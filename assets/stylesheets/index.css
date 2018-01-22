@@ -1,6 +1,6 @@
 html, body{
 
-
+	height: 100%;
 	min-width: 360px;
 }
 
@@ -11,7 +11,8 @@ html, body{
 
 
 body{
-	height: 500px;
+	/*height: 500px;*/
+	min-height: 100%;
 	width: 100%;
 
 
@@ -26,6 +27,7 @@ body{
 .input{
 	width: 100%;
 }
+
 
 #brand{
 	height: 50px;
