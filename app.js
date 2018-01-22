@@ -26,7 +26,7 @@ app.get("/register", function(req, res){
 
 //Post of the register route
 app.post("/", function(req, res){
-
+	res.send("Post req of the register!");
 });
 
 //start server listening
