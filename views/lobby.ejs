@@ -1,1 +1,41 @@
-<h1>You've reached the lobby!</h1>
+<% include partials/header%>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<link rel="stylesheet" type="text/css" href="/stylesheets/lobby.css">
+
+<div class="container">
+	<div class="row">
+		<div class="col-xs-6" id="chat-window">
+			<ol id="chat-list">
+				<li><div class="other-chat">
+						Hey how are you? :D
+					</div></li>
+
+				
+				<li><div class="self-chat">
+						I'm good :)
+					</div></li>
+				
+
+			</ol>
+
+
+			<input type="text" name="chat-message" id="chat-message-input">
+		</div>
+
+		<div class="col-xs-6">
+			<ul>
+				<li>Game room 1</li>
+				<li>Game room 2</li>
+				<li>Game room 3</li>
+				<li>Game room 4</li>
+				<li><%=currentUser.username%></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript" src="scripts/lobby.js"></script>
+
+<% include partials/footer%>

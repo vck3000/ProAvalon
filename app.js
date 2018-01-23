@@ -10,7 +10,8 @@ var express 		= require("express"),
 	User 			= require("./models/user"),
 
 	passport		= require("passport"),
-	LocalStrategy	= require("passport-local");
+	LocalStrategy	= require("passport-local"),
+	passportSocketIo = require("passport.socketio");
 
 var port = process.env.PORT || 3000;
 
@@ -34,7 +35,13 @@ app.use(express.static("assets"));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(methodOverride("_method"));
 
-
+//res.locals variables
+app.use(function(req, res, next){
+	res.locals.currentUser = req.user;
+	// res.locals.error = req.flash("error");
+	// res.locals.success = req.flash("success");
+	next();
+});
 
 
 
@@ -84,7 +91,8 @@ app.post("/login", passport.authenticate("local", {
 
  
 app.get("/lobby", isLoggedIn, function(req, res){
-	res.render("lobby");
+	console.log(req.user);
+	res.render("lobby", {currentUser: req.user});
 });
 
 //start server listening
@@ -95,7 +103,35 @@ var server = app.listen(port, function(){
 //=====================================
 //SOCKETS
 //=====================================
+var socket = require("socket.io");
+var io = socket(server);
 
+io.sockets.on("connection", function(socket){
+	console.log("A new user has connected under socket ID: " + socket.id);
+
+	//automatically join the all chat
+	socket.join("allChat");
+
+	
+	socket.on("allChatFromClient", function(data){
+		console.log("incoming message at " + data.date + ": " + data.message);
+		// if()
+		data.username = res.locals.currentUser;
+		socket.in("allChat").broadcast.emit("allChatToClient", data);
+	});
+
+	
+
+	socket.on("newRoom", function(data){
+		var room = new Room(currentUser);
+
+		socket.in("allChat").emit("Room " + room.ID + " has been created! Go join!");
+	});
+
+
+
+
+});
 
 
 //=====================================

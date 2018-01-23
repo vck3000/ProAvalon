@@ -1,0 +1,56 @@
+html, body{
+	height: 100%;
+	width: 100%;
+	/*overflow: hidden;*/
+	
+}
+
+
+
+.container {
+	height: 90%;
+}
+
+.row {
+	height: 100%;
+}
+
+
+#chat-message-input {
+	width: 100%;
+	border: 2px solid purple;
+	float: bottom;
+	/*position: relative;*/
+	bottom: 0;
+	position: absolute;
+
+	/*INSERT SOM HEIGHT THING HERE*/
+}
+
+#chat-window {
+	height: 500px;
+}
+
+#chat-list {
+	padding-bottom: 30px;
+	list-style: none;
+	width: 100%;
+}
+
+.other-chat {
+	float: left;
+	text-align: left;
+	width: 100%;
+}
+
+.self-chat {
+	color: purple;
+	text-align: right;
+	width: 100%;
+}
+
+#chat-list li {
+    padding: 0.1rem;
+    overflow: hidden;
+    display: flex;
+}
