@@ -2,27 +2,43 @@
 //INITIALISATION
 //=====================================
 var express 		= require("express"),
-	app 			= express()
-	mongoose		= require("mongoose"),
-	bodyParser 		= require("body-parser"),
-	methodOverride 	= require("method-override"),
+app 			= express()
+mongoose		= require("mongoose"),
+bodyParser 		= require("body-parser"),
+methodOverride 	= require("method-override"),
 
-	User 			= require("./models/user"),
+User 			= require("./models/user"),
 
-	passport		= require("passport"),
-	LocalStrategy	= require("passport-local"),
-	passportSocketIo = require("passport.socketio");
+passport		= require("passport"),
+LocalStrategy	= require("passport-local"),
+passportSocketIo = require("passport.socketio");
 
 var port = process.env.PORT || 3000;
 
+
+
 mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
+
+var session = require("express-session");
+var MongoDBStore = require('connect-mongodb-session')(session);
+var store = new MongoDBStore({
+	uri: 'mongodb://localhost/TheNewResistanceUsers',
+	collection: 'mySessions'
+});
+
+// Catch errors
+store.on('error', function(error) {
+	assert.ifError(error);
+	assert.ok(false);
+});
 
 
 //authentication
-app.use(require("express-session")({
+app.use(session({
 	secret: "Once again Rusty wins cutest dog!",
 	resave: false,
-	saveUninitialized: false
+	saveUninitialized: false,
+	store: store
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -42,7 +58,6 @@ app.use(function(req, res, next){
 	// res.locals.success = req.flash("success");
 	next();
 });
-
 
 
 
@@ -89,41 +104,62 @@ app.post("/login", passport.authenticate("local", {
 // });
 
 
- 
+
 app.get("/lobby", isLoggedIn, function(req, res){
 	console.log(req.user);
 	res.render("lobby", {currentUser: req.user});
 });
+
 
 //start server listening
 var server = app.listen(port, function(){
 	console.log("Server has started!");
 });
 
+
 //=====================================
 //SOCKETS
 //=====================================
 var socket = require("socket.io");
-var io = socket(server);
+var io = socket(server),
+passportSocketIo = require("passport.socketio");;
 
-io.sockets.on("connection", function(socket){
-	console.log("A new user has connected under socket ID: " + socket.id);
+// var io               = require("socket.io")(server),
+    // sessionStore     = require('awesomeSessionStore'), // find a working session store (have a look at the readme) 
+    //authentication
+    app.use(require("express-session")({
+    	secret: "Once again Rusty wins cutest dog!",
+    	resave: false,
+    	saveUninitialized: false
+    }));
+
+    io.use(passportSocketIo.authorize({
+  cookieParser: require('cookie-parser'), //optional your cookie-parser middleware function. Defaults to require('cookie-parser') 
+  // key:          'express.sid',       //make sure is the same as in your session settings in app.js 
+  secret:       "Once again Rusty wins cutest dog!",      //make sure is the same as in your session settings in app.js 
+  store:        store,        //you need to use the same sessionStore you defined in the app.use(session({... in app.js 
+  // success:      onAuthorizeSuccess,  // *optional* callback on success 
+  // fail:         onAuthorizeFail,     // *optional* callback on fail/error 
+}));
+
+    io.sockets.on("connection", function(socket){
+    	console.log("A new user has connected under socket ID: " + socket.id);
 
 	//automatically join the all chat
 	socket.join("allChat");
 
 	
 	socket.on("allChatFromClient", function(data){
-		console.log("incoming message at " + data.date + ": " + data.message);
+		console.log("incoming message at " + data.date + ": " + data.message + " by: " + socket.request.user);
 		// if()
-		data.username = res.locals.currentUser;
-		socket.in("allChat").broadcast.emit("allChatToClient", data);
+		data.username = socket.request.user.username;
+		io.in("allChat").emit("allChatToClient", data);
 	});
 
 	
 
 	socket.on("newRoom", function(data){
-		var room = new Room(currentUser);
+		var room = new Room(socket.request.user);
 
 		socket.in("allChat").emit("Room " + room.ID + " has been created! Go join!");
 	});
