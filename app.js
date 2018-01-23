@@ -26,6 +26,8 @@ var store = new MongoDBStore({
 	collection: 'mySessions'
 });
 
+
+
 // Catch errors
 store.on('error', function(error) {
 	assert.ifError(error);
@@ -124,16 +126,15 @@ var socket = require("socket.io");
 var io = socket(server),
 passportSocketIo = require("passport.socketio");;
 
-// var io               = require("socket.io")(server),
-    // sessionStore     = require('awesomeSessionStore'), // find a working session store (have a look at the readme) 
-    //authentication
-    app.use(require("express-session")({
-    	secret: "Once again Rusty wins cutest dog!",
-    	resave: false,
-    	saveUninitialized: false
-    }));
+var currentPlayers = [];
 
-    io.use(passportSocketIo.authorize({
+app.use(require("express-session")({
+	secret: "Once again Rusty wins cutest dog!",
+	resave: false,
+	saveUninitialized: false
+}));
+
+io.use(passportSocketIo.authorize({
   cookieParser: require('cookie-parser'), //optional your cookie-parser middleware function. Defaults to require('cookie-parser') 
   // key:          'express.sid',       //make sure is the same as in your session settings in app.js 
   secret:       "Once again Rusty wins cutest dog!",      //make sure is the same as in your session settings in app.js 
@@ -142,18 +143,24 @@ passportSocketIo = require("passport.socketio");;
   // fail:         onAuthorizeFail,     // *optional* callback on fail/error 
 }));
 
-    io.sockets.on("connection", function(socket){
-    	console.log("A new user has connected under socket ID: " + socket.id);
+io.sockets.on("connection", function(socket){
+	console.log("A new user has connected under socket ID: " + socket.id);
 
 	//automatically join the all chat
 	socket.join("allChat");
+	currentPlayers.push(socket.request.user);
 
+	data = {
+		username: socket.request.user.username,
+		currentPlayers: currentPlayers
+	};
+	socket.in("allChat").emit("newPlayerJoinedLobby", data);
 	
 	socket.on("allChatFromClient", function(data){
 		console.log("incoming message at " + data.date + ": " + data.message + " by: " + socket.request.user);
 		// if()
 		data.username = socket.request.user.username;
-		io.in("allChat").emit("allChatToClient", data);
+		socket.in("allChat").emit("allChatToClient", data);
 	});
 
 	
@@ -163,9 +170,6 @@ passportSocketIo = require("passport.socketio");;
 
 		socket.in("allChat").emit("Room " + room.ID + " has been created! Go join!");
 	});
-
-
-
 
 });
 
