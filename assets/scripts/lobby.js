@@ -1,5 +1,5 @@
-var socket = io();
-
+var socket = io({transports: ['websocket'], upgrade: false});
+console.log("started");
 
 document.querySelector("#chat-message-input").onkeyup = function (e) {
 	//When enter is pressed in the chatmessageinput
@@ -7,28 +7,30 @@ document.querySelector("#chat-message-input").onkeyup = function (e) {
         var d = new Date();
         //set up the data structure:
         var message = this.value;
-        //append 0 in front of single digit minutes
-        var dateMinutes = d.getMinutes();
 
-        if(dateMinutes.toString.length == 1){
-        	dateMinutes = "0" + d.getMinutes();
+        //only do it if the user has inputted something
+        //i.e. dont run when its an empty string
+        if(message && message.length > 0){
+            //append 0 in front of single digit minutes
+            var dateMinutes = d.getMinutes();
+
+            var date = "" + d.getHours() + ":" + dateMinutes;
+            var data = {
+                date: date,
+                message: message
+            }
+
+            //reset the value of the textbox
+            this.value = "";
+            //send data to the server 
+            socket.emit("allChatFromClient", data);
+
+            //add the self chat
+            var dateStr = "[" + data.date + "]";
+            var str = "<li class=self>" + dateStr + " Me: " + data.message;
+            $("#chat-list").append(str);
         }
 
-        var date = "" + d.getHours() + ":" + dateMinutes;
-        var data = {
-        	date: date,
-        	message: message
-        }
-
-        //reset the value of the textbox
-        this.value = "";
-        //send data to the server 
-        socket.emit("allChatFromClient", data);
-
-        //add the self chat
-        var dateStr = "[" + data.date + "]";
-        var str = "<li class=self>" + dateStr + " Me: " + data.message;
-        $("#chat-list").append(str);
     }
 };
 
@@ -38,16 +40,27 @@ socket.on("allChatToClient", function(data){
 	$("#chat-list").append(str);
 });
 
-socket.on("newPlayerJoinedLobby", function(data){
-	console.log(data.username);
-	console.log(data.currentPlayers);
+socket.on("player-joined-lobby", function(username){
+    var str = "<li class=server-text>" + username + " has joined the lobby!";
+    $("#chat-list").append(str);
+})
 
-	$("#current-players-list").remove();
+socket.on("player-left-lobby", function(username){
+    var str = "<li class=server-text>" + username + " has left the lobby.";
+    $("#chat-list").append(str);
+})
 
-	data.currentPlayers.forEach(function(currentPlayer){
-		var str = "<li>" + currentPlayer.username + "</li>";
-		$("#current-players-list").append(str);
-	});
+socket.on("update-current-players-list", function(currentPlayers){
+    console.log("update the current player list request received");
+    console.log(currentPlayers);
+    //remove all the li's inside the list
+    $("#current-players-list li").remove();
+    
+    //append each player into the list
+    currentPlayers.forEach(function(currentPlayer){
+      var str = "<li>" + currentPlayer + "</li>";
+      $("#current-players-list").append(str);
+  });
 });
 
 
