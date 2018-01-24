@@ -72,3 +72,17 @@ html, body{
 	overflow: hidden;
 	display: flex;
 }
+
+
+
+
+
+
+/*GAME-ROOM AREA*/
+.game-room {
+	height: 75%;
+}
+.jumbotron{
+	height: 100%;
+	width: 100%;
+}

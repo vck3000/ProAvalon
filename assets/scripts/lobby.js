@@ -75,9 +75,3 @@ socket.on("update-current-players-list", function(currentPlayers){
   });
 });
 
-
-
-
-document.querySelector("#testButton").addEventListener("click", function(){
-    document.querySelector(".lobby-container").classList.toggle("inactive-window");
-})
