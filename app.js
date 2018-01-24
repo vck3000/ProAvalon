@@ -164,7 +164,6 @@ io.sockets.on("connection", function(socket){
 
 	console.log("A new user has connected under socket ID: " + socket.id);
 
-
 	//automatically join the all chat
 	socket.join("allChat");
 	currentPlayers.push(socket.request.user.username);

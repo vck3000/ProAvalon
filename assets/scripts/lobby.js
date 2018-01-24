@@ -30,7 +30,7 @@ document.querySelector("#chat-message-input").onkeyup = function (e) {
             var str = "<li class=self>" + dateStr + " Me: " + data.message;
             $("#chat-list").append(str);
             //scroll down
-            $("#chat-window").scrollTop = $("#chat-window").scrollHeight;
+            $("#chat-window")[0].scrollTop = $("#chat-window")[0].scrollHeight;
         }
 
     }
@@ -41,7 +41,7 @@ socket.on("allChatToClient", function(data){
 	var str = "<li class=other>" + date + " " + data.username + ": " + data.message;
 	$("#chat-list").append(str);
     //scroll down
-    $("#chat-window").scrollTop = $("#chat-window").scrollHeight;
+    $("#chat-window")[0].scrollTop = $("#chat-window")[0].scrollHeight;
 });
 
 socket.on("player-joined-lobby", function(username){

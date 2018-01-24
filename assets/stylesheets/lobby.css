@@ -15,6 +15,7 @@ html, body{
 }
 
 
+
 #chat-message-input {
 	width: 100%;
 	border: 2px solid black;
@@ -33,6 +34,7 @@ html, body{
 #col1{
 	height: 100%;
 }
+
 #chat-window {
 	height: 75%;
 	display:block;
@@ -45,7 +47,6 @@ html, body{
 
 #chat-list {
 	padding: 0;
-	padding-bottom: 30px;
 
 	list-style: none;
 	width: 100%;
