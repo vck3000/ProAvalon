@@ -2,6 +2,9 @@ var socket = io({transports: ['websocket'], upgrade: false});
 console.log("started");
 
 
+document.querySelector("#testLink").addEventListener("click", function(){
+    socket.emit("newRoom");
+}); 
 
 
 document.querySelector("#chat-message-input").onkeyup = function (e) {

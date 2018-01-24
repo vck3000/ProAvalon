@@ -3,6 +3,8 @@
 var currentPlayers = [];
 var allSockets = [];
 
+var avalonRoom = require("../gameplay/avalonRoom");
+
 
 module.exports = function(io){
 	//SOCKETS for each connection
@@ -50,7 +52,12 @@ module.exports = function(io){
 		//when a new room is created
 		//INCOMPLETE
 		socket.on("newRoom", function(data){
-			var room = new Room(socket.request.user);
+			// var room = new Room(socket.request.user);
+
+			var room = new avalonRoom();
+			room.testFunction();
+
+			console.log("new room request");
 
 			socket.in("allChat").emit("Room " + room.ID + " has been created! Go join!");
 		});
