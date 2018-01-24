@@ -4,31 +4,35 @@
 
 <link rel="stylesheet" type="text/css" href="/stylesheets/lobby.css">
 
+
+
 <div class="container">
 	<div class="row">
-		<div class="col-xs-6" id="chat-window">
-			<ol id="chat-list">
-				<li><div class="other-chat">
+		<div class="col-xs-6" id="col1">
+			<p>All chat!</p>
+			<div id="chat-window">
+				<ol id="chat-list">
+					<li><div class="other-chat">
 						Hey how are you? :D
 					</div></li>
 
-				
-				<li><div class="self-chat">
+
+					<li><div class="self-chat">
 						I'm good :)
 					</div></li>
-				
-
-			</ol>
-
+				</ol>
+			</div>
 
 			<input type="text" name="chat-message" id="chat-message-input">
+			
+			
 		</div>
 
 		<div class="col-xs-6">
 			Hi there, <%=currentUser.username%>!
 
 			<br>
-
+			<h3>Games:</h3>
 			<ul id="game-rooms">
 				<li>Game room 1</li>
 				<li>Game room 2</li>
@@ -37,7 +41,7 @@
 			</ul>
 			
 			<br>
-
+			<h3>Online players:</h3>
 			<ul id="current-players-list">
 				
 			</ul>

@@ -2,7 +2,7 @@
 //INITIALISATION
 //=====================================
 var express 	= require("express"),
-app 			= express()
+app 			= express(),
 mongoose		= require("mongoose"),
 bodyParser 		= require("body-parser"),
 methodOverride 	= require("method-override"),
@@ -36,9 +36,11 @@ store.on('error', function(error) {
 });
 
 
+console.log(process.env);
 //authentication
 app.use(session({
-	secret: "Once again Rusty wins cutest dog!",
+
+	secret: process.env.MY_SECRET_KEY,
 	resave: false,
 	saveUninitialized: false,
 	store: store
@@ -137,7 +139,7 @@ app.use(require("express-session")({
 io.use(passportSocketIo.authorize({
   cookieParser: cookieParser, //optional your cookie-parser middleware function. Defaults to require('cookie-parser') 
   // key:          'express.sid',       //make sure is the same as in your session settings in app.js 
-  secret:       "Once again Rusty wins cutest dog!",      //make sure is the same as in your session settings in app.js 
+  secret:       process.env.MY_SECRET_KEY,      //make sure is the same as in your session settings in app.js 
   store:        store,        //you need to use the same sessionStore you defined in the app.use(session({... in app.js 
   // success:      onAuthorizeSuccess,  // *optional* callback on success 
   // fail:         onAuthorizeFail,     // *optional* callback on fail/error 
@@ -147,7 +149,7 @@ io.use(passportSocketIo.authorize({
 
 var currentPlayers = [];
 
-
+//SOCKETS for each connection
 io.sockets.on("connection", function(socket){
 	console.log("A new user has connected under socket ID: " + socket.id);
 	//automatically join the all chat
@@ -160,7 +162,7 @@ io.sockets.on("connection", function(socket){
 	//io sends to everyone in the room, including the current user of this socket
 	io.in("allChat").emit("update-current-players-list", currentPlayers);
 	
-	
+
 	//when a user tries to send a message to all chat
 	socket.on("allChatFromClient", function(data){
 		//debugging

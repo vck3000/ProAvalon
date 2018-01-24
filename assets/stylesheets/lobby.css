@@ -2,7 +2,6 @@ html, body{
 	height: 100%;
 	width: 100%;
 	/*overflow: hidden;*/
-	
 }
 
 
@@ -18,23 +17,39 @@ html, body{
 
 #chat-message-input {
 	width: 100%;
-	border: 2px solid purple;
-	float: bottom;
-	/*position: relative;*/
-	bottom: 0;
-	position: absolute;
+	border: 2px solid black;
+	/*float: bottom;*/
+	/*bottom: 0;*/
+	/*position: absolute;*/
+
+/*	width: 400px;
+	margin: 0 auto;
+	border: solid 1px #ccc;
+	border-radius: 5px;
+	overflow: hidden;*/
 
 	/*INSERT SOM HEIGHT THING HERE*/
 }
-
+#col1{
+	height: 100%;
+}
 #chat-window {
-	height: 500px;
+	height: 75%;
+	display:block;
+	max-height: 75%;
+	border: 1px solid black;
+	overflow-y: auto;
+	overflow-x: visible;
+
 }
 
 #chat-list {
+	padding: 0;
 	padding-bottom: 30px;
+
 	list-style: none;
 	width: 100%;
+	overflow: auto;
 }
 
 .other-chat {
@@ -50,7 +65,7 @@ html, body{
 }
 
 #chat-list li {
-    padding: 0.1rem;
-    overflow: hidden;
-    display: flex;
+	padding: 0.1rem;
+	overflow: hidden;
+	display: flex;
 }
