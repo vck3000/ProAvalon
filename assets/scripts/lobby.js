@@ -29,6 +29,8 @@ document.querySelector("#chat-message-input").onkeyup = function (e) {
             var dateStr = "[" + data.date + "]";
             var str = "<li class=self>" + dateStr + " Me: " + data.message;
             $("#chat-list").append(str);
+            //scroll down
+            $("#chat-window").scrollTop = $("#chat-window").scrollHeight;
         }
 
     }
@@ -38,17 +40,24 @@ socket.on("allChatToClient", function(data){
 	var date = "[" + data.date + "]";
 	var str = "<li class=other>" + date + " " + data.username + ": " + data.message;
 	$("#chat-list").append(str);
+    //scroll down
+    $("#chat-window").scrollTop = $("#chat-window").scrollHeight;
 });
 
 socket.on("player-joined-lobby", function(username){
     var str = "<li class=server-text>" + username + " has joined the lobby!";
     $("#chat-list").append(str);
-})
+});
 
 socket.on("player-left-lobby", function(username){
     var str = "<li class=server-text>" + username + " has left the lobby.";
     $("#chat-list").append(str);
-})
+});
+
+socket.on("alert", function(data){
+    alert(data);
+    window.location.replace("/");
+});
 
 socket.on("update-current-players-list", function(currentPlayers){
     console.log("update the current player list request received");

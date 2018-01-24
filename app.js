@@ -14,7 +14,7 @@ LocalStrategy	= require("passport-local"),
 passportSocketIo= require("passport.socketio"),
 cookieParser 	= require('cookie-parser');
 
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 80;
 
 
 
@@ -36,7 +36,6 @@ store.on('error', function(error) {
 });
 
 
-console.log(process.env);
 //authentication
 app.use(session({
 
@@ -51,10 +50,16 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+// var passportOneSessionPerUser=require('passport-one-session-per-user')
+// passport.use(new passportOneSessionPerUser())
+// app.use(passport.authenticate('passport-one-session-per-user'))
+
 app.set("view engine", "ejs");
 app.use(express.static("assets"));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(methodOverride("_method"));
+
+
 
 //res.locals variables
 app.use(function(req, res, next){
@@ -117,8 +122,9 @@ app.get("/lobby", isLoggedIn, function(req, res){
 
 
 //start server listening
-var server = app.listen(port, function(){
-	console.log("Server has started!");
+var IP = process.env.IP || "192.168.1.55";
+var server = app.listen(port, IP , function(){
+	console.log("Server has started on " + IP + ":" + port + "!");
 });
 
 
@@ -129,12 +135,6 @@ var socket = require("socket.io");
 var io = socket(server),
 passportSocketIo = require("passport.socketio");;
 
-
-app.use(require("express-session")({
-	secret: "Once again Rusty wins cutest dog!",
-	resave: false,
-	saveUninitialized: false
-}));
 
 io.use(passportSocketIo.authorize({
   cookieParser: cookieParser, //optional your cookie-parser middleware function. Defaults to require('cookie-parser') 
@@ -148,20 +148,34 @@ io.use(passportSocketIo.authorize({
 
 
 var currentPlayers = [];
+var allSockets = [];
 
 //SOCKETS for each connection
 io.sockets.on("connection", function(socket){
+
+	//if user is already logged in
+	var i = currentPlayers.indexOf(socket.request.user.username);
+	if(i !== -1){
+		allSockets[socket.request.user.username].emit("alert", "You've been disconnected");
+		allSockets[socket.request.user.username].disconnect();
+		currentPlayers.splice(i, 1);
+		console.log("User was logged in already, killed last session and socket.")
+	}
+
 	console.log("A new user has connected under socket ID: " + socket.id);
+
+
 	//automatically join the all chat
 	socket.join("allChat");
 	currentPlayers.push(socket.request.user.username);
+	allSockets[socket.request.user.username] = socket;
 
 	//socket sends to all except the user of this socket
 	socket.in("allChat").emit("player-joined-lobby", socket.request.user.username);
 	
 	//io sends to everyone in the room, including the current user of this socket
 	io.in("allChat").emit("update-current-players-list", currentPlayers);
-	
+
 
 	//when a user tries to send a message to all chat
 	socket.on("allChatFromClient", function(data){

@@ -20,6 +20,7 @@
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^4.4.0",
+    "passport-one-session-per-user": "^1.0.3",
     "passport.socketio": "^3.7.0",
     "save": "^2.3.2",
     "socket.io": "^2.0.4"
