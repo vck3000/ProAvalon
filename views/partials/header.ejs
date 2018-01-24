@@ -44,6 +44,10 @@
 
 					<li><a href="#">Contact us</a></li>
 
+					<% if(currentUser){%>
+						<li><a href="/logout">Log out</a></li>
+					<%}%>
+
 				</ul>
 			</div><!-- /.navbar-collapse -->
 		</div><!-- /.container-fluid -->

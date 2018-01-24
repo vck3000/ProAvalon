@@ -42,6 +42,12 @@ router.get("/lobby", isLoggedIn, function(req, res){
 	res.render("lobby", {currentUser: req.user});
 });
 
+router.get("/logout", function(req, res){
+	req.session.destroy(function (err) {
+	    res.redirect('/'); //Inside a callback… bulletproof!
+	});
+});
+
 //=====================================
 //MIDDLEWARE
 //=====================================
