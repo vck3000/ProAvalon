@@ -6,7 +6,7 @@ html, body{
 
 
 
-.container {
+.lobby-container {
 	height: 90%;
 }
 
@@ -14,7 +14,9 @@ html, body{
 	height: 100%;
 }
 
-
+.inactive-window{
+	display: none;
+}
 
 #chat-message-input {
 	width: 100%;
