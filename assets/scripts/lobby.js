@@ -13,7 +13,9 @@ document.querySelector("#success-alert-box-button").addEventListener("click", fu
     document.querySelector("#success-alert-box-button").classList.add("inactive-window");
 });
 
-
+document.querySelector("#backButton").addEventListener("click", function(){
+    changeView();
+});
 
 
 document.querySelector("#chat-message-input").onkeyup = function (e) {
@@ -140,9 +142,84 @@ socket.on("new-game-created", function(str){
 
 socket.on("auto-join-room-id", function(roomID){
     console.log("auto join room");
+    //received a request from server to auto join
+    //likely we were the one who created the room
+    //so we auto join into it
     socket.emit("join-room", roomID);
+    //chang ethe view to the room instead of lobby
+    changeView();
 });
 
+
+function toRadians (angle) {
+  return angle * (Math.PI / 180);
+}
+
+function generatePlayerLocations(numOfPlayers, a, b){
+    //CONICS :D
+    var x_ = [];
+    var y_ = [];
+    var step = 360/numOfPlayers;
+
+    for(var i = 0; i < numOfPlayers; i++){
+        //get the coordinates. Note the +90 is to rotate so that
+        //the first person is at the top of the screen
+        x_[i] = a*(Math.cos(toRadians((step*i) + 90)))*0.6;
+        y_[i] = b*(Math.sin(toRadians((step*i) + 90)))*0.6;
+    }
+
+    var object = {
+        x: x_,
+        y: y_
+    }
+    return object;
+}
+
+
 socket.on("update-room-players", function(data){
-    
+    // var x = $("#typehead").parent().width();
+
+    console.log("update room players");
+    renderPlayers(data);
 });
+
+
+function renderPlayers(data){
+    var w = $("#mainRoomBox").width();
+    var h = $("#mainRoomBox").height();
+
+    var playerLocations = generatePlayerLocations(numPlayers, w/2, h/2);
+
+    console.log("w: " + w + "    h: " + h);
+    console.log(playerLocations);
+
+
+    //generate the divs in the html
+    var str = "";
+    for(var i = 0 ; i < numPlayers; i++){
+        str = str + "<div>hi! " + i + " </div>";
+    }
+    //set the divs into the box
+    $("#mainRoomBox").html(str);
+
+
+    //set the positions
+    var divs = document.querySelectorAll("#mainRoomBox div");
+    for(var i = 0 ; i < numPlayers; i++){
+        var offsetX = w/2 ;
+        var offsetY = h/2 ;
+
+        var strX = playerLocations.x[i] + offsetX + "px";
+        var strY = playerLocations.y[i] + offsetY + "px";
+
+        divs[i].style.left = strX;
+        divs[i].style.bottom = strY;
+    }
+}
+
+
+function changeView(){
+    $(".lobby-container").toggleClass("inactive-window");
+    $(".room-container").toggleClass("inactive-window");
+
+}

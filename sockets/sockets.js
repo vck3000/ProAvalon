@@ -119,7 +119,7 @@ module.exports = function(io){
 			//broadcast to all chat
 			var str =  "Room " + nextRoomId + " has been created! Go join!";
 			console.log(str);
-			console.log(rooms);
+			// console.log(rooms);
 			//send to allChat including the host of the game
 			io.in("allChat").emit("new-game-created", str);
 			//send back room id to host so they can auto connect
@@ -136,14 +136,11 @@ module.exports = function(io){
 
 		socket.on("join-room", function(roomId){
 			var ToF = rooms[roomId].playerJoinGame(socket);
-			console.log(socket.request.user.username + "has joined room " + roomId + ": " + ToF)
+			console.log(socket.request.user.username + " has joined room " + roomId + ": " + ToF)
 
 			socket.join(roomId);
-			socket.in("roomId").emit("update-room-players", roomData);
 
-
+			io.in(roomId).emit("update-room-players", rooms[roomId].getPlayers());
 		});
-
-		
 	});
 }

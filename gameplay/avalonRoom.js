@@ -133,6 +133,7 @@ module.exports = function(host_, roomId_){
 			for(var i = 0; i < this.sockets.length; i++){
 				array[i] = this.sockets[i].request.user.username;
 			}
+			return array;
 		} else{
 			return playersInGame;	
 		}

@@ -10,6 +10,8 @@ html, body{
 	height: 90%;
 }
 
+
+
 .row {
 	height: 100%;
 }
@@ -79,10 +81,32 @@ html, body{
 
 
 /*GAME-ROOM AREA*/
-.game-room {
-	height: 75%;
+
+.room-container {
+	height: 40%;
+	/*background-color: purple;*/
 }
+
+#mainRoomBox {
+	height: 40%;
+	width: 75%;
+	position: absolute;
+
+	border: solid 1px black;
+
+}
+
+.room-container #mainRoomBox div {
+	display: inline-block;
+	position: absolute;
+	/*transform: translate(50%, 50%);*/
+}
+
 .jumbotron{
-	height: 100%;
-	width: 100%;
+	display: inline-block;
+
+	padding: 0;
+	margin: 0;
+	/*height: 100%;
+	width: 100%;*/
 }
