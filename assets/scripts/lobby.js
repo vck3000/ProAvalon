@@ -105,6 +105,7 @@ socket.on("update-current-games-list", function(currentGames){
 
 
 
+
 //notifications code
 socket.on("alert", function(data){
     alert(data);
@@ -125,17 +126,23 @@ socket.on("success-alert", function(data){
 
 
 
+
+
 //ROOM CODE
 document.querySelector("#testLink").addEventListener("click", function(){
     socket.emit("newRoom");
 }); 
 
-socket.on("autoJoinRoomID", function(roomID){
-    console.log("auto join room");
-    socket.emit("joinRoom", roomID);
-})
-
 socket.on("new-game-created", function(str){
     var str = "<li class=server-text>" + str + "</li>";
     $("#chat-list").append(str);
+});
+
+socket.on("auto-join-room-id", function(roomID){
+    console.log("auto join room");
+    socket.emit("join-room", roomID);
+});
+
+socket.on("update-room-players", function(data){
+    
 });

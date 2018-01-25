@@ -123,7 +123,7 @@ module.exports = function(io){
 			//send to allChat including the host of the game
 			io.in("allChat").emit("new-game-created", str);
 			//send back room id to host so they can auto connect
-			socket.emit("autoJoinRoomID", nextRoomId);
+			socket.emit("auto-join-room-id", nextRoomId);
 
 			// sending to individual socketid (private message)
   			//socket.to(<socketid>).emit('hey', 'I just met you');
@@ -134,9 +134,14 @@ module.exports = function(io){
   			updateCurrentGamesList(io);
   		});
 
-		socket.on("joinRoom", function(roomId){
+		socket.on("join-room", function(roomId){
 			var ToF = rooms[roomId].playerJoinGame(socket);
 			console.log(socket.request.user.username + "has joined room " + roomId + ": " + ToF)
+
+			socket.join(roomId);
+			socket.in("roomId").emit("update-room-players", roomData);
+
+
 		});
 
 		
