@@ -12,7 +12,9 @@ User 			= require("./models/user"),
 passport		= require("passport"),
 LocalStrategy	= require("passport-local"),
 passportSocketIo= require("passport.socketio"),
-cookieParser 	= require('cookie-parser');
+cookieParser 	= require('cookie-parser')
+
+flash 			= require("connect-flash");;
 
 var port = process.env.PORT || 80;
 
@@ -43,6 +45,19 @@ app.use(session({
 	saveUninitialized: false,
 	store: store
 }));
+
+
+app.use(flash());
+//res.locals variables
+app.use(function(req, res, next){
+	res.locals.currentUser = req.user;
+	res.locals.error = req.flash("error");
+	res.locals.success = req.flash("success");
+	next();
+});
+
+
+
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
@@ -54,18 +69,10 @@ app.use(express.static("assets"));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(methodOverride("_method"));
 
-//res.locals variables
-app.use(function(req, res, next){
-	res.locals.currentUser = req.user;
-	// res.locals.error = req.flash("error");
-	// res.locals.success = req.flash("success");
-	next();
-});
 
 
 var indexRoutes = require("./routes/index");
 app.use(indexRoutes);
-
 
 
 //start server listening
@@ -79,8 +86,6 @@ var server = app.listen(port, IP , function(){
 //=====================================
 //SOCKETS
 //=====================================
-
-
 var socket = require("socket.io");
 var io = socket(server),
 passportSocketIo = require("passport.socketio");;

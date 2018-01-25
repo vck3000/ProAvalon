@@ -2,6 +2,7 @@ var express 	= require("express");
 var router 		= express.Router();
 var passport 	= require("passport");
 var User 		= require("../models/user");
+var flash 		= require("connect-flash");
 
 //Index route
 router.get("/", function(req, res){
@@ -30,10 +31,15 @@ router.post("/", function(req, res){
 
 //login route
 router.post("/login", passport.authenticate("local", {
-	successRedirect: "/lobby",
+	successRedirect: "/lobbyFlash",
 	failureRedirect: "/"
 }), function(req, res){
 	res.send("LOGIN LOGIC");
+});
+
+router.get("/lobbyFlash", function(req, res){
+	req.flash("success", "Logged you in!");
+	res.redirect("/lobby");
 });
 
 //lobby route
@@ -44,10 +50,13 @@ router.get("/lobby", isLoggedIn, function(req, res){
 
 //logout
 router.get("/logout", function(req, res){
+	req.flash("success", "Logged you out!");
 	req.session.destroy(function (err) {
 	    res.redirect('/'); //Inside a callback… bulletproof!
-	});
+	});	
 });
+
+
 
 //=====================================
 //MIDDLEWARE
