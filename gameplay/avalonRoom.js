@@ -2,7 +2,10 @@
 
 var playersInGame = [];
 var player = [];
+var mongoose = require("mongoose");
+var User = require("../models/user");
 
+mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
 // var sockets = [];
 
 // var host;
@@ -40,10 +43,10 @@ function getRandomInt(min, max) {
 	min = Math.ceil(min);
 	max = Math.floor(max);
  	return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
-}
+ }
 
-function shuffle(array) {
-	var currentIndex = array.length, temporaryValue, randomIndex;
+ function shuffle(array) {
+ 	var currentIndex = array.length, temporaryValue, randomIndex;
  	 // While there remain elements to shuffle...
  	 while (0 !== currentIndex) {
 	    // Pick a remaining element...
@@ -94,6 +97,8 @@ module.exports = function(host_, roomId_){
 			playersInGame[i] = [];
 			playersInGame[i].username = this.sockets[i].request.user.username;
 			playersInGame[i].socketId = this.sockets[i].id;
+
+			
 			//set the role to be from the roles array with index of the value
 			//of the rolesAssignment which has been shuffled
 			playersInGame[i].role = roles[rolesAssignment[i]];
@@ -106,7 +111,33 @@ module.exports = function(host_, roomId_){
 	this.playerJoinGame = function(socket){
 		//when game hasnt started yet, add the person to the players in game
 		if(gameStarted === false){
+
+			// console.log(User.findById(socket.request.user.id));
+
+			// User.findById("5a694cc2802e711c284e2d55", function(err, user){
+			// 	console.log("found user");
+			// 	console.log(user.avatarImg);
+			// });
+
+			User.findById(socket.request.user.id, function(err, user){
+				if(err){
+					console.log(err);
+				} else{
+					if(user.avatarImg){
+						socket.request.user.avatarImg = user.avatarImg;
+						console.log("User has been found!!!!" + socket.request.user.avatarImg);
+					} else{
+						socket.request.user.avatarImg = "base-res.png";
+
+					}
+				}
+
+
+
+			});
+
 			this.sockets.push(socket);
+
 			return true;
 		} else{
 			console.log("Game has already started!");
@@ -131,12 +162,21 @@ module.exports = function(host_, roomId_){
 		if(gameStarted === false){
 			var array = [];
 			for(var i = 0; i < this.sockets.length; i++){
-				array[i] = this.sockets[i].request.user.username;
+
+				array[i] = {
+					username: this.sockets[i].request.user.username,	
+					avatarImg: this.sockets[i].request.user.avatarImg
+				}
 			}
 			return array;
 		} else{
 			return playersInGame;	
 		}
+
+
+
+
+
 	};
 
 	this.getSockets = function(){

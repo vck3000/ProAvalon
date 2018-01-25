@@ -180,24 +180,29 @@ socket.on("update-room-players", function(data){
     // var x = $("#typehead").parent().width();
 
     console.log("update room players");
-    renderPlayers(data);
-});
+    console.log(data);
 
-
-function renderPlayers(data){
     var w = $("#mainRoomBox").width();
     var h = $("#mainRoomBox").height();
 
+    var numPlayers = 3;
+
     var playerLocations = generatePlayerLocations(numPlayers, w/2, h/2);
 
-    console.log("w: " + w + "    h: " + h);
-    console.log(playerLocations);
+    // console.log("w: " + w + "    h: " + h);
+    // console.log(playerLocations);
 
 
     //generate the divs in the html
     var str = "";
     for(var i = 0 ; i < numPlayers; i++){
-        str = str + "<div>hi! " + i + " </div>";
+        if(data[i] && data[i].avatarImg){
+            console.log(data[i].avatarImg);
+            str = str + "<div><img src='" + data[i].avatarImg + "'> hi! " + i + " </div>";    
+        }else {
+            str = str + "<div><img src='base-res.png'> hi! " + i + " </div>";    
+        }
+        
     }
     //set the divs into the box
     $("#mainRoomBox").html(str);
@@ -215,7 +220,8 @@ function renderPlayers(data){
         divs[i].style.left = strX;
         divs[i].style.bottom = strY;
     }
-}
+
+});
 
 
 function changeView(){

@@ -118,3 +118,11 @@ function isLoggedIn(req, res, next){
 	console.log("User is not logged in");
 	res.redirect("/");
 }
+
+
+User.findById("5a694cc2802e711c284e2d55", function(err, user){
+	console.log("found user");
+	console.log(user.avatarImg);
+});
+
+
