@@ -45,7 +45,7 @@ module.exports = function(io){
 			console.log("User is not authenticated");
 		}
 
-		//if user is already logged in
+		//if user is already logged in, destroy their last session
 		var i = currentPlayers.indexOf(socket.request.user.username);
 		if(i !== -1){
 			allSockets[socket.request.user.username].emit("alert", "You've been disconnected");
@@ -53,13 +53,17 @@ module.exports = function(io){
 			currentPlayers.splice(i, 1);
 			console.log("User was logged in already, killed last session and socket.")
 		}
-
 		console.log(socket.request.user.username + " has connected under socket ID: " + socket.id);
 
 		//automatically join the all chat
 		socket.join("allChat");
+		//push the new user into our list of players
 		currentPlayers.push(socket.request.user.username);
+		//push the new socket into our list of sockets
 		allSockets[socket.request.user.username] = socket;
+
+		//send a notif to the user saying logged in
+		socket.emit("success-alert", "Successfully logged in! Welcome, " + socket.request.user.username + "!");
 
 		//socket sends to all except the user of this socket
 		socket.in("allChat").emit("player-joined-lobby", socket.request.user.username);

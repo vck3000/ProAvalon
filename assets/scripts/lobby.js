@@ -114,13 +114,13 @@ socket.on("alert", function(data){
 socket.on("danger-alert", function(data){
     document.querySelector("#danger-alert-box").classList.remove("inactive-window");
     document.querySelector("#danger-alert-box-button").classList.remove("inactive-window");
-    document.querySelector("#danger-alert-box").textContent = data + " | Press here to remove";
+    document.querySelector("#danger-alert-box").textContent = data + "        |        Press here to remove";
 });
 
 socket.on("success-alert", function(data){
     document.querySelector("#success-alert-box").classList.remove("inactive-window");
     document.querySelector("#success-alert-box-button").classList.remove("inactive-window");
-    document.querySelector("#success-alert-box").textContent = data + " | Press here to remove";
+    document.querySelector("#success-alert-box").textContent = data + "        |        Press here to remove";
 });
 
 

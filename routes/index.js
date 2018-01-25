@@ -31,15 +31,15 @@ router.post("/", function(req, res){
 
 //login route
 router.post("/login", passport.authenticate("local", {
-	successRedirect: "/lobbyFlash",
-	failureRedirect: "/"
+	successRedirect: "/lobby",
+	failureRedirect: "/loginFail"
 }), function(req, res){
 	res.send("LOGIN LOGIC");
 });
 
-router.get("/lobbyFlash", function(req, res){
-	req.flash("success", "Logged you in!");
-	res.redirect("/lobby");
+router.get("/loginFail", function(req, res){
+	req.flash("error", "Log in failed! Please try again :)");
+	res.redirect("/");
 });
 
 //lobby route
@@ -50,7 +50,8 @@ router.get("/lobby", isLoggedIn, function(req, res){
 
 //logout
 router.get("/logout", function(req, res){
-	req.flash("success", "Logged you out!");
+	//doesn't work since we destroy the session right after...
+	// req.flash("success", "Logged you out!");
 	req.session.destroy(function (err) {
 	    res.redirect('/'); //Inside a callback… bulletproof!
 	});	
