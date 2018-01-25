@@ -5,11 +5,12 @@ var player = [];
 
 var sockets = [];
 
-var host;
+// var host;
 
-var roomID;
+// var roomId;
 
 var gameStarted = false;
+var finished = false;
 
 var roles = [
 "Merlin",
@@ -57,10 +58,10 @@ function shuffle(array) {
 }
 
 
-module.exports = function(host_, roomID_){
+module.exports = function(host_, roomId_){
 	//Just to know who is the current host.
-	host = host_;
-	roomID = roomID_;
+	this.host = host_;
+	this.roomId = roomId_;
 
 	//start game
 	this.startGame = function(){
@@ -110,8 +111,8 @@ module.exports = function(host_, roomID_){
 			console.log("Game has already started!");
 			return false;
 		}
-		
 	};
+
 
 	//when a player leaves before game starts
 	this.playerLeaveGameUninitialised = function(socket){
@@ -141,8 +142,21 @@ module.exports = function(host_, roomID_){
 	}
 
 	this.getHost = function(){
-		return host;
+		return this.host;
 	};
 
+	this.getStatus = function(){
+		if(finished === true){
+			return "Finished!";
+		} else if(gameStarted === true){
+			return "Game started!";
+		} else{
+			return "Waiting!";
+		}
+	}
+
+	this.getRoomId = function(){
+		return this.roomId;
+	}
 
 };

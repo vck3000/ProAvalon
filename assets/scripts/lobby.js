@@ -79,6 +79,24 @@ socket.on("update-current-players-list", function(currentPlayers){
   });
 });
 
+socket.on("update-current-games-list", function(currentGames){
+    console.log("update the current games list request received");
+    console.log(currentGames);
+    //remove all the li's inside the list
+    $("#current-games-list li").remove();
+    
+    //append each player into the list
+    currentGames.forEach(function(currentGame){
+        //if the currentGame exists
+        if(currentGame){
+            var str = "<li>" + currentGame.roomId + ": " + currentGame.status + "</li>";
+            $("#current-games-list").append(str);      
+        }
+
+    });
+});
+
+
 
 
 //ROOM CODE

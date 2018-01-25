@@ -71,6 +71,7 @@ app.use(indexRoutes);
 //start server listening
 var IP = process.env.IP || "192.168.1.55";
 var server = app.listen(port, IP , function(){
+// var server = app.listen(port , function(){
 	console.log("Server has started on " + IP + ":" + port + "!");
 });
 

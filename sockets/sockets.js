@@ -9,6 +9,32 @@ var rooms = [];
 var nextRoomId = 1;
 
 
+var updateCurrentGamesList = function(io){
+	//prepare room data to send to players. 
+	var gamesList = [];
+	for(var i = 0; i < rooms.length; i++){
+		//If the game exists
+		if(rooms[i]){
+			//create new array to send
+			gamesList[i] = {};
+			//get status of game
+			gamesList[i].status = rooms[i].getStatus();
+			//get room ID
+			gamesList[i].roomId = rooms[i].getRoomId();
+		}
+	}
+
+
+	// console.log(gamesList);
+
+
+	io.in("allChat").emit("update-current-games-list", gamesList);
+}
+
+
+
+
+
 module.exports = function(io){
 	//SOCKETS for each connection
 	io.sockets.on("connection", function(socket){
@@ -41,7 +67,7 @@ module.exports = function(io){
 		//io sends to everyone in the room, including the current user of this socket
 		io.in("allChat").emit("update-current-players-list", currentPlayers);
 
-
+		updateCurrentGamesList(io);
 
 
 
@@ -85,10 +111,10 @@ module.exports = function(io){
 			rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId);
 			console.log("new room request");
 
-
 			//broadcast to all chat
 			var str =  "Room " + nextRoomId + " has been created! Go join!";
 			console.log(str);
+			console.log(rooms);
 			//send to allChat including the host of the game
 			io.in("allChat").emit("new-game-created", str);
 			//send back room id to host so they can auto connect
@@ -99,6 +125,8 @@ module.exports = function(io){
 
   			//increment index for next game
   			nextRoomId++;
+
+  			updateCurrentGamesList(io);
   		});
 
 		socket.on("joinRoom", function(roomId){
