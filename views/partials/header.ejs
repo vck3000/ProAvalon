@@ -55,6 +55,8 @@
 
 	<div class="container">
 
+
+		<!-- MY NOTIFICATION REQUESTS - does NOT need to reload -->
 		<a id="danger-alert-box-button" class="inactive-window">
 			<div class="alert alert-danger inactive-window" id="danger-alert-box">
 			</div>	
@@ -64,6 +66,19 @@
 			<div class="alert alert-success inactive-window" id="success-alert-box">
 			</div>	
 		</a>
+
+		<!-- FLASH NOTIFICATION REQUESTS - does need to reload -->
+		<% if(error && error.length > 0){ %>
+		<div class="alert alert-danger" role="alert">
+			<%= error%>
+		</div>
+		<%}%>
+
+		<% if(success && success.length > 0){ %>
+		<div class="alert alert-success" role="alert">
+			<%= success%>
+		</div>
+		<%}%>
 
 	</div>
 
