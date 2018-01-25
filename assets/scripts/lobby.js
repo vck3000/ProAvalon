@@ -2,9 +2,7 @@ var socket = io({transports: ['websocket'], upgrade: false});
 console.log("started");
 
 
-document.querySelector("#testLink").addEventListener("click", function(){
-    socket.emit("newRoom");
-}); 
+
 
 
 document.querySelector("#chat-message-input").onkeyup = function (e) {
@@ -43,11 +41,14 @@ document.querySelector("#chat-message-input").onkeyup = function (e) {
 };
 
 socket.on("allChatToClient", function(data){
+
 	var date = "[" + data.date + "]";
 	var str = "<li class=other>" + date + " " + data.username + ": " + data.message;
 	$("#chat-list").append(str);
     //scroll down
     $("#chat-window")[0].scrollTop = $("#chat-window")[0].scrollHeight;
+
+
 });
 
 socket.on("player-joined-lobby", function(username){
@@ -78,3 +79,19 @@ socket.on("update-current-players-list", function(currentPlayers){
   });
 });
 
+
+
+//ROOM CODE
+document.querySelector("#testLink").addEventListener("click", function(){
+    socket.emit("newRoom");
+}); 
+
+socket.on("autoJoinRoomID", function(roomID){
+    console.log("auto join room");
+    socket.emit("joinRoom", roomID);
+})
+
+socket.on("new-game-created", function(str){
+    var str = "<li class=server-text>" + str + "</li>";
+    $("#chat-list").append(str);
+});

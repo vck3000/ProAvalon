@@ -1,9 +1,19 @@
 var avalonRoom = require("./avalonRoom.js");
 
 
-players = ["Michael", "George", "Jasmine", "Victor", "Grace"];
+var players = ["Michael", "George", "Jasmine", "Victor", "Grace", "newPlayer"];
+var socketIds = [
+"a",
+"b",
+"c",
+"d",
+"e",
+"f",
+];
 
-var room = new avalonRoom(players);
+var host = "Michael";
+
+var room = new avalonRoom(host);
 
 // console.log("roomTestTrue was: " + room.testTrue());
 
@@ -11,7 +21,6 @@ var room = new avalonRoom(players);
 // 	console.log("testTrue was trueasdfasdf");
 // }
 
-room.startGame(players);
+room.startGame(players, socketIds);
 
 console.log(room.getPlayers());
-console.log(room.getPlayers().role);

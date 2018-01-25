@@ -5,6 +5,9 @@ var allSockets = [];
 
 var avalonRoom = require("../gameplay/avalonRoom");
 
+var rooms = [];
+var nextRoomId = 1;
+
 
 module.exports = function(io){
 	//SOCKETS for each connection
@@ -39,6 +42,14 @@ module.exports = function(io){
 		io.in("allChat").emit("update-current-players-list", currentPlayers);
 
 
+
+
+
+
+
+
+
+
 		//when a user tries to send a message to all chat
 		socket.on("allChatFromClient", function(data){
 			//debugging
@@ -49,20 +60,7 @@ module.exports = function(io){
 			socket.in("allChat").emit("allChatToClient", data);
 		});
 
-		//when a new room is created
-		//INCOMPLETE
-		socket.on("newRoom", function(data){
-			// var room = new Room(socket.request.user);
-
-			var room = new avalonRoom();
-			room.testFunction();
-
-			console.log("new room request");
-
-			socket.in("allChat").emit("Room " + room.ID + " has been created! Go join!");
-		});
-
-		//when a user disconnects/leaves
+		//when a user disconnects/leaves the whole website
 		socket.on("disconnect",function(data){
 			//debugging
 			console.log(socket.request.user.username + " has left.");
@@ -78,5 +76,36 @@ module.exports = function(io){
 			socket.in("allChat").emit("player-left-lobby", socket.request.user.username);
 		});
 
+
+
+		//when a new room is created
+		//INCOMPLETE
+		socket.on("newRoom", function(){
+			//create new room
+			rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId);
+			console.log("new room request");
+
+
+			//broadcast to all chat
+			var str =  "Room " + nextRoomId + " has been created! Go join!";
+			console.log(str);
+			//send to allChat including the host of the game
+			io.in("allChat").emit("new-game-created", str);
+			//send back room id to host so they can auto connect
+			socket.emit("autoJoinRoomID", nextRoomId);
+
+			// sending to individual socketid (private message)
+  			//socket.to(<socketid>).emit('hey', 'I just met you');
+
+  			//increment index for next game
+  			nextRoomId++;
+  		});
+
+		socket.on("joinRoom", function(roomId){
+			var ToF = rooms[roomId].playerJoinGame(socket);
+			console.log(socket.request.user.username + "has joined room " + roomId + ": " + ToF)
+		});
+
+		
 	});
 }
