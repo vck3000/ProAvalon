@@ -45,10 +45,31 @@
 					<li><a href="#">Contact us</a></li>
 
 					<% if(currentUser){%>
-						<li><a href="/logout">Log out</a></li>
+					<li><a href="/logout">Log out</a></li>
 					<%}%>
 
 				</ul>
 			</div><!-- /.navbar-collapse -->
 		</div><!-- /.container-fluid -->
 	</nav>
+
+	<div class="container">
+
+		<a id="danger-alert-box-button" class="inactive-window">
+			<div class="alert alert-danger inactive-window" id="danger-alert-box">
+			</div>	
+		</a>
+
+		<a id="success-alert-box-button" class="inactive-window">
+			<div class="alert alert-success inactive-window" id="success-alert-box">
+			</div>	
+		</a>
+
+	</div>
+
+	<style type="text/css">
+	.inactive-window{
+		display: none;
+	}
+
+</style>

@@ -3,7 +3,7 @@
 var playersInGame = [];
 var player = [];
 
-var sockets = [];
+// var sockets = [];
 
 // var host;
 
@@ -62,11 +62,12 @@ module.exports = function(host_, roomId_){
 	//Just to know who is the current host.
 	this.host = host_;
 	this.roomId = roomId_;
+	this.sockets = [];
 
 	//start game
 	this.startGame = function(){
 
-		if(sockets.length < 5){
+		if(this.sockets.length < 5){
 			//NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
 			console.log("Not enough players.");
 			return false;
@@ -79,7 +80,7 @@ module.exports = function(host_, roomId_){
 		var rolesAssignment = [];
 
 		//create the starting array for role assignment
-		for(var i = 0; i < sockets.length; i++){
+		for(var i = 0; i < this.sockets.length; i++){
 			rolesAssignment[i] = i;
 		}
 
@@ -91,8 +92,8 @@ module.exports = function(host_, roomId_){
 		//Now we initialise roles
 		for(var i = 0; i < players.length; i++){
 			playersInGame[i] = [];
-			playersInGame[i].username = sockets[i].request.user.username;
-			playersInGame[i].socketId = sockets[i].id;
+			playersInGame[i].username = this.sockets[i].request.user.username;
+			playersInGame[i].socketId = this.sockets[i].id;
 			//set the role to be from the roles array with index of the value
 			//of the rolesAssignment which has been shuffled
 			playersInGame[i].role = roles[rolesAssignment[i]];
@@ -105,7 +106,7 @@ module.exports = function(host_, roomId_){
 	this.playerJoinGame = function(socket){
 		//when game hasnt started yet, add the person to the players in game
 		if(gameStarted === false){
-			sockets.push(socket);
+			this.sockets.push(socket);
 			return true;
 		} else{
 			console.log("Game has already started!");
@@ -117,8 +118,8 @@ module.exports = function(host_, roomId_){
 	//when a player leaves before game starts
 	this.playerLeaveGameUninitialised = function(socket){
 		if(gameStarted === false){
-			var i = sockets.indexOf(socket);
-			sockets.splice(i, 1);
+			var i = this.sockets.indexOf(socket);
+			this.sockets.splice(i, 1);
 			return true;
 		} else{
 			console.log("Game has already started!");
@@ -129,8 +130,8 @@ module.exports = function(host_, roomId_){
 	this.getPlayers = function(){
 		if(gameStarted === false){
 			var array = [];
-			for(var i = 0; i < sockets.length; i++){
-				array[i] = sockets[i].request.user.username;
+			for(var i = 0; i < this.sockets.length; i++){
+				array[i] = this.sockets[i].request.user.username;
 			}
 		} else{
 			return playersInGame;	
@@ -138,7 +139,7 @@ module.exports = function(host_, roomId_){
 	};
 
 	this.getSockets = function(){
-		return sockets;
+		return this.sockets;
 	}
 
 	this.getHost = function(){

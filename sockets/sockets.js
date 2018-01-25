@@ -78,6 +78,7 @@ module.exports = function(io){
 
 		//when a user tries to send a message to all chat
 		socket.on("allChatFromClient", function(data){
+			socket.emit("danger-alert", "test alert asdf");
 			//debugging
 			console.log("incoming message at " + data.date + ": " + data.message + " by: " + socket.request.user);
 			//get the username and put it into the data object

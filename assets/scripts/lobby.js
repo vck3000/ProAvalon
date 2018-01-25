@@ -2,6 +2,17 @@ var socket = io({transports: ['websocket'], upgrade: false});
 console.log("started");
 
 
+//button event listeners
+document.querySelector("#danger-alert-box-button").addEventListener("click", function(){
+    document.querySelector("#danger-alert-box").classList.add("inactive-window");
+    document.querySelector("#danger-alert-box-button").classList.add("inactive-window");
+});
+
+document.querySelector("#success-alert-box-button").addEventListener("click", function(){
+    document.querySelector("#success-alert-box").classList.add("inactive-window");
+    document.querySelector("#success-alert-box-button").classList.add("inactive-window");
+});
+
 
 
 
@@ -61,10 +72,6 @@ socket.on("player-left-lobby", function(username){
     $("#chat-list").append(str);
 });
 
-socket.on("alert", function(data){
-    alert(data);
-    window.location.replace("/");
-});
 
 socket.on("update-current-players-list", function(currentPlayers){
     console.log("update the current player list request received");
@@ -96,6 +103,25 @@ socket.on("update-current-games-list", function(currentGames){
     });
 });
 
+
+
+//notifications code
+socket.on("alert", function(data){
+    alert(data);
+    window.location.replace("/");
+});
+
+socket.on("danger-alert", function(data){
+    document.querySelector("#danger-alert-box").classList.remove("inactive-window");
+    document.querySelector("#danger-alert-box-button").classList.remove("inactive-window");
+    document.querySelector("#danger-alert-box").textContent = data + " | Press here to remove";
+});
+
+socket.on("success-alert", function(data){
+    document.querySelector("#success-alert-box").classList.remove("inactive-window");
+    document.querySelector("#success-alert-box-button").classList.remove("inactive-window");
+    document.querySelector("#success-alert-box").textContent = data + " | Press here to remove";
+});
 
 
 
