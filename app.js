@@ -120,9 +120,6 @@ function isLoggedIn(req, res, next){
 }
 
 
-User.findById("5a694cc2802e711c284e2d55", function(err, user){
-	console.log("found user");
-	console.log(user.avatarImg);
-});
+
 
 

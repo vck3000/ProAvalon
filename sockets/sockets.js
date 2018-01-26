@@ -105,6 +105,8 @@ module.exports = function(io){
 			socket.in("allChat").emit("update-current-players-list", currentPlayers);
 			//tell all clients that the user has left
 			socket.in("allChat").emit("player-left-lobby", socket.request.user.username);
+
+			//remove player from room
 		});
 
 
@@ -135,6 +137,8 @@ module.exports = function(io){
   		});
 
 		socket.on("join-room", function(roomId){
+			console.log(roomId);
+			console.log(rooms[roomId]);
 			var ToF = rooms[roomId].playerJoinGame(socket);
 			console.log(socket.request.user.username + " has joined room " + roomId + ": " + ToF)
 

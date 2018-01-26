@@ -98,10 +98,23 @@ socket.on("update-current-games-list", function(currentGames){
     currentGames.forEach(function(currentGame){
         //if the currentGame exists
         if(currentGame){
-            var str = "<li>" + currentGame.roomId + ": " + currentGame.status + "</li>";
-            $("#current-games-list").append(str);      
-        }
+            var str = "<li id='list'>" + currentGame.roomId + ": " + currentGame.status + "</li>";
+            
+            //add the li to the list
+            $("#current-games-list").append(str);
 
+            //grab all li's
+            var allLis = document.querySelectorAll("#current-games-list li");
+
+            //add the event listener to the last li added.
+            allLis[allLis.length - 1].addEventListener("click", function(){
+                //JOIN THE ROOM
+                // console.log(currentGame.roomId);
+                socket.emit("join-room", currentGame.roomId);
+                //change the view to the room instead of lobby
+                changeView();
+            });
+        }
     });
 });
 
@@ -185,7 +198,7 @@ socket.on("update-room-players", function(data){
     var w = $("#mainRoomBox").width();
     var h = $("#mainRoomBox").height();
 
-    var numPlayers = 3;
+    var numPlayers = data.length;//3;
 
     var playerLocations = generatePlayerLocations(numPlayers, w/2, h/2);
 
