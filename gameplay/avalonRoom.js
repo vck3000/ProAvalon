@@ -14,6 +14,7 @@ mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
 
 var gameStarted = false;
 var finished = false;
+var destroyRoom = false;
 
 var roles = [
 "Merlin",
@@ -151,12 +152,22 @@ module.exports = function(host_, roomId_){
 		if(gameStarted === false){
 			var i = this.sockets.indexOf(socket);
 			this.sockets.splice(i, 1);
+
+			if(this.sockets.length === 0){
+				console.log("Room: " + this.roomId + " is empty, destroying...");
+				this.destroyRoom = true;
+			}
+
 			return true;
 		} else{
 			console.log("Game has already started!");
 			return false;
 		}
 	};
+	
+	this.toDestroyRoom = function(){
+		return this.destroyRoom;
+	}
 
 	this.getPlayers = function(){
 		if(gameStarted === false){

@@ -15,6 +15,7 @@ document.querySelector("#success-alert-box-button").addEventListener("click", fu
 
 document.querySelector("#backButton").addEventListener("click", function(){
     changeView();
+    socket.emit("leave-room", "");
 });
 
 
@@ -46,8 +47,8 @@ document.querySelector("#chat-message-input").onkeyup = function (e) {
             var dateStr = "[" + data.date + "]";
             var str = "<li class=self>" + dateStr + " Me: " + data.message;
             $("#chat-list").append(str);
-            //scroll down
-            $("#chat-window")[0].scrollTop = $("#chat-window")[0].scrollHeight;
+
+            scrollDown();
         }
 
     }
@@ -58,20 +59,20 @@ socket.on("allChatToClient", function(data){
 	var date = "[" + data.date + "]";
 	var str = "<li class=other>" + date + " " + data.username + ": " + data.message;
 	$("#chat-list").append(str);
-    //scroll down
-    $("#chat-window")[0].scrollTop = $("#chat-window")[0].scrollHeight;
 
-
+    scrollDown();
 });
 
 socket.on("player-joined-lobby", function(username){
     var str = "<li class=server-text>" + username + " has joined the lobby!";
     $("#chat-list").append(str);
+    scrollDown();
 });
 
 socket.on("player-left-lobby", function(username){
     var str = "<li class=server-text>" + username + " has left the lobby.";
     $("#chat-list").append(str);
+    scrollDown();
 });
 
 
@@ -192,6 +193,10 @@ function generatePlayerLocations(numOfPlayers, a, b){
 socket.on("update-room-players", function(data){
     // var x = $("#typehead").parent().width();
 
+    //remove all the li's inside the list
+    $("#mainRoomBox div").remove();
+
+
     console.log("update room players");
     console.log(data);
 
@@ -241,4 +246,9 @@ function changeView(){
     $(".lobby-container").toggleClass("inactive-window");
     $(".room-container").toggleClass("inactive-window");
 
+}
+
+function scrollDown(){
+    //scroll down
+    $("#chat-window")[0].scrollTop = $("#chat-window")[0].scrollHeight;
 }

@@ -82,7 +82,7 @@ module.exports = function(io){
 
 		//when a user tries to send a message to all chat
 		socket.on("allChatFromClient", function(data){
-			socket.emit("danger-alert", "test alert asdf");
+			// socket.emit("danger-alert", "test alert asdf");
 			//debugging
 			console.log("incoming message at " + data.date + ": " + data.message + " by: " + socket.request.user);
 			//get the username and put it into the data object
@@ -105,8 +105,15 @@ module.exports = function(io){
 			socket.in("allChat").emit("update-current-players-list", currentPlayers);
 			//tell all clients that the user has left
 			socket.in("allChat").emit("player-left-lobby", socket.request.user.username);
+			
+			//remove player from room if he/she is in one
+			if(socket.request.user.inRoomId){
+				rooms[socket.request.user.inRoomId].playerLeaveGameUninitialised(socket);	
+				io.in(socket.request.user.inRoomId).emit("update-room-players", rooms[socket.request.user.inRoomId].getPlayers());
+			}
+			
 
-			//remove player from room
+			
 		});
 
 
@@ -138,13 +145,49 @@ module.exports = function(io){
 
 		socket.on("join-room", function(roomId){
 			console.log(roomId);
-			console.log(rooms[roomId]);
-			var ToF = rooms[roomId].playerJoinGame(socket);
-			console.log(socket.request.user.username + " has joined room " + roomId + ": " + ToF)
+			// console.log(rooms[roomId]);
+			
+			//if the room exists
+			if(rooms[roomId]){
+				var ToF = rooms[roomId].playerJoinGame(socket);
+				console.log(socket.request.user.username + " has joined room " + roomId + ": " + ToF);
+				
+				//set the room id into the socket obj
+				socket.request.user.inRoomId = roomId;
 
-			socket.join(roomId);
+				//join the room chat
+				socket.join(roomId);
 
-			io.in(roomId).emit("update-room-players", rooms[roomId].getPlayers());
+				//update the room players
+				io.in(roomId).emit("update-room-players", rooms[roomId].getPlayers());	
+			} else{
+				console.log("Game doesn't exist!");
+			}
+
+
 		});
+
+		socket.on("leave-room", function(){
+			console.log("player is leaving room: " + socket.request.user.inRoomId);
+
+			//remove player from room if he/she is in one
+			if(socket.request.user.inRoomId){
+				//leave the room
+				rooms[socket.request.user.inRoomId].playerLeaveGameUninitialised(socket);	
+				//Check if the room needs destroying
+				if(rooms[socket.request.user.inRoomId].toDestroyRoom() == true){
+					//destroy room
+					rooms[socket.request.user.inRoomId] = undefined;
+					//resend the current games list
+					updateCurrentGamesList(io);
+				} 
+				//otherwise update room players
+				else{
+					//update the room players
+					io.in(socket.request.user.inRoomId).emit("update-room-players", rooms[socket.request.user.inRoomId].getPlayers());
+				}
+			}
+		});
+
 	});
 }

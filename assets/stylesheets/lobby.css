@@ -90,7 +90,8 @@ html, body{
 #mainRoomBox {
 	height: 40%;
 	width: 75%;
-	position: absolute;
+	/*position: absolute;*/
+	position: block;	
 
 	border: solid 1px black;
 
