@@ -228,7 +228,7 @@ function drawPlayers(data){
         for(var i = 0 ; i < numPlayers; i++){
             if(data[i] && data[i].avatarImg){
                 console.log(data[i].avatarImg);
-                str = str + "<div><img src='" + data[i].avatarImg + "'> hi! " + i + " </div>";    
+                str = str + "<div><img src='" + data[i].avatarImg + "'><p style='text-align: center;'> hi! " + i + " </p></div>";    
             }else {
                 str = str + "<div><img src='base-res.png'> hi! " + i + " </div>";    
             }
