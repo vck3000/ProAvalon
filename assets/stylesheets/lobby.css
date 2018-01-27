@@ -107,7 +107,7 @@ html, body{
 	position: absolute;
 	/*transform: translate(50%, 50%);*/
 	transform:translate(-50%, 50%); /* centered first regardless of width*/
-	background-color: green;
+	background-color: green; 
 }
 
 .jumbotron{
