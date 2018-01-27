@@ -1,3 +1,8 @@
+* {
+    outline: 1px solid red;
+}
+
+
 html, body{
 	height: 100%;
 	width: 100%;
@@ -20,7 +25,7 @@ html, body{
 	display: none;
 }
 
-#chat-message-input {
+.all-chat-message-input {
 	width: 100%;
 	border: 2px solid black;
 	/*float: bottom;*/
@@ -39,17 +44,16 @@ html, body{
 	height: 100%;
 }
 
-#chat-window {
+.chat-window {
 	height: 75%;
 	display:block;
 	max-height: 75%;
 	border: 1px solid black;
 	overflow-y: auto;
 	overflow-x: visible;
-
 }
 
-#chat-list {
+.chat-list {
 	padding: 0;
 
 	list-style: none;
@@ -88,7 +92,8 @@ html, body{
 }
 
 .game-container{
-	height: 100%;
+	/*height: is already set in the container at 90%*/
+	height: 90%;
 	width: 75%;
 }
 
@@ -107,7 +112,16 @@ html, body{
 	position: absolute;
 	/*transform: translate(50%, 50%);*/
 	transform:translate(-50%, 50%); /* centered first regardless of width*/
-	background-color: green; 
+	background-color: #dddddd; 
+}
+
+.username-p {
+	text-align: center;
+}
+
+#all-chat-in-game {
+/*	height: 100%;
+	max-height: 100%;*/
 }
 
 .jumbotron{

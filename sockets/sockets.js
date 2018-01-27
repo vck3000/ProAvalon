@@ -9,32 +9,6 @@ var rooms = [];
 var nextRoomId = 1;
 
 
-var updateCurrentGamesList = function(io){
-	//prepare room data to send to players. 
-	var gamesList = [];
-	for(var i = 0; i < rooms.length; i++){
-		//If the game exists
-		if(rooms[i]){
-			//create new array to send
-			gamesList[i] = {};
-			//get status of game
-			gamesList[i].status = rooms[i].getStatus();
-			//get room ID
-			gamesList[i].roomId = rooms[i].getRoomId();
-		}
-	}
-
-
-	// console.log(gamesList);
-
-
-	io.in("allChat").emit("update-current-games-list", gamesList);
-}
-
-
-
-
-
 module.exports = function(io){
 	//SOCKETS for each connection
 	io.sockets.on("connection", function(socket){
@@ -106,13 +80,8 @@ module.exports = function(io){
 			//tell all clients that the user has left
 			socket.in("allChat").emit("player-left-lobby", socket.request.user.username);
 			
-			//remove player from room if he/she is in one
-			if(socket.request.user.inRoomId){
-				rooms[socket.request.user.inRoomId].playerLeaveGameUninitialised(socket);	
-				io.in(socket.request.user.inRoomId).emit("update-room-players", rooms[socket.request.user.inRoomId].getPlayers());
-			}
-			
 
+			removePlayerFromRoomAndCheckDestroy(socket, io);
 			
 		});
 
@@ -143,6 +112,7 @@ module.exports = function(io){
   			updateCurrentGamesList(io);
   		});
 
+		//when a player joins a room
 		socket.on("join-room", function(roomId){
 			console.log(roomId);
 			// console.log(rooms[roomId]);
@@ -163,31 +133,55 @@ module.exports = function(io){
 			} else{
 				console.log("Game doesn't exist!");
 			}
-
-
 		});
 
+		//when a player leaves a room
 		socket.on("leave-room", function(){
 			console.log("player is leaving room: " + socket.request.user.inRoomId);
-
-			//remove player from room if he/she is in one
-			if(socket.request.user.inRoomId){
-				//leave the room
-				rooms[socket.request.user.inRoomId].playerLeaveGameUninitialised(socket);	
-				//Check if the room needs destroying
-				if(rooms[socket.request.user.inRoomId].toDestroyRoom() == true){
-					//destroy room
-					rooms[socket.request.user.inRoomId] = undefined;
-					//resend the current games list
-					updateCurrentGamesList(io);
-				} 
-				//otherwise update room players
-				else{
-					//update the room players
-					io.in(socket.request.user.inRoomId).emit("update-room-players", rooms[socket.request.user.inRoomId].getPlayers());
-				}
-			}
+			
+			removePlayerFromRoomAndCheckDestroy(socket, io);
 		});
-
 	});
+}
+
+
+function removePlayerFromRoomAndCheckDestroy(socket, io){
+	//remove player from room if he/she is in one
+	if(socket.request.user.inRoomId){
+		//leave the room
+		rooms[socket.request.user.inRoomId].playerLeaveGameUninitialised(socket);	
+		//check if the room even exists, sometimes with fast refreshes
+		//it might already have deleted the room
+		if(rooms[socket.request.user.inRoomId]){
+			//Check if the room needs destroying
+			if(rooms[socket.request.user.inRoomId].toDestroyRoom() == true){
+				//destroy room
+				rooms[socket.request.user.inRoomId] = undefined;
+				//resend the current games list
+				updateCurrentGamesList(io);
+			} 
+			//otherwise update room players
+			else{
+				//update the room players
+				io.in(socket.request.user.inRoomId).emit("update-room-players", rooms[socket.request.user.inRoomId].getPlayers());
+			}
+		}
+	}
+}
+
+var updateCurrentGamesList = function(io){
+	//prepare room data to send to players. 
+	var gamesList = [];
+	for(var i = 0; i < rooms.length; i++){
+		//If the game exists
+		if(rooms[i]){
+			//create new array to send
+			gamesList[i] = {};
+			//get status of game
+			gamesList[i].status = rooms[i].getStatus();
+			//get room ID
+			gamesList[i].roomId = rooms[i].getRoomId();
+		}
+	}
+	io.in("allChat").emit("update-current-games-list", gamesList);
 }

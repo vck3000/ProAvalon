@@ -26,7 +26,7 @@ document.querySelector("#backButton").addEventListener("click", function(){
 });
 
 
-document.querySelector("#chat-message-input").onkeyup = function (e) {
+document.querySelector(".all-chat-message-input").onkeyup = function (e) {
 	//When enter is pressed in the chatmessageinput
 	if (e.keyCode == 13) {
         var d = new Date();
@@ -53,7 +53,9 @@ document.querySelector("#chat-message-input").onkeyup = function (e) {
             //add the self chat
             var dateStr = "[" + data.date + "]";
             var str = "<li class=self>" + dateStr + " Me: " + data.message;
-            $("#chat-list").append(str);
+
+            $(".chat-list").append(str);
+            
 
             scrollDown();
         }
@@ -65,20 +67,21 @@ socket.on("allChatToClient", function(data){
 
 	var date = "[" + data.date + "]";
 	var str = "<li class=other>" + date + " " + data.username + ": " + data.message;
-	$("#chat-list").append(str);
+
+    $(".chat-list").append(str);
 
     scrollDown();
 });
 
 socket.on("player-joined-lobby", function(username){
     var str = "<li class=server-text>" + username + " has joined the lobby!";
-    $("#chat-list").append(str);
+    $(".chat-list").append(str);
     scrollDown();
 });
 
 socket.on("player-left-lobby", function(username){
     var str = "<li class=server-text>" + username + " has left the lobby.";
-    $("#chat-list").append(str);
+    $(".chat-list").append(str);
     scrollDown();
 });
 
@@ -158,7 +161,7 @@ document.querySelector("#testLink").addEventListener("click", function(){
 
 socket.on("new-game-created", function(str){
     var str = "<li class=server-text>" + str + "</li>";
-    $("#chat-list").append(str);
+    $(".chat-list").append(str);
 });
 
 socket.on("auto-join-room-id", function(roomID){
@@ -228,9 +231,9 @@ function drawPlayers(data){
         for(var i = 0 ; i < numPlayers; i++){
             if(data[i] && data[i].avatarImg){
                 console.log(data[i].avatarImg);
-                str = str + "<div><img src='" + data[i].avatarImg + "'><p style='text-align: center;'> hi! " + i + " </p></div>";    
+                str = str + "<div><img src='" + data[i].avatarImg + "'><p class='username-p'>" + data[i].username + " </p></div>";    
             }else {
-                str = str + "<div><img src='base-res.png'> hi! " + i + " </div>";    
+                str = str + "<div><img src='base-res.png'><p class='username-p'>" + data[i].username + " </p></div>";    
             }
             
         }
@@ -262,5 +265,7 @@ function changeView(){
 
 function scrollDown(){
     //scroll down
-    $("#chat-window")[0].scrollTop = $("#chat-window")[0].scrollHeight;
+    console.log($(".chat-window"));
+    $(".chat-window")[0].scrollTop = $(".chat-window")[0].scrollHeight;
+    $(".chat-window")[1].scrollTop = $(".chat-window")[1].scrollHeight;
 }
