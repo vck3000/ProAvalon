@@ -87,11 +87,16 @@ html, body{
 	/*background-color: purple;*/
 }
 
-#mainRoomBox {
-	height: 40%;
+.game-container{
+	height: 100%;
 	width: 75%;
+}
+
+#mainRoomBox {
+	height: 100%;
+	width: 100%;
 	/*position: absolute;*/
-	position: block;	
+	position: relative;	
 
 	border: solid 1px black;
 
@@ -101,6 +106,8 @@ html, body{
 	display: inline-block;
 	position: absolute;
 	/*transform: translate(50%, 50%);*/
+	transform:translate(-50%, 50%); /* centered first regardless of width*/
+	background-color: green;
 }
 
 .jumbotron{

@@ -1,6 +1,13 @@
 var socket = io({transports: ['websocket'], upgrade: false});
 console.log("started");
 
+var storeData;
+//window resize, repaint the users
+window.addEventListener('resize', function(){
+    console.log("Resized");
+    drawPlayers(storeData);
+}); 
+
 
 //button event listeners
 document.querySelector("#danger-alert-box-button").addEventListener("click", function(){
@@ -192,59 +199,64 @@ function generatePlayerLocations(numOfPlayers, a, b){
 
 socket.on("update-room-players", function(data){
     // var x = $("#typehead").parent().width();
+    storeData = data;
 
     //remove all the li's inside the list
     $("#mainRoomBox div").remove();
 
-
     console.log("update room players");
     console.log(data);
 
-    var w = $("#mainRoomBox").width();
-    var h = $("#mainRoomBox").height();
-
-    var numPlayers = data.length;//3;
-
-    var playerLocations = generatePlayerLocations(numPlayers, w/2, h/2);
-
-    // console.log("w: " + w + "    h: " + h);
-    // console.log(playerLocations);
-
-
-    //generate the divs in the html
-    var str = "";
-    for(var i = 0 ; i < numPlayers; i++){
-        if(data[i] && data[i].avatarImg){
-            console.log(data[i].avatarImg);
-            str = str + "<div><img src='" + data[i].avatarImg + "'> hi! " + i + " </div>";    
-        }else {
-            str = str + "<div><img src='base-res.png'> hi! " + i + " </div>";    
-        }
-        
-    }
-    //set the divs into the box
-    $("#mainRoomBox").html(str);
-
-
-    //set the positions
-    var divs = document.querySelectorAll("#mainRoomBox div");
-    for(var i = 0 ; i < numPlayers; i++){
-        var offsetX = w/2 ;
-        var offsetY = h/2 ;
-
-        var strX = playerLocations.x[i] + offsetX + "px";
-        var strY = playerLocations.y[i] + offsetY + "px";
-
-        divs[i].style.left = strX;
-        divs[i].style.bottom = strY;
-    }
-
+    drawPlayers(data);
 });
+
+function drawPlayers(data){
+    if(data){
+        var w = $("#mainRoomBox").width();
+        var h = $("#mainRoomBox").height();
+
+        var numPlayers = data.length;//3;
+
+        var playerLocations = generatePlayerLocations(numPlayers, w/2, h/2);
+
+        // console.log("w: " + w + "    h: " + h);
+        // console.log(playerLocations);
+
+
+        //generate the divs in the html
+        var str = "";
+        for(var i = 0 ; i < numPlayers; i++){
+            if(data[i] && data[i].avatarImg){
+                console.log(data[i].avatarImg);
+                str = str + "<div><img src='" + data[i].avatarImg + "'> hi! " + i + " </div>";    
+            }else {
+                str = str + "<div><img src='base-res.png'> hi! " + i + " </div>";    
+            }
+            
+        }
+        //set the divs into the box
+        $("#mainRoomBox").html(str);
+
+
+        //set the positions
+        var divs = document.querySelectorAll("#mainRoomBox div");
+        for(var i = 0 ; i < numPlayers; i++){
+            var offsetX = w/2 ;
+            var offsetY = h/2 ;
+
+            var strX = playerLocations.x[i] + offsetX + "px";
+            var strY = playerLocations.y[i] + offsetY + "px";
+
+            divs[i].style.left = strX;
+            divs[i].style.bottom = strY;
+        }
+    }
+}
 
 
 function changeView(){
     $(".lobby-container").toggleClass("inactive-window");
-    $(".room-container").toggleClass("inactive-window");
+    $(".game-container").toggleClass("inactive-window");
 
 }
 
