@@ -25,13 +25,27 @@ document.querySelector("#backButton").addEventListener("click", function(){
     socket.emit("leave-room", "");
 });
 
-
-document.querySelector(".all-chat-message-input").onkeyup = function (e) {
+var allChatWindow1 = document.querySelectorAll(".all-chat-message-input")[0];
+allChatWindow1.onkeyup = function (e, allChatWindow1) {
 	//When enter is pressed in the chatmessageinput
-	if (e.keyCode == 13) {
+    addAllChatEventListeners(e, this);
+};
+
+var allChatWindow2 = document.querySelectorAll(".all-chat-message-input")[1];
+allChatWindow2.onkeyup = function (e, allChatWindow2) {
+    //When enter is pressed in the chatmessageinput
+    addAllChatEventListeners(e, this);
+};
+
+function addAllChatEventListeners(e, allChatWindow){
+    // console.log("LOLOL" + e.keyCode);
+    // console.log(allChatWindow);
+
+
+    if (e.keyCode == 13) {
         var d = new Date();
         //set up the data structure:
-        var message = this.value;
+        var message = allChatWindow.value;
 
         //only do it if the user has inputted something
         //i.e. dont run when its an empty string
@@ -46,7 +60,7 @@ document.querySelector(".all-chat-message-input").onkeyup = function (e) {
             }
 
             //reset the value of the textbox
-            this.value = "";
+            allChatWindow.value = "";
             //send data to the server 
             socket.emit("allChatFromClient", data);
 
@@ -56,12 +70,13 @@ document.querySelector(".all-chat-message-input").onkeyup = function (e) {
 
             $(".chat-list").append(str);
             
-
             scrollDown();
         }
 
     }
-};
+}
+
+
 
 socket.on("allChatToClient", function(data){
 
@@ -231,9 +246,9 @@ function drawPlayers(data){
         for(var i = 0 ; i < numPlayers; i++){
             if(data[i] && data[i].avatarImg){
                 console.log(data[i].avatarImg);
-                str = str + "<div><img src='" + data[i].avatarImg + "'><p class='username-p'>" + data[i].username + " </p></div>";    
+                str = str + "<div><img class='avatarImgInRoom' src='" + data[i].avatarImg + "'><p class='username-p'>" + data[i].username + " </p></div>";    
             }else {
-                str = str + "<div><img src='base-res.png'><p class='username-p'>" + data[i].username + " </p></div>";    
+                str = str + "<div><img class='avatarImgInRoom' src='base-res.png'><p class='username-p'>" + data[i].username + " </p></div>";    
             }
             
         }
@@ -253,6 +268,11 @@ function drawPlayers(data){
             divs[i].style.left = strX;
             divs[i].style.bottom = strY;
         }
+
+        var divs = $(".room-container #mainRoomBox div");
+        for(var i = 0; i < divs.length; i++){
+            divs[i].width = divs[i].height + "px";
+        }
     }
 }
 
@@ -265,7 +285,7 @@ function changeView(){
 
 function scrollDown(){
     //scroll down
-    console.log($(".chat-window"));
+    // console.log($(".chat-window"));
     $(".chat-window")[0].scrollTop = $(".chat-window")[0].scrollHeight;
     $(".chat-window")[1].scrollTop = $(".chat-window")[1].scrollHeight;
 }
