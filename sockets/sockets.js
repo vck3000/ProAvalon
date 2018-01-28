@@ -146,6 +146,9 @@ module.exports = function(io){
 
 				//update the room players
 				io.in(roomId).emit("update-room-players", rooms[roomId].getPlayers());	
+
+				//emit to say to others that someone has joined
+				socket.broadcast.emit("player-left-room", "socket.request.user.username");
 			} else{
 				console.log("Game doesn't exist!");
 			}
@@ -153,9 +156,18 @@ module.exports = function(io){
 
 		//when a player leaves a room
 		socket.on("leave-room", function(){
-			console.log("player is leaving room: " + socket.request.user.inRoomId);
-			
+			console.log(socket.request.user.username + " is leaving room: " + socket.request.user.inRoomId);
+			//broadcast to let others know
+			socket.broadcast.emit("player-left-room", "socket.request.user.username");
+			//remove player from room and check destroy
 			removePlayerFromRoomAndCheckDestroy(socket, io);
+		});
+
+		socket.on("startGame", function(){
+			if(socket.request.user.inRoomId){
+				rooms[socket.request.user.inRoomId].startGame();	
+			}
+			
 		});
 	});
 }

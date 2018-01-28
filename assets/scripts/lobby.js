@@ -13,6 +13,11 @@ window.addEventListener('resize', function(){
 
 
 //button event listeners
+document.querySelector("#start-button").addEventListener("click", function(){
+    socket.emit("startGame", "");
+})
+
+
 document.querySelector("#danger-alert-box-button").addEventListener("click", function(){
     document.querySelector("#danger-alert-box").classList.add("inactive-window");
     document.querySelector("#danger-alert-box-button").classList.add("inactive-window");
@@ -158,6 +163,17 @@ socket.on("player-left-lobby", function(username){
     scrollDown();
 });
 
+socket.on("player-joined-room", function(username){
+    var str = "<li class=server-text>" + username + " has joined the room!";
+    $(".room-chat-list").append(str);
+    scrollDown();
+});
+
+socket.on("player-left-room", function(username){
+    var str = "<li class=server-text>" + username + " has left the room.";
+    $(".room-chat-list").append(str);
+    scrollDown();
+});
 
 socket.on("update-current-players-list", function(currentPlayers){
     console.log("update the current player list request received");
