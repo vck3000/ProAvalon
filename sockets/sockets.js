@@ -77,7 +77,6 @@ module.exports = function(io){
 				//send out that data object to all other clients in room(except the one who sent the message)
 				socket.in(data.roomId).emit("roomChatToClient", data);
 			}
-			
 		});
 
 
@@ -164,9 +163,27 @@ module.exports = function(io){
 		});
 
 		socket.on("startGame", function(){
+			//start the game
 			if(socket.request.user.inRoomId){
 				rooms[socket.request.user.inRoomId].startGame();	
 			}
+
+			//distribute roles to each player
+			var playerRoles = rooms[socket.request.user.inRoomId].getPlayerRoles();
+			for(var i = 0; i < playerRoles.length; i++){
+				//send to each individual player
+				var data = {
+					role: playerRoles[i].role,
+				}
+				socket.to(playerRoles[i].socketId).emit("game-starting-data", data);
+
+				console.log("Player " + playerRoles[i].username + " has been given role: " + playerRoles[i].role);
+
+				  // sending to individual socketid (private message)
+				  // socket.to(<socketid>).emit('hey', 'I just met you');
+				}
+
+			// allSockets[socket.request.user.username]
 			
 		});
 	});

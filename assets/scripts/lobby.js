@@ -12,11 +12,17 @@ window.addEventListener('resize', function(){
 }); 
 
 
-//button event listeners
+//======================================
+//BUTTON EVENT LISTENERS
+//======================================
 document.querySelector("#start-button").addEventListener("click", function(){
     socket.emit("startGame", "");
 })
 
+//new ROOM CODE
+document.querySelector("#testLink").addEventListener("click", function(){
+    socket.emit("newRoom");
+}); 
 
 document.querySelector("#danger-alert-box-button").addEventListener("click", function(){
     document.querySelector("#danger-alert-box").classList.add("inactive-window");
@@ -33,7 +39,6 @@ document.querySelector("#backButton").addEventListener("click", function(){
     socket.emit("leave-room", "");
     roomId = undefined; 
 });
-
 
 
 var allChatWindow1 = document.querySelectorAll(".all-chat-message-input")[0];
@@ -126,9 +131,9 @@ roomChatWindow.onkeyup = function(e){
 
 
 
-//SOCKETS
-
-
+//======================================
+//SOCKET ROUTES
+//======================================
 socket.on("allChatToClient", function(data){
 
 	var date = "[" + data.date + "]";
@@ -219,10 +224,27 @@ socket.on("update-current-games-list", function(currentGames){
     });
 });
 
+socket.on("new-game-created", function(str){
+    var str = "<li class=server-text>" + str + "</li>";
+    $(".all-chat-list").append(str);
+});
+
+socket.on("auto-join-room-id", function(roomID){
+    console.log("auto join room");
+    //received a request from server to auto join
+    //likely we were the one who created the room
+    //so we auto join into it
+    socket.emit("join-room", roomID);
+    //chang ethe view to the room instead of lobby
+    changeView();
+});
 
 
 
-//notifications code
+
+//======================================
+//NOTIFICATION SOCKET ROUTES
+//======================================
 socket.on("alert", function(data){
     alert(data);
     window.location.replace("/");
@@ -244,50 +266,12 @@ socket.on("success-alert", function(data){
 
 
 
-//ROOM CODE
-document.querySelector("#testLink").addEventListener("click", function(){
-    socket.emit("newRoom");
-}); 
-
-socket.on("new-game-created", function(str){
-    var str = "<li class=server-text>" + str + "</li>";
-    $(".all-chat-list").append(str);
-});
-
-socket.on("auto-join-room-id", function(roomID){
-    console.log("auto join room");
-    //received a request from server to auto join
-    //likely we were the one who created the room
-    //so we auto join into it
-    socket.emit("join-room", roomID);
-    //chang ethe view to the room instead of lobby
-    changeView();
-});
 
 
-function toRadians (angle) {
-  return angle * (Math.PI / 180);
-}
 
-function generatePlayerLocations(numOfPlayers, a, b){
-    //CONICS :D
-    var x_ = [];
-    var y_ = [];
-    var step = 360/numOfPlayers;
 
-    for(var i = 0; i < numOfPlayers; i++){
-        //get the coordinates. Note the +90 is to rotate so that
-        //the first person is at the top of the screen
-        x_[i] = a*(Math.cos(toRadians((step*i) + 90)))*0.6;
-        y_[i] = b*(Math.sin(toRadians((step*i) + 90)))*0.6;
-    }
 
-    var object = {
-        x: x_,
-        y: y_
-    }
-    return object;
-}
+
 
 
 socket.on("update-room-players", function(data){
@@ -303,6 +287,17 @@ socket.on("update-room-players", function(data){
     drawPlayers(data);
 });
 
+//======================================
+//GAME SOCKET ROUTES
+//======================================
+
+// game-starting-data
+
+
+
+//======================================
+//FUNCTIONS
+//======================================
 function drawPlayers(data){
     if(data){
         var w = $("#mainRoomBox").width();
@@ -384,4 +379,28 @@ function scrollDown(){
     for(var i = 0; i < chatWindows.length; i++){
         $(".chat-window")[i].scrollTop = $(".chat-window")[i].scrollHeight;
     }
+}
+
+function toRadians (angle) {
+  return angle * (Math.PI / 180);
+}
+
+function generatePlayerLocations(numOfPlayers, a, b){
+    //CONICS :D
+    var x_ = [];
+    var y_ = [];
+    var step = 360/numOfPlayers;
+
+    for(var i = 0; i < numOfPlayers; i++){
+        //get the coordinates. Note the +90 is to rotate so that
+        //the first person is at the top of the screen
+        x_[i] = a*(Math.cos(toRadians((step*i) + 90)))*0.6;
+        y_[i] = b*(Math.sin(toRadians((step*i) + 90)))*0.6;
+    }
+
+    var object = {
+        x: x_,
+        y: y_
+    }
+    return object;
 }

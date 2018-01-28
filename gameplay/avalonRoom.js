@@ -169,11 +169,12 @@ module.exports = function(host_, roomId_){
 		return this.destroyRoom;
 	}
 
+	//NOTE THIS SHOULD NOT RETURN ROLES OF EACH PLAYER
+	//BECAUSE THIS DATA IS BEING SENT RAW TO THE PLAYERS
 	this.getPlayers = function(){
 		if(gameStarted === false){
 			var array = [];
 			for(var i = 0; i < this.sockets.length; i++){
-
 				array[i] = {
 					username: this.sockets[i].request.user.username,	
 					avatarImg: this.sockets[i].request.user.avatarImg
@@ -181,14 +182,22 @@ module.exports = function(host_, roomId_){
 			}
 			return array;
 		} else{
+			//NOOOOOOOOOOOOOOOOOOOOOOOOOOOOO READ ABOVE COMMENT
+			// return playersInGame;	
+			return false;
+		}
+	};
+
+	//This code stays only in the server,
+	//individual roles will be distributed individually.
+	this.getPlayerRoles = function(){
+		if(gameStarted === true){
 			return playersInGame;	
 		}
-
-
-
-
-
-	};
+		else {
+			console.log("Game hasn't started yet");
+		}
+	}
 
 	this.getSockets = function(){
 		return this.sockets;
