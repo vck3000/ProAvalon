@@ -65,6 +65,22 @@ module.exports = function(io){
 			socket.in("allChat").emit("allChatToClient", data);
 		});
 
+		//when a user tries to send a message to room
+		socket.on("roomChatFromClient", function(data){
+			// socket.emit("danger-alert", "test alert asdf");
+			//debugging
+			console.log("incoming message at " + data.date + ": " + data.message + " by: " + socket.request.user);
+			//get the username and put it into the data object
+			data.username = socket.request.user.username;
+
+			if(data.roomId){
+				//send out that data object to all other clients in room(except the one who sent the message)
+				socket.in(data.roomId).emit("roomChatToClient", data);
+			}
+			
+		});
+
+
 		//when a user disconnects/leaves the whole website
 		socket.on("disconnect",function(data){
 			//debugging
@@ -167,7 +183,7 @@ function removePlayerFromRoomAndCheckDestroy(socket, io){
 	}
 }
 
-	var updateCurrentGamesList = function(io){
+var updateCurrentGamesList = function(io){
 	//prepare room data to send to players. 
 	var gamesList = [];
 	for(var i = 0; i < rooms.length; i++){

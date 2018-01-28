@@ -25,7 +25,7 @@ html, body{
 	display: none;
 }
 
-.all-chat-message-input {
+.chat-message-input {
 	width: 100%;
 	border: 2px solid black;
 	/*float: bottom;*/
@@ -44,6 +44,10 @@ html, body{
 	height: 100%;
 }
 
+.full-height {
+	 height: 100%;
+}
+
 .chat-window {
 	height: 75%;
 	display:block;
@@ -54,7 +58,7 @@ html, body{
 }
 
 .chat-list {
-	padding: 0;
+	padding: 5px;
 
 	list-style: none;
 	width: 100%;

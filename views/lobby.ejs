@@ -11,7 +11,7 @@
 		<div class="col-xs-6" id="col1">
 			<p>All chat!</p>
 			<div class="chat-window">
-				<ol class="chat-list">
+				<ol class="chat-list all-chat-list">
 					<li><div class="other-chat">
 						Hey how are you? :D
 					</div></li>
@@ -21,7 +21,7 @@
 					</div></li>
 				</ol>
 			</div>
-			<input type="text" class="all-chat-message-input">
+			<input type="text" class="chat-message-input all-chat-message-input">
 		</div>
 
 		<div class="col-xs-6">
@@ -60,14 +60,15 @@
 
 	<ul class="nav nav-tabs">
 		<li class="active"><a data-toggle="tab" href="#all-chat-in-game">All Chat!</a></li>
-		<li><a data-toggle="tab" href="#menu1">Menu 1</a></li>
+		<li><a data-toggle="tab" href="#room-chat-in-game">Game Chat!</a></li>
 		<li><a data-toggle="tab" href="#menu2">Menu 2</a></li>
 	</ul>
 
 	<div class="tab-content" style='height: 40%;'>
-		<div id="all-chat-in-game" class="tab-pane fade in active" style="height: 100%">
+
+		<div id="all-chat-in-game" class="tab-pane fade in active full-height">
 			<div class="chat-window">
-				<ol class="chat-list">
+				<ol class="chat-list all-chat-list">
 					<li><div class="other-chat">
 						Hey how are you? :D
 					</div></li>
@@ -78,14 +79,29 @@
 				</ol>
 			</div>
 
-			<input type="text" class="all-chat-message-input">
+			<input type="text" class="chat-message-input all-chat-message-input">
 		</div>
 		
 
-		<div id="menu1" class="tab-pane fade">
-			<h3>Menu 1</h3>
-			<p>Some content in menu 1.</p>
+		<div id="room-chat-in-game" class="tab-pane fade full-height">
+			<div id="room-chat-in-game" class="tab-pane fade in active" style="height: 100%">
+				<div class="chat-window">
+					<ol class="chat-list room-chat-list">
+						<li><div class="other-chat">
+							Hey how are you? :D GMAE CHATTTTTT
+						</div></li>
+
+						<li><div class="self-chat">
+							I'm good :)
+						</div></li>
+					</ol>
+				</div>
+
+				<input type="text" class="room-chat-message-input chat-message-input">
+			</div>
+
 		</div>
+
 		<div id="menu2" class="tab-pane fade">
 			<h3>Menu 2</h3>
 			<p>Some content in menu 2.</p>

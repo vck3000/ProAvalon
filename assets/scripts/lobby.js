@@ -1,7 +1,10 @@
 var socket = io({transports: ['websocket'], upgrade: false});
 console.log("started");
 
+//for the game (like players in game)
 var storeData;
+var roomId; 
+
 //window resize, repaint the users
 window.addEventListener('resize', function(){
     console.log("Resized");
@@ -23,7 +26,10 @@ document.querySelector("#success-alert-box-button").addEventListener("click", fu
 document.querySelector("#backButton").addEventListener("click", function(){
     changeView();
     socket.emit("leave-room", "");
+    roomId = undefined; 
 });
+
+
 
 var allChatWindow1 = document.querySelectorAll(".all-chat-message-input")[0];
 allChatWindow1.onkeyup = function (e, allChatWindow1) {
@@ -40,7 +46,6 @@ allChatWindow2.onkeyup = function (e, allChatWindow2) {
 function addAllChatEventListeners(e, allChatWindow){
     // console.log("LOLOL" + e.keyCode);
     // console.log(allChatWindow);
-
 
     if (e.keyCode == 13) {
         var d = new Date();
@@ -68,7 +73,7 @@ function addAllChatEventListeners(e, allChatWindow){
             var dateStr = "[" + data.date + "]";
             var str = "<li class=self>" + dateStr + " Me: " + data.message;
 
-            $(".chat-list").append(str);
+            $(".all-chat-list").append(str);
             
             scrollDown();
         }
@@ -76,6 +81,47 @@ function addAllChatEventListeners(e, allChatWindow){
     }
 }
 
+var roomChatWindow = document.querySelector(".room-chat-message-input");
+roomChatWindow.onkeyup = function(e){
+    if (e.keyCode == 13) {
+        var d = new Date();
+        //set up the data structure:
+        var message = roomChatWindow.value;
+
+        //only do it if the user has inputted something
+        //i.e. dont run when its an empty string
+        if(message && message.length > 0){
+            //append 0 in front of single digit minutes
+            var dateMinutes = d.getMinutes();
+
+            var date = "" + d.getHours() + ":" + dateMinutes;
+            var data = {
+                date: date,
+                message: message,
+                roomId: roomId
+            }
+
+            //reset the value of the textbox
+            roomChatWindow.value = "";
+            //send data to the server 
+            socket.emit("roomChatFromClient", data);
+
+            //add the self chat
+            var dateStr = "[" + data.date + "]";
+            var str = "<li class=self>" + dateStr + " Me: " + data.message;
+
+            $(".room-chat-list").append(str);
+            
+            scrollDown();
+        }
+    }
+}
+
+
+
+
+
+//SOCKETS
 
 
 socket.on("allChatToClient", function(data){
@@ -83,20 +129,32 @@ socket.on("allChatToClient", function(data){
 	var date = "[" + data.date + "]";
 	var str = "<li class=other>" + date + " " + data.username + ": " + data.message;
 
-    $(".chat-list").append(str);
+    console.log("all chat inc");
+
+    $(".all-chat-list").append(str);
+
+    scrollDown();
+});
+
+socket.on("roomChatToClient", function(data){
+
+    var date = "[" + data.date + "]";
+    var str = "<li class=other>" + date + " " + data.username + ": " + data.message;
+
+    $(".room-chat-list").append(str);
 
     scrollDown();
 });
 
 socket.on("player-joined-lobby", function(username){
     var str = "<li class=server-text>" + username + " has joined the lobby!";
-    $(".chat-list").append(str);
+    $(".all-chat-list").append(str);
     scrollDown();
 });
 
 socket.on("player-left-lobby", function(username){
     var str = "<li class=server-text>" + username + " has left the lobby.";
-    $(".chat-list").append(str);
+    $(".all-chat-list").append(str);
     scrollDown();
 });
 
@@ -138,6 +196,7 @@ socket.on("update-current-games-list", function(currentGames){
                 // console.log(currentGame.roomId);
                 socket.emit("join-room", currentGame.roomId);
                 //change the view to the room instead of lobby
+                roomId = currentGame.roomId;
                 changeView();
             });
         }
@@ -176,7 +235,7 @@ document.querySelector("#testLink").addEventListener("click", function(){
 
 socket.on("new-game-created", function(str){
     var str = "<li class=server-text>" + str + "</li>";
-    $(".chat-list").append(str);
+    $(".all-chat-list").append(str);
 });
 
 socket.on("auto-join-room-id", function(roomID){
@@ -303,6 +362,10 @@ function changeView(){
 function scrollDown(){
     //scroll down
     // console.log($(".chat-window"));
-    $(".chat-window")[0].scrollTop = $(".chat-window")[0].scrollHeight;
-    $(".chat-window")[1].scrollTop = $(".chat-window")[1].scrollHeight;
+
+    var chatWindows = $(".chat-window");
+
+    for(var i = 0; i < chatWindows.length; i++){
+        $(".chat-window")[i].scrollTop = $(".chat-window")[i].scrollHeight;
+    }
 }
