@@ -149,11 +149,18 @@ html, body{
 
 }
 
-.jumbotron{
-	display: inline-block;
 
-	padding: 0;
-	margin: 0;
-	/*height: 100%;
-	width: 100%;*/
+
+
+.game-buttons-div {
+	text-align: center;
+	padding: 15px;
+}
+
+.game-buttons-div button {
+	margin: 0 5px 0 5px;
+}
+
+.center-div {
+	text-align: center;
 }
