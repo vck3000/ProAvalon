@@ -256,7 +256,7 @@ function drawPlayers(data){
         $("#mainRoomBox").html(str);
 
 
-        //set the positions
+        //set the positions and sizes
         var divs = document.querySelectorAll("#mainRoomBox div");
         for(var i = 0 ; i < numPlayers; i++){
             var offsetX = w/2 ;
@@ -271,7 +271,24 @@ function drawPlayers(data){
 
         var divs = $(".room-container #mainRoomBox div");
         for(var i = 0; i < divs.length; i++){
-            divs[i].width = divs[i].height + "px";
+            divs[i].style.width = 30 + "%";
+            divs[i].style.height = 30 + "%";
+
+            //get which one is smaller, width or height and then
+            //force square
+            if(divs[i].offsetWidth < divs[i].offsetHeight){
+                divs[i].style.height = divs[i].offsetWidth + "px";
+                console.log("width smaller, make height smaller to square");
+            } else{
+                divs[i].style.width = divs[i].offsetHeight + "px";
+                console.log("height smaller, make width smaller to square");
+            }
+            /*
+
+            // divs[i].width = divs[i].height + "px";
+            divs[i].style.height = divs[i].offsetWidth + "px";
+            console.log(divs);*/
+            console.log("height: " + divs[i].offsetHeight + " width: " + divs[i].offsetWidth);
         }
     }
 }

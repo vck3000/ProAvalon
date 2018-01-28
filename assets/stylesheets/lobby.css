@@ -111,7 +111,10 @@ html, body{
 	display: inline-block;
 	position: absolute;
 	/*transform: translate(50%, 50%);*/
-	transform:translate(-50%, 50%); /* centered first regardless of width*/
+
+	/*Slightly bias toward the top because of the words underneath the picture/div
+	hence 40% */
+	transform:translate(-50%, 40%); /* centered first regardless of width*/
 	background-color: #dddddd; 
 
 	text-align: center;
@@ -120,8 +123,10 @@ html, body{
 	/*min-width: 30px;*/
 	/*min-height: 30px;*/
 
-	/*width: 40%;*/
-	height: 25%;
+	max-width: 128px;
+	max-height: 128px;
+	/*width: 30%;*/
+	/*height: 25%;*/
 }
 
 .username-p {
