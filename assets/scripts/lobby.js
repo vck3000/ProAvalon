@@ -293,12 +293,11 @@ socket.on("update-room-players", function(data){
 //======================================
 socket.on("game-starting", function(data){
     if(data){
-        console.log(data.role);    
+        console.log(data);    
 
         gameStarted = true;
         drawPlayers(storeData);
-    }
-    
+    } 
 });
 // game-starting-data
 
@@ -325,6 +324,9 @@ function drawPlayers(data){
         
         if(storeData.gameStarted){
             //draw the players according to what the client sees (their role sees)
+
+
+
         } else{
             for(var i = 0 ; i < numPlayers; i++){
                 if(data[i] && data[i].avatarImg){

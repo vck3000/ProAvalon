@@ -70,7 +70,7 @@ module.exports = function(host_, roomId_){
 
 	//start game
 	this.startGame = function(){
-
+		
 		if(this.sockets.length < 5){
 			//NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
 			console.log("Not enough players.");
@@ -79,6 +79,11 @@ module.exports = function(host_, roomId_){
 			console.log("Game already started!");
 			return false;
 		}
+
+
+		//make game started after the checks for game already started
+		gameStarted = true;
+
 
 		var playersYetToInitialise = [];
 		var rolesAssignment = [];
@@ -107,40 +112,43 @@ module.exports = function(host_, roomId_){
 
 		//prepare the data for each person to see
 		for(var i = 0; i < playersInGame.length; i++){
-			if(playersInGame[i].role === "Merlin"){
-				playersInGame[i].see.spies = [];
+			
+			//set up the see object.
+			playersInGame[i].see = {};
 
+			if(playersInGame[i].role === "Merlin"){
+				playersInGame[i].see.spies = this.getSpies();
 			}
 			else if(playersInGame[i].role === "Percival"){
-				
+				playersInGame[i].see.merlins = this.getMerlins();
 			}
 			else if(playersInGame[i].role === "Morgana"){
-				
+				playersInGame[i].see.spies = this.getSpies();
 			}
 			else if(playersInGame[i].role === "Assassin"){
-				
+				playersInGame[i].see.spies = this.getSpies();
 			} 
 			else if(playersInGame[i].role === "Resistance"){
-
+				playersInGame[i].see.spies = [];
 			}
-			playersInGame[i].see.res
 		}
 
-
-		//make game started
-		gameStarted = true;
+		
 
 		return true;
 	};
 
 	this.getSpies = function(){
+		console.log("get spies: " + gameStarted);
 		if(gameStarted === true){
 			var array = [];
 			for(var i = 0; i < playersInGame.length; i++){
 				if(playersInGame[i].role === "Morgana" || playersInGame[i].role === "Assassin" || playersInGame[i].role === "Spy"){
 					array.push(playersInGame[i].username);
+					// console.log(playersInGame[i].username + "IS A SPY AND IS BEING ADDED!");
 				}
 			}
+			// console.log("Array: " + array)
 			return array;
 		} else{
 			return false;

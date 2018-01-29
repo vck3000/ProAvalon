@@ -42,7 +42,7 @@ module.exports = function(io){
 		//socket sends to all except the user of this socket
 		socket.in("allChat").emit("player-joined-lobby", socket.request.user.username);
 		
-		//io sends to everyone in the room, including the current user of this socket
+		//io sends to everyone in the site, including the current user of this socket
 		io.in("allChat").emit("update-current-players-list", currentPlayers);
 
 		updateCurrentGamesList(io);
@@ -179,18 +179,19 @@ module.exports = function(io){
 				console.log(playerRoles);
 
 				for(var i = 0; i < playerRoles.length; i++){
-				//Prepare the data object
-				var data = {
-					role: playerRoles[i].role,
-				}
-				//send to each individual player
-				io.to(playerRoles[i].socketId).emit("game-starting", data);
-				// io.broadcast.emit("game-starting", data);
+					//Prepare the data object
+					var data = {
+						role: playerRoles[i].role,
+						see: playerRoles[i].see
+					}
+					//send to each individual player
+					io.to(playerRoles[i].socketId).emit("game-starting", data);
+					// io.broadcast.emit("game-starting", data);
 
-				console.log("Player " + playerRoles[i].username + " has been given role: " + playerRoles[i].role);
+					console.log("Player " + playerRoles[i].username + " has been given role: " + playerRoles[i].role);
 
-				  // sending to individual socketid (private message)
-				  // socket.to(<socketid>).emit('hey', 'I just met you');
+					  // sending to individual socketid (private message)
+					  // socket.to(<socketid>).emit('hey', 'I just met you');
 				}
 
 			// allSockets[socket.request.user.username]
