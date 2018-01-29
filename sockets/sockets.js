@@ -147,7 +147,7 @@ module.exports = function(io){
 				io.in(roomId).emit("update-room-players", rooms[roomId].getPlayers());	
 
 				//emit to say to others that someone has joined
-				socket.broadcast.emit("player-left-room", "socket.request.user.username");
+				socket.broadcast.emit("player-joined-room", socket.request.user.username);
 			} else{
 				console.log("Game doesn't exist!");
 			}
@@ -157,25 +157,35 @@ module.exports = function(io){
 		socket.on("leave-room", function(){
 			console.log(socket.request.user.username + " is leaving room: " + socket.request.user.inRoomId);
 			//broadcast to let others know
-			socket.broadcast.emit("player-left-room", "socket.request.user.username");
+			socket.broadcast.emit("player-left-room", socket.request.user.username);
 			//remove player from room and check destroy
 			removePlayerFromRoomAndCheckDestroy(socket, io);
 		});
 
 		socket.on("startGame", function(){
+			console.log("STARTING GAME SEQUENCE");
+
+			if(rooms[socket.request.user.inRoomId].getStatus() === "Game started!"){
+				console.log("Game has already started, can't start game again");
+				return;
+			}
+
 			//start the game
 			if(socket.request.user.inRoomId){
 				rooms[socket.request.user.inRoomId].startGame();	
-			}
 
-			//distribute roles to each player
-			var playerRoles = rooms[socket.request.user.inRoomId].getPlayerRoles();
-			for(var i = 0; i < playerRoles.length; i++){
-				//send to each individual player
+				//distribute roles to each player
+				var playerRoles = rooms[socket.request.user.inRoomId].getPlayerRoles();
+				console.log(playerRoles);
+
+				for(var i = 0; i < playerRoles.length; i++){
+				//Prepare the data object
 				var data = {
 					role: playerRoles[i].role,
 				}
-				socket.to(playerRoles[i].socketId).emit("game-starting-data", data);
+				//send to each individual player
+				io.to(playerRoles[i].socketId).emit("game-starting", data);
+				// io.broadcast.emit("game-starting", data);
 
 				console.log("Player " + playerRoles[i].username + " has been given role: " + playerRoles[i].role);
 
@@ -184,7 +194,7 @@ module.exports = function(io){
 				}
 
 			// allSockets[socket.request.user.username]
-			
+			}
 		});
 	});
 }

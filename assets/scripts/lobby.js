@@ -4,6 +4,7 @@ console.log("started");
 //for the game (like players in game)
 var storeData;
 var roomId; 
+var gameStarted = false;
 
 //window resize, repaint the users
 window.addEventListener('resize', function(){
@@ -290,7 +291,15 @@ socket.on("update-room-players", function(data){
 //======================================
 //GAME SOCKET ROUTES
 //======================================
+socket.on("game-starting", function(data){
+    if(data){
+        console.log(data.role);    
 
+        gameStarted = true;
+        drawPlayers(storeData);
+    }
+    
+});
 // game-starting-data
 
 
@@ -313,15 +322,20 @@ function drawPlayers(data){
 
         //generate the divs in the html
         var str = "";
-        for(var i = 0 ; i < numPlayers; i++){
-            if(data[i] && data[i].avatarImg){
-                console.log(data[i].avatarImg);
-                str = str + "<div><img class='avatarImgInRoom' src='" + data[i].avatarImg + "'><p class='username-p'>" + data[i].username + " </p></div>";    
-            }else {
-                str = str + "<div><img class='avatarImgInRoom' src='base-res.png'><p class='username-p'>" + data[i].username + " </p></div>";    
-            }
-            
+        
+        if(storeData.gameStarted){
+            //draw the players according to what the client sees (their role sees)
+        } else{
+            for(var i = 0 ; i < numPlayers; i++){
+                if(data[i] && data[i].avatarImg){
+                    console.log(data[i].avatarImg);
+                    str = str + "<div><img class='avatarImgInRoom' src='" + data[i].avatarImg + "'><p class='username-p'>" + data[i].username + " </p></div>";    
+                }else {
+                    str = str + "<div><img class='avatarImgInRoom' src='base-res.png'><p class='username-p'>" + data[i].username + " </p></div>";    
+                }
+            }    
         }
+        
         //set the divs into the box
         $("#mainRoomBox").html(str);
 
@@ -348,17 +362,18 @@ function drawPlayers(data){
             //force square
             if(divs[i].offsetWidth < divs[i].offsetHeight){
                 divs[i].style.height = divs[i].offsetWidth + "px";
-                console.log("width smaller, make height smaller to square");
+                // console.log("width smaller, make height smaller to square");
             } else{
                 divs[i].style.width = divs[i].offsetHeight + "px";
-                console.log("height smaller, make width smaller to square");
+                // console.log("height smaller, make width smaller to square");
             }
             /*
 
             // divs[i].width = divs[i].height + "px";
             divs[i].style.height = divs[i].offsetWidth + "px";
             console.log(divs);*/
-            console.log("height: " + divs[i].offsetHeight + " width: " + divs[i].offsetWidth);
+
+            // console.log("height: " + divs[i].offsetHeight + " width: " + divs[i].offsetWidth);
         }
     }
 }

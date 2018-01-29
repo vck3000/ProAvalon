@@ -94,19 +94,72 @@ module.exports = function(host_, roomId_){
 		rolesAssignment = shuffle(rolesAssignment);
 
 		//Now we initialise roles
-		for(var i = 0; i < players.length; i++){
+		for(var i = 0; i < this.sockets.length; i++){
 			playersInGame[i] = [];
 			playersInGame[i].username = this.sockets[i].request.user.username;
 			playersInGame[i].socketId = this.sockets[i].id;
 
-			
 			//set the role to be from the roles array with index of the value
 			//of the rolesAssignment which has been shuffled
 			playersInGame[i].role = roles[rolesAssignment[i]];
 		}
 
+
+		//prepare the data for each person to see
+		for(var i = 0; i < playersInGame.length; i++){
+			if(playersInGame[i].role === "Merlin"){
+				playersInGame[i].see.spies = [];
+
+			}
+			else if(playersInGame[i].role === "Percival"){
+				
+			}
+			else if(playersInGame[i].role === "Morgana"){
+				
+			}
+			else if(playersInGame[i].role === "Assassin"){
+				
+			} 
+			else if(playersInGame[i].role === "Resistance"){
+
+			}
+			playersInGame[i].see.res
+		}
+
+
+		//make game started
+		gameStarted = true;
+
 		return true;
 	};
+
+	this.getSpies = function(){
+		if(gameStarted === true){
+			var array = [];
+			for(var i = 0; i < playersInGame.length; i++){
+				if(playersInGame[i].role === "Morgana" || playersInGame[i].role === "Assassin" || playersInGame[i].role === "Spy"){
+					array.push(playersInGame[i].username);
+				}
+			}
+			return array;
+		} else{
+			return false;
+		}
+	}
+
+	this.getMerlins = function(){
+		if(gameStarted === true){
+			var array = [];
+			for(var i = 0; i < playersInGame.length; i++){
+				if(playersInGame[i].role === "Merlin" || playersInGame[i].role === "Morgana"){
+					array.push(playersInGame[i].username);
+				}
+			}
+			return array;
+		} else{
+			return false;
+		}
+	}
 
 
 	this.playerJoinGame = function(socket){
@@ -192,10 +245,13 @@ module.exports = function(host_, roomId_){
 	//individual roles will be distributed individually.
 	this.getPlayerRoles = function(){
 		if(gameStarted === true){
+			console.log("GET PLAYER ROLES TRUE");
 			return playersInGame;	
 		}
 		else {
+			console.log("GET PLAYER ROLES false");
 			console.log("Game hasn't started yet");
+			return false;
 		}
 	}
 
