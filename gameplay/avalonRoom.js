@@ -115,12 +115,15 @@ module.exports = function(host_, roomId_){
 			
 			//set up the see object.
 			playersInGame[i].see = {};
+			playersInGame[i].see.spies = [];
+			playersInGame[i].see.merlins = [];
 
 			if(playersInGame[i].role === "Merlin"){
 				playersInGame[i].see.spies = this.getSpies();
 			}
 			else if(playersInGame[i].role === "Percival"){
 				playersInGame[i].see.merlins = this.getMerlins();
+
 			}
 			else if(playersInGame[i].role === "Morgana"){
 				playersInGame[i].see.spies = this.getSpies();
@@ -238,7 +241,8 @@ module.exports = function(host_, roomId_){
 			for(var i = 0; i < this.sockets.length; i++){
 				array[i] = {
 					username: this.sockets[i].request.user.username,	
-					avatarImg: this.sockets[i].request.user.avatarImg
+					avatarImgRes: this.sockets[i].request.user.avatarImgRes,
+					avatarImgSpy: this.sockets[i].request.user.avatarImgSpy
 				}
 			}
 			return array;

@@ -3,8 +3,9 @@ console.log("started");
 
 //for the game (like players in game)
 var storeData;
+var seeData;
 var roomId; 
-var gameStarted = false;
+var gameStarted; //= false;
 
 //window resize, repaint the users
 window.addEventListener('resize', function(){
@@ -293,20 +294,24 @@ socket.on("update-room-players", function(data){
 //======================================
 socket.on("game-starting", function(data){
     if(data){
-        console.log(data);    
+        console.log("game starting!");
+
+        console.log(data);   
+        seeData = data; 
 
         gameStarted = true;
+
         drawPlayers(storeData);
     } 
 });
 // game-starting-data
 
-
-
 //======================================
 //FUNCTIONS
 //======================================
 function drawPlayers(data){
+    console.log("drawPlayers called");
+
     if(data){
         var w = $("#mainRoomBox").width();
         var h = $("#mainRoomBox").height();
@@ -321,22 +326,53 @@ function drawPlayers(data){
 
         //generate the divs in the html
         var str = "";
-        
-        if(storeData.gameStarted){
+        console.log("Game started: " + gameStarted);
+        if(gameStarted === true){
             //draw the players according to what the client sees (their role sees)
-
-
-
-        } else{
             for(var i = 0 ; i < numPlayers; i++){
-                if(data[i] && data[i].avatarImg){
-                    console.log(data[i].avatarImg);
-                    str = str + "<div><img class='avatarImgInRoom' src='" + data[i].avatarImg + "'><p class='username-p'>" + data[i].username + " </p></div>";    
+                console.log("draw");
+                //if the person has an avatar
+                if(data[i] && data[i].avatarImgRes){
+                    console.log("avatar exists");
+
+                    //check if the user is on the list. 
+                    //if they are not, they are res
+                    if(seeData.see.spies && seeData.see.spies.indexOf(data[i].username) === -1){
+                        str = str + "<div><img class='avatarImgInRoom' src='" + data[i].avatarImgRes + "'><p class='username-p'>" + data[i].username + " </p></div>";    
+                    } 
+                    //else they are a spy
+                    else{
+                        str = str + "<div><img class='avatarImgInRoom' src='" + data[i].avatarImgSpy + "'><p class='username-p'>" + data[i].username + " </p></div>";    
+                    }
+                }
+                //else they dont have a avatar, use base-res/spy images
+                else {
+                    console.log("no avatar exists");
+                    //check if the user is on the list. 
+                    //if they are not, they are res
+                    if(seeData.see.spies && seeData.see.spies.indexOf(data[i].username) === -1){
+                        str = str + "<div><img class='avatarImgInRoom' src='base-res.png'><p class='username-p'>" + data[i].username + " </p></div>";    
+                    } 
+                    //else they are a spy
+                    else{
+                        str = str + "<div><img class='avatarImgInRoom' src='base-spy.png'><p class='username-p'>" + data[i].username + " </p></div>";    
+                    }
+                }
+            }    
+        } 
+        //when game has not yet started, everyone is a res image
+        else{
+            for(var i = 0 ; i < numPlayers; i++){
+                if(data[i] && data[i].avatarImgRes){
+                    console.log(data[i].avatarImgRes);
+                    str = str + "<div><img class='avatarImgInRoom' src='" + data[i].avatarImgRes + "'><p class='username-p'>" + data[i].username + " </p></div>";    
                 }else {
                     str = str + "<div><img class='avatarImgInRoom' src='base-res.png'><p class='username-p'>" + data[i].username + " </p></div>";    
                 }
             }    
         }
+
+        console.log(str);
         
         //set the divs into the box
         $("#mainRoomBox").html(str);
