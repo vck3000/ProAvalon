@@ -317,12 +317,7 @@ function drawPlayers(data){
         var h = $("#mainRoomBox").height();
 
         var numPlayers = data.length;//3;
-
         var playerLocations = generatePlayerLocations(numPlayers, w/2, h/2);
-
-        // console.log("w: " + w + "    h: " + h);
-        // console.log(playerLocations);
-
 
         //generate the divs in the html
         var str = "";
@@ -331,32 +326,18 @@ function drawPlayers(data){
             //draw the players according to what the client sees (their role sees)
             for(var i = 0 ; i < numPlayers; i++){
                 console.log("draw");
-                //if the person has an avatar
-                if(data[i] && data[i].avatarImgRes){
-                    console.log("avatar exists");
 
-                    //check if the user is on the list. 
-                    //if they are not, they are res
-                    if(seeData.see.spies && seeData.see.spies.indexOf(data[i].username) === -1){
-                        str = str + "<div><img class='avatarImgInRoom' src='" + data[i].avatarImgRes + "'><p class='username-p'>" + data[i].username + " </p></div>";    
-                    } 
-                    //else they are a spy
-                    else{
-                        str = str + "<div><img class='avatarImgInRoom' src='" + data[i].avatarImgSpy + "'><p class='username-p'>" + data[i].username + " </p></div>";    
-                    }
-                }
-                //else they dont have a avatar, use base-res/spy images
-                else {
-                    console.log("no avatar exists");
-                    //check if the user is on the list. 
-                    //if they are not, they are res
-                    if(seeData.see.spies && seeData.see.spies.indexOf(data[i].username) === -1){
-                        str = str + "<div><img class='avatarImgInRoom' src='base-res.png'><p class='username-p'>" + data[i].username + " </p></div>";    
-                    } 
-                    //else they are a spy
-                    else{
-                        str = str + "<div><img class='avatarImgInRoom' src='base-spy.png'><p class='username-p'>" + data[i].username + " </p></div>";    
-                    }
+                //check if the user is on the list. 
+                //if they are not, they are res
+                if(seeData.see.spies && seeData.see.spies.indexOf(data[i].username) === -1){
+                    // str = str + "<div><img class='avatarImgInRoom' src='" + data[i].avatarImgRes + "'><p class='username-p'>" + data[i].username + " </p></div>";    
+                    str = str + strOfAvatar(data[i], "res");
+                    
+                } 
+                //else they are a spy
+                else{
+                    // str = str + "<div><img class='avatarImgInRoom' src='" + data[i].avatarImgSpy + "'><p class='username-p'>" + data[i].username + " </p></div>";    
+                    str = str + strOfAvatar(data[i], "spy");
                 }
             }    
         } 
@@ -372,11 +353,10 @@ function drawPlayers(data){
             }    
         }
 
-        console.log(str);
+        // console.log(str);
         
         //set the divs into the box
         $("#mainRoomBox").html(str);
-
 
         //set the positions and sizes
         var divs = document.querySelectorAll("#mainRoomBox div");
@@ -415,6 +395,27 @@ function drawPlayers(data){
         }
     }
 }
+
+function strOfAvatar(playerData, alliance){
+    var picLink;
+    if(alliance === "res"){
+        if(playerData.avatarImgRes){
+            picLink = playerData.avatarImgRes;
+        } else{
+            picLink = 'base-res.png'    
+        }
+    }
+    else{
+        if(playerData.avatarImgSpy){
+            picLink = playerData.avatarImgSpy;
+        } else{
+            picLink = 'base-spy.png'    
+        }
+    }
+
+    return "<div><img class='avatarImgInRoom' src='" + picLink + "'><p class='username-p'>" + playerData.username + " </p></div>";    
+}
+
 
 
 function changeView(){
