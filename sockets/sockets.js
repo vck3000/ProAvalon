@@ -47,6 +47,9 @@ module.exports = function(io){
 
 		updateCurrentGamesList(io);
 
+		//send the user its ID to store on their side.
+		socket.emit("username", socket.request.user.username);
+
 
 
 

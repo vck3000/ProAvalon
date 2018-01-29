@@ -5,7 +5,8 @@ console.log("started");
 var storeData;
 var seeData;
 var roomId; 
-var gameStarted; //= false;
+var gameStarted = false;
+var ownUsername = "";
 
 //window resize, repaint the users
 window.addEventListener('resize', function(){
@@ -136,6 +137,10 @@ roomChatWindow.onkeyup = function(e){
 //======================================
 //SOCKET ROUTES
 //======================================
+socket.on("username", function(username){
+    ownUsername = username;
+});
+
 socket.on("allChatToClient", function(data){
 
 	var date = "[" + data.date + "]";
@@ -413,7 +418,16 @@ function strOfAvatar(playerData, alliance){
         }
     }
 
-    return "<div><img class='avatarImgInRoom' src='" + picLink + "'><p class='username-p'>" + playerData.username + " </p></div>";    
+    //if rendering our own player, give it the role tag
+    var role = ""; 
+    if(playerData.username === ownUsername){
+        role = seeData.role;
+    }
+    else if(seeData.see.merlins.indexOf(playerData.username) !== -1){
+        role = "Merlin?";
+    }
+
+    return "<div><img class='avatarImgInRoom' src='" + picLink + "'><p class='username-p'>" + playerData.username + " </p><p class='role-p'>" + role + "</p></div>";    
 }
 
 
