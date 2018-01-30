@@ -41,6 +41,13 @@ document.querySelector("#backButton").addEventListener("click", function(){
     changeView();
     socket.emit("leave-room", "");
     roomId = undefined; 
+    //reset all the variables
+    storeData = [];
+    seeData = [];
+    roomId = undefined; 
+    gameStarted = false;
+    //note do not reset our own username.
+
 });
 
 
@@ -297,7 +304,7 @@ socket.on("update-room-players", function(data){
 //======================================
 //GAME SOCKET ROUTES
 //======================================
-socket.on("game-starting", function(data){
+socket.on("game-data", function(data){
     if(data){
         console.log("game starting!");
 
@@ -309,7 +316,6 @@ socket.on("game-starting", function(data){
         drawPlayers(storeData);
     } 
 });
-// game-starting-data
 
 //======================================
 //FUNCTIONS
@@ -355,7 +361,7 @@ function drawPlayers(data){
                 }else {
                     str = str + "<div><img class='avatarImgInRoom' src='base-res.png'><p class='username-p'>" + data[i].username + " </p></div>";    
                 }
-            }    
+            }  
         }
 
         // console.log(str);
@@ -374,10 +380,9 @@ function drawPlayers(data){
 
             divs[i].style.left = strX;
             divs[i].style.bottom = strY;
-        }
 
-        var divs = $(".room-container #mainRoomBox div");
-        for(var i = 0; i < divs.length; i++){
+
+            //size of the avatar img
             divs[i].style.width = 30 + "%";
             divs[i].style.height = 30 + "%";
 
@@ -397,6 +402,18 @@ function drawPlayers(data){
             console.log(divs);*/
 
             // console.log("height: " + divs[i].offsetHeight + " width: " + divs[i].offsetWidth);
+
+            //add the event listeners for button press
+            divs[i].addEventListener("click", function(){
+                console.log("avatar pressed");
+                this.classList.toggle("highlight-avatar");
+            })
+
+        }
+
+        var divs = $(".room-container #mainRoomBox div");
+        for(var i = 0; i < divs.length; i++){
+
         }
     }
 }

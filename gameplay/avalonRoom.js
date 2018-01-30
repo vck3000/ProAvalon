@@ -1,7 +1,5 @@
 //avalon room object
 
-var playersInGame = [];
-var player = [];
 var mongoose = require("mongoose");
 var User = require("../models/user");
 
@@ -12,9 +10,6 @@ mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
 
 // var roomId;
 
-var gameStarted = false;
-var finished = false;
-var destroyRoom = false;
 
 var roles = [
 "Merlin",
@@ -63,6 +58,14 @@ function getRandomInt(min, max) {
 
 
 module.exports = function(host_, roomId_){
+
+	this.playersInGame = [];
+	this.player = [];
+	this.gameStarted = false;
+	this.finished = false;
+	this.destroyRoom = false;
+
+
 	//Just to know who is the current host.
 	this.host = host_;
 	this.roomId = roomId_;
@@ -75,14 +78,14 @@ module.exports = function(host_, roomId_){
 			//NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
 			console.log("Not enough players.");
 			return false;
-		} else if(gameStarted === true){
+		} else if(this.gameStarted === true){
 			console.log("Game already started!");
 			return false;
 		}
 
 
 		//make game started after the checks for game already started
-		gameStarted = true;
+		this.gameStarted = true;
 
 
 		var playersYetToInitialise = [];
@@ -100,39 +103,38 @@ module.exports = function(host_, roomId_){
 
 		//Now we initialise roles
 		for(var i = 0; i < this.sockets.length; i++){
-			playersInGame[i] = [];
-			playersInGame[i].username = this.sockets[i].request.user.username;
-			playersInGame[i].socketId = this.sockets[i].id;
+			this.playersInGame[i] = [];
+			this.playersInGame[i].username = this.sockets[i].request.user.username;
+			this.playersInGame[i].socketId = this.sockets[i].id;
 
 			//set the role to be from the roles array with index of the value
 			//of the rolesAssignment which has been shuffled
-			playersInGame[i].role = roles[rolesAssignment[i]];
+			this.playersInGame[i].role = roles[rolesAssignment[i]];
 		}
 
 
 		//prepare the data for each person to see
-		for(var i = 0; i < playersInGame.length; i++){
+		for(var i = 0; i < this.playersInGame.length; i++){
 			
 			//set up the see object.
-			playersInGame[i].see = {};
-			playersInGame[i].see.spies = [];
-			playersInGame[i].see.merlins = [];
+			this.playersInGame[i].see = {};
+			this.playersInGame[i].see.spies = [];
+			this.playersInGame[i].see.merlins = [];
 
-			if(playersInGame[i].role === "Merlin"){
-				playersInGame[i].see.spies = this.getSpies();
+			if(this.playersInGame[i].role === "Merlin"){
+				this.playersInGame[i].see.spies = this.getSpies();
 			}
-			else if(playersInGame[i].role === "Percival"){
-				playersInGame[i].see.merlins = this.getMerlins();
-
+			else if(this.playersInGame[i].role === "Percival"){
+				this.playersInGame[i].see.merlins = this.getMerlins();
 			}
-			else if(playersInGame[i].role === "Morgana"){
-				playersInGame[i].see.spies = this.getSpies();
+			else if(this.playersInGame[i].role === "Morgana"){
+				this.playersInGame[i].see.spies = this.getSpies();
 			}
-			else if(playersInGame[i].role === "Assassin"){
-				playersInGame[i].see.spies = this.getSpies();
+			else if(this.playersInGame[i].role === "Assassin"){
+				this.playersInGame[i].see.spies = this.getSpies();
 			} 
-			else if(playersInGame[i].role === "Resistance"){
-				playersInGame[i].see.spies = [];
+			else if(this.playersInGame[i].role === "Resistance"){
+				this.playersInGame[i].see.spies = [];
 			}
 		}
 
@@ -142,12 +144,12 @@ module.exports = function(host_, roomId_){
 	};
 
 	this.getSpies = function(){
-		console.log("get spies: " + gameStarted);
-		if(gameStarted === true){
+		console.log("get spies: " + this.gameStarted);
+		if(this.gameStarted === true){
 			var array = [];
-			for(var i = 0; i < playersInGame.length; i++){
-				if(playersInGame[i].role === "Morgana" || playersInGame[i].role === "Assassin" || playersInGame[i].role === "Spy"){
-					array.push(playersInGame[i].username);
+			for(var i = 0; i < this.playersInGame.length; i++){
+				if(this.playersInGame[i].role === "Morgana" || this.playersInGame[i].role === "Assassin" || this.playersInGame[i].role === "Spy"){
+					array.push(this.playersInGame[i].username);
 					// console.log(playersInGame[i].username + "IS A SPY AND IS BEING ADDED!");
 				}
 			}
@@ -159,11 +161,11 @@ module.exports = function(host_, roomId_){
 	}
 
 	this.getMerlins = function(){
-		if(gameStarted === true){
+		if(this.gameStarted === true){
 			var array = [];
-			for(var i = 0; i < playersInGame.length; i++){
-				if(playersInGame[i].role === "Merlin" || playersInGame[i].role === "Morgana"){
-					array.push(playersInGame[i].username);
+			for(var i = 0; i < this.playersInGame.length; i++){
+				if(this.playersInGame[i].role === "Merlin" || this.playersInGame[i].role === "Morgana"){
+					array.push(this.playersInGame[i].username);
 				}
 			}
 			return array;
@@ -174,37 +176,23 @@ module.exports = function(host_, roomId_){
 
 
 	this.playerJoinGame = function(socket){
+		//get a list of usernames in the game
+		//because if a player had left and came back into the room
+		//we want to re-update their data they see
+
+		var usernames = this.getUsernamesInGame();
+
 		//when game hasnt started yet, add the person to the players in game
-		if(gameStarted === false){
-
-			// console.log(User.findById(socket.request.user.id));
-
-			// User.findById("5a694cc2802e711c284e2d55", function(err, user){
-			// 	console.log("found user");
-			// 	console.log(user.avatarImg);
-			// });
-
-			User.findById(socket.request.user.id, function(err, user){
-				if(err){
-					console.log(err);
-				} else{
-					if(user.avatarImg){
-						socket.request.user.avatarImg = user.avatarImg;
-						console.log("User has been found!!!!" + socket.request.user.avatarImg);
-					} else{
-						socket.request.user.avatarImg = "base-res.png";
-
-					}
-				}
-
-
-
-			});
-
+		if(this.gameStarted === false){
 			this.sockets.push(socket);
-
 			return true;
-		} else{
+		} 
+		//if the player joining is already part of the game
+		else if(usernames.indexOf(socket.request.username) !== -1){
+			//this.sockets.push(socket);
+			return true;
+		} 
+		else{
 			console.log("Game has already started!");
 			return false;
 		}
@@ -213,7 +201,8 @@ module.exports = function(host_, roomId_){
 
 	//when a player leaves before game starts
 	this.playerLeaveGameUninitialised = function(socket){
-		if(gameStarted === false){
+		if(this.gameStarted === false){
+			//get rid of their socket
 			var i = this.sockets.indexOf(socket);
 			this.sockets.splice(i, 1);
 
@@ -224,7 +213,7 @@ module.exports = function(host_, roomId_){
 
 			return true;
 		} else{
-			console.log("Game has already started!");
+			console.log("Player left mid-game!");
 			return false;
 		}
 	};
@@ -233,32 +222,38 @@ module.exports = function(host_, roomId_){
 		return this.destroyRoom;
 	}
 
-	//NOTE THIS SHOULD NOT RETURN ROLES OF EACH PLAYER
-	//BECAUSE THIS DATA IS BEING SENT RAW TO THE PLAYERS
 	this.getPlayers = function(){
-		if(gameStarted === false){
+		var array = [];
+		for(var i = 0; i < this.sockets.length; i++){
+			array[i] = {
+				username: this.sockets[i].request.user.username,	
+				avatarImgRes: this.sockets[i].request.user.avatarImgRes,
+				avatarImgSpy: this.sockets[i].request.user.avatarImgSpy
+			}
+		}
+		return array;
+	};
+
+	this.getUsernamesInGame = function(){
+		if(this.gameStarted === true){
 			var array = [];
 			for(var i = 0; i < this.sockets.length; i++){
-				array[i] = {
-					username: this.sockets[i].request.user.username,	
-					avatarImgRes: this.sockets[i].request.user.avatarImgRes,
-					avatarImgSpy: this.sockets[i].request.user.avatarImgSpy
-				}
+				array[i] = this.sockets[i].request.user.username;
 			}
-			return array;
-		} else{
-			//NOOOOOOOOOOOOOOOOOOOOOOOOOOOOO READ ABOVE COMMENT
-			// return playersInGame;	
-			return false;
+			return array;	
 		}
-	};
+		else{
+			return [];
+		}
+		
+	}
 
 	//This code stays only in the server,
 	//individual roles will be distributed individually.
 	this.getPlayerRoles = function(){
-		if(gameStarted === true){
+		if(this.gameStarted === true){
 			console.log("GET PLAYER ROLES TRUE");
-			return playersInGame;	
+			return this.playersInGame;	
 		}
 		else {
 			console.log("GET PLAYER ROLES false");
@@ -276,9 +271,9 @@ module.exports = function(host_, roomId_){
 	};
 
 	this.getStatus = function(){
-		if(finished === true){
+		if(this.finished === true){
 			return "Finished!";
-		} else if(gameStarted === true){
+		} else if(this.gameStarted === true){
 			return "Game started!";
 		} else{
 			return "Waiting!";

@@ -55,8 +55,6 @@ module.exports = function(io){
 
 
 
-
-
 		//when a user tries to send a message to all chat
 		socket.on("allChatFromClient", function(data){
 			// socket.emit("danger-alert", "test alert asdf");
@@ -109,7 +107,12 @@ module.exports = function(io){
 		//INCOMPLETE
 		socket.on("newRoom", function(){
 			//create new room
+			// rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId);
+			
 			rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId);
+			console.log(avalonRoom);
+			console.log(rooms[nextRoomId]);
+
 			console.log("new room request");
 
 			//broadcast to all chat
@@ -121,7 +124,7 @@ module.exports = function(io){
 			//send back room id to host so they can auto connect
 			socket.emit("auto-join-room-id", nextRoomId);
 
-			// sending to individual socketid (private message)
+			//sending to individual socketid (private message)
   			//socket.to(<socketid>).emit('hey', 'I just met you');
 
   			//increment index for next game
@@ -137,9 +140,21 @@ module.exports = function(io){
 			
 			//if the room exists
 			if(rooms[roomId]){
-				var ToF = rooms[roomId].playerJoinGame(socket);
-				console.log(socket.request.user.username + " has joined room " + roomId + ": " + ToF);
+				//if the game hasn't started yet
+				//then add them to the game
+
+				//get an array of the users in the game
+				//just in case that the person joining left mid-game
+				//earlier
+				usernamesInGame = rooms[roomId].getUsernamesInGame();
 				
+				//if the room has not started yet, throw them into the room
+				console.log("Game status is: " + rooms[roomId].getStatus());
+				if(rooms[roomId].getStatus() === "Waiting!"){
+					var ToF = rooms[roomId].playerJoinGame(socket);
+					console.log(socket.request.user.username + " has joined room " + roomId + ": " + ToF);
+				} 
+
 				//set the room id into the socket obj
 				socket.request.user.inRoomId = roomId;
 
@@ -147,10 +162,17 @@ module.exports = function(io){
 				socket.join(roomId);
 
 				//update the room players
-				io.in(roomId).emit("update-room-players", rooms[roomId].getPlayers());	
+				io.in(roomId).emit("update-room-players", rooms[roomId].getPlayers());		
 
 				//emit to say to others that someone has joined
 				socket.broadcast.emit("player-joined-room", socket.request.user.username);
+
+				//if the game has started, and the user who is joining
+				//is part of the game, give them the data of the game again
+				if(usernamesInGame.indexOf(socket.request.user.username) !== -1){
+					distributeGameData(socket, io);
+				}
+
 			} else{
 				console.log("Game doesn't exist!");
 			}
@@ -163,6 +185,8 @@ module.exports = function(io){
 			socket.broadcast.emit("player-left-room", socket.request.user.username);
 			//remove player from room and check destroy
 			removePlayerFromRoomAndCheckDestroy(socket, io);
+			//leave the room chat
+			socket.leave(socket.request.user.inRoomId);
 		});
 
 		socket.on("startGame", function(){
@@ -176,33 +200,29 @@ module.exports = function(io){
 			//start the game
 			if(socket.request.user.inRoomId){
 				rooms[socket.request.user.inRoomId].startGame();	
-
-				//distribute roles to each player
-				var playerRoles = rooms[socket.request.user.inRoomId].getPlayerRoles();
-				console.log(playerRoles);
-
-				for(var i = 0; i < playerRoles.length; i++){
-					//Prepare the data object
-					var data = {
-						role: playerRoles[i].role,
-						see: playerRoles[i].see
-					}
-					//send to each individual player
-					io.to(playerRoles[i].socketId).emit("game-starting", data);
-					// io.broadcast.emit("game-starting", data);
-
-					console.log("Player " + playerRoles[i].username + " has been given role: " + playerRoles[i].role);
-
-					  // sending to individual socketid (private message)
-					  // socket.to(<socketid>).emit('hey', 'I just met you');
-				}
-
-			// allSockets[socket.request.user.username]
 			}
+
+			distributeGameData(socket, io);
 		});
 	});
 }
 
+function distributeGameData(socket, io){
+	//distribute roles to each player
+	var playerRoles = rooms[socket.request.user.inRoomId].getPlayerRoles();
+	console.log(playerRoles);
+
+	for(var i = 0; i < playerRoles.length; i++){
+		//Prepare the data object
+		var data = {
+			role: playerRoles[i].role,
+			see: playerRoles[i].see
+		}
+		//send to each individual player
+		io.to(playerRoles[i].socketId).emit("game-data", data);
+		console.log("Player " + playerRoles[i].username + " has been given role: " + playerRoles[i].role);
+	}
+}
 
 function removePlayerFromRoomAndCheckDestroy(socket, io){
 	//remove player from room if he/she is in one

@@ -45,7 +45,7 @@ html, body{
 }
 
 .full-height {
-	 height: 100%;
+	height: 100%;
 }
 
 .chat-window {
@@ -119,7 +119,7 @@ html, body{
 	/*Slightly bias toward the top because of the words underneath the picture/div
 	hence 40% */
 	transform:translate(-50%, 40%); /* centered first regardless of width*/
-	background-color: #eeeeee; 
+	/*background-color: #eeeeee; */
 
 	text-align: center;
 
@@ -155,7 +155,13 @@ html, body{
 
 }
 
+.highlight-avatar {
+	background-color: #ffff00;
+	border-radius: 10px;
 
+	/*padding-left: 10px;*/
+	/*margin-left: -10px;*/
+}
 
 
 .game-buttons-div {
