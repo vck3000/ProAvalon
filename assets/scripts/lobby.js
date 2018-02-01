@@ -48,6 +48,9 @@ document.querySelector("#backButton").addEventListener("click", function(){
     gameStarted = false;
     //note do not reset our own username.
 
+    //reset room-chat 
+    $(".room-chat-list").html("");
+
 });
 
 

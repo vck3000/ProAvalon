@@ -165,14 +165,13 @@ module.exports = function(io){
 				io.in(roomId).emit("update-room-players", rooms[roomId].getPlayers());		
 
 				//emit to say to others that someone has joined
-				socket.broadcast.emit("player-joined-room", socket.request.user.username);
+				io.in(roomId).emit("player-joined-room", socket.request.user.username);
 
 				//if the game has started, and the user who is joining
 				//is part of the game, give them the data of the game again
 				if(usernamesInGame.indexOf(socket.request.user.username) !== -1){
 					distributeGameData(socket, io);
 				}
-
 			} else{
 				console.log("Game doesn't exist!");
 			}
@@ -182,7 +181,7 @@ module.exports = function(io){
 		socket.on("leave-room", function(){
 			console.log(socket.request.user.username + " is leaving room: " + socket.request.user.inRoomId);
 			//broadcast to let others know
-			socket.broadcast.emit("player-left-room", socket.request.user.username);
+			io.in(socket.request.user.inRoomId).emit("player-left-room", socket.request.user.username);
 			//remove player from room and check destroy
 			removePlayerFromRoomAndCheckDestroy(socket, io);
 			//leave the room chat
