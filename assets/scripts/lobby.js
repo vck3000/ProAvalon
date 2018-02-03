@@ -341,16 +341,13 @@ function drawPlayers(data){
             for(var i = 0 ; i < numPlayers; i++){
                 console.log("draw");
 
-                //check if the user is on the list. 
+                //check if the user is on the spy list. 
                 //if they are not, they are res
                 if(seeData.see.spies && seeData.see.spies.indexOf(data[i].username) === -1){
-                    // str = str + "<div><img class='avatarImgInRoom' src='" + data[i].avatarImgRes + "'><p class='username-p'>" + data[i].username + " </p></div>";    
                     str = str + strOfAvatar(data[i], "res");
-                    
                 } 
                 //else they are a spy
                 else{
-                    // str = str + "<div><img class='avatarImgInRoom' src='" + data[i].avatarImgSpy + "'><p class='username-p'>" + data[i].username + " </p></div>";    
                     str = str + strOfAvatar(data[i], "spy");
                 }
             }    
@@ -358,17 +355,17 @@ function drawPlayers(data){
         //when game has not yet started, everyone is a res image
         else{
             for(var i = 0 ; i < numPlayers; i++){
-                if(data[i] && data[i].avatarImgRes){
-                    console.log(data[i].avatarImgRes);
-                    str = str + "<div><img class='avatarImgInRoom' src='" + data[i].avatarImgRes + "'><p class='username-p'>" + data[i].username + " </p></div>";    
-                }else {
-                    str = str + "<div><img class='avatarImgInRoom' src='base-res.png'><p class='username-p'>" + data[i].username + " </p></div>";    
-                }
+                str = str + strOfAvatar(data[i], "res");
             }  
         }
 
         // console.log(str);
         
+        //draw the teamLeader star
+        // str = str + "<span><img src='leader.png' class='leaderStar'></span>";
+
+
+
         //set the divs into the box
         $("#mainRoomBox").html(str);
 
@@ -398,25 +395,32 @@ function drawPlayers(data){
                 divs[i].style.width = divs[i].offsetHeight + "px";
                 // console.log("height smaller, make width smaller to square");
             }
-            /*
-
-            // divs[i].width = divs[i].height + "px";
-            divs[i].style.height = divs[i].offsetWidth + "px";
-            console.log(divs);*/
-
-            // console.log("height: " + divs[i].offsetHeight + " width: " + divs[i].offsetWidth);
 
             //add the event listeners for button press
             divs[i].addEventListener("click", function(){
                 console.log("avatar pressed");
                 this.classList.toggle("highlight-avatar");
-            })
+            });
 
+
+            //team leader star part!
+            if(gameStarted === false){
+                //draw the team leader star in the specific div
+                if(i === 0){
+                    console.log("test");
+
+                    //set the div string and add the star
+                    var str = $("#mainRoomBox div")[0].innerHTML;
+                    str = str + "<span><img src='leader.png' class='leaderStar'></span>";
+
+                    //update the str in the div
+                    $("#mainRoomBox div")[0].innerHTML = str;
+                }
+            }
         }
 
         var divs = $(".room-container #mainRoomBox div");
         for(var i = 0; i < divs.length; i++){
-
         }
     }
 }
@@ -438,14 +442,18 @@ function strOfAvatar(playerData, alliance){
         }
     }
 
-    //if rendering our own player, give it the role tag
+
     var role = ""; 
-    if(playerData.username === ownUsername){
-        role = seeData.role;
+    if(gameStarted === true){
+        //if rendering our own player, give it the role tag
+        if(playerData.username === ownUsername){
+            role = seeData.role;
+        }
+        else if(seeData.see.merlins.indexOf(playerData.username) !== -1){
+            role = "Merlin?";
+        }  
     }
-    else if(seeData.see.merlins.indexOf(playerData.username) !== -1){
-        role = "Merlin?";
-    }
+
 
     return "<div><img class='avatarImgInRoom' src='" + picLink + "'><p class='username-p'>" + playerData.username + " </p><p class='role-p'>" + role + "</p></div>";    
 }

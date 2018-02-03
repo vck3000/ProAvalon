@@ -197,11 +197,15 @@ module.exports = function(io){
 			}
 
 			//start the game
-			if(socket.request.user.inRoomId){
+			if(socket.request.user.inRoomId && socket.request.user.username === rooms[socket.request.user.inRoomId].getHost()){
 				rooms[socket.request.user.inRoomId].startGame();	
+			} else{
+				console.log("Room doesn't exist or user is not host, cannot start game");
+				return;
 			}
 
 			distributeGameData(socket, io);
+
 		});
 	});
 }
@@ -215,7 +219,8 @@ function distributeGameData(socket, io){
 		//Prepare the data object
 		var data = {
 			role: playerRoles[i].role,
-			see: playerRoles[i].see
+			see: playerRoles[i].see,
+			teamLeader: playerRoles[i].teamLeader
 		}
 		//send to each individual player
 		io.to(playerRoles[i].socketId).emit("game-data", data);

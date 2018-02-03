@@ -1,5 +1,5 @@
 * {
-	/*outline: 1px solid red;*/
+	outline: 1px solid red;
 }
 
 
@@ -131,6 +131,13 @@ html, body{
 	max-height: 128px;
 	/*width: 30%;*/
 	/*height: 25%;*/
+}
+
+.leaderStar {
+	z-index: 2;
+	position: absolute;
+	right: 0;
+	bottom: 0;
 }
 
 .role-p	{

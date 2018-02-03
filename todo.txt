@@ -1,8 +1,9 @@
 To-do list:
 -Fix timezone issues in all chat
--Sometimes when a single player in the room refreshes, causes whole server to crash
+
 -In game tabs (all chat, game chat, VH, other stuff)
 
 
 Done: 
 -two tabs logged into same account
+-Sometimes when a single player in the room refreshes, causes whole server to crash

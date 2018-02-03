@@ -230,6 +230,11 @@ module.exports = function(host_, roomId_){
 				avatarImgRes: this.sockets[i].request.user.avatarImgRes,
 				avatarImgSpy: this.sockets[i].request.user.avatarImgSpy
 			}
+
+			//give the host the teamLeader star
+			if(array[i].username === this.host){
+				array[i].teamLeader = true;
+			}
 		}
 		return array;
 	};
