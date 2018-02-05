@@ -1,5 +1,5 @@
 * {
-	outline: 1px solid red;
+	/*outline: 1px solid red;*/
 }
 
 
@@ -93,19 +93,20 @@ html, body{
 .room-container {
 	height: 40%;
 	/*background-color: purple;*/
+	position: relative;
 }
 
 .game-container{
 	/*height: is already set in the container at 90%*/
 	height: 90%;
-	width: 75%;
+	/*width: 75%;*/
 }
 
 #mainRoomBox {
 	height: 100%;
 	width: 100%;
 	/*position: absolute;*/
-	position: relative;	
+	/*position: relative;	*/
 
 	border: solid 1px black;
 
@@ -177,9 +178,54 @@ html, body{
 }
 
 .game-buttons-div button {
-	margin: 0 5px 0 5px;
+	margin: 0 15px 0 15px;
 }
 
 .center-div {
 	text-align: center;
 }
+
+#missionsBox {
+	/*text-align: center;*/
+	position: absolute;
+	/*margin: auto;*/
+	left: 50%;
+	top: 50%;
+
+	transform: translateX(-50%);
+
+
+
+}
+
+.missionBox {
+	width: 30px;
+	height: 30px;
+	border: 1px solid black;
+	border-radius: 5px;
+	float: left;
+	margin-left: 3px;
+	margin-right: 3px;
+	/*position: absolute;*/
+
+}
+
+.pickBox {
+	width: 20px;
+	height: 20px;
+	border: 1px solid black;
+	border-radius: 15px;
+	float: left;
+	margin-left: 3px;
+	margin-right: 3px;
+	/*position: absolute;*/
+}
+
+.row {
+	width: 100%;
+	margin: 5px;
+
+	display: flex;
+	justify-content: space-around;
+}
+

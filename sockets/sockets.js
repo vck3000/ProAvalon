@@ -106,26 +106,16 @@ module.exports = function(io){
 		//when a new room is created
 		//INCOMPLETE
 		socket.on("newRoom", function(){
-			//create new room
-			// rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId);
-			
 			rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId);
-			console.log(avalonRoom);
-			console.log(rooms[nextRoomId]);
-
 			console.log("new room request");
-
 			//broadcast to all chat
 			var str =  "Room " + nextRoomId + " has been created! Go join!";
 			console.log(str);
-			// console.log(rooms);
+
 			//send to allChat including the host of the game
 			io.in("allChat").emit("new-game-created", str);
 			//send back room id to host so they can auto connect
 			socket.emit("auto-join-room-id", nextRoomId);
-
-			//sending to individual socketid (private message)
-  			//socket.to(<socketid>).emit('hey', 'I just met you');
 
   			//increment index for next game
   			nextRoomId++;
@@ -140,14 +130,6 @@ module.exports = function(io){
 			
 			//if the room exists
 			if(rooms[roomId]){
-				//if the game hasn't started yet
-				//then add them to the game
-
-				//get an array of the users in the game
-				//just in case that the person joining left mid-game
-				//earlier
-				usernamesInGame = rooms[roomId].getUsernamesInGame();
-				
 				//if the room has not started yet, throw them into the room
 				console.log("Game status is: " + rooms[roomId].getStatus());
 				if(rooms[roomId].getStatus() === "Waiting!"){
@@ -169,6 +151,7 @@ module.exports = function(io){
 
 				//if the game has started, and the user who is joining
 				//is part of the game, give them the data of the game again
+				usernamesInGame = rooms[roomId].getUsernamesInGame();
 				if(usernamesInGame.indexOf(socket.request.user.username) !== -1){
 					distributeGameData(socket, io);
 				}
@@ -189,42 +172,31 @@ module.exports = function(io){
 		});
 
 		socket.on("startGame", function(){
-			console.log("STARTING GAME SEQUENCE");
-
-			if(rooms[socket.request.user.inRoomId].getStatus() === "Game started!"){
-				console.log("Game has already started, can't start game again");
-				return;
-			}
-
 			//start the game
 			if(socket.request.user.inRoomId && socket.request.user.username === rooms[socket.request.user.inRoomId].getHost()){
-				rooms[socket.request.user.inRoomId].startGame();	
+				if(rooms[socket.request.user.inRoomId].startGame() === true){
+					distributeGameData(socket, io);
+				}
 			} else{
 				console.log("Room doesn't exist or user is not host, cannot start game");
+				socket.emit("danger-alert", "You are not the host. You cannot start the game.")
 				return;
 			}
-
-			distributeGameData(socket, io);
-
 		});
 	});
 }
 
 function distributeGameData(socket, io){
 	//distribute roles to each player
-	var playerRoles = rooms[socket.request.user.inRoomId].getPlayerRoles();
-	console.log(playerRoles);
 
-	for(var i = 0; i < playerRoles.length; i++){
-		//Prepare the data object
-		var data = {
-			role: playerRoles[i].role,
-			see: playerRoles[i].see,
-			teamLeader: playerRoles[i].teamLeader
-		}
+	var gameData = rooms[socket.request.user.inRoomId].getGameData();
+
+
+	for(var i = 0; i < Object.keys(gameData).length; i++){
 		//send to each individual player
-		io.to(playerRoles[i].socketId).emit("game-data", data);
-		console.log("Player " + playerRoles[i].username + " has been given role: " + playerRoles[i].role);
+		io.to(gameData[i].socketId).emit("game-data", gameData[i]);
+		console.log(gameData[i]);
+		console.log("Player " + gameData[i].username + " has been given role: " + gameData[i].role);
 	}
 }
 

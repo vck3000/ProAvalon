@@ -44,6 +44,7 @@ document.querySelector("#backButton").addEventListener("click", function(){
     //reset all the variables
     storeData = [];
     seeData = [];
+    gameData = [];
     roomId = undefined; 
     gameStarted = false;
     //note do not reset our own username.
@@ -311,13 +312,20 @@ socket.on("game-data", function(data){
     if(data){
         console.log("game starting!");
 
-        console.log(data);   
-        seeData = data; 
+        console.log(data);
+        // seeData = data; 
+        gameData = data;
 
         gameStarted = true;
 
         drawPlayers(storeData);
     } 
+});
+
+socket.on("update-status-message", function(data){
+    if(data){
+        $("#status").textContent = data;
+    }
 });
 
 //======================================
@@ -339,11 +347,13 @@ function drawPlayers(data){
         if(gameStarted === true){
             //draw the players according to what the client sees (their role sees)
             for(var i = 0 ; i < numPlayers; i++){
+
                 console.log("draw");
+                console.log("DATA: " + data);
 
                 //check if the user is on the spy list. 
                 //if they are not, they are res
-                if(seeData.see.spies && seeData.see.spies.indexOf(data[i].username) === -1){
+                if(gameData.see.spies && gameData.see.spies.indexOf(data[i].username) === -1){
                     str = str + strOfAvatar(data[i], "res");
                 } 
                 //else they are a spy
@@ -417,12 +427,27 @@ function drawPlayers(data){
                     $("#mainRoomBox div")[0].innerHTML = str;
                 }
             }
-        }
+            else {
+                // var i = getUsernameIndex(gameData.teamLeader);
+                // //set the div string and add the star
+                // var str = $("#mainRoomBox div")[i].innerHTML;
+                // str = str + "<span><img src='leader.png' class='leaderStar'></span>";
 
-        var divs = $(".room-container #mainRoomBox div");
-        for(var i = 0; i < divs.length; i++){
+                // //update the str in the div
+                // $("#mainRoomBox div")[i].innerHTML = str;
+            }
         }
     }
+}
+
+function getUsernameIndex(username){
+    if(gameStarted === true){
+        return storeData.username.indexOf(username);
+    }
+    else{
+        return false;
+    }
+    
 }
 
 function strOfAvatar(playerData, alliance){
@@ -447,9 +472,9 @@ function strOfAvatar(playerData, alliance){
     if(gameStarted === true){
         //if rendering our own player, give it the role tag
         if(playerData.username === ownUsername){
-            role = seeData.role;
+            role = gameData.role;
         }
-        else if(seeData.see.merlins.indexOf(playerData.username) !== -1){
+        else if(gameData.see.merlins.indexOf(playerData.username) !== -1){
             role = "Merlin?";
         }  
     }
@@ -490,7 +515,7 @@ function generatePlayerLocations(numOfPlayers, a, b){
     for(var i = 0; i < numOfPlayers; i++){
         //get the coordinates. Note the +90 is to rotate so that
         //the first person is at the top of the screen
-        x_[i] = a*(Math.cos(toRadians((step*i) + 90)))*0.6;
+        x_[i] = a*(Math.cos(toRadians((step*i) + 90)))*0.85;
         y_[i] = b*(Math.sin(toRadians((step*i) + 90)))*0.6;
     }
 

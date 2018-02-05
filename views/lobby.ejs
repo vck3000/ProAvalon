@@ -47,13 +47,30 @@
 
 
 
-<div class="game-container inactive-window container">
+<div class="game-container inactive-window "> <!-- container -->
 	<button id="backButton" class="btn btn-warning">Back</button>
 	
 	<div class="room-container">
 		<div id="mainRoomBox" class="">
 			<p></p>
-		</div>	
+		</div>
+		<div id="missionsBox">
+			<div class="row">
+				<div class="missionBox"></div>
+				<div class="missionBox"></div>
+				<div class="missionBox"></div>
+				<div class="missionBox"></div>
+				<div class="missionBox"></div>
+			</div>
+
+			<div class="row">
+				<div class="pickBox"></div>
+				<div class="pickBox"></div>
+				<div class="pickBox"></div>
+				<div class="pickBox"></div>
+				<div class="pickBox"></div>
+			</div>
+		</div>
 	</div>
 	
 	
@@ -62,8 +79,8 @@
 		<button class="btn btn-success" id="start-button">Start!</button>
 	</div>
 
-	<div class="center-div well">
-			Need at least 5 players to start :P
+	<div class="center-div well" id="status">
+			Waiting for game to start... :P
 	</div>
 
 

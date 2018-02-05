@@ -1,5 +1,7 @@
 //avalon room object
 
+var util = require("util");
+
 var mongoose = require("mongoose");
 var User = require("../models/user");
 
@@ -35,26 +37,7 @@ var roles = [
 
 
 
-function getRandomInt(min, max) {
-	min = Math.ceil(min);
-	max = Math.floor(max);
- 	return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
- }
 
- function shuffle(array) {
- 	var currentIndex = array.length, temporaryValue, randomIndex;
- 	 // While there remain elements to shuffle...
- 	 while (0 !== currentIndex) {
-	    // Pick a remaining element...
-	    randomIndex = Math.floor(Math.random() * currentIndex);
-	    currentIndex -= 1;
-	    // And swap it with the current element.
-	    temporaryValue = array[currentIndex];
-	    array[currentIndex] = array[randomIndex];
-	    array[randomIndex] = temporaryValue;
-	}
-	return array;
-}
 
 
 module.exports = function(host_, roomId_){
@@ -66,14 +49,75 @@ module.exports = function(host_, roomId_){
 	this.destroyRoom = false;
 
 
+	this.teamLeader;
+	this.missionNum; 
+	this.pickNum;
+	this.gameHistory;
+
+	this.playersYetToVote;
+	this.approveRejectPhase;
+	this.proposedTeam;
+
 	//Just to know who is the current host.
 	this.host = host_;
 	this.roomId = roomId_;
 	this.sockets = [];
 
+	this.getStatusMessage = function(){
+
+	};
+
+	this.getGameData = function(){
+		//get the player roles first
+		console.log("Get game data called within avalonRoom");
+
+		var data = {};
+
+		var playerRoles = this.playersInGame;
+		console.log("Player roles: " + playerRoles);
+
+		console.log("player length: " + playerRoles.length);
+
+		//set up the object first, because we cannot pass an array through
+		//socket.io
+		for(var i = 0; i < playerRoles.length; i++){
+			data[i] = {
+				role: playerRoles[i].role,
+				see: playerRoles[i].see,
+				teamLeader: playerRoles[i].teamLeader,
+				username: playerRoles[i].username,
+				socketId: playerRoles[i].socketId
+			}
+		}
+
+		//add on these common variables
+		for(var i = 0; i < playerRoles.length; i++){
+			data[i].statusMessage = this.getStatusMessage();
+			data[i].missionNum = this.missionNum;
+			data[i].pickNum = this.pickNum;
+			data[i].gameHistory = this.gameHistory;
+			data[i].teamLeader = this.teamLeader;
+
+			data[i].playersYetToVote = this.playersYetToVote;
+			data[i].approveRejectPhase = this.approveRejectPhase;
+			data[i].proposedTeam = this.proposedTeam;
+
+			console.log(data[i]);
+
+		}
+
+		console.log("data: " + util.inspect(data, {depth: 4}));
+
+
+		return data;
+	};
+
+	
+
+
 	//start game
 	this.startGame = function(){
-		
+
 		if(this.sockets.length < 5){
 			//NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
 			console.log("Not enough players.");
@@ -83,10 +127,11 @@ module.exports = function(host_, roomId_){
 			return false;
 		}
 
+		//get a random starting team leader
+		teamLeader = getRandomInt(0,this.sockets.length);
 
 		//make game started after the checks for game already started
 		this.gameStarted = true;
-
 
 		var playersYetToInitialise = [];
 		var rolesAssignment = [];
@@ -103,7 +148,7 @@ module.exports = function(host_, roomId_){
 
 		//Now we initialise roles
 		for(var i = 0; i < this.sockets.length; i++){
-			this.playersInGame[i] = [];
+			this.playersInGame[i] = {};
 			this.playersInGame[i].username = this.sockets[i].request.user.username;
 			this.playersInGame[i].socketId = this.sockets[i].id;
 
@@ -121,6 +166,7 @@ module.exports = function(host_, roomId_){
 			this.playersInGame[i].see.spies = [];
 			this.playersInGame[i].see.merlins = [];
 
+			//give the respective role their data/info
 			if(this.playersInGame[i].role === "Merlin"){
 				this.playersInGame[i].see.spies = this.getSpies();
 			}
@@ -134,26 +180,19 @@ module.exports = function(host_, roomId_){
 				this.playersInGame[i].see.spies = this.getSpies();
 			} 
 			else if(this.playersInGame[i].role === "Resistance"){
-				this.playersInGame[i].see.spies = [];
 			}
 		}
-
-		
-
 		return true;
 	};
 
 	this.getSpies = function(){
-		console.log("get spies: " + this.gameStarted);
 		if(this.gameStarted === true){
 			var array = [];
 			for(var i = 0; i < this.playersInGame.length; i++){
 				if(this.playersInGame[i].role === "Morgana" || this.playersInGame[i].role === "Assassin" || this.playersInGame[i].role === "Spy"){
 					array.push(this.playersInGame[i].username);
-					// console.log(playersInGame[i].username + "IS A SPY AND IS BEING ADDED!");
 				}
 			}
-			// console.log("Array: " + array)
 			return array;
 		} else{
 			return false;
@@ -258,6 +297,7 @@ module.exports = function(host_, roomId_){
 	this.getPlayerRoles = function(){
 		if(this.gameStarted === true){
 			console.log("GET PLAYER ROLES TRUE");
+			console.log("Players in game: " + playerInGame);
 			return this.playersInGame;	
 		}
 		else {
@@ -269,7 +309,7 @@ module.exports = function(host_, roomId_){
 
 	this.getSockets = function(){
 		return this.sockets;
-	}
+	};
 
 	this.getHost = function(){
 		return this.host;
@@ -289,4 +329,28 @@ module.exports = function(host_, roomId_){
 		return this.roomId;
 	}
 
+
 };
+
+
+
+function getRandomInt(min, max) {
+	min = Math.ceil(min);
+	max = Math.floor(max);
+ 	return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+ }
+
+ function shuffle(array) {
+ 	var currentIndex = array.length, temporaryValue, randomIndex;
+ 	 // While there remain elements to shuffle...
+ 	 while (0 !== currentIndex) {
+	    // Pick a remaining element...
+	    randomIndex = Math.floor(Math.random() * currentIndex);
+	    currentIndex -= 1;
+	    // And swap it with the current element.
+	    temporaryValue = array[currentIndex];
+	    array[currentIndex] = array[randomIndex];
+	    array[randomIndex] = temporaryValue;
+	}
+	return array;
+}
