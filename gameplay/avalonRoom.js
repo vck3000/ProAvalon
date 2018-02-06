@@ -27,6 +27,15 @@ var roles = [
 "Spy"
 ];
 
+var numPlayersOnMission = [
+["2","3","2","3","3"],
+["2","3","4","3","4"],
+["1","1","1","1","1"],
+["1","1","1","1","1"],
+["1","1","1","1","1"]
+
+]
+
 /*
 
 5p - fab 4 + vt
@@ -51,8 +60,10 @@ module.exports = function(host_, roomId_){
 
 	this.teamLeader;
 	this.missionNum; 
+	this.missionHistory;
 	this.pickNum;
 	this.gameHistory;
+
 
 	this.playersYetToVote;
 	this.approveRejectPhase;
@@ -94,6 +105,7 @@ module.exports = function(host_, roomId_){
 		for(var i = 0; i < playerRoles.length; i++){
 			data[i].statusMessage = this.getStatusMessage();
 			data[i].missionNum = this.missionNum;
+			data[i].missionHistory = this.missionHistory;
 			data[i].pickNum = this.pickNum;
 			data[i].gameHistory = this.gameHistory;
 			data[i].teamLeader = this.teamLeader;
@@ -101,6 +113,8 @@ module.exports = function(host_, roomId_){
 			data[i].playersYetToVote = this.playersYetToVote;
 			data[i].approveRejectPhase = this.approveRejectPhase;
 			data[i].proposedTeam = this.proposedTeam;
+
+			data[i].numPlayersOnMission = numPlayersOnMission[playerRoles.length]; //- 5
 
 			console.log(data[i]);
 
@@ -118,7 +132,7 @@ module.exports = function(host_, roomId_){
 	//start game
 	this.startGame = function(){
 
-		if(this.sockets.length < 5){
+		if(this.sockets.length < 1){
 			//NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
 			console.log("Not enough players.");
 			return false;
@@ -126,9 +140,6 @@ module.exports = function(host_, roomId_){
 			console.log("Game already started!");
 			return false;
 		}
-
-		//get a random starting team leader
-		teamLeader = getRandomInt(0,this.sockets.length);
 
 		//make game started after the checks for game already started
 		this.gameStarted = true;
@@ -182,6 +193,14 @@ module.exports = function(host_, roomId_){
 			else if(this.playersInGame[i].role === "Resistance"){
 			}
 		}
+
+		//set game start parameters
+		//get a random starting team leader
+		this.teamLeader = getRandomInt(0,this.sockets.length);
+		this.missionNum = 4; 
+		this.pickNum = 3;	
+		this.missionHistory = ["succeed", "fail", "fail"];
+
 		return true;
 	};
 

@@ -193,9 +193,6 @@ html, body{
 	top: 50%;
 
 	transform: translateX(-50%);
-
-
-
 }
 
 .missionBox {
@@ -208,6 +205,16 @@ html, body{
 	margin-right: 3px;
 	/*position: absolute;*/
 
+	text-align: center;
+}
+
+.missionBoxSucceed {
+	color: white;
+	background-color: green;
+}
+.missionBoxFail {
+	color: white;
+	background-color: red;
 }
 
 .pickBox {
@@ -219,6 +226,10 @@ html, body{
 	margin-left: 3px;
 	margin-right: 3px;
 	/*position: absolute;*/
+}
+
+.pickBoxFill {
+	background-color: black;
 }
 
 .row {

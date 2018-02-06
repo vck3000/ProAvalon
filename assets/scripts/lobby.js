@@ -4,14 +4,14 @@ console.log("started");
 //for the game (like players in game)
 var storeData;
 var seeData;
+var gameData;
 var roomId; 
 var gameStarted = false;
 var ownUsername = "";
-
 //window resize, repaint the users
 window.addEventListener('resize', function(){
     console.log("Resized");
-    drawPlayers(storeData);
+    draw(storeData);
 }); 
 
 
@@ -302,7 +302,7 @@ socket.on("update-room-players", function(data){
     console.log("update room players");
     console.log(data);
 
-    drawPlayers(data);
+    draw(data);
 });
 
 //======================================
@@ -318,7 +318,7 @@ socket.on("game-data", function(data){
 
         gameStarted = true;
 
-        drawPlayers(storeData);
+        draw(storeData);
     } 
 });
 
@@ -331,8 +331,8 @@ socket.on("update-status-message", function(data){
 //======================================
 //FUNCTIONS
 //======================================
-function drawPlayers(data){
-    console.log("drawPlayers called");
+function draw(data){
+    console.log("draw called");
 
     if(data){
         var w = $("#mainRoomBox").width();
@@ -349,7 +349,8 @@ function drawPlayers(data){
             for(var i = 0 ; i < numPlayers; i++){
 
                 console.log("draw");
-                console.log("DATA: " + data);
+                console.log("DATA: ");
+                console.log(data);
 
                 //check if the user is on the spy list. 
                 //if they are not, they are res
@@ -380,8 +381,10 @@ function drawPlayers(data){
         $("#mainRoomBox").html(str);
 
         //set the positions and sizes
+        console.log("numPlayers: " + numPlayers)
         var divs = document.querySelectorAll("#mainRoomBox div");
         for(var i = 0 ; i < numPlayers; i++){
+            console.log("player position: asdflaksdjf;lksjdf");
             var offsetX = w/2 ;
             var offsetY = h/2 ;
 
@@ -418,7 +421,6 @@ function drawPlayers(data){
                 //draw the team leader star in the specific div
                 if(i === 0){
                     console.log("test");
-
                     //set the div string and add the star
                     var str = $("#mainRoomBox div")[0].innerHTML;
                     str = str + "<span><img src='leader.png' class='leaderStar'></span>";
@@ -427,22 +429,59 @@ function drawPlayers(data){
                     $("#mainRoomBox div")[0].innerHTML = str;
                 }
             }
-            else {
-                // var i = getUsernameIndex(gameData.teamLeader);
-                // //set the div string and add the star
-                // var str = $("#mainRoomBox div")[i].innerHTML;
-                // str = str + "<span><img src='leader.png' class='leaderStar'></span>";
+            // else {
+            //     var playerIndex = getUsernameIndex(gameData.teamLeader);
+            //     if(i){
+            //         //set the div string and add the star
+            //         var str = $("#mainRoomBox div")[playerIndex].innerHTML;
+            //         str = str + "<span><img src='leader.png' class='leaderStar'></span>";
 
-                // //update the str in the div
-                // $("#mainRoomBox div")[i].innerHTML = str;
+            //         //update the str in the div
+            //         $("#mainRoomBox div")[playerIndex].innerHTML = str;
+            //     }
+            // }
+        }
+
+        if(gameStarted === true){
+            //draw missions and numPick
+            //j<5 because there are only 5 missions/picks each game
+            for(var j = 0; j < 5; j++){
+                //missions
+                var missionStatus = gameData.missionHistory[j];
+                if(missionStatus){
+                    if(missionStatus === "succeed"){
+                        document.querySelectorAll(".missionBox")[j].classList.toggle("missionBoxSucceed");
+                    } else{
+                        document.querySelectorAll(".missionBox")[j].classList.toggle("missionBoxFail");
+                    }
+                }
+
+                //draw in the number of players in each mission
+                var numPlayersOnMission = gameData.numPlayersOnMission[j];
+                if(numPlayersOnMission){
+                    document.querySelectorAll(".missionBox")[j].innerText = numPlayersOnMission;
+                }
+            }    
+
+            //picks
+            var pickStatus = gameData.pickNum;
+
+            for(var j = 0; j < pickStatus; j++){
+                document.querySelectorAll(".pickBox")[j].classList.toggle("pickBoxFill");
             }
         }
+
     }
 }
 
 function getUsernameIndex(username){
     if(gameStarted === true){
-        return storeData.username.indexOf(username);
+
+        for(var i = 0; i < storeData.length; i++){
+            if(storeData[i].username === username){
+                return i;
+            }
+        }
     }
     else{
         return false;
