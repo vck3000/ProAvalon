@@ -47,6 +47,7 @@ document.querySelector("#backButton").addEventListener("click", function(){
     gameData = [];
     roomId = undefined; 
     gameStarted = false;
+    numPlayersOnMission = [];
     //note do not reset our own username.
 
     //reset room-chat 
@@ -415,32 +416,24 @@ function draw(data){
                 this.classList.toggle("highlight-avatar");
             });
 
-
-            //team leader star part!
-            if(gameStarted === false){
-                //draw the team leader star in the specific div
-                if(i === 0){
-                    console.log("test");
-                    //set the div string and add the star
-                    var str = $("#mainRoomBox div")[0].innerHTML;
-                    str = str + "<span><img src='leader.png' class='leaderStar'></span>";
-
-                    //update the str in the div
-                    $("#mainRoomBox div")[0].innerHTML = str;
-                }
-            }
-            // else {
-            //     var playerIndex = getUsernameIndex(gameData.teamLeader);
-            //     if(i){
-            //         //set the div string and add the star
-            //         var str = $("#mainRoomBox div")[playerIndex].innerHTML;
-            //         str = str + "<span><img src='leader.png' class='leaderStar'></span>";
-
-            //         //update the str in the div
-            //         $("#mainRoomBox div")[playerIndex].innerHTML = str;
-            //     }
-            // }
         }
+
+        //team leader star part!
+        var playerIndex;
+        if(gameStarted === false){
+            playerIndex = 0;
+        } else {
+            playerIndex = gameData.teamLeader;
+        }
+
+        //set the div string and add the star
+        var str = $("#mainRoomBox div")[playerIndex].innerHTML;
+        str = str + "<span><img src='leader.png' class='leaderStar'></span>";
+
+        //update the str in the div
+        $("#mainRoomBox div")[playerIndex].innerHTML = str;
+
+
 
         if(gameStarted === true){
             //draw missions and numPick
@@ -465,7 +458,6 @@ function draw(data){
 
             //picks
             var pickStatus = gameData.pickNum;
-
             for(var j = 0; j < pickStatus; j++){
                 document.querySelectorAll(".pickBox")[j].classList.toggle("pickBoxFill");
             }
