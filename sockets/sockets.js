@@ -186,7 +186,9 @@ module.exports = function(io){
 		//when a player picks a team
 		socket.on("pickedTeam", function(data){
 			rooms[socket.request.user.inRoomId].playerPickTeam(socket, data);
+			distributeGameData(socket, io);
 		});
+		
 	});
 }
 

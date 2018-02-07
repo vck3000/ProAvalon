@@ -357,20 +357,26 @@ function draw(){
         if(gameStarted === true){
             drawMiddleBoxes();
 
-            if(gameData.votingPhase === false){
-                //Edit the status bar/well
-                document.querySelector("#status").innerText = gameData.statusMessage;
-                //default greyed out rn
-                enableDisableButtons();
+            //Edit the status bar/well
+            document.querySelector("#status").innerText = gameData.statusMessage;
 
-                //if we are the team leader---------------------------------------------
-                if(getIndexFromUsername(ownUsername) === gameData.teamLeader){
-                    teamLeaderSetup();              
-                }    
+            //default greyed out rn
+            enableDisableButtons();
+
+            if(gameData.votingPhase === true){
+                drawGuns();
             }
+
+            //if we are the team leader---------------------------------------------
+            if(getIndexFromUsername(ownUsername) === gameData.teamLeader){
+                teamLeaderSetup();              
+            }    
+
         }
     }
 }
+
+
 
 function teamLeaderSetup(){
     var numPlayersOnMission = gameData.numPlayersOnMission[gameData.missionNum-1];
@@ -494,6 +500,18 @@ function drawAndPositionAvatars(){
     }
 }
 
+function drawGuns(){
+
+    // gameData.propsedTeam
+    for(var i = 0; i < gameData.proposedTeam.length; i++){
+        //set the div string and add the gun
+        var str = $("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])].innerHTML;
+        str = str + "<span><img src='gun.png' class='gun'></span>";
+        //update the str in the div
+        $("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])].innerHTML = str;
+    }
+}
+
 function drawTeamLeaderStar(){
     //team leader star part!----------------------------------------------------
     var playerIndex;
@@ -522,8 +540,23 @@ function enableDisableButtonsLeader(numPlayersOnMission){
     }
 }
 function enableDisableButtons(){
-    //default greyed out
-    document.querySelector("#green-button").classList.add("disabled");
+    //if we aren't in voting phase
+    if(gameData.votingPhase === false){
+        document.querySelector("#green-button").classList.add("disabled");
+        document.querySelector("#green-button").innerText = "Pick!";
+
+        document.querySelector("#red-button").classList.add("disabled");
+    } 
+
+    //if we are in voting phase
+    else{
+        document.querySelector("#green-button").classList.remove("disabled");
+        document.querySelector("#green-button").innerText = "Approve";
+
+        document.querySelector("#red-button").classList.remove("disabled");
+        document.querySelector("#red-button").innerText = "Reject";
+    }
+    
 }
 
 function countHighlightedAvatars(){

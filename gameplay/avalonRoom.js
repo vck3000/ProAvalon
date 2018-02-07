@@ -80,9 +80,13 @@ module.exports = function(host_, roomId_){
 			console.log("Team leader has picked: ");
 
 			var splitStr = pickedTeam.split(" ");
-			for(var i = 0; i < splitStr.length; i++){
+			for(var i = 0; i < splitStr.length-1; i++){
+				
 				console.log(splitStr[i] + " and ");
+
+				this.proposedTeam[i] = splitStr[i];
 			}
+			this.votingPhase = true;
 		}
 		else{
 			console.log("You are not the team leader, you cannot make a pick");

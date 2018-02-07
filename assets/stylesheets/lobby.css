@@ -140,6 +140,12 @@ html, body{
 	right: 0;
 	bottom: 0;
 }
+.gun {
+	z-index: 2;
+	position: absolute;
+	right: 0;
+	top: 50%;
+}
 
 .role-p	{
 	padding: 0;
