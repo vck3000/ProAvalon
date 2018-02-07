@@ -18,7 +18,7 @@ window.addEventListener('resize', function(){
 //======================================
 //BUTTON EVENT LISTENERS
 //======================================
-document.querySelector("#start-button").addEventListener("click", function(){
+document.querySelector("#green-button").addEventListener("click", function(){
     socket.emit("startGame", "");
 })
 
@@ -332,138 +332,190 @@ socket.on("update-status-message", function(data){
 //======================================
 //FUNCTIONS
 //======================================
-function draw(data){
+function draw(){
     console.log("draw called");
+    if(storeData){
+        drawAndPositionAvatars();
 
-    if(data){
-        var w = $("#mainRoomBox").width();
-        var h = $("#mainRoomBox").height();
-
-        var numPlayers = data.length;//3;
-        var playerLocations = generatePlayerLocations(numPlayers, w/2, h/2);
-
-        //generate the divs in the html
-        var str = "";
-        console.log("Game started: " + gameStarted);
-        if(gameStarted === true){
-            //draw the players according to what the client sees (their role sees)
-            for(var i = 0 ; i < numPlayers; i++){
-
-                console.log("draw");
-                console.log("DATA: ");
-                console.log(data);
-
-                //check if the user is on the spy list. 
-                //if they are not, they are res
-                if(gameData.see.spies && gameData.see.spies.indexOf(data[i].username) === -1){
-                    str = str + strOfAvatar(data[i], "res");
-                } 
-                //else they are a spy
-                else{
-                    str = str + strOfAvatar(data[i], "spy");
-                }
-            }    
-        } 
-        //when game has not yet started, everyone is a res image
-        else{
-            for(var i = 0 ; i < numPlayers; i++){
-                str = str + strOfAvatar(data[i], "res");
-            }  
-        }
-
-        // console.log(str);
-        
-        //draw the teamLeader star
-        // str = str + "<span><img src='leader.png' class='leaderStar'></span>";
-
-
-
-        //set the divs into the box
-        $("#mainRoomBox").html(str);
-
-        //set the positions and sizes
-        console.log("numPlayers: " + numPlayers)
-        var divs = document.querySelectorAll("#mainRoomBox div");
-        for(var i = 0 ; i < numPlayers; i++){
-            console.log("player position: asdflaksdjf;lksjdf");
-            var offsetX = w/2 ;
-            var offsetY = h/2 ;
-
-            var strX = playerLocations.x[i] + offsetX + "px";
-            var strY = playerLocations.y[i] + offsetY + "px";
-
-            divs[i].style.left = strX;
-            divs[i].style.bottom = strY;
-
-
-            //size of the avatar img
-            divs[i].style.width = 30 + "%";
-            divs[i].style.height = 30 + "%";
-
-            //get which one is smaller, width or height and then
-            //force square
-            if(divs[i].offsetWidth < divs[i].offsetHeight){
-                divs[i].style.height = divs[i].offsetWidth + "px";
-                // console.log("width smaller, make height smaller to square");
-            } else{
-                divs[i].style.width = divs[i].offsetHeight + "px";
-                // console.log("height smaller, make width smaller to square");
-            }
-
-            //add the event listeners for button press
-            divs[i].addEventListener("click", function(){
-                console.log("avatar pressed");
-                this.classList.toggle("highlight-avatar");
-            });
-
-        }
-
-        //team leader star part!
-        var playerIndex;
-        if(gameStarted === false){
-            playerIndex = 0;
-        } else {
-            playerIndex = gameData.teamLeader;
-        }
-
-        //set the div string and add the star
-        var str = $("#mainRoomBox div")[playerIndex].innerHTML;
-        str = str + "<span><img src='leader.png' class='leaderStar'></span>";
-
-        //update the str in the div
-        $("#mainRoomBox div")[playerIndex].innerHTML = str;
-
-
+        drawTeamLeaderStar();
 
         if(gameStarted === true){
-            //draw missions and numPick
-            //j<5 because there are only 5 missions/picks each game
-            for(var j = 0; j < 5; j++){
-                //missions
-                var missionStatus = gameData.missionHistory[j];
-                if(missionStatus){
-                    if(missionStatus === "succeed"){
-                        document.querySelectorAll(".missionBox")[j].classList.toggle("missionBoxSucceed");
-                    } else{
-                        document.querySelectorAll(".missionBox")[j].classList.toggle("missionBoxFail");
-                    }
-                }
+            drawMiddleBoxes();
 
-                //draw in the number of players in each mission
-                var numPlayersOnMission = gameData.numPlayersOnMission[j];
-                if(numPlayersOnMission){
-                    document.querySelectorAll(".missionBox")[j].innerText = numPlayersOnMission;
-                }
-            }    
+            //Edit the status bar/well
+            document.querySelector("#status").innerText = gameData.statusMessage;
+            //default greyed out rn
+            enableDisableButtons();
 
-            //picks
-            var pickStatus = gameData.pickNum;
-            for(var j = 0; j < pickStatus; j++){
-                document.querySelectorAll(".pickBox")[j].classList.toggle("pickBoxFill");
+            //if we are the team leader---------------------------------------------
+            if(getUsernameIndex(ownUsername) === gameData.teamLeader){
+                teamLeaderSetup();              
             }
         }
-
     }
+}
+
+function teamLeaderSetup(){
+    var numPlayersOnMission = gameData.numPlayersOnMission[gameData.missionNum-1];
+
+    //edit the well to show how many people to pick.
+    document.querySelector("#status").innerText = "Your turn to pick a team! Pick " + numPlayersOnMission +" players!";
+
+    var divs = document.querySelectorAll("#mainRoomBox div");
+    //add the event listeners for button press
+    for(var i = 0; i < divs.length; i++){
+        divs[i].addEventListener("click", function(){
+            console.log("avatar pressed");
+            //toggle the highlight class
+            this.classList.toggle("highlight-avatar");
+            //change the pick team button to enabled/disabled
+            enableDisableButtonsLeader();
+        });    
+    }  
+}
+
+function drawMiddleBoxes(){
+    //draw missions and numPick
+    //j<5 because there are only 5 missions/picks each game
+    for(var j = 0; j < 5; j++){
+        //missions
+        var missionStatus = gameData.missionHistory[j];
+        if(missionStatus){
+            if(missionStatus === "succeed"){
+                document.querySelectorAll(".missionBox")[j].classList.toggle("missionBoxSucceed");
+            } else{
+                document.querySelectorAll(".missionBox")[j].classList.toggle("missionBoxFail");
+            }
+        }
+
+        //draw in the number of players in each mission
+        var numPlayersOnMission = gameData.numPlayersOnMission[j];
+        if(numPlayersOnMission){
+            document.querySelectorAll(".missionBox")[j].innerText = numPlayersOnMission;
+        }
+    }    
+
+    //picks boxes
+    var pickStatus = gameData.pickNum;
+    for(var j = 0; j < pickStatus; j++){
+        document.querySelectorAll(".pickBox")[j].classList.toggle("pickBoxFill");
+    }
+}
+
+
+function drawAndPositionAvatars(){
+    var w = $("#mainRoomBox").width();
+    var h = $("#mainRoomBox").height();
+
+    var numPlayers = storeData.length;//3;
+    var playerLocations = generatePlayerLocations(numPlayers, w/2, h/2);
+
+    //generate the divs in the html
+    var str = "";
+    console.log("Game started: " + gameStarted);
+    if(gameStarted === true){
+        //draw the players according to what the client sees (their role sees)
+        for(var i = 0 ; i < numPlayers; i++){
+
+            console.log("draw");
+            console.log("storeData: ");
+            console.log(storeData);
+
+            //check if the user is on the spy list. 
+            //if they are not, they are res
+            if(gameData.see.spies && gameData.see.spies.indexOf(storeData[i].username) === -1){
+                str = str + strOfAvatar(storeData[i], "res");
+            } 
+            //else they are a spy
+            else{
+                str = str + strOfAvatar(storeData[i], "spy");
+            }
+        }    
+    } 
+    //when game has not yet started, everyone is a res image
+    else{
+        for(var i = 0 ; i < numPlayers; i++){
+            str = str + strOfAvatar(storeData[i], "res");
+        }  
+    }
+
+    //set the divs into the box
+    $("#mainRoomBox").html(str);
+    
+
+    //===============================================
+    //POSITIONING SECTION
+    //===============================================
+    
+    //set the positions and sizes
+    console.log("numPlayers: " + numPlayers)
+    var divs = document.querySelectorAll("#mainRoomBox div");
+    for(var i = 0 ; i < numPlayers; i++){
+        console.log("player position: asdflaksdjf;lksjdf");
+        var offsetX = w/2 ;
+        var offsetY = h/2 ;
+
+        var strX = playerLocations.x[i] + offsetX + "px";
+        var strY = playerLocations.y[i] + offsetY + "px";
+
+        divs[i].style.left = strX;
+        divs[i].style.bottom = strY;
+
+        //size of the avatar img
+        divs[i].style.width = 30 + "%";
+        divs[i].style.height = 30 + "%";
+
+        //get which one is smaller, width or height and then
+        //force square
+        if(divs[i].offsetWidth < divs[i].offsetHeight){
+            divs[i].style.height = divs[i].offsetWidth + "px";
+            // console.log("width smaller, make height smaller to square");
+        } else{
+            divs[i].style.width = divs[i].offsetHeight + "px";
+            // console.log("height smaller, make width smaller to square");
+        }
+    }
+}
+
+function drawTeamLeaderStar(){
+    //team leader star part!----------------------------------------------------
+    var playerIndex;
+    if(gameStarted === false){
+        playerIndex = 0;
+    } else {
+        playerIndex = gameData.teamLeader;
+    }
+    //set the div string and add the star
+    var str = $("#mainRoomBox div")[playerIndex].innerHTML;
+    str = str + "<span><img src='leader.png' class='leaderStar'></span>";
+    //update the str in the div
+    $("#mainRoomBox div")[playerIndex].innerHTML = str;
+    //team leader star part!----------------------------------------------------
+}
+
+function enableDisableButtonsLeader(){
+    //if they've selected the right number of players, then allow them to send
+    if(countHighlightedAvatars == numPlayersOnMission){
+        document.querySelector("#green-button").classList.remove("disabled");
+    }
+    else{
+        document.querySelector("#green-button").classList.add("disabled");
+    }
+}
+function enableDisableButtons(){
+    //default greyed out
+    document.querySelector("#green-button").classList.add("disabled");
+}
+
+function countHighlightedAvatars(){
+    var divs = document.querySelectorAll("#mainRoomBox div");
+    var count = 0;
+    for(var i = 0; i < divs.length; i++){
+        if(divs[i].classList.contains("highlight-avatar") === true){
+            count++;
+        }
+    }
+    return count;
 }
 
 function getUsernameIndex(username){
@@ -478,7 +530,6 @@ function getUsernameIndex(username){
     else{
         return false;
     }
-    
 }
 
 function strOfAvatar(playerData, alliance){
@@ -498,7 +549,6 @@ function strOfAvatar(playerData, alliance){
         }
     }
 
-
     var role = ""; 
     if(gameStarted === true){
         //if rendering our own player, give it the role tag
@@ -509,8 +559,6 @@ function strOfAvatar(playerData, alliance){
             role = "Merlin?";
         }  
     }
-
-
     return "<div><img class='avatarImgInRoom' src='" + picLink + "'><p class='username-p'>" + playerData.username + " </p><p class='role-p'>" + role + "</p></div>";    
 }
 
@@ -519,13 +567,9 @@ function strOfAvatar(playerData, alliance){
 function changeView(){
     $(".lobby-container").toggleClass("inactive-window");
     $(".game-container").toggleClass("inactive-window");
-
 }
 
 function scrollDown(){
-    //scroll down
-    // console.log($(".chat-window"));
-
     var chatWindows = $(".chat-window");
 
     for(var i = 0; i < chatWindows.length; i++){

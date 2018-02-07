@@ -58,16 +58,16 @@ module.exports = function(host_, roomId_){
 	this.destroyRoom = false;
 
 
-	this.teamLeader;
-	this.missionNum; 
-	this.missionHistory;
-	this.pickNum;
-	this.gameHistory;
+	this.teamLeader = 0;
+	this.missionNum = 0; 
+	this.missionHistory = [];
+	this.pickNum = 0;
+	this.gameHistory = [];
 
 
-	this.playersYetToVote;
-	this.approveRejectPhase;
-	this.proposedTeam;
+	this.playersYetToVote = [];
+	this.votingPhase = false;
+	this.proposedTeam = [];
 
 	//Just to know who is the current host.
 	this.host = host_;
@@ -75,7 +75,13 @@ module.exports = function(host_, roomId_){
 	this.sockets = [];
 
 	this.getStatusMessage = function(){
-
+		if(this.votingPhase === false){
+			var str = "Waiting on " + this.playersInGame[this.teamLeader].username + " to pick.";
+			return str;
+		} else{
+			var str = "Voting phase";
+			return str;
+		}
 	};
 
 	this.getGameData = function(){
@@ -114,7 +120,7 @@ module.exports = function(host_, roomId_){
 			data[i].approveRejectPhase = this.approveRejectPhase;
 			data[i].proposedTeam = this.proposedTeam;
 
-			data[i].numPlayersOnMission = numPlayersOnMission[playerRoles.length]; //- 5
+			data[i].numPlayersOnMission = numPlayersOnMission[playerRoles.length - 5]; //- 5
 
 			console.log(data[i]);
 
@@ -132,7 +138,7 @@ module.exports = function(host_, roomId_){
 	//start game
 	this.startGame = function(){
 
-		if(this.sockets.length < 1){
+		if(this.sockets.length < 5){
 			//NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
 			console.log("Not enough players.");
 			return false;
