@@ -106,8 +106,6 @@ module.exports = function(host_, roomId_){
 			this.votingPhase = false;
 			var outcome = calcVotes(this.votes);
 
-			
-			
 			this.proposedTeam = [];
 
 			this.pickNum++;
@@ -125,6 +123,10 @@ module.exports = function(host_, roomId_){
 	}
 
 	this.playerPickTeam = function(socket, pickedTeam){
+		//reset the votes:
+		this.votes = [];
+
+		//if the person who submitted the pick team is the team leader of the time, allow and go ahead
 		if(getIndexFromUsername(this.sockets, socket.request.user.username) === this.teamLeader){
 			console.log("Team leader has picked: ");
 
@@ -191,6 +193,8 @@ module.exports = function(host_, roomId_){
 			data[i].proposedTeam = this.proposedTeam;
 
 			data[i].numPlayersOnMission = numPlayersOnMission[playerRoles.length - 5]; //- 5
+
+			data[i].votes = this.votes;
 
 			// console.log(data[i]);
 

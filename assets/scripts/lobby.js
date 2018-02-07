@@ -381,6 +381,14 @@ function draw(){
             if(gameData.votingPhase === false){
                 //give it the default status message
                 document.querySelector("#status").innerText = gameData.statusMessage;    
+                
+                //draw the votes if there are any to show
+                if(gameData.votes !== []){
+                    drawVotes();
+                }
+                else{
+                    eraseVotes();
+                }
             }
             else{
                 //show the remaining players who haven't voted
@@ -403,7 +411,22 @@ function draw(){
     }
 }
 
+function eraseVotes(){
+    var divs = document.querySelectorAll("#mainRoomBox div");
 
+    for(var i = 0; i < divs.length; i++){
+        document.querySelectorAll("#mainRoomBox div")[i].classList.remove("approve");
+        document.querySelectorAll("#mainRoomBox div")[i].classList.remove("reject");
+    }  
+}
+
+function drawVotes(){
+    var divs = document.querySelectorAll("#mainRoomBox div");
+
+    for(var i = 0; i < divs.length; i++){
+        document.querySelectorAll("#mainRoomBox div")[i].classList.add(gameData.votes[i]);
+    }  
+}
 
 function teamLeaderSetup(votingPhase){
     var numPlayersOnMission = gameData.numPlayersOnMission[gameData.missionNum-1];
