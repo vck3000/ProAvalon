@@ -59,6 +59,7 @@ module.exports = function(host_, roomId_){
 
 
 	this.teamLeader = 0;
+	this.hammer = 0;
 	this.missionNum = 0; 
 	this.missionHistory = [];
 	this.pickNum = 0;
@@ -173,7 +174,6 @@ module.exports = function(host_, roomId_){
 			data[i] = {
 				role: playerRoles[i].role,
 				see: playerRoles[i].see,
-				teamLeader: playerRoles[i].teamLeader,
 				username: playerRoles[i].username,
 				socketId: playerRoles[i].socketId
 			}
@@ -187,6 +187,7 @@ module.exports = function(host_, roomId_){
 			data[i].pickNum = this.pickNum;
 			data[i].gameHistory = this.gameHistory;
 			data[i].teamLeader = this.teamLeader;
+			data[i].hammer = this.hammer;
 
 			data[i].playersYetToVote = this.playersYetToVote;
 			data[i].votingPhase = this.votingPhase;
@@ -195,6 +196,7 @@ module.exports = function(host_, roomId_){
 			data[i].numPlayersOnMission = numPlayersOnMission[playerRoles.length - 5]; //- 5
 
 			data[i].votes = this.votes;
+			data[i].hammer = this.hammer;
 
 			// console.log(data[i]);
 
@@ -276,6 +278,8 @@ module.exports = function(host_, roomId_){
 		//set game start parameters
 		//get a random starting team leader
 		this.teamLeader = getRandomInt(0,this.sockets.length);
+		this.hammer = ((this.teamLeader - 5 + this.sockets.length) % this.sockets.length);
+
 		this.missionNum = 4; 
 		this.pickNum = 3;	
 		this.missionHistory = ["succeed", "fail", "fail"];

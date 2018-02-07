@@ -662,10 +662,10 @@ function getIndexFromUsername(username){
 }
 
 function getUsernameFromIndex(index){
-    if(gameStarted === true){
+    if(storeData[index]){
         return storeData[index].username;
     }
-    else{
+    else {
         return false;
     }
 }
@@ -687,6 +687,7 @@ function strOfAvatar(playerData, alliance){
         }
     }
 
+    //add in the role of the player, and the percy info
     var role = ""; 
     if(gameStarted === true){
         //if rendering our own player, give it the role tag
@@ -697,7 +698,22 @@ function strOfAvatar(playerData, alliance){
             role = "Merlin?";
         }  
     }
-    return "<div><img class='avatarImgInRoom' src='" + picLink + "'><p class='username-p'>" + playerData.username + " </p><p class='role-p'>" + role + "</p></div>";    
+
+    //add in the hammer star
+    var hammerStar = "";
+    if(gameStarted === false){
+        //give hammer star to the host
+        if(playerData.username === getUsernameFromIndex(0)){
+            hammerStar = "<span class='glyphicon glyphicon-star-empty'></span>";
+        }
+    }
+    else{
+        if(playerData.username === getUsernameFromIndex(gameData.hammer)){
+            hammerStar = "<span class='glyphicon glyphicon-star-empty'></span>";
+        }
+    }
+
+    return "<div><img class='avatarImgInRoom' src='" + picLink + "'><p class='username-p'>" + playerData.username + " " + hammerStar + " </p><p class='role-p'>" + role + "</p></div>";    
 }
 
 

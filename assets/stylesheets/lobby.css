@@ -9,6 +9,11 @@ html, body{
 	/*overflow: hidden;*/
 }
 
+p {
+	margin: 0;
+	padding: 0;
+}
+
 
 
 .lobby-container {
