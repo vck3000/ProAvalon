@@ -19,6 +19,7 @@ window.addEventListener('resize', function(){
 //BUTTON EVENT LISTENERS
 //======================================
 document.querySelector("#green-button").addEventListener("click", greenButtonFunction);
+document.querySelector("#red-button").addEventListener("click", redButtonFunction);
 
 //new ROOM CODE
 document.querySelector("#testLink").addEventListener("click", function(){
@@ -330,18 +331,30 @@ socket.on("update-status-message", function(data){
 //======================================
 //FUNCTIONS
 //======================================
-function greenButtonFunction(){
+function redButtonFunction() {
+    console.log("Voted reject");
+    socket.emit("vote", "reject");
+}
+
+function greenButtonFunction() {
     //if button is not disabled: 
     if(document.querySelector("#green-button").classList.contains("disabled") === false){
         if(gameStarted === false){
             socket.emit("startGame", "");
         }   
         else{
-            console.log("Picked team: asdf");
+            if(gameData.votingPhase === false){
+                console.log("Picked team: asdf");
 
-            var str = getHighlightedAvatars();
-            console.log(str);
-            socket.emit("pickedTeam", str);
+                var str = getHighlightedAvatars();
+                console.log(str);
+                socket.emit("pickedTeam", str);    
+            }
+            else{
+                console.log("Voted approve");
+                socket.emit("vote", "approve");
+            }
+            
         } 
     }
 }
@@ -357,9 +370,6 @@ function draw(){
         if(gameStarted === true){
             drawMiddleBoxes();
 
-            //Edit the status bar/well
-            document.querySelector("#status").innerText = gameData.statusMessage;
-
             //default greyed out rn
             enableDisableButtons();
 
@@ -367,10 +377,27 @@ function draw(){
                 drawGuns();
             }
 
+            //Edit the status bar/well
+            if(gameData.votingPhase === false){
+                //give it the default status message
+                document.querySelector("#status").innerText = gameData.statusMessage;    
+            }
+            else{
+                //show the remaining players who haven't voted
+                var str = "Waiting for votes: ";
+                for(var i = 0; i < gameData.playersYetToVote.length; i++){
+                    str = str + gameData.playersYetToVote[i] + ", ";
+                }
+
+                document.querySelector("#status").innerText = str;      
+            }
+
             //if we are the team leader---------------------------------------------
             if(getIndexFromUsername(ownUsername) === gameData.teamLeader){
-                teamLeaderSetup();              
+                teamLeaderSetup(gameData.votingPhase);              
             }    
+
+            
 
         }
     }
@@ -378,11 +405,14 @@ function draw(){
 
 
 
-function teamLeaderSetup(){
+function teamLeaderSetup(votingPhase){
     var numPlayersOnMission = gameData.numPlayersOnMission[gameData.missionNum-1];
 
     //edit the well to show how many people to pick.
-    document.querySelector("#status").innerText = "Your turn to pick a team! Pick " + numPlayersOnMission +" players!";
+    if(votingPhase === false){
+        document.querySelector("#status").innerText = "Your turn to pick a team! Pick " + numPlayersOnMission +" players!";    
+    }
+    
 
     var divs = document.querySelectorAll("#mainRoomBox div");
     //add the event listeners for button press
@@ -405,9 +435,11 @@ function drawMiddleBoxes(){
         var missionStatus = gameData.missionHistory[j];
         if(missionStatus){
             if(missionStatus === "succeed"){
-                document.querySelectorAll(".missionBox")[j].classList.toggle("missionBoxSucceed");
+                document.querySelectorAll(".missionBox")[j].classList.add("missionBoxSucceed");
+                document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxFail");
             } else{
-                document.querySelectorAll(".missionBox")[j].classList.toggle("missionBoxFail");
+                document.querySelectorAll(".missionBox")[j].classList.add("missionBoxFail");
+                document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxSucceed");
             }
         }
 
@@ -419,9 +451,15 @@ function drawMiddleBoxes(){
     }    
 
     //picks boxes
-    var pickStatus = gameData.pickNum;
-    for(var j = 0; j < pickStatus; j++){
-        document.querySelectorAll(".pickBox")[j].classList.toggle("pickBoxFill");
+    var pickNum = gameData.pickNum;
+    for(var j = 0; j < 5; j++){
+        if(j < pickNum){
+            document.querySelectorAll(".pickBox")[j].classList.add("pickBoxFill");    
+        }
+        else{
+            document.querySelectorAll(".pickBox")[j].classList.remove("pickBoxFill");       
+        }
+        
     }
 }
 

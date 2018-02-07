@@ -172,23 +172,35 @@ module.exports = function(io){
 
 		socket.on("startGame", function(){
 			//start the game
-			if(socket.request.user.inRoomId && socket.request.user.username === rooms[socket.request.user.inRoomId].getHost()){
-				if(rooms[socket.request.user.inRoomId].startGame() === true){
-					distributeGameData(socket, io);
+			if(rooms[socket.request.user.inRoomId]){
+				if(socket.request.user.inRoomId && socket.request.user.username === rooms[socket.request.user.inRoomId].getHost()){
+					if(rooms[socket.request.user.inRoomId].startGame() === true){
+						distributeGameData(socket, io);
+					}
+				} else{
+					console.log("Room doesn't exist or user is not host, cannot start game");
+					socket.emit("danger-alert", "You are not the host. You cannot start the game.")
+					return;
 				}
-			} else{
-				console.log("Room doesn't exist or user is not host, cannot start game");
-				socket.emit("danger-alert", "You are not the host. You cannot start the game.")
-				return;
 			}
 		});
 
 		//when a player picks a team
 		socket.on("pickedTeam", function(data){
-			rooms[socket.request.user.inRoomId].playerPickTeam(socket, data);
-			distributeGameData(socket, io);
+			if(rooms[socket.request.user.inRoomId]){
+				rooms[socket.request.user.inRoomId].playerPickTeam(socket, data);
+				distributeGameData(socket, io);
+			}
 		});
-		
+
+		socket.on("vote", function(data){
+			if(rooms[socket.request.user.inRoomId]){
+				rooms[socket.request.user.inRoomId].vote(socket, data);
+				distributeGameData(socket, io);	
+			}
+			
+		});
+
 	});
 }
 
@@ -201,8 +213,8 @@ function distributeGameData(socket, io){
 	for(var i = 0; i < Object.keys(gameData).length; i++){
 		//send to each individual player
 		io.to(gameData[i].socketId).emit("game-data", gameData[i]);
-		console.log(gameData[i]);
-		console.log("Player " + gameData[i].username + " has been given role: " + gameData[i].role);
+		// console.log(gameData[i]);
+		// console.log("Player " + gameData[i].username + " has been given role: " + gameData[i].role);
 	}
 }
 

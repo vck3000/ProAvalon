@@ -68,12 +68,61 @@ module.exports = function(host_, roomId_){
 	this.playersYetToVote = [];
 	this.votingPhase = false;
 	this.proposedTeam = [];
+	this.votes = [];
 
 	//Just to know who is the current host.
 	this.host = host_;
 	this.roomId = roomId_;
+	//NOTE this is the list of sockets of PLAYERS IN THE GAME
+	//not including spectators
 	this.sockets = [];
 
+	this.vote = function(socket, voteStr){
+		if(this.votingPhase === true){
+
+			var i = this.playersYetToVote.indexOf(socket.request.user.username);
+
+			//if this vote is coming from someone who hasn't voted yet
+			if(i !== -1){
+				if(voteStr === "approve"){
+					this.votes[getIndexFromUsername(this.sockets, socket.request.user.username)] = "approve";
+					console.log("received approve from " + socket.request.user.username);
+				}
+				else if(voteStr === "reject"){
+					this.votes[getIndexFromUsername(this.sockets, socket.request.user.username)] = "reject";
+					console.log("received reject from " + socket.request.user.username);
+				}	
+				this.playersYetToVote.splice(i, 1);	
+			}
+			else{
+				console.log("Player has already voted or is not in the game");
+			}
+		}
+
+		//if our votes array is the same length as the number of players, then we have
+		//all of our votes. proceed to next part of the game.
+		if(this.playersYetToVote.length === 0){
+
+			this.votingPhase = false;
+			var outcome = calcVotes(this.votes);
+
+			
+			
+			this.proposedTeam = [];
+
+			this.pickNum++;
+			if(this.pickNum > 5){
+				this.pickNum = 1;
+				this.missionNum++;
+			}
+			this.teamLeader--;
+			if(this.teamLeader < 0){
+				this.teamLeader = this.sockets.length - 1; 
+			}
+		}
+
+		console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, {depth: 2}));
+	}
 
 	this.playerPickTeam = function(socket, pickedTeam){
 		if(getIndexFromUsername(this.sockets, socket.request.user.username) === this.teamLeader){
@@ -87,6 +136,7 @@ module.exports = function(host_, roomId_){
 				this.proposedTeam[i] = splitStr[i];
 			}
 			this.votingPhase = true;
+			this.playersYetToVote = this.getUsernamesInGame();
 		}
 		else{
 			console.log("You are not the team leader, you cannot make a pick");
@@ -95,6 +145,7 @@ module.exports = function(host_, roomId_){
 
 	this.getStatusMessage = function(){
 		if(this.votingPhase === false){
+			console.log(this.teamLeader);
 			var str = "Waiting on " + this.playersInGame[this.teamLeader].username + " to pick.";
 			return str;
 		} else{
@@ -110,9 +161,9 @@ module.exports = function(host_, roomId_){
 		var data = {};
 
 		var playerRoles = this.playersInGame;
-		console.log("Player roles: " + playerRoles);
+		// console.log("Player roles: " + playerRoles);
 
-		console.log("player length: " + playerRoles.length);
+		// console.log("player length: " + playerRoles.length);
 
 		//set up the object first, because we cannot pass an array through
 		//socket.io
@@ -141,11 +192,11 @@ module.exports = function(host_, roomId_){
 
 			data[i].numPlayersOnMission = numPlayersOnMission[playerRoles.length - 5]; //- 5
 
-			console.log(data[i]);
+			// console.log(data[i]);
 
 		}
 
-		console.log("data: " + util.inspect(data, {depth: 4}));
+		// console.log("data: " + util.inspect(data, {depth: 4}));
 
 		return data;
 	};
@@ -373,6 +424,38 @@ module.exports = function(host_, roomId_){
 };
 
 
+function calcVotes(votes){
+	var numOfPlayers = votes.length;
+
+	var countApp = 0;
+	var countRej = 0;
+
+	var outcome;
+
+	for(var i = 0; i < numOfPlayers; i++){
+		if(votes[i] === "approve"){
+			console.log("app");
+			countApp++;
+		}
+		else if(votes[i] === "reject"){
+			console.log("rej");
+			countRej++;
+		}
+		else{
+			console.log("Bad vote: " + votes[i]);
+		}
+	}	
+
+	//calcuate the outcome
+	if(countApp > countRej){
+		outcome = "approved";
+	}
+	else{
+		outcome = "rejected";
+	}
+
+	return outcome;
+}
 
 function getRandomInt(min, max) {
 	min = Math.ceil(min);
