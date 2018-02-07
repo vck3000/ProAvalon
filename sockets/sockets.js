@@ -104,7 +104,6 @@ module.exports = function(io){
 
 
 		//when a new room is created
-		//INCOMPLETE
 		socket.on("newRoom", function(){
 			rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId);
 			console.log("new room request");
@@ -182,6 +181,11 @@ module.exports = function(io){
 				socket.emit("danger-alert", "You are not the host. You cannot start the game.")
 				return;
 			}
+		});
+
+		//when a player picks a team
+		socket.on("pickedTeam", function(data){
+			rooms[socket.request.user.inRoomId].playerPickTeam(socket, data);
 		});
 	});
 }

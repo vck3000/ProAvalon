@@ -18,9 +18,7 @@ window.addEventListener('resize', function(){
 //======================================
 //BUTTON EVENT LISTENERS
 //======================================
-document.querySelector("#green-button").addEventListener("click", function(){
-    socket.emit("startGame", "");
-})
+document.querySelector("#green-button").addEventListener("click", greenButtonFunction);
 
 //new ROOM CODE
 document.querySelector("#testLink").addEventListener("click", function(){
@@ -332,6 +330,23 @@ socket.on("update-status-message", function(data){
 //======================================
 //FUNCTIONS
 //======================================
+function greenButtonFunction(){
+    //if button is not disabled: 
+    if(document.querySelector("#green-button").classList.contains("disabled") === false){
+        if(gameStarted === false){
+            socket.emit("startGame", "");
+        }   
+        else{
+            console.log("Picked team: asdf");
+
+            var str = getHighlightedAvatars();
+            console.log(str);
+            socket.emit("pickedTeam", str);
+        } 
+    }
+}
+
+
 function draw(){
     console.log("draw called");
     if(storeData){
@@ -342,14 +357,16 @@ function draw(){
         if(gameStarted === true){
             drawMiddleBoxes();
 
-            //Edit the status bar/well
-            document.querySelector("#status").innerText = gameData.statusMessage;
-            //default greyed out rn
-            enableDisableButtons();
+            if(gameData.votingPhase === false){
+                //Edit the status bar/well
+                document.querySelector("#status").innerText = gameData.statusMessage;
+                //default greyed out rn
+                enableDisableButtons();
 
-            //if we are the team leader---------------------------------------------
-            if(getUsernameIndex(ownUsername) === gameData.teamLeader){
-                teamLeaderSetup();              
+                //if we are the team leader---------------------------------------------
+                if(getIndexFromUsername(ownUsername) === gameData.teamLeader){
+                    teamLeaderSetup();              
+                }    
             }
         }
     }
@@ -369,8 +386,8 @@ function teamLeaderSetup(){
             //toggle the highlight class
             this.classList.toggle("highlight-avatar");
             //change the pick team button to enabled/disabled
-            enableDisableButtonsLeader();
-        });    
+            enableDisableButtonsLeader(numPlayersOnMission);
+        });   
     }  
 }
 
@@ -493,9 +510,11 @@ function drawTeamLeaderStar(){
     //team leader star part!----------------------------------------------------
 }
 
-function enableDisableButtonsLeader(){
+function enableDisableButtonsLeader(numPlayersOnMission){
     //if they've selected the right number of players, then allow them to send
-    if(countHighlightedAvatars == numPlayersOnMission){
+    console.log("countHighlightedAvatars: " + countHighlightedAvatars());
+    console.log("numPlayersOnMission: " + numPlayersOnMission);
+    if(countHighlightedAvatars() == numPlayersOnMission){
         document.querySelector("#green-button").classList.remove("disabled");
     }
     else{
@@ -518,7 +537,23 @@ function countHighlightedAvatars(){
     return count;
 }
 
-function getUsernameIndex(username){
+function getHighlightedAvatars(){
+    var str = "";
+
+    var divs = document.querySelectorAll("#mainRoomBox div");
+
+    for(var i = 0; i < divs.length; i++){
+        if(divs[i].classList.contains("highlight-avatar") === true){
+            //we need to use getUsernameFromIndex otherwise
+            //we will get info from the individual player
+            //such as a percy seeing a merlin?.
+            str = str + getUsernameFromIndex(i) + " ";
+        }
+    }
+    return str;
+}
+
+function getIndexFromUsername(username){
     if(gameStarted === true){
 
         for(var i = 0; i < storeData.length; i++){
@@ -526,6 +561,15 @@ function getUsernameIndex(username){
                 return i;
             }
         }
+    }
+    else{
+        return false;
+    }
+}
+
+function getUsernameFromIndex(index){
+    if(gameStarted === true){
+        return storeData[index].username;
     }
     else{
         return false;

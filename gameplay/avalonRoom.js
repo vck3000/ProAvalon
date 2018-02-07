@@ -74,6 +74,21 @@ module.exports = function(host_, roomId_){
 	this.roomId = roomId_;
 	this.sockets = [];
 
+
+	this.playerPickTeam = function(socket, pickedTeam){
+		if(getIndexFromUsername(this.sockets, socket.request.user.username) === this.teamLeader){
+			console.log("Team leader has picked: ");
+
+			var splitStr = pickedTeam.split(" ");
+			for(var i = 0; i < splitStr.length; i++){
+				console.log(splitStr[i] + " and ");
+			}
+		}
+		else{
+			console.log("You are not the team leader, you cannot make a pick");
+		}
+	}
+
 	this.getStatusMessage = function(){
 		if(this.votingPhase === false){
 			var str = "Waiting on " + this.playersInGame[this.teamLeader].username + " to pick.";
@@ -117,7 +132,7 @@ module.exports = function(host_, roomId_){
 			data[i].teamLeader = this.teamLeader;
 
 			data[i].playersYetToVote = this.playersYetToVote;
-			data[i].approveRejectPhase = this.approveRejectPhase;
+			data[i].votingPhase = this.votingPhase;
 			data[i].proposedTeam = this.proposedTeam;
 
 			data[i].numPlayersOnMission = numPlayersOnMission[playerRoles.length - 5]; //- 5
@@ -127,7 +142,6 @@ module.exports = function(host_, roomId_){
 		}
 
 		console.log("data: " + util.inspect(data, {depth: 4}));
-
 
 		return data;
 	};
@@ -314,7 +328,6 @@ module.exports = function(host_, roomId_){
 		else{
 			return [];
 		}
-		
 	}
 
 	//This code stays only in the server,
@@ -353,8 +366,6 @@ module.exports = function(host_, roomId_){
 	this.getRoomId = function(){
 		return this.roomId;
 	}
-
-
 };
 
 
@@ -378,4 +389,12 @@ function getRandomInt(min, max) {
 	    array[randomIndex] = temporaryValue;
 	}
 	return array;
+}
+
+function getIndexFromUsername(sockets, username){
+	for(var i = 0; i < sockets.length; i++){
+		if(username === sockets[i].request.user.username){
+			return i;
+		}
+	}
 }
