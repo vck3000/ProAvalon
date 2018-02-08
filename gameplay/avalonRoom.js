@@ -70,6 +70,7 @@ module.exports = function(host_, roomId_){
 	// this.votingPhase = false;
 	this.proposedTeam = [];
 	this.votes = [];
+	this.missionVotes = [];
 
 	this.phase = "picking";
 
@@ -80,7 +81,74 @@ module.exports = function(host_, roomId_){
 	//not including spectators
 	this.sockets = [];
 
-	this.vote = function(socket, voteStr){
+	this.missionVote = function(socket, voteStr){
+		if(this.phase === "missionVoting"){
+
+			var i = this.playersYetToVote.indexOf(socket.request.user.username);
+
+			//if this vote is coming from someone who hasn't voted yet
+			if(i !== -1){
+				if(voteStr === "success"){
+					this.missionVotes[getIndexFromUsername(this.sockets, socket.request.user.username)] = "success";
+					console.log("received success from " + socket.request.user.username);
+				}
+				else if(voteStr === "fail"){
+					this.missionVotes[getIndexFromUsername(this.sockets, socket.request.user.username)] = "fail";
+					console.log("received fail from " + socket.request.user.username);
+				}	
+				else{
+					console.log("ERROR! Expected success or fail, got: " + voteStr);
+				}
+				//remove the player from players yet to vote
+				this.playersYetToVote.splice(i, 1);	
+			}
+			else{
+				console.log("Player has already voted or is not in the game");
+			}
+		}
+
+		//if our votes array is the same length as the number of players, then we have
+		//all of our votes. proceed to next part of the game.
+		if(this.playersYetToVote.length === 0){
+			var outcome = calcMissionVotes(this.missionVotes);
+
+			//this.proposedTeam = [];
+
+			// this.pickNum++;
+			//if team was approved, then reset pickNum
+			//and increment missionNum
+			if(outcome === "succeeded"){
+				this.phase = "picking";
+
+				// this.pickNum = 1;
+				// this.missionNum++;
+				// this.phase = "missionVoting";
+
+				// this.playersYetToVote = this.proposedTeam;
+			}
+			else if(outcome === "failed"){
+				//fail code
+			}
+			else{
+				console.log("ERROR, should be either succeeded or failed, instead got: " + outcome);
+			}
+
+			//move to next team Leader, and reset it back to the start if 
+			//we go into negative numbers
+			this.teamLeader--;
+			if(this.teamLeader < 0){
+				this.teamLeader = this.sockets.length - 1; 
+			}
+
+		}
+
+		console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, {depth: 2}));
+
+		//if we get all the votes in, then do this
+		this.proposedTeam = [];
+	}
+
+	this.pickVote = function(socket, voteStr){
 		if(this.phase === "voting"){
 
 			var i = this.playersYetToVote.indexOf(socket.request.user.username);
@@ -95,6 +163,10 @@ module.exports = function(host_, roomId_){
 					this.votes[getIndexFromUsername(this.sockets, socket.request.user.username)] = "reject";
 					console.log("received reject from " + socket.request.user.username);
 				}	
+				else{
+					console.log("ERROR! Expected approve or reject, got: " + voteStr);
+				}
+				//remove the player from players yet to vote
 				this.playersYetToVote.splice(i, 1);	
 			}
 			else{
@@ -105,22 +177,43 @@ module.exports = function(host_, roomId_){
 		//if our votes array is the same length as the number of players, then we have
 		//all of our votes. proceed to next part of the game.
 		if(this.playersYetToVote.length === 0){
-
-			//CHANGE THIS TO BE EITHER PICKING OR SUCCEED FAIL PHASE
-			this.phase = "picking";
 			var outcome = calcVotes(this.votes);
 
-			this.proposedTeam = [];
+			//this.proposedTeam = [];
 
 			this.pickNum++;
-			if(this.pickNum > 5){
+			//if team was approved, then reset pickNum
+			//and increment missionNum
+			if(outcome === "approved"){
 				this.pickNum = 1;
 				this.missionNum++;
+				this.phase = "missionVoting";
+
+				this.playersYetToVote = this.proposedTeam;
 			}
+			else if(this.pickNum > 5 && outcome === "rejected"){
+				console.log("--------------------------");
+				console.log("HAMMER REJECTED, GAME OVER");
+				console.log("HAMMER REJECTED, GAME OVER");
+				console.log("HAMMER REJECTED, GAME OVER");
+				console.log("HAMMER REJECTED, GAME OVER");
+				console.log("HAMMER REJECTED, GAME OVER");
+				console.log("--------------------------");
+				this.finished = true;
+				//still need to show to the players. the above only shows in the lobby	
+			}
+			else if(outcome === "rejected"){
+				this.phase = "picking";
+			}
+
+			//move to next team Leader, and reset it back to the start if 
+			//we go into negative numbers
 			this.teamLeader--;
 			if(this.teamLeader < 0){
 				this.teamLeader = this.sockets.length - 1; 
 			}
+
+			//CHANGE THIS TO BE EITHER PICKING OR SUCCEED FAIL PHASE
 		}
 
 		console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, {depth: 2}));

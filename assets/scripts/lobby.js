@@ -333,7 +333,7 @@ socket.on("update-status-message", function(data){
 //======================================
 function redButtonFunction() {
     console.log("Voted reject");
-    socket.emit("vote", "reject");
+    socket.emit("pickVote", "reject");
 }
 
 function greenButtonFunction() {
@@ -352,7 +352,7 @@ function greenButtonFunction() {
             }
             else if(gameData.phase === "voting"){
                 console.log("Voted approve");
-                socket.emit("vote", "approve");
+                socket.emit("pickVote", "approve");
             }
             
         } 
@@ -379,12 +379,8 @@ function draw(){
                 document.querySelector("#status").innerText = gameData.statusMessage;    
                 
                 //draw the votes if there are any to show
-                if(gameData.votes !== []){
-                    drawVotes();
-                }
-                else{
-                    eraseVotes();
-                }
+                drawVotes(gameData.votes);
+                
             }
             else if(gameData.phase === "voting"){
 
@@ -392,39 +388,50 @@ function draw(){
 
                 //show the remaining players who haven't voted
                 var str = "Waiting for votes: ";
+
                 for(var i = 0; i < gameData.playersYetToVote.length; i++){
                     str = str + gameData.playersYetToVote[i] + ", ";
                 }
 
                 document.querySelector("#status").innerText = str;      
             }
+            else if(gameData.phase === "missionVoting"){
+                //show the remaining players who haven't voted
+                var str = "Waiting for mision votes: ";
+
+                for(var i = 0; i < gameData.playersYetToVote.length; i++){
+                    str = str + gameData.playersYetToVote[i] + ", ";
+                }
+
+                document.querySelector("#status").innerText = str;     
+
+                drawGuns();
+                drawVotes(gameData.votes);
+            }
 
             //if we are the team leader---------------------------------------------
             if(getIndexFromUsername(ownUsername) === gameData.teamLeader){
                 teamLeaderSetup(gameData.phase);              
             }    
-
-            
-
         }
     }
 }
 
-function eraseVotes(){
+function drawVotes(votes){
     var divs = document.querySelectorAll("#mainRoomBox div");
 
-    for(var i = 0; i < divs.length; i++){
-        document.querySelectorAll("#mainRoomBox div")[i].classList.remove("approve");
-        document.querySelectorAll("#mainRoomBox div")[i].classList.remove("reject");
-    }  
-}
+    if(votes){
+        for(var i = 0; i < divs.length; i++){
+            document.querySelectorAll("#mainRoomBox div")[i].classList.add(votes[i]);
+        }  
+    }
+    else{
+        for(var i = 0; i < divs.length; i++){
+            document.querySelectorAll("#mainRoomBox div")[i].classList.remove("approve");
+            document.querySelectorAll("#mainRoomBox div")[i].classList.remove("reject");
+        }  
+    }
 
-function drawVotes(){
-    var divs = document.querySelectorAll("#mainRoomBox div");
-
-    for(var i = 0; i < divs.length; i++){
-        document.querySelectorAll("#mainRoomBox div")[i].classList.add(gameData.votes[i]);
-    }  
 }
 
 function teamLeaderSetup(phase){
@@ -614,18 +621,53 @@ function enableDisableButtons(){
         document.querySelector("#green-button").innerText = "Pick!";
 
         document.querySelector("#red-button").classList.add("disabled");
+        document.querySelector("#red-button").innerText = "Disabled";
     } 
 
     //if we are in voting phase
     else if(gameData.phase === "voting")
     {
-        document.querySelector("#green-button").classList.remove("disabled");
-        document.querySelector("#green-button").innerText = "Approve";
+        if(checkEntryExistsInArray(gameData.playersYetToVote, ownUsername)){
+            document.querySelector("#green-button").classList.remove("disabled");
+            document.querySelector("#green-button").innerText = "Approve";
 
-        document.querySelector("#red-button").classList.remove("disabled");
-        document.querySelector("#red-button").innerText = "Reject";
+            document.querySelector("#red-button").classList.remove("disabled");
+            document.querySelector("#red-button").innerText = "Reject";
+        }
+        else{
+            disableButtons();
+        }   
     }
-    
+
+    else if(gameData.phase === "missionVoting"){
+        if(checkEntryExistsInArray(gameData.playersYetToVote, ownUsername)){
+            document.querySelector("#green-button").classList.remove("disabled");
+            document.querySelector("#green-button").innerText = "SUCCEED";
+
+            document.querySelector("#red-button").classList.remove("disabled");
+            document.querySelector("#red-button").innerText = "FAIL";
+        }
+        else{
+            disableButtons();
+        }   
+    }
+}
+
+function checkEntryExistsInArray(array, entry){
+    for(var i = 0; i < array.length; i++){
+        if(array[i] === entry){
+            return true;
+        }
+    }
+    return false;
+}
+
+function disableButtons(){
+    document.querySelector("#green-button").classList.add("disabled");
+    document.querySelector("#green-button").innerText = "Disabled";
+
+    document.querySelector("#red-button").classList.add("disabled");
+    document.querySelector("#red-button").innerText = "Disabled";
 }
 
 function countHighlightedAvatars(){

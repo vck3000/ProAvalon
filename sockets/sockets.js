@@ -193,9 +193,9 @@ module.exports = function(io){
 			}
 		});
 
-		socket.on("vote", function(data){
+		socket.on("pickVote", function(data){
 			if(rooms[socket.request.user.inRoomId]){
-				rooms[socket.request.user.inRoomId].vote(socket, data);
+				rooms[socket.request.user.inRoomId].pickVote(socket, data);
 				distributeGameData(socket, io);	
 			}
 			
