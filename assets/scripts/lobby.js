@@ -492,7 +492,6 @@ function drawAndPositionAvatars(){
     var h = $("#mainRoomBox").height();
 
     var numPlayers = storeData.length;//3;
-    var playerLocations = generatePlayerLocations(numPlayers, w/2, h/2);
 
     //generate the divs in the html
     var str = "";
@@ -534,8 +533,10 @@ function drawAndPositionAvatars(){
     //set the positions and sizes
     console.log("numPlayers: " + numPlayers)
     var divs = document.querySelectorAll("#mainRoomBox div");
+    var playerLocations = generatePlayerLocations(numPlayers, w/2, h/2);
+
     for(var i = 0 ; i < numPlayers; i++){
-        console.log("player position: asdflaksdjf;lksjdf");
+        // console.log("player position: asdflaksdjf;lksjdf");
         var offsetX = w/2 ;
         var offsetY = h/2 ;
 
@@ -545,19 +546,24 @@ function drawAndPositionAvatars(){
         divs[i].style.left = strX;
         divs[i].style.bottom = strY;
 
-        //size of the avatar img
-        divs[i].style.width = 30 + "%";
-        divs[i].style.height = 30 + "%";
+        var ratioXtoY = 0.8;
 
-        //get which one is smaller, width or height and then
-        //force square
-        if(divs[i].offsetWidth < divs[i].offsetHeight){
-            divs[i].style.height = divs[i].offsetWidth + "px";
-            // console.log("width smaller, make height smaller to square");
-        } else{
-            divs[i].style.width = divs[i].offsetHeight + "px";
-            // console.log("height smaller, make width smaller to square");
-        }
+        divs[i].style.height = 30 + "%";
+        divs[i].style.width = divs[i].offsetHeight*ratioXtoY + "px";
+
+        // //size of the avatar img
+        // divs[i].style.width = 30 + "%";
+        // divs[i].style.height = 30 + "%";
+
+        // //get which one is smaller, width or height and then
+        // //force square
+        // if(divs[i].offsetWidth < divs[i].offsetHeight){
+        //     divs[i].style.height = divs[i].offsetWidth + "px";
+        //     // console.log("width smaller, make height smaller to square");
+        // } else{
+        //     divs[i].style.width = divs[i].offsetHeight + "px";
+        //     // console.log("height smaller, make width smaller to square");
+        // }
     }
 }
 
@@ -586,6 +592,8 @@ function drawTeamLeaderStar(){
     str = str + "<span><img src='leader.png' class='leaderStar'></span>";
     //update the str in the div
     $("#mainRoomBox div")[playerIndex].innerHTML = str;
+
+    $(".leaderStar")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
     //team leader star part!----------------------------------------------------
 }
 
@@ -740,12 +748,23 @@ function generatePlayerLocations(numOfPlayers, a, b){
     var x_ = [];
     var y_ = [];
     var step = 360/numOfPlayers;
+    var tiltOffset = 0;
+    console.log("Step: " + step);
+
+    //for 6p and 10p, rotate slightly so that usernames dont collide
+    //with the role text
+    if(numOfPlayers === 6 || numOfPlayers === 10){
+        var tiltOffset = step/2;
+    }
 
     for(var i = 0; i < numOfPlayers; i++){
+
         //get the coordinates. Note the +90 is to rotate so that
         //the first person is at the top of the screen
-        x_[i] = a*(Math.cos(toRadians((step*i) + 90)))*0.85;
-        y_[i] = b*(Math.sin(toRadians((step*i) + 90)))*0.6;
+        x_[i] = a*(Math.cos(toRadians((step*i) + 90 + tiltOffset)))*0.85;
+        y_[i] = b*(Math.sin(toRadians((step*i) + 90 + tiltOffset)))*0.6;
+        // x_[i] = a*(Math.cos(toRadians((step*i) + 90)));
+        // y_[i] = b*(Math.sin(toRadians((step*i) + 90)));
     }
 
     var object = {

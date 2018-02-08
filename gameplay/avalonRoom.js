@@ -281,7 +281,7 @@ module.exports = function(host_, roomId_){
 		this.hammer = ((this.teamLeader - 5 + this.sockets.length) % this.sockets.length);
 
 		this.missionNum = 4; 
-		this.pickNum = 3;	
+		this.pickNum = 1;
 		this.missionHistory = ["succeed", "fail", "fail"];
 
 		return true;
