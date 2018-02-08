@@ -67,9 +67,11 @@ module.exports = function(host_, roomId_){
 
 
 	this.playersYetToVote = [];
-	this.votingPhase = false;
+	// this.votingPhase = false;
 	this.proposedTeam = [];
 	this.votes = [];
+
+	this.phase = "picking";
 
 	//Just to know who is the current host.
 	this.host = host_;
@@ -79,7 +81,7 @@ module.exports = function(host_, roomId_){
 	this.sockets = [];
 
 	this.vote = function(socket, voteStr){
-		if(this.votingPhase === true){
+		if(this.phase === "voting"){
 
 			var i = this.playersYetToVote.indexOf(socket.request.user.username);
 
@@ -104,7 +106,8 @@ module.exports = function(host_, roomId_){
 		//all of our votes. proceed to next part of the game.
 		if(this.playersYetToVote.length === 0){
 
-			this.votingPhase = false;
+			//CHANGE THIS TO BE EITHER PICKING OR SUCCEED FAIL PHASE
+			this.phase = "picking";
 			var outcome = calcVotes(this.votes);
 
 			this.proposedTeam = [];
@@ -138,7 +141,7 @@ module.exports = function(host_, roomId_){
 
 				this.proposedTeam[i] = splitStr[i];
 			}
-			this.votingPhase = true;
+			this.phase = "voting";
 			this.playersYetToVote = this.getUsernamesInGame();
 		}
 		else{
@@ -147,13 +150,17 @@ module.exports = function(host_, roomId_){
 	}
 
 	this.getStatusMessage = function(){
-		if(this.votingPhase === false){
+		if(this.phase === "picking"){
 			console.log(this.teamLeader);
 			var str = "Waiting on " + this.playersInGame[this.teamLeader].username + " to pick.";
 			return str;
-		} else{
+		} 
+		else if(this.phase === "voting"){
 			var str = "Voting phase";
 			return str;
+		}
+		else{
+			return false;
 		}
 	};
 
@@ -190,7 +197,7 @@ module.exports = function(host_, roomId_){
 			data[i].hammer = this.hammer;
 
 			data[i].playersYetToVote = this.playersYetToVote;
-			data[i].votingPhase = this.votingPhase;
+			data[i].phase = this.phase;
 			data[i].proposedTeam = this.proposedTeam;
 
 			data[i].numPlayersOnMission = numPlayersOnMission[playerRoles.length - 5]; //- 5
@@ -281,7 +288,7 @@ module.exports = function(host_, roomId_){
 		this.hammer = ((this.teamLeader - 5 + this.sockets.length) % this.sockets.length);
 
 		this.missionNum = 4; 
-		this.pickNum = 1;
+		this.pickNum = 3;
 		this.missionHistory = ["succeed", "fail", "fail"];
 
 		return true;

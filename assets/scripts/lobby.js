@@ -343,14 +343,14 @@ function greenButtonFunction() {
             socket.emit("startGame", "");
         }   
         else{
-            if(gameData.votingPhase === false){
+            if(gameData.phase === "picking"){
                 console.log("Picked team: asdf");
 
                 var str = getHighlightedAvatars();
                 console.log(str);
                 socket.emit("pickedTeam", str);    
             }
-            else{
+            else if(gameData.phase === "voting"){
                 console.log("Voted approve");
                 socket.emit("vote", "approve");
             }
@@ -373,12 +373,8 @@ function draw(){
             //default greyed out rn
             enableDisableButtons();
 
-            if(gameData.votingPhase === true){
-                drawGuns();
-            }
-
             //Edit the status bar/well
-            if(gameData.votingPhase === false){
+            if(gameData.phase === "picking"){
                 //give it the default status message
                 document.querySelector("#status").innerText = gameData.statusMessage;    
                 
@@ -390,7 +386,10 @@ function draw(){
                     eraseVotes();
                 }
             }
-            else{
+            else if(gameData.phase === "voting"){
+
+                drawGuns();
+
                 //show the remaining players who haven't voted
                 var str = "Waiting for votes: ";
                 for(var i = 0; i < gameData.playersYetToVote.length; i++){
@@ -402,7 +401,7 @@ function draw(){
 
             //if we are the team leader---------------------------------------------
             if(getIndexFromUsername(ownUsername) === gameData.teamLeader){
-                teamLeaderSetup(gameData.votingPhase);              
+                teamLeaderSetup(gameData.phase);              
             }    
 
             
@@ -428,11 +427,11 @@ function drawVotes(){
     }  
 }
 
-function teamLeaderSetup(votingPhase){
+function teamLeaderSetup(phase){
     var numPlayersOnMission = gameData.numPlayersOnMission[gameData.missionNum-1];
 
     //edit the well to show how many people to pick.
-    if(votingPhase === false){
+    if(phase === "picking"){
         document.querySelector("#status").innerText = "Your turn to pick a team! Pick " + numPlayersOnMission +" players!";    
     }
     
@@ -609,8 +608,8 @@ function enableDisableButtonsLeader(numPlayersOnMission){
     }
 }
 function enableDisableButtons(){
-    //if we aren't in voting phase
-    if(gameData.votingPhase === false){
+    //if we are in picking phase
+    if(gameData.phase === "picking"){
         document.querySelector("#green-button").classList.add("disabled");
         document.querySelector("#green-button").innerText = "Pick!";
 
@@ -618,7 +617,8 @@ function enableDisableButtons(){
     } 
 
     //if we are in voting phase
-    else{
+    else if(gameData.phase === "voting")
+    {
         document.querySelector("#green-button").classList.remove("disabled");
         document.querySelector("#green-button").innerText = "Approve";
 
