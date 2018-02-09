@@ -261,30 +261,33 @@ socket.on("auto-join-room-id", function(roomID){
 
 
 //======================================
-//NOTIFICATION SOCKET ROUTES
+//NOTIFICATIONS
 //======================================
 socket.on("alert", function(data){
     alert(data);
     window.location.replace("/");
 });
 
-socket.on("danger-alert", function(data){
-    document.querySelector("#danger-alert-box").classList.remove("inactive-window");
-    document.querySelector("#danger-alert-box-button").classList.remove("inactive-window");
-    document.querySelector("#danger-alert-box").textContent = data + "        |        Press here to remove";
+socket.on("success-alert", function(data){
+    showSuccessAlert(data);
 });
 
-socket.on("success-alert", function(data){
+socket.on("danger-alert", function(data){
+    showDangerAlert(data);
+});
+
+function showSuccessAlert(data){
     document.querySelector("#success-alert-box").classList.remove("inactive-window");
     document.querySelector("#success-alert-box-button").classList.remove("inactive-window");
     document.querySelector("#success-alert-box").textContent = data + "        |        Press here to remove";
-});
+}
 
 
-
-
-
-
+function showDangerAlert(data){
+    document.querySelector("#danger-alert-box").classList.remove("inactive-window");
+    document.querySelector("#danger-alert-box-button").classList.remove("inactive-window");
+    document.querySelector("#danger-alert-box").textContent = data + "        |        Press here to remove";
+};
 
 
 
@@ -332,8 +335,14 @@ socket.on("update-status-message", function(data){
 //FUNCTIONS
 //======================================
 function redButtonFunction() {
-    console.log("Voted reject");
-    socket.emit("pickVote", "reject");
+    if(gameData.phase === "voting"){
+        console.log("Voted reject");
+        socket.emit("pickVote", "reject");
+    }
+    else if(gameData.phase === "missionVoting"){
+        console.log("Voted fail");
+        socket.emit("missionVote", "fail");
+    }
 }
 
 function greenButtonFunction() {
@@ -353,6 +362,10 @@ function greenButtonFunction() {
             else if(gameData.phase === "voting"){
                 console.log("Voted approve");
                 socket.emit("pickVote", "approve");
+            }
+            else if(gameData.phase === "missionVoting"){
+                console.log("Voted succeed");
+                socket.emit("missionVote", "succeed");
             }
             
         } 
@@ -380,6 +393,11 @@ function draw(){
                 
                 //draw the votes if there are any to show
                 drawVotes(gameData.votes);
+
+                //if we are the team leader---------------------------------------------
+                if(getIndexFromUsername(ownUsername) === gameData.teamLeader){
+                    teamLeaderSetup(gameData.phase);              
+                }    
                 
             }
             else if(gameData.phase === "voting"){
@@ -395,6 +413,7 @@ function draw(){
 
                 document.querySelector("#status").innerText = str;      
             }
+
             else if(gameData.phase === "missionVoting"){
                 //show the remaining players who haven't voted
                 var str = "Waiting for mision votes: ";
@@ -408,11 +427,11 @@ function draw(){
                 drawGuns();
                 drawVotes(gameData.votes);
             }
+            else if(gameData.phase === "finished"){
+                document.querySelector("#status").innerText = gameData.statusMessage;
+                enableDisableButtons();
+            }
 
-            //if we are the team leader---------------------------------------------
-            if(getIndexFromUsername(ownUsername) === gameData.teamLeader){
-                teamLeaderSetup(gameData.phase);              
-            }    
         }
     }
 }
@@ -439,21 +458,25 @@ function teamLeaderSetup(phase){
 
     //edit the well to show how many people to pick.
     if(phase === "picking"){
-        document.querySelector("#status").innerText = "Your turn to pick a team! Pick " + numPlayersOnMission +" players!";    
-    }
-    
 
-    var divs = document.querySelectorAll("#mainRoomBox div");
-    //add the event listeners for button press
-    for(var i = 0; i < divs.length; i++){
-        divs[i].addEventListener("click", function(){
-            console.log("avatar pressed");
-            //toggle the highlight class
-            this.classList.toggle("highlight-avatar");
-            //change the pick team button to enabled/disabled
-            enableDisableButtonsLeader(numPlayersOnMission);
-        });   
-    }  
+        document.querySelector("#status").innerText = "Your turn to pick a team! Pick " + numPlayersOnMission +" players!";    
+
+        var divs = document.querySelectorAll("#mainRoomBox div");
+        //add the event listeners for button press
+        for(var i = 0; i < divs.length; i++){
+            divs[i].addEventListener("click", function(){
+                console.log("avatar pressed");
+                //toggle the highlight class
+                this.classList.toggle("highlight-avatar");
+                //change the pick team button to enabled/disabled
+                enableDisableButtonsLeader(numPlayersOnMission);
+            });   
+        }  
+    }
+
+
+
+
 }
 
 function drawMiddleBoxes(){
@@ -463,10 +486,11 @@ function drawMiddleBoxes(){
         //missions
         var missionStatus = gameData.missionHistory[j];
         if(missionStatus){
-            if(missionStatus === "succeed"){
+            if(missionStatus === "succeeded"){
                 document.querySelectorAll(".missionBox")[j].classList.add("missionBoxSucceed");
                 document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxFail");
-            } else{
+            } 
+            else if(missionStatus === "failed"){
                 document.querySelectorAll(".missionBox")[j].classList.add("missionBoxFail");
                 document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxSucceed");
             }
@@ -651,6 +675,10 @@ function enableDisableButtons(){
             disableButtons();
         }   
     }
+
+    else if(gameData.phase === "finished"){
+        disableButtons();
+    }
 }
 
 function checkEntryExistsInArray(array, entry){
@@ -739,7 +767,13 @@ function strOfAvatar(playerData, alliance){
 
     //add in the role of the player, and the percy info
     var role = ""; 
-    if(gameStarted === true){
+    
+    //can improve this code here
+    if(gameStarted === true && gameData.phase === "finished"){
+        role = gameData.see.roles[getIndexFromUsername(playerData.username)];
+    }
+
+    else if(gameStarted === true){
         //if rendering our own player, give it the role tag
         if(playerData.username === ownUsername){
             role = gameData.role;
@@ -747,7 +781,8 @@ function strOfAvatar(playerData, alliance){
         else if(gameData.see.merlins.indexOf(playerData.username) !== -1){
             role = "Merlin?";
         }  
-    }
+    } 
+
 
     //add in the hammer star
     var hammerStar = "";

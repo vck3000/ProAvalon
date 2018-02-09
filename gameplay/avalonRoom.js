@@ -81,6 +81,30 @@ module.exports = function(host_, roomId_){
 	//not including spectators
 	this.sockets = [];
 
+	this.winner = "";
+
+	this.finishGame = function(winner){
+		if(winner === "spy"){
+			//spies win, nothing more to do.
+			this.winner = "spies";
+		}
+		else if(winner === "res"){
+			//SHOOT THE MERLIN!
+			this.winner = "resistance";
+		}
+		else{
+			console.log("ERROR! winner was: " + winner);
+		}
+
+		//game clean up
+		this.finished = false;
+		this.phase = "finished";
+
+	}
+
+
+
+
 	this.missionVote = function(socket, voteStr){
 		if(this.phase === "missionVoting"){
 
@@ -107,45 +131,46 @@ module.exports = function(host_, roomId_){
 			}
 		}
 
-		//if our votes array is the same length as the number of players, then we have
-		//all of our votes. proceed to next part of the game.
+		//CALCULATE OUTCOME OF THE MISSION
 		if(this.playersYetToVote.length === 0){
 			var outcome = calcMissionVotes(this.missionVotes);
-
-			//this.proposedTeam = [];
-
-			// this.pickNum++;
-			//if team was approved, then reset pickNum
-			//and increment missionNum
-			if(outcome === "succeeded"){
-				this.phase = "picking";
-
-				// this.pickNum = 1;
-				// this.missionNum++;
-				// this.phase = "missionVoting";
-
-				// this.playersYetToVote = this.proposedTeam;
-			}
-			else if(outcome === "failed"){
-				//fail code
+			if(outcome){
+				this.missionHistory.push(outcome);	
 			}
 			else{
-				console.log("ERROR, should be either succeeded or failed, instead got: " + outcome);
+				console.log("ERROR! Outcome was: " + outcome);
 			}
 
-			//move to next team Leader, and reset it back to the start if 
-			//we go into negative numbers
-			this.teamLeader--;
-			if(this.teamLeader < 0){
-				this.teamLeader = this.sockets.length - 1; 
+			this.phase = "picking";
+			this.missionNum++;
+			this.pickNum = 1;
+			//if we get all the votes in, then do this
+			this.proposedTeam = [];
+
+			//count number of succeeds and fails
+			var numOfSucceeds = 0;
+			var numOfFails = 0;
+			for(var i = 0; i < this.missionHistory.length; i++){
+				if(this.missionHistory[i] === "succeeded"){
+					numOfSucceeds++;
+				}
+				else if(this.missionHistory[i] === "failed"){
+					numOfFails++;
+				}
+			}
+
+			//if we have 3 fails, game finish
+			if(numOfFails >= 3){
+				//pass through the winner
+				this.finishGame("spy");
+			}
+			else if(numOfSucceeds >= 3){
+				//pass through the winner
+				this.finishGame("res");
 			}
 
 		}
-
 		console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, {depth: 2}));
-
-		//if we get all the votes in, then do this
-		this.proposedTeam = [];
 	}
 
 	this.pickVote = function(socket, voteStr){
@@ -185,22 +210,23 @@ module.exports = function(host_, roomId_){
 			//if team was approved, then reset pickNum
 			//and increment missionNum
 			if(outcome === "approved"){
-				this.pickNum = 1;
-				this.missionNum++;
+				
 				this.phase = "missionVoting";
-
 				this.playersYetToVote = this.proposedTeam;
 			}
-			else if(this.pickNum > 5 && outcome === "rejected"){
+			else if(this.pickNum >= 5 && outcome === "rejected"){
 				console.log("--------------------------");
 				console.log("HAMMER REJECTED, GAME OVER");
-				console.log("HAMMER REJECTED, GAME OVER");
-				console.log("HAMMER REJECTED, GAME OVER");
-				console.log("HAMMER REJECTED, GAME OVER");
-				console.log("HAMMER REJECTED, GAME OVER");
 				console.log("--------------------------");
-				this.finished = true;
-				//still need to show to the players. the above only shows in the lobby	
+
+				//set the remaining missions to all fail
+				while(this.missionHistory.length < 5){
+					this.missionHistory[this.missionHistory.length] = "failed";
+				}
+
+				//finish the game, spies have won
+				//send through winner
+				this.finishGame("spy");
 			}
 			else if(outcome === "rejected"){
 				this.phase = "picking";
@@ -252,6 +278,10 @@ module.exports = function(host_, roomId_){
 			var str = "Voting phase";
 			return str;
 		}
+		else if(this.phase === "finished"){
+			var str = "Game has finished! The " + this.winner + " have won!";
+			return str;
+		}
 		else{
 			return false;
 		}
@@ -297,6 +327,13 @@ module.exports = function(host_, roomId_){
 
 			data[i].votes = this.votes;
 			data[i].hammer = this.hammer;
+			data[i].winner = this.winner;
+
+			//if game is finished, reveal everything including roles
+			if(this.phase === "finished"){
+				data[i].see.spies = this.getSpies(); 
+				data[i].see.roles = this.getRevealedRoles(); 
+			}
 
 			// console.log(data[i]);
 
@@ -382,7 +419,7 @@ module.exports = function(host_, roomId_){
 
 		this.missionNum = 4; 
 		this.pickNum = 3;
-		this.missionHistory = ["succeed", "fail", "fail"];
+		this.missionHistory = ["succeeded", "failed", "failed"];
 
 		return true;
 	};
@@ -408,6 +445,18 @@ module.exports = function(host_, roomId_){
 				if(this.playersInGame[i].role === "Merlin" || this.playersInGame[i].role === "Morgana"){
 					array.push(this.playersInGame[i].username);
 				}
+			}
+			return array;
+		} else{
+			return false;
+		}
+	}
+
+	this.getRevealedRoles = function(){
+		if(this.gameStarted === true && this.phase === "finished"){
+			var array = [];
+			for(var i = 0; i < this.playersInGame.length; i++){
+				array.push(this.playersInGame[i].role);
 			}
 			return array;
 		} else{
@@ -532,6 +581,72 @@ module.exports = function(host_, roomId_){
 };
 
 
+
+
+function getRandomInt(min, max) {
+	min = Math.ceil(min);
+	max = Math.floor(max);
+ 	return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+ }
+
+ function shuffle(array) {
+ 	var currentIndex = array.length, temporaryValue, randomIndex;
+ 	 // While there remain elements to shuffle...
+ 	 while (0 !== currentIndex) {
+	    // Pick a remaining element...
+	    randomIndex = Math.floor(Math.random() * currentIndex);
+	    currentIndex -= 1;
+	    // And swap it with the current element.
+	    temporaryValue = array[currentIndex];
+	    array[currentIndex] = array[randomIndex];
+	    array[randomIndex] = temporaryValue;
+	}
+	return array;
+}
+
+function getIndexFromUsername(sockets, username){
+	for(var i = 0; i < sockets.length; i++){
+		if(username === sockets[i].request.user.username){
+			return i;
+		}
+	}
+}
+
+function calcMissionVotes(votes){
+	//note we may not have all the votes from every person
+	//e.g. may look like "fail", "undef.", "success"
+	numOfPlayers = votes.length;
+
+	var countSucceed = 0;
+	var countFail = 0;
+
+	var outcome;
+
+	for(var i = 0; i < numOfPlayers; i++){
+		if(votes[i] === "succeed"){
+			console.log("succeed");
+			countSucceed++;
+		}
+		else if(votes[i] === "fail"){
+			console.log("fail");
+			countFail++;
+		}
+		else{
+			console.log("Bad vote: " + votes[i]);
+		}
+	}	
+
+	//calcuate the outcome
+	if(countFail === 0){
+		outcome = "succeeded";
+	}
+	else{
+		outcome = "failed";
+	}
+
+	return outcome;
+}
+
 function calcVotes(votes){
 	var numOfPlayers = votes.length;
 
@@ -563,33 +678,4 @@ function calcVotes(votes){
 	}
 
 	return outcome;
-}
-
-function getRandomInt(min, max) {
-	min = Math.ceil(min);
-	max = Math.floor(max);
- 	return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
- }
-
- function shuffle(array) {
- 	var currentIndex = array.length, temporaryValue, randomIndex;
- 	 // While there remain elements to shuffle...
- 	 while (0 !== currentIndex) {
-	    // Pick a remaining element...
-	    randomIndex = Math.floor(Math.random() * currentIndex);
-	    currentIndex -= 1;
-	    // And swap it with the current element.
-	    temporaryValue = array[currentIndex];
-	    array[currentIndex] = array[randomIndex];
-	    array[randomIndex] = temporaryValue;
-	}
-	return array;
-}
-
-function getIndexFromUsername(sockets, username){
-	for(var i = 0; i < sockets.length; i++){
-		if(username === sockets[i].request.user.username){
-			return i;
-		}
-	}
 }

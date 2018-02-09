@@ -201,6 +201,14 @@ module.exports = function(io){
 			
 		});
 
+		socket.on("missionVote", function(data){
+			if(rooms[socket.request.user.inRoomId]){
+				rooms[socket.request.user.inRoomId].missionVote(socket, data);
+				distributeGameData(socket, io);	
+			}
+			
+		});
+
 	});
 }
 
