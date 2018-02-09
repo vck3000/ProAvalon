@@ -427,6 +427,16 @@ function draw(){
                 drawGuns();
                 drawVotes(gameData.votes);
             }
+            else if(gameData.phase === "assassination"){
+                if(gameData.role === "Assassin"){
+                    document.querySelector("#status").innerText = "Shoot the merlin!";
+                }
+                else {
+                    document.querySelector("#status").innerText = "Waiting for the assassin to shoot!";   
+                }
+                enableDisableButtons();
+            }
+
             else if(gameData.phase === "finished"){
                 document.querySelector("#status").innerText = gameData.statusMessage;
                 enableDisableButtons();
@@ -451,6 +461,23 @@ function drawVotes(votes){
         }  
     }
 
+}
+
+
+function assassinationSetup(phase){
+    if(phase === "assassination"){
+        var divs = document.querySelectorAll("#mainRoomBox div");
+        //add the event listeners for button press
+        for(var i = 0; i < divs.length; i++){
+            divs[i].addEventListener("click", function(){
+                console.log("avatar pressed");
+                //toggle the highlight class
+                this.classList.toggle("highlight-avatar");
+                //change the pick team button to enabled/disabled
+                enableDisableButtons(numPlayersOnMission);
+            });   
+        }  
+    }
 }
 
 function teamLeaderSetup(phase){
@@ -674,6 +701,22 @@ function enableDisableButtons(){
         else{
             disableButtons();
         }   
+    }
+
+    else if(gameData.phase === "assassination"){
+        // document.querySelector("#green-button").classList.add("disabled");
+        document.querySelector("#green-button").innerText = "SHOOT!";
+
+        document.querySelector("#red-button").classList.add("disabled");
+        document.querySelector("#red-button").innerText = "Disabled";
+
+        //if there is only one person highlighted
+        if(countHighlightedAvatars() == 1){
+            document.querySelector("#green-button").classList.remove("disabled");
+        }
+        else{
+            document.querySelector("#green-button").classList.add("disabled");
+        }
     }
 
     else if(gameData.phase === "finished"){

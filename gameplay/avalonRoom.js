@@ -46,7 +46,7 @@ var numPlayersOnMission = [
 
 
 
-
+	
 
 
 module.exports = function(host_, roomId_){
@@ -87,22 +87,46 @@ module.exports = function(host_, roomId_){
 		if(winner === "spy"){
 			//spies win, nothing more to do.
 			this.winner = "spies";
+			this.gameEnd();
 		}
 		else if(winner === "res"){
 			//SHOOT THE MERLIN!
-			this.winner = "resistance";
+			this.phase === "assassination";
+			// this.winner = "resistance";
 		}
 		else{
 			console.log("ERROR! winner was: " + winner);
 		}
+	}
 
+	this.gameEnd = function(){
 		//game clean up
 		this.finished = false;
 		this.phase = "finished";
-
 	}
 
+	this.assassinate = function(target){
+		if(this.phase === "assassination"){
+			//get the merlin's uesrname
+			var playerRoles = this.playersInGame;
+			var merlinUsername = undefined;
+			for(var i = 0; i < playerRoles.length; i++){
+				if(playerRoles[i].role === "Merlin"){
+					merlinUsername = playerRoles[i].username;
+				}
+			}
 
+			if(merlinUsername && target === merlinUsername){
+				this.winner = "spies";
+			}
+			else{
+				this.winner = "resistance";
+			}
+		}
+		else{
+			console.log("Not assassination phase yet");
+		}
+	}
 
 
 	this.missionVote = function(socket, voteStr){
