@@ -206,7 +206,13 @@ module.exports = function(io){
 				rooms[socket.request.user.inRoomId].missionVote(socket, data);
 				distributeGameData(socket, io);	
 			}
-			
+		});
+
+		socket.on("assassinate", function(data){
+			if(rooms[socket.request.user.inRoomId]){
+				rooms[socket.request.user.inRoomId].assassinate(socket, data);
+				distributeGameData(socket, io);
+			}
 		});
 
 	});

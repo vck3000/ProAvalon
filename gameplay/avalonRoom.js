@@ -91,7 +91,7 @@ module.exports = function(host_, roomId_){
 		}
 		else if(winner === "res"){
 			//SHOOT THE MERLIN!
-			this.phase === "assassination";
+			this.phase = "assassination";
 			// this.winner = "resistance";
 		}
 		else{
@@ -105,7 +105,11 @@ module.exports = function(host_, roomId_){
 		this.phase = "finished";
 	}
 
-	this.assassinate = function(target){
+	this.assassinate = function(socket, target){
+
+		//check if socket came from ASSASSIN!!!!
+		//INCOMPMLETEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE!
+
 		if(this.phase === "assassination"){
 			//get the merlin's uesrname
 			var playerRoles = this.playersInGame;
@@ -115,13 +119,19 @@ module.exports = function(host_, roomId_){
 					merlinUsername = playerRoles[i].username;
 				}
 			}
+			// console.log("target before split: " + target);
+			// target = target.split(" ");
+			console.log("target: " + target);
 
+			console.log("merlin username: " + merlinUsername);
 			if(merlinUsername && target === merlinUsername){
 				this.winner = "spies";
 			}
 			else{
 				this.winner = "resistance";
 			}
+
+			this.gameEnd();
 		}
 		else{
 			console.log("Not assassination phase yet");
@@ -136,16 +146,16 @@ module.exports = function(host_, roomId_){
 
 			//if this vote is coming from someone who hasn't voted yet
 			if(i !== -1){
-				if(voteStr === "success"){
-					this.missionVotes[getIndexFromUsername(this.sockets, socket.request.user.username)] = "success";
-					console.log("received success from " + socket.request.user.username);
+				if(voteStr === "succeed"){
+					this.missionVotes[getIndexFromUsername(this.sockets, socket.request.user.username)] = "succeed";
+					console.log("received succeed from " + socket.request.user.username);
 				}
 				else if(voteStr === "fail"){
 					this.missionVotes[getIndexFromUsername(this.sockets, socket.request.user.username)] = "fail";
 					console.log("received fail from " + socket.request.user.username);
 				}	
 				else{
-					console.log("ERROR! Expected success or fail, got: " + voteStr);
+					console.log("ERROR! Expected succeed or fail, got: " + voteStr);
 				}
 				//remove the player from players yet to vote
 				this.playersYetToVote.splice(i, 1);	
@@ -183,14 +193,19 @@ module.exports = function(host_, roomId_){
 				}
 			}
 
+			console.log("numOfSucceeds: " + numOfSucceeds);
+			console.log("numOfFails: " + numOfFails);
+
 			//if we have 3 fails, game finish
 			if(numOfFails >= 3){
 				//pass through the winner
+
 				this.finishGame("spy");
 			}
 			else if(numOfSucceeds >= 3){
 				//pass through the winner
 				this.finishGame("res");
+				console.log("RES WON, NOW GOING INTO ASSASSINATION");
 			}
 
 		}
@@ -443,7 +458,7 @@ module.exports = function(host_, roomId_){
 
 		this.missionNum = 4; 
 		this.pickNum = 3;
-		this.missionHistory = ["succeeded", "failed", "failed"];
+		this.missionHistory = ["succeeded", "failed", "succeeded"];
 
 		return true;
 	};

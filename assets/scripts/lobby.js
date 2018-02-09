@@ -367,6 +367,10 @@ function greenButtonFunction() {
                 console.log("Voted succeed");
                 socket.emit("missionVote", "succeed");
             }
+            else if(gameData.phase === "assassination"){
+                console.log("Assasinate!!!");
+                socket.emit("assassinate", getHighlightedAvatars());
+            }
             
         } 
     }
@@ -428,13 +432,16 @@ function draw(){
                 drawVotes(gameData.votes);
             }
             else if(gameData.phase === "assassination"){
+                //for the assassin: set up their stuff to shoot
                 if(gameData.role === "Assassin"){
                     document.querySelector("#status").innerText = "Shoot the merlin!";
+                    assassinationSetup(gameData.phase);
                 }
                 else {
                     document.querySelector("#status").innerText = "Waiting for the assassin to shoot!";   
                 }
                 enableDisableButtons();
+
             }
 
             else if(gameData.phase === "finished"){
@@ -474,7 +481,7 @@ function assassinationSetup(phase){
                 //toggle the highlight class
                 this.classList.toggle("highlight-avatar");
                 //change the pick team button to enabled/disabled
-                enableDisableButtons(numPlayersOnMission);
+                enableDisableButtons();
             });   
         }  
     }
