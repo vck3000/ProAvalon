@@ -46,7 +46,7 @@ var numPlayersOnMission = [
 
 
 
-	
+
 
 
 module.exports = function(host_, roomId_){
@@ -73,6 +73,7 @@ module.exports = function(host_, roomId_){
 	this.missionVotes = [];
 
 	this.phase = "picking";
+	this.playerShot;
 
 	//Just to know who is the current host.
 	this.host = host_;
@@ -80,6 +81,8 @@ module.exports = function(host_, roomId_){
 	//NOTE this is the list of sockets of PLAYERS IN THE GAME
 	//not including spectators
 	this.sockets = [];
+
+
 
 	this.winner = "";
 
@@ -119,12 +122,12 @@ module.exports = function(host_, roomId_){
 					merlinUsername = playerRoles[i].username;
 				}
 			}
-			// console.log("target before split: " + target);
-			// target = target.split(" ");
-			console.log("target: " + target);
+
+			//set the player shot
+			this.playerShot = target[0];
 
 			console.log("merlin username: " + merlinUsername);
-			if(merlinUsername && target === merlinUsername){
+			if(merlinUsername && target[0] === merlinUsername){
 				this.winner = "spies";
 			}
 			else{
@@ -292,14 +295,19 @@ module.exports = function(host_, roomId_){
 		if(getIndexFromUsername(this.sockets, socket.request.user.username) === this.teamLeader){
 			console.log("Team leader has picked: ");
 
-			var splitStr = pickedTeam.split(" ");
-			for(var i = 0; i < splitStr.length-1; i++){
+			// var splitStr = pickedTeam.split(" ");
+			// for(var i = 0; i < splitStr.length-1; i++){
 				
-				console.log(splitStr[i] + " and ");
+			// 	console.log(splitStr[i] + " and ");
 
-				this.proposedTeam[i] = splitStr[i];
-			}
+			// 	this.proposedTeam[i] = splitStr[i];
+			// }
+
+			//set the proposed team
+			this.proposedTeam = pickedTeam;
+			//change phase
 			this.phase = "voting";
+			//players yet to vote are all players in game
 			this.playersYetToVote = this.getUsernamesInGame();
 		}
 		else{
@@ -372,6 +380,7 @@ module.exports = function(host_, roomId_){
 			if(this.phase === "finished"){
 				data[i].see.spies = this.getSpies(); 
 				data[i].see.roles = this.getRevealedRoles(); 
+				data[i].see.playerShot = this.playerShot;
 			}
 
 			// console.log(data[i]);

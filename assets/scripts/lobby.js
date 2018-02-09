@@ -355,9 +355,9 @@ function greenButtonFunction() {
             if(gameData.phase === "picking"){
                 console.log("Picked team: asdf");
 
-                var str = getHighlightedAvatars();
-                console.log(str);
-                socket.emit("pickedTeam", str);    
+                var arr = getHighlightedAvatars();
+                console.log(arr);
+                socket.emit("pickedTeam", arr);    
             }
             else if(gameData.phase === "voting"){
                 console.log("Voted approve");
@@ -447,10 +447,24 @@ function draw(){
             else if(gameData.phase === "finished"){
                 document.querySelector("#status").innerText = gameData.statusMessage;
                 enableDisableButtons();
+                drawBullet(getIndexFromUsername(gameData.see.playerShot));
+
             }
 
         }
     }
+}
+
+function drawBullet(indexOfPlayer){
+
+    //set the div string and add the star
+    var str = $("#mainRoomBox div")[indexOfPlayer].innerHTML;
+    str = str + "<span><img src='bullet.png' class='bullet'></span>";
+    //update the str in the div
+    $("#mainRoomBox div")[indexOfPlayer].innerHTML = str;
+
+    // $(".bullet")[0].style.top = 0;
+
 }
 
 function drawVotes(votes){
@@ -764,15 +778,18 @@ function getHighlightedAvatars(){
 
     var divs = document.querySelectorAll("#mainRoomBox div");
 
+    var arr = [];
+
     for(var i = 0; i < divs.length; i++){
         if(divs[i].classList.contains("highlight-avatar") === true){
             //we need to use getUsernameFromIndex otherwise
             //we will get info from the individual player
             //such as a percy seeing a merlin?.
             str = str + getUsernameFromIndex(i) + " ";
+            arr.push(getUsernameFromIndex(i));
         }
     }
-    return str;
+    return arr;
 }
 
 function getIndexFromUsername(username){

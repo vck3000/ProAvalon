@@ -148,11 +148,21 @@ p {
 
 	transform: translateY(-100%);
 }
+
+.bullet{
+	top: -60px;
+	/*left: -200px;*/
+	position: absolute;
+	transform: translate(-50%, 50%);
+	width: 50px;
+	height: 50px;
+}
+
 .gun {
 	z-index: 2;
 	position: absolute;
 	right: 0;
-	top: 50%;
+	top: 33%;
 	width: 100%;
 }
 
@@ -207,7 +217,7 @@ p {
 	position: absolute;
 	/*margin: auto;*/
 	left: 50%;
-	top: 35%;
+	top: 40%;
 
 	transform: translateX(-50%);
 }
