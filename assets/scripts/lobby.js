@@ -245,35 +245,6 @@ socket.on("update-current-games-list", function(currentGames){
 });
 
 
-//OLD CODE ^:
-// console.log("update the current games list request received");
-//     console.log(currentGames);
-//     //remove all the li's inside the list
-//     $("#current-games-list button").remove();
-
-//     //append each player into the list
-//     currentGames.forEach(function(currentGame){
-//         //if the currentGame exists
-//         if(currentGame){
-//             var str = "<button class='gameRoomButton btn btn-info'>" + currentGame.roomId + ": " + currentGame.status + "</button>";
-
-//             //add the li to the list
-//             $("#current-games-list").append(str);
-
-//             //grab all li's
-//             var allButtons = document.querySelectorAll("#current-games-list button");
-
-//             //add the event listener to the last li added.
-//             allButtons[allButtons.length - 1].addEventListener("click", function(){
-//                 //JOIN THE ROOM
-//                 // console.log(currentGame.roomId);
-//                 socket.emit("join-room", currentGame.roomId);
-//                 //change the view to the room instead of lobby
-//                 roomId = currentGame.roomId;
-//                 changeView();
-//             });
-//         }
-//     });
 
 
 
