@@ -470,6 +470,11 @@ function draw(){
             }
 
         }
+
+        else{
+            document.querySelector("#status").innerText = "Waiting for game to start...";
+            enableDisableButtons();
+        }
     }
 }
 
@@ -705,14 +710,22 @@ function enableDisableButtonsLeader(numPlayersOnMission){
     }
 }
 function enableDisableButtons(){
-    //if we are in picking phase
-    if(gameData.phase === "picking"){
-        document.querySelector("#green-button").classList.add("disabled");
-        document.querySelector("#green-button").innerText = "Pick!";
+    if(gameStarted === false){
+        document.querySelector("#green-button").classList.remove("disabled");
+        document.querySelector("#green-button").innerText = "Start!";
 
         document.querySelector("#red-button").classList.add("disabled");
         document.querySelector("#red-button").innerText = "Disabled";
-    } 
+    }
+    else if(gameStarted === true){
+        //if we are in picking phase
+        if(gameData.phase === "picking"){
+            document.querySelector("#green-button").classList.add("disabled");
+            document.querySelector("#green-button").innerText = "Pick!";
+
+            document.querySelector("#red-button").classList.add("disabled");
+            document.querySelector("#red-button").innerText = "Disabled";
+        } 
 
     //if we are in voting phase
     else if(gameData.phase === "voting")
@@ -761,6 +774,8 @@ function enableDisableButtons(){
     else if(gameData.phase === "finished"){
         disableButtons();
     }
+}
+
 }
 
 function checkEntryExistsInArray(array, entry){

@@ -105,7 +105,7 @@ module.exports = function(io){
 
 		//when a new room is created
 		socket.on("newRoom", function(){
-			rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId);
+			rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId, io);
 			console.log("new room request");
 			//broadcast to all chat
 			var str =  "Room " + nextRoomId + " has been created! Go join!";
@@ -184,6 +184,8 @@ module.exports = function(io){
 					return;
 				}
 			}
+
+			updateCurrentGamesList(io);
 		});
 
 		//when a player picks a team
@@ -207,6 +209,8 @@ module.exports = function(io){
 				rooms[socket.request.user.inRoomId].missionVote(socket, data);
 				distributeGameData(socket, io);	
 			}
+			//update all the games list (also including the status because game status changes when a mission is voted for)
+			updateCurrentGamesList(io);
 		});
 
 		socket.on("assassinate", function(data){
@@ -214,6 +218,8 @@ module.exports = function(io){
 				rooms[socket.request.user.inRoomId].assassinate(socket, data);
 				distributeGameData(socket, io);
 			}
+			//update all the games list (also including the status because game status changes when a mission is voted for)
+			updateCurrentGamesList(io);
 		});
 
 	});

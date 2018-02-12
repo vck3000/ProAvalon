@@ -49,7 +49,9 @@ var numPlayersOnMission = [
 
 
 
-module.exports = function(host_, roomId_){
+module.exports = function(host_, roomId_, io_){
+
+	this.io = io_;
 
 	this.playersInGame = [];
 	this.player = [];
@@ -104,7 +106,7 @@ module.exports = function(host_, roomId_){
 
 	this.gameEnd = function(){
 		//game clean up
-		this.finished = false;
+		this.finished = true;
 		this.phase = "finished";
 	}
 
@@ -616,8 +618,8 @@ module.exports = function(host_, roomId_){
 	this.getStatus = function(){
 		if(this.finished === true){
 			return "Finished!";
-		} else if(this.gameStarted === true){
-			return "Game started!";
+		} else if(this.gameStarted === true){	
+			return "Game in progress!";
 		} else{
 			return "Waiting!";
 		}
