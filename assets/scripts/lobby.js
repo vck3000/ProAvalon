@@ -716,11 +716,17 @@ function enableDisableButtonsLeader(numPlayersOnMission){
 }
 function enableDisableButtons(){
     if(gameStarted === false){
-        document.querySelector("#green-button").classList.remove("disabled");
-        document.querySelector("#green-button").innerText = "Start!";
+        if(ownUsername === getUsernameFromIndex(0)){
+            document.querySelector("#green-button").classList.remove("disabled");
+            document.querySelector("#green-button").innerText = "Start!";
 
-        document.querySelector("#red-button").classList.add("disabled");
-        document.querySelector("#red-button").innerText = "Disabled";
+            document.querySelector("#red-button").classList.add("disabled");
+            document.querySelector("#red-button").innerText = "Disabled";
+        }
+        else{
+            disableButtons();
+        }
+        
     }
     else if(gameStarted === true){
         //if we are in picking phase

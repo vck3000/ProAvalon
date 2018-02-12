@@ -122,6 +122,10 @@ module.exports = function(io){
   			updateCurrentGamesList(io);
   		});
 
+  		socket.on("enter-room", function(roomId){
+  			//ENTER ROOM CODE, need to change join-room substantially too. 
+  		});
+
 		//when a player joins a room
 		socket.on("join-room", function(roomId){
 			console.log(roomId);
