@@ -20,13 +20,16 @@ var port = process.env.PORT || 80;
 
 
 
-mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
+// mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
+mongoose.connect(process.env.DATABASEURL);
+//mongodb://<dbuser>:<dbpassword>@ds131698.mlab.com:31698/playavalon
 
 var session = require("express-session");
 var MongoDBStore = require('connect-mongodb-session')(session);
 var store = new MongoDBStore({
 	// uri: 'mongodb://localhost/TheNewResistanceUsers',
-	uri: 'mongodb://127.0.0.1/TheNewResistanceUsers',
+	// uri: 'mongodb://127.0.0.1/TheNewResistanceUsers',
+	uri: process.env.DATABASEURL,
 	collection: 'mySessions'
 });
 
@@ -78,8 +81,8 @@ app.use(indexRoutes);
 
 //start server listening
 var IP = process.env.IP || "192.168.1.55";
-var server = app.listen(port, IP , function(){
-// var server = app.listen(port , function(){
+// var server = app.listen(port, IP , function(){
+var server = app.listen(port , function(){
 	console.log("Server has started on " + IP + ":" + port + "!");
 });
 
