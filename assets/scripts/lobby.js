@@ -45,9 +45,9 @@ document.querySelector("#backButton").addEventListener("click", function(){
     socket.emit("leave-room", "");
     roomId = undefined; 
     //reset all the variables
-    storeData = [];
-    seeData = [];
-    gameData = [];
+    storeData = undefined;
+    seeData = undefined;
+    gameData = undefined;
     gameStarted = false;
     numPlayersOnMission = [];
     inRoom = false;
@@ -408,8 +408,10 @@ function draw(){
 
         drawTeamLeaderStar();
 
+        drawMiddleBoxes();
+
         if(gameStarted === true){
-            drawMiddleBoxes();
+
 
             //default greyed out rn
             enableDisableButtons();
@@ -559,10 +561,10 @@ function teamLeaderSetup(phase){
 function drawMiddleBoxes(){
     //draw missions and numPick
     //j<5 because there are only 5 missions/picks each game
-    for(var j = 0; j < 5; j++){
-        //missions
-        var missionStatus = gameData.missionHistory[j];
-        if(missionStatus){
+    if(gameData){
+        for(var j = 0; j < 5; j++){
+            //missions
+            var missionStatus = gameData.missionHistory[j];
             if(missionStatus === "succeeded"){
                 document.querySelectorAll(".missionBox")[j].classList.add("missionBoxSucceed");
                 document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxFail");
@@ -571,26 +573,36 @@ function drawMiddleBoxes(){
                 document.querySelectorAll(".missionBox")[j].classList.add("missionBoxFail");
                 document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxSucceed");
             }
-        }
 
-        //draw in the number of players in each mission
-        var numPlayersOnMission = gameData.numPlayersOnMission[j];
-        if(numPlayersOnMission){
-            document.querySelectorAll(".missionBox")[j].innerText = numPlayersOnMission;
-        }
-    }    
+            //draw in the number of players in each mission
+            var numPlayersOnMission = gameData.numPlayersOnMission[j];
+            if(numPlayersOnMission){
+                document.querySelectorAll(".missionBox")[j].innerText = numPlayersOnMission;
 
-    //picks boxes
-    var pickNum = gameData.pickNum;
-    for(var j = 0; j < 5; j++){
-        if(j < pickNum){
-            document.querySelectorAll(".pickBox")[j].classList.add("pickBoxFill");    
+            }
+
+            //picks boxes
+            var pickNum = gameData.pickNum;
+            if(j < pickNum){
+                document.querySelectorAll(".pickBox")[j].classList.add("pickBoxFill");    
+            }
+            else{
+                document.querySelectorAll(".pickBox")[j].classList.remove("pickBoxFill");       
+            }
         }
-        else{
+    }
+    else{
+        for(var j = 0; j < 5; j++){
+            document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxFail");
+            document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxSucceed");
+
+            document.querySelectorAll(".missionBox")[j].innerText = "";
+
             document.querySelectorAll(".pickBox")[j].classList.remove("pickBoxFill");       
         }
         
     }
+
 }
 
 

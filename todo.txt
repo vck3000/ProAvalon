@@ -3,6 +3,15 @@ To-do list:
 
 -In game tabs (all chat, game chat, VH, other stuff)
 
+-Spam filter?
+-Maximum length to a single chat message
+
+-Add gameplay text in game chat
+ 
+-Add in who rej, who app
+
+-SPECTATOR MODE	
+
 
 Done: 
 -two tabs logged into same account
