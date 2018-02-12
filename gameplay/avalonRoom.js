@@ -609,7 +609,7 @@ module.exports = function(host_, roomId_){
 		return this.sockets;
 	};
 
-	this.getHost = function(){
+	this.getHostUsername = function(){
 		return this.host;
 	};
 

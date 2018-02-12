@@ -20,7 +20,30 @@ p {
 	height: 90%;
 }
 
+.gameRoomButton {
+	display: block;
+}
 
+#current-games-list {
+	/*display: block; */
+	padding: 0;
+}
+
+#current-games-table{
+	border-collapse:separate; 
+	border-spacing: 1px;
+}
+
+#current-games-table tbody tr td {
+	/*box-sizing:border-box;*/
+	border: transparent 2px solid;
+	/*margin: 10px;*/
+}
+
+
+#current-games-table tbody tr td:hover {
+	border: green 2px solid;
+}
 
 .row {
 	height: 100%;

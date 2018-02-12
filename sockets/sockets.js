@@ -266,6 +266,7 @@ var updateCurrentGamesList = function(io){
 			gamesList[i].status = rooms[i].getStatus();
 			//get room ID
 			gamesList[i].roomId = rooms[i].getRoomId();
+			gamesList[i].hostUsername = rooms[i].getHostUsername();
 		}
 	}
 	io.in("allChat").emit("update-current-games-list", gamesList);

@@ -212,35 +212,71 @@ socket.on("update-current-players-list", function(currentPlayers){
 });
 
 socket.on("update-current-games-list", function(currentGames){
-    console.log("update the current games list request received");
     console.log(currentGames);
-    //remove all the li's inside the list
-    $("#current-games-list li").remove();
-    
-    //append each player into the list
+    //remove all the entries inside the table:
+    $("#current-games-table tbody tr td").remove();
+    $("#current-games-table tbody tr").remove();
+
+    //append each game to the list
     currentGames.forEach(function(currentGame){
-        //if the currentGame exists
+        //if the current game exists, add it
         if(currentGame){
-            var str = "<li id='list'>" + currentGame.roomId + ": " + currentGame.status + "</li>";
-            
-            //add the li to the list
-            $("#current-games-list").append(str);
+            var str = "<tr> <td> " + currentGame.roomId + ": " + currentGame.status + "<p>Host: " + currentGame.hostUsername + "</p>" +  "</td> </tr>";
+            $("#current-games-table tbody").append(str);
 
-            //grab all li's
-            var allLis = document.querySelectorAll("#current-games-list li");
 
-            //add the event listener to the last li added.
-            allLis[allLis.length - 1].addEventListener("click", function(){
+            //grab all the td's and then add an event listener
+            var allTds = document.querySelectorAll("#current-games-table tbody tr td");
+
+            //add the event listener to the last td added.
+            allTds[allTds.length - 1].addEventListener("click", function(){
                 //JOIN THE ROOM
                 // console.log(currentGame.roomId);
                 socket.emit("join-room", currentGame.roomId);
                 //change the view to the room instead of lobby
                 roomId = currentGame.roomId;
+                //change to the game room view
                 changeView();
             });
         }
     });
+
+    
 });
+
+
+//OLD CODE ^:
+// console.log("update the current games list request received");
+//     console.log(currentGames);
+//     //remove all the li's inside the list
+//     $("#current-games-list button").remove();
+
+//     //append each player into the list
+//     currentGames.forEach(function(currentGame){
+//         //if the currentGame exists
+//         if(currentGame){
+//             var str = "<button class='gameRoomButton btn btn-info'>" + currentGame.roomId + ": " + currentGame.status + "</button>";
+
+//             //add the li to the list
+//             $("#current-games-list").append(str);
+
+//             //grab all li's
+//             var allButtons = document.querySelectorAll("#current-games-list button");
+
+//             //add the event listener to the last li added.
+//             allButtons[allButtons.length - 1].addEventListener("click", function(){
+//                 //JOIN THE ROOM
+//                 // console.log(currentGame.roomId);
+//                 socket.emit("join-room", currentGame.roomId);
+//                 //change the view to the room instead of lobby
+//                 roomId = currentGame.roomId;
+//                 changeView();
+//             });
+//         }
+//     });
+
+
+
 
 socket.on("new-game-created", function(str){
     var str = "<li class=server-text>" + str + "</li>";
