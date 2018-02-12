@@ -8,6 +8,7 @@ var gameData;
 var roomId; 
 var gameStarted = false;
 var ownUsername = "";
+var inRoom = false;
 //window resize, repaint the users
 window.addEventListener('resize', function(){
     console.log("Resized");
@@ -23,7 +24,10 @@ document.querySelector("#red-button").addEventListener("click", redButtonFunctio
 
 //new ROOM CODE
 document.querySelector("#testLink").addEventListener("click", function(){
-    socket.emit("newRoom");
+    if(inRoom === false){
+        socket.emit("newRoom");
+        inRoom = true;    
+    }
 }); 
 
 document.querySelector("#danger-alert-box-button").addEventListener("click", function(){
@@ -46,6 +50,7 @@ document.querySelector("#backButton").addEventListener("click", function(){
     gameData = [];
     gameStarted = false;
     numPlayersOnMission = [];
+    inRoom = false;
     //note do not reset our own username.
 
     //reset room-chat 
