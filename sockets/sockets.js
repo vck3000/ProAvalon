@@ -174,7 +174,7 @@ module.exports = function(io){
 		socket.on("startGame", function(){
 			//start the game
 			if(rooms[socket.request.user.inRoomId]){
-				if(socket.request.user.inRoomId && socket.request.user.username === rooms[socket.request.user.inRoomId].getHost()){
+				if(socket.request.user.inRoomId && socket.request.user.username === rooms[socket.request.user.inRoomId].getHostUsername()){
 					if(rooms[socket.request.user.inRoomId].startGame() === true){
 						distributeGameData(socket, io);
 					}
