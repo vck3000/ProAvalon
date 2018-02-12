@@ -44,7 +44,6 @@ document.querySelector("#backButton").addEventListener("click", function(){
     storeData = [];
     seeData = [];
     gameData = [];
-    roomId = undefined; 
     gameStarted = false;
     numPlayersOnMission = [];
     //note do not reset our own username.
@@ -241,6 +240,17 @@ socket.on("update-current-games-list", function(currentGames){
         }
     });
 
+    //remove the ugly remaining border when no games are there to display
+    if(document.querySelectorAll("#current-games-table tbody tr td").length === 0){
+        document.querySelectorAll("#current-games-table")[0].classList.add("current-games-table-off");
+        document.querySelectorAll("#current-games-table")[0].classList.remove("current-games-table-on");
+
+    }
+    else{
+        document.querySelectorAll("#current-games-table")[0].classList.add("current-games-table-on");
+        document.querySelectorAll("#current-games-table")[0].classList.remove("current-games-table-off");
+
+    }
     
 });
 
@@ -254,12 +264,13 @@ socket.on("new-game-created", function(str){
     $(".all-chat-list").append(str);
 });
 
-socket.on("auto-join-room-id", function(roomID){
+socket.on("auto-join-room-id", function(roomId_){
     console.log("auto join room");
     //received a request from server to auto join
     //likely we were the one who created the room
     //so we auto join into it
-    socket.emit("join-room", roomID);
+    socket.emit("join-room", roomId_);
+    roomId = roomId_;
     //chang ethe view to the room instead of lobby
     changeView();
 });

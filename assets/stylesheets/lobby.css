@@ -29,9 +29,14 @@ p {
 	padding: 0;
 }
 
-#current-games-table{
+.current-games-table-on{
 	border-collapse:separate; 
 	border-spacing: 1px;
+}
+
+.current-games-table-off{
+	border-collapse: collapse;
+	border: purple 1px solid;
 }
 
 #current-games-table tbody tr td {

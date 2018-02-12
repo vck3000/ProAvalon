@@ -59,7 +59,7 @@ module.exports = function(io){
 		socket.on("allChatFromClient", function(data){
 			// socket.emit("danger-alert", "test alert asdf");
 			//debugging
-			console.log("incoming message at " + data.date + ": " + data.message + " by: " + socket.request.user);
+			console.log("incoming message from allchat at " + data.date + ": " + data.message + " by: " + socket.request.user);
 			//get the username and put it into the data object
 			data.username = socket.request.user.username;
 			//send out that data object to all other clients (except the one who sent the message)
@@ -70,7 +70,7 @@ module.exports = function(io){
 		socket.on("roomChatFromClient", function(data){
 			// socket.emit("danger-alert", "test alert asdf");
 			//debugging
-			console.log("incoming message at " + data.date + ": " + data.message + " by: " + socket.request.user);
+			console.log("incoming message from room at " + data.date + ": " + data.message + " by: " + socket.request.user);
 			//get the username and put it into the data object
 			data.username = socket.request.user.username;
 
@@ -141,6 +141,7 @@ module.exports = function(io){
 
 				//join the room chat
 				socket.join(roomId);
+				console.log("typeof roomId: " + typeof(roomId));
 
 				//update the room players
 				io.in(roomId).emit("update-room-players", rooms[roomId].getPlayers());		
