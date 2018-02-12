@@ -20,6 +20,7 @@ router.post("/", function(req, res){
 	User.register(newUser, req.body.password, function(err, user){
 		if(err){
 			console.log("ERROR: " + err);
+			req.flash("error", "Sign up failed. Most likely that username is taken.");
 			res.redirect("register");
 		} else{
 			passport.authenticate("local")(req, res, function(){
