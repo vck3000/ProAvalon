@@ -622,7 +622,7 @@ module.exports = function(host_, roomId_, io_){
 			return "Game in progress!";
 		} else{
 			return "Waiting!";
-		}
+		} 
 	}
 
 	this.getRoomId = function(){
