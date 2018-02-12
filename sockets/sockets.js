@@ -63,7 +63,7 @@ module.exports = function(io){
 			//get the username and put it into the data object
 			data.username = socket.request.user.username;
 			//send out that data object to all other clients (except the one who sent the message)
-			socket.in("allChat").emit("allChatToClient", data);
+			io.in("allChat").emit("allChatToClient", data);
 		});
 
 		//when a user tries to send a message to room
@@ -76,7 +76,7 @@ module.exports = function(io){
 
 			if(data.roomId){
 				//send out that data object to all other clients in room(except the one who sent the message)
-				socket.in(data.roomId).emit("roomChatToClient", data);
+				io.in(data.roomId).emit("roomChatToClient", data);
 			}
 		});
 

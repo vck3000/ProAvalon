@@ -98,10 +98,10 @@ function addAllChatEventListeners(e, allChatWindow){
             socket.emit("allChatFromClient", data);
 
             //add the self chat
-            var dateStr = "[" + data.date + "]";
-            var str = "<li class=self>" + dateStr + " Me: " + data.message;
+            // var dateStr = "[" + data.date + "]";
+            // var str = "<li class=self>" + dateStr + " Me: " + data.message;
 
-            $(".all-chat-list").append(str);
+            // $(".all-chat-list").append(str);
             
             scrollDown();
         }
@@ -135,10 +135,11 @@ roomChatWindow.onkeyup = function(e){
             socket.emit("roomChatFromClient", data);
 
             //add the self chat
-            var dateStr = "[" + data.date + "]";
-            var str = "<li class=self>" + dateStr + " Me: " + data.message;
+            
+            // var dateStr = "[" + data.date + "]";
+            // var str = "<li class=self>" + dateStr + " Me: " + data.message;
 
-            $(".room-chat-list").append(str);
+            // $(".room-chat-list").append(str);
             
             scrollDown();
         }
@@ -159,7 +160,7 @@ socket.on("username", function(username){
 socket.on("allChatToClient", function(data){
 
 	var date = "[" + data.date + "]";
-	var str = "<li class=other>" + date + " " + data.username + ": " + data.message;
+	var str = "<li class=other><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + data.message;
 
     console.log("all chat inc");
 
@@ -171,7 +172,7 @@ socket.on("allChatToClient", function(data){
 socket.on("roomChatToClient", function(data){
 
     var date = "[" + data.date + "]";
-    var str = "<li class=other>" + date + " " + data.username + ": " + data.message;
+    var str = "<li class=other><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + data.message;
 
     $(".room-chat-list").append(str);
 

@@ -14,6 +14,23 @@ p {
 	padding: 0;
 }
 
+.server-text {
+	color: #2378ff;
+	font-style: italic;
+}
+
+.date-text {
+	background: #efefef;
+
+}
+
+.username-text {
+	font-weight: bold;
+}
+
+.hi-there {
+	border-bottom: 2px solid black
+}
 
 
 .lobby-container {
