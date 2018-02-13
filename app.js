@@ -28,8 +28,8 @@ var session = require("express-session");
 var MongoDBStore = require('connect-mongodb-session')(session);
 var store = new MongoDBStore({
 	// uri: 'mongodb://localhost/TheNewResistanceUsers',
-	uri: 'mongodb://127.0.0.1/TheNewResistanceUsers',
-	// uri: process.env.DATABASEURL,
+	// uri: 'mongodb://127.0.0.1/TheNewResistanceUsers',
+	uri: process.env.DATABASEURL,
 	collection: 'mySessions'
 });
 
