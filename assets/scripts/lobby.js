@@ -338,6 +338,7 @@ socket.on("update-room-players", function(data){
 //GAME SOCKET ROUTES
 //======================================
 socket.on("game-data", function(data){
+    console.log("GAME DATA INC");
     if(data){
         console.log("game starting!");
 
@@ -348,12 +349,12 @@ socket.on("game-data", function(data){
         gameStarted = true;
 
         //for now, set this as a constant
-        var option_print_gameplay_text = $("#option_print_gameplay_text")[0].value;
+        var option_print_gameplay_text = $("#option_print_gameplay_text")[0].checked;
+        
         if(option_print_gameplay_text === true){
             printGameplayText();
         }
         
-
         draw(storeData);
     } 
 });
@@ -695,9 +696,9 @@ function drawAndPositionAvatars(){
         //draw the players according to what the client sees (their role sees)
         for(var i = 0 ; i < numPlayers; i++){
 
-            console.log("draw");
-            console.log("storeData: ");
-            console.log(storeData);
+            // console.log("draw");
+            // console.log("storeData: ");
+            // console.log(storeData);
 
             //check if the user is on the spy list. 
             //if they are not, they are res
