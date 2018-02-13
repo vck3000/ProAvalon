@@ -8,11 +8,20 @@ To-do list:
 
 -Add gameplay text in game chat
  
--Add in who rej, who app
+
 
 -SPECTATOR MODE	
+
+-DISCUSSIONS
+-VH
+
+
+
 
 
 Done: 
 -two tabs logged into same account
+
 -Sometimes when a single player in the room refreshes, causes whole server to crash
+
+-Add in who rej, who app

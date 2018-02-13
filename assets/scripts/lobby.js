@@ -174,10 +174,14 @@ socket.on("roomChatToClient", function(data){
     var date = "[" + data.date + "]";
     var str = "<li class=other><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + data.message;
 
-    $(".room-chat-list").append(str);
-
-    scrollDown();
+    addToRoomChat(str);
 });
+
+function addToRoomChat(str){
+    $(".room-chat-list").append(str);
+    scrollDown();
+}
+
 
 socket.on("player-joined-lobby", function(username){
     var str = "<li class=server-text>" + username + " has joined the lobby!";
@@ -193,14 +197,12 @@ socket.on("player-left-lobby", function(username){
 
 socket.on("player-joined-room", function(username){
     var str = "<li class=server-text>" + username + " has joined the room!";
-    $(".room-chat-list").append(str);
-    scrollDown();
+    addToRoomChat(str);
 });
 
 socket.on("player-left-room", function(username){
     var str = "<li class=server-text>" + username + " has left the room.";
-    $(".room-chat-list").append(str);
-    scrollDown();
+    addToRoomChat(str);
 });
 
 socket.on("update-current-players-list", function(currentPlayers){
@@ -345,6 +347,13 @@ socket.on("game-data", function(data){
 
         gameStarted = true;
 
+        //for now, set this as a constant
+        var option_print_gameplay_text = $("#option_print_gameplay_text")[0].value;
+        if(option_print_gameplay_text === true){
+            printGameplayText();
+        }
+        
+
         draw(storeData);
     } 
 });
@@ -358,6 +367,73 @@ socket.on("update-status-message", function(data){
 //======================================
 //FUNCTIONS
 //======================================
+var print_gameplay_text_game_started = false;
+var print_gameplay_text_picked_team = false;
+var print_gameplay_text_vote_results = false;
+function printGameplayText() {
+    // var date = "[" + data.date + "]";
+    // var str = "<li class=other><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + data.message;
+
+
+    if(gameStarted === true && print_gameplay_text_game_started === false){
+        var str = "<li class='gameplay-text'>Game started!</li>";
+        addToRoomChat(str);
+
+        print_gameplay_text_game_started = true;
+    }
+    else if(gameData.proposedTeam && gameData.proposedTeam.length > 0 && print_gameplay_text_picked_team === false){
+        var start = "<li class='gameplay-text'>"
+        var end = "</li>"
+
+        var str =  start + getUsernameFromIndex(gameData.teamLeader) + " picked: " 
+        
+        for(var i = 0; i < gameData.proposedTeam.length; i++){
+            str = str + gameData.proposedTeam[i] + ", ";
+        }
+
+        str = str + end;
+
+        addToRoomChat(str);
+        print_gameplay_text_picked_team = true;
+    }
+    else if(gameData.votes && gameData.votes.length > 0 && print_gameplay_text_vote_results === false){
+        var start = "<li class='gameplay-text'>"
+        var end = "</li>"
+
+        
+        var approvedUsernames = "";
+        var rejectedUsernames = "";
+
+        console.log("length: " + gameData.votes.length);
+
+
+        for(var i = 0; i < gameData.votes.length; i++){
+            console.log(gameData.votes[i]);
+
+            if(gameData.votes[i] === "approve"){
+                console.log("approved added: " + getUsernameFromIndex(i));
+                approvedUsernames = approvedUsernames + getUsernameFromIndex(i) + ", ";
+            }
+            else if(gameData.votes[i] === "reject"){
+                console.log("reject added: " + getUsernameFromIndex(i));
+                rejectedUsernames = rejectedUsernames + getUsernameFromIndex(i) + ", ";
+            }
+            else{
+                console.log("ERROR! Unknown vote: " + gameData.votes[i]);
+            }
+        }
+
+        var str =  start + "<p>Approved: " + approvedUsernames + "</p> <p>Rejected: " + rejectedUsernames + "</p>" + end;
+
+        // str = str + end;
+
+        addToRoomChat(str);
+        print_gameplay_text_vote_results = true;
+    }
+
+
+}
+
 function redButtonFunction() {
     if(gameData.phase === "voting"){
         console.log("Voted reject");

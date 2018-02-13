@@ -37,8 +37,6 @@
 					<li><a href="#">Forums</a></li>
 
 					<!-- <li><a href="#">News</a></li> -->
-
-					
 				</ul>
 				
 
@@ -48,6 +46,22 @@
 					<!-- <li><a href="#">Contact us</a></li> -->
 
 					<% if(currentUser){%>
+					<li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+								<span class="glyphicon glyphicon-cog"></span>
+								<span class="caret"></span>
+							</a>
+							<ul class="dropdown-menu">
+								<input type="checkbox" name="option_print_gameplay_text" id=option_print_gameplay_text checked>
+								<label for="option_print_gameplay_text">Print gameplay text</label>
+
+								<!-- <li><a href="#">Action</a></li>
+								<li><a href="#">Another action</a></li> -->
+							</ul>
+						</li>
+						
+					</li>
 					<li><a href="/logout">Log out</a></li>
 					<%}%>
 

@@ -19,6 +19,11 @@ p {
 	font-style: italic;
 }
 
+.gameplay-text {
+	color: rgb(255,0,0);
+	font-style: italic;
+}
+
 .date-text {
 	background: #efefef;
 
