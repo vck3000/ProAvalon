@@ -12,8 +12,7 @@ User 			= require("./models/user"),
 passport		= require("passport"),
 LocalStrategy	= require("passport-local"),
 passportSocketIo= require("passport.socketio"),
-cookieParser 	= require('cookie-parser')
-
+cookieParser 	= require('cookie-parser'),
 flash 			= require("connect-flash");;
 
 var port = process.env.PORT || 80;

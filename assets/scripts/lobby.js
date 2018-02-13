@@ -351,7 +351,10 @@ socket.on("game-data", function(data){
         //for now, set this as a constant
         var option_print_gameplay_text = $("#option_print_gameplay_text")[0].checked;
         
+        console.log("button is: " + option_print_gameplay_text);
+
         if(option_print_gameplay_text === true){
+            console.log("printgameplayText");
             printGameplayText();
         }
         
@@ -371,10 +374,12 @@ socket.on("update-status-message", function(data){
 var print_gameplay_text_game_started = false;
 var print_gameplay_text_picked_team = false;
 var print_gameplay_text_vote_results = false;
+
 function printGameplayText() {
     // var date = "[" + data.date + "]";
     // var str = "<li class=other><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + data.message;
 
+    console.log("var is: " + print_gameplay_text_vote_results);
 
     if(gameStarted === true && print_gameplay_text_game_started === false){
         var str = "<li class='gameplay-text'>Game started!</li>";
@@ -396,10 +401,11 @@ function printGameplayText() {
 
         addToRoomChat(str);
         print_gameplay_text_picked_team = true;
-    }
-    else if(gameData.votes && gameData.votes.length > 0 && print_gameplay_text_vote_results === false){
-        var start = "<li class='gameplay-text'>"
-        var end = "</li>"
+    }  
+    //storeData.length is the number of players in game
+    else if(gameData.votes && gameData.votes.length >= storeData.length && gameData.votes.indexOf(null) === -1 && print_gameplay_text_vote_results === false){
+        var start = "<li class='gameplay-text'>";
+        var end = "</li>";
 
         
         var approvedUsernames = "";
