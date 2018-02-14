@@ -59,7 +59,7 @@ module.exports = function(io){
 		socket.on("allChatFromClient", function(data){
 			// socket.emit("danger-alert", "test alert asdf");
 			//debugging
-			console.log("incoming message from allchat at " + data.date + ": " + data.message + " by: " + socket.request.user);
+			console.log("incoming message from allchat at " + data.date + ": " + data.message + " by: " + socket.request.user.username);
 			//get the username and put it into the data object
 			data.username = socket.request.user.username;
 			//send out that data object to all other clients (except the one who sent the message)
@@ -70,7 +70,7 @@ module.exports = function(io){
 		socket.on("roomChatFromClient", function(data){
 			// socket.emit("danger-alert", "test alert asdf");
 			//debugging
-			console.log("incoming message from room at " + data.date + ": " + data.message + " by: " + socket.request.user);
+			console.log("incoming message from room at " + data.date + ": " + data.message + " by: " + socket.request.user.username);
 			//get the username and put it into the data object
 			data.username = socket.request.user.username;
 
@@ -122,7 +122,7 @@ module.exports = function(io){
   			updateCurrentGamesList(io);
   		});
 
-  		socket.on("enter-room", function(roomId){
+		socket.on("enter-room", function(roomId){
   			//ENTER ROOM CODE, need to change join-room substantially too. 
   		});
 
@@ -133,22 +133,20 @@ module.exports = function(io){
 			
 			//if the room exists
 			if(rooms[roomId]){
-				//if the room has not started yet, throw them into the room
-				console.log("Game status is: " + rooms[roomId].getStatus());
-				if(rooms[roomId].getStatus() === "Waiting!"){
-					var ToF = rooms[roomId].playerJoinGame(socket);
-					console.log(socket.request.user.username + " has joined room " + roomId + ": " + ToF);
-				} 
-
 				//set the room id into the socket obj
 				socket.request.user.inRoomId = roomId;
 
+				//set them to a spectator
+				socket.request.user.spectator = true;
+
 				//join the room chat
 				socket.join(roomId);
-				console.log("typeof roomId: " + typeof(roomId));
 
-				//update the room players
-				io.in(roomId).emit("update-room-players", rooms[roomId].getPlayers());		
+				//join the room
+				rooms[roomId].playerJoinRoom(socket);
+
+				//emit to the new spectator the players in the game.
+				socket.emit("update-room-players", rooms[roomId].getPlayers());
 
 				//emit to say to others that someone has joined
 				io.in(roomId).emit("player-joined-room", socket.request.user.username);
@@ -158,9 +156,35 @@ module.exports = function(io){
 				usernamesInGame = rooms[roomId].getUsernamesInGame();
 				if(usernamesInGame.indexOf(socket.request.user.username) !== -1){
 					distributeGameData(socket, io);
+					socket.request.user.spectator = false;
 				}
+
+				//if game has started, give them a copy of spectator data
+				if(rooms[roomId].getStatus() !== "Waiting!"){
+					giveGameDataToSpectator(socket, io);
+				}
+				
+
 			} else{
 				console.log("Game doesn't exist!");
+			}
+		});
+
+		socket.on("join-game", function(roomId){
+			if(rooms[roomId]){
+				socket.request.user.spectator = false;
+				//if the room has not started yet, throw them into the room
+				console.log("Game status is: " + rooms[roomId].getStatus());
+				if(rooms[roomId].getStatus() === "Waiting!"){
+					var ToF = rooms[roomId].playerJoinGame(socket);
+					console.log(socket.request.user.username + " has joined room " + roomId + ": " + ToF);
+
+					//update the room players
+					io.in(roomId).emit("update-room-players", rooms[roomId].getPlayers());	
+				} 
+				else{
+					console.log("Game has started, player " + socket.request.user.username + " is not allowed to join.");
+				}
 			}
 		});
 
@@ -241,6 +265,22 @@ function distributeGameData(socket, io){
 		// console.log(gameData[i]);
 		// console.log("Player " + gameData[i].username + " has been given role: " + gameData[i].role);
 	}
+
+	var gameDataForSpectators = rooms[socket.request.user.inRoomId].getGameDataForSpectators();
+	//send out spectator data
+	for(var i = 0; i < rooms[socket.request.user.inRoomId].socketsOfSpectators.length; i++){
+		var socketId = rooms[socket.request.user.inRoomId].socketsOfSpectators[i].id;
+		console.log("Socket id: " + socketId);
+		socket.to(socketId).emit("game-data", gameDataForSpectators);
+		console.log("(for loop) Sent to spectator: " + rooms[socket.request.user.inRoomId].socketsOfSpectators[i].request.user.username);
+	}
+}
+
+function giveGameDataToSpectator(socket, io){
+	var gameDataForSpectators = rooms[socket.request.user.inRoomId].getGameDataForSpectators();
+	//send out spectator data
+	console.log("Spectator data sent to spectator: " + socket.request.user.username);
+	socket.emit("game-data", gameDataForSpectators);
 }
 
 function removePlayerFromRoomAndCheckDestroy(socket, io){

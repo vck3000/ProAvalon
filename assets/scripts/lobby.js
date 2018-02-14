@@ -9,6 +9,9 @@ var roomId;
 var gameStarted = false;
 var ownUsername = "";
 var inRoom = false;
+
+var isSpectator = false;
+
 //window resize, repaint the users
 window.addEventListener('resize', function(){
     console.log("Resized");
@@ -52,7 +55,7 @@ document.querySelector("#backButton").addEventListener("click", function(){
     numPlayersOnMission = [];
     inRoom = false;
     //note do not reset our own username.
-
+    isSpectator = false;
 
     print_gameplay_text_game_started = false;
     print_gameplay_text_picked_team = false;
@@ -249,6 +252,8 @@ socket.on("update-current-games-list", function(currentGames){
                 socket.emit("join-room", currentGame.roomId);
                 //change the view to the room instead of lobby
                 roomId = currentGame.roomId;
+                //set the spectator to true
+                isSpectator = true;
                 //change to the game room view
                 changeView();
             });
@@ -285,6 +290,8 @@ socket.on("auto-join-room-id", function(roomId_){
     //likely we were the one who created the room
     //so we auto join into it
     socket.emit("join-room", roomId_);
+    socket.emit("join-game", roomId_);
+    isSpectator = false;
     roomId = roomId_;
     //chang ethe view to the room instead of lobby
     changeView();
@@ -426,13 +433,11 @@ function printGameplayText() {
     else if(gameData.votes && gameData.votes.length >= storeData.length && gameData.votes.indexOf(null) === -1 && print_gameplay_text_vote_results === false){
         var start = "<li class='gameplay-text'>";
         var end = "</li>";
-
         
         var approvedUsernames = "";
         var rejectedUsernames = "";
 
         console.log("length: " + gameData.votes.length);
-
 
         for(var i = 0; i < gameData.votes.length; i++){
             console.log(gameData.votes[i]);
@@ -454,7 +459,6 @@ function printGameplayText() {
         if(gameData.phase === "missionVoting"){
             missionApproveStr = "<p>Mission was approved!</p>"
         }
-
 
         var str =  start + missionApproveStr + "<p>Approved: " + approvedUsernames + "</p> <p>Rejected: " + rejectedUsernames + "</p>" + end;
 
@@ -478,22 +482,28 @@ function printGameplayText() {
 }
 
 function redButtonFunction() {
-    if(gameData.phase === "voting"){
-        console.log("Voted reject");
-        socket.emit("pickVote", "reject");
-    }
-    else if(gameData.phase === "missionVoting"){
-        console.log("Voted fail");
-        socket.emit("missionVote", "fail");
-    }
+    if(document.querySelector("#red-button").classList.contains("disabled") === false){
+        if(gameData.phase === "voting"){
+            console.log("Voted reject");
+            socket.emit("pickVote", "reject");
+        }
+        else if(gameData.phase === "missionVoting"){
+            console.log("Voted fail");
+            socket.emit("missionVote", "fail");
+        }
+    }    
 }
 
 function greenButtonFunction() {
     //if button is not disabled: 
     if(document.querySelector("#green-button").classList.contains("disabled") === false){
-        if(gameStarted === false){
+        if(isSpectator === true){
+            socket.emit("join-game", roomId);
+            isSpectator = false;
+        }
+        else if(gameStarted === false){
             socket.emit("startGame", "");
-        }   
+        }
         else{
             if(gameData.phase === "picking"){
                 console.log("Picked team: asdf");
@@ -529,9 +539,8 @@ function draw(){
 
         drawMiddleBoxes();
 
+
         if(gameStarted === true){
-
-
             //default greyed out rn
             enableDisableButtons();
 
@@ -826,12 +835,15 @@ function drawTeamLeaderStar(){
         playerIndex = gameData.teamLeader;
     }
     //set the div string and add the star
-    var str = $("#mainRoomBox div")[playerIndex].innerHTML;
-    str = str + "<span><img src='leader.png' class='leaderStar'></span>";
-    //update the str in the div
-    $("#mainRoomBox div")[playerIndex].innerHTML = str;
+    if($("#mainRoomBox div")[playerIndex]){
+        var str = $("#mainRoomBox div")[playerIndex].innerHTML;
+        str = str + "<span><img src='leader.png' class='leaderStar'></span>";
+        //update the str in the div
+        $("#mainRoomBox div")[playerIndex].innerHTML = str;
 
-    $(".leaderStar")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
+        $(".leaderStar")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
+    }
+
     //team leader star part!----------------------------------------------------
 }
 
@@ -855,12 +867,19 @@ function enableDisableButtons(){
             document.querySelector("#red-button").classList.add("disabled");
             document.querySelector("#red-button").innerText = "Disabled";
         }
+        //we are spectator
+        else if(isSpectator === true){
+            document.querySelector("#green-button").classList.remove("disabled");
+            document.querySelector("#green-button").innerText = "Join!";
+
+            document.querySelector("#red-button").classList.add("disabled");
+            document.querySelector("#red-button").innerText = "Disabled";
+        }
         else{
             disableButtons();
         }
-        
     }
-    else if(gameStarted === true){
+    else if(gameStarted === true && isSpectator === false){
         //if we are in picking phase
         if(gameData.phase === "picking"){
             document.querySelector("#green-button").classList.add("disabled");
@@ -870,54 +889,58 @@ function enableDisableButtons(){
             document.querySelector("#red-button").innerText = "Disabled";
         } 
 
-    //if we are in voting phase
-    else if(gameData.phase === "voting")
-    {
-        if(checkEntryExistsInArray(gameData.playersYetToVote, ownUsername)){
-            document.querySelector("#green-button").classList.remove("disabled");
-            document.querySelector("#green-button").innerText = "Approve";
+        //if we are in voting phase
+        else if(gameData.phase === "voting")
+        {
+            if(checkEntryExistsInArray(gameData.playersYetToVote, ownUsername)){
+                document.querySelector("#green-button").classList.remove("disabled");
+                document.querySelector("#green-button").innerText = "Approve";
 
-            document.querySelector("#red-button").classList.remove("disabled");
-            document.querySelector("#red-button").innerText = "Reject";
+                document.querySelector("#red-button").classList.remove("disabled");
+                document.querySelector("#red-button").innerText = "Reject";
+            }
+            else{
+                disableButtons();
+            }   
         }
-        else{
+
+        else if(gameData.phase === "missionVoting"){
+            if(checkEntryExistsInArray(gameData.playersYetToVote, ownUsername)){
+                document.querySelector("#green-button").classList.remove("disabled");
+                document.querySelector("#green-button").innerText = "SUCCEED";
+
+                document.querySelector("#red-button").classList.remove("disabled");
+                document.querySelector("#red-button").innerText = "FAIL";
+            }
+            else{
+                disableButtons();
+            }   
+        }
+
+        else if(gameData.phase === "assassination"){
+            // document.querySelector("#green-button").classList.add("disabled");
+            document.querySelector("#green-button").innerText = "SHOOT!";
+
+            document.querySelector("#red-button").classList.add("disabled");
+            document.querySelector("#red-button").innerText = "Disabled";
+
+            //if there is only one person highlighted
+            if(countHighlightedAvatars() == 1){
+                document.querySelector("#green-button").classList.remove("disabled");
+            }
+            else{
+                document.querySelector("#green-button").classList.add("disabled");
+            }
+        }
+
+        else if(gameData.phase === "finished"){
             disableButtons();
-        }   
-    }
-
-    else if(gameData.phase === "missionVoting"){
-        if(checkEntryExistsInArray(gameData.playersYetToVote, ownUsername)){
-            document.querySelector("#green-button").classList.remove("disabled");
-            document.querySelector("#green-button").innerText = "SUCCEED";
-
-            document.querySelector("#red-button").classList.remove("disabled");
-            document.querySelector("#red-button").innerText = "FAIL";
-        }
-        else{
-            disableButtons();
-        }   
-    }
-
-    else if(gameData.phase === "assassination"){
-        // document.querySelector("#green-button").classList.add("disabled");
-        document.querySelector("#green-button").innerText = "SHOOT!";
-
-        document.querySelector("#red-button").classList.add("disabled");
-        document.querySelector("#red-button").innerText = "Disabled";
-
-        //if there is only one person highlighted
-        if(countHighlightedAvatars() == 1){
-            document.querySelector("#green-button").classList.remove("disabled");
-        }
-        else{
-            document.querySelector("#green-button").classList.add("disabled");
         }
     }
-
-    else if(gameData.phase === "finished"){
+    else if(gameStarted === true && isSpectator === true){
         disableButtons();
     }
-}
+    
 
 }
 
@@ -983,12 +1006,23 @@ function getIndexFromUsername(username){
 }
 
 function getUsernameFromIndex(index){
-    if(storeData[index]){
-        return storeData[index].username;
-    }
-    else {
-        return false;
-    }
+    // if(gameStarted === false){
+        if(storeData[index]){
+            return storeData[index].username;
+        }
+        else {
+            return false;
+        }    
+    // }
+    // else{
+    //     if(gameData[index]){
+    //         return gameData.username[index];
+    //     }
+    //     else{
+    //         return false;
+    //     }
+    // }
+    
 }
 
 function strOfAvatar(playerData, alliance){
@@ -997,7 +1031,7 @@ function strOfAvatar(playerData, alliance){
         if(playerData.avatarImgRes){
             picLink = playerData.avatarImgRes;
         } else{
-            picLink = 'base-res.png'    
+            picLink = 'base-res.png'
         }
     }
     else{

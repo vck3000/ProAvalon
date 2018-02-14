@@ -84,6 +84,8 @@ module.exports = function(host_, roomId_, io_){
 	//not including spectators
 	this.sockets = [];
 
+	this.socketsOfSpectators = [];
+
 
 
 	this.winner = "";
@@ -336,6 +338,46 @@ module.exports = function(host_, roomId_, io_){
 		}
 	};
 
+	this.getGameDataForSpectators = function(){
+		var playerRoles = this.playersInGame;
+
+		//set up the spectator data object
+		var data = {};
+
+		data.see = {};
+		data.see.spies = [];
+		data.see.merlins = [];
+
+		data.statusMessage = this.getStatusMessage();
+		data.missionNum = this.missionNum;
+		data.missionHistory = this.missionHistory;
+		data.pickNum = this.pickNum;
+		data.gameHistory = this.gameHistory;
+		data.teamLeader = this.teamLeader;
+		data.hammer = this.hammer;
+
+		data.playersYetToVote = this.playersYetToVote;
+		data.phase = this.phase;
+		data.proposedTeam = this.proposedTeam;
+
+		data.numPlayersOnMission = numPlayersOnMission[playerRoles.length - 5]; //- 5
+
+		data.votes = this.votes;
+		data.hammer = this.hammer;
+		data.winner = this.winner;
+
+		data.spectator = true;
+
+		//if game is finished, reveal everything including roles
+		if(this.phase === "finished"){
+			data.see.spies = this.getSpies(); 
+			data.see.roles = this.getRevealedRoles(); 
+			data.see.playerShot = this.playerShot;
+		}
+
+		return data;
+	}
+
 	this.getGameData = function(){
 		//get the player roles first
 		console.log("Get game data called within avalonRoom");
@@ -356,10 +398,8 @@ module.exports = function(host_, roomId_, io_){
 				username: playerRoles[i].username,
 				socketId: playerRoles[i].socketId
 			}
-		}
 
-		//add on these common variables
-		for(var i = 0; i < playerRoles.length; i++){
+			//add on these common variables:
 			data[i].statusMessage = this.getStatusMessage();
 			data[i].missionNum = this.missionNum;
 			data[i].missionHistory = this.missionHistory;
@@ -378,23 +418,20 @@ module.exports = function(host_, roomId_, io_){
 			data[i].hammer = this.hammer;
 			data[i].winner = this.winner;
 
+			data[i].spectator = false;
+
+
 			//if game is finished, reveal everything including roles
 			if(this.phase === "finished"){
 				data[i].see.spies = this.getSpies(); 
 				data[i].see.roles = this.getRevealedRoles(); 
 				data[i].see.playerShot = this.playerShot;
 			}
-
-			// console.log(data[i]);
-
 		}
-
-		// console.log("data: " + util.inspect(data, {depth: 4}));
-
-		return data;
+		return data; 
 	};
 
-	
+
 
 
 	//start game
@@ -514,6 +551,9 @@ module.exports = function(host_, roomId_, io_){
 		}
 	}
 
+	this.playerJoinRoom = function(socket){
+		this.socketsOfSpectators.push(socket);
+	}
 
 	this.playerJoinGame = function(socket){
 		//get a list of usernames in the game
@@ -525,12 +565,17 @@ module.exports = function(host_, roomId_, io_){
 		//when game hasnt started yet, add the person to the players in game
 		if(this.gameStarted === false){
 			this.sockets.push(socket);
+
+			//also remove them from the list of socketsOfSpectators
+			var i = this.socketsOfSpectators.indexOf(socket);
+			this.socketsOfSpectators.splice(i, 1);
+
 			return true;
 		} 
 		//if the player joining is already part of the game
 		else if(usernames.indexOf(socket.request.username) !== -1){
 			//this.sockets.push(socket);
-			return true;
+			return false;
 		} 
 		else{
 			console.log("Game has already started!");
@@ -545,6 +590,10 @@ module.exports = function(host_, roomId_, io_){
 			//get rid of their socket
 			var i = this.sockets.indexOf(socket);
 			this.sockets.splice(i, 1);
+
+			//also get rid of it in the socketsOfSpectators list
+			var i = this.socketsOfSpectators.indexOf(socket);
+			this.socketsOfSpectators.splice(i, 1);
 
 			if(this.sockets.length === 0){
 				console.log("Room: " + this.roomId + " is empty, destroying...");
@@ -576,6 +625,7 @@ module.exports = function(host_, roomId_, io_){
 				array[i].teamLeader = true;
 			}
 		}
+
 		return array;
 	};
 

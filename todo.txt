@@ -15,6 +15,7 @@ To-do list:
 -DISCUSSIONS
 -VH
 
+-Show number of fails
 
 
 
