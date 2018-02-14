@@ -53,6 +53,13 @@ document.querySelector("#backButton").addEventListener("click", function(){
     inRoom = false;
     //note do not reset our own username.
 
+
+    print_gameplay_text_game_started = false;
+    print_gameplay_text_picked_team = false;
+    print_gameplay_text_vote_results = false;
+    print_last_mission_num = 1;
+
+
     //reset room-chat 
     $(".room-chat-list").html("");
 
@@ -374,6 +381,7 @@ socket.on("update-status-message", function(data){
 var print_gameplay_text_game_started = false;
 var print_gameplay_text_picked_team = false;
 var print_gameplay_text_vote_results = false;
+var print_last_mission_num = 1;
 
 function printGameplayText() {
     // var date = "[" + data.date + "]";
@@ -386,6 +394,16 @@ function printGameplayText() {
         addToRoomChat(str);
 
         print_gameplay_text_game_started = true;
+
+        //sometimes I have some starting mission num so set it to that
+        //on game start
+        print_last_mission_num = gameData.missionNum;
+    }
+    else if((gameData.phase === "picking" || gameData.phase === "assassination") && print_last_mission_num !== gameData.missionNum){
+        var str = "<li class='gameplay-text'>" + "The mission: " + gameData.missionHistory[gameData.missionNum-2] + "!</li>"
+
+        addToRoomChat(str);
+        print_last_mission_num = gameData.missionNum;
     }
     else if(gameData.proposedTeam && gameData.proposedTeam.length > 0 && print_gameplay_text_picked_team === false){
         var start = "<li class='gameplay-text'>"
@@ -401,6 +419,8 @@ function printGameplayText() {
 
         addToRoomChat(str);
         print_gameplay_text_picked_team = true;
+        //reset this token
+        print_gameplay_text_vote_results = false;
     }  
     //storeData.length is the number of players in game
     else if(gameData.votes && gameData.votes.length >= storeData.length && gameData.votes.indexOf(null) === -1 && print_gameplay_text_vote_results === false){
@@ -430,12 +450,28 @@ function printGameplayText() {
             }
         }
 
-        var str =  start + "<p>Approved: " + approvedUsernames + "</p> <p>Rejected: " + rejectedUsernames + "</p>" + end;
+        var missionApproveStr = "";
+        if(gameData.phase === "missionVoting"){
+            missionApproveStr = "<p>Mission was approved!</p>"
+        }
 
-        // str = str + end;
+
+        var str =  start + missionApproveStr + "<p>Approved: " + approvedUsernames + "</p> <p>Rejected: " + rejectedUsernames + "</p>" + end;
 
         addToRoomChat(str);
         print_gameplay_text_vote_results = true;
+        //reset this token
+        print_gameplay_text_picked_team = false
+    }
+
+    else if(gameData.winner === "resistance" || gameData.winner === "spies"){
+        var start = "<li class='gameplay-text'>";
+        var end = "</li>";
+        var middle = "Game has finished, " + gameData.winner + " have won!";
+        
+        var str = start + middle + end;
+        
+        addToRoomChat(str);
     }
 
 
