@@ -184,13 +184,13 @@ module.exports = function(host_, roomId_, io_){
 			}
 
 			//for the gameplay message
-			if(outcome === "success"){
+			if(outcome === "succeeded"){
 				this.gameplayMessage = "The mission succeeded!";
 			}
-			else if(outcome === "fail"){
+			else if(outcome === "failed"){
 				//get number of fails
 				var numOfVotedFails = 0;
-				for(var i = 0; i < this.missionVotes; i++){
+				for(var i = 0; i < this.missionVotes.length; i++){
 					if(this.missionVotes[i] === "fail"){
 						numOfVotedFails++;
 					}

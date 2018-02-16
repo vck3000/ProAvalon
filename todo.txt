@@ -19,6 +19,7 @@ To-do list:
 
 -Require everyone to press ready before starting game
 
+-make res not able to fail
 
 
 

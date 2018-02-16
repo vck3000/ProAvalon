@@ -58,6 +58,9 @@ router.get("/logout", function(req, res){
 	});	
 });
 
+router.get("/log", function(req, res){
+	res.render("log");
+})
 
 
 //=====================================
