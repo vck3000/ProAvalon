@@ -26,3 +26,34 @@ Done:
 -Sometimes when a single player in the room refreshes, causes whole server to crash
 
 -Add in who rej, who app
+
+
+
+List of suggestions
+•	Private/public games. Adding passwords
+•	Displaying name/number of room in this room
+•	Changing properties of game in room such as ranked/unranked or Avalon/resistance
+•	Res-only chat
+•	Option to remake game, without creating new
+•	Custom name rooms
+•	/Buzzall option (something like this is good, but private players prolly don’t want be buzzed)
+•	Coloring chat (choosing own color or for others)
+•	Showing host/all players in room
+•	Option to alone upload avatars and rating them, so image may be banned (I don’t like it)
+•	Match history
+•	Disable copying certain texts (maybe useful link http://stackoverflow.com/questions/8957443/prevent-copying-text-in-web-page/12021733#12021733)
+•	Seperating different players chat
+•	Readjusting approve/reject button (they aren’t so close and are always at same place)
+•	Mvp voting after game (I don’t like it)
+•	Levels
+•	Assassination clock and picking/voting clock (I like having infinity time for everything, but maybe its good to have some clock)
+•	Button to res/spy another player
+•	Vote history always visible
+•	Fitting game room better in browser (done) 
+•	Logout button (done)
+•	Better SEO(in progress, Tony wrote it so maybe he knows something about it)
+•	Sorting posts on forum
+•	Mark as read in forum
+•	Display fail/success in vote history
+
+also from old suggestion:anonymous mode

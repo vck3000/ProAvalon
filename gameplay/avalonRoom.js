@@ -73,6 +73,7 @@ module.exports = function(host_, roomId_, io_){
 	this.proposedTeam = [];
 	this.votes = [];
 	this.missionVotes = [];
+	this.gameplayMessage = "";
 
 	this.phase = "picking";
 	this.playerShot;
@@ -182,6 +183,22 @@ module.exports = function(host_, roomId_, io_){
 				console.log("ERROR! Outcome was: " + outcome);
 			}
 
+			//for the gameplay message
+			if(outcome === "success"){
+				this.gameplayMessage = "The mission succeeded!";
+			}
+			else if(outcome === "fail"){
+				//get number of fails
+				var numOfVotedFails = 0;
+				for(var i = 0; i < this.missionVotes; i++){
+					if(this.missionVotes[i] === "fail"){
+						numOfVotedFails++;
+					}
+				}
+				this.gameplayMessage = "The mission failed with " + numOfVotedFails + " fails!";
+			}
+			
+
 			this.phase = "picking";
 			this.missionNum++;
 			this.pickNum = 1;
@@ -259,6 +276,9 @@ module.exports = function(host_, roomId_, io_){
 				
 				this.phase = "missionVoting";
 				this.playersYetToVote = this.proposedTeam;
+
+				
+				this.gameplayMessage = "Mission " + this.missionNum + "." + this.pickNum + " was approved!" + getStrApprovedRejectedPlayers(this.votes, this.playersInGame);
 			}
 			else if(this.pickNum >= 5 && outcome === "rejected"){
 				console.log("--------------------------");
@@ -273,9 +293,13 @@ module.exports = function(host_, roomId_, io_){
 				//finish the game, spies have won
 				//send through winner
 				this.finishGame("spy");
+
+				// this.gameplayMessage = "Spies have won!";
 			}
 			else if(outcome === "rejected"){
 				this.phase = "picking";
+
+				this.gameplayMessage = "Mission " + this.missionNum + "." + this.pickNum + " was rejected!" + getStrApprovedRejectedPlayers(this.votes, this.playersInGame);
 			}
 
 			//move to next team Leader, and reset it back to the start if 
@@ -285,11 +309,14 @@ module.exports = function(host_, roomId_, io_){
 				this.teamLeader = this.sockets.length - 1; 
 			}
 
-			//CHANGE THIS TO BE EITHER PICKING OR SUCCEED FAIL PHASE
+			
+
 		}
 
 		console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, {depth: 2}));
 	}
+
+	
 
 	this.playerPickTeam = function(socket, pickedTeam){
 		//reset the votes:
@@ -313,6 +340,8 @@ module.exports = function(host_, roomId_, io_){
 			this.phase = "voting";
 			//players yet to vote are all players in game
 			this.playersYetToVote = this.getUsernamesInGame();
+
+			this.gameplayMessage = socket.request.user.username + " has picked: " + pickedTeam;
 		}
 		else{
 			console.log("You are not the team leader, you cannot make a pick");
@@ -366,6 +395,8 @@ module.exports = function(host_, roomId_, io_){
 		data.hammer = this.hammer;
 		data.winner = this.winner;
 
+		data.gameplayMessage = this.gameplayMessage;
+
 		data.spectator = true;
 
 		//if game is finished, reveal everything including roles
@@ -417,6 +448,8 @@ module.exports = function(host_, roomId_, io_){
 			data[i].votes = this.votes;
 			data[i].hammer = this.hammer;
 			data[i].winner = this.winner;
+
+			data[i].gameplayMessage = this.gameplayMessage;
 
 			data[i].spectator = false;
 
@@ -507,6 +540,8 @@ module.exports = function(host_, roomId_, io_){
 		this.missionNum = 4; 
 		this.pickNum = 3;
 		this.missionHistory = ["succeeded", "failed", "succeeded"];
+
+		this.gameplayMessage = "Game started!";
 
 		return true;
 	};
@@ -712,6 +747,10 @@ function getIndexFromUsername(sockets, username){
 	}
 }
 
+function getUsernameFromIndex(index, playersInGame){
+	return playersInGame[index].username;
+}
+
 function calcMissionVotes(votes){
 	//note we may not have all the votes from every person
 	//e.g. may look like "fail", "undef.", "success"
@@ -779,3 +818,25 @@ function calcVotes(votes){
 
 	return outcome;
 }
+
+function getStrApprovedRejectedPlayers(votes, playersInGame){
+		var approvedUsernames = "";
+		var rejectedUsernames = "";
+
+		for(var i = 0; i < votes.length; i++){
+
+			if(votes[i] === "approve"){
+				approvedUsernames = approvedUsernames + getUsernameFromIndex(i, playersInGame) + ", ";
+			}
+			else if(votes[i] === "reject"){
+				rejectedUsernames = rejectedUsernames + getUsernameFromIndex(i, playersInGame) + ", ";
+			}
+			else{
+				console.log("ERROR! Unknown vote: " + gameData.votes[i]);
+			}
+		}
+
+		var str = "<p>Approved: " + approvedUsernames + "</p> <p>Rejected: " + rejectedUsernames + "</p>"
+
+		return str;
+	}

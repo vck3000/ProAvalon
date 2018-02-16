@@ -369,7 +369,7 @@ socket.on("game-data", function(data){
 
         if(option_print_gameplay_text === true){
             console.log("printgameplayText");
-            printGameplayText();
+            newPrintGameplayText();
         }
         
         draw(storeData);
@@ -385,101 +385,55 @@ socket.on("update-status-message", function(data){
 //======================================
 //FUNCTIONS
 //======================================
-var print_gameplay_text_game_started = false;
-var print_gameplay_text_picked_team = false;
-var print_gameplay_text_vote_results = false;
-var print_last_mission_num = 1;
+var oldGameplayText = "";
+function newPrintGameplayText(){
+    if(gameData && gameData.gameplayMessage !== oldGameplayText){
+        var str = "<li class='gameplay-text'>" + gameData.gameplayMessage + "</li>";
 
-function printGameplayText() {
-    // var date = "[" + data.date + "]";
-    // var str = "<li class=other><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + data.message;
-
-    console.log("var is: " + print_gameplay_text_vote_results);
-
-    if(gameStarted === true && print_gameplay_text_game_started === false){
-        var str = "<li class='gameplay-text'>Game started!</li>";
         addToRoomChat(str);
 
-        print_gameplay_text_game_started = true;
-
-        //sometimes I have some starting mission num so set it to that
-        //on game start
-        print_last_mission_num = gameData.missionNum;
+        oldGameplayText = gameData.gameplayMessage;
     }
-    else if((gameData.phase === "picking" || gameData.phase === "assassination") && print_last_mission_num !== gameData.missionNum){
-        var str = "<li class='gameplay-text'>" + "The mission: " + gameData.missionHistory[gameData.missionNum-2] + "!</li>"
-
-        addToRoomChat(str);
-        print_last_mission_num = gameData.missionNum;
-    }
-    else if(gameData.proposedTeam && gameData.proposedTeam.length > 0 && print_gameplay_text_picked_team === false){
-        var start = "<li class='gameplay-text'>"
-        var end = "</li>"
-
-        var str =  start + getUsernameFromIndex(gameData.teamLeader) + " picked: " 
-        
-        for(var i = 0; i < gameData.proposedTeam.length; i++){
-            str = str + gameData.proposedTeam[i] + ", ";
-        }
-
-        str = str + end;
-
-        addToRoomChat(str);
-        print_gameplay_text_picked_team = true;
-        //reset this token
-        print_gameplay_text_vote_results = false;
-    }  
-    //storeData.length is the number of players in game
-    else if(gameData.votes && gameData.votes.length >= storeData.length && gameData.votes.indexOf(null) === -1 && print_gameplay_text_vote_results === false){
-        var start = "<li class='gameplay-text'>";
-        var end = "</li>";
-        
-        var approvedUsernames = "";
-        var rejectedUsernames = "";
-
-        console.log("length: " + gameData.votes.length);
-
-        for(var i = 0; i < gameData.votes.length; i++){
-            console.log(gameData.votes[i]);
-
-            if(gameData.votes[i] === "approve"){
-                console.log("approved added: " + getUsernameFromIndex(i));
-                approvedUsernames = approvedUsernames + getUsernameFromIndex(i) + ", ";
-            }
-            else if(gameData.votes[i] === "reject"){
-                console.log("reject added: " + getUsernameFromIndex(i));
-                rejectedUsernames = rejectedUsernames + getUsernameFromIndex(i) + ", ";
-            }
-            else{
-                console.log("ERROR! Unknown vote: " + gameData.votes[i]);
-            }
-        }
-
-        var missionApproveStr = "";
-        if(gameData.phase === "missionVoting"){
-            missionApproveStr = "<p>Mission was approved!</p>"
-        }
-
-        var str =  start + missionApproveStr + "<p>Approved: " + approvedUsernames + "</p> <p>Rejected: " + rejectedUsernames + "</p>" + end;
-
-        addToRoomChat(str);
-        print_gameplay_text_vote_results = true;
-        //reset this token
-        print_gameplay_text_picked_team = false
-    }
-
-    else if(gameData.winner === "resistance" || gameData.winner === "spies"){
-        var start = "<li class='gameplay-text'>";
-        var end = "</li>";
-        var middle = "Game has finished, " + gameData.winner + " have won!";
-        
-        var str = start + middle + end;
-        
-        addToRoomChat(str);
-    }
-
-
 }
+
+
+//     else if(gameData.votes && gameData.votes.length >= storeData.length && gameData.votes.indexOf(null) === -1 && print_gameplay_text_vote_results === false){
+//         var start = "<li class='gameplay-text'>";
+//         var end = "</li>";
+        
+//         var approvedUsernames = "";
+//         var rejectedUsernames = "";
+
+//         console.log("length: " + gameData.votes.length);
+
+//         for(var i = 0; i < gameData.votes.length; i++){
+//             console.log(gameData.votes[i]);
+
+//             if(gameData.votes[i] === "approve"){
+//                 console.log("approved added: " + getUsernameFromIndex(i));
+//                 approvedUsernames = approvedUsernames + getUsernameFromIndex(i) + ", ";
+//             }
+//             else if(gameData.votes[i] === "reject"){
+//                 console.log("reject added: " + getUsernameFromIndex(i));
+//                 rejectedUsernames = rejectedUsernames + getUsernameFromIndex(i) + ", ";
+//             }
+//             else{
+//                 console.log("ERROR! Unknown vote: " + gameData.votes[i]);
+//             }
+//         }
+
+//         var missionApproveStr = "";
+//         if(gameData.phase === "missionVoting"){
+//             missionApproveStr = "<p>Mission was approved!</p>"
+//         }
+
+//         var str =  start + missionApproveStr + "<p>Approved: " + approvedUsernames + "</p> <p>Rejected: " + rejectedUsernames + "</p>" + end;
+
+//         addToRoomChat(str);
+//         print_gameplay_text_vote_results = true;
+//         //reset this token
+//         print_gameplay_text_picked_team = false
+//     }
 
 function redButtonFunction() {
     if(document.querySelector("#red-button").classList.contains("disabled") === false){
