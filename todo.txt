@@ -6,11 +6,7 @@ To-do list:
 -Spam filter?
 -Maximum length to a single chat message
 
-
- 
-
-
-
+-bigger avatars?
 
 -DISCUSSIONS
 -VH
@@ -20,6 +16,10 @@ To-do list:
 
 -make res not able to fail
 
+-role customisation
+-starting screen select options for start
+
+-hammer star might be in wrong position
 
 
 Done: 

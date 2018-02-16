@@ -8,6 +8,7 @@ var User = require("../models/user");
 mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
 // var sockets = [];
 
+var minPlayers = 1;
 // var host;
 
 // var roomId;
@@ -74,6 +75,8 @@ module.exports = function(host_, roomId_, io_){
 	this.votes = [];
 	this.missionVotes = [];
 	this.gameplayMessage = "";
+
+	this.voteHistory = {};
 
 	this.phase = "picking";
 	this.playerShot;
@@ -239,7 +242,6 @@ module.exports = function(host_, roomId_, io_){
 				this.finishGame("res");
 				console.log("RES WON, NOW GOING INTO ASSASSINATION");
 			}
-
 		}
 		console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, {depth: 2}));
 	}
@@ -400,6 +402,7 @@ module.exports = function(host_, roomId_, io_){
 		data.numPlayersOnMission = numPlayersOnMission[playerRoles.length - 5]; //- 5
 
 		data.votes = this.votes;
+		data.voteHistory = this.voteHistory;
 		data.hammer = this.hammer;
 		data.winner = this.winner;
 
@@ -451,9 +454,10 @@ module.exports = function(host_, roomId_, io_){
 			data[i].phase = this.phase;
 			data[i].proposedTeam = this.proposedTeam;
 
-			data[i].numPlayersOnMission = numPlayersOnMission[playerRoles.length - 5]; //- 5
+			data[i].numPlayersOnMission = numPlayersOnMission[playerRoles.length - minPlayers]; //- 5
 
 			data[i].votes = this.votes;
+			data[i].voteHistory = this.voteHistory;
 			data[i].hammer = this.hammer;
 			data[i].winner = this.winner;
 
@@ -478,7 +482,7 @@ module.exports = function(host_, roomId_, io_){
 	//start game
 	this.startGame = function(){
 
-		if(this.sockets.length < 5){
+		if(this.sockets.length < minPlayers){
 			//NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
 			console.log("Not enough players.");
 			return false;
@@ -550,6 +554,27 @@ module.exports = function(host_, roomId_, io_){
 		this.missionHistory = ["succeeded", "failed", "succeeded"];
 
 		this.gameplayMessage = "Game started!";
+
+		for(var i = 0; i < this.sockets.length; i++){
+			this.voteHistory[this.sockets[i].request.user.username] = [];
+		}
+		
+		//seed some data into the vote history
+		this.voteHistory["123"][0] = [];
+		this.voteHistory["123"][0][0] = "approve";
+		this.voteHistory["123"][0][1] = "reject";
+		this.voteHistory["123"][0][2] = "approve";
+		this.voteHistory["123"][0][3] = "reject";
+
+		this.voteHistory["123"][1] = [];
+		this.voteHistory["123"][1][0] = "approve";
+		this.voteHistory["123"][1][1] = "approve";
+		
+		this.voteHistory["123"][2] = [];
+		this.voteHistory["123"][2][0] = ["reject"];
+		this.voteHistory["123"][2][1] = ["reject"];
+
+		this.voteHistory["123"][3] = [];
 
 		return true;
 	};

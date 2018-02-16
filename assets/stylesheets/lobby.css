@@ -326,3 +326,13 @@ p {
 	border: solid 5px red;
 	border-radius: 10px;
 }
+
+
+
+
+
+
+/*Vote history*/
+table, th, td {
+    border: 1px solid black;
+}

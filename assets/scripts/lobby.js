@@ -372,6 +372,7 @@ socket.on("game-data", function(data){
             newPrintGameplayText();
         }
         
+        drawVoteHistory(gameData);
         draw(storeData);
     } 
 });
@@ -400,7 +401,7 @@ function newPrintGameplayText(){
 //     else if(gameData.votes && gameData.votes.length >= storeData.length && gameData.votes.indexOf(null) === -1 && print_gameplay_text_vote_results === false){
 //         var start = "<li class='gameplay-text'>";
 //         var end = "</li>";
-        
+
 //         var approvedUsernames = "";
 //         var rejectedUsernames = "";
 
@@ -573,7 +574,7 @@ function draw(){
 
 function drawBullet(indexOfPlayer){
 
-    //set the div string and add the star
+    //set the div string and add the star\\
     var str = $("#mainRoomBox div")[indexOfPlayer].innerHTML;
     str = str + "<span><img src='bullet.png' class='bullet'></span>";
     //update the str in the div
@@ -597,7 +598,6 @@ function drawVotes(votes){
             document.querySelectorAll("#mainRoomBox div")[i].classList.remove("reject");
         }  
     }
-
 }
 
 
@@ -1083,4 +1083,61 @@ function generatePlayerLocations(numOfPlayers, a, b){
         y: y_
     }
     return object;
+}
+
+
+
+
+function drawVoteHistory(data){
+
+    var str = "";
+
+    //top row where missions are displayed
+    //extra <td> set is for the top left corner of the table
+    str += "<tr><td></td>"; 
+    
+    for(var i = 0; i < data.missionNum; i++){
+        str += "<td>M" + (i + 1) + "</td>";
+    }
+    str += "</tr>";
+
+
+
+    //for every username
+    for (var key in data.voteHistory) {
+        if (data.voteHistory.hasOwnProperty(key)) {
+            // console.log(key + " -> " + data.voteHistory[key]);
+            str += "<tr>";
+            //print username in the first column
+            str += "<td>" + key + "</td>";   
+
+            //Individual mission voteHistory
+            //for every mission
+            for(var i = 0; i < data.voteHistory[key].length; i++){
+                str += "<td>";
+
+                //for every pick
+                for(var j = 0; j < data.voteHistory[key][i].length; j++){
+                    str += "<td>";
+
+
+                    str += "</td>";
+                }
+
+                str += "</td>";
+            }
+
+
+
+
+
+            str +="</tr>"
+        }
+    }
+
+
+
+    $("#voteHistoryTable")[0].innerHTML = str;
+
+
 }
