@@ -17,6 +17,8 @@ To-do list:
 
 -Show number of fails
 
+-Require everyone to press ready before starting game
+
 
 
 

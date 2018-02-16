@@ -269,7 +269,7 @@ module.exports = function(host_, roomId_, io_){
 
 			//this.proposedTeam = [];
 
-			this.pickNum++;
+			
 			//if team was approved, then reset pickNum
 			//and increment missionNum
 			if(outcome === "approved"){
@@ -310,7 +310,7 @@ module.exports = function(host_, roomId_, io_){
 			}
 
 			
-
+			this.pickNum++;
 		}
 
 		console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, {depth: 2}));
