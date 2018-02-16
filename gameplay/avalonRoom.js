@@ -111,6 +111,14 @@ module.exports = function(host_, roomId_, io_){
 		//game clean up
 		this.finished = true;
 		this.phase = "finished";
+
+		if(this.winner === "spies"){
+			this.gameplayMessage = "The spies have won the game!";
+		}
+		else if(this.winner === "resistance"){
+			this.gameplayMessage = "The resistance have won the game!";
+
+		}
 	}
 
 	this.assassinate = function(socket, target){
@@ -820,23 +828,23 @@ function calcVotes(votes){
 }
 
 function getStrApprovedRejectedPlayers(votes, playersInGame){
-		var approvedUsernames = "";
-		var rejectedUsernames = "";
+	var approvedUsernames = "";
+	var rejectedUsernames = "";
 
-		for(var i = 0; i < votes.length; i++){
+	for(var i = 0; i < votes.length; i++){
 
-			if(votes[i] === "approve"){
-				approvedUsernames = approvedUsernames + getUsernameFromIndex(i, playersInGame) + ", ";
-			}
-			else if(votes[i] === "reject"){
-				rejectedUsernames = rejectedUsernames + getUsernameFromIndex(i, playersInGame) + ", ";
-			}
-			else{
-				console.log("ERROR! Unknown vote: " + gameData.votes[i]);
-			}
+		if(votes[i] === "approve"){
+			approvedUsernames = approvedUsernames + getUsernameFromIndex(i, playersInGame) + ", ";
 		}
-
-		var str = "<p>Approved: " + approvedUsernames + "</p> <p>Rejected: " + rejectedUsernames + "</p>"
-
-		return str;
+		else if(votes[i] === "reject"){
+			rejectedUsernames = rejectedUsernames + getUsernameFromIndex(i, playersInGame) + ", ";
+		}
+		else{
+			console.log("ERROR! Unknown vote: " + gameData.votes[i]);
+		}
 	}
+
+	var str = "<p>Approved: " + approvedUsernames + "</p> <p>Rejected: " + rejectedUsernames + "</p>"
+
+	return str;
+}

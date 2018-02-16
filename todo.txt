@@ -6,16 +6,15 @@ To-do list:
 -Spam filter?
 -Maximum length to a single chat message
 
--Add gameplay text in game chat
+
  
 
 
--SPECTATOR MODE	
+
 
 -DISCUSSIONS
 -VH
 
--Show number of fails
 
 -Require everyone to press ready before starting game
 
@@ -25,11 +24,11 @@ To-do list:
 
 Done: 
 -two tabs logged into same account
-
 -Sometimes when a single player in the room refreshes, causes whole server to crash
-
 -Add in who rej, who app
-
+-Show number of fails
+-Add gameplay text in game chat
+-SPECTATOR MODE	
 
 
 List of suggestions
