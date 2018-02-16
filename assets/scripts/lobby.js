@@ -555,7 +555,10 @@ function draw(){
             else if(gameData.phase === "finished"){
                 document.querySelector("#status").innerText = gameData.statusMessage;
                 enableDisableButtons();
-                drawBullet(getIndexFromUsername(gameData.see.playerShot));
+                if(gameData.see.playerShot){
+                    drawBullet(getIndexFromUsername(gameData.see.playerShot));
+                }
+                
 
             }
 
