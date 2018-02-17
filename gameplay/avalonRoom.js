@@ -560,6 +560,7 @@ module.exports = function(host_, roomId_, io_){
 		}
 		
 		//seed some data into the vote history
+		this.voteHistory["123"] = [];
 		this.voteHistory["123"][0] = [];
 		this.voteHistory["123"][0][0] = "approve";
 		this.voteHistory["123"][0][1] = "reject";
