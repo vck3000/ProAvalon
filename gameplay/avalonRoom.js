@@ -8,7 +8,7 @@ var User = require("../models/user");
 mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
 // var sockets = [];
 
-var minPlayers = 1;
+var minPlayers = 5;
 // var host;
 
 // var roomId;
@@ -556,7 +556,7 @@ module.exports = function(host_, roomId_, io_){
 		this.gameplayMessage = "Game started!";
 
 		for(var i = 0; i < this.sockets.length; i++){
-			this.voteHistory[this.sockets[i].request.user.username] = [];
+			// this.voteHistory[this.sockets[i].request.user.username] = [];
 		}
 		
 		//seed some data into the vote history
