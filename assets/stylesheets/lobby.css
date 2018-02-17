@@ -327,8 +327,14 @@ p {
 	border-radius: 10px;
 }
 
-
-
+.approveVH {
+	border: 1px black solid;
+	background-color: green;
+}
+.rejectVH {
+	border: 1px black solid;
+	background-color: red;
+}
 
 
 

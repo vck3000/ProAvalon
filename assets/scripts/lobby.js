@@ -1090,6 +1090,8 @@ function generatePlayerLocations(numOfPlayers, a, b){
 
 function drawVoteHistory(data){
 
+    var numOfPicksPerMission = [];
+
     var str = "";
 
     //top row where missions are displayed
@@ -1097,7 +1099,7 @@ function drawVoteHistory(data){
     str += "<tr><td></td>"; 
     
     for(var i = 0; i < data.missionNum; i++){
-        str += "<td>M" + (i + 1) + "</td>";
+        str += "<td style='width: 7em;' colspan='' id='missionHeader" + (i + 1) + "'>M" + (i + 1) + "</td>";
     }
     str += "</tr>";
 
@@ -1114,17 +1116,16 @@ function drawVoteHistory(data){
             //Individual mission voteHistory
             //for every mission
             for(var i = 0; i < data.voteHistory[key].length; i++){
-                str += "<td>";
+                numOfPicksPerMission[i] = 0;
 
                 //for every pick
                 for(var j = 0; j < data.voteHistory[key][i].length; j++){
-                    str += "<td>";
+                    str += "<td class=" + data.voteHistory[key][i][j] + "VH>";
 
 
                     str += "</td>";
+                    numOfPicksPerMission[i]++;
                 }
-
-                str += "</td>";
             }
 
 
@@ -1139,5 +1140,10 @@ function drawVoteHistory(data){
 
     $("#voteHistoryTable")[0].innerHTML = str;
 
+    //set the right colspans for the mission headers
+    for(var i = 0; i < numOfPicksPerMission.length; i++){
+        var id = "#missionHeader" + (i + 1);
+        $(id).attr("colspan", numOfPicksPerMission[i]);
+    }
 
 }

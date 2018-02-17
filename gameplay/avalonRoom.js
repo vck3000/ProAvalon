@@ -399,7 +399,7 @@ module.exports = function(host_, roomId_, io_){
 		data.phase = this.phase;
 		data.proposedTeam = this.proposedTeam;
 
-		data.numPlayersOnMission = numPlayersOnMission[playerRoles.length - 5]; //- 5
+		data.numPlayersOnMission = numPlayersOnMission[playerRoles.length - minPlayers]; //- 5
 
 		data.votes = this.votes;
 		data.voteHistory = this.voteHistory;
@@ -575,6 +575,44 @@ module.exports = function(host_, roomId_, io_){
 		this.voteHistory["123"][2][1] = ["reject"];
 
 		this.voteHistory["123"][3] = [];
+		this.voteHistory["123"][3][0] = undefined;
+
+		this.voteHistory["1"] = [];
+		this.voteHistory["1"][0] = [];
+		this.voteHistory["1"][0][0] = "approve";
+		this.voteHistory["1"][0][1] = "approve";
+		this.voteHistory["1"][0][2] = "approve";
+		this.voteHistory["1"][0][3] = "approve";
+
+		this.voteHistory["1"][1] = [];
+		this.voteHistory["1"][1][0] = "approve";
+		this.voteHistory["1"][1][1] = "approve";
+		
+		this.voteHistory["1"][2] = [];
+		this.voteHistory["1"][2][0] = ["reject"];
+		this.voteHistory["1"][2][1] = ["reject"];
+
+		this.voteHistory["1"][3] = [];
+		this.voteHistory["1"][3][0] = undefined;
+
+
+		this.voteHistory["2"] = [];
+		this.voteHistory["2"][0] = [];
+		this.voteHistory["2"][0][0] = "approve";
+		this.voteHistory["2"][0][1] = "reject";
+		this.voteHistory["2"][0][2] = "reject";
+		this.voteHistory["2"][0][3] = "reject";
+
+		this.voteHistory["2"][1] = [];
+		this.voteHistory["2"][1][0] = "reject";
+		this.voteHistory["2"][1][1] = "reject";
+		
+		this.voteHistory["2"][2] = [];
+		this.voteHistory["2"][2][0] = ["reject"];
+		this.voteHistory["2"][2][1] = ["reject"];
+
+		this.voteHistory["2"][3] = [];
+		this.voteHistory["2"][3][0] = undefined;
 
 		return true;
 	};
