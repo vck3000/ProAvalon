@@ -974,7 +974,8 @@ function getStrApprovedRejectedPlayers(votes, playersInGame){
 		}
 	}
 
-	var str = "<p>Approved: " + approvedUsernames + "</p> <p>Rejected: " + rejectedUsernames + "</p>"
+	// var str = "<p>Approved: " + approvedUsernames + "</p> <p>Rejected: " + rejectedUsernames + "</p>"
+	var str = "";
 
 	return str;
 }
