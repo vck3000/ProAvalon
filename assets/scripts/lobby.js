@@ -1099,7 +1099,7 @@ function drawVoteHistory(data){
     str += "<tr><td></td>"; 
     
     for(var i = 0; i < data.missionNum; i++){
-        str += "<td style='width: 7em;' colspan='' id='missionHeader" + (i + 1) + "'>M" + (i + 1) + "</td>";
+        str += "<td style='width: 11em;' colspan='' id='missionHeader" + (i + 1) + "'>M" + (i + 1) + "</td>";
     }
     str += "</tr>";
 
@@ -1120,7 +1120,8 @@ function drawVoteHistory(data){
 
                 //for every pick
                 for(var j = 0; j < data.voteHistory[key][i].length; j++){
-                    str += "<td class=" + data.voteHistory[key][i][j] + "VH>";
+                    console.log(data.voteHistory[key][i][j]);
+                    str += "<td class='" + data.voteHistory[key][i][j] + "''>";
 
 
                     str += "</td>";

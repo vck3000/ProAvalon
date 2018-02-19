@@ -312,6 +312,21 @@ module.exports = function(host_, roomId_, io_){
 				this.gameplayMessage = "Mission " + this.missionNum + "." + this.pickNum + " was rejected!" + getStrApprovedRejectedPlayers(this.votes, this.playersInGame);
 			}
 
+			//VH:
+			for(var i = 0; i < this.sockets.length; i++){
+				if(this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1] === undefined){
+					this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1] = [];
+				}
+				if(this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1][this.pickNum-1] === undefined){
+					console.log("Clear leader and picked from pickVote");
+					this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1][this.pickNum-1] = "";
+				}
+
+				this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1][this.pickNum-1] += ("VH" + this.votes[i]);
+
+			}
+
+
 			//move to next team Leader, and reset it back to the start if 
 			//we go into negative numbers
 			this.teamLeader--;
@@ -352,33 +367,82 @@ module.exports = function(host_, roomId_, io_){
 			this.playersYetToVote = this.getUsernamesInGame();
 
 			this.gameplayMessage = socket.request.user.username + " has picked: " + pickedTeam;
-		}
-		else{
-			console.log("You are not the team leader, you cannot make a pick");
-		}
+
+			//VH:
+			for(var i = 0; i < this.sockets.length; i++){
+				if(this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1] === undefined){
+					this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1] = [];
+				}
+				if(this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1][this.pickNum-1] === undefined){
+					console.log("Clear leader and picked from playerPickTeam");
+					this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1][this.pickNum-1] = "";
+				}
+
+
+				if(this.proposedTeam.indexOf(this.sockets[i].request.user.username) !== -1){
+					this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1][this.pickNum-1] += "VHpicked ";
+				}
+
+				if(i === this.teamLeader){
+					this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1][this.pickNum-1] += "VHleader ";
+				}
+			}
+
+
+		// this.voteHistory["123"] = [];
+		// this.voteHistory["123"][0] = [];
+		// this.voteHistory["123"][0][0] = "VHapprove";
+		// this.voteHistory["123"][0][1] = "VHreject VHpicked";
+		// this.voteHistory["123"][0][2] = "VHapprove";
+		// this.voteHistory["123"][0][3] = "VHreject";
+
+		// this.voteHistory["123"][1] = [];
+		// this.voteHistory["123"][1][0] = "VHapprove";
+		// this.voteHistory["123"][1][1] = "VHapprove";
+		
+		// this.voteHistory["123"][2] = [];
+		// this.voteHistory["123"][2][0] = "VHreject";
+		// this.voteHistory["123"][2][1] = "VHreject";
+
+		// this.voteHistory["123"][3] = [];
+		// this.voteHistory["123"][3][0] = undefined;
+
+		// this.voteHistory["1"] = [];
+		// this.voteHistory["1"][0] = [];
+		// this.voteHistory["1"][0][0] = "VHapprove VHpicked VHleader";
+		// this.voteHistory["1"][0][1] = "VHapprove";
+		// this.voteHistory["1"][0][2] = "VHapprove";
+		// this.voteHistory["1"][0][3] = "VHapprove";
+
+
+
 	}
+	else{
+		console.log("You are not the team leader, you cannot make a pick");
+	}
+}
 
-	this.getStatusMessage = function(){
-		if(this.phase === "picking"){
-			console.log(this.teamLeader);
-			var str = "Waiting on " + this.playersInGame[this.teamLeader].username + " to pick.";
-			return str;
-		} 
-		else if(this.phase === "voting"){
-			var str = "Voting phase";
-			return str;
-		}
-		else if(this.phase === "finished"){
-			var str = "Game has finished! The " + this.winner + " have won!";
-			return str;
-		}
-		else{
-			return false;
-		}
-	};
+this.getStatusMessage = function(){
+	if(this.phase === "picking"){
+		console.log(this.teamLeader);
+		var str = "Waiting on " + this.playersInGame[this.teamLeader].username + " to pick.";
+		return str;
+	} 
+	else if(this.phase === "voting"){
+		var str = "Voting phase";
+		return str;
+	}
+	else if(this.phase === "finished"){
+		var str = "Game has finished! The " + this.winner + " have won!";
+		return str;
+	}
+	else{
+		return false;
+	}
+};
 
-	this.getGameDataForSpectators = function(){
-		var playerRoles = this.playersInGame;
+this.getGameDataForSpectators = function(){
+	var playerRoles = this.playersInGame;
 
 		//set up the spectator data object
 		var data = {};
@@ -549,71 +613,73 @@ module.exports = function(host_, roomId_, io_){
 		this.teamLeader = getRandomInt(0,this.sockets.length);
 		this.hammer = ((this.teamLeader - 5 + this.sockets.length) % this.sockets.length);
 
-		this.missionNum = 4; 
-		this.pickNum = 3;
-		this.missionHistory = ["succeeded", "failed", "succeeded"];
+		this.missionNum = 1; 
+		this.pickNum = 1;
+		// this.missionHistory = ["succeeded", "failed", "succeeded"];
+		this.missionHistory = [];
 
 		this.gameplayMessage = "Game started!";
 
+		//seed the starting data into the VH
 		for(var i = 0; i < this.sockets.length; i++){
-			// this.voteHistory[this.sockets[i].request.user.username] = [];
+			this.voteHistory[this.sockets[i].request.user.username] = [];
 		}
 		
 		//seed some data into the vote history
-		this.voteHistory["123"] = [];
-		this.voteHistory["123"][0] = [];
-		this.voteHistory["123"][0][0] = "approve";
-		this.voteHistory["123"][0][1] = "reject";
-		this.voteHistory["123"][0][2] = "approve";
-		this.voteHistory["123"][0][3] = "reject";
+		// this.voteHistory["123"] = [];
+		// this.voteHistory["123"][0] = [];
+		// this.voteHistory["123"][0][0] = "VHapprove";
+		// this.voteHistory["123"][0][1] = "VHreject VHpicked";
+		// this.voteHistory["123"][0][2] = "VHapprove";
+		// this.voteHistory["123"][0][3] = "VHreject";
 
-		this.voteHistory["123"][1] = [];
-		this.voteHistory["123"][1][0] = "approve";
-		this.voteHistory["123"][1][1] = "approve";
+		// this.voteHistory["123"][1] = [];
+		// this.voteHistory["123"][1][0] = "VHapprove";
+		// this.voteHistory["123"][1][1] = "VHapprove";
 		
-		this.voteHistory["123"][2] = [];
-		this.voteHistory["123"][2][0] = ["reject"];
-		this.voteHistory["123"][2][1] = ["reject"];
+		// this.voteHistory["123"][2] = [];
+		// this.voteHistory["123"][2][0] = "VHreject";
+		// this.voteHistory["123"][2][1] = "VHreject";
 
-		this.voteHistory["123"][3] = [];
-		this.voteHistory["123"][3][0] = undefined;
+		// this.voteHistory["123"][3] = [];
+		// this.voteHistory["123"][3][0] = undefined;
 
-		this.voteHistory["1"] = [];
-		this.voteHistory["1"][0] = [];
-		this.voteHistory["1"][0][0] = "approve";
-		this.voteHistory["1"][0][1] = "approve";
-		this.voteHistory["1"][0][2] = "approve";
-		this.voteHistory["1"][0][3] = "approve";
+		// this.voteHistory["1"] = [];
+		// this.voteHistory["1"][0] = [];
+		// this.voteHistory["1"][0][0] = "VHapprove VHpicked VHleader";
+		// this.voteHistory["1"][0][1] = "VHapprove";
+		// this.voteHistory["1"][0][2] = "VHapprove";
+		// this.voteHistory["1"][0][3] = "VHapprove";
 
-		this.voteHistory["1"][1] = [];
-		this.voteHistory["1"][1][0] = "approve";
-		this.voteHistory["1"][1][1] = "approve";
+		// this.voteHistory["1"][1] = [];
+		// this.voteHistory["1"][1][0] = "VHapprove";
+		// this.voteHistory["1"][1][1] = "VHapprove";
 		
-		this.voteHistory["1"][2] = [];
-		this.voteHistory["1"][2][0] = ["reject"];
-		this.voteHistory["1"][2][1] = ["reject"];
+		// this.voteHistory["1"][2] = [];
+		// this.voteHistory["1"][2][0] = "VHreject";
+		// this.voteHistory["1"][2][1] = "VHreject";
 
-		this.voteHistory["1"][3] = [];
-		this.voteHistory["1"][3][0] = undefined;
+		// this.voteHistory["1"][3] = [];
+		// this.voteHistory["1"][3][0] = undefined;
 
 
-		this.voteHistory["2"] = [];
-		this.voteHistory["2"][0] = [];
-		this.voteHistory["2"][0][0] = "approve";
-		this.voteHistory["2"][0][1] = "reject";
-		this.voteHistory["2"][0][2] = "reject";
-		this.voteHistory["2"][0][3] = "reject";
+		// this.voteHistory["2"] = [];
+		// this.voteHistory["2"][0] = [];
+		// this.voteHistory["2"][0][0] = "VHapprove VHpicked";
+		// this.voteHistory["2"][0][1] = "VHreject VHleader VHpicked";
+		// this.voteHistory["2"][0][2] = "VHreject";
+		// this.voteHistory["2"][0][3] = "VHreject";
 
-		this.voteHistory["2"][1] = [];
-		this.voteHistory["2"][1][0] = "reject";
-		this.voteHistory["2"][1][1] = "reject";
+		// this.voteHistory["2"][1] = [];
+		// this.voteHistory["2"][1][0] = "VHreject";
+		// this.voteHistory["2"][1][1] = "VHreject";
 		
-		this.voteHistory["2"][2] = [];
-		this.voteHistory["2"][2][0] = ["reject"];
-		this.voteHistory["2"][2][1] = ["reject"];
+		// this.voteHistory["2"][2] = [];
+		// this.voteHistory["2"][2][0] = "VHreject";
+		// this.voteHistory["2"][2][1] = "VHreject";
 
-		this.voteHistory["2"][3] = [];
-		this.voteHistory["2"][3][0] = undefined;
+		// this.voteHistory["2"][3] = [];
+		// this.voteHistory["2"][3][0] = undefined;
 
 		return true;
 	};

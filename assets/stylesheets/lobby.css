@@ -180,6 +180,7 @@ p {
 
 	text-align: center;
 
+	box-sizing: border-box;
 
 	/*min-width: 30px;*/
 	/*min-height: 30px;*/
@@ -309,6 +310,11 @@ p {
 	background-color: black;
 }
 
+
+
+
+
+
 .row {
 	width: 100%;
 	margin: 5px;
@@ -327,18 +333,35 @@ p {
 	border-radius: 10px;
 }
 
-.approveVH {
-	border: 1px black solid;
-	background-color: green;
+.VHapprove {
+	/*border: 1px black solid;*/
+	background-color: #BBFFBB;
 }
-.rejectVH {
-	border: 1px black solid;
-	background-color: red;
+.VHreject {
+	/*border: 1px black solid;*/
+	background-color: #FFBBBB;
+}
+
+.VHpicked {
+	background-image: url("/tick.png"); 
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.VHleader {
+	/*background-image: url("/leader.png"); 
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;*/
+
+	border: black 3px solid;
 }
 
 
 
 /*Vote history*/
 table, th, td {
-    border: 1px solid black;
+	border: 1px solid black;
+	text-align: center;
 }
