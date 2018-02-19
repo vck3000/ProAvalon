@@ -349,7 +349,7 @@ p {
 	background-position: center;
 }
 
-.VHleader {
+#voteHistoryTable .VHleader {
 	/*background-image: url("/leader.png"); 
 	background-size: contain;
 	background-repeat: no-repeat;
