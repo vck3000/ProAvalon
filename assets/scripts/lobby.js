@@ -13,10 +13,10 @@ var inRoom = false;
 var isSpectator = false;
 
 
-var spies = ["Morgana", "Assassin", "Spy", "Oberon", "Mordred"];
-var resistance = ["Merlin", "Percival", "Resistance"];
+var spiesList = ["Morgana", "Assassin", "Spy", "Oberon", "Mordred"];
+var resistanceList = ["Merlin", "Percival", "Resistance"];
 
-var roles = ["Merlin", "Percival", "Resistance", "Morgana", "Assassin", "Spy", "Oberon", "Mordred"];
+var rolesList = ["Merlin", "Percival", "Resistance", "Morgana", "Assassin", "Spy", "Oberon", "Mordred"];
 
 
 //window resize, repaint the users
@@ -359,7 +359,7 @@ socket.on("update-room-players", function(data){
 //GAME SOCKET ROUTES
 //======================================
 socket.on("game-data", function(data){
-    console.log("GAME DATA INC");
+    console.log("GAME DATA INC");   
     if(data){
         console.log("game starting!");
 
@@ -453,12 +453,14 @@ function redButtonFunction() {
         }
         else if(gameData.phase === "missionVoting"){
             console.log("Voted fail");
-            socket.emit("missionVote", "fail");
+            
 
-            if(spies.indexOf(gameData.role) !== -1){
+            if(resistanceList.indexOf(gameData.role) !== -1){
                 console.log("You aren't a spy! You cannot fail a mission!");
                 // socket.emit("missionVote", "succeed");
                 showDangerAlert("You are resistance! Surely you want to succeed!");
+            } else{
+                socket.emit("missionVote", "fail");
             }
 
         }
