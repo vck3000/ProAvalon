@@ -59,7 +59,11 @@ router.get("/logout", function(req, res){
 });
 
 router.get("/log", function(req, res){
-	res.render("log");
+	res.render("log", {currentUser: req.user});
+})
+
+router.get("/rules", function(req, res){
+	res.render("rules", {currentUser: req.user});
 })
 
 
