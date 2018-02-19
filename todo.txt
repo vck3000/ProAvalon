@@ -1,15 +1,13 @@
 To-do list:
 -Fix timezone issues in all chat
 
--In game tabs (all chat, game chat, VH, other stuff)
-
 -Spam filter?
 -Maximum length to a single chat message
 
 -bigger avatars?
 
 -DISCUSSIONS
--VH
+
 
 -Require everyone to press ready before starting game
 
@@ -28,6 +26,7 @@ Done:
 -Show number of fails
 -Add gameplay text in game chat
 -SPECTATOR MODE	
+-VH
 
 
 List of suggestions

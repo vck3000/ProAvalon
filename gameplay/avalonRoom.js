@@ -28,6 +28,7 @@ var roles = [
 "Spy"
 ];
 
+
 var numPlayersOnMission = [
 ["2","3","2","3","3"],
 ["2","3","4","3","4"],
@@ -424,7 +425,7 @@ module.exports = function(host_, roomId_, io_){
 
 this.getStatusMessage = function(){
 	if(this.phase === "picking"){
-		console.log(this.teamLeader);
+		// console.log(this.teamLeader);
 		var str = "Waiting on " + this.playersInGame[this.teamLeader].username + " to pick.";
 		return str;
 	} 
@@ -725,30 +726,44 @@ this.getGameDataForSpectators = function(){
 	}
 
 	this.playerJoinRoom = function(socket){
-		this.socketsOfSpectators.push(socket);
-	}
+		if(this.gameStarted === false){
+			this.socketsOfSpectators.push(socket);
+		}
 
-	this.playerJoinGame = function(socket){
 		//get a list of usernames in the game
 		//because if a player had left and came back into the room
 		//we want to re-update their data they see
-
 		var usernames = this.getUsernamesInGame();
+
+		console.log("usernames: " + usernames);
+		console.log("Socket uesrname: " + socket.request.user.username);
+		//if the player joining is already part of the game
+		var index = usernames.indexOf(socket.request.user.username);
+		if(index !== -1){
+			//this.sockets.push(socket);
+
+			console.log("Old socket: " + this.sockets[usernames.indexOf(socket.request.user.username)].request.user.username + ", " + this.sockets[usernames.indexOf(socket.request.user.username)].id);
+
+			this.sockets[index].id = socket.id;
+			this.playersInGame[index].socketId  = socket.id;
+
+			console.log("New socket: " + this.sockets[usernames.indexOf(socket.request.user.username)].request.user.username + ", " + this.sockets[usernames.indexOf(socket.request.user.username)].id);
+
+			console.log("Player has refreshed their page, been given a new socket ID. That new ID has been updated");
+			return false;
+		} 
+	}
+
+	this.playerJoinGame = function(socket){
 
 		//when game hasnt started yet, add the person to the players in game
 		if(this.gameStarted === false){
 			this.sockets.push(socket);
-
 			//also remove them from the list of socketsOfSpectators
 			var i = this.socketsOfSpectators.indexOf(socket);
 			this.socketsOfSpectators.splice(i, 1);
 
 			return true;
-		} 
-		//if the player joining is already part of the game
-		else if(usernames.indexOf(socket.request.username) !== -1){
-			//this.sockets.push(socket);
-			return false;
 		} 
 		else{
 			console.log("Game has already started!");

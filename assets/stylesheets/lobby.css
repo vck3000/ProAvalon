@@ -361,7 +361,7 @@ p {
 
 
 /*Vote history*/
-table, th, td {
+#voteHistoryTable tr td {
 	border: 1px solid black;
 	text-align: center;
 }

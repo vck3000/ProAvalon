@@ -122,13 +122,13 @@ module.exports = function(io){
   			updateCurrentGamesList(io);
   		});
 
-		socket.on("enter-room", function(roomId){
-  			//ENTER ROOM CODE, need to change join-room substantially too. 
-  		});
+		// socket.on("enter-room", function(roomId){
+  // 			//ENTER ROOM CODE, need to change join-room substantially too. 
+  // 		});
 
 		//when a player joins a room
 		socket.on("join-room", function(roomId){
-			console.log(roomId);
+			// console.log(roomId);
 			// console.log(rooms[roomId]);
 			
 			//if the room exists
@@ -155,12 +155,12 @@ module.exports = function(io){
 				//is part of the game, give them the data of the game again
 				usernamesInGame = rooms[roomId].getUsernamesInGame();
 				if(usernamesInGame.indexOf(socket.request.user.username) !== -1){
+					
 					distributeGameData(socket, io);
 					socket.request.user.spectator = false;
 				}
-
 				//if game has started, give them a copy of spectator data
-				if(rooms[roomId].getStatus() !== "Waiting!"){
+				else if(rooms[roomId].getStatus() !== "Waiting!"){
 					giveGameDataToSpectator(socket, io);
 				}
 				

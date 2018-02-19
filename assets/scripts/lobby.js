@@ -12,6 +12,13 @@ var inRoom = false;
 
 var isSpectator = false;
 
+
+var spies = ["Morgana", "Assassin", "Spy", "Oberon", "Mordred"];
+var resistance = ["Merlin", "Percival", "Resistance"];
+
+var roles = ["Merlin", "Percival", "Resistance", "Morgana", "Assassin", "Spy", "Oberon", "Mordred"];
+
+
 //window resize, repaint the users
 window.addEventListener('resize', function(){
     console.log("Resized");
@@ -371,6 +378,8 @@ socket.on("game-data", function(data){
             console.log("printgameplayText");
             newPrintGameplayText();
         }
+
+        isSpectator = gameData.spectator;
         
         drawVoteHistory(gameData);
         draw(storeData);
@@ -445,6 +454,13 @@ function redButtonFunction() {
         else if(gameData.phase === "missionVoting"){
             console.log("Voted fail");
             socket.emit("missionVote", "fail");
+
+            if(spies.indexOf(gameData.role) !== -1){
+                console.log("You aren't a spy! You cannot fail a mission!");
+                // socket.emit("missionVote", "succeed");
+                showDangerAlert("You are resistance! Surely you want to succeed!");
+            }
+
         }
     }    
 }
@@ -1099,7 +1115,7 @@ function drawVoteHistory(data){
     str += "<tr><td></td>"; 
     
     for(var i = 0; i < data.missionNum; i++){
-        str += "<td style='width: 11em;' colspan='' id='missionHeader" + (i + 1) + "'>M" + (i + 1) + "</td>";
+        str += "<td class='' style='width: 11em;' colspan='' id='missionHeader" + (i + 1) + "'>Mission " + (i + 1) + "</td>";
     }
     str += "</tr>";
 
