@@ -101,9 +101,8 @@ function addAllChatEventListeners(e, allChatWindow){
         //i.e. dont run when its an empty string
         if(message && message.length > 0){
             //append 0 in front of single digit minutes
-            var dateMinutes = d.getMinutes();
 
-            var date = "" + d.getHours() + ":" + dateMinutes;
+            var date = "" + d.getMinutes();
             var data = {
                 date: date,
                 message: message
@@ -137,9 +136,8 @@ roomChatWindow.onkeyup = function(e){
         //i.e. dont run when its an empty string
         if(message && message.length > 0){
             //append 0 in front of single digit minutes
-            var dateMinutes = d.getMinutes();
 
-            var date = "" + d.getHours() + ":" + dateMinutes;
+            var date = "" + d.getMinutes();
             var data = {
                 date: date,
                 message: message,
@@ -175,8 +173,9 @@ socket.on("username", function(username){
 });
 
 socket.on("allChatToClient", function(data){
+    var d = new Date();
 
-	var date = "[" + data.date + "]";
+	var date = "[" + d.getHours() + ":" + data.date + "]";
 	var str = "<li class=other><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + data.message;
 
     console.log("all chat inc");
@@ -187,8 +186,9 @@ socket.on("allChatToClient", function(data){
 });
 
 socket.on("roomChatToClient", function(data){
+    var d = new Date();
 
-    var date = "[" + data.date + "]";
+    var date = "[" + d.getHours() + ":" + data.date + "]";
     var str = "<li class=other><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + data.message;
 
     addToRoomChat(str);
