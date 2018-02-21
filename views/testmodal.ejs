@@ -1,0 +1,77 @@
+<% include partials/header%>
+
+<style type="text/css">
+	.active {
+		/*border: 3px solid green !important;*/
+		background-color: #99ff9f !important;
+	}
+
+	.btn-mine {
+		border: 3px solid black;
+		background-color: #d8d8d8;
+	}
+
+
+</style>
+
+<!-- Trigger the modal with a button -->
+<button type="button" class="btn btn-warning" data-toggle="modal" data-target="#myModal">
+	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+</button>
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+	<div class="modal-dialog">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">Game options!</h2>
+			</div>
+			<div class="modal-body">
+				<h4>Select the roles/items you would like in the game.</h4>
+				<h6>Default roles have been pre-selected.</h6>
+
+
+				<div class="btn-group-vertical" data-toggle="buttons">
+					<label class="btn btn-mine active">
+						<input type="checkbox" autocomplete="off" checked> Merlin
+					</label>
+					<br>
+					<label class="btn btn-mine active">
+						<input type="checkbox" autocomplete="off" checked> Assassin
+					</label>
+					<br>
+					<label class="btn btn-mine active">
+						<input type="checkbox" autocomplete="off" checked> Percival+Morgana
+					</label>
+					<br>
+					<label class="btn btn-mine">
+						<input type="checkbox" autocomplete="off"> Lady of the Lake
+					</label>
+					<br>
+					<label class="btn btn-mine">
+						<input type="checkbox" autocomplete="off"> Mordred
+					</label>
+					<br>
+					<label class="btn btn-mine">
+						<input type="checkbox" autocomplete="off"> Oberon
+					</label>
+
+
+				</div>
+
+
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+
+
+<% include partials/footer%>

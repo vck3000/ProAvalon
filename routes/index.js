@@ -66,6 +66,9 @@ router.get("/rules", function(req, res){
 	res.render("rules", {currentUser: req.user});
 })
 
+router.get("/testmodal", function(req, res){
+	res.render("testmodal", {currentUser: req.user});
+});
 
 //=====================================
 //MIDDLEWARE
