@@ -981,6 +981,7 @@ function strOfAvatar(playerData, alliance){
 
     //add in the role of the player, and the percy info
     var role = ""; 
+    var lady = "";
     
     //can improve this code here
     if(gameStarted === true && gameData.phase === "finished"){
@@ -995,6 +996,10 @@ function strOfAvatar(playerData, alliance){
         else if(gameData.see.merlins.indexOf(playerData.username) !== -1){
             role = "Merlin?";
         }  
+
+        if(playerData.username === getUsernameFromIndex(gameData.lady)){
+            lady = "<span class='glyphicon glyphicon-book'></span> ";
+        }
     } 
 
 
@@ -1012,7 +1017,7 @@ function strOfAvatar(playerData, alliance){
         }
     }
 
-    return "<div><img class='avatarImgInRoom' src='" + picLink + "'><p class='username-p'>" + playerData.username + " " + hammerStar + " </p><p class='role-p'>" + role + "</p></div>";    
+    return "<div><img class='avatarImgInRoom' src='" + picLink + "'><p class='username-p'>" + lady + playerData.username + " " + hammerStar + " </p><p class='role-p'>" + role + "</p></div>";    
 }
 
 

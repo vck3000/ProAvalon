@@ -1,5 +1,5 @@
 To-do list:
--Fix timezone issues in all chat
+
 
 -Spam filter?
 -Maximum length to a single chat message
@@ -8,15 +8,13 @@ To-do list:
 
 -DISCUSSIONS
 
-
 -Require everyone to press ready before starting game
-
-
--role customisation
--starting screen select options for start
 
 -hammer star might be in wrong position
 
+-Lady of the Lake
+
+***************************************************************************************
 
 Done: 
 -two tabs logged into same account
@@ -27,8 +25,11 @@ Done:
 -SPECTATOR MODE	
 -VH
 -make res not able to fail
+-role customisation
+-starting screen select options for start
+-Fix timezone issues in all chat
 
-
+***************************************************************************************
 
 List of suggestions
 •	Private/public games. Adding passwords

@@ -83,7 +83,7 @@ module.exports = function(host_, roomId_, io_){
 	this.missionHistory = [];
 	this.pickNum = 0;
 	this.gameHistory = [];
-
+	this.lady = undefined;
 
 	this.playersYetToVote = [];
 	// this.votingPhase = false;
@@ -241,6 +241,7 @@ module.exports = function(host_, roomId_, io_){
 			this.pickNum = 1;
 			//if we get all the votes in, then do this
 			this.proposedTeam = [];
+			this.missionVotes = [];
 
 			//count number of succeeds and fails
 			var numOfSucceeds = 0;
@@ -268,6 +269,8 @@ module.exports = function(host_, roomId_, io_){
 				this.finishGame("res");
 				console.log("RES WON, NOW GOING INTO ASSASSINATION");
 			}
+			//+1 to compensate for somewhere...
+			this.hammer = ((this.teamLeader - 5 + 1 + this.sockets.length) % this.sockets.length);
 		}
 		console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, {depth: 2}));
 	}
@@ -359,8 +362,6 @@ module.exports = function(host_, roomId_, io_){
 			if(this.teamLeader < 0){
 				this.teamLeader = this.sockets.length - 1; 
 			}
-
-			
 			this.pickNum++;
 		}
 
@@ -457,6 +458,7 @@ this.getGameDataForSpectators = function(){
 		data.pickNum = this.pickNum;
 		data.gameHistory = this.gameHistory;
 		data.teamLeader = this.teamLeader;
+		data.lady = this.lady;
 		data.hammer = this.hammer;
 
 		data.playersYetToVote = this.playersYetToVote;
@@ -514,6 +516,7 @@ this.getGameDataForSpectators = function(){
 			data[i].gameHistory = this.gameHistory;
 			data[i].teamLeader = this.teamLeader;
 			data[i].hammer = this.hammer;
+			data[i].lady = this.lady;
 
 			data[i].playersYetToVote = this.playersYetToVote;
 			data[i].phase = this.phase;
@@ -586,6 +589,9 @@ this.getGameDataForSpectators = function(){
 		if(options.morgana === true){spyRoles.push("Morgana");console.log("Added morgana");}
 		if(options.mordred === true){spyRoles.push("Mordred");console.log("added mordred");}
 		if(options.oberon === true){spyRoles.push("Oberon");console.log("added oberon");}
+		if(options.lady === true){
+			this.lady = getRandomInt(0, this.sockets.length);
+		}
 
 		var resPlayers = [];
 		var spyPlayers = [];
@@ -675,10 +681,15 @@ this.getGameDataForSpectators = function(){
 
 		this.gameplayMessage = str;
 
+
 		//seed the starting data into the VH
 		for(var i = 0; i < this.sockets.length; i++){
 			this.voteHistory[this.sockets[i].request.user.username] = [];
 		}
+
+
+
+
 
 		return true;
 	};
