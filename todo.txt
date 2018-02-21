@@ -10,7 +10,8 @@ To-do list:
 
 -Require everyone to press ready before starting game
 
-
+-Cannot lady a person who previously held the lady before
+-cap players to 10p
 
 
 
@@ -31,6 +32,11 @@ Done:
 -Lady of the Lake
 -hammer star might be in wrong position
 
+
+•	Disable copying certain texts (maybe useful link http://stackoverflow.com/questions/8957443/prevent-copying-text-in-web-page/12021733#12021733)
+•	Fitting game room better in browser (done) 
+•	Logout button (done)
+
 ***************************************************************************************
 
 List of suggestions
@@ -45,7 +51,7 @@ List of suggestions
 •	Showing host/all players in room
 •	Option to alone upload avatars and rating them, so image may be banned (I don’t like it)
 •	Match history
-•	Disable copying certain texts (maybe useful link http://stackoverflow.com/questions/8957443/prevent-copying-text-in-web-page/12021733#12021733)
+
 •	Seperating different players chat
 •	Readjusting approve/reject button (they aren’t so close and are always at same place)
 •	Mvp voting after game (I don’t like it)
@@ -53,8 +59,7 @@ List of suggestions
 •	Assassination clock and picking/voting clock (I like having infinity time for everything, but maybe its good to have some clock)
 •	Button to res/spy another player
 •	Vote history always visible
-•	Fitting game room better in browser (done) 
-•	Logout button (done)
+
 •	Better SEO(in progress, Tony wrote it so maybe he knows something about it)
 •	Sorting posts on forum
 •	Mark as read in forum

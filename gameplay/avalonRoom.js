@@ -276,6 +276,19 @@ module.exports = function(host_, roomId_, io_){
 			console.log("numOfSucceeds: " + numOfSucceeds);
 			console.log("numOfFails: " + numOfFails);
 
+			
+			//+1 to compensate for somewhere...
+			this.hammer = ((this.teamLeader - 5 + 1 + this.sockets.length) % this.sockets.length);
+
+
+			this.phase = "picking";
+			//only lady of the lake after m1 and m2 have finished.
+			if(this.lady !== undefined && this.missionNum >= 3){
+				this.phase = "lady";
+				
+			}
+
+			//game over
 			//if we have 3 fails, game finish
 			if(numOfFails >= 3){
 				//pass through the winner
@@ -287,16 +300,7 @@ module.exports = function(host_, roomId_, io_){
 				this.finishGame("res");
 				console.log("RES WON, NOW GOING INTO ASSASSINATION");
 			}
-			//+1 to compensate for somewhere...
-			this.hammer = ((this.teamLeader - 5 + 1 + this.sockets.length) % this.sockets.length);
 
-
-			this.phase = "picking";
-			//only lady of the lake after m1 and m2 have finished.
-			if(this.lady !== undefined && this.missionNum >= 3){
-				this.phase = "lady";
-				
-			}
 		}
 		console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, {depth: 2}));
 	}
