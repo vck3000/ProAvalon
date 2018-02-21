@@ -405,32 +405,6 @@ module.exports = function(host_, roomId_, io_){
 			}
 
 
-		// this.voteHistory["123"] = [];
-		// this.voteHistory["123"][0] = [];
-		// this.voteHistory["123"][0][0] = "VHapprove";
-		// this.voteHistory["123"][0][1] = "VHreject VHpicked";
-		// this.voteHistory["123"][0][2] = "VHapprove";
-		// this.voteHistory["123"][0][3] = "VHreject";
-
-		// this.voteHistory["123"][1] = [];
-		// this.voteHistory["123"][1][0] = "VHapprove";
-		// this.voteHistory["123"][1][1] = "VHapprove";
-		
-		// this.voteHistory["123"][2] = [];
-		// this.voteHistory["123"][2][0] = "VHreject";
-		// this.voteHistory["123"][2][1] = "VHreject";
-
-		// this.voteHistory["123"][3] = [];
-		// this.voteHistory["123"][3][0] = undefined;
-
-		// this.voteHistory["1"] = [];
-		// this.voteHistory["1"][0] = [];
-		// this.voteHistory["1"][0][0] = "VHapprove VHpicked VHleader";
-		// this.voteHistory["1"][0][1] = "VHapprove";
-		// this.voteHistory["1"][0][2] = "VHapprove";
-		// this.voteHistory["1"][0][3] = "VHapprove";
-
-
 
 	}
 	else{
@@ -515,6 +489,7 @@ this.getGameDataForSpectators = function(){
 		//socket.io
 		for(var i = 0; i < playerRoles.length; i++){
 			data[i] = {
+				alliance: playerRoles[i].alliance,
 				role: playerRoles[i].role,
 				see: playerRoles[i].see,
 				username: playerRoles[i].username,
@@ -575,17 +550,9 @@ this.getGameDataForSpectators = function(){
 		this.gameStarted = true;
 
 		var playersYetToInitialise = [];
-		var rolesAssignment = [];
 
-		//create the starting array for role assignment
-		for(var i = 0; i < this.sockets.length; i++){
-			rolesAssignment[i] = i;
-		}
+		var rolesAssignment = generateAssignmentOrders(this.sockets.length);
 
-		//shuffle 3 times
-		rolesAssignment = shuffle(rolesAssignment);
-		rolesAssignment = shuffle(rolesAssignment);
-		rolesAssignment = shuffle(rolesAssignment);
 
 		//Now we initialise roles
 		for(var i = 0; i < this.sockets.length; i++){
@@ -602,13 +569,44 @@ this.getGameDataForSpectators = function(){
 
 		//give roles to the players according to their alliances
 		//Get roles:
-		var rolesRes = [];
-		var rolesSpy = [];
-		if(options.merlinassassin === true){rolesRes.push("Merlin"); rolesSpy.push("Assassin");}
-		if(options.percival === true){rolesRes.push("Percival");}
-		if(options.morgana === true){rolesSpy.push("Morgana");}
-		if(options.mordred === true){rolesSpy.push("Mordred");}
-		if(options.oberon === true){rolesSpy.push("Oberon");}
+		var resRoles = [];
+		var spyRoles = [];
+		if(options.merlinassassin === true){resRoles.push("Merlin"); spyRoles.push("Assassin");console.log("added merlin assassin");}
+		if(options.percival === true){resRoles.push("Percival");console.log("Added percy");}
+		if(options.morgana === true){spyRoles.push("Morgana");console.log("Added morgana");}
+		if(options.mordred === true){spyRoles.push("Mordred");console.log("added mordred");}
+		if(options.oberon === true){spyRoles.push("Oberon");console.log("added oberon");}
+
+		var resPlayers = [];
+		var spyPlayers = [];
+		for(var i = 0; i < this.sockets.length; i++){
+			if(this.playersInGame[i].alliance === "Resistance"){resPlayers.push(i);}
+			else if(this.playersInGame[i].alliance === "Spy"){spyPlayers.push(i);}
+		}
+
+		//for the res roles:
+		rolesAssignment = generateAssignmentOrders(resPlayers.length);
+		for(var i = 0; i < rolesAssignment.length; i++){
+			this.playersInGame[resPlayers[i]].role = resRoles[rolesAssignment[i]];
+			// console.log("res role: " + resRoles[rolesAssignment[i]]);
+		}
+
+		//for the spy roles:
+		rolesAssignment = generateAssignmentOrders(spyPlayers.length);
+		for(var i = 0; i < rolesAssignment.length; i++){
+			this.playersInGame[spyPlayers[i]].role = spyRoles[rolesAssignment[i]];
+			// console.log("spy role: " + spyRoles[rolesAssignment[i]]);
+		}
+
+
+		//for those players with no role, set their role to their alliance
+		for(var i = 0; i < this.playersInGame.length; i++){
+			// console.log(this.playersInGame[i].role);
+			if(this.playersInGame[i].role === undefined){
+				this.playersInGame[i].role = this.playersInGame[i].alliance;
+				// console.log("Overwrite role as alliance for player: " + this.playersInGame[i].username);
+			}
+		}
 
 
 		//prepare the data for each person to see
@@ -632,6 +630,9 @@ this.getGameDataForSpectators = function(){
 			else if(this.playersInGame[i].role === "Assassin"){
 				this.playersInGame[i].see.spies = this.getSpies();
 			} 
+			else if(this.playersInGame[i].role === "Spy"){
+				this.playersInGame[i].see.spies = this.getSpies();
+			} 
 			else if(this.playersInGame[i].role === "Resistance"){
 			}
 		}
@@ -652,62 +653,6 @@ this.getGameDataForSpectators = function(){
 		for(var i = 0; i < this.sockets.length; i++){
 			this.voteHistory[this.sockets[i].request.user.username] = [];
 		}
-		
-		//seed some data into the vote history
-		// this.voteHistory["123"] = [];
-		// this.voteHistory["123"][0] = [];
-		// this.voteHistory["123"][0][0] = "VHapprove";
-		// this.voteHistory["123"][0][1] = "VHreject VHpicked";
-		// this.voteHistory["123"][0][2] = "VHapprove";
-		// this.voteHistory["123"][0][3] = "VHreject";
-
-		// this.voteHistory["123"][1] = [];
-		// this.voteHistory["123"][1][0] = "VHapprove";
-		// this.voteHistory["123"][1][1] = "VHapprove";
-		
-		// this.voteHistory["123"][2] = [];
-		// this.voteHistory["123"][2][0] = "VHreject";
-		// this.voteHistory["123"][2][1] = "VHreject";
-
-		// this.voteHistory["123"][3] = [];
-		// this.voteHistory["123"][3][0] = undefined;
-
-		// this.voteHistory["1"] = [];
-		// this.voteHistory["1"][0] = [];
-		// this.voteHistory["1"][0][0] = "VHapprove VHpicked VHleader";
-		// this.voteHistory["1"][0][1] = "VHapprove";
-		// this.voteHistory["1"][0][2] = "VHapprove";
-		// this.voteHistory["1"][0][3] = "VHapprove";
-
-		// this.voteHistory["1"][1] = [];
-		// this.voteHistory["1"][1][0] = "VHapprove";
-		// this.voteHistory["1"][1][1] = "VHapprove";
-		
-		// this.voteHistory["1"][2] = [];
-		// this.voteHistory["1"][2][0] = "VHreject";
-		// this.voteHistory["1"][2][1] = "VHreject";
-
-		// this.voteHistory["1"][3] = [];
-		// this.voteHistory["1"][3][0] = undefined;
-
-
-		// this.voteHistory["2"] = [];
-		// this.voteHistory["2"][0] = [];
-		// this.voteHistory["2"][0][0] = "VHapprove VHpicked";
-		// this.voteHistory["2"][0][1] = "VHreject VHleader VHpicked";
-		// this.voteHistory["2"][0][2] = "VHreject";
-		// this.voteHistory["2"][0][3] = "VHreject";
-
-		// this.voteHistory["2"][1] = [];
-		// this.voteHistory["2"][1][0] = "VHreject";
-		// this.voteHistory["2"][1][1] = "VHreject";
-		
-		// this.voteHistory["2"][2] = [];
-		// this.voteHistory["2"][2][0] = "VHreject";
-		// this.voteHistory["2"][2][1] = "VHreject";
-
-		// this.voteHistory["2"][3] = [];
-		// this.voteHistory["2"][3][0] = undefined;
 
 		return true;
 	};
@@ -1020,4 +965,19 @@ function getStrApprovedRejectedPlayers(votes, playersInGame){
 	var str = "";
 
 	return str;
+}
+
+function generateAssignmentOrders(num){
+	var rolesAssignment = [];
+
+	//create the starting array for role assignment
+	for(var i = 0; i < num; i++){
+		rolesAssignment[i] = i;
+	}
+
+	//shuffle
+	rolesAssignment = shuffle(rolesAssignment);
+	// console.log(rolesAssignment);
+
+	return rolesAssignment;
 }

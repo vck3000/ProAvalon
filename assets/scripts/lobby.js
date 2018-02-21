@@ -175,8 +175,8 @@ socket.on("username", function(username){
 socket.on("allChatToClient", function(data){
     var d = new Date();
 
-	var date = "[" + d.getHours() + ":" + data.date + "]";
-	var str = "<li class=other><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + data.message;
+    var date = "[" + d.getHours() + ":" + data.date + "]";
+    var str = "<li class=other><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + data.message;
 
     console.log("all chat inc");
 
@@ -364,16 +364,18 @@ socket.on("game-data", function(data){
         console.log("game starting!");
 
         console.log(data);
-        // seeData = data; 
         gameData = data;
 
         gameStarted = true;
 
-        //for now, set this as a constant
-        var option_print_gameplay_text = $("#option_print_gameplay_text")[0].checked;
-        
-        console.log("button is: " + option_print_gameplay_text);
+        //hide the options cog
+        document.querySelector("#options-button").classList.add("hidden");
 
+        //get the status of the checkbox for the gameplaytext
+        var option_print_gameplay_text = $("#option_print_gameplay_text")[0].checked;
+        console.log("button is: " + option_print_gameplay_text);
+        
+            
         if(option_print_gameplay_text === true){
             console.log("printgameplayText");
             newPrintGameplayText();
@@ -405,45 +407,6 @@ function newPrintGameplayText(){
         oldGameplayText = gameData.gameplayMessage;
     }
 }
-
-
-//     else if(gameData.votes && gameData.votes.length >= storeData.length && gameData.votes.indexOf(null) === -1 && print_gameplay_text_vote_results === false){
-//         var start = "<li class='gameplay-text'>";
-//         var end = "</li>";
-
-//         var approvedUsernames = "";
-//         var rejectedUsernames = "";
-
-//         console.log("length: " + gameData.votes.length);
-
-//         for(var i = 0; i < gameData.votes.length; i++){
-//             console.log(gameData.votes[i]);
-
-//             if(gameData.votes[i] === "approve"){
-//                 console.log("approved added: " + getUsernameFromIndex(i));
-//                 approvedUsernames = approvedUsernames + getUsernameFromIndex(i) + ", ";
-//             }
-//             else if(gameData.votes[i] === "reject"){
-//                 console.log("reject added: " + getUsernameFromIndex(i));
-//                 rejectedUsernames = rejectedUsernames + getUsernameFromIndex(i) + ", ";
-//             }
-//             else{
-//                 console.log("ERROR! Unknown vote: " + gameData.votes[i]);
-//             }
-//         }
-
-//         var missionApproveStr = "";
-//         if(gameData.phase === "missionVoting"){
-//             missionApproveStr = "<p>Mission was approved!</p>"
-//         }
-
-//         var str =  start + missionApproveStr + "<p>Approved: " + approvedUsernames + "</p> <p>Rejected: " + rejectedUsernames + "</p>" + end;
-
-//         addToRoomChat(str);
-//         print_gameplay_text_vote_results = true;
-//         //reset this token
-//         print_gameplay_text_picked_team = false
-//     }
 
 function redButtonFunction() {
     if(document.querySelector("#red-button").classList.contains("disabled") === false){
@@ -835,12 +798,15 @@ function enableDisableButtonsLeader(numPlayersOnMission){
 }
 function enableDisableButtons(){
     if(gameStarted === false){
+        //Host
         if(ownUsername === getUsernameFromIndex(0)){
             document.querySelector("#green-button").classList.remove("disabled");
             document.querySelector("#green-button").innerText = "Start!";
 
             document.querySelector("#red-button").classList.add("disabled");
             document.querySelector("#red-button").innerText = "Disabled";
+
+            document.querySelector("#options-button").classList.remove("hidden");
         }
         //we are spectator
         else if(isSpectator === true){
