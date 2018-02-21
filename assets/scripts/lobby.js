@@ -385,7 +385,8 @@ socket.on("game-data", function(data){
 });
 
 socket.on("lady-info", function(message){
-    var str = "<li class='special-text'>" + message + " (this message is only shown to you)</li>";
+    var str = "<li class='special-text noselect'>" + message + " (this message is only shown to you)</li>";
+    addToRoomChat(str);
 });
 
 socket.on("update-status-message", function(data){
@@ -535,8 +536,9 @@ function draw(){
                 enableDisableButtons();
             }
             else if(gameData.phase === "lady"){
+                document.querySelector("#status").innerText = gameData.statusMessage;
                 if(ownUsername === getUsernameFromIndex(gameData.lady)){
-                    ladySetup();
+                    ladySetup(gameData.phase);
                 }
                 enableDisableButtons();
             }

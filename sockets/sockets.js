@@ -250,6 +250,13 @@ module.exports = function(io){
 			updateCurrentGamesList(io);
 		});
 
+		socket.on("lady", function(data){
+			if(rooms[socket.request.user.inRoomId]){
+				rooms[socket.request.user.inRoomId].useLady(socket, data);
+				distributeGameData(socket, io);
+			}
+		});
+
 	});
 }
 

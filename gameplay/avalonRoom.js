@@ -173,18 +173,18 @@ module.exports = function(host_, roomId_, io_){
 		}
 	}
 
-	this.lady = function(socket, target){
+	this.useLady = function(socket, target){
 		//check that the person making this request has the lady
 		if(getIndexFromUsername(this.sockets, socket.request.user.username) === this.lady && this.phase === "lady"){
 			//grab the target's alliance
-			var alliance = this.playersInGame[getIndexFromUsername(target)].alliance;
+			var alliance = this.playersInGame[getIndexFromUsername(this.sockets, target)].alliance;
 
 			//emit to the lady holder the person's alliance
 			socket.emit("lady-info", "Player " + target + " is a " + alliance);
 			console.log("Player " + target + " is a " + alliance);
 
 			//update lady location
-			this.lady = getIndexFromUsername(target);
+			this.lady = getIndexFromUsername(this.sockets, target);
 
 			this.gameplayMessage = (socket.request.user.username + " has carded " + target);
 

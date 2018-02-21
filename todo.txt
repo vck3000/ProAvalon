@@ -10,9 +10,9 @@ To-do list:
 
 -Require everyone to press ready before starting game
 
--hammer star might be in wrong position
 
--Lady of the Lake
+
+
 
 ***************************************************************************************
 
@@ -28,6 +28,8 @@ Done:
 -role customisation
 -starting screen select options for start
 -Fix timezone issues in all chat
+-Lady of the Lake
+-hammer star might be in wrong position
 
 ***************************************************************************************
 
