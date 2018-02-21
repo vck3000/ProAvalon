@@ -406,14 +406,14 @@ module.exports = function(host_, roomId_, io_){
 
 
 
+		}
+		else{
+			console.log("You are not the team leader, you cannot make a pick");
+		}
 	}
-	else{
-		console.log("You are not the team leader, you cannot make a pick");
-	}
-}
 
-this.getStatusMessage = function(){
-	if(this.phase === "picking"){
+	this.getStatusMessage = function(){
+		if(this.phase === "picking"){
 		// console.log(this.teamLeader);
 		var str = "Waiting on " + this.playersInGame[this.teamLeader].username + " to pick.";
 		return str;
@@ -619,21 +619,28 @@ this.getGameDataForSpectators = function(){
 
 			//give the respective role their data/info
 			if(this.playersInGame[i].role === "Merlin"){
-				this.playersInGame[i].see.spies = this.getSpies();
+				this.playersInGame[i].see.spies = this.getSpies("Merlin");
 			}
 			else if(this.playersInGame[i].role === "Percival"){
 				this.playersInGame[i].see.merlins = this.getMerlins();
 			}
 			else if(this.playersInGame[i].role === "Morgana"){
-				this.playersInGame[i].see.spies = this.getSpies();
+				this.playersInGame[i].see.spies = this.getSpies("Morgana");
 			}
 			else if(this.playersInGame[i].role === "Assassin"){
-				this.playersInGame[i].see.spies = this.getSpies();
+				this.playersInGame[i].see.spies = this.getSpies("Assassin");
 			} 
 			else if(this.playersInGame[i].role === "Spy"){
-				this.playersInGame[i].see.spies = this.getSpies();
+				this.playersInGame[i].see.spies = this.getSpies("Spy");
 			} 
+			else if(this.playersInGame[i].role === "Mordred"){
+				this.playersInGame[i].see.spies = this.getSpies("Mordred");
+			}
+			else if(this.playersInGame[i].role === "Oberon"){
+				this.playersInGame[i].see.spies = this.getSpies("Oberon");
+			}
 			else if(this.playersInGame[i].role === "Resistance"){
+
 			}
 		}
 
@@ -657,14 +664,38 @@ this.getGameDataForSpectators = function(){
 		return true;
 	};
 
-	this.getSpies = function(){
+	this.getSpies = function(roleRequesting){
 		if(this.gameStarted === true){
 			var array = [];
-			for(var i = 0; i < this.playersInGame.length; i++){
-				if(this.playersInGame[i].role === "Morgana" || this.playersInGame[i].role === "Assassin" || this.playersInGame[i].role === "Spy"){
-					array.push(this.playersInGame[i].username);
+
+			//if oberon is requesting data, give it only him/herself's username
+			if(roleRequesting === "Oberon"){
+				for(var i = 0; i < this.playersInGame.length; i++){
+					if(this.playersInGame[i].role === "Oberon"){
+						array.push(this.playersInGame[i].username);
+						return array;
+					}
 				}
 			}
+
+			for(var i = 0; i < this.playersInGame.length; i++){
+				//NOTE: exclude mordred to merlin!
+				if(this.playersInGame[i].alliance === "Spy"){
+					if(this.playersInGame[i].role === "Mordred" && roleRequesting === "Merlin"){
+						//don't add mordred for merlin to see
+						//but do add it for any other spies.
+					}
+					else if(this.playersInGame[i].role === "Oberon" && roleRequesting !== "Merlin"){
+						//Don't add oberon for any other spies,
+						//but do add it for merlin (merlin can see oberon)
+					}
+					else{
+						//add the spy
+						array.push(this.playersInGame[i].username);	
+					}
+				}
+			}
+
 			return array;
 		} else{
 			return false;

@@ -12,13 +12,6 @@ var inRoom = false;
 
 var isSpectator = false;
 
-
-var spiesList = ["Morgana", "Assassin", "Spy", "Oberon", "Mordred"];
-var resistanceList = ["Merlin", "Percival", "Resistance"];
-
-var rolesList = ["Merlin", "Percival", "Resistance", "Morgana", "Assassin", "Spy", "Oberon", "Mordred"];
-
-
 //window resize, repaint the users
 window.addEventListener('resize', function(){
     console.log("Resized");
@@ -418,7 +411,7 @@ function redButtonFunction() {
             console.log("Voted fail");
             
 
-            if(resistanceList.indexOf(gameData.role) !== -1){
+            if(gameData.alliance === "Resistance"){
                 console.log("You aren't a spy! You cannot fail a mission!");
                 // socket.emit("missionVote", "succeed");
                 showDangerAlert("You are resistance! Surely you want to succeed!");
