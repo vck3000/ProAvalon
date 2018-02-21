@@ -664,7 +664,16 @@ this.getGameDataForSpectators = function(){
 		// this.missionHistory = ["succeeded", "failed", "succeeded"];
 		this.missionHistory = [];
 
-		this.gameplayMessage = "Game started!";
+		var str = "Game started with roles: ";
+		//add res roles: 
+		for(var i = 0; i < resRoles.length; i++){
+			str += (resRoles[i] + ", ");
+		}
+		for(var i = 0; i < spyRoles.length; i++){
+			str += (spyRoles[i] + ", ");
+		}
+
+		this.gameplayMessage = str;
 
 		//seed the starting data into the VH
 		for(var i = 0; i < this.sockets.length; i++){

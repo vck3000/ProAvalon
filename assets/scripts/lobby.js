@@ -62,6 +62,9 @@ document.querySelector("#backButton").addEventListener("click", function(){
     print_gameplay_text_vote_results = false;
     print_last_mission_num = 1;
 
+    //hide the options cog
+    document.querySelector("#options-button").classList.add("hidden");
+
 
     //reset room-chat 
     $(".room-chat-list").html("");
@@ -368,7 +371,7 @@ socket.on("game-data", function(data){
         var option_print_gameplay_text = $("#option_print_gameplay_text")[0].checked;
         console.log("button is: " + option_print_gameplay_text);
         
-            
+        
         if(option_print_gameplay_text === true){
             console.log("printgameplayText");
             newPrintGameplayText();
