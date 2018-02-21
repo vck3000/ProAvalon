@@ -199,11 +199,11 @@ module.exports = function(io){
 			socket.leave(socket.request.user.inRoomId);
 		});
 
-		socket.on("startGame", function(){
+		socket.on("startGame", function(data){
 			//start the game
 			if(rooms[socket.request.user.inRoomId]){
 				if(socket.request.user.inRoomId && socket.request.user.username === rooms[socket.request.user.inRoomId].getHostUsername()){
-					if(rooms[socket.request.user.inRoomId].startGame() === true){
+					if(rooms[socket.request.user.inRoomId].startGame(data) === true){
 						distributeGameData(socket, io);
 					}
 				} else{

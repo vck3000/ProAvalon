@@ -475,7 +475,7 @@ function greenButtonFunction() {
             isSpectator = false;
         }
         else if(gameStarted === false){
-            socket.emit("startGame", "");
+            socket.emit("startGame", getOptions());
         }
         else{
             if(gameData.phase === "picking"){
@@ -1164,5 +1164,20 @@ function drawVoteHistory(data){
         var id = "#missionHeader" + (i + 1);
         $(id).attr("colspan", numOfPicksPerMission[i]);
     }
+
+}
+
+
+function getOptions(){
+
+    var data = {
+        merlinassassin: $("#merlinassassin")[0].checked,
+        percival: $("#percival")[0].checked,
+        morgana: $("#morgana")[0].checked,
+        lady: $("#lady")[0].checked,
+        mordred: $("#mordred")[0].checked,
+        oberon: $("#oberon")[0].checked
+    }
+    return data;
 
 }

@@ -14,19 +14,34 @@ var minPlayers = 5;
 // var roomId;
 
 
-var roles = [
-"Merlin",
-"Percival",
-"Morgana",
-"Assassin",
-"Resistance",
+// var roles = [
+// "Merlin",
+// "Percival",
+// "Morgana",
+// "Assassin",
+// "Resistance",
 
-//6P addition
-"Resistance",
+// //6P addition
+// "Resistance",
 
-//7P addition
+// //7P addition
+// "Spy"
+// ];
+
+
+var alliances = [
+"Resistance",
+"Resistance",
+"Resistance",
+"Spy",
+"Spy",
+"Resistance",
+"Spy",
+"Resistance",
+"Resistance",
 "Spy"
-];
+
+]
 
 
 var numPlayersOnMission = [
@@ -545,7 +560,7 @@ this.getGameDataForSpectators = function(){
 
 
 	//start game
-	this.startGame = function(){
+	this.startGame = function(options){
 
 		if(this.sockets.length < minPlayers){
 			//NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
@@ -568,7 +583,7 @@ this.getGameDataForSpectators = function(){
 		}
 
 		//shuffle 3 times
-		var rolesAssignment = shuffle(rolesAssignment);
+		rolesAssignment = shuffle(rolesAssignment);
 		rolesAssignment = shuffle(rolesAssignment);
 		rolesAssignment = shuffle(rolesAssignment);
 
@@ -580,8 +595,20 @@ this.getGameDataForSpectators = function(){
 
 			//set the role to be from the roles array with index of the value
 			//of the rolesAssignment which has been shuffled
-			this.playersInGame[i].role = roles[rolesAssignment[i]];
+			this.playersInGame[i].alliance = alliances[rolesAssignment[i]];
+			// this.playersInGame[i].role = roles[rolesAssignment[i]];
 		}
+
+
+		//give roles to the players according to their alliances
+		//Get roles:
+		var rolesRes = [];
+		var rolesSpy = [];
+		if(options.merlinassassin === true){rolesRes.push("Merlin"); rolesSpy.push("Assassin");}
+		if(options.percival === true){rolesRes.push("Percival");}
+		if(options.morgana === true){rolesSpy.push("Morgana");}
+		if(options.mordred === true){rolesSpy.push("Mordred");}
+		if(options.oberon === true){rolesSpy.push("Oberon");}
 
 
 		//prepare the data for each person to see

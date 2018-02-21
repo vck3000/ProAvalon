@@ -365,3 +365,17 @@ p {
 	border: 1px solid black;
 	text-align: center;
 }
+
+
+/*MODALS*/
+.btn-mine.active {
+	/*border: 3px solid green !important;*/
+	background-color: #d6ffd8 !important;
+
+}
+
+.btn-mine {
+	border: 3px solid black;
+	border-radius: 10px !important;
+	background-color: #e5e5e5;
+}
