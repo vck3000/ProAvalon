@@ -173,6 +173,26 @@ module.exports = function(host_, roomId_, io_){
 		}
 	}
 
+	this.lady = function(socket, target){
+		//check that the person making this request has the lady
+		if(getIndexFromUsername(this.sockets, socket.request.user.username) === this.lady && this.phase === "lady"){
+			//grab the target's alliance
+			var alliance = this.playersInGame[getIndexFromUsername(target)].alliance;
+
+			//emit to the lady holder the person's alliance
+			socket.emit("lady-info", "Player " + target + " is a " + alliance);
+			console.log("Player " + target + " is a " + alliance);
+
+			//update lady location
+			this.lady = getIndexFromUsername(target);
+
+			this.gameplayMessage = (socket.request.user.username + " has carded " + target);
+
+			//update phase
+			this.phase = "picking";
+		}
+	}
+
 
 	this.missionVote = function(socket, voteStr){
 		if(this.phase === "missionVoting"){
@@ -235,8 +255,6 @@ module.exports = function(host_, roomId_, io_){
 				this.gameplayMessage = "The mission failed with " + numOfVotedFails + " fails!";
 			}
 			
-
-			this.phase = "picking";
 			this.missionNum++;
 			this.pickNum = 1;
 			//if we get all the votes in, then do this
@@ -271,6 +289,14 @@ module.exports = function(host_, roomId_, io_){
 			}
 			//+1 to compensate for somewhere...
 			this.hammer = ((this.teamLeader - 5 + 1 + this.sockets.length) % this.sockets.length);
+
+
+			this.phase = "picking";
+			//only lady of the lake after m1 and m2 have finished.
+			if(this.lady !== undefined && this.missionNum >= 3){
+				this.phase = "lady";
+				
+			}
 		}
 		console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, {depth: 2}));
 	}
@@ -425,25 +451,28 @@ module.exports = function(host_, roomId_, io_){
 
 	this.getStatusMessage = function(){
 		if(this.phase === "picking"){
-		// console.log(this.teamLeader);
-		var str = "Waiting on " + this.playersInGame[this.teamLeader].username + " to pick.";
-		return str;
-	} 
-	else if(this.phase === "voting"){
-		var str = "Voting phase";
-		return str;
-	}
-	else if(this.phase === "finished"){
-		var str = "Game has finished! The " + this.winner + " have won!";
-		return str;
-	}
-	else{
-		return false;
-	}
-};
+			// console.log(this.teamLeader);
+			var str = "Waiting on " + this.playersInGame[this.teamLeader].username + " to pick.";
+			return str;
+		} 
+		else if(this.phase === "voting"){
+			var str = "Voting phase";
+			return str;
+		}
+		else if(this.phase === "lady"){
+			return "Waiting for lady of the lake to be used.";
+		}
+		else if(this.phase === "finished"){
+			var str = "Game has finished! The " + this.winner + " have won!";
+			return str;
+		}
+		else{
+			return false;
+		}
+	};
 
-this.getGameDataForSpectators = function(){
-	var playerRoles = this.playersInGame;
+	this.getGameDataForSpectators = function(){
+		var playerRoles = this.playersInGame;
 
 		//set up the spectator data object
 		var data = {};

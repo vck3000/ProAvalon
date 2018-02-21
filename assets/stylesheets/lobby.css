@@ -24,6 +24,11 @@ p {
 	font-style: italic;
 }
 
+.special-text {
+	color: rgb(208, 0, 255);
+	font-style: italic;
+}
+
 .date-text {
 	background: #efefef;
 

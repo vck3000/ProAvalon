@@ -384,6 +384,10 @@ socket.on("game-data", function(data){
     } 
 });
 
+socket.on("lady-info", function(message){
+    var str = "<li class='special-text'>" + message + " (this message is only shown to you)</li>";
+});
+
 socket.on("update-status-message", function(data){
     if(data){
         $("#status").textContent = data;
@@ -438,8 +442,6 @@ function greenButtonFunction() {
         }
         else{
             if(gameData.phase === "picking"){
-                console.log("Picked team: asdf");
-
                 var arr = getHighlightedAvatars();
                 console.log(arr);
                 socket.emit("pickedTeam", arr);    
@@ -455,6 +457,10 @@ function greenButtonFunction() {
             else if(gameData.phase === "assassination"){
                 console.log("Assasinate!!!");
                 socket.emit("assassinate", getHighlightedAvatars());
+            }
+            else if(gameData.phase === "lady"){
+                console.log("Lady: " + getHighlightedAvatars()[0]);
+                socket.emit("lady", getHighlightedAvatars()[0]);
             }
             
         } 
@@ -527,7 +533,12 @@ function draw(){
                     document.querySelector("#status").innerText = "Waiting for the assassin to shoot!";   
                 }
                 enableDisableButtons();
-
+            }
+            else if(gameData.phase === "lady"){
+                if(ownUsername === getUsernameFromIndex(gameData.lady)){
+                    ladySetup();
+                }
+                enableDisableButtons();
             }
 
             else if(gameData.phase === "finished"){
@@ -614,9 +625,26 @@ function teamLeaderSetup(phase){
             });   
         }  
     }
+}
 
+function ladySetup(phase){
+    //edit the well to show how many people to pick.
+    if(phase === "lady"){
 
+        document.querySelector("#status").innerText = "Your turn to use the Lady of the Lake. Select one player to use it on.";    
 
+        var divs = document.querySelectorAll("#mainRoomBox div");
+        //add the event listeners for button press
+        for(var i = 0; i < divs.length; i++){
+            divs[i].addEventListener("click", function(){
+                console.log("avatar pressed");
+                //toggle the highlight class
+                this.classList.toggle("highlight-avatar");
+                //change the pick team button to enabled/disabled
+                enableDisableButtons();
+            });   
+        }  
+    }
 
 }
 
@@ -863,6 +891,21 @@ function enableDisableButtons(){
 
             //if there is only one person highlighted
             if(countHighlightedAvatars() == 1){
+                document.querySelector("#green-button").classList.remove("disabled");
+            }
+            else{
+                document.querySelector("#green-button").classList.add("disabled");
+            }
+        }
+        else if(gameData.phase === "lady"){
+            // document.querySelector("#green-button").classList.add("disabled");
+            document.querySelector("#green-button").innerText = "Card!";
+
+            document.querySelector("#red-button").classList.add("disabled");
+            document.querySelector("#red-button").innerText = "Disabled";
+
+            //if there is only one person highlighted
+            if(countHighlightedAvatars() == 1 && ownUsername === getUsernameFromIndex(gameData.lady)){
                 document.querySelector("#green-button").classList.remove("disabled");
             }
             else{
