@@ -47,10 +47,10 @@ var alliances = [
 var numPlayersOnMission = [
 ["2","3","2","3","3"],
 ["2","3","4","3","4"],
-["1","1","1","1","1"],
-["1","1","1","1","1"],
-["1","1","1","1","1"]
-
+["2","3","3","4*","4"],
+["3","4","4","5*","5"],
+["3","4","4","5*","5"],
+["3","4","4","5*","5"],
 ]
 
 /*
@@ -202,7 +202,12 @@ module.exports = function(host_, roomId_, io_){
 
 		//CALCULATE OUTCOME OF THE MISSION
 		if(this.playersYetToVote.length === 0){
-			var outcome = calcMissionVotes(this.missionVotes);
+			var requiresTwoFails = false;
+			if(this.playersInGame.length >= 7 && this.missionNum === 4){
+				requiresTwoFails = true;
+			}
+
+			var outcome = calcMissionVotes(this.missionVotes, requiresTwoFails);
 			if(outcome){
 				this.missionHistory.push(outcome);	
 			}
@@ -212,16 +217,21 @@ module.exports = function(host_, roomId_, io_){
 
 			//for the gameplay message
 			if(outcome === "succeeded"){
-				this.gameplayMessage = "The mission succeeded!";
+				//get number of fails
+				var numOfVotedFails = countFails(this.missionVotes);
+
+				if(numOfVotedFails === 0){
+					this.gameplayMessage = "The mission succeeded!";	
+				}
+				else{
+					this.gameplayMessage = "The mission succeeded! But with " + numOfVotedFails + " fails!";
+				}
+
+				
 			}
 			else if(outcome === "failed"){
 				//get number of fails
-				var numOfVotedFails = 0;
-				for(var i = 0; i < this.missionVotes.length; i++){
-					if(this.missionVotes[i] === "fail"){
-						numOfVotedFails++;
-					}
-				}
+				var numOfVotedFails = countFails(this.missionVotes);
 				this.gameplayMessage = "The mission failed with " + numOfVotedFails + " fails!";
 			}
 			
@@ -907,7 +917,7 @@ function getUsernameFromIndex(index, playersInGame){
 	return playersInGame[index].username;
 }
 
-function calcMissionVotes(votes){
+function calcMissionVotes(votes, requiresTwoFails){
 	//note we may not have all the votes from every person
 	//e.g. may look like "fail", "undef.", "success"
 	numOfPlayers = votes.length;
@@ -933,6 +943,9 @@ function calcMissionVotes(votes){
 
 	//calcuate the outcome
 	if(countFail === 0){
+		outcome = "succeeded";
+	}
+	else if(countFail === 1 && requiresTwoFails === true){
 		outcome = "succeeded";
 	}
 	else{
@@ -1011,4 +1024,15 @@ function generateAssignmentOrders(num){
 	// console.log(rolesAssignment);
 
 	return rolesAssignment;
+}
+
+function countFails(votes){
+	var numOfVotedFails = 0;
+	for(var i = 0; i < votes.length; i++){
+		if(votes[i] === "fail"){
+			numOfVotedFails++;
+		}
+	}
+
+	return numOfVotedFails;
 }

@@ -782,7 +782,7 @@ function enableDisableButtonsLeader(numPlayersOnMission){
     //if they've selected the right number of players, then allow them to send
     console.log("countHighlightedAvatars: " + countHighlightedAvatars());
     console.log("numPlayersOnMission: " + numPlayersOnMission);
-    if(countHighlightedAvatars() == numPlayersOnMission){
+    if(countHighlightedAvatars() == numPlayersOnMission || (countHighlightedAvatars() + "*") == numPlayersOnMission){
         document.querySelector("#green-button").classList.remove("disabled");
     }
     else{
