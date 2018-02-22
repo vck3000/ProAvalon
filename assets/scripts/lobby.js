@@ -669,8 +669,7 @@ function drawMiddleBoxes(){
             //draw in the number of players in each mission
             var numPlayersOnMission = gameData.numPlayersOnMission[j];
             if(numPlayersOnMission){
-                document.querySelectorAll(".missionBox")[j].innerText = numPlayersOnMission;
-
+                document.querySelectorAll(".missionBox")[j].innerHTML = "<p>" + numPlayersOnMission + "</p>";
             }
 
             //picks boxes
@@ -751,8 +750,11 @@ function drawAndPositionAvatars(){
         var offsetX = w/2;
         var offsetY = h/2;
 
+        var windowH = $(window).height();
+        var windowW = $(window).width();
+
         var strX = playerLocations.x[i] + offsetX + "px";
-        var strY = playerLocations.y[i] + offsetY + "px";
+        var strY = playerLocations.y[i] + offsetY - windowH*0.01 + "px";
 
         divs[i].style.left = strX;
         divs[i].style.bottom = strY;
@@ -1103,7 +1105,7 @@ function generatePlayerLocations(numOfPlayers, a, b){
         //get the coordinates. Note the +90 is to rotate so that
         //the first person is at the top of the screen
         x_[i] = a*(Math.cos(toRadians((step*i) + 90 + tiltOffset)))*0.85;
-        y_[i] = b*(Math.sin(toRadians((step*i) + 90 + tiltOffset)))*0.8;
+        y_[i] = b*(Math.sin(toRadians((step*i) + 90 + tiltOffset)))*0.7;
         // x_[i] = a*(Math.cos(toRadians((step*i) + 90)));
         // y_[i] = b*(Math.sin(toRadians((step*i) + 90)));
     }
