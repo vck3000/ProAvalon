@@ -171,8 +171,9 @@ p {
 	height: 100%;
 	width: 100%;
 	/*resize: none;*/
-	/*position: absolute;*/
+	position: absolute;
 	/*position: relative;	*/
+	top: 0px;
 }
 
 .room-container #mainRoomBox div {
@@ -419,4 +420,11 @@ p {
 input[type="text"] {
 	padding-left: 5px;
 	margin-top: 3px;
+}
+
+
+#backButton {
+	position: absolute;
+	top: 50px;
+	left: 0px;
 }

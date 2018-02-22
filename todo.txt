@@ -12,8 +12,18 @@ To-do list:
 -Cannot lady a person who previously held the lady before
 -cap players to 10p
 
+-time with e.g. 15:03 turning up as 15:3
+-button dont activate top half
 
+-green mission succeed colour is too bright/light
 
+-top player isnt centered with mission box
+
+-highlight green avatars and chat
+-claiming
+-let players choose colour
+
+-num of playerse in the game
 
 
 ***************************************************************************************

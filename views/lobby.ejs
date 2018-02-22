@@ -52,8 +52,6 @@
 <div class="game-container inactive-window "> <!-- container -->
 	
 	<div class="room-container">
-		<button id="backButton" class="btn btn-warning">Back</button>
-
 		<div id="mainRoomBox" class="">
 			<p></p>
 		</div>
@@ -116,91 +114,88 @@
 		
 
 		<div id="room-chat-in-game" class="tab-pane fade in active full-height">
-			<!-- <div id="room-chat-in-game" class="tab-pane fade in active full-height"> -->
-				<div class="chat-window">
-					<ol class="chat-list room-chat-list">
-						
-					</ol>
-				</div>
+			<div class="chat-window">
+				<ol class="chat-list room-chat-list">
 
-				<input type="text" class="room-chat-message-input chat-message-input">
-				<!-- </div> -->
-
+				</ol>
 			</div>
 
-			<div id="vh" class="tab-pane fade">
-				<h3><u>Vote History</u></h3>
+			<input type="text" class="room-chat-message-input chat-message-input">
 
-				<table>
-					<tbody id="voteHistoryTable">
-
-					</tbody>
-				</table>
-
-			</div>
 		</div>
 
+		<div id="vh" class="tab-pane fade">
+			<h3><u>Vote History</u></h3>
 
-	</div>
+			<table>
+				<tbody id="voteHistoryTable">
 
-
-
-
-
-
-	<!-- Modal for game options-->
-	<div id="myModal" class="modal fade" role="dialog">
-		<div class="modal-dialog">
-
-			<!-- Modal content-->
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
-					<h2 class="modal-title">Game options!</h2>
-				</div>
-				<div class="modal-body">
-					<h4>Select the roles/items you would like in the game.</h4>
-					<h6>Default roles have been pre-selected.</h6>
-
-
-					<div class="btn-group-vertical" data-toggle="buttons">
-						<label class="btn btn-mine active">
-							<input name="merlinassassin" id="merlinassassin" type="checkbox" autocomplete="off" checked> Merlin + Assassin
-						</label>
-						<br>
-						<label class="btn btn-mine active">
-							<input name="percival" id="percival" type="checkbox" autocomplete="off" checked> Percival
-						</label>
-						<br>
-						<label class="btn btn-mine active">
-							<input name="morgana" id="morgana" type="checkbox" autocomplete="off" checked> Morgana
-						</label>
-						<br>
-						<label class="btn btn-mine">
-							<input name="lady" id="lady" type="checkbox" autocomplete="off"> Lady of the Lake
-						</label>
-						<br>
-						<label class="btn btn-mine">
-							<input name="mordred" id="mordred" type="checkbox" autocomplete="off"> Mordred
-						</label>
-						<br>
-						<label class="btn btn-mine">
-							<input name="oberon" id="oberon" type="checkbox" autocomplete="off"> Oberon
-						</label>
-
-
-					</div>
-
-
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				</div>
-			</div>
+				</tbody>
+			</table>
 
 		</div>
 	</div>
 
-	<script type="text/javascript" src="scripts/lobby.js"></script>
+	<button id="backButton" class="btn btn-warning">Back</button>
+</div>
 
-	<% include partials/footer%>
+
+
+
+
+<!-- Modal for game options-->
+<div id="myModal" class="modal fade" role="dialog">
+	<div class="modal-dialog">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">Game options!</h2>
+			</div>
+			<div class="modal-body">
+				<h4>Select the roles/items you would like in the game.</h4>
+				<h6>Default roles have been pre-selected.</h6>
+
+
+				<div class="btn-group-vertical" data-toggle="buttons">
+					<label class="btn btn-mine active">
+						<input name="merlinassassin" id="merlinassassin" type="checkbox" autocomplete="off" checked> Merlin + Assassin
+					</label>
+					<br>
+					<label class="btn btn-mine active">
+						<input name="percival" id="percival" type="checkbox" autocomplete="off" checked> Percival
+					</label>
+					<br>
+					<label class="btn btn-mine active">
+						<input name="morgana" id="morgana" type="checkbox" autocomplete="off" checked> Morgana
+					</label>
+					<br>
+					<label class="btn btn-mine">
+						<input name="lady" id="lady" type="checkbox" autocomplete="off"> Lady of the Lake
+					</label>
+					<br>
+					<label class="btn btn-mine">
+						<input name="mordred" id="mordred" type="checkbox" autocomplete="off"> Mordred
+					</label>
+					<br>
+					<label class="btn btn-mine">
+						<input name="oberon" id="oberon" type="checkbox" autocomplete="off"> Oberon
+					</label>
+
+
+				</div>
+
+
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript" src="scripts/lobby.js"></script>
+
+<% include partials/footer%>

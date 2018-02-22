@@ -26,6 +26,10 @@ var isSpectator = false;
 window.addEventListener('resize', function(){
     console.log("Resized");
     draw(storeData);
+    //check navbar doesn't go past one row
+    if($(".navbar")[0].offsetHeight > 50){
+        //collapse
+    }
 }); 
 
 
