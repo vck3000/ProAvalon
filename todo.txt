@@ -4,7 +4,6 @@ To-do list:
 -Spam filter?
 -Maximum length to a single chat message
 
--bigger avatars?
 
 -DISCUSSIONS
 
@@ -14,7 +13,7 @@ To-do list:
 -cap players to 10p
 
 -shrinking text box for phone
--avatar overlapping with missions box
+
 
 
 ***************************************************************************************
@@ -33,6 +32,8 @@ Done:
 -Fix timezone issues in all chat
 -Lady of the Lake
 -hammer star might be in wrong position
+-avatar overlapping with missions box
+-bigger avatars?
 
 
 •	Disable copying certain texts (maybe useful link http://stackoverflow.com/questions/8957443/prevent-copying-text-in-web-page/12021733#12021733)

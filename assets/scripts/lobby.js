@@ -1,6 +1,16 @@
 var socket = io({transports: ['websocket'], upgrade: false});
 console.log("started");
 
+
+//Prevents the window height from changing when android keyboard is pulled up.
+setTimeout(function() {
+    let viewheight = $(window).height();
+    let viewwidth = $(window).width();
+    let viewport = document.querySelector("meta[name=viewport]");
+    viewport.setAttribute("content", "height=" + viewheight + "px, width=" + viewwidth + "px, initial-scale=1.0");
+}, 300);
+
+
 //for the game (like players in game)
 var storeData;
 var seeData;
