@@ -73,10 +73,13 @@ also from old suggestion:anonymous mode
 
 Refs:
 cosmetic stuff:
-margins for text box (first letter touching side)
+
++margins for text box (first letter touching side)
+
 smooth borders for text box?
 numbers centered in boxes on mission size
-a less harsh red for rejects and fails
-reject/approve borders doesnt touch head of avatar
-"1 fails"
-remove "disabled" in buttons
+
++a less harsh red for rejects and fails
++reject/approve borders doesnt touch head of avatar
++"1 fails"
++remove "disabled" in buttons

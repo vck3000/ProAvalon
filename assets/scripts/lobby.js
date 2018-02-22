@@ -830,7 +830,7 @@ function enableDisableButtons(){
             document.querySelector("#green-button").innerText = "Start!";
 
             document.querySelector("#red-button").classList.add("disabled");
-            document.querySelector("#red-button").innerText = "Disabled";
+            // document.querySelector("#red-button").innerText = "Disabled";
 
             document.querySelector("#options-button").classList.remove("hidden");
         }
@@ -840,7 +840,7 @@ function enableDisableButtons(){
             document.querySelector("#green-button").innerText = "Join!";
 
             document.querySelector("#red-button").classList.add("disabled");
-            document.querySelector("#red-button").innerText = "Disabled";
+            // document.querySelector("#red-button").innerText = "Disabled";
         }
         else{
             disableButtons();
@@ -853,7 +853,7 @@ function enableDisableButtons(){
             document.querySelector("#green-button").innerText = "Pick!";
 
             document.querySelector("#red-button").classList.add("disabled");
-            document.querySelector("#red-button").innerText = "Disabled";
+            // document.querySelector("#red-button").innerText = "Disabled";
         } 
 
         //if we are in voting phase
@@ -889,7 +889,7 @@ function enableDisableButtons(){
             document.querySelector("#green-button").innerText = "SHOOT!";
 
             document.querySelector("#red-button").classList.add("disabled");
-            document.querySelector("#red-button").innerText = "Disabled";
+            // document.querySelector("#red-button").innerText = "Disabled";
 
             //if there is only one person highlighted
             if(countHighlightedAvatars() == 1){
@@ -904,7 +904,7 @@ function enableDisableButtons(){
             document.querySelector("#green-button").innerText = "Card!";
 
             document.querySelector("#red-button").classList.add("disabled");
-            document.querySelector("#red-button").innerText = "Disabled";
+            // document.querySelector("#red-button").innerText = "Disabled";
 
             //if there is only one person highlighted
             if(countHighlightedAvatars() == 1 && ownUsername === getUsernameFromIndex(gameData.lady)){
