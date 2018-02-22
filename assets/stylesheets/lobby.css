@@ -85,21 +85,7 @@ p {
 	display: none;
 }
 
-.chat-message-input {
-	width: 100%;
-	border: 2px solid #d3d3d3;
-	/*float: bottom;*/
-	/*bottom: 0;*/
-	/*position: absolute;*/
 
-/*	width: 400px;
-	margin: 0 auto;
-	border: solid 1px #ccc;
-	border-radius: 5px;
-	overflow: hidden;*/
-
-	/*INSERT SOM HEIGHT THING HERE*/
-}
 #col1{
 	height: 100%;
 }
@@ -113,8 +99,15 @@ p {
 	display:block;
 	max-height: 75%;
 	border: 1px solid #d3d3d3;
+	border-radius: 5px;
 	overflow-y: auto;
 	overflow-x: visible;
+}
+
+.chat-message-input {
+	width: 100%;
+	border: 2px solid #d3d3d3;
+	border-radius: 5px;
 }
 
 .chat-list {
@@ -159,6 +152,8 @@ p {
 .game-container{
 	/*height: is already set in the container at 90%*/
 	height: 90%;
+	padding-left: 10px;
+	padding-right: 10px;
 	/*width: 75%;*/
 }
 
@@ -170,6 +165,8 @@ p {
 	/*position: relative;	*/
 
 	border: solid 1px #d3d3d3;
+	border-radius: 5px;
+
 
 }
 
@@ -294,11 +291,11 @@ p {
 }
 
 .missionBoxSucceed {
-	color: white;
+	/*color: white;*/
 	background-color: #BBFFBB;
 }
 .missionBoxFail {
-	color: white;
+	/*color: white;*/
 	background-color: #ff6666;
 }
 
@@ -390,16 +387,16 @@ p {
 
 /*This is for the special text like lady, so users cannot select to copy paste*/
 .noselect {
-  -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: none; /* Safari */
+	-khtml-user-select: none; /* Konqueror HTML */
+	-moz-user-select: none; /* Firefox */
+	-ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome and Opera */
-}
+            supported by Chrome and Opera */
+        }
 
 
-input[type="text"] {
-	padding-left: 5px;
-}
+        input[type="text"] {
+        	padding-left: 5px;
+        }
