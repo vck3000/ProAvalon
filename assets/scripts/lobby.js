@@ -47,14 +47,20 @@ document.querySelector("#testLink").addEventListener("click", function(){
     }
 }); 
 
+//Hide the notifications when clicked
 document.querySelector("#danger-alert-box-button").addEventListener("click", function(){
     document.querySelector("#danger-alert-box").classList.add("inactive-window");
     document.querySelector("#danger-alert-box-button").classList.add("inactive-window");
+    //primarly used to update the position of buttons
+    draw();
 });
 
+//Hide the notifications when clicked
 document.querySelector("#success-alert-box-button").addEventListener("click", function(){
     document.querySelector("#success-alert-box").classList.add("inactive-window");
     document.querySelector("#success-alert-box-button").classList.add("inactive-window");
+    //primarly used to update the position of buttons
+    draw();
 });
 
 document.querySelector("#backButton").addEventListener("click", function(){
@@ -491,6 +497,10 @@ function draw(){
         drawTeamLeaderStar();
 
         drawMiddleBoxes();
+
+        var position = $("#mainRoomBox")[0].getBoundingClientRect();
+        $("#button-group-top-left")[0].style.top = position.y + "px";
+        $("#button-group-top-left")[0].style.left = position.x + "px";
 
 
         if(gameStarted === true){

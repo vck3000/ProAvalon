@@ -423,8 +423,13 @@ input[type="text"] {
 }
 
 
-#backButton {
+#button-group-top-left {
 	position: absolute;
-	top: 50px;
-	left: 0px;
+/*	top: 50px;
+	left: 0px;*/
+}
+
+.nav-tabs {
+	/*Remove the bottom border*/
+	border: 0px solid black !important;
 }

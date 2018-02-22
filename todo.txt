@@ -25,6 +25,8 @@ To-do list:
 
 -num of playerse in the game
 
+-force re-login if a user refreshes
+
 
 ***************************************************************************************
 DONE: 
