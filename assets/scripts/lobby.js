@@ -949,10 +949,10 @@ function checkEntryExistsInArray(array, entry){
 
 function disableButtons(){
     document.querySelector("#green-button").classList.add("disabled");
-    document.querySelector("#green-button").innerText = "Disabled";
+    // document.querySelector("#green-button").innerText = "Disabled";
 
     document.querySelector("#red-button").classList.add("disabled");
-    document.querySelector("#red-button").innerText = "Disabled";
+    // document.querySelector("#red-button").innerText = "Disabled";
 }
 
 function countHighlightedAvatars(){
