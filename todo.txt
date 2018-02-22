@@ -12,13 +12,14 @@ To-do list:
 -Cannot lady a person who previously held the lady before
 -cap players to 10p
 
--shrinking text box for phone
+
 
 
 
 ***************************************************************************************
+DONE: 
 
-Done: 
+Mine: 
 -two tabs logged into same account
 -Sometimes when a single player in the room refreshes, causes whole server to crash
 -Add in who rej, who app
@@ -34,11 +35,25 @@ Done:
 -hammer star might be in wrong position
 -avatar overlapping with missions box
 -bigger avatars?
+-shrinking text box for phone
 
 
+Hak:
 •	Disable copying certain texts (maybe useful link http://stackoverflow.com/questions/8957443/prevent-copying-text-in-web-page/12021733#12021733)
 •	Fitting game room better in browser (done) 
 •	Logout button (done)
+
+
+
+Ref:
++margins for text box (first letter touching side)
++smooth borders for text box?
++a less harsh red for rejects and fails
++reject/approve borders doesnt touch head of avatar
++"1 fails"
++remove "disabled" in buttons
++capitalise lady of the lake
++add spaces to the gameplay text
 
 ***************************************************************************************
 
@@ -75,13 +90,6 @@ also from old suggestion:anonymous mode
 Refs:
 cosmetic stuff:
 
-+margins for text box (first letter touching side)
-+smooth borders for text box?
-+a less harsh red for rejects and fails
-+reject/approve borders doesnt touch head of avatar
-+"1 fails"
-+remove "disabled" in buttons
-+capitalise lady of the lake
-+add spaces to the gameplay text
+
 
 numbers centered in boxes on mission size
