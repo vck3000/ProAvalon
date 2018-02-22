@@ -748,8 +748,8 @@ function drawAndPositionAvatars(){
 
     for(var i = 0 ; i < numPlayers; i++){
         // console.log("player position: asdflaksdjf;lksjdf");
-        var offsetX = w/2 ;
-        var offsetY = h/2 ;
+        var offsetX = w/2;
+        var offsetY = h/2;
 
         var strX = playerLocations.x[i] + offsetX + "px";
         var strY = playerLocations.y[i] + offsetY + "px";
@@ -759,7 +759,7 @@ function drawAndPositionAvatars(){
 
         var ratioXtoY = 0.8;
 
-        divs[i].style.height = 30 + "%";
+        divs[i].style.height = 40 + "%";
         divs[i].style.width = divs[i].offsetHeight*ratioXtoY + "px";
 
         // //size of the avatar img
@@ -1103,7 +1103,7 @@ function generatePlayerLocations(numOfPlayers, a, b){
         //get the coordinates. Note the +90 is to rotate so that
         //the first person is at the top of the screen
         x_[i] = a*(Math.cos(toRadians((step*i) + 90 + tiltOffset)))*0.85;
-        y_[i] = b*(Math.sin(toRadians((step*i) + 90 + tiltOffset)))*0.6;
+        y_[i] = b*(Math.sin(toRadians((step*i) + 90 + tiltOffset)))*0.8;
         // x_[i] = a*(Math.cos(toRadians((step*i) + 90)));
         // y_[i] = b*(Math.sin(toRadians((step*i) + 90)));
     }

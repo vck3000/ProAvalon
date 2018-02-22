@@ -147,6 +147,8 @@ p {
 	height: 40%;
 	/*background-color: purple;*/
 	position: relative;
+	/*border: solid 1px #d3d3d3;*/
+	/*border-radius: 5px;*/
 }
 
 .game-container{
@@ -163,11 +165,6 @@ p {
 	/*resize: none;*/
 	/*position: absolute;*/
 	/*position: relative;	*/
-
-	border: solid 1px #d3d3d3;
-	border-radius: 5px;
-
-
 }
 
 .room-container #mainRoomBox div {
@@ -177,7 +174,7 @@ p {
 
 	/*Slightly bias toward the top because of the words underneath the picture/div
 	hence 40% */
-	transform:translate(-50%, 40%); /* centered first regardless of width*/
+	transform:translate(-50%, 50%); /* centered first regardless of width*/
 	/*background-color: #eeeeee; */
 
 	text-align: center;
@@ -272,19 +269,23 @@ p {
 	position: absolute;
 	/*margin: auto;*/
 	left: 50%;
-	top: 40%;
+	top: 33%;
 
 	transform: translateX(-50%);
 }
 
 .missionBox {
-	width: 30px;
-	height: 30px;
+	width: 7vmin;
+	height: 7vmin;
+
+	max-width: 30px;
+	max-height: 30px;
+
 	border: 1px solid black;
-	border-radius: 5px;
+	border-radius: 7px;
 	float: left;
-	margin-left: 3px;
-	margin-right: 3px;
+	margin-left: 1px;
+	margin-right: 1px;
 	/*position: absolute;*/
 
 	text-align: center;
@@ -300,13 +301,17 @@ p {
 }
 
 .pickBox {
-	width: 20px;
-	height: 20px;
+	width: 3vmin;
+	height: 3vmin;
+
+	max-width: 15px;
+	max-height: 15px;
+
 	border: 1px solid black;
-	border-radius: 15px;
+	border-radius: 50%;
 	float: left;
-	margin-left: 3px;
-	margin-right: 3px;
+	margin-left: 0.7em;
+	margin-right: 0.7em;
 	/*position: absolute;*/
 }
 
@@ -392,11 +397,11 @@ p {
 	-khtml-user-select: none; /* Konqueror HTML */
 	-moz-user-select: none; /* Firefox */
 	-ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-            supported by Chrome and Opera */
-        }
+	user-select: none; 
+}
 
 
-        input[type="text"] {
-        	padding-left: 5px;
-        }
+input[type="text"] {
+	padding-left: 5px;
+	margin-top: 3px;
+}

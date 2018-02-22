@@ -429,7 +429,12 @@ module.exports = function(host_, roomId_, io_){
 			//players yet to vote are all players in game
 			this.playersYetToVote = this.getUsernamesInGame();
 
-			this.gameplayMessage = socket.request.user.username + " has picked: " + pickedTeam;
+			var str = "";
+			for(var i = 0; i < pickedTeam.length; i++){
+				str += pickedTeam[i] + ", ";
+			}
+
+			this.gameplayMessage = socket.request.user.username + " has picked: " + str;
 
 			//VH:
 			for(var i = 0; i < this.sockets.length; i++){
@@ -470,7 +475,7 @@ module.exports = function(host_, roomId_, io_){
 			return str;
 		}
 		else if(this.phase === "lady"){
-			return "Waiting for lady of the lake to be used.";
+			return "Waiting for Lady of the Lake to be used.";
 		}
 		else if(this.phase === "finished"){
 			var str = "Game has finished! The " + this.winner + " have won!";
