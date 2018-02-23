@@ -420,3 +420,7 @@ input[type="text"] {
 	padding-left: 5px;
 	margin-top: 3px;
 }
+
+.nav-tabs {
+	border: 0 solid black !important;
+}
