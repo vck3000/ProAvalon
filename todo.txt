@@ -10,10 +10,6 @@ To-do list:
 -Require everyone to press ready before starting game
 
 -Cannot lady a person who previously held the lady before
--cap players to 10p
-
--time with e.g. 15:03 turning up as 15:3
-
 
 -green mission succeed colour is too bright/light
 
@@ -52,7 +48,8 @@ Mine:
 -shrinking text box for phone
 -top player isnt centered with mission box
 -button dont activate top half
-
+-time with e.g. 15:03 turning up as 15:3
+-cap players to 10p
 
 Hak:
 •	Disable copying certain texts (maybe useful link http://stackoverflow.com/questions/8957443/prevent-copying-text-in-web-page/12021733#12021733)
