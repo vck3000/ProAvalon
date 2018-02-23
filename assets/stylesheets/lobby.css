@@ -428,3 +428,7 @@ input[type="text"] {
 h3 {
 	margin-top: 0px !important;
 }
+
+.nav-tabs li a {
+	padding: 1vw !important;
+}
