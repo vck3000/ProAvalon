@@ -199,6 +199,8 @@ module.exports = function(io){
 			removePlayerFromRoomAndCheckDestroy(socket, io);
 			//leave the room chat
 			socket.leave(socket.request.user.inRoomId);
+
+			updateCurrentGamesList(io);
 		});
 
 		socket.on("startGame", function(data){
