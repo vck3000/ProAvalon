@@ -424,3 +424,7 @@ input[type="text"] {
 .nav-tabs {
 	border: 0 solid black !important;
 }
+
+h3 {
+	margin-top: 0px !important;
+}
