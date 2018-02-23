@@ -13,11 +13,11 @@ To-do list:
 -cap players to 10p
 
 -time with e.g. 15:03 turning up as 15:3
--button dont activate top half
+
 
 -green mission succeed colour is too bright/light
 
--top player isnt centered with mission box
+
 
 -highlight green avatars and chat
 -claiming
@@ -50,6 +50,8 @@ Mine:
 -avatar overlapping with missions box
 -bigger avatars?
 -shrinking text box for phone
+-top player isnt centered with mission box
+-button dont activate top half
 
 
 Hak:

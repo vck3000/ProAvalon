@@ -108,7 +108,10 @@ function addAllChatEventListeners(e, allChatWindow){
         if(message && message.length > 0){
             //append 0 in front of single digit minutes
 
-            var date = "" + d.getMinutes();
+            var date = d.getMinutes();
+
+            if(date < 10){date = "0" + date;}
+
             var data = {
                 date: date,
                 message: message
@@ -118,12 +121,6 @@ function addAllChatEventListeners(e, allChatWindow){
             allChatWindow.value = "";
             //send data to the server 
             socket.emit("allChatFromClient", data);
-
-            //add the self chat
-            // var dateStr = "[" + data.date + "]";
-            // var str = "<li class=self>" + dateStr + " Me: " + data.message;
-
-            // $(".all-chat-list").append(str);
             
             scrollDown();
         }
@@ -143,7 +140,9 @@ roomChatWindow.onkeyup = function(e){
         if(message && message.length > 0){
             //append 0 in front of single digit minutes
 
-            var date = "" + d.getMinutes();
+            var date = d.getMinutes();
+            if(date < 10){date = "0" + date;}
+
             var data = {
                 date: date,
                 message: message,
@@ -155,13 +154,6 @@ roomChatWindow.onkeyup = function(e){
             //send data to the server 
             socket.emit("roomChatFromClient", data);
 
-            //add the self chat
-            
-            // var dateStr = "[" + data.date + "]";
-            // var str = "<li class=self>" + dateStr + " Me: " + data.message;
-
-            // $(".room-chat-list").append(str);
-            
             scrollDown();
         }
     }
@@ -179,9 +171,12 @@ socket.on("username", function(username){
 });
 
 socket.on("allChatToClient", function(data){
+    //format the date
     var d = new Date();
-
-    var date = "[" + d.getHours() + ":" + data.date + "]";
+    var hour = d.getHours();
+    if(hour < 10){hour = "0" + hour;}
+    if(data.date < 10){data.date = "0" + data.date;}
+    var date = "[" + hour + ":" + data.date + "]";
     var str = "<li class=other><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + data.message;
 
     console.log("all chat inc");
@@ -192,9 +187,13 @@ socket.on("allChatToClient", function(data){
 });
 
 socket.on("roomChatToClient", function(data){
+    //format the date
     var d = new Date();
+    var hour = d.getHours();
+    if(hour < 10){hour = "0" + hour;}
+    if(data.date < 10){data.date = "0" + data.date;}
+    var date = "[" + hour + ":" + data.date + "]";
 
-    var date = "[" + d.getHours() + ":" + data.date + "]";
     var str = "<li class=other><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + data.message;
 
     addToRoomChat(str);
