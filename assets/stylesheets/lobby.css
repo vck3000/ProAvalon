@@ -430,5 +430,6 @@ h3 {
 }
 
 .nav-tabs li a {
-	padding: 1vw !important;
+	padding-left: 1vw !important;
+	padding-right: 1vw !important;
 }
