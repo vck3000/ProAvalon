@@ -182,7 +182,7 @@ p {
 
 	/*Slightly bias toward the top because of the words underneath the picture/div
 	hence 40% */
-	transform:translate(-50%, 50%); /* centered first regardless of width*/
+	transform:translate(-50%, 40%); /* centered first regardless of width*/
 	/*background-color: #eeeeee; */
 
 	text-align: center;

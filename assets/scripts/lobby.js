@@ -251,7 +251,7 @@ socket.on("update-current-games-list", function(currentGames){
     currentGames.forEach(function(currentGame){
         //if the current game exists, add it
         if(currentGame){
-            var str = "<tr> <td> " + currentGame.roomId + ": " + currentGame.status + "<p>Host: " + currentGame.hostUsername + "</p>" +  "</td> </tr>";
+            var str = "<tr> <td> " + currentGame.roomId + ": " + currentGame.status + " [" + currentGame.numOfPlayersInside + "/10]" +  "<p>Host: " + currentGame.hostUsername + "</p>" +  "</td> </tr>";
             $("#current-games-table tbody").append(str);
 
 

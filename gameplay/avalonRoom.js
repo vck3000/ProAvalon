@@ -834,7 +834,8 @@ module.exports = function(host_, roomId_, io_){
 	this.playerJoinGame = function(socket){
 
 		//when game hasnt started yet, add the person to the players in game
-		if(this.gameStarted === false){
+		//cap of 10 players in the game at once.
+		if(this.gameStarted === false && this.sockets.length < 10){
 			this.sockets.push(socket);
 			//also remove them from the list of socketsOfSpectators
 			var i = this.socketsOfSpectators.indexOf(socket);
@@ -942,6 +943,10 @@ module.exports = function(host_, roomId_, io_){
 
 	this.getRoomId = function(){
 		return this.roomId;
+	}
+
+	this.getNumOfPlayersInside = function(){
+		return this.sockets.length;
 	}
 };
 

@@ -186,6 +186,8 @@ module.exports = function(io){
 					console.log("Game has started, player " + socket.request.user.username + " is not allowed to join.");
 				}
 			}
+
+			updateCurrentGamesList(io);
 		});
 
 		//when a player leaves a room
@@ -325,6 +327,7 @@ var updateCurrentGamesList = function(io){
 			//get room ID
 			gamesList[i].roomId = rooms[i].getRoomId();
 			gamesList[i].hostUsername = rooms[i].getHostUsername();
+			gamesList[i].numOfPlayersInside = rooms[i].getNumOfPlayersInside();
 		}
 	}
 	io.in("allChat").emit("update-current-games-list", gamesList);
