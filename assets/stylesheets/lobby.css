@@ -105,7 +105,7 @@ p {
 .chat-window {
 	height: 75%;
 	display:block;
-	max-height: 75%;
+	/*max-height: 75%;*/
 	border: 1px solid #d3d3d3;
 	border-radius: 5px;
 	overflow-y: auto;
@@ -432,4 +432,8 @@ h3 {
 .nav-tabs li a {
 	padding-left: 1vw !important;
 	padding-right: 1vw !important;
+}
+
+#newRoom {
+	width: 100%;
 }

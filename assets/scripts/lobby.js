@@ -10,6 +10,15 @@ setTimeout(function() {
     viewport.setAttribute("content", "height=" + viewheight + "px, width=" + viewwidth + "px, initial-scale=1.0");
 }, 300);
 
+// Extend divs to bottom of page:
+// All chat in lobby
+var parentH = $("#col1")[0].offsetHeight;
+var textH = $("#all-chat-lobby-text")[0].offsetHeight;
+var inputH = $(".all-chat-message-input")[0].offsetHeight
+var newHeight = parentH - textH - inputH;
+$("#all-chat-lobby")[0].style.height = (newHeight - 10) + "px";
+
+
 
 //for the game (like players in game)
 var storeData;
@@ -36,7 +45,7 @@ document.querySelector("#green-button").addEventListener("click", greenButtonFun
 document.querySelector("#red-button").addEventListener("click", redButtonFunction);
 
 //new ROOM CODE
-document.querySelector("#testLink").addEventListener("click", function(){
+document.querySelector("#newRoom").addEventListener("click", function(){
     if(inRoom === false){
         socket.emit("newRoom");
         inRoom = true;    
