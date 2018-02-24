@@ -133,7 +133,7 @@ roomChatWindow.onkeyup = function(e){
             //append 0 in front of single digit minutes
 
             var date = d.getMinutes();
-            if(date < 10){date = "0" + date;}
+            // if(date < 10){date = "0" + date;}
 
             var data = {
                 date: date,
@@ -173,9 +173,7 @@ socket.on("allChatToClient", function(data){
 
     console.log("all chat inc");
 
-    $(".all-chat-list").append(str);
-
-    scrollDown();
+    addToAllChat(str);
 });
 
 socket.on("roomChatToClient", function(data){
@@ -191,10 +189,44 @@ socket.on("roomChatToClient", function(data){
     addToRoomChat(str);
 });
 
+
+
+function addToAllChat(str){
+    $(".all-chat-list").append(str);
+    scrollDown();
+
+    if($(".nav-tabs #all-chat-in-game-tab").hasClass("active") === false){
+        $(".nav-tabs #all-chat-in-game-tab").addClass("newMessage");
+    }
+}
+
 function addToRoomChat(str){
     $(".room-chat-list").append(str);
     scrollDown();
+
+    if($(".nav-tabs #room-chat-in-game-tab").hasClass("active") === false){
+        $(".nav-tabs #room-chat-in-game-tab").addClass("newMessage");
+    }
 }
+
+//Remove the new message yellow background colour when
+//user selects the tab
+$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+  var target = $(e.target).attr("href") // activated tab
+  console.log(target);
+
+  if(target === "#all-chat-in-game"){
+    $(".nav-tabs #all-chat-in-game-tab").removeClass("newMessage")
+  }
+  else if(target === "#room-chat-in-game"){
+    $(".nav-tabs #room-chat-in-game-tab").removeClass("newMessage")
+  }
+});
+
+
+
+
+
 
 
 socket.on("player-joined-lobby", function(username){

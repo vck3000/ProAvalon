@@ -444,3 +444,8 @@ h3 {
 	padding-top: 1vh;
 	padding-bottom: 1vh;
 }
+
+
+.newMessage {
+	background-color: yellow;
+}
