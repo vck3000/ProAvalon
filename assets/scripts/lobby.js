@@ -48,6 +48,8 @@ document.querySelector("#red-button").addEventListener("click", redButtonFunctio
 document.querySelector("#newRoom").addEventListener("click", function(){
     if(inRoom === false){
         socket.emit("newRoom");
+        console.log("RESET GAM DATA ON CREATE ROOM");
+        resetAllGameData();
         inRoom = true;    
     }
 }); 
@@ -69,29 +71,6 @@ document.querySelector("#backButton").addEventListener("click", function(){
     resetAllGameData();
 });
 
-function resetAllGameData(){
-    roomId = undefined; 
-    //reset all the variables
-    storeData = undefined;
-    seeData = undefined;
-    gameData = undefined;
-    gameStarted = false;
-    numPlayersOnMission = [];
-    inRoom = false;
-    //note do not reset our own username.
-    isSpectator = false;
-
-    print_gameplay_text_game_started = false;
-    print_gameplay_text_picked_team = false;
-    print_gameplay_text_vote_results = false;
-    print_last_mission_num = 1;
-
-    //hide the options cog
-    document.querySelector("#options-button").classList.add("hidden");
-
-    //reset room-chat 
-    $(".room-chat-list").html("");
-}
 
 
 var allChatWindow1 = document.querySelectorAll(".all-chat-message-input")[0];
@@ -273,6 +252,7 @@ socket.on("update-current-games-list", function(currentGames){
             allTds[allTds.length - 1].addEventListener("click", function(){
                 //JOIN THE ROOM
 
+                console.log("RESET GAM DATA ON JOIN ROOM");
                 resetAllGameData();
 
                 // console.log(currentGame.roomId);
@@ -1218,4 +1198,29 @@ function getOptions(){
     }
     return data;
 
+}
+
+function resetAllGameData(){
+    roomId = undefined; 
+    //reset all the variables
+    storeData = undefined;
+    seeData = undefined;
+    gameData = undefined;
+    gameStarted = false;
+    numPlayersOnMission = [];
+    inRoom = false;
+    //note do not reset our own username.
+    isSpectator = false;
+
+    print_gameplay_text_game_started = false;
+    print_gameplay_text_picked_team = false;
+    print_gameplay_text_vote_results = false;
+    print_last_mission_num = 1;
+
+    //hide the options cog
+    document.querySelector("#options-button").classList.add("hidden");
+
+    //reset room-chat 
+    console.log("RESET ROOM CHAT");
+    $(".room-chat-list").html("");
 }
