@@ -8,16 +8,17 @@ setTimeout(function() {
     let viewwidth = $(window).width();
     let viewport = document.querySelector("meta[name=viewport]");
     viewport.setAttribute("content", "height=" + viewheight + "px, width=" + viewwidth + "px, initial-scale=1.0");
+
+
+
+    // Extend divs to bottom of page:
+    // All chat in lobby
+    var parentH = $("#col1")[0].offsetHeight;
+    var textH = $("#all-chat-lobby-text")[0].offsetHeight;
+    var inputH = $(".all-chat-message-input")[0].offsetHeight
+    var newHeight = parentH - textH - inputH;
+    $("#all-chat-lobby")[0].style.height = (newHeight - 10) + "px";
 }, 300);
-
-// Extend divs to bottom of page:
-// All chat in lobby
-var parentH = $("#col1")[0].offsetHeight;
-var textH = $("#all-chat-lobby-text")[0].offsetHeight;
-var inputH = $(".all-chat-message-input")[0].offsetHeight
-var newHeight = parentH - textH - inputH;
-$("#all-chat-lobby")[0].style.height = (newHeight - 10) + "px";
-
 
 
 //for the game (like players in game)
@@ -1076,6 +1077,8 @@ function strOfAvatar(playerData, alliance){
 function changeView(){
     $(".lobby-container").toggleClass("inactive-window");
     $(".game-container").toggleClass("inactive-window");
+
+    extendTabContentToBottomInRoom();
 }
 
 function scrollDown(){
@@ -1223,4 +1226,16 @@ function resetAllGameData(){
     //reset room-chat 
     console.log("RESET ROOM CHAT");
     $(".room-chat-list").html("");
+}
+
+function extendTabContentToBottomInRoom(){
+    //extending the tab content to the bottom of the page:
+    var gameContainer = $(".game-container")[0];
+    var tabContainer = $(".tab-content")[0];
+    // var offsetTop = tabContainer.offsetTop;
+    var newHeight2 = gameContainer.offsetHeight - tabContainer.offsetTop;
+    console.log("gamecontainerheight: " + gameContainer.offsetHeight);
+    console.log("tabcontainertoppos: " + tabContainer.offsetTop);
+    console.log("New height 2: " + newHeight2);
+    tabContainer.style.height = (newHeight2*1.2) + "px"; 
 }

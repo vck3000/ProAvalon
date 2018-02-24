@@ -103,7 +103,7 @@ p {
 }
 
 .chat-window {
-	height: 75%;
+	height: 90%;
 	display:block;
 	/*max-height: 75%;*/
 	border: 1px solid #d3d3d3;
@@ -438,4 +438,9 @@ h3 {
 
 #newRoom {
 	width: 100%;
+}
+
+.game-buttons-div {
+	padding-top: 1vh;
+	padding-bottom: 1vh;
 }
