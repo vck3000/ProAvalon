@@ -13,7 +13,7 @@ To-do list:
 
 -green mission succeed colour is too bright/light
 
-
+-center long usernames properly
 
 -highlight green avatars and chat
 -claiming

@@ -272,6 +272,9 @@ socket.on("update-current-games-list", function(currentGames){
             //add the event listener to the last td added.
             allTds[allTds.length - 1].addEventListener("click", function(){
                 //JOIN THE ROOM
+
+                resetAllGameData();
+
                 // console.log(currentGame.roomId);
                 socket.emit("join-room", currentGame.roomId);
                 //change the view to the room instead of lobby
@@ -280,8 +283,6 @@ socket.on("update-current-games-list", function(currentGames){
                 isSpectator = true;
                 //change to the game room view
                 changeView();
-
-                resetAllGameData();
             });
         }
     });
@@ -1087,7 +1088,7 @@ function strOfAvatar(playerData, alliance){
         }
     }
 
-    return "<div><img class='avatarImgInRoom' src='" + picLink + "'><p class='username-p'>" + lady + playerData.username + " " + hammerStar + " </p><p class='role-p'>" + role + "</p></div>";    
+    return "<div><img class='avatarImgInRoom' src='" + picLink + "'><p class='username-p'>" + lady + "" + playerData.username + " " + hammerStar + " </p><p class='role-p'>" + role + "</p></div>";    
 }
 
 
