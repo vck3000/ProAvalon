@@ -55,7 +55,7 @@ app.use(flash());
 app.use(function(req, res, next){
 	res.locals.currentUser = req.user;
 	// headerActive default should be nothing, otherwise specify in the routes index.js file
-	res.locals.headerActive = "";
+	res.locals.headerActive = " ";
 	res.locals.error = req.flash("error");
 	res.locals.success = req.flash("success");
 	next();
