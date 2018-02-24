@@ -108,7 +108,7 @@ module.exports = function(io){
 			rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId, io);
 			console.log("new room request");
 			//broadcast to all chat
-			var str =  "Room " + nextRoomId + " has been created! Go join!";
+			var str =  socket.request.user.username + " has created room " + nextRoomId + ". Go join!";
 			console.log(str);
 
 			//send to allChat including the host of the game
@@ -160,7 +160,7 @@ module.exports = function(io){
 					socket.request.user.spectator = false;
 				}
 				//if game has started, give them a copy of spectator data
-				else if(rooms[roomId].getStatus() !== "Waiting!"){
+				else if(rooms[roomId].getStatus() !== "Waiting"){
 					giveGameDataToSpectator(socket, io);
 				}
 				
@@ -175,7 +175,7 @@ module.exports = function(io){
 				socket.request.user.spectator = false;
 				//if the room has not started yet, throw them into the room
 				console.log("Game status is: " + rooms[roomId].getStatus());
-				if(rooms[roomId].getStatus() === "Waiting!"){
+				if(rooms[roomId].getStatus() === "Waiting"){
 					var ToF = rooms[roomId].playerJoinGame(socket);
 					console.log(socket.request.user.username + " has joined room " + roomId + ": " + ToF);
 

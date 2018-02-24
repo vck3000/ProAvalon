@@ -244,7 +244,7 @@ module.exports = function(host_, roomId_, io_){
 					this.gameplayMessage = "The mission succeeded!";	
 				}
 				else{
-					this.gameplayMessage = "The mission succeeded! But with " + numOfVotedFails + " fails!";
+					this.gameplayMessage = "The mission succeeded, but with " + numOfVotedFails + " fails!";
 				}
 
 				
@@ -478,7 +478,7 @@ module.exports = function(host_, roomId_, io_){
 			return "Waiting for Lady of the Lake to be used.";
 		}
 		else if(this.phase === "finished"){
-			var str = "Game has finished! The " + this.winner + " have won!";
+			var str = "Game has finished. The " + this.winner + " have won!";
 			return str;
 		}
 		else{
@@ -868,7 +868,7 @@ module.exports = function(host_, roomId_, io_){
 
 			return true;
 		} else{
-			console.log("Player left mid-game!");
+			console.log("Player left mid-game.");
 			return false;
 		}
 	};
@@ -933,11 +933,11 @@ module.exports = function(host_, roomId_, io_){
 
 	this.getStatus = function(){
 		if(this.finished === true){
-			return "Finished!";
+			return "Finished";
 		} else if(this.gameStarted === true){	
-			return "Game in progress!";
+			return "Game in progress";
 		} else{
-			return "Waiting!";
+			return "Waiting";
 		} 
 	}
 
