@@ -54,6 +54,8 @@ app.use(flash());
 //res.locals variables
 app.use(function(req, res, next){
 	res.locals.currentUser = req.user;
+	// headerActive default should be lobby, otherwise specify in the routes index.js file
+	res.locals.headerActive = "lobby";
 	res.locals.error = req.flash("error");
 	res.locals.success = req.flash("success");
 	next();

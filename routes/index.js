@@ -46,7 +46,7 @@ router.get("/loginFail", function(req, res){
 //lobby route
 router.get("/lobby", isLoggedIn, function(req, res){
 	console.log(req.user);
-	res.render("lobby", {currentUser: req.user});
+	res.render("lobby", {currentUser: req.user, headerActive: "lobby"});
 });
 
 //logout
@@ -59,11 +59,11 @@ router.get("/logout", function(req, res){
 });
 
 router.get("/log", function(req, res){
-	res.render("log", {currentUser: req.user});
+	res.render("log", {currentUser: req.user, headerActive: "log"});
 })
 
 router.get("/rules", function(req, res){
-	res.render("rules", {currentUser: req.user});
+	res.render("rules", {currentUser: req.user, headerActive: "rules"});
 })
 
 router.get("/testmodal", function(req, res){

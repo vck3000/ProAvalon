@@ -30,17 +30,42 @@
 			<!-- Collect the nav links, forms, and other content for toggling -->
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
+
+					<% if(headerActive){%>
+
+					<% if(headerActive === "lobby"){ %>
 					<li class="active"><a href="/lobby">Lobby</a></li>
+					<%} %>
+					<% if(headerActive !== "lobby"){ %>
+					<li><a href="/lobby">Lobby</a></li>
+					<% } %>
 
+					<% if(headerActive === "rules"){ %>
+					<li class="active"><a href="/rules">Rules</a></li>
+					<%} %>
+					<% if(headerActive !== "rules"){ %>
 					<li><a href="/rules">Rules</a></li>
+					<% } %>
 
+					<% if(headerActive === "forums"){ %>
+					<li class="active"><a href="#">Forums</a></li>
+					<%} %>
+					<% if(headerActive !== "forums"){ %>
 					<li><a href="#">Forums</a></li>
+					<% } %>
 
+					<% if(headerActive === "log"){ %>
+					<li class="active"><a href="/log">Change log</a></li>
+					<%} %>
+					<% if(headerActive !== "log"){ %>
 					<li><a href="/log">Change log</a></li>
+					<% } %>
+
+					<%}%>
 
 					<!-- <li><a href="#">News</a></li> -->
 				</ul>
-				
+
 
 				<ul class="nav navbar-nav navbar-right">
 					<!-- <li><a href="#">About</a></li> -->
@@ -57,11 +82,8 @@
 							<ul class="dropdown-menu">
 								<input type="checkbox" name="option_print_gameplay_text" id=option_print_gameplay_text checked>
 								<label for="option_print_gameplay_text">Print gameplay text</label>
-
-								
 							</ul>
 						</li>
-						
 					</li>
 					<!-- <li><a href="#">Hi there, <%=currentUser.username%></a></li> -->
 					<li><a href="/logout">Log out</a></li>
@@ -86,7 +108,7 @@
 			</div>	
 		</a>
 
-		
+
 		<!-- FLASH NOTIFICATION REQUESTS - does need to reload -->
 		<% if(error && error.length > 0){ %>
 		<div class="alert alert-danger" role="alert">
@@ -108,3 +130,15 @@
 	}
 
 </style>
+
+<script type="text/javascript">
+
+	// $(".nav a").on("click", function(){
+	// 	$(".nav").find(".active").removeClass("active");
+
+	// });
+
+	// $(this).parent().addClass("active");
+
+
+</script>
