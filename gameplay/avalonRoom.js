@@ -855,11 +855,15 @@ module.exports = function(host_, roomId_, io_){
 		if(this.gameStarted === false){
 			//get rid of their socket
 			var i = this.sockets.indexOf(socket);
-			this.sockets.splice(i, 1);
+			if(i !== -1){
+				this.sockets.splice(i, 1);
+			}
 
 			//also get rid of it in the socketsOfSpectators list
 			var i = this.socketsOfSpectators.indexOf(socket);
-			this.socketsOfSpectators.splice(i, 1);
+			if(i !== -1){
+				this.socketsOfSpectators.splice(i, 1);
+			}
 
 			if(this.sockets.length === 0){
 				console.log("Room: " + this.roomId + " is empty, destroying...");
