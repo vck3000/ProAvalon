@@ -4,7 +4,6 @@ To-do list:
 -Spam filter?
 -Maximum length to a single chat message
 
-
 -DISCUSSIONS
 
 -Require everyone to press ready before starting game
@@ -12,8 +11,6 @@ To-do list:
 -Cannot lady a person who previously held the lady before
 
 -green mission succeed colour is too bright/light
-
--center long usernames properly
 
 -highlight green avatars and chat
 -claiming
@@ -85,6 +82,7 @@ Mine:
 -button dont activate top half
 -time with e.g. 15:03 turning up as 15:3
 -cap players to 10p
+-center long usernames properly
 
 Hak:
 •	Disable copying certain texts (maybe useful link http://stackoverflow.com/questions/8957443/prevent-copying-text-in-web-page/12021733#12021733)
