@@ -65,6 +65,11 @@ document.querySelector("#success-alert-box-button").addEventListener("click", fu
 document.querySelector("#backButton").addEventListener("click", function(){
     changeView();
     socket.emit("leave-room", "");
+
+    resetAllGameData();
+});
+
+function resetAllGameData(){
     roomId = undefined; 
     //reset all the variables
     storeData = undefined;
@@ -84,11 +89,9 @@ document.querySelector("#backButton").addEventListener("click", function(){
     //hide the options cog
     document.querySelector("#options-button").classList.add("hidden");
 
-
     //reset room-chat 
     $(".room-chat-list").html("");
-
-});
+}
 
 
 var allChatWindow1 = document.querySelectorAll(".all-chat-message-input")[0];
@@ -277,6 +280,8 @@ socket.on("update-current-games-list", function(currentGames){
                 isSpectator = true;
                 //change to the game room view
                 changeView();
+
+                resetAllGameData();
             });
         }
     });
