@@ -37,7 +37,7 @@ module.exports = function(io){
 		allSockets[socket.request.user.username] = socket;
 
 		//send a notif to the user saying logged in
-		socket.emit("success-alert", "Successfully logged in! Welcome, " + socket.request.user.username + "!");
+		// socket.emit("success-alert", "Successfully logged in! Welcome, " + socket.request.user.username + "!");
 
 		//socket sends to all except the user of this socket
 		socket.in("allChat").emit("player-joined-lobby", socket.request.user.username);
