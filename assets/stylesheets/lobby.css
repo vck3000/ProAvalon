@@ -456,3 +456,8 @@ h3 {
 .selected-chat {
 	color: green;
 }
+
+.selected-avatar {
+	background-color: #8BE38B;
+	border-radius: 5px;
+}
