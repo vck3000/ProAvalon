@@ -84,6 +84,7 @@ module.exports = function(host_, roomId_, io_){
 	this.pickNum = 0;
 	this.gameHistory = [];
 	this.lady = undefined;
+	this.ladyablePeople = [];
 
 	this.playersYetToVote = [];
 	// this.votingPhase = false;
@@ -175,7 +176,7 @@ module.exports = function(host_, roomId_, io_){
 
 	this.useLady = function(socket, target){
 		//check that the person making this request has the lady
-		if(getIndexFromUsername(this.sockets, socket.request.user.username) === this.lady && this.phase === "lady"){
+		if(getIndexFromUsername(this.sockets, socket.request.user.username) === this.lady && this.phase === "lady" && this.ladyablePeople[getIndexFromUsername(this.sockets, target)] === true){
 			//grab the target's alliance
 			var alliance = this.playersInGame[getIndexFromUsername(this.sockets, target)].alliance;
 
@@ -185,6 +186,8 @@ module.exports = function(host_, roomId_, io_){
 
 			//update lady location
 			this.lady = getIndexFromUsername(this.sockets, target);
+			//make that person no longer ladyable
+			this.ladyablePeople[this.lady] = false;
 
 			this.gameplayMessage = (socket.request.user.username + " has carded " + target);
 
@@ -561,6 +564,7 @@ module.exports = function(host_, roomId_, io_){
 			data[i].teamLeader = this.teamLeader;
 			data[i].hammer = this.hammer;
 			data[i].lady = this.lady;
+			data[i].ladyablePeople = this.ladyablePeople;
 
 			data[i].playersYetToVote = this.playersYetToVote;
 			data[i].phase = this.phase;
@@ -635,6 +639,11 @@ module.exports = function(host_, roomId_, io_){
 		if(options.oberon === true){spyRoles.push("Oberon");console.log("added oberon");}
 		if(options.lady === true){
 			this.lady = getRandomInt(0, this.sockets.length);
+			this.ladyablePeople = [];
+			for(var i = 0; i < this.sockets.length; i++){
+				this.ladyablePeople[i] = true;
+			}
+			this.ladyablePeople[this.lady] = false;
 		}
 
 		var resPlayers = [];
@@ -724,7 +733,6 @@ module.exports = function(host_, roomId_, io_){
 		}
 
 		this.gameplayMessage = str;
-
 
 		//seed the starting data into the VH
 		for(var i = 0; i < this.sockets.length; i++){

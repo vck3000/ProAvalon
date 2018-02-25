@@ -217,10 +217,10 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 
   if(target === "#all-chat-in-game"){
     $(".nav-tabs #all-chat-in-game-tab").removeClass("newMessage")
-  }
-  else if(target === "#room-chat-in-game"){
+}
+else if(target === "#room-chat-in-game"){
     $(".nav-tabs #room-chat-in-game-tab").removeClass("newMessage")
-  }
+}
 });
 
 
@@ -575,7 +575,7 @@ function draw(){
             else if(gameData.phase === "lady"){
                 document.querySelector("#status").innerText = gameData.statusMessage;
                 if(ownUsername === getUsernameFromIndex(gameData.lady)){
-                    ladySetup(gameData.phase);
+                    ladySetup(gameData.phase, gameData.ladyablePeople);
                 }
                 enableDisableButtons();
             }
@@ -666,7 +666,7 @@ function teamLeaderSetup(phase){
     }
 }
 
-function ladySetup(phase){
+function ladySetup(phase, ladyablePeople){
     //edit the well to show how many people to pick.
     if(phase === "lady"){
 
@@ -675,13 +675,15 @@ function ladySetup(phase){
         var divs = document.querySelectorAll("#mainRoomBox div");
         //add the event listeners for button press
         for(var i = 0; i < divs.length; i++){
-            divs[i].addEventListener("click", function(){
-                console.log("avatar pressed");
-                //toggle the highlight class
-                this.classList.toggle("highlight-avatar");
-                //change the pick team button to enabled/disabled
-                enableDisableButtons();
-            });   
+            if(ladyablePeople[i] === true){
+                divs[i].addEventListener("click", function(){
+                    console.log("avatar pressed");
+                    //toggle the highlight class
+                    this.classList.toggle("highlight-avatar");
+                    //change the pick team button to enabled/disabled
+                    enableDisableButtons();
+                });   
+            }
         }  
     }
 

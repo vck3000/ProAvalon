@@ -16,7 +16,7 @@ To-do list:
 -claiming
 -let players choose colour
 
--num of playerse in the game
+
 
 -force re-login if a user refreshes
 
@@ -83,6 +83,7 @@ Mine:
 -time with e.g. 15:03 turning up as 15:3
 -cap players to 10p
 -center long usernames properly
+-num of players in the game
 
 Hak:
 •	Disable copying certain texts (maybe useful link http://stackoverflow.com/questions/8957443/prevent-copying-text-in-web-page/12021733#12021733)
