@@ -6,7 +6,8 @@
 html, body{
 	height: 100%;
 	width: 100%;
-	font-size: 2vmax;
+	font-size: 2vh;
+
 	/*overflow: hidden;*/
 }
 
