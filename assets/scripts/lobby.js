@@ -21,6 +21,33 @@ setTimeout(function() {
 }, 300);
 
 
+
+//get the status of the checkbox for the gameplaytext
+var option_font_size = $("#option_font_size")[0].checked;
+var option_font_size_text = $("#option_font_size_text")[0];
+
+var stringText = $("html").css("font-size");
+stringText = stringText.slice(0, stringText.length - 5);
+option_font_size_text.value = stringText;
+
+if(option_font_size === true){
+    $("#option_font_size_text").on("change", function() {
+        console.log(option_font_size_text.value);
+        if(option_font_size_text.value > 5){
+            $("html *").css("font-size", option_font_size_text.value + "px");     
+        }
+        else {
+            $("html *").css("font-size", "5px");
+        }
+       
+       draw(storeData);
+   });
+}
+
+
+
+
+
 //for the game (like players in game)
 var storeData;
 var seeData;
@@ -407,7 +434,6 @@ socket.on("game-data", function(data){
         //get the status of the checkbox for the gameplaytext
         var option_print_gameplay_text = $("#option_print_gameplay_text")[0].checked;
         console.log("button is: " + option_print_gameplay_text);
-        
         
         if(option_print_gameplay_text === true){
             console.log("printgameplayText");
