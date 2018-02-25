@@ -6,6 +6,7 @@
 html, body{
 	height: 100%;
 	width: 100%;
+	font-size: 2vmax;
 	/*overflow: hidden;*/
 }
 
@@ -205,8 +206,9 @@ p {
 	position: absolute;
 	right: 0;
 	/*bottom: 0;*/
+	height: 4vh;
 
-	transform: translateY(-100%);
+	transform: translateY(-130%);
 }
 
 .bullet{
@@ -279,7 +281,7 @@ p {
 	position: absolute;
 	/*margin: auto;*/
 	left: 50%;
-	top: 44%;
+	top: 47%;
 
 	transform: translateX(-50%);
 }
