@@ -449,3 +449,8 @@ h3 {
 .newMessage {
 	background-color: yellow;
 }
+
+
+.selected-chat {
+	color: green;
+}
