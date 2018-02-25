@@ -108,7 +108,7 @@ module.exports = function(io){
 			rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId, io);
 			console.log("new room request");
 			//broadcast to all chat
-			var str =  socket.request.user.username + " has created room " + nextRoomId + ". Go join!";
+			var str =  socket.request.user.username + " has created room " + nextRoomId + ".";
 			console.log(str);
 
 			//send to allChat including the host of the game

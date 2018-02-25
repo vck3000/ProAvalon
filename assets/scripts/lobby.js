@@ -230,7 +230,7 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 
 
 socket.on("player-joined-lobby", function(username){
-    var str = "<li class=server-text>" + username + " has joined the lobby!";
+    var str = "<li class=server-text>" + username + " has joined the lobby.";
     $(".all-chat-list").append(str);
     scrollDown();
 });
@@ -242,7 +242,7 @@ socket.on("player-left-lobby", function(username){
 });
 
 socket.on("player-joined-room", function(username){
-    var str = "<li class=server-text>" + username + " has joined the room!";
+    var str = "<li class=server-text>" + username + " has joined the room.";
     addToRoomChat(str);
 });
 
@@ -459,7 +459,7 @@ function redButtonFunction() {
             if(gameData.alliance === "Resistance"){
                 console.log("You aren't a spy! You cannot fail a mission!");
                 // socket.emit("missionVote", "succeed");
-                showDangerAlert("You are resistance! Surely you want to succeed!");
+                showDangerAlert("You are resistance. Surely you want to succeed!");
             } else{
                 socket.emit("missionVote", "fail");
             }
@@ -564,11 +564,11 @@ function draw(){
             else if(gameData.phase === "assassination"){
                 //for the assassin: set up their stuff to shoot
                 if(gameData.role === "Assassin"){
-                    document.querySelector("#status").innerText = "Shoot the merlin!";
+                    document.querySelector("#status").innerText = "Shoot the merlin.";
                     assassinationSetup(gameData.phase);
                 }
                 else {
-                    document.querySelector("#status").innerText = "Waiting for the assassin to shoot!";   
+                    document.querySelector("#status").innerText = "Waiting for the assassin to shoot.";   
                 }
                 enableDisableButtons();
             }
@@ -650,7 +650,7 @@ function teamLeaderSetup(phase){
     //edit the well to show how many people to pick.
     if(phase === "picking"){
 
-        document.querySelector("#status").innerText = "Your turn to pick a team! Pick " + numPlayersOnMission +" players!";    
+        document.querySelector("#status").innerText = "Your turn to pick a team. Pick " + numPlayersOnMission +" players.";    
 
         var divs = document.querySelectorAll("#mainRoomBox div");
         //add the event listeners for button press
@@ -866,7 +866,7 @@ function enableDisableButtons(){
         //Host
         if(ownUsername === getUsernameFromIndex(0)){
             document.querySelector("#green-button").classList.remove("disabled");
-            document.querySelector("#green-button").innerText = "Start!";
+            document.querySelector("#green-button").innerText = "Start";
 
             document.querySelector("#red-button").classList.add("disabled");
             // document.querySelector("#red-button").innerText = "Disabled";
@@ -876,7 +876,7 @@ function enableDisableButtons(){
         //we are spectator
         else if(isSpectator === true){
             document.querySelector("#green-button").classList.remove("disabled");
-            document.querySelector("#green-button").innerText = "Join!";
+            document.querySelector("#green-button").innerText = "Join";
 
             document.querySelector("#red-button").classList.add("disabled");
             // document.querySelector("#red-button").innerText = "Disabled";
@@ -889,7 +889,7 @@ function enableDisableButtons(){
         //if we are in picking phase
         if(gameData.phase === "picking"){
             document.querySelector("#green-button").classList.add("disabled");
-            document.querySelector("#green-button").innerText = "Pick!";
+            document.querySelector("#green-button").innerText = "Pick";
 
             document.querySelector("#red-button").classList.add("disabled");
             // document.querySelector("#red-button").innerText = "Disabled";
@@ -925,7 +925,7 @@ function enableDisableButtons(){
 
         else if(gameData.phase === "assassination"){
             // document.querySelector("#green-button").classList.add("disabled");
-            document.querySelector("#green-button").innerText = "SHOOT!";
+            document.querySelector("#green-button").innerText = "SHOOT";
 
             document.querySelector("#red-button").classList.add("disabled");
             // document.querySelector("#red-button").innerText = "Disabled";
@@ -940,7 +940,7 @@ function enableDisableButtons(){
         }
         else if(gameData.phase === "lady"){
             // document.querySelector("#green-button").classList.add("disabled");
-            document.querySelector("#green-button").innerText = "Card!";
+            document.querySelector("#green-button").innerText = "Card";
 
             document.querySelector("#red-button").classList.add("disabled");
             // document.querySelector("#red-button").innerText = "Disabled";
