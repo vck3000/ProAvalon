@@ -601,6 +601,7 @@ module.exports = function(host_, roomId_, io_){
 		if(this.sockets.length < minPlayers){
 			//NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
 			console.log("Not enough players.");
+			this.sockets[0].emit("danger-alert", "Minimum 5 players to start. ")
 			return false;
 		} else if(this.gameStarted === true){
 			console.log("Game already started!");
