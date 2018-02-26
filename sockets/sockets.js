@@ -299,11 +299,11 @@ function removePlayerFromRoomAndCheckDestroy(socket, io){
 	//remove player from room if he/she is in one
 	if(socket.request.user.inRoomId && rooms[socket.request.user.inRoomId]){
 		//leave the room
-		rooms[socket.request.user.inRoomId].playerLeaveGameUninitialised(socket);	
+		rooms[socket.request.user.inRoomId].playerLeaveRoom(socket);	
 		//check if the room even exists, sometimes with fast refreshes
 		//it might already have deleted the room
 		//Check if the room needs destroying
-		if(rooms[socket.request.user.inRoomId].toDestroyRoom() == true){
+		if(rooms[socket.request.user.inRoomId].toDestroyRoom() === true){
 			//destroy room
 			rooms[socket.request.user.inRoomId] = undefined;
 			//resend the current games list

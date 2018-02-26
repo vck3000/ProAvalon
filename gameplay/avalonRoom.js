@@ -75,7 +75,7 @@ module.exports = function(host_, roomId_, io_){
 	this.gameStarted = false;
 	this.finished = false;
 	this.destroyRoom = false;
-
+	this.playersInRoom = [];
 
 	this.teamLeader = 0;
 	this.hammer = 0;
@@ -815,6 +815,7 @@ module.exports = function(host_, roomId_, io_){
 		if(this.gameStarted === false){
 			this.socketsOfSpectators.push(socket);
 		}
+		this.playersInRoom.push(socket);
 
 		//get a list of usernames in the game
 		//because if a player had left and came back into the room
@@ -860,7 +861,16 @@ module.exports = function(host_, roomId_, io_){
 
 
 	//when a player leaves before game starts
-	this.playerLeaveGameUninitialised = function(socket){
+	this.playerLeaveRoom = function(socket){
+		//remove from players in room
+		this.playersInRoom.splice(this.playersInRoom.indexOf(socket), 1);
+
+		if(this.playersInRoom.length === 0){
+			console.log("Room: " + this.roomId + " is empty, destroying...");
+			this.destroyRoom = true;
+		}
+
+
 		if(this.gameStarted === false){
 			//get rid of their socket
 			var i = this.sockets.indexOf(socket);
@@ -872,11 +882,6 @@ module.exports = function(host_, roomId_, io_){
 			var i = this.socketsOfSpectators.indexOf(socket);
 			if(i !== -1){
 				this.socketsOfSpectators.splice(i, 1);
-			}
-
-			if(this.sockets.length === 0){
-				console.log("Room: " + this.roomId + " is empty, destroying...");
-				this.destroyRoom = true;
 			}
 
 			return true;
