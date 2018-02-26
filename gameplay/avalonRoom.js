@@ -737,13 +737,16 @@ module.exports = function(host_, roomId_, io_){
 		// this.missionHistory = ["succeeded", "failed", "succeeded"];
 		this.missionHistory = [];
 
-		var str = "Game started with roles: ";
+		var str = "Game started with: ";
 		//add res roles: 
 		for(var i = 0; i < resRoles.length; i++){
 			str += (resRoles[i] + ", ");
 		}
 		for(var i = 0; i < spyRoles.length; i++){
 			str += (spyRoles[i] + ", ");
+		}
+		if(options.lady === true){
+			str += "Lady of the Lake."
 		}
 
 		this.gameplayMessage = str;
