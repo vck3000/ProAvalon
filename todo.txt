@@ -15,6 +15,11 @@ To-do list:
 
 -force re-login if a user refreshes
 
+-goes into assassinatio mode with no assassin
+
+-injection in chat
+-no spaces in username
+
 
 List of suggestions
 •	Private/public games. Adding passwords

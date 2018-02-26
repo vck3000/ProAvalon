@@ -186,20 +186,17 @@ socket.on("username", function(username){
 });
 
 socket.on("allChatToClient", function(data){
-    //format the date
-    var d = new Date();
-    var hour = d.getHours();
-    if(hour < 10){hour = "0" + hour;}
-    if(data.date < 10){data.date = "0" + data.date;}
-    var date = "[" + hour + ":" + data.date + "]";
-    var str = "<li class=other><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + data.message;
-
-    console.log("all chat inc");
-
-    addToAllChat(str);
+    addToAllChat(data);
 });
 
 socket.on("roomChatToClient", function(data){
+    addToRoomChat(data);
+});
+
+
+
+function addToAllChat(data){
+
     //format the date
     var d = new Date();
     var hour = d.getHours();
@@ -207,30 +204,41 @@ socket.on("roomChatToClient", function(data){
     if(data.date < 10){data.date = "0" + data.date;}
     var date = "[" + hour + ":" + data.date + "]";
 
-    var str = "<li class=other><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + data.message;
+    var filteredMessage = data.message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-    addToRoomChat(str);
-});
+    var str = "<li class=other><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage;
 
-
-
-function addToAllChat(str){
     $(".all-chat-list").append(str);
     scrollDown();
 
+    //yellow notification on the tabs in room.
     if($(".nav-tabs #all-chat-in-game-tab").hasClass("active") === false){
         $(".nav-tabs #all-chat-in-game-tab").addClass("newMessage");
     }
 }
 
-function addToRoomChat(str){
-    $(".room-chat-list").append(str);
-    scrollDown();
+function addToRoomChat(data){
 
-    if($(".nav-tabs #room-chat-in-game-tab").hasClass("active") === false){
-        $(".nav-tabs #room-chat-in-game-tab").addClass("newMessage");
+        //format the date
+        var d = new Date();
+        var hour = d.getHours();
+        if(hour < 10){hour = "0" + hour;}
+        if(data.date < 10){data.date = "0" + data.date;}
+        var date = "[" + hour + ":" + data.date + "]";
+
+        //prevent XSS injection
+        var filteredMessage = data.message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+        var str = "<li class=other><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage;
+
+        $(".room-chat-list").append(str);
+        scrollDown();
+
+        //yellow notification on the tabs in room.
+        if($(".nav-tabs #room-chat-in-game-tab").hasClass("active") === false){
+            $(".nav-tabs #room-chat-in-game-tab").addClass("newMessage");
+        }
     }
-}
 
 //Remove the new message yellow background colour when
 //user selects the tab
