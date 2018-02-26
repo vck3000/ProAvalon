@@ -204,9 +204,15 @@ function addToAllChat(data){
     if(data.date < 10){data.date = "0" + data.date;}
     var date = "[" + hour + ":" + data.date + "]";
 
+    //prevent XSS injection
     var filteredMessage = data.message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-    var str = "<li class=other><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage;
+    var str = "";
+    if(classStr === "server-text"){
+        str = "<li class='" + classStr + "'>" + filteredMessage;
+    } else{
+        str = "<li class='" + classStr + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage;
+    }
 
     $(".all-chat-list").append(str);
     scrollDown();
@@ -217,7 +223,7 @@ function addToAllChat(data){
     }
 }
 
-function addToRoomChat(data){
+function addToRoomChat(data, classStr){
 
         //format the date
         var d = new Date();
@@ -229,7 +235,14 @@ function addToRoomChat(data){
         //prevent XSS injection
         var filteredMessage = data.message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-        var str = "<li class=other><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage;
+        var str = "";
+
+        if(classStr && classStr !== ""){
+            str = "<li class='" + classStr + "'>" + filteredMessage;
+        }
+        else{
+            str = "<li class='" + classStr + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage;
+        }
 
         $(".room-chat-list").append(str);
         scrollDown();
@@ -267,19 +280,24 @@ socket.on("player-joined-lobby", function(username){
 });
 
 socket.on("player-left-lobby", function(username){
-    var str = "<li class=server-text>" + username + " has left the lobby.";
-    $(".all-chat-list").append(str);
-    scrollDown();
+    var str = "" + username + " has left the lobby.";
+    var data = {message: str};
+
+    addToAllChat(data, "server-text");
 });
 
 socket.on("player-joined-room", function(username){
-    var str = "<li class=server-text>" + username + " has joined the room.";
-    addToRoomChat(str);
+    var str = "" + username + " has joined the room.";
+    var data = {message: str};
+
+    addToRoomChat(data, "server-text");
 });
 
 socket.on("player-left-room", function(username){
-    var str = "<li class=server-text>" + username + " has left the room.";
-    addToRoomChat(str);
+    var str = "" + username + " has left the room.";
+    var data = {message: str};
+
+    addToRoomChat(data, "server-text");
 });
 
 socket.on("update-current-players-list", function(currentPlayers){
@@ -461,8 +479,10 @@ socket.on("game-data", function(data){
 });
 
 socket.on("lady-info", function(message){
-    var str = "<li class='special-text noselect'>" + message + " (this message is only shown to you)</li>";
-    addToRoomChat(str);
+    var str = message + " (this message is only shown to you)";
+    var data = {message: str};
+
+    addToRoomChat(data, "special-text noselect");
 });
 
 socket.on("update-status-message", function(data){
@@ -477,9 +497,10 @@ socket.on("update-status-message", function(data){
 var oldGameplayText = "";
 function newPrintGameplayText(){
     if(gameData && gameData.gameplayMessage !== oldGameplayText){
-        var str = "<li class='gameplay-text'>" + gameData.gameplayMessage + "</li>";
-
-        addToRoomChat(str);
+        var str = gameData.gameplayMessage;
+        var data = {message: str};
+        
+        addToRoomChat(data, "gameplay-text");
 
         oldGameplayText = gameData.gameplayMessage;
     }
