@@ -1,0 +1,19 @@
+
+/** {
+	border: 1px red solid;
+}*/
+
+
+div {
+	text-align: center;
+}
+
+
+form {
+	vertical-align: bottom;
+}
+
+#myDiv {
+	width: 50%;
+	max-width: 300px;
+}

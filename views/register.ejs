@@ -1,19 +1,49 @@
 <% include partials/header %>
 
+<link rel="stylesheet" type="text/css" href="stylesheets/register.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
+
+
+
 <div class="container">
 	<h2>Sign up!</h2>
 
-	<form action="/" method="POST" id="registerId">
+<!-- 	<form action="/" method="POST" id="registerId">
 		<input type="text" name="username" placeholder="Username">
 		<input type="password" name="password" placeholder="Password">
 		<button>Submit!</button>
-	</form>
+	</form> -->
 </div>
 
-	
+<br>
 
+<div class="container" id="myDiv">
 
+	<form class="form-horizontal" action="/" method="POST" id="registerId" data-toggle="validator">
+		<div class="form-group">
+			<input type="text" name="username" class="form-control" placeholder="Username" required>
+			<div class="help-block with-errors"></div>
+		</div>
+		<div class="form-group">
+			<input type="password" name="password" class="form-control" placeholder="Password" required id="inputPassword" data-minlength="4">
+			<!-- <div class="help-block">Minimum of 4 characters</div> -->
+			<div class="help-block with-errors"></div>
+		</div>
 
+		<div class="form-group">
+			<input type="password" name="confirmPassword" class="form-control" placeholder="Confirm password" required data-match="#inputPassword" data-match-error="Passwords do not match.">
+			<div class="help-block with-errors"></div>
+		</div>
+
+		<div class="form-group">
+			<div class="col-sm-offset-2 col-sm-10">
+				<button type="submit" class="btn btn-default">Submit</button>
+			</div>
+		</div>
+	</form>
+
+</div>
 
 
 
