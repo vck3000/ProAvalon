@@ -623,7 +623,7 @@ function draw(){
     }
 }
 
-
+var selectedAvatars = {};
 function activateAvatarButtons (){
     console.log("activate avatar buttons");
     console.log("LOL");
@@ -631,7 +631,7 @@ function activateAvatarButtons (){
         var buttons = document.querySelectorAll("#mainRoomBox div #highlightAvatarButton");
         //add the event listeners for button press
         for(var i = 0; i < buttons.length; i++){
-            console.log(i);
+            // console.log(i);
 
             buttons[i].addEventListener("click", function(){
                 // //toggle the highlight class
@@ -639,8 +639,16 @@ function activateAvatarButtons (){
                 // var uniqueNum = i;
                 console.log("click");
 
-                this.parentElement.classList.toggle("selected-avatar");
-
+                // this.parentElement.classList.toggle("selected-avatar");
+                var username = this.parentElement.getAttribute("usernameofplayer");
+                if(selectedAvatars[username] === true){
+                    selectedAvatars[username] = false;
+                }
+                else{
+                    selectedAvatars[username] = true;
+                }
+                
+                draw(storeData);
             });   
         }  
     // }
@@ -1064,8 +1072,7 @@ function getHighlightedAvatars(){
 }
 
 function getIndexFromUsername(username){
-    if(gameStarted === true){
-
+    if(storeData){
         for(var i = 0; i < storeData.length; i++){
             if(storeData[i].username === username){
                 return i;
@@ -1075,6 +1082,7 @@ function getIndexFromUsername(username){
     else{
         return false;
     }
+
 }
 
 function getUsernameFromIndex(index){
@@ -1152,7 +1160,12 @@ function strOfAvatar(playerData, alliance){
         }
     }
 
-    return "<div><span id='highlightAvatarButton' class='glyphicon glyphicon-user avatarButton'></span><img class='avatarImgInRoom' src='" + picLink + "'><p class='username-p'>" + lady + "" + playerData.username + " " + hammerStar + " </p><p class='role-p'>" + role + "</p></div>";    
+    var selectedAvatar = "";
+    if(selectedAvatars[playerData.username] === true){
+        selectedAvatar = "class='selected-avatar'";
+    }
+
+    return "<div usernameofplayer='" + playerData.username + "' " + selectedAvatar + "><span id='highlightAvatarButton' class='glyphicon glyphicon-user avatarButton'></span><img class='avatarImgInRoom' src='" + picLink + "'><p class='username-p'>" + lady + "" + playerData.username + " " + hammerStar + " </p><p class='role-p'>" + role + "</p></div>";    
 }
 
 
@@ -1297,6 +1310,8 @@ function resetAllGameData(){
     inRoom = false;
     //note do not reset our own username.
     isSpectator = false;
+
+    selectedAvatars = {};
 
     print_gameplay_text_game_started = false;
     print_gameplay_text_picked_team = false;
