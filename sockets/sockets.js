@@ -96,11 +96,12 @@ module.exports = function(io){
 			//tell all clients that the user has left
 			socket.in("allChat").emit("player-left-lobby", socket.request.user.username);
 			
+			//if they are in a room, say they're leaving the room.
+			io.in(socket.request.user.inRoomId).emit("player-left-room", socket.request.user.username);
 
 			removePlayerFromRoomAndCheckDestroy(socket, io);
 			
 		});
-
 
 
 		//when a new room is created
