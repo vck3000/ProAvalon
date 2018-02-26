@@ -216,15 +216,13 @@ p {
 	border: 5px solid transparent;
 }
 
-.room-container #mainRoomBox div #highlightAvatarButton {
-	position: absolute;
-}
+
 
 .room-container #mainRoomBox div .avatarButton {
 	border: 2px solid #d3d3d3;
 	padding: 2px;
 	border-radius: 25%;
-	transform: translateX(-20%);
+	transform: translateX(-90%);
 	position: absolute;
 }
 
@@ -482,9 +480,19 @@ h3 {
 
 .selected-chat {
 	color: green;
+	/*background-color: gray;*/
 }
 
 .selected-avatar {
 	background-color: #8BE38B;
 	border-radius: 5px;
+}
+
+.room-container #mainRoomBox div #highlightChatButton {
+	position: absolute;
+	top: 22px;
+}
+
+.room-container #mainRoomBox div #highlightAvatarButton {
+	position: absolute;
 }

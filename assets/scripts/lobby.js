@@ -212,7 +212,7 @@ function addToAllChat(data, classStr){
         str = "<li class='" + classStr + "'>" + filteredMessage;
     }
     else{
-        str = "<li class='" + classStr + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage;
+        str = "<li class='" + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage;
     }
 
     $(".all-chat-list").append(str);
@@ -238,11 +238,17 @@ function addToRoomChat(data, classStr){
 
         var str = "";
 
+        //set the highlight chat if the user has been selected already
+        var highlightChat = "";
+        if(selectedChat[data.username] === true){
+            highlightChat = "selected-chat";
+        }
+
         if(classStr && classStr !== ""){
-            str = "<li class='" + classStr + "'>" + filteredMessage;
+            str = "<li class='" + classStr + " " + highlightChat + "'>" + filteredMessage;
         }
         else{
-            str = "<li class='" + classStr + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage;
+            str = "<li class='" + highlightChat + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage;
         }
 
         $(".room-chat-list").append(str);
@@ -663,20 +669,21 @@ function draw(){
 }
 
 var selectedAvatars = {};
+var selectedChat = {};
 function activateAvatarButtons (){
     console.log("activate avatar buttons");
     console.log("LOL");
     // if(OPTION THING ADD HERE){
-        var buttons = document.querySelectorAll("#mainRoomBox div #highlightAvatarButton");
+        var highlightButtons = document.querySelectorAll("#mainRoomBox div #highlightAvatarButton");
         //add the event listeners for button press
-        for(var i = 0; i < buttons.length; i++){
+        for(var i = 0; i < highlightButtons.length; i++){
             // console.log(i);
 
-            buttons[i].addEventListener("click", function(){
+            highlightButtons[i].addEventListener("click", function(){
                 // //toggle the highlight class
                 // var divs = document.querySelectorAll("#mainRoomBox div");
                 // var uniqueNum = i;
-                console.log("click");
+                console.log("click for highlight avatar");
 
                 // this.parentElement.classList.toggle("selected-avatar");
                 var username = this.parentElement.getAttribute("usernameofplayer");
@@ -690,6 +697,55 @@ function activateAvatarButtons (){
                 draw(storeData);
             });   
         }  
+
+
+
+        var highlightChatButtons = document.querySelectorAll("#mainRoomBox div #highlightChatButton");
+        //add the event listeners for button press
+        for(var i = 0; i < highlightChatButtons.length; i++){
+            // console.log(i);
+
+            highlightChatButtons[i].addEventListener("click", function(){
+                // //toggle the highlight class
+                // var divs = document.querySelectorAll("#mainRoomBox div");
+                // var uniqueNum = i;
+                console.log("click for highlight chat");
+
+                // this.parentElement.classList.toggle("selected-avatar");
+
+                var chatItems = $(".room-chat-list li");
+                var username = this.parentElement.getAttribute("usernameofplayer");
+
+                if(selectedChat[username] === true){
+                    selectedChat[username] = false;
+
+                    for(var i = 0; i < chatItems.length; i++){
+                        if(chatItems[i].childNodes[2]){
+                            if(chatItems[i].childNodes[2].innerText === username + ":"){
+                                chatItems[i].classList = chatItems[i].classList.replace("selected-chat", "deselected-chat");
+                            }
+                        }
+                    }
+                }
+                else{
+                    selectedChat[username] = true;
+
+                    console.log("add chat colour");
+
+                    for(var i = 0; i < chatItems.length; i++){
+                        if(chatItems[i].childNodes[2]){
+                            if(chatItems[i].childNodes[2].innerText === username + ":"){
+                                chatItems[i].classList += " selected-chat";
+                            }
+                        }
+                    }
+                }
+                
+                draw(storeData);
+            });   
+        }  
+
+
     // }
 }
 
@@ -1204,7 +1260,13 @@ function strOfAvatar(playerData, alliance){
         selectedAvatar = "class='selected-avatar'";
     }
 
-    return "<div usernameofplayer='" + playerData.username + "' " + selectedAvatar + "><span id='highlightAvatarButton' class='glyphicon glyphicon-user avatarButton'></span><img class='avatarImgInRoom' src='" + picLink + "'><p class='username-p'>" + lady + "" + playerData.username + " " + hammerStar + " </p><p class='role-p'>" + role + "</p></div>";    
+    var str = "<div usernameofplayer='" + playerData.username + "' \
+    " + selectedAvatar + "><span id='highlightAvatarButton' class='glyphicon glyphicon-user avatarButton'></span>\
+    <span id='highlightChatButton' class='glyphicon glyphicon glyphicon-menu-hamburger avatarButton'></span>\
+    <img class='avatarImgInRoom' src='" + picLink + "'><p class='username-p'>" + lady + "" + playerData.username + " \
+    " + hammerStar + " </p><p class='role-p'>" + role + "</p></div>";    
+
+    return str;
 }
 
 
