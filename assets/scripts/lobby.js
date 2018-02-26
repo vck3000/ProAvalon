@@ -30,19 +30,19 @@ var stringText = $("html").css("font-size");
 stringText = stringText.slice(0, stringText.length - 5);
 option_font_size_text.value = stringText;
 
-if(option_font_size === true){
-    $("#option_font_size_text").on("change", function() {
-        console.log(option_font_size_text.value);
-        if(option_font_size_text.value > 5){
-            $("html *").css("font-size", option_font_size_text.value + "px");     
-        }
-        else {
-            $("html *").css("font-size", "5px");
-        }
+// if(option_font_size === true){
+//     $("#option_font_size_text").on("change", function() {
+//         console.log(option_font_size_text.value);
+//         if(option_font_size_text.value > 5){
+//             $("html *").css("font-size", option_font_size_text.value + "px");     
+//         }
+//         else {
+//             $("html *").css("font-size", "5px");
+//         }
 
-        draw(storeData);
-    });
-}
+//         draw(storeData);
+//     });
+// }
 
 
 
@@ -129,7 +129,7 @@ function addAllChatEventListeners(e, allChatWindow){
 
             var date = d.getMinutes();
 
-            if(date < 10){date = "0" + date;}
+            // if(date < 10){date = "0" + date;}
 
             var data = {
                 date: date,
@@ -277,14 +277,23 @@ socket.on("player-left-room", function(username){
 socket.on("update-current-players-list", function(currentPlayers){
     console.log("update the current player list request received");
     console.log(currentPlayers);
-    //remove all the li's inside the list
-    $("#current-players-list li").remove();
+    //remove all the li's inside the table
+    $("#current-players-table tbody tr td").remove();
+    $("#current-players-table tbody tr").remove();
     
     //append each player into the list
     currentPlayers.forEach(function(currentPlayer){
-      var str = "<li>" + currentPlayer + "</li>";
-      $("#current-players-list").append(str);
-  });
+
+        //if the current game exists, add it
+        if(currentPlayer){
+            var str = "<tr> <td> " + currentPlayer + "</td> </tr>";
+            $("#current-players-table tbody").append(str);
+        }
+
+
+        // var str = "<li>" + currentPlayer + "</li>";
+        // $("#current-players-list").append(str);
+    });
 });
 
 socket.on("update-current-games-list", function(currentGames){
@@ -297,7 +306,7 @@ socket.on("update-current-games-list", function(currentGames){
     currentGames.forEach(function(currentGame){
         //if the current game exists, add it
         if(currentGame){
-            var str = "<tr> <td> " + currentGame.roomId + ": " + currentGame.status + " [" + currentGame.numOfPlayersInside + "/10]" +  "<p>Host: " + currentGame.hostUsername + "</p>" +  "</td> </tr>";
+            var str = "<tr> <td> " + currentGame.roomId + ": " + currentGame.status + " " + currentGame.numOfPlayersInside + "/10" +  "<p>Host: " + currentGame.hostUsername + "</p>" +  "</td> </tr>";
             $("#current-games-table tbody").append(str);
 
 

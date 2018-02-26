@@ -6,9 +6,11 @@
 html, body{
 	height: 100%;
 	width: 100%;
-	font-size: 2vh;
+	/*font-size: 2vh;*/
 
 	/*overflow: hidden;*/
+
+	/*font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;*/
 }
 
 .navbar {
@@ -25,8 +27,10 @@ p {
 }
 
 .server-text {
-	color: #2378ff;
-	font-style: italic;
+	/*color: #2378ff;*/
+	/*color: #ff6b6b;*/
+	color: #7c7c7c;
+	/*font-style: italic;*/
 }
 
 .gameplay-text {
@@ -462,7 +466,7 @@ h3 {
 }
 
 #newRoom {
-	width: 100%;
+	/*width: 100%;*/
 }
 
 .game-buttons-div {

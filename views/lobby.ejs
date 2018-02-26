@@ -9,7 +9,7 @@
 <div class="container lobby-container">
 	<div class="row">
 		<div class="col-xs-6" id="col1">
-			<h3 id="all-chat-lobby-text">All chat</h3>
+			<strong><p id="all-chat-lobby-text">All Chat</p></strong>
 			<div class="chat-window" id="all-chat-lobby">
 				<ol class="chat-list all-chat-list">
 					
@@ -19,16 +19,12 @@
 		</div>
 
 		<div class="col-xs-6">
-			<h3 class='hi-there'>Hi there, <%=currentUser.username%>. </h3>
+			<!-- <p class='hi-there'>Hi there, <%=currentUser.username%>. </p> -->
 
-			<br>
-			<h3>Games:</h3>
+			<!-- <br> -->
+			<strong><p>Games:</p></strong>
 
 			<a id="newRoom" class="btn btn-default" href="#">New room</a>
-
-			<ul id="current-games-list">
-
-			</ul>
 
 			<table id="current-games-table" class="table table-bordered table-striped">	
 				<tbody>
@@ -37,10 +33,13 @@
 			</table>
 			
 			<br>
-			<h3>Online players:</h3>
-			<ul id="current-players-list">
-				
-			</ul>
+			<strong><p>Online players:</p></strong>
+
+			<table id="current-players-table" class="table table-bordered table-striped">	
+				<tbody>
+					
+				</tbody>
+			</table>
 		</div>
 	</div>
 </div>
