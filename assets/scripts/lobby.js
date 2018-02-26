@@ -39,9 +39,9 @@ if(option_font_size === true){
         else {
             $("html *").css("font-size", "5px");
         }
-       
-       draw(storeData);
-   });
+
+        draw(storeData);
+    });
 }
 
 
@@ -177,10 +177,6 @@ roomChatWindow.onkeyup = function(e){
         }
     }
 }
-
-
-
-
 
 //======================================
 //SOCKET ROUTES
@@ -541,6 +537,8 @@ function draw(){
 
         drawMiddleBoxes();
 
+        activateAvatarButtons();
+
 
         if(gameStarted === true){
             //default greyed out rn
@@ -624,6 +622,31 @@ function draw(){
         }
     }
 }
+
+
+function activateAvatarButtons (){
+    console.log("activate avatar buttons");
+    console.log("LOL");
+    // if(OPTION THING ADD HERE){
+        var buttons = document.querySelectorAll("#mainRoomBox div #highlightAvatarButton");
+        //add the event listeners for button press
+        for(var i = 0; i < buttons.length; i++){
+            console.log(i);
+
+            buttons[i].addEventListener("click", function(){
+                // //toggle the highlight class
+                // var divs = document.querySelectorAll("#mainRoomBox div");
+                // var uniqueNum = i;
+                console.log("click");
+
+                this.parentElement.classList.toggle("selected-avatar");
+
+            });   
+        }  
+    // }
+}
+
+
 
 function drawBullet(indexOfPlayer){
 
@@ -1129,7 +1152,7 @@ function strOfAvatar(playerData, alliance){
         }
     }
 
-    return "<div><img class='avatarImgInRoom' src='" + picLink + "'><p class='username-p'>" + lady + "" + playerData.username + " " + hammerStar + " </p><p class='role-p'>" + role + "</p></div>";    
+    return "<div><span id='highlightAvatarButton' class='glyphicon glyphicon-user avatarButton'></span><img class='avatarImgInRoom' src='" + picLink + "'><p class='username-p'>" + lady + "" + playerData.username + " " + hammerStar + " </p><p class='role-p'>" + role + "</p></div>";    
 }
 
 
