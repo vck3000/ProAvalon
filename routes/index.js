@@ -17,17 +17,24 @@ router.get("/register", function(req, res){
 //Post of the register route
 router.post("/", function(req, res){
 	var newUser = new User({username: req.body.username});
-	User.register(newUser, req.body.password, function(err, user){
-		if(err){
-			console.log("ERROR: " + err);
-			req.flash("error", "Sign up failed. Most likely that username is taken.");
-			res.redirect("register");
-		} else{
-			passport.authenticate("local")(req, res, function(){
-				res.redirect("/lobby");
-			});
-		}
-	});
+
+	if(req.body.username.indexOf(" ")){
+		req.flash("error", "Sign up failed. Please do not use spaces in your username.");
+		res.redirect("register");
+	}
+	else{
+		User.register(newUser, req.body.password, function(err, user){
+			if(err){
+				console.log("ERROR: " + err);
+				req.flash("error", "Sign up failed. Most likely that username is taken.");
+				res.redirect("register");
+			} else{
+				passport.authenticate("local")(req, res, function(){
+					res.redirect("/lobby");
+				});
+			}
+		});
+	}	
 });
 
 //login route
