@@ -195,7 +195,7 @@ socket.on("roomChatToClient", function(data){
 
 
 
-function addToAllChat(data){
+function addToAllChat(data, classStr){
 
     //format the date
     var d = new Date();
@@ -205,12 +205,13 @@ function addToAllChat(data){
     var date = "[" + hour + ":" + data.date + "]";
 
     //prevent XSS injection
-    var filteredMessage = data.message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    var filteredMessage = data.message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "You just used an illegal white space. Please dont use it.");
 
     var str = "";
-    if(classStr === "server-text"){
+    if(classStr && classStr !== ""){
         str = "<li class='" + classStr + "'>" + filteredMessage;
-    } else{
+    }
+    else{
         str = "<li class='" + classStr + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage;
     }
 
@@ -233,7 +234,7 @@ function addToRoomChat(data, classStr){
         var date = "[" + hour + ":" + data.date + "]";
 
         //prevent XSS injection
-        var filteredMessage = data.message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        var filteredMessage = data.message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "You just used an illegal white space. Please dont use it.");
 
         var str = "";
 
