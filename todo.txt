@@ -9,7 +9,7 @@ To-do list:
 
 -green mission succeed colour is too bright/light
 
--highlight green avatars and chat
+
 -claiming
 -let players choose colour
 
@@ -17,9 +17,9 @@ To-do list:
 
 -goes into assassinatio mode with no assassin
 
-
 -no spaces in username
--remove game when all players leave
+
+-oberon not showing up as red (spy) at end of game
 
 
 List of suggestions
@@ -54,7 +54,7 @@ also from old suggestion:anonymous mode
 
 Refs:
 cosmetic stuff:
-When pressing start, you should add "requires 5 players to start" message: I think it would feel more responsive instead of simply doing nothing when you press it
+
 
 
 
@@ -88,6 +88,9 @@ Mine:
 -Cannot lady a person who previously held the lady before
 
 -injection in chat
+-highlight green avatars and chat
+-remove game when all players leave
+
 
 Hak:
 •	Disable copying certain texts (maybe useful link http://stackoverflow.com/questions/8957443/prevent-copying-text-in-web-page/12021733#12021733)
@@ -106,5 +109,5 @@ Ref:
 +capitalise lady of the lake
 +add spaces to the gameplay text
 +numbers centered in boxes on mission size
-
++When pressing start, you should add "requires 5 players to start" message: I think it would feel more responsive instead of simply doing nothing when you press it
 

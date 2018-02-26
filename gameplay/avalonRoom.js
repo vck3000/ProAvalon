@@ -119,8 +119,21 @@ module.exports = function(host_, roomId_, io_){
 		}
 		else if(winner === "res"){
 			//SHOOT THE MERLIN!
-			this.phase = "assassination";
-			// this.winner = "resistance";
+			var assassinIsInGame = false;
+			for(var i = 0; i < this.playersInGame.length; i++){
+				if(this.playersInGame[i].role === "Assassin"){
+					assassinIsInGame = true;
+					break;
+				}
+			}
+
+			if(assassinIsInGame === true){
+				this.phase = "assassination";	
+			}
+			else{
+				this.winner = "resistance";
+				this.gameEnd();
+			}
 		}
 		else{
 			console.log("ERROR! winner was: " + winner);
