@@ -538,7 +538,7 @@ module.exports = function(host_, roomId_, io_){
 
 		//if game is finished, reveal everything including roles
 		if(this.phase === "finished"){
-			data.see.spies = this.getSpies(); 
+			data.see.spies = this.getAllSpies(); 
 			data.see.roles = this.getRevealedRoles(); 
 			data.see.playerShot = this.playerShot;
 		}
@@ -597,7 +597,7 @@ module.exports = function(host_, roomId_, io_){
 
 			//if game is finished, reveal everything including roles
 			if(this.phase === "finished"){
-				data[i].see.spies = this.getSpies(); 
+				data[i].see.spies = this.getAllSpies(); 
 				data[i].see.roles = this.getRevealedRoles(); 
 				data[i].see.playerShot = this.playerShot;
 			}
@@ -759,6 +759,21 @@ module.exports = function(host_, roomId_, io_){
 
 		return true;
 	};
+
+	this.getAllSpies = function(){
+		if(this.gameStarted === true){
+			var array = [];
+			for(var i = 0; i < this.playersInGame.length; i++){
+				if(this.playersInGame[i].alliance === "Spy"){
+					array.push(this.playersInGame[i].username);		
+				}
+			}
+			return array;
+		} 
+		else{
+			return false;
+		}
+	}
 
 	this.getSpies = function(roleRequesting){
 		if(this.gameStarted === true){
