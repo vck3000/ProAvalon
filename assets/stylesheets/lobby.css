@@ -49,7 +49,7 @@ p {
 }
 
 .hi-there {
-	border-bottom: 2px solid black
+	border-bottom: 2px dotted gray
 }
 
 
@@ -102,6 +102,16 @@ p {
 
 .full-height {
 	height: 100%;
+}
+
+.tab-window {
+	height: 90%;
+	border: 1px solid #d3d3d3;
+	border-radius: 5px;
+	overflow-y: auto;
+	overflow-x: visible;
+
+	padding: 5px;
 }
 
 .chat-window {
