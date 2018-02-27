@@ -20,6 +20,33 @@ setTimeout(function() {
 }, 300);
 
 
+$("#option_dark_theme")[0].addEventListener("click", function(){
+    var checked = $("#option_dark_theme")[0].checked;
+    console.log("dark theme change " + checked);
+    //dark theme
+    if(checked === true){
+        $("body")[0].classList.add("dark");
+        $(".well").addClass("dark");
+        $("input").addClass("dark");
+        $("textarea").addClass("dark");
+        $(".btn-default").addClass("btn-inverse");
+        $(".navbar").addClass("navbar-inverse");
+    }
+    else{
+        $("body")[0].classList.remove("dark");
+        $(".well").removeClass("dark");
+        $("input").removeClass("dark");
+        $("textarea").removeClass("dark");
+        $(".btn-default").removeClass("btn-inverse");
+        $(".navbar").removeClass("navbar-inverse");
+        // $("body")[0].style.backgroundColor ="#ffffff";
+        // $("body")[0].style.color ="#333";
+        // $("input")[0].style.backgroundColor ="#fff";
+    }
+
+
+});
+
 
 //get the status of the checkbox for the gameplaytext
 var option_font_size = $("#option_font_size")[0].checked;

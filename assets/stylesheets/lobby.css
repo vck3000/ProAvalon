@@ -44,7 +44,7 @@ p {
 }
 
 .date-text {
-	background: #efefef;
+	/*background: #efefef;*/
 
 }
 
@@ -495,4 +495,58 @@ h3 {
 
 .room-container #mainRoomBox div #highlightAvatarButton {
 	position: absolute;
+}
+
+
+.dark {
+	background-color: #444444;
+	color: #CCCCCC;
+	/*$("input")[0].style.backgroundColor ="#444444";*/
+}
+
+input .dark, 
+.well .dark, 
+textarea .dark{
+	background-color : #333333; 
+}
+
+/*Copied from boot strap*/
+.btn-inverse{
+	color:#ffffff;
+	text-shadow:0 -1px 0 rgba(0, 0, 0, 0.25);
+	background-color:#363636;
+	background-image:-moz-linear-gradient(top, #444444, #222222);
+	background-image:-webkit-gradient(linear, 0 0, 0 100%, from(#444444), to(#222222));
+	background-image:-webkit-linear-gradient(top, #444444, #222222);
+	background-image:-o-linear-gradient(top, #444444, #222222);
+	background-image:linear-gradient(to bottom, #444444, #222222);
+	background-repeat:repeat-x;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff444444', endColorstr='#ff222222', GradientType=0);
+	border-color:#222222 #222222 #000000;border-color:rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+	*background-color:#222222;filter:progid:DXImageTransform.Microsoft.gradient(enabled = false);}.btn-inverse:hover,.btn-inverse:focus,.btn-inverse:active,.btn-inverse.active,.btn-inverse.disabled,.btn-inverse[disabled]{
+		color:#ffffff;
+		background-color:#222222;
+		*background-color:#151515;
+	}
+}
+
+.dark .table td {
+	border-top: 1px solid #222222;
+}
+
+.dark .table-striped tbody>tr:nth-child(even)>td, .dark .table-striped tbody>tr:nth-child(even)>th {
+    background-color: #444444;
+}
+
+.dark .table-striped tbody>tr:nth-child(odd)>td, .dark .table-striped tbody>tr:nth-child(odd)>th {
+    background-color: #3d3d3d;
+}
+
+.dark .nav-tabs>.active>a, .dark .nav-tabs>.active>a:hover, .dark .nav-tabs>.active>a:focus {
+    /*border: 1px solid #222222;*/
+    background-color: #444444;
+    border-bottom-color: transparent;
+}
+
+.dark, .dark input, .dark .nav-tabs>.active>a, .dark .nav-tabs>.active>a:hover, .dark .nav-tabs>.active>a:focus, .dark textarea {
+    color: #CCCCCC;
 }

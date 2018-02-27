@@ -5,21 +5,12 @@ To-do list:
 
 -DISCUSSIONS
 
--Require everyone to press ready before starting game
-
--green mission succeed colour is too bright/light
-
-
 -claiming
 -let players choose colour
 
 -force re-login if a user refreshes
 
--goes into assassinatio mode with no assassin
 
--no spaces in username
-
--oberon not showing up as red (spy) at end of game
 
 
 List of suggestions
@@ -90,7 +81,11 @@ Mine:
 -injection in chat
 -highlight green avatars and chat
 -remove game when all players leave
-
+-Require everyone to press ready before starting game
+-goes into assassination mode with no assassin
+-no spaces in username
+-oberon not showing up as red (spy) at end of game
+-green mission succeed colour is too bright/light
 
 Hak:
 •	Disable copying certain texts (maybe useful link http://stackoverflow.com/questions/8957443/prevent-copying-text-in-web-page/12021733#12021733)
