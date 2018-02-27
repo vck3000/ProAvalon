@@ -568,3 +568,49 @@ textarea .dark{
 .dark .newMessage {
 	background-color: #a09d00;
 }
+
+#current-players-table tbody tr td {
+	/*box-sizing:border-box;*/
+	border: transparent 2px solid;
+	/*margin: 10px;*/
+}
+
+table {
+	border-radius: 5px;
+	/*border: 1px solid #ddd;*/
+	border-collapse:separate; 
+	border-spacing: 1px;
+}
+
+.dropdown-menu {
+	padding-left: 10px;
+	padding-right: 10px;
+	min-width: 200px;
+}
+
+
+.navbar-text {
+	padding-left: 10px;
+}
+
+/*table {
+    border-collapse:separate;
+    border:solid black 1px;
+    border: 1px solid #ddd;
+    border-radius:5px;
+    -moz-border-radius:5px;
+}
+
+td, th {
+    border-left:solid black 1px;
+    border-top:solid black 1px;
+}
+
+th {
+    background-color: blue;
+    border-top: none;
+}
+
+td:first-child, th:first-child {
+     border-left: none;
+}*/
