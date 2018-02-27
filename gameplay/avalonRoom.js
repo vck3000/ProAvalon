@@ -633,29 +633,32 @@ module.exports = function(host_, roomId_, io_){
 	}
 
 	this.hostTryStartGame = function(options){
-		//check before starting
-		if(this.sockets.length < minPlayers){
-			//NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
-			console.log("Not enough players.");
-			this.sockets[0].emit("danger-alert", "Minimum 5 players to start. ")
-			return false;
-		} else if(this.gameStarted === true){
-			console.log("Game already started!");
-			return false;
+		if(this.canJoin === false){
+			//check before starting
+			if(this.sockets.length < minPlayers){
+				//NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
+				console.log("Not enough players.");
+				this.sockets[0].emit("danger-alert", "Minimum 5 players to start. ")
+				return false;
+			} else if(this.gameStarted === true){
+				console.log("Game already started!");
+				return false;
+			}
+
+			//makes it so that others cannot join the room anymore
+			this.canJoin = false;
+
+			//.slice to clone
+			this.playersYetToReady = this.sockets.slice();
+			this.options = options;
+
+			var rolesInStr = getRolesInStr(options);
+
+			for(var i = 0; i < this.sockets.length; i++){
+				this.sockets[i].emit("game-starting", rolesInStr);
+			}
 		}
 
-		//makes it so that others cannot join the room anymore
-		this.canJoin = false;
-
-		//.slice to clone
-		this.playersYetToReady = this.sockets.slice();
-		this.options = options;
-
-		var rolesInStr = getRolesInStr(options);
-
-		for(var i = 0; i < this.sockets.length; i++){
-			this.sockets[i].emit("game-starting", rolesInStr);
-		}
 	}
 
 	//start game
