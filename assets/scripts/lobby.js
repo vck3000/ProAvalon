@@ -720,9 +720,9 @@ function activateAvatarButtons (){
                     selectedChat[username] = false;
 
                     for(var i = 0; i < chatItems.length; i++){
-                        if(chatItems[i].childNodes[2]){
+                        if(chatItems[i].classList.contains("selected-chat")){
                             if(chatItems[i].childNodes[2].innerText === username + ":"){
-                                chatItems[i].classList = chatItems[i].classList.replace("selected-chat", "deselected-chat");
+                                chatItems[i].classList.remove("selected-chat");
                             }
                         }
                     }
