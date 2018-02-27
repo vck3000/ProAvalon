@@ -10,7 +10,7 @@ To-do list:
 
 -force re-login if a user refreshes
 
-
+-leave room text displayed twice hwen someone leaves a room, and then dc's from server
 
 
 List of suggestions

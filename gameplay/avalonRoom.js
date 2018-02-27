@@ -633,7 +633,7 @@ module.exports = function(host_, roomId_, io_){
 	}
 
 	this.hostTryStartGame = function(options){
-		if(this.canJoin === false){
+		if(this.canJoin === true){
 			//check before starting
 			if(this.sockets.length < minPlayers){
 				//NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
