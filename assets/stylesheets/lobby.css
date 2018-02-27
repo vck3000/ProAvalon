@@ -564,3 +564,7 @@ textarea .dark{
 .dark .missionBoxFail{
 	background-color: #d9534f;
 }
+
+.dark .newMessage {
+	background-color: #a09d00;
+}
