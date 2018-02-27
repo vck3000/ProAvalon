@@ -1265,16 +1265,16 @@ function strOfAvatar(playerData, alliance){
     
     //can improve this code here
     if(gameStarted === true && gameData.phase === "finished"){
-        role = gameData.see.roles[getIndexFromUsername(playerData.username)];
+        role = "<p class='role-p'>" + gameData.see.roles[getIndexFromUsername(playerData.username)] + "</p>";
     }
 
     else if(gameStarted === true){
         //if rendering our own player, give it the role tag
         if(playerData.username === ownUsername){
-            role = gameData.role;
+            role = "<p class='role-p'>" + gameData.role + "</p>";
         }
         else if(gameData.see.merlins.indexOf(playerData.username) !== -1){
-            role = "Merlin?";
+            role = "<p class='role-p'>" + "Merlin?" + "</p>";
         }  
 
         if(playerData.username === getUsernameFromIndex(gameData.lady)){
@@ -1306,7 +1306,7 @@ function strOfAvatar(playerData, alliance){
     " + selectedAvatar + "><span id='highlightAvatarButton' class='glyphicon glyphicon-user avatarButton'></span>\
     <span id='highlightChatButton' class='glyphicon glyphicon glyphicon-menu-hamburger avatarButton'></span>\
     <img class='avatarImgInRoom' src='" + picLink + "'><p class='username-p'>" + lady + "" + playerData.username + " \
-    " + hammerStar + " </p><p class='role-p'>" + role + "</p></div>";    
+    " + hammerStar + " </p>" + role + "</div>";    
 
     return str;
 }

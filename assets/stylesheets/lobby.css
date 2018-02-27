@@ -550,3 +550,17 @@ textarea .dark{
 .dark, .dark input, .dark .nav-tabs>.active>a, .dark .nav-tabs>.active>a:hover, .dark .nav-tabs>.active>a:focus, .dark textarea {
     color: #CCCCCC;
 }
+
+.dark .role-p {
+	background-color: #444444;
+	border: 1px solid #dddddd;
+}
+
+.dark .missionBoxSucceed{
+	background-color: #5cb85c;
+}
+
+
+.dark .missionBoxFail{
+	background-color: #d9534f;
+}
