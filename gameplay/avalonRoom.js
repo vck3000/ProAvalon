@@ -880,9 +880,11 @@ module.exports = function(host_, roomId_, io_){
 	}
 
 	this.playerJoinRoom = function(socket){
-		if(this.gameStarted === false){
+		//only add them to spectators if they are not part of the game already.
+		if(this.sockets.indexOf(socket) === -1){
 			this.socketsOfSpectators.push(socket);
 		}
+
 		this.playersInRoom.push(socket);
 
 		//get a list of usernames in the game
@@ -945,22 +947,22 @@ module.exports = function(host_, roomId_, io_){
 			if(i !== -1){
 				this.sockets.splice(i, 1);
 			}
-
-			//also get rid of it in the socketsOfSpectators list
-			var i = this.socketsOfSpectators.indexOf(socket);
-			if(i !== -1){
-				this.socketsOfSpectators.splice(i, 1);
-			}
-
 			if(this.sockets[0]){
 				this.host = this.sockets[0].request.user.username;	
 			}
 			
 
 			return true;
-		} else{
+		} 
+		else{
 			console.log("Player left mid-game.");
 			return false;
+		}
+
+		//also get rid of it in the socketsOfSpectators list
+		var i = this.socketsOfSpectators.indexOf(socket);
+		if(i !== -1){
+			this.socketsOfSpectators.splice(i, 1);
 		}
 	};
 	
@@ -1038,6 +1040,11 @@ module.exports = function(host_, roomId_, io_){
 
 	this.getNumOfPlayersInside = function(){
 		return this.sockets.length;
+	}
+
+
+	this.getSocketsOfSpectators = function(){
+		return this.socketsOfSpectators;
 	}
 };
 
@@ -1202,7 +1209,7 @@ function getRolesInStr(options){
 	var str = "";
 
 	if(options.merlinassassin === true){str += "Merlin, Assassin, "}
-	if(options.percival === true){str += "Percival, ";}
+		if(options.percival === true){str += "Percival, ";}
 	if(options.morgana === true){str += "Morgana, ";}
 	if(options.mordred === true){str += "Mordred, ";}
 	if(options.oberon === true){str += "Oberon, ";}
