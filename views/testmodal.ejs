@@ -1,23 +1,25 @@
 <% include partials/header%>
 
 <style type="text/css">
-	.active {
-		/*border: 3px solid green !important;*/
-		background-color: #d6ffd8 !important;
+.active {
+	/*border: 3px solid green !important;*/
+	background-color: #d6ffd8 !important;
 
-	}
+}
 
-	.btn-mine {
-		border: 3px solid black;
-		border-radius: 10px !important;
-		background-color: #e5e5e5;
-	}
+.btn-mine {
+	border: 3px solid black;
+	border-radius: 10px !important;
+	background-color: #e5e5e5;
+}
 </style>
 
 <!-- Trigger the modal with a button -->
 <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#myModal">
 	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
 </button>
+
+<button id="myButton">HIT ME</button>
 
 <!-- Modal -->
 <div id="myModal" class="modal fade" role="dialog">
@@ -71,6 +73,22 @@
 
 	</div>
 </div>
+
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script type="text/javascript">
+	$("#myButton").on("click", function(){
+		swal({
+			title: "Game is starting!",
+			text: "Roles are: as;dlkfj",
+			icon: "info",
+			// button: "Ready!",
+			buttons: ["Not ready", "Ready"]
+		}).then(function(value){
+			// swal(("The returned value is: " + value));
+		});
+	});
+</script>
 
 
 

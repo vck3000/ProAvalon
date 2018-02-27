@@ -107,6 +107,9 @@ module.exports = function(host_, roomId_, io_){
 
 	this.socketsOfSpectators = [];
 
+	this.canJoin = true;
+	this.options = undefined;
+
 
 
 	this.winner = "";
@@ -503,6 +506,7 @@ module.exports = function(host_, roomId_, io_){
 	};
 
 	this.getGameDataForSpectators = function(){
+		return false;
 		var playerRoles = this.playersInGame;
 
 		//set up the spectator data object
@@ -605,12 +609,31 @@ module.exports = function(host_, roomId_, io_){
 		return data; 
 	};
 
+	this.playerReady = function(username){
+		var index = getIndexFromUsername(this.playersYetToReady, username);
+		this.playersYetToReady.splice(index, 1);
 
+		if(this.playersYetToReady.length === 0 && this.canJoin === false){
+			if(this.startGame(this.options) === true){
+				return true;	
+			}
+			else{
+				return false;
+			}
+		}
+		else{
+			return false;
+		}
+	}
 
+	this.playerNotReady = function(username){
+		this.playersYetToReady = [];
+		this.canJoin = true;
+		return username;
+	}
 
-	//start game
-	this.startGame = function(options){
-
+	this.hostTryStartGame = function(options){
+		//check before starting
 		if(this.sockets.length < minPlayers){
 			//NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
 			console.log("Not enough players.");
@@ -621,10 +644,24 @@ module.exports = function(host_, roomId_, io_){
 			return false;
 		}
 
+		//makes it so that others cannot join the room anymore
+		this.canJoin = false;
+
+		//.slice to clone
+		this.playersYetToReady = this.sockets.slice();
+		this.options = options;
+
+		var rolesInStr = getRolesInStr(options);
+
+		for(var i = 0; i < this.sockets.length; i++){
+			this.sockets[i].emit("game-starting", rolesInStr);
+		}
+	}
+
+	//start game
+	this.startGame = function(options){
 		//make game started after the checks for game already started
 		this.gameStarted = true;
-
-		var playersYetToInitialise = [];
 
 		var rolesAssignment = generateAssignmentOrders(this.sockets.length);
 
@@ -876,7 +913,7 @@ module.exports = function(host_, roomId_, io_){
 
 		//when game hasnt started yet, add the person to the players in game
 		//cap of 10 players in the game at once.
-		if(this.gameStarted === false && this.sockets.length < 10){
+		if(this.gameStarted === false && this.sockets.length < 10 && this.canJoin === true){
 			this.sockets.push(socket);
 			//also remove them from the list of socketsOfSpectators
 			var i = this.socketsOfSpectators.indexOf(socket);
@@ -1153,4 +1190,18 @@ function countFails(votes){
 	}
 
 	return numOfVotedFails;
+}
+
+function getRolesInStr(options){
+
+	var str = "";
+
+	if(options.merlinassassin === true){str += "Merlin, Assassin, "}
+	if(options.percival === true){str += "Percival, ";}
+	if(options.morgana === true){str += "Morgana, ";}
+	if(options.mordred === true){str += "Mordred, ";}
+	if(options.oberon === true){str += "Oberon, ";}
+	if(options.lady === true){str += "Lady of the Lake, ";}
+
+	return str;
 }

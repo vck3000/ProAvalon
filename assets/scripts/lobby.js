@@ -1,7 +1,6 @@
 var socket = io({transports: ['websocket'], upgrade: false});
 console.log("started");
 
-
 //Prevents the window height from changing when android keyboard is pulled up.
 setTimeout(function() {
     let viewheight = $(window).height();
@@ -29,23 +28,6 @@ var option_font_size_text = $("#option_font_size_text")[0];
 var stringText = $("html").css("font-size");
 stringText = stringText.slice(0, stringText.length - 5);
 option_font_size_text.value = stringText;
-
-// if(option_font_size === true){
-//     $("#option_font_size_text").on("change", function() {
-//         console.log(option_font_size_text.value);
-//         if(option_font_size_text.value > 5){
-//             $("html *").css("font-size", option_font_size_text.value + "px");     
-//         }
-//         else {
-//             $("html *").css("font-size", "5px");
-//         }
-
-//         draw(storeData);
-//     });
-// }
-
-
-
 
 
 //for the game (like players in game)
@@ -226,14 +208,15 @@ function addToAllChat(data, classStr){
 
 function addToRoomChat(data, classStr){
 
-        //format the date
-        var d = new Date();
-        var hour = d.getHours();
-        if(hour < 10){hour = "0" + hour;}
-        if(data.date < 10){data.date = "0" + data.date;}
-        var date = "[" + hour + ":" + data.date + "]";
+    //format the date
+    var d = new Date();
+    var hour = d.getHours();
+    if(hour < 10){hour = "0" + hour;}
+    if(data.date < 10){data.date = "0" + data.date;}
+    var date = "[" + hour + ":" + data.date + "]";
 
-        //prevent XSS injection
+    //prevent XSS injection
+    if(data.message){
         var filteredMessage = data.message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "You just used an illegal white space. Please dont use it.");
 
         var str = "";
@@ -259,6 +242,8 @@ function addToRoomChat(data, classStr){
             $(".nav-tabs #room-chat-in-game-tab").addClass("newMessage");
         }
     }
+
+}
 
 //Remove the new message yellow background colour when
 //user selects the tab
@@ -456,6 +441,36 @@ socket.on("update-room-players", function(data){
 //======================================
 //GAME SOCKET ROUTES
 //======================================
+
+socket.on("game-starting", function(roles){
+    var secondsLeft = 15;
+    swal({
+        title: "Game is starting in " + secondsLeft,
+        text: "Roles are: " + roles,
+        icon: "info",
+        // button: "Ready!",
+        buttons: ["Not ready", "Ready"]
+    }).then(function(value){
+        // swal(("The returned value is: " + value));
+        if(value === true){
+            socket.emit("player-ready", ownUsername);
+        }
+        else{
+            socket.emit("player-not-ready", ownUsername);
+        }
+    });
+});
+
+socket.on("player-ready", function(str){
+    var data = {message: str}
+    addToRoomChat(data, "server-text");
+});
+
+socket.on("player-not-ready", function(str){
+    var data = {message: str}
+    addToRoomChat(data, "server-text");
+});
+
 socket.on("game-data", function(data){
     console.log("GAME DATA INC");   
     if(data){

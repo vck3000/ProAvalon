@@ -204,13 +204,29 @@ module.exports = function(io){
 			updateCurrentGamesList(io);
 		});
 
+		socket.on("player-ready", function(username){
+			if(rooms[socket.request.user.inRoomId]){
+				io.in(socket.request.user.inRoomId).emit("player-ready", username + " is ready.");
+
+				if(rooms[socket.request.user.inRoomId].playerReady(username) === true){
+					//game will auto start if the above returned true
+					distributeGameData(socket, io);
+				}
+			}
+		});
+
+		socket.on("player-not-ready", function(username){
+			if(rooms[socket.request.user.inRoomId]){
+				rooms[socket.request.user.inRoomId].playerNotReady(username);
+				io.in(socket.request.user.inRoomId).emit("player-not-ready", username + " is not ready.");
+			}
+		});
+
 		socket.on("startGame", function(data){
 			//start the game
 			if(rooms[socket.request.user.inRoomId]){
 				if(socket.request.user.inRoomId && socket.request.user.username === rooms[socket.request.user.inRoomId].getHostUsername()){
-					if(rooms[socket.request.user.inRoomId].startGame(data) === true){
-						distributeGameData(socket, io);
-					}
+					rooms[socket.request.user.inRoomId].hostTryStartGame(data);
 				} else{
 					console.log("Room doesn't exist or user is not host, cannot start game");
 					socket.emit("danger-alert", "You are not the host. You cannot start the game.")
