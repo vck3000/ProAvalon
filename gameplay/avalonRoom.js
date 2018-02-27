@@ -952,6 +952,11 @@ module.exports = function(host_, roomId_, io_){
 				this.socketsOfSpectators.splice(i, 1);
 			}
 
+			if(this.sockets[0]){
+				this.host = this.sockets[0].request.user.username;	
+			}
+			
+
 			return true;
 		} else{
 			console.log("Player left mid-game.");
