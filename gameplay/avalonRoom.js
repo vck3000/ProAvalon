@@ -506,7 +506,7 @@ module.exports = function(host_, roomId_, io_){
 	};
 
 	this.getGameDataForSpectators = function(){
-		return false;
+		// return false;
 		var playerRoles = this.playersInGame;
 
 		//set up the spectator data object
