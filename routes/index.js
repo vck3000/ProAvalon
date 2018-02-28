@@ -18,8 +18,8 @@ router.get("/register", function(req, res){
 router.post("/", function(req, res){
 	var newUser = new User({username: req.body.username});
 
-	if(req.body.username.indexOf(" ")){
-		req.flash("error", "Sign up failed. Please do not use spaces in your username.");
+	if(req.body.username.indexOf(" ") !== -1){
+		req.flash("error", "Sign up failed. Please do not use spaces in your username." + req.body.username.indexOf(" "));
 		res.redirect("register");
 	}
 	else{
