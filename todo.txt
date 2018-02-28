@@ -11,6 +11,10 @@ To-do list:
 -force re-login if a user refreshes
 
 -leave room text displayed twice hwen someone leaves a room, and then dc's from server
+-widen all chat in laptop screens
+- kick option
+-player commands
+-show roles in the bar for host
 
 
 List of suggestions
