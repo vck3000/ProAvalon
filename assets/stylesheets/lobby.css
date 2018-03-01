@@ -80,7 +80,7 @@ p {
 
 .current-games-table-off{
 	border-collapse: collapse;
-	border: purple 1px solid;
+	border: transparent 1px solid;
 }
 
 #current-games-table tbody tr td {
@@ -557,11 +557,17 @@ textarea .dark{
 
 .dark, .dark input, .dark .nav-tabs>.active>a, .dark .nav-tabs>.active>a:hover, .dark .nav-tabs>.active>a:focus, .dark textarea {
     color: #CCCCCC;
+    border: 1px #000000 solid;
 }
 
 .dark .role-p {
 	background-color: #444444;
-	border: 1px solid #dddddd;
+	/*border: 1px solid #dddddd;*/
+	border: 1px solid transparent;
+}
+
+.dark .tab-window {
+	border: 1px black solid;
 }
 
 .dark .missionBoxSucceed{
@@ -577,13 +583,25 @@ textarea .dark{
 	background-color: #a09d00;
 }
 
+.dark .chat-window {
+	border: 1px solid #000000;
+}
+
+.dark .table-bordered{
+	border: 1px solid #000000;
+}
+
+.dark .table-bordered, .current-games-table-off {
+	border: 1px transparent solid;
+}
+
 #current-players-table tbody tr td {
 	/*box-sizing:border-box;*/
 	border: transparent 2px solid;
 	/*margin: 10px;*/
 }
 
-table {
+.lobby-table {
 	border-radius: 5px;
 	/*border: 1px solid #ddd;*/
 	border-collapse:separate; 
