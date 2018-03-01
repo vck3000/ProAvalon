@@ -58,7 +58,7 @@ p {
 
 
 .lobby-container {
-	height: 90%;
+	height: 80%;
 	/*width: 70%;*/
 	margin-left: auto;
 	margin-right: auto;
@@ -486,8 +486,13 @@ h3 {
 	/*background-color: gray;*/
 }
 
-.selected-avatar {
+.selected-avatar-1 {
 	background-color: #8BE38B;
+	border-radius: 5px;
+}
+
+.selected-avatar-2 {
+	background-color: #d9534f;
 	border-radius: 5px;
 }
 

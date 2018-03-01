@@ -19,7 +19,9 @@ To-do list:
 
 -Moderators
 
--m1 hammer is missplaced
+-Add option to adjust height and width of lobby
+
+-fix inop font size
 
 
 Hak:
@@ -97,6 +99,7 @@ Mine:
 -oberon not showing up as red (spy) at end of game
 -green mission succeed colour is too bright/light
 -widen all chat in laptop screens
+-m1 hammer is missplaced
 
 
 

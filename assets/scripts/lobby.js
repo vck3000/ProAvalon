@@ -711,6 +711,7 @@ function draw(){
 }
 
 var selectedAvatars = {};
+var numOfStatesOfHighlight = 2;
 var selectedChat = {};
 function activateAvatarButtons (){
     console.log("activate avatar buttons");
@@ -729,12 +730,15 @@ function activateAvatarButtons (){
 
                 // this.parentElement.classList.toggle("selected-avatar");
                 var username = this.parentElement.getAttribute("usernameofplayer");
-                if(selectedAvatars[username] === true){
-                    selectedAvatars[username] = false;
+
+                if(selectedAvatars[username] !== undefined){
+                    selectedAvatars[username] += 1;
                 }
                 else{
-                    selectedAvatars[username] = true;
+                    selectedAvatars[username] = 0;
                 }
+
+                selectedAvatars[username] = selectedAvatars[username] % (numOfStatesOfHighlight + 1);
                 
                 draw(storeData);
             });   
@@ -1298,8 +1302,11 @@ function strOfAvatar(playerData, alliance){
     }
 
     var selectedAvatar = "";
-    if(selectedAvatars[playerData.username] === true){
-        selectedAvatar = "class='selected-avatar'";
+    if(selectedAvatars[playerData.username] === 1){
+        selectedAvatar = "class='selected-avatar-1'";
+    }
+    else if(selectedAvatars[playerData.username] === 2){
+        selectedAvatar = "class='selected-avatar-2'";
     }
 
     var str = "<div usernameofplayer='" + playerData.username + "' \
