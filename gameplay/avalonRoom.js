@@ -770,7 +770,7 @@ module.exports = function(host_, roomId_, io_){
 		//set game start parameters
 		//get a random starting team leader
 		this.teamLeader = getRandomInt(0,this.sockets.length);
-		this.hammer = ((this.teamLeader - 5 + this.sockets.length) % this.sockets.length);
+		this.hammer = ((this.teamLeader - 5 + 1 + this.sockets.length) % this.sockets.length);
 
 		this.missionNum = 1; 
 		this.pickNum = 1;
