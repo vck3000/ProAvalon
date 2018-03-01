@@ -560,6 +560,10 @@ textarea .dark{
     border: 1px #000000 solid;
 }
 
+.dark input {
+	background-color: #333333;
+}
+
 .dark .role-p {
 	background-color: #444444;
 	/*border: 1px solid #dddddd;*/
