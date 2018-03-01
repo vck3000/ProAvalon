@@ -52,9 +52,27 @@ $("#option_dark_theme")[0].addEventListener("click", function(){
 var option_font_size = $("#option_font_size")[0].checked;
 var option_font_size_text = $("#option_font_size_text")[0];
 
-var stringText = $("html").css("font-size");
-stringText = stringText.slice(0, stringText.length - 5);
+var stringText = $("body").css("font-size");
+stringText = stringText.slice(0, stringText.length - 2);
 option_font_size_text.value = stringText;
+
+if(option_font_size === true){
+    $("#option_font_size_text").on("change", function() {
+        console.log(option_font_size_text.value);
+        if(option_font_size_text.value > 5){
+            $("html *").css("font-size", option_font_size_text.value + "px");     
+        }
+        else {
+            $("html *").css("font-size", "5px");
+        }
+        draw(storeData);
+    });
+}
+
+
+
+
+
 
 
 //for the game (like players in game)
