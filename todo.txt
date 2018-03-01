@@ -11,12 +11,18 @@ To-do list:
 -force re-login if a user refreshes
 
 -leave room text displayed twice hwen someone leaves a room, and then dc's from server
--widen all chat in laptop screens
-- kick option
+-kick option
 -player commands
 -show roles in the bar for host
 
+-click highlight avatar multiple times to highlight diff colours
 
+-Moderators
+
+-m1 hammer is missplaced
+
+
+Hak:
 List of suggestions
 •	Private/public games. Adding passwords
 •	Displaying name/number of room in this room
@@ -90,6 +96,9 @@ Mine:
 -no spaces in username
 -oberon not showing up as red (spy) at end of game
 -green mission succeed colour is too bright/light
+-widen all chat in laptop screens
+
+
 
 Hak:
 •	Disable copying certain texts (maybe useful link http://stackoverflow.com/questions/8957443/prevent-copying-text-in-web-page/12021733#12021733)
