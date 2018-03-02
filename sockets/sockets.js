@@ -9,6 +9,28 @@ var rooms = [];
 var nextRoomId = 1;
 
 
+var userCommands = {
+	commandA: {
+		command: "commandAType",
+		help: "Just some text for commandA",
+		socketCommand: "commandA~"
+	},
+
+	help: {
+		command: "help",
+		help: "Come on, if you don't know what this command does YOU need help.",
+		socketCommand: "help"
+	}
+};
+
+
+
+
+
+
+
+
+
 module.exports = function(io){
 	//SOCKETS for each connection
 	io.sockets.on("connection", function(socket){
@@ -17,6 +39,8 @@ module.exports = function(io){
 			console.log("User is authenticated");
 		} else{
 			console.log("User is not authenticated");
+			socket.emit("alert", "You are not authenticated.");
+			return; 
 		}
 
 		//if user is already logged in, destroy their last session
@@ -49,7 +73,8 @@ module.exports = function(io){
 
 		//send the user its ID to store on their side.
 		socket.emit("username", socket.request.user.username);
-
+		//send the user the list of commands
+		socket.emit("commands", userCommands);
 
 
 

@@ -15,13 +15,11 @@ To-do list:
 -player commands
 -show roles in the bar for host
 
--click highlight avatar multiple times to highlight diff colours
-
 -Moderators
 
 -Add option to adjust height and width of lobby
 
--fix inop font size
+
 
 -blue or yellow words for dark theme highlitht
 
@@ -102,7 +100,8 @@ Mine:
 -green mission succeed colour is too bright/light
 -widen all chat in laptop screens
 -m1 hammer is missplaced
-
+-fix inop font size
+-click highlight avatar multiple times to highlight diff colours
 
 
 Hak:

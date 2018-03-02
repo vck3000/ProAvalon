@@ -39,12 +39,7 @@ $("#option_dark_theme")[0].addEventListener("click", function(){
         $("textarea").removeClass("dark");
         $(".btn-default").removeClass("btn-inverse");
         $(".navbar").removeClass("navbar-inverse");
-        // $("body")[0].style.backgroundColor ="#ffffff";
-        // $("body")[0].style.color ="#333";
-        // $("input")[0].style.backgroundColor ="#fff";
     }
-
-
 });
 
 
@@ -165,9 +160,15 @@ function addAllChatEventListeners(e, allChatWindow){
 
             //reset the value of the textbox
             allChatWindow.value = "";
-            //send data to the server 
-            socket.emit("allChatFromClient", data);
-            
+
+            //check message, if false then no command.
+            if(checkMessageForCommands(message) === true){
+                //do nothing, all will be done in function checkMessageForCommands.
+            }
+            else{
+                //send data to the server 
+                socket.emit("allChatFromClient", data);
+            }
             scrollDown();
         }
 
@@ -197,9 +198,15 @@ roomChatWindow.onkeyup = function(e){
 
             //reset the value of the textbox
             roomChatWindow.value = "";
-            //send data to the server 
-            socket.emit("roomChatFromClient", data);
 
+            //check message, if false then no command.
+            if(checkMessageForCommands(message) === true){
+                //do nothing, all will be done in function checkMessageForCommands.
+            }
+            else{
+                //send data to the server 
+                socket.emit("roomChatFromClient", data);
+            }
             scrollDown();
         }
     }
@@ -404,9 +411,7 @@ socket.on("update-current-games-list", function(currentGames){
     else{
         document.querySelectorAll("#current-games-table")[0].classList.add("current-games-table-on");
         document.querySelectorAll("#current-games-table")[0].classList.remove("current-games-table-off");
-
     }
-    
 });
 
 
@@ -432,7 +437,9 @@ socket.on("auto-join-room-id", function(roomId_){
     changeView();
 });
 
-
+socket.on("commands", function(commands){
+    assignCommands(commands);
+})
 
 
 //======================================
@@ -902,7 +909,6 @@ function ladySetup(phase, ladyablePeople){
             }
         }  
     }
-
 }
 
 function drawMiddleBoxes(){
@@ -941,14 +947,10 @@ function drawMiddleBoxes(){
         for(var j = 0; j < 5; j++){
             document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxFail");
             document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxSucceed");
-
             document.querySelectorAll(".missionBox")[j].innerText = "";
-
             document.querySelectorAll(".pickBox")[j].classList.remove("pickBoxFill");       
         }
-        
     }
-
 }
 
 
@@ -964,11 +966,6 @@ function drawAndPositionAvatars(){
     if(gameStarted === true){
         //draw the players according to what the client sees (their role sees)
         for(var i = 0 ; i < numPlayers; i++){
-
-            // console.log("draw");
-            // console.log("storeData: ");
-            // console.log(storeData);
-
             //check if the user is on the spy list. 
             //if they are not, they are res
             if(gameData.see.spies && gameData.see.spies.indexOf(storeData[i].username) === -1){
@@ -1048,7 +1045,6 @@ function drawGuns(){
 }
 
 function drawTeamLeaderStar(){
-    //team leader star part!----------------------------------------------------
     var playerIndex;
     if(gameStarted === false){
         playerIndex = 0;
@@ -1064,8 +1060,6 @@ function drawTeamLeaderStar(){
 
         $(".leaderStar")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
     }
-
-    //team leader star part!----------------------------------------------------
 }
 
 function enableDisableButtonsLeader(numPlayersOnMission){
@@ -1179,8 +1173,6 @@ function enableDisableButtons(){
     else if(gameStarted === true && isSpectator === true){
         disableButtons();
     }
-    
-
 }
 
 function checkEntryExistsInArray(array, entry){
@@ -1245,23 +1237,12 @@ function getIndexFromUsername(username){
 }
 
 function getUsernameFromIndex(index){
-    // if(gameStarted === false){
-        if(storeData[index]){
-            return storeData[index].username;
-        }
-        else {
-            return false;
-        }    
-    // }
-    // else{
-    //     if(gameData[index]){
-    //         return gameData.username[index];
-    //     }
-    //     else{
-    //         return false;
-    //     }
-    // }
-    
+    if(storeData[index]){
+        return storeData[index].username;
+    }
+    else {
+        return false;
+    }   
 }
 
 function strOfAvatar(playerData, alliance){
@@ -1336,8 +1317,6 @@ function strOfAvatar(playerData, alliance){
     return str;
 }
 
-
-
 function changeView(){
     $(".lobby-container").toggleClass("inactive-window");
     $(".game-container").toggleClass("inactive-window");
@@ -1388,15 +1367,9 @@ function generatePlayerLocations(numOfPlayers, a, b){
     return object;
 }
 
-
-
-
 function drawVoteHistory(data){
-
     var numOfPicksPerMission = [];
-
     var str = "";
-
     //top row where missions are displayed
     //extra <td> set is for the top left corner of the table
     str += "<tr><td></td>"; 
@@ -1405,8 +1378,6 @@ function drawVoteHistory(data){
         str += "<td class='' style='width: 11em;' colspan='' id='missionHeader" + (i + 1) + "'>Mission " + (i + 1) + "</td>";
     }
     str += "</tr>";
-
-
 
     //for every username
     for (var key in data.voteHistory) {
@@ -1425,22 +1396,13 @@ function drawVoteHistory(data){
                 for(var j = 0; j < data.voteHistory[key][i].length; j++){
                     console.log(data.voteHistory[key][i][j]);
                     str += "<td class='" + data.voteHistory[key][i][j] + "''>";
-
-
                     str += "</td>";
                     numOfPicksPerMission[i]++;
                 }
             }
-
-
-
-
-
             str +="</tr>"
         }
     }
-
-
 
     $("#voteHistoryTable")[0].innerHTML = str;
 
@@ -1449,7 +1411,6 @@ function drawVoteHistory(data){
         var id = "#missionHeader" + (i + 1);
         $(id).attr("colspan", numOfPicksPerMission[i]);
     }
-
 }
 
 
@@ -1505,3 +1466,26 @@ function extendTabContentToBottomInRoom(){
     console.log("New height 2: " + newHeight2);
     tabContainer.style.height = (newHeight2*1.2) + "px"; 
 }
+
+
+
+var commands;
+function assignCommands(serverCommands){
+    commands = serverCommands;
+}
+
+
+function checkMessageForCommands(message){
+    if(message[0] === '/'){
+        console.log("COMMAND INPUT DETECTED");
+
+        
+        
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+
