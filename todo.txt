@@ -23,6 +23,8 @@ To-do list:
 
 -fix inop font size
 
+-blue or yellow words for dark theme highlitht
+
 
 Hak:
 List of suggestions

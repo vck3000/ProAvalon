@@ -309,7 +309,7 @@ p {
 	position: absolute;
 	/*margin: auto;*/
 	left: 50%;
-	top: 47%;
+	top: 43%;
 
 	transform: translateX(-50%);
 }
@@ -427,7 +427,6 @@ p {
 .btn-mine.active {
 	/*border: 3px solid green !important;*/
 	background-color: #d6ffd8 !important;
-
 }
 
 .btn-mine {
@@ -435,6 +434,19 @@ p {
 	border-radius: 10px !important;
 	background-color: #e5e5e5;
 }
+
+.dark .modal-content {
+	background-color: #333;
+}
+
+.dark .modal-content label {
+	color: #000000;
+}
+
+.dark ul {
+	background-color: #333;
+}
+
 
 
 /*This is for the special text like lady, so users cannot select to copy paste*/
