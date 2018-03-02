@@ -443,7 +443,7 @@ p {
 	color: #000000;
 }
 
-.dark ul {
+.dark .dropdown-menu {
 	background-color: #333;
 }
 
