@@ -11,25 +11,30 @@ var nextRoomId = 1;
 
 var userCommands = {
 	commandA: {
-		command: "commandAType",
+		command: "commandA",
 		help: "Just some text for commandA",
-		socketCommand: "commandA~"
+		socketCommand: "commandA~",
+		run: function(args){
+			//do stuff
+			return "commandA has been run.";
+		}
 	},
 
 	help: {
 		command: "help",
 		help: "Come on, if you don't know what this command does YOU need help.",
-		socketCommand: "help"
+		socketCommand: "help",
+		run: function(args){
+			//do stuff
+			var str = [];
+			str[0] = "line 0";
+			str[1] = "line 1";
+
+			// return "Commands are: commandA, help";
+			return str;
+		}
 	}
 };
-
-
-
-
-
-
-
-
 
 module.exports = function(io){
 	//SOCKETS for each connection
@@ -76,13 +81,26 @@ module.exports = function(io){
 		//send the user the list of commands
 		socket.emit("commands", userCommands);
 
-
+		//=======================================
+		//COMMANDS
+		//=======================================
+		socket.on("messageCommand", function(data){
+			console.log("data0: " + data.command);
+			if(userCommands[data.command]){
+				var str = userCommands[data.command].run(data.args);
+				socket.emit("messageCommandReturnStr", str);	
+			}
+			else{
+				socket.emit("messageCommandReturnStr", "Invalid command.");
+			}
+			
+		});
 
 
 
 		//when a user tries to send a message to all chat
 		socket.on("allChatFromClient", function(data){
-			// socket.emit("danger-alert", "test alert asdf");
+			//socket.emit("danger-alert", "test alert asdf");
 			//debugging
 			console.log("incoming message from allchat at " + data.date + ": " + data.message + " by: " + socket.request.user.username);
 			//get the username and put it into the data object

@@ -230,71 +230,83 @@ socket.on("roomChatToClient", function(data){
 
 
 function addToAllChat(data, classStr){
-
-    //format the date
-    var d = new Date();
-    var hour = d.getHours();
-    if(hour < 10){hour = "0" + hour;}
-    if(data.date < 10){data.date = "0" + data.date;}
-    var date = "[" + hour + ":" + data.date + "]";
-
-    //prevent XSS injection
-    var filteredMessage = data.message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "You just used an illegal white space. Please dont use it.");
-
-    var str = "";
-    if(classStr && classStr !== ""){
-        str = "<li class='" + classStr + "'>" + filteredMessage;
-    }
-    else{
-        str = "<li class='" + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage;
+    //if it is a string, force it into a array
+    if(typeof(data.message) === "string"){
+        data.message = [data.message];
     }
 
-    $(".all-chat-list").append(str);
-    scrollDown();
+    for(var i = 0; i < data.message.length; i++){
+        //format the date
+        var d = new Date();
+        var hour = d.getHours();
+        if(hour < 10){hour = "0" + hour;}
+        if(data.date < 10){data.date = "0" + data.date;}
+        var date = "[" + hour + ":" + data.date + "]";
 
-    //yellow notification on the tabs in room.
-    if($(".nav-tabs #all-chat-in-game-tab").hasClass("active") === false){
-        $(".nav-tabs #all-chat-in-game-tab").addClass("newMessage");
-    }
-}
-
-function addToRoomChat(data, classStr){
-
-    //format the date
-    var d = new Date();
-    var hour = d.getHours();
-    if(hour < 10){hour = "0" + hour;}
-    if(data.date < 10){data.date = "0" + data.date;}
-    var date = "[" + hour + ":" + data.date + "]";
-
-    //prevent XSS injection
-    if(data.message){
-        var filteredMessage = data.message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "You just used an illegal white space. Please dont use it.");
+        //prevent XSS injection
+        var filteredMessage = data.message[i].replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
 
         var str = "";
-
-        //set the highlight chat if the user has been selected already
-        var highlightChat = "";
-        if(selectedChat[data.username] === true){
-            highlightChat = "selected-chat";
-        }
-
         if(classStr && classStr !== ""){
-            str = "<li class='" + classStr + " " + highlightChat + "'>" + filteredMessage;
+            str = "<li class='" + classStr + "'>" + filteredMessage;
         }
         else{
-            str = "<li class='" + highlightChat + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage;
+            str = "<li class='" + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage;
         }
 
-        $(".room-chat-list").append(str);
+        $(".all-chat-list").append(str);
         scrollDown();
 
         //yellow notification on the tabs in room.
-        if($(".nav-tabs #room-chat-in-game-tab").hasClass("active") === false){
-            $(".nav-tabs #room-chat-in-game-tab").addClass("newMessage");
+        if($(".nav-tabs #all-chat-in-game-tab").hasClass("active") === false){
+            $(".nav-tabs #all-chat-in-game-tab").addClass("newMessage");
         }
     }
 
+}
+
+function addToRoomChat(data, classStr){
+    //if it is a string, force it into a array
+    if(typeof(data.message) === "string"){
+        data.message = [data.message];
+    }
+    
+    for(var i = 0; i < data.message.length; i++){
+        //format the date
+        var d = new Date();
+        var hour = d.getHours();
+        if(hour < 10){hour = "0" + hour;}
+        if(data.date < 10){data.date = "0" + data.date;}
+        var date = "[" + hour + ":" + data.date + "]";
+
+        //prevent XSS injection
+        if(data.message[i]){
+            var filteredMessage = data.message[i].replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
+
+            var str = "";
+
+            //set the highlight chat if the user has been selected already
+            var highlightChat = "";
+            if(selectedChat[data.username] === true){
+                highlightChat = "selected-chat";
+            }
+
+            if(classStr && classStr !== ""){
+                str = "<li class='" + classStr + " " + highlightChat + "'>" + filteredMessage;
+            }
+            else{
+                str = "<li class='" + highlightChat + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage;
+            }
+
+            $(".room-chat-list").append(str);
+            scrollDown();
+
+            //yellow notification on the tabs in room.
+            if($(".nav-tabs #room-chat-in-game-tab").hasClass("active") === false){
+                $(".nav-tabs #room-chat-in-game-tab").addClass("newMessage");
+            }
+        }
+    }
 }
 
 //Remove the new message yellow background colour when
@@ -439,7 +451,16 @@ socket.on("auto-join-room-id", function(roomId_){
 
 socket.on("commands", function(commands){
     assignCommands(commands);
-})
+});
+
+socket.on("messageCommandReturnStr", function(str){
+    var data = {message: str};
+
+    addToAllChat(data, "server-text");
+    addToRoomChat(data, "server-text");
+
+    console.log("received return str");
+});
 
 
 //======================================
@@ -1476,11 +1497,40 @@ function assignCommands(serverCommands){
 
 
 function checkMessageForCommands(message){
+    arrayMessage = message.split(" ");
+    console.log("arr message: " + arrayMessage);
+
     if(message[0] === '/'){
         console.log("COMMAND INPUT DETECTED");
+        var validCommandFound = false;
 
-        
-        
+        //need to change this to only up to the first space
+        messageCommand = message.slice(1, message.length);
+
+        var commandCalled = "";
+
+        //cycle through the commands and try to find the command.
+        for (var key in commands) {
+            if (commands.hasOwnProperty(key)) {
+                // console.log(key + " -> " + commands[key]);
+                if(messageCommand === commands[key].command){
+
+                    console.log("Command: " + commands[key].command + " called.");
+                    commandCalled = commands[key].command;
+                    validCommandFound = true;
+                    break;
+                }
+            }
+        }
+
+        if(validCommandFound === false){
+            console.log("Command invalid");
+        }
+        else{
+            //sending command to server
+            console.log("Sending command: " + messageCommand + " to server.");
+            socket.emit("messageCommand", {command: messageCommand, args: arrayMessage});
+        }
         return true;
     }
     else{
@@ -1489,3 +1539,16 @@ function checkMessageForCommands(message){
 }
 
 
+// var userCommands = {
+//     commandA: {
+//         command: "commandAType",
+//         help: "Just some text for commandA",
+//         socketCommand: "commandA~"
+//     },
+
+//     help: {
+//         command: "help",
+//         help: "Come on, if you don't know what this command does YOU need help.",
+//         socketCommand: "help"
+//     }
+// };
