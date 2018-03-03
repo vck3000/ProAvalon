@@ -449,6 +449,11 @@ socket.on("auto-join-room-id", function(roomId_){
     changeView();
 });
 
+
+
+//==========================================
+//COMMANDS
+//==========================================
 socket.on("commands", function(commands){
     assignCommands(commands);
 });
@@ -462,6 +467,22 @@ socket.on("messageCommandReturnStr", function(str){
     console.log("received return str");
 });
 
+var slap;
+socket.on("slap", function(username){
+
+    if(slap === undefined){
+        slap = new Audio('sounds/slap.mp3');
+    }
+
+    slap.play();
+    var data = {message: "You have just been slapped by " + username}
+
+    setTimeout(function(){
+        addToAllChat(data, "server-text");
+        addToRoomChat(data, "server-text");
+    }, 1100);
+    
+});
 
 //======================================
 //NOTIFICATIONS

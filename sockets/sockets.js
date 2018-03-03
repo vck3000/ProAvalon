@@ -57,9 +57,12 @@ var userCommands = {
 	slap: {
 		command: "slap",
 		help: "/slap <playername>: Slap a player for fun.",
-		run: function(args){
+		run: function(args, senderSocket){
 
-			return "slapped player " + args[1] + " (not yet)";
+			var slapSocket = allSockets[args[1]];
+			slapSocket.emit("slap", senderSocket.request.user.username);
+
+			return "You have slapped player " + args[1] + "!";
 		}
 	}
 };
@@ -115,7 +118,7 @@ module.exports = function(io){
 		socket.on("messageCommand", function(data){
 			console.log("data0: " + data.command);
 			if(userCommands[data.command]){
-				var str = userCommands[data.command].run(data.args);
+				var str = userCommands[data.command].run(data.args, socket);
 				socket.emit("messageCommandReturnStr", str);	
 			}
 			else{
@@ -426,3 +429,12 @@ var updateCurrentGamesList = function(io){
 	}
 	io.in("allChat").emit("update-current-games-list", gamesList);
 }
+
+
+// function getSocketFromUsername(username){
+// 	for(var i = 0; i < allSockets.length; i++){
+// 		if(allSockets[i].request.user.username === username){
+// 			return allSockets[i];
+// 		}
+// 	}
+// }
