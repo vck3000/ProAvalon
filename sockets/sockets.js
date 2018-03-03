@@ -13,7 +13,6 @@ var userCommands = {
 	commandA: {
 		command: "commandA",
 		help: "Just some text for commandA",
-		socketCommand: "commandA~",
 		run: function(args){
 			//do stuff
 			return "commandA has been run.";
@@ -23,15 +22,36 @@ var userCommands = {
 	help: {
 		command: "help",
 		help: "Come on, if you don't know what this command does YOU need help.",
-		socketCommand: "help",
 		run: function(args){
 			//do stuff
 			var str = [];
 			str[0] = "line 0";
 			str[1] = "line 1";
 
+			var i = 0;
+
+			for (var key in userCommands) {
+				if (userCommands.hasOwnProperty(key)) {
+					// console.log(key + " -> " + p[key]);
+					str[i] =  userCommands[key].command + ": " + userCommands[key].help;
+					i++;
+					//create a break in the chat
+					str[i] = "-------------------------";
+					i++;
+				}
+			}
+
 			// return "Commands are: commandA, help";
 			return str;
+		}
+	},
+
+	buzz: {
+		command: "buzz",
+		help: "Buzz a player :)",
+		run: function(args){
+
+			return "buzzed a player (not yet)";
 		}
 	}
 };

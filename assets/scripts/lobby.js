@@ -270,7 +270,7 @@ function addToRoomChat(data, classStr){
     if(typeof(data.message) === "string"){
         data.message = [data.message];
     }
-    
+
     for(var i = 0; i < data.message.length; i++){
         //format the date
         var d = new Date();
@@ -1525,6 +1525,10 @@ function checkMessageForCommands(message){
 
         if(validCommandFound === false){
             console.log("Command invalid");
+            var str = messageCommand + " is not a valid command. Type /help for a list of commands.";9
+            var data = {message: str}
+            addToAllChat(data, "server-text");
+            addToRoomChat(data, "server-text");
         }
         else{
             //sending command to server
