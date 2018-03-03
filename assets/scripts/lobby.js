@@ -94,6 +94,12 @@ window.addEventListener('resize', function(){
 document.querySelector("#green-button").addEventListener("click", greenButtonFunction);
 document.querySelector("#red-button").addEventListener("click", redButtonFunction);
 
+
+$('#myModal').on('hidden.bs.modal', function (e) {
+  draw(storeData);
+})
+
+
 //new ROOM CODE
 document.querySelector("#newRoom").addEventListener("click", function(){
     if(inRoom === false){
@@ -771,7 +777,38 @@ function draw(){
         }
 
         else{
-            document.querySelector("#status").innerText = "Waiting for game to start...";
+            currentOptions = getOptions();
+            var str = "";
+
+            for(var key in currentOptions){
+                if(currentOptions.hasOwnProperty(key)) {
+                    if(currentOptions[key] === true){
+                        if(key === "merlinassassin"){
+                            str += "Merlin, Assassin, ";
+                        }
+                        else if(key === "percival"){
+                            str +=  "Percival, ";    
+                        }
+                        else if(key === "morgana"){
+                            str += "Morgana, ";
+                        }
+                        else if(key === "lady"){
+                            str += "Lady of the Lake, ";
+                        }
+                        else if(key === "mordred"){
+                            str += "Mordred, ";
+                        }
+                        else if(key === "oberon"){
+                            str += "Oberon, ";
+                        }
+                        else{
+                            str += "Error, unexpected option."
+                        }
+                    }
+                }
+            }
+
+            document.querySelector("#status").innerText = "Current roles: " + str;
             enableDisableButtons();
         }
     }

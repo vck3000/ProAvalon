@@ -12,14 +12,12 @@ To-do list:
 
 -leave room text displayed twice hwen someone leaves a room, and then dc's from server
 -kick option
--player commands
+
 -show roles in the bar for host
 
 -Moderators
 
 -Add option to adjust height and width of lobby
-
-
 
 -blue or yellow words for dark theme highlitht
 
@@ -102,6 +100,13 @@ Mine:
 -m1 hammer is missplaced
 -fix inop font size
 -click highlight avatar multiple times to highlight diff colours
+-player commands
+
+
+
+
+
+
 
 
 Hak:
