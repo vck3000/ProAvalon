@@ -847,7 +847,7 @@ function drawBullet(indexOfPlayer){
 
     //set the div string and add the star\\
     var str = $("#mainRoomBox div")[indexOfPlayer].innerHTML;
-    str = str + "<span><img src='bullet.png' class='bullet'></span>";
+    str = str + "<span><img src='pictures/bullet.png' class='bullet'></span>";
     //update the str in the div
     $("#mainRoomBox div")[indexOfPlayer].innerHTML = str;
 
@@ -1059,7 +1059,7 @@ function drawGuns(){
     for(var i = 0; i < gameData.proposedTeam.length; i++){
         //set the div string and add the gun
         var str = $("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])].innerHTML;
-        str = str + "<span><img src='gun.png' class='gun'></span>";
+        str = str + "<span><img src='pictures/gun.png' class='gun'></span>";
         //update the str in the div
         $("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])].innerHTML = str;
     }
@@ -1075,7 +1075,7 @@ function drawTeamLeaderStar(){
     //set the div string and add the star
     if($("#mainRoomBox div")[playerIndex]){
         var str = $("#mainRoomBox div")[playerIndex].innerHTML;
-        str = str + "<span><img src='leader.png' class='leaderStar'></span>";
+        str = str + "<span><img src='pictures/leader.png' class='leaderStar'></span>";
         //update the str in the div
         $("#mainRoomBox div")[playerIndex].innerHTML = str;
 
@@ -1270,16 +1270,16 @@ function strOfAvatar(playerData, alliance){
     var picLink;
     if(alliance === "res"){
         if(playerData.avatarImgRes){
-            picLink = playerData.avatarImgRes;
+            picLink = 'avatars/' + playerData.avatarImgRes;
         } else{
-            picLink = 'base-res.png'
+            picLink = 'avatars/base-res.png'
         }
     }
     else{
         if(playerData.avatarImgSpy){
-            picLink = playerData.avatarImgSpy;
+            picLink = 'avatars/' + playerData.avatarImgSpy;
         } else{
-            picLink = 'base-spy.png'    
+            picLink = 'avatars/base-spy.png'    
         }
     }
 
@@ -1505,7 +1505,7 @@ function checkMessageForCommands(message){
         var validCommandFound = false;
 
         //need to change this to only up to the first space
-        messageCommand = message.slice(1, message.length);
+        messageCommand = arrayMessage[0].slice(1, arrayMessage[0].length);
 
         var commandCalled = "";
 
