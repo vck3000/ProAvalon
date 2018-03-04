@@ -60,9 +60,34 @@ var userCommands = {
 		run: function(args, senderSocket){
 
 			var slapSocket = allSockets[args[1]];
-			slapSocket.emit("slap", senderSocket.request.user.username);
+			if(slapSocket){
+				slapSocket.emit("slap", senderSocket.request.user.username);	
+				return "You have slapped player " + args[1] + "!";
+			}
+			else{
+				return "There is no such player";
+			}
+			
 
-			return "You have slapped player " + args[1] + "!";
+			
+		}
+	},
+
+	roomChat: {
+		command: "roomChat",
+		help: "/roomChat: Get a copy of the chat for the current game.",
+		run: function(args, senderSocket){
+			//code
+
+		}
+	},
+
+	allChat: {
+		command: "allChat",
+		help: "/allChat: Get a copy of the last 5 minutes of allChat.",
+		run: function(args, senderSocket){
+			//code
+
 		}
 	}
 };
