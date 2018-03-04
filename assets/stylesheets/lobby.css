@@ -399,18 +399,13 @@ p {
 }
 
 .VHpicked {
-	background-image: url("/tick.png"); 
+	background-image: url("/pictures/tick.png"); 
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center;
 }
 
 #voteHistoryTable .VHleader {
-	/*background-image: url("/leader.png"); 
-	background-size: contain;
-	background-repeat: no-repeat;
-	background-position: center;*/
-
 	border: black 3px solid;
 }
 

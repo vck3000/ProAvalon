@@ -168,7 +168,7 @@ function addAllChatEventListeners(e, allChatWindow){
             allChatWindow.value = "";
 
             //check message, if false then no command.
-            if(checkMessageForCommands(message) === true){
+            if(checkMessageForCommands(message, "allChat") === true){
                 //do nothing, all will be done in function checkMessageForCommands.
             }
             else{
@@ -206,7 +206,7 @@ roomChatWindow.onkeyup = function(e){
             roomChatWindow.value = "";
 
             //check message, if false then no command.
-            if(checkMessageForCommands(message) === true){
+            if(checkMessageForCommands(message, "roomChat") === true){
                 //do nothing, all will be done in function checkMessageForCommands.
             }
             else{
@@ -467,11 +467,15 @@ socket.on("commands", function(commands){
 socket.on("messageCommandReturnStr", function(str){
     var data = {message: str};
 
-    addToAllChat(data, "server-text");
-    addToRoomChat(data, "server-text");
-
+    if(lastChatBoxCommand === "allChat"){
+        addToAllChat(data, "server-text");    
+    }
+    else if(lastChatBoxCommand === "roomChat"){
+        addToRoomChat(data, "server-text");
+    }
     console.log("received return str");
 });
+
 
 var slap;
 socket.on("slap", function(username){
@@ -487,7 +491,6 @@ socket.on("slap", function(username){
         addToAllChat(data, "server-text");
         addToRoomChat(data, "server-text");
     }, 1100);
-    
 });
 
 //======================================
@@ -1559,8 +1562,8 @@ function assignCommands(serverCommands){
     commands = serverCommands;
 }
 
-
-function checkMessageForCommands(message){
+var lastChatBoxCommand = "";
+function checkMessageForCommands(message, chatBox){
     arrayMessage = message.split(" ");
     console.log("arr message: " + arrayMessage);
 
@@ -1599,6 +1602,8 @@ function checkMessageForCommands(message){
             console.log("Sending command: " + messageCommand + " to server.");
             socket.emit("messageCommand", {command: messageCommand, args: arrayMessage});
         }
+
+        lastChatBoxCommand = chatBox;
         return true;
     }
     else{
