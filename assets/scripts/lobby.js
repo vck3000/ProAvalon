@@ -1167,7 +1167,7 @@ function enableDisableButtons(){
             document.querySelector("#red-button").classList.remove("disabled");
             document.querySelector("#red-button").innerText = "Kick";
 
-            // data-toggle="modal" data-target="#kickModal"
+            //set the stuff for the kick modal buttons
             $("#red-button").attr("data-toggle", "modal");
             $("#red-button").attr("data-target", "#kickModal");
 
@@ -1396,11 +1396,12 @@ function strOfAvatar(playerData, alliance){
         selectedAvatar = "class='selected-avatar-2'";
     }
 
-    var str = "<div usernameofplayer='" + playerData.username + "' \
-    " + selectedAvatar + "><span id='highlightAvatarButton' class='glyphicon glyphicon-user avatarButton'></span>\
-    <span id='highlightChatButton' class='glyphicon glyphicon glyphicon-menu-hamburger avatarButton'></span>\
-    <img class='avatarImgInRoom' src='" + picLink + "'><p class='username-p'>" + lady + "" + playerData.username + " \
-    " + hammerStar + " </p>" + role + "</div>";    
+    var str = "<div usernameofplayer='" + playerData.username + "' " + selectedAvatar + ">";
+        str += "<span id='highlightAvatarButton' class='glyphicon glyphicon-user avatarButton'></span>";
+        str += "<span id='highlightChatButton' class='glyphicon glyphicon glyphicon-menu-hamburger avatarButton'></span>";
+        str += "<img class='avatarImgInRoom' src='" + picLink + "'>";
+        str += "<p class='username-p'>" + lady + "" + playerData.username + " " + hammerStar + " </p>" + role + "</div>";
+
 
     return str;
 }
