@@ -94,8 +94,8 @@ window.addEventListener('resize', function(){
 document.querySelector("#green-button").addEventListener("click", greenButtonFunction);
 document.querySelector("#red-button").addEventListener("click", redButtonFunction);
 
-
-$('#myModal').on('hidden.bs.modal', function (e) {
+//re-draw the game screen when the modal is closed to update the roles in the center well.
+$('#optionsModal').on('hidden.bs.modal', function (e) {
   draw(storeData);
 })
 
@@ -586,6 +586,9 @@ socket.on("game-data", function(data){
 
         //hide the options cog
         document.querySelector("#options-button").classList.add("hidden");
+        //remove the kick modal from redbutton
+        $("#red-button").removeAttr("data-target");
+        $("#red-button").removeAttr("data-toggle");
 
         isSpectator = gameData.spectator;
         
@@ -617,22 +620,31 @@ socket.on("gameplay-text", function(incString){
 
 function redButtonFunction() {
     if(document.querySelector("#red-button").classList.contains("disabled") === false){
-        if(gameData.phase === "voting"){
-            console.log("Voted reject");
-            socket.emit("pickVote", "reject");
+        if(isSpectator === true){
+
         }
-        else if(gameData.phase === "missionVoting"){
-            console.log("Voted fail");
-            
+        else if(gameStarted === false){
+            //kick
 
-            if(gameData.alliance === "Resistance"){
-                console.log("You aren't a spy! You cannot fail a mission!");
-                // socket.emit("missionVote", "succeed");
-                showDangerAlert("You are resistance. Surely you want to succeed!");
-            } else{
-                socket.emit("missionVote", "fail");
+        }
+        else{
+            if(gameData.phase === "voting"){
+                console.log("Voted reject");
+                socket.emit("pickVote", "reject");
             }
+            else if(gameData.phase === "missionVoting"){
+                console.log("Voted fail");
+                
 
+                if(gameData.alliance === "Resistance"){
+                    console.log("You aren't a spy! You cannot fail a mission!");
+                    // socket.emit("missionVote", "succeed");
+                    showDangerAlert("You are resistance. Surely you want to succeed!");
+                } else{
+                    socket.emit("missionVote", "fail");
+                }
+
+            } 
         }
     }    
 }
@@ -1152,8 +1164,8 @@ function enableDisableButtons(){
             document.querySelector("#green-button").classList.remove("disabled");
             document.querySelector("#green-button").innerText = "Start";
 
-            document.querySelector("#red-button").classList.add("disabled");
-            // document.querySelector("#red-button").innerText = "Disabled";
+            document.querySelector("#red-button").classList.remove("disabled");
+            document.querySelector("#red-button").innerText = "Kick";
 
             document.querySelector("#options-button").classList.remove("hidden");
         }

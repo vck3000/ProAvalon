@@ -21,7 +21,7 @@ To-do list:
 
 -blue or yellow words for dark theme highlitht
 -
--Mission _(num) succeeded
+
 -no case sensitive usernames
 -gun disappears when someone votes
 
@@ -107,7 +107,7 @@ Mine:
 -player commands
 
 -show roles in the bar for host
-
+-Mission _(num) succeeded
 
 
 
