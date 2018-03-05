@@ -30,27 +30,27 @@ var minPlayers = 5;
 
 
 var alliances = [
-"Resistance",
-"Resistance",
-"Resistance",
-"Spy",
-"Spy",
-"Resistance",
-"Spy",
-"Resistance",
-"Resistance",
-"Spy"
+	"Resistance",
+	"Resistance",
+	"Resistance",
+	"Spy",
+	"Spy",
+	"Resistance",
+	"Spy",
+	"Resistance",
+	"Resistance",
+	"Spy"
 
 ]
 
 
 var numPlayersOnMission = [
-["2","3","2","3","3"],
-["2","3","4","3","4"],
-["2","3","3","4*","4"],
-["3","4","4","5*","5"],
-["3","4","4","5*","5"],
-["3","4","4","5*","5"],
+	["2", "3", "2", "3", "3"],
+	["2", "3", "4", "3", "4"],
+	["2", "3", "3", "4*", "4"],
+	["3", "4", "4", "5*", "5"],
+	["3", "4", "4", "5*", "5"],
+	["3", "4", "4", "5*", "5"],
 ]
 
 /*
@@ -66,7 +66,7 @@ var numPlayersOnMission = [
 
 
 
-module.exports = function(host_, roomId_, io_){
+module.exports = function (host_, roomId_, io_) {
 
 	this.io = io_;
 
@@ -79,7 +79,7 @@ module.exports = function(host_, roomId_, io_){
 
 	this.teamLeader = 0;
 	this.hammer = 0;
-	this.missionNum = 0; 
+	this.missionNum = 0;
 	this.missionHistory = [];
 	this.pickNum = 0;
 	this.gameHistory = [];
@@ -114,45 +114,45 @@ module.exports = function(host_, roomId_, io_){
 
 	this.winner = "";
 
-	this.finishGame = function(winner){
-		if(winner === "spy"){
+	this.finishGame = function (winner) {
+		if (winner === "spy") {
 			//spies win, nothing more to do.
 			this.winner = "spies";
 			this.gameEnd();
 		}
-		else if(winner === "res"){
+		else if (winner === "res") {
 			//SHOOT THE MERLIN!
 			var assassinIsInGame = false;
-			for(var i = 0; i < this.playersInGame.length; i++){
-				if(this.playersInGame[i].role === "Assassin"){
+			for (var i = 0; i < this.playersInGame.length; i++) {
+				if (this.playersInGame[i].role === "Assassin") {
 					assassinIsInGame = true;
 					break;
 				}
 			}
 
-			if(assassinIsInGame === true){
-				this.phase = "assassination";	
+			if (assassinIsInGame === true) {
+				this.phase = "assassination";
 			}
-			else{
+			else {
 				this.winner = "resistance";
 				this.gameEnd();
 			}
 		}
-		else{
+		else {
 			console.log("ERROR! winner was: " + winner);
 		}
 	}
 
-	this.gameEnd = function(){
+	this.gameEnd = function () {
 		//game clean up
 		this.finished = true;
 		this.phase = "finished";
 
-		if(this.winner === "spies"){
+		if (this.winner === "spies") {
 			// this.gameplayMessage = "The spies have won the game.";
 			sendGameplayText(this.sockets, "The spies have won the game.");
 		}
-		else if(this.winner === "resistance"){
+		else if (this.winner === "resistance") {
 			// this.gameplayMessage = "The resistance have won the game.";
 			sendGameplayText(this.sockets, "The resistance have won the game.");
 
@@ -160,17 +160,17 @@ module.exports = function(host_, roomId_, io_){
 		}
 	}
 
-	this.assassinate = function(socket, target){
+	this.assassinate = function (socket, target) {
 
 		//check if socket came from ASSASSIN!!!!
 		//INCOMPMLETEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE!
 
-		if(this.phase === "assassination"){
+		if (this.phase === "assassination") {
 			//get the merlin's uesrname
 			var playerRoles = this.playersInGame;
 			var merlinUsername = undefined;
-			for(var i = 0; i < playerRoles.length; i++){
-				if(playerRoles[i].role === "Merlin"){
+			for (var i = 0; i < playerRoles.length; i++) {
+				if (playerRoles[i].role === "Merlin") {
 					merlinUsername = playerRoles[i].username;
 				}
 			}
@@ -179,23 +179,23 @@ module.exports = function(host_, roomId_, io_){
 			this.playerShot = target[0];
 
 			console.log("merlin username: " + merlinUsername);
-			if(merlinUsername && target[0] === merlinUsername){
+			if (merlinUsername && target[0] === merlinUsername) {
 				this.winner = "spies";
 			}
-			else{
+			else {
 				this.winner = "resistance";
 			}
 
 			this.gameEnd();
 		}
-		else{
+		else {
 			console.log("Not assassination phase yet");
 		}
 	}
 
-	this.useLady = function(socket, target){
+	this.useLady = function (socket, target) {
 		//check that the person making this request has the lady
-		if(getIndexFromUsername(this.sockets, socket.request.user.username) === this.lady && this.phase === "lady" && this.ladyablePeople[getIndexFromUsername(this.sockets, target)] === true){
+		if (getIndexFromUsername(this.sockets, socket.request.user.username) === this.lady && this.phase === "lady" && this.ladyablePeople[getIndexFromUsername(this.sockets, target)] === true) {
 			//grab the target's alliance
 			var alliance = this.playersInGame[getIndexFromUsername(this.sockets, target)].alliance;
 
@@ -218,81 +218,81 @@ module.exports = function(host_, roomId_, io_){
 	}
 
 
-	this.missionVote = function(socket, voteStr){
-		if(this.phase === "missionVoting"){
+	this.missionVote = function (socket, voteStr) {
+		if (this.phase === "missionVoting") {
 
 			var i = this.playersYetToVote.indexOf(socket.request.user.username);
 
 			//if this vote is coming from someone who hasn't voted yet
-			if(i !== -1){
-				if(voteStr === "succeed"){
+			if (i !== -1) {
+				if (voteStr === "succeed") {
 					this.missionVotes[getIndexFromUsername(this.sockets, socket.request.user.username)] = "succeed";
 					console.log("received succeed from " + socket.request.user.username);
 				}
-				else if(voteStr === "fail"){
+				else if (voteStr === "fail") {
 					this.missionVotes[getIndexFromUsername(this.sockets, socket.request.user.username)] = "fail";
 					console.log("received fail from " + socket.request.user.username);
-				}	
-				else{
+				}
+				else {
 					console.log("ERROR! Expected succeed or fail, got: " + voteStr);
 				}
 				//remove the player from players yet to vote
-				this.playersYetToVote.splice(i, 1);	
+				this.playersYetToVote.splice(i, 1);
 			}
-			else{
+			else {
 				console.log("Player has already voted or is not in the game");
 			}
 		}
 
 		//CALCULATE OUTCOME OF THE MISSION
-		if(this.playersYetToVote.length === 0){
+		if (this.playersYetToVote.length === 0) {
 			var requiresTwoFails = false;
-			if(this.playersInGame.length >= 7 && this.missionNum === 4){
+			if (this.playersInGame.length >= 7 && this.missionNum === 4) {
 				requiresTwoFails = true;
 			}
 
 			var outcome = calcMissionVotes(this.missionVotes, requiresTwoFails);
-			if(outcome){
-				this.missionHistory.push(outcome);	
+			if (outcome) {
+				this.missionHistory.push(outcome);
 			}
-			else{
+			else {
 				console.log("ERROR! Outcome was: " + outcome);
 			}
 
 			//for the gameplay message
-			if(outcome === "succeeded"){
+			if (outcome === "succeeded") {
 				//get number of fails
 				var numOfVotedFails = countFails(this.missionVotes);
 
-				if(numOfVotedFails === 0){
+				if (numOfVotedFails === 0) {
 					// this.gameplayMessage = "The mission succeeded.";	
 					sendGameplayText(this.sockets, "Mission " + this.missionNum + " has succeeded");
 
 				}
-				else{
+				else {
 					// this.gameplayMessage = "The mission succeeded, but with " + numOfVotedFails + " fails.";
 					sendGameplayText(this.sockets, "Mission " + this.missionNum + " succeeded, but with " + numOfVotedFails + " fails.");
 
 				}
 
-				
+
 			}
-			else if(outcome === "failed"){
+			else if (outcome === "failed") {
 				//get number of fails
 				var numOfVotedFails = countFails(this.missionVotes);
-				if(numOfVotedFails === 1){
+				if (numOfVotedFails === 1) {
 					// this.gameplayMessage = "The mission failed with " + numOfVotedFails + " fail.";	
 					sendGameplayText(this.sockets, "Mission " + this.missionNum + " failed with " + numOfVotedFails + " fail.");
 
 				}
-				else{
+				else {
 					// this.gameplayMessage = "The mission failed with " + numOfVotedFails + " fails.";	
 					sendGameplayText(this.sockets, "Mission " + this.missionNum + " failed with " + numOfVotedFails + " fails.");
 
 				}
-				
+
 			}
-			
+
 			this.missionNum++;
 			this.pickNum = 1;
 			//if we get all the votes in, then do this
@@ -302,11 +302,11 @@ module.exports = function(host_, roomId_, io_){
 			//count number of succeeds and fails
 			var numOfSucceeds = 0;
 			var numOfFails = 0;
-			for(var i = 0; i < this.missionHistory.length; i++){
-				if(this.missionHistory[i] === "succeeded"){
+			for (var i = 0; i < this.missionHistory.length; i++) {
+				if (this.missionHistory[i] === "succeeded") {
 					numOfSucceeds++;
 				}
-				else if(this.missionHistory[i] === "failed"){
+				else if (this.missionHistory[i] === "failed") {
 					numOfFails++;
 				}
 			}
@@ -314,73 +314,73 @@ module.exports = function(host_, roomId_, io_){
 			console.log("numOfSucceeds: " + numOfSucceeds);
 			console.log("numOfFails: " + numOfFails);
 
-			
+
 			//+1 to compensate for somewhere...
 			this.hammer = ((this.teamLeader - 5 + 1 + this.sockets.length) % this.sockets.length);
 
 
 			this.phase = "picking";
 			//only lady of the lake after m1 and m2 have finished.
-			if(this.lady !== undefined && this.missionNum >= 3){
+			if (this.lady !== undefined && this.missionNum >= 3) {
 				this.phase = "lady";
-				
+
 			}
 
 			//game over
 			//if we have 3 fails, game finish
-			if(numOfFails >= 3){
+			if (numOfFails >= 3) {
 				//pass through the winner
 
 				this.finishGame("spy");
 			}
-			else if(numOfSucceeds >= 3){
+			else if (numOfSucceeds >= 3) {
 				//pass through the winner
 				this.finishGame("res");
 				console.log("RES WON, NOW GOING INTO ASSASSINATION");
 			}
 
 		}
-		console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, {depth: 2}));
+		console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, { depth: 2 }));
 	}
 
-	this.pickVote = function(socket, voteStr){
-		if(this.phase === "voting"){
+	this.pickVote = function (socket, voteStr) {
+		if (this.phase === "voting") {
 
 			var i = this.playersYetToVote.indexOf(socket.request.user.username);
 
 			//if this vote is coming from someone who hasn't voted yet
-			if(i !== -1){
-				if(voteStr === "approve"){
+			if (i !== -1) {
+				if (voteStr === "approve") {
 					this.votes[getIndexFromUsername(this.sockets, socket.request.user.username)] = "approve";
 					console.log("received approve from " + socket.request.user.username);
 				}
-				else if(voteStr === "reject"){
+				else if (voteStr === "reject") {
 					this.votes[getIndexFromUsername(this.sockets, socket.request.user.username)] = "reject";
 					console.log("received reject from " + socket.request.user.username);
-				}	
-				else{
+				}
+				else {
 					console.log("ERROR! Expected approve or reject, got: " + voteStr);
 				}
 				//remove the player from players yet to vote
-				this.playersYetToVote.splice(i, 1);	
+				this.playersYetToVote.splice(i, 1);
 			}
-			else{
+			else {
 				console.log("Player has already voted or is not in the game");
 			}
 		}
 
 		//if our votes array is the same length as the number of players, then we have
 		//all of our votes. proceed to next part of the game.
-		if(this.playersYetToVote.length === 0){
+		if (this.playersYetToVote.length === 0) {
 			var outcome = calcVotes(this.votes);
 
 			//this.proposedTeam = [];
 
-			
+
 			//if team was approved, then reset pickNum
 			//and increment missionNum
-			if(outcome === "approved"){
-				
+			if (outcome === "approved") {
+
 				this.phase = "missionVoting";
 				this.playersYetToVote = this.proposedTeam;
 
@@ -389,13 +389,13 @@ module.exports = function(host_, roomId_, io_){
 				sendGameplayText(this.sockets, str);
 
 			}
-			else if(this.pickNum >= 5 && outcome === "rejected"){
+			else if (this.pickNum >= 5 && outcome === "rejected") {
 				console.log("--------------------------");
 				console.log("HAMMER REJECTED, GAME OVER");
 				console.log("--------------------------");
 
 				//set the remaining missions to all fail
-				while(this.missionHistory.length < 5){
+				while (this.missionHistory.length < 5) {
 					this.missionHistory[this.missionHistory.length] = "failed";
 				}
 
@@ -405,7 +405,7 @@ module.exports = function(host_, roomId_, io_){
 
 				// this.gameplayMessage = "Spies have won!";
 			}
-			else if(outcome === "rejected"){
+			else if (outcome === "rejected") {
 				this.phase = "picking";
 
 				var str = "Mission " + this.missionNum + "." + this.pickNum + " was rejected." + getStrApprovedRejectedPlayers(this.votes, this.playersInGame);
@@ -415,16 +415,16 @@ module.exports = function(host_, roomId_, io_){
 			}
 
 			//VH:
-			for(var i = 0; i < this.sockets.length; i++){
-				if(this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1] === undefined){
-					this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1] = [];
+			for (var i = 0; i < this.sockets.length; i++) {
+				if (this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1] === undefined) {
+					this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1] = [];
 				}
-				if(this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1][this.pickNum-1] === undefined){
+				if (this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1][this.pickNum - 1] === undefined) {
 					console.log("Clear leader and picked from pickVote");
-					this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1][this.pickNum-1] = "";
+					this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1][this.pickNum - 1] = "";
 				}
 
-				this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1][this.pickNum-1] += ("VH" + this.votes[i]);
+				this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1][this.pickNum - 1] += ("VH" + this.votes[i]);
 
 			}
 
@@ -432,28 +432,28 @@ module.exports = function(host_, roomId_, io_){
 			//move to next team Leader, and reset it back to the start if 
 			//we go into negative numbers
 			this.teamLeader--;
-			if(this.teamLeader < 0){
-				this.teamLeader = this.sockets.length - 1; 
+			if (this.teamLeader < 0) {
+				this.teamLeader = this.sockets.length - 1;
 			}
 			this.pickNum++;
 		}
 
-		console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, {depth: 2}));
+		console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, { depth: 2 }));
 	}
 
-	
 
-	this.playerPickTeam = function(socket, pickedTeam){
+
+	this.playerPickTeam = function (socket, pickedTeam) {
 		//reset the votes:
 		this.votes = [];
 
 		//if the person who submitted the pick team is the team leader of the time, allow and go ahead
-		if(getIndexFromUsername(this.sockets, socket.request.user.username) === this.teamLeader){
+		if (getIndexFromUsername(this.sockets, socket.request.user.username) === this.teamLeader) {
 			console.log("Team leader has picked: ");
 
 			// var splitStr = pickedTeam.split(" ");
 			// for(var i = 0; i < splitStr.length-1; i++){
-				
+
 			// 	console.log(splitStr[i] + " and ");
 
 			// 	this.proposedTeam[i] = splitStr[i];
@@ -467,7 +467,7 @@ module.exports = function(host_, roomId_, io_){
 			this.playersYetToVote = this.getUsernamesInGame();
 
 			var str = "";
-			for(var i = 0; i < pickedTeam.length; i++){
+			for (var i = 0; i < pickedTeam.length; i++) {
 				str += pickedTeam[i] + ", ";
 			}
 
@@ -477,56 +477,56 @@ module.exports = function(host_, roomId_, io_){
 
 
 			//VH:
-			for(var i = 0; i < this.sockets.length; i++){
-				if(this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1] === undefined){
-					this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1] = [];
+			for (var i = 0; i < this.sockets.length; i++) {
+				if (this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1] === undefined) {
+					this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1] = [];
 				}
-				if(this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1][this.pickNum-1] === undefined){
+				if (this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1][this.pickNum - 1] === undefined) {
 					console.log("Clear leader and picked from playerPickTeam");
-					this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1][this.pickNum-1] = "";
+					this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1][this.pickNum - 1] = "";
 				}
 
 
-				if(this.proposedTeam.indexOf(this.sockets[i].request.user.username) !== -1){
-					this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1][this.pickNum-1] += "VHpicked ";
+				if (this.proposedTeam.indexOf(this.sockets[i].request.user.username) !== -1) {
+					this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1][this.pickNum - 1] += "VHpicked ";
 				}
 
-				if(i === this.teamLeader){
-					this.voteHistory[this.sockets[i].request.user.username][this.missionNum-1][this.pickNum-1] += "VHleader ";
+				if (i === this.teamLeader) {
+					this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1][this.pickNum - 1] += "VHleader ";
 				}
 			}
 
 
 
 		}
-		else{
+		else {
 			console.log("You are not the team leader, you cannot make a pick");
 		}
 	}
 
-	this.getStatusMessage = function(){
-		if(this.phase === "picking"){
+	this.getStatusMessage = function () {
+		if (this.phase === "picking") {
 			// console.log(this.teamLeader);
 			var str = "Waiting on " + this.playersInGame[this.teamLeader].username + " to pick.";
 			return str;
-		} 
-		else if(this.phase === "voting"){
+		}
+		else if (this.phase === "voting") {
 			var str = "Voting phase";
 			return str;
 		}
-		else if(this.phase === "lady"){
+		else if (this.phase === "lady") {
 			return "Waiting for Lady of the Lake to be used.";
 		}
-		else if(this.phase === "finished"){
+		else if (this.phase === "finished") {
 			var str = "Game has finished. The " + this.winner + " have won.";
 			return str;
 		}
-		else{
+		else {
 			return false;
 		}
 	};
 
-	this.getGameDataForSpectators = function(){
+	this.getGameDataForSpectators = function () {
 		// return false;
 		var playerRoles = this.playersInGame;
 
@@ -562,16 +562,16 @@ module.exports = function(host_, roomId_, io_){
 		data.spectator = true;
 
 		//if game is finished, reveal everything including roles
-		if(this.phase === "finished"){
-			data.see.spies = this.getAllSpies(); 
-			data.see.roles = this.getRevealedRoles(); 
+		if (this.phase === "finished") {
+			data.see.spies = this.getAllSpies();
+			data.see.roles = this.getRevealedRoles();
 			data.see.playerShot = this.playerShot;
 		}
 
 		return data;
 	}
 
-	this.getGameData = function(){
+	this.getGameData = function () {
 		//get the player roles first
 		console.log("Get game data called within avalonRoom");
 
@@ -584,7 +584,7 @@ module.exports = function(host_, roomId_, io_){
 
 		//set up the object first, because we cannot pass an array through
 		//socket.io
-		for(var i = 0; i < playerRoles.length; i++){
+		for (var i = 0; i < playerRoles.length; i++) {
 			data[i] = {
 				alliance: playerRoles[i].alliance,
 				role: playerRoles[i].role,
@@ -621,47 +621,47 @@ module.exports = function(host_, roomId_, io_){
 
 
 			//if game is finished, reveal everything including roles
-			if(this.phase === "finished"){
-				data[i].see.spies = this.getAllSpies(); 
-				data[i].see.roles = this.getRevealedRoles(); 
+			if (this.phase === "finished") {
+				data[i].see.spies = this.getAllSpies();
+				data[i].see.roles = this.getRevealedRoles();
 				data[i].see.playerShot = this.playerShot;
 			}
 		}
-		return data; 
+		return data;
 	};
 
-	this.playerReady = function(username){
+	this.playerReady = function (username) {
 		var index = getIndexFromUsername(this.playersYetToReady, username);
 		this.playersYetToReady.splice(index, 1);
 
-		if(this.playersYetToReady.length === 0 && this.canJoin === false){
-			if(this.startGame(this.options) === true){
-				return true;	
+		if (this.playersYetToReady.length === 0 && this.canJoin === false) {
+			if (this.startGame(this.options) === true) {
+				return true;
 			}
-			else{
+			else {
 				return false;
 			}
 		}
-		else{
+		else {
 			return false;
 		}
 	}
 
-	this.playerNotReady = function(username){
+	this.playerNotReady = function (username) {
 		this.playersYetToReady = [];
 		this.canJoin = true;
 		return username;
 	}
 
-	this.hostTryStartGame = function(options){
-		if(this.canJoin === true){
+	this.hostTryStartGame = function (options) {
+		if (this.canJoin === true) {
 			//check before starting
-			if(this.sockets.length < minPlayers){
+			if (this.sockets.length < minPlayers) {
 				//NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
 				console.log("Not enough players.");
 				this.sockets[0].emit("danger-alert", "Minimum 5 players to start. ")
 				return false;
-			} else if(this.gameStarted === true){
+			} else if (this.gameStarted === true) {
 				console.log("Game already started!");
 				return false;
 			}
@@ -675,7 +675,7 @@ module.exports = function(host_, roomId_, io_){
 
 			var rolesInStr = getRolesInStr(options);
 
-			for(var i = 0; i < this.sockets.length; i++){
+			for (var i = 0; i < this.sockets.length; i++) {
 				this.sockets[i].emit("game-starting", rolesInStr);
 			}
 		}
@@ -683,7 +683,7 @@ module.exports = function(host_, roomId_, io_){
 	}
 
 	//start game
-	this.startGame = function(options){
+	this.startGame = function (options) {
 		//make game started after the checks for game already started
 		this.gameStarted = true;
 
@@ -691,7 +691,7 @@ module.exports = function(host_, roomId_, io_){
 
 
 		//Now we initialise roles
-		for(var i = 0; i < this.sockets.length; i++){
+		for (var i = 0; i < this.sockets.length; i++) {
 			this.playersInGame[i] = {};
 			this.playersInGame[i].username = this.sockets[i].request.user.username;
 			this.playersInGame[i].socketId = this.sockets[i].id;
@@ -707,15 +707,15 @@ module.exports = function(host_, roomId_, io_){
 		//Get roles:
 		var resRoles = [];
 		var spyRoles = [];
-		if(options.merlinassassin === true){resRoles.push("Merlin"); spyRoles.push("Assassin");console.log("added merlin assassin");}
-		if(options.percival === true){resRoles.push("Percival");console.log("Added percy");}
-		if(options.morgana === true){spyRoles.push("Morgana");console.log("Added morgana");}
-		if(options.mordred === true){spyRoles.push("Mordred");console.log("added mordred");}
-		if(options.oberon === true){spyRoles.push("Oberon");console.log("added oberon");}
-		if(options.lady === true){
+		if (options.merlinassassin === true) { resRoles.push("Merlin"); spyRoles.push("Assassin"); console.log("added merlin assassin"); }
+		if (options.percival === true) { resRoles.push("Percival"); console.log("Added percy"); }
+		if (options.morgana === true) { spyRoles.push("Morgana"); console.log("Added morgana"); }
+		if (options.mordred === true) { spyRoles.push("Mordred"); console.log("added mordred"); }
+		if (options.oberon === true) { spyRoles.push("Oberon"); console.log("added oberon"); }
+		if (options.lady === true) {
 			this.lady = getRandomInt(0, this.sockets.length);
 			this.ladyablePeople = [];
-			for(var i = 0; i < this.sockets.length; i++){
+			for (var i = 0; i < this.sockets.length; i++) {
 				this.ladyablePeople[i] = true;
 			}
 			this.ladyablePeople[this.lady] = false;
@@ -723,30 +723,30 @@ module.exports = function(host_, roomId_, io_){
 
 		var resPlayers = [];
 		var spyPlayers = [];
-		for(var i = 0; i < this.sockets.length; i++){
-			if(this.playersInGame[i].alliance === "Resistance"){resPlayers.push(i);}
-			else if(this.playersInGame[i].alliance === "Spy"){spyPlayers.push(i);}
+		for (var i = 0; i < this.sockets.length; i++) {
+			if (this.playersInGame[i].alliance === "Resistance") { resPlayers.push(i); }
+			else if (this.playersInGame[i].alliance === "Spy") { spyPlayers.push(i); }
 		}
 
 		//for the res roles:
 		rolesAssignment = generateAssignmentOrders(resPlayers.length);
-		for(var i = 0; i < rolesAssignment.length; i++){
+		for (var i = 0; i < rolesAssignment.length; i++) {
 			this.playersInGame[resPlayers[i]].role = resRoles[rolesAssignment[i]];
 			// console.log("res role: " + resRoles[rolesAssignment[i]]);
 		}
 
 		//for the spy roles:
 		rolesAssignment = generateAssignmentOrders(spyPlayers.length);
-		for(var i = 0; i < rolesAssignment.length; i++){
+		for (var i = 0; i < rolesAssignment.length; i++) {
 			this.playersInGame[spyPlayers[i]].role = spyRoles[rolesAssignment[i]];
 			// console.log("spy role: " + spyRoles[rolesAssignment[i]]);
 		}
 
 
 		//for those players with no role, set their role to their alliance
-		for(var i = 0; i < this.playersInGame.length; i++){
+		for (var i = 0; i < this.playersInGame.length; i++) {
 			// console.log(this.playersInGame[i].role);
-			if(this.playersInGame[i].role === undefined){
+			if (this.playersInGame[i].role === undefined) {
 				this.playersInGame[i].role = this.playersInGame[i].alliance;
 				// console.log("Overwrite role as alliance for player: " + this.playersInGame[i].username);
 			}
@@ -754,59 +754,59 @@ module.exports = function(host_, roomId_, io_){
 
 
 		//prepare the data for each person to see
-		for(var i = 0; i < this.playersInGame.length; i++){
-			
+		for (var i = 0; i < this.playersInGame.length; i++) {
+
 			//set up the see object.
 			this.playersInGame[i].see = {};
 			this.playersInGame[i].see.spies = [];
 			this.playersInGame[i].see.merlins = [];
 
 			//give the respective role their data/info
-			if(this.playersInGame[i].role === "Merlin"){
+			if (this.playersInGame[i].role === "Merlin") {
 				this.playersInGame[i].see.spies = this.getSpies("Merlin");
 			}
-			else if(this.playersInGame[i].role === "Percival"){
+			else if (this.playersInGame[i].role === "Percival") {
 				this.playersInGame[i].see.merlins = this.getMerlins();
 			}
-			else if(this.playersInGame[i].role === "Morgana"){
+			else if (this.playersInGame[i].role === "Morgana") {
 				this.playersInGame[i].see.spies = this.getSpies("Morgana");
 			}
-			else if(this.playersInGame[i].role === "Assassin"){
+			else if (this.playersInGame[i].role === "Assassin") {
 				this.playersInGame[i].see.spies = this.getSpies("Assassin");
-			} 
-			else if(this.playersInGame[i].role === "Spy"){
+			}
+			else if (this.playersInGame[i].role === "Spy") {
 				this.playersInGame[i].see.spies = this.getSpies("Spy");
-			} 
-			else if(this.playersInGame[i].role === "Mordred"){
+			}
+			else if (this.playersInGame[i].role === "Mordred") {
 				this.playersInGame[i].see.spies = this.getSpies("Mordred");
 			}
-			else if(this.playersInGame[i].role === "Oberon"){
+			else if (this.playersInGame[i].role === "Oberon") {
 				this.playersInGame[i].see.spies = this.getSpies("Oberon");
 			}
-			else if(this.playersInGame[i].role === "Resistance"){
+			else if (this.playersInGame[i].role === "Resistance") {
 
 			}
 		}
 
 		//set game start parameters
 		//get a random starting team leader
-		this.teamLeader = getRandomInt(0,this.sockets.length);
+		this.teamLeader = getRandomInt(0, this.sockets.length);
 		this.hammer = ((this.teamLeader - 5 + 1 + this.sockets.length) % this.sockets.length);
 
-		this.missionNum = 1; 
+		this.missionNum = 1;
 		this.pickNum = 1;
 		// this.missionHistory = ["succeeded", "failed", "succeeded"];
 		this.missionHistory = [];
 
 		var str = "Game started with: ";
 		//add res roles: 
-		for(var i = 0; i < resRoles.length; i++){
+		for (var i = 0; i < resRoles.length; i++) {
 			str += (resRoles[i] + ", ");
 		}
-		for(var i = 0; i < spyRoles.length; i++){
+		for (var i = 0; i < spyRoles.length; i++) {
 			str += (spyRoles[i] + ", ");
 		}
-		if(options.lady === true){
+		if (options.lady === true) {
 			str += "Lady of the Lake."
 		}
 
@@ -815,7 +815,7 @@ module.exports = function(host_, roomId_, io_){
 
 
 		//seed the starting data into the VH
-		for(var i = 0; i < this.sockets.length; i++){
+		for (var i = 0; i < this.sockets.length; i++) {
 			this.voteHistory[this.sockets[i].request.user.username] = [];
 		}
 
@@ -826,88 +826,88 @@ module.exports = function(host_, roomId_, io_){
 		return true;
 	};
 
-	this.getAllSpies = function(){
-		if(this.gameStarted === true){
+	this.getAllSpies = function () {
+		if (this.gameStarted === true) {
 			var array = [];
-			for(var i = 0; i < this.playersInGame.length; i++){
-				if(this.playersInGame[i].alliance === "Spy"){
-					array.push(this.playersInGame[i].username);		
+			for (var i = 0; i < this.playersInGame.length; i++) {
+				if (this.playersInGame[i].alliance === "Spy") {
+					array.push(this.playersInGame[i].username);
 				}
 			}
 			return array;
-		} 
-		else{
+		}
+		else {
 			return false;
 		}
 	}
 
-	this.getSpies = function(roleRequesting){
-		if(this.gameStarted === true){
+	this.getSpies = function (roleRequesting) {
+		if (this.gameStarted === true) {
 			var array = [];
 
 			//if oberon is requesting data, give it only him/herself's username
-			if(roleRequesting === "Oberon"){
-				for(var i = 0; i < this.playersInGame.length; i++){
-					if(this.playersInGame[i].role === "Oberon"){
+			if (roleRequesting === "Oberon") {
+				for (var i = 0; i < this.playersInGame.length; i++) {
+					if (this.playersInGame[i].role === "Oberon") {
 						array.push(this.playersInGame[i].username);
 						return array;
 					}
 				}
 			}
 
-			for(var i = 0; i < this.playersInGame.length; i++){
+			for (var i = 0; i < this.playersInGame.length; i++) {
 				//NOTE: exclude mordred to merlin!
-				if(this.playersInGame[i].alliance === "Spy"){
-					if(this.playersInGame[i].role === "Mordred" && roleRequesting === "Merlin"){
+				if (this.playersInGame[i].alliance === "Spy") {
+					if (this.playersInGame[i].role === "Mordred" && roleRequesting === "Merlin") {
 						//don't add mordred for merlin to see
 						//but do add it for any other spies.
 					}
-					else if(this.playersInGame[i].role === "Oberon" && roleRequesting !== "Merlin"){
+					else if (this.playersInGame[i].role === "Oberon" && roleRequesting !== "Merlin") {
 						//Don't add oberon for any other spies,
 						//but do add it for merlin (merlin can see oberon)
 					}
-					else{
+					else {
 						//add the spy
-						array.push(this.playersInGame[i].username);	
+						array.push(this.playersInGame[i].username);
 					}
 				}
 			}
 
 			return array;
-		} else{
+		} else {
 			return false;
 		}
 	}
 
-	this.getMerlins = function(){
-		if(this.gameStarted === true){
+	this.getMerlins = function () {
+		if (this.gameStarted === true) {
 			var array = [];
-			for(var i = 0; i < this.playersInGame.length; i++){
-				if(this.playersInGame[i].role === "Merlin" || this.playersInGame[i].role === "Morgana"){
+			for (var i = 0; i < this.playersInGame.length; i++) {
+				if (this.playersInGame[i].role === "Merlin" || this.playersInGame[i].role === "Morgana") {
 					array.push(this.playersInGame[i].username);
 				}
 			}
 			return array;
-		} else{
+		} else {
 			return false;
 		}
 	}
 
-	this.getRevealedRoles = function(){
-		if(this.gameStarted === true && this.phase === "finished"){
+	this.getRevealedRoles = function () {
+		if (this.gameStarted === true && this.phase === "finished") {
 			var array = [];
-			for(var i = 0; i < this.playersInGame.length; i++){
+			for (var i = 0; i < this.playersInGame.length; i++) {
 				array.push(this.playersInGame[i].role);
 			}
 			return array;
-		} else{
+		} else {
 			return false;
 		}
 	}
 
-	this.playerJoinRoom = function(socket){
+	this.playerJoinRoom = function (socket) {
 		//only add them to spectators if they are not part of the game already.
-		if(this.sockets.indexOf(socket) === -1){
+		if (this.sockets.indexOf(socket) === -1) {
 			this.socketsOfSpectators.push(socket);
 		}
 
@@ -922,34 +922,34 @@ module.exports = function(host_, roomId_, io_){
 		console.log("Socket uesrname: " + socket.request.user.username);
 		//if the player joining is already part of the game
 		var index = usernames.indexOf(socket.request.user.username);
-		if(index !== -1){
+		if (index !== -1) {
 			//this.sockets.push(socket);
 
 			console.log("Old socket: " + this.sockets[usernames.indexOf(socket.request.user.username)].request.user.username + ", " + this.sockets[usernames.indexOf(socket.request.user.username)].id);
 
 			this.sockets[index].id = socket.id;
-			this.playersInGame[index].socketId  = socket.id;
+			this.playersInGame[index].socketId = socket.id;
 
 			console.log("New socket: " + this.sockets[usernames.indexOf(socket.request.user.username)].request.user.username + ", " + this.sockets[usernames.indexOf(socket.request.user.username)].id);
 
 			console.log("Player has refreshed their page, been given a new socket ID. That new ID has been updated");
 			return false;
-		} 
+		}
 	}
 
-	this.playerJoinGame = function(socket){
+	this.playerJoinGame = function (socket) {
 
 		//when game hasnt started yet, add the person to the players in game
 		//cap of 10 players in the game at once.
-		if(this.gameStarted === false && this.sockets.length < 10 && this.canJoin === true){
+		if (this.gameStarted === false && this.sockets.length < 10 && this.canJoin === true) {
 			this.sockets.push(socket);
 			//also remove them from the list of socketsOfSpectators
 			var i = this.socketsOfSpectators.indexOf(socket);
 			this.socketsOfSpectators.splice(i, 1);
 
 			return true;
-		} 
-		else{
+		}
+		else {
 			console.log("Game has already started!");
 			return false;
 		}
@@ -957,56 +957,56 @@ module.exports = function(host_, roomId_, io_){
 
 
 	//when a player leaves before game starts
-	this.playerLeaveRoom = function(socket){
+	this.playerLeaveRoom = function (socket) {
 		//remove from players in room
 		this.playersInRoom.splice(this.playersInRoom.indexOf(socket), 1);
 
-		if(this.playersInRoom.length === 0){
+		if (this.playersInRoom.length === 0) {
 			console.log("Room: " + this.roomId + " is empty, destroying...");
 			this.destroyRoom = true;
 		}
 
 
-		if(this.gameStarted === false){
+		if (this.gameStarted === false) {
 			//get rid of their socket
 			var i = this.sockets.indexOf(socket);
-			if(i !== -1){
+			if (i !== -1) {
 				this.sockets.splice(i, 1);
 			}
-			if(this.sockets[0]){
-				this.host = this.sockets[0].request.user.username;	
+			if (this.sockets[0]) {
+				this.host = this.sockets[0].request.user.username;
 			}
-			
+
 
 			return true;
-		} 
-		else{
+		}
+		else {
 			console.log("Player left mid-game.");
 			return false;
 		}
 
 		//also get rid of it in the socketsOfSpectators list
 		var i = this.socketsOfSpectators.indexOf(socket);
-		if(i !== -1){
+		if (i !== -1) {
 			this.socketsOfSpectators.splice(i, 1);
 		}
 	};
-	
-	this.toDestroyRoom = function(){
+
+	this.toDestroyRoom = function () {
 		return this.destroyRoom;
 	}
 
-	this.getPlayers = function(){
+	this.getPlayers = function () {
 		var array = [];
-		for(var i = 0; i < this.sockets.length; i++){
+		for (var i = 0; i < this.sockets.length; i++) {
 			array[i] = {
-				username: this.sockets[i].request.user.username,	
+				username: this.sockets[i].request.user.username,
 				avatarImgRes: this.sockets[i].request.user.avatarImgRes,
 				avatarImgSpy: this.sockets[i].request.user.avatarImgSpy
 			}
 
 			//give the host the teamLeader star
-			if(array[i].username === this.host){
+			if (array[i].username === this.host) {
 				array[i].teamLeader = true;
 			}
 		}
@@ -1014,26 +1014,26 @@ module.exports = function(host_, roomId_, io_){
 		return array;
 	};
 
-	this.getUsernamesInGame = function(){
-		if(this.gameStarted === true){
+	this.getUsernamesInGame = function () {
+		if (this.gameStarted === true) {
 			var array = [];
-			for(var i = 0; i < this.sockets.length; i++){
+			for (var i = 0; i < this.sockets.length; i++) {
 				array[i] = this.sockets[i].request.user.username;
 			}
-			return array;	
+			return array;
 		}
-		else{
+		else {
 			return [];
 		}
 	}
 
 	//This code stays only in the server,
 	//individual roles will be distributed individually.
-	this.getPlayerRoles = function(){
-		if(this.gameStarted === true){
+	this.getPlayerRoles = function () {
+		if (this.gameStarted === true) {
 			console.log("GET PLAYER ROLES TRUE");
 			console.log("Players in game: " + playerInGame);
-			return this.playersInGame;	
+			return this.playersInGame;
 		}
 		else {
 			console.log("GET PLAYER ROLES false");
@@ -1042,34 +1042,34 @@ module.exports = function(host_, roomId_, io_){
 		}
 	}
 
-	this.getSockets = function(){
+	this.getSockets = function () {
 		return this.sockets;
 	};
 
-	this.getHostUsername = function(){
+	this.getHostUsername = function () {
 		return this.host;
 	};
 
-	this.getStatus = function(){
-		if(this.finished === true){
+	this.getStatus = function () {
+		if (this.finished === true) {
 			return "Finished";
-		} else if(this.gameStarted === true){	
+		} else if (this.gameStarted === true) {
 			return "Game in progress";
-		} else{
+		} else {
 			return "Waiting";
-		} 
+		}
 	}
 
-	this.getRoomId = function(){
+	this.getRoomId = function () {
 		return this.roomId;
 	}
 
-	this.getNumOfPlayersInside = function(){
+	this.getNumOfPlayersInside = function () {
 		return this.sockets.length;
 	}
 
 
-	this.getSocketsOfSpectators = function(){
+	this.getSocketsOfSpectators = function () {
 		return this.socketsOfSpectators;
 	}
 };
@@ -1080,37 +1080,37 @@ module.exports = function(host_, roomId_, io_){
 function getRandomInt(min, max) {
 	min = Math.ceil(min);
 	max = Math.floor(max);
- 	return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
- }
+	return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+}
 
- function shuffle(array) {
- 	var currentIndex = array.length, temporaryValue, randomIndex;
- 	 // While there remain elements to shuffle...
- 	 while (0 !== currentIndex) {
-	    // Pick a remaining element...
-	    randomIndex = Math.floor(Math.random() * currentIndex);
-	    currentIndex -= 1;
-	    // And swap it with the current element.
-	    temporaryValue = array[currentIndex];
-	    array[currentIndex] = array[randomIndex];
-	    array[randomIndex] = temporaryValue;
+function shuffle(array) {
+	var currentIndex = array.length, temporaryValue, randomIndex;
+	// While there remain elements to shuffle...
+	while (0 !== currentIndex) {
+		// Pick a remaining element...
+		randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex -= 1;
+		// And swap it with the current element.
+		temporaryValue = array[currentIndex];
+		array[currentIndex] = array[randomIndex];
+		array[randomIndex] = temporaryValue;
 	}
 	return array;
 }
 
-function getIndexFromUsername(sockets, username){
-	for(var i = 0; i < sockets.length; i++){
-		if(username === sockets[i].request.user.username){
+function getIndexFromUsername(sockets, username) {
+	for (var i = 0; i < sockets.length; i++) {
+		if (username === sockets[i].request.user.username) {
 			return i;
 		}
 	}
 }
 
-function getUsernameFromIndex(index, playersInGame){
+function getUsernameFromIndex(index, playersInGame) {
 	return playersInGame[index].username;
 }
 
-function calcMissionVotes(votes, requiresTwoFails){
+function calcMissionVotes(votes, requiresTwoFails) {
 	//note we may not have all the votes from every person
 	//e.g. may look like "fail", "undef.", "success"
 	numOfPlayers = votes.length;
@@ -1120,35 +1120,35 @@ function calcMissionVotes(votes, requiresTwoFails){
 
 	var outcome;
 
-	for(var i = 0; i < numOfPlayers; i++){
-		if(votes[i] === "succeed"){
+	for (var i = 0; i < numOfPlayers; i++) {
+		if (votes[i] === "succeed") {
 			console.log("succeed");
 			countSucceed++;
 		}
-		else if(votes[i] === "fail"){
+		else if (votes[i] === "fail") {
 			console.log("fail");
 			countFail++;
 		}
-		else{
+		else {
 			console.log("Bad vote: " + votes[i]);
 		}
-	}	
+	}
 
 	//calcuate the outcome
-	if(countFail === 0){
+	if (countFail === 0) {
 		outcome = "succeeded";
 	}
-	else if(countFail === 1 && requiresTwoFails === true){
+	else if (countFail === 1 && requiresTwoFails === true) {
 		outcome = "succeeded";
 	}
-	else{
+	else {
 		outcome = "failed";
 	}
 
 	return outcome;
 }
 
-function calcVotes(votes){
+function calcVotes(votes) {
 	var numOfPlayers = votes.length;
 
 	var countApp = 0;
@@ -1156,44 +1156,44 @@ function calcVotes(votes){
 
 	var outcome;
 
-	for(var i = 0; i < numOfPlayers; i++){
-		if(votes[i] === "approve"){
+	for (var i = 0; i < numOfPlayers; i++) {
+		if (votes[i] === "approve") {
 			console.log("app");
 			countApp++;
 		}
-		else if(votes[i] === "reject"){
+		else if (votes[i] === "reject") {
 			console.log("rej");
 			countRej++;
 		}
-		else{
+		else {
 			console.log("Bad vote: " + votes[i]);
 		}
-	}	
+	}
 
 	//calcuate the outcome
-	if(countApp > countRej){
+	if (countApp > countRej) {
 		outcome = "approved";
 	}
-	else{
+	else {
 		outcome = "rejected";
 	}
 
 	return outcome;
 }
 
-function getStrApprovedRejectedPlayers(votes, playersInGame){
+function getStrApprovedRejectedPlayers(votes, playersInGame) {
 	var approvedUsernames = "";
 	var rejectedUsernames = "";
 
-	for(var i = 0; i < votes.length; i++){
+	for (var i = 0; i < votes.length; i++) {
 
-		if(votes[i] === "approve"){
+		if (votes[i] === "approve") {
 			approvedUsernames = approvedUsernames + getUsernameFromIndex(i, playersInGame) + ", ";
 		}
-		else if(votes[i] === "reject"){
+		else if (votes[i] === "reject") {
 			rejectedUsernames = rejectedUsernames + getUsernameFromIndex(i, playersInGame) + ", ";
 		}
-		else{
+		else {
 			console.log("ERROR! Unknown vote: " + gameData.votes[i]);
 		}
 	}
@@ -1204,11 +1204,11 @@ function getStrApprovedRejectedPlayers(votes, playersInGame){
 	return str;
 }
 
-function generateAssignmentOrders(num){
+function generateAssignmentOrders(num) {
 	var rolesAssignment = [];
 
 	//create the starting array for role assignment
-	for(var i = 0; i < num; i++){
+	for (var i = 0; i < num; i++) {
 		rolesAssignment[i] = i;
 	}
 
@@ -1219,10 +1219,10 @@ function generateAssignmentOrders(num){
 	return rolesAssignment;
 }
 
-function countFails(votes){
+function countFails(votes) {
 	var numOfVotedFails = 0;
-	for(var i = 0; i < votes.length; i++){
-		if(votes[i] === "fail"){
+	for (var i = 0; i < votes.length; i++) {
+		if (votes[i] === "fail") {
 			numOfVotedFails++;
 		}
 	}
@@ -1230,23 +1230,23 @@ function countFails(votes){
 	return numOfVotedFails;
 }
 
-function getRolesInStr(options){
+function getRolesInStr(options) {
 
 	var str = "";
 
-	if(options.merlinassassin === true){str += "Merlin, Assassin, "}
-		if(options.percival === true){str += "Percival, ";}
-	if(options.morgana === true){str += "Morgana, ";}
-	if(options.mordred === true){str += "Mordred, ";}
-	if(options.oberon === true){str += "Oberon, ";}
-	if(options.lady === true){str += "Lady of the Lake, ";}
+	if (options.merlinassassin === true) { str += "Merlin, Assassin, " }
+	if (options.percival === true) { str += "Percival, "; }
+	if (options.morgana === true) { str += "Morgana, "; }
+	if (options.mordred === true) { str += "Mordred, "; }
+	if (options.oberon === true) { str += "Oberon, "; }
+	if (options.lady === true) { str += "Lady of the Lake, "; }
 
 	return str;
 }
 
 
-function sendGameplayText(sockets, incString){
-	for(var i = 0; i < sockets.length; i++){
+function sendGameplayText(sockets, incString) {
+	for (var i = 0; i < sockets.length; i++) {
 		sockets[i].emit("gameplay-text", incString);
 	}
 }
