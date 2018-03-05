@@ -587,15 +587,6 @@ socket.on("game-data", function(data){
         //hide the options cog
         document.querySelector("#options-button").classList.add("hidden");
 
-        //get the status of the checkbox for the gameplaytext
-        var option_print_gameplay_text = $("#option_print_gameplay_text")[0].checked;
-        console.log("button is: " + option_print_gameplay_text);
-        
-        if(option_print_gameplay_text === true){
-            console.log("printgameplayText");
-            newPrintGameplayText();
-        }
-
         isSpectator = gameData.spectator;
         
         drawVoteHistory(gameData);
@@ -619,19 +610,9 @@ socket.on("update-status-message", function(data){
 //======================================
 //FUNCTIONS
 //======================================
-// var oldGameplayText = "";
-// function newPrintGameplayText(){
-//     if(gameData && gameData.gameplayMessage !== oldGameplayText){
-//         var str = gameData.gameplayMessage;
-//         var data = {message: str};
-        
-//         addToRoomChat(data, "gameplay-text");
-
-//         oldGameplayText = gameData.gameplayMessage;
-//     }
-// }
 socket.on("gameplay-text", function(incString){
-    addToRoomChat(incString, "gameplay-text");
+    addToRoomChat({message: incString}, "gameplay-text");
+    console.log("print new gameplay-text");
 });
 
 function redButtonFunction() {
