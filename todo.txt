@@ -3,23 +3,27 @@ To-do list:
 -Spam filter?
 -Maximum length to a single chat message
 
--DISCUSSIONS
+-DISCUSSIONS-
 
 -claiming
 -let players choose colour
 
 -force re-login if a user refreshes
 
--leave room text displayed twice hwen someone leaves a room, and then dc's from server
+-leave room text displayed twice hwen someone leaves a room, and then dc's from .server
 -kick option
 
--show roles in the bar for host
+
 
 -Moderators
 
 -Add option to adjust height and width of lobby
 
 -blue or yellow words for dark theme highlitht
+-
+-Mission _(num) succeeded
+-no case sensitive usernames
+-gun disappears when someone votes
 
 
 Hak:
@@ -102,7 +106,7 @@ Mine:
 -click highlight avatar multiple times to highlight diff colours
 -player commands
 
-
+-show roles in the bar for host
 
 
 

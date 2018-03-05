@@ -149,10 +149,13 @@ module.exports = function(host_, roomId_, io_){
 		this.phase = "finished";
 
 		if(this.winner === "spies"){
-			this.gameplayMessage = "The spies have won the game.";
+			// this.gameplayMessage = "The spies have won the game.";
+			sendGameplayText(this.sockets, "The spies have won the game.");
 		}
 		else if(this.winner === "resistance"){
-			this.gameplayMessage = "The resistance have won the game.";
+			// this.gameplayMessage = "The resistance have won the game.";
+			sendGameplayText(this.sockets, "The resistance have won the game.");
+
 
 		}
 	}
@@ -205,7 +208,9 @@ module.exports = function(host_, roomId_, io_){
 			//make that person no longer ladyable
 			this.ladyablePeople[this.lady] = false;
 
-			this.gameplayMessage = (socket.request.user.username + " has carded " + target);
+			// this.gameplayMessage = (socket.request.user.username + " has carded " + target);
+			sendGameplayText(this.sockets, (socket.request.user.username + " has carded " + target));
+
 
 			//update phase
 			this.phase = "picking";
@@ -260,10 +265,14 @@ module.exports = function(host_, roomId_, io_){
 				var numOfVotedFails = countFails(this.missionVotes);
 
 				if(numOfVotedFails === 0){
-					this.gameplayMessage = "The mission succeeded.";	
+					// this.gameplayMessage = "The mission succeeded.";	
+					sendGameplayText(this.sockets, "Mission " + this.missionNum + " has succeeded");
+
 				}
 				else{
-					this.gameplayMessage = "The mission succeeded, but with " + numOfVotedFails + " fails.";
+					// this.gameplayMessage = "The mission succeeded, but with " + numOfVotedFails + " fails.";
+					sendGameplayText(this.sockets, "Mission " + this.missionNum + " succeeded, but with " + numOfVotedFails + " fails.");
+
 				}
 
 				
@@ -272,10 +281,14 @@ module.exports = function(host_, roomId_, io_){
 				//get number of fails
 				var numOfVotedFails = countFails(this.missionVotes);
 				if(numOfVotedFails === 1){
-					this.gameplayMessage = "The mission failed with " + numOfVotedFails + " fail.";	
+					// this.gameplayMessage = "The mission failed with " + numOfVotedFails + " fail.";	
+					sendGameplayText(this.sockets, "Mission " + this.missionNum + " failed with " + numOfVotedFails + " fail.");
+
 				}
 				else{
-					this.gameplayMessage = "The mission failed with " + numOfVotedFails + " fails.";	
+					// this.gameplayMessage = "The mission failed with " + numOfVotedFails + " fails.";	
+					sendGameplayText(this.sockets, "Mission " + this.missionNum + " failed with " + numOfVotedFails + " fails.");
+
 				}
 				
 			}
@@ -371,8 +384,10 @@ module.exports = function(host_, roomId_, io_){
 				this.phase = "missionVoting";
 				this.playersYetToVote = this.proposedTeam;
 
-				
-				this.gameplayMessage = "Mission " + this.missionNum + "." + this.pickNum + " was approved." + getStrApprovedRejectedPlayers(this.votes, this.playersInGame);
+				var str = "Mission " + this.missionNum + "." + this.pickNum + " was approved." + getStrApprovedRejectedPlayers(this.votes, this.playersInGame);
+				// this.gameplayMessage = str;
+				sendGameplayText(this.sockets, str);
+
 			}
 			else if(this.pickNum >= 5 && outcome === "rejected"){
 				console.log("--------------------------");
@@ -393,7 +408,10 @@ module.exports = function(host_, roomId_, io_){
 			else if(outcome === "rejected"){
 				this.phase = "picking";
 
-				this.gameplayMessage = "Mission " + this.missionNum + "." + this.pickNum + " was rejected." + getStrApprovedRejectedPlayers(this.votes, this.playersInGame);
+				var str = "Mission " + this.missionNum + "." + this.pickNum + " was rejected." + getStrApprovedRejectedPlayers(this.votes, this.playersInGame);
+				// this.gameplayMessage = str;
+				sendGameplayText(this.sockets, str);
+
 			}
 
 			//VH:
@@ -453,7 +471,10 @@ module.exports = function(host_, roomId_, io_){
 				str += pickedTeam[i] + ", ";
 			}
 
-			this.gameplayMessage = socket.request.user.username + " has picked: " + str;
+			var str2 = socket.request.user.username + " has picked: " + str;
+			this.gameplayMessage = str2;
+			sendGameplayText(this.sockets, str2);
+
 
 			//VH:
 			for(var i = 0; i < this.sockets.length; i++){
@@ -789,7 +810,9 @@ module.exports = function(host_, roomId_, io_){
 			str += "Lady of the Lake."
 		}
 
-		this.gameplayMessage = str;
+		// this.gameplayMessage = str;
+		sendGameplayText(this.sockets, str);
+
 
 		//seed the starting data into the VH
 		for(var i = 0; i < this.sockets.length; i++){
@@ -1219,4 +1242,11 @@ function getRolesInStr(options){
 	if(options.lady === true){str += "Lady of the Lake, ";}
 
 	return str;
+}
+
+
+function sendGameplayText(sockets, incString){
+	for(var i = 0; i < sockets.length; i++){
+		sockets[i].emit("gameplay-text", incString);
+	}
 }

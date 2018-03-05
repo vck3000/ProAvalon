@@ -619,17 +619,20 @@ socket.on("update-status-message", function(data){
 //======================================
 //FUNCTIONS
 //======================================
-var oldGameplayText = "";
-function newPrintGameplayText(){
-    if(gameData && gameData.gameplayMessage !== oldGameplayText){
-        var str = gameData.gameplayMessage;
-        var data = {message: str};
+// var oldGameplayText = "";
+// function newPrintGameplayText(){
+//     if(gameData && gameData.gameplayMessage !== oldGameplayText){
+//         var str = gameData.gameplayMessage;
+//         var data = {message: str};
         
-        addToRoomChat(data, "gameplay-text");
+//         addToRoomChat(data, "gameplay-text");
 
-        oldGameplayText = gameData.gameplayMessage;
-    }
-}
+//         oldGameplayText = gameData.gameplayMessage;
+//     }
+// }
+socket.on("gameplay-text", function(incString){
+    addToRoomChat(incString, "gameplay-text");
+});
 
 function redButtonFunction() {
     if(document.querySelector("#red-button").classList.contains("disabled") === false){
