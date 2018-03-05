@@ -14,7 +14,7 @@ setTimeout(function() {
     // All chat in lobby
     var parentH = $("#col1")[0].offsetHeight;
     var textH = $("#all-chat-lobby-text")[0].offsetHeight;
-    var inputH = $(".all-chat-message-input")[0].offsetHeight
+    var inputH = $(".all-chat-message-input")[0].offsetHeight;
     var newHeight = parentH - textH - inputH;
     $("#all-chat-lobby")[0].style.height = (newHeight - 10) + "px";
 }, 300);
@@ -1166,6 +1166,10 @@ function enableDisableButtons(){
 
             document.querySelector("#red-button").classList.remove("disabled");
             document.querySelector("#red-button").innerText = "Kick";
+
+            // data-toggle="modal" data-target="#kickModal"
+            $("#red-button").attr("data-toggle", "modal");
+            $("#red-button").attr("data-target", "#kickModal");
 
             document.querySelector("#options-button").classList.remove("hidden");
         }
