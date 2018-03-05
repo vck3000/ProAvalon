@@ -1,5 +1,5 @@
 var socket = io({transports: ['websocket'], upgrade: false});
-console.log("started");
+// console.log("started");
 
 //Prevents the window height from changing when android keyboard is pulled up.
 setTimeout(function() {
@@ -104,7 +104,7 @@ $('#optionsModal').on('hidden.bs.modal', function (e) {
 document.querySelector("#newRoom").addEventListener("click", function(){
     if(inRoom === false){
         socket.emit("newRoom");
-        console.log("RESET GAM DATA ON CREATE ROOM");
+        console.log("RESET GAME DATA ON CREATE ROOM");
         resetAllGameData();
         inRoom = true;    
     }
@@ -319,7 +319,7 @@ function addToRoomChat(data, classStr){
 //user selects the tab
 $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
   var target = $(e.target).attr("href") // activated tab
-  console.log(target);
+  // console.log(target);
 
   if(target === "#all-chat-in-game"){
     $(".nav-tabs #all-chat-in-game-tab").removeClass("newMessage")
@@ -364,7 +364,7 @@ socket.on("player-left-room", function(username){
 
 socket.on("update-current-players-list", function(currentPlayers){
     console.log("update the current player list request received");
-    console.log(currentPlayers);
+    // console.log(currentPlayers);
     //remove all the li's inside the table
     $("#current-players-table tbody tr td").remove();
     $("#current-players-table tbody tr").remove();
@@ -385,7 +385,7 @@ socket.on("update-current-players-list", function(currentPlayers){
 });
 
 socket.on("update-current-games-list", function(currentGames){
-    console.log(currentGames);
+    // console.log(currentGames);
     //remove all the entries inside the table:
     $("#current-games-table tbody tr td").remove();
     $("#current-games-table tbody tr").remove();
@@ -405,7 +405,7 @@ socket.on("update-current-games-list", function(currentGames){
             allTds[allTds.length - 1].addEventListener("click", function(){
                 //JOIN THE ROOM
 
-                console.log("RESET GAM DATA ON JOIN ROOM");
+                console.log("RESET GAME DATA ON JOIN ROOM");
                 resetAllGameData();
 
                 // console.log(currentGame.roomId);
@@ -536,7 +536,7 @@ socket.on("update-room-players", function(data){
     $("#mainRoomBox div").remove();
 
     console.log("update room players");
-    console.log(data);
+    // console.log(data);
 
     draw(data);
 });
@@ -575,11 +575,11 @@ socket.on("player-not-ready", function(str){
 });
 
 socket.on("game-data", function(data){
-    console.log("GAME DATA INC");   
+    // console.log("GAME DATA INC");   
     if(data){
         console.log("game starting!");
 
-        console.log(data);
+        // console.log(data);
         gameData = data;
 
         gameStarted = true;
@@ -823,8 +823,8 @@ var selectedAvatars = {};
 var numOfStatesOfHighlight = 2;
 var selectedChat = {};
 function activateAvatarButtons (){
-    console.log("activate avatar buttons");
-    console.log("LOL");
+    // console.log("activate avatar buttons");
+    // console.log("LOL");
     // if(OPTION THING ADD HERE){
         var highlightButtons = document.querySelectorAll("#mainRoomBox div #highlightAvatarButton");
         //add the event listeners for button press
@@ -838,17 +838,18 @@ function activateAvatarButtons (){
                 console.log("click for highlight avatar");
 
                 // this.parentElement.classList.toggle("selected-avatar");
-                var username = this.parentElement.getAttribute("usernameofplayer");
+                var username = this.parentElement.parentElement.getAttribute("usernameofplayer");
+                // console.log("username: " + username);
 
                 if(selectedAvatars[username] !== undefined){
                     selectedAvatars[username] += 1;
                 }
                 else{
-                    selectedAvatars[username] = 0;
+                    selectedAvatars[username] = 1;
                 }
 
                 selectedAvatars[username] = selectedAvatars[username] % (numOfStatesOfHighlight + 1);
-                
+                console.log("Selected avatars num: " + selectedAvatars[username])
                 draw(storeData);
             });   
         }  
@@ -869,7 +870,7 @@ function activateAvatarButtons (){
                 // this.parentElement.classList.toggle("selected-avatar");
 
                 var chatItems = $(".room-chat-list li");
-                var username = this.parentElement.getAttribute("usernameofplayer");
+                var username = this.parentElement.parentElement.getAttribute("usernameofplayer");
 
                 if(selectedChat[username] === true){
                     selectedChat[username] = false;
@@ -1077,7 +1078,7 @@ function drawAndPositionAvatars(){
     //===============================================
     
     //set the positions and sizes
-    console.log("numPlayers: " + numPlayers)
+    // console.log("numPlayers: " + numPlayers)
     var divs = document.querySelectorAll("#mainRoomBox div");
     var playerLocations = generatePlayerLocations(numPlayers, w/2, h/2);
 
@@ -1148,8 +1149,8 @@ function drawTeamLeaderStar(){
 
 function enableDisableButtonsLeader(numPlayersOnMission){
     //if they've selected the right number of players, then allow them to send
-    console.log("countHighlightedAvatars: " + countHighlightedAvatars());
-    console.log("numPlayersOnMission: " + numPlayersOnMission);
+    // console.log("countHighlightedAvatars: " + countHighlightedAvatars());
+    // console.log("numPlayersOnMission: " + numPlayersOnMission);
     if(countHighlightedAvatars() == numPlayersOnMission || (countHighlightedAvatars() + "*") == numPlayersOnMission){
         document.querySelector("#green-button").classList.remove("disabled");
     }
@@ -1390,15 +1391,20 @@ function strOfAvatar(playerData, alliance){
 
     var selectedAvatar = "";
     if(selectedAvatars[playerData.username] === 1){
-        selectedAvatar = "class='selected-avatar-1'";
+        selectedAvatar = "selected-avatar-1";
+        // console.log("HI");
     }
     else if(selectedAvatars[playerData.username] === 2){
-        selectedAvatar = "class='selected-avatar-2'";
+        selectedAvatar = "selected-avatar-2";
     }
 
-    var str = "<div usernameofplayer='" + playerData.username + "' " + selectedAvatar + ">";
+    var str = "<div usernameofplayer='" + playerData.username + "' class='playerDiv " + selectedAvatar + "''>";
+
+        str += "<span class='avatarOptionButtons'>";
         str += "<span id='highlightAvatarButton' class='glyphicon glyphicon-user avatarButton'></span>";
         str += "<span id='highlightChatButton' class='glyphicon glyphicon glyphicon-menu-hamburger avatarButton'></span>";
+        str += "</span>";
+
         str += "<img class='avatarImgInRoom' src='" + picLink + "'>";
         str += "<p class='username-p'>" + lady + "" + playerData.username + " " + hammerStar + " </p>" + role + "</div>";
 
@@ -1431,7 +1437,7 @@ function generatePlayerLocations(numOfPlayers, a, b){
     var y_ = [];
     var step = 360/numOfPlayers;
     var tiltOffset = 0;
-    console.log("Step: " + step);
+    // console.log("Step: " + step);
 
     //for 6p and 10p, rotate slightly so that usernames dont collide
     //with the role text
@@ -1483,7 +1489,7 @@ function drawVoteHistory(data){
 
                 //for every pick
                 for(var j = 0; j < data.voteHistory[key][i].length; j++){
-                    console.log(data.voteHistory[key][i][j]);
+                    // console.log(data.voteHistory[key][i][j]);
                     str += "<td class='" + data.voteHistory[key][i][j] + "''>";
                     str += "</td>";
                     numOfPicksPerMission[i]++;
@@ -1540,7 +1546,7 @@ function resetAllGameData(){
     document.querySelector("#options-button").classList.add("hidden");
 
     //reset room-chat 
-    console.log("RESET ROOM CHAT");
+    // console.log("RESET ROOM CHAT");
     $(".room-chat-list").html("");
 }
 
@@ -1550,9 +1556,9 @@ function extendTabContentToBottomInRoom(){
     var tabContainer = $(".tab-content")[0];
     // var offsetTop = tabContainer.offsetTop;
     var newHeight2 = gameContainer.offsetHeight - tabContainer.offsetTop;
-    console.log("gamecontainerheight: " + gameContainer.offsetHeight);
-    console.log("tabcontainertoppos: " + tabContainer.offsetTop);
-    console.log("New height 2: " + newHeight2);
+    // console.log("gamecontainerheight: " + gameContainer.offsetHeight);
+    // console.log("tabcontainertoppos: " + tabContainer.offsetTop);
+    // console.log("New height 2: " + newHeight2);
     tabContainer.style.height = (newHeight2*1.2) + "px"; 
 }
 
@@ -1566,7 +1572,7 @@ function assignCommands(serverCommands){
 var lastChatBoxCommand = "";
 function checkMessageForCommands(message, chatBox){
     arrayMessage = message.split(" ");
-    console.log("arr message: " + arrayMessage);
+    // console.log("arr message: " + arrayMessage);
 
     if(message[0] === '/'){
         console.log("COMMAND INPUT DETECTED");

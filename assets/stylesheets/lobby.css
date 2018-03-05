@@ -194,7 +194,7 @@ p {
 	/*position: relative;	*/
 }
 
-.room-container #mainRoomBox div {
+.playerDiv {
 	display: inline-block;
 	position: absolute;
 	/*transform: translate(50%, 50%);*/
@@ -221,13 +221,7 @@ p {
 
 
 
-.room-container #mainRoomBox div .avatarButton {
-	border: 2px solid #d3d3d3;
-	padding: 2px;
-	border-radius: 25%;
-	transform: translateX(-90%);
-	position: absolute;
-}
+
 
 .leaderStar {
 	z-index: 2;
@@ -503,132 +497,155 @@ h3 {
 	border-radius: 5px;
 }
 
-.room-container #mainRoomBox div #highlightChatButton {
+.avatarOptionButtons {
+	position: absolute;
+	top: 0px;
+	display: block;
+
+}
+
+.playerDiv .avatarButton {
+	border: 2px solid #d3d3d3;
+	padding: 2px;
+	border-radius: 25%;
+	transform: translateX(-90%);
+	/*position: absolute;*/
+	display: none;
+	/*display: block;*/
+}
+
+.playerDiv:hover .avatarButton{
+	display: block;
+	/*background-color: purple;*/
+}
+
+
+/*.room-container #mainRoomBox div #highlightChatButton {
 	position: absolute;
 	top: 22px;
 }
 
 .room-container #mainRoomBox div #highlightAvatarButton {
 	position: absolute;
-}
+	}*/
 
 
-.dark {
-	background-color: #444444;
-	color: #CCCCCC;
-	/*$("input")[0].style.backgroundColor ="#444444";*/
-}
-
-input .dark, 
-.well .dark, 
-textarea .dark{
-	background-color : #333333; 
-}
-
-/*Copied from boot strap*/
-.btn-inverse{
-	color:#ffffff;
-	text-shadow:0 -1px 0 rgba(0, 0, 0, 0.25);
-	background-color:#363636;
-	background-image:-moz-linear-gradient(top, #444444, #222222);
-	background-image:-webkit-gradient(linear, 0 0, 0 100%, from(#444444), to(#222222));
-	background-image:-webkit-linear-gradient(top, #444444, #222222);
-	background-image:-o-linear-gradient(top, #444444, #222222);
-	background-image:linear-gradient(to bottom, #444444, #222222);
-	background-repeat:repeat-x;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff444444', endColorstr='#ff222222', GradientType=0);
-	border-color:#222222 #222222 #000000;border-color:rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-	*background-color:#222222;filter:progid:DXImageTransform.Microsoft.gradient(enabled = false);}.btn-inverse:hover,.btn-inverse:focus,.btn-inverse:active,.btn-inverse.active,.btn-inverse.disabled,.btn-inverse[disabled]{
-		color:#ffffff;
-		background-color:#222222;
-		*background-color:#151515;
+	.dark {
+		background-color: #444444;
+		color: #CCCCCC;
+		/*$("input")[0].style.backgroundColor ="#444444";*/
 	}
-}
 
-.dark .table td {
-	border-top: 1px solid #222222;
-}
+	input .dark, 
+	.well .dark, 
+	textarea .dark{
+		background-color : #333333; 
+	}
 
-.dark .table-striped tbody>tr:nth-child(even)>td, .dark .table-striped tbody>tr:nth-child(even)>th {
-    background-color: #444444;
-}
+	/*Copied from boot strap*/
+	.btn-inverse{
+		color:#ffffff;
+		text-shadow:0 -1px 0 rgba(0, 0, 0, 0.25);
+		background-color:#363636;
+		background-image:-moz-linear-gradient(top, #444444, #222222);
+		background-image:-webkit-gradient(linear, 0 0, 0 100%, from(#444444), to(#222222));
+		background-image:-webkit-linear-gradient(top, #444444, #222222);
+		background-image:-o-linear-gradient(top, #444444, #222222);
+		background-image:linear-gradient(to bottom, #444444, #222222);
+		background-repeat:repeat-x;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff444444', endColorstr='#ff222222', GradientType=0);
+		border-color:#222222 #222222 #000000;border-color:rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+		*background-color:#222222;filter:progid:DXImageTransform.Microsoft.gradient(enabled = false);}.btn-inverse:hover,.btn-inverse:focus,.btn-inverse:active,.btn-inverse.active,.btn-inverse.disabled,.btn-inverse[disabled]{
+			color:#ffffff;
+			background-color:#222222;
+			*background-color:#151515;
+		}
+	}
 
-.dark .table-striped tbody>tr:nth-child(odd)>td, .dark .table-striped tbody>tr:nth-child(odd)>th {
-    background-color: #3d3d3d;
-}
+	.dark .table td {
+		border-top: 1px solid #222222;
+	}
 
-.dark .nav-tabs>.active>a, .dark .nav-tabs>.active>a:hover, .dark .nav-tabs>.active>a:focus {
-    /*border: 1px solid #222222;*/
-    background-color: #444444;
-    border-bottom-color: transparent;
-}
+	.dark .table-striped tbody>tr:nth-child(even)>td, .dark .table-striped tbody>tr:nth-child(even)>th {
+		background-color: #444444;
+	}
 
-.dark, .dark input, .dark .nav-tabs>.active>a, .dark .nav-tabs>.active>a:hover, .dark .nav-tabs>.active>a:focus, .dark textarea {
-    color: #CCCCCC;
-    border: 1px #000000 solid;
-}
+	.dark .table-striped tbody>tr:nth-child(odd)>td, .dark .table-striped tbody>tr:nth-child(odd)>th {
+		background-color: #3d3d3d;
+	}
 
-.dark input {
-	background-color: #333333;
-}
+	.dark .nav-tabs>.active>a, .dark .nav-tabs>.active>a:hover, .dark .nav-tabs>.active>a:focus {
+		/*border: 1px solid #222222;*/
+		background-color: #444444;
+		border-bottom-color: transparent;
+	}
 
-.dark .role-p {
-	background-color: #444444;
-	/*border: 1px solid #dddddd;*/
-	border: 1px solid transparent;
-}
+	.dark, .dark input, .dark .nav-tabs>.active>a, .dark .nav-tabs>.active>a:hover, .dark .nav-tabs>.active>a:focus, .dark textarea {
+		color: #CCCCCC;
+		border: 1px #000000 solid;
+	}
 
-.dark .tab-window {
-	border: 1px black solid;
-}
+	.dark input {
+		background-color: #333333;
+	}
 
-.dark .missionBoxSucceed{
-	background-color: #5cb85c;
-}
+	.dark .role-p {
+		background-color: #444444;
+		/*border: 1px solid #dddddd;*/
+		border: 1px solid transparent;
+	}
 
+	.dark .tab-window {
+		border: 1px black solid;
+	}
 
-.dark .missionBoxFail{
-	background-color: #d9534f;
-}
-
-.dark .newMessage {
-	background-color: #a09d00;
-}
-
-.dark .chat-window {
-	border: 1px solid #000000;
-}
-
-.dark .table-bordered{
-	border: 1px solid #000000;
-}
-
-.dark .table-bordered, .current-games-table-off {
-	border: 1px transparent solid;
-}
-
-#current-players-table tbody tr td {
-	/*box-sizing:border-box;*/
-	border: transparent 2px solid;
-	/*margin: 10px;*/
-}
-
-.lobby-table {
-	border-radius: 5px;
-	/*border: 1px solid #ddd;*/
-	border-collapse:separate; 
-	border-spacing: 1px;
-}
-
-.dropdown-menu {
-	padding-left: 10px;
-	padding-right: 10px;
-	min-width: 200px;
-}
+	.dark .missionBoxSucceed{
+		background-color: #5cb85c;
+	}
 
 
-.navbar-text {
-	padding-left: 10px;
-}
+	.dark .missionBoxFail{
+		background-color: #d9534f;
+	}
+
+	.dark .newMessage {
+		background-color: #a09d00;
+	}
+
+	.dark .chat-window {
+		border: 1px solid #000000;
+	}
+
+	.dark .table-bordered{
+		border: 1px solid #000000;
+	}
+
+	.dark .table-bordered, .current-games-table-off {
+		border: 1px transparent solid;
+	}
+
+	#current-players-table tbody tr td {
+		/*box-sizing:border-box;*/
+		border: transparent 2px solid;
+		/*margin: 10px;*/
+	}
+
+	.lobby-table {
+		border-radius: 5px;
+		/*border: 1px solid #ddd;*/
+		border-collapse:separate; 
+		border-spacing: 1px;
+	}
+
+	.dropdown-menu {
+		padding-left: 10px;
+		padding-right: 10px;
+		min-width: 200px;
+	}
+
+
+	.navbar-text {
+		padding-left: 10px;
+	}
 
 /*table {
     border-collapse:separate;
