@@ -1,670 +1,623 @@
-* {
-	/*outline: 1px solid red;*/
-}
-
-
-html, body{
-	height: 100%;
-	width: 100%;
-	/*font-size: 2vh;*/
-
-	/*overflow: hidden;*/
-
-	/*font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;*/
-}
-
-.navbar {
-	margin-bottom: 0px;
-}
-
-.well{
-	margin-bottom: 0px;
+html,
+body {
+    height: 100%;
+    width: 100%;
+    /*font-size: 2vh;*/
+    /*overflow: hidden;*/
+    /*font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;*/
 }
 
 p {
-	margin: 0;
-	padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
-.server-text {
-	/*color: #2378ff;*/
-	/*color: #ff6b6b;*/
-	color: #7c7c7c;
-	/*font-style: italic;*/
+.navbar {
+    margin-bottom: 0px;
 }
 
-.gameplay-text {
-	color: rgb(255,0,0);
-	font-style: italic;
+.well {
+    margin-bottom: 0px;
 }
 
-.special-text {
-	color: rgb(208, 0, 255);
-	font-style: italic;
-}
 
-.date-text {
-	/*background: #efefef;*/
-
-}
-
-.username-text {
-	font-weight: bold;
-}
-
-.hi-there {
-	border-bottom: 2px dotted gray
-}
-
+/* Lobby items */
 
 .lobby-container {
-	height: 80%;
-	/*width: 70%;*/
-	margin-left: auto;
-	margin-right: auto;
+    height: 80%;
+    /*width: 70%;*/
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .gameRoomButton {
-	display: block;
+    display: block;
 }
 
 #current-games-list {
-	/*display: block; */
-	padding: 0;
+    /*display: block; */
+    padding: 0;
 }
 
-.current-games-table-on{
-	border-collapse:separate; 
-	border-spacing: 1px;
+.current-games-table-on {
+    border-collapse: separate;
+    border-spacing: 1px;
 }
 
-.current-games-table-off{
-	border-collapse: collapse;
-	border: transparent 1px solid;
+.current-games-table-off {
+    border-collapse: collapse;
+    border: transparent 1px solid;
 }
 
 #current-games-table tbody tr td {
-	/*box-sizing:border-box;*/
-	border: transparent 2px solid;
-	/*margin: 10px;*/
+    /*box-sizing:border-box;*/
+    border: transparent 2px solid;
+    /*margin: 10px;*/
 }
 
-
 #current-games-table tbody tr td:hover {
-	border: green 2px solid;
+    border: green 2px solid;
 }
 
 .row {
-	height: 100%;
+    height: 100%;
 }
 
-.inactive-window{
-	display: none;
+.inactive-window {
+    display: none;
 }
 
-
-#col1{
-	height: 100%;
+#col1 {
+    height: 100%;
 }
 
 .full-height {
-	height: 100%;
+    height: 100%;
 }
 
 .tab-window {
-	height: 90%;
-	border: 1px solid #d3d3d3;
-	border-radius: 5px;
-	overflow-y: auto;
-	overflow-x: visible;
-
-	padding: 5px;
+    height: 90%;
+    border: 1px solid #d3d3d3;
+    border-radius: 5px;
+    overflow-y: auto;
+    overflow-x: visible;
+    padding: 5px;
 }
 
 .chat-window {
-	height: 90%;
-	display:block;
-	/*max-height: 75%;*/
-	border: 1px solid #d3d3d3;
-	border-radius: 5px;
-	overflow-y: auto;
-	overflow-x: visible;
+    height: 90%;
+    display: block;
+    /*max-height: 75%;*/
+    border: 1px solid #d3d3d3;
+    border-radius: 5px;
+    overflow-y: auto;
+    overflow-x: visible;
 }
 
 .chat-message-input {
-	width: 100%;
-	border: 2px solid #d3d3d3;
-	border-radius: 5px;
+    width: 100%;
+    border: 2px solid #d3d3d3;
+    border-radius: 5px;
 }
 
 .chat-list {
-	padding: 5px;
-
-	list-style: none;
-	width: 100%;
-	overflow: auto;
+    padding: 5px;
+    list-style: none;
+    width: 100%;
+    overflow: auto;
 }
 
 .other-chat {
-	float: left;
-	text-align: left;
-	width: 100%;
+    float: left;
+    text-align: left;
+    width: 100%;
 }
 
 .self-chat {
-	color: purple;
-	text-align: right;
-	width: 100%;
+    color: purple;
+    text-align: right;
+    width: 100%;
 }
 
 #chat-list li {
-	padding: 0.1rem;
-	overflow: hidden;
-	display: flex;
+    padding: 0.1rem;
+    overflow: hidden;
+    display: flex;
+}
+
+#current-players-table tbody tr td {
+    /*box-sizing:border-box;*/
+    border: transparent 2px solid;
+    /*margin: 10px;*/
+}
+
+.lobby-table {
+    border-radius: 5px;
+    /*border: 1px solid #ddd;*/
+    border-collapse: separate;
+    border-spacing: 1px;
+}
+
+.dropdown-menu {
+    padding-left: 10px;
+    padding-right: 10px;
+    min-width: 200px;
+}
+
+.navbar-text {
+    padding-left: 10px;
 }
 
 
+/* TEXT */
 
+.server-text {
+    /*color: #2378ff;*/
+    /*color: #ff6b6b;*/
+    color: #7c7c7c;
+    /*font-style: italic;*/
+}
 
+.gameplay-text {
+    color: rgb(255, 0, 0);
+    font-style: italic;
+}
+
+.special-text {
+    color: rgb(208, 0, 255);
+    font-style: italic;
+}
+
+.username-text {
+    font-weight: bold;
+}
 
 
 /*GAME-ROOM AREA*/
 
 .room-container {
-	height: 40%;
-	/*background-color: purple;*/
-	position: relative;
-	/*border: solid 1px #d3d3d3;*/
-	/*border-radius: 5px;*/
+    height: 40%;
+    /*background-color: purple;*/
+    position: relative;
+    /*border: solid 1px #d3d3d3;*/
+    /*border-radius: 5px;*/
 }
 
-.game-container{
-	/*height: is already set in the container at 90%*/
-	height: 90%;
-	padding-left: 10px;
-	padding-right: 10px;
-	/*width: 75%;*/
+.game-container {
+    /*height: is already set in the container at 90%*/
+    height: 90%;
+    padding-left: 10px;
+    padding-right: 10px;
+    /*width: 75%;*/
 }
 
 #mainRoomBox {
-	height: 90%;
-	width: 100%;
-	/*resize: none;*/
-	/*position: absolute;*/
-	/*position: relative;	*/
+    height: 90%;
+    width: 100%;
+    /*resize: none;*/
+    /*position: absolute;*/
+    /*position: relative;	*/
 }
+
+
+/*GAME-ROOM ITEMS*/
 
 .playerDiv {
-	display: inline-block;
-	position: absolute;
-	/*transform: translate(50%, 50%);*/
-
-	/*Slightly bias toward the top because of the words underneath the picture/div
+    display: inline-block;
+    position: absolute;
+    /*Slightly bias toward the top because of the words underneath the picture/div
 	hence 40% */
-	transform:translate(-40%, 40%); /* centered first regardless of width*/
-	/*background-color: #eeeeee; */
-
-	text-align: center;
-
-	box-sizing: border-box;
-
-	/*min-width: 30px;*/
-	/*min-height: 30px;*/
-
-	max-width: 128px;
-	max-height: 128px;
-	/*width: 30%;*/
-	/*height: 25%;*/
-
-	border: 5px solid transparent;
+    transform: translate(-40%, 40%);
+    text-align: center;
+    box-sizing: border-box;
+    max-width: 128px;
+    max-height: 128px;
+    border: 5px solid transparent;
 }
-
-
-
-
 
 .leaderStar {
-	z-index: 2;
-	position: absolute;
-	right: 0;
-	/*bottom: 0;*/
-	height: 4vh;
-
-	transform: translateY(-130%);
+    z-index: 2;
+    position: absolute;
+    right: 0;
+    /*bottom: 0;*/
+    height: 4vh;
+    transform: translateY(-130%);
 }
 
-.bullet{
-	top: -60px;
-	/*left: -200px;*/
-	position: absolute;
-	transform: translate(-50%, 50%);
-	width: 50px;
-	height: 50px;
+.bullet {
+    top: -60px;
+    /*left: -200px;*/
+    position: absolute;
+    transform: translate(-50%, 50%);
+    width: 50px;
+    height: 50px;
 }
 
 .gun {
-	z-index: 2;
-	position: absolute;
-	right: 0;
-	top: 33%;
-	width: 100%;
+    z-index: 2;
+    position: absolute;
+    right: 0;
+    top: 33%;
+    width: 100%;
 }
 
-.role-p	{
-	padding: 0;
-	background-color: #dddddd;
-	border-radius: 5px;
+.role-p {
+    padding: 0;
+    background-color: #dddddd;
+    border-radius: 5px;
 }
 
 .username-p {
-	/*text-align: center;*/
-	display: flex;
-	justify-content: center;
+    /*text-align: center;*/
+    display: flex;
+    justify-content: center;
 }
-
 
 .avatarImgInRoom {
-	/*margin: 0 auto;*/
-	object-fit: contain;
-
-	width:auto;
-	/*height:auto;*/
-	max-width:100%;
-	max-height:100%;
-
-	top: 0px;
-
+    /*margin: 0 auto;*/
+    object-fit: contain;
+    width: auto;
+    /*height:auto;*/
+    max-width: 100%;
+    max-height: 100%;
+    top: 0px;
 }
+
+
+/* Highlighting of avatars/chat */
 
 .highlight-avatar {
-	background-color: #ffff00 !important;
-	border-radius: 10px;
+    background-color: #ffff00 !important;
+    border-radius: 10px;
+    /*padding-left: 10px;*/
+    /*margin-left: -10px;*/
+}
 
-	/*padding-left: 10px;*/
-	/*margin-left: -10px;*/
+.selected-chat {
+    color: green;
+}
+
+.selected-avatar-1 {
+    background-color: #8BE38B;
+    border-radius: 5px;
+}
+
+.selected-avatar-2 {
+    background-color: #d9534f;
+    border-radius: 5px;
+}
+
+.avatarOptionButtons {
+    position: absolute;
+    top: 0px;
+    display: block;
+}
+
+.playerDiv .avatarButton {
+    border: 2px solid #d3d3d3;
+    padding: 2px;
+    border-radius: 25%;
+    transform: translateX(-90%);
+    /*position: absolute;*/
+    display: none;
+    /*display: block;*/
+}
+
+.playerDiv:hover .avatarButton {
+    display: block;
+    /*background-color: purple;*/
 }
 
 
+/* Center well */
+
 .game-buttons-div {
-	text-align: center;
-	padding: 15px;
+    text-align: center;
+    padding: 15px;
 }
 
 .game-buttons-div button {
-	margin: 0 15px 0 15px;
+    margin: 0 15px 0 15px;
 }
 
 .center-div {
-	text-align: center;
+    text-align: center;
 }
 
-#missionsBox {
-	/*text-align: center;*/
-	position: absolute;
-	/*margin: auto;*/
-	left: 50%;
-	top: 43%;
 
-	transform: translateX(-50%);
+/* Mission box */
+
+#missionsBox {
+    /*text-align: center;*/
+    position: absolute;
+    /*margin: auto;*/
+    left: 50%;
+    top: 43%;
+    transform: translateX(-50%);
 }
 
 .missionBox {
-	width: 7vmin;
-	height: 7vmin;
-
-	max-width: 30px;
-	max-height: 30px;
-
-	border: 1px solid black;
-	border-radius: 7px;
-	float: left;
-	margin-left: 1px;
-	margin-right: 1px;
-
-	display: table;
-	vertical-align: middle;
-
-	text-align: center;
+    width: 7vmin;
+    height: 7vmin;
+    max-width: 30px;
+    max-height: 30px;
+    border: 1px solid black;
+    border-radius: 7px;
+    float: left;
+    margin-left: 1px;
+    margin-right: 1px;
+    display: table;
+    vertical-align: middle;
+    text-align: center;
 }
 
 .missionBox p {
-	display: table-cell;
-	vertical-align: middle;
+    display: table-cell;
+    vertical-align: middle;
 }
 
 .missionBoxSucceed {
-	/*color: white;*/
-	background-color: #BBFFBB;
+    /*color: white;*/
+    background-color: #BBFFBB;
 }
+
 .missionBoxFail {
-	/*color: white;*/
-	background-color: #ff6666;
+    /*color: white;*/
+    background-color: #ff6666;
 }
+
+
+/* black circles */
 
 .pickBox {
-	width: 3vmin;
-	height: 3vmin;
-
-	max-width: 15px;
-	max-height: 15px;
-
-	border: 1px solid black;
-	border-radius: 50%;
-	float: left;
-	margin-left: 0.7em;
-	margin-right: 0.7em;
-	/*position: absolute;*/
+    width: 3vmin;
+    height: 3vmin;
+    max-width: 15px;
+    max-height: 15px;
+    border: 1px solid black;
+    border-radius: 50%;
+    float: left;
+    margin-left: 0.7em;
+    margin-right: 0.7em;
+    /*position: absolute;*/
 }
 
 .pickBoxFill {
-	background-color: black;
+    background-color: black;
 }
-
-
-
-
-
 
 .row {
-	width: 100%;
-	margin: 5px;
-
-	display: flex;
-	justify-content: space-around;
+    width: 100%;
+    margin: 5px;
+    display: flex;
+    justify-content: space-around;
 }
 
+
+/* Approve reject colours */
+
 .approve {
-	border: solid 5px green !important;
-	border-radius: 10px;
+    border: solid 5px green !important;
+    border-radius: 10px;
 }
 
 .reject {
-	border: solid 5px #ff6666 !important;
-	border-radius: 10px;
+    border: solid 5px #ff6666 !important;
+    border-radius: 10px;
 }
 
 .VHapprove {
-	/*border: 1px black solid;*/
-	background-color: #BBFFBB;
+    /*border: 1px black solid;*/
+    background-color: #BBFFBB;
 }
+
 .VHreject {
-	/*border: 1px black solid;*/
-	background-color: #FFBBBB;
+    /*border: 1px black solid;*/
+    background-color: #FFBBBB;
 }
 
 .VHpicked {
-	background-image: url("/pictures/tick.png"); 
-	background-size: contain;
-	background-repeat: no-repeat;
-	background-position: center;
+    background-image: url("/pictures/tick.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 #voteHistoryTable .VHleader {
-	border: black 3px solid;
+    border: black 3px solid;
 }
 
 
-
 /*Vote history*/
+
 #voteHistoryTable tr td {
-	border: 1px solid black;
-	text-align: center;
+    border: 1px solid black;
+    text-align: center;
 }
 
 
 /*MODALS*/
+
 .btn-mine.active {
-	/*border: 3px solid green !important;*/
-	background-color: #d6ffd8 !important;
+    /*border: 3px solid green !important;*/
+    background-color: #d6ffd8 !important;
 }
 
 .btn-mine {
-	border: 3px solid black;
-	border-radius: 10px !important;
-	background-color: #e5e5e5;
+    border: 3px solid black;
+    border-radius: 10px !important;
+    background-color: #e5e5e5;
 }
-
-.dark .modal-content {
-	background-color: #333;
-}
-
-.dark .modal-content label {
-	color: #000000;
-}
-
-.dark .dropdown-menu {
-	background-color: #333;
-}
-
 
 
 /*This is for the special text like lady, so users cannot select to copy paste*/
+
 .noselect {
-	-webkit-touch-callout: none; /* iOS Safari */
-	-webkit-user-select: none; /* Safari */
-	-khtml-user-select: none; /* Konqueror HTML */
-	-moz-user-select: none; /* Firefox */
-	-ms-user-select: none; /* Internet Explorer/Edge */
-	user-select: none; 
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
 }
 
-
 input[type="text"] {
-	padding-left: 5px;
-	margin-top: 3px;
+    padding-left: 5px;
+    margin-top: 3px;
 }
 
 .nav-tabs {
-	border: 0 solid black !important;
+    border: 0 solid black !important;
 }
 
 h3 {
-	margin-top: 0px !important;
+    margin-top: 0px !important;
 }
 
 .nav-tabs li a {
-	padding-left: 1vw !important;
-	padding-right: 1vw !important;
-}
-
-#newRoom {
-	/*width: 100%;*/
+    padding-left: 1vw !important;
+    padding-right: 1vw !important;
 }
 
 .game-buttons-div {
-	padding-top: 1vh;
-	padding-bottom: 1vh;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
 }
-
 
 .newMessage {
-	background-color: yellow;
+    background-color: yellow;
 }
 
 
-.selected-chat {
-	color: green;
-	/*background-color: gray;*/
+/* Dark mode */
+
+.dark .modal-content {
+    background-color: #333;
 }
 
-.selected-avatar-1 {
-	background-color: #8BE38B;
-	border-radius: 5px;
+.dark .modal-content label {
+    color: #000000;
 }
 
-.selected-avatar-2 {
-	background-color: #d9534f;
-	border-radius: 5px;
+.dark .dropdown-menu {
+    background-color: #333;
 }
 
-.avatarOptionButtons {
-	position: absolute;
-	top: 0px;
-	display: block;
-
+.dark {
+    background-color: #444444;
+    color: #CCCCCC;
+    /*$("input")[0].style.backgroundColor ="#444444";*/
 }
 
-.playerDiv .avatarButton {
-	border: 2px solid #d3d3d3;
-	padding: 2px;
-	border-radius: 25%;
-	transform: translateX(-90%);
-	/*position: absolute;*/
-	display: none;
-	/*display: block;*/
-}
-
-.playerDiv:hover .avatarButton{
-	display: block;
-	/*background-color: purple;*/
+input .dark,
+.well .dark,
+textarea .dark {
+    background-color: #333333;
 }
 
 
-/*.room-container #mainRoomBox div #highlightChatButton {
-	position: absolute;
-	top: 22px;
+/*Copied from boot strap*/
+
+.btn-inverse {
+    color: #ffffff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    background-color: #363636;
+    background-image: -moz-linear-gradient(top, #444444, #222222);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#444444), to(#222222));
+    background-image: -webkit-linear-gradient(top, #444444, #222222);
+    background-image: -o-linear-gradient(top, #444444, #222222);
+    background-image: linear-gradient(to bottom, #444444, #222222);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff444444', endColorstr='#ff222222', GradientType=0);
+    border-color: #222222 #222222 #000000;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    *background-color: #222222;
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
 }
 
-.room-container #mainRoomBox div #highlightAvatarButton {
-	position: absolute;
-	}*/
-
-
-	.dark {
-		background-color: #444444;
-		color: #CCCCCC;
-		/*$("input")[0].style.backgroundColor ="#444444";*/
-	}
-
-	input .dark, 
-	.well .dark, 
-	textarea .dark{
-		background-color : #333333; 
-	}
-
-	/*Copied from boot strap*/
-	.btn-inverse{
-		color:#ffffff;
-		text-shadow:0 -1px 0 rgba(0, 0, 0, 0.25);
-		background-color:#363636;
-		background-image:-moz-linear-gradient(top, #444444, #222222);
-		background-image:-webkit-gradient(linear, 0 0, 0 100%, from(#444444), to(#222222));
-		background-image:-webkit-linear-gradient(top, #444444, #222222);
-		background-image:-o-linear-gradient(top, #444444, #222222);
-		background-image:linear-gradient(to bottom, #444444, #222222);
-		background-repeat:repeat-x;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff444444', endColorstr='#ff222222', GradientType=0);
-		border-color:#222222 #222222 #000000;border-color:rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-		*background-color:#222222;filter:progid:DXImageTransform.Microsoft.gradient(enabled = false);}.btn-inverse:hover,.btn-inverse:focus,.btn-inverse:active,.btn-inverse.active,.btn-inverse.disabled,.btn-inverse[disabled]{
-			color:#ffffff;
-			background-color:#222222;
-			*background-color:#151515;
-		}
-	}
-
-	.dark .table td {
-		border-top: 1px solid #222222;
-	}
-
-	.dark .table-striped tbody>tr:nth-child(even)>td, .dark .table-striped tbody>tr:nth-child(even)>th {
-		background-color: #444444;
-	}
-
-	.dark .table-striped tbody>tr:nth-child(odd)>td, .dark .table-striped tbody>tr:nth-child(odd)>th {
-		background-color: #3d3d3d;
-	}
-
-	.dark .nav-tabs>.active>a, .dark .nav-tabs>.active>a:hover, .dark .nav-tabs>.active>a:focus {
-		/*border: 1px solid #222222;*/
-		background-color: #444444;
-		border-bottom-color: transparent;
-	}
-
-	.dark, .dark input, .dark .nav-tabs>.active>a, .dark .nav-tabs>.active>a:hover, .dark .nav-tabs>.active>a:focus, .dark textarea {
-		color: #CCCCCC;
-		border: 1px #000000 solid;
-	}
-
-	.dark input {
-		background-color: #333333;
-	}
-
-	.dark .role-p {
-		background-color: #444444;
-		/*border: 1px solid #dddddd;*/
-		border: 1px solid transparent;
-	}
-
-	.dark .tab-window {
-		border: 1px black solid;
-	}
-
-	.dark .missionBoxSucceed{
-		background-color: #5cb85c;
-	}
-
-
-	.dark .missionBoxFail{
-		background-color: #d9534f;
-	}
-
-	.dark .newMessage {
-		background-color: #a09d00;
-	}
-
-	.dark .chat-window {
-		border: 1px solid #000000;
-	}
-
-	.dark .table-bordered{
-		border: 1px solid #000000;
-	}
-
-	.dark .table-bordered, .current-games-table-off {
-		border: 1px transparent solid;
-	}
-
-	#current-players-table tbody tr td {
-		/*box-sizing:border-box;*/
-		border: transparent 2px solid;
-		/*margin: 10px;*/
-	}
-
-	.lobby-table {
-		border-radius: 5px;
-		/*border: 1px solid #ddd;*/
-		border-collapse:separate; 
-		border-spacing: 1px;
-	}
-
-	.dropdown-menu {
-		padding-left: 10px;
-		padding-right: 10px;
-		min-width: 200px;
-	}
-
-
-	.navbar-text {
-		padding-left: 10px;
-	}
-
-/*table {
-    border-collapse:separate;
-    border:solid black 1px;
-    border: 1px solid #ddd;
-    border-radius:5px;
-    -moz-border-radius:5px;
+.btn-inverse:hover,
+.btn-inverse:focus,
+.btn-inverse:active,
+.btn-inverse.active,
+.btn-inverse.disabled,
+.btn-inverse[disabled] {
+    color: #ffffff;
+    background-color: #222222;
+    *background-color: #151515;
 }
 
-td, th {
-    border-left:solid black 1px;
-    border-top:solid black 1px;
+.dark .table td {
+    border-top: 1px solid #222222;
 }
 
-th {
-    background-color: blue;
-    border-top: none;
+.dark .table-striped tbody>tr:nth-child(even)>td,
+.dark .table-striped tbody>tr:nth-child(even)>th {
+    background-color: #444444;
 }
 
-td:first-child, th:first-child {
-     border-left: none;
-}*/
+.dark .table-striped tbody>tr:nth-child(odd)>td,
+.dark .table-striped tbody>tr:nth-child(odd)>th {
+    background-color: #3d3d3d;
+}
+
+.dark .nav-tabs>.active>a,
+.dark .nav-tabs>.active>a:hover,
+.dark .nav-tabs>.active>a:focus {
+    /*border: 1px solid #222222;*/
+    background-color: #444444;
+    border-bottom-color: transparent;
+}
+
+.dark,
+.dark input,
+.dark .nav-tabs>.active>a,
+.dark .nav-tabs>.active>a:hover,
+.dark .nav-tabs>.active>a:focus,
+.dark textarea {
+    color: #CCCCCC;
+    border: 1px #000000 solid;
+}
+
+.dark input {
+    background-color: #333333;
+}
+
+.dark .role-p {
+    background-color: #444444;
+    /*border: 1px solid #dddddd;*/
+    border: 1px solid transparent;
+}
+
+.dark .tab-window {
+    border: 1px black solid;
+}
+
+.dark .missionBoxSucceed {
+    background-color: #5cb85c;
+}
+
+.dark .missionBoxFail {
+    background-color: #d9534f;
+}
+
+.dark .newMessage {
+    background-color: #a09d00;
+}
+
+.dark .chat-window {
+    border: 1px solid #000000;
+}
+
+.dark .table-bordered {
+    border: 1px solid #000000;
+}
+
+.dark .table-bordered,
+.current-games-table-off {
+    border: 1px transparent solid;
+}
