@@ -22,7 +22,6 @@ To-do list:
 -blue or yellow words for dark theme highlitht
 -Max number of players
 
--no case sensitive usernames
 
 
 
@@ -109,6 +108,7 @@ Mine:
 -show roles in the bar for host
 -Mission _(num) succeeded
 -gun disappears when someone votes
+-no case sensitive usernames
 
 
 

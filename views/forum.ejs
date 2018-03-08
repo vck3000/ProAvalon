@@ -2,119 +2,128 @@
 
     <link rel="stylesheet" type="text/css" href="stylesheets/forum.css">
 
-    <h1>Forums!</h1>
-    <button type="button" class="btn btn-primary">Avalon</button>
-    <button type="button" class="btn btn-info">Off-topic</button>
-    <button type="button" class="btn btn-warning">Suggestions</button>
-    <button type="button" class="btn btn-danger">Bugs</button>
+    <div class="container">
+        <h1>Forums</h1>
+        <button type="button" class="btn btn-primary">Avalon</button>
+        <button type="button" class="btn btn-info">Off-topic</button>
+        <button type="button" class="btn btn-warning">Suggestions</button>
+        <button type="button" class="btn btn-danger">Bugs</button>
+        <button type="button" class="btn btn-default">Un-tagged</button>
 
-    <br>
-    <br>
-
-
-
-
+        <br>
+        <br>
 
 
-    <div class="panel panel-info">
-        <div class="panel-heading">Recent new threads</div>
-        <div class="panel-body">
 
-            <ol>
+
+
+
+        <div class="panel panel-info">
+            <div class="panel-heading">Recent new threads</div>
+            <div class="panel-body">
+
+
+                <div class="container-fluid">
+                    <ol>
+                        <li>
+                            <div class="bg-warning discussionContainer">
+                                <div class="discussionTitleBox">
+                                    <div class="discussionTitle">
+                                        #1: Welcome to the forums! Please read this before posting.
+                                    </div>
+                                    <p class="discussionDetail">
+                                        By: ProNub, 08-03-2018
+                                    </p>
+                                </div>
+                                <div class="discussionRight">
+                                    <div class="likes">
+                                        <span class="glyphicon glyphicon-comment"></span>
+                                        <span>30 </span>
+                                        <span class="glyphicon glyphicon-thumbs-up"></span>
+                                        <span>
+                                            11 
+                                        </span>
+                                        <span class="glyphicon glyphicon-time"></span>
+                                        <span>8h </span>
+                                    </div>
+
+
+
+                                </div>
+                            </div>
+                        </li>
+
+
+                        <li>
+                            <div class="bg-info discussionContainer">
+                                <div class="discussionTitleBox">
+                                    <div class="discussionTitle">
+                                        #2: Is Merlin broken!?!?
+                                    </div>
+                                    <p class="discussionDetail">
+                                        By: ProNub, 08-03-2018
+                                    </p>
+                                </div>
+                                <div class="discussionRight">
+                                    <div class="likes">
+                                        <span class="glyphicon glyphicon-comment"></span>
+                                        <span>15</span>
+                                        <span class="glyphicon glyphicon-thumbs-up"></span>
+                                        <span>
+                                            11
+                                        </span>
+                                        <span class="glyphicon glyphicon-time"></span>
+                                        <span>11h </span>
+                                    </div>
+
+
+
+                                </div>
+                            </div>
+                        </li>
+
+                    </ol>
+                </div>
+
+
+
+            </div>
+        </div>
+
+
+
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
                 <li>
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-9 col-sm-9 col-xs-9">test1</div>
-                            <div class="col-md-3 col-sm-3 col-xs-3">test2</div>
-                        </div>
-                    </div>
+                    <a href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
                 </li>
-
-            </ol>
-
-        </div>
-    </div>
-
-
-
-    <nav aria-label="Page navigation">
-        <ul class="pagination">
-            <li>
-                <a href="#" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
-            <li class="active">
-                <a href="#">
-                    <span>1</span>
-                </a>
-            </li>
-            <li>
-                <a href="#">2</a>
-            </li>
-            <li>
-                <a href="#">3</a>
-            </li>
-            <li>
-                <a href="#">4</a>
-            </li>
-            <li>
-                <a href="#">5</a>
-            </li>
-            <li>
-                <a href="#" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
+                <li class="active">
+                    <a href="#">
+                        <span>1</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">2</a>
+                </li>
+                <li>
+                    <a href="#">3</a>
+                </li>
+                <li>
+                    <a href="#">4</a>
+                </li>
+                <li>
+                    <a href="#">5</a>
+                </li>
+                <li>
+                    <a href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
 
 
-
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-
-    <div class="panel panel-info">
-        <div class="panel-heading">Recent new threads</div>
-        <div class="panel-body">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Author</th>
-                        <th>Category</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="active">
-                        <td>test</td>
-                    </tr>
-                    <tr class="success">
-                        <td>test</td>
-                    </tr>
-                    <tr class="warning">
-                        <td>test</td>
-                    </tr>
-                    <tr class="danger">
-                        <td>test</td>
-                    </tr>
-                    <tr class="info">
-                        <td>test</td>
-                    </tr>
-                </tbody>
-
-            </table>
-        </div>
-    </div>
 
     <% include partials/footer%>

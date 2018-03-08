@@ -64,22 +64,22 @@ router.get("/logout", function(req, res){
 });
 
 router.get("/log", function(req, res){
-	res.render("log", {currentUser: req.user, headerActive: "log"});
+	res.render("log", {currentUser: res.app.locals.originalUsername, headerActive: "log"});
 })
 
 router.get("/rules", function(req, res){
-	res.render("rules", {currentUser: req.user, headerActive: "rules"});
+	res.render("rules", {currentUser: res.app.locals.originalUsername, headerActive: "rules"});
 })
 
 router.get("/testmodal", function(req, res){
-	res.render("testmodal", {currentUser: req.user});
+	res.render("testmodal", {currentUser: res.app.locals.originalUsername});
 });
 
 //=====================================
 //Forum
 //=====================================
 router.get("/forum", function(req, res){
-	res.render("forum", {currentUser: req.user});
+	res.render("forum", {currentUser: res.app.locals.originalUsername});
 })
 
 
