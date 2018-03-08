@@ -50,10 +50,10 @@
 					<% } %>
 
 					<% if(headerActive === "forums"){ %>
-					<li class="active"><a href="#">Forums</a></li>
+					<li class="active"><a href="/forum">Forums</a></li>
 					<%} %>
 					<% if(headerActive !== "forums"){ %>
-					<li><a href="#">Forums</a></li>
+					<li><a href="/forum">Forums</a></li>
 					<% } %>
 
 					<% if(headerActive === "log"){ %>
@@ -113,7 +113,7 @@
 						</li>
 					</li>
 					<!-- <li><a href="#">Hi there, <%=currentUser.username%></a></li> -->
-					<p class="navbar-text"><!-- Signed in as  --><%=currentUser.username%></p>
+					<p class="navbar-text" id="originalUsername"><!-- Signed in as  --><%=currentUser%></p>
 
 					<li><a href="/logout">Log out</a></li>
 					<%}%>

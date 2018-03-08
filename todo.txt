@@ -3,7 +3,7 @@ To-do list:
 -Spam filter?
 -Maximum length to a single chat message
 
--DISCUSSIONS-
+-DISCUSSIONS
 
 -claiming
 -let players choose colour
@@ -20,10 +20,10 @@ To-do list:
 -Add option to adjust height and width of lobby
 
 -blue or yellow words for dark theme highlitht
--
+-Max number of players
 
 -no case sensitive usernames
--gun disappears when someone votes
+
 
 
 Hak:
@@ -108,7 +108,7 @@ Mine:
 
 -show roles in the bar for host
 -Mission _(num) succeeded
-
+-gun disappears when someone votes
 
 
 

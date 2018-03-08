@@ -15,7 +15,7 @@ router.get("/register", function(req, res){
 });
 
 //Post of the register route
-router.post("/", function(req, res){
+router.post("/", usernameToLowerCase, function(req, res){
 	var newUser = new User({username: req.body.username});
 
 	if(req.body.username.indexOf(" ") !== -1){
@@ -38,12 +38,10 @@ router.post("/", function(req, res){
 });
 
 //login route
-router.post("/login", passport.authenticate("local", {
+router.post("/login", usernameToLowerCase, passport.authenticate("local", {
 	successRedirect: "/lobby",
 	failureRedirect: "/loginFail"
-}), function(req, res){
-	res.send("LOGIN LOGIC");
-});
+}));
 
 router.get("/loginFail", function(req, res){
 	req.flash("error", "Log in failed! Please try again :)");
@@ -52,8 +50,8 @@ router.get("/loginFail", function(req, res){
 
 //lobby route
 router.get("/lobby", isLoggedIn, function(req, res){
-	console.log(req.user);
-	res.render("lobby", {currentUser: req.user, headerActive: "lobby"});
+	console.log(res.app.locals.originalUsername);
+	res.render("lobby", {currentUser: res.app.locals.originalUsername, headerActive: "lobby"});
 });
 
 //logout
@@ -78,6 +76,15 @@ router.get("/testmodal", function(req, res){
 });
 
 //=====================================
+//Forum
+//=====================================
+router.get("/forum", function(req, res){
+	res.render("forum", {currentUser: req.user});
+})
+
+
+
+//=====================================
 //MIDDLEWARE
 //=====================================
 function isLoggedIn(req, res, next){
@@ -86,6 +93,12 @@ function isLoggedIn(req, res, next){
 	}
 	console.log("User is not logged in");
 	res.redirect("/");
+}
+
+function usernameToLowerCase(req, res, next){
+	res.app.locals.originalUsername = req.body.username;
+	req.body.username = req.body.username.toLowerCase();
+	next();
 }
 
 

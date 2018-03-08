@@ -382,7 +382,7 @@ module.exports = function (host_, roomId_, io_) {
 			if (outcome === "approved") {
 
 				this.phase = "missionVoting";
-				this.playersYetToVote = this.proposedTeam;
+				this.playersYetToVote = this.proposedTeam.slice();
 
 				var str = "Mission " + this.missionNum + "." + this.pickNum + " was approved." + getStrApprovedRejectedPlayers(this.votes, this.playersInGame);
 				// this.gameplayMessage = str;
@@ -952,7 +952,7 @@ module.exports = function (host_, roomId_, io_) {
 			return true;
 		}
 		else {
-			console.log("Game has already started!");
+			console.log("Game has already started! Or maximum number of players");
 			return false;
 		}
 	};

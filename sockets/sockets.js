@@ -1,6 +1,6 @@
 //sockets
 
-var currentPlayers = [];
+var currentPlayersUsernames = [];
 var allSockets = [];
 
 var avalonRoom = require("../gameplay/avalonRoom");
@@ -98,6 +98,7 @@ module.exports = function (io) {
 
 		if (socket.request.isAuthenticated()) {
 			console.log("User is authenticated");
+
 		} else {
 			console.log("User is not authenticated");
 			socket.emit("alert", "You are not authenticated.");
@@ -105,11 +106,17 @@ module.exports = function (io) {
 		}
 
 		//if user is already logged in, destroy their last session
-		var i = currentPlayers.indexOf(socket.request.user.username);
+		//compare the new username that is lowercased to the list of current usernames lowercased
+		var loweredCurrentPlayersUsernames = [];
+		for(var i = 0; i < currentPlayersUsernames.length; i++){
+			loweredCurrentPlayersUsernames[i] = currentPlayersUsernames[i].toLowerCase();
+		}
+
+		var i = loweredCurrentPlayersUsernames.indexOf(socket.request.user.username.toLowerCase());
 		if (i !== -1) {
 			allSockets[socket.request.user.username].emit("alert", "You've been disconnected");
 			allSockets[socket.request.user.username].disconnect();
-			currentPlayers.splice(i, 1);
+			currentPlayersUsernames.splice(i, 1);
 			console.log("User was logged in already, killed last session and socket.")
 		}
 		console.log(socket.request.user.username + " has connected under socket ID: " + socket.id);
@@ -117,7 +124,7 @@ module.exports = function (io) {
 		//automatically join the all chat
 		socket.join("allChat");
 		//push the new user into our list of players
-		currentPlayers.push(socket.request.user.username);
+		currentPlayersUsernames.push(socket.request.user.username);
 		//push the new socket into our list of sockets
 		allSockets[socket.request.user.username] = socket;
 
@@ -128,7 +135,7 @@ module.exports = function (io) {
 		socket.in("allChat").emit("player-joined-lobby", socket.request.user.username);
 
 		//io sends to everyone in the site, including the current user of this socket
-		io.in("allChat").emit("update-current-players-list", currentPlayers);
+		io.in("allChat").emit("update-current-players-list", currentPlayersUsernames);
 
 		updateCurrentGamesList(io);
 
@@ -140,6 +147,26 @@ module.exports = function (io) {
 		//=======================================
 		//COMMANDS
 		//=======================================
+		socket.on("originalUsername", function (username) {
+			var lowerCasedUsername = username.toLowerCase();
+			//if the lowercased version of their caps username is the same, then go ahead
+			if (lowerCasedUsername == socket.request.user.username) {
+				//set the socket to new caps
+				socket.request.user.oldUsername = socket.request.user.username;
+				socket.request.user.username = username;
+				console.log("Changed player " + lowerCasedUsername + " to " + username);
+
+				//set the currentPlayerUsernames to new caps
+				var i = currentPlayersUsernames.indexOf(lowerCasedUsername);
+				currentPlayersUsernames[i] = username;
+
+				//io sends to everyone in the site, including the current user of this socket
+				io.in("allChat").emit("update-current-players-list", currentPlayersUsernames);
+
+				updateCurrentGamesList(io);
+			}
+		});
+
 		socket.on("messageCommand", function (data) {
 			console.log("data0: " + data.command);
 			if (userCommands[data.command]) {
@@ -151,8 +178,6 @@ module.exports = function (io) {
 			}
 
 		});
-
-
 
 		//when a user tries to send a message to all chat
 		socket.on("allChatFromClient", function (data) {
@@ -185,13 +210,13 @@ module.exports = function (io) {
 			//debugging
 			console.log(socket.request.user.username + " has left.");
 			//get the index of the player in the array list
-			var i = currentPlayers.indexOf(socket.request.user.username);
+			var i = currentPlayersUsernames.indexOf(socket.request.user.username);
 			//in case they already dont exist, dont crash server
 			if (i === -1) { return; }
 			//remove that single player who left
-			currentPlayers.splice(i, 1);
+			currentPlayersUsernames.splice(i, 1);
 			//send out the new updated current player list
-			socket.in("allChat").emit("update-current-players-list", currentPlayers);
+			socket.in("allChat").emit("update-current-players-list", currentPlayersUsernames);
 			//tell all clients that the user has left
 			socket.in("allChat").emit("player-left-lobby", socket.request.user.username);
 

@@ -1,6 +1,15 @@
 var socket = io({ transports: ['websocket'], upgrade: false });
 // console.log("started");
 
+// Update the server for our caps username
+if ($("#originalUsername")[0]) {
+    var originalUsername = $("#originalUsername")[0].innerText;
+    console.log("ORIGINAL USERNAME: " + originalUsername);
+    socket.emit("originalUsername", originalUsername);
+}
+
+
+
 //Prevents the window height from changing when android keyboard is pulled up.
 setTimeout(function () {
     let viewheight = $(window).height();
@@ -100,12 +109,12 @@ $('#optionsModal').on('hidden.bs.modal', function (e) {
 })
 
 // Set the event listener for the button
-$("#kickButton")[0].addEventListener("click", function(){
+$("#kickButton")[0].addEventListener("click", function () {
     var players = getKickPlayers();
 
     //kick the selected players one by one
-    for(var key in players){
-        if(players.hasOwnProperty(key)){
+    for (var key in players) {
+        if (players.hasOwnProperty(key)) {
             socket.emit("kickPlayer", key);
             console.log("kick player: " + key);
         }
@@ -638,7 +647,7 @@ function redButtonFunction() {
 
             str += '<div class="btn-group-vertical" data-toggle="buttons">';
 
-            for(var i = 0; i < storeData.length; i++){
+            for (var i = 0; i < storeData.length; i++) {
                 str += '<label class="btn btn-mine">';
 
                 str += '<input name="' + storeData[i].username + '" id="' + storeData[i].username + '" type="checkbox" autocomplete="off">' + storeData[i].username;
@@ -1549,8 +1558,8 @@ function getOptions() {
 function getKickPlayers() {
     var data = {};
 
-    for(var i = 0; i < storeData.length; i++){
-        if($("#" + storeData[i].username)[0].checked === true){
+    for (var i = 0; i < storeData.length; i++) {
+        if ($("#" + storeData[i].username)[0].checked === true) {
             data[storeData[i].username] = true;
         }
     }

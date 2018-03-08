@@ -1,19 +1,19 @@
 //=====================================
 //INITIALISATION
 //=====================================
-var express 	= require("express"),
-app 			= express(),
-mongoose		= require("mongoose"),
-bodyParser 		= require("body-parser"),
-methodOverride 	= require("method-override"),
+var express = require("express"),
+	app = express(),
+	mongoose = require("mongoose"),
+	bodyParser = require("body-parser"),
+	methodOverride = require("method-override"),
 
-User 			= require("./models/user"),
+	User = require("./models/user"),
 
-passport		= require("passport"),
-LocalStrategy	= require("passport-local"),
-passportSocketIo= require("passport.socketio"),
-cookieParser 	= require('cookie-parser'),
-flash 			= require("connect-flash");;
+	passport = require("passport"),
+	LocalStrategy = require("passport-local"),
+	passportSocketIo = require("passport.socketio"),
+	cookieParser = require('cookie-parser'),
+	flash = require("connect-flash");;
 
 var port = process.env.PORT || 80;
 
@@ -34,7 +34,7 @@ var store = new MongoDBStore({
 
 
 // Catch errors
-store.on('error', function(error) {
+store.on('error', function (error) {
 	assert.ifError(error);
 	assert.ok(false);
 });
@@ -52,7 +52,7 @@ app.use(session({
 
 app.use(flash());
 //res.locals variables
-app.use(function(req, res, next){
+app.use(function (req, res, next) {
 	res.locals.currentUser = req.user;
 	// headerActive default should be nothing, otherwise specify in the routes index.js file
 	res.locals.headerActive = " ";
@@ -66,12 +66,14 @@ app.use(function(req, res, next){
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
+
+
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.set("view engine", "ejs");
 app.use(express.static("assets"));
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 
 
@@ -83,7 +85,7 @@ app.use(indexRoutes);
 //start server listening
 var IP = process.env.IP || "192.168.1.55";
 // var server = app.listen(port, IP , function(){
-var server = app.listen(port , function(){
+var server = app.listen(port, function () {
 	console.log("Server has started on " + IP + ":" + port + "!");
 });
 
@@ -93,18 +95,18 @@ var server = app.listen(port , function(){
 //=====================================
 var socket = require("socket.io");
 var io = socket(server),
-passportSocketIo = require("passport.socketio");;
+	passportSocketIo = require("passport.socketio");;
 
 require("./sockets/sockets")(io);
 
 io.use(passportSocketIo.authorize({
-  cookieParser: cookieParser, //optional your cookie-parser middleware function. Defaults to require('cookie-parser') 
-  // key:          'express.sid',       //make sure is the same as in your session settings in app.js 
-  secret:       process.env.MY_SECRET_KEY,      //make sure is the same as in your session settings in app.js 
-  store:        store,        //you need to use the same sessionStore you defined in the app.use(session({... in app.js 
-  // success:      onAuthorizeSuccess,  // *optional* callback on success 
-  // fail:         onAuthorizeFail,     // *optional* callback on fail/error 
-  passport: passport
+	cookieParser: cookieParser, //optional your cookie-parser middleware function. Defaults to require('cookie-parser') 
+	// key:          'express.sid',       //make sure is the same as in your session settings in app.js 
+	secret: process.env.MY_SECRET_KEY,      //make sure is the same as in your session settings in app.js 
+	store: store,        //you need to use the same sessionStore you defined in the app.use(session({... in app.js 
+	// success:      onAuthorizeSuccess,  // *optional* callback on success 
+	// fail:         onAuthorizeFail,     // *optional* callback on fail/error 
+	passport: passport
 }));
 
 
@@ -116,8 +118,8 @@ io.use(passportSocketIo.authorize({
 //=====================================
 //MIDDLEWARE
 //=====================================
-function isLoggedIn(req, res, next){
-	if(req.isAuthenticated()){
+function isLoggedIn(req, res, next) {
+	if (req.isAuthenticated()) {
 		return next();
 	}
 	console.log("User is not logged in");
