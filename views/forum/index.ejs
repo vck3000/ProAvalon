@@ -1,24 +1,100 @@
-<% include partials/header%>
+<% include ../partials/header%>
 
     <link rel="stylesheet" type="text/css" href="stylesheets/forum.css">
 
     <div class="container">
-        <h1>Forums</h1>
-        <button type="button" class="btn btn-primary">Avalon</button>
-        <button type="button" class="btn btn-info">Off-topic</button>
-        <button type="button" class="btn btn-warning">Suggestions</button>
-        <button type="button" class="btn btn-danger">Bugs</button>
-        <button type="button" class="btn btn-default">Un-tagged</button>
+        <div style="text-align: center;">
+            <h1>Forums</h1>
+            <button type="button" class="btn btn-primary">Avalon</button>
+            <button type="button" class="btn btn-info">Off-topic</button>
+            <button type="button" class="btn btn-warning">Suggestions</button>
+            <button type="button" class="btn btn-danger">Bugs</button>
+
+            <br>
+            <br>
+
+
+            <button type="button" class="btn btn-success" id="createButton" href="/new">Create</button>
+        </div>
+
 
         <br>
-        <br>
+
+        <div class="panel panel-success">
+            <div class="panel-heading">Pinned threads</div>
+            <div class="panel-body">
+
+
+                <div class="container-fluid">
+                    <ol>
+                        <li>
+                            <div class="bg-warning discussionContainer">
+                                <div class="discussionTitleBox">
+                                    <div class="discussionTitle">
+                                        #1: Welcome to the forums! Please read this before posting.
+                                    </div>
+                                    <p class="discussionDetail">
+                                        By: ProNub, 08-03-2018
+                                    </p>
+                                </div>
+                                <div class="discussionRight">
+                                    <div class="likes">
+                                        <span class="glyphicon glyphicon-comment"></span>
+                                        <span>30 </span>
+                                        <span class="glyphicon glyphicon-thumbs-up"></span>
+                                        <span>
+                                            11
+                                        </span>
+                                        <span class="glyphicon glyphicon-time"></span>
+                                        <span>8h </span>
+                                    </div>
 
 
 
+                                </div>
+                            </div>
+                        </li>
+
+
+                        <li>
+                            <div class="bg-info discussionContainer">
+                                <div class="discussionTitleBox">
+                                    <div class="discussionTitle">
+                                        #2: Is Merlin broken!?!?
+                                    </div>
+                                    <p class="discussionDetail">
+                                        By: ProNub, 08-03-2018
+                                    </p>
+                                </div>
+                                <div class="discussionRight">
+                                    <div class="likes">
+                                        <span class="glyphicon glyphicon-comment"></span>
+                                        <span>15</span>
+                                        <span class="glyphicon glyphicon-thumbs-up"></span>
+                                        <span>
+                                            11
+                                        </span>
+                                        <span class="glyphicon glyphicon-time"></span>
+                                        <span>11h </span>
+                                    </div>
 
 
 
-        <div class="panel panel-info">
+                                </div>
+                            </div>
+                        </li>
+
+                    </ol>
+                </div>
+
+
+
+            </div>
+        </div>
+
+
+
+        <div class="panel panel-default">
             <div class="panel-heading">Recent new threads</div>
             <div class="panel-body">
 
@@ -41,7 +117,7 @@
                                         <span>30 </span>
                                         <span class="glyphicon glyphicon-thumbs-up"></span>
                                         <span>
-                                            11 
+                                            11
                                         </span>
                                         <span class="glyphicon glyphicon-time"></span>
                                         <span>8h </span>
@@ -126,4 +202,4 @@
 
 
 
-    <% include partials/footer%>
+        <% include ../partials/footer%>

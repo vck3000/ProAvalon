@@ -78,9 +78,10 @@ router.get("/testmodal", function(req, res){
 //=====================================
 //Forum
 //=====================================
-router.get("/forum", function(req, res){
-	res.render("forum", {currentUser: res.app.locals.originalUsername});
-})
+//this part should be in another file now.
+// router.get("/forum", function(req, res){
+// 	res.render("forum", {currentUser: res.app.locals.originalUsername});
+// })
 
 
 
