@@ -1,11 +1,18 @@
 <% include ../partials/header%>
 
+
+<%   var bg_converter = {};                      %>
+<%   bg_converter["avalon"] = "success";       %>
+<%   bg_converter["off-topic"] = "info";       %>
+<%   bg_converter["suggestion"] = "warning";   %>
+<%   bg_converter["bug"] = "danger";           %>
+
     <link rel="stylesheet" type="text/css" href="stylesheets/forum.css">
 
     <div class="container">
         <div style="text-align: center;">
             <h1>Forums</h1>
-            <button type="button" class="btn btn-primary">Avalon</button>
+            <button type="button" class="btn btn-success">Avalon</button>
             <button type="button" class="btn btn-info">Off-topic</button>
             <button type="button" class="btn btn-warning">Suggestions</button>
             <button type="button" class="btn btn-danger">Bugs</button>
@@ -13,8 +20,8 @@
             <br>
             <br>
 
-
-            <button type="button" class="btn btn-success" id="createButton" href="/new">Create</button>
+            <a href="/forum/new"><button type="button" class="btn btn-success" id="createButton">Create</button></a>
+            
         </div>
 
 
@@ -101,63 +108,33 @@
 
                 <div class="container-fluid">
                     <ol>
-                        <li>
-                            <div class="bg-warning discussionContainer">
-                                <div class="discussionTitleBox">
-                                    <div class="discussionTitle">
-                                        #1: Welcome to the forums! Please read this before posting.
+                        <%allForumThreads.forEach(function(forumThread){ %>
+                            <li>
+                                <div class="bg-<%=bg_converter[forumThread.category]%> discussionContainer">
+                                    <div class="discussionTitleBox">
+                                        <div class="discussionTitle">
+                                            <%=forumThread.title%>
+                                        </div>
+                                        <p class="discussionDetail">
+                                            By: <%=forumThread.author.username%>, <%=forumThread.timeCreated.toDateString()%>
+                                        </p>
                                     </div>
-                                    <p class="discussionDetail">
-                                        By: ProNub, 08-03-2018
-                                    </p>
-                                </div>
-                                <div class="discussionRight">
-                                    <div class="likes">
-                                        <span class="glyphicon glyphicon-comment"></span>
-                                        <span>30 </span>
-                                        <span class="glyphicon glyphicon-thumbs-up"></span>
-                                        <span>
-                                            11
-                                        </span>
-                                        <span class="glyphicon glyphicon-time"></span>
-                                        <span>8h </span>
+                                    <div class="discussionRight">
+                                        <div class="likes">
+                                            <span class="glyphicon glyphicon-comment"></span>
+                                            <span><%=forumThread.numOfComments%></span>
+                                            <span class="glyphicon glyphicon-thumbs-up"></span>
+                                            <span> 
+                                              <%=forumThread.likes%>
+                                            </span>
+                                            <span class="glyphicon glyphicon-time"></span>
+                                            <span><%=forumThread.hoursSinceLastEdit%>h </span>
+                                        </div>
                                     </div>
-
-
-
                                 </div>
-                            </div>
-                        </li>
+                            </li>
 
-
-                        <li>
-                            <div class="bg-info discussionContainer">
-                                <div class="discussionTitleBox">
-                                    <div class="discussionTitle">
-                                        #2: Is Merlin broken!?!?
-                                    </div>
-                                    <p class="discussionDetail">
-                                        By: ProNub, 08-03-2018
-                                    </p>
-                                </div>
-                                <div class="discussionRight">
-                                    <div class="likes">
-                                        <span class="glyphicon glyphicon-comment"></span>
-                                        <span>15</span>
-                                        <span class="glyphicon glyphicon-thumbs-up"></span>
-                                        <span>
-                                            11
-                                        </span>
-                                        <span class="glyphicon glyphicon-time"></span>
-                                        <span>11h </span>
-                                    </div>
-
-
-
-                                </div>
-                            </div>
-                        </li>
-
+                        <%})%> 
                     </ol>
                 </div>
 

@@ -6,6 +6,13 @@ var forumThreadSchema = new mongoose.Schema({
 	// price: String,
 	// image: String,
 	description: String,
+	timeCreated: Date,
+	
+	likes: String,
+	numOfComments: String,
+	timeLastEdit: String,
+	
+
 	author: {
 		id: {
 			type: mongoose.Schema.Types.ObjectId,
@@ -18,9 +25,11 @@ var forumThreadSchema = new mongoose.Schema({
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Comment"
 		} 
-	]
+	],
+
+	category: String
 });
 //compile schema into a model
-var forumThread = mongoose.model("Campground", forumThreadSchema);
+var forumThread = mongoose.model("forumThread", forumThreadSchema);
 
 module.exports = forumThread;

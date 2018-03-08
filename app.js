@@ -1,19 +1,21 @@
 //=====================================
 //INITIALISATION
 //=====================================
-var express = require("express"),
-	app = express(),
-	mongoose = require("mongoose"),
-	bodyParser = require("body-parser"),
-	methodOverride = require("method-override"),
+var express 			= require("express"),
+	app 				= express(),
+	mongoose			= require("mongoose"),
+	bodyParser 			= require("body-parser"),
+	methodOverride 		= require("method-override"),
 
-	User = require("./models/user"),
+	User 				= require("./models/user"),
 
-	passport = require("passport"),
-	LocalStrategy = require("passport-local"),
-	passportSocketIo = require("passport.socketio"),
-	cookieParser = require('cookie-parser'),
-	flash = require("connect-flash");;
+	passport 			= require("passport"),
+	LocalStrategy 		= require("passport-local"),
+	passportSocketIo 	= require("passport.socketio"),
+	cookieParser 		= require('cookie-parser'),
+	flash 				= require("connect-flash"),
+
+	seedDB      		= require("./seeds");
 
 var port = process.env.PORT || 80;
 
@@ -21,6 +23,8 @@ var port = process.env.PORT || 80;
 console.log(process.env.DATABASEURL);
 // mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
 mongoose.connect(process.env.DATABASEURL);
+
+
 //mongodb://<dbuser>:<dbpassword>@ds131698.mlab.com:31698/playavalon
 
 var session = require("express-session");
@@ -84,6 +88,7 @@ app.use(indexRoutes);
 var forumRoutes = require("./routes/forum");
 app.use("/forum", forumRoutes);
 
+seedDB();
 
 //start server listening
 var IP = process.env.IP || "192.168.1.55";
