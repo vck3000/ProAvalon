@@ -13,7 +13,7 @@ var data = [
         title: "Welcome to the forums! Please read this before posting.",
         description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
         author: { username: "ProNub" },
-        timeCreated: date.setTime(1520427600000),
+        timeCreated: date.setTime(1486954000000),
 
         numOfComments: 31,
         likes: 12,
@@ -25,7 +25,7 @@ var data = [
         title: "Is Merlin broken!?!?",
         description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
         author: { username: "ProNub" },
-        timeCreated: date.setTime(1521427600000),
+        timeCreated: date.setTime(1487954000000),
 
         numOfComments: 16,
         likes: 12,
@@ -37,7 +37,7 @@ var data = [
         title: "My Percivals are always useless!!",
         description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
         author: { username: "ProNub" },
-        timeCreated: date.setTime(1522427600000),
+        timeCreated: date.setTime(1488954000000),
 
         numOfComments: 16,
         likes: 12,
@@ -49,7 +49,7 @@ var data = [
         title: "Guns aren't displaying correctly.",
         description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
         author: { username: "ProNub" },
-        timeCreated: date.setTime(1523427600000),
+        timeCreated: date.setTime(1489954000000),
 
         numOfComments: 13,
         likes: 1,
@@ -61,7 +61,7 @@ var data = [
         title: "Database is failing.",
         description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
         author: { username: "ProNub" },
-        timeCreated: date.setTime(1524427600000),
+        timeCreated: date.setTime(1490954000000),
 
         numOfComments: 13,
         likes: 1,
@@ -73,7 +73,7 @@ var data = [
         title: "I can't get number ids to work :(.",
         description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
         author: { username: "ProNub" },
-        timeCreated: date.setTime(1525427600000),
+        timeCreated: date.setTime(1491954000000),
 
         numOfComments: 13,
         likes: 1,
@@ -85,7 +85,7 @@ var data = [
         title: "halp.",
         description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
         author: { username: "ProNub" },
-        timeCreated: date.setTime(1526427600000),
+        timeCreated: date.setTime(1492954000000),
 
         numOfComments: 13,
         likes: 1,
