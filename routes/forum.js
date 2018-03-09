@@ -125,12 +125,18 @@ router.get("/new", middleware.isLoggedIn, function (req, res) {
 
 //show
 router.get("/:id", function (req, res) {
-	Campground.findById(req.params.id).populate("comments").exec(function (err, foundCampground) {
+	forumThread.findById(req.params.id)/*.populate("comments")*/.exec(function (err, foundForumThread) {
 		if (err) {
-			console.log(err);
+			// console.log(err);
+			console.log("Thread not found, redirecting");
+			res.redirect("/forum");
 		}
 		else {
-			res.render("campgrounds/show", { campground: foundCampground });
+			if (foundForumThread === null) {
+				console.log("Thread not found, redirecting");
+				res.redirect("/forum");
+			}
+			res.render("forum/show", { forumThread: foundForumThread });
 		}
 	});
 });
