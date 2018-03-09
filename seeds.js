@@ -1,6 +1,7 @@
 var mongoose = require("mongoose");
 var forumThread = require("./models/forumThread");
 var forumThreadComment = require("./models/forumThreadComment");
+var lastIds = require("./models/lastIds");
 
 
 var date = new Date();
@@ -94,48 +95,61 @@ var data = [
     }
 ]
 
-function seedDB() {
-    //Remove all forumThreads
-    forumThread.remove({}, function (err) {
-        if (err) {
-            console.log(err);
-        }
-        console.log("removed all forums");
-        forumThreadComment.remove({}, function (err) {
-            if (err) {
-                console.log(err);
-            }
-            console.log("removed all comments");
-            data.forEach(function (seed) {
-                forumThread.create(seed, function (err, forumThreadReturned) {
-                    if (err) {
-                        console.log(err)
-                    } else {
-                        console.log("added a forumThread");
+var lastIdsReturned;
 
-                        //create a comment
-                        forumThreadComment.create({
+function seedDB() {
+    //clear lastIds
+    lastIds.remove({}).exec()
+        //create a single number
+        .then(function () {
+            return lastIds.create({ number: 1 });
+        })
+
+        //remove all forumThreads
+        .then(function (thatNumber) {
+            lastIdsReturned = thatNumber;
+            return forumThread.remove({});
+        })
+
+        //remove all comments
+        .then(function () {
+            return forumThreadComment.remove({});
+        })
+
+        //create forum threads
+        .then(function () {
+
+            data.forEach(async function (seed) {
+                var num = 0;
+                num = lastIdsReturned.number;
+
+                lastIdsReturned.number++;
+                await lastIdsReturned.save();
+                console.log(num);
+
+                seed.numberId = num;
+                
+                
+                //create each forum thread
+                await forumThread.create(seed)
+                    .then(async function (createdForumThread) {
+                        console.log("Created new forum thread");
+
+                        //create a comment for each forum thread
+                        await forumThreadComment.create({
                             text: "This place is great, but I wish there was internet",
                             author: { username: "Homer" },
                             timeCreated: date.setTime(1514725200000),
                             likes: 1
-
-                        }, function (err, comment) {
-                            if (err) {
-                                console.log(err);
-                            } else {
-                                forumThreadReturned.comments.push(comment);
-                                forumThreadReturned.save();
+                        })
+                            .then(function (createdComment) {
+                                createdForumThread.comments.push(createdComment);
+                                createdForumThread.save();
                                 console.log("Created new comment");
-                            }
-                        });
-                    }
-                });
+                            })
+                    });
             });
         });
-
-    });
-    //add a few comments
 }
 
 module.exports = seedDB;
