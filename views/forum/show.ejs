@@ -5,7 +5,7 @@
 <div class="myContainer">
 
     <h2><%=forumThread.title%></h2>
-    <p>By: <%=forumThread.author.username%>, <%=forumThread.timeCreated%></p>
+    <p>By: <%=forumThread.author.username%>, <%=forumThread.timeCreated.toISOString()%></p>
 
 </div>
 

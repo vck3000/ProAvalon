@@ -758,12 +758,25 @@ function draw() {
 
                 drawGuns();
 
-                //show the remaining players who haven't voted
-                var str = "Waiting for votes: ";
+                var str = "";
 
-                for (var i = 0; i < gameData.playersYetToVote.length; i++) {
-                    str = str + gameData.playersYetToVote[i] + ", ";
+                //show the remaining players who haven't voted if we have voted
+                if (gameData.playersYetToVote.indexOf(ownUsername) === -1) {
+                    str += "Waiting for votes: ";
+
+                    for (var i = 0; i < gameData.playersYetToVote.length; i++) {
+                        str = str + gameData.playersYetToVote[i] + ", ";
+                    }
                 }
+                else {
+                    //change the well to display what was picked.
+                    str += gameData.teamLeader + " has picked: ";
+
+                    for(var i = 0; i < gameData.proposedTeam.length; i++){
+                        str += gameData.proposedTeam[i] + ", ";
+                    }
+                }
+
 
                 document.querySelector("#status").innerText = str;
             }
