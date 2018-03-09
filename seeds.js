@@ -19,7 +19,7 @@ var data = [
         likes: 12,
         hoursSinceLastEdit: 8,
 
-        category: "off-topic"
+        category: "offTopic"
     },
     {
         title: "Is Merlin broken!?!?",

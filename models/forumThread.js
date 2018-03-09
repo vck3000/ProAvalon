@@ -10,7 +10,8 @@ var forumThreadSchema = new mongoose.Schema({
 	
 	likes: String,
 	numOfComments: String,
-	timeLastEdit: String,
+	hoursSinceLastEdit: String,
+	timeLastEdit: Date,
 
 	numberId: Number,
 	

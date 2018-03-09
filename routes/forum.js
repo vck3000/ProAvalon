@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var forumThread = require("../models/forumThread");
+var lastIds = require("../models/lastIds");
 
 
 var middleware = require("../middleware");
@@ -16,7 +17,7 @@ router.get("/", function (req, res) {
 
 	//get all campgrounds from DB
 	//then render
-	forumThread.find({}).sort({timeCreated: 'descending'}).exec(function (err, allForumThreads) {
+	forumThread.find({}).sort({ timeCreated: 'descending' }).exec(function (err, allForumThreads) {
 		if (err) {
 			console.log(err);
 		}
@@ -25,43 +26,94 @@ router.get("/", function (req, res) {
 			res.render("forum/index", { allForumThreads: allForumThreads.slice(0, 10), currentUser: res.app.locals.originalUsername });
 		}
 	});
-
-	// forumThread.find({/*Looking for everything so this is empty*/ },
-	// 	function (err, allForumThreads/*allForumThreads is what came back from the find*/) {
-	// 		if (err) {
-	// 			console.log(err);
-	// 		}
-	// 		else {
-	// 			res.render("forum/index", { allForumThreads: allForumThreads, currentUser: res.app.locals.originalUsername });
-	// 		}
-	// 	});
 });
 
-router.post("/", middleware.isLoggedIn, function (req, res) {
+router.post("/", middleware.isLoggedIn, async function (req, res) {
+	const util = require('util')
+
+	console.log("inc data: " + util.inspect(req.body, { showHidden: false, depth: null }))
+
+	// console.log("inc data: " + req.body);
+
 	//get data from form and add to campgrounds array
-	var name = req.body.name;
-	var price = req.body.price;
-	var image = req.body.image;
+	var title = req.body.title;
 	var description = req.body.description;
-	var id = req.user._id;
-	var username = req.user.username;
 
-	var newCampground = {
-		name: name, price: price, image: image,
-		description: description, author: { id, username }
-	};
+	var d = new Date();
 
-	//create a new campground and save to DB
-	Campground.create(newCampground, function (err, newlyCreated) {
-		if (err) {
-			console.log(err);
-		}
-		else {
-			//redirect back to campgrounds page
-			res.redirect("/campgrounds");
-		}
+	var timeCreated = d;
+
+	var likes = 0;
+	var numOfComments = 0;
+	var timeLastEdit = d;
+
+	var hoursSinceLastEdit = 0;
+
+	var author = {
+		id: req.user._id,
+		username: res.app.locals.originalUsername
+	}
+
+	var comments = [];
+
+	var category = "";
+	if (req.body.avalon) {
+		category = "avalon";
+	}
+	else if (req.body.offTopic) {
+		category = "offTopic";
+	}
+	else if (req.body.suggestion) {
+		category = "suggestion";
+	}
+	else if (req.body.bug) {
+		category = "bug";
+	}
+
+	var number = 0;
+	await lastIds.findOne({}).exec(async function (err, returnedLastId) {
+		console.log(returnedLastId.number);
+
+		number = returnedLastId.number;
+		returnedLastId.number++;
+
+		await returnedLastId.save();
+
+
+		var newForumThread = {
+			title: title,
+			description: description,
+
+			hoursSinceLastEdit: hoursSinceLastEdit,
+			timeCreated: timeCreated,
+
+			likes: likes,
+			numOfComments: numOfComments,
+			timeLastEdit: timeLastEdit,
+
+			author: author,
+			comments: comments,
+			category: category,
+			numberId: number
+		};
+
+		//create a new campground and save to DB
+		forumThread.create(newForumThread, function (err, newlyCreated) {
+			if (err) {
+				console.log(err);
+			}
+			else {
+				//redirect back to campgrounds page
+				res.redirect("/forum");
+			}
+		});
+
+
 	});
-	// campgrounds.push(newCampground);
+
+	//PUT IT ALL TOGETHER
+
+
 });
 
 //this route should be above the :id one because of
