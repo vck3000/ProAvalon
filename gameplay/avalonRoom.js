@@ -903,7 +903,15 @@ module.exports = function (host_, roomId_, io_) {
 
 	this.playerJoinRoom = function (socket) {
 		//only add them to spectators if they are not part of the game already.
-		if (this.sockets.indexOf(socket) === -1) {
+		var stringOfUsernames = [];
+
+		//creating the string of usernames
+		for(var i = 0; i < this.sockets.length; i++){
+			stringOfUsernames.push(this.sockets[i].request.user.username);
+		}
+
+
+		if (stringOfUsernames.indexOf(socket.request.user.username) === -1) {
 			console.log("Spectator added!");
 			this.socketsOfSpectators.push(socket);
 		}

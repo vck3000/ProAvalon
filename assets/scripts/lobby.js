@@ -1,11 +1,15 @@
 var socket = io({ transports: ['websocket'], upgrade: false });
 // console.log("started");
 
+var ownUsername = "";
+
 // Update the server for our caps username
 if ($("#originalUsername")[0]) {
     var originalUsername = $("#originalUsername")[0].innerText;
     console.log("ORIGINAL USERNAME: " + originalUsername);
     socket.emit("originalUsername", originalUsername);
+
+    ownUsername = originalUsername;
 }
 
 
@@ -85,7 +89,7 @@ var seeData;
 var gameData;
 var roomId;
 var gameStarted = false;
-var ownUsername = "";
+
 var inRoom = false;
 
 var isSpectator = false;
@@ -243,7 +247,7 @@ roomChatWindow.onkeyup = function (e) {
 //SOCKET ROUTES
 //======================================
 socket.on("username", function (username) {
-    ownUsername = username;
+    // ownUsername = username;
 });
 
 socket.on("allChatToClient", function (data) {
