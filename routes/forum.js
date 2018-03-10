@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var forumThread = require("../models/forumThread");
+var forumThreadComment = require("../models/forumThreadComment");
 var lastIds = require("../models/lastIds");
 
 
@@ -15,7 +16,7 @@ router.get("/", function (req, res) {
 	// res.render("campgrounds", {campgrounds: campgrounds});
 
 
-	//get all campgrounds from DB
+	//get all forumThreads from DB
 	//then render
 	forumThread.find({}).sort({ timeCreated: 'descending' }).exec(function (err, allForumThreads) {
 		if (err) {
@@ -125,7 +126,7 @@ router.get("/new", middleware.isLoggedIn, function (req, res) {
 
 //show
 router.get("/:id", function (req, res) {
-	forumThread.findById(req.params.id)/*.populate("comments")*/.exec(function (err, foundForumThread) {
+	forumThread.findById(req.params.id).populate("comments").exec(function (err, foundForumThread) {
 		if (err) {
 			// console.log(err);
 			console.log("Thread not found, redirecting");
@@ -136,6 +137,7 @@ router.get("/:id", function (req, res) {
 				console.log("Thread not found, redirecting");
 				res.redirect("/forum");
 			}
+			console.log("comments: " + forumThread.comments);
 			res.render("forum/show", { forumThread: foundForumThread });
 		}
 	});
