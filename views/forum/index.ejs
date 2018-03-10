@@ -7,7 +7,7 @@
 <%   bg_converter["suggestion"] = "warning";   %>
 <%   bg_converter["bug"] = "danger";           %>
 
-    <link rel="stylesheet" type="text/css" href="stylesheets/forum/index.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/forum/index.css">
 
     <div class="container">
         <div style="text-align: center;">
@@ -113,7 +113,7 @@
                                 <div class="bg-<%=bg_converter[forumThread.category]%> discussionContainer">
                                     <div class="discussionTitleBox">
                                         <div class="discussionTitle">
-                                            <a href="/forum/<%=forumThread._id%>">
+                                            <a href="/forum/show/<%=forumThread._id%>">
                                                 #<%=forumThread.numberId%>: <%=forumThread.title%>
                                             </a>
                                         </div>
@@ -130,7 +130,7 @@
                                               <%=forumThread.likes%>
                                             </span>
                                             <span class="glyphicon glyphicon-time"></span>
-                                            <span><%=forumThread.hoursSinceLastEdit%>h </span>
+                                            <span><%=forumThread.timeSinceString%> </span>
                                         </div>
                                     </div>
                                 </div>
@@ -150,29 +150,31 @@
         <nav aria-label="Page navigation">
             <ul class="pagination">
                 <li>
-                    <a href="#" aria-label="Previous">
+                    <a href="/forum/<%=pageNum-1%>" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
-                <li class="active">
-                    <a href="#">
-                        <span>1</span>
-                    </a>
-                </li>
+
+                <% var NUM_OF_PAGES_TO_SHOW_ON_PAGER = 5; %>
+                <% var HALF_NUM_OF_PAGES_TO_SHOW_ON_PAGER = Math.floor(NUM_OF_PAGES_TO_SHOW_ON_PAGER/2); %>
+                
+                <% var startingPageNum = pageNum - HALF_NUM_OF_PAGES_TO_SHOW_ON_PAGER; %>
+                <% if(startingPageNum < 1) {startingPageNum = 1;} %>
+                
+
+                <% for(var i = startingPageNum; i < NUM_OF_PAGES_TO_SHOW_ON_PAGER + startingPageNum; i++){ %>
+                    <% if(i == pageNum){ %>
+                        <li class="active">
+                    <% } else { %>
+                        <li>
+                    <% } %>
+                        <a href="/forum/page/<%=i%>"><%=i%></a>
+                    </li>
+
+                <% } %>
+                
                 <li>
-                    <a href="#">2</a>
-                </li>
-                <li>
-                    <a href="#">3</a>
-                </li>
-                <li>
-                    <a href="#">4</a>
-                </li>
-                <li>
-                    <a href="#">5</a>
-                </li>
-                <li>
-                    <a href="#" aria-label="Next">
+                    <a href="/forum/<%=pageNum+1%>" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>

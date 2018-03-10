@@ -16,7 +16,16 @@
         <h2><%=forumThread.title%></h2>
 
 
-        <p>By: <%=forumThread.author.username%>, <%=forumThread.timeSinceString%></p>
+        <p>By: <%=forumThread.author.username%>, 
+        
+        <span class="pull-right">
+                <span class="glyphicon glyphicon-comment"></span>
+                <span><%=forumThread.numOfComments%></span>
+                <span class="glyphicon glyphicon-thumbs-up"></span>
+                <span> <%=forumThread.likes%></span>
+                <span class="glyphicon glyphicon-time"></span>
+                <span><%=forumThread.timeSinceString%></span>
+        </span></p>
 
         
     </div>

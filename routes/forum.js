@@ -7,26 +7,62 @@ var lastIds = require("../models/lastIds");
 
 var middleware = require("../middleware");
 
-
 router.get("/", function (req, res) {
+	res.redirect("/forum/page/1");
+})
+
+
+router.get("/page/:pageNum", function (req, res) {
 	//rendering the campgrounds.ejs file
 	//and also passing in the array data
 	//first campgrounds is the name of the obj we are passing
 	//the second one is the data from the above array we are providing
 	// res.render("campgrounds", {campgrounds: campgrounds});
 
+	//if theres an invalid page num, redirect to page 1
+	if (req.params.pageNum < 1) {
+		res.redirect("/forum/page/1");
+	}
 
 	//get all forumThreads from DB
 	//then render
-	forumThread.find({}).sort({ timeCreated: 'descending' }).exec(function (err, allForumThreads) {
-		if (err) {
-			console.log(err);
-		}
-		else {
-			//only send back the first 10 entries
-			res.render("forum/index", { allForumThreads: allForumThreads.slice(0, 10), currentUser: res.app.locals.originalUsername });
-		}
-	});
+
+	var NUM_OF_RESULTS_PER_PAGE = 10;
+	if (req.params.numOfResultsPerPage) {
+		NUM_OF_RESULTS_PER_PAGE = req.params.numOfResultsPerPage;
+	}
+
+	var skipNumber = 0;
+
+	//if we have a specified pageNum, then skip a bit
+	if (req.params.pageNum) {
+		//-1 because page numbers start at 1
+		skipNumber = (req.params.pageNum - 1) * NUM_OF_RESULTS_PER_PAGE;
+	}
+
+	//get the last 5 and limit it to 5 documents returned
+	forumThread.find({}).sort({ timeCreated: 'descending' }).skip(skipNumber).limit(NUM_OF_RESULTS_PER_PAGE)
+		.exec(function (err, allForumThreads) {
+			if (err) {
+				console.log(err);
+			}
+			else {
+
+				allForumThreads.forEach(function (forumThread) {
+
+					forumThread.timeSinceString = getTimeDiffInString(forumThread.timeLastEdit);
+					// console.log()
+
+				});
+
+				//only send back the first 10 entries
+				res.render("forum/index", {
+					allForumThreads: allForumThreads,
+					currentUser: res.app.locals.originalUsername,
+					pageNum: req.params.pageNum
+				});
+			}
+		});
 });
 
 router.post("/", middleware.isLoggedIn, async function (req, res) {
@@ -40,13 +76,14 @@ router.post("/", middleware.isLoggedIn, async function (req, res) {
 	var title = req.body.title;
 	var description = req.body.description;
 
-	var d = new Date();
+	var d1 = new Date();
+	var d2 = new Date();
 
-	var timeCreated = d;
+	var timeCreated = d1;
 
 	var likes = 0;
 	var numOfComments = 0;
-	var timeLastEdit = d;
+	var timeLastEdit = d2;
 
 	var hoursSinceLastEdit = 0;
 
@@ -125,7 +162,7 @@ router.get("/new", middleware.isLoggedIn, function (req, res) {
 });
 
 //show
-router.get("/:id", function (req, res) {
+router.get("/show/:id", function (req, res) {
 	forumThread.findById(req.params.id).populate("comments").exec(function (err, foundForumThread) {
 		if (err) {
 			// console.log(err);
@@ -136,42 +173,15 @@ router.get("/:id", function (req, res) {
 			if (foundForumThread === null) {
 				console.log("Thread not found, redirecting");
 				res.redirect("/forum");
-				
+
 				return;
 			}
 
-
-			var currentDate = new Date(); 
-			var dateDifference = new Date (currentDate - foundForumThread.timeCreated); 
-
-			//set it to seconds
-			var timeSince = (dateDifference/1000); 
-
-			console.log(timeSince);
-			if(timeSince < 60){
-				timeSince = Math.floor(timeSince) + " seconds ago";   
-			}
-			else if(timeSince/60 < 60){
-				timeSince = Math.floor(timeSince) + " mins ago";   
-			} 
-			else if(timeSince/60/60 < 24){
-				timeSince = Math.floor(timeSince/60/60) + " hr ago"; 
-			} 
-			else if(timeSince/60/60/24 < 30){
-				timeSince = (Math.floor(timeSince/60/60/24)) + " days ago"; 
-			} 
-			else if(timeSince/60/60/24/30 < 12){
-				timeSince = (Math.floor(timeSince/60/60/24/30)) + " months ago"; 
-			} 
-			else{
-				timeSince = (Math.floor(timeSince/60/60/24/30/12)) + " years ago"; 
-			}
-
+			//update the time since string
+			var timeSince = getTimeDiffInString(foundForumThread.timeLastEdit);
 			foundForumThread.timeSinceString = timeSince;
 
 			console.log("comments: " + foundForumThread.comments);
-
-			
 
 			res.render("forum/show", { forumThread: foundForumThread });
 		}
@@ -212,6 +222,36 @@ router.delete("/:id", middleware.checkCampgroundOwnership, function (req, res) {
 });
 
 
+function getTimeDiffInString(inputTime) {
+
+	var currentDate = new Date();
+	var dateDifference = new Date(currentDate - inputTime);
+
+	//set it to seconds
+	var timeSince = (dateDifference / 1000);
+
+	console.log(timeSince);
+	if (timeSince < 60) {
+		timeSince = Math.floor(timeSince) + " seconds";
+	}
+	else if (timeSince / 60 < 60) {
+		timeSince = Math.floor(timeSince) + " mins";
+	}
+	else if (timeSince / 60 / 60 < 24) {
+		timeSince = Math.floor(timeSince / 60 / 60) + " hours";
+	}
+	else if (timeSince / 60 / 60 / 24 < 30) {
+		timeSince = (Math.floor(timeSince / 60 / 60 / 24)) + " days";
+	}
+	else if (timeSince / 60 / 60 / 24 / 30 < 12) {
+		timeSince = (Math.floor(timeSince / 60 / 60 / 24 / 30)) + " months";
+	}
+	else {
+		timeSince = (Math.floor(timeSince / 60 / 60 / 24 / 30 / 12)) + " years";
+	}
+
+	return timeSince;
+}
 
 
 
