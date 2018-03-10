@@ -12,13 +12,21 @@ h2 {
 }
 
 .postContainer {
-    background-color: rgb(230, 230, 230);
+    /*  */
     border-radius: 10px;
     padding: 10px;
 }
 
 .commentsContainer {
-    background-color: rgb(245, 245, 245);
+    /* background-color: rgb(255, 175, 175); */
+    background-color: rgb(245, 245, 245); 
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.descriptionContainer {
+    background-color: rgb(230, 230, 230);
+    
     border-radius: 10px;
     padding: 10px;
 }

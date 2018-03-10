@@ -2,16 +2,26 @@
 
 <link rel="stylesheet" type="text/css" href="/stylesheets/forum/show.css">
 
+
+<%   var bg_converter = {};                    %>
+<%   bg_converter["avalon"] = "success";       %>
+<%   bg_converter["offTopic"] = "info";        %>
+<%   bg_converter["suggestion"] = "warning";   %>
+<%   bg_converter["bug"] = "danger";           %>
+
+
 <div class="myContainer">
-    <div class="postContainer">
+    <div class="postContainer bg-<%=bg_converter[forumThread.category]%>">
 
         <h2><%=forumThread.title%></h2>
-        <p>By: <%=forumThread.author.username%>, <%=forumThread.timeCreated.toLocaleString()%></p>
+
+
+        <p>By: <%=forumThread.author.username%>, <%=forumThread.timeSinceString%></p>
 
         
     </div>
 
-    <div class="commentsContainer">
+    <div class="descriptionContainer">
         <p>
             <%=forumThread.description%>
         </p>
@@ -21,12 +31,14 @@
 
     <hr>
 
-    <%forumThread.comments.forEach(function(comment){ %>
-        <%=comment%>
-        <br>
-        <hr>
-    <%})%>
 
+
+    <div class="commentsContainer">
+        <%forumThread.comments.forEach(function(comment){ %>
+            <%=comment%>
+            
+        <%})%>
+    </div>
 </div>
 
 

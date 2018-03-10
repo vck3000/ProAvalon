@@ -136,8 +136,43 @@ router.get("/:id", function (req, res) {
 			if (foundForumThread === null) {
 				console.log("Thread not found, redirecting");
 				res.redirect("/forum");
+				
+				return;
 			}
-			console.log("comments: " + forumThread.comments);
+
+
+			var currentDate = new Date(); 
+			var dateDifference = new Date (currentDate - foundForumThread.timeCreated); 
+
+			//set it to seconds
+			var timeSince = (dateDifference/1000); 
+
+			console.log(timeSince);
+			if(timeSince < 60){
+				timeSince = Math.floor(timeSince) + " seconds ago";   
+			}
+			else if(timeSince/60 < 60){
+				timeSince = Math.floor(timeSince) + " mins ago";   
+			} 
+			else if(timeSince/60/60 < 24){
+				timeSince = Math.floor(timeSince/60/60) + " hr ago"; 
+			} 
+			else if(timeSince/60/60/24 < 30){
+				timeSince = (Math.floor(timeSince/60/60/24)) + " days ago"; 
+			} 
+			else if(timeSince/60/60/24/30 < 12){
+				timeSince = (Math.floor(timeSince/60/60/24/30)) + " months ago"; 
+			} 
+			else{
+				timeSince = (Math.floor(timeSince/60/60/24/30/12)) + " years ago"; 
+			}
+
+			foundForumThread.timeSinceString = timeSince;
+
+			console.log("comments: " + foundForumThread.comments);
+
+			
+
 			res.render("forum/show", { forumThread: foundForumThread });
 		}
 	});
