@@ -40,3 +40,6 @@ p {
     padding-left: 10px;
 }
 
+.editForumThreadButtons .delete-form{
+    display: inline-block;
+}

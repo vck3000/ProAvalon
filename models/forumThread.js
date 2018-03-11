@@ -14,6 +14,8 @@ var forumThreadSchema = new mongoose.Schema({
 	timeLastEdit: Date,
 
 	numberId: Number,
+
+	edited: Boolean,
 	
 
 	author: {

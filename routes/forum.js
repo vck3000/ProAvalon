@@ -106,7 +106,7 @@ router.post("/", middleware.isLoggedIn, async function (req, res) {
 	else if (req.body.bug) {
 		category = "bug";
 	}
-	else{
+	else {
 		category = "offTopic";
 	}
 
@@ -208,30 +208,30 @@ router.put("/:id", middleware.checkForumThreadOwnership, function (req, res) {
 	//find and update the correct campground
 
 	var category = "";
+	var categoryChange = false;
 	if (req.body.avalon) {
 		category = "avalon";
-
-		//update the category
-		req.body.forumThread.category = category;
+		categoryChange = true;
 	}
 	else if (req.body.offTopic) {
 		category = "offTopic";
-
-		//update the category
-		req.body.forumThread.category = category;
+		categoryChange = true;
 	}
 	else if (req.body.suggestion) {
 		category = "suggestion";
-
-		//update the category
-		req.body.forumThread.category = category;
+		categoryChange = true;
 	}
 	else if (req.body.bug) {
 		category = "bug";
+		categoryChange = true;
+	}
 
+	if (categoryChange === true) {
 		//update the category
 		req.body.forumThread.category = category;
 	}
+
+	req.body.forumThread.edited = true;
 
 
 
@@ -267,22 +267,22 @@ function getTimeDiffInString(inputTime) {
 
 	console.log(timeSince);
 	if (timeSince < 60) {
-		timeSince = Math.floor(timeSince) + " seconds";
+		timeSince = Math.floor(timeSince) + " sec";
 	}
 	else if (timeSince / 60 < 60) {
-		timeSince = Math.floor(timeSince / 60) + " mins";
+		timeSince = Math.floor(timeSince / 60) + " min";
 	}
 	else if (timeSince / 60 / 60 < 24) {
-		timeSince = Math.floor(timeSince / 60 / 60) + " hours";
+		timeSince = Math.floor(timeSince / 60 / 60) + " hr";
 	}
 	else if (timeSince / 60 / 60 / 24 < 30) {
-		timeSince = (Math.floor(timeSince / 60 / 60 / 24)) + " days";
+		timeSince = (Math.floor(timeSince / 60 / 60 / 24)) + " day";
 	}
 	else if (timeSince / 60 / 60 / 24 / 30 < 12) {
-		timeSince = (Math.floor(timeSince / 60 / 60 / 24 / 30)) + " months";
+		timeSince = (Math.floor(timeSince / 60 / 60 / 24 / 30)) + " mth";
 	}
 	else {
-		timeSince = (Math.floor(timeSince / 60 / 60 / 24 / 30 / 12)) + " years";
+		timeSince = (Math.floor(timeSince / 60 / 60 / 24 / 30 / 12)) + " yr";
 	}
 
 	return timeSince;

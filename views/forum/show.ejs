@@ -11,12 +11,18 @@
 
 
 <div class="myContainer">
+
+    <button id="backButton" class="btn btn-warning" onclick="goBack()">Back</button>
+    <br>
+    <br>
+
+
     <div class="postContainer bg-<%=bg_converter[forumThread.category]%>">
 
         <h2><%=forumThread.title%></h2>
 
 
-        <p>By: <%=forumThread.author.username%> | Created: <%=forumThread.timeCreated.toLocaleDateString();%>
+        <p>By: <%=forumThread.author.username%> | <%=forumThread.timeCreated.toLocaleDateString();%>
         
         <span class="pull-right">
                 <span class="glyphicon glyphicon-comment"></span>
@@ -33,22 +39,25 @@
     <div class="descriptionContainer">
         <p>
             <%=forumThread.description%>
+            <br>
+            
 
-
-            <br>
-            <br>
-            <br>
-            <br>
-
+            <% if(forumThread.edited === true){ %>
+                <br>
+                [Edited]
+            <% } %>
 
             <% if(currentUser && forumThread.author.id && forumThread.author.id.equals(currentUser.id)){ %>
-                <a class="btn btn-warning" href="/forum/<%=forumThread._id%>/edit">Edit</a>
+                <br>
+                <div class="editForumThreadButtons">
+                    <a class="btn btn-warning" href="/forum/<%=forumThread._id%>/edit">Edit</a>
 
-                <form class="delete-form" action="/forum/<%=forumThread._id%>?_method=DELETE" method="POST">
-                    <button class="btn btn-danger">
-                        Delete
-                    </button>
-                </form>
+                    <form class="delete-form" action="/forum/<%=forumThread._id%>?_method=DELETE" method="POST">
+                        <button class="btn btn-danger">
+                            Delete
+                        </button>
+                    </form>
+                </div>
             <%}%>
                     
 
@@ -76,7 +85,11 @@
 
 
 
-
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
 
 
 
