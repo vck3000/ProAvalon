@@ -40,7 +40,6 @@ router.get("/page/:pageNum", function (req, res) {
 		skipNumber = (req.params.pageNum - 1) * NUM_OF_RESULTS_PER_PAGE;
 	}
 
-	//get the last 5 and limit it to 5 documents returned
 	forumThread.find({}).sort({ timeCreated: 'descending' }).skip(skipNumber).limit(NUM_OF_RESULTS_PER_PAGE)
 		.exec(function (err, allForumThreads) {
 			if (err) {
@@ -55,24 +54,24 @@ router.get("/page/:pageNum", function (req, res) {
 
 				});
 
-				//only send back the first 10 entries
 				res.render("forum/index", {
 					allForumThreads: allForumThreads,
-					currentUser: res.app.locals.originalUsername,
+					currentUser: { username: res.app.locals.originalUsername, id: req.user._id },
 					pageNum: req.params.pageNum
 				});
 			}
 		});
 });
 
+//creating new forumThread
 router.post("/", middleware.isLoggedIn, async function (req, res) {
 	const util = require('util')
 
-	console.log("inc data: " + util.inspect(req.body, { showHidden: false, depth: null }))
+	// console.log("inc data: " + util.inspect(req.body, { showHidden: false, depth: null }))
 
 	// console.log("inc data: " + req.body);
 
-	//get data from form and add to campgrounds array
+	//get data from form and add to forumThread array
 	var title = req.body.title;
 	var description = req.body.description;
 
@@ -106,6 +105,9 @@ router.post("/", middleware.isLoggedIn, async function (req, res) {
 	}
 	else if (req.body.bug) {
 		category = "bug";
+	}
+	else{
+		category = "offTopic";
 	}
 
 	var number = 0;
@@ -177,49 +179,82 @@ router.get("/show/:id", function (req, res) {
 				return;
 			}
 
-			//update the time since string
+			//update the time since string for forumThread
 			var timeSince = getTimeDiffInString(foundForumThread.timeLastEdit);
 			foundForumThread.timeSinceString = timeSince;
 
+			//update the time since string for each comment
+			foundForumThread.comments.forEach(function (comment) {
+				comment.timeSinceString = getTimeDiffInString(comment.timeLastEdit);
+			});
+
 			console.log("comments: " + foundForumThread.comments);
 
-			res.render("forum/show", { forumThread: foundForumThread });
+			res.render("forum/show", { forumThread: foundForumThread, currentUser: { username: res.app.locals.originalUsername, id: req.user._id } });
 		}
 	});
 });
 
 
-//EDIT campground route
-router.get("/:id/edit", middleware.checkCampgroundOwnership, function (req, res) {
-	Campground.findById(req.params.id, function (err, foundCampground) {
-		res.render("campgrounds/edit", { campground: foundCampground });
+//EDIT forumThread route
+router.get("/:id/edit", middleware.checkForumThreadOwnership, function (req, res) {
+	forumThread.findById(req.params.id, function (err, foundForumThread) {
+		res.render("forum/edit", { forumThread: foundForumThread });
 	});
 });
 
 //update campground route
-router.put("/:id", middleware.checkCampgroundOwnership, function (req, res) {
+router.put("/:id", middleware.checkForumThreadOwnership, function (req, res) {
 	//find and update the correct campground
 
-	Campground.findByIdAndUpdate(req.params.id, req.body.campground, function (err, updatedCampground) {
+	var category = "";
+	if (req.body.avalon) {
+		category = "avalon";
+
+		//update the category
+		req.body.forumThread.category = category;
+	}
+	else if (req.body.offTopic) {
+		category = "offTopic";
+
+		//update the category
+		req.body.forumThread.category = category;
+	}
+	else if (req.body.suggestion) {
+		category = "suggestion";
+
+		//update the category
+		req.body.forumThread.category = category;
+	}
+	else if (req.body.bug) {
+		category = "bug";
+
+		//update the category
+		req.body.forumThread.category = category;
+	}
+
+
+
+	forumThread.findByIdAndUpdate(req.params.id, req.body.forumThread, function (err, updatedForumThread) {
 		if (err) {
-			res.redirect("/campgrounds");
+			res.redirect("/forum");
 		} else {
-			res.redirect("/campgrounds/" + req.params.id);
+			res.redirect("/forum/show/" + updatedForumThread.id);
 		}
 	});
 	//redirect to show page
 });
 
 //destroy campground route
-router.delete("/:id", middleware.checkCampgroundOwnership, function (req, res) {
-	Campground.findByIdAndRemove(req.params.id, function (err) {
-		if (err) {
-			res.redirect("/campgrounds");
-		} else {
-			res.redirect("/campgrounds");
-		}
-	});
-});
+// router.delete("/:id", middleware.checkCampgroundOwnership, function (req, res) {
+// 	Campground.findByIdAndRemove(req.params.id, function (err) {
+// 		if (err) {
+// 			res.redirect("/campgrounds");
+// 		} else {
+// 			res.redirect("/campgrounds");
+// 		}
+// 	});
+// });
 
 
 function getTimeDiffInString(inputTime) {
@@ -235,7 +270,7 @@ function getTimeDiffInString(inputTime) {
 		timeSince = Math.floor(timeSince) + " seconds";
 	}
 	else if (timeSince / 60 < 60) {
-		timeSince = Math.floor(timeSince) + " mins";
+		timeSince = Math.floor(timeSince / 60) + " mins";
 	}
 	else if (timeSince / 60 / 60 < 24) {
 		timeSince = Math.floor(timeSince / 60 / 60) + " hours";

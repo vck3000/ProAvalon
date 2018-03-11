@@ -1,6 +1,6 @@
 var mongoose = require("mongoose");
 
-var commentSchema = mongoose.Schema({
+var replySchema = mongoose.Schema({
 	text: String,
 
 	author: {
@@ -14,13 +14,6 @@ var commentSchema = mongoose.Schema({
 	timeCreated: Date,
 	timeLastEdit: Date,
 	likes: String,
-
-	replies: [
-		{
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "forumThreadCommentReply"
-		} 
-	],
 });
 
-module.exports = mongoose.model("forumThreadComment", commentSchema);
+module.exports = mongoose.model("forumThreadCommentReply", replySchema);

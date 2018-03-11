@@ -6,7 +6,7 @@ var forumThreadComment = require("../models/forumThreadComment");
 var middlewareObj = {};
 
 
-middlewareObj.checkCampgroundOwnership = function(req, res, next){
+middlewareObj.checkForumThreadOwnership = function(req, res, next){
 	if(req.isAuthenticated()){
 		forumThread.findById(req.params.id, function(err, forumThread){
 			if(err){
@@ -28,7 +28,7 @@ middlewareObj.checkCampgroundOwnership = function(req, res, next){
 	}
 }
 
-middlewareObj.checkCommentOwnership = function(req, res, next){
+middlewareObj.checkForumThreadCommentOwnership = function(req, res, next){
 	if(req.isAuthenticated()){
 		forumThreadComment.findById(req.params.comment_id, function(err, foundComment){
 			if(err){

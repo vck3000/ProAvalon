@@ -147,6 +147,7 @@ function seedDB() {
                             text: "This place is great, but I wish there was internet",
                             author: { username: "Homer" },
                             timeCreated: date.setTime(1514725200000),
+                            timeLastEdit: date.setTime(1514725200000),
                             likes: 1
                         })
                             .then(function (createdComment) {

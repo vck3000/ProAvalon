@@ -6,6 +6,10 @@ h2 {
     margin: 0;
 }
 
+p {
+    margin: 0;
+}
+
 .myContainer {
     width: 75%;
     margin: 0 auto;
@@ -30,3 +34,9 @@ h2 {
     border-radius: 10px;
     padding: 10px;
 }
+
+.timeSince {
+    color: #888888;
+    padding-left: 10px;
+}
+

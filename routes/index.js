@@ -51,7 +51,7 @@ router.get("/loginFail", function(req, res){
 //lobby route
 router.get("/lobby", isLoggedIn, function(req, res){
 	console.log(res.app.locals.originalUsername);
-	res.render("lobby", {currentUser: res.app.locals.originalUsername, headerActive: "lobby"});
+	res.render("lobby", {currentUser: {username: res.app.locals.originalUsername, id: req.user._id}, headerActive: "lobby"});
 });
 
 //logout
@@ -64,15 +64,15 @@ router.get("/logout", function(req, res){
 });
 
 router.get("/log", function(req, res){
-	res.render("log", {currentUser: res.app.locals.originalUsername, headerActive: "log"});
+	res.render("log", {currentUser: {username: res.app.locals.originalUsername, id: req.user._id}, headerActive: "log"});
 })
 
 router.get("/rules", function(req, res){
-	res.render("rules", {currentUser: res.app.locals.originalUsername, headerActive: "rules"});
+	res.render("rules", {currentUser: {username: res.app.locals.originalUsername, id: req.user._id}, headerActive: "rules"});
 })
 
 router.get("/testmodal", function(req, res){
-	res.render("testmodal", {currentUser: res.app.locals.originalUsername});
+	res.render("testmodal", {currentUser: {username: res.app.locals.originalUsername, id: req.user._id}});
 });
 
 //=====================================
@@ -80,7 +80,7 @@ router.get("/testmodal", function(req, res){
 //=====================================
 //this part should be in another file now.
 // router.get("/forum", function(req, res){
-// 	res.render("forum", {currentUser: res.app.locals.originalUsername});
+// 	res.render("forum", {currentUser: {username: res.app.locals.originalUsername, id: req.user._id}});
 // })
 
 

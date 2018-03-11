@@ -16,7 +16,7 @@
         <h2><%=forumThread.title%></h2>
 
 
-        <p>By: <%=forumThread.author.username%>, 
+        <p>By: <%=forumThread.author.username%> | Created: <%=forumThread.timeCreated.toLocaleDateString();%>
         
         <span class="pull-right">
                 <span class="glyphicon glyphicon-comment"></span>
@@ -33,6 +33,25 @@
     <div class="descriptionContainer">
         <p>
             <%=forumThread.description%>
+
+
+            <br>
+            <br>
+            <br>
+            <br>
+
+
+            <% if(currentUser && forumThread.author.id && forumThread.author.id.equals(currentUser.id)){ %>
+                <a class="btn btn-warning" href="/forum/<%=forumThread._id%>/edit">Edit</a>
+
+                <form class="delete-form" action="/forum/<%=forumThread._id%>?_method=DELETE" method="POST">
+                    <button class="btn btn-danger">
+                        Delete
+                    </button>
+                </form>
+            <%}%>
+                    
+
         </p>
     </div>
 
@@ -43,9 +62,11 @@
 
 
     <div class="commentsContainer">
+        <h3>Comments: </h3>
+
         <%forumThread.comments.forEach(function(comment){ %>
-            <%=comment%>
-            
+        <p><strong><%=comment.author.username%></strong> <span class="timeSince"><%=comment.timeSinceString%> ago</span></p>
+            <%=comment.text%>
         <%})%>
     </div>
 </div>
