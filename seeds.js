@@ -144,8 +144,8 @@ function seedDB() {
 
                         //create a comment for each forum thread
                         await forumThreadComment.create({
-                            text: "This place is great, but I wish there was internet",
-                            author: { username: "Homer" },
+                            text: "Avalon is the best!!!!",
+                            author: { username: "defnotProNub" },
                             timeCreated: date.setTime(1514725200000),
                             timeLastEdit: date.setTime(1514725200000),
                             likes: 1

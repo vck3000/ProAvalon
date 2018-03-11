@@ -56,7 +56,7 @@ router.get("/page/:pageNum", function (req, res) {
 
 				res.render("forum/index", {
 					allForumThreads: allForumThreads,
-					currentUser: { username: res.app.locals.originalUsername, id: req.user._id },
+					currentUser: { username: res.app.locals.originalUsername, user: req.user },
 					pageNum: req.params.pageNum
 				});
 			}
@@ -160,7 +160,7 @@ router.post("/", middleware.isLoggedIn, async function (req, res) {
 //order
 router.get("/new", middleware.isLoggedIn, function (req, res) {
 	// console.log("NEW STUFF ");
-	res.render("forum/new");
+	res.render("forum/new", { currentUser: { username: res.app.locals.originalUsername, user: req.user } });
 });
 
 //show
@@ -188,9 +188,9 @@ router.get("/show/:id", function (req, res) {
 				comment.timeSinceString = getTimeDiffInString(comment.timeLastEdit);
 			});
 
-			console.log("comments: " + foundForumThread.comments);
+			// console.log("comments: " + foundForumThread.comments);
 
-			res.render("forum/show", { forumThread: foundForumThread, currentUser: { username: res.app.locals.originalUsername, id: req.user._id } });
+			res.render("forum/show", { forumThread: foundForumThread, currentUser: { username: res.app.locals.originalUsername, user: req.user } });
 		}
 	});
 });
@@ -199,11 +199,11 @@ router.get("/show/:id", function (req, res) {
 //EDIT forumThread route
 router.get("/:id/edit", middleware.checkForumThreadOwnership, function (req, res) {
 	forumThread.findById(req.params.id, function (err, foundForumThread) {
-		res.render("forum/edit", { forumThread: foundForumThread });
+		res.render("forum/edit", { forumThread: foundForumThread, currentUser: { username: res.app.locals.originalUsername, user: req.user } });
 	});
 });
 
-//update campground route
+//update forumThread route
 router.put("/:id", middleware.checkForumThreadOwnership, function (req, res) {
 	//find and update the correct campground
 
@@ -233,6 +233,8 @@ router.put("/:id", middleware.checkForumThreadOwnership, function (req, res) {
 
 	req.body.forumThread.edited = true;
 
+	req.body.forumThread.timeLastEdit = new Date();
+
 
 
 	forumThread.findByIdAndUpdate(req.params.id, req.body.forumThread, function (err, updatedForumThread) {
@@ -243,6 +245,51 @@ router.put("/:id", middleware.checkForumThreadOwnership, function (req, res) {
 		}
 	});
 	//redirect to show page
+});
+
+
+//create new comment route
+router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
+
+	var d = new Date();
+
+	var commentData = {
+		text: req.body.comment.text,
+		author: { id: req.user._id, username: res.app.locals.originalUsername },
+
+		timeCreated: d,
+		timeLastEdit: d,
+
+		likes: 0,
+
+		replies: []
+	}
+
+	forumThreadComment.create(commentData, function (err, newComment) {
+
+		console.log("new comment: " + newComment);
+
+		console.log("Thread id: " + req.params.id);
+		console.log("Redirecting to: " + "/forum/show/" + req.params.id);
+
+		forumThread.findById(req.params.id).populate("comments").exec(function (err, foundForumThread) {
+			console.log("title of thread found: " + foundForumThread.title);
+		
+			console.log("current comments: " + foundForumThread.comments);
+
+		
+			foundForumThread.comments.push(newComment);
+			
+			console.log("current comments after add: " + foundForumThread.comments);
+
+			foundForumThread.save();
+
+			//redirect to same forum thread
+			res.redirect("/forum/show/" + req.params.id);
+		});
+
+	});
+
 });
 
 //destroy campground route

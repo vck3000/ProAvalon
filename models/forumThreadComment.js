@@ -13,7 +13,7 @@ var commentSchema = mongoose.Schema({
 
 	timeCreated: Date,
 	timeLastEdit: Date,
-	likes: String,
+	likes: Number,
 
 	replies: [
 		{

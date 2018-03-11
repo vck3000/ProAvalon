@@ -10,6 +10,12 @@ p {
     margin: 0;
 }
 
+textarea {
+    width: 100%;
+
+    resize: vertical;
+}
+
 .myContainer {
     width: 75%;
     margin: 0 auto;
@@ -43,3 +49,8 @@ p {
 .editForumThreadButtons .delete-form{
     display: inline-block;
 }
+
+.addCommentDiv {
+    display: none;
+}
+
