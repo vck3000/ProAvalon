@@ -147,25 +147,25 @@ module.exports = function (io) {
 		//=======================================
 		//COMMANDS
 		//=======================================
-		socket.on("originalUsername", function (username) {
-			var lowerCasedUsername = username.toLowerCase();
-			//if the lowercased version of their caps username is the same, then go ahead
-			if (lowerCasedUsername == socket.request.user.username) {
-				//set the socket to new caps
-				socket.request.user.oldUsername = socket.request.user.username;
-				socket.request.user.username = username;
-				console.log("Changed player " + lowerCasedUsername + " to " + username);
+		// socket.on("originalUsername", function (username) {
+		// 	var lowerCasedUsername = username.toLowerCase();
+		// 	//if the lowercased version of their caps username is the same, then go ahead
+		// 	if (lowerCasedUsername == socket.request.user.username) {
+		// 		//set the socket to new caps
+		// 		socket.request.user.oldUsername = socket.request.user.username;
+		// 		socket.request.user.username = username;
+		// 		console.log("Changed player " + lowerCasedUsername + " to " + username);
 
-				//set the currentPlayerUsernames to new caps
-				var i = currentPlayersUsernames.indexOf(lowerCasedUsername);
-				currentPlayersUsernames[i] = username;
+		// 		//set the currentPlayerUsernames to new caps
+		// 		var i = currentPlayersUsernames.indexOf(lowerCasedUsername);
+		// 		currentPlayersUsernames[i] = username;
 
-				//io sends to everyone in the site, including the current user of this socket
-				io.in("allChat").emit("update-current-players-list", currentPlayersUsernames);
+		// 		//io sends to everyone in the site, including the current user of this socket
+		// 		io.in("allChat").emit("update-current-players-list", currentPlayersUsernames);
 
-				updateCurrentGamesList(io);
-			}
-		});
+		// 		updateCurrentGamesList(io);
+		// 	}
+		// });
 
 		socket.on("messageCommand", function (data) {
 			console.log("data0: " + data.command);

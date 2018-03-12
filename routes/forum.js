@@ -56,7 +56,7 @@ router.get("/page/:pageNum", function (req, res) {
 
 				res.render("forum/index", {
 					allForumThreads: allForumThreads,
-					currentUser: { username: res.app.locals.originalUsername, user: req.user },
+					currentUser: req.user,
 					pageNum: req.params.pageNum
 				});
 			}
@@ -160,7 +160,7 @@ router.post("/", middleware.isLoggedIn, async function (req, res) {
 //order
 router.get("/new", middleware.isLoggedIn, function (req, res) {
 	// console.log("NEW STUFF ");
-	res.render("forum/new", { currentUser: { username: res.app.locals.originalUsername, user: req.user } });
+	res.render("forum/new", { currentUser: req.user });
 });
 
 //show
@@ -190,7 +190,7 @@ router.get("/show/:id", function (req, res) {
 
 			// console.log("comments: " + foundForumThread.comments);
 
-			res.render("forum/show", { forumThread: foundForumThread, currentUser: { username: res.app.locals.originalUsername, user: req.user } });
+			res.render("forum/show", { forumThread: foundForumThread, currentUser: req.user});
 		}
 	});
 });
@@ -199,7 +199,7 @@ router.get("/show/:id", function (req, res) {
 //EDIT forumThread route
 router.get("/:id/edit", middleware.checkForumThreadOwnership, function (req, res) {
 	forumThread.findById(req.params.id, function (err, foundForumThread) {
-		res.render("forum/edit", { forumThread: foundForumThread, currentUser: { username: res.app.locals.originalUsername, user: req.user } });
+		res.render("forum/edit", { forumThread: foundForumThread, currentUser: req.user });
 	});
 });
 

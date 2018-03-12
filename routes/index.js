@@ -15,13 +15,14 @@ router.get("/register", function(req, res){
 });
 
 //Post of the register route
-router.post("/", usernameToLowerCase, function(req, res){
-	var newUser = new User({username: req.body.username});
+router.post("/",/* usernameToLowerCase, */function(req, res){
+	var newUser = new User({username: req.body.username/*.toLowerCase()*/});
 
 	if(req.body.username.indexOf(" ") !== -1){
 		req.flash("error", "Sign up failed. Please do not use spaces in your username." + req.body.username.indexOf(" "));
 		res.redirect("register");
 	}
+
 	else{
 		User.register(newUser, req.body.password, function(err, user){
 			if(err){
@@ -38,23 +39,23 @@ router.post("/", usernameToLowerCase, function(req, res){
 });
 
 //login route
-router.post("/login", usernameToLowerCase, passport.authenticate("local", {
+router.post("/login", /*usernameToLowerCase,*/ passport.authenticate("local", {
 	successRedirect: "/lobby",
 	failureRedirect: "/loginFail"
 }));
 
 router.get("/loginFail", function(req, res){
-	req.flash("error", "Log in failed! Please try again :)");
+	req.flash("error", "Log in failed! Please try again.");
 	res.redirect("/");
 });
 
 //lobby route
 router.get("/lobby", isLoggedIn, function(req, res){
-	console.log(res.app.locals.originalUsername);
-	res.render("lobby", {currentUser: {username: res.app.locals.originalUsername, id: req.user._id}, headerActive: "lobby"});
+	// console.log(res.app.locals.originalUsername);
+	res.render("lobby", {currentUser: req.user, headerActive: "lobby"});
 });
 
-//logout
+//logout 
 router.get("/logout", function(req, res){
 	//doesn't work since we destroy the session right after...
 	// req.flash("success", "Logged you out!");
@@ -64,15 +65,15 @@ router.get("/logout", function(req, res){
 });
 
 router.get("/log", function(req, res){
-	res.render("log", {currentUser: {username: res.app.locals.originalUsername, id: req.user._id}, headerActive: "log"});
+	res.render("log", {currentUser: req.user, headerActive: "log"});
 })
 
 router.get("/rules", function(req, res){
-	res.render("rules", {currentUser: {username: res.app.locals.originalUsername, id: req.user._id}, headerActive: "rules"});
+	res.render("rules", {currentUser: req.user, headerActive: "rules"});
 })
 
 router.get("/testmodal", function(req, res){
-	res.render("testmodal", {currentUser: {username: res.app.locals.originalUsername, id: req.user._id}});
+	res.render("testmodal", {currentUser: req.user});
 });
 
 //=====================================
@@ -80,7 +81,7 @@ router.get("/testmodal", function(req, res){
 //=====================================
 //this part should be in another file now.
 // router.get("/forum", function(req, res){
-// 	res.render("forum", {currentUser: {username: res.app.locals.originalUsername, id: req.user._id}});
+// 	res.render("forum", {currentUser: req.user});
 // })
 
 
@@ -96,11 +97,11 @@ function isLoggedIn(req, res, next){
 	res.redirect("/");
 }
 
-function usernameToLowerCase(req, res, next){
-	res.app.locals.originalUsername = req.body.username;
-	req.body.username = req.body.username.toLowerCase();
-	next();
-}
+// function usernameToLowerCase(req, res, next){
+// 	res.app.locals.originalUsername = req.body.username;
+// 	req.body.username = req.body.username.toLowerCase();
+// 	next();
+// }
 
 
 

@@ -4,13 +4,13 @@ var socket = io({ transports: ['websocket'], upgrade: false });
 var ownUsername = "";
 
 // Update the server for our caps username
-if ($("#originalUsername")[0]) {
-    var originalUsername = $("#originalUsername")[0].innerText;
-    console.log("ORIGINAL USERNAME: " + originalUsername);
-    socket.emit("originalUsername", originalUsername);
+// if ($("#originalUsername")[0]) {
+//     var originalUsername = $("#originalUsername")[0].innerText;
+//     console.log("ORIGINAL USERNAME: " + originalUsername);
+//     socket.emit("originalUsername", originalUsername);
 
-    ownUsername = originalUsername;
-}
+//     ownUsername = originalUsername;
+// }
 
 
 
