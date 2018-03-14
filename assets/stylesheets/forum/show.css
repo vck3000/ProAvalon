@@ -11,9 +11,15 @@ p {
 }
 
 textarea {
-    width: 100%;
-
     resize: vertical;
+}
+
+.mainComment {
+    width: 100%;
+}
+
+.commentReply {
+    width: 50%;
 }
 
 .myContainer {
@@ -29,14 +35,13 @@ textarea {
 
 .commentsContainer {
     /* background-color: rgb(255, 175, 175); */
-    background-color: rgb(245, 245, 245); 
+    background-color: rgb(245, 245, 245);
     border-radius: 10px;
     padding: 10px;
 }
 
 .descriptionContainer {
     background-color: rgb(230, 230, 230);
-    
     border-radius: 10px;
     padding: 10px;
 }
@@ -46,7 +51,7 @@ textarea {
     padding-left: 10px;
 }
 
-.editForumThreadButtons .delete-form{
+.editForumThreadButtons .delete-form {
     display: inline-block;
 }
 
@@ -54,3 +59,15 @@ textarea {
     display: none;
 }
 
+.hidden {
+    display: none;
+}
+
+.form-group {
+    margin: 0;
+}
+
+.replyBox {
+    margin-left: 10px;
+    margin-top: 10px;
+}

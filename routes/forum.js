@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 var forumThread = require("../models/forumThread");
 var forumThreadComment = require("../models/forumThreadComment");
+var forumThreadCommentReply = require("../models/forumThreadCommentReply");
 var lastIds = require("../models/lastIds");
 
 
@@ -88,7 +89,7 @@ router.post("/", middleware.isLoggedIn, async function (req, res) {
 
 	var author = {
 		id: req.user._id,
-		username: res.app.locals.originalUsername
+		username: req.user.username
 	}
 
 	var comments = [];
@@ -165,7 +166,7 @@ router.get("/new", middleware.isLoggedIn, function (req, res) {
 
 //show
 router.get("/show/:id", function (req, res) {
-	forumThread.findById(req.params.id).populate("comments").exec(function (err, foundForumThread) {
+	forumThread.findById(req.params.id).populate({path: "comments", populate: {path: "replies"}}).exec(function (err, foundForumThread) {
 		if (err) {
 			// console.log(err);
 			console.log("Thread not found, redirecting");
@@ -186,11 +187,13 @@ router.get("/show/:id", function (req, res) {
 			//update the time since string for each comment
 			foundForumThread.comments.forEach(function (comment) {
 				comment.timeSinceString = getTimeDiffInString(comment.timeLastEdit);
+
+				console.log(comment.replies);
 			});
 
 			// console.log("comments: " + foundForumThread.comments);
 
-			res.render("forum/show", { forumThread: foundForumThread, currentUser: req.user});
+			res.render("forum/show", { forumThread: foundForumThread, currentUser: req.user });
 		}
 	});
 });
@@ -255,7 +258,7 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 
 	var commentData = {
 		text: req.body.comment.text,
-		author: { id: req.user._id, username: res.app.locals.originalUsername },
+		author: { id: req.user._id, username: req.user.username },
 
 		timeCreated: d,
 		timeLastEdit: d,
@@ -274,12 +277,12 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 
 		forumThread.findById(req.params.id).populate("comments").exec(function (err, foundForumThread) {
 			console.log("title of thread found: " + foundForumThread.title);
-		
+
 			console.log("current comments: " + foundForumThread.comments);
 
-		
+
 			foundForumThread.comments.push(newComment);
-			
+
 			console.log("current comments after add: " + foundForumThread.comments);
 
 			foundForumThread.save();
@@ -287,9 +290,46 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 			//redirect to same forum thread
 			res.redirect("/forum/show/" + req.params.id);
 		});
-
 	});
+});
 
+
+//create new comment route
+router.post("/:id/:commentId", middleware.isLoggedIn, async function (req, res) {
+
+	var d = new Date();
+
+	var commentReplyData = {
+		text: req.body.comment.text,
+		author: { id: req.user._id, username: req.user.username },
+
+		timeCreated: d,
+		timeLastEdit: d,
+
+		likes: 0,
+	}
+
+	forumThreadCommentReply.create(commentReplyData, function (err, newCommentReply) {
+
+		// console.log("new commentReply: " + newCommentReply);
+
+		forumThreadComment.findById(req.params.commentId).populate("replies").exec(function (err, foundForumThreadComment) {
+			if (foundForumThreadComment.replies === undefined) {
+				foundForumThreadComment.replies = [];
+			}
+
+			foundForumThreadComment.replies.push(newCommentReply);
+			foundForumThreadComment.save();
+
+			forumThread.findById(req.params.id).populate("comments").exec(function (err, foundForumThread) {
+				foundForumThread.markModified("comments");
+				foundForumThread.save();
+			});
+
+			//redirect to same forum thread
+			res.redirect("/forum/show/" + req.params.id);
+		});
+	});
 });
 
 //destroy campground route
@@ -312,7 +352,7 @@ function getTimeDiffInString(inputTime) {
 	//set it to seconds
 	var timeSince = (dateDifference / 1000);
 
-	console.log(timeSince);
+	// console.log(timeSince);
 	if (timeSince < 60) {
 		timeSince = Math.floor(timeSince) + " sec";
 	}

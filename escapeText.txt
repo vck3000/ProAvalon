@@ -1,0 +1,20 @@
++var escapeText = function(s) {
++    return s
++        .replace(/&/g, '&amp;')
++        .replace(/</g, '&lt;')
++        .replace(/>/g, '&gt;')
++        .replace(/'/g, '&apos;')
++        .replace(/"/g, '&quot;')
++        .replace(/(?:\r\n|\r|\n)/g, ' <br>');
++        // .replace(/ /g, '\u00a0');
++};
++var replaceText = function(s) {
++    return s
++        .replace(/&amp;/g, '&')
++        .replace(/&lt;/g, '<')
++        .replace(/&gt;/g, '>')
++        .replace(/&apos;/g, '\'')
++        .replace(/&quot;/g, '\"')
++        .replace(/<br>/g, '\n')
++        .replace(/ <br\/>/g, '\n');
++};

@@ -32,7 +32,6 @@
                 <span class="glyphicon glyphicon-time"></span>
                 <span><%=forumThread.timeSinceString%></span>
         </span></p>
-
         
     </div>
 
@@ -41,13 +40,12 @@
             <%=forumThread.description%>
             <br>
             
-
             <% if(forumThread.edited === true){ %>
                 <br>
                 [Edited]
             <% } %>
 
-            <% if(currentUser && forumThread.author.id && forumThread.author.id.equals(currentUser.user.id)){ %>
+            <% if(currentUser && forumThread.author.id && forumThread.author.id.equals(currentUser.id)){ %>
                 <br>
                 <div class="editForumThreadButtons">
                     <a class="btn btn-warning" href="/forum/<%=forumThread._id%>/edit">Edit</a>
@@ -59,8 +57,6 @@
                     </form>
                 </div>
             <%}%>
-                    
-
         </p>
     </div>
 
@@ -79,7 +75,7 @@
         <div class="addCommentDiv">
             <form class="comment-form" action="/forum/<%=forumThread._id%>/comment" method="POST">
                 <div class="form-group">
-                    <textarea type="text" placeholder="text" name="comment[text]" rows="5"></textarea>
+                    <textarea type="text" placeholder="text" name="comment[text]" rows="5" class="mainComment"></textarea>
                 </div>
 
                 <div class="form-group">
@@ -90,14 +86,40 @@
             <br>
         </div>
 
-        
+        <!-- COMMENTS -->
+        <div class="comments">
 
-        <%forumThread.comments.forEach(function(comment){ %>
-        <p><strong><%=comment.author.username%></strong> <span class="timeSince"><%=comment.timeSinceString%> ago</span></p>
-            <%=comment.text%>
-            <br>
-            <br>
-        <%})%>
+            <%forumThread.comments.forEach(function(comment){ %>
+                <div class="individualComment">
+                    <p><strong><%=comment.author.username%></strong> <span class="timeSince"><%=comment.timeSinceString%> ago</span></p>
+                    <p><%=comment.text%></p>
+                    <p><a class="reply">Reply</a> <a class="like">Like</a></p>
+                    <!-- Reply box for main comment -->
+                    <div class="replyBox hidden">
+                        <form class="comment-form" action="/forum/<%=forumThread._id%>/<%=comment._id%>" method="POST">
+                            <div class="form-group">
+                                <textarea type="text" placeholder="text" name="comment[text]" rows="3" class="commentReply"></textarea>
+                            </div>
+                            <div class="form-group">
+                            <button class="btn btn-sm btn-primary">Submit</button></div>
+                        </form>
+
+                        <br>
+                        <br>
+                    </div>
+
+                    <!-- Replies to the main comment -->
+                    <% if(comment.replies){ comment.replies.forEach(function(reply){ %>
+                        <%=reply.text%>
+                        <br>
+                    <% }); } %>
+
+
+                    <br>
+                    <br>
+                </div>
+            <%});%>
+        </div>
     </div>
 </div>
 
@@ -113,14 +135,59 @@
 
 
     function showAddComment() {
-        if($(".addCommentDiv")[0].style.display === "none"){
-            $(".addCommentDiv")[0].style.display = "block";
-        }
-        else{
+        if($(".addCommentDiv")[0].style.display === "block"){
             $(".addCommentDiv")[0].style.display = "none";
         }
-        
+        else{
+            $(".addCommentDiv")[0].style.display = "block";
+        }
     }
+
+
+    addEventListenersForReply();
+
+    function addEventListenersForReply() {
+
+        var replies = document.querySelectorAll(".reply");
+
+        replies.forEach(function(reply){
+            reply.addEventListener("click", function(){
+
+                console.log("for every reply");
+                
+                var parent = this.parentNode;
+                //go up one more level
+                
+                parent = parent.parentNode;
+
+                var childNodes = parent.childNodes;
+
+                console.log(childNodes);
+    
+                var replyBox;
+
+                
+    
+                for(var i = 0; i < childNodes.length; i++){
+                    if(childNodes[i].classList && childNodes[i].classList.contains("replyBox")){
+                        replyBox = childNodes[i];
+                        console.log(replyBox);
+                        break;
+                    }
+                }
+    
+                if(replyBox){
+                    replyBox.classList.toggle("hidden");
+                }
+                
+            });
+        });
+    
+    }
+
+    
+
+
 </script>
 
 
