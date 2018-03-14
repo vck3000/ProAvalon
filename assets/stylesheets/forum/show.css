@@ -77,3 +77,11 @@ textarea {
     margin-bottom: 10px;
     font-size: 1em;
 }
+
+.commentOptions {
+    display: none;
+}
+
+.individualComment:hover .commentOptions {
+    display: block;
+}

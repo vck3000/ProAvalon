@@ -8,16 +8,17 @@ var middlewareObj = {};
 
 middlewareObj.checkForumThreadOwnership = function (req, res, next) {
 	if (req.isAuthenticated()) {
-		forumThread.findById(req.params.id, function (err, forumThread) {
+		forumThread.findById(req.params.id, function (err, foundForumThread) {
 			if (err) {
 				req.flash("error", "forumThread not found!");
 				res.redirect("back");
 			} else {
 				//does user own campground?
-				if (forumThread.author.id.equals(req.user._id)) {
+				if (foundForumThread.author.id && foundForumThread.author.id.equals(req.user._id)) {
 					next();
 				} else {
 					req.flash("error", "You are not the owner!");
+					console.log(req.user._id + " " + req.user.username +  " has attempted to do something bad");
 					res.redirect("back");
 				}
 			}

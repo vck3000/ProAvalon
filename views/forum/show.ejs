@@ -125,21 +125,23 @@
         <div class="comments">
 
             <%forumThread.comments.forEach(function(comment){ %>
-                <div class="individualComment">
-                    <p><strong><%=comment.author.username%></strong> <span class="timeSince"><%=comment.timeSinceString%> ago</span></p>
-                    <p><%=comment.text%></p>
-                    <p><a class="reply">Reply</a> <a class="like">Like</a></p>
-                    <!-- Reply box for main comment -->
-                    <div class="replyBox hidden">
-                        <form class="comment-form" action="/forum/<%=forumThread._id%>/<%=comment._id%>" method="POST">
-                            <div class="form-group">
-                                <textarea type="text" placeholder="text" name="comment[text]" rows="3" class="commentReply"></textarea>
-                            </div>
-                            <div class="form-group">
-                            <button class="btn btn-sm btn-primary">Submit</button></div>
-                        </form>
+                <div class="individualMainComment">
+                    <div class="individualComment">
+                        <p><strong><%=comment.author.username%></strong> <span class="timeSince"><%=comment.timeSinceString%> ago</span></p>
+                        <p><%=comment.text%></p>
+                        <p class="commentOptions"><a class="reply">Reply</a> <a class="like">Like</a></p>
+                        <!-- Reply box for main comment -->
+                        <div class="replyBox hidden">
+                            <form class="comment-form" action="/forum/<%=forumThread._id%>/<%=comment._id%>" method="POST">
+                                <div class="form-group">
+                                    <textarea type="text" placeholder="text" name="comment[text]" rows="3" class="commentReply"></textarea>
+                                </div>
+                                <div class="form-group">
+                                <button class="btn btn-sm btn-primary">Submit</button></div>
+                            </form>
 
-                        <br>
+                            <br>
+                        </div>
                     </div>
 
                     <!-- Replies to the main comment -->
@@ -191,8 +193,9 @@
                 
                 var parent = this.parentNode;
                 //go up one more level
-                
                 parent = parent.parentNode;
+                //go up one more level
+                // parent = parent.parentNode;
 
                 var childNodes = parent.childNodes;
 
