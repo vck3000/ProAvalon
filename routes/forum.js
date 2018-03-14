@@ -148,13 +148,8 @@ router.post("/", middleware.isLoggedIn, async function (req, res) {
 				res.redirect("/forum");
 			}
 		});
-
-
 	});
-
 	//PUT IT ALL TOGETHER
-
-
 });
 
 //this route should be above the :id one because of
@@ -187,6 +182,11 @@ router.get("/show/:id", function (req, res) {
 			//update the time since string for each comment
 			foundForumThread.comments.forEach(function (comment) {
 				comment.timeSinceString = getTimeDiffInString(comment.timeLastEdit);
+
+				//update the time since string for each reply to a comment
+				comment.replies.forEach(function(reply){
+					reply.timeSinceString = getTimeDiffInString(reply.timeLastEdit);
+				});
 
 				console.log(comment.replies);
 			});
@@ -332,16 +332,18 @@ router.post("/:id/:commentId", middleware.isLoggedIn, async function (req, res) 
 	});
 });
 
+
 //destroy campground route
-// router.delete("/:id", middleware.checkCampgroundOwnership, function (req, res) {
-// 	Campground.findByIdAndRemove(req.params.id, function (err) {
-// 		if (err) {
-// 			res.redirect("/campgrounds");
-// 		} else {
-// 			res.redirect("/campgrounds");
-// 		}
-// 	});
-// });
+router.delete("/:id", middleware.checkForumThreadOwnership, function (req, res) {
+	forumThread.findByIdAndRemove(req.params.id, function (err) {
+		if (err) {
+			res.redirect("/forum");
+		} else {
+			console.log("Deleted a forumThread.");
+			res.redirect("/forum");
+		}
+	});
+});
 
 
 function getTimeDiffInString(inputTime) {

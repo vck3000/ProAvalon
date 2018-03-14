@@ -49,12 +49,47 @@
                 <br>
                 <div class="editForumThreadButtons">
                     <a class="btn btn-warning" href="/forum/<%=forumThread._id%>/edit">Edit</a>
+                    <a class="btn btn-danger" onclick="deleteFunction()">
+                    
+                    DELETE
+                    
+                    <% var postId1 = forumThread._id; %>
+                    <script>
+                        var postId = "<%=forumThread._id%>";
 
-                    <form class="delete-form" action="/forum/<%=forumThread._id%>?_method=DELETE" method="POST">
-                        <button class="btn btn-danger">
-                            Delete
-                        </button>
-                    </form>
+                        function deleteFunction(){
+                            swal({
+                                title: "Are you sure you want to delete?",
+                                text: "All comments and replies will also be deleted.",
+                                icon: "warning",
+                                buttons: true,
+                                dangerMode: true,
+                            })
+                            .then((willDelete) => {
+                            
+
+                                if (willDelete) {
+                                    $.ajax({
+                                    type: "DELETE",
+                                    url: "/forum/" + postId,
+                                    // data: "name=someValue",
+                                });
+                                
+                                swal("Your thread has been deleted.").then(function(){
+                                    window.location.replace("/forum");
+                                });
+                                
+
+                                } else {
+                                swal("Nothing was deleted.");
+                                }
+                            });
+                            
+                            //<form class="delete-form" action="/forum/<%=forumThread._id%>?_method=DELETE" method="POST">
+                        }
+                    </script>
+                    
+                    </a>
                 </div>
             <%}%>
         </p>
@@ -105,18 +140,17 @@
                         </form>
 
                         <br>
-                        <br>
                     </div>
 
                     <!-- Replies to the main comment -->
                     <% if(comment.replies){ comment.replies.forEach(function(reply){ %>
-                        <%=reply.text%>
-                        <br>
+                        <div class="replyToComment"><p><strong><%=reply.author.username%></strong><span class="timeSince"><%=reply.timeSinceString%> ago</span></p><p><%=reply.text%></p></div>    
+
+
+                        
                     <% }); } %>
 
 
-                    <br>
-                    <br>
                 </div>
             <%});%>
         </div>
@@ -184,10 +218,6 @@
         });
     
     }
-
-    
-
-
 </script>
 
 
