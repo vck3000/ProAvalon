@@ -111,8 +111,9 @@ module.exports = function (io) {
 
 		var i = loweredCurrentPlayersUsernames.indexOf(socket.request.user.username.toLowerCase());
 		if (i !== -1) {
-			allSockets[socket.request.user.username].emit("alert", "You've been disconnected");
-			allSockets[socket.request.user.username].disconnect();
+			//kick the old socket
+			allSockets[socket.request.user.username.toLowerCase()].emit("alert", "You've been disconnected");
+			allSockets[socket.request.user.username.toLowerCase()].disconnect();
 			currentPlayersUsernames.splice(i, 1);
 			console.log("User was logged in already, killed last session and socket.")
 		}
@@ -123,7 +124,7 @@ module.exports = function (io) {
 		//push the new user into our list of players
 		currentPlayersUsernames.push(socket.request.user.username);
 		//push the new socket into our list of sockets
-		allSockets[socket.request.user.username] = socket;
+		allSockets[socket.request.user.username.toLowerCase()] = socket;
 
 		//send a notif to the user saying logged in
 		// socket.emit("success-alert", "Successfully logged in! Welcome, " + socket.request.user.username + "!");

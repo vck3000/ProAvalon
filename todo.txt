@@ -4,7 +4,6 @@ To-do list:
 -claiming
 -let players choose colour
 
--force re-login if a user refreshes
 
 -title notificaitons
 
