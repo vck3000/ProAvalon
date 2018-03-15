@@ -108,7 +108,7 @@ module.exports = function (io) {
 		//if user is already logged in, destroy their last session
 		//compare the new username that is lowercased to the list of current usernames lowercased
 		var loweredCurrentPlayersUsernames = [];
-		for(var i = 0; i < currentPlayersUsernames.length; i++){
+		for (var i = 0; i < currentPlayersUsernames.length; i++) {
 			loweredCurrentPlayersUsernames[i] = currentPlayersUsernames[i].toLowerCase();
 		}
 
@@ -168,7 +168,7 @@ module.exports = function (io) {
 			//get the username and put it into the data object
 			data.username = socket.request.user.username;
 			//send out that data object to all other clients (except the one who sent the message)
-			
+
 			data.message = textLengthFilter(data.message);
 
 			io.in("allChat").emit("allChatToClient", data);
@@ -207,6 +207,9 @@ module.exports = function (io) {
 			socket.in("allChat").emit("player-left-lobby", socket.request.user.username);
 			//Note, by default when socket disconnects, it leaves from all rooms. 
 			//If user disconnected from within a room, the leave room function will send a message to other players in room.
+
+			//if they are in a room, say they're leaving the room.
+			io.in(socket.request.user.inRoomId).emit("player-left-room", socket.request.user.username);
 
 			removePlayerFromRoomAndCheckDestroy(socket, io);
 
@@ -482,10 +485,10 @@ function updateRoomPlayers(io, socket) {
 	io.in(socket.request.user.inRoomId).emit("update-room-players", rooms[socket.request.user.inRoomId].getPlayers());
 }
 
-function textLengthFilter(str){
+function textLengthFilter(str) {
 	var lengthLimit = 500;
 
-	if(str.length > lengthLimit){
-		return str.slice(0,lengthLimit);
+	if (str.length > lengthLimit) {
+		return str.slice(0, lengthLimit);
 	}
 }
