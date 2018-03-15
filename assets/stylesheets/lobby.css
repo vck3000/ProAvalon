@@ -105,6 +105,7 @@ p {
     list-style: none;
     width: 100%;
     overflow: auto;
+    word-wrap: break-word;
 }
 
 .other-chat {

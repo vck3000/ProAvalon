@@ -147,25 +147,6 @@ module.exports = function (io) {
 		//=======================================
 		//COMMANDS
 		//=======================================
-		// socket.on("originalUsername", function (username) {
-		// 	var lowerCasedUsername = username.toLowerCase();
-		// 	//if the lowercased version of their caps username is the same, then go ahead
-		// 	if (lowerCasedUsername == socket.request.user.username) {
-		// 		//set the socket to new caps
-		// 		socket.request.user.oldUsername = socket.request.user.username;
-		// 		socket.request.user.username = username;
-		// 		console.log("Changed player " + lowerCasedUsername + " to " + username);
-
-		// 		//set the currentPlayerUsernames to new caps
-		// 		var i = currentPlayersUsernames.indexOf(lowerCasedUsername);
-		// 		currentPlayersUsernames[i] = username;
-
-		// 		//io sends to everyone in the site, including the current user of this socket
-		// 		io.in("allChat").emit("update-current-players-list", currentPlayersUsernames);
-
-		// 		updateCurrentGamesList(io);
-		// 	}
-		// });
 
 		socket.on("messageCommand", function (data) {
 			console.log("data0: " + data.command);
@@ -187,6 +168,9 @@ module.exports = function (io) {
 			//get the username and put it into the data object
 			data.username = socket.request.user.username;
 			//send out that data object to all other clients (except the one who sent the message)
+			
+			data.message = textLengthFilter(data.message);
+
 			io.in("allChat").emit("allChatToClient", data);
 		});
 
@@ -197,6 +181,8 @@ module.exports = function (io) {
 			console.log("incoming message from room at " + data.date + ": " + data.message + " by: " + socket.request.user.username);
 			//get the username and put it into the data object
 			data.username = socket.request.user.username;
+
+			data.message = textLengthFilter(data.message);
 
 			if (data.roomId) {
 				//send out that data object to all other clients in room(except the one who sent the message)
@@ -495,4 +481,12 @@ var updateCurrentGamesList = function (io) {
 
 function updateRoomPlayers(io, socket) {
 	io.in(socket.request.user.inRoomId).emit("update-room-players", rooms[socket.request.user.inRoomId].getPlayers());
+}
+
+function textLengthFilter(str){
+	var lengthLimit = 500;
+
+	if(str.length > lengthLimit){
+		return str.slice(0,lengthLimit);
+	}
 }

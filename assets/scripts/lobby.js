@@ -1,7 +1,9 @@
 var socket = io({ transports: ['websocket'], upgrade: false });
 // console.log("started");
 
-var ownUsername = "";
+
+
+var ownUsername = $("#originalUsername")[0].innerText; //"";
 
 // Update the server for our caps username
 // if ($("#originalUsername")[0]) {
@@ -21,8 +23,6 @@ setTimeout(function () {
     let viewport = document.querySelector("meta[name=viewport]");
     viewport.setAttribute("content", "height=" + viewheight + ", width=" + viewwidth + ", initial-scale=1.0");
 
-
-
     // Extend divs to bottom of page:
     // All chat in lobby
     var parentH = $("#col1")[0].offsetHeight;
@@ -33,26 +33,37 @@ setTimeout(function () {
 }, 300);
 
 
+
+//=======================================================================
+//COOKIE SETUP!!!!!! Simple cookies for user options to persist
+//=======================================================================
+var userOptions = ["optionDarkTheme"];
+
+//Set up default options: (Note, cookies are all stored as strings so boolean true will become "true")
+if (docCookies.keys().length === 0) {
+    // swal("Some user options have updated! Your settings have been reset. Please change them again.");
+    docCookies.setItem("optionDarkTheme", "true");
+}
+
+//Loading up default options:
+if(docCookies.getItem("optionDarkTheme") === "true"){
+    console.log("Loaded up dark theme true");
+    updateDarkTheme(true);
+    $("#option_dark_theme")[0].checked = true;
+}
+
+
+
+
+//dark theme option checkbox event listener
 $("#option_dark_theme")[0].addEventListener("click", function () {
     var checked = $("#option_dark_theme")[0].checked;
     console.log("dark theme change " + checked);
     //dark theme
-    if (checked === true) {
-        $("body")[0].classList.add("dark");
-        $(".well").addClass("dark");
-        $("input").addClass("dark");
-        $("textarea").addClass("dark");
-        $(".btn-default").addClass("btn-inverse");
-        $(".navbar").addClass("navbar-inverse");
-    }
-    else {
-        $("body")[0].classList.remove("dark");
-        $(".well").removeClass("dark");
-        $("input").removeClass("dark");
-        $("textarea").removeClass("dark");
-        $(".btn-default").removeClass("btn-inverse");
-        $(".navbar").removeClass("navbar-inverse");
-    }
+    updateDarkTheme(checked);
+
+    //save their option in cookie
+    docCookies.setItem("optionDarkTheme", checked.toString());
 });
 
 
@@ -67,12 +78,19 @@ option_font_size_text.value = stringText;
 if (option_font_size === true) {
     $("#option_font_size_text").on("change", function () {
         console.log(option_font_size_text.value);
-        if (option_font_size_text.value > 5) {
-            $("html *").css("font-size", option_font_size_text.value + "px");
+
+        var lowerFontSizeBound = 8;
+        var upperFontSizeBound = 25;
+
+        //bound the font size
+        if (option_font_size_text.value < lowerFontSizeBound) {
+            option_font_size_text.value = lowerFontSizeBound;
         }
-        else {
-            $("html *").css("font-size", "5px");
+        else if(option_font_size_text.value > upperFontSizeBound) {
+            option_font_size_text.value = upperFontSizeBound;
         }
+
+        $("html *").css("font-size", option_font_size_text.value + "px");
         draw(storeData);
     });
 }
@@ -772,7 +790,7 @@ function draw() {
                     //change the well to display what was picked.
                     str += gameData.teamLeader + " has picked: ";
 
-                    for(var i = 0; i < gameData.proposedTeam.length; i++){
+                    for (var i = 0; i < gameData.proposedTeam.length; i++) {
                         str += gameData.proposedTeam[i] + ", ";
                     }
                 }
@@ -1676,6 +1694,26 @@ function checkMessageForCommands(message, chatBox) {
     }
     else {
         return false;
+    }
+}
+
+
+function updateDarkTheme(checked) {
+    if (checked === true) {
+        $("body")[0].classList.add("dark");
+        $(".well").addClass("dark");
+        $("input").addClass("dark");
+        $("textarea").addClass("dark");
+        $(".btn-default").addClass("btn-inverse");
+        $(".navbar").addClass("navbar-inverse");
+    }
+    else {
+        $("body")[0].classList.remove("dark");
+        $(".well").removeClass("dark");
+        $("input").removeClass("dark");
+        $("textarea").removeClass("dark");
+        $(".btn-default").removeClass("btn-inverse");
+        $(".navbar").removeClass("navbar-inverse");
     }
 }
 
