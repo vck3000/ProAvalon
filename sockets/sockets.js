@@ -488,4 +488,7 @@ function textLengthFilter(str) {
 	if (str.length > lengthLimit) {
 		return str.slice(0, lengthLimit);
 	}
+	else{
+		return str;
+	}
 }
