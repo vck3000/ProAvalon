@@ -3,7 +3,7 @@ To-do list:
 -Spam filter?
 -Maximum length to a single chat message
 
--DISCUSSIONS
+
 
 -claiming
 -let players choose colour
@@ -11,9 +11,8 @@ To-do list:
 -force re-login if a user refreshes
 
 -leave room text displayed twice hwen someone leaves a room, and then dc's from .server
--kick option
 
-
+-Escape text for usernames (<h1> username </h1> works which is shouldn't)
 
 -Moderators
 
@@ -109,7 +108,8 @@ Mine:
 -Mission _(num) succeeded
 -gun disappears when someone votes
 -no case sensitive usernames
-
+-DISCUSSIONS
+-kick option
 
 
 

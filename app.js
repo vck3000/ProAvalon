@@ -1,21 +1,21 @@
 //=====================================
 //INITIALISATION
 //=====================================
-var express 			= require("express"),
-	app 				= express(),
-	mongoose			= require("mongoose"),
-	bodyParser 			= require("body-parser"),
-	methodOverride 		= require("method-override"),
+var express = require("express"),
+	app = express(),
+	mongoose = require("mongoose"),
+	bodyParser = require("body-parser"),
+	methodOverride = require("method-override"),
 
-	User 				= require("./models/user"),
+	User = require("./models/user"),
 
-	passport 			= require("passport"),
-	LocalStrategy 		= require("passport-local"),
-	passportSocketIo 	= require("passport.socketio"),
-	cookieParser 		= require('cookie-parser'),
-	flash 				= require("connect-flash"),
+	passport = require("passport"),
+	LocalStrategy = require("passport-local"),
+	passportSocketIo = require("passport.socketio"),
+	cookieParser = require('cookie-parser'),
+	flash = require("connect-flash"),
 
-	seedDB      		= require("./seeds");
+	seedDB = require("./seeds");
 
 var port = process.env.PORT || 80;
 
@@ -138,3 +138,12 @@ function isLoggedIn(req, res, next) {
 
 
 
+function escapeText(str) {
+	return str
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/'/g, '&apos;')
+		.replace(/"/g, '&quot;')
+		.replace(/(?:\r\n|\r|\n)/g, ' <br>');
+};

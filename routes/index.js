@@ -15,7 +15,11 @@ router.get("/register", function(req, res){
 });
 
 //Post of the register route
-router.post("/",/* usernameToLowerCase, */function(req, res){
+router.post("/",escapeTextUsername,/* usernameToLowerCase, */function(req, res){
+	// console.log("escaped: " + escapeText(req.body.username));
+
+	// var escapedUsername = escapeText(req.body.username);
+
 	var newUser = new User({username: req.body.username/*.toLowerCase()*/});
 
 	if(req.body.username.indexOf(" ") !== -1){
@@ -30,6 +34,9 @@ router.post("/",/* usernameToLowerCase, */function(req, res){
 				req.flash("error", "Sign up failed. Most likely that username is taken.");
 				res.redirect("register");
 			} else{
+				//successful, get them to log in again
+				// req.flash("success", "Sign up successful. Please log in.");
+				// res.redirect("/");
 				passport.authenticate("local")(req, res, function(){
 					res.redirect("/lobby");
 				});
@@ -39,7 +46,7 @@ router.post("/",/* usernameToLowerCase, */function(req, res){
 });
 
 //login route
-router.post("/login", /*usernameToLowerCase,*/ passport.authenticate("local", {
+router.post("/login",escapeTextUsername, /*usernameToLowerCase,*/ passport.authenticate("local", {
 	successRedirect: "/lobby",
 	failureRedirect: "/loginFail"
 }));
@@ -103,7 +110,23 @@ function isLoggedIn(req, res, next){
 // 	next();
 // }
 
+function escapeTextUsername(req, res, next){
+	req.body.username = escapeText(req.body.username);
+	next();
+}
+
 
 
 
 module.exports = router;
+
+
+function escapeText(str) {
+	return str
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/'/g, '&apos;')
+		.replace(/"/g, '&quot;')
+		.replace(/(?:\r\n|\r|\n)/g, ' <br>');
+};
