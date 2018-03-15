@@ -1,19 +1,8 @@
 var socket = io({ transports: ['websocket'], upgrade: false });
 // console.log("started");
 
-
-
-var ownUsername = $("#originalUsername")[0].innerText; //"";
-
-// Update the server for our caps username
-// if ($("#originalUsername")[0]) {
-//     var originalUsername = $("#originalUsername")[0].innerText;
-//     console.log("ORIGINAL USERNAME: " + originalUsername);
-//     socket.emit("originalUsername", originalUsername);
-
-//     ownUsername = originalUsername;
-// }
-
+//grab our username from the username assigned by server in EJS file.
+var ownUsername = $("#originalUsername")[0].innerText;
 
 
 //Prevents the window height from changing when android keyboard is pulled up.
@@ -32,7 +21,7 @@ setTimeout(function () {
     $("#all-chat-lobby")[0].style.height = (newHeight - 10) + "px";
 }, 300);
 
-
+//when the navbar is closed, re-exted the tab content to bottom.
 $('.navbar-collapse').on('hidden.bs.collapse', function () {
     extendTabContentToBottomInRoom();
 });
@@ -79,7 +68,7 @@ var userOptions = {
 
                 //make the font size changes
                 $("html *").css("font-size", fontSize + "px");
-                draw(storeData);
+                draw();
             }
         },
         initialiseEventListener: function () {
@@ -104,7 +93,7 @@ var userOptions = {
 
                 //make the changes to font size
                 $("html *").css("font-size", fontSize + "px");
-                draw(storeData);
+                draw();
 
                 //save the data in cookie
                 console.log("Stored font size: " + fontSize);
@@ -184,7 +173,7 @@ var userOptions = {
 
             //extend the tab content to bottom
             extendTabContentToBottomInRoom();
-            draw(storeData);
+            draw();
 
             //get cookie data
             var containerHeight = docCookies.getItem("optionHeightOfAvatarContainer");
@@ -213,15 +202,9 @@ for (var keys in userOptions) {
 }
 
 
-//==================================================
-//Resizeable game room lobby code
-//==================================================
 
-console.log("resize setup done");
-
-
-//for the game (like players in game)
-var storeData;
+//for the game
+var roomPlayersData;
 var seeData;
 var gameData;
 var roomId;
@@ -234,7 +217,7 @@ var isSpectator = false;
 //window resize, repaint the users
 window.addEventListener('resize', function () {
     console.log("Resized");
-    draw(storeData);
+    draw();
 });
 
 
@@ -246,7 +229,7 @@ document.querySelector("#red-button").addEventListener("click", redButtonFunctio
 
 //re-draw the game screen when the modal is closed to update the roles in the center well.
 $('#optionsModal').on('hidden.bs.modal', function (e) {
-    draw(storeData);
+    draw();
 })
 
 // Set the event listener for the button
@@ -288,8 +271,6 @@ document.querySelector("#backButton").addEventListener("click", function () {
 
     resetAllGameData();
 });
-
-
 
 var allChatWindow1 = document.querySelectorAll(".all-chat-message-input")[0];
 allChatWindow1.onkeyup = function (e, allChatWindow1) {
@@ -494,9 +475,6 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 
 
 
-
-
-
 socket.on("player-joined-lobby", function (username) {
     var str = "<li class=server-text>" + username + " has joined the lobby.";
     $(".all-chat-list").append(str);
@@ -539,10 +517,6 @@ socket.on("update-current-players-list", function (currentPlayers) {
             var str = "<tr> <td> " + currentPlayer + "</td> </tr>";
             $("#current-players-table tbody").append(str);
         }
-
-
-        // var str = "<li>" + currentPlayer + "</li>";
-        // $("#current-players-list").append(str);
     });
 });
 
@@ -596,9 +570,6 @@ socket.on("update-current-games-list", function (currentGames) {
 
 
 
-
-
-
 socket.on("new-game-created", function (str) {
     var str = "<li class=server-text>" + str + "</li>";
     $(".all-chat-list").append(str);
@@ -641,7 +612,6 @@ socket.on("messageCommandReturnStr", function (str) {
 
 var slap;
 socket.on("slap", function (username) {
-
     if (slap === undefined) {
         slap = new Audio('sounds/slap.mp3');
     }
@@ -689,7 +659,7 @@ function showDangerAlert(data) {
 
 socket.on("update-room-players", function (data) {
     // var x = $("#typehead").parent().width();
-    storeData = data;
+    roomPlayersData = data;
 
     //remove all the li's inside the list
     $("#mainRoomBox div").remove();
@@ -697,21 +667,22 @@ socket.on("update-room-players", function (data) {
     console.log("update room players");
     // console.log(data);
 
-    draw(data);
+    draw();
 });
 
 //======================================
 //GAME SOCKET ROUTES
 //======================================
-
 socket.on("game-starting", function (roles) {
     var secondsLeft = 15;
+
     swal({
         title: "Game is starting in " + secondsLeft,
         text: "Roles are: " + roles,
         icon: "info",
         // button: "Ready!",
-        buttons: ["Not ready", "Ready"]
+        buttons: ["Not ready", "Ready"],
+        timer: 15000
     }).then(function (value) {
         // swal(("The returned value is: " + value));
         if (value === true) {
@@ -721,6 +692,7 @@ socket.on("game-starting", function (roles) {
             socket.emit("player-not-ready", ownUsername);
         }
     });
+
 });
 
 socket.on("player-ready", function (str) {
@@ -752,7 +724,7 @@ socket.on("game-data", function (data) {
         isSpectator = gameData.spectator;
 
         drawVoteHistory(gameData);
-        draw(storeData);
+        draw();
     }
 });
 
@@ -788,10 +760,10 @@ function redButtonFunction() {
 
             str += '<div class="btn-group-vertical" data-toggle="buttons">';
 
-            for (var i = 0; i < storeData.length; i++) {
+            for (var i = 0; i < roomPlayersData.length; i++) {
                 str += '<label class="btn btn-mine">';
 
-                str += '<input name="' + storeData[i].username + '" id="' + storeData[i].username + '" type="checkbox" autocomplete="off">' + storeData[i].username;
+                str += '<input name="' + roomPlayersData[i].username + '" id="' + roomPlayersData[i].username + '" type="checkbox" autocomplete="off">' + roomPlayersData[i].username;
 
                 str += "</label>";
                 str += "<br>";
@@ -863,7 +835,7 @@ function greenButtonFunction() {
 
 function draw() {
     console.log("draw called");
-    if (storeData) {
+    if (roomPlayersData) {
         drawAndPositionAvatars();
 
         drawTeamLeaderStar();
@@ -1037,7 +1009,7 @@ function activateAvatarButtons() {
 
             selectedAvatars[username] = selectedAvatars[username] % (numOfStatesOfHighlight + 1);
             console.log("Selected avatars num: " + selectedAvatars[username])
-            draw(storeData);
+            draw();
         });
     }
 
@@ -1084,7 +1056,7 @@ function activateAvatarButtons() {
                 }
             }
 
-            draw(storeData);
+            draw();
         });
     }
 
@@ -1230,7 +1202,7 @@ function drawAndPositionAvatars() {
     var w = $("#mainRoomBox").width();
     var h = $("#mainRoomBox").height();
 
-    var numPlayers = storeData.length;//3;
+    var numPlayers = roomPlayersData.length;//3;
 
     //generate the divs in the html
     var str = "";
@@ -1240,19 +1212,19 @@ function drawAndPositionAvatars() {
         for (var i = 0; i < numPlayers; i++) {
             //check if the user is on the spy list. 
             //if they are not, they are res
-            if (gameData.see.spies && gameData.see.spies.indexOf(storeData[i].username) === -1) {
-                str = str + strOfAvatar(storeData[i], "res");
+            if (gameData.see.spies && gameData.see.spies.indexOf(roomPlayersData[i].username) === -1) {
+                str = str + strOfAvatar(roomPlayersData[i], "res");
             }
             //else they are a spy
             else {
-                str = str + strOfAvatar(storeData[i], "spy");
+                str = str + strOfAvatar(roomPlayersData[i], "spy");
             }
         }
     }
     //when game has not yet started, everyone is a res image
     else {
         for (var i = 0; i < numPlayers; i++) {
-            str = str + strOfAvatar(storeData[i], "res");
+            str = str + strOfAvatar(roomPlayersData[i], "res");
         }
     }
 
@@ -1498,9 +1470,9 @@ function getHighlightedAvatars() {
 }
 
 function getIndexFromUsername(username) {
-    if (storeData) {
-        for (var i = 0; i < storeData.length; i++) {
-            if (storeData[i].username === username) {
+    if (roomPlayersData) {
+        for (var i = 0; i < roomPlayersData.length; i++) {
+            if (roomPlayersData[i].username === username) {
                 return i;
             }
         }
@@ -1512,8 +1484,8 @@ function getIndexFromUsername(username) {
 }
 
 function getUsernameFromIndex(index) {
-    if (storeData[index]) {
-        return storeData[index].username;
+    if (roomPlayersData[index]) {
+        return roomPlayersData[index].username;
     }
     else {
         return false;
@@ -1712,9 +1684,9 @@ function getOptions() {
 function getKickPlayers() {
     var data = {};
 
-    for (var i = 0; i < storeData.length; i++) {
-        if ($("#" + storeData[i].username)[0].checked === true) {
-            data[storeData[i].username] = true;
+    for (var i = 0; i < roomPlayersData.length; i++) {
+        if ($("#" + roomPlayersData[i].username)[0].checked === true) {
+            data[roomPlayersData[i].username] = true;
         }
     }
 
@@ -1724,7 +1696,7 @@ function getKickPlayers() {
 function resetAllGameData() {
     roomId = undefined;
     //reset all the variables
-    storeData = undefined;
+    roomPlayersData = undefined;
     seeData = undefined;
     gameData = undefined;
     gameStarted = false;
