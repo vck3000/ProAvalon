@@ -37,63 +37,97 @@ setTimeout(function () {
 //=======================================================================
 //COOKIE SETUP!!!!!! Simple cookies for user options to persist
 //=======================================================================
-var userOptions = ["optionDarkTheme"];
+var userOptions = {
+    optionDarkTheme: {
+        defaultValue: "false",
+        onLoad: function () {
+            if (docCookies.getItem("optionDarkTheme") === "true") {
+                console.log("Load up dark theme is true");
+                //update the dark theme if cookie data is true
+                updateDarkTheme(true);
+                //show its checked on their screen
+                $("#option_dark_theme")[0].checked = true;
+            }
+        },
+        initialiseEventListener: function () {
+            //dark theme option checkbox event listener
+            $("#option_dark_theme")[0].addEventListener("click", function () {
+                var checked = $("#option_dark_theme")[0].checked;
+                console.log("dark theme change " + checked);
+                //dark theme
+                updateDarkTheme(checked);
 
-//Set up default options: (Note, cookies are all stored as strings so boolean true will become "true")
-if (docCookies.keys().length === 0) {
-    // swal("Some user options have updated! Your settings have been reset. Please change them again.");
-    docCookies.setItem("optionDarkTheme", "true");
-}
-
-//Loading up default options:
-if(docCookies.getItem("optionDarkTheme") === "true"){
-    console.log("Loaded up dark theme true");
-    updateDarkTheme(true);
-    $("#option_dark_theme")[0].checked = true;
-}
-
-
-
-
-//dark theme option checkbox event listener
-$("#option_dark_theme")[0].addEventListener("click", function () {
-    var checked = $("#option_dark_theme")[0].checked;
-    console.log("dark theme change " + checked);
-    //dark theme
-    updateDarkTheme(checked);
-
-    //save their option in cookie
-    docCookies.setItem("optionDarkTheme", checked.toString());
-});
-
-
-//get the status of the checkbox for the gameplaytext
-var option_font_size = $("#option_font_size")[0].checked;
-var option_font_size_text = $("#option_font_size_text")[0];
-
-var stringText = $("body").css("font-size");
-stringText = stringText.slice(0, stringText.length - 2);
-option_font_size_text.value = stringText;
-
-if (option_font_size === true) {
-    $("#option_font_size_text").on("change", function () {
-        console.log(option_font_size_text.value);
-
-        var lowerFontSizeBound = 8;
-        var upperFontSizeBound = 25;
-
-        //bound the font size
-        if (option_font_size_text.value < lowerFontSizeBound) {
-            option_font_size_text.value = lowerFontSizeBound;
+                //save their option in cookie
+                docCookies.setItem("optionDarkTheme", checked.toString());
+            });
         }
-        else if(option_font_size_text.value > upperFontSizeBound) {
-            option_font_size_text.value = upperFontSizeBound;
+    },
+
+    optionFontSize: {
+        defaultValue: "14",
+        onLoad: function () {
+            if ($("#option_font_size")[0].checked === true) {
+                //get cookie data
+                var fontSize = docCookies.getItem("optionFontSize");
+
+                //set the value in the users display
+                $("#option_font_size_text")[0].value = fontSize;
+
+                //make the font size changes
+                $("html *").css("font-size", fontSize + "px");
+                draw(storeData);
+            }
+        },
+        initialiseEventListener: function () {
+            $("#option_font_size_text").on("change", function () {
+                var fontSize = $("#option_font_size_text")[0].value;
+                console.log(fontSize);
+
+                //assign bounds
+                var lowerFontSizeBound = 8;
+                var upperFontSizeBound = 25;
+
+                //bound the font size
+                if (fontSize < lowerFontSizeBound) {
+                    fontSize = lowerFontSizeBound;
+                }
+                else if (fontSize > upperFontSizeBound) {
+                    fontSize = upperFontSizeBound;
+                }
+
+                //display the new value in case it was changed by bounds
+                $("#option_font_size_text")[0].value = fontSize;
+
+                //make the changes to font size
+                $("html *").css("font-size", fontSize + "px");
+                draw(storeData);
+
+                //save the data in cookie
+                console.log("Stored font size: " + fontSize);
+                docCookies.setItem("optionFontSize", fontSize);
+            });
+        }
+    }
+}
+
+//run through each userOption load and initialiseEventListener
+//create the default values if the cookie doesn't have the option stored.
+for (var keys in userOptions) {
+    if (userOptions.hasOwnProperty(keys)) {
+        //if the option doesnt exist, create default option
+        if (docCookies.hasItem(keys) === false) {
+            docCookies.setItem(keys, userOptions[keys].defaultValue);
         }
 
-        $("html *").css("font-size", option_font_size_text.value + "px");
-        draw(storeData);
-    });
+        //run the load function for each option
+        userOptions[keys].onLoad();
+        //run the initialise event listener function for each option
+        userOptions[keys].initialiseEventListener();
+
+    }
 }
+
+
 
 
 
