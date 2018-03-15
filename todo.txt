@@ -1,5 +1,4 @@
 To-do list:
-
 -Spam filter?
 
 -claiming
@@ -7,13 +6,12 @@ To-do list:
 
 -force re-login if a user refreshes
 
--leave room text displayed twice hwen someone leaves a room, and then dc's from .server
+-leave room text displayed twice when someone leaves a room, and then dc's from .server
 
 -title notificaitons
 
 -Moderators
 
--Add option to adjust height and width of lobby
 
 -blue or yellow words for dark theme highlitht
 -Max number of players
@@ -110,6 +108,7 @@ Mine:
 
 -Maximum length to a single chat message
 -Escape text for usernames (<h1> username </h1> works which is shouldn't)
+-Add option to adjust height and width of lobby
 
 
 Hak:

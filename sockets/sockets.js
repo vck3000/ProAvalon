@@ -205,9 +205,8 @@ module.exports = function (io) {
 			socket.in("allChat").emit("update-current-players-list", currentPlayersUsernames);
 			//tell all clients that the user has left
 			socket.in("allChat").emit("player-left-lobby", socket.request.user.username);
-
-			//if they are in a room, say they're leaving the room.
-			io.in(socket.request.user.inRoomId).emit("player-left-room", socket.request.user.username);
+			//Note, by default when socket disconnects, it leaves from all rooms. 
+			//If user disconnected from within a room, the leave room function will send a message to other players in room.
 
 			removePlayerFromRoomAndCheckDestroy(socket, io);
 

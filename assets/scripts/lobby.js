@@ -114,7 +114,7 @@ var userOptions = {
     },
 
     optionHeightOfAvatarContainer: {
-        defaultValue: $("#div1Resize").height(),
+        defaultValue: $("#div1Resize").parent().height()*0.4,
         onLoad: function () {
             //get cookie data
             var containerHeight = docCookies.getItem("optionHeightOfAvatarContainer");
