@@ -21,7 +21,7 @@ var userCommands = {
 
 	help: {
 		command: "help",
-		help: "/help: Come on, if you don't know what this command does YOU need help.",
+		help: "/help: ...shows help",
 		run: function (args) {
 			//do stuff
 			var str = [];
@@ -48,7 +48,7 @@ var userCommands = {
 
 	buzz: {
 		command: "buzz",
-		help: "/buzz <playername>: Buzz a player :)",
+		help: "/buzz <playername>: Buzz a player.",
 		run: function (args) {
 			return "buzzed player " + args[1] + " (not yet)";
 		}
@@ -67,9 +67,6 @@ var userCommands = {
 			else {
 				return "There is no such player";
 			}
-
-
-
 		}
 	},
 
@@ -131,8 +128,8 @@ module.exports = function (io) {
 		//send a notif to the user saying logged in
 		// socket.emit("success-alert", "Successfully logged in! Welcome, " + socket.request.user.username + "!");
 
-		//socket sends to all except the user of this socket
-		socket.in("allChat").emit("player-joined-lobby", socket.request.user.username);
+		//socket sends to all players
+		io.in("allChat").emit("player-joined-lobby", socket.request.user.username);
 
 		//io sends to everyone in the site, including the current user of this socket
 		io.in("allChat").emit("update-current-players-list", currentPlayersUsernames);

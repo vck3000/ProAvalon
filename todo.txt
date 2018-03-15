@@ -6,12 +6,9 @@ To-do list:
 
 -force re-login if a user refreshes
 
--leave room text displayed twice when someone leaves a room, and then dc's from .server
-
 -title notificaitons
 
 -Moderators
-
 
 -blue or yellow words for dark theme highlitht
 -Max number of players
@@ -47,12 +44,6 @@ List of suggestions
 •	Display fail/success in vote history
 
 also from old suggestion:anonymous mode
-
-
-
-Refs:
-cosmetic stuff:
-
 
 
 
@@ -109,6 +100,9 @@ Mine:
 -Maximum length to a single chat message
 -Escape text for usernames (<h1> username </h1> works which is shouldn't)
 -Add option to adjust height and width of lobby
+
+-leave room text displayed twice when someone leaves a room, and then dc's from .server
+
 
 
 Hak:

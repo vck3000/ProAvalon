@@ -22,11 +22,13 @@ div{
 			<strong>15-03-2018: </strong>
 			<ul>
 				<li>Fixed XSS in usernames.</li>
-				<li>Added maximum 500 characters limit to each message.</li>
-				<li>Added local storage support for user options to persist.</li>
-				<li>Added dark theme persist (when you refresh, your setting stays).</li>
-				<li>Added font-size persist (when you refresh, your setting stays).</li>
-				<li>Added resize-able game room. Can change by dragging a bar on the screen on by typing in a new value in the options (easier to do on mobile).</li>
+				<li>Added: Maximum 500 characters limit to each message.</li>
+				<li>Added: Cookie support for user options to persist.</li>
+				<li>Added: Dark theme persist (when you refresh, your setting stays).</li>
+				<li>Added: Font-size persist (when you refresh, your setting stays).</li>
+				<li>Added: Resize-able game room. Can change by dragging a bar on the screen on by typing in a new value in the options (easier to do on mobile).</li>
+				<li>Fixed bug: 'player has left the room' displaying twice when they disconnect while in a room.</li>
+				<li>Added: Player who just joined lobby now sees themself joining in all chat.</li>
 			</ul>
 		</li>
 
@@ -35,9 +37,9 @@ div{
 		<li class="list-group-item">
 			<strong>14-03-2018: </strong>
 			<ul>
-				<li>Added delete functionality for forumThread.</li>
-				<li>Added replies to comments.</li>
-				<li>Added options for comments (Reply and Like(still inop)).</li>
+				<li>Added: delete functionality for forumThread.</li>
+				<li>Added: replies to comments.</li>
+				<li>Added: options for comments (Reply and Like(still inop)).</li>
 			</ul>
 		</li>
 
@@ -54,11 +56,11 @@ div{
 				<li>Forum updates: </li>
 				<ul>
 					<li>Fixed mins showing up as seconds.</li>
-					<li>Added a creation date inside a forumThread.</li>
-					<li>Added time since for comments</li>
-					<li>Added default category as off-topic if user did not specify</li>
-					<li>Added edit forumThread functionality</li>
-					<li>Added edited display when a post has been edited</li>
+					<li>Added: a creation date inside a forumThread.</li>
+					<li>Added: time since for comments</li>
+					<li>Added: default category as off-topic if user did not specify</li>
+					<li>Added: edit forumThread functionality</li>
+					<li>Added: edited display when a post has been edited</li>
 				</ul>
 			</ul>
 		</li>
@@ -68,13 +70,13 @@ div{
 			<ul>
 				<li>Forum updates: </li>
 				<ul>
-					<li>Added comments to each forumThread.</li>
-					<li>Added time in sec, min, hour, etc. for threads.</li>
-					<li>Added in time since last edit using above model^.</li>
-					<li>Added in pagers (bottom page navigator)</li>
-					<li>Added in results per page (server side, client side not yet implemented)</li>
-					<li>Added in show page.</li>
-					<li>Added in show page the likes, date, time since last edit, comments, description, title etc.</li>
+					<li>Added: Comments to each forumThread.</li>
+					<li>Added: Time in sec, min, hour, etc. for threads.</li>
+					<li>Added: Time since last edit using above model^.</li>
+					<li>Added: Pagers (bottom page navigator)</li>
+					<li>Added: Results per page (server side, client side not yet implemented)</li>
+					<li>Added: Show page.</li>
+					<li>Added: Show page the likes, date, time since last edit, comments, description, title etc.</li>
 				</ul>
 			</ul>
 		</li>
@@ -82,7 +84,7 @@ div{
 		<li class="list-group-item">
 			<strong>09-03-2018: </strong>
 			<ul>
-				<li>Added create forum functionality.</li>
+				<li>Added: Create forum functionality.</li>
 				<li>Fixed bug: Relogging in makes a player in a running game rejoin as spectator.</li>
 			</ul>
 		</li>
@@ -90,8 +92,8 @@ div{
 		<li class="list-group-item">
 			<strong>08-03-2018: </strong>
 			<ul>
-				<li>Added case insensitive usernames. Some usernames (that were not all lower-case) may have been deleted.</li>
-				<li>Added forum main page.</li>
+				<li>Added: Case insensitive usernames. Some usernames (that were not all lower-case) may have been deleted.</li>
+				<li>Added: Forum main page.</li>
 			</ul>
 		</li>
 
@@ -107,9 +109,9 @@ div{
 		<li class="list-group-item">
 			<strong>05-03-2018: </strong>
 			<ul>
-				<li>Added kicking.</li>
-				<li>Hid avatar buttons (reveals on hover).</li>
-				<li>Refactored inner workings of the code.</li>
+				<li>Added: Kicking.</li>
+				<li>Added: Hid avatar buttons (reveals on hover).</li>
+				<li>Refactored: Inner workings of the code.</li>
 				<li>Fixed bug: When a player leaves a room (before it starts) and rejoins, when the game starts they have role undefined.</li>
 			</ul>
 		</li>
@@ -118,9 +120,9 @@ div{
 		<li class="list-group-item">
 			<strong>04-03-2018: </strong>
 			<ul>
-				<li>Added framework for user commands.</li>
-				<li>Added /slap command.</li>
-				<li>Added current role options for host in information bar.</li>
+				<li>Added: Framework for user commands.</li>
+				<li>Added: /slap command.</li>
+				<li>Added: Current role options for host in information bar.</li>
 			</ul>
 		</li>
 
@@ -129,8 +131,8 @@ div{
 			<ul>
 				<li>Expanded all chat in lobby for big screens.</li>
 				<li>Fixed bug: Starting hammer star icon was incorrectly placed.</li>
-				<li>Added red highlight avatar for client side.</li>
-				<li>Re-added font size edit.</li>
+				<li>Added: Red highlight avatar for client side.</li>
+				<li>Re-Added: Font size edit.</li>
 				<li>Changed borders of dark theme to black colour.</li>
 				<li>Changed shade of black for input.</li>
 				<li>Fixed some places where dark mode was not dark mode yet.</li>
@@ -151,9 +153,9 @@ div{
 				<li>Fixed bug: Game going into assassination mode with no assassin.</li>
 				<li>Fixed bug: Oberon not showing up as spy after game finishes.</li>
 				<li>Fixed bug: Lady of the Lake not showing up in gameplay text when game starts.</li>
-				<li>Added player ready/not ready prompts when game is starting.</li>
+				<li>Added: Player ready/not ready prompts when game is starting.</li>
 				<li>Fixed bug: A player who was pushed up to host (because previous host left) was unable to start game.</li>
-				<li>Added dark theme.</li>
+				<li>Added: Dark theme.</li>
 				<li>Fixed bug: Spectators not receiving updated game-data as the game progresses.</li>
 			</ul>
 		</li>
@@ -161,10 +163,10 @@ div{
 		<li class="list-group-item">
 			<strong>26-02-2018: </strong>
 			<ul>
-				<li>Made the register page neater. Added live feedback. Minimum 4 chars password. Added confirm password input.</li>
-				<li>Centered and added some padding to rules page.</li>
+				<li>Made the register page neater. Added: live feedback. Minimum 4 chars password. Added: confirm password input.</li>
+				<li>Centered and Added: some padding to rules page.</li>
 				<li>Fixed bug: Player left the room not showing when a user closes the window or refreshes while in a game.</li>
-				<li>Added highlighting avatars on client side.</li>
+				<li>Added: Highlighting avatars on client side.</li>
 				<li>Changed fonts to be more consitent.</li>
 				<li>Bolded key text in lobby.</li>
 				<li>Re-styled the players online section.</li>
@@ -173,7 +175,7 @@ div{
 				<li>Fixed bug: Room not destroying when all players leave.</li>
 				<li>Disallow the use of  & n b s p ;  command.</li>
 				<li>Disallow the use of spaces in usernames.</li>
-				<li>Added highlighting chat on client side.</li>
+				<li>Added: highlighting chat on client side.</li>
 			</ul>
 		</li>
 
@@ -186,8 +188,8 @@ div{
 				<li>Removed pretty much all of the '!' marks.</li>
 				<li>Fixed bug: Could use Lady of the Lake on a previous holder.</li>
 				<li>Made dynamic font sizing for different size screens. (Enhances mobile experience)</li>
-				<li>Added custom size fonts.</li>
-				<li>Added message when a player tries to start a game with less than 5 players.</li>
+				<li>Added: Custom size fonts.</li>
+				<li>Added: Message when a player tries to start a game with less than 5 players.</li>
 			</ul>
 		</li>
 
@@ -203,7 +205,7 @@ div{
 				<li>Fixed active (grey) state on buttons in navbar.</li>
 				<li>Fixed room chat not resetting when creating a new room.</li>
 				<li>Extended tabs in game room to bottom of the screen. (Better mobile experience)</li>
-				<li>Added yellow border to new messages.</li>
+				<li>Added: Yellow border to new messages.</li>
 				<li>Fixed room destroying itself when a spectator leaves before game starts.</li>
 			</ul>
 		</li>
@@ -213,11 +215,11 @@ div{
 			<strong>23-02-2018: </strong>
 			<ul>
 				<li>Fixed button being overlapped and unable to be pressed.</li>
-				<li>Added number of players in a game in lobby to see.</li>
+				<li>Added: Number of players in a game in lobby to see.</li>
 				<li>Fixed width of the top nav-bar. Does not overflow to two rows now.</li>
-				<li>Added miscellaneous tab in game room.</li>
+				<li>Added: Miscellaneous tab in game room.</li>
 				<li>Top avatar is now centered with mission boxes</li>
-				<li>Added dynamic padding for the nav-tabs (so that all chat, game chat, vote history and misc don't overflow to a 2nd row.</li>
+				<li>Added: Dynamic padding for the nav-tabs (so that all chat, game chat, vote history and misc don't overflow to a 2nd row.</li>
 				<li>Fixed single digit hour/minute showing instead of double digit. E.g. Time 3:15 should be 03:15. (needs testing)</li>
 			</ul>
 		</li>
@@ -226,7 +228,7 @@ div{
 		<li class="list-group-item">
 			<strong>22-02-2018: </strong>
 			<ul>
-				<li>Added in Lady of the Lake.</li>
+				<li>Added: Lady of the Lake.</li>
 				<li>Unable to copy paste certain game-sensitive text.</li>
 				<li>Fixed assassination phase not triggering.</li>
 				<li>Enhanced a lot of the user interface. Looks prettier. Also made it look nicer for phones. (But please don't use landscape mode!)</li>
@@ -240,9 +242,9 @@ div{
 		<li class="list-group-item">
 			<strong>21-02-2018: </strong>
 			<ul>
-				<li>Added game options for role customisation.</li>
-				<li>Added Mordred.</li>
-				<li>Added Oberon.</li>
+				<li>Added: Game options for role customisation.</li>
+				<li>Added: Mordred.</li>
+				<li>Added: Oberon.</li>
 				<li>Lady of the lake not yet implemented. (But visible in the game options)</li>
 				<li>M4 in 7p+ games now requires two fails.</li>
 				<li>Fixed bug: Options cog not disappearing when a host leaves his own game and joins another (which they didn't host).</li>
@@ -256,7 +258,7 @@ div{
 		<li class="list-group-item">
 			<strong>19-02-2018: </strong>
 			<ul>
-				<li>Added Vote History.</li>
+				<li>Added: Vote History.</li>
 				<li>Removed approved and rejected usernames from gameplay chat.</li>
 				<li>Changed 'M' to 'Mission' in Vote History.</li>
 				<li>Fixed bug: Player refresh causing them to receive spectator data instead of their own game data.</li>
