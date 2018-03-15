@@ -4,6 +4,8 @@
 <script src="/libraries/cookies_min.js"></script>
 
 <link rel="stylesheet" type="text/css" href="/stylesheets/lobby.css">
+<link rel="stylesheet" type="text/css" href="/libraries/jquery-ui-1.12.1/jquery-ui.min.css">
+
 
 
 
@@ -50,103 +52,103 @@
 
 
 	<div class="game-container inactive-window "> <!-- container -->
+		<div id="div1Resize">
+			<div class="room-container">
+				<button id="backButton" class="btn btn-warning">Back</button>
 
-		<div class="room-container">
-			<button id="backButton" class="btn btn-warning">Back</button>
-
-			<div id="mainRoomBox" class="">
-				<p></p>
-			</div>
-			<div id="missionsBox">
-				<div class="row">
-					<div class="missionBox"></div>
-					<div class="missionBox"></div>
-					<div class="missionBox"></div>
-					<div class="missionBox"></div>
-					<div class="missionBox"></div>
+				<div id="mainRoomBox" class="">
+					<p></p>
 				</div>
+				<div id="missionsBox">
+					<div class="row">
+						<div class="missionBox"></div>
+						<div class="missionBox"></div>
+						<div class="missionBox"></div>
+						<div class="missionBox"></div>
+						<div class="missionBox"></div>
+					</div>
 
-				<div class="row">
-					<div class="pickBox"></div>
-					<div class="pickBox"></div>
-					<div class="pickBox"></div>
-					<div class="pickBox"></div>
-					<div class="pickBox"></div>
+					<div class="row">
+						<div class="pickBox"></div>
+						<div class="pickBox"></div>
+						<div class="pickBox"></div>
+						<div class="pickBox"></div>
+						<div class="pickBox"></div>
+					</div>
 				</div>
 			</div>
 		</div>
+		<div class="myHr"></div>
+		<div id="div2Resize">
+			<div class="game-buttons-div">
+				<button class="btn btn-danger" id="red-button"> <span class="glyphicon glyphicon-remove"></span></button>
+
+				<!-- Trigger the modal with a button -->
+				<button type="button" class="btn btn-warning hidden" data-toggle="modal" data-target="#optionsModal" id="options-button">
+					<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+				</button>
+
+				<button class="btn btn-success" id="green-button">Start!</button>
+
+			</div>
+
+
+			<div class="center-div well well-sm" id="status">
+				Waiting for game to start... :P
+			</div>
 
 
 
-		<div class="game-buttons-div">
-			<button class="btn btn-danger" id="red-button"> <span class="glyphicon glyphicon-remove"></span></button>
+			<ul class="nav nav-tabs">
+				<li id="all-chat-in-game-tab"><a data-toggle="tab" href="#all-chat-in-game">All Chat!</a></li>
+				<li class="active" id="room-chat-in-game-tab"><a data-toggle="tab" href="#room-chat-in-game">Game Chat!</a></li>
+				<li><a data-toggle="tab" href="#vh">Vote History</a></li>
+				<li><a data-toggle="tab" href="#misc">Misc.</a></li>
+			</ul>
 
-			<!-- Trigger the modal with a button -->
-			<button type="button" class="btn btn-warning hidden" data-toggle="modal" data-target="#optionsModal" id="options-button">
-				<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-			</button>
+			<div class="tab-content" style=''>
 
-			<button class="btn btn-success" id="green-button">Start!</button>
+				<div id="all-chat-in-game" class="tab-pane fade full-height">
+					<div class="chat-window">
+						<ol class="chat-list all-chat-list">
 
+						</ol>
+					</div>
+					<input type="text" class="chat-message-input all-chat-message-input">
+				</div>
+
+
+				<div id="room-chat-in-game" class="tab-pane fade in active full-height">
+					<div class="chat-window">
+						<ol class="chat-list room-chat-list">
+
+						</ol>
+					</div>
+
+					<input type="text" class="room-chat-message-input chat-message-input">
+
+				</div>
+
+				<div id="vh" class="tab-pane fade in full-height">
+					<div class="tab-window">
+						<!-- <h3><u>Vote History</u></h3> -->
+
+						<table>
+							<tbody id="voteHistoryTable">
+
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<div id="misc" class="tab-pane fade in full-height">
+					<div class="tab-window">
+						<!-- <h3><u>Misc.</u></h3> -->
+					</div>
+
+				</div>
+			</div>
 		</div>
-
-
-		<div class="center-div well well-sm" id="status">
-			Waiting for game to start... :P
-		</div>
-
-
-
-		<ul class="nav nav-tabs">
-			<li id="all-chat-in-game-tab"><a data-toggle="tab" href="#all-chat-in-game">All Chat!</a></li>
-			<li class="active" id="room-chat-in-game-tab"><a data-toggle="tab" href="#room-chat-in-game">Game Chat!</a></li>
-			<li><a data-toggle="tab" href="#vh">Vote History</a></li>
-			<li><a data-toggle="tab" href="#misc">Misc.</a></li>
-		</ul>
-
-		<div class="tab-content" style=''>
-
-			<div id="all-chat-in-game" class="tab-pane fade full-height">
-				<div class="chat-window">
-					<ol class="chat-list all-chat-list">
-
-					</ol>
-				</div>
-				<input type="text" class="chat-message-input all-chat-message-input">
-			</div>
-
-
-			<div id="room-chat-in-game" class="tab-pane fade in active full-height">
-				<div class="chat-window">
-					<ol class="chat-list room-chat-list">
-
-					</ol>
-				</div>
-
-				<input type="text" class="room-chat-message-input chat-message-input">
-
-			</div>
-
-			<div id="vh" class="tab-pane fade in full-height">
-				<div class="tab-window">
-					<!-- <h3><u>Vote History</u></h3> -->
-
-					<table>
-						<tbody id="voteHistoryTable">
-
-						</tbody>
-					</table>
-				</div>
-			</div>
-
-			<div id="misc" class="tab-pane fade in full-height">
-				<div class="tab-window">
-					<!-- <h3><u>Misc.</u></h3> -->
-				</div>
-
-			</div>
-		</div>
-
 
 	</div>
 
@@ -232,6 +234,9 @@
 		</div>
 	</div>
 
+	<script type="text/javascript" src="libraries/jquery-ui-1.12.1/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="scripts/lobby.js"></script>
+
+
 
 	<% include partials/footer%>

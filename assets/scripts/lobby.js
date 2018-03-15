@@ -33,6 +33,10 @@ setTimeout(function () {
 }, 300);
 
 
+$('.navbar-collapse').on('hidden.bs.collapse', function () {
+    extendTabContentToBottomInRoom();
+});
+
 
 //=======================================================================
 //COOKIE SETUP!!!!!! Simple cookies for user options to persist
@@ -107,6 +111,87 @@ var userOptions = {
                 docCookies.setItem("optionFontSize", fontSize);
             });
         }
+    },
+
+    optionHeightOfAvatarContainer: {
+        defaultValue: $("#div1Resize").height(),
+        onLoad: function () {
+            //get cookie data
+            var containerHeight = docCookies.getItem("optionHeightOfAvatarContainer");
+
+            //set the height of div 1
+            $("#div1Resize").height(containerHeight);
+            //Note the following function only adjusts the 2nd div (the div below)
+            userOptions["optionHeightOfAvatarContainer"].avatarContainerHeightAdjust();
+
+            //set the value in the users display
+            $("#option_avatar_container_height_text")[0].value = containerHeight;
+        },
+        initialiseEventListener: function () {
+
+
+            //set up div 1 to be resizable in north and south directions
+            $("#div1Resize").resizable({ handles: 'n, s' });
+            //on resize of div 1, resize div 2.
+            $('#div1Resize').resize(function () {
+                //Make the height adjustments
+                userOptions["optionHeightOfAvatarContainer"].avatarContainerHeightAdjust();
+                //save the new heights
+                docCookies.setItem("optionHeightOfAvatarContainer", $("#div1Resize").height());
+            });
+            //on whole window resize, resize both divs.
+            $(window).resize(function () {
+                $('#div1Resize').width($("#div2Resize").parent().width());
+
+                //save the new heights
+                docCookies.setItem("optionHeightOfAvatarContainer", $("#div1Resize").height());
+                //Make the height adjustments
+                userOptions["optionHeightOfAvatarContainer"].avatarContainerHeightAdjust();
+                
+            });
+
+
+            $("#option_avatar_container_height_text").on("change", function () {
+                var containerHeight = $("#option_avatar_container_height_text")[0].value;
+                console.log(containerHeight);
+
+                //assign bounds
+                var lowerBound = 40;
+                var upperBound = 600;
+
+                //bound the font size
+                if (containerHeight < lowerBound) {
+                    containerHeight = lowerBound;
+                }
+                else if (containerHeight > upperBound) {
+                    containerHeight = upperBound;
+                }
+
+                //set the height of div 1 first:
+                $("#div1Resize").height(containerHeight);
+
+                //save the new heights
+                docCookies.setItem("optionHeightOfAvatarContainer", containerHeight);
+
+                //Make the height adjustments to div 2
+                userOptions["optionHeightOfAvatarContainer"].avatarContainerHeightAdjust();
+                
+            });
+        },
+
+        avatarContainerHeightAdjust: function () {
+            $('#div2Resize').height($('#div2Resize').parent().height() - $("#div1Resize").height());
+
+            //extend the tab content to bottom
+            extendTabContentToBottomInRoom();
+            draw(storeData);
+
+            //get cookie data
+            var containerHeight = docCookies.getItem("optionHeightOfAvatarContainer");
+
+            //set the value in the users display
+            $("#option_avatar_container_height_text")[0].value = containerHeight;
+        }
     }
 }
 
@@ -128,11 +213,11 @@ for (var keys in userOptions) {
 }
 
 
+//==================================================
+//Resizeable game room lobby code
+//==================================================
 
-
-
-
-
+console.log("resize setup done");
 
 
 //for the game (like players in game)

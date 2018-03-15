@@ -293,7 +293,6 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 	});
 });
 
-
 //create new comment route
 router.post("/:id/:commentId", middleware.isLoggedIn, async function (req, res) {
 

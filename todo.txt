@@ -9,6 +9,7 @@ To-do list:
 
 -leave room text displayed twice hwen someone leaves a room, and then dc's from .server
 
+-title notificaitons
 
 -Moderators
 

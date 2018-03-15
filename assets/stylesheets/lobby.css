@@ -177,7 +177,7 @@ p {
 /*GAME-ROOM AREA*/
 
 .room-container {
-    height: 40%;
+    height: 100%;
     /*background-color: purple;*/
     position: relative;
     /*border: solid 1px #d3d3d3;*/
@@ -187,6 +187,9 @@ p {
 .game-container {
     /*height: is already set in the container at 90%*/
     height: 90%;
+    min-height: 90%;
+    max-height: 90%;
+
     padding-left: 10px;
     padding-right: 10px;
     /*width: 75%;*/
@@ -221,8 +224,8 @@ p {
     position: absolute;
     right: 0;
     /*bottom: 0;*/
-    height: 4vh;
-    transform: translateY(-130%);
+    height: 30%;
+    transform: translate(-10%, -140%);
 }
 
 .bullet {
@@ -335,6 +338,9 @@ p {
     left: 50%;
     top: 43%;
     transform: translateX(-50%);
+
+    width: 35vw;
+    max-width: 200px;
 }
 
 .missionBox {
@@ -378,8 +384,8 @@ p {
     border: 1px solid black;
     border-radius: 50%;
     float: left;
-    margin-left: 0.7em;
-    margin-right: 0.7em;
+    margin-left: 1vh;
+    margin-right: 1vh;
     /*position: absolute;*/
 }
 
@@ -621,4 +627,19 @@ textarea .dark {
 .dark .table-bordered,
 .current-games-table-off {
     border: 1px transparent solid;
+}
+
+
+#div1Resize {
+    /* border: 1px solid black; */
+    height: 40%;
+}
+#div2Resize {
+    /* border: 1px solid red; */
+}
+
+.myHr {
+    height: 2px;
+    width: 100%;
+    background: rgb(161, 161, 161);
 }
