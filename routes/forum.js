@@ -161,7 +161,7 @@ router.get("/new", middleware.isLoggedIn, function (req, res) {
 
 //show
 router.get("/show/:id", function (req, res) {
-	forumThread.findById(req.params.id).populate({path: "comments", populate: {path: "replies"}}).exec(function (err, foundForumThread) {
+	forumThread.findById(req.params.id).populate("comments").populate({ path: "comments", populate: { path: "replies" } }).exec(function (err, foundForumThread) {
 		if (err) {
 			// console.log(err);
 			console.log("Thread not found, redirecting");
@@ -184,7 +184,7 @@ router.get("/show/:id", function (req, res) {
 				comment.timeSinceString = getTimeDiffInString(comment.timeLastEdit);
 
 				//update the time since string for each reply to a comment
-				comment.replies.forEach(function(reply){
+				comment.replies.forEach(function (reply) {
 					reply.timeSinceString = getTimeDiffInString(reply.timeLastEdit);
 				});
 
@@ -293,7 +293,56 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 	});
 });
 
-//create new comment route
+//edit a comment 
+router.get("/:id/:comment_id/edit", middleware.checkForumThreadCommentOwnership, function (req, res) {
+
+	forumThreadComment.findById(req.params.comment_id, function (err, foundComment) {
+		if (err) {
+			console.log("ERROR: " + err);
+		}
+		res.render("forum/comment/edit", { comment: foundComment, forumThread: { id: req.params.id } });
+	})
+});
+
+
+//update forumThreadComment route
+router.put("/:id/:comment_id", middleware.checkForumThreadCommentOwnership, function (req, res) {
+	//find and update the correct campground
+
+	forumThreadComment.findById(req.params.comment_id, req.body.comment, async function (err, foundComment) {
+
+		if (err) {
+			res.redirect("/forum");
+		} else {
+
+			foundComment.text = req.body.comment.text;
+			foundComment.edited = true;
+
+			await foundComment.save();
+
+			// forumThread.findById(req.params.id)
+			forumThread.findById(req.params.id).populate("comments").exec(async function (err, foundForumThread) {
+				console.log("found forum thread:");
+				console.log(req.params.id);
+
+				foundForumThread.markModified("comments");
+				await foundForumThread.save();
+
+				//redirect to the forum page
+				// req.flash("success", "Comment updated successfully.");
+				res.redirect("/forum/show/" + req.params.id);
+			});
+		}
+	});
+});
+
+
+
+
+
+
+
+//create new comment reply route
 router.post("/:id/:commentId", middleware.isLoggedIn, async function (req, res) {
 
 	var d = new Date();
@@ -331,8 +380,47 @@ router.post("/:id/:commentId", middleware.isLoggedIn, async function (req, res) 
 	});
 });
 
+//edit a comment reply
+router.get("/:id/:comment_id/:reply_id/edit", middleware.checkForumThreadCommentReplyOwnership, function (req, res) {
 
-//destroy campground route
+	forumThreadCommentReply.findById(req.params.reply_id, function (err, foundReply) {
+		if (err) {
+			console.log("ERROR: " + err);
+		}
+		res.render("forum/comment/reply/edit", { reply: foundReply, comment: {id: req.params.comment_id}, forumThread: { id: req.params.id } });
+	})
+});
+
+//update forumThreadComment route
+router.put("/:id/:comment_id/:reply_id", middleware.checkForumThreadCommentReplyOwnership, function (req, res) {
+
+	forumThreadCommentReply.findById(req.params.comment_id, req.body.comment, async function (err, foundReply) {
+
+		if (err) {
+			res.redirect("/forum");
+		} else {
+
+			foundReply.text = req.body.reply.text;
+			foundReply.edited = true;
+
+			await foundReply.save();
+
+			// forumThread.findById(req.params.id)
+			forumThreadComment.findById(req.params.comment_id).populate("replies").exec(async function (err, foundForumThreadComment) {
+
+				foundForumThreadComment.markModified("replies");
+				await foundForumThreadComment.save();
+
+				//redirect to the forum page
+				// req.flash("success", "Comment updated successfully.");
+				res.redirect("/forum/show/" + req.params.id);
+			});
+		}
+	});
+});
+
+
+//destroy forumThread route
 router.delete("/:id", middleware.checkForumThreadOwnership, function (req, res) {
 	forumThread.findByIdAndRemove(req.params.id, function (err) {
 		if (err) {

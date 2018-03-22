@@ -1,6 +1,7 @@
 //all middleware goes here
 var forumThread = require("../models/forumThread");
 var forumThreadComment = require("../models/forumThreadComment");
+var forumThreadCommentReply = require("../models/forumThreadCommentReply");
 
 
 var middlewareObj = {};
@@ -35,8 +36,29 @@ middlewareObj.checkForumThreadCommentOwnership = function (req, res, next) {
 			if (err) {
 				res.redirect("back");
 			} else {
-				//does user own campground?
-				if (foundComment.author.id.equals(req.user._id)) {
+				//does user own comment?
+				if (foundComment && foundComment.author.id.equals(req.user._id)) {
+					next();
+				} else {
+					req.flash("error", "You are not the owner!");
+					res.redirect("back");
+				}
+			}
+		});
+	} else {
+		req.flash("error", "You need to be logged in to do that!");
+		res.redirect("back");
+	}
+}
+
+middlewareObj.checkForumThreadCommentReplyOwnership = function (req, res, next) {
+	if (req.isAuthenticated()) {
+		forumThreadCommentReply.findById(req.params.reply_id, function (err, foundReply) {
+			if (err) {
+				res.redirect("back");
+			} else {
+				//does user own comment?
+				if (foundReply && foundReply.author.id.equals(req.user._id)) {
 					next();
 				} else {
 					req.flash("error", "You are not the owner!");

@@ -14,6 +14,7 @@ var commentSchema = mongoose.Schema({
 	timeCreated: Date,
 	timeLastEdit: Date,
 	likes: Number,
+	edited: Boolean,
 
 	replies: [
 		{

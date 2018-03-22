@@ -79,9 +79,11 @@ textarea {
 }
 
 .commentOptions {
-    display: none;
+    /* display: none; */
+    visibility: hidden;
 }
 
 .individualComment:hover .commentOptions {
-    display: block;
+    /* display: block; */
+    visibility: visible;
 }

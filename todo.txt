@@ -12,7 +12,9 @@ To-do list:
 -blue or yellow words for dark theme highlitht
 -Max number of players
 
+-Highlight avatar doesnt work on game start??
 
+-gameplayText isnt showing sometimes
 
 
 Hak:
