@@ -12,6 +12,7 @@ p {
 
 textarea {
     resize: vertical;
+    width: 100%;
 }
 
 .mainComment {

@@ -2,6 +2,10 @@
 
 <link rel="stylesheet" type="text/css" href="/stylesheets/forum/show.css">
 
+<!-- include summernote css/js -->
+<link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote.css" rel="stylesheet">
+<script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote.js"></script>
+												
 
 <%   var bg_converter = {};                    %>
 <%   bg_converter["avalon"] = "success";       %>
@@ -32,12 +36,11 @@
                 <span class="glyphicon glyphicon-time"></span>
                 <span><%=forumThread.timeSinceString%></span>
         </span></p>
-        
     </div>
 
     <div class="descriptionContainer">
         <p>
-            <%=forumThread.description%>
+            <%-forumThread.description%>
             <br>
             
             <% if(forumThread.edited === true){ %>
@@ -110,7 +113,15 @@
         <div class="addCommentDiv">
             <form class="comment-form" action="/forum/<%=forumThread._id%>/comment" method="POST">
                 <div class="form-group">
-                    <textarea type="text" placeholder="text" name="comment[text]" rows="5" class="mainComment"></textarea>
+                    <div id="panel1">
+
+                    </div>
+
+                    <div>
+                        <textarea type="text" placeholder="text" name="comment[text]" id="commentTextArea" rows="5" class="mainComment" style="width: 1;"></textarea>
+                    </div>
+                   
+                    
                 </div>
 
                 <div class="form-group">
@@ -128,7 +139,7 @@
                 <div class="individualMainComment">
                     <div class="individualComment">
                         <p><strong><%=comment.author.username%></strong> <span class="timeSince"><%=comment.timeSinceString%> ago</span></p>
-                        <p class="mainCommentText"><%=comment.text%></p>
+                        <p class="mainCommentText"><%-comment.text%></p>
                         <% if(comment.edited === true){ %>
                             [Edited]
                         <% } %>
@@ -169,7 +180,7 @@
                             </p>
                             
                             <p>
-                                <%=reply.text%> 
+                                <%-reply.text%> 
                             </p>
 
                             <% if(reply.edited === true){ %>
@@ -202,8 +213,9 @@
 <script type="text/javascript" src="/scripts/forum/show.js"></script>
 
 
-
-
+<script type="text/javascript">
+    $('#commentTextArea').summernote();
+</script>
 
 
 

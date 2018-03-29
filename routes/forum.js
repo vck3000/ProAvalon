@@ -7,12 +7,13 @@ var lastIds = require("../models/lastIds");
 
 var pinnedThread = require("../models/pinnedThread");
 
-
 var middleware = require("../middleware");
+var sanitizeHtml = require('sanitize-html');
+
 
 router.get("/", function (req, res) {
 	res.redirect("/forum/page/1");
-})
+});
 
 
 router.get("/page/:pageNum", function (req, res) {
@@ -86,7 +87,7 @@ router.get("/page/:pageNum", function (req, res) {
 
 //creating new forumThread
 router.post("/", middleware.isLoggedIn, async function (req, res) {
-	const util = require('util')
+	const util = require('util');
 
 	// console.log("inc data: " + util.inspect(req.body, { showHidden: false, depth: null }))
 
@@ -95,6 +96,8 @@ router.post("/", middleware.isLoggedIn, async function (req, res) {
 	//get data from form and add to forumThread array
 	var title = req.body.title;
 	var description = req.body.description;
+
+	description = sanitizeHtml(req.body.description);
 
 	var d1 = new Date();
 	var d2 = new Date();
@@ -258,7 +261,7 @@ router.put("/:id", middleware.checkForumThreadOwnership, function (req, res) {
 
 	req.body.forumThread.timeLastEdit = new Date();
 
-
+	req.body.forumThread.description = sanitizeHtml(req.body.forumThread.description)
 
 	forumThread.findByIdAndUpdate(req.params.id, req.body.forumThread, function (err, updatedForumThread) {
 		if (err) {
@@ -277,7 +280,7 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 	var d = new Date();
 
 	var commentData = {
-		text: req.body.comment.text,
+		text: description = sanitizeHtml(req.body.comment.text),
 		author: { id: req.user._id, username: req.user.username },
 
 		timeCreated: d,
@@ -335,7 +338,7 @@ router.put("/:id/:comment_id", middleware.checkForumThreadCommentOwnership, func
 			res.redirect("/forum");
 		} else {
 
-			foundComment.text = req.body.comment.text;
+			foundComment.text = sanitizeHtml(req.body.comment.text);
 			foundComment.edited = true;
 
 			await foundComment.save();
@@ -368,7 +371,7 @@ router.post("/:id/:commentId", middleware.isLoggedIn, async function (req, res) 
 	var d = new Date();
 
 	var commentReplyData = {
-		text: req.body.comment.text,
+		text: sanitizeHtml(req.body.comment.text),
 		author: { id: req.user._id, username: req.user.username },
 
 		timeCreated: d,
@@ -418,7 +421,7 @@ router.put("/:id/:comment_id/:reply_id", middleware.checkForumThreadCommentReply
 		if (err) {
 			res.redirect("/forum");
 		} else {
-			foundReply.text = req.body.reply.text;
+			foundReply.text = sanitizeHtml(req.body.reply.text);
 			foundReply.edited = true;
 			foundReply.timeLastEdit = new Date();
 			await foundReply.save();
