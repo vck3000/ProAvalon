@@ -156,7 +156,6 @@
                                 <div class="form-group">
                                 <button class="btn btn-sm btn-primary">Submit</button></div>
                             </form>
-
                             <br>
                         </div>
                     </div>
@@ -172,6 +171,10 @@
                             <p>
                                 <%=reply.text%> 
                             </p>
+
+                            <% if(reply.edited === true){ %>
+                            [Edited]
+                            <% } %>
 
                             <% if(currentUser && reply.author.id && reply.author.id.equals(currentUser.id)){ %>
                                 <p>

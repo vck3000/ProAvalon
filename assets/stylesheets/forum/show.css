@@ -87,3 +87,14 @@ textarea {
     /* display: block; */
     visibility: visible;
 }
+
+
+.edit {
+    /* display: none; */
+    visibility: hidden;
+}
+
+.replyToComment:hover .edit {
+    /* display: block; */
+    visibility: visible;
+}

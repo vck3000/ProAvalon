@@ -5,6 +5,8 @@ var forumThreadComment = require("../models/forumThreadComment");
 var forumThreadCommentReply = require("../models/forumThreadCommentReply");
 var lastIds = require("../models/lastIds");
 
+var pinnedThread = require("../models/pinnedThread");
+
 
 var middleware = require("../middleware");
 
@@ -47,18 +49,36 @@ router.get("/page/:pageNum", function (req, res) {
 				console.log(err);
 			}
 			else {
-
 				allForumThreads.forEach(function (forumThread) {
-
 					forumThread.timeSinceString = getTimeDiffInString(forumThread.timeLastEdit);
-					// console.log()
-
 				});
 
-				res.render("forum/index", {
-					allForumThreads: allForumThreads,
-					currentUser: req.user,
-					pageNum: req.params.pageNum
+				pinnedThread.find({}).exec(async function (err, allPinnedThreadIds){
+					if(err){
+						console.log(err);
+					}
+					else{
+						//get all the pinned threads
+						var allPinnedThreads = [];
+
+						for(var i = 0; i < allPinnedThreadIds.length; i++){
+							await forumThread.findById(allPinnedThreadIds[i].forumThread.id, function(err, pinnedThread){
+								
+								pinnedThread.timeSinceString = getTimeDiffInString(pinnedThread.timeLastEdit);
+
+								allPinnedThreads.push(pinnedThread);
+							});
+						}
+
+
+
+						res.render("forum/index", {
+							allPinnedThreads: allPinnedThreads,
+							allForumThreads: allForumThreads,
+							currentUser: req.user,
+							pageNum: req.params.pageNum
+						});
+					}
 				});
 			}
 		});
@@ -382,27 +402,25 @@ router.post("/:id/:commentId", middleware.isLoggedIn, async function (req, res) 
 
 //edit a comment reply
 router.get("/:id/:comment_id/:reply_id/edit", middleware.checkForumThreadCommentReplyOwnership, function (req, res) {
-
 	forumThreadCommentReply.findById(req.params.reply_id, function (err, foundReply) {
 		if (err) {
 			console.log("ERROR: " + err);
 		}
 		res.render("forum/comment/reply/edit", { reply: foundReply, comment: {id: req.params.comment_id}, forumThread: { id: req.params.id } });
-	})
+	});
 });
 
-//update forumThreadComment route
+//update forumThreadCommentReply route
 router.put("/:id/:comment_id/:reply_id", middleware.checkForumThreadCommentReplyOwnership, function (req, res) {
-
-	forumThreadCommentReply.findById(req.params.comment_id, req.body.comment, async function (err, foundReply) {
-
+	console.log("Edit a reply");
+	
+	forumThreadCommentReply.findById(req.params.reply_id, async function (err, foundReply) {
 		if (err) {
 			res.redirect("/forum");
 		} else {
-
 			foundReply.text = req.body.reply.text;
 			foundReply.edited = true;
-
+			foundReply.timeLastEdit = new Date();
 			await foundReply.save();
 
 			// forumThread.findById(req.params.id)

@@ -3,6 +3,8 @@ var forumThread = require("./models/forumThread");
 var forumThreadComment = require("./models/forumThreadComment");
 var lastIds = require("./models/lastIds");
 
+var pinnedThread = require("./models/pinnedThread");
+
 
 var date = new Date();
 // date = date.getTime();
@@ -123,6 +125,10 @@ function seedDB() {
             return forumThreadComment.remove({});
         })
 
+        .then(function() {
+            return pinnedThread.remove({});
+        })
+
         //create forum threads
         .then(function () {
 
@@ -154,7 +160,11 @@ function seedDB() {
                                 createdForumThread.comments.push(createdComment);
                                 createdForumThread.save();
                                 console.log("Created new comment");
-                            })
+                            });
+
+                        if(seed.title === "Welcome to the forums! Please read this before posting." || seed.title === "Is Merlin broken!?!?"){
+                            await pinnedThread.create({forumThread: {id: createdForumThread.id}});
+                        }
                     });
             });
         });
