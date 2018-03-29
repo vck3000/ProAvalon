@@ -88,7 +88,7 @@ app.use(indexRoutes);
 var forumRoutes = require("./routes/forum");
 app.use("/forum", forumRoutes);
 
-seedDB();
+// seedDB();
 
 //start server listening
 var IP = process.env.IP || "192.168.1.55";
