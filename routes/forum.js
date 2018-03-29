@@ -54,17 +54,17 @@ router.get("/page/:pageNum", function (req, res) {
 					forumThread.timeSinceString = getTimeDiffInString(forumThread.timeLastEdit);
 				});
 
-				pinnedThread.find({}).exec(async function (err, allPinnedThreadIds){
-					if(err){
+				pinnedThread.find({}).exec(async function (err, allPinnedThreadIds) {
+					if (err) {
 						console.log(err);
 					}
-					else{
+					else {
 						//get all the pinned threads
 						var allPinnedThreads = [];
 
-						for(var i = 0; i < allPinnedThreadIds.length; i++){
-							await forumThread.findById(allPinnedThreadIds[i].forumThread.id, function(err, pinnedThread){
-								
+						for (var i = 0; i < allPinnedThreadIds.length; i++) {
+							await forumThread.findById(allPinnedThreadIds[i].forumThread.id, function (err, pinnedThread) {
+
 								pinnedThread.timeSinceString = getTimeDiffInString(pinnedThread.timeLastEdit);
 
 								allPinnedThreads.push(pinnedThread);
@@ -85,6 +85,16 @@ router.get("/page/:pageNum", function (req, res) {
 		});
 });
 
+var sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2'];
+var sanitizeHtmlAllowedAttributesForumThread = {
+	a: ['href', 'name', 'target'],
+	img: ['src', 'style'],
+	iframe: ['src', 'style'],
+	'*': ['style'],
+	table: ['class']
+};
+
+
 //creating new forumThread
 router.post("/", middleware.isLoggedIn, async function (req, res) {
 	const util = require('util');
@@ -98,11 +108,8 @@ router.post("/", middleware.isLoggedIn, async function (req, res) {
 	var description = req.body.description;
 
 	description = sanitizeHtml(req.body.description, {
-		allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]),
-		allowedAttributes: {
-			a: [ 'href', 'name', 'target' ],
-			img: ['src', 'style']
-		}
+		allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
+		allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
 	});
 
 	var d1 = new Date();
@@ -268,11 +275,8 @@ router.put("/:id", middleware.checkForumThreadOwnership, function (req, res) {
 	req.body.forumThread.timeLastEdit = new Date();
 
 	req.body.forumThread.description = sanitizeHtml(req.body.forumThread.description, {
-		allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]),
-		allowedAttributes: {
-			a: [ 'href', 'name', 'target' ],
-			img: ['src', 'style']
-		}
+		allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
+		allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
 	});
 
 	forumThread.findByIdAndUpdate(req.params.id, req.body.forumThread, function (err, updatedForumThread) {
@@ -421,14 +425,14 @@ router.get("/:id/:comment_id/:reply_id/edit", middleware.checkForumThreadComment
 		if (err) {
 			console.log("ERROR: " + err);
 		}
-		res.render("forum/comment/reply/edit", { reply: foundReply, comment: {id: req.params.comment_id}, forumThread: { id: req.params.id } });
+		res.render("forum/comment/reply/edit", { reply: foundReply, comment: { id: req.params.comment_id }, forumThread: { id: req.params.id } });
 	});
 });
 
 //update forumThreadCommentReply route
 router.put("/:id/:comment_id/:reply_id", middleware.checkForumThreadCommentReplyOwnership, function (req, res) {
 	console.log("Edit a reply");
-	
+
 	forumThreadCommentReply.findById(req.params.reply_id, async function (err, foundReply) {
 		if (err) {
 			res.redirect("/forum");

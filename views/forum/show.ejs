@@ -2,9 +2,7 @@
 
 <link rel="stylesheet" type="text/css" href="/stylesheets/forum/show.css">
 
-<!-- include summernote css/js -->
-<link href="/summernote-0.8.9-dist/dist/summernote.css" rel="stylesheet">
-<script src="/summernote-0.8.9-dist/dist/summernote.min.js"></script>
+<% include ../partials/summernoteInclude%>
 												
 
 <%   var bg_converter = {};                    %>
@@ -217,6 +215,8 @@
 
     $(document).ready(function() {
         $('#commentTextArea').summernote();
+        $('.commentReply').summernote();
+
     });
 
 
