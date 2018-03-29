@@ -97,7 +97,13 @@ router.post("/", middleware.isLoggedIn, async function (req, res) {
 	var title = req.body.title;
 	var description = req.body.description;
 
-	description = sanitizeHtml(req.body.description);
+	description = sanitizeHtml(req.body.description, {
+		allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]),
+		allowedAttributes: {
+			a: [ 'href', 'name', 'target' ],
+			img: ['src', 'style']
+		}
+	});
 
 	var d1 = new Date();
 	var d2 = new Date();
@@ -261,7 +267,13 @@ router.put("/:id", middleware.checkForumThreadOwnership, function (req, res) {
 
 	req.body.forumThread.timeLastEdit = new Date();
 
-	req.body.forumThread.description = sanitizeHtml(req.body.forumThread.description)
+	req.body.forumThread.description = sanitizeHtml(req.body.forumThread.description, {
+		allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]),
+		allowedAttributes: {
+			a: [ 'href', 'name', 'target' ],
+			img: ['src', 'style']
+		}
+	});
 
 	forumThread.findByIdAndUpdate(req.params.id, req.body.forumThread, function (err, updatedForumThread) {
 		if (err) {
