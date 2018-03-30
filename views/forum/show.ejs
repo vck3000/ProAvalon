@@ -141,46 +141,43 @@
                             <a class="reply">Reply</a>
                             <a class="like">Like</a>
 
-                            <a class="" onclick="deleteCommentFunction()">
-                    
-                            Remove
-                            
-                                <script>
-                                    var postId = "<%=forumThread._id%>";
-                                    var commentId = "<%=comment._id%>";
-
-                                    function deleteCommentFunction(){
-                                        swal({
-                                            title: "Are you sure you want to delete your comment?",
-                                            icon: "warning",
-                                            buttons: true,
-                                            dangerMode: true,
-                                        })
-                                        .then((willDelete) => {
-
-                                            if (willDelete) {
-                                                $.ajax({
-                                                type: "DELETE",
-                                                url: "/forum/deleteComment/" + postId + "/" + commentId,
-                                                // data: "name=someValue",
-                                            });
-                                            
-                                            swal("Your comment has been deleted.").then(function(){
-                                                location.reload();
-                                            });
-
-                                            } else {
-                                            swal("Nothing was deleted.");
-                                            }
-                                        });
-                                    }
-                                </script>
-                            
-                            </a>
-
-
                             <% if(currentUser && comment.author.id && comment.author.id.equals(currentUser.id)){ %>
                                 <a class="edit" href="/forum/<%=forumThread._id%>/<%=comment._id%>/edit">Edit</a>
+
+                                <a class="" onclick="deleteCommentFunction()">
+                                Remove
+                                    <script>
+                                        var postId = "<%=forumThread._id%>";
+                                        var commentId = "<%=comment._id%>";
+
+                                        function deleteCommentFunction(){
+                                            swal({
+                                                title: "Are you sure you want to delete your comment?",
+                                                icon: "warning",
+                                                buttons: true,
+                                                dangerMode: true,
+                                            })
+                                            .then((willDelete) => {
+
+                                                if (willDelete) {
+                                                    $.ajax({
+                                                    type: "DELETE",
+                                                    url: "/forum/deleteComment/" + postId + "/" + commentId,
+                                                    // data: "name=someValue",
+                                                });
+                                                
+                                                swal("Your comment will be deleted.").then(function(){
+                                                    location.reload();
+                                                });
+
+                                                } else {
+                                                swal("Nothing was deleted.");
+                                                }
+                                            });
+                                        }
+                                    </script>
+                                
+                                </a>
                             <% } %>
                         
                         </p>
@@ -220,17 +217,48 @@
                             <% } %>
 
                             <% if(currentUser && reply.author.id && reply.author.id.equals(currentUser.id)){ %>
-                                <p>
+                                <p class="commentOptions">
                                     <a class="edit" href="/forum/<%=forumThread._id%>/<%=comment._id%>/<%=reply._id%>/edit">Edit</a>
+
+                                    <a class="edit" onclick="deleteCommentReplyFunction()">
+                                    Remove
+                                        <script>
+                                            var postId = "<%=forumThread._id%>";
+                                            var commentId = "<%=comment._id%>";
+                                            var replyId = "<%=reply._id%>";
+
+                                            function deleteCommentReplyFunction(){
+                                                swal({
+                                                    title: "Are you sure you want to delete your reply?",
+                                                    icon: "warning",
+                                                    buttons: true,
+                                                    dangerMode: true,
+                                                })
+                                                .then((willDelete) => {
+
+                                                    if (willDelete) {
+                                                        $.ajax({
+                                                        type: "DELETE",
+                                                        url: "/forum/deleteCommentReply/" + postId + "/" + commentId + "/" + replyId,
+                                                        // data: "name=someValue",
+                                                    });
+                                                    
+                                                    swal("Your reply will be deleted. " + "/forum/deleteCommentReply/" + postId + "/" + commentId + "/" + replyId).then(function(){
+                                                        location.reload();
+                                                    });
+
+                                                    } else {
+                                                        swal("Nothing was deleted.");
+                                                    }
+                                                });
+                                            }
+                                        </script>
+                                    
+                                    </a>
                                 </p>
                             <% } %>
                         </div>    
-
-
-                        
                     <% }); } %>
-
-
                 </div>
             <%});%>
         </div>

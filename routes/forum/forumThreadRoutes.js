@@ -48,7 +48,7 @@ router.get("/show/:id", function (req, res) {
 					reply.timeSinceString = getTimeDiffInString(reply.timeLastEdit);
 				});
 
-				console.log(comment.replies);
+				// console.log(comment.replies);
 			});
 			res.render("forum/show", { forumThread: foundForumThread, currentUser: req.user });
 		}

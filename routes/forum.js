@@ -18,7 +18,8 @@ router.use(forumThreadRoutes);
 var forumThreadCommentRoutes = require("../routes/forum/forumThreadCommentRoutes");
 router.use(forumThreadCommentRoutes);
 
-
+var forumThreadCommentReplyRoutes = require("../routes/forum/forumThreadCommentReplyRoutes");
+router.use(forumThreadCommentReplyRoutes);
 
 
 router.get("/", function (req, res) {

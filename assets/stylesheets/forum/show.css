@@ -84,7 +84,8 @@ textarea {
     visibility: hidden;
 }
 
-.individualComment:hover .commentOptions {
+.individualComment:hover .commentOptions,
+.individualComment:hover .edit {
     /* display: block; */
     visibility: visible;
 }

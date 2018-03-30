@@ -95,5 +95,50 @@ router.put("/:id/:comment_id/:reply_id", middleware.checkForumThreadCommentReply
 });
 
 
+/**********************************************************/
+//Destroy a comment reply route
+/**********************************************************/
+router.delete("/deleteCommentReply/:id/:comment_id/:reply_id", middleware.checkForumThreadCommentReplyOwnership, function (req, res) {
+	console.log("Reached delete comment reply route");
+	console.log("forum id: " + req.params.id);
+	console.log("comment id: " + req.params.comment_id);
+	console.log("reply id: " + req.params.reply_id);
+	console.log(" ");
+
+
+	forumThreadCommentReply.findByIdAndRemove(req.params.reply_id, function (err) {
+		if (err) {
+			res.redirect("/forum");
+		} else {
+			console.log("Deleted a reply.");
+			forumThreadComment.findById(req.params.comment_id).populate("replies").exec(async function (err, foundComment) {
+				if (err) {
+					console.log(err);
+				}
+				else {
+					foundComment.markModified("replies");
+					await foundComment.save();
+
+					console.log("A");
+
+
+					forumThread.findById(req.params.id).populate("comments").exec(async function (err, foundForumThread) {
+						if (err) {
+							console.log(err);
+						}
+						else {
+							foundForumThread.markModified("comments");
+							await foundForumThread.save();
+							console.log("B");
+						}
+					});
+				}
+
+
+			})
+			res.redirect("/forum/" + req.params.id);
+		}
+	});
+});
 
 module.exports = router;
