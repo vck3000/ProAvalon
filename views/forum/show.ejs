@@ -54,41 +54,36 @@
                     
                     DELETE
                     
-                    <% var postId1 = forumThread._id; %>
-                    <script>
-                        var postId = "<%=forumThread._id%>";
+                        <script>
+                            var postId = "<%=forumThread._id%>";
 
-                        function deleteFunction(){
-                            swal({
-                                title: "Are you sure you want to delete?",
-                                text: "All comments and replies will also be deleted.",
-                                icon: "warning",
-                                buttons: true,
-                                dangerMode: true,
-                            })
-                            .then((willDelete) => {
-                            
+                            function deleteFunction(){
+                                swal({
+                                    title: "Are you sure you want to delete?",
+                                    text: "All comments and replies will also be deleted.",
+                                    icon: "warning",
+                                    buttons: true,
+                                    dangerMode: true,
+                                })
+                                .then((willDelete) => {
 
-                                if (willDelete) {
-                                    $.ajax({
-                                    type: "DELETE",
-                                    url: "/forum/" + postId,
-                                    // data: "name=someValue",
+                                    if (willDelete) {
+                                        $.ajax({
+                                        type: "DELETE",
+                                        url: "/forum/deleteForumThread/" + postId,
+                                        // data: "name=someValue",
+                                    });
+                                    
+                                    swal("Your thread has been deleted.").then(function(){
+                                        window.location.replace("/forum");
+                                    });
+
+                                    } else {
+                                    swal("Nothing was deleted.");
+                                    }
                                 });
-                                
-                                swal("Your thread has been deleted.").then(function(){
-                                    window.location.replace("/forum");
-                                });
-                                
-
-                                } else {
-                                swal("Nothing was deleted.");
-                                }
-                            });
-                            
-                            //<form class="delete-form" action="/forum/<%=forumThread._id%>?_method=DELETE" method="POST">
-                        }
-                    </script>
+                            }
+                        </script>
                     
                     </a>
                 </div>
@@ -145,6 +140,45 @@
                         
                             <a class="reply">Reply</a>
                             <a class="like">Like</a>
+
+                            <a class="" onclick="deleteCommentFunction()">
+                    
+                            Remove
+                            
+                                <script>
+                                    var postId = "<%=forumThread._id%>";
+                                    var commentId = "<%=comment._id%>";
+
+                                    function deleteCommentFunction(){
+                                        swal({
+                                            title: "Are you sure you want to delete your comment?",
+                                            icon: "warning",
+                                            buttons: true,
+                                            dangerMode: true,
+                                        })
+                                        .then((willDelete) => {
+
+                                            if (willDelete) {
+                                                $.ajax({
+                                                type: "DELETE",
+                                                url: "/forum/deleteComment/" + postId + "/" + commentId,
+                                                // data: "name=someValue",
+                                            });
+                                            
+                                            swal("Your comment has been deleted.").then(function(){
+                                                location.reload();
+                                            });
+
+                                            } else {
+                                            swal("Nothing was deleted.");
+                                            }
+                                        });
+                                    }
+                                </script>
+                            
+                            </a>
+
+
                             <% if(currentUser && comment.author.id && comment.author.id.equals(currentUser.id)){ %>
                                 <a class="edit" href="/forum/<%=forumThread._id%>/<%=comment._id%>/edit">Edit</a>
                             <% } %>

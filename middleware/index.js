@@ -37,7 +37,12 @@ middlewareObj.checkForumThreadCommentOwnership = function (req, res, next) {
 				res.redirect("back");
 			} else {
 				//does user own comment?
-				if (foundComment && foundComment.author.id.equals(req.user._id)) {
+				if(foundComment === undefined || foundComment === null){
+					req.flash("error", "Comment not found?");
+					console.log("lol " + req.params.comment_id)
+					res.redirect("back");
+				}
+				else if (foundComment && foundComment.author.id.equals(req.user._id)) {
 					next();
 				} else {
 					req.flash("error", "You are not the owner!");
