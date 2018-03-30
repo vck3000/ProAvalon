@@ -85,12 +85,12 @@ router.get("/page/:pageNum", function (req, res) {
 		});
 });
 
-var sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2'];
+var sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2', 'u'];
 var sanitizeHtmlAllowedAttributesForumThread = {
 	a: ['href', 'name', 'target'],
 	img: ['src', 'style'],
 	iframe: ['src', 'style'],
-	'*': ['style'],
+	// '*': ['style'],
 	table: ['class']
 };
 

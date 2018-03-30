@@ -6082,7 +6082,7 @@ var ImageDialog = /** @class */ (function () {
             imageLimitation = "<small>" + (this.lang.image.maximumFileSize + ' : ' + readableSize) + "</small>";
         }
         var body = [
-            '<div class="form-group note-form-group note-group-select-from-files">',
+            '<div class="form-group note-form-group note-group-select-from-files hidden">',
             '<label class="note-form-label">' + this.lang.image.selectFromFiles + '</label>',
             '<input class="note-image-input note-form-control note-input" ',
             ' type="file" name="files" accept="image/*" multiple="multiple" />',
