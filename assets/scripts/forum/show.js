@@ -46,6 +46,83 @@ replies.forEach(function(reply){
 });
 
 
+//==============================================================================
+//Attach all the Delete anchor links to their respective replyBox
+//==============================================================================
+
+//get all the delete anchor links
+var deletes = document.querySelectorAll(".deleteComment");
+//for each anchor link, add an event listener to its respective replyBox
+deletes.forEach(function(singleDelete){
+    singleDelete.addEventListener("click", function(){
+        
+        var linkToDelete = this.getAttribute('linktodelete');
+
+        swal({
+            title: "Are you sure you want to delete your comment?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+
+            if (willDelete) {
+                $.ajax({
+                type: "DELETE",
+                url: linkToDelete,
+                // data: "name=someValue",
+            });
+            
+            swal("Your comment will be deleted.").then(function(){
+                location.reload();
+            });
+
+            } else {
+            swal("Nothing was deleted.");
+            }
+        });
+        
+    });
+});
+
+//==============================================================================
+//Attach all the Delete anchor links to their respective replyBox
+//==============================================================================
+
+//get all the delete anchor links
+var deletes = document.querySelectorAll(".deleteCommentReply");
+//for each anchor link, add an event listener to its respective replyBox
+deletes.forEach(function(singleDelete){
+    singleDelete.addEventListener("click", function(){
+        
+        var linkToDelete = this.getAttribute('linktodelete');
+
+        swal({
+            title: "Are you sure you want to delete your reply?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+    
+            if (willDelete) {
+                $.ajax({
+                type: "DELETE",
+                url: linkToDelete,
+                // data: "name=someValue",
+            });
+            
+            swal("Your reply will be deleted. ").then(function(){
+                location.reload();
+            });
+    
+            } else {
+                swal("Nothing was deleted.");
+            }
+        });
+    });
+});
+
 
 //==============================================================================    
 //Attach all the Edit anchor links to enable editing:

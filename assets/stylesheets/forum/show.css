@@ -81,7 +81,7 @@ textarea {
 
 .commentOptions {
     /* display: none; */
-    visibility: hidden;
+    /*visibility: hidden;*/
 }
 
 .individualComment:hover .commentOptions,
@@ -93,7 +93,7 @@ textarea {
 
 .edit {
     /* display: none; */
-    visibility: hidden;
+    /* visibility: hidden; */
 }
 
 .replyToComment:hover .edit {
