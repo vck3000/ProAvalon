@@ -842,7 +842,7 @@ function draw() {
 
         drawMiddleBoxes();
 
-        activateAvatarButtons();
+        
 
 
         if (gameStarted === true) {
@@ -879,7 +879,7 @@ function draw() {
                 }
                 else {
                     //change the well to display what was picked.
-                    str += gameData.teamLeader + " has picked: ";
+                    str += (getUsernameFromIndex(gameData.teamLeader) + " has picked: ");
 
                     for (var i = 0; i < gameData.proposedTeam.length; i++) {
                         str += gameData.proposedTeam[i] + ", ";
@@ -975,6 +975,8 @@ function draw() {
             }
             enableDisableButtons();
         }
+
+        activateAvatarButtons();
     }
 }
 
@@ -987,6 +989,9 @@ function activateAvatarButtons() {
     // if(OPTION THING ADD HERE){
     var highlightButtons = document.querySelectorAll("#mainRoomBox div #highlightAvatarButton");
     //add the event listeners for button press
+
+    console.log("added " + highlightButtons.length + " many listeners for highlightbuttons");
+
     for (var i = 0; i < highlightButtons.length; i++) {
         // console.log(i);
 

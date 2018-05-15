@@ -16,6 +16,11 @@ To-do list:
 
 -gameplayText isnt showing sometimes
 
+-remove all replies to a comment when deleting comment.
+-remove all comments and replies when deleting forumthread.
+
+-"0 has picked: ytsersius, 2, 1,"
+
 
 Hak:
 List of suggestions
