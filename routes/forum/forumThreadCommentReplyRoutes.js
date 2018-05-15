@@ -8,7 +8,19 @@ var middleware = require("../../middleware");
 var sanitizeHtml = require('sanitize-html');
 var getTimeDiffInString = require("../../assets/myLibraries/getTimeDiffInString");
 
-var sanitizeHtmlAllowedTagsForumThread = ['u'];
+// var sanitizeHtmlAllowedTagsForumThread = ['u'];
+var sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2', 'u', 'span'];
+var sanitizeHtmlAllowedAttributesForumThread = {
+	a: ['href', 'name', 'target'],
+	img: ['src', 'style'],
+	iframe: ['src', 'style'],
+	// '*': ['style'],
+	table: ['class'],
+
+	p: ['style'],
+
+	span: ['style']
+};
 
 
 /**********************************************************/
@@ -19,7 +31,12 @@ router.post("/:id/:commentId", middleware.isLoggedIn, async function (req, res) 
 	var d = new Date();
 
 	var commentReplyData = {
-		text: sanitizeHtml(req.body.comment.text),
+		
+		text: sanitizeHtml(req.body.comment.text, {
+			allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
+			allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
+		}),
+
 		author: { id: req.user._id, username: req.user.username },
 
 		timeCreated: d,
@@ -75,7 +92,10 @@ router.put("/:id/:comment_id/:reply_id", middleware.checkForumThreadCommentReply
 		if (err) {
 			res.redirect("/forum");
 		} else {
-			foundReply.text = sanitizeHtml(req.body.reply.text);
+			foundReply.text = sanitizeHtml(req.body.reply.text, {
+                allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
+                allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
+            });
 			foundReply.edited = true;
 			foundReply.timeLastEdit = new Date();
 			await foundReply.save();

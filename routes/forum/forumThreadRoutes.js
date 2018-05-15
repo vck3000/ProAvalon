@@ -6,13 +6,17 @@ var middleware = require("../../middleware");
 var sanitizeHtml = require('sanitize-html');
 var getTimeDiffInString = require("../../assets/myLibraries/getTimeDiffInString");
 
-var sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2', 'u'];
+var sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2', 'u', 'span'];
 var sanitizeHtmlAllowedAttributesForumThread = {
 	a: ['href', 'name', 'target'],
 	img: ['src', 'style'],
 	iframe: ['src', 'style'],
 	// '*': ['style'],
-	table: ['class']
+	table: ['class'],
+
+	p: ['style'],
+
+	span: ['style']
 };
 
 
@@ -95,7 +99,7 @@ router.post("/", middleware.isLoggedIn, async function (req, res) {
 		await returnedLastId.save();
 
 		var newForumThread = {
-			title: req.body.title,
+			title: sanitizeHtml(req.body.title),
 			description: sanitizeHtml(req.body.description, {
                 allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
                 allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
@@ -181,6 +185,10 @@ router.put("/:id", middleware.checkForumThreadOwnership, function (req, res) {
 		allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
 		allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
 	});
+
+	//Even though EJS <%= %> doesn't allow for injection, it still displays and in case it fails,
+	//we should sanitize the title anyway.
+	req.body.forumThread.title = sanitizeHtml(req.body.forumThread.title);
 
 	forumThread.findByIdAndUpdate(req.params.id, req.body.forumThread, function (err, updatedForumThread) {
 		if (err) {

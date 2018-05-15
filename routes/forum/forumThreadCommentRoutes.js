@@ -7,8 +7,20 @@ var middleware = require("../../middleware");
 var sanitizeHtml = require('sanitize-html');
 var getTimeDiffInString = require("../../assets/myLibraries/getTimeDiffInString");
 
-var sanitizeHtmlAllowedTagsForumThread = ['u'];
+// var sanitizeHtmlAllowedTagsForumThread = ['u'];
 
+var sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2', 'u', 'span'];
+var sanitizeHtmlAllowedAttributesForumThread = {
+	a: ['href', 'name', 'target'],
+	img: ['src', 'style'],
+	iframe: ['src', 'style'],
+	// '*': ['style'],
+	table: ['class'],
+
+	p: ['style'],
+
+	span: ['style']
+};
 
 /**********************************************************/
 //Create new comment route
@@ -16,8 +28,10 @@ var sanitizeHtmlAllowedTagsForumThread = ['u'];
 router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 
 	var commentData = {
-		text: description = sanitizeHtml(req.body.comment.text, {
-            allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread)
+		
+		text: sanitizeHtml(req.body.comment.text, {
+            allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
+			allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
         }),
 		author: { id: req.user._id, username: req.user.username },
 		timeCreated: new Date(),
@@ -74,7 +88,12 @@ router.put("/:id/:comment_id", middleware.checkForumThreadCommentOwnership, func
 			res.redirect("/forum");
 		} else {
 
-			foundComment.text = sanitizeHtml(req.body.comment.text);
+			foundComment.text = sanitizeHtml(req.body.comment.text, {
+				allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
+				allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
+			}),
+
+
 			foundComment.edited = true;
 
 			await foundComment.save();
