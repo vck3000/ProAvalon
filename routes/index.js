@@ -4,6 +4,8 @@ var passport 	= require("passport");
 var User 		= require("../models/user");
 var flash 		= require("connect-flash");
 
+var middleware = require("../middleware");
+
 //Index route
 router.get("/", function(req, res){
 	res.render("index");
@@ -57,9 +59,10 @@ router.get("/loginFail", function(req, res){
 });
 
 //lobby route
-router.get("/lobby", isLoggedIn, function(req, res){
+router.get("/lobby", middleware.isLoggedIn, function(req, res){
 	// console.log(res.app.locals.originalUsername);
 	res.render("lobby", {currentUser: req.user, headerActive: "lobby"});
+
 });
 
 //logout 
@@ -96,13 +99,13 @@ router.get("/testmodal", function(req, res){
 //=====================================
 //MIDDLEWARE
 //=====================================
-function isLoggedIn(req, res, next){
-	if(req.isAuthenticated()){
-		return next();
-	}
-	console.log("User is not logged in");
-	res.redirect("/");
-}
+// function isLoggedIn(req, res, next){
+// 	if(req.isAuthenticated()){
+// 		return next();
+// 	}
+// 	console.log("User is not logged in");
+// 	res.redirect("/");
+// }
 
 // function usernameToLowerCase(req, res, next){
 // 	res.app.locals.originalUsername = req.body.username;

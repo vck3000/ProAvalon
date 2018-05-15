@@ -27,50 +27,53 @@
 
         <br>
 
-        <div class="panel panel-success">
-            <div class="panel-heading">Pinned threads</div>
-            <div class="panel-body">
+        <% if(pageNum == 1) { %> 
+
+            <div class="panel panel-success">
+                <div class="panel-heading">Pinned threads</div>
+                <div class="panel-body">
 
 
-                <div class="container-fluid">
-                    <ol>
+                    <div class="container-fluid">
+                        <ol>
 
-                        <%allPinnedThreads.forEach(function(forumThread){ %>
-                            <li>
-                                <div class="bg-<%=bg_converter[forumThread.category]%> discussionContainer">
-                                    <div class="discussionTitleBox">
-                                        <div class="discussionTitle">
-                                            <a href="/forum/show/<%=forumThread._id%>">
-                                                #<%=forumThread.numberId%>: <%=forumThread.title%>
-                                            </a>
+                            <%allPinnedThreads.forEach(function(forumThread){ %>
+                                <li>
+                                    <div class="bg-<%=bg_converter[forumThread.category]%> discussionContainer">
+                                        <div class="discussionTitleBox">
+                                            <div class="discussionTitle">
+                                                <a href="/forum/show/<%=forumThread._id%>">
+                                                    #<%=forumThread.numberId%>: <%=forumThread.title%>
+                                                </a>
+                                            </div>
+                                            <p class="discussionDetail">
+                                                By: <%=forumThread.author.username%>, <%=forumThread.timeCreated.toDateString()%>
+                                            </p>
                                         </div>
-                                        <p class="discussionDetail">
-                                            By: <%=forumThread.author.username%>, <%=forumThread.timeCreated.toDateString()%>
-                                        </p>
-                                    </div>
-                                    <div class="discussionRight">
-                                        <div class="likes">
-                                            <span class="glyphicon glyphicon-comment"></span>
-                                            <span><%=forumThread.numOfComments%></span>
-                                            <span class="glyphicon glyphicon-thumbs-up"></span>
-                                            <span> 
-                                              <%=forumThread.likes%>
-                                            </span>
-                                            <span class="glyphicon glyphicon-time"></span>
-                                            <span><%=forumThread.timeSinceString%> </span>
+                                        <div class="discussionRight">
+                                            <div class="likes">
+                                                <span class="glyphicon glyphicon-comment"></span>
+                                                <span><%=forumThread.numOfComments%></span>
+                                                <span class="glyphicon glyphicon-thumbs-up"></span>
+                                                <span> 
+                                                <%=forumThread.likes%>
+                                                </span>
+                                                <span class="glyphicon glyphicon-time"></span>
+                                                <span><%=forumThread.timeSinceString%> </span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </li>
-                        <%})%> 
+                                </li>
+                            <%})%> 
 
-                    </ol>
+                        </ol>
+                    </div>
+
+
+
                 </div>
-
-
-
             </div>
-        </div>
+        <% } %>
 
 
 
@@ -123,7 +126,11 @@
         <nav aria-label="Page navigation">
             <ul class="pagination">
                 <li>
-                    <a href="/forum/<%=pageNum-1%>" aria-label="Previous">
+                <% if(pageNum-1 == 0) {%>
+                    <a href="/forum/page/1" aria-label="Previous">
+                <% } else{ %>
+                    <a href="/forum/page/<%=pageNum-1%>" aria-label="Previous">
+                <% } %>
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
@@ -147,7 +154,7 @@
                 <% } %>
                 
                 <li>
-                    <a href="/forum/<%=pageNum+1%>" aria-label="Next">
+                    <a href="/forum/page/<%=parseInt(pageNum)+1%>" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>

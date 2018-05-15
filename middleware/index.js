@@ -3,6 +3,7 @@ var forumThread = require("../models/forumThread");
 var forumThreadComment = require("../models/forumThreadComment");
 var forumThreadCommentReply = require("../models/forumThreadCommentReply");
 
+var flash 		= require("connect-flash");
 
 var middlewareObj = {};
 
@@ -16,6 +17,7 @@ middlewareObj.checkForumThreadOwnership = function (req, res, next) {
 			} else {
 				//does user own campground?
 				if (foundForumThread.author.id && foundForumThread.author.id.equals(req.user._id)) {
+					
 					next();
 				} else {
 					req.flash("error", "You are not the owner!");
@@ -79,8 +81,8 @@ middlewareObj.checkForumThreadCommentReplyOwnership = function (req, res, next) 
 
 middlewareObj.isLoggedIn = function (req, res, next) {
 	if (req.isAuthenticated()) {
-		console.log("logged in as " + req.user._id + " and " + req.user.username);
-
+		console.log("logged in as " + req.user._id + " and " + req.user.username + "asdfasdf");
+		req.flash("success", "succeeded test, logged in correctly");
 		return next();
 	}
 	req.flash("error", "You need to be logged in to do that!");
