@@ -6,7 +6,7 @@ var middleware = require("../../middleware");
 var sanitizeHtml = require('sanitize-html');
 var getTimeDiffInString = require("../../assets/myLibraries/getTimeDiffInString");
 
-var sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2', 'u', 'span'];
+var sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2', 'u', 'span', 'br'];
 var sanitizeHtmlAllowedAttributesForumThread = {
 	a: ['href', 'name', 'target'],
 	img: ['src', 'style'],
@@ -180,7 +180,7 @@ router.put("/:id", middleware.checkForumThreadOwnership, function (req, res) {
 	req.body.forumThread.edited = true;
     req.body.forumThread.timeLastEdit = new Date();
     
-    //sanitize the description once again
+	//sanitize the description once again
 	req.body.forumThread.description = sanitizeHtml(req.body.forumThread.description, {
 		allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
 		allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,

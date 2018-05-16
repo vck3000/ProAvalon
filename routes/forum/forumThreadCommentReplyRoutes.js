@@ -9,7 +9,7 @@ var sanitizeHtml = require('sanitize-html');
 var getTimeDiffInString = require("../../assets/myLibraries/getTimeDiffInString");
 
 // var sanitizeHtmlAllowedTagsForumThread = ['u'];
-var sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2', 'u', 'span'];
+var sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2', 'u', 'span', 'br'];
 var sanitizeHtmlAllowedAttributesForumThread = {
 	a: ['href', 'name', 'target'],
 	img: ['src', 'style'],
