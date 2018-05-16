@@ -26,6 +26,43 @@ $('.navbar-collapse').on('hidden.bs.collapse', function () {
     extendTabContentToBottomInRoom();
 });
 
+var defaultColours = [
+    'FF0000', 
+    'FFFF00',
+    '808000', 
+    '00FF00',
+    '008000',
+    '00FFFF',
+    '008080',
+    '0000FF',
+    '800080',
+    'FF00FF'
+]
+
+//When document has loaded, reinit the jscolor
+$(document).ready(function() {
+    //On first run, update the colours
+
+    for(var i = 0; i < 10; i++){
+        if(!docCookies.hasItem('player' + i + "HighlightColour")){
+            docCookies.setItem('player' + i + "HighlightColour", defaultColours[i]);
+        }
+        $("#player" + i + "HighlightColour")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));
+    }
+});
+
+function update(picker){
+    // picker.attr('col', picker.toHEXString());
+    picker.col = picker.toHEXString();
+    // console.log(picker.playerColourID);
+    // console.log(picker.col);
+
+    docCookies.setItem('player' + picker.playerColourID + "HighlightColour", picker.col);
+}
+
+
+
+
 
 //=======================================================================
 //COOKIE SETUP!!!!!! Simple cookies for user options to persist
@@ -107,6 +144,8 @@ var userOptions = {
         onLoad: function () {
             //get cookie data
             var containerHeight = docCookies.getItem("optionHeightOfAvatarContainer");
+
+            containerHeight = parseInt(containerHeight);
 
             //set the height of div 1
             $("#div1Resize").height(containerHeight);

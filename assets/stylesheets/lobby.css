@@ -278,7 +278,7 @@ p {
 }
 
 .selected-chat {
-    color: green;
+    background-color: rgb(255, 255, 0);
 }
 
 .selected-avatar-1 {
@@ -628,6 +628,7 @@ textarea .dark {
 .current-games-table-off {
     border: 1px transparent solid;
 }
+
 
 
 #div1Resize {

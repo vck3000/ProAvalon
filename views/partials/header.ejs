@@ -130,6 +130,46 @@
 									<input type="checkbox" name="option_dark_theme" id="option_dark_theme">
 									<label for="option_dark_theme">Dark theme</label>
 								</li>
+
+								<li>
+									<button class="btn btn-default" onclick="resetCookies()">Reset all settings</button>
+
+									<script src="/libraries/cookies_min.js"></script>
+									<script>
+										function resetCookies(){
+											swal({
+												title: "Do you really want to reset your settings?",
+												text: "Settings such as height of gameplay area, dark mode, colour will be reset. You will not be able to recover your settings!",
+												icon: "warning",
+												buttons: ["Cancel", "Delete"],
+												dangerMode: true,
+												})
+												.then((willDelete) => {
+												if (willDelete) {
+													
+													//get all the keys
+													var keys = docCookies.keys();
+
+													//remove each item
+													for(var i = 0; i < keys.length; i++){
+														docCookies.removeItem(keys[i]);
+													}
+
+													swal("Poof! Your settings have been reset!", {
+													icon: "success",
+													}).then(() =>{
+														//reload
+														location.reload();
+													});
+
+													
+												} else {
+													swal("Your settings are safe!");
+												}
+											});
+										}
+									</script>
+								</li>
 								
 							</ul>
 						</li>
