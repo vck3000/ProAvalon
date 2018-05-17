@@ -1293,9 +1293,9 @@ function getRolesInStr(options) {
 function sendText(sockets, incString, stringType) {
 	data = {
 		message: incString,
-		stringType: stringType
+		classStr: stringType
 	};
 	for (var i = 0; i < sockets.length; i++) {
-		sockets[i].emit("sendText", data);
+		sockets[i].emit("roomChatToClient", data);
 	}
 }
