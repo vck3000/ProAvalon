@@ -499,7 +499,7 @@ function addToRoomChat(data, classStr) {
                 str = "<li class='" + classStr + "'>" + filteredMessage;
             }
             else {
-                str = "<li><span background-color='#" + highlightChatColour + " ' username='" + data.username + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage + "</span></li>";
+                str = "<li><span style='background-color: " + highlightChatColour + "' username='" + data.username + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage + "</span></li>";
             }
 
             $(".room-chat-list").append(str);
