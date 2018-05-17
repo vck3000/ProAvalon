@@ -58,6 +58,22 @@ function update(picker){
     // console.log(picker.col);
 
     docCookies.setItem('player' + picker.playerColourID + "HighlightColour", picker.col);
+
+    //refresh the chat highlight colour at the same time
+
+    var username = getUsernameFromIndex(picker.playerColourID);
+    
+    console.log("Player highlight colour: " + playerHighlightColour);
+
+    //only need to change colour if the user has selected that player's chat.
+    if (selectedChat[username] === true) {
+        var chatItems = $(".room-chat-list li span[username='" + username + "']");
+        var playerHighlightColour = docCookies.getItem("player" + getIndexFromUsername(username) + "HighlightColour");
+
+        chatItems.css("background-color", "#" + playerHighlightColour);
+    }
+
+    draw();
 }
 
 
@@ -483,7 +499,7 @@ function addToRoomChat(data, classStr) {
                 str = "<li class='" + classStr + " " + highlightChat + "'>" + filteredMessage;
             }
             else {
-                str = "<li class='" + highlightChat + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage;
+                str = "<li><span username='" + data.username + "' class='" + highlightChat + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage + "</span></li>";
             }
 
             $(".room-chat-list").append(str);
@@ -1062,50 +1078,28 @@ function activateAvatarButtons() {
     var highlightChatButtons = document.querySelectorAll("#mainRoomBox div #highlightChatButton");
     //add the event listeners for button press
     for (var i = 0; i < highlightChatButtons.length; i++) {
-        // console.log(i);
-
         highlightChatButtons[i].addEventListener("click", function () {
             // //toggle the highlight class
-            // var divs = document.querySelectorAll("#mainRoomBox div");
-            // var uniqueNum = i;
             console.log("click for highlight chat");
 
-            // this.parentElement.classList.toggle("selected-avatar");
-
-            var chatItems = $(".room-chat-list li");
             var username = this.parentElement.parentElement.getAttribute("usernameofplayer");
+            var chatItems = $(".room-chat-list li span[username='" + username + "']");
+
+            var playerHighlightColour = docCookies.getItem("player" + getIndexFromUsername(username) + "HighlightColour");
+            
+            console.log("Player highlight colour: " + playerHighlightColour);
 
             if (selectedChat[username] === true) {
                 selectedChat[username] = false;
-
-                for (var i = 0; i < chatItems.length; i++) {
-                    if (chatItems[i].classList.contains("selected-chat")) {
-                        if (chatItems[i].childNodes[2].innerText === username + ":") {
-                            chatItems[i].classList.remove("selected-chat");
-                        }
-                    }
-                }
+                chatItems.css("background-color", "white");
             }
             else {
                 selectedChat[username] = true;
-
-                console.log("add chat colour");
-
-                for (var i = 0; i < chatItems.length; i++) {
-                    if (chatItems[i].childNodes[2]) {
-                        if (chatItems[i].childNodes[2].innerText === username + ":") {
-                            chatItems[i].classList += " selected-chat";
-                        }
-                    }
-                }
+                chatItems.css("background-color", "#" + playerHighlightColour);
             }
-
             draw();
         });
     }
-
-
-    // }
 }
 
 
