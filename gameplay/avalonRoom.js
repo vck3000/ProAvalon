@@ -246,6 +246,15 @@ module.exports = function (host_, roomId_, io_) {
 
 		//CALCULATE OUTCOME OF THE MISSION
 		if (this.playersYetToVote.length === 0) {
+
+			//perform these functions here now.
+			this.teamLeader--;
+			if (this.teamLeader < 0) {
+				this.teamLeader = this.sockets.length - 1;
+			}
+			this.pickNum++;
+
+			
 			var requiresTwoFails = false;
 			if (this.playersInGame.length >= 7 && this.missionNum === 4) {
 				requiresTwoFails = true;
@@ -314,7 +323,6 @@ module.exports = function (host_, roomId_, io_) {
 			console.log("numOfSucceeds: " + numOfSucceeds);
 			console.log("numOfFails: " + numOfFails);
 
-
 			//+1 to compensate for somewhere...
 			this.hammer = ((this.teamLeader - 5 + 1 + this.sockets.length) % this.sockets.length);
 
@@ -338,6 +346,8 @@ module.exports = function (host_, roomId_, io_) {
 				this.finishGame("res");
 				console.log("RES WON, NOW GOING INTO ASSASSINATION");
 			}
+
+			
 
 		}
 		console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, { depth: 2 }));
@@ -388,6 +398,8 @@ module.exports = function (host_, roomId_, io_) {
 				// this.gameplayMessage = str;
 				sendText(this.sockets, str, "gameplay-text");
 
+				//temporarily increase the team leader so that when mission is approved 
+				//the leader star will stay since we automatically teamLeader-- at the end of this block.
 			}
 			else if (this.pickNum >= 5 && outcome === "rejected") {
 				console.log("--------------------------");
@@ -429,13 +441,17 @@ module.exports = function (host_, roomId_, io_) {
 			}
 
 
-			//move to next team Leader, and reset it back to the start if 
-			//we go into negative numbers
-			this.teamLeader--;
-			if (this.teamLeader < 0) {
-				this.teamLeader = this.sockets.length - 1;
+			if(outcome !== "approved"){
+				//move to next team Leader, and reset it back to the start if 
+				//we go into negative numbers
+				this.teamLeader--;
+				if (this.teamLeader < 0) {
+					this.teamLeader = this.sockets.length - 1;
+				}
+				this.pickNum++;
 			}
-			this.pickNum++;
+			
+			
 		}
 
 		console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, { depth: 2 }));

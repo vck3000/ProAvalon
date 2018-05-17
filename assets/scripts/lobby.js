@@ -1762,6 +1762,9 @@ function resetAllGameData() {
     //reset room-chat 
     // console.log("RESET ROOM CHAT");
     $(".room-chat-list").html("");
+
+    //reset the vh table
+    $("#voteHistoryTable")[0].innerHTML = "";
 }
 
 function extendTabContentToBottomInRoom() {
