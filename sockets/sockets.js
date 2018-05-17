@@ -1,11 +1,17 @@
 //sockets
+var avalonRoom = require("../gameplay/avalonRoom");
+
 
 var currentPlayersUsernames = [];
 var allSockets = [];
 
-var avalonRoom = require("../gameplay/avalonRoom");
-
 var rooms = [];
+var roomChatHistory = [];
+
+//retain only 5 mins.
+var allChatHistory = [];
+var allChat5Min = [];
+
 var nextRoomId = 1;
 
 
@@ -24,25 +30,33 @@ var userCommands = {
 		help: "/help: ...shows help",
 		run: function (args) {
 			//do stuff
-			var str = [];
 
+			var data = [];
 			var i = 0;
+
 			//starting break in the chat
-			str[i] = "-------------------------";
+			data[i] = {message: "-------------------------", classStr: "server-text"};
+
+			// var str = [];
+			// str[i] = "-------------------------";
+
 			i++;
 
 			for (var key in userCommands) {
 				if (userCommands.hasOwnProperty(key)) {
 					// console.log(key + " -> " + p[key]);
-					str[i] = userCommands[key].help;
+					data[i] = {message: userCommands[key].help, classStr: "server-text"};
+					// str[i] = userCommands[key].help;
 					i++;
 					//create a break in the chat
-					str[i] = "-------------------------";
+					data[i] = {message: "-------------------------", classStr: "server-text"};
+					// str[i] = "-------------------------";
 					i++;
 				}
 			}
 			// return "Commands are: commandA, help";
-			return str;
+			// return str;
+			return data;
 		}
 	},
 
@@ -75,7 +89,8 @@ var userCommands = {
 		help: "/roomChat: Get a copy of the chat for the current game.",
 		run: function (args, senderSocket) {
 			//code
-
+			return roomChatHistory[senderSocket.request.user.inRoomId];
+			// roomChatHistory[roomId].push(data);
 		}
 	},
 
@@ -85,9 +100,11 @@ var userCommands = {
 		run: function (args, senderSocket) {
 			//code
 
+			return allChat5Min;
 		}
 	}
 };
+
 
 module.exports = function (io) {
 	//SOCKETS for each connection
@@ -130,7 +147,15 @@ module.exports = function (io) {
 		// socket.emit("success-alert", "Successfully logged in! Welcome, " + socket.request.user.username + "!");
 
 		//socket sends to all players
-		io.in("allChat").emit("player-joined-lobby", socket.request.user.username);
+		var data = {
+			message: socket.request.user.username + " has joined the lobby.",
+			classStr: "server-text"
+		}
+		sendToAllChat(io, data);
+		//dont need this line anymore
+		// io.in("allChat").emit("player-joined-lobby", socket.request.user.username);
+
+		
 
 		//io sends to everyone in the site, including the current user of this socket
 		io.in("allChat").emit("update-current-players-list", currentPlayersUsernames);
@@ -149,13 +174,19 @@ module.exports = function (io) {
 		socket.on("messageCommand", function (data) {
 			console.log("data0: " + data.command);
 			if (userCommands[data.command]) {
-				var str = userCommands[data.command].run(data.args, socket);
-				socket.emit("messageCommandReturnStr", str);
+
+				var dataToSend = userCommands[data.command].run(data.args, socket);
+
+				socket.emit("messageCommandReturnStr", dataToSend);
 			}
 			else {
-				socket.emit("messageCommandReturnStr", "Invalid command.");
-			}
+				var dataToSend = {
+					message: "Invalid command.",
+					classStr: "server-text"
+				}
 
+				socket.emit("messageCommandReturnStr", dataToSend);
+			}
 		});
 
 		//when a user tries to send a message to all chat
@@ -168,8 +199,9 @@ module.exports = function (io) {
 			//send out that data object to all other clients (except the one who sent the message)
 
 			data.message = textLengthFilter(data.message);
+			//no classStr since its a player message
 
-			io.in("allChat").emit("allChatToClient", data);
+			sendToAllChat(io, data);
 		});
 
 		//when a user tries to send a message to room
@@ -183,8 +215,10 @@ module.exports = function (io) {
 			data.message = textLengthFilter(data.message);
 
 			if (data.roomId) {
-				//send out that data object to all other clients in room(except the one who sent the message)
-				io.in(data.roomId).emit("roomChatToClient", data);
+				//send out that data object to all clients in room
+				
+				sendToRoomChat(io, data.roomId, data);
+				// io.in(data.roomId).emit("roomChatToClient", data);
 			}
 		});
 
@@ -192,7 +226,7 @@ module.exports = function (io) {
 		//when a user disconnects/leaves the whole website
 		socket.on("disconnect", function (data) {
 			//debugging
-			console.log(socket.request.user.username + " has left.");
+			console.log(socket.request.user.username + " has left the lobby.");
 			//get the index of the player in the array list
 			var i = currentPlayersUsernames.indexOf(socket.request.user.username);
 			//in case they already dont exist, dont crash server
@@ -202,12 +236,22 @@ module.exports = function (io) {
 			//send out the new updated current player list
 			socket.in("allChat").emit("update-current-players-list", currentPlayersUsernames);
 			//tell all clients that the user has left
-			socket.in("allChat").emit("player-left-lobby", socket.request.user.username);
+			var data = {
+				message: socket.request.user.username + " has left the lobby.",
+				classStr: "server-text"
+			}
+			sendToAllChat(io, data);
+
 			//Note, by default when socket disconnects, it leaves from all rooms. 
 			//If user disconnected from within a room, the leave room function will send a message to other players in room.
 
 			//if they are in a room, say they're leaving the room.
-			io.in(socket.request.user.inRoomId).emit("player-left-room", socket.request.user.username);
+			var data = {
+				message: socket.request.user.username + " has left the room.",
+				classStr: "server-text"
+			}
+			sendToRoomChat(io, socket.request.user.inRoomId, data);
+			// io.in(socket.request.user.inRoomId).emit("player-left-room", socket.request.user.username);
 
 			removePlayerFromRoomAndCheckDestroy(socket, io);
 
@@ -219,11 +263,16 @@ module.exports = function (io) {
 			rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId, io);
 			console.log("new room request");
 			//broadcast to all chat
-			var str = socket.request.user.username + " has created room " + nextRoomId + ".";
-			console.log(str);
+			var data = {
+				message: socket.request.user.username + " has created room " + nextRoomId + ".",
+				classStr: "server-text"
+			}			
+			sendToAllChat(io, data);
+
+			console.log(data.message);
 
 			//send to allChat including the host of the game
-			io.in("allChat").emit("new-game-created", str);
+			// io.in("allChat").emit("new-game-created", str);
 			//send back room id to host so they can auto connect
 			socket.emit("auto-join-room-id", nextRoomId);
 
@@ -232,10 +281,6 @@ module.exports = function (io) {
 
 			updateCurrentGamesList(io);
 		});
-
-		// socket.on("enter-room", function(roomId){
-		// 			//ENTER ROOM CODE, need to change join-room substantially too. 
-		// 		});
 
 		//when a player joins a room
 		socket.on("join-room", function (roomId) {
@@ -259,8 +304,15 @@ module.exports = function (io) {
 				//emit to the new spectator the players in the game.
 				socket.emit("update-room-players", rooms[roomId].getPlayers());
 
+				
 				//emit to say to others that someone has joined
-				io.in(roomId).emit("player-joined-room", socket.request.user.username);
+				var data = {
+					message: socket.request.user.username + " has joined the room.",
+					classStr: "server-text"
+				}			
+				sendToRoomChat(io, roomId, data);
+
+				// io.in(roomId).emit("player-joined-room", socket.request.user.username);
 
 				//if the game has started, and the user who is joining
 				//is part of the game, give them the data of the game again
@@ -306,7 +358,15 @@ module.exports = function (io) {
 			if (rooms[socket.request.user.inRoomId]) {
 				console.log(socket.request.user.username + " is leaving room: " + socket.request.user.inRoomId);
 				//broadcast to let others know
-				io.in(socket.request.user.inRoomId).emit("player-left-room", socket.request.user.username);
+
+				var data = {
+					message: socket.request.user.username + " has left the room.",
+					classStr: "server-text"
+				}
+				sendToRoomChat(io, socket.request.user.inRoomId, data);
+
+				// io.in(socket.request.user.inRoomId).emit("player-left-room", socket.request.user.username);
+
 				//remove player from room and check destroy
 				removePlayerFromRoomAndCheckDestroy(socket, io);
 				//leave the room chat
@@ -319,7 +379,13 @@ module.exports = function (io) {
 
 		socket.on("player-ready", function (username) {
 			if (rooms[socket.request.user.inRoomId]) {
-				io.in(socket.request.user.inRoomId).emit("player-ready", username + " is ready.");
+
+				var data = {
+					message: username + " is ready.",
+					classStr: "server-text"
+				}
+				sendToRoomChat(io, socket.request.user.inRoomId, data);
+				// io.in(socket.request.user.inRoomId).emit("player-ready", username + " is ready.");
 
 				if (rooms[socket.request.user.inRoomId].playerReady(username) === true) {
 					//game will auto start if the above returned true
@@ -331,7 +397,13 @@ module.exports = function (io) {
 		socket.on("player-not-ready", function (username) {
 			if (rooms[socket.request.user.inRoomId]) {
 				rooms[socket.request.user.inRoomId].playerNotReady(username);
-				io.in(socket.request.user.inRoomId).emit("player-not-ready", username + " is not ready.");
+				var data = {
+					message: username + " is not ready.",
+					classStr: "server-text"
+				}
+				sendToRoomChat(io, socket.request.user.inRoomId, data);
+
+				// io.in(socket.request.user.inRoomId).emit("player-not-ready", username + " is not ready.");
 			}
 		});
 
@@ -492,4 +564,55 @@ function textLengthFilter(str) {
 	else{
 		return str;
 	}
+}
+
+
+var fiveMinsInMillis = 1000 * 60 * 5;
+// var fiveMinsInMillis = 10000; //10 seconds just for testing
+
+
+function sendToAllChat(io, data){
+	io.in("allChat").emit("allChatToClient", data);
+
+	var date = new Date();
+	data.dateCreated = date;
+
+	allChatHistory.push(data);
+
+	allChat5Min.push(data);
+
+	
+	var i = 0;
+	
+
+	while(date - allChat5Min[i].dateCreated > fiveMinsInMillis){
+		if(i >= allChat5Min.length){
+			break;
+		}
+		i++;
+	}
+
+	if(i !== 0){
+		console.log("Messages older than 5 mins detected. Deleting old ones. index: " + i);
+		//starting from index 0, remove i items.
+		allChat5Min.splice(0, i);
+	}
+
+}
+
+function sendToRoomChat(io, roomId, data){
+	io.in(roomId).emit("roomChatToClient", data);
+	// io.in(socket.request.user.inRoomId).emit("player-ready", username + " is ready.");
+
+	if(!roomChatHistory[roomId]){
+		console.log("no room id for this chat history");
+		roomChatHistory[roomId] = [];
+	}
+	roomChatHistory[roomId].push(data);
+	console.log("data added: ");
+	console.log(data);
+
+	console.log("Total data: ");
+	console.log(roomChatHistory[roomId]);
+
 }

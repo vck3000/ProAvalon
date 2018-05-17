@@ -1,23 +1,14 @@
 To-do list:
--Spam filter?
 
 -claiming
--let players choose colour
-
 
 -title notificaitons
 
+-Sound
+
 -Moderators
 
--blue or yellow words for dark theme highlitht
 -Max number of players
-
--Highlight avatar doesnt work on game start??
-
--gameplayText isnt showing sometimes
-
-
-
 
 
 
@@ -56,9 +47,16 @@ also from old suggestion:anonymous mode
 ***************************************************************************************
 DONE: 
 
+-blue or yellow words for dark theme highlitht
+-Spam filter?
 -remove all replies to a comment when deleting comment.
 -remove all comments and replies when deleting forumthread.
 -"0 has picked: ytsersius, 2, 1,"
+-let players choose colour
+-Highlight avatar doesnt work on game start??
+-gameplayText isnt showing sometimes
+
+
 
 Mine: 
 -two tabs logged into same account

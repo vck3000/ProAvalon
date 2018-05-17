@@ -433,81 +433,92 @@ socket.on("roomChatToClient", function (data) {
 
 
 
-function addToAllChat(data, classStr) {
-    //if it is a string, force it into a array
-    if (typeof (data.message) === "string") {
-        data.message = [data.message];
+function addToAllChat(data) {
+
+    if(data){
+        //if it is not an array, force it into a array
+        if (data[0] === undefined) {
+            console.log("force array");
+            data = [data];
+        }  
+
+        for (var i = 0; i < data.length; i++) {
+            //format the date
+            var d = new Date();
+            var hour = d.getHours();
+            if (hour < 10) { hour = "0" + hour; }
+            if (data[i].date < 10) { data[i].date = "0" + data[i].date; }
+            var date = "[" + hour + ":" + data[i].date + "]";
+
+            if(data[i].message){
+                //prevent XSS injection
+                var filteredMessage = data[i].message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
+
+                var str = "";
+                if (data[i].classStr && data[i].classStr !== "") {
+                    str = "<li class='" + data[i].classStr + "'>" + filteredMessage;
+                }
+                else {
+                    str = "<li class='" + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + filteredMessage;
+                }
+
+                $(".all-chat-list").append(str);
+                scrollDown();
+
+                //yellow notification on the tabs in room.
+                if ($(".nav-tabs #all-chat-in-game-tab").hasClass("active") === false) {
+                    $(".nav-tabs #all-chat-in-game-tab").addClass("newMessage");
+                }
+            }
+            
+        }
     }
-
-    for (var i = 0; i < data.message.length; i++) {
-        //format the date
-        var d = new Date();
-        var hour = d.getHours();
-        if (hour < 10) { hour = "0" + hour; }
-        if (data.date < 10) { data.date = "0" + data.date; }
-        var date = "[" + hour + ":" + data.date + "]";
-
-        //prevent XSS injection
-        var filteredMessage = data.message[i].replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
-
-        var str = "";
-        if (classStr && classStr !== "") {
-            str = "<li class='" + classStr + "'>" + filteredMessage;
-        }
-        else {
-            str = "<li class='" + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage;
-        }
-
-        $(".all-chat-list").append(str);
-        scrollDown();
-
-        //yellow notification on the tabs in room.
-        if ($(".nav-tabs #all-chat-in-game-tab").hasClass("active") === false) {
-            $(".nav-tabs #all-chat-in-game-tab").addClass("newMessage");
-        }
-    }
-
 }
 
-function addToRoomChat(data, classStr) {
-    //if it is a string, force it into a array
-    if (typeof (data.message) === "string") {
-        data.message = [data.message];
-    }
-
-    for (var i = 0; i < data.message.length; i++) {
-        //format the date
-        var d = new Date();
-        var hour = d.getHours();
-        if (hour < 10) { hour = "0" + hour; }
-        if (data.date < 10) { data.date = "0" + data.date; }
-        var date = "[" + hour + ":" + data.date + "]";
-
-        //prevent XSS injection
-        if (data.message[i]) {
-            var filteredMessage = data.message[i].replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
-
-            var str = "";
-
-            //set the highlight chat if the user has been selected already
-            var highlightChatColour = "";
-            if (selectedChat[data.username] === true) {
-                highlightChatColour = docCookies.getItem("player" + getIndexFromUsername(data.username) + 'HighlightColour');
-            }
-
-            if (classStr && classStr !== "") {
-                str = "<li class='" + classStr + "'>" + filteredMessage;
-            }
-            else {
-                str = "<li><span style='background-color: " + highlightChatColour + "' username='" + data.username + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage + "</span></li>";
-            }
-
-            $(".room-chat-list").append(str);
-            scrollDown();
-
-            //yellow notification on the tabs in room.
-            if ($(".nav-tabs #room-chat-in-game-tab").hasClass("active") === false) {
-                $(".nav-tabs #room-chat-in-game-tab").addClass("newMessage");
+function addToRoomChat(data) {
+    //if it is not an array, force it into a array
+    if(data){
+        if (data[0] === undefined) {
+            data = [data];
+        }
+    
+        for (var i = 0; i < data.length; i++) {
+            //format the date
+            var d = new Date();
+            var hour = d.getHours();
+            if (hour < 10) { hour = "0" + hour; }
+            if (data[i].date < 10) { data[i].date = "0" + data[i].date; }
+            var date = "[" + hour + ":" + data[i].date + "]";
+    
+            
+            if (data[i].message) {
+                console.log(data[i].message);
+                //prevent XSS injection
+                var filteredMessage = data[i].message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
+    
+                var str = "";
+    
+                //set the highlight chat if the user has been selected already
+                var highlightChatColour = "";
+                console.log("true?"  + selectedChat[data[i].username]);
+                if (selectedChat[data[i].username] === true) {
+                    highlightChatColour = docCookies.getItem("player" + getIndexFromUsername(data[i].username) + 'HighlightColour');
+                }
+    
+                if (data[i].classStr && data[i].classStr !== "") {
+                    str = "<li class='" + data[i].classStr + "'>" + filteredMessage;
+                }
+                else {
+                    str = "<li><span style='background-color: #" + highlightChatColour + "' username='" + data[i].username + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + filteredMessage + "</span></li>";
+                }
+    
+                $(".room-chat-list").append(str);
+                scrollDown();
+    
+                //yellow notification on the tabs in room.
+                if ($(".nav-tabs #room-chat-in-game-tab").hasClass("active") === false) {
+                    $(".nav-tabs #room-chat-in-game-tab").addClass("newMessage");
+                }
             }
         }
     }
@@ -525,36 +536,6 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     else if (target === "#room-chat-in-game") {
         $(".nav-tabs #room-chat-in-game-tab").removeClass("newMessage")
     }
-});
-
-
-
-
-socket.on("player-joined-lobby", function (username) {
-    var str = "<li class=server-text>" + username + " has joined the lobby.";
-    $(".all-chat-list").append(str);
-    scrollDown();
-});
-
-socket.on("player-left-lobby", function (username) {
-    var str = "" + username + " has left the lobby.";
-    var data = { message: str };
-
-    addToAllChat(data, "server-text");
-});
-
-socket.on("player-joined-room", function (username) {
-    var str = "" + username + " has joined the room.";
-    var data = { message: str };
-
-    addToRoomChat(data, "server-text");
-});
-
-socket.on("player-left-room", function (username) {
-    var str = "" + username + " has left the room.";
-    var data = { message: str };
-
-    addToRoomChat(data, "server-text");
 });
 
 socket.on("update-current-players-list", function (currentPlayers) {
@@ -623,13 +604,6 @@ socket.on("update-current-games-list", function (currentGames) {
     }
 });
 
-
-
-socket.on("new-game-created", function (str) {
-    var str = "<li class=server-text>" + str + "</li>";
-    $(".all-chat-list").append(str);
-});
-
 socket.on("auto-join-room-id", function (roomId_) {
     console.log("auto join room");
     //received a request from server to auto join
@@ -652,14 +626,14 @@ socket.on("commands", function (commands) {
     assignCommands(commands);
 });
 
-socket.on("messageCommandReturnStr", function (str) {
-    var data = { message: str };
+socket.on("messageCommandReturnStr", function (data) {
+    // var data = { message: str , classStr: "server-text"};
 
     if (lastChatBoxCommand === "allChat") {
-        addToAllChat(data, "server-text");
+        addToAllChat(data);
     }
     else if (lastChatBoxCommand === "roomChat") {
-        addToRoomChat(data, "server-text");
+        addToRoomChat(data);
     }
     console.log("received return str");
 });
@@ -672,11 +646,11 @@ socket.on("slap", function (username) {
     }
 
     slap.play();
-    var data = { message: "You have just been slapped by " + username }
+    var data = { message: "You have just been slapped by " + username , classStr: "server-text"}
 
     setTimeout(function () {
-        addToAllChat(data, "server-text");
-        addToRoomChat(data, "server-text");
+        addToAllChat(data);
+        addToRoomChat(data);
     }, 1100);
 });
 
@@ -750,16 +724,6 @@ socket.on("game-starting", function (roles) {
 
 });
 
-socket.on("player-ready", function (str) {
-    var data = { message: str }
-    addToRoomChat(data, "server-text");
-});
-
-socket.on("player-not-ready", function (str) {
-    var data = { message: str }
-    addToRoomChat(data, "server-text");
-});
-
 socket.on("game-data", function (data) {
     // console.log("GAME DATA INC");   
     if (data) {
@@ -785,9 +749,9 @@ socket.on("game-data", function (data) {
 
 socket.on("lady-info", function (message) {
     var str = message + " (this message is only shown to you)";
-    var data = { message: str };
+    var data = { message: str, classStr: "special-text noselect" };
 
-    addToRoomChat(data, "special-text noselect");
+    addToRoomChat(data);
 });
 
 socket.on("update-status-message", function (data) {
@@ -799,10 +763,6 @@ socket.on("update-status-message", function (data) {
 //======================================
 //FUNCTIONS
 //======================================
-socket.on("sendText", function (data) {
-    addToRoomChat({ message: data.message }, data.stringType);
-    // console.log("print new gameplay-text");
-});
 
 function redButtonFunction() {
     if (document.querySelector("#red-button").classList.contains("disabled") === false) {
@@ -1094,6 +1054,7 @@ function activateAvatarButtons() {
                 chatItems.css("background-color", "white");
             }
             else {
+                console.log("set true");
                 selectedChat[username] = true;
                 chatItems.css("background-color", "#" + playerHighlightColour);
             }
@@ -1805,6 +1766,16 @@ function checkMessageForCommands(message, chatBox) {
                     console.log("Command: " + commands[key].command + " called.");
                     commandCalled = commands[key].command;
                     validCommandFound = true;
+
+                    if(commands[key].command === "roomChat"){
+                        //reset room chat
+                        $(".room-chat-list").html("");
+                    }
+                    else if(commands[key].command === "allChat"){
+                        //reset all chat
+                        $(".all-chat-list").html("");
+                    }
+
                     break;
                 }
             }
@@ -1812,10 +1783,13 @@ function checkMessageForCommands(message, chatBox) {
 
         if (validCommandFound === false) {
             console.log("Command invalid");
-            var str = messageCommand + " is not a valid command. Type /help for a list of commands."; 9
-            var data = { message: str }
-            addToAllChat(data, "server-text");
-            addToRoomChat(data, "server-text");
+            var str = "/"+ messageCommand + " is not a valid command. Type /help for a list of commands."; 
+            var data = { 
+                message: str,
+                classStr: "server-text"
+            }
+            addToAllChat(data);
+            addToRoomChat(data);
         }
         else {
             //sending command to server
