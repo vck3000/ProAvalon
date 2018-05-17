@@ -64,7 +64,7 @@ var userCommands = {
 		command: "buzz",
 		help: "/buzz <playername>: Buzz a player.",
 		run: function (args) {
-			return "buzzed player " + args[1] + " (not yet)";
+			return "buzzed player " + args[1] + " (not yet implemented)";
 		}
 	},
 
