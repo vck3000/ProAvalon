@@ -3,6 +3,7 @@ var router 		= express.Router();
 var passport 	= require("passport");
 var User 		= require("../models/user");
 var flash 		= require("connect-flash");
+var sanitizeHtml = require('sanitize-html');
 
 var middleware = require("../middleware");
 
@@ -17,7 +18,7 @@ router.get("/register", function(req, res){
 });
 
 //Post of the register route
-router.post("/",escapeTextUsername,/* usernameToLowerCase, */function(req, res){
+router.post("/",sanitiseUsername,/* usernameToLowerCase, */function(req, res){
 	// console.log("escaped: " + escapeText(req.body.username));
 
 	// var escapedUsername = escapeText(req.body.username);
@@ -26,6 +27,11 @@ router.post("/",escapeTextUsername,/* usernameToLowerCase, */function(req, res){
 
 	if(req.body.username.indexOf(" ") !== -1){
 		req.flash("error", "Sign up failed. Please do not use spaces in your username." + req.body.username.indexOf(" "));
+		res.redirect("register");
+	}
+
+	else if(usernameContainsBadCharacter(req.body.username) == true){
+		req.flash("error", "Please do not use an illegal character");
 		res.redirect("register");
 	}
 
@@ -48,7 +54,7 @@ router.post("/",escapeTextUsername,/* usernameToLowerCase, */function(req, res){
 });
 
 //login route
-router.post("/login",escapeTextUsername, /*usernameToLowerCase,*/ passport.authenticate("local", {
+router.post("/login",sanitiseUsername, /*usernameToLowerCase,*/ passport.authenticate("local", {
 	successRedirect: "/lobby",
 	failureRedirect: "/loginFail"
 }));
@@ -118,10 +124,32 @@ function escapeTextUsername(req, res, next){
 	next();
 }
 
+function sanitiseUsername(req, res, next){
+	
+	req.body.username = sanitizeHtml(req.body.username, {
+		allowedTags: [],
+		allowedAttributes: []
+	});
 
-
+	next();
+}
 
 module.exports = router;
+
+
+function usernameContainsBadCharacter(str){
+	if(str.includes('&amp;') || 
+			str.includes('&lt;') ||
+			str.includes('&gt;') ||
+			str.includes('&apos;') ||
+			str.includes('&quot;')){
+		return true;
+	}
+	else{
+		return false;
+	}
+
+}
 
 
 function escapeText(str) {

@@ -490,16 +490,16 @@ function addToRoomChat(data, classStr) {
             var str = "";
 
             //set the highlight chat if the user has been selected already
-            var highlightChat = "";
+            var highlightChatColour = "";
             if (selectedChat[data.username] === true) {
-                highlightChat = "selected-chat";
+                highlightChatColour = docCookies.getItem("player" + getIndexFromUsername(data.username) + 'HighlightColour');
             }
 
             if (classStr && classStr !== "") {
-                str = "<li class='" + classStr + " " + highlightChat + "'>" + filteredMessage;
+                str = "<li class='" + classStr + "'>" + filteredMessage;
             }
             else {
-                str = "<li><span username='" + data.username + "' class='" + highlightChat + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage + "</span></li>";
+                str = "<li><span background-color='#" + highlightChatColour + " ' username='" + data.username + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data.username + ":</span> " + filteredMessage + "</span></li>";
             }
 
             $(".room-chat-list").append(str);
@@ -1723,7 +1723,9 @@ function getKickPlayers() {
     var data = {};
 
     for (var i = 0; i < roomPlayersData.length; i++) {
-        if ($("#" + roomPlayersData[i].username)[0].checked === true) {
+        console.log(unescapeHtml(roomPlayersData[i].username));
+        // if ($("#" + roomPlayersData[i].username)[0].checked === true) {
+        if ($("#" + $.escapeSelector(unescapeHtml(roomPlayersData[i].username)))[0].checked === true) {
             data[roomPlayersData[i].username] = true;
         }
     }
@@ -1848,6 +1850,27 @@ function updateDarkTheme(checked) {
         $(".navbar").removeClass("navbar-inverse");
     }
 }
+
+
+function unescapeHtml(unsafe) {
+    return unsafe
+         .replace(/&amp;/g, "&")
+         .replace(/&lt;/g, "<")
+         .replace(/&gt;/g, ">")
+         .replace(/&quot;/g, '"')
+         .replace(/&#039;/g, "'")
+      
+}
+
+function escapeHtml(unsafe) {
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+}
+
 
 
 // var userCommands = {
