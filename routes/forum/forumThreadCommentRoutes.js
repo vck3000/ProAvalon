@@ -53,8 +53,10 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 
 			//add 1 to the num of comments
             foundForumThread.numOfComments = foundForumThread.numOfComments + 1;
-            
-            foundForumThread.save();
+            //update time last edited
+			foundForumThread.timeLastEdit = new Date();
+			
+			foundForumThread.save();
             
 			//redirect to same forum thread
 			res.redirect("/forum/show/" + req.params.id);
@@ -95,6 +97,7 @@ router.put("/:id/:comment_id", middleware.checkForumThreadCommentOwnership, func
 
 
 			foundComment.edited = true;
+			foundComment.timeLastEdit = new Date();
 
 			await foundComment.save();
 
@@ -104,6 +107,8 @@ router.put("/:id/:comment_id", middleware.checkForumThreadCommentOwnership, func
 				console.log(req.params.id);
 
 				foundForumThread.markModified("comments");
+				//update time last edited
+				foundForumThread.timeLastEdit = new Date();
 				await foundForumThread.save();
 
 				//redirect to the forum page

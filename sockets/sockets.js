@@ -152,10 +152,7 @@ module.exports = function (io) {
 			classStr: "server-text"
 		}
 		sendToAllChat(io, data);
-		//dont need this line anymore
-		// io.in("allChat").emit("player-joined-lobby", socket.request.user.username);
 
-		
 
 		//io sends to everyone in the site, including the current user of this socket
 		io.in("allChat").emit("update-current-players-list", currentPlayersUsernames);
@@ -609,13 +606,16 @@ function sendToRoomChat(io, roomId, data){
 	// io.in(socket.request.user.inRoomId).emit("player-ready", username + " is ready.");
 
 	if(!roomChatHistory[roomId]){
-		console.log("no room id for this chat history");
+		console.log("no room id for this chat history, creating now");
 		roomChatHistory[roomId] = [];
 	}
-	roomChatHistory[roomId].push(data);
-	console.log("data added: ");
-	console.log(data);
-
-	console.log("Total data: ");
-	console.log(roomChatHistory[roomId]); 
+	if(rooms[roomId].getGameStarted() === true){
+		roomChatHistory[roomId].push(data);
+		console.log("chat history added: ");
+		console.log(data);
+	}
+	else{
+		console.log("Game isn't started, don't log this message.");
+	}
+	
 }

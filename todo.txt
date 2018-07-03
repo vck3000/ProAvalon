@@ -11,7 +11,7 @@ To-do list:
 -Max number of players
 
 -show slapper that it was successful or not
--reorder players when game starts
+
 -Last time edited for forum
 -Order posts in order of last edited
 -Notifications?
@@ -32,6 +32,13 @@ To-do list:
 -make it so that the players role doesn't cover the mission bar (2 3 2 3 3)
 
 -Statistics page
+
+
+-Learn REGEX
+
+-Learn Bitwise operations...?
+
+-Stop people from relogging and flooding main chat
 
 6 or 8 inch futon
 cotton only

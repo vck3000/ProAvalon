@@ -55,7 +55,7 @@ router.get("/page/:pageNum", function (req, res) {
 		skipNumber = (req.params.pageNum - 1) * NUM_OF_RESULTS_PER_PAGE;
 	}
 
-	forumThread.find({}).sort({ timeCreated: 'descending' }).skip(skipNumber).limit(NUM_OF_RESULTS_PER_PAGE)
+	forumThread.find({}).sort({ timeLastEdit: 'descending' }).skip(skipNumber).limit(NUM_OF_RESULTS_PER_PAGE)
 		.exec(function (err, allForumThreads) {
 			if (err) {
 				console.log(err);
