@@ -714,12 +714,26 @@ module.exports = function (host_, roomId_, io_) {
 		}
 		shuffledPlayerAssignments = shuffle(shuffledPlayerAssignments);
 
+		var tempSockets = [];
+		//create temp sockets
+		for(var i = 0; i < this.sockets.length; i++){
+			tempSockets[i] = this.sockets[i];
+		}
+
+		//assign the shuffled sockets
+		for(var i = 0; i < this.sockets.length; i++){
+			this.sockets[i] = tempSockets[shuffledPlayerAssignments[i]];
+		}
+		
+		
+
+
 		//Now we initialise roles
 		for (var i = 0; i < this.sockets.length; i++) {
 			this.playersInGame[i] = {};
 			//assign them the sockets but with shuffled. 
-			this.playersInGame[i].username = this.sockets[shuffledPlayerAssignments[i]].request.user.username;
-			this.playersInGame[i].socketId = this.sockets[shuffledPlayerAssignments[i]].id;
+			this.playersInGame[i].username = this.sockets[i].request.user.username;
+			this.playersInGame[i].socketId = this.sockets[i].id;
 
 			//set the role to be from the roles array with index of the value
 			//of the rolesAssignment which has been shuffled
@@ -1040,35 +1054,19 @@ module.exports = function (host_, roomId_, io_) {
 
 		var array = [];
 
-		if(this.gameStarted === true){
-			for (var i = 0; i < this.sockets.length; i++) {
-				array[i] = {
-					username: this.sockets[i].request.user.username,
-					avatarImgRes: this.sockets[i].request.user.avatarImgRes,
-					avatarImgSpy: this.sockets[i].request.user.avatarImgSpy
-				}
-	
-				//give the host the teamLeader star
-				if (array[i].username === this.host) {
-					array[i].teamLeader = true;
-				}
+		for (var i = 0; i < this.sockets.length; i++) {
+			array[i] = {
+				username: this.sockets[i].request.user.username,
+				avatarImgRes: this.sockets[i].request.user.avatarImgRes,
+				avatarImgSpy: this.sockets[i].request.user.avatarImgSpy
 			}
-		}
-		else{
-			for (var i = 0; i < this.sockets.length; i++) {
-				array[i] = {
-					username: this.sockets[shuffledPlayerAssignments[i]].request.user.username,
-					avatarImgRes: this.sockets[shuffledPlayerAssignments[i]].request.user.avatarImgRes,
-					avatarImgSpy: this.sockets[shuffledPlayerAssignments[i]].request.user.avatarImgSpy
-				}
-	
-				//give the host the teamLeader star
-				if (array[shuffledPlayerAssignments[i]].username === this.host) {
-					array[shuffledPlayerAssignments[i]].teamLeader = true;
-				}
-			}
-		}
 
+			//give the host the teamLeader star
+			if (array[i].username === this.host) {
+				array[i].teamLeader = true;
+			}
+		}
+		
 		return array;
 	};
 
