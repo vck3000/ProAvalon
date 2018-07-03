@@ -96,11 +96,11 @@ var userCommands = {
 
 	allChat: {
 		command: "allChat",
-		help: "/allChat: Get a copy of the last 5 minutes of allChat.",
+		help: "/allChat: Get a copy of the last 5 minutes of allChat. (DISABLED)",
 		run: function (args, senderSocket) {
 			//code
 
-			return allChat5Min;
+			return null;//allChat5Min;
 		}
 	}
 };
@@ -390,6 +390,7 @@ module.exports = function (io) {
 				if (rooms[socket.request.user.inRoomId].playerReady(username) === true) {
 					//game will auto start if the above returned true
 					distributeGameData(socket, io);
+					updateRoomPlayers(io, socket);
 				}
 			}
 		});
@@ -411,7 +412,10 @@ module.exports = function (io) {
 			//start the game
 			if (rooms[socket.request.user.inRoomId]) {
 				if (socket.request.user.inRoomId && socket.request.user.username === rooms[socket.request.user.inRoomId].getHostUsername()) {
+
 					rooms[socket.request.user.inRoomId].hostTryStartGame(data);
+
+					//socket.emit("update-room-players", rooms[roomId].getPlayers());
 				} else {
 					console.log("Room doesn't exist or user is not host, cannot start game");
 					socket.emit("danger-alert", "You are not the host. You cannot start the game.")
@@ -593,7 +597,7 @@ function sendToAllChat(io, data){
 	}
 
 	if(i !== 0){
-		console.log("Messages older than 5 mins detected. Deleting old ones. index: " + i);
+		//console.log("Messages older than 5 mins detected. Deleting old ones. index: " + i);
 		//starting from index 0, remove i items.
 		allChat5Min.splice(0, i);
 	}
@@ -613,6 +617,5 @@ function sendToRoomChat(io, roomId, data){
 	console.log(data);
 
 	console.log("Total data: ");
-	console.log(roomChatHistory[roomId]);
-
+	console.log(roomChatHistory[roomId]); 
 }

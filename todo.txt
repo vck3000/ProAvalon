@@ -10,7 +10,33 @@ To-do list:
 
 -Max number of players
 
+-show slapper that it was successful or not
+-reorder players when game starts
+-Last time edited for forum
+-Order posts in order of last edited
+-Notifications?
 
+-Mission boxes need to scale too
+
+-sound for joining and game start
+
+-Increase gap between rej app buttons
+-fade the buttons more when inactive?
+-Change gameplay text to grey
+
+-bold lady of the lake text
+
+-3 has picked: KR, 3, 2,
+3 has picked: KR, 3, 2,
+
+-make it so that the players role doesn't cover the mission bar (2 3 2 3 3)
+
+-Statistics page
+
+6 or 8 inch futon
+cotton only
+
+check on ebay
 
 Hak:
 List of suggestions

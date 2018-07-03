@@ -114,6 +114,9 @@ module.exports = function (host_, roomId_, io_) {
 
 	this.winner = "";
 
+	var shuffledPlayerAssignments = [];
+
+
 	this.finishGame = function (winner) {
 		if (winner === "spy") {
 			//spies win, nothing more to do.
@@ -705,18 +708,27 @@ module.exports = function (host_, roomId_, io_) {
 
 		var rolesAssignment = generateAssignmentOrders(this.sockets.length);
 
+		//shuffle the players around. Make sure to redistribute this room player data in sockets.
+		for(var i = 0; i < this.sockets.length; i++){
+			shuffledPlayerAssignments[i] = i;
+		}
+		shuffledPlayerAssignments = shuffle(shuffledPlayerAssignments);
 
 		//Now we initialise roles
 		for (var i = 0; i < this.sockets.length; i++) {
 			this.playersInGame[i] = {};
-			this.playersInGame[i].username = this.sockets[i].request.user.username;
-			this.playersInGame[i].socketId = this.sockets[i].id;
+			//assign them the sockets but with shuffled. 
+			this.playersInGame[i].username = this.sockets[shuffledPlayerAssignments[i]].request.user.username;
+			this.playersInGame[i].socketId = this.sockets[shuffledPlayerAssignments[i]].id;
 
 			//set the role to be from the roles array with index of the value
 			//of the rolesAssignment which has been shuffled
 			this.playersInGame[i].alliance = alliances[rolesAssignment[i]];
 			// this.playersInGame[i].role = roles[rolesAssignment[i]];
 		}
+
+
+		//shuffle
 
 
 		//give roles to the players according to their alliances
@@ -1025,17 +1037,35 @@ module.exports = function (host_, roomId_, io_) {
 	}
 
 	this.getPlayers = function () {
-		var array = [];
-		for (var i = 0; i < this.sockets.length; i++) {
-			array[i] = {
-				username: this.sockets[i].request.user.username,
-				avatarImgRes: this.sockets[i].request.user.avatarImgRes,
-				avatarImgSpy: this.sockets[i].request.user.avatarImgSpy
-			}
 
-			//give the host the teamLeader star
-			if (array[i].username === this.host) {
-				array[i].teamLeader = true;
+		var array = [];
+
+		if(this.gameStarted === true){
+			for (var i = 0; i < this.sockets.length; i++) {
+				array[i] = {
+					username: this.sockets[i].request.user.username,
+					avatarImgRes: this.sockets[i].request.user.avatarImgRes,
+					avatarImgSpy: this.sockets[i].request.user.avatarImgSpy
+				}
+	
+				//give the host the teamLeader star
+				if (array[i].username === this.host) {
+					array[i].teamLeader = true;
+				}
+			}
+		}
+		else{
+			for (var i = 0; i < this.sockets.length; i++) {
+				array[i] = {
+					username: this.sockets[shuffledPlayerAssignments[i]].request.user.username,
+					avatarImgRes: this.sockets[shuffledPlayerAssignments[i]].request.user.avatarImgRes,
+					avatarImgSpy: this.sockets[shuffledPlayerAssignments[i]].request.user.avatarImgSpy
+				}
+	
+				//give the host the teamLeader star
+				if (array[shuffledPlayerAssignments[i]].username === this.host) {
+					array[shuffledPlayerAssignments[i]].teamLeader = true;
+				}
 			}
 		}
 
