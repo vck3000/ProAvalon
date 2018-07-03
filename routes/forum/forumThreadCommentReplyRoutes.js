@@ -61,6 +61,10 @@ router.post("/:id/:commentId", middleware.isLoggedIn, async function (req, res) 
 				foundForumThread.markModified("comments");
 				//add 1 to the num of comments
 				foundForumThread.numOfComments = foundForumThread.numOfComments + 1;
+
+				//update time last edited
+				foundForumThread.timeLastEdit = new Date();
+
 				foundForumThread.save();
 			});
 
@@ -104,6 +108,9 @@ router.put("/:id/:comment_id/:reply_id", middleware.checkForumThreadCommentReply
 			forumThreadComment.findById(req.params.comment_id).populate("replies").exec(async function (err, foundForumThreadComment) {
 
 				foundForumThreadComment.markModified("replies");
+				//update time last edited
+				foundForumThread.timeLastEdit = new Date();
+
 				await foundForumThreadComment.save();
 
 				//redirect to the forum page
