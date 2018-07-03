@@ -4,8 +4,13 @@ var util = require("util");
 
 var mongoose = require("mongoose");
 var User = require("../models/user");
+var GameRecord = require("../models/gameRecord");
 
 mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
+
+
+
+
 // var sockets = [];
 
 var minPlayers = 5;
@@ -121,6 +126,7 @@ module.exports = function (host_, roomId_, io_) {
 		if (winner === "spy") {
 			//spies win, nothing more to do.
 			this.winner = "spies";
+			this.howWasWon = "Mission fails."
 			this.gameEnd();
 		}
 		else if (winner === "res") {
@@ -135,9 +141,11 @@ module.exports = function (host_, roomId_, io_) {
 
 			if (assassinIsInGame === true) {
 				this.phase = "assassination";
+				this.startAssassinationTime = new Date();
 			}
 			else {
 				this.winner = "resistance";
+				this.howWasWon = "Mission successes"
 				this.gameEnd();
 			}
 		}
@@ -158,9 +166,54 @@ module.exports = function (host_, roomId_, io_) {
 		else if (this.winner === "resistance") {
 			// this.gameplayMessage = "The resistance have won the game.";
 			sendText(this.sockets, "The resistance have won the game.", "gameplay-text");
-
-
 		}
+
+		//store data into the database:
+		var rolesCombined = [];
+		
+		//combine roles
+		for(var i = 0; i < (this.resRoles.length + this.spyRoles.length); i++){
+			if(i < this.resRoles.length){
+				rolesCombined[i] = this.resRoles[i];
+			}
+			else{
+				rolesCombined[i] = this.spyRoles[i-this.resRoles.length];
+			}
+		}
+
+		var playerRolesVar = {};
+
+		for(var i = 0; i < this.playersInGame.length; i++){
+			playerRolesVar[this.playersInGame[i].username] = {
+				alliance: this.playersInGame[i].alliance,
+				role: this.playersInGame[i].role
+			}
+		}
+		
+		var objectToStore = {
+			timeGameStarted: this.startGameTime,
+			timeAssassinationStarted: this.startAssassinationTime,
+			timeGameFinished: new Date(),
+			winningTeam: this.winner,
+			spyTeam: this.spyUsernames,
+			resistanceTeam: this.resistanceUsernames,
+			numberOfPlayers: this.sockets.length,
+			howTheGameWasWon: this.howWasWon,
+			roles: rolesCombined,
+
+			missionHistory: this.missionHistory,
+			voteHistory: this.voteHistory,
+			playerRoles: playerRolesVar
+		};
+
+		GameRecord.create(objectToStore, function(err){
+			if(err){
+				console.log(err);
+			}
+			else{
+				console.log("Stored game data successfully.");
+			}
+		})
 	}
 
 	this.assassinate = function (socket, target) {
@@ -184,9 +237,11 @@ module.exports = function (host_, roomId_, io_) {
 			console.log("merlin username: " + merlinUsername);
 			if (merlinUsername && target[0] === merlinUsername) {
 				this.winner = "spies";
+				this.howWasWon = "Assassinated Merlin correctly."
 			}
 			else {
 				this.winner = "resistance";
+				this.howWasWon = "Mission successes and Merlin did not die."
 			}
 
 			this.gameEnd();
@@ -347,13 +402,13 @@ module.exports = function (host_, roomId_, io_) {
 			else if (numOfSucceeds >= 3) {
 				//pass through the winner
 				this.finishGame("res");
-				console.log("RES WON, NOW GOING INTO ASSASSINATION");
+				// console.log("RES WON, NOW GOING INTO ASSASSINATION");
 			}
 
 			
 
 		}
-		console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, { depth: 2 }));
+		// console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, { depth: 2 }));
 	}
 
 	this.pickVote = function (socket, voteStr) {
@@ -703,6 +758,9 @@ module.exports = function (host_, roomId_, io_) {
 
 	//start game
 	this.startGame = function (options) {
+		this.startGameTime = new Date();
+
+
 		//make game started after the checks for game already started
 		this.gameStarted = true;
 
@@ -747,13 +805,13 @@ module.exports = function (host_, roomId_, io_) {
 
 		//give roles to the players according to their alliances
 		//Get roles:
-		var resRoles = [];
-		var spyRoles = [];
-		if (options.merlinassassin === true) { resRoles.push("Merlin"); spyRoles.push("Assassin"); console.log("added merlin assassin"); }
-		if (options.percival === true) { resRoles.push("Percival"); console.log("Added percy"); }
-		if (options.morgana === true) { spyRoles.push("Morgana"); console.log("Added morgana"); }
-		if (options.mordred === true) { spyRoles.push("Mordred"); console.log("added mordred"); }
-		if (options.oberon === true) { spyRoles.push("Oberon"); console.log("added oberon"); }
+		this.resRoles = [];
+		this.spyRoles = [];
+		if (options.merlinassassin === true) { this.resRoles.push("Merlin"); this.spyRoles.push("Assassin"); console.log("added merlin assassin"); }
+		if (options.percival === true) { this.resRoles.push("Percival"); console.log("Added percy"); }
+		if (options.morgana === true) { this.spyRoles.push("Morgana"); console.log("Added morgana"); }
+		if (options.mordred === true) { this.spyRoles.push("Mordred"); console.log("added mordred"); }
+		if (options.oberon === true) { this.spyRoles.push("Oberon"); console.log("added oberon"); }
 		if (options.lady === true) {
 			this.lady = getRandomInt(0, this.sockets.length);
 			this.ladyablePeople = [];
@@ -765,22 +823,25 @@ module.exports = function (host_, roomId_, io_) {
 
 		var resPlayers = [];
 		var spyPlayers = [];
+
+		this.resistanceUsernames = [];
+		this.spyUsernames = [];
 		for (var i = 0; i < this.sockets.length; i++) {
-			if (this.playersInGame[i].alliance === "Resistance") { resPlayers.push(i); }
-			else if (this.playersInGame[i].alliance === "Spy") { spyPlayers.push(i); }
+			if (this.playersInGame[i].alliance === "Resistance") { resPlayers.push(i); this.resistanceUsernames.push(getUsernameFromIndex(i, this.playersInGame));}
+			else if (this.playersInGame[i].alliance === "Spy") { spyPlayers.push(i); this.spyUsernames.push(getUsernameFromIndex(i, this.playersInGame));}
 		}
 
 		//for the res roles:
 		rolesAssignment = generateAssignmentOrders(resPlayers.length);
 		for (var i = 0; i < rolesAssignment.length; i++) {
-			this.playersInGame[resPlayers[i]].role = resRoles[rolesAssignment[i]];
+			this.playersInGame[resPlayers[i]].role = this.resRoles[rolesAssignment[i]];
 			// console.log("res role: " + resRoles[rolesAssignment[i]]);
 		}
 
 		//for the spy roles:
 		rolesAssignment = generateAssignmentOrders(spyPlayers.length);
 		for (var i = 0; i < rolesAssignment.length; i++) {
-			this.playersInGame[spyPlayers[i]].role = spyRoles[rolesAssignment[i]];
+			this.playersInGame[spyPlayers[i]].role = this.spyRoles[rolesAssignment[i]];
 			// console.log("spy role: " + spyRoles[rolesAssignment[i]]);
 		}
 
@@ -842,11 +903,11 @@ module.exports = function (host_, roomId_, io_) {
 
 		var str = "Game started with: ";
 		//add res roles: 
-		for (var i = 0; i < resRoles.length; i++) {
-			str += (resRoles[i] + ", ");
+		for (var i = 0; i < this.resRoles.length; i++) {
+			str += (this.resRoles[i] + ", ");
 		}
-		for (var i = 0; i < spyRoles.length; i++) {
-			str += (spyRoles[i] + ", ");
+		for (var i = 0; i < this.spyRoles.length; i++) {
+			str += (this.spyRoles[i] + ", ");
 		}
 		if (options.lady === true) {
 			str += "Lady of the Lake."

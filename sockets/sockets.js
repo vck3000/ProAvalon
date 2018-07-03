@@ -609,7 +609,7 @@ function sendToRoomChat(io, roomId, data){
 		console.log("no room id for this chat history, creating now");
 		roomChatHistory[roomId] = [];
 	}
-	if(rooms[roomId].getGameStarted() === true){
+	if(rooms[roomId] && rooms[roomId].getGameStarted() === true){
 		roomChatHistory[roomId].push(data);
 		console.log("chat history added: ");
 		console.log(data);
@@ -617,5 +617,4 @@ function sendToRoomChat(io, roomId, data){
 	else{
 		console.log("Game isn't started, don't log this message.");
 	}
-	
 }

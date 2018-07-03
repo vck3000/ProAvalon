@@ -28,11 +28,11 @@ var sanitizeHtmlAllowedAttributesForumThread = {
 router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 
 	var commentData = {
-		
+
 		text: sanitizeHtml(req.body.comment.text, {
-            allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
+			allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
 			allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
-        }),
+		}),
 		author: { id: req.user._id, username: req.user.username },
 		timeCreated: new Date(),
 		timeLastEdit: new Date(),
@@ -52,12 +52,12 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 			// console.log("current comments after add: " + foundForumThread.comments);
 
 			//add 1 to the num of comments
-            foundForumThread.numOfComments = foundForumThread.numOfComments + 1;
-            //update time last edited
+			foundForumThread.numOfComments = foundForumThread.numOfComments + 1;
+			//update time last edited
 			foundForumThread.timeLastEdit = new Date();
-			
+
 			foundForumThread.save();
-            
+
 			//redirect to same forum thread
 			res.redirect("/forum/show/" + req.params.id);
 		});
@@ -96,7 +96,7 @@ router.put("/:id/:comment_id", middleware.checkForumThreadCommentOwnership, func
 			}),
 
 
-			foundComment.edited = true;
+				foundComment.edited = true;
 			foundComment.timeLastEdit = new Date();
 
 			await foundComment.save();
