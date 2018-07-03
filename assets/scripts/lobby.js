@@ -1495,14 +1495,30 @@ function strOfAvatar(playerData, alliance) {
     var picLink;
     if (alliance === "res") {
         if (playerData.avatarImgRes) {
-            picLink = 'avatars/' + playerData.avatarImgRes;
+
+            if(playerData.avatarImgRes.includes("http")){
+                picLink = playerData.avatarImgRes;
+            }
+            else{
+                //stored locally, need to add the path to it
+                picLink = 'avatars/' + playerData.avatarImgRes;
+            }
+            
         } else {
             picLink = 'avatars/base-res.png'
         }
     }
     else {
         if (playerData.avatarImgSpy) {
-            picLink = 'avatars/' + playerData.avatarImgSpy;
+
+            if(playerData.avatarImgSpy.includes("http")){
+                picLink = playerData.avatarImgSpy;
+            }
+            else{
+                //stored locally, need to add the path to it
+                picLink = 'avatars/' + playerData.avatarImgSpy;
+            }
+
         } else {
             picLink = 'avatars/base-spy.png'
         }
