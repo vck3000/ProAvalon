@@ -26,8 +26,53 @@ router.get("/", function (req, res) {
 	res.redirect("/forum/page/1");
 });
 
+router.get("/page/:category/:pageNum", function(req, res){
+	console.log("category");
+	
+	//if theres an invalid page num, redirect to page 1
+	if (req.params.pageNum < 1) {
+		res.redirect("/forum/page/" + req.params.category + "/1");
+	}
+
+	//get all forumThreads from DB
+	//then render
+
+	var NUM_OF_RESULTS_PER_PAGE = 10;
+	//if user specified num of results per page:
+	if (req.params.numOfResultsPerPage) {
+		NUM_OF_RESULTS_PER_PAGE = req.params.numOfResultsPerPage;
+	}
+	
+	var skipNumber = 0;
+	//if we have a specified pageNum, then skip a bit
+	if (req.params.pageNum) {
+		//-1 because page numbers start at 1
+		skipNumber = (req.params.pageNum - 1) * NUM_OF_RESULTS_PER_PAGE;
+	}
+
+	forumThread.find({category: req.params.category}).sort({ timeLastEdit: 'descending' }).skip(skipNumber).limit(NUM_OF_RESULTS_PER_PAGE)
+		.exec(function (err, allForumThreads) {
+			if (err) {
+				console.log(err);
+			}
+			else {
+				allForumThreads.forEach(function (forumThread) {
+					forumThread.timeSinceString = getTimeDiffInString(forumThread.timeLastEdit);
+				});
+
+				res.render("forum/index", {
+					allPinnedThreads: [],
+					allForumThreads: allForumThreads,
+					currentUser: req.user,
+					pageNum: req.params.pageNum,
+					activeCategory: req.params.category
+				});				
+			}
+		});
+});
 
 router.get("/page/:pageNum", function (req, res) {
+	console.log("pageNum");
 	//rendering the campgrounds.ejs file
 	//and also passing in the array data
 	//first campgrounds is the name of the obj we are passing

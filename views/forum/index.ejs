@@ -12,10 +12,30 @@
     <div class="container">
         <div style="text-align: center;">
             <h1>Forums</h1>
-            <button type="button" class="btn btn-success">Avalon</button>
-            <button type="button" class="btn btn-info">Off-topic</button>
-            <button type="button" class="btn btn-warning">Suggestions</button>
-            <button type="button" class="btn btn-danger">Bugs</button>
+
+            <% if(typeof activeCategory !== 'undefined' && activeCategory === "avalon"){ %>
+                <a type="button" class="btn btn-success active" href="/forum/page/1">Avalon</a>
+            <% } else { %>
+                <a type="button" class="btn btn-success" href="/forum/page/avalon/1">Avalon</a>
+            <% } %>
+
+            <% if(typeof activeCategory !== 'undefined' && activeCategory === "offTopic"){ %>
+                <a type="button" class="btn btn-info active" href="/forum/page/1">Off-topic</a>
+            <% } else { %>
+                <a type="button" class="btn btn-info" href="/forum/page/offTopic/1">Off-topic</a>
+            <% } %>
+
+            <% if(typeof activeCategory !== 'undefined' && activeCategory === "suggestion"){ %>
+            <a type="button" class="btn btn-warning active" href="/forum/page/1">Suggestions</a>
+            <% } else { %>
+            <a type="button" class="btn btn-warning" href="/forum/page/suggestion/1">Suggestions</a>
+            <% } %>
+
+            <% if(typeof activeCategory !== 'undefined' && activeCategory === "bug"){ %>
+            <a type="button" class="btn btn-danger active" href="/forum/page/1">Bugs</a>
+            <% } else { %>
+            <a type="button" class="btn btn-danger" href="/forum/page/bug/1">Bugs</a>
+            <% } %>
 
             <br>
             <br>
@@ -27,7 +47,7 @@
 
         <br>
 
-        <% if(pageNum == 1) { %> 
+        <% if(pageNum == 1 && allPinnedThreads.length !== 0) { %> 
 
             <div class="panel panel-success">
                 <div class="panel-heading">Pinned threads</div>
