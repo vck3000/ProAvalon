@@ -165,7 +165,8 @@ p {
 }
 
 .gameplay-text {
-    color: rgb(255, 0, 0);
+    /* color: rgb(255, 0, 0); */
+    color: gray;
     font-style: italic;
 }
 
@@ -429,12 +430,12 @@ p {
     background-color: #FFBBBB;
 }
 
-.VHpicked {
+/* .VHpicked {
     background-image: url("/pictures/tick.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-}
+} */
 
 #voteHistoryTable .VHleader {
     border: black 3px solid;

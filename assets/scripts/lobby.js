@@ -1695,7 +1695,13 @@ function drawVoteHistory(data) {
                 //for every pick
                 for (var j = 0; j < data.voteHistory[key][i].length; j++) {
                     // console.log(data.voteHistory[key][i][j]);
+
                     str += "<td class='" + data.voteHistory[key][i][j] + "''>";
+
+                    if(data.voteHistory[key][i][j].includes("VHpicked") === true){
+                        str += "<i class='glyphicon glyphicon-ok'></i>";
+                    }
+
                     str += "</td>";
                     numOfPicksPerMission[i]++;
                 }

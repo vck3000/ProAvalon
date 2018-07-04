@@ -1213,6 +1213,17 @@ module.exports = function (host_, roomId_, io_) {
 	this.getGameStarted = function(){
 		return this.gameStarted;
 	}
+
+	this.getUsernamesOfSpectators = function() {
+
+		var arrayToReturn = [];
+
+		for(var i = 0; i < socketsOfSpectators.length; i++){
+			arrayToReturn[i] = socketsOfSpectators[i].request.user.username;
+		}
+
+		return arrayToReturn;
+	}
 };
 
 

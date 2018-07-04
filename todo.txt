@@ -15,7 +15,13 @@ To-do list:
 
 -Notifications?
 
--Mission boxes need to scale too
+-add time stamp after every message
+-so that it can be quoted
+
+-I think I also forgot to add hammer rejected to the ways a game can end
+
+-Dont make all missions fail if a hammer was rejected
+
 
 -sound for joining and game start
 
@@ -144,6 +150,8 @@ Mine:
 -Last time edited for forum
 -Order posts in order of last edited
 -Shuffle players on game start
+-Mission boxes need to scale too
+
 
 
 Hak:
