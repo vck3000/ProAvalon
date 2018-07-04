@@ -650,3 +650,12 @@ textarea .dark {
     width: 100%;
     background: rgb(161, 161, 161);
 }
+
+
+
+.myQuote{
+    color: rgb(107, 107, 107);
+    padding-left: 10px;
+    border-left: #ccc 3px solid;
+
+}

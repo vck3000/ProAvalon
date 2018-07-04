@@ -500,25 +500,50 @@ function addToRoomChat(data) {
                 console.log(data[i].message);
                 //prevent XSS injection
                 var filteredMessage = data[i].message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
-    
+                console.log("Filtered message: " + filteredMessage);
                 var str = "";
-    
-                //set the highlight chat if the user has been selected already
-                var highlightChatColour = "";
-                console.log("true?"  + selectedChat[data[i].username]);
-                if (selectedChat[data[i].username] === true) {
-                    highlightChatColour = docCookies.getItem("player" + getIndexFromUsername(data[i].username) + 'HighlightColour');
+
+                // if there is no '[', then the chat incoming is not a quote.
+                if(filteredMessage.indexOf("[") === -1){
+                    //set the highlight chat if the user has been selected already
+                    var highlightChatColour = "";
+                    console.log("true?"  + selectedChat[data[i].username]);
+                    if (selectedChat[data[i].username] === true) {
+                        highlightChatColour = docCookies.getItem("player" + getIndexFromUsername(data[i].username) + 'HighlightColour');
+                    }
+
+                    //if its a server text or special text
+                    if (data[i].classStr && data[i].classStr !== "") {
+                        str = "<li class='" + data[i].classStr + "'>" + filteredMessage;
+                    }
+                    //its a user's chat so put some other stuff on it
+                    else {
+                        str = "<li><span style='background-color: #" + highlightChatColour + "' username='" + data[i].username + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + filteredMessage + "</span></li>";
+                    }
+
+                    $(".room-chat-list").append(str);
+                    scrollDown();
+                }
+
+                //else if there is a '[' character, then assume the user is quoting a chunk of text
+                else{
+                    var strings = filteredMessage.split("[");
+
+                    str = "<li><span username='" + data[i].username + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + "Quoting:" + "</span></li>";
+
+                    console.log("Strings: ");
+
+                    for(var j = 1; j < strings.length; j++){
+                        str += "<li class='myQuote'>" + "[" + strings[j] + "</li>";
+                        console.log(strings[j]);
+                    }
+
+                    $(".room-chat-list").append(str);
+                    scrollDown();
+
                 }
     
-                if (data[i].classStr && data[i].classStr !== "") {
-                    str = "<li class='" + data[i].classStr + "'>" + filteredMessage;
-                }
-                else {
-                    str = "<li><span style='background-color: #" + highlightChatColour + "' username='" + data[i].username + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + filteredMessage + "</span></li>";
-                }
-    
-                $(".room-chat-list").append(str);
-                scrollDown();
+               
     
                 //yellow notification on the tabs in room.
                 if ($(".nav-tabs #room-chat-in-game-tab").hasClass("active") === false) {
@@ -1244,7 +1269,8 @@ function drawAndPositionAvatars() {
     //set the positions and sizes
     // console.log("numPlayers: " + numPlayers)
     var divs = document.querySelectorAll("#mainRoomBox div");
-    var playerLocations = generatePlayerLocations(numPlayers, w / 2, h / 2);
+    const scaleWidthDown = 0.8;
+    var playerLocations = generatePlayerLocations(numPlayers, (w / 2)*scaleWidthDown, h / 2);
 
     for (var i = 0; i < numPlayers; i++) {
         // console.log("player position: asdflaksdjf;lksjdf");
