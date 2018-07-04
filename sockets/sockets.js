@@ -252,6 +252,8 @@ module.exports = function (io) {
 
 			removePlayerFromRoomAndCheckDestroy(socket, io);
 
+			
+
 		});
 
 

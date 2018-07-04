@@ -7,6 +7,11 @@ body {
     /*font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;*/
 }
 
+ol {
+    list-style: none;
+    padding: 0;
+}
+
 p {
     margin: 0;
     padding: 0;
@@ -336,11 +341,12 @@ p {
     position: absolute;
     /*margin: auto;*/
     left: 50%;
-    top: 43%;
+    top: 48%;
     transform: translateX(-50%);
 
     width: 35vw;
     max-width: 200px;
+    max-height: 60px;
 }
 
 .missionBox {

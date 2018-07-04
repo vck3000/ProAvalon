@@ -30,7 +30,7 @@
 
 
 	<nav class="navbar navbar-default container-fullwidth ">
-		<div class="container">
+		<div class="container" id="navBarContainerId">
 			<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
@@ -175,7 +175,7 @@
 						</li>
 					</li>
 					<!-- <li><a href="#">Hi there, <%=currentUser.username%></a></li> -->
-					<p class="navbar-text" id="originalUsername"><%=currentUser.username%></p>
+					<li><a class="" id="originalUsername"><%=currentUser.username%></a></li>
 
 					<li><a href="/logout">Log out</a></li>
 					<%}%>
@@ -229,12 +229,50 @@
 
 <script type="text/javascript">
 
-	// $(".nav a").on("click", function(){
-	// 	$(".nav").find(".active").removeClass("active");
+/*
+	function fixHeaderHeight(){
+		var navBar = $("#navBarContainerId");
 
-	// });
+		var navBarHeight = navBar.height();
 
-	// $(this).parent().addClass("active");
+		navBar.width((navBar.parent().width() - 50) + "px");
 
+		if(navBarHeight === 100){
+			
+			//break out if we loop too many times.
+			var count = 0;
+
+			while(navBarHeight === 100 && count < 100){
+				console.log("height: " + navBarHeight);
+				var currentWidth = navBar.width();
+
+				var newWidth = currentWidth + 30;
+				var str = newWidth + 'px';
+				navBar.width(str);
+
+				navBarHeight = $("#navBarContainerId").height();
+				count = count + 1;
+
+				console.log("current width: " + currentWidth);
+				console.log("new width: " + newWidth);
+				console.log("height: " + navBarHeight);
+			}
+		}
+	}
+
+	fixHeaderHeight();
+
+	//window resize, repaint the users
+	window.addEventListener('resize', function () {
+		
+	//fix header height after 0.5s
+		setTimeout(function(){
+			fixHeaderHeight();
+		}, 500);
+	
+	});
+
+*/
+	
 
 </script>

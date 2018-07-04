@@ -26,7 +26,11 @@ router.post("/",sanitiseUsername,/* usernameToLowerCase, */function(req, res){
 	var newUser = new User({username: req.body.username/*.toLowerCase()*/});
 
 	if(req.body.username.indexOf(" ") !== -1){
-		req.flash("error", "Sign up failed. Please do not use spaces in your username." + req.body.username.indexOf(" "));
+		req.flash("error", "Sign up failed. Please do not use spaces in your username.");
+		res.redirect("register");
+	}
+	else if(req.body.username.length > 25){
+		req.flash("error", "Sign up failed. Please do not use more than 25 characters in your username.");
 		res.redirect("register");
 	}
 

@@ -317,7 +317,7 @@ document.querySelector("#danger-alert-box-button").addEventListener("click", fun
 
 document.querySelector("#success-alert-box-button").addEventListener("click", function () {
     document.querySelector("#success-alert-box").classList.add("inactive-window");
-    document.querySelector("#success-alert-box-button").classList.add("inactive-window");
+    document.querySelector("#success-alert-box-buttofn").classList.add("inactive-window");
 });
 
 document.querySelector("#backButton").addEventListener("click", function () {
@@ -430,6 +430,11 @@ socket.on("allChatToClient", function (data) {
 socket.on("roomChatToClient", function (data) {
     addToRoomChat(data);
 });
+
+socket.on('disconnect', function(){
+    window.location= "/";
+    alert("You have been disconnected!");
+})
 
 
 
@@ -856,6 +861,7 @@ function draw() {
         drawTeamLeaderStar();
 
         drawMiddleBoxes();
+        scaleMiddleBoxes();
 
         
 
@@ -1859,6 +1865,26 @@ function escapeHtml(unsafe) {
          .replace(/>/g, "&gt;")
          .replace(/"/g, "&quot;")
          .replace(/'/g, "&#039;");
+}
+
+function scaleMiddleBoxes(){
+    gameTableHeight = $("#mainRoomBox").height();
+
+    const startScalingHeight = 284;
+    const maxHeightOfBoxes = 60; //in px
+    const scaleFactor = maxHeightOfBoxes/startScalingHeight;
+
+    var setHeightOfMissionBox = gameTableHeight*scaleFactor;
+
+    var ratioToReduce = (setHeightOfMissionBox / maxHeightOfBoxes);
+
+    console.log("Reduce by: " + ratioToReduce);
+    if(ratioToReduce > 1){
+        ratioToReduce = 1;
+    }
+
+    $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")")
+
 }
 
 

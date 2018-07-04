@@ -4,7 +4,7 @@
 }*/
 
 
-div {
+.center {
 	text-align: center;
 }
 
@@ -17,4 +17,8 @@ form {
 	width: 50%;
 	max-width: 300px;
 
+}
+
+li {
+	margin: auto;
 }
