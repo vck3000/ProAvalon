@@ -301,6 +301,7 @@ p {
     position: absolute;
     top: 0px;
     display: block;
+    z-index: 1000;
 }
 
 .playerDiv .avatarButton {
@@ -669,4 +670,28 @@ textarea .dark {
     border: 1px solid #e1e1e8;
     white-space: nowrap;
     line-height: 20px;
+}
+
+.claimIcon{
+    position: absolute;
+
+    top: 0%;
+    left: 0%;
+
+    height: 40%;
+
+    max-height: 45px;
+    max-width: 45px;
+
+    transform: translateX(-50%) translateY(-50%) rotate(-15deg) ;
+    z-index: -999;
+}
+
+
+
+
+#claimButton{
+    position: absolute;
+    right: 0%;
+
 }

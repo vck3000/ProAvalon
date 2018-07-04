@@ -116,6 +116,7 @@ module.exports = function (host_, roomId_, io_) {
 	this.options = undefined;
 
 	this.kickedPlayers = {};
+	this.claimingPlayers = {};
 
 	this.winner = "";
 
@@ -646,62 +647,69 @@ module.exports = function (host_, roomId_, io_) {
 	}
 
 	this.getGameData = function () {
-		//get the player roles first
-		console.log("Get game data called within avalonRoom");
 
-		var data = {};
+		if(this.gameStarted == true){
+			//get the player roles first
+			console.log("Get game data called within avalonRoom");
 
-		var playerRoles = this.playersInGame;
-		// console.log("Player roles: " + playerRoles);
+			var data = {};
 
-		// console.log("player length: " + playerRoles.length);
+			var playerRoles = this.playersInGame;
+			// console.log("Player roles: " + playerRoles);
 
-		//set up the object first, because we cannot pass an array through
-		//socket.io
-		for (var i = 0; i < playerRoles.length; i++) {
-			data[i] = {
-				alliance: playerRoles[i].alliance,
-				role: playerRoles[i].role,
-				see: playerRoles[i].see,
-				username: playerRoles[i].username,
-				socketId: playerRoles[i].socketId
+			// console.log("player length: " + playerRoles.length);
+
+			//set up the object first, because we cannot pass an array through
+			//socket.io
+			for (var i = 0; i < playerRoles.length; i++) {
+				data[i] = {
+					alliance: playerRoles[i].alliance,
+					role: playerRoles[i].role,
+					see: playerRoles[i].see,
+					username: playerRoles[i].username,
+					socketId: playerRoles[i].socketId
+				}
+
+				//add on these common variables:
+				data[i].statusMessage = this.getStatusMessage();
+				data[i].missionNum = this.missionNum;
+				data[i].missionHistory = this.missionHistory;
+				data[i].pickNum = this.pickNum;
+				data[i].gameHistory = this.gameHistory;
+				data[i].teamLeader = this.teamLeader;
+				data[i].hammer = this.hammer;
+				data[i].lady = this.lady;
+				data[i].ladyablePeople = this.ladyablePeople;
+
+				data[i].playersYetToVote = this.playersYetToVote;
+				data[i].phase = this.phase;
+				data[i].proposedTeam = this.proposedTeam;
+
+				data[i].numPlayersOnMission = numPlayersOnMission[playerRoles.length - minPlayers]; //- 5
+
+				data[i].votes = this.votes;
+				data[i].voteHistory = this.voteHistory;
+				data[i].hammer = this.hammer;
+				data[i].winner = this.winner;
+
+				data[i].gameplayMessage = this.gameplayMessage;
+
+				data[i].spectator = false;
+
+
+				//if game is finished, reveal everything including roles
+				if (this.phase === "finished") {
+					data[i].see.spies = this.getAllSpies();
+					data[i].see.roles = this.getRevealedRoles();
+					data[i].see.playerShot = this.playerShot;
+				}
 			}
-
-			//add on these common variables:
-			data[i].statusMessage = this.getStatusMessage();
-			data[i].missionNum = this.missionNum;
-			data[i].missionHistory = this.missionHistory;
-			data[i].pickNum = this.pickNum;
-			data[i].gameHistory = this.gameHistory;
-			data[i].teamLeader = this.teamLeader;
-			data[i].hammer = this.hammer;
-			data[i].lady = this.lady;
-			data[i].ladyablePeople = this.ladyablePeople;
-
-			data[i].playersYetToVote = this.playersYetToVote;
-			data[i].phase = this.phase;
-			data[i].proposedTeam = this.proposedTeam;
-
-			data[i].numPlayersOnMission = numPlayersOnMission[playerRoles.length - minPlayers]; //- 5
-
-			data[i].votes = this.votes;
-			data[i].voteHistory = this.voteHistory;
-			data[i].hammer = this.hammer;
-			data[i].winner = this.winner;
-
-			data[i].gameplayMessage = this.gameplayMessage;
-
-			data[i].spectator = false;
-
-
-			//if game is finished, reveal everything including roles
-			if (this.phase === "finished") {
-				data[i].see.spies = this.getAllSpies();
-				data[i].see.roles = this.getRevealedRoles();
-				data[i].see.playerShot = this.playerShot;
-			}
+			return data;
 		}
-		return data;
+		else{
+			return "Game hasn't started";
+		}
+		
 	};
 
 	this.playerReady = function (username) {
@@ -1116,10 +1124,13 @@ module.exports = function (host_, roomId_, io_) {
 		var array = [];
 
 		for (var i = 0; i < this.sockets.length; i++) {
+			var isClaiming = this.claimingPlayers[this.sockets[i].request.user.username];
+
 			array[i] = {
 				username: this.sockets[i].request.user.username,
 				avatarImgRes: this.sockets[i].request.user.avatarImgRes,
-				avatarImgSpy: this.sockets[i].request.user.avatarImgSpy
+				avatarImgSpy: this.sockets[i].request.user.avatarImgSpy,
+				claim: isClaiming
 			}
 
 			//give the host the teamLeader star
@@ -1223,6 +1234,16 @@ module.exports = function (host_, roomId_, io_) {
 		}
 
 		return arrayToReturn;
+	}
+
+	this.claim = function(socket){
+		//if the person is already claiming
+		if(socket.request.user.username in this.claimingPlayers){
+			delete this.claimingPlayers[socket.request.user.username];
+		}
+		else{
+			this.claimingPlayers[socket.request.user.username] = true;
+		}
 	}
 };
 

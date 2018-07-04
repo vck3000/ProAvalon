@@ -327,6 +327,12 @@ document.querySelector("#backButton").addEventListener("click", function () {
     resetAllGameData();
 });
 
+document.querySelector("#claimButton").addEventListener("click", function () {
+    
+    //INCOMPLETE
+    socket.emit("claim", "");
+});
+
 var allChatWindow1 = document.querySelectorAll(".all-chat-message-input")[0];
 allChatWindow1.onkeyup = function (e, allChatWindow1) {
     //When enter is pressed in the chatmessageinput
@@ -888,6 +894,8 @@ function draw() {
         drawMiddleBoxes();
         scaleMiddleBoxes();
 
+        drawClaimingPlayers(roomPlayersData.claimingPlayers);
+
         
 
 
@@ -1335,6 +1343,46 @@ function drawTeamLeaderStar() {
 
         $(".leaderStar")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
     }
+}
+
+function drawClaimingPlayers(claimingPlayers){
+
+    roomPlayersData
+
+    for(var i = 0; i < roomPlayersData.length; i++){
+        if(roomPlayersData[i].claim && roomPlayersData[i].claim === true){
+            if ($("#mainRoomBox div")[getIndexFromUsername(roomPlayersData[i].username)]) {
+                var str = $("#mainRoomBox div")[getIndexFromUsername(roomPlayersData[i].username)].innerHTML;
+                str = str + "<span><img src='pictures/claim.png' class='claimIcon'></span>";
+                //update the str in the div
+                $("#mainRoomBox div")[getIndexFromUsername(roomPlayersData[i].username)].innerHTML = str;
+        
+                // $(".claimIcon")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
+            }
+        }
+    }
+
+    // for (var username in claimingPlayers) {
+    //     if (claimingPlayers.hasOwnProperty(username)) {
+    //         if ($("#mainRoomBox div")[getIndexFromUsername(username)]) {
+    //             var str = $("#mainRoomBox div")[getIndexFromUsername(username)].innerHTML;
+    //             str = str + "<span><img src='pictures/claim.png' class='claimIcon'></span>";
+    //             //update the str in the div
+    //             $("#mainRoomBox div")[getIndexFromUsername(username)].innerHTML = str;
+        
+    //             // $(".claimIcon")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
+    //         }
+    //     }
+    // }
+
+    // if ($("#mainRoomBox div")[playerIndex]) {
+    //     var str = $("#mainRoomBox div")[playerIndex].innerHTML;
+    //     str = str + "<span><img src='pictures/leader.png' class='leaderStar'></span>";
+    //     //update the str in the div
+    //     $("#mainRoomBox div")[playerIndex].innerHTML = str;
+
+    //     $(".leaderStar")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
+    // }
 }
 
 function enableDisableButtonsLeader(numPlayersOnMission) {

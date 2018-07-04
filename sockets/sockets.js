@@ -252,7 +252,7 @@ module.exports = function (io) {
 
 			removePlayerFromRoomAndCheckDestroy(socket, io);
 
-			
+
 
 		});
 
@@ -471,6 +471,13 @@ module.exports = function (io) {
 			if (rooms[socket.request.user.inRoomId]) {
 				rooms[socket.request.user.inRoomId].useLady(socket, data);
 				distributeGameData(socket, io);
+			}
+		});
+
+		socket.on("claim", function(data){
+			if (rooms[socket.request.user.inRoomId]) {
+				rooms[socket.request.user.inRoomId].claim(socket);
+				updateRoomPlayers(io, socket);
 			}
 		});
 
