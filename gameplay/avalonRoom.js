@@ -127,7 +127,11 @@ module.exports = function (host_, roomId_, io_) {
 		if (winner === "spy") {
 			//spies win, nothing more to do.
 			this.winner = "spies";
-			this.howWasWon = "Mission fails."
+			//if it has already been set, then its probably hammer rejected
+			//otherwise set it to mission fails
+			if(!this.howWasWon){
+				this.howWasWon = "Mission fails.";
+			}
 			this.gameEnd();
 		}
 		else if (winner === "res") {
@@ -465,13 +469,12 @@ module.exports = function (host_, roomId_, io_) {
 				console.log("HAMMER REJECTED, GAME OVER");
 				console.log("--------------------------");
 
-				//set the remaining missions to all fail
-				while (this.missionHistory.length < 5) {
-					this.missionHistory[this.missionHistory.length] = "failed";
-				}
+				//set the mission to fail
+				this.missionHistory[this.missionHistory.length] = "failed";
 
 				//finish the game, spies have won
 				//send through winner
+				this.howWasWon = "Hammer rejected.";
 				this.finishGame("spy");
 
 				// this.gameplayMessage = "Spies have won!";
