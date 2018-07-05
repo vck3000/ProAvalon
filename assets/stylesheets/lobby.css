@@ -99,6 +99,15 @@ p {
     padding: 5px;
 }
 
+.tab-window-full-bottom{
+    height: 100%;
+    border: 1px solid #d3d3d3;
+    border-radius: 5px;
+    overflow-y: auto;
+    overflow-x: visible;
+    padding: 5px;
+}
+
 .chat-window {
     height: 90%;
     display: block;

@@ -379,7 +379,8 @@ function addAllChatEventListeners(e, allChatWindow) {
                 //send data to the server 
                 socket.emit("allChatFromClient", data);
             }
-            scrollDown();
+            scrollDown("all-chat-lobby");
+            scrollDown("all-chat-room");
         }
 
     }
@@ -417,7 +418,7 @@ roomChatWindow.onkeyup = function (e) {
                 //send data to the server 
                 socket.emit("roomChatFromClient", data);
             }
-            scrollDown();
+            scrollDown("room-chat-room");
         }
     }
 }
@@ -474,7 +475,8 @@ function addToAllChat(data) {
                 }
 
                 $(".all-chat-list").append(str);
-                scrollDown();
+                scrollDown("all-chat-lobby");
+                scrollDown("all-chat-room");
 
                 //yellow notification on the tabs in room.
                 if ($(".nav-tabs #all-chat-in-game-tab").hasClass("active") === false) {
@@ -528,7 +530,7 @@ function addToRoomChat(data) {
                     }
 
                     $(".room-chat-list").append(str);
-                    scrollDown();
+                    scrollDown("room-chat-room");
                 }
 
                 //else if there is a '[' character, then assume the user is quoting a chunk of text
@@ -545,7 +547,7 @@ function addToRoomChat(data) {
                     }
 
                     $(".room-chat-list").append(str);
-                    scrollDown();
+                    scrollDown("room-chat-room");
 
                 }
     
@@ -1675,11 +1677,25 @@ function changeView() {
     extendTabContentToBottomInRoom();
 }
 
-function scrollDown() {
-    var chatWindows = $(".chat-window");
+function scrollDown(chatBox) {
+    //example input of chatBox: all-chat-room
 
-    for (var i = 0; i < chatWindows.length; i++) {
-        $(".chat-window")[i].scrollTop = $(".chat-window")[i].scrollHeight;
+    var searchStrScrollBox = "#" + chatBox;
+    var searchStrListBox = "#" + chatBox + "-list";
+
+    var scrollBox = $(searchStrScrollBox);
+    var listBox = $(searchStrListBox);
+
+    const cutOffPixelsToScroll = 20;
+
+    console.log("diff is " + (listBox.height() - scrollBox.scrollTop() - scrollBox.height()) );
+
+    //if the user is scrolled away
+    if((listBox.height() - scrollBox.scrollTop() - scrollBox.height()) > 20){
+        //dont do anything
+    }
+    else {
+        scrollBox.scrollTop(listBox.height());
     }
 }
 
@@ -1838,7 +1854,7 @@ function extendTabContentToBottomInRoom() {
     // console.log("gamecontainerheight: " + gameContainer.offsetHeight);
     // console.log("tabcontainertoppos: " + tabContainer.offsetTop);
     // console.log("New height 2: " + newHeight2);
-    tabContainer.style.height = (newHeight2 * 1.2) + "px";
+    tabContainer.style.height = (newHeight2 * 1.25) + "px";
 }
 
 
