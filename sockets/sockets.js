@@ -375,7 +375,10 @@ module.exports = function (io) {
 				socket.leave(socket.request.user.inRoomId);
 
 				//remove from spectators list
-				io.in(socket.request.user.inRoomId).emit("update-room-players", rooms[socket.request.user.inRoomId].getPlayers());
+				if(rooms[socket.request.user.inRoomId]){
+					io.in(socket.request.user.inRoomId).emit("update-room-players", rooms[socket.request.user.inRoomId].getPlayers());
+				}
+				
 
 
 				updateCurrentGamesList(io);
