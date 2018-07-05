@@ -54,6 +54,16 @@ p {
     border: transparent 1px solid;
 }
 
+.spectators-table-on {
+    border-collapse: separate;
+    border-spacing: 1px;
+}
+
+.spectators-table-off {
+    border-collapse: collapse;
+    border: transparent 1px solid;
+}
+
 #current-games-table tbody tr td {
     /*box-sizing:border-box;*/
     border: transparent 2px solid;
@@ -132,6 +142,12 @@ p {
 }
 
 #current-players-table tbody tr td {
+    /*box-sizing:border-box;*/
+    border: transparent 2px solid;
+    /*margin: 10px;*/
+}
+
+#spectators-table tbody tr td {
     /*box-sizing:border-box;*/
     border: transparent 2px solid;
     /*margin: 10px;*/

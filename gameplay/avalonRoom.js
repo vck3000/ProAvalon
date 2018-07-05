@@ -1124,12 +1124,15 @@ module.exports = function (host_, roomId_, io_) {
 
 	this.getPlayers = function () {
 
-		var array = [];
+		var array = {
+			playersJoined: [],
+			spectators: []
+		};
 
 		for (var i = 0; i < this.sockets.length; i++) {
 			var isClaiming = this.claimingPlayers[this.sockets[i].request.user.username];
 
-			array[i] = {
+			array.playersJoined[i] = {
 				username: this.sockets[i].request.user.username,
 				avatarImgRes: this.sockets[i].request.user.avatarImgRes,
 				avatarImgSpy: this.sockets[i].request.user.avatarImgSpy,
@@ -1137,10 +1140,21 @@ module.exports = function (host_, roomId_, io_) {
 			}
 
 			//give the host the teamLeader star
-			if (array[i].username === this.host) {
-				array[i].teamLeader = true;
+			if (array.playersJoined[i].username === this.host) {
+				array.playersJoined[i].teamLeader = true;
 			}
 		}
+
+		var spectatorSockets = this.socketsOfSpectators;
+		var usernamesOfSpectators = [];
+		for(var i = 0; i < spectatorSockets.length; i++){
+			usernamesOfSpectators[i] = spectatorSockets[i].request.user.username;
+			console.log(spectatorSockets[i].request.user.username);
+		}
+
+		array.spectators = usernamesOfSpectators;
+
+		console.log("usernames of spectators" + usernamesOfSpectators);
 		
 		return array;
 	};

@@ -724,7 +724,8 @@ function showDangerAlert(data) {
 
 socket.on("update-room-players", function (data) {
     // var x = $("#typehead").parent().width();
-    roomPlayersData = data;
+    roomPlayersData = data.playersJoined;
+    roomSpectatorsData = data.spectators;
 
     //remove all the li's inside the list
     $("#mainRoomBox div").remove();
@@ -732,6 +733,8 @@ socket.on("update-room-players", function (data) {
     console.log("update room players");
     // console.log(data);
 
+    //update spectators list
+    updateSpectatorsList();
     draw();
 });
 
@@ -1966,6 +1969,53 @@ function scaleMiddleBoxes(){
     $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")")
 
 }
+
+function updateSpectatorsList(){
+    $("#spectators-table tbody tr td").remove();
+    $("#spectators-table tbody tr").remove();
+
+    //append each player into the list
+    roomSpectatorsData.forEach(function (spectator) {
+
+        //if the current game exists, add it
+        if (spectator) {
+            var str = "<tr> <td> " + spectator + "</td> </tr>";
+            $("#spectators-table tbody").append(str);
+        }
+    });
+
+
+    //remove the ugly remaining border when no spectators are there to display
+    if (document.querySelectorAll("#spectators-table tbody tr td").length === 0) {
+        document.querySelectorAll("#spectators-table")[0].classList.add("spectators-table-off");
+        document.querySelectorAll("#spectators-table")[0].classList.remove("spectators-table-on");
+
+    }
+    else {
+        document.querySelectorAll("#spectators-table")[0].classList.add("spectators-table-on");
+        document.querySelectorAll("#spectators-table")[0].classList.remove("spectators-table-off");
+    }
+
+}
+
+
+// socket.on("update-current-players-list", function (currentPlayers) {
+//     console.log("update the current player list request received");
+//     // console.log(currentPlayers);
+//     //remove all the li's inside the table
+//     $("#current-players-table tbody tr td").remove();
+//     $("#current-players-table tbody tr").remove();
+
+//     //append each player into the list
+//     currentPlayers.forEach(function (currentPlayer) {
+
+//         //if the current game exists, add it
+//         if (currentPlayer) {
+//             var str = "<tr> <td> " + currentPlayer + "</td> </tr>";
+//             $("#current-players-table tbody").append(str);
+//         }
+//     });
+// });
 
 
 

@@ -303,6 +303,9 @@ module.exports = function (io) {
 				//emit to the new spectator the players in the game.
 				socket.emit("update-room-players", rooms[roomId].getPlayers());
 
+				//update the room players
+				io.in(roomId).emit("update-room-players", rooms[roomId].getPlayers());
+
 				
 				//emit to say to others that someone has joined
 				var data = {
@@ -370,6 +373,10 @@ module.exports = function (io) {
 				removePlayerFromRoomAndCheckDestroy(socket, io);
 				//leave the room chat
 				socket.leave(socket.request.user.inRoomId);
+
+				//remove from spectators list
+				io.in(socket.request.user.inRoomId).emit("update-room-players", rooms[socket.request.user.inRoomId].getPlayers());
+
 
 				updateCurrentGamesList(io);
 
