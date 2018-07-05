@@ -72,7 +72,6 @@ router.get("/loginFail", function(req, res){
 router.get("/lobby", middleware.isLoggedIn, function(req, res){
 	// console.log(res.app.locals.originalUsername);
 	res.render("lobby", {currentUser: req.user, headerActive: "lobby"});
-
 });
 
 //logout 
@@ -146,7 +145,9 @@ function usernameContainsBadCharacter(str){
 			str.includes('&lt;') ||
 			str.includes('&gt;') ||
 			str.includes('&apos;') ||
-			str.includes('&quot;')){
+			str.includes('&quot;') ||
+			str.includes("[") ||
+			str.includes("]")) {
 		return true;
 	}
 	else{
