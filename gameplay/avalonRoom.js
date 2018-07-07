@@ -263,7 +263,7 @@ module.exports = function (host_, roomId_, io_) {
 			var alliance = this.playersInGame[getIndexFromUsername(this.sockets, target)].alliance;
 
 			//emit to the lady holder the person's alliance
-			socket.emit("lady-info", "Player " + target + " is a " + alliance);
+			socket.emit("lady-info", /*"Player " + */target + " is a " + alliance);
 			console.log("Player " + target + " is a " + alliance);
 
 			//update lady location
@@ -272,7 +272,7 @@ module.exports = function (host_, roomId_, io_) {
 			this.ladyablePeople[this.lady] = false;
 
 			// this.gameplayMessage = (socket.request.user.username + " has carded " + target);
-			sendText(this.sockets, (socket.request.user.username + " has carded " + target), "gameplay-text");
+			sendText(this.sockets, (socket.request.user.username + " has carded " + target + "."), "gameplay-text");
 
 
 			//update phase
@@ -1435,7 +1435,8 @@ function getRolesInStr(options) {
 function sendText(sockets, incString, stringType) {
 	data = {
 		message: incString,
-		classStr: stringType
+		classStr: stringType,
+		
 	};
 	for (var i = 0; i < sockets.length; i++) {
 		sockets[i].emit("roomChatToClient", data);

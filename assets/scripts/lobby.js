@@ -21,6 +21,23 @@ setTimeout(function () {
     $("#all-chat-lobby")[0].style.height = (newHeight - 10) + "px";
 }, 300);
 
+
+
+
+$(document).ready(function(){
+    checkStatusBarWithHeight();
+})
+//if the users screen is big enough, then we can make the center status bar big
+function checkStatusBarWithHeight(){
+    const cutOffHeight = 800
+    if($(window).height() > cutOffHeight){
+        $("#status").removeClass("well-sm");
+    }
+    else{
+        $("#status").addClass("well-sm");
+    }
+}
+
 //when the navbar is closed, re-exted the tab content to bottom.
 $('.navbar-collapse').on('hidden.bs.collapse', function () {
     extendTabContentToBottomInRoom();
@@ -272,6 +289,7 @@ var isSpectator = false;
 //window resize, repaint the users
 window.addEventListener('resize', function () {
     console.log("Resized");
+    checkStatusBarWithHeight();
     draw();
 });
 

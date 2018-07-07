@@ -1,47 +1,20 @@
 To-do list:
 
-
 -title notificaitons
-
 -Sound
-
 -Moderators
-
 -Max number of players
-
 -show slapper that it was successful or not
-
 -Notifications?
-
--add time stamp after every message
--so that it can be quoted
-
-
 -sound for joining and game start
-
 -Increase gap between rej app buttons
 -fade the buttons more when inactive?
-
--bold lady of the lake text
-
--3 has picked: KR, 3, 2,
-3 has picked: KR, 3, 2,
-
--new chat isnt highlighted on player highlight
-
--if people are scrolled up and a new message is typed, itll push down.
 
 -Statistics page
 
 -spectator number on the front page game info
 
-
--You are ____ morgana, percy etc, in gameplay text
-
-
--Learn REGEX
-
--Learn Bitwise operations...?
+-server text isnt showing up on /roomChat
 
 -Editing a comment is broken???
 
@@ -49,7 +22,13 @@ To-do list:
 -move bottom avatars up a bit, too close to gray bar
 -Thicker status bar for pc's and big screens
 
--thin red line for new incoming messages when scrolled away
+
+
+-Learn REGEX
+
+-Learn Bitwise operations...?
+
+
 
 
 6 or 8 inch futon
@@ -167,6 +146,17 @@ Mine:
 -Dont make all missions fail if a hammer was rejected
 -make it so that the players role doesn't cover the mission bar (2 3 2 3 3)
 -Stop people from relogging and flooding main chat
+-if people are scrolled up and a new message is typed, itll push down.
+-You are ____ morgana, percy etc, in gameplay text
+-add time stamp after every message
+-so that it can be quoted
+-3 has picked: KR, 3, 2,
+3 has picked: KR, 3, 2,
+-bold lady of the lake text
+
+-thin red line for new incoming messages when scrolled away
+-new chat isnt highlighted on player highlight (I cant recreate this bug)
+
 
 
 Hak:
