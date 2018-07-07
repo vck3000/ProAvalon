@@ -361,7 +361,8 @@ p {
 }
 
 .game-buttons-div button {
-    margin: 0 15px 0 15px;
+    margin-left: 10%;
+    margin-right: 10%;
 }
 
 .center-div {
