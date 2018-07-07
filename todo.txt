@@ -15,7 +15,10 @@ To-do list:
 
 -spectator number on the front page game info
 
--Editing a comment is broken???
+
+
+
+
 
 
 
@@ -159,6 +162,7 @@ Mine:
 -server text isnt showing up on /roomChat
 -bit more indent for all of the chat in the chat windows
 -Increase gap between rej app buttons
+-Editing a comment is broken???
 
 
 Hak:

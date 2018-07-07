@@ -109,13 +109,24 @@ router.put("/:id/:comment_id/:reply_id", middleware.checkForumThreadCommentReply
 
 				foundForumThreadComment.markModified("replies");
 				//update time last edited
-				foundForumThread.timeLastEdit = new Date();
+				foundForumThreadComment.timeLastEdit = new Date();
 
 				await foundForumThreadComment.save();
 
-				//redirect to the forum page
-				// req.flash("success", "Comment updated successfully.");
-				res.redirect("/forum/show/" + req.params.id);
+				// forumThread.findById(req.params.id)
+				forumThread.findById(req.params.id).populate("comments").exec(async function (err, foundForumThread) {
+					console.log("found forum thread:");
+					console.log(req.params.id);
+
+					foundForumThread.markModified("comments");
+					//update time last edited
+					foundForumThread.timeLastEdit = new Date();
+					await foundForumThread.save();
+
+					//redirect to the forum page
+					// req.flash("success", "Comment updated successfully.");
+					res.redirect("/forum/show/" + req.params.id);
+				});
 			});
 		}
 	});
