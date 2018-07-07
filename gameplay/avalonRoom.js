@@ -550,7 +550,11 @@ module.exports = function (host_, roomId_, io_) {
 			}
 
 			var str2 = socket.request.user.username + " has picked: " + str;
-			this.gameplayMessage = str2;
+			// this.gameplayMessage = str2;
+			//remove the last , and replace with .
+			str2 = str2.slice(0, str2.length - 2);
+			str2 += ".";
+
 			sendText(this.sockets, str2, "gameplay-text");
 
 
@@ -921,8 +925,12 @@ module.exports = function (host_, roomId_, io_) {
 			str += (this.spyRoles[i] + ", ");
 		}
 		if (options.lady === true) {
-			str += "Lady of the Lake."
+			str += "Lady of the Lake, "
 		}
+
+		//remove the last , and replace with .
+		str = str.slice(0, str.length - 2);
+		str += ".";
 
 		// this.gameplayMessage = str;
 		sendText(this.sockets, str, "gameplay-text");
@@ -1428,6 +1436,10 @@ function getRolesInStr(options) {
 	if (options.oberon === true) { str += "Oberon, "; }
 	if (options.lady === true) { str += "Lady of the Lake, "; }
 
+	//remove the last , and replace with .
+	str = str.slice(0, str.length - 2);
+	str += ".";
+
 	return str;
 }
 
@@ -1436,7 +1448,7 @@ function sendText(sockets, incString, stringType) {
 	data = {
 		message: incString,
 		classStr: stringType,
-		
+
 	};
 	for (var i = 0; i < sockets.length; i++) {
 		sockets[i].emit("roomChatToClient", data);

@@ -973,7 +973,12 @@ function draw() {
                     for (var i = 0; i < gameData.proposedTeam.length; i++) {
                         str += gameData.proposedTeam[i] + ", ";
                     }
+
                 }
+
+                //remove the last , and replace with .
+                str = str.slice(0, str.length - 2);
+                str += ".";
 
 
                 document.querySelector("#status").innerText = str;
@@ -986,6 +991,10 @@ function draw() {
                 for (var i = 0; i < gameData.playersYetToVote.length; i++) {
                     str = str + gameData.playersYetToVote[i] + ", ";
                 }
+                
+                //remove the last , and replace with .
+                str = str.slice(0, str.length - 2);
+                str += ".";
 
                 document.querySelector("#status").innerText = str;
 
@@ -1056,6 +1065,10 @@ function draw() {
                         }
                     }
                 }
+
+                //remove the last , and replace with .
+                str = str.slice(0, str.length - 2);
+                str += ".";
 
                 document.querySelector("#status").innerText = "Current roles: " + str;
             }
