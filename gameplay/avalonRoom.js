@@ -1297,6 +1297,10 @@ module.exports = function (host_, roomId_, io_) {
 		this.addToChatHistory(data);
 	}
 
+	this.getNumOfSpectatorsInside = function(){
+		return this.socketsOfSpectators.length;
+	}
+
 };
 
 

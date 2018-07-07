@@ -334,6 +334,8 @@ module.exports = function (io) {
 					giveGameDataToSpectator(socket, io);
 				}
 
+				updateCurrentGamesList(io);
+
 
 			} else {
 				console.log("Game doesn't exist!");
@@ -569,6 +571,7 @@ var updateCurrentGamesList = function (io) {
 			gamesList[i].roomId = rooms[i].getRoomId();
 			gamesList[i].hostUsername = rooms[i].getHostUsername();
 			gamesList[i].numOfPlayersInside = rooms[i].getNumOfPlayersInside();
+			gamesList[i].numOfSpectatorsInside = rooms[i].getNumOfSpectatorsInside();
 		}
 	}
 	io.in("allChat").emit("update-current-games-list", gamesList);
