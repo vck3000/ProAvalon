@@ -14,11 +14,30 @@ To-do list:
 
 
 
+-spectators see you are undefined, your role is undefined
 
+- i just realised the chatbox doesn't scroll if the next line of chat is more than one line long   
+-disable slapping when in game
 
+-approve is on left, reject on the right
+-succeed button on the left too
 
+-bubblein dark mode canat see role
 
+-specs cant see server text
 
+-vh is wrong way around
+-leaderes go right down, not right up
+
+-multiple tabs
+
+-claim has to be transparent
+
+-two spectators???
+-spectators duplicate when they leave and reenter
+-invalid command is showing up in both allchat and gamechat
+
+-change text claim to unclaim when claiming
 
 
 

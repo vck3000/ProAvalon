@@ -814,12 +814,14 @@ socket.on("game-data", function (data) {
 
         //if the game has only just started for the first time, display your role
         if(gameStarted === false){
-            var str = "You are a " + gameData.alliance + ". Your role is " + gameData.role + ".";
-            data = {
-                classStr: "server-text",
-                message: str
+            if(gameData.alliance){
+                var str = "You are a " + gameData.alliance + ". Your role is " + gameData.role + ".";
+                data = {
+                    classStr: "server-text",
+                    message: str
+                }
+                addToRoomChat(data);
             }
-            addToRoomChat(data);
         }
 
         gameStarted = true;
