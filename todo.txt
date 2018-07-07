@@ -9,7 +9,6 @@ To-do list:
 
 -Max number of players
 
--Increase gap between rej app buttons
 -fade the buttons more when inactive?
 
 -Statistics page
@@ -18,7 +17,6 @@ To-do list:
 
 -Editing a comment is broken???
 
--bit more indent for all of the chat in the chat windows
 
 
 
@@ -159,6 +157,8 @@ Mine:
 -Thicker status bar for pc's and big screens
 -show slapper that it was successful or not
 -server text isnt showing up on /roomChat
+-bit more indent for all of the chat in the chat windows
+-Increase gap between rej app buttons
 
 
 Hak:

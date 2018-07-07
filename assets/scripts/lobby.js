@@ -2028,16 +2028,22 @@ function resetAllGameData() {
     $("#voteHistoryTable")[0].innerHTML = "";
 }
 
+var tempVar = 0;
+
 function extendTabContentToBottomInRoom() {
     //extending the tab content to the bottom of the page:
     var gameContainer = $(".game-container")[0];
-    var tabContainer = $(".tab-content")[0];
+    var tabContainer = $(".tab-content");
+
+    // console.log("gameContainer: " + gameContainer.offsetHeight);
+    // console.log("tabContainer: " + tabContainer.position().top);
     // var offsetTop = tabContainer.offsetTop;
-    var newHeight2 = gameContainer.offsetHeight - tabContainer.offsetTop;
+    var newHeight2 = Math.floor(gameContainer.offsetHeight - tabContainer.position().top);
     // console.log("gamecontainerheight: " + gameContainer.offsetHeight);
     // console.log("tabcontainertoppos: " + tabContainer.offsetTop);
     // console.log("New height 2: " + newHeight2);
-    tabContainer.style.height = (newHeight2 * 1.25) + "px";
+    tabContainer[0].style.height = Math.floor((newHeight2 * 1.2) - tempVar) + "px";
+
 }
 
 
