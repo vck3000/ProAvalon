@@ -991,7 +991,7 @@ function draw() {
                 for (var i = 0; i < gameData.playersYetToVote.length; i++) {
                     str = str + gameData.playersYetToVote[i] + ", ";
                 }
-                
+
                 //remove the last , and replace with .
                 str = str.slice(0, str.length - 2);
                 str += ".";
@@ -1326,12 +1326,18 @@ function drawAndPositionAvatars() {
     // console.log("numPlayers: " + numPlayers)
     var divs = document.querySelectorAll("#mainRoomBox div");
     const scaleWidthDown = 0.8;
-    var playerLocations = generatePlayerLocations(numPlayers, (w / 2)*scaleWidthDown, h / 2);
+    const scaleHeightDown = 0.9;
+    var playerLocations = generatePlayerLocations(numPlayers, (w / 2)*scaleWidthDown, (h / 2)*scaleHeightDown);
 
     for (var i = 0; i < numPlayers; i++) {
         // console.log("player position: asdflaksdjf;lksjdf");
         var offsetX = w / 2;
         var offsetY = h / 2;
+        
+        //reduce the height so that the bottom of avatars dont crash into the bottom.
+        offsetY = offsetY * 1.15;
+
+        console.log("offsetY: " + offsetY);
 
         var windowH = $(window).height();
         var windowW = $(window).width();

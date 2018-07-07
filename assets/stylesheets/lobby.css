@@ -371,7 +371,7 @@ p {
     position: absolute;
     /*margin: auto;*/
     left: 50%;
-    top: 48%;
+    top: 40%;
     transform: translateX(-50%);
 
     width: 35vw;
