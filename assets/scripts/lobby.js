@@ -458,9 +458,10 @@ function addToAllChat(data) {
             //format the date
             var d = new Date();
             var hour = d.getHours();
+            var min = d.getMinutes();
             if (hour < 10) { hour = "0" + hour; }
-            if (data[i].date < 10) { data[i].date = "0" + data[i].date; }
-            var date = "[" + hour + ":" + data[i].date + "]";
+            // if (data[i].date < 10) { data[i].date = "0" + data[i].date; }
+            var date = "[" + hour + ":" + min + "]";
 
             if(data[i].message){
                 //prevent XSS injection
@@ -468,7 +469,7 @@ function addToAllChat(data) {
 
                 var str = "";
                 if (data[i].classStr && data[i].classStr !== "") {
-                    str = "<li class='" + data[i].classStr + "'>" + filteredMessage;
+                    str = "<li class='" + data[i].classStr + "'><span class='date-text'>" + date + "</span>" + filteredMessage;
                 }
                 else {
                     str = "<li class='" + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + filteredMessage;
@@ -499,9 +500,10 @@ function addToRoomChat(data) {
             //format the date
             var d = new Date();
             var hour = d.getHours();
+            var min = d.getMinutes();
             if (hour < 10) { hour = "0" + hour; }
-            if (data[i].date < 10) { data[i].date = "0" + data[i].date; }
-            var date = "[" + hour + ":" + data[i].date + "]";
+            // if (data[i].date < 10) { data[i].date = "0" + data[i].date; }
+            var date = "[" + hour + ":" + min + "]";
     
             
             if (data[i].message) {
@@ -522,11 +524,11 @@ function addToRoomChat(data) {
 
                     //if its a server text or special text
                     if (data[i].classStr && data[i].classStr !== "") {
-                        str = "<li class='" + data[i].classStr + "'>" + filteredMessage;
+                        str = "<li class='" + data[i].classStr + "'><span class='date-text'>" + date + "</span> " + filteredMessage;
                     }
                     //its a user's chat so put some other stuff on it
                     else {
-                        str = "<li><span style='background-color: #" + highlightChatColour + "' username='" + data[i].username + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + filteredMessage + "</span></li>";
+                        str = "<li><span style='background-color: #" + highlightChatColour + "' username='" + data[i].username + "'><span class='date-text'> " + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + filteredMessage + "</span></li>";
                     }
 
                     $(".room-chat-list").append(str);
