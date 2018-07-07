@@ -1677,6 +1677,12 @@ function changeView() {
     extendTabContentToBottomInRoom();
 }
 
+// var chatBoxToNavTab = {
+//     "all-chat-lobby": "",
+//     "all-chat-room": "All Chat",
+//     "room-chat-room": "Game Chat"
+// }
+
 function scrollDown(chatBox) {
     //example input of chatBox: all-chat-room
 
@@ -1686,18 +1692,79 @@ function scrollDown(chatBox) {
     var scrollBox = $(searchStrScrollBox);
     var listBox = $(searchStrListBox);
 
+    var searchStrBar = "#" + chatBox + "-bar";
+
     const cutOffPixelsToScroll = 20;
 
-    console.log("diff is " + (listBox.height() - scrollBox.scrollTop() - scrollBox.height()) );
+    // console.log("diff is " + (listBox.height() - scrollBox.scrollTop() - scrollBox.height()) );
 
     //if the user is scrolled away
     if((listBox.height() - scrollBox.scrollTop() - scrollBox.height()) > 20){
-        //dont do anything
+        //Show user that there is a new message with the red bar.
+        //Show because the only time this will trigger is when a new message comes in anyway
+        $(searchStrBar).removeClass("hidden");
     }
     else {
         scrollBox.scrollTop(listBox.height());
+        $(searchStrBar).addClass("hidden");
+    }
+
+    // //if the chatbox is not open make the red bar visible since there is a new message
+    // if(chatBoxToNavTab[chatBox] !== "" && $('.nav-tabs .active').text() !== chatBoxToNavTab[chatBox]){
+    //     $(searchStrBar).removeClass("hidden");
+    // }
+}
+
+var arrayOfChatBoxes = [
+    "#all-chat-lobby",
+    "#all-chat-room",
+    "#room-chat-room"
+]
+
+for(var i = 0; i < arrayOfChatBoxes.length; i++){
+    var chatBoxToEvent = arrayOfChatBoxes[i];
+
+    console.log("Chatbox is: " + chatBoxToEvent);
+
+    $(chatBoxToEvent).on("scroll", function(){
+        chatBox = "#" + this.id;
+        checkUnreadMessagesBar(chatBox);
+    });
+}
+
+function checkUnreadMessagesBar(chatBox){
+    console.log("chatbox : " + chatBox);
+
+    var searchStrScrollBox = "" + chatBox;
+    var searchStrListBox = "" + chatBox + "-list";
+    var searchStrBar = "" + chatBox + "-bar";
+
+    var scrollBox = $(searchStrScrollBox);
+    var listBox = $(searchStrListBox);
+
+    // console.log("SCROLL");
+    console.log("IF: " + !(listBox.height() - scrollBox.scrollTop() - scrollBox.height() > 20));
+
+    //if user is at the bottom
+    if(!(listBox.height() - scrollBox.scrollTop() - scrollBox.height() > 20)){
+        $(searchStrBar).addClass("hidden");
     }
 }
+
+// This bit was for updating the red bar when a person comes back into the tab
+// but its too hard to implement rn so no need rn.
+// $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+//     var target = $(e.target).attr("href") // activated tab
+
+//     console.log($(target));
+
+
+//     var chatBox = "#" + $(target)[0].childNodes[1].id;
+//     console.log(chatBox);
+//     // console.log(e);
+//   });
+
+
 
 function toRadians(angle) {
     return angle * (Math.PI / 180);

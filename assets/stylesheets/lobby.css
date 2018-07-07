@@ -720,3 +720,22 @@ textarea .dark {
     right: 0%;
 
 }
+
+#room-chat-room-bar {
+    border-bottom: 1px dashed red;
+    
+    /* position: absolute; */
+    /* bottom: 0%; */
+    /* height: 10px; */
+    position: relative;
+    bottom: 5px;
+    width: 100%;
+    /* margin-bottom: 3px; */
+}
+
+.chat-bar {
+    border-bottom: 1px dashed red;
+    position: relative;
+    bottom: 5px;
+    width: 100%;
+}

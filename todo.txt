@@ -33,6 +33,8 @@ To-do list:
 
 -Statistics page
 
+-spectator number on the front page game info
+
 
 -You are ____ morgana, percy etc, in gameplay text
 
@@ -42,6 +44,12 @@ To-do list:
 -Learn Bitwise operations...?
 
 -Editing a comment is broken???
+
+-bit more indent for all of the chat in the chat windows
+-move bottom avatars up a bit, too close to gray bar
+-Thicker status bar for pc's and big screens
+
+-thin red line for new incoming messages when scrolled away
 
 
 6 or 8 inch futon
