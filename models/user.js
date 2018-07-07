@@ -10,6 +10,8 @@ var UserSchema = new mongoose.Schema({
 	dateJoined: Date,
 
 	totalGamesPlayed: Number,
+
+	totalHoursPlayed: Date,
 	
 	totalWins: Number,
 	totalLosses: Number,

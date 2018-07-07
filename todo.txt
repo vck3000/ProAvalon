@@ -9,11 +9,9 @@ To-do list:
 
 -Max number of players
 
--fade the buttons more when inactive?
 
 -Statistics page
 
--spectator number on the front page game info
 
 
 
@@ -163,6 +161,8 @@ Mine:
 -bit more indent for all of the chat in the chat windows
 -Increase gap between rej app buttons
 -Editing a comment is broken???
+-spectator number on the front page game info
+-fade the buttons more when inactive?
 
 
 Hak:

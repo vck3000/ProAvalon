@@ -752,9 +752,19 @@ function showDangerAlert(data) {
 
 
 
-
+var ding;
 socket.on("update-room-players", function (data) {
-    // var x = $("#typehead").parent().width();
+
+    //if an extra person joins, play the chime
+    if(roomPlayersData && roomPlayersData.length < data.playersJoined.length){
+        if(!ding){
+            ding =  new Audio('sounds/ding.wav');
+        }
+        console.log("ding");
+        ding.play();
+    }
+
+    // var x = $("#typehead").parent().width();    
     roomPlayersData = data.playersJoined;
     roomSpectatorsData = data.spectators;
 
