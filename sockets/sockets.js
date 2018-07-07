@@ -6,7 +6,6 @@ var currentPlayersUsernames = [];
 var allSockets = [];
 
 var rooms = [];
-var roomChatHistory = [];
 
 //retain only 5 mins.
 var allChatHistory = [];
@@ -21,7 +20,7 @@ var userCommands = {
 		help: "/commandA: Just some text for commandA",
 		run: function (args) {
 			//do stuff
-			return "commandA has been run.";
+			return {message: "commandA has been run.", classStr: "server-text"};
 		}
 	},
 
@@ -64,22 +63,24 @@ var userCommands = {
 		command: "buzz",
 		help: "/buzz <playername>: Buzz a player.",
 		run: function (args) {
-			return "buzzed player " + args[1] + " (not yet implemented)";
+			return {message: "buzzed player " + args[1] + " (not yet implemented)", classStr: "server-text"};
 		}
 	},
 
 	slap: {
 		command: "slap",
-		help: "/slap <playername>: Slap a player for fun.",
+		help: "/slap <playername>: Slap a player for fun. <playername> must all be in lower case.",
 		run: function (args, senderSocket) {
 
 			var slapSocket = allSockets[args[1]];
 			if (slapSocket) {
 				slapSocket.emit("slap", senderSocket.request.user.username);
-				return "You have slapped player " + args[1] + "!";
+			return {message: "You have slapped player " + args[1] + "!", classStr: "server-text"};
 			}
 			else {
-				return "There is no such player";
+				console.log(allSockets);
+				return {message: "There is no such player.", classStr: "server-text"};
+				
 			}
 		}
 	},
@@ -89,8 +90,13 @@ var userCommands = {
 		help: "/roomChat: Get a copy of the chat for the current game.",
 		run: function (args, senderSocket) {
 			//code
-			return roomChatHistory[senderSocket.request.user.inRoomId];
-			// roomChatHistory[roomId].push(data);
+			if(rooms[senderSocket.request.user.inRoomId]){
+				return rooms[senderSocket.request.user.inRoomId].getChatHistory();
+
+			}
+			else{
+				return {message: "The game hasn't started yet. There is no chat to display.", classStr: "server-text"}
+			}
 		}
 	},
 
@@ -99,7 +105,6 @@ var userCommands = {
 		help: "/allChat: Get a copy of the last 5 minutes of allChat. (DISABLED)",
 		run: function (args, senderSocket) {
 			//code
-
 			return null;//allChat5Min;
 		}
 	}
@@ -624,16 +629,7 @@ function sendToRoomChat(io, roomId, data){
 	io.in(roomId).emit("roomChatToClient", data);
 	// io.in(socket.request.user.inRoomId).emit("player-ready", username + " is ready.");
 
-	if(!roomChatHistory[roomId]){
-		console.log("no room id for this chat history, creating now");
-		roomChatHistory[roomId] = [];
-	}
-	if(rooms[roomId] && rooms[roomId].getGameStarted() === true){
-		roomChatHistory[roomId].push(data);
-		console.log("chat history added: ");
-		console.log(data);
-	}
-	else{
-		console.log("Game isn't started, don't log this message.");
+	if(rooms[roomId]){
+		rooms[roomId].addToChatHistory(data);
 	}
 }

@@ -687,6 +687,15 @@ socket.on("commands", function (commands) {
 socket.on("messageCommandReturnStr", function (data) {
     // var data = { message: str , classStr: "server-text"};
 
+    // if(!data.classStr){
+    //     data = {
+    //         message: data,
+    //         classStr: "server-text"
+    //     }
+    // }
+
+    
+
     if (lastChatBoxCommand === "allChat") {
         addToAllChat(data);
     }
@@ -704,7 +713,7 @@ socket.on("slap", function (username) {
     }
 
     slap.play();
-    var data = { message: "You have just been slapped by " + username , classStr: "server-text"}
+    var data = { message: "You have been slapped by " + username + ".", classStr: "server-text"}
 
     setTimeout(function () {
         addToAllChat(data);

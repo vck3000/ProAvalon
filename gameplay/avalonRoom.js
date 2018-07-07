@@ -75,6 +75,8 @@ module.exports = function (host_, roomId_, io_) {
 
 	this.io = io_;
 
+	this.chatHistory = [];
+
 	this.playersInGame = [];
 	this.player = [];
 	this.gameStarted = false;
@@ -166,11 +168,11 @@ module.exports = function (host_, roomId_, io_) {
 
 		if (this.winner === "spies") {
 			// this.gameplayMessage = "The spies have won the game.";
-			sendText(this.sockets, "The spies have won the game.", "gameplay-text");
+			this.sendText(this.sockets, "The spies have won the game.", "gameplay-text");
 		}
 		else if (this.winner === "resistance") {
 			// this.gameplayMessage = "The resistance have won the game.";
-			sendText(this.sockets, "The resistance have won the game.", "gameplay-text");
+			this.sendText(this.sockets, "The resistance have won the game.", "gameplay-text");
 		}
 
 		//store data into the database:
@@ -272,7 +274,7 @@ module.exports = function (host_, roomId_, io_) {
 			this.ladyablePeople[this.lady] = false;
 
 			// this.gameplayMessage = (socket.request.user.username + " has carded " + target);
-			sendText(this.sockets, (socket.request.user.username + " has carded " + target + "."), "gameplay-text");
+			this.sendText(this.sockets, (socket.request.user.username + " has carded " + target + "."), "gameplay-text");
 
 
 			//update phase
@@ -338,12 +340,12 @@ module.exports = function (host_, roomId_, io_) {
 
 				if (numOfVotedFails === 0) {
 					// this.gameplayMessage = "The mission succeeded.";	
-					sendText(this.sockets, "Mission " + this.missionNum + " has succeeded", "gameplay-text");
+					this.sendText(this.sockets, "Mission " + this.missionNum + " has succeeded", "gameplay-text");
 
 				}
 				else {
 					// this.gameplayMessage = "The mission succeeded, but with " + numOfVotedFails + " fails.";
-					sendText(this.sockets, "Mission " + this.missionNum + " succeeded, but with " + numOfVotedFails + " fails.", "gameplay-text");
+					this.sendText(this.sockets, "Mission " + this.missionNum + " succeeded, but with " + numOfVotedFails + " fails.", "gameplay-text");
 
 				}
 
@@ -354,12 +356,12 @@ module.exports = function (host_, roomId_, io_) {
 				var numOfVotedFails = countFails(this.missionVotes);
 				if (numOfVotedFails === 1) {
 					// this.gameplayMessage = "The mission failed with " + numOfVotedFails + " fail.";	
-					sendText(this.sockets, "Mission " + this.missionNum + " failed with " + numOfVotedFails + " fail.", "gameplay-text");
+					this.sendText(this.sockets, "Mission " + this.missionNum + " failed with " + numOfVotedFails + " fail.", "gameplay-text");
 
 				}
 				else {
 					// this.gameplayMessage = "The mission failed with " + numOfVotedFails + " fails.";	
-					sendText(this.sockets, "Mission " + this.missionNum + " failed with " + numOfVotedFails + " fails.", "gameplay-text");
+					this.sendText(this.sockets, "Mission " + this.missionNum + " failed with " + numOfVotedFails + " fails.", "gameplay-text");
 
 				}
 
@@ -459,7 +461,7 @@ module.exports = function (host_, roomId_, io_) {
 
 				var str = "Mission " + this.missionNum + "." + this.pickNum + " was approved." + getStrApprovedRejectedPlayers(this.votes, this.playersInGame);
 				// this.gameplayMessage = str;
-				sendText(this.sockets, str, "gameplay-text");
+				this.sendText(this.sockets, str, "gameplay-text");
 
 				//temporarily increase the team leader so that when mission is approved 
 				//the leader star will stay since we automatically teamLeader-- at the end of this block.
@@ -484,7 +486,7 @@ module.exports = function (host_, roomId_, io_) {
 
 				var str = "Mission " + this.missionNum + "." + this.pickNum + " was rejected." + getStrApprovedRejectedPlayers(this.votes, this.playersInGame);
 				// this.gameplayMessage = str;
-				sendText(this.sockets, str, "gameplay-text");
+				this.sendText(this.sockets, str, "gameplay-text");
 
 			}
 
@@ -555,7 +557,7 @@ module.exports = function (host_, roomId_, io_) {
 			str2 = str2.slice(0, str2.length - 2);
 			str2 += ".";
 
-			sendText(this.sockets, str2, "gameplay-text");
+			this.sendText(this.sockets, str2, "gameplay-text");
 
 
 			//VH:
@@ -933,7 +935,7 @@ module.exports = function (host_, roomId_, io_) {
 		str += ".";
 
 		// this.gameplayMessage = str;
-		sendText(this.sockets, str, "gameplay-text");
+		this.sendText(this.sockets, str, "gameplay-text");
 
 
 		//seed the starting data into the VH
@@ -1237,7 +1239,7 @@ module.exports = function (host_, roomId_, io_) {
 				this.socketsOfSpectators.push(kickedPlayerSocket);
 				console.log("Kicked player: " + username);
 
-				sendText(this.playersInRoom, "Player " + username + " has been kicked by the host.", "server-text");
+				this.sendText(this.playersInRoom, "Player " + username + " has been kicked by the host.", "server-text");
 
 				// Ban them from this room
 				this.kickedPlayers[username] = true;
@@ -1270,6 +1272,31 @@ module.exports = function (host_, roomId_, io_) {
 			this.claimingPlayers[socket.request.user.username] = true;
 		}
 	}
+	
+
+	this.addToChatHistory = function(data){
+		if(this.gameStarted === true){
+			this.chatHistory.push(data);
+		}
+	}
+
+	this.getChatHistory = function(data){
+		return this.chatHistory;
+	}
+
+	this.sendText = function(sockets, incString, stringType) {
+		data = {
+			message: incString,
+			classStr: stringType,
+	
+		};
+		for (var i = 0; i < sockets.length; i++) {
+			sockets[i].emit("roomChatToClient", data);
+		}
+	
+		this.addToChatHistory(data);
+	}
+
 };
 
 
@@ -1444,13 +1471,3 @@ function getRolesInStr(options) {
 }
 
 
-function sendText(sockets, incString, stringType) {
-	data = {
-		message: incString,
-		classStr: stringType,
-
-	};
-	for (var i = 0; i < sockets.length; i++) {
-		sockets[i].emit("roomChatToClient", data);
-	}
-}
