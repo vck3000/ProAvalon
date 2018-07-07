@@ -118,6 +118,11 @@ p {
     overflow-x: visible;
 }
 
+.chat-window ol li{
+    padding-left: 1px;
+    margin-bottom: 4px;
+}
+
 .chat-message-input {
     width: 100%;
     border: 2px solid #d3d3d3;
