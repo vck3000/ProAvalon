@@ -1941,35 +1941,48 @@ function drawVoteHistory(data) {
     }
     str += "</tr>";
 
-    //for every username
-    for (var key in data.voteHistory) {
-        if (data.voteHistory.hasOwnProperty(key)) {
-            // console.log(key + " -> " + data.voteHistory[key]);
-            str += "<tr>";
-            //print username in the first column
-            str += "<td>" + key + "</td>";
+    var keyArray = [];
+    //push the first person first
+    keyArray[0] = (roomPlayersData[0].username);
 
-            //Individual mission voteHistory
-            //for every mission
-            for (var i = 0; i < data.voteHistory[key].length; i++) {
-                numOfPicksPerMission[i] = 0;
+    //for every username in a clockwise direction
+    for (var i = roomPlayersData.length-1; i > 0; i--){
+        keyArray[roomPlayersData.length - i] = (roomPlayersData[i].username);
+        console.log("Push: " + roomPlayersData[i].username);
+        console.log("i: " + i);
+    } 
+    
+    console.log("key array:" );
+    console.log(keyArray);
 
-                //for every pick
-                for (var j = 0; j < data.voteHistory[key][i].length; j++) {
-                    // console.log(data.voteHistory[key][i][j]);
 
-                    str += "<td class='" + data.voteHistory[key][i][j] + "''>";
+    // for(var k = keyArray.length - 1; k >= 0; k--){
+    for(var k = 0; k < keyArray.length; k++){
+        // console.log(key + " -> " + data.voteHistory[key]);
+        str += "<tr>";
+        //print username in the first column
+        str += "<td>" + keyArray[k] + "</td>";
 
-                    if(data.voteHistory[key][i][j].includes("VHpicked") === true){
-                        str += "<i class='glyphicon glyphicon-ok'></i>";
-                    }
+        //Individual mission voteHistory
+        //for every mission
+        for (var i = 0; i < data.voteHistory[keyArray[k]].length; i++) {
+            numOfPicksPerMission[i] = 0;
 
-                    str += "</td>";
-                    numOfPicksPerMission[i]++;
+            //for every pick
+            for (var j = 0; j < data.voteHistory[keyArray[k]][i].length; j++) {
+                // console.log(data.voteHistory[key][i][j]);
+
+                str += "<td class='" + data.voteHistory[keyArray[k]][i][j] + "''>";
+
+                if(data.voteHistory[keyArray[k]][i][j].includes("VHpicked") === true){
+                    str += "<i class='glyphicon glyphicon-ok'></i>";
                 }
+
+                str += "</td>";
+                numOfPicksPerMission[i]++;
             }
-            str += "</tr>"
         }
+        str += "</tr>";
     }
 
     $("#voteHistoryTable")[0].innerHTML = str;

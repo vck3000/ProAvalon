@@ -504,6 +504,8 @@ module.exports = function (io) {
 function distributeGameData(socket, io) {
 	//distribute roles to each player
 
+	updateRoomPlayers(io, socket);
+
 	var gameData = rooms[socket.request.user.inRoomId].getGameData();
 
 

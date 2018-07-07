@@ -14,13 +14,11 @@ To-do list:
 
 
 
--spectators see you are undefined, your role is undefined
 
 - i just realised the chatbox doesn't scroll if the next line of chat is more than one line long   
 -disable slapping when in game
 
--approve is on left, reject on the right
--succeed button on the left too
+
 
 -bubblein dark mode canat see role
 
@@ -182,6 +180,12 @@ Mine:
 -Editing a comment is broken???
 -spectator number on the front page game info
 -fade the buttons more when inactive?
+
+
+-spectators see you are undefined, your role is undefined
+-approve is on left, reject on the right
+-succeed button on the left too
+
 
 
 Hak:

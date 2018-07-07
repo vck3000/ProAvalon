@@ -367,8 +367,7 @@ module.exports = function (host_, roomId_, io_) {
 
 			}
 
-			this.missionNum++;
-			this.pickNum = 1;
+			
 			//if we get all the votes in, then do this
 			this.proposedTeam = [];
 			this.missionVotes = [];
@@ -410,6 +409,10 @@ module.exports = function (host_, roomId_, io_) {
 				//pass through the winner
 				this.finishGame("res");
 				// console.log("RES WON, NOW GOING INTO ASSASSINATION");
+			}
+			else{
+				this.missionNum++;
+				this.pickNum = 1;
 			}
 
 			
