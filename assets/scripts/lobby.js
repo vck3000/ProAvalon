@@ -1325,7 +1325,7 @@ function drawAndPositionAvatars() {
     //set the positions and sizes
     // console.log("numPlayers: " + numPlayers)
     var divs = document.querySelectorAll("#mainRoomBox div");
-    const scaleWidthDown = 0.8;
+    const scaleWidthDown = 0.9;
     const scaleHeightDown = 0.9;
     var playerLocations = generatePlayerLocations(numPlayers, (w / 2)*scaleWidthDown, (h / 2)*scaleHeightDown);
 
@@ -1339,6 +1339,8 @@ function drawAndPositionAvatars() {
 
         console.log("offsetY: " + offsetY);
 
+
+        //scale the height of avatars
         var windowH = $(window).height();
         var windowW = $(window).width();
 
@@ -1350,7 +1352,7 @@ function drawAndPositionAvatars() {
 
         var ratioXtoY = 0.8;
 
-        divs[i].style.height = 40 + "%";
+        divs[i].style.height = 37 + "%";
         divs[i].style.width = divs[i].offsetHeight * ratioXtoY + "px";
 
         // //size of the avatar img
@@ -1819,6 +1821,55 @@ function toRadians(angle) {
     return angle * (Math.PI / 180);
 }
 
+//some setups result in collisions of avatars
+//so set up some custom degree positions for avatars at certain 
+//game sizes
+
+//key = num of players in game
+//2nd key = player position
+//value = angle
+var customSteps = {
+
+    7: {
+        1: 35,
+        6: 325
+    },
+    8: {
+        1: 30,
+
+        3: 145,
+        5: 215,
+
+        7: 330
+    },
+    9: {
+        1: 30,
+        2: 70,
+        3: 140,
+        4: 167,
+
+        5: 193,
+        6: 220,
+        7: 290,
+        8: 330
+
+    },
+    10: {
+        0: 13,
+        1: 40,
+        2: 90,
+        3: 140,
+        4: 167,
+
+        5: 193,
+        6: 220,
+        7: 270,
+        8: 320,
+        9: 347
+
+    }
+}
+
 function generatePlayerLocations(numOfPlayers, a, b) {
     //CONICS :D
     var x_ = [];
@@ -1829,18 +1880,25 @@ function generatePlayerLocations(numOfPlayers, a, b) {
 
     //for 6p and 10p, rotate slightly so that usernames dont collide
     //with the role text
-    if (numOfPlayers === 6 || numOfPlayers === 10) {
+    if (numOfPlayers === 6) {
         var tiltOffset = step / 2;
     }
 
     for (var i = 0; i < numOfPlayers; i++) {
+        if(customSteps[numOfPlayers] && customSteps[numOfPlayers][i]){
+            x_[i] = a * (Math.cos(toRadians((customSteps[numOfPlayers][i]) + 90 + tiltOffset))) * 0.85;
+            y_[i] = b * (Math.sin(toRadians((customSteps[numOfPlayers][i]) + 90 + tiltOffset))) * 0.7;
+        }
+        else{
+            //get the coordinates. Note the +90 is to rotate so that
+            //the first person is at the top of the screen
+            x_[i] = a * (Math.cos(toRadians((step * i) + 90 + tiltOffset))) * 0.85;
+            y_[i] = b * (Math.sin(toRadians((step * i) + 90 + tiltOffset))) * 0.7;
+            // x_[i] = a*(Math.cos(toRadians((step*i) + 90)));
+            // y_[i] = b*(Math.sin(toRadians((step*i) + 90)));
+        }
 
-        //get the coordinates. Note the +90 is to rotate so that
-        //the first person is at the top of the screen
-        x_[i] = a * (Math.cos(toRadians((step * i) + 90 + tiltOffset))) * 0.85;
-        y_[i] = b * (Math.sin(toRadians((step * i) + 90 + tiltOffset))) * 0.7;
-        // x_[i] = a*(Math.cos(toRadians((step*i) + 90)));
-        // y_[i] = b*(Math.sin(toRadians((step*i) + 90)));
+
     }
 
     var object = {
