@@ -1771,7 +1771,10 @@ function scrollDown(chatBox) {
     // console.log("diff is " + (listBox.height() - scrollBox.scrollTop() - scrollBox.height()) );
 
     //if the user is scrolled away
-    if((listBox.height() - scrollBox.scrollTop() - scrollBox.height()) > 20){
+
+    var heightOfLastMessage = listBox.children().last().height();
+
+    if((listBox.height() - scrollBox.scrollTop() - scrollBox.height()) > 5 + heightOfLastMessage){
         //Show user that there is a new message with the red bar.
         //Show because the only time this will trigger is when a new message comes in anyway
         $(searchStrBar).removeClass("hidden");
