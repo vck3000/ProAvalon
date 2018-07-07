@@ -478,7 +478,7 @@ function addToAllChat(data) {
             var hour = d.getHours();
             var min = d.getMinutes();
             if (hour < 10) { hour = "0" + hour; }
-            // if (data[i].date < 10) { data[i].date = "0" + data[i].date; }
+            if (min < 10) { min = "0" + min; }
             var date = "[" + hour + ":" + min + "]";
 
             if(data[i].message){
@@ -520,7 +520,7 @@ function addToRoomChat(data) {
             var hour = d.getHours();
             var min = d.getMinutes();
             if (hour < 10) { hour = "0" + hour; }
-            // if (data[i].date < 10) { data[i].date = "0" + data[i].date; }
+            if (min < 10) { min = "0" + min; }
             var date = "[" + hour + ":" + min + "]";
     
             
