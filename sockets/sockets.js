@@ -505,27 +505,30 @@ function distributeGameData(socket, io) {
 
 	updateRoomPlayers(io, socket);
 
-	var gameData = rooms[socket.request.user.inRoomId].getGameData();
+	if(rooms[socket.request.user.inRoomId].gameStarted === true){
+		var gameData = rooms[socket.request.user.inRoomId].getGameData();
 
+	
 
-	for (var i = 0; i < Object.keys(gameData).length; i++) {
-		//send to each individual player
-		console.log("send out game data to player: " + gameData[i].username);
-		io.to(gameData[i].socketId).emit("game-data", gameData[i]);
-		// console.log(gameData[i]);
-		// console.log("Player " + gameData[i].username + " has been given role: " + gameData[i].role);
-	}
-
-	var gameDataForSpectators = rooms[socket.request.user.inRoomId].getGameDataForSpectators();
-	//send out spectator data
-	socketsOfSpectators = rooms[socket.request.user.inRoomId].getSocketsOfSpectators();
-	console.log("sockets of spectators length: " + socketsOfSpectators.length);
-
-	for (var i = 0; i < socketsOfSpectators.length; i++) {
-		var socketId = socketsOfSpectators[i].id;
-		console.log("Socket id: " + socketId);
-		socket.to(socketId).emit("game-data", gameDataForSpectators);
-		console.log("(for loop) Sent to spectator: " + socketsOfSpectators[i].request.user.username);
+		for (var i = 0; i < Object.keys(gameData).length; i++) {
+			//send to each individual player
+			console.log("send out game data to player: " + gameData[i].username);
+			io.to(gameData[i].socketId).emit("game-data", gameData[i]);
+			// console.log(gameData[i]);
+			// console.log("Player " + gameData[i].username + " has been given role: " + gameData[i].role);
+		}
+	
+		var gameDataForSpectators = rooms[socket.request.user.inRoomId].getGameDataForSpectators();
+		//send out spectator data
+		socketsOfSpectators = rooms[socket.request.user.inRoomId].getSocketsOfSpectators();
+		console.log("sockets of spectators length: " + socketsOfSpectators.length);
+	
+		for (var i = 0; i < socketsOfSpectators.length; i++) {
+			var socketId = socketsOfSpectators[i].id;
+			console.log("Socket id: " + socketId);
+			socket.to(socketId).emit("game-data", gameDataForSpectators);
+			console.log("(for loop) Sent to spectator: " + socketsOfSpectators[i].request.user.username);
+		}
 	}
 }
 

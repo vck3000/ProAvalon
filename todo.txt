@@ -17,12 +17,12 @@ To-do list:
 
 
 
+-full stop after m1 has succeeded
+-right side tabs VH is fked
 
--multiple tabs
+-server text is gone??
 
-
-
-
+-yellow highlight buttons should disappear when its viewed in 2nd tab.
 
 
 
@@ -186,6 +186,7 @@ Mine:
 -Show a leave icon if a player isn't in the room after game started.
 -claim has to be transparent
 -bubblein dark mode cant see role
+-multiple tabs
 
 
 
