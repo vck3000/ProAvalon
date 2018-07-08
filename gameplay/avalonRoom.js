@@ -340,7 +340,7 @@ module.exports = function (host_, roomId_, io_) {
 
 				if (numOfVotedFails === 0) {
 					// this.gameplayMessage = "The mission succeeded.";	
-					this.sendText(this.sockets, "Mission " + this.missionNum + " has succeeded", "gameplay-text");
+					this.sendText(this.sockets, "Mission " + this.missionNum + " has succeeded.", "gameplay-text");
 
 				}
 				else {

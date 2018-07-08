@@ -17,8 +17,7 @@ To-do list:
 
 
 
--full stop after m1 has succeeded
--right side tabs VH is fked
+
 
 -server text is gone??
 
@@ -188,7 +187,8 @@ Mine:
 -bubblein dark mode cant see role
 -multiple tabs
 
-
+-full stop after m1 has succeeded
+-right side tabs VH is fked
 
 
 

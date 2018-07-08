@@ -29,7 +29,7 @@ $(document).ready(function(){
 })
 //if the users screen is big enough, then we can make the center status bar big
 function checkStatusBarWithHeight(){
-    const cutOffHeight = 800
+    const cutOffHeight = 850
     if($(window).height() > cutOffHeight){
         $("#status").removeClass("well-sm");
     }
@@ -222,7 +222,7 @@ var userOptions = {
 
 
             //set up div 1 to be resizable in north and south directions
-            $("#div1Resize").resizable({ handles: 'n, s' });
+            $("#div1Resize").resizable({ handles: 's' });
             //on resize of div 1, resize div 2.
             $('#div1Resize').resize(function () {
                 //Make the height adjustments
@@ -2189,10 +2189,12 @@ function extendTabContentToBottomInRoom() {
     var tabContainer = $(".tab-content");
     var navTabs = $(".nav-tabs");
 
-    var newHeight2 = Math.floor(gameContainer.offsetHeight - tabNumber.position().top);
-    tabNumber[0].style.height = Math.floor((newHeight2 * 1.22) - tempVar) + "px";
+    var newHeight2 = Math.floor(gameContainer.offsetHeight - tabNumber.position().top) - 20;
+    console.log("new height 2: " + newHeight2);
 
-    tabContainer.height(Math.floor(newHeight2 - navTabs.height()) + "px");
+    tabNumber[0].style.height = Math.floor((newHeight2 * 1) - tempVar) + "px";
+
+    tabContainer.height(Math.floor(newHeight2 /*- navTabs.height()*/) + "px");
 }
 
 

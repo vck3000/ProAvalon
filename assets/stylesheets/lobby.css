@@ -109,7 +109,7 @@ p {
 }
 
 .chat-window {
-    height: 90%;
+    height: 100%;
     display: block;
     /*max-height: 75%;*/
     border: 1px solid #d3d3d3;
@@ -529,9 +529,18 @@ h3 {
 }
 
 .nav-tabs li a {
-    padding-left: 1vw !important;
-    padding-right: 1vw !important;
+    padding: 12px 8px !important;
 }
+
+@media screen and (max-width: 480px) {
+    .nav-tabs li a { 
+        padding-left: 1vw !important;
+        padding-right: 1vw !important;
+        padding-top: 1vh !important;
+        padding-bottom: 1vh !important;
+    } 
+ }
+
 
 .game-buttons-div {
     padding-top: 1vh;
