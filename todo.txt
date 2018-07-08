@@ -12,12 +12,7 @@ To-do list:
 
 -Statistics page
 
-
-
-
 -disable slapping when in game
-
-
 
 -bubblein dark mode canat see role
 
@@ -31,7 +26,6 @@ To-do list:
 
 -two spectators???
 -spectators duplicate when they leave and reenter
--invalid command is showing up in both allchat and gamechat
 
 
 
@@ -186,6 +180,7 @@ Mine:
 -vh is wrong way around
 -leaderes go right down, not right up
 -change text claim to unclaim when claiming
+-invalid command is showing up in both allchat and gamechat
 
 
 Hak:

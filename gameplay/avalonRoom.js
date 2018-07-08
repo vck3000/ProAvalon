@@ -1287,6 +1287,7 @@ module.exports = function (host_, roomId_, io_) {
 		return this.chatHistory;
 	}
 
+	//Note this sends text to ALL players and ALL spectators
 	this.sendText = function(sockets, incString, stringType) {
 		data = {
 			message: incString,
@@ -1295,6 +1296,9 @@ module.exports = function (host_, roomId_, io_) {
 		};
 		for (var i = 0; i < sockets.length; i++) {
 			sockets[i].emit("roomChatToClient", data);
+		}
+		for(var i = 0; i < this.socketsOfSpectators.length; i++){
+			this.socketsOfSpectators[i].emit("roomChatToClient", data);
 		}
 	
 		this.addToChatHistory(data);
