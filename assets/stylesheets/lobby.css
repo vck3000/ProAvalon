@@ -671,6 +671,11 @@ textarea .dark {
     border: 1px transparent solid;
 }
 
+.dark .date-text {
+    background-color: #333333;
+    border: 1px solid #222222;
+}
+
 
 
 #div1Resize {
