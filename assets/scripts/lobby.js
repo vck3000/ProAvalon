@@ -388,16 +388,23 @@ document.querySelector("#claimButton").addEventListener("click", function () {
 });
 
 var allChatWindow1 = document.querySelectorAll(".all-chat-message-input")[0];
-allChatWindow1.onkeyup = function (e, allChatWindow1) {
+allChatWindow1.onkeydown = function (e, allChatWindow1) {
     //When enter is pressed in the chatmessageinput
     addAllChatEventListeners(e, this);
 };
 
 var allChatWindow2 = document.querySelectorAll(".all-chat-message-input")[1];
-allChatWindow2.onkeyup = function (e, allChatWindow2) {
+allChatWindow2.onkeydown = function (e, allChatWindow2) {
     //When enter is pressed in the chatmessageinput
     addAllChatEventListeners(e, this);
 };
+
+var allChatWindow3 = document.querySelectorAll(".all-chat-message-input")[2];
+allChatWindow3.onkeydown = function (e, allChatWindow3) {
+    //When enter is pressed in the chatmessageinput
+    addAllChatEventListeners(e, this);
+};
+
 
 function addAllChatEventListeners(e, allChatWindow) {
     // console.log("LOLOL" + e.keyCode);
@@ -435,13 +442,29 @@ function addAllChatEventListeners(e, allChatWindow) {
             }
             scrollDown("all-chat-lobby");
             scrollDown("all-chat-room");
+            scrollDown("all-chat-room2");
         }
 
     }
 }
 
-var roomChatWindow = document.querySelector(".room-chat-message-input");
-roomChatWindow.onkeyup = function (e) {
+var roomChatWindow1 = document.querySelectorAll(".room-chat-message-input")[0];
+
+roomChatWindow1.onkeydown = function (e, roomChatWindow1) {
+    //When enter is pressed in the chatmessageinput
+    addRoomChatEventListeners(e, this);
+};
+
+var roomChatWindow2 = document.querySelectorAll(".room-chat-message-input")[1];
+roomChatWindow2.onkeydown = function (e, roomChatWindow2) {
+    //When enter is pressed in the chatmessageinput
+    addRoomChatEventListeners(e, this);
+};
+
+function addRoomChatEventListeners(e, roomChatWindow) {
+    // console.log("LOLOL" + e.keyCode);
+    // console.log(allChatWindow);
+
     if (e.keyCode == 13) {
         var d = new Date();
         //set up the data structure:
@@ -473,7 +496,9 @@ roomChatWindow.onkeyup = function (e) {
                 socket.emit("roomChatFromClient", data);
             }
             scrollDown("room-chat-room");
+            scrollDown("room-chat-room2");
         }
+
     }
 }
 
@@ -508,6 +533,9 @@ function addToAllChat(data) {
             data = [data];
         }  
 
+        console.log("add to all chat: ");
+        console.log(data);
+
         for (var i = 0; i < data.length; i++) {
             //format the date
             var d = new Date();
@@ -516,14 +544,13 @@ function addToAllChat(data) {
             if (hour < 10) { hour = "0" + hour; }
             if (min < 10) { min = "0" + min; }
             var date = "[" + hour + ":" + min + "]";
-
-            if(data[i].message){
+            if(data[i] && data[i].message){
                 //prevent XSS injection
                 var filteredMessage = data[i].message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
 
                 var str = "";
                 if (data[i].classStr && data[i].classStr !== "") {
-                    str = "<li class='" + data[i].classStr + "'><span class='date-text'>" + date + "</span>" + filteredMessage;
+                    str = "<li class='" + data[i].classStr + "'><span class='date-text'>" + date + "</span> " + filteredMessage;
                 }
                 else {
                     str = "<li class='" + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + filteredMessage;
@@ -532,6 +559,8 @@ function addToAllChat(data) {
                 $(".all-chat-list").append(str);
                 scrollDown("all-chat-lobby");
                 scrollDown("all-chat-room");
+                scrollDown("all-chat-room2");
+                
 
                 //yellow notification on the tabs in room.
                 if ($(".nav-tabs #all-chat-in-game-tab").hasClass("active") === false) {
@@ -560,7 +589,7 @@ function addToRoomChat(data) {
             var date = "[" + hour + ":" + min + "]";
     
             
-            if (data[i].message) {
+            if (data[i] && data[i].message) {
                 console.log(data[i].message);
                 //prevent XSS injection
                 var filteredMessage = data[i].message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
@@ -587,6 +616,7 @@ function addToRoomChat(data) {
 
                     $(".room-chat-list").append(str);
                     scrollDown("room-chat-room");
+                    scrollDown("room-chat-room2");
                 }
 
                 //else if there is a '[' character, then assume the user is quoting a chunk of text
@@ -604,6 +634,7 @@ function addToRoomChat(data) {
 
                     $(".room-chat-list").append(str);
                     scrollDown("room-chat-room");
+                    scrollDown("room-chat-room2");
 
                 }
     
@@ -1860,7 +1891,9 @@ function scrollDown(chatBox) {
 var arrayOfChatBoxes = [
     "#all-chat-lobby",
     "#all-chat-room",
-    "#room-chat-room"
+    "#room-chat-room",
+    "#all-chat-room2",
+    "#room-chat-room2"
 ]
 
 for(var i = 0; i < arrayOfChatBoxes.length; i++){
@@ -2055,13 +2088,16 @@ function drawVoteHistory(data) {
         str += "</tr>";
     }
 
-    $("#voteHistoryTable")[0].innerHTML = str;
+    $(".voteHistoryTableClass")[0].innerHTML = str;
+    $(".voteHistoryTableClass")[1].innerHTML = str;
 
     //set the right colspans for the mission headers
     for (var i = 0; i < numOfPicksPerMission.length; i++) {
         var id = "#missionHeader" + (i + 1);
         $(id).attr("colspan", numOfPicksPerMission[i]);
     }
+
+    
 }
 
 
@@ -2133,7 +2169,7 @@ function extendTabContentToBottomInRoom() {
     var navTabs = $(".nav-tabs");
 
     var newHeight2 = Math.floor(gameContainer.offsetHeight - tabNumber.position().top);
-    tabNumber[0].style.height = Math.floor((newHeight2 * 1.2) - tempVar) + "px";
+    tabNumber[0].style.height = Math.floor((newHeight2 * 1.22) - tempVar) + "px";
 
     tabContainer.height(Math.floor(newHeight2 - navTabs.height()) + "px");
 }
