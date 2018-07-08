@@ -33,7 +33,6 @@ To-do list:
 -spectators duplicate when they leave and reenter
 -invalid command is showing up in both allchat and gamechat
 
--change text claim to unclaim when claiming
 
 
 
@@ -186,6 +185,7 @@ Mine:
 - i just realised the chatbox doesn't scroll if the next line of chat is more than one line long   
 -vh is wrong way around
 -leaderes go right down, not right up
+-change text claim to unclaim when claiming
 
 
 Hak:

@@ -2132,8 +2132,12 @@ function checkMessageForCommands(message, chatBox) {
                 message: str,
                 classStr: "server-text"
             }
-            addToAllChat(data);
-            addToRoomChat(data);
+            if (chatBox === "allChat") {
+                addToAllChat(data);
+            }
+            else if (chatBox === "roomChat") {
+                addToRoomChat(data);
+            }
         }
         else {
             //sending command to server

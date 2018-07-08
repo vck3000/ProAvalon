@@ -34,7 +34,7 @@ var userCommands = {
 			var i = 0;
 
 			//starting break in the chat
-			data[i] = {message: "-------------------------", classStr: "server-text"};
+			// data[i] = {message: "-------------------------", classStr: "server-text"};
 
 			// var str = [];
 			// str[i] = "-------------------------";
@@ -48,9 +48,8 @@ var userCommands = {
 					// str[i] = userCommands[key].help;
 					i++;
 					//create a break in the chat
-					data[i] = {message: "-------------------------", classStr: "server-text"};
-					// str[i] = "-------------------------";
-					i++;
+					// data[i] = {message: "-------------------------", classStr: "server-text"};
+					// i++;
 				}
 			}
 			// return "Commands are: commandA, help";
