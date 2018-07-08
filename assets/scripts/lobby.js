@@ -2278,6 +2278,8 @@ function updateDarkTheme(checked) {
         $("textarea").addClass("dark");
         $(".btn-default").addClass("btn-inverse");
         $(".navbar").addClass("navbar-inverse");
+        $("#playerHighlightColourButton").addClass("buttonDark");
+        $("#playerHighlightColourButton2").addClass("buttonDark");
     }
     else {
         $("body")[0].classList.remove("dark");
@@ -2286,6 +2288,8 @@ function updateDarkTheme(checked) {
         $("textarea").removeClass("dark");
         $(".btn-default").removeClass("btn-inverse");
         $(".navbar").removeClass("navbar-inverse");
+        $("#playerHighlightColourButton").removeClass("buttonDark");
+        $("#playerHighlightColourButton2").removeClass("buttonDark");
     }
 }
 
@@ -2361,10 +2365,15 @@ function updateSpectatorsList(){
         document.querySelectorAll("#spectators-table")[0].classList.add("spectators-table-off");
         document.querySelectorAll("#spectators-table")[0].classList.remove("spectators-table-on");
 
+        document.querySelectorAll("#spectators-table")[1].classList.add("spectators-table-off");
+        document.querySelectorAll("#spectators-table")[1].classList.remove("spectators-table-on");
     }
     else {
         document.querySelectorAll("#spectators-table")[0].classList.add("spectators-table-on");
         document.querySelectorAll("#spectators-table")[0].classList.remove("spectators-table-off");
+
+        document.querySelectorAll("#spectators-table")[1].classList.add("spectators-table-on");
+        document.querySelectorAll("#spectators-table")[1].classList.remove("spectators-table-off");
     }
 
 }
