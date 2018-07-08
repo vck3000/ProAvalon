@@ -24,10 +24,13 @@ To-do list:
 
 -claim has to be transparent
 
--two spectators???
--spectators duplicate when they leave and reenter
 
 
+
+-show spectators a display until players all accept so they know a game is about to start
+-Let spectators still join if someone isnt ready after a round of ready/notready'same
+
+-Show a leave icon if a player isn't in the room after game started.
 
 
 -Learn REGEX
@@ -181,6 +184,8 @@ Mine:
 -leaderes go right down, not right up
 -change text claim to unclaim when claiming
 -invalid command is showing up in both allchat and gamechat
+-two spectators???
+-spectators duplicate when they leave and reenter
 
 
 Hak:

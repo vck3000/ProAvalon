@@ -1103,6 +1103,13 @@ module.exports = function (host_, roomId_, io_) {
 			this.destroyRoom = true;
 		}
 
+			//Get rid of it in the socketsOfSpectators list
+			var i = this.socketsOfSpectators.indexOf(socket);
+			if (i !== -1) {
+				this.socketsOfSpectators.splice(i, 1);
+				console.log("Spectator left, killed their spec socket");
+			}
+
 
 		if (this.gameStarted === false) {
 			//get rid of their socket
@@ -1114,21 +1121,15 @@ module.exports = function (host_, roomId_, io_) {
 				this.host = this.sockets[0].request.user.username;
 			}
 
-			//also get rid of it in the socketsOfSpectators list
-			var i = this.socketsOfSpectators.indexOf(socket);
-			if (i !== -1) {
-				this.socketsOfSpectators.splice(i, 1);
-				console.log("Spectator left, killed their spec socket");
-			}
-
 			return true;
 		}
+
 		else {
 			console.log("Player left mid-game.");
 			return false;
 		}
 
-
+		
 	};
 
 	this.toDestroyRoom = function () {
