@@ -120,7 +120,7 @@ p {
 
 .chat-window ol li{
     padding-left: 1px;
-    margin-bottom: 4px;
+    margin-bottom: 1px;
 }
 
 .chat-message-input {
@@ -725,6 +725,9 @@ i {
     white-space: nowrap;
     line-height: 20px;
     font-style: normal;
+
+    font-family: Monaco,Menlo,Consolas,"Courier New",monospace;
+    font-size: 12px !important;
 }
 
 .claimIcon{
@@ -795,4 +798,13 @@ i {
 
 .displayNoneClass {
     display: none;
+}
+
+#tabs1 {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+#tabs2 {
+    padding-left: 0px;
+    padding-right: 0px;
 }
