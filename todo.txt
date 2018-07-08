@@ -21,12 +21,10 @@ To-do list:
 
 -multiple tabs
 
--claim has to be transparent
 
 
 
 
--Show a leave icon if a player isn't in the room after game started.
 
 
 -Learn REGEX
@@ -186,6 +184,8 @@ Mine:
 -show spectators a display until players all accept so they know a game is about to start
 
 -specs cant see server text
+-Show a leave icon if a player isn't in the room after game started.
+-claim has to be transparent
 
 
 

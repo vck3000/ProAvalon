@@ -1476,13 +1476,23 @@ function drawExitedPlayers(playersStillInRoom){
 
             // var j = playersStillInRoom.indexOf(arrayOfUsernames[i]);
 
-            if ($("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])]) {
-                var str = $("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])].innerHTML;
-                str = str + "<span><img src='pictures/leave.png' class='leaveIcon'></span>";
-                //update the str in the div
-                $("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])].innerHTML = str;
+            // if ($("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])]) {
+            //     var str = $("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])].innerHTML;
+            //     str = str + "<span><img src='pictures/leave.png' class='leaveIcon'></span>";
+            //     //update the str in the div
+            //     $("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])].innerHTML = str;
         
-                // $(".claimIcon")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
+            //     // $(".claimIcon")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
+            // }
+
+
+            if ($(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])]) {
+                $(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])].classList.add("leftRoom");
+            }
+        }
+        else{
+            if ($(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])]) {
+                $(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])].classList.remove("leftRoom");
             }
         }
     }
