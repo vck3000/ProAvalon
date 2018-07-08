@@ -1,0 +1,77 @@
+<li>
+    <input type="checkbox" name="option_print_gameplay_text" id="option_print_gameplay_text" checked>
+    <label for="option_print_gameplay_text">Print gameplay text</label>	
+</li>
+
+<!-- <li>
+    <input type="checkbox" name="option_highlight_player_chat" id="option_highlight_player_chat" checked>
+    <label for="option_highlight_player_chat">Highlight player chat (inop.)</label>
+</li>
+
+<li>
+    <input type="checkbox" name="option_highlight_player_avatar" id="option_highlight_player_avatar" checked>
+    <label for="option_highlight_player_avatar">Highlight player avatar (inop.)</label>
+</li> -->
+<li>
+    <input type="checkbox" name="option_font_size" id="option_font_size" checked>
+    <label for="option_font_size">Font size: </label>
+    <!--<span class="fontButton"> - </span>-->
+    <input type="text" name="option_font_size_text" id="option_font_size_text" style="width: 3em;">
+    <!--<span class="fontButton"> + </span>-->
+</li>
+
+<li>
+    <input type="checkbox" name="option_avatar_container_height" id="option_avatar_container_height" checked>
+    <label for="option_avatar_container_height">Height of avatar area: </label>
+    <input type="text" name="option_avatar_container_height_text" id="option_avatar_container_height_text" style="width: 3em;">
+</li>
+
+<li>
+    <input type="checkbox" name="option_dark_theme" id="option_dark_theme">
+    <label for="option_dark_theme">Dark theme</label>
+</li>
+
+<li>
+    <input type="checkbox" name="option_two_tabs" id="option_two_tabs">
+    <label for="option_two_tabs">Two tabs in game room</label>
+</li>
+
+<li>
+    <button class="btn btn-default" onclick="resetCookies()">Reset all settings</button>
+
+    <script src="/libraries/cookies_min.js"></script>
+    <script>
+        function resetCookies(){
+            swal({
+                title: "Do you really want to reset your settings?",
+                text: "Settings such as height of gameplay area, dark mode, colour will be reset. You will not be able to recover your settings!",
+                icon: "warning",
+                buttons: ["Cancel", "Delete"],
+                dangerMode: true,
+                })
+                .then((willDelete) => {
+                if (willDelete) {
+                    
+                    //get all the keys
+                    var keys = docCookies.keys();
+
+                    //remove each item
+                    for(var i = 0; i < keys.length; i++){
+                        docCookies.removeItem(keys[i]);
+                    }
+
+                    swal("Poof! Your settings have been reset!", {
+                    icon: "success",
+                    }).then(() =>{
+                        //reload
+                        location.reload();
+                    });
+
+                    
+                } else {
+                    swal("Your settings are safe!");
+                }
+            });
+        }
+    </script>
+</li>
