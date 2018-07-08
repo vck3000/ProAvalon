@@ -655,12 +655,15 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     var target = $(e.target).attr("href") // activated tab
     // console.log(target);
 
-    if (target === "#all-chat-in-game") {
+    if (target === "#all-chat-in-game" || target === "#all-chat-in-game2") {
         $(".nav-tabs #all-chat-in-game-tab").removeClass("newMessage")
     }
-    else if (target === "#room-chat-in-game") {
+    else if (target === "#room-chat-in-game" || target === "#room-chat-in-game2") {
         $(".nav-tabs #room-chat-in-game-tab").removeClass("newMessage")
     }
+
+    console.log("change tab " + target);
+
 });
 
 socket.on("update-current-players-list", function (currentPlayers) {
@@ -1871,6 +1874,20 @@ function scrollDown(chatBox) {
     //if the user is scrolled away
 
     var heightOfLastMessage = listBox.children().last().height();
+
+    var lastMessages = listBox.children();
+    var lastMessage = lastMessages[lastMessages.length-1];
+
+    var i = lastMessages.length-1 - 1;
+    while(lastMessage.classList.contains("myQuote")){
+        lastMessage = lastMessages[i];
+        i--;
+    }
+
+    heightOfLastMessage = ((lastMessages.length-1) - i)*20;
+
+    console.log("Height: " + heightOfLastMessage);
+
 
     if((listBox.height() - scrollBox.scrollTop() - scrollBox.height()) > 5 + heightOfLastMessage){
         //Show user that there is a new message with the red bar.
