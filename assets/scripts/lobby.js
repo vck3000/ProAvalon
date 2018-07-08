@@ -2040,7 +2040,7 @@ function drawVoteHistory(data) {
     str += "<tr><td></td>";
 
     for (var i = 0; i < data.missionNum; i++) {
-        str += "<td class='' style='width: 11em;' colspan='' id='missionHeader" + (i + 1) + "'>Mission " + (i + 1) + "</td>";
+        str += "<td style='width: 11em;' colspan='' class='missionHeader" + (i + 1) + "'>Mission " + (i + 1) + "</td>";
     }
     str += "</tr>";
 
@@ -2085,7 +2085,7 @@ function drawVoteHistory(data) {
                 numOfPicksPerMission[i]++;
             }
         }
-        str += "</tr>";
+        str += "</tr>"; 
     }
 
     $(".voteHistoryTableClass")[0].innerHTML = str;
@@ -2093,8 +2093,12 @@ function drawVoteHistory(data) {
 
     //set the right colspans for the mission headers
     for (var i = 0; i < numOfPicksPerMission.length; i++) {
-        var id = "#missionHeader" + (i + 1);
+        var id = ".missionHeader" + (i + 1);
+
+        var allHeaders = $(id);
+    
         $(id).attr("colspan", numOfPicksPerMission[i]);
+    
     }
 
     
