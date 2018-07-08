@@ -826,12 +826,12 @@ var ding;
 socket.on("update-room-players", function (data) {
 
     //if an extra person joins, play the chime
-    if(roomPlayersData && roomPlayersData.length < data.playersJoined.length){
+    if(roomPlayersData && roomPlayersData.length < data.playersJoined.length && data.playersJoined.length > 1){
         if(!ding){
             ding =  new Audio('sounds/ding.wav');
         }
         console.log("ding");
-        ding.play();
+        // ding.play();
     }
 
     // var x = $("#typehead").parent().width();    
@@ -2293,6 +2293,7 @@ function updateTwoTabs(checked){
     if(checked === true){
         $("#tabs1").addClass("col-xs-6");
         $("#tabs2").removeClass("displayNoneClass");
+
     }
     else{
         $("#tabs1").removeClass("col-xs-6");

@@ -21,7 +21,6 @@ To-do list:
 
 -server text is gone??
 
--yellow highlight buttons should disappear when its viewed in 2nd tab.
 
 
 
@@ -189,6 +188,7 @@ Mine:
 
 -full stop after m1 has succeeded
 -right side tabs VH is fked
+-yellow highlight buttons should disappear when its viewed in 2nd tab.
 
 
 
