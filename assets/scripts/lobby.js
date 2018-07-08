@@ -65,6 +65,7 @@ $(document).ready(function() {
             docCookies.setItem('player' + i + "HighlightColour", defaultColours[i]);
         }
         $("#player" + i + "HighlightColour")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));
+        $("#player" + i + "HighlightColour2")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));
     }
 });
 
@@ -75,6 +76,12 @@ function update(picker){
     // console.log(picker.col);
 
     docCookies.setItem('player' + picker.playerColourID + "HighlightColour", picker.col);
+
+    for(var i = 0; i < 10; i++){
+        $("#player" + i + "HighlightColour")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));
+        $("#player" + i + "HighlightColour2")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));  
+    }
+    
 
     //refresh the chat highlight colour at the same time
 
@@ -101,6 +108,29 @@ function update(picker){
 //COOKIE SETUP!!!!!! Simple cookies for user options to persist
 //=======================================================================
 var userOptions = {
+    optionTwoTabs: {
+        defaultValue: "false",
+        onLoad: function(){
+            if (docCookies.getItem("optionTwoTabs") === "true") {
+                
+                
+                updateTwoTabs(true);
+                //show its checked on their screen
+                $("#option_two_tabs")[0].checked = true;
+            }
+        },
+        initialiseEventListener: function(){
+            $("#option_two_tabs")[0].addEventListener("click", function () {
+                var checked = $("#option_two_tabs")[0].checked;
+                //dark theme
+                updateTwoTabs(checked);
+
+                //save their option in cookie
+                docCookies.setItem("optionTwoTabs", checked.toString());
+            });
+        }
+    },
+
     optionDarkTheme: {
         defaultValue: "false",
         onLoad: function () {
@@ -1182,7 +1212,7 @@ function activateAvatarButtons() {
 
             if (selectedChat[username] === true) {
                 selectedChat[username] = false;
-                chatItems.css("background-color", "white");
+                chatItems.css("background-color", "transparent");
             }
             else {
                 console.log("set true");
@@ -2098,19 +2128,15 @@ var tempVar = 0;
 function extendTabContentToBottomInRoom() {
     //extending the tab content to the bottom of the page:
     var gameContainer = $(".game-container")[0];
+    var tabNumber = $("#tabs1");
     var tabContainer = $(".tab-content");
+    var navTabs = $(".nav-tabs");
 
-    // console.log("gameContainer: " + gameContainer.offsetHeight);
-    // console.log("tabContainer: " + tabContainer.position().top);
-    // var offsetTop = tabContainer.offsetTop;
-    var newHeight2 = Math.floor(gameContainer.offsetHeight - tabContainer.position().top);
-    // console.log("gamecontainerheight: " + gameContainer.offsetHeight);
-    // console.log("tabcontainertoppos: " + tabContainer.offsetTop);
-    // console.log("New height 2: " + newHeight2);
-    tabContainer[0].style.height = Math.floor((newHeight2 * 1.2) - tempVar) + "px";
+    var newHeight2 = Math.floor(gameContainer.offsetHeight - tabNumber.position().top);
+    tabNumber[0].style.height = Math.floor((newHeight2 * 1.2) - tempVar) + "px";
 
+    tabContainer.height(Math.floor(newHeight2 - navTabs.height()) + "px");
 }
-
 
 
 var commands;
@@ -2201,6 +2227,17 @@ function updateDarkTheme(checked) {
         $("textarea").removeClass("dark");
         $(".btn-default").removeClass("btn-inverse");
         $(".navbar").removeClass("navbar-inverse");
+    }
+}
+
+function updateTwoTabs(checked){
+    if(checked === true){
+        $("#tabs1").addClass("col-xs-6");
+        $("#tabs2").removeClass("displayNoneClass");
+    }
+    else{
+        $("#tabs1").removeClass("col-xs-6");
+        $("#tabs2").addClass("displayNoneClass");
     }
 }
 

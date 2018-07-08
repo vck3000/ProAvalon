@@ -132,6 +132,11 @@
 								</li>
 
 								<li>
+									<input type="checkbox" name="option_two_tabs" id="option_two_tabs">
+									<label for="option_two_tabs">Two tabs in game room</label>
+								</li>
+
+								<li>
 									<button class="btn btn-default" onclick="resetCookies()">Reset all settings</button>
 
 									<script src="/libraries/cookies_min.js"></script>
@@ -228,51 +233,5 @@
 </style>
 
 <script type="text/javascript">
-
-/*
-	function fixHeaderHeight(){
-		var navBar = $("#navBarContainerId");
-
-		var navBarHeight = navBar.height();
-
-		navBar.width((navBar.parent().width() - 50) + "px");
-
-		if(navBarHeight === 100){
-			
-			//break out if we loop too many times.
-			var count = 0;
-
-			while(navBarHeight === 100 && count < 100){
-				console.log("height: " + navBarHeight);
-				var currentWidth = navBar.width();
-
-				var newWidth = currentWidth + 30;
-				var str = newWidth + 'px';
-				navBar.width(str);
-
-				navBarHeight = $("#navBarContainerId").height();
-				count = count + 1;
-
-				console.log("current width: " + currentWidth);
-				console.log("new width: " + newWidth);
-				console.log("height: " + navBarHeight);
-			}
-		}
-	}
-
-	fixHeaderHeight();
-
-	//window resize, repaint the users
-	window.addEventListener('resize', function () {
-		
-	//fix header height after 0.5s
-		setTimeout(function(){
-			fixHeaderHeight();
-		}, 500);
-	
-	});
-
-*/
-	
 
 </script>
