@@ -810,6 +810,23 @@ socket.on("game-starting", function (roles) {
 
 });
 
+socket.on("spec-game-starting", function(data){
+    swal({
+        title:"A game is starting!",
+        text: "You cannot join the game unless someone is not ready.",
+        icon: "info"
+    });
+
+    // document.querySelector("#green-button").classList.contains("disabled")
+
+    $("#green-button").addClass("disabled");
+});
+
+socket.on("spec-game-starting-finished", function(data){
+    $("#green-button").removeClass("disabled");
+});
+
+
 socket.on("game-data", function (data) {
     // console.log("GAME DATA INC");   
     if (data) {

@@ -729,6 +729,11 @@ module.exports = function (host_, roomId_, io_) {
 		this.playersYetToReady.splice(index, 1);
 
 		if (this.playersYetToReady.length === 0 && this.canJoin === false) {
+			//say to spectators that the ready/notready phase is over
+			for(var i = 0; i < this.socketsOfSpectators.length; i++){
+				this.socketsOfSpectators[i].emit("spec-game-starting-finished", null);
+			}
+
 			if (this.startGame(this.options) === true) {
 				return true;
 			}
@@ -744,6 +749,11 @@ module.exports = function (host_, roomId_, io_) {
 	this.playerNotReady = function (username) {
 		this.playersYetToReady = [];
 		this.canJoin = true;
+
+		for(var i = 0; i < this.socketsOfSpectators.length; i++){
+			this.socketsOfSpectators[i].emit("spec-game-starting-finished", null);
+		}
+
 		return username;
 	}
 
@@ -771,6 +781,9 @@ module.exports = function (host_, roomId_, io_) {
 
 			for (var i = 0; i < this.sockets.length; i++) {
 				this.sockets[i].emit("game-starting", rolesInStr);
+			}
+			for(var i = 0; i < this.socketsOfSpectators.length; i++){
+				this.socketsOfSpectators[i].emit("spec-game-starting", null);
 			}
 		}
 
