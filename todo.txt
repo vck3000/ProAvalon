@@ -14,11 +14,10 @@ To-do list:
 
 -disable slapping when in game
 
--bubblein dark mode canat see role
-
--specs cant see server text
 
 
+
+-bubblein dark mode cant see role
 
 -multiple tabs
 
@@ -26,9 +25,6 @@ To-do list:
 
 
 
-
--show spectators a display until players all accept so they know a game is about to start
--Let spectators still join if someone isnt ready after a round of ready/notready'same
 
 -Show a leave icon if a player isn't in the room after game started.
 
@@ -186,6 +182,13 @@ Mine:
 -invalid command is showing up in both allchat and gamechat
 -two spectators???
 -spectators duplicate when they leave and reenter
+-Let spectators still join if someone isnt ready after a round of ready/notready'same
+-show spectators a display until players all accept so they know a game is about to start
+
+-specs cant see server text
+
+
+
 
 
 Hak:

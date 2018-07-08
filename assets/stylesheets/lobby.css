@@ -722,6 +722,21 @@ textarea .dark {
     z-index: -999;
 }
 
+.leaveIcon{
+    position: absolute;
+
+    top: 0%;
+    right: 0%;
+
+    height: 30%;
+    max-height: 50px;
+
+    transform: translateX(30%) translateY(-50%);
+
+    z-index: -999;
+
+}
+
 
 
 

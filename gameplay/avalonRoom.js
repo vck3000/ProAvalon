@@ -647,6 +647,8 @@ module.exports = function (host_, roomId_, io_) {
 		data.gameplayMessage = this.gameplayMessage;
 
 		data.spectator = true;
+		data.gamePlayersInRoom = this.getUsernamesOfPlayersInRoom();
+		
 
 		//if game is finished, reveal everything including roles
 		if (this.phase === "finished") {
@@ -707,6 +709,7 @@ module.exports = function (host_, roomId_, io_) {
 				data[i].gameplayMessage = this.gameplayMessage;
 
 				data[i].spectator = false;
+				data[i].gamePlayersInRoom = this.getUsernamesOfPlayersInRoom();
 
 
 				//if game is finished, reveal everything including roles
@@ -1195,6 +1198,19 @@ module.exports = function (host_, roomId_, io_) {
 			return array;
 		}
 		else {
+			return [];
+		}
+	}
+
+	this.getUsernamesOfPlayersInRoom = function() {
+		if(this.gameStarted === true){
+			var array = [];
+			for(var i = 0; i < this.playersInRoom.length; i++){
+				array.push(this.playersInRoom[i].request.user.username);
+			}
+			return array;
+		}
+		else{
 			return [];
 		}
 	}

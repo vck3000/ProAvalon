@@ -554,6 +554,9 @@ function removePlayerFromRoomAndCheckDestroy(socket, io) {
 		else {
 			//update the room players
 			updateRoomPlayers(io, socket);
+
+			//also update gamedata for all players
+			distributeGameData(socket, io);
 		}
 	}
 }

@@ -976,9 +976,9 @@ function draw() {
         drawClaimingPlayers(roomPlayersData.claimingPlayers);
 
         
-
-
         if (gameStarted === true) {
+            drawExitedPlayers(gameData.gamePlayersInRoom);
+
             //default greyed out rn
             enableDisableButtons();
 
@@ -1447,8 +1447,6 @@ function drawTeamLeaderStar() {
 
 function drawClaimingPlayers(claimingPlayers){
 
-    roomPlayersData
-
     for(var i = 0; i < roomPlayersData.length; i++){
         if(roomPlayersData[i].claim && roomPlayersData[i].claim === true){
             if ($("#mainRoomBox div")[getIndexFromUsername(roomPlayersData[i].username)]) {
@@ -1462,27 +1460,33 @@ function drawClaimingPlayers(claimingPlayers){
         }
     }
 
-    // for (var username in claimingPlayers) {
-    //     if (claimingPlayers.hasOwnProperty(username)) {
-    //         if ($("#mainRoomBox div")[getIndexFromUsername(username)]) {
-    //             var str = $("#mainRoomBox div")[getIndexFromUsername(username)].innerHTML;
-    //             str = str + "<span><img src='pictures/claim.png' class='claimIcon'></span>";
-    //             //update the str in the div
-    //             $("#mainRoomBox div")[getIndexFromUsername(username)].innerHTML = str;
+}
+
+function drawExitedPlayers(playersStillInRoom){
+
+    var arrayOfUsernames = []
+    for(var i = 0; i < roomPlayersData.length; i++){
+        arrayOfUsernames.push(roomPlayersData[i].username);
+    }
+
+
+    for(var i = 0; i < arrayOfUsernames.length; i++){
+        // if(roomPlayersData[i].claim && roomPlayersData[i].claim === true){
+        if(playersStillInRoom.indexOf(arrayOfUsernames[i]) === -1){
+
+            // var j = playersStillInRoom.indexOf(arrayOfUsernames[i]);
+
+            if ($("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])]) {
+                var str = $("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])].innerHTML;
+                str = str + "<span><img src='pictures/leave.png' class='leaveIcon'></span>";
+                //update the str in the div
+                $("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])].innerHTML = str;
         
-    //             // $(".claimIcon")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
-    //         }
-    //     }
-    // }
+                // $(".claimIcon")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
+            }
+        }
+    }
 
-    // if ($("#mainRoomBox div")[playerIndex]) {
-    //     var str = $("#mainRoomBox div")[playerIndex].innerHTML;
-    //     str = str + "<span><img src='pictures/leader.png' class='leaderStar'></span>";
-    //     //update the str in the div
-    //     $("#mainRoomBox div")[playerIndex].innerHTML = str;
-
-    //     $(".leaderStar")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
-    // }
 }
 
 function enableDisableButtonsLeader(numPlayersOnMission) {
