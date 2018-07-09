@@ -213,6 +213,8 @@
 		border-radius: 15px;
 		border: 1px dashed gray;
 		padding-left: 15px;
+
+		margin-bottom: 10px;
 	}
 
 	#rightOptionsMenu {
@@ -313,7 +315,13 @@
 									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Enabled </label>
 								</div>
 								<div>
-									<label>Volume: <input type="range" min=0 max=100 name="option_dark_theme" id="option_dark_theme"></label>
+									<label style="display: inline-flex">
+										Volume:
+										<span style="padding-left: 15px;"></span>
+										<input type="range" min=0 max=100 value=100 name="option_notifications_volume" id="option_notifications_volume">
+										<span style="padding-left: 15px;"></span>
+										<span id="volumeValue">100</span>
+									</label>
 								</div>
 								<div>
 									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Players joining room </label>
@@ -339,35 +347,36 @@
 							</div>
 
 
-
-							<h5><u>Desktop notifications: </u></h5>
-							<div>
-								<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Enabled </label>
-							</div>
-							<div>
-								<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Players joining room </label>
-							</div>
-							<div>
-								<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Players joining game </label>
-							</div>
-							<div>
-								<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Game starting </label>
-							</div>
-
-
-							<div>
-								<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Enabled during game </label>
-							</div>
-							<div>
-								<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Your turn and not viewing the window </label>
-							</div>
-							<div>
-								<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Game finishes and not viewing the window </label>
-							</div>
+							<div class="subBox">
+								<h5><u>Desktop notifications: </u></h5>
+								<div>
+									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Enabled </label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Players joining room </label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Players joining game </label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Game starting </label>
+								</div>
 
 
-							<div>
-								<label><input type="text" name="option_dark_theme" id="option_dark_theme" style="width: 3em;"> Seconds before you can be buzzed again</label>
+								<div>
+									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Enabled during game </label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Your turn and not viewing the window </label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Game finishes and not viewing the window </label>
+								</div>
+
+
+								<div>
+									<label><input type="text" name="option_dark_theme" id="option_dark_theme" style="width: 3em;"> Seconds before you can be buzzed again</label>
+								</div>
 							</div>
 						</div>
 
@@ -471,5 +480,12 @@ var a;
 		} 
 	}
 
+
+	var volumeSlider = document.getElementById("option_notifications_volume");
+	var volumeDisplay = $("#volumeValue");
+
+	volumeSlider.oninput = function(){
+		volumeDisplay[0].innerHTML = volumeSlider.value;
+	};
 
 </script>
