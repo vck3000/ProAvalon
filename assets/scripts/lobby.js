@@ -50,16 +50,16 @@ $('.navbar-collapse').on('hidden.bs.collapse', function () {
 });
 
 var defaultColours = [
-    '#FF0000', 
-    '#FFFF00',
-    '#808000', 
-    '#00FF00',
-    '#008000',
-    '#00FFFF',
-    '#008080',
-    '#0000FF',
-    '#800080',
-    '#FF00FF'
+    '#ff6d6d', 
+    '#ffff9e',
+    "#c5b5ff",
+    "#ff9b9b",
+    '#9aa888', 
+    '#96ff96',
+    '##72afac',
+    '#a8d6ff',
+    '#9999ff',
+    '#ff93ff'
 ]
 
 //When document has loaded, reinit the jscolor
