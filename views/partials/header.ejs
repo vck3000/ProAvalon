@@ -205,6 +205,9 @@
 		
 	}
 
+	.dark .myActive {
+		background-color: #5b5b5b !important;
+	}
 	.myActive {
 		background: #ABABAB;
 	}
@@ -411,6 +414,8 @@
 											for(var i = 0; i < keys.length; i++){
 												docCookies.removeItem(keys[i]);
 											}
+
+											docCookies.setItem("lastSettingsResetDate", new Date());
 						
 											swal("Poof! Your settings have been reset!", {
 											icon: "success",

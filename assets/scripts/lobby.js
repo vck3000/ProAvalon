@@ -5,6 +5,12 @@ var socket = io({ transports: ['websocket'], upgrade: false });
 var ownUsername = $("#originalUsername")[0].innerText;
 
 
+
+
+
+
+
+
 //Prevents the window height from changing when android keyboard is pulled up.
 setTimeout(function () {
     let viewheight = $(window).height();
@@ -44,16 +50,16 @@ $('.navbar-collapse').on('hidden.bs.collapse', function () {
 });
 
 var defaultColours = [
-    'FF0000', 
-    'FFFF00',
-    '808000', 
-    '00FF00',
-    '008000',
-    '00FFFF',
-    '008080',
-    '0000FF',
-    '800080',
-    'FF00FF'
+    '#FF0000', 
+    '#FFFF00',
+    '#808000', 
+    '#00FF00',
+    '#008000',
+    '#00FFFF',
+    '#008080',
+    '#0000FF',
+    '#800080',
+    '#FF00FF'
 ]
 
 //When document has loaded, reinit the jscolor
@@ -94,7 +100,7 @@ function update(picker){
         var chatItems = $(".room-chat-list li span[username='" + username + "']");
         var playerHighlightColour = docCookies.getItem("player" + getIndexFromUsername(username) + "HighlightColour");
 
-        chatItems.css("background-color", "#" + playerHighlightColour);
+        chatItems.css("background-color", "" + playerHighlightColour);
     }
 
     draw();
@@ -345,7 +351,7 @@ var userOptions = {
 
             volumeDisplay[0].innerHTML = volumeSlider.value;
 
-            
+
         
             volumeSlider.oninput = function(){
                 volumeDisplay[0].innerHTML = volumeSlider.value;
@@ -933,7 +939,58 @@ socket.on("roomChatToClient", function (data) {
 socket.on('disconnect', function(){
     window.location= "/";
     alert("You have been disconnected!");
-})
+});
+
+socket.on('checkSettingsResetDate', function(serverResetDate){
+    serverResetDate = new Date(serverResetDate);
+    console.log("check reset date");
+
+    console.log(docCookies.hasItem("lastSettingsResetDate"));
+
+    //check if we need to reset settings
+    if(docCookies.hasItem("lastSettingsResetDate")){
+        var lastDate = new Date(docCookies.getItem("lastSettingsResetDate"));
+
+        console.log(serverResetDate);
+        console.log(lastDate);
+
+        console.log(serverResetDate > lastDate);
+
+        if(serverResetDate > lastDate){
+            resetSettings();
+        }
+    }
+    else{
+        resetSettings();
+    }
+
+    
+});
+
+
+function resetSettings(){
+    swal({
+        title: "New updates!",
+        text: "Due to some new updates, a reset of your personal settings is required. I apologise for the inconvenience caused :(.",
+        icon: "warning"
+    }).then(() =>{
+        //get all the keys
+        var keys = docCookies.keys();
+                                    
+        //remove each item
+        for(var i = 0; i < keys.length; i++){
+            docCookies.removeItem(keys[i]);
+        }
+
+        swal("Poof! Your settings have been reset!", {
+        icon: "success",
+        }).then(() =>{
+            //reload
+            docCookies.setItem("lastSettingsResetDate", new Date());
+            location.reload();
+        });
+    });
+}
 
 
 
@@ -1024,7 +1081,7 @@ function addToRoomChat(data) {
                     }
                     //its a user's chat so put some other stuff on it
                     else {
-                        str = "<li><span style='background-color: #" + highlightChatColour + "' username='" + data[i].username + "'><span class='date-text'> " + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + filteredMessage + "</span></li>";
+                        str = "<li><span style='background-color: " + highlightChatColour + "' username='" + data[i].username + "'><span class='date-text'> " + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + filteredMessage + "</span></li>";
                     }
 
                     $(".room-chat-list").append(str);
@@ -1664,7 +1721,7 @@ function activateAvatarButtons() {
             else {
                 console.log("set true");
                 selectedChat[username] = true;
-                chatItems.css("background-color", "#" + playerHighlightColour);
+                chatItems.css("background-color", "" + playerHighlightColour);
             }
             draw();
         });

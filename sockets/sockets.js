@@ -1,6 +1,7 @@
 //sockets
 var avalonRoom = require("../gameplay/avalonRoom");
 
+const dateResetRequired = 1531125110385;
 
 var currentPlayersUsernames = [];
 var allSockets = [];
@@ -122,7 +123,6 @@ module.exports = function (io) {
 			socket.emit("alert", "You are not authenticated.");
 			return;
 		}
-
 		//if user is already logged in, destroy their last session
 		//compare the new username that is lowercased to the list of current usernames lowercased
 		var loweredCurrentPlayersUsernames = [];
@@ -167,6 +167,9 @@ module.exports = function (io) {
 		socket.emit("username", socket.request.user.username);
 		//send the user the list of commands
 		socket.emit("commands", userCommands);
+
+		socket.emit("checkSettingsResetDate", dateResetRequired);
+		
 
 		//=======================================
 		//COMMANDS

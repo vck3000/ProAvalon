@@ -492,7 +492,16 @@ p {
     /*border: 3px solid green !important;*/
     background-color: #d6ffd8 !important;
 }
+.dark .btn-mine.active {
+    /*border: 3px solid green !important;*/
+    background-color: #3fff3873 !important;
+}
 
+.dark .btn-mine {
+    color: black;
+    border: 1px solid white;
+    background: black;
+}
 .btn-mine {
     border: 3px solid black;
     border-radius: 10px !important;
