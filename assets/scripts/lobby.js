@@ -108,72 +108,23 @@ function update(picker){
 //COOKIE SETUP!!!!!! Simple cookies for user options to persist
 //=======================================================================
 var userOptions = {
-    optionTwoTabs: {
-        defaultValue: "false",
-        onLoad: function(){
-            if (docCookies.getItem("optionTwoTabs") === "true") {
-                
-                
-                updateTwoTabs(true);
-                //show its checked on their screen
-                $("#option_two_tabs")[0].checked = true;
-            }
-        },
-        initialiseEventListener: function(){
-            $("#option_two_tabs")[0].addEventListener("click", function () {
-                var checked = $("#option_two_tabs")[0].checked;
-                //dark theme
-                updateTwoTabs(checked);
 
-                //save their option in cookie
-                docCookies.setItem("optionTwoTabs", checked.toString());
-            });
-        }
-    },
-
-    optionDarkTheme: {
-        defaultValue: "false",
-        onLoad: function () {
-            if (docCookies.getItem("optionDarkTheme") === "true") {
-                console.log("Load up dark theme is true");
-                //update the dark theme if cookie data is true
-                updateDarkTheme(true);
-                //show its checked on their screen
-                $("#option_dark_theme")[0].checked = true;
-            }
-        },
-        initialiseEventListener: function () {
-            //dark theme option checkbox event listener
-            $("#option_dark_theme")[0].addEventListener("click", function () {
-                var checked = $("#option_dark_theme")[0].checked;
-                console.log("dark theme change " + checked);
-                //dark theme
-                updateDarkTheme(checked);
-
-                //save their option in cookie
-                docCookies.setItem("optionDarkTheme", checked.toString());
-            });
-        }
-    },
-
-    optionFontSize: {
+    optionGeneralFontSize: {
         defaultValue: "14",
         onLoad: function () {
-            if ($("#option_font_size")[0].checked === true) {
-                //get cookie data
-                var fontSize = docCookies.getItem("optionFontSize");
+            //get cookie data
+            var fontSize = docCookies.getItem("optionGeneralFontSize");
 
-                //set the value in the users display
-                $("#option_font_size_text")[0].value = fontSize;
+            //set the value in the users display
+            $("#option_general_font_size_text")[0].value = fontSize;
 
-                //make the font size changes
-                $("html *").css("font-size", fontSize + "px");
-                draw();
-            }
+            //make the font size changes
+            $("html *").css("font-size", fontSize + "px");
+            draw();
         },
         initialiseEventListener: function () {
-            $("#option_font_size_text").on("change", function () {
-                var fontSize = $("#option_font_size_text")[0].value;
+            $("#option_general_font_size_text").on("change", function () {
+                var fontSize = $("#option_general_font_size_text")[0].value;
                 console.log(fontSize);
 
                 //assign bounds
@@ -189,7 +140,7 @@ var userOptions = {
                 }
 
                 //display the new value in case it was changed by bounds
-                $("#option_font_size_text")[0].value = fontSize;
+                $("#option_general_font_size_text")[0].value = fontSize;
 
                 //make the changes to font size
                 $("html *").css("font-size", fontSize + "px");
@@ -197,26 +148,26 @@ var userOptions = {
 
                 //save the data in cookie
                 console.log("Stored font size: " + fontSize);
-                docCookies.setItem("optionFontSize", fontSize);
+                docCookies.setItem("optionGeneralFontSize", fontSize);
             });
         }
     },
 
-    optionHeightOfAvatarContainer: {
+    optionDisplayHeightOfAvatarContainer: {
         defaultValue: $("#div1Resize").parent().height()*0.4,
         onLoad: function () {
             //get cookie data
-            var containerHeight = docCookies.getItem("optionHeightOfAvatarContainer");
+            var containerHeight = docCookies.getItem("optionDisplayHeightOfAvatarContainer");
 
             containerHeight = parseInt(containerHeight);
 
             //set the height of div 1
             $("#div1Resize").height(containerHeight);
             //Note the following function only adjusts the 2nd div (the div below)
-            userOptions["optionHeightOfAvatarContainer"].avatarContainerHeightAdjust();
+            userOptions["optionDisplayHeightOfAvatarContainer"].avatarContainerHeightAdjust();
 
             //set the value in the users display
-            $("#option_avatar_container_height_text")[0].value = containerHeight;
+            $("#option_display_avatar_container_height_text")[0].value = containerHeight;
         },
         initialiseEventListener: function () {
 
@@ -226,24 +177,24 @@ var userOptions = {
             //on resize of div 1, resize div 2.
             $('#div1Resize').resize(function () {
                 //Make the height adjustments
-                userOptions["optionHeightOfAvatarContainer"].avatarContainerHeightAdjust();
+                userOptions["optionDisplayHeightOfAvatarContainer"].avatarContainerHeightAdjust();
                 //save the new heights
-                docCookies.setItem("optionHeightOfAvatarContainer", $("#div1Resize").height());
+                docCookies.setItem("optionDisplayHeightOfAvatarContainer", $("#div1Resize").height());
             });
             //on whole window resize, resize both divs.
             $(window).resize(function () {
                 $('#div1Resize').width($("#div2Resize").parent().width());
 
                 //save the new heights
-                docCookies.setItem("optionHeightOfAvatarContainer", $("#div1Resize").height());
+                docCookies.setItem("optionDisplayHeightOfAvatarContainer", $("#div1Resize").height());
                 //Make the height adjustments
-                userOptions["optionHeightOfAvatarContainer"].avatarContainerHeightAdjust();
+                userOptions["optionDisplayHeightOfAvatarContainer"].avatarContainerHeightAdjust();
                 
             });
 
 
-            $("#option_avatar_container_height_text").on("change", function () {
-                var containerHeight = $("#option_avatar_container_height_text")[0].value;
+            $("#option_display_avatar_container_height_text").on("change", function () {
+                var containerHeight = $("#option_display_avatar_container_height_text")[0].value;
                 console.log(containerHeight);
 
                 //assign bounds
@@ -262,10 +213,10 @@ var userOptions = {
                 $("#div1Resize").height(containerHeight);
 
                 //save the new heights
-                docCookies.setItem("optionHeightOfAvatarContainer", containerHeight);
+                docCookies.setItem("optionDisplayHeightOfAvatarContainer", containerHeight);
 
                 //Make the height adjustments to div 2
-                userOptions["optionHeightOfAvatarContainer"].avatarContainerHeightAdjust();
+                userOptions["optionDisplayHeightOfAvatarContainer"].avatarContainerHeightAdjust();
                 
             });
         },
@@ -278,12 +229,64 @@ var userOptions = {
             draw();
 
             //get cookie data
-            var containerHeight = docCookies.getItem("optionHeightOfAvatarContainer");
+            var containerHeight = docCookies.getItem("optionDisplayHeightOfAvatarContainer");
 
             //set the value in the users display
-            $("#option_avatar_container_height_text")[0].value = containerHeight;
+            $("#option_display_avatar_container_height_text")[0].value = containerHeight;
         }
-    }
+    },
+
+    optionDisplayDarkTheme: {
+        defaultValue: "false",
+        onLoad: function () {
+            if (docCookies.getItem("optionDisplayDarkTheme") === "true") {
+                console.log("Load up dark theme is true");
+                //update the dark theme if cookie data is true
+                updateDarkTheme(true);
+                //show its checked on their screen
+                $("#option_display_dark_theme")[0].checked = true;
+            }
+        },
+        initialiseEventListener: function () {
+            //dark theme option checkbox event listener
+            $("#option_display_dark_theme")[0].addEventListener("click", function () {
+                var checked = $("#option_display_dark_theme")[0].checked;
+                console.log("dark theme change " + checked);
+                //dark theme
+                updateDarkTheme(checked);
+
+                //save their option in cookie
+                docCookies.setItem("optionDisplayDarkTheme", checked.toString());
+            });
+        }
+    },
+
+    optionDisplayTwoTabs: {
+        defaultValue: "false",
+        onLoad: function(){
+            if (docCookies.getItem("optionDisplayTwoTabs") === "true") {
+                
+                
+                updateTwoTabs(true);
+                //show its checked on their screen
+                $("#option_display_two_tabs")[0].checked = true;
+            }
+        },
+        initialiseEventListener: function(){
+            $("#option_display_two_tabs")[0].addEventListener("click", function () {
+                var checked = $("#option_display_two_tabs")[0].checked;
+                //dark theme
+                updateTwoTabs(checked);
+
+                //save their option in cookie
+                docCookies.setItem("optionDisplayTwoTabs", checked.toString());
+            });
+        }
+    },
+
+    
+
+    
 }
 
 //run through each userOption load and initialiseEventListener

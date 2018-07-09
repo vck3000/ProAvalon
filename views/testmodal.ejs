@@ -295,6 +295,11 @@
 							<div>
 								<label>Game finishes and not viewing the window: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
 							</div>
+
+
+							<div>
+								<label>Seconds before you can be buzzed again: <input type="text" name="option_dark_theme" id="option_dark_theme" style="width: 3em;"></label>
+							</div>
 						</div>
 
 
@@ -418,7 +423,7 @@ var a;
 			var title = "The game is starting!";
 			var options = {
 				body:"Are you ready?",
-				icon: "/avatars/base-res.png"
+				image:"/avatars/base-res.png"
 			}
 
 			var test = new Notification(title, options);
