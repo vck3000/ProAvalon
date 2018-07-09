@@ -68,7 +68,7 @@ $(document).ready(function() {
 
     for(var i = 0; i < 10; i++){
         if(!docCookies.hasItem('player' + i + "HighlightColour")){
-            docCookies.setItem('player' + i + "HighlightColour", defaultColours[i]);
+            docCookies.setItem('player' + i + "HighlightColour", defaultColours[i], Infinity);
         }
         $("#player" + i + "HighlightColour")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));
         $("#player" + i + "HighlightColour2")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));
@@ -81,7 +81,7 @@ function update(picker){
     // console.log(picker.playerColourID);
     // console.log(picker.col);
 
-    docCookies.setItem('player' + picker.playerColourID + "HighlightColour", picker.col);
+    docCookies.setItem('player' + picker.playerColourID + "HighlightColour", picker.col, Infinity);
 
     for(var i = 0; i < 10; i++){
         $("#player" + i + "HighlightColour")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));
@@ -154,7 +154,7 @@ var userOptions = {
 
                 //save the data in cookie
               // console.log("Stored font size: " + fontSize);
-                docCookies.setItem("optionGeneralFontSize", fontSize);
+                docCookies.setItem("optionGeneralFontSize", fontSize, Infinity);
             });
         }
     },
@@ -185,14 +185,14 @@ var userOptions = {
                 //Make the height adjustments
                 userOptions["optionDisplayHeightOfAvatarContainer"].avatarContainerHeightAdjust();
                 //save the new heights
-                docCookies.setItem("optionDisplayHeightOfAvatarContainer", $("#div1Resize").height());
+                docCookies.setItem("optionDisplayHeightOfAvatarContainer", $("#div1Resize").height(), Infinity);
             });
             //on whole window resize, resize both divs.
             $(window).resize(function () {
                 $('#div1Resize').width($("#div2Resize").parent().width());
 
                 //save the new heights
-                docCookies.setItem("optionDisplayHeightOfAvatarContainer", $("#div1Resize").height());
+                docCookies.setItem("optionDisplayHeightOfAvatarContainer", $("#div1Resize").height(), Infinity);
                 //Make the height adjustments
                 userOptions["optionDisplayHeightOfAvatarContainer"].avatarContainerHeightAdjust();
                 
@@ -219,7 +219,7 @@ var userOptions = {
                 $("#div1Resize").height(containerHeight);
 
                 //save the new heights
-                docCookies.setItem("optionDisplayHeightOfAvatarContainer", containerHeight);
+                docCookies.setItem("optionDisplayHeightOfAvatarContainer", containerHeight, Infinity);
 
                 //Make the height adjustments to div 2
                 userOptions["optionDisplayHeightOfAvatarContainer"].avatarContainerHeightAdjust();
@@ -262,7 +262,7 @@ var userOptions = {
                 updateDarkTheme(checked);
 
                 //save their option in cookie
-                docCookies.setItem("optionDisplayDarkTheme", checked.toString());
+                docCookies.setItem("optionDisplayDarkTheme", checked.toString(), Infinity);
             });
         }
     },
@@ -283,7 +283,7 @@ var userOptions = {
                 updateTwoTabs(checked);
 
                 //save their option in cookie
-                docCookies.setItem("optionDisplayTwoTabs", checked.toString());
+                docCookies.setItem("optionDisplayTwoTabs", checked.toString(), Infinity);
             });
         }
     },
@@ -309,7 +309,7 @@ var userOptions = {
             $("#option_notifications_sound_enable")[0].addEventListener("click", function () {
                 var checked = $("#option_notifications_sound_enable")[0].checked;
                 //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundEnable", checked.toString());
+                docCookies.setItem("optionNotificationsSoundEnable", checked.toString(), Infinity);
             });
         }
     },
@@ -331,7 +331,7 @@ var userOptions = {
             $("#option_notifications_sound_enable_in_game")[0].addEventListener("click", function () {
                 var checked = $("#option_notifications_sound_enable_in_game")[0].checked;
                 //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundEnableInGame", checked.toString());
+                docCookies.setItem("optionNotificationsSoundEnableInGame", checked.toString(), Infinity);
             });
         }
     },
@@ -361,7 +361,7 @@ var userOptions = {
             $("#option_notifications_sound_volume")[0].addEventListener("click", function () {
                 var valueToStore = $("#option_notifications_sound_volume")[0].value;
                 //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundVolume", valueToStore);
+                docCookies.setItem("optionNotificationsSoundVolume", valueToStore, Infinity);
             });
         }
     },
@@ -384,7 +384,7 @@ var userOptions = {
             $("#option_notifications_sound_players_joining_room")[0].addEventListener("click", function () {
                 var checked = $("#option_notifications_sound_players_joining_room")[0].checked;
                 //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundPlayersJoiningRoom", checked.toString());
+                docCookies.setItem("optionNotificationsSoundPlayersJoiningRoom", checked.toString(), Infinity);
             });
         }
     },
@@ -406,7 +406,7 @@ var userOptions = {
             $("#option_notifications_sound_players_joining_game")[0].addEventListener("click", function () {
                 var checked = $("#option_notifications_sound_players_joining_game")[0].checked;
                 //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundPlayersJoiningGame", checked.toString());
+                docCookies.setItem("optionNotificationsSoundPlayersJoiningGame", checked.toString(), Infinity);
             });
         }
     },
@@ -428,7 +428,7 @@ var userOptions = {
             $("#option_notifications_sound_game_starting")[0].addEventListener("click", function () {
                 var checked = $("#option_notifications_sound_game_starting")[0].checked;
                 //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundGameStarting", checked.toString());
+                docCookies.setItem("optionNotificationsSoundGameStarting", checked.toString(), Infinity);
             });
         }
     },
@@ -452,7 +452,7 @@ var userOptions = {
             $("#option_notifications_sound_your_turn")[0].addEventListener("click", function () {
                 var checked = $("#option_notifications_sound_your_turn")[0].checked;
                 //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundYourTurn", checked.toString());
+                docCookies.setItem("optionNotificationsSoundYourTurn", checked.toString(), Infinity);
             });
         }
     },
@@ -474,7 +474,7 @@ var userOptions = {
             $("#option_notifications_sound_game_ending")[0].addEventListener("click", function () {
                 var checked = $("#option_notifications_sound_game_ending")[0].checked;
                 //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundGameEnding", checked.toString());
+                docCookies.setItem("optionNotificationsSoundGameEnding", checked.toString(), Infinity);
             });
         }
     },
@@ -496,7 +496,7 @@ var userOptions = {
             $("#option_notifications_sound_buzz")[0].addEventListener("click", function () {
                 var checked = $("#option_notifications_sound_buzz")[0].checked;
                 //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundBuzz", checked.toString());
+                docCookies.setItem("optionNotificationsSoundBuzz", checked.toString(), Infinity);
             });
         }
     },
@@ -518,7 +518,7 @@ var userOptions = {
             $("#option_notifications_sound_slap")[0].addEventListener("click", function () {
                 var checked = $("#option_notifications_sound_slap")[0].checked;
                 //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundSlap", checked.toString());
+                docCookies.setItem("optionNotificationsSoundSlap", checked.toString(), Infinity);
             });
         }
     },
@@ -537,7 +537,7 @@ var userOptions = {
             $("#option_notifications_buzz_slap_timeout")[0].addEventListener("click", function () {
                 var valueToStore = $("#option_notifications_buzz_slap_timeout")[0].value;
                 //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundBuzzSlapTimeout", valueToStore);
+                docCookies.setItem("optionNotificationsSoundBuzzSlapTimeout", valueToStore, Infinity);
             });
         }
     },
@@ -562,7 +562,7 @@ var userOptions = {
             $("#option_notifications_desktop_enable")[0].addEventListener("click", function () {
                 var checked = $("#option_notifications_desktop_enable")[0].checked;
                 //save their option in cookie
-                docCookies.setItem("optionNotificationsDesktopEnable", checked.toString());
+                docCookies.setItem("optionNotificationsDesktopEnable", checked.toString(), Infinity);
             });
         }
     },
@@ -584,7 +584,7 @@ var userOptions = {
             $("#option_notifications_desktop_players_joining_room")[0].addEventListener("click", function () {
                 var checked = $("#option_notifications_desktop_players_joining_room")[0].checked;
                 //save their option in cookie
-                docCookies.setItem("optionNotificationsDesktopPlayersJoiningRoom", checked.toString());
+                docCookies.setItem("optionNotificationsDesktopPlayersJoiningRoom", checked.toString(), Infinity);
             });
         }
     },
@@ -606,7 +606,7 @@ var userOptions = {
             $("#option_notifications_desktop_players_joining_game")[0].addEventListener("click", function () {
                 var checked = $("#option_notifications_desktop_players_joining_game")[0].checked;
                 //save their option in cookie
-                docCookies.setItem("optionNotificationsDesktopPlayersJoiningGame", checked.toString());
+                docCookies.setItem("optionNotificationsDesktopPlayersJoiningGame", checked.toString(), Infinity);
             });
         }
     },
@@ -628,7 +628,7 @@ var userOptions = {
             $("#option_notifications_desktop_game_starting")[0].addEventListener("click", function () {
                 var checked = $("#option_notifications_desktop_game_starting")[0].checked;
                 //save their option in cookie
-                docCookies.setItem("optionNotificationsDesktopGameStarting", checked.toString());
+                docCookies.setItem("optionNotificationsDesktopGameStarting", checked.toString(), Infinity);
             });
         }
     },
@@ -650,7 +650,7 @@ var userOptions = {
             $("#option_notifications_desktop_your_turn")[0].addEventListener("click", function () {
                 var checked = $("#option_notifications_desktop_your_turn")[0].checked;
                 //save their option in cookie
-                docCookies.setItem("optionNotificationsDesktopYourTurn", checked.toString());
+                docCookies.setItem("optionNotificationsDesktopYourTurn", checked.toString(), Infinity);
             });
         }
     },
@@ -672,7 +672,7 @@ var userOptions = {
             $("#option_notifications_desktop_game_ending")[0].addEventListener("click", function () {
                 var checked = $("#option_notifications_desktop_game_ending")[0].checked;
                 //save their option in cookie
-                docCookies.setItem("optionNotificationsDesktopGameEnding", checked.toString());
+                docCookies.setItem("optionNotificationsDesktopGameEnding", checked.toString(), Infinity);
             });
         }
     },
@@ -694,7 +694,7 @@ var userOptions = {
             $("#option_notifications_desktop_buzz")[0].addEventListener("click", function () {
                 var checked = $("#option_notifications_desktop_buzz")[0].checked;
                 //save their option in cookie
-                docCookies.setItem("optionNotificationsDesktopBuzz", checked.toString());
+                docCookies.setItem("optionNotificationsDesktopBuzz", checked.toString(), Infinity);
             });
         }
     },
@@ -707,7 +707,7 @@ for (var keys in userOptions) {
     if (userOptions.hasOwnProperty(keys)) {
         //if the option doesnt exist, create default option
         if (docCookies.hasItem(keys) === false) {
-            docCookies.setItem(keys, userOptions[keys].defaultValue);
+            docCookies.setItem(keys, userOptions[keys].defaultValue, Infinity);
         }
 
         //run the load function for each option
@@ -978,12 +978,12 @@ function resetSettings(){
         for(var i = 0; i < keys.length; i++){
             docCookies.removeItem(keys[i]);
         }
+        docCookies.setItem("lastSettingsResetDate", new Date().toString(), Infinity);
 
         swal("Poof! Your settings have been reset!", {
         icon: "success",
         }).then(() =>{
             //reload
-            docCookies.setItem("lastSettingsResetDate", new Date());
             location.reload();
         });
     });
@@ -2914,4 +2914,41 @@ function playSound(soundToPlay){
         soundFiles[soundToPlay].volume = $("#option_notifications_sound_volume")[0].value / 100;
         soundFiles[soundToPlay].play();
     }
+}
+
+
+function displayNotification(title, body, icon, tag){
+
+    if(Notification.requestPermission === "granted" && $("#option_notifications_desktop_enable")[0].checked === true){
+        var options = {
+            body: body,
+            icon: icon,
+            tag: tag
+        }
+    
+        var notif = new Notification(title, options);
+    }
+
+}
+
+
+
+function testNotif(){
+		
+    if(Notification.permission !== "granted"){
+        Notification.requestPermission();
+    }
+
+    else {
+
+        var title = "The game is starting!";
+        var options = {
+            body:"Are you ready?",
+            image:"/avatars/base-res.png"
+        }
+
+        var test = new Notification(title, options);
+    }
+
+
 }

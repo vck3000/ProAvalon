@@ -365,6 +365,9 @@
 
 							<div class="subBox">
 								<h5><u>Desktop notifications: </u></h5>
+								<div class="btn btn-default btn-md" onclick="Notification.requestPermission();">
+									Request permissions
+								</div>
 								<div>
 									<label><input type="checkbox" name="option_notifications_desktop_enable" id="option_notifications_desktop_enable"> Enabled </label>
 								</div>
@@ -420,8 +423,7 @@
 												docCookies.removeItem(keys[i]);
 											}
 
-											docCookies.setItem("lastSettingsResetDate", new Date());
-						
+											docCookies.setItem("lastSettingsResetDate", new Date().toString(), Infinity);
 											swal("Poof! Your settings have been reset!", {
 											icon: "success",
 											}).then(() =>{
