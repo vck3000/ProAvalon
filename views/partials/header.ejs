@@ -312,71 +312,76 @@
 							<div class="subBox">
 								<h5><u>Sound: </u></h5>
 								<div>
-									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Enabled </label>
+									<label><input type="checkbox" name="option_notifications_sound_enable" id="option_notifications_sound_enable"> Enabled </label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_notifications_sound_enable_in_game" id="option_notifications_sound_enable_in_game"> Enabled in game</label>
 								</div>
 								<div>
 									<label style="display: inline-flex">
 										Volume:
 										<span style="padding-left: 15px;"></span>
-										<input type="range" min=0 max=100 value=100 name="option_notifications_volume" id="option_notifications_volume">
+										<input type="range" min=0 max=100 value=100 name="option_notifications_sound_volume" id="option_notifications_sound_volume">
 										<span style="padding-left: 15px;"></span>
 										<span id="volumeValue">100</span>
 									</label>
+									<p><div class="btn btn-default btn-xs">Test buzz</div></p>
 								</div>
 								<div>
-									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Players joining room </label>
+									<label><input type="checkbox" name="option_notifications_sound_players_joining_room" id="option_notifications_sound_players_joining_room"> Players joining room </label>
 								</div>
 								<div>
-									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Players joining game </label>
+									<label><input type="checkbox" name="option_notifications_sound_players_joining_game" id="option_notifications_sound_players_joining_game"> Players joining game </label>
 								</div>
 								<div>
-									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Game starting </label>
+									<label><input type="checkbox" name="option_notifications_sound_game_starting" id="option_notifications_sound_game_starting"> Game starting </label>
 								</div>
 								<div>
-									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Your turn when not viewing </label>
+									<label><input type="checkbox" name="option_notifications_sound_your_turn" id="option_notifications_sound_your_turn"> Your turn when not viewing </label>
 								</div>
 								<div>
-									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Game ending</label>
+									<label><input type="checkbox" name="option_notifications_sound_game_ending" id="option_notifications_sound_game_ending"> Game ending</label>
 								</div>
 								<div>
-									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Buzzing </label>
+									<label><input type="checkbox" name="option_notifications_sound_buzz" id="option_notifications_sound_buzz"> Buzzing </label>
 								</div>
 								<div>
-									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Slapping</label>
+									<label><input type="checkbox" name="option_notifications_sound_slap" id="option_notifications_sound_slap"> Slapping</label>
 								</div>
+							</div>
+
+							<div>
+								<label><input type="text" name="option_notifications_buzz_slap_timeout" id="option_notifications_buzz_slap_timeout" style="width: 3em;"> Seconds before you can be buzzed or slapped again</label>
 							</div>
 
 
 							<div class="subBox">
 								<h5><u>Desktop notifications: </u></h5>
 								<div>
-									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Enabled </label>
+									<label><input type="checkbox" name="option_notifications_desktop_enable" id="option_notifications_desktop_enable"> Enabled </label>
 								</div>
 								<div>
-									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Players joining room </label>
+									<label><input type="checkbox" name="option_notifications_desktop_players_joining_room" id="option_notifications_desktop_players_joining_room"> Players joining room </label>
 								</div>
 								<div>
-									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Players joining game </label>
+									<label><input type="checkbox" name="option_notifications_desktop_players_joining_game" id="option_notifications_desktop_players_joining_game"> Players joining game </label>
 								</div>
 								<div>
-									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Game starting </label>
+									<label><input type="checkbox" name="option_notifications_desktop_game_starting" id="option_notifications_desktop_game_starting"> Game starting </label>
+								</div>
+
+								<div>
+									<label><input type="checkbox" name="option_notifications_desktop_your_turn" id="option_notifications_desktop_your_turn"> Your turn when not viewing  </label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_notifications_desktop_game_ending" id="option_notifications_desktop_game_ending"> Game ending when not viewing </label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_notifications_desktop_buzz" id="option_notifications_desktop_buzz"> Buzz </label>
 								</div>
 
 
-								<div>
-									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Enabled during game </label>
-								</div>
-								<div>
-									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Your turn and not viewing the window </label>
-								</div>
-								<div>
-									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Game finishes and not viewing the window </label>
-								</div>
-
-
-								<div>
-									<label><input type="text" name="option_dark_theme" id="option_dark_theme" style="width: 3em;"> Seconds before you can be buzzed again</label>
-								</div>
+								
 							</div>
 						</div>
 
@@ -481,11 +486,6 @@ var a;
 	}
 
 
-	var volumeSlider = document.getElementById("option_notifications_volume");
-	var volumeDisplay = $("#volumeValue");
 
-	volumeSlider.oninput = function(){
-		volumeDisplay[0].innerHTML = volumeSlider.value;
-	};
 
 </script>

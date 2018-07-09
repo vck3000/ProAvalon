@@ -265,8 +265,6 @@ var userOptions = {
         defaultValue: "false",
         onLoad: function(){
             if (docCookies.getItem("optionDisplayTwoTabs") === "true") {
-                
-                
                 updateTwoTabs(true);
                 //show its checked on their screen
                 $("#option_display_two_tabs")[0].checked = true;
@@ -283,6 +281,418 @@ var userOptions = {
             });
         }
     },
+
+    //---------------------------------------------
+    //Sound Notifications
+    //---------------------------------------------
+    
+    optionNotificationsSoundEnable: {
+        defaultValue: "true",
+        onLoad: function(){
+            var checked;
+            var savedSetting = docCookies.getItem("optionNotificationsSoundEnable");
+            if(savedSetting === "true"){
+                checked = true;
+            }
+            else if(savedSetting === "false"){
+                checked = false;
+            }
+            $("#option_notifications_sound_enable")[0].checked = checked;
+        },
+        initialiseEventListener: function() {
+            $("#option_notifications_sound_enable")[0].addEventListener("click", function () {
+                var checked = $("#option_notifications_sound_enable")[0].checked;
+                //save their option in cookie
+                docCookies.setItem("optionNotificationsSoundEnable", checked.toString());
+            });
+        }
+    },
+
+    optionNotificationsSoundEnableInGame: {
+        defaultValue: "true",
+        onLoad: function(){
+            var checked;
+            var savedSetting = docCookies.getItem("optionNotificationsSoundEnableInGame");
+            if(savedSetting === "true"){
+                checked = true;
+            }
+            else if(savedSetting === "false"){
+                checked = false;
+            }
+            $("#option_notifications_sound_enable_in_game")[0].checked = checked;
+        },
+        initialiseEventListener: function() {
+            $("#option_notifications_sound_enable_in_game")[0].addEventListener("click", function () {
+                var checked = $("#option_notifications_sound_enable_in_game")[0].checked;
+                //save their option in cookie
+                docCookies.setItem("optionNotificationsSoundEnableInGame", checked.toString());
+            });
+        }
+    },
+
+    optionNotificationsSoundVolume: {
+        defaultValue: "100",
+        onLoad: function(){
+            //get cookie data
+            var volume = docCookies.getItem("optionNotificationsSoundVolume");
+
+            //set the value in the users display
+            $("#option_notifications_sound_volume")[0].value = volume;   
+            
+            //update the number when slider changes
+            var volumeSlider = document.getElementById("option_notifications_sound_volume");
+            var volumeDisplay = $("#volumeValue");
+
+            volumeDisplay[0].innerHTML = volumeSlider.value;
+
+            
+        
+            volumeSlider.oninput = function(){
+                volumeDisplay[0].innerHTML = volumeSlider.value;
+            };
+        },
+        initialiseEventListener: function() {
+            $("#option_notifications_sound_volume")[0].addEventListener("click", function () {
+                var valueToStore = $("#option_notifications_sound_volume")[0].value;
+                //save their option in cookie
+                docCookies.setItem("optionNotificationsSoundVolume", valueToStore);
+            });
+        }
+    },
+    
+
+    optionNotificationsSoundPlayersJoiningRoom: {
+        defaultValue: "false",
+        onLoad: function(){
+            var checked;
+            var savedSetting = docCookies.getItem("optionNotificationsSoundPlayersJoiningRoom");
+            if(savedSetting === "true"){
+                checked = true;
+            }
+            else if(savedSetting === "false"){
+                checked = false;
+            }
+            $("#option_notifications_sound_players_joining_room")[0].checked = checked;
+        },
+        initialiseEventListener: function() {
+            $("#option_notifications_sound_players_joining_room")[0].addEventListener("click", function () {
+                var checked = $("#option_notifications_sound_players_joining_room")[0].checked;
+                //save their option in cookie
+                docCookies.setItem("optionNotificationsSoundPlayersJoiningRoom", checked.toString());
+            });
+        }
+    },
+
+    optionNotificationsSoundPlayersJoiningGame: {
+        defaultValue: "true",
+        onLoad: function(){
+            var checked;
+            var savedSetting = docCookies.getItem("optionNotificationsSoundPlayersJoiningGame");
+            if(savedSetting === "true"){
+                checked = true;
+            }
+            else if(savedSetting === "false"){
+                checked = false;
+            }
+            $("#option_notifications_sound_players_joining_game")[0].checked = checked;
+        },
+        initialiseEventListener: function() {
+            $("#option_notifications_sound_players_joining_game")[0].addEventListener("click", function () {
+                var checked = $("#option_notifications_sound_players_joining_game")[0].checked;
+                //save their option in cookie
+                docCookies.setItem("optionNotificationsSoundPlayersJoiningGame", checked.toString());
+            });
+        }
+    },
+
+    optionNotificationsSoundGameStarting: {
+        defaultValue: "true",
+        onLoad: function(){
+            var checked;
+            var savedSetting = docCookies.getItem("optionNotificationsSoundGameStarting");
+            if(savedSetting === "true"){
+                checked = true;
+            }
+            else if(savedSetting === "false"){
+                checked = false;
+            }
+            $("#option_notifications_sound_game_starting")[0].checked = checked;
+        },
+        initialiseEventListener: function() {
+            $("#option_notifications_sound_game_starting")[0].addEventListener("click", function () {
+                var checked = $("#option_notifications_sound_game_starting")[0].checked;
+                //save their option in cookie
+                docCookies.setItem("optionNotificationsSoundGameStarting", checked.toString());
+            });
+        }
+    },
+
+
+
+    optionNotificationsSoundYourTurn: {
+        defaultValue: "false",
+        onLoad: function(){
+            var checked;
+            var savedSetting = docCookies.getItem("optionNotificationsSoundYourTurn");
+            if(savedSetting === "true"){
+                checked = true;
+            }
+            else if(savedSetting === "false"){
+                checked = false;
+            }
+            $("#option_notifications_sound_your_turn")[0].checked = checked;
+        },
+        initialiseEventListener: function() {
+            $("#option_notifications_sound_your_turn")[0].addEventListener("click", function () {
+                var checked = $("#option_notifications_sound_your_turn")[0].checked;
+                //save their option in cookie
+                docCookies.setItem("optionNotificationsSoundYourTurn", checked.toString());
+            });
+        }
+    },
+
+    optionNotificationsSoundGameEnding: {
+        defaultValue: "true",
+        onLoad: function(){
+            var checked;
+            var savedSetting = docCookies.getItem("optionNotificationsSoundGameEnding");
+            if(savedSetting === "true"){
+                checked = true;
+            }
+            else if(savedSetting === "false"){
+                checked = false;
+            }
+            $("#option_notifications_sound_game_ending")[0].checked = checked;
+        },
+        initialiseEventListener: function() {
+            $("#option_notifications_sound_game_ending")[0].addEventListener("click", function () {
+                var checked = $("#option_notifications_sound_game_ending")[0].checked;
+                //save their option in cookie
+                docCookies.setItem("optionNotificationsSoundGameEnding", checked.toString());
+            });
+        }
+    },
+
+    optionNotificationsSoundBuzz: {
+        defaultValue: "true",
+        onLoad: function(){
+            var checked;
+            var savedSetting = docCookies.getItem("optionNotificationsSoundBuzz");
+            if(savedSetting === "true"){
+                checked = true;
+            }
+            else if(savedSetting === "false"){
+                checked = false;
+            }
+            $("#option_notifications_sound_buzz")[0].checked = checked;
+        },
+        initialiseEventListener: function() {
+            $("#option_notifications_sound_buzz")[0].addEventListener("click", function () {
+                var checked = $("#option_notifications_sound_buzz")[0].checked;
+                //save their option in cookie
+                docCookies.setItem("optionNotificationsSoundBuzz", checked.toString());
+            });
+        }
+    },
+
+    optionNotificationsSoundSlap: {
+        defaultValue: "true",
+        onLoad: function(){
+            var checked;
+            var savedSetting = docCookies.getItem("optionNotificationsSoundSlap");
+            if(savedSetting === "true"){
+                checked = true;
+            }
+            else if(savedSetting === "false"){
+                checked = false;
+            }
+            $("#option_notifications_sound_slap")[0].checked = checked;
+        },
+        initialiseEventListener: function() {
+            $("#option_notifications_sound_slap")[0].addEventListener("click", function () {
+                var checked = $("#option_notifications_sound_slap")[0].checked;
+                //save their option in cookie
+                docCookies.setItem("optionNotificationsSoundSlap", checked.toString());
+            });
+        }
+    },
+
+    optionNotificationsSoundBuzzSlapTimeout: {
+        defaultValue: "15",
+        onLoad: function(){
+            //get cookie data
+            var seconds = docCookies.getItem("optionNotificationsSoundBuzzSlapTimeout");
+
+            //set the value in the users display
+            $("#option_notifications_buzz_slap_timeout")[0].value = seconds;
+            
+        },
+        initialiseEventListener: function() {
+            $("#option_notifications_buzz_slap_timeout")[0].addEventListener("click", function () {
+                var valueToStore = $("#option_notifications_buzz_slap_timeout")[0].value;
+                //save their option in cookie
+                docCookies.setItem("optionNotificationsSoundBuzzSlapTimeout", valueToStore);
+            });
+        }
+    },
+
+    //---------------------------------------------
+    //Desktop notifications
+    //---------------------------------------------
+    optionNotificationsDesktopEnable: {
+        defaultValue: "true",
+        onLoad: function(){
+            var checked;
+            var savedSetting = docCookies.getItem("optionNotificationsDesktopEnable");
+            if(savedSetting === "true"){
+                checked = true;
+            }
+            else if(savedSetting === "false"){
+                checked = false;
+            }
+            $("#option_notifications_desktop_enable")[0].checked = checked;
+        },
+        initialiseEventListener: function() {
+            $("#option_notifications_desktop_enable")[0].addEventListener("click", function () {
+                var checked = $("#option_notifications_desktop_enable")[0].checked;
+                //save their option in cookie
+                docCookies.setItem("optionNotificationsDesktopEnable", checked.toString());
+            });
+        }
+    },
+
+    optionNotificationsDesktopPlayersJoiningRoom: {
+        defaultValue: "false",
+        onLoad: function(){
+            var checked;
+            var savedSetting = docCookies.getItem("optionNotificationsDesktopPlayersJoiningRoom");
+            if(savedSetting === "true"){
+                checked = true;
+            }
+            else if(savedSetting === "false"){
+                checked = false;
+            }
+            $("#option_notifications_desktop_players_joining_room")[0].checked = checked;
+        },
+        initialiseEventListener: function() {
+            $("#option_notifications_desktop_players_joining_room")[0].addEventListener("click", function () {
+                var checked = $("#option_notifications_desktop_players_joining_room")[0].checked;
+                //save their option in cookie
+                docCookies.setItem("optionNotificationsDesktopPlayersJoiningRoom", checked.toString());
+            });
+        }
+    },
+
+    optionNotificationsDesktopPlayersJoiningGame: {
+        defaultValue: "true",
+        onLoad: function(){
+            var checked;
+            var savedSetting = docCookies.getItem("optionNotificationsDesktopPlayersJoiningGame");
+            if(savedSetting === "true"){
+                checked = true;
+            }
+            else if(savedSetting === "false"){
+                checked = false;
+            }
+            $("#option_notifications_desktop_players_joining_game")[0].checked = checked;
+        },
+        initialiseEventListener: function() {
+            $("#option_notifications_desktop_players_joining_game")[0].addEventListener("click", function () {
+                var checked = $("#option_notifications_desktop_players_joining_game")[0].checked;
+                //save their option in cookie
+                docCookies.setItem("optionNotificationsDesktopPlayersJoiningGame", checked.toString());
+            });
+        }
+    },
+
+    optionNotificationsDesktopGameStarting: {
+        defaultValue: "true",
+        onLoad: function(){
+            var checked;
+            var savedSetting = docCookies.getItem("optionNotificationsDesktopGameStarting");
+            if(savedSetting === "true"){
+                checked = true;
+            }
+            else if(savedSetting === "false"){
+                checked = false;
+            }
+            $("#option_notifications_desktop_game_starting")[0].checked = checked;
+        },
+        initialiseEventListener: function() {
+            $("#option_notifications_desktop_game_starting")[0].addEventListener("click", function () {
+                var checked = $("#option_notifications_desktop_game_starting")[0].checked;
+                //save their option in cookie
+                docCookies.setItem("optionNotificationsDesktopGameStarting", checked.toString());
+            });
+        }
+    },
+
+    optionNotificationsDesktopYourTurn: {
+        defaultValue: "false",
+        onLoad: function(){
+            var checked;
+            var savedSetting = docCookies.getItem("optionNotificationsDesktopYourTurn");
+            if(savedSetting === "true"){
+                checked = true;
+            }
+            else if(savedSetting === "false"){
+                checked = false;
+            }
+            $("#option_notifications_desktop_your_turn")[0].checked = checked;
+        },
+        initialiseEventListener: function() {
+            $("#option_notifications_desktop_your_turn")[0].addEventListener("click", function () {
+                var checked = $("#option_notifications_desktop_your_turn")[0].checked;
+                //save their option in cookie
+                docCookies.setItem("optionNotificationsDesktopYourTurn", checked.toString());
+            });
+        }
+    },
+
+    optionNotificationsDesktopGameEnding: {
+        defaultValue: "false",
+        onLoad: function(){
+            var checked;
+            var savedSetting = docCookies.getItem("optionNotificationsDesktopGameEnding");
+            if(savedSetting === "true"){
+                checked = true;
+            }
+            else if(savedSetting === "false"){
+                checked = false;
+            }
+            $("#option_notifications_desktop_game_ending")[0].checked = checked;
+        },
+        initialiseEventListener: function() {
+            $("#option_notifications_desktop_game_ending")[0].addEventListener("click", function () {
+                var checked = $("#option_notifications_desktop_game_ending")[0].checked;
+                //save their option in cookie
+                docCookies.setItem("optionNotificationsDesktopGameEnding", checked.toString());
+            });
+        }
+    },
+
+    optionNotificationsDesktopBuzz: {
+        defaultValue: "true",
+        onLoad: function(){
+            var checked;
+            var savedSetting = docCookies.getItem("optionNotificationsDesktopBuzz");
+            if(savedSetting === "true"){
+                checked = true;
+            }
+            else if(savedSetting === "false"){
+                checked = false;
+            }
+            $("#option_notifications_desktop_buzz")[0].checked = checked;
+        },
+        initialiseEventListener: function() {
+            $("#option_notifications_desktop_buzz")[0].addEventListener("click", function () {
+                var checked = $("#option_notifications_desktop_buzz")[0].checked;
+                //save their option in cookie
+                docCookies.setItem("optionNotificationsDesktopBuzz", checked.toString());
+            });
+        }
+    },
+
 
     
 
