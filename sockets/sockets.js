@@ -71,7 +71,6 @@ var userCommands = {
 			else {
 				console.log(allSockets);
 				return {message: "There is no such player.", classStr: "server-text"};
-				
 			}
 		}
 	},

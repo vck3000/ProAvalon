@@ -93,7 +93,7 @@ function update(picker){
 
     var username = getUsernameFromIndex(picker.playerColourID);
     
-    console.log("Player highlight colour: " + playerHighlightColour);
+  // console.log("Player highlight colour: " + playerHighlightColour);
 
     //only need to change colour if the user has selected that player's chat.
     if (selectedChat[username] === true) {
@@ -131,7 +131,7 @@ var userOptions = {
         initialiseEventListener: function () {
             $("#option_general_font_size_text").on("change", function () {
                 var fontSize = $("#option_general_font_size_text")[0].value;
-                console.log(fontSize);
+              // console.log(fontSize);
 
                 //assign bounds
                 var lowerFontSizeBound = 8;
@@ -153,7 +153,7 @@ var userOptions = {
                 draw();
 
                 //save the data in cookie
-                console.log("Stored font size: " + fontSize);
+              // console.log("Stored font size: " + fontSize);
                 docCookies.setItem("optionGeneralFontSize", fontSize);
             });
         }
@@ -201,7 +201,7 @@ var userOptions = {
 
             $("#option_display_avatar_container_height_text").on("change", function () {
                 var containerHeight = $("#option_display_avatar_container_height_text")[0].value;
-                console.log(containerHeight);
+              // console.log(containerHeight);
 
                 //assign bounds
                 var lowerBound = 40;
@@ -246,7 +246,7 @@ var userOptions = {
         defaultValue: "false",
         onLoad: function () {
             if (docCookies.getItem("optionDisplayDarkTheme") === "true") {
-                console.log("Load up dark theme is true");
+              // console.log("Load up dark theme is true");
                 //update the dark theme if cookie data is true
                 updateDarkTheme(true);
                 //show its checked on their screen
@@ -257,7 +257,7 @@ var userOptions = {
             //dark theme option checkbox event listener
             $("#option_display_dark_theme")[0].addEventListener("click", function () {
                 var checked = $("#option_display_dark_theme")[0].checked;
-                console.log("dark theme change " + checked);
+              // console.log("dark theme change " + checked);
                 //dark theme
                 updateDarkTheme(checked);
 
@@ -734,7 +734,7 @@ var isSpectator = false;
 
 //window resize, repaint the users
 window.addEventListener('resize', function () {
-    console.log("Resized");
+  // console.log("Resized");
     checkStatusBarWithHeight();
     draw();
 });
@@ -759,7 +759,7 @@ $("#kickButton")[0].addEventListener("click", function () {
     for (var key in players) {
         if (players.hasOwnProperty(key)) {
             socket.emit("kickPlayer", key);
-            console.log("kick player: " + key);
+          // console.log("kick player: " + key);
         }
     }
 });
@@ -768,7 +768,7 @@ $("#kickButton")[0].addEventListener("click", function () {
 document.querySelector("#newRoom").addEventListener("click", function () {
     if (inRoom === false) {
         socket.emit("newRoom");
-        console.log("RESET GAME DATA ON CREATE ROOM");
+      // console.log("RESET GAME DATA ON CREATE ROOM");
         resetAllGameData();
         inRoom = true;
     }
@@ -940,18 +940,18 @@ socket.on('disconnect', function(){
 
 socket.on('checkSettingsResetDate', function(serverResetDate){
     serverResetDate = new Date(serverResetDate);
-    console.log("check reset date");
+  // console.log("check reset date");
 
-    console.log(docCookies.hasItem("lastSettingsResetDate"));
+  // console.log(docCookies.hasItem("lastSettingsResetDate"));
 
     //check if we need to reset settings
     if(docCookies.hasItem("lastSettingsResetDate")){
         var lastDate = new Date(docCookies.getItem("lastSettingsResetDate"));
 
-        console.log(serverResetDate);
-        console.log(lastDate);
+      // console.log(serverResetDate);
+      // console.log(lastDate);
 
-        console.log(serverResetDate > lastDate);
+      // console.log(serverResetDate > lastDate);
 
         if(serverResetDate > lastDate){
             resetSettings();
@@ -996,12 +996,12 @@ function addToAllChat(data) {
     if(data){
         //if it is not an array, force it into a array
         if (data[0] === undefined) {
-            console.log("force array");
+          // console.log("force array");
             data = [data];
         }  
 
-        console.log("add to all chat: ");
-        console.log(data);
+      // console.log("add to all chat: ");
+      // console.log(data);
 
         for (var i = 0; i < data.length; i++) {
             //format the date
@@ -1057,17 +1057,17 @@ function addToRoomChat(data) {
     
             
             if (data[i] && data[i].message) {
-                console.log(data[i].message);
+              // console.log(data[i].message);
                 //prevent XSS injection
                 var filteredMessage = data[i].message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
-                console.log("Filtered message: " + filteredMessage);
+              // console.log("Filtered message: " + filteredMessage);
                 var str = "";
 
                 // if there is no '[', then the chat incoming is not a quote.
                 if(filteredMessage.indexOf("[") === -1){
                     //set the highlight chat if the user has been selected already
                     var highlightChatColour = "";
-                    console.log("true?"  + selectedChat[data[i].username]);
+                  // console.log("true?"  + selectedChat[data[i].username]);
                     if (selectedChat[data[i].username] === true) {
                         highlightChatColour = docCookies.getItem("player" + getIndexFromUsername(data[i].username) + 'HighlightColour');
                     }
@@ -1092,11 +1092,11 @@ function addToRoomChat(data) {
 
                     str = "<li><span username='" + data[i].username + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + "Quoting:" + "</span></li>";
 
-                    console.log("Strings: ");
+                  // console.log("Strings: ");
 
                     for(var j = 1; j < strings.length; j++){
                         str += "<li class='myQuote'>" + "[" + strings[j] + "</li>";
-                        console.log(strings[j]);
+                      // console.log(strings[j]);
                     }
 
                     $(".room-chat-list").append(str);
@@ -1129,12 +1129,12 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         $(".nav-tabs #room-chat-in-game-tab").removeClass("newMessage")
     }
 
-    console.log("change tab " + target);
+  // console.log("change tab " + target);
 
 });
 
 socket.on("update-current-players-list", function (currentPlayers) {
-    console.log("update the current player list request received");
+  // console.log("update the current player list request received");
     // console.log(currentPlayers);
     //remove all the li's inside the table
     $("#current-players-table tbody tr td").remove();
@@ -1172,7 +1172,7 @@ socket.on("update-current-games-list", function (currentGames) {
             allTds[allTds.length - 1].addEventListener("click", function () {
                 //JOIN THE ROOM
 
-                console.log("RESET GAME DATA ON JOIN ROOM");
+              // console.log("RESET GAME DATA ON JOIN ROOM");
                 resetAllGameData();
 
                 // console.log(currentGame.roomId);
@@ -1200,7 +1200,7 @@ socket.on("update-current-games-list", function (currentGames) {
 });
 
 socket.on("auto-join-room-id", function (roomId_) {
-    console.log("auto join room");
+  // console.log("auto join room");
     //received a request from server to auto join
     //likely we were the one who created the room
     //so we auto join into it
@@ -1239,7 +1239,7 @@ socket.on("messageCommandReturnStr", function (data) {
     else if (lastChatBoxCommand === "roomChat") {
         addToRoomChat(data);
     }
-    console.log("received return str");
+  // console.log("received return str");
 });
 
 var timeLastBuzzSlap;
@@ -1327,7 +1327,7 @@ socket.on("update-room-players", function (data) {
     //remove all the li's inside the list
     $("#mainRoomBox div").remove();
 
-    console.log("update room players");
+  // console.log("update room players");
     // console.log(data);
 
     //update spectators list
@@ -1384,7 +1384,7 @@ socket.on("spec-game-starting-finished", function(data){
 socket.on("game-data", function (data) {
     // console.log("GAME DATA INC");   
     if (data) {
-        console.log("game starting!");
+      // console.log("game starting!");
 
         // console.log(data);
         gameData = data;
@@ -1463,15 +1463,15 @@ function redButtonFunction() {
         }
         else {
             if (gameData.phase === "voting") {
-                console.log("Voted reject");
+              // console.log("Voted reject");
                 socket.emit("pickVote", "reject");
             }
             else if (gameData.phase === "missionVoting") {
-                console.log("Voted fail");
+              // console.log("Voted fail");
 
 
                 if (gameData.alliance === "Resistance") {
-                    console.log("You aren't a spy! You cannot fail a mission!");
+                  // console.log("You aren't a spy! You cannot fail a mission!");
                     // socket.emit("missionVote", "succeed");
                     showDangerAlert("You are resistance. Surely you want to succeed!");
                 } else {
@@ -1496,23 +1496,23 @@ function greenButtonFunction() {
         else {
             if (gameData.phase === "picking") {
                 var arr = getHighlightedAvatars();
-                console.log(arr);
+              // console.log(arr);
                 socket.emit("pickedTeam", arr);
             }
             else if (gameData.phase === "voting") {
-                console.log("Voted approve");
+              // console.log("Voted approve");
                 socket.emit("pickVote", "approve");
             }
             else if (gameData.phase === "missionVoting") {
-                console.log("Voted succeed");
+              // console.log("Voted succeed");
                 socket.emit("missionVote", "succeed");
             }
             else if (gameData.phase === "assassination") {
-                console.log("Assasinate!!!");
+              // console.log("Assasinate!!!");
                 socket.emit("assassinate", getHighlightedAvatars());
             }
             else if (gameData.phase === "lady") {
-                console.log("Lady: " + getHighlightedAvatars()[0]);
+              // console.log("Lady: " + getHighlightedAvatars()[0]);
                 socket.emit("lady", getHighlightedAvatars()[0]);
             }
 
@@ -1522,7 +1522,7 @@ function greenButtonFunction() {
 
 
 function draw() {
-    console.log("draw called");
+  // console.log("draw called");
     if (roomPlayersData) {
         drawAndPositionAvatars();
 
@@ -1550,7 +1550,6 @@ function draw() {
 
                 //if we are the team leader---------------------------------------------
                 if (getIndexFromUsername(ownUsername) === gameData.teamLeader) {
-                    console.log("RAN");
                     teamLeaderSetup(gameData.phase);
                 }
 
@@ -1698,7 +1697,7 @@ function activateAvatarButtons() {
     var highlightButtons = document.querySelectorAll("#mainRoomBox div #highlightAvatarButton");
     //add the event listeners for button press
 
-    console.log("added " + highlightButtons.length + " many listeners for highlightbuttons");
+    // console.log("added " + highlightButtons.length + " many listeners for highlightbuttons");
 
     for (var i = 0; i < highlightButtons.length; i++) {
         // console.log(i);
@@ -1707,7 +1706,7 @@ function activateAvatarButtons() {
             // //toggle the highlight class
             // var divs = document.querySelectorAll("#mainRoomBox div");
             // var uniqueNum = i;
-            console.log("click for highlight avatar");
+          // console.log("click for highlight avatar");
 
             // this.parentElement.classList.toggle("selected-avatar");
             var username = this.parentElement.parentElement.getAttribute("usernameofplayer");
@@ -1721,7 +1720,7 @@ function activateAvatarButtons() {
             }
 
             selectedAvatars[username] = selectedAvatars[username] % (numOfStatesOfHighlight + 1);
-            console.log("Selected avatars num: " + selectedAvatars[username])
+          // console.log("Selected avatars num: " + selectedAvatars[username])
             draw();
         });
     }
@@ -1733,21 +1732,21 @@ function activateAvatarButtons() {
     for (var i = 0; i < highlightChatButtons.length; i++) {
         highlightChatButtons[i].addEventListener("click", function () {
             // //toggle the highlight class
-            console.log("click for highlight chat");
+          // console.log("click for highlight chat");
 
             var username = this.parentElement.parentElement.getAttribute("usernameofplayer");
             var chatItems = $(".room-chat-list li span[username='" + username + "']");
 
             var playerHighlightColour = docCookies.getItem("player" + getIndexFromUsername(username) + "HighlightColour");
             
-            console.log("Player highlight colour: " + playerHighlightColour);
+          // console.log("Player highlight colour: " + playerHighlightColour);
 
             if (selectedChat[username] === true) {
                 selectedChat[username] = false;
                 chatItems.css("background-color", "transparent");
             }
             else {
-                console.log("set true");
+              // console.log("set true");
                 selectedChat[username] = true;
                 chatItems.css("background-color", "" + playerHighlightColour);
             }
@@ -1793,7 +1792,7 @@ function assassinationSetup(phase) {
         //add the event listeners for button press
         for (var i = 0; i < divs.length; i++) {
             divs[i].addEventListener("click", function () {
-                console.log("avatar pressed");
+              // console.log("avatar pressed");
                 //toggle the highlight class
                 this.classList.toggle("highlight-avatar");
                 //change the pick team button to enabled/disabled
@@ -1815,7 +1814,7 @@ function teamLeaderSetup(phase) {
         //add the event listeners for button press
         for (var i = 0; i < divs.length; i++) {
             divs[i].addEventListener("click", function () {
-                console.log("avatar pressed");
+              // console.log("avatar pressed");
                 //toggle the highlight class
                 this.classList.toggle("highlight-avatar");
                 //change the pick team button to enabled/disabled
@@ -1837,7 +1836,7 @@ function ladySetup(phase, ladyablePeople) {
         for (var i = 0; i < divs.length; i++) {
             if (ladyablePeople[i] === true) {
                 divs[i].addEventListener("click", function () {
-                    console.log("avatar pressed");
+                  // console.log("avatar pressed");
                     //toggle the highlight class
                     this.classList.toggle("highlight-avatar");
                     //change the pick team button to enabled/disabled
@@ -1899,7 +1898,7 @@ function drawAndPositionAvatars() {
 
     //generate the divs in the html
     var str = "";
-    console.log("Game started: " + gameStarted);
+  // console.log("Game started: " + gameStarted);
     if (gameStarted === true) {
         //draw the players according to what the client sees (their role sees)
         for (var i = 0; i < numPlayers; i++) {
@@ -1944,7 +1943,7 @@ function drawAndPositionAvatars() {
         //reduce the height so that the bottom of avatars dont crash into the bottom.
         offsetY = offsetY * 1.15;
 
-        console.log("offsetY: " + offsetY);
+      // console.log("offsetY: " + offsetY);
 
 
         //scale the height of avatars
@@ -2072,12 +2071,12 @@ function enableDisableButtonsLeader(numPlayersOnMission) {
     }
     else {
         document.querySelector("#green-button").classList.add("disabled");
-        console.log("RAN AGAIN");
         document.querySelector("#green-button").classList.add("faded");
         
     }
 }
 function enableDisableButtons() {
+    //reset the faded class for the buttons
     document.querySelector("#green-button").classList.remove("faded");
 
     
@@ -2392,7 +2391,7 @@ function scrollDown(chatBox) {
 
     heightOfLastMessage = ((lastMessages.length-1) - i)*20;
 
-    console.log("Height: " + heightOfLastMessage);
+  // console.log("Height: " + heightOfLastMessage);
 
 
     if((listBox.height() - scrollBox.scrollTop() - scrollBox.height()) > 5 + heightOfLastMessage){
@@ -2422,7 +2421,7 @@ var arrayOfChatBoxes = [
 for(var i = 0; i < arrayOfChatBoxes.length; i++){
     var chatBoxToEvent = arrayOfChatBoxes[i];
 
-    console.log("Chatbox is: " + chatBoxToEvent);
+  // console.log("Chatbox is: " + chatBoxToEvent);
 
     $(chatBoxToEvent).on("scroll", function(){
         chatBox = "#" + this.id;
@@ -2431,7 +2430,7 @@ for(var i = 0; i < arrayOfChatBoxes.length; i++){
 }
 
 function checkUnreadMessagesBar(chatBox){
-    console.log("chatbox : " + chatBox);
+  // console.log("chatbox : " + chatBox);
 
     var searchStrScrollBox = "" + chatBox;
     var searchStrListBox = "" + chatBox + "-list";
@@ -2441,7 +2440,7 @@ function checkUnreadMessagesBar(chatBox){
     var listBox = $(searchStrListBox);
 
     // console.log("SCROLL");
-    console.log("IF: " + !(listBox.height() - scrollBox.scrollTop() - scrollBox.height() > 20));
+  // console.log("IF: " + !(listBox.height() - scrollBox.scrollTop() - scrollBox.height() > 20));
 
     //if user is at the bottom
     if(!(listBox.height() - scrollBox.scrollTop() - scrollBox.height() > 20)){
@@ -2454,11 +2453,11 @@ function checkUnreadMessagesBar(chatBox){
 // $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 //     var target = $(e.target).attr("href") // activated tab
 
-//     console.log($(target));
+//   // console.log($(target));
 
 
 //     var chatBox = "#" + $(target)[0].childNodes[1].id;
-//     console.log(chatBox);
+//   // console.log(chatBox);
 //     // console.log(e);
 //   });
 
@@ -2574,12 +2573,12 @@ function drawVoteHistory(data) {
     //for every username in a clockwise direction
     for (var i = roomPlayersData.length-1; i > 0; i--){
         keyArray[roomPlayersData.length - i] = (roomPlayersData[i].username);
-        console.log("Push: " + roomPlayersData[i].username);
-        console.log("i: " + i);
+      // console.log("Push: " + roomPlayersData[i].username);
+      // console.log("i: " + i);
     } 
     
-    console.log("key array:" );
-    console.log(keyArray);
+  // console.log("key array:" );
+  // console.log(keyArray);
 
 
     // for(var k = keyArray.length - 1; k >= 0; k--){
@@ -2646,7 +2645,7 @@ function getKickPlayers() {
     var data = {};
 
     for (var i = 0; i < roomPlayersData.length; i++) {
-        console.log(unescapeHtml(roomPlayersData[i].username));
+      // console.log(unescapeHtml(roomPlayersData[i].username));
         // if ($("#" + roomPlayersData[i].username)[0].checked === true) {
         if ($("#" + $.escapeSelector(unescapeHtml(roomPlayersData[i].username)))[0].checked === true) {
             data[roomPlayersData[i].username] = true;
@@ -2696,7 +2695,7 @@ function extendTabContentToBottomInRoom() {
     var navTabs = $(".nav-tabs");
 
     var newHeight2 = Math.floor(gameContainer.offsetHeight - tabNumber.position().top) - 20;
-    console.log("new height 2: " + newHeight2);
+  // console.log("new height 2: " + newHeight2);
 
     tabNumber[0].style.height = Math.floor((newHeight2 * 1) - tempVar) + "px";
 
@@ -2715,7 +2714,7 @@ function checkMessageForCommands(message, chatBox) {
     // console.log("arr message: " + arrayMessage);
 
     if (message[0] === '/') {
-        console.log("COMMAND INPUT DETECTED");
+      // console.log("COMMAND INPUT DETECTED");
         var validCommandFound = false;
 
         //need to change this to only up to the first space
@@ -2729,7 +2728,7 @@ function checkMessageForCommands(message, chatBox) {
                 // console.log(key + " -> " + commands[key]);
                 if (messageCommand === commands[key].command) {
 
-                    console.log("Command: " + commands[key].command + " called.");
+                  // console.log("Command: " + commands[key].command + " called.");
                     commandCalled = commands[key].command;
                     validCommandFound = true;
 
@@ -2748,7 +2747,7 @@ function checkMessageForCommands(message, chatBox) {
         }
 
         if (validCommandFound === false) {
-            console.log("Command invalid");
+          // console.log("Command invalid");
             var str = "/"+ messageCommand + " is not a valid command. Type /help for a list of commands."; 
             var data = { 
                 message: str,
@@ -2763,7 +2762,7 @@ function checkMessageForCommands(message, chatBox) {
         }
         else {
             //sending command to server
-            console.log("Sending command: " + messageCommand + " to server.");
+          // console.log("Sending command: " + messageCommand + " to server.");
             socket.emit("messageCommand", { command: messageCommand, args: arrayMessage });
         }
 
@@ -2842,7 +2841,7 @@ function scaleMiddleBoxes(){
 
     var ratioToReduce = (setHeightOfMissionBox / maxHeightOfBoxes);
 
-    console.log("Reduce by: " + ratioToReduce);
+  // console.log("Reduce by: " + ratioToReduce);
     if(ratioToReduce > 1){
         ratioToReduce = 1;
     }

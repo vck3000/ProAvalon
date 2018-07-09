@@ -123,6 +123,7 @@ module.exports = function (host_, roomId_, io_) {
 	this.winner = "";
 
 	var shuffledPlayerAssignments = [];
+	this.gamePlayerLeftDuringReady = false;
 
 
 	this.finishGame = function (winner) {
@@ -780,6 +781,8 @@ module.exports = function (host_, roomId_, io_) {
 			this.playersYetToReady = this.sockets.slice();
 			this.options = options;
 
+			this.gamePlayerLeftDuringReady = false;
+
 			var rolesInStr = getRolesInStr(options);
 
 			for (var i = 0; i < this.sockets.length; i++) {
@@ -794,6 +797,11 @@ module.exports = function (host_, roomId_, io_) {
 
 	//start game
 	this.startGame = function (options) {
+		if(this.sockets.length < 5 || this.sockets.length > 10 || this.gamePlayerLeftDuringReady === true){
+			this.canJoin = true;
+			this.gamePlayerLeftDuringReady = false;
+			return false;
+		}
 		this.startGameTime = new Date();
 
 
@@ -1111,6 +1119,10 @@ module.exports = function (host_, roomId_, io_) {
 
 	//when a player leaves before game starts
 	this.playerLeaveRoom = function (socket) {
+		if(this.playersInGame.indexOf(socket) !== -1){
+			this.gamePlayerLeftDuringReady = true;
+		}
+		
 		//remove from players in room
 		this.playersInRoom.splice(this.playersInRoom.indexOf(socket), 1);
 

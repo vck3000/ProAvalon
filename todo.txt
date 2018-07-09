@@ -26,17 +26,17 @@ To-do list:
 
 -player profile page
 
+-sometimes someone would be transparent even though they didnt leave
+
 -roll command
 
--dark mode hammers and usernames cant see when avatar is highlighted
 
 
 -waiting for (username) to shoot 
 -right side tabs dont flash yellow
 
 
--remove faded when not needed
--remove game start sound
+
 
 
 -Learn REGEX
@@ -206,7 +206,9 @@ Mine:
 -yellow highlight buttons should disappear when its viewed in 2nd tab.
 -disable slapping when in game
 -server text is gone??
-
+-remove faded when not needed
+-remove game start sound
+-dark mode hammers and usernames cant see when avatar is highlighted
 
 
 Hak:

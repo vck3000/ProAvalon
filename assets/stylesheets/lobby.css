@@ -326,8 +326,15 @@ p {
     border-radius: 5px;
 }
 
+.dark .selected-avatar-1 {
+    background-color: #579157;
+    border-radius: 5px;
+}
+
+
+
 .selected-avatar-2 {
-    background-color: #d9534f;
+    background-color: #d9544f81;
     border-radius: 5px;
 }
 
