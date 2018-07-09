@@ -1401,7 +1401,7 @@ socket.on("game-data", function (data) {
             }
 
             if($("#option_notifications_sound_game_starting")[0].checked === true){
-                playSound("game-start");
+                // playSound("game-start");
             }
         }
 
@@ -2078,6 +2078,9 @@ function enableDisableButtonsLeader(numPlayersOnMission) {
     }
 }
 function enableDisableButtons() {
+    document.querySelector("#green-button").classList.remove("faded");
+
+    
     if (gameStarted === false) {
         //Host
         if (ownUsername === getUsernameFromIndex(0)) {

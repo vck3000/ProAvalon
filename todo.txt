@@ -35,6 +35,10 @@ To-do list:
 -right side tabs dont flash yellow
 
 
+-remove faded when not needed
+-remove game start sound
+
+
 -Learn REGEX
 
 -Learn Bitwise operations...?
