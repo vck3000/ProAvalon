@@ -1550,6 +1550,7 @@ function draw() {
 
                 //if we are the team leader---------------------------------------------
                 if (getIndexFromUsername(ownUsername) === gameData.teamLeader) {
+                    console.log("RAN");
                     teamLeaderSetup(gameData.phase);
                 }
 
@@ -1821,6 +1822,7 @@ function teamLeaderSetup(phase) {
                 enableDisableButtonsLeader(numPlayersOnMission);
             });
         }
+        enableDisableButtonsLeader(numPlayersOnMission);
     }
 }
 
@@ -2066,9 +2068,13 @@ function enableDisableButtonsLeader(numPlayersOnMission) {
     // console.log("numPlayersOnMission: " + numPlayersOnMission);
     if (countHighlightedAvatars() == numPlayersOnMission || (countHighlightedAvatars() + "*") == numPlayersOnMission) {
         document.querySelector("#green-button").classList.remove("disabled");
+        document.querySelector("#green-button").classList.remove("faded");
     }
     else {
         document.querySelector("#green-button").classList.add("disabled");
+        console.log("RAN AGAIN");
+        document.querySelector("#green-button").classList.add("faded");
+        
     }
 }
 function enableDisableButtons() {

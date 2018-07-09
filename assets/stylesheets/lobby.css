@@ -847,8 +847,11 @@ i {
 
 
 .disabled{
-    opacity: 0.0 !important;
-    filter: alpha(opacity=30); /* For IE8 and earlier */
+    visibility: hidden;
+}
 
-
+.faded {
+    opacity: 0.5 !important;
+    filter: alpha(opacity=50); /* For IE8 and earlier */
+    visibility: visible !important;
 }
