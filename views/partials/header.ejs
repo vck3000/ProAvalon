@@ -328,7 +328,12 @@
 										<span style="padding-left: 15px;"></span>
 										<span id="volumeValue">100</span>
 									</label>
-									<p><div class="btn btn-default btn-xs">Test buzz</div></p>
+									<p><div id="testBuzzButton" class="btn btn-default btn-xs">Test buzz</div></p>
+									<script>
+										$("#testBuzzButton").on("click", function(){
+											playSound("buzz");
+										});
+									</script>
 								</div>
 								<div>
 									<label><input type="checkbox" name="option_notifications_sound_players_joining_room" id="option_notifications_sound_players_joining_room"> Players joining room </label>
@@ -340,7 +345,7 @@
 									<label><input type="checkbox" name="option_notifications_sound_game_starting" id="option_notifications_sound_game_starting"> Game starting </label>
 								</div>
 								<div>
-									<label><input type="checkbox" name="option_notifications_sound_your_turn" id="option_notifications_sound_your_turn"> Your turn when not viewing </label>
+									<label><input type="checkbox" name="option_notifications_sound_your_turn" id="option_notifications_sound_your_turn"><span style="text-decoration: line-through;"> Your turn when not viewing </span></label>
 								</div>
 								<div>
 									<label><input type="checkbox" name="option_notifications_sound_game_ending" id="option_notifications_sound_game_ending"> Game ending</label>
@@ -374,7 +379,7 @@
 								</div>
 
 								<div>
-									<label><input type="checkbox" name="option_notifications_desktop_your_turn" id="option_notifications_desktop_your_turn"> Your turn when not viewing  </label>
+									<label><input type="checkbox" name="option_notifications_desktop_your_turn" id="option_notifications_desktop_your_turn"><span style="text-decoration: line-through;"> Your turn when not viewing  </span></label>
 								</div>
 								<div>
 									<label><input type="checkbox" name="option_notifications_desktop_game_ending" id="option_notifications_desktop_game_ending"> Game ending when not viewing </label>

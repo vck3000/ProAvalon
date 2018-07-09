@@ -61,15 +61,24 @@ var userCommands = {
 
 	buzz: {
 		command: "buzz",
-		help: "/buzz <playername>: Buzz a player.",
-		run: function (args) {
-			return {message: "buzzed player " + args[1] + " (not yet implemented)", classStr: "server-text"};
+		help: "/buzz <playername>: Buzz a player. <playername> must all be in lower case. (until I upgrade this)",
+		run: function (args, senderSocket) {
+			var buzzSocket = allSockets[args[1]];
+			if (buzzSocket) {
+				buzzSocket.emit("buzz", senderSocket.request.user.username);
+			return {message: "You have buzzed player " + args[1] + ".", classStr: "server-text"};
+			}
+			else {
+				console.log(allSockets);
+				return {message: "There is no such player.", classStr: "server-text"};
+				
+			}
 		}
 	},
 
 	slap: {
 		command: "slap",
-		help: "/slap <playername>: Slap a player for fun. <playername> must all be in lower case.",
+		help: "/slap <playername>: Slap a player for fun. <playername> must all be in lower case. (until I upgrade this)",
 		run: function (args, senderSocket) {
 
 			var slapSocket = allSockets[args[1]];

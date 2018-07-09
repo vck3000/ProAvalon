@@ -722,6 +722,7 @@ for (var keys in userOptions) {
 
 //for the game
 var roomPlayersData;
+var roomSpectatorsData;
 var seeData;
 var gameData;
 var roomId;
@@ -1241,20 +1242,36 @@ socket.on("messageCommandReturnStr", function (data) {
     console.log("received return str");
 });
 
-
-var slap;
+var timeLastBuzzSlap;
 socket.on("slap", function (username) {
-    if (slap === undefined) {
-        slap = new Audio('sounds/slap.mp3');
+    if($("#option_notifications_sound_slap")[0].checked === true){
+        if(!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $("#option_notifications_buzz_slap_timeout")[0].value){
+            playSound("slap");
+            
+            timeLastBuzzSlap = new Date();
+
+            var data = { message: "You have been slapped by " + username + ".", classStr: "server-text"}
+            setTimeout(function () {
+                addToAllChat(data);
+                addToRoomChat(data);
+            }, 1100);
+        }
     }
 
-    slap.play();
-    var data = { message: "You have been slapped by " + username + ".", classStr: "server-text"}
+});
 
-    setTimeout(function () {
-        addToAllChat(data);
-        addToRoomChat(data);
-    }, 1100);
+socket.on("buzz", function (username) {
+    if($("#option_notifications_sound_buzz")[0].checked === true){
+        if(!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $("#option_notifications_buzz_slap_timeout")[0].value){
+            playSound("ding");
+
+            var data = { message: "You have been buzzed by " + username + ".", classStr: "server-text"}
+            setTimeout(function () {
+                addToAllChat(data);
+                addToRoomChat(data);
+            }, 0);
+        }
+    }
 });
 
 //======================================
@@ -1288,16 +1305,19 @@ function showDangerAlert(data) {
 
 
 
-var ding;
 socket.on("update-room-players", function (data) {
 
     //if an extra person joins, play the chime
     if(roomPlayersData && roomPlayersData.length < data.playersJoined.length && data.playersJoined.length > 1){
-        if(!ding){
-            ding =  new Audio('sounds/ding.wav');
+        if($("#option_notifications_sound_players_joining_game")[0].checked === true){
+            playSound('ding');
         }
-        console.log("ding");
-        // ding.play();
+    }
+
+    if(roomSpectatorsData && roomSpectatorsData.length < data.spectators.length){
+        if($("#option_notifications_sound_players_joining_room")[0].checked === true){
+            playSound('highDing');
+        }
     }
 
     // var x = $("#typehead").parent().width();    
@@ -1320,6 +1340,10 @@ socket.on("update-room-players", function (data) {
 //======================================
 socket.on("game-starting", function (roles) {
     var secondsLeft = 15;
+
+    if($("#option_notifications_sound_game_starting")[0].checked === true){
+        playSound("dingDingDing");
+    }
 
     swal({
         title: "Game is starting in " + secondsLeft,
@@ -1374,6 +1398,10 @@ socket.on("game-data", function (data) {
                     message: str
                 }
                 addToRoomChat(data);
+            }
+
+            if($("#option_notifications_sound_game_starting")[0].checked === true){
+                playSound("game-start");
             }
         }
 
@@ -1601,6 +1629,9 @@ function draw() {
                     drawBullet(getIndexFromUsername(gameData.see.playerShot));
                 }
 
+                if($("#option_notifications_sound_game_ending")[0].checked === true){
+                    playSound("game-end");
+                }
 
             }
 
@@ -2847,14 +2878,17 @@ function updateSpectatorsList(){
 
 
 var sounds = {
-    "slap": "slap.wav",
-    "buzz": "buzz.wav",
+    "slap": "slap.mp3",
+    "buzz": "ding.mp3",
+    "ding": "ding.mp3",
     "game-start": "game-start.mp3",
-    "game-end": "game-end.mp3"
+    "game-end": "game-end.mp3",
+    "highDing": "highDing.mp3",
+    "dingDingDing": "dingDingDing.mp3"
 }
 
 //get all the sound files and prepare them.
-var soundsFiles = {};
+var soundFiles = {};
 for(var key in sounds){
     if(sounds.hasOwnProperty(key)){
         soundFiles[key] = new Audio('sounds/' + sounds[key])
@@ -2865,7 +2899,7 @@ function playSound(soundToPlay){
     if($("#option_notifications_sound_enable")[0].checked === false){
         return false;
     }
-    else if(gameStarted && $("#option_notifications_sound_enable_in_game")[0].checked){
+    else if(gameStarted && $("#option_notifications_sound_enable_in_game")[0].checked === false){
         return false;
     }
     else{
