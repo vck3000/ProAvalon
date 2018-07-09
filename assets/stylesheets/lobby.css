@@ -706,16 +706,26 @@ i {
 #div1Resize {
     /* border: 1px solid black; */
     height: 40%;
-}
-#div2Resize {
-    /* border: 1px solid red; */
+
+    max-width: 1300px;
+    margin:auto;
 }
 
 .myHr {
     height: 2px;
     width: 100%;
+    max-width: 1300px;
+    margin:auto;
     background: rgb(161, 161, 161);
 }
+
+#div2Resize {
+    /* border: 1px solid red; */
+    max-width:1300px;
+    margin: auto;
+}
+
+
 
 
 
@@ -784,6 +794,13 @@ i {
     position: absolute;
     right: 0%;
 
+    top:5%;
+}
+
+#backButton {
+    position: absolute;
+    left: 0%;
+    top:5%;
 }
 
 #room-chat-room-bar {
