@@ -146,6 +146,10 @@
 	.optionsInputList {
 		
 	}
+
+	.myActive {
+		background: #ABABAB;
+	}
 	
 	
 </style>
@@ -165,12 +169,12 @@
 
 				<div class="row" style="height: 60vh; ">
 
-					<div id="leftOptionsCategories" class="col-xs-2">
+					<div id="leftOptionsCategories" class="col-xs-4 col-md-3">
 
 						<table id="leftOptionsCategoriesTable" class="table table-bordered table-striped lobby-table">
 							<tbody>
 								<tr>
-									<td id="generalOptionsButton">
+									<td id="generalOptionsButton" class="myActive">
 										<span class="optionCategoriesText">
 											General
 										</span>
@@ -186,9 +190,9 @@
 								</tr>
 
 								<tr>
-									<td id="soundOptionsButton">
+									<td id="notificationsOptionsButton">
 										<span class="optionCategoriesText">
-											Sound
+											Notifications
 										</span>
 									</td>
 								</tr>
@@ -207,8 +211,9 @@
 					<div id="borderBar" class="col-xs-1">
 					</div>
 
-					<div id="rightOptionsMenu" class="col-xs-9">
+					<div id="rightOptionsMenu" class="col-xs-7 col-md-8">
 						<div id="generalOptionsMenu">
+							<h4><u>General: </u></h4>
 							<div>
 								<label>Font size: <input type="text" name="option_font_size_text" id="option_font_size_text" style="width: 3em;"></label>
 							</div>
@@ -219,6 +224,7 @@
 
 
 						<div id="displayOptionsMenu" class="hidden">
+							<h4><u>Display: </u></h4>
 							<div>
 								<label>Dark theme: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
 							</div>
@@ -230,47 +236,71 @@
 						
 
 
-						<div id="soundOptionsMenu" class="hidden">
-							blah blah some sound stuff
-							<ul>
-								<li>Volume</li>
-								<li>Frequency</li>
-								<li></li>
-							</ul>
+						<div id="notificationsOptionsMenu" class="hidden">
+							<h4><u>Notifications: </u></h4>
+							
 
-							<h4>Select the roles/items you would like in the game.</h4>
-							<h6>Default roles have been pre-selected.</h6>
+							<h5><u>Sound: </u></h5>
+							<div>
+								<label>Enabled: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
+							</div>
+							<div>
+								<label>Volume: <input type="range" min=0 max=100 name="option_dark_theme" id="option_dark_theme"></label>
+							</div>
+							<div>
+								<label>Players joining room: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
+							</div>
+							<div>
+								<label>Players joining game: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
+							</div>
+							<div>
+								<label>Game starting: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
+							</div>
+							<div>
+								<label>Your turn when not viewing: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
+							</div>
+							<div>
+								<label>Game ending: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
+							</div>
+							<div>
+								<label>Buzzing: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
+							</div>
+							<div>
+								<label>Slapping: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
+							</div>
 
-							<div class="btn-group-vertical" data-toggle="buttons">
-								<label class="btn btn-mine active">
-									<input type="checkbox" autocomplete="off" checked> Merlin + Assassin
-								</label>
-								<br>
-								<label class="btn btn-mine active">
-									<input type="checkbox" autocomplete="off" checked> Percival
-								</label>
-								<br>
-								<label class="btn btn-mine active">
-									<input type="checkbox" autocomplete="off" checked> Morgana
-								</label>
-								<br>
-								<label class="btn btn-mine">
-									<input type="checkbox" autocomplete="off"> Lady of the Lake
-								</label>
-								<br>
-								<label class="btn btn-mine">
-									<input type="checkbox" autocomplete="off"> Mordred
-								</label>
-								<br>
-								<label class="btn btn-mine">
-									<input type="checkbox" autocomplete="off"> Oberon
-								</label>
+
+
+							<h5><u>Desktop notifications: </u></h5>
+							<div>
+								<label>Enabled: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
+							</div>
+							<div>
+								<label>Players joining room: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
+							</div>
+							<div>
+								<label>Players joining game: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
+							</div>
+							<div>
+								<label>Game starting: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
+							</div>
+
+
+							<div>
+								<label>Enabled during game: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
+							</div>
+							<div>
+								<label>Your turn and not viewing the window: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
+							</div>
+							<div>
+								<label>Game finishes and not viewing the window: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
 							</div>
 						</div>
 
 
 
 						<div id="resetOptionsMenu" class="hidden">
+							<h4><u>Reset: </u></h4>
 							<button class="btn btn-danger" onclick="resetCookies()">Reset all settings</button>
 
 							<script src="/libraries/cookies_min.js"></script>
@@ -331,7 +361,7 @@ var a;
 	var optionsList = [
 		"general",
 		"display",
-		"sound",
+		"notifications",
 		"reset"
 	]
 
@@ -348,6 +378,10 @@ var a;
 			$("#" + openThisMenu).removeClass("hidden");
 
 
+			removeMyActiveOffAllButtons();
+			this.classList.add("myActive");
+
+
 		});
 	}
 
@@ -357,14 +391,43 @@ var a;
 		} 
 	}
 
+	function removeMyActiveOffAllButtons() {
+		for(var i = 0; i < optionsList.length; i++){
+			$("#" + optionsList[i] + "OptionsButton").removeClass("myActive");
+		} 
+	}
+
 
 </script>
 
 
 
 
+<button onclick="testNotif()"> test notification </button>
+
+<script>
+
+	function testNotif(){
+		
+		if(Notification.permission !== "granted"){
+			Notification.requestPermission();
+		}
+
+		else {
+
+			var title = "The game is starting!";
+			var options = {
+				body:"Are you ready?",
+				icon: "/avatars/base-res.png"
+			}
+
+			var test = new Notification(title, options);
+		}
 
 
+	}
+
+</script>
 
 
 
