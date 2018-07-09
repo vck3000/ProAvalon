@@ -5,6 +5,9 @@ To-do list:
 -Notifications?
 -sound for joining and game start
 
+-test buzz button
+
+
 -Moderators
 
 -Max number of players
@@ -12,16 +15,24 @@ To-do list:
 
 -Statistics page
 
--disable slapping when in game
+
+-online users list in misc tab
+-record individual player stats
+
+-move font size to display
 
 
+-notification from forums
+
+-player profile page
+
+-roll command
+
+-dark mode hammers and usernames cant see when avatar is highlighted
 
 
-
-
--server text is gone??
-
-
+-waiting for (username) to shoot 
+-right side tabs dont flash yellow
 
 
 -Learn REGEX
@@ -189,6 +200,8 @@ Mine:
 -full stop after m1 has succeeded
 -right side tabs VH is fked
 -yellow highlight buttons should disappear when its viewed in 2nd tab.
+-disable slapping when in game
+-server text is gone??
 
 
 

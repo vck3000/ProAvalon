@@ -698,10 +698,6 @@ var userOptions = {
             });
         }
     },
-
-
-    
-
     
 }
 

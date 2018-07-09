@@ -844,3 +844,11 @@ i {
     padding-left: 0px;
     padding-right: 0px;
 }
+
+
+.disabled{
+    opacity: 0.0 !important;
+    filter: alpha(opacity=30); /* For IE8 and earlier */
+
+
+}
