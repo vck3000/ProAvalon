@@ -715,7 +715,7 @@ i {
 #div1Resize {
     /* border: 1px solid black; */
     height: 40%;
-
+    width: 100%;
     max-width: 1300px;
     margin:auto;
 }

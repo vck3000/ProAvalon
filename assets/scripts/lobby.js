@@ -2845,36 +2845,31 @@ function updateSpectatorsList(){
 }
 
 
-// socket.on("update-current-players-list", function (currentPlayers) {
-//     console.log("update the current player list request received");
-//     // console.log(currentPlayers);
-//     //remove all the li's inside the table
-//     $("#current-players-table tbody tr td").remove();
-//     $("#current-players-table tbody tr").remove();
 
-//     //append each player into the list
-//     currentPlayers.forEach(function (currentPlayer) {
+var sounds = {
+    "slap": "slap.wav",
+    "buzz": "buzz.wav",
+    "game-start": "game-start.mp3",
+    "game-end": "game-end.mp3"
+}
 
-//         //if the current game exists, add it
-//         if (currentPlayer) {
-//             var str = "<tr> <td> " + currentPlayer + "</td> </tr>";
-//             $("#current-players-table tbody").append(str);
-//         }
-//     });
-// });
+//get all the sound files and prepare them.
+var soundsFiles = {};
+for(var key in sounds){
+    if(sounds.hasOwnProperty(key)){
+        soundFiles[key] = new Audio('sounds/' + sounds[key])
+    }
+}
 
-
-
-// var userCommands = {
-//     commandA: {
-//         command: "commandAType",
-//         help: "Just some text for commandA",
-//         socketCommand: "commandA~"
-//     },
-
-//     help: {
-//         command: "help",
-//         help: "Come on, if you don't know what this command does YOU need help.",
-//         socketCommand: "help"
-//     }
-// };
+function playSound(soundToPlay){
+    if($("#option_notifications_sound_enable")[0].checked === false){
+        return false;
+    }
+    else if(gameStarted && $("#option_notifications_sound_enable_in_game")[0].checked){
+        return false;
+    }
+    else{
+        soundFiles[soundToPlay].volume = $("#option_notifications_sound_volume")[0].value / 100;
+        soundFiles[soundToPlay].play();
+    }
+}
