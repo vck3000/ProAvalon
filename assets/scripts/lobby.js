@@ -1261,8 +1261,9 @@ socket.on("slap", function (username) {
 });
 
 socket.on("buzz", function (username) {
-    if($("#option_notifications_sound_buzz")[0].checked === true){
-        if(!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $("#option_notifications_buzz_slap_timeout")[0].value){
+    
+    if(!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $("#option_notifications_buzz_slap_timeout")[0].value){
+        if($("#option_notifications_sound_buzz")[0].checked === true){
             playSound("ding");
 
             var data = { message: "You have been buzzed by " + username + ".", classStr: "server-text"}
@@ -1270,6 +1271,10 @@ socket.on("buzz", function (username) {
                 addToAllChat(data);
                 addToRoomChat(data);
             }, 0);
+        }
+
+        if($("#option_notifications_desktop_buzz")[0].checked === true){
+            displayNotification(username + " has buzzed you!", "", "avatars/base-spy.png", "buzz");
         }
     }
 });
@@ -1307,16 +1312,25 @@ function showDangerAlert(data) {
 
 socket.on("update-room-players", function (data) {
 
-    //if an extra person joins, play the chime
+    //if an extra person joins the game, play the chime
     if(roomPlayersData && roomPlayersData.length < data.playersJoined.length && data.playersJoined.length > 1){
         if($("#option_notifications_sound_players_joining_game")[0].checked === true){
             playSound('ding');
         }
+        
+        if($("#option_notifications_desktop_players_joining_game")[0].checked === true){
+            displayNotification("New player in game!  [" + (data.playersJoined.length) + "p]", data.playersJoined[data.playersJoined.length - 1].username + " has joined the game!", "avatars/base-res.png", "newPlayerInGame");
+        }
     }
 
+    //if an extra person joins the room
     if(roomSpectatorsData && roomSpectatorsData.length < data.spectators.length){
         if($("#option_notifications_sound_players_joining_room")[0].checked === true){
             playSound('highDing');
+        }
+
+        if($("#option_notifications_desktop_players_joining_room")[0].checked === true){
+            displayNotification("New player in room.", data.spectators[data.spectators.length - 1] + " has joined the room.", "avatars/base-res.png", "newPlayerInRoom");
         }
     }
 
@@ -1344,6 +1358,11 @@ socket.on("game-starting", function (roles) {
     if($("#option_notifications_sound_game_starting")[0].checked === true){
         playSound("dingDingDing");
     }
+
+    if($("#option_notifications_desktop_game_starting")[0].checked === true){
+        displayNotification("Game starting!", "Are you ready?", "avatars/base-spy.png", "gameStarting");
+    }
+
 
     swal({
         title: "Game is starting in " + secondsLeft,
@@ -1631,6 +1650,10 @@ function draw() {
 
                 if($("#option_notifications_sound_game_ending")[0].checked === true){
                     playSound("game-end");
+                }
+
+                if($("#option_notifications_desktop_game_ending")[0].checked === true){
+                    displayNotification("Game has ended!", "", "avatars/base-spy.png", "gameEnded");
                 }
 
             }
@@ -2919,7 +2942,7 @@ function playSound(soundToPlay){
 
 function displayNotification(title, body, icon, tag){
 
-    if(Notification.requestPermission === "granted" && $("#option_notifications_desktop_enable")[0].checked === true){
+    if(Notification.permission === "granted" && $("#option_notifications_desktop_enable")[0].checked === true){
         var options = {
             body: body,
             icon: icon,
@@ -2928,27 +2951,4 @@ function displayNotification(title, body, icon, tag){
     
         var notif = new Notification(title, options);
     }
-
-}
-
-
-
-function testNotif(){
-		
-    if(Notification.permission !== "granted"){
-        Notification.requestPermission();
-    }
-
-    else {
-
-        var title = "The game is starting!";
-        var options = {
-            body:"Are you ready?",
-            image:"/avatars/base-res.png"
-        }
-
-        var test = new Notification(title, options);
-    }
-
-
 }
