@@ -208,6 +208,16 @@
 	.myActive {
 		background: #ABABAB;
 	}
+
+	.subBox {
+		border-radius: 15px;
+		border: 1px dashed gray;
+		padding-left: 15px;
+	}
+
+	#rightOptionsMenu {
+		overflow: auto;
+	}
 	
 	
 </style>
@@ -270,7 +280,7 @@
 					</div>
 
 					<div id="rightOptionsMenu" class="col-xs-7 col-md-8">
-						<div id="generalOptionsMenu">
+						<div id="generalOptionsMenu" class="rightMenu">
 							<h4><u>General: </u></h4>
 							<div>
 								<label>Font size: <input type="text" name="option_general_font_size_text" id="option_general_font_size_text" style="width: 3em;"></label>
@@ -278,91 +288,92 @@
 						</div>
 
 
-						<div id="displayOptionsMenu" class="hidden">
+						<div id="displayOptionsMenu" class="hidden rightMenu">
 							<h4><u>Display: </u></h4>
 							<div>
 								<label>Height of avatar area: <input type="text" name="option_display_avatar_container_height_text" id="option_display_avatar_container_height_text" style="width: 3em;"></label>
 							</div>
 							<div>
-								<label>Dark theme: <input type="checkbox" name="option_display_dark_theme" id="option_display_dark_theme"></label>
+								<label><input type="checkbox" name="option_display_dark_theme" id="option_display_dark_theme"> Dark theme</label>
 							</div>
 							<div>
-								<label>Two tabs: <input type="checkbox" name="option_display_two_tabs" id="option_display_two_tabs"></label>
+								<label><input type="checkbox" name="option_display_two_tabs" id="option_display_two_tabs"> Two tabs</label>
 							</div>
 						</div>
 
 						
 
 
-						<div id="notificationsOptionsMenu" class="hidden">
+						<div id="notificationsOptionsMenu" class="hidden rightMenu">
 							<h4><u>Notifications: </u></h4>
 							
-
-							<h5><u>Sound: </u></h5>
-							<div>
-								<label>Enabled: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
-							</div>
-							<div>
-								<label>Volume: <input type="range" min=0 max=100 name="option_dark_theme" id="option_dark_theme"></label>
-							</div>
-							<div>
-								<label>Players joining room: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
-							</div>
-							<div>
-								<label>Players joining game: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
-							</div>
-							<div>
-								<label>Game starting: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
-							</div>
-							<div>
-								<label>Your turn when not viewing: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
-							</div>
-							<div>
-								<label>Game ending: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
-							</div>
-							<div>
-								<label>Buzzing: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
-							</div>
-							<div>
-								<label>Slapping: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
+							<div class="subBox">
+								<h5><u>Sound: </u></h5>
+								<div>
+									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Enabled </label>
+								</div>
+								<div>
+									<label>Volume: <input type="range" min=0 max=100 name="option_dark_theme" id="option_dark_theme"></label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Players joining room </label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Players joining game </label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Game starting </label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Your turn when not viewing </label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Game ending</label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Buzzing </label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Slapping</label>
+								</div>
 							</div>
 
 
 
 							<h5><u>Desktop notifications: </u></h5>
 							<div>
-								<label>Enabled: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
+								<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Enabled </label>
 							</div>
 							<div>
-								<label>Players joining room: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
+								<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Players joining room </label>
 							</div>
 							<div>
-								<label>Players joining game: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
+								<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Players joining game </label>
 							</div>
 							<div>
-								<label>Game starting: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
-							</div>
-
-
-							<div>
-								<label>Enabled during game: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
-							</div>
-							<div>
-								<label>Your turn and not viewing the window: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
-							</div>
-							<div>
-								<label>Game finishes and not viewing the window: <input type="checkbox" name="option_dark_theme" id="option_dark_theme"></label>
+								<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Game starting </label>
 							</div>
 
 
 							<div>
-								<label>Seconds before you can be buzzed again: <input type="text" name="option_dark_theme" id="option_dark_theme" style="width: 3em;"></label>
+								<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Enabled during game </label>
+							</div>
+							<div>
+								<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Your turn and not viewing the window </label>
+							</div>
+							<div>
+								<label><input type="checkbox" name="option_dark_theme" id="option_dark_theme"> Game finishes and not viewing the window </label>
+							</div>
+
+
+							<div>
+								<label><input type="text" name="option_dark_theme" id="option_dark_theme" style="width: 3em;"> Seconds before you can be buzzed again</label>
 							</div>
 						</div>
 
 
 
-						<div id="resetOptionsMenu" class="hidden">
+						<div id="resetOptionsMenu" class="hidden rightMenu">
 							<h4><u>Reset: </u></h4>
 							<button class="btn btn-danger" onclick="resetCookies()">Reset all settings</button>
 
