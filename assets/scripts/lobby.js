@@ -115,22 +115,28 @@ function update(picker){
 //=======================================================================
 var userOptions = {
 
-    optionGeneralFontSize: {
+    lastSettingsResetDate: {
+        defaultValue: new Date().toString(),
+        onLoad: function(){},
+        initialiseEventListener: function(){}
+    },
+
+    optionDisplayFontSize: {
         defaultValue: "14",
         onLoad: function () {
             //get cookie data
-            var fontSize = docCookies.getItem("optionGeneralFontSize");
+            var fontSize = docCookies.getItem("optionDisplayFontSize");
 
             //set the value in the users display
-            $("#option_general_font_size_text")[0].value = fontSize;
+            $("#option_display_font_size_text")[0].value = fontSize;
 
             //make the font size changes
             $("html *").css("font-size", fontSize + "px");
             draw();
         },
         initialiseEventListener: function () {
-            $("#option_general_font_size_text").on("change", function () {
-                var fontSize = $("#option_general_font_size_text")[0].value;
+            $("#option_display_font_size_text").on("change", function () {
+                var fontSize = $("#option_display_font_size_text")[0].value;
               // console.log(fontSize);
 
                 //assign bounds
@@ -146,7 +152,7 @@ var userOptions = {
                 }
 
                 //display the new value in case it was changed by bounds
-                $("#option_general_font_size_text")[0].value = fontSize;
+                $("#option_display_font_size_text")[0].value = fontSize;
 
                 //make the changes to font size
                 $("html *").css("font-size", fontSize + "px");
@@ -154,7 +160,7 @@ var userOptions = {
 
                 //save the data in cookie
               // console.log("Stored font size: " + fontSize);
-                docCookies.setItem("optionGeneralFontSize", fontSize, Infinity);
+                docCookies.setItem("optionDisplayFontSize", fontSize, Infinity);
             });
         }
     },
@@ -958,7 +964,7 @@ socket.on('checkSettingsResetDate', function(serverResetDate){
         }
     }
     else{
-        resetSettings();
+        // resetSettings();
     }
 
     

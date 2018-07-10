@@ -1,13 +1,5 @@
 To-do list:
 
--title notificaitons
--Sound
--Notifications?
--sound for joining and game start
-
--test buzz button
-
-
 -Moderators
 
 -Max number of players
@@ -19,7 +11,6 @@ To-do list:
 -online users list in misc tab
 -record individual player stats
 
--move font size to display
 
 
 -notification from forums
@@ -209,6 +200,24 @@ Mine:
 -remove faded when not needed
 -remove game start sound
 -dark mode hammers and usernames cant see when avatar is highlighted
+
+-title notificaitons
+-Sound
+-Notifications?
+-sound for joining and game start
+
+-test buzz button
+-move font size to display
+
+
+
+
+
+
+
+
+
+
 
 
 Hak:

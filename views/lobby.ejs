@@ -169,57 +169,64 @@
 						<div id="misc" class="tab-pane fade in full-height">
 							<div class="tab-window-full-bottom">
 							
-							<button id="playerHighlightColourButton">Click to change highlight colour</button>
-							<script>
-								$("#playerHighlightColourButton").on("click", function(){
-									$("#playerHighlightColourBoxes").toggleClass("hidden");
-								});
-							</script>
-							
-							<span id="playerHighlightColourBoxes" class="hidden">
-								<h5>0 starts at the top, and increases anti-clockwise.</h5>
+								<button id="playerHighlightColourButton">Click to change highlight colour</button>
+								<script>
+									$("#playerHighlightColourButton").on("click", function(){
+										$("#playerHighlightColourBoxes").toggleClass("hidden");
+									});
+								</script>
+								
+								<span id="playerHighlightColourBoxes" class="hidden">
+									<h5>0 starts at the top, and increases anti-clockwise.</h5>
 
-								Player 0: <button id="player0HighlightColour" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
-								borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'0'}" style="width:20px; height:20px;"></button>
+									Player 0: <button id="player0HighlightColour" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
+									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'0'}" style="width:20px; height:20px;"></button>
+									<br>
+									Player 1: <button id="player1HighlightColour" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
+									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'1'}" style="width:20px; height:20px;"></button>
+									<br>
+									Player 2: <button id="player2HighlightColour" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
+									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'2'}" style="width:20px; height:20px;"></button>
+									<br>
+									Player 3: <button id="player3HighlightColour" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
+									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'3'}" style="width:20px; height:20px;"></button>
+									<br>
+									Player 4: <button id="player4HighlightColour" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
+									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'4'}" style="width:20px; height:20px;"></button>
+									<br>
+									Player 5: <button id="player5HighlightColour" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
+									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'5'}" style="width:20px; height:20px;"></button>
+									<br>
+									Player 6: <button id="player6HighlightColour" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
+									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'6'}" style="width:20px; height:20px;"></button>
+									<br>
+									Player 7: <button id="player7HighlightColour" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
+									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'7'}" style="width:20px; height:20px;"></button>
+									<br>
+									Player 8: <button id="player8HighlightColour" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
+									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'8'}" style="width:20px; height:20px;"></button>
+									<br>
+									Player 9: <button id="player9HighlightColour" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
+									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'9'}" style="width:20px; height:20px;"></button>
+								</span>
 								<br>
-								Player 1: <button id="player1HighlightColour" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
-								borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'1'}" style="width:20px; height:20px;"></button>
 								<br>
-								Player 2: <button id="player2HighlightColour" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
-								borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'2'}" style="width:20px; height:20px;"></button>
 								<br>
-								Player 3: <button id="player3HighlightColour" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
-								borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'3'}" style="width:20px; height:20px;"></button>
-								<br>
-								Player 4: <button id="player4HighlightColour" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
-								borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'4'}" style="width:20px; height:20px;"></button>
-								<br>
-								Player 5: <button id="player5HighlightColour" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
-								borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'5'}" style="width:20px; height:20px;"></button>
-								<br>
-								Player 6: <button id="player6HighlightColour" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
-								borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'6'}" style="width:20px; height:20px;"></button>
-								<br>
-								Player 7: <button id="player7HighlightColour" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
-								borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'7'}" style="width:20px; height:20px;"></button>
-								<br>
-								Player 8: <button id="player8HighlightColour" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
-								borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'8'}" style="width:20px; height:20px;"></button>
-								<br>
-								Player 9: <button id="player9HighlightColour" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
-								borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'9'}" style="width:20px; height:20px;"></button>
-							</span>
-							<br>
-							<br>
-							<br>
-							
-							<strong><p>Spectators:</p></strong>
+								
+								<strong><p>Spectators:</p></strong>
 
-							<table id="spectators-table" class="table table-bordered table-striped lobby-table">	
-								<tbody>
+								<table id="spectators-table" class="table table-bordered table-striped lobby-table">	
+									<tbody>
 
-								</tbody>
-							</table>
+									</tbody>
+								</table>
+
+								<strong><p>Online players:</p></strong>
+								<table id="current-players-table" class="table table-bordered table-striped lobby-table">	
+									<tbody>
+
+									</tbody>
+								</table>
 							
 							</div>
 
@@ -291,57 +298,64 @@
 						<div id="misc2" class="tab-pane fade in full-height">
 							<div class="tab-window-full-bottom">
 							
-							<button id="playerHighlightColourButton2" class="">Click to change highlight colour</button>
-							<script>
-								$("#playerHighlightColourButton2").on("click", function(){
-									$("#playerHighlightColourBoxes2").toggleClass("hidden");
-								});
-							</script>
-							
-							<span id="playerHighlightColourBoxes2" class="hidden">
-								<h5>0 starts at the top, and increases anti-clockwise.</h5>
+								<button id="playerHighlightColourButton2" class="">Click to change highlight colour</button>
+								<script>
+									$("#playerHighlightColourButton2").on("click", function(){
+										$("#playerHighlightColourBoxes2").toggleClass("hidden");
+									});
+								</script>
+								
+								<span id="playerHighlightColourBoxes2" class="hidden">
+									<h5>0 starts at the top, and increases anti-clockwise.</h5>
 
-								Player 0: <button id="player0HighlightColour2" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
-								borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'0'}" style="width:20px; height:20px;"></button>
+									Player 0: <button id="player0HighlightColour2" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
+									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'0'}" style="width:20px; height:20px;"></button>
+									<br>
+									Player 1: <button id="player1HighlightColour2" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
+									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'1'}" style="width:20px; height:20px;"></button>
+									<br>
+									Player 2: <button id="player2HighlightColour2" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
+									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'2'}" style="width:20px; height:20px;"></button>
+									<br>
+									Player 3: <button id="player3HighlightColour2" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
+									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'3'}" style="width:20px; height:20px;"></button>
+									<br>
+									Player 4: <button id="player4HighlightColour2" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
+									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'4'}" style="width:20px; height:20px;"></button>
+									<br>
+									Player 5: <button id="player5HighlightColour2" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
+									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'5'}" style="width:20px; height:20px;"></button>
+									<br>
+									Player 6: <button id="player6HighlightColour2" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
+									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'6'}" style="width:20px; height:20px;"></button>
+									<br>
+									Player 7: <button id="player7HighlightColour2" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
+									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'7'}" style="width:20px; height:20px;"></button>
+									<br>
+									Player 8: <button id="player8HighlightColour2" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
+									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'8'}" style="width:20px; height:20px;"></button>
+									<br>
+									Player 9: <button id="player9HighlightColour2" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
+									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'9'}" style="width:20px; height:20px;"></button>
+								</span>
 								<br>
-								Player 1: <button id="player1HighlightColour2" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
-								borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'1'}" style="width:20px; height:20px;"></button>
 								<br>
-								Player 2: <button id="player2HighlightColour2" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
-								borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'2'}" style="width:20px; height:20px;"></button>
 								<br>
-								Player 3: <button id="player3HighlightColour2" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
-								borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'3'}" style="width:20px; height:20px;"></button>
-								<br>
-								Player 4: <button id="player4HighlightColour2" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
-								borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'4'}" style="width:20px; height:20px;"></button>
-								<br>
-								Player 5: <button id="player5HighlightColour2" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
-								borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'5'}" style="width:20px; height:20px;"></button>
-								<br>
-								Player 6: <button id="player6HighlightColour2" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
-								borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'6'}" style="width:20px; height:20px;"></button>
-								<br>
-								Player 7: <button id="player7HighlightColour2" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
-								borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'7'}" style="width:20px; height:20px;"></button>
-								<br>
-								Player 8: <button id="player8HighlightColour2" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
-								borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'8'}" style="width:20px; height:20px;"></button>
-								<br>
-								Player 9: <button id="player9HighlightColour2" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
-								borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'9'}" style="width:20px; height:20px;"></button>
-							</span>
-							<br>
-							<br>
-							<br>
-							
-							<strong><p>Spectators:</p></strong>
+								
+								<strong><p>Spectators:</p></strong>
 
-							<table id="spectators-table" class="table table-bordered table-striped lobby-table">	
-								<tbody>
+								<table id="spectators-table" class="table table-bordered table-striped lobby-table">	
+									<tbody>
 
-								</tbody>
-							</table>
+									</tbody>
+								</table>
+
+								<strong><p>Online players:</p></strong>
+								<table id="current-players-table" class="table table-bordered table-striped lobby-table">	
+									<tbody>
+
+									</tbody>
+								</table>
 							
 							</div>
 
