@@ -1,0 +1,67 @@
+<% include partials/header %>
+
+<link rel="stylesheet" type="text/css" href="/stylesheets/profile.css">
+<link rel="stylesheet" type="text/css" href="/libraries/flag-icon-css-master/css/flag-icon.min.css">
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
+
+
+<div class="container jumbotron">
+
+    <%= userData %>
+
+    <div class="row">
+        <div class="col-xs-12" id="topRow">
+
+            <div class="row">
+                <div class="col-xs-6 col-md-3">
+            
+                    <% if(userData.avatarImgRes){ %>
+                        <% if(userData.avatarImgRes.includes("http")){ %>
+                            <img src=<%= userData.avatarImgRes %> >
+                        <% } else {%>
+                            <img src=<%= "../avatars/" + userData.avatarImgRes %> >
+                        <% } %>
+                    <% } else{ %>
+                        <img src="avatars/base-res.png  " >
+                    <% } %>
+
+                </div>
+                <div class="col-xs-6 col-md-9">
+                    <span id="title">
+                        <h2>
+                            <span id="flagSpan" class="flag-icon flag-icon-au" data-toggle="tooltip" title="Australia"></span>
+                            <%=userData.username %> 
+                        </h2>  
+                    </span>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <h2><u>Stats:</u></h2>
+                
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+
+$( document ).ready(function() {
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+});
+
+
+
+</script>
+
+
+<% include partials/footer %>

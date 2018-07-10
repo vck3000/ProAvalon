@@ -1,0 +1,21 @@
+
+
+#title {
+    /* padding-left: 25%; */
+    position: relative;
+}
+
+#title * {
+    /* display: inline-block; */
+    /* position: absolute; */
+    /* transform: translateY(50%); */
+}
+
+#topRow {
+    /* margin:auto; */
+}
+
+#flagSpan {
+    position:absolute;
+    transform: translateX(-120%);   
+}
