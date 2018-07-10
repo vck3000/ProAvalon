@@ -106,6 +106,20 @@ router.get("/profile/:profileUsername", function(req, res){
 	});
 });
 
+
+router.get("/profile/getProfileDataAJAX/:profileUsername", function(req, res){
+	User.findOne({username: req.params.profileUsername}, function(err, foundUser){
+		if(err){
+			console.log(err);
+		}
+		else{
+			res.status(200).send(foundUser);
+
+			console.log("Received AJAX request");
+		}
+	});
+});
+
 //=====================================
 //Forum
 //=====================================

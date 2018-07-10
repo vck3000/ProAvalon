@@ -21,6 +21,8 @@ To-do list:
 
 -roll command
 
+-Who card started with
+
 
 
 -waiting for (username) to shoot 

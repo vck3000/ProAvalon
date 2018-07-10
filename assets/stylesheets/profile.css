@@ -1,21 +1,139 @@
 
 
 #title {
-    /* padding-left: 25%; */
-    position: relative;
+    /* padding-bottom: 15px;     */
 }
 
-#title * {
-    /* display: inline-block; */
-    /* position: absolute; */
-    /* transform: translateY(50%); */
+#title h2 {
+    display: inline;
+    padding-right: 2%;
 }
+
 
 #topRow {
     /* margin:auto; */
 }
 
 #flagSpan {
-    position:absolute;
-    transform: translateX(-120%);   
+    /* position:absolute; */
+    /* transform: translateX(-120%);    */
+}
+
+
+.row {
+    width: 90%;
+    margin: auto;
+}
+
+
+.myContainer {
+    border-radius: 50px;
+
+    padding-top: 5%;
+    padding-bottom: 5%;
+    margin-bottom: 30px;
+    color: inherit;
+    background-color: #eee;
+    
+    width:95%;
+}
+
+.biography {
+    color: rgb(97, 97, 97);
+    border: 1px solid #6b6b6b;
+    padding: 10px;
+    border-radius: 15px;
+    font-size: 1em;
+
+    margin-top: 15px;
+}
+
+.avatarImg {
+    /* border: 1px solid #ddd; */
+    /* border-radius: 4px; */
+    padding: 5px;
+    
+
+    border: 4px solid #fff;
+    border-radius: 5px;
+
+    box-shadow: 5px 5px rgb(194, 194, 194);
+}
+
+
+.avatarImg {
+    opacity: 1;
+    display: block;
+    margin: auto;
+
+    max-height: 15vh;
+    /* width: 100%; */
+    /* height: 100%; */
+    /* height: auto; */
+    transition: .5s ease;
+    backface-visibility: hidden;
+  }
+  
+  .middle {
+    transition: .5s ease;
+    opacity: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%)
+  }
+  
+  .avatarImgDiv {
+      position: relative;
+  }
+  .avatarImgDiv:hover .avatarImg {
+    opacity: 0.3;
+    /* border: 1px solid red; */
+  }
+  
+  .avatarImgDiv:hover .middle {
+    opacity: 1;
+  }
+
+
+  .changeAvatarText {
+    background-color: rgb(97, 97, 97);
+    color: white;
+    font-size: 16px;
+    padding: 4px 4px;
+    text-align: center;
+  }
+
+
+.lobby-table {
+    border-radius: 5px;
+    /*border: 1px solid #ddd;*/
+    border-collapse: separate;
+    border-spacing: 1px;
+}
+
+.lobby-table tbody tr td {
+    /*box-sizing:border-box;*/
+    border: transparent 2px solid;
+    /*margin: 10px;*/
+}
+
+.myTable {
+    border: 1px solid black;
+    /* table-layout: fixed; */
+
+    /* width: 100%; */
+}
+
+.myTable tbody tr td{
+    border: 1px solid black;
+}
+
+.statsCol1 {
+    /* width: 50%; */
+}
+
+.statsCol2 {
+    /* width: 50%; */
 }

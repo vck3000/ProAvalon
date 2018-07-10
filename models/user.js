@@ -8,15 +8,18 @@ var UserSchema = new mongoose.Schema({
 	avatarImgSpy: String,
 
 	dateJoined: Date,
-	totalSecondsPlayed: Date,
+	totalTimePlayed: Date,
 
 
 	totalGamesPlayed: Number,
 
 	
 	totalWins: Number,
+	totalResWins: Number,
 	totalLosses: Number,
-	
+	totalResLosses: Number,
+
+	winsLossesGameSizeBreakdown: Object,
 
 	nationality: String,
 	timeZone: String,
