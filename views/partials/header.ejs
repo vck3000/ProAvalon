@@ -207,9 +207,9 @@
 
 							<% if(locals.userNotifications) { for(var i = 0; i < userNotifications.length; i++){ %>
 									<li class="notificationItem" idOfNotif=<%=userNotifications[i]._id%>><a href="#">
-										<p class="notificationText"><%=userNotifications[i].text%></p>
+										<a href=<%= userNotifications[i].link %>><p class="notificationText"><%=userNotifications[i].text%></p></a>
 										<p><span class="notificationDate"><%=new Date(userNotifications[i].date).toDateString()%></span><span class="notificationHide">Hide<span class="hidden"><%=userNotifications[i]._id%></span></span></p>
-										
+										<p><%= userNotifications[i].link %></p>
 										<% if(!(i === userNotifications.length - 1)) { %>
 											<hr>
 										<% } %>
@@ -610,20 +610,27 @@ $(document).ready(function(){
 		
 		var notifs = $("#notificationsList li");
 
-		for(var i = 0; i < notifs.length; i++){
+		for(var i = 1; i < notifs.length; i++){
 
 			// console.log(notifs[i].children[0].children[1].children[1].children[0].innerHTML);
 
-			if(notifs[i].children[0]){
-				if(notifs[i].children[0].children[1].children[1].children[0].innerHTML === this.children[0].innerHTML){
+			
+				if(notifs.length === 2){
+					notifs[1].innerHTML = "";
+					$(".badge")[0].innerHTML = 0;
+					console.log("been here");
+				}
+				
+				else if(notifs[i].children[2].children[1].children[0].innerHTML === this.children[0].innerHTML){
 					console.log(i);
 	
-					notifs[i].innerHTML = "";
+					notifs[i].remove();
+					// notifs.splice(i, 1);					
 					$(".badge")[0].innerHTML -= 1;
 	
 					break;
 				}
-			}
+			
 			
 		}
 		

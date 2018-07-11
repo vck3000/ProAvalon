@@ -8,6 +8,7 @@ var sanitizeHtml = require('sanitize-html');
 var getTimeDiffInString = require("../../assets/myLibraries/getTimeDiffInString");
 var User 			= require("../../models/user");
 var myNotification	= require("../../models/notification");
+var mongoose = require('mongoose');
 
 
 // var sanitizeHtmlAllowedTagsForumThread = ['u'];
@@ -48,7 +49,7 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 		// console.log("Thread id: " + req.params.id);
 		// console.log("Redirecting to: " + "/forum/show/" + req.params.id);
 
-		forumThread.findById(req.params.id).populate("comments").exec(function (err, foundForumThread) {
+		forumThread.findById(mongoose.Types.ObjectId(req.params.id)).populate("comments").exec(function (err, foundForumThread) {
 			// console.log("title of thread found: " + foundForumThread.title);
 			// console.log("current comments: " + foundForumThread.comments);
 			foundForumThread.comments.push(newComment);
@@ -64,7 +65,8 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 			// console.log(foundForumThread.author.id)
 
 			//Set up a new notification
-			User.findById(foundForumThread.author.id).populate("notifications")
+			console.log(foundForumThread.author);
+			User.findById(mongoose.Types.ObjectId(foundForumThread.author.id)).populate("notifications")
 				.exec(function(err, foundUser){
 
 				if(err){
@@ -73,14 +75,18 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 				else{
 					notificationVar = {
 						text: req.user.username + " has commented on your post.",
-						date: new Date()
+						date: new Date(),
+						link: ("/forum/show/" + foundForumThread._id + "#" + newComment._id)
+
 					}
 					// if(foundUser){
 						myNotification.create(notificationVar, function(err, newNotif){
 							console.log(foundUser);
-							foundUser.notifications.push(newNotif);
-							foundUser.markModified("notifications");
-							foundUser.save();
+							if(foundUser.notifications){
+								foundUser.notifications.push(newNotif);
+								foundUser.markModified("notifications");
+								foundUser.save();
+							}
 						});
 					// }
 				}

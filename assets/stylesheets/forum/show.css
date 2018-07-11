@@ -104,3 +104,8 @@ textarea {
     /* display: block; */
     visibility: visible;
 }
+
+
+:target {
+    border: 2px dashed red;
+}

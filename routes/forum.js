@@ -26,11 +26,11 @@ router.use(forumThreadCommentReplyRoutes);
 
 
 
-router.get("/", function (req, res) {
+router.get("/", middleware.isLoggedIn, function (req, res) {
 	res.redirect("/forum/page/1");
 });
 
-router.get("/page/:category/:pageNum", function(req, res){
+router.get("/page/:category/:pageNum", middleware.isLoggedIn, function(req, res){
 	console.log("category");
 	
 	//if theres an invalid page num, redirect to page 1
@@ -66,21 +66,32 @@ router.get("/page/:category/:pageNum", function(req, res){
 
 				var userNotifications = [];
 
-				await User.findOne({username: req.user.username}).populate("notifications").exec(function(err, foundUser){
-					if(foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined){
-						userNotifications = foundUser.notifications;
-						console.log(foundUser.notifications);
-					}
-					
+				if(req.user.username){
+					await User.findOne({username: req.user.username}).populate("notifications").exec(function(err, foundUser){
+						if(foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined){
+							userNotifications = foundUser.notifications;
+							console.log(foundUser.notifications);
+						}
+						
+						res.render("forum/index", {
+							allPinnedThreads: [],
+							allForumThreads: allForumThreads,
+							currentUser: req.user,
+							pageNum: req.params.pageNum,
+							activeCategory: req.params.category,
+							userNotifications: userNotifications 
+						});				
+					});
+				}
+				else{
 					res.render("forum/index", {
 						allPinnedThreads: [],
 						allForumThreads: allForumThreads,
-						currentUser: req.user,
 						pageNum: req.params.pageNum,
-						activeCategory: req.params.category,
-						userNotifications: userNotifications 
-					});				
-				});
+						activeCategory: req.params.category
+					});	
+				}
+				
 
 				
 						
@@ -88,7 +99,7 @@ router.get("/page/:category/:pageNum", function(req, res){
 		});
 });
 
-router.get("/page/:pageNum", function (req, res) {
+router.get("/page/:pageNum", middleware.isLoggedIn, function (req, res) {
 	console.log("pageNum");
 	//rendering the campgrounds.ejs file
 	//and also passing in the array data
@@ -146,20 +157,31 @@ router.get("/page/:pageNum", function (req, res) {
 
 						var userNotifications = [];
 
-						await User.findOne({username: req.user.username}).populate("notifications").exec(function(err, foundUser){
-							if(foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined){
-								userNotifications = foundUser.notifications;
-								console.log(foundUser.notifications);
-							}
+						if(req.user.username){
+							await User.findOne({username: req.user.username}).populate("notifications").exec(function(err, foundUser){
+								if(foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined){
+									userNotifications = foundUser.notifications;
+									console.log(foundUser.notifications);
+								}
+								res.render("forum/index", {
+									allPinnedThreads: [],
+									allForumThreads: allForumThreads,
+									currentUser: req.user,
+									pageNum: req.params.pageNum,
+									activeCategory: req.params.category,
+									userNotifications: userNotifications 
+								});		
+							});
+						}
+						else {
 							res.render("forum/index", {
 								allPinnedThreads: [],
 								allForumThreads: allForumThreads,
-								currentUser: req.user,
 								pageNum: req.params.pageNum,
-								activeCategory: req.params.category,
-								userNotifications: userNotifications 
+								activeCategory: req.params.category
 							});		
-						});
+						}
+						
 
 					
 					}

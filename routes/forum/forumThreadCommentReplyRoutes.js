@@ -81,54 +81,58 @@ function createReply (req, res, commentReplyData, replyingToThisReply) {
 	forumThreadCommentReply.create(commentReplyData, function (err, newCommentReply) {
 				
 		// console.log("new commentReply: " + newCommentReply);
+		forumThread.findById(mongoose.Types.ObjectId(req.params.id), function(err, foundForum){
 
-		forumThreadComment.findById(req.params.commentId).populate("replies").exec(function (err, foundForumThreadComment) {
-			if (foundForumThreadComment.replies === undefined) {
-				foundForumThreadComment.replies = [];
-			}
-
-			foundForumThreadComment.replies.push(newCommentReply);
-			foundForumThreadComment.save();
-
-			//Set up a new notification
-			User.findById(mongoose.Types.ObjectId(replyingToThisReply.author.id)).populate("notifications")
-				.exec(function(err, foundUser){
-					console.log("User");
-					console.log(foundUser);
-
-					if(err){
-						console.log(err);
-					}
-					else{
-						notificationVar = {
-							text: req.user.username + " has replied to your reply.",
-							date: new Date()
+			forumThreadComment.findById(req.params.commentId).populate("replies").exec(function (err, foundForumThreadComment) {
+				if (foundForumThreadComment.replies === undefined) {
+					foundForumThreadComment.replies = [];
+				}
+	
+				foundForumThreadComment.replies.push(newCommentReply);
+				foundForumThreadComment.save();
+	
+				//Set up a new notification
+				User.findById(mongoose.Types.ObjectId(replyingToThisReply.author.id)).populate("notifications")
+					.exec(function(err, foundUser){
+						console.log("User");
+						console.log(foundUser);
+	
+						if(err){
+							console.log(err);
 						}
-						// if(foundUser){
-							myNotification.create(notificationVar, function(err, newNotif){
-								console.log(foundUser);
-								foundUser.notifications.push(newNotif);
-								foundUser.markModified("notifications");
-								foundUser.save();
-							});
-						// }
-					}
+						else{
+							notificationVar = {
+								text: req.user.username + " has replied to your reply.",
+								date: new Date(),
+								link: ("/forum/show/" + foundForum._id + "#" + newCommentReply._id)
+							}
+							// if(foundUser){
+								myNotification.create(notificationVar, function(err, newNotif){
+									console.log(foundUser);
+									foundUser.notifications.push(newNotif);
+									foundUser.markModified("notifications");
+									foundUser.save();
+								});
+							// }
+						}
+				});
+				
+	
+				forumThread.findById(req.params.id).populate("comments").exec(function (err, foundForumThread) {
+					foundForumThread.markModified("comments");
+					//add 1 to the num of comments
+					foundForumThread.numOfComments = foundForumThread.numOfComments + 1;
+	
+					//update time last edited
+					foundForumThread.timeLastEdit = new Date();
+	
+					foundForumThread.save();
+				});
+	
+				//redirect to same forum thread
+				res.redirect("/forum/show/" + req.params.id);
 			});
-			
 
-			forumThread.findById(req.params.id).populate("comments").exec(function (err, foundForumThread) {
-				foundForumThread.markModified("comments");
-				//add 1 to the num of comments
-				foundForumThread.numOfComments = foundForumThread.numOfComments + 1;
-
-				//update time last edited
-				foundForumThread.timeLastEdit = new Date();
-
-				foundForumThread.save();
-			});
-
-			//redirect to same forum thread
-			res.redirect("/forum/show/" + req.params.id);
 		});
 	});
 }
