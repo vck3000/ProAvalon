@@ -1,10 +1,17 @@
 var express = require("express");
 var router = express.Router();
 var forumThread = require("../../models/forumThread");
+var forumThreadComment = require("../../models/forumThreadComment");
+var forumThreadCommentReply = require("../../models/forumThreadCommentReply");
 var lastIds = require("../../models/lastIds");
 var middleware = require("../../middleware");
 var sanitizeHtml = require('sanitize-html');
 var getTimeDiffInString = require("../../assets/myLibraries/getTimeDiffInString");
+var User 			= require("../../models/user");
+var myNotification	= require("../../models/notification");
+
+var mongoose = require('mongoose');
+
 
 var sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2', 'u', 'span', 'br'];
 var sanitizeHtmlAllowedAttributesForumThread = {
@@ -21,12 +28,25 @@ var sanitizeHtmlAllowedAttributesForumThread = {
 
 
 
+// forumThreadCommentReply.find({}).populate("clients").exec(function(err, foundObj){
+// 	console.log("complete");
+// 	// console.log(foundObj);
+
+
+// 	foundObj.forEach(function(obj){
+// 		console.log(obj.clients);
+// 	})
+// });
 
 /**********************************************************/
 //Show the forumThread
 /**********************************************************/
 router.get("/show/:id", function (req, res) {
-	forumThread.findById(req.params.id).populate("comments").populate({ path: "comments", populate: { path: "replies" } }).exec(function (err, foundForumThread) {
+	forumThread.findById(req.params.id)
+	// .populate("comments")
+	// .populate({ path: "comments", populate: { path: "replies" } })
+	.populate({ path: "comments", populate: { path: "replies", populate: {path:"clients"}}})
+	.exec( async function (err, foundForumThread) {
 		if (err) {
 			// console.log(err);
 			console.log("Thread not found, redirecting");
@@ -50,11 +70,29 @@ router.get("/show/:id", function (req, res) {
 				//update the time since string for each reply to a comment
 				comment.replies.forEach(function (reply) {
 					reply.timeSinceString = getTimeDiffInString(reply.timeLastEdit);
+					// console.log("client: ");
+					// console.log(reply.clients);
 				});
 
 				// console.log(comment.replies);
 			});
-			res.render("forum/show", { forumThread: foundForumThread, currentUser: req.user });
+
+
+			var userNotifications = [];
+
+			await User.findOne({username: req.user.username}).populate("notifications").exec(function(err, foundUser){
+				if(foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined){
+					userNotifications = foundUser.notifications;
+					console.log(foundUser.notifications);
+				}
+				res.render("forum/show", {
+					userNotifications: userNotifications,
+					forumThread: foundForumThread, 
+					currentUser: req.user
+				});		
+			});
+
+			
 		}
 	});
 });
@@ -64,7 +102,7 @@ router.get("/show/:id", function (req, res) {
 /**********************************************************/
 router.get("/new", middleware.isLoggedIn, function (req, res) {
 	// console.log("NEW STUFF ");
-	res.render("forum/new", { currentUser: req.user });
+	res.render("forum/new", { currentUser: req.user, userNotifications: []});
 });
 
 /**********************************************************/
@@ -141,8 +179,19 @@ router.post("/", middleware.isLoggedIn, async function (req, res) {
 //Show the edit forumThread route
 /**********************************************************/
 router.get("/:id/edit", middleware.checkForumThreadOwnership, function (req, res) {
-	forumThread.findById(req.params.id, function (err, foundForumThread) {
-		res.render("forum/edit", { forumThread: foundForumThread, currentUser: req.user });
+	forumThread.findById(req.params.id, async function (err, foundForumThread) {
+		var userNotifications = [];
+
+		await User.findOne({username: req.user.username}).populate("notifications").exec(function(err, foundUser){
+			if(foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined){
+				userNotifications = foundUser.notifications;
+				console.log(foundUser.notifications);
+			}
+			
+			res.render("forum/edit", { forumThread: foundForumThread, currentUser: req.user, userNotifications: userNotifications });
+
+		});
+
 	});
 });
 

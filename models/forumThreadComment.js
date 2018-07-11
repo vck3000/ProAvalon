@@ -19,9 +19,9 @@ var commentSchema = mongoose.Schema({
 	replies: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "forumThreadCommentReply"
+			ref: "ForumThreadCommentReply"
 		} 
 	],
 });
 
-module.exports = mongoose.model("forumThreadComment", commentSchema);
+module.exports = mongoose.model("ForumThreadComment", commentSchema);

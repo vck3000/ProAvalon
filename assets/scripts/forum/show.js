@@ -41,6 +41,8 @@ replies.forEach(function(reply){
         //Toggle its hidden state to show/hide
         if(replyBox){
             replyBox.classList.toggle("hidden");
+            console.log(replyBox.querySelector("textarea"));
+            $(replyBox.querySelector("textarea")).summernote();
         }
     });
 });

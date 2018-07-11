@@ -31,7 +31,12 @@ var UserSchema = new mongoose.Schema({
 	//only has one Number attached to it
 	roleStats: Object,
 
-	notifications: Object
+	notifications: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "notification"
+		} 
+	]
 
 
 });

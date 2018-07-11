@@ -129,8 +129,8 @@
         <div class="comments">
 
             <%forumThread.comments.forEach(function(comment){ %>
-                <div class="individualMainComment">
-                    <div class="individualComment">
+                <div class="individualMainComment" id=<%=comment.id%>>
+                    <div class="individualComment" >
                         <p><strong><%=comment.author.username%></strong> <span class="timeSince"><%=comment.timeSinceString%> ago</span></p>
                         <p class="mainCommentText"><%-comment.text%></p>
                         <% if(comment.edited === true){ %>
@@ -171,10 +171,13 @@
 
                     <!-- Replies to the main comment -->
                     <% if(comment.replies){ comment.replies.forEach(function(reply){ %>
-                        <div class="replyToComment">
+                        <div class="replyToComment"  id=<%=reply.id%>>
                             <p>
                                 <strong><%=reply.author.username%></strong>
                                 <span class="timeSince"><%=reply.timeSinceString%> ago</span>
+                                <% if(reply.replyingUsername) { %>
+                                    <span class="replyingUsername"> @<%=reply.replyingUsername%></span>
+                                <% } %>
                             </p>
                             
                             <p>
@@ -185,15 +188,39 @@
                             [Edited]
                             <% } %>
 
-                            <% if(currentUser && reply.author.id && reply.author.id.equals(currentUser.id)){ %>
-                                <p class="commentOptions">
+                            <p class="commentOptions">
+                        
+                                <a class="reply">Reply</a>
+                                <a class="like">Like</a>
+
+                                <% if(currentUser && reply.author.id && reply.author.id.equals(currentUser.id)){ %>
+                                    
                                     <a class="edit" href="/forum/<%=forumThread._id%>/<%=comment._id%>/<%=reply._id%>/edit">Edit</a>
 
                                     <a class="edit deleteCommentReply" linkToDelete="/forum/deleteCommentReply/<%=forumThread._id%>/<%=comment._id%>/<%=reply._id%>">
                                     Remove
                                     </a>
-                                </p>
-                            <% } %>
+                                
+                                <% } %>
+                            </p>
+
+                            <div class="mainCommentEditButtons hidden">
+                            <a class="btn btn-default btn-sm">Cancel</a>
+                            <a class="btn btn-primary btn-sm">Submit</a>
+                            </div>
+
+                            <!-- Reply box for main comment -->
+                            <div class="replyBox hidden">
+                                <form class="comment-form" action="/forum/<%=forumThread._id%>/<%=comment._id%>/<%=reply._id%>" method="POST">
+                                    <div class="form-group">
+                                        <textarea type="text" placeholder="text" name="comment[text]" rows="3" class="commentReply"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                    <button class="btn btn-sm btn-primary">Submit</button></div>
+                                </form>
+                                <br>
+                            </div>
+
                         </div>    
                     <% }); } %>
                 </div>
@@ -214,7 +241,7 @@
 
     $(document).ready(function() {
         $('#commentTextArea').summernote();
-        $('.commentReply').summernote();
+        // $('.commentReply').summernote();
 
     });
 

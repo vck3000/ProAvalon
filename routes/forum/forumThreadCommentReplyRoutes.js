@@ -7,6 +7,10 @@ var lastIds = require("../../models/lastIds");
 var middleware = require("../../middleware");
 var sanitizeHtml = require('sanitize-html');
 var getTimeDiffInString = require("../../assets/myLibraries/getTimeDiffInString");
+var User 			= require("../../models/user");
+var myNotification	= require("../../models/notification");
+
+var mongoose = require('mongoose');
 
 // var sanitizeHtmlAllowedTagsForumThread = ['u'];
 var sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2', 'u', 'span', 'br'];
@@ -23,10 +27,18 @@ var sanitizeHtmlAllowedAttributesForumThread = {
 };
 
 
+
 /**********************************************************/
 //Create a new comment reply route
 /**********************************************************/
 router.post("/:id/:commentId", middleware.isLoggedIn, async function (req, res) {
+	createCommentReply(req, res);
+});
+router.post("/:id/:commentId/:replyId", middleware.isLoggedIn, async function (req, res) {
+	createCommentReply(req, res);
+});
+
+function createCommentReply(req, res){
 
 	var d = new Date();
 
@@ -45,8 +57,29 @@ router.post("/:id/:commentId", middleware.isLoggedIn, async function (req, res) 
 		likes: 0,
 	}
 
-	forumThreadCommentReply.create(commentReplyData, function (err, newCommentReply) {
+	if(req.params.replyId){
+		// commentReplyData.clients = [req.params.replyId];
+		// console.log("Got replyId");
+		var id = mongoose.Types.ObjectId('4edd40c86762e0fb12000003');
 
+		forumThreadCommentReply.findById(mongoose.Types.ObjectId(req.params.replyId)).exec(function(err, foundReply){
+			//If there was someone who this reply was targetted to
+			commentReplyData.replyingUsername = [foundReply.author.username];
+			
+			createReply(req, res, commentReplyData, foundReply);
+		});
+	}
+	else{
+		createReply(req, res, commentReplyData);		
+	}
+
+	
+}
+
+
+function createReply (req, res, commentReplyData, replyingToThisReply) {
+	forumThreadCommentReply.create(commentReplyData, function (err, newCommentReply) {
+				
 		// console.log("new commentReply: " + newCommentReply);
 
 		forumThreadComment.findById(req.params.commentId).populate("replies").exec(function (err, foundForumThreadComment) {
@@ -56,6 +89,32 @@ router.post("/:id/:commentId", middleware.isLoggedIn, async function (req, res) 
 
 			foundForumThreadComment.replies.push(newCommentReply);
 			foundForumThreadComment.save();
+
+			//Set up a new notification
+			User.findById(mongoose.Types.ObjectId(replyingToThisReply.author.id)).populate("notifications")
+				.exec(function(err, foundUser){
+					console.log("User");
+					console.log(foundUser);
+
+					if(err){
+						console.log(err);
+					}
+					else{
+						notificationVar = {
+							text: req.user.username + " has replied to your reply.",
+							date: new Date()
+						}
+						// if(foundUser){
+							myNotification.create(notificationVar, function(err, newNotif){
+								console.log(foundUser);
+								foundUser.notifications.push(newNotif);
+								foundUser.markModified("notifications");
+								foundUser.save();
+							});
+						// }
+					}
+			});
+			
 
 			forumThread.findById(req.params.id).populate("comments").exec(function (err, foundForumThread) {
 				foundForumThread.markModified("comments");
@@ -72,17 +131,23 @@ router.post("/:id/:commentId", middleware.isLoggedIn, async function (req, res) 
 			res.redirect("/forum/show/" + req.params.id);
 		});
 	});
-});
-
+}
 /**********************************************************/
 //Edit a comment reply
 /**********************************************************/
 router.get("/:id/:comment_id/:reply_id/edit", middleware.checkForumThreadCommentReplyOwnership, function (req, res) {
-	forumThreadCommentReply.findById(req.params.reply_id, function (err, foundReply) {
+	forumThreadCommentReply.findById(req.params.reply_id, async function (err, foundReply) {
 		if (err) {
 			console.log("ERROR: " + err);
 		}
-		res.render("forum/comment/reply/edit", { reply: foundReply, comment: { id: req.params.comment_id }, forumThread: { id: req.params.id } });
+
+		var userNotifications = [];
+
+		await User.findById(req.user._id).exec(function(err, foundUser){
+			if(!err){userNotifications = foundUser.userNotifications;}
+		});
+
+		res.render("forum/comment/reply/edit", { reply: foundReply, comment: { id: req.params.comment_id }, forumThread: { id: req.params.id }, userNotifications: userNotifications });
 	});
 });
 

@@ -1335,7 +1335,7 @@ socket.on("update-room-players", function (data) {
             playSound('highDing');
         }
 
-        if($("#option_notifications_desktop_players_joining_room")[0].checked === true){
+        if($("#option_notifications_desktop_players_joining_room")[0].checked === true && data.spectators[data.spectators.length - 1] !== ownUsername){
             displayNotification("New player in room.", data.spectators[data.spectators.length - 1] + " has joined the room.", "avatars/base-res.png", "newPlayerInRoom");
         }
     }

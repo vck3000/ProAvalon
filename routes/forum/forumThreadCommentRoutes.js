@@ -6,6 +6,9 @@ var lastIds = require("../../models/lastIds");
 var middleware = require("../../middleware");
 var sanitizeHtml = require('sanitize-html');
 var getTimeDiffInString = require("../../assets/myLibraries/getTimeDiffInString");
+var User 			= require("../../models/user");
+var myNotification	= require("../../models/notification");
+
 
 // var sanitizeHtmlAllowedTagsForumThread = ['u'];
 
@@ -58,9 +61,36 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 
 			foundForumThread.save();
 
+			// console.log(foundForumThread.author.id)
+
+			//Set up a new notification
+			User.findById(foundForumThread.author.id).populate("notifications")
+				.exec(function(err, foundUser){
+
+				if(err){
+					console.log(err);
+				}
+				else{
+					notificationVar = {
+						text: req.user.username + " has commented on your post.",
+						date: new Date()
+					}
+					// if(foundUser){
+						myNotification.create(notificationVar, function(err, newNotif){
+							console.log(foundUser);
+							foundUser.notifications.push(newNotif);
+							foundUser.markModified("notifications");
+							foundUser.save();
+						});
+					// }
+				}
+			});
+
 			//redirect to same forum thread
 			res.redirect("/forum/show/" + req.params.id);
 		});
+
+
 	});
 });
 
@@ -69,11 +99,19 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 //Show the edit a comment page
 /**********************************************************/
 router.get("/:id/:comment_id/edit", middleware.checkForumThreadCommentOwnership, function (req, res) {
-	forumThreadComment.findById(req.params.comment_id, function (err, foundComment) {
+	forumThreadComment.findById(req.params.comment_id, async function (err, foundComment) {
 		if (err) {
 			console.log("ERROR: " + err);
 		}
-		res.render("forum/comment/edit", { comment: foundComment, forumThread: { id: req.params.id } });
+
+		var userNotifications = [];
+
+		await User.findById(req.user._id).populate("notifications").exec(function(err, foundUser){
+			if(!err){userNotifications = foundUser.userNotifications;}
+		});
+
+		
+		res.render("forum/comment/edit", { comment: foundComment, forumThread: { id: req.params.id }, userNotifications: userNotifications });
 	})
 });
 

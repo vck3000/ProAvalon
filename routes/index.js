@@ -1,11 +1,113 @@
-var express 	= require("express");
-var router 		= express.Router();
-var passport 	= require("passport");
-var User 		= require("../models/user");
-var flash 		= require("connect-flash");
-var sanitizeHtml = require('sanitize-html');
+var express 		= require("express");
+var router 			= express.Router();
+var passport 		= require("passport");
+var User 			= require("../models/user");
+var myNotification	= require("../models/notification");
+var flash 			= require("connect-flash");
+var sanitizeHtml 	= require('sanitize-html');
+var mongoose = require("mongoose");
+
 
 var middleware = require("../middleware");
+
+console.log("before");
+
+// myNotification.remove({}).exec(function(){
+// 	console.log("after");
+	
+// 	var notifications = [
+// 		{
+// 			text: "bb has replied to your post.",
+// 			date: new Date()
+// 		},
+// 		{
+// 			text: "bb has slapped you for fun.",
+// 			date: new Date() - 1000000000
+// 		},
+// 		{
+// 			text: "bb has shot you again.",
+// 			date: new Date() - 10000000000
+// 		},
+// 		{
+// 			text: "bb has tickled you.",
+// 			date: new Date() - 10000000000
+// 		}
+// 	];
+// 	addNotifications(notifications);
+
+// });
+
+// async function addNotifications(notificationsss){
+
+// 	User.findOne({username: "ProNub"}, async function(err, foundUser){
+// 		if(err){
+// 			console.log(err);
+// 		}
+// 		else{
+// 			foundUser.notifications = [];
+// 			foundUser.markModified("notifications");
+// 			await foundUser.save();
+			
+// 			console.log(foundUser.notifications);
+// 			console.log("removed pronub's notification");
+			
+	
+// 			notificationsss.forEach(async function(seed){
+// 				console.log("test");
+// 				myNotification.create(seed).then(async function(newNotification){
+					
+// 					foundUser.notifications.push(newNotification);
+					
+// 					console.log(newNotification);
+// 					console.log(foundUser.notifications);
+						
+// 					// foundUser.markModified("notifications");
+					
+					
+// 					console.log('created');
+// 					console.log(foundUser.notifications.length);
+					
+// 					foundUser.markModified("notifications");
+// 					await foundUser.save();
+					
+
+					
+// 				});	
+// 			});			
+// 		}
+
+// 		console.log(foundUser.notifications.length);
+		
+// 	});
+
+
+	
+// }
+
+
+// User.findOne({username: "ProNub"}, function(err, foundUser){
+// 	notifications = [
+// 		{
+// 			text: "bb has replied to your post.",
+// 			date: new Date()
+// 		},
+
+// 		{
+// 			text: "bb has slapped you for fun.",
+// 			date: new Date() - 1000000000
+// 		},
+
+// 		{
+// 			text: "bb has shot you again.",
+// 			date: new Date() - 10000000000
+// 		},
+// 	]
+
+// 	foundUser.save();
+// });
+
+
+
 
 //Index route
 router.get("/", function(req, res){
@@ -23,7 +125,17 @@ router.post("/",sanitiseUsername,/* usernameToLowerCase, */function(req, res){
 
 	// var escapedUsername = escapeText(req.body.username);
 
-	var newUser = new User({username: req.body.username/*.toLowerCase()*/});
+	var newUser = new User({
+		username: req.body.username,
+		dateJoined: new Date()
+	});
+
+	//set default values
+	for(var key in defaultValuesForUser){
+		if(defaultValuesForUser.hasOwnProperty(key)){
+			newUser[key] = defaultValuesForUser[key];
+		}
+	}
 
 	if(req.body.username.indexOf(" ") !== -1){
 		req.flash("error", "Sign up failed. Please do not use spaces in your username.");
@@ -71,8 +183,34 @@ router.get("/loginFail", function(req, res){
 //lobby route
 router.get("/lobby", middleware.isLoggedIn, function(req, res){
 	// console.log(res.app.locals.originalUsername);
-	res.render("lobby", {currentUser: req.user, headerActive: "lobby"});
+	User.findOne({username: req.user.username}).populate("notifications").exec(function(err, foundUser){
+		if(err){
+			res.render("lobby", {currentUser: req.user, headerActive: "lobby", userNotifications: [{text: "There was a problem loading your notifications.", optionsCog: true}] });
+			console.log(err);
+		}
+		else{
+			res.render("lobby", {currentUser: req.user, headerActive: "lobby", userNotifications: foundUser.notifications, optionsCog: true});
+		
+			//check that they have all the default values.
+			for(var keys in defaultValuesForUser){
+				if(defaultValuesForUser.hasOwnProperty(keys)){
+					//if they don't have a default value, then give them a default value.
+					if(!foundUser[keys]){
+						foundUser[keys] = defaultValuesForUser[keys];
+					}
+				}
+			}
+			foundUser.save();
+		
+		}
+
+	});
 });
+
+
+
+
+
 
 //logout 
 router.get("/logout", function(req, res){
@@ -84,7 +222,7 @@ router.get("/logout", function(req, res){
 });
 
 router.get("/log", function(req, res){
-	res.render("log", {currentUser: req.user, headerActive: "log"});
+	res.render("log", {currentUser: req.user, headerActive: "log", path: "log"});
 })
 
 router.get("/rules", function(req, res){
@@ -107,7 +245,7 @@ router.get("/profile/:profileUsername", function(req, res){
 });
 
 
-router.get("/profile/getProfileDataAJAX/:profileUsername", function(req, res){
+router.get("/ajax/profile/getProfileData/:profileUsername", function(req, res){
 	User.findOne({username: req.params.profileUsername}, function(err, foundUser){
 		if(err){
 			console.log(err);
@@ -119,6 +257,32 @@ router.get("/profile/getProfileDataAJAX/:profileUsername", function(req, res){
 		}
 	});
 });
+
+router.get("/ajax/hideNotification", function(req, res){
+	console.log("hide nofication");
+	console.log(req.query.idOfNotif);
+
+
+	// console.log(mongoose.Types.ObjectId(req.query.idOfNotif));
+
+	myNotification.findByIdAndRemove(mongoose.Types.ObjectId(req.query.idOfNotif), function(err){
+		if(err){
+			console.log(err);
+		}
+
+		User.findOne({username: req.user.username}).populate("notifications").exec(async function(err, foundUser){
+
+			foundUser.markModified("notifications");
+			await foundUser.save();
+
+		});
+
+	});
+});
+
+
+
+
 
 //=====================================
 //Forum
@@ -191,3 +355,26 @@ function escapeText(str) {
 		.replace(/"/g, '&quot;')
 		.replace(/(?:\r\n|\r|\n)/g, ' <br>');
 };
+
+
+var defaultValuesForUser = {
+	avatarImgRes: null,
+	avatarImgSpy: null,
+
+	totalTimePlayed: 0,
+	totalGamesPlayed: 0,
+
+	totalWins: 0,
+	totalResWins: 0,
+	totalLosses: 0,
+	totalResLosses: 0,
+
+	winsLossesGameSizeBreakdown: {},
+
+	nationality: "",
+	timeZone: "",
+	biography: "",
+
+	roleStats: {},
+	notificationS: {}
+}

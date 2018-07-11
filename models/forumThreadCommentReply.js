@@ -14,7 +14,13 @@ var replySchema = mongoose.Schema({
 	timeCreated: Date,
 	timeLastEdit: Date,
 	likes: String,
-	edited: Boolean
+	edited: Boolean,
+
+	replyingUsername: String
+
+
+
+
 });
 
-module.exports = mongoose.model("forumThreadCommentReply", replySchema);
+module.exports = mongoose.model("ForumThreadCommentReply", replySchema);

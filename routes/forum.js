@@ -10,6 +10,8 @@ var sanitizeHtml = require('sanitize-html');
 var pinnedThread = require("../models/pinnedThread");
 var getTimeDiffInString = require("../assets/myLibraries/getTimeDiffInString");
 
+var User 			= require("../models/user");
+var myNotification	= require("../models/notification");
 
 //grab the routes
 var forumThreadRoutes = require("../routes/forum/forumThreadRoutes");
@@ -20,6 +22,8 @@ router.use(forumThreadCommentRoutes);
 
 var forumThreadCommentReplyRoutes = require("../routes/forum/forumThreadCommentReplyRoutes");
 router.use(forumThreadCommentReplyRoutes);
+
+
 
 
 router.get("/", function (req, res) {
@@ -51,7 +55,7 @@ router.get("/page/:category/:pageNum", function(req, res){
 	}
 
 	forumThread.find({category: req.params.category}).sort({ timeLastEdit: 'descending' }).skip(skipNumber).limit(NUM_OF_RESULTS_PER_PAGE)
-		.exec(function (err, allForumThreads) {
+		.exec(async function (err, allForumThreads) {
 			if (err) {
 				console.log(err);
 			}
@@ -60,13 +64,26 @@ router.get("/page/:category/:pageNum", function(req, res){
 					forumThread.timeSinceString = getTimeDiffInString(forumThread.timeLastEdit);
 				});
 
-				res.render("forum/index", {
-					allPinnedThreads: [],
-					allForumThreads: allForumThreads,
-					currentUser: req.user,
-					pageNum: req.params.pageNum,
-					activeCategory: req.params.category
-				});				
+				var userNotifications = [];
+
+				await User.findOne({username: req.user.username}).populate("notifications").exec(function(err, foundUser){
+					if(foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined){
+						userNotifications = foundUser.notifications;
+						console.log(foundUser.notifications);
+					}
+					
+					res.render("forum/index", {
+						allPinnedThreads: [],
+						allForumThreads: allForumThreads,
+						currentUser: req.user,
+						pageNum: req.params.pageNum,
+						activeCategory: req.params.category,
+						userNotifications: userNotifications 
+					});				
+				});
+
+				
+						
 			}
 		});
 });
@@ -127,14 +144,24 @@ router.get("/page/:pageNum", function (req, res) {
 							});
 						}
 
+						var userNotifications = [];
 
-
-						res.render("forum/index", {
-							allPinnedThreads: allPinnedThreads,
-							allForumThreads: allForumThreads,
-							currentUser: req.user,
-							pageNum: req.params.pageNum
+						await User.findOne({username: req.user.username}).populate("notifications").exec(function(err, foundUser){
+							if(foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined){
+								userNotifications = foundUser.notifications;
+								console.log(foundUser.notifications);
+							}
+							res.render("forum/index", {
+								allPinnedThreads: [],
+								allForumThreads: allForumThreads,
+								currentUser: req.user,
+								pageNum: req.params.pageNum,
+								activeCategory: req.params.category,
+								userNotifications: userNotifications 
+							});		
 						});
+
+					
 					}
 				});
 			}

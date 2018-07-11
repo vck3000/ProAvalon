@@ -52,6 +52,10 @@ textarea {
     padding-left: 10px;
 }
 
+.replyingUsername {
+    color: #888888;    
+}
+
 .editForumThreadButtons .delete-form {
     display: inline-block;
 }

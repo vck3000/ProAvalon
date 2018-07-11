@@ -84,7 +84,11 @@
                                 <span id="flagSpan" class="flag-icon flag-icon-au" data-toggle="tooltip" title="Australia"></span>
                                 <span id="profileUsername"><%=userData.username %> </span>
                             </h2>  
-                            <span> Date joined: <%= userData.dateJoined.toDateString() %> </span>
+                            <p> Date joined: <% if(userData.dateJoined){ %>
+                                <%= userData.dateJoined.toDateString() %> 
+                                <% } else { %> 
+                                    N/A
+                                <% } %></p>
                         </span>
                         
                     </div>
@@ -169,9 +173,9 @@
 
 
         xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("GET","/profile/getProfileDataAJAX/" + $("#profileUsername")[0].innerHTML, true);
+        xmlhttp.open("GET","/ajax/profile/getProfileData/" + $("#profileUsername")[0].innerHTML, true);
 
-        console.log("/profile/getProfileDataAJAX/" + $("#profileUsername")[0].innerHTML);
+        console.log("/ajax/profile/getProfileData/" + $("#profileUsername")[0].innerHTML);
 
 
         xmlhttp.onreadystatechange=function(){

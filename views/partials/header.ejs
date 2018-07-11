@@ -26,6 +26,96 @@
 			height: 30px;
 			border: 1px solid black;
 		}
+
+
+		.dropdown-menu>li>a {
+			display: block;
+			padding: 3px 20px;
+			clear: both;
+			font-weight: 400;
+			line-height: 1.42857143;
+			color: #333;
+			white-space: nowrap;
+		}
+
+		.dark .dropdown-menu>li>a{
+			color: #c1c1c1;
+		}
+
+		a>hr {
+			margin-top: 5px;
+			margin-bottom: 5px;
+		}
+
+		.dropdown-menu>li>a:hover {
+			background-color: transparent;
+		}
+
+
+		.notificationItem {
+			position: relative;
+			background-color: #eee;
+			border-radius: 10px;
+		}
+
+		.dark .notificationItem {
+			background-color: #444444;
+		}
+
+		
+
+		.notificationItem:hover {
+			background-color: #ddd;
+		}
+		.dark .notificationItem:hover {
+			background-color: #3D3D3D;
+		}
+
+		.notificationText {
+			font-weight: 700;
+		}
+
+		.notificationDate {
+			/* font-size: 0.5em; */
+		}
+
+		.notificationHide {
+			/* font-size: 0.5em; */
+			position: absolute;
+			right: 10%;
+		}
+
+		.notificationHide:hover {
+			color: blue;
+			text-decoration: underline;
+		}
+
+		.dark .notificationHide:hover {
+			color: white;
+			text-decoration: underline;
+		}
+
+
+		.hideAll {
+			/* font-size: 0.5em; */
+			position: absolute;
+			right: 10%;
+		}
+
+		.hideAll:hover {
+			color: blue;
+			text-decoration: underline;
+		}
+
+		.dark .hideAll:hover {
+			color: white;
+			text-decoration: underline;
+		}
+
+
+
+
+
 	</style>
 
 
@@ -86,15 +176,61 @@
 					<!-- <li><a href="#">About</a></li> -->
 
 					<!-- <li><a href="#">Contact us</a></li> -->
-
+			
 					<% if(currentUser){%>
-					<li>
-						<li class="dropdown">
+
+					
+
+					<li class="dropdown">
+						<a href="#" id="dLabel" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<!--<span class="glyphicon glyphicon-info-sign"></span>-->
+							<% if(locals.userNotifications){%>
+								<span class="badge">
+							
+								<%=userNotifications.length%>
+							
+								</span>
+							<% } %>
+							
+						</a> 
+
+						<ul class="dropdown-menu" aria-labelledby="dLabel" id="notificationsList">
+						
+							<li class="notificationItem"><a>
+								<p class="notificationText"><span style="visibility: hidden">a</span></p>
+								<p><span class="notificationDate"><span style="visibility: hidden">a</span></span><span class="hideAll">Hide all<span class="hidden"></span></span></p>
+							
+								<hr>
+
+								</a>
+							</li>
+
+							<% if(locals.userNotifications) { for(var i = 0; i < userNotifications.length; i++){ %>
+									<li class="notificationItem" idOfNotif=<%=userNotifications[i]._id%>><a href="#">
+										<p class="notificationText"><%=userNotifications[i].text%></p>
+										<p><span class="notificationDate"><%=new Date(userNotifications[i].date).toDateString()%></span><span class="notificationHide">Hide<span class="hidden"><%=userNotifications[i]._id%></span></span></p>
+										
+										<% if(!(i === userNotifications.length - 1)) { %>
+											<hr>
+										<% } %>
+									</a></li>
+									
+
+								<% } %>
+							<% } %>
+				  		</ul>
+
+
+					</li>
+
+					
+					<% if(locals.optionsCog){ %> 
+						<li>
 							<a href="#" role="button" data-toggle="modal" data-target="#optionsModal">
 								<span class="glyphicon glyphicon-cog"></span>
 							</a> 
 						</li>
-					</li>
+					<% } %>
 					<!-- <li><a href="#">Hi there, <%=currentUser.username%></a></li> -->
 					<li><a class="" id="originalUsername"><%=currentUser.username%></a></li>
 
@@ -443,7 +579,100 @@
 
 <script>
 
-var a;
+$(document).ready(function(){
+
+	$(".hideAll").on("click", function(){
+		var notifs = $("#notificationsList li");
+
+		if(notifs){
+			for(var i = 1; i < notifs.length; i++){
+				hideFunction(notifs[i].getAttribute("idOfNotif"));
+	
+				notifs[i].remove();
+			}
+	
+			$(".badge")[0].innerHTML = 0;
+		}
+		
+		
+
+		
+	});
+
+
+
+	$(".notificationHide").on("click", function(){
+		console.log("click");
+		console.log(this.children[0].innerHTML);
+		hideFunction(this.children[0].innerHTML);
+		
+		// console.log(this.parent().innerHTML);
+		
+		var notifs = $("#notificationsList li");
+
+		for(var i = 0; i < notifs.length; i++){
+
+			// console.log(notifs[i].children[0].children[1].children[1].children[0].innerHTML);
+
+			if(notifs[i].children[0]){
+				if(notifs[i].children[0].children[1].children[1].children[0].innerHTML === this.children[0].innerHTML){
+					console.log(i);
+	
+					notifs[i].innerHTML = "";
+					$(".badge")[0].innerHTML -= 1;
+	
+					break;
+				}
+			}
+			
+		}
+		
+	});
+	
+});
+
+function hideFunction(idOfNotification){
+	// console.log(idOfNotification);
+
+	$.ajax({
+	url: "/ajax/hideNotification",
+	type: "GET",
+	data: {idOfNotif: idOfNotification},
+	success: function(){console.log("ajax success");},
+	error: function(err){console.log(err);}
+	});
+
+
+/*
+	xmlhttp = new XMLHttpRequest();
+	xmlhttp.open("GET","/ajax/hideNotification", true);
+
+	console.log("/profile/getProfileDataAJAX/" + $("#profileUsername")[0].innerHTML);
+
+
+	xmlhttp.onreadystatechange=function(){
+		if (xmlhttp.readyState==4 && xmlhttp.status==200){
+			userData=JSON.parse(xmlhttp.responseText);
+			console.log(userData);
+
+			drawCharts();
+		}
+	}
+	xmlhttp.send();*/
+
+}
+
+
+
+
+
+
+
+
+
+
+
+	var a;
 
 	var optionsList = [
 		"display",

@@ -28,13 +28,13 @@ var forumThreadSchema = new mongoose.Schema({
 	comments: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "forumThreadComment"
+			ref: "ForumThreadComment"
 		} 
 	],
 
 	category: String
 });
 //compile schema into a model
-var forumThread = mongoose.model("forumThread", forumThreadSchema);
+var forumThread = mongoose.model("ForumThread", forumThreadSchema);
 
 module.exports = forumThread;
