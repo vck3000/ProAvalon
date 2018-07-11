@@ -66,7 +66,8 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 
 			//Set up a new notification
 			console.log(foundForumThread.author);
-			User.findById(mongoose.Types.ObjectId(foundForumThread.author.id)).populate("notifications")
+			if(foundForumThread.author.id){
+				User.findById(mongoose.Types.ObjectId(foundForumThread.author.id)).populate("notifications")
 				.exec(function(err, foundUser){
 
 				if(err){
@@ -89,8 +90,10 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 							}
 						});
 					// }
-				}
-			});
+					}
+				});
+			}
+			
 
 			//redirect to same forum thread
 			res.redirect("/forum/show/" + req.params.id);
