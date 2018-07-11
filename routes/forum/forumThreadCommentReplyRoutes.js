@@ -92,7 +92,7 @@ function createReply (req, res, commentReplyData, replyingToThisReply) {
 				foundForumThreadComment.save();
 	
 				if(replyingToThisReply){
-					//Set up a new notification
+					//Set up a new notification for the replyee
 					User.findById(mongoose.Types.ObjectId(replyingToThisReply.author.id)).populate("notifications")
 					.exec(function(err, foundUser){
 						console.log("User");
@@ -118,6 +118,32 @@ function createReply (req, res, commentReplyData, replyingToThisReply) {
 						}
 					});
 				}
+
+				//Set up a new notification for the main commenter
+				User.findById(mongoose.Types.ObjectId(foundForumThreadComment.author.id)).populate("notifications")
+				.exec(function(err, foundUser){
+					console.log("User");
+					console.log(foundUser);
+
+					if(err){
+						console.log(err);
+					}
+					else{
+						notificationVar = {
+							text: req.user.username + " has replied to your comment.",
+							date: new Date(),
+							link: ("/forum/show/" + foundForum._id + "#" + newCommentReply._id)
+						}
+						// if(foundUser){
+							myNotification.create(notificationVar, function(err, newNotif){
+								console.log(foundUser);
+								foundUser.notifications.push(newNotif);
+								foundUser.markModified("notifications");
+								foundUser.save();
+							});
+						// }
+					}
+				});	
 				
 				
 	
