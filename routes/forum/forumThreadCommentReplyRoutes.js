@@ -91,12 +91,13 @@ function createReply (req, res, commentReplyData, replyingToThisReply) {
 				foundForumThreadComment.replies.push(newCommentReply);
 				foundForumThreadComment.save();
 	
-				//Set up a new notification
-				User.findById(mongoose.Types.ObjectId(replyingToThisReply.author.id)).populate("notifications")
+				if(replyingToThisReply){
+					//Set up a new notification
+					User.findById(mongoose.Types.ObjectId(replyingToThisReply.author.id)).populate("notifications")
 					.exec(function(err, foundUser){
 						console.log("User");
 						console.log(foundUser);
-	
+
 						if(err){
 							console.log(err);
 						}
@@ -115,7 +116,9 @@ function createReply (req, res, commentReplyData, replyingToThisReply) {
 								});
 							// }
 						}
-				});
+					});
+				}
+				
 				
 	
 				forumThread.findById(req.params.id).populate("comments").exec(function (err, foundForumThread) {
