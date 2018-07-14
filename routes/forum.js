@@ -147,7 +147,12 @@ router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function(req, res){
 									);
 
 								}
-								foundReply.save();
+								foundReply.save(function(){
+									foundComment.save(function(){
+										foundThread.markModified("comments");	
+										foundThread.save();
+									});
+								});
 								foundComment.markModified("replies");
 							}
 							else{
@@ -155,7 +160,10 @@ router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function(req, res){
 							}
 						});
 					}
-					foundComment.save();
+					foundComment.save(function(){
+						foundThread.markModified("comments");	
+						foundThread.save();
+					});
 					foundThread.markModified("comments");					
 				});
 			}
@@ -299,7 +307,7 @@ router.get("/page/:category/:pageNum", middleware.isLoggedIn, function(req, res)
 					await User.findOne({username: req.user.username}).populate("notifications").exec(function(err, foundUser){
 						if(foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined){
 							userNotifications = foundUser.notifications;
-							console.log(foundUser.notifications);
+							// console.log(foundUser.notifications);
 						}
 						
 						res.render("forum/index", {
@@ -440,7 +448,7 @@ function createNotification(userID, stringToSay, link){
 			}
 			// if(foundUser){
 				myNotification.create(notificationVar, function(err, newNotif){
-					console.log(foundUser);
+					// console.log(foundUser);
 					if(foundUser.notifications){
 						foundUser.notifications.push(newNotif);
 						foundUser.markModified("notifications");

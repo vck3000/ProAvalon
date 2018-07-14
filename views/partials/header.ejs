@@ -77,6 +77,7 @@
 
 		.notificationDate {
 			/* font-size: 0.5em; */
+			padding: 5px 10px;
 		}
 
 		.notificationHide {
@@ -112,6 +113,13 @@
 			text-decoration: underline;
 		}
 
+		hr {
+			padding-top:2px;
+			padding-bottom: 2px;
+
+			margin-top:2px;
+			margin-bottom: 2px;
+		}
 
 
 
@@ -200,21 +208,24 @@
 								<p class="notificationText"><span style="visibility: hidden">a</span></p>
 								<p><span class="notificationDate"><span style="visibility: hidden">a</span></span><span class="hideAll">Hide all<span class="hidden"></span></span></p>
 							
-								<hr>
+								
 
 								</a>
 							</li>
 
+							<hr>
+
 							<% if(locals.userNotifications) { for(var i = 0; i < userNotifications.length; i++){ %>
-									<li class="notificationItem" idOfNotif=<%=userNotifications[i]._id%>><a href="#">
+									<li class="notificationItem" idOfNotif=<%=userNotifications[i]._id%>>
 										<a href=<%= userNotifications[i].link %>><p class="notificationText"><%=userNotifications[i].text%></p></a>
 										<p><span class="notificationDate"><%=new Date(userNotifications[i].date).toDateString()%></span><span class="notificationHide">Hide<span class="hidden"><%=userNotifications[i]._id%></span></span></p>
-										<p><%= userNotifications[i].link %></p>
-										<% if(!(i === userNotifications.length - 1)) { %>
-											<hr>
-										<% } %>
-									</a></li>
+										<!--<p><%= userNotifications[i].link %></p>-->
+										
+									</li>
 									
+									<% if(!(i === userNotifications.length - 1)) { %>
+										<hr>
+									<% } %>
 
 								<% } %>
 							<% } %>

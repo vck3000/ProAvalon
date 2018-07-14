@@ -77,18 +77,71 @@ router.get("/show/:id", function (req, res) {
 				// console.log(comment.replies);
 			});
 
+			var userIdString = req.user._id.toString().replace(" ", "");
+
+			var idsOfLikedPosts = [];
+			//have they liked the main post already?
+			if(foundForumThread.whoLikedId){
+				for(var i = 0; i < foundForumThread.whoLikedId.length; i++){
+					if(foundForumThread.whoLikedId[i] && foundForumThread.whoLikedId[i].toString().replace(" ", "") === userIdString){
+						idsOfLikedPosts[0] = foundForumThread._id;
+						console.log("added");
+						break;
+					}
+				}
+			}
+
+			console.log("liked: ");
+			// console.log(typeof(foundForumThread.whoLikedId[0].toString()));
+			console.log(typeof(userIdString));
+			// console.log(foundForumThread.whoLikedId[0].toString === userIdString);
+			
+
+			foundForumThread.comments.forEach(function (comment) {
+				if(comment.whoLikedId){
+					for(var i = 0; i < comment.whoLikedId.length; i++){
+						if(comment.whoLikedId[i] && comment.whoLikedId[i].toString().replace(" ", "") === userIdString){
+							idsOfLikedPosts.push(comment._id);					
+						}
+					}
+				}
+
+				comment.replies.forEach(function (reply) {
+					if(reply.whoLikedId){
+						for(var i = 0; i < reply.whoLikedId.length; i++){
+							if(reply.whoLikedId[i] && reply.whoLikedId[i].toString().replace(" ", "") === userIdString){
+								idsOfLikedPosts.push(reply._id);					
+							}
+						}
+					}
+				});
+			});
+
+			// console.log("id of user");
+			// console.log(req.user._id);
+
+			// console.log(" who like dforum");
+			// console.log(foundForumThread.whoLikedId[1]._id.toString());
+
+			// console.log("equal?");
+			// console.log(foundForumThread.whoLikedId[0]._id == (req.user._id.toString()));
+
+			console.log("ids");
+			console.log(idsOfLikedPosts);
+
 
 			var userNotifications = [];
 
 			await User.findOne({username: req.user.username}).populate("notifications").exec(function(err, foundUser){
 				if(foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined){
 					userNotifications = foundUser.notifications;
-					console.log(foundUser.notifications);
+					// console.log(foundUser.notifications);
 				}
 				res.render("forum/show", {
 					userNotifications: userNotifications,
 					forumThread: foundForumThread, 
-					currentUser: req.user
+					currentUser: req.user,
+					idsOfLikedPosts: idsOfLikedPosts
 				});		
 			});
 

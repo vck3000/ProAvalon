@@ -84,10 +84,12 @@ likes.forEach(function(like){
                 if(message === "liked"){
                     $(thisLike).notify("Liked",  { position:"right", autoHideDelay: 1000, className: "success"});
                     $("#" + idofelement + "likes")[0].innerText = parseInt($("#" + idofelement + "likes")[0].innerText) + 1
+                    $(thisLike)[0].innerText = "Unlike";
                 }
                 else if(message === "unliked"){
                     $(thisLike).notify("Unliked",  { position:"right", autoHideDelay: 1000, className: "info"});
                     $("#" + idofelement + "likes")[0].innerText = parseInt($("#" + idofelement + "likes")[0].innerText) - 1
+                    $(thisLike)[0].innerText = "Like";
                 }
                 else{
                     $(thisLike).notify("Error! Something went wrong...",  { position:"right", autoHideDelay: 1000, className: "error"});

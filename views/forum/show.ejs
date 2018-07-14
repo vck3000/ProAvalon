@@ -47,8 +47,24 @@
             <% } %>
 
             <p class="commentOptions">
-                <a class="like" idOfElement=<%=forumThread._id%> idOfForum=<%=forumThread._id%> typeofelement='forum'>Like</a>
+                <a class="like" idOfElement=<%=forumThread._id%> idOfForum=<%=forumThread._id%> typeofelement='forum'>
+                    <%               
+                    var isInside = false;
+                        Object.keys(idsOfLikedPosts).forEach(function(key) {
+                            if (idsOfLikedPosts[key].toString().replace(" ", "") == forumThread._id.toString().replace(" ", "")) {
+                                isInside = true;
+                            }
+                        });
+                    %>
+
+                    <% if(!isInside){ %>
+                        Like
+                    <% } else { %>
+                        Unlike
+                    <% } %>
+                </a>
             </p>
+
 
             <% if(currentUser && forumThread.author.id && forumThread.author.id.equals(currentUser.id)){ %>
                 <br>
@@ -149,7 +165,22 @@
                         <p class="commentOptions">
                         
                             <a class="reply">Reply</a>
-                            <a class="like" idOfElement=<%=comment._id%> idofcomment=<%=comment._id%> idOfForum=<%=forumThread._id%> typeofelement='comment'>Like</a>
+                            <a class="like" idOfElement=<%=comment._id%> idofcomment=<%=comment._id%> idOfForum=<%=forumThread._id%> typeofelement='comment'>
+                                <%               
+                                var isInside = false;
+                                    Object.keys(idsOfLikedPosts).forEach(function(key) {
+                                        if (idsOfLikedPosts[key].toString().replace(" ", "") == comment._id.toString().replace(" ", "")) {
+                                            isInside = true;
+                                        }
+                                    });
+                                %>
+                                
+                                <% if(!isInside){ %>
+                                    Like
+                                <% } else { %>
+                                    Unlike
+                                <% } %>
+                            </a>
 
                             <% if(currentUser && comment.author.id && comment.author.id.equals(currentUser.id)){ %>
                                 <a class="edit" href="/forum/<%=forumThread._id%>/<%=comment._id%>/edit">Edit</a>
@@ -204,7 +235,22 @@
                             <p class="commentOptions">
                         
                                 <a class="reply">Reply</a>
-                                <a class="like" idOfElement=<%=reply._id%> idOfReply=<%=reply._id%> idOfComment=<%=comment._id%> idOfForum=<%=forumThread._id%> typeofelement='reply'>Like</a>
+                                <a class="like" idOfElement=<%=reply._id%> idOfReply=<%=reply._id%> idOfComment=<%=comment._id%> idOfForum=<%=forumThread._id%> typeofelement='reply'>
+                                    <%               
+                                    var isInside = false;
+                                        Object.keys(idsOfLikedPosts).forEach(function(key) {
+                                            if (idsOfLikedPosts[key].toString().replace(" ", "") == reply._id.toString().replace(" ", "")) {
+                                                isInside = true;
+                                            }
+                                        });
+                                    %>
+                                    
+                                    <% if(!isInside){ %>
+                                        Like
+                                    <% } else { %>
+                                        Unlike
+                                    <% } %>
+                                </a>
 
                                 <% if(currentUser && reply.author.id && reply.author.id.equals(currentUser.id)){ %>
                                     
