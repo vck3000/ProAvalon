@@ -586,16 +586,13 @@ $(document).ready(function(){
 
 		if(notifs){
 			for(var i = 1; i < notifs.length; i++){
-				hideFunction(notifs[i].getAttribute("idOfNotif"));
-	
+				// hideFunction(notifs[i].getAttribute("idOfNotif"));
+				hideAllNotifs();
 				notifs[i].remove();
 			}
 	
 			$(".badge")[0].innerHTML = 0;
 		}
-		
-		
-
 		
 	});
 
@@ -648,6 +645,41 @@ function hideFunction(idOfNotification){
 	success: function(){console.log("ajax success");},
 	error: function(err){console.log(err);}
 	});
+	
+	
+
+
+/*
+	xmlhttp = new XMLHttpRequest();
+	xmlhttp.open("GET","/ajax/hideNotification", true);
+
+	console.log("/profile/getProfileDataAJAX/" + $("#profileUsername")[0].innerHTML);
+
+
+	xmlhttp.onreadystatechange=function(){
+		if (xmlhttp.readyState==4 && xmlhttp.status==200){
+			userData=JSON.parse(xmlhttp.responseText);
+			console.log(userData);
+
+			drawCharts();
+		}
+	}
+	xmlhttp.send();*/
+
+}
+
+
+function hideAllNotifs(){
+	// console.log(idOfNotification);
+
+	$.ajax({
+	url: "/ajax/hideAllNotifications",
+	type: "GET",
+	success: function(){console.log("ajax success");},
+	error: function(err){console.log(err);}
+	});
+	
+	
 
 
 /*

@@ -41,6 +41,7 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 		timeCreated: new Date(),
 		timeLastEdit: new Date(),
 		likes: 0,
+		whoLiked: [],
 		replies: []
 	}
 

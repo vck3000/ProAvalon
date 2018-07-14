@@ -280,6 +280,31 @@ router.get("/ajax/hideNotification", function(req, res){
 	});
 });
 
+router.get("/ajax/hideAllNotifications", function(req, res){
+	console.log("hide all nofications");
+
+	User.findById(req.user._id).populate("notifications").exec(async function(err, foundUser){
+		if(err){
+			console.log(err);
+		}
+		console.log(foundUser.notifications);
+
+		foundUser.notifications.forEach(function(notif){
+			console.log("removing notif");
+			console.log(notif);
+			myNotification.findByIdAndRemove(notif._id, function(err){
+				// console.log("callback");
+			});
+		});
+
+		foundUser.notifications = [];
+
+		foundUser.markModified("notifications");
+		foundUser.save();
+
+	});
+});
+
 
 
 
@@ -375,6 +400,27 @@ var defaultValuesForUser = {
 	timeZone: "",
 	biography: "",
 
-	roleStats: {},
+	roleStats: {
+		"5p": {
+			"merlin": {
+				
+			},
+			"percival": {
+				
+			},
+			"assassin": {
+				
+			},
+			"morgana": {
+				
+			},
+			"spy": {
+				
+			},
+			"resistance": {
+				
+			}
+		}
+	},
 	notificationS: {}
 }

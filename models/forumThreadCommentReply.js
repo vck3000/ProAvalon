@@ -1,6 +1,6 @@
 var mongoose = require("mongoose");
 
-var replySchema = mongoose.Schema({
+var replySchema = new mongoose.Schema({
 	text: String,
 
 	author: {
@@ -13,7 +13,8 @@ var replySchema = mongoose.Schema({
 
 	timeCreated: Date,
 	timeLastEdit: Date,
-	likes: String,
+	likes: Number,
+	whoLikedId: [],
 	edited: Boolean,
 
 	replyingUsername: String

@@ -1,30 +1,17 @@
 To-do list:
 
 -Moderators
-
 -Max number of players
-
-
 -Statistics page
-
-
--online users list in misc tab
 -record individual player stats
-
-
-
--notification from forums
-
+-about page
+-restart server while saving games and restarting
+-last person commented on a forum
+-likes on forums
 -player profile page
-
 -sometimes someone would be transparent even though they didnt leave
-
 -roll command
-
--Who card started with
-
-
-
+-Who card started with stat
 -waiting for (username) to shoot 
 -right side tabs dont flash yellow
 
@@ -213,9 +200,10 @@ Mine:
 
 
 
+-online users list in misc tab
 
 
-
+-notification from forums
 
 
 

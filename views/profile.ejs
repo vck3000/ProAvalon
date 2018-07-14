@@ -235,11 +235,37 @@
 
         console.log(generalRoleStats);
 
-        var generalLabelsArray = ["Overall Resistance", "Overall Spy"];
-
-
         var spyWins = userData.totalWins - userData.totalResWins;
         var spyLosses = userData.totalLosses - userData.totalResLosses;
+
+
+        
+        //create array for the chartjs hover stats:
+        //first two entries are overall res and overall spy
+        var generalRoleStatsArray = [
+            {
+                wins: userData.totalResWins,
+                losses: userData.totalResLosses
+            },
+            {
+                wins: spyWins,
+                losses: spyLosses
+            }
+        ];
+        i = 2;
+
+        for(var key in generalRoleStats){
+            if(generalRoleStats.hasOwnProperty(key)){
+                generalRoleStatsArray[i] = generalRoleStats[key];
+                i++;
+            }
+        }
+
+        console.log(generalRoleStatsArray);
+
+
+
+        var generalLabelsArray = ["Overall Resistance", "Overall Spy"];
 
         var generalData = [Math.floor(userData.totalResWins/ (userData.totalResWins+userData.totalResLosses) * 100), Math.floor((spyWins) / (spyLosses + spyWins) * 100)];
         var backgroundColor = [blue1, red1];
@@ -250,19 +276,19 @@
 
                 // console.log(role);
 
-                console.log(generalRoleStats[role].wins);
+                // console.log(generalRoleStats[role].wins);
 
                 var percentWon = Math.floor((generalRoleStats[role].wins / (generalRoleStats[role].wins + generalRoleStats[role].losses)) * 100);
                 generalData.push(percentWon);
 
-                console.log(generalData);
+                // console.log(generalData);
 
 
 
                 //Now capitalise
                 var role = capitalizeFirstLetter(role);
                 generalLabelsArray.push(role);
-                console.log(generalLabelsArray);
+                // console.log(generalLabelsArray);
                 
 
                 
@@ -281,7 +307,7 @@
         var dataGeneral = {
             labels: generalLabelsArray,
             datasets: [{
-                label: 'Winrate %',
+                label: 'Winrate',
                 data: generalData,
                 backgroundColor: backgroundColor,
                 borderColor: borderColor,
@@ -292,17 +318,37 @@
             scales: {
                 yAxes: [{
                     ticks: {
-                        beginAtZero:true
+                        beginAtZero:true,
+
                     }
                 }],
                 xAxes: [{
                     ticks: {
                         suggestedMin: 0,
-                        suggestedMax: 100
+                        suggestedMax: 100,
+
+                        callback: function(value, index, values) {
+                        return value + '%';
+                    }
                     }
                 }]
-            }
+            },
+
+            //give back % and also num of games on hover
+            tooltips: {
+                callbacks: {
+                label: function(tooltipItem, chartData) {
+                    // return "lmao";
+                    return chartData.labels[tooltipItem.index] + ': ' + chartData.datasets[0].data[tooltipItem.index] + '%' + " " + "[" + generalRoleStatsArray[tooltipItem.index].wins + "/" + generalRoleStatsArray[tooltipItem.index].losses + "]";                    
+                    }
+                }
+            },
+
+            
+
         }
+
+        
 
 
 
@@ -330,23 +376,9 @@
                     'rgba(255, 159, 64, 1)'
                 ],
                 borderWidth: 1
-            }],
+            }]
         }
-        var optionsGeneral = {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero:true
-                    }
-                }],
-                xAxes: [{
-                    ticks: {
-                        suggestedMin: 0,
-                        suggestedMax: 100
-                    }
-                }]
-            }
-        }
+
 
 
 

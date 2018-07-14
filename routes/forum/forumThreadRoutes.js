@@ -45,7 +45,7 @@ router.get("/show/:id", function (req, res) {
 	forumThread.findById(req.params.id)
 	// .populate("comments")
 	// .populate({ path: "comments", populate: { path: "replies" } })
-	.populate({ path: "comments", populate: { path: "replies", populate: {path:"clients"}}})
+	.populate({ path: "comments", populate: { path: "replies"}})
 	.exec( async function (err, foundForumThread) {
 		if (err) {
 			// console.log(err);

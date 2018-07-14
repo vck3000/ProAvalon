@@ -49,6 +49,59 @@ replies.forEach(function(reply){
 
 
 //==============================================================================
+//Attach all the likes to the ajax requestse
+//==============================================================================
+
+//get all the reply anchor links
+var likes = document.querySelectorAll(".like");
+//for each anchor link, add an event listener to its respective replyBox
+likes.forEach(function(like){
+    like.addEventListener("click", function(){
+
+        var thisLike = this;
+
+        var idofelement = this.getAttribute("idofelement");
+        var typeofelement = this.getAttribute("typeofelement");
+
+        var idOfReply = this.getAttribute("idofreply");
+        var idOfComment = this.getAttribute("idofcomment");
+        var idOfForum = this.getAttribute("idofforum");
+        
+
+        console.log(idOfReply);
+        console.log(idOfComment);
+        console.log(idOfForum);
+
+
+        xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("GET","/forum/ajax/like/" + typeofelement + "/" + idOfForum + "=" + idOfComment + "=" + idOfReply, true);
+
+        xmlhttp.onreadystatechange=function(){
+            if (xmlhttp.readyState==4 && xmlhttp.status==200){
+                var message=xmlhttp.responseText;
+                console.log(message);   
+
+                if(message === "liked"){
+                    $(thisLike).notify("Liked",  { position:"right", autoHideDelay: 1000, className: "success"});
+                    $("#" + idofelement + "likes")[0].innerText = parseInt($("#" + idofelement + "likes")[0].innerText) + 1
+                }
+                else if(message === "unliked"){
+                    $(thisLike).notify("Unliked",  { position:"right", autoHideDelay: 1000, className: "info"});
+                    $("#" + idofelement + "likes")[0].innerText = parseInt($("#" + idofelement + "likes")[0].innerText) - 1
+                }
+                else{
+                    $(thisLike).notify("Error! Something went wrong...",  { position:"right", autoHideDelay: 1000, className: "error"});
+                }
+            }
+        }
+        xmlhttp.send();
+
+
+    });
+});
+
+
+//==============================================================================
 //Attach all the Delete anchor links to their respective replyBox
 //==============================================================================
 

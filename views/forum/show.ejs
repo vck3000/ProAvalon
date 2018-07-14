@@ -2,7 +2,7 @@
 
 <link rel="stylesheet" type="text/css" href="/stylesheets/forum/show.css">
 
-<% include ../partials/summernoteInclude%>
+<% include ../partials/forumInclude%>
 												
 
 <%   var bg_converter = {};                    %>
@@ -30,7 +30,7 @@
                 <span class="glyphicon glyphicon-comment"></span>
                 <span><%=forumThread.numOfComments%></span>
                 <span class="glyphicon glyphicon-thumbs-up"></span>
-                <span> <%=forumThread.likes%></span>
+                <span id=<%=forumThread._id  + "likes"%>> <%=forumThread.likes%></span>
                 <span class="glyphicon glyphicon-time"></span>
                 <span><%=forumThread.timeSinceString%></span>
         </span></p>
@@ -45,6 +45,10 @@
                 <br>
                 [Edited]
             <% } %>
+
+            <p class="commentOptions">
+                <a class="like" idOfElement=<%=forumThread._id%> idOfForum=<%=forumThread._id%> typeofelement='forum'>Like</a>
+            </p>
 
             <% if(currentUser && forumThread.author.id && forumThread.author.id.equals(currentUser.id)){ %>
                 <br>
@@ -131,7 +135,13 @@
             <%forumThread.comments.forEach(function(comment){ %>
                 <div class="individualMainComment" id=<%=comment.id%>>
                     <div class="individualComment" >
-                        <p><strong><%=comment.author.username%></strong> <span class="timeSince"><%=comment.timeSinceString%> ago</span></p>
+                        <p>
+                            <strong><%=comment.author.username%></strong> 
+                            <span class="timeSince"><%=comment.timeSinceString%> ago</span>
+                            <span class="glyphicon glyphicon-thumbs-up"></span>
+                            <span id=<%=comment._id + "likes"%>> <%=comment.likes%></span>
+                        
+                        </p>
                         <p class="mainCommentText"><%-comment.text%></p>
                         <% if(comment.edited === true){ %>
                             [Edited]
@@ -139,7 +149,7 @@
                         <p class="commentOptions">
                         
                             <a class="reply">Reply</a>
-                            <a class="like">Like</a>
+                            <a class="like" idOfElement=<%=comment._id%> idofcomment=<%=comment._id%> idOfForum=<%=forumThread._id%> typeofelement='comment'>Like</a>
 
                             <% if(currentUser && comment.author.id && comment.author.id.equals(currentUser.id)){ %>
                                 <a class="edit" href="/forum/<%=forumThread._id%>/<%=comment._id%>/edit">Edit</a>
@@ -175,6 +185,9 @@
                             <p>
                                 <strong><%=reply.author.username%></strong>
                                 <span class="timeSince"><%=reply.timeSinceString%> ago</span>
+                                <span class="glyphicon glyphicon-thumbs-up"></span>
+                                <span id=<%=reply._id + "likes"%>> <%=reply.likes%></span>
+
                                 <% if(reply.replyingUsername) { %>
                                     <span class="replyingUsername"> @<%=reply.replyingUsername%></span>
                                 <% } %>
@@ -191,7 +204,7 @@
                             <p class="commentOptions">
                         
                                 <a class="reply">Reply</a>
-                                <a class="like">Like</a>
+                                <a class="like" idOfElement=<%=reply._id%> idOfReply=<%=reply._id%> idOfComment=<%=comment._id%> idOfForum=<%=forumThread._id%> typeofelement='reply'>Like</a>
 
                                 <% if(currentUser && reply.author.id && reply.author.id.equals(currentUser.id)){ %>
                                     
@@ -242,8 +255,10 @@
     $(document).ready(function() {
         $('#commentTextArea').summernote();
         // $('.commentReply').summernote();
-
     });
+
+
+
 
 
 </script>
