@@ -17,6 +17,8 @@ To-do list:
 
 -bolding and colour together not wokring
 
+-dont notify if its yourself
+-deleting stuff should just be hidden.
 
 
 -Learn REGEX

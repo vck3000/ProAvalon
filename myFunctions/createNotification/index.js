@@ -19,24 +19,28 @@ createNotifObj.createNotification = function(userIDTarget, stringToSay, link){
 			console.log(err);
 		}
 		else{
-			notificationVar = {
-				text: stringToSay,
-				date: new Date(),
-				link: link,
+			if(foundUser){
+				if(stringToSay.includes(foundUser.username) === false){
 
-				forPlayer: foundUser.username,
-				seen: false
-			}
-			// if(foundUser){
-				myNotification.create(notificationVar, function(err, newNotif){
-					// console.log(foundUser);
-					if(foundUser.notifications){
-						foundUser.notifications.push(newNotif);
-						foundUser.markModified("notifications");
-						foundUser.save();
+					notificationVar = {
+						text: stringToSay,
+						date: new Date(),
+						link: link,
+		
+						forPlayer: foundUser.username,
+						seen: false
 					}
-				});
-			// }
+					
+						myNotification.create(notificationVar, function(err, newNotif){
+							// console.log(foundUser);
+							if(foundUser.notifications){
+								foundUser.notifications.push(newNotif);
+								foundUser.markModified("notifications");
+								foundUser.save();
+							}
+						});
+					}
+				}
 			}
 		});
 	}
