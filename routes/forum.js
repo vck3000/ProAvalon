@@ -11,7 +11,7 @@ var pinnedThread = require("../models/pinnedThread");
 var getTimeDiffInString = require("../assets/myLibraries/getTimeDiffInString");
 
 var User 			= require("../models/user");
-var myNotification	= require("../models/notification");
+var createNotificationObj = require("../myFunctions/createNotification");
 
 var mongoose 		= require("mongoose");
 
@@ -74,11 +74,12 @@ router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function(req, res){
 					foundThread.likes += 1;
 					res.status(200).send("liked");
 
-					createNotification(
-						foundThread.author.id, 
-						req.user.username + " has liked your post!", 
-						("/forum/show/" + foundThread._id)
-					);
+					//create notif to replying target
+					var userIdTarget = foundThread.author.id;
+					var stringToSay = req.user.username + " has liked your post!";
+					var link = ("/forum/show/" + foundThread._id);
+
+					createNotificationObj.createNotification(userIdTarget, stringToSay, link);
 
 					console.log(foundThread);
 					
@@ -110,11 +111,13 @@ router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function(req, res){
 							foundComment.likes += 1;
 							res.status(200).send("liked");
 
-							createNotification(
-								foundComment.author.id, 
-								req.user.username + " has liked your comment!", 
-								("/forum/show/" + foundThread._id + "#" + foundComment._id)
-							);
+							//create notif to replying target
+							var userIdTarget = foundComment.author.id;
+							var stringToSay = req.user.username + " has liked your comment!";
+							var link = ("/forum/show/" + foundThread._id + "#" + foundComment._id);
+
+							createNotificationObj.createNotification(userIdTarget, stringToSay, link);
+							
 
 							
 						}
@@ -140,11 +143,12 @@ router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function(req, res){
 									foundReply.likes += 1;
 									res.status(200).send("liked");
 
-									createNotification(
-										foundReply.author.id, 
-										req.user.username + " has liked your reply!", 
-										("/forum/show/" + foundThread._id + "#" + foundReply._id)
-									);
+									//create notif to replying target
+									var userIdTarget = foundReply.author.id;
+									var stringToSay = req.user.username + " has liked your reply!";
+									var link = ("/forum/show/" + foundThread._id + "#" + foundReply._id);
+
+									createNotificationObj.createNotification(userIdTarget, stringToSay, link);
 
 								}
 								foundReply.save(function(){
@@ -429,42 +433,6 @@ router.get("/page/:pageNum", middleware.isLoggedIn, function (req, res) {
 			}
 		});
 });
-
-
-function createNotification(userID, stringToSay, link){
-	if(userID){
-		User.findById(mongoose.Types.ObjectId(userID)).populate("notifications")
-		.exec(function(err, foundUser){
-
-			console.log(foundUser.username);
-
-		if(err){
-			console.log(err);
-		}
-		else{
-			notificationVar = {
-				text: stringToSay,
-				date: new Date(),
-				link: link,
-
-				forPlayer: foundUser.username,
-				seen: false
-			}
-			// if(foundUser){
-				myNotification.create(notificationVar, function(err, newNotif){
-					// console.log(foundUser);
-					if(foundUser.notifications){
-						foundUser.notifications.push(newNotif);
-						foundUser.markModified("notifications");
-						foundUser.save();
-					}
-				});
-			// }
-			}
-		});
-	}
-}
-
 
 
 

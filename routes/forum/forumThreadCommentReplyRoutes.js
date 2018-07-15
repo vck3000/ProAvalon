@@ -8,7 +8,9 @@ var middleware = require("../../middleware");
 var sanitizeHtml = require('sanitize-html');
 var getTimeDiffInString = require("../../assets/myLibraries/getTimeDiffInString");
 var User 			= require("../../models/user");
-var myNotification	= require("../../models/notification");
+
+var createNotificationObj = require("../../myFunctions/createNotification");
+
 
 var mongoose = require('mongoose');
 
@@ -92,33 +94,12 @@ function createReply (req, res, commentReplyData, replyingToThisReply) {
 				foundForumThreadComment.save();
 	
 				if(replyingToThisReply){
-					//Set up a new notification for the replyee
-					User.findById(mongoose.Types.ObjectId(replyingToThisReply.author.id)).populate("notifications")
-					.exec(function(err, foundUser){
-						console.log("User");
-						console.log(foundUser);
+					//create notif to replying target
+					var userIdTarget = mongoose.Types.ObjectId(replyingToThisReply.author.id);
+					var stringToSay = req.user.username + " has replied to your reply.";
+					var link = ("/forum/show/" + foundForum._id + "#" + newCommentReply._id);
 
-						if(err){
-							console.log(err);
-						}
-						else{
-							notificationVar = {
-								text: req.user.username + " has replied to your reply.",
-								date: new Date(),
-								link: ("/forum/show/" + foundForum._id + "#" + newCommentReply._id),
-
-								forPlayer: foundUser.username,
-								seen: false
-							}
-							// if(foundUser){
-								myNotification.create(notificationVar, function(err, newNotif){
-									foundUser.notifications.push(newNotif);
-									foundUser.markModified("notifications");
-									foundUser.save();
-								});
-							// }
-						}
-					});
+					createNotificationObj.createNotification(userIdTarget, stringToSay, link);
 				}
 
 				console.log(foundForumThreadComment);
@@ -126,38 +107,13 @@ function createReply (req, res, commentReplyData, replyingToThisReply) {
 				console.log(foundForumThreadComment.author);
 
 				if(foundForumThreadComment.author.id){
-					//Set up a new notification for the main commenter
-					User.findById(mongoose.Types.ObjectId(foundForumThreadComment.author.id)).populate("notifications")
-					.exec(function(err, foundUser){
-						console.log("User");
-						console.log(foundUser);
+					//create notif to main comment person
+					var userIdTarget = mongoose.Types.ObjectId(foundForumThreadComment.author.id);
+					var stringToSay = req.user.username + " has replied to your comment.";
+					var link = ("/forum/show/" + foundForum._id + "#" + newCommentReply._id);
 
-						if(err){
-							console.log(err);
-						}
-						else{
-							notificationVar = {
-								text: req.user.username + " has replied to your comment.",
-								date: new Date(),
-								link: ("/forum/show/" + foundForum._id + "#" + newCommentReply._id),
-
-								forPlayer: foundUser.username,
-								seen: false
-							}
-							if(foundUser){
-								myNotification.create(notificationVar, function(err, newNotif){
-									console.log(foundUser);
-									foundUser.notifications.push(newNotif);
-									foundUser.markModified("notifications");
-									foundUser.save();
-								});
-							}
-						}
-					});	
+					createNotificationObj.createNotification(userIdTarget, stringToSay, link);
 				}
-
-				
-				
 				
 	
 				forumThread.findById(req.params.id).populate("comments").exec(function (err, foundForumThread) {

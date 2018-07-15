@@ -7,8 +7,10 @@ var middleware = require("../../middleware");
 var sanitizeHtml = require('sanitize-html');
 var getTimeDiffInString = require("../../assets/myLibraries/getTimeDiffInString");
 var User 			= require("../../models/user");
-var myNotification	= require("../../models/notification");
 var mongoose = require('mongoose');
+
+var createNotificationObj = require("../../myFunctions/createNotification");
+
 
 
 // var sanitizeHtmlAllowedTagsForumThread = ['u'];
@@ -69,34 +71,13 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 			//Set up a new notification
 			console.log(foundForumThread.author);
 			if(foundForumThread.author.id){
-				User.findById(mongoose.Types.ObjectId(foundForumThread.author.id)).populate("notifications")
-				.exec(function(err, foundUser){
 
-				if(err){
-					console.log(err);
-				}
-				else{
-					notificationVar = {
-						text: req.user.username + " has commented on your post.",
-						date: new Date(),
-						link: ("/forum/show/" + foundForumThread._id + "#" + newComment._id),
+				//create notif
+				var userIdTarget = mongoose.Types.ObjectId(foundForumThread.author.id);
+				var stringToSay = req.user.username + " has commented on your post.";
+				var link = ("/forum/show/" + foundForumThread._id + "#" + newComment._id);
 
-						forPlayer: foundUser.username,
-						seen: false
-
-					}
-					// if(foundUser){
-						myNotification.create(notificationVar, function(err, newNotif){
-							console.log(foundUser);
-							if(foundUser.notifications){
-								foundUser.notifications.push(newNotif);
-								foundUser.markModified("notifications");
-								foundUser.save();
-							}
-						});
-					// }
-					}
-				});
+				createNotificationObj.createNotification(userIdTarget, stringToSay, link);
 			}
 			
 

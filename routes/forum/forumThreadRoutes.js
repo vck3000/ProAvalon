@@ -8,9 +8,9 @@ var middleware = require("../../middleware");
 var sanitizeHtml = require('sanitize-html');
 var getTimeDiffInString = require("../../assets/myLibraries/getTimeDiffInString");
 var User 			= require("../../models/user");
-var myNotification	= require("../../models/notification");
 
 var mongoose = require('mongoose');
+
 
 
 var sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2', 'u', 'span', 'br'];
