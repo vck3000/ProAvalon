@@ -166,7 +166,7 @@ var userOptions = {
     },
 
     optionDisplayHeightOfAvatarContainer: {
-        defaultValue: $("#div1Resize").parent().height()*0.4,
+        defaultValue: $("#div1Resize").parent().height()*0.5,
         onLoad: function () {
             //get cookie data
             var containerHeight = docCookies.getItem("optionDisplayHeightOfAvatarContainer");
@@ -1037,7 +1037,7 @@ function addToAllChat(data) {
 
                 //yellow notification on the tabs in room.
                 if ($(".nav-tabs #all-chat-in-game-tab").hasClass("active") === false) {
-                    $(".nav-tabs #all-chat-in-game-tab").addClass("newMessage");
+                    $(".nav-tabs #all-chat-in-game-tab")[0].classList.add("newMessage"); 
                 }
             }
             
@@ -1115,7 +1115,7 @@ function addToRoomChat(data) {
     
                 //yellow notification on the tabs in room.
                 if ($(".nav-tabs #room-chat-in-game-tab").hasClass("active") === false) {
-                    $(".nav-tabs #room-chat-in-game-tab").addClass("newMessage");
+                    $(".nav-tabs #room-chat-in-game-tab")[0].classList.add("newMessage");
                 }
             }
         }
@@ -1635,7 +1635,12 @@ function draw() {
                     assassinationSetup(gameData.phase);
                 }
                 else {
-                    document.querySelector("#status").innerText = "Waiting for the assassin to shoot.";
+                    if(gameData.assassin){
+                        document.querySelector("#status").innerText = "Waiting for " + gameData.assassin + " to shoot.";
+                    }
+                    else{
+                        document.querySelector("#status").innerText = "Waiting for assassin to shoot.";
+                    }
                 }
                 enableDisableButtons();
             }

@@ -125,6 +125,8 @@ module.exports = function (host_, roomId_, io_) {
 	var shuffledPlayerAssignments = [];
 	this.gamePlayerLeftDuringReady = false;
 
+	this.ladyStartRole = undefined;
+
 
 	this.finishGame = function (winner) {
 		if (winner === "spy") {
@@ -211,7 +213,9 @@ module.exports = function (host_, roomId_, io_) {
 
 			missionHistory: this.missionHistory,
 			voteHistory: this.voteHistory,
-			playerRoles: playerRolesVar
+			playerRoles: playerRolesVar,
+
+			ladyStartRole: this.ladyStartRole
 		};
 
 		GameRecord.create(objectToStore, function(err){
@@ -649,6 +653,8 @@ module.exports = function (host_, roomId_, io_) {
 
 		data.spectator = true;
 		data.gamePlayersInRoom = this.getUsernamesOfPlayersInRoom();
+
+		data.assassin = this.getAssassinUsernameForAssassinationPhase();
 		
 
 		//if game is finished, reveal everything including roles
@@ -712,6 +718,7 @@ module.exports = function (host_, roomId_, io_) {
 				data[i].spectator = false;
 				data[i].gamePlayersInRoom = this.getUsernamesOfPlayersInRoom();
 
+				data[i].assassin = this.getAssassinUsernameForAssassinationPhase();
 
 				//if game is finished, reveal everything including roles
 				if (this.phase === "finished") {
@@ -899,6 +906,13 @@ module.exports = function (host_, roomId_, io_) {
 			}
 		}
 
+		for(var i = 0; i < this.playersInGame.length; i++){
+			if(this.playersInGame[i].role.toLowerCase() === "Assassin".toLowerCase()){
+				this.assassinsUsername = this.playersInGame[i].username;
+				break;
+			}
+		}
+
 
 		//prepare the data for each person to see
 		for (var i = 0; i < this.playersInGame.length; i++) {
@@ -964,6 +978,9 @@ module.exports = function (host_, roomId_, io_) {
 		// this.gameplayMessage = str;
 		this.sendText(this.sockets, str, "gameplay-text");
 
+		if(this.lady){
+			this.ladyStartRole = this.playersInGame[this.lady].role;
+		}
 
 		//seed the starting data into the VH
 		for (var i = 0; i < this.sockets.length; i++) {
@@ -1349,6 +1366,16 @@ module.exports = function (host_, roomId_, io_) {
 	this.getNumOfSpectatorsInside = function(){
 		return this.socketsOfSpectators.length;
 	}
+
+	this.getAssassinUsernameForAssassinationPhase = function(){
+		if(this.phase === "assassination"){
+			return this.assassinsUsername;
+		}
+		else{
+			return undefined;
+		}
+	}
+	
 
 };
 

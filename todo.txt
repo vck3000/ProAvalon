@@ -4,14 +4,14 @@ To-do list:
 -Max number of players
 -Statistics page
 -record individual player stats
--about page
+
 -restart server while saving games and restarting
 
 -sometimes someone would be transparent even though they didnt leave
 -roll command
--Who card started with stat
 -waiting for (username) to shoot
--right side tabs dont flash yellow
+
+
 
 -bolding and colour together not wokring
 
@@ -233,4 +233,6 @@ Mine:
 
 -dont notify if its yourself
 -player profile page
-
+-about page
+-right side tabs dont flash yellow
+-Who card started with stat
