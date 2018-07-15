@@ -194,61 +194,61 @@
 			
 					<% if(currentUser){%>
 
-					
-
-					<li class="dropdown" id="notificationsDropdown">
-						<a href="#" id="dropDownNotification">
-							<!--<span class="glyphicon glyphicon-info-sign"></span>-->
-							<% if(locals.userNotifications){%>
-								<span class="badge">
-								<%
-									var num = 0;
-									for(var i = 0; i < userNotifications.length; i++){
-										if(userNotifications[i].seen === false || !userNotifications[i].seen){
-											num++;
+					<% if(locals.userNotifications) {%>
+						<li class="dropdown" id="notificationsDropdown">
+							<a href="#" id="dropDownNotification">
+								<!--<span class="glyphicon glyphicon-info-sign"></span>-->
+								<% if(locals.userNotifications){%>
+									<span class="badge">
+									<%
+										var num = 0;
+										for(var i = 0; i < userNotifications.length; i++){
+											if(userNotifications[i].seen === false || !userNotifications[i].seen){
+												num++;
+											}
 										}
-									}
-								%>
-								<%=num%>
-							
-								</span>
-							<% } %>
-							
-						</a> 
-
-						<ul class="dropdown-menu" id="notificationsList">
-						
-							<li class="notificationItem"><a>
-								<p class="notificationText"><span style="visibility: hidden">a</span></p>
-								<p><span class="notificationDate"><span style="visibility: hidden">a</span></span><span class="hideAll">Hide all<span class="hidden"></span></span></p>
-								</a>
-							</li>
-							<% if(userNotifications.length !== 0){ %>
-							<hr>
-							<% } %>
-
-							<% if(locals.userNotifications) { for(var i = 0; i < userNotifications.length; i++){ %>
-								<% if(userNotifications[i].seen === false || userNotifications[i].seen=== undefined){ %>
-									<li class="notificationItem unseen" idOfNotif=<%=userNotifications[i]._id%>>
-								<% } else{ %>
-									<li class="notificationItem" idOfNotif=<%=userNotifications[i]._id%>>
+									%>
+									<%=num%>
+								
+									</span>
 								<% } %>
-										<a  href="<%=userNotifications[i].link%>"><p class="notificationText"><%=userNotifications[i].text%></p></a>
-										<p><span class="notificationDate"><%=new Date(userNotifications[i].date).toDateString()%></span><span class="notificationHide" >Hide<span class="hidden userNotificationIdToRemove" ><%=userNotifications[i]._id%></span></span></p>
-										<!--<p><%= userNotifications[i].link %></p>-->
-										
-									</li>
-									
-									<% if(!(i === userNotifications.length - 1)) { %>
-										<hr>
+								
+							</a> 
+
+							<ul class="dropdown-menu" id="notificationsList">
+							
+								<li class="notificationItem"><a>
+									<p class="notificationText"><span style="visibility: hidden">a</span></p>
+									<p><span class="notificationDate"><span style="visibility: hidden">a</span></span><span class="hideAll">Hide all<span class="hidden"></span></span></p>
+									</a>
+								</li>
+								<% if(locals.userNotifications && userNotifications.length !== 0){ %>
+								<hr>
+								<% } %>
+
+								<% if(locals.userNotifications) { for(var i = 0; i < userNotifications.length; i++){ %>
+									<% if(userNotifications[i].seen === false || userNotifications[i].seen=== undefined){ %>
+										<li class="notificationItem unseen" idOfNotif=<%=userNotifications[i]._id%>>
+									<% } else{ %>
+										<li class="notificationItem" idOfNotif=<%=userNotifications[i]._id%>>
 									<% } %>
+											<a  href="<%=userNotifications[i].link%>"><p class="notificationText"><%=userNotifications[i].text%></p></a>
+											<p><span class="notificationDate"><%=new Date(userNotifications[i].date).toDateString()%></span><span class="notificationHide" >Hide<span class="hidden userNotificationIdToRemove" ><%=userNotifications[i]._id%></span></span></p>
+											<!--<p><%= userNotifications[i].link %></p>-->
+											
+										</li>
+										
+										<% if(!(i === userNotifications.length - 1)) { %>
+											<hr>
+										<% } %>
 
+									<% } %>
 								<% } %>
-							<% } %>
-				  		</ul>
+							</ul>
 
 
-					</li>
+						</li>
+					<% } %>
 
 					
 					<% if(locals.optionsCog){ %> 

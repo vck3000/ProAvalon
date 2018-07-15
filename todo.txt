@@ -6,9 +6,7 @@ To-do list:
 -record individual player stats
 -about page
 -restart server while saving games and restarting
--last person commented on a forum
--likes on forums
--player profile page
+
 -sometimes someone would be transparent even though they didnt leave
 -roll command
 -Who card started with stat
@@ -17,7 +15,6 @@ To-do list:
 
 -bolding and colour together not wokring
 
--dont notify if its yourself
 -deleting stuff should just be hidden.
 
 
@@ -67,6 +64,29 @@ also from old suggestion:anonymous mode
 
 ***************************************************************************************
 DONE: 
+
+
+Hak:
+•	Disable copying certain texts (maybe useful link http://stackoverflow.com/questions/8957443/prevent-copying-text-in-web-page/12021733#12021733)
+•	Fitting game room better in browser (done) 
+•	Logout button (done)
+
+
+
+Ref:
++margins for text box (first letter touching side)
++smooth borders for text box?
++a less harsh red for rejects and fails
++reject/approve borders doesnt touch head of avatar
++"1 fails"
++remove "disabled" in buttons
++capitalise lady of the lake
++add spaces to the gameplay text
++numbers centered in boxes on mission size
++When pressing start, you should add "requires 5 players to start" message: I think it would feel more responsive instead of simply doing nothing when you press it
+
+
+
 
 -blue or yellow words for dark theme highlitht
 -Spam filter?
@@ -207,27 +227,10 @@ Mine:
 
 -notification from forums
 
+-last person commented on a forum
+-likes on forums
 
 
-
-
-
-Hak:
-•	Disable copying certain texts (maybe useful link http://stackoverflow.com/questions/8957443/prevent-copying-text-in-web-page/12021733#12021733)
-•	Fitting game room better in browser (done) 
-•	Logout button (done)
-
-
-
-Ref:
-+margins for text box (first letter touching side)
-+smooth borders for text box?
-+a less harsh red for rejects and fails
-+reject/approve borders doesnt touch head of avatar
-+"1 fails"
-+remove "disabled" in buttons
-+capitalise lady of the lake
-+add spaces to the gameplay text
-+numbers centered in boxes on mission size
-+When pressing start, you should add "requires 5 players to start" message: I think it would feel more responsive instead of simply doing nothing when you press it
+-dont notify if its yourself
+-player profile page
 

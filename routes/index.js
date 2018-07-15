@@ -244,6 +244,11 @@ router.get("/profile/:profileUsername", function(req, res){
 	});
 });
 
+router.get("/about", function(req, res){
+	res.render("about", {currentUser: req.user});
+});
+
+
 
 router.get("/ajax/profile/getProfileData/:profileUsername", function(req, res){
 	User.findOne({username: req.params.profileUsername}, function(err, foundUser){
