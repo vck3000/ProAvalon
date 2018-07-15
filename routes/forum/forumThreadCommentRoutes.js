@@ -60,6 +60,7 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 			foundForumThread.numOfComments = foundForumThread.numOfComments + 1;
 			//update time last edited
 			foundForumThread.timeLastEdit = new Date();
+			foundForumThread.whoLastEdit = req.user.username;
 
 			foundForumThread.save();
 
@@ -157,6 +158,8 @@ router.put("/:id/:comment_id", middleware.checkForumThreadCommentOwnership, func
 				foundForumThread.markModified("comments");
 				//update time last edited
 				foundForumThread.timeLastEdit = new Date();
+				foundForumThread.whoLastEdit = req.user.username;
+				
 				await foundForumThread.save();
 
 				//redirect to the forum page

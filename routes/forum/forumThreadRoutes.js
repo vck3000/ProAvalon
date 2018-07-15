@@ -201,6 +201,7 @@ router.post("/", middleware.isLoggedIn, async function (req, res) {
 			likes: 0,
 			numOfComments: 0,
 			timeLastEdit: new Date(),
+			whoLastEdit: req.user.username,
 			author: {
                 id: req.user._id,
                 username: req.user.username
@@ -280,7 +281,8 @@ router.put("/:id", middleware.checkForumThreadOwnership, function (req, res) {
 
     //add the required changes for an edit
 	req.body.forumThread.edited = true;
-    req.body.forumThread.timeLastEdit = new Date();
+	req.body.forumThread.timeLastEdit = new Date();
+	req.body.forumThread.whoLastEdit = req.user.username;
     
 	//sanitize the description once again
 	req.body.forumThread.description = sanitizeHtml(req.body.forumThread.description, {

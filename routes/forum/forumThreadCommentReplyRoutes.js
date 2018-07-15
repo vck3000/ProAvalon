@@ -109,7 +109,6 @@ function createReply (req, res, commentReplyData, replyingToThisReply) {
 							}
 							// if(foundUser){
 								myNotification.create(notificationVar, function(err, newNotif){
-									console.log(foundUser);
 									foundUser.notifications.push(newNotif);
 									foundUser.markModified("notifications");
 									foundUser.save();
@@ -119,31 +118,39 @@ function createReply (req, res, commentReplyData, replyingToThisReply) {
 					});
 				}
 
-				//Set up a new notification for the main commenter
-				User.findById(mongoose.Types.ObjectId(foundForumThreadComment.author.id)).populate("notifications")
-				.exec(function(err, foundUser){
-					console.log("User");
-					console.log(foundUser);
+				console.log(foundForumThreadComment);
+				console.log("author");
+				console.log(foundForumThreadComment.author);
 
-					if(err){
-						console.log(err);
-					}
-					else{
-						notificationVar = {
-							text: req.user.username + " has replied to your comment.",
-							date: new Date(),
-							link: ("/forum/show/" + foundForum._id + "#" + newCommentReply._id)
+				if(foundForumThreadComment.author.id){
+					//Set up a new notification for the main commenter
+					User.findById(mongoose.Types.ObjectId(foundForumThreadComment.author.id)).populate("notifications")
+					.exec(function(err, foundUser){
+						console.log("User");
+						console.log(foundUser);
+
+						if(err){
+							console.log(err);
 						}
-						// if(foundUser){
-							myNotification.create(notificationVar, function(err, newNotif){
-								console.log(foundUser);
-								foundUser.notifications.push(newNotif);
-								foundUser.markModified("notifications");
-								foundUser.save();
-							});
-						// }
-					}
-				});	
+						else{
+							notificationVar = {
+								text: req.user.username + " has replied to your comment.",
+								date: new Date(),
+								link: ("/forum/show/" + foundForum._id + "#" + newCommentReply._id)
+							}
+							if(foundUser){
+								myNotification.create(notificationVar, function(err, newNotif){
+									console.log(foundUser);
+									foundUser.notifications.push(newNotif);
+									foundUser.markModified("notifications");
+									foundUser.save();
+								});
+							}
+						}
+					});	
+				}
+
+				
 				
 				
 	
@@ -154,6 +161,8 @@ function createReply (req, res, commentReplyData, replyingToThisReply) {
 	
 					//update time last edited
 					foundForumThread.timeLastEdit = new Date();
+					foundForumThread.whoLastEdit = req.user.username;
+					
 	
 					foundForumThread.save();
 				});
@@ -208,6 +217,8 @@ router.put("/:id/:comment_id/:reply_id", middleware.checkForumThreadCommentReply
 				foundForumThreadComment.markModified("replies");
 				//update time last edited
 				foundForumThreadComment.timeLastEdit = new Date();
+				
+				
 
 				await foundForumThreadComment.save();
 
@@ -219,6 +230,7 @@ router.put("/:id/:comment_id/:reply_id", middleware.checkForumThreadCommentReply
 					foundForumThread.markModified("comments");
 					//update time last edited
 					foundForumThread.timeLastEdit = new Date();
+					foundForumThread.whoLastEdit = req.user.username;
 					await foundForumThread.save();
 
 					//redirect to the forum page

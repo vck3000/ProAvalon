@@ -88,3 +88,7 @@ li {}
 .likes {
     /* vertical-align: middle; */
 }
+
+span {
+    white-space:nowrap;
+}

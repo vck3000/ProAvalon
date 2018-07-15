@@ -112,19 +112,30 @@
                                             </a>
                                         </div>
                                         <p class="discussionDetail">
-                                            By: <%=forumThread.author.username%>, <%=forumThread.timeCreated.toDateString()%>
+                                        By: <%=forumThread.author.username%>, <%=forumThread.timeCreated.toDateString()%>
                                         </p>
                                     </div>
                                     <div class="discussionRight">
                                         <div class="likes">
-                                            <span class="glyphicon glyphicon-comment"></span>
-                                            <span><%=forumThread.numOfComments%></span>
-                                            <span class="glyphicon glyphicon-thumbs-up"></span>
-                                            <span> 
-                                              <%=forumThread.likes%>
+                                            <span>
+                                                <span class="glyphicon glyphicon-comment"></span>
+                                                <span><%=forumThread.numOfComments%></span>
                                             </span>
-                                            <span class="glyphicon glyphicon-time"></span>
-                                            <span><%=forumThread.timeSinceString%> </span>
+                                            <span>
+                                                <span class="glyphicon glyphicon-thumbs-up"></span>
+                                                <span> 
+                                                    <%=forumThread.likes%>
+                                                </span>
+                                            </span>
+                                            <span>
+                                                <span class="glyphicon glyphicon-time"></span>
+                                                <span><%=forumThread.timeSinceString%> </span>
+                                            </span>
+                                        </div>
+                                        <div>
+                                        <% if(forumThread.whoLastEdit) { %>
+                                            <span><span class="glyphicon glyphicon-edit"></span> <%=forumThread.whoLastEdit%></span>
+                                        <% } %>
                                         </div>
                                     </div>
                                 </div>
