@@ -105,7 +105,10 @@ function createReply (req, res, commentReplyData, replyingToThisReply) {
 							notificationVar = {
 								text: req.user.username + " has replied to your reply.",
 								date: new Date(),
-								link: ("/forum/show/" + foundForum._id + "#" + newCommentReply._id)
+								link: ("/forum/show/" + foundForum._id + "#" + newCommentReply._id),
+
+								forPlayer: foundUser.username,
+								seen: false
 							}
 							// if(foundUser){
 								myNotification.create(notificationVar, function(err, newNotif){
@@ -136,7 +139,10 @@ function createReply (req, res, commentReplyData, replyingToThisReply) {
 							notificationVar = {
 								text: req.user.username + " has replied to your comment.",
 								date: new Date(),
-								link: ("/forum/show/" + foundForum._id + "#" + newCommentReply._id)
+								link: ("/forum/show/" + foundForum._id + "#" + newCommentReply._id),
+
+								forPlayer: foundUser.username,
+								seen: false
 							}
 							if(foundUser){
 								myNotification.create(notificationVar, function(err, newNotif){

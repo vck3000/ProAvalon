@@ -121,6 +121,13 @@
 			margin-bottom: 2px;
 		}
 
+		.unseen {
+			background-color: rgba(188, 214, 255, 0.6)
+		}
+		.unseen:hover {
+			background-color: rgba(188, 214, 255, 1) !important;
+		}
+
 
 
 
@@ -189,36 +196,45 @@
 
 					
 
-					<li class="dropdown">
-						<a href="#" id="dLabel" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<li class="dropdown" id="notificationsDropdown">
+						<a href="#" id="dropDownNotification">
 							<!--<span class="glyphicon glyphicon-info-sign"></span>-->
 							<% if(locals.userNotifications){%>
 								<span class="badge">
-							
-								<%=userNotifications.length%>
+								<%
+									var num = 0;
+									for(var i = 0; i < userNotifications.length; i++){
+										if(userNotifications[i].seen === false || !userNotifications[i].seen){
+											num++;
+										}
+									}
+								%>
+								<%=num%>
 							
 								</span>
 							<% } %>
 							
 						</a> 
 
-						<ul class="dropdown-menu" aria-labelledby="dLabel" id="notificationsList">
+						<ul class="dropdown-menu" id="notificationsList">
 						
 							<li class="notificationItem"><a>
 								<p class="notificationText"><span style="visibility: hidden">a</span></p>
 								<p><span class="notificationDate"><span style="visibility: hidden">a</span></span><span class="hideAll">Hide all<span class="hidden"></span></span></p>
-							
-								
-
 								</a>
 							</li>
-
+							<% if(userNotifications.length !== 0){ %>
 							<hr>
+							<% } %>
 
 							<% if(locals.userNotifications) { for(var i = 0; i < userNotifications.length; i++){ %>
+								<% if(userNotifications[i].seen === false || userNotifications[i].seen=== undefined){ %>
+									<li class="notificationItem unseen" idOfNotif=<%=userNotifications[i]._id%>>
+								<% } else{ %>
 									<li class="notificationItem" idOfNotif=<%=userNotifications[i]._id%>>
-										<a href=<%= userNotifications[i].link %>><p class="notificationText"><%=userNotifications[i].text%></p></a>
-										<p><span class="notificationDate"><%=new Date(userNotifications[i].date).toDateString()%></span><span class="notificationHide">Hide<span class="hidden"><%=userNotifications[i]._id%></span></span></p>
+								<% } %>
+										<a  href="<%=userNotifications[i].link%>"><p class="notificationText"><%=userNotifications[i].text%></p></a>
+										<p><span class="notificationDate"><%=new Date(userNotifications[i].date).toDateString()%></span><span class="notificationHide" >Hide<span class="hidden userNotificationIdToRemove" ><%=userNotifications[i]._id%></span></span></p>
 										<!--<p><%= userNotifications[i].link %></p>-->
 										
 									</li>
@@ -592,6 +608,50 @@
 
 $(document).ready(function(){
 
+	$('#dropDownNotification').on('click', function (event) {
+		$(this).parent().toggleClass('open');
+		// console.log("test");
+		// console.log(this);
+	});
+
+	
+	// $('.userNotificationIdToRemove').on('click', function (event) {
+	// 	setTimeout(function(e){
+	// 		$(event).parent("notificationsDropdown a").parent().toggleClass('open');
+	// 	}, 100)
+	// 	console.log("test");
+	// 	console.log(this);
+	// });
+
+
+	$('body').on('click', function (e) {
+		if (!$('#notificationsDropdown').is(e.target) 
+			&& $('#notificationsDropdown').has(e.target).length === 0 
+			&& $('.open').has(e.target).length === 0
+		) {
+			$('#notificationsDropdown').removeClass('open');
+		}
+	});
+
+	$(".notificationText").on('click', function(e){
+		
+		if(e.innerText !== "a" && $(e.target).parent().parent().hasClass("unseen") === true){
+			// seenNotificationFunction
+			// console.log($(e.target).parent().parent().find(".userNotificationIdToRemove")[0].innerHTML);
+			var id = $(e.target).parent().parent().find(".userNotificationIdToRemove")[0].innerHTML;
+
+			seenNotificationFunction(id);
+
+			$(".badge")[0].innerHTML -= 1;
+
+			$(e.target).parent().parent().removeClass("unseen");
+
+
+		}
+	});
+
+
+
 	$(".hideAll").on("click", function(){
 		var notifs = $("#notificationsList li");
 
@@ -600,50 +660,57 @@ $(document).ready(function(){
 				// hideFunction(notifs[i].getAttribute("idOfNotif"));
 				hideAllNotifs();
 				notifs[i].remove();
+				$(notifs[i]).next().remove();
 			}
-	
+			
 			$(".badge")[0].innerHTML = 0;
+
+			$("#notificationsList hr").remove();
 		}
-		
+
+
 	});
 
 
 
+
+
 	$(".notificationHide").on("click", function(){
-		console.log("click");
-		console.log(this.children[0].innerHTML);
+		// console.log("click");
+		// console.log(this.children[0].innerHTML);
 		hideFunction(this.children[0].innerHTML);
 		
 		// console.log(this.parent().innerHTML);
 		
 		var notifs = $("#notificationsList li");
 
-		for(var i = 1; i < notifs.length; i++){
+		var notifsIds = $("#notificationsList li").find(".userNotificationIdToRemove");
 
-			// console.log(notifs[i].children[0].children[1].children[1].children[0].innerHTML);
+		for(var i = 0; i < notifsIds.length; i++){
 
+			// console.log(notifs);
 			
 				if(notifs.length === 2){
 					notifs[1].innerHTML = "";
 					$(".badge")[0].innerHTML = 0;
-					console.log("been here");
+					// console.log("been here");
 				}
 				
-				else if(notifs[i].children[2].children[1].children[0].innerHTML === this.children[0].innerHTML){
-					console.log(i);
-	
-					notifs[i].remove();
+				else if(notifsIds[i] && notifsIds[i].innerHTML === this.children[0].innerHTML){
+					// console.log(i);
+
+					$(notifs[i+1]).addClass("hidden");
+					$(notifs[i+1]).next().addClass("hidden");
 					// notifs.splice(i, 1);					
-					$(".badge")[0].innerHTML -= 1;
-	
+					
+					if($(this).parent().parent().hasClass("unseen") === true){
+						$(".badge")[0].innerHTML -= 1;
+					}
+
 					break;
 				}
-			
-			
 		}
-		
 	});
-	
 });
 
 function hideFunction(idOfNotification){
@@ -656,27 +723,18 @@ function hideFunction(idOfNotification){
 	success: function(){console.log("ajax success");},
 	error: function(err){console.log(err);}
 	});
-	
-	
+}
 
+function seenNotificationFunction(idOfNotification){
+	// console.log(idOfNotification);
 
-/*
-	xmlhttp = new XMLHttpRequest();
-	xmlhttp.open("GET","/ajax/hideNotification", true);
-
-	console.log("/profile/getProfileDataAJAX/" + $("#profileUsername")[0].innerHTML);
-
-
-	xmlhttp.onreadystatechange=function(){
-		if (xmlhttp.readyState==4 && xmlhttp.status==200){
-			userData=JSON.parse(xmlhttp.responseText);
-			console.log(userData);
-
-			drawCharts();
-		}
-	}
-	xmlhttp.send();*/
-
+	$.ajax({
+	url: "/ajax/seenNotification",
+	type: "GET",
+	data: {idOfNotif: idOfNotification},
+	success: function(){console.log("ajax success");},
+	error: function(err){console.log(err);}
+	});
 }
 
 
@@ -732,11 +790,11 @@ function hideAllNotifs(){
 
 	for(var i = 0; i < optionsList.length; i++){
 		$("#" + optionsList[i] + "OptionsButton").on("click", function(){
-			console.log(this);
+			// console.log(this);
 			a = this;
 
 			var openThisMenu = this.innerText.toLowerCase().slice(0, this.innerText.length) + "OptionsMenu";
-			console.log("open this: " + openThisMenu);
+			// console.log("open this: " + openThisMenu);
 
 			closeAllMenuOptions();
 

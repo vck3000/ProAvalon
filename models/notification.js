@@ -5,7 +5,10 @@ var notificationSchema = new mongoose.Schema({
 	
 	text: String,
 	date: Date,
-	link: String
+	link: String,
+
+	forPlayer: String,
+	seen: Boolean
 
 });
 //compile schema into a model

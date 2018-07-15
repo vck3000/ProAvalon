@@ -12,10 +12,10 @@ To-do list:
 -sometimes someone would be transparent even though they didnt leave
 -roll command
 -Who card started with stat
--waiting for (username) to shoot 
+-waiting for (username) to shoot
 -right side tabs dont flash yellow
 
-
+-bolding and colour together not wokring
 
 
 

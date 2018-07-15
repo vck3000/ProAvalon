@@ -445,8 +445,10 @@ function createNotification(userID, stringToSay, link){
 			notificationVar = {
 				text: stringToSay,
 				date: new Date(),
-				link: link
+				link: link,
 
+				forPlayer: foundUser.username,
+				seen: false
 			}
 			// if(foundUser){
 				myNotification.create(notificationVar, function(err, newNotif){

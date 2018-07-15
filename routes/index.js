@@ -258,6 +258,36 @@ router.get("/ajax/profile/getProfileData/:profileUsername", function(req, res){
 	});
 });
 
+
+
+router.get("/ajax/seenNotification", function(req, res){
+	console.log("seen nofication");
+	console.log(req.query.idOfNotif);
+
+
+	// console.log(mongoose.Types.ObjectId(req.query.idOfNotif));
+
+	myNotification.findById(mongoose.Types.ObjectId(req.query.idOfNotif), function(err, notif){
+		if(err){
+			console.log(err);
+		}
+
+		notif.seen = true;
+		var promiseReturned = notif.save();
+
+		promiseReturned.then(function(){
+			User.findOne({username: req.user.username}).populate("notifications").exec(async function(err, foundUser){
+
+				foundUser.markModified("notifications");
+				await foundUser.save();
+	
+			});
+		});
+
+	});
+});
+
+
 router.get("/ajax/hideNotification", function(req, res){
 	console.log("hide nofication");
 	console.log(req.query.idOfNotif);
@@ -304,6 +334,8 @@ router.get("/ajax/hideAllNotifications", function(req, res){
 
 	});
 });
+
+
 
 
 

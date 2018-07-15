@@ -79,7 +79,10 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 					notificationVar = {
 						text: req.user.username + " has commented on your post.",
 						date: new Date(),
-						link: ("/forum/show/" + foundForumThread._id + "#" + newComment._id)
+						link: ("/forum/show/" + foundForumThread._id + "#" + newComment._id),
+
+						forPlayer: foundUser.username,
+						seen: false
 
 					}
 					// if(foundUser){
