@@ -248,6 +248,9 @@ router.get("/about", function(req, res){
 	res.render("about", {currentUser: req.user});
 });
 
+router.get("/security", function(req, res){
+	res.render("security", {currentUser: req.user});
+});
 
 
 router.get("/ajax/profile/getProfileData/:profileUsername", function(req, res){

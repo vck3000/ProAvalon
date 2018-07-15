@@ -1,0 +1,95 @@
+<% include partials/header%>
+
+
+
+<style>
+
+    
+
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="container">
+    <h1>Security and how to protect yourself</h1>
+
+    <p>
+        If you have come here you are a cool curious fellow :). Here I wish to reassure you that I have done my research to make the site as secure as it can be.
+    </p>
+    <p>
+        <ul>
+            <li>
+                The site uses a username password authentication system, with your session and 
+                authentication being handled by passportjs (written by really smart people, 
+                I would not dare try to implement authentication by myself). 
+            </li>
+            <li>
+                Your password is heavily encrypted (hash). It will take current hardware an extremely long time to decrypt it
+                unless you have a ridiculously simple password such as "12345". Therefore, in the unlikely case that
+                the database is breached, if you have a secure password (like "123*jfVu&#@" (not my password)) then 
+                there is almost no chance that it can be decrypted by anyone. I recomment watching this video if you 
+                are interested in how your password could be decrypted (don't worry, you don't have to know computers to understand the video :))
+
+                <a href="https://www.youtube.com/watch?v=RtUvMJFP_IE">Link</a>
+            </li>
+        </ul>
+    </p>
+
+    <p>
+        That said, I cannot protect you from yourself. It is lightly mentioned in the video I linked above, but
+        I will provide some tips on protecting yourself.
+        <ol>
+            <li>
+                Don't use a weak password. This is the most obvious, but often overlooked way to protect yourself.     
+            </li>
+            <li>
+                Be careful when opening weird links or emails. If it asks you to log in, check the website name
+                first and make sure there are no typos (e.g. facebook.com vs faceb00k.com). Only log in
+                if you are positive that the page you are viewing is a legitimate site. 
+                Also double check it has "https" in the website link/url (any reputable site will definitely use https) and not "http" (unless it usually doesn't have https).
+            </li>
+            <li>
+                If someone wants your password (even myself) do not give it no matter what. 
+                If I ask you for your password then I am not trustworthy. 
+                If you say you forgot your password and I say that I can go retrieve it, I am not trustworthy (of course I would never do these things). 
+                I should not be able to see your raw password, only your really complicated password encrypted hash. 
+                I can only reset your password, I cannot decrypt it. 
+            </li>
+            <li>
+                If you are on a open wifi network (one with no password) be careful. 
+                Everything your computer sends to the web and back is VIEWABLE in RAW text.
+                The only exception is if it is pre-encrypted on your computer before it is sent to the web and back.
+                You know if a website is using this "pre-encryption" if the website link/url has "https" in it, if it is "http" it is not using "pre-encryption".
+
+                I will aim to get my site to https as soon as I can (when I buy a domain name and release the server live I will be able to).
+            </li>
+            <li>
+                You may wonder why I know these things, aren't I the suspicious one? 
+                I have been studying ethical hacking and learnt these things to better protect myself,
+                and if you have read the above, yourself too. 
+                Hacking in this new digital age is to be feared and not taken lightly.
+            </li>
+
+        </ol>
+    </p>
+
+    <p>
+        Thank you for reading up to here. Now go play a game!
+    </p>
+
+
+    <br>
+    <br>
+    <br>
+</div>
+
+<% include partials/footer%>
