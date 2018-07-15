@@ -393,6 +393,8 @@ router.get("/page/:pageNum", middleware.isLoggedIn, function (req, res) {
 							});
 						}
 
+						
+
 						var userNotifications = [];
 
 						if(req.user.username){
@@ -402,7 +404,7 @@ router.get("/page/:pageNum", middleware.isLoggedIn, function (req, res) {
 									console.log(foundUser.notifications);
 								}
 								res.render("forum/index", {
-									allPinnedThreads: [],
+									allPinnedThreads: allPinnedThreads,
 									allForumThreads: allForumThreads,
 									currentUser: req.user,
 									pageNum: req.params.pageNum,
@@ -413,7 +415,7 @@ router.get("/page/:pageNum", middleware.isLoggedIn, function (req, res) {
 						}
 						else {
 							res.render("forum/index", {
-								allPinnedThreads: [],
+								allPinnedThreads: allPinnedThreads,
 								allForumThreads: allForumThreads,
 								pageNum: req.params.pageNum,
 								activeCategory: req.params.category
