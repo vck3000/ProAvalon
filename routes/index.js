@@ -249,6 +249,8 @@ router.get("/ajax/profile/getProfileData/:profileUsername", function(req, res){
 	User.findOne({username: req.params.profileUsername}, function(err, foundUser){
 		if(err){
 			console.log(err);
+			res.status(200).send("error");
+			
 		}
 		else{
 			res.status(200).send(foundUser);
@@ -283,8 +285,10 @@ router.get("/ajax/seenNotification", function(req, res){
 	
 			});
 		});
-
 	});
+
+	res.status(200).send("done");
+	
 });
 
 
@@ -306,8 +310,10 @@ router.get("/ajax/hideNotification", function(req, res){
 			await foundUser.save();
 
 		});
-
 	});
+
+	res.status(200).send("done");
+	
 });
 
 router.get("/ajax/hideAllNotifications", function(req, res){
@@ -333,6 +339,7 @@ router.get("/ajax/hideAllNotifications", function(req, res){
 		foundUser.save();
 
 	});
+	res.status(200).send("done");	
 });
 
 
