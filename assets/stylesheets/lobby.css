@@ -410,7 +410,6 @@ p {
     vertical-align: middle;
     text-align: center;
 
-    color: white;
     
 }
 
@@ -424,6 +423,9 @@ p {
     /* background-color: #BBFFBB; */
     background-color: #0044cc;
     opacity: 0.65;
+
+    color: white;
+    
 }
 
 .missionBoxFail {
@@ -431,6 +433,9 @@ p {
     background-color: #bd362f;
     /* background-color: #ff6666; */
     opacity: 0.65;
+
+    color: white;
+    
 }
 
 

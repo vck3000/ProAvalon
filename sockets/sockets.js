@@ -69,7 +69,7 @@ savedGameObj.findOne({}).exec(function(err, foundSaveGame){
 			// console.log(rooms[storedData["roomId"]]["sockets"].find("request"));
 	
 			
-			foundSaveGame.remove();
+			// foundSaveGame.remove();
 		}
 	}
 });
@@ -458,6 +458,11 @@ module.exports = function (io) {
 
 			//if the room exists
 			if (rooms[roomId]) {
+				console.log("room id is: ");
+				console.log(roomId);
+				console.log(roomId);
+				console.log(roomId);
+
 				//set the room id into the socket obj
 				socket.request.user.inRoomId = roomId;
 
@@ -674,7 +679,14 @@ function distributeGameData(socket, io) {
 	if(rooms[socket.request.user.inRoomId].gameStarted === true){
 		var gameData = rooms[socket.request.user.inRoomId].getGameData();
 
-	
+		var roomId = socket.request.user.inRoomId;
+
+		for (var i = 0; i < Object.keys(gameData).length; i++) {
+			gameData[i].roomId = roomId;
+		}
+
+
+		console.log("roomId distribute: " + roomId);
 
 		for (var i = 0; i < Object.keys(gameData).length; i++) {
 			//send to each individual player

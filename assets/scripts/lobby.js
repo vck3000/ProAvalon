@@ -794,6 +794,7 @@ document.querySelector("#backButton").addEventListener("click", function () {
     changeView();
     socket.emit("leave-room", "");
 
+    console.log("LEAVE");
     resetAllGameData();
 });
 
@@ -1440,7 +1441,7 @@ socket.on("spec-game-starting-finished", function(data){
 
 socket.on("game-data", function (data) {
     // console.log("GAME DATA INC");   
-    if (data) {
+    if (data && roomId === data.roomId) {
       // console.log("game starting!");
 
         // console.log(data);
