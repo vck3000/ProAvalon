@@ -1598,6 +1598,8 @@ function draw() {
             //default greyed out rn
             enableDisableButtons();
 
+            $("#missionsBox").removeClass("invisible");
+
             //Edit the status bar/well
             if (gameData.phase === "picking") {
                 //give it the default status message
