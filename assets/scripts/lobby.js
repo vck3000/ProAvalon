@@ -753,8 +753,9 @@ document.querySelector("#green-button").addEventListener("click", greenButtonFun
 document.querySelector("#red-button").addEventListener("click", redButtonFunction);
 
 //re-draw the game screen when the modal is closed to update the roles in the center well.
-$('#optionsModal').on('hidden.bs.modal', function (e) {
+$('#roleOptionsModal').on('hidden.bs.modal', function (e) {
     draw();
+    console.log("test");
 })
 
 // Set the event listener for the button
