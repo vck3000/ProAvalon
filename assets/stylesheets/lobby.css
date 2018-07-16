@@ -775,11 +775,11 @@ i {
     background-color: #f7f7f9;
     border: 1px solid #e1e1e8;
     white-space: nowrap;
-    line-height: 20px;
+    /* line-height: 20px; */
     font-style: normal;
 
     font-family: Monaco,Menlo,Consolas,"Courier New",monospace;
-    font-size: 12px !important;
+    /* font-size: 12px !important; */
 }
 
 .claimIcon{
