@@ -292,6 +292,33 @@ module.exports = function (io) {
 
 
 		//io sends to everyone in the site, including the current user of this socket
+		var newCurrentPlayersUsernames = [];
+		//get a new updated list of lowered usernames
+		for (var i = 0; i < currentPlayersUsernames.length; i++) {
+			loweredCurrentPlayersUsernames[i] = currentPlayersUsernames[i].toLowerCase();
+		}
+
+		if(allSockets.length !== currentPlayersUsernames.length){
+			for(var key in allSockets){
+				if(allSockets.hasOwnProperty(key)){
+
+					//if the username doesn't exist in the curerntplayerusernames,
+					//then make them refresh
+					console.log(loweredCurrentPlayersUsernames);
+					if(loweredCurrentPlayersUsernames.indexOf(key) === -1){
+						allSockets[key].emit("refresh");
+						console.log("MADE THEM REFRESH!!! SUCCESS");
+					}
+
+				}
+			}
+		}
+
+		for(var key in allSockets){
+			if(allSockets.hasOwnProperty(key)){
+				newCurrentPlayersUsernames.push(key);
+			}
+		}
 		io.in("allChat").emit("update-current-players-list", currentPlayersUsernames);
 
 		updateCurrentGamesList(io);

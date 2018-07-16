@@ -989,6 +989,9 @@ socket.on("serverRestartWarning", function(){
     });
 });
 
+socket.on("refresh", function (data) {
+    location.reload();
+});
 
 function resetSettings(){
     swal({
