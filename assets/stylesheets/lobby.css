@@ -881,3 +881,19 @@ i {
 
 
 
+
+.approveLabel{
+    position: absolute;
+    top: -10%;
+    left: 50%;
+    text-align: center;
+    transform: translateX(-50%);
+}
+
+.rejectLabel{
+    position: absolute;
+    top: -10%;
+    left: 50%;
+    text-align: center;
+    transform: translateX(-50%);
+}

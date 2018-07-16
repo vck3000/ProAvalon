@@ -14,16 +14,12 @@ To-do list:
 
 -hide missions box until game start after i release sensitive
 
--mission succeed in mission box should be blue.
-#0044cc blue
-
-#ffffff white text
-
-#bd362f red
+<span class="label label-success">Approve</span>
 
 
 
--dates font should be small too when changed
+
+
 -changing roles doesnt update in status
 -approve reject on top of players
 
@@ -253,3 +249,5 @@ Mine:
 -restart server while saving games and restarting
 -old vh stays
 -game end sound sounding when a player leaves, (annoying mulitple tones)
+-mission succeed in mission box should be blue.
+-dates font should be small too when changed

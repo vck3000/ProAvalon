@@ -143,7 +143,7 @@
 		<div class="" id="navBarContainerId">
 			<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header">
-				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+				<button type="button" class="navbar-toggle navbar-toggler collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
 					<span class="sr-only">Toggle navigation</span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
@@ -201,7 +201,7 @@
 
 					<% if(locals.userNotifications) {%>
 						<li class="dropdown" id="notificationsDropdown">
-							<a href="#" id="dropDownNotification">
+							<a href="#" id="dropDownNotification" class="dropDownNotification">
 								<!--<span class="glyphicon glyphicon-info-sign"></span>-->
 								<% if(locals.userNotifications){%>
 									<span class="badge">
@@ -258,7 +258,7 @@
 					
 					<% if(locals.optionsCog){ %> 
 						<li>
-							<a href="#" role="button" data-toggle="modal" data-target="#optionsModal">
+							<a href="#" role="button" data-toggle="modal" data-target="#optionsModal" class="optionsCog">
 								<span class="glyphicon glyphicon-cog"></span>
 							</a> 
 						</li>
@@ -825,6 +825,24 @@ function hideAllNotifs(){
 		} 
 	}
 
+$(document).ready(function () {
+    $(document).click(function (event) {
+        var clickover = $(event.target);
+		var _opened = $(".collapse").hasClass("collapse in");
+		
+		console.log(clickover);
+
+		if (
+			_opened === true 
+			&& !clickover.hasClass("navbar-toggler")
+			&& !clickover.hasClass("badge") 
+			&& !clickover.hasClass("optionsCog")
+			&& !clickover.hasClass("dropDownNotification")
+		 ) {
+            $("button.navbar-toggler").click();
+        }
+    });
+});
 
 
 

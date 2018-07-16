@@ -21,56 +21,65 @@ var allChat5Min = [];
 var nextRoomId = 1;
 
 
-savedGameObj.findOne({}).exec(function(err, foundSaveGame){
+savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 	if(err){console.log(err);}
 	else{
-		if(foundSaveGame){
-			console.log("Parsed:");
-			console.log(JSON.parse(foundSaveGame.room));
-	
-			var storedData = JSON.parse(foundSaveGame.room);
-	
+		for(var key in foundSaveGameArray){
+			if(foundSaveGameArray.hasOwnProperty(key)){
+				console.log(foundSaveGameArray);
+
+				var foundSaveGame = foundSaveGameArray[key];
+
+				if(foundSaveGame){
+					console.log("Parsed:");
+					console.log(JSON.parse(foundSaveGame.room));
 			
-	
-			rooms[storedData["roomId"]] = new avalonRoom();
-	
-	
-	
-	
-			for(var key in storedData){
-				if(storedData.hasOwnProperty(key)){
-					console.log("typeof: " + typeof(key))
-					rooms[storedData["roomId"]][key] = storedData[key];
-					console.log("copied over: " + key);
-					console.log(storedData[key]);
+					var storedData = JSON.parse(foundSaveGame.room);
+			
+					
+			
+					rooms[storedData["roomId"]] = new avalonRoom();
+			
+			
+			
+			
+					for(var key in storedData){
+						if(storedData.hasOwnProperty(key)){
+							console.log("typeof: " + typeof(key))
+							rooms[storedData["roomId"]][key] = storedData[key];
+							console.log("copied over: " + key);
+							console.log(storedData[key]);
+						}
+					}
+			
+					rooms[storedData["roomId"]].restartSaved = true;
+					rooms[storedData["roomId"]].frozen = true;
+					rooms[storedData["roomId"]].playersInRoom = [];
+		
+					rooms[storedData["roomId"]].someCutoffPlayersJoined = "no";
+					rooms[storedData["roomId"]].socketsOfSpectators = [];
+			
+			
+					console.log("New room");
+					console.log(rooms[storedData["roomId"]]);
+			
+					console.log("game start");
+					console.log(storedData.gameStarted);
+			
+					// console.log("sockets");
+					// console.log(rooms[storedData["roomId"]].sockets[1]);
+			
+			
+			
+					
+					// console.log(rooms[storedData["roomId"]]["sockets"].find("request"));
+			
+					
+					// foundSaveGame.remove();
 				}
 			}
-	
-			rooms[storedData["roomId"]].restartSaved = true;
-			rooms[storedData["roomId"]].frozen = true;
-			rooms[storedData["roomId"]].playersInRoom = [];
-
-			rooms[storedData["roomId"]].someCutoffPlayersJoined = "no";
-			rooms[storedData["roomId"]].socketsOfSpectators = [];
-	
-	
-			console.log("New room");
-			console.log(rooms[storedData["roomId"]]);
-	
-			console.log("game start");
-			console.log(storedData.gameStarted);
-	
-			// console.log("sockets");
-			// console.log(rooms[storedData["roomId"]].sockets[1]);
-	
-	
-	
-			
-			// console.log(rooms[storedData["roomId"]]["sockets"].find("request"));
-	
-			
-			// foundSaveGame.remove();
 		}
+		
 	}
 });
 

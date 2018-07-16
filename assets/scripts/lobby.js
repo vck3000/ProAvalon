@@ -1834,13 +1834,22 @@ function drawVotes(votes) {
 
     if (votes) {
         for (var i = 0; i < divs.length; i++) {
-            document.querySelectorAll("#mainRoomBox div")[i].classList.add(votes[i]);
+            if(votes[i] === "approve"){
+                $($("#mainRoomBox div")[i]).find(".approveLabel").removeClass("invisible");
+            }
+            if(votes[i] === "reject"){
+                $($("#mainRoomBox div")[i]).find(".rejectLabel").removeClass("invisible");
+            }
+            // document.querySelectorAll("#mainRoomBox div")[i].classList.add(votes[i]);
         }
     }
     else {
         for (var i = 0; i < divs.length; i++) {
-            document.querySelectorAll("#mainRoomBox div")[i].classList.remove("approve");
-            document.querySelectorAll("#mainRoomBox div")[i].classList.remove("reject");
+            // document.querySelectorAll("#mainRoomBox div")[i].classList.remove("approve");
+            // document.querySelectorAll("#mainRoomBox div")[i].classList.remove("reject");
+
+            $($("#mainRoomBox div")[i]).find(".approveLabel").addClass("invisible");
+            $($("#mainRoomBox div")[i]).find(".rejectLabel").addClass("invisible");
         }
     }
 }
@@ -2401,6 +2410,10 @@ function strOfAvatar(playerData, alliance) {
     str += "<span id='highlightChatButton' class='glyphicon glyphicon glyphicon-menu-hamburger avatarButton'></span>";
     str += "</span>";
 
+    str += '<span class="label label-success invisible approveLabel">Approve</span>';
+    str += '<span class="label label-danger invisible rejectLabel">Reject</span>';
+
+
     str += "<img class='avatarImgInRoom' src='" + picLink + "'>";
     str += "<p class='username-p'>" + lady + "" + playerData.username + " " + hammerStar + " </p>" + role + "</div>";
 
@@ -2917,6 +2930,11 @@ function scaleMiddleBoxes(){
 
     // $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")")
     $("#missionsBox").css("transform", "translateX(-47%) scale(" + ratioToReduce + ")")
+
+
+    //also scale the approve reject buttons
+    $(".approveLabel").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")");
+    $(".rejectLabel").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")");
 
 }
 
