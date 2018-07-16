@@ -4,7 +4,6 @@ To-do list:
 -Max number of players
 -Statistics page
 
--restart server while saving games and restarting
 
 -roll command
 
@@ -12,13 +11,14 @@ To-do list:
 
 -deleting stuff should just be hidden.
 
--game end sound sounding when a player leaves, (annoying mulitple tones)
 
 -hide missions box until game start after i release sensitive
 
 -mission succeed in mission box should be blue.
 
--old vh stays
+
+
+
 
 -Learn REGEX
 
@@ -241,3 +241,6 @@ Mine:
 -waiting for (username) to shoot
 -sometimes someone would be transparent even though they didnt leave
 -record individual player stats
+-restart server while saving games and restarting
+-old vh stays
+-game end sound sounding when a player leaves, (annoying mulitple tones)
