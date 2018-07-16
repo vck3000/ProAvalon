@@ -130,7 +130,7 @@ module.exports = function (host_, roomId_, io_) {
 	this.whoAssassinShot = undefined;
 	this.moreThanOneFailMissions = [];
 
-	this.someCutoffPlayersJoined = false;
+	this.someCutoffPlayersJoined = "no";
 	this.cutoffForSomePlayersJoined = 5;
 
 
@@ -1253,7 +1253,8 @@ module.exports = function (host_, roomId_, io_) {
 
 		//cutoff
 		if(this.playersInRoom.length >= this.cutoffForSomePlayersJoined){
-			this.someCutoffPlayersJoined = true;
+			console.log("cutoffreached: " + this.playersInRoom.length + " " + this.cutoffForSomePlayersJoined);
+			this.someCutoffPlayersJoined = "yes";
 		}
 		
 		
@@ -1323,7 +1324,7 @@ module.exports = function (host_, roomId_, io_) {
 		console.log("cutoff: " + this.someCutoffPlayersJoined);
 
 		if(this.restartSaved === true){
-			if (this.playersInRoom.length === 0 && this.someCutoffPlayersJoined === true) {
+			if (this.playersInRoom.length === 0 && this.someCutoffPlayersJoined === "yes") {
 				console.log("Room: " + this.roomId + " is empty, destroying...");
 				this.destroyRoom = true;
 			}

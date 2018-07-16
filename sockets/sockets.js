@@ -42,12 +42,14 @@ savedGameObj.findOne({}).exec(function(err, foundSaveGame){
 					console.log("typeof: " + typeof(key))
 					rooms[storedData["roomId"]][key] = storedData[key];
 					console.log("copied over: " + key);
-					console.log(storedData.key);
+					console.log(storedData[key]);
 				}
 			}
 	
 			rooms[storedData["roomId"]].restartSaved = true;
 			rooms[storedData["roomId"]].playersInRoom = [];
+
+			rooms[storedData["roomId"]].someCutoffPlayersJoined = "no";
 	
 	
 			console.log("New room");
@@ -65,7 +67,7 @@ savedGameObj.findOne({}).exec(function(err, foundSaveGame){
 			// console.log(rooms[storedData["roomId"]]["sockets"].find("request"));
 	
 			
-			foundSaveGame.remove();
+			// foundSaveGame.remove();
 		}
 	}
 });
@@ -274,6 +276,7 @@ module.exports = function (io) {
 		socket.join("allChat");
 		//push the new user into our list of players
 		currentPlayersUsernames.push(socket.request.user.username);
+		currentPlayersUsernames.sort();
 		//push the new socket into our list of sockets
 		allSockets[socket.request.user.username.toLowerCase()] = socket;
 
