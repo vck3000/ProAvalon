@@ -115,13 +115,15 @@ var userCommands = {
 
 			for (var key in userCommands) {
 				if (userCommands.hasOwnProperty(key)) {
-					// console.log(key + " -> " + p[key]);
-					data[i] = {message: userCommands[key].help, classStr: "server-text"};
-					// str[i] = userCommands[key].help;
-					i++;
-					//create a break in the chat
-					// data[i] = {message: "-------------------------", classStr: "server-text"};
-					// i++;
+					if(!userCommands[key].modsOnly){
+						// console.log(key + " -> " + p[key]);
+						data[i] = {message: userCommands[key].help, classStr: "server-text"};
+						// str[i] = userCommands[key].help;
+						i++;
+						//create a break in the chat
+						// data[i] = {message: "-------------------------", classStr: "server-text"};
+						// i++;
+					}
 				}
 			}
 			// return "Commands are: commandA, help";
@@ -185,6 +187,27 @@ var userCommands = {
 		run: function (args, senderSocket) {
 			//code
 			return allChat5Min;
+		}
+	},
+
+	roll: {
+		command: "roll",
+		help: "/roll <optional number>: Returns a random number between 1 and 10 or 1 and optional number.",
+		run: function (args, senderSocket) {
+			//code
+			if(args[1]){
+				if(isNaN(args[1]) === false){
+					return {message: (Math.floor(Math.random() * args[1]) + 1).toString(), classStr: "server-text"}
+				}
+				else{
+					return {message: "That is not a valid number!", classStr: "server-text"}	
+				}
+			}
+			
+			else{
+				return {message: (Math.floor(Math.random() * 10) + 1).toString(), classStr: "server-text"}
+			}
+			
 		}
 	},
 

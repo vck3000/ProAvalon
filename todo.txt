@@ -1,33 +1,36 @@
 To-do list:
 
 -Moderators
--Max number of players
--Statistics page
-
-
--roll command
-
--bolding and colour together not wokring
-
 -deleting stuff should just be hidden.
 
 
--hide missions box until game start after i release sensitive
-
-<span class="label label-success">Approve</span>
+-Statistics page
 
 
 
+-bolding and colour together not wokring
 
 
--changing roles doesnt update in status
--approve reject on top of players
+-weird bug where u cant join and get a u tried to start the game issue
+
+-Let users change the flag
+
+
 
 
 
 -Learn REGEX
 
 -Learn Bitwise operations...?
+
+
+
+***************************************************************************************
+On hold
+***************************************************************************************
+
+-Max number of players
+
 
 
 
@@ -251,3 +254,7 @@ Mine:
 -game end sound sounding when a player leaves, (annoying mulitple tones)
 -mission succeed in mission box should be blue.
 -dates font should be small too when changed
+-approve reject on top of players
+-hide missions box until game start after i release sensitive
+-changing roles doesnt update in status
+-roll command

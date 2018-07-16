@@ -25,7 +25,8 @@ var sanitizeHtmlAllowedAttributesForumThread = {
 
 	p: ['style'],
 
-	span: ['style']
+	span: ['style'],
+	b: ['style']
 };
 
 
