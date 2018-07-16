@@ -2412,6 +2412,12 @@ function changeView() {
     $(".game-container").toggleClass("inactive-window");
 
     extendTabContentToBottomInRoom();
+
+
+    setTimeout(function(){
+        console.log("redraw");
+        draw();
+    }, 1000);
 }
 
 // var chatBoxToNavTab = {
@@ -2909,7 +2915,8 @@ function scaleMiddleBoxes(){
         ratioToReduce = 1;
     }
 
-    $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")")
+    // $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")")
+    $("#missionsBox").css("transform", "translateX(-47%) scale(" + ratioToReduce + ")")
 
 }
 
