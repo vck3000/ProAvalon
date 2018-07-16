@@ -8,7 +8,6 @@ To-do list:
 
 
 
--bolding and colour together not wokring
 
 
 -weird bug where u cant join and get a u tried to start the game issue
@@ -258,3 +257,4 @@ Mine:
 -hide missions box until game start after i release sensitive
 -changing roles doesnt update in status
 -roll command
+-bolding and colour together not wokring

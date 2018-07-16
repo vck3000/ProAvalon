@@ -233,13 +233,25 @@ router.get("/testmodal", function(req, res){
 	res.render("testmodal", {currentUser: req.user});
 });
 
+
+router.get("/profile/:profileUsername/edit", function(req, res){
+	User.findOne({username: req.params.profileUsername}, function(err, foundUser){
+		if(err){
+			console.log(err);
+		}
+		else{
+			res.render("profile/edit", {userData: foundUser});
+		}
+	});
+});
+
 router.get("/profile/:profileUsername", function(req, res){
 	User.findOne({username: req.params.profileUsername}, function(err, foundUser){
 		if(err){
 			console.log(err);
 		}
 		else{
-			res.render("profile", {userData: foundUser});
+			res.render("profile/profile", {userData: foundUser});
 		}
 	});
 });
