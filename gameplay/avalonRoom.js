@@ -1312,6 +1312,9 @@ module.exports = function (host_, roomId_, io_) {
 		}
 		else {
 			console.log("Game has already started! Or maximum number of players");
+			console.log(this.gameStarted);
+			console.log(this.sockets.length);
+			console.log(this.canJoin);
 			return false;
 		}
 	};

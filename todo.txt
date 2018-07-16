@@ -15,8 +15,17 @@ To-do list:
 -hide missions box until game start after i release sensitive
 
 -mission succeed in mission box should be blue.
+#0044cc blue
+
+#ffffff white text
+
+#bd362f red
 
 
+
+-dates font should be small too when changed
+-changing roles doesnt update in status
+-approve reject on top of players
 
 
 
