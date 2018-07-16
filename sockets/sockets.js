@@ -26,13 +26,13 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 	else{
 		for(var key in foundSaveGameArray){
 			if(foundSaveGameArray.hasOwnProperty(key)){
-				console.log(foundSaveGameArray);
+				// console.log(foundSaveGameArray);
 
 				var foundSaveGame = foundSaveGameArray[key];
 
 				if(foundSaveGame){
-					console.log("Parsed:");
-					console.log(JSON.parse(foundSaveGame.room));
+					// console.log("Parsed:");
+					// console.log(JSON.parse(foundSaveGame.room));
 			
 					var storedData = JSON.parse(foundSaveGame.room);
 			
@@ -45,10 +45,10 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 			
 					for(var key in storedData){
 						if(storedData.hasOwnProperty(key)){
-							console.log("typeof: " + typeof(key))
+							// console.log("typeof: " + typeof(key))
 							rooms[storedData["roomId"]][key] = storedData[key];
-							console.log("copied over: " + key);
-							console.log(storedData[key]);
+							// console.log("copied over: " + key);
+							// console.log(storedData[key]);
 						}
 					}
 			
@@ -60,11 +60,11 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 					rooms[storedData["roomId"]].socketsOfSpectators = [];
 			
 			
-					console.log("New room");
-					console.log(rooms[storedData["roomId"]]);
+					// console.log("New room");
+					// console.log(rooms[storedData["roomId"]]);
 			
-					console.log("game start");
-					console.log(storedData.gameStarted);
+					console.log("Game loaded");
+					// console.log(storedData.gameStarted);
 			
 					// console.log("sockets");
 					// console.log(rooms[storedData["roomId"]].sockets[1]);

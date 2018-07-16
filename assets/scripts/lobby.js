@@ -979,13 +979,28 @@ socket.on("serverRestartWarning", function(){
 
     When you rejoin please use /roomChat to recover your chat.
 
-    I apologise for the inconvenience caused. Thank you.`;
+    I apologise for the inconvenience caused. Thank you.
+    
+    You can exit this message by pressing escape.`;
 
     swal({
         title: "Server restarting!",
         text: message,
         icon: "warning",
-        dangerMode: true
+        buttons: false,
+        
+        dangerMode: true,
+
+        // closeOnConfirm: false, //It does close the popup when I click on close button
+        closeOnCancel: false,
+        allowOutsideClick: false,
+
+        closeOnClickOutside: false,
+
+        
+
+        timer: 30000
+
     }).then(() =>{
         // location.reload();
     });
