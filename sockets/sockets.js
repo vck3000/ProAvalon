@@ -51,7 +51,7 @@ savedGameObj.findOne({}).exec(function(err, foundSaveGame){
 			rooms[storedData["roomId"]].playersInRoom = [];
 
 			rooms[storedData["roomId"]].someCutoffPlayersJoined = "no";
-			rooms[storedData["roomId"]].spectatorSockets = [];
+			rooms[storedData["roomId"]].socketsOfSpectators = [];
 	
 	
 			console.log("New room");
