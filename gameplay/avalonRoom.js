@@ -130,6 +130,10 @@ module.exports = function (host_, roomId_, io_) {
 	this.whoAssassinShot = undefined;
 	this.moreThanOneFailMissions = [];
 
+	this.someCutoffPlayersJoined = false;
+	this.cutoffForSomePlayersJoined = 5;
+
+
 
 	this.finishGame = function (winner) {
 		if (winner === "spy") {
@@ -1203,7 +1207,34 @@ module.exports = function (host_, roomId_, io_) {
 		}
 	}
 
+	this.socketsChangedOnce = false;
+
 	this.playerJoinRoom = function (socket) {
+		if(this.restartSaved){
+
+			if(this.socketsChangedOnce === false){
+				this.sockets = [];
+				for(var i = 0; i < this.playersInGame.length; i++){
+					this.sockets[i] = {};
+					this.sockets[i].request = {};
+					this.sockets[i].request.user = {};
+					this.sockets[i].request.user.username = this.playersInGame[i].username;
+					this.sockets[i].request.user.id = this.playersInGame[i].id;
+					this.sockets[i].emit = function(){};
+
+					this.socketsChangedOnce = true;
+				}
+			}
+			
+
+
+			for(var i = 0; i < this.playersInGame.length; i++){
+				if(this.playersInGame[i].username === socket.request.user.username){
+					this.sockets[i] = socket;
+				}
+			}
+		}
+
 		//only add them to spectators if they are not part of the game already.
 		var stringOfUsernames = [];
 
@@ -1220,6 +1251,13 @@ module.exports = function (host_, roomId_, io_) {
 
 		this.playersInRoom.push(socket);
 
+		//cutoff
+		if(this.playersInRoom.length >= this.cutoffForSomePlayersJoined){
+			this.someCutoffPlayersJoined = true;
+		}
+		
+		
+
 		//get a list of usernames in the game
 		//because if a player had left and came back into the room
 		//we want to re-update their data they see
@@ -1232,12 +1270,14 @@ module.exports = function (host_, roomId_, io_) {
 		if (index !== -1) {
 			//this.sockets.push(socket);
 
-			console.log("Old socket: " + this.sockets[usernames.indexOf(socket.request.user.username)].request.user.username + ", " + this.sockets[usernames.indexOf(socket.request.user.username)].id);
-
-			this.sockets[index].id = socket.id;
+			// console.log("Old socket: " + this.sockets[usernames.indexOf(socket.request.user.username)].request.user.username + ", " + this.sockets[usernames.indexOf(socket.request.user.username)].id);
+			if(!this.restartSaved){
+				this.sockets[index].id = socket.id;
+			}
 			this.playersInGame[index].socketId = socket.id;
+			
 
-			console.log("New socket: " + this.sockets[usernames.indexOf(socket.request.user.username)].request.user.username + ", " + this.sockets[usernames.indexOf(socket.request.user.username)].id);
+			// console.log("New socket: " + this.sockets[usernames.indexOf(socket.request.user.username)].request.user.username + ", " + this.sockets[usernames.indexOf(socket.request.user.username)].id);
 
 			console.log("Player has refreshed their page, been given a new socket ID. That new ID has been updated");
 			return false;
@@ -1277,10 +1317,25 @@ module.exports = function (host_, roomId_, io_) {
 		//remove from players in room
 		this.playersInRoom.splice(this.playersInRoom.indexOf(socket), 1);
 
-		if (this.playersInRoom.length === 0) {
-			console.log("Room: " + this.roomId + " is empty, destroying...");
-			this.destroyRoom = true;
+		console.log("playersInRoom length: ");
+		console.log(this.playersInRoom.length);
+		// console.log(this.playersInRoom);
+		console.log("cutoff: " + this.someCutoffPlayersJoined);
+
+		if(this.restartSaved === true){
+			if (this.playersInRoom.length === 0 && this.someCutoffPlayersJoined === true) {
+				console.log("Room: " + this.roomId + " is empty, destroying...");
+				this.destroyRoom = true;
+			}
 		}
+		else{
+			if (this.playersInRoom.length === 0) {
+				console.log("Room: " + this.roomId + " is empty, destroying...");
+				this.destroyRoom = true;
+			}
+		}
+
+		
 
 			//Get rid of it in the socketsOfSpectators list
 			var i = this.socketsOfSpectators.indexOf(socket);
@@ -1355,8 +1410,8 @@ module.exports = function (host_, roomId_, io_) {
 	this.getUsernamesInGame = function () {
 		if (this.gameStarted === true) {
 			var array = [];
-			for (var i = 0; i < this.sockets.length; i++) {
-				array[i] = this.sockets[i].request.user.username;
+			for (var i = 0; i < this.playersInGame.length; i++) {
+				array[i] = this.playersInGame[i].username;
 			}
 			return array;
 		}
@@ -1368,6 +1423,8 @@ module.exports = function (host_, roomId_, io_) {
 	this.getUsernamesOfPlayersInRoom = function() {
 		if(this.gameStarted === true){
 			var array = [];
+			console.log("playersInRoom");
+			// console.log(this.playersInRoom[0].request.user.username);
 			for(var i = 0; i < this.playersInRoom.length; i++){
 				array.push(this.playersInRoom[i].request.user.username);
 			}

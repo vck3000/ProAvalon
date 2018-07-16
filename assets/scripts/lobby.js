@@ -966,8 +966,27 @@ socket.on('checkSettingsResetDate', function(serverResetDate){
     else{
         // resetSettings();
     }
+});
 
-    
+socket.on("serverRestartWarning", function(){
+    var message = `In order for me to update the site, the server must be restarted. 
+
+    Any running games will be saved and you will be able to continue your games when you log in again.
+
+    The server will only be down for a brief moment, at most 30 seconds.
+
+    When you rejoin please use /roomChat to recover your chat.
+
+    I apologise for the inconvenience caused. Thank you.`;
+
+    swal({
+        title: "Server restarting!",
+        text: message,
+        icon: "warning",
+        dangerMode: true
+    }).then(() =>{
+        // location.reload();
+    });
 });
 
 

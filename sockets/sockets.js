@@ -1,6 +1,12 @@
 //sockets
 var avalonRoom = require("../gameplay/avalonRoom");
 
+var savedGameObj = require("../models/savedGame");
+
+const JSON = require('circular-json');
+
+
+
 const dateResetRequired = 1531125110385;
 
 var currentPlayersUsernames = [];
@@ -13,6 +19,58 @@ var allChatHistory = [];
 var allChat5Min = [];
 
 var nextRoomId = 1;
+
+
+savedGameObj.findOne({}).exec(function(err, foundSaveGame){
+	if(err){console.log(err);}
+	else{
+		if(foundSaveGame){
+			console.log("Parsed:");
+			console.log(JSON.parse(foundSaveGame.room));
+	
+			var storedData = JSON.parse(foundSaveGame.room);
+	
+			
+	
+			rooms[storedData["roomId"]] = new avalonRoom();
+	
+	
+	
+	
+			for(var key in storedData){
+				if(storedData.hasOwnProperty(key)){
+					console.log("typeof: " + typeof(key))
+					rooms[storedData["roomId"]][key] = storedData[key];
+					console.log("copied over: " + key);
+					console.log(storedData.key);
+				}
+			}
+	
+			rooms[storedData["roomId"]].restartSaved = true;
+			rooms[storedData["roomId"]].playersInRoom = [];
+	
+	
+			console.log("New room");
+			console.log(rooms[storedData["roomId"]]);
+	
+			console.log("game start");
+			console.log(storedData.gameStarted);
+	
+			// console.log("sockets");
+			// console.log(rooms[storedData["roomId"]].sockets[1]);
+	
+	
+	
+			
+			// console.log(rooms[storedData["roomId"]]["sockets"].find("request"));
+	
+			
+			foundSaveGame.remove();
+		}
+	}
+});
+
+
 
 
 var userCommands = {
@@ -110,12 +168,76 @@ var userCommands = {
 
 	allChat: {
 		command: "allChat",
-		help: "/allChat: Get a copy of the last 5 minutes of allChat. (DISABLED)",
+		help: "/allChat: Get a copy of the last 5 minutes of allChat.",
 		run: function (args, senderSocket) {
 			//code
-			return null;//allChat5Min;
+			return allChat5Min;
+		}
+	},
+
+	serverRestartWarning: {
+		command: "serverRestartWarning",
+		help: "/serverRestartWarning: Only for the admin to use :)",
+		run: function (args, senderSocket) {
+			console.log(allSockets);
+			//code
+			if(senderSocket.request.user.username === "ProNub"){
+
+				for(var key in allSockets){
+					if(allSockets.hasOwnProperty(key)){
+						allSockets[key].emit("serverRestartWarning")
+					}
+				}
+
+				var numOfGamesSaved = 0;
+				var numOfGamesEncountered = 0;
+				var promises = [];
+
+				//save the games
+				for(var i = 0; i < rooms.length; i++){
+					if(rooms[i] && rooms[i].gameStarted === true){
+						console.log("rooms");
+						console.log(rooms[i]);
+						
+						savedGameObj.create({room: JSON.stringify(rooms[i])}, function(err, savedGame){
+							if(err){
+								console.log(err);
+							}
+							console.log(savedGame);
+							numOfGamesSaved++;
+
+							console.log("created");
+							console.log(numOfGamesSaved >= numOfGamesEncountered);
+							console.log(numOfGamesSaved);
+							console.log(numOfGamesEncountered);
+
+							if(numOfGamesSaved >= numOfGamesEncountered){
+								var data = {message: "Successful. Saved " + numOfGamesSaved + " games.", classStr: "server-text"};
+								senderSocket.emit("allChatToClient", data);
+								senderSocket.emit("roomChatToClient", data);
+							}
+
+						});
+						numOfGamesEncountered++;
+					}
+				}
+
+				console.log(numOfGamesEncountered);
+				
+				if(numOfGamesEncountered === 0){
+					return {message: "Successful. But no games needed to be saved.", classStr: "server-text"};
+				}
+				else{
+					return {message: "Successful. But still saving games.", classStr: "server-text"};
+				}
+
+			}
+			else{
+				return {message: "You are not the admin...", classStr: "server-text"};
+			}
 		}
 	}
+
 };
 
 
@@ -266,14 +388,15 @@ module.exports = function (io) {
 			// io.in(socket.request.user.inRoomId).emit("player-left-room", socket.request.user.username);
 
 			removePlayerFromRoomAndCheckDestroy(socket, io);
-
-
-
 		});
 
 
 		//when a new room is created
 		socket.on("newRoom", function () {
+			//while rooms exist already (in case of a previously saved and retrieved game)
+			while(rooms[nextRoomId]){
+				nextRoomId++;
+			}
 			rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId, io);
 			console.log("new room request");
 			//broadcast to all chat

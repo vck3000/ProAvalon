@@ -3,7 +3,6 @@ To-do list:
 -Moderators
 -Max number of players
 -Statistics page
--record individual player stats
 
 -restart server while saving games and restarting
 
@@ -241,3 +240,4 @@ Mine:
 -Who card started with stat
 -waiting for (username) to shoot
 -sometimes someone would be transparent even though they didnt leave
+-record individual player stats
