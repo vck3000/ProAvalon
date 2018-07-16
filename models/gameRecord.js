@@ -12,13 +12,16 @@ var gameRecordSchema = new mongoose.Schema({
 	numberOfPlayers: Number,
 	//E.g. mission fails, mission suceeds and dodge bullet, assassination
 	howTheGameWasWon: String,
+	whoAssassinShot: String,
 	roles: [String],
 
-	ladyStartRole: String,
+	ladyChain: [String],
 
 	missionHistory: [String],
 	voteHistory: Object,
-	playerRoles: Object
+	playerRoles: Object,
+
+	moreThanOneFailMissions: [Boolean]
 	
 });
 //compile schema into a model

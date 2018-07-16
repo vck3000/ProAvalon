@@ -125,13 +125,16 @@ module.exports = function (host_, roomId_, io_) {
 	var shuffledPlayerAssignments = [];
 	this.gamePlayerLeftDuringReady = false;
 
-	this.ladyStartRole = undefined;
+	this.ladyChain = [];
+
+	this.whoAssassinShot = undefined;
+	this.moreThanOneFailMissions = [];
 
 
 	this.finishGame = function (winner) {
 		if (winner === "spy") {
 			//spies win, nothing more to do.
-			this.winner = "spies";
+			this.winner = "Spy";
 			//if it has already been set, then its probably hammer rejected
 			//otherwise set it to mission fails
 			if(!this.howWasWon){
@@ -154,7 +157,7 @@ module.exports = function (host_, roomId_, io_) {
 				this.startAssassinationTime = new Date();
 			}
 			else {
-				this.winner = "resistance";
+				this.winner = "Resistance";
 				this.howWasWon = "Mission successes"
 				this.gameEnd();
 			}
@@ -215,7 +218,10 @@ module.exports = function (host_, roomId_, io_) {
 			voteHistory: this.voteHistory,
 			playerRoles: playerRolesVar,
 
-			ladyStartRole: this.ladyStartRole
+			ladyChain: this.ladyChain,
+			whoAssassinShot: this.whoAssassinShot,
+
+			moreThanOneFailMissions: this.moreThanOneFailMissions
 		};
 
 		GameRecord.create(objectToStore, function(err){
@@ -225,7 +231,117 @@ module.exports = function (host_, roomId_, io_) {
 			else{
 				console.log("Stored game data successfully.");
 			}
-		})
+		});
+
+		//store player data:
+
+		var timeFinished = new Date();
+		var timeStarted = this.startGameTime;
+
+		var gameDuration = timeFinished - timeStarted;
+		console.log("game duration: ");
+		console.log(gameDuration);
+
+		console.log("game size: ");
+		console.log(this.playersInGame.length);
+
+		var playersInGameVar = this.playersInGame;
+		var winnerVar = this.winner;
+
+		// for(var i = 0; i < this.playersInGame.length; i++){
+
+		this.playersInGame.forEach(function(player){
+
+			User.findById(player.userId).exec(function(err, foundUser){
+				if(err){console.log(err);}
+				else{
+
+					// console.log("role");
+					// console.log(player.role.toLowerCase());
+
+					console.log(foundUser.totalTimePlayed);
+					console.log(foundUser.totalTimePlayed.getMilliseconds());
+					console.log(foundUser.totalTimePlayed.getUTCMilliseconds());
+					
+
+
+					foundUser.totalTimePlayed = foundUser.totalTimePlayed.getMilliseconds() + gameDuration;
+
+					//update individual player statistics
+					foundUser.totalGamesPlayed += 1;
+
+					if(winnerVar === player.alliance){
+						foundUser.totalWins += 1;
+						if(winnerVar === "Resistance"){
+							foundUser.totalResWins += 1;
+						}
+					} else{
+						//loss
+						foundUser.totalLosses += 1;
+						if(winnerVar === "Resistance"){
+							foundUser.totalResLosses += 1;
+						}
+					}
+
+					//checks that the var exists
+					if(!foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"]){
+						foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"] = {
+							wins: 0,
+							losses: 0
+						};
+					}
+					if(!foundUser.roleStats[playersInGameVar.length + "p"]){
+						foundUser.roleStats[playersInGameVar.length + "p"] = {};
+					}
+					if(!foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()]){
+						foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()] = {
+							wins: 0,
+							losses: 0
+						};
+					}
+
+
+					if(winnerVar === player.alliance){
+						//checks
+						if(isNaN(foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].losses)){
+							foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].wins = 0;
+						}
+						if(isNaN(foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].wins)){
+							foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].wins = 0;
+						}
+						// console.log("=NaN?");
+						// console.log(isNaN(foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].wins));
+
+						foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].wins += 1;
+						foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].wins += 1;
+					}
+					else{
+						//checks
+						if(isNaN(foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].losses)){
+							foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].losses = 0;
+						}
+						if(isNaN(foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].losses)){
+							foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].losses = 0;
+						}
+
+						foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].losses += 1;
+						foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].losses += 1;
+					}
+					// console.log("Rolestat for player");
+					// console.log(foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()]);
+
+					foundUser.markModified("winsLossesGameSizeBreakdown");
+					foundUser.markModified("roleStats");
+					
+					foundUser.save();
+				}
+			});
+
+
+		});
+
+			
+		
 	}
 
 	this.assassinate = function (socket, target) {
@@ -248,13 +364,21 @@ module.exports = function (host_, roomId_, io_) {
 
 			console.log("merlin username: " + merlinUsername);
 			if (merlinUsername && target[0] === merlinUsername) {
-				this.winner = "spies";
+				this.winner = "Spy";
 				this.howWasWon = "Assassinated Merlin correctly."
 			}
 			else {
-				this.winner = "resistance";
+				this.winner = "Resistance";
 				this.howWasWon = "Mission successes and Merlin did not die."
 			}
+
+			for(var i = 0; i < playerRoles.length; i++){
+				if(playerRoles[i].username === target[0]){
+					this.whoAssassinShot = playerRoles[i].role;
+					break;
+				}
+			}
+
 
 			this.gameEnd();
 		}
@@ -277,6 +401,8 @@ module.exports = function (host_, roomId_, io_) {
 			this.lady = getIndexFromUsername(this.sockets, target);
 			//make that person no longer ladyable
 			this.ladyablePeople[this.lady] = false;
+
+			this.ladyChain[this.ladyChain.length] = this.playersInGame[getIndexFromUsername(this.sockets, target)].role;
 
 			// this.gameplayMessage = (socket.request.user.username + " has carded " + target);
 			this.sendText(this.sockets, (socket.request.user.username + " has carded " + target + "."), "gameplay-text");
@@ -359,10 +485,16 @@ module.exports = function (host_, roomId_, io_) {
 			else if (outcome === "failed") {
 				//get number of fails
 				var numOfVotedFails = countFails(this.missionVotes);
+
+				if(numOfVotedFails > 1){
+					this.moreThanOneFailMissions[this.missionNum] = true;
+				}
+
+				
 				if (numOfVotedFails === 1) {
 					// this.gameplayMessage = "The mission failed with " + numOfVotedFails + " fail.";	
 					this.sendText(this.sockets, "Mission " + this.missionNum + " failed with " + numOfVotedFails + " fail.", "gameplay-text");
-
+					
 				}
 				else {
 					// this.gameplayMessage = "The mission failed with " + numOfVotedFails + " fails.";	
@@ -398,7 +530,8 @@ module.exports = function (host_, roomId_, io_) {
 
 			this.phase = "picking";
 			//only lady of the lake after m1 and m2 have finished.
-			if (this.lady !== undefined && this.missionNum >= 3) {
+			//This is still the old missionNum, so when missionNum here is 1, it is the end of m2
+			if (this.lady !== undefined && this.missionNum >= 2) {
 				this.phase = "lady";
 
 			}
@@ -843,6 +976,7 @@ module.exports = function (host_, roomId_, io_) {
 			//assign them the sockets but with shuffled. 
 			this.playersInGame[i].username = this.sockets[i].request.user.username;
 			this.playersInGame[i].socketId = this.sockets[i].id;
+			this.playersInGame[i].userId = this.sockets[i].request.user._id;
 
 			//set the role to be from the roles array with index of the value
 			//of the rolesAssignment which has been shuffled
@@ -978,8 +1112,8 @@ module.exports = function (host_, roomId_, io_) {
 		// this.gameplayMessage = str;
 		this.sendText(this.sockets, str, "gameplay-text");
 
-		if(this.lady){
-			this.ladyStartRole = this.playersInGame[this.lady].role;
+		if(options.lady === true){
+			this.ladyChain[0] = this.playersInGame[this.lady].role;
 		}
 
 		//seed the starting data into the VH

@@ -7,16 +7,19 @@ To-do list:
 
 -restart server while saving games and restarting
 
--sometimes someone would be transparent even though they didnt leave
 -roll command
--waiting for (username) to shoot
-
-
 
 -bolding and colour together not wokring
 
 -deleting stuff should just be hidden.
 
+-game end sound sounding when a player leaves, (annoying mulitple tones)
+
+-hide missions box until game start after i release sensitive
+
+-mission succeed in mission box should be blue.
+
+-old vh stays
 
 -Learn REGEX
 
@@ -236,3 +239,5 @@ Mine:
 -about page
 -right side tabs dont flash yellow
 -Who card started with stat
+-waiting for (username) to shoot
+-sometimes someone would be transparent even though they didnt leave

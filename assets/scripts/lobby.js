@@ -1660,7 +1660,10 @@ function draw() {
                 }
 
                 if($("#option_notifications_sound_game_ending")[0].checked === true){
-                    playSound("game-end");
+                    if(gameEndSoundPlayed === false){
+                        playSound("game-end");
+                        gameEndSoundPlayed = true;
+                    }
                 }
 
                 if($("#option_notifications_desktop_game_ending")[0].checked === true){
@@ -2689,6 +2692,8 @@ function getKickPlayers() {
     return data;
 }
 
+
+var gameEndSoundPlayed = false;
 function resetAllGameData() {
     roomId = undefined;
     //reset all the variables
@@ -2717,6 +2722,8 @@ function resetAllGameData() {
 
     //reset the vh table
     $("#voteHistoryTable")[0].innerHTML = "";
+
+    gameEndSoundPlayed = false;
 }
 
 var tempVar = 0;

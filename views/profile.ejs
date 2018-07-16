@@ -278,8 +278,21 @@
 
                 // console.log(generalRoleStats[role].wins);
 
+                if(isNaN(generalRoleStats[role].losses) || generalRoleStats[role].losses === null){
+                    generalRoleStats[role].losses = 0;
+                }
+
+                if(isNaN(generalRoleStats[role].wins) || generalRoleStats[role].wins === null){
+                    generalRoleStats[role].wins = 0;
+                }
+
+
                 var percentWon = Math.floor((generalRoleStats[role].wins / (generalRoleStats[role].wins + generalRoleStats[role].losses)) * 100);
                 generalData.push(percentWon);
+
+                console.log("percentWon");
+                console.log(percentWon);
+                console.log(generalRoleStats[role].wins + generalRoleStats[role].losses);
 
                 // console.log(generalData);
 
@@ -383,7 +396,7 @@
 
 
 
-
+        $("#tempdiv")[0].innerHTML = JSON.stringify(generalRoleStats) ;
 
         var ctx = document.getElementById("statsChart");
         var myChart = new Chart(ctx, {
@@ -403,7 +416,7 @@ function capitalizeFirstLetter(string) {
 <% } %>
 
 
-
+<div id="tempdiv"> test</div>
 
 
 
