@@ -47,6 +47,7 @@ savedGameObj.findOne({}).exec(function(err, foundSaveGame){
 			}
 	
 			rooms[storedData["roomId"]].restartSaved = true;
+			rooms[storedData["roomId"]].frozen = true;
 			rooms[storedData["roomId"]].playersInRoom = [];
 
 			rooms[storedData["roomId"]].someCutoffPlayersJoined = "no";

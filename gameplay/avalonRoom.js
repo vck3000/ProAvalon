@@ -172,6 +172,13 @@ module.exports = function (host_, roomId_, io_) {
 	}
 
 	this.gameEnd = function () {
+
+		for(var key in this.playersInRoom){
+			if(this.playersInRoom.hasOwnProperty(key)){
+				this.playersInRoom[key].emit("gameEnded");
+			}
+		}
+
 		//game clean up
 		this.finished = true;
 		this.phase = "finished";
@@ -1255,6 +1262,7 @@ module.exports = function (host_, roomId_, io_) {
 		if(this.playersInRoom.length >= this.cutoffForSomePlayersJoined){
 			console.log("cutoffreached: " + this.playersInRoom.length + " " + this.cutoffForSomePlayersJoined);
 			this.someCutoffPlayersJoined = "yes";
+			this.frozen = false;
 		}
 		
 		
@@ -1460,7 +1468,10 @@ module.exports = function (host_, roomId_, io_) {
 	};
 
 	this.getStatus = function () {
-		if (this.finished === true) {
+		if(this.frozen && this.frozen === true){
+			return "Frozen";
+		}
+		else if (this.finished === true) {
 			return "Finished";
 		} else if (this.gameStarted === true) {
 			return "Game in progress";

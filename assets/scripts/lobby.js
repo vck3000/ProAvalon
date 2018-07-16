@@ -1017,6 +1017,16 @@ function resetSettings(){
     });
 }
 
+socket.on("gameEnded", function (data) {
+    if($("#option_notifications_sound_game_ending")[0].checked === true){
+        playSound("game-end");
+    }
+    
+    if($("#option_notifications_desktop_game_ending")[0].checked === true){
+        displayNotification("Game has ended!", "", "avatars/base-spy.png", "gameEnded");
+    }
+});
+
 
 
 function addToAllChat(data) {
@@ -1681,16 +1691,6 @@ function draw() {
                     drawBullet(getIndexFromUsername(gameData.see.playerShot));
                 }
 
-                if($("#option_notifications_sound_game_ending")[0].checked === true){
-                    if(gameEndSoundPlayed === false){
-                        playSound("game-end");
-                        gameEndSoundPlayed = true;
-                    }
-                }
-
-                if($("#option_notifications_desktop_game_ending")[0].checked === true){
-                    displayNotification("Game has ended!", "", "avatars/base-spy.png", "gameEnded");
-                }
 
             }
 
@@ -2751,7 +2751,6 @@ function resetAllGameData() {
     //reset the vh table
     $("#voteHistoryTable")[0].innerHTML = "";
 
-    gameEndSoundPlayed = false;
 }
 
 var tempVar = 0;
