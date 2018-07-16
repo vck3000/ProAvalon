@@ -2003,7 +2003,7 @@ function drawAndPositionAvatars() {
     // console.log("numPlayers: " + numPlayers)
     var divs = document.querySelectorAll("#mainRoomBox div");
     const scaleWidthDown = 0.9;
-    const scaleHeightDown = 0.9;
+    const scaleHeightDown = 1;
     var playerLocations = generatePlayerLocations(numPlayers, (w / 2)*scaleWidthDown, (h / 2)*scaleHeightDown);
 
     for (var i = 0; i < numPlayers; i++) {
@@ -2012,7 +2012,7 @@ function drawAndPositionAvatars() {
         var offsetY = h / 2;
         
         //reduce the height so that the bottom of avatars dont crash into the bottom.
-        offsetY = offsetY * 1.15;
+        offsetY = offsetY * 1;
 
       // console.log("offsetY: " + offsetY);
 
@@ -2767,6 +2767,8 @@ function resetAllGameData() {
     //reset the vh table
     $("#voteHistoryTable")[0].innerHTML = "";
 
+    $("#missionsBox").addClass("invisible");
+    
 }
 
 var tempVar = 0;
@@ -2917,7 +2919,7 @@ function escapeHtml(unsafe) {
 function scaleMiddleBoxes(){
     gameTableHeight = $("#mainRoomBox").height();
 
-    const startScalingHeight = 284;
+    const startScalingHeight = 300;
     const maxHeightOfBoxes = 60; //in px
     const scaleFactor = maxHeightOfBoxes/startScalingHeight;
 
