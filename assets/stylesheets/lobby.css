@@ -86,7 +86,7 @@ p {
     height: 100%;
 }
 #col2 {
-    overflow: scroll;
+    overflow: auto;
 }
 
 .full-height {
