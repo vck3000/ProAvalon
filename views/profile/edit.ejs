@@ -5,6 +5,11 @@
 <link rel="stylesheet" type="text/css" href="../../stylesheets/profile.css">
 <link rel="stylesheet" type="text/css" href="../../libraries/flag-icon-css-master/css/flag-icon.min.css">
 
+
+<link href="/summernote-0.8.9-dist/dist/summernote.css" rel="stylesheet">
+<script src="/summernote-0.8.9-dist/dist/summernote.js"></script>
+
+
 <style>
 
     h1{
@@ -21,16 +26,22 @@
 <div class="container myContainer">
     <h1>Change your settings here: </h1>
 
-    <form>
+    <form action="/profile/<%=userData.username%>" method="POST">
+
     
+    <h3>
+        Nationality! (None of this is compulsory, you don't have to fill this in.)
+    </h3>
     
     <h1><span id="flagSpan" class="flag-icon flag-icon-un" data-toggle="tooltip"></span></h1>
     
     
     
     
-    <select id="selectNation" name="nation">
-        <option value="UN" selected>United Nations</option>
+    <input type="hidden" value="" name="nationality" id="nationality">
+
+    <select id="selectNation" name="nationCode">
+        <option value="UN">United Nations</option>
         <option value="AF">Afghanistan</option>
         <option value="AX">Åland Islands</option>
         <option value="AL">Albania</option>
@@ -282,6 +293,17 @@
         <option value="ZW">Zimbabwe</option>
     </select>
 
+    <br>
+    <br>
+
+    <h3>
+        Biography
+    </h3>
+    <textarea type="text" placeholder="Type a mini-biography of yourself." name="biography" id="biography" rows="5" class="" style=""><%=userData.biography%></textarea>
+
+
+    <button class="btn btn-success" type="submit">Submit</button>
+
     </form>
     
 
@@ -295,20 +317,45 @@
 
 <script>
 
-    $("#selectNation").on("change", function(e){
-        console.log($("#selectNation").find(":selected")[0]);
-        console.log($("#selectNation").find(":selected")[0].innerText);
-        console.log($("#selectNation").find(":selected").val());
+    $(document).ready(function() {
+        $('#biography').summernote();
+        // $('.commentReply').summernote();
+
+
         
+        var nationCode = '<%=userData.nationCode%>.toUpperCase()';
+        var nationality = '<%=userData.nationality%>';
+
+        if(nationCode && nationality && nationCode !== '' && nationality !== ''){
+            console.log(      $("option:contains('" + nationality + "')")         );
+            $("option:contains('" + nationality + "')").attr("selected", "selected");
+            updateFlag();
+        }
+        else{
+            $("option:contains('United Nations')").attr("selected", "selected");
+            updateFlag();
+        }
+    });
+
+    $("#selectNation").on("change", function(e){
+        // console.log($("#selectNation").find(":selected")[0]);
+        // console.log($("#selectNation").find(":selected")[0].innerText);
+        // console.log($("#selectNation").find(":selected").val());
+        
+        updateFlag();
+
+    });
+
+    function updateFlag(){
         var countryCode = $("#selectNation").find(":selected").val();
         var countryName = $("#selectNation").find(":selected")[0].innerText;
+
+        $("#nationality").val(countryName); 
 
         $("#flagSpan").removeClass();
         $("#flagSpan").addClass("flag-icon");
         $("#flagSpan").addClass("flag-icon-" + countryCode.toLowerCase());
-        
-
-    });
+    }
 
 </script>
 

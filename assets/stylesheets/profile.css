@@ -87,14 +87,14 @@
   .avatarImgDiv {
       position: relative;
   }
-  .avatarImgDiv:hover .avatarImg {
+  /* .avatarImgDiv:hover .avatarImg {
     opacity: 0.3;
-    /* border: 1px solid red; */
+    
   }
   
   .avatarImgDiv:hover .middle {
     opacity: 1;
-  }
+  } */
 
 
   .changeAvatarText {

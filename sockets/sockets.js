@@ -75,7 +75,7 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 					// console.log(rooms[storedData["roomId"]]["sockets"].find("request"));
 			
 					
-					foundSaveGame.remove();
+					// foundSaveGame.remove();
 				}
 			}
 		}

@@ -88,6 +88,9 @@ app.use(indexRoutes);
 var forumRoutes = require("./routes/forum");
 app.use("/forum", forumRoutes);
 
+var profileRoutes = require("./routes/profile");
+app.use("/profile", profileRoutes);
+
 // seedDB();
 
 //start server listening

@@ -22,6 +22,7 @@ var UserSchema = new mongoose.Schema({
 	winsLossesGameSizeBreakdown: Object,
 
 	nationality: String,
+	nationCode: String,
 	timeZone: String,
 	biography: String,
 

@@ -2,11 +2,41 @@
 var forumThread = require("../models/forumThread");
 var forumThreadComment = require("../models/forumThreadComment");
 var forumThreadCommentReply = require("../models/forumThreadCommentReply");
+var User 			= require("../models/user");
 
 var flash 		= require("connect-flash");
 
 var middlewareObj = {};
 
+
+middlewareObj.checkProfileOwnership = function (req, res, next) {
+	if (req.isAuthenticated()) {
+		User.find({username: req.params.profileUsername.replace(" ", "")}, function (err, foundUser) {
+			if (err) {
+				req.flash("error", "User not found!");
+				res.redirect("back");
+			} else {
+				foundUser = foundUser[0]
+				console.log("asdfasdf");
+				console.log(foundUser.username);
+				//does user own campground?
+				if (foundUser.username && foundUser.username === req.user.username) {
+					next();
+				} else {
+					// console.log(foundUser.username.replace(" ", ""));
+					// console.log(req.user.username.replace(" ", ""));
+
+					req.flash("error", "You are not the owner!");
+					console.log(req.user._id + " " + req.user.username +  " has attempted to do something bad");
+					res.redirect("back");
+				}
+			}
+		});
+	} else {
+		req.flash("error", "You need to be logged in to do that!");
+		res.redirect("back");
+	}
+}
 
 middlewareObj.checkForumThreadOwnership = function (req, res, next) {
 	if (req.isAuthenticated()) {
