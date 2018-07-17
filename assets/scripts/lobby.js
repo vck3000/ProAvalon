@@ -1274,20 +1274,20 @@ socket.on("auto-join-room-id", function (roomId_) {
 //==========================================
 socket.on("commands", function (commands) {
     assignCommands(commands);
-});
+}); 
+
+var modCommands;
+socket.on("modCommands", function (commands) {
+    modCommands = commands;
+}); 
+
+var adminCommands;
+socket.on("adminCommands", function (commands) {
+    adminCommands = commands;
+}); 
+
 
 socket.on("messageCommandReturnStr", function (data) {
-    // var data = { message: str , classStr: "server-text"};
-
-    // if(!data.classStr){
-    //     data = {
-    //         message: data,
-    //         classStr: "server-text"
-    //     }
-    // }
-
-    
-
     if (lastChatBoxCommand === "allChat") {
         addToAllChat(data);
     }
@@ -2844,6 +2844,38 @@ function checkMessageForCommands(message, chatBox) {
                     }
 
                     break;
+                }
+            }
+        }
+
+        if(modCommands){
+            for (var key in modCommands) {
+                if (modCommands.hasOwnProperty(key)) {
+                    // console.log(key + " -> " + commands[key]);
+                    if (messageCommand === modCommands[key].command) {
+                        console.log("mods");
+                      // console.log("Command: " + commands[key].command + " called.");
+                        commandCalled = modCommands[key].command;
+                        validCommandFound = true;
+    
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(adminCommands){
+            for (var key in adminCommands) {
+                if (adminCommands.hasOwnProperty(key)) {
+                    // console.log(key + " -> " + commands[key]);
+                    if (messageCommand === adminCommands[key].command) {
+                        console.log("admin");
+                        // console.log("Command: " + commands[key].command + " called.");
+                        commandCalled = adminCommands[key].command;
+                        validCommandFound = true;
+    
+                        break;
+                    }
                 }
             }
         }

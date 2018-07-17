@@ -6,6 +6,13 @@ var savedGameObj = require("../models/savedGame");
 const JSON = require('circular-json');
 
 
+var modsArray = require("../modsadmins/mods");
+var adminsArray = require("../modsadmins/admins");
+
+
+
+
+
 
 const dateResetRequired = 1531125110385;
 
@@ -209,11 +216,86 @@ var userCommands = {
 			}
 			
 		}
+	}
+
+};
+
+
+var modCommands = {
+	m: {
+		command: "m",
+		help: "/m: ...shows mods commands",
+		run: function (args) {
+			//do stuff
+			var data = [];
+			var i = 0;
+			i++;
+
+			for (var key in modCommands) {
+				if (modCommands.hasOwnProperty(key)) {
+					if(!modCommands[key].modsOnly){
+						// console.log(key + " -> " + p[key]);
+						data[i] = {message: modCommands[key].help, classStr: "server-text"};
+						// str[i] = userCommands[key].help;
+						i++;
+						//create a break in the chat
+						// data[i] = {message: "-------------------------", classStr: "server-text"};
+						// i++;
+					}
+				}
+			}
+			return data;
+		}
+	},
+	modtest: {
+		command: "modtest",
+		help: "/modtest: Testing that only mods can access this command",
+		run: function (args) {
+			//do stuff
+			return {message: "modtest has been run.", classStr: "server-text"};
+		}
+	},
+}
+
+var adminCommands = {
+	a: {
+		command: "a",
+		help: "/a: ...shows mods commands",
+		run: function (args) {
+			//do stuff
+			var data = [];
+			var i = 0;
+			i++;
+
+			for (var key in adminCommands) {
+				if (adminCommands.hasOwnProperty(key)) {
+					if(!adminCommands[key].modsOnly){
+						// console.log(key + " -> " + p[key]);
+						data[i] = {message: adminCommands[key].help, classStr: "server-text"};
+						// str[i] = userCommands[key].help;
+						i++;
+						//create a break in the chat
+						// data[i] = {message: "-------------------------", classStr: "server-text"};
+						// i++;
+					}
+				}
+			}
+			return data;
+		}
 	},
 
-	serverRestartWarning: {
-		command: "serverRestartWarning",
-		help: "/serverRestartWarning: Only for the admin to use :)",
+	admintest: {
+		command: "admintest",
+		help: "/admintest: Testing that only the admin can access this command",
+		run: function (args) {
+			//do stuff
+			return {message: "admintest has been run.", classStr: "server-text"};
+		}
+	},
+
+	aServerRestartWarning: {
+		command: "aServerRestartWarning",
+		help: "/aServerRestartWarning: Only for the admin to use :)",
 		run: function (args, senderSocket) {
 			console.log(allSockets);
 			//code
@@ -273,8 +355,8 @@ var userCommands = {
 			}
 		}
 	}
+}
 
-};
 
 
 module.exports = function (io) {
@@ -362,6 +444,20 @@ module.exports = function (io) {
 		//send the user the list of commands
 		socket.emit("commands", userCommands);
 
+		//if the mods name is inside the array
+		if(modsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1 ){
+			//send the user the list of commands
+			socket.emit("modCommands", modCommands);
+		}
+
+		//if the admin name is inside the array
+		if(adminsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1 ){
+			//send the user the list of commands
+			socket.emit("adminCommands", adminCommands);
+		}
+
+
+
 		socket.emit("checkSettingsResetDate", dateResetRequired);
 		
 
@@ -371,10 +467,20 @@ module.exports = function (io) {
 
 		socket.on("messageCommand", function (data) {
 			console.log("data0: " + data.command);
+			console.log("mod command exists: " + modCommands[data.command]);
+			console.log("Index of mods" + modsArray.indexOf(socket.request.user.username.toLowerCase()));
+			
+			
 			if (userCommands[data.command]) {
-
 				var dataToSend = userCommands[data.command].run(data.args, socket);
-
+				socket.emit("messageCommandReturnStr", dataToSend);
+			}
+			else if(modCommands[data.command] && modsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1){
+				var dataToSend = modCommands[data.command].run(data.args, socket);
+				socket.emit("messageCommandReturnStr", dataToSend);
+			}
+			else if(adminCommands[data.command] && adminsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1){
+				var dataToSend = adminCommands[data.command].run(data.args, socket);
 				socket.emit("messageCommandReturnStr", dataToSend);
 			}
 			else {
