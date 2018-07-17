@@ -3,9 +3,16 @@ To-do list:
 -Moderators
 -deleting stuff should just be hidden.
 -Statistics page
+
+
+
 -weird bug where u cant join and get a u tried to start the game issue
 
 
+-push to server current list of modActions
+-immediately enact the ban (make them refresh or redirect back to the lobby)
+-add muting. will act automatically. 
+-allow for mods to remove bans/mute
 
 
 

@@ -186,6 +186,13 @@
 					<li><a href="/log">Change Log</a></li>
 					<% } %>
 
+					<% if(headerActive === "about"){ %>
+					<li class="active"><a href="/about">About</a></li>
+					<%} %>
+					<% if(headerActive !== "about"){ %>
+					<li><a href="/about">About</a></li>
+					<% } %>
+
 					<%}%>
 
 					<!-- <li><a href="#">News</a></li> -->
@@ -830,7 +837,7 @@ $(document).ready(function () {
         var clickover = $(event.target);
 		var _opened = $(".collapse").hasClass("collapse in");
 		
-		console.log(clickover);
+		// console.log(clickover);
 
 		if (
 			_opened === true 

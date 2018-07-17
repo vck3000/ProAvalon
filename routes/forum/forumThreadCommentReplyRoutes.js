@@ -8,9 +8,7 @@ var middleware = require("../../middleware");
 var sanitizeHtml = require('sanitize-html');
 var getTimeDiffInString = require("../../assets/myLibraries/getTimeDiffInString");
 var User 			= require("../../models/user");
-
 var createNotificationObj = require("../../myFunctions/createNotification");
-
 
 var mongoose = require('mongoose');
 

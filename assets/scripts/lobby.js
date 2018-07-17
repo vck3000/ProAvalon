@@ -7,10 +7,6 @@ var ownUsername = $("#originalUsername")[0].innerText;
 
 
 
-
-
-
-
 //Prevents the window height from changing when android keyboard is pulled up.
 setTimeout(function () {
     let viewheight = $(window).height();
@@ -343,7 +339,7 @@ var userOptions = {
     },
 
     optionNotificationsSoundVolume: {
-        defaultValue: "100",
+        defaultValue: "50",
         onLoad: function(){
             //get cookie data
             var volume = docCookies.getItem("optionNotificationsSoundVolume");
@@ -1044,6 +1040,10 @@ socket.on("gameEnded", function (data) {
     }
 });
 
+socket.on("openModModal", function (data) {
+    $("#modModal").modal("show");
+});
+
 
 
 function addToAllChat(data) {
@@ -1278,6 +1278,20 @@ socket.on("commands", function (commands) {
 
 var modCommands;
 socket.on("modCommands", function (commands) {
+
+    if(!modCommands){
+        $("#modActionCloseButton").on("click", function(){
+            $("#modModal").modal("hide");
+            
+            console.log($("#modactionform").serializeArray());
+            var data = $("#modactionform").serializeArray();
+
+            socket.emit("modAction", data);
+        });
+
+
+    }
+
     modCommands = commands;
 }); 
 

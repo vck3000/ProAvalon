@@ -180,15 +180,48 @@ router.get("/loginFail", function(req, res){
 	res.redirect("/");
 });
 
+
+
+
+var modAction = require("../models/modAction");
+var currentModActions = [];
+//load up all the modActions that are not released yet and are bans
+modAction.find({whenRelease: {$gt: new Date()}, type: "ban"}, function(err, allModActions){
+	
+	for(var i = 0; i < allModActions.length; i++){
+		currentModActions.push(allModActions[i]);
+	}
+	console.log("bans:");
+	console.log(currentModActions);
+	
+});
+
 //lobby route
 router.get("/lobby", middleware.isLoggedIn, function(req, res){
 	// console.log(res.app.locals.originalUsername);
 	User.findOne({username: req.user.username}).populate("notifications").exec(function(err, foundUser){
 		if(err){
-			res.render("lobby", {currentUser: req.user, headerActive: "lobby", userNotifications: [{text: "There was a problem loading your notifications.", optionsCog: true}] });
+			// res.render("lobby", {currentUser: req.user, headerActive: "lobby", userNotifications: [{text: "There was a problem loading your notifications.", optionsCog: true}] });
 			console.log(err);
+			req.flash("error", "Something has gone wrong! Please contact a moderator or admin.");
+			res.redirect("/");
 		}
 		else{
+			for(var i = 0; i < currentModActions.length; i++){
+				if(req.user.id.toString() === currentModActions[i].bannedPlayer.id.toString()){
+					if(currentModActions[i].type === "ban"){
+						var message = "You have been banned. The ban will be released on " + currentModActions[i].whenRelease + ".";
+						message += " Reflect on your actions.";
+						req.flash("error", message);
+						res.redirect("/")
+	
+						console.log(req.user.username + " is still banned and cannot join the lobby.");
+						return;
+					}
+				}
+			}
+
+
 			res.render("lobby", {currentUser: req.user, headerActive: "lobby", userNotifications: foundUser.notifications, optionsCog: true});
 		
 			//check that they have all the default values.
@@ -234,7 +267,7 @@ router.get("/testmodal", function(req, res){
 });
 
 router.get("/about", function(req, res){
-	res.render("about", {currentUser: req.user});
+	res.render("about", {currentUser: req.user, headerActive: "about"});
 });
 
 router.get("/security", function(req, res){
@@ -338,9 +371,6 @@ router.get("/ajax/hideAllNotifications", function(req, res){
 	});
 	res.status(200).send("done");	
 });
-
-
-
 
 
 

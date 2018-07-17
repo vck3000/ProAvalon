@@ -37,9 +37,15 @@ var UserSchema = new mongoose.Schema({
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "notification"
 		} 
+	],
+
+
+	modAction: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "ModAction"
+		} 
 	]
-
-
 });
 
 

@@ -2,12 +2,16 @@
 var avalonRoom = require("../gameplay/avalonRoom");
 
 var savedGameObj = require("../models/savedGame");
+var modAction = require("../models/modAction");
+
+var User  = require("../models/user");
 
 const JSON = require('circular-json');
 
 
 var modsArray = require("../modsadmins/mods");
 var adminsArray = require("../modsadmins/admins");
+
 
 
 
@@ -86,9 +90,22 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 				}
 			}
 		}
-		
 	}
 });
+
+var currentModActions = [];
+
+//load up all the modActions that are not released yet
+modAction.find({whenRelease: {$gt: new Date()}, type: "mute"}, function(err, allModActions){
+	
+	for(var i = 0; i < allModActions.length; i++){
+		currentModActions.push(allModActions[i]);
+	}
+	console.log("mute");
+	console.log(currentModActions);
+});
+
+
 
 
 
@@ -97,7 +114,7 @@ var userCommands = {
 	commandA: {
 		command: "commandA",
 		help: "/commandA: Just some text for commandA",
-		run: function (args) {
+		run: function (data) {
 			//do stuff
 			return {message: "commandA has been run.", classStr: "server-text"};
 		}
@@ -106,10 +123,10 @@ var userCommands = {
 	help: {
 		command: "help",
 		help: "/help: ...shows help",
-		run: function (args) {
+		run: function (data) {
 			//do stuff
 
-			var data = [];
+			var dataToReturn = [];
 			var i = 0;
 
 			//starting break in the chat
@@ -124,7 +141,7 @@ var userCommands = {
 				if (userCommands.hasOwnProperty(key)) {
 					if(!userCommands[key].modsOnly){
 						// console.log(key + " -> " + p[key]);
-						data[i] = {message: userCommands[key].help, classStr: "server-text"};
+						dataToReturn[i] = {message: userCommands[key].help, classStr: "server-text"};
 						// str[i] = userCommands[key].help;
 						i++;
 						//create a break in the chat
@@ -135,21 +152,23 @@ var userCommands = {
 			}
 			// return "Commands are: commandA, help";
 			// return str;
-			return data;
+			return dataToReturn;
 		}
 	},
 
 	buzz: {
 		command: "buzz",
 		help: "/buzz <playername>: Buzz a player. <playername> must all be in lower case. (until I upgrade this)",
-		run: function (args, senderSocket) {
+		run: function (data, senderSocket) {
+			var args = data.args;
+
 			var buzzSocket = allSockets[args[1]];
 			if (buzzSocket) {
 				buzzSocket.emit("buzz", senderSocket.request.user.username);
 			return {message: "You have buzzed player " + args[1] + ".", classStr: "server-text"};
 			}
 			else {
-				console.log(allSockets);
+				// console.log(allSockets);
 				return {message: "There is no such player.", classStr: "server-text"};
 			}
 		}
@@ -158,7 +177,8 @@ var userCommands = {
 	slap: {
 		command: "slap",
 		help: "/slap <playername>: Slap a player for fun. <playername> must all be in lower case. (until I upgrade this)",
-		run: function (args, senderSocket) {
+		run: function (data, senderSocket) {
+			var args = data.args;			
 
 			var slapSocket = allSockets[args[1]];
 			if (slapSocket) {
@@ -166,7 +186,7 @@ var userCommands = {
 			return {message: "You have slapped player " + args[1] + "!", classStr: "server-text"};
 			}
 			else {
-				console.log(allSockets);
+				// console.log(allSockets);
 				return {message: "There is no such player.", classStr: "server-text"};
 				
 			}
@@ -176,7 +196,8 @@ var userCommands = {
 	roomChat: {
 		command: "roomChat",
 		help: "/roomChat: Get a copy of the chat for the current game.",
-		run: function (args, senderSocket) {
+		run: function (data, senderSocket) {
+			var args = data.args;
 			//code
 			if(rooms[senderSocket.request.user.inRoomId]){
 				return rooms[senderSocket.request.user.inRoomId].getChatHistory();
@@ -191,8 +212,9 @@ var userCommands = {
 	allChat: {
 		command: "allChat",
 		help: "/allChat: Get a copy of the last 5 minutes of allChat.",
-		run: function (args, senderSocket) {
+		run: function (data, senderSocket) {
 			//code
+			var args = data.args;
 			return allChat5Min;
 		}
 	},
@@ -200,7 +222,9 @@ var userCommands = {
 	roll: {
 		command: "roll",
 		help: "/roll <optional number>: Returns a random number between 1 and 10 or 1 and optional number.",
-		run: function (args, senderSocket) {
+		run: function (data, senderSocket) {
+			var args = data.args;
+			
 			//code
 			if(args[1]){
 				if(isNaN(args[1]) === false){
@@ -225,45 +249,84 @@ var modCommands = {
 	m: {
 		command: "m",
 		help: "/m: ...shows mods commands",
-		run: function (args) {
-			//do stuff
-			var data = [];
-			var i = 0;
-			i++;
+		run: function (data, senderSocket) {
 
-			for (var key in modCommands) {
-				if (modCommands.hasOwnProperty(key)) {
-					if(!modCommands[key].modsOnly){
-						// console.log(key + " -> " + p[key]);
-						data[i] = {message: modCommands[key].help, classStr: "server-text"};
-						// str[i] = userCommands[key].help;
-						i++;
-						//create a break in the chat
-						// data[i] = {message: "-------------------------", classStr: "server-text"};
-						// i++;
-					}
-				}
+			// console.log(senderSocket.request.user.username);
+			if(modsArray.indexOf(senderSocket.request.user.username.toLowerCase()) !== -1){
+				senderSocket.emit("openModModal");
+				return {message: "May your judgement bring peace to all!", classStr: "server-text"};
 			}
-			return data;
+			else{
+				//add a report to this player.
+				return {message: "You are not a mod. Why are you trying this...", classStr: "server-text"};
+			}
+
+
+			// var args = data.args;
+			// //do stuff
+			// var dataToReturn = [];
+			// var i = 0;
+			// i++;
+
+			// for (var key in modCommands) {
+			// 	if (modCommands.hasOwnProperty(key)) {
+			// 		if(!modCommands[key].modsOnly){
+			// 			// console.log(key + " -> " + p[key]);
+			// 			dataToReturn[i] = {message: modCommands[key].help, classStr: "server-text"};
+			// 			// str[i] = userCommands[key].help;
+			// 			i++;
+			// 			//create a break in the chat
+			// 			// data[i] = {message: "-------------------------", classStr: "server-text"};
+			// 			// i++;
+			// 		}
+			// 	}
+			// }
+			// return dataToReturn;
 		}
 	},
 	modtest: {
 		command: "modtest",
 		help: "/modtest: Testing that only mods can access this command",
-		run: function (args) {
+		run: function (data) {
+			var args = data.args;
 			//do stuff
 			return {message: "modtest has been run.", classStr: "server-text"};
 		}
 	},
+	mmute: {
+		command: "mmute",
+		help: "/mmute <playername> <>: mute a player using your powers!",
+		run: function (data, senderSocket) {
+			var args = data.args;
+			//do stuff
+			if(args[1]){
+
+				User.find({username: args[1]}, )
+
+				var newModAction = {
+					type: "mute",
+					bannedPlayer: null
+				};
+
+
+				modAction
+			}
+			
+			return {message: "modtest has been run.", classStr: "server-text"};
+		}
+	},
+
+	
 }
 
 var adminCommands = {
 	a: {
 		command: "a",
 		help: "/a: ...shows mods commands",
-		run: function (args) {
+		run: function (data) {
+			var args = data.args;
 			//do stuff
-			var data = [];
+			var dataToReturn = [];
 			var i = 0;
 			i++;
 
@@ -271,7 +334,7 @@ var adminCommands = {
 				if (adminCommands.hasOwnProperty(key)) {
 					if(!adminCommands[key].modsOnly){
 						// console.log(key + " -> " + p[key]);
-						data[i] = {message: adminCommands[key].help, classStr: "server-text"};
+						dataToReturn[i] = {message: adminCommands[key].help, classStr: "server-text"};
 						// str[i] = userCommands[key].help;
 						i++;
 						//create a break in the chat
@@ -280,14 +343,15 @@ var adminCommands = {
 					}
 				}
 			}
-			return data;
+			return dataToReturn;
 		}
 	},
 
 	admintest: {
 		command: "admintest",
 		help: "/admintest: Testing that only the admin can access this command",
-		run: function (args) {
+		run: function (data) {
+			var args = data.args;
 			//do stuff
 			return {message: "admintest has been run.", classStr: "server-text"};
 		}
@@ -296,8 +360,9 @@ var adminCommands = {
 	aServerRestartWarning: {
 		command: "aServerRestartWarning",
 		help: "/aServerRestartWarning: Only for the admin to use :)",
-		run: function (args, senderSocket) {
-			console.log(allSockets);
+		run: function (data, senderSocket) {
+			var args = data.args;
+			// console.log(allSockets);
 			//code
 			if(senderSocket.request.user.username === "ProNub"){
 
@@ -371,6 +436,30 @@ module.exports = function (io) {
 			socket.emit("alert", "You are not authenticated.");
 			return;
 		}
+
+		//check if they have a ban or a mute
+
+		for(var i = 0; i < currentModActions.length; i++){
+			if(socket.request.user.id.toString() === currentModActions[i].bannedPlayer.id.toString()){
+				if(currentModActions[i].type === "ban"){
+					var message = "You have been banned. The ban will be released on " + currentModActions[i].whenRelease + ".";
+					message += ""
+					socket.request.flash(message);
+					socket.request.redirect("/");
+
+					console.log(socket.request.user.username + " is still banned and cannot join the lobby.");
+
+					return;
+				}
+
+			}
+		}
+
+
+
+
+
+
 		//if user is already logged in, destroy their last session
 		//compare the new username that is lowercased to the list of current usernames lowercased
 		var loweredCurrentPlayersUsernames = [];
@@ -420,7 +509,7 @@ module.exports = function (io) {
 
 					//if the username doesn't exist in the curerntplayerusernames,
 					//then make them refresh
-					console.log(loweredCurrentPlayersUsernames);
+					// console.log(loweredCurrentPlayersUsernames);
 					if(loweredCurrentPlayersUsernames.indexOf(key) === -1){
 						allSockets[key].emit("refresh");
 						console.log("MADE THEM REFRESH!!! SUCCESS");
@@ -461,6 +550,112 @@ module.exports = function (io) {
 		socket.emit("checkSettingsResetDate", dateResetRequired);
 		
 
+		// router.post("/modAction", function(req, res){
+		// 	console.log("modAction!");
+		
+		// 	console.log(req.body);
+		
+		// 	res.send("received");
+		// });
+
+		socket.on("modAction", async function(data){
+
+			if(modsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1){
+				// var parsedData = JSON.parse(data);
+				console.log(data);
+
+				var newModAction = {};
+
+				console.log("a");
+
+				data.forEach(async function(item){
+					console.log("b");
+					if(item.name === "banPlayerUsername"){
+						console.log("b(a)");
+						await User.find({username: item.value}, function(err, foundUser){
+							if(err){console.log(err);}
+							else{
+								foundUser = foundUser[0];
+								console.log("b(b)");
+								// console.log(foundUser);
+								newModAction.bannedPlayer = {};
+								newModAction.bannedPlayer.id = foundUser._id;
+								newModAction.bannedPlayer.username = foundUser.username;
+							}
+						});
+					}
+					else if(item.name === "typeofmodaction"){
+						newModAction.type = item.value;
+					}
+					else if(item.name === "reasonofmodaction"){
+						newModAction.reason = item.value;
+					}
+					else if(item.name === "durationofmodaction"){
+						var oneSec = 1000;
+						var oneMin = oneSec*60;
+						var oneHr = oneMin*60;
+						var oneDay = oneHr*24;
+						var oneMonth = oneDay*30;
+						//30 min, 3hr, 1 day, 3 day, 7 day, 1 month
+						var durations = [
+							oneMin*30,
+							oneHr*3,
+							oneDay,
+							oneDay*3,
+							oneDay*7,
+							oneMonth
+						];
+						newModAction.durationToBan = new Date(durations[item.value]);
+					}
+					else if(item.name === "descriptionByMod"){
+						newModAction.descriptionByMod = item.value;
+					}
+
+
+
+				// [ { name: 'banPlayerUsername', value: '123' },
+				//   { name: 'typeofmodaction', value: 'ban' },
+				//   { name: 'reasonofmodaction', value: 'griefing' },
+				//   { name: 'durationofmodaction', value: '4' },
+				//   { name: 'descriptionByMod', value: 'asdfa' } ]
+
+
+				});
+
+				console.log("c");
+
+
+				await User.findById(socket.request.user.id, function(err, foundUser){
+					if(err){console.log(err);}
+					else{
+						newModAction.modWhoBanned = {};
+						newModAction.modWhoBanned.id = foundUser._id;
+						newModAction.modWhoBanned.username = foundUser.username;
+						console.log("1");
+					}
+				});
+
+				console.log("2");
+
+				newModAction.whenMade = new Date();
+				newModAction.whenRelease = newModAction.whenMade.getTime() + newModAction.durationToBan.getTime();
+
+				console.log(newModAction);
+
+				console.log("****************");
+				modAction.create(newModAction,function(err, newModActionCreated){
+					console.log(newModActionCreated);
+					//push new mod action into the array of currently active ones loaded.
+				});
+			}
+
+			else{
+				//create a report. someone doing something bad.
+			}
+			
+
+		});
+
 		//=======================================
 		//COMMANDS
 		//=======================================
@@ -471,16 +666,17 @@ module.exports = function (io) {
 			console.log("Index of mods" + modsArray.indexOf(socket.request.user.username.toLowerCase()));
 			
 			
+
 			if (userCommands[data.command]) {
-				var dataToSend = userCommands[data.command].run(data.args, socket);
+				var dataToSend = userCommands[data.command].run(data, socket);
 				socket.emit("messageCommandReturnStr", dataToSend);
 			}
 			else if(modCommands[data.command] && modsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1){
-				var dataToSend = modCommands[data.command].run(data.args, socket);
+				var dataToSend = modCommands[data.command].run(data, socket);
 				socket.emit("messageCommandReturnStr", dataToSend);
 			}
 			else if(adminCommands[data.command] && adminsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1){
-				var dataToSend = adminCommands[data.command].run(data.args, socket);
+				var dataToSend = adminCommands[data.command].run(data, socket);
 				socket.emit("messageCommandReturnStr", dataToSend);
 			}
 			else {
@@ -497,7 +693,7 @@ module.exports = function (io) {
 		socket.on("allChatFromClient", function (data) {
 			//socket.emit("danger-alert", "test alert asdf");
 			//debugging
-			console.log("incoming message from allchat at " + data.date + ": " + data.message + " by: " + socket.request.user.username);
+			console.log("allchat: " + data.message + " by: " + socket.request.user.username);
 			//get the username and put it into the data object
 			data.username = socket.request.user.username;
 			//send out that data object to all other clients (except the one who sent the message)
@@ -512,7 +708,7 @@ module.exports = function (io) {
 		socket.on("roomChatFromClient", function (data) {
 			// socket.emit("danger-alert", "test alert asdf");
 			//debugging
-			console.log("incoming message from room at " + data.date + ": " + data.message + " by: " + socket.request.user.username);
+			console.log("roomchat: " + data.message + " by: " + socket.request.user.username);
 			//get the username and put it into the data object
 			data.username = socket.request.user.username;
 
