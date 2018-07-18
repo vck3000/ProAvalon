@@ -2,16 +2,15 @@ To-do list:
 
 -Moderators
 -deleting stuff should just be hidden.
--Statistics page
+-Statistics page 
 
 
 
 
  
--push to server current list of modActions
--immediately enact the ban (make them refresh or redirect back to the lobby)
--add muting. will act automatically. 
--allow for mods to remove bans/mute
+
+
+-sometimes someone would be transparent even though they didnt leave
  
 
 
@@ -245,7 +244,6 @@ Mine:
 -right side tabs dont flash yellow
 -Who card started with stat
 -waiting for (username) to shoot
--sometimes someone would be transparent even though they didnt leave
 -record individual player stats
 -restart server while saving games and restarting
 -old vh stays
@@ -262,3 +260,7 @@ Mine:
 -Random 4.2 4.3 skipped???
  -specs cant see middle mission boxes
 -overall res loss didnt count
+-push to server current list of modActions
+-immediately enact the ban (make them refresh or redirect back to the lobby)
+-add muting. will act automatically. 
+-allow for mods to remove bans/mute
