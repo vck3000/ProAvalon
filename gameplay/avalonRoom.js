@@ -594,81 +594,85 @@ module.exports = function (host_, roomId_, io_) {
 			else {
 				console.log("Player has already voted or is not in the game");
 			}
+
+
+			//if our votes array is the same length as the number of players, then we have
+			//all of our votes. proceed to next part of the game.
+			if (this.playersYetToVote.length === 0) {
+				var outcome = calcVotes(this.votes);
+
+				//this.proposedTeam = [];
+
+
+				//if team was approved, then reset pickNum
+				//and increment missionNum
+				if (outcome === "approved") {
+
+					this.phase = "missionVoting";
+					this.playersYetToVote = this.proposedTeam.slice();
+
+					var str = "Mission " + this.missionNum + "." + this.pickNum + " was approved." + getStrApprovedRejectedPlayers(this.votes, this.playersInGame);
+					// this.gameplayMessage = str;
+					this.sendText(this.sockets, str, "gameplay-text");
+
+					//temporarily increase the team leader so that when mission is approved 
+					//the leader star will stay since we automatically teamLeader-- at the end of this block.
+				}
+				else if (this.pickNum >= 5 && outcome === "rejected") {
+					console.log("--------------------------");
+					console.log("HAMMER REJECTED, GAME OVER");
+					console.log("--------------------------");
+
+					//set the mission to fail
+					this.missionHistory[this.missionHistory.length] = "failed";
+
+					//finish the game, spies have won
+					//send through winner
+					this.howWasWon = "Hammer rejected.";
+					this.finishGame("spy");
+
+					// this.gameplayMessage = "Spies have won!";
+				}
+				else if (outcome === "rejected") {
+					this.phase = "picking";
+
+					var str = "Mission " + this.missionNum + "." + this.pickNum + " was rejected." + getStrApprovedRejectedPlayers(this.votes, this.playersInGame);
+					// this.gameplayMessage = str;
+					this.sendText(this.sockets, str, "gameplay-text");
+
+				}
+
+				//VH:
+				for (var i = 0; i < this.sockets.length; i++) {
+					if (this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1] === undefined) {
+						this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1] = [];
+					}
+					if (this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1][this.pickNum - 1] === undefined) {
+						console.log("Clear leader and picked from pickVote");
+						this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1][this.pickNum - 1] = "";
+					}
+
+					this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1][this.pickNum - 1] += ("VH" + this.votes[i]);
+
+				}
+
+
+				if(outcome !== "approved"){
+					//move to next team Leader, and reset it back to the start if 
+					//we go into negative numbers
+					this.teamLeader--;
+					if (this.teamLeader < 0) {
+						this.teamLeader = this.sockets.length - 1;
+					}
+					this.pickNum++;
+				}
+				
+				
+			}
+
 		}
 
-		//if our votes array is the same length as the number of players, then we have
-		//all of our votes. proceed to next part of the game.
-		if (this.playersYetToVote.length === 0) {
-			var outcome = calcVotes(this.votes);
-
-			//this.proposedTeam = [];
-
-
-			//if team was approved, then reset pickNum
-			//and increment missionNum
-			if (outcome === "approved") {
-
-				this.phase = "missionVoting";
-				this.playersYetToVote = this.proposedTeam.slice();
-
-				var str = "Mission " + this.missionNum + "." + this.pickNum + " was approved." + getStrApprovedRejectedPlayers(this.votes, this.playersInGame);
-				// this.gameplayMessage = str;
-				this.sendText(this.sockets, str, "gameplay-text");
-
-				//temporarily increase the team leader so that when mission is approved 
-				//the leader star will stay since we automatically teamLeader-- at the end of this block.
-			}
-			else if (this.pickNum >= 5 && outcome === "rejected") {
-				console.log("--------------------------");
-				console.log("HAMMER REJECTED, GAME OVER");
-				console.log("--------------------------");
-
-				//set the mission to fail
-				this.missionHistory[this.missionHistory.length] = "failed";
-
-				//finish the game, spies have won
-				//send through winner
-				this.howWasWon = "Hammer rejected.";
-				this.finishGame("spy");
-
-				// this.gameplayMessage = "Spies have won!";
-			}
-			else if (outcome === "rejected") {
-				this.phase = "picking";
-
-				var str = "Mission " + this.missionNum + "." + this.pickNum + " was rejected." + getStrApprovedRejectedPlayers(this.votes, this.playersInGame);
-				// this.gameplayMessage = str;
-				this.sendText(this.sockets, str, "gameplay-text");
-
-			}
-
-			//VH:
-			for (var i = 0; i < this.sockets.length; i++) {
-				if (this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1] === undefined) {
-					this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1] = [];
-				}
-				if (this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1][this.pickNum - 1] === undefined) {
-					console.log("Clear leader and picked from pickVote");
-					this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1][this.pickNum - 1] = "";
-				}
-
-				this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1][this.pickNum - 1] += ("VH" + this.votes[i]);
-
-			}
-
-
-			if(outcome !== "approved"){
-				//move to next team Leader, and reset it back to the start if 
-				//we go into negative numbers
-				this.teamLeader--;
-				if (this.teamLeader < 0) {
-					this.teamLeader = this.sockets.length - 1;
-				}
-				this.pickNum++;
-			}
-			
-			
-		}
+		
 
 		console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, { depth: 2 }));
 	}
