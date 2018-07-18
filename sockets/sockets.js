@@ -3,6 +3,7 @@ var avalonRoom = require("../gameplay/avalonRoom");
 
 var savedGameObj = require("../models/savedGame");
 var modAction = require("../models/modAction");
+var currentModActions = [];
 
 var User  = require("../models/user");
 
@@ -93,7 +94,6 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 	}
 });
 
-var currentModActions = [];
 
 //load up all the modActions that are not released yet
 modAction.find({whenRelease: {$gt: new Date()}, type: "mute"}, function(err, allModActions){
@@ -248,7 +248,15 @@ var userCommands = {
 var modCommands = {
 	m: {
 		command: "m",
-		help: "/m: ...shows mods commands",
+		help: "/m: displays /mhelp",
+		run: function (data, senderSocket) {
+
+			return modCommands["mhelp"].run(data, senderSocket);
+		}
+	},
+	mban: {
+		command: "mban",
+		help: "/mban: Open the ban interface",
 		run: function (data, senderSocket) {
 
 			// console.log(senderSocket.request.user.username);
@@ -260,13 +268,106 @@ var modCommands = {
 				//add a report to this player.
 				return {message: "You are not a mod. Why are you trying this...", classStr: "server-text"};
 			}
+		}
+	},
+
+	modtest: {
+		command: "modtest",
+		help: "/modtest: Testing that only mods can access this command",
+		run: function (data) {
+			var args = data.args;
+			//do stuff
+			return {message: "modtest has been run.", classStr: "server-text"};
+		}
+	},
+	mhelp: {
+		command: "mhelp",
+		help: "/mhelp: show commands.",
+		run: function (data, senderSocket) {
+			var args = data.args;
+			//do stuff
+			var dataToReturn = [];
+			var i = 0;
+			i++;
+
+			for (var key in modCommands) {
+				if (modCommands.hasOwnProperty(key)) {
+					if(!modCommands[key].modsOnly){
+						// console.log(key + " -> " + p[key]);
+						dataToReturn[i] = {message: modCommands[key].help, classStr: "server-text"};
+						// str[i] = userCommands[key].help;
+						i++;
+						//create a break in the chat
+						// data[i] = {message: "-------------------------", classStr: "server-text"};
+						// i++;
+					}
+				}
+			}
+			return dataToReturn;
+			
+		}
+	},
+	munban: {
+		command: "munban",
+		help: "/munban <player name>: Removes ALL existing bans OR mutes on a player's name.",
+		run: async function (data, senderSocket) {
+			var args = data.args;
+
+			if(!args[1]){
+				return {message: "Specify a username.", classStr: "server-text"}
+			}
+
+			modAction.find({'bannedPlayer.username': args[1]}, function(err, foundModAction){
+				console.log("foundmodaction");
+				console.log(foundModAction);
+				if(foundModAction.length !== 0){
+					modAction.remove({'bannedPlayer.username': args[1]},function(err, foundModAction){
+						if(err){
+							console.log(err);
+							senderSocket.emit("messageCommandReturnStr", {message: "Something went wrong.", classStr: "server-text"});
+						}
+						else{
+							console.log("Successfully unbanned " + args[1] + ".");
+							senderSocket.emit("messageCommandReturnStr", {message: "Successfully unbanned " + args[1] + ".", classStr: "server-text"});					
+						}
+					});
+				}
+				else{
+					senderSocket.emit("messageCommandReturnStr", {message: args[1] + " does not have a ban.", classStr: "server-text"});
+				}
+			});
+			
+		}
+	},
+
+	mcurrentbans: {
+		command: "mcurrentbans",
+		help: "/mcurrentbans: Show a list of currently active bans.",
+		run: function (data, senderSocket) {
+			var args = data.args;
+			//do stuff
+			var dataToReturn = [];
+			var i = 0;
+			i++;
+
+			modAction.find({}, function(err, foundModActions){
+				foundModActions.forEach(function(modActionFound){
+					var message = modActionFound.bannedPlayer.username + " was banned for " + modActionFound.reason + " by " + modActionFound.modWhoBanned.username + ": '" + modActionFound.descriptionByMod + "' until: " + modActionFound.whenRelease.toString();
+
+					dataToReturn[dataToReturn.length] = {message: message, classStr: "server-text"};
+				});
+
+				if(dataToReturn.length === 0){
+					senderSocket.emit("messageCommandReturnStr", {message: "No one is banned! Yay!", classStr: "server-text"});
+				}
+				else{
+					senderSocket.emit("messageCommandReturnStr", dataToReturn);
+				}
+
+			});
 
 
-			// var args = data.args;
-			// //do stuff
-			// var dataToReturn = [];
-			// var i = 0;
-			// i++;
+
 
 			// for (var key in modCommands) {
 			// 	if (modCommands.hasOwnProperty(key)) {
@@ -282,39 +383,12 @@ var modCommands = {
 			// 	}
 			// }
 			// return dataToReturn;
-		}
-	},
-	modtest: {
-		command: "modtest",
-		help: "/modtest: Testing that only mods can access this command",
-		run: function (data) {
-			var args = data.args;
-			//do stuff
-			return {message: "modtest has been run.", classStr: "server-text"};
-		}
-	},
-	mmute: {
-		command: "mmute",
-		help: "/mmute <playername> <>: mute a player using your powers!",
-		run: function (data, senderSocket) {
-			var args = data.args;
-			//do stuff
-			if(args[1]){
-
-				User.find({username: args[1]}, )
-
-				var newModAction = {
-					type: "mute",
-					bannedPlayer: null
-				};
-
-
-				modAction
-			}
 			
-			return {message: "modtest has been run.", classStr: "server-text"};
 		}
 	},
+
+
+
 
 	
 }
@@ -396,8 +470,7 @@ var adminCommands = {
 
 							if(numOfGamesSaved >= numOfGamesEncountered){
 								var data = {message: "Successful. Saved " + numOfGamesSaved + " games.", classStr: "server-text"};
-								senderSocket.emit("allChatToClient", data);
-								senderSocket.emit("roomChatToClient", data);
+								senderSocket.emit("messageCommandReturnStr", data);
 							}
 
 						});
@@ -440,16 +513,11 @@ module.exports = function (io) {
 		//check if they have a ban or a mute
 
 		for(var i = 0; i < currentModActions.length; i++){
-			if(socket.request.user.id.toString() === currentModActions[i].bannedPlayer.id.toString()){
-				if(currentModActions[i].type === "ban"){
-					var message = "You have been banned. The ban will be released on " + currentModActions[i].whenRelease + ".";
-					message += ""
-					socket.request.flash(message);
-					socket.request.redirect("/");
-
-					console.log(socket.request.user.username + " is still banned and cannot join the lobby.");
-
-					return;
+			if(currentModActions[i].bannedPlayer.id && socket.request.user.id.toString() === currentModActions[i].bannedPlayer.id.toString()){
+				if(currentModActions[i].type === "mute"){
+					
+					
+					
 				}
 
 			}
@@ -568,6 +636,8 @@ module.exports = function (io) {
 
 				console.log("a");
 
+				var leave = false;
+
 				data.forEach(async function(item){
 					console.log("b");
 					if(item.name === "banPlayerUsername"){
@@ -577,6 +647,11 @@ module.exports = function (io) {
 							else{
 								foundUser = foundUser[0];
 								console.log("b(b)");
+								if(!foundUser){
+									socket.emit("messageCommandReturnStr", {message: "User not found. Please check spelling and caps.", classStr: "server-text"});
+									leave = true;
+									return;
+								}
 								// console.log(foundUser);
 								newModAction.bannedPlayer = {};
 								newModAction.bannedPlayer.id = foundUser._id;
@@ -622,9 +697,14 @@ module.exports = function (io) {
 
 				});
 
+				
+
 				console.log("c");
 
-
+				if(leave === true){
+					return;
+				}
+				
 				await User.findById(socket.request.user.id, function(err, foundUser){
 					if(err){console.log(err);}
 					else{
@@ -641,12 +721,25 @@ module.exports = function (io) {
 				newModAction.whenRelease = newModAction.whenMade.getTime() + newModAction.durationToBan.getTime();
 
 				console.log(newModAction);
+				if(leave === false){
+					console.log("****************");
+					modAction.create(newModAction,function(err, newModActionCreated){
+						console.log(newModActionCreated);
+						//push new mod action into the array of currently active ones loaded.
+						currentModActions.push(newModActionCreated);
+						//if theyre online
+						if(allSockets[newModActionCreated.bannedPlayer.username.toLowerCase()]){
+							allSockets[newModActionCreated.bannedPlayer.username.toLowerCase()].disconnect(true);
+						}
 
-				console.log("****************");
-				modAction.create(newModAction,function(err, newModActionCreated){
-					console.log(newModActionCreated);
-					//push new mod action into the array of currently active ones loaded.
-				});
+						socket.emit("messageCommandReturnStr", {message: newModActionCreated.bannedPlayer.username + " has received a " + newModActionCreated.type + " modAction. Thank you :).", classStr: "server-text"});
+						
+					});
+				}
+				else{
+					
+				}
+				
 			}
 
 			else{

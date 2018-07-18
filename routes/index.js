@@ -7,6 +7,8 @@ var flash 			= require("connect-flash");
 var sanitizeHtml 	= require('sanitize-html');
 var mongoose = require("mongoose");
 
+var modAction = require("../models/modAction");
+
 
 var middleware = require("../middleware");
 
@@ -183,23 +185,10 @@ router.get("/loginFail", function(req, res){
 
 
 
-var modAction = require("../models/modAction");
-var currentModActions = [];
-//load up all the modActions that are not released yet and are bans
-modAction.find({whenRelease: {$gt: new Date()}, type: "ban"}, function(err, allModActions){
-	
-	for(var i = 0; i < allModActions.length; i++){
-		currentModActions.push(allModActions[i]);
-	}
-	console.log("bans:");
-	console.log(currentModActions);
-	
-});
-
 //lobby route
-router.get("/lobby", middleware.isLoggedIn, function(req, res){
+router.get("/lobby", middleware.isLoggedIn, async function(req, res){
 	// console.log(res.app.locals.originalUsername);
-	User.findOne({username: req.user.username}).populate("notifications").exec(function(err, foundUser){
+	User.findOne({username: req.user.username}).populate("notifications").exec(async function(err, foundUser){
 		if(err){
 			// res.render("lobby", {currentUser: req.user, headerActive: "lobby", userNotifications: [{text: "There was a problem loading your notifications.", optionsCog: true}] });
 			console.log(err);
@@ -207,10 +196,25 @@ router.get("/lobby", middleware.isLoggedIn, function(req, res){
 			res.redirect("/");
 		}
 		else{
+
+			currentModActions = [];
+			//load up all the modActions that are not released yet and are bans
+			await modAction.find({whenRelease: {$gt: new Date()}, type: "ban"}, function(err, allModActions){
+				
+				for(var i = 0; i < allModActions.length; i++){
+					currentModActions.push(allModActions[i]);
+				}
+				console.log("bans:");
+				console.log(currentModActions);
+				console.log("a");
+			});
+
+			console.log("b");
+
 			for(var i = 0; i < currentModActions.length; i++){
 				if(req.user.id.toString() === currentModActions[i].bannedPlayer.id.toString()){
 					if(currentModActions[i].type === "ban"){
-						var message = "You have been banned. The ban will be released on " + currentModActions[i].whenRelease + ".";
+						var message = "You have been banned. The ban will be released on " + currentModActions[i].whenRelease + ". Ban description: '" + currentModActions[i].descriptionByMod + "'";
 						message += " Reflect on your actions.";
 						req.flash("error", message);
 						res.redirect("/")
@@ -220,6 +224,8 @@ router.get("/lobby", middleware.isLoggedIn, function(req, res){
 					}
 				}
 			}
+
+			console.log("c");
 
 
 			res.render("lobby", {currentUser: req.user, headerActive: "lobby", userNotifications: foundUser.notifications, optionsCog: true});
