@@ -449,124 +449,125 @@ module.exports = function (host_, roomId_, io_) {
 			else {
 				console.log("Player has already voted or is not in the game");
 			}
-		}
 
-		//CALCULATE OUTCOME OF THE MISSION
-		if (this.playersYetToVote.length === 0) {
 
-			//perform these functions here now.
-			this.teamLeader--;
-			if (this.teamLeader < 0) {
-				this.teamLeader = this.sockets.length - 1;
-			}
-			this.pickNum++;
+			//CALCULATE OUTCOME OF THE MISSION
+			if (this.playersYetToVote.length === 0) {
 
-			
-			var requiresTwoFails = false;
-			if (this.playersInGame.length >= 7 && this.missionNum === 4) {
-				requiresTwoFails = true;
-			}
+				//perform these functions here now.
+				this.teamLeader--;
+				if (this.teamLeader < 0) {
+					this.teamLeader = this.sockets.length - 1;
+				}
+				this.pickNum++;
 
-			var outcome = calcMissionVotes(this.missionVotes, requiresTwoFails);
-			if (outcome) {
-				this.missionHistory.push(outcome);
-			}
-			else {
-				console.log("ERROR! Outcome was: " + outcome);
-			}
+				
+				var requiresTwoFails = false;
+				if (this.playersInGame.length >= 7 && this.missionNum === 4) {
+					requiresTwoFails = true;
+				}
 
-			//for the gameplay message
-			if (outcome === "succeeded") {
-				//get number of fails
-				var numOfVotedFails = countFails(this.missionVotes);
-
-				if (numOfVotedFails === 0) {
-					// this.gameplayMessage = "The mission succeeded.";	
-					this.sendText(this.sockets, "Mission " + this.missionNum + " has succeeded.", "gameplay-text");
-
+				var outcome = calcMissionVotes(this.missionVotes, requiresTwoFails);
+				if (outcome) {
+					this.missionHistory.push(outcome);
 				}
 				else {
-					// this.gameplayMessage = "The mission succeeded, but with " + numOfVotedFails + " fails.";
-					this.sendText(this.sockets, "Mission " + this.missionNum + " succeeded, but with " + numOfVotedFails + " fails.", "gameplay-text");
-
+					console.log("ERROR! Outcome was: " + outcome);
 				}
 
+				//for the gameplay message
+				if (outcome === "succeeded") {
+					//get number of fails
+					var numOfVotedFails = countFails(this.missionVotes);
 
-			}
-			else if (outcome === "failed") {
-				//get number of fails
-				var numOfVotedFails = countFails(this.missionVotes);
+					if (numOfVotedFails === 0) {
+						// this.gameplayMessage = "The mission succeeded.";	
+						this.sendText(this.sockets, "Mission " + this.missionNum + " has succeeded.", "gameplay-text");
 
-				if(numOfVotedFails > 1){
-					this.moreThanOneFailMissions[this.missionNum] = true;
+					}
+					else {
+						// this.gameplayMessage = "The mission succeeded, but with " + numOfVotedFails + " fails.";
+						this.sendText(this.sockets, "Mission " + this.missionNum + " succeeded, but with " + numOfVotedFails + " fails.", "gameplay-text");
+
+					}
+
+
+				}
+				else if (outcome === "failed") {
+					//get number of fails
+					var numOfVotedFails = countFails(this.missionVotes);
+
+					if(numOfVotedFails > 1){
+						this.moreThanOneFailMissions[this.missionNum] = true;
+					}
+
+					
+					if (numOfVotedFails === 1) {
+						// this.gameplayMessage = "The mission failed with " + numOfVotedFails + " fail.";	
+						this.sendText(this.sockets, "Mission " + this.missionNum + " failed with " + numOfVotedFails + " fail.", "gameplay-text");
+						
+					}
+					else {
+						// this.gameplayMessage = "The mission failed with " + numOfVotedFails + " fails.";	
+						this.sendText(this.sockets, "Mission " + this.missionNum + " failed with " + numOfVotedFails + " fails.", "gameplay-text");
+
+					}
+
 				}
 
 				
-				if (numOfVotedFails === 1) {
-					// this.gameplayMessage = "The mission failed with " + numOfVotedFails + " fail.";	
-					this.sendText(this.sockets, "Mission " + this.missionNum + " failed with " + numOfVotedFails + " fail.", "gameplay-text");
-					
+				//if we get all the votes in, then do this
+				this.proposedTeam = [];
+				this.missionVotes = [];
+
+				//count number of succeeds and fails
+				var numOfSucceeds = 0;
+				var numOfFails = 0;
+				for (var i = 0; i < this.missionHistory.length; i++) {
+					if (this.missionHistory[i] === "succeeded") {
+						numOfSucceeds++;
+					}
+					else if (this.missionHistory[i] === "failed") {
+						numOfFails++;
+					}
 				}
-				else {
-					// this.gameplayMessage = "The mission failed with " + numOfVotedFails + " fails.";	
-					this.sendText(this.sockets, "Mission " + this.missionNum + " failed with " + numOfVotedFails + " fails.", "gameplay-text");
+
+				console.log("numOfSucceeds: " + numOfSucceeds);
+				console.log("numOfFails: " + numOfFails);
+
+				//+1 to compensate for somewhere...
+				this.hammer = ((this.teamLeader - 5 + 1 + this.sockets.length) % this.sockets.length);
+
+
+				this.phase = "picking";
+				//only lady of the lake after m1 and m2 have finished.
+				//This is still the old missionNum, so when missionNum here is 1, it is the end of m2
+				if (this.lady !== undefined && this.missionNum >= 2) {
+					this.phase = "lady";
 
 				}
 
-			}
+				//game over
+				//if we have 3 fails, game finish
+				if (numOfFails >= 3) {
+					//pass through the winner
 
-			
-			//if we get all the votes in, then do this
-			this.proposedTeam = [];
-			this.missionVotes = [];
-
-			//count number of succeeds and fails
-			var numOfSucceeds = 0;
-			var numOfFails = 0;
-			for (var i = 0; i < this.missionHistory.length; i++) {
-				if (this.missionHistory[i] === "succeeded") {
-					numOfSucceeds++;
+					this.finishGame("spy");
 				}
-				else if (this.missionHistory[i] === "failed") {
-					numOfFails++;
+				else if (numOfSucceeds >= 3) {
+					//pass through the winner
+					this.finishGame("res");
+					// console.log("RES WON, NOW GOING INTO ASSASSINATION");
+				}
+				else{
+					this.missionNum++;
+					this.pickNum = 1;
 				}
 			}
-
-			console.log("numOfSucceeds: " + numOfSucceeds);
-			console.log("numOfFails: " + numOfFails);
-
-			//+1 to compensate for somewhere...
-			this.hammer = ((this.teamLeader - 5 + 1 + this.sockets.length) % this.sockets.length);
-
-
-			this.phase = "picking";
-			//only lady of the lake after m1 and m2 have finished.
-			//This is still the old missionNum, so when missionNum here is 1, it is the end of m2
-			if (this.lady !== undefined && this.missionNum >= 2) {
-				this.phase = "lady";
-
-			}
-
-			//game over
-			//if we have 3 fails, game finish
-			if (numOfFails >= 3) {
-				//pass through the winner
-
-				this.finishGame("spy");
-			}
-			else if (numOfSucceeds >= 3) {
-				//pass through the winner
-				this.finishGame("res");
-				// console.log("RES WON, NOW GOING INTO ASSASSINATION");
-			}
-			else{
-				this.missionNum++;
-				this.pickNum = 1;
-			}
-
-			
 
 		}
+
+		
 		// console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, { depth: 2 }));
 	}
 

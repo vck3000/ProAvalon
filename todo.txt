@@ -6,7 +6,6 @@ To-do list:
 
 
 
--weird bug where u cant join and get a u tried to start the game issue
 
  
 -push to server current list of modActions
@@ -14,11 +13,7 @@ To-do list:
 -add muting. will act automatically. 
 -allow for mods to remove bans/mute
  
- -specs cant see middle mission boxes
 
--overall res loss didnt count
--percy cant see merlins
--Random 4.2 4.3 skipped???
 
 -Learn REGEX
 
@@ -31,6 +26,8 @@ On hold
 ***************************************************************************************
 
 -Max number of players
+-percy cant see merlins
+-weird bug where u cant join and get a u tried to start the game issue
 
 
 
@@ -262,3 +259,6 @@ Mine:
 -bolding and colour together not wokring
 -Let users change the flag
 -total res losses didnt add
+-Random 4.2 4.3 skipped???
+ -specs cant see middle mission boxes
+-overall res loss didnt count
