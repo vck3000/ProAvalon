@@ -1,0 +1,23 @@
+language: node_js
+dist: trusty
+node_js: 8.9
+sudo: true
+
+addons:
+  firefox: latest
+  chrome: stable
+
+script:
+  # xvfb-run is needed for headless testing with real browsers
+  - if [[ "$TRAVIS_EVENT_TYPE" != "cron"  ]]; then
+      xvfb-run yarn test;
+    fi;
+
+  - if [[ "$TRAVIS_EVENT_TYPE" = "cron"  ]]; then
+      travis_retry yarn test:sauce &&
+      yarn check:third-party;
+    fi;
+
+notifications:
+  email:
+    on_success: never

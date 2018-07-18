@@ -13,7 +13,13 @@
 	<script type="text/javascript" src="/libraries/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 	<!-- Sweet alert! -->
 	<!-- <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> -->
-	<script src="/libraries/sweetalert2.1.0.min.js"></script>
+	<!--<script src="/libraries/sweetalert2.1.0.min.js"></script>-->
+	
+	<script type="text/javascript" src="/libraries/sweetalert2/dist/sweetalert2.all.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@7.1.0/dist/promise.min.js"></script>
+
+
+
 
 	<meta name="viewport" content="width=device-width, initial-scale=1" /> 
 
@@ -21,6 +27,10 @@
 <body>
 
 	<style>
+		.swal2-popup {
+			font-size: 1.6rem !important;
+		}
+
 		.fontButton{
 			width: 30px;
 			height: 30px;
@@ -567,15 +577,20 @@
 							<script src="/libraries/cookies_min.js"></script>
 							<script>
 								function resetCookies(){
-									swal({
+									Swal({
 										title: "Do you really want to reset your settings?",
 										text: "Settings such as height of gameplay area, dark mode, colour will be reset. You will not be able to recover your settings!",
-										icon: "warning",
-										buttons: ["Cancel", "Delete"],
-										dangerMode: true,
+										type: "warning",
+										showCancelButton: true,
+										confirmButtonText: "Delete",
+										reverseButtons: true,
+										focusCancel: true,
+										confirmButtonColor: "#ff4f3f"
+										// buttons: ["Cancel", "Delete"],
 										})
-										.then((willDelete) => {
-										if (willDelete) {
+										.then((result) => {
+											console.log(result);
+										if (result.value) {
 											
 											//get all the keys
 											var keys = docCookies.keys();
@@ -586,16 +601,16 @@
 											}
 
 											docCookies.setItem("lastSettingsResetDate", new Date().toString(), Infinity);
-											swal("Poof! Your settings have been reset!", {
-											icon: "success",
+											Swal({
+												title: "Poof! Your settings have been reset!",
+												type: "success",
 											}).then(() =>{
 												//reload
 												location.reload();
 											});
-						
-											
+					
 										} else {
-											swal("Your settings are safe!");
+											Swal("Your settings are safe!");
 										}
 									});
 								}

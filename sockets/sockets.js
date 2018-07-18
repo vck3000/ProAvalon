@@ -329,6 +329,17 @@ var modCommands = {
 						else{
 							console.log("Successfully unbanned " + args[1] + ".");
 							senderSocket.emit("messageCommandReturnStr", {message: "Successfully unbanned " + args[1] + ".", classStr: "server-text"});					
+
+
+							//load up all the modActions that are not released yet
+							modAction.find({whenRelease: {$gt: new Date()}, type: "mute"}, function(err, allModActions){
+								currentModActions = [];
+								for(var i = 0; i < allModActions.length; i++){
+									currentModActions.push(allModActions[i]);
+								}
+								console.log("mute");
+								console.log(currentModActions);
+							});
 						}
 					});
 				}
@@ -726,8 +737,11 @@ module.exports = function (io) {
 						//push new mod action into the array of currently active ones loaded.
 						currentModActions.push(newModActionCreated);
 						//if theyre online
-						if(allSockets[newModActionCreated.bannedPlayer.username.toLowerCase()]){
+						if(newModActionCreated.type === "ban" && allSockets[newModActionCreated.bannedPlayer.username.toLowerCase()]){
 							allSockets[newModActionCreated.bannedPlayer.username.toLowerCase()].disconnect(true);
+						}
+						else if(newModActionCreated.type === "mute" && allSockets[newModActionCreated.bannedPlayer.username.toLowerCase()]){
+							allSockets[newModActionCreated.bannedPlayer.username.toLowerCase()].emit("muteNotification", newModActionCreated);
 						}
 
 						socket.emit("messageCommandReturnStr", {message: newModActionCreated.bannedPlayer.username + " has received a " + newModActionCreated.type + " modAction. Thank you :).", classStr: "server-text"});
@@ -784,32 +798,45 @@ module.exports = function (io) {
 		socket.on("allChatFromClient", function (data) {
 			//socket.emit("danger-alert", "test alert asdf");
 			//debugging
-			console.log("allchat: " + data.message + " by: " + socket.request.user.username);
-			//get the username and put it into the data object
-			data.username = socket.request.user.username;
-			//send out that data object to all other clients (except the one who sent the message)
 
-			data.message = textLengthFilter(data.message);
-			//no classStr since its a player message
+			var toContinue = !isMuted(socket);
 
-			sendToAllChat(io, data);
+			// console.log(toContinue);
+
+			if(toContinue){
+				console.log("allchat: " + data.message + " by: " + socket.request.user.username);
+				//get the username and put it into the data object
+				data.username = socket.request.user.username;
+				//send out that data object to all other clients (except the one who sent the message)
+				data.message = textLengthFilter(data.message);
+				//no classStr since its a player message
+
+				sendToAllChat(io, data);
+			}
 		});
 
 		//when a user tries to send a message to room
 		socket.on("roomChatFromClient", function (data) {
 			// socket.emit("danger-alert", "test alert asdf");
 			//debugging
-			console.log("roomchat: " + data.message + " by: " + socket.request.user.username);
-			//get the username and put it into the data object
-			data.username = socket.request.user.username;
 
-			data.message = textLengthFilter(data.message);
+			var toContinue = !isMuted(socket);
+			
 
-			if (data.roomId) {
-				//send out that data object to all clients in room
-				
-				sendToRoomChat(io, data.roomId, data);
-				// io.in(data.roomId).emit("roomChatToClient", data);
+
+			if(toContinue){
+				console.log("roomchat: " + data.message + " by: " + socket.request.user.username);
+				//get the username and put it into the data object
+				data.username = socket.request.user.username;
+
+				data.message = textLengthFilter(data.message);
+
+				if (data.roomId) {
+					//send out that data object to all clients in room
+					
+					sendToRoomChat(io, data.roomId, data);
+					// io.in(data.roomId).emit("roomChatToClient", data);
+				}
 			}
 		});
 
@@ -850,30 +877,35 @@ module.exports = function (io) {
 
 		//when a new room is created
 		socket.on("newRoom", function () {
-			//while rooms exist already (in case of a previously saved and retrieved game)
-			while(rooms[nextRoomId]){
+
+			var toContinue = !isMuted(socket);
+
+			if(toContinue){
+				//while rooms exist already (in case of a previously saved and retrieved game)
+				while(rooms[nextRoomId]){
+					nextRoomId++;
+				}
+				rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId, io);
+				console.log("new room request");
+				//broadcast to all chat
+				var data = {
+					message: socket.request.user.username + " has created room " + nextRoomId + ".",
+					classStr: "server-text"
+				}			
+				sendToAllChat(io, data);
+
+				console.log(data.message);
+
+				//send to allChat including the host of the game
+				// io.in("allChat").emit("new-game-created", str);
+				//send back room id to host so they can auto connect
+				socket.emit("auto-join-room-id", nextRoomId);
+
+				//increment index for next game
 				nextRoomId++;
+
+				updateCurrentGamesList(io);
 			}
-			rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId, io);
-			console.log("new room request");
-			//broadcast to all chat
-			var data = {
-				message: socket.request.user.username + " has created room " + nextRoomId + ".",
-				classStr: "server-text"
-			}			
-			sendToAllChat(io, data);
-
-			console.log(data.message);
-
-			//send to allChat including the host of the game
-			// io.in("allChat").emit("new-game-created", str);
-			//send back room id to host so they can auto connect
-			socket.emit("auto-join-room-id", nextRoomId);
-
-			//increment index for next game
-			nextRoomId++;
-
-			updateCurrentGamesList(io);
 		});
 
 		//when a player joins a room
@@ -938,23 +970,28 @@ module.exports = function (io) {
 		});
 
 		socket.on("join-game", function (roomId) {
-			if (rooms[roomId]) {
-				socket.request.user.spectator = false;
-				//if the room has not started yet, throw them into the room
-				console.log("Game status is: " + rooms[roomId].getStatus());
-				if (rooms[roomId].getStatus() === "Waiting") {
-					var ToF = rooms[roomId].playerJoinGame(socket);
-					console.log(socket.request.user.username + " has joined room " + roomId + ": " + ToF);
+			var toContinue = !isMuted(socket);
 
-					//update the room players
-					io.in(roomId).emit("update-room-players", rooms[roomId].getPlayers());
+			if(toContinue){
+
+				if (rooms[roomId]) {
+					socket.request.user.spectator = false;
+					//if the room has not started yet, throw them into the room
+					console.log("Game status is: " + rooms[roomId].getStatus());
+					if (rooms[roomId].getStatus() === "Waiting") {
+						var ToF = rooms[roomId].playerJoinGame(socket);
+						console.log(socket.request.user.username + " has joined room " + roomId + ": " + ToF);
+
+						//update the room players
+						io.in(roomId).emit("update-room-players", rooms[roomId].getPlayers());
+					}
+					else {
+						console.log("Game has started, player " + socket.request.user.username + " is not allowed to join.");
+					}
 				}
-				else {
-					console.log("Game has started, player " + socket.request.user.username + " is not allowed to join.");
-				}
+
+				updateCurrentGamesList(io);
 			}
-
-			updateCurrentGamesList(io);
 		});
 
 		//when a player leaves a room
@@ -1242,4 +1279,20 @@ function sendToRoomChat(io, roomId, data){
 	if(rooms[roomId]){
 		rooms[roomId].addToChatHistory(data);
 	}
+}
+
+function isMuted(socket){
+	returnVar = false;
+	currentModActions.forEach(function(oneModAction){
+		// console.log(oneModAction);
+		if(oneModAction.type === "mute" && oneModAction.bannedPlayer && oneModAction.bannedPlayer.id && oneModAction.bannedPlayer.id.toString() === socket.request.user.id.toString()){
+			socket.emit("muteNotification", oneModAction);
+			// console.log("TRUEEEE");
+
+			returnVar = true;
+			return;
+		}
+	});
+
+	return returnVar;
 }

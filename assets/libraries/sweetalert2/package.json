@@ -1,0 +1,176 @@
+{
+  "_from": "sweetalert2",
+  "_id": "sweetalert2@7.25.6",
+  "_inBundle": false,
+  "_integrity": "sha512-i8TnZ5eb2TwvIh9fBDpstk2f6xdwcmluTzh70skEG1Y+0vWysNVg/kzhro7Skz6NdVzjbFAkIRHq86tVU09O3w==",
+  "_location": "/sweetalert2",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "sweetalert2",
+    "name": "sweetalert2",
+    "escapedName": "sweetalert2",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/sweetalert2/-/sweetalert2-7.25.6.tgz",
+  "_shasum": "462a5ab72c2eb3f4cd4ffb648b02fc91c4ad4c65",
+  "_spec": "sweetalert2",
+  "_where": "C:\\Victor's_stuff\\Coding\\WebDev\\TheNewResistance",
+  "author": {
+    "name": "Limon Monte",
+    "email": "limon.monte@gmail.com",
+    "url": "https://limonte.github.io"
+  },
+  "bugs": {
+    "url": "https://github.com/sweetalert2/sweetalert2/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "Matthew Francis Brunetti",
+      "email": "zenflow87@gmail.com",
+      "url": "https://github.com/zenflow"
+    },
+    {
+      "name": "Morgan Touverey-Quilling",
+      "email": "mtouverey@alembic-dev.com",
+      "url": "https://github.com/toverux"
+    },
+    {
+      "name": "Joseph Schultz",
+      "url": "https://github.com/acupajoe"
+    },
+    {
+      "name": "Sam Turrell",
+      "email": "sam@samturrell.co.uk",
+      "url": "https://github.com/samturrell"
+    },
+    {
+      "name": "Johan Fagerberg",
+      "url": "https://github.com/birjolaxew"
+    }
+  ],
+  "deprecated": false,
+  "description": "A beautiful, responsive, customizable and accessible (WAI-ARIA) replacement for JavaScript's popup boxes, supported fork of sweetalert",
+  "devDependencies": {
+    "babel-core": "^6.23.1",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-array-includes": "^2.0.3",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-plugin-transform-object-assign": "^6.22.0",
+    "babel-preset-env": "^1.6.1",
+    "browser-sync": "^2.23.3",
+    "bundlesize": "^0.17.0",
+    "custom-event-polyfill": "^0.3.0",
+    "detect-browser": "^2.1.0",
+    "event-stream": "^3.3.4",
+    "execa": "^0.10.0",
+    "git-state": "^4.0.0",
+    "gulp": "^4.0.0",
+    "gulp-autoprefixer": "^5.0.0",
+    "gulp-clean-css": "^3.9.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-css2js": "^1.1.2",
+    "gulp-if": "^2.0.2",
+    "gulp-load-plugins": "^1.5.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-rollup": "^2.16.2",
+    "gulp-sass": "^4.0.0",
+    "gulp-sass-lint": "^1.3.4",
+    "gulp-standard": "^8.0.0",
+    "gulp-tslint": "^8.1.2",
+    "gulp-typescript": "^4.0.2",
+    "gulp-uglify": "^3.0.0",
+    "is-ci": "^1.1.0",
+    "jquery": "^3.3.1",
+    "karma": "^2.0.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-ie-launcher": "^1.0.0",
+    "karma-qunit": "^2.0.0",
+    "karma-sauce-launcher": "^1.2.0",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-spec-reporter": "^0.0.32",
+    "karma-webpack": "^4.0.0-beta.0",
+    "merge2": "^1.2.1",
+    "mkdirp": "^0.5.1",
+    "pify": "^3.0.0",
+    "promise-polyfill": "^7.1.0",
+    "qunit": "^2.5.1",
+    "rimraf": "^2.6.2",
+    "rollup": "^0.58.0",
+    "rollup-plugin-babel": "^3.0.2",
+    "rollup-plugin-json": "^2.3.0",
+    "sinon": "^5.0.7",
+    "standard": "^8.0.0",
+    "tslint": "^5.8.0",
+    "typescript": "~2.1",
+    "webpack": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "files": [
+    "dist",
+    "src",
+    "sweetalert2.d.ts"
+  ],
+  "greenkeeper": {
+    "ignore": [
+      "gulp-standard",
+      "standard"
+    ]
+  },
+  "homepage": "https://sweetalert2.github.io/",
+  "jsnext:main": "src/sweetalert2.js",
+  "keywords": [
+    "sweetalert",
+    "sweetalert2",
+    "alert",
+    "prompt",
+    "confirm"
+  ],
+  "license": "MIT",
+  "main": "dist/sweetalert2.all.js",
+  "name": "sweetalert2",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sweetalert2/sweetalert2.git"
+  },
+  "scripts": {
+    "build": "gulp build",
+    "check": "npm run check:linting && npm run check:bundlesize && npm run check:require-in-node && npm run check:qunit && npm run check:qunit:minified && npm run check:ts",
+    "check:bundlesize": "bundlesize -f dist/sweetalert2.all.min.js -s 15kB",
+    "check:jsdelivr": "curl --location 'https://cdn.jsdelivr.net/npm/sweetalert2' 2>&1 | grep --quiet 'window.Swal'",
+    "check:linting": "gulp lint",
+    "check:qunit": "karma start karma.conf.js --single-run",
+    "check:qunit:minified": "karma start karma.conf.js --single-run --minified",
+    "check:qunit:minified:sauce": "karma start karma.conf.js --single-run --minified --sauce",
+    "check:qunit:sauce": "karma start karma.conf.js --single-run --sauce",
+    "check:require-in-node": "node test/require-in-node",
+    "check:sauce": "npm run check:qunit:sauce && npm run check:qunit:minified:sauce",
+    "check:third-party": "npm run check:unpkg && npm run check:jsdelivr && npm run check:wappalyzer",
+    "check:ts": "tsc --lib dom,es6 sweetalert2.d.ts",
+    "check:unpkg": "curl --location 'https://unpkg.com/sweetalert2' 2>&1 | grep --quiet 'window.Swal'",
+    "check:wappalyzer": "curl 'https://api.wappalyzer.com/lookup-basic/v1/?url=https%3A%2F%2Fsweetalert2.github.io' 2>&1 | grep --quiet 'SweetAlert2'",
+    "fix:lint": "standard --fix",
+    "release": "node release",
+    "start": "gulp develop --continue-on-error --skip-minification --skip-standalone",
+    "test": "npm run build && npm run check",
+    "test:sauce": "npm run build && npm run check:sauce"
+  },
+  "standard": {
+    "ignore": [
+      "dist/"
+    ]
+  },
+  "types": "sweetalert2.d.ts",
+  "version": "7.25.6"
+}

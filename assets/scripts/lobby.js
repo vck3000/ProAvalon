@@ -20,7 +20,7 @@ setTimeout(function () {
     var textH = $("#all-chat-lobby-text")[0].offsetHeight;
     var inputH = $(".all-chat-message-input")[0].offsetHeight;
     var newHeight = parentH - textH - inputH;
-    $("#all-chat-lobby")[0].style.height = (newHeight - 10) + "px";
+    // $("#all-chat-lobby")[0].style.height = (newHeight - 10) + "px";
 }, 300);
 
 
@@ -937,6 +937,10 @@ socket.on("roomChatToClient", function (data) {
     addToRoomChat(data);
 });
 
+socket.on("joinedGameSuccess", function(data){
+    isSpectator = false;
+});
+
 socket.on('disconnect', function(){
     window.location= "/";
     alert("You have been disconnected!");
@@ -967,35 +971,35 @@ socket.on('checkSettingsResetDate', function(serverResetDate){
 });
 
 socket.on("serverRestartWarning", function(){
-    var message = `In order for me to update the site, the server must be restarted. 
+    var message = `<div style='text-align: left;'>
+    <style>
+        #swalUl li{
+            padding-bottom: 3%;
+        }
 
-    Any running games will be saved and you will be able to continue your games when you log in again.
+    </style>
+    <ul id="swalUl">
+        <li>In order for me to update the site, the server must be restarted. </li>
 
-    The server will only be down for a brief moment, at most 30 seconds.
+        <li>Any running games will be saved and you will be able to continue your games when you log in again.</li>
 
-    When you rejoin please use /roomChat to recover your chat.
+        <li>The server will only be down for a brief moment, at most 30 seconds.</li>
 
-    I apologise for the inconvenience caused. Thank you.
+        <li>When you rejoin please use /roomChat to recover your chat.</li>
+
+        <li>I apologise for the inconvenience caused. Thank you.</li>
+    </ul>
     
-    You can exit this message by pressing escape.`;
+    </div>`;
 
-    swal({
+    Swal({
         title: "Server restarting!",
-        text: message,
-        icon: "warning",
-        buttons: false,
-        
-        dangerMode: true,
+        html: message,
+        type: "warning",
+        allowEnterKey: false
 
-        // closeOnConfirm: false, //It does close the popup when I click on close button
-        closeOnCancel: false,
-        allowOutsideClick: false,
 
-        closeOnClickOutside: false,
 
-        
-
-        timer: 30000
 
     }).then(() =>{
         // location.reload();
@@ -1007,38 +1011,26 @@ socket.on("refresh", function (data) {
 });
 
 socket.on("muteNotification", function (modAction) {
-    var message = `You have been muted. Your actions have been deemed damaging, but not too serious. 
+    var message = `You will not be allowed to talk. You will not be allowed to play.<br><br>
 
-    You will not be allowed to talk. You will not be allowed to play.
+    You are allowed to spectate games, use the forums and check out profiles. <br><br>
 
-    The only things you are allowed to do is spectate games, use the forums, and check out profiles. 
-
-    Reflect on your actions. Your ban will be released on ` + new Date(modAction.whenRelease) + `. 
+    Your mute will be released on ` + new Date(modAction.whenRelease) + `. <br><br>
     
     The description of your ban is: ` + modAction.descriptionByMod
 
-    + `
+    + `<br><br>
     
     You can exit this message by pressing escape.`;
 
 
-    swal({
+    Swal({
         title: "You have been muted.",
-        text: message,
-        icon: "warning",
-        buttons: false,
+        html: message,
+        type: "warning",
+        // buttons: false,
         
-        dangerMode: true,
-
-        // closeOnConfirm: false, //It does close the popup when I click on close button
-        closeOnCancel: false,
-        allowOutsideClick: false,
-
-        closeOnClickOutside: false,
-
-        
-
-        timer: 30000
+        allowEnterKey: false
 
     }).then(() =>{
         // location.reload();
@@ -1048,10 +1040,11 @@ socket.on("muteNotification", function (modAction) {
 });
 
 function resetSettings(){
-    swal({
+    Swal({
         title: "New updates!",
-        text: "Due to some new updates, a reset of your personal settings is required. I apologise for the inconvenience caused :(.",
-        icon: "warning"
+        html: "Due to some new updates, a reset of your personal settings is required.<br><br>I apologise for the inconvenience caused :(.",
+        type: "warning",
+        allowEnterKey: false
     }).then(() =>{
         //get all the keys
         var keys = docCookies.keys();
@@ -1062,8 +1055,9 @@ function resetSettings(){
         }
         docCookies.setItem("lastSettingsResetDate", new Date().toString(), Infinity);
 
-        swal("Poof! Your settings have been reset!", {
-        icon: "success",
+        Swal({
+            title: "Poof! Your settings have been reset!",
+            type: "success",
         }).then(() =>{
             //reload
             location.reload();
@@ -1463,7 +1457,7 @@ socket.on("update-room-players", function (data) {
 //GAME SOCKET ROUTES
 //======================================
 socket.on("game-starting", function (roles) {
-    var secondsLeft = 15;
+    
 
     if($("#option_notifications_sound_game_starting")[0].checked === true){
         playSound("dingDingDing");
@@ -1473,31 +1467,53 @@ socket.on("game-starting", function (roles) {
         displayNotification("Game starting!", "Are you ready?", "avatars/base-spy.png", "gameStarting");
     }
 
+    var secondsLeft = 10;
+    let timerInterval;
 
-    swal({
-        title: "Game is starting in " + secondsLeft,
-        text: "Roles are: " + roles,
-        icon: "info",
-        // button: "Ready!",
-        buttons: ["Not ready", "Ready"],
-        timer: 15000
-    }).then(function (value) {
-        // swal(("The returned value is: " + value));
-        if (value === true) {
-            socket.emit("player-ready", ownUsername);
-        }
-        else {
+    Swal({
+        title: "Game is starting!",
+        html: "<strong></strong> seconds left. <br><br>Roles are: " + roles,
+        type: "info",
+        confirmButtonText: "Ready",
+        showConfirmButton: true,
+        showCancelButton: true,
+        cancelButtonText: "Not ready",
+        allowOutsideClick: false,
+        allowEnterKey: false,
+        reverseButtons: true,
+        
+        timer: 10000,
+
+        onOpen: () => {
+            // swal.showLoading()
+            timerInterval = setInterval(() => {
+              swal.getContent().querySelector('strong')
+                .textContent = Math.floor(swal.getTimerLeft()/1000)
+            }, 100)
+          },
+          onClose: () => {
+            clearInterval(timerInterval)
+          }
+
+    }).then(function (result) {
+        console.log(result)
+        if (result.dismiss === swal.DismissReason.timer || result.dismiss === swal.DismissReason.cancel) {
+            console.log('I was closed by the timer')
             socket.emit("player-not-ready", ownUsername);
-        }
+          }
+          else{
+            console.log('Im ready!')
+            socket.emit("player-ready", ownUsername);
+          }
     });
-
 });
 
 socket.on("spec-game-starting", function(data){
-    swal({
+    Swal({
         title:"A game is starting!",
         text: "You cannot join the game unless someone is not ready.",
-        icon: "info"
+        type: "info",
+        allowEnterKey: false
     });
 
     // document.querySelector("#green-button").classList.contains("disabled")
@@ -1618,7 +1634,6 @@ function greenButtonFunction() {
     if (document.querySelector("#green-button").classList.contains("disabled") === false) {
         if (isSpectator === true) {
             socket.emit("join-game", roomId);
-            isSpectator = false;
         }
         else if (gameStarted === false) {
             socket.emit("startGame", getOptions());

@@ -1316,6 +1316,7 @@ module.exports = function (host_, roomId_, io_) {
 			var i = this.socketsOfSpectators.indexOf(socket);
 			this.socketsOfSpectators.splice(i, 1);
 
+			socket.emit("joinedGameSuccess");
 			return true;
 		}
 		else {
@@ -1323,6 +1324,8 @@ module.exports = function (host_, roomId_, io_) {
 			console.log(this.gameStarted);
 			console.log(this.sockets.length);
 			console.log(this.canJoin);
+			socket.emit("danger-alert", "Game has already started, or too many players, or you can't join right now (probably because of ready/notready phase already started)");
+			
 			return false;
 		}
 	};
