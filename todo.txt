@@ -14,7 +14,11 @@ To-do list:
 -add muting. will act automatically. 
 -allow for mods to remove bans/mute
  
+ -specs cant see middle mission boxes
 
+-overall res loss didnt count
+-percy cant see merlins
+-Random 4.2 4.3 skipped???
 
 -Learn REGEX
 
@@ -257,3 +261,4 @@ Mine:
 -roll command
 -bolding and colour together not wokring
 -Let users change the flag
+-total res losses didnt add

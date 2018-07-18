@@ -1108,9 +1108,6 @@ function distributeGameData(socket, io) {
 
 		var roomId = socket.request.user.inRoomId;
 
-		for (var i = 0; i < Object.keys(gameData).length; i++) {
-			gameData[i].roomId = roomId;
-		}
 
 
 		console.log("roomId distribute: " + roomId);
@@ -1124,6 +1121,7 @@ function distributeGameData(socket, io) {
 		}
 	
 		var gameDataForSpectators = rooms[socket.request.user.inRoomId].getGameDataForSpectators();
+
 		//send out spectator data
 		socketsOfSpectators = rooms[socket.request.user.inRoomId].getSocketsOfSpectators();
 		console.log("sockets of spectators length: " + socketsOfSpectators.length);

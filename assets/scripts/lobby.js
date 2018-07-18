@@ -1470,7 +1470,8 @@ socket.on("spec-game-starting-finished", function(data){
 
 
 socket.on("game-data", function (data) {
-    // console.log("GAME DATA INC");   
+    console.log("GAME DATA INC");   
+    console.log(data);
     if (data && roomId === data.roomId) {
       // console.log("game starting!");
 

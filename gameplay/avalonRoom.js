@@ -289,7 +289,7 @@ module.exports = function (host_, roomId_, io_) {
 					} else{
 						//loss
 						foundUser.totalLosses += 1;
-						if(winnerVar === "Resistance"){
+						if(winnerVar === "Spy"){
 							foundUser.totalResLosses += 1;
 						}
 					}
@@ -799,6 +799,8 @@ module.exports = function (host_, roomId_, io_) {
 		data.gamePlayersInRoom = this.getUsernamesOfPlayersInRoom();
 
 		data.assassin = this.getAssassinUsernameForAssassinationPhase();
+
+		data.roomId = this.roomId;
 		
 
 		//if game is finished, reveal everything including roles
@@ -863,6 +865,7 @@ module.exports = function (host_, roomId_, io_) {
 				data[i].gamePlayersInRoom = this.getUsernamesOfPlayersInRoom();
 
 				data[i].assassin = this.getAssassinUsernameForAssassinationPhase();
+				data[i].roomId = this.roomId;
 
 				//if game is finished, reveal everything including roles
 				if (this.phase === "finished") {
