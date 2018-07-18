@@ -1362,7 +1362,7 @@ module.exports = function (host_, roomId_, io_) {
 			console.log("Gone once");
 		}
 
-		//************************************************************************************** */
+		
 
 		console.log("socketsOfPlayersInRoom length: ");
 		console.log(this.socketsOfPlayersInRoom.length);
