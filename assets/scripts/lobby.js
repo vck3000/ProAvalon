@@ -2550,19 +2550,23 @@ function scrollDown(chatBox) {
 
     var lastMessages = listBox.children();
     var lastMessage = lastMessages[lastMessages.length-1];
+    var extraHeight = $(lastMessage).height() - 20;
 
     var i = lastMessages.length-1 - 1;
     while(lastMessage.classList.contains("myQuote")){
         lastMessage = lastMessages[i];
+        extraHeight += $(lastMessage).height() - 20;
         i--;
     }
+
+    
 
     heightOfLastMessage = ((lastMessages.length-1) - i)*20;
 
   // console.log("Height: " + heightOfLastMessage);
 
 
-    if((listBox.height() - scrollBox.scrollTop() - scrollBox.height()) > 5 + heightOfLastMessage){
+    if((listBox.height() - scrollBox.scrollTop() - scrollBox.height()) > 5 + heightOfLastMessage + extraHeight){
         //Show user that there is a new message with the red bar.
         //Show because the only time this will trigger is when a new message comes in anyway
         $(searchStrBar).removeClass("hidden");
