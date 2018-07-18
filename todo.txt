@@ -1,12 +1,11 @@
 To-do list:
 
--Moderators
 -deleting stuff should just be hidden.
 -Statistics page 
 
 
 
-
+-scroll down auto doesnt work with a line of multiple rows long.
  
 
 
@@ -264,3 +263,7 @@ Mine:
 -immediately enact the ban (make them refresh or redirect back to the lobby)
 -add muting. will act automatically. 
 -allow for mods to remove bans/mute
+
+-Moderators
+
+

@@ -82,7 +82,7 @@ module.exports = function (host_, roomId_, io_) {
 	this.gameStarted = false;
 	this.finished = false;
 	this.destroyRoom = false;
-	this.playersInRoom = [];
+	this.socketsOfPlayersInRoom = [];
 
 	this.teamLeader = 0;
 	this.hammer = 0;
@@ -173,9 +173,9 @@ module.exports = function (host_, roomId_, io_) {
 
 	this.gameEnd = function () {
 
-		for(var key in this.playersInRoom){
-			if(this.playersInRoom.hasOwnProperty(key)){
-				this.playersInRoom[key].emit("gameEnded");
+		for(var key in this.socketsOfPlayersInRoom){
+			if(this.socketsOfPlayersInRoom.hasOwnProperty(key)){
+				this.socketsOfPlayersInRoom[key].emit("gameEnded");
 			}
 		}
 
@@ -1264,11 +1264,21 @@ module.exports = function (host_, roomId_, io_) {
 			this.socketsOfSpectators.push(socket);
 		}
 
-		this.playersInRoom.push(socket);
+		var tempArray = [];
+		for(var i = 0; i < this.socketsOfPlayersInRoom.length; i++){
+			tempArray[i] = this.socketsOfPlayersInRoom[i].request.user.username;
+		}
+
+		if(tempArray.indexOf(socket.request.user.username) === -1){
+			this.socketsOfPlayersInRoom.push(socket);
+		}
+		else{
+			console.log("PLAYER EXISTS ALREADY!");
+		}
 
 		//cutoff
-		if(this.playersInRoom.length >= this.cutoffForSomePlayersJoined){
-			console.log("cutoffreached: " + this.playersInRoom.length + " " + this.cutoffForSomePlayersJoined);
+		if(this.socketsOfPlayersInRoom.length >= this.cutoffForSomePlayersJoined){
+			console.log("cutoffreached: " + this.socketsOfPlayersInRoom.length + " " + this.cutoffForSomePlayersJoined);
 			this.someCutoffPlayersJoined = "yes";
 			this.frozen = false;
 		}
@@ -1336,23 +1346,37 @@ module.exports = function (host_, roomId_, io_) {
 		if(this.playersInGame.indexOf(socket) !== -1){
 			this.gamePlayerLeftDuringReady = true;
 		}
-		
-		//remove from players in room
-		this.playersInRoom.splice(this.playersInRoom.indexOf(socket), 1);
 
-		console.log("playersInRoom length: ");
-		console.log(this.playersInRoom.length);
-		// console.log(this.playersInRoom);
+		var tempArray = [];
+		for(var i = 0; i < this.socketsOfPlayersInRoom.length; i++){
+			tempArray.push(this.socketsOfPlayersInRoom[i].request.user.id);
+		}
+		
+		//remove from players in room until their player id doesn't exist
+		var i = tempArray.indexOf(socket.request.user.id);
+		while(i !== -1){
+			tempArray.splice(i, 1)
+			this.socketsOfPlayersInRoom.splice(i, 1);
+
+			i = tempArray.indexOf(socket.request.user.id)
+			console.log("Gone once");
+		}
+
+		//************************************************************************************** */
+
+		console.log("socketsOfPlayersInRoom length: ");
+		console.log(this.socketsOfPlayersInRoom.length);
+		// console.log(this.socketsOfPlayersInRoom);
 		console.log("cutoff: " + this.someCutoffPlayersJoined);
 
 		if(this.restartSaved === true){
-			if (this.playersInRoom.length === 0 && this.someCutoffPlayersJoined === "yes") {
+			if (this.socketsOfPlayersInRoom.length === 0 && this.someCutoffPlayersJoined === "yes") {
 				console.log("Room: " + this.roomId + " is empty, destroying...");
 				this.destroyRoom = true;
 			}
 		}
 		else{
-			if (this.playersInRoom.length === 0) {
+			if (this.socketsOfPlayersInRoom.length === 0) {
 				console.log("Room: " + this.roomId + " is empty, destroying...");
 				this.destroyRoom = true;
 			}
@@ -1360,12 +1384,12 @@ module.exports = function (host_, roomId_, io_) {
 
 		
 
-			//Get rid of it in the socketsOfSpectators list
-			var i = this.socketsOfSpectators.indexOf(socket);
-			if (i !== -1) {
-				this.socketsOfSpectators.splice(i, 1);
-				console.log("Spectator left, killed their spec socket");
-			}
+		//Get rid of it in the socketsOfSpectators list
+		var i = this.socketsOfSpectators.indexOf(socket);
+		if (i !== -1) {
+			this.socketsOfSpectators.splice(i, 1);
+			console.log("Spectator left, killed their spec socket");
+		}
 
 
 		if (this.gameStarted === false) {
@@ -1448,8 +1472,8 @@ module.exports = function (host_, roomId_, io_) {
 			var array = [];
 			console.log("playersInRoom");
 			// console.log(this.playersInRoom[0].request.user.username);
-			for(var i = 0; i < this.playersInRoom.length; i++){
-				array.push(this.playersInRoom[i].request.user.username);
+			for(var i = 0; i < this.socketsOfPlayersInRoom.length; i++){
+				array.push(this.socketsOfPlayersInRoom[i].request.user.username);
 			}
 			return array;
 		}
@@ -1518,7 +1542,7 @@ module.exports = function (host_, roomId_, io_) {
 				this.socketsOfSpectators.push(kickedPlayerSocket);
 				console.log("Kicked player: " + username);
 
-				this.sendText(this.playersInRoom, "Player " + username + " has been kicked by the host.", "server-text");
+				this.sendText(this.socketsOfPlayersInRoom, "Player " + username + " has been kicked by the host.", "server-text");
 
 				// Ban them from this room
 				this.kickedPlayers[username] = true;

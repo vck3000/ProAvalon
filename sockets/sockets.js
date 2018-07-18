@@ -574,7 +574,7 @@ module.exports = function (io) {
 
 
 		//io sends to everyone in the site, including the current user of this socket
-		var newCurrentPlayersUsernames = [];
+		var loweredCurrentPlayersUsernames = [];
 		//get a new updated list of lowered usernames
 		for (var i = 0; i < currentPlayersUsernames.length; i++) {
 			loweredCurrentPlayersUsernames[i] = currentPlayersUsernames[i].toLowerCase();
@@ -590,17 +590,12 @@ module.exports = function (io) {
 					if(loweredCurrentPlayersUsernames.indexOf(key) === -1){
 						allSockets[key].emit("refresh");
 						console.log("MADE THEM REFRESH!!! SUCCESS");
+						console.log(socket.request.user.username);
 					}
-
 				}
 			}
 		}
 
-		for(var key in allSockets){
-			if(allSockets.hasOwnProperty(key)){
-				newCurrentPlayersUsernames.push(key);
-			}
-		}
 		io.in("allChat").emit("update-current-players-list", currentPlayersUsernames);
 
 		updateCurrentGamesList(io);
@@ -847,6 +842,8 @@ module.exports = function (io) {
 			console.log(socket.request.user.username + " has left the lobby.");
 			//get the index of the player in the array list
 			var i = currentPlayersUsernames.indexOf(socket.request.user.username);
+			//also remove from allSockets
+			delete allSockets[socket.request.user.username.toLowerCase()];
 			//in case they already dont exist, dont crash server
 			if (i === -1) { return; }
 			//remove that single player who left
@@ -996,6 +993,8 @@ module.exports = function (io) {
 
 		//when a player leaves a room
 		socket.on("leave-room", function () {
+			console.log("In room id");
+			console.log(socket.request.user.inRoomId);
 			if (rooms[socket.request.user.inRoomId]) {
 				console.log(socket.request.user.username + " is leaving room: " + socket.request.user.inRoomId);
 				//broadcast to let others know

@@ -204,12 +204,12 @@ router.get("/lobby", middleware.isLoggedIn, async function(req, res){
 				for(var i = 0; i < allModActions.length; i++){
 					currentModActions.push(allModActions[i]);
 				}
-				console.log("bans:");
-				console.log(currentModActions);
-				console.log("a");
+				// console.log("bans:");
+				// console.log(currentModActions);
+				// console.log("a");
 			});
 
-			console.log("b");
+			// console.log("b");
 
 			for(var i = 0; i < currentModActions.length; i++){
 				if(req.user.id.toString() === currentModActions[i].bannedPlayer.id.toString()){
@@ -225,7 +225,7 @@ router.get("/lobby", middleware.isLoggedIn, async function(req, res){
 				}
 			}
 
-			console.log("c");
+			// console.log("c");
 
 
 			res.render("lobby", {currentUser: req.user, headerActive: "lobby", userNotifications: foundUser.notifications, optionsCog: true});
@@ -359,7 +359,7 @@ router.get("/ajax/hideAllNotifications", function(req, res){
 		if(err){
 			console.log(err);
 		}
-		console.log(foundUser.notifications);
+		// console.log(foundUser.notifications);
 
 		foundUser.notifications.forEach(function(notif){
 			console.log("removing notif");
