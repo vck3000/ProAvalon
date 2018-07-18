@@ -1006,6 +1006,47 @@ socket.on("refresh", function (data) {
     location.reload();
 });
 
+socket.on("muteNotification", function (modAction) {
+    var message = `You have been muted. Your actions have been deemed damaging, but not too serious. 
+
+    You will not be allowed to talk. You will not be allowed to play.
+
+    The only things you are allowed to do is spectate games, use the forums, and check out profiles. 
+
+    Reflect on your actions. Your ban will be released on ` + new Date(modAction.whenRelease) + `. 
+    
+    The description of your ban is: ` + modAction.descriptionByMod
+
+    + `
+    
+    You can exit this message by pressing escape.`;
+
+
+    swal({
+        title: "You have been muted.",
+        text: message,
+        icon: "warning",
+        buttons: false,
+        
+        dangerMode: true,
+
+        // closeOnConfirm: false, //It does close the popup when I click on close button
+        closeOnCancel: false,
+        allowOutsideClick: false,
+
+        closeOnClickOutside: false,
+
+        
+
+        timer: 30000
+
+    }).then(() =>{
+        // location.reload();
+    });
+
+    
+});
+
 function resetSettings(){
     swal({
         title: "New updates!",

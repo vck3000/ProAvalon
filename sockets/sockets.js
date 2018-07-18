@@ -515,9 +515,7 @@ module.exports = function (io) {
 		for(var i = 0; i < currentModActions.length; i++){
 			if(currentModActions[i].bannedPlayer.id && socket.request.user.id.toString() === currentModActions[i].bannedPlayer.id.toString()){
 				if(currentModActions[i].type === "mute"){
-					
-					
-					
+					socket.emit("muteNotification", currentModActions[i]);
 				}
 
 			}
@@ -721,7 +719,7 @@ module.exports = function (io) {
 				newModAction.whenRelease = newModAction.whenMade.getTime() + newModAction.durationToBan.getTime();
 
 				console.log(newModAction);
-				if(leave === false){
+				if(leave === false && newModAction.bannedPlayer && newModAction.bannedPlayer.username){
 					console.log("****************");
 					modAction.create(newModAction,function(err, newModActionCreated){
 						console.log(newModActionCreated);
@@ -737,7 +735,7 @@ module.exports = function (io) {
 					});
 				}
 				else{
-					
+					socket.emit("messageCommandReturnStr", {message: "Something went wrong... Contact the admin!", classStr: "server-text"});
 				}
 				
 			}
@@ -1035,7 +1033,6 @@ module.exports = function (io) {
 					return;
 				}
 			}
-
 			updateCurrentGamesList(io);
 		});
 
