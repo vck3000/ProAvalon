@@ -12,102 +12,6 @@ var modAction = require("../models/modAction");
 
 var middleware = require("../middleware");
 
-console.log("before");
-
-// myNotification.remove({}).exec(function(){
-// 	console.log("after");
-	
-// 	var notifications = [
-// 		{
-// 			text: "bb has replied to your post.",
-// 			date: new Date()
-// 		},
-// 		{
-// 			text: "bb has slapped you for fun.",
-// 			date: new Date() - 1000000000
-// 		},
-// 		{
-// 			text: "bb has shot you again.",
-// 			date: new Date() - 10000000000
-// 		},
-// 		{
-// 			text: "bb has tickled you.",
-// 			date: new Date() - 10000000000
-// 		}
-// 	];
-// 	addNotifications(notifications);
-
-// });
-
-// async function addNotifications(notificationsss){
-
-// 	User.findOne({username: "ProNub"}, async function(err, foundUser){
-// 		if(err){
-// 			console.log(err);
-// 		}
-// 		else{
-// 			foundUser.notifications = [];
-// 			foundUser.markModified("notifications");
-// 			await foundUser.save();
-			
-// 			console.log(foundUser.notifications);
-// 			console.log("removed pronub's notification");
-			
-	
-// 			notificationsss.forEach(async function(seed){
-// 				console.log("test");
-// 				myNotification.create(seed).then(async function(newNotification){
-					
-// 					foundUser.notifications.push(newNotification);
-					
-// 					console.log(newNotification);
-// 					console.log(foundUser.notifications);
-						
-// 					// foundUser.markModified("notifications");
-					
-					
-// 					console.log('created');
-// 					console.log(foundUser.notifications.length);
-					
-// 					foundUser.markModified("notifications");
-// 					await foundUser.save();
-					
-
-					
-// 				});	
-// 			});			
-// 		}
-
-// 		console.log(foundUser.notifications.length);
-		
-// 	});
-
-
-	
-// }
-
-
-// User.findOne({username: "ProNub"}, function(err, foundUser){
-// 	notifications = [
-// 		{
-// 			text: "bb has replied to your post.",
-// 			date: new Date()
-// 		},
-
-// 		{
-// 			text: "bb has slapped you for fun.",
-// 			date: new Date() - 1000000000
-// 		},
-
-// 		{
-// 			text: "bb has shot you again.",
-// 			date: new Date() - 10000000000
-// 		},
-// 	]
-
-// 	foundUser.save();
-// });
-
 
 
 
@@ -187,6 +91,7 @@ router.get("/loginFail", function(req, res){
 
 //lobby route
 router.get("/lobby", middleware.isLoggedIn, async function(req, res){
+	
 	// console.log(res.app.locals.originalUsername);
 	User.findOne({username: req.user.username}).populate("notifications").exec(async function(err, foundUser){
 		if(err){

@@ -16,24 +16,6 @@ mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
 var minPlayers = 5;
 // var host;
 
-// var roomId;
-
-
-// var roles = [
-// "Merlin",
-// "Percival",
-// "Morgana",
-// "Assassin",
-// "Resistance",
-
-// //6P addition
-// "Resistance",
-
-// //7P addition
-// "Spy"
-// ];
-
-
 var alliances = [
 	"Resistance",
 	"Resistance",
@@ -45,7 +27,6 @@ var alliances = [
 	"Resistance",
 	"Resistance",
 	"Spy"
-
 ]
 
 
@@ -58,13 +39,7 @@ var numPlayersOnMission = [
 	["3", "4", "4", "5*", "5"],
 ]
 
-/*
 
-5p - fab 4 + vt
-6p - fab 4 + vt + vt 
-7p - fab 4 + vt + vt + vs
-
-*/
 
 
 
@@ -82,7 +57,7 @@ module.exports = function (host_, roomId_, io_) {
 	this.gameStarted = false;
 	this.finished = false;
 	this.destroyRoom = false;
-	this.socketsOfPlayersInRoom = [];
+	
 
 	this.teamLeader = 0;
 	this.hammer = 0;
@@ -94,7 +69,7 @@ module.exports = function (host_, roomId_, io_) {
 	this.ladyablePeople = [];
 
 	this.playersYetToVote = [];
-	// this.votingPhase = false;
+	
 	this.proposedTeam = [];
 	this.votes = [];
 	this.missionVotes = [];
@@ -108,10 +83,11 @@ module.exports = function (host_, roomId_, io_) {
 	//Just to know who is the current host.
 	this.host = host_;
 	this.roomId = roomId_;
+
 	//NOTE this is the list of sockets of PLAYERS IN THE GAME
 	//not including spectators
-	this.sockets = [];
-
+	this.allSockets = [];
+	this.socketsOfPlayers = [];
 	this.socketsOfSpectators = [];
 
 	this.canJoin = true;
@@ -173,9 +149,9 @@ module.exports = function (host_, roomId_, io_) {
 
 	this.gameEnd = function () {
 
-		for(var key in this.socketsOfPlayersInRoom){
-			if(this.socketsOfPlayersInRoom.hasOwnProperty(key)){
-				this.socketsOfPlayersInRoom[key].emit("gameEnded");
+		for(var key in this.allSockets){
+			if(this.allSockets.hasOwnProperty(key)){
+				this.allSockets[key].emit("gameEnded");
 			}
 		}
 
@@ -185,11 +161,11 @@ module.exports = function (host_, roomId_, io_) {
 
 		if (this.winner === "spies") {
 			// this.gameplayMessage = "The spies have won the game.";
-			this.sendText(this.sockets, "The spies have won the game.", "gameplay-text");
+			this.sendText(this.allSockets, "The spies have won the game.", "gameplay-text");
 		}
 		else if (this.winner === "resistance") {
 			// this.gameplayMessage = "The resistance have won the game.";
-			this.sendText(this.sockets, "The resistance have won the game.", "gameplay-text");
+			this.sendText(this.allSockets, "The resistance have won the game.", "gameplay-text");
 		}
 
 		//store data into the database:
@@ -221,7 +197,7 @@ module.exports = function (host_, roomId_, io_) {
 			winningTeam: this.winner,
 			spyTeam: this.spyUsernames,
 			resistanceTeam: this.resistanceUsernames,
-			numberOfPlayers: this.sockets.length,
+			numberOfPlayers: this.socketsOfPlayers.length,
 			howTheGameWasWon: this.howWasWon,
 			roles: rolesCombined,
 
@@ -400,23 +376,23 @@ module.exports = function (host_, roomId_, io_) {
 
 	this.useLady = function (socket, target) {
 		//check that the person making this request has the lady
-		if (getIndexFromUsername(this.sockets, socket.request.user.username) === this.lady && this.phase === "lady" && this.ladyablePeople[getIndexFromUsername(this.sockets, target)] === true) {
+		if (getIndexFromUsername(this.socketsOfPlayers, socket.request.user.username) === this.lady && this.phase === "lady" && this.ladyablePeople[getIndexFromUsername(this.socketsOfPlayers, target)] === true) {
 			//grab the target's alliance
-			var alliance = this.playersInGame[getIndexFromUsername(this.sockets, target)].alliance;
+			var alliance = this.playersInGame[getIndexFromUsername(this.socketsOfPlayers, target)].alliance;
 
 			//emit to the lady holder the person's alliance
 			socket.emit("lady-info", /*"Player " + */target + " is a " + alliance);
 			console.log("Player " + target + " is a " + alliance);
 
 			//update lady location
-			this.lady = getIndexFromUsername(this.sockets, target);
+			this.lady = getIndexFromUsername(this.socketsOfPlayers, target);
 			//make that person no longer ladyable
 			this.ladyablePeople[this.lady] = false;
 
-			this.ladyChain[this.ladyChain.length] = this.playersInGame[getIndexFromUsername(this.sockets, target)].role;
+			this.ladyChain[this.ladyChain.length] = this.playersInGame[getIndexFromUsername(this.socketsOfPlayers, target)].role;
 
 			// this.gameplayMessage = (socket.request.user.username + " has carded " + target);
-			this.sendText(this.sockets, (socket.request.user.username + " has carded " + target + "."), "gameplay-text");
+			this.sendText(this.allSockets, (socket.request.user.username + " has carded " + target + "."), "gameplay-text");
 
 
 			//update phase

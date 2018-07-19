@@ -113,10 +113,21 @@ module.exports = function (io) {
 
 
 		var playerIds = getPlayerIdsFromAllSockets();
+		console.log("Player ids");
+		console.log(playerIds);
+
+		console.log("new playerID");
+		console.log(socket.request.user.id);
 		//keep removing all the sockets when the player ids still exist.
-		while(playerIds.indexOf(socket.request.user.id) !== -1){
+		if(playerIds.indexOf(socket.request.user.id) !== -1){
+			console.log("disconnected a player who already is logged in");
+			console.log("disconnected  " + socket.request.user.username);
+			
+			allSockets[playerIds.indexOf(socket.request.user.id)].emit("disconnect");
+			
 			allSockets.splice(playerIds.indexOf(socket.request.user.id), 1);
 			playerIds = getPlayerIdsFromAllSockets();
+			
 		}
 
 		//now push their socket in
@@ -165,13 +176,28 @@ module.exports = function (io) {
 			//debugging
 			console.log(socket.request.user.username + " has left the lobby.");
 			
-			//remove them from all sockets
 			var playerIds = getPlayerIdsFromAllSockets();
-			while(playerIds.indexOf(socket.request.user.id) !== -1){
+
+			console.log("Player ids");
+			console.log(playerIds);
+
+			console.log("disconnecting playerID++");
+			console.log(socket.request.user.id);
+			console.log("disconnecting playerID--");
+			
+
+			//remove them from all sockets
+			
+			if(playerIds.indexOf(socket.request.user.id) !== -1){
+				console.log("A player just disconnected. Removed their socket.");
+				console.log("disconnecting: " + socket.request.user.username);
+				
+				allSockets[playerIds.indexOf(socket.request.user.id)].disconnect(true);
 				allSockets.splice(playerIds.indexOf(socket.request.user.id), 1);
+				
+				
 				playerIds = getPlayerIdsFromAllSockets();
 			}
-
 
 			//send out the new updated current player list
 			socket.in("allChat").emit("update-current-players-list", getPlayerUsernamesFromAllSockets());
@@ -193,7 +219,7 @@ module.exports = function (io) {
 			sendToRoomChat(io, socket.request.user.inRoomId, data);
 			// io.in(socket.request.user.inRoomId).emit("player-left-room", socket.request.user.username);
 
-			removePlayerFromRoomAndCheckDestroy(socket, io);
+			playerLeaveRoomCheckDestroy(socket, io);
 		});
 
 
@@ -413,7 +439,7 @@ module.exports = function (io) {
 				//increment index for next game
 				nextRoomId++;
 
-				updateCurrentGamesList(io);
+				updateCurrentGamesList();
 			}
 		});
 
@@ -426,14 +452,9 @@ module.exports = function (io) {
 			if (rooms[roomId]) {
 				console.log("room id is: ");
 				console.log(roomId);
-				console.log(roomId);
-				console.log(roomId);
-
+				
 				//set the room id into the socket obj
 				socket.request.user.inRoomId = roomId;
-
-				//set them to a spectator
-				socket.request.user.spectator = true;
 
 				//join the room chat
 				socket.join(roomId);
@@ -441,12 +462,8 @@ module.exports = function (io) {
 				//join the room
 				rooms[roomId].playerJoinRoom(socket);
 
-				//emit to the new spectator the players in the game.
-				socket.emit("update-room-players", rooms[roomId].getPlayers());
 
-				//update the room players
-				io.in(roomId).emit("update-room-players", rooms[roomId].getPlayers());
-
+				
 				
 				//emit to say to others that someone has joined
 				var data = {
@@ -455,23 +472,25 @@ module.exports = function (io) {
 				}			
 				sendToRoomChat(io, roomId, data);
 
-				// io.in(roomId).emit("player-joined-room", socket.request.user.username);
+				
+
+				//This stuff should be handled within the avalonRoom file
+
+				//emit to the new spectator the players in the game.
+				// socket.emit("update-room-players", rooms[roomId].getPlayers());
 
 				//if the game has started, and the user who is joining
 				//is part of the game, give them the data of the game again
-				usernamesInGame = rooms[roomId].getUsernamesInGame();
-				if (usernamesInGame.indexOf(socket.request.user.username) !== -1) {
+				// usernamesInGame = rooms[roomId].getUsernamesInGame();
+				// if (usernamesInGame.indexOf(socket.request.user.username) !== -1) {
+				// 	distributeGameData(socket, io);
+				// 	// socket.request.user.spectator = false;
+				// }
 
-					distributeGameData(socket, io);
-					socket.request.user.spectator = false;
-				}
 				//if game has started, give them a copy of spectator data
-				else if (rooms[roomId].getStatus() !== "Waiting") {
-					giveGameDataToSpectator(socket, io);
-				}
-
-				updateCurrentGamesList(io);
-
+				// else if (rooms[roomId].getStatus() !== "Waiting") {
+				// 	giveGameDataToSpectator(socket, io);
+				// }
 
 			} else {
 				console.log("Game doesn't exist!");
@@ -482,24 +501,20 @@ module.exports = function (io) {
 			var toContinue = !isMuted(socket);
 
 			if(toContinue){
-
 				if (rooms[roomId]) {
-					socket.request.user.spectator = false;
+					
 					//if the room has not started yet, throw them into the room
 					console.log("Game status is: " + rooms[roomId].getStatus());
+
 					if (rooms[roomId].getStatus() === "Waiting") {
 						var ToF = rooms[roomId].playerJoinGame(socket);
 						console.log(socket.request.user.username + " has joined room " + roomId + ": " + ToF);
-
-						//update the room players
-						io.in(roomId).emit("update-room-players", rooms[roomId].getPlayers());
 					}
 					else {
 						console.log("Game has started, player " + socket.request.user.username + " is not allowed to join.");
 					}
+					updateCurrentGamesList();
 				}
-
-				updateCurrentGamesList(io);
 			}
 		});
 
@@ -507,6 +522,7 @@ module.exports = function (io) {
 		socket.on("leave-room", function () {
 			console.log("In room id");
 			console.log(socket.request.user.inRoomId);
+
 			if (rooms[socket.request.user.inRoomId]) {
 				console.log(socket.request.user.username + " is leaving room: " + socket.request.user.inRoomId);
 				//broadcast to let others know
@@ -517,22 +533,12 @@ module.exports = function (io) {
 				}
 				sendToRoomChat(io, socket.request.user.inRoomId, data);
 
-				// io.in(socket.request.user.inRoomId).emit("player-left-room", socket.request.user.username);
-
-				//remove player from room and check destroy
-				removePlayerFromRoomAndCheckDestroy(socket, io);
+				playerLeaveRoomCheckDestroy(socket);
+				
 				//leave the room chat
 				socket.leave(socket.request.user.inRoomId);
-
-				//remove from spectators list
-				if(rooms[socket.request.user.inRoomId]){
-					io.in(socket.request.user.inRoomId).emit("update-room-players", rooms[socket.request.user.inRoomId].getPlayers());
-				}
 				
-
-
-				updateCurrentGamesList(io);
-
+				updateCurrentGamesList();
 			}
 		});
 
@@ -544,7 +550,7 @@ module.exports = function (io) {
 					classStr: "server-text"
 				}
 				sendToRoomChat(io, socket.request.user.inRoomId, data);
-				// io.in(socket.request.user.inRoomId).emit("player-ready", username + " is ready.");
+				
 
 				if (rooms[socket.request.user.inRoomId].playerReady(username) === true) {
 					//game will auto start if the above returned true
@@ -685,32 +691,7 @@ function giveGameDataToSpectator(socket, io) {
 	socket.emit("game-data", gameDataForSpectators);
 }
 
-function removePlayerFromRoomAndCheckDestroy(socket, io) {
-	//remove player from room if he/she is in one
-	if (socket.request.user.inRoomId && rooms[socket.request.user.inRoomId]) {
-		//leave the room
-		rooms[socket.request.user.inRoomId].playerLeaveRoom(socket);
-		//check if the room even exists, sometimes with fast refreshes
-		//it might already have deleted the room
-		//Check if the room needs destroying
-		if (rooms[socket.request.user.inRoomId].toDestroyRoom() === true) {
-			//destroy room
-			rooms[socket.request.user.inRoomId] = undefined;
-			//resend the current games list
-			updateCurrentGamesList(io);
-		}
-		//otherwise update room players
-		else {
-			//update the room players
-			updateRoomPlayers(io, socket);
-
-			//also update gamedata for all players
-			distributeGameData(socket, io);
-		}
-	}
-}
-
-var updateCurrentGamesList = function (io) {
+var updateCurrentGamesList = function () {
 	//prepare room data to send to players. 
 	var gamesList = [];
 	for (var i = 0; i < rooms.length; i++) {
@@ -727,7 +708,10 @@ var updateCurrentGamesList = function (io) {
 			gamesList[i].numOfSpectatorsInside = rooms[i].getNumOfSpectatorsInside();
 		}
 	}
-	io.in("allChat").emit("update-current-games-list", gamesList);
+
+	allSockets.forEach(function(sock){
+		sock.emit("update-current-games-list", gamesList);
+	});
 }
 
 function updateRoomPlayers(io, socket) {
@@ -747,11 +731,13 @@ function textLengthFilter(str) {
 
 
 var fiveMinsInMillis = 1000 * 60 * 5;
-// var fiveMinsInMillis = 10000; //10 seconds just for testing
-
 
 function sendToAllChat(io, data){
-	io.in("allChat").emit("allChatToClient", data);
+
+	allSockets.forEach(function(sock){
+		sock.emit("allChatToClient", data);
+	});
+	// io.in("allChat").emit("allChatToClient", data);
 
 	var date = new Date();
 	data.dateCreated = date;
@@ -760,9 +746,7 @@ function sendToAllChat(io, data){
 
 	allChat5Min.push(data);
 
-	
 	var i = 0;
-	
 
 	while(date - allChat5Min[i].dateCreated > fiveMinsInMillis){
 		if(i >= allChat5Min.length){
@@ -776,7 +760,6 @@ function sendToAllChat(io, data){
 		//starting from index 0, remove i items.
 		allChat5Min.splice(0, i);
 	}
-
 }
 
 function sendToRoomChat(io, roomId, data){
@@ -817,7 +800,21 @@ function getPlayerUsernamesFromAllSockets(){
 	var playerUsernames = [];
 	for(var i = 0; i < allSockets.length; i++){
 		playerUsernames[i] = allSockets[i].request.user.username;
-		console.log(allSockets[i].request.user.username);
+		console.log("getPlayerUsernamesFromAllSockets" + allSockets[i].request.user.username);
 	}
 	return playerUsernames;
 }
+
+
+function playerLeaveRoomCheckDestroy(socket){
+
+	if(socket.request.user.inRoomId && rooms[socket.request.user.inRoomId]){
+		rooms[socket.request.user.inRoomId].playerLeaveRoom(socket);
+		var toDestroy = rooms[socket.request.user.inRoomId].toDestroy();
+		if(toDestroy){
+			rooms[socket.request.user.inRoomId] = undefined;
+		}
+		socket.request.user.inRoomId = undefined;
+	}
+}
+

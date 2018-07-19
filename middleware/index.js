@@ -111,7 +111,7 @@ middlewareObj.checkForumThreadCommentReplyOwnership = function (req, res, next) 
 
 middlewareObj.isLoggedIn = function (req, res, next) {
 	if (req.isAuthenticated()) {
-		console.log("logged in as " + req.user._id + " and " + req.user.username + "asdfasdf");
+		console.log("middleware: logged in as " + req.user._id + " and " + req.user.username + "");
 		// req.flash("success", "succeeded test, logged in correctly");
 		return next();
 	}
