@@ -24,701 +24,11 @@ setTimeout(function () {
 }, 300);
 
 
-
-
-$(document).ready(function(){
-    checkStatusBarWithHeight();
-})
-//if the users screen is big enough, then we can make the center status bar big
-function checkStatusBarWithHeight(){
-    const cutOffHeight = 850
-    if($(window).height() > cutOffHeight){
-        $("#status").removeClass("well-sm");
-    }
-    else{
-        $("#status").addClass("well-sm");
-    }
-}
-
 //when the navbar is closed, re-exted the tab content to bottom.
 $('.navbar-collapse').on('hidden.bs.collapse', function () {
     extendTabContentToBottomInRoom();
 });
 
-var defaultColours = [
-    '#ff6d6d', 
-    '#ffff9e',
-    "#c5b5ff",
-    "#ff9b9b",
-    '#9aa888', 
-    '#96ff96',
-    '##72afac',
-    '#a8d6ff',
-    '#9999ff',
-    '#ff93ff'
-]
-
-//When document has loaded, reinit the jscolor
-$(document).ready(function() {
-    //On first run, update the colours
-
-    for(var i = 0; i < 10; i++){
-        if(!docCookies.hasItem('player' + i + "HighlightColour")){
-            docCookies.setItem('player' + i + "HighlightColour", defaultColours[i], Infinity);
-        }
-        $("#player" + i + "HighlightColour")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));
-        $("#player" + i + "HighlightColour2")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));
-    }
-});
-
-function update(picker){
-    // picker.attr('col', picker.toHEXString());
-    picker.col = picker.toHEXString();
-    // console.log(picker.playerColourID);
-    // console.log(picker.col);
-
-    docCookies.setItem('player' + picker.playerColourID + "HighlightColour", picker.col, Infinity);
-
-    for(var i = 0; i < 10; i++){
-        $("#player" + i + "HighlightColour")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));
-        $("#player" + i + "HighlightColour2")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));  
-    }
-    
-
-    //refresh the chat highlight colour at the same time
-
-    var username = getUsernameFromIndex(picker.playerColourID);
-    
-  // console.log("Player highlight colour: " + playerHighlightColour);
-
-    //only need to change colour if the user has selected that player's chat.
-    if (selectedChat[username] === true) {
-        var chatItems = $(".room-chat-list li span[username='" + username + "']");
-        var playerHighlightColour = docCookies.getItem("player" + getIndexFromUsername(username) + "HighlightColour");
-
-        chatItems.css("background-color", "" + playerHighlightColour);
-    }
-
-    draw();
-}
-
-
-
-
-
-//=======================================================================
-//COOKIE SETUP!!!!!! Simple cookies for user options to persist
-//=======================================================================
-var userOptions = {
-
-    lastSettingsResetDate: {
-        defaultValue: new Date().toString(),
-        onLoad: function(){},
-        initialiseEventListener: function(){}
-    },
-
-    optionDisplayFontSize: {
-        defaultValue: "14",
-        onLoad: function () {
-            //get cookie data
-            var fontSize = docCookies.getItem("optionDisplayFontSize");
-
-            //set the value in the users display
-            $("#option_display_font_size_text")[0].value = fontSize;
-
-            //make the font size changes
-            $("html *").css("font-size", fontSize + "px");
-            draw();
-        },
-        initialiseEventListener: function () {
-            $("#option_display_font_size_text").on("change", function () {
-                var fontSize = $("#option_display_font_size_text")[0].value;
-              // console.log(fontSize);
-
-                //assign bounds
-                var lowerFontSizeBound = 8;
-                var upperFontSizeBound = 25;
-
-                //bound the font size
-                if (fontSize < lowerFontSizeBound) {
-                    fontSize = lowerFontSizeBound;
-                }
-                else if (fontSize > upperFontSizeBound) {
-                    fontSize = upperFontSizeBound;
-                }
-
-                //display the new value in case it was changed by bounds
-                $("#option_display_font_size_text")[0].value = fontSize;
-
-                //make the changes to font size
-                $("html *").css("font-size", fontSize + "px");
-                draw();
-
-                //save the data in cookie
-              // console.log("Stored font size: " + fontSize);
-                docCookies.setItem("optionDisplayFontSize", fontSize, Infinity);
-            });
-        }
-    },
-
-    optionDisplayHeightOfAvatarContainer: {
-        defaultValue: $("#div1Resize").parent().height()*0.5,
-        onLoad: function () {
-            //get cookie data
-            var containerHeight = docCookies.getItem("optionDisplayHeightOfAvatarContainer");
-
-            containerHeight = parseInt(containerHeight);
-
-            //set the height of div 1
-            $("#div1Resize").height(containerHeight);
-            //Note the following function only adjusts the 2nd div (the div below)
-            userOptions["optionDisplayHeightOfAvatarContainer"].avatarContainerHeightAdjust();
-
-            //set the value in the users display
-            $("#option_display_avatar_container_height_text")[0].value = containerHeight;
-        },
-        initialiseEventListener: function () {
-
-
-            //set up div 1 to be resizable in north and south directions
-            $("#div1Resize").resizable({ handles: 's' });
-            //on resize of div 1, resize div 2.
-            $('#div1Resize').resize(function () {
-                //Make the height adjustments
-                userOptions["optionDisplayHeightOfAvatarContainer"].avatarContainerHeightAdjust();
-                //save the new heights
-                docCookies.setItem("optionDisplayHeightOfAvatarContainer", $("#div1Resize").height(), Infinity);
-            });
-            //on whole window resize, resize both divs.
-            $(window).resize(function () {
-                $('#div1Resize').width($("#div2Resize").parent().width());
-
-                //save the new heights
-                docCookies.setItem("optionDisplayHeightOfAvatarContainer", $("#div1Resize").height(), Infinity);
-                //Make the height adjustments
-                userOptions["optionDisplayHeightOfAvatarContainer"].avatarContainerHeightAdjust();
-                
-            });
-
-
-            $("#option_display_avatar_container_height_text").on("change", function () {
-                var containerHeight = $("#option_display_avatar_container_height_text")[0].value;
-              // console.log(containerHeight);
-
-                //assign bounds
-                var lowerBound = 40;
-                var upperBound = 600;
-
-                //bound the font size
-                if (containerHeight < lowerBound) {
-                    containerHeight = lowerBound;
-                }
-                else if (containerHeight > upperBound) {
-                    containerHeight = upperBound;
-                }
-
-                //set the height of div 1 first:
-                $("#div1Resize").height(containerHeight);
-
-                //save the new heights
-                docCookies.setItem("optionDisplayHeightOfAvatarContainer", containerHeight, Infinity);
-
-                //Make the height adjustments to div 2
-                userOptions["optionDisplayHeightOfAvatarContainer"].avatarContainerHeightAdjust();
-                
-            });
-        },
-
-        avatarContainerHeightAdjust: function () {
-            $('#div2Resize').height($('#div2Resize').parent().height() - $("#div1Resize").height());
-
-            //extend the tab content to bottom
-            extendTabContentToBottomInRoom();
-            draw();
-
-            //get cookie data
-            var containerHeight = docCookies.getItem("optionDisplayHeightOfAvatarContainer");
-
-            //set the value in the users display
-            $("#option_display_avatar_container_height_text")[0].value = containerHeight;
-        }
-    },
-
-    optionDisplayDarkTheme: {
-        defaultValue: "false",
-        onLoad: function () {
-            if (docCookies.getItem("optionDisplayDarkTheme") === "true") {
-              // console.log("Load up dark theme is true");
-                //update the dark theme if cookie data is true
-                updateDarkTheme(true);
-                //show its checked on their screen
-                $("#option_display_dark_theme")[0].checked = true;
-            }
-        },
-        initialiseEventListener: function () {
-            //dark theme option checkbox event listener
-            $("#option_display_dark_theme")[0].addEventListener("click", function () {
-                var checked = $("#option_display_dark_theme")[0].checked;
-              // console.log("dark theme change " + checked);
-                //dark theme
-                updateDarkTheme(checked);
-
-                //save their option in cookie
-                docCookies.setItem("optionDisplayDarkTheme", checked.toString(), Infinity);
-            });
-        }
-    },
-
-    optionDisplayTwoTabs: {
-        defaultValue: "false",
-        onLoad: function(){
-            if (docCookies.getItem("optionDisplayTwoTabs") === "true") {
-                updateTwoTabs(true);
-                //show its checked on their screen
-                $("#option_display_two_tabs")[0].checked = true;
-            }
-        },
-        initialiseEventListener: function(){
-            $("#option_display_two_tabs")[0].addEventListener("click", function () {
-                var checked = $("#option_display_two_tabs")[0].checked;
-                //dark theme
-                updateTwoTabs(checked);
-
-                //save their option in cookie
-                docCookies.setItem("optionDisplayTwoTabs", checked.toString(), Infinity);
-            });
-        }
-    },
-
-    //---------------------------------------------
-    //Sound Notifications
-    //---------------------------------------------
-    
-    optionNotificationsSoundEnable: {
-        defaultValue: "true",
-        onLoad: function(){
-            var checked;
-            var savedSetting = docCookies.getItem("optionNotificationsSoundEnable");
-            if(savedSetting === "true"){
-                checked = true;
-            }
-            else if(savedSetting === "false"){
-                checked = false;
-            }
-            $("#option_notifications_sound_enable")[0].checked = checked;
-        },
-        initialiseEventListener: function() {
-            $("#option_notifications_sound_enable")[0].addEventListener("click", function () {
-                var checked = $("#option_notifications_sound_enable")[0].checked;
-                //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundEnable", checked.toString(), Infinity);
-            });
-        }
-    },
-
-    optionNotificationsSoundEnableInGame: {
-        defaultValue: "true",
-        onLoad: function(){
-            var checked;
-            var savedSetting = docCookies.getItem("optionNotificationsSoundEnableInGame");
-            if(savedSetting === "true"){
-                checked = true;
-            }
-            else if(savedSetting === "false"){
-                checked = false;
-            }
-            $("#option_notifications_sound_enable_in_game")[0].checked = checked;
-        },
-        initialiseEventListener: function() {
-            $("#option_notifications_sound_enable_in_game")[0].addEventListener("click", function () {
-                var checked = $("#option_notifications_sound_enable_in_game")[0].checked;
-                //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundEnableInGame", checked.toString(), Infinity);
-            });
-        }
-    },
-
-    optionNotificationsSoundVolume: {
-        defaultValue: "50",
-        onLoad: function(){
-            //get cookie data
-            var volume = docCookies.getItem("optionNotificationsSoundVolume");
-
-            //set the value in the users display
-            $("#option_notifications_sound_volume")[0].value = volume;   
-            
-            //update the number when slider changes
-            var volumeSlider = document.getElementById("option_notifications_sound_volume");
-            var volumeDisplay = $("#volumeValue");
-
-            volumeDisplay[0].innerHTML = volumeSlider.value;
-
-
-        
-            volumeSlider.oninput = function(){
-                volumeDisplay[0].innerHTML = volumeSlider.value;
-            };
-        },
-        initialiseEventListener: function() {
-            $("#option_notifications_sound_volume")[0].addEventListener("click", function () {
-                var valueToStore = $("#option_notifications_sound_volume")[0].value;
-                //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundVolume", valueToStore, Infinity);
-            });
-        }
-    },
-    
-
-    optionNotificationsSoundPlayersJoiningRoom: {
-        defaultValue: "false",
-        onLoad: function(){
-            var checked;
-            var savedSetting = docCookies.getItem("optionNotificationsSoundPlayersJoiningRoom");
-            if(savedSetting === "true"){
-                checked = true;
-            }
-            else if(savedSetting === "false"){
-                checked = false;
-            }
-            $("#option_notifications_sound_players_joining_room")[0].checked = checked;
-        },
-        initialiseEventListener: function() {
-            $("#option_notifications_sound_players_joining_room")[0].addEventListener("click", function () {
-                var checked = $("#option_notifications_sound_players_joining_room")[0].checked;
-                //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundPlayersJoiningRoom", checked.toString(), Infinity);
-            });
-        }
-    },
-
-    optionNotificationsSoundPlayersJoiningGame: {
-        defaultValue: "true",
-        onLoad: function(){
-            var checked;
-            var savedSetting = docCookies.getItem("optionNotificationsSoundPlayersJoiningGame");
-            if(savedSetting === "true"){
-                checked = true;
-            }
-            else if(savedSetting === "false"){
-                checked = false;
-            }
-            $("#option_notifications_sound_players_joining_game")[0].checked = checked;
-        },
-        initialiseEventListener: function() {
-            $("#option_notifications_sound_players_joining_game")[0].addEventListener("click", function () {
-                var checked = $("#option_notifications_sound_players_joining_game")[0].checked;
-                //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundPlayersJoiningGame", checked.toString(), Infinity);
-            });
-        }
-    },
-
-    optionNotificationsSoundGameStarting: {
-        defaultValue: "true",
-        onLoad: function(){
-            var checked;
-            var savedSetting = docCookies.getItem("optionNotificationsSoundGameStarting");
-            if(savedSetting === "true"){
-                checked = true;
-            }
-            else if(savedSetting === "false"){
-                checked = false;
-            }
-            $("#option_notifications_sound_game_starting")[0].checked = checked;
-        },
-        initialiseEventListener: function() {
-            $("#option_notifications_sound_game_starting")[0].addEventListener("click", function () {
-                var checked = $("#option_notifications_sound_game_starting")[0].checked;
-                //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundGameStarting", checked.toString(), Infinity);
-            });
-        }
-    },
-
-
-
-    optionNotificationsSoundYourTurn: {
-        defaultValue: "false",
-        onLoad: function(){
-            var checked;
-            var savedSetting = docCookies.getItem("optionNotificationsSoundYourTurn");
-            if(savedSetting === "true"){
-                checked = true;
-            }
-            else if(savedSetting === "false"){
-                checked = false;
-            }
-            $("#option_notifications_sound_your_turn")[0].checked = checked;
-        },
-        initialiseEventListener: function() {
-            $("#option_notifications_sound_your_turn")[0].addEventListener("click", function () {
-                var checked = $("#option_notifications_sound_your_turn")[0].checked;
-                //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundYourTurn", checked.toString(), Infinity);
-            });
-        }
-    },
-
-    optionNotificationsSoundGameEnding: {
-        defaultValue: "true",
-        onLoad: function(){
-            var checked;
-            var savedSetting = docCookies.getItem("optionNotificationsSoundGameEnding");
-            if(savedSetting === "true"){
-                checked = true;
-            }
-            else if(savedSetting === "false"){
-                checked = false;
-            }
-            $("#option_notifications_sound_game_ending")[0].checked = checked;
-        },
-        initialiseEventListener: function() {
-            $("#option_notifications_sound_game_ending")[0].addEventListener("click", function () {
-                var checked = $("#option_notifications_sound_game_ending")[0].checked;
-                //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundGameEnding", checked.toString(), Infinity);
-            });
-        }
-    },
-
-    optionNotificationsSoundBuzz: {
-        defaultValue: "true",
-        onLoad: function(){
-            var checked;
-            var savedSetting = docCookies.getItem("optionNotificationsSoundBuzz");
-            if(savedSetting === "true"){
-                checked = true;
-            }
-            else if(savedSetting === "false"){
-                checked = false;
-            }
-            $("#option_notifications_sound_buzz")[0].checked = checked;
-        },
-        initialiseEventListener: function() {
-            $("#option_notifications_sound_buzz")[0].addEventListener("click", function () {
-                var checked = $("#option_notifications_sound_buzz")[0].checked;
-                //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundBuzz", checked.toString(), Infinity);
-            });
-        }
-    },
-
-    optionNotificationsSoundSlap: {
-        defaultValue: "true",
-        onLoad: function(){
-            var checked;
-            var savedSetting = docCookies.getItem("optionNotificationsSoundSlap");
-            if(savedSetting === "true"){
-                checked = true;
-            }
-            else if(savedSetting === "false"){
-                checked = false;
-            }
-            $("#option_notifications_sound_slap")[0].checked = checked;
-        },
-        initialiseEventListener: function() {
-            $("#option_notifications_sound_slap")[0].addEventListener("click", function () {
-                var checked = $("#option_notifications_sound_slap")[0].checked;
-                //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundSlap", checked.toString(), Infinity);
-            });
-        }
-    },
-
-    optionNotificationsSoundBuzzSlapTimeout: {
-        defaultValue: "15",
-        onLoad: function(){
-            //get cookie data
-            var seconds = docCookies.getItem("optionNotificationsSoundBuzzSlapTimeout");
-
-            //set the value in the users display
-            $("#option_notifications_buzz_slap_timeout")[0].value = seconds;
-            
-        },
-        initialiseEventListener: function() {
-            $("#option_notifications_buzz_slap_timeout")[0].addEventListener("click", function () {
-                var valueToStore = $("#option_notifications_buzz_slap_timeout")[0].value;
-                //save their option in cookie
-                docCookies.setItem("optionNotificationsSoundBuzzSlapTimeout", valueToStore, Infinity);
-            });
-        }
-    },
-
-    //---------------------------------------------
-    //Desktop notifications
-    //---------------------------------------------
-    optionNotificationsDesktopEnable: {
-        defaultValue: "true",
-        onLoad: function(){
-            var checked;
-            var savedSetting = docCookies.getItem("optionNotificationsDesktopEnable");
-            if(savedSetting === "true"){
-                checked = true;
-            }
-            else if(savedSetting === "false"){
-                checked = false;
-            }
-            $("#option_notifications_desktop_enable")[0].checked = checked;
-        },
-        initialiseEventListener: function() {
-            $("#option_notifications_desktop_enable")[0].addEventListener("click", function () {
-                var checked = $("#option_notifications_desktop_enable")[0].checked;
-                //save their option in cookie
-                docCookies.setItem("optionNotificationsDesktopEnable", checked.toString(), Infinity);
-            });
-        }
-    },
-
-    optionNotificationsDesktopPlayersJoiningRoom: {
-        defaultValue: "false",
-        onLoad: function(){
-            var checked;
-            var savedSetting = docCookies.getItem("optionNotificationsDesktopPlayersJoiningRoom");
-            if(savedSetting === "true"){
-                checked = true;
-            }
-            else if(savedSetting === "false"){
-                checked = false;
-            }
-            $("#option_notifications_desktop_players_joining_room")[0].checked = checked;
-        },
-        initialiseEventListener: function() {
-            $("#option_notifications_desktop_players_joining_room")[0].addEventListener("click", function () {
-                var checked = $("#option_notifications_desktop_players_joining_room")[0].checked;
-                //save their option in cookie
-                docCookies.setItem("optionNotificationsDesktopPlayersJoiningRoom", checked.toString(), Infinity);
-            });
-        }
-    },
-
-    optionNotificationsDesktopPlayersJoiningGame: {
-        defaultValue: "true",
-        onLoad: function(){
-            var checked;
-            var savedSetting = docCookies.getItem("optionNotificationsDesktopPlayersJoiningGame");
-            if(savedSetting === "true"){
-                checked = true;
-            }
-            else if(savedSetting === "false"){
-                checked = false;
-            }
-            $("#option_notifications_desktop_players_joining_game")[0].checked = checked;
-        },
-        initialiseEventListener: function() {
-            $("#option_notifications_desktop_players_joining_game")[0].addEventListener("click", function () {
-                var checked = $("#option_notifications_desktop_players_joining_game")[0].checked;
-                //save their option in cookie
-                docCookies.setItem("optionNotificationsDesktopPlayersJoiningGame", checked.toString(), Infinity);
-            });
-        }
-    },
-
-    optionNotificationsDesktopGameStarting: {
-        defaultValue: "true",
-        onLoad: function(){
-            var checked;
-            var savedSetting = docCookies.getItem("optionNotificationsDesktopGameStarting");
-            if(savedSetting === "true"){
-                checked = true;
-            }
-            else if(savedSetting === "false"){
-                checked = false;
-            }
-            $("#option_notifications_desktop_game_starting")[0].checked = checked;
-        },
-        initialiseEventListener: function() {
-            $("#option_notifications_desktop_game_starting")[0].addEventListener("click", function () {
-                var checked = $("#option_notifications_desktop_game_starting")[0].checked;
-                //save their option in cookie
-                docCookies.setItem("optionNotificationsDesktopGameStarting", checked.toString(), Infinity);
-            });
-        }
-    },
-
-    optionNotificationsDesktopYourTurn: {
-        defaultValue: "false",
-        onLoad: function(){
-            var checked;
-            var savedSetting = docCookies.getItem("optionNotificationsDesktopYourTurn");
-            if(savedSetting === "true"){
-                checked = true;
-            }
-            else if(savedSetting === "false"){
-                checked = false;
-            }
-            $("#option_notifications_desktop_your_turn")[0].checked = checked;
-        },
-        initialiseEventListener: function() {
-            $("#option_notifications_desktop_your_turn")[0].addEventListener("click", function () {
-                var checked = $("#option_notifications_desktop_your_turn")[0].checked;
-                //save their option in cookie
-                docCookies.setItem("optionNotificationsDesktopYourTurn", checked.toString(), Infinity);
-            });
-        }
-    },
-
-    optionNotificationsDesktopGameEnding: {
-        defaultValue: "false",
-        onLoad: function(){
-            var checked;
-            var savedSetting = docCookies.getItem("optionNotificationsDesktopGameEnding");
-            if(savedSetting === "true"){
-                checked = true;
-            }
-            else if(savedSetting === "false"){
-                checked = false;
-            }
-            $("#option_notifications_desktop_game_ending")[0].checked = checked;
-        },
-        initialiseEventListener: function() {
-            $("#option_notifications_desktop_game_ending")[0].addEventListener("click", function () {
-                var checked = $("#option_notifications_desktop_game_ending")[0].checked;
-                //save their option in cookie
-                docCookies.setItem("optionNotificationsDesktopGameEnding", checked.toString(), Infinity);
-            });
-        }
-    },
-
-    optionNotificationsDesktopBuzz: {
-        defaultValue: "true",
-        onLoad: function(){
-            var checked;
-            var savedSetting = docCookies.getItem("optionNotificationsDesktopBuzz");
-            if(savedSetting === "true"){
-                checked = true;
-            }
-            else if(savedSetting === "false"){
-                checked = false;
-            }
-            $("#option_notifications_desktop_buzz")[0].checked = checked;
-        },
-        initialiseEventListener: function() {
-            $("#option_notifications_desktop_buzz")[0].addEventListener("click", function () {
-                var checked = $("#option_notifications_desktop_buzz")[0].checked;
-                //save their option in cookie
-                docCookies.setItem("optionNotificationsDesktopBuzz", checked.toString(), Infinity);
-            });
-        }
-    },
-    
-}
-
-//run through each userOption load and initialiseEventListener
-//create the default values if the cookie doesn't have the option stored.
-for (var keys in userOptions) {
-    if (userOptions.hasOwnProperty(keys)) {
-        //if the option doesnt exist, create default option
-        if (docCookies.hasItem(keys) === false) {
-            docCookies.setItem(keys, userOptions[keys].defaultValue, Infinity);
-        }
-
-        //run the load function for each option
-        userOptions[keys].onLoad();
-        //run the initialise event listener function for each option
-        userOptions[keys].initialiseEventListener();
-
-    }
-}
 
 
 
@@ -742,856 +52,15 @@ window.addEventListener('resize', function () {
 });
 
 
-//======================================
-//BUTTON EVENT LISTENERS
-//======================================
-document.querySelector("#green-button").addEventListener("click", greenButtonFunction);
-document.querySelector("#red-button").addEventListener("click", redButtonFunction);
 
-//re-draw the game screen when the modal is closed to update the roles in the center well.
-$('#roleOptionsModal').on('hidden.bs.modal', function (e) {
-    draw();
-    console.log("test");
-})
 
-// Set the event listener for the button
-$("#kickButton")[0].addEventListener("click", function () {
-    var players = getKickPlayers();
 
-    //kick the selected players one by one
-    for (var key in players) {
-        if (players.hasOwnProperty(key)) {
-            socket.emit("kickPlayer", key);
-          // console.log("kick player: " + key);
-        }
-    }
-});
 
-//new ROOM CODE
-document.querySelector("#newRoom").addEventListener("click", function () {
-    if (inRoom === false) {
-        socket.emit("newRoom");
-      // console.log("RESET GAME DATA ON CREATE ROOM");
-        resetAllGameData();
-        inRoom = true;
-    }
-});
 
-document.querySelector("#danger-alert-box-button").addEventListener("click", function () {
-    document.querySelector("#danger-alert-box").classList.add("inactive-window");
-    document.querySelector("#danger-alert-box-button").classList.add("inactive-window");
-});
 
-document.querySelector("#success-alert-box-button").addEventListener("click", function () {
-    document.querySelector("#success-alert-box").classList.add("inactive-window");
-    document.querySelector("#success-alert-box-button").classList.add("inactive-window");
-});
 
-document.querySelector("#backButton").addEventListener("click", function () {
-    changeView();
-    socket.emit("leave-room", "");
 
-    console.log("LEAVE");
-    resetAllGameData();
-});
 
-document.querySelector("#claimButton").addEventListener("click", function () {
-    //INCOMPLETE
-    socket.emit("claim", "");
-
-    if($("#claimButton")[0].innerText === "Claim"){
-        $("#claimButton")[0].innerText = "Unclaim";
-    }
-    else{
-        $("#claimButton")[0].innerText = "Claim";
-    }
-});
-
-var allChatWindow1 = document.querySelectorAll(".all-chat-message-input")[0];
-allChatWindow1.onkeydown = function (e, allChatWindow1) {
-    //When enter is pressed in the chatmessageinput
-    addAllChatEventListeners(e, this);
-};
-
-var allChatWindow2 = document.querySelectorAll(".all-chat-message-input")[1];
-allChatWindow2.onkeydown = function (e, allChatWindow2) {
-    //When enter is pressed in the chatmessageinput
-    addAllChatEventListeners(e, this);
-};
-
-var allChatWindow3 = document.querySelectorAll(".all-chat-message-input")[2];
-allChatWindow3.onkeydown = function (e, allChatWindow3) {
-    //When enter is pressed in the chatmessageinput
-    addAllChatEventListeners(e, this);
-};
-
-
-function addAllChatEventListeners(e, allChatWindow) {
-    // console.log("LOLOL" + e.keyCode);
-    // console.log(allChatWindow);
-
-    if (e.keyCode == 13) {
-        var d = new Date();
-        //set up the data structure:
-        var message = allChatWindow.value;
-
-        //only do it if the user has inputted something
-        //i.e. dont run when its an empty string
-        if (message && message.length > 0) {
-            //append 0 in front of single digit minutes
-
-            var date = d.getMinutes();
-
-            // if(date < 10){date = "0" + date;}
-
-            var data = {
-                date: date,
-                message: message
-            }
-
-            //reset the value of the textbox
-            allChatWindow.value = "";
-
-            //check message, if false then no command.
-            if (checkMessageForCommands(message, "allChat") === true) {
-                //do nothing, all will be done in function checkMessageForCommands.
-            }
-            else {
-                //send data to the server 
-                socket.emit("allChatFromClient", data);
-            }
-            scrollDown("all-chat-lobby");
-            scrollDown("all-chat-room");
-            scrollDown("all-chat-room2");
-        }
-
-    }
-}
-
-var roomChatWindow1 = document.querySelectorAll(".room-chat-message-input")[0];
-
-roomChatWindow1.onkeydown = function (e, roomChatWindow1) {
-    //When enter is pressed in the chatmessageinput
-    addRoomChatEventListeners(e, this);
-};
-
-var roomChatWindow2 = document.querySelectorAll(".room-chat-message-input")[1];
-roomChatWindow2.onkeydown = function (e, roomChatWindow2) {
-    //When enter is pressed in the chatmessageinput
-    addRoomChatEventListeners(e, this);
-};
-
-function addRoomChatEventListeners(e, roomChatWindow) {
-    // console.log("LOLOL" + e.keyCode);
-    // console.log(allChatWindow);
-
-    if (e.keyCode == 13) {
-        var d = new Date();
-        //set up the data structure:
-        var message = roomChatWindow.value;
-
-        //only do it if the user has inputted something
-        //i.e. dont run when its an empty string
-        if (message && message.length > 0) {
-            //append 0 in front of single digit minutes
-
-            var date = d.getMinutes();
-            // if(date < 10){date = "0" + date;}
-
-            var data = {
-                date: date,
-                message: message,
-                roomId: roomId
-            }
-
-            //reset the value of the textbox
-            roomChatWindow.value = "";
-
-            //check message, if false then no command.
-            if (checkMessageForCommands(message, "roomChat") === true) {
-                //do nothing, all will be done in function checkMessageForCommands.
-            }
-            else {
-                //send data to the server 
-                socket.emit("roomChatFromClient", data);
-            }
-            scrollDown("room-chat-room");
-            scrollDown("room-chat-room2");
-        }
-
-    }
-}
-
-//======================================
-//SOCKET ROUTES
-//======================================
-socket.on("username", function (username) {
-    // ownUsername = username;
-});
-
-socket.on("allChatToClient", function (data) {
-    addToAllChat(data);
-});
-
-socket.on("roomChatToClient", function (data) {
-    addToRoomChat(data);
-});
-
-socket.on("joinedGameSuccess", function(data){
-    isSpectator = false;
-});
-
-socket.on('disconnect', function(){
-    // window.location= "/";
-    // alert("You have been disconnected!");
-    showDangerAlert("You have been disconnected! Please refresh the page.");
-    socket.disconnect();
-});
-
-socket.on('checkSettingsResetDate', function(serverResetDate){
-    serverResetDate = new Date(serverResetDate);
-  // console.log("check reset date");
-
-  // console.log(docCookies.hasItem("lastSettingsResetDate"));
-
-    //check if we need to reset settings
-    if(docCookies.hasItem("lastSettingsResetDate")){
-        var lastDate = new Date(docCookies.getItem("lastSettingsResetDate"));
-
-      // console.log(serverResetDate);
-      // console.log(lastDate);
-
-      // console.log(serverResetDate > lastDate);
-
-        if(serverResetDate > lastDate){
-            resetSettings();
-        }
-    }
-    else{
-        // resetSettings();
-    }
-});
-
-socket.on("serverRestartWarning", function(){
-    var message = `<div style='text-align: left;'>
-    <style>
-        #swalUl li{
-            padding-bottom: 3%;
-        }
-
-    </style>
-    <ul id="swalUl">
-        <li>In order for me to update the site, the server must be restarted. </li>
-
-        <li>Any running games will be saved and you will be able to continue your games when you log in again.</li>
-
-        <li>The server will only be down for a brief moment, at most 30 seconds.</li>
-
-        <li>When you rejoin please use /roomChat to recover your chat.</li>
-
-        <li>I apologise for the inconvenience caused. Thank you.</li>
-    </ul>
-    
-    </div>`;
-
-    Swal({
-        title: "Server restarting!",
-        html: message,
-        type: "warning",
-        allowEnterKey: false
-
-
-
-
-    }).then(() =>{
-        // location.reload();
-    });
-});
-
-socket.on("refresh", function (data) {
-    location.reload();
-});
-
-socket.on("muteNotification", function (modAction) {
-    var message = `You will not be allowed to talk. You will not be allowed to play.<br><br>
-
-    You are allowed to spectate games, use the forums and check out profiles. <br><br>
-
-    Your mute will be released on ` + new Date(modAction.whenRelease) + `. <br><br>
-    
-    The description of your ban is: ` + modAction.descriptionByMod
-
-    + `<br><br>
-    
-    You can exit this message by pressing escape.`;
-
-
-    Swal({
-        title: "You have been muted.",
-        html: message,
-        type: "warning",
-        // buttons: false,
-        
-        allowEnterKey: false
-
-    }).then(() =>{
-        // location.reload();
-    });
-
-    
-});
-
-function resetSettings(){
-    Swal({
-        title: "New updates!",
-        html: "Due to some new updates, a reset of your personal settings is required.<br><br>I apologise for the inconvenience caused :(.",
-        type: "warning",
-        allowEnterKey: false
-    }).then(() =>{
-        //get all the keys
-        var keys = docCookies.keys();
-                                    
-        //remove each item
-        for(var i = 0; i < keys.length; i++){
-            docCookies.removeItem(keys[i]);
-        }
-        docCookies.setItem("lastSettingsResetDate", new Date().toString(), Infinity);
-
-        Swal({
-            title: "Poof! Your settings have been reset!",
-            type: "success",
-        }).then(() =>{
-            //reload
-            location.reload();
-        });
-    });
-}
-
-socket.on("gameEnded", function (data) {
-    if($("#option_notifications_sound_game_ending")[0].checked === true){
-        playSound("game-end");
-    }
-    
-    if($("#option_notifications_desktop_game_ending")[0].checked === true){
-        displayNotification("Game has ended!", "", "avatars/base-spy.png", "gameEnded");
-    }
-});
-
-socket.on("openModModal", function (data) {
-    $("#modModal").modal("show");
-});
-
-
-
-function addToAllChat(data) {
-
-    if(data){
-        //if it is not an array, force it into a array
-        if (data[0] === undefined) {
-          // console.log("force array");
-            data = [data];
-        }  
-
-      // console.log("add to all chat: ");
-      // console.log(data);
-
-        for (var i = 0; i < data.length; i++) {
-            //format the date
-            var d = new Date();
-            var hour = d.getHours();
-            var min = d.getMinutes();
-            if (hour < 10) { hour = "0" + hour; }
-            if (min < 10) { min = "0" + min; }
-            var date = "[" + hour + ":" + min + "]";
-            if(data[i] && data[i].message){
-                //prevent XSS injection
-                var filteredMessage = data[i].message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
-
-                var str = "";
-                if (data[i].classStr && data[i].classStr !== "") {
-                    str = "<li class='" + data[i].classStr + "'><span class='date-text'>" + date + "</span> " + filteredMessage;
-                }
-                else {
-                    str = "<li class='" + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + filteredMessage;
-                }
-
-                $(".all-chat-list").append(str);
-                scrollDown("all-chat-lobby");
-                scrollDown("all-chat-room");
-                scrollDown("all-chat-room2");
-                
-
-                //yellow notification on the tabs in room.
-                if ($(".nav-tabs #all-chat-in-game-tab").hasClass("active") === false) {
-                    $(".nav-tabs #all-chat-in-game-tab")[0].classList.add("newMessage"); 
-                }
-            }
-        }
-    }
-}
-
-function addToRoomChat(data) {
-    //if it is not an array, force it into a array
-    if(data){
-        if (data[0] === undefined) {
-            data = [data];
-        }
-
-        var usernamesOfPlayersInGame = [];
-        if(gameStarted === true){
-            roomPlayersData.forEach(function(obj){
-                usernamesOfPlayersInGame.push(obj.username);
-            });
-        }
-    
-        for (var i = 0; i < data.length; i++) {
-            //format the date
-            var d = new Date();
-            var hour = d.getHours();
-            var min = d.getMinutes();
-            if (hour < 10) { hour = "0" + hour; }
-            if (min < 10) { min = "0" + min; }
-            var date = "[" + hour + ":" + min + "]";
-    
-            
-            if (data[i] && data[i].message) {
-                var spectatorClass = "";
-                if(usernamesOfPlayersInGame.indexOf(data[i].username) === -1 && gameStarted === true){
-                    spectatorClass = "spectator-chat";
-                }
-
-
-              // console.log(data[i].message);
-                //prevent XSS injection
-                var filteredMessage = data[i].message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
-              // console.log("Filtered message: " + filteredMessage);
-                var str = "";
-
-                // if there is no '[', then the chat incoming is not a quote.
-                if(filteredMessage.indexOf("[") === -1){
-                    //set the highlight chat if the user has been selected already
-                    var highlightChatColour = "";
-                  // console.log("true?"  + selectedChat[data[i].username]);
-                    if (selectedChat[data[i].username] === true) {
-                        highlightChatColour = docCookies.getItem("player" + getIndexFromUsername(data[i].username) + 'HighlightColour');
-                    }
-
-                    //if its a server text or special text
-                    if (data[i].classStr && data[i].classStr !== "") {
-                        str = "<li class='" + data[i].classStr + "'><span class='date-text'>" + date + "</span> " + filteredMessage;
-                    }
-                    //its a user's chat so put some other stuff on it
-                    else {
-                        str = "<li class='" + spectatorClass + "'><span style='background-color: " + highlightChatColour + "' username='" + data[i].username + "'><span class='date-text'> " + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + filteredMessage + "</span></li>";
-                    }
-
-                    $(".room-chat-list").append(str);
-                    scrollDown("room-chat-room");
-                    scrollDown("room-chat-room2");
-                }
-
-                //else if there is a '[' character, then assume the user is quoting a chunk of text
-                else{
-                    var strings = filteredMessage.split("[");
-
-                    str = "<li><span username='" + data[i].username + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + "Quoting:" + "</span></li>";
-
-                  // console.log("Strings: ");
-
-                    for(var j = 1; j < strings.length; j++){
-                        str += "<li class='myQuote'>" + "[" + strings[j] + "</li>";
-                      // console.log(strings[j]);
-                    }
-
-                    $(".room-chat-list").append(str);
-                    scrollDown("room-chat-room");
-                    scrollDown("room-chat-room2");
-
-                }
-    
-               
-    
-                //yellow notification on the tabs in room.
-                if ($(".nav-tabs #room-chat-in-game-tab").hasClass("active") === false) {
-                    $(".nav-tabs #room-chat-in-game-tab")[0].classList.add("newMessage");
-                }
-            }
-        }
-    }
-}
-
-//Remove the new message yellow background colour when
-//user selects the tab
-$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-    var target = $(e.target).attr("href") // activated tab
-    // console.log(target);
-
-    if (target === "#all-chat-in-game" || target === "#all-chat-in-game2") {
-        $(".nav-tabs #all-chat-in-game-tab").removeClass("newMessage")
-    }
-    else if (target === "#room-chat-in-game" || target === "#room-chat-in-game2") {
-        $(".nav-tabs #room-chat-in-game-tab").removeClass("newMessage")
-    }
-
-  // console.log("change tab " + target);
-
-});
-
-socket.on("update-current-players-list", function (currentPlayers) {
-  // console.log("update the current player list request received");
-    // console.log(currentPlayers);
-    //remove all the li's inside the table
-    $("#current-players-table tbody tr td").remove();
-    $("#current-players-table tbody tr").remove();
-
-    //append each player into the list
-    currentPlayers.forEach(function (currentPlayer) {
-
-        //if the current game exists, add it
-        if (currentPlayer) {
-            var str = "<tr> <td> " + currentPlayer + "</td> </tr>";
-            $("#current-players-table tbody").append(str);
-        }
-    });
-});
-
-socket.on("update-current-games-list", function (currentGames) {
-    // console.log(currentGames);
-    //remove all the entries inside the table:
-    $("#current-games-table tbody tr td").remove();
-    $("#current-games-table tbody tr").remove();
-
-    //append each game to the list
-    currentGames.forEach(function (currentGame) {
-        //if the current game exists, add it
-        if (currentGame) {
-            var str = "<tr> <td> " + currentGame.roomId + ": " + currentGame.status + " " + currentGame.numOfPlayersInside + "/10 <span style='padding-left: 10px;'>Spec: " + currentGame.numOfSpectatorsInside + "</span><p>Host: " + currentGame.hostUsername + "</p>" + "</td> </tr>";
-            $("#current-games-table tbody").append(str);
-
-
-            //grab all the td's and then add an event listener
-            var allTds = document.querySelectorAll("#current-games-table tbody tr td");
-
-            //add the event listener to the last td added.
-            allTds[allTds.length - 1].addEventListener("click", function () {
-                //JOIN THE ROOM
-
-              // console.log("RESET GAME DATA ON JOIN ROOM");
-                resetAllGameData();
-
-                // console.log(currentGame.roomId);
-                socket.emit("join-room", currentGame.roomId);
-                //change the view to the room instead of lobby
-                roomId = currentGame.roomId;
-                //set the spectator to true
-                isSpectator = true;
-                //change to the game room view
-                changeView();
-            });
-        }
-    });
-
-    //remove the ugly remaining border when no games are there to display
-    if (document.querySelectorAll("#current-games-table tbody tr td").length === 0) {
-        document.querySelectorAll("#current-games-table")[0].classList.add("current-games-table-off");
-        document.querySelectorAll("#current-games-table")[0].classList.remove("current-games-table-on");
-
-    }
-    else {
-        document.querySelectorAll("#current-games-table")[0].classList.add("current-games-table-on");
-        document.querySelectorAll("#current-games-table")[0].classList.remove("current-games-table-off");
-    }
-});
-
-socket.on("auto-join-room-id", function (roomId_) {
-  // console.log("auto join room");
-    //received a request from server to auto join
-    //likely we were the one who created the room
-    //so we auto join into it
-    socket.emit("join-room", roomId_);
-    socket.emit("join-game", roomId_);
-    isSpectator = false;
-    roomId = roomId_;
-    //chang ethe view to the room instead of lobby
-    changeView();
-});
-
-
-
-//==========================================
-//COMMANDS
-//==========================================
-socket.on("commands", function (commands) {
-    assignCommands(commands);
-}); 
-
-var modCommands;
-socket.on("modCommands", function (commands) {
-
-    if(!modCommands){
-        $("#modActionCloseButton").on("click", function(){
-            $("#modModal").modal("hide");
-            
-            console.log($("#modactionform").serializeArray());
-            var data = $("#modactionform").serializeArray();
-
-            socket.emit("modAction", data);
-        });
-
-
-    }
-
-    modCommands = commands;
-}); 
-
-var adminCommands;
-socket.on("adminCommands", function (commands) {
-    adminCommands = commands;
-}); 
-
-
-socket.on("messageCommandReturnStr", function (data) {
-    if (lastChatBoxCommand === "allChat") {
-        addToAllChat(data);
-    }
-    else if (lastChatBoxCommand === "roomChat") {
-        addToRoomChat(data);
-    }
-  // console.log("received return str");
-});
-
-var timeLastBuzzSlap;
-socket.on("slap", function (username) {
-    if($("#option_notifications_sound_slap")[0].checked === true){
-        if(!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $("#option_notifications_buzz_slap_timeout")[0].value){
-            playSound("slap");
-            
-            timeLastBuzzSlap = new Date();
-
-            var data = { message: "You have been slapped by " + username + ".", classStr: "server-text"}
-            setTimeout(function () {
-                addToAllChat(data);
-                addToRoomChat(data);
-            }, 1100);
-        }
-    }
-
-});
-
-socket.on("buzz", function (username) {
-    
-    if(!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $("#option_notifications_buzz_slap_timeout")[0].value){
-        if($("#option_notifications_sound_buzz")[0].checked === true){
-            playSound("ding");
-
-            var data = { message: "You have been buzzed by " + username + ".", classStr: "server-text"}
-            setTimeout(function () {
-                addToAllChat(data);
-                addToRoomChat(data);
-            }, 0);
-        }
-
-        if($("#option_notifications_desktop_buzz")[0].checked === true){
-            displayNotification(username + " has buzzed you!", "", "avatars/base-spy.png", "buzz");
-        }
-    }
-});
-
-//======================================
-//NOTIFICATIONS
-//======================================
-socket.on("alert", function (data) {
-    alert(data);
-    window.location.replace("/");
-});
-
-socket.on("success-alert", function (data) {
-    showSuccessAlert(data);
-});
-
-socket.on("danger-alert", function (data) {
-    showDangerAlert(data);
-});
-
-function showSuccessAlert(data) {
-    document.querySelector("#success-alert-box").classList.remove("inactive-window");
-    document.querySelector("#success-alert-box-button").classList.remove("inactive-window");
-    document.querySelector("#success-alert-box").innerHTML = data + " <span class='glyphicon glyphicon-remove pull-right'></span>";
-}
-
-
-function showDangerAlert(data) {
-    document.querySelector("#danger-alert-box").classList.remove("inactive-window");
-    document.querySelector("#danger-alert-box-button").classList.remove("inactive-window");
-    document.querySelector("#danger-alert-box").innerHTML = data + " <span class='glyphicon glyphicon-remove pull-right'></span>";
-};
-
-
-
-socket.on("update-room-players", function (data) {
-
-    //if an extra person joins the game, play the chime
-    if(roomPlayersData && roomPlayersData.length < data.playersJoined.length && data.playersJoined.length > 1){
-        if($("#option_notifications_sound_players_joining_game")[0].checked === true){
-            playSound('ding');
-        }
-        
-        if($("#option_notifications_desktop_players_joining_game")[0].checked === true){
-            displayNotification("New player in game!  [" + (data.playersJoined.length) + "p]", data.playersJoined[data.playersJoined.length - 1].username + " has joined the game!", "avatars/base-res.png", "newPlayerInGame");
-        }
-    }
-
-    //if an extra person joins the room
-    if(roomSpectatorsData && roomSpectatorsData.length < data.spectators.length){
-        if($("#option_notifications_sound_players_joining_room")[0].checked === true){
-            playSound('highDing');
-        }
-
-        if($("#option_notifications_desktop_players_joining_room")[0].checked === true && data.spectators[data.spectators.length - 1] !== ownUsername){
-            displayNotification("New player in room.", data.spectators[data.spectators.length - 1] + " has joined the room.", "avatars/base-res.png", "newPlayerInRoom");
-        }
-    }
-
-    // var x = $("#typehead").parent().width();    
-    roomPlayersData = data.playersJoined;
-    roomSpectatorsData = data.spectators;
-
-    //remove all the li's inside the list
-    $("#mainRoomBox div").remove();
-
-  // console.log("update room players");
-    // console.log(data);
-
-    //update spectators list
-    updateSpectatorsList();
-    draw();
-});
-
-//======================================
-//GAME SOCKET ROUTES
-//======================================
-socket.on("game-starting", function (roles) {
-    
-
-    if($("#option_notifications_sound_game_starting")[0].checked === true){
-        playSound("dingDingDing");
-    }
-
-    if($("#option_notifications_desktop_game_starting")[0].checked === true){
-        displayNotification("Game starting!", "Are you ready?", "avatars/base-spy.png", "gameStarting");
-    }
-
-    var secondsLeft = 10;
-    let timerInterval;
-
-    Swal({
-        title: "Game is starting!",
-        html: "<strong></strong> seconds left. <br><br>Roles are: " + roles,
-        type: "info",
-        confirmButtonText: "Ready",
-        showConfirmButton: true,
-        showCancelButton: true,
-        cancelButtonText: "Not ready",
-        allowOutsideClick: false,
-        allowEnterKey: false,
-        reverseButtons: true,
-        
-        timer: 10000,
-
-        onOpen: () => {
-            // swal.showLoading()
-            timerInterval = setInterval(() => {
-              swal.getContent().querySelector('strong')
-                .textContent = Math.floor(swal.getTimerLeft()/1000)
-            }, 100)
-          },
-          onClose: () => {
-            clearInterval(timerInterval)
-          }
-
-    }).then(function (result) {
-        console.log(result)
-        if (result.dismiss === swal.DismissReason.timer || result.dismiss === swal.DismissReason.cancel) {
-            console.log('I was closed by the timer')
-            socket.emit("player-not-ready", ownUsername);
-          }
-          else{
-            console.log('Im ready!')
-            socket.emit("player-ready", ownUsername);
-          }
-    });
-});
-
-socket.on("spec-game-starting", function(data){
-    Swal({
-        title:"A game is starting!",
-        text: "You cannot join the game unless someone is not ready.",
-        type: "info",
-        allowEnterKey: false
-    });
-
-    // document.querySelector("#green-button").classList.contains("disabled")
-
-    $("#green-button").addClass("disabled");
-});
-
-socket.on("spec-game-starting-finished", function(data){
-    $("#green-button").removeClass("disabled");
-});
-
-
-socket.on("game-data", function (data) {
-    console.log("GAME DATA INC");   
-    console.log(data);
-    if (data && roomId === data.roomId) {
-      // console.log("game starting!");
-
-        // console.log(data);
-        gameData = data;
-
-        //if the game has only just started for the first time, display your role
-        if(gameStarted === false){
-            if(gameData.alliance){
-                var str = "You are a " + gameData.alliance + ". Your role is " + gameData.role + ".";
-                data = {
-                    classStr: "server-text",
-                    message: str
-                }
-                addToRoomChat(data);
-            }
-
-            if($("#option_notifications_sound_game_starting")[0].checked === true){
-                // playSound("game-start");
-            }
-        }
-
-        gameStarted = true;
-
-        //hide the options cog
-        document.querySelector("#options-button").classList.add("hidden");
-        //remove the kick modal from redbutton
-        $("#red-button").removeAttr("data-target");
-        $("#red-button").removeAttr("data-toggle");
-
-        isSpectator = gameData.spectator;
-
-        drawVoteHistory(gameData);
-        draw();
-    }
-});
-
-socket.on("lady-info", function (message) {
-    var str = message + " (this message is only shown to you)";
-    var data = { message: str, classStr: "special-text noselect" };
-
-    addToRoomChat(data);
-});
-
-socket.on("update-status-message", function (data) {
-    if (data) {
-        $("#status").textContent = data;
-    }
-});
 
 //======================================
 //FUNCTIONS
@@ -1681,680 +150,680 @@ function greenButtonFunction() {
 
 
 function draw() {
-  // console.log("draw called");
-    if (roomPlayersData) {
-        drawAndPositionAvatars();
-
-        drawTeamLeaderStar();
-
-        drawMiddleBoxes();
-        scaleMiddleBoxes();
-
-        drawClaimingPlayers(roomPlayersData.claimingPlayers);
-
-        
-        if (gameStarted === true) {
-            drawExitedPlayers(gameData.gamePlayersInRoom);
-
-            //default greyed out rn
-            enableDisableButtons();
-
-            $("#missionsBox").removeClass("invisible");
-
-            //Edit the status bar/well
-            if (gameData.phase === "picking") {
-                //give it the default status message
-                document.querySelector("#status").innerText = gameData.statusMessage;
-
-                //draw the votes if there are any to show
-                drawVotes(gameData.votes);
-
-                //if we are the team leader---------------------------------------------
-                if (getIndexFromUsername(ownUsername) === gameData.teamLeader) {
-                    teamLeaderSetup(gameData.phase);
-                }
-
-            }
-            else if (gameData.phase === "voting") {
-
-                drawGuns();
-
-                var str = "";
-
-                //show the remaining players who haven't voted if we have voted
-                if (gameData.playersYetToVote.indexOf(ownUsername) === -1) {
-                    str += "Waiting for votes: ";
-
-                    for (var i = 0; i < gameData.playersYetToVote.length; i++) {
-                        str = str + gameData.playersYetToVote[i] + ", ";
-                    }
-                }
-                else {
-                    //change the well to display what was picked.
-                    str += (getUsernameFromIndex(gameData.teamLeader) + " has picked: ");
-
-                    for (var i = 0; i < gameData.proposedTeam.length; i++) {
-                        str += gameData.proposedTeam[i] + ", ";
-                    }
-
-                }
-
-                //remove the last , and replace with .
-                str = str.slice(0, str.length - 2);
-                str += ".";
-
-
-                document.querySelector("#status").innerText = str;
-            }
-
-            else if (gameData.phase === "missionVoting") {
-                //show the remaining players who haven't voted
-                var str = "Waiting for mision votes: ";
-
-                for (var i = 0; i < gameData.playersYetToVote.length; i++) {
-                    str = str + gameData.playersYetToVote[i] + ", ";
-                }
-
-                //remove the last , and replace with .
-                str = str.slice(0, str.length - 2);
-                str += ".";
-
-                document.querySelector("#status").innerText = str;
-
-                drawGuns();
-                drawVotes(gameData.votes);
-            }
-            else if (gameData.phase === "assassination") {
-                //for the assassin: set up their stuff to shoot
-                if (gameData.role === "Assassin") {
-                    document.querySelector("#status").innerText = "Shoot the merlin.";
-                    assassinationSetup(gameData.phase);
-                }
-                else {
-                    if(gameData.assassin){
-                        document.querySelector("#status").innerText = "Waiting for " + gameData.assassin + " to shoot the Merlin.";
-                    }
-                    else{
-                        document.querySelector("#status").innerText = "Waiting for assassin to shoot.";
-                    }
-                }
-                enableDisableButtons();
-            }
-            else if (gameData.phase === "lady") {
-                document.querySelector("#status").innerText = gameData.statusMessage;
-                if (ownUsername === getUsernameFromIndex(gameData.lady)) {
-                    ladySetup(gameData.phase, gameData.ladyablePeople);
-                }
-                enableDisableButtons();
-            }
-
-            else if (gameData.phase === "finished") {
-                document.querySelector("#status").innerText = gameData.statusMessage;
-                enableDisableButtons();
-                if (gameData.see.playerShot) {
-                    drawBullet(getIndexFromUsername(gameData.see.playerShot));
-                }
-
-
-            }
-
-        }
-
-        else {
-            //if we are the host
-            if (ownUsername === getUsernameFromIndex(0)) {
-                currentOptions = getOptions();
-                var str = "";
-
-                for (var key in currentOptions) {
-                    if (currentOptions.hasOwnProperty(key)) {
-                        if (currentOptions[key] === true) {
-                            if (key === "merlinassassin") {
-                                str += "Merlin, Assassin, ";
-                            }
-                            else if (key === "percival") {
-                                str += "Percival, ";
-                            }
-                            else if (key === "morgana") {
-                                str += "Morgana, ";
-                            }
-                            else if (key === "lady") {
-                                str += "Lady of the Lake, ";
-                            }
-                            else if (key === "mordred") {
-                                str += "Mordred, ";
-                            }
-                            else if (key === "oberon") {
-                                str += "Oberon, ";
-                            }
-                            else {
-                                str += "Error, unexpected option."
-                            }
-                        }
-                    }
-                }
-
-                //remove the last , and replace with .
-                str = str.slice(0, str.length - 2);
-                str += ".";
-
-                document.querySelector("#status").innerText = "Current roles: " + str;
-            }
-            else {
-                document.querySelector("#status").innerText = "Waiting for game to start... ";
-            }
-            enableDisableButtons();
-        }
-
-        activateAvatarButtons();
-    }
-}
-
-var selectedAvatars = {};
-var numOfStatesOfHighlight = 2;
-var selectedChat = {};
-function activateAvatarButtons() {
-    // console.log("activate avatar buttons");
-    // console.log("LOL");
-    // if(OPTION THING ADD HERE){
-    var highlightButtons = document.querySelectorAll("#mainRoomBox div #highlightAvatarButton");
-    //add the event listeners for button press
-
-    // console.log("added " + highlightButtons.length + " many listeners for highlightbuttons");
-
-    for (var i = 0; i < highlightButtons.length; i++) {
-        // console.log(i);
-
-        highlightButtons[i].addEventListener("click", function () {
-            // //toggle the highlight class
-            // var divs = document.querySelectorAll("#mainRoomBox div");
-            // var uniqueNum = i;
-          // console.log("click for highlight avatar");
-
-            // this.parentElement.classList.toggle("selected-avatar");
-            var username = this.parentElement.parentElement.getAttribute("usernameofplayer");
-            // console.log("username: " + username);
-
-            if (selectedAvatars[username] !== undefined) {
-                selectedAvatars[username] += 1;
-            }
-            else {
-                selectedAvatars[username] = 1;
-            }
-
-            selectedAvatars[username] = selectedAvatars[username] % (numOfStatesOfHighlight + 1);
-          // console.log("Selected avatars num: " + selectedAvatars[username])
-            draw();
-        });
-    }
-
-
-
-    var highlightChatButtons = document.querySelectorAll("#mainRoomBox div #highlightChatButton");
-    //add the event listeners for button press
-    for (var i = 0; i < highlightChatButtons.length; i++) {
-        highlightChatButtons[i].addEventListener("click", function () {
-            // //toggle the highlight class
-          // console.log("click for highlight chat");
-
-            var username = this.parentElement.parentElement.getAttribute("usernameofplayer");
-            var chatItems = $(".room-chat-list li span[username='" + username + "']");
-
-            var playerHighlightColour = docCookies.getItem("player" + getIndexFromUsername(username) + "HighlightColour");
-            
-          // console.log("Player highlight colour: " + playerHighlightColour);
-
-            if (selectedChat[username] === true) {
-                selectedChat[username] = false;
-                chatItems.css("background-color", "transparent");
-            }
-            else {
-              // console.log("set true");
-                selectedChat[username] = true;
-                chatItems.css("background-color", "" + playerHighlightColour);
-            }
-            draw();
-        });
-    }
-}
-
-
-
-function drawBullet(indexOfPlayer) {
-
-    //set the div string and add the star\\
-    var str = $("#mainRoomBox div")[indexOfPlayer].innerHTML;
-    str = str + "<span><img src='pictures/bullet.png' class='bullet'></span>";
-    //update the str in the div
-    $("#mainRoomBox div")[indexOfPlayer].innerHTML = str;
-
-    // $(".bullet")[0].style.top = 0;
-
-}
-
-function drawVotes(votes) {
-    var divs = document.querySelectorAll("#mainRoomBox div");
-
-    if (votes) {
-        for (var i = 0; i < divs.length; i++) {
-            if(votes[i] === "approve"){
-                $($("#mainRoomBox div")[i]).find(".approveLabel").removeClass("invisible");
-            }
-            if(votes[i] === "reject"){
-                $($("#mainRoomBox div")[i]).find(".rejectLabel").removeClass("invisible");
-            }
-            // document.querySelectorAll("#mainRoomBox div")[i].classList.add(votes[i]);
-        }
-    }
-    else {
-        for (var i = 0; i < divs.length; i++) {
-            // document.querySelectorAll("#mainRoomBox div")[i].classList.remove("approve");
-            // document.querySelectorAll("#mainRoomBox div")[i].classList.remove("reject");
-
-            $($("#mainRoomBox div")[i]).find(".approveLabel").addClass("invisible");
-            $($("#mainRoomBox div")[i]).find(".rejectLabel").addClass("invisible");
-        }
-    }
-}
-
-
-function assassinationSetup(phase) {
-    if (phase === "assassination") {
-        var divs = document.querySelectorAll("#mainRoomBox div");
-        //add the event listeners for button press
-        for (var i = 0; i < divs.length; i++) {
-            divs[i].addEventListener("click", function () {
-              // console.log("avatar pressed");
-                //toggle the highlight class
-                this.classList.toggle("highlight-avatar");
-                //change the pick team button to enabled/disabled
-                enableDisableButtons();
-            });
-        }
-    }
-}
-
-function teamLeaderSetup(phase) {
-    var numPlayersOnMission = gameData.numPlayersOnMission[gameData.missionNum - 1];
-
-    //edit the well to show how many people to pick.
-    if (phase === "picking") {
-
-        document.querySelector("#status").innerText = "Your turn to pick a team. Pick " + numPlayersOnMission + " players.";
-
-        var divs = document.querySelectorAll("#mainRoomBox div");
-        //add the event listeners for button press
-        for (var i = 0; i < divs.length; i++) {
-            divs[i].addEventListener("click", function () {
-              // console.log("avatar pressed");
-                //toggle the highlight class
-                this.classList.toggle("highlight-avatar");
-                //change the pick team button to enabled/disabled
-                enableDisableButtonsLeader(numPlayersOnMission);
-            });
-        }
-        enableDisableButtonsLeader(numPlayersOnMission);
-    }
-}
-
-function ladySetup(phase, ladyablePeople) {
-    //edit the well to show how many people to pick.
-    if (phase === "lady") {
-
-        document.querySelector("#status").innerText = "Your turn to use the Lady of the Lake. Select one player to use it on.";
-
-        var divs = document.querySelectorAll("#mainRoomBox div");
-        //add the event listeners for button press
-        for (var i = 0; i < divs.length; i++) {
-            if (ladyablePeople[i] === true) {
-                divs[i].addEventListener("click", function () {
-                  // console.log("avatar pressed");
-                    //toggle the highlight class
-                    this.classList.toggle("highlight-avatar");
-                    //change the pick team button to enabled/disabled
-                    enableDisableButtons();
-                });
-            }
-        }
-    }
-}
-
-function drawMiddleBoxes() {
-    //draw missions and numPick
-    //j<5 because there are only 5 missions/picks each game
-    if (gameData) {
-        for (var j = 0; j < 5; j++) {
-            //missions
-            var missionStatus = gameData.missionHistory[j];
-            if (missionStatus === "succeeded") {
-                document.querySelectorAll(".missionBox")[j].classList.add("missionBoxSucceed");
-                document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxFail");
-            }
-            else if (missionStatus === "failed") {
-                document.querySelectorAll(".missionBox")[j].classList.add("missionBoxFail");
-                document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxSucceed");
-            }
-
-            //draw in the number of players in each mission
-            var numPlayersOnMission = gameData.numPlayersOnMission[j];
-            if (numPlayersOnMission) {
-                document.querySelectorAll(".missionBox")[j].innerHTML = "<p>" + numPlayersOnMission + "</p>";
-            }
-
-            //picks boxes
-            var pickNum = gameData.pickNum;
-            if (j < pickNum) {
-                document.querySelectorAll(".pickBox")[j].classList.add("pickBoxFill");
-            }
-            else {
-                document.querySelectorAll(".pickBox")[j].classList.remove("pickBoxFill");
-            }
-        }
-    }
-    else {
-        for (var j = 0; j < 5; j++) {
-            document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxFail");
-            document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxSucceed");
-            document.querySelectorAll(".missionBox")[j].innerText = "";
-            document.querySelectorAll(".pickBox")[j].classList.remove("pickBoxFill");
-        }
-    }
-}
-
-
-function drawAndPositionAvatars() {
-    var w = $("#mainRoomBox").width();
-    var h = $("#mainRoomBox").height();
-
-    var numPlayers = roomPlayersData.length;//3;
-
-    //generate the divs in the html
-    var str = "";
-  // console.log("Game started: " + gameStarted);
-    if (gameStarted === true) {
-        //draw the players according to what the client sees (their role sees)
-        for (var i = 0; i < numPlayers; i++) {
-            //check if the user is on the spy list. 
-            //if they are not, they are res
-            if (gameData.see.spies && gameData.see.spies.indexOf(roomPlayersData[i].username) === -1) {
-                str = str + strOfAvatar(roomPlayersData[i], "res");
-            }
-            //else they are a spy
-            else {
-                str = str + strOfAvatar(roomPlayersData[i], "spy");
-            }
-        }
-    }
-    //when game has not yet started, everyone is a res image
-    else {
-        for (var i = 0; i < numPlayers; i++) {
-            str = str + strOfAvatar(roomPlayersData[i], "res");
-        }
-    }
-
-    //set the divs into the box
-    $("#mainRoomBox").html(str);
-
-
-    //===============================================
-    //POSITIONING SECTION
-    //===============================================
-
-    //set the positions and sizes
-    // console.log("numPlayers: " + numPlayers)
-    var divs = document.querySelectorAll("#mainRoomBox div");
-    const scaleWidthDown = 0.9;
-    const scaleHeightDown = 1;
-    var playerLocations = generatePlayerLocations(numPlayers, (w / 2)*scaleWidthDown, (h / 2)*scaleHeightDown);
-
-    for (var i = 0; i < numPlayers; i++) {
-        // console.log("player position: asdflaksdjf;lksjdf");
-        var offsetX = w / 2;
-        var offsetY = h / 2;
-        
-        //reduce the height so that the bottom of avatars dont crash into the bottom.
-        offsetY = offsetY * 1;
-
-      // console.log("offsetY: " + offsetY);
-
-
-        //scale the height of avatars
-        var windowH = $(window).height();
-        var windowW = $(window).width();
-
-        var strX = playerLocations.x[i] + offsetX + "px";
-        var strY = playerLocations.y[i] + offsetY - windowH * 0.01 + "px";
-
-        divs[i].style.left = strX;
-        divs[i].style.bottom = strY;
-
-        var ratioXtoY = 0.8;
-
-        divs[i].style.height = 37 + "%";
-        divs[i].style.width = divs[i].offsetHeight * ratioXtoY + "px";
-
-        // //size of the avatar img
-        // divs[i].style.width = 30 + "%";
-        // divs[i].style.height = 30 + "%";
-
-        // //get which one is smaller, width or height and then
-        // //force square
-        // if(divs[i].offsetWidth < divs[i].offsetHeight){
-        //     divs[i].style.height = divs[i].offsetWidth + "px";
-        //     // console.log("width smaller, make height smaller to square");
-        // } else{
-        //     divs[i].style.width = divs[i].offsetHeight + "px";
-        //     // console.log("height smaller, make width smaller to square");
-        // }
-    }
-}
-
-function drawGuns() {
-
-    // gameData.propsedTeam
-    for (var i = 0; i < gameData.proposedTeam.length; i++) {
-        //set the div string and add the gun
-        var str = $("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])].innerHTML;
-        str = str + "<span><img src='pictures/gun.png' class='gun'></span>";
-        //update the str in the div
-        $("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])].innerHTML = str;
-    }
-}
-
-function drawTeamLeaderStar() {
-    var playerIndex;
-    if (gameStarted === false) {
-        playerIndex = 0;
-    } else {
-        playerIndex = gameData.teamLeader;
-    }
-    //set the div string and add the star
-    if ($("#mainRoomBox div")[playerIndex]) {
-        var str = $("#mainRoomBox div")[playerIndex].innerHTML;
-        str = str + "<span><img src='pictures/leader.png' class='leaderStar'></span>";
-        //update the str in the div
-        $("#mainRoomBox div")[playerIndex].innerHTML = str;
-
-        $(".leaderStar")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
-    }
-}
-
-function drawClaimingPlayers(claimingPlayers){
-
-    for(var i = 0; i < roomPlayersData.length; i++){
-        if(roomPlayersData[i].claim && roomPlayersData[i].claim === true){
-            if ($("#mainRoomBox div")[getIndexFromUsername(roomPlayersData[i].username)]) {
-                var str = $("#mainRoomBox div")[getIndexFromUsername(roomPlayersData[i].username)].innerHTML;
-                str = str + "<span><img src='pictures/claim.png' class='claimIcon'></span>";
-                //update the str in the div
-                $("#mainRoomBox div")[getIndexFromUsername(roomPlayersData[i].username)].innerHTML = str;
-        
-                // $(".claimIcon")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
-            }
-        }
-    }
-
-}
-
-function drawExitedPlayers(playersStillInRoom){
-
-    var arrayOfUsernames = []
-    for(var i = 0; i < roomPlayersData.length; i++){
-        arrayOfUsernames.push(roomPlayersData[i].username);
-    }
-
-
-    for(var i = 0; i < arrayOfUsernames.length; i++){
-        // if(roomPlayersData[i].claim && roomPlayersData[i].claim === true){
-        if(playersStillInRoom.indexOf(arrayOfUsernames[i]) === -1){
-
-            // var j = playersStillInRoom.indexOf(arrayOfUsernames[i]);
-
-            // if ($("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])]) {
-            //     var str = $("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])].innerHTML;
-            //     str = str + "<span><img src='pictures/leave.png' class='leaveIcon'></span>";
-            //     //update the str in the div
-            //     $("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])].innerHTML = str;
-        
-            //     // $(".claimIcon")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
-            // }
-
-
-            if ($(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])]) {
-                $(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])].classList.add("leftRoom");
-            }
-        }
-        else{
-            if ($(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])]) {
-                $(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])].classList.remove("leftRoom");
-            }
-        }
-    }
-
-}
-
-function enableDisableButtonsLeader(numPlayersOnMission) {
-    //if they've selected the right number of players, then allow them to send
-    // console.log("countHighlightedAvatars: " + countHighlightedAvatars());
-    // console.log("numPlayersOnMission: " + numPlayersOnMission);
-    if (countHighlightedAvatars() == numPlayersOnMission || (countHighlightedAvatars() + "*") == numPlayersOnMission) {
-        document.querySelector("#green-button").classList.remove("disabled");
-        document.querySelector("#green-button").classList.remove("faded");
-    }
-    else {
-        document.querySelector("#green-button").classList.add("disabled");
-        document.querySelector("#green-button").classList.add("faded");
-        
-    }
-}
-function enableDisableButtons() {
-    //reset the faded class for the buttons
-    document.querySelector("#green-button").classList.remove("faded");
-
-    
-    if (gameStarted === false) {
-        //Host
-        if (ownUsername === getUsernameFromIndex(0)) {
-            document.querySelector("#green-button").classList.remove("disabled");
-            document.querySelector("#green-button").innerText = "Start";
-
-            document.querySelector("#red-button").classList.remove("disabled");
-            document.querySelector("#red-button").innerText = "Kick";
-
-            //set the stuff for the kick modal buttons
-            $("#red-button").attr("data-toggle", "modal");
-            $("#red-button").attr("data-target", "#kickModal");
-
-            document.querySelector("#options-button").classList.remove("hidden");
-        }
-        //we are spectator
-        else if (isSpectator === true) {
-            document.querySelector("#green-button").classList.remove("disabled");
-            document.querySelector("#green-button").innerText = "Join";
-
-            document.querySelector("#red-button").classList.add("disabled");
-            // document.querySelector("#red-button").innerText = "Disabled";
-        }
-        else {
-            disableButtons();
-        }
-    }
-    else if (gameStarted === true && isSpectator === false) {
-        //if we are in picking phase
-        if (gameData.phase === "picking") {
-            document.querySelector("#green-button").classList.add("disabled");
-            document.querySelector("#green-button").innerText = "Pick";
-
-            document.querySelector("#red-button").classList.add("disabled");
-            // document.querySelector("#red-button").innerText = "Disabled";
-        }
-
-        //if we are in voting phase
-        else if (gameData.phase === "voting") {
-            if (checkEntryExistsInArray(gameData.playersYetToVote, ownUsername)) {
-                document.querySelector("#green-button").classList.remove("disabled");
-                document.querySelector("#green-button").innerText = "Approve";
-
-                document.querySelector("#red-button").classList.remove("disabled");
-                document.querySelector("#red-button").innerText = "Reject";
-            }
-            else {
-                disableButtons();
-            }
-        }
-
-        else if (gameData.phase === "missionVoting") {
-            if (checkEntryExistsInArray(gameData.playersYetToVote, ownUsername)) {
-                document.querySelector("#green-button").classList.remove("disabled");
-                document.querySelector("#green-button").innerText = "SUCCEED";
-
-                document.querySelector("#red-button").classList.remove("disabled");
-                document.querySelector("#red-button").innerText = "FAIL";
-            }
-            else {
-                disableButtons();
-            }
-        }
-
-        else if (gameData.phase === "assassination") {
-            // document.querySelector("#green-button").classList.add("disabled");
-            document.querySelector("#green-button").innerText = "SHOOT";
-
-            document.querySelector("#red-button").classList.add("disabled");
-            // document.querySelector("#red-button").innerText = "Disabled";
-
-            //if there is only one person highlighted
-            if (countHighlightedAvatars() == 1) {
-                document.querySelector("#green-button").classList.remove("disabled");
-            }
-            else {
-                document.querySelector("#green-button").classList.add("disabled");
-            }
-        }
-        else if (gameData.phase === "lady") {
-            // document.querySelector("#green-button").classList.add("disabled");
-            document.querySelector("#green-button").innerText = "Card";
-
-            document.querySelector("#red-button").classList.add("disabled");
-            // document.querySelector("#red-button").innerText = "Disabled";
-
-            //if there is only one person highlighted
-            if (countHighlightedAvatars() == 1 && ownUsername === getUsernameFromIndex(gameData.lady)) {
-                document.querySelector("#green-button").classList.remove("disabled");
-            }
-            else {
-                document.querySelector("#green-button").classList.add("disabled");
-            }
-        }
-
-        else if (gameData.phase === "finished") {
-            disableButtons();
-        }
-    }
-    else if (gameStarted === true && isSpectator === true) {
-        disableButtons();
-    }
-}
+    // console.log("draw called");
+      if (roomPlayersData) {
+          drawAndPositionAvatars();
+  
+          drawTeamLeaderStar();
+  
+          drawMiddleBoxes();
+          scaleMiddleBoxes();
+  
+          drawClaimingPlayers(roomPlayersData.claimingPlayers);
+  
+          
+          if (gameStarted === true) {
+              drawExitedPlayers(gameData.gamePlayersInRoom);
+  
+              //default greyed out rn
+              enableDisableButtons();
+  
+              $("#missionsBox").removeClass("invisible");
+  
+              //Edit the status bar/well
+              if (gameData.phase === "picking") {
+                  //give it the default status message
+                  document.querySelector("#status").innerText = gameData.statusMessage;
+  
+                  //draw the votes if there are any to show
+                  drawVotes(gameData.votes);
+  
+                  //if we are the team leader---------------------------------------------
+                  if (getIndexFromUsername(ownUsername) === gameData.teamLeader) {
+                      teamLeaderSetup(gameData.phase);
+                  }
+  
+              }
+              else if (gameData.phase === "voting") {
+  
+                  drawGuns();
+  
+                  var str = "";
+  
+                  //show the remaining players who haven't voted if we have voted
+                  if (gameData.playersYetToVote.indexOf(ownUsername) === -1) {
+                      str += "Waiting for votes: ";
+  
+                      for (var i = 0; i < gameData.playersYetToVote.length; i++) {
+                          str = str + gameData.playersYetToVote[i] + ", ";
+                      }
+                  }
+                  else {
+                      //change the well to display what was picked.
+                      str += (getUsernameFromIndex(gameData.teamLeader) + " has picked: ");
+  
+                      for (var i = 0; i < gameData.proposedTeam.length; i++) {
+                          str += gameData.proposedTeam[i] + ", ";
+                      }
+  
+                  }
+  
+                  //remove the last , and replace with .
+                  str = str.slice(0, str.length - 2);
+                  str += ".";
+  
+  
+                  document.querySelector("#status").innerText = str;
+              }
+  
+              else if (gameData.phase === "missionVoting") {
+                  //show the remaining players who haven't voted
+                  var str = "Waiting for mision votes: ";
+  
+                  for (var i = 0; i < gameData.playersYetToVote.length; i++) {
+                      str = str + gameData.playersYetToVote[i] + ", ";
+                  }
+  
+                  //remove the last , and replace with .
+                  str = str.slice(0, str.length - 2);
+                  str += ".";
+  
+                  document.querySelector("#status").innerText = str;
+  
+                  drawGuns();
+                  drawVotes(gameData.votes);
+              }
+              else if (gameData.phase === "assassination") {
+                  //for the assassin: set up their stuff to shoot
+                  if (gameData.role === "Assassin") {
+                      document.querySelector("#status").innerText = "Shoot the merlin.";
+                      assassinationSetup(gameData.phase);
+                  }
+                  else {
+                      if(gameData.assassin){
+                          document.querySelector("#status").innerText = "Waiting for " + gameData.assassin + " to shoot the Merlin.";
+                      }
+                      else{
+                          document.querySelector("#status").innerText = "Waiting for assassin to shoot.";
+                      }
+                  }
+                  enableDisableButtons();
+              }
+              else if (gameData.phase === "lady") {
+                  document.querySelector("#status").innerText = gameData.statusMessage;
+                  if (ownUsername === getUsernameFromIndex(gameData.lady)) {
+                      ladySetup(gameData.phase, gameData.ladyablePeople);
+                  }
+                  enableDisableButtons();
+              }
+  
+              else if (gameData.phase === "finished") {
+                  document.querySelector("#status").innerText = gameData.statusMessage;
+                  enableDisableButtons();
+                  if (gameData.see.playerShot) {
+                      drawBullet(getIndexFromUsername(gameData.see.playerShot));
+                  }
+  
+  
+              }
+  
+          }
+  
+          else {
+              //if we are the host
+              if (ownUsername === getUsernameFromIndex(0)) {
+                  currentOptions = getOptions();
+                  var str = "";
+  
+                  for (var key in currentOptions) {
+                      if (currentOptions.hasOwnProperty(key)) {
+                          if (currentOptions[key] === true) {
+                              if (key === "merlinassassin") {
+                                  str += "Merlin, Assassin, ";
+                              }
+                              else if (key === "percival") {
+                                  str += "Percival, ";
+                              }
+                              else if (key === "morgana") {
+                                  str += "Morgana, ";
+                              }
+                              else if (key === "lady") {
+                                  str += "Lady of the Lake, ";
+                              }
+                              else if (key === "mordred") {
+                                  str += "Mordred, ";
+                              }
+                              else if (key === "oberon") {
+                                  str += "Oberon, ";
+                              }
+                              else {
+                                  str += "Error, unexpected option."
+                              }
+                          }
+                      }
+                  }
+  
+                  //remove the last , and replace with .
+                  str = str.slice(0, str.length - 2);
+                  str += ".";
+  
+                  document.querySelector("#status").innerText = "Current roles: " + str;
+              }
+              else {
+                  document.querySelector("#status").innerText = "Waiting for game to start... ";
+              }
+              enableDisableButtons();
+          }
+  
+          activateAvatarButtons();
+      }
+  }
+  
+  var selectedAvatars = {};
+  var numOfStatesOfHighlight = 2;
+  var selectedChat = {};
+  function activateAvatarButtons() {
+      // console.log("activate avatar buttons");
+      // console.log("LOL");
+      // if(OPTION THING ADD HERE){
+      var highlightButtons = document.querySelectorAll("#mainRoomBox div #highlightAvatarButton");
+      //add the event listeners for button press
+  
+      // console.log("added " + highlightButtons.length + " many listeners for highlightbuttons");
+  
+      for (var i = 0; i < highlightButtons.length; i++) {
+          // console.log(i);
+  
+          highlightButtons[i].addEventListener("click", function () {
+              // //toggle the highlight class
+              // var divs = document.querySelectorAll("#mainRoomBox div");
+              // var uniqueNum = i;
+            // console.log("click for highlight avatar");
+  
+              // this.parentElement.classList.toggle("selected-avatar");
+              var username = this.parentElement.parentElement.getAttribute("usernameofplayer");
+              // console.log("username: " + username);
+  
+              if (selectedAvatars[username] !== undefined) {
+                  selectedAvatars[username] += 1;
+              }
+              else {
+                  selectedAvatars[username] = 1;
+              }
+  
+              selectedAvatars[username] = selectedAvatars[username] % (numOfStatesOfHighlight + 1);
+            // console.log("Selected avatars num: " + selectedAvatars[username])
+              draw();
+          });
+      }
+  
+  
+  
+      var highlightChatButtons = document.querySelectorAll("#mainRoomBox div #highlightChatButton");
+      //add the event listeners for button press
+      for (var i = 0; i < highlightChatButtons.length; i++) {
+          highlightChatButtons[i].addEventListener("click", function () {
+              // //toggle the highlight class
+            // console.log("click for highlight chat");
+  
+              var username = this.parentElement.parentElement.getAttribute("usernameofplayer");
+              var chatItems = $(".room-chat-list li span[username='" + username + "']");
+  
+              var playerHighlightColour = docCookies.getItem("player" + getIndexFromUsername(username) + "HighlightColour");
+              
+            // console.log("Player highlight colour: " + playerHighlightColour);
+  
+              if (selectedChat[username] === true) {
+                  selectedChat[username] = false;
+                  chatItems.css("background-color", "transparent");
+              }
+              else {
+                // console.log("set true");
+                  selectedChat[username] = true;
+                  chatItems.css("background-color", "" + playerHighlightColour);
+              }
+              draw();
+          });
+      }
+  }
+  
+  
+  
+  function drawBullet(indexOfPlayer) {
+  
+      //set the div string and add the star\\
+      var str = $("#mainRoomBox div")[indexOfPlayer].innerHTML;
+      str = str + "<span><img src='pictures/bullet.png' class='bullet'></span>";
+      //update the str in the div
+      $("#mainRoomBox div")[indexOfPlayer].innerHTML = str;
+  
+      // $(".bullet")[0].style.top = 0;
+  
+  }
+  
+  function drawVotes(votes) {
+      var divs = document.querySelectorAll("#mainRoomBox div");
+  
+      if (votes) {
+          for (var i = 0; i < divs.length; i++) {
+              if(votes[i] === "approve"){
+                  $($("#mainRoomBox div")[i]).find(".approveLabel").removeClass("invisible");
+              }
+              if(votes[i] === "reject"){
+                  $($("#mainRoomBox div")[i]).find(".rejectLabel").removeClass("invisible");
+              }
+              // document.querySelectorAll("#mainRoomBox div")[i].classList.add(votes[i]);
+          }
+      }
+      else {
+          for (var i = 0; i < divs.length; i++) {
+              // document.querySelectorAll("#mainRoomBox div")[i].classList.remove("approve");
+              // document.querySelectorAll("#mainRoomBox div")[i].classList.remove("reject");
+  
+              $($("#mainRoomBox div")[i]).find(".approveLabel").addClass("invisible");
+              $($("#mainRoomBox div")[i]).find(".rejectLabel").addClass("invisible");
+          }
+      }
+  }
+  
+  
+  function assassinationSetup(phase) {
+      if (phase === "assassination") {
+          var divs = document.querySelectorAll("#mainRoomBox div");
+          //add the event listeners for button press
+          for (var i = 0; i < divs.length; i++) {
+              divs[i].addEventListener("click", function () {
+                // console.log("avatar pressed");
+                  //toggle the highlight class
+                  this.classList.toggle("highlight-avatar");
+                  //change the pick team button to enabled/disabled
+                  enableDisableButtons();
+              });
+          }
+      }
+  }
+  
+  function teamLeaderSetup(phase) {
+      var numPlayersOnMission = gameData.numPlayersOnMission[gameData.missionNum - 1];
+  
+      //edit the well to show how many people to pick.
+      if (phase === "picking") {
+  
+          document.querySelector("#status").innerText = "Your turn to pick a team. Pick " + numPlayersOnMission + " players.";
+  
+          var divs = document.querySelectorAll("#mainRoomBox div");
+          //add the event listeners for button press
+          for (var i = 0; i < divs.length; i++) {
+              divs[i].addEventListener("click", function () {
+                // console.log("avatar pressed");
+                  //toggle the highlight class
+                  this.classList.toggle("highlight-avatar");
+                  //change the pick team button to enabled/disabled
+                  enableDisableButtonsLeader(numPlayersOnMission);
+              });
+          }
+          enableDisableButtonsLeader(numPlayersOnMission);
+      }
+  }
+  
+  function ladySetup(phase, ladyablePeople) {
+      //edit the well to show how many people to pick.
+      if (phase === "lady") {
+  
+          document.querySelector("#status").innerText = "Your turn to use the Lady of the Lake. Select one player to use it on.";
+  
+          var divs = document.querySelectorAll("#mainRoomBox div");
+          //add the event listeners for button press
+          for (var i = 0; i < divs.length; i++) {
+              if (ladyablePeople[i] === true) {
+                  divs[i].addEventListener("click", function () {
+                    // console.log("avatar pressed");
+                      //toggle the highlight class
+                      this.classList.toggle("highlight-avatar");
+                      //change the pick team button to enabled/disabled
+                      enableDisableButtons();
+                  });
+              }
+          }
+      }
+  }
+  
+  function drawMiddleBoxes() {
+      //draw missions and numPick
+      //j<5 because there are only 5 missions/picks each game
+      if (gameData) {
+          for (var j = 0; j < 5; j++) {
+              //missions
+              var missionStatus = gameData.missionHistory[j];
+              if (missionStatus === "succeeded") {
+                  document.querySelectorAll(".missionBox")[j].classList.add("missionBoxSucceed");
+                  document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxFail");
+              }
+              else if (missionStatus === "failed") {
+                  document.querySelectorAll(".missionBox")[j].classList.add("missionBoxFail");
+                  document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxSucceed");
+              }
+  
+              //draw in the number of players in each mission
+              var numPlayersOnMission = gameData.numPlayersOnMission[j];
+              if (numPlayersOnMission) {
+                  document.querySelectorAll(".missionBox")[j].innerHTML = "<p>" + numPlayersOnMission + "</p>";
+              }
+  
+              //picks boxes
+              var pickNum = gameData.pickNum;
+              if (j < pickNum) {
+                  document.querySelectorAll(".pickBox")[j].classList.add("pickBoxFill");
+              }
+              else {
+                  document.querySelectorAll(".pickBox")[j].classList.remove("pickBoxFill");
+              }
+          }
+      }
+      else {
+          for (var j = 0; j < 5; j++) {
+              document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxFail");
+              document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxSucceed");
+              document.querySelectorAll(".missionBox")[j].innerText = "";
+              document.querySelectorAll(".pickBox")[j].classList.remove("pickBoxFill");
+          }
+      }
+  }
+  
+  
+  function drawAndPositionAvatars() {
+      var w = $("#mainRoomBox").width();
+      var h = $("#mainRoomBox").height();
+  
+      var numPlayers = roomPlayersData.length;//3;
+  
+      //generate the divs in the html
+      var str = "";
+    // console.log("Game started: " + gameStarted);
+      if (gameStarted === true) {
+          //draw the players according to what the client sees (their role sees)
+          for (var i = 0; i < numPlayers; i++) {
+              //check if the user is on the spy list. 
+              //if they are not, they are res
+              if (gameData.see.spies && gameData.see.spies.indexOf(roomPlayersData[i].username) === -1) {
+                  str = str + strOfAvatar(roomPlayersData[i], "res");
+              }
+              //else they are a spy
+              else {
+                  str = str + strOfAvatar(roomPlayersData[i], "spy");
+              }
+          }
+      }
+      //when game has not yet started, everyone is a res image
+      else {
+          for (var i = 0; i < numPlayers; i++) {
+              str = str + strOfAvatar(roomPlayersData[i], "res");
+          }
+      }
+  
+      //set the divs into the box
+      $("#mainRoomBox").html(str);
+  
+  
+      //===============================================
+      //POSITIONING SECTION
+      //===============================================
+  
+      //set the positions and sizes
+      // console.log("numPlayers: " + numPlayers)
+      var divs = document.querySelectorAll("#mainRoomBox div");
+      const scaleWidthDown = 0.9;
+      const scaleHeightDown = 1;
+      var playerLocations = generatePlayerLocations(numPlayers, (w / 2)*scaleWidthDown, (h / 2)*scaleHeightDown);
+  
+      for (var i = 0; i < numPlayers; i++) {
+          // console.log("player position: asdflaksdjf;lksjdf");
+          var offsetX = w / 2;
+          var offsetY = h / 2;
+          
+          //reduce the height so that the bottom of avatars dont crash into the bottom.
+          offsetY = offsetY * 1;
+  
+        // console.log("offsetY: " + offsetY);
+  
+  
+          //scale the height of avatars
+          var windowH = $(window).height();
+          var windowW = $(window).width();
+  
+          var strX = playerLocations.x[i] + offsetX + "px";
+          var strY = playerLocations.y[i] + offsetY - windowH * 0.01 + "px";
+  
+          divs[i].style.left = strX;
+          divs[i].style.bottom = strY;
+  
+          var ratioXtoY = 0.8;
+  
+          divs[i].style.height = 37 + "%";
+          divs[i].style.width = divs[i].offsetHeight * ratioXtoY + "px";
+  
+          // //size of the avatar img
+          // divs[i].style.width = 30 + "%";
+          // divs[i].style.height = 30 + "%";
+  
+          // //get which one is smaller, width or height and then
+          // //force square
+          // if(divs[i].offsetWidth < divs[i].offsetHeight){
+          //     divs[i].style.height = divs[i].offsetWidth + "px";
+          //     // console.log("width smaller, make height smaller to square");
+          // } else{
+          //     divs[i].style.width = divs[i].offsetHeight + "px";
+          //     // console.log("height smaller, make width smaller to square");
+          // }
+      }
+  }
+  
+  function drawGuns() {
+  
+      // gameData.propsedTeam
+      for (var i = 0; i < gameData.proposedTeam.length; i++) {
+          //set the div string and add the gun
+          var str = $("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])].innerHTML;
+          str = str + "<span><img src='pictures/gun.png' class='gun'></span>";
+          //update the str in the div
+          $("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])].innerHTML = str;
+      }
+  }
+  
+  function drawTeamLeaderStar() {
+      var playerIndex;
+      if (gameStarted === false) {
+          playerIndex = 0;
+      } else {
+          playerIndex = gameData.teamLeader;
+      }
+      //set the div string and add the star
+      if ($("#mainRoomBox div")[playerIndex]) {
+          var str = $("#mainRoomBox div")[playerIndex].innerHTML;
+          str = str + "<span><img src='pictures/leader.png' class='leaderStar'></span>";
+          //update the str in the div
+          $("#mainRoomBox div")[playerIndex].innerHTML = str;
+  
+          $(".leaderStar")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
+      }
+  }
+  
+  function drawClaimingPlayers(claimingPlayers){
+  
+      for(var i = 0; i < roomPlayersData.length; i++){
+          if(roomPlayersData[i].claim && roomPlayersData[i].claim === true){
+              if ($("#mainRoomBox div")[getIndexFromUsername(roomPlayersData[i].username)]) {
+                  var str = $("#mainRoomBox div")[getIndexFromUsername(roomPlayersData[i].username)].innerHTML;
+                  str = str + "<span><img src='pictures/claim.png' class='claimIcon'></span>";
+                  //update the str in the div
+                  $("#mainRoomBox div")[getIndexFromUsername(roomPlayersData[i].username)].innerHTML = str;
+          
+                  // $(".claimIcon")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
+              }
+          }
+      }
+  
+  }
+  
+  function drawExitedPlayers(playersStillInRoom){
+  
+      var arrayOfUsernames = []
+      for(var i = 0; i < roomPlayersData.length; i++){
+          arrayOfUsernames.push(roomPlayersData[i].username);
+      }
+  
+  
+      for(var i = 0; i < arrayOfUsernames.length; i++){
+          // if(roomPlayersData[i].claim && roomPlayersData[i].claim === true){
+          if(playersStillInRoom.indexOf(arrayOfUsernames[i]) === -1){
+  
+              // var j = playersStillInRoom.indexOf(arrayOfUsernames[i]);
+  
+              // if ($("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])]) {
+              //     var str = $("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])].innerHTML;
+              //     str = str + "<span><img src='pictures/leave.png' class='leaveIcon'></span>";
+              //     //update the str in the div
+              //     $("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])].innerHTML = str;
+          
+              //     // $(".claimIcon")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
+              // }
+  
+  
+              if ($(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])]) {
+                  $(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])].classList.add("leftRoom");
+              }
+          }
+          else{
+              if ($(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])]) {
+                  $(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])].classList.remove("leftRoom");
+              }
+          }
+      }
+  
+  }
+  
+  function enableDisableButtonsLeader(numPlayersOnMission) {
+      //if they've selected the right number of players, then allow them to send
+      // console.log("countHighlightedAvatars: " + countHighlightedAvatars());
+      // console.log("numPlayersOnMission: " + numPlayersOnMission);
+      if (countHighlightedAvatars() == numPlayersOnMission || (countHighlightedAvatars() + "*") == numPlayersOnMission) {
+          document.querySelector("#green-button").classList.remove("disabled");
+          document.querySelector("#green-button").classList.remove("faded");
+      }
+      else {
+          document.querySelector("#green-button").classList.add("disabled");
+          document.querySelector("#green-button").classList.add("faded");
+          
+      }
+  }
+  function enableDisableButtons() {
+      //reset the faded class for the buttons
+      document.querySelector("#green-button").classList.remove("faded");
+  
+      
+      if (gameStarted === false) {
+          //Host
+          if (ownUsername === getUsernameFromIndex(0)) {
+              document.querySelector("#green-button").classList.remove("disabled");
+              document.querySelector("#green-button").innerText = "Start";
+  
+              document.querySelector("#red-button").classList.remove("disabled");
+              document.querySelector("#red-button").innerText = "Kick";
+  
+              //set the stuff for the kick modal buttons
+              $("#red-button").attr("data-toggle", "modal");
+              $("#red-button").attr("data-target", "#kickModal");
+  
+              document.querySelector("#options-button").classList.remove("hidden");
+          }
+          //we are spectator
+          else if (isSpectator === true) {
+              document.querySelector("#green-button").classList.remove("disabled");
+              document.querySelector("#green-button").innerText = "Join";
+  
+              document.querySelector("#red-button").classList.add("disabled");
+              // document.querySelector("#red-button").innerText = "Disabled";
+          }
+          else {
+              disableButtons();
+          }
+      }
+      else if (gameStarted === true && isSpectator === false) {
+          //if we are in picking phase
+          if (gameData.phase === "picking") {
+              document.querySelector("#green-button").classList.add("disabled");
+              document.querySelector("#green-button").innerText = "Pick";
+  
+              document.querySelector("#red-button").classList.add("disabled");
+              // document.querySelector("#red-button").innerText = "Disabled";
+          }
+  
+          //if we are in voting phase
+          else if (gameData.phase === "voting") {
+              if (checkEntryExistsInArray(gameData.playersYetToVote, ownUsername)) {
+                  document.querySelector("#green-button").classList.remove("disabled");
+                  document.querySelector("#green-button").innerText = "Approve";
+  
+                  document.querySelector("#red-button").classList.remove("disabled");
+                  document.querySelector("#red-button").innerText = "Reject";
+              }
+              else {
+                  disableButtons();
+              }
+          }
+  
+          else if (gameData.phase === "missionVoting") {
+              if (checkEntryExistsInArray(gameData.playersYetToVote, ownUsername)) {
+                  document.querySelector("#green-button").classList.remove("disabled");
+                  document.querySelector("#green-button").innerText = "SUCCEED";
+  
+                  document.querySelector("#red-button").classList.remove("disabled");
+                  document.querySelector("#red-button").innerText = "FAIL";
+              }
+              else {
+                  disableButtons();
+              }
+          }
+  
+          else if (gameData.phase === "assassination") {
+              // document.querySelector("#green-button").classList.add("disabled");
+              document.querySelector("#green-button").innerText = "SHOOT";
+  
+              document.querySelector("#red-button").classList.add("disabled");
+              // document.querySelector("#red-button").innerText = "Disabled";
+  
+              //if there is only one person highlighted
+              if (countHighlightedAvatars() == 1) {
+                  document.querySelector("#green-button").classList.remove("disabled");
+              }
+              else {
+                  document.querySelector("#green-button").classList.add("disabled");
+              }
+          }
+          else if (gameData.phase === "lady") {
+              // document.querySelector("#green-button").classList.add("disabled");
+              document.querySelector("#green-button").innerText = "Card";
+  
+              document.querySelector("#red-button").classList.add("disabled");
+              // document.querySelector("#red-button").innerText = "Disabled";
+  
+              //if there is only one person highlighted
+              if (countHighlightedAvatars() == 1 && ownUsername === getUsernameFromIndex(gameData.lady)) {
+                  document.querySelector("#green-button").classList.remove("disabled");
+              }
+              else {
+                  document.querySelector("#green-button").classList.add("disabled");
+              }
+          }
+  
+          else if (gameData.phase === "finished") {
+              disableButtons();
+          }
+      }
+      else if (gameStarted === true && isSpectator === true) {
+          disableButtons();
+      }
+  }
 
 function checkEntryExistsInArray(array, entry) {
     for (var i = 0; i < array.length; i++) {

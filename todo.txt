@@ -1,14 +1,16 @@
 To-do list:
-
--deleting stuff should just be hidden.
--Statistics page 
-
-
-
  
--Make spectator chat another colour
 
 -sometimes someone would be transparent even though they didnt leave
+-Jed bug: Percy cant see merlins and thinks theyre vt
+
+-add one more second to the countdown
+
+-game chat not highlighting yellow on new message
+
+-if u join back straight away after creating a room itll bug
+
+-mute button
 
 
 
@@ -17,7 +19,8 @@ To-do list:
 After release
 ***************************************************************************************
 -Custom colours for specific people
-
+-deleting stuff should just be hidden.
+-Statistics page 
 
 
 
@@ -284,4 +287,5 @@ Mine:
 
 -remove vh in 2nd tab
 -blue colour for people joining
+-Make spectator chat another colour
 -player pick twice
