@@ -6,10 +6,21 @@ To-do list:
 
 
  
-
+-Make spectator chat another colour
 
 -sometimes someone would be transparent even though they didnt leave
- 
+
+
+
+
+***************************************************************************************
+After release
+***************************************************************************************
+-Custom colours for specific people
+
+
+
+
 
 
 -Learn REGEX
@@ -267,3 +278,10 @@ Mine:
 
 
 -scroll down auto doesnt work with a line of multiple rows long.
+-lady book needs a space before name
+-waiting for someone to shoot Merlin.
+-players can join multiple times...
+
+-remove vh in 2nd tab
+-blue colour for people joining
+-player pick twice

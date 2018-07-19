@@ -197,6 +197,14 @@ p {
     /*font-style: italic;*/
 }
 
+.server-text-teal{
+    color: teal;
+}
+
+.spectator-chat{
+    color: #ffa860;
+}
+
 .gameplay-text {
     /* color: rgb(255, 0, 0); */
     color: gray;
@@ -392,17 +400,17 @@ p {
     transform: translateX(-50%);
 
     width: 35vw;
-    max-width: 200px;
+    max-width: 225px;
     max-height: 60px;
 }
 
 .missionBox {
     width: 7vmin;
     height: 7vmin;
-    max-width: 30px;
+    max-width: 40px;
     max-height: 30px;
-    border: 1px solid black;
-    border-radius: 7px;
+
+    border-radius: 5px;
     float: left;
     margin-left: 1px;
     margin-right: 1px;
@@ -410,6 +418,11 @@ p {
     vertical-align: middle;
     text-align: center;
 
+    border: 0px solid black;
+
+    background-color: #EFEFEF;
+    color: rgb(124, 124, 124);
+    
     
 }
 
@@ -423,6 +436,7 @@ p {
     /* background-color: #BBFFBB; */
     background-color: #0044cc;
     opacity: 0.65;
+
 
     color: white;
     

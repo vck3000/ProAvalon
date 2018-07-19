@@ -945,7 +945,7 @@ socket.on('disconnect', function(){
     // window.location= "/";
     // alert("You have been disconnected!");
     showDangerAlert("You have been disconnected! Please refresh the page.");
-
+    socket.disconnect();
 });
 
 socket.on('checkSettingsResetDate', function(serverResetDate){
@@ -1126,7 +1126,6 @@ function addToAllChat(data) {
                     $(".nav-tabs #all-chat-in-game-tab")[0].classList.add("newMessage"); 
                 }
             }
-            
         }
     }
 }
@@ -1136,6 +1135,13 @@ function addToRoomChat(data) {
     if(data){
         if (data[0] === undefined) {
             data = [data];
+        }
+
+        var usernamesOfPlayersInGame = [];
+        if(gameStarted === true){
+            roomPlayersData.forEach(function(obj){
+                usernamesOfPlayersInGame.push(obj.username);
+            });
         }
     
         for (var i = 0; i < data.length; i++) {
@@ -1149,6 +1155,12 @@ function addToRoomChat(data) {
     
             
             if (data[i] && data[i].message) {
+                var spectatorClass = "";
+                if(usernamesOfPlayersInGame.indexOf(data[i].username) === -1 && gameStarted === true){
+                    spectatorClass = "spectator-chat";
+                }
+
+
               // console.log(data[i].message);
                 //prevent XSS injection
                 var filteredMessage = data[i].message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
@@ -1170,7 +1182,7 @@ function addToRoomChat(data) {
                     }
                     //its a user's chat so put some other stuff on it
                     else {
-                        str = "<li><span style='background-color: " + highlightChatColour + "' username='" + data[i].username + "'><span class='date-text'> " + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + filteredMessage + "</span></li>";
+                        str = "<li class='" + spectatorClass + "'><span style='background-color: " + highlightChatColour + "' username='" + data[i].username + "'><span class='date-text'> " + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + filteredMessage + "</span></li>";
                     }
 
                     $(".room-chat-list").append(str);
@@ -1760,7 +1772,7 @@ function draw() {
                 }
                 else {
                     if(gameData.assassin){
-                        document.querySelector("#status").innerText = "Waiting for " + gameData.assassin + " to shoot.";
+                        document.querySelector("#status").innerText = "Waiting for " + gameData.assassin + " to shoot the Merlin.";
                     }
                     else{
                         document.querySelector("#status").innerText = "Waiting for assassin to shoot.";
@@ -2506,7 +2518,7 @@ function strOfAvatar(playerData, alliance) {
 
 
     str += "<img class='avatarImgInRoom' src='" + picLink + "'>";
-    str += "<p class='username-p'>" + lady + "" + playerData.username + " " + hammerStar + " </p>" + role + "</div>";
+    str += "<p class='username-p'>" + lady + " " + playerData.username + " " + hammerStar + " </p>" + role + "</div>";
 
 
     return str;
@@ -2551,37 +2563,41 @@ function scrollDown(chatBox) {
     var heightOfLastMessage = listBox.children().last().height();
 
     var lastMessages = listBox.children();
-    var lastMessage = lastMessages[lastMessages.length-1];
-    var extraHeight = $(lastMessage).height() - 20;
 
-    var i = lastMessages.length-1 - 1;
-    while(lastMessage.classList.contains("myQuote")){
-        lastMessage = lastMessages[i];
-        extraHeight += $(lastMessage).height() - 20;
-        i--;
-    }
-
+    if(lastMessages.length !== 0){
+        var lastMessage = lastMessages[lastMessages.length-1];
+        var extraHeight = $(lastMessage).height() - 20;
     
-
-    heightOfLastMessage = ((lastMessages.length-1) - i)*20;
-
-  // console.log("Height: " + heightOfLastMessage);
-
-
-    if((listBox.height() - scrollBox.scrollTop() - scrollBox.height()) > 5 + heightOfLastMessage + extraHeight){
-        //Show user that there is a new message with the red bar.
-        //Show because the only time this will trigger is when a new message comes in anyway
-        $(searchStrBar).removeClass("hidden");
+        var i = lastMessages.length-1 - 1;
+        while(lastMessage.classList.contains("myQuote")){
+            lastMessage = lastMessages[i];
+            extraHeight += $(lastMessage).height() - 20;
+            i--;
+        }
+    
+        
+    
+        heightOfLastMessage = ((lastMessages.length-1) - i)*20;
+    
+      // console.log("Height: " + heightOfLastMessage);
+    
+    
+        if((listBox.height() - scrollBox.scrollTop() - scrollBox.height()) > 5 + heightOfLastMessage + extraHeight){
+            //Show user that there is a new message with the red bar.
+            //Show because the only time this will trigger is when a new message comes in anyway
+            $(searchStrBar).removeClass("hidden");
+        }
+        else {
+            scrollBox.scrollTop(listBox.height());
+            $(searchStrBar).addClass("hidden");
+        }
+    
+        // //if the chatbox is not open make the red bar visible since there is a new message
+        // if(chatBoxToNavTab[chatBox] !== "" && $('.nav-tabs .active').text() !== chatBoxToNavTab[chatBox]){
+        //     $(searchStrBar).removeClass("hidden");
+        // }
     }
-    else {
-        scrollBox.scrollTop(listBox.height());
-        $(searchStrBar).addClass("hidden");
-    }
-
-    // //if the chatbox is not open make the red bar visible since there is a new message
-    // if(chatBoxToNavTab[chatBox] !== "" && $('.nav-tabs .active').text() !== chatBoxToNavTab[chatBox]){
-    //     $(searchStrBar).removeClass("hidden");
-    // }
+    
 }
 
 var arrayOfChatBoxes = [
@@ -2858,7 +2874,9 @@ function resetAllGameData() {
     $(".room-chat-list").html("");
 
     //reset the vh table
-    $("#voteHistoryTable")[0].innerHTML = "";
+    // $("#voteHistoryTable")[0].innerHTML = "";
+    $(".voteHistoryTableClass")[0].innerHTML = "";
+    $(".voteHistoryTableClass")[1].innerHTML = "";
 
     $("#missionsBox").addClass("invisible");
     

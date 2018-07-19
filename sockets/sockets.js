@@ -568,7 +568,7 @@ module.exports = function (io) {
 		//socket sends to all players
 		var data = {
 			message: socket.request.user.username + " has joined the lobby.",
-			classStr: "server-text"
+			classStr: "server-text-teal"
 		}
 		sendToAllChat(io, data);
 
@@ -939,7 +939,7 @@ module.exports = function (io) {
 				//emit to say to others that someone has joined
 				var data = {
 					message: socket.request.user.username + " has joined the room.",
-					classStr: "server-text"
+					classStr: "server-text-teal"
 				}			
 				sendToRoomChat(io, roomId, data);
 
