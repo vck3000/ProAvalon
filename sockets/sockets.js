@@ -119,16 +119,23 @@ module.exports = function (io) {
 		console.log("new playerID");
 		console.log(socket.request.user.id);
 		//keep removing all the sockets when the player ids still exist.
-		if(playerIds.indexOf(socket.request.user.id) !== -1){
-			console.log("disconnected a player who already is logged in");
-			console.log("disconnected  " + socket.request.user.username);
-			
-			allSockets[playerIds.indexOf(socket.request.user.id)].emit("disconnect");
-			
-			allSockets.splice(playerIds.indexOf(socket.request.user.id), 1);
-			playerIds = getPlayerIdsFromAllSockets();
-			
+
+		for(var i = 0; i < allSockets.length; i++){
+			if(allSockets[i].request.user.id === socket.request.user.id){
+				allSockets[i].disconnect(true);
+			}
 		}
+
+		// if(playerIds.indexOf(socket.request.user.id) !== -1){
+		// 	console.log("disconnected a player who already is logged in");
+		// 	console.log("disconnected  " + socket.request.user.username);
+			
+		// 	allSockets[playerIds.indexOf(socket.request.user.id)].emit("disconnect");
+			
+		// 	// allSockets.splice(playerIds.indexOf(socket.request.user.id), 1);
+		// 	playerIds = getPlayerIdsFromAllSockets();
+			
+		// }
 
 		//now push their socket in
 		allSockets.push(socket);
@@ -165,7 +172,8 @@ module.exports = function (io) {
 		sendToAllChat(io, data);
 
 		io.in("allChat").emit("update-current-players-list", getPlayerUsernamesFromAllSockets());
-
+		console.log("update current players list");
+		console.log(getPlayerUsernamesFromAllSockets());
 		updateCurrentGamesList(io);
 
 
@@ -187,17 +195,19 @@ module.exports = function (io) {
 			
 
 			//remove them from all sockets
+
+			allSockets.splice(allSockets.indexOf(socket), 1);
 			
-			if(playerIds.indexOf(socket.request.user.id) !== -1){
-				console.log("A player just disconnected. Removed their socket.");
-				console.log("disconnecting: " + socket.request.user.username);
+			// if(playerIds.indexOf(socket.request.user.id) !== -1){
+			// 	console.log("A player just disconnected. Removed their socket.");
+			// 	console.log("disconnecting: " + socket.request.user.username);
 				
-				allSockets[playerIds.indexOf(socket.request.user.id)].disconnect(true);
-				allSockets.splice(playerIds.indexOf(socket.request.user.id), 1);
+			// 	allSockets[playerIds.indexOf(socket.request.user.id)].disconnect(true);
+			// 	allSockets.splice(playerIds.indexOf(socket.request.user.id), 1);
 				
 				
-				playerIds = getPlayerIdsFromAllSockets();
-			}
+			// 	playerIds = getPlayerIdsFromAllSockets();
+			// }
 
 			//send out the new updated current player list
 			socket.in("allChat").emit("update-current-players-list", getPlayerUsernamesFromAllSockets());
@@ -792,6 +802,7 @@ function getPlayerIdsFromAllSockets(){
 	for(var i = 0; i < allSockets.length; i++){
 		playerIds[i] = allSockets[i].request.user.id;
 		console.log(allSockets[i].request.user.id);
+		console.log("username: " + allSockets[i].request.user.username);
 	}
 	return playerIds;
 }
