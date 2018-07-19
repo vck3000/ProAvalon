@@ -22,7 +22,7 @@ var adminCommands = actionsObj.adminCommands;
 
 const dateResetRequired = 1531125110385;
 
-
+var currentPlayersUsernames = [];
 var allSockets = [];
 
 var rooms = [];
@@ -109,19 +109,68 @@ module.exports = function (io) {
 			}
 		}
 
-		console.log(socket.request.user.username + " has connected under socket ID: " + socket.id);
-
-
-		var playerIds = getPlayerIdsFromAllSockets();
-		//keep removing all the sockets when the player ids still exist.
-		while(playerIds.indexOf(socket.request.user.id) !== -1){
-			allSockets.splice(playerIds.indexOf(socket.request.user.id), 1);
-			playerIds = getPlayerIdsFromAllSockets();
+		//if user is already logged in, destroy their last session
+		//compare the new username that is lowercased to the list of current usernames lowercased
+		var loweredCurrentPlayersUsernames = [];
+		for (var i = 0; i < currentPlayersUsernames.length; i++) {
+			loweredCurrentPlayersUsernames[i] = currentPlayersUsernames[i].toLowerCase();
 		}
 
-		//now push their socket in
-		allSockets.push(socket);
+		var i = loweredCurrentPlayersUsernames.indexOf(socket.request.user.username.toLowerCase());
+		if (i !== -1) {
+			//kick the old socket
+			allSockets[socket.request.user.username.toLowerCase()].emit("alert", "You've been disconnected");
+			allSockets[socket.request.user.username.toLowerCase()].disconnect();
+			currentPlayersUsernames.splice(i, 1);
+			console.log("User was logged in already, killed last session and socket.")
+		}
+		console.log(socket.request.user.username + " has connected under socket ID: " + socket.id);
 
+		//automatically join the all chat
+		socket.join("allChat");
+		//push the new user into our list of players
+		currentPlayersUsernames.push(socket.request.user.username);
+		currentPlayersUsernames.sort();
+		//push the new socket into our list of sockets
+		allSockets[socket.request.user.username.toLowerCase()] = socket;
+
+		//send a notif to the user saying logged in
+		// socket.emit("success-alert", "Successfully logged in! Welcome, " + socket.request.user.username + "!");
+
+		//socket sends to all players
+		var data = {
+			message: socket.request.user.username + " has joined the lobby.",
+			classStr: "server-text-teal"
+		}
+		sendToAllChat(io, data);
+
+
+		//io sends to everyone in the site, including the current user of this socket
+		var loweredCurrentPlayersUsernames = [];
+		//get a new updated list of lowered usernames
+		for (var i = 0; i < currentPlayersUsernames.length; i++) {
+			loweredCurrentPlayersUsernames[i] = currentPlayersUsernames[i].toLowerCase();
+		}
+
+		if(allSockets.length !== currentPlayersUsernames.length){
+			for(var key in allSockets){
+				if(allSockets.hasOwnProperty(key)){
+
+					//if the username doesn't exist in the curerntplayerusernames,
+					//then make them refresh
+					// console.log(loweredCurrentPlayersUsernames);
+					if(loweredCurrentPlayersUsernames.indexOf(key) === -1){
+						allSockets[key].emit("refresh");
+						console.log("MADE THEM REFRESH!!! SUCCESS");
+						console.log(socket.request.user.username);
+					}
+				}
+			}
+		}
+
+		io.in("allChat").emit("update-current-players-list", currentPlayersUsernames);
+
+		updateCurrentGamesList(io);
 
 		//send the user its ID to store on their side.
 		socket.emit("username", socket.request.user.username);
@@ -140,62 +189,18 @@ module.exports = function (io) {
 			socket.emit("adminCommands", adminCommands);
 		}
 
+
+
 		socket.emit("checkSettingsResetDate", dateResetRequired);
 		
 
-
-		//automatically join the all chat
-		socket.join("allChat");
-		//socket sends to all players
-		var data = {
-			message: socket.request.user.username + " has joined the lobby.",
-			classStr: "server-text-teal"
-		}
-		sendToAllChat(io, data);
-
-		io.in("allChat").emit("update-current-players-list", getPlayerUsernamesFromAllSockets());
-
-		updateCurrentGamesList(io);
-
-
-
-
-		//when a user disconnects/leaves the whole website
-		socket.on("disconnect", function (data) {
-			//debugging
-			console.log(socket.request.user.username + " has left the lobby.");
-			
-			//remove them from all sockets
-			var playerIds = getPlayerIdsFromAllSockets();
-			while(playerIds.indexOf(socket.request.user.id) !== -1){
-				allSockets.splice(playerIds.indexOf(socket.request.user.id), 1);
-				playerIds = getPlayerIdsFromAllSockets();
-			}
-
-
-			//send out the new updated current player list
-			socket.in("allChat").emit("update-current-players-list", getPlayerUsernamesFromAllSockets());
-			//tell all clients that the user has left
-			var data = {
-				message: socket.request.user.username + " has left the lobby.",
-				classStr: "server-text"
-			}
-			sendToAllChat(io, data);
-
-			//Note, by default when socket disconnects, it leaves from all rooms. 
-			//If user disconnected from within a room, the leave room function will send a message to other players in room.
-
-			//if they are in a room, say they're leaving the room.
-			var data = {
-				message: socket.request.user.username + " has left the room.",
-				classStr: "server-text"
-			}
-			sendToRoomChat(io, socket.request.user.inRoomId, data);
-			// io.in(socket.request.user.inRoomId).emit("player-left-room", socket.request.user.username);
-
-			removePlayerFromRoomAndCheckDestroy(socket, io);
-		});
-
+		// router.post("/modAction", function(req, res){
+		// 	console.log("modAction!");
+		
+		// 	console.log(req.body);
+		
+		// 	res.send("received");
+		// });
 
 		socket.on("modAction", async function(data){
 
@@ -381,6 +386,42 @@ module.exports = function (io) {
 					// io.in(data.roomId).emit("roomChatToClient", data);
 				}
 			}
+		});
+
+
+		//when a user disconnects/leaves the whole website
+		socket.on("disconnect", function (data) {
+			//debugging
+			console.log(socket.request.user.username + " has left the lobby.");
+			//get the index of the player in the array list
+			var i = currentPlayersUsernames.indexOf(socket.request.user.username);
+			//also remove from allSockets
+			delete allSockets[socket.request.user.username.toLowerCase()];
+			//in case they already dont exist, dont crash server
+			if (i === -1) { return; }
+			//remove that single player who left
+			currentPlayersUsernames.splice(i, 1);
+			//send out the new updated current player list
+			socket.in("allChat").emit("update-current-players-list", currentPlayersUsernames);
+			//tell all clients that the user has left
+			var data = {
+				message: socket.request.user.username + " has left the lobby.",
+				classStr: "server-text"
+			}
+			sendToAllChat(io, data);
+
+			//Note, by default when socket disconnects, it leaves from all rooms. 
+			//If user disconnected from within a room, the leave room function will send a message to other players in room.
+
+			//if they are in a room, say they're leaving the room.
+			var data = {
+				message: socket.request.user.username + " has left the room.",
+				classStr: "server-text"
+			}
+			sendToRoomChat(io, socket.request.user.inRoomId, data);
+			// io.in(socket.request.user.inRoomId).emit("player-left-room", socket.request.user.username);
+
+			removePlayerFromRoomAndCheckDestroy(socket, io);
 		});
 
 
@@ -802,22 +843,4 @@ function isMuted(socket){
 	});
 
 	return returnVar;
-}
-
-function getPlayerIdsFromAllSockets(){
-	var playerIds = [];
-	for(var i = 0; i < allSockets.length; i++){
-		playerIds[i] = allSockets[i].request.user.id;
-		console.log(allSockets[i].request.user.id);
-	}
-	return playerIds;
-}
-
-function getPlayerUsernamesFromAllSockets(){
-	var playerUsernames = [];
-	for(var i = 0; i < allSockets.length; i++){
-		playerUsernames[i] = allSockets[i].request.user.username;
-		console.log(allSockets[i].request.user.username);
-	}
-	return playerUsernames;
 }
