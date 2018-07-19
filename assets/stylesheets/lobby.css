@@ -884,7 +884,7 @@ i {
 
 .approveLabel{
     position: absolute;
-    top: -10%;
+    top: -20%;
     left: 50%;
     text-align: center;
     transform: translateX(-50%);
@@ -892,7 +892,7 @@ i {
 
 .rejectLabel{
     position: absolute;
-    top: -10%;
+    top: -20%;
     left: 50%;
     text-align: center;
     transform: translateX(-50%);

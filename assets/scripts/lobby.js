@@ -784,7 +784,7 @@ document.querySelector("#danger-alert-box-button").addEventListener("click", fun
 
 document.querySelector("#success-alert-box-button").addEventListener("click", function () {
     document.querySelector("#success-alert-box").classList.add("inactive-window");
-    document.querySelector("#success-alert-box-buttofn").classList.add("inactive-window");
+    document.querySelector("#success-alert-box-button").classList.add("inactive-window");
 });
 
 document.querySelector("#backButton").addEventListener("click", function () {
@@ -942,8 +942,10 @@ socket.on("joinedGameSuccess", function(data){
 });
 
 socket.on('disconnect', function(){
-    window.location= "/";
-    alert("You have been disconnected!");
+    // window.location= "/";
+    // alert("You have been disconnected!");
+    showDangerAlert("You have been disconnected! Please refresh the page.");
+
 });
 
 socket.on('checkSettingsResetDate', function(serverResetDate){
@@ -1402,14 +1404,14 @@ socket.on("danger-alert", function (data) {
 function showSuccessAlert(data) {
     document.querySelector("#success-alert-box").classList.remove("inactive-window");
     document.querySelector("#success-alert-box-button").classList.remove("inactive-window");
-    document.querySelector("#success-alert-box").textContent = data + "        |        Press here to remove";
+    document.querySelector("#success-alert-box").innerHTML = data + " <span class='glyphicon glyphicon-remove pull-right'></span>";
 }
 
 
 function showDangerAlert(data) {
     document.querySelector("#danger-alert-box").classList.remove("inactive-window");
     document.querySelector("#danger-alert-box-button").classList.remove("inactive-window");
-    document.querySelector("#danger-alert-box").textContent = data + "        |        Press here to remove";
+    document.querySelector("#danger-alert-box").innerHTML = data + " <span class='glyphicon glyphicon-remove pull-right'></span>";
 };
 
 
