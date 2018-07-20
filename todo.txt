@@ -1,15 +1,9 @@
 To-do list:
  
-
--sometimes someone would be transparent even though they didnt leave
--Jed bug: Percy cant see merlins and thinks theyre vt
-
--add one more second to the countdown
-
--game chat not highlighting yellow on new message
+-forum moderation
 
 
--mute button
+
 
 
 
@@ -22,6 +16,8 @@ After release
 -Statistics page 
 
 
+-Jed bug: Percy cant see merlins and thinks theyre vt
+PERHAPS ITS FIXED NOW WITH THE SOCKETS REFACTOR?
 
 
 
@@ -289,3 +285,8 @@ Mine:
 -Make spectator chat another colour
 -player pick twice
 -if u join back straight away after creating a room itll bug
+-game chat not highlighting yellow on new message
+-add one more second to the countdown
+-sometimes someone would be transparent even though they didnt leave
+
+-mute button

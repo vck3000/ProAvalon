@@ -15,9 +15,12 @@
 <div class="myContainer">
 
     <button id="backButton" class="btn btn-warning" onclick="goBack()">Back</button>
-    <br>
-    <br>
+    <% if(locals.mod){ %>
+        <button id="backButton" class="btn btn-info pull-right" onclick="toggleModOptions()">Mod Actions</button>
+    <% } %>
 
+    <br>
+    <br>
 
     <div class="postContainer bg-<%=bg_converter[forumThread.category]%>">
 
@@ -64,6 +67,7 @@
                     <% } %>
                 </a>
             </p>
+            
 
 
             <% if(currentUser && forumThread.author.id && forumThread.author.id.equals(currentUser.id)){ %>
@@ -81,25 +85,32 @@
                                 swal({
                                     title: "Are you sure you want to delete?",
                                     text: "All comments and replies will also be deleted.",
-                                    icon: "warning",
-                                    buttons: true,
-                                    dangerMode: true,
-                                })
-                                .then((willDelete) => {
-
-                                    if (willDelete) {
-                                        $.ajax({
-                                        type: "DELETE",
-                                        url: "/forum/deleteForumThread/" + postId,
-                                        // data: "name=someValue",
-                                    });
+                                    type: "warning",
                                     
-                                    swal("Your thread has been deleted.").then(function(){
-                                        window.location.replace("/forum");
-                                    });
+                                    showCancelButton: true,
+                                    reverseButtons: true
+                                })
+                                .then((result) => {
+
+                                    if (result.value) {
+                                        $.ajax({
+                                            type: "DELETE",
+                                            url: "/forum/deleteForumThread/" + postId,
+                                            // data: "name=someValue",
+                                        });
+                                        
+                                        swal({
+                                            title: "Your thread has been deleted.",
+                                            type: "success"
+                                        }).then(function(){
+                                            window.location.replace("/forum");
+                                        });
 
                                     } else {
-                                    swal("Nothing was deleted.");
+                                    swal({
+                                        title: "Nothing was deleted.",
+                                        type: "info"
+                                    });
                                     }
                                 });
                             }
@@ -108,6 +119,15 @@
                     </a>
                 </div>
             <%}%>
+
+
+            <% if(locals.mod){ %>
+                <br>
+                <a class="btn btn-danger btn-sm modButton hidden" idOfElement="<%=forumThread._id%>" typeOfElement="forum" authorId="<%=forumThread.author.id%>">Mod Remove</a>
+            <% } %>
+
+            
+
         </p>
     </div>
 
@@ -189,6 +209,10 @@
                                 Remove
                                 </a>
                             <% } %>
+
+                            <% if(locals.mod){ %>
+                                <a class="btn btn-danger btn-sm modButton hidden" idOfElement="<%=comment._id%>" typeOfElement="comment" authorId="<%=comment.author.id%>">Mod Remove</a>
+                            <% } %>
                         
                         </p>
 
@@ -261,6 +285,10 @@
                                     </a>
                                 
                                 <% } %>
+
+                                <% if(locals.mod){ %>
+                                    <a class="btn btn-danger btn-sm modButton hidden" idOfElement="<%=reply._id%>" typeOfElement="reply"  authorId="<%=reply.author.id%>">Mod Remove</a>
+                                <% } %>
                             </p>
 
                             <div class="mainCommentEditButtons hidden">
@@ -291,6 +319,82 @@
 
 
 
+<!-- Modal for Moderators-->
+<div id="modModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h2 class="modal-title" style="color: red; font-weight: 700;">Moderator menu. May your judgement bring peace!</h2>
+            </div>
+            
+            <div style="width: 75%; margin: auto;">
+            <br>
+
+                <iframe name="frame" style="display: none;"></iframe>
+                <form action="/modAction" method="POST" target="frame" id="modactionform">
+                    <div class="form-group">
+                        <label for="banPlayerUsername">Username of player to modAction against: <h6 style="display: inline">(It is case sensitive, please be careful! Best to copy paste their username)</h6></label>
+                        <input name="banPlayerUsername" type="text" class="form-control" id="banPlayerUsername" placeholder="Username of player to modAction against.">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="typeofmodaction">Type of modAction to do: </label>
+                        <br>
+                        <select name="typeofmodaction" class="form-control" id="typeofmodaction">
+                            <option selected>Please select an option</option>
+                            <option value="remove">Remove</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reasonofmodaction">Reason: </label>
+                        <br>
+                        <select name="reasonofmodaction" class="form-control" id="typeofmodaction">
+                            <option selected>Please select an option</option>
+                            <option value="abusive">Abusive</option>
+                            <option value="unrelated">Unrelated</option>
+                            <option value="advertising">Advertising</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Please confirm that the following is what you want to remove:</label>
+                        <div id="modActionBanningElementText" style="background-color: #cccccc; border-radius: 5px;">
+                            asdf test
+                        </div>
+                    </div>                    
+
+
+                    <div class="form-group">
+                        <label for="descriptionByMod">Description: <h6 style="display: inline;">OPTIONAL: This will be publically viewable. Up to you if you want to write anything.</h6></label>
+                        <br>
+                        <textarea name="descriptionByMod" class="form-control" style="width: 100%;" id="descriptionByMod"></textarea>
+                    </div>
+
+                    <br>
+                    <!--<input type="submit" value="Slam the hammer of judgement!" class="btn btn-danger" id="modActionCloseButton">-->
+                    <button id="modActionCloseButton" type="button" class="btn btn-danger" >Slam the hammer of judgement!</button>
+                    <br>
+                    <br>
+                </form>
+            </div>
+
+
+            <div class="modal-footer">
+            
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+    
+
+
+
 
 
 <script type="text/javascript" src="/scripts/forum/show.js"></script>
@@ -303,13 +407,25 @@
         // $('.commentReply').summernote();
     });
 
+    function toggleModOptions(){
+        $(".modButton").toggleClass("hidden");
+    }
+
+
+    $(".modButton").on("click", function(e){
+        console.log($(e.target).attr("idOfElement"));
+
+        $("#modModal").modal("show");
+    });
+
+
+
+
 
 
 
 
 </script>
-
-
 
 
 <% include ../partials/footer%>

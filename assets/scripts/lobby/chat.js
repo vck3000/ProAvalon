@@ -188,60 +188,66 @@ function addToRoomChat(data) {
             
             if (data[i] && data[i].message) {
                 var spectatorClass = "";
-                if(usernamesOfPlayersInGame.indexOf(data[i].username) === -1 && gameStarted === true){
-                    spectatorClass = "spectator-chat";
+                var muteSpectators = $(".muteSpecs")[0].checked;
+                //if they dont exist in players in room, if game is started, and if mute spectators
+                if(usernamesOfPlayersInGame.indexOf(data[i].username) === -1 && gameStarted === true && muteSpectators === true){
+                    //this message is muted. 
+                    //dont do anything
                 }
-
-
-              // console.log(data[i].message);
-                //prevent XSS injection
-                var filteredMessage = data[i].message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
-              // console.log("Filtered message: " + filteredMessage);
-                var str = "";
-
-                // if there is no '[', then the chat incoming is not a quote.
-                if(filteredMessage.indexOf("[") === -1){
-                    //set the highlight chat if the user has been selected already
-                    var highlightChatColour = "";
-                  // console.log("true?"  + selectedChat[data[i].username]);
-                    if (selectedChat[data[i].username] === true) {
-                        highlightChatColour = docCookies.getItem("player" + getIndexFromUsername(data[i].username) + 'HighlightColour');
-                    }
-
-                    //if its a server text or special text
-                    if (data[i].classStr && data[i].classStr !== "") {
-                        str = "<li class='" + data[i].classStr + "'><span class='date-text'>" + date + "</span> " + filteredMessage;
-                    }
-                    //its a user's chat so put some other stuff on it
-                    else {
-                        str = "<li class='" + spectatorClass + "'><span style='background-color: " + highlightChatColour + "' username='" + data[i].username + "'><span class='date-text'> " + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + filteredMessage + "</span></li>";
-                    }
-
-                    $(".room-chat-list").append(str);
-                    scrollDown("room-chat-room");
-                    scrollDown("room-chat-room2");
-                }
-
-                //else if there is a '[' character, then assume the user is quoting a chunk of text
                 else{
-                    var strings = filteredMessage.split("[");
-
-                    str = "<li><span username='" + data[i].username + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + "Quoting:" + "</span></li>";
-
-                  // console.log("Strings: ");
-
-                    for(var j = 1; j < strings.length; j++){
-                        str += "<li class='myQuote'>" + "[" + strings[j] + "</li>";
-                      // console.log(strings[j]);
+                    if(usernamesOfPlayersInGame.indexOf(data[i].username) === -1 && gameStarted === true){
+                        spectatorClass = "spectator-chat";
                     }
 
-                    $(".room-chat-list").append(str);
-                    scrollDown("room-chat-room");
-                    scrollDown("room-chat-room2");
-                }
-                //yellow notification on the tabs in room.
-                if ($(".nav-tabs #room-chat-in-game-tab").hasClass("active") === false) {
-                    $(".nav-tabs #room-chat-in-game-tab")[0].classList.add("newMessage");
+                    //prevent XSS injection
+                    var filteredMessage = data[i].message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
+                    // console.log("Filtered message: " + filteredMessage);
+                    var str = "";
+
+                    // if there is no '[', then the chat incoming is not a quote.
+                    if(filteredMessage.indexOf("[") === -1){
+                        //set the highlight chat if the user has been selected already
+                        var highlightChatColour = "";
+                    // console.log("true?"  + selectedChat[data[i].username]);
+                        if (selectedChat[data[i].username] === true) {
+                            highlightChatColour = docCookies.getItem("player" + getIndexFromUsername(data[i].username) + 'HighlightColour');
+                        }
+
+                        //if its a server text or special text
+                        if (data[i].classStr && data[i].classStr !== "") {
+                            str = "<li class='" + data[i].classStr + "'><span class='date-text'>" + date + "</span> " + filteredMessage;
+                        }
+                        //its a user's chat so put some other stuff on it
+                        else {
+                            str = "<li class='" + spectatorClass + "'><span style='background-color: " + highlightChatColour + "' username='" + data[i].username + "'><span class='date-text'> " + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + filteredMessage + "</span></li>";
+                        }
+
+                        $(".room-chat-list").append(str);
+                        scrollDown("room-chat-room");
+                        scrollDown("room-chat-room2");
+                    }
+
+                    //else if there is a '[' character, then assume the user is quoting a chunk of text
+                    else{
+                        var strings = filteredMessage.split("[");
+
+                        str = "<li><span username='" + data[i].username + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + "Quoting:" + "</span></li>";
+
+                    // console.log("Strings: ");
+
+                        for(var j = 1; j < strings.length; j++){
+                            str += "<li class='myQuote'>" + "[" + strings[j] + "</li>";
+                        // console.log(strings[j]);
+                        }
+
+                        $(".room-chat-list").append(str);
+                        scrollDown("room-chat-room");
+                        scrollDown("room-chat-room2");
+                    }
+                    //yellow notification on the tabs in room.
+                    if ($(".nav-tabs #room-chat-in-game-tab").hasClass("active") === false) {
+                        $(".nav-tabs #room-chat-in-game-tab")[0].classList.add("newMessage");
+                    }
                 }
             }
         }
@@ -262,5 +268,18 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     }
 
   // console.log("change tab " + target);
+
+});
+
+
+$(".muteSpecs").on("change", function(e){
+    // console.log(e);
+    console.log(e.target.checked);
+
+    var muteButtons = $(".muteSpecs");
+    
+    for(var i = 0; i < muteButtons.length; i++){
+        muteButtons[i].checked = e.target.checked;
+    }
 
 });

@@ -579,7 +579,7 @@ module.exports = function (io) {
 			//tell all clients that the user has left
 			var data = {
 				message: socket.request.user.username + " has left the lobby.",
-				classStr: "server-text"
+				classStr: "server-text-teal"
 			}
 			sendToAllChat(io, data);
 
@@ -881,7 +881,7 @@ module.exports = function (io) {
 
 				var data = {
 					message: socket.request.user.username + " has left the room.",
-					classStr: "server-text"
+					classStr: "server-text-teal"
 				}
 				sendToRoomChat(io, socket.request.user.inRoomId, data);
 

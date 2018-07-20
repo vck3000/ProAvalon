@@ -11,6 +11,9 @@ var User 			= require("../../models/user");
 
 var mongoose = require('mongoose');
 
+var modsArray = require("../../modsadmins/mods");
+var adminsArray = require("../../modsadmins/admins");
+
 
 
 var sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2', 'u', 'span', 'br'];
@@ -138,11 +141,18 @@ router.get("/show/:id", function (req, res) {
 					userNotifications = foundUser.notifications;
 					// console.log(foundUser.notifications);
 				}
+
+				var isMod;
+				if(modsArray.indexOf(req.user.username.toLowerCase()) !== -1){
+					isMod = true;
+				}
+
 				res.render("forum/show", {
 					userNotifications: userNotifications,
 					forumThread: foundForumThread, 
 					currentUser: req.user,
-					idsOfLikedPosts: idsOfLikedPosts
+					idsOfLikedPosts: idsOfLikedPosts,
+					mod: isMod
 				});		
 			});
 

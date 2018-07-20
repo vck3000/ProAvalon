@@ -104,7 +104,7 @@ socket.on("game-starting", function (roles) {
         allowEnterKey: false,
         reverseButtons: true,
         
-        timer: 10000,
+        timer: 11000,
 
         onOpen: () => {
             // swal.showLoading()
