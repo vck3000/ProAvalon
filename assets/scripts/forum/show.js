@@ -117,13 +117,12 @@ deletes.forEach(function(singleDelete){
 
         swal({
             title: "Are you sure you want to delete your comment?",
-            icon: "warning",
-            buttons: true,
-            dangerMode: true,
+            type: "warning",
+            showCancelButton: true,
+            reverseButtons: true
         })
-        .then((willDelete) => {
-
-            if (willDelete) {
+        .then((result) => {
+            if (result.value) {
                 $.ajax({
                 type: "DELETE",
                 url: linkToDelete,
@@ -156,13 +155,13 @@ deletes.forEach(function(singleDelete){
 
         swal({
             title: "Are you sure you want to delete your reply?",
-            icon: "warning",
-            buttons: true,
-            dangerMode: true,
+            type: "warning",            
+            showCancelButton: true,
+            reverseButtons: true
         })
-        .then((willDelete) => {
+        .then((result) => {
     
-            if (willDelete) {
+            if (result.value) {
                 $.ajax({
                 type: "DELETE",
                 url: linkToDelete,

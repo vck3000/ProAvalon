@@ -2,6 +2,9 @@ var mongoose = require("mongoose");
 
 var replySchema = new mongoose.Schema({
 	text: String,
+	oldText: String,
+
+	disabled: Boolean,
 
 	author: {
 		id: {

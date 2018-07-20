@@ -31,17 +31,6 @@ var sanitizeHtmlAllowedAttributesForumThread = {
 };
 
 
-
-// forumThreadCommentReply.find({}).populate("clients").exec(function(err, foundObj){
-// 	console.log("complete");
-// 	// console.log(foundObj);
-
-
-// 	foundObj.forEach(function(obj){
-// 		console.log(obj.clients);
-// 	})
-// });
-
 /**********************************************************/
 //Show the forumThread
 /**********************************************************/
@@ -62,6 +51,27 @@ router.get("/show/:id", function (req, res) {
 				res.redirect("/forum");
 				return;
 			}
+
+			var mod = false;
+			//if they're mod then allow them see disabled posts.
+			if(modsArray.indexOf(req.user.username.toLowerCase()) !== -1){
+				mod = true;
+			}
+
+			// remove any replies and comments that are disabled if not a moderator is viewing
+			// if(mod === false){
+			// 	console.log(foundForumThread.comments);
+
+			// 	for(var i = foundForumThread.comments.length - 1; i >= 0; i--){
+			// 		// console.log(foundForumThread.comments[i].disabled);
+			// 		if(foundForumThread.comments[i].disabled && foundForumThread.comments[i].disabled === true){
+			// 			console.log("Remove a comment");
+			// 			foundForumThread.comments[i].oldText = "";
+			// 		}
+			// 	}
+			// }
+
+
 
 			//update the time since string for forumThread
 			var timeSince = getTimeDiffInString(foundForumThread.timeLastEdit);

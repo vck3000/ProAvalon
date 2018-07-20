@@ -32,7 +32,21 @@ var modActionSchema = new mongoose.Schema({
 
     descriptionByMod: String,
 
-    originalContent: String
+    originalContent: String,
+
+    idOfReply: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "ForumThreadCommentReply"
+    },
+    idOfComment: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "ForumThreadComment"
+    },
+    idOfForum: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "ForumThread"
+	},
+	elementDeleted: String
 });
 
 //compile schema into a model

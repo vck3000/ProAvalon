@@ -3,9 +3,14 @@ var mongoose = require("mongoose");
 //SCHEMA SETUP
 var forumThreadSchema = new mongoose.Schema({
 	title: String,
+	oldTitle: String,
 	// price: String,
 	// image: String,
 	description: String,
+	oldDescription: String,
+
+	disabled: Boolean,
+
 	timeCreated: Date,
 	
 	likes: Number,

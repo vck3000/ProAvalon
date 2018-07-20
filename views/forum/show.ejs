@@ -12,10 +12,11 @@
 <%   bg_converter["bug"] = "danger";           %>
 
 
-<div class="myContainer">
+<div class="myContainer" id="<%=forumThread.id%>">
 
     <button id="backButton" class="btn btn-warning" onclick="goBack()">Back</button>
     <% if(locals.mod){ %>
+        <!--<button id="backButton" class="btn btn-info pull-right" onclick="toggleDeletedPosts()">Mod see deleted</button><br><br>-->
         <button id="backButton" class="btn btn-info pull-right" onclick="toggleModOptions()">Mod Actions</button>
     <% } %>
 
@@ -40,8 +41,10 @@
     </div>
 
     <div class="descriptionContainer">
-        <p>
+        <div>
+            <div class="text">
             <%-forumThread.description%>
+            </div>
             <br>
             
             <% if(forumThread.edited === true){ %>
@@ -128,7 +131,7 @@
 
             
 
-        </p>
+        </div>
     </div>
 
 
@@ -170,15 +173,33 @@
 
             <%forumThread.comments.forEach(function(comment){ %>
                 <div class="individualMainComment" id=<%=comment.id%>>
-                    <div class="individualComment" >
+
+           
+                
+                    <div class="individualComment">
                         <p>
+                            <% if(comment.disabled && comment.disabled === true){ %>
+                            <span style="color: red;" class="glyphicon glyphicon-ban-circle"></span>                            
+                            <% } %>
                             <strong><%=comment.author.username%></strong> 
                             <span class="timeSince"><%=comment.timeSinceString%> ago</span>
                             <span class="glyphicon glyphicon-thumbs-up"></span>
                             <span id=<%=comment._id + "likes"%>> <%=comment.likes%></span>
                         
                         </p>
-                        <p class="mainCommentText"><%-comment.text%></p>
+
+                        
+
+                        <div class="mainCommentText text">
+                            <%-comment.text%>
+                        </div>
+
+                        <% if(comment.disabled && comment.disabled === true && locals.mod && mod === true){ %>
+                            <div style="color: gray">
+                                Old deleted text: (only mods see :P) <%-comment.oldText%>
+                            </div>
+                        <% } %>
+
                         <% if(comment.edited === true){ %>
                             [Edited]
                         <% } %>
@@ -238,6 +259,9 @@
                     <% if(comment.replies){ comment.replies.forEach(function(reply){ %>
                         <div class="replyToComment"  id=<%=reply.id%>>
                             <p>
+                                <% if(reply.disabled && reply.disabled === true){ %>
+                                <span style="color: red;" class="glyphicon glyphicon-ban-circle"></span>                            
+                                <% } %>
                                 <strong><%=reply.author.username%></strong>
                                 <span class="timeSince"><%=reply.timeSinceString%> ago</span>
                                 <span class="glyphicon glyphicon-thumbs-up"></span>
@@ -248,9 +272,15 @@
                                 <% } %>
                             </p>
                             
-                            <p>
+                            <div class="text">
                                 <%-reply.text%> 
-                            </p>
+                            </div>
+
+                            <% if(reply.disabled && reply.disabled === true && locals.mod && mod === true){ %>
+                                <div style="color: gray">
+                                    Old deleted text: (only mods see :P) <%-reply.oldText%>
+                                </div>
+                            <% } %>
 
                             <% if(reply.edited === true){ %>
                             [Edited]
@@ -344,8 +374,7 @@
                         <label for="typeofmodaction">Type of modAction to do: </label>
                         <br>
                         <select name="typeofmodaction" class="form-control" id="typeofmodaction">
-                            <option selected>Please select an option</option>
-                            <option value="remove">Remove</option>
+                            <option selected value="remove">Remove</option>
                         </select>
                     </div>
 
@@ -363,16 +392,21 @@
                     <div class="form-group">
                         <label>Please confirm that the following is what you want to remove:</label>
                         <div id="modActionBanningElementText" style="background-color: #cccccc; border-radius: 5px;">
-                            asdf test
+                            Victor was here ;)
                         </div>
                     </div>                    
 
-
                     <div class="form-group">
-                        <label for="descriptionByMod">Description: <h6 style="display: inline;">OPTIONAL: This will be publically viewable. Up to you if you want to write anything.</h6></label>
+                        <label for="descriptionByMod">Description: <h6 style="display: inline;">OPTIONAL: This will be NOT be publically viewable. Just for the sake of a record. Up to you if you want to write anything.</h6></label>
                         <br>
                         <textarea name="descriptionByMod" class="form-control" style="width: 100%;" id="descriptionByMod"></textarea>
                     </div>
+
+                    <input class="hidden" type="text" name="typeOfForumElement" id="typeOfForumElement"></input>
+                    <input class="hidden" type="text" name="idOfForum" id="idOfForum"></input>
+                    <input class="hidden" type="text" name="idOfComment" id="idOfComment"></input>
+                    <input class="hidden" type="text" name="idOfReply" id="idOfReply"></input>
+                    <input class="hidden" type="text" name="idOfPlayerToBan" id="idOfPlayerToBan"></input>
 
                     <br>
                     <!--<input type="submit" value="Slam the hammer of judgement!" class="btn btn-danger" id="modActionCloseButton">-->
@@ -405,6 +439,40 @@
     $(document).ready(function() {
         $('#commentTextArea').summernote();
         // $('.commentReply').summernote();
+
+
+        <%if(locals.mod){ %>
+            <%if(mod === true){ %>
+                $("#modActionCloseButton").on("click", function(){
+                    $("#modModal").modal("hide");
+                    
+                    var data = $("#modactionform").serializeArray();
+                    
+                    $.ajax({
+                        type: 'POST',
+                        data: data,
+                        
+                        
+                        dataType:'json',
+                        url: '/forum/modAction',                      
+                        success: function(data) {
+                            console.log('success');
+                                                       
+                        },
+                        error: function(error) {
+                            // console.log("some error in fetching the notifications");
+                            location.reload();
+                        }
+                    });
+
+                    console.log(data);
+                    
+                    //create ajax
+                });
+            <% } %>                           
+        <% } %>
+        
+
     });
 
     function toggleModOptions(){
@@ -413,31 +481,54 @@
 
 
     $(".modButton").on("click", function(e){
-        console.log($(e.target).attr("idOfElement"));
-        console.log($(e.target).attr("typeOfElement"));
-        console.log($(e.target).attr("authorId"));
-        console.log($(e.target).attr("authorUsername"));
+        // console.log($(e.target).attr("idOfElement"));
+        // console.log($(e.target).attr("typeOfElement"));
+        // console.log($(e.target).attr("authorId"));
+        // console.log($(e.target).attr("authorUsername"));
 
         var idOfElement = $(e.target).attr("idOfElement");
         var typeOfElement = $(e.target).attr("typeOfElement");
         var authorId = $(e.target).attr("authorId");
         var authorUsername = $(e.target).attr("authorUsername");
 
+        var text = $(e.target).closest("div").find(".text")[0].innerHTML;
+        console.log($(e.target).closest("div").find(".text")[0].innerHTML);
 
         $("#modModal").modal("show");
         $("#banPlayerUsername").val(authorUsername);
-        $("#modActionBanningElementText").innerHTML = 
+        $("#modActionBanningElementText")[0].innerHTML = text;
+        $("#typeOfForumElement").val(typeOfElement);
+        $("#idOfPlayerToBan").val(authorId);
+
+        if(typeOfElement === "reply"){
+            $("#idOfReply").val($($(e.target).closest(".replyToComment")).attr("id"));
+            $("#idOfComment").val($($(e.target).closest(".individualMainComment")).attr("id"));
+            $("#idOfForum").val($($(e.target).closest(".myContainer")).attr("id"));
+        }
+        else if(typeOfElement === "comment"){
+            $("#idOfReply").val("");
+            $("#idOfComment").val($($(e.target).closest(".individualMainComment")).attr("id"));
+            $("#idOfForum").val($($(e.target).closest(".myContainer")).attr("id"));
+        }
+        else{
+            $("#idOfReply").val("");
+            $("#idOfComment").val("");
+            $("#idOfForum").val($($(e.target).closest(".myContainer")).attr("id"));
+        }
+
 
     });
 
-
-
-
-
-
-
-
 </script>
+
+<% if(locals.mod && mod === true){ %>
+    <script>
+        function toggleDeletedPosts(){
+            $(".individualMainComment .disabled").toggleClass("unhiddenDisabled");
+            $(".individualMainComment .disabled").toggleClass("hidden");
+        }
+    </script>
+<% } %>
 
 
 <% include ../partials/footer%>
