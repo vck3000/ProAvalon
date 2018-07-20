@@ -123,7 +123,7 @@
 
             <% if(locals.mod){ %>
                 <br>
-                <a class="btn btn-danger btn-sm modButton hidden" idOfElement="<%=forumThread._id%>" typeOfElement="forum" authorId="<%=forumThread.author.id%>">Mod Remove</a>
+                <a class="btn btn-danger btn-sm modButton hidden" idOfElement="<%=forumThread._id%>" typeOfElement="forum" authorId="<%=forumThread.author.id%>"  authorUsername="<%=forumThread.author.username%>">Mod Remove</a>
             <% } %>
 
             
@@ -185,7 +185,7 @@
                         <p class="commentOptions">
                         
                             <a class="reply">Reply</a>
-                            <a class="like" idOfElement=<%=comment._id%> idofcomment=<%=comment._id%> idOfForum=<%=forumThread._id%> typeofelement='comment'>
+                            <a class="like " idOfElement=<%=comment._id%> idofcomment=<%=comment._id%> idOfForum=<%=forumThread._id%> typeofelement='comment'>
                                 <%               
                                 var isInside = false;
                                     Object.keys(idsOfLikedPosts).forEach(function(key) {
@@ -211,7 +211,7 @@
                             <% } %>
 
                             <% if(locals.mod){ %>
-                                <a class="btn btn-danger btn-sm modButton hidden" idOfElement="<%=comment._id%>" typeOfElement="comment" authorId="<%=comment.author.id%>">Mod Remove</a>
+                                <a class="btn btn-danger btn-sm modButton hidden" idOfElement="<%=comment._id%>" typeOfElement="comment" authorId="<%=comment.author.id%>" authorUsername="<%=comment.author.username%>">Mod Remove</a>
                             <% } %>
                         
                         </p>
@@ -287,7 +287,7 @@
                                 <% } %>
 
                                 <% if(locals.mod){ %>
-                                    <a class="btn btn-danger btn-sm modButton hidden" idOfElement="<%=reply._id%>" typeOfElement="reply"  authorId="<%=reply.author.id%>">Mod Remove</a>
+                                    <a class="btn btn-danger btn-sm modButton hidden" idOfElement="<%=reply._id%>" typeOfElement="reply" authorId="<%=reply.author.id%>" authorUsername="<%=reply.author.username%>">Mod Remove</a>
                                 <% } %>
                             </p>
 
@@ -414,8 +414,20 @@
 
     $(".modButton").on("click", function(e){
         console.log($(e.target).attr("idOfElement"));
+        console.log($(e.target).attr("typeOfElement"));
+        console.log($(e.target).attr("authorId"));
+        console.log($(e.target).attr("authorUsername"));
+
+        var idOfElement = $(e.target).attr("idOfElement");
+        var typeOfElement = $(e.target).attr("typeOfElement");
+        var authorId = $(e.target).attr("authorId");
+        var authorUsername = $(e.target).attr("authorUsername");
+
 
         $("#modModal").modal("show");
+        $("#banPlayerUsername").val(authorUsername);
+        $("#modActionBanningElementText").innerHTML = 
+
     });
 
 

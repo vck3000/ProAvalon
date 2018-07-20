@@ -2,7 +2,7 @@ To-do list:
  
 -forum moderation
 
-
+-leave room remove from room chat.
 
 
 

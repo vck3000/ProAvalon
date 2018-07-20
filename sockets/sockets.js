@@ -885,10 +885,12 @@ module.exports = function (io) {
 				}
 				sendToRoomChat(io, socket.request.user.inRoomId, data);
 
-				playerLeaveRoomCheckDestroy(socket);
-				
 				//leave the room chat
 				socket.leave(socket.request.user.inRoomId);
+
+				playerLeaveRoomCheckDestroy(socket);
+				
+				
 				
 				updateCurrentGamesList();
 			}
