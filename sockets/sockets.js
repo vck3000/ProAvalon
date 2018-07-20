@@ -60,11 +60,11 @@ var actionsObj = {
     
                 i++;
     
-                for (var key in obj.userCommands) {
-                    if (obj.userCommands.hasOwnProperty(key)) {
-                        if(!obj.userCommands[key].modsOnly){
+                for (var key in actionsObj.userCommands) {
+                    if (actionsObj.userCommands.hasOwnProperty(key)) {
+                        if(!actionsObj.userCommands[key].modsOnly){
                             // console.log(key + " -> " + p[key]);
-                            dataToReturn[i] = {message: obj.userCommands[key].help, classStr: "server-text"};
+                            dataToReturn[i] = {message: actionsObj.userCommands[key].help, classStr: "server-text"};
                             // str[i] = userCommands[key].help;
                             i++;
                             //create a break in the chat
@@ -83,9 +83,11 @@ var actionsObj = {
             command: "buzz",
             help: "/buzz <playername>: Buzz a player. <playername> must all be in lower case. (until I upgrade this)",
             run: function (data, senderSocket) {
-                var args = data.args;
+				var args = data.args;
+				
+				
     
-                var buzzSocket = allSockets[args[1]];
+                var buzzSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
                 if (buzzSocket) {
                     buzzSocket.emit("buzz", senderSocket.request.user.username);
                 return {message: "You have buzzed player " + args[1] + ".", classStr: "server-text"};
@@ -103,7 +105,7 @@ var actionsObj = {
             run: function (data, senderSocket) {
                 var args = data.args;			
     
-                var slapSocket = allSockets[args[1]];
+                var slapSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
                 if (slapSocket) {
                     slapSocket.emit("slap", senderSocket.request.user.username);
                 return {message: "You have slapped player " + args[1] + "!", classStr: "server-text"};
@@ -174,7 +176,7 @@ var actionsObj = {
             help: "/m: displays /mhelp",
             run: function (data, senderSocket) {
     
-                return obj.modCommands["mhelp"].run(data, senderSocket);
+                return actionsObj.modCommands["mhelp"].run(data, senderSocket);
             }
         },
         mban: {
@@ -213,11 +215,11 @@ var actionsObj = {
                 var i = 0;
                 i++;
     
-                for (var key in obj.modCommands) {
-                    if (obj.modCommands.hasOwnProperty(key)) {
-                        if(!obj.modCommands[key].modsOnly){
+                for (var key in actionsObj.modCommands) {
+                    if (actionsObj.modCommands.hasOwnProperty(key)) {
+                        if(!actionsObj.modCommands[key].modsOnly){
                             // console.log(key + " -> " + p[key]);
-                            dataToReturn[i] = {message: obj.modCommands[key].help, classStr: "server-text"};
+                            dataToReturn[i] = {message: actionsObj.modCommands[key].help, classStr: "server-text"};
                             // str[i] = userCommands[key].help;
                             i++;
                             //create a break in the chat
@@ -338,11 +340,11 @@ var actionsObj = {
                 var i = 0;
                 i++;
     
-                for (var key in obj.adminCommands) {
-                    if (obj.adminCommands.hasOwnProperty(key)) {
-                        if(!obj.adminCommands[key].modsOnly){
+                for (var key in actionsObj.adminCommands) {
+                    if (actionsObj.adminCommands.hasOwnProperty(key)) {
+                        if(!actionsObj.adminCommands[key].modsOnly){
                             // console.log(key + " -> " + p[key]);
-                            dataToReturn[i] = {message: obj.adminCommands[key].help, classStr: "server-text"};
+                            dataToReturn[i] = {message: actionsObj.adminCommands[key].help, classStr: "server-text"};
                             // str[i] = userCommands[key].help;
                             i++;
                             //create a break in the chat
@@ -1127,4 +1129,14 @@ function getPlayerIdsFromAllSockets(){
 		array[i] = allSockets[i].request.user.id;
 	}
 	return array;
+}
+
+function getIndexFromUsername(sockets, username){
+	for(var i = 0; i < sockets.length; i++){
+		if(sockets[i].request.user.username === username){
+			return i;
+		}
+	}
+	return null;
+
 }
