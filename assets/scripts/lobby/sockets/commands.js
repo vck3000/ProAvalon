@@ -75,4 +75,8 @@ socket.on("buzz", function (username) {
 
 socket.on("toggleNavBar", function (username) {
     $(".navbar").toggle("hidden");
+    setTimeout(function(){
+        draw();
+        extendTabContentToBottomInRoom();
+    }, 2000);
 });

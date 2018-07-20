@@ -4,8 +4,13 @@ var socket = io({ transports: ['websocket'], upgrade: false });
 //grab our username from the username assigned by server in EJS file.
 var ownUsername = $("#originalUsername")[0].innerText;
 
-
-
+$(document).ready(function(){
+    setInterval(function(){
+        draw(); 
+        console.log("one second"); 
+        extendTabContentToBottomInRoom();
+    }, 1000);
+});
 
 //Prevents the window height from changing when android keyboard is pulled up.
 setTimeout(function () {
@@ -599,7 +604,7 @@ function draw() {
   
           var ratioXtoY = 0.8;
   
-          divs[i].style.height = 37 + "%";
+          divs[i].style.height = 45 + "%";
           divs[i].style.width = divs[i].offsetHeight * ratioXtoY + "px";
   
           // //size of the avatar img
