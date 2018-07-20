@@ -165,7 +165,16 @@ var actionsObj = {
                 }
                 
             }
-        }
+		},
+
+		navbar: {
+            command: "navbar",
+            help: "/navbar: Hides and unhides the top navbar. Some phone screens may look better with the navbar turned off.",
+            run: function (data, senderSocket) {
+                var args = data.args;
+                senderSocket.emit("toggleNavBar");
+            }
+		}
     
     },
     

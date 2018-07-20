@@ -2,7 +2,6 @@ To-do list:
 
 
 [01:01] ProNub: or an actual tickle lick and... squish sound?
--hide navbar with command
 
 
 ***************************************************************************************
@@ -291,3 +290,4 @@ Mine:
 -forum moderation
 -kicking players 
 -guns at the end of a game.
+-hide navbar with command

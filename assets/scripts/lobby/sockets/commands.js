@@ -56,7 +56,6 @@ socket.on("slap", function (username) {
 });
 
 socket.on("buzz", function (username) {
-    
     if(!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $("#option_notifications_buzz_slap_timeout")[0].value){
         if($("#option_notifications_sound_buzz")[0].checked === true){
             playSound("ding");
@@ -72,4 +71,8 @@ socket.on("buzz", function (username) {
             displayNotification(username + " has buzzed you!", "", "avatars/base-spy.png", "buzz");
         }
     }
+});
+
+socket.on("toggleNavBar", function (username) {
+    $(".navbar").toggle("hidden");
 });
