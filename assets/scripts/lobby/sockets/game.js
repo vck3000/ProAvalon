@@ -1,29 +1,19 @@
 socket.on("update-room-players", function (data) {
     //if an extra person joins the game, play the chime
-    if(roomPlayersData && roomPlayersData.length < data.playersJoined.length && data.playersJoined.length > 1){
+    if(roomPlayersData && roomPlayersData.length < data.length && data.length > 1){
         if($("#option_notifications_sound_players_joining_game")[0].checked === true){
             playSound('ding');
         }
         
         if($("#option_notifications_desktop_players_joining_game")[0].checked === true){
-            displayNotification("New player in game!  [" + (data.playersJoined.length) + "p]", data.playersJoined[data.playersJoined.length - 1].username + " has joined the game!", "avatars/base-res.png", "newPlayerInGame");
+            displayNotification("New player in game!  [" + (data.length) + "p]", data[data.length - 1].username + " has joined the game!", "avatars/base-res.png", "newPlayerInGame");
         }
     }
 
-    //if an extra person joins the room
-    if(roomSpectatorsData && roomSpectatorsData.length < data.spectators.length){
-        if($("#option_notifications_sound_players_joining_room")[0].checked === true){
-            playSound('highDing');
-        }
-
-        if($("#option_notifications_desktop_players_joining_room")[0].checked === true && data.spectators[data.spectators.length - 1] !== ownUsername){
-            displayNotification("New player in room.", data.spectators[data.spectators.length - 1] + " has joined the room.", "avatars/base-res.png", "newPlayerInRoom");
-        }
-    }
+    console.log("update room players");
 
     // var x = $("#typehead").parent().width();    
-    roomPlayersData = data.playersJoined;
-    roomSpectatorsData = data.spectators;
+    roomPlayersData = data;
 
     //remove all the li's inside the list
     $("#mainRoomBox div").remove();
@@ -32,9 +22,25 @@ socket.on("update-room-players", function (data) {
     // console.log(data);
 
     //update spectators list
-    updateSpectatorsList();
+    // updateSpectatorsList();
     draw();
 });
+
+
+    //spectator join notifications
+    //todo******************************************************
+    //todo******************************************************
+
+    //if an extra person joins the room
+    // if(roomSpectatorsData && roomSpectatorsData.length < data.spectators.length){
+    //     if($("#option_notifications_sound_players_joining_room")[0].checked === true){
+    //         playSound('highDing');
+    //     }
+
+    //     if($("#option_notifications_desktop_players_joining_room")[0].checked === true && data.spectators[data.spectators.length - 1] !== ownUsername){
+    //         displayNotification("New player in room.", data.spectators[data.spectators.length - 1] + " has joined the room.", "avatars/base-res.png", "newPlayerInRoom");
+    //     }
+    // }
 
 //======================================
 //GAME SOCKET ROUTES

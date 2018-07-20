@@ -390,10 +390,17 @@ router.get("/page/:pageNum", middleware.isLoggedIn, function (req, res) {
 
 						for (var i = 0; i < allPinnedThreadIds.length; i++) {
 							await forumThread.findById(allPinnedThreadIds[i].forumThread.id, function (err, pinnedThread) {
-
-								pinnedThread.timeSinceString = getTimeDiffInString(pinnedThread.timeLastEdit);
-
-								allPinnedThreads.push(pinnedThread);
+								if(err){
+									console.log(err);
+								}
+								else{
+									if(pinnedThread && pinnedThread.timeLastEdit){
+										pinnedThread.timeSinceString = getTimeDiffInString(pinnedThread.timeLastEdit);
+										allPinnedThreads.push(pinnedThread);
+									}
+									
+								}
+								
 							});
 						}
 

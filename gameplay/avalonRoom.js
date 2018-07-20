@@ -168,6 +168,10 @@ module.exports = function (host_, roomId_, io_) {
 			this.sendText(this.allSockets, "The resistance have won the game.", "gameplay-text");
 		}
 
+		this.distributeGameData();
+
+
+
 		//store data into the database:
 		var rolesCombined = [];
 		
@@ -197,7 +201,7 @@ module.exports = function (host_, roomId_, io_) {
 			winningTeam: this.winner,
 			spyTeam: this.spyUsernames,
 			resistanceTeam: this.resistanceUsernames,
-			numberOfPlayers: this.socketsOfPlayers.length,
+			numberOfPlayers: this.playersInGame.length,
 			howTheGameWasWon: this.howWasWon,
 			roles: rolesCombined,
 
@@ -376,20 +380,20 @@ module.exports = function (host_, roomId_, io_) {
 
 	this.useLady = function (socket, target) {
 		//check that the person making this request has the lady
-		if (getIndexFromUsername(this.socketsOfPlayers, socket.request.user.username) === this.lady && this.phase === "lady" && this.ladyablePeople[getIndexFromUsername(this.socketsOfPlayers, target)] === true) {
+		if (getIndexFromUsername(this.playersInGame, socket.request.user.username) === this.lady && this.phase === "lady" && this.ladyablePeople[getIndexFromUsername(this.playersInGame, target)] === true) {
 			//grab the target's alliance
-			var alliance = this.playersInGame[getIndexFromUsername(this.socketsOfPlayers, target)].alliance;
+			var alliance = this.playersInGame[getIndexFromUsername(this.playersInGame, target)].alliance;
 
 			//emit to the lady holder the person's alliance
 			socket.emit("lady-info", /*"Player " + */target + " is a " + alliance);
 			console.log("Player " + target + " is a " + alliance);
 
 			//update lady location
-			this.lady = getIndexFromUsername(this.socketsOfPlayers, target);
+			this.lady = getIndexFromUsername(this.playersInGame, target);
 			//make that person no longer ladyable
 			this.ladyablePeople[this.lady] = false;
 
-			this.ladyChain[this.ladyChain.length] = this.playersInGame[getIndexFromUsername(this.socketsOfPlayers, target)].role;
+			this.ladyChain[this.ladyChain.length] = this.playersInGame[getIndexFromUsername(this.playersInGame, target)].role;
 
 			// this.gameplayMessage = (socket.request.user.username + " has carded " + target);
 			this.sendText(this.allSockets, (socket.request.user.username + " has carded " + target + "."), "gameplay-text");
@@ -398,6 +402,8 @@ module.exports = function (host_, roomId_, io_) {
 			//update phase
 			this.phase = "picking";
 		}
+		this.distributeGameData();
+		
 	}
 
 
@@ -409,11 +415,11 @@ module.exports = function (host_, roomId_, io_) {
 			//if this vote is coming from someone who hasn't voted yet
 			if (i !== -1) {
 				if (voteStr === "succeed") {
-					this.missionVotes[getIndexFromUsername(this.sockets, socket.request.user.username)] = "succeed";
+					this.missionVotes[getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "succeed";
 					console.log("received succeed from " + socket.request.user.username);
 				}
 				else if (voteStr === "fail") {
-					this.missionVotes[getIndexFromUsername(this.sockets, socket.request.user.username)] = "fail";
+					this.missionVotes[getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "fail";
 					console.log("received fail from " + socket.request.user.username);
 				}
 				else {
@@ -433,7 +439,7 @@ module.exports = function (host_, roomId_, io_) {
 				//perform these functions here now.
 				this.teamLeader--;
 				if (this.teamLeader < 0) {
-					this.teamLeader = this.sockets.length - 1;
+					this.teamLeader = this.socketsOfPlayers.length - 1;
 				}
 				this.pickNum++;
 
@@ -458,12 +464,12 @@ module.exports = function (host_, roomId_, io_) {
 
 					if (numOfVotedFails === 0) {
 						// this.gameplayMessage = "The mission succeeded.";	
-						this.sendText(this.sockets, "Mission " + this.missionNum + " has succeeded.", "gameplay-text");
+						this.sendText(this.allSockets, "Mission " + this.missionNum + " has succeeded.", "gameplay-text");
 
 					}
 					else {
 						// this.gameplayMessage = "The mission succeeded, but with " + numOfVotedFails + " fails.";
-						this.sendText(this.sockets, "Mission " + this.missionNum + " succeeded, but with " + numOfVotedFails + " fails.", "gameplay-text");
+						this.sendText(this.allSockets, "Mission " + this.missionNum + " succeeded, but with " + numOfVotedFails + " fails.", "gameplay-text");
 
 					}
 
@@ -480,12 +486,12 @@ module.exports = function (host_, roomId_, io_) {
 					
 					if (numOfVotedFails === 1) {
 						// this.gameplayMessage = "The mission failed with " + numOfVotedFails + " fail.";	
-						this.sendText(this.sockets, "Mission " + this.missionNum + " failed with " + numOfVotedFails + " fail.", "gameplay-text");
+						this.sendText(this.allSockets, "Mission " + this.missionNum + " failed with " + numOfVotedFails + " fail.", "gameplay-text");
 						
 					}
 					else {
 						// this.gameplayMessage = "The mission failed with " + numOfVotedFails + " fails.";	
-						this.sendText(this.sockets, "Mission " + this.missionNum + " failed with " + numOfVotedFails + " fails.", "gameplay-text");
+						this.sendText(this.allSockets, "Mission " + this.missionNum + " failed with " + numOfVotedFails + " fails.", "gameplay-text");
 
 					}
 
@@ -512,7 +518,7 @@ module.exports = function (host_, roomId_, io_) {
 				console.log("numOfFails: " + numOfFails);
 
 				//+1 to compensate for somewhere...
-				this.hammer = ((this.teamLeader - 5 + 1 + this.sockets.length) % this.sockets.length);
+				this.hammer = ((this.teamLeader - 5 + 1 + this.playersInGame.length) % this.playersInGame.length);
 
 
 				this.phase = "picking";
@@ -543,6 +549,7 @@ module.exports = function (host_, roomId_, io_) {
 
 		}
 
+		this.distributeGameData();
 		
 		// console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, { depth: 2 }));
 	}
@@ -555,11 +562,11 @@ module.exports = function (host_, roomId_, io_) {
 			//if this vote is coming from someone who hasn't voted yet
 			if (i !== -1) {
 				if (voteStr === "approve") {
-					this.votes[getIndexFromUsername(this.sockets, socket.request.user.username)] = "approve";
+					this.votes[getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "approve";
 					console.log("received approve from " + socket.request.user.username);
 				}
 				else if (voteStr === "reject") {
-					this.votes[getIndexFromUsername(this.sockets, socket.request.user.username)] = "reject";
+					this.votes[getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "reject";
 					console.log("received reject from " + socket.request.user.username);
 				}
 				else {
@@ -590,7 +597,7 @@ module.exports = function (host_, roomId_, io_) {
 
 					var str = "Mission " + this.missionNum + "." + this.pickNum + " was approved." + getStrApprovedRejectedPlayers(this.votes, this.playersInGame);
 					// this.gameplayMessage = str;
-					this.sendText(this.sockets, str, "gameplay-text");
+					this.sendText(this.allSockets, str, "gameplay-text");
 
 					//temporarily increase the team leader so that when mission is approved 
 					//the leader star will stay since we automatically teamLeader-- at the end of this block.
@@ -615,21 +622,21 @@ module.exports = function (host_, roomId_, io_) {
 
 					var str = "Mission " + this.missionNum + "." + this.pickNum + " was rejected." + getStrApprovedRejectedPlayers(this.votes, this.playersInGame);
 					// this.gameplayMessage = str;
-					this.sendText(this.sockets, str, "gameplay-text");
+					this.sendText(this.allSockets, str, "gameplay-text");
 
 				}
 
 				//VH:
-				for (var i = 0; i < this.sockets.length; i++) {
-					if (this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1] === undefined) {
-						this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1] = [];
+				for (var i = 0; i < this.playersInGame.length; i++) {
+					if (this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1] === undefined) {
+						this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1] = [];
 					}
-					if (this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1][this.pickNum - 1] === undefined) {
+					if (this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1][this.pickNum - 1] === undefined) {
 						console.log("Clear leader and picked from pickVote");
-						this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1][this.pickNum - 1] = "";
+						this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1][this.pickNum - 1] = "";
 					}
 
-					this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1][this.pickNum - 1] += ("VH" + this.votes[i]);
+					this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1][this.pickNum - 1] += ("VH" + this.votes[i]);
 
 				}
 
@@ -639,7 +646,7 @@ module.exports = function (host_, roomId_, io_) {
 					//we go into negative numbers
 					this.teamLeader--;
 					if (this.teamLeader < 0) {
-						this.teamLeader = this.sockets.length - 1;
+						this.teamLeader = this.playersInGame.length - 1;
 					}
 					this.pickNum++;
 				}
@@ -650,6 +657,7 @@ module.exports = function (host_, roomId_, io_) {
 		}
 
 		
+		this.distributeGameData();
 
 		console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, { depth: 2 }));
 	}
@@ -663,7 +671,7 @@ module.exports = function (host_, roomId_, io_) {
 			this.votes = [];
 
 			//if the person who submitted the pick team is the team leader of the time, allow and go ahead
-			if (getIndexFromUsername(this.sockets, socket.request.user.username) === this.teamLeader) {
+			if (getIndexFromUsername(this.playersInGame, socket.request.user.username) === this.teamLeader) {
 				console.log("Team leader has picked: ");
 
 				// var splitStr = pickedTeam.split(" ");
@@ -692,26 +700,26 @@ module.exports = function (host_, roomId_, io_) {
 				str2 = str2.slice(0, str2.length - 2);
 				str2 += ".";
 
-				this.sendText(this.sockets, str2, "gameplay-text");
+				this.sendText(this.allSockets, str2, "gameplay-text");
 
 
 				//VH:
-				for (var i = 0; i < this.sockets.length; i++) {
-					if (this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1] === undefined) {
-						this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1] = [];
+				for (var i = 0; i < this.playersInGame.length; i++) {
+					if (this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1] === undefined) {
+						this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1] = [];
 					}
-					if (this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1][this.pickNum - 1] === undefined) {
+					if (this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1][this.pickNum - 1] === undefined) {
 						console.log("Clear leader and picked from playerPickTeam");
-						this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1][this.pickNum - 1] = "";
+						this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1][this.pickNum - 1] = "";
 					}
 
 
-					if (this.proposedTeam.indexOf(this.sockets[i].request.user.username) !== -1) {
-						this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1][this.pickNum - 1] += "VHpicked ";
+					if (this.proposedTeam.indexOf(this.playersInGame[i].request.user.username) !== -1) {
+						this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1][this.pickNum - 1] += "VHpicked ";
 					}
 
 					if (i === this.teamLeader) {
-						this.voteHistory[this.sockets[i].request.user.username][this.missionNum - 1][this.pickNum - 1] += "VHleader ";
+						this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1][this.pickNum - 1] += "VHleader ";
 					}
 				}
 
@@ -726,6 +734,7 @@ module.exports = function (host_, roomId_, io_) {
 			console.log("Not picking phase.");
 		}
 		
+		this.distributeGameData();
 	}
 
 	this.getStatusMessage = function () {
@@ -878,9 +887,10 @@ module.exports = function (host_, roomId_, io_) {
 				this.playersYetToReady.splice(index, 1);
 				if (this.playersYetToReady.length === 0 && this.canJoin === false) {
 					//say to spectators that the ready/notready phase is over
-					for(var i = 0; i < this.socketsOfSpectators.length; i++){
-						this.socketsOfSpectators[i].emit("spec-game-starting-finished", null);
-					}
+					var socketsOfSpecs = this.getSocketsOfSpectators();
+					socketsOfSpecs.forEach(function(sock){
+						sock.emit("spec-game-starting-finished", null);
+					});
 	
 					if (this.startGame(this.options) === true) {
 						return true;
@@ -901,9 +911,11 @@ module.exports = function (host_, roomId_, io_) {
 			this.playersYetToReady = [];
 			this.canJoin = true;
 
-			for(var i = 0; i < this.socketsOfSpectators.length; i++){
-				this.socketsOfSpectators[i].emit("spec-game-starting-finished", null);
-			}
+			var socketsOfSpecs = this.getSocketsOfSpectators();
+			socketsOfSpecs.forEach(function(sock){
+				sock.emit("spec-game-starting-finished", null);
+			});
+			
 			return username;
 		}
 	}
@@ -911,10 +923,10 @@ module.exports = function (host_, roomId_, io_) {
 	this.hostTryStartGame = function (options) {
 		if (this.canJoin === true) {
 			//check before starting
-			if (this.sockets.length < minPlayers) {
+			if (this.socketsOfPlayers.length < minPlayers) {
 				//NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
 				console.log("Not enough players.");
-				this.sockets[0].emit("danger-alert", "Minimum 5 players to start. ")
+				this.socketsOfPlayers[0].emit("danger-alert", "Minimum 5 players to start. ")
 				return false;
 			} else if (this.gameStarted === true) {
 				console.log("Game already started!");
@@ -925,26 +937,27 @@ module.exports = function (host_, roomId_, io_) {
 			this.canJoin = false;
 
 			//.slice to clone
-			this.playersYetToReady = this.sockets.slice();
+			this.playersYetToReady = this.socketsOfPlayers.slice();
 			this.options = options;
 
 			this.gamePlayerLeftDuringReady = false;
 
 			var rolesInStr = getRolesInStr(options);
 
-			for (var i = 0; i < this.sockets.length; i++) {
-				this.sockets[i].emit("game-starting", rolesInStr);
+			for (var i = 0; i < this.socketsOfPlayers.length; i++) {
+				this.socketsOfPlayers[i].emit("game-starting", rolesInStr);
 			}
-			for(var i = 0; i < this.socketsOfSpectators.length; i++){
-				this.socketsOfSpectators[i].emit("spec-game-starting", null);
-			}
-		}
 
+			var socketsOfSpecs = this.getSocketsOfSpectators();
+			socketsOfSpecs.forEach(function(sock){
+				sock.emit("spec-game-starting", null);
+			});
+		}
 	}
 
 	//start game
 	this.startGame = function (options) {
-		if(this.sockets.length < 5 || this.sockets.length > 10 || this.gamePlayerLeftDuringReady === true){
+		if(this.socketsOfPlayers.length < 5 || this.socketsOfPlayers.length > 10 || this.gamePlayerLeftDuringReady === true){
 			this.canJoin = true;
 			this.gamePlayerLeftDuringReady = false;
 			return false;
@@ -955,35 +968,37 @@ module.exports = function (host_, roomId_, io_) {
 		//make game started after the checks for game already started
 		this.gameStarted = true;
 
-		var rolesAssignment = generateAssignmentOrders(this.sockets.length);
+		var rolesAssignment = generateAssignmentOrders(this.socketsOfPlayers.length);
 
 		//shuffle the players around. Make sure to redistribute this room player data in sockets.
-		for(var i = 0; i < this.sockets.length; i++){
+		for(var i = 0; i < this.socketsOfPlayers.length; i++){
 			shuffledPlayerAssignments[i] = i;
 		}
 		shuffledPlayerAssignments = shuffle(shuffledPlayerAssignments);
 
 		var tempSockets = [];
 		//create temp sockets
-		for(var i = 0; i < this.sockets.length; i++){
-			tempSockets[i] = this.sockets[i];
+		for(var i = 0; i < this.socketsOfPlayers.length; i++){
+			tempSockets[i] = this.socketsOfPlayers[i];
 		}
 
 		//assign the shuffled sockets
-		for(var i = 0; i < this.sockets.length; i++){
-			this.sockets[i] = tempSockets[shuffledPlayerAssignments[i]];
+		for(var i = 0; i < this.socketsOfPlayers.length; i++){
+			this.socketsOfPlayers[i] = tempSockets[shuffledPlayerAssignments[i]];
 		}
 
 		
 
 
 		//Now we initialise roles
-		for (var i = 0; i < this.sockets.length; i++) {
+		for (var i = 0; i < this.socketsOfPlayers.length; i++) {
 			this.playersInGame[i] = {};
 			//assign them the sockets but with shuffled. 
-			this.playersInGame[i].username = this.sockets[i].request.user.username;
-			this.playersInGame[i].socketId = this.sockets[i].id;
-			this.playersInGame[i].userId = this.sockets[i].request.user._id;
+			this.playersInGame[i].username = this.socketsOfPlayers[i].request.user.username;
+			this.playersInGame[i].socketId = this.socketsOfPlayers[i].id;
+			this.playersInGame[i].userId = this.socketsOfPlayers[i].request.user._id;
+
+			this.playersInGame[i].request = this.socketsOfPlayers[i].request;
 
 			//set the role to be from the roles array with index of the value
 			//of the rolesAssignment which has been shuffled
@@ -1005,9 +1020,9 @@ module.exports = function (host_, roomId_, io_) {
 		if (options.mordred === true) { this.spyRoles.push("Mordred"); console.log("added mordred"); }
 		if (options.oberon === true) { this.spyRoles.push("Oberon"); console.log("added oberon"); }
 		if (options.lady === true) {
-			this.lady = getRandomInt(0, this.sockets.length);
+			this.lady = getRandomInt(0, this.playersInGame.length);
 			this.ladyablePeople = [];
-			for (var i = 0; i < this.sockets.length; i++) {
+			for (var i = 0; i < this.playersInGame.length; i++) {
 				this.ladyablePeople[i] = true;
 			}
 			this.ladyablePeople[this.lady] = false;
@@ -1018,9 +1033,9 @@ module.exports = function (host_, roomId_, io_) {
 
 		this.resistanceUsernames = [];
 		this.spyUsernames = [];
-		for (var i = 0; i < this.sockets.length; i++) {
-			if (this.playersInGame[i].alliance === "Resistance") { resPlayers.push(i); this.resistanceUsernames.push(getUsernameFromIndex(i, this.playersInGame));}
-			else if (this.playersInGame[i].alliance === "Spy") { spyPlayers.push(i); this.spyUsernames.push(getUsernameFromIndex(i, this.playersInGame));}
+		for (var i = 0; i < this.playersInGame.length; i++) {
+			if (this.playersInGame[i].alliance === "Resistance") { resPlayers.push(i); this.resistanceUsernames.push(getUsernameFromIndex(this.playersInGame, i));}
+			else if (this.playersInGame[i].alliance === "Spy") { spyPlayers.push(i); this.spyUsernames.push(getUsernameFromIndex(this.playersInGame, i));}
 		}
 
 		//for the res roles:
@@ -1092,8 +1107,8 @@ module.exports = function (host_, roomId_, io_) {
 
 		//set game start parameters
 		//get a random starting team leader
-		this.teamLeader = getRandomInt(0, this.sockets.length);
-		this.hammer = ((this.teamLeader - 5 + 1 + this.sockets.length) % this.sockets.length);
+		this.teamLeader = getRandomInt(0, this.playersInGame.length);
+		this.hammer = ((this.teamLeader - 5 + 1 + this.playersInGame.length) % this.playersInGame.length);
 
 		this.missionNum = 1;
 		this.pickNum = 1;
@@ -1117,16 +1132,18 @@ module.exports = function (host_, roomId_, io_) {
 		str += ".";
 
 		// this.gameplayMessage = str;
-		this.sendText(this.sockets, str, "gameplay-text");
+		this.sendText(this.allSockets, str, "gameplay-text");
 
 		if(options.lady === true){
 			this.ladyChain[0] = this.playersInGame[this.lady].role;
 		}
 
 		//seed the starting data into the VH
-		for (var i = 0; i < this.sockets.length; i++) {
-			this.voteHistory[this.sockets[i].request.user.username] = [];
+		for (var i = 0; i < this.playersInGame.length; i++) {
+			this.voteHistory[this.playersInGame[i].request.user.username] = [];
 		}
+
+		this.distributeGameData();
 
 		return true;
 	};
@@ -1214,101 +1231,51 @@ module.exports = function (host_, roomId_, io_) {
 
 	this.playerJoinRoom = function (socket) {
 		if(this.restartSaved){
-
 			if(this.socketsChangedOnce === false){
-				this.sockets = [];
-				for(var i = 0; i < this.playersInGame.length; i++){
-					this.sockets[i] = {};
-					this.sockets[i].request = {};
-					this.sockets[i].request.user = {};
-					this.sockets[i].request.user.username = this.playersInGame[i].username;
-					this.sockets[i].request.user.id = this.playersInGame[i].id;
-					this.sockets[i].emit = function(){};
+				// console.log("RAN ONCE");
+				this.allSockets = [];
+				this.socketsOfPlayers = [];
+				// for(var i = 0; i < this.playersInGame.length; i++){
+				// 	this.socketsOfPlayers[i] = {};
+				// 	this.socketsOfPlayers[i].request = {};
+				// 	this.socketsOfPlayers[i].request.user = {};
+				// 	this.socketsOfPlayers[i].request.user.username = this.playersInGame[i].username;
+				// 	this.socketsOfPlayers[i].request.user.id = this.playersInGame[i].id;
+				// 	this.socketsOfPlayers[i].emit = function(){};
+
+				// }
 
 					this.socketsChangedOnce = true;
-				}
+				
 			}
-			
+		}
 
-
+		this.allSockets.push(socket);
+		// console.log("PUSHED: ");
+		// console.log(this.allSockets[0].request.user.username);
+		// console.log(socket.request.user.username);
+		if(this.gameStarted === true){
+			//if the new socket is a player, add them to the sockets of players
 			for(var i = 0; i < this.playersInGame.length; i++){
 				if(this.playersInGame[i].username === socket.request.user.username){
-					this.sockets[i] = socket;
+					this.socketsOfPlayers.splice(i, 0, socket);
+					this.playersInGame[i].request = socket.request;
+					
+					break;
 				}
 			}
+			//sends to players and specs
+			this.distributeGameData();
 		}
-
-		//if their username is already here, then delete the old one
-		var usernames = [];
-		this.socketsOfPlayersInRoom.forEach(function(socketHere){
-			usernames.push(socketHere.request.user.username.toLowerCase());
-		});
-
-		var i = usernames.indexOf(socket.request.user.username.toLowerCase());
-
-		if(i !== -1){
-			this.socketsOfPlayersInRoom.splice(i, 1);
-		}
-
-		//only add them to spectators if they are not part of the game already.
-		var stringOfUsernames = [];
-
-		//creating the string of usernames
-		for(var i = 0; i < this.sockets.length; i++){
-			stringOfUsernames.push(this.sockets[i].request.user.username);
-		}
-
-
-		if (stringOfUsernames.indexOf(socket.request.user.username) === -1) {
-			console.log("Spectator added!");
-			this.socketsOfSpectators.push(socket);
-		}
-
-		var tempArray = [];
-		for(var i = 0; i < this.socketsOfPlayersInRoom.length; i++){
-			tempArray[i] = this.socketsOfPlayersInRoom[i].request.user.username;
-		}
-
-		if(tempArray.indexOf(socket.request.user.username) === -1){
-			this.socketsOfPlayersInRoom.push(socket);
-		}
-		else{
-			console.log("PLAYER EXISTS ALREADY!");
-		}
-
+		
 		//cutoff
-		if(this.socketsOfPlayersInRoom.length >= this.cutoffForSomePlayersJoined){
-			console.log("cutoffreached: " + this.socketsOfPlayersInRoom.length + " " + this.cutoffForSomePlayersJoined);
+		if(this.allSockets.length >= this.cutoffForSomePlayersJoined){
+			console.log("cutoffreached: " + this.allSockets.length + " " + this.cutoffForSomePlayersJoined);
 			this.someCutoffPlayersJoined = "yes";
 			this.frozen = false;
 		}
-		
-		
 
-		//get a list of usernames in the game
-		//because if a player had left and came back into the room
-		//we want to re-update their data they see
-		var usernames = this.getUsernamesInGame();
-
-		console.log("usernames: " + usernames);
-		console.log("Socket uesrname: " + socket.request.user.username);
-		//if the player joining is already part of the game
-		var index = usernames.indexOf(socket.request.user.username);
-		if (index !== -1) {
-			//this.sockets.push(socket);
-
-			// console.log("Old socket: " + this.sockets[usernames.indexOf(socket.request.user.username)].request.user.username + ", " + this.sockets[usernames.indexOf(socket.request.user.username)].id);
-			if(!this.restartSaved){
-				this.sockets[index].id = socket.id;
-			}
-			this.playersInGame[index].socketId = socket.id;
-			
-
-			// console.log("New socket: " + this.sockets[usernames.indexOf(socket.request.user.username)].request.user.username + ", " + this.sockets[usernames.indexOf(socket.request.user.username)].id);
-
-			console.log("Player has refreshed their page, been given a new socket ID. That new ID has been updated");
-			return false;
-		}
+		this.updateRoomPlayers();		
 	}
 
 	this.playerJoinGame = function (socket) {
@@ -1318,37 +1285,22 @@ module.exports = function (host_, roomId_, io_) {
 			return false;
 		}
 
-
-		//if their username is already here, then delete the old one
-		var usernames = [];
-		this.sockets.forEach(function(socketHere){
-			usernames.push(socketHere.request.user.username.toLowerCase());
-		});
-
-		var i = usernames.indexOf(socket.request.user.username.toLowerCase());
-
-		if(i !== -1){
-			this.sockets.splice(i, 1);
+		if(this.socketsOfPlayers.indexOf(socket) !== -1){
+			// socket.emit("danger-alert", "You have already joined...");			
+			//no need to notify them^
+			return true;
 		}
-
-
-
 		//when game hasnt started yet, add the person to the players in game
 		//cap of 10 players in the game at once.
-		if (this.gameStarted === false && this.sockets.length < 10 && this.canJoin === true) {
-			this.sockets.push(socket);
-			//also remove them from the list of socketsOfSpectators
-			var i = this.socketsOfSpectators.indexOf(socket);
-			this.socketsOfSpectators.splice(i, 1);
+		else if (this.gameStarted === false && this.allSockets.length < 10 && this.canJoin === true) {
+			this.socketsOfPlayers.push(socket);
 
-			socket.emit("joinedGameSuccess");
+			this.updateRoomPlayers();
 			return true;
 		}
 		else {
 			console.log("Game has already started! Or maximum number of players");
-			console.log(this.gameStarted);
-			console.log(this.sockets.length);
-			console.log(this.canJoin);
+			
 			socket.emit("danger-alert", "Game has already started, or too many players, or you can't join right now (probably because of ready/notready phase already started)");
 			
 			return false;
@@ -1356,68 +1308,43 @@ module.exports = function (host_, roomId_, io_) {
 	};
 
 
-	//when a player leaves before game starts
 	this.playerLeaveRoom = function (socket) {
+		//when a player leaves before game starts
 		if(this.playersInGame.indexOf(socket) !== -1){
 			this.gamePlayerLeftDuringReady = true;
 		}
-
-		var tempArray = [];
-		for(var i = 0; i < this.socketsOfPlayersInRoom.length; i++){
-			tempArray.push(this.socketsOfPlayersInRoom[i].request.user.id);
-		}
 		
-		//remove from players in room until their player id doesn't exist
-		var i = tempArray.indexOf(socket.request.user.id);
-		while(i !== -1){
-			tempArray.splice(i, 1)
-			this.socketsOfPlayersInRoom.splice(i, 1);
-
-			i = tempArray.indexOf(socket.request.user.id)
-			console.log("Gone once");
+		this.allSockets.splice(this.allSockets.indexOf(socket), 1);
+		//if they exist in players, then remove them
+		if(this.socketsOfPlayers[this.socketsOfPlayers.indexOf(socket)]){
+			this.socketsOfPlayers.splice(this.socketsOfPlayers.indexOf(socket), 1);	
 		}
 
-		
+		this.updateRoomPlayers();
+		this.distributeGameData();
 
-		console.log("socketsOfPlayersInRoom length: ");
-		console.log(this.socketsOfPlayersInRoom.length);
-		// console.log(this.socketsOfPlayersInRoom);
-		console.log("cutoff: " + this.someCutoffPlayersJoined);
 
 		if(this.restartSaved === true){
-			if (this.socketsOfPlayersInRoom.length === 0 && this.someCutoffPlayersJoined === "yes") {
+			if (this.allSockets.length === 0 && this.someCutoffPlayersJoined === "yes") {
 				console.log("Room: " + this.roomId + " is empty, destroying...");
 				this.destroyRoom = true;
 			}
 		}
 		else{
-			if (this.socketsOfPlayersInRoom.length === 0) {
+			if (this.allSockets.length === 0) {
 				console.log("Room: " + this.roomId + " is empty, destroying...");
 				this.destroyRoom = true;
 			}
 		}
 
-		
-
-		//Get rid of it in the socketsOfSpectators list
-		var i = this.socketsOfSpectators.indexOf(socket);
-		if (i !== -1) {
-			this.socketsOfSpectators.splice(i, 1);
-			console.log("Spectator left, killed their spec socket");
-		}
-
-
 		if (this.gameStarted === false) {
-			//get rid of their socket
-			var i = this.sockets.indexOf(socket);
-			if (i !== -1) {
-				this.sockets.splice(i, 1);
+			if(this.socketsOfPlayers[0]){
+				this.host = this.socketsOfPlayers[0].request.user.username;
+				return true;
 			}
-			if (this.sockets[0]) {
-				this.host = this.sockets[0].request.user.username;
+			else{
+				return false;
 			}
-
-			return true;
 		}
 
 		else {
@@ -1425,48 +1352,51 @@ module.exports = function (host_, roomId_, io_) {
 			return false;
 		}
 
-		
 	};
 
-	this.toDestroyRoom = function () {
+	this.toDestroy = function () {
 		return this.destroyRoom;
 	}
 
-	this.getPlayers = function () {
+	this.getRoomPlayers = function () {
+		var roomPlayers = [];
 
-		var array = {
-			playersJoined: [],
-			spectators: []
-		};
-
-		for (var i = 0; i < this.sockets.length; i++) {
-			var isClaiming = this.claimingPlayers[this.sockets[i].request.user.username];
-
-			array.playersJoined[i] = {
-				username: this.sockets[i].request.user.username,
-				avatarImgRes: this.sockets[i].request.user.avatarImgRes,
-				avatarImgSpy: this.sockets[i].request.user.avatarImgSpy,
-				claim: isClaiming
-			}
-
-			//give the host the teamLeader star
-			if (array.playersJoined[i].username === this.host) {
-				array.playersJoined[i].teamLeader = true;
+		if(this.gameStarted === true){
+			for (var i = 0; i < this.playersInGame.length; i++) {
+				var isClaiming = this.claimingPlayers[this.playersInGame[i].request.user.username];
+	
+				roomPlayers[i] = {
+					username: this.playersInGame[i].request.user.username,
+					avatarImgRes: this.playersInGame[i].request.user.avatarImgRes,
+					avatarImgSpy: this.playersInGame[i].request.user.avatarImgSpy,
+					claim: isClaiming
+				}
+	
+				//give the host the teamLeader star
+				if (roomPlayers[i].username === this.host) {
+					roomPlayers[i].teamLeader = true;
+				}
 			}
 		}
-
-		var spectatorSockets = this.socketsOfSpectators;
-		var usernamesOfSpectators = [];
-		for(var i = 0; i < spectatorSockets.length; i++){
-			usernamesOfSpectators[i] = spectatorSockets[i].request.user.username;
-			console.log(spectatorSockets[i].request.user.username);
+		else{
+			for (var i = 0; i < this.socketsOfPlayers.length; i++) {
+				var isClaiming = this.claimingPlayers[this.socketsOfPlayers[i].request.user.username];
+	
+				roomPlayers[i] = {
+					username: this.socketsOfPlayers[i].request.user.username,
+					avatarImgRes: this.socketsOfPlayers[i].request.user.avatarImgRes,
+					avatarImgSpy: this.socketsOfPlayers[i].request.user.avatarImgSpy,
+					claim: isClaiming
+				}
+	
+				//give the host the teamLeader star
+				if (roomPlayers[i].username === this.host) {
+					roomPlayers[i].teamLeader = true;
+				}
+			}
 		}
-
-		array.spectators = usernamesOfSpectators;
-
-		console.log("usernames of spectators" + usernamesOfSpectators);
 		
-		return array;
+		return roomPlayers;
 	};
 
 	this.getUsernamesInGame = function () {
@@ -1487,8 +1417,8 @@ module.exports = function (host_, roomId_, io_) {
 			var array = [];
 			console.log("playersInRoom");
 			// console.log(this.playersInRoom[0].request.user.username);
-			for(var i = 0; i < this.socketsOfPlayersInRoom.length; i++){
-				array.push(this.socketsOfPlayersInRoom[i].request.user.username);
+			for(var i = 0; i < this.socketsOfPlayers.length; i++){
+				array.push(this.socketsOfPlayers[i].request.user.username);
 			}
 			return array;
 		}
@@ -1513,7 +1443,7 @@ module.exports = function (host_, roomId_, io_) {
 	}
 
 	this.getSockets = function () {
-		return this.sockets;
+		return this.allSockets;
 	};
 
 	this.getHostUsername = function () {
@@ -1538,26 +1468,21 @@ module.exports = function (host_, roomId_, io_) {
 	}
 
 	this.getNumOfPlayersInside = function () {
-		return this.sockets.length;
+		return this.allSockets.length;
 	}
 
-
-	this.getSocketsOfSpectators = function () {
-		return this.socketsOfSpectators;
-	}
 
 	this.kickPlayer = function (username, socket) {
 		if (this.gameStarted === false) {
 			if (this.host === socket.request.user.username) {
 				// Get their socket
-				var kickedPlayerSocket = this.sockets[getIndexFromUsername(this.sockets, username)];
+				var kickedPlayerSocket = this.socketsOfPlayers[getIndexFromUsername(this.socketsOfPlayers, username)];
 				// Remove from game
-				this.sockets.splice(getIndexFromUsername(this.sockets, username), 1);
-				// Add to the list of spectators
-				this.socketsOfSpectators.push(kickedPlayerSocket);
+				this.socketsOfPlayers.splice(getIndexFromUsername(this.socketsOfPlayers, username), 1);
+				
 				console.log("Kicked player: " + username);
 
-				this.sendText(this.socketsOfPlayersInRoom, "Player " + username + " has been kicked by the host.", "server-text");
+				this.sendText(this.socketsOfPlayers, "Player " + username + " has been kicked by the host.", "server-text");
 
 				// Ban them from this room
 				this.kickedPlayers[username] = true;
@@ -1570,17 +1495,6 @@ module.exports = function (host_, roomId_, io_) {
 		return this.gameStarted;
 	}
 
-	this.getUsernamesOfSpectators = function() {
-
-		var arrayToReturn = [];
-
-		for(var i = 0; i < socketsOfSpectators.length; i++){
-			arrayToReturn[i] = socketsOfSpectators[i].request.user.username;
-		}
-
-		return arrayToReturn;
-	}
-
 	this.claim = function(socket){
 		//if the person is already claiming
 		if(socket.request.user.username in this.claimingPlayers){
@@ -1589,6 +1503,7 @@ module.exports = function (host_, roomId_, io_) {
 		else{
 			this.claimingPlayers[socket.request.user.username] = true;
 		}
+		this.distributeGameData();		
 	}
 	
 
@@ -1607,20 +1522,12 @@ module.exports = function (host_, roomId_, io_) {
 		data = {
 			message: incString,
 			classStr: stringType,
-	
 		};
-		for (var i = 0; i < sockets.length; i++) {
-			sockets[i].emit("roomChatToClient", data);
+		for (var i = 0; i < this.allSockets.length; i++) {
+			this.allSockets[i].emit("roomChatToClient", data);
 		}
-		for(var i = 0; i < this.socketsOfSpectators.length; i++){
-			this.socketsOfSpectators[i].emit("roomChatToClient", data);
-		}
-	
+		
 		this.addToChatHistory(data);
-	}
-
-	this.getNumOfSpectatorsInside = function(){
-		return this.socketsOfSpectators.length;
 	}
 
 	this.getAssassinUsernameForAssassinationPhase = function(){
@@ -1632,7 +1539,78 @@ module.exports = function (host_, roomId_, io_) {
 		}
 	}
 	
+	this.updateRoomPlayers = function(){
 
+		for(var i = 0; i < this.allSockets.length; i++){
+			//need to go through all sockets, but only send to the socket of players in game
+			if(this.allSockets[i]){
+				this.allSockets[i].emit("update-room-players", this.getRoomPlayers());
+			}
+		}
+	}
+
+	this.distributeGameData = function(){
+		//distribute roles to each player
+	
+		this.updateRoomPlayers();
+	
+		if(this.gameStarted === true){
+			var gameData = this.getGameData();
+	
+			console.log("roomId distribute: " + this.roomId);
+
+			for(var i = 0; i < this.playersInGame.length; i++){
+				var index = getIndexFromUsername(this.socketsOfPlayers, this.playersInGame[i].request.user.username);
+
+				//need to go through all sockets, but only send to the socket of players in game
+				if(this.socketsOfPlayers[index]){
+					this.socketsOfPlayers[index].emit("game-data", gameData[i])
+
+					console.log("Sent to player: " + this.playersInGame[i].request.user.username + " role " + gameData[i].role);
+				}
+			}
+		
+			var gameDataForSpectators = this.getGameDataForSpectators();
+	
+			var sockOfSpecs = this.getSocketsOfSpectators();
+			sockOfSpecs.forEach(function(sock){
+				sock.emit("game-data", gameDataForSpectators);
+				console.log("(for loop) Sent to spectator: " + sock.request.user.username);
+			});
+		}
+	}
+
+
+	this.getSocketsOfSpectators = function(){
+		//slice to create a new complete copy of allSOckets
+		var socketsOfSpecs = this.allSockets.slice();
+		// console.log("a");
+		
+		// console.log(this.allSockets.length);
+		// console.log(this.socketsOfPlayers.length);
+
+		for(var i = 0; i < this.socketsOfPlayers.length; i++){
+			var index = socketsOfSpecs.indexOf(this.socketsOfPlayers[i]);
+
+			if(index !== -1){
+				// console.log("REMOVE: " + socketsOfSpecs[index].request.user.username);
+				
+				socketsOfSpecs.splice(index, 1);
+			}
+		}
+
+		
+		console.log(socketsOfSpecs.length);
+		
+		//return the remaining which are only spectators
+
+		console.log("Get sockets of spectators: ");
+		socketsOfSpecs.forEach(function(sock){
+			console.log(sock.request.user.username);
+		});
+
+		return socketsOfSpecs;
+	}
 };
 
 
@@ -1659,17 +1637,6 @@ function shuffle(array) {
 	return array;
 }
 
-function getIndexFromUsername(sockets, username) {
-	for (var i = 0; i < sockets.length; i++) {
-		if (username === sockets[i].request.user.username) {
-			return i;
-		}
-	}
-}
-
-function getUsernameFromIndex(index, playersInGame) {
-	return playersInGame[index].username;
-}
 
 function calcMissionVotes(votes, requiresTwoFails) {
 	//note we may not have all the votes from every person
@@ -1747,10 +1714,10 @@ function getStrApprovedRejectedPlayers(votes, playersInGame) {
 	for (var i = 0; i < votes.length; i++) {
 
 		if (votes[i] === "approve") {
-			approvedUsernames = approvedUsernames + getUsernameFromIndex(i, playersInGame) + ", ";
+			approvedUsernames = approvedUsernames + getUsernameFromIndex(playersInGame, i) + ", ";
 		}
 		else if (votes[i] === "reject") {
-			rejectedUsernames = rejectedUsernames + getUsernameFromIndex(i, playersInGame) + ", ";
+			rejectedUsernames = rejectedUsernames + getUsernameFromIndex(playersInGame, i) + ", ";
 		}
 		else {
 			console.log("ERROR! Unknown vote: " + gameData.votes[i]);
@@ -1805,5 +1772,36 @@ function getRolesInStr(options) {
 
 	return str;
 }
+
+
+
+function getIndexFromUsername(sockets, username) {
+	for (var i = 0; i < sockets.length; i++) {
+		if (username === sockets[i].request.user.username) {
+			return i;
+		}
+	}
+}
+
+function getUsernameFromIndex(usernames, index) {
+	return usernames[index].username;
+}
+
+
+
+
+
+
+
+
+
+
+// function giveGameDataToSpectator(socket, io) {
+// 	var gameDataForSpectators = rooms[socket.request.user.inRoomId].getGameDataForSpectators();
+// 	//send out spectator data
+// 	console.log("Spectator data sent to spectator: " + socket.request.user.username);
+// 	socket.emit("game-data", gameDataForSpectators);
+// }
+
 
 
