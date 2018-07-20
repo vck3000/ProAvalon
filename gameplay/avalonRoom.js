@@ -1547,6 +1547,18 @@ module.exports = function (host_, roomId_, io_) {
 				this.allSockets[i].emit("update-room-players", this.getRoomPlayers());
 			}
 		}
+
+		//also update the spectators
+		var socketsOfSpecs = this.getSocketsOfSpectators();
+
+		var usernames = [];
+		for(var i = 0; i < socketsOfSpecs.length; i++){
+			usernames[i] = socketsOfSpecs[i].request.user.username;
+		}
+
+		this.allSockets.forEach(function(spec){
+			spec.emit("update-room-spectators", usernames);
+		});
 	}
 
 	this.distributeGameData = function(){

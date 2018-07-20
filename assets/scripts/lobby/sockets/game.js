@@ -21,10 +21,43 @@ socket.on("update-room-players", function (data) {
   // console.log("update room players");
     // console.log(data);
 
-    //update spectators list
+    // update spectators list
     // updateSpectatorsList();
     draw();
 });
+
+socket.on("update-room-spectators", function(spectatorUsernames){
+    $("#spectators-table tbody tr td").remove();
+    $("#spectators-table tbody tr").remove();
+
+    //append each player into the list
+    spectatorUsernames.forEach(function (spectator) {
+
+        //if the current game exists, add it
+        if (spectator) {
+            var str = "<tr> <td> " + spectator + "</td> </tr>";
+            $("#spectators-table tbody").append(str);
+        }
+    });
+
+
+    //remove the ugly remaining border when no spectators are there to display
+    if (document.querySelectorAll("#spectators-table tbody tr td").length === 0) {
+        document.querySelectorAll("#spectators-table")[0].classList.add("spectators-table-off");
+        document.querySelectorAll("#spectators-table")[0].classList.remove("spectators-table-on");
+
+        document.querySelectorAll("#spectators-table")[1].classList.add("spectators-table-off");
+        document.querySelectorAll("#spectators-table")[1].classList.remove("spectators-table-on");
+    }
+    else {
+        document.querySelectorAll("#spectators-table")[0].classList.add("spectators-table-on");
+        document.querySelectorAll("#spectators-table")[0].classList.remove("spectators-table-off");
+
+        document.querySelectorAll("#spectators-table")[1].classList.add("spectators-table-on");
+        document.querySelectorAll("#spectators-table")[1].classList.remove("spectators-table-off");
+    }
+});
+
 
 
     //spectator join notifications

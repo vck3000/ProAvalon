@@ -8,7 +8,6 @@ To-do list:
 
 -game chat not highlighting yellow on new message
 
--if u join back straight away after creating a room itll bug
 
 -mute button
 
@@ -289,3 +288,4 @@ Mine:
 -blue colour for people joining
 -Make spectator chat another colour
 -player pick twice
+-if u join back straight away after creating a room itll bug
