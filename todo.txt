@@ -1,11 +1,8 @@
 To-do list:
- 
--forum moderation
 
-[-guns at the end of a game.
+
 [01:01] ProNub: or an actual tickle lick and... squish sound?
-[-kicking players 
-[-hide navbar with command
+-hide navbar with command
 
 
 ***************************************************************************************
@@ -291,3 +288,6 @@ Mine:
 
 -mute button
 -leave room remove from room chat.
+-forum moderation
+-kicking players 
+-guns at the end of a game.

@@ -71,6 +71,7 @@ module.exports = function (host_, roomId_, io_) {
 	this.playersYetToVote = [];
 	
 	this.proposedTeam = [];
+	this.lastProposedTeam = [];
 	this.votes = [];
 	this.missionVotes = [];
 	this.gameplayMessage = "";
@@ -167,6 +168,7 @@ module.exports = function (host_, roomId_, io_) {
 			// this.gameplayMessage = "The resistance have won the game.";
 			this.sendText(this.allSockets, "The resistance have won the game.", "gameplay-text");
 		}
+
 
 		this.distributeGameData();
 
@@ -682,8 +684,10 @@ module.exports = function (host_, roomId_, io_) {
 				// 	this.proposedTeam[i] = splitStr[i];
 				// }
 
+				
 				//set the proposed team
 				this.proposedTeam = pickedTeam;
+				this.lastProposedTeam = this.proposedTeam;
 				//change phase
 				this.phase = "voting";
 				//players yet to vote are all players in game
@@ -805,6 +809,7 @@ module.exports = function (host_, roomId_, io_) {
 			data.see.spies = this.getAllSpies();
 			data.see.roles = this.getRevealedRoles();
 			data.see.playerShot = this.playerShot;
+			data.proposedTeam = this.lastProposedTeam;
 		}
 
 		return data;
@@ -869,6 +874,7 @@ module.exports = function (host_, roomId_, io_) {
 					data[i].see.spies = this.getAllSpies();
 					data[i].see.roles = this.getRevealedRoles();
 					data[i].see.playerShot = this.playerShot;
+					data[i].proposedTeam = this.lastProposedTeam;
 				}
 			}
 			return data;
@@ -1475,9 +1481,7 @@ module.exports = function (host_, roomId_, io_) {
 	this.kickPlayer = function (username, socket) {
 		if (this.gameStarted === false) {
 			if (this.host === socket.request.user.username) {
-				// Get their socket
-				var kickedPlayerSocket = this.socketsOfPlayers[getIndexFromUsername(this.socketsOfPlayers, username)];
-				// Remove from game
+				
 				this.socketsOfPlayers.splice(getIndexFromUsername(this.socketsOfPlayers, username), 1);
 				
 				console.log("Kicked player: " + username);
@@ -1486,6 +1490,8 @@ module.exports = function (host_, roomId_, io_) {
 
 				// Ban them from this room
 				this.kickedPlayers[username] = true;
+
+				this.updateRoomPlayers();
 			}
 		}
 		// console.log("Cant kick, game started");

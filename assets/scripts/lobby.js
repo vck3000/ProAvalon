@@ -824,6 +824,7 @@ function enableDisableButtons() {
         }
 
         else if (gameData.phase === "finished") {
+            drawGuns();
             disableButtons();
         }
     }
