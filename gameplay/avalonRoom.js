@@ -1298,7 +1298,7 @@ module.exports = function (host_, roomId_, io_) {
 		}
 		//when game hasnt started yet, add the person to the players in game
 		//cap of 10 players in the game at once.
-		else if (this.gameStarted === false && this.socketsOfPlayers.length < 10 && this.canJoin === true) {
+		else if (this.gameStarted === false && this.allSockets.length < 10 && this.canJoin === true) {
 			this.socketsOfPlayers.push(socket);
 
 			this.updateRoomPlayers();
