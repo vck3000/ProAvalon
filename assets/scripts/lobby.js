@@ -6,7 +6,7 @@ var ownUsername = $("#originalUsername")[0].innerText;
 
 $(document).ready(function(){
     setInterval(function(){
-        draw(); 
+        // draw(); 
         console.log("one second"); 
         extendTabContentToBottomInRoom();
     }, 1000);
