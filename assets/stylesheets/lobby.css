@@ -913,3 +913,7 @@ i {
     text-align: center;
     transform: translateX(-50%);
 }
+
+.propUpButton {
+    visibility: hidden;
+}
