@@ -6,7 +6,7 @@ var ownUsername = $("#originalUsername")[0].innerText;
 
 $(document).ready(function(){
     setInterval(function(){
-        draw(); 
+        // draw(); 
         console.log("one second"); 
         extendTabContentToBottomInRoom();
     }, 1000);
@@ -587,7 +587,7 @@ function draw() {
           var offsetY = h / 2;
           
           //reduce the height so that the bottom of avatars dont crash into the bottom.
-          offsetY = offsetY * 1;
+          offsetY = offsetY * 1.1;
   
         // console.log("offsetY: " + offsetY);
   
@@ -602,9 +602,9 @@ function draw() {
           divs[i].style.left = strX;
           divs[i].style.bottom = strY;
   
-          var ratioXtoY = 0.8;
+          var ratioXtoY = 1;
   
-          divs[i].style.height = 45 + "%";
+          divs[i].style.height = 30 + "%";
           divs[i].style.width = divs[i].offsetHeight * ratioXtoY + "px";
   
           // //size of the avatar img
@@ -1544,7 +1544,7 @@ function escapeHtml(unsafe) {
 function scaleMiddleBoxes(){
     gameTableHeight = $("#mainRoomBox").height();
 
-    const startScalingHeight = 300;
+    const startScalingHeight = 400;
     const maxHeightOfBoxes = 60; //in px
     const scaleFactor = maxHeightOfBoxes/startScalingHeight;
 
@@ -1556,14 +1556,38 @@ function scaleMiddleBoxes(){
     if(ratioToReduce > 1){
         ratioToReduce = 1;
     }
+    else if(ratioToReduce < 0.6){
+        ratioToReduce = 0.6;
+    }
 
     // $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")")
     $("#missionsBox").css("transform", "translateX(-47%) scale(" + ratioToReduce + ")")
 
+    $(".missionBox").css("font-size", (1/ratioToReduce) + "em");
+
+
+
+    const bstartScalingHeight = 200;
+    const bmaxHeightOfBoxes = 60; //in px
+    const bscaleFactor = bmaxHeightOfBoxes/bstartScalingHeight;
+
+    var bsetHeightOfMissionBox = gameTableHeight*bscaleFactor;
+
+    var bratioToReduce = (bsetHeightOfMissionBox / bmaxHeightOfBoxes);
+
+  // console.log("Reduce by: " + ratioToReduce);
+    if(bratioToReduce > 1){
+        bratioToReduce = 1;
+    }
+    else if(ratioToReduce < 0.6){
+        bratioToReduce = 0.6;
+    }
+
+
 
     //also scale the approve reject buttons
-    $(".approveLabel").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")");
-    $(".rejectLabel").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")");
+    $(".approveLabel").css("transform", "translateX(-50%) scale(" + bratioToReduce + ")");
+    $(".rejectLabel").css("transform", "translateX(-50%) scale(" + bratioToReduce + ")");
 
 }
 
