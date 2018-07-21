@@ -377,7 +377,6 @@ p {
 .game-buttons-div {
     text-align: center;
     padding: 15px;
-    transform: translateY(-100%);
 }
 
 .game-buttons-div button {
