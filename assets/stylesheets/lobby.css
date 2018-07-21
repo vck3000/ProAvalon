@@ -381,8 +381,8 @@ p {
 }
 
 .game-buttons-div button {
-    margin-left: 2%;
-    margin-right: 2%;
+    margin-left: 7%;
+    margin-right: 7%;
 }
 
 .center-div {
@@ -885,8 +885,7 @@ i {
 
 
 .disabled{
-    /* visibility: hidden; */
-    display: none;
+    visibility: hidden;
 }
 
 .faded {
