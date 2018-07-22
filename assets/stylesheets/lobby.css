@@ -375,6 +375,10 @@ p {
 
 /* Center well */
 
+well {
+    height: 54px;
+}
+
 .game-buttons-div {
     text-align: center;
     /* padding: 15px; */
@@ -386,8 +390,8 @@ p {
 }
 
 .game-buttons-div button {
-    margin-left: 2%;
-    margin-right: 2%;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .center-div {
@@ -400,6 +404,7 @@ p {
 #missionsBox {
     /*text-align: center;*/
     position: absolute;
+    z-index: -1;
     /*margin: auto;*/
     left: 49%;
     top: 43%;
@@ -890,7 +895,7 @@ i {
 
 
 .disabled{
-    visibility: hidden;
+    /* visibility: hidden; */
     display:none;
 }
 
@@ -905,7 +910,7 @@ i {
 
 .approveLabel{
     position: absolute;
-    top: -20%;
+    top: 0%;
     left: 50%;
     text-align: center;
     transform: translateX(-50%);
@@ -913,7 +918,7 @@ i {
 
 .rejectLabel{
     position: absolute;
-    top: -20%;
+    top: 0%;
     left: 50%;
     text-align: center;
     transform: translateX(-50%);

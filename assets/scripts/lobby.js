@@ -5,6 +5,10 @@ var socket = io({ transports: ['websocket'], upgrade: false });
 //grab our username from the username assigned by server in EJS file.
 var ownUsername = $("#originalUsername")[0].innerText;
 
+setInterval(function(){
+    extendTabContentToBottomInRoom();
+
+}, 1000);
 
 
 
