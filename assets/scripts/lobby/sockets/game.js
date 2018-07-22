@@ -1,16 +1,9 @@
 socket.on("update-room-players", function (data) {
     //if an extra person joins the game, play the chime
-    if(roomPlayersData && roomPlayersData.length < data.length && data.length > 1){
-        if($("#option_notifications_sound_players_joining_game")[0].checked === true){
-            playSound('ding');
-        }
-        
-        if($("#option_notifications_desktop_players_joining_game")[0].checked === true){
-            displayNotification("New player in game!  [" + (data.length) + "p]", data[data.length - 1].username + " has joined the game!", "avatars/base-res.png", "newPlayerInGame");
-        }
-    }
 
     console.log("update room players");
+
+    // showDangerAlert("Test");
 
     // var x = $("#typehead").parent().width();    
     roomPlayersData = data;
@@ -24,6 +17,17 @@ socket.on("update-room-players", function (data) {
     // update spectators list
     // updateSpectatorsList();
     draw();
+
+    if(roomPlayersData && roomPlayersData.length < data.length && data.length > 1){
+        if($("#option_notifications_sound_players_joining_game")[0].checked === true){
+            playSound('ding');
+        }
+        
+        if($("#option_notifications_desktop_players_joining_game")[0].checked === true){
+            displayNotification("New player in game!  [" + (data.length) + "p]", data[data.length - 1].username + " has joined the game!", "avatars/base-res.png", "newPlayerInGame");
+        }
+    }
+
 });
 
 socket.on("update-room-spectators", function(spectatorUsernames){

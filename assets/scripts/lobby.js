@@ -1,5 +1,10 @@
 
-var socket = io({ transports: ['websocket'], upgrade: false });
+var socket = io();
+
+// socket.on('reconnect_attempt', () => {
+//     socket.io.opts.transports = [, 'websocket'];
+//   });
+
 // console.log("started");
 
 //grab our username from the username assigned by server in EJS file.
@@ -1054,7 +1059,7 @@ function strOfAvatar(playerData, alliance) {
 
 
     str += "<img class='avatarImgInRoom' src='" + picLink + "'>";
-    str += "<p class='username-p'>" + lady + " " + playerData.username + " " + hammerStar + " </p>" + role + "</div>";
+    str += "<p class='username-p' style='white-space:nowrap;'>" + lady + " " + playerData.username + " " + hammerStar + " </p>" + role + "</div>";
 
 
     return str;
