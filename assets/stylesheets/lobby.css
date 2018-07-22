@@ -211,6 +211,22 @@ p {
     font-style: italic;
 }
 
+.gameplay-text-red {
+    /* color: rgb(255, 0, 0); */
+    color: #bd362f;
+    font-style: italic;
+    font-weight: 700;
+}
+
+
+.gameplay-text-blue {
+    /* color: rgb(255, 0, 0); */
+    color: #0044cc;
+    font-style: italic;
+    font-weight: 700;
+}
+
+
 
 /* This is Lady */
 .special-text {

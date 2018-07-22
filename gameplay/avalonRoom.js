@@ -466,12 +466,12 @@ module.exports = function (host_, roomId_, io_) {
 
 					if (numOfVotedFails === 0) {
 						// this.gameplayMessage = "The mission succeeded.";	
-						this.sendText(this.allSockets, "Mission " + this.missionNum + " has succeeded.", "gameplay-text");
+						this.sendText(this.allSockets, "Mission " + this.missionNum + " succeeded.", "gameplay-text-blue");
 
 					}
 					else {
 						// this.gameplayMessage = "The mission succeeded, but with " + numOfVotedFails + " fails.";
-						this.sendText(this.allSockets, "Mission " + this.missionNum + " succeeded, but with " + numOfVotedFails + " fails.", "gameplay-text");
+						this.sendText(this.allSockets, "Mission " + this.missionNum + " succeeded, but with " + numOfVotedFails + " fails.", "gameplay-text-blue");
 
 					}
 
@@ -488,12 +488,12 @@ module.exports = function (host_, roomId_, io_) {
 					
 					if (numOfVotedFails === 1) {
 						// this.gameplayMessage = "The mission failed with " + numOfVotedFails + " fail.";	
-						this.sendText(this.allSockets, "Mission " + this.missionNum + " failed with " + numOfVotedFails + " fail.", "gameplay-text");
+						this.sendText(this.allSockets, "Mission " + this.missionNum + " failed with " + numOfVotedFails + " fail.", "gameplay-text-red");
 						
 					}
 					else {
 						// this.gameplayMessage = "The mission failed with " + numOfVotedFails + " fails.";	
-						this.sendText(this.allSockets, "Mission " + this.missionNum + " failed with " + numOfVotedFails + " fails.", "gameplay-text");
+						this.sendText(this.allSockets, "Mission " + this.missionNum + " failed with " + numOfVotedFails + " fails.", "gameplay-text-red");
 
 					}
 
@@ -927,6 +927,15 @@ module.exports = function (host_, roomId_, io_) {
 	}
 
 	this.hostTryStartGame = function (options) {
+		if(this.hostTryStartGameDate){
+			if(new Date - this.hostTryStartGameDate > 1000*11){
+				this.canJoin = true;
+				this.playersYetToReady = [];
+			}
+		}
+		
+
+
 		if (this.canJoin === true) {
 			//check before starting
 			if (this.socketsOfPlayers.length < minPlayers) {
@@ -938,6 +947,8 @@ module.exports = function (host_, roomId_, io_) {
 				console.log("Game already started!");
 				return false;
 			}
+
+			this.hostTryStartGameDate = new Date();
 
 			//makes it so that others cannot join the room anymore
 			this.canJoin = false;
@@ -1285,6 +1296,15 @@ module.exports = function (host_, roomId_, io_) {
 	}
 
 	this.playerJoinGame = function (socket) {
+
+		if(this.hostTryStartGameDate){
+			if(new Date - this.hostTryStartGameDate > 1000*11){
+				this.canJoin = true;
+				this.playersYetToReady = [];
+			}
+		}
+
+
 		// If they have not been kicked before
 		if (this.kickedPlayers[socket.request.user.username] === true) {
 			socket.emit("danger-alert", "You have been banned from this room. You can not join.");
@@ -1306,9 +1326,19 @@ module.exports = function (host_, roomId_, io_) {
 		}
 		else {
 			console.log("Game has already started! Or maximum number of players");
-			
-			socket.emit("danger-alert", "Game has already started, or too many players, or you can't join right now (probably because of ready/notready phase already started)");
-			
+			if(this.gameStarted === true){
+				socket.emit("danger-alert", "Game has already started.");
+			}
+			else if(this.socketsOfPlayers.length >= 10){
+				socket.emit("danger-alert", "There are too many players in the game already.");
+			}
+			else if(this.canJoin === false){
+				socket.emit("danger-alert", "The game is currently trying to start (ready/not ready phase). You can join if someone is not ready, or after 10 seconds has elapsed.");
+			}
+			else{
+				socket.emit("danger-alert", "There was an error. Let the admin know if you see this...");
+			}
+
 			return false;
 		}
 	};
