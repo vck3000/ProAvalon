@@ -295,7 +295,12 @@ var actionsObj = {
                 var i = 0;
                 i++;
     
-                modAction.find({}, function(err, foundModActions){
+                modAction.find({
+					$or: [
+						{type: "mute"},
+						{type: "ban"}
+					]
+				}, function(err, foundModActions){
                     foundModActions.forEach(function(modActionFound){
                         var message = modActionFound.bannedPlayer.username + " was banned for " + modActionFound.reason + " by " + modActionFound.modWhoBanned.username + ": '" + modActionFound.descriptionByMod + "' until: " + modActionFound.whenRelease.toString();
     
