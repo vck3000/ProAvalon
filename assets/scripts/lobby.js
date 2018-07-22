@@ -47,6 +47,8 @@ var isSpectator = false;
 //window resize, repaint the users
 window.addEventListener('resize', function () {
   // console.log("Resized");
+
+
     checkStatusBarWithHeight();
     draw();
 });
@@ -316,7 +318,7 @@ function draw() {
           }
   
           activateAvatarButtons();
-      }
+      }      
   }
   
   var selectedAvatars = {};
@@ -572,9 +574,14 @@ function draw() {
       //set the positions and sizes
       // console.log("numPlayers: " + numPlayers)
       var divs = document.querySelectorAll("#mainRoomBox div");
-      const scaleWidthDown = 0.9;
+      const scaleWidthDown = 0.8;
       const scaleHeightDown = 1;
-      var playerLocations = generatePlayerLocations(numPlayers, (w / 2)*scaleWidthDown, (h / 2)*scaleHeightDown);
+
+      var a = (w / 2)*scaleWidthDown;
+      var b = (h / 2)*scaleHeightDown;
+
+
+      var playerLocations = generatePlayerLocations(numPlayers, a, b);
   
       for (var i = 0; i < numPlayers; i++) {
           // console.log("player position: asdflaksdjf;lksjdf");
@@ -587,21 +594,30 @@ function draw() {
         // console.log("offsetY: " + offsetY);
   
   
-          //scale the height of avatars
-          var windowH = $(window).height();
-          var windowW = $(window).width();
-  
           var strX = playerLocations.x[i] + offsetX + "px";
-          var strY = playerLocations.y[i] + offsetY - windowH * 0.01 + "px";
+          var strY = playerLocations.y[i] + offsetY + "px";
   
           divs[i].style.left = strX;
           divs[i].style.bottom = strY;
   
           var ratioXtoY = 0.8;
   
-          divs[i].style.height = 37 + "%";
-          divs[i].style.width = divs[i].offsetHeight * ratioXtoY + "px";
+          divs[i].style.height = 30 + "%";
+
+        //   divs[i].style.width = divs[i].offsetHeight * ratioXtoY + "px";
   
+        var divHeightPos = $(divs[i]).position().top * 1.4;
+        var translateValue = (-100/(2*b))*(divHeightPos-2*b);
+
+        $(divs[i]).css("transform", "translate(-50%, " + translateValue + "%)");
+
+
+
+
+
+
+
+
           // //size of the avatar img
           // divs[i].style.width = 30 + "%";
           // divs[i].style.height = 30 + "%";
@@ -1199,14 +1215,14 @@ function generatePlayerLocations(numOfPlayers, a, b) {
 
     for (var i = 0; i < numOfPlayers; i++) {
         if(customSteps[numOfPlayers] && customSteps[numOfPlayers][i]){
-            x_[i] = a * (Math.cos(toRadians((customSteps[numOfPlayers][i]) + 90 + tiltOffset))) * 0.85;
-            y_[i] = b * (Math.sin(toRadians((customSteps[numOfPlayers][i]) + 90 + tiltOffset))) * 0.7;
+            x_[i] = a * (Math.cos(toRadians((customSteps[numOfPlayers][i]) + 90 + tiltOffset))) * 1;
+            y_[i] = b * (Math.sin(toRadians((customSteps[numOfPlayers][i]) + 90 + tiltOffset))) * 1;
         }
         else{
             //get the coordinates. Note the +90 is to rotate so that
             //the first person is at the top of the screen
-            x_[i] = a * (Math.cos(toRadians((step * i) + 90 + tiltOffset))) * 0.85;
-            y_[i] = b * (Math.sin(toRadians((step * i) + 90 + tiltOffset))) * 0.7;
+            x_[i] = a * (Math.cos(toRadians((step * i) + 90 + tiltOffset))) * 1;
+            y_[i] = b * (Math.sin(toRadians((step * i) + 90 + tiltOffset))) * 1;
             // x_[i] = a*(Math.cos(toRadians((step*i) + 90)));
             // y_[i] = b*(Math.sin(toRadians((step*i) + 90)));
         }

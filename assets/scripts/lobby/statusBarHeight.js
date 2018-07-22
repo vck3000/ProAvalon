@@ -5,9 +5,9 @@ $(document).ready(function(){
 function checkStatusBarWithHeight(){
     const cutOffHeight = 850
     if($(window).height() > cutOffHeight){
-        $("#status").removeClass("well-sm");
+        // $("#status").removeClass("well-sm");
     }
     else{
-        $("#status").addClass("well-sm");
+        // $("#status").addClass("well-sm");
     }
 }

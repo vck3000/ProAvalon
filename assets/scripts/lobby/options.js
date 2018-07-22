@@ -73,13 +73,19 @@ var userOptions = {
 
 
             //set up div 1 to be resizable in north and south directions
-            $("#div1Resize").resizable({ handles: 's' });
+            $("#div1Resize").resizable({ 
+                handles: 's'
+            });
             //on resize of div 1, resize div 2.
             $('#div1Resize').resize(function () {
                 //Make the height adjustments
                 userOptions["optionDisplayHeightOfAvatarContainer"].avatarContainerHeightAdjust();
                 //save the new heights
                 docCookies.setItem("optionDisplayHeightOfAvatarContainer", $("#div1Resize").height(), Infinity);
+
+                //update the new resizeable heights
+                $("#div1Resize").resizable("option","minHeight",parseInt($(window).height()*0.25,10));
+                $("#div1Resize").resizable("option","maxHeight",parseInt($(window).height()*0.50,10));
             });
             //on whole window resize, resize both divs.
             $(window).resize(function () {
@@ -89,6 +95,10 @@ var userOptions = {
                 docCookies.setItem("optionDisplayHeightOfAvatarContainer", $("#div1Resize").height(), Infinity);
                 //Make the height adjustments
                 userOptions["optionDisplayHeightOfAvatarContainer"].avatarContainerHeightAdjust();
+
+                //update the new resizeable heights
+                $("#div1Resize").resizable("option","minHeight",parseInt($(window).height()*0.25,10));
+                $("#div1Resize").resizable("option","maxHeight",parseInt($(window).height()*0.50,10));
                 
             });
 
@@ -98,8 +108,8 @@ var userOptions = {
               // console.log(containerHeight);
 
                 //assign bounds
-                var lowerBound = 40;
-                var upperBound = 600;
+                var lowerBound = parseInt($(window).height()*0.25,10);
+                var upperBound = parseInt($(window).height()*0.50,10);
 
                 //bound the font size
                 if (containerHeight < lowerBound) {
