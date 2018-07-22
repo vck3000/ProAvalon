@@ -229,7 +229,7 @@ module.exports = function (host_, roomId_, io_) {
 		//store player data:
 
 		var timeFinished = new Date();
-		var timeStarted = this.startGameTime;
+		var timeStarted = new Date(this.startGameTime);
 
 		var gameDuration = timeFinished - timeStarted;
 		console.log("game duration: ");
@@ -245,7 +245,7 @@ module.exports = function (host_, roomId_, io_) {
 
 		this.playersInGame.forEach(function(player){
 
-			User.findById(player.userId).exec(function(err, foundUser){
+			User.findById(player.userId).populate("modAction").populate("notifications").exec(function(err, foundUser){
 				if(err){console.log(err);}
 				else{
 
