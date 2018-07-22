@@ -377,7 +377,8 @@ p {
 
 .game-buttons-div {
     text-align: center;
-    padding: 15px;
+    /* padding: 15px; */
+    padding-top: 3px;
     /* margin-top: 10px; */
     /* position: relative; */
     /* bottom: 0%; */
@@ -594,8 +595,8 @@ h3 {
 
 
 .game-buttons-div {
-    padding-top: 1vh;
-    padding-bottom: 1vh;
+    /* padding-top: 1vh; */
+    /* padding-bottom: 1vh; */
 }
 
 .newMessage {
@@ -890,6 +891,7 @@ i {
 
 .disabled{
     visibility: hidden;
+    display:none;
 }
 
 .faded {

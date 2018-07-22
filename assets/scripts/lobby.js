@@ -601,11 +601,11 @@ function draw() {
           divs[i].style.left = strX;
           divs[i].style.bottom = strY;
   
-          var ratioXtoY = 0.8;
+          var ratioXtoY = 1;
   
           divs[i].style.height = 30 + "%";
 
-        //   divs[i].style.width = divs[i].offsetHeight * ratioXtoY + "px";
+          divs[i].style.width = divs[i].offsetHeight * ratioXtoY + "px";
   
         var divHeightPos = $(divs[i]).position().top * 1.4;
         var translateValue = (-100/(2*b))*(divHeightPos-2*b);
