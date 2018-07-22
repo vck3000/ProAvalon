@@ -106,7 +106,7 @@ var server = app.listen(port, function () {
 //=====================================
 var socket = require("socket.io");
 var io = socket(server),
-	passportSocketIo = require("passport.socketio");;
+	passportSocketIo = require("passport.socketio");
 
 require("./sockets/sockets")(io);
 

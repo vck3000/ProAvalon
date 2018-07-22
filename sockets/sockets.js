@@ -512,63 +512,67 @@ module.exports = function (io) {
 			return;
 		}
 
-		//check if they have a ban or a mute
-
-		for(var i = 0; i < currentModActions.length; i++){
-			if(currentModActions[i].bannedPlayer.id && socket.request.user.id.toString() === currentModActions[i].bannedPlayer.id.toString()){
-				if(currentModActions[i].type === "mute"){
-					socket.emit("muteNotification", currentModActions[i]);
+		//slight delay while client loads
+		setTimeout(function(){
+			//check if they have a ban or a mute
+			for(var i = 0; i < currentModActions.length; i++){
+				if(currentModActions[i].bannedPlayer.id && socket.request.user.id.toString() === currentModActions[i].bannedPlayer.id.toString()){
+					if(currentModActions[i].type === "mute"){
+						socket.emit("muteNotification", currentModActions[i]);
+					}
 				}
 			}
-		}
 
-		console.log(socket.request.user.username + " has connected under socket ID: " + socket.id);
+			console.log(socket.request.user.username + " has connected under socket ID: " + socket.id);
 
-		//remove any duplicate sockets
-		for(var i = 0; i < allSockets.length; i++){
-			if(allSockets[i].request.user.id === socket.request.user.id){
-				allSockets[i].disconnect(true);
+			//remove any duplicate sockets
+			for(var i = 0; i < allSockets.length; i++){
+				if(allSockets[i].request.user.id === socket.request.user.id){
+					allSockets[i].disconnect(true);
+				}
 			}
-		}
 
-		//now push their socket in
-		allSockets.push(socket);
+			//now push their socket in
+			allSockets.push(socket);
 
 
-		//send the user its ID to store on their side.
-		socket.emit("username", socket.request.user.username);
-		//send the user the list of commands
-		socket.emit("commands", userCommands);
-
-		//if the mods name is inside the array
-		if(modsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1 ){
+			//send the user its ID to store on their side.
+			socket.emit("username", socket.request.user.username);
 			//send the user the list of commands
-			socket.emit("modCommands", modCommands);
-		}
+			socket.emit("commands", userCommands);
 
-		//if the admin name is inside the array
-		if(adminsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1 ){
-			//send the user the list of commands
-			socket.emit("adminCommands", adminCommands);
-		}
+			//if the mods name is inside the array
+			if(modsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1 ){
+				//send the user the list of commands
+				socket.emit("modCommands", modCommands);
+			}
 
-		socket.emit("checkSettingsResetDate", dateResetRequired);
+			//if the admin name is inside the array
+			if(adminsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1 ){
+				//send the user the list of commands
+				socket.emit("adminCommands", adminCommands);
+			}
+
+			socket.emit("checkSettingsResetDate", dateResetRequired);
+
+
+
+			//automatically join the all chat
+			socket.join("allChat");
+			//socket sends to all players
+			var data = {
+				message: socket.request.user.username + " has joined the lobby.",
+				classStr: "server-text-teal"
+			}
+			sendToAllChat(io, data);
+
+			io.in("allChat").emit("update-current-players-list", getPlayerUsernamesFromAllSockets());
+			console.log("update current players list");
+			console.log(getPlayerUsernamesFromAllSockets());
+			updateCurrentGamesList(io);
+		},500);
+
 		
-
-
-		//automatically join the all chat
-		socket.join("allChat");
-		//socket sends to all players
-		var data = {
-			message: socket.request.user.username + " has joined the lobby.",
-			classStr: "server-text-teal"
-		}
-		sendToAllChat(io, data);
-
-		io.in("allChat").emit("update-current-players-list", getPlayerUsernamesFromAllSockets());
-		console.log("update current players list");
-		console.log(getPlayerUsernamesFromAllSockets());
-		updateCurrentGamesList(io);
 
 
 		//when a user disconnects/leaves the whole website
