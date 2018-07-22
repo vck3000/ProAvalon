@@ -22,6 +22,11 @@ function showSuccessAlert(data) {
 
 
 function showDangerAlert(data) {
+
+    if(data === "You have been disconnected! Please refresh the page."){
+        document.querySelector("#danger-alert-box").classList.add("disconnect");
+    }
+
     document.querySelector("#danger-alert-box").classList.remove("inactive-window");
     document.querySelector("#danger-alert-box-button").classList.remove("inactive-window");
     document.querySelector("#danger-alert-box").innerHTML = data + " <span class='glyphicon glyphicon-remove pull-right'></span>";

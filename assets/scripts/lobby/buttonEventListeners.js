@@ -34,8 +34,15 @@ document.querySelector("#newRoom").addEventListener("click", function () {
 });
 
 document.querySelector("#danger-alert-box-button").addEventListener("click", function () {
-    document.querySelector("#danger-alert-box").classList.add("inactive-window");
-    document.querySelector("#danger-alert-box-button").classList.add("inactive-window");
+
+    if(document.querySelector("#danger-alert-box").classList.contains("disconnect")){
+
+    }
+    else{
+        document.querySelector("#danger-alert-box").classList.add("inactive-window");
+        document.querySelector("#danger-alert-box-button").classList.add("inactive-window");
+    }
+    
 });
 
 document.querySelector("#success-alert-box-button").addEventListener("click", function () {

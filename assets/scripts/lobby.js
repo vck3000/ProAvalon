@@ -609,7 +609,38 @@ function draw() {
   
           divs[i].style.height = 30 + "%";
 
+        //   if($($(divs[i])[0]).find(".role-p")[0] ){
+        //     var canvas = document.createElement("canvas");
+        //     var ctx=canvas.getContext("2d");
+
+            
+        //     ctx.font = $("#option_display_font_size_text").val(); + "px";
+        //     var roleHere = $($(divs[i])[0]).find(".role-p")[0].innerHTML;
+        //     console.log($($(divs[i])[0]).find(".role-p")[0].innerHTML);
+            
+        //     var widthOfRole = ctx.measureText(roleHere).width;
+
+        //     console.log("width: " + widthOfRole);
+
+        //     if(divs[i].offsetHeight < widthOfRole){
+        //         divs[i].style.width =  widthOfRole + "px";
+        //       }
+        //   }
+
+
+
+
+        //   var canvas = document.createElement("canvas");
+        //   var ctx=canvas.getContext("2d");
+        //   var roleHere = $($(divs[i]).find(".role-p")).innerHTML;
+        //   var widthOfRole = Math.floor(ctx.measureText(roleHere).width);
+
+
+
+
+          
           divs[i].style.width = divs[i].offsetHeight * ratioXtoY + "px";
+
   
         var divHeightPos = $(divs[i]).position().top * 1.4;
         var translateValue = (-100/(2*b))*(divHeightPos-2*b);
