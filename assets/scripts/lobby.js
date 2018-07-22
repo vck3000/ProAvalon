@@ -609,10 +609,12 @@ function draw() {
   
           divs[i].style.height = 30 + "%";
 
+          //was trying to set width of div to be same as length of text but that doesnt work
+          //cos guns also expand.
+
         //   if($($(divs[i])[0]).find(".role-p")[0] ){
         //     var canvas = document.createElement("canvas");
         //     var ctx=canvas.getContext("2d");
-
             
         //     ctx.font = $("#option_display_font_size_text").val(); + "px";
         //     var roleHere = $($(divs[i])[0]).find(".role-p")[0].innerHTML;
@@ -624,6 +626,11 @@ function draw() {
 
         //     if(divs[i].offsetHeight < widthOfRole){
         //         divs[i].style.width =  widthOfRole + "px";
+
+        //         if($($(divs[i])[0]).find(".gun")[0] ){
+        //             $($(divs[i])[0]).find(".gun")[0].height(divs[i].offsetHeight + "px");
+        //         }
+
         //       }
         //   }
 
