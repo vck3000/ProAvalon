@@ -18,15 +18,15 @@ socket.on("update-room-players", function (data) {
     // updateSpectatorsList();
     draw();
 
-    // if(oldData && oldData.length < roomPlayersData.length && roomPlayersData.length > 1){
-    //     if($("#option_notifications_sound_players_joining_game")[0].checked === true){
-    //         playSound('ding');
-    //     }
+    if(oldData && oldData.length < roomPlayersData.length && roomPlayersData.length > 1){
+        if($("#option_notifications_sound_players_joining_game")[0].checked === true){
+            playSound('ding');
+        }
         
-    //     if($("#option_notifications_desktop_players_joining_game")[0].checked === true){
-    //         displayNotification("New player in game!  [" + (roomPlayersData.length) + "p]", roomPlayersData[roomPlayersData.length - 1].username + " has joined the game!", "avatars/base-res.png", "newPlayerInGame");
-    //     }
-    // }
+        if($("#option_notifications_desktop_players_joining_game")[0].checked === true){
+            displayNotification("New player in game!  [" + (roomPlayersData.length) + "p]", roomPlayersData[roomPlayersData.length - 1].username + " has joined the game!", "avatars/base-res.png", "newPlayerInGame");
+        }
+    }
 
 });
 
