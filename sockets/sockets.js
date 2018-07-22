@@ -512,6 +512,16 @@ module.exports = function (io) {
 			return;
 		}
 
+		//remove any duplicate sockets
+		for(var i = 0; i < allSockets.length; i++){
+			if(allSockets[i].request.user.id === socket.request.user.id){
+				allSockets[i].disconnect(true);
+			}
+		}
+		//now push their socket in
+		allSockets.push(socket);
+
+
 		//slight delay while client loads
 		setTimeout(function(){
 			//check if they have a ban or a mute
@@ -525,15 +535,9 @@ module.exports = function (io) {
 
 			console.log(socket.request.user.username + " has connected under socket ID: " + socket.id);
 
-			//remove any duplicate sockets
-			for(var i = 0; i < allSockets.length; i++){
-				if(allSockets[i].request.user.id === socket.request.user.id){
-					allSockets[i].disconnect(true);
-				}
-			}
+			
 
-			//now push their socket in
-			allSockets.push(socket);
+			
 
 
 			//send the user its ID to store on their side.
