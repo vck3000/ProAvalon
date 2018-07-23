@@ -597,7 +597,14 @@ function draw() {
       //set the positions and sizes
       // console.log("numPlayers: " + numPlayers)
       var divs = document.querySelectorAll("#mainRoomBox div");
-      const scaleWidthDown = 0.8;
+
+      var scaleWidthDown;
+      if(numPlayers === 6){
+        scaleWidthDown = 0.8;
+      }
+      else{
+        scaleWidthDown = 0.8;  
+      }
       const scaleHeightDown = 1;
 
       var a = (w / 2)*scaleWidthDown;
@@ -1306,9 +1313,19 @@ function toRadians(angle) {
 //2nd key = player position
 //value = angle
 var customSteps = {
+    6: {
+        0: 26,
+        1: 90,
+        2: 154,
+        3: 206,
+        4: 270,
+        5: 334,
+    },
 
     7: {
         1: 35,
+        3: 157,
+        4: 203,
         6: 325
     },
     8: {
@@ -1358,7 +1375,7 @@ function generatePlayerLocations(numOfPlayers, a, b) {
     //for 6p and 10p, rotate slightly so that usernames dont collide
     //with the role text
     if (numOfPlayers === 6) {
-        var tiltOffset = step / 2;
+        // var tiltOffset = step / 2;
     }
 
     for (var i = 0; i < numOfPlayers; i++) {

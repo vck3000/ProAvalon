@@ -8,8 +8,6 @@ To-do list:
 restrict quoting length
 
 
-8p avatars arent aligned
-7p bottom avatars move closer
 
 
 Unclaim bug
@@ -322,3 +320,7 @@ mission 4 succeeded too blue on dark
 dark theme make hammer counter gray
 try to lower the top avatsr a bit
 "Has shot someone, not blah"
+
+8p avatars arent aligned
+7p bottom avatars move closer
+6p top and bottom avatars move closer
