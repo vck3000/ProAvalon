@@ -591,7 +591,7 @@ module.exports = function (host_, roomId_, io_) {
 			if (this.playersYetToVote.length === 0) {
 				var outcome = calcVotes(this.votes);
 
-				//this.proposedTeam = [];
+				this.proposedTeam = [];
 
 
 				//if team was approved, then reset pickNum

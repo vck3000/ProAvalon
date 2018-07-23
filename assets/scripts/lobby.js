@@ -708,6 +708,7 @@ function draw() {
     $(".gun img").css("width", $("#mainRoomBox div").width() + "px"); 
     $(".gun").css("width", $("#mainRoomBox div").width() + "px"); 
 
+    
         if(!oldProposedTeam || oldProposedTeam.length !== gameData.proposedTeam.length){
             // $(".gun").css("width", $("#mainRoomBox div").width() + "px"); 
             $(".gun").css("left", "50%"); 
