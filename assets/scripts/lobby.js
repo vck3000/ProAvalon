@@ -1090,12 +1090,12 @@ function strOfAvatar(playerData, alliance) {
     if (gameStarted === false) {
         //give hammer star to the host
         if (playerData.username === getUsernameFromIndex(0)) {
-            hammerStar = "<span style='position: absolute; right: 0%; transform: translateX(50%);' class='glyphicon glyphicon-star'></span>";
+            hammerStar = "<span style='position: absolute; right: 0%; transform: translate(50%, -100%);' class='glyphicon glyphicon-star'></span>";
         }
     }
     else {
         if (playerData.username === getUsernameFromIndex(gameData.hammer)) {
-            hammerStar = "<span style='position: absolute; right: 0%; transform: translateX(50%);' class='glyphicon glyphicon-star'></span>";
+            hammerStar = "<span style='position: absolute; right: 0%; transform: translate(50%, -100%);' class='glyphicon glyphicon-star'></span>";
         }
     }
 
@@ -1467,6 +1467,8 @@ function resetAllGameData() {
     print_gameplay_text_picked_team = false;
     print_gameplay_text_vote_results = false;
     print_last_mission_num = 1;
+
+    oldProposedTeam = false;
 
     //hide the options cog
     document.querySelector("#options-button").classList.add("hidden");

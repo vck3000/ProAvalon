@@ -217,7 +217,9 @@ p {
     font-style: italic;
     font-weight: 700;
 }
-
+.dark .gameplay-text-red {
+    color: #fc4141;
+}
 
 .gameplay-text-blue {
     /* color: rgb(255, 0, 0); */
@@ -225,6 +227,14 @@ p {
     font-style: italic;
     font-weight: 700;
 }
+.dark .gameplay-text-blue {
+    color: #0087d6;
+}
+
+
+
+
+
 
 
 

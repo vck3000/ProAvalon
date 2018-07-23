@@ -755,7 +755,18 @@ module.exports = function (host_, roomId_, io_) {
 			return "Waiting for Lady of the Lake to be used.";
 		}
 		else if (this.phase === "finished") {
-			var str = "Game has finished. The " + this.winner + " have won.";
+			var winningTeam;
+			if(this.winner === "Spy"){
+				winningTeam = "spies";
+			}
+			else if(this.winner === "Resistance"){
+				winningTeam = "resistance";
+			}
+			else{
+				winningTeam = "Error...";
+			}
+
+			var str = "Game has finished. The " + winningTeam + " have won.";
 			return str;
 		}
 		else {
