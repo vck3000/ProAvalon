@@ -82,184 +82,186 @@ window.addEventListener('resize', function () {
 var highlightedAvatars;
 function draw() {
     // console.log("draw called");
-      if (roomPlayersData) {
+    if (roomPlayersData) {
 
 
-        highlightedAvatars = getHighlightedAvatars();
+    highlightedAvatars = getHighlightedAvatars();
+    
+        drawAndPositionAvatars();
+
+        drawTeamLeaderStar();
+
+        drawMiddleBoxes();
+        scaleMiddleBoxes();
+
+        drawClaimingPlayers(roomPlayersData.claimingPlayers);
+
+        drawGuns();
+
+        console.log(highlightedAvatars);
+        restoreHighlightedAvatars(highlightedAvatars);
+
         
-          drawAndPositionAvatars();
-  
-          drawTeamLeaderStar();
-  
-          drawMiddleBoxes();
-          scaleMiddleBoxes();
-  
-          drawClaimingPlayers(roomPlayersData.claimingPlayers);
+        if (gameStarted === true) {
+            drawExitedPlayers(gameData.gamePlayersInRoom);
 
-          drawGuns();
-  
-          
-          if (gameStarted === true) {
-              drawExitedPlayers(gameData.gamePlayersInRoom);
-  
-              //default greyed out rn
-              enableDisableButtons();
-  
-              $("#missionsBox").removeClass("invisible");
-  
-              //Edit the status bar/well
-              if (gameData.phase === "picking") {
-                  //give it the default status message
-                  document.querySelector("#status").innerText = gameData.statusMessage;
-  
-                  //draw the votes if there are any to show
-                  drawVotes(gameData.votes);
-  
-                  //if we are the team leader---------------------------------------------
-                  if (getIndexFromUsername(ownUsername) === gameData.teamLeader) {
-                      teamLeaderSetup(gameData.phase);
-                  }
-  
-              }
-              else if (gameData.phase === "voting") {
-  
-                  drawGuns();
-  
-                  var str = "";
-  
-                  //show the remaining players who haven't voted if we have voted
-                  if (gameData.playersYetToVote.indexOf(ownUsername) === -1) {
-                      str += "Waiting for votes: ";
-  
-                      for (var i = 0; i < gameData.playersYetToVote.length; i++) {
-                          str = str + gameData.playersYetToVote[i] + ", ";
-                      }
-                  }
-                  else {
-                      //change the well to display what was picked.
-                      str += (getUsernameFromIndex(gameData.teamLeader) + " has picked: ");
-  
-                      for (var i = 0; i < gameData.proposedTeam.length; i++) {
-                          str += gameData.proposedTeam[i] + ", ";
-                      }
-  
-                  }
-  
-                  //remove the last , and replace with .
-                  str = str.slice(0, str.length - 2);
-                  str += ".";
-  
-  
-                  document.querySelector("#status").innerText = str;
-              }
-  
-              else if (gameData.phase === "missionVoting") {
-                  //show the remaining players who haven't voted
-                  var str = "Waiting for mission votes: ";
-  
-                  for (var i = 0; i < gameData.playersYetToVote.length; i++) {
-                      str = str + gameData.playersYetToVote[i] + ", ";
-                  }
-  
-                  //remove the last , and replace with .
-                  str = str.slice(0, str.length - 2);
-                  str += ".";
-  
-                  document.querySelector("#status").innerText = str;
-  
-                  drawGuns();
-                  drawVotes(gameData.votes);
-              }
-              else if (gameData.phase === "assassination") {
-                  //for the assassin: set up their stuff to shoot
-                  if (gameData.role === "Assassin") {
-                      document.querySelector("#status").innerText = "Shoot merlin.";
-                      assassinationSetup(gameData.phase);
-                  }
-                  else {
-                      if(gameData.assassin){
-                          document.querySelector("#status").innerText = "Waiting for " + gameData.assassin + " to shoot Merlin.";
-                      }
-                      else{
-                          document.querySelector("#status").innerText = "Waiting for assassin to shoot.";
-                      }
-                  }
-                //   enableDisableButtons();
-              }
-              else if (gameData.phase === "lady") {
-                  document.querySelector("#status").innerText = gameData.statusMessage;
-                  if (ownUsername === getUsernameFromIndex(gameData.lady)) {
-                      ladySetup(gameData.phase, gameData.ladyablePeople);
-                  }
-                //   enableDisableButtons();
-              }
-  
-              else if (gameData.phase === "finished") {
-                  document.querySelector("#status").innerText = gameData.statusMessage;
-                //   enableDisableButtons();
-                  if (gameData.see.playerShot) {
-                      drawBullet(getIndexFromUsername(gameData.see.playerShot));
-                  }
-  
-  
-              }
-  
-          }
-  
-          else {
-              //if we are the host
-              if (ownUsername === getUsernameFromIndex(0)) {
-                  currentOptions = getOptions();
-                  var str = "";
-  
-                  for (var key in currentOptions) {
-                      if (currentOptions.hasOwnProperty(key)) {
-                          if (currentOptions[key] === true) {
-                              if (key === "merlinassassin") {
-                                  str += "Merlin, Assassin, ";
-                              }
-                              else if (key === "percival") {
-                                  str += "Percival, ";
-                              }
-                              else if (key === "morgana") {
-                                  str += "Morgana, ";
-                              }
-                              else if (key === "lady") {
-                                  str += "Lady of the Lake, ";
-                              }
-                              else if (key === "mordred") {
-                                  str += "Mordred, ";
-                              }
-                              else if (key === "oberon") {
-                                  str += "Oberon, ";
-                              }
-                              else {
-                                  str += "Error, unexpected option."
-                              }
-                          }
-                      }
-                  }
-  
-                  //remove the last , and replace with .
-                  str = str.slice(0, str.length - 2);
-                  str += ".";
-  
-                  document.querySelector("#status").innerText = "Current roles: " + str;
-              }
-              else {
-                  document.querySelector("#status").innerText = "Waiting for game to start... ";
-              }
-          }
-  
-          console.log(highlightedAvatars);
-          restoreHighlightedAvatars(highlightedAvatars);
+            //default greyed out rn
+            enableDisableButtons();
 
-          activateAvatarButtons();
-          enableDisableButtons();
+            $("#missionsBox").removeClass("invisible");
+
+            //Edit the status bar/well
+            if (gameData.phase === "picking") {
+                //give it the default status message
+                document.querySelector("#status").innerText = gameData.statusMessage;
+
+                //draw the votes if there are any to show
+                drawVotes(gameData.votes);
+
+                //if we are the team leader---------------------------------------------
+                if (getIndexFromUsername(ownUsername) === gameData.teamLeader) {
+                    teamLeaderSetup(gameData.phase);
+                }
+            }
+            else if (gameData.phase === "voting") {
+
+                drawGuns();
+
+                var str = "";
+
+                //show the remaining players who haven't voted if we have voted
+                if (gameData.playersYetToVote.indexOf(ownUsername) === -1) {
+                    str += "Waiting for votes: ";
+
+                    for (var i = 0; i < gameData.playersYetToVote.length; i++) {
+                        str = str + gameData.playersYetToVote[i] + ", ";
+                    }
+                }
+                else {
+                    //change the well to display what was picked.
+                    str += (getUsernameFromIndex(gameData.teamLeader) + " has picked: ");
+
+                    for (var i = 0; i < gameData.proposedTeam.length; i++) {
+                        str += gameData.proposedTeam[i] + ", ";
+                    }
+
+                }
+
+                //remove the last , and replace with .
+                str = str.slice(0, str.length - 2);
+                str += ".";
 
 
-      }      
-  }
+                document.querySelector("#status").innerText = str;
+            }
+
+            else if (gameData.phase === "missionVoting") {
+                //show the remaining players who haven't voted
+                var str = "Waiting for mission votes: ";
+
+                for (var i = 0; i < gameData.playersYetToVote.length; i++) {
+                    str = str + gameData.playersYetToVote[i] + ", ";
+                }
+
+                //remove the last , and replace with .
+                str = str.slice(0, str.length - 2);
+                str += ".";
+
+                document.querySelector("#status").innerText = str;
+
+                drawGuns();
+                drawVotes(gameData.votes);
+            }
+            else if (gameData.phase === "assassination") {
+                //for the assassin: set up their stuff to shoot
+                if (gameData.role === "Assassin") {
+                    document.querySelector("#status").innerText = "Shoot merlin.";
+                    assassinationSetup(gameData.phase);
+                }
+                else {
+                    if(gameData.assassin){
+                        document.querySelector("#status").innerText = "Waiting for " + gameData.assassin + " to shoot Merlin.";
+                    }
+                    else{
+                        document.querySelector("#status").innerText = "Waiting for assassin to shoot.";
+                    }
+                }
+            //   enableDisableButtons();
+            }
+            else if (gameData.phase === "lady") {
+                document.querySelector("#status").innerText = gameData.statusMessage;
+                if (ownUsername === getUsernameFromIndex(gameData.lady)) {
+                    ladySetup(gameData.phase, gameData.ladyablePeople);
+                }
+            //   enableDisableButtons();
+            }
+
+            else if (gameData.phase === "finished") {
+                document.querySelector("#status").innerText = gameData.statusMessage;
+            //   enableDisableButtons();
+                if (gameData.see.playerShot) {
+                    drawBullet(getIndexFromUsername(gameData.see.playerShot));
+                }
+
+
+            }
+
+        }
+
+        else {
+            //if we are the host
+            if (ownUsername === getUsernameFromIndex(0)) {
+                currentOptions = getOptions();
+                var str = "";
+
+                for (var key in currentOptions) {
+                    if (currentOptions.hasOwnProperty(key)) {
+                        if (currentOptions[key] === true) {
+                            if (key === "merlinassassin") {
+                                str += "Merlin, Assassin, ";
+                            }
+                            else if (key === "percival") {
+                                str += "Percival, ";
+                            }
+                            else if (key === "morgana") {
+                                str += "Morgana, ";
+                            }
+                            else if (key === "lady") {
+                                str += "Lady of the Lake, ";
+                            }
+                            else if (key === "mordred") {
+                                str += "Mordred, ";
+                            }
+                            else if (key === "oberon") {
+                                str += "Oberon, ";
+                            }
+                            else {
+                                str += "Error, unexpected option."
+                            }
+                        }
+                    }
+                }
+
+                //remove the last , and replace with .
+                str = str.slice(0, str.length - 2);
+                str += ".";
+
+                document.querySelector("#status").innerText = "Current roles: " + str;
+            }
+            else {
+                document.querySelector("#status").innerText = "Waiting for game to start... ";
+            }
+        }
+
+        activateAvatarButtons();
+        enableDisableButtons();
+        //do this
+        //if we are the team leader---------------------------------------------
+        if (getIndexFromUsername(ownUsername) === gameData.teamLeader && gameData.phase === "picking") {
+            enableDisableButtonsLeader(gameData.numPlayersOnMission[gameData.missionNum - 1]);  
+        }
+    }      
+}
   
   var selectedAvatars = {};
   var numOfStatesOfHighlight = 2;
@@ -393,29 +395,29 @@ function draw() {
       }
   }
   
-  function teamLeaderSetup(phase) {
-      var numPlayersOnMission = gameData.numPlayersOnMission[gameData.missionNum - 1];
-  
-      //edit the well to show how many people to pick.
-      if (phase === "picking") {
-  
-          document.querySelector("#status").innerText = "Your turn to pick a team. Pick " + numPlayersOnMission + " players.";
-  
-          var divs = document.querySelectorAll("#mainRoomBox div");
-          //add the event listeners for button press
-          for (var i = 0; i < divs.length; i++) {
-              divs[i].addEventListener("click", function () {
-                // console.log("avatar pressed");
-                  //toggle the highlight class
-                  this.classList.toggle("highlight-avatar");
-                  //change the pick team button to enabled/disabled
-                  enableDisableButtonsLeader(numPlayersOnMission);
-              });
-          }
-          enableDisableButtonsLeader(numPlayersOnMission);
-      }
-  }
-  
+function teamLeaderSetup(phase) {
+    var numPlayersOnMission = gameData.numPlayersOnMission[gameData.missionNum - 1];
+
+    //edit the well to show how many people to pick.
+    if (phase === "picking") {
+
+        document.querySelector("#status").innerText = "Your turn to pick a team. Pick " + numPlayersOnMission + " players.";
+
+        var divs = document.querySelectorAll("#mainRoomBox div");
+        //add the event listeners for button press
+        for (var i = 0; i < divs.length; i++) {
+            divs[i].addEventListener("click", function () {
+            // console.log("avatar pressed");
+                //toggle the highlight class
+                this.classList.toggle("highlight-avatar");
+                //change the pick team button to enabled/disabled
+                enableDisableButtonsLeader(numPlayersOnMission);
+            });
+        }
+        enableDisableButtonsLeader(numPlayersOnMission);
+    }
+}
+
   function ladySetup(phase, ladyablePeople) {
       //edit the well to show how many people to pick.
       if (phase === "lady") {
