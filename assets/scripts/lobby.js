@@ -407,7 +407,15 @@ function draw() {
   
       //set the div string and add the star\\
       var str = $("#mainRoomBox div")[indexOfPlayer].innerHTML;
-      str = str + "<span><img src='pictures/bullet.png' class='bullet'></span>";
+
+      var darkModeEnabled = $("#option_display_dark_theme")[0].checked;
+      if(darkModeEnabled === true){
+        str = str + "<span><img src='pictures/bullet-dark.png' class='bullet'></span>";
+      }
+      else{
+        str = str + "<span><img src='pictures/bullet.png' class='bullet'></span>";
+      }
+
       //update the str in the div
       $("#mainRoomBox div")[indexOfPlayer].innerHTML = str;
   
@@ -1068,6 +1076,12 @@ function strOfAvatar(playerData, alliance) {
     var role = "";
     var lady = "";
 
+    //to get the lengths of the words or usernames
+    var canvas = document.createElement("canvas");
+    var ctx=canvas.getContext("2d");
+    ctx.font = $("#option_display_font_size_text").val() + "px sans-serif";
+
+
     //can improve this code here
     if (gameStarted === true && gameData.phase === "finished") {
         role = "<p class='role-p'>" + gameData.see.roles[getIndexFromUsername(playerData.username)] + "</p>";
@@ -1083,24 +1097,24 @@ function strOfAvatar(playerData, alliance) {
         }
 
         if (playerData.username === getUsernameFromIndex(gameData.lady)) {
-            lady = "<span class='glyphicon glyphicon-book'></span> ";
+
+            var nameWid = ctx.measureText(playerData.username).width;
+            var widOfBox = $("#mainRoomBox").height()*(playerDivHeightPercent/100);
+
+            var littleProtrudingEdgeWid = (nameWid - widOfBox) / 2;
+            var offsetDist = (nameWid - littleProtrudingEdgeWid) + 5;
+
+            lady = "<span class='glyphicon glyphicon-book' style='top: 50%; transform: translateY(-50%); position: absolute; right: " + offsetDist + "px'></span> ";
         }
     }
 
 
     //add in the hammer star
     var hammerStar = "";
-
-    var canvas = document.createElement("canvas");
-    var ctx=canvas.getContext("2d");
-    
-    ctx.font = $("#option_display_font_size_text").val() + "px sans-serif";
-    
-    console.log(playerData.username);
-    console.log(ctx.font);
-    
+    // console.log(playerData.username);
+    // console.log(ctx.font);
     var nameWid = ctx.measureText(playerData.username).width;
-    console.log(nameWid);
+    // console.log(nameWid);
 
     
 
@@ -1115,12 +1129,12 @@ function strOfAvatar(playerData, alliance) {
     if (gameStarted === false) {
         //give hammer star to the host
         if (playerData.username === getUsernameFromIndex(0)) {
-            hammerStar = "<span style='position: absolute; left: " + offsetDist + "px;' class='glyphicon glyphicon-star'></span>";
+            hammerStar = "<span style='top: 50%; transform: translateY(-50%); position: absolute; left: " + offsetDist + "px;' class='glyphicon glyphicon-star'></span>";
         }
     }
     else {
         if (playerData.username === getUsernameFromIndex(gameData.hammer)) {
-            hammerStar = "<span style='position: absolute; left: " + offsetDist + "px;' class='glyphicon glyphicon-star'></span>";
+            hammerStar = "<span style='top: 50%; transform: translateY(-50%); position: absolute; left: " + offsetDist + "px;' class='glyphicon glyphicon-star'></span>";
         }
     }
 
