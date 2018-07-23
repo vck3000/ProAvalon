@@ -1577,10 +1577,18 @@ module.exports = function (host_, roomId_, io_) {
 	
 	this.updateRoomPlayers = function(){
 
+		var usernamesOfSpecs = [];
+		var socketsOfSpectators = this.getSocketsOfSpectators();
+		socketsOfSpectators.forEach(function(sock){
+			usernamesOfSpecs.push(sock.request.user.username);
+		});
+		usernamesOfSpecs.sort();
+
 		for(var i = 0; i < this.allSockets.length; i++){
 			//need to go through all sockets, but only send to the socket of players in game
 			if(this.allSockets[i]){
 				this.allSockets[i].emit("update-room-players", this.getRoomPlayers());
+				this.allSockets[i].emit("update-room-spectators", usernamesOfSpecs);
 			}
 		}
 
@@ -1641,10 +1649,10 @@ module.exports = function (host_, roomId_, io_) {
 		
 		//return the remaining which are only spectators
 
-		console.log("Get sockets of spectators: ");
-		socketsOfSpecs.forEach(function(sock){
-			console.log(sock.request.user.username);
-		});
+		// console.log("Get sockets of spectators: ");
+		// socketsOfSpecs.forEach(function(sock){
+		// 	console.log(sock.request.user.username);
+		// });
 
 		return socketsOfSpecs;
 	}
