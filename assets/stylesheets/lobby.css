@@ -443,7 +443,7 @@ well {
     position: absolute;
     z-index: -1;
     /*margin: auto;*/
-    left: 49%;
+    /* left: 49%; */
     top: 43%;
     transform: translateX(-50%);
 
@@ -470,13 +470,12 @@ well {
 
     background-color: #EFEFEF;
     color: rgb(124, 124, 124);
-    
-    
 }
 
 .missionBox p {
     display: table-cell;
     vertical-align: middle;
+    font-size: 1.3em;
 }
 
 .missionBoxSucceed {

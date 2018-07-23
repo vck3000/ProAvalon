@@ -542,6 +542,9 @@ function draw() {
               document.querySelectorAll(".pickBox")[j].classList.remove("pickBoxFill");
           }
       }
+
+      widthOfRoom = $("#mainRoomBox").width();
+      $("#missionsBox").css("left", (widthOfRoom/2) + "px");
   }
   
   
@@ -1680,7 +1683,8 @@ function scaleMiddleBoxes(){
     }
 
     // $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")")
-    $("#missionsBox").css("transform", "translateX(-47%) scale(" + ratioToReduce + ")")
+    // $("#missionsBox").css("transform-origin", "bottom");
+    $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")");
 
 
     //also scale the approve reject buttons

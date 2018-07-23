@@ -83,16 +83,6 @@ socket.on("update-room-spectators", function(spectatorUsernames){
 //GAME SOCKET ROUTES
 //======================================
 socket.on("game-starting", function (roles) {
-    
-
-    if($("#option_notifications_sound_game_starting")[0].checked === true){
-        playSound("dingDingDing");
-    }
-
-    if($("#option_notifications_desktop_game_starting")[0].checked === true){
-        displayNotification("Game starting!", "Are you ready?", "avatars/base-spy.png", "gameStarting");
-    }
-
     var secondsLeft = 10;
     let timerInterval;
 
@@ -132,6 +122,15 @@ socket.on("game-starting", function (roles) {
             socket.emit("player-ready", ownUsername);
           }
     });
+
+    if($("#option_notifications_sound_game_starting")[0].checked === true){
+        playSound("dingDingDing");
+    }
+
+    if($("#option_notifications_desktop_game_starting")[0].checked === true){
+        displayNotification("Game starting!", "Are you ready?", "avatars/base-spy.png", "gameStarting");
+    }
+    
 });
 
 socket.on("spec-game-starting", function(data){
