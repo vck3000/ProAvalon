@@ -358,11 +358,15 @@ module.exports = function (host_, roomId_, io_) {
 			console.log("merlin username: " + merlinUsername);
 			if (merlinUsername && target[0] === merlinUsername) {
 				this.winner = "Spy";
-				this.howWasWon = "Assassinated Merlin correctly."
+				this.howWasWon = "Assassinated Merlin correctly.";
+
+				this.sendText(this.allSockets, "The assassin has shot " + merlinUsername + "!", classStr="gameplay-text-red");
 			}
 			else {
 				this.winner = "Resistance";
-				this.howWasWon = "Mission successes and Merlin did not die."
+				this.howWasWon = "Mission successes and Merlin did not die.";
+
+				this.sendText(this.allSockets, "The assassin has shot " + target[0] + "! " + target[0] + " was not merlin, " + merlinUsername + " was!" , classStr="gameplay-text-blue");
 			}
 
 			for(var i = 0; i < playerRoles.length; i++){

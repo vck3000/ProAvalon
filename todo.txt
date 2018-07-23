@@ -5,18 +5,14 @@ To-do list:
 
 
 
-
-
 restrict quoting length
 
 
 8p avatars arent aligned
 7p bottom avatars move closer
-try to lower the top avatsr a bit
 
 
 Unclaim bug
-dark theme make hammer counter gray
 
 "Has shot someone, not blah"
 
@@ -324,3 +320,5 @@ Animation of guns
 the SPY h ave won
 red bullet to see
 mission 4 succeeded too blue on dark
+dark theme make hammer counter gray
+try to lower the top avatsr a bit
