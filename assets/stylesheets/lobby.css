@@ -472,6 +472,15 @@ well {
     color: rgb(124, 124, 124);
 }
 
+.dark .missionBox {
+    background-color: #898989;
+    color: white;
+}
+
+
+
+
+
 .missionBox p {
     display: table-cell;
     vertical-align: middle;
@@ -483,10 +492,15 @@ well {
     /* background-color: #BBFFBB; */
     background-color: #0044cc;
     opacity: 0.65;
-
-
     color: white;
-    
+}
+
+.dark .missionBoxSucceed {
+    /*color: white;*/
+    /* background-color: #BBFFBB; */
+    background-color: #0044cc;
+    opacity: 0.65;
+    color: white;
 }
 
 .missionBoxFail {
@@ -494,9 +508,14 @@ well {
     background-color: #bd362f;
     /* background-color: #ff6666; */
     opacity: 0.65;
-
     color: white;
-    
+}
+.dark .missionBoxFail {
+    /*color: white;*/
+    background-color: #bd362f;
+    /* background-color: #ff6666; */
+    opacity: 0.65;
+    color: white;
 }
 
 

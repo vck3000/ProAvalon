@@ -4,21 +4,16 @@ To-do list:
 [01:01] ProNub: or an actual tickle lick and... squish sound?
 
 
-kicking players
-[12:26] Pinocchio: pro 1 and 2 got kicked
-[12:26] Pinocchio: but 3 did not
 
-Animation of guns
+
 
 restrict quoting length
 
-phones cant see start text, same bug as cant sit down
 
 8p avatars arent aligned
 7p bottom avatars move closer
 try to lower the top avatsr a bit
 
-the SPY h ave won
 
 Unclaim bug
 dark theme make hammer counter gray
@@ -320,4 +315,12 @@ Mine:
 
 [11:44] Ref-Rain: Waiting for mision votes: Ref-Rain.
 space bar before the hammer star
+phones cant see start text, same bug as cant sit down
 fill in star hammer
+kicking players
+[12:26] Pinocchio: pro 1 and 2 got kicked
+[12:26] Pinocchio: but 3 did not
+
+Animation of guns
+
+the SPY h ave won
