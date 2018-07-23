@@ -257,7 +257,7 @@ function draw() {
         enableDisableButtons();
         //do this
         //if we are the team leader---------------------------------------------
-        if (getIndexFromUsername(ownUsername) === gameData.teamLeader && gameData.phase === "picking") {
+        if (gameData && gameData.teamLeader && getIndexFromUsername(ownUsername) === gameData.teamLeader && gameData.phase === "picking") {
             enableDisableButtonsLeader(gameData.numPlayersOnMission[gameData.missionNum - 1]);  
         }
     }      
@@ -1520,17 +1520,30 @@ function resetAllGameData() {
 
 var tempVar = 0;
 
+var gameContainer = $(".game-container")[0];
+var tabNumber = $("#tabs1");
+var tabContainer = $(".tab-content");
+var navTabs = $(".nav-tabs");
+
 function extendTabContentToBottomInRoom() {
     //extending the tab content to the bottom of the page:
-    var gameContainer = $(".game-container")[0];
-    var tabNumber = $("#tabs1");
-    var tabContainer = $(".tab-content");
-    var navTabs = $(".nav-tabs");
 
-    var newHeight2 = Math.floor(gameContainer.offsetHeight - tabNumber.position().top) - 20;
+    //20 pixel diff for navbar
+
+    if($("#tabs1 .nav").height() > 40){
+        console.log("ASDF");
+        tempVar = 37;
+    }
+    else{
+        tempVar = 0;
+    }
+
+
+    var newHeight2 = Math.floor(gameContainer.offsetHeight - tabNumber.position().top) - 20 - tempVar;
+    console.log("h: " + newHeight2);
   // console.log("new height 2: " + newHeight2);
 
-    tabNumber[0].style.height = Math.floor((newHeight2 * 1) - tempVar) + "px";
+    tabNumber[0].style.height = Math.floor((newHeight2 * 1) ) + "px";
 
     tabContainer.height(Math.floor(newHeight2 /*- navTabs.height()*/) + "px");
 }
@@ -1666,8 +1679,9 @@ function updateDarkTheme(checked) {
 function updateTwoTabs(checked){
     if(checked === true){
         $("#tabs1").addClass("col-xs-6");
+        $("#tabs1").addClass("tabs1TwoTabs");
+        $("#tabs2").addClass("tabs2TwoTabs");
         $("#tabs2").removeClass("displayNoneClass");
-
     }
     else{
         $("#tabs1").removeClass("col-xs-6");

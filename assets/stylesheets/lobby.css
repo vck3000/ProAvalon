@@ -22,7 +22,11 @@ p {
 }
 
 .well {
-    margin-bottom: 0px;
+    /* margin-bottom: 0px; */
+}
+
+.well-sm {
+    
 }
 
 
@@ -652,15 +656,16 @@ h3 {
 }
 
 .nav-tabs li a {
-    padding: 12px 8px !important;
+    padding: 8px 12px !important;
+    margin-right: 2px;
 }
 
 @media screen and (max-width: 480px) {
     .nav-tabs li a { 
         padding-left: 1vw !important;
         padding-right: 1vw !important;
-        padding-top: 1vh !important;
-        padding-bottom: 1vh !important;
+        /* padding-top: 1vh !important; */
+        /* padding-bottom: 1vh !important; */
     } 
  }
 
@@ -830,21 +835,23 @@ i {
     /* border: 1px solid black; */
     height: 40%;
     width: 100%;
-    max-width: 1300px;
+    max-width: 95%;
     margin:auto;
 }
 
 .myHr {
     height: 2px;
     width: 100%;
-    max-width: 1300px;
+    /* max-width: 90%; */
     margin: auto;
     background: rgb(161, 161, 161);
 }
 
 #div2Resize {
     /* border: 1px solid red; */
-    max-width:1300px;
+    /* max-width:1300px; */
+    max-width: 95%;
+    
     margin: auto;
 }
 
@@ -951,11 +958,19 @@ i {
 }
 
 #tabs1 {
-    padding-left: 0px;
-    padding-right: 0px;
+    /* padding-left: 0px; */
+    /* padding-right: 0px; */
 }
 #tabs2 {
+    /* padding-left: 0px; */
+    /* padding-right: 0px; */
+}
+
+.tabs1TwoTabs {
     padding-left: 0px;
+}
+
+.tabs2TwoTabs {
     padding-right: 0px;
 }
 
