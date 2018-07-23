@@ -27,9 +27,9 @@ socket.on("update-room-players", function (data) {
             displayNotification("New player in game!  [" + (roomPlayersData.length) + "p]", roomPlayersData[roomPlayersData.length - 1].username + " has joined the game!", "avatars/base-res.png", "newPlayerInGame");
         }
     }
-
 });
 
+var oldSpectators = [];
 socket.on("update-room-spectators", function(spectatorUsernames){
     $("#spectators-table tbody tr td").remove();
     $("#spectators-table tbody tr").remove();
@@ -60,24 +60,41 @@ socket.on("update-room-spectators", function(spectatorUsernames){
         document.querySelectorAll("#spectators-table")[1].classList.add("spectators-table-on");
         document.querySelectorAll("#spectators-table")[1].classList.remove("spectators-table-off");
     }
+
+    var newUsernameIndex = -1;
+    console.log(oldSpectators);
+    console.log(spectatorUsernames);
+
+    for(var i = 0; i < oldSpectators.length; i++){
+        if(oldSpectators.indexOf(spectatorUsernames[i]) === -1){
+            newUsernameIndex = i;
+        }
+    }
+    if(newUsernameIndex === -1){
+        newUsernameIndex = spectatorUsernames.length - 1;
+    }
+
+    console.log("new player: " + spectatorUsernames[newUsernameIndex]);
+
+    // if an extra person joins the room
+    if(spectatorUsernames && oldSpectators.length < spectatorUsernames.length && spectatorUsernames[newUsernameIndex] !== ownUsername){
+        if($("#option_notifications_sound_players_joining_room")[0].checked === true){
+            playSound('highDing');
+        }
+
+        if($("#option_notifications_desktop_players_joining_room")[0].checked === true && oldSpectators.length < spectatorUsernames.length && spectatorUsernames.indexOf(ownUsername) === -1){
+           
+            
+            displayNotification("New player in room.",  + spectatorUsernames[newUsernameIndex] + " has joined the room.", "avatars/base-res.png", "newPlayerInRoom");
+        }
+    }
+    oldSpectators = spectatorUsernames;
+
 });
 
 
 
-    //spectator join notifications
-    //todo******************************************************
-    //todo******************************************************
 
-    //if an extra person joins the room
-    // if(roomSpectatorsData && roomSpectatorsData.length < data.spectators.length){
-    //     if($("#option_notifications_sound_players_joining_room")[0].checked === true){
-    //         playSound('highDing');
-    //     }
-
-    //     if($("#option_notifications_desktop_players_joining_room")[0].checked === true && data.spectators[data.spectators.length - 1] !== ownUsername){
-    //         displayNotification("New player in room.", data.spectators[data.spectators.length - 1] + " has joined the room.", "avatars/base-res.png", "newPlayerInRoom");
-    //     }
-    // }
 
 //======================================
 //GAME SOCKET ROUTES
@@ -130,7 +147,7 @@ socket.on("game-starting", function (roles) {
     if($("#option_notifications_desktop_game_starting")[0].checked === true){
         displayNotification("Game starting!", "Are you ready?", "avatars/base-spy.png", "gameStarting");
     }
-    
+
 });
 
 socket.on("spec-game-starting", function(data){
