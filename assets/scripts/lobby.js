@@ -547,7 +547,7 @@ function draw() {
       $("#missionsBox").css("left", (widthOfRoom/2) + "px");
   }
   
-  
+  var playerDivHeightPercent = 30;
   function drawAndPositionAvatars() {
       var w = $("#mainRoomBox").width();
       var h = $("#mainRoomBox").height();
@@ -617,7 +617,7 @@ function draw() {
   
           var ratioXtoY = 1;
   
-          divs[i].style.height = 30 + "%";
+          divs[i].style.height = playerDivHeightPercent + "%";
 
           //was trying to set width of div to be same as length of text but that doesnt work
           //cos guns also expand.
@@ -1090,15 +1090,37 @@ function strOfAvatar(playerData, alliance) {
 
     //add in the hammer star
     var hammerStar = "";
+
+    var canvas = document.createElement("canvas");
+    var ctx=canvas.getContext("2d");
+    
+    ctx.font = $("#option_display_font_size_text").val() + "px sans-serif";
+    
+    console.log(playerData.username);
+    console.log(ctx.font);
+    
+    var nameWid = ctx.measureText(playerData.username).width;
+    console.log(nameWid);
+
+    
+
+    var widOfBox = $("#mainRoomBox").height()*(playerDivHeightPercent/100);
+    console.log(widOfBox);
+
+    var littleProtrudingEdgeWid = (nameWid - widOfBox) / 2;
+    var offsetDist = (nameWid - littleProtrudingEdgeWid) + 5;
+
+    console.log(offsetDist);
+
     if (gameStarted === false) {
         //give hammer star to the host
         if (playerData.username === getUsernameFromIndex(0)) {
-            hammerStar = "<span style='position: absolute; right: 0%; transform: translate(50%, -100%);' class='glyphicon glyphicon-star'></span>";
+            hammerStar = "<span style='position: absolute; left: " + offsetDist + "px;' class='glyphicon glyphicon-star'></span>";
         }
     }
     else {
         if (playerData.username === getUsernameFromIndex(gameData.hammer)) {
-            hammerStar = "<span style='position: absolute; right: 0%; transform: translate(50%, -100%);' class='glyphicon glyphicon-star'></span>";
+            hammerStar = "<span style='position: absolute; left: " + offsetDist + "px;' class='glyphicon glyphicon-star'></span>";
         }
     }
 
