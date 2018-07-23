@@ -1,3 +1,91 @@
+
+function redButtonFunction() {
+    if (document.querySelector("#red-button").classList.contains("disabled") === false) {
+        if (isSpectator === true) {
+
+        }
+        else if (gameStarted === false) {
+            // Set the kick modal content
+            var str = "<h4>Select the players you want to kick.</h4>";
+
+            str += '<div class="btn-group-vertical" data-toggle="buttons">';
+
+            for (var i = 0; i < roomPlayersData.length; i++) {
+                str += '<label class="btn btn-mine">';
+
+                str += '<input name="' + roomPlayersData[i].username + '" id="' + roomPlayersData[i].username + '" type="checkbox" autocomplete="off">' + roomPlayersData[i].username;
+
+                str += "</label>";
+                str += "<br>";
+            }
+
+            str += '</div>';
+
+            $("#kickModalContent")[0].innerHTML = str;
+        }
+        else {
+            if (gameData.phase === "voting") {
+              // console.log("Voted reject");
+                socket.emit("pickVote", "reject");
+            }
+            else if (gameData.phase === "missionVoting") {
+              // console.log("Voted fail");
+
+
+                if (gameData.alliance === "Resistance") {
+                  // console.log("You aren't a spy! You cannot fail a mission!");
+                    // socket.emit("missionVote", "succeed");
+                    showDangerAlert("You are resistance. Surely you want to succeed!");
+                } else {
+                    socket.emit("missionVote", "fail");
+                }
+
+            }
+        }
+        $("#mainRoomBox div").removeClass("highlight-avatar");
+    }
+}
+
+function greenButtonFunction() {
+    //if button is not disabled: 
+    if (document.querySelector("#green-button").classList.contains("disabled") === false) {
+        if (isSpectator === true) {
+            socket.emit("join-game", roomId);
+        }
+        else if (gameStarted === false) {
+            socket.emit("startGame", getOptions());
+        }
+        else {
+            if (gameData.phase === "picking") {
+                var arr = getHighlightedAvatars();
+              // console.log(arr);
+                socket.emit("pickedTeam", arr);
+            }
+            else if (gameData.phase === "voting") {
+              // console.log("Voted approve");
+                socket.emit("pickVote", "approve");
+            }
+            else if (gameData.phase === "missionVoting") {
+              // console.log("Voted succeed");
+                socket.emit("missionVote", "succeed");
+            }
+            else if (gameData.phase === "assassination") {
+              // console.log("Assasinate!!!");
+                socket.emit("assassinate", getHighlightedAvatars());
+            }
+            else if (gameData.phase === "lady") {
+              // console.log("Lady: " + getHighlightedAvatars()[0]);
+                socket.emit("lady", getHighlightedAvatars()[0]);
+            }
+
+        }
+
+        $("#mainRoomBox div").removeClass("highlight-avatar");
+    }
+}
+
+
+
 //======================================
 //BUTTON EVENT LISTENERS
 //======================================

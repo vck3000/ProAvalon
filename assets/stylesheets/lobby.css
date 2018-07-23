@@ -331,6 +331,10 @@ p {
     /* width: 100%; */
 }
 
+.gun {
+    pointer-events:none;
+}
+
 .role-p {
     padding: 0;
     background-color: #dddddd;

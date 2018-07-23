@@ -9,7 +9,7 @@ socket.on("update-room-players", function (data) {
     roomPlayersData = data;
 
     //remove all the li's inside the list
-    $("#mainRoomBox div").remove();
+    // $("#mainRoomBox div").remove();
 
   // console.log("update room players");
     // console.log(data);
@@ -83,9 +83,7 @@ socket.on("update-room-spectators", function(spectatorUsernames){
         }
 
         if($("#option_notifications_desktop_players_joining_room")[0].checked === true && oldSpectators.length < spectatorUsernames.length && spectatorUsernames.indexOf(ownUsername) === -1){
-           
-            
-            displayNotification("New player in room.",  + spectatorUsernames[newUsernameIndex] + " has joined the room.", "avatars/base-res.png", "newPlayerInRoom");
+            displayNotification("New player in room.", spectatorUsernames[newUsernameIndex] + " has joined the room.", "avatars/base-res.png", "newPlayerInRoom");
         }
     }
     oldSpectators = spectatorUsernames;

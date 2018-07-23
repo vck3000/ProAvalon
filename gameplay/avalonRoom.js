@@ -113,6 +113,9 @@ module.exports = function (host_, roomId_, io_) {
 
 
 	this.finishGame = function (winner) {
+		//rewind one
+		this.pickNum--;
+		
 		if (winner === "spy") {
 			//spies win, nothing more to do.
 			this.winner = "Spy";
@@ -591,7 +594,6 @@ module.exports = function (host_, roomId_, io_) {
 			if (this.playersYetToVote.length === 0) {
 				var outcome = calcVotes(this.votes);
 
-				this.proposedTeam = [];
 
 
 				//if team was approved, then reset pickNum
@@ -600,6 +602,7 @@ module.exports = function (host_, roomId_, io_) {
 
 					this.phase = "missionVoting";
 					this.playersYetToVote = this.proposedTeam.slice();
+					
 
 					var str = "Mission " + this.missionNum + "." + this.pickNum + " was approved." + getStrApprovedRejectedPlayers(this.votes, this.playersInGame);
 					// this.gameplayMessage = str;
@@ -657,6 +660,7 @@ module.exports = function (host_, roomId_, io_) {
 					this.pickNum++;
 				}
 				
+				this.proposedTeam = [];
 				
 			}
 
@@ -891,6 +895,9 @@ module.exports = function (host_, roomId_, io_) {
 					data[i].see.playerShot = this.playerShot;
 					data[i].proposedTeam = this.lastProposedTeam;
 				}
+				else if (this.phase === "assassination") {
+					data[i].proposedTeam = this.lastProposedTeam;
+				};
 			}
 			return data;
 		}

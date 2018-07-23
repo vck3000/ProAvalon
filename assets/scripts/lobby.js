@@ -78,92 +78,15 @@ window.addEventListener('resize', function () {
 //FUNCTIONS
 //======================================
 
-function redButtonFunction() {
-    if (document.querySelector("#red-button").classList.contains("disabled") === false) {
-        if (isSpectator === true) {
 
-        }
-        else if (gameStarted === false) {
-            // Set the kick modal content
-            var str = "<h4>Select the players you want to kick.</h4>";
-
-            str += '<div class="btn-group-vertical" data-toggle="buttons">';
-
-            for (var i = 0; i < roomPlayersData.length; i++) {
-                str += '<label class="btn btn-mine">';
-
-                str += '<input name="' + roomPlayersData[i].username + '" id="' + roomPlayersData[i].username + '" type="checkbox" autocomplete="off">' + roomPlayersData[i].username;
-
-                str += "</label>";
-                str += "<br>";
-            }
-
-            str += '</div>';
-
-            $("#kickModalContent")[0].innerHTML = str;
-        }
-        else {
-            if (gameData.phase === "voting") {
-              // console.log("Voted reject");
-                socket.emit("pickVote", "reject");
-            }
-            else if (gameData.phase === "missionVoting") {
-              // console.log("Voted fail");
-
-
-                if (gameData.alliance === "Resistance") {
-                  // console.log("You aren't a spy! You cannot fail a mission!");
-                    // socket.emit("missionVote", "succeed");
-                    showDangerAlert("You are resistance. Surely you want to succeed!");
-                } else {
-                    socket.emit("missionVote", "fail");
-                }
-
-            }
-        }
-    }
-}
-
-function greenButtonFunction() {
-    //if button is not disabled: 
-    if (document.querySelector("#green-button").classList.contains("disabled") === false) {
-        if (isSpectator === true) {
-            socket.emit("join-game", roomId);
-        }
-        else if (gameStarted === false) {
-            socket.emit("startGame", getOptions());
-        }
-        else {
-            if (gameData.phase === "picking") {
-                var arr = getHighlightedAvatars();
-              // console.log(arr);
-                socket.emit("pickedTeam", arr);
-            }
-            else if (gameData.phase === "voting") {
-              // console.log("Voted approve");
-                socket.emit("pickVote", "approve");
-            }
-            else if (gameData.phase === "missionVoting") {
-              // console.log("Voted succeed");
-                socket.emit("missionVote", "succeed");
-            }
-            else if (gameData.phase === "assassination") {
-              // console.log("Assasinate!!!");
-                socket.emit("assassinate", getHighlightedAvatars());
-            }
-            else if (gameData.phase === "lady") {
-              // console.log("Lady: " + getHighlightedAvatars()[0]);
-                socket.emit("lady", getHighlightedAvatars()[0]);
-            }
-
-        }
-    }
-}
-
-
+var highlightedAvatars;
 function draw() {
     // console.log("draw called");
       if (roomPlayersData) {
+
+
+        highlightedAvatars = getHighlightedAvatars();
+        
           drawAndPositionAvatars();
   
           drawTeamLeaderStar();
@@ -261,19 +184,19 @@ function draw() {
                           document.querySelector("#status").innerText = "Waiting for assassin to shoot.";
                       }
                   }
-                  enableDisableButtons();
+                //   enableDisableButtons();
               }
               else if (gameData.phase === "lady") {
                   document.querySelector("#status").innerText = gameData.statusMessage;
                   if (ownUsername === getUsernameFromIndex(gameData.lady)) {
                       ladySetup(gameData.phase, gameData.ladyablePeople);
                   }
-                  enableDisableButtons();
+                //   enableDisableButtons();
               }
   
               else if (gameData.phase === "finished") {
                   document.querySelector("#status").innerText = gameData.statusMessage;
-                  enableDisableButtons();
+                //   enableDisableButtons();
                   if (gameData.see.playerShot) {
                       drawBullet(getIndexFromUsername(gameData.see.playerShot));
                   }
@@ -326,10 +249,15 @@ function draw() {
               else {
                   document.querySelector("#status").innerText = "Waiting for game to start... ";
               }
-              enableDisableButtons();
           }
   
+          console.log(highlightedAvatars);
+          restoreHighlightedAvatars(highlightedAvatars);
+
           activateAvatarButtons();
+          enableDisableButtons();
+
+
       }      
   }
   
@@ -703,13 +631,40 @@ function draw() {
   }
   
 
-  var oldProposedTeam;
+
+  var whenToShowGuns = [
+    "voting",
+    "missionVoting",
+    "assassination",
+    "finished"
+];
+
+  var lastPickNum = 0;
+  var lastMissionNum = 0;
   function drawGuns() {
     $(".gun img").css("width", $("#mainRoomBox div").width() + "px"); 
     $(".gun").css("width", $("#mainRoomBox div").width() + "px"); 
 
     
-        if(!oldProposedTeam || oldProposedTeam.length !== gameData.proposedTeam.length){
+
+    if(gameData && gameData.phase){
+        if(whenToShowGuns.indexOf(gameData.phase) === -1){
+            $(".gun").css("left", "50%"); 
+            $(".gun").css("top", "50%"); 
+            $(".gun").css("transform", "translate(-50%,-50%)"); 
+            $(".gun").removeClass("gunAfter"); 
+            $(".gun").addClass("gunBefore"); 
+        }
+    }
+    else{
+        $(".gun").css("left", "50%"); 
+            $(".gun").css("top", "50%"); 
+            $(".gun").css("transform", "translate(-50%,-50%)"); 
+            $(".gun").removeClass("gunAfter"); 
+            $(".gun").addClass("gunBefore"); 
+    }
+    
+        if(gameData && (lastPickNum !== gameData.pickNum || lastMissionNum !== gameData.missionNum)){
             // $(".gun").css("width", $("#mainRoomBox div").width() + "px"); 
             $(".gun").css("left", "50%"); 
             $(".gun").css("top", "50%"); 
@@ -734,8 +689,7 @@ function draw() {
 
                     // $($(".gun")[i]).css("left", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + "px"); 
                     // $($(".gun")[i]).css("top", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + "px"); 
-                    $($(".gun")[i]).removeClass("gunBefore"); 
-                    $($(".gun")[i]).addClass("gunAfter"); 
+                    
 
                     var widOfGun = $(".gun").width();
                     var heightOfGun = $(".gun").height();
@@ -744,14 +698,18 @@ function draw() {
                         top: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*1.5) + "px" ,
                         left: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/2) + "px",
                     }, 500);
-            }
+                    $($(".gun")[i]).removeClass("gunBefore"); 
+                    $($(".gun")[i]).addClass("gunAfter"); 
+
+                lastPickNum = gameData.pickNum;
+                lastMissionNum = gameData.missionNum;
+            }   
         
 
             
             // $($(".gun")[i]).css("transform", "translateY(150%)"); 
 
             // divs[i].style.width = divs[i].offsetHeight * ratioXtoY + "px";
-            oldProposedTeam = gameData.proposedTeam;
         }
     }
     else{
@@ -1030,6 +988,12 @@ function getHighlightedAvatars() {
     return arr;
 }
 
+function restoreHighlightedAvatars(usernames){
+    usernames.forEach(function(username){
+        $($("#mainRoomBox div")[getIndexFromUsername(username)]).addClass("highlight-avatar");
+    });
+}
+
 function getIndexFromUsername(username) {
     if (roomPlayersData) {
         for (var i = 0; i < roomPlayersData.length; i++) {
@@ -1133,12 +1097,12 @@ function strOfAvatar(playerData, alliance) {
     
 
     var widOfBox = $("#mainRoomBox").height()*(playerDivHeightPercent/100);
-    console.log(widOfBox);
+    // console.log(widOfBox);
 
     var littleProtrudingEdgeWid = (nameWid - widOfBox) / 2;
     var offsetDist = (nameWid - littleProtrudingEdgeWid) + 5;
 
-    console.log(offsetDist);
+    // console.log(offsetDist);
 
     if (gameStarted === false) {
         //give hammer star to the host
@@ -1547,6 +1511,9 @@ function resetAllGameData() {
 
     $("#missionsBox").addClass("invisible");
     
+    lastPickNum = 0;
+    lastMissionNum = 0;
+
 }
 
 var tempVar = 0;
