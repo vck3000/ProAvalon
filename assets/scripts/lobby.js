@@ -790,23 +790,29 @@ function draw() {
           $(".leaderStar")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
       }
   }
-  
-  function drawClaimingPlayers(claimingPlayers){
-  
-      for(var i = 0; i < roomPlayersData.length; i++){
-          if(roomPlayersData[i].claim && roomPlayersData[i].claim === true){
-              if ($("#mainRoomBox div")[getIndexFromUsername(roomPlayersData[i].username)]) {
-                  var str = $("#mainRoomBox div")[getIndexFromUsername(roomPlayersData[i].username)].innerHTML;
-                  str = str + "<span><img src='pictures/claim.png' class='claimIcon'></span>";
-                  //update the str in the div
-                  $("#mainRoomBox div")[getIndexFromUsername(roomPlayersData[i].username)].innerHTML = str;
-          
-                  // $(".claimIcon")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
-              }
-          }
-      }
-  
-  }
+
+function drawClaimingPlayers(claimingPlayers){
+
+    $("#claimButton")[0].innerText = "Claim";
+
+    
+    for(var i = 0; i < roomPlayersData.length; i++){
+        if(roomPlayersData[i].claim && roomPlayersData[i].claim === true){
+            if ($("#mainRoomBox div")[getIndexFromUsername(roomPlayersData[i].username)]) {
+                var str = $("#mainRoomBox div")[getIndexFromUsername(roomPlayersData[i].username)].innerHTML;
+                str = str + "<span><img src='pictures/claim.png' class='claimIcon'></span>";
+                //update the str in the div
+                $("#mainRoomBox div")[getIndexFromUsername(roomPlayersData[i].username)].innerHTML = str;
+        
+                // $(".claimIcon")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
+            }
+
+            if(roomPlayersData[i].username === ownUsername){
+                $("#claimButton")[0].innerText = "Unclaim";
+            }
+        }
+    }
+}
   
   function drawExitedPlayers(playersStillInRoom){
   

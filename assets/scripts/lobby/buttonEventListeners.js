@@ -61,11 +61,4 @@ document.querySelector("#backButton").addEventListener("click", function () {
 document.querySelector("#claimButton").addEventListener("click", function () {
     //INCOMPLETE
     socket.emit("claim", "");
-
-    if($("#claimButton")[0].innerText === "Claim"){
-        $("#claimButton")[0].innerText = "Unclaim";
-    }
-    else{
-        $("#claimButton")[0].innerText = "Claim";
-    }
 });
