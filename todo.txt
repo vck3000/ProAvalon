@@ -17,9 +17,7 @@ try to lower the top avatsr a bit
 
 Unclaim bug
 dark theme make hammer counter gray
-mission 4 succeeded too blue on dark
 
-red bullet to see
 "Has shot someone, not blah"
 
 
@@ -324,3 +322,5 @@ kicking players
 Animation of guns
 
 the SPY h ave won
+red bullet to see
+mission 4 succeeded too blue on dark

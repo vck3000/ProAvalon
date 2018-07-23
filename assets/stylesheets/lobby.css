@@ -533,10 +533,17 @@ well {
     margin-right: 1vh;
     /*position: absolute;*/
 }
+.dark .pickBox {
+    border: 1px solid gray;
+}
 
 .pickBoxFill {
     background-color: black;
 }
+.dark .pickBoxFill {
+    background-color: gray;
+}
+
 
 .row {
     width: 100%;
