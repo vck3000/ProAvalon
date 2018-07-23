@@ -235,7 +235,13 @@ function addToRoomChat(data) {
 
                     // console.log("Strings: ");
 
-                        for(var j = 1; j < strings.length; j++){
+                        var goFor = strings.length;
+                        //only 5 lines of quote at a time max.
+                        if(goFor > 6){
+                            goFor = 6;
+                        }
+
+                        for(var j = 1; j < goFor; j++){
                             str += "<li class='myQuote'>" + "[" + strings[j] + "</li>";
                         // console.log(strings[j]);
                         }

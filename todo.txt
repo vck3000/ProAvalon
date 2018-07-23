@@ -5,12 +5,10 @@ To-do list:
 
 
 
-restrict quoting length
 
 
 
 
-Unclaim bug
 
 
 
@@ -324,3 +322,5 @@ try to lower the top avatsr a bit
 8p avatars arent aligned
 7p bottom avatars move closer
 6p top and bottom avatars move closer
+Unclaim bug
+restrict quoting length
