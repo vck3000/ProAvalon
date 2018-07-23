@@ -172,6 +172,8 @@ function draw() {
           scaleMiddleBoxes();
   
           drawClaimingPlayers(roomPlayersData.claimingPlayers);
+
+          drawGuns();
   
           
           if (gameStarted === true) {
@@ -682,16 +684,74 @@ function draw() {
       }
   }
   
+
+  var oldProposedTeam;
   function drawGuns() {
-  
-      // gameData.propsedTeam
-      for (var i = 0; i < gameData.proposedTeam.length; i++) {
-          //set the div string and add the gun
-          var str = $("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])].innerHTML;
-          str = str + "<span><img src='pictures/gun.png' class='gun'></span>";
-          //update the str in the div
-          $("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])].innerHTML = str;
-      }
+    $(".gun img").css("width", $("#mainRoomBox div").width() + "px"); 
+    $(".gun").css("width", $("#mainRoomBox div").width() + "px"); 
+
+        if(!oldProposedTeam || oldProposedTeam.length !== gameData.proposedTeam.length){
+            // $(".gun").css("width", $("#mainRoomBox div").width() + "px"); 
+            $(".gun").css("left", "50%"); 
+            $(".gun").css("top", "50%"); 
+            $(".gun").css("transform", "translate(-50%,-50%)"); 
+            $(".gun").removeClass("gunAfter"); 
+            $(".gun").addClass("gunBefore"); 
+
+            
+        // gameData.propsedTeam
+        for (var i = 0; i < gameData.proposedTeam.length; i++) {
+            console.log("not hidden stuff");
+            //set the div string and add the gun
+            //   var str = $(".room-container")[0].innerHTML;
+            //   str = str + "<span><img src='pictures/gun.png' class='gun'></span>";
+            //update the str in the div
+            //   $(".room-container")[0].innerHTML = str;
+            //   $("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])].innerHTML = str;
+            //   console.log($($(".room-container")[0]).position());
+
+
+
+
+            // $($(".gun")[i]).css("left", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + "px"); 
+            // $($(".gun")[i]).css("top", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + "px"); 
+            $($(".gun")[i]).removeClass("gunBefore"); 
+            $($(".gun")[i]).addClass("gunAfter"); 
+
+            var widOfGun = $(".gun").width();
+            var heightOfGun = $(".gun").height();
+
+            $($(".gun")[i]).animate({
+                top: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*1.5) + "px" ,
+                left: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/2) + "px",
+            }, 500);
+
+            
+            // $($(".gun")[i]).css("transform", "translateY(150%)"); 
+
+            // divs[i].style.width = divs[i].offsetHeight * ratioXtoY + "px";
+            oldProposedTeam = gameData.proposedTeam;
+        }
+    }
+    else if(0){
+
+    }
+    else{
+        adjustGunPositions();
+    }
+}
+
+  function adjustGunPositions(){
+    for (var i = 0; i < gameData.proposedTeam.length; i++) {
+
+        var widOfGun = $(".gun").width();
+        var heightOfGun = $(".gun").height();
+
+
+        $($(".gun")[i]).css("top", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*1.5) + "px"); 
+        $($(".gun")[i]).css("left", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/2) + "px"); 
+        
+    }
   }
   
   function drawTeamLeaderStar() {

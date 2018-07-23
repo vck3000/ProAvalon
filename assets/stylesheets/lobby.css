@@ -304,12 +304,21 @@ p {
     height: 50px;
 }
 
-.gun {
+.gunBefore {
     z-index: 2;
     position: absolute;
-    right: 0;
-    top: 33%;
-    width: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    visibility: hidden;
+}
+
+.gunAfter {
+    z-index: 2;
+    position: absolute;
+    /* right: 0; */
+    /* top: 33%; */
+    /* width: 100%; */
 }
 
 .role-p {

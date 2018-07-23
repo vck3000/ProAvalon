@@ -9,8 +9,7 @@ kicking players
 [12:26] Pinocchio: but 3 did not
 
 Animation of guns
-space bar before the hammer star
-fill in star hammer
+
 restrict quoting length
 
 phones cant see start text, same bug as cant sit down
@@ -320,3 +319,5 @@ Mine:
 
 
 [11:44] Ref-Rain: Waiting for mision votes: Ref-Rain.
+space bar before the hammer star
+fill in star hammer
