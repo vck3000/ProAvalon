@@ -230,7 +230,7 @@ function draw() {
   
               else if (gameData.phase === "missionVoting") {
                   //show the remaining players who haven't voted
-                  var str = "Waiting for mision votes: ";
+                  var str = "Waiting for mission votes: ";
   
                   for (var i = 0; i < gameData.playersYetToVote.length; i++) {
                       str = str + gameData.playersYetToVote[i] + ", ";
@@ -1029,12 +1029,12 @@ function strOfAvatar(playerData, alliance) {
     if (gameStarted === false) {
         //give hammer star to the host
         if (playerData.username === getUsernameFromIndex(0)) {
-            hammerStar = "<span class='glyphicon glyphicon-star-empty'></span>";
+            hammerStar = "<span style='position: absolute; right: 0%; transform: translateX(50%);' class='glyphicon glyphicon-star'></span>";
         }
     }
     else {
         if (playerData.username === getUsernameFromIndex(gameData.hammer)) {
-            hammerStar = "<span class='glyphicon glyphicon-star-empty'></span>";
+            hammerStar = "<span style='position: absolute; right: 0%; transform: translateX(50%);' class='glyphicon glyphicon-star'></span>";
         }
     }
 
@@ -1059,7 +1059,7 @@ function strOfAvatar(playerData, alliance) {
 
 
     str += "<img class='avatarImgInRoom' src='" + picLink + "'>";
-    str += "<p class='username-p' style='white-space:nowrap;'>" + lady + " " + playerData.username + " " + hammerStar + " </p>" + role + "</div>";
+    str += "<p class='username-p' style='white-space:nowrap; position:relative;'>" + lady + " " + playerData.username + " " + hammerStar + " </p>" + role + "</div>";
 
 
     return str;
@@ -1603,7 +1603,7 @@ function escapeHtml(unsafe) {
 function scaleMiddleBoxes(){
     gameTableHeight = $("#mainRoomBox").height();
 
-    const startScalingHeight = 300;
+    const startScalingHeight = 400;
     const maxHeightOfBoxes = 60; //in px
     const scaleFactor = maxHeightOfBoxes/startScalingHeight;
 

@@ -263,6 +263,7 @@ p {
 
 #mainRoomBox {
     height: 100%;
+    margin-top: 10px;
     width: 100%;
     /*resize: none;*/
     /*position: absolute;*/
@@ -927,7 +928,7 @@ i {
 
 .approveLabel{
     position: absolute;
-    top: 0%;
+    top: -10%;
     left: 50%;
     text-align: center;
     transform: translateX(-50%);
@@ -935,7 +936,7 @@ i {
 
 .rejectLabel{
     position: absolute;
-    top: 0%;
+    top: -10%;
     left: 50%;
     text-align: center;
     transform: translateX(-50%);

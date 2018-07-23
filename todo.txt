@@ -4,6 +4,31 @@ To-do list:
 [01:01] ProNub: or an actual tickle lick and... squish sound?
 
 
+kicking players
+[12:26] Pinocchio: pro 1 and 2 got kicked
+[12:26] Pinocchio: but 3 did not
+
+Animation of guns
+space bar before the hammer star
+fill in star hammer
+restrict quoting length
+
+phones cant see start text, same bug as cant sit down
+
+8p avatars arent aligned
+7p bottom avatars move closer
+try to lower the top avatsr a bit
+
+the SPY h ave won
+
+Unclaim bug
+dark theme make hammer counter gray
+mission 4 succeeded too blue on dark
+
+red bullet to see
+"Has shot someone, not blah"
+
+
 ***************************************************************************************
 After release
 ***************************************************************************************
@@ -14,6 +39,7 @@ After release
 
 -Jed bug: Percy cant see merlins and thinks theyre vt
 PERHAPS ITS FIXED NOW WITH THE SOCKETS REFACTOR?
+
 
 
 
@@ -291,3 +317,6 @@ Mine:
 -kicking players 
 -guns at the end of a game.
 -hide navbar with command
+
+
+[11:44] Ref-Rain: Waiting for mision votes: Ref-Rain.
