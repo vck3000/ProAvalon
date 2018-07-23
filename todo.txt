@@ -14,7 +14,6 @@ restrict quoting length
 
 Unclaim bug
 
-"Has shot someone, not blah"
 
 
 ***************************************************************************************
@@ -322,3 +321,4 @@ red bullet to see
 mission 4 succeeded too blue on dark
 dark theme make hammer counter gray
 try to lower the top avatsr a bit
+"Has shot someone, not blah"
