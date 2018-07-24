@@ -3,7 +3,6 @@ To-do list:
 
 [01:01] ProNub: or an actual tickle lick and... squish sound?
 
-space out the tabs.
 
 
 
@@ -322,3 +321,5 @@ try to lower the top avatsr a bit
 6p top and bottom avatars move closer
 Unclaim bug
 restrict quoting length
+-guns dont reset after a pick
+space out the tabs.

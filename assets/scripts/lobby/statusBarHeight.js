@@ -11,4 +11,8 @@ function checkStatusBarWithHeight(){
         $("#status").addClass("well-sm");
         $("#status").addClass("well-sm");
     }
+
+
+    
+
 }

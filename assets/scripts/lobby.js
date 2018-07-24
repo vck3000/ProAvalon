@@ -1529,6 +1529,9 @@ function extendTabContentToBottomInRoom() {
     //extending the tab content to the bottom of the page:
 
     //20 pixel diff for navbar
+    
+
+
 
     if($("#tabs1 .nav").height() > 40){
         console.log("ASDF");
