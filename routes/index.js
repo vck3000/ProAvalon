@@ -43,7 +43,8 @@ router.post("/",sanitiseUsername,/* usernameToLowerCase, */function(req, res){
 	  ){
 		req.flash("error", "The captcha failed or was not inputted.");
 		res.redirect("register");
-	 }
+		return;	
+	}
 
 	 const secretKey = process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
 
@@ -56,7 +57,8 @@ router.post("/",sanitiseUsername,/* usernameToLowerCase, */function(req, res){
 		// If Not Successful
 		if(body.success !== undefined && !body.success){
 			req.flash("error", "Failed captcha verification.");
-			res.redirect("register");		
+			res.redirect("register");	
+			return;	
 		}
 	
 		var newUser = new User({
@@ -74,15 +76,18 @@ router.post("/",sanitiseUsername,/* usernameToLowerCase, */function(req, res){
 		if(req.body.username.indexOf(" ") !== -1){
 			req.flash("error", "Sign up failed. Please do not use spaces in your username.");
 			res.redirect("register");
+			return;	
 		}
 		else if(req.body.username.length > 25){
 			req.flash("error", "Sign up failed. Please do not use more than 25 characters in your username.");
 			res.redirect("register");
+			return;	
 		}
 	
 		else if(usernameContainsBadCharacter(req.body.username) == true){
 			req.flash("error", "Please do not use an illegal character");
 			res.redirect("register");
+			return;	
 		}
 	
 		else{
