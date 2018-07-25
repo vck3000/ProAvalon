@@ -179,6 +179,15 @@ router.get("/new", middleware.isLoggedIn, function (req, res) {
 	res.render("forum/new", { currentUser: req.user, userNotifications: []});
 });
 
+
+//if this is the first.
+lastIds.findOne({}).exec(async function (err, returnedLastId) {
+	if(!returnedLastId){
+		await lastIds.create({number: 1});
+	}
+});
+
+
 /**********************************************************/
 //Create a new forumThread
 /**********************************************************/
@@ -206,6 +215,11 @@ router.post("/", middleware.isLoggedIn, async function (req, res) {
     //grab the next number id from db
 	var number = 0;
 	await lastIds.findOne({}).exec(async function (err, returnedLastId) {
+
+		if(!returnedLastId){
+			await lastIds.create({number: 1});
+		}
+
 		number = returnedLastId.number;
 		returnedLastId.number++;
 		await returnedLastId.save();
