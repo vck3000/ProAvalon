@@ -351,7 +351,9 @@ var actionsObj = {
 				var slapSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
                 if (slapSocket) {
 					console.log("b");
-					senderSocket.emit("messageCommandReturnStr", {message: slapSocket.request.connection.remoteAddress, classStr: "server-text"});
+					var clientIpAddress = slapSocket.request.headers['x-forwarded-for'] || slapSocket.request.connection.remoteAddress;
+
+					senderSocket.emit("messageCommandReturnStr", {message: clientIpAddress, classStr: "server-text"});
 					
                 	return {message: "slapSocket.request.user.username", classStr: "server-text"};
                 }
