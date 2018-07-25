@@ -342,18 +342,24 @@ var actionsObj = {
                 var args = data.args;
     
                 if(!args[1]){
+					console.log("a");
+					senderSocket.emit("messageCommandReturnStr", {message: "Specify a username", classStr: "server-text"});
                     return {message: "Specify a username.", classStr: "server-text"}
 				}
 				
 
 				var slapSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
                 if (slapSocket) {
-					senderSocket.emit("messageCommandReturnStr", {message: slapSocket.request.connection.remoteAddress, classStr: "server-text"});
+					console.log("b");
+					senderSocket.emit("messageCommandReturnStr", {message: slapSocket.handshake.address, classStr: "server-text"});
 					
                 	return {message: "slapSocket.request.user.username", classStr: "server-text"};
                 }
                 else {
-                    // console.log(allSockets);
+					console.log("c");
+					
+					senderSocket.emit("messageCommandReturnStr", {message: "No IP found or invalid username", classStr: "server-text"});
+					
                     return {message: "There is no such player.", classStr: "server-text"};
 				}
 				
