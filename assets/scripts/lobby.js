@@ -564,6 +564,13 @@ function teamLeaderSetup(phase) {
   
           divs[i].style.height = playerDivHeightPercent + "%";
 
+          var maxAvatarHeight = $("#option_display_max_avatar_height")[0].value;
+          console.log($(divs[i]).height());
+          if($(divs[i]).height() > maxAvatarHeight){
+            divs[i].style.height = maxAvatarHeight + "px";
+          }
+
+
           //was trying to set width of div to be same as length of text but that doesnt work
           //cos guns also expand.
 

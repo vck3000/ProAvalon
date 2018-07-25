@@ -3,9 +3,8 @@ To-do list:
 
 [01:01] ProNub: or an actual tickle lick and... squish sound?
 
-
-
-
+-set max height for avatars in options
+-kicking people gives player join notification
 
 
 
@@ -323,3 +322,5 @@ Unclaim bug
 restrict quoting length
 -guns dont reset after a pick
 space out the tabs.
+-update commands to not need lower case on slap and buzz
+-spec diff colour gray

@@ -81,7 +81,7 @@ var actionsObj = {
     
         buzz: {
             command: "buzz",
-            help: "/buzz <playername>: Buzz a player. <playername> must all be in lower case. (until I upgrade this)",
+            help: "/buzz <playername>: Buzz a player.",
             run: function (data, senderSocket) {
 				var args = data.args;
 				
@@ -101,7 +101,7 @@ var actionsObj = {
     
         slap: {
             command: "slap",
-            help: "/slap <playername>: Slap a player for fun. <playername> must all be in lower case. (until I upgrade this)",
+            help: "/slap <playername>: Slap a player for fun.",
             run: function (data, senderSocket) {
                 var args = data.args;			
     
@@ -615,7 +615,7 @@ module.exports = function (io) {
 			//if they are in a room, say they're leaving the room.
 			var data = {
 				message: socket.request.user.username + " has left the room.",
-				classStr: "server-text"
+				classStr: "server-text-teal"
 			}
 			sendToRoomChat(io, socket.request.user.inRoomId, data);
 			// io.in(socket.request.user.inRoomId).emit("player-left-room", socket.request.user.username);

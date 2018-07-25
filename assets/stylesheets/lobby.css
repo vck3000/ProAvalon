@@ -206,7 +206,11 @@ p {
 }
 
 .spectator-chat{
-    color: gray;
+    color: rgb(98, 98, 98);
+}
+
+.dark .spectator-chat{
+    color: rgb(175, 175, 175);
 }
 
 .gameplay-text {

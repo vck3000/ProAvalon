@@ -146,6 +146,45 @@ var userOptions = {
         }
     },
 
+    optionDisplayMaxAvatarHeight: {
+        defaultValue: "128",
+        onLoad: function () {
+            //get cookie data
+            var maxAvatarHeight = docCookies.getItem("optionDisplayMaxAvatarHeight");
+
+            //set the value in the users display
+            $("#option_display_max_avatar_height")[0].value = maxAvatarHeight;
+
+            draw();
+        },
+        initialiseEventListener: function () {
+            $("#option_display_max_avatar_height").on("change", function () {
+                var maxAvatarHeight = $("#option_display_max_avatar_height")[0].value;
+              // console.log(fontSize);
+
+                //assign bounds
+                var lowerBound = 30;
+                var upperBound = 128;
+
+                //bound the font size
+                if (maxAvatarHeight < lowerBound) {
+                    maxAvatarHeight = lowerBound;
+                }
+                else if (maxAvatarHeight > upperBound) {
+                    maxAvatarHeight = upperBound;
+                }
+
+                //display the new value in case it was changed by bounds
+                $("#option_display_max_avatar_height")[0].value = maxAvatarHeight;
+
+                draw();
+
+                //save the data in cookie
+                docCookies.setItem("optionDisplayMaxAvatarHeight", maxAvatarHeight, Infinity);
+            });
+        }
+    },
+
     optionDisplayDarkTheme: {
         defaultValue: "false",
         onLoad: function () {
