@@ -41,7 +41,7 @@ router.post("/",sanitiseUsername,/* usernameToLowerCase, */function(req, res){
 		req.body.captcha === '' ||
 		req.body.captcha === null
 	  ){
-		req.flash("error", "Something went wrong with the captcha.");
+		req.flash("error", "The captcha failed or was not inputted.");
 		res.redirect("register");
 	 }
 
@@ -55,7 +55,7 @@ router.post("/",sanitiseUsername,/* usernameToLowerCase, */function(req, res){
 	
 		// If Not Successful
 		if(body.success !== undefined && !body.success){
-			req.flash("error", "Failed captcha.");
+			req.flash("error", "Failed captcha verification.");
 			res.redirect("register");		
 		}
 	
