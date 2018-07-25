@@ -56,7 +56,7 @@ router.post("/",sanitiseUsername,/* usernameToLowerCase, */function(req, res){
 		// If Not Successful
 		if(body.success !== undefined && !body.success){
 			req.flash("error", "Failed captcha.");
-			res.redirect("register");		
+			// res.redirect("register");		
 		}
 	
 		var newUser = new User({

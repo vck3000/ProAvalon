@@ -113,7 +113,6 @@ var actionsObj = {
                 else {
                     // console.log(allSockets);
                     return {message: "There is no such player.", classStr: "server-text"};
-                    
                 }
             }
         },
@@ -335,7 +334,32 @@ var actionsObj = {
                 // return dataToReturn;
                 
             }
-        },
+		},
+		mip: {
+            command: "mip",
+            help: "/mip <player name>: Get the ip of the player.",
+            run: async function (data, senderSocket) {
+                var args = data.args;
+    
+                if(!args[1]){
+                    return {message: "Specify a username.", classStr: "server-text"}
+				}
+				
+
+				var slapSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
+                if (slapSocket) {
+                    slapSocket.emit("slap", senderSocket.request.user.username);
+                return {message: "You have slapped player " + args[1] + "!", classStr: "server-text"};
+                }
+                else {
+                    // console.log(allSockets);
+                    return {message: "There is no such player.", classStr: "server-text"};
+				}
+				
+
+                return 
+            }
+        }
     
     
     
