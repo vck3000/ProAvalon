@@ -1,9 +1,41 @@
 <% include partials/header %>
 
+<style>
+	body {
+		// background-image: url("/pictures/0c42a04b087d6faaea1b410fbb0c4198_original.jpg");
+		// background-repeat: no-repeat;
+		// background-attachment: fixed;
+		// background-size: cover;
+		
+		// filter: brightness(50%);
+	}
 
-	<div class="container">
+	.jumbotron{
+		border-radius: 5px;
+		padding-top: 0px;
+	}
+
+	#scrollDiv {
+		// filter: brightness(75%);
+		
+	}
+
+	.myContainer {
+		padding-right: 15px;
+		padding-left: 15px;
+		margin-right: auto;
+		margin-left: auto;
+		width:90%;
+	}
+
+
+</style>
+
+
+
+	<div class="myContainer">
 		<div class="row">
-			<div id="scrollDiv" class="col-sm-6">
+			<div id="scrollDiv" class="col-md-5">
 				<form id="form" action="/login" method="POST">
 					<h3 id="loginHeading">Log in!</h3>
 					<div class="form-group">
@@ -14,23 +46,55 @@
 						<label for="password">Password: </label>
 						<input type="password" class="form-control" id="password" placeholder="Password", name="password">
 					</div>
-					<button type="submit" class="btn btn-default">Log in!</button>
+					<button type="submit" class="btn btn-default">Play</button>
 
-					<a href="/register" class="btn btn-default">Sign up!</a>
+					<a href="/register" class="btn btn-default pull-right">Register</a>
 				</form>
 			</div>
 
-			<div class="col-sm-6 jumbotron">
-				<h1>A game of deception</h1>
-				<p>Can you out-wit your opponents?</p>
+			<div class="col-md-7 jumbotron">
+				<div>
+					<img src="/pictures/logo-min.png" style="width: 100%; text-align: center;">
+				</div>
+				<div class='hero-unit'>
+					<div class='text-center'>
+						<iframe width="560" height="315" src="http://www.youtube.com/embed/g_QRczGzXqw" frameborder="0" allowfullscreen></iframe>
+					</div>
+					<p></p>
+					<p style="font-size: 18px">This is a free online version of the popular game <a href="http://www.amazon.com/Indie-Boards-Cards-RES2IBC-Resistance/dp/B008A2BA8G"><em>The Resistance</em></a> (designed by Don Eskridge), wherein a small band of revolutionaries must use logic and deduction in order to ferret out the spies who have infiltrated their ranks and are sabatoging the cell's presumably heroic acts of rebellion against government tyranny.</p>
+				</div>
+
+			</div>
 			</div>
 
 		</div>
 		
 	</div>
 
-	
+	form
+<script>
+	document.getElementById('subscribeForm').addEventListener('submit', submitForm);
+	function submitForm(e){
+		e.preventDefault();
 
+		const name = document.querySelector('#name').value;
+		const email = document.querySelector('#email').value;
+		const captcha = document.querySelector('#g-recaptcha-response').value;
+		fetch('/subscribe', {
+		method:'POST',
+		headers: {
+			'Accept': 'application/json, text/plain, */*',
+			'Content-type':'application/json'
+		},
+		body:JSON.stringify({name:name, email: email, captcha: captcha})
+		})
+			.then((res) => res.json())
+			.then((data) => {
+			console.log(data);
+			alert(data.msg);
+		});
+	}
+</script>
 
 
 

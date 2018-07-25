@@ -363,7 +363,7 @@ module.exports = function (host_, roomId_, io_) {
 				this.winner = "Spy";
 				this.howWasWon = "Assassinated Merlin correctly.";
 
-				this.sendText(this.allSockets, "The assassin has shot " + merlinUsername + "!", classStr="gameplay-text-red");
+				this.sendText(this.allSockets, "The assassin has shot " + merlinUsername + "! They were correct!", classStr="gameplay-text-red");
 			}
 			else {
 				this.winner = "Resistance";

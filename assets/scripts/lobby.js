@@ -1071,25 +1071,34 @@ function strOfAvatar(playerData, alliance) {
 
     //can improve this code here
     if (gameStarted === true && gameData.phase === "finished") {
-        role = "<p class='role-p'>" + gameData.see.roles[getIndexFromUsername(playerData.username)] + "</p>";
+        var roleWid = ctx.measureText(gameData.see.roles[getIndexFromUsername(playerData.username)]).width + 20;
+        
+        role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + gameData.see.roles[getIndexFromUsername(playerData.username)] + "</p>";
     }
 
     else if (gameStarted === true) {
+        
+        
         //if rendering our own player, give it the role tag
         if (playerData.username === ownUsername) {
-            role = "<p class='role-p'>" + gameData.role + "</p>";
+            var roleWid = ctx.measureText(gameData.role).width + 20;
+            role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + gameData.role + "</p>";
         }
         else if (gameData.see.merlins.indexOf(playerData.username) !== -1) {
-            role = "<p class='role-p'>" + "Merlin?" + "</p>";
+            var roleWid = ctx.measureText("Merlin?").width + 20;
+
+            role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + "Merlin?" + "</p>";
         }
 
         if (playerData.username === getUsernameFromIndex(gameData.lady)) {
 
             var nameWid = ctx.measureText(playerData.username).width;
-            var widOfBox = $("#mainRoomBox").height()*(playerDivHeightPercent/100);
+            var widOfBox = $("#mainRoomBox div").width();
 
             var littleProtrudingEdgeWid = (nameWid - widOfBox) / 2;
             var offsetDist = (nameWid - littleProtrudingEdgeWid) + 5;
+
+            
 
             lady = "<span class='glyphicon glyphicon-book' style='top: 50%; transform: translateY(-50%); position: absolute; right: " + offsetDist + "px'></span> ";
         }
@@ -1105,11 +1114,13 @@ function strOfAvatar(playerData, alliance) {
 
     
 
-    var widOfBox = $("#mainRoomBox").height()*(playerDivHeightPercent/100);
+    var widOfBox = $("#mainRoomBox div").width();
     // console.log(widOfBox);
 
     var littleProtrudingEdgeWid = (nameWid - widOfBox) / 2;
     var offsetDist = (nameWid - littleProtrudingEdgeWid) + 5;
+
+    
 
     // console.log(offsetDist);
 

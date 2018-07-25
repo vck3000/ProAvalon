@@ -1,13 +1,14 @@
 <% include partials/header %>
+<script src='https://www.google.com/recaptcha/api.js'></script>
 
 <link rel="stylesheet" type="text/css" href="stylesheets/register.css">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
 
 
-<div class="container jumbotron">
+<div class="container">
 
-	<div class="container center">
+	<div class="container center myContainer">
 		<h2>Sign up!</h2>
 
 	<!-- 	<form action="/" method="POST" id="registerId">
@@ -22,17 +23,20 @@
 	<div class="container center" id="myDiv">
 
 		<form class="form-horizontal" action="/" method="POST" id="registerId" data-toggle="validator">
-			<div class="form-group">
-				<input type="text" name="username" class="form-control" placeholder="Username" required>
+			<div class="form-group" >
+				<label class="alignLeft pull-left">Username</label>
+				<input type="text" id="username" name="username" class="form-control" placeholder="Username" required>
 				<div class="help-block with-errors"></div>
 			</div>
 			<div class="form-group">
+				<label class="alignLeft pull-left">Password</label>
 				<input type="password" name="password" class="form-control" placeholder="Password" required id="inputPassword" data-minlength="4">
 				<!-- <div class="help-block">Minimum of 4 characters</div> -->
 				<div class="help-block with-errors"></div>
 			</div>
 
 			<div class="form-group">
+				<label class="alignLeft pull-left">Confirm password</label>
 				<input type="password" name="confirmPassword" class="form-control" placeholder="Confirm password" required data-match="#inputPassword" data-match-error="Passwords do not match.">
 				<div class="help-block with-errors"></div>
 			</div>
@@ -42,6 +46,8 @@
 					<button type="submit" class="btn btn-default center">Submit</button>
 				</div>
 			</div>
+			<br>
+			<div class="g-recaptcha" data-sitekey="6LdaNWYUAAAAAEZaewme7gGpvL1c1_zPzbVKiF18"></div>
 		</form>
 	</div>
 
@@ -63,5 +69,31 @@
 	</div>
 
 </div>
+
+
+<script>
+	document.getElementById('form').addEventListener('submit', submitForm);
+	function submitForm(e){
+		e.preventDefault();
+
+		const username = document.querySelector('#username').value;
+		const password = document.querySelector('#inputPassword').value;
+		const captcha = document.querySelector('#g-recaptcha-response').value;
+		fetch('/subscribe', {
+		method:'POST',
+		headers: {
+			'Accept': 'application/json, text/plain, */*',
+			'Content-type':'application/json'
+		},
+		body:JSON.stringify({username:username, password: password, captcha: captcha})
+		})
+			.then((res) => res.json())
+			.then((data) => {
+			console.log(data);
+			alert(data.msg);
+		});
+	}
+</script>
+
 
 <% include partials/footer %>

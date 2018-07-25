@@ -31,72 +31,48 @@ router.post("/",sanitiseUsername,/* usernameToLowerCase, */function(req, res){
 
 	// var escapedUsername = escapeText(req.body.username);
 
-	if(
-		req.body.captcha === undefined ||
-		req.body.captcha === '' ||
-		req.body.captcha === null
-	  ){
-		req.flash("error", "Something went wrong with the captcha.");
-		res.redirect("register");
-	 }
-
-	 const secretKey = process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
-
-	 const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.captcha}&remoteip=${req.connection.remoteAddress}`;
-
-	 request(verifyUrl, (err, response, body) => {
-		body = JSON.parse(body);
-		console.log(body);
-	
-		// If Not Successful
-		if(body.success !== undefined && !body.success){
-			req.flash("error", "Failed captcha.");
-			res.redirect("register");		
-		}
-	
-		var newUser = new User({
-			username: req.body.username,
-			dateJoined: new Date()
-		});
-	
-		//set default values
-		for(var key in defaultValuesForUser){
-			if(defaultValuesForUser.hasOwnProperty(key)){
-				newUser[key] = defaultValuesForUser[key];
-			}
-		}
-	
-		if(req.body.username.indexOf(" ") !== -1){
-			req.flash("error", "Sign up failed. Please do not use spaces in your username.");
-			res.redirect("register");
-		}
-		else if(req.body.username.length > 25){
-			req.flash("error", "Sign up failed. Please do not use more than 25 characters in your username.");
-			res.redirect("register");
-		}
-	
-		else if(usernameContainsBadCharacter(req.body.username) == true){
-			req.flash("error", "Please do not use an illegal character");
-			res.redirect("register");
-		}
-	
-		else{
-			User.register(newUser, req.body.password, function(err, user){
-				if(err){
-					console.log("ERROR: " + err);
-					req.flash("error", "Sign up failed. Most likely that username is taken.");
-					res.redirect("register");
-				} else{
-					//successful, get them to log in again
-					// req.flash("success", "Sign up successful. Please log in.");
-					// res.redirect("/");
-					passport.authenticate("local")(req, res, function(){
-						res.redirect("/lobby");
-					});
-				}
-			});
-		}	
+	var newUser = new User({
+		username: req.body.username,
+		dateJoined: new Date()
 	});
+
+	//set default values
+	for(var key in defaultValuesForUser){
+		if(defaultValuesForUser.hasOwnProperty(key)){
+			newUser[key] = defaultValuesForUser[key];
+		}
+	}
+
+	if(req.body.username.indexOf(" ") !== -1){
+		req.flash("error", "Sign up failed. Please do not use spaces in your username.");
+		res.redirect("register");
+	}
+	else if(req.body.username.length > 25){
+		req.flash("error", "Sign up failed. Please do not use more than 25 characters in your username.");
+		res.redirect("register");
+	}
+
+	else if(usernameContainsBadCharacter(req.body.username) == true){
+		req.flash("error", "Please do not use an illegal character");
+		res.redirect("register");
+	}
+
+	else{
+		User.register(newUser, req.body.password, function(err, user){
+			if(err){
+				console.log("ERROR: " + err);
+				req.flash("error", "Sign up failed. Most likely that username is taken.");
+				res.redirect("register");
+			} else{
+				//successful, get them to log in again
+				// req.flash("success", "Sign up successful. Please log in.");
+				// res.redirect("/");
+				passport.authenticate("local")(req, res, function(){
+					res.redirect("/lobby");
+				});
+			}
+		});
+	}	
 });
 
 //login route
