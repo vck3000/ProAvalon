@@ -127,6 +127,7 @@
             <% if(locals.mod){ %>
                 <br>
                 <a class="btn btn-danger btn-sm modButton hidden" idOfElement="<%=forumThread._id%>" typeOfElement="forum" authorId="<%=forumThread.author.id%>"  authorUsername="<%=forumThread.author.username%>">Mod Remove</a>
+                <a id="pinButton" class="btn btn-success btn-sm modButtonPin hidden" idOfElement="<%=forumThread._id%>" typeOfElement="forum" authorId="<%=forumThread.author.id%>"  authorUsername="<%=forumThread.author.username%>">Pin thread</a>
             <% } %>
 
             
@@ -469,6 +470,25 @@
                     
                     //create ajax
                 });
+
+
+                $("#pinButton").on("click", function(e){
+                    var data = $(e.target).attr("idOfElement");
+                    console.log(data);
+                    
+                    $.ajax({
+                        type: 'POST',
+                        data: data,
+                        dataType:'json',
+                        url: '/forum/pinThread',                      
+                        success: function(data) {
+                            console.log('success');
+                        },
+                        error: function(error) {
+                            location.reload();
+                        }
+                    });
+                });
             <% } %>                           
         <% } %>
         
@@ -477,6 +497,7 @@
 
     function toggleModOptions(){
         $(".modButton").toggleClass("hidden");
+        $(".modButtonPin").toggleClass("hidden");
     }
 
 

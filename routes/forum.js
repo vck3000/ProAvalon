@@ -460,4 +460,52 @@ router.post("/modAction", function(req, res){
 	
 });
 
+
+
+
+
+router.post("/pinThread", function(req, res){
+	console.log(req.body);
+	console.log("Reached pin thread.");
+
+	var idOfThread = "";
+	for(var key in req.body){
+		if(req.body.hasOwnProperty(key)){
+			idOfThread = key;
+		}
+	}
+	console.log(idOfThread);
+
+	pinnedThread.findOne({forumThread: {id: mongoose.Types.ObjectId(idOfThread)}}).exec(function(err, pin){
+		console.log(pin);
+		if(err){
+			console.log(err);
+		}
+		else{
+			if(pin !== null){
+				console.log("removing");
+				pinnedThread.findByIdAndRemove(pin._id, function(err){
+					if(err){
+						console.log(err);
+					}
+					else{
+						console.log("done");
+					}
+				});
+			}
+			else{
+				forumThread.findById(mongoose.Types.ObjectId(idOfThread)).exec(function(err, foundForumThread){
+					if(foundForumThread){
+						pinnedThread.create({forumThread: {id: foundForumThread.id}});
+					}
+				});
+			}
+		}
+		
+	});
+
+	
+
+});
+
 module.exports = router;
