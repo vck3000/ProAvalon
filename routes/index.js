@@ -34,6 +34,8 @@ router.post("/",sanitiseUsername,/* usernameToLowerCase, */function(req, res){
 
 	// var escapedUsername = escapeText(req.body.username);
 
+	req.body.captcha = req.body['g-recaptcha-response'];
+
 	if(
 		req.body.captcha === undefined ||
 		req.body.captcha === '' ||
