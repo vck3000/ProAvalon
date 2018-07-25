@@ -348,8 +348,9 @@ var actionsObj = {
 
 				var slapSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
                 if (slapSocket) {
-                    slapSocket.emit("slap", senderSocket.request.user.username);
-                return {message: "You have slapped player " + args[1] + "!", classStr: "server-text"};
+					senderSocket.emit("messageCommandReturnStr", {message: slapSocket.request.connection.remoteAddress, classStr: "server-text"});
+					
+                	return {message: "slapSocket.request.user.username", classStr: "server-text"};
                 }
                 else {
                     // console.log(allSockets);
