@@ -351,7 +351,7 @@ var actionsObj = {
 				var slapSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
                 if (slapSocket) {
 					console.log("b");
-					senderSocket.emit("messageCommandReturnStr", {message: slapSocket.handshake.address, classStr: "server-text"});
+					senderSocket.emit("messageCommandReturnStr", {message: slapSocket.request.connection.remoteAddress, classStr: "server-text"});
 					
                 	return {message: "slapSocket.request.user.username", classStr: "server-text"};
                 }

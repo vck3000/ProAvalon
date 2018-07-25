@@ -71,29 +71,29 @@
 </div>
 
 
-<script>
-	document.getElementById('registerId').addEventListener('submit', submitForm);
-	function submitForm(e){
-		e.preventDefault();
+// <script>
+// 	document.getElementById('registerId').addEventListener('submit', submitForm);
+// 	function submitForm(e){
+// 		e.preventDefault();
 
-		const username = document.querySelector('#username').value;
-		const password = document.querySelector('#inputPassword').value;
-		const captcha = document.querySelector('#g-recaptcha-response').value;
-		fetch('/subscribe', {
-		method:'POST',
-		headers: {
-			'Accept': 'application/json, text/plain, */*',
-			'Content-type':'application/json'
-		},
-		body:JSON.stringify({username:username, password: password, captcha: captcha})
-		})
-			.then((res) => res.json())
-			.then((data) => {
-			console.log(data);
-			// alert(data.msg);
-		});
-	}
-</script>
+// 		const username = document.querySelector('#username').value;
+// 		const password = document.querySelector('#inputPassword').value;
+// 		const captcha = document.querySelector('#g-recaptcha-response').value;
+// 		fetch('/subscribe', {
+// 		method:'POST',
+// 		headers: {
+// 			'Accept': 'application/json, text/plain, */*',
+// 			'Content-type':'application/json'
+// 		},
+// 		body:JSON.stringify({username:username, password: password, captcha: captcha})
+// 		})
+// 			.then((res) => res.json())
+// 			.then((data) => {
+// 			console.log(data);
+// 			// alert(data.msg);
+// 		});
+// 	}
+// </script>
 
 
 <% include partials/footer %>
