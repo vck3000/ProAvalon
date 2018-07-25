@@ -166,15 +166,23 @@
         </div>
     </div>
 
+    <% var categoryAdd; %>
 
-
+    <% if(typeof activeCategory !== 'undefined'){ 
+        categoryAdd = "/" + activeCategory;
+     } else{ 
+        categoryAdd = "";
+     } %>
     <nav aria-label="Page navigation">
         <ul class="pagination">
             <li>
             <% if(pageNum-1 == 0) {%>
-                <a href="/forum/page/1" aria-label="Previous">
+                <% var str = "/forum/page" + categoryAdd + "/1"; %>
+                <a href=<%=str%> aria-label="Previous">
             <% } else{ %>
-                <a href="/forum/page/<%=pageNum-1%>" aria-label="Previous">
+                <% var str = "/forum/page" + categoryAdd + "/" + (pageNum-1); %>
+            
+                <a href=<%=str%> aria-label="Previous">
             <% } %>
                     <span aria-hidden="true">&laquo;</span>
                 </a>
@@ -193,13 +201,15 @@
                 <% } else { %>
                     <li>
                 <% } %>
-                    <a href="/forum/page/<%=i%>"><%=i%></a>
+                    <a href="/forum/page<%=categoryAdd%>/<%=i%>"><%=i%></a>
                 </li>
 
             <% } %>
             
             <li>
-                <a href="/forum/page/<%=parseInt(pageNum)+1%>" aria-label="Next">
+                <% var str = "/forum/page" + categoryAdd + "/" + (parseInt(pageNum)+1); %>
+            
+                <a href=<%=str%> aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
                 </a>
             </li>
