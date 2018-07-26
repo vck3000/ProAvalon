@@ -248,18 +248,20 @@ router.get("/ajax/seenNotification", function(req, res){
 		if(err){
 			console.log(err);
 		}
-
-		notif.seen = true;
-		var promiseReturned = notif.save();
-
-		promiseReturned.then(function(){
-			User.findOne({username: req.user.username}).populate("notifications").exec(async function(err, foundUser){
-
-				foundUser.markModified("notifications");
-				await foundUser.save();
+		if(notif && notif !== null && notif !== undefined){
+			notif.seen = true;
+			var promiseReturned = notif.save();
 	
+			promiseReturned.then(function(){
+				User.findOne({username: req.user.username}).populate("notifications").exec(async function(err, foundUser){
+	
+					foundUser.markModified("notifications");
+					await foundUser.save();
+		
+				});
 			});
-		});
+		}
+		
 	});
 
 	res.status(200).send("done");
