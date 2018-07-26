@@ -93,14 +93,21 @@ app.use("/profile", profileRoutes);
 
 //HTTPS REDIRECT
 app.use(function(request, response){
-	if(!request.secure){
+	// if(!request.secure){
 		console.log("redirect to https");
 		console.log(request.headers.host);
 		console.log(request.url);
 
-	  	response.redirect("https://" + request.headers.host + request.url);
-	}
+	  	response.redirect("https://proavalon.com" + request.url);
+	// }
 });
+
+
+
+
+
+
+
 
 // seedDB();
 
