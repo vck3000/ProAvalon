@@ -65,6 +65,30 @@ app.use(function (req, res, next) {
 	next();
 });
 
+//HTTPS REDIRECT
+console.log("b");
+console.log(process.env.MY_PLATFORM);
+if(process.env.MY_PLATFORM === "online"){
+	app.use(function(request, response, next){
+		console.log("A");
+		if(request.headers["x-forwarded-proto"] !== "https"){
+			console.log("redirect to https");
+			console.log(request.headers.host);
+			console.log(request.hostname);
+
+			console.log(request.url);
+	
+			console.log("https://" + request.hostname + request.url)
+	
+			response.redirect("https://" + request.hostname + request.url);
+		}
+		else{
+			next();
+		}
+	});
+}
+
+
 
 
 app.use(passport.initialize());
@@ -90,19 +114,6 @@ app.use("/forum", forumRoutes);
 
 var profileRoutes = require("./routes/profile");
 app.use("/profile", profileRoutes);
-
-//HTTPS REDIRECT
-app.use(function(request, response){
-	// if(!request.secure){
-		console.log("redirect to https");
-		console.log(request.headers.host);
-		console.log(request.url);
-
-	  	response.redirect("https://proavalon.com" + request.url);
-	// }
-});
-
-
 
 
 
