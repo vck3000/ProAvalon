@@ -627,6 +627,7 @@ module.exports = function (host_, roomId_, io_) {
 					// this.gameplayMessage = "Spies have won!";
 				}
 				else if (outcome === "rejected") {
+					this.proposedTeam = [];
 					this.phase = "picking";
 
 					var str = "Mission " + this.missionNum + "." + this.pickNum + " was rejected." + getStrApprovedRejectedPlayers(this.votes, this.playersInGame);
@@ -660,7 +661,6 @@ module.exports = function (host_, roomId_, io_) {
 					this.pickNum++;
 				}
 				
-				this.proposedTeam = [];
 				
 			}
 

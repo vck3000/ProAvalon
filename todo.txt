@@ -4,8 +4,13 @@ To-do list:
 [01:01] ProNub: or an actual tickle lick and... squish sound?
 
 -kicking people gives player join notification
+-[00:50] hakha3: Waiting for pmoomm to shoot Merlin.... (dots)
+-custom mission bar size
 
-
+-black font whith yellow highlight on dark theme
+-lady start at person before 1.1
+-change bell sound
+option for space under status bar
 
 ***************************************************************************************
 After release

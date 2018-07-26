@@ -144,7 +144,6 @@ function draw() {
                     for (var i = 0; i < gameData.proposedTeam.length; i++) {
                         str += gameData.proposedTeam[i] + ", ";
                     }
-
                 }
 
                 //remove the last , and replace with .
@@ -156,12 +155,32 @@ function draw() {
             }
 
             else if (gameData.phase === "missionVoting") {
-                //show the remaining players who haven't voted
-                var str = "Waiting for mission votes: ";
 
-                for (var i = 0; i < gameData.playersYetToVote.length; i++) {
-                    str = str + gameData.playersYetToVote[i] + ", ";
+                var str = "";
+                //show the remaining players who haven't voted if we have voted
+                if (gameData.playersYetToVote.indexOf(ownUsername) === -1) {
+                    str += "Waiting for mission votes: ";
+
+                    for (var i = 0; i < gameData.playersYetToVote.length; i++) {
+                        str = str + gameData.playersYetToVote[i] + ", ";
+                    }
                 }
+                else {
+                    //change the well to display what was picked.
+                    str += (getUsernameFromIndex(gameData.teamLeader) + " has picked: ");
+
+                    for (var i = 0; i < gameData.proposedTeam.length; i++) {
+                        str += gameData.proposedTeam[i] + ", ";
+                    }
+                }
+
+
+                //show the remaining players who haven't voted
+                // var str = "Waiting for mission votes: ";
+
+                // for (var i = 0; i < gameData.playersYetToVote.length; i++) {
+                //     str = str + gameData.playersYetToVote[i] + ", ";
+                // }
 
                 //remove the last , and replace with .
                 str = str.slice(0, str.length - 2);
@@ -180,10 +199,10 @@ function draw() {
                 }
                 else {
                     if(gameData.assassin){
-                        document.querySelector("#status").innerText = "Waiting for " + gameData.assassin + " to shoot Merlin.";
+                        document.querySelector("#status").innerText = "Waiting for " + gameData.assassin + " to assassinate Merlin.";
                     }
                     else{
-                        document.querySelector("#status").innerText = "Waiting for assassin to shoot.";
+                        document.querySelector("#status").innerText = "Waiting for assassin to assassinate.";
                     }
                 }
             //   enableDisableButtons();
