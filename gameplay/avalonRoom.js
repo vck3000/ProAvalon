@@ -553,14 +553,14 @@ module.exports = function (host_, roomId_, io_) {
 					this.missionNum++;
 					this.pickNum = 1;
 					//+1 to compensate for somewhere...
-					this.hammer = ((this.teamLeader - 5 + 1 + this.playersInGame.length) % this.playersInGame.length);
 					this.teamLeader--;
 					if (this.teamLeader < 0) {
 						this.teamLeader = this.socketsOfPlayers.length - 1;
 					}
+					this.hammer = ((this.teamLeader - 5 + 1 + this.playersInGame.length) % this.playersInGame.length);
+
 				}
 			}
-
 		}
 
 		this.distributeGameData();
