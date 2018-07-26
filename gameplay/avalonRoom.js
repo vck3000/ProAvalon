@@ -114,7 +114,9 @@ module.exports = function (host_, roomId_, io_) {
 
 	this.finishGame = function (winner) {
 		//rewind one
-		this.pickNum--;
+		// this.pickNum--;
+		// this.missionNum--;
+		// this.hammer++;
 		
 		if (winner === "spy") {
 			//spies win, nothing more to do.
@@ -446,12 +448,8 @@ module.exports = function (host_, roomId_, io_) {
 			if (this.playersYetToVote.length === 0) {
 
 				//perform these functions here now.
-				this.teamLeader--;
-				if (this.teamLeader < 0) {
-					this.teamLeader = this.socketsOfPlayers.length - 1;
-				}
+				
 				this.pickNum++;
-
 				
 				var requiresTwoFails = false;
 				if (this.playersInGame.length >= 7 && this.missionNum === 4) {
@@ -526,10 +524,6 @@ module.exports = function (host_, roomId_, io_) {
 				console.log("numOfSucceeds: " + numOfSucceeds);
 				console.log("numOfFails: " + numOfFails);
 
-				//+1 to compensate for somewhere...
-				this.hammer = ((this.teamLeader - 5 + 1 + this.playersInGame.length) % this.playersInGame.length);
-
-
 				this.phase = "picking";
 				//only lady of the lake after m1 and m2 have finished.
 				//This is still the old missionNum, so when missionNum here is 1, it is the end of m2
@@ -544,15 +538,26 @@ module.exports = function (host_, roomId_, io_) {
 					//pass through the winner
 
 					this.finishGame("spy");
+					//at the end of game reduce pick num from increasing.
+					//because if i move pickNum to the else statement below it breaks... idk why
+					this.pickNum--;
 				}
 				else if (numOfSucceeds >= 3) {
 					//pass through the winner
 					this.finishGame("res");
 					// console.log("RES WON, NOW GOING INTO ASSASSINATION");
+					//because if i move pickNum to the else statement below it breaks... idk why
+					this.pickNum--;
 				}
 				else{
 					this.missionNum++;
 					this.pickNum = 1;
+					//+1 to compensate for somewhere...
+					this.hammer = ((this.teamLeader - 5 + 1 + this.playersInGame.length) % this.playersInGame.length);
+					this.teamLeader--;
+					if (this.teamLeader < 0) {
+						this.teamLeader = this.socketsOfPlayers.length - 1;
+					}
 				}
 			}
 
