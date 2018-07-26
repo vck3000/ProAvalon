@@ -435,7 +435,7 @@ var actionsObj = {
     
                     //save the games
                     for(var i = 0; i < rooms.length; i++){
-                        if(rooms[i] && rooms[i].gameStarted === true){
+                        if(rooms[i] && rooms[i].gameStarted === true && rooms[i].finished !== true){
                             console.log("rooms");
                             console.log(rooms[i]);
                             

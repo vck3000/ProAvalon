@@ -95,6 +95,9 @@ app.use("/profile", profileRoutes);
 app.use(function(request, response){
 	if(!request.secure){
 		console.log("redirect to https");
+		console.log(request.headers.host);
+		console.log(request.url);
+
 	  	response.redirect("https://" + request.headers.host + request.url);
 	}
 });
