@@ -20,7 +20,7 @@ var express = require("express"),
 var port = process.env.PORT || 80;
 
 
-console.log(process.env.DATABASEURL);
+// console.log(process.env.DATABASEURL);
 // mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
 mongoose.connect(process.env.DATABASEURL);
 
@@ -66,19 +66,19 @@ app.use(function (req, res, next) {
 });
 
 //HTTPS REDIRECT
-console.log("b");
-console.log(process.env.MY_PLATFORM);
+// console.log("b");
+// console.log(process.env.MY_PLATFORM);
 if(process.env.MY_PLATFORM === "online"){
 	app.use(function(request, response, next){
 		console.log("A");
 		if(request.headers["x-forwarded-proto"] !== "https"){
-			console.log("redirect to https");
-			console.log(request.headers.host);
-			console.log(request.hostname);
+			// console.log("redirect to https");
+			// console.log(request.headers.host);
+			// console.log(request.hostname);
 
-			console.log(request.url);
+			// console.log(request.url);
 	
-			console.log("https://" + request.hostname + request.url)
+			// console.log("https://" + request.hostname + request.url)
 	
 			response.redirect("https://" + request.hostname + request.url);
 		}
