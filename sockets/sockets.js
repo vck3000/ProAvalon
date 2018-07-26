@@ -523,6 +523,11 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 					
 
 					console.log("Game loaded");
+
+					console.log("platform: " + process.env.MY_PLATFORM);
+					if(process.env.MY_PLATFORM === "online"){
+						foundSaveGame.remove();
+					}
 				}
 			}
 		}
