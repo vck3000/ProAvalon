@@ -161,21 +161,28 @@ router.put("/:id/:comment_id", middleware.checkForumThreadCommentOwnership, func
 /**********************************************************/
 router.delete("/deleteComment/:id/:comment_id", middleware.checkForumThreadCommentOwnership, function (req, res) {
 	console.log("Reached delete comment route")
-	forumThreadComment.findByIdAndRemove(req.params.comment_id, function (err) {
+	forumThreadComment.findById(req.params.comment_id, function (err, foundComment) {
 		if (err) {
 			res.redirect("/forum");
 		} else {
-			console.log("Deleted a comment.");
-
+			console.log("Deleted (disabled) a comment by author.");
 			console.log("thread id " + req.params.id);
 
+			foundComment.disabled = true;
+			foundComment.oldText = foundComment.text;
+			foundComment.text = "*Deleted*";
 
-			forumThread.findById(req.params.id).populate("comments").exec(async function (err, foundForumThread) {
-				foundForumThread.markModified("comments");
-				await foundForumThread.save();
+
+			foundComment.save(function(){
+				forumThread.findById(req.params.id).populate("comments").exec(async function (err, foundForumThread) {
+					foundForumThread.markModified("comments");
+					await foundForumThread.save();
+				});
+	
+				res.redirect("/forum/" + req.params.id);
 			});
 
-			res.redirect("/forum/" + req.params.id);
+			
 		}
 	});
 });

@@ -343,11 +343,15 @@ router.put("/:id", middleware.checkForumThreadOwnership, function (req, res) {
 //Destroy the forumThread route
 /**********************************************************/
 router.delete("/deleteForumThread/:id", middleware.checkForumThreadOwnership, function (req, res) {
-	forumThread.findByIdAndRemove(req.params.id, function (err) {
+	forumThread.findById(req.params.id, function (err, foundForumThread) {
 		if (err) {
 			res.redirect("/forum");
 		} else {
-			console.log("Deleted a forumThread.");
+			console.log("Deleted (disabled) a forumThread by the author.");
+
+			foundForumThread.disabled = true;
+			foundForumThread.save();
+
 			res.redirect("/forum");
 		}
 	});

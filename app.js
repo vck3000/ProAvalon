@@ -70,7 +70,7 @@ app.use(function (req, res, next) {
 // console.log(process.env.MY_PLATFORM);
 if(process.env.MY_PLATFORM === "online"){
 	app.use(function(request, response, next){
-		console.log("A");
+		// console.log("A");
 		if(request.headers["x-forwarded-proto"] !== "https"){
 			// console.log("redirect to https");
 			// console.log(request.headers.host);

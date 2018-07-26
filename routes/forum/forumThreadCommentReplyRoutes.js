@@ -215,37 +215,43 @@ router.delete("/deleteCommentReply/:id/:comment_id/:reply_id", middleware.checkF
 	console.log(" ");
 
 
-	forumThreadCommentReply.findByIdAndRemove(req.params.reply_id, function (err) {
+	forumThreadCommentReply.findById(req.params.reply_id, function (err, foundReply) {
 		if (err) {
 			res.redirect("/forum");
 		} else {
-			console.log("Deleted a reply.");
-			forumThreadComment.findById(req.params.comment_id).populate("replies").exec(async function (err, foundComment) {
-				if (err) {
-					console.log(err);
-				}
-				else {
-					foundComment.markModified("replies");
-					await foundComment.save();
+			console.log("Deleted (disabled) a reply by author.");
 
-					console.log("A");
+			foundReply.disabled = true;
+			foundReply.oldText = foundReply.text;
+			foundReply.text = "*Deleted*";
+			
 
-
-					forumThread.findById(req.params.id).populate("comments").exec(async function (err, foundForumThread) {
-						if (err) {
-							console.log(err);
-						}
-						else {
-							foundForumThread.markModified("comments");
-							await foundForumThread.save();
-							console.log("B");
-						}
-					});
-				}
-
-
-			})
-			res.redirect("/forum/" + req.params.id);
+			foundReply.save(function(){
+				forumThreadComment.findById(req.params.comment_id).populate("replies").exec(async function (err, foundComment) {
+					if (err) {
+						console.log(err);
+					}
+					else {
+						foundComment.markModified("replies");
+						await foundComment.save();
+	
+						// console.log("A");
+	
+	
+						forumThread.findById(req.params.id).populate("comments").exec(async function (err, foundForumThread) {
+							if (err) {
+								console.log(err);
+							}
+							else {
+								foundForumThread.markModified("comments");
+								await foundForumThread.save();
+								// console.log("B");
+							}
+						});
+					}
+				})
+				res.redirect("/forum/" + req.params.id);
+			});
 		}
 	});
 });
