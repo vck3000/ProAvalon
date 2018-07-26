@@ -91,6 +91,14 @@ app.use("/forum", forumRoutes);
 var profileRoutes = require("./routes/profile");
 app.use("/profile", profileRoutes);
 
+//HTTPS REDIRECT
+app.use(function(request, response){
+	if(!request.secure){
+		console.log("redirect to https");
+	  	response.redirect("https://" + request.headers.host + request.url);
+	}
+});
+
 // seedDB();
 
 //start server listening
