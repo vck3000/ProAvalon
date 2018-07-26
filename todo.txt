@@ -13,6 +13,9 @@ To-do list:
 
 -host is starting the game message before "ready" messages in chat
 
+- When you refresh the game while at a table, you should be brought back into that room (so u dont have to search/remember which game u were in)
+
+
 
 - Autocomplete when typing names
 - Case Insentitive for slapping/buzzing

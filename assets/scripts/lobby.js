@@ -502,138 +502,9 @@ function teamLeaderSetup(phase) {
 
       widthOfRoom = $("#mainRoomBox").width();
       $("#missionsBox").css("left", (widthOfRoom/2) + "px");
-  }
-  
-  var playerDivHeightPercent = 30;
-  function drawAndPositionAvatars() {
-      var w = $("#mainRoomBox").width();
-      var h = $("#mainRoomBox").height();
-  
-      var numPlayers = roomPlayersData.length;//3;
-  
-      //generate the divs in the html
-      var str = "";
-    // console.log("Game started: " + gameStarted);
-      if (gameStarted === true) {
-          //draw the players according to what the client sees (their role sees)
-          for (var i = 0; i < numPlayers; i++) {
-              //check if the user is on the spy list. 
-              //if they are not, they are res
-              if (gameData.see.spies && gameData.see.spies.indexOf(roomPlayersData[i].username) === -1) {
-                  str = str + strOfAvatar(roomPlayersData[i], "res");
-              }
-              //else they are a spy
-              else {
-                  str = str + strOfAvatar(roomPlayersData[i], "spy");
-              }
-          }
-      }
-      //when game has not yet started, everyone is a res image
-      else {
-          for (var i = 0; i < numPlayers; i++) {
-              str = str + strOfAvatar(roomPlayersData[i], "res");
-          }
-      }
-  
-      //set the divs into the box
-      $("#mainRoomBox").html(str);
-  
-  
-      //===============================================
-      //POSITIONING SECTION
-      //===============================================
-  
-      //set the positions and sizes
-      // console.log("numPlayers: " + numPlayers)
-      var divs = document.querySelectorAll("#mainRoomBox div");
+}
 
-      var scaleWidthDown;
-      if(numPlayers === 6){
-        scaleWidthDown = 0.8;
-      }
-      else{
-        scaleWidthDown = 0.8;  
-      }
-      const scaleHeightDown = 1;
-
-      var a = (w / 2)*scaleWidthDown;
-      var b = (h / 2)*scaleHeightDown;
-
-
-      var playerLocations = generatePlayerLocations(numPlayers, a, b);
-  
-      for (var i = 0; i < numPlayers; i++) {
-          // console.log("player position: asdflaksdjf;lksjdf");
-          var offsetX = w / 2;
-          var offsetY = h / 2;
-          
-          //reduce the height so that the bottom of avatars dont crash into the bottom.
-          offsetY = offsetY * 1;
-  
-        // console.log("offsetY: " + offsetY);
-  
-  
-          var strX = playerLocations.x[i] + offsetX + "px";
-          var strY = playerLocations.y[i] + offsetY + "px";
-  
-          divs[i].style.left = strX;
-          divs[i].style.bottom = strY;
-  
-          var ratioXtoY = 1;
-  
-          divs[i].style.height = playerDivHeightPercent + "%";
-
-          var maxAvatarHeight = $("#option_display_max_avatar_height")[0].value;
-          console.log($(divs[i]).height());
-          if($(divs[i]).height() > maxAvatarHeight){
-            divs[i].style.height = maxAvatarHeight + "px";
-          }
-
-
-          //was trying to set width of div to be same as length of text but that doesnt work
-          //cos guns also expand.
-
-        //   if($($(divs[i])[0]).find(".role-p")[0] ){
-        //     var canvas = document.createElement("canvas");
-        //     var ctx=canvas.getContext("2d");
-            
-        //     ctx.font = $("#option_display_font_size_text").val(); + "px";
-        //     var roleHere = $($(divs[i])[0]).find(".role-p")[0].innerHTML;
-        //     console.log($($(divs[i])[0]).find(".role-p")[0].innerHTML);
-            
-        //     var widthOfRole = ctx.measureText(roleHere).width;
-
-        //     console.log("width: " + widthOfRole);
-
-        //     if(divs[i].offsetHeight < widthOfRole){
-        //         divs[i].style.width =  widthOfRole + "px";
-
-        //         if($($(divs[i])[0]).find(".gun")[0] ){
-        //             $($(divs[i])[0]).find(".gun")[0].height(divs[i].offsetHeight + "px");
-        //         }
-
-        //       }
-        //   }
-
-
-
-
-        //   var canvas = document.createElement("canvas");
-        //   var ctx=canvas.getContext("2d");
-        //   var roleHere = $($(divs[i]).find(".role-p")).innerHTML;
-        //   var widthOfRole = Math.floor(ctx.measureText(roleHere).width);
-
-
-
-
-          
-          divs[i].style.width = divs[i].offsetHeight * ratioXtoY + "px";
-
-  
-        var divHeightPos = $(divs[i]).position().top * 1.4;
-        var translateValue = (-100/(2*b))*(divHeightPos-2*b);
-
-        $(divs[i]).css("transform", "translate(-50%, " + translateValue + "%)");
+//set up the hover over missions box and highlight participating members
 
 
 
@@ -641,22 +512,162 @@ function teamLeaderSetup(phase) {
 
 
 
+var playerDivHeightPercent = 30;
+function drawAndPositionAvatars() {
+    var w = $("#mainRoomBox").width();
+    var h = $("#mainRoomBox").height();
 
-          // //size of the avatar img
-          // divs[i].style.width = 30 + "%";
-          // divs[i].style.height = 30 + "%";
-  
-          // //get which one is smaller, width or height and then
-          // //force square
-          // if(divs[i].offsetWidth < divs[i].offsetHeight){
-          //     divs[i].style.height = divs[i].offsetWidth + "px";
-          //     // console.log("width smaller, make height smaller to square");
-          // } else{
-          //     divs[i].style.width = divs[i].offsetHeight + "px";
-          //     // console.log("height smaller, make width smaller to square");
-          // }
-      }
-  }
+    var numPlayers = roomPlayersData.length;//3;
+
+    //generate the divs in the html
+    var str = "";
+// console.log("Game started: " + gameStarted);
+    if (gameStarted === true) {
+        //draw the players according to what the client sees (their role sees)
+        for (var i = 0; i < numPlayers; i++) {
+            //check if the user is on the spy list. 
+            //if they are not, they are res
+            if (gameData.see.spies && gameData.see.spies.indexOf(roomPlayersData[i].username) === -1) {
+                str = str + strOfAvatar(roomPlayersData[i], "res");
+            }
+            //else they are a spy
+            else {
+                str = str + strOfAvatar(roomPlayersData[i], "spy");
+            }
+        }
+    }
+    //when game has not yet started, everyone is a res image
+    else {
+        for (var i = 0; i < numPlayers; i++) {
+            str = str + strOfAvatar(roomPlayersData[i], "res");
+        }
+    }
+
+    //set the divs into the box
+    $("#mainRoomBox").html(str);
+
+
+    //===============================================
+    //POSITIONING SECTION
+    //===============================================
+
+    //set the positions and sizes
+    // console.log("numPlayers: " + numPlayers)
+    var divs = document.querySelectorAll("#mainRoomBox div");
+
+    var scaleWidthDown;
+    if(numPlayers === 6){
+    scaleWidthDown = 0.8;
+    }
+    else{
+    scaleWidthDown = 0.8;  
+    }
+    const scaleHeightDown = 1;
+
+    var a = (w / 2)*scaleWidthDown;
+    var b = (h / 2)*scaleHeightDown;
+
+
+    var playerLocations = generatePlayerLocations(numPlayers, a, b);
+
+    for (var i = 0; i < numPlayers; i++) {
+        // console.log("player position: asdflaksdjf;lksjdf");
+        var offsetX = w / 2;
+        var offsetY = h / 2;
+        
+        //reduce the height so that the bottom of avatars dont crash into the bottom.
+        offsetY = offsetY * 1;
+
+    // console.log("offsetY: " + offsetY);
+
+
+        var strX = playerLocations.x[i] + offsetX + "px";
+        var strY = playerLocations.y[i] + offsetY + "px";
+
+        divs[i].style.left = strX;
+        divs[i].style.bottom = strY;
+
+        var ratioXtoY = 1;
+
+        divs[i].style.height = playerDivHeightPercent + "%";
+
+        var maxAvatarHeight = $("#option_display_max_avatar_height")[0].value;
+        console.log($(divs[i]).height());
+        if($(divs[i]).height() > maxAvatarHeight){
+        divs[i].style.height = maxAvatarHeight + "px";
+        }
+
+
+        //was trying to set width of div to be same as length of text but that doesnt work
+        //cos guns also expand.
+
+    //   if($($(divs[i])[0]).find(".role-p")[0] ){
+    //     var canvas = document.createElement("canvas");
+    //     var ctx=canvas.getContext("2d");
+        
+    //     ctx.font = $("#option_display_font_size_text").val(); + "px";
+    //     var roleHere = $($(divs[i])[0]).find(".role-p")[0].innerHTML;
+    //     console.log($($(divs[i])[0]).find(".role-p")[0].innerHTML);
+        
+    //     var widthOfRole = ctx.measureText(roleHere).width;
+
+    //     console.log("width: " + widthOfRole);
+
+    //     if(divs[i].offsetHeight < widthOfRole){
+    //         divs[i].style.width =  widthOfRole + "px";
+
+    //         if($($(divs[i])[0]).find(".gun")[0] ){
+    //             $($(divs[i])[0]).find(".gun")[0].height(divs[i].offsetHeight + "px");
+    //         }
+
+    //       }
+    //   }
+
+
+
+
+    //   var canvas = document.createElement("canvas");
+    //   var ctx=canvas.getContext("2d");
+    //   var roleHere = $($(divs[i]).find(".role-p")).innerHTML;
+    //   var widthOfRole = Math.floor(ctx.measureText(roleHere).width);
+
+
+
+
+        
+    divs[i].style.width = divs[i].offsetHeight * ratioXtoY + "px";
+
+
+    var divHeightPos = $(divs[i]).position().top * 1.4;
+    var translateValue = (-100/(2*b))*(divHeightPos-2*b);
+
+    $(divs[i]).css("transform", "translate(-50%, " + translateValue + "%)");
+
+
+
+
+
+
+
+
+        // //size of the avatar img
+        // divs[i].style.width = 30 + "%";
+        // divs[i].style.height = 30 + "%";
+
+        // //get which one is smaller, width or height and then
+        // //force square
+        // if(divs[i].offsetWidth < divs[i].offsetHeight){
+        //     divs[i].style.height = divs[i].offsetWidth + "px";
+        //     // console.log("width smaller, make height smaller to square");
+        // } else{
+        //     divs[i].style.width = divs[i].offsetHeight + "px";
+        //     // console.log("height smaller, make width smaller to square");
+        // }
+    }
+}
+
+
+
   
 
 

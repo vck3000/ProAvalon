@@ -26,6 +26,9 @@ p {
     box-sizing: border-box;
     border: 2px solid transparent;
 }
+.showYourTurnNotification{
+    border: orange solid 2px;
+}
 
 .well-sm {
     
@@ -1011,6 +1014,3 @@ i {
     transform: translateX(-50%);
 }
 
-.showYourTurnNotification{
-    border: red solid 2px;
-}
