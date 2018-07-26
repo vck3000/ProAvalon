@@ -8,9 +8,10 @@ To-do list:
 -custom mission bar size
 
 -black font whith yellow highlight on dark theme
--lady start at person before 1.1
--change bell sound
+
 -option for space under status bar
+
+-host is starting the game message before "ready" messages in chat
 
 
 - Autocomplete when typing names
@@ -359,3 +360,6 @@ space out the tabs.
 -update commands to not need lower case on slap and buzz
 -spec diff colour gray
 -set max height for avatars in options
+
+-lady start at person before 1.1
+-change bell sound

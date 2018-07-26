@@ -853,6 +853,8 @@ function enableDisableButtonsLeader(numPlayersOnMission) {
     }
 }
 function enableDisableButtons() {
+    showYourTurnNotification(false);
+
     //reset the faded class for the buttons
     document.querySelector("#green-button").classList.remove("faded");
     //determine if we are spectator or not
@@ -899,11 +901,17 @@ function enableDisableButtons() {
 
             document.querySelector("#red-button").classList.add("disabled");
             // document.querySelector("#red-button").innerText = "Disabled";
+
+            if(checkEntryExistsInArray(getUsernameFromIndex(gameData.teamLeader), ownUsername)){
+                showYourTurnNotification(true);
+            }
         }
 
         //if we are in voting phase
         else if (gameData.phase === "voting") {
             if (checkEntryExistsInArray(gameData.playersYetToVote, ownUsername)) {
+                showYourTurnNotification(true);
+
                 document.querySelector("#green-button").classList.remove("disabled");
                 document.querySelector("#green-button").innerText = "Approve";
 
@@ -917,6 +925,8 @@ function enableDisableButtons() {
 
         else if (gameData.phase === "missionVoting") {
             if (checkEntryExistsInArray(gameData.playersYetToVote, ownUsername)) {
+                showYourTurnNotification(true);
+
                 document.querySelector("#green-button").classList.remove("disabled");
                 document.querySelector("#green-button").innerText = "SUCCEED";
 
@@ -935,6 +945,10 @@ function enableDisableButtons() {
             document.querySelector("#red-button").classList.add("disabled");
             // document.querySelector("#red-button").innerText = "Disabled";
 
+            if ("Assassin" === gameData.role) {
+                showYourTurnNotification(true);
+            }
+
             //if there is only one person highlighted
             if (countHighlightedAvatars() == 1) {
                 document.querySelector("#green-button").classList.remove("disabled");
@@ -944,6 +958,10 @@ function enableDisableButtons() {
             }
         }
         else if (gameData.phase === "lady") {
+            if (ownUsername === getUsernameFromIndex(gameData.lady)) {
+                showYourTurnNotification(true);
+            }
+            
             // document.querySelector("#green-button").classList.add("disabled");
             document.querySelector("#green-button").innerText = "Card";
 
@@ -1822,5 +1840,18 @@ function displayNotification(title, body, icon, tag){
         }
     
         var notif = new Notification(title, options);
+    }
+}
+
+
+function showYourTurnNotification(ToF){
+    if(ToF === true){
+        $("#statusBarWell").addClass("showYourTurnNotification");
+    }
+    else if(ToF === false){
+        $("#statusBarWell").removeClass("showYourTurnNotification");
+    }
+    else{
+        console.log("error in show your turn notifications");
     }
 }

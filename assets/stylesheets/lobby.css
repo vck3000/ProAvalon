@@ -23,6 +23,8 @@ p {
 
 .well {
     margin-bottom: 0px;
+    box-sizing: border-box;
+    border: 2px solid transparent;
 }
 
 .well-sm {
@@ -1007,4 +1009,8 @@ i {
     left: 50%;
     text-align: center;
     transform: translateX(-50%);
+}
+
+.showYourTurnNotification{
+    border: red solid 2px;
 }
