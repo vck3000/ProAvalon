@@ -139,7 +139,7 @@ socket.on("game-starting", function (roles) {
     });
 
     if($("#option_notifications_sound_game_starting")[0].checked === true){
-        playSound("dingDingDing");
+        playSound("game-start-ready");
     }
 
     if($("#option_notifications_desktop_game_starting")[0].checked === true){

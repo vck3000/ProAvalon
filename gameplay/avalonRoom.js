@@ -1063,14 +1063,7 @@ module.exports = function (host_, roomId_, io_) {
 		if (options.morgana === true) { this.spyRoles.push("Morgana"); console.log("Added morgana"); }
 		if (options.mordred === true) { this.spyRoles.push("Mordred"); console.log("added mordred"); }
 		if (options.oberon === true) { this.spyRoles.push("Oberon"); console.log("added oberon"); }
-		if (options.lady === true) {
-			this.lady = getRandomInt(0, this.playersInGame.length);
-			this.ladyablePeople = [];
-			for (var i = 0; i < this.playersInGame.length; i++) {
-				this.ladyablePeople[i] = true;
-			}
-			this.ladyablePeople[this.lady] = false;
-		}
+		
 
 		var resPlayers = [];
 		var spyPlayers = [];
@@ -1158,6 +1151,15 @@ module.exports = function (host_, roomId_, io_) {
 		this.pickNum = 1;
 		// this.missionHistory = ["succeeded", "failed", "succeeded"];
 		this.missionHistory = [];
+
+		if (options.lady === true) {
+			this.lady = (this.teamLeader + 1) % this.playersInGame.length;
+			this.ladyablePeople = [];
+			for (var i = 0; i < this.playersInGame.length; i++) {
+				this.ladyablePeople[i] = true;
+			}
+			this.ladyablePeople[this.lady] = false;
+		}
 
 		var str = "Game started with: ";
 		//add res roles: 

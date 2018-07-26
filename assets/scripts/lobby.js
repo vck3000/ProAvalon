@@ -1787,7 +1787,7 @@ var sounds = {
     "game-start": "game-start.mp3",
     "game-end": "game-end.mp3",
     "highDing": "highDing.mp3",
-    "dingDingDing": "dingDingDing.mp3"
+    "game-start-ready": "game-start-ready.mp3"
 }
 
 //get all the sound files and prepare them.

@@ -42,8 +42,13 @@ option for space under status bar
 -- A breakdown of my wins as spy due to assassination vs missions. Breakdown of loses as res due to assassination vs missions.
 -- Percent of times I personally took the bullet for Merlin.
 - BUG: Having the char '[' anywhere in the text triggers the quoting feature and truncs any preceding chars. Instead it should be according to the format "[mm:hh] ValidUsername: MsgActuallySaid" and any text added before/after the quote should end up in the lines before/after the quote
+- Have Quoted text a color other than grey so its more distinctive from regular chat/spectators. light purple?
 
+- Align game status text to the left (like in TRP) instead of centered (idk, i sorta like centered?)
+- enable hypertext
 
+- In the Stats Graph, if u have 0%, still have some small sliver so it can be hovered over
+- Have an overlay on the Stats Graph for the "Site Average" for each of the bars (average calculated over players who have played at least 50 games). basically a tick for each role showing how i stack up and so i know what is considered "good"
 
 
 ***************************************************************************************
