@@ -12,6 +12,40 @@ To-do list:
 -change bell sound
 option for space under status bar
 
+
+- Autocomplete when typing names
+- Case Insentitive for slapping/buzzing
+- hover over mission in center of table highlights participating members
+
+- disable buzzing active players in game (to prevent cheating)
+- the second tab (if enabled) that is non-chat is a bit too short and should stretch down to the proper height
+
+- bug: when using smaller avatars, after clicking the profile icon to highlight them, the buttons (profile and :smiley: disappear and need to rehovered over
+- have alt-text for when hovering over an avatars profile and = button
+- have alt-text for hovering over lady of the lake
+
+- clicking a new page (forum, rules, etc) should open a new tab by default if you are in lobby/game so u dont accidentally leave the room
+
+
+-when leaving and returning to a game room, the /roomChat command should be run automatically
+
+- Stand Up button before the game has started (instead of having to leave the room and return)
+- Make it more obvious when it's my turn to pick a team. perhaps instead of a the little sheriff's badge, have whoever is picking have a background of a big sheriff star
+
+- /roomChat should only work in a room, /allChat should only work in lobby. perhaps just merge back to the /chat cmd and it'll know which to print when used (but if they'll be automatic, then ignore this).
+
+- Have a visible-but-disabled Pick button when its my turn/assassination/carding so its visually obvious its my turn to do something
+- Have an little icon that represents "hasnt voted yet" that goes away (or turns from red to green) upon voting (only visible after i've voted)(edited)
+- After clicking the = icon by an avatar, the icon should change colors (ideally to the color that he'll be highlighted to) so i know that it worked
+- very minor issue: lastpass thinks the textbox is a Username box. prob because of something weird in the textbox definition(edited)
+- Smart Personal Stats - Add certain interesting (objective) measurements to my personal stats page like:
+-- A breakdown of my wins as spy due to assassination vs missions. Breakdown of loses as res due to assassination vs missions.
+-- Percent of times I personally took the bullet for Merlin.
+- BUG: Having the char '[' anywhere in the text triggers the quoting feature and truncs any preceding chars. Instead it should be according to the format "[mm:hh] ValidUsername: MsgActuallySaid" and any text added before/after the quote should end up in the lines before/after the quote
+
+
+
+
 ***************************************************************************************
 After release
 ***************************************************************************************
