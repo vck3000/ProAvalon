@@ -1372,6 +1372,27 @@ module.exports = function (host_, roomId_, io_) {
 		}
 	};
 
+	this.playerStandUp = function (socket) {
+
+		if(this.socketsOfPlayers.indexOf(socket) === -1){
+			return true;
+		}
+		//when game hasnt started yet, add the person to the players in game
+		//cap of 10 players in the game at once.
+		else if (this.gameStarted === false && this.canJoin === true) {
+			this.socketsOfPlayers.splice(this.socketsOfPlayers.indexOf(socket), 1);
+
+			this.updateRoomPlayers();
+			return true;
+		}
+		else {
+
+			console.log("error, cant make the player stand up");
+
+			return false;
+		}
+	};
+
 
 	this.playerLeaveRoom = function (socket) {
 		//when a player leaves before game starts

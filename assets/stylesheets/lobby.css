@@ -32,10 +32,11 @@ p {
 
 .dark .showYourTurnNotification{
     border: rgba(170, 110, 0, 0.75) solid 2px;
-    margin-bottom: 0px;
-    
+    margin-bottom: 0px !important;
+    margin-top: 0px !important;
 }
 .dark .well{ 
+    margin-top: 1px;
     margin-bottom: 1px;
 }
 
@@ -993,10 +994,17 @@ i {
 }
 
 
+
+
 .disabled{
     display:none;
 }
+.unhide {
+    display: inline !important;
+}
+
 .showFaded{
+
 }
 
 .faded {

@@ -934,6 +934,30 @@ module.exports = function (io) {
 			}
 		});
 
+		socket.on("standUpFromGame", function () {
+			var toContinue = !isMuted(socket);
+
+			var roomId = socket.request.user.inRoomId;
+
+			if(toContinue){
+				if (rooms[roomId]) {
+					
+					//if the room has not started yet, remove them from players list
+					console.log("Game status is: " + rooms[roomId].getStatus());
+
+					if (rooms[roomId].getStatus() === "Waiting") {
+						var ToF = rooms[roomId].playerStandUp(socket);
+						console.log(socket.request.user.username + " has stood up from room " + roomId + ": " + ToF);
+					}
+					else {
+						console.log("Game has started, player " + socket.request.user.username + " is not allowed to stand up.");
+					}
+					updateCurrentGamesList();
+				}
+			}
+		});
+
+
 		//when a player leaves a room
 		socket.on("leave-room", function () {
 			console.log("In room id");

@@ -866,6 +866,17 @@ function enableDisableButtonsLeader(numPlayersOnMission) {
 function enableDisableButtons() {
     showYourTurnNotification(false);
 
+    //are we a player sitting down?
+    var isPlayer = false;
+    for(var i = 0; i < roomPlayersData.length; i++){
+        if(roomPlayersData[i].username === ownUsername){
+            //if we are a player sitting down, then yes, we are a player
+            isPlayer = true;
+        }
+    }
+    isSpectator = !isPlayer;
+
+
     //reset the faded class for the buttons
     document.querySelector("#green-button").classList.remove("faded");
     //determine if we are spectator or not
@@ -902,6 +913,9 @@ function enableDisableButtons() {
         }
         else {
             disableButtons();
+            document.querySelector("#red-button").classList.remove("disabled");
+            document.querySelector("#red-button").innerText = "Stand up";
+            
         }
     }
     else if (gameStarted === true && isSpectator === false) {
@@ -913,7 +927,7 @@ function enableDisableButtons() {
             document.querySelector("#red-button").classList.add("disabled");
             // document.querySelector("#red-button").innerText = "Disabled";
 
-            if(checkEntryExistsInArray(getUsernameFromIndex(gameData.teamLeader), ownUsername)){
+            if(getUsernameFromIndex(gameData.teamLeader) === ownUsername){
                 showYourTurnNotification(true);
             }
         }
@@ -921,7 +935,7 @@ function enableDisableButtons() {
         //if we are in voting phase
         else if (gameData.phase === "voting") {
             if (checkEntryExistsInArray(gameData.playersYetToVote, ownUsername)) {
-                showYourTurnNotification(true);
+                // showYourTurnNotification(true);
 
                 document.querySelector("#green-button").classList.remove("disabled");
                 document.querySelector("#green-button").innerText = "Approve";
@@ -936,7 +950,7 @@ function enableDisableButtons() {
 
         else if (gameData.phase === "missionVoting") {
             if (checkEntryExistsInArray(gameData.playersYetToVote, ownUsername)) {
-                showYourTurnNotification(true);
+                // showYourTurnNotification(true);
 
                 document.querySelector("#green-button").classList.remove("disabled");
                 document.querySelector("#green-button").innerText = "SUCCEED";
@@ -1858,11 +1872,12 @@ function displayNotification(title, body, icon, tag){
 function showYourTurnNotification(ToF){
     if(ToF === true){
         // $("#statusBarWell").addClass("showYourTurnNotification");
+        $("#green-button").addClass("unhide");
         // $("#statusBarWell").addClass("showFaded");
-
     }
     else if(ToF === false){
         // $("#statusBarWell").removeClass("showYourTurnNotification");
+        $("#green-button").removeClass("unhide");
         // $("#statusBarWell").removeClass("showFaded");
     }
     else{

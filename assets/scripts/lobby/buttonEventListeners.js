@@ -5,23 +5,35 @@ function redButtonFunction() {
 
         }
         else if (gameStarted === false) {
-            // Set the kick modal content
-            var str = "<h4>Select the players you want to kick.</h4>";
 
-            str += '<div class="btn-group-vertical" data-toggle="buttons">';
+            if(document.querySelector("#red-button").innerText === "Stand up"){
+                socket.emit("standUpFromGame");
 
-            for (var i = 0; i < roomPlayersData.length; i++) {
-                str += '<label class="btn btn-mine">';
+                enableDisableButtons();
+            }
+            else{
+                //host kicking
+                // Set the kick modal content
+                var str = "<h4>Select the players you want to kick.</h4>";
 
-                str += '<input name="' + roomPlayersData[i].username + '" id="' + roomPlayersData[i].username + '" type="checkbox" autocomplete="off">' + roomPlayersData[i].username;
+                str += '<div class="btn-group-vertical" data-toggle="buttons">';
 
-                str += "</label>";
-                str += "<br>";
+                for (var i = 0; i < roomPlayersData.length; i++) {
+                    str += '<label class="btn btn-mine">';
+
+                    str += '<input name="' + roomPlayersData[i].username + '" id="' + roomPlayersData[i].username + '" type="checkbox" autocomplete="off">' + roomPlayersData[i].username;
+
+                    str += "</label>";
+                    str += "<br>";
+                }
+
+                str += '</div>';
+
+                $("#kickModalContent")[0].innerHTML = str;
             }
 
-            str += '</div>';
 
-            $("#kickModalContent")[0].innerHTML = str;
+            
         }
         else {
             if (gameData.phase === "voting") {
