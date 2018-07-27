@@ -1795,9 +1795,9 @@ function escapeHtml(unsafe) {
 function scaleMiddleBoxes(){
     gameTableHeight = $("#mainRoomBox").height();
 
-    const startScalingHeight = 400;
-    const maxHeightOfBoxes = 60; //in px
-    const scaleFactor = maxHeightOfBoxes/startScalingHeight;
+    var startScalingHeight = 400;
+    var maxHeightOfBoxes = 60; //in px
+    var scaleFactor = maxHeightOfBoxes/startScalingHeight;
 
     var setHeightOfMissionBox = gameTableHeight*scaleFactor;
 
@@ -1813,6 +1813,16 @@ function scaleMiddleBoxes(){
     $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")");
 
 
+    var startScalingHeight = 200;
+    var maxHeightOfBoxes = 60; //in px
+    var scaleFactor = maxHeightOfBoxes/startScalingHeight;
+
+    var setHeightOfMissionBox = gameTableHeight*scaleFactor;
+
+    var ratioToReduce = (setHeightOfMissionBox / maxHeightOfBoxes);
+    if(ratioToReduce > 1){
+        ratioToReduce = 1;
+    }
     //also scale the approve reject buttons
     $(".approveLabel").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")");
     $(".rejectLabel").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")");
