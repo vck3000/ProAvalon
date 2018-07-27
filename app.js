@@ -150,6 +150,77 @@ io.use(passportSocketIo.authorize({
 }));
 
 
+if(process.env.MY_PLATFORM === "local"){
+	var testRoleStats = {
+		"5p": {
+			"merlin": {
+				"wins": 2
+			},
+			"percival": {
+				"losses": 2
+			},
+			"assassin": {
+				"losses": 1
+			},
+			"morgana": {
+				"losses": 2
+			},
+			"spy": {},
+			"resistance": {
+				"losses": 2,
+				"wins": 1
+			}
+		},
+		"8p": {
+			"spy": {
+				"wins": 1,
+				"losses": 0
+			},
+			"assassin": {
+				"wins": 1,
+				"losses": 0
+			}
+		},
+		"7p": {
+			"resistance": {
+				"wins": 1,
+				"losses": 0
+			},
+			"merlin": {
+				"wins": 0,
+				"losses": 1
+			}
+		},
+		"6p": {
+			"resistance": {
+				"wins": 3,
+				"losses": 1
+			},
+			"merlin": {
+				"wins": 1,
+				"losses": 0
+			},
+			"assassin": {
+				"wins": 1,
+				"losses": 1
+			},
+			"morgana": {
+				"wins": 0,
+				"losses": 2
+			}
+		}
+	};
+	var User 			= require("./models/user");
+	User.findOne({username: "123"}).exec(function(err, foundUser){
+		foundUser.roleStats = testRoleStats;
+		foundUser.save();
+		console.log("test");
+	});
+}
+
+
+
+
 
 
 

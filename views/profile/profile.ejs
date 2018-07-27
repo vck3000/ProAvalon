@@ -237,12 +237,25 @@
                 for(var role in roleStats[gameSize]){
                     if(roleStats[gameSize].hasOwnProperty(role)){
                         if(!generalRoleStats[role]){
-                            generalRoleStats[role] = roleStats[gameSize][role];
+                            generalRoleStats[role] = {
+                                wins: 0,
+                                losses: 0
+                            };
                         }
-                        else{
-                            generalRoleStats[role].wins += roleStats[gameSize][role].wins;
-                            generalRoleStats[role].losses += roleStats[gameSize][role].losses;
-                        }
+                        // else{
+                            if(!isNaN(roleStats[gameSize][role].wins)){
+                                generalRoleStats[role].wins += roleStats[gameSize][role].wins;
+                            }
+                            if(!isNaN(roleStats[gameSize][role].losses)){
+                                generalRoleStats[role].losses += roleStats[gameSize][role].losses;
+                            }
+
+                            if(role === "assassin"){
+                                console.log("assassin");
+                                console.log(generalRoleStats[role].losses);
+                                console.log(generalRoleStats[role].wins);
+                            }
+                        // }
                     }
                 }
             }
@@ -411,7 +424,7 @@
 
 
 
-        // $("#tempdiv")[0].innerHTML = JSON.stringify(generalRoleStats) ;
+        $("#tempdiv")[0].innerHTML = JSON.stringify(generalRoleStats) ;
 
         var ctx = document.getElementById("statsChart");
         var myChart = new Chart(ctx, {
