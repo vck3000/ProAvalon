@@ -527,14 +527,16 @@ var actionsObj = {
 				var targetSock = allSockets[getIndexFromUsername(allSockets, args[1])];
                 if (targetSock) {
 					targetSock.disconnect();
-                	return {message: "Disconnected " + args[1], classStr: "server-text"};
+					senderSocket.emit("messageCommandReturnStr", {message: "Disconnected " + args[1] + " successfully.", classStr: "server-text"});
+					
+                	return;
                 }
                 else {
 					senderSocket.emit("messageCommandReturnStr", {message: "Could not find username", classStr: "server-text"});
 				}
 				
 
-                return 
+                return;
             }
         }
     
