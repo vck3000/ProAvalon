@@ -510,6 +510,32 @@ var actionsObj = {
 
                 return 
             }
+		},
+		mdc: {
+            command: "mdc",
+            help: "/mdc <player name>: Disconnect a player.",
+            run: async function (data, senderSocket) {
+                var args = data.args;
+    
+                if(!args[1]){
+					
+					senderSocket.emit("messageCommandReturnStr", {message: "Specify a username", classStr: "server-text"});
+                    return;
+				}
+				
+
+				var targetSock = allSockets[getIndexFromUsername(allSockets, args[1])];
+                if (targetSock) {
+					targetSock.disconnect();
+                	return {message: "Disconnected " + args[1], classStr: "server-text"};
+                }
+                else {
+					senderSocket.emit("messageCommandReturnStr", {message: "Could not find username", classStr: "server-text"});
+				}
+				
+
+                return 
+            }
         }
     
     
