@@ -129,6 +129,12 @@ var actionsObj = {
 					else if(args[1] === "slap"){verbPast = "slapped";}
 					else if(args[1] === "lick"){verbPast = "licked";}
 
+					//if the sendersocket is in a game, then send a message to everyone in the game.
+					if(senderSocket.request.user.inRoomId && rooms[senderSocket.request.user.inRoomId] && rooms[senderSocket.request.user.inRoomId].gameStarted === true){
+						var str = senderSocket.request.user.username + " has " + verbPast + " " + slapSocket.request.user.username + ". (In game)";
+						rooms[senderSocket.request.user.inRoomId].sendText(rooms[senderSocket.request.user.inRoomId].allSockets, str, "server-text");
+					}
+
 
                 return {message: "You have " + verbPast + " " + args[2] + "!", classStr: "server-text"};
                 }

@@ -15,24 +15,20 @@ To-do list:
 
 -lady isnt being drawn at the end of the game.
 
--host is starting the game message before "ready" messages in chat
 
 - When you refresh the game while at a table, you should be brought back into that room (so u dont have to search/remember which game u were in)
 
-- add to front page about my details if u cant log in
 
 
 - Autocomplete when typing names
 - Case Insentitive for slapping/buzzing
 - hover over mission in center of table highlights participating members
 
-- disable buzzing active players in game (to prevent cheating)
 - the second tab (if enabled) that is non-chat is a bit too short and should stretch down to the proper height
 
 - have alt-text for when hovering over an avatars profile and = button
 - have alt-text for hovering over lady of the lake
 
-- Stand Up button before the game has started (instead of having to leave the room and return)
 - Make it more obvious when it's my turn to pick a team. perhaps instead of a the little sheriff's badge, have whoever is picking have a background of a big sheriff star
 
 - /roomChat should only work in a room, /allChat should only work in lobby. perhaps just merge back to the /chat cmd and it'll know which to print when used (but if they'll be automatic, then ignore this).
@@ -372,3 +368,7 @@ space out the tabs.
 -lady start at person before 1.1
 -change bell sound
 [01:01] ProNub: or an actual tickle lick and... squish sound?
+-host is starting the game message before "ready" messages in chat
+- add to front page about my details if u cant log in
+- Stand Up button before the game has started (instead of having to leave the room and return)
+- disable buzzing active players in game (to prevent cheating)
