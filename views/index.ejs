@@ -1,5 +1,8 @@
 <% include partials/header %>
 
+<link rel="stylesheet" type="text/css" href="/stylesheets/index.css">
+
+
 <style>
 	body {
 		// background-image: url("/pictures/0c42a04b087d6faaea1b410fbb0c4198_original.jpg");
@@ -28,6 +31,12 @@
 		width:90%;
 	}
 
+	#scroll {
+		position:absolute;
+		transform: translateX(-50%);
+		z-index: -1;
+	}
+
 
 </style>
 
@@ -36,6 +45,9 @@
 	<div class="myContainer">
 		<div class="row">
 			<div id="scrollDiv" class="col-md-5">
+
+				<img src="/pictures/scroll-min.png" id="scroll">
+
 				<form id="form" action="/login" method="POST">
 					<h3 id="loginHeading">Log in!</h3>
 					<div class="form-group">
@@ -84,6 +96,40 @@
 if($("#imgBigLogo").width() < 560){
 	$($("#vid1")[0]).width($("#imgBigLogo").width());
 }
+
+
+$( document ).ready(function() {
+	setupPageStuff();
+});
+
+
+function setupPageStuff(){
+	var scaleWidDownForm = 0.6
+	$("#form").width($("#scroll").width()*scaleWidDownForm + "px");
+	
+	var leftPosOfScroll = parseInt($("#scroll").css("left"), 10);
+	var offset = $("#scroll").width()/2;
+
+	var leftPosToScroll = leftPosOfScroll - offset;
+
+	var distToCenter = (parseInt($("#scroll").width() , 10) - parseInt($("#form").width(), 10) ) / 2;
+
+	$("#form").css("left", (leftPosToScroll + distToCenter) + "px");
+	$("#form").css("top", $("#scroll").height()*0.2 + "px");
+	
+
+
+
+
+	$("#scrollDiv").height($("#scroll").height());
+}
+
+$( window ).resize(function() {
+	setupPageStuff();
+});
+
+
+
 </script>
 
 <% include partials/footer %>

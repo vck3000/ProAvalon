@@ -10,6 +10,11 @@ To-do list:
 
 -option for space under status bar
 
+-previous host press stand up goes to kick menu
+
+
+-lady isnt being drawn at the end of the game.
+
 -host is starting the game message before "ready" messages in chat
 
 - When you refresh the game while at a table, you should be brought back into that room (so u dont have to search/remember which game u were in)

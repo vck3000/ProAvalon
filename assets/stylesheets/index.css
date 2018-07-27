@@ -47,10 +47,10 @@ body{
 	height: 100%;
 	text-align: center;
 
-	background-size: contain;
+	/* background-size: contain;
 	background-image: url("/pictures/scroll-min.png");
 	background-repeat: no-repeat;
-	background-position: center;
+	background-position: center; */
 
 }
 
@@ -61,21 +61,22 @@ body{
 #usernameDiv{
 	padding-bottom: 15%;
 }
-#form{
-	/*margin: 30% auto 0px auto;*/
-	text-align: left;
-	padding-top: 20%;
-	padding-bottom: 25%;
-/*	padding-left: 20%;
-	padding-right: 20%;*/
-	height: 100%;
-	width: 40%;
-	/*max-width: 300px;*/
-	margin: 0 auto;
 
+#form{
+
+	position:absolute;
+
+	
+	text-align: left;
+
+	/* height: 100%; */
+	
+	margin: 0 auto;
 	box-sizing: border-box;
 
 	overflow: hidden;
+
+	/* transform: translateX(-50%); */
 
 
 }
