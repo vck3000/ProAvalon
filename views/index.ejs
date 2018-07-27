@@ -100,6 +100,10 @@ if($("#imgBigLogo").width() < 560){
 
 $( document ).ready(function() {
 	setupPageStuff();
+	setInterval(function(){
+		setupPageStuff();
+		console.log("a");
+	},1000);
 });
 
 
