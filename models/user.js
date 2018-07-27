@@ -45,6 +45,10 @@ var UserSchema = new mongoose.Schema({
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "ModAction"
 		} 
+	],
+
+	mutedPlayers: [
+		String
 	]
 });
 
@@ -52,26 +56,3 @@ var UserSchema = new mongoose.Schema({
 UserSchema.plugin(passportLocalMongoose);
 
 module.exports = mongoose.model("User", UserSchema);
-
-
-
-
-/*
-
-roleStats: {
-	"merlin": {
-		"5": {
-			"wins": 15,
-			"losses": 8
-		},
-
-		"6": {
-
-		},
-	}
-
-	
-}
-
-
-*/

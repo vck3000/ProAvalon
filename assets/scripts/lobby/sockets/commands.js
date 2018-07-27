@@ -39,36 +39,56 @@ socket.on("messageCommandReturnStr", function (data) {
 
 var timeLastBuzzSlap;
 socket.on("slap", function (username) {
-    if($("#option_notifications_sound_slap")[0].checked === true){
-        if(!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $("#option_notifications_buzz_slap_timeout")[0].value){
-            playSound("slap");
-            
-            timeLastBuzzSlap = new Date();
+    if(isPlayerMuted(username) === false){
+        if($("#option_notifications_sound_slap")[0].checked === true){
+            if(!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $("#option_notifications_buzz_slap_timeout")[0].value){
+                playSound("slap");
+                
+                timeLastBuzzSlap = new Date();
 
-            var data = { message: "You have been slapped by " + username + ".", classStr: "server-text"}
-            setTimeout(function () {
-                addToAllChat(data);
-                addToRoomChat(data);
-            }, 1100);
+                var data = { message: "You have been slapped by " + username + ".", classStr: "server-text"}
+                setTimeout(function () {
+                    addToAllChat(data);
+                    addToRoomChat(data);
+                }, 1100);
+            }
         }
     }
-
 });
 
 socket.on("buzz", function (username) {
-    if(!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $("#option_notifications_buzz_slap_timeout")[0].value){
-        if($("#option_notifications_sound_buzz")[0].checked === true){
-            playSound("ding");
-
-            var data = { message: "You have been buzzed by " + username + ".", classStr: "server-text"}
-            setTimeout(function () {
-                addToAllChat(data);
-                addToRoomChat(data);
-            }, 0);
+    if(isPlayerMuted(username) === false){
+        if(!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $("#option_notifications_buzz_slap_timeout")[0].value){
+            if($("#option_notifications_sound_buzz")[0].checked === true){
+                playSound("ding");
+    
+                var data = { message: "You have been buzzed by " + username + ".", classStr: "server-text"}
+                setTimeout(function () {
+                    addToAllChat(data);
+                    addToRoomChat(data);
+                }, 0);
+            }
+    
+            if($("#option_notifications_desktop_buzz")[0].checked === true){
+                displayNotification(username + " has buzzed you!", "", "avatars/base-spy.png", "buzz");
+            }
         }
+    }
+    
+});
 
-        if($("#option_notifications_desktop_buzz")[0].checked === true){
-            displayNotification(username + " has buzzed you!", "", "avatars/base-spy.png", "buzz");
+socket.on("lick", function (username) {
+    if(isPlayerMuted(username) === false){    
+        if(!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $("#option_notifications_buzz_slap_timeout")[0].value){
+            if($("#option_notifications_sound_buzz")[0].checked === true){
+                playSound("lick");
+
+                var data = { message: "You have been licked by " + username + ".", classStr: "server-text"}
+                setTimeout(function () {
+                    addToAllChat(data);
+                    addToRoomChat(data);
+                }, 0);
+            }
         }
     }
 });

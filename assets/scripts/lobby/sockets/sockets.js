@@ -24,6 +24,14 @@ socket.on('disconnect', function(){
     socket.disconnect();
 });
 
+var mutedPlayers = [];
+socket.on('updateMutedPlayers', function(data){
+    mutedPlayers = data;
+    // console.log("Muted players: ");
+    // console.log(mutedPlayers);
+});
+
+
 socket.on('checkSettingsResetDate', function(serverResetDate){
     serverResetDate = new Date(serverResetDate);
   // console.log("check reset date");

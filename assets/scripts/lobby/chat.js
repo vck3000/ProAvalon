@@ -116,11 +116,13 @@ function addRoomChatEventListeners(e, roomChatWindow) {
 
 
 function addToAllChat(data) {
+    // console.log("raw data");
+    // console.log(data);
 
     if(data){
         //if it is not an array, force it into a array
         if (data[0] === undefined) {
-          // console.log("force array");
+        //   console.log("force array");
             data = [data];
         }  
 
@@ -137,6 +139,9 @@ function addToAllChat(data) {
             var date = "[" + hour + ":" + min + "]";
             if(data[i] && data[i].message){
                 //prevent XSS injection
+                // console.log(data[i]);
+                // console.log(data[i].message);
+
                 var filteredMessage = data[i].message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
 
                 var str = "";
@@ -145,6 +150,11 @@ function addToAllChat(data) {
                 }
                 else {
                     str = "<li class='" + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + filteredMessage;
+                }
+
+                //if they've muted this player, then just dont show anything. reset str to nothing.
+                if(isPlayerMuted(data[i].username) === true){
+                    str = "";
                 }
 
                 $(".all-chat-list").append(str);
@@ -222,6 +232,11 @@ function addToRoomChat(data) {
                             str = "<li class='" + spectatorClass + "'><span style='background-color: " + highlightChatColour + "' username='" + data[i].username + "'><span class='date-text'> " + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + filteredMessage + "</span></li>";
                         }
 
+                        //if they've muted this player, then just dont show anything. reset str to nothing.
+                        if(isPlayerMuted(data[i].username) === true){
+                            str = "";
+                        }
+
                         $(".room-chat-list").append(str);
                         scrollDown("room-chat-room");
                         scrollDown("room-chat-room2");
@@ -260,6 +275,15 @@ function addToRoomChat(data) {
     }
 }
 
+function isPlayerMuted(username){
+    if(mutedPlayers.indexOf(username) !== -1){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
 //Remove the new message yellow background colour when
 //user selects the tab
 $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -289,3 +313,4 @@ $(".muteSpecs").on("change", function(e){
     }
 
 });
+

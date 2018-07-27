@@ -34,15 +34,6 @@ var nextRoomId = 1;
 
 var actionsObj = {
     userCommands: {
-        commandA: {
-            command: "commandA",
-            help: "/commandA: Just some text for commandA",
-            run: function (data) {
-                //do stuff
-                return {message: "commandA has been run.", classStr: "server-text"};
-            }
-        },
-    
         help: {
             command: "help",
             help: "/help: ...shows help",
@@ -83,19 +74,12 @@ var actionsObj = {
             command: "buzz",
             help: "/buzz <playername>: Buzz a player.",
             run: function (data, senderSocket) {
-				var args = data.args;
+				var args = data.args;		
 				
-				
-    
-                var buzzSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
-                if (buzzSocket) {
-                    buzzSocket.emit("buzz", senderSocket.request.user.username);
-                return {message: "You have buzzed player " + args[1] + ".", classStr: "server-text"};
-                }
-                else {
-                    // console.log(allSockets);
-                    return {message: "There is no such player.", classStr: "server-text"};
-                }
+				data.args[2] = data.args[1];
+				data.args[1] = "buzz";
+
+				return actionsObj.userCommands.interactUser.run(data, senderSocket);
             }
         },
     
@@ -103,19 +87,57 @@ var actionsObj = {
             command: "slap",
             help: "/slap <playername>: Slap a player for fun.",
             run: function (data, senderSocket) {
-                var args = data.args;			
-    
-                var slapSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
+				var args = data.args;		
+				
+				data.args[2] = data.args[1];
+				data.args[1] = "slap";
+
+				return actionsObj.userCommands.interactUser.run(data, senderSocket);
+            }
+		},
+
+		lick: {
+            command: "lick",
+            help: "/lick <playername>: Lick a player.",
+            run: function (data, senderSocket) {
+				var args = data.args;		
+				
+				data.args[2] = data.args[1];
+				data.args[1] = "lick";
+
+				return actionsObj.userCommands.interactUser.run(data, senderSocket);
+            }
+        },
+		
+		interactUser: {
+			command: "interactUser",
+			help: "/interactUser <slap/buzz/lick> <playername>: Interact with a player.",
+            run: function (data, senderSocket) {
+				var args = data.args;			
+				
+				var possibleInteracts = ["buzz", "slap", "lick"];
+				if(possibleInteracts.indexOf(args[1]) === -1){
+                    return {message: "You can only slap, buzz or lick, not " + args[1] + ".", classStr: "server-text"};
+				}
+				
+                var slapSocket = allSockets[getIndexFromUsername(allSockets, args[2])];
                 if (slapSocket) {
-                    slapSocket.emit("slap", senderSocket.request.user.username);
-                return {message: "You have slapped player " + args[1] + "!", classStr: "server-text"};
+					slapSocket.emit(args[1], senderSocket.request.user.username);
+					
+					var verbPast = "";
+					if(args[1] === "buzz"){verbPast = "buzzed";}
+					else if(args[1] === "slap"){verbPast = "slapped";}
+					else if(args[1] === "lick"){verbPast = "licked";}
+
+
+                return {message: "You have " + verbPast + " " + args[2] + "!", classStr: "server-text"};
                 }
                 else {
                     // console.log(allSockets);
                     return {message: "There is no such player.", classStr: "server-text"};
                 }
             }
-        },
+		},
     
         roomChat: {
             command: "roomChat",
@@ -164,6 +186,126 @@ var actionsObj = {
                 }
                 
             }
+		},
+
+		mute: {
+            command: "mute",
+            help: "/mute: Mute a player who is being annoying in chat/buzzing/slapping/licking you.",
+            run: function (data, senderSocket) {
+                var args = data.args;
+				
+				if(args[1]){
+					User.findOne({username: args[1]}).exec(function(err, foundUserToMute){
+						if(err){console.log(err);}
+						else{
+							if(foundUserToMute){
+								User.findOne({username: senderSocket.request.user.username}).exec(function(err, userCallingMute){
+									if(err){console.log(err);}
+									else{
+										if(userCallingMute){
+											if(!userCallingMute.mutedPlayers){
+												userCallingMute.mutedPlayers = [];
+											}
+											if(userCallingMute.mutedPlayers.indexOf(foundUserToMute.username) === -1){
+												userCallingMute.mutedPlayers.push(foundUserToMute.username);
+												userCallingMute.markModified("mutedPlayers");
+												userCallingMute.save();
+												senderSocket.emit("updateMutedPlayers", userCallingMute.mutedPlayers);					
+												senderSocket.emit("messageCommandReturnStr", {message: "Muted " + args[1] + " successfully.", classStr: "server-text"});
+											}
+											else{
+												senderSocket.emit("messageCommandReturnStr", {message: "You have already muted " + args[1] + ".", classStr: "server-text"});
+											}
+											
+										}
+									}
+								});
+							}
+							else{
+								senderSocket.emit("messageCommandReturnStr", {message: args[1] + " was not found.", classStr: "server-text"});
+								return;
+							}
+						}
+					});
+				}
+            }
+		},
+
+		unmute: {
+            command: "unmute",
+            help: "/unmute: Unmute a player.",
+            run: function (data, senderSocket) {
+                var args = data.args;
+				
+				if(args[1]){
+					User.findOne({username: senderSocket.request.user.username}).exec(function(err, foundUser){
+						if(err){console.log(err);}
+						else{
+							if(foundUser){
+								if(!foundUser.mutedPlayers){
+									foundUser.mutedPlayers = [];
+								}
+								var index = foundUser.mutedPlayers.indexOf(args[1]);
+
+								if(index !== -1){
+									foundUser.mutedPlayers.splice(index, 1);
+									foundUser.markModified("mutedPlayers");
+									foundUser.save();
+	
+									senderSocket.emit("updateMutedPlayers", foundUser.mutedPlayers);					
+									senderSocket.emit("messageCommandReturnStr", {message: "Unmuted " + args[1] + " successfully.", classStr: "server-text"});	
+								}
+								else{
+									senderSocket.emit("messageCommandReturnStr", {message: "Could not find " + args[1] + ".", classStr: "server-text"});										
+								}
+							}
+						}
+					});
+				}
+				else{
+					senderSocket.emit("messageCommandReturnStr", {message: args[1] + " was not found or was not muted from the start.", classStr: "server-text"});
+					return;
+				}
+			}
+		},
+
+		getMutedPlayers: {
+            command: "getMutedPlayers",
+            help: "/getMutedPlayers: See who you have muted.",
+            run: function (data, senderSocket) {
+				var args = data.args;
+				
+				if(args[1] === senderSocket.request.user.username){
+					senderSocket.emit("messageCommandReturnStr", {message: "Why would you mute yourself...?", classStr:"server-text"});					
+					return;
+				}
+				
+				User.findOne({username: senderSocket.request.user.username}).exec(function(err, foundUser){
+					if(err){console.log(err);}
+					else{
+						if(foundUser){
+							if(!foundUser.mutedPlayers){
+								foundUser.mutedPlayers = [];
+							}
+
+							var dataToReturn = [];
+							dataToReturn[0] = {message: "Muted players:", classStr: "server-text"};
+							
+							for(var i = 0; i < foundUser.mutedPlayers.length; i++){
+								dataToReturn[i+1] = {message: "-" + foundUser.mutedPlayers[i], classStr: "server-text"};
+							}
+							if(dataToReturn.length === 1){
+								dataToReturn[0] = {message: "You have no muted players.", classStr: "server-text"}
+							}
+
+							// console.log(dataToReturn);
+
+							senderSocket.emit("messageCommandReturnStr", dataToReturn);
+							
+						}
+					}
+				});
+			}
 		},
 
 		navbar: {
@@ -606,6 +748,11 @@ module.exports = function (io) {
 
 			socket.emit("checkSettingsResetDate", dateResetRequired);
 
+			User.findOne({username: socket.request.user.username}).exec(function(err, foundUser){
+				if(foundUser.mutedPlayers){
+					socket.emit("updateMutedPlayers", foundUser.mutedPlayers);
+				}
+			});
 
 
 			//automatically join the all chat

@@ -334,12 +334,7 @@ module.exports = function (host_, roomId_, io_) {
 					foundUser.save();
 				}
 			});
-
-
 		});
-
-			
-		
 	}
 
 	this.assassinate = function (socket, target) {
