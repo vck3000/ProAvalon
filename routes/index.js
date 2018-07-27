@@ -219,6 +219,10 @@ router.get("/security", function(req, res){
 	res.render("security", {currentUser: req.user});
 });
 
+router.get("/troubleshooting", function(req, res){
+	res.render("troubleshooting", {currentUser: req.user});
+});
+
 
 router.get("/ajax/profile/getProfileData/:profileUsername", function(req, res){
 	User.findOne({username: req.params.profileUsername}, function(err, foundUser){

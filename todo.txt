@@ -1,13 +1,12 @@
 To-do list:
 
-
-[01:01] ProNub: or an actual tickle lick and... squish sound?
-
 -kicking people gives player join notification
 -[00:50] hakha3: Waiting for pmoomm to shoot Merlin.... (dots)
 -custom mission bar size
 
 -black font whith yellow highlight on dark theme
+
+-alphabetical sorting players
 
 -option for space under status bar
 
@@ -15,7 +14,7 @@ To-do list:
 
 - When you refresh the game while at a table, you should be brought back into that room (so u dont have to search/remember which game u were in)
 
--add to front page about my details if u cant log in
+- add to front page about my details if u cant log in
 
 
 - Autocomplete when typing names
@@ -367,3 +366,4 @@ space out the tabs.
 
 -lady start at person before 1.1
 -change bell sound
+[01:01] ProNub: or an actual tickle lick and... squish sound?

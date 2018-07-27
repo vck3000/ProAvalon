@@ -991,6 +991,7 @@ module.exports = function (host_, roomId_, io_) {
 			socketsOfSpecs.forEach(function(sock){
 				sock.emit("spec-game-starting", null);
 			});
+			this.sendText(this.allSockets, "The game is starting!", "gameplay-text");
 		}
 	}
 
