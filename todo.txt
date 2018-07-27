@@ -15,6 +15,7 @@ To-do list:
 
 - When you refresh the game while at a table, you should be brought back into that room (so u dont have to search/remember which game u were in)
 
+-add to front page about my details if u cant log in
 
 
 - Autocomplete when typing names

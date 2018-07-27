@@ -30,6 +30,15 @@ p {
     border: orange solid 2px;
 }
 
+.dark .showYourTurnNotification{
+    border: rgba(170, 110, 0, 0.75) solid 2px;
+    margin-bottom: 0px;
+    
+}
+.dark .well{ 
+    margin-bottom: 1px;
+}
+
 .well-sm {
     
 }
@@ -985,14 +994,16 @@ i {
 
 
 .disabled{
-    /* visibility: hidden; */
     display:none;
+}
+.showFaded{
 }
 
 .faded {
     opacity: 0.5 !important;
     filter: alpha(opacity=50); /* For IE8 and earlier */
     visibility: visible !important;
+    /* display:block; */
 }
 
 

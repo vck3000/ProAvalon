@@ -1858,9 +1858,12 @@ function displayNotification(title, body, icon, tag){
 function showYourTurnNotification(ToF){
     if(ToF === true){
         $("#statusBarWell").addClass("showYourTurnNotification");
+        // $("#statusBarWell").addClass("showFaded");
+
     }
     else if(ToF === false){
         $("#statusBarWell").removeClass("showYourTurnNotification");
+        // $("#statusBarWell").removeClass("showFaded");
     }
     else{
         console.log("error in show your turn notifications");
