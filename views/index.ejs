@@ -75,7 +75,8 @@
 				</div>
 
 				<h1>A game of deception</h1>
-				<p>Can you out-wit your opponents?</p>
+				<p id="testId">Can you out-wit your opponents?</p>
+				
 
 				<div class='hero-unit'>
 
@@ -108,10 +109,16 @@ $( document ).ready(function() {
 
 
 function setupPageStuff(){
-	var scaleWidDownForm = 0.6
+	var scaleWidDownForm = 0.6;
 	$("#form").width($("#scroll").width()*scaleWidDownForm + "px");
 	
-	var leftPosOfScroll = parseInt($("#scroll").css("left"), 10);
+	var leftPosOfScroll;
+	if($("#scroll").css("left") === "auto"){
+		leftPosOfScroll = $(window).width()*0.9/2;
+	}
+	else{
+		leftPosOfScroll = parseInt($("#scroll").css("left"), 10);
+	}
 	var offset = $("#scroll").width()/2;
 
 	var leftPosToScroll = leftPosOfScroll - offset;
@@ -119,8 +126,10 @@ function setupPageStuff(){
 	var distToCenter = (parseInt($("#scroll").width() , 10) - parseInt($("#form").width(), 10) ) / 2;
 
 	$("#form").css("left", (leftPosToScroll + distToCenter) + "px");
+	// $("#form").css("left", (leftPosToScroll + distToCenter) + "px");
 	$("#form").css("top", $("#scroll").height()*0.2 + "px");
 	
+	$("#testId")[0].innerText = $("#scroll").css("top");
 
 
 
