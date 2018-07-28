@@ -6,7 +6,6 @@ To-do list:
 
 -black font whith yellow highlight on dark theme
 
--alphabetical sorting players
 
 -option for space under status bar
 
@@ -21,7 +20,6 @@ To-do list:
 
 
 - Autocomplete when typing names
-- Case Insentitive for slapping/buzzing
 - hover over mission in center of table highlights participating members
 
 - the second tab (if enabled) that is non-chat is a bit too short and should stretch down to the proper height
@@ -29,7 +27,6 @@ To-do list:
 - have alt-text for when hovering over an avatars profile and = button
 - have alt-text for hovering over lady of the lake
 
-- Make it more obvious when it's my turn to pick a team. perhaps instead of a the little sheriff's badge, have whoever is picking have a background of a big sheriff star
 
 - /roomChat should only work in a room, /allChat should only work in lobby. perhaps just merge back to the /chat cmd and it'll know which to print when used (but if they'll be automatic, then ignore this).
 
@@ -372,3 +369,6 @@ space out the tabs.
 - disable buzzing active players in game (to prevent cheating)
 - Have a visible-but-disabled Pick button when its my turn/assassination/carding so its visually obvious its my turn to do something
 - Align game status text to the left (like in TRP) instead of centered (idk, i sorta like centered?)
+- Case Insentitive for slapping/buzzing
+- Make it more obvious when it's my turn to pick a team. perhaps instead of a the little sheriff's badge, have whoever is picking have a background of a big sheriff star
+-alphabetical sorting players

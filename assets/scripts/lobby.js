@@ -199,7 +199,7 @@ function draw() {
                 }
                 else {
                     if(gameData.assassin){
-                        document.querySelector("#status").innerText = "Waiting for " + gameData.assassin + " to assassinate Merlin.";
+                        document.querySelector("#status").innerText = "Waiting for " + gameData.assassin + " to assassinate Merlin...";
                     }
                     else{
                         document.querySelector("#status").innerText = "Waiting for assassin to assassinate.";
