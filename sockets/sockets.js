@@ -4,6 +4,7 @@ var avalonRoom = require("../gameplay/avalonRoom");
 var savedGameObj = require("../models/savedGame");
 var modAction = require("../models/modAction");
 var currentModActions = [];
+var myNotification	= require("../models/notification");
 
 var User  = require("../models/user");
 
@@ -539,6 +540,41 @@ var actionsObj = {
                 else {
 					senderSocket.emit("messageCommandReturnStr", {message: "Could not find username", classStr: "server-text"});
 				}
+				
+
+                return;
+            }
+		},
+		
+		mnotify: {
+            command: "mnotify",
+            help: "/mnotify <player name> <text to leave for player>: Disconnect a player.",
+            run: async function (data, senderSocket) {
+				var args = data.args;
+				var str = "";
+				for(var i = 2; i < args.length; i++){
+					str.push(args[i]);
+					str.push(" ");
+				}
+				
+				User.findOne({usernameLower: args[1].toLowerCase()}).exec(function(err, foundUser){
+					if(err){console.log(err);}
+					else{
+						newNotif = {
+							text: str,
+							date: new Date(),
+							link: "#",
+							forPlayer: foundUser.username,
+							seen: false
+						}
+
+
+
+					}
+
+				});
+
+				
 				
 
                 return;

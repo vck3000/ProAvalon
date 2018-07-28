@@ -6,6 +6,7 @@ var mongoose = require("mongoose");
 var User = require("../models/user");
 var GameRecord = require("../models/gameRecord");
 
+
 mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
 
 

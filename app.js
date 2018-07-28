@@ -150,6 +150,23 @@ io.use(passportSocketIo.authorize({
 }));
 
 
+//REMOVE THIS SOON AFTER UPLOADING TO SERVER ONCE
+User.find({}).populate("notifications").exec(function(err, foundUsers){
+	// for(var i = 0; i < foundUsers.length; i++){
+	// 	console.log(foundUsers.username);
+	// }
+	console.log(typeof(foundUsers));
+	for(var key in foundUsers){
+		if(foundUsers.hasOwnProperty(key)){
+			console.log(foundUsers[key].username);
+			console.log("key: " + key);
+
+			foundUsers[key].usernameLower = foundUsers[key].username.toLowerCase();
+			foundUsers[key].save();
+		}
+	}
+});
+
 // if(process.env.MY_PLATFORM === "local"){
 // 	var testRoleStats = {
 // 		"5p": {

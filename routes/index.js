@@ -63,6 +63,7 @@ router.post("/",sanitiseUsername,/* usernameToLowerCase, */function(req, res){
 	
 		var newUser = new User({
 			username: req.body.username,
+			usernameLower: req.body.username.toLowerCase(),
 			dateJoined: new Date()
 		});
 	
