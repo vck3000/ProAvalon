@@ -1391,7 +1391,12 @@ function getPlayerUsernamesFromAllSockets(){
 	for(var i = 0; i < allSockets.length; i++){
 		array[i] = allSockets[i].request.user.username;
 	}
-	array.sort();
+	array.sort(function(a, b) {
+		var textA = a.toUpperCase();
+		var textB = b.toUpperCase();
+		return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+	});
+
 	return array;
 }
 function getPlayerIdsFromAllSockets(){

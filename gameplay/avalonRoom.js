@@ -1628,7 +1628,11 @@ module.exports = function (host_, roomId_, io_) {
 		socketsOfSpectators.forEach(function(sock){
 			usernamesOfSpecs.push(sock.request.user.username);
 		});
-		usernamesOfSpecs.sort();
+		usernamesOfSpecs.sort(function(a, b) {
+			var textA = a.toUpperCase();
+			var textB = b.toUpperCase();
+			return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+		});
 
 		for(var i = 0; i < this.allSockets.length; i++){
 			//need to go through all sockets, but only send to the socket of players in game
