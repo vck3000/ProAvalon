@@ -5,6 +5,8 @@ var savedGameObj = require("../models/savedGame");
 var modAction = require("../models/modAction");
 var currentModActions = [];
 var myNotification	= require("../models/notification");
+var createNotificationObj = require("../myFunctions/createNotification");
+
 
 var User  = require("../models/user");
 
@@ -548,30 +550,35 @@ var actionsObj = {
 		
 		mnotify: {
             command: "mnotify",
-            help: "/mnotify <player name> <text to leave for player>: Disconnect a player.",
+            help: "/mnotify <player name> <text to leave for player>: Leaves a message for a player that will appear in their notifications. Note your name will be added to the end of the message to them.",
             run: async function (data, senderSocket) {
 				var args = data.args;
 				var str = "";
 				for(var i = 2; i < args.length; i++){
-					str.push(args[i]);
-					str.push(" ");
+					str += args[i];
+					str += " ";
 				}
+
+				str += ("(From: " + senderSocket.request.user.username + ")");
 				
 				User.findOne({usernameLower: args[1].toLowerCase()}).exec(function(err, foundUser){
-					if(err){console.log(err);}
-					else{
-						newNotif = {
-							text: str,
-							date: new Date(),
-							link: "#",
-							forPlayer: foundUser.username,
-							seen: false
-						}
-
-
-
+					if(err){
+						console.log(err);							
+						senderSocket.emit("messageCommandReturnStr", {message: "Server error... let me know if you see this.", classStr: "server-text"});
 					}
-
+					else{
+						if(foundUser){
+							var userIdTarget = foundUser._id;
+							var stringToSay = str;
+							var link = "#";
+	
+							createNotificationObj.createNotification(userIdTarget, stringToSay, link);
+							senderSocket.emit("messageCommandReturnStr", {message: "Sent to " + foundUser.username + " successfully! Here was your message: " + str, classStr: "server-text"});
+						}
+						else{
+							senderSocket.emit("messageCommandReturnStr", {message: "Could not find " + args[1], classStr: "server-text"});
+						}
+					}
 				});
 
 				
