@@ -1451,18 +1451,20 @@ function getPlayerIdsFromAllSockets(){
 }
 
 function getIndexFromUsername(sockets, username, caseInsensitive){
-	for(var i = 0; i < sockets.length; i++){
-		if(caseInsensitive){
-			if(sockets[i].request.user.username.toLowerCase() === username.toLowerCase()){
-				return i;
+	if(sockets && username){
+		for(var i = 0; i < sockets.length; i++){
+			if(caseInsensitive){
+				if(sockets[i].request.user.username.toLowerCase() === username.toLowerCase()){
+					return i;
+				}
 			}
-		}
-		else{
-			if(sockets[i].request.user.username === username){
-				return i;
+			else{
+				if(sockets[i].request.user.username === username){
+					return i;
+				}
 			}
+			
 		}
-		
 	}
 	return null;
 
