@@ -1,18 +1,17 @@
 To-do list:
 
--kicking people gives player join notification
--[00:50] hakha3: Waiting for pmoomm to shoot Merlin.... (dots)
--custom mission bar size
+- kicking people gives player join notification
+- custom mission bar size
 
--black font whith yellow highlight on dark theme
-
-
--option for space under status bar
-
--previous host press stand up goes to kick menu
+- black font whith yellow highlight on dark theme
 
 
--lady isnt being drawn at the end of the game.
+- option for space under status bar
+
+- previous host press stand up goes to kick menu
+
+
+- lady isnt being drawn at the end of the game.
 
 
 - When you refresh the game while at a table, you should be brought back into that room (so u dont have to search/remember which game u were in)
@@ -20,23 +19,21 @@ To-do list:
 
 
 - Autocomplete when typing names
+
 - hover over mission in center of table highlights participating members
 
 - the second tab (if enabled) that is non-chat is a bit too short and should stretch down to the proper height
 
-- have alt-text for when hovering over an avatars profile and = button
 - have alt-text for hovering over lady of the lake
 
 
 - /roomChat should only work in a room, /allChat should only work in lobby. perhaps just merge back to the /chat cmd and it'll know which to print when used (but if they'll be automatic, then ignore this).
 
 - After clicking the = icon by an avatar, the icon should change colors (ideally to the color that he'll be highlighted to) so i know that it worked
-- very minor issue: lastpass thinks the textbox is a Username box. prob because of something weird in the textbox definition(edited)
 
 - BUG: Having the char '[' anywhere in the text triggers the quoting feature and truncs any preceding chars. Instead it should be according to the format "[mm:hh] ValidUsername: MsgActuallySaid" and any text added before/after the quote should end up in the lines before/after the quote
 - Have Quoted text a color other than grey so its more distinctive from regular chat/spectators. light purple?
 
-- enable hypertext
 
 - In the Stats Graph, if u have 0%, still have some small sliver so it can be hovered over (dont know if possible to do this, it might end up showing 1% win rate)
 - Have an overlay on the Stats Graph for the "Site Average" for each of the bars (average calculated over players who have played at least 50 games). basically a tick for each role showing how i stack up and so i know what is considered "good"
@@ -372,3 +369,8 @@ space out the tabs.
 - Case Insentitive for slapping/buzzing
 - Make it more obvious when it's my turn to pick a team. perhaps instead of a the little sheriff's badge, have whoever is picking have a background of a big sheriff star
 -alphabetical sorting players
+- have alt-text for when hovering over an avatars profile and = button
+- enable hypertext
+- very minor issue: lastpass thinks the textbox is a Username box. prob because of something weird in the textbox definition(edited)
+
+- [00:50] hakha3: Waiting for pmoomm to shoot Merlin.... (dots)

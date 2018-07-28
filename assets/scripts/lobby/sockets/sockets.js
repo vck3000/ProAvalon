@@ -214,6 +214,11 @@ socket.on("update-current-players-list", function (currentPlayers) {
                   isSpectator = true;
                   //change to the game room view
                   changeView();
+
+                  setTimeout(function(){
+                    $(".room-chat-list").html("");                      
+                    checkMessageForCommands("/roomchat", "roomChat");
+                  }, 500);
               });
           }
       });

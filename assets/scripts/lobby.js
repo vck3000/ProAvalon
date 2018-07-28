@@ -1160,8 +1160,7 @@ function strOfAvatar(playerData, alliance) {
             var littleProtrudingEdgeWid = (nameWid - widOfBox) / 2;
             var offsetDist = (nameWid - littleProtrudingEdgeWid) + 5;
 
-            
-
+        
             lady = "<span class='glyphicon glyphicon-book' style='top: 50%; transform: translateY(-50%); position: absolute; right: " + offsetDist + "px'></span> ";
         }
     }
