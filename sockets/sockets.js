@@ -120,7 +120,7 @@ var actionsObj = {
                     return {message: "You can only slap, buzz or lick, not " + args[1] + ".", classStr: "server-text"};
 				}
 				
-                var slapSocket = allSockets[getIndexFromUsername(allSockets, args[2])];
+                var slapSocket = allSockets[getIndexFromUsername(allSockets, args[2], true)];
                 if (slapSocket) {
 					slapSocket.emit(args[1], senderSocket.request.user.username);
 					
@@ -145,9 +145,9 @@ var actionsObj = {
             }
 		},
     
-        roomChat: {
-            command: "roomChat",
-            help: "/roomChat: Get a copy of the chat for the current game.",
+        roomchat: {
+            command: "roomchat",
+            help: "/roomchat: Get a copy of the chat for the current game.",
             run: function (data, senderSocket) {
                 var args = data.args;
                 //code
@@ -161,9 +161,9 @@ var actionsObj = {
             }
         },
     
-        allChat: {
-            command: "allChat",
-            help: "/allChat: Get a copy of the last 5 minutes of allChat.",
+        allchat: {
+            command: "allchat",
+            help: "/allchat: Get a copy of the last 5 minutes of allchat.",
             run: function (data, senderSocket) {
                 //code
                 var args = data.args;
@@ -275,9 +275,9 @@ var actionsObj = {
 			}
 		},
 
-		getMutedPlayers: {
-            command: "getMutedPlayers",
-            help: "/getMutedPlayers: See who you have muted.",
+		getmutedplayers: {
+            command: "getmutedplayers",
+            help: "/getmutedplayers: See who you have muted.",
             run: function (data, senderSocket) {
 				var args = data.args;
 				
@@ -524,7 +524,6 @@ var actionsObj = {
                 var args = data.args;
     
                 if(!args[1]){
-					
 					senderSocket.emit("messageCommandReturnStr", {message: "Specify a username", classStr: "server-text"});
                     return;
 				}
@@ -1403,11 +1402,19 @@ function getPlayerIdsFromAllSockets(){
 	return array;
 }
 
-function getIndexFromUsername(sockets, username){
+function getIndexFromUsername(sockets, username, caseInsensitive){
 	for(var i = 0; i < sockets.length; i++){
-		if(sockets[i].request.user.username === username){
-			return i;
+		if(caseInsensitive){
+			if(sockets[i].request.user.username.toLowerCase() === username.toLowerCase()){
+				return i;
+			}
 		}
+		else{
+			if(sockets[i].request.user.username === username){
+				return i;
+			}
+		}
+		
 	}
 	return null;
 

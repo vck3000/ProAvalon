@@ -33,14 +33,12 @@ To-do list:
 
 - /roomChat should only work in a room, /allChat should only work in lobby. perhaps just merge back to the /chat cmd and it'll know which to print when used (but if they'll be automatic, then ignore this).
 
-- Have a visible-but-disabled Pick button when its my turn/assassination/carding so its visually obvious its my turn to do something
 - After clicking the = icon by an avatar, the icon should change colors (ideally to the color that he'll be highlighted to) so i know that it worked
 - very minor issue: lastpass thinks the textbox is a Username box. prob because of something weird in the textbox definition(edited)
 
 - BUG: Having the char '[' anywhere in the text triggers the quoting feature and truncs any preceding chars. Instead it should be according to the format "[mm:hh] ValidUsername: MsgActuallySaid" and any text added before/after the quote should end up in the lines before/after the quote
 - Have Quoted text a color other than grey so its more distinctive from regular chat/spectators. light purple?
 
-- Align game status text to the left (like in TRP) instead of centered (idk, i sorta like centered?)
 - enable hypertext
 
 - In the Stats Graph, if u have 0%, still have some small sliver so it can be hovered over (dont know if possible to do this, it might end up showing 1% win rate)
@@ -372,3 +370,5 @@ space out the tabs.
 - add to front page about my details if u cant log in
 - Stand Up button before the game has started (instead of having to leave the room and return)
 - disable buzzing active players in game (to prevent cheating)
+- Have a visible-but-disabled Pick button when its my turn/assassination/carding so its visually obvious its my turn to do something
+- Align game status text to the left (like in TRP) instead of centered (idk, i sorta like centered?)
