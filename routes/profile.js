@@ -51,7 +51,7 @@ router.post("/:profileUsername",middleware.checkProfileOwnership , function(req,
 	}
 
 
-	User.find({username: req.params.profileUsername}, function(err, foundUser){
+	User.find({username: req.params.profileUsername}).populate("notifications").exec(function(err, foundUser){
         foundUser = foundUser[0];
 
 		if(err){
