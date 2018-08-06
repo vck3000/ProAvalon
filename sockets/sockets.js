@@ -693,7 +693,22 @@ var actionsObj = {
                     return {message: "You are not the admin...", classStr: "server-text"};
                 }
             }
-        }
+		},
+
+		killS: {
+            command: "killS",
+            help: "/killS: test kill",
+            run: function (data) {
+                var args = data.args;
+				//do stuff
+				process.exit(0);
+				
+
+
+                return {message: "killS has been run.", classStr: "server-text"};
+            }
+		},
+		
     }
 }
 
