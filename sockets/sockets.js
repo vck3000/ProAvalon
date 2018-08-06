@@ -45,7 +45,6 @@ function gracefulShutdown(){
 		sendWarning();
 	}
 
-	process.exit(0);
 }
 
 
@@ -94,6 +93,11 @@ function saveGamesAndSendWarning(senderSocket) {
 					var data = {message: "Successful. Saved " + numOfGamesSaved + " games.", classStr: "server-text"};
 					if(senderSocket){
 						senderSocket.emit("messageCommandReturnStr", data);
+					}
+
+					//if its a heroku update
+					if(!senderSocket){
+						process.exit(0);
 					}
 				}
 
