@@ -38,17 +38,12 @@ To-do list:
 - In the Stats Graph, if u have 0%, still have some small sliver so it can be hovered over (dont know if possible to do this, it might end up showing 1% win rate)
 - Have an overlay on the Stats Graph for the "Site Average" for each of the bars (average calculated over players who have played at least 50 games). basically a tick for each role showing how i stack up and so i know what is considered "good"
 
-
-***************************************************************************************
-After release
-***************************************************************************************
 -Custom colours for specific people
--deleting stuff should just be hidden.
+
 -Statistics page 
 
 
--Jed bug: Percy cant see merlins and thinks theyre vt
-PERHAPS ITS FIXED NOW WITH THE SOCKETS REFACTOR?
+
 
 
 👶🏼👶🏽👶🏾👶🏿
@@ -374,3 +369,5 @@ space out the tabs.
 - very minor issue: lastpass thinks the textbox is a Username box. prob because of something weird in the textbox definition(edited)
 
 - [00:50] hakha3: Waiting for pmoomm to shoot Merlin.... (dots)
+-Jed bug: Percy cant see merlins and thinks theyre vt
+PERHAPS ITS FIXED NOW WITH THE SOCKETS REFACTOR?

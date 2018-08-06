@@ -194,12 +194,13 @@ function draw() {
             else if (gameData.phase === "assassination") {
                 //for the assassin: set up their stuff to shoot
                 if (gameData.role === "Assassin") {
-                    document.querySelector("#status").innerText = "Shoot merlin.";
+                    document.querySelector("#status").innerText = "Shoot merlin asdf.";
+                    // console.log
                     assassinationSetup(gameData.phase);
                 }
                 else {
                     if(gameData.assassin){
-                        document.querySelector("#status").innerText = "Waiting for " + gameData.assassin + " to assassinate Merlin...";
+                        document.querySelector("#status").innerText = "Waiting for " + gameData.assassin + " to assassinate Merlin...6546546546";
                     }
                     else{
                         document.querySelector("#status").innerText = "Waiting for assassin to assassinate.";
@@ -398,21 +399,38 @@ function draw() {
   }
   
   
-  function assassinationSetup(phase) {
-      if (phase === "assassination") {
-          var divs = document.querySelectorAll("#mainRoomBox div");
-          //add the event listeners for button press
-          for (var i = 0; i < divs.length; i++) {
-              divs[i].addEventListener("click", function () {
+function assassinationSetup(phase) {
+    if (phase === "assassination") {
+        var divs = document.querySelectorAll("#mainRoomBox div");
+        //add the event listeners for button press
+
+        var spies;
+        if(gameData && gameData.see){
+        spies = gameData.see.spies;
+        }
+
+        for (var i = 0; i < divs.length; i++) {
+
+            //if the player is not a "seeable" spy, then make them selectable
+            console.log("spies: ");
+            console.log(spies);
+            console.log("Username of player: " + divs[i].getAttribute("usernameofplayer"));
+            if(spies.indexOf(divs[i].getAttribute("usernameofplayer")) === -1){
+
+                divs[i].addEventListener("click", function () {
                 // console.log("avatar pressed");
-                  //toggle the highlight class
-                  this.classList.toggle("highlight-avatar");
-                  //change the pick team button to enabled/disabled
-                  enableDisableButtons();
-              });
-          }
-      }
-  }
+                    //toggle the highlight class
+                    this.classList.toggle("highlight-avatar");
+                    //change the pick team button to enabled/disabled
+                    enableDisableButtons();
+                });
+
+            }
+            
+            
+        }
+    }
+}
   
 function teamLeaderSetup(phase) {
     var numPlayersOnMission = gameData.numPlayersOnMission[gameData.missionNum - 1];
@@ -1893,4 +1911,8 @@ function showYourTurnNotification(ToF){
     else{
         console.log("error in show your turn notifications");
     }
+}
+
+function hi(){
+    console.log("hi");
 }

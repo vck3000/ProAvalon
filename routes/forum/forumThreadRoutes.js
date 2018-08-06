@@ -34,7 +34,7 @@ var sanitizeHtmlAllowedAttributesForumThread = {
 /**********************************************************/
 //Show the forumThread
 /**********************************************************/
-router.get("/show/:id", function (req, res) {
+router.get("/show/:id", middleware.isLoggedIn, function (req, res) {
 	forumThread.findById(req.params.id)
 	// .populate("comments")
 	// .populate({ path: "comments", populate: { path: "replies" } })
