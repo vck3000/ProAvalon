@@ -34,10 +34,11 @@ var allChat5Min = [];
 var nextRoomId = 1;
 
 
-process.on('SIGINT', gracefulShutdown);
-process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown("Sigterm"));
+process.on('SIGTERM', gracefulShutdown("Sigterm"));
 
-function gracefulShutdown(){
+function gracefulShutdown(signal){
+	console.log(signal + " asd;fjlkasdjf;lkasdj;la;lsdkjf;alksdjf;alskdjfa;sldkfaj;")
 	if(process.env.MY_PLATFORM === "online"){
 		saveGamesAndSendWarning();
 	}
