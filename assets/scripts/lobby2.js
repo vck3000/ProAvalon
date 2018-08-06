@@ -194,13 +194,13 @@ function draw() {
             else if (gameData.phase === "assassination") {
                 //for the assassin: set up their stuff to shoot
                 if (gameData.role === "Assassin") {
-                    document.querySelector("#status").innerText = "Shoot merlin asdf.";
+                    document.querySelector("#status").innerText = "Shoot merlin.";
                     // console.log
                     assassinationSetup(gameData.phase);
                 }
                 else {
                     if(gameData.assassin){
-                        document.querySelector("#status").innerText = "Waiting for " + gameData.assassin + " to assassinate Merlin...6546546546";
+                        document.querySelector("#status").innerText = "Waiting for " + gameData.assassin + " to assassinate Merlin...";
                     }
                     else{
                         document.querySelector("#status").innerText = "Waiting for assassin to assassinate.";
