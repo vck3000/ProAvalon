@@ -71,8 +71,6 @@ socket.on("serverRestartWarning", function(){
 
         <li>The server will only be down for a brief moment, at most 30 seconds.</li>
 
-        <li>When you rejoin please use /roomChat to recover your chat.</li>
-
         <li>I apologise for the inconvenience caused. Thank you.</li>
     </ul>
     
@@ -80,6 +78,40 @@ socket.on("serverRestartWarning", function(){
 
     Swal({
         title: "Server restarting!",
+        html: message,
+        type: "warning",
+        allowEnterKey: false
+
+
+
+
+    }).then(() =>{
+        // location.reload();
+    });
+});
+
+socket.on("serverDailyRestartWarning", function(){
+    var message = `<div style='text-align: left;'>
+    <style>
+        #swalUl li{
+            padding-bottom: 3%;
+        }
+
+    </style>
+    <ul id="swalUl">
+        <li>The server's daily restart is happening now!</li>
+
+        <li>Any running games will be saved and you will be able to continue your games when you log in again.</li>
+
+        <li>The server will only be down for a brief moment, at most 30 seconds.</li>
+
+        <li>I apologise for the inconvenience caused. Thank you.</li>
+    </ul>
+    
+    </div>`;
+
+    Swal({
+        title: "Server Daily Restart!",
         html: message,
         type: "warning",
         allowEnterKey: false

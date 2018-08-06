@@ -52,7 +52,7 @@ function gracefulShutdown(){
 function sendWarning(){
 	for(var key in allSockets){
 		if(allSockets.hasOwnProperty(key)){
-			allSockets[key].emit("serverRestartWarning");
+			allSockets[key].emit("serverDailyRestartWarning");
 		}
 	}
 }
@@ -60,7 +60,11 @@ function sendWarning(){
 function saveGamesAndSendWarning(senderSocket) {
 	for(var key in allSockets){
 		if(allSockets.hasOwnProperty(key)){
-			allSockets[key].emit("serverRestartWarning");
+			if(senderSocket){
+				allSockets[key].emit("serverRestartWarning");
+			}else{
+				allSockets[key].emit("serverDailyRestartWarning");				
+			}
 		}
 	}
 
