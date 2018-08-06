@@ -34,6 +34,80 @@ var allChat5Min = [];
 var nextRoomId = 1;
 
 
+process.on('SIGINT', gracefulShutdown);
+process.on('SIGTERM', gracefulShutdown);
+
+function gracefulShutdown(){
+	if(process.env.MY_PLATFORM === "online"){
+		saveGamesAndSendWarning();
+	}
+	else{
+		sendWarning();
+	}
+
+	process.exit(0);
+}
+
+
+function sendWarning(){
+	for(var key in allSockets){
+		if(allSockets.hasOwnProperty(key)){
+			allSockets[key].emit("serverRestartWarning");
+		}
+	}
+}
+
+function saveGamesAndSendWarning(senderSocket) {
+	for(var key in allSockets){
+		if(allSockets.hasOwnProperty(key)){
+			allSockets[key].emit("serverRestartWarning");
+		}
+	}
+
+	var numOfGamesSaved = 0;
+	var numOfGamesEncountered = 0;
+	var promises = [];
+
+	//save the games
+	for(var i = 0; i < rooms.length; i++){
+		if(rooms[i] && rooms[i].gameStarted === true && rooms[i].finished !== true){
+			console.log("rooms");
+			console.log(rooms[i]);
+			
+			savedGameObj.create({room: JSON.stringify(rooms[i])}, function(err, savedGame){
+				if(err){
+					console.log(err);
+				}
+				console.log(savedGame);
+				numOfGamesSaved++;
+
+				console.log("created");
+				console.log(numOfGamesSaved >= numOfGamesEncountered);
+				console.log(numOfGamesSaved);
+				console.log(numOfGamesEncountered);
+
+				if(numOfGamesSaved >= numOfGamesEncountered){
+					var data = {message: "Successful. Saved " + numOfGamesSaved + " games.", classStr: "server-text"};
+					if(senderSocket){
+						senderSocket.emit("messageCommandReturnStr", data);
+					}
+				}
+
+			});
+			numOfGamesEncountered++;
+		}
+	}
+
+	console.log(numOfGamesEncountered);
+	
+	if(numOfGamesEncountered === 0){
+		return {message: "Successful. But no games needed to be saved.", classStr: "server-text"};
+	}
+	else{
+		return {message: "Successful. But still saving games.", classStr: "server-text"};
+	}
+}
+
 
 var actionsObj = {
     userCommands: {
@@ -638,55 +712,10 @@ var actionsObj = {
             run: function (data, senderSocket) {
                 var args = data.args;
                 // console.log(allSockets);
-                //code
-                if(senderSocket.request.user.username === "ProNub"){
+				//code
+                if(adminsArray.indexOf(senderSocket.request.user.username.toLowerCase) !== -1){
     
-                    for(var key in allSockets){
-                        if(allSockets.hasOwnProperty(key)){
-                            allSockets[key].emit("serverRestartWarning")
-                        }
-                    }
-    
-                    var numOfGamesSaved = 0;
-                    var numOfGamesEncountered = 0;
-                    var promises = [];
-    
-                    //save the games
-                    for(var i = 0; i < rooms.length; i++){
-                        if(rooms[i] && rooms[i].gameStarted === true && rooms[i].finished !== true){
-                            console.log("rooms");
-                            console.log(rooms[i]);
-                            
-                            savedGameObj.create({room: JSON.stringify(rooms[i])}, function(err, savedGame){
-                                if(err){
-                                    console.log(err);
-                                }
-                                console.log(savedGame);
-                                numOfGamesSaved++;
-    
-                                console.log("created");
-                                console.log(numOfGamesSaved >= numOfGamesEncountered);
-                                console.log(numOfGamesSaved);
-                                console.log(numOfGamesEncountered);
-    
-                                if(numOfGamesSaved >= numOfGamesEncountered){
-                                    var data = {message: "Successful. Saved " + numOfGamesSaved + " games.", classStr: "server-text"};
-                                    senderSocket.emit("messageCommandReturnStr", data);
-                                }
-    
-                            });
-                            numOfGamesEncountered++;
-                        }
-                    }
-    
-                    console.log(numOfGamesEncountered);
-                    
-                    if(numOfGamesEncountered === 0){
-                        return {message: "Successful. But no games needed to be saved.", classStr: "server-text"};
-                    }
-                    else{
-                        return {message: "Successful. But still saving games.", classStr: "server-text"};
-                    }
+                    saveGamesAndSendWarning(senderSocket);
     
                 }
                 else{
