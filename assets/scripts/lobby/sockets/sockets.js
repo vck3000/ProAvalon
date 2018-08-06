@@ -115,10 +115,6 @@ socket.on("serverDailyRestartWarning", function(){
         html: message,
         type: "warning",
         allowEnterKey: false
-
-
-
-
     }).then(() =>{
         // location.reload();
     });

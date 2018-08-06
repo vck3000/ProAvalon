@@ -717,10 +717,8 @@ var actionsObj = {
                 var args = data.args;
                 // console.log(allSockets);
 				//code
-                if(adminsArray.indexOf(senderSocket.request.user.username.toLowerCase) !== -1){
-    
+                if(adminsArray.indexOf(senderSocket.request.user.username.toLowerCase()) !== -1){
                     saveGamesAndSendWarning(senderSocket);
-    
                 }
                 else{
                     return {message: "You are not the admin...", classStr: "server-text"};
