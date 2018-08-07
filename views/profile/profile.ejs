@@ -146,7 +146,7 @@
                         <tr>
                             <td class="statsCol1">Total time played: </td>
                             <!--<td class="statsCol2"> <%=getDatesString(userData.totalTimePlayed)%> </td>-->
-                            <td class="statsCol2"> <%=Math.floor(userData.totalTimePlayed/(1000*60*60))%> hrs</td>
+                            <td class="statsCol2"> <%=Math.floor(userData.totalTimePlayed.getTime()/(1000*60*60))%> hrs</td>
                         </tr>
                     </tbody>
                 </table>

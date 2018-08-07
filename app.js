@@ -154,21 +154,21 @@ io.use(passportSocketIo.authorize({
 
 
 //REMOVE THIS SOON AFTER UPLOADING TO SERVER ONCE
-User.find({}).populate("notifications").exec(function(err, foundUsers){
-	// for(var i = 0; i < foundUsers.length; i++){
-	// 	console.log(foundUsers.username);
-	// }
-	console.log(typeof(foundUsers));
-	for(var key in foundUsers){
-		if(foundUsers.hasOwnProperty(key)){
-			console.log(foundUsers[key].username);
-			console.log("key: " + key);
+// User.find({}).populate("notifications").exec(function(err, foundUsers){
+// 	// for(var i = 0; i < foundUsers.length; i++){
+// 	// 	console.log(foundUsers.username);
+// 	// }
+// 	console.log(typeof(foundUsers));
+// 	for(var key in foundUsers){
+// 		if(foundUsers.hasOwnProperty(key)){
+// 			console.log(foundUsers[key].username);
+// 			console.log("key: " + key);
 
-			foundUsers[key].usernameLower = foundUsers[key].username.toLowerCase();
-			foundUsers[key].save();
-		}
-	}
-});
+// 			foundUsers[key].usernameLower = foundUsers[key].username.toLowerCase();
+// 			foundUsers[key].save();
+// 		}
+// 	}
+// });
 
 // if(process.env.MY_PLATFORM === "local"){
 // 	var testRoleStats = {
@@ -237,6 +237,71 @@ User.find({}).populate("notifications").exec(function(err, foundUsers){
 // 		console.log("test");
 // 	});
 // }
+
+
+//RESTORING THE TOTAL GAMETIME PLAYED. REMOVE THIS SECTION AFTER ONE UPLOAD TO THE SERVER!!
+//but if u dont remove it its still ok, doesn't break anything. itll just update every time it restarts
+
+var gameRecord = require("./models/gameRecord");
+
+
+
+
+var peopleTotalTime = {};
+
+User.find({}).populate("notifications").exec(async function(err, Users){
+	if(err){console.log(err);}
+	else{
+		// console.log("a");
+
+		await gameRecord.find({}, function(err, gameRecords){
+			if(err){console.log(err);}
+			else{
+				// console.log("c");
+				gameRecords.forEach(function(record){
+					var gameDuration = new Date(record.timeGameFinished.getTime() - record.timeGameStarted.getTime());
+			
+					// console.log("Duration: ");
+					// console.log(gameDuration);
+					// console.log("Duration getTime: ");
+					// console.log(gameDuration.getTime());
+			
+					record.spyTeam.forEach(function(spyPlayer){
+						if(!peopleTotalTime[spyPlayer.toLowerCase()]){
+							peopleTotalTime[spyPlayer.toLowerCase()] = new Date(gameDuration.getTime());
+						}
+						else{
+							peopleTotalTime[spyPlayer.toLowerCase()] = new Date(peopleTotalTime[spyPlayer.toLowerCase()].getTime() + gameDuration.getTime());
+						}
+					});
+
+					record.resistanceTeam.forEach(function(resPlayer){
+						if(!peopleTotalTime[resPlayer.toLowerCase()]){
+							peopleTotalTime[resPlayer.toLowerCase()] = new Date(gameDuration.getTime());
+						}
+						else{
+							peopleTotalTime[resPlayer.toLowerCase()] = new Date(peopleTotalTime[resPlayer.toLowerCase()].getTime() + gameDuration.getTime());
+						}
+					});
+
+					for(var key in peopleTotalTime){
+						if(peopleTotalTime.hasOwnProperty(key)){
+							// console.log("key");
+							// console.log(key);
+							User.findOne({usernameLower: key}).populate("notifications").exec(function(err, user){
+								if(err){console.log(err);}
+								else{
+									user.totalTimePlayed = peopleTotalTime[key];
+									user.save();
+								}
+							});
+						}
+					}
+				});
+			}
+		});
+	}
+});
 
 
 

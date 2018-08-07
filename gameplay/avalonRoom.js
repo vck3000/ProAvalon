@@ -237,7 +237,7 @@ module.exports = function (host_, roomId_, io_) {
 		var timeFinished = new Date();
 		var timeStarted = new Date(this.startGameTime);
 
-		var gameDuration = timeFinished - timeStarted;
+		var gameDuration = new Date(timeFinished - timeStarted);
 		console.log("game duration: ");
 		console.log(gameDuration);
 
@@ -262,7 +262,7 @@ module.exports = function (host_, roomId_, io_) {
 					console.log(foundUser.totalTimePlayed.getMilliseconds());
 					console.log(foundUser.totalTimePlayed.getUTCMilliseconds());
 
-					foundUser.totalTimePlayed = new Date(foundUser.totalTimePlayed.getTime() + gameDuration);
+					foundUser.totalTimePlayed = new Date(foundUser.totalTimePlayed.getTime() + gameDuration.getTime());
 				
 					//update individual player statistics
 					foundUser.totalGamesPlayed += 1;
