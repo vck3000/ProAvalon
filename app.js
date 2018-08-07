@@ -249,55 +249,48 @@ var gameRecord = require("./models/gameRecord");
 
 var peopleTotalTime = {};
 
-User.find({}).populate("notifications").exec(async function(err, Users){
+gameRecord.find({}, function(err, gameRecords){
 	if(err){console.log(err);}
 	else{
-		// console.log("a");
+		console.log("c");
+		gameRecords.forEach(function(record){
+			var gameDuration = new Date(record.timeGameFinished.getTime() - record.timeGameStarted.getTime());
+	
+			console.log("Duration: ");
+			console.log(gameDuration);
+			console.log("Duration getTime: ");
+			console.log(gameDuration.getTime());
+	
+			record.spyTeam.forEach(function(spyPlayer){
+				if(!peopleTotalTime[spyPlayer.toLowerCase()]){
+					peopleTotalTime[spyPlayer.toLowerCase()] = new Date(gameDuration.getTime());
+				}
+				else{
+					peopleTotalTime[spyPlayer.toLowerCase()] = new Date(peopleTotalTime[spyPlayer.toLowerCase()].getTime() + gameDuration.getTime());
+				}
+			});
 
-		await gameRecord.find({}, function(err, gameRecords){
-			if(err){console.log(err);}
-			else{
-				// console.log("c");
-				gameRecords.forEach(function(record){
-					var gameDuration = new Date(record.timeGameFinished.getTime() - record.timeGameStarted.getTime());
-			
-					// console.log("Duration: ");
-					// console.log(gameDuration);
-					// console.log("Duration getTime: ");
-					// console.log(gameDuration.getTime());
-			
-					record.spyTeam.forEach(function(spyPlayer){
-						if(!peopleTotalTime[spyPlayer.toLowerCase()]){
-							peopleTotalTime[spyPlayer.toLowerCase()] = new Date(gameDuration.getTime());
-						}
+			record.resistanceTeam.forEach(function(resPlayer){
+				if(!peopleTotalTime[resPlayer.toLowerCase()]){
+					peopleTotalTime[resPlayer.toLowerCase()] = new Date(gameDuration.getTime());
+				}
+				else{
+					peopleTotalTime[resPlayer.toLowerCase()] = new Date(peopleTotalTime[resPlayer.toLowerCase()].getTime() + gameDuration.getTime());
+				}
+			});
+
+			for(var key in peopleTotalTime){
+				if(peopleTotalTime.hasOwnProperty(key)){
+					console.log("key");
+					console.log(key);
+					User.findOne({usernameLower: key}).populate("notifications").exec(function(err, user){
+						if(err){console.log(err);}
 						else{
-							peopleTotalTime[spyPlayer.toLowerCase()] = new Date(peopleTotalTime[spyPlayer.toLowerCase()].getTime() + gameDuration.getTime());
+							user.totalTimePlayed = peopleTotalTime[key];
+							user.save();
 						}
 					});
-
-					record.resistanceTeam.forEach(function(resPlayer){
-						if(!peopleTotalTime[resPlayer.toLowerCase()]){
-							peopleTotalTime[resPlayer.toLowerCase()] = new Date(gameDuration.getTime());
-						}
-						else{
-							peopleTotalTime[resPlayer.toLowerCase()] = new Date(peopleTotalTime[resPlayer.toLowerCase()].getTime() + gameDuration.getTime());
-						}
-					});
-
-					for(var key in peopleTotalTime){
-						if(peopleTotalTime.hasOwnProperty(key)){
-							// console.log("key");
-							// console.log(key);
-							User.findOne({usernameLower: key}).populate("notifications").exec(function(err, user){
-								if(err){console.log(err);}
-								else{
-									user.totalTimePlayed = peopleTotalTime[key];
-									user.save();
-								}
-							});
-						}
-					}
-				});
+				}
 			}
 		});
 	}

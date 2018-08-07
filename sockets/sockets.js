@@ -743,6 +743,22 @@ var actionsObj = {
                 return {message: "killS has been run.", classStr: "server-text"};
             }
 		},
+
+		aram: {
+            command: "aram",
+            help: "/aram: get the ram used",
+            run: function (data) {
+                var args = data.args;
+				
+				const used = process.memoryUsage().heapUsed / 1024 / 1024;
+				console.log(`The script uses approximately ${Math.round(used * 100) / 100} MB`);
+
+                return {message: `The script uses approximately ${Math.round(used * 100) / 100} MB`, classStr: "server-text"};
+            }
+		},
+
+
+
 		
     }
 }
