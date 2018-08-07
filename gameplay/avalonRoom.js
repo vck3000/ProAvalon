@@ -261,11 +261,9 @@ module.exports = function (host_, roomId_, io_) {
 					console.log(foundUser.totalTimePlayed);
 					console.log(foundUser.totalTimePlayed.getMilliseconds());
 					console.log(foundUser.totalTimePlayed.getUTCMilliseconds());
-					
 
-
-					foundUser.totalTimePlayed = foundUser.totalTimePlayed.getMilliseconds() + gameDuration;
-
+					foundUser.totalTimePlayed = new Date(foundUser.totalTimePlayed.getTime() + gameDuration);
+				
 					//update individual player statistics
 					foundUser.totalGamesPlayed += 1;
 
@@ -333,6 +331,7 @@ module.exports = function (host_, roomId_, io_) {
 					foundUser.markModified("roleStats");
 					
 					foundUser.save();
+					console.log("SAVE SAVE");
 				}
 			});
 		});

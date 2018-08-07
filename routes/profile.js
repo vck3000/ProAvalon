@@ -29,7 +29,7 @@ var sanitizeHtmlAllowedAttributesForumThread = {
 
 //show the edit page
 router.get("/:profileUsername/edit",middleware.checkProfileOwnership, function(req, res){
-	User.findOne({username: req.params.profileUsername}, function(err, foundUser){
+	User.findOne({usernameLower: req.params.profileUsername.toLowerCase()}, function(err, foundUser){
 		if(err){
 			console.log(err);
 		}
@@ -51,7 +51,7 @@ router.post("/:profileUsername",middleware.checkProfileOwnership , function(req,
 	}
 
 
-	User.find({username: req.params.profileUsername}).populate("notifications").exec(function(err, foundUser){
+	User.find({usernameLower: req.params.profileUsername.toLowerCase()}).populate("notifications").exec(function(err, foundUser){
         foundUser = foundUser[0];
 
 		if(err){
@@ -77,7 +77,7 @@ router.post("/:profileUsername",middleware.checkProfileOwnership , function(req,
 
 //show the profile page
 router.get("/:profileUsername",middleware.isLoggedIn, function(req, res){
-	User.findOne({username: req.params.profileUsername}, function(err, foundUser){
+	User.findOne({usernameLower: req.params.profileUsername.toLowerCase()}, function(err, foundUser){
 		if(err){
 			console.log(err);
 		}

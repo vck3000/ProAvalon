@@ -140,6 +140,10 @@
                             <td class="statsCol2"> <%= userData.totalLosses %> </td>
                         </tr>
                         <tr>
+                            <td class="statsCol1">Total win rate: </td>
+                            <td class="statsCol2"> <%= Math.floor((userData.totalWins / (userData.totalWins + userData.totalLosses))*100) %>% </td>
+                        </tr>
+                        <tr>
                             <td class="statsCol1">Total time played: </td>
                             <!--<td class="statsCol2"> <%=getDatesString(userData.totalTimePlayed)%> </td>-->
                             <td class="statsCol2"> <%=Math.floor(userData.totalTimePlayed/(1000*60*60))%> hrs</td>
