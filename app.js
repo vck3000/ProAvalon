@@ -24,6 +24,7 @@ var port = process.env.PORT || 80;
 // mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
 mongoose.connect(process.env.DATABASEURL);
 
+// mongodb://127.0.0.1/TheNewResistanceUsers
 
 //mongodb://<dbuser>:<dbpassword>@ds131698.mlab.com:31698/playavalon
 
@@ -242,60 +243,102 @@ io.use(passportSocketIo.authorize({
 //RESTORING THE TOTAL GAMETIME PLAYED. REMOVE THIS SECTION AFTER ONE UPLOAD TO THE SERVER!!
 //but if u dont remove it its still ok, doesn't break anything. itll just update every time it restarts
 
-var gameRecord = require("./models/gameRecord");
+// var gameRecord = require("./models/gameRecord");
 
 
 
 
-var peopleTotalTime = {};
+// var peopleTotalTime = {};
+// var arrayUsernamesTimePlayed = [];
+// 		var arrayTimePlayed = [];
 
-gameRecord.find({}, function(err, gameRecords){
-	if(err){console.log(err);}
-	else{
-		console.log("c");
-		gameRecords.forEach(function(record){
-			var gameDuration = new Date(record.timeGameFinished.getTime() - record.timeGameStarted.getTime());
+// gameRecord.find({}, function(err, gameRecords){
+// 	if(err){console.log(err);}
+// 	else{
+// 		console.log("c");
+// 		gameRecords.forEach(function(record){
+// 			var gameDuration = new Date(record.timeGameFinished.getTime() - record.timeGameStarted.getTime());
 	
-			console.log("Duration: ");
-			console.log(gameDuration);
-			console.log("Duration getTime: ");
-			console.log(gameDuration.getTime());
+// 			console.log("Duration: ");
+// 			console.log(gameDuration);
+// 			console.log("Duration getTime: ");
+// 			console.log(gameDuration.getTime());
 	
-			record.spyTeam.forEach(function(spyPlayer){
-				if(!peopleTotalTime[spyPlayer.toLowerCase()]){
-					peopleTotalTime[spyPlayer.toLowerCase()] = new Date(gameDuration.getTime());
-				}
-				else{
-					peopleTotalTime[spyPlayer.toLowerCase()] = new Date(peopleTotalTime[spyPlayer.toLowerCase()].getTime() + gameDuration.getTime());
-				}
-			});
+// 			record.spyTeam.forEach(function(spyPlayer){
+// 				if(!peopleTotalTime[spyPlayer.toLowerCase()]){
+// 					peopleTotalTime[spyPlayer.toLowerCase()] = new Date(gameDuration.getTime());
+// 				}
+// 				else{
+// 					peopleTotalTime[spyPlayer.toLowerCase()] = new Date(peopleTotalTime[spyPlayer.toLowerCase()].getTime() + gameDuration.getTime());
+// 				}
+// 			});
 
-			record.resistanceTeam.forEach(function(resPlayer){
-				if(!peopleTotalTime[resPlayer.toLowerCase()]){
-					peopleTotalTime[resPlayer.toLowerCase()] = new Date(gameDuration.getTime());
-				}
-				else{
-					peopleTotalTime[resPlayer.toLowerCase()] = new Date(peopleTotalTime[resPlayer.toLowerCase()].getTime() + gameDuration.getTime());
-				}
-			});
+// 			record.resistanceTeam.forEach(function(resPlayer){
+// 				if(!peopleTotalTime[resPlayer.toLowerCase()]){
+// 					peopleTotalTime[resPlayer.toLowerCase()] = new Date(gameDuration.getTime());
+// 				}
+// 				else{
+// 					peopleTotalTime[resPlayer.toLowerCase()] = new Date(peopleTotalTime[resPlayer.toLowerCase()].getTime() + gameDuration.getTime());
+// 				}
+// 			});
+// 		});
 
-			for(var key in peopleTotalTime){
-				if(peopleTotalTime.hasOwnProperty(key)){
-					console.log("key");
-					console.log(key);
-					User.findOne({usernameLower: key}).populate("notifications").exec(function(err, user){
-						if(err){console.log(err);}
-						else{
-							user.totalTimePlayed = peopleTotalTime[key];
-							user.save();
-						}
-					});
-				}
-			}
-		});
-	}
-});
 
+		
+
+// 		for(var key in peopleTotalTime){
+// 			if(peopleTotalTime.hasOwnProperty(key)){
+// 				// console.log("key");
+// 				// console.log(key);
+
+// 				// if(key === 'hakha3'){
+
+// 				arrayUsernamesTimePlayed.push(key);
+// 				arrayTimePlayed.push(peopleTotalTime[key]);
+// 			}
+// 		}
+
+
+// 		// for(var i = 0; i < arrayUsernamesTimePlayed.length; i++){
+// 		// 	User.findOne({usernameLower: arrayUsernamesTimePlayed[i]}).populate("notifications").exec(async function(err, user){
+// 		// 		if(err){console.log(err);}
+// 		// 		else{
+// 		// 			// console.log(arrayUsernamesTimePlayed[i]);
+// 		// 			// console.log("time played: ");
+// 		// 			// console.log(arrayTimePlayed[i]);
+// 		// 			console.log(i);
+// 		// 			// user.totalTimePlayed = arrayTimePlayed[i];
+// 		// 			// user.save();
+// 		// 		}
+// 		// 	});
+// 		// }
+// 		console.log("DONE: ");
+// 		console.log(arrayUsernamesTimePlayed);
+// 		console.log(arrayTimePlayed);
+
+// 		nextTest(0);
+
+// 	}
+// });
+
+
+// function nextTest(i){
+// 	if(i === arrayUsernamesTimePlayed.length){
+// 		return;
+// 	}
+// 	User.findOne({usernameLower: arrayUsernamesTimePlayed[i]}).populate("notifications").exec(async function(err, user){
+// 		if(err){console.log(err);}
+// 		else{
+// 			console.log(arrayUsernamesTimePlayed[i]);
+// 			console.log("time played: ");
+// 			console.log(arrayTimePlayed[i]);
+// 			console.log(i);
+// 			user.totalTimePlayed = arrayTimePlayed[i];
+// 			user.save();
+// 			nextTest(i+1);
+// 		}
+// 	});
+// }
 
 
 
