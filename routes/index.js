@@ -226,7 +226,7 @@ router.get("/troubleshooting", function(req, res){
 });
 
 router.get("/statistics", function(req, res){
-	res.render("statistics", {currentUser: req.user});
+	res.render("statistics", {currentUser: req.user, headerActive: "stats"});
 });
 
 
@@ -240,16 +240,83 @@ router.get("/ajax/getStatistics", function(req, res){
 			console.log("records.length");
 			console.log(records.length);
 			var obj = {};
-			obj.len = records.length;
+			obj.totalgamesplayed = records.length;
 
 
+			//**********************************************
+			//Getting the average duration of each game
+			//**********************************************
 			var averageGameDuration = new Date(0);
 			for(var i = 0; i < records.length; i++){
 				var duration = new Date(records[i].timeGameFinished.getTime() - records[i].timeGameStarted.getTime());
 				averageGameDuration = new Date(averageGameDuration.getTime() + duration.getTime());
 			}
-
 			obj.averageGameDuration = new Date(averageGameDuration.getTime() / records.length);
+
+
+			//**********************************************
+			//Getting the win rate of alliances globally
+			//**********************************************
+			var resWins = 0;
+			var spyWins = 0;
+			for(var i = 0; i < records.length; i++){
+				if(records[i].winningTeam === "Resistance"){
+					resWins++;
+					// console.log("res win: ");
+					// console.log(resWins);
+				}
+				else if(records[i].winningTeam === "Spy"){
+					spyWins++;
+					// console.log("spy win: ");
+					// console.log(spyWins);
+				}
+				// console.log("winning team:");
+				// console.log(records[i].winningTeam);
+
+			}
+			obj.totalResWins = resWins;
+			obj.totalSpyWins = spyWins;
+
+
+
+			//**********************************************
+			//Getting the assassination win rate
+			//**********************************************
+			var rolesShotObj = {};
+			for(var i = 0; i < records.length; i++){
+				var roleShot = records[i].whoAssassinShot;
+				if(roleShot){
+					// console.log("a");
+					if(rolesShotObj[roleShot] !== undefined){
+						rolesShotObj[roleShot] = rolesShotObj[roleShot] + 1;
+						// console.log(roleShot + " was shot, total count: " + rolesShotObj[roleShot]);
+
+					}
+					else{
+						rolesShotObj[roleShot] = 0;
+					}
+				}
+			}
+
+			obj.assassinRolesShot = rolesShotObj;
+			
+			
+			//**********************************************
+			//Getting the average duration of each assassination
+			//**********************************************
+			var averageAssassinationDuration = new Date(0);
+			var count = 0;
+			for(var i = 0; i < records.length; i++){
+				if(records[i].timeAssassinationStarted){
+					var duration = new Date(records[i].timeGameFinished.getTime() - records[i].timeAssassinationStarted.getTime());
+					averageAssassinationDuration = new Date(averageAssassinationDuration.getTime() + duration.getTime());
+					count++;
+				}
+			}
+			obj.averageAssassinationDuration = new Date(averageAssassinationDuration.getTime() / count);
+
+			
+
 
 			res.status(200).send(obj);
 		}

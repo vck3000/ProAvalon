@@ -17,15 +17,75 @@
         width:95%;
     }
 
+    .myTable {
+        border: 1px solid black;
+        /* table-layout: fixed; */
+
+        /* width: 100%; */
+    }
+
+    .myTable tbody tr td{
+        border: 1px solid black;
+    }
+
 </style>
 
 <div class="container myContainer">
-    <h1>Statistics</h1>
+    <h1><u>Statistics</u></h1>
 
     <div>
         <div id="loading">
             Loading...
         </div>
+
+        <div id="statsDiv" class="hidden">
+
+            <table class="table myTable">
+                <tbody>
+                    <tr>
+                        <td class="statsCol1">Total games played: </td>
+                        <td class="statsCol2" id="totalgamesplayed"></td>
+                    </tr>
+                    <tr>
+                        <td class="statsCol1">Total Resistance wins: </td>
+                        <td class="statsCol2" id="totalreswins"></td>
+                    </tr>
+                    <tr>
+                        <td class="statsCol1">Total Spy wins: </td>
+                        <td class="statsCol2" id="totalspywins"></td>
+                    </tr>
+                    <tr>
+                        <td class="statsCol1">Average game duration: </td>
+                        <td class="statsCol2" id="averagegameduration"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <h2><u>Assassinations:</u></h2>
+
+            <table class="table myTable">
+                <tbody>
+                    <tr>
+                        <td class="statsCol1">Merlin shot: </td>
+                        <td class="statsCol2" id="totalMerlinShot"></td>
+                    </tr>
+                    <tr>
+                        <td class="statsCol1">Percival shot: </td>
+                        <td class="statsCol2" id="totalPercivalShot"></td>
+                    </tr>
+                    <tr>
+                        <td class="statsCol1">Resistance shot: </td>
+                        <td class="statsCol2" id="totalResistanceShot"></td>
+                    </tr>
+                    <tr>
+                        <td class="statsCol1">Average assassination time: </td>
+                        <td class="statsCol2" id="averageassassinationduration"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
     </div>
 </div>
 
@@ -52,11 +112,49 @@
                 gameRecordsData=JSON.parse(xmlhttp.responseText);
                 console.log(gameRecordsData);
 
-                // drawCharts();
+                drawData();
             }
         }
         xmlhttp.send();
     });
+
+
+    var grd;
+    function drawData(){
+        grd = gameRecordsData;
+        $("#loading").addClass("hidden");
+        $("#statsDiv").removeClass("hidden");
+
+
+        
+        //***********************************
+        //General stats
+        //***********************************
+        var resWinPercent = Math.round(grd.totalResWins/grd.totalgamesplayed*100);
+        var spyWinPercent = Math.round(grd.totalSpyWins/grd.totalgamesplayed*100);
+        $("#totalgamesplayed")[0].innerText = grd.totalgamesplayed + " games";
+        $("#totalreswins")[0].innerText = grd.totalResWins + " games, " + resWinPercent + "%";
+        $("#totalspywins")[0].innerText = grd.totalSpyWins + " games, " + spyWinPercent + "%";
+        $("#averagegameduration")[0].innerText = new Date(grd.averageGameDuration).getUTCMinutes() + " mins " + new Date(grd.averageGameDuration).getUTCSeconds() + " seconds";
+
+
+
+        //***********************************
+        //Assassination stats
+        //***********************************
+        var totalAssassinShots = grd.assassinRolesShot["Merlin"] + 
+                        grd.assassinRolesShot["Percival"] +
+                        grd.assassinRolesShot["Resistance"];
+
+        $("#totalMerlinShot")[0].innerText = grd.assassinRolesShot["Merlin"] + " times, " + Math.round(grd.assassinRolesShot["Merlin"] / totalAssassinShots * 100) + "%";
+        $("#totalPercivalShot")[0].innerText = grd.assassinRolesShot["Percival"] + " times, " + Math.round(grd.assassinRolesShot["Percival"] / totalAssassinShots * 100) + "%";
+        $("#totalResistanceShot")[0].innerText = grd.assassinRolesShot["Resistance"] + " times, " + Math.round(grd.assassinRolesShot["Resistance"] / totalAssassinShots * 100) + "%";
+        
+        $("#averageassassinationduration")[0].innerText = new Date(grd.averageAssassinationDuration).getUTCMinutes() + " mins " + new Date(grd.averageAssassinationDuration).getUTCSeconds() + " seconds";
+
+        
+        
+    }
 
 </script>
 
