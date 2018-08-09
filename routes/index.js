@@ -8,6 +8,7 @@ var sanitizeHtml 	= require('sanitize-html');
 var mongoose = require("mongoose");
 
 var modAction = require("../models/modAction");
+var gameRecord = require("../models/gameRecord");
 
 
 var middleware = require("../middleware");
@@ -224,6 +225,19 @@ router.get("/troubleshooting", function(req, res){
 	res.render("troubleshooting", {currentUser: req.user});
 });
 
+router.get("/statistics", function(req, res){
+	res.render("statistics", {currentUser: req.user});
+});
+
+
+
+router.get("/ajax/getStatistics", function(req, res){
+	gameRecord.find({}).exec(function(err, records){
+
+	});
+});
+
+
 
 router.get("/ajax/profile/getProfileData/:profileUsername", function(req, res){
 	User.findOne({username: req.params.profileUsername}, function(err, foundUser){
@@ -233,11 +247,33 @@ router.get("/ajax/profile/getProfileData/:profileUsername", function(req, res){
 			
 		}
 		else{
-			res.status(200).send(foundUser);
+			if(foundUser){
+				var sendUserData = {};
+				sendUserData.username = foundUser.username;
+				sendUserData.avatarImgRes = foundUser.avatarImgRes;
+				sendUserData.avatarImgSpy = foundUser.avatarImgSpy;
+				sendUserData.nationality = foundUser.nationality;
+				sendUserData.nationCode = foundUser.nationCode;
+				sendUserData.dateJoined = foundUser.dateJoined;
+				sendUserData.biography = foundUser.biography;
+				sendUserData.totalGamesPlayed = foundUser.totalGamesPlayed;
+				sendUserData.totalWins = foundUser.totalWins;
+				sendUserData.totalLosses = foundUser.totalLosses;
+				sendUserData.totalTimePlayed = foundUser.totalTimePlayed;
+				sendUserData.roleStats = foundUser.roleStats;
+				sendUserData.totalResWins = foundUser.totalResWins;
+				sendUserData.totalResLosses = foundUser.totalResLosses;
+	
+	
+				res.status(200).send(sendUserData);
+			}
+			
 
-			console.log("Received AJAX request");
+
+
 		}
 	});
+	console.log("Received AJAX request");
 });
 
 

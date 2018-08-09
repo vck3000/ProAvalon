@@ -1,0 +1,72 @@
+<% include ./partials/header %>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+
+<style>
+    .myContainer {
+        border-radius: 50px;
+
+        padding-top: 5%;
+        padding-bottom: 5%;
+        margin-bottom: 30px;
+        color: inherit;
+        background-color: #eee;
+        
+        width:95%;
+    }
+
+</style>
+
+<div class="container myContainer">
+    <h1>Statistics</h1>
+
+    <div>
+        <div id="loading">
+            Loading...
+        </div>
+    </div>
+</div>
+
+<br>
+<br>
+<br>
+
+
+
+<script>
+    var gameRecordsData;
+
+    $( document ).ready(function() {
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+
+
+        xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("GET","/ajax/getStatistics", true);
+
+        xmlhttp.onreadystatechange=function(){
+            if (xmlhttp.readyState==4 && xmlhttp.status==200){
+                gameRecordsData=JSON.parse(xmlhttp.responseText);
+                console.log(gameRecordsData);
+
+                // drawCharts();
+            }
+        }
+        xmlhttp.send();
+    });
+
+</script>
+
+
+
+
+
+<% include ./partials/footer %>
+
+
+
+
+
