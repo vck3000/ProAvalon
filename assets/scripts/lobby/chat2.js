@@ -130,17 +130,27 @@ function addToAllChat(data) {
       // console.log(data);
 
         for (var i = 0; i < data.length; i++) {
-            //format the date
-            var d = new Date();
-            var hour = d.getHours();
-            var min = d.getMinutes();
-            if (hour < 10) { hour = "0" + hour; }
-            if (min < 10) { min = "0" + min; }
-            var date = "[" + hour + ":" + min + "]";
             if(data[i] && data[i].message){
-                //prevent XSS injection
-                // console.log(data[i]);
-                // console.log(data[i].message);
+                //set up the date:
+                var date;
+                var d;
+                if(data[i].dateCreated){
+                    d = new Date(data[i].dateCreated);
+                }
+                else{
+                    d = new Date();                        
+                }
+                var hour = d.getHours();
+                var min = d.getMinutes();
+                if (hour < 10) { hour = "0" + hour; }
+                if (min < 10) { min = "0" + min; }
+                date = "[" + hour + ":" + min + "]"; 
+
+                if(!data[i].dateCreated){
+                    date = "[" + "]";                 
+                }
+
+
 
                 var filteredMessage = data[i].message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
 
@@ -195,15 +205,38 @@ function addToRoomChat(data) {
     
         for (var i = 0; i < data.length; i++) {
             //format the date
-            var d = new Date();
-            var hour = d.getHours();
-            var min = d.getMinutes();
-            if (hour < 10) { hour = "0" + hour; }
-            if (min < 10) { min = "0" + min; }
-            var date = "[" + hour + ":" + min + "]";
+            // var d = new Date();
+            // var hour = d.getHours();
+            // var min = d.getMinutes();
+            // if (hour < 10) { hour = "0" + hour; }
+            // if (min < 10) { min = "0" + min; }
+            // var date = "[" + hour + ":" + min + "]";
     
             
             if (data[i] && data[i].message) {
+                //set up the date:
+                var date;
+                
+                // console.log(data[i].dateCreated);
+                var d;
+                if(data[i].dateCreated){
+                    d = new Date(data[i].dateCreated);
+                }
+                else{
+                    d = new Date();                        
+                }
+                var hour = d.getHours();
+                var min = d.getMinutes();
+                if (hour < 10) { hour = "0" + hour; }
+                if (min < 10) { min = "0" + min; }
+                date = "[" + hour + ":" + min + "]"; 
+
+                if(!data[i].dateCreated){
+                    date = "[" + "]";                 
+                }
+
+
+
                 var spectatorClass = "";
                 var muteSpectators = $(".muteSpecs")[0].checked;
                 //if they dont exist in players in room, if game is started, and if mute spectators

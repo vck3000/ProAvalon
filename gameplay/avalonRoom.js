@@ -1608,6 +1608,7 @@ module.exports = function (host_, roomId_, io_) {
 		data = {
 			message: incString,
 			classStr: stringType,
+			dateCreated: new Date()
 		};
 		for (var i = 0; i < this.allSockets.length; i++) {
 			this.allSockets[i].emit("roomChatToClient", data);

@@ -942,7 +942,8 @@ module.exports = function (io) {
 			//if they are in a room, say they're leaving the room.
 			var data = {
 				message: socket.request.user.username + " has left the room.",
-				classStr: "server-text-teal"
+				classStr: "server-text-teal",
+				dateCreated: new Date()
 			}
 			sendToRoomChat(io, socket.request.user.inRoomId, data);
 			// io.in(socket.request.user.inRoomId).emit("player-left-room", socket.request.user.username);
@@ -1127,6 +1128,7 @@ module.exports = function (io) {
 				data.username = socket.request.user.username;
 
 				data.message = textLengthFilter(data.message);
+				data.dateCreated = new Date();
 
 				if (data.roomId) {
 					//send out that data object to all clients in room
@@ -1191,7 +1193,8 @@ module.exports = function (io) {
 				//emit to say to others that someone has joined
 				var data = {
 					message: socket.request.user.username + " has joined the room.",
-					classStr: "server-text-teal"
+					classStr: "server-text-teal",
+					dateCreated: new Date()
 				}			
 				sendToRoomChat(io, roomId, data);
 
@@ -1258,7 +1261,8 @@ module.exports = function (io) {
 
 				var data = {
 					message: socket.request.user.username + " has left the room.",
-					classStr: "server-text-teal"
+					classStr: "server-text-teal",
+					dateCreated: new Date()
 				}
 				sendToRoomChat(io, socket.request.user.inRoomId, data);
 
@@ -1278,7 +1282,8 @@ module.exports = function (io) {
 
 				var data = {
 					message: username + " is ready.",
-					classStr: "server-text"
+					classStr: "server-text",
+					dateCreated: new Date()
 				}
 				sendToRoomChat(io, socket.request.user.inRoomId, data);
 				
@@ -1294,7 +1299,8 @@ module.exports = function (io) {
 				rooms[socket.request.user.inRoomId].playerNotReady(username);
 				var data = {
 					message: username + " is not ready.",
-					classStr: "server-text"
+					classStr: "server-text",
+					dateCreated: new Date()
 				}
 				sendToRoomChat(io, socket.request.user.inRoomId, data);
 
@@ -1427,14 +1433,16 @@ function textLengthFilter(str) {
 var fiveMinsInMillis = 1000 * 60 * 5;
 
 function sendToAllChat(io, data){
+	var date = new Date();
+	data.dateCreated = date;
+	
 
 	allSockets.forEach(function(sock){
 		sock.emit("allChatToClient", data);
 	});
 	// io.in("allChat").emit("allChatToClient", data);
 
-	var date = new Date();
-	data.dateCreated = date;
+	
 
 	allChatHistory.push(data);
 
