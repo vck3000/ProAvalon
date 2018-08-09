@@ -99,21 +99,40 @@ function createReply (req, res, commentReplyData, replyingToThisReply) {
 					var link = ("/forum/show/" + foundForum._id + "#" + newCommentReply._id);
 
 					createNotificationObj.createNotification(userIdTarget, stringToSay, link);
+
+					// console.log("**********************************");
+					// console.log(replyingToThisReply.author.id);
+					// console.log(foundForumThreadComment.author.id);
+					// console.log(replyingToThisReply.author.id.equals(foundForumThreadComment.author.id));
+					
+					if(foundForumThreadComment.author.id && replyingToThisReply.author.id.equals(foundForumThreadComment.author.id)){
+						//dont create two notifications for a player
+					}
+					else{
+						if(foundForumThreadComment.author.id){
+							//create notif to main comment person
+							var userIdTarget = mongoose.Types.ObjectId(foundForumThreadComment.author.id);
+							var stringToSay = req.user.username + " has replied to your comment.";
+							var link = ("/forum/show/" + foundForum._id + "#" + newCommentReply._id);
+		
+							createNotificationObj.createNotification(userIdTarget, stringToSay, link);
+						}
+					}
+				}
+				else{
+					if(foundForumThreadComment.author.id){
+						//create notif to main comment person
+						var userIdTarget = mongoose.Types.ObjectId(foundForumThreadComment.author.id);
+						var stringToSay = req.user.username + " has replied to your comment.";
+						var link = ("/forum/show/" + foundForum._id + "#" + newCommentReply._id);
+	
+						createNotificationObj.createNotification(userIdTarget, stringToSay, link);
+					}
 				}
 
 				console.log(foundForumThreadComment);
 				console.log("author");
-				console.log(foundForumThreadComment.author);
-
-				if(foundForumThreadComment.author.id){
-					//create notif to main comment person
-					var userIdTarget = mongoose.Types.ObjectId(foundForumThreadComment.author.id);
-					var stringToSay = req.user.username + " has replied to your comment.";
-					var link = ("/forum/show/" + foundForum._id + "#" + newCommentReply._id);
-
-					createNotificationObj.createNotification(userIdTarget, stringToSay, link);
-				}
-				
+				console.log(foundForumThreadComment.author);				
 	
 				forumThread.findById(req.params.id).populate("comments").exec(function (err, foundForumThread) {
 					foundForumThread.markModified("comments");
