@@ -806,6 +806,7 @@ module.exports = function (host_, roomId_, io_) {
 		data.phase = this.phase;
 		data.proposedTeam = this.proposedTeam;
 
+
 		data.numPlayersOnMission = numPlayersOnMission[playerRoles.length - minPlayers]; //- 5
 
 		data.votes = this.votes;
@@ -828,6 +829,9 @@ module.exports = function (host_, roomId_, io_) {
 			data.see.spies = this.getAllSpies();
 			data.see.roles = this.getRevealedRoles();
 			data.see.playerShot = this.playerShot;
+			data.proposedTeam = this.lastProposedTeam;
+		}
+		else if (this.phase === "assassination") {
 			data.proposedTeam = this.lastProposedTeam;
 		}
 
@@ -897,7 +901,7 @@ module.exports = function (host_, roomId_, io_) {
 				}
 				else if (this.phase === "assassination") {
 					data[i].proposedTeam = this.lastProposedTeam;
-				};
+				}
 			}
 			return data;
 		}
