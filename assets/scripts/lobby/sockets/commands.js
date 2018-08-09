@@ -28,6 +28,7 @@ socket.on("adminCommands", function (commands) {
 
 
 socket.on("messageCommandReturnStr", function (data) {
+    data.dateCreated = new Date();
     if (lastChatBoxCommand === "allChat") {
         addToAllChat(data);
     }
@@ -46,7 +47,11 @@ socket.on("slap", function (username) {
                 
                 timeLastBuzzSlap = new Date();
 
-                var data = { message: "You have been slapped by " + username + ".", classStr: "server-text"}
+                var data = {
+                    message: "You have been slapped by " + username + ".", 
+                    classStr: "server-text",
+                    dateCreated: new Date()
+                }
                 setTimeout(function () {
                     addToAllChat(data);
                     addToRoomChat(data);
@@ -62,7 +67,11 @@ socket.on("buzz", function (username) {
             if($("#option_notifications_sound_buzz")[0].checked === true){
                 playSound("ding");
     
-                var data = { message: "You have been buzzed by " + username + ".", classStr: "server-text"}
+                var data = { 
+                    message: "You have been buzzed by " + username + ".", 
+                    classStr: "server-text",
+                    dateCreated: new Date()
+                }
                 setTimeout(function () {
                     addToAllChat(data);
                     addToRoomChat(data);
@@ -83,7 +92,11 @@ socket.on("lick", function (username) {
             if($("#option_notifications_sound_buzz")[0].checked === true){
                 playSound("lick");
 
-                var data = { message: "You have been licked by " + username + ".", classStr: "server-text"}
+                var data = { 
+                    message: "You have been licked by " + username + ".", 
+                    classStr: "server-text",
+                    dateCreated: new Date()
+                }
                 setTimeout(function () {
                     addToAllChat(data);
                     addToRoomChat(data);

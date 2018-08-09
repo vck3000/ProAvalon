@@ -233,7 +233,26 @@ router.get("/statistics", function(req, res){
 
 router.get("/ajax/getStatistics", function(req, res){
 	gameRecord.find({}).exec(function(err, records){
+		if(err){
+			console.log(err);
+		}
+		else{
+			console.log("records.length");
+			console.log(records.length);
+			var obj = {};
+			obj.len = records.length;
 
+
+			var averageGameDuration = new Date(0);
+			for(var i = 0; i < records.length; i++){
+				var duration = new Date(records[i].timeGameFinished.getTime() - records[i].timeGameStarted.getTime());
+				averageGameDuration = new Date(averageGameDuration.getTime() + duration.getTime());
+			}
+
+			obj.averageGameDuration = new Date(averageGameDuration.getTime() / records.length);
+
+			res.status(200).send(obj);
+		}
 	});
 });
 
