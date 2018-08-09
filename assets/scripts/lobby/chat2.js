@@ -167,10 +167,17 @@ function addToAllChat(data) {
                 if ($(".nav-tabs #all-chat-in-game-tab").hasClass("active") === false) {
                     $(".nav-tabs #all-chat-in-game-tab")[0].classList.add("newMessage"); 
                 }
+                
+                if(!roomPlayersData){
+                    console.log("REMOVED");
+                    $(".nav-tabs #all-chat-in-game-tab")[0].classList.remove("newMessage"); 
+                }
             }
         }
     }
 }
+
+
 
 function addToRoomChat(data) {
     //if it is not an array, force it into a array

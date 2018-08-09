@@ -101,7 +101,12 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.set("view engine", "ejs");
-app.use(express.static("assets", {maxAge: 1800000})); //expires in 30 minutes.
+if(process.env.MY_PLATFORM === "online"){
+	app.use(express.static("assets", {maxAge: 1800000})); //expires in 30 minutes.
+}
+else{
+	app.use(express.static("assets")); //expires in 30 minutes.	
+}
 // var path = require('path'); 
 // app.use(express.static(path.join(__dirname, 'assets'), { maxAge: '2 days' }));
 

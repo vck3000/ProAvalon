@@ -94,6 +94,11 @@ textarea {
     visibility: visible;
 }
 
+.individualComment{
+    margin-bottom: 10px;
+}
+
+
 
 .edit {
     /* display: none; */

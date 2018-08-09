@@ -49,11 +49,11 @@ function gracefulShutdown(){
 
 
 function sendWarning(){
-	for(var key in allSockets){
-		if(allSockets.hasOwnProperty(key)){
-			allSockets[key].emit("serverDailyRestartWarning");
-		}
-	}
+	// for(var key in allSockets){
+	// 	if(allSockets.hasOwnProperty(key)){
+	// 		allSockets[key].emit("serverDailyRestartWarning");
+	// 	}
+	// }
 }
 
 function saveGamesAndSendWarning(senderSocket) {
