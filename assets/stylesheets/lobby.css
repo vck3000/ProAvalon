@@ -224,6 +224,11 @@ p {
     color: rgb(98, 98, 98);
 }
 
+.hidden-spectator-chat{
+    /* color: rgb(98, 98, 98); */
+    display: none;
+}
+
 .dark .spectator-chat{
     color: rgb(175, 175, 175);
 }

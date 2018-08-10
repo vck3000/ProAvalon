@@ -45,6 +45,8 @@ function gracefulShutdown(){
 		sendWarning();
 	}
 
+	console.log("Graceful shutdown request");
+
 }
 
 
@@ -75,7 +77,7 @@ function saveGamesAndSendWarning(senderSocket) {
 	for(var i = 0; i < rooms.length; i++){
 		if(rooms[i] && rooms[i].gameStarted === true && rooms[i].finished !== true){
 			console.log("rooms");
-			console.log(rooms[i]);
+			// console.log(rooms[i]);
 			
 			savedGameObj.create({room: JSON.stringify(rooms[i])}, function(err, savedGame){
 				if(err){
@@ -110,6 +112,10 @@ function saveGamesAndSendWarning(senderSocket) {
 	
 	if(numOfGamesEncountered === 0){
 		return {message: "Successful. But no games needed to be saved.", classStr: "server-text"};
+		//if its a heroku update
+		if(!senderSocket){
+			process.exit(0);
+		}
 	}
 	else{
 		return {message: "Successful. But still saving games.", classStr: "server-text"};
