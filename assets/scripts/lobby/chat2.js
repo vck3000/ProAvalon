@@ -296,7 +296,7 @@ function addToRoomChat(data) {
                 else{
                     var strings = filteredMessage.split("[");
 
-                    str = "<li><span username='" + data[i].username + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + "Quoting:" + "</span></li>";
+                    str = "<li class='" + spectatorClass + "'><span username='" + data[i].username + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + "Quoting:" + "</span></li>";
 
                 // console.log("Strings: ");
 
@@ -307,7 +307,7 @@ function addToRoomChat(data) {
                     }
 
                     for(var j = 1; j < goFor; j++){
-                        str += "<li class='myQuote'>" + "[" + strings[j] + "</li>";
+                        str += "<li class='myQuote " + spectatorClass + "'>" + "[" + strings[j] + "</li>";
                     // console.log(strings[j]);
                     }
 
