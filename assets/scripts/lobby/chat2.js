@@ -179,7 +179,7 @@ function addToAllChat(data) {
                 }
                 
                 if(!roomPlayersData){
-                    console.log("REMOVED");
+                    // console.log("REMOVED");
                     $(".nav-tabs #all-chat-in-game-tab")[0].classList.remove("newMessage"); 
                 }
             }
@@ -240,7 +240,7 @@ function addToRoomChat(data) {
                 var spectatorClass = "";
                 var muteSpectators = $(".muteSpecs")[0].checked;
                 //if they dont exist in players in room, if game is started, and if mute spectators
-
+                var thisMessageSpectator = false;
                 
                 //oldSpectators is the var stored in sockets file that 
                 //has a list of usernames of spectators
@@ -248,12 +248,14 @@ function addToRoomChat(data) {
                     //this message is muted. 
                     //dont do anything
                     spectatorClass = "hidden-spectator-chat spectator-chat";
+                    thisMessageSpectator = true;
+                    
                 }
                 else{
                     if(oldSpectators.indexOf(data[i].username) !== -1 && gameStarted === true){
                         spectatorClass = "spectator-chat";
+                        thisMessageSpectator = true;
                     }
-                    
                 }
 
 
@@ -313,10 +315,14 @@ function addToRoomChat(data) {
                     scrollDown("room-chat-room");
                     scrollDown("room-chat-room2");
                 }
-                //yellow notification on the tabs in room.
-                if ($(".nav-tabs #room-chat-in-game-tab").hasClass("active") === false) {
-                    $(".nav-tabs #room-chat-in-game-tab")[0].classList.add("newMessage");
+
+                if(thisMessageSpectator === false){
+                    //yellow notification on the tabs in room.
+                    if ($(".nav-tabs #room-chat-in-game-tab").hasClass("active") === false) {
+                        $(".nav-tabs #room-chat-in-game-tab")[0].classList.add("newMessage");
+                    }
                 }
+                
             }
         }
     }
@@ -345,6 +351,9 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     }
 
   console.log("change tab " + target);
+
+  scrollDown( $(target).find(".chat-window")[0].id , true);
+  
 
 });
 

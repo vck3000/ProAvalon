@@ -1261,9 +1261,15 @@ function changeView() {
 //     "room-chat-room": "Game Chat"
 // }
 
-function scrollDown(chatBox) {
+function scrollDown(chatBox, hardScroll) {
     //example input of chatBox: all-chat-room
 
+    if(chatBox[0] === "#"){
+        chatBox = chatBox.slice(1, chatBox.length);
+    }
+
+    
+    
     var searchStrScrollBox = "#" + chatBox;
     var searchStrListBox = "#" + chatBox + "-list";
 
@@ -1309,12 +1315,14 @@ function scrollDown(chatBox) {
             scrollBox.scrollTop(listBox.height());
             $(searchStrBar).addClass("hidden");
         }
-    
-        // //if the chatbox is not open make the red bar visible since there is a new message
-        // if(chatBoxToNavTab[chatBox] !== "" && $('.nav-tabs .active').text() !== chatBoxToNavTab[chatBox]){
-        //     $(searchStrBar).removeClass("hidden");
-        // }
     }
+
+    if(hardScroll === true){
+        // $("#mydiv").scrollTop($("#mydiv")[0].scrollHeight);
+
+        scrollBox.scrollTop(scrollBox[0].scrollHeight);
+    }
+
     
 }
 
@@ -1631,7 +1639,7 @@ function extendTabContentToBottomInRoom() {
 
 
     if($("#tabs1 .nav").height() > 40){
-        console.log("ASDF");
+        // console.log("ASDF");
         tempVar = 37;
     }
     else{
@@ -1640,7 +1648,7 @@ function extendTabContentToBottomInRoom() {
 
 
     var newHeight2 = Math.floor(gameContainer.offsetHeight - tabNumber.position().top) - 20 - tempVar;
-    console.log("h: " + newHeight2);
+    // console.log("h: " + newHeight2);
   // console.log("new height 2: " + newHeight2);
 
     tabNumber[0].style.height = Math.floor((newHeight2 * 1) ) + "px";

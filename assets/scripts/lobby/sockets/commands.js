@@ -53,8 +53,12 @@ socket.on("slap", function (username) {
                     dateCreated: new Date()
                 }
                 setTimeout(function () {
-                    addToAllChat(data);
-                    addToRoomChat(data);
+                    if (lastChatBoxCommand === "allChat") {
+                        addToAllChat(data);
+                    }
+                    else if (lastChatBoxCommand === "roomChat") {
+                        addToRoomChat(data);
+                    }
                 }, 1100);
             }
         }
@@ -73,8 +77,12 @@ socket.on("buzz", function (username) {
                     dateCreated: new Date()
                 }
                 setTimeout(function () {
-                    addToAllChat(data);
-                    addToRoomChat(data);
+                    if (lastChatBoxCommand === "allChat") {
+                        addToAllChat(data);
+                    }
+                    else if (lastChatBoxCommand === "roomChat") {
+                        addToRoomChat(data);
+                    }
                 }, 0);
             }
     
@@ -98,8 +106,12 @@ socket.on("lick", function (username) {
                     dateCreated: new Date()
                 }
                 setTimeout(function () {
-                    addToAllChat(data);
-                    addToRoomChat(data);
+                    if (lastChatBoxCommand === "allChat") {
+                        addToAllChat(data);
+                    }
+                    else if (lastChatBoxCommand === "roomChat") {
+                        addToRoomChat(data);
+                    }
                 }, 0);
             }
         }
