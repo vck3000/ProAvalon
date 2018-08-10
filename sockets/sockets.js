@@ -146,7 +146,7 @@ var actionsObj = {
                     if (actionsObj.userCommands.hasOwnProperty(key)) {
                         if(!actionsObj.userCommands[key].modsOnly){
                             // console.log(key + " -> " + p[key]);
-                            dataToReturn[i] = {message: actionsObj.userCommands[key].help, classStr: "server-text"};
+                            dataToReturn[i] = {message: actionsObj.userCommands[key].help, classStr: "server-text", dateCreated: new Date()};
                             // str[i] = userCommands[key].help;
                             i++;
                             //create a break in the chat
@@ -208,38 +208,45 @@ var actionsObj = {
 				
 				var possibleInteracts = ["buzz", "slap", "lick"];
 				if(possibleInteracts.indexOf(args[1]) === -1){
-                    return {message: "You can only slap, buzz or lick, not " + args[1] + ".", classStr: "server-text"};
+                    return {message: "You can only slap, buzz or lick, not " + args[1] + ".", classStr: "server-text", dateCreated: new Date()};
 				}
 				
                 var slapSocket = allSockets[getIndexFromUsername(allSockets, args[2], true)];
                 if (slapSocket) {
-					slapSocket.emit(args[1], senderSocket.request.user.username);
-					
+
 					var verbPast = "";
 					if(args[1] === "buzz"){verbPast = "buzzed";}
 					else if(args[1] === "slap"){verbPast = "slapped";}
 					else if(args[1] === "lick"){verbPast = "licked";}
 
+					var dataToSend = {
+						username: senderSocket.request.user.username,
+						verb: args[1],
+						verbPast: verbPast
+					}
+					slapSocket.emit("interactUser", dataToSend);
+
+
 					//if the sendersocket is in a game, then send a message to everyone in the game.
-					if(
-						(
-							senderSocket.request.user.inRoomId && 
-							rooms[senderSocket.request.user.inRoomId] && 
-							rooms[senderSocket.request.user.inRoomId].gameStarted === true
-						) 
-						||
-						(
-							slapSocket.request.user.inRoomId && 
-							rooms[slapSocket.request.user.inRoomId] && 
-							rooms[slapSocket.request.user.inRoomId].gameStarted === true
-						) 
-					){
+					var slappedInGame = false;
+					var socketThatWasSlappedInGame = undefined;
+					//need to know which person is in the room, if theyre both then it doesnt matter who.
+					if(senderSocket.request.user.inRoomId && rooms[senderSocket.request.user.inRoomId] && rooms[senderSocket.request.user.inRoomId].gameStarted === true) {
+						slappedInGame = true;
+						socketThatWasSlappedInGame = senderSocket;
+					}
+					else if(slapSocket.request.user.inRoomId && rooms[slapSocket.request.user.inRoomId] && rooms[slapSocket.request.user.inRoomId].gameStarted === true){
+						slappedInGame = true;
+						socketThatWasSlappedInGame = slapSocket;
+					} 
+
+					if(slappedInGame === true){
 						var str = senderSocket.request.user.username + " has " + verbPast + " " + slapSocket.request.user.username + ". (In game)";
-						rooms[senderSocket.request.user.inRoomId].sendText(rooms[senderSocket.request.user.inRoomId].allSockets, str, "server-text");
+						rooms[socketThatWasSlappedInGame.request.user.inRoomId].sendText(rooms[socketThatWasSlappedInGame.request.user.inRoomId].allSockets, str, "server-text");
 					}
 
-
-                return {message: "You have " + verbPast + " " + args[2] + "!", classStr: "server-text"};
+					
+                return; // {message: "You have " + verbPast + " " + args[2] + "!", classStr: "server-text"};
                 }
                 else {
                     // console.log(allSockets);
@@ -1105,10 +1112,34 @@ module.exports = function (io) {
 			else {
 				var dataToSend = {
 					message: "Invalid command.",
-					classStr: "server-text"
+					classStr: "server-text",
+					dateCreated: new Date()
 				}
 
 				socket.emit("messageCommandReturnStr", dataToSend);
+			}
+		});
+		
+		socket.on("interactUserPlayed", function (data){
+
+			// socket.emit("interactUserPlayed", {success: false, interactedBy: data.username, myUsername: ownUsername, verb: data.verb, verbPast: data.verbPast});
+			var socketWhoInitiatedInteract = allSockets[getIndexFromUsername(allSockets, data.interactedBy, true)];
+			
+			if(socketWhoInitiatedInteract){
+				var messageStr;
+				if(data.success === true){
+					messageStr = data.myUsername + " was " + data.verbPast + "!";
+				}
+				else{
+					messageStr = data.myUsername + " was not " + data.verbPast + ", most likely because they have already been " + data.verbPast + " recently.";
+				}
+				var dataToSend = {
+					message: messageStr,
+					classStr: "server-text",
+					dateCreated: new Date()
+				}
+
+				socketWhoInitiatedInteract.emit("messageCommandReturnStr", dataToSend);
 			}
 		});
 
