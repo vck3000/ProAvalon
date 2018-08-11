@@ -197,7 +197,7 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 
 					console.log("platform: " + process.env.MY_PLATFORM);
 					if(process.env.MY_PLATFORM === "online"){
-						foundSaveGame.remove();
+						// foundSaveGame.remove();
 					}
 				}
 			}
