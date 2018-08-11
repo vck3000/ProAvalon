@@ -311,6 +311,11 @@ function addToRoomChat(data) {
                     // console.log(strings[j]);
                     }
 
+                    //if they've muted this player, then just dont show anything. reset str to nothing.
+                    if(isPlayerMuted(data[i].username) === true){
+                        str = "";
+                    }
+
                     $(".room-chat-list").append(str);
                     scrollDown("room-chat-room");
                     scrollDown("room-chat-room2");
