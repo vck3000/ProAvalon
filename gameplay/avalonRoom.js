@@ -1277,95 +1277,105 @@ module.exports = function (host_, roomId_, io_) {
 		}
 	}
 
-	this.socketsChangedOnce = false;
-
 	this.playerJoinRoom = function (socket) {
-		if(this.restartSaved){
-			if(this.socketsChangedOnce === false){
-				// console.log("RAN ONCE");
-				this.allSockets = [];
-				this.socketsOfPlayers = [];
+		// console.log("AAAA");
+		// console.log(thisRoom.restartSaved);
+		// if(thisRoom.restartSaved){
+		// 	console.log(thisRoom.socketsChangedOnce);
+		// }
+		// console.log(thisRoom.allSockets.length);
+		
+		if(thisRoom.restartSaved){
+			if(thisRoom.socketsChangedOnce === false){
+				console.log("RAN ONCE");
+				thisRoom.allSockets = [];
+				thisRoom.socketsOfPlayers = [];
 				// for(var i = 0; i < this.playersInGame.length; i++){
 				// 	this.socketsOfPlayers[i] = {};
 				// 	this.socketsOfPlayers[i].request = {};
 				// 	this.socketsOfPlayers[i].request.user = {};
-				// 	this.socketsOfPlayers[i].request.user.username = this.playersInGame[i].username;
-				// 	this.socketsOfPlayers[i].request.user.id = this.playersInGame[i].id;
+				// 	this.socketsOfPlayers[i].request.user.username = "";	
+				// 	this.socketsOfPlayers[i].request.user.id = "";
 				// 	this.socketsOfPlayers[i].emit = function(){};
 
 				// }
 
-					this.socketsChangedOnce = true;
+				thisRoom.socketsChangedOnce = true;
 				
 			}
 		}
 
-		this.allSockets.push(socket);
+		thisRoom.allSockets.push(socket);
+		
 		// console.log("PUSHED: ");
 		// console.log(this.allSockets[0].request.user.username);
 		// console.log(socket.request.user.username);
-		if(this.gameStarted === true){
+		if(thisRoom.gameStarted === true){
 			//if the new socket is a player, add them to the sockets of players
-			for(var i = 0; i < this.playersInGame.length; i++){
-				if(this.playersInGame[i].username === socket.request.user.username){
-					this.socketsOfPlayers.splice(i, 0, socket);
-					this.playersInGame[i].request = socket.request;
+			for(var i = 0; i < thisRoom.playersInGame.length; i++){
+				if(thisRoom.playersInGame[i].username === socket.request.user.username){
+					thisRoom.socketsOfPlayers.splice(i, 0, socket);
+
+					thisRoom.playersInGame[i].request = socket.request;
 					
 					break;
 				}
 			}
 			//sends to players and specs
-			this.distributeGameData();
+			thisRoom.distributeGameData();
 		}
 		
 		//cutoff
-		if(this.allSockets.length >= this.cutoffForSomePlayersJoined){
-			console.log("cutoffreached: " + this.allSockets.length + " " + this.cutoffForSomePlayersJoined);
-			this.someCutoffPlayersJoined = "yes";
-			this.frozen = false;
+		if(thisRoom.allSockets.length >= thisRoom.cutoffForSomePlayersJoined){
+			console.log("cutoffreached: " + thisRoom.allSockets.length + " " + thisRoom.cutoffForSomePlayersJoined);
+			thisRoom.someCutoffPlayersJoined = "yes";
+			thisRoom.frozen = false;
 		}
 
-		this.updateRoomPlayers();		
+		thisRoom.updateRoomPlayers();		
+
+		console.log("Current sockets of players after player joined: ");
+		console.log(thisRoom.socketsOfPlayers.length);
 	}
 
 	this.playerJoinGame = function (socket) {
 
-		if(this.hostTryStartGameDate){
+		if(thisRoom.hostTryStartGameDate){
 			if(new Date - this.hostTryStartGameDate > 1000*11){
-				this.canJoin = true;
-				this.playersYetToReady = [];
+				thisRoom.canJoin = true;
+				thisRoom.playersYetToReady = [];
 			}
 		}
 
 
 		// If they have not been kicked before
-		if (this.kickedPlayers[socket.request.user.username] === true) {
+		if (thisRoom.kickedPlayers[socket.request.user.username] === true) {
 			socket.emit("danger-alert", "You have been banned from this room. You can not join.");
 			return false;
 		}
 
-		if(this.socketsOfPlayers.indexOf(socket) !== -1){
+		if(thisRoom.socketsOfPlayers.indexOf(socket) !== -1){
 			// socket.emit("danger-alert", "You have already joined...");			
 			//no need to notify them^
 			return true;
 		}
 		//when game hasnt started yet, add the person to the players in game
 		//cap of 10 players in the game at once.
-		else if (this.gameStarted === false && this.socketsOfPlayers.length < 10 && this.canJoin === true) {
-			this.socketsOfPlayers.push(socket);
+		else if (thisRoom.gameStarted === false && thisRoom.socketsOfPlayers.length < 10 && thisRoom.canJoin === true) {
+			thisRoom.socketsOfPlayers.push(socket);
 
-			this.updateRoomPlayers();
+			thisRoom.updateRoomPlayers();
 			return true;
 		}
 		else {
 			console.log("Game has already started! Or maximum number of players");
-			if(this.gameStarted === true){
+			if(thisRoom.gameStarted === true){
 				socket.emit("danger-alert", "Game has already started.");
 			}
-			else if(this.socketsOfPlayers.length >= 10){
+			else if(thisRoom.socketsOfPlayers.length >= 10){
 				socket.emit("danger-alert", "There are too many players in the game already.");
 			}
-			else if(this.canJoin === false){
+			else if(thisRoom.canJoin === false){
 				socket.emit("danger-alert", "The game is currently trying to start (ready/not ready phase). You can join if someone is not ready, or after 10 seconds has elapsed.");
 			}
 			else{
@@ -1378,15 +1388,15 @@ module.exports = function (host_, roomId_, io_) {
 
 	this.playerStandUp = function (socket) {
 
-		if(this.socketsOfPlayers.indexOf(socket) === -1){
+		if(thisRoom.socketsOfPlayers.indexOf(socket) === -1){
 			return true;
 		}
 		//when game hasnt started yet, add the person to the players in game
 		//cap of 10 players in the game at once.
-		else if (this.gameStarted === false && this.canJoin === true) {
-			this.socketsOfPlayers.splice(this.socketsOfPlayers.indexOf(socket), 1);
+		else if (thisRoom.gameStarted === false && thisRoom.canJoin === true) {
+			thisRoom.socketsOfPlayers.splice(thisRoom.socketsOfPlayers.indexOf(socket), 1);
 
-			this.updateRoomPlayers();
+			thisRoom.updateRoomPlayers();
 			return true;
 		}
 		else {

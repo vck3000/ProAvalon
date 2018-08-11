@@ -65,7 +65,7 @@ socket.on("serverRestartWarning", function(){
 
     </style>
     <ul id="swalUl">
-        <li>In order for me to update the site, the server must be restarted. </li>
+        <li>In order for me to update the site, the server must be restarted in a few seconds. </li>
 
         <li>Any running games will be saved and you will be able to continue your games when you log in again.</li>
 
@@ -77,9 +77,9 @@ socket.on("serverRestartWarning", function(){
     </div>`;
 
     Swal({
-        title: "Server restarting!",
+        title: "Server restarting soon!",
         html: message,
-        type: "warning",
+        type: "info",
         allowEnterKey: false
 
 
@@ -90,29 +90,11 @@ socket.on("serverRestartWarning", function(){
     });
 });
 
-socket.on("serverDailyRestartWarning", function(){
-    var message = `<div style='text-align: left;'>
-    <style>
-        #swalUl li{
-            padding-bottom: 3%;
-        }
-
-    </style>
-    <ul id="swalUl">
-        <li>The server's daily restart is happening now!</li>
-
-        <li>Any running games will be saved and you will be able to continue your games when you log in again.</li>
-
-        <li>The server will only be down for a brief moment, at most 30 seconds.</li>
-
-        <li>I apologise for the inconvenience caused. Thank you.</li>
-    </ul>
-    
-    </div>`;
+socket.on("serverRestartingNow", function(){
 
     Swal({
-        title: "Server Daily Restart!",
-        html: message,
+        title: "Server restarting now",
+        text: "The server is restarting now either due to an update, or for its daily restart.",
         type: "warning",
         allowEnterKey: false
     }).then(() =>{

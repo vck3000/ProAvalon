@@ -38,12 +38,12 @@ process.on('SIGINT', gracefulShutdown);
 process.on('SIGTERM', gracefulShutdown);
 
 function gracefulShutdown(){
-	if(process.env.MY_PLATFORM === "online"){
-		saveGamesAndSendWarning();
-	}
-	else{
+	// if(process.env.MY_PLATFORM === "online"){
+	// 	saveGamesAndSendWarning();
+	// }
+	// else{
 		sendWarning();
-	}
+	// }
 
 	console.log("Graceful shutdown request");
 
@@ -51,11 +51,11 @@ function gracefulShutdown(){
 
 
 function sendWarning(){
-	// for(var key in allSockets){
-	// 	if(allSockets.hasOwnProperty(key)){
-	// 		allSockets[key].emit("serverDailyRestartWarning");
-	// 	}
-	// }
+	for(var key in allSockets){
+		if(allSockets.hasOwnProperty(key)){
+			allSockets[key].emit("serverRestartingNow");
+		}
+	}
 }
 
 function saveGameToDb(roomToSave){
@@ -81,6 +81,8 @@ function saveGameToDb(roomToSave){
 }
 function deleteSaveGameFromDb(roomToSave){
 	// if(process.env.MY_PLATFORM === "online"){
+		console.log("room id to remove");
+		console.log(roomToSave.savedGameRecordId);
 		savedGameObj.findByIdAndRemove(roomToSave.savedGameRecordId, function(err){
 			if(err){
 				console.log(err);
@@ -99,7 +101,7 @@ function saveGamesAndSendWarning(senderSocket) {
 			if(senderSocket){
 				allSockets[key].emit("serverRestartWarning");
 			}else{
-				allSockets[key].emit("serverDailyRestartWarning");				
+				// allSockets[key].emit("serverDailyRestartWarning");				
 			}
 		}
 	}
@@ -108,54 +110,100 @@ function saveGamesAndSendWarning(senderSocket) {
 	var numOfGamesEncountered = 0;
 	var promises = [];
 
-	//save the games
-	for(var i = 0; i < rooms.length; i++){
-		if(rooms[i] && rooms[i].gameStarted === true && rooms[i].finished !== true){
-			console.log("rooms");
-			// console.log(rooms[i]);
+	// //save the games
+	// for(var i = 0; i < rooms.length; i++){
+	// 	if(rooms[i] && rooms[i].gameStarted === true && rooms[i].finished !== true){
+	// 		console.log("rooms");
+	// 		// console.log(rooms[i]);
 			
-			savedGameObj.create({room: JSON.stringify(rooms[i])}, function(err, savedGame){
-				if(err){
-					console.log(err);
-				}
-				console.log(savedGame);
-				numOfGamesSaved++;
+	// 		savedGameObj.create({room: JSON.stringify(rooms[i])}, function(err, savedGame){
+	// 			if(err){
+	// 				console.log(err);
+	// 			}
+	// 			console.log(savedGame);
+	// 			numOfGamesSaved++;
 
-				console.log("created");
-				console.log(numOfGamesSaved >= numOfGamesEncountered);
-				console.log(numOfGamesSaved);
-				console.log(numOfGamesEncountered);
+	// 			console.log("created");
+	// 			console.log(numOfGamesSaved >= numOfGamesEncountered);
+	// 			console.log(numOfGamesSaved);
+	// 			console.log(numOfGamesEncountered);
 
-				if(numOfGamesSaved >= numOfGamesEncountered){
-					var data = {message: "Successful. Saved " + numOfGamesSaved + " games.", classStr: "server-text"};
-					if(senderSocket){
-						senderSocket.emit("messageCommandReturnStr", data);
-					}
+	// 			if(numOfGamesSaved >= numOfGamesEncountered){
+	// 				var data = {message: "Successful. Saved " + numOfGamesSaved + " games.", classStr: "server-text"};
+	// 				if(senderSocket){
+	// 					senderSocket.emit("messageCommandReturnStr", data);
+	// 				}
 
-					//if its a heroku update
-					if(!senderSocket){
-						process.exit(0);
-					}
-				}
+	// 				// //if its a heroku update
+	// 				// if(!senderSocket){
+	// 				// 	process.exit(0);
+	// 				// }
+	// 			}
 
-			});
-			numOfGamesEncountered++;
-		}
-	}
+	// 		});
+	// 		numOfGamesEncountered++;
+	// 	}
+	// }
 
 	console.log(numOfGamesEncountered);
 	
 	if(numOfGamesEncountered === 0){
 		return {message: "Successful. But no games needed to be saved.", classStr: "server-text"};
-		//if its a heroku update
-		if(!senderSocket){
-			process.exit(0);
-		}
 	}
 	else{
 		return {message: "Successful. But still saving games.", classStr: "server-text"};
 	}
 }
+
+
+savedGameObj.find({}).exec(function(err, foundSaveGameArray){
+	if(err){console.log(err);}
+	else{
+		for(var key in foundSaveGameArray){
+			if(foundSaveGameArray.hasOwnProperty(key)){
+				// console.log(foundSaveGameArray);
+
+				var foundSaveGame = foundSaveGameArray[key];
+
+				if(foundSaveGame){
+					// console.log("Parsed:");
+					// console.log(JSON.parse(foundSaveGame.room));
+			
+					var storedData = JSON.parse(foundSaveGame.room);
+			
+					rooms[storedData["roomId"]] = new avalonRoom();
+			
+					for(var key in storedData){
+						if(storedData.hasOwnProperty(key)){
+							// console.log("typeof: " + typeof(key))
+							rooms[storedData["roomId"]][key] = storedData[key];
+							// console.log("copied over: " + key);
+							// if(key === "startGameTime"){
+
+								// console.log(storedData[key]);
+								// console.log(new Date - storedData[key]);
+							// }
+						}
+					}
+			
+					rooms[storedData["roomId"]].restartSaved = true;
+					rooms[storedData["roomId"]].socketsChangedOnce = false;
+					rooms[storedData["roomId"]].frozen = true;
+					
+		
+					rooms[storedData["roomId"]].someCutoffPlayersJoined = "no";
+					
+					console.log("Game loaded");
+
+					console.log("platform: " + process.env.MY_PLATFORM);
+					if(process.env.MY_PLATFORM === "online"){
+						foundSaveGame.remove();
+					}
+				}
+			}
+		}
+	}
+});
 
 
 var actionsObj = {
@@ -886,56 +934,6 @@ var actionsObj = {
 var userCommands = actionsObj.userCommands;
 var modCommands = actionsObj.modCommands;
 var adminCommands = actionsObj.adminCommands;
-
-
-savedGameObj.find({}).exec(function(err, foundSaveGameArray){
-	if(err){console.log(err);}
-	else{
-		for(var key in foundSaveGameArray){
-			if(foundSaveGameArray.hasOwnProperty(key)){
-				// console.log(foundSaveGameArray);
-
-				var foundSaveGame = foundSaveGameArray[key];
-
-				if(foundSaveGame){
-					// console.log("Parsed:");
-					// console.log(JSON.parse(foundSaveGame.room));
-			
-					var storedData = JSON.parse(foundSaveGame.room);
-			
-					rooms[storedData["roomId"]] = new avalonRoom();
-			
-					for(var key in storedData){
-						if(storedData.hasOwnProperty(key)){
-							// console.log("typeof: " + typeof(key))
-							rooms[storedData["roomId"]][key] = storedData[key];
-							// console.log("copied over: " + key);
-							// if(key === "startGameTime"){
-
-								// console.log(storedData[key]);
-								// console.log(new Date - storedData[key]);
-							// }
-						}
-					}
-			
-					rooms[storedData["roomId"]].restartSaved = true;
-					rooms[storedData["roomId"]].frozen = true;
-					
-		
-					rooms[storedData["roomId"]].someCutoffPlayersJoined = "no";
-					
-
-					console.log("Game loaded");
-
-					console.log("platform: " + process.env.MY_PLATFORM);
-					if(process.env.MY_PLATFORM === "online"){
-						foundSaveGame.remove();
-					}
-				}
-			}
-		}
-	}
-});
 
 
 //load up all the modActions that are not released yet

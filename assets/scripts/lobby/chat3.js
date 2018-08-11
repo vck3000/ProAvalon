@@ -359,9 +359,11 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         $(".nav-tabs #room-chat-in-game-tab").removeClass("newMessage")
     }
 
-  console.log("change tab " + target);
+    console.log("change tab " + target);
 
-  scrollDown( $(target).find(".chat-window")[0].id , true);
+    if($(target).find(".chat-window")[0]){
+        scrollDown( $(target).find(".chat-window")[0].id , true);
+    }
   
 
 });
