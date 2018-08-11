@@ -1737,7 +1737,8 @@ function checkMessageForCommands(message, chatBox) {
             var str = "/"+ messageCommand + " is not a valid command. Type /help for a list of commands."; 
             var data = { 
                 message: str,
-                classStr: "server-text"
+                classStr: "server-text",
+                dateCreated: new Date()
             }
             if (chatBox === "allChat") {
                 addToAllChat(data);
@@ -1747,8 +1748,8 @@ function checkMessageForCommands(message, chatBox) {
             }
         }
         else {
-            //sending command to server
-          // console.log("Sending command: " + messageCommand + " to server.");
+            // sending command to server
+            // console.log("Sending command: " + messageCommand + " to server.");
             socket.emit("messageCommand", { command: messageCommand, args: arrayMessage });
         }
 
