@@ -6,7 +6,6 @@ var mongoose = require("mongoose");
 var User = require("../models/user");
 var GameRecord = require("../models/gameRecord");
 
-
 mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
 
 
@@ -48,6 +47,8 @@ var numPlayersOnMission = [
 
 
 module.exports = function (host_, roomId_, io_) {
+
+	var thisRoom = this;
 
 	this.io = io_;
 
@@ -238,11 +239,11 @@ module.exports = function (host_, roomId_, io_) {
 		var timeStarted = new Date(this.startGameTime);
 
 		var gameDuration = new Date(timeFinished - timeStarted);
-		console.log("game duration: ");
-		console.log(gameDuration);
+		// console.log("game duration: ");
+		// console.log(gameDuration);
 
-		console.log("game size: ");
-		console.log(this.playersInGame.length);
+		// console.log("game size: ");
+		// console.log(this.playersInGame.length);
 
 		var playersInGameVar = this.playersInGame;
 		var winnerVar = this.winner;
@@ -258,9 +259,9 @@ module.exports = function (host_, roomId_, io_) {
 						// console.log("role");
 						// console.log(player.role.toLowerCase());
 
-						console.log(foundUser.totalTimePlayed);
-						console.log(foundUser.totalTimePlayed.getMilliseconds());
-						console.log(foundUser.totalTimePlayed.getUTCMilliseconds());
+						// console.log(foundUser.totalTimePlayed);
+						// console.log(foundUser.totalTimePlayed.getMilliseconds());
+						// console.log(foundUser.totalTimePlayed.getUTCMilliseconds());
 
 						foundUser.totalTimePlayed = new Date(foundUser.totalTimePlayed.getTime() + gameDuration.getTime());
 					
@@ -331,7 +332,7 @@ module.exports = function (host_, roomId_, io_) {
 						foundUser.markModified("roleStats");
 						
 						foundUser.save();
-						console.log("SAVE SAVE");
+						// console.log("SAVE SAVE");
 
 					}
 					
@@ -1713,6 +1714,10 @@ module.exports = function (host_, roomId_, io_) {
 		// });
 
 		return socketsOfSpecs;
+	}
+
+	this.gameMove = function(socket, data){
+		thisRoom[data.gameMove](socket, data.clientData);
 	}
 };
 

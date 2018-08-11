@@ -75,15 +75,15 @@ socket.on("interactUser", function (data) {
                 if(timeDelay === undefined){timeDelay = 0;}
 
                 setTimeout(function () {
-                    if (lastChatBoxCommand === "allChat") {
-                        addToAllChat(dataString);
-                    }
-                    else if (lastChatBoxCommand === "roomChat") {
-                        addToRoomChat(dataString);
-                    }else{
+                    // if (lastChatBoxCommand === "allChat") {
+                    //     addToAllChat(dataString);
+                    // }
+                    // else if (lastChatBoxCommand === "roomChat") {
+                    //     addToRoomChat(dataString);
+                    // }else{
                         addToAllChat(dataString);
                         addToRoomChat(dataString);                        
-                    }
+                    // }
                 }, timeDelay);
 
                 //only display notif if its a buzz

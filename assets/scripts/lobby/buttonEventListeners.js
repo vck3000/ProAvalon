@@ -38,18 +38,22 @@ function redButtonFunction() {
         else {
             if (gameData.phase === "voting") {
               // console.log("Voted reject");
-                socket.emit("pickVote", "reject");
+                // socket.emit("pickVote", "reject");
+                socket.emit("gameMove", {gameMove: "pickVote", clientData: "reject"});
+                
             }
             else if (gameData.phase === "missionVoting") {
               // console.log("Voted fail");
 
 
                 if (gameData.alliance === "Resistance") {
-                  // console.log("You aren't a spy! You cannot fail a mission!");
+                    // console.log("You aren't a spy! You cannot fail a mission!");
                     // socket.emit("missionVote", "succeed");
                     showDangerAlert("You are resistance. Surely you want to succeed!");
                 } else {
-                    socket.emit("missionVote", "fail");
+                    // socket.emit("missionVote", "fail");
+                    socket.emit("gameMove", {gameMove: "missionVote", clientData: "fail"});
+                    
                 }
 
             }
@@ -71,23 +75,33 @@ function greenButtonFunction() {
             if (gameData.phase === "picking") {
                 var arr = getHighlightedAvatars();
               // console.log(arr);
-                socket.emit("pickedTeam", arr);
+                socket.emit("gameMove", {gameMove: "playerPickTeam", clientData: arr});
             }
             else if (gameData.phase === "voting") {
-              // console.log("Voted approve");
-                socket.emit("pickVote", "approve");
+                // console.log("Voted approve");
+                socket.emit("gameMove", {gameMove: "pickVote", clientData: "approve"});
+              
+                // socket.emit("pickVote", "approve");
             }
             else if (gameData.phase === "missionVoting") {
-              // console.log("Voted succeed");
-                socket.emit("missionVote", "succeed");
+                // console.log("Voted succeed");
+                socket.emit("gameMove", {gameMove: "missionVote", clientData: "succeed"});
+
+                // socket.emit("missionVote", "succeed");
             }
             else if (gameData.phase === "assassination") {
-              // console.log("Assasinate!!!");
-                socket.emit("assassinate", getHighlightedAvatars());
+                // console.log("Assasinate!!!");
+                socket.emit("gameMove", {gameMove: "assassinate", clientData: getHighlightedAvatars()});
+
+              
+                // socket.emit("assassinate", getHighlightedAvatars());
             }
             else if (gameData.phase === "lady") {
-              // console.log("Lady: " + getHighlightedAvatars()[0]);
-                socket.emit("lady", getHighlightedAvatars()[0]);
+                socket.emit("gameMove", {gameMove: "useLady", clientData: getHighlightedAvatars()[0]});
+
+                
+                // console.log("Lady: " + getHighlightedAvatars()[0]);
+                // socket.emit("lady", getHighlightedAvatars()[0]);
             }
 
         }

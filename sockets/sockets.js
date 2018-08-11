@@ -58,6 +58,41 @@ function sendWarning(){
 	// }
 }
 
+function saveGameToDb(roomToSave){
+	if(roomToSave.gameStarted === true && roomToSave.finished !== true){
+		if(roomToSave.savedGameRecordId === undefined){
+			savedGameObj.create({room: JSON.stringify(roomToSave)}, function(err, savedGame){
+				if(err){
+					console.log(err);
+				}
+				else{
+					rooms[rooms.indexOf(roomToSave)].savedGameRecordId = savedGame.id;
+					console.log("Successfully created this save game");
+					
+				}
+			});
+		}
+		else{
+			savedGameObj.findByIdAndUpdate(roomToSave.savedGameRecordId, {room: JSON.stringify(roomToSave)}, function(err, savedGame){
+				console.log("Successfully saved this game");
+			});
+		}
+	}
+}
+function deleteSaveGameFromDb(roomToSave){
+	// if(process.env.MY_PLATFORM === "online"){
+		savedGameObj.findByIdAndRemove(roomToSave.savedGameRecordId, function(err){
+			if(err){
+				console.log(err);
+			}
+			else{
+				console.log("Successfully removed this save game from db");
+			}
+		});
+	// }
+
+}
+
 function saveGamesAndSendWarning(senderSocket) {
 	for(var key in allSockets){
 		if(allSockets.hasOwnProperty(key)){
@@ -593,37 +628,61 @@ var actionsObj = {
                 
             }
 		},
-		mip: {
-            command: "mip",
-            help: "/mip <player name>: Get the ip of the player.",
+		mcompareips: {
+            command: "mcompareips",
+            help: "/mcompareips: Get usernames of players with the same IP.",
             run: async function (data, senderSocket) {
-                var args = data.args;
-    
-                if(!args[1]){
-					console.log("a");
-					senderSocket.emit("messageCommandReturnStr", {message: "Specify a username", classStr: "server-text"});
-                    return {message: "Specify a username.", classStr: "server-text"}
-				}
-				
+                var args = data.args;				
 
 				var slapSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
-                if (slapSocket) {
-					console.log("b");
-					var clientIpAddress = slapSocket.request.headers['x-forwarded-for'] || slapSocket.request.connection.remoteAddress;
 
-					senderSocket.emit("messageCommandReturnStr", {message: clientIpAddress, classStr: "server-text"});
-					
-                	return {message: "slapSocket.request.user.username", classStr: "server-text"};
-                }
-                else {
-					console.log("c");
-					
-					senderSocket.emit("messageCommandReturnStr", {message: "No IP found or invalid username", classStr: "server-text"});
-					
-                    return {message: "There is no such player.", classStr: "server-text"};
+				var usernames = [];
+				var ips = [];
+
+				for(var i = 0; i < allSockets.length; i++){
+					usernames.push(allSockets[i].request.user.username);
+
+					var clientIpAddress = allSockets[i].request.headers['x-forwarded-for'] || allSockets[i].request.connection.remoteAddress;
+					ips.push(clientIpAddress);
 				}
+
+				var names = ['Mike', 'Matt', 'Nancy', 'Adam', 'Jenny', 'Nancy', 'Carl']
+
+				var uniq = ips
+				.map((ip) => {
+				return {count: 1, ip: ip}
+				})
+				.reduce((a, b) => {
+				a[b.ip] = (a[b.ip] || 0) + b.count
+				return a
+				}, {});
+
+				var duplicateIps = Object.keys(uniq).filter((a) => uniq[a] > 1)
+
+				console.log(duplicateIps) // [ 'Nancy' ]
+				// var indexesOfDuplicates = [][];
+
+				// var str = "";
+				var dataToReturn = [];
+				dataToReturn[0] = {message: "-------------------------", classStr: "server-text", dateCreated: new Date()};
 				
 
+				for(var i = 0; i < duplicateIps.length; i++){
+					//for each ip, search through the whole users to see who has the ips
+
+					for(var j = 0; j < ips.length; j++){
+						if(ips[j] === duplicateIps[i]){
+							dataToReturn.push({message: usernames[j], classStr: "server-text", dateCreated: new Date()})
+						}
+					}
+
+					dataToReturn.push({message: "-------------------------", classStr: "server-text", dateCreated: new Date()})
+
+
+				}
+
+				senderSocket.emit("messageCommandReturnStr", dataToReturn);
+				
                 return 
             }
 		},
@@ -779,6 +838,41 @@ var actionsObj = {
 				console.log(`The script uses approximately ${Math.round(used * 100) / 100} MB`);
 
                 return {message: `The script uses approximately ${Math.round(used * 100) / 100} MB`, classStr: "server-text"};
+            }
+		},
+
+		aip: {
+            command: "aip",
+            help: "/aip <player name>: Get the ip of the player.",
+            run: async function (data, senderSocket) {
+                var args = data.args;
+    
+                if(!args[1]){
+					console.log("a");
+					senderSocket.emit("messageCommandReturnStr", {message: "Specify a username", classStr: "server-text"});
+                    return {message: "Specify a username.", classStr: "server-text"}
+				}
+				
+
+				var slapSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
+                if (slapSocket) {
+					console.log("b");
+					var clientIpAddress = slapSocket.request.headers['x-forwarded-for'] || slapSocket.request.connection.remoteAddress;
+
+					senderSocket.emit("messageCommandReturnStr", {message: clientIpAddress, classStr: "server-text"});
+					
+                	return {message: "slapSocket.request.user.username", classStr: "server-text"};
+                }
+                else {
+					console.log("c");
+					
+					senderSocket.emit("messageCommandReturnStr", {message: "No IP found or invalid username", classStr: "server-text"});
+					
+                    return {message: "There is no such player.", classStr: "server-text"};
+				}
+				
+
+                return 
             }
 		},
 
@@ -1067,11 +1161,11 @@ module.exports = function (io) {
 						//push new mod action into the array of currently active ones loaded.
 						currentModActions.push(newModActionCreated);
 						//if theyre online
-						if(newModActionCreated.type === "ban" && allSockets[newModActionCreated.bannedPlayer.username.toLowerCase()]){
-							allSockets[newModActionCreated.bannedPlayer.username.toLowerCase()].disconnect(true);
+						if(newModActionCreated.type === "ban" && allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)] ){
+							allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)].disconnect(true);
 						}
-						else if(newModActionCreated.type === "mute" && allSockets[newModActionCreated.bannedPlayer.username.toLowerCase()]){
-							allSockets[newModActionCreated.bannedPlayer.username.toLowerCase()].emit("muteNotification", newModActionCreated);
+						else if(newModActionCreated.type === "mute" && allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)] ){
+							allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)].emit("muteNotification", newModActionCreated);
 						}
 
 						socket.emit("messageCommandReturnStr", {message: newModActionCreated.bannedPlayer.username + " has received a " + newModActionCreated.type + " modAction. Thank you :).", classStr: "server-text"});
@@ -1382,53 +1476,69 @@ module.exports = function (io) {
 			}
 		});
 
-		//when a player picks a team
-		socket.on("pickedTeam", function (data) {
+		//************************
+		//game data stuff
+		//************************
+		socket.on("gameMove", function(data){
 			if (rooms[socket.request.user.inRoomId]) {
-				rooms[socket.request.user.inRoomId].playerPickTeam(socket, data);
-				
+				rooms[socket.request.user.inRoomId].gameMove(socket, data);
+			}
+
+			if(rooms[socket.request.user.inRoomId].finished === true){
+				deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
+			}
+			else{
+				saveGameToDb(rooms[socket.request.user.inRoomId]);
 			}
 		});
 
-		socket.on("pickVote", function (data) {
-			if (rooms[socket.request.user.inRoomId]) {
-				rooms[socket.request.user.inRoomId].pickVote(socket, data);
+		// //when a player picks a team
+		// socket.on("pickedTeam", function (data) {
+		// 	if (rooms[socket.request.user.inRoomId]) {
+		// 		rooms[socket.request.user.inRoomId].playerPickTeam(socket, data);
+		// 	}
+		// });
+ 
+		// socket.on("pickVote", function (data) {
+		// 	if (rooms[socket.request.user.inRoomId]) {
+		// 		rooms[socket.request.user.inRoomId].pickVote(socket, data);
 				
-			}
+		// 	}
 
-		});
+		// });
 
-		socket.on("missionVote", function (data) {
-			if (rooms[socket.request.user.inRoomId]) {
-				rooms[socket.request.user.inRoomId].missionVote(socket, data);
+		// socket.on("missionVote", function (data) {
+		// 	if (rooms[socket.request.user.inRoomId]) {
+		// 		rooms[socket.request.user.inRoomId].missionVote(socket, data);
 				
-			}
-			//update all the games list (also including the status because game status changes when a mission is voted for)
-			updateCurrentGamesList(io);
-		});
+		// 	}
+		// 	//update all the games list (also including the status because game status changes when a mission is voted for)
+		// 	updateCurrentGamesList(io);
+		// });
 
-		socket.on("assassinate", function (data) {
-			if (rooms[socket.request.user.inRoomId]) {
-				rooms[socket.request.user.inRoomId].assassinate(socket, data);
+		// socket.on("assassinate", function (data) {
+		// 	if (rooms[socket.request.user.inRoomId]) {
+		// 		rooms[socket.request.user.inRoomId].assassinate(socket, data);
 				
-			}
-			//update all the games list (also including the status because game status changes when a mission is voted for)
-			updateCurrentGamesList(io);
-		});
+		// 	}
+		// 	//update all the games list (also including the status because game status changes when a mission is voted for)
+		// 	updateCurrentGamesList(io);
+		// });
 
-		socket.on("lady", function (data) {
-			if (rooms[socket.request.user.inRoomId]) {
-				rooms[socket.request.user.inRoomId].useLady(socket, data);
+		// socket.on("lady", function (data) {
+		// 	if (rooms[socket.request.user.inRoomId]) {
+		// 		rooms[socket.request.user.inRoomId].useLady(socket, data);
 				
-			}
-		});
+		// 	}
+		// });
 
 		socket.on("claim", function(data){
 			if (rooms[socket.request.user.inRoomId]) {
 				rooms[socket.request.user.inRoomId].claim(socket);
-				
 			}
 		});
+
+
 
 	});
 }
