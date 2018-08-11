@@ -315,6 +315,99 @@ router.get("/ajax/getStatistics", function(req, res){
 			}
 			obj.averageAssassinationDuration = new Date(averageAssassinationDuration.getTime() / count);
 
+			//**********************************************
+			//Getting the win rate for each game size
+			//**********************************************
+			var gameSizeWins = {};
+
+			for(var i = 0; i < records.length; i++){
+				if(!gameSizeWins[records[i].numberOfPlayers]){
+					gameSizeWins[records[i].numberOfPlayers] = {};
+					gameSizeWins[records[i].numberOfPlayers].spy = 0;
+					gameSizeWins[records[i].numberOfPlayers].res = 0;
+				}
+
+				if(records[i].winningTeam === "Spy"){
+					gameSizeWins[records[i].numberOfPlayers].spy++;
+				}
+				else if(records[i].winningTeam === "Resistance"){
+					gameSizeWins[records[i].numberOfPlayers].res++;
+				}
+				else{
+					console.log("error, winning team not recognised: " + records[i].winningTeam);
+				}
+
+			}
+			obj.gameSizeWins = gameSizeWins;
+
+
+			//**********************************************
+			//Getting the spy wins breakdown
+			//**********************************************
+			var spyWinBreakdown = {};
+
+			for(var i = 0; i < records.length; i++){
+				if(records[i].winningTeam === "Spy"){
+					if(!spyWinBreakdown[records[i].howTheGameWasWon]){
+						spyWinBreakdown[records[i].howTheGameWasWon] = 0;
+					}
+
+					spyWinBreakdown[records[i].howTheGameWasWon]++;
+				}
+			}
+			obj.spyWinBreakdown = spyWinBreakdown;
+
+
+			//**********************************************
+			//Getting the Lady of the lake wins breakdown
+			//**********************************************
+			var ladyBreakdown = {
+					"resStart": {
+						"resWin": 0, 
+						"spyWin": 0
+					}, 
+					"spyStart": {
+						"resWin": 0, 
+						"spyWin": 0
+					}
+				};
+
+			//IMPORTANT, MUST KEEP THESE ROLES UP TO DATE!
+			//SHOULD MAKE AN EXTERNAL FILE OF THESE ALLIANCES
+			var resRoles = ["Merlin", "Percival", "Resistance"];
+			var spyRoles = ["Assassin", "Morgana", "Spy", "Mordred", "Oberon"];
+
+			
+			for(var i = 0; i < records.length; i++){
+				if(records[i].ladyChain.length > 0){
+					
+
+					//if the first person who held the card is a res
+					if(resRoles.indexOf(records[i].ladyChain[0]) !== -1){
+						if(records[i].winningTeam === "Resistance"){
+							ladyBreakdown.resStart.resWin++;
+						}
+						else if(records[i].winningTeam === "Spy"){
+							ladyBreakdown.resStart.spyWin++;
+						}
+					}
+					//if the first person who held the card is a spy
+					else if(spyRoles.indexOf(records[i].ladyChain[0]) !== -1){
+						if(records[i].winningTeam === "Resistance"){
+							ladyBreakdown.spyStart.resWin++;
+						}
+						else if(records[i].winningTeam === "Spy"){
+							ladyBreakdown.spyStart.spyWin++;
+						}
+					}
+					else{
+						console.log("ERROR no alliance assigned to role: " + records[i].ladyChain[0]);
+					}
+				}
+			}
+			obj.ladyBreakdown = ladyBreakdown;
+
+
 			
 
 

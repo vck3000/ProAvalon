@@ -28,6 +28,10 @@
         border: 1px solid black;
     }
 
+    .myTable thead tr td{
+        border: 1px solid black;
+    }
+
 </style>
 
 <div class="container myContainer">
@@ -38,8 +42,9 @@
             Loading...
         </div>
 
-        <div id="statsDiv" class="hidden">
+        <div id="statsDiv" class="">
 
+            <h3>General stats:</h3>
             <table class="table myTable">
                 <tbody>
                     <tr>
@@ -61,9 +66,53 @@
                 </tbody>
             </table>
 
+            <h3>Game size win rate breakdown:</h3>
+            <table class="table myTable">
+                <tbody>
+                    <thead>
+                        <tr>
+                            <td>Game size</td>
+                            <td>Resistance</td>
+                            <td>Spy</td>
+                        </tr>
+                    </thead>
+                    <tr>
+                        <td class="statsCol1">5P</td>
+                        <td class="statsCol2" id="5preswin"></td>
+                        <td class="statsCol2" id="5pspywin"></td>
+                    </tr>
+                    <tr>
+                        <td class="statsCol1">6P</td>
+                        <td class="statsCol2" id="6preswin"></td>
+                        <td class="statsCol2" id="6pspywin"></td>
+                    </tr>
+                    <tr>
+                        <td class="statsCol1">7P</td>
+                        <td class="statsCol2" id="7preswin"></td>
+                        <td class="statsCol2" id="7pspywin"></td>
+                    </tr>
+                    <tr>
+                        <td class="statsCol1">8P</td>
+                        <td class="statsCol2" id="8preswin"></td>
+                        <td class="statsCol2" id="8pspywin"></td>
+                    </tr>
+                    <tr>
+                        <td class="statsCol1">9P</td>
+                        <td class="statsCol2" id="9preswin"></td>
+                        <td class="statsCol2" id="9pspywin"></td>
+                    </tr>
+                    <tr>
+                        <td class="statsCol1">10P</td>
+                        <td class="statsCol2" id="10preswin"></td>
+                        <td class="statsCol2" id="10pspywin"></td>
+                    </tr>
 
-            <h2><u>Assassinations:</u></h2>
+                </tbody>
+            </table>
 
+
+
+            <h3>Assassinations:</h3>
             <table class="table myTable">
                 <tbody>
                     <tr>
@@ -84,6 +133,61 @@
                     </tr>
                 </tbody>
             </table>
+
+
+            <h3>Spy wins breakdown:</h3>
+            <table class="table myTable">
+                <tbody>
+                    <tr>
+                        <td class="statsCol1">Failing missions: </td>
+                        <td class="statsCol2" id="spywinfailingmissions"></td>
+                    </tr>
+                    <tr>
+                        <td class="statsCol1">Assassinating Merlin: </td>
+                        <td class="statsCol2" id="spywinassassinatingmerlin"></td>
+                    </tr>
+                    <tr>
+                        <td class="statsCol1">Hammer reject: </td>
+                        <td class="statsCol2" id="spywinhammerreject"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <h3>Lady starting team win rates</h3>
+            <table class="table myTable">
+                <tbody>
+                    <thead>
+                        <tr>
+                            <td></td>
+                            <td>Resistance wins</td>
+                            <td>Spy wins</td>
+                        </tr>
+                    </thead>
+                    <tr>
+                        <td class="statsCol1">Lady started with Resistance</td>
+                        <td class="statsCol2" id="resStartResWin"></td>
+                        <td class="statsCol2" id="resStartSpyWin"></td>
+                    </tr>
+                    <tr>
+                        <td class="statsCol1">Lady started with Spy</td>
+                        <td class="statsCol2" id="spyStartResWin"></td>
+                        <td class="statsCol2" id="spyStartSpyWin"></td>
+                    </tr>
+
+                </tbody>
+            </table>
+            
+
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+
+            <div id="testDiv">
+            
+            </div>
         </div>
         
     </div>
@@ -140,6 +244,29 @@
 
 
         //***********************************
+        //Game size win rate breakdown stats
+        //***********************************
+        $("#5preswin")[0].innerText = grd.gameSizeWins[5].res + " wins, " + Math.round(grd.gameSizeWins[5].res / (grd.gameSizeWins[5].res + grd.gameSizeWins[5].spy) * 100) + "%";
+        $("#5pspywin")[0].innerText = grd.gameSizeWins[5].spy + " wins, " + Math.round(grd.gameSizeWins[5].spy / (grd.gameSizeWins[5].res + grd.gameSizeWins[5].spy) * 100) + "%";
+
+        $("#6preswin")[0].innerText = grd.gameSizeWins[6].res + " wins, " + Math.round(grd.gameSizeWins[6].res / (grd.gameSizeWins[6].res + grd.gameSizeWins[6].spy) * 100) + "%";
+        $("#6pspywin")[0].innerText = grd.gameSizeWins[6].spy + " wins, " + Math.round(grd.gameSizeWins[6].spy / (grd.gameSizeWins[6].res + grd.gameSizeWins[6].spy) * 100) + "%";
+
+        $("#7preswin")[0].innerText = grd.gameSizeWins[7].res + " wins, " + Math.round(grd.gameSizeWins[7].res / (grd.gameSizeWins[7].res + grd.gameSizeWins[7].spy) * 100) + "%";
+        $("#7pspywin")[0].innerText = grd.gameSizeWins[7].spy + " wins, " + Math.round(grd.gameSizeWins[7].spy / (grd.gameSizeWins[7].res + grd.gameSizeWins[7].spy) * 100) + "%";
+
+        $("#8preswin")[0].innerText = grd.gameSizeWins[8].res + " wins, " + Math.round(grd.gameSizeWins[8].res / (grd.gameSizeWins[8].res + grd.gameSizeWins[8].spy) * 100) + "%";
+        $("#8pspywin")[0].innerText = grd.gameSizeWins[8].spy + " wins, " + Math.round(grd.gameSizeWins[8].spy / (grd.gameSizeWins[8].res + grd.gameSizeWins[8].spy) * 100) + "%";
+
+        $("#9preswin")[0].innerText = grd.gameSizeWins[9].res + " wins, " + Math.round(grd.gameSizeWins[9].res / (grd.gameSizeWins[9].res + grd.gameSizeWins[9].spy) * 100) + "%";
+        $("#9pspywin")[0].innerText = grd.gameSizeWins[9].spy + " wins, " + Math.round(grd.gameSizeWins[9].spy / (grd.gameSizeWins[9].res + grd.gameSizeWins[9].spy) * 100) + "%";
+
+        $("#10preswin")[0].innerText = grd.gameSizeWins[10].res + " wins, " + Math.round(grd.gameSizeWins[10].res / (grd.gameSizeWins[10].res + grd.gameSizeWins[10].spy) * 100) + "%";
+        $("#10pspywin")[0].innerText = grd.gameSizeWins[10].spy + " wins, " + Math.round(grd.gameSizeWins[10].spy / (grd.gameSizeWins[10].res + grd.gameSizeWins[10].spy) * 100) + "%";
+
+
+
+        //***********************************
         //Assassination stats
         //***********************************
         var totalAssassinShots = grd.assassinRolesShot["Merlin"] + 
@@ -152,8 +279,33 @@
         
         $("#averageassassinationduration")[0].innerText = new Date(grd.averageAssassinationDuration).getUTCMinutes() + " mins " + new Date(grd.averageAssassinationDuration).getUTCSeconds() + " seconds";
 
+
         
         
+
+
+        //***********************************
+        //Spy wins breakdown
+        //***********************************
+        $("#spywinfailingmissions")[0].innerText = grd.spyWinBreakdown["Mission fails."] + " times, " + Math.round(grd.spyWinBreakdown["Mission fails."]/grd.totalSpyWins*100) + "%";
+        $("#spywinassassinatingmerlin")[0].innerText = grd.spyWinBreakdown["Assassinated Merlin correctly."] + " times, " + Math.round(grd.spyWinBreakdown["Assassinated Merlin correctly."]/grd.totalSpyWins*100) + "%";
+        $("#spywinhammerreject")[0].innerText = grd.spyWinBreakdown["Hammer rejected."] + " times, " + Math.round(grd.spyWinBreakdown["Hammer rejected."]/grd.totalSpyWins*100) + "%";
+
+
+
+        //***********************************
+        //Lady of the lake wins breakdown
+        //***********************************
+        $("#resStartResWin")[0].innerText = grd.ladyBreakdown["resStart"]["resWin"] + " times, " + Math.round(grd.ladyBreakdown["resStart"]["resWin"] / (grd.ladyBreakdown["resStart"]["resWin"] + grd.ladyBreakdown["resStart"]["spyWin"]) * 100) + "%";
+        $("#resStartSpyWin")[0].innerText = grd.ladyBreakdown["resStart"]["spyWin"] + " times, " + Math.round(grd.ladyBreakdown["resStart"]["spyWin"] / (grd.ladyBreakdown["resStart"]["resWin"] + grd.ladyBreakdown["resStart"]["spyWin"]) * 100) + "%";
+
+        $("#spyStartResWin")[0].innerText = grd.ladyBreakdown["spyStart"]["resWin"] + " times, " + Math.round(grd.ladyBreakdown["spyStart"]["resWin"] / (grd.ladyBreakdown["spyStart"]["resWin"] + grd.ladyBreakdown["spyStart"]["spyWin"]) * 100) + "%";
+        $("#spyStartSpyWin")[0].innerText = grd.ladyBreakdown["spyStart"]["spyWin"] + " times, " + Math.round(grd.ladyBreakdown["spyStart"]["spyWin"] / (grd.ladyBreakdown["spyStart"]["resWin"] + grd.ladyBreakdown["spyStart"]["spyWin"]) * 100) + "%";
+
+
+
+        $("#testDiv")[0].innerText = JSON.stringify(grd);
+
     }
 
 </script>
