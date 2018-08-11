@@ -321,7 +321,11 @@ function addToRoomChat(data) {
                     scrollDown("room-chat-room2");
                 }
 
-                if(thisMessageSpectator === false){
+                if(thisMessageSpectator === true && muteSpectators === true){
+                    //if the person talking is a spectator, and if mute spectators is checked,
+                    //then dont show yellow notification. Otherwise show.
+                }
+                else{
                     //yellow notification on the tabs in room.
                     if ($(".nav-tabs #room-chat-in-game-tab").hasClass("active") === false) {
                         $(".nav-tabs #room-chat-in-game-tab")[0].classList.add("newMessage");
