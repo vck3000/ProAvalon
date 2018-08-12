@@ -46,8 +46,16 @@ router.post("/:profileUsername",middleware.checkProfileOwnership , function(req,
 	console.log(req.body.biography);
 	console.log(req.body.nationality);
 	console.log(req.body.nationCode);
-	if(typeof(req.body.nationCode.length) === "array"){
-		req.body.nationCode = req.body.nationCode[0];
+
+	// req.body.nationCode = ["UN", "CA", "AU"];
+	// console.log("changed");
+
+	// console.log(req.body.nationCode);
+	// console.log(typeof(req.body.nationCode));
+	
+
+	if(typeof(req.body.nationCode) === "array" || typeof(req.body.nationCode) === "object"){
+		req.body.nationCode = req.body.nationCode[req.body.nationCode.length-1];
 	}
 
 
