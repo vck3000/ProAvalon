@@ -1651,7 +1651,9 @@ function isMuted(socket){
 function playerLeaveRoomCheckDestroy(socket){
 
 	if(socket.request.user.inRoomId && rooms[socket.request.user.inRoomId]){
+		//leave the room
 		rooms[socket.request.user.inRoomId].playerLeaveRoom(socket);
+
 		var toDestroy = rooms[socket.request.user.inRoomId].toDestroy();
 		if(toDestroy){
 			deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
@@ -1661,12 +1663,14 @@ function playerLeaveRoomCheckDestroy(socket){
 		//code if frozen and more than 1hr then remove.
 		if(rooms[socket.request.user.inRoomId] 
 			&& rooms[socket.request.user.inRoomId].timeFrozenLoaded 
-			&& rooms[socket.request.user.inRoomId].getStatus() === "Frozen"){
+			&& rooms[socket.request.user.inRoomId].getStatus() === "Frozen"
+			&& rooms[socket.request.user.inRoomId].allSockets.length === 0){
 
 				var curr = new Date();
 				var timeToKill = 1000*60*5; //5 mins
+				// var timeToKill = 1000*10; //10s
 				if( ( curr.getTime() - rooms[socket.request.user.inRoomId].timeFrozenLoaded.getTime() ) > timeToKill){
-					deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
+					// deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
 					rooms[socket.request.user.inRoomId] = undefined;
 
 					console.log("Been more than " + timeToKill/1000 + " seconds, removing this frozen game.");
