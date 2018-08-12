@@ -39,7 +39,9 @@ var forumThreadSchema = new mongoose.Schema({
 		} 
 	],
 
-	category: String
+	category: String,
+
+	seenUsers: [String]
 });
 //compile schema into a model
 var forumThread = mongoose.model("ForumThread", forumThreadSchema);

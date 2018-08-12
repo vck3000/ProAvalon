@@ -79,10 +79,14 @@ function createCommentReply(req, res){
 
 
 function createReply (req, res, commentReplyData, replyingToThisReply) {
-	forumThreadCommentReply.create(commentReplyData, function (err, newCommentReply) {
-				
+	//the creator has already seen it
+	commentReplyData.seenUsers = [req.user.username.toLowerCase()];
+
+	forumThreadCommentReply.create(commentReplyData, function (err, newCommentReply) {				
 		// console.log("new commentReply: " + newCommentReply);
 		forumThread.findById(mongoose.Types.ObjectId(req.params.id), function(err, foundForum){
+
+			
 
 			forumThreadComment.findById(req.params.commentId).populate("replies").exec(function (err, foundForumThreadComment) {
 				if (foundForumThreadComment.replies === undefined) {
@@ -149,7 +153,14 @@ function createReply (req, res, commentReplyData, replyingToThisReply) {
 	
 				//redirect to same forum thread
 				res.redirect("/forum/show/" + req.params.id);
+
+			
 			});
+
+			//since there is a new comment, the thread is now refreshed and no one has seen the new changes yet,
+			//except for the one who made the comment
+			foundForum.seenUsers = [req.user.username.toLowerCase()];
+			foundForum.save();
 
 		});
 	});
@@ -165,7 +176,7 @@ router.get("/:id/:comment_id/:reply_id/edit", middleware.checkForumThreadComment
 
 		var userNotifications = [];
 
-		await User.findById(req.user._id).exec(function(err, foundUser){
+		await User.findById(req.user._id).populate("notifications").exec(function(err, foundUser){
 			if(!err){userNotifications = foundUser.userNotifications;}
 		});
 

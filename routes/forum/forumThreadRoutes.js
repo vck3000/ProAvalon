@@ -164,6 +164,51 @@ router.get("/show/:id", middleware.isLoggedIn, function (req, res) {
 					idsOfLikedPosts: idsOfLikedPosts,
 					mod: isMod
 				});		
+
+				//if there is no seen users array, create it and add the user
+				if(!foundForumThread.seenUsers){
+					foundForumThread.seenUsers = [];
+				}
+				//if the viewing user isnt on the list, then add them.
+				if(foundForumThread.seenUsers.indexOf(req.user.username.toLowerCase()) === -1){
+					foundForumThread.seenUsers.push(req.user.username.toLowerCase());
+				}
+
+				// for every comment, add the user to seen users
+				foundForumThread.comments.forEach(async function (comm){
+					var changesMade = false;
+					
+
+					if(!comm.seenUsers){comm.seenUsers = [];}
+					//if the user isnt on the list, add them. otherwise no need.
+					if(comm.seenUsers.indexOf(req.user.username.toLowerCase()) === -1){
+						comm.seenUsers.push(req.user.username.toLowerCase());
+						changesMade = true;
+					}
+
+
+					comm.replies.forEach(async function (rep){
+						if(!rep.seenUsers){rep.seenUsers = [];}
+						//if the user isnt on the list, add them. otherwise no need.
+						if(rep.seenUsers.indexOf(req.user.username.toLowerCase()) === -1){
+							rep.seenUsers.push(req.user.username.toLowerCase());
+							changesMade = true;
+							await rep.save();
+						}
+						
+					});
+
+					//only need to comm.save() if there was a change.
+					//otherwise save some resources and skip saving.
+					if(changesMade === true){
+						comm.markModified("replies");
+						await comm.save();
+					}
+				});
+				//there is always at least one change, so just save.
+				foundForumThread.markModified("comments");
+				foundForumThread.save();
+				
 			});
 
 			

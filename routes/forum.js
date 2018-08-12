@@ -253,6 +253,7 @@ router.get("/page/:category/:pageNum", middleware.isLoggedIn, function(req, res)
 });
 
 
+//main page that users land on
 router.get("/page/:pageNum", middleware.isLoggedIn, function (req, res) {
 	console.log("pageNum");
 	//rendering the campgrounds.ejs file

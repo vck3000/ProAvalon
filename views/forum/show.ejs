@@ -173,11 +173,18 @@
         <div class="comments">
 
             <%forumThread.comments.forEach(function(comment){ %>
+                <%
+                    var classesToAdd = "";
+                    if(!comment.seenUsers || comment.seenUsers.indexOf(currentUser.username.toLowerCase()) === -1){
+                        classesToAdd += "post-unseen ";
+                    }
+                %>                
+
                 <div class="individualMainComment" id=<%=comment.id%>>
 
            
                 
-                    <div class="individualComment">
+                    <div class="individualComment <%=classesToAdd%>">
                         <p>
                             <% if(comment.disabled && comment.disabled === true){ %>
                             <span style="color: red;" class="glyphicon glyphicon-ban-circle"></span>                            
@@ -258,7 +265,15 @@
 
                     <!-- Replies to the main comment -->
                     <% if(comment.replies){ comment.replies.forEach(function(reply){ %>
-                        <div class="replyToComment"  id=<%=reply.id%>>
+
+                    <%
+                        var classesToAdd = "";
+                        if(!reply.seenUsers || reply.seenUsers.indexOf(currentUser.username.toLowerCase()) === -1){
+                            classesToAdd += "post-unseen ";
+                        }
+                    %>                
+
+                        <div class="replyToComment <%=classesToAdd%>"  id=<%=reply.id%>>
                             <p>
                                 <% if(reply.disabled && reply.disabled === true){ %>
                                 <span style="color: red;" class="glyphicon glyphicon-ban-circle"></span>                            

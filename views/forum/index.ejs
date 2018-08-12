@@ -63,10 +63,16 @@
 
 
                 <div class="container-fluid">
-                    <ol>
+                    <ol class="forumsList">
 
                         <%allPinnedThreads.forEach(function(forumThread){ %>
-                            <li>
+                            <%/* if the forum thread doesnt have a seen variable, or the viewing user is not on the seen list */ %>
+                            <%if(!forumThread.seenUsers || forumThread.seenUsers.indexOf(currentUser.username.toLowerCase() ) === -1 ){%>
+                                <li class="post-unseen">
+                            <% } else{ %>
+                                <li>
+                            <% } %>
+
                                 <div class="bg-<%=bg_converter[forumThread.category]%> discussionContainer">
                                     <div class="discussionTitleBox">
                                         <div class="discussionTitle">
@@ -89,6 +95,11 @@
                                             <span class="glyphicon glyphicon-time"></span>
                                             <span><%=forumThread.timeSinceString%> </span>
                                         </div>
+                                        <div>
+                                        <% if(forumThread.whoLastEdit) { %>
+                                            <span><span class="glyphicon glyphicon-edit"></span> <%=forumThread.whoLastEdit%></span>
+                                        <% } %>
+                                        </div>
                                     </div>
                                 </div>
                             </li>
@@ -110,12 +121,16 @@
             <div class="container-fluid">
                 <ol class="forumsList">
                     <%allForumThreads.forEach(function(forumThread){ %>
-                        <% if(forumThread.disabled && forumThread.disabled === true){ %>
-                            <li class="hidden disabled">
-                        <% } else{ %>
-                            <li class="">
-                        <% } %>
-                        
+
+                        <% var classesToAdd = "";%>
+                        <%if(!forumThread.seenUsers || forumThread.seenUsers.indexOf(currentUser.username.toLowerCase() ) === -1 ){
+                            classesToAdd += "post-unseen ";
+                         }
+
+                        if(forumThread.disabled && forumThread.disabled === true){ 
+                            classesToAdd += "hidden disabled "
+                        }%>
+                        <li class="<%=classesToAdd%>">
 
                             <div class="bg-<%=bg_converter[forumThread.category]%> discussionContainer">
                                 <div class="discussionTitleBox">

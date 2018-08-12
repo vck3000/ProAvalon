@@ -81,6 +81,10 @@ textarea {
     margin-left: 40px;
     margin-bottom: 10px;
     font-size: 1em;
+
+    padding-left: 5px;
+
+    border-left: 2px solid transparent;
 }
 
 .commentOptions {
@@ -96,6 +100,8 @@ textarea {
 
 .individualComment{
     margin-bottom: 10px;
+    border-left: 2px solid transparent;
+    padding-left: 5px;
 }
 
 
@@ -113,4 +119,10 @@ textarea {
 
 :target {
     border: 2px dashed red;
+}
+
+
+.post-unseen {
+    border-left: 2px dotted blue !important;
+    /* padding-left: 5px; */
 }

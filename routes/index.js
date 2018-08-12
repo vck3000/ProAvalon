@@ -372,6 +372,8 @@ router.get("/ajax/getStatistics", function(req, res){
 					}
 				};
 
+
+				
 			//IMPORTANT, MUST KEEP THESE ROLES UP TO DATE!
 			//SHOULD MAKE AN EXTERNAL FILE OF THESE ALLIANCES
 			var resRoles = ["Merlin", "Percival", "Resistance"];

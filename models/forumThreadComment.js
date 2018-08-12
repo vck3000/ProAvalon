@@ -26,6 +26,8 @@ var commentSchema = new mongoose.Schema({
 			ref: "ForumThreadCommentReply"
 		} 
 	],
+
+	seenUsers: [String]
 });
 
 module.exports = mongoose.model("ForumThreadComment", commentSchema);

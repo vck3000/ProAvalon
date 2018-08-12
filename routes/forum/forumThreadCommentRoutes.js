@@ -45,7 +45,10 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 		timeLastEdit: new Date(),
 		likes: 0,
 		whoLiked: [],
-		replies: []
+		replies: [],
+
+		//the creator has already seen it
+		seenUsers: [req.user.username.toLowerCase()]
 	}
 
 	forumThreadComment.create(commentData, function (err, newComment) {
@@ -65,7 +68,8 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 			foundForumThread.timeLastEdit = new Date();
 			foundForumThread.whoLastEdit = req.user.username;
 
-			foundForumThread.save();
+			//now saving down the bottom
+			// foundForumThread.save();
 
 			// console.log(foundForumThread.author.id)
 
@@ -84,6 +88,12 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 
 			//redirect to same forum thread
 			res.redirect("/forum/show/" + req.params.id);
+
+			//since there is a new comment, the thread is now refreshed and no one has seen the new changes yet,
+			//except for the one who made the comment
+			foundForumThread.seenUsers = [req.user.username.toLowerCase()];
+			foundForumThread.save();
+			
 		});
 
 

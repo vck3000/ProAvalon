@@ -20,7 +20,9 @@ var replySchema = new mongoose.Schema({
 	whoLikedId: [],
 	edited: Boolean,
 
-	replyingUsername: String
+	replyingUsername: String,
+
+	seenUsers: [String]
 
 
 

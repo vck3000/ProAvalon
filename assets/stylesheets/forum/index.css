@@ -20,14 +20,16 @@ p {
     /* width: 100%; */
 }
 
-li {}
+.forumsList li {
+    margin-bottom: 1vh;
+    border: 1px solid transparent;
+}
 
 .container-fluid {
     padding: 0px;
 }
 
 .discussionContainer {
-    margin-bottom: 1vh;
     /* margin-left: -15px; */
     /* margin-right: 15px; */
 
@@ -91,4 +93,12 @@ li {}
 
 span {
     white-space:nowrap;
+}
+
+.post-unseen {
+    /* border-left-color: blue;
+    border-left-style: dotted; */
+
+    border: 1px solid blue !important; 
+
 }
