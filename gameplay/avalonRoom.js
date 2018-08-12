@@ -475,7 +475,7 @@ module.exports = function (host_, roomId_, io_) {
 					}
 					else {
 						// this.gameplayMessage = "The mission succeeded, but with " + numOfVotedFails + " fails.";
-						this.sendText(this.allSockets, "Mission " + this.missionNum + " succeeded, but with " + numOfVotedFails + " fails.", "gameplay-text-blue");
+						this.sendText(this.allSockets, "Mission " + this.missionNum + " succeeded, but with " + numOfVotedFails + " fail.", "gameplay-text-blue");
 
 					}
 

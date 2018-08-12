@@ -189,7 +189,8 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 					rooms[storedData["roomId"]].restartSaved = true;
 					rooms[storedData["roomId"]].socketsChangedOnce = false;
 					rooms[storedData["roomId"]].frozen = true;
-					
+
+					rooms[storedData["roomId"]].timeFrozenLoaded = new Date();
 		
 					rooms[storedData["roomId"]].someCutoffPlayersJoined = "no";
 					
@@ -1653,10 +1654,34 @@ function playerLeaveRoomCheckDestroy(socket){
 		rooms[socket.request.user.inRoomId].playerLeaveRoom(socket);
 		var toDestroy = rooms[socket.request.user.inRoomId].toDestroy();
 		if(toDestroy){
+			deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
 			rooms[socket.request.user.inRoomId] = undefined;
 		}
+
+		//code if frozen and more than 1hr then remove.
+		if(rooms[socket.request.user.inRoomId] 
+			&& rooms[socket.request.user.inRoomId].timeFrozenLoaded 
+			&& rooms[socket.request.user.inRoomId].getStatus() === "Frozen"){
+
+				var curr = new Date();
+				var timeToKill = 1000*60*5; //5 mins
+				if( ( curr.getTime() - rooms[socket.request.user.inRoomId].timeFrozenLoaded.getTime() ) > timeToKill){
+					deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
+					rooms[socket.request.user.inRoomId] = undefined;
+
+					console.log("Been more than " + timeToKill/1000 + " seconds, removing this frozen game.");
+				}
+				else{
+					console.log("Frozen game has only loaded for " + (curr.getTime() - rooms[socket.request.user.inRoomId].timeFrozenLoaded.getTime())/1000 + " seconds, Dont remove yet.");
+				}
+		}
+
 		socket.request.user.inRoomId = undefined;
 	}
+
+	
+
+
 }
 
 
@@ -1698,5 +1723,4 @@ function getIndexFromUsername(sockets, username, caseInsensitive){
 		}
 	}
 	return null;
-
 }
