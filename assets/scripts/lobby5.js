@@ -1171,7 +1171,7 @@ function strOfAvatar(playerData, alliance) {
         }
     }
 
-    if (gameData.lady && playerData.username === getUsernameFromIndex(gameData.lady)) {
+    if (gameData && gameData.lady && playerData.username === getUsernameFromIndex(gameData.lady)) {
 
         var nameWid = ctx.measureText(playerData.username).width;
         var widOfBox = $("#mainRoomBox div").width();
