@@ -261,19 +261,30 @@
 								<hr>
 								<% } %>
 
-								<% if(locals.userNotifications) { for(var i = 0; i < userNotifications.length; i++){ %>
+								<% if(locals.userNotifications) { for(var i = userNotifications.length - 1; i >= 0; i--){ %>
 									<% if(userNotifications[i].seen === false || userNotifications[i].seen=== undefined){ %>
 										<li class="notificationItem unseen" idOfNotif=<%=userNotifications[i]._id%>>
 									<% } else{ %>
 										<li class="notificationItem" idOfNotif=<%=userNotifications[i]._id%>>
 									<% } %>
 											<a  href="<%=userNotifications[i].link%>"><p class="notificationText"><%=userNotifications[i].text%></p></a>
-											<p><span class="notificationDate"><%=new Date(userNotifications[i].date).toDateString()%></span><span class="notificationHide" >Hide<span class="hidden userNotificationIdToRemove" ><%=userNotifications[i]._id%></span></span></p>
+
+											<%
+												// var dateToShow = new Date(userNotifications[i].date).toDateString();
+												var dateToShow = new Date(userNotifications[i].date).toLocaleString('en-GB',{hour12: true});
+
+												// if(new Date().toDateString() === dateToShow){
+												// 	dateToShow = new Date(userNotifications[i].date).
+												// }	
+											%>
+
+
+											<p><span class="notificationDate"><%=dateToShow%></span><span class="notificationHide" >Hide<span class="hidden userNotificationIdToRemove" ><%=userNotifications[i]._id%></span></span></p>
 											<!--<p><%= userNotifications[i].link %></p>-->
 											
 										</li>
 										
-										<% if(!(i === userNotifications.length - 1)) { %>
+										<% if(!(i === 0)) { %>
 											<hr>
 										<% } %>
 

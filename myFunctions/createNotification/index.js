@@ -20,7 +20,20 @@ createNotifObj.createNotification = function(userIDTarget, stringToSay, link){
 		}
 		else{
 			if(foundUser){
-				if(stringToSay.includes(foundUser.username) === false){
+				//check if the user already has the exact same notification, check by the link.
+				//mainly for duplicate likes.
+				var sameNotifExists = false;
+				for(var i = 0; i < foundUser.notifications.length; i++){
+					//if its the same link, and the same notification text
+					if(foundUser.notifications[i].link === link && foundUser.notifications[i].text === stringToSay){
+						sameNotifExists = true;
+						break;
+					}
+				}
+
+
+				//if the notification is for the person who made it (i.e. If I comment on my own post)
+				if(stringToSay.includes(foundUser.username) === false && sameNotifExists === false){
 
 					notificationVar = {
 						text: stringToSay,
