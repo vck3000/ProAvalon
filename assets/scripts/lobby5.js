@@ -1169,19 +1169,20 @@ function strOfAvatar(playerData, alliance) {
 
             role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + "Merlin?" + "</p>";
         }
-    }
+        if (gameData && gameData.lady && playerData.username === getUsernameFromIndex(gameData.lady)) {
 
-    if (gameData && gameData.lady && playerData.username === getUsernameFromIndex(gameData.lady)) {
-
-        var nameWid = ctx.measureText(playerData.username).width;
-        var widOfBox = $("#mainRoomBox div").width();
-
-        var littleProtrudingEdgeWid = (nameWid - widOfBox) / 2;
-        var offsetDist = (nameWid - littleProtrudingEdgeWid) + 5;
-
+            var nameWid = ctx.measureText(playerData.username).width;
+            var widOfBox = $("#mainRoomBox div").width();
     
-        lady = "<span class='glyphicon glyphicon-book' style='top: 50%; transform: translateY(-50%); position: absolute; right: " + offsetDist + "px'></span> ";
+            var littleProtrudingEdgeWid = (nameWid - widOfBox) / 2;
+            var offsetDist = (nameWid - littleProtrudingEdgeWid) + 5;
+    
+        
+            lady = "<span class='glyphicon glyphicon-book' style='top: 50%; transform: translateY(-50%); position: absolute; right: " + offsetDist + "px'></span> ";
+        }
     }
+
+
 
 
     //add in the hammer star
