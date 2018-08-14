@@ -411,9 +411,17 @@ router.get("/ajax/getStatistics", function(req, res){
 
 
 			
+			// User.find({}).populate("notifications").exec(function(err, users){
 
+			// 	users.sort(function(a, b){
+			// 		return b.totalTimePlayed.getTime() - a.totalTimePlayed.getTime();
+			// 	});
 
-			res.status(200).send(obj);
+				// obj.usernamesTopHoursPlayed = users.slice(0, 20);
+
+				res.status(200).send(obj);
+			// });
+
 		}
 	});
 });
