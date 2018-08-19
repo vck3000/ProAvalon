@@ -411,16 +411,27 @@ router.get("/ajax/getStatistics", function(req, res){
 
 
 			
-			// User.find({}).populate("notifications").exec(function(err, users){
+			User.find({}).populate("notifications").exec(function(err, users){
 
-			// 	users.sort(function(a, b){
-			// 		return b.totalTimePlayed.getTime() - a.totalTimePlayed.getTime();
-			// 	});
+				users.sort(function(a, b){
+					return b.totalGamesPlayed - a.totalGamesPlayed;
+				});
 
-				// obj.usernamesTopHoursPlayed = users.slice(0, 20);
+				var usernamesTopGamesPlayed = users.slice(0, 20);
+
+				var usernamesTopGamesPlayedReduced = [];
+				for(var i = 0; i < usernamesTopGamesPlayed.length; i++){
+					usernamesTopGamesPlayedReduced[i] = {};
+					
+					usernamesTopGamesPlayedReduced[i].username = usernamesTopGamesPlayed[i].username;
+					usernamesTopGamesPlayedReduced[i].totalGamesPlayed = usernamesTopGamesPlayed[i].totalGamesPlayed;
+					
+				}
+
+				obj.usernamesTopGamesPlayed = usernamesTopGamesPlayedReduced;
 
 				res.status(200).send(obj);
-			// });
+			});
 
 		}
 	});
