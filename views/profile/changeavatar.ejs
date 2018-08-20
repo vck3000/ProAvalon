@@ -1,0 +1,112 @@
+<% include ../partials/header %>
+
+<link rel="stylesheet" type="text/css" href="../stylesheets/profile.css">
+
+<style>
+    .myContainer {
+        border-radius: 50px;
+
+        padding-top: 5%;
+        padding-bottom: 5%;
+        margin-bottom: 30px;
+        color: inherit;
+        background-color: #eee;
+        
+        width:95%;
+    }
+
+    .myTable {
+        border: 1px solid black;
+        /* table-layout: fixed; */
+
+        /* width: 100%; */
+    }
+
+    .myTable tbody tr td{
+        border: 1px solid black;
+    }
+
+    .myTable thead tr td{
+        border: 1px solid black;
+    }
+
+    .table-nonfluid {
+        width: auto !important;
+    }
+
+</style>
+
+
+<div class="container myContainer">
+    <h1><u>Request an avatar!</u></h1>
+
+    <h3>Rules for avatars:</h3>
+    <div>
+        Avatars:
+        <ul>
+            <li>Must be easily identifyable as res or spy.</li>
+            <li>Must have at least 20% of the original colour (blue or red) (approximation).</li>
+            <li>Must not be inappropriate.</li>
+            <li>Must have similar Res and Spy avatars.</li>
+            <li>Must not be similar to any other existing custom avatars (unless the avatar was yours initially).</li>
+            <li>Must be 128x128 px in size.</li>
+            <li>Preferably be a png or jpeg file.</li>
+            <li>Must be publically viewable. Some image hosting websites like imgur don't like other servers grabbing data directly from them. Discord and Google drive sharing works well. Click <a href="/profile/avatargetlinktutorial">here</a> for a tutorial on how to get a good link.</li>
+        </ul>
+    </div>
+
+    <h3>Who can request a custom avatar:</h3>
+    <div>
+        Players:
+        <ul>
+            <li>Must have played at least 100 games (with the exception of old regular players).</li>
+            <li>Must be an active player of the public Resistance community.</li>
+            <li>Will not be allowed multiple avatars over a number of alternate accounts (open to discussion).</li>
+        </ul>
+    </div>
+    <br>
+
+    These requirements may or may not change in the future.
+
+    <br>
+    <br>
+
+    <h4><u>If you think your avatar meets these requirements, please fill in the form below:</u></h4>
+
+
+    <br>
+    <br>
+
+
+    <form action="/profile/<%=userData.username%>/changeavatar" method="post">
+        <div class="form-group">
+            <label for="reslink">Resistance avatar image link</label>
+            <input name="reslink" type="url" class="form-control" id="reslink" placeholder="Resistance image link">
+        </div>
+
+        <div class="form-group">
+            <label for="spylink">Spy avatar image link</label>
+            <input name="spylink" type="url" class="form-control" id="spylink" placeholder="Spy image link">
+        </div>
+
+        <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+
+
+</div>
+
+<br>
+
+
+
+
+
+
+
+
+<% include ../partials/footer %>
+
+
+
+
+

@@ -89,19 +89,18 @@ p {
   .avatarImgDiv {
       position: relative;
   }
-  /* .avatarImgDiv:hover .avatarImg {
+   .avatarImgDiv:hover .avatarImg {
     opacity: 0.3;
-    
   }
   
   .avatarImgDiv:hover .middle {
     opacity: 1;
-  } */
+  } 
 
 
   .changeAvatarText {
-    background-color: rgb(97, 97, 97);
-    color: white;
+    background-color: rgb(245, 245, 245);
+    color: rgb(0, 0, 0);
     font-size: 16px;
     padding: 4px 4px;
     text-align: center;

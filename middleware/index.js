@@ -8,6 +8,8 @@ var flash 		= require("connect-flash");
 
 var middlewareObj = {};
 
+var modsArray = require("../modsadmins/mods")
+
 
 middlewareObj.checkProfileOwnership = function (req, res, next) {
 	if (req.isAuthenticated()) {
@@ -117,6 +119,22 @@ middlewareObj.isLoggedIn = function (req, res, next) {
 	}
 	req.flash("error", "You need to be logged in to do that!");
 	res.redirect("/");
+}
+
+
+
+middlewareObj.isMod = function (req, res, next) {
+
+	if(req.isAuthenticated() && modsArray.indexOf(req.user.username.toLowerCase()) !== -1){
+		return next();
+	}
+	else{
+		console.log("not a mod");
+		req.flash("error", "You are not a moderator.");
+		res.redirect("/");
+	}
+
+
 }
 
 module.exports = middlewareObj;
