@@ -4,7 +4,7 @@ var middleware = require("../middleware");
 var sanitizeHtml = require('sanitize-html');
 var User 			= require("../models/user");
 var mongoose 		= require("mongoose");
-var avatarRequest = require("../models/avatarRequest")
+var avatarRequest = require("../models/avatarRequest");
 var createNotificationObj = require("../myFunctions/createNotification");
 
 

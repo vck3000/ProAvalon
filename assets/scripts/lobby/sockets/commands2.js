@@ -35,6 +35,9 @@ socket.on("messageCommandReturnStr", function (data) {
     else if (lastChatBoxCommand === "roomChat") {
         addToRoomChat(data);
     }
+    else{
+        addToAllChat(data);        
+    }
   // console.log("received return str");
 });
 

@@ -8,6 +8,8 @@ var myNotification	= require("../models/notification");
 var createNotificationObj = require("../myFunctions/createNotification");
 
 
+var avatarRequest = require("../models/avatarRequest");
+
 var User  = require("../models/user");
 
 const JSON = require('circular-json');
@@ -998,12 +1000,32 @@ module.exports = function (io) {
 			if(modsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1 ){
 				//send the user the list of commands
 				socket.emit("modCommands", modCommands);
+
+				avatarRequest.find({processed: false}).exec(function(err, allAvatarRequests){
+					if(err){console.log(err);}
+					else{
+						socket.emit("", modCommands);
+
+						if(allAvatarRequests.length !== 0){
+							if(allAvatarRequests.length === 1){
+								socket.emit("messageCommandReturnStr", {message: "There is " + allAvatarRequests.length + " pending custom avatar request.", classStr: "server-text"});
+							}
+							else{
+								socket.emit("messageCommandReturnStr", {message: "There are " + allAvatarRequests.length + " pending custom avatar requests.", classStr: "server-text"});
+							}
+						}
+						else{
+							socket.emit("messageCommandReturnStr", {message: "There are no pending custom avatar requests!", classStr: "server-text"});							
+						}
+					}
+				});
 			}
 
 			//if the admin name is inside the array
 			if(adminsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1 ){
 				//send the user the list of commands
 				socket.emit("adminCommands", adminCommands);
+
 			}
 
 			socket.emit("checkSettingsResetDate", dateResetRequired);
