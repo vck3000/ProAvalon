@@ -58,6 +58,13 @@
 
 
 <div class="container myContainer">
+    <div class="row">
+        <div class="searchBar pull-right" >
+            <input id="searchInput" type="text" placeholder="Search a username..." name="search">
+            <button id="searchButton"><i class="glyphicon glyphicon-search"></i></button>
+        </div>
+    </div>
+    <br>
 
     <% if(userData && userData.username){ %>
         <div class="row">
@@ -158,8 +165,14 @@
         </div>
 
     <% } else { %>
+    
+        <h1><span id="username"></span> was not found!</h1>
 
-            <h1>User not found. Please check the spelling and capital letters.</h1>
+        <script>
+            var lastBit = window.location.href.substr(window.location.href.lastIndexOf('/') + 1);
+            console.log(lastBit);
+            $("#username")[0].innerText = lastBit;
+        </script>
 
     <% } %>
 
@@ -176,6 +189,15 @@
 
 
 
+<script>
+$("#searchButton").on("click", function(e){
+    console.log($("#searchInput")[0].value);
+
+    //redirect to the correct path.
+    window.location.replace("" + $("#searchInput")[0].value);
+});
+        
+</script>
 
 
 <% if(userData && userData.username){ %>
@@ -189,7 +211,7 @@
         //     $(".avatarImg").attr("src", userData.avatarImgSpy);
         // });
 
-
+        
 
 
 

@@ -31,7 +31,7 @@ p {
 .myContainer {
     border-radius: 50px;
 
-    padding-top: 5%;
+    padding-top: 20px;
     padding-bottom: 5%;
     margin-bottom: 30px;
     color: inherit;
@@ -138,3 +138,71 @@ p {
 .statsCol2 {
     /* width: 50%; */
 }
+
+
+
+
+/* input[type=text] {
+    width: 130px;
+    -webkit-transition: width 0.4s ease-in-out;
+    transition: width 0.4s ease-in-out;
+} */
+
+/* When the input field gets focus, change its width to 100% */
+/* input[type=text]:focus {
+    width: 100%;
+} */
+
+
+
+
+
+
+/* Style the search field */
+ .searchBar input[type=text] {
+    padding: 10px;
+    font-size: 17px;
+    border: 1px solid grey;
+    float: left;
+    width: 80%;
+    background: #f1f1f1;
+
+    
+    border-radius: 15px 0px 0px 15px ;
+  } 
+  
+  /* Style the submit button */
+  .searchBar button {
+    float: left;
+    width: 20%;
+    padding: 10px;
+    background: #2196F3;
+    color: white;
+    font-size: 17px;
+    border: 1px solid grey;
+    border-left: none; /* Prevent double borders */
+    cursor: pointer;
+
+    border-radius: 0px 12px 12px 0px;
+    
+  }
+  
+  .searchBar button:hover {
+    background: #0b7dda;
+  }
+  
+  /* Clear floats */
+  .searchBar::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
+
+.searchBar{
+    box-sizing: border-box;
+    max-width: 400px;
+
+    /* margin-left: 10%; */
+    /* width: 80%; */
+}
+
