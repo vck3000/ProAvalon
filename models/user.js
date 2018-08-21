@@ -8,6 +8,8 @@ var UserSchema = new mongoose.Schema({
 	avatarImgRes: String,
 	avatarImgSpy: String,
 
+	avatarHide: Boolean,
+
 	dateJoined: Date,
 	totalTimePlayed: Date,
 

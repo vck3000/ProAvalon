@@ -1109,7 +1109,7 @@ function getUsernameFromIndex(index) {
 function strOfAvatar(playerData, alliance) {
     var picLink;
     if (alliance === "res") {
-        if (playerData.avatarImgRes && $("#option_display_original_avatars")[0].checked === false) {
+        if ((playerData.avatarImgRes && $("#option_display_original_avatars")[0].checked === false) && (!playerData.avatarHide || playerData.avatarHide === false)) {
             if(playerData.avatarImgRes.includes("http")){
                 picLink = playerData.avatarImgRes;
             }
@@ -1123,7 +1123,7 @@ function strOfAvatar(playerData, alliance) {
         }
     }
     else {
-        if (playerData.avatarImgSpy && $("#option_display_original_avatars")[0].checked === false) {
+        if ((playerData.avatarImgSpy && $("#option_display_original_avatars")[0].checked === false) && (!playerData.avatarHide || playerData.avatarHide === false)) {
             if(playerData.avatarImgSpy.includes("http")){
                 picLink = playerData.avatarImgSpy;
             }

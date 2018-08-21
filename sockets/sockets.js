@@ -517,7 +517,46 @@ var actionsObj = {
                 var args = data.args;
                 senderSocket.emit("toggleNavBar");
             }
-		}
+		},
+
+		avatarshow: {
+            command: "avatarshow",
+            help: "/avatarshow: Show your custom avatar!",
+            run: function (data, senderSocket) {
+
+				User.findOne({usernameLower: senderSocket.request.user.username.toLowerCase()}).populate("notifications").exec(function(err, foundUser){
+					foundUser.avatarHide = false;
+					foundUser.save();
+
+					var dataToReturn = {
+						message: "Successfully unhidden.",
+						classStr: "server-text"
+					}
+
+					senderSocket.emit("messageCommandReturnStr", dataToReturn);
+				});
+            }
+		},
+		avatarhide: {
+            command: "avatarhide",
+            help: "/avatarhide: Hide your custom avatar.",
+            run: function (data, senderSocket) {
+				User.findOne({usernameLower: senderSocket.request.user.username.toLowerCase()}).populate("notifications").exec(function(err, foundUser){
+					foundUser.avatarHide = true;
+					foundUser.save();
+
+					var dataToReturn = {
+						message: "Successfully hidden.",
+						classStr: "server-text"
+					}
+
+					senderSocket.emit("messageCommandReturnStr", dataToReturn);
+				});
+
+				
+				
+            }
+        },
     
     },
     

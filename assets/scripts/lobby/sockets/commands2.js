@@ -27,18 +27,26 @@ socket.on("adminCommands", function (commands) {
 }); 
 
 
-socket.on("messageCommandReturnStr", function (data) {
-    data.dateCreated = new Date();
-    if (lastChatBoxCommand === "allChat") {
-        addToAllChat(data);
+socket.on("messageCommandReturnStr", function (dataInc) {
+    if(dataInc){
+        console.log(dataInc);
+    
+        if(!dataInc.dateCreated){
+            dataInc.dateCreated = new Date();
+        }
+    
+        if (lastChatBoxCommand === "allChat") {
+            addToAllChat(dataInc);
+        }
+        else if (lastChatBoxCommand === "roomChat") {
+            addToRoomChat(dataInc);
+        }
+        else{
+            addToAllChat(dataInc);        
+        }
+      // console.log("received return str");
     }
-    else if (lastChatBoxCommand === "roomChat") {
-        addToRoomChat(data);
-    }
-    else{
-        addToAllChat(data);        
-    }
-  // console.log("received return str");
+    
 });
 
 var timeLastBuzzSlap;
