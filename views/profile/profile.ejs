@@ -76,9 +76,7 @@
                             <img class="avatarImg" src="../avatars/base-res.png  " >
                         <% } %>
 
-                        <div class="middle">
-                            <a class="changeAvatarText" href="/profile/<%=userData.username%>/changeavatar">Change avatar</a>
-                        </div>
+                        
 
                     </div>
                     <div class="col-xs-6 col-md-9">
@@ -186,6 +184,49 @@
     var userData;
 
     $( document ).ready(function() {
+
+        // $(".avatarImg").on("hover", function(){
+        //     $(".avatarImg").attr("src", userData.avatarImgSpy);
+        // });
+
+
+
+
+
+        $( ".avatarImg" ).hover(
+            function() {
+                var str = "";
+                if(userData.avatarImgSpy){ 
+                    if(userData.avatarImgSpy.includes("http")){ 
+                        str = "<%=userData.avatarImgSpy%>";
+                    } else {
+                        str = "../avatars/<%=userData.avatarImgSpy%>";
+                    } 
+                } else{ 
+                    str = "../avatars/base-spy.png";
+                } 
+
+                console.log("spy");
+                $(".avatarImg").attr("src", str);
+            }, 
+            
+            function() {
+                var str = "";
+                if(userData.avatarImgRes){ 
+                    if(userData.avatarImgRes.includes("http")){ 
+                        str = "<%=userData.avatarImgRes%>";
+                    } else {
+                        str = "../avatars/<%=userData.avatarImgRes%>";
+                    } 
+                } else{ 
+                    str = "../avatars/base-res.png";
+                } 
+
+                console.log("res");
+                $(".avatarImg").attr("src", str);
+            }
+          );
+
         $(function () {
             $('[data-toggle="tooltip"]').tooltip();
         });

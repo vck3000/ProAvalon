@@ -90,11 +90,11 @@ p {
       position: relative;
   }
    .avatarImgDiv:hover .avatarImg {
-    opacity: 0.3;
+    /* opacity: 0.3; */
   }
   
   .avatarImgDiv:hover .middle {
-    opacity: 1;
+    /* opacity: 1; */
   } 
 
 

@@ -5,6 +5,10 @@ To-do list:
 
 - black font whith yellow highlight on dark theme
 
+-option to hide joined/left game
+-Show default original avatars
+-hide your own avatar
+-hide stats option
 
 - option for space under status bar
 
