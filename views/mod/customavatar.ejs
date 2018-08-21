@@ -34,7 +34,7 @@
 
     .alignCenterHoriz{
         text-align: center;
-        background: rgb(100,100,100);
+        background: rgb(200,200,200);
     }
 
 
@@ -106,6 +106,7 @@
                             <div class="panel-body alignCenterHoriz">
                                 <img class="avatarImg" src=<%= avreq.resLink %>>
                                 <div class="imgdimensions">Loading</div>
+                                <div class="link"></div>
                             </div>
                         </div>
                     </div>
@@ -115,6 +116,7 @@
                             <div class="panel-body alignCenterHoriz">
                                 <img class="avatarImg" src=<%= avreq.spyLink %>>
                                 <div class="imgdimensions">Loading</div>
+                                <div class="link"></div>
                                 
                             </div>
                         </div>
@@ -160,6 +162,7 @@ $( document ).ready(function() {
     
     setInterval(function(){
         var imgdimensions = $(".imgdimensions");
+        var links = $(".link");
 
         console.log(imgdimensions);
         console.log("test");
@@ -172,6 +175,8 @@ $( document ).ready(function() {
     
     
             imgdimensions[i].innerText = x + "x" + y + " px";
+
+            links[i].innerText = $(imgdimensions[i].parentElement.children[0]).attr("src");
         }
     }, 1000);
     

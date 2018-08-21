@@ -145,8 +145,8 @@ router.post("/:profileUsername/changeavatar",middleware.checkProfileOwnership, f
 	var avatarRequestData = {
 		forUsername: req.params.profileUsername.toLowerCase(),
 
-		resLink: req.body.reslink,
-		spyLink: req.body.spylink,
+		resLink: sanitizeHtml(req.body.reslink),
+		spyLink: sanitizeHtml(req.body.spylink),
 
 		dateRequested: new Date(),
 
@@ -195,6 +195,8 @@ router.post("/:profileUsername",middleware.checkProfileOwnership , function(req,
 	if(typeof(req.body.nationCode) === "array" || typeof(req.body.nationCode) === "object"){
 		req.body.nationCode = req.body.nationCode[req.body.nationCode.length-1];
 	}
+
+
 
 
 	User.find({usernameLower: req.params.profileUsername.toLowerCase()}).populate("notifications").exec(function(err, foundUser){
