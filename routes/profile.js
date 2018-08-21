@@ -89,12 +89,18 @@ router.post("/mod/ajax/processavatarrequest", middleware.isLoggedIn, middleware.
 			}
 
 			else if(req.body.decision === false || req.body.decision === "false"){
+				console.log("search lower user: " + foundReq.forUsername.toLowerCase());
+				
 				User.findOne({usernameLower: foundReq.forUsername.toLowerCase()}).populate("notifications").exec(function(err, foundUser){
 					if(err){console.log(err);}
 					else{
 						var str = "Your avatar request was rejected by " + foundReq.modWhoProcessed + ".";
 						
-						str += " Their comment was: " + foundReq.modComment;
+						if(foundReq.modComment){
+							str += " Their comment was: " + foundReq.modComment;
+						}
+
+						console.log("string: " + str);
 						
 
 						// createNotifObj.createNotification = function(userIDTarget, stringToSay, link){

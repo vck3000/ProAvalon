@@ -231,6 +231,22 @@ var userOptions = {
         }
     },
 
+    optionDisplayOriginalAvatars: {
+        defaultValue: "false",
+        onLoad: function(){
+            if (docCookies.getItem("optionDisplayOriginalAvatars") === "true") {
+                $("#option_display_original_avatars")[0].checked = true;
+            }
+        },
+        initialiseEventListener: function(){
+            $("#option_display_original_avatars")[0].addEventListener("click", function () {
+                //save their option in cookie
+                draw();
+                docCookies.setItem("optionDisplayOriginalAvatars", checked.toString(), Infinity);
+            });
+        }
+    },
+
     //---------------------------------------------
     //Sound Notifications
     //---------------------------------------------

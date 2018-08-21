@@ -9,6 +9,8 @@ To-do list:
 -Show default original avatars
 -hide your own avatar
 -hide stats option
+-search bar for profiles
+
 
 - option for space under status bar
 
