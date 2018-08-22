@@ -1734,7 +1734,7 @@ function playerLeaveRoomCheckDestroy(socket){
 				var timeToKill = 1000*60*5; //5 mins
 				// var timeToKill = 1000*10; //10s
 				if( ( curr.getTime() - rooms[socket.request.user.inRoomId].timeFrozenLoaded.getTime() ) > timeToKill){
-					// deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
+					deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
 					rooms[socket.request.user.inRoomId] = undefined;
 
 					console.log("Been more than " + timeToKill/1000 + " seconds, removing this frozen game.");
