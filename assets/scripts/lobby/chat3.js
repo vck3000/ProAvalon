@@ -237,7 +237,7 @@ function addToRoomChat(data) {
 
 
 
-                var spectatorClass = "";
+                var addClass = "";
                 var muteSpectators = $(".muteSpecs")[0].checked;
                 //if they dont exist in players in room, if game is started, and if mute spectators
                 var thisMessageSpectator = false;
@@ -247,16 +247,31 @@ function addToRoomChat(data) {
                 if(oldSpectators.indexOf(data[i].username) !== -1 && gameStarted === true && muteSpectators === true){
                     //this message is muted. 
                     //dont do anything
-                    spectatorClass = "hidden-spectator-chat spectator-chat";
+                    addClass = "hidden-spectator-chat spectator-chat";
                     thisMessageSpectator = true;
                     
                 }
                 else{
                     if(oldSpectators.indexOf(data[i].username) !== -1 && gameStarted === true){
-                        spectatorClass = "spectator-chat";
+                        addClass = "spectator-chat";
                         thisMessageSpectator = true;
                     }
                 }
+
+                var muteJoinLeave = $(".mutejoinleave")[0].checked;
+                //if they dont exist in players in room, if game is started, and if mute spectators
+                var thisMessageJoinLeave = false;
+                console.log(data[i].classStr);
+                console.log(muteJoinLeave);
+
+                if(data[i].classStr === "server-text-teal" && muteJoinLeave === true){
+                    thisMessageJoinLeave = true;
+                    addClass += " hidden-spectator-chat";
+                    
+                }
+
+
+
 
 
                 //prevent XSS injection
@@ -275,11 +290,11 @@ function addToRoomChat(data) {
 
                     //if its a server text or special text
                     if (data[i].classStr && data[i].classStr !== "") {
-                        str = "<li class='" + data[i].classStr + "'><span class='date-text'>" + date + "</span> " + filteredMessage;
+                        str = "<li class='" + data[i].classStr + " " + addClass + "'><span class='date-text'>" + date + "</span> " + filteredMessage;
                     }
                     //its a user's chat so put some other stuff on it
                     else {
-                        str = "<li class='" + spectatorClass + "'><span style='background-color: " + highlightChatColour + "' username='" + data[i].username + "'><span class='date-text'> " + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + filteredMessage + "</span></li>";
+                        str = "<li class='" + addClass + "'><span style='background-color: " + highlightChatColour + "' username='" + data[i].username + "'><span class='date-text'> " + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + filteredMessage + "</span></li>";
                     }
 
                     //if they've muted this player, then just dont show anything. reset str to nothing.
@@ -296,7 +311,7 @@ function addToRoomChat(data) {
                 else{
                     var strings = filteredMessage.split("[");
 
-                    str = "<li class='" + spectatorClass + "'><span username='" + data[i].username + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + "Quoting:" + "</span></li>";
+                    str = "<li class='" + addClass + "'><span username='" + data[i].username + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + "Quoting:" + "</span></li>";
 
                 // console.log("Strings: ");
 
@@ -307,7 +322,7 @@ function addToRoomChat(data) {
                     }
 
                     for(var j = 1; j < goFor; j++){
-                        str += "<li class='myQuote " + spectatorClass + "'>" + "[" + strings[j] + "</li>";
+                        str += "<li class='myQuote " + addClass + "'>" + "[" + strings[j] + "</li>";
                     // console.log(strings[j]);
                     }
 
@@ -321,9 +336,12 @@ function addToRoomChat(data) {
                     scrollDown("room-chat-room2");
                 }
 
-                if(thisMessageSpectator === true && muteSpectators === true){
+                if(thisMessageSpectator === true && muteSpectators === true ){
                     //if the person talking is a spectator, and if mute spectators is checked,
                     //then dont show yellow notification. Otherwise show.
+                }
+                else if(thisMessageJoinLeave === true && muteJoinLeave === true){
+                    //It is a message that is joining or leaving
                 }
                 else{
                     //yellow notification on the tabs in room.
@@ -385,6 +403,27 @@ $(".muteSpecs").on("change", function(e){
     else{
         $(".spectator-chat").removeClass("hidden-spectator-chat");        
     }
-
 });
 
+
+//When the player presses the mmute specs button
+$(".mutejoinleave").on("change", function(e){
+    // console.log(e);
+    // console.log(e.target.checked);
+
+    var muteButtons = $(".mutejoinleave");
+    
+    for(var i = 0; i < muteButtons.length; i++){
+        muteButtons[i].checked = e.target.checked;
+    }
+
+    //Note! Careful here, we only use this server-text-teal class for
+    //player joining and leaving so thats why it works
+    //if in the future we add more teal server text it will hide those too!
+    if(e.target.checked === true){
+        $(".server-text-teal").addClass("hidden-spectator-chat");
+    }
+    else{
+        $(".server-text-teal").removeClass("hidden-spectator-chat");        
+    }
+});

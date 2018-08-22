@@ -6,10 +6,8 @@ To-do list:
 - black font whith yellow highlight on dark theme
 
 -option to hide joined/left game
--Show default original avatars
--hide your own avatar
+
 -hide stats option
--search bar for profiles
 
 
 - option for space under status bar
@@ -377,3 +375,7 @@ space out the tabs.
 - [00:50] hakha3: Waiting for pmoomm to shoot Merlin.... (dots)
 -Jed bug: Percy cant see merlins and thinks theyre vt
 PERHAPS ITS FIXED NOW WITH THE SOCKETS REFACTOR?
+
+-search bar for profiles
+-Show default original avatars
+-hide your own avatar
