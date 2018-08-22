@@ -190,6 +190,18 @@
 
 
 <script>
+
+$("#searchInput").on("keydown", function(e){
+    // console.log(e.keyCode);
+
+    if(e.keyCode === 13){
+        console.log($("#searchInput")[0].value);
+
+        //redirect to the correct path.
+        window.location.replace("" + $("#searchInput")[0].value);
+    }
+});
+
 $("#searchButton").on("click", function(e){
     console.log($("#searchInput")[0].value);
 
