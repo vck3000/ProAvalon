@@ -403,6 +403,9 @@ $(".muteSpecs").on("change", function(e){
     else{
         $(".spectator-chat").removeClass("hidden-spectator-chat");        
     }
+
+    scrollDown("room-chat-room", true);
+    scrollDown("room-chat-room2", true);
 });
 
 
@@ -426,4 +429,7 @@ $(".mutejoinleave").on("change", function(e){
     else{
         $(".server-text-teal").removeClass("hidden-spectator-chat");        
     }
+
+    scrollDown("room-chat-room", true);
+    scrollDown("room-chat-room2", true);
 });
