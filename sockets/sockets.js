@@ -1312,6 +1312,14 @@ module.exports = function (io) {
 			if(toContinue){
 				console.log("allchat: " + data.message + " by: " + socket.request.user.username);
 				//get the username and put it into the data object
+
+				var validUsernames = getPlayerUsernamesFromAllSockets();
+
+				//if the username is not valid, i.e. one that they actually logged in as
+				if(validUsernames.indexOf(socket.request.user.username) === -1){
+					break;
+				}
+
 				data.username = socket.request.user.username;
 				//send out that data object to all other clients (except the one who sent the message)
 				data.message = textLengthFilter(data.message);
@@ -1331,6 +1339,14 @@ module.exports = function (io) {
 			if(toContinue){
 				console.log("roomchat: " + data.message + " by: " + socket.request.user.username);
 				//get the username and put it into the data object
+
+				var validUsernames = getPlayerUsernamesFromAllSockets();
+
+				//if the username is not valid, i.e. one that they actually logged in as
+				if(validUsernames.indexOf(socket.request.user.username) === -1){
+					break;
+				}
+				
 				data.username = socket.request.user.username;
 
 				data.message = textLengthFilter(data.message);
