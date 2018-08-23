@@ -67,7 +67,7 @@ app.use(function (req, res, next) {
 //HTTPS REDIRECT
 // console.log("b");
 // console.log(process.env.MY_PLATFORM);
-if(process.env.MY_PLATFORM === "online"){
+if(process.env.MY_PLATFORM === "online" || process.env.MY_PLATFORM === "staging"){
 	app.use(function(request, response, next){
 		// console.log("A");
 		if(request.headers["x-forwarded-proto"] !== "https"){
