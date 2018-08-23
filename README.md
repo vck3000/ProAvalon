@@ -82,4 +82,4 @@ When contributing, please make a new branch and then make pull request. If you r
 
 ## Acknowledgments
 
-* Ref-rain and Hakha3 for their user feedback and support for the site.
+* Ref-rain and Hakha3 for their immense suppport and continuous user feedback for the site.
