@@ -1,0 +1,32 @@
+{
+  "name": "ProAvalon",
+  "scripts": {
+  },
+  "env": {
+    "DATABASEURL": {
+      "required": true
+    },
+    "MY_PLATFORM": {
+      "required": true
+    },
+    "MY_SECRET_GOOGLE_CAPTCHA_KEY": {
+      "required": true
+    },
+    "MY_SECRET_KEY": {
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "addons": [
+
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}
