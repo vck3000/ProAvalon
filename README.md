@@ -72,6 +72,9 @@ There is also a middleware folder which contains useful functions mainly for aut
 
 Other Useful global functions can be found under the myFunctions folder. 
 
+Note: When registering, no captcha is required for local and staging environments. So feel free to ignore the error message you see when registering a new account on those environments.
+
+
 ## Contributing
 If you are new to coding and would like to help contribute, I highly recommend this course on Udemy made by Colt Steel [(Click here)](https://www.udemy.com/the-web-developer-bootcamp/). It gave me the starting nudge I needed to make this site. Small contributions are always welcome!
 
