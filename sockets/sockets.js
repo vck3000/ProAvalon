@@ -1317,7 +1317,7 @@ module.exports = function (io) {
 
 				//if the username is not valid, i.e. one that they actually logged in as
 				if(validUsernames.indexOf(socket.request.user.username) === -1){
-					break;
+					return;
 				}
 
 				data.username = socket.request.user.username;
@@ -1344,9 +1344,9 @@ module.exports = function (io) {
 
 				//if the username is not valid, i.e. one that they actually logged in as
 				if(validUsernames.indexOf(socket.request.user.username) === -1){
-					break;
+					return;
 				}
-				
+
 				data.username = socket.request.user.username;
 
 				data.message = textLengthFilter(data.message);
