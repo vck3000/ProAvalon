@@ -34,7 +34,7 @@ router.post("/",sanitiseUsername,/* usernameToLowerCase, */function(req, res){
 	// var escapedUsername = escapeText(req.body.username);
 	
 	//if we are local, we can skip the captcha
-	if(process.env.MY_PLATFORM === "local"){
+	if(process.env.MY_PLATFORM === "local" || process.env.MY_PLATFORM === "staging"){
 		//duplicate code as below
 		var newUser = new User({
 			username: req.body.username,
