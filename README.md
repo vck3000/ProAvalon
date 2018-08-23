@@ -75,7 +75,7 @@ Other Useful global functions can be found under the myFunctions folder.
 ## Contributing
 If you are new to coding and would like to help contribute, I highly recommend this course on Udemy made by Colt Steel [(Click here)](https://www.udemy.com/the-web-developer-bootcamp/). It gave me the starting nudge I needed to make this site. Small contributions are always welcome!
 
-When contributing, please make a pull request. If you require any help, throw me a message through discord or through the server. (Link to the server is included in this Github repository)
+When contributing, please make a new branch and then make pull request. If you require any help, throw me a message through discord or through the server. (Link to the server is included in this Github repository)
 
 ## Acknowledgments
 
