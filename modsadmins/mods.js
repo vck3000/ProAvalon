@@ -2,7 +2,8 @@
 
 //all in lower case
 var modsArray = [
-    "pronub"
+    "pronub",
+    "bocaben"
 ];
 
 module.exports = modsArray;

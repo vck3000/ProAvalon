@@ -99,6 +99,7 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.set("view engine", "ejs");
+//if the production site, then use a cache that lasts for 30 mins.
 if(process.env.MY_PLATFORM === "online"){
 	app.use(express.static("assets", {maxAge: 1800000})); //expires in 30 minutes.
 }
