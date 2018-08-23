@@ -609,13 +609,24 @@ module.exports = router;
 
 
 function usernameContainsBadCharacter(str){
+	//only allow alphanumerical
+	var regx = /^[A-Za-z0-9]+$/;
+	  
 	if(str.includes('&amp;') || 
 			str.includes('&lt;') ||
 			str.includes('&gt;') ||
 			str.includes('&apos;') ||
 			str.includes('&quot;') ||
 			str.includes("[") ||
-			str.includes("]")) {
+			str.includes("]") ||
+			str.includes("/") ||
+			str.includes("\\") ||
+			str.includes("&") ||
+			str.includes(";")
+		){
+		return true;
+	}
+	else if(!regx.test(str)){
 		return true;
 	}
 	else{

@@ -191,7 +191,12 @@ router.post("/:profileUsername",middleware.checkProfileOwnership , function(req,
 	console.log(req.body.nationality);
 	console.log(req.body.nationCode);
 
-	if(req.body.biography && req.body.nationality && req.body.nationCode){
+
+	if(!req.body.biography){
+		req.body.biography = "";
+	}
+
+	if(req.body.nationality && req.body.nationCode){
 		//some browsers are screwing up and sending two nation codes back
 		if(typeof(req.body.nationCode) === "array" || typeof(req.body.nationCode) === "object"){
 			req.body.nationCode = req.body.nationCode[req.body.nationCode.length-1];
@@ -230,6 +235,12 @@ router.post("/:profileUsername",middleware.checkProfileOwnership , function(req,
 			}
 		});
 	}
+	else{
+		res.redirect("/profile/" + req.params.profileUsername);
+
+	}
+
+	
 	
 });
 
