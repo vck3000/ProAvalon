@@ -13,9 +13,7 @@ var express = require("express"),
 	LocalStrategy = require("passport-local"),
 	passportSocketIo = require("passport.socketio"),
 	cookieParser = require('cookie-parser'),
-	flash = require("connect-flash"),
-
-	seedDB = require("./seeds");
+	flash = require("connect-flash")
 
 var port = process.env.PORT || 80;
 
