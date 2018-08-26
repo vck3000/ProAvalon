@@ -586,16 +586,6 @@ var actionsObj = {
                 }
             }
         },
-    
-        modtest: {
-            command: "modtest",
-            help: "/modtest: Testing that only mods can access this command",
-            run: function (data) {
-                var args = data.args;
-                //do stuff
-                return {message: "modtest has been run.", classStr: "server-text"};
-            }
-        },
         mhelp: {
             command: "mhelp",
             help: "/mhelp: show commands.",
@@ -647,7 +637,7 @@ var actionsObj = {
                                 senderSocket.emit("messageCommandReturnStr", {message: "Successfully unbanned " + args[1] + ".", classStr: "server-text"});					
     
     
-                                //load up all the modActions that are not released yet
+                                //load up all the modActions again to update
                                 modAction.find({whenRelease: {$gt: new Date()}, type: "mute"}, function(err, allModActions){
                                     currentModActions = [];
                                     for(var i = 0; i < allModActions.length; i++){
@@ -684,7 +674,13 @@ var actionsObj = {
 					]
 				}, function(err, foundModActions){
                     foundModActions.forEach(function(modActionFound){
-                        var message = modActionFound.bannedPlayer.username + " was banned for " + modActionFound.reason + " by " + modActionFound.modWhoBanned.username + ": '" + modActionFound.descriptionByMod + "' until: " + modActionFound.whenRelease.toString();
+						var message = "";
+						if(modActionFound.type === "ban"){
+							message = modActionFound.bannedPlayer.username + " was banned for " + modActionFound.reason + " by " + modActionFound.modWhoBanned.username + ", description: '" + modActionFound.descriptionByMod + "' until: " + modActionFound.whenRelease.toString();
+						}
+						else if(modActionFound.type === "mute"){
+							message = modActionFound.bannedPlayer.username + " was muted for " + modActionFound.reason + " by " + modActionFound.modWhoBanned.username + ", description: '" + modActionFound.descriptionByMod + "' until: " + modActionFound.whenRelease.toString();
+						}	
     
                         dataToReturn[dataToReturn.length] = {message: message, classStr: "server-text"};
                     });
@@ -695,27 +691,7 @@ var actionsObj = {
                     else{
                         senderSocket.emit("messageCommandReturnStr", dataToReturn);
                     }
-    
                 });
-    
-    
-    
-    
-                // for (var key in modCommands) {
-                // 	if (modCommands.hasOwnProperty(key)) {
-                // 		if(!modCommands[key].modsOnly){
-                // 			// console.log(key + " -> " + p[key]);
-                // 			dataToReturn[i] = {message: modCommands[key].help, classStr: "server-text"};
-                // 			// str[i] = userCommands[key].help;
-                // 			i++;
-                // 			//create a break in the chat
-                // 			// data[i] = {message: "-------------------------", classStr: "server-text"};
-                // 			// i++;
-                // 		}
-                // 	}
-                // }
-                // return dataToReturn;
-                
             }
 		},
 		mcompareips: {
@@ -773,7 +749,7 @@ var actionsObj = {
 
 				senderSocket.emit("messageCommandReturnStr", dataToReturn);
 				
-                return 
+                return;
             }
 		},
 		mdc: {
@@ -783,12 +759,12 @@ var actionsObj = {
                 var args = data.args;
     
                 if(!args[1]){
-					senderSocket.emit("messageCommandReturnStr", {message: "Specify a username", classStr: "server-text"});
+					senderSocket.emit("messageCommandReturnStr", {message: "Specify a username.", classStr: "server-text"});
                     return;
 				}
 				
 
-				var targetSock = allSockets[getIndexFromUsername(allSockets, args[1])];
+				var targetSock = allSockets[getIndexFromUsername(allSockets, args[1], true)];
                 if (targetSock) {
 					targetSock.disconnect();
 					senderSocket.emit("messageCommandReturnStr", {message: "Disconnected " + args[1] + " successfully.", classStr: "server-text"});
@@ -836,18 +812,43 @@ var actionsObj = {
 						}
 					}
 				});
+                return;
+            }
+		},
+		
+		mwhisper: {
+            command: "mwhisper",
+            help: "/mwhisper <player name> <text to send>: Sends a whisper to a player.",
+            run: async function (data, senderSocket) {
+				var args = data.args;
+				var str = "";
+				for(var i = 2; i < args.length; i++){
+					str += args[i];
+					str += " ";
+				}
 
+				str += ("(From: " + senderSocket.request.user.username + ")");
+
+				var dataMessage = {
+					messeage: str,
+					dateCreated: new Date(),
+					classStr: "whisper"
+				}
 				
+				var sendToSocket = allSockets[getIndexFromUsername(allSockets, args[1], true)];
+
+				if(!sendToSocket){
+					senderSocket.emit("messageCommandReturnStr", {message: "Could not find " + args[1], classStr: "server-text"});
+				}
+				else{
+					sendToSocket.emit("whisper", str);
+				}
+
 				
 
                 return;
             }
-        }
-    
-    
-    
-    
-        
+		}
     },
     
     adminCommands: {
@@ -962,13 +963,9 @@ var actionsObj = {
 				}
 				
 
-                return 
+                return;
             }
-		},
-
-
-
-		
+		}
     }
 }
 
@@ -1138,27 +1135,22 @@ module.exports = function (io) {
 
 			if(modsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1){
 				// var parsedData = JSON.parse(data);
-				console.log(data);
-
 				var newModAction = {};
-
-				console.log("a");
-
-				var leave = false;
+				var userNotFound = false;
 
 				data.forEach(async function(item){
 					console.log("b");
 					if(item.name === "banPlayerUsername"){
 						console.log("b(a)");
 						//not case sensitive
-						await User.find({username: item.value}, function(err, foundUser){
+						await User.findOne({usernameLower: item.value.toLowerCase()}, function(err, foundUser){
 							if(err){console.log(err);}
 							else{
-								foundUser = foundUser[0];
+								// foundUser = foundUser[0];
 								console.log("b(b)");
 								if(!foundUser){
 									socket.emit("messageCommandReturnStr", {message: "User not found. Please check spelling and caps.", classStr: "server-text"});
-									leave = true;
+									userNotFound = true;
 									return;
 								}
 								// console.log(foundUser);
@@ -1198,7 +1190,7 @@ module.exports = function (io) {
 
 				console.log("c");
 
-				if(leave === true){
+				if(userNotFound === true){
 					return;
 				}
 				
