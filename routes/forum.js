@@ -36,7 +36,7 @@ router.get("/", middleware.isLoggedIn, function (req, res) {
 	res.redirect("/forum/page/1");
 });
 
-
+//Player liking a thing
 // router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function(req, res){
 router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function(req, res){
 	console.log("Routed here");
@@ -46,14 +46,6 @@ router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function(req, res){
 	forumId = splitted[0];
 	commentId = splitted[1];
 	replyId = splitted[2];
-
-	// console.log(req.params.bigId);
-	// console.log(forumId);
-	// console.log(commentId);
-	// console.log(replyId);
-	// console.log(req.params.type);
-	
-
 
 	forumThread.findById(forumId).populate("comments").exec(function(err, foundThread){
 		if(!foundThread){
@@ -376,7 +368,7 @@ router.get("/page/:pageNum", middleware.isLoggedIn, function (req, res) {
 });
 
 
-router.post("/modAction", function(req, res){
+router.post("/modAction", middleware.isMod, function(req, res){
 	console.log(req.body);
 	console.log("Reached forum mod action.");
 
@@ -465,7 +457,7 @@ router.post("/modAction", function(req, res){
 
 
 
-router.post("/pinThread", function(req, res){
+router.post("/pinThread", middleware.isMod, function(req, res){
 	console.log(req.body);
 	console.log("Reached pin thread.");
 
