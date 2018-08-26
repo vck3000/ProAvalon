@@ -15,7 +15,7 @@ What things you need to install the software and how to install them
 
 ### Installing
 
-1. Fetch (using git) a copy of the code:
+1. Clone (using git) a copy of the code:
 ```
 cd C:/YourFolder
 git clone https://github.com/vck3000/ProAvalon.git
