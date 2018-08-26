@@ -146,9 +146,9 @@ function addToAllChat(data) {
                 if (min < 10) { min = "0" + min; }
                 date = "[" + hour + ":" + min + "]"; 
 
-                if(!data[i].dateCreated){
-                    date = "[" + "]";                 
-                }
+                // if(!data[i].dateCreated){
+                //     date = "[" + "]";
+                // }
 
 
 
@@ -231,9 +231,9 @@ function addToRoomChat(data) {
                 if (min < 10) { min = "0" + min; }
                 date = "[" + hour + ":" + min + "]"; 
 
-                if(!data[i].dateCreated){
-                    date = "[" + "]";                 
-                }
+                // if(!data[i].dateCreated){
+                //     date = "[" + "]";                 
+                // }
 
 
 

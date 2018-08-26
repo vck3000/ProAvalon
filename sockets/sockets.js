@@ -209,6 +209,7 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 });
 
 
+var lastWhisperObj = {};
 var actionsObj = {
     userCommands: {
         help: {
@@ -556,8 +557,48 @@ var actionsObj = {
 				
 				
             }
-        },
-    
+		},
+		r: {
+            command: "r",
+            help: "/r: Reply to a mod who just messaged you.",
+            run: function (data, senderSocket) {
+				
+				var args = data.args;
+				var str = senderSocket.request.user.username + " (whisper): ";
+				for(var i = 1; i < args.length; i++){
+					str += args[i];
+					str += " ";
+				}
+
+				// str += ("(From: " + senderSocket.request.user.username + ")");
+
+				var dataMessage = {
+					message: str,
+					dateCreated: new Date(),
+					classStr: "whisper"
+				};
+				
+				//this sendToSocket is the moderator
+				var sendToSocket = allSockets[getIndexFromUsername(allSockets, lastWhisperObj[senderSocket.request.user.username], true)];
+
+				if(!sendToSocket){
+					senderSocket.emit("messageCommandReturnStr", {message: "You haven't been whispered to before.", classStr: "server-text"});
+				}
+				else{
+					sendToSocket.emit("allChatToClient", dataMessage);
+					sendToSocket.emit("roomChatToClient", dataMessage);
+
+					//set the last whisper person
+					lastWhisperObj[sendToSocket.request.user.username] = senderSocket.request.user.username;
+
+					lastWhisperObj[senderSocket.request.user.username] = sendToSocket.request.user.username;
+
+					senderSocket.emit("allChatToClient", dataMessage);
+					senderSocket.emit("roomChatToClient", dataMessage);
+				}
+				return;
+            }
+        }
     },
     
     
@@ -821,16 +862,16 @@ var actionsObj = {
             help: "/mwhisper <player name> <text to send>: Sends a whisper to a player.",
             run: async function (data, senderSocket) {
 				var args = data.args;
-				var str = "";
+				var str = senderSocket.request.user.username + " (whisper): ";
 				for(var i = 2; i < args.length; i++){
 					str += args[i];
 					str += " ";
 				}
 
-				str += ("(From: " + senderSocket.request.user.username + ")");
+				// str += ("(From: " + senderSocket.request.user.username + ")");
 
 				var dataMessage = {
-					messeage: str,
+					message: str,
 					dateCreated: new Date(),
 					classStr: "whisper"
 				}
@@ -841,12 +882,27 @@ var actionsObj = {
 					senderSocket.emit("messageCommandReturnStr", {message: "Could not find " + args[1], classStr: "server-text"});
 				}
 				else{
-					sendToSocket.emit("whisper", str);
+					//send notification that you can do /r for first whisper message
+					if(!lastWhisperObj[sendToSocket.request.user.username]){
+						sendToSocket.emit("allChatToClient", {message: "You can do /r <message> to reply.", classStr: "whisper", dateCreated: new Date()});
+						sendToSocket.emit("roomChatToClient", {message: "You can do /r <message> to reply.", classStr: "whisper", dateCreated: new Date()});
+					}
+
+
+					sendToSocket.emit("allChatToClient", dataMessage);
+					sendToSocket.emit("roomChatToClient", dataMessage);
+
+					senderSocket.emit("allChatToClient", dataMessage);
+					senderSocket.emit("roomChatToClient", dataMessage);
+					
+					//set the last whisper person
+					lastWhisperObj[sendToSocket.request.user.username] = senderSocket.request.user.username;
+
+					lastWhisperObj[senderSocket.request.user.username] = sendToSocket.request.user.username;
 				}
 
-				
-
                 return;
+				
             }
 		}
     },

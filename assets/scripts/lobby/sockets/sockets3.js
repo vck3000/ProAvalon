@@ -11,6 +11,8 @@ socket.on("allChatToClient", function (data) {
 
 socket.on("roomChatToClient", function (data) {
     addToRoomChat(data);
+    console.log("Add to room chat");
+    console.log(data);
 });
 
 socket.on("joinedGameSuccess", function(data){

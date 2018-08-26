@@ -90,8 +90,9 @@ socket.on("game-data", function (data) {
             if(gameData.alliance){
                 var str = "You are a " + gameData.alliance + ". Your role is " + gameData.role + ".";
                 data = {
-                    classStr: "server-text",
-                    message: str
+                    classStr: "server-text noselect",
+                    message: str,
+                    dateCreated: new Date()
                 }
                 addToRoomChat(data);
             }
