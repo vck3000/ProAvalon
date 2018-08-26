@@ -24,7 +24,7 @@ router.get("/", function(req, res){
 
 //register route
 router.get("/register", function(req, res){
-	res.render("register");
+	res.render("register", {platform: process.env.MY_PLATFORM});
 });
 
 //Post of the register route
