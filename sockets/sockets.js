@@ -903,6 +903,31 @@ var actionsObj = {
                 return;
 				
             }
+		},
+
+		mremoveavatar: {
+            command: "mremoveavatar",
+            help: "/mremoveavatar <player name>: Remove <player name>'s avatar.",
+            run: async function (data, senderSocket) {
+                var args = data.args;
+    
+                if(!args[1]){
+					senderSocket.emit("messageCommandReturnStr", {message: "Specify a username.", classStr: "server-text"});
+                    return;
+				}
+				
+				User.findOne({usernameLower: args[1].toLowerCase()}).populate("notifications").exec(function(err, foundUser){
+					if(err){console.log(err);}
+					else{
+						foundUser.avatarImgRes = "";
+						foundUser.avatarImgSpy = "";
+						foundUser.save();
+
+						senderSocket.emit("messageCommandReturnStr", {message: "Successfully removed " + args[1] + "'s avatar.", classStr: "server-text"});
+					}
+				});
+                return;
+            }
 		}
     },
     

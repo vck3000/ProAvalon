@@ -14,6 +14,7 @@ To-do list:
 - people can still edit deleted messages
 - direct messages
 
+
 - message on the register page saying to ignore if staging site
 
 -hide stats option
