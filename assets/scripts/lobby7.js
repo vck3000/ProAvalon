@@ -933,7 +933,11 @@ function enableDisableButtons() {
             disableButtons();
             document.querySelector("#red-button").classList.remove("disabled");
             document.querySelector("#red-button").innerText = "Stand up";
-            
+        }
+
+        if(ownUsername !== getUsernameFromIndex(0)){
+            $("#red-button").attr("data-toggle", "");
+            $("#red-button").attr("data-target", "");
         }
     }
     else if (gameStarted === true && isSpectator === false) {

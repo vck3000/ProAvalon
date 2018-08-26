@@ -5,31 +5,13 @@ To-do list:
 
 - black font whith yellow highlight on dark theme
 
--option to hide joined/left game
-
-- was banned instead of was muted
 - sort by ...... options?
 
-- delete custom avatar
-- people can still edit deleted messages
-- direct messages
-
-
-- message on the register page saying to ignore if staging site
-
--hide stats option
-
+- hide stats option
 
 - option for space under status bar
 
 - previous host press stand up goes to kick menu
-
-
-- lady isnt being drawn at the end of the game.
-
-
-- When you refresh the game while at a table, you should be brought back into that room (so u dont have to search/remember which game u were in)
-
 
 
 - Autocomplete when typing names
@@ -49,12 +31,11 @@ To-do list:
 - Have Quoted text a color other than grey so its more distinctive from regular chat/spectators. light purple?
 
 
-- In the Stats Graph, if u have 0%, still have some small sliver so it can be hovered over (dont know if possible to do this, it might end up showing 1% win rate)
 - Have an overlay on the Stats Graph for the "Site Average" for each of the bars (average calculated over players who have played at least 50 games). basically a tick for each role showing how i stack up and so i know what is considered "good"
 
--Custom colours for specific people
+- Custom colours for specific people
 
--Statistics page 
+- Statistics page 
 
 
 
@@ -389,3 +370,11 @@ PERHAPS ITS FIXED NOW WITH THE SOCKETS REFACTOR?
 -search bar for profiles
 -Show default original avatars
 -hide your own avatar
+- delete custom avatar
+- people can still edit deleted messages
+- was banned instead of was muted
+-option to hide joined/left game
+- In the Stats Graph, if u have 0%, still have some small sliver so it can be hovered over (dont know if possible to do this, it might end up showing 1% win rate)
+- message on the register page saying to ignore if staging site
+- lady isnt being drawn at the end of the game.
+- direct messages
