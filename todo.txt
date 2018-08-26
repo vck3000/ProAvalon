@@ -11,7 +11,6 @@ To-do list:
 
 - option for space under status bar
 
-- previous host press stand up goes to kick menu
 
 
 - Autocomplete when typing names
@@ -377,4 +376,5 @@ PERHAPS ITS FIXED NOW WITH THE SOCKETS REFACTOR?
 - In the Stats Graph, if u have 0%, still have some small sliver so it can be hovered over (dont know if possible to do this, it might end up showing 1% win rate)
 - message on the register page saying to ignore if staging site
 - lady isnt being drawn at the end of the game.
+- previous host press stand up goes to kick menu
 - direct messages
