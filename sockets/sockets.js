@@ -1150,6 +1150,7 @@ module.exports = function (io) {
 					console.log("b");
 					if(item.name === "banPlayerUsername"){
 						console.log("b(a)");
+						//not case sensitive
 						await User.find({username: item.value}, function(err, foundUser){
 							if(err){console.log(err);}
 							else{

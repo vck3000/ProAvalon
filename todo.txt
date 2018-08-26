@@ -7,6 +7,15 @@ To-do list:
 
 -option to hide joined/left game
 
+- was banned instead of was muted
+- sort by ...... options?
+
+- delete custom avatar
+- people can still edit deleted messages
+- direct messages
+
+- message on the register page saying to ignore if staging site
+
 -hide stats option
 
 
