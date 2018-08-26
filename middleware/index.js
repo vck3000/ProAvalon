@@ -9,6 +9,7 @@ var flash 		= require("connect-flash");
 var middlewareObj = {};
 
 var modsArray = require("../modsadmins/mods")
+var adminsArray = require("../modsadmins/admins")
 
 
 middlewareObj.checkProfileOwnership = function (req, res, next) {
@@ -133,8 +134,19 @@ middlewareObj.isMod = function (req, res, next) {
 		req.flash("error", "You are not a moderator.");
 		res.redirect("/");
 	}
-
-
 }
+
+middlewareObj.isAdmin = function (req, res, next) {
+
+	if(req.isAuthenticated() && admins.indexOf(req.user.username.toLowerCase()) !== -1){
+		return next();
+	}
+	else{
+		console.log("not a admin");
+		req.flash("error", "You are not an admin.");
+		res.redirect("/");
+	}
+}
+
 
 module.exports = middlewareObj;

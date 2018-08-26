@@ -173,14 +173,21 @@ router.get("/:id/:comment_id/:reply_id/edit", middleware.checkForumThreadComment
 		if (err) {
 			console.log("ERROR: " + err);
 		}
+		else{
+			if(foundReply.disabled === true){
+				req.flash("error", "You cannot edit a deleted reply.");
+				res.redirect("back");
+			}
+			else{
+				var userNotifications = [];
 
-		var userNotifications = [];
-
-		await User.findById(req.user._id).populate("notifications").exec(function(err, foundUser){
-			if(!err){userNotifications = foundUser.userNotifications;}
-		});
-
-		res.render("forum/comment/reply/edit", { reply: foundReply, comment: { id: req.params.comment_id }, forumThread: { id: req.params.id }, userNotifications: userNotifications });
+				await User.findById(req.user._id).populate("notifications").exec(function(err, foundUser){
+					if(!err){userNotifications = foundUser.userNotifications;}
+				});
+		
+				res.render("forum/comment/reply/edit", { reply: foundReply, comment: { id: req.params.comment_id }, forumThread: { id: req.params.id }, userNotifications: userNotifications });
+			}
+		}
 	});
 });
 
@@ -194,41 +201,47 @@ router.put("/:id/:comment_id/:reply_id", middleware.checkForumThreadCommentReply
 		if (err) {
 			res.redirect("/forum");
 		} else {
-			foundReply.text = sanitizeHtml(req.body.reply.text, {
-                allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
-                allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
-            });
-			foundReply.edited = true;
-			foundReply.timeLastEdit = new Date();
-			await foundReply.save();
-
-			// forumThread.findById(req.params.id)
-			forumThreadComment.findById(req.params.comment_id).populate("replies").exec(async function (err, foundForumThreadComment) {
-
-				foundForumThreadComment.markModified("replies");
-				//update time last edited
-				foundForumThreadComment.timeLastEdit = new Date();
-				
-				
-
-				await foundForumThreadComment.save();
+			if(foundReply.disabled === true){
+				req.flash("error", "You cannot edit a deleted reply.");
+				res.redirect("back");
+			}
+			else{
+				foundReply.text = sanitizeHtml(req.body.reply.text, {
+					allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
+					allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
+				});
+				foundReply.edited = true;
+				foundReply.timeLastEdit = new Date();
+				await foundReply.save();
 
 				// forumThread.findById(req.params.id)
-				forumThread.findById(req.params.id).populate("comments").exec(async function (err, foundForumThread) {
-					console.log("found forum thread:");
-					console.log(req.params.id);
+				forumThreadComment.findById(req.params.comment_id).populate("replies").exec(async function (err, foundForumThreadComment) {
 
-					foundForumThread.markModified("comments");
+					foundForumThreadComment.markModified("replies");
 					//update time last edited
-					foundForumThread.timeLastEdit = new Date();
-					foundForumThread.whoLastEdit = req.user.username;
-					await foundForumThread.save();
+					foundForumThreadComment.timeLastEdit = new Date();
+					
+					
 
-					//redirect to the forum page
-					// req.flash("success", "Comment updated successfully.");
-					res.redirect("/forum/show/" + req.params.id);
+					await foundForumThreadComment.save();
+
+					// forumThread.findById(req.params.id)
+					forumThread.findById(req.params.id).populate("comments").exec(async function (err, foundForumThread) {
+						console.log("found forum thread:");
+						console.log(req.params.id);
+
+						foundForumThread.markModified("comments");
+						//update time last edited
+						foundForumThread.timeLastEdit = new Date();
+						foundForumThread.whoLastEdit = req.user.username;
+						await foundForumThread.save();
+
+						//redirect to the forum page
+						// req.flash("success", "Comment updated successfully.");
+						res.redirect("/forum/show/" + req.params.id);
+					});
 				});
-			});
+			}
 		}
 	});
 });

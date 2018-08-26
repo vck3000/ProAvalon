@@ -105,9 +105,9 @@ router.get("/show/:id", middleware.isLoggedIn, function (req, res) {
 				}
 			}
 
-			console.log("liked: ");
+			// console.log("liked: ");
 			// console.log(typeof(foundForumThread.whoLikedId[0].toString()));
-			console.log(typeof(userIdString));
+			// console.log(typeof(userIdString));
 			// console.log(foundForumThread.whoLikedId[0].toString === userIdString);
 			
 
@@ -140,8 +140,8 @@ router.get("/show/:id", middleware.isLoggedIn, function (req, res) {
 			// console.log("equal?");
 			// console.log(foundForumThread.whoLikedId[0]._id == (req.user._id.toString()));
 
-			console.log("ids");
-			console.log(idsOfLikedPosts);
+			// console.log("ids");
+			// console.log(idsOfLikedPosts);
 
 
 			var userNotifications = [];
@@ -152,66 +152,75 @@ router.get("/show/:id", middleware.isLoggedIn, function (req, res) {
 					// console.log(foundUser.notifications);
 				}
 
-				var isMod;
+				var isMod = false;
 				if(modsArray.indexOf(req.user.username.toLowerCase()) !== -1){
 					isMod = true;
 				}
 
-				res.render("forum/show", {
-					userNotifications: userNotifications,
-					forumThread: foundForumThread, 
-					currentUser: req.user,
-					idsOfLikedPosts: idsOfLikedPosts,
-					mod: isMod
-				});		
+				// console.log("AAA");
+				// console.log(foundForumThread.disabled);
+				// console.log(isMod);
 
-				//if there is no seen users array, create it and add the user
-				if(!foundForumThread.seenUsers){
-					foundForumThread.seenUsers = [];
+				//if forumthread.disabled is true, and also the person is not a mod, then dont show
+				if(foundForumThread.disabled === true && isMod === false){
+					req.flash("error", "Thread is deleted.");
+					res.redirect("/forum/page/1");
 				}
-				//if the viewing user isnt on the list, then add them.
-				if(foundForumThread.seenUsers.indexOf(req.user.username.toLowerCase()) === -1){
-					foundForumThread.seenUsers.push(req.user.username.toLowerCase());
-				}
+				else{
 
-				// for every comment, add the user to seen users
-				foundForumThread.comments.forEach(async function (comm){
-					var changesMade = false;
-					
+					res.render("forum/show", {
+						userNotifications: userNotifications,
+						forumThread: foundForumThread, 
+						currentUser: req.user,
+						idsOfLikedPosts: idsOfLikedPosts,
+						mod: isMod
+					});		
 
-					if(!comm.seenUsers){comm.seenUsers = [];}
-					//if the user isnt on the list, add them. otherwise no need.
-					if(comm.seenUsers.indexOf(req.user.username.toLowerCase()) === -1){
-						comm.seenUsers.push(req.user.username.toLowerCase());
-						changesMade = true;
+					//Below is seen/unseen code
+	
+					//if there is no seen users array, create it and add the user
+					if(!foundForumThread.seenUsers){
+						foundForumThread.seenUsers = [];
 					}
-
-
-					comm.replies.forEach(async function (rep){
-						if(!rep.seenUsers){rep.seenUsers = [];}
-						//if the user isnt on the list, add them. otherwise no need.
-						if(rep.seenUsers.indexOf(req.user.username.toLowerCase()) === -1){
-							rep.seenUsers.push(req.user.username.toLowerCase());
-							changesMade = true;
-							await rep.save();
-						}
+					//if the viewing user isnt on the list, then add them.
+					if(foundForumThread.seenUsers.indexOf(req.user.username.toLowerCase()) === -1){
+						foundForumThread.seenUsers.push(req.user.username.toLowerCase());
+					}
+	
+					// for every comment, add the user to seen users
+					foundForumThread.comments.forEach(async function (comm){
+						var changesMade = false;
 						
+						//see all the comments
+						if(!comm.seenUsers){comm.seenUsers = [];}
+						//if the user isnt on the list, add them. otherwise no need.
+						if(comm.seenUsers.indexOf(req.user.username.toLowerCase()) === -1){
+							comm.seenUsers.push(req.user.username.toLowerCase());
+							changesMade = true;
+						}
+						//see all the replies
+						comm.replies.forEach(async function (rep){
+							if(!rep.seenUsers){rep.seenUsers = [];}
+							//if the user isnt on the list, add them. otherwise no need.
+							if(rep.seenUsers.indexOf(req.user.username.toLowerCase()) === -1){
+								rep.seenUsers.push(req.user.username.toLowerCase());
+								changesMade = true;
+								await rep.save();
+							}
+						});
+	
+						//only need to comm.save() if there was a change.
+						//otherwise save some resources and skip saving.
+						if(changesMade === true){
+							comm.markModified("replies");
+							await comm.save();
+						}
 					});
-
-					//only need to comm.save() if there was a change.
-					//otherwise save some resources and skip saving.
-					if(changesMade === true){
-						comm.markModified("replies");
-						await comm.save();
-					}
-				});
-				//there is always at least one change, so just save.
-				foundForumThread.markModified("comments");
-				foundForumThread.save();
-				
+					//there is always at least one change, so just save.
+					foundForumThread.markModified("comments");
+					foundForumThread.save();
+				}
 			});
-
-			
 		}
 	});
 });
@@ -354,31 +363,36 @@ router.put("/:id", middleware.checkForumThreadOwnership, function (req, res) {
 		categoryChange = true;
 	}
 
-	if (categoryChange === true) {
-		//update the category
-		req.body.forumThread.category = category;
-	}
-
-    //add the required changes for an edit
-	req.body.forumThread.edited = true;
-	req.body.forumThread.timeLastEdit = new Date();
-	req.body.forumThread.whoLastEdit = req.user.username;
-    
-	//sanitize the description once again
-	req.body.forumThread.description = sanitizeHtml(req.body.forumThread.description, {
-		allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
-		allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
-	});
-
 	//Even though EJS <%= %> doesn't allow for injection, it still displays and in case it fails,
 	//we should sanitize the title anyway.
-	req.body.forumThread.title = sanitizeHtml(req.body.forumThread.title);
 
-	forumThread.findByIdAndUpdate(req.params.id, req.body.forumThread, function (err, updatedForumThread) {
+	forumThread.findById(req.params.id, function (err, foundForumThread) {
 		if (err) {
+			req.flash("error", "There was an error finding your forum thread.");
 			res.redirect("/forum");
 		} else {
-			res.redirect("/forum/show/" + updatedForumThread.id);
+
+			if (categoryChange === true) {
+				//update the category
+				foundForumThread.category = category;
+			}
+		
+			//add the required changes for an edit
+			foundForumThread.edited = true;
+			foundForumThread.timeLastEdit = new Date();
+			foundForumThread.whoLastEdit = req.user.username;
+			
+			//sanitize the description once again
+			foundForumThread.description = sanitizeHtml(req.body.forumThread.description, {
+				allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
+				allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
+			});
+
+			foundForumThread.title = sanitizeHtml(req.body.forumThread.title);
+			
+			foundForumThread.save();
+
+			res.redirect("/forum/show/" + foundForumThread.id);
 		}
 	});
 });
