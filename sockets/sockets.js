@@ -863,7 +863,7 @@ var actionsObj = {
             run: async function (data, senderSocket) {
 				var args = data.args;
 				var str = senderSocket.request.user.username + " (whisper): ";
-				for(var i = 2; i < args.length; i++){
+				for(var i = 2; i < args.length; i++){ 
 					str += args[i];
 					str += " ";
 				}
