@@ -15,7 +15,7 @@ What things you need to install the software and how to install them
 
 ### Installing
 
-1. Fetch (using git) a copy of the code:
+1. Clone (using git) a copy of the code:
 ```
 cd C:/YourFolder
 git clone https://github.com/vck3000/ProAvalon.git
@@ -71,9 +71,6 @@ There is a server-wide cache of 30 minutes for all files. This helps cut down on
 There is also a middleware folder which contains useful functions mainly for authentication purposes on forums and profiles. 
 
 Other Useful global functions can be found under the myFunctions folder. 
-
-Note: When registering, no captcha is required for local and staging environments. So feel free to ignore the error message you see when registering a new account on those environments.
-
 
 ## Contributing
 If you are new to coding and would like to help contribute, I highly recommend this course on Udemy made by Colt Steel [(Click here)](https://www.udemy.com/the-web-developer-bootcamp/). It gave me the starting nudge I needed to make this site. Small contributions are always welcome!
