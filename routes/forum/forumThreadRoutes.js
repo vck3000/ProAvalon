@@ -323,18 +323,23 @@ router.post("/", middleware.isLoggedIn, async function (req, res) {
 /**********************************************************/
 router.get("/:id/edit", middleware.checkForumThreadOwnership, function (req, res) {
 	forumThread.findById(req.params.id, async function (err, foundForumThread) {
-		var userNotifications = [];
+		if(foundForumThread.disabled === true){
+			req.flash("error", "You cannot edit a deleted forum thread.");
+			res.redirect("back");
+		}
+		else{
+			var userNotifications = [];
 
-		await User.findOne({username: req.user.username}).populate("notifications").exec(function(err, foundUser){
-			if(foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined){
-				userNotifications = foundUser.notifications;
-				console.log(foundUser.notifications);
-			}
-			
-			res.render("forum/edit", { forumThread: foundForumThread, currentUser: req.user, userNotifications: userNotifications });
-
-		});
-
+			await User.findOne({username: req.user.username}).populate("notifications").exec(function(err, foundUser){
+				if(foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined){
+					userNotifications = foundUser.notifications;
+					console.log(foundUser.notifications);
+				}
+				
+				res.render("forum/edit", { forumThread: foundForumThread, currentUser: req.user, userNotifications: userNotifications });
+	
+			});
+		}
 	});
 });
 
@@ -370,8 +375,12 @@ router.put("/:id", middleware.checkForumThreadOwnership, function (req, res) {
 		if (err) {
 			req.flash("error", "There was an error finding your forum thread.");
 			res.redirect("/forum");
-		} else {
-
+		} 
+		else if(foundForumThread.disabled === true){
+			req.flash("error", "You cannot edit a deleted forum thread.");
+			res.redirect("back");
+		}
+		else {
 			if (categoryChange === true) {
 				//update the category
 				foundForumThread.category = category;
