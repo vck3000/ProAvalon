@@ -816,7 +816,6 @@ var actionsObj = {
 					senderSocket.emit("messageCommandReturnStr", {message: "Could not find username", classStr: "server-text"});
 				}
 				
-
                 return;
             }
 		},
@@ -1228,6 +1227,7 @@ module.exports = function (io) {
 						var oneHr = oneMin*60;
 						var oneDay = oneHr*24;
 						var oneMonth = oneDay*30;
+						var oneYear = oneMonth*12;
 						//30 min, 3hr, 1 day, 3 day, 7 day, 1 month
 						var durations = [
 							oneMin*30,
@@ -1235,7 +1235,10 @@ module.exports = function (io) {
 							oneDay,
 							oneDay*3,
 							oneDay*7,
-							oneMonth
+							oneMonth,
+							oneMonth*6,
+							oneYear,
+							oneYear*1000
 						];
 						newModAction.durationToBan = new Date(durations[item.value]);
 					}
@@ -1266,7 +1269,7 @@ module.exports = function (io) {
 				newModAction.whenRelease = newModAction.whenMade.getTime() + newModAction.durationToBan.getTime();
 
 				console.log(newModAction);
-				if(leave === false && newModAction.bannedPlayer && newModAction.bannedPlayer.username){
+				if(userNotFound === false && newModAction.bannedPlayer && newModAction.bannedPlayer.username){
 					console.log("****************");
 					modAction.create(newModAction,function(err, newModActionCreated){
 						console.log(newModActionCreated);
