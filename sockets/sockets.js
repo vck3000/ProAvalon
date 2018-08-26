@@ -1813,6 +1813,8 @@ function playerLeaveRoomCheckDestroy(socket){
 		}
 
 		socket.request.user.inRoomId = undefined;
+
+		updateCurrentGamesList();
 	}
 
 	
