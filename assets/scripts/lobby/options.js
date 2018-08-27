@@ -240,9 +240,37 @@ var userOptions = {
         },
         initialiseEventListener: function(){
             $("#option_display_original_avatars")[0].addEventListener("click", function () {
-                //save their option in cookie
+                var checked = $("#option_display_original_avatars")[0].checked;
                 draw();
+
+                //save their option in cookie
                 docCookies.setItem("optionDisplayOriginalAvatars", checked.toString(), Infinity);
+            });
+        }
+    },
+
+    optionDisplayCompactView: {
+        defaultValue: "false",
+        onLoad: function(){
+            if (docCookies.getItem("optionDisplayCompactView") === "true") {
+                $("#option_display_compact_view")[0].checked = true;
+
+                updateCompactView(true);
+            }
+            else{
+                updateCompactView(false);
+            }
+        },
+        initialiseEventListener: function(){
+            $("#option_display_compact_view")[0].addEventListener("click", function () {
+                //when they press it...
+                var checked = $("#option_display_compact_view")[0].checked;
+
+                updateCompactView(checked);
+                
+
+                //save their option in cookie
+                docCookies.setItem("optionDisplayCompactView", checked.toString(), Infinity);
             });
         }
     },
@@ -739,4 +767,29 @@ function update(picker){
     }
 
     draw();
+}
+
+
+function updateCompactView(input){
+    if(input === true){
+        $("#tabs1").css("padding-right", "0px");
+        $("#tabs2").css("padding-left", "0px");
+
+        $(".well").css("margin-bottom", "0px");
+        $(".well").css("margin-top", "0px");
+        
+    }
+    else{
+        $("#tabs1").css("padding-right", "15px");
+        $("#tabs2").css("padding-left", "15px");
+
+        $(".well").css("margin-bottom", "20px");
+        $(".well").css("margin-top", "20px");
+        
+
+    }
+
+
+
+
 }
