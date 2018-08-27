@@ -9,10 +9,6 @@ To-do list:
 
 - hide stats option
 
-- option for space under status bar
-
-
-
 - Autocomplete when typing names
 
 - hover over mission in center of table highlights participating members
@@ -30,11 +26,9 @@ To-do list:
 - Have Quoted text a color other than grey so its more distinctive from regular chat/spectators. light purple?
 
 
-- Have an overlay on the Stats Graph for the "Site Average" for each of the bars (average calculated over players who have played at least 50 games). basically a tick for each role showing how i stack up and so i know what is considered "good"
 
 - Custom colours for specific people
 
-- Statistics page 
 
 
 
@@ -377,4 +371,7 @@ PERHAPS ITS FIXED NOW WITH THE SOCKETS REFACTOR?
 - message on the register page saying to ignore if staging site
 - lady isnt being drawn at the end of the game.
 - previous host press stand up goes to kick menu
+- option for space under status bar
 - direct messages
+- Have an overlay on the Stats Graph for the "Site Average" for each of the bars (average calculated over players who have played at least 50 games). basically a tick for each role showing how i stack up and so i know what is considered "good"
+- Statistics page 
