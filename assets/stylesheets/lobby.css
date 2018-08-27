@@ -1050,3 +1050,20 @@ i {
     background-color: #579157;
     border-radius: 5px;
 } */
+
+
+#statusBarWell {
+    height: 57px;
+    margin: auto;
+
+    /* position: relative; */
+    overflow: auto;
+}
+
+#status{
+    /* position: relative;
+    /* top: 50%;
+    left: 50%; 
+    transform: translate(-50%, 0%);
+    width: 100%; */
+}

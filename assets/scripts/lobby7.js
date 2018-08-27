@@ -113,7 +113,7 @@ function draw() {
             //Edit the status bar/well
             if (gameData.phase === "picking") {
                 //give it the default status message
-                document.querySelector("#status").innerText = gameData.statusMessage;
+                setStatusBarText(gameData.statusMessage);
 
                 //draw the votes if there are any to show
                 drawVotes(gameData.votes);
@@ -151,7 +151,8 @@ function draw() {
                 str += ".";
 
 
-                document.querySelector("#status").innerText = str;
+                setStatusBarText(str);
+                
             }
 
             else if (gameData.phase === "missionVoting") {
@@ -186,7 +187,8 @@ function draw() {
                 str = str.slice(0, str.length - 2);
                 str += ".";
 
-                document.querySelector("#status").innerText = str;
+                setStatusBarText(str);
+                
 
                 drawGuns();
                 drawVotes(gameData.votes);
@@ -194,22 +196,25 @@ function draw() {
             else if (gameData.phase === "assassination") {
                 //for the assassin: set up their stuff to shoot
                 if (gameData.role === "Assassin") {
-                    document.querySelector("#status").innerText = "Shoot merlin.";
+                setStatusBarText("Shoot merlin.");
+                    
                     // console.log
                     assassinationSetup(gameData.phase);
                 }
                 else {
                     if(gameData.assassin){
-                        document.querySelector("#status").innerText = "Waiting for " + gameData.assassin + " to assassinate Merlin...";
+                        setStatusBarText("Waiting for " + gameData.assassin + " to assassinate Merlin...");
+
                     }
                     else{
-                        document.querySelector("#status").innerText = "Waiting for assassin to assassinate.";
+                        setStatusBarText("Waiting for assassin to assassinate.");
                     }
                 }
             //   enableDisableButtons();
             }
             else if (gameData.phase === "lady") {
-                document.querySelector("#status").innerText = gameData.statusMessage;
+                setStatusBarText(gameData.statusMessage);
+                
                 if (ownUsername === getUsernameFromIndex(gameData.lady)) {
                     ladySetup(gameData.phase, gameData.ladyablePeople);
                 }
@@ -217,7 +222,8 @@ function draw() {
             }
 
             else if (gameData.phase === "finished") {
-                document.querySelector("#status").innerText = gameData.statusMessage;
+                setStatusBarText(gameData.statusMessage);
+                
             //   enableDisableButtons();
                 if (gameData.see.playerShot) {
                     drawBullet(getIndexFromUsername(gameData.see.playerShot));
@@ -266,10 +272,12 @@ function draw() {
                 str = str.slice(0, str.length - 2);
                 str += ".";
 
-                document.querySelector("#status").innerText = "Current roles: " + str;
+                setStatusBarText("Current roles: " + str);
+                
             }
             else {
-                document.querySelector("#status").innerText = "Waiting for game to start... ";
+                setStatusBarText("Waiting for game to start... ");
+                
             }
         }
 
@@ -438,7 +446,8 @@ function teamLeaderSetup(phase) {
     //edit the well to show how many people to pick.
     if (phase === "picking") {
 
-        document.querySelector("#status").innerText = "Your turn to pick a team. Pick " + numPlayersOnMission + " players.";
+        setStatusBarText("Your turn to pick a team. Pick " + numPlayersOnMission + " players.");
+
 
         var divs = document.querySelectorAll("#mainRoomBox div");
         //add the event listeners for button press
@@ -458,9 +467,10 @@ function teamLeaderSetup(phase) {
   function ladySetup(phase, ladyablePeople) {
       //edit the well to show how many people to pick.
       if (phase === "lady") {
-  
-          document.querySelector("#status").innerText = "Your turn to use the Lady of the Lake. Select one player to use it on.";
-  
+
+        setStatusBarText("Your turn to use the Lady of the Lake. Select one player to use it on.");
+
+        
           var divs = document.querySelectorAll("#mainRoomBox div");
           //add the event listeners for button press
           for (var i = 0; i < divs.length; i++) {
