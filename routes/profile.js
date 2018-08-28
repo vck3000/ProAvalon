@@ -58,61 +58,63 @@ router.post("/mod/ajax/processavatarrequest", middleware.isLoggedIn, middleware.
 	avatarRequest.findById(req.body.avatarreqid).exec(function(err, foundReq){
 		if(err){console.log(err);}
 		else{
-			foundReq.processed = true;
-			foundReq.modComment = req.body.modcomment;
-			foundReq.approved = req.body.decision;
-			foundReq.modWhoProcessed = req.user.username;
+			if(foundReq){
+				foundReq.processed = true;
+				foundReq.modComment = req.body.modcomment;
+				foundReq.approved = req.body.decision;
+				foundReq.modWhoProcessed = req.user.username;
 
-			if(req.body.decision === true || req.body.decision === "true"){
-				console.log("search lower user: " + foundReq.forUsername.toLowerCase());
+				if(req.body.decision === true || req.body.decision === "true"){
+					console.log("search lower user: " + foundReq.forUsername.toLowerCase());
 
-				User.findOne({usernameLower: foundReq.forUsername.toLowerCase()}).populate("notifications").exec(function(err, foundUser){
-					if(err){console.log(err);}
-					else{
-						foundUser.avatarImgRes = foundReq.resLink;
-						foundUser.avatarImgSpy = foundReq.spyLink;
+					User.findOne({usernameLower: foundReq.forUsername.toLowerCase()}).populate("notifications").exec(function(err, foundUser){
+						if(err){console.log(err);}
+						else{
+							foundUser.avatarImgRes = foundReq.resLink;
+							foundUser.avatarImgSpy = foundReq.spyLink;
 
-						// console.log(foundUser);
+							// console.log(foundUser);
 
-						foundUser.save();
+							foundUser.save();
 
-						var str = "Your avatar request was approved by " + foundReq.modWhoProcessed + "!";
-						if(foundReq.modComment){
-							str += " Their comment was: " + foundReq.modComment;
+							var str = "Your avatar request was approved by " + foundReq.modWhoProcessed + "!";
+							if(foundReq.modComment){
+								str += " Their comment was: " + foundReq.modComment;
+							}
+
+							// createNotifObj.createNotification = function(userIDTarget, stringToSay, link){
+							createNotificationObj.createNotification(foundUser._id, str, "#");
 						}
+						
+					});
+				}
 
-						// createNotifObj.createNotification = function(userIDTarget, stringToSay, link){
-						createNotificationObj.createNotification(foundUser._id, str, "#");
-					}
+				else if(req.body.decision === false || req.body.decision === "false"){
+					console.log("search lower user: " + foundReq.forUsername.toLowerCase());
 					
-				});
-			}
+					User.findOne({usernameLower: foundReq.forUsername.toLowerCase()}).populate("notifications").exec(function(err, foundUser){
+						if(err){console.log(err);}
+						else{
+							var str = "Your avatar request was rejected by " + foundReq.modWhoProcessed + ".";
+							
+							if(foundReq.modComment){
+								str += " Their comment was: " + foundReq.modComment;
+							}
 
-			else if(req.body.decision === false || req.body.decision === "false"){
-				console.log("search lower user: " + foundReq.forUsername.toLowerCase());
-				
-				User.findOne({usernameLower: foundReq.forUsername.toLowerCase()}).populate("notifications").exec(function(err, foundUser){
-					if(err){console.log(err);}
-					else{
-						var str = "Your avatar request was rejected by " + foundReq.modWhoProcessed + ".";
-						
-						if(foundReq.modComment){
-							str += " Their comment was: " + foundReq.modComment;
+							console.log("string: " + str);
+							
+
+							// createNotifObj.createNotification = function(userIDTarget, stringToSay, link){
+							createNotificationObj.createNotification(foundUser._id, str, "#");
 						}
+					});
+				}
+				else{
+					console.log("error, decision isnt anything recognisable...: " + req.body.decision);
+				}
 
-						console.log("string: " + str);
-						
-
-						// createNotifObj.createNotification = function(userIDTarget, stringToSay, link){
-						createNotificationObj.createNotification(foundUser._id, str, "#");
-					}
-				});
+				foundReq.save();
 			}
-			else{
-				console.log("error, decision isnt anything recognisable...: " + req.body.decision);
-			}
-
-			foundReq.save();
 		}
 	});
 
