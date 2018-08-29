@@ -269,6 +269,10 @@ router.get("/testmodal", function(req, res){
 	res.render("testmodal", {currentUser: req.user});
 });
 
+router.get("/testAutoCompleteUsernames", function(req, res){
+	res.render("testAutoCompleteUsernames", {currentUser: req.user});
+});
+
 router.get("/about", function(req, res){
 	res.render("about", {currentUser: req.user, headerActive: "about"});
 });
