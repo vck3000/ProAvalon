@@ -250,7 +250,7 @@ var userOptions = {
     },
 
     optionDisplayCompactView: {
-        defaultValue: "false",
+        defaultValue: "true",
         onLoad: function(){
             if (docCookies.getItem("optionDisplayCompactView") === "true") {
                 $("#option_display_compact_view")[0].checked = true;
