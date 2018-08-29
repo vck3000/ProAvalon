@@ -103,6 +103,7 @@ function draw() {
 
         
         if (gameStarted === true) {
+
             drawExitedPlayers(gameData.gamePlayersInRoom);
 
             //default greyed out rn
@@ -1635,6 +1636,8 @@ function resetAllGameData() {
     lastPickNum = 0;
     lastMissionNum = 0;
 
+    //leaving room so reset the possible autocomplete stuff
+    // autoCompleteStrs = currentOnlinePlayers;
 }
 
 var tempVar = 0;

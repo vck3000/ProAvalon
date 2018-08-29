@@ -175,13 +175,16 @@ socket.on("openModModal", function (data) {
     $("#modModal").modal("show");
 });
 
-
+var currentOnlinePlayers;
 socket.on("update-current-players-list", function (currentPlayers) {
     // console.log("update the current player list request received");
     // console.log(currentPlayers);
     //remove all the li's inside the table
     $("#current-players-table tbody tr td").remove();
     $("#current-players-table tbody tr").remove();
+
+    // currentOnlinePlayers = currentPlayers;
+    autoCompleteStrs = currentPlayers;
 
     //append each player into the list
     currentPlayers.forEach(function (currentPlayer) {
