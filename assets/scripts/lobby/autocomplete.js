@@ -1,16 +1,5 @@
 
-var autoCompleteStrs = [
-    "aa",
-    "ab",
-    "ac",
-    "ad",
-    "ae",
-    "af",
-    "ProNub",
-    "OhBabyATripleOhYeahh",
-    "test",
-    "Prossss"
-];
+var autoCompleteStrs = [];
 
 var lastKeyPress;
 $(".chat-message-input").on('keydown', function(e) {
@@ -69,30 +58,6 @@ $(".chat-message-input").on('keydown', function(e) {
     }
     lastKeyPress = e.which;
 });
-
-
-
-// var autoCompleteStrs = [
-//     "asdf",
-//     "ProNub",
-//     "asddddddd",
-//     "asdde",
-//     "asdfff",
-//     "afee",
-// ];
-
-var autoCompleteStrs = [
-    "aa",
-    "ab",
-    "ac",
-    "ad",
-    "ae",
-    "af",
-    "ProNub",
-    "OhBabyATripleOhYeahh",
-    "test",
-    "Prossss"
-];
 
 function getLastWord(words) {
     var n = words.split(" ");
