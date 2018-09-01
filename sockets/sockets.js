@@ -1444,7 +1444,7 @@ module.exports = function (io) {
 
 			var toContinue = !isMuted(socket);
 
-			if(toContinue){
+			if(toContinue && dataObj){
 				//while rooms exist already (in case of a previously saved and retrieved game)
 				while(rooms[nextRoomId]){
 					nextRoomId++;
