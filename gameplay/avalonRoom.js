@@ -50,7 +50,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 
 	var thisRoom = this;
 	
-	if(newRoomPassword_.length === 0){
+	if(newRoomPassword_ && newRoomPassword_.length === 0){
 		newRoomPassword_ = undefined;
 	}
 	this.joinPassword = newRoomPassword_;
