@@ -91,8 +91,7 @@ function addRoomChatEventListeners(e, roomChatWindow) {
 
             var data = {
                 date: date,
-                message: message,
-                roomId: roomId
+                message: message
             }
 
             //reset the value of the textbox

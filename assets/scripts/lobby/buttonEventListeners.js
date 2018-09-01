@@ -137,15 +137,7 @@ $("#kickButton")[0].addEventListener("click", function () {
     }
 });
 
-//new ROOM CODE
-document.querySelector("#newRoom").addEventListener("click", function () {
-    if (inRoom === false) {
-        socket.emit("newRoom");
-      // console.log("RESET GAME DATA ON CREATE ROOM");
-        resetAllGameData();
-        inRoom = true;
-    }
-});
+
 
 document.querySelector("#danger-alert-box-button").addEventListener("click", function () {
 
@@ -175,4 +167,28 @@ document.querySelector("#backButton").addEventListener("click", function () {
 document.querySelector("#claimButton").addEventListener("click", function () {
     //INCOMPLETE
     socket.emit("claim", "");
+});
+
+
+//New room code
+$("#newRoom").on("click", function(data){
+    $('#newRoomModal').modal('show');
+    $("#newRoomPassword").val("");
+});
+
+$("#createNewRoomButton").on("click", function(data){
+    console.log( $("#maxNumPlayers").val() );
+    console.log( $("#newRoomPassword").val() );
+
+    var sendObj = {
+        maxNumPlayers: $("#maxNumPlayers").val(),
+        newRoomPassword: $("#newRoomPassword").val()
+    };
+
+    if (inRoom === false) {
+        socket.emit("newRoom", sendObj);
+        
+        resetAllGameData();
+        inRoom = true;
+    }
 });

@@ -46,9 +46,16 @@ var numPlayersOnMission = [
 
 
 
-module.exports = function (host_, roomId_, io_) {
+module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_) {
 
 	var thisRoom = this;
+	
+	if(newRoomPassword_.length === 0){
+		newRoomPassword_ = undefined;
+	}
+	this.joinPassword = newRoomPassword_;
+	this.maxNumPlayers = maxNumPlayers_;
+
 
 	this.io = io_;
 
@@ -1277,29 +1284,38 @@ module.exports = function (host_, roomId_, io_) {
 		}
 	}
 
-	this.playerJoinRoom = function (socket) {
-		// console.log("AAAA");
-		// console.log(thisRoom.restartSaved);
-		// if(thisRoom.restartSaved){
-		// 	console.log(thisRoom.socketsChangedOnce);
-		// }
-		// console.log(thisRoom.allSockets.length);
+	this.playerJoinRoom = function (socket, inputPassword) {
+		console.log("Inputpassword from avalonRoom: " + inputPassword);
+
+		//if the room has a password and user hasn't put one in yet
+		if(thisRoom.joinPassword !== undefined && inputPassword === undefined){
+			socket.emit("joinPassword", this.roomId);
+			console.log("No password inputted!");
+			
+			return false;
+		}
+		//if the room has a password and user HAS put a password in
+		else if(thisRoom.joinPassword !== undefined && inputPassword !== undefined){
+			if(thisRoom.joinPassword === inputPassword){
+				console.log("Correct password!");
+				//continue on
+			}
+			else{
+				console.log("Wrong password!");
+				
+				// socket.emit("danger-alert", "The password you have inputted is incorrect.");
+				socket.emit("wrongRoomPassword");
+				socket.emit("changeView", "lobby");
+				return false;
+			}
+		}
+
 		
 		if(thisRoom.restartSaved){
 			if(thisRoom.socketsChangedOnce === false){
 				console.log("RAN ONCE");
 				thisRoom.allSockets = [];
 				thisRoom.socketsOfPlayers = [];
-				// for(var i = 0; i < this.playersInGame.length; i++){
-				// 	this.socketsOfPlayers[i] = {};
-				// 	this.socketsOfPlayers[i].request = {};
-				// 	this.socketsOfPlayers[i].request.user = {};
-				// 	this.socketsOfPlayers[i].request.user.username = "";	
-				// 	this.socketsOfPlayers[i].request.user.id = "";
-				// 	this.socketsOfPlayers[i].emit = function(){};
-
-				// }
-
 				thisRoom.socketsChangedOnce = true;
 				
 			}
@@ -1307,9 +1323,6 @@ module.exports = function (host_, roomId_, io_) {
 
 		thisRoom.allSockets.push(socket);
 		
-		// console.log("PUSHED: ");
-		// console.log(this.allSockets[0].request.user.username);
-		// console.log(socket.request.user.username);
 		if(thisRoom.gameStarted === true){
 			//if the new socket is a player, add them to the sockets of players
 			for(var i = 0; i < thisRoom.playersInGame.length; i++){
@@ -1336,10 +1349,17 @@ module.exports = function (host_, roomId_, io_) {
 
 		console.log("Current sockets of players after player joined: ");
 		console.log(thisRoom.socketsOfPlayers.length);
+
+		console.log("All sockets of players after player joined: ");
+		
+		console.log(thisRoom.allSockets.length);
+
+
+		return true;
 	}
 
 	this.playerJoinGame = function (socket) {
-
+		//ready not ready
 		if(thisRoom.hostTryStartGameDate){
 			if(new Date - this.hostTryStartGameDate > 1000*11){
 				thisRoom.canJoin = true;
@@ -1353,6 +1373,10 @@ module.exports = function (host_, roomId_, io_) {
 			socket.emit("danger-alert", "You have been banned from this room. You can not join.");
 			return false;
 		}
+		//if the player hasn't joined...
+		if(this.allSockets.indexOf(socket) === -1){
+			return false;
+		}222
 
 		if(thisRoom.socketsOfPlayers.indexOf(socket) !== -1){
 			// socket.emit("danger-alert", "You have already joined...");			
@@ -1413,8 +1437,12 @@ module.exports = function (host_, roomId_, io_) {
 		if(this.playersInGame.indexOf(socket) !== -1){
 			this.gamePlayerLeftDuringReady = true;
 		}
-		
-		this.allSockets.splice(this.allSockets.indexOf(socket), 1);
+
+		var index = this.allSockets.indexOf(socket);
+		if(index !== -1){
+			this.allSockets.splice(index, 1);
+		}
+
 		//if they exist in players, then remove them
 		if(this.socketsOfPlayers[this.socketsOfPlayers.indexOf(socket)]){
 			this.socketsOfPlayers.splice(this.socketsOfPlayers.indexOf(socket), 1);	

@@ -268,6 +268,9 @@ router.get("/rules", function(req, res){
 router.get("/testmodal", function(req, res){
 	res.render("testmodal", {currentUser: req.user});
 });
+router.get("/testmodal2", function(req, res){
+	res.render("testmodal2", {currentUser: req.user});
+});
 
 router.get("/testAutoCompleteUsernames", function(req, res){
 	res.render("testAutoCompleteUsernames", {currentUser: req.user});

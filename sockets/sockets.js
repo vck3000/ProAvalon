@@ -1429,10 +1429,10 @@ module.exports = function (io) {
 				data.message = textLengthFilter(data.message);
 				data.dateCreated = new Date();
 
-				if (data.roomId) {
+				if (socket.request.user.inRoomId) {
 					//send out that data object to all clients in room
 					
-					sendToRoomChat(io, data.roomId, data);
+					sendToRoomChat(io, socket.request.user.inRoomId, data);
 					// io.in(data.roomId).emit("roomChatToClient", data);
 				}
 			}
@@ -1440,7 +1440,7 @@ module.exports = function (io) {
 
 
 		//when a new room is created
-		socket.on("newRoom", function () {
+		socket.on("newRoom", function (dataObj) {
 
 			var toContinue = !isMuted(socket);
 
@@ -1449,7 +1449,7 @@ module.exports = function (io) {
 				while(rooms[nextRoomId]){
 					nextRoomId++;
 				}
-				rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId, io);
+				rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword);
 				console.log("new room request");
 				//broadcast to all chat
 				var data = {
@@ -1463,7 +1463,7 @@ module.exports = function (io) {
 				//send to allChat including the host of the game
 				// io.in("allChat").emit("new-game-created", str);
 				//send back room id to host so they can auto connect
-				socket.emit("auto-join-room-id", nextRoomId);
+				socket.emit("auto-join-room-id", nextRoomId, dataObj.newRoomPassword);
 
 				//increment index for next game
 				nextRoomId++;
@@ -1473,31 +1473,36 @@ module.exports = function (io) {
 		});
 
 		//when a player joins a room
-		socket.on("join-room", function (roomId) {
+		socket.on("join-room", function (roomId, inputPassword) {
+
+			console.log("inputpassword: " + inputPassword);
 			
 			//if the room exists
 			if (rooms[roomId]) {
 				console.log("room id is: ");
 				console.log(roomId);
-				
-				//set the room id into the socket obj
-				socket.request.user.inRoomId = roomId;
-
-				//join the room chat
-				socket.join(roomId);
 
 				//join the room
-				rooms[roomId].playerJoinRoom(socket);
+				var ToF = rooms[roomId].playerJoinRoom(socket, inputPassword);
 
-				//emit to say to others that someone has joined
-				var data = {
-					message: socket.request.user.username + " has joined the room.",
-					classStr: "server-text-teal",
-					dateCreated: new Date()
-				}			
-				sendToRoomChat(io, roomId, data);
+				if(ToF === true){
+					//set the room id into the socket obj
+					socket.request.user.inRoomId = roomId;
 
-				updateCurrentGamesList();
+					//join the room chat
+					socket.join(roomId);
+
+					//emit to say to others that someone has joined
+					var data = {
+						message: socket.request.user.username + " has joined the room.",
+						classStr: "server-text-teal",
+						dateCreated: new Date()
+					}			
+					sendToRoomChat(io, roomId, data);
+
+					updateCurrentGamesList();
+				}
+				
 
 			} else {
 				console.log("Game doesn't exist!");
@@ -1713,6 +1718,13 @@ var updateCurrentGamesList = function () {
 			gamesList[i] = {};
 			//get status of game
 			gamesList[i].status = rooms[i].getStatus();
+
+			if(rooms[i].joinPassword !== undefined){
+				gamesList[i].passwordLocked = true;
+			}
+			else{
+				gamesList[i].passwordLocked = false;
+			}
 			//get room ID
 			gamesList[i].roomId = rooms[i].getRoomId();
 			gamesList[i].hostUsername = rooms[i].getHostUsername();

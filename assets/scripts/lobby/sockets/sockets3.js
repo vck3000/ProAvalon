@@ -207,7 +207,14 @@ socket.on("update-current-games-list", function (currentGames) {
     currentGames.forEach(function (currentGame) {
         //if the current game exists, add it
         if (currentGame) {
-            var str = "<tr> <td> " + currentGame.roomId + ": " + currentGame.status + " " + currentGame.numOfPlayersInside + "/10 <span style='padding-left: 10px;'>Spec: " + currentGame.numOfSpectatorsInside + "</span><p>Host: " + currentGame.hostUsername + "</p>" + "</td> </tr>";
+            var lockStr = "";
+            if(currentGame.passwordLocked === true){
+                lockStr = " <span class='glyphicon glyphicon-lock'></span>";
+            }
+            console.log("lock str: " + lockStr);
+
+
+            var str = "<tr> <td> " + currentGame.roomId + lockStr + ": " + currentGame.status + " " + currentGame.numOfPlayersInside + "/10 <span style='padding-left: 10px;'>Spec: " + currentGame.numOfSpectatorsInside + "</span><p>Host: " + currentGame.hostUsername + "</p>" + "</td> </tr>";
             $("#current-games-table tbody").append(str);
 
 
@@ -218,7 +225,7 @@ socket.on("update-current-games-list", function (currentGames) {
             allTds[allTds.length - 1].addEventListener("click", function () {
                 //JOIN THE ROOM
 
-            // console.log("RESET GAME DATA ON JOIN ROOM");
+                // console.log("RESET GAME DATA ON JOIN ROOM");
                 resetAllGameData();
 
                 // console.log(currentGame.roomId);
@@ -250,12 +257,13 @@ socket.on("update-current-games-list", function (currentGames) {
     }
 });
   
-socket.on("auto-join-room-id", function (roomId_) {
+socket.on("auto-join-room-id", function (roomId_, newRoomPassword) {
+    console.log("newRoomPassword: " + newRoomPassword);
     // console.log("auto join room");
     //received a request from server to auto join
     //likely we were the one who created the room
     //so we auto join into it
-    socket.emit("join-room", roomId_);
+    socket.emit("join-room", roomId_, newRoomPassword);
     socket.emit("join-game", roomId_);
     isSpectator = false;
     roomId = roomId_;
@@ -364,3 +372,40 @@ socket.on("update-room-spectators", function(spectatorUsernames){
 
 });
 
+
+socket.on("joinPassword", function(roomId){
+
+
+    (async function getEmail () {
+        const {value: inputPassword} = await swal({
+            title: "Type in the room password",
+            type: "info",
+            input: 'text',
+            allowEnterKey: true,
+            showCancelButton: true,
+        });
+        
+        if (inputPassword) {
+            // swal('Entered password: ' + inputPassword);
+            socket.emit("join-room", roomId, inputPassword);
+        }
+        else{
+            changeView();
+        }
+        })();
+
+});
+
+socket.on("changeView", function(targetLocation){
+    changeView();
+});
+
+socket.on("wrongRoomPassword", function(){
+    swal({
+        title: "Incorrect password",
+        type: "warning",
+        allowEnterKey: true,
+    });
+});
+
+socket.emit("wrongRoomPassword");

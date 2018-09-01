@@ -83,9 +83,7 @@ var highlightedAvatars;
 function draw() {
     // console.log("draw called");
     if (roomPlayersData) {
-
-
-    highlightedAvatars = getHighlightedAvatars();
+        highlightedAvatars = getHighlightedAvatars();
     
         drawAndPositionAvatars();
 
@@ -289,7 +287,10 @@ function draw() {
         if (gameData && gameData.teamLeader && getIndexFromUsername(ownUsername) === gameData.teamLeader && gameData.phase === "picking") {
             enableDisableButtonsLeader(gameData.numPlayersOnMission[gameData.missionNum - 1]);  
         }
-    }      
+    }     
+    else{
+        $("#mainRoomBox")[0].innerHTML = "";
+    } 
 }
   
   var selectedAvatars = {};

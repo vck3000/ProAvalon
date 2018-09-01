@@ -1,0 +1,61 @@
+<% include partials/header%>
+
+
+<button id="newRoomButton">HIT ME</button>
+
+<!-- newRoomModal -->
+<div id="newRoomModal" class="modal fade" role="dialog">
+	<div class="modal-dialog">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">New Room options!</h2>
+			</div>
+			<div class="modal-body">
+				<h4>Select your room options!</h4>
+                <h6>Default settings have been pre-selected.</h6>
+                <br>
+
+                <label>Max number of players: </label>
+                <select id="maxNumPlayers" name="maxNumPlayers">
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10" selected="selected">10</option>
+                </select>
+                <br>
+                <label>Password: <input type="text" name="newRoomPassword" id="newRoomPassword" style=""></label>
+
+			</div>
+            <div class="modal-footer">
+				<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            
+				<button id="createNewRoomButton" type="button" class="btn btn-success" data-dismiss="modal">Create</button>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+
+
+
+
+<script>
+
+    $("#newRoomButton").on("click", function(data){
+        $('#newRoomModal').modal('show');
+    });
+
+    $("#createNewRoomButton").on("click", function(data){
+        console.log( $("#maxNumPlayers").val() );
+        console.log( $("#newRoomPassword").val() );
+    });
+
+</script>
+
+<% include partials/footer%>
