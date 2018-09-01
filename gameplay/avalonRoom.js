@@ -50,11 +50,18 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 
 	var thisRoom = this;
 	
-	if(newRoomPassword_ && newRoomPassword_.length === 0){
+	
+	if(newRoomPassword_ === ""){
 		newRoomPassword_ = undefined;
+		console.log("UNDEFINED!!!!");
 	}
+
 	this.joinPassword = newRoomPassword_;
 	this.maxNumPlayers = maxNumPlayers_;
+
+	console.log("newroomPassword:|" + newRoomPassword_ + "|");
+	console.log("joinPassword:|" + this.joinPassword + "|");
+	console.log("typeof newroom:|" + typeof(newRoomPassword_) + "|");
 
 
 	this.io = io_;
@@ -1448,7 +1455,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 		//if they exist in players, then remove them
 		if(this.socketsOfPlayers[this.socketsOfPlayers.indexOf(socket)]){
 			this.socketsOfPlayers.splice(this.socketsOfPlayers.indexOf(socket), 1);	
-		}
+		} 
 
 		this.updateRoomPlayers();
 		this.distributeGameData();
