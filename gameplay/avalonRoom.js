@@ -1298,6 +1298,8 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 		else if(thisRoom.joinPassword !== undefined && inputPassword !== undefined){
 			if(thisRoom.joinPassword === inputPassword){
 				console.log("Correct password!");
+
+				socket.emit("correctRoomPassword");
 				//continue on
 			}
 			else{
@@ -1376,7 +1378,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 		//if the player hasn't joined...
 		if(this.allSockets.indexOf(socket) === -1){
 			return false;
-		}222
+		}
 
 		if(thisRoom.socketsOfPlayers.indexOf(socket) !== -1){
 			// socket.emit("danger-alert", "You have already joined...");			

@@ -236,11 +236,6 @@ socket.on("update-current-games-list", function (currentGames) {
                 isSpectator = true;
                 //change to the game room view
                 changeView();
-
-                setTimeout(function(){
-                $(".room-chat-list").html("");                      
-                checkMessageForCommands("/roomchat", "roomChat");
-                }, 500);
             });
         }
     });
@@ -408,4 +403,10 @@ socket.on("wrongRoomPassword", function(){
     });
 });
 
-socket.emit("wrongRoomPassword");
+socket.on("correctRoomPassword", function(){
+    //call roomchat
+    setTimeout(function(){
+        $(".room-chat-list").html("");                      
+        checkMessageForCommands("/roomchat", "roomChat");
+    }, 500);
+});

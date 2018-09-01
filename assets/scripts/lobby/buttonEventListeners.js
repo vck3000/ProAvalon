@@ -174,6 +174,7 @@ document.querySelector("#claimButton").addEventListener("click", function () {
 $("#newRoom").on("click", function(data){
     $('#newRoomModal').modal('show');
     $("#newRoomPassword").val("");
+    $(".gun").css("visibility", "hidden");
 });
 
 $("#createNewRoomButton").on("click", function(data){
