@@ -170,10 +170,14 @@ document.querySelector("#claimButton").addEventListener("click", function () {
 });
 
 
-//New room code
+//New room code (When its opened, open the modal and reset to default settings)
 $("#newRoom").on("click", function(data){
     $('#newRoomModal').modal('show');
+    //password empty default
     $("#newRoomPassword").val("");
+    //10p default
+    $(".maxNumPlayers").val("10");
+
     $(".gun").css("visibility", "hidden");
 });
 
