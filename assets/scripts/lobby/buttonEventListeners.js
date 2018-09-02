@@ -178,12 +178,12 @@ $("#newRoom").on("click", function(data){
 });
 
 $("#createNewRoomButton").on("click", function(data){
-    console.log( $("#maxNumPlayers").val() );
+    console.log( $($(".maxNumPlayers")[1]).val() );
     console.log( $("#newRoomPassword").val() );
 
     var sendObj = {
-        maxNumPlayers: $("#maxNumPlayers").val(),
-        newRoomPassword: $("#newRoomPassword").val()
+        maxNumPlayers: $($(".maxNumPlayers")[1]).val(),
+        newRoomPassword: $(".newRoomPassword").val()
     };
 
     if (inRoom === false) {

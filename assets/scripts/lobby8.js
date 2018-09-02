@@ -1945,7 +1945,7 @@ function hi(){
 }
 
 
-$("#maxNumPlayers").on("change", function(e){
+$(".maxNumPlayers").on("change", function(e){
     console.log("Change");
     console.log(e.target.value);
 
