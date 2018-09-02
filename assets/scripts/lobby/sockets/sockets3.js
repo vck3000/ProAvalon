@@ -213,8 +213,50 @@ socket.on("update-current-games-list", function (currentGames) {
             }
             console.log("lock str: " + lockStr);
 
+            
+            if(currentGame.missionHistory){
+                var missionHistoryStr = "<span style='white-space:nowrap; display: inline-block;'>";
+                var fontSize = docCookies.getItem("optionDisplayFontSize") + "px";
 
-            var str = "<tr> <td> " + currentGame.roomId + lockStr + ": " + currentGame.status + " " + currentGame.numOfPlayersInside + "/10 <span style='padding-left: 10px;'>Spec: " + currentGame.numOfSpectatorsInside + "</span><p>Host: " + currentGame.hostUsername + "</p>" + "</td> </tr>";
+                currentGame.missionHistory.forEach(function(hist){
+                    if(hist === "succeeded"){
+                        missionHistoryStr += "<span class='missionBoxSucceed lobbyMissionBox' style='height: " + fontSize + "; width: " + fontSize + ";'></span>";                    
+                    }
+                    else{
+                        missionHistoryStr += "<span class='missionBoxFail lobbyMissionBox' style='height: " + fontSize + "; width: " + fontSize + ";'></span>";                    
+                    }
+                });
+                for(var i = 0; i < 5 - currentGame.missionHistory.length; i++){
+                    missionHistoryStr += "<span class='missionBoxDefault lobbyMissionBox' style='height: " + fontSize + "; width: " + fontSize + ";'></span>";                    
+                }
+    
+                missionHistoryStr += "</span>";
+            }
+            else{
+                var missionHistoryStr = "";
+            }
+            
+
+            var str = "<tr> <td> " + 
+            currentGame.roomId + lockStr + 
+            ": " + currentGame.status + " " +
+
+            currentGame.numOfPlayersInside + 
+            "/10 <span style='padding-left: 10px;'>Spec: " + 
+            currentGame.numOfSpectatorsInside + "</span><br><span style='padding-right: 10px;'>Host: " + 
+            currentGame.hostUsername + "</span>" + 
+            
+            missionHistoryStr + " " +
+            // "M" + currentGame.missionNum + "." + 
+            // currentGame.pickNum +
+
+            // <div class="missionBox missionBoxSucceed" style="font-size: 14px;"><p>3</p></div>
+            
+            "</td> </tr>";
+
+           
+           
+           
             $("#current-games-table tbody").append(str);
 
 

@@ -50,18 +50,21 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 
 	var thisRoom = this;
 	
-	
 	if(newRoomPassword_ === ""){
 		newRoomPassword_ = undefined;
-		console.log("UNDEFINED!!!!");
+		// console.log("UNDEFINED!!!!");
+	}
+
+	if(maxNumPlayers_ === ""){
+		maxNumPlayers_ = undefined;
+		// console.log("UNDEFINED!!!!");
 	}
 
 	this.joinPassword = newRoomPassword_;
 	this.maxNumPlayers = maxNumPlayers_;
 
-	console.log("newroomPassword:|" + newRoomPassword_ + "|");
-	console.log("joinPassword:|" + this.joinPassword + "|");
-	console.log("typeof newroom:|" + typeof(newRoomPassword_) + "|");
+	console.log("maxNumPlayers:|" + maxNumPlayers_ + "|");
+
 
 
 	this.io = io_;
@@ -93,7 +96,6 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 	this.gameplayMessage = "";
 
 	this.voteHistory = {};
-
 	this.phase = "picking";
 	this.playerShot;
 
@@ -1292,25 +1294,25 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 	}
 
 	this.playerJoinRoom = function (socket, inputPassword) {
-		console.log("Inputpassword from avalonRoom: " + inputPassword);
+		// console.log("Inputpassword from avalonRoom: " + inputPassword);
 
 		//if the room has a password and user hasn't put one in yet
 		if(thisRoom.joinPassword !== undefined && inputPassword === undefined){
 			socket.emit("joinPassword", this.roomId);
-			console.log("No password inputted!");
+			// console.log("No password inputted!");
 			
 			return false;
 		}
 		//if the room has a password and user HAS put a password in
 		else if(thisRoom.joinPassword !== undefined && inputPassword !== undefined){
 			if(thisRoom.joinPassword === inputPassword){
-				console.log("Correct password!");
+				// console.log("Correct password!");
 
 				socket.emit("correctRoomPassword");
 				//continue on
 			}
 			else{
-				console.log("Wrong password!");
+				// console.log("Wrong password!");
 				
 				// socket.emit("danger-alert", "The password you have inputted is incorrect.");
 				socket.emit("wrongRoomPassword");
@@ -1322,7 +1324,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 		
 		if(thisRoom.restartSaved){
 			if(thisRoom.socketsChangedOnce === false){
-				console.log("RAN ONCE");
+				// console.log("RAN ONCE");
 				thisRoom.allSockets = [];
 				thisRoom.socketsOfPlayers = [];
 				thisRoom.socketsChangedOnce = true;
@@ -1356,18 +1358,23 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 
 		thisRoom.updateRoomPlayers();		
 
-		console.log("Current sockets of players after player joined: ");
-		console.log(thisRoom.socketsOfPlayers.length);
+		// console.log("Current sockets of players after player joined: ");
+		// console.log(thisRoom.socketsOfPlayers.length);
 
-		console.log("All sockets of players after player joined: ");
+		// console.log("All sockets of players after player joined: ");
 		
-		console.log(thisRoom.allSockets.length);
+		// console.log(thisRoom.allSockets.length);
 
 
 		return true;
 	}
 
 	this.playerJoinGame = function (socket) {
+		if(this.maxNumPlayers && this.socketsOfPlayers.length >= this.maxNumPlayers){
+			socket.emit("danger-alert", "The game has reached the limit for number of players.");
+			return false;
+		}
+
 		//ready not ready
 		if(thisRoom.hostTryStartGameDate){
 			if(new Date - this.hostTryStartGameDate > 1000*11){

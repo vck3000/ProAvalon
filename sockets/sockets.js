@@ -1730,6 +1730,10 @@ var updateCurrentGamesList = function () {
 			gamesList[i].hostUsername = rooms[i].getHostUsername();
 			if(rooms[i].gameStarted === true){
 				gamesList[i].numOfPlayersInside = rooms[i].playersInGame.length;
+
+				gamesList[i].missionHistory = rooms[i].missionHistory;
+				gamesList[i].missionNum = rooms[i].missionNum;
+				gamesList[i].pickNum = rooms[i].pickNum;
 			}
 			else{
 				gamesList[i].numOfPlayersInside = rooms[i].socketsOfPlayers.length;

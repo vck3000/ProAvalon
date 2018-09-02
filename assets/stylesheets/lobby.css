@@ -1050,3 +1050,18 @@ i {
     background-color: #579157;
     border-radius: 5px;
 } */
+
+
+.lobbyMissionBox {
+    display: inline-block;
+    margin-left: 1px;
+    margin-right: 1px;
+    border-radius: 5px;
+    transform: translateY(2px);
+}
+
+.missionBoxDefault {
+    background-color: #EFEFEF;
+    color: rgb(124, 124, 124);
+    border: rgb(87, 87, 87) 1px solid;
+}
