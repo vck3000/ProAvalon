@@ -62,6 +62,10 @@
 
 				<button id="claimButton" class="btn btn-primary">Claim</button>
 
+				<div class="gameInfoMaxPlayers badge">
+					8/9
+				</div>
+
 
 				<div id="mainRoomBox" class="">
 					<p></p>
@@ -441,6 +445,19 @@
 						</label>
 					</div>
 
+					<br>
+					<br>
+
+					<label>Max number of players:</label>
+					<select id="maxNumPlayers" name="maxNumPlayers">
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10" selected="selected">10</option>
+					</select>
+
 
 				</div>
 				<div class="modal-footer">
@@ -580,9 +597,8 @@
 					<h6>Default settings have been pre-selected.</h6>
 					<br>
 
-					<label>Max number of players: (INOPERATIVE) </label>
+					<label>Max number of players:</label>
 					<select id="maxNumPlayers" name="maxNumPlayers">
-						<option value="2">2</option>
 						<option value="5">5</option>
 						<option value="6">6</option>
 						<option value="7">7</option>

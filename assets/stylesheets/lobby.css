@@ -1065,3 +1065,23 @@ i {
     color: rgb(124, 124, 124);
     border: rgb(87, 87, 87) 1px solid;
 }
+
+.gameInfoMaxPlayers {
+    position: absolute;
+    bottom: 0%;
+    right: 0%;
+
+    /* top: 50%;
+    left: 50%; */
+
+    /* border: 1px solid gray; */
+    /* background-color: rgb(231, 231, 231); */
+
+
+
+    /* padding: 3px; */
+
+    /* border-radius: 10px; */
+
+    transform: translate(-10%, -20%);
+}

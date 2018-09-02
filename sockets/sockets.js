@@ -1637,6 +1637,15 @@ module.exports = function (io) {
 			}
 		});
 
+		socket.on("update-room-max-players", function (number) {
+			if (rooms[socket.request.user.inRoomId]) {
+				rooms[socket.request.user.inRoomId].updateMaxNumPlayers(socket, number);
+			}
+		});
+
+
+		
+
 		//************************
 		//game data stuff
 		//************************

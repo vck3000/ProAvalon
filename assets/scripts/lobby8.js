@@ -1943,3 +1943,11 @@ function showYourTurnNotification(ToF){
 function hi(){
     console.log("hi");
 }
+
+
+$("#maxNumPlayers").on("change", function(e){
+    console.log("Change");
+    console.log(e.target.value);
+
+    socket.emit("update-room-max-players", e.target.value);
+});

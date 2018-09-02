@@ -278,6 +278,11 @@ socket.on("update-current-games-list", function (currentGames) {
                 isSpectator = true;
                 //change to the game room view
                 changeView();
+
+                setTimeout(function(){
+                    $(".room-chat-list").html("");                      
+                    checkMessageForCommands("/roomchat", "roomChat");
+                }, 500);
             });
         }
     });
@@ -452,3 +457,18 @@ socket.on("correctRoomPassword", function(){
         checkMessageForCommands("/roomchat", "roomChat");
     }, 500);
 });
+
+//this part at the moment only updates the max number of players in a game.
+socket.on("update-room-info", function(data){
+    // data.maxNumPlayers
+    $(".gameInfoMaxPlayers")[0].innerText = roomPlayersData.length + "/" + data.maxNumPlayers;
+
+    //if a game has started
+    if(gameData){
+        $(".gameInfoMaxPlayers").addClass("hidden");
+    }
+    else{
+        $(".gameInfoMaxPlayers").removeClass("hidden");        
+    }
+});
+

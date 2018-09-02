@@ -1705,6 +1705,8 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 			if(this.allSockets[i]){
 				this.allSockets[i].emit("update-room-players", this.getRoomPlayers());
 				this.allSockets[i].emit("update-room-spectators", usernamesOfSpecs);
+				this.allSockets[i].emit("update-room-info", {maxNumPlayers: this.maxNumPlayers});
+
 			}
 		}
 
@@ -1775,6 +1777,13 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 
 	this.gameMove = function(socket, data){
 		thisRoom[data.gameMove](socket, data.clientData);
+	}
+
+	this.updateMaxNumPlayers = function(socket, number){
+		if(socket.request.user.username === thisRoom.host && number >= 5 && number <= 10){
+			thisRoom.maxNumPlayers = number;
+			thisRoom.updateRoomPlayers();
+		}
 	}
 };
 
