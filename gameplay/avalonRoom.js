@@ -55,7 +55,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 		// console.log("UNDEFINED!!!!");
 	}
 
-	if(maxNumPlayers_ === "" || maxNumPlayers_ <= 5 || maxNumPlayers_ >= 10 ){
+	if(maxNumPlayers_ === "" || maxNumPlayers_ < 5 || maxNumPlayers_ > 10 ){
 		maxNumPlayers_ = undefined;
 		// console.log("UNDEFINED!!!!");
 	}
