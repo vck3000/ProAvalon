@@ -727,58 +727,39 @@ function drawAndPositionAvatars() {
     }
     else{
         $(".gun").css("left", "50%"); 
-            $(".gun").css("top", "50%"); 
-            $(".gun").css("transform", "translate(-50%,-50%)"); 
-            $(".gun").removeClass("gunAfter"); 
-            $(".gun").addClass("gunBefore"); 
+        $(".gun").css("top", "50%"); 
+        $(".gun").css("transform", "translate(-50%,-50%)"); 
+        $(".gun").removeClass("gunAfter"); 
+        $(".gun").addClass("gunBefore"); 
     }
     
-        if(gameData && (lastPickNum !== gameData.pickNum || lastMissionNum !== gameData.missionNum)){
-            // $(".gun").css("width", $("#mainRoomBox div").width() + "px"); 
-            $(".gun").css("left", "50%"); 
-            $(".gun").css("top", "50%"); 
-            $(".gun").css("transform", "translate(-50%,-50%)"); 
-            $(".gun").removeClass("gunAfter"); 
-            $(".gun").addClass("gunBefore"); 
+    if(gameData && (lastPickNum !== gameData.pickNum || lastMissionNum !== gameData.missionNum)){
+        // $(".gun").css("width", $("#mainRoomBox div").width() + "px"); 
+        $(".gun").css("left", "50%"); 
+        $(".gun").css("top", "50%"); 
+        $(".gun").css("transform", "translate(-50%,-50%)"); 
+        $(".gun").removeClass("gunAfter"); 
+        $(".gun").addClass("gunBefore"); 
 
-            if(gameData && gameData.proposedTeam){
-                // gameData.propsedTeam
-                for (var i = 0; i < gameData.proposedTeam.length; i++) {
-                    console.log("not hidden stuff");
-                    //set the div string and add the gun
-                    //   var str = $(".room-container")[0].innerHTML;
-                    //   str = str + "<span><img src='pictures/gun.png' class='gun'></span>";
-                    //update the str in the div
-                    //   $(".room-container")[0].innerHTML = str;
-                    //   $("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])].innerHTML = str;
-                    //   console.log($($(".room-container")[0]).position());
+        if(gameData && gameData.proposedTeam){
+            // gameData.propsedTeam
+            for (var i = 0; i < gameData.proposedTeam.length; i++) {
+                console.log("not hidden stuff");
+                //set the div string and add the gun
 
+                var widOfGun = $(".gun").width();
+                var heightOfGun = $(".gun").height();
 
-
-
-                    // $($(".gun")[i]).css("left", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + "px"); 
-                    // $($(".gun")[i]).css("top", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + "px"); 
-                    
-
-                    var widOfGun = $(".gun").width();
-                    var heightOfGun = $(".gun").height();
-
-                    $($(".gun")[i]).animate({
-                        top: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*1.5) + "px" ,
-                        left: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/2) + "px",
-                    }, 500);
-                    $($(".gun")[i]).removeClass("gunBefore"); 
-                    $($(".gun")[i]).addClass("gunAfter"); 
+                $($(".gun")[i]).animate({
+                    top: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*1.5) + "px" ,
+                    left: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/2) + "px",
+                }, 500);
+                $($(".gun")[i]).removeClass("gunBefore"); 
+                $($(".gun")[i]).addClass("gunAfter"); 
 
                 lastPickNum = gameData.pickNum;
                 lastMissionNum = gameData.missionNum;
             }   
-        
-
-            
-            // $($(".gun")[i]).css("transform", "translateY(150%)"); 
-
-            // divs[i].style.width = divs[i].offsetHeight * ratioXtoY + "px";
         }
     }
     else{

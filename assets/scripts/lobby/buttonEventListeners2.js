@@ -178,7 +178,10 @@ $("#newRoom").on("click", function(data){
     //10p default
     $(".maxNumPlayers").val("10");
 
-    $(".gun").css("visibility", "hidden");
+    // $(".gun").css("visibility", "hidden");
+
+    $(".gun").removeClass("gunAfter"); 
+    $(".gun").addClass("gunBefore"); 
 });
 
 $("#createNewRoomButton").on("click", function(data){
