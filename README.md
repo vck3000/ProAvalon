@@ -9,7 +9,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 
 What things you need to install the software and how to install them
-- Node.js
+- Node.js v7.6 or later
 - MongoDB
 - Git
 
@@ -35,6 +35,10 @@ Open a mongo shell (in a new terminal or command prompt):
 Create the database:
 > use TheNewResistanceUsers
 switched to db TheNewResistanceUsers
+```
+4. Install Node modules
+```
+> npm install
 ```
 
 ## Running
