@@ -196,6 +196,8 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 		
 					rooms[storedData["roomId"]].someCutoffPlayersJoined = "no";
 					
+					rooms[storedData["roomId"]].savedGameRecordId = foundSaveGame.id;
+					
 					console.log("Game loaded");
 
 					console.log("platform: " + process.env.MY_PLATFORM);
@@ -1842,7 +1844,7 @@ function playerLeaveRoomCheckDestroy(socket){
 			rooms[socket.request.user.inRoomId] = undefined;
 		}
 
-		//code if frozen and more than 1hr then remove.
+		//if room is frozen for more than 1hr then remove.
 		if(rooms[socket.request.user.inRoomId] 
 			&& rooms[socket.request.user.inRoomId].timeFrozenLoaded 
 			&& rooms[socket.request.user.inRoomId].getStatus() === "Frozen"
