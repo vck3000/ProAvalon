@@ -94,7 +94,7 @@ function draw() {
 
         drawClaimingPlayers(roomPlayersData.claimingPlayers);
 
-        drawGuns();
+        drawguns();
 
         console.log(highlightedAvatars);
         restoreHighlightedAvatars(highlightedAvatars);
@@ -124,7 +124,7 @@ function draw() {
             }
             else if (gameData.phase === "voting") {
 
-                drawGuns();
+                drawguns();
 
                 var str = "";
 
@@ -189,7 +189,7 @@ function draw() {
                 setStatusBarText(str);
                 
 
-                drawGuns();
+                drawguns();
                 drawVotes(gameData.votes);
             }
             else if (gameData.phase === "assassination") {
@@ -701,7 +701,7 @@ function drawAndPositionAvatars() {
   
 
 
-  var whenToShowGuns = [
+  var whenToShowguns = [
     "voting",
     "missionVoting",
     "assassination",
@@ -710,24 +710,26 @@ function drawAndPositionAvatars() {
 
   var lastPickNum = 0;
   var lastMissionNum = 0;
-  function drawGuns() {
-    $(".gun img").css("width", $("#mainRoomBox div").width() + "px"); 
-    $(".gun").css("width", $("#mainRoomBox div").width() + "px"); 
+  function drawguns() {
+    $(".gun img").css("max-width", "100%"); 
+    $(".gun").css("max-width", "100%"); 
 
     
 
     if(gameData && gameData.phase){
-        if(whenToShowGuns.indexOf(gameData.phase) === -1){
-            $(".gun").css("left", "50%"); 
-            $(".gun").css("top", "50%"); 
+        if(whenToShowguns.indexOf(gameData.phase) === -1){
+            //$(".gun").css("left", "50%"); 
+            //$(".gun").css("top", "50%"); 
+			$(".gun").css("max-width", "100%"); 
             $(".gun").css("transform", "translate(-50%,-50%)"); 
             $(".gun").removeClass("gunAfter"); 
             $(".gun").addClass("gunBefore"); 
         }
     }
     else{
-        $(".gun").css("left", "50%"); 
-        $(".gun").css("top", "50%"); 
+        //$(".gun").css("left", "50%"); 
+        //$(".gun").css("top", "50%"); 
+		$(".gun").css("max-width", "100%"); 
         $(".gun").css("transform", "translate(-50%,-50%)"); 
         $(".gun").removeClass("gunAfter"); 
         $(".gun").addClass("gunBefore"); 
@@ -735,9 +737,10 @@ function drawAndPositionAvatars() {
     
     if(gameData && (lastPickNum !== gameData.pickNum || lastMissionNum !== gameData.missionNum)){
         // $(".gun").css("width", $("#mainRoomBox div").width() + "px"); 
-        $(".gun").css("left", "50%"); 
-        $(".gun").css("top", "50%"); 
-        $(".gun").css("transform", "translate(-50%,-50%)"); 
+        //$(".gun").css("left", "50%"); 
+        //$(".gun").css("top", "50%"); 
+		$(".gun").css("max-width", "100%"); 
+        $(".gun").css("transform", "translate(-50%,-50%)"); //turn of translates
         $(".gun").removeClass("gunAfter"); 
         $(".gun").addClass("gunBefore"); 
 
@@ -747,12 +750,13 @@ function drawAndPositionAvatars() {
                 console.log("not hidden stuff");
                 //set the div string and add the gun
 
-                var widOfGun = $(".gun").width();
-                var heightOfGun = $(".gun").height();
+                var widOfgun = $(".gun").width();
+                var heightOfgun = $(".gun").height();
+                var proposedUserAvatar = $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]);
 
                 $($(".gun")[i]).animate({
-                    top: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*1.5) + "px" ,
-                    left: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/2) + "px",
+                    top: proposedUserAvatar.position().top + (heightOfgun) + (proposedUserAvatar.height()/3) + "px" ,
+                    left: proposedUserAvatar.position().left + (widOfgun) + "px",
                 }, 500);
                 $($(".gun")[i]).removeClass("gunBefore"); 
                 $($(".gun")[i]).addClass("gunAfter"); 
@@ -763,20 +767,20 @@ function drawAndPositionAvatars() {
         }
     }
     else{
-        adjustGunPositions();
+        adjustgunPositions();
     }
 }
 
-  function adjustGunPositions(){
+  function adjustgunPositions(){
     if(gameData && gameData.proposedTeam){     
         for (var i = 0; i < gameData.proposedTeam.length; i++) {
 
-            var widOfGun = $(".gun").width();
-            var heightOfGun = $(".gun").height();
+            var widOfgun = $(".gun").width();
+            var heightOfgun = $(".gun").height();
+            var proposedUserAvatar = $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]);
 
-
-            $($(".gun")[i]).css("top", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*1.5) + "px"); 
-            $($(".gun")[i]).css("left", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/2) + "px"); 
+            $($(".gun")[i]).css("top", proposedUserAvatar.position().top + (heightOfgun) + (proposedUserAvatar.height()/3) + "px"); 
+            $($(".gun")[i]).css("left", proposedUserAvatar.position().left + (widOfgun) + "px"); 
             
         }
     }
@@ -1018,7 +1022,7 @@ function enableDisableButtons() {
         }
 
         else if (gameData.phase === "finished") {
-            drawGuns();
+            drawguns();
             disableButtons();
         }
     }
