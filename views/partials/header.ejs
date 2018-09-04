@@ -256,8 +256,8 @@
 							<ul class="dropdown-menu" id="notificationsList">
 							
 								<li class="notificationItem"><a>
-									<p class="notificationText"><span style="visibility: hidden">a</span></p>
-									<p><span class="notificationDate"><span style="visibility: hidden">a</span></span><span class="hideAll">Hide all<span class="hidden"></span></span></p>
+									<p class="notificationText"><span style="visibility: hidden; white-space: normal;">a</span></p>
+									<p><span class="notificationDate"><span style="visibility: hidden; white-space: normal;">a</span></span><span class="hideAll">Hide all<span class="hidden"></span></span></p>
 									</a>
 								</li>
 								<% if(locals.userNotifications && userNotifications.length !== 0){ %>
@@ -270,7 +270,7 @@
 									<% } else{ %>
 										<li class="notificationItem" idOfNotif=<%=userNotifications[i]._id%>>
 									<% } %>
-											<a  href="<%=userNotifications[i].link%>"><p class="notificationText"><%=userNotifications[i].text%></p></a>
+											<a  href="<%=userNotifications[i].link%>"><p class="notificationText" style="white-space: normal;"><%=userNotifications[i].text%></p></a>
 
 											<%
 												// var dateToShow = new Date(userNotifications[i].date).toDateString();
@@ -282,7 +282,9 @@
 											%>
 
 
-											<p><span class="notificationDate"><%=dateToShow%></span><span class="notificationHide" >Hide<span class="hidden userNotificationIdToRemove" ><%=userNotifications[i]._id%></span></span></p>
+											<p><span class="notificationDate"><%=dateToShow%></span>
+											<span class="notificationHide" >Hide<span class="hidden userNotificationIdToRemove" ><%=userNotifications[i]._id%></span></span>
+											</p>
 											<!--<p><%= userNotifications[i].link %></p>-->
 											
 										</li>
