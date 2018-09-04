@@ -12,7 +12,7 @@ socket.on("modCommands", function (commands) {
         $("#modActionCloseButton").on("click", function(){
             $("#modModal").modal("hide");
             
-            console.log($("#modactionform").serializeArray());
+            // console.log($("#modactionform").serializeArray());
             var data = $("#modactionform").serializeArray();
 
             socket.emit("modAction", data);
@@ -29,7 +29,7 @@ socket.on("adminCommands", function (commands) {
 
 socket.on("messageCommandReturnStr", function (dataInc) {
     if(dataInc){
-        console.log(dataInc);
+        // console.log(dataInc);
     
         if(!dataInc.dateCreated){
             dataInc.dateCreated = new Date();

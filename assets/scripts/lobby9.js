@@ -96,7 +96,7 @@ function draw() {
 
         drawGuns();
 
-        console.log(highlightedAvatars);
+        // console.log(highlightedAvatars);
         restoreHighlightedAvatars(highlightedAvatars);
 
         
@@ -422,9 +422,9 @@ function assassinationSetup(phase) {
         for (var i = 0; i < divs.length; i++) {
 
             //if the player is not a "seeable" spy, then make them selectable
-            console.log("spies: ");
-            console.log(spies);
-            console.log("Username of player: " + divs[i].getAttribute("usernameofplayer"));
+            // console.log("spies: ");
+            // console.log(spies);
+            // console.log("Username of player: " + divs[i].getAttribute("usernameofplayer"));
             if(spies.indexOf(divs[i].getAttribute("usernameofplayer")) === -1){
 
                 divs[i].addEventListener("click", function () {
@@ -622,7 +622,7 @@ function drawAndPositionAvatars() {
         divs[i].style.height = playerDivHeightPercent + "%";
 
         var maxAvatarHeight = $("#option_display_max_avatar_height")[0].value;
-        console.log($(divs[i]).height());
+        // console.log($(divs[i]).height());
         if($(divs[i]).height() > maxAvatarHeight){
         divs[i].style.height = maxAvatarHeight + "px";
         }
@@ -744,7 +744,7 @@ function drawAndPositionAvatars() {
         if(gameData && gameData.proposedTeam){
             // gameData.propsedTeam
             for (var i = 0; i < gameData.proposedTeam.length; i++) {
-                console.log("not hidden stuff");
+                // console.log("not hidden stuff");
                 //set the div string and add the gun
 
                 var widOfGun = $(".gun").width();
@@ -1247,7 +1247,7 @@ function changeView() {
 
 
     setTimeout(function(){
-        console.log("redraw");
+        // console.log("redraw");
         draw();
     }, 1000);
 }
@@ -1704,7 +1704,7 @@ function checkMessageForCommands(message, chatBox) {
                 if (modCommands.hasOwnProperty(key)) {
                     // console.log(key + " -> " + commands[key]);
                     if (messageCommand === modCommands[key].command) {
-                        console.log("mods");
+                        // console.log("mods");
                       // console.log("Command: " + commands[key].command + " called.");
                         commandCalled = modCommands[key].command;
                         validCommandFound = true;
@@ -1720,7 +1720,7 @@ function checkMessageForCommands(message, chatBox) {
                 if (adminCommands.hasOwnProperty(key)) {
                     // console.log(key + " -> " + commands[key]);
                     if (messageCommand === adminCommands[key].command) {
-                        console.log("admin");
+                        // console.log("admin");
                         // console.log("Command: " + commands[key].command + " called.");
                         commandCalled = adminCommands[key].command;
                         validCommandFound = true;
@@ -1921,14 +1921,9 @@ function showYourTurnNotification(ToF){
     }
 }
 
-function hi(){
-    console.log("hi");
-}
-
-
 $(".maxNumPlayers").on("change", function(e){
-    console.log("Change");
-    console.log(e.target.value);
+    // console.log("Change");
+    // console.log(e.target.value);
 
     socket.emit("update-room-max-players", e.target.value);
 });

@@ -107,7 +107,7 @@ router.post("/",sanitiseUsername,/* usernameToLowerCase, */function(req, res){
 	
 		 request(verifyUrl, (err, response, body) => {
 			body = JSON.parse(body);
-			console.log(body);
+			// console.log(body);
 		
 			// If Not Successful
 			if(body.success !== undefined && !body.success){
@@ -216,7 +216,7 @@ router.get("/lobby", middleware.isLoggedIn, async function(req, res){
 						req.flash("error", message);
 						res.redirect("/")
 	
-						console.log(req.user.username + " is still banned and cannot join the lobby.");
+						// console.log(req.user.username + " is still banned and cannot join the lobby.");
 						return;
 					}
 				}
@@ -300,8 +300,8 @@ router.get("/ajax/getStatistics", function(req, res){
 			console.log(err);
 		}
 		else{
-			console.log("records.length");
-			console.log(records.length);
+			// console.log("records.length");
+			// console.log(records.length);
 			var obj = {};
 			obj.totalgamesplayed = records.length;
 
@@ -536,14 +536,14 @@ router.get("/ajax/profile/getProfileData/:profileUsername", function(req, res){
 
 		}
 	});
-	console.log("Received AJAX request");
+	// console.log("Received AJAX request");
 });
 
 
 
 router.get("/ajax/seenNotification", function(req, res){
-	console.log("seen nofication");
-	console.log(req.query.idOfNotif);
+	// console.log("seen nofication");
+	// console.log(req.query.idOfNotif);
 
 
 	// console.log(mongoose.Types.ObjectId(req.query.idOfNotif));
@@ -574,8 +574,8 @@ router.get("/ajax/seenNotification", function(req, res){
 
 
 router.get("/ajax/hideNotification", function(req, res){
-	console.log("hide nofication");
-	console.log(req.query.idOfNotif);
+	// console.log("hide nofication");
+	// console.log(req.query.idOfNotif);
 
 
 	// console.log(mongoose.Types.ObjectId(req.query.idOfNotif));
@@ -598,7 +598,7 @@ router.get("/ajax/hideNotification", function(req, res){
 });
 
 router.get("/ajax/hideAllNotifications", function(req, res){
-	console.log("hide all nofications");
+	// console.log("hide all nofications");
 
 	User.findById(req.user._id).populate("notifications").exec(async function(err, foundUser){
 		if(err){
@@ -607,8 +607,8 @@ router.get("/ajax/hideAllNotifications", function(req, res){
 		// console.log(foundUser.notifications);
 
 		foundUser.notifications.forEach(function(notif){
-			console.log("removing notif");
-			console.log(notif);
+			// console.log("removing notif");
+			// console.log(notif);
 			myNotification.findByIdAndRemove(notif._id, function(err){
 				// console.log("callback");
 			});

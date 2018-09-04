@@ -37,13 +37,13 @@ socket.on("game-starting", function (roles) {
           }
 
     }).then(function (result) {
-        console.log(result)
+        // console.log(result)
         if (result.dismiss === swal.DismissReason.timer || result.dismiss === swal.DismissReason.cancel) {
-            console.log('I was closed by the timer')
+            // console.log('I was closed by the timer')
             socket.emit("player-not-ready", ownUsername);
           }
           else{
-            console.log('Im ready!')
+            // console.log('Im ready!')
             socket.emit("player-ready", ownUsername);
           }
     });
@@ -77,8 +77,8 @@ socket.on("spec-game-starting-finished", function(data){
 
 
 socket.on("game-data", function (data) {
-    console.log("GAME DATA INC");   
-    console.log(data);
+    // console.log("GAME DATA INC");   
+    // console.log(data);
     if (data && roomId === data.roomId) {
       // console.log("game starting!");
 

@@ -63,11 +63,11 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 	this.joinPassword = newRoomPassword_;
 	this.maxNumPlayers = maxNumPlayers_;
 
-	console.log("AAAA");
-	console.log(maxNumPlayers_);
-	console.log(typeof(maxNumPlayers_));
+	// console.log("AAAA");
+	// console.log(maxNumPlayers_);
+	// console.log(typeof(maxNumPlayers_));
 
-	console.log("maxNumPlayers:|" + maxNumPlayers_ + "|");
+	// console.log("maxNumPlayers:|" + maxNumPlayers_ + "|");
 
 
 
@@ -249,7 +249,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 				console.log(err);
 			}
 			else{
-				console.log("Stored game data successfully.");
+				// console.log("Stored game data successfully.");
 			}
 		});
 
@@ -379,7 +379,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 			//set the player shot
 			this.playerShot = target[0];
 
-			console.log("merlin username: " + merlinUsername);
+			// console.log("merlin username: " + merlinUsername);
 			if (merlinUsername && target[0] === merlinUsername) {
 				this.winner = "Spy";
 				this.howWasWon = "Assassinated Merlin correctly.";
@@ -404,7 +404,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 			this.gameEnd();
 		}
 		else {
-			console.log("Not assassination phase yet");
+			// console.log("Not assassination phase yet");
 		}
 	}
 
@@ -416,7 +416,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 
 			//emit to the lady holder the person's alliance
 			socket.emit("lady-info", /*"Player " + */target + " is a " + alliance);
-			console.log("Player " + target + " is a " + alliance);
+			// console.log("Player " + target + " is a " + alliance);
 
 			//update lady location
 			this.lady = getIndexFromUsername(this.playersInGame, target);
@@ -446,11 +446,11 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 			if (i !== -1) {
 				if (voteStr === "succeed") {
 					this.missionVotes[getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "succeed";
-					console.log("received succeed from " + socket.request.user.username);
+					// console.log("received succeed from " + socket.request.user.username);
 				}
 				else if (voteStr === "fail") {
 					this.missionVotes[getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "fail";
-					console.log("received fail from " + socket.request.user.username);
+					// console.log("received fail from " + socket.request.user.username);
 				}
 				else {
 					console.log("ERROR! Expected succeed or fail, got: " + voteStr);
@@ -459,7 +459,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 				this.playersYetToVote.splice(i, 1);
 			}
 			else {
-				console.log("Player has already voted or is not in the game");
+				console.log("Player " + socket.request.user.username + " has already voted or is not in the game");
 			}
 
 
@@ -540,8 +540,8 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 					}
 				}
 
-				console.log("numOfSucceeds: " + numOfSucceeds);
-				console.log("numOfFails: " + numOfFails);
+				// console.log("numOfSucceeds: " + numOfSucceeds);
+				// console.log("numOfFails: " + numOfFails);
 
 				this.phase = "picking";
 				//only lady of the lake after m1 and m2 have finished.
@@ -596,11 +596,11 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 			if (i !== -1) {
 				if (voteStr === "approve") {
 					this.votes[getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "approve";
-					console.log("received approve from " + socket.request.user.username);
+					// console.log("received approve from " + socket.request.user.username);
 				}
 				else if (voteStr === "reject") {
 					this.votes[getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "reject";
-					console.log("received reject from " + socket.request.user.username);
+					// console.log("received reject from " + socket.request.user.username);
 				}
 				else {
 					console.log("ERROR! Expected approve or reject, got: " + voteStr);
@@ -636,9 +636,9 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 					//the leader star will stay since we automatically teamLeader-- at the end of this block.
 				}
 				else if (this.pickNum >= 5 && outcome === "rejected") {
-					console.log("--------------------------");
-					console.log("HAMMER REJECTED, GAME OVER");
-					console.log("--------------------------");
+					// console.log("--------------------------");
+					// console.log("HAMMER REJECTED, GAME OVER");
+					// console.log("--------------------------");
 
 					//set the mission to fail
 					this.missionHistory[this.missionHistory.length] = "failed";
@@ -666,7 +666,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 						this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1] = [];
 					}
 					if (this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1][this.pickNum - 1] === undefined) {
-						console.log("Clear leader and picked from pickVote");
+						// console.log("Clear leader and picked from pickVote");
 						this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1][this.pickNum - 1] = "";
 					}
 
@@ -693,7 +693,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 		
 		this.distributeGameData();
 
-		console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, { depth: 2 }));
+		// console.log("Players yet to vote: " + util.inspect(this.playersYetToVote, { depth: 2 }));
 	}
 
 
@@ -706,7 +706,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 
 			//if the person who submitted the pick team is the team leader of the time, allow and go ahead
 			if (getIndexFromUsername(this.playersInGame, socket.request.user.username) === this.teamLeader) {
-				console.log("Team leader has picked: ");
+				// console.log("Team leader has picked: ");
 
 				// var splitStr = pickedTeam.split(" ");
 				// for(var i = 0; i < splitStr.length-1; i++){
@@ -745,7 +745,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 						this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1] = [];
 					}
 					if (this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1][this.pickNum - 1] === undefined) {
-						console.log("Clear leader and picked from playerPickTeam");
+						// console.log("Clear leader and picked from playerPickTeam");
 						this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1][this.pickNum - 1] = "";
 					}
 
@@ -763,11 +763,11 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 
 			}
 			else {
-				console.log("You are not the team leader, you cannot make a pick");
+				// console.log("You are not the team leader, you cannot make a pick");
 			}
 		}
 		else{
-			console.log("Not picking phase.");
+			// console.log("Not picking phase.");
 		}
 		
 		this.distributeGameData();
@@ -866,7 +866,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 
 		if(this.gameStarted == true){
 			//get the player roles first
-			console.log("Get game data called within avalonRoom");
+			// console.log("Get game data called within avalonRoom");
 
 			var data = {};
 
@@ -990,11 +990,11 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 			//check before starting
 			if (this.socketsOfPlayers.length < minPlayers) {
 				//NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
-				console.log("Not enough players.");
+				// console.log("Not enough players.");
 				this.socketsOfPlayers[0].emit("danger-alert", "Minimum 5 players to start. ")
 				return false;
 			} else if (this.gameStarted === true) {
-				console.log("Game already started!");
+				// console.log("Game already started!");
 				return false;
 			}
 
@@ -1082,11 +1082,11 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 		//Get roles:
 		this.resRoles = [];
 		this.spyRoles = [];
-		if (options.merlinassassin === true) { this.resRoles.push("Merlin"); this.spyRoles.push("Assassin"); console.log("added merlin assassin"); }
-		if (options.percival === true) { this.resRoles.push("Percival"); console.log("Added percy"); }
-		if (options.morgana === true) { this.spyRoles.push("Morgana"); console.log("Added morgana"); }
-		if (options.mordred === true) { this.spyRoles.push("Mordred"); console.log("added mordred"); }
-		if (options.oberon === true) { this.spyRoles.push("Oberon"); console.log("added oberon"); }
+		if (options.merlinassassin === true) { this.resRoles.push("Merlin"); this.spyRoles.push("Assassin"); /*console.log("added merlin assassin"); */}
+		if (options.percival === true) { this.resRoles.push("Percival"); /*console.log("Added percy"); */}
+		if (options.morgana === true) { this.spyRoles.push("Morgana"); /*console.log("Added morgana"); */}
+		if (options.mordred === true) { this.spyRoles.push("Mordred"); /*console.log("added mordred"); */}
+		if (options.oberon === true) { this.spyRoles.push("Oberon"); /*console.log("added oberon"); */}
 		
 
 		var resPlayers = [];
@@ -1299,6 +1299,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 
 	this.playerJoinRoom = function (socket, inputPassword) {
 		// console.log("Inputpassword from avalonRoom: " + inputPassword);
+		console.log(socket.request.user.username + " has joined room " + thisRoom.roomId);
 
 		//if the room has a password and user hasn't put one in yet
 		if(thisRoom.joinPassword !== undefined && inputPassword === undefined){
@@ -1355,7 +1356,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 		
 		//cutoff
 		if(thisRoom.allSockets.length >= thisRoom.cutoffForSomePlayersJoined){
-			console.log("cutoffreached: " + thisRoom.allSockets.length + " " + thisRoom.cutoffForSomePlayersJoined);
+			// console.log("cutoffreached: " + thisRoom.allSockets.length + " " + thisRoom.cutoffForSomePlayersJoined);
 			thisRoom.someCutoffPlayersJoined = "yes";
 			thisRoom.frozen = false;
 		}
@@ -1412,7 +1413,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 			return true;
 		}
 		else {
-			console.log("Game has already started! Or maximum number of players");
+			// console.log("Game has already started! Or maximum number of players");
 			if(thisRoom.gameStarted === true){
 				socket.emit("danger-alert", "Game has already started.");
 			}
@@ -1445,7 +1446,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 		}
 		else {
 
-			console.log("error, cant make the player stand up");
+			// console.log("error, cant make the player stand up");
 
 			return false;
 		}
@@ -1496,7 +1497,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 		}
 
 		else {
-			console.log("Player left mid-game.");
+			// console.log("Player left mid-game.");
 			return false;
 		}
 
@@ -1566,7 +1567,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 	this.getUsernamesOfPlayersInRoom = function() {
 		if(this.gameStarted === true){
 			var array = [];
-			console.log("playersInRoom");
+			// console.log("playersInRoom");
 			// console.log(this.playersInRoom[0].request.user.username);
 			for(var i = 0; i < this.socketsOfPlayers.length; i++){
 				array.push(this.socketsOfPlayers[i].request.user.username);
@@ -1582,13 +1583,13 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 	//individual roles will be distributed individually.
 	this.getPlayerRoles = function () {
 		if (this.gameStarted === true) {
-			console.log("GET PLAYER ROLES TRUE");
-			console.log("Players in game: " + playerInGame);
+			// console.log("GET PLAYER ROLES TRUE");
+			// console.log("Players in game: " + playerInGame);
 			return this.playersInGame;
 		}
 		else {
-			console.log("GET PLAYER ROLES false");
-			console.log("Game hasn't started yet");
+			// console.log("GET PLAYER ROLES false");
+			// console.log("Game hasn't started yet");
 			return false;
 		}
 	}
@@ -1724,7 +1725,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 		if(this.gameStarted === true){
 			var gameData = this.getGameData();
 	
-			console.log("roomId distribute: " + this.roomId);
+			// console.log("roomId distribute: " + this.roomId);
 
 			for(var i = 0; i < this.playersInGame.length; i++){
 				var index = getIndexFromUsername(this.socketsOfPlayers, this.playersInGame[i].request.user.username);
@@ -1733,7 +1734,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 				if(this.socketsOfPlayers[index]){
 					this.socketsOfPlayers[index].emit("game-data", gameData[i])
 
-					console.log("Sent to player: " + this.playersInGame[i].request.user.username + " role " + gameData[i].role);
+					// console.log("Sent to player: " + this.playersInGame[i].request.user.username + " role " + gameData[i].role);
 				}
 			}
 		
@@ -1742,7 +1743,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 			var sockOfSpecs = this.getSocketsOfSpectators();
 			sockOfSpecs.forEach(function(sock){
 				sock.emit("game-data", gameDataForSpectators);
-				console.log("(for loop) Sent to spectator: " + sock.request.user.username);
+				// console.log("(for loop) Sent to spectator: " + sock.request.user.username);
 			});
 		}
 	}
@@ -1767,7 +1768,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 		}
 
 		
-		console.log(socketsOfSpecs.length);
+		// console.log(socketsOfSpecs.length);
 		
 		//return the remaining which are only spectators
 
@@ -1828,11 +1829,11 @@ function calcMissionVotes(votes, requiresTwoFails) {
 
 	for (var i = 0; i < numOfPlayers; i++) {
 		if (votes[i] === "succeed") {
-			console.log("succeed");
+			// console.log("succeed");
 			countSucceed++;
 		}
 		else if (votes[i] === "fail") {
-			console.log("fail");
+			// console.log("fail");
 			countFail++;
 		}
 		else {
@@ -1862,11 +1863,11 @@ function calcVotes(votes) {
 
 	for (var i = 0; i < numOfPlayers; i++) {
 		if (votes[i] === "approve") {
-			console.log("app");
+			// console.log("app");
 			countApp++;
 		}
 		else if (votes[i] === "reject") {
-			console.log("rej");
+			// console.log("rej");
 			countRej++;
 		}
 		else {

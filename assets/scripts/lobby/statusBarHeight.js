@@ -30,14 +30,14 @@ function setStatusBarText(strToSet){
 
     var wid = ctx.measureText(strToSet).width;
 
-    console.log("total wid");
-    console.log($("#status").width());
+    // console.log("total wid");
+    // console.log($("#status").width());
 
-    console.log("wid of text"); 
-    console.log(wid);
+    // console.log("wid of text"); 
+    // console.log(wid);
 
-    console.log("wid of buttons");
-    console.log($(".game-buttons-div").width());
+    // console.log("wid of buttons");
+    // console.log($(".game-buttons-div").width());
 
     var totalWid = $("#status").width();
     var widOfText = wid;

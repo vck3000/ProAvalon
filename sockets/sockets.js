@@ -69,28 +69,28 @@ function saveGameToDb(roomToSave){
 				}
 				else{
 					rooms[rooms.indexOf(roomToSave)].savedGameRecordId = savedGame.id;
-					console.log("Successfully created this save game");
+					// console.log("Successfully created this save game");
 					
 				}
 			});
 		}
 		else{
 			savedGameObj.findByIdAndUpdate(roomToSave.savedGameRecordId, {room: JSON.stringify(roomToSave)}, function(err, savedGame){
-				console.log("Successfully saved this game");
+				// console.log("Successfully saved this game");
 			});
 		}
 	}
 }
 function deleteSaveGameFromDb(roomToSave){
 	// if(process.env.MY_PLATFORM === "online"){
-		console.log("room id to remove");
-		console.log(roomToSave.savedGameRecordId);
+		// console.log("room id to remove");
+		// console.log(roomToSave.savedGameRecordId);
 		savedGameObj.findByIdAndRemove(roomToSave.savedGameRecordId, function(err){
 			if(err){
 				console.log(err);
 			}
 			else{
-				console.log("Successfully removed this save game from db");
+				// console.log("Successfully removed this save game from db");
 			}
 		});
 	// }
@@ -147,7 +147,7 @@ function saveGamesAndSendWarning(senderSocket) {
 	// 	}
 	// }
 
-	console.log(numOfGamesEncountered);
+	// console.log(numOfGamesEncountered);
 	
 	if(numOfGamesEncountered === 0){
 		return {message: "Successful. But no games needed to be saved.", classStr: "server-text"};
@@ -198,9 +198,9 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 					
 					rooms[storedData["roomId"]].savedGameRecordId = foundSaveGame.id;
 					
-					console.log("Game loaded");
+					// console.log("Game loaded");
 
-					console.log("platform: " + process.env.MY_PLATFORM);
+					// console.log("platform: " + process.env.MY_PLATFORM);
 					if(process.env.MY_PLATFORM === "online"){
 						// foundSaveGame.remove();
 					}
@@ -667,8 +667,8 @@ var actionsObj = {
                 }
     
                 modAction.find({'bannedPlayer.username': args[1]}, function(err, foundModAction){
-                    console.log("foundmodaction");
-                    console.log(foundModAction);
+                    // console.log("foundmodaction");
+                    // console.log(foundModAction);
                     if(foundModAction.length !== 0){
                         modAction.remove({'bannedPlayer.username': args[1]},function(err, foundModAction){
                             if(err){
@@ -676,7 +676,7 @@ var actionsObj = {
                                 senderSocket.emit("messageCommandReturnStr", {message: "Something went wrong.", classStr: "server-text"});
                             }
                             else{
-                                console.log("Successfully unbanned " + args[1] + ".");
+                                // console.log("Successfully unbanned " + args[1] + ".");
                                 senderSocket.emit("messageCommandReturnStr", {message: "Successfully unbanned " + args[1] + ".", classStr: "server-text"});					
     
     
@@ -686,8 +686,8 @@ var actionsObj = {
                                     for(var i = 0; i < allModActions.length; i++){
                                         currentModActions.push(allModActions[i]);
                                     }
-                                    console.log("mute");
-                                    console.log(currentModActions);
+                                    // console.log("mute");
+                                    // console.log(currentModActions);
                                 });
                             }
                         });
@@ -768,7 +768,7 @@ var actionsObj = {
 
 				var duplicateIps = Object.keys(uniq).filter((a) => uniq[a] > 1)
 
-				console.log(duplicateIps) // [ 'Nancy' ]
+				// console.log(duplicateIps) // [ 'Nancy' ]
 				// var indexesOfDuplicates = [][];
 
 				// var str = "";
@@ -1008,7 +1008,7 @@ var actionsObj = {
                 var args = data.args;
 				
 				const used = process.memoryUsage().heapUsed / 1024 / 1024;
-				console.log(`The script uses approximately ${Math.round(used * 100) / 100} MB`);
+				// console.log(`The script uses approximately ${Math.round(used * 100) / 100} MB`);
 
                 return {message: `The script uses approximately ${Math.round(used * 100) / 100} MB`, classStr: "server-text"};
             }
@@ -1021,7 +1021,7 @@ var actionsObj = {
                 var args = data.args;
     
                 if(!args[1]){
-					console.log("a");
+					// console.log("a");
 					senderSocket.emit("messageCommandReturnStr", {message: "Specify a username", classStr: "server-text"});
                     return {message: "Specify a username.", classStr: "server-text"}
 				}
@@ -1029,7 +1029,7 @@ var actionsObj = {
 
 				var slapSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
                 if (slapSocket) {
-					console.log("b");
+					// console.log("b");
 					var clientIpAddress = slapSocket.request.headers['x-forwarded-for'] || slapSocket.request.connection.remoteAddress;
 
 					senderSocket.emit("messageCommandReturnStr", {message: clientIpAddress, classStr: "server-text"});
@@ -1037,7 +1037,7 @@ var actionsObj = {
                 	return {message: "slapSocket.request.user.username", classStr: "server-text"};
                 }
                 else {
-					console.log("c");
+					// console.log("c");
 					
 					senderSocket.emit("messageCommandReturnStr", {message: "No IP found or invalid username", classStr: "server-text"});
 					
@@ -1063,8 +1063,8 @@ modAction.find({whenRelease: {$gt: new Date()}, type: "mute"}, function(err, all
 	for(var i = 0; i < allModActions.length; i++){
 		currentModActions.push(allModActions[i]);
 	}
-	console.log("mute");
-	console.log(currentModActions);
+	// console.log("mute");
+	// console.log(currentModActions);
 });
 
 
@@ -1074,9 +1074,9 @@ module.exports = function (io) {
 	io.sockets.on("connection", function (socket) {
 
 		if (socket.request.isAuthenticated()) {
-			console.log("User is authenticated");
+			// console.log("User is authenticated");
 		} else {
-			console.log("User is not authenticated");
+			// console.log("User is not authenticated");
 			socket.emit("alert", "You are not authenticated.");
 			return;
 		}
@@ -1168,8 +1168,8 @@ module.exports = function (io) {
 			sendToAllChat(io, data);
 
 			io.in("allChat").emit("update-current-players-list", getPlayerUsernamesFromAllSockets());
-			console.log("update current players list");
-			console.log(getPlayerUsernamesFromAllSockets());
+			// console.log("update current players list");
+			// console.log(getPlayerUsernamesFromAllSockets());
 			updateCurrentGamesList(io);
 		},500);
 
@@ -1221,15 +1221,15 @@ module.exports = function (io) {
 				var userNotFound = false;
 
 				data.forEach(async function(item){
-					console.log("b");
+					// console.log("b");
 					if(item.name === "banPlayerUsername"){
-						console.log("b(a)");
+						// console.log("b(a)");
 						//not case sensitive
 						await User.findOne({usernameLower: item.value.toLowerCase()}, function(err, foundUser){
 							if(err){console.log(err);}
 							else{
 								// foundUser = foundUser[0];
-								console.log("b(b)");
+								// console.log("b(b)");
 								if(!foundUser){
 									socket.emit("messageCommandReturnStr", {message: "User not found. Please check spelling and caps.", classStr: "server-text"});
 									userNotFound = true;
@@ -1274,7 +1274,7 @@ module.exports = function (io) {
 					}
 				});
 
-				console.log("c");
+				// console.log("c");
 
 				if(userNotFound === true){
 					return;
@@ -1286,20 +1286,20 @@ module.exports = function (io) {
 						newModAction.modWhoBanned = {};
 						newModAction.modWhoBanned.id = foundUser._id;
 						newModAction.modWhoBanned.username = foundUser.username;
-						console.log("1");
+						// console.log("1");
 					}
 				});
 
-				console.log("2");
+				// console.log("2");
 
 				newModAction.whenMade = new Date();
 				newModAction.whenRelease = newModAction.whenMade.getTime() + newModAction.durationToBan.getTime();
 
-				console.log(newModAction);
+				// console.log(newModAction);
 				if(userNotFound === false && newModAction.bannedPlayer && newModAction.bannedPlayer.username){
-					console.log("****************");
+					// console.log("****************");
 					modAction.create(newModAction,function(err, newModActionCreated){
-						console.log(newModActionCreated);
+						// console.log(newModActionCreated);
 						//push new mod action into the array of currently active ones loaded.
 						currentModActions.push(newModActionCreated);
 						//if theyre online
@@ -1327,9 +1327,9 @@ module.exports = function (io) {
 		//=======================================
 
 		socket.on("messageCommand", function (data) {
-			console.log("data0: " + data.command);
-			console.log("mod command exists: " + modCommands[data.command]);
-			console.log("Index of mods" + modsArray.indexOf(socket.request.user.username.toLowerCase()));
+			// console.log("data0: " + data.command);
+			// console.log("mod command exists: " + modCommands[data.command]);
+			// console.log("Index of mods" + modsArray.indexOf(socket.request.user.username.toLowerCase()));
 			
 			
 
@@ -1452,7 +1452,7 @@ module.exports = function (io) {
 					nextRoomId++;
 				}
 				rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword);
-				console.log("new room request");
+				// console.log("new room request");
 				//broadcast to all chat
 				var data = {
 					message: socket.request.user.username + " has created room " + nextRoomId + ".",
@@ -1460,7 +1460,7 @@ module.exports = function (io) {
 				}			
 				sendToAllChat(io, data);
 
-				console.log(data.message);
+				// console.log(data.message);
 
 				//send to allChat including the host of the game
 				// io.in("allChat").emit("new-game-created", str);
@@ -1477,12 +1477,12 @@ module.exports = function (io) {
 		//when a player joins a room
 		socket.on("join-room", function (roomId, inputPassword) {
 
-			console.log("inputpassword: " + inputPassword);
+			// console.log("inputpassword: " + inputPassword);
 			
 			//if the room exists
 			if (rooms[roomId]) {
-				console.log("room id is: ");
-				console.log(roomId);
+				// console.log("room id is: ");
+				// console.log(roomId);
 
 				//join the room
 				var ToF = rooms[roomId].playerJoinRoom(socket, inputPassword);
@@ -1507,7 +1507,7 @@ module.exports = function (io) {
 				
 
 			} else {
-				console.log("Game doesn't exist!");
+				// console.log("Game doesn't exist!");
 			}
 		});
 
@@ -1518,14 +1518,14 @@ module.exports = function (io) {
 				if (rooms[roomId]) {
 					
 					//if the room has not started yet, throw them into the room
-					console.log("Game status is: " + rooms[roomId].getStatus());
+					// console.log("Game status is: " + rooms[roomId].getStatus());
 
 					if (rooms[roomId].getStatus() === "Waiting") {
 						var ToF = rooms[roomId].playerJoinGame(socket);
 						console.log(socket.request.user.username + " has joined room " + roomId + ": " + ToF);
 					}
 					else {
-						console.log("Game has started, player " + socket.request.user.username + " is not allowed to join.");
+						// console.log("Game has started, player " + socket.request.user.username + " is not allowed to join.");
 					}
 					updateCurrentGamesList();
 				}
@@ -1541,14 +1541,14 @@ module.exports = function (io) {
 				if (rooms[roomId]) {
 					
 					//if the room has not started yet, remove them from players list
-					console.log("Game status is: " + rooms[roomId].getStatus());
+					// console.log("Game status is: " + rooms[roomId].getStatus());
 
 					if (rooms[roomId].getStatus() === "Waiting") {
 						var ToF = rooms[roomId].playerStandUp(socket);
-						console.log(socket.request.user.username + " has stood up from room " + roomId + ": " + ToF);
+						// console.log(socket.request.user.username + " has stood up from room " + roomId + ": " + ToF);
 					}
 					else {
-						console.log("Game has started, player " + socket.request.user.username + " is not allowed to stand up.");
+						// console.log("Game has started, player " + socket.request.user.username + " is not allowed to stand up.");
 					}
 					updateCurrentGamesList();
 				}
@@ -1558,8 +1558,8 @@ module.exports = function (io) {
 
 		//when a player leaves a room
 		socket.on("leave-room", function () {
-			console.log("In room id");
-			console.log(socket.request.user.inRoomId);
+			// console.log("In room id");
+			// console.log(socket.request.user.inRoomId);
 
 			if (rooms[socket.request.user.inRoomId]) {
 				console.log(socket.request.user.username + " is leaving room: " + socket.request.user.inRoomId);
@@ -1623,7 +1623,7 @@ module.exports = function (io) {
 
 					//socket.emit("update-room-players", rooms[roomId].getPlayers());
 				} else {
-					console.log("Room doesn't exist or user is not host, cannot start game");
+					// console.log("Room doesn't exist or user is not host, cannot start game");
 					socket.emit("danger-alert", "You are not the host. You cannot start the game.")
 					return;
 				}

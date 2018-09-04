@@ -123,7 +123,7 @@ document.querySelector("#red-button").addEventListener("click", redButtonFunctio
 //re-draw the game screen when the modal is closed to update the roles in the center well.
 $('#roleOptionsModal').on('hidden.bs.modal', function (e) {
     draw();
-    console.log("test");
+    // console.log("test");
 })
 
 // Set the event listener for the button
@@ -162,7 +162,7 @@ document.querySelector("#backButton").addEventListener("click", function () {
     changeView();
     socket.emit("leave-room", "");
 
-    console.log("LEAVE");
+    // console.log("LEAVE");
     resetAllGameData();
 });
 
@@ -187,8 +187,8 @@ $("#newRoom").on("click", function(data){
 });
 
 $("#createNewRoomButton").on("click", function(data){
-    console.log( $($(".maxNumPlayers")[1]).val() );
-    console.log( $("#newRoomPassword").val() );
+    // console.log( $($(".maxNumPlayers")[1]).val() );
+    // console.log( $("#newRoomPassword").val() );
 
     var sendObj = {
         maxNumPlayers: $($(".maxNumPlayers")[1]).val(),

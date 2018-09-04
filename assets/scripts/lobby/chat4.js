@@ -260,8 +260,8 @@ function addToRoomChat(data) {
                 var muteJoinLeave = $(".mutejoinleave")[0].checked;
                 //if they dont exist in players in room, if game is started, and if mute spectators
                 var thisMessageJoinLeave = false;
-                console.log(data[i].classStr);
-                console.log(muteJoinLeave);
+                // console.log(data[i].classStr);
+                // console.log(muteJoinLeave);
 
                 if(data[i].classStr === "server-text-teal" && muteJoinLeave === true){
                     thisMessageJoinLeave = true;

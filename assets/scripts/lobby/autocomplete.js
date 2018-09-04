@@ -15,7 +15,7 @@ $(".chat-message-input").on('keydown', function(e) {
         var newWord;
         var lastWord;
         if(lastKeyPress === 9){
-            console.log(goodPossibleStrings);
+            // console.log(goodPossibleStrings);
             //if our last keypress is still a tab, put the next possible autocomplete str in
             lastWord = currentAutoCompleteWord;
 
@@ -23,7 +23,7 @@ $(".chat-message-input").on('keydown', function(e) {
                 newWord = goodPossibleStrings[0];
             }
             else{
-                console.log("last word: " + lastWord);
+                // console.log("last word: " + lastWord);
                 newWord = goodPossibleStrings[ goodPossibleStrings.indexOf(lastWord) + 1 ];
             }
 
@@ -70,7 +70,7 @@ var currentAutoCompleteWord = "";
 
 function autoComplete(currentStr, possibleStrs){
     var lastWord = getLastWord(currentStr);
-    console.log(lastWord);
+    // console.log(lastWord);
 
     goodPossibleStrings = [];
 
@@ -95,7 +95,7 @@ function autoComplete(currentStr, possibleStrs){
         }
     }
 
-    console.log(goodPossibleStrings);
+    // console.log(goodPossibleStrings);
     currentAutoCompleteWord = goodPossibleStrings[0];
     return currentAutoCompleteWord;
 }
