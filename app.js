@@ -16,11 +16,11 @@ var express = require("express"),
 	flash = require("connect-flash")
 
 var port = process.env.PORT || 80;
-
+var dbLoc = process.env.DATABASEURL || "mongodb://localhost/TheNewResistanceUsers";
 
 // console.log(process.env.DATABASEURL);
 // mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
-mongoose.connect(process.env.DATABASEURL);
+mongoose.connect(dbLoc);
 
 // mongodb://127.0.0.1/TheNewResistanceUsers
 
@@ -28,10 +28,11 @@ mongoose.connect(process.env.DATABASEURL);
 
 var session = require("express-session");
 var MongoDBStore = require('connect-mongodb-session')(session);
+
 var store = new MongoDBStore({
 	// uri: 'mongodb://localhost/TheNewResistanceUsers',
 	// uri: 'mongodb://127.0.0.1/TheNewResistanceUsers',
-	uri: process.env.DATABASEURL,
+	uri: dbLoc,
 	collection: 'mySessions'
 });
 
@@ -44,9 +45,10 @@ store.on('error', function (error) {
 
 
 //authentication
+var secretKey = process.env.MY_SECRET_KEY || "MySecretKey";
 app.use(session({
 
-	secret: process.env.MY_SECRET_KEY,
+	secret: secretKey,
 	resave: false,
 	saveUninitialized: false,
 	store: store
@@ -67,7 +69,8 @@ app.use(function (req, res, next) {
 //HTTPS REDIRECT
 // console.log("b");
 // console.log(process.env.MY_PLATFORM);
-if(process.env.MY_PLATFORM === "online" || process.env.MY_PLATFORM === "staging"){
+var platform = process.env.MY_PLATFORM || "local";
+if(platform === "online" || platform === "staging"){
 	app.use(function(request, response, next){
 		// console.log("A");
 		if(request.headers["x-forwarded-proto"] !== "https"){
@@ -100,7 +103,7 @@ passport.deserializeUser(User.deserializeUser());
 
 app.set("view engine", "ejs");
 //if the production site, then use a cache that lasts for 30 mins.
-if(process.env.MY_PLATFORM === "online"){
+if(platform === "online"){
 	app.use(express.static("assets", {maxAge: 1800000})); //expires in 30 minutes.
 }
 else{
@@ -150,7 +153,7 @@ require("./sockets/sockets")(io);
 io.use(passportSocketIo.authorize({
 	cookieParser: cookieParser, //optional your cookie-parser middleware function. Defaults to require('cookie-parser') 
 	// key:          'express.sid',       //make sure is the same as in your session settings in app.js 
-	secret: process.env.MY_SECRET_KEY,      //make sure is the same as in your session settings in app.js 
+	secret: secretKey,      //make sure is the same as in your session settings in app.js 
 	store: store,        //you need to use the same sessionStore you defined in the app.use(session({... in app.js 
 	// success:      onAuthorizeSuccess,  // *optional* callback on success 
 	// fail:         onAuthorizeFail,     // *optional* callback on fail/error 
@@ -175,7 +178,7 @@ io.use(passportSocketIo.authorize({
 // 	}
 // });
 
-// if(process.env.MY_PLATFORM === "local"){
+// if(platform === "local"){
 // 	var testRoleStats = {
 // 		"5p": {
 // 			"merlin": {

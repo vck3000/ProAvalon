@@ -1452,7 +1452,6 @@ module.exports = function (io) {
 					nextRoomId++;
 				}
 				rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword);
-				// console.log("new room request");
 				//broadcast to all chat
 				var data = {
 					message: socket.request.user.username + " has created room " + nextRoomId + ".",
@@ -1643,6 +1642,7 @@ module.exports = function (io) {
 			if (rooms[socket.request.user.inRoomId]) {
 				rooms[socket.request.user.inRoomId].updateMaxNumPlayers(socket, number);
 			}
+                        updateCurrentGamesList();
 		});
 
 
@@ -1741,7 +1741,6 @@ var updateCurrentGamesList = function () {
 			gamesList[i].hostUsername = rooms[i].getHostUsername();
 			if(rooms[i].gameStarted === true){
 				gamesList[i].numOfPlayersInside = rooms[i].playersInGame.length;
-
 				gamesList[i].missionHistory = rooms[i].missionHistory;
 				gamesList[i].missionNum = rooms[i].missionNum;
 				gamesList[i].pickNum = rooms[i].pickNum;
@@ -1749,10 +1748,10 @@ var updateCurrentGamesList = function () {
 			else{
 				gamesList[i].numOfPlayersInside = rooms[i].socketsOfPlayers.length;
 			}
+                        gamesList[i].maxNumPlayers = rooms[i].maxNumPlayers;
 			gamesList[i].numOfSpectatorsInside = rooms[i].getSocketsOfSpectators().length;
 		}
 	}
-
 	allSockets.forEach(function(sock){
 		sock.emit("update-current-games-list", gamesList);
 	});
