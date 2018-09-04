@@ -237,22 +237,13 @@ socket.on("update-current-games-list", function (currentGames) {
             }
             
 
-            var str = "<tr> <td> " + 
-            currentGame.roomId + lockStr + 
-            ": " + currentGame.status + " " +
-
-            currentGame.numOfPlayersInside + 
-            "/10 <span style='padding-left: 10px;'>Spec: " + 
-            currentGame.numOfSpectatorsInside + "</span><br><span style='padding-right: 10px;'>Host: " + 
-            currentGame.hostUsername + "</span>" + 
-            
-            missionHistoryStr + " " +
-            // "M" + currentGame.missionNum + "." + 
-            // currentGame.pickNum +
-
-            // <div class="missionBox missionBoxSucceed" style="font-size: 14px;"><p>3</p></div>
-            
-            "</td> </tr>";
+            var str = "<tr> <td><strong>Room#" + 
+                currentGame.roomId + lockStr + "</strong>: " + 
+                currentGame.status + " [" + currentGame.numOfPlayersInside +  "/" + currentGame.maxNumPlayers + "]" + 
+                "<hr>"+ 
+                "Spectators: " + currentGame.numOfSpectatorsInside + 
+                "<br/>Host: " + currentGame.hostUsername + 
+                "</td> </tr>";
 
            
            
@@ -462,7 +453,6 @@ socket.on("correctRoomPassword", function(){
 socket.on("update-room-info", function(data){
     // data.maxNumPlayers
     $(".gameInfoMaxPlayers")[0].innerText = roomPlayersData.length + "/" + data.maxNumPlayers;
-
     //if a game has started
     if(gameData){
         $(".gameInfoMaxPlayers").addClass("hidden");
