@@ -192,7 +192,7 @@ $("#createNewRoomButton").on("click", function(data){
 
     var sendObj = {
         maxNumPlayers: $($(".maxNumPlayers")[1]).val(),
-        newRoomPassword: $(".newRoomPassword").val()
+        newRoomPassword: $("#newRoomPassword").val()
     };
 
     if (inRoom === false) {
