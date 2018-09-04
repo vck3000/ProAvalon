@@ -1,4 +1,4 @@
-
+	
 function redButtonFunction() {
     if (document.querySelector("#red-button").classList.contains("disabled") === false) {
         if (isSpectator === true) {
@@ -17,14 +17,16 @@ function redButtonFunction() {
                 var str = "<h4>Select the players you want to kick.</h4>";
 
                 str += '<div class="btn-group-vertical" data-toggle="buttons">';
-
+				
                 for (var i = 0; i < roomPlayersData.length; i++) {
-                    str += '<label class="btn btn-mine">';
+					if (ownUsername !== roomPlayersData[i].username){
+						str += '<label class="btn btn-mine">';
 
-                    str += '<input name="' + roomPlayersData[i].username + '" id="' + roomPlayersData[i].username + '" type="checkbox" autocomplete="off">' + roomPlayersData[i].username;
+						str += '<input name="' + roomPlayersData[i].username + '" id="' + roomPlayersData[i].username + '" type="checkbox" autocomplete="off">' + roomPlayersData[i].username;
 
-                    str += "</label>";
-                    str += "<br>";
+						str += "</label>";
+						str += "<br>";
+					}
                 }
 
                 str += '</div>';
