@@ -26,7 +26,15 @@ function redButtonFunction() {
 
 						str += "</label>";
 						str += "<br>";
-					}
+                    }
+                    else{
+                        str += '<label class="btn btn-mine" style="display: none;">';
+
+						str += '<input name="' + roomPlayersData[i].username + '" id="' + roomPlayersData[i].username + '" type="checkbox" autocomplete="off">' + roomPlayersData[i].username;
+
+						str += "</label>";
+						str += "<br>";
+                    }
                 }
 
                 str += '</div>';
