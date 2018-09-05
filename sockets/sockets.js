@@ -647,25 +647,29 @@ var actionsObj = {
 					else if(foundUser){
 
 						var slapSocket = allSockets[getIndexFromUsername(allSockets, args[1], true)];
-						var clientIpAddress = slapSocket.request.headers['x-forwarded-for'] || slapSocket.request.connection.remoteAddress;
+						if(slapSocket){
+							var clientIpAddress = slapSocket.request.headers['x-forwarded-for'] || slapSocket.request.connection.remoteAddress;
 
-						var banIpData = {
-							type: "ip",
-							bannedIp: clientIpAddress,
-							usernamesAssociated: [args[1].toLowerCase()],
-							modWhoBanned: {id: foundUser._id, username: foundUser.username},
-							whenMade: new Date(),
-						}
-
-						banIp.create(banIpData, function(err, newBan){
-							if(err){console.log(err);}
-							else{
-								allSockets[getIndexFromUsername(allSockets, args[1].toLowerCase(), true)].disconnect(true);
-								
-								senderSocket.emit("messageCommandReturnStr", {message: "Successfully ip banned user " + args[1], classStr: "server-text"});								
+							var banIpData = {
+								type: "ip",
+								bannedIp: clientIpAddress,
+								usernamesAssociated: [args[1].toLowerCase()],
+								modWhoBanned: {id: foundUser._id, username: foundUser.username},
+								whenMade: new Date(),
 							}
-						});
-						
+	
+							banIp.create(banIpData, function(err, newBan){
+								if(err){console.log(err);}
+								else{
+									allSockets[getIndexFromUsername(allSockets, args[1].toLowerCase(), true)].disconnect(true);
+									
+									senderSocket.emit("messageCommandReturnStr", {message: "Successfully ip banned user " + args[1], classStr: "server-text"});								
+								}
+							});
+						}
+						else{
+							senderSocket.emit("messageCommandReturnStr", {message: "Could not find the player to ban.", classStr: "server-text"});		
+						}
 					}
 
 					else{
