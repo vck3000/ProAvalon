@@ -646,7 +646,7 @@ var actionsObj = {
 					if(err){console.log(err);}
 					else if(foundUser){
 
-						var slapSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
+						var slapSocket = allSockets[getIndexFromUsername(allSockets, args[1], true)];
 						var clientIpAddress = slapSocket.request.headers['x-forwarded-for'] || slapSocket.request.connection.remoteAddress;
 
 						var banIpData = {
