@@ -275,6 +275,33 @@ var userOptions = {
         }
     },
 
+   optionProposedTeamIcon: {
+        defaultValue: "false",
+        onLoad: function(){
+            if (docCookies.getItem("optionProposedTeamIcon") === "shield") {
+                $("#option_proposed_team_icon")[0].checked = true;
+                updateGunImage("shield");
+            }
+            else{
+                $("#option_proposed_team_icon")[0].checked = false;
+                updateGunImage("gun");
+            }
+        },
+        initialiseEventListener: function(){
+            $("#option_proposed_team_icon")[0].addEventListener("click", function () {
+                //when they press it...
+                var checked = $("#option_proposed_team_icon")[0].checked;
+                if(checked === true){
+                    updateGunImage("shield");
+                } else {
+                    updateGunImage("gun");
+                }
+                //save their option in cookie
+            });
+        }
+    },
+
+
     //---------------------------------------------
     //Sound Notifications
     //---------------------------------------------
@@ -792,4 +819,22 @@ function updateCompactView(input){
 
 
 
+}
+
+function updateGunImage(input) {
+    if (input === "shield") {
+        //when shields are used
+        $(".gunImg").attr('src','pictures/shield.png');
+        docCookies.setItem('gunPos.x', 5);
+        docCookies.setItem('gunPos.y', 0.8);
+        docCookies.setItem('optionProposedTeamIcon', 'shield');
+    } else {
+        //when guns are used
+	$(".gunImg").attr('src','pictures/gun.png');
+        docCookies.setItem('gunPos.x', 2);
+        docCookies.setItem('gunPos.y', 1.5);
+        docCookies.setItem('optionProposedTeamIcon', 'gun');
+    }
+    adjustGunPositions();
+    draw();
 }

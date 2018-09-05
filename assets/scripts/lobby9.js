@@ -1,4 +1,3 @@
-
 var socket = io();
 
 // socket.on('reconnect_attempt', () => {
@@ -93,7 +92,7 @@ function draw() {
         scaleMiddleBoxes();
 
         drawClaimingPlayers(roomPlayersData.claimingPlayers);
-
+        
         drawGuns();
 
         // console.log(highlightedAvatars);
@@ -713,9 +712,13 @@ function drawAndPositionAvatars() {
   function drawGuns() {
     $(".gun img").css("width", $("#mainRoomBox div").width() + "px"); 
     $(".gun").css("width", $("#mainRoomBox div").width() + "px"); 
-
-    
-
+    if (docCookies.hasItem('optionProposedTeamIcon') === true){
+        if (docCookies.getItem('optionProposedTeamIcon') === true) {
+            updateGunImage("shield");
+        }
+    } else {
+        updateGunImage("gun");
+    }
     if(gameData && gameData.phase){
         if(whenToShowGuns.indexOf(gameData.phase) === -1){
             $(".gun").css("left", "50%"); 
@@ -749,10 +752,10 @@ function drawAndPositionAvatars() {
 
                 var widOfGun = $(".gun").width();
                 var heightOfGun = $(".gun").height();
-
+                var offsetGunPos = getGunPos();
                 $($(".gun")[i]).animate({
-                    top: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*1.5) + "px" ,
-                    left: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/2) + "px",
+                    top: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*offsetGunPos.y) + "px" ,
+                    left: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/offsetGunPos.x) + "px",
                 }, 500);
                 $($(".gun")[i]).removeClass("gunBefore"); 
                 $($(".gun")[i]).addClass("gunAfter"); 
@@ -773,11 +776,9 @@ function drawAndPositionAvatars() {
 
             var widOfGun = $(".gun").width();
             var heightOfGun = $(".gun").height();
-
-
-            $($(".gun")[i]).css("top", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*1.5) + "px"); 
-            $($(".gun")[i]).css("left", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/2) + "px"); 
-            
+            var offsetGunPos = getGunPos();
+            $($(".gun")[i]).css("top", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*offsetGunPos.y) + "px"); 
+            $($(".gun")[i]).css("left", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/offsetGunPos.x) + "px"); 
         }
     }
   }
@@ -1836,8 +1837,12 @@ function scaleMiddleBoxes(){
     // $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")")
     // $("#missionsBox").css("transform-origin", "bottom");
     $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")");
-
-
+    var playerDivHeightRatio = $(".playerDiv").height()/128; 
+    if(docCookies.getItem('optionProposedTeamIcon') === 'shield'){
+        $(".gun").css("height", 130*playerDivHeightRatio + "px");
+    } else {
+        $(".gun").css("height", 35*playerDivHeightRatio + "px");
+    }
     var startScalingHeight = 200;
     var maxHeightOfBoxes = 60; //in px
     var scaleFactor = maxHeightOfBoxes/startScalingHeight;
@@ -1927,3 +1932,18 @@ $(".maxNumPlayers").on("change", function(e){
 
     socket.emit("update-room-max-players", e.target.value);
 });
+
+function getGunPos(){
+    if (docCookies.hasItem('gunPos.x') === true && docCookies.hasItem('gunPos.y') === true) {
+        gunPos = { 
+            'x': docCookies.getItem('gunPos.x'),
+            'y': docCookies.getItem('gunPos.y')
+        };
+    } else {
+        gunPos = {
+            'x': 2,
+            'y': 1.5
+        };
+    }
+    return gunPos;
+}
