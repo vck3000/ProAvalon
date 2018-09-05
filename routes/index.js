@@ -717,6 +717,10 @@ async function checkIpBan(req, res, next){
 		var username = req.body.username || req.user.username;
 		username = username.toLowerCase();
 
+		if(!foundBannedIpsArray[index].usernamesAssociated){
+			foundBannedIpsArray[index].usernamesAssociated = [];
+		}
+
 		//if their username isnt associated with the ip ban, add their username to it for record.
 		if(foundBannedIpsArray[index].usernamesAssociated.indexOf(username) === -1){
 			foundBannedIpsArray[index].usernamesAssociated.push(username);
