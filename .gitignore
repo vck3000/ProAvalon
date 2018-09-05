@@ -1,3 +1,4 @@
-node_modules/
+!node_modules/*
+node_modules/passport-local-mongoose/
 package-lock.json
 banips.txt
