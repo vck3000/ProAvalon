@@ -9,6 +9,7 @@ var mongoose = require("mongoose");
 
 var modAction = require("../models/modAction");
 var gameRecord = require("../models/gameRecord");
+var banIp = require("../models/banIp");
 
 
 var middleware = require("../middleware");
@@ -168,7 +169,7 @@ router.post("/",sanitiseUsername,/* usernameToLowerCase, */function(req, res){
 });
 
 //login route
-router.post("/login",sanitiseUsername, /*usernameToLowerCase,*/ passport.authenticate("local", {
+router.post("/login", checkIpBan, sanitiseUsername, /*usernameToLowerCase,*/ passport.authenticate("local", {
 	successRedirect: "/lobby",
 	failureRedirect: "/loginFail"
 }));
@@ -182,7 +183,7 @@ router.get("/loginFail", function(req, res){
 
 
 //lobby route
-router.get("/lobby", middleware.isLoggedIn, async function(req, res){
+router.get("/lobby", middleware.isLoggedIn, checkIpBan, async function(req, res){
 	
 	// console.log(res.app.locals.originalUsername);
 	User.findOne({username: req.user.username}).populate("notifications").exec(async function(err, foundUser){
@@ -667,6 +668,71 @@ function sanitiseUsername(req, res, next){
 
 	next();
 }
+
+var bannedIps = [];
+var foundBannedIpsArray = [];
+//load it once on startup
+// updateBannedIps();
+
+function updateBannedIps(){
+	return banIp.find({}, function(err, foundBannedIps){
+		if(err){console.log(err);}
+		else{
+			bannedIps = [];
+			// console.log(foundBannedIps);
+			if(foundBannedIps){
+				foundBannedIps.forEach(function(oneBannedIp){
+					bannedIps.push(oneBannedIp.bannedIp);
+					foundBannedIpsArray.push(oneBannedIp);
+				});
+			}
+		}	
+	}).exec();
+}
+
+
+async function checkIpBan(req, res, next){
+	var clientIpAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+	// console.log("clientIpAddress: " + clientIpAddress);
+
+	// console.log("before BannedIps: ");
+	// console.log(bannedIps);
+
+	await updateBannedIps();
+
+	// console.log("after BannedIps: ");
+	// console.log(bannedIps);
+
+	// console.log(typeof(bannedIps[0]));
+	// console.log(typeof(clientIpAddress));
+	
+
+	if(bannedIps.indexOf(clientIpAddress) === -1){
+		// console.log("NEXT");
+		next();
+	}
+	else{
+		var index = bannedIps.indexOf(clientIpAddress);
+
+		var username = req.body.username || req.user.username;
+		username = username.toLowerCase();
+
+		//if their username isnt associated with the ip ban, add their username to it for record.
+		if(foundBannedIpsArray[index].usernamesAssociated.indexOf(username) === -1){
+			foundBannedIpsArray[index].usernamesAssociated.push(username);
+		}
+
+		foundBannedIpsArray[index].save();
+
+
+		req.flash("error", "You have been banned.");
+		res.redirect("/");
+	}
+
+	
+}
+
+
 
 module.exports = router;
 
