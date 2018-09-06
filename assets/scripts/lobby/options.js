@@ -738,6 +738,21 @@ $(document).ready(function() {
     }
 });
 
+
+function setAllHighlightColorsToYellow(){
+
+    var color="#ffff9e"
+
+    for(var i = 0; i < 10; i++){
+        docCookies.setItem('player' + i + "HighlightColour", color, Infinity);
+    }
+
+    for(var i = 0; i < 10; i++){
+        $("#player" + i + "HighlightColour")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));
+        $("#player" + i + "HighlightColour2")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));  
+    }
+}
+
 function update(picker){
     // picker.attr('col', picker.toHEXString());
     picker.col = picker.toHEXString();
