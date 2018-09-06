@@ -29,7 +29,7 @@ router.get("/register", function(req, res){
 });
 
 //Post of the register route
-router.post("/",sanitiseUsername,/* usernameToLowerCase, */function(req, res){
+router.post("/", checkIpBan, sanitiseUsername,/* usernameToLowerCase, */function(req, res){
 	// console.log("escaped: " + escapeText(req.body.username));
 
 	// var escapedUsername = escapeText(req.body.username);
