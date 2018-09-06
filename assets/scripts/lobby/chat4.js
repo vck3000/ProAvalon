@@ -187,9 +187,8 @@ function addToAllChat(data) {
 }
 
 
-function unhighlightAllPlayers(){
-
-    var usernames=Object.keys(selectedChat)
+function unhighlightAllChat(){
+    var usernames = Object.keys(selectedChat)
 
     usernames.forEach(function(user){
         selectedChat[user] = false;
@@ -297,7 +296,7 @@ function addToRoomChat(data) {
 
                     if(selectedChat[data[i].username] === true){
                         if(setHighlightColorToYellow === true){
-                            highlightChatColour="#ffff9e"
+                            highlightChatColour = "#ffff9e";
                         }
                         else {
                             highlightChatColour = docCookies.getItem("player" + getIndexFromUsername(data[i].username) + 'HighlightColour');
@@ -454,19 +453,16 @@ $(".mutejoinleave").on("change", function(e){
 
 //When the player sets the color to yellow
 $(".setHighlightColorsToYellow").on("change", function(e){
-
-    var setHighlightColorsToYellow = $(".setHighlightColorsToYellow");
+    var checkBoxes = $(".setHighlightColorsToYellow");
     
-    for(var i = 0; i < setHighlightColorsToYellow.length; i++){
-        setHighlightColorsToYellow[i].checked = e.target.checked;
+    for(var i = 0; i < checkBoxes.length; i++){
+        checkBoxes[i].checked = e.target.checked;
     }
 
-
-    var usernames=Object.keys(selectedChat)
-
+    var usernames = Object.keys(selectedChat);
 
     if(e.target.checked === true){
-        var color="#ffff9e"
+        var color = "#ffff9e";
         usernames.forEach(function(user){
             if(selectedChat[user] === true){
                 var chatItems = $(".room-chat-list li span[username='" + user + "']");
@@ -484,6 +480,4 @@ $(".setHighlightColorsToYellow").on("change", function(e){
         });   
     }
 
-    scrollDown("room-chat-room", true);
-    scrollDown("room-chat-room2", true);
 });

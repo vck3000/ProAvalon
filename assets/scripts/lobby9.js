@@ -350,7 +350,7 @@ function draw() {
               var setHighlightColorToYellow = $(".setHighlightColorsToYellow")[0].checked;
 
               if(setHighlightColorToYellow === true){
-                playerHighlightColour="#ffff9e";
+                playerHighlightColour = "#ffff9e";
               }
               
             // console.log("Player highlight colour: " + playerHighlightColour);
@@ -1779,6 +1779,8 @@ function updateDarkTheme(checked) {
         $(".navbar").addClass("navbar-inverse");
         $("#playerHighlightColourButton").addClass("buttonDark");
         $("#playerHighlightColourButton2").addClass("buttonDark");
+        $("#removeHighlight").addClass("buttonDark");
+        $("#removeHighlight2").addClass("buttonDark");
     }
     else {
         $("body")[0].classList.remove("dark");
@@ -1789,6 +1791,8 @@ function updateDarkTheme(checked) {
         $(".navbar").removeClass("navbar-inverse");
         $("#playerHighlightColourButton").removeClass("buttonDark");
         $("#playerHighlightColourButton2").removeClass("buttonDark");
+        $("#removeHighlight").removeClass("buttonDark");
+        $("#removeHighlight2").removeClass("buttonDark");
     }
 }
 
