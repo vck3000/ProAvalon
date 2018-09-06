@@ -761,6 +761,16 @@ function setAllHighlightColorsToYellow(){
         $("#player" + i + "HighlightColour")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));
         $("#player" + i + "HighlightColour2")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));  
     }
+
+    var usernames=Object.keys(selectedChat)
+
+    usernames.forEach(user => {
+        if(selectedChat[user]==true){
+            var chatItems = $(".room-chat-list li span[username='" + user + "']");
+            chatItems.css("background-color", color);
+        }
+    });
+
 }
 
 function update(picker){
