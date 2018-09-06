@@ -745,7 +745,7 @@ function drawAndPositionAvatars() {
 
                 var widOfGun = $(".gun").width();
                 var heightOfGun = $(".gun").height();
-                var icon = docCookies.getItem('optionDisplayProposedTeamIcon');
+                var icon = docCookies.getItem("optionDisplayProposedTeamIcon");
                 var offsetGunPos = getGunPos(icon);
                 $($(".gun")[i]).animate({
                     top: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*offsetGunPos.y) + "px" ,
@@ -770,7 +770,7 @@ function drawAndPositionAvatars() {
 
             var widOfGun = $(".gun").width();
             var heightOfGun = $(".gun").height();
-            var icon = docCookies.getItem('optionDisplayProposedTeamIcon');
+            var icon = docCookies.getItem("optionDisplayProposedTeamIcon");
             var offsetGunPos = getGunPos(icon);
             $($(".gun")[i]).css("top", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*offsetGunPos.y) + "px"); 
             $($(".gun")[i]).css("left", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/offsetGunPos.x) + "px"); 
@@ -1833,7 +1833,7 @@ function scaleMiddleBoxes(){
     // $("#missionsBox").css("transform-origin", "bottom");
     $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")");
     var playerDivHeightRatio = $(".playerDiv").height()/128; 
-    var proposedTeamIcon = docCookies.getItem('optionDisplayProposedTeamIcon');
+    var proposedTeamIcon = docCookies.getItem("optionDisplayProposedTeamIcon");
     if(proposedTeamIcon === 'shield'){
         $(".gun").css("height", 130*playerDivHeightRatio + "px");
         //needs to be scaled this way as reducing img size still overshoots
@@ -1938,13 +1938,14 @@ function getGunPos(icon) {
     var position = {};
     if (icon === "shield") {
         position = {
-            'x': 5,
-            'y': 0.8
+            "x": 5,
+            "y": 0.8
         }
     } else {
+        // default: icon = "gun"
         position = {
-            'x': 2,
-            'y': 1.5
+            "x": 2,
+            "y": 1.5
         }
     }
     return position;
