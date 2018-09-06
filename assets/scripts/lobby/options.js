@@ -738,6 +738,8 @@ $(document).ready(function() {
     }
 });
 
+
+
 function update(picker){
     // picker.attr('col', picker.toHEXString());
     picker.col = picker.toHEXString();
