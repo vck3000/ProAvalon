@@ -275,28 +275,45 @@ var userOptions = {
         }
     },
 
-   optionProposedTeamIcon: {
+   optionDisplayProposedTeamIcon: {
         defaultValue: "false",
         onLoad: function(){
-            if (docCookies.getItem("optionProposedTeamIcon") === "shield") {
-                $("#option_proposed_team_icon")[0].checked = true;
-                updateGunImage("shield");
+            //check if optionDisplayProposedTeamIcon exists in cookies
+            var isOptionExists = docCookies.hasItem("optionDisplayProposedTeamIcon");
+            var icon = "";
+            //if not, set it
+            if (isOptionExists === false) {
+                icon = 'gun';
+                //save it in cookie
+                docCookies.setItem("optionDisplayProposedTeamIcon", icon, Infinity);
+            } else {
+                //else load it
+                icon = docCookies.getItem("optionDisplayProposedTeamIcon")
+            }
+            //set check marks
+            if (icon === "shield") {
+                $("#option_display_proposed_team_icon")[0].checked = true;
             }
             else{
-                $("#option_proposed_team_icon")[0].checked = false;
-                updateGunImage("gun");
+                $("#option_display_proposed_team_icon")[0].checked = false;
             }
+            //update image on load
+            updateGunImage(icon);
         },
         initialiseEventListener: function(){
-            $("#option_proposed_team_icon")[0].addEventListener("click", function () {
+            $("#option_display_proposed_team_icon")[0].addEventListener("click", function () {
                 //when they press it...
-                var checked = $("#option_proposed_team_icon")[0].checked;
-                if(checked === true){
-                    updateGunImage("shield");
+                var isChecked = $("#option_display_proposed_team_icon")[0].checked;
+                var icon = "";
+                if(isChecked === true){
+                    icon = 'shield';
                 } else {
-                    updateGunImage("gun");
+                    icon = 'gun';
                 }
                 //save their option in cookie
+                docCookies.setItem('optionDisplayProposedTeamIcon', icon, Infinity);
+                //update image on click
+                updateGunImage(icon);
             });
         }
     },
@@ -825,15 +842,9 @@ function updateGunImage(input) {
     if (input === "shield") {
         //when shields are used
         $(".gunImg").attr('src','pictures/shield.png');
-        docCookies.setItem('gunPos.x', 5);
-        docCookies.setItem('gunPos.y', 0.8);
-        docCookies.setItem('optionProposedTeamIcon', 'shield');
     } else {
         //when guns are used
 	$(".gunImg").attr('src','pictures/gun.png');
-        docCookies.setItem('gunPos.x', 2);
-        docCookies.setItem('gunPos.y', 1.5);
-        docCookies.setItem('optionProposedTeamIcon', 'gun');
     }
     adjustGunPositions();
     draw();
