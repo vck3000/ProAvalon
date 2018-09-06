@@ -187,6 +187,17 @@ function addToAllChat(data) {
 }
 
 
+function unhighlightAllPlayers(){
+
+    var usernames=Object.keys(selectedChat)
+
+    usernames.forEach(function(user){
+        selectedChat[user] = false;
+        var chatItems = $(".room-chat-list li span[username='" + user + "']");
+        chatItems.css("background-color", "transparent");
+    });
+}
+
 
 function addToRoomChat(data) {
     //if it is not an array, force it into a array
@@ -271,8 +282,6 @@ function addToRoomChat(data) {
 
 
 
-
-
                 //prevent XSS injection
                 var filteredMessage = data[i].message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
                 // console.log("Filtered message: " + filteredMessage);
@@ -282,9 +291,16 @@ function addToRoomChat(data) {
                 if(filteredMessage.indexOf("[") === -1){
                     //set the highlight chat if the user has been selected already
                     var highlightChatColour = "";
+                    var setHighlightColorToYellow = $(".setHighlightColorsToYellow")[0].checked;
+
                 // console.log("true?"  + selectedChat[data[i].username]);
-                    if (selectedChat[data[i].username] === true) {
-                        highlightChatColour = docCookies.getItem("player" + getIndexFromUsername(data[i].username) + 'HighlightColour');
+
+                    if(selectedChat[data[i].username] === true){
+                        if(setHighlightColorToYellow===true){
+                            highlightChatColour="#ffff9e"
+                        }else {
+                            highlightChatColour = docCookies.getItem("player" + getIndexFromUsername(data[i].username) + 'HighlightColour');
+                        }
                     }
 
                     //if its a server text or special text

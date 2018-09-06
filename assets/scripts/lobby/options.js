@@ -738,40 +738,7 @@ $(document).ready(function() {
     }
 });
 
-function unhighlightAllPlayers(){
 
-    var usernames=Object.keys(selectedChat)
-
-    usernames.forEach(user => {
-        selectedChat[user] = false;
-        var chatItems = $(".room-chat-list li span[username='" + user + "']");
-        chatItems.css("background-color", "transparent");
-    });
-}
-
-function setAllHighlightColorsToYellow(){
-
-    var color="#ffff9e"
-
-    for(var i = 0; i < 10; i++){
-        docCookies.setItem('player' + i + "HighlightColour", color, Infinity);
-    }
-
-    for(var i = 0; i < 10; i++){
-        $("#player" + i + "HighlightColour")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));
-        $("#player" + i + "HighlightColour2")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));  
-    }
-
-    var usernames=Object.keys(selectedChat)
-
-    usernames.forEach(user => {
-        if(selectedChat[user]==true){
-            var chatItems = $(".room-chat-list li span[username='" + user + "']");
-            chatItems.css("background-color", color);
-        }
-    });
-
-}
 
 function update(picker){
     // picker.attr('col', picker.toHEXString());

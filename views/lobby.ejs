@@ -187,13 +187,14 @@
 								<label>Mute spectators <input type="checkbox" class="muteSpecs"></label>
 								<br>
 								<label>Mute join/leave messages <input type="checkbox" class="mutejoinleave"></label>
-							
+								<br>
+								<label>Set all highlight colors to yellow <input type="checkbox" class="setHighlightColorsToYellow"></label>
+
 								<br>
 								<br>
 							
 								<button id="playerHighlightColourButton">Click to change highlight colour</button>
 								<br>
-								<button id="setHighlightColorToYellowButton" onclick="setAllHighlightColorsToYellow()">Set all highlight colors to yellow</button>
 								<br>
 								<button id="removeHighlight" onclick="unhighlightAllPlayers()">Unhighlight all players</button>
 								<script>
@@ -328,11 +329,14 @@
 									<label>Mute spectators <input type="checkbox" class="muteSpecs"></label>
 									<br>
 									<label>Mute join/leave messages <input type="checkbox" class="mutejoinleave"></label>
-							
+									<br>
+									<label>Set all highlight colors to yellow <input type="checkbox" class="setHighlightColorsToYellow"></label>
 								<br>
 								<br>
-							
 								<button id="playerHighlightColourButton2" class="">Click to change highlight colour</button>
+								<br>
+								<br>
+								<button id="removeHighlight" onclick="unhighlightAllPlayers()">Unhighlight all players</button>
 								<script>
 									$("#playerHighlightColourButton2").on("click", function(){
 										$("#playerHighlightColourBoxes2").toggleClass("hidden");
