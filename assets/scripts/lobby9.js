@@ -1,3 +1,4 @@
+
 var socket = io();
 
 // socket.on('reconnect_attempt', () => {
@@ -92,7 +93,7 @@ function draw() {
         scaleMiddleBoxes();
 
         drawClaimingPlayers(roomPlayersData.claimingPlayers);
-        
+
         drawGuns();
 
         // console.log(highlightedAvatars);
@@ -720,6 +721,9 @@ function drawAndPositionAvatars() {
   function drawGuns() {
     $(".gun img").css("width", $("#mainRoomBox div").width() + "px"); 
     $(".gun").css("width", $("#mainRoomBox div").width() + "px"); 
+
+    
+
     if(gameData && gameData.phase){
         if(whenToShowGuns.indexOf(gameData.phase) === -1){
             $(".gun").css("left", "50%"); 
@@ -753,11 +757,10 @@ function drawAndPositionAvatars() {
 
                 var widOfGun = $(".gun").width();
                 var heightOfGun = $(".gun").height();
-                var icon = docCookies.getItem("optionDisplayProposedTeamIcon");
-                var offsetGunPos = getGunPos(icon);
+
                 $($(".gun")[i]).animate({
-                    top: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*offsetGunPos.y) + "px" ,
-                    left: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/offsetGunPos.x) + "px",
+                    top: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*1.5) + "px" ,
+                    left: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/2) + "px",
                 }, 500);
                 $($(".gun")[i]).removeClass("gunBefore"); 
                 $($(".gun")[i]).addClass("gunAfter"); 
@@ -778,10 +781,11 @@ function drawAndPositionAvatars() {
 
             var widOfGun = $(".gun").width();
             var heightOfGun = $(".gun").height();
-            var icon = docCookies.getItem("optionDisplayProposedTeamIcon");
-            var offsetGunPos = getGunPos(icon);
-            $($(".gun")[i]).css("top", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*offsetGunPos.y) + "px"); 
-            $($(".gun")[i]).css("left", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/offsetGunPos.x) + "px"); 
+
+
+            $($(".gun")[i]).css("top", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*1.5) + "px"); 
+            $($(".gun")[i]).css("left", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/2) + "px"); 
+            
         }
     }
   }
@@ -1844,18 +1848,8 @@ function scaleMiddleBoxes(){
     // $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")")
     // $("#missionsBox").css("transform-origin", "bottom");
     $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")");
-    var playerDivHeightRatio = $(".playerDiv").height()/128; 
-    var proposedTeamIcon = docCookies.getItem("optionDisplayProposedTeamIcon");
-    if(proposedTeamIcon === 'shield'){
-        $(".gun").css("height", 130*playerDivHeightRatio + "px");
-        //needs to be scaled this way as reducing img size still overshoots
-        $(".gunImg").css("max-height", "80%");
-        $(".gunImg").css("max-width", "80%");
-    } else {
-        $(".gun").css("height", 35*playerDivHeightRatio + "px");
-        $(".gunImg").css("max-height", "100%");
-        $(".gunImg").css("max-width", "100%");
-    }
+
+
     var startScalingHeight = 200;
     var maxHeightOfBoxes = 60; //in px
     var scaleFactor = maxHeightOfBoxes/startScalingHeight;
@@ -1945,20 +1939,3 @@ $(".maxNumPlayers").on("change", function(e){
 
     socket.emit("update-room-max-players", e.target.value);
 });
-
-function getGunPos(icon) {
-    var position = {};
-    if (icon === "shield") {
-        position = {
-            "x": 5,
-            "y": 0.8
-        }
-    } else {
-        // default: icon = "gun"
-        position = {
-            "x": 2,
-            "y": 1.5
-        }
-    }
-    return position;
-}
