@@ -187,16 +187,14 @@
 								<label>Mute spectators <input type="checkbox" class="muteSpecs"></label>
 								<br>
 								<label>Mute join/leave messages <input type="checkbox" class="mutejoinleave"></label>
-								<br>
+								<hr>
 								<label>Set all highlight colors to yellow <input type="checkbox" class="setHighlightColorsToYellow"></label>
 
 								<br>
 								<br>
+								
 							
 								<button id="playerHighlightColourButton">Click to change highlight colour</button>
-								<br>
-								<br>
-								<button id="removeHighlight" onclick="unhighlightAllPlayers()">Unhighlight all players</button>
 								<script>
 									$("#playerHighlightColourButton").on("click", function(){
 										$("#playerHighlightColourBoxes").toggleClass("hidden");
@@ -236,6 +234,9 @@
 									Player 9: <button id="player9HighlightColour" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
 									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'9'}" style="width:20px; height:20px;"></button>
 								</span>
+								<br>
+								<br>
+								<button id="removeHighlight" onclick="unhighlightAllPlayers()">Unhighlight all players</button>
 								<br>
 								<br>
 								
@@ -329,14 +330,11 @@
 									<label>Mute spectators <input type="checkbox" class="muteSpecs"></label>
 									<br>
 									<label>Mute join/leave messages <input type="checkbox" class="mutejoinleave"></label>
-									<br>
+									<hr>
 									<label>Set all highlight colors to yellow <input type="checkbox" class="setHighlightColorsToYellow"></label>
 								<br>
 								<br>
 								<button id="playerHighlightColourButton2" class="">Click to change highlight colour</button>
-								<br>
-								<br>
-								<button id="removeHighlight" onclick="unhighlightAllPlayers()">Unhighlight all players</button>
 								<script>
 									$("#playerHighlightColourButton2").on("click", function(){
 										$("#playerHighlightColourBoxes2").toggleClass("hidden");
@@ -376,6 +374,10 @@
 									Player 9: <button id="player9HighlightColour2" class="jscolor {valueElement:null,value:'66ccff', width:101, padding:0, shadow:false,
 									borderWidth:0, backgroundColor:'transparent', insetColor:'#000', onFineChange:'update(this)', playerColourID:'9'}" style="width:20px; height:20px;"></button>
 								</span>
+								
+								<br>
+								<br>
+								<button id="removeHighlight" onclick="unhighlightAllPlayers()">Unhighlight all players</button>
 								<br>
 								<br>
 								<br>

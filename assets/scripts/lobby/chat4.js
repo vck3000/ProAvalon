@@ -296,9 +296,10 @@ function addToRoomChat(data) {
                 // console.log("true?"  + selectedChat[data[i].username]);
 
                     if(selectedChat[data[i].username] === true){
-                        if(setHighlightColorToYellow===true){
+                        if(setHighlightColorToYellow === true){
                             highlightChatColour="#ffff9e"
-                        }else {
+                        }
+                        else {
                             highlightChatColour = docCookies.getItem("player" + getIndexFromUsername(data[i].username) + 'HighlightColour');
                         }
                     }
@@ -443,6 +444,44 @@ $(".mutejoinleave").on("change", function(e){
     }
     else{
         $(".server-text-teal").removeClass("hidden-spectator-chat");        
+    }
+
+    scrollDown("room-chat-room", true);
+    scrollDown("room-chat-room2", true);
+});
+
+
+
+//When the player sets the color to yellow
+$(".setHighlightColorsToYellow").on("change", function(e){
+
+    var setHighlightColorsToYellow = $(".setHighlightColorsToYellow");
+    
+    for(var i = 0; i < setHighlightColorsToYellow.length; i++){
+        setHighlightColorsToYellow[i].checked = e.target.checked;
+    }
+
+
+    var usernames=Object.keys(selectedChat)
+
+
+    if(e.target.checked === true){
+        var color="#ffff9e"
+        usernames.forEach(function(user){
+            if(selectedChat[user] === true){
+                var chatItems = $(".room-chat-list li span[username='" + user + "']");
+                chatItems.css("background-color", color);
+            }
+        });   
+    }
+    else{
+        usernames.forEach(function(user){
+            if(selectedChat[user] === true){
+                var chatItems = $(".room-chat-list li span[username='" + user + "']");
+                var color = docCookies.getItem("player" + getIndexFromUsername(user) + 'HighlightColour');
+                chatItems.css("background-color", color);
+            }
+        });   
     }
 
     scrollDown("room-chat-room", true);

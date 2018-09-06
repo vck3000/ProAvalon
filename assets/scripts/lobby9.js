@@ -343,7 +343,15 @@ function draw() {
               var username = this.parentElement.parentElement.getAttribute("usernameofplayer");
               var chatItems = $(".room-chat-list li span[username='" + username + "']");
   
+
+
               var playerHighlightColour = docCookies.getItem("player" + getIndexFromUsername(username) + "HighlightColour");
+
+              var setHighlightColorToYellow = $(".setHighlightColorsToYellow")[0].checked;
+
+              if(setHighlightColorToYellow === true){
+                playerHighlightColour="#ffff9e";
+              }
               
             // console.log("Player highlight colour: " + playerHighlightColour);
   
