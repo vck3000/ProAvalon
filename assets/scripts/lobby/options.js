@@ -738,6 +738,16 @@ $(document).ready(function() {
     }
 });
 
+function unhighlightAllPlayers(){
+
+    var usernames=Object.keys(selectedChat)
+
+    usernames.forEach(user => {
+        selectedChat[user] = false;
+        var chatItems = $(".room-chat-list li span[username='" + user + "']");
+        chatItems.css("background-color", "transparent");
+    });
+}
 
 function setAllHighlightColorsToYellow(){
 
