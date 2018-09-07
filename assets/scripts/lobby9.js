@@ -1857,9 +1857,11 @@ function scaleMiddleBoxes(){
     if(proposedTeamIcon === "shield"){
         maxHeight = 51;
         maxWidth = 40;
-    } else {
-        maxHeight = 43;
-        maxWidth = 122;
+    } 
+    //Default gun
+    else {
+        maxHeight = 45;
+        maxWidth = 128;
     }
     $(".gunImg").css("height", "100%");  
     $(".gunImg").css("height", "100%");    
