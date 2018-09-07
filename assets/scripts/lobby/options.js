@@ -314,6 +314,8 @@ var userOptions = {
                 docCookies.setItem("optionDisplayProposedTeamIcon", icon, Infinity);
                 //update image on click
                 updateGunImage(icon);
+                //Need to redraw and rescale
+                draw();
             });
         }
     },

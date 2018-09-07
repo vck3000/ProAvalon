@@ -1834,6 +1834,7 @@ function scaleMiddleBoxes(){
     $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")");
     var playerDivHeightRatio = $(".playerDiv").height()/128; 
     var proposedTeamIcon = docCookies.getItem("optionDisplayProposedTeamIcon");
+
     var maxHeight = 0;
     var maxWidth = 0;
     if(proposedTeamIcon === "shield"){
@@ -1843,6 +1844,7 @@ function scaleMiddleBoxes(){
         maxHeight = 43;
         maxWidth = 122;
     }
+  
     $(".gunImg").css("height", "100%");  
     $(".gunImg").css("height", "100%");    
     //needs to be scaled this way as reducing img size still overshoots
