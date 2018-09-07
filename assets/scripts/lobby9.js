@@ -1850,12 +1850,16 @@ function scaleMiddleBoxes(){
     $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")");
     var playerDivHeightRatio = $(".playerDiv").height()/128; 
     var proposedTeamIcon = docCookies.getItem("optionDisplayProposedTeamIcon");
+
+    var maxHeight;
+    var maxWidth;
+
     if(proposedTeamIcon === "shield"){
-        var maxHeight = 51;
-        var maxWidth = 40;
+        maxHeight = 51;
+        maxWidth = 40;
     } else {
-        var maxHeight = 43;
-        var maxWidth = 122;
+        maxHeight = 43;
+        maxWidth = 122;
     }
     $(".gunImg").css("height", "100%");  
     $(".gunImg").css("height", "100%");    
