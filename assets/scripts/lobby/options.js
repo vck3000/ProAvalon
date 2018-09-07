@@ -288,7 +288,7 @@ var userOptions = {
                 docCookies.setItem("optionDisplayProposedTeamIcon", icon, Infinity);
             } else {
                 //else load it
-                icon = docCookies.getItem("optionDisplayProposedTeamIcon")
+                icon = docCookies.getItem("optionDisplayProposedTeamIcon");
             }
             //set check marks
             if (icon === "shield") {

@@ -15,8 +15,6 @@ setInterval(function(){
 
 }, 1000);
 
-
-
 //Prevents the window height from changing when android keyboard is pulled up.
 setTimeout(function () {
     let viewheight = $(window).height();
@@ -33,13 +31,10 @@ setTimeout(function () {
     // $("#all-chat-lobby")[0].style.height = (newHeight - 10) + "px";
 }, 300);
 
-
 //when the navbar is closed, re-exted the tab content to bottom.
 $('.navbar-collapse').on('hidden.bs.collapse', function () {
     extendTabContentToBottomInRoom();
 });
-
-
 
 
 //for the game
@@ -62,17 +57,6 @@ window.addEventListener('resize', function () {
     checkStatusBarWithHeight();
     draw();
 });
-
-
-
-
-
-
-
-
-
-
-
 
 //======================================
 //FUNCTIONS
@@ -1850,12 +1834,14 @@ function scaleMiddleBoxes(){
     $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")");
     var playerDivHeightRatio = $(".playerDiv").height()/128; 
     var proposedTeamIcon = docCookies.getItem("optionDisplayProposedTeamIcon");
+    var maxHeight = 0;
+    var maxWidth = 0;
     if(proposedTeamIcon === "shield"){
-        var maxHeight = 51;
-        var maxWidth = 40;
+        maxHeight = 51;
+        maxWidth = 40;
     } else {
-        var maxHeight = 43;
-        var maxWidth = 122;
+        maxHeight = 43;
+        maxWidth = 122;
     }
     $(".gunImg").css("height", "100%");  
     $(".gunImg").css("height", "100%");    
