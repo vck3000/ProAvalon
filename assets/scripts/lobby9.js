@@ -1841,8 +1841,8 @@ function scaleMiddleBoxes(){
         maxHeight = 51;
         maxWidth = 40;
     } else {
-        maxHeight = 43;
-        maxWidth = 122;
+        maxHeight = 45;
+        maxWidth = 128;
     }
   
     $(".gunImg").css("height", "100%");  
