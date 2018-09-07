@@ -275,6 +275,49 @@ var userOptions = {
         }
     },
 
+    optionDisplayProposedTeamIcon: {
+        defaultValue: "false",
+        onLoad: function(){
+            //check if optionDisplayProposedTeamIcon exists in cookies
+            var isOptionExists = docCookies.hasItem("optionDisplayProposedTeamIcon");
+            var icon = "";
+            //if not, set it
+            if (isOptionExists === false) {
+                icon = "gun";
+                //save it in cookie
+                docCookies.setItem("optionDisplayProposedTeamIcon", icon, Infinity);
+            } else {
+                //else load it
+                icon = docCookies.getItem("optionDisplayProposedTeamIcon")
+            }
+            //set check marks
+            if (icon === "shield") {
+                $("#option_display_proposed_team_icon")[0].checked = true;
+            }
+            else{
+                $("#option_display_proposed_team_icon")[0].checked = false;
+            }
+            //update image on load
+            updateGunImage(icon);
+        },
+        initialiseEventListener: function(){
+            $("#option_display_proposed_team_icon")[0].addEventListener("click", function () {
+                //when they press it...
+                var isChecked = $("#option_display_proposed_team_icon")[0].checked;
+                var icon = "";
+                if(isChecked === true){
+                    icon = "shield";
+                } else {
+                    icon = "gun";
+                }
+                //save their option in cookie
+                docCookies.setItem("optionDisplayProposedTeamIcon", icon, Infinity);
+                //update image on click
+                updateGunImage(icon);
+            });
+        }
+    },
+
     //---------------------------------------------
     //Sound Notifications
     //---------------------------------------------
@@ -719,7 +762,7 @@ var defaultColours = [
     "#ff9b9b",
     '#9aa888', 
     '#96ff96',
-    '##72afac',
+    '#72afac',
     '#a8d6ff',
     '#9999ff',
     '#ff93ff'
@@ -790,8 +833,16 @@ function updateCompactView(input){
         
 
     }
+}
 
-
-
-
+function updateGunImage(input) {
+    if (input === "shield") {
+            //when shields are used
+            $(".gunImg").attr("src","pictures/shield.png");
+    } else {
+        //when guns are used
+        $(".gunImg").attr("src","pictures/gun.png");
+    }
+    adjustGunPositions();
+    draw();
 }

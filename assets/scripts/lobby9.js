@@ -757,10 +757,11 @@ function drawAndPositionAvatars() {
 
                 var widOfGun = $(".gun").width();
                 var heightOfGun = $(".gun").height();
-
+                var icon = docCookies.getItem("optionDisplayProposedTeamIcon");
+                var offsetGunPos = getGunPos(icon);
                 $($(".gun")[i]).animate({
-                    top: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*1.5) + "px" ,
-                    left: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/2) + "px",
+                    top: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*offsetGunPos.y) + "px" ,
+                    left: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/offsetGunPos.x) + "px",
                 }, 500);
                 $($(".gun")[i]).removeClass("gunBefore"); 
                 $($(".gun")[i]).addClass("gunAfter"); 
@@ -781,11 +782,10 @@ function drawAndPositionAvatars() {
 
             var widOfGun = $(".gun").width();
             var heightOfGun = $(".gun").height();
-
-
-            $($(".gun")[i]).css("top", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*1.5) + "px"); 
-            $($(".gun")[i]).css("left", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/2) + "px"); 
-            
+            var icon = docCookies.getItem("optionDisplayProposedTeamIcon");
+            var offsetGunPos = getGunPos(icon);
+            $($(".gun")[i]).css("top", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*offsetGunPos.y) + "px"); 
+            $($(".gun")[i]).css("left", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/offsetGunPos.x) + "px");           
         }
     }
   }
@@ -1848,8 +1848,20 @@ function scaleMiddleBoxes(){
     // $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")")
     // $("#missionsBox").css("transform-origin", "bottom");
     $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")");
-
-
+    var playerDivHeightRatio = $(".playerDiv").height()/128; 
+    var proposedTeamIcon = docCookies.getItem("optionDisplayProposedTeamIcon");
+    if(proposedTeamIcon === "shield"){
+        var maxHeight = 51;
+        var maxWidth = 40;
+    } else {
+        var maxHeight = 43;
+        var maxWidth = 122;
+    }
+    $(".gunImg").css("height", "100%");  
+    $(".gunImg").css("height", "100%");    
+    //needs to be scaled this way as reducing img size still overshoots
+    $(".gunImg").css("max-height", maxHeight*playerDivHeightRatio + "px");
+    $(".gunImg").css("max-width", maxWidth*playerDivHeightRatio + "px");
     var startScalingHeight = 200;
     var maxHeightOfBoxes = 60; //in px
     var scaleFactor = maxHeightOfBoxes/startScalingHeight;
@@ -1865,9 +1877,6 @@ function scaleMiddleBoxes(){
     $(".rejectLabel").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")");
 
 }
-
-
-
 
 
 var sounds = {
@@ -1939,3 +1948,20 @@ $(".maxNumPlayers").on("change", function(e){
 
     socket.emit("update-room-max-players", e.target.value);
 });
+
+function getGunPos(icon) {
+    var position = {};
+    if (icon === "shield") {
+        position = {
+            "x": 2,
+            "y": 1.85       
+        }
+    } else {
+        // default: icon = "gun"
+        position = {
+            "x": 2,
+            "y": 1.5
+        }
+    }
+    return position;
+}
