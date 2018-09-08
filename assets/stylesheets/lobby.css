@@ -352,7 +352,8 @@ p {
 }
 
 .gunAfter {
-    z-index: 2;
+    /* On top of the mission boxes (z-index: 10) in the center */
+    z-index: 11;
     position: absolute;
     /* right: 0; */
     /* top: 33%; */
