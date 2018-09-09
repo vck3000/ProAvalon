@@ -10,8 +10,12 @@ socket.on("success-alert", function (data) {
     showSuccessAlert(data);
 });
 
-socket.on("danger-alert", function (data) {
-    showDangerAlert(data);
+socket.on("danger-alert", function (data, action = "show") {
+    if (action == "show"){
+        showDangerAlert(data);
+    } else {
+        hideDangerAlert();
+    }
 });
 
 function showSuccessAlert(data) {
@@ -30,4 +34,9 @@ function showDangerAlert(data) {
     document.querySelector("#danger-alert-box").classList.remove("inactive-window");
     document.querySelector("#danger-alert-box-button").classList.remove("inactive-window");
     document.querySelector("#danger-alert-box").innerHTML = data + " <span class='glyphicon glyphicon-remove pull-right'></span>";
+};
+
+function hideDangerAlert() {
+    document.querySelector("#danger-alert-box").classList.add("inactive-window");
+    document.querySelector("#danger-alert-box-button").classList.add("inactive-window");
 };
