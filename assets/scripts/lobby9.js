@@ -10,6 +10,14 @@ var socket = io();
 //grab our username from the username assigned by server in EJS file.
 var ownUsername = $("#originalUsername")[0].innerText;
 
+//register all buttons here for easier access
+//less problems on debugging
+var buttons = {
+    "red": "#red-button",
+    "green": "#green-button",
+    "claim": "#claimButton"
+}
+
 setInterval(function(){
     extendTabContentToBottomInRoom();
 
@@ -794,8 +802,11 @@ function drawAndPositionAvatars() {
 
 function drawClaimingPlayers(claimingPlayers){
 
-    $("#claimButton")[0].innerText = "Claim";
-
+    $(buttons["claim"])[0].innerText = "Claim";
+    // Initially when someone creates a room, enable claim button
+    if (isSpectator === false) {
+        $(buttons["claim"]).removeClass("disabled");
+    }
     
     for(var i = 0; i < roomPlayersData.length; i++){
         if(roomPlayersData[i].claim && roomPlayersData[i].claim === true){
@@ -809,7 +820,7 @@ function drawClaimingPlayers(claimingPlayers){
             }
 
             if(roomPlayersData[i].username === ownUsername){
-                $("#claimButton")[0].innerText = "Unclaim";
+                $(buttons["claim"])[0].innerText = "Unclaim";
             }
         }
     }
@@ -857,12 +868,12 @@ function enableDisableButtonsLeader(numPlayersOnMission) {
     // console.log("countHighlightedAvatars: " + countHighlightedAvatars());
     // console.log("numPlayersOnMission: " + numPlayersOnMission);
     if (countHighlightedAvatars() == numPlayersOnMission || (countHighlightedAvatars() + "*") == numPlayersOnMission) {
-        document.querySelector("#green-button").classList.remove("disabled");
-        document.querySelector("#green-button").classList.remove("faded");
+        document.querySelector(buttons["green"]).classList.remove("hidden");
+        document.querySelector(buttons["green"]).classList.remove("disabled");
     }
     else {
-        document.querySelector("#green-button").classList.add("disabled");
-        document.querySelector("#green-button").classList.add("faded");
+        document.querySelector(buttons["green"]).classList.add("hidden");
+        document.querySelector(buttons["green"]).classList.add("disabled");
         
     }
 }
@@ -881,7 +892,7 @@ function enableDisableButtons() {
 
 
     //reset the faded class for the buttons
-    document.querySelector("#green-button").classList.remove("faded");
+    document.querySelector(buttons["green"]).classList.remove("disabled");
     //determine if we are spectator or not
     for(var i = 0; i < roomPlayersData.length; i++){
         if(roomPlayersData[i].username === ownUsername){
@@ -894,45 +905,46 @@ function enableDisableButtons() {
     if (gameStarted === false) {
         //Host
         if (ownUsername === getUsernameFromIndex(0)) {
-            document.querySelector("#green-button").classList.remove("disabled");
-            document.querySelector("#green-button").innerText = "Start";
-
-            document.querySelector("#red-button").classList.remove("disabled");
-            document.querySelector("#red-button").innerText = "Kick";
+            document.querySelector(buttons["green"]).classList.remove("hidden");
+            document.querySelector(buttons["green"]).innerText = "Start";
+            document.querySelector(buttons["claim"]).classList.remove("disabled");
+            document.querySelector(buttons["red"]).classList.remove("hidden");
+            document.querySelector(buttons["red"]).innerText = "Kick";
 
             //set the stuff for the kick modal buttons
-            $("#red-button").attr("data-toggle", "modal");
-            $("#red-button").attr("data-target", "#kickModal");
+            $(buttons["red"]).attr("data-toggle", "modal");
+            $(buttons["red"]).attr("data-target", "#kickModal");
 
             document.querySelector("#options-button").classList.remove("hidden");
         }
         //we are spectator
         else if (isSpectator === true) {
-            document.querySelector("#green-button").classList.remove("disabled");
-            document.querySelector("#green-button").innerText = "Join";
-
-            document.querySelector("#red-button").classList.add("disabled");
-            // document.querySelector("#red-button").innerText = "Disabled";
+            document.querySelector(buttons["green"]).classList.remove("hidden");
+            document.querySelector(buttons["green"]).innerText = "Join";
+            document.querySelector(buttons["claim"]).classList.add("disabled");
+            document.querySelector(buttons["red"]).classList.add("hidden");
+            // document.querySelector(buttons["red"]).innerText = "hidden";
         }
         else {
             disableButtons();
-            document.querySelector("#red-button").classList.remove("disabled");
-            document.querySelector("#red-button").innerText = "Stand up";
+            document.querySelector(buttons["red"]).classList.remove("hidden");
+            document.querySelector(buttons["claim"]).classList.remove("disabled");
+            document.querySelector(buttons["red"]).innerText = "Stand up";
         }
 
         if(ownUsername !== getUsernameFromIndex(0)){
-            $("#red-button").attr("data-toggle", "");
-            $("#red-button").attr("data-target", "");
+            $(buttons["red"]).attr("data-toggle", "");
+            $(buttons["red"]).attr("data-target", "");
         }
     }
     else if (gameStarted === true && isSpectator === false) {
         //if we are in picking phase
         if (gameData.phase === "picking") {
-            document.querySelector("#green-button").classList.add("disabled");
-            document.querySelector("#green-button").innerText = "Pick";
+            document.querySelector(buttons["green"]).classList.add("hidden");
+            document.querySelector(buttons["green"]).innerText = "Pick";
 
-            document.querySelector("#red-button").classList.add("disabled");
-            // document.querySelector("#red-button").innerText = "Disabled";
+            document.querySelector(buttons["red"]).classList.add("hidden");
+            // document.querySelector(buttons["red"]).innerText = "hidden";
 
             if(getUsernameFromIndex(gameData.teamLeader) === ownUsername){
                 showYourTurnNotification(true);
@@ -944,11 +956,11 @@ function enableDisableButtons() {
             if (checkEntryExistsInArray(gameData.playersYetToVote, ownUsername)) {
                 // showYourTurnNotification(true);
 
-                document.querySelector("#green-button").classList.remove("disabled");
-                document.querySelector("#green-button").innerText = "Approve";
+                document.querySelector(buttons["green"]).classList.remove("hidden");
+                document.querySelector(buttons["green"]).innerText = "Approve";
 
-                document.querySelector("#red-button").classList.remove("disabled");
-                document.querySelector("#red-button").innerText = "Reject";
+                document.querySelector(buttons["red"]).classList.remove("hidden");
+                document.querySelector(buttons["red"]).innerText = "Reject";
             }
             else {
                 disableButtons();
@@ -959,11 +971,11 @@ function enableDisableButtons() {
             if (checkEntryExistsInArray(gameData.playersYetToVote, ownUsername)) {
                 // showYourTurnNotification(true);
 
-                document.querySelector("#green-button").classList.remove("disabled");
-                document.querySelector("#green-button").innerText = "SUCCEED";
+                document.querySelector(buttons["green"]).classList.remove("hidden");
+                document.querySelector(buttons["green"]).innerText = "SUCCEED";
 
-                document.querySelector("#red-button").classList.remove("disabled");
-                document.querySelector("#red-button").innerText = "FAIL";
+                document.querySelector(buttons["red"]).classList.remove("hidden");
+                document.querySelector(buttons["red"]).innerText = "FAIL";
             }
             else {
                 disableButtons();
@@ -971,11 +983,11 @@ function enableDisableButtons() {
         }
 
         else if (gameData.phase === "assassination") {
-            // document.querySelector("#green-button").classList.add("disabled");
-            document.querySelector("#green-button").innerText = "SHOOT";
+            // document.querySelector(buttons["green"]).classList.add("hidden");
+            document.querySelector(buttons["green"]).innerText = "SHOOT";
 
-            document.querySelector("#red-button").classList.add("disabled");
-            // document.querySelector("#red-button").innerText = "Disabled";
+            document.querySelector(buttons["red"]).classList.add("hidden");
+            // document.querySelector(buttons["red"]).innerText = "hidden";
 
             if ("Assassin" === gameData.role) {
                 showYourTurnNotification(true);
@@ -983,10 +995,10 @@ function enableDisableButtons() {
 
             //if there is only one person highlighted
             if (countHighlightedAvatars() == 1) {
-                document.querySelector("#green-button").classList.remove("disabled");
+                document.querySelector(buttons["green"]).classList.remove("hidden");
             }
             else {
-                document.querySelector("#green-button").classList.add("disabled");
+                document.querySelector(buttons["green"]).classList.add("hidden");
             }
         }
         else if (gameData.phase === "lady") {
@@ -994,18 +1006,18 @@ function enableDisableButtons() {
                 showYourTurnNotification(true);
             }
             
-            // document.querySelector("#green-button").classList.add("disabled");
-            document.querySelector("#green-button").innerText = "Card";
+            // document.querySelector(buttons["green"]).classList.add("hidden");
+            document.querySelector(buttons["green"]).innerText = "Card";
 
-            document.querySelector("#red-button").classList.add("disabled");
-            // document.querySelector("#red-button").innerText = "Disabled";
+            document.querySelector(buttons["red"]).classList.add("hidden");
+            // document.querySelector(buttons["red"]).innerText = "hidden";
 
             //if there is only one person highlighted
             if (countHighlightedAvatars() == 1 && ownUsername === getUsernameFromIndex(gameData.lady)) {
-                document.querySelector("#green-button").classList.remove("disabled");
+                document.querySelector(buttons["green"]).classList.remove("hidden");
             }
             else {
-                document.querySelector("#green-button").classList.add("disabled");
+                document.querySelector(buttons["green"]).classList.add("hidden");
             }
         }
 
@@ -1029,11 +1041,11 @@ function checkEntryExistsInArray(array, entry) {
 }
 
 function disableButtons() {
-    document.querySelector("#green-button").classList.add("disabled");
-    // document.querySelector("#green-button").innerText = "Disabled";
+    document.querySelector(buttons["green"]).classList.add("hidden");
+    // document.querySelector(buttons["green"]).innerText = "hidden";
 
-    document.querySelector("#red-button").classList.add("disabled");
-    // document.querySelector("#red-button").innerText = "Disabled";
+    document.querySelector(buttons["red"]).classList.add("hidden");
+    // document.querySelector(buttons["red"]).innerText = "hidden";
 }
 
 function countHighlightedAvatars() {
@@ -1917,12 +1929,12 @@ function displayNotification(title, body, icon, tag){
 function showYourTurnNotification(ToF){
     if(ToF === true){
         // $("#statusBarWell").addClass("showYourTurnNotification");
-        $("#green-button").addClass("unhide");
+        $(buttons["green"]).addClass("unhide");
         // $("#statusBarWell").addClass("showFaded");
     }
     else if(ToF === false){
         // $("#statusBarWell").removeClass("showYourTurnNotification");
-        $("#green-button").removeClass("unhide");
+        $(buttons["green"]).removeClass("unhide");
         // $("#statusBarWell").removeClass("showFaded");
     }
     else{

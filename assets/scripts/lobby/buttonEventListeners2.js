@@ -1,6 +1,6 @@
 	
 function redButtonFunction() {
-    if (document.querySelector("#red-button").classList.contains("disabled") === false) {
+    if (document.querySelector("#red-button").classList.contains("hidden") === false) {
         if (isSpectator === true) {
 
         }
@@ -8,7 +8,10 @@ function redButtonFunction() {
 
             if(document.querySelector("#red-button").innerText === "Stand up"){
                 socket.emit("standUpFromGame");
-
+                //remove claim status when a player sits down
+                //then stands up
+                socket.emit("claim", "");
+                
                 enableDisableButtons();
             }
             else{
@@ -74,7 +77,7 @@ function redButtonFunction() {
 
 function greenButtonFunction() {
     //if button is not disabled: 
-    if (document.querySelector("#green-button").classList.contains("disabled") === false) {
+    if (document.querySelector("#green-button").classList.contains("hidden") === false) {
         if (isSpectator === true) {
             socket.emit("join-game", roomId);
         }
@@ -176,7 +179,11 @@ document.querySelector("#backButton").addEventListener("click", function () {
 
 document.querySelector("#claimButton").addEventListener("click", function () {
     //INCOMPLETE
-    socket.emit("claim", "");
+    // disallow innertext change to "unclaim" when spectators
+    // click a disabled claim button
+    if (isSpectator === false) {
+        socket.emit("claim", "");
+    }
 });
 
 

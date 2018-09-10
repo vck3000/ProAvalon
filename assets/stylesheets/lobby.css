@@ -999,12 +999,6 @@ i {
     padding-right: 0px;
 }
 
-
-
-
-.disabled{
-    display:none;
-}
 .unhide {
     display: inline !important;
 }
@@ -1019,7 +1013,6 @@ i {
     visibility: visible !important;
     /* display:block; */
 }
-
 
 
 

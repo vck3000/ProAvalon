@@ -1735,7 +1735,7 @@ module.exports = function (io) {
 			if (rooms[socket.request.user.inRoomId]) {
 				rooms[socket.request.user.inRoomId].updateMaxNumPlayers(socket, number);
 			}
-                        updateCurrentGamesList();
+			updateCurrentGamesList();
 		});
 
 
