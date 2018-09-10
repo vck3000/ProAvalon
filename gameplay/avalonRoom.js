@@ -12,9 +12,7 @@ mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
 
 
 // var sockets = [];
-
 var minPlayers = 5;
-var banTime = 3 * 60 * 1000; //5 minutes in milliseconds
 // var host;
 
 var alliances = [
@@ -117,7 +115,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 	this.canJoin = true;
 	this.options = undefined;
 
-	this.kickedPlayers = {};
+	this.kickedPlayers = [];
 	this.claimingPlayers = {};
 
 	this.winner = "";
@@ -1390,24 +1388,11 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 		}
 
 		// If they have not been kicked before
-		if (Object.keys(thisRoom.kickedPlayers).includes(socket.request.user.username) == true){
-			if(thisRoom.kickedPlayers[socket.request.user.username]["status"] === true) {
-				var banTimeLeft = banTime - ((new Date).getTime() - thisRoom.kickedPlayers[socket.request.user.username]["startTime"]);
-				if (banTimeLeft > 0) {
-					var banMsg = "You have been banned from joining the game for the next " + 
-						convertMillisToSeconds(banTimeLeft) + ". You can not join yet.";
-					socket.emit("danger-alert", banMsg);
-					return false;
-				} else {
-					//if ban time has been depleted, allow player to join the room again
-					//by removing him from the kickedPlayers map
-					delete thisRoom.kickedPlayers[socket.request.user.username];
-					console.log(socket.request.user.username + " has been removed from kickedPlayer list of room # "+ thisRoom.roomId);
-					socket.emit("danger-alert", null, "hide");
-				}
-				console.log(convertMillisToSeconds(banTimeLeft));
-			}
+		if (thisRoom.kickedPlayers.includes(socket.request.user.username) === true) {
+			socket.emit("danger-alert", "You have been banned from this room. You cannot join.");
+			return false;
 		}
+
 		//if the player hasn't joined...
 		if(this.allSockets.indexOf(socket) === -1){
 			return false;
@@ -1643,14 +1628,10 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 			if (this.host === socket.request.user.username) {
 				
 				this.socketsOfPlayers.splice(getIndexFromUsername(this.socketsOfPlayers, username), 1);
-				// Ban them from this room
-				// Add ban time start
-				this.kickedPlayers[username] = {
-					"status": true,
-					"startTime": (new Date).getTime()
-				};
-				var kickMsg = "Player " + username + " has been kick and banned by " + this.host + " for " +
-				 convertMillisToSeconds(banTime) + ".";
+				// Kick them from this room
+				// Add to kickedPlayers array
+				this.kickedPlayers.push(username);
+				var kickMsg = "Player " + username + " has been kick and banned by " + this.host + ".";
 				this.sendText(this.socketsOfPlayers, kickMsg, "server-text");
 				console.log(kickMsg);
 				this.updateRoomPlayers();
