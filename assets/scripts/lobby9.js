@@ -10,6 +10,14 @@ var socket = io();
 //grab our username from the username assigned by server in EJS file.
 var ownUsername = $("#originalUsername")[0].innerText;
 
+//register all buttons here for easier access
+//less problems on debugging
+var buttons = {
+    "red": "#red-button",
+    "green": "#green-button",
+    "claim": "#claimButton"
+}
+
 setInterval(function(){
     extendTabContentToBottomInRoom();
 
@@ -794,8 +802,11 @@ function drawAndPositionAvatars() {
 
 function drawClaimingPlayers(claimingPlayers){
 
-    $("#claimButton")[0].innerText = "Claim";
-
+    $(buttons["claim"])[0].innerText = "Claim";
+    // Initially when someone creates a room, enable claim button
+    if (isSpectator === false) {
+        $(buttons["claim"]).removeClass("disabled");
+    }
     
     for(var i = 0; i < roomPlayersData.length; i++){
         if(roomPlayersData[i].claim && roomPlayersData[i].claim === true){
@@ -809,7 +820,7 @@ function drawClaimingPlayers(claimingPlayers){
             }
 
             if(roomPlayersData[i].username === ownUsername){
-                $("#claimButton")[0].innerText = "Unclaim";
+                $(buttons["claim"])[0].innerText = "Unclaim";
             }
         }
     }
@@ -854,20 +865,22 @@ function drawClaimingPlayers(claimingPlayers){
   
 function enableDisableButtonsLeader(numPlayersOnMission) {
     //if they've selected the right number of players, then allow them to send
-    // console.log("countHighlightedAvatars: " + countHighlightedAvatars());
-    // console.log("numPlayersOnMission: " + numPlayersOnMission);
     if (countHighlightedAvatars() == numPlayersOnMission || (countHighlightedAvatars() + "*") == numPlayersOnMission) {
-        document.querySelector("#green-button").classList.remove("disabled");
-        document.querySelector("#green-button").classList.remove("faded");
-    }
-    else {
-        document.querySelector("#green-button").classList.add("disabled");
-        document.querySelector("#green-button").classList.add("faded");
-        
+        btnRemoveHidden("green");
+        btnRemoveDisabled("green");
     }
 }
 function enableDisableButtons() {
-    showYourTurnNotification(false);
+    //Hide the buttons. Unhide them as we need.
+    document.querySelector(buttons["green"]).classList.add("hidden");
+    document.querySelector(buttons["red"]).classList.add("hidden");
+        // Claim button is never hidden, only disabled
+    // document.querySelector(buttons["claim"]).classList.add("hidden");
+    
+    //Disable the buttons. Enable them as we need them.
+    document.querySelector(buttons["green"]).classList.add("disabled");
+    document.querySelector(buttons["red"]).classList.add("disabled");
+    document.querySelector(buttons["claim"]).classList.add("disabled");
 
     //are we a player sitting down?
     var isPlayer = false;
@@ -875,13 +888,11 @@ function enableDisableButtons() {
         if(roomPlayersData[i].username === ownUsername){
             //if we are a player sitting down, then yes, we are a player
             isPlayer = true;
+            break;
         }
     }
     isSpectator = !isPlayer;
-
-
-    //reset the faded class for the buttons
-    document.querySelector("#green-button").classList.remove("faded");
+    
     //determine if we are spectator or not
     for(var i = 0; i < roomPlayersData.length; i++){
         if(roomPlayersData[i].username === ownUsername){
@@ -890,92 +901,92 @@ function enableDisableButtons() {
         }
     }
 
+    // if we aren't a spectator, then remove the disable on the claim button
+    if(isSpectator === false){
+        btnRemoveDisabled("claim");
+    }
       
     if (gameStarted === false) {
         //Host
         if (ownUsername === getUsernameFromIndex(0)) {
-            document.querySelector("#green-button").classList.remove("disabled");
-            document.querySelector("#green-button").innerText = "Start";
 
-            document.querySelector("#red-button").classList.remove("disabled");
-            document.querySelector("#red-button").innerText = "Kick";
+            btnRemoveHidden("green");
+            btnRemoveDisabled("green");
+            btnSetText("green", "Start");
+
+            btnRemoveHidden("red");
+            btnRemoveDisabled("red");
+            btnSetText("red", "Kick");
 
             //set the stuff for the kick modal buttons
-            $("#red-button").attr("data-toggle", "modal");
-            $("#red-button").attr("data-target", "#kickModal");
+            $(buttons["red"]).attr("data-toggle", "modal");
+            $(buttons["red"]).attr("data-target", "#kickModal");
 
             document.querySelector("#options-button").classList.remove("hidden");
         }
         //we are spectator
         else if (isSpectator === true) {
-            document.querySelector("#green-button").classList.remove("disabled");
-            document.querySelector("#green-button").innerText = "Join";
-
-            document.querySelector("#red-button").classList.add("disabled");
-            // document.querySelector("#red-button").innerText = "Disabled";
+            btnRemoveHidden("green");
+            btnRemoveDisabled("green");
+            btnSetText("green", "Join");
         }
+        //we are a player sitting down, before game has started
         else {
-            disableButtons();
-            document.querySelector("#red-button").classList.remove("disabled");
-            document.querySelector("#red-button").innerText = "Stand up";
+            btnRemoveHidden("red");
+            btnRemoveDisabled("red");
+            btnSetText("red", "Spectate");
         }
 
+        //if we are not the host, then un-bind the red button from the kick modal
         if(ownUsername !== getUsernameFromIndex(0)){
-            $("#red-button").attr("data-toggle", "");
-            $("#red-button").attr("data-target", "");
+            $(buttons["red"]).attr("data-toggle", "");
+            $(buttons["red"]).attr("data-target", "");
         }
     }
+    //if game started and we are a player:
     else if (gameStarted === true && isSpectator === false) {
-        //if we are in picking phase
+        // if we are in picking phase
         if (gameData.phase === "picking") {
-            document.querySelector("#green-button").classList.add("disabled");
-            document.querySelector("#green-button").innerText = "Pick";
+            btnSetText("green", "Pick");
 
-            document.querySelector("#red-button").classList.add("disabled");
-            // document.querySelector("#red-button").innerText = "Disabled";
-
+            // if we are the team leader, then show them that its their turn by
+            // unhiding the button
             if(getUsernameFromIndex(gameData.teamLeader) === ownUsername){
                 showYourTurnNotification(true);
             }
         }
 
-        //if we are in voting phase
+        // if we are in voting phase
         else if (gameData.phase === "voting") {
+            // if our username is among the players that haven't voted yet
+            // then show the approve reject buttons
             if (checkEntryExistsInArray(gameData.playersYetToVote, ownUsername)) {
-                // showYourTurnNotification(true);
+                btnRemoveHidden("green");
+                btnRemoveDisabled("green");
+                btnSetText("green", "Approve");
 
-                document.querySelector("#green-button").classList.remove("disabled");
-                document.querySelector("#green-button").innerText = "Approve";
-
-                document.querySelector("#red-button").classList.remove("disabled");
-                document.querySelector("#red-button").innerText = "Reject";
-            }
-            else {
-                disableButtons();
+                btnRemoveHidden("red");
+                btnRemoveDisabled("red");
+                btnSetText("red", "Reject");
             }
         }
 
         else if (gameData.phase === "missionVoting") {
+            // if our username is among the players that haven't voted yet
+            // then show the approve reject buttons
             if (checkEntryExistsInArray(gameData.playersYetToVote, ownUsername)) {
-                // showYourTurnNotification(true);
+                btnRemoveHidden("green");
+                btnRemoveDisabled("green");
+                btnSetText("green", "SUCCEED");
 
-                document.querySelector("#green-button").classList.remove("disabled");
-                document.querySelector("#green-button").innerText = "SUCCEED";
-
-                document.querySelector("#red-button").classList.remove("disabled");
-                document.querySelector("#red-button").innerText = "FAIL";
-            }
-            else {
-                disableButtons();
+                btnRemoveHidden("red");
+                btnRemoveDisabled("red");
+                btnSetText("red", "FAIL");
             }
         }
 
         else if (gameData.phase === "assassination") {
-            // document.querySelector("#green-button").classList.add("disabled");
-            document.querySelector("#green-button").innerText = "SHOOT";
-
-            document.querySelector("#red-button").classList.add("disabled");
-            // document.querySelector("#red-button").innerText = "Disabled";
+            btnSetText("green", "SHOOT");
 
             if ("Assassin" === gameData.role) {
                 showYourTurnNotification(true);
@@ -983,39 +994,27 @@ function enableDisableButtons() {
 
             //if there is only one person highlighted
             if (countHighlightedAvatars() == 1) {
-                document.querySelector("#green-button").classList.remove("disabled");
-            }
-            else {
-                document.querySelector("#green-button").classList.add("disabled");
+                btnRemoveDisabled("green");
             }
         }
+
         else if (gameData.phase === "lady") {
             if (ownUsername === getUsernameFromIndex(gameData.lady)) {
                 showYourTurnNotification(true);
             }
-            
-            // document.querySelector("#green-button").classList.add("disabled");
-            document.querySelector("#green-button").innerText = "Card";
 
-            document.querySelector("#red-button").classList.add("disabled");
-            // document.querySelector("#red-button").innerText = "Disabled";
+            btnSetText("green", "Card");
 
             //if there is only one person highlighted
             if (countHighlightedAvatars() == 1 && ownUsername === getUsernameFromIndex(gameData.lady)) {
-                document.querySelector("#green-button").classList.remove("disabled");
-            }
-            else {
-                document.querySelector("#green-button").classList.add("disabled");
+                btnRemoveDisabled("green");
             }
         }
 
         else if (gameData.phase === "finished") {
+            // Ideally this would be in the draw function somewhere... not here
             drawGuns();
-            disableButtons();
         }
-    }
-    else if (gameStarted === true && isSpectator === true) {
-        disableButtons();
     }
 }
 
@@ -1026,14 +1025,6 @@ function checkEntryExistsInArray(array, entry) {
         }
     }
     return false;
-}
-
-function disableButtons() {
-    document.querySelector("#green-button").classList.add("disabled");
-    // document.querySelector("#green-button").innerText = "Disabled";
-
-    document.querySelector("#red-button").classList.add("disabled");
-    // document.querySelector("#red-button").innerText = "Disabled";
 }
 
 function countHighlightedAvatars() {
@@ -1915,15 +1906,12 @@ function displayNotification(title, body, icon, tag){
 
 
 function showYourTurnNotification(ToF){
+    //Display the green button if its your turn.
     if(ToF === true){
-        // $("#statusBarWell").addClass("showYourTurnNotification");
-        $("#green-button").addClass("unhide");
-        // $("#statusBarWell").addClass("showFaded");
+        $(buttons["green"]).removeClass("hidden");
     }
     else if(ToF === false){
-        // $("#statusBarWell").removeClass("showYourTurnNotification");
-        $("#green-button").removeClass("unhide");
-        // $("#statusBarWell").removeClass("showFaded");
+        $(buttons["green"]).addClass("hidden");
     }
     else{
         console.log("error in show your turn notifications");
@@ -1952,4 +1940,15 @@ function getGunPos(icon) {
         }
     }
     return position;
+}
+
+
+function btnRemoveHidden(btnStr){
+    document.querySelector(buttons[btnStr]).classList.remove("hidden");
+}
+function btnRemoveDisabled(btnStr){
+    document.querySelector(buttons[btnStr]).classList.remove("disabled");
+}
+function btnSetText(btnStr, text){
+    document.querySelector(buttons[btnStr]).innerText = text;
 }

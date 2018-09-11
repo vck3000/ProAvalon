@@ -1,16 +1,21 @@
 	
 function redButtonFunction() {
+    // if the button isn't disabled
     if (document.querySelector("#red-button").classList.contains("disabled") === false) {
         if (isSpectator === true) {
 
         }
         else if (gameStarted === false) {
-
-            if(document.querySelector("#red-button").innerText === "Stand up"){
+            //if we are spectating
+            if(document.querySelector("#red-button").innerText === "Spectate"){
                 socket.emit("standUpFromGame");
-
+                //remove claim status when a player sits down
+                //then stands up
+                socket.emit("claim", "");
+                
                 enableDisableButtons();
             }
+            //we are the host, open kick menu
             else{
                 //host kicking
                 // Set the kick modal content
@@ -73,7 +78,7 @@ function redButtonFunction() {
 }
 
 function greenButtonFunction() {
-    //if button is not disabled: 
+    //if button isn't disabled: 
     if (document.querySelector("#green-button").classList.contains("disabled") === false) {
         if (isSpectator === true) {
             socket.emit("join-game", roomId);
@@ -176,7 +181,11 @@ document.querySelector("#backButton").addEventListener("click", function () {
 
 document.querySelector("#claimButton").addEventListener("click", function () {
     //INCOMPLETE
-    socket.emit("claim", "");
+    // disallow innertext change to "unclaim" when spectators
+    // click a disabled claim button
+    if (isSpectator === false) {
+        socket.emit("claim", "");
+    }
 });
 
 

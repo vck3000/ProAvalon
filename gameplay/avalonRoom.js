@@ -1536,7 +1536,6 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 					avatarImgRes: this.socketsOfPlayers[i].request.user.avatarImgRes,
 					avatarImgSpy: this.socketsOfPlayers[i].request.user.avatarImgSpy,
 					avatarHide: this.socketsOfPlayers[i].request.user.avatarHide,
-					
 					claim: isClaiming
 				}
 	

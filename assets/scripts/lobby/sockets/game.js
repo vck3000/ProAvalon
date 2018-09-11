@@ -66,13 +66,13 @@ socket.on("spec-game-starting", function(data){
         allowEnterKey: false
     });
 
-    // document.querySelector("#green-button").classList.contains("disabled")
+    // document.querySelector("#green-button").classList.contains("hidden")
 
-    $("#green-button").addClass("disabled");
+    $("#green-button").addClass("hidden");
 });
 
 socket.on("spec-game-starting-finished", function(data){
-    $("#green-button").removeClass("disabled");
+    $("#green-button").removeClass("hidden");
 });
 
 
