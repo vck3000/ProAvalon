@@ -1631,7 +1631,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 				// Kick them from this room
 				// Add to kickedPlayers array
 				this.kickedPlayers.push(username);
-				var kickMsg = "Player " + username + " has been kick and banned by " + this.host + ".";
+				var kickMsg = "Player " + username + " has been kicked by " + this.host + ".";
 				this.sendText(this.socketsOfPlayers, kickMsg, "server-text");
 				console.log(kickMsg);
 				this.updateRoomPlayers();
