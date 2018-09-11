@@ -12,7 +12,6 @@ mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
 
 
 // var sockets = [];
-
 var minPlayers = 5;
 // var host;
 
@@ -116,7 +115,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 	this.canJoin = true;
 	this.options = undefined;
 
-	this.kickedPlayers = {};
+	this.kickedPlayers = [];
 	this.claimingPlayers = {};
 
 	this.winner = "";
@@ -1388,12 +1387,12 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 			}
 		}
 
-
 		// If they have not been kicked before
-		if (thisRoom.kickedPlayers[socket.request.user.username] === true) {
-			socket.emit("danger-alert", "You have been banned from this room. You can not join.");
+		if (thisRoom.kickedPlayers.includes(socket.request.user.username) === true) {
+			socket.emit("danger-alert", "You have been banned from this room. You cannot join.");
 			return false;
 		}
+
 		//if the player hasn't joined...
 		if(this.allSockets.indexOf(socket) === -1){
 			return false;
@@ -1629,14 +1628,12 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 			if (this.host === socket.request.user.username) {
 				
 				this.socketsOfPlayers.splice(getIndexFromUsername(this.socketsOfPlayers, username), 1);
-				
-				console.log("Kicked player: " + username);
-
-				this.sendText(this.socketsOfPlayers, "Player " + username + " has been kicked by the host.", "server-text");
-
-				// Ban them from this room
-				this.kickedPlayers[username] = true;
-
+				// Kick them from this room
+				// Add to kickedPlayers array
+				this.kickedPlayers.push(username);
+				var kickMsg = "Player " + username + " has been kicked by " + this.host + ".";
+				this.sendText(this.socketsOfPlayers, kickMsg, "server-text");
+				console.log(kickMsg);
 				this.updateRoomPlayers();
 			}
 		}
@@ -1965,15 +1962,6 @@ function getIndexFromUsername(sockets, username) {
 function getUsernameFromIndex(usernames, index) {
 	return usernames[index].username;
 }
-
-
-
-
-
-
-
-
-
 
 // function giveGameDataToSpectator(socket, io) {
 // 	var gameDataForSpectators = rooms[socket.request.user.inRoomId].getGameDataForSpectators();
