@@ -8,8 +8,8 @@ var flash 		= require("connect-flash");
 
 var middlewareObj = {};
 
-var modsArray = require("../modsadmins/mods")
-var adminsArray = require("../modsadmins/admins")
+var modsArray = require("../modsadmins/mods");
+var adminsArray = require("../modsadmins/admins");
 
 
 middlewareObj.checkProfileOwnership = function (req, res, next) {

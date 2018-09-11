@@ -1,0 +1,135 @@
+<% include ../partials/header %>
+
+<style>
+    .myContainer {
+        border-radius: 50px;
+
+        padding-top: 2%;
+        padding-bottom: 5%;
+        margin-bottom: 30px;
+        color: inherit;
+        background-color: #eee;
+        
+        width:95%;
+    }
+
+</style>
+
+
+<div class="container myContainer">
+    <h1><u>Moderation</u></h1>
+    <div>
+        <h4>Hi mods, thanks for all your hard work! I appreciate it very much :).</h4>
+    </div>
+
+    <br>
+    <br>
+
+    <div>
+        Useful links:
+        <ul>
+            <li><a href="/profile/mod/customavatar">Custom Avatar Requests</a></li>
+        </ul>
+    </div>
+
+    <br>
+    <br>
+    <br>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Moderation logs:</h3>
+        </div>
+        <div class="panel-body" id="logsDiv">
+            Loading...
+        </div>
+    </div>
+
+    <button class="btn btn-info" style="    
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);" onclick="loadMoreLogs()">
+        Load more
+    </button>
+
+
+</div>
+
+
+<script>
+
+    $( document ).ready(function() {
+        xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("GET", "/mod/ajax/data/0", true);
+
+        xmlhttp.onreadystatechange=function(){
+            if (xmlhttp.readyState==4 && xmlhttp.status==200){
+                
+                modData=JSON.parse(xmlhttp.responseText);
+                console.log(modData);
+
+                updateModData(modData);
+            }
+        }
+        xmlhttp.send();
+    });
+
+    function updateModData(data){
+
+        str = "";
+        
+        for(var i = 0; i < data.logs.length; i++){
+
+            descriptionStr = "";
+            for(var j = 1; j < data.logs[i].stringsArray.length; j++){
+                descriptionStr += "<p>" + data.logs[i].stringsArray[j] + "</p>";
+            }
+
+            str += `<div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                        ` + data.logs[i].stringsArray[0] + `
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        ` + descriptionStr + `
+                    </div>
+                </div>`
+
+        }
+
+        
+
+        $("#logsDiv")[0].innerHTML = str;
+    }
+
+    var index = 1;
+    function loadMoreLogs(){
+        xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("GET", "/mod/ajax/data/" + index, true);
+
+        xmlhttp.onreadystatechange=function(){
+            if (xmlhttp.readyState==4 && xmlhttp.status==200){
+                
+                modData=JSON.parse(xmlhttp.responseText);
+                console.log(modData);
+
+                updateModData(modData);
+            }
+        }
+        xmlhttp.send();
+
+        index++;
+    }
+
+</script>
+
+
+
+
+<% include ../partials/footer %>
+
+
+
+
+
