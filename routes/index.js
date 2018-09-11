@@ -315,91 +315,94 @@ router.get("/statistics", function(req, res){
 
 router.get("/mod/ajax/data/:pageIndex", function(req, res){
 	//get all the mod actions
-	pageIndex = req.params.pageIndex;
+	if(pageIndex){
+		pageIndex = req.params.pageIndex;
 
-	var logs = [];
+		var logs = [];
 
-	modAction.find({}, async function(err, foundModActions){
-		if(err){console.log(err);}
+		modAction.find({}, async function(err, foundModActions){
+			if(err){console.log(err);}
 
-		else{
-			logsObj = [];
-			await foundModActions.forEach(function(action){
-				stringsArray = [];
-				switch(action.type){
-					case "ban":
-						stringsArray[0] = (action.modWhoBanned.username + " has banned " + action.bannedPlayer.username);
-						stringsArray[0] += " for reason: " + action.reason + ".";
-	
-						var dur = action.durationToBan;
-						
-						stringsArray.push("The ban was made on " + action.whenMade);
-						stringsArray.push("The ban will last for: " + (dur.getFullYear() - 1970) + " yrs, " + dur.getMonth() + " mths, " + dur.getDay() + " days, " + dur.getHours() + " hrs.");
-						stringsArray.push("The ban will be released on: " + action.whenRelease);
-						stringsArray.push("Moderator message: " + action.descriptionByMod);
-						break;
-					case "mute":
-						stringsArray[0] = (action.modWhoBanned.username + " has muted " + action.bannedPlayer.username);
-						stringsArray[0] += " for reason: " + action.reason + ".";
+			else{
+				logsObj = [];
+				await foundModActions.forEach(function(action){
+					stringsArray = [];
+					switch(action.type){
+						case "ban":
+							stringsArray[0] = (action.modWhoBanned.username + " has banned " + action.bannedPlayer.username);
+							stringsArray[0] += " for reason: " + action.reason + ".";
+		
+							var dur = action.durationToBan;
+							
+							stringsArray.push("The ban was made on " + action.whenMade);
+							stringsArray.push("The ban will last for: " + (dur.getFullYear() - 1970) + " yrs, " + dur.getMonth() + " mths, " + dur.getDay() + " days, " + dur.getHours() + " hrs.");
+							stringsArray.push("The ban will be released on: " + action.whenRelease);
+							stringsArray.push("Moderator message: " + action.descriptionByMod);
+							break;
+						case "mute":
+							stringsArray[0] = (action.modWhoBanned.username + " has muted " + action.bannedPlayer.username);
+							stringsArray[0] += " for reason: " + action.reason + ".";
 
-						var dur = action.durationToBan;
+							var dur = action.durationToBan;
 
-						stringsArray.push("The mute was made on " + action.whenMade);
-						// -1970 years because thats the start of computer time
-						stringsArray.push("The mute will last for: " + (dur.getFullYear() - 1970) + " yrs, " + dur.getMonth() + " mths, " + dur.getDay() + " days, " + dur.getHours() + " hrs.");
-						stringsArray.push("The mute will be released on: " + action.whenRelease);
-						stringsArray.push("Moderator message: " + action.descriptionByMod);
-						break;
-					// Forum remove
-					case "remove":
-						stringsArray[0] = action.modWhoBanned.username + " removed " + action.bannedPlayer.username + "'s " + action.elementDeleted + ".";
-						stringsArray[0] += " Reason: " + action.reason + ".";
-	
-						stringsArray[1] = "The removal occured on " + action.whenMade;
-						stringsArray[2] = "Moderator message: " + action.descriptionByMod;
-	
-						//Get the extra link bit (The # bit to select to a specific comment/reply)
-						linkStr = "";
-						if(action.elementDeleted === "forum"){
-							//Dont need the extra bit here
-						}
-						else if(action.elementDeleted == "comment"){
-							linkStr == "#" + action.idOfComment;
-						}
-						else if(action.elementDeleted == "reply"){
-							linkStr == "#" + action.idOfReply;
-						}
-	
-						stringsArray[3] = "The link to the article is: <a href='/forum/show/" + action.idOfForum + linkStr + "'>Here</a>";
-						break;
-				}
-	
-				var log = {};
-				log.stringsArray = stringsArray;
-				log.date = action.whenMade;
+							stringsArray.push("The mute was made on " + action.whenMade);
+							// -1970 years because thats the start of computer time
+							stringsArray.push("The mute will last for: " + (dur.getFullYear() - 1970) + " yrs, " + dur.getMonth() + " mths, " + dur.getDay() + " days, " + dur.getHours() + " hrs.");
+							stringsArray.push("The mute will be released on: " + action.whenRelease);
+							stringsArray.push("Moderator message: " + action.descriptionByMod);
+							break;
+						// Forum remove
+						case "remove":
+							stringsArray[0] = action.modWhoBanned.username + " removed " + action.bannedPlayer.username + "'s " + action.elementDeleted + ".";
+							stringsArray[0] += " Reason: " + action.reason + ".";
+		
+							stringsArray[1] = "The removal occured on " + action.whenMade;
+							stringsArray[2] = "Moderator message: " + action.descriptionByMod;
+		
+							//Get the extra link bit (The # bit to select to a specific comment/reply)
+							linkStr = "";
+							if(action.elementDeleted === "forum"){
+								//Dont need the extra bit here
+							}
+							else if(action.elementDeleted == "comment"){
+								linkStr == "#" + action.idOfComment;
+							}
+							else if(action.elementDeleted == "reply"){
+								linkStr == "#" + action.idOfReply;
+							}
+		
+							stringsArray[3] = "The link to the article is: <a href='/forum/show/" + action.idOfForum + linkStr + "'>Here</a>";
+							break;
+					}
+		
+					var log = {};
+					log.stringsArray = stringsArray;
+					log.date = action.whenMade;
 
-				logsObj.push(log);
-			});
-
-
-			// console.log("A");
+					logsObj.push(log);
+				});
 
 
-
-			var obj = {};
-			obj.logs = logsObj;
-
-			//sort in newest to oldest
-			obj.logs.sort(compareLogObjs);
-
-			obj.logs = obj.logs.slice(parseInt(pageIndex)*10, parseInt(pageIndex+1)*10);
-	
-			res.status(200).send(obj);
-			// console.log("B");
+				// console.log("A");
 
 
-		}
-	})
+
+				var obj = {};
+				obj.logs = logsObj;
+
+				//sort in newest to oldest
+				obj.logs.sort(compareLogObjs);
+
+				obj.logs = obj.logs.slice(parseInt(pageIndex)*10, parseInt(pageIndex+1)*10);
+		
+				res.status(200).send(obj);
+				// console.log("B");
+
+
+			}
+		});
+
+	}
 });
 
 function compareLogObjs(a,b) {
