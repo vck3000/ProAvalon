@@ -393,7 +393,7 @@ router.get("/mod/ajax/data/:pageIndex", function(req, res){
 				//sort in newest to oldest
 				obj.logs.sort(compareLogObjs);
 
-				obj.logs = obj.logs.slice(parseInt(pageIndex)*10, parseInt(pageIndex+1)*10);
+				obj.logs = obj.logs.slice(parseInt(pageIndex)*10, (parseInt(pageIndex)+1)*10);
 		
 				res.status(200).send(obj);
 				// console.log("B");
