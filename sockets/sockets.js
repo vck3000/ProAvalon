@@ -1797,9 +1797,9 @@ module.exports = function (io) {
 		// 	}
 		// });
 
-		socket.on("claim", function(data){
+		socket.on("setClaim", function(data){
 			if (rooms[socket.request.user.inRoomId]) {
-				rooms[socket.request.user.inRoomId].claim(socket);
+				rooms[socket.request.user.inRoomId].setClaim(socket, data);
 			}
 		});
 
