@@ -315,7 +315,7 @@ router.get("/statistics", function(req, res){
 
 router.get("/mod/ajax/data/:pageIndex", function(req, res){
 	//get all the mod actions
-	if(pageIndex){
+	if(req.params.pageIndex){
 		pageIndex = req.params.pageIndex;
 
 		var logs = [];
