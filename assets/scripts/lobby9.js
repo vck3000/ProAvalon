@@ -88,6 +88,9 @@ function draw() {
 
         drawGuns();
 
+        //default greyed out rn
+        enableDisableButtons();
+
         // console.log(highlightedAvatars);
         restoreHighlightedAvatars(highlightedAvatars);
 
@@ -95,9 +98,6 @@ function draw() {
         if (gameStarted === true) {
 
             drawExitedPlayers(gameData.gamePlayersInRoom);
-
-            //default greyed out rn
-            enableDisableButtons();
 
             $("#missionsBox").removeClass("invisible");
 
@@ -864,10 +864,14 @@ function drawClaimingPlayers(claimingPlayers){
   }
   
 function enableDisableButtonsLeader(numPlayersOnMission) {
+    enableDisableButtons();
     //if they've selected the right number of players, then allow them to send
     if (countHighlightedAvatars() == numPlayersOnMission || (countHighlightedAvatars() + "*") == numPlayersOnMission) {
         btnRemoveHidden("green");
         btnRemoveDisabled("green");
+    }
+    else{
+        btnRemoveHidden("green");
     }
 }
 function enableDisableButtons() {
