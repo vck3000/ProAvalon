@@ -1643,14 +1643,17 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 		return this.gameStarted;
 	}
 
-	this.claim = function(socket){
-		//if the person is already claiming
-		if(socket.request.user.username in this.claimingPlayers){
-			delete this.claimingPlayers[socket.request.user.username];
-		}
-		else{
+	this.setClaim = function(socket, data){
+		//if the player is claiming and is not in claimingPlayers{}
+		if (data === true && Object.keys(this.claimingPlayers).includes(socket.request.user.username) === false){
 			this.claimingPlayers[socket.request.user.username] = true;
-		}
+		  //if the player is unclaiming and is in claimingPlayers{}
+		} else if (data === false && Object.keys(this.claimingPlayers).includes(socket.request.user.username) === true) {
+			delete this.claimingPlayers[socket.request.user.username];
+		} 
+		//if the player is claiming and is in claimingPlayers{}, then do nothing
+		//if the player is unclaiming and is not in claimingPlayers{}, then do nothing
+
 		this.distributeGameData();		
 	}
 	
