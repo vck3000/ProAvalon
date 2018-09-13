@@ -195,7 +195,7 @@ socket.on("update-current-players-list", function (currentPlayers) {
             $("#current-players-table tbody").append(str);
         }
     });
-    $("#player-count").text(currentPlayers.length);
+    $(".player-count").text(currentPlayers.length);
 });
   
 socket.on("update-current-games-list", function (currentGames) {
