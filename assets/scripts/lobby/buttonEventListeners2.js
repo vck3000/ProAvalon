@@ -11,7 +11,7 @@ function redButtonFunction() {
                 socket.emit("standUpFromGame");
                 //remove claim status when a player sits down
                 //then stands up
-                socket.emit("claim", "");
+                socket.emit("setClaim", false);
                 
                 enableDisableButtons();
             }
@@ -184,7 +184,12 @@ document.querySelector("#claimButton").addEventListener("click", function () {
     // disallow innertext change to "unclaim" when spectators
     // click a disabled claim button
     if (isSpectator === false) {
-        socket.emit("claim", "");
+        var btnText = $("#claimButton").text();
+        if (btnText === "Claim"){
+            socket.emit("setClaim", true);
+        } else {
+            socket.emit("setClaim", false);
+        }
     }
 });
 

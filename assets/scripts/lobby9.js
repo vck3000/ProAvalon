@@ -88,6 +88,9 @@ function draw() {
 
         drawGuns();
 
+        //default greyed out rn
+        enableDisableButtons();
+
         // console.log(highlightedAvatars);
         restoreHighlightedAvatars(highlightedAvatars);
 
@@ -95,9 +98,6 @@ function draw() {
         if (gameStarted === true) {
 
             drawExitedPlayers(gameData.gamePlayersInRoom);
-
-            //default greyed out rn
-            enableDisableButtons();
 
             $("#missionsBox").removeClass("invisible");
 
@@ -276,7 +276,7 @@ function draw() {
         enableDisableButtons();
         //do this
         //if we are the team leader---------------------------------------------
-        if (gameData && gameData.teamLeader && getIndexFromUsername(ownUsername) === gameData.teamLeader && gameData.phase === "picking") {
+        if (gameData && getIndexFromUsername(ownUsername) === gameData.teamLeader && gameData.phase === "picking") {
             enableDisableButtonsLeader(gameData.numPlayersOnMission[gameData.missionNum - 1]);  
         }
     }     
@@ -864,10 +864,15 @@ function drawClaimingPlayers(claimingPlayers){
   }
   
 function enableDisableButtonsLeader(numPlayersOnMission) {
+    enableDisableButtons();
     //if they've selected the right number of players, then allow them to send
     if (countHighlightedAvatars() == numPlayersOnMission || (countHighlightedAvatars() + "*") == numPlayersOnMission) {
+        console.log("RUN THIS");
         btnRemoveHidden("green");
         btnRemoveDisabled("green");
+    }
+    else{
+        btnRemoveHidden("green");
     }
 }
 function enableDisableButtons() {
