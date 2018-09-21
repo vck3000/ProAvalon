@@ -1545,9 +1545,10 @@ module.exports = function (io) {
 					nextRoomId++;
 				}
 				rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword);
-				//broadcast to all chat
+                var privateStr = ("" === dataObj.newRoomPassword) ? "" : "private ";
+                //broadcast to all chat
 				var data = {
-					message: socket.request.user.username + " has created room " + nextRoomId + ".",
+					message: socket.request.user.username + " has created " + privateStr + "room " + nextRoomId + ".",
 					classStr: "server-text"
 				}			
 				sendToAllChat(io, data);
