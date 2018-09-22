@@ -186,6 +186,8 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 		this.finished = true;
 		this.phase = "finished";
 
+        //TODO: Trigger updateCurrentPlayersList() and updateCurrentGamesList();
+
 		if (this.winner === "spies") {
 			// this.gameplayMessage = "The spies have won the game.";
 			this.sendText(this.allSockets, "The spies have won the game.", "gameplay-text");

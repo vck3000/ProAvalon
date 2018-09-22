@@ -176,7 +176,7 @@ socket.on("openModModal", function (data) {
 });
 
 var currentOnlinePlayers;
-socket.on("update-current-players-list", function (currentPlayers) {
+socket.on("update-current-players-list", function (currentPlayersAndStatuses) {
     // console.log("update the current player list request received");
     // console.log(currentPlayers);
     //remove all the li's inside the table
@@ -184,18 +184,20 @@ socket.on("update-current-players-list", function (currentPlayers) {
     $("#current-players-table tbody tr").remove();
 
     // currentOnlinePlayers = currentPlayers;
-    autoCompleteStrs = currentPlayers;
+    autoCompleteStrs = currentPlayersAndStatuses.map(cp => cp[0]);
 
     //append each player into the list
-    currentPlayers.forEach(function (currentPlayer) {
-
+    currentPlayersAndStatuses.forEach(function (currentPlayerAndStatus) {
+        [currentPlayer, playerStatus] = currentPlayerAndStatus;
+        console.log("playerStatus = " + playerStatus);
         //if the current game exists, add it
         if (currentPlayer) {
-            var str = "<tr> <td> " + currentPlayer + "</td> </tr>";
+            var playerStatusStr = (playerStatus) ? " <i>(" + playerStatus + ")</i>" : "";
+            var str = "<tr> <td> " + currentPlayer + playerStatusStr + "</td> </tr>";
             $("#current-players-table tbody").append(str);
         }
     });
-    $(".player-count").text(currentPlayers.length);
+    $(".player-count").text(currentPlayersAndStatuses.length);
 });
   
 socket.on("update-current-games-list", function (currentGames) {

@@ -1260,9 +1260,11 @@ module.exports = function (io) {
 			}
 			sendToAllChat(io, data);
 
-			io.in("allChat").emit("update-current-players-list", getPlayerUsernamesFromAllSockets());
+			//io.in("allChat").emit("update-current-players-list", getPlayerUsernamesAndStatusesFromAllSockets());
 			// console.log("update current players list");
 			// console.log(getPlayerUsernamesFromAllSockets());
+
+			updateCurrentPlayersList();
 			updateCurrentGamesList(io);
 		},500);
 
@@ -1282,7 +1284,9 @@ module.exports = function (io) {
 
 
 			//send out the new updated current player list
-			socket.in("allChat").emit("update-current-players-list", getPlayerUsernamesFromAllSockets());
+			//socket.in("allChat").emit("update-current-players-list", getPlayerUsernamesAndStatusesFromAllSockets());
+			updateCurrentPlayersList();
+			
 			//tell all clients that the user has left
 			var data = {
 				message: socket.request.user.username + " has left the lobby.",
@@ -1562,6 +1566,7 @@ module.exports = function (io) {
 				//increment index for next game
 				nextRoomId++;
 
+                updateCurrentPlayersList();
 				updateCurrentGamesList();
 			}
 		});
@@ -1594,6 +1599,7 @@ module.exports = function (io) {
 					}			
 					sendToRoomChat(io, roomId, data);
 
+					updateCurrentPlayersList();
 					updateCurrentGamesList();
 				}
 				
@@ -1619,6 +1625,7 @@ module.exports = function (io) {
 					else {
 						// console.log("Game has started, player " + socket.request.user.username + " is not allowed to join.");
 					}
+					updateCurrentPlayersList();
 					updateCurrentGamesList();
 				}
 			}
@@ -1642,6 +1649,7 @@ module.exports = function (io) {
 					else {
 						// console.log("Game has started, player " + socket.request.user.username + " is not allowed to stand up.");
 					}
+					updateCurrentPlayersList();
 					updateCurrentGamesList();
 				}
 			}
@@ -1670,7 +1678,7 @@ module.exports = function (io) {
 				playerLeaveRoomCheckDestroy(socket);
 				
 				
-				
+				updateCurrentPlayersList();
 				updateCurrentGamesList();
 			}
 		});
@@ -1688,6 +1696,8 @@ module.exports = function (io) {
 
 				if (rooms[socket.request.user.inRoomId].playerReady(username) === true) {
 					//game will auto start if the above returned true
+					updateCurrentPlayersList();
+					updateCurrentGamesList();
 				}
 			}
 		});
@@ -1720,6 +1730,7 @@ module.exports = function (io) {
 					return;
 				}
 			}
+			updateCurrentPlayersList();
 			updateCurrentGamesList(io);
 		});
 
@@ -1810,7 +1821,11 @@ module.exports = function (io) {
 
 
 
-
+var updateCurrentPlayersList = function () {
+	allSockets.forEach(function (sock) {
+		sock.emit("update-current-players-list", getPlayerUsernamesAndStatusesFromAllSockets());
+	});
+}
 
 var updateCurrentGamesList = function () {
 	//prepare room data to send to players. 
@@ -1957,7 +1972,7 @@ function playerLeaveRoomCheckDestroy(socket){
 		}
 
 		socket.request.user.inRoomId = undefined;
-
+		updateCurrentPlayersList();
 		updateCurrentGamesList();
 	}
 
@@ -1980,7 +1995,38 @@ function getPlayerUsernamesFromAllSockets(){
 
 	return array;
 }
-function getPlayerIdsFromAllSockets(){
+
+
+function getPlayerUsernamesAndStatusesFromAllSockets() {
+    var array = [];
+    for (var i = 0; i < allSockets.length; i++) {
+        // check in lobby vs room
+        if (allSockets[i].request.user.inRoomId) {
+            var usernamesOfPlayers = rooms[allSockets[i].request.user.inRoomId].socketsOfPlayers.map(x => x.request.user.username);
+            // check sitting vs spectating
+            if (usernamesOfPlayers.includes(allSockets[i].request.user.username) && !rooms[allSockets[i].request.user.inRoomId].finished)
+                // check game started vs waiting
+                if (rooms[allSockets[i].request.user.inRoomId].gameStarted)
+                    playerStatus = "Playing in #" + allSockets[i].request.user.inRoomId;
+                else
+                    playerStatus = "Waiting in #" + allSockets[i].request.user.inRoomId;
+            else
+                playerStatus = "Spectating in #" + allSockets[i].request.user.inRoomId;
+        }
+        else
+            playerStatus = null;
+        array[i] = [allSockets[i].request.user.username, playerStatus];
+    }
+    array.sort(function (a, b) {
+        var textA = a[0].toUpperCase();
+        var textB = b[0].toUpperCase();
+        return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+    });
+    return array;
+}
+
+
+function getPlayerIdsFromAllSockets() {
 	var array = [];
 	for(var i = 0; i < allSockets.length; i++){
 		array[i] = allSockets[i].request.user.id;
