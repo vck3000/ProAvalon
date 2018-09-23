@@ -568,7 +568,7 @@ var actionsObj = {
             run: function (data, senderSocket) {
 				
 				var args = data.args;
-                var str = senderSocket.request.user.username + "->" + lastWhisperObj[senderSocket.request.user.username] + " (whisper): ";
+				var str = senderSocket.request.user.username + " (whisper): ";
 				for(var i = 1; i < args.length; i++){
 					str += args[i];
 					str += " ";
@@ -914,8 +914,8 @@ var actionsObj = {
             command: "mwhisper",
             help: "/mwhisper <player name> <text to send>: Sends a whisper to a player.",
             run: async function (data, senderSocket) {
-                var args = data.args;
-                var str = senderSocket.request.user.username + "->" + args[1] + " (whisper): ";
+				var args = data.args;
+				var str = senderSocket.request.user.username + " (whisper): ";
 				for(var i = 2; i < args.length; i++){ 
 					str += args[i];
 					str += " ";
