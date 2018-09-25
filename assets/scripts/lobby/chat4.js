@@ -197,6 +197,7 @@ function unhighlightAllChat(){
     });
 }
 
+var roomChatHistory = [];
 
 function addToRoomChat(data) {
     //if it is not an array, force it into a array
@@ -239,6 +240,7 @@ function addToRoomChat(data) {
                 if (hour < 10) { hour = "0" + hour; }
                 if (min < 10) { min = "0" + min; }
                 date = "[" + hour + ":" + min + "]"; 
+                data[i].dateStr = date;
 
                 // if(!data[i].dateCreated){
                 //     date = "[" + "]";                 
@@ -286,67 +288,115 @@ function addToRoomChat(data) {
                 // console.log("Filtered message: " + filteredMessage);
                 var str = "";
 
-                // if there is no '[', then the chat incoming is not a quote.
-                if(filteredMessage.indexOf("[") === -1){
-                    //set the highlight chat if the user has been selected already
-                    var highlightChatColour = "";
-                    var setHighlightColorToYellow = $(".setHighlightColorsToYellow")[0].checked;
+
+                // any part of the chat before any quoted parts
+                var unquotedMessage = filteredMessage.split("[")[0];
+
+                var rawQuotedString = filteredMessage.slice(unquotedMessage.length);
+                //unquotedMessage = unquotedMessage.trim();
+
+                var quotedStrings = [];
+                var quotesList = rawQuotedString.split("[").slice(1);
+
+                var s = "";
+                while (quotesList.length > 0)
+                {
+                    var lastQuote = "[" + quotesList.pop();
+                    s = lastQuote + s;
+                    //console.log('s = ' + s);
+
+                    // parse "[hh:mm]", "username" and everything after the ": "
+                    var dateStr = s.slice(0,7);
+                    var username = s.slice(8, s.indexOf(': '));
+                    var text = s.slice(s.indexOf(': ') + 2);
+                    //console.log('dateStr = ' + dateStr);
+                    //console.log('username = ' + username);
+                    //console.log('text = ' + text.trim());
+
+                    // verify all quotes are either a server message or have actually been said
+                    if (roomChatHistory.filter(d => (['server-text-teal', 'server-text'].includes(d.classStr) && // either msg from server
+                                                     username === d.message) ||
+                                                    (d.username === username &&     // or was said by that user
+                                                     d.dateStr === dateStr &&
+                                                     d.message.startsWith(text.trim()))
+                                              ).length > 0)
+                    {
+                        quotedStrings.push(s);
+                        console.log('pushed ' + s);
+                        s = "";
+                    }
+                }
+
+                // if 's' is still not a verified quote, add it as normal text
+                unquotedMessage += s;
+                quotedStrings.reverse();    // was built backwards
+                //console.log("quoted stuff: " + quotedStrings.join(','));
+                data[i].message = unquotedMessage.trim();
+
+
+                // Handle the non-quoted parts                
+                //set the highlight chat if the user has been selected already
+                var highlightChatColour = "";
+                var setHighlightColorToYellow = $(".setHighlightColorsToYellow")[0].checked;
 
                 // console.log("true?"  + selectedChat[data[i].username]);
 
-                    if(selectedChat[data[i].username] === true){
-                        if(setHighlightColorToYellow === true){
-                            highlightChatColour = "#ffff9e";
-                        }
-                        else {
-                            highlightChatColour = docCookies.getItem("player" + getIndexFromUsername(data[i].username) + 'HighlightColour');
-                        }
+                if (selectedChat[data[i].username] === true) {
+                    if (setHighlightColorToYellow === true) {
+                        highlightChatColour = "#ffff9e";
                     }
-
-                    //if its a server text or special text
-                    if (data[i].classStr && data[i].classStr !== "") {
-                        str = "<li class='" + data[i].classStr + " " + addClass + "'><span class='date-text'>" + date + "</span> " + filteredMessage;
-                    }
-                    //its a user's chat so put some other stuff on it
                     else {
-                        str = "<li class='" + addClass + "'><span style='background-color: " + highlightChatColour + "' username='" + data[i].username + "'><span class='date-text'> " + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + filteredMessage + "</span></li>";
+                        highlightChatColour = docCookies.getItem("player" + getIndexFromUsername(data[i].username) + 'HighlightColour');
                     }
-
-                    //if they've muted this player, then just dont show anything. reset str to nothing.
-                    if(isPlayerMuted(data[i].username) === true){
-                        str = "";
-                    }
-
-                    $(".room-chat-list").append(str);
-                    scrollDown("room-chat-room");
-                    scrollDown("room-chat-room2");
                 }
 
-                //else if there is a '[' character, then assume the user is quoting a chunk of text
-                else{
-                    var strings = filteredMessage.split("[");
+                //if its a server text or special text
+                if (data[i].classStr && data[i].classStr !== "") {
+                    str = "<li class='" + data[i].classStr + " " + addClass + "'><span class='date-text'>" + date + "</span> " + unquotedMessage;
+                }
+                //its a user's chat so put some other stuff on it
+                else {
+                    str = "<li class='" + addClass + "'><span style='background-color: " + highlightChatColour + "' username='" + data[i].username + "'><span class='date-text'> " + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + (unquotedMessage || "<i>Quoting:</i>") + "</span></li>";
+                }
 
-                    str = "<li class='" + addClass + "'><span username='" + data[i].username + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + "Quoting:" + "</span></li>";
+                //if they've muted this player, then just dont show anything. reset str to nothing.
+                if (isPlayerMuted(data[i].username) === true) {
+                    str = "";
+                }
 
-                // console.log("Strings: ");
+                $(".room-chat-list").append(str);
+                scrollDown("room-chat-room");
+                scrollDown("room-chat-room2");
 
-                    var goFor = strings.length;
+
+
+                // Handle the quoted parts
+                if (quotedStrings.length > 0) {
+                    var strQuotes = "";
+                    // DEPRECATED: No longer need this, since it's being done above in the unquoted part
+                    //if (unquotedMessage.length === 0)
+                    //    strQuotes = "<li class='" + addClass + "'><span username='" + data[i].username + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> Quoting:</span></li>";
+                    //else
+                    //    "<li class='" + addClass + "'>Quoting:</li>";
+                    // console.log("Strings: ");
+
+                    var goFor = quotedStrings.length;
                     //only 5 lines of quote at a time max.
-                    if(goFor > 6){
+                    if (goFor > 6) {
                         goFor = 6;
                     }
 
-                    for(var j = 1; j < goFor; j++){
-                        str += "<li class='myQuote " + addClass + "'>" + "[" + strings[j] + "</li>";
-                    // console.log(strings[j]);
+                    for (var j = 0; j < goFor; j++) {
+                        strQuotes += "<li class='myQuote " + addClass + "'>" + quotedStrings[j] + "</li>";
+                        // console.log(strings[j]);
                     }
 
                     //if they've muted this player, then just dont show anything. reset str to nothing.
-                    if(isPlayerMuted(data[i].username) === true){
-                        str = "";
+                    if (isPlayerMuted(data[i].username) === true) {
+                        strQuotes = "";
                     }
 
-                    $(".room-chat-list").append(str);
+                    $(".room-chat-list").append(strQuotes);
                     scrollDown("room-chat-room");
                     scrollDown("room-chat-room2");
                 }
@@ -364,7 +414,7 @@ function addToRoomChat(data) {
                         $(".nav-tabs #room-chat-in-game-tab")[0].classList.add("newMessage");
                     }
                 }
-                
+                roomChatHistory.push(data[i]);
             }
         }
     }
