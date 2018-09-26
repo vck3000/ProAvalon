@@ -182,25 +182,38 @@
                 </tbody>
             </table>
 
-            <h3>Most games played</h3>
+            <h3>Game duration by size breakdown:</h3>
             <table class="table myTable table-nonfluid">
                 <tbody>
                     <thead>
                         <tr>
-                            <td></td>
-                            <td>Resistance wins</td>
-                            <td>Spy wins</td>
+                            <td>Game size</td>
+                            <td>Average game duration</td>
                         </tr>
                     </thead>
                     <tr>
-                        <td class="statsCol1">Lady started with Resistance</td>
-                        <td class="statsCol2" id="resStartResWin"></td>
-                        <td class="statsCol2" id="resStartSpyWin"></td>
+                        <td class="statsCol1">5P</td>
+                        <td class="statsCol2" id="5paveragegameduration"></td>
                     </tr>
                     <tr>
-                        <td class="statsCol1">Lady started with Spy</td>
-                        <td class="statsCol2" id="spyStartResWin"></td>
-                        <td class="statsCol2" id="spyStartSpyWin"></td>
+                        <td class="statsCol1">6P</td>
+                        <td class="statsCol2" id="6paveragegameduration"></td>
+                    </tr>
+                    <tr>
+                        <td class="statsCol1">7P</td>
+                        <td class="statsCol2" id="7paveragegameduration"></td>
+                    </tr>
+                    <tr>
+                        <td class="statsCol1">8P</td>
+                        <td class="statsCol2" id="8paveragegameduration"></td>
+                    </tr>
+                    <tr>
+                        <td class="statsCol1">9P</td>
+                        <td class="statsCol2" id="9paveragegameduration"></td>
+                    </tr>
+                    <tr>
+                        <td class="statsCol1">10P</td>
+                        <td class="statsCol2" id="10paveragegameduration"></td>
                     </tr>
 
                 </tbody>
@@ -331,6 +344,20 @@
         $("#spyStartResWin")[0].innerText = grd.ladyBreakdown["spyStart"]["resWin"] + " times, " + Math.round(grd.ladyBreakdown["spyStart"]["resWin"] / (grd.ladyBreakdown["spyStart"]["resWin"] + grd.ladyBreakdown["spyStart"]["spyWin"]) * 100) + "%";
         $("#spyStartSpyWin")[0].innerText = grd.ladyBreakdown["spyStart"]["spyWin"] + " times, " + Math.round(grd.ladyBreakdown["spyStart"]["spyWin"] / (grd.ladyBreakdown["spyStart"]["resWin"] + grd.ladyBreakdown["spyStart"]["spyWin"]) * 100) + "%";
 
+
+        //***********************************
+        //Game duration by size breakdown
+        //***********************************
+
+        $("#averagegameduration")[0].innerText = new Date(grd['5paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['5paverageGameDuration']).getUTCSeconds() + " seconds";
+
+
+        $("#5paveragegameduration")[0].innerText = new Date(grd['5paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['5paverageGameDuration']).getUTCSeconds() + " seconds";
+        $("#6paveragegameduration")[0].innerText = new Date(grd['6paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['6paverageGameDuration']).getUTCSeconds() + " seconds";
+        $("#7paveragegameduration")[0].innerText = new Date(grd['7paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['7paverageGameDuration']).getUTCSeconds() + " seconds";
+        $("#8paveragegameduration")[0].innerText = new Date(grd['8paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['8paverageGameDuration']).getUTCSeconds() + " seconds";
+        $("#9paveragegameduration")[0].innerText = new Date(grd['9paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['9paverageGameDuration']).getUTCSeconds() + " seconds";
+        $("#10paveragegameduration")[0].innerText = new Date(grd['10paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['10paverageGameDuration']).getUTCSeconds() + " seconds";
 
 
         // $("#testDiv")[0].innerText = JSON.stringify(grd);

@@ -307,6 +307,8 @@ router.get("/statistics", function(req, res){
 
 
 
+//Get the moderation logs to show
+
 // 1) Bans
 // 2) Mutes
 // 3) Forum removes
@@ -419,6 +421,8 @@ router.get("/mod", middleware.isMod, function(req, res){
 });
 
 
+
+//Get public statistics
 router.get("/ajax/getStatistics", function(req, res){
 	gameRecord.find({}).exec(function(err, records){
 		if(err){
@@ -598,28 +602,69 @@ router.get("/ajax/getStatistics", function(req, res){
 			obj.ladyBreakdown = ladyBreakdown;
 
 
+
+			//**********************************************
+			//Getting the average duration of each game
+			//**********************************************
+			var averageGameDurations = [];
+			var countForGameSize = [];
+			for(var i = 5; i < 11; i++){
+				averageGameDurations[i] = new Date(0);
+				countForGameSize[i] = 0;
+			}
+
+			// console.log(averageGameDurations);
+
+			for(var i = 0; i < records.length; i++){
+				var duration = new Date(records[i].timeGameFinished.getTime() - records[i].timeGameStarted.getTime());
+
+				// console.log(records[i].numberOfPlayers);
+
+				averageGameDurations[records[i].numberOfPlayers] = new Date(averageGameDurations[records[i].numberOfPlayers].getTime() + duration.getTime());
+				countForGameSize[records[i].numberOfPlayers] ++;
+			}
+			obj['5paverageGameDuration'] = new Date(averageGameDurations[5].getTime() / countForGameSize['5']);
+			obj['6paverageGameDuration'] = new Date(averageGameDurations[6].getTime() / countForGameSize['6']);
+			obj['7paverageGameDuration'] = new Date(averageGameDurations[7].getTime() / countForGameSize['7']);
+			obj['8paverageGameDuration'] = new Date(averageGameDurations[8].getTime() / countForGameSize['8']);
+			obj['9paverageGameDuration'] = new Date(averageGameDurations[9].getTime() / countForGameSize['9']);
+			obj['10paverageGameDuration'] = new Date(averageGameDurations[10].getTime() / countForGameSize['10']);
 			
-			User.find({}).populate("notifications").exec(function(err, users){
+			
+			// for(var i = 5; i < 11; i++){
+			// 	console.log(countForGameSize[i]);
+			// }
 
-				users.sort(function(a, b){
-					return b.totalGamesPlayed - a.totalGamesPlayed;
-				});
 
-				var usernamesTopGamesPlayed = users.slice(0, 20);
 
-				var usernamesTopGamesPlayedReduced = [];
-				for(var i = 0; i < usernamesTopGamesPlayed.length; i++){
-					usernamesTopGamesPlayedReduced[i] = {};
+
+
+			res.status(200).send(obj);
+			
+
+			// One person had issues with publically showing their number of games played...?
+
+			// User.find({}).populate("notifications").exec(function(err, users){
+
+			// 	users.sort(function(a, b){
+			// 		return b.totalGamesPlayed - a.totalGamesPlayed;
+			// 	});
+
+			// 	var usernamesTopGamesPlayed = users.slice(0, 20);
+
+			// 	var usernamesTopGamesPlayedReduced = [];
+			// 	for(var i = 0; i < usernamesTopGamesPlayed.length; i++){
+			// 		usernamesTopGamesPlayedReduced[i] = {};
 					
-					usernamesTopGamesPlayedReduced[i].username = usernamesTopGamesPlayed[i].username;
-					usernamesTopGamesPlayedReduced[i].totalGamesPlayed = usernamesTopGamesPlayed[i].totalGamesPlayed;
+			// 		usernamesTopGamesPlayedReduced[i].username = usernamesTopGamesPlayed[i].username;
+			// 		usernamesTopGamesPlayedReduced[i].totalGamesPlayed = usernamesTopGamesPlayed[i].totalGamesPlayed;
 					
-				}
+			// 	}
 
-				obj.usernamesTopGamesPlayed = usernamesTopGamesPlayedReduced;
+			// 	obj.usernamesTopGamesPlayed = usernamesTopGamesPlayedReduced;
 
-				res.status(200).send(obj);
-			});
+				
+			// });
 
 		}
 	});
