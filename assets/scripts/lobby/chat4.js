@@ -309,9 +309,9 @@ function addToRoomChat(data) {
                     var dateStr = s.slice(0,7);
                     var username = s.slice(8, s.indexOf(': '));
                     var text = s.slice(s.indexOf(': ') + 2);
-                    console.log('dateStr = ' + dateStr);
-                    console.log('username = ' + username);
-                    console.log('text = ' + text);
+                    //console.log('dateStr = ' + dateStr);
+                    //console.log('username = ' + username);
+                    //console.log('text = ' + text);
 
                     // verify all quotes are either a server message or have actually been said
                     if (roomChatHistory.filter(d => (['server-text-teal', 'server-text'].includes(d.classStr) && // either msg from server
