@@ -309,13 +309,13 @@ function addToRoomChat(data) {
                     var dateStr = s.slice(0,7);
                     var username = s.slice(8, s.indexOf(': '));
                     var text = s.slice(s.indexOf(': ') + 2);
-                    //console.log('dateStr = ' + dateStr);
-                    //console.log('username = ' + username);
-                    //console.log('text = ' + text.trim());
+                    console.log('dateStr = ' + dateStr);
+                    console.log('username = ' + username);
+                    console.log('text = ' + text);
 
                     // verify all quotes are either a server message or have actually been said
                     if (roomChatHistory.filter(d => (['server-text-teal', 'server-text'].includes(d.classStr) && // either msg from server
-                                                     username === d.message) ||
+                                                     s.slice(8).trim() === d.message.trim()) ||
                                                     (d.username === username &&     // or was said by that user
                                                      d.dateStr === dateStr &&
                                                      d.message.startsWith(text.trim()))
