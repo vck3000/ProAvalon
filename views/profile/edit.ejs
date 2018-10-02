@@ -301,6 +301,8 @@
     <br>
     <br>
 
+    Hide stats: <input type="checkbox" name="hideStats" id="hideStats" value="true">
+
     <h3>
         Biography
     </h3>
@@ -326,6 +328,8 @@
         $('#biography').summernote();
         // $('.commentReply').summernote();
 
+
+        $('#hideStats').prop('checked', '<%=userData.hideStats%>');
 
         
         var nationCode = '<%=userData.nationCode%>.toUpperCase()';

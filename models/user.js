@@ -10,6 +10,9 @@ var UserSchema = new mongoose.Schema({
 
 	avatarHide: Boolean,
 
+	hideStats: Boolean,
+
+
 	dateJoined: Date,
 	totalTimePlayed: Date,
 

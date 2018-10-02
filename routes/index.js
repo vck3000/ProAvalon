@@ -689,13 +689,17 @@ router.get("/ajax/profile/getProfileData/:profileUsername", function(req, res){
 				sendUserData.nationCode = foundUser.nationCode;
 				sendUserData.dateJoined = foundUser.dateJoined;
 				sendUserData.biography = foundUser.biography;
-				sendUserData.totalGamesPlayed = foundUser.totalGamesPlayed;
-				sendUserData.totalWins = foundUser.totalWins;
-				sendUserData.totalLosses = foundUser.totalLosses;
-				sendUserData.totalTimePlayed = foundUser.totalTimePlayed;
-				sendUserData.roleStats = foundUser.roleStats;
-				sendUserData.totalResWins = foundUser.totalResWins;
-				sendUserData.totalResLosses = foundUser.totalResLosses;
+				sendUserData.hideStats = foundUser.hideStats;
+
+				if(!foundUser.hideStats){
+					sendUserData.totalGamesPlayed = foundUser.totalGamesPlayed;
+					sendUserData.totalWins = foundUser.totalWins;
+					sendUserData.totalLosses = foundUser.totalLosses;
+					sendUserData.totalTimePlayed = foundUser.totalTimePlayed;
+					sendUserData.roleStats = foundUser.roleStats;
+					sendUserData.totalResWins = foundUser.totalResWins;
+					sendUserData.totalResLosses = foundUser.totalResLosses;
+				}
 	
 	
 				res.status(200).send(sendUserData);
