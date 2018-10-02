@@ -317,7 +317,7 @@ function addToRoomChat(data) {
                     if (roomChatHistory.filter(d => (['server-text-teal', 'server-text'].includes(d.classStr) && // either msg from server
                                                      s.slice(8).trim() === d.message.trim()) ||
                                                     (d.username === username &&     // or was said by that user
-                                                     d.dateStr === dateStr &&
+                                                     d.dateStr.slice(4,6) === dateStr.slice(4,6) &&    // only check that the minutes are correct (to ignore timezone)
                                                      d.message.startsWith(text.trim()))
                                               ).length > 0)
                     {
