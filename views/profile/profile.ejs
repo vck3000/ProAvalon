@@ -126,44 +126,51 @@
         </div>
         
 
-        <div class="row">
-            <div class="col-xs-12 col-md-4">
-                <h2><u>Stats:</u></h2>  
-
-                <table class="table myTable">
-                    <tbody>
-                        <tr>
-                            <td class="statsCol1">Total games played: </td>
-                            <td class="statsCol2"> <%= userData.totalGamesPlayed %> </td>
-                        </tr>
-                        <tr>
-                            <td class="statsCol1">Total games won: </td>
-                            <td class="statsCol2"> <%= userData.totalWins %> </td>
-                        </tr>
-                        <tr>
-                            <td class="statsCol1">Total games lost: </td>
-                            <td class="statsCol2"> <%= userData.totalLosses %> </td>
-                        </tr>
-                        <tr>
-                            <td class="statsCol1">Total win rate: </td>
-                            <td class="statsCol2"> <%= Math.floor((userData.totalWins / (userData.totalWins + userData.totalLosses))*100) %>% </td>
-                        </tr>
-                        <tr>
-                            <td class="statsCol1">Total time played: </td>
-                            <!--<td class="statsCol2"> <%=getDatesString(userData.totalTimePlayed)%> </td>-->
-                            <td class="statsCol2"> <%=Math.floor(userData.totalTimePlayed.getTime()/(1000*60*60))%> hrs</td>
-                        </tr>
-                    </tbody>
-                </table>
+        <% if(userData.hideStats){ %>
+            <div class="row">
+                <div class="col-sm-12">
+                        <h3 class="text-danger">User has decided to hide his stats.</h3>
+                </div>
             </div>
-
-            <div class="col-xs-12 col-md-8">
-                <canvas id="statsChart">
-                </canvas>
-            </div>
+            <% } else { %>
+                <div class="row" >
+                        <div class="col-xs-12 col-md-4">
+                            <h2><u>Stats:</u></h2>  
             
-        </div>
-
+                            <table class="table myTable">
+                                <tbody>
+                                    <tr>
+                                        <td class="statsCol1">Total games played: </td>
+                                        <td class="statsCol2"> <%= userData.totalGamesPlayed %> </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="statsCol1">Total games won: </td>
+                                        <td class="statsCol2"> <%= userData.totalWins %> </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="statsCol1">Total games lost: </td>
+                                        <td class="statsCol2"> <%= userData.totalLosses %> </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="statsCol1">Total win rate: </td>
+                                        <td class="statsCol2"> <%= Math.floor((userData.totalWins / (userData.totalWins + userData.totalLosses))*100) %>% </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="statsCol1">Total time played: </td>
+                                        <!--<td class="statsCol2"> <%=getDatesString(userData.totalTimePlayed)%> </td>-->
+                                        <td class="statsCol2"> <%=Math.floor(userData.totalTimePlayed.getTime()/(1000*60*60))%> hrs</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+            
+                        <div class="col-xs-12 col-md-8">
+                            <canvas id="statsChart">
+                            </canvas>
+                        </div>
+                        
+                    </div>
+            <% } %> 
     <% } else { %>
     
         <h1><span id="username"></span> was not found!</h1>
@@ -216,6 +223,7 @@ $("#searchButton").on("click", function(e){
 
 <script>
     var userData;
+    
 
     $( document ).ready(function() {
 
@@ -224,6 +232,7 @@ $("#searchButton").on("click", function(e){
         // });
 
         
+       
 
 
 
@@ -269,15 +278,17 @@ $("#searchButton").on("click", function(e){
         xmlhttp = new XMLHttpRequest();
         xmlhttp.open("GET","/ajax/profile/getProfileData/" + $("#profileUsername")[0].innerHTML, true);
 
-        console.log("/ajax/profile/getProfileData/" + $("#profileUsername")[0].innerHTML);
+       // console.log("/ajax/profile/getProfileData/" + $("#profileUsername")[0].innerHTML);
 
 
         xmlhttp.onreadystatechange=function(){
             if (xmlhttp.readyState==4 && xmlhttp.status==200){
                 userData=JSON.parse(xmlhttp.responseText);
-                console.log(userData);
-
-                drawCharts();
+              //  console.log(userData);
+                if(!userData.hideStats){
+                    drawCharts();
+                }
+                
             }
         }
         xmlhttp.send();
@@ -330,9 +341,9 @@ $("#searchButton").on("click", function(e){
                             }
 
                             if(role === "assassin"){
-                                console.log("assassin");
-                                console.log(generalRoleStats[role].losses);
-                                console.log(generalRoleStats[role].wins);
+                             //   console.log("assassin");
+                              //  console.log(generalRoleStats[role].losses);
+                              //  console.log(generalRoleStats[role].wins);
                             }
                         // }
                     }
@@ -340,7 +351,7 @@ $("#searchButton").on("click", function(e){
             }
         }
 
-        console.log(generalRoleStats);
+       // console.log(generalRoleStats);
 
         var spyWins = userData.totalWins - userData.totalResWins;
         var spyLosses = userData.totalLosses - userData.totalResLosses;
@@ -368,7 +379,7 @@ $("#searchButton").on("click", function(e){
             }
         }
 
-        console.log(generalRoleStatsArray);
+      //  console.log(generalRoleStatsArray);
 
 
 
@@ -397,9 +408,9 @@ $("#searchButton").on("click", function(e){
                 var percentWon = Math.floor((generalRoleStats[role].wins / (generalRoleStats[role].wins + generalRoleStats[role].losses)) * 100);
                 generalData.push(percentWon);
 
-                console.log("percentWon");
-                console.log(percentWon);
-                console.log(generalRoleStats[role].wins + generalRoleStats[role].losses);
+              //  console.log("percentWon");
+              //  console.log(percentWon);
+               // console.log(generalRoleStats[role].wins + generalRoleStats[role].losses);
 
                 // console.log(generalData);
 
@@ -503,7 +514,7 @@ $("#searchButton").on("click", function(e){
 
 
 
-        $("#tempdiv")[0].innerHTML = JSON.stringify(generalRoleStats) ;
+       // $("#tempdiv")[0].innerHTML = JSON.stringify(generalRoleStats) ;
 
         var ctx = document.getElementById("statsChart");
         var myChart = new Chart(ctx, {

@@ -192,6 +192,7 @@ router.post("/:profileUsername",middleware.checkProfileOwnership , function(req,
 	console.log(req.body.biography);
 	console.log(req.body.nationality);
 	console.log(req.body.nationCode);
+	console.log(req.body.hideStats);
 
 
 	if(!req.body.biography){
@@ -228,6 +229,8 @@ router.post("/:profileUsername",middleware.checkProfileOwnership , function(req,
 	
 				foundUser.nationality = sanitizeHtml(req.body.nationality);
 				foundUser.nationCode = sanitizeHtml(req.body.nationCode.toLowerCase());
+
+				foundUser.hideStats = req.body.hideStats;
 	
 				foundUser.save();
 	
