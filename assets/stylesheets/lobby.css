@@ -398,6 +398,11 @@ p {
     /*margin-left: -10px;*/
 }
 
+.highlight-participating {
+    background-color: #ffff00 !important;
+    border-radius: 10px;
+}
+
 .selected-chat {
     /* background-color: rgb(255, 255, 0); */
 }

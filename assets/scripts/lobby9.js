@@ -537,11 +537,11 @@ function teamLeaderSetup(phase) {
 //when hovering over missions box, highlight members participating in mission
 $("#missionsBox").hover(function(){
     for (var i = 0; i < gameData.proposedTeam.length; i++) {
-		$('[usernameofplayer="' + gameData.proposedTeam[i] + '"]').addClass("highlight-avatar");
+		$('[usernameofplayer="' + gameData.proposedTeam[i] + '"]').addClass("highlight-participating");
 	}
     }, function(){
     for (var i = 0; i < gameData.proposedTeam.length; i++) {
-		$('[usernameofplayer="' + gameData.proposedTeam[i] + '"]').removeClass("highlight-avatar");
+		$('[usernameofplayer="' + gameData.proposedTeam[i] + '"]').removeClass("highlight-participating");
 	}
 });
 
