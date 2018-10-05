@@ -534,12 +534,16 @@ function teamLeaderSetup(phase) {
       $("#missionsBox").css("left", (widthOfRoom/2) + "px");
 }
 
-//set up the hover over missions box and highlight participating members
-
-
-
-
-
+//when hovering over missions box, highlight members participating in mission
+$("#missionsBox").hover(function(){
+    for (var i = 0; i < gameData.proposedTeam.length; i++) {
+		$('[usernameofplayer="' + gameData.proposedTeam[i] + '"]').addClass("highlight-avatar");
+	}
+    }, function(){
+    for (var i = 0; i < gameData.proposedTeam.length; i++) {
+		$('[usernameofplayer="' + gameData.proposedTeam[i] + '"]').removeClass("highlight-avatar");
+	}
+});
 
 
 var playerDivHeightPercent = 30;
