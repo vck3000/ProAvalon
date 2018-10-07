@@ -510,6 +510,14 @@ function teamLeaderSetup(phase) {
               if (numPlayersOnMission) {
                   document.querySelectorAll(".missionBox")[j].innerHTML = "<p>" + numPlayersOnMission + "</p>";
               }
+			  
+			  var x = document.getElementsByClassName("missionBox");
+			  for(var i = 0; i < 5; i++){
+			    x[i].setAttribute("id","mission" + i);	  
+			  }
+			  
+			  bindHoverEvents();
+
   
               //picks boxes
               var pickNum = gameData.pickNum;
@@ -545,6 +553,78 @@ $("#missionsBox").hover(function(){
 	}
 });
 
+//when hovering over a mission box, highlight the players that went on that mission
+function bindHoverEvents(){
+	$("#mission0").hover(function(){
+		if(gameData.missionTeam[0]){
+			for(var i = 0; i < gameData.missionTeam[0].length; i++){
+					$('[usernameofplayer="' + gameData.missionTeam[0][i] + '"]').addClass("highlight-participating");
+			}
+		}	
+	}, function(){
+		if(gameData.missionTeam[0]){
+			for(var i = 0; i < gameData.missionTeam[0].length; i++){
+					$('[usernameofplayer="' + gameData.missionTeam[0][i] + '"]').removeClass("highlight-participating");
+			}
+		}
+	});
+
+	$("#mission1").hover(function(){
+		if(gameData.missionTeam[1]){
+			for(var i = 0; i < gameData.missionTeam[1].length; i++){
+					$('[usernameofplayer="' + gameData.missionTeam[1][i] + '"]').addClass("highlight-participating");
+			}
+		}
+	}, function(){
+		if(gameData.missionTeam[1]){
+			for(var i = 0; i < gameData.missionTeam[1].length; i++){
+					$('[usernameofplayer="' + gameData.missionTeam[1][i] + '"]').removeClass("highlight-participating");
+			}
+		}
+	});
+
+	$("#mission2").hover(function(){
+		if(gameData.missionTeam[2]){
+			for(var i = 0; i < gameData.missionTeam[2].length; i++){
+					$('[usernameofplayer="' + gameData.missionTeam[2][i] + '"]').addClass("highlight-participating");
+			}
+		}
+	}, function(){
+		if(gameData.missionTeam[2]){
+			for(var i = 0; i < gameData.missionTeam[2].length; i++){
+					$('[usernameofplayer="' + gameData.missionTeam[2][i] + '"]').removeClass("highlight-participating");
+			}
+		}
+	});
+
+	$("#mission3").hover(function(){
+		if(gameData.missionTeam[3]){
+			for(var i = 0; i < gameData.missionTeam[3].length; i++){
+					$('[usernameofplayer="' + gameData.missionTeam[3][i] + '"]').addClass("highlight-participating");
+			}
+		}
+	}, function(){
+		if(gameData.missionTeam[3]){
+			for(var i = 0; i < gameData.missionTeam[3].length; i++){
+					$('[usernameofplayer="' + gameData.missionTeam[3][i] + '"]').removeClass("highlight-participating");
+			}
+		}
+	});
+
+	$("#mission4").hover(function(){
+		if(gameData.missionTeam[4]){
+			for(var i = 0; i < gameData.missionTeam[4].length; i++){
+					$('[usernameofplayer="' + gameData.missionTeam[4][i] + '"]').addClass("highlight-participating");
+			}
+		}
+	}, function(){
+		if(gameData.missionTeam[4]){
+			for(var i = 0; i < gameData.missionTeam[4].length; i++){
+					$('[usernameofplayer="' + gameData.missionTeam[4][i] + '"]').removeClass("highlight-participating");
+			}
+		}
+	});
+}
 
 var playerDivHeightPercent = 30;
 function drawAndPositionAvatars() {
