@@ -72,36 +72,35 @@
                             <% } else{ %>
                                 <li>
                             <% } %>
-
-                                <div class="bg-<%=bg_converter[forumThread.category]%> discussionContainer">
-                                    <div class="discussionTitleBox">
-                                        <div class="discussionTitle">
-                                            <a href="/forum/show/<%=forumThread._id%>">
+                                <a href="/forum/show/<%=forumThread._id%>">
+                                    <div class="bg-<%=bg_converter[forumThread.category]%> discussionContainer">
+                                        <div class="discussionTitleBox">
+                                            <div class="discussionTitle">
                                                 #<%=forumThread.numberId%>: <%=forumThread.title%>
-                                            </a>
+                                            </div>
+                                            <p class="discussionDetail">
+                                                By: <%=forumThread.author.username%>, <%=forumThread.timeCreated.toDateString()%>
+                                            </p>
                                         </div>
-                                        <p class="discussionDetail">
-                                            By: <%=forumThread.author.username%>, <%=forumThread.timeCreated.toDateString()%>
-                                        </p>
+                                        <div class="discussionRight">
+                                            <div class="likes">
+                                                <span class="glyphicon glyphicon-comment"></span>
+                                                <span><%=forumThread.numOfComments%></span>
+                                                <span class="glyphicon glyphicon-thumbs-up"></span>
+                                                <span> 
+                                                <%=forumThread.likes%>
+                                                </span>
+                                                <span class="glyphicon glyphicon-time"></span>
+                                                <span><%=forumThread.timeSinceString%> </span>
+                                            </div>
+                                            <div>
+                                            <% if(forumThread.whoLastEdit) { %>
+                                                <span><span class="glyphicon glyphicon-edit"></span> <%=forumThread.whoLastEdit%></span>
+                                            <% } %>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="discussionRight">
-                                        <div class="likes">
-                                            <span class="glyphicon glyphicon-comment"></span>
-                                            <span><%=forumThread.numOfComments%></span>
-                                            <span class="glyphicon glyphicon-thumbs-up"></span>
-                                            <span> 
-                                            <%=forumThread.likes%>
-                                            </span>
-                                            <span class="glyphicon glyphicon-time"></span>
-                                            <span><%=forumThread.timeSinceString%> </span>
-                                        </div>
-                                        <div>
-                                        <% if(forumThread.whoLastEdit) { %>
-                                            <span><span class="glyphicon glyphicon-edit"></span> <%=forumThread.whoLastEdit%></span>
-                                        <% } %>
-                                        </div>
-                                    </div>
-                                </div>
+                                </a>
                             </li>
                         <%})%> 
 
@@ -131,45 +130,44 @@
                             classesToAdd += "hidden disabled "
                         }%>
                         <li class="<%=classesToAdd%>">
-
-                            <div class="bg-<%=bg_converter[forumThread.category]%> discussionContainer">
-                                <div class="discussionTitleBox">
-                                    <div class="discussionTitle">
-                                        <a href="/forum/show/<%=forumThread._id%>">
+                            <a href="/forum/show/<%=forumThread._id%>">
+                                <div class="bg-<%=bg_converter[forumThread.category]%> discussionContainer">
+                                    <div class="discussionTitleBox">
+                                        <div class="discussionTitle">
                                             <% if(forumThread.disabled === true){ %>
                                                 <span style="color: red;" class="glyphicon glyphicon-ban-circle"></span>
                                             <% } %>
                                             #<%=forumThread.numberId%>: <%=forumThread.title%>
-                                        </a>
+                                        </div>
+                                        <p class="discussionDetail">
+                                        By: <%=forumThread.author.username%>, <%=forumThread.timeCreated.toDateString()%>
+                                        </p>
                                     </div>
-                                    <p class="discussionDetail">
-                                    By: <%=forumThread.author.username%>, <%=forumThread.timeCreated.toDateString()%>
-                                    </p>
-                                </div>
-                                <div class="discussionRight">
-                                    <div class="likes">
-                                        <span>
-                                            <span class="glyphicon glyphicon-comment"></span>
-                                            <span><%=forumThread.numOfComments%></span>
-                                        </span>
-                                        <span>
-                                            <span class="glyphicon glyphicon-thumbs-up"></span>
-                                            <span> 
-                                                <%=forumThread.likes%>
+                                    <div class="discussionRight">
+                                        <div class="likes">
+                                            <span>
+                                                <span class="glyphicon glyphicon-comment"></span>
+                                                <span><%=forumThread.numOfComments%></span>
                                             </span>
-                                        </span>
-                                        <span>
-                                            <span class="glyphicon glyphicon-time"></span>
-                                            <span><%=forumThread.timeSinceString%> </span>
-                                        </span>
-                                    </div>
-                                    <div>
-                                    <% if(forumThread.whoLastEdit) { %>
-                                        <span><span class="glyphicon glyphicon-edit"></span> <%=forumThread.whoLastEdit%></span>
-                                    <% } %>
+                                            <span>
+                                                <span class="glyphicon glyphicon-thumbs-up"></span>
+                                                <span> 
+                                                    <%=forumThread.likes%>
+                                                </span>
+                                            </span>
+                                            <span>
+                                                <span class="glyphicon glyphicon-time"></span>
+                                                <span><%=forumThread.timeSinceString%> </span>
+                                            </span>
+                                        </div>
+                                        <div>
+                                        <% if(forumThread.whoLastEdit) { %>
+                                            <span><span class="glyphicon glyphicon-edit"></span> <%=forumThread.whoLastEdit%></span>
+                                        <% } %>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         </li>
 
                     <%})%> 
