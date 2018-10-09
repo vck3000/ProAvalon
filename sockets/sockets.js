@@ -1,5 +1,5 @@
 //sockets
-var avalonRoom = require("../gameplay/avalonRoom");
+var avalonRoom = require("../gameplay/game");
 
 var savedGameObj = require("../models/savedGame");
 var modAction = require("../models/modAction");

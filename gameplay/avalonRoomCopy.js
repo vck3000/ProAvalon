@@ -51,12 +51,10 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 	
 	if(newRoomPassword_ === ""){
 		newRoomPassword_ = undefined;
-		// console.log("UNDEFINED!!!!");
 	}
 
 	if(maxNumPlayers_ === "" || maxNumPlayers_ < 5 || maxNumPlayers_ > 10 ){
 		maxNumPlayers_ = undefined;
-		// console.log("UNDEFINED!!!!");
 	}
 
 	this.joinPassword = newRoomPassword_;
