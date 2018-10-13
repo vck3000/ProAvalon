@@ -1,11 +1,23 @@
 
-function Percival() {
+function Percival(thisRoom_) {
+
+    this.thisRoom = thisRoom_;
 
     this.role = "Percival";
     this.alliance = "Resistance";
     
     this.test = function(){
-        console.log("HII from Percival");
+        // The following lines running successfully shows that each role file can access
+        // the variables and functions from the game room!
+        console.log("HII from Percival. I will send messages to players through socket.emit()");
+        var data = {
+            message: "LOLOL FROM PERCY",
+            classStr: "server-text"
+        }
+
+
+        this.thisRoom.io.in(this.thisRoom.roomId).emit("roomChatToClient", data);
+        
     }
 
     this.see = function(){

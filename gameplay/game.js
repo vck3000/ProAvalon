@@ -9,10 +9,7 @@ var GameRecord = require("../models/gameRecord");
 mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
 
 
-var avalonRoles = require("./avalon");
-
-avalonRoles.merlin.test();	
-
+var avalonRolesIndex = require("./avalon/index");
 
 
 //********************************
@@ -50,6 +47,13 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 	PlayersReadyNotReady.call(this, minPlayers);
 
 	var thisRoom = this;
+
+	this.avalonRolesObj = new avalonRolesIndex;
+	this.avalonRoles = this.avalonRolesObj.getRoles(thisRoom);
+	console.log(this.avalonRoles);
+
+	this.avalonRoles.merlin.test();
+	this.avalonRoles.percival.test();
 
 	/*
 		Handle joining:
@@ -319,6 +323,11 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 
 	//Misc game room functions
 	this.addToChatHistory = function(data){
+
+		//FOR TESTING
+		// this.avalonRoles.merlin.test();
+		// this.avalonRoles.percival.test();
+
 		if(this.gameStarted === true){
 			this.chatHistory.push(data);
 		}

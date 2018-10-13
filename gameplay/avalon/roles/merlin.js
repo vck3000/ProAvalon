@@ -1,11 +1,15 @@
 
-function Merlin() {
+function Merlin(thisRoom_) {
 
-    this.role = "Merlin";
-    this.alliance = "Resistance";
+    this.thisRoom = thisRoom_;
+
+    const role = "Merlin";
+    const alliance = "Resistance";
     
     this.test = function(){
-        console.log("HII from merlin");
+        // The following lines running successfully shows that each role file can access
+        // the variables and functions from the game room!
+        console.log("HII from merlin. The number of sockets is: " + this.thisRoom.allSockets.length);
     }
 
     this.see = function(){
