@@ -1548,6 +1548,20 @@ function getOptions() {
         mordred: $("#mordred")[0].checked,
         oberon: $("#oberon")[0].checked
     }
+
+    var options = "";
+    for(var key in data){
+        if(data.hasOwnProperty(key)){
+            if(data[key] === true){
+                options += key + ", ";
+            }
+        }
+    }
+
+
+
+
+
     return data;
 
 }

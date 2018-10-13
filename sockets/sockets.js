@@ -1,5 +1,5 @@
 //sockets
-var avalonRoom = require("../gameplay/game");
+var gameRoom = require("../gameplay/game");
 
 var savedGameObj = require("../models/savedGame");
 var modAction = require("../models/modAction");
@@ -175,7 +175,7 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 			
 					var storedData = JSON.parse(foundSaveGame.room);
 			
-					rooms[storedData["roomId"]] = new avalonRoom();
+					rooms[storedData["roomId"]] = new gameRoom();
 			
 					for(var key in storedData){
 						if(storedData.hasOwnProperty(key)){
@@ -352,9 +352,8 @@ var actionsObj = {
             run: function (data, senderSocket) {
                 var args = data.args;
                 //code
-                if(rooms[senderSocket.request.user.inRoomId]){
-                    return rooms[senderSocket.request.user.inRoomId].getChatHistory();
-    
+                if(rooms[senderSocket.request.user.inRoomId] && rooms[senderSocket.request.user.inRoomId].gameStarted === true){
+                    return rooms[senderSocket.request.user.inRoomId].chatHistory;
                 }
                 else{
                     return {message: "The game hasn't started yet. There is no chat to display.", classStr: "server-text"}
@@ -982,6 +981,47 @@ var actionsObj = {
 				});
                 return;
             }
+		},
+
+		maddbots: {
+            command: "maddbots",
+            help: "/maddbots <number>: Add <number> bots to the room.",
+            run: function (data, senderSocket) {
+                var args = data.args;
+    
+                if(!args[1]){
+					senderSocket.emit("messageCommandReturnStr", {message: "Specify a number.", classStr: "server-text"});
+                    return;
+				}
+				
+				if(rooms[senderSocket.request.user.inRoomId]){
+					dummySockets = [];
+
+
+					for(var i = 0; i < args[1]; i++){
+
+						dummySockets[i] = {
+							request: {
+								user: {
+									username: "Bot" + i
+								}
+							},
+							emit: function(){
+
+							}
+						};
+						rooms[senderSocket.request.user.inRoomId].playerJoinRoom(dummySockets[i]);
+						rooms[senderSocket.request.user.inRoomId].playerSitDown(dummySockets[i]);
+						
+					};
+
+
+				}
+
+
+				
+                return;
+            }
 		}
     },
     
@@ -1544,7 +1584,7 @@ module.exports = function (io) {
 				while(rooms[nextRoomId]){
 					nextRoomId++;
 				}
-				rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword);
+				rooms[nextRoomId] = new gameRoom(socket.request.user.username, nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword);
                 var privateStr = ("" === dataObj.newRoomPassword) ? "" : "private ";
                 //broadcast to all chat
 				var data = {
@@ -1614,7 +1654,7 @@ module.exports = function (io) {
 					// console.log("Game status is: " + rooms[roomId].getStatus());
 
 					if (rooms[roomId].getStatus() === "Waiting") {
-						var ToF = rooms[roomId].playerJoinGame(socket);
+						var ToF = rooms[roomId].playerSitDown(socket);
 						console.log(socket.request.user.username + " has joined room " + roomId + ": " + ToF);
 					}
 					else {
@@ -1710,7 +1750,7 @@ module.exports = function (io) {
 		socket.on("startGame", function (data) {
 			//start the game
 			if (rooms[socket.request.user.inRoomId]) {
-				if (socket.request.user.inRoomId && socket.request.user.username === rooms[socket.request.user.inRoomId].getHostUsername()) {
+				if (socket.request.user.inRoomId && socket.request.user.username === rooms[socket.request.user.inRoomId].host) {
 
 					rooms[socket.request.user.inRoomId].hostTryStartGame(data);
 
@@ -1831,19 +1871,19 @@ var updateCurrentGamesList = function () {
 				gamesList[i].passwordLocked = false;
 			}
 			//get room ID
-			gamesList[i].roomId = rooms[i].getRoomId();
-			gamesList[i].hostUsername = rooms[i].getHostUsername();
+			gamesList[i].roomId = rooms[i].roomId;
+			gamesList[i].hostUsername = rooms[i].host;
 			if(rooms[i].gameStarted === true){
-				gamesList[i].numOfPlayersInside = rooms[i].playersInGame.length;
+				gamesList[i].numOfPlayersInside = rooms[i].socketsSittingDown.length;
 				gamesList[i].missionHistory = rooms[i].missionHistory;
 				gamesList[i].missionNum = rooms[i].missionNum;
 				gamesList[i].pickNum = rooms[i].pickNum;
 			}
 			else{
-				gamesList[i].numOfPlayersInside = rooms[i].socketsOfPlayers.length;
+				gamesList[i].numOfPlayersInside = rooms[i].socketsSittingDown.length;
 			}
-                        gamesList[i].maxNumPlayers = rooms[i].maxNumPlayers;
-			gamesList[i].numOfSpectatorsInside = rooms[i].getSocketsOfSpectators().length;
+			gamesList[i].maxNumPlayers = rooms[i].maxNumPlayers;
+			gamesList[i].numOfSpectatorsInside = rooms[i].allSockets.length - rooms[i].socketsSittingDown.length;
 		}
 	}
 	allSockets.forEach(function(sock){
@@ -1931,7 +1971,8 @@ function playerLeaveRoomCheckDestroy(socket){
 		//leave the room
 		rooms[socket.request.user.inRoomId].playerLeaveRoom(socket);
 
-		var toDestroy = rooms[socket.request.user.inRoomId].toDestroy();
+		//TODO !!! Incomplete
+		var toDestroy = false; //rooms[socket.request.user.inRoomId].toDestroy();
 		if(toDestroy){
 			deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
 			rooms[socket.request.user.inRoomId] = undefined;

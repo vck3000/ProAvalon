@@ -88,6 +88,8 @@ function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_) {
 
 		// If the socket passes all the tests, then push them
 		thisRoom.socketsSittingDown.push(socket);
+
+		thisRoom.updateRoomPlayers();
 	}
     
     this.playerStandUp = function(socket) {
@@ -95,6 +97,7 @@ function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_) {
 		if(index !== -1){
 			thisRoom.socketsSittingDown.splice(index, 1);
 		}
+		thisRoom.updateRoomPlayers();
 	};
 
 	this.playerLeaveRoom = function (socket) {
@@ -145,7 +148,7 @@ function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_) {
 			// Add to kickedPlayers array
 			this.kickedPlayers.push(username.toLowerCase());
 			var kickMsg = "Player " + username + " has been kicked by " + this.host + ".";
-			this.sendText(this.socketsOfPlayers, kickMsg, "server-text");
+			this.sendText(this.socketsSittingDown, kickMsg, "server-text");
 			// console.log(kickMsg);
 			this.updateRoomPlayers();
 		}
@@ -262,8 +265,6 @@ function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_) {
 			thisRoom.updateRoomPlayers();
 		}
     }
-    
-
 }
 
 
