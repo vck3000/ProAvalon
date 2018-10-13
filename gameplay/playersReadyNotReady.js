@@ -72,6 +72,15 @@ function playersReadyNotReady(minPlayers) {
 
             //.slice to clone
             this.playersYetToReady = this.socketsSittingDown.slice();
+
+            for(var i = this.playersYetToReady.length - 1; i >= 0 ; i--){
+                username = this.playersYetToReady[i].request.user.username;
+
+                if( username.includes("Bot") ){
+                    this.playersYetToReady.splice(i, 1);
+                }
+            }
+
             this.options = options;
 
             this.gamePlayerLeftDuringReady = false;

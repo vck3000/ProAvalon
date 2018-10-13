@@ -1147,7 +1147,7 @@ function strOfAvatar(playerData, alliance) {
             var roleWid = ctx.measureText(gameData.role).width + 20;
             role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + gameData.role + "</p>";
         }
-        else if (gameData.see.merlins.indexOf(playerData.username) !== -1) {
+        else if (gameData.see.merlins && gameData.see.merlins.indexOf(playerData.username) !== -1) {
             var roleWid = ctx.measureText("Merlin?").width + 20;
 
             role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + "Merlin?" + "</p>";
@@ -1548,22 +1548,7 @@ function getOptions() {
         mordred: $("#mordred")[0].checked,
         oberon: $("#oberon")[0].checked
     }
-
-    var options = "";
-    for(var key in data){
-        if(data.hasOwnProperty(key)){
-            if(data[key] === true){
-                options += key + ", ";
-            }
-        }
-    }
-
-
-
-
-
     return data;
-
 }
 
 function getKickPlayers() {

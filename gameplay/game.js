@@ -2,6 +2,9 @@ var util = require("util");
 var Room = require("./room");
 var PlayersReadyNotReady = require("./playersReadyNotReady");
 
+var usernamesIndexes = require("../myFunctions/usernamesIndexes");
+
+
 var mongoose = require("mongoose");
 var User = require("../models/user");
 var GameRecord = require("../models/gameRecord");
@@ -50,10 +53,7 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 
 	this.avalonRolesObj = new avalonRolesIndex;
 	this.avalonRoles = this.avalonRolesObj.getRoles(thisRoom);
-	console.log(this.avalonRoles);
-
-	this.avalonRoles.merlin.test();
-	this.avalonRoles.percival.test();
+	// console.log(this.avalonRoles);
 
 	/*
 		Handle joining:
@@ -105,11 +105,40 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 
 	*/
 
-	//Game variables
-	this.gameStarted = false;
+	// Game variables
+	this.gameStarted 					= false;
+	this.finished 						= false;
+
+	this.phase					 		= "picking";
+
+	this.playersInGame 					= [];
+
+	this.teamLeader 					= 0;
+	this.hammer 						= 0;
+	this.missionNum 					= 0;
+	this.pickNum 						= 0;
+	this.missionHistory 				= [];
+	this.proposedTeam 					= [];
+	this.lastProposedTeam 				= [];
+	this.teamVotes 						= [];
+	this.missionVotes 					= [];
+
+	this.voteHistory 					= {};
 
 
-	//Misc variables
+
+	// Game misc variables
+	this.winner							= "";
+	this.moreThanOneFailMissions 		= [];
+	this.socketsOfPlayers 				= this.socketsSittingDown;
+	this.options 						= undefined;
+
+	// Room variables
+	this.destroyRoom = false;
+	
+
+
+	// Room misc variables
 	this.chatHistory = []; // Here because chatHistory records after game starts
 
 
@@ -128,8 +157,6 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 	//start game
 	this.startGame = function (options) {
 
-		this.socketsOfPlayers = this.socketsSittingDown;
-
 		if(this.socketsOfPlayers.length < 5 || this.socketsOfPlayers.length > 10 || this.gamePlayerLeftDuringReady === true){
 			this.canJoin = true;
 			this.gamePlayerLeftDuringReady = false;
@@ -143,6 +170,7 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 
 		var rolesAssignment = generateAssignmentOrders(this.socketsOfPlayers.length);
 
+		var shuffledPlayerAssignments = [];
 		//shuffle the players around. Make sure to redistribute this room player data in sockets.
 		for(var i = 0; i < this.socketsOfPlayers.length; i++){
 			shuffledPlayerAssignments[i] = i;
@@ -196,8 +224,8 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 		this.resistanceUsernames = [];
 		this.spyUsernames = [];
 		for (var i = 0; i < this.playersInGame.length; i++) {
-			if (this.playersInGame[i].alliance === "Resistance") { resPlayers.push(i); this.resistanceUsernames.push(getUsernameFromIndex(this.playersInGame, i));}
-			else if (this.playersInGame[i].alliance === "Spy") { spyPlayers.push(i); this.spyUsernames.push(getUsernameFromIndex(this.playersInGame, i));}
+			if (this.playersInGame[i].alliance === "Resistance") { resPlayers.push(i); this.resistanceUsernames.push(usernamesIndexes.getUsernameFromIndex(this.playersInGame, i));}
+			else if (this.playersInGame[i].alliance === "Spy") { spyPlayers.push(i); this.spyUsernames.push(usernamesIndexes.getUsernameFromIndex(this.playersInGame, i));}
 		}
 
 		//for the res roles:
@@ -242,7 +270,7 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 
 			//give the respective role their data/info
 			if (this.playersInGame[i].role === "Merlin") {
-				this.playersInGame[i].see.spies = this.getSpies("Merlin");
+				this.playersInGame[i].see = this.avalonRoles.merlin.see();
 			}
 			// else if (this.playersInGame[i].role === "Percival") {
 			// 	this.playersInGame[i].see.merlins = this.getMerlins();
@@ -321,6 +349,158 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 
 
 
+
+
+	this.distributeGameData = function(){
+		//distribute roles to each player
+	
+		this.updateRoomPlayers();
+	
+		if(this.gameStarted === true){
+			var gameData = this.getGameData();
+	
+			// console.log("roomId distribute: " + this.roomId);
+
+			for(var i = 0; i < this.playersInGame.length; i++){
+				var index = usernamesIndexes.getIndexFromUsername(this.socketsOfPlayers, this.playersInGame[i].request.user.username);
+
+				//need to go through all sockets, but only send to the socket of players in game
+				if(this.socketsOfPlayers[index]){
+					this.socketsOfPlayers[index].emit("game-data", gameData[i])
+
+					// console.log("Sent to player: " + this.playersInGame[i].request.user.username + " role " + gameData[i].role);
+				}
+			}
+		
+			var gameDataForSpectators = this.getGameDataForSpectators();
+	
+			var sockOfSpecs = this.getSocketsOfSpectators();
+			sockOfSpecs.forEach(function(sock){
+				sock.emit("game-data", gameDataForSpectators);
+				// console.log("(for loop) Sent to spectator: " + sock.request.user.username);
+			});
+		}
+	};
+
+	this.getGameData = function () {
+
+		if(this.gameStarted == true){
+			var data = {};
+
+			var playerRoles = this.playersInGame;
+
+			//set up the object first, because we cannot pass an array through
+			//socket.io
+			for (var i = 0; i < playerRoles.length; i++) {
+				// Player specific data
+				data[i] = {
+					alliance: playerRoles[i].alliance,
+					role: playerRoles[i].role,
+					see: playerRoles[i].see,
+					username: playerRoles[i].username,
+					socketId: playerRoles[i].socketId
+				}
+
+				//add on these common variables:
+				data[i].statusMessage 			= getStatusMessage();
+				data[i].missionNum 				= this.missionNum;
+				data[i].missionHistory 			= this.missionHistory;
+				data[i].pickNum 				= this.pickNum;
+				data[i].teamLeader 				= this.teamLeader;
+				data[i].hammer 					= this.hammer;
+
+				data[i].playersYetToVote 		= this.playersYetToVote;
+				data[i].phase 					= this.phase;
+				data[i].proposedTeam 			= this.proposedTeam;
+
+				data[i].numPlayersOnMission 	= numPlayersOnMission[playerRoles.length - minPlayers]; //- 5
+
+				data[i].votes 					= this.votes;
+				data[i].voteHistory 			= this.voteHistory;
+				data[i].hammer 					= this.hammer;
+				data[i].winner 					= this.winner;
+
+				data[i].gameplayMessage 		= this.gameplayMessage;
+
+				data[i].spectator 				= false;
+				data[i].gamePlayersInRoom 		= getUsernamesOfPlayersInRoom(thisRoom);
+
+				data[i].roomId 					= this.roomId;
+
+				//if game is finished, reveal everything including roles
+				if (this.phase === "finished") {
+					data[i].see.spies = this.getAllSpies(thisRoom);
+					data[i].see.roles = this.getRevealedRoles(thisRoom);
+					data[i].proposedTeam = this.lastProposedTeam;
+				}
+				else if (this.phase === "assassination") {
+					data[i].proposedTeam = this.lastProposedTeam;
+				}
+			}
+			return data;
+		}
+		else{
+			return "Game hasn't started";
+		}
+		
+	};
+
+
+	this.getGameDataForSpectators = function () {
+		// return false;
+		var playerRoles = this.playersInGame;
+
+		//set up the spectator data object
+		var data = {};
+
+		data.see 							= {};
+		data.see.spies 						= [];
+		data.see.merlins 					= [];
+
+		data.statusMessage 					= getStatusMessage();
+		data.missionNum 					= this.missionNum;
+		data.missionHistory 				= this.missionHistory;
+		data.pickNum 						= this.pickNum;
+		data.teamLeader 					= this.teamLeader;
+		data.hammer 						= this.hammer;
+
+		data.playersYetToVote = this.playersYetToVote;
+		data.phase = this.phase;
+		data.proposedTeam = this.proposedTeam;
+
+		data.numPlayersOnMission = numPlayersOnMission[playerRoles.length - minPlayers]; //- 5
+
+		data.votes = this.votes;
+		data.voteHistory = this.voteHistory;
+		data.hammer = this.hammer;
+		data.winner = this.winner;
+
+		data.gameplayMessage = this.gameplayMessage;
+
+		data.spectator = true;
+		data.gamePlayersInRoom = getUsernamesOfPlayersInRoom(thisRoom);	
+
+		data.roomId = this.roomId;
+		
+
+		//if game is finished, reveal everything including roles
+		if (this.phase === "finished") {
+			data.see.spies = this.getAllSpies(thisRoom);
+			data.see.roles = this.getRevealedRoles(thisRoom);
+			data.proposedTeam = this.lastProposedTeam;
+		}
+		else if (this.phase === "assassination") {
+			data.proposedTeam = this.lastProposedTeam;
+		}
+
+		return data;
+	}
+
+
+
+
+
+
 	//Misc game room functions
 	this.addToChatHistory = function(data){
 
@@ -351,8 +531,121 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 
 
 
+// Helpful functions
+
+function getRandomInt(min, max) {
+	min = Math.ceil(min);
+	max = Math.floor(max);
+	return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+}
+
+function shuffle(array) {
+	var currentIndex = array.length, temporaryValue, randomIndex;
+	// While there remain elements to shuffle...
+	while (0 !== currentIndex) {
+		// Pick a remaining element...
+		randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex -= 1;
+		// And swap it with the current element.
+		temporaryValue = array[currentIndex];
+		array[currentIndex] = array[randomIndex];
+		array[randomIndex] = temporaryValue;
+	}
+	return array;
+}
 
 
+function calcMissionVotes(votes, requiresTwoFails) {
+	//note we may not have all the votes from every person
+	//e.g. may look like "fail", "undef.", "success"
+	numOfPlayers = votes.length;
+
+	var countSucceed = 0;
+	var countFail = 0;
+
+	var outcome;
+
+	for (var i = 0; i < numOfPlayers; i++) {
+		if (votes[i] === "succeed") {
+			// console.log("succeed");
+			countSucceed++;
+		}
+		else if (votes[i] === "fail") {
+			// console.log("fail");
+			countFail++;
+		}
+		else {
+			console.log("Bad vote: " + votes[i]);
+		}
+	}
+
+	//calcuate the outcome
+	if (countFail === 0) {
+		outcome = "succeeded";
+	}
+	else if (countFail === 1 && requiresTwoFails === true) {
+		outcome = "succeeded";
+	}
+	else {
+		outcome = "failed";
+	}
+
+	return outcome;
+}
+
+function calcVotes(votes) {
+	var numOfPlayers = votes.length;
+	var countApp = 0;
+	var countRej = 0;
+	var outcome;
+
+	for (var i = 0; i < numOfPlayers; i++) {
+		if (votes[i] === "approve") {
+			// console.log("app");
+			countApp++;
+		}
+		else if (votes[i] === "reject") {
+			// console.log("rej");
+			countRej++;
+		}
+		else {
+			console.log("Bad vote: " + votes[i]);
+		}
+	}
+
+	//calcuate the outcome
+	if (countApp > countRej) {
+		outcome = "approved";
+	}
+	else {
+		outcome = "rejected";
+	}
+
+	return outcome;
+}
+
+function getStrApprovedRejectedPlayers(votes, playersInGame) {
+	var approvedUsernames = "";
+	var rejectedUsernames = "";
+
+	for (var i = 0; i < votes.length; i++) {
+
+		if (votes[i] === "approve") {
+			approvedUsernames = approvedUsernames + getUsernameFromIndex(playersInGame, i) + ", ";
+		}
+		else if (votes[i] === "reject") {
+			rejectedUsernames = rejectedUsernames + getUsernameFromIndex(playersInGame, i) + ", ";
+		}
+		else {
+			console.log("ERROR! Unknown vote: " + gameData.votes[i]);
+		}
+	}
+	// Disabled approve rejected people.
+	// var str = "<p>Approved: " + approvedUsernames + "</p> <p>Rejected: " + rejectedUsernames + "</p>"
+	var str = "";
+
+	return str;
+}
 
 function generateAssignmentOrders(num) {
 	var rolesAssignment = [];
@@ -368,6 +661,85 @@ function generateAssignmentOrders(num) {
 
 	return rolesAssignment;
 }
+
+function countFails(votes) {
+	var numOfVotedFails = 0;
+	for (var i = 0; i < votes.length; i++) {
+		if (votes[i] === "fail") {
+			numOfVotedFails++;
+		}
+	}
+	return numOfVotedFails;
+}
+
+function getRolesInStr(options) {
+
+	var str = "";
+
+	if (options.merlinassassin === true) { str += "Merlin, Assassin, " }
+	if (options.percival === true) { str += "Percival, "; }
+	if (options.morgana === true) { str += "Morgana, "; }
+	if (options.mordred === true) { str += "Mordred, "; }
+	if (options.oberon === true) { str += "Oberon, "; }
+	if (options.lady === true) { str += "Lady of the Lake, "; }
+
+	//remove the last , and replace with .
+	str = str.slice(0, str.length - 2);
+	str += ".";
+
+	return str;
+}
+
+function getAllSpies(thisRoom) {
+	if (thisRoom.gameStarted === true) {
+		var array = [];
+		for (var i = 0; i < thisRoom.playersInGame.length; i++) {
+			if (thisRoom.playersInGame[i].alliance === "Spy") {
+				array.push(thisRoom.playersInGame[i].username);
+			}
+		}
+		return array;
+	}
+	else {
+		return false;
+	}
+}
+
+function getRevealedRoles(thisRoom) {
+	if (thisRoom.gameStarted === true && thisRoom.phase === "finished") {
+		var array = [];
+		for (var i = 0; i < thisRoom.playersInGame.length; i++) {
+			array.push(thisRoom.playersInGame[i].role);
+		}
+		return array;
+	} else {
+		return false;
+	}
+}
+
+function getUsernamesOfPlayersInRoom(thisRoom) {
+	if(thisRoom.gameStarted === true){
+		var array = [];
+		for(var i = 0; i < thisRoom.socketsOfPlayers.length; i++){
+			array.push(thisRoom.socketsOfPlayers[i].request.user.username);
+		}
+		return array;
+	}
+	else{
+		return [];
+	}
+}
+
+function getStatusMessage(){
+	return "Get status message, TODO, incomplete";
+}
+
+
+
+
+
+
+
 
 
 //Game object inherits all the functions and stuff from Room

@@ -14,20 +14,20 @@ function Merlin(thisRoom_) {
 
     this.see = function(){
         
-        if(thisRoom.gameStarted === true){
+        if(this.thisRoom.gameStarted === true){
             var obj = {};
 
             var array = [];
 
-            for (var i = 0; i < thisRoom.playersInGame.length; i++) {
-				if (thisRoom.playersInGame[i].alliance === "Spy") {
+            for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
+				if (this.thisRoom.playersInGame[i].alliance === "Spy") {
 
-					if (thisRoom.playersInGame[i].role === "Mordred") {
+					if (this.thisRoom.playersInGame[i].role === "Mordred") {
 						//don't add mordred for Merlin to see
 					}
 					else {
 						//add the spy
-						array.push(thisRoom.playersInGame[i].username);
+						array.push(this.thisRoom.playersInGame[i].username);
 					}
 				}
             }
