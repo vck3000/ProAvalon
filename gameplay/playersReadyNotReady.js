@@ -105,7 +105,8 @@ function getRolesInStr(options) {
 
 	var str = "";
 
-	if (options.merlinassassin === true) { str += "Merlin, Assassin, " }
+    if (options.merlin === true) { str += "Merlin, " }
+    if (options.assassin === true) { str += "Assassin, " }
 	if (options.percival === true) { str += "Percival, "; }
 	if (options.morgana === true) { str += "Morgana, "; }
 	if (options.mordred === true) { str += "Mordred, "; }

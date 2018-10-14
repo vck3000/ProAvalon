@@ -33,6 +33,7 @@ function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_) {
 
 
     this.playerJoinRoom = function (socket, inputPassword) {
+		console.log("Room.js file should print next after game.js.");
 		// console.log("Inputpassword from avalonRoom: " + inputPassword);
 		console.log(socket.request.user.username + " has joined room " + thisRoom.roomId);
 

@@ -234,8 +234,11 @@ function draw() {
                 for (var key in currentOptions) {
                     if (currentOptions.hasOwnProperty(key)) {
                         if (currentOptions[key] === true) {
-                            if (key === "merlinassassin") {
-                                str += "Merlin, Assassin, ";
+                            if (key === "merlin") {
+                                str += "Merlin, ";
+                            }
+                            else if (key === "assassin") {
+                                str += "Assassin, ";
                             }
                             else if (key === "percival") {
                                 str += "Percival, ";
@@ -551,13 +554,13 @@ function drawAndPositionAvatars() {
 
     //generate the divs in the html
     var str = "";
-// console.log("Game started: " + gameStarted);
+    // console.log("Game started: " + gameStarted);
     if (gameStarted === true) {
         //draw the players according to what the client sees (their role sees)
         for (var i = 0; i < numPlayers; i++) {
             //check if the user is on the spy list. 
             //if they are not, they are res
-            if (gameData.see.spies && gameData.see.spies.indexOf(roomPlayersData[i].username) === -1) {
+            if (gameData.see && gameData.see.spies && gameData.see.spies.indexOf(roomPlayersData[i].username) === -1) {
                 str = str + strOfAvatar(roomPlayersData[i], "res");
             }
             //else they are a spy
@@ -1141,13 +1144,12 @@ function strOfAvatar(playerData, alliance) {
 
     else if (gameStarted === true) {
         
-        
         //if rendering our own player, give it the role tag
         if (playerData.username === ownUsername) {
             var roleWid = ctx.measureText(gameData.role).width + 20;
             role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + gameData.role + "</p>";
         }
-        else if (gameData.see.merlins && gameData.see.merlins.indexOf(playerData.username) !== -1) {
+        else if (gameData.see && gameData.see.merlins && gameData.see.merlins.indexOf(playerData.username) !== -1) {
             var roleWid = ctx.measureText("Merlin?").width + 20;
 
             role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + "Merlin?" + "</p>";
@@ -1541,7 +1543,8 @@ function drawVoteHistory(data) {
 function getOptions() {
 
     var data = {
-        merlinassassin: $("#merlinassassin")[0].checked,
+        merlin: $("#merlin")[0].checked,
+        assassin: $("#assassin")[0].checked,
         percival: $("#percival")[0].checked,
         morgana: $("#morgana")[0].checked,
         lady: $("#lady")[0].checked,

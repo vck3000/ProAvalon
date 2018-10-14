@@ -61,8 +61,6 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 			- If game has started, check if they are a player
 				- If they are player, give them data
 				- If they are not a player, give them spec data
-			
-
 	*/
 
 	/*
@@ -125,8 +123,6 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 
 	this.voteHistory 					= {};
 
-
-
 	// Game misc variables
 	this.winner							= "";
 	this.moreThanOneFailMissions 		= [];
@@ -134,24 +130,18 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 	this.options 						= undefined;
 
 	// Room variables
-	this.destroyRoom = false;
+	this.destroyRoom 					= false;
 	
-
-
 	// Room misc variables
-	this.chatHistory = []; // Here because chatHistory records after game starts
+	this.chatHistory 					= []; // Here because chatHistory records after game starts
 
 
-
-
-
-
-
-
-
-
-
-
+    this.playerJoinRoom = function (socket, inputPassword) {
+		console.log("Game.js file should print first");
+		// console.log("\n\n");
+		console.log(this.prototype);
+		// Room.playerJoinRoom(socket, inputPassword);
+	}
 
 
 	//start game
@@ -188,9 +178,6 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 			this.socketsOfPlayers[i] = tempSockets[shuffledPlayerAssignments[i]];
 		}
 
-		
-
-
 		//Now we initialise roles
 		for (var i = 0; i < this.socketsOfPlayers.length; i++) {
 			this.playersInGame[i] = {};
@@ -207,35 +194,63 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 		}
 
 
-		//give roles to the players according to their alliances
+		for(var key in this.avalonRoles){
+			if(this.avalonRoles.hasOwnProperty(key)){
+				console.log("Key: " + key);
+			}
+		}
+
+		//Give roles to the players according to their alliances
 		//Get roles:
 		this.resRoles = [];
 		this.spyRoles = [];
-		if (options.merlinassassin === true) { this.resRoles.push("Merlin"); this.spyRoles.push("Assassin"); /*console.log("added merlin assassin"); */}
-		if (options.percival === true) { this.resRoles.push("Percival"); /*console.log("Added percy"); */}
-		if (options.morgana === true) { this.spyRoles.push("Morgana"); /*console.log("Added morgana"); */}
-		if (options.mordred === true) { this.spyRoles.push("Mordred"); /*console.log("added mordred"); */}
-		if (options.oberon === true) { this.spyRoles.push("Oberon"); /*console.log("added oberon"); */}
-		
+
+		// For every role we get given:
+		for(var key in options){
+			if(options.hasOwnProperty(key)){
+				// If the role is selected in game: 
+				if(options[key] === true){
+					// If a role file exists for this
+					if(this.avalonRoles.hasOwnProperty(key)){
+						// If it is a res:
+						if(this.avalonRoles[key].alliance === "Resistance"){
+							this.resRoles.push(this.avalonRoles[key].role);
+						}
+						else if(this.avalonRoles[key].alliance === "Spy"){
+							this.spyRoles.push(this.avalonRoles[key].role);
+						}
+						else{
+							console.log("THIS SHOULD NOT HAPPEN! Invalid role file. Look in game.js file.");
+						}
+					}
+					else{
+						console.log("Warning: Client requested a role that doesn't exist -> " + key);
+					}
+				}
+			}
+		}
 
 		var resPlayers = [];
 		var spyPlayers = [];
 
-		this.resistanceUsernames = [];
-		this.spyUsernames = [];
+
 		for (var i = 0; i < this.playersInGame.length; i++) {
-			if (this.playersInGame[i].alliance === "Resistance") { resPlayers.push(i); this.resistanceUsernames.push(usernamesIndexes.getUsernameFromIndex(this.playersInGame, i));}
-			else if (this.playersInGame[i].alliance === "Spy") { spyPlayers.push(i); this.spyUsernames.push(usernamesIndexes.getUsernameFromIndex(this.playersInGame, i));}
+			if (this.playersInGame[i].alliance === "Resistance") {
+				resPlayers.push(i); 
+			}
+			else if (this.playersInGame[i].alliance === "Spy") {
+				spyPlayers.push(i);
+			}
 		}
 
-		//for the res roles:
+		// Assign the res roles randomly
 		rolesAssignment = generateAssignmentOrders(resPlayers.length);
 		for (var i = 0; i < rolesAssignment.length; i++) {
 			this.playersInGame[resPlayers[i]].role = this.resRoles[rolesAssignment[i]];
 			// console.log("res role: " + resRoles[rolesAssignment[i]]);
 		}
 
-		//for the spy roles:
+		// Assign the spy roles randomly
 		rolesAssignment = generateAssignmentOrders(spyPlayers.length);
 		for (var i = 0; i < rolesAssignment.length; i++) {
 			this.playersInGame[spyPlayers[i]].role = this.spyRoles[rolesAssignment[i]];
@@ -243,7 +258,7 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 		}
 
 
-		//for those players with no role, set their role to their alliance
+		//for those players with no role, set their role to their alliance (i.e. for Resistance VT and Spy VS)
 		for (var i = 0; i < this.playersInGame.length; i++) {
 			// console.log(this.playersInGame[i].role);
 			if (this.playersInGame[i].role === undefined) {
@@ -252,47 +267,13 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 			}
 		}
 
-		for(var i = 0; i < this.playersInGame.length; i++){
-			if(this.playersInGame[i].role.toLowerCase() === "Assassin".toLowerCase()){
-				this.assassinsUsername = this.playersInGame[i].username;
-				break;
-			}
-		}
-
-
-		//prepare the data for each person to see
+		// Prepare the data for each person to see for the rest of the game.
+		// The following data do not change as the game goes on.
 		for (var i = 0; i < this.playersInGame.length; i++) {
+			// Lowercase the role to give the file name
+			let roleLower = this.playersInGame[i].role.toLowerCase();
 
-			//set up the see object.
-			this.playersInGame[i].see = {};
-			this.playersInGame[i].see.spies = [];
-			this.playersInGame[i].see.merlins = [];
-
-			//give the respective role their data/info
-			if (this.playersInGame[i].role === "Merlin") {
-				this.playersInGame[i].see = this.avalonRoles.merlin.see();
-			}
-			// else if (this.playersInGame[i].role === "Percival") {
-			// 	this.playersInGame[i].see.merlins = this.getMerlins();
-			// }
-			// else if (this.playersInGame[i].role === "Morgana") {
-			// 	this.playersInGame[i].see.spies = this.getSpies("Morgana");
-			// }
-			// else if (this.playersInGame[i].role === "Assassin") {
-			// 	this.playersInGame[i].see.spies = this.getSpies("Assassin");
-			// }
-			// else if (this.playersInGame[i].role === "Spy") {
-			// 	this.playersInGame[i].see.spies = this.getSpies("Spy");
-			// }
-			// else if (this.playersInGame[i].role === "Mordred") {
-			// 	this.playersInGame[i].see.spies = this.getSpies("Mordred");
-			// }
-			// else if (this.playersInGame[i].role === "Oberon") {
-			// 	this.playersInGame[i].see.spies = this.getSpies("Oberon");
-			// }
-			// else if (this.playersInGame[i].role === "Resistance") {
-
-			// }
+			this.playersInGame[i].see = this.avalonRoles[roleLower].see();
 		}
 
 		//set game start parameters
@@ -305,15 +286,6 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 		// this.missionHistory = ["succeeded", "failed", "succeeded"];
 		this.missionHistory = [];
 
-		if (options.lady === true) {
-			this.lady = (this.teamLeader + 1) % this.playersInGame.length;
-			this.ladyablePeople = [];
-			for (var i = 0; i < this.playersInGame.length; i++) {
-				this.ladyablePeople[i] = true;
-			}
-			this.ladyablePeople[this.lady] = false;
-		}
-
 		var str = "Game started with: ";
 		//add res roles: 
 		for (var i = 0; i < this.resRoles.length; i++) {
@@ -322,20 +294,15 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 		for (var i = 0; i < this.spyRoles.length; i++) {
 			str += (this.spyRoles[i] + ", ");
 		}
-		if (options.lady === true) {
-			str += "Lady of the Lake, "
-		}
+
+		// TODO: Need to add cards here!!!
 
 		//remove the last , and replace with .
 		str = str.slice(0, str.length - 2);
 		str += ".";
-
 		// this.gameplayMessage = str;
 		this.sendText(this.allSockets, str, "gameplay-text");
 
-		if(options.lady === true){
-			this.ladyChain[0] = this.playersInGame[this.lady].role;
-		}
 
 		//seed the starting data into the VH
 		for (var i = 0; i < this.playersInGame.length; i++) {
@@ -343,7 +310,6 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 		}
 
 		this.distributeGameData();
-
 		return true;
 	};
 
@@ -358,9 +324,6 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 	
 		if(this.gameStarted === true){
 			var gameData = this.getGameData();
-	
-			// console.log("roomId distribute: " + this.roomId);
-
 			for(var i = 0; i < this.playersInGame.length; i++){
 				var index = usernamesIndexes.getIndexFromUsername(this.socketsOfPlayers, this.playersInGame[i].request.user.username);
 
@@ -383,7 +346,6 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 	};
 
 	this.getGameData = function () {
-
 		if(this.gameStarted == true){
 			var data = {};
 
@@ -497,13 +459,8 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 	}
 
 
-
-
-
-
 	//Misc game room functions
 	this.addToChatHistory = function(data){
-
 		//FOR TESTING
 		// this.avalonRoles.merlin.test();
 		// this.avalonRoles.percival.test();
@@ -676,7 +633,8 @@ function getRolesInStr(options) {
 
 	var str = "";
 
-	if (options.merlinassassin === true) { str += "Merlin, Assassin, " }
+	if (options.merlin === true) { str += "Merlin, "; }
+	if (options.assassin === true) { str += "Assassin, "; }
 	if (options.percival === true) { str += "Percival, "; }
 	if (options.morgana === true) { str += "Morgana, "; }
 	if (options.mordred === true) { str += "Mordred, "; }
@@ -743,9 +701,13 @@ function getStatusMessage(){
 
 
 //Game object inherits all the functions and stuff from Room
-Game.prototype = Object.create(Room.prototype);
-Game.prototype = Object.create(PlayersReadyNotReady.prototype);
+Game.prototype.prototype = Object.create(Room.prototype);
+Game.prototype.prototype = Object.create(PlayersReadyNotReady.prototype);
 
+
+
+
+// console.log();
 
 
 module.exports = Game;

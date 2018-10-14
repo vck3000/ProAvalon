@@ -20,29 +20,19 @@ function Percival(thisRoom_) {
         
     }
 
+    // Percival sees Merlin and Morgana
     this.see = function(){
-        
-        if(thisRoom.gameStarted === true){
-            var obj = {};
+        var obj = {};
+        var array = [];
 
-            var array = [];
-
-            for (var i = 0; i < thisRoom.playersInGame.length; i++) {
-				if (thisRoom.playersInGame[i].alliance === "Spy") {
-
-					if (thisRoom.playersInGame[i].role === "Mordred") {
-						//don't add mordred for Merlin to see
-					}
-					else {
-						//add the spy
-						array.push(thisRoom.playersInGame[i].username);
-					}
-				}
+        for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
+            if (this.thisRoom.playersInGame[i].role === "Merlin" || this.thisRoom.playersInGame[i].role === "Morgana") {
+                array.push(this.thisRoom.playersInGame[i].username);
             }
-            
-            obj.spies = array;
-            return obj;
-        }
+        } 
+        
+        obj.merlins = array;
+        return obj;
     }
 
 }

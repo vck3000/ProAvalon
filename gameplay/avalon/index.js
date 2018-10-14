@@ -1,3 +1,4 @@
+//This file helps us load in the roles from the folder
 
 function index(){
     //Import all the roles from AVALON
