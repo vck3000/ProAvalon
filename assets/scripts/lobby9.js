@@ -559,13 +559,13 @@ function drawAndPositionAvatars() {
         //draw the players according to what the client sees (their role sees)
         for (var i = 0; i < numPlayers; i++) {
             //check if the user is on the spy list. 
-            //if they are not, they are res
-            if (gameData.see && gameData.see.spies && gameData.see.spies.indexOf(roomPlayersData[i].username) === -1) {
-                str = str + strOfAvatar(roomPlayersData[i], "res");
-            }
-            //else they are a spy
-            else {
+            //if they are, they are spy
+            if (gameData.see && gameData.see.spies && gameData.see.spies.indexOf(roomPlayersData[i].username) !== -1) {
                 str = str + strOfAvatar(roomPlayersData[i], "spy");
+            }
+            //else they are a res
+            else {
+                str = str + strOfAvatar(roomPlayersData[i], "res");
             }
         }
     }

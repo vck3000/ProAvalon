@@ -1614,29 +1614,26 @@ module.exports = function (io) {
 			
 			//if the room exists
 			if (rooms[roomId]) {
-				// console.log("room id is: ");
-				// console.log(roomId);
 
 				//join the room
-				var ToF = rooms[roomId].playerJoinRoom(socket, inputPassword);
+				rooms[roomId].playerJoinRoom(socket, inputPassword);
 
-				if(ToF === true){
-					//set the room id into the socket obj
-					socket.request.user.inRoomId = roomId;
+				//set the room id into the socket obj
+				socket.request.user.inRoomId = roomId;
 
-					//join the room chat
-					socket.join(roomId);
+				//join the room chat
+				socket.join(roomId);
 
-					//emit to say to others that someone has joined
-					var data = {
-						message: socket.request.user.username + " has joined the room.",
-						classStr: "server-text-teal",
-						dateCreated: new Date()
-					}			
-					sendToRoomChat(io, roomId, data);
+				//emit to say to others that someone has joined
+				var data = {
+					message: socket.request.user.username + " has joined the room.",
+					classStr: "server-text-teal",
+					dateCreated: new Date()
+				}			
+				sendToRoomChat(io, roomId, data);
 
-					updateCurrentGamesList();
-				}
+				updateCurrentGamesList();
+				
 				
 
 			} else {
@@ -1749,11 +1746,11 @@ module.exports = function (io) {
 
 		socket.on("startGame", function (data) {
 			//start the game
+			console.log(socket.request.user.inRoomId);
 			if (rooms[socket.request.user.inRoomId]) {
+
 				if (socket.request.user.inRoomId && socket.request.user.username === rooms[socket.request.user.inRoomId].host) {
-
 					rooms[socket.request.user.inRoomId].hostTryStartGame(data);
-
 					//socket.emit("update-room-players", rooms[roomId].getPlayers());
 				} else {
 					// console.log("Room doesn't exist or user is not host, cannot start game");
