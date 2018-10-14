@@ -25,7 +25,7 @@ function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_) {
 	
 	// Sockets
 	this.allSockets 				= [];
-	this.socketsSittingDown 		= [];
+	this.socketsOfPlayers 			= [];
 
 	// Arrays containing lower cased usernames
 	this.kickedPlayers 				= [];
@@ -75,41 +75,47 @@ Room.prototype.playerJoinRoom = function (socket, inputPassword) {
 	return true;
 }
 
+
 Room.prototype.playerSitDown = function(socket) {
 	socketUsername = socket.request.user.username;
 
 	// If they were kicked and banned
 	if(this.kickedPlayers.indexOf(socketUsername.toLowerCase()) !== -1){
-		//TODO: Emit to them that they were kicked and are banned from the room.
+		socket.emit("danger-alert", "You have been banned from this room. You cannot join.");
 		return;
 	}
-	// If there aren't too many players already sitting down
-	else if(this.socketsSittingDown < this.maxNumPlayers_){
-		//TODO: Emit to them that max num of players has been reached
+	// If there are too many players already sitting down
+	else if(this.socketsOfPlayers.length >= this.maxNumPlayers){
+		socket.emit("danger-alert", "The game has reached the limit for number of players.");
 		return;
 	}
 	// If they already exist, no need to add
-	else if(this.allSockets.indexOf(socket) === -1){
+	else if(this.socketsOfPlayers.indexOf(socket) !== -1){
 		return;
 	}
 
+
 	// If the socket passes all the tests, then push them
-	this.socketsSittingDown.push(socket);
+	this.socketsOfPlayers.push(socket);
 
 	this.updateRoomPlayers();
 }
 
+
 Room.prototype.playerStandUp = function(socket) {
-	var index = this.socketsSittingDown.indexOf(socket);
+	//Grab their index
+	var index = this.socketsOfPlayers.indexOf(socket);
+	// If they are on the list of sockets of players,
 	if(index !== -1){
-		this.socketsSittingDown.splice(index, 1);
+		this.socketsOfPlayers.splice(index, 1);
+		this.updateRoomPlayers();
 	}
-	this.updateRoomPlayers();
 };
+
 
 Room.prototype.playerLeaveRoom = function (socket) {
 	// When a player leaves during ready, not ready phase
-	if(this.socketsSittingDown.indexOf(socket) !== -1){
+	if(this.socketsOfPlayers.indexOf(socket) !== -1){
 		this.gamePlayerLeftDuringReady = true;
 	}
 
@@ -123,8 +129,8 @@ Room.prototype.playerLeaveRoom = function (socket) {
 	this.playerStandUp(socket);
 	
 	// Set the host to the first person in the sitting down array in case the previous host left
-	if(this.socketsSittingDown[0]){
-		this.host = this.socketsSittingDown[0].request.user.username;
+	if(this.socketsOfPlayers[0]){
+		this.host = this.socketsOfPlayers[0].request.user.username;
 	}
 
 	// Destroy room if there's no one in it anymore
@@ -155,7 +161,7 @@ Room.prototype.kickPlayer = function (username, socket) {
 		// Add to kickedPlayers array
 		this.kickedPlayers.push(username.toLowerCase());
 		var kickMsg = "Player " + username + " has been kicked by " + this.host + ".";
-		this.sendText(this.socketsSittingDown, kickMsg, "server-text");
+		this.sendText(this.socketsOfPlayers, kickMsg, "server-text");
 		// console.log(kickMsg);
 		this.updateRoomPlayers();
 	}
@@ -221,11 +227,11 @@ Room.prototype.updateRoomPlayers = function(){
 Room.prototype.getRoomPlayers = function () {
 	var roomPlayers = [];
 
-	for (var i = 0; i < this.socketsSittingDown.length; i++) {
+	for (var i = 0; i < this.socketsOfPlayers.length; i++) {
 
 		var isClaiming;
 		//If the player's username exists on the list of claiming:
-		if(this.claimingPlayers.indexOf(this.socketsSittingDown[i].request.user.username) !== -1){
+		if(this.claimingPlayers.indexOf(this.socketsOfPlayers[i].request.user.username) !== -1){
 			isClaiming = true;
 		}
 		else{
@@ -234,10 +240,10 @@ Room.prototype.getRoomPlayers = function () {
 		
 
 		roomPlayers[i] = {
-			username: this.socketsSittingDown[i].request.user.username,
-			avatarImgRes: this.socketsSittingDown[i].request.user.avatarImgRes,
-			avatarImgSpy: this.socketsSittingDown[i].request.user.avatarImgSpy,
-			avatarHide: this.socketsSittingDown[i].request.user.avatarHide,
+			username: this.socketsOfPlayers[i].request.user.username,
+			avatarImgRes: this.socketsOfPlayers[i].request.user.avatarImgRes,
+			avatarImgSpy: this.socketsOfPlayers[i].request.user.avatarImgSpy,
+			avatarHide: this.socketsOfPlayers[i].request.user.avatarHide,
 			claim: isClaiming
 		}
 
@@ -255,9 +261,9 @@ Room.prototype.getSocketsOfSpectators = function(){
 	var socketsOfSpecs = this.allSockets.slice();
 	
 	// If there is a socket that is sitting down within the socketsOfSpecs (which was at first a clone of allSockets)
-	// then remove that socket. Do this for all socketsSittingDown
-	for(var i = 0; i < this.socketsSittingDown.length; i++){
-		var index = socketsOfSpecs.indexOf(this.socketsSittingDown[i]);	
+	// then remove that socket. Do this for all socketsOfPlayers
+	for(var i = 0; i < this.socketsOfPlayers.length; i++){
+		var index = socketsOfSpecs.indexOf(this.socketsOfPlayers[i]);	
 		if(index !== -1){
 			socketsOfSpecs.splice(index, 1);
 		}

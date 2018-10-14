@@ -57,10 +57,10 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options) {
 
     if (this.canJoin === true) {
         //check before starting
-        if (this.socketsSittingDown.length < this.minPlayers) {
+        if (this.socketsOfPlayers.length < this.minPlayers) {
             //NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
             // console.log("Not enough players.");
-            this.socketsSittingDown[0].emit("danger-alert", "Minimum 5 players to start. ")
+            this.socketsOfPlayers[0].emit("danger-alert", "Minimum 5 players to start. ")
             return false;
         } else if (this.gameStarted === true) {
             // console.log("Game already started!");
@@ -73,7 +73,7 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options) {
         this.canJoin = false;
 
         //.slice to clone
-        this.playersYetToReady = this.socketsSittingDown.slice();
+        this.playersYetToReady = this.socketsOfPlayers.slice();
 
         for(var i = this.playersYetToReady.length - 1; i >= 0 ; i--){
             username = this.playersYetToReady[i].request.user.username;
@@ -89,8 +89,8 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options) {
 
         var rolesInStr = getRolesInStr(options);
 
-        for (var i = 0; i < this.socketsSittingDown.length; i++) {
-            this.socketsSittingDown[i].emit("game-starting", rolesInStr);
+        for (var i = 0; i < this.socketsOfPlayers.length; i++) {
+            this.socketsOfPlayers[i].emit("game-starting", rolesInStr);
         }
 
         var socketsOfSpecs = this.getSocketsOfSpectators();

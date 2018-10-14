@@ -1871,16 +1871,16 @@ var updateCurrentGamesList = function () {
 			gamesList[i].roomId = rooms[i].roomId;
 			gamesList[i].hostUsername = rooms[i].host;
 			if(rooms[i].gameStarted === true){
-				gamesList[i].numOfPlayersInside = rooms[i].socketsSittingDown.length;
+				gamesList[i].numOfPlayersInside = rooms[i].socketsOfPlayers.length;
 				gamesList[i].missionHistory = rooms[i].missionHistory;
 				gamesList[i].missionNum = rooms[i].missionNum;
 				gamesList[i].pickNum = rooms[i].pickNum;
 			}
 			else{
-				gamesList[i].numOfPlayersInside = rooms[i].socketsSittingDown.length;
+				gamesList[i].numOfPlayersInside = rooms[i].socketsOfPlayers.length;
 			}
 			gamesList[i].maxNumPlayers = rooms[i].maxNumPlayers;
-			gamesList[i].numOfSpectatorsInside = rooms[i].allSockets.length - rooms[i].socketsSittingDown.length;
+			gamesList[i].numOfSpectatorsInside = rooms[i].allSockets.length - rooms[i].socketsOfPlayers.length;
 		}
 	}
 	allSockets.forEach(function(sock){

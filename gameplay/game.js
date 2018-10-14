@@ -126,7 +126,6 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 	// Game misc variables
 	this.winner							= "";
 	this.moreThanOneFailMissions 		= [];
-	this.socketsOfPlayers 				= this.socketsSittingDown;
 	this.options 						= undefined;
 
 	// Room variables
@@ -142,13 +141,50 @@ Game.prototype = Object.create(Room.prototype);
 Object.assign(Game.prototype, PlayersReadyNotReady.prototype);
 
 
-
-
+//------------------------------------------------
+// METHOD OVERRIDES ------------------------------
+//------------------------------------------------
 Game.prototype.playerJoinRoom = function (socket, inputPassword) {
 	console.log("Game.js file should print first");
 
+	if(this.gameStarted === true){
+
+		//if the new socket is a player, add them to the sockets of players
+		for(var i = 0; i < this.playersInGame.length; i++){
+			if(this.playersInGame[i].username === socket.request.user.username){
+				this.socketsOfPlayers.splice(i, 0, socket);
+
+				this.playersInGame[i].request = socket.request;
+				
+				break;
+			}
+		}
+		//sends to players and specs
+		this.distributeGameData();
+	}
+
 	Room.prototype.playerJoinRoom.call(this, socket, inputPassword);
+	this.updateRoomPlayers();		
+};
+
+Game.prototype.playerSitDown = function(socket){
+	// If the game has started 
+	if(this.gameStarted === true){
+		socket.emit("danger-alert", "Game has already started.");
+		return;
+	}
+	// If the ready/not ready phase is ongoing
+	else if(this.canJoin === false){
+		socket.emit("danger-alert", "The game is currently trying to start (ready/not ready phase). You can join if someone is not ready, or after 10 seconds has elapsed.");
+		return;
+	}
+
+	Room.prototype.playerSitDown.call(this, socket);
 }
+
+
+
+// && this.gameStarted === false && this.canJoin === true
 
 
 //start game
@@ -489,6 +525,7 @@ Game.prototype.getStatus = function () {
 	}
 }
 
+// console.log((new Game).__proto__);
 
 module.exports = Game;
 
