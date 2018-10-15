@@ -13,11 +13,14 @@ function LadyOfTheLake(thisRoom_) {
         console.log("HII from Lady of the Lake. The number of sockets is: " + this.thisRoom.allSockets.length);
     }
 
-    this.checkSpecialMove = function(){
-        
-    }
 
 }
+
+LadyOfTheLake.prototype.checkSpecialMove = function(){
+
+}
+
+
 
 // setStatusBarText("Your turn to use the Lady of the Lake. Select one player to use it on.");
 

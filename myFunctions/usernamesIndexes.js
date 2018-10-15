@@ -7,6 +7,8 @@ obj.getIndexFromUsername = function(sockets, username) {
 			return i;
 		}
 	}
+
+	return -1;
 }
 
 obj.getUsernameFromIndex = function(usernames, index) {

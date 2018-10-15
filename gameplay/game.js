@@ -125,7 +125,9 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 	this.missionHistory 				= [];
 	this.proposedTeam 					= [];
 	this.lastProposedTeam 				= [];
-	this.teamVotes 						= [];
+	this.votes 							= [];
+	//Only show all the votes when they've all come in, not one at a time
+	this.publicVotes 					= []; 
 	this.missionVotes 					= [];
 
 	this.voteHistory 					= {};
@@ -190,7 +192,7 @@ Game.prototype.playerSitDown = function(socket){
 Game.prototype.playerStandUp = function(socket){
 	//If the ready/not ready phase is ongoing
 	if(this.canJoin === false){
-		socket.emit("danger-alert", "The game is currently trying to start (ready/not ready phase). You cannot stand up now.");
+		// socket.emit("danger-alert", "The game is currently trying to start (ready/not ready phase). You cannot stand up now.");
 		return;
 	}
 	// If the game has started
@@ -394,6 +396,7 @@ Game.prototype.gameMove = function (socket, data) {
 		if(usernamesIndexes.getIndexFromUsername(this.playersInGame, socket.request.user.username) === this.teamLeader){
 			//Reset votes
 			this.votes = [];
+			this.publicVotes = [];
 
 			var num = numPlayersOnMission[this.playersInGame.length - minPlayers][this.missionNum - 1];
 			console.log("Num player for this mission : " + num);
@@ -460,10 +463,10 @@ Game.prototype.gameMove = function (socket, data) {
 		// If they haven't voted yet
 		if(i !== -1){
 			if(data === "yes"){
-				this.votes[usernamesIndexes.getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "yes";
+				this.votes[usernamesIndexes.getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "approve";
 			}
 			else if(data === "no"){
-				this.votes[usernamesIndexes.getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "no";
+				this.votes[usernamesIndexes.getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "reject";
 			}
 			else {
 				console.log("ERROR! This should definitely not happen. Game.js votingTeam.");
@@ -474,10 +477,14 @@ Game.prototype.gameMove = function (socket, data) {
 
 			// If we have all of our votes, proceed onward
 			if(this.playersYetToVote.length === 0){
+				this.publicVotes = this.votes;
+				this.VHUpdateTeamVotes();
+				
+
 				var outcome = calcVotes(this.votes);
 
 				if(outcome === "yes"){
-					this.phase === "missionVoting";
+					this.phase = "votingMission";
 					this.playersYetToVote = this.proposedTeam.slice();
 
 					var str = "Mission " + this.missionNum + "." + this.pickNum + " was approved." + getStrApprovedRejectedPlayers(this.votes, this.playersInGame);
@@ -499,7 +506,6 @@ Game.prototype.gameMove = function (socket, data) {
 
 					this.incrementTeamLeader();
 				}
-				this.VHUpdateTeamVotes();
 			}
 
 			this.distributeGameData();
@@ -513,16 +519,23 @@ Game.prototype.gameMove = function (socket, data) {
 
 		//if this vote is coming from someone who hasn't voted yet
 		if (i !== -1) {
-			if (voteStr === "yes") {
+			if (data === "yes") {
 				this.missionVotes[usernamesIndexes.getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "succeed";
 				// console.log("received succeed from " + socket.request.user.username);
 			}
-			else if (voteStr === "no") {
+			else if (data === "no") {
+				// If the user is a res, they shouldn't be allowed to fail
+				var index = usernamesIndexes.getIndexFromUsername(this.playersInGame, socket.request.user.username);
+				if(index !== -1 && this.playersInGame[index].alliance === "Resistance"){
+					socket.emit("danger-alert", "You are resistance! Surely you want to succeed!");
+					return;
+				}
+
 				this.missionVotes[usernamesIndexes.getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "fail";
 				// console.log("received fail from " + socket.request.user.username);
 			}
 			else {
-				console.log("ERROR! Expected yes or no (success/fail), got: " + voteStr);
+				console.log("ERROR! Expected yes or no (success/fail), got: " + data);
 			}
 			//remove the player from players yet to vote
 			this.playersYetToVote.splice(i, 1);
@@ -535,7 +548,7 @@ Game.prototype.gameMove = function (socket, data) {
 		// If we have all the votes in
 		if (this.playersYetToVote.length === 0) {
 
-			var outcome = calcMissionVotes(this.missionVotes);
+			var outcome = this.calcMissionVotes(this.missionVotes);
 			if (outcome) {
 				this.missionHistory.push(outcome);
 			}
@@ -607,7 +620,7 @@ Game.prototype.gameMove = function (socket, data) {
 					this.teamLeader = this.socketsOfPlayers.length - 1;
 				}
 				this.hammer = ((this.teamLeader - 5 + 1 + this.playersInGame.length) % this.playersInGame.length);
-				this.phase = "picking";	
+				this.phase = "pickingTeam";	
 			}
 		}
 	}
@@ -626,6 +639,34 @@ Game.prototype.gameMove = function (socket, data) {
 
 	this.distributeGameData();
 };
+
+var whenToShowGuns = [
+    "votingTeam",
+    "votingMission",
+    "finished"
+];
+
+Game.prototype.toShowGuns = function(){
+	// If the phase doesn't exist on whenToShowGuns, then check cards
+	if(whenToShowGuns.indexOf(this.phase) === -1){
+		
+		//Check all the special roles and cards
+		if(this.checkRoleCardToShowGuns()){
+			return true;
+		}
+
+		// If still we don't have any, then don't show guns
+		else{
+			return false;
+		}
+	}	
+
+	// It is on the list, show guns
+	else{
+		return true;
+	}
+}
+
 
 Game.prototype.incrementTeamLeader = function(){
 	//move to next team Leader, and reset it back to the start if 
@@ -667,88 +708,6 @@ Game.prototype.distributeGameData = function(){
 	}
 };
 
-Game.prototype.getClientButtonSettings = function(indexOfPlayer){
-	var obj = {
-		green:{},
-		red: {}
-	};
-
-	if(indexOfPlayer){
-		if(this.phase === "pickingTeam"){
-			// If it is the host
-			if(indexOfPlayer === this.teamLeader){
-				obj.green.hidden = false;
-				obj.green.disabled = true;
-				obj.green.setText = "Pick";
-	
-				obj.red.hidden = true;
-				obj.red.disabled = true;
-				obj.red.setText = "";
-			}
-			// If it is any other player who isn't host
-			else{
-				obj.green.hidden = true;
-				obj.green.disabled = true;
-				obj.green.setText = "";
-	
-				obj.red.hidden = true;
-				obj.red.disabled = true;
-				obj.red.setText = "";
-			}
-			
-		}
-		else if(this.phase === "votingTeam"){
-			// If user has voted already
-			if(indexOfPlayer && this.playersYetToVote.indexOf(this.playersInGame[indexOfPlayer].username) === -1){
-				obj.green.hidden = true;
-				obj.green.disabled = true;
-				obj.green.setText = "";
-		
-				obj.red.hidden = true;
-				obj.red.disabled = true;
-				obj.red.setText = "";
-			}
-			// User has not voted yet
-			else if(indexOfPlayer){
-				obj.green.hidden = false;
-				obj.green.disabled = false;
-				obj.green.setText = "Approve";
-		
-				obj.red.hidden = false;
-				obj.red.disabled = false;
-				obj.red.setText = "Reject";
-			}
-		}
-		else if(this.phase === "votingMission"){
-			obj.green.hidden = false;
-			obj.green.disabled = false;
-			obj.green.setText = "SUCCEED";
-	
-			obj.red.hidden = false;
-			obj.red.disabled = false;
-			obj.red.setText = "FAIL";
-		}
-		else{
-			//TODO
-			//Get the buttons from cards if applicable!
-		}
-	}
-	// User is a spectator
-	else{
-		obj.green.hidden = true;
-		obj.green.disabled = true;
-		obj.green.setText = "";
-
-		obj.red.hidden = true;
-		obj.red.disabled = true;
-		obj.red.setText = "";
-	}
-
-	
-
-	return obj;
-};
-
 Game.prototype.getClientNumOfTargets = function(){
 	if(this.phase === "pickingTeam"){
 		var num = numPlayersOnMission[this.playersInGame.length - minPlayers][this.missionNum - 1];
@@ -767,7 +726,14 @@ Game.prototype.getClientNumOfTargets = function(){
 		return -1;
 	}
 	else{
-		// TODO get from cards/roles
+		// Check the roles cards
+		var num = this.checkRoleCardGetClientNumOfTargets();
+		if(num !== null){
+			return num;
+		}
+		else{
+			return -1;
+		}
 	}
 };
 
@@ -806,7 +772,7 @@ Game.prototype.getGameData = function () {
 
 			data[i].numPlayersOnMission 	= numPlayersOnMission[playerRoles.length - minPlayers]; //- 5
 
-			data[i].votes 					= this.votes;
+			data[i].votes 					= this.publicVotes;
 			data[i].voteHistory 			= this.voteHistory;
 			data[i].hammer 					= this.hammer;
 			data[i].winner 					= this.winner;
@@ -817,11 +783,13 @@ Game.prototype.getGameData = function () {
 			data[i].gamePlayersInRoom 		= getUsernamesOfPlayersInRoom(this);
 
 			data[i].roomId 					= this.roomId;
+			data[i].toShowGuns 				= this.toShowGuns();
 
 			//if game is finished, reveal everything including roles
 			if (this.phase === "finished") {
-				data[i].see.spies = this.getAllSpies(this);
-				data[i].see.roles = this.getRevealedRoles(this);
+				data[i].see = {};
+				data[i].see.spies = getAllSpies(this);
+				data[i].see.roles = getRevealedRoles(this);
 				data[i].proposedTeam = this.lastProposedTeam;
 			}
 			else if (this.phase === "assassination") {
@@ -848,6 +816,8 @@ Game.prototype.getGameDataForSpectators = function () {
 	data.see.spies 						= [];
 	data.see.merlins 					= [];
 
+	data.buttons 					= this.getClientButtonSettings();
+
 	data.statusMessage 					= this.getStatusMessage();
 	data.missionNum 					= this.missionNum;
 	data.missionHistory 				= this.missionHistory;
@@ -855,29 +825,31 @@ Game.prototype.getGameDataForSpectators = function () {
 	data.teamLeader 					= this.teamLeader;
 	data.hammer 						= this.hammer;
 
-	data.playersYetToVote = this.playersYetToVote;
-	data.phase = this.phase;
-	data.proposedTeam = this.proposedTeam;
+	data.playersYetToVote 				= this.playersYetToVote;
+	data.phase 							= this.phase;
+	data.proposedTeam 					= this.proposedTeam;
 
-	data.numPlayersOnMission = numPlayersOnMission[playerRoles.length - minPlayers]; //- 5
+	data.numPlayersOnMission 			= numPlayersOnMission[playerRoles.length - minPlayers]; //- 5
 
-	data.votes = this.votes;
-	data.voteHistory = this.voteHistory;
-	data.hammer = this.hammer;
-	data.winner = this.winner;
+	data.votes 							= this.publicVotes;
+	data.voteHistory 					= this.voteHistory;
+	data.hammer 						= this.hammer;
+	data.winner 						= this.winner;
 
-	data.gameplayMessage = this.gameplayMessage;
+	data.gameplayMessage 				= this.gameplayMessage;
 
-	data.spectator = true;
-	data.gamePlayersInRoom = getUsernamesOfPlayersInRoom(this);	
+	data.spectator 						= true;
+	data.gamePlayersInRoom 				= getUsernamesOfPlayersInRoom(this);	
 
-	data.roomId = this.roomId;
+	data.roomId 						= this.roomId;
+	data.toShowGuns 					= this.toShowGuns();
 	
 
 	//if game is finished, reveal everything including roles
 	if (this.phase === "finished") {
-		data.see.spies = this.getAllSpies(this);
-		data.see.roles = this.getRevealedRoles(this);
+		data.see = {};
+		data.see.spies = getAllSpies(this);
+		data.see.roles = getRevealedRoles(this);
 		data.proposedTeam = this.lastProposedTeam;
 	}
 
@@ -896,10 +868,116 @@ Game.prototype.addToChatHistory = function(data){
 	}
 }
 
+Game.prototype.getClientButtonSettings = function(indexOfPlayer){
+	var obj = {
+		green:{},
+		red: {}
+	};
+
+	if(indexOfPlayer !== undefined){
+		if(this.phase === "pickingTeam"){
+			// If it is the host
+			if(indexOfPlayer === this.teamLeader){
+				obj.green.hidden = false;
+				obj.green.disabled = true;
+				obj.green.setText = "Pick";
+	
+				obj.red.hidden = true;
+				obj.red.disabled = true;
+				obj.red.setText = "";
+			}
+			// If it is any other player who isn't host
+			else{
+				obj.green.hidden = true;
+				obj.green.disabled = true;
+				obj.green.setText = "";
+	
+				obj.red.hidden = true;
+				obj.red.disabled = true;
+				obj.red.setText = "";
+			}
+			
+		}
+		else if(this.phase === "votingTeam"){
+			// If user has voted already
+			if(this.playersYetToVote.indexOf(this.playersInGame[indexOfPlayer].username) === -1){
+				obj.green.hidden = true;
+				obj.green.disabled = true;
+				obj.green.setText = "";
+		
+				obj.red.hidden = true;
+				obj.red.disabled = true;
+				obj.red.setText = "";
+			}
+			// User has not voted yet
+			else{
+				obj.green.hidden = false;
+				obj.green.disabled = false;
+				obj.green.setText = "Approve";
+		
+				obj.red.hidden = false;
+				obj.red.disabled = false;
+				obj.red.setText = "Reject";
+			}
+		}
+		else if(this.phase === "votingMission"){
+			if(this.playersYetToVote.indexOf(this.playersInGame[indexOfPlayer].username) === -1){
+				obj.green.hidden = true;
+				obj.green.disabled = true;
+				obj.green.setText = "";
+		
+				obj.red.hidden = true;
+				obj.red.disabled = true;
+				obj.red.setText = "";
+			}
+			// User has not voted yet
+			else{
+				obj.green.hidden = false;
+				obj.green.disabled = false;
+				obj.green.setText = "SUCCEED";
+		
+				obj.red.hidden = false;
+				obj.red.disabled = false;
+				obj.red.setText = "FAIL";
+			}
+		}
+		else{
+			//Check the roles cards
+			obj = this.checkRoleCardGetClientButtonSettings(indexOfPlayer);
+			if(obj !== null){
+				return obj;
+			}
+			//Give spectator data if last resort
+			else{
+				obj.green.hidden = true;
+				obj.green.disabled = true;
+				obj.green.setText = "";
+		
+				obj.red.hidden = true;
+				obj.red.disabled = true;
+				obj.red.setText = "";
+			}
+		}
+	}
+	// User is a spectator
+	else{
+		obj.green.hidden = true;
+		obj.green.disabled = true;
+		obj.green.setText = "";
+
+		obj.red.hidden = true;
+		obj.red.disabled = true;
+		obj.red.setText = "";
+	}
+
+	
+
+	return obj;
+};
 
 Game.prototype.getStatusMessage = function(indexOfPlayer){
 	if (this.phase === "pickingTeam") {
-		if(indexOfPlayer && indexOfPlayer === this.teamLeader){
+		if(indexOfPlayer !== undefined && indexOfPlayer === this.teamLeader){
 			var num = numPlayersOnMission[this.playersInGame.length - minPlayers][this.missionNum - 1];
 
 			return "Your turn to pick a team. Pick " + num + " players.";
@@ -910,7 +988,7 @@ Game.prototype.getStatusMessage = function(indexOfPlayer){
 	}
 	else if (this.phase === "votingTeam") {
 		// If user has voted already
-		if(indexOfPlayer && this.playersYetToVote.indexOf(this.playersInGame[indexOfPlayer].username) === -1){
+		if(indexOfPlayer !== undefined && this.playersYetToVote.indexOf(this.playersInGame[indexOfPlayer].username) === -1){
 			var str = "";
 			str += "Waiting for votes: ";
 			for (var i = 0; i < this.playersYetToVote.length; i++) {
@@ -937,6 +1015,34 @@ Game.prototype.getStatusMessage = function(indexOfPlayer){
 			return str;
 		}
 	}
+	else if (this.phase === "votingMission") {
+		//If the user is someone who needs to vote success or fail
+		if(indexOfPlayer !== undefined && this.playersYetToVote.indexOf(this.playersInGame[indexOfPlayer].username) !== -1){
+			var str = "";
+			str += (this.playersInGame[this.teamLeader].username + " has picked: ");
+
+			for (var i = 0; i < this.proposedTeam.length; i++) {
+				str += this.proposedTeam[i] + ", ";
+			}
+			// Remove last , and replace with .
+			str = str.slice(0, str.length - 2);
+			str += ".";
+
+			return str;
+		}
+		else{
+			var str = "";
+			str += "Waiting for mission votes: ";
+			for (var i = 0; i < this.playersYetToVote.length; i++) {
+				str = str + this.playersYetToVote[i] + ", ";
+			}
+			// Remove last , and replace with .
+			str = str.slice(0, str.length - 2);
+			str += ".";
+	
+			return str;
+		}
+	}
 	else if (this.phase === "finished") {
 		var winningTeam;
 		if(this.winner === "Spy"){
@@ -953,8 +1059,14 @@ Game.prototype.getStatusMessage = function(indexOfPlayer){
 		return str;
 	}
 	else {
-		//Get the status message from the cards or roles
-		return "";
+		// Check the roles and cards
+		var str = this.checkRoleCardStatusMessage(indexOfPlayer);
+		if(str !== null){
+			return str;
+		}
+		else{
+			return "";
+		}
 	}
 };
 
@@ -975,12 +1087,12 @@ Game.prototype.getStatus = function () {
 
 
 
-Game.prototype.finishGame = function(){
-	this.phase === "finished";
+Game.prototype.finishGame = function(toBeWinner){
+	this.phase = "finished";
 
-	// RUN SPECIAL CARD/ROLE CHECKS (i.e. assassin)
-	// TODO
-
+	if(this.checkRoleCardSpecialMoves() === true){
+		return;
+	}
 
 	// If after the special card/role check the phase is
 	// not finished now, then don't run the rest of the code below
@@ -989,16 +1101,13 @@ Game.prototype.finishGame = function(){
 	}
 
 
-
-
-	for(var key in this.allSockets){
-		if(this.allSockets.hasOwnProperty(key)){
-			this.allSockets[key].emit("gameEnded");
-		}
+	for(var i = 0; i < this.allSockets.length; i++){
+		this.allSockets[i].emit("gameEnded");
 	}
 
 	//game clean up
 	this.finished = true;
+	this.winner = toBeWinner;
 
 	if (this.winner === "spies") {
 		// this.gameplayMessage = "The spies have won the game.";
@@ -1157,10 +1266,174 @@ Game.prototype.finishGame = function(){
 			}
 		});
 	});
-}
+};
+
+Game.prototype.calcMissionVotes = function(votes) {
+
+	var requiresTwoFails = false;
+	if (this.playersInGame.length >= 7 && this.missionNum === 4) {
+		requiresTwoFails = true;
+	}
+
+	//note we may not have all the votes from every person
+	//e.g. may look like "fail", "undef.", "success"
+	numOfPlayers = votes.length;
+
+	var countSucceed = 0;
+	var countFail = 0;
+
+	var outcome;
+
+	for (var i = 0; i < numOfPlayers; i++) {
+		if (votes[i] === "succeed") {
+			// console.log("succeed");
+			countSucceed++;
+		}
+		else if (votes[i] === "fail") {
+			// console.log("fail");
+			countFail++;
+		}
+		else {
+			console.log("Bad vote: " + votes[i]);
+		}
+	}
+
+	//calcuate the outcome
+	if (countFail === 0) {
+		outcome = "succeeded";
+	}
+	else if (countFail === 1 && requiresTwoFails === true) {
+		outcome = "succeeded";
+	}
+	else {
+		outcome = "failed";
+	}
+
+	return outcome;
+};
 
 
+Game.prototype.checkRoleCardSpecialMoves = function(){
+	var foundSomething = false;
+	for(var i = 0; i < this.roleKeysInPlay.length; i++){
+		//If the function doesn't exist, return null
+		if(!this.avalonRoles[this.roleKeysInPlay[i]].checkSpecialMove){continue;}
 
+		if(this.avalonRoles[this.roleKeysInPlay[i]].checkSpecialMove() === true){
+			foundSomething = true;
+			break;
+		}
+	}
+	// If we haven't found something in the roles, check the cards
+	if(foundSomething === false){
+		for(var i = 0; i < this.cardKeysInPlay.length; i++){
+			//If the function doesn't exist, return null
+			if(!this.avalonRoles[this.roleKeysInPlay[i]].checkSpecialMove){continue;}
+
+			if(this.avalonCards[this.cardKeysInPlay[i]].checkSpecialMove() === true){
+				foundSomething = true;
+				break;
+			}
+		}
+	}
+
+	return foundSomething;
+};
+Game.prototype.checkRoleCardToShowGuns = function(indexOfPlayer){
+	var data = null;
+	for(var i = 0; i < this.roleKeysInPlay.length; i++){
+		//If the function doesn't exist, return null
+		if(!this.avalonRoles[this.roleKeysInPlay[i]].toShowGuns){continue;}
+
+		data = this.avalonRoles[this.roleKeysInPlay[i]].toShowGuns();
+		if(data !== null){
+			return data;
+		}
+	}
+
+	for(var i = 0; i < this.cardKeysInPlay.length; i++){
+		//If the function doesn't exist, continue
+		if(!this.avalonRoles[this.roleKeysInPlay[i]].toShowGuns){continue;}
+
+		data = this.avalonCards[this.cardKeysInPlay[i]].toShowGuns();
+		if(data !== null){
+			return data;
+		}
+	}
+	return data;
+};
+Game.prototype.checkRoleCardGetClientNumOfTargets = function(){
+	var data = null;
+	for(var i = 0; i < this.roleKeysInPlay.length; i++){
+		//If the function doesn't exist, return null
+		if(!this.avalonRoles[this.roleKeysInPlay[i]].getClientNumOfTargets){continue;}
+
+		data = this.avalonRoles[this.roleKeysInPlay[i]].getClientNumOfTargets();
+		if(data !== null){
+			return data;
+		}
+	}
+
+	for(var i = 0; i < this.cardKeysInPlay.length; i++){
+		//If the function doesn't exist, return null
+		if(!this.avalonRoles[this.roleKeysInPlay[i]].getClientNumOfTargets){continue;}
+
+		data = this.avalonCards[this.cardKeysInPlay[i]].getClientNumOfTargets();
+		if(data !== null){
+			return data;
+		}
+	}
+
+	return data;
+};
+Game.prototype.checkRoleCardGetClientButtonSettings = function(indexOfPlayer){
+	var data = null;
+	for(var i = 0; i < this.roleKeysInPlay.length; i++){
+		//If the function doesn't exist, return null
+		if(!this.avalonRoles[this.roleKeysInPlay[i]].getClientButtonSettings){continue;}
+
+		data = this.avalonRoles[this.roleKeysInPlay[i]].getClientButtonSettings();
+		if(data !== null){
+			return data;
+		}
+	}
+
+	for(var i = 0; i < this.cardKeysInPlay.length; i++){
+		//If the function doesn't exist, return null
+		if(!this.avalonRoles[this.roleKeysInPlay[i]].getClientButtonSettings){continue;}
+
+		data = this.avalonCards[this.cardKeysInPlay[i]].getClientButtonSettings();
+		if(data !== null){
+			return data;
+		}
+	}
+
+	return data;
+};
+Game.prototype.checkRoleCardStatusMessage = function(indexOfPlayer){
+	var data = null;
+	for(var i = 0; i < this.roleKeysInPlay.length; i++){
+		//If the function doesn't exist, return null
+		if(!this.avalonRoles[this.roleKeysInPlay[i]].getStatusMessage){continue;}
+
+		data = this.avalonRoles[this.roleKeysInPlay[i]].getStatusMessage();
+		if(data !== null){
+			return data;
+		}
+	}
+
+	for(var i = 0; i < this.cardKeysInPlay.length; i++){
+		//If the function doesn't exist, return null
+		if(!this.avalonRoles[this.roleKeysInPlay[i]].getStatusMessage){continue;}
+
+		data = this.avalonCards[this.cardKeysInPlay[i]].getStatusMessage();
+		if(data !== null){
+			return data;
+		}
+	}
+
+	return data;
+};
 
 
 
@@ -1241,49 +1514,7 @@ function shuffle(array) {
 }
 
 
-function calcMissionVotes(votes) {
 
-	var requiresTwoFails = false;
-	if (this.playersInGame.length >= 7 && this.missionNum === 4) {
-		requiresTwoFails = true;
-	}
-
-	//note we may not have all the votes from every person
-	//e.g. may look like "fail", "undef.", "success"
-	numOfPlayers = votes.length;
-
-	var countSucceed = 0;
-	var countFail = 0;
-
-	var outcome;
-
-	for (var i = 0; i < numOfPlayers; i++) {
-		if (votes[i] === "succeed") {
-			// console.log("succeed");
-			countSucceed++;
-		}
-		else if (votes[i] === "fail") {
-			// console.log("fail");
-			countFail++;
-		}
-		else {
-			console.log("Bad vote: " + votes[i]);
-		}
-	}
-
-	//calcuate the outcome
-	if (countFail === 0) {
-		outcome = "succeeded";
-	}
-	else if (countFail === 1 && requiresTwoFails === true) {
-		outcome = "succeeded";
-	}
-	else {
-		outcome = "failed";
-	}
-
-	return outcome;
-}
 
 function calcVotes(votes) {
 	var numOfPlayers = votes.length;
@@ -1292,11 +1523,11 @@ function calcVotes(votes) {
 	var outcome;
 
 	for (var i = 0; i < numOfPlayers; i++) {
-		if (votes[i] === "yes") {
+		if (votes[i] === "approve") {
 			// console.log("app");
 			countApp++;
 		}
-		else if (votes[i] === "no") {
+		else if (votes[i] === "reject") {
 			// console.log("rej");
 			countRej++;
 		}
@@ -1322,11 +1553,11 @@ function getStrApprovedRejectedPlayers(votes, playersInGame) {
 
 	for (var i = 0; i < votes.length; i++) {
 
-		if (votes[i] === "yes") {
-			approvedUsernames = approvedUsernames + this.playersInGame[i].username + ", ";
+		if (votes[i] === "approve") {
+			approvedUsernames = approvedUsernames + playersInGame[i].username + ", ";
 		}
-		else if (votes[i] === "no") {
-			rejectedUsernames = rejectedUsernames + this.playersInGame[i].username + ", ";
+		else if (votes[i] === "reject") {
+			rejectedUsernames = rejectedUsernames + playersInGame[i].username + ", ";
 		}
 		else {
 			console.log("ERROR! Unknown vote: " + votes[i]);

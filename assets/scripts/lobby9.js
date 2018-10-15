@@ -676,14 +676,6 @@ function drawAndPositionAvatars() {
 
   
 
-
-  var whenToShowGuns = [
-    "voting",
-    "missionVoting",
-    "assassination",
-    "finished"
-];
-
   var lastPickNum = 0;
   var lastMissionNum = 0;
   function drawGuns() {
@@ -693,7 +685,7 @@ function drawAndPositionAvatars() {
     
 
     if(gameData && gameData.phase){
-        if(whenToShowGuns.indexOf(gameData.phase) === -1){
+        if(gameData.toShowGuns === false){
             $(".gun").css("left", "50%"); 
             $(".gun").css("top", "50%"); 
             $(".gun").css("transform", "translate(-50%,-50%)"); 
