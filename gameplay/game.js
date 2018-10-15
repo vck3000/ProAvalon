@@ -127,6 +127,7 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 	this.pickNum 						= 0;
 	this.missionHistory 				= [];
 	this.proposedTeam 					= [];
+	this.lastProposedTeam 				= [];
 	this.votes 							= [];
 	//Only show all the votes when they've all come in, not one at a time
 	this.publicVotes 					= []; 
@@ -858,8 +859,11 @@ Game.prototype.getGameData = function () {
 				data[i].see = {};
 				data[i].see.spies = getAllSpies(this);
 				data[i].see.roles = getRevealedRoles(this);
+				data[i].proposedTeam = this.lastProposedTeam;
 			}
-			
+			else if (this.phase === "assassination") {
+				data[i].proposedTeam = this.lastProposedTeam;
+			}
 		}
 		return data;
 	}
@@ -918,6 +922,7 @@ Game.prototype.getGameDataForSpectators = function () {
 		data.see = {};
 		data.see.spies = getAllSpies(this);
 		data.see.roles = getRevealedRoles(this);
+		data.proposedTeam = this.lastProposedTeam;
 	}
 
 	return data;
