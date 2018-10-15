@@ -149,6 +149,11 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 Game.prototype = Object.create(Room.prototype);
 Object.assign(Game.prototype, PlayersReadyNotReady.prototype);
 
+// Game.prototype.reloadParentFunctions = function(){
+// 	//Game object inherits all the functions and stuff from Room
+// 	this.prototype = Object.create(Room.prototype);
+// 	Object.assign(this.prototype, PlayersReadyNotReady.prototype);
+// }
 
 //------------------------------------------------
 // METHOD OVERRIDES ------------------------------
@@ -169,7 +174,7 @@ Game.prototype.playerJoinRoom = function (socket, inputPassword) {
 		//sends to players and specs
 		this.distributeGameData();
 	}
-
+	console.log("A");
 	Room.prototype.playerJoinRoom.call(this, socket, inputPassword);
 	this.updateRoomPlayers();		
 };
@@ -386,7 +391,9 @@ Game.prototype.startGame = function (options) {
 Game.prototype.gameMove = function (socket, data) {
 
 	//RUN SPECIAL ROLE AND CARD CHECKS
-	// .......................
+	if(this.checkRoleCardSpecialMoves(socket, data) === true){
+		return;
+	}
 
 	//************************************************************************************
 	//************************************************************************************
@@ -631,11 +638,11 @@ Game.prototype.gameMove = function (socket, data) {
 		// Do nothing here?
 	}
 
-
-
-
 	//RUN SPECIAL ROLE AND CARD CHECKS
-	// .......................
+	//Don't know if we need this again at the bottom of this function (already called once at the top)
+	if(this.checkRoleCardSpecialMoves(socket, data) === true){
+		return;
+	}
 
 	this.distributeGameData();
 };
@@ -678,6 +685,34 @@ Game.prototype.incrementTeamLeader = function(){
 	this.pickNum++;
 }
 
+Game.prototype.getRoomPlayers = function () {
+	if(this.gameStarted === true){
+		var roomPlayers = [];
+		
+		for (var i = 0; i < this.playersInGame.length; i++) {
+			var isClaiming = this.claimingPlayers[this.playersInGame[i].request.user.username];
+
+			roomPlayers[i] = {
+				username: this.playersInGame[i].request.user.username,
+				avatarImgRes: this.playersInGame[i].request.user.avatarImgRes,
+				avatarImgSpy: this.playersInGame[i].request.user.avatarImgSpy,
+				avatarHide: this.playersInGame[i].request.user.avatarHide,
+				claim: isClaiming
+			}
+
+			//give the host the teamLeader star
+			if (roomPlayers[i].username === this.host) {
+				roomPlayers[i].teamLeader = true;
+			}
+		}
+		return roomPlayers;
+	}
+	else{
+		Room.prototype.getRoomPlayers.call(this);
+		
+	}
+}
+
 
 
 Game.prototype.distributeGameData = function(){
@@ -708,10 +743,15 @@ Game.prototype.distributeGameData = function(){
 	}
 };
 
-Game.prototype.getClientNumOfTargets = function(){
+Game.prototype.getClientNumOfTargets = function(indexOfPlayer){
 	if(this.phase === "pickingTeam"){
 		var num = numPlayersOnMission[this.playersInGame.length - minPlayers][this.missionNum - 1];
-		console.log("Num player for this mission : " + num);
+		// console.log("Num player for this mission : " + num);
+
+		//If we are not the team leader
+		if(indexOfPlayer !== this.teamLeader){
+			return null;
+		}
 
 		//In case the mission num is 4*, make it 4.
 		if(num.length > 1){ num = parseInt(num[0]); }
@@ -720,19 +760,19 @@ Game.prototype.getClientNumOfTargets = function(){
 		return num;
 	}
 	else if(this.phase === "votingTeam"){
-		return -1;
+		return null;
 	}
 	else if(this.phase === "votingMission"){
-		return -1;
+		return null;
 	}
 	else{
 		// Check the roles cards
-		var num = this.checkRoleCardGetClientNumOfTargets();
+		var num = this.checkRoleCardGetClientNumOfTargets(indexOfPlayer);
 		if(num !== null){
 			return num;
 		}
 		else{
-			return -1;
+			return null;
 		}
 	}
 };
@@ -771,6 +811,7 @@ Game.prototype.getGameData = function () {
 			data[i].proposedTeam 			= this.proposedTeam;
 
 			data[i].numPlayersOnMission 	= numPlayersOnMission[playerRoles.length - minPlayers]; //- 5
+			data[i].numSelectTargets		= this.getClientNumOfTargets(i);
 
 			data[i].votes 					= this.publicVotes;
 			data[i].voteHistory 			= this.voteHistory;
@@ -816,7 +857,7 @@ Game.prototype.getGameDataForSpectators = function () {
 	data.see.spies 						= [];
 	data.see.merlins 					= [];
 
-	data.buttons 					= this.getClientButtonSettings();
+	data.buttons 						= this.getClientButtonSettings();
 
 	data.statusMessage 					= this.getStatusMessage();
 	data.missionNum 					= this.missionNum;
@@ -830,6 +871,7 @@ Game.prototype.getGameDataForSpectators = function () {
 	data.proposedTeam 					= this.proposedTeam;
 
 	data.numPlayersOnMission 			= numPlayersOnMission[playerRoles.length - minPlayers]; //- 5
+	data.numSelectTargets				= this.getClientNumOfTargets();
 
 	data.votes 							= this.publicVotes;
 	data.voteHistory 					= this.voteHistory;
@@ -949,6 +991,10 @@ Game.prototype.getClientButtonSettings = function(indexOfPlayer){
 			}
 			//Give spectator data if last resort
 			else{
+				obj = {
+					green: {},
+					red: {}
+				}
 				obj.green.hidden = true;
 				obj.green.disabled = true;
 				obj.green.setText = "";
@@ -1313,13 +1359,13 @@ Game.prototype.calcMissionVotes = function(votes) {
 };
 
 
-Game.prototype.checkRoleCardSpecialMoves = function(){
+Game.prototype.checkRoleCardSpecialMoves = function(socket, data){
 	var foundSomething = false;
 	for(var i = 0; i < this.roleKeysInPlay.length; i++){
 		//If the function doesn't exist, return null
 		if(!this.avalonRoles[this.roleKeysInPlay[i]].checkSpecialMove){continue;}
 
-		if(this.avalonRoles[this.roleKeysInPlay[i]].checkSpecialMove() === true){
+		if(this.avalonRoles[this.roleKeysInPlay[i]].checkSpecialMove(socket, data) === true){
 			foundSomething = true;
 			break;
 		}
@@ -1330,7 +1376,7 @@ Game.prototype.checkRoleCardSpecialMoves = function(){
 			//If the function doesn't exist, return null
 			if(!this.avalonRoles[this.roleKeysInPlay[i]].checkSpecialMove){continue;}
 
-			if(this.avalonCards[this.cardKeysInPlay[i]].checkSpecialMove() === true){
+			if(this.avalonCards[this.cardKeysInPlay[i]].checkSpecialMove(socket, data) === true){
 				foundSomething = true;
 				break;
 			}
@@ -1339,7 +1385,7 @@ Game.prototype.checkRoleCardSpecialMoves = function(){
 
 	return foundSomething;
 };
-Game.prototype.checkRoleCardToShowGuns = function(indexOfPlayer){
+Game.prototype.checkRoleCardToShowGuns = function(){
 	var data = null;
 	for(var i = 0; i < this.roleKeysInPlay.length; i++){
 		//If the function doesn't exist, return null
@@ -1362,13 +1408,13 @@ Game.prototype.checkRoleCardToShowGuns = function(indexOfPlayer){
 	}
 	return data;
 };
-Game.prototype.checkRoleCardGetClientNumOfTargets = function(){
+Game.prototype.checkRoleCardGetClientNumOfTargets = function(indexOfPlayer){
 	var data = null;
 	for(var i = 0; i < this.roleKeysInPlay.length; i++){
 		//If the function doesn't exist, return null
 		if(!this.avalonRoles[this.roleKeysInPlay[i]].getClientNumOfTargets){continue;}
 
-		data = this.avalonRoles[this.roleKeysInPlay[i]].getClientNumOfTargets();
+		data = this.avalonRoles[this.roleKeysInPlay[i]].getClientNumOfTargets(indexOfPlayer);
 		if(data !== null){
 			return data;
 		}
@@ -1378,7 +1424,7 @@ Game.prototype.checkRoleCardGetClientNumOfTargets = function(){
 		//If the function doesn't exist, return null
 		if(!this.avalonRoles[this.roleKeysInPlay[i]].getClientNumOfTargets){continue;}
 
-		data = this.avalonCards[this.cardKeysInPlay[i]].getClientNumOfTargets();
+		data = this.avalonCards[this.cardKeysInPlay[i]].getClientNumOfTargets(indexOfPlayer);
 		if(data !== null){
 			return data;
 		}
@@ -1392,7 +1438,7 @@ Game.prototype.checkRoleCardGetClientButtonSettings = function(indexOfPlayer){
 		//If the function doesn't exist, return null
 		if(!this.avalonRoles[this.roleKeysInPlay[i]].getClientButtonSettings){continue;}
 
-		data = this.avalonRoles[this.roleKeysInPlay[i]].getClientButtonSettings();
+		data = this.avalonRoles[this.roleKeysInPlay[i]].getClientButtonSettings(indexOfPlayer);
 		if(data !== null){
 			return data;
 		}
@@ -1402,7 +1448,7 @@ Game.prototype.checkRoleCardGetClientButtonSettings = function(indexOfPlayer){
 		//If the function doesn't exist, return null
 		if(!this.avalonRoles[this.roleKeysInPlay[i]].getClientButtonSettings){continue;}
 
-		data = this.avalonCards[this.cardKeysInPlay[i]].getClientButtonSettings();
+		data = this.avalonCards[this.cardKeysInPlay[i]].getClientButtonSettings(indexOfPlayer);
 		if(data !== null){
 			return data;
 		}
@@ -1416,7 +1462,7 @@ Game.prototype.checkRoleCardStatusMessage = function(indexOfPlayer){
 		//If the function doesn't exist, return null
 		if(!this.avalonRoles[this.roleKeysInPlay[i]].getStatusMessage){continue;}
 
-		data = this.avalonRoles[this.roleKeysInPlay[i]].getStatusMessage();
+		data = this.avalonRoles[this.roleKeysInPlay[i]].getStatusMessage(indexOfPlayer);
 		if(data !== null){
 			return data;
 		}
@@ -1424,7 +1470,7 @@ Game.prototype.checkRoleCardStatusMessage = function(indexOfPlayer){
 
 	for(var i = 0; i < this.cardKeysInPlay.length; i++){
 		//If the function doesn't exist, return null
-		if(!this.avalonRoles[this.roleKeysInPlay[i]].getStatusMessage){continue;}
+		if(!this.avalonRoles[this.roleKeysInPlay[i]].getStatusMessage(indexOfPlayer)){continue;}
 
 		data = this.avalonCards[this.cardKeysInPlay[i]].getStatusMessage();
 		if(data !== null){
@@ -1435,6 +1481,43 @@ Game.prototype.checkRoleCardStatusMessage = function(indexOfPlayer){
 	return data;
 };
 
+Game.prototype.loadRoleCardData = function(roleData, cardData){
+	this.avalonRoles = (new avalonRolesIndex).getRoles(this);
+	this.avalonCards = (new avalonCardsIndex).getCards(this);
+
+	//For every role
+	for(var k1 in roleData){
+		if(roleData.hasOwnProperty(k1)){
+
+			//For every piece of data
+			for(var k2 in roleData[k1]){
+				if(roleData[k1].hasOwnProperty(k2)){
+					this.avalonRoles[k1][k2] = roleData[k1][k2];
+				}
+			}
+
+			// For every role, update the "thisRoom" to point to this
+			// this.avalonRoles[k1]["thisRoom"] = this;
+		}
+	}
+	
+	//For every role
+	for(var k1 in cardData){
+		if(cardData.hasOwnProperty(k1)){
+
+			//For every piece of data
+			for(var k2 in cardData[k1]){
+				if(cardData[k1].hasOwnProperty(k2)){
+					this.avalonCards[k1][k2] = cardData[k1][k2];
+				}
+			}
+			// For every card, update the "thisRoom" to point to this
+			// this.avalonCards[k1]["thisRoom"] = this;
+		}
+	}
+
+	console.log(this.avalonRoles);
+}
 
 
 

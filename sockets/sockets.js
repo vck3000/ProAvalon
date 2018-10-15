@@ -181,7 +181,7 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 						if(storedData.hasOwnProperty(key)){
 							// console.log("typeof: " + typeof(key))
 							rooms[storedData["roomId"]][key] = storedData[key];
-							// console.log("copied over: " + key);
+							console.log("copied over: " + key);
 							// if(key === "startGameTime"){
 
 								// console.log(storedData[key]);
@@ -189,9 +189,15 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 							// }
 						}
 					}
-			
+
+					rooms[storedData["roomId"]].loadRoleCardData(storedData["avalonRoles"], storedData["avalonCards"]);
+					// rooms[storedData["roomId"]].reloadParentFunctions();
+					
+
 					rooms[storedData["roomId"]].restartSaved = true;
-					rooms[storedData["roomId"]].socketsChangedOnce = false;
+					rooms[storedData["roomId"]].allSockets = [];
+					rooms[storedData["roomId"]].socketsOfPlayers = [];
+					
 					rooms[storedData["roomId"]].frozen = true;
 
 					rooms[storedData["roomId"]].timeFrozenLoaded = new Date();
@@ -204,7 +210,7 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 
 					// console.log("platform: " + process.env.MY_PLATFORM);
 					if(process.env.MY_PLATFORM === "online"){
-						// foundSaveGame.remove();
+						foundSaveGame.remove();
 					}
 				}
 			}

@@ -65,17 +65,19 @@ Assassin.prototype.checkSpecialMove = function(socket, data){
 
     // If its already assassination phase, then carry out the assassination move
     else if(this.isSpecialPhase() && socket && data){
+        if(typeof(data) === "object" || typeof(data) === "array"){
+            data = data[0];
+        }
         // Check that the person making this request is the assassin
         var indexOfRequester = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username);
         if(this.thisRoom.playersInGame[indexOfRequester].role === this.role){
-
             var indexOfTarget = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, data);
 
             // Get merlin's username
             var merlinUsername = undefined;
-			for (var i = 0; i < playerRoles.length; i++) {
-				if (playerRoles[i].role === "Merlin") {
-					merlinUsername = playerRoles[i].username;
+			for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
+				if (this.thisRoom.playersInGame[i].role === "Merlin") {
+					merlinUsername = this.thisRoom.playersInGame[i].username;
 				}
             }
             
@@ -102,6 +104,7 @@ Assassin.prototype.checkSpecialMove = function(socket, data){
                 }
             }
             else{
+                console.log(data);
 		        socket.emit("danger-alert", "Bad assassination data. Tell the admin if you see this!");
             }
         }
@@ -119,13 +122,17 @@ Assassin.prototype.toShowGuns = function(){
     }
 };
 
-Assassin.prototype.getClientNumOfTargets = function(){
-    if(this.isSpecialPhase()){
-        return 1;
+Assassin.prototype.getClientNumOfTargets = function(indexOfPlayer){
+
+    if(indexOfPlayer !== undefined && indexOfPlayer !== null){
+        if(this.isSpecialPhase() && this.thisRoom.playersInGame[indexOfPlayer].role === this.role){
+            return 1;
+        }
+        else{
+            return null;
+        }
     }
-    else{
-        return null;
-    }
+
 };
 
 
@@ -190,7 +197,6 @@ Assassin.prototype.getStatusMessage = function(indexOfPlayer){
             var usernameOfAssassin = this.thisRoom.playersInGame[indexOfAssassin].username;
             return "Waiting for " + usernameOfAssassin + " to assassinate Merlin."
         }
-        return obj;
     }
     return null;
 };
