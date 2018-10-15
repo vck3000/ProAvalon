@@ -1786,7 +1786,6 @@ module.exports = function (io) {
 			if (rooms[socket.request.user.inRoomId]) {
 				rooms[socket.request.user.inRoomId].gameMove(socket, data);
 			}
-
 			if(rooms[socket.request.user.inRoomId].finished === true){
 				deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
 			}
@@ -1794,46 +1793,6 @@ module.exports = function (io) {
 				saveGameToDb(rooms[socket.request.user.inRoomId]);
 			}
 		});
-
-		// //when a player picks a team
-		// socket.on("pickedTeam", function (data) {
-		// 	if (rooms[socket.request.user.inRoomId]) {
-		// 		rooms[socket.request.user.inRoomId].playerPickTeam(socket, data);
-		// 	}
-		// });
- 
-		// socket.on("pickVote", function (data) {
-		// 	if (rooms[socket.request.user.inRoomId]) {
-		// 		rooms[socket.request.user.inRoomId].pickVote(socket, data);
-				
-		// 	}
-
-		// });
-
-		// socket.on("missionVote", function (data) {
-		// 	if (rooms[socket.request.user.inRoomId]) {
-		// 		rooms[socket.request.user.inRoomId].missionVote(socket, data);
-				
-		// 	}
-		// 	//update all the games list (also including the status because game status changes when a mission is voted for)
-		// 	updateCurrentGamesList(io);
-		// });
-
-		// socket.on("assassinate", function (data) {
-		// 	if (rooms[socket.request.user.inRoomId]) {
-		// 		rooms[socket.request.user.inRoomId].assassinate(socket, data);
-				
-		// 	}
-		// 	//update all the games list (also including the status because game status changes when a mission is voted for)
-		// 	updateCurrentGamesList(io);
-		// });
-
-		// socket.on("lady", function (data) {
-		// 	if (rooms[socket.request.user.inRoomId]) {
-		// 		rooms[socket.request.user.inRoomId].useLady(socket, data);
-				
-		// 	}
-		// });
 
 		socket.on("setClaim", function(data){
 			if (rooms[socket.request.user.inRoomId]) {
@@ -1968,8 +1927,7 @@ function playerLeaveRoomCheckDestroy(socket){
 		//leave the room
 		rooms[socket.request.user.inRoomId].playerLeaveRoom(socket);
 
-		//TODO !!! Incomplete
-		var toDestroy = false; //rooms[socket.request.user.inRoomId].toDestroy();
+		var toDestroy = rooms[socket.request.user.inRoomId].destroyRoom;
 		if(toDestroy){
 			deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
 			rooms[socket.request.user.inRoomId] = undefined;

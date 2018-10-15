@@ -2,11 +2,10 @@
 
 function index(){
     //Import all the roles from AVALON
-    this.getRoles = function(thisRoom){
-        var normalizedPath = require("path").join(__dirname, "./roles");
+    this.getCards = function(thisRoom){
+        var normalizedPath = require("path").join(__dirname, "./cards");
 
-
-        var roleImports = {};
+        var cardImports = {};
         var obj = {};
     
         require("fs").readdirSync(normalizedPath).forEach(function(file) {
@@ -14,14 +13,14 @@ function index(){
     
             name = file.replace(".js", "");
     
-            roleImports[name] = require("./roles/" + file);
+            cardImports[name] = require("./cards/" + file);
         });
     
     
-        for(var name in roleImports){
-            if(roleImports.hasOwnProperty(name)){
+        for(var name in cardImports){
+            if(cardImports.hasOwnProperty(name)){
                 //Initialise it
-                obj[name] = new roleImports[name](thisRoom);
+                obj[name] = new cardImports[name](thisRoom);
             }
         }
 

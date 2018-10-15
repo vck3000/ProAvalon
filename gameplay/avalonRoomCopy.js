@@ -746,7 +746,6 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 						this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1][this.pickNum - 1] = "";
 					}
 
-
 					if (this.proposedTeam.indexOf(this.playersInGame[i].request.user.username) !== -1) {
 						this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1][this.pickNum - 1] += "VHpicked ";
 					}

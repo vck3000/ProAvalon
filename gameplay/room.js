@@ -31,7 +31,7 @@ function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_) {
 	this.kickedPlayers 				= [];
 	this.claimingPlayers 			= [];
 
-}
+};
 
 
 Room.prototype.playerJoinRoom = function (socket, inputPassword) {
@@ -73,7 +73,7 @@ Room.prototype.playerJoinRoom = function (socket, inputPassword) {
 	this.updateRoomPlayers();
 
 	return true;
-}
+};
 
 
 Room.prototype.playerSitDown = function(socket) {
@@ -94,12 +94,11 @@ Room.prototype.playerSitDown = function(socket) {
 		return;
 	}
 
-
 	// If the socket passes all the tests, then push them
 	this.socketsOfPlayers.push(socket);
 
 	this.updateRoomPlayers();
-}
+};
 
 
 Room.prototype.playerStandUp = function(socket) {
@@ -165,7 +164,7 @@ Room.prototype.kickPlayer = function (username, socket) {
 		// console.log(kickMsg);
 		this.updateRoomPlayers();
 	}
-}
+};
 
 Room.prototype.setClaim = function(socket, data){
 	//data presents whether they want to CLAIM (true) or UNCLAIM (false)
@@ -184,7 +183,7 @@ Room.prototype.setClaim = function(socket, data){
 	}
 
 	this.updateRoomPlayers();
-}
+};
 
 
 
@@ -198,7 +197,7 @@ Room.prototype.sendText = function(sockets, incString, stringType) {
 	for (var i = 0; i < this.allSockets.length; i++) {
 		this.allSockets[i].emit("roomChatToClient", data);
 	}
-}
+};
 
 Room.prototype.updateRoomPlayers = function(){
 	//Get the usernames of spectators
@@ -222,7 +221,7 @@ Room.prototype.updateRoomPlayers = function(){
 			this.allSockets[i].emit("update-room-info", {maxNumPlayers: this.maxNumPlayers});
 		}
 	}
-}
+};
 
 Room.prototype.getRoomPlayers = function () {
 	var roomPlayers = [];
@@ -270,14 +269,14 @@ Room.prototype.getSocketsOfSpectators = function(){
 	}
 
 	return socketsOfSpecs;
-}
+};
 
 Room.prototype.updateMaxNumPlayers = function(socket, number){
 	if(socket.request.user.username === this.host && number >= 5 && number <= 10){
 		this.maxNumPlayers = number;
 		this.updateRoomPlayers();
 	}
-}
+};
 
 
 

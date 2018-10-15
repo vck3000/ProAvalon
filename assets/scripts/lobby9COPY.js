@@ -953,13 +953,76 @@ function enableDisableButtons() {
     }
     //if game started and we are a player:
     else if (gameStarted === true && isSpectator === false) {
-        if(gameData.greenButton.hidden === false){btnRemoveHidden("green");}
-        if(gameData.greenButton.disabled === false){btnRemoveDisabled("green");}
-        if(gameData.greenButton.setText !== undefined){btnSetText("green", gameData.greenButton.setText);}
+        // if we are in picking phase
+        if (gameData.phase === "picking") {
+            btnSetText("green", "Pick");
 
-        if(gameData.redButton.hidden === false){btnRemoveHidden("red");}
-        if(gameData.redButton.disabled === false){btnRemoveDisabled("red");}
-        if(gameData.redButton.setText !== undefined){btnSetText("red", gameData.redButton.setText);}
+            // if we are the team leader, then show them that its their turn by
+            // unhiding the button
+            if(getUsernameFromIndex(gameData.teamLeader) === ownUsername){
+                showYourTurnNotification(true);
+            }
+        }
+
+        // if we are in voting phase
+        else if (gameData.phase === "voting") {
+            // if our username is among the players that haven't voted yet
+            // then show the approve reject buttons
+            if (checkEntryExistsInArray(gameData.playersYetToVote, ownUsername)) {
+                btnRemoveHidden("green");
+                btnRemoveDisabled("green");
+                btnSetText("green", "Approve");
+
+                btnRemoveHidden("red");
+                btnRemoveDisabled("red");
+                btnSetText("red", "Reject");
+            }
+        }
+
+        else if (gameData.phase === "missionVoting") {
+            // if our username is among the players that haven't voted yet
+            // then show the approve reject buttons
+            if (checkEntryExistsInArray(gameData.playersYetToVote, ownUsername)) {
+                btnRemoveHidden("green");
+                btnRemoveDisabled("green");
+                btnSetText("green", "SUCCEED");
+
+                btnRemoveHidden("red");
+                btnRemoveDisabled("red");
+                btnSetText("red", "FAIL");
+            }
+        }
+
+        else if (gameData.phase === "assassination") {
+            btnSetText("green", "SHOOT");
+
+            if ("Assassin" === gameData.role) {
+                showYourTurnNotification(true);
+            }
+
+            //if there is only one person highlighted
+            if (countHighlightedAvatars() == 1) {
+                btnRemoveDisabled("green");
+            }
+        }
+
+        else if (gameData.phase === "lady") {
+            if (ownUsername === getUsernameFromIndex(gameData.lady)) {
+                showYourTurnNotification(true);
+            }
+
+            btnSetText("green", "Card");
+
+            //if there is only one person highlighted
+            if (countHighlightedAvatars() == 1 && ownUsername === getUsernameFromIndex(gameData.lady)) {
+                btnRemoveDisabled("green");
+            }
+        }
+
+        else if (gameData.phase === "finished") {
+            // Ideally this would be in the draw function somewhere... not here
+            drawGuns();
+        }
     }
 }
 
