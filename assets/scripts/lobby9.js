@@ -96,132 +96,133 @@ function draw() {
 
         
         if (gameStarted === true) {
-
             drawExitedPlayers(gameData.gamePlayersInRoom);
 
-            $("#missionsBox").removeClass("invisible");
-
-            //Edit the status bar/well
-            if (gameData.phase === "picking") {
+            if(gameData.finished !== true){
+                $("#missionsBox").removeClass("invisible");
+    
                 //give it the default status message
                 setStatusBarText(gameData.statusMessage);
-
+    
                 //draw the votes if there are any to show
                 drawVotes(gameData.votes);
-
+    
                 //if we are the team leader---------------------------------------------
                 if (getIndexFromUsername(ownUsername) === gameData.teamLeader) {
                     teamLeaderSetup(gameData.phase);
                 }
-            }
-            else if (gameData.phase === "voting") {
-
-                drawGuns();
-
-                var str = "";
-
-                //show the remaining players who haven't voted if we have voted
-                if (gameData.playersYetToVote.indexOf(ownUsername) === -1) {
-                    str += "Waiting for votes: ";
-
-                    for (var i = 0; i < gameData.playersYetToVote.length; i++) {
-                        str = str + gameData.playersYetToVote[i] + ", ";
-                    }
-                }
-                else {
-                    //change the well to display what was picked.
-                    str += (getUsernameFromIndex(gameData.teamLeader) + " has picked: ");
-
-                    for (var i = 0; i < gameData.proposedTeam.length; i++) {
-                        str += gameData.proposedTeam[i] + ", ";
-                    }
-                }
-
-                //remove the last , and replace with .
-                str = str.slice(0, str.length - 2);
-                str += ".";
-
-
-                setStatusBarText(str);
                 
-            }
-
-            else if (gameData.phase === "missionVoting") {
-
-                var str = "";
-                //show the remaining players who haven't voted if we have voted
-                if (gameData.playersYetToVote.indexOf(ownUsername) === -1) {
-                    str += "Waiting for mission votes: ";
-
-                    for (var i = 0; i < gameData.playersYetToVote.length; i++) {
-                        str = str + gameData.playersYetToVote[i] + ", ";
-                    }
-                }
-                else {
-                    //change the well to display what was picked.
-                    str += (getUsernameFromIndex(gameData.teamLeader) + " has picked: ");
-
-                    for (var i = 0; i < gameData.proposedTeam.length; i++) {
-                        str += gameData.proposedTeam[i] + ", ";
-                    }
-                }
-
-
-                //show the remaining players who haven't voted
-                // var str = "Waiting for mission votes: ";
-
-                // for (var i = 0; i < gameData.playersYetToVote.length; i++) {
-                //     str = str + gameData.playersYetToVote[i] + ", ";
-                // }
-
-                //remove the last , and replace with .
-                str = str.slice(0, str.length - 2);
-                str += ".";
-
-                setStatusBarText(str);
-                
-
-                drawGuns();
-                drawVotes(gameData.votes);
-            }
-            else if (gameData.phase === "assassination") {
-                //for the assassin: set up their stuff to shoot
-                if (gameData.role === "Assassin") {
-                setStatusBarText("Shoot merlin.");
+                // else if (gameData.phase === "voting") {
+    
+                //     drawGuns();
+    
+                //     var str = "";
+    
+                //     //show the remaining players who haven't voted if we have voted
+                //     if (gameData.playersYetToVote.indexOf(ownUsername) === -1) {
+                //         str += "Waiting for votes: ";
+    
+                //         for (var i = 0; i < gameData.playersYetToVote.length; i++) {
+                //             str = str + gameData.playersYetToVote[i] + ", ";
+                //         }
+                //     }
+                //     else {
+                //         //change the well to display what was picked.
+                //         str += (getUsernameFromIndex(gameData.teamLeader) + " has picked: ");
+    
+                //         for (var i = 0; i < gameData.proposedTeam.length; i++) {
+                //             str += gameData.proposedTeam[i] + ", ";
+                //         }
+                //     }
+    
+                //     //remove the last , and replace with .
+                //     str = str.slice(0, str.length - 2);
+                //     str += ".";
+    
+    
+                //     setStatusBarText(str);
                     
-                    // console.log
-                    assassinationSetup(gameData.phase);
-                }
-                else {
-                    if(gameData.assassin){
-                        setStatusBarText("Waiting for " + gameData.assassin + " to assassinate Merlin...");
-
-                    }
-                    else{
-                        setStatusBarText("Waiting for assassin to assassinate.");
-                    }
-                }
-            //   enableDisableButtons();
+                // }
+    
+                // else if (gameData.phase === "missionVoting") {
+    
+                //     var str = "";
+                //     //show the remaining players who haven't voted if we have voted
+                //     if (gameData.playersYetToVote.indexOf(ownUsername) === -1) {
+                //         str += "Waiting for mission votes: ";
+    
+                //         for (var i = 0; i < gameData.playersYetToVote.length; i++) {
+                //             str = str + gameData.playersYetToVote[i] + ", ";
+                //         }
+                //     }
+                //     else {
+                //         //change the well to display what was picked.
+                //         str += (getUsernameFromIndex(gameData.teamLeader) + " has picked: ");
+    
+                //         for (var i = 0; i < gameData.proposedTeam.length; i++) {
+                //             str += gameData.proposedTeam[i] + ", ";
+                //         }
+                //     }
+    
+    
+                //     //show the remaining players who haven't voted
+                //     // var str = "Waiting for mission votes: ";
+    
+                //     // for (var i = 0; i < gameData.playersYetToVote.length; i++) {
+                //     //     str = str + gameData.playersYetToVote[i] + ", ";
+                //     // }
+    
+                //     //remove the last , and replace with .
+                //     str = str.slice(0, str.length - 2);
+                //     str += ".";
+    
+                //     setStatusBarText(str);
+                    
+    
+                //     drawGuns();
+                //     drawVotes(gameData.votes);
+                // }
+                // else if (gameData.phase === "assassination") {
+                //     //for the assassin: set up their stuff to shoot
+                //     if (gameData.role === "Assassin") {
+                //     setStatusBarText("Shoot merlin.");
+                        
+                //         // console.log
+                //         assassinationSetup(gameData.phase);
+                //     }
+                //     else {
+                //         if(gameData.assassin){
+                //             setStatusBarText("Waiting for " + gameData.assassin + " to assassinate Merlin...");
+    
+                //         }
+                //         else{
+                //             setStatusBarText("Waiting for assassin to assassinate.");
+                //         }
+                //     }
+                // //   enableDisableButtons();
+                // }
+                // else if (gameData.phase === "lady") {
+                //     setStatusBarText(gameData.statusMessage);
+                    
+                //     if (ownUsername === getUsernameFromIndex(gameData.lady)) {
+                //         ladySetup(gameData.phase, gameData.ladyablePeople);
+                //     }
+                // //   enableDisableButtons();
+                // }
+    
+                // else if (gameData.phase === "finished") {
+                //     setStatusBarText(gameData.statusMessage);
+                    
+                // //   enableDisableButtons();
+                //     if (gameData.see.playerShot) {
+                //         drawBullet(getIndexFromUsername(gameData.see.playerShot));
+                //     }
+    
+    
+                // }
             }
-            else if (gameData.phase === "lady") {
-                setStatusBarText(gameData.statusMessage);
-                
-                if (ownUsername === getUsernameFromIndex(gameData.lady)) {
-                    ladySetup(gameData.phase, gameData.ladyablePeople);
-                }
-            //   enableDisableButtons();
-            }
 
-            else if (gameData.phase === "finished") {
-                setStatusBarText(gameData.statusMessage);
-                
-            //   enableDisableButtons();
-                if (gameData.see.playerShot) {
-                    drawBullet(getIndexFromUsername(gameData.see.playerShot));
-                }
-
-
-            }
+            
 
         }
 
@@ -448,93 +449,65 @@ function assassinationSetup(phase) {
 function teamLeaderSetup(phase) {
     var numPlayersOnMission = gameData.numPlayersOnMission[gameData.missionNum - 1];
 
-    //edit the well to show how many people to pick.
-    if (phase === "picking") {
-
-        setStatusBarText("Your turn to pick a team. Pick " + numPlayersOnMission + " players.");
-
-
-        var divs = document.querySelectorAll("#mainRoomBox div");
-        //add the event listeners for button press
-        for (var i = 0; i < divs.length; i++) {
-            divs[i].addEventListener("click", function () {
-            // console.log("avatar pressed");
-                //toggle the highlight class
-                this.classList.toggle("highlight-avatar");
-                //change the pick team button to enabled/disabled
-                enableDisableButtonsLeader(numPlayersOnMission);
-            });
-        }
-        enableDisableButtonsLeader(numPlayersOnMission);
+    var divs = document.querySelectorAll("#mainRoomBox div");
+    //add the event listeners for button press
+    for (var i = 0; i < divs.length; i++) {
+        divs[i].addEventListener("click", function () {
+        // console.log("avatar pressed");
+            //toggle the highlight class
+            this.classList.toggle("highlight-avatar");
+            //change the pick team button to enabled/disabled
+            enableDisableButtonsLeader(numPlayersOnMission);
+        });
     }
-}
+    enableDisableButtonsLeader(numPlayersOnMission);
+    
+};
 
-  function ladySetup(phase, ladyablePeople) {
-      //edit the well to show how many people to pick.
-      if (phase === "lady") {
-
-        setStatusBarText("Your turn to use the Lady of the Lake. Select one player to use it on.");
-
-        
-          var divs = document.querySelectorAll("#mainRoomBox div");
-          //add the event listeners for button press
-          for (var i = 0; i < divs.length; i++) {
-              if (ladyablePeople[i] === true) {
-                  divs[i].addEventListener("click", function () {
-                    // console.log("avatar pressed");
-                      //toggle the highlight class
-                      this.classList.toggle("highlight-avatar");
-                      //change the pick team button to enabled/disabled
-                      enableDisableButtons();
-                  });
-              }
-          }
-      }
-  }
   
-  function drawMiddleBoxes() {
-      //draw missions and numPick
-      //j<5 because there are only 5 missions/picks each game
-      if (gameData) {
-          for (var j = 0; j < 5; j++) {
-              //missions
-              var missionStatus = gameData.missionHistory[j];
-              if (missionStatus === "succeeded") {
-                  document.querySelectorAll(".missionBox")[j].classList.add("missionBoxSucceed");
-                  document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxFail");
-              }
-              else if (missionStatus === "failed") {
-                  document.querySelectorAll(".missionBox")[j].classList.add("missionBoxFail");
-                  document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxSucceed");
-              }
-  
-              //draw in the number of players in each mission
-              var numPlayersOnMission = gameData.numPlayersOnMission[j];
-              if (numPlayersOnMission) {
-                  document.querySelectorAll(".missionBox")[j].innerHTML = "<p>" + numPlayersOnMission + "</p>";
-              }
-  
-              //picks boxes
-              var pickNum = gameData.pickNum;
-              if (j < pickNum) {
-                  document.querySelectorAll(".pickBox")[j].classList.add("pickBoxFill");
-              }
-              else {
-                  document.querySelectorAll(".pickBox")[j].classList.remove("pickBoxFill");
-              }
-          }
-      }
-      else {
-          for (var j = 0; j < 5; j++) {
-              document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxFail");
-              document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxSucceed");
-              document.querySelectorAll(".missionBox")[j].innerText = "";
-              document.querySelectorAll(".pickBox")[j].classList.remove("pickBoxFill");
-          }
-      }
+function drawMiddleBoxes() {
+    //draw missions and numPick
+    //j<5 because there are only 5 missions/picks each game
+    if (gameData) {
+        for (var j = 0; j < 5; j++) {
+            //missions
+            var missionStatus = gameData.missionHistory[j];
+            if (missionStatus === "succeeded") {
+                document.querySelectorAll(".missionBox")[j].classList.add("missionBoxSucceed");
+                document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxFail");
+            }
+            else if (missionStatus === "failed") {
+                document.querySelectorAll(".missionBox")[j].classList.add("missionBoxFail");
+                document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxSucceed");
+            }
 
-      widthOfRoom = $("#mainRoomBox").width();
-      $("#missionsBox").css("left", (widthOfRoom/2) + "px");
+            //draw in the number of players in each mission
+            var numPlayersOnMission = gameData.numPlayersOnMission[j];
+            if (numPlayersOnMission) {
+                document.querySelectorAll(".missionBox")[j].innerHTML = "<p>" + numPlayersOnMission + "</p>";
+            }
+
+            //picks boxes
+            var pickNum = gameData.pickNum;
+            if (j < pickNum) {
+                document.querySelectorAll(".pickBox")[j].classList.add("pickBoxFill");
+            }
+            else {
+                document.querySelectorAll(".pickBox")[j].classList.remove("pickBoxFill");
+            }
+        }
+    }
+    else {
+        for (var j = 0; j < 5; j++) {
+            document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxFail");
+            document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxSucceed");
+            document.querySelectorAll(".missionBox")[j].innerText = "";
+            document.querySelectorAll(".pickBox")[j].classList.remove("pickBoxFill");
+        }
+    }
+
+    widthOfRoom = $("#mainRoomBox").width();
+    $("#missionsBox").css("left", (widthOfRoom/2) + "px");
 }
 
 //set up the hover over missions box and highlight participating members
@@ -953,13 +926,13 @@ function enableDisableButtons() {
     }
     //if game started and we are a player:
     else if (gameStarted === true && isSpectator === false) {
-        if(gameData.greenButton.hidden === false){btnRemoveHidden("green");}
-        if(gameData.greenButton.disabled === false){btnRemoveDisabled("green");}
-        if(gameData.greenButton.setText !== undefined){btnSetText("green", gameData.greenButton.setText);}
+        if(gameData.buttons.green.hidden === false){btnRemoveHidden("green");}
+        if(gameData.buttons.green.disabled === false){btnRemoveDisabled("green");}
+        if(gameData.buttons.green.setText !== undefined){btnSetText("green", gameData.buttons.green.setText);}
 
-        if(gameData.redButton.hidden === false){btnRemoveHidden("red");}
-        if(gameData.redButton.disabled === false){btnRemoveDisabled("red");}
-        if(gameData.redButton.setText !== undefined){btnSetText("red", gameData.redButton.setText);}
+        if(gameData.buttons.red.hidden === false){btnRemoveHidden("red");}
+        if(gameData.buttons.red.disabled === false){btnRemoveDisabled("red");}
+        if(gameData.buttons.red.setText !== undefined){btnSetText("red", gameData.buttons.red.setText);}
     }
 }
 

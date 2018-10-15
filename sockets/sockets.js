@@ -83,11 +83,11 @@ function saveGameToDb(roomToSave){
 		}
 	}
 }
-function deleteSaveGameFromDb(roomToSave){
+function deleteSaveGameFromDb(room){
 	// if(process.env.MY_PLATFORM === "online"){
 		// console.log("room id to remove");
 		// console.log(roomToSave.savedGameRecordId);
-		savedGameObj.findByIdAndRemove(roomToSave.savedGameRecordId, function(err){
+		savedGameObj.findByIdAndRemove(room.savedGameRecordId, function(err){
 			if(err){
 				console.log(err);
 			}
@@ -1003,7 +1003,8 @@ var actionsObj = {
 						dummySockets[i] = {
 							request: {
 								user: {
-									username: "Bot" + i
+									username: "Bot" + i,
+									bot: true
 								}
 							},
 							emit: function(){
@@ -1020,6 +1021,22 @@ var actionsObj = {
 
 
 				
+                return;
+            }
+		},
+
+		mremovefrozen: {
+			command: "mremovefrozen",
+            help: "/mremovefrozen: Remove all frozen rooms and the corresponding save files in the database.",
+            run: function (data, senderSocket) {
+
+				for(var i = 0; i < rooms.length; i++){
+					if(rooms[i] && rooms[i].frozen === true){
+						deleteSaveGameFromDb(rooms[i]);
+						rooms[i] = undefined;
+					}
+				}
+				updateCurrentGamesList();
                 return;
             }
 		}

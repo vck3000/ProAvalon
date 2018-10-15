@@ -75,10 +75,10 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options) {
         //.slice to clone
         this.playersYetToReady = this.socketsOfPlayers.slice();
 
+        // If there are bots, remove them.
         for(var i = this.playersYetToReady.length - 1; i >= 0 ; i--){
-            username = this.playersYetToReady[i].request.user.username;
-
-            if( username.includes("Bot") ){
+            if( this.playersYetToReady[i].request.user.bot === true ){
+                console.log("Removed bot: " + i);
                 this.playersYetToReady.splice(i, 1);
             }
         }

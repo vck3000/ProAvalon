@@ -391,15 +391,15 @@ Game.prototype.gameMove = function (socket, data) {
 	//************************************************************************************
 	if(this.phase === "pickingTeam"){
 		// If the person requesting is the host
-		if(getIndexFromUsername(this.playersInGame, socket.request.user.username) === this.teamLeader){
+		if(usernamesIndexes.getIndexFromUsername(this.playersInGame, socket.request.user.username) === this.teamLeader){
 			//Reset votes
 			this.votes = [];
 
 			var num = numPlayersOnMission[this.playersInGame.length - minPlayers][this.missionNum - 1];
-			console.log("Num player for this mission : " + numPlayersMission);
+			console.log("Num player for this mission : " + num);
 
 			//In case the mission num is 4*, make it 4.
-			if(num.length > 1){ num = parseInt(num[1]); }
+			if(num.length > 1){ num = parseInt(num[0]); }
 			else{ num = parseInt(num); }
 			
 			//Check that the data is valid (i.e. includes only usernames of players)
@@ -460,10 +460,10 @@ Game.prototype.gameMove = function (socket, data) {
 		// If they haven't voted yet
 		if(i !== -1){
 			if(data === "yes"){
-				this.votes[getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "yes";
+				this.votes[usernamesIndexes.getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "yes";
 			}
 			else if(data === "no"){
-				this.votes[getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "no";
+				this.votes[usernamesIndexes.getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "no";
 			}
 			else {
 				console.log("ERROR! This should definitely not happen. Game.js votingTeam.");
@@ -514,11 +514,11 @@ Game.prototype.gameMove = function (socket, data) {
 		//if this vote is coming from someone who hasn't voted yet
 		if (i !== -1) {
 			if (voteStr === "yes") {
-				this.missionVotes[getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "succeed";
+				this.missionVotes[usernamesIndexes.getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "succeed";
 				// console.log("received succeed from " + socket.request.user.username);
 			}
 			else if (voteStr === "no") {
-				this.missionVotes[getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "fail";
+				this.missionVotes[usernamesIndexes.getIndexFromUsername(this.playersInGame, socket.request.user.username)] = "fail";
 				// console.log("received fail from " + socket.request.user.username);
 			}
 			else {
@@ -624,6 +624,7 @@ Game.prototype.gameMove = function (socket, data) {
 	//RUN SPECIAL ROLE AND CARD CHECKS
 	// .......................
 
+	this.distributeGameData();
 };
 
 Game.prototype.incrementTeamLeader = function(){
@@ -666,6 +667,110 @@ Game.prototype.distributeGameData = function(){
 	}
 };
 
+Game.prototype.getClientButtonSettings = function(indexOfPlayer){
+	var obj = {
+		green:{},
+		red: {}
+	};
+
+	if(indexOfPlayer){
+		if(this.phase === "pickingTeam"){
+			// If it is the host
+			if(indexOfPlayer === this.teamLeader){
+				obj.green.hidden = false;
+				obj.green.disabled = true;
+				obj.green.setText = "Pick";
+	
+				obj.red.hidden = true;
+				obj.red.disabled = true;
+				obj.red.setText = "";
+			}
+			// If it is any other player who isn't host
+			else{
+				obj.green.hidden = true;
+				obj.green.disabled = true;
+				obj.green.setText = "";
+	
+				obj.red.hidden = true;
+				obj.red.disabled = true;
+				obj.red.setText = "";
+			}
+			
+		}
+		else if(this.phase === "votingTeam"){
+			// If user has voted already
+			if(indexOfPlayer && this.playersYetToVote.indexOf(this.playersInGame[indexOfPlayer].username) === -1){
+				obj.green.hidden = true;
+				obj.green.disabled = true;
+				obj.green.setText = "";
+		
+				obj.red.hidden = true;
+				obj.red.disabled = true;
+				obj.red.setText = "";
+			}
+			// User has not voted yet
+			else if(indexOfPlayer){
+				obj.green.hidden = false;
+				obj.green.disabled = false;
+				obj.green.setText = "Approve";
+		
+				obj.red.hidden = false;
+				obj.red.disabled = false;
+				obj.red.setText = "Reject";
+			}
+		}
+		else if(this.phase === "votingMission"){
+			obj.green.hidden = false;
+			obj.green.disabled = false;
+			obj.green.setText = "SUCCEED";
+	
+			obj.red.hidden = false;
+			obj.red.disabled = false;
+			obj.red.setText = "FAIL";
+		}
+		else{
+			//TODO
+			//Get the buttons from cards if applicable!
+		}
+	}
+	// User is a spectator
+	else{
+		obj.green.hidden = true;
+		obj.green.disabled = true;
+		obj.green.setText = "";
+
+		obj.red.hidden = true;
+		obj.red.disabled = true;
+		obj.red.setText = "";
+	}
+
+	
+
+	return obj;
+};
+
+Game.prototype.getClientNumOfTargets = function(){
+	if(this.phase === "pickingTeam"){
+		var num = numPlayersOnMission[this.playersInGame.length - minPlayers][this.missionNum - 1];
+		console.log("Num player for this mission : " + num);
+
+		//In case the mission num is 4*, make it 4.
+		if(num.length > 1){ num = parseInt(num[0]); }
+		else{ num = parseInt(num); }
+
+		return num;
+	}
+	else if(this.phase === "votingTeam"){
+		return -1;
+	}
+	else if(this.phase === "votingMission"){
+		return -1;
+	}
+	else{
+		// TODO get from cards/roles
+	}
+};
+
 Game.prototype.getGameData = function () {
 	if(this.gameStarted == true){
 		var data = {};
@@ -682,10 +787,13 @@ Game.prototype.getGameData = function () {
 				see: playerRoles[i].see,
 				username: playerRoles[i].username,
 				socketId: playerRoles[i].socketId
-			}
+			};
 
 			//add on these common variables:
-			data[i].statusMessage 			= getStatusMessage();
+			data[i].buttons 				= this.getClientButtonSettings(i);
+
+			data[i].statusMessage 			= this.getStatusMessage(i);
+			
 			data[i].missionNum 				= this.missionNum;
 			data[i].missionHistory 			= this.missionHistory;
 			data[i].pickNum 				= this.pickNum;
@@ -740,7 +848,7 @@ Game.prototype.getGameDataForSpectators = function () {
 	data.see.spies 						= [];
 	data.see.merlins 					= [];
 
-	data.statusMessage 					= getStatusMessage();
+	data.statusMessage 					= this.getStatusMessage();
 	data.missionNum 					= this.missionNum;
 	data.missionHistory 				= this.missionHistory;
 	data.pickNum 						= this.pickNum;
@@ -787,6 +895,68 @@ Game.prototype.addToChatHistory = function(data){
 		this.chatHistory.push(data);
 	}
 }
+
+
+Game.prototype.getStatusMessage = function(indexOfPlayer){
+	if (this.phase === "pickingTeam") {
+		if(indexOfPlayer && indexOfPlayer === this.teamLeader){
+			var num = numPlayersOnMission[this.playersInGame.length - minPlayers][this.missionNum - 1];
+
+			return "Your turn to pick a team. Pick " + num + " players.";
+		}
+		else{
+			return "Waiting for " + this.playersInGame[this.teamLeader].username + " to pick a team.";
+		}
+	}
+	else if (this.phase === "votingTeam") {
+		// If user has voted already
+		if(indexOfPlayer && this.playersYetToVote.indexOf(this.playersInGame[indexOfPlayer].username) === -1){
+			var str = "";
+			str += "Waiting for votes: ";
+			for (var i = 0; i < this.playersYetToVote.length; i++) {
+				str = str + this.playersYetToVote[i] + ", ";
+			}
+			// Remove last , and replace with .
+			str = str.slice(0, str.length - 2);
+			str += ".";
+
+			return str;
+		}
+		// User has not voted yet or user is a spectator
+		else{
+			var str = "";
+			str += (this.playersInGame[this.teamLeader].username + " has picked: ");
+
+			for (var i = 0; i < this.proposedTeam.length; i++) {
+				str += this.proposedTeam[i] + ", ";
+			}
+			// Remove last , and replace with .
+			str = str.slice(0, str.length - 2);
+			str += ".";
+
+			return str;
+		}
+	}
+	else if (this.phase === "finished") {
+		var winningTeam;
+		if(this.winner === "Spy"){
+			winningTeam = "spies";
+		}
+		else if(this.winner === "Resistance"){
+			winningTeam = "resistance";
+		}
+		else{
+			winningTeam = "Error...";
+		}
+
+		var str = "Game has finished. The " + winningTeam + " have won.";
+		return str;
+	}
+	else {
+		//Get the status message from the cards or roles
+		return "";
+	}
+};
 
 Game.prototype.getStatus = function () {
 	if(this.frozen === true){
@@ -1152,14 +1322,14 @@ function getStrApprovedRejectedPlayers(votes, playersInGame) {
 
 	for (var i = 0; i < votes.length; i++) {
 
-		if (votes[i] === "approve") {
-			approvedUsernames = approvedUsernames + getUsernameFromIndex(playersInGame, i) + ", ";
+		if (votes[i] === "yes") {
+			approvedUsernames = approvedUsernames + this.playersInGame[i].username + ", ";
 		}
-		else if (votes[i] === "reject") {
-			rejectedUsernames = rejectedUsernames + getUsernameFromIndex(playersInGame, i) + ", ";
+		else if (votes[i] === "no") {
+			rejectedUsernames = rejectedUsernames + this.playersInGame[i].username + ", ";
 		}
 		else {
-			console.log("ERROR! Unknown vote: " + gameData.votes[i]);
+			console.log("ERROR! Unknown vote: " + votes[i]);
 		}
 	}
 	// Disabled approve rejected people.
@@ -1251,8 +1421,4 @@ function getUsernamesOfPlayersInRoom(thisRoom) {
 	else{
 		return [];
 	}
-}
-
-function getStatusMessage(){
-	return "Get status message, TODO, incomplete";
 }
