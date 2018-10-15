@@ -708,8 +708,7 @@ Game.prototype.getRoomPlayers = function () {
 		return roomPlayers;
 	}
 	else{
-		Room.prototype.getRoomPlayers.call(this);
-		
+		return Room.prototype.getRoomPlayers.call(this);
 	}
 }
 
