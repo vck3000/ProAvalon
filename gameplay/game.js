@@ -115,6 +115,9 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 	this.playersInGame 					= [];
 	this.playerUsernamesInGame			= [];
 
+	this.resistanceUsernames = [];
+	this.spyUsernames = [];
+
 	this.roleKeysInPlay					= [];
 	this.cardKeysInPlay					= [];
 
@@ -124,7 +127,6 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 	this.pickNum 						= 0;
 	this.missionHistory 				= [];
 	this.proposedTeam 					= [];
-	this.lastProposedTeam 				= [];
 	this.votes 							= [];
 	//Only show all the votes when they've all come in, not one at a time
 	this.publicVotes 					= []; 
@@ -159,7 +161,6 @@ Object.assign(Game.prototype, PlayersReadyNotReady.prototype);
 // METHOD OVERRIDES ------------------------------
 //------------------------------------------------
 Game.prototype.playerJoinRoom = function (socket, inputPassword) {
-	console.log("Game.js file should print first");
 	if(this.gameStarted === true){
 		//if the new socket is a player, add them to the sockets of players
 		for(var i = 0; i < this.playersInGame.length; i++){
@@ -171,12 +172,13 @@ Game.prototype.playerJoinRoom = function (socket, inputPassword) {
 				break;
 			}
 		}
+		Room.prototype.playerJoinRoom.call(this, socket, inputPassword);		
 		//sends to players and specs
 		this.distributeGameData();
 	}
-	console.log("A");
-	Room.prototype.playerJoinRoom.call(this, socket, inputPassword);
-	this.updateRoomPlayers();		
+	else{
+		Room.prototype.playerJoinRoom.call(this, socket, inputPassword);		
+	}
 };
 
 Game.prototype.playerSitDown = function(socket){
@@ -208,6 +210,27 @@ Game.prototype.playerStandUp = function(socket){
 
 	Room.prototype.playerStandUp.call(this, socket);
 };
+
+Game.prototype.playerLeaveRoom = function(socket){
+	if(this.gameStarted === true){
+
+		//if they exist in socketsOfPlayers, then remove them
+		var index = this.socketsOfPlayers.indexOf(socket);
+		if(index !== -1){
+			this.socketsOfPlayers.splice(index, 1);	
+		} 
+
+		this.distributeGameData();
+	}
+	// If one person left in the room, the host would change
+	// after the game started. So this will fix it
+	var origHost = this.host;
+	
+	Room.prototype.playerLeaveRoom.call(this, socket);
+
+	this.host = origHost;
+};
+	
 
 //start game
 Game.prototype.startGame = function (options) {
@@ -307,13 +330,15 @@ Game.prototype.startGame = function (options) {
 	var resPlayers = [];
 	var spyPlayers = [];
 
-
 	for (var i = 0; i < this.playersInGame.length; i++) {
 		if (this.playersInGame[i].alliance === "Resistance") {
 			resPlayers.push(i); 
+			this.resistanceUsernames.push(this.playersInGame[i].username);
 		}
 		else if (this.playersInGame[i].alliance === "Spy") {
 			spyPlayers.push(i);
+			this.spyUsernames.push(this.playersInGame[i].username);
+			
 		}
 	}
 
@@ -825,16 +850,16 @@ Game.prototype.getGameData = function () {
 			data[i].roomId 					= this.roomId;
 			data[i].toShowGuns 				= this.toShowGuns();
 
+			data[i].rolesCards				= this.getRoleCardPublicGameData();
+			
+
 			//if game is finished, reveal everything including roles
 			if (this.phase === "finished") {
 				data[i].see = {};
 				data[i].see.spies = getAllSpies(this);
 				data[i].see.roles = getRevealedRoles(this);
-				data[i].proposedTeam = this.lastProposedTeam;
 			}
-			else if (this.phase === "assassination") {
-				data[i].proposedTeam = this.lastProposedTeam;
-			}
+			
 		}
 		return data;
 	}
@@ -858,7 +883,7 @@ Game.prototype.getGameDataForSpectators = function () {
 
 	data.buttons 						= this.getClientButtonSettings();
 
-	data.statusMessage 					= this.getStatusMessage();
+	data.statusMessage 					= this.getStatusMessage(-1);
 	data.missionNum 					= this.missionNum;
 	data.missionHistory 				= this.missionHistory;
 	data.pickNum 						= this.pickNum;
@@ -884,6 +909,8 @@ Game.prototype.getGameDataForSpectators = function () {
 
 	data.roomId 						= this.roomId;
 	data.toShowGuns 					= this.toShowGuns();
+
+	data.rolesCards						= this.getRoleCardPublicGameData();
 	
 
 	//if game is finished, reveal everything including roles
@@ -891,7 +918,6 @@ Game.prototype.getGameDataForSpectators = function () {
 		data.see = {};
 		data.see.spies = getAllSpies(this);
 		data.see.roles = getRevealedRoles(this);
-		data.proposedTeam = this.lastProposedTeam;
 	}
 
 	return data;
@@ -1028,12 +1054,26 @@ Game.prototype.getStatusMessage = function(indexOfPlayer){
 			return "Your turn to pick a team. Pick " + num + " players.";
 		}
 		else{
+			console.log(this.teamLeader);
 			return "Waiting for " + this.playersInGame[this.teamLeader].username + " to pick a team.";
 		}
 	}
 	else if (this.phase === "votingTeam") {
+		// If we are spectator
+		if(indexOfPlayer === -1){
+			var str = "";
+			str += "Waiting for votes: ";
+			for (var i = 0; i < this.playersYetToVote.length; i++) {
+				str = str + this.playersYetToVote[i] + ", ";
+			}
+			// Remove last , and replace with .
+			str = str.slice(0, str.length - 2);
+			str += ".";
+
+			return str;
+		}
 		// If user has voted already
-		if(indexOfPlayer !== undefined && this.playersYetToVote.indexOf(this.playersInGame[indexOfPlayer].username) === -1){
+		else if(indexOfPlayer !== undefined && this.playersYetToVote.indexOf(this.playersInGame[indexOfPlayer].username) === -1){
 			var str = "";
 			str += "Waiting for votes: ";
 			for (var i = 0; i < this.playersYetToVote.length; i++) {
@@ -1061,8 +1101,21 @@ Game.prototype.getStatusMessage = function(indexOfPlayer){
 		}
 	}
 	else if (this.phase === "votingMission") {
+		// If we are spectator
+		if(indexOfPlayer === -1){
+			var str = "";
+			str += "Waiting for mission votes: ";
+			for (var i = 0; i < this.playersYetToVote.length; i++) {
+				str = str + this.playersYetToVote[i] + ", ";
+			}
+			// Remove last , and replace with .
+			str = str.slice(0, str.length - 2);
+			str += ".";
+	
+			return str;
+		}
 		//If the user is someone who needs to vote success or fail
-		if(indexOfPlayer !== undefined && this.playersYetToVote.indexOf(this.playersInGame[indexOfPlayer].username) !== -1){
+		else if(indexOfPlayer !== undefined && this.playersYetToVote.indexOf(this.playersInGame[indexOfPlayer].username) !== -1){
 			var str = "";
 			str += (this.playersInGame[this.teamLeader].username + " has picked: ");
 
@@ -1145,14 +1198,19 @@ Game.prototype.finishGame = function(toBeWinner){
 		return;
 	}
 
-
 	for(var i = 0; i < this.allSockets.length; i++){
 		this.allSockets[i].emit("gameEnded");
 	}
 
 	//game clean up
 	this.finished = true;
-	this.winner = toBeWinner;
+
+	if(toBeWinner === "Resistance"){
+		this.winner = "resistance";
+	}
+	else if(toBeWinner === "Spy"){
+		this.winner = "spies";
+	}
 
 	if (this.winner === "spies") {
 		// this.gameplayMessage = "The spies have won the game.";
@@ -1480,6 +1538,30 @@ Game.prototype.checkRoleCardStatusMessage = function(indexOfPlayer){
 	return data;
 };
 
+Game.prototype.getRoleCardPublicGameData = function(){
+	var allData = {
+		roles: {},
+		cards: {}
+	};
+	for(var i = 0; i < this.roleKeysInPlay.length; i++){
+		//If the function doesn't exist, return null
+		if(!this.avalonRoles[this.roleKeysInPlay[i]].getPublicGameData){continue;}
+
+		let data = this.avalonRoles[this.roleKeysInPlay[i]].getPublicGameData();
+		Object.assign(allData.roles, data);
+	}
+
+	for(var i = 0; i < this.cardKeysInPlay.length; i++){
+		//If the function doesn't exist, return null
+		if(!this.avalonRoles[this.roleKeysInPlay[i]].getPublicGameData()){continue;}
+
+		let data = this.avalonCards[this.cardKeysInPlay[i]].getPublicGameData();
+		Object.assign(allData.cards, data);
+	}
+
+	return allData;
+};
+
 Game.prototype.loadRoleCardData = function(roleData, cardData){
 	this.avalonRoles = (new avalonRolesIndex).getRoles(this);
 	this.avalonCards = (new avalonCardsIndex).getCards(this);
@@ -1496,7 +1578,7 @@ Game.prototype.loadRoleCardData = function(roleData, cardData){
 			}
 
 			// For every role, update the "thisRoom" to point to this
-			// this.avalonRoles[k1]["thisRoom"] = this;
+			this.avalonRoles[k1]["thisRoom"] = this;
 		}
 	}
 	
@@ -1511,12 +1593,10 @@ Game.prototype.loadRoleCardData = function(roleData, cardData){
 				}
 			}
 			// For every card, update the "thisRoom" to point to this
-			// this.avalonCards[k1]["thisRoom"] = this;
+			this.avalonCards[k1]["thisRoom"] = this;
 		}
 	}
-
-	console.log(this.avalonRoles);
-}
+};
 
 
 

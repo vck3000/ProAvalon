@@ -181,7 +181,7 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 						if(storedData.hasOwnProperty(key)){
 							// console.log("typeof: " + typeof(key))
 							rooms[storedData["roomId"]][key] = storedData[key];
-							console.log("copied over: " + key);
+							// console.log("copied over: " + key);
 							// if(key === "startGameTime"){
 
 								// console.log(storedData[key]);
@@ -1853,7 +1853,7 @@ var updateCurrentGamesList = function () {
 			gamesList[i].roomId = rooms[i].roomId;
 			gamesList[i].hostUsername = rooms[i].host;
 			if(rooms[i].gameStarted === true){
-				gamesList[i].numOfPlayersInside = rooms[i].socketsOfPlayers.length;
+				gamesList[i].numOfPlayersInside = rooms[i].playersInGame.length;
 				gamesList[i].missionHistory = rooms[i].missionHistory;
 				gamesList[i].missionNum = rooms[i].missionNum;
 				gamesList[i].pickNum = rooms[i].pickNum;

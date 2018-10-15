@@ -9,6 +9,9 @@ function Assassin(thisRoom_) {
     this.role = "Assassin";
     this.alliance = "Spy";
 
+    this.finishedShot = false;
+    this.playerShot = "";
+
     //Assassin sees all spies except oberon
     this.see = function(){
         if(this.thisRoom.gameStarted === true){
@@ -45,67 +48,78 @@ Assassin.prototype.isSpecialPhase = function(){
 
 //Assassination phase
 Assassin.prototype.checkSpecialMove = function(socket, data){
+    if(this.finishedShot === false){
+        // If we have the right conditions, we go into assassination phase
+        if(this.thisRoom.phase === "finished"){
+            //Get the number of successes:
+            var numOfSuccesses = 0;
 
-    // If we have the right conditions, we go into assassination phase
-    if(this.thisRoom.phase === "finished"){
-        //Get the number of successes:
-        var numOfSuccesses = 0;
+            for(var i = 0; i < this.thisRoom.missionHistory.length; i++){
+                if(this.thisRoom.missionHistory[i] === "succeeded"){
+                    numOfSuccesses++;
+                }
+            }
 
-        for(var i = 0; i < this.thisRoom.missionHistory.length; i++){
-            if(this.thisRoom.missionHistory[i] === "succeeded"){
-                numOfSuccesses++;
+            if(numOfSuccesses === 3){
+                this.thisRoom.phase = this.specialPhase;
+                return true;
             }
         }
 
-        if(numOfSuccesses === 3){
-            this.thisRoom.phase = this.specialPhase;
-            return true;
-        }
-    }
-
-    // If its already assassination phase, then carry out the assassination move
-    else if(this.isSpecialPhase() && socket && data){
-        if(typeof(data) === "object" || typeof(data) === "array"){
-            data = data[0];
-        }
-        // Check that the person making this request is the assassin
-        var indexOfRequester = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username);
-        if(this.thisRoom.playersInGame[indexOfRequester].role === this.role){
-            var indexOfTarget = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, data);
-
-            // Get merlin's username
-            var merlinUsername = undefined;
-			for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
-				if (this.thisRoom.playersInGame[i].role === "Merlin") {
-					merlinUsername = this.thisRoom.playersInGame[i].username;
-				}
+        // If its already assassination phase, then carry out the assassination move
+        else if(this.isSpecialPhase() && socket && data){
+            if(typeof(data) === "object" || typeof(data) === "array"){
+                data = data[0];
             }
-            
-            if(indexOfTarget !== -1){
-                if(this.thisRoom.playersInGame[indexOfTarget].role === "Merlin"){
-                    this.thisRoom.winner = "Spy";
-                    this.thisRoom.howWasWon = "Assassinated Merlin correctly.";
+            // Check that the person making this request is the assassin
+            var indexOfRequester = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username);
+            if(this.thisRoom.playersInGame[indexOfRequester].role === this.role){
+                var indexOfTarget = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, data);
 
-                    this.thisRoom.sendText(this.thisRoom.allSockets, "The assassin has shot " + merlinUsername + "! They were correct!", classStr="gameplay-text-red");
-                }
-                else {
-                    this.thisRoom.winner = "Resistance";
-                    this.thisRoom.howWasWon = "Mission successes and Merlin did not die.";
-
-                    this.thisRoom.sendText(this.thisRoom.allSockets, "The assassin has shot " + target[0] + "! " + target[0] + " was not merlin, " + merlinUsername + " was!" , classStr="gameplay-text-blue");
-                }
-
-                //For gameRecord - get the role that was shot
-                for(var i = 0; i < playerRoles.length; i++){
-                    if(playerRoles[i].username === target[0]){
-                        this.thisRoom.whoAssassinShot = playerRoles[i].role;
-                        break;
+                // Get merlin's username
+                var merlinUsername = undefined;
+                for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
+                    if (this.thisRoom.playersInGame[i].role === "Merlin") {
+                        merlinUsername = this.thisRoom.playersInGame[i].username;
                     }
                 }
-            }
-            else{
-                console.log(data);
-		        socket.emit("danger-alert", "Bad assassination data. Tell the admin if you see this!");
+
+                //set the player shot
+			    this.playerShot = data;
+                
+                if(indexOfTarget !== -1){
+                    if(this.thisRoom.playersInGame[indexOfTarget].role === "Merlin"){
+                        this.thisRoom.winner = "Spy";
+                        this.thisRoom.howWasWon = "Assassinated Merlin correctly.";
+
+                        this.thisRoom.sendText(this.thisRoom.allSockets, "The assassin has shot " + merlinUsername + "! They were correct!", classStr="gameplay-text-red");
+                        this.thisRoom.finishGame("Spy");
+                    }
+                    else {
+                        this.thisRoom.winner = "Resistance";
+                        this.thisRoom.howWasWon = "Mission successes and Merlin did not die.";
+
+                        // console.log("THIS WAS RUN ONCE");
+                        this.thisRoom.sendText(this.thisRoom.allSockets, "The assassin has shot " + data + "! " + data + " was not merlin, " + merlinUsername + " was!" , classStr="gameplay-text-blue");
+                        this.thisRoom.finishGame("Resistance");
+                    }
+
+                    this.finishedShot = true;
+
+                    //For gameRecord - get the role that was shot
+                    for(var i = 0; i < this.thisRoom.playersInGame.length; i++){
+                        if(this.thisRoom.playersInGame[i].username === data){
+                            this.thisRoom.whoAssassinShot = this.thisRoom.playersInGame[i].role;
+                            break;
+                        }
+                    }
+
+
+                }
+                else{
+                    console.log(data);
+                    socket.emit("danger-alert", "Bad assassination data. Tell the admin if you see this!");
+                }
             }
         }
     }
@@ -201,6 +215,12 @@ Assassin.prototype.getStatusMessage = function(indexOfPlayer){
     return null;
 };
 
+
+Assassin.prototype.getPublicGameData = function(){
+    if(this.finishedShot === true){
+        return { assassinShotUsername: this.playerShot };
+    }
+}
 
 
 module.exports = Assassin;

@@ -35,13 +35,8 @@ function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_) {
 
 
 Room.prototype.playerJoinRoom = function (socket, inputPassword) {
-	// console.log("\n\n");
-	// console.log(this);
-	// console.log("\n\n");
 
-	console.log("Room.js file should print next after game.js.");
-	// console.log("Inputpassword from avalonRoom: " + inputPassword);
-	console.log(socket.request.user.username + " has joined room " + this.roomId);
+	console.log(socket.request.user.username + " has joined room " + this.roomId); 
 
 	//if the room has a password and user hasn't put one in yet
 	if(this.joinPassword !== undefined && inputPassword === undefined){

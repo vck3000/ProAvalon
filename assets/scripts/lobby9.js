@@ -163,6 +163,14 @@ function draw() {
             }
         }
 
+        // Roles and cards special data
+        if(gameData && gameData.rolesCards){
+            // Show the assassin shot
+            if(gameData.rolesCards.assassinShotUsername){
+                drawBullet(getIndexFromUsername(gameData.see.playerShot));
+            }
+        }
+
         activateAvatarButtons();
         enableDisableButtons();
 
@@ -715,15 +723,14 @@ function drawClaimingPlayers(claimingPlayers){
   }
   
 function checkSelectAvatarButtons(num) {
-    enableDisableButtons();
     //if they've selected the right number of players, then allow them to sendz`
     if (countHighlightedAvatars() == num || (countHighlightedAvatars() + "*") == num) {
         console.log("RUN THIS");
-        btnRemoveHidden("green");
+        // btnRemoveHidden("green");
         btnRemoveDisabled("green");
     }
     else{
-        btnRemoveHidden("green");
+        // btnRemoveHidden("green");
     }
 }
 function enableDisableButtons() {
@@ -736,6 +743,7 @@ function enableDisableButtons() {
     //Disable the buttons. Enable them as we need them.
     document.querySelector(buttons["green"]).classList.add("disabled");
     document.querySelector(buttons["red"]).classList.add("disabled");
+
     document.querySelector(buttons["claim"]).classList.add("disabled");
 
     //are we a player sitting down?
@@ -808,6 +816,7 @@ function enableDisableButtons() {
         if(gameData.buttons.red.hidden === false){btnRemoveHidden("red");}
         if(gameData.buttons.red.disabled === false){btnRemoveDisabled("red");}
         if(gameData.buttons.red.setText !== undefined){btnSetText("red", gameData.buttons.red.setText);}
+        checkSelectAvatarButtons(gameData.numSelectTargets);
     }
 }
 
