@@ -1748,14 +1748,16 @@ module.exports = function (io) {
 		socket.on("gameMove", function(data){
 			if (rooms[socket.request.user.inRoomId]) {
 				rooms[socket.request.user.inRoomId].gameMove(socket, data);
+
+				if(rooms[socket.request.user.inRoomId].finished === true){
+					deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
+				}
+				else{
+					saveGameToDb(rooms[socket.request.user.inRoomId]);
+				}
 			}
 
-			if(rooms[socket.request.user.inRoomId].finished === true){
-				deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
-			}
-			else{
-				saveGameToDb(rooms[socket.request.user.inRoomId]);
-			}
+			
 		});
 
 		// //when a player picks a team
