@@ -94,7 +94,6 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 	
 	this.proposedTeam = [];
 	this.lastProposedTeam = [];
-	this.missionTeam = [];
 	this.votes = [];
 	this.missionVotes = [];
 	this.gameplayMessage = "";
@@ -623,12 +622,6 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 				//if team was approved, then reset pickNum
 				//and increment missionNum
 				if (outcome === "approved") {
-
-					var playerArray = [];
-					for (var i = 0; i < this.proposedTeam.length; i++) {
-						playerArray.push(this.proposedTeam[i]);
-					}
-					this.missionTeam.push(playerArray);
 				
 					this.phase = "missionVoting";
 					this.playersYetToVote = this.proposedTeam.slice();
@@ -906,7 +899,6 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 				data[i].playersYetToVote = this.playersYetToVote;
 				data[i].phase = this.phase;
 				data[i].proposedTeam = this.proposedTeam;
-				data[i].missionTeam = this.missionTeam;
 
 				data[i].numPlayersOnMission = numPlayersOnMission[playerRoles.length - minPlayers]; //- 5
 

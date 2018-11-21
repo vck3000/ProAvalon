@@ -399,9 +399,16 @@ p {
 }
 
 .highlight-participating {
-    background-color: #ffff00 !important;
+    background-color: rgb(255, 255, 0) !important;
     border-radius: 10px;
 }
+
+.highlight-participating-dark {
+    background-color: rgba(255, 255, 0, 0.65)  !important;
+    border-radius: 10px;
+}
+
+
 
 .selected-chat {
     /* background-color: rgb(255, 255, 0); */
