@@ -622,7 +622,7 @@ module.exports = function (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_
 				//if team was approved, then reset pickNum
 				//and increment missionNum
 				if (outcome === "approved") {
-
+				
 					this.phase = "missionVoting";
 					this.playersYetToVote = this.proposedTeam.slice();
 					

@@ -534,14 +534,6 @@ function teamLeaderSetup(phase) {
       $("#missionsBox").css("left", (widthOfRoom/2) + "px");
 }
 
-//set up the hover over missions box and highlight participating members
-
-
-
-
-
-
-
 var playerDivHeightPercent = 30;
 function drawAndPositionAvatars() {
     var w = $("#mainRoomBox").width();

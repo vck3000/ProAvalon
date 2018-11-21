@@ -123,3 +123,87 @@ socket.on("lady-info", function (message) {
 
     addToRoomChat(data);
 });
+
+
+
+hoverMissionBoxHighlightPlayerSetup();
+function hoverMissionBoxHighlightPlayerSetup(){
+
+    $(".missionBox").hover(
+    // Upon hover:
+    function(){
+        // console.log(this);
+        // console.log(this.getAttribute("id"));
+        // console.log(this.getAttribute("id").slice(-1));
+
+        var missionNum = this.getAttribute("id").slice(-1);
+        // Grab players to highlight
+        var participatingTeamHighlight = getPlayersOnMission(parseInt(missionNum));
+
+        // console.log("Participating members:");
+        // console.log(participatingTeamHighlight);
+
+        var darkThemeBool = docCookies.getItem("optionDisplayDarkTheme") === "true"
+
+        // For the players on the team
+        participatingTeamHighlight.forEach(function(username){
+            if (darkThemeBool) {
+                $('[usernameofplayer="' + username + '"]').addClass("highlight-participating-dark");
+            }
+            else{
+                $('[usernameofplayer="' + username + '"]').addClass("highlight-participating");
+                $(this).css("background-color", "rgba(255, 255, 0, 1)");
+            }
+        });
+        
+        // For the missionBox itself
+        if (darkThemeBool) {
+            $(this).css("background-color", "rgba(255, 255, 0, 0.65)");
+            // Finished missions default have opacity set to 0.65 so ignore this temporarily
+            $(this).css("opacity", "1");
+        }
+        else{
+            $(this).css("background-color", "rgba(255, 255, 0, 1)");
+        }
+        
+        // Set font colour to black so we can see the text when the box is yellow
+        $(this).css("color", "black");
+    },
+    // Upon unhover:
+    function(){
+        // Reset all the displays for this function
+        $(".playerDiv").removeClass("highlight-participating");
+        $(".playerDiv").removeClass("highlight-participating-dark");
+        $(".playerDiv").css("opacity", "");
+
+        $(this).css("background-color", "");
+        $(this).css("color", "");
+        $(this).css("opacity", "");
+    });
+}
+
+function getPlayersOnMission(missionNum){
+    // If we haven't played enough missions dont highlight anything
+    if(missionNum > gameData.missionNum - 2){
+        return [];
+    } else{
+        var team = [];
+        // For each player:
+        for(var key in gameData.voteHistory){
+            if(gameData.voteHistory.hasOwnProperty(key) === true){
+                // console.log(key);
+                // Get the length of the mission (how many picks in the mission because we grab the last pick)
+                var missionLen = gameData.voteHistory[key][missionNum].length;
+                // console.log("a: " + missionLen);
+        
+                // If the user was picked, add to the list
+                if(gameData.voteHistory[key][missionNum][missionLen-1].includes("VHpicked") === true){
+                    team.push(key);
+                }
+            }
+        }
+
+        return team;
+    }
+}
+
