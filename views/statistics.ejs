@@ -2,7 +2,10 @@
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+
 
 <style>
     .myContainer {
@@ -36,6 +39,12 @@
         width: auto !important;
     }
 
+    #gamesPlayedChart {
+        min-width: 75%;
+        /*height: 50%;*/
+        border: 1px solid red;
+    }
+
 </style>
 
 <div class="container myContainer">
@@ -47,6 +56,9 @@
         </div>
 
         <div id="statsDiv" class="hidden">
+
+            <h3>Site traffic (Games played per day) (NOTE I HAVEN'T DOUBLE CHECKED THIS DATA! MIGHT BE WRONG!):</h3>
+            <canvas id="gamesPlayedChart"></canvas>
 
             <h3>General stats:</h3>
             <table class="table myTable table-nonfluid">
@@ -270,6 +282,79 @@
         grd = gameRecordsData;
         $("#loading").addClass("hidden");
         $("#statsDiv").removeClass("hidden");
+
+        //***********************************
+        //Site traffic stats
+        //***********************************
+
+        // Convert millis from epoch to a date object for use in the graph.
+        var gamesPlayedXAxis = [];
+        for(var i = 0; i < grd.siteTrafficGamesPlayedXAxis.length; i++){
+            
+            
+
+
+
+            gamesPlayedXAxis[i] = moment(grd.siteTrafficGamesPlayedXAxis[i], "x").format("DD MMM YYYY hh:mm a"); //parse string 
+            // console.log(typeof(grd.siteTrafficGamesPlayedXAxis[i]));
+        }
+
+        var gamesPlayedStatsConfig = {
+			type: 'line',
+			data: {
+				labels: gamesPlayedXAxis,
+				datasets: [{
+					label: 'Games Played per day',
+					backgroundColor: "rgba(255, 102, 102, 0.4)",
+					borderColor: "rgba(255, 102, 102, 1)",
+					data: grd.siteTrafficGamesPlayedYAxis,
+                    fill: false,
+                    lineTension: 0,
+                    borderWidth: 2
+				}]
+			},
+			options: {
+				responsive: true,
+				title: {
+					display: true,
+					text: 'Site traffic data'
+				},
+				tooltips: {
+					mode: 'index',
+					intersect: false,
+				},
+				hover: {
+					mode: 'nearest',
+					intersect: true
+				},
+				scales: {
+					xAxes: [{
+						type: 'time',
+						time: {
+							// format: timeFormat,
+							// round: 'day'
+							tooltipFormat: 'll'
+						},
+						scaleLabel: {
+							display: true,
+							labelString: 'Date'
+						}
+					}],
+					yAxes: [{
+						scaleLabel: {
+							display: true,
+							labelString: 'Games Played'
+						}
+					}]
+				}
+			}
+		};
+
+
+
+
+        var ctx = document.getElementById("gamesPlayedChart");
+        var myChart = new Chart(ctx, gamesPlayedStatsConfig);
 
 
         

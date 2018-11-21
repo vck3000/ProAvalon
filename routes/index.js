@@ -6,6 +6,8 @@ var myNotification	= require("../models/notification");
 var flash 			= require("connect-flash");
 var sanitizeHtml 	= require('sanitize-html');
 var mongoose = require("mongoose");
+var fs = require('fs');
+
 
 var modAction = require("../models/modAction");
 var gameRecord = require("../models/gameRecord");
@@ -421,9 +423,30 @@ router.get("/mod", middleware.isMod, function(req, res){
 });
 
 
+function gameDateCompare(a,b) {
+	if (a.date < b.date){
+		return -1;
+	}
+	if (a.date > b.date){
+		return 1;
+	}
+	else{
+		return 0;
+	}
+}
+
 
 //Get public statistics
 router.get("/ajax/getStatistics", function(req, res){
+
+
+	// //TEMPORARY! REMOVE THIS LATER!!
+	// var obj = JSON.parse(fs.readFileSync('./routes/SampleStatistic.json', 'utf8'));
+	// res.status(200).send(obj);
+	// return;
+	// //TEMPORARY! REMOVE THIS LATER!!
+	
+
 	gameRecord.find({}).exec(function(err, records){
 		if(err){
 			console.log(err);
@@ -434,6 +457,57 @@ router.get("/ajax/getStatistics", function(req, res){
 			var obj = {};
 			obj.totalgamesplayed = records.length;
 
+			//***********************************
+			//Site traffic stats - one data point per day
+			//***********************************
+			var gamesPlayedData = {};
+			var xAxisVars = [];
+			var yAxisVars = [];
+			for(var i = 0; i < records.length; i++){
+				var timeFinish = records[i].timeGameFinished;
+				// Round to nearest day
+				var dayFinished = new Date(timeFinish.getFullYear(), timeFinish.getMonth(), timeFinish.getDate());
+
+				// Count the number of games played on the same day
+				if(gamesPlayedData[dayFinished.getTime()] === undefined){
+					gamesPlayedData[dayFinished.getTime()] = 1;
+				}
+				else{
+					gamesPlayedData[dayFinished.getTime()] = gamesPlayedData[dayFinished.getTime()] + 1;
+				}
+			}
+
+			var gamesPlayedDataArray = [];
+			// Turn it into an array of objects
+			for(var key in gamesPlayedData){
+				if(gamesPlayedData.hasOwnProperty(key)){
+
+					var newObj = {
+						date: key,
+						value: gamesPlayedData[key]
+					}
+
+					gamesPlayedDataArray.push(newObj);
+				}
+			}
+
+			// Sort it
+			gamesPlayedDataArray.sort(gameDateCompare);
+
+			// Split it into the two axis
+			for(var i = 0; i < gamesPlayedDataArray.length; i++){
+				xAxisVars.push(gamesPlayedDataArray[i].date);
+				yAxisVars.push(gamesPlayedDataArray[i].value);
+				// yAxisVars.push(new Date(gamesPlayedDataArray[i].value)); // This line seems to make server hang..?
+			}
+
+			// Remove the last entry since the day isn't over yet...
+			xAxisVars.pop();
+			yAxisVars.pop();
+
+			obj.siteTrafficGamesPlayedXAxis = xAxisVars;
+			obj.siteTrafficGamesPlayedYAxis = yAxisVars;
+		
 
 			//**********************************************
 			//Getting the average duration of each game
