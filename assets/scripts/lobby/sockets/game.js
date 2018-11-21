@@ -184,7 +184,7 @@ function hoverMissionBoxHighlightPlayerSetup(){
 
 function getPlayersOnMission(missionNum){
     // If we haven't played enough missions dont highlight anything
-    if(missionNum > gameData.missionNum - 2){
+    if(missionNum > gameData.missionHistory.length - 1){
         return [];
     } else{
         var team = [];
