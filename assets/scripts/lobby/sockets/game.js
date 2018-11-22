@@ -155,19 +155,17 @@ function hoverMissionBoxHighlightPlayerSetup(){
                 $(this).css("background-color", "rgba(255, 255, 0, 1)");
             }
         });
-        
-        // For the missionBox itself
-        if (darkThemeBool) {
-            $(this).css("background-color", "rgba(255, 255, 0, 0.65)");
-            // Finished missions default have opacity set to 0.65 so ignore this temporarily
-            $(this).css("opacity", "1");
+
+        // Only outline the missionBox if we have something to show
+        if(participatingTeamHighlight.length !== 0){
+            // For the missionBox itself
+            if (darkThemeBool) {
+                $(this).css("outline", "5px solid rgba(255, 255, 0, 0.65)");
+            }
+            else{
+                $(this).css("outline", "5px solid rgba(255, 255, 0, 1)");
+            }
         }
-        else{
-            $(this).css("background-color", "rgba(255, 255, 0, 1)");
-        }
-        
-        // Set font colour to black so we can see the text when the box is yellow
-        $(this).css("color", "black");
     },
     // Upon unhover:
     function(){
@@ -176,8 +174,7 @@ function hoverMissionBoxHighlightPlayerSetup(){
         $(".playerDiv").removeClass("highlight-participating-dark");
         $(".playerDiv").css("opacity", "");
 
-        $(this).css("background-color", "");
-        $(this).css("color", "");
+        $(this).css("outline", "");
         $(this).css("opacity", "");
     });
 }
