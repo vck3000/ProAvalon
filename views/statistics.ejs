@@ -40,9 +40,11 @@
     }
 
     #gamesPlayedChart {
-        min-width: 75%;
+        width: 100%;
         /*height: 50%;*/
         border: 1px solid red;
+
+        max-width: 1000px;
     }
 
 </style>
@@ -314,7 +316,8 @@
 				}]
 			},
 			options: {
-				responsive: true,
+                responsive: true,
+                maintainAspectRatio: true,
 				title: {
 					display: true,
 					text: 'Site traffic data'
@@ -344,7 +347,10 @@
 						scaleLabel: {
 							display: true,
 							labelString: 'Games Played'
-						}
+                        },
+                        ticks: {
+                            beginAtZero: true
+                        }
 					}]
 				}
 			}
