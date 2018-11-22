@@ -1815,7 +1815,7 @@ module.exports = function (io) {
 				else{
 					saveGameToDb(rooms[socket.request.user.inRoomId]);
 				}
-			}
+			} 
 
 			
 		});
