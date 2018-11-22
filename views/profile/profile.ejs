@@ -470,7 +470,7 @@ $("#searchButton").on("click", function(e){
                 callbacks: {
                 label: function(tooltipItem, chartData) {
                     // return "lmao";
-                    return chartData.labels[tooltipItem.index] + ': ' + chartData.datasets[0].data[tooltipItem.index] + '%' + " " + "[" + generalRoleStatsArray[tooltipItem.index].wins + "/" + generalRoleStatsArray[tooltipItem.index].losses + "]";                    
+                    return chartData.labels[tooltipItem.index] + ': ' + chartData.datasets[0].data[tooltipItem.index] + '%' + " " + "[" + generalRoleStatsArray[tooltipItem.index].wins + "W/" + generalRoleStatsArray[tooltipItem.index].losses + "L]";                    
                     }
                 }
             },
