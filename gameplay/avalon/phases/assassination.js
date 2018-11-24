@@ -165,7 +165,7 @@ Assassination.prototype.getStatusMessage = function(indexOfPlayer){
     }
 }
 
-Assassination.prototype.getProhibitedIndexesToPick = function(indexOfPlayer){  
+Assassination.prototype.getProhibitedIndexesToPick = function(indexOfPlayer){
     var spyIndexes = [];
  
     for(var i = 0; i < this.thisRoom.playersInGame.length; i++){

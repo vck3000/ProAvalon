@@ -471,9 +471,9 @@ Game.prototype.gameMove = function (socket, data) {
 		this.specialPhases[this.phase].gameMove(socket, data);
 	}
 
-	// THIS SHOULDN'T HAPPEN!!
+	// THIS SHOULDN'T HAPPEN!! We always require a gameMove function to change phases
 	else{
-		this.sendText(this.allSockets, "ERROR LET ADMIN KNOW IF YOU SEE THIS", "gameplay-text");
+		this.sendText(this.allSockets, "ERROR LET ADMIN KNOW IF YOU SEE THIS code 1", "gameplay-text");
 	}
 
 	//RUN SPECIAL ROLE AND CARD CHECKS
@@ -493,9 +493,8 @@ Game.prototype.toShowGuns = function(){
 		this.specialPhases[this.phase].showGuns;
 	}
 
-	// THIS SHOULDN'T HAPPEN!!
 	else{
-		this.sendText(this.allSockets, "ERROR LET ADMIN KNOW IF YOU SEE THIS", "gameplay-text");
+		return false;
 	}
 }
 
@@ -510,9 +509,8 @@ Game.prototype.getClientNumOfTargets = function(indexOfPlayer){
 		return this.specialPhases[this.phase].numOfTargets(indexOfPlayer);
 	}
 
-	// THIS SHOULDN'T HAPPEN!!
 	else{
-		this.sendText(this.allSockets, "ERROR LET ADMIN KNOW IF YOU SEE THIS", "gameplay-text");
+		return 0;
 	}
 };
 
@@ -528,9 +526,22 @@ Game.prototype.getClientButtonSettings = function(indexOfPlayer){
 			return this.specialPhases[this.phase].buttonSettings(indexOfPlayer);
 		}
 
-		// THIS SHOULDN'T HAPPEN!!
 		else{
-			this.sendText(this.allSockets, "ERROR LET ADMIN KNOW IF YOU SEE THIS", "gameplay-text");
+			//Spectator data
+			var obj = {
+				green:{},
+				red: {}
+			};
+	
+			obj.green.hidden = true;
+			obj.green.disabled = true;
+			obj.green.setText = "";
+	
+			obj.red.hidden = true;
+			obj.red.disabled = true;
+			obj.red.setText = "";
+	
+			return obj;
 		}
 	}
 	// User is a spectator
@@ -564,9 +575,8 @@ Game.prototype.getStatusMessage = function(indexOfPlayer){
 		return this.specialPhases[this.phase].getStatusMessage(indexOfPlayer);
 	}
 
-	// THIS SHOULDN'T HAPPEN!!
 	else{
-		this.sendText(this.allSockets, "ERROR LET ADMIN KNOW IF YOU SEE THIS", "gameplay-text");
+		return "There is no status message for the current phase... Let admin know if you see this code 5.";
 	}
 };
 
@@ -582,9 +592,8 @@ Game.prototype.getProhibitedIndexesToPick = function(indexOfPlayer){
 		return this.specialPhases[this.phase].getProhibitedIndexesToPick(indexOfPlayer);
 	}
 
-	// THIS SHOULDN'T HAPPEN!!
 	else{
-		this.sendText(this.allSockets, "ERROR LET ADMIN KNOW IF YOU SEE THIS", "gameplay-text");
+		return undefined;
 	}
 };
 

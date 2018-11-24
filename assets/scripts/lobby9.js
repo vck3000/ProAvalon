@@ -352,7 +352,7 @@ function enableSelectAvatars(prohibitedIndexesToPicks) {
     //add the event listeners for button press
     for (var i = 0; i < divs.length; i++) {
 
-        if(prohibitedIndexesToPicks.includes(i) === false){
+        if(prohibitedIndexesToPicks === undefined || prohibitedIndexesToPicks.includes(i) === false){
             divs[i].addEventListener("click", function () {
                 // console.log("avatar pressed");
                     //toggle the highlight class
