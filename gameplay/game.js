@@ -13,9 +13,9 @@ mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
 
 
 var avalonRolesIndex = require("./avalon/indexRoles");
+var avalonPhasesIndex = require("./avalon/indexPhases")
 var avalonCardsIndex = require("./avalon/indexCards");
 var commonPhasesIndex = require("./indexCommonPhases");
-
 
 function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 	//********************************
@@ -50,18 +50,15 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 
 	var thisRoom = this;
 
-
 	this.avalonRoles = (new avalonRolesIndex).getRoles(thisRoom);
+	this.avalonPhases = (new avalonPhasesIndex).getPhases(thisRoom);
 	this.avalonCards = (new avalonCardsIndex).getCards(thisRoom);
-	this.phasesObj = (new commonPhasesIndex).getPhases(thisRoom);
 
-	// console.log(this.phasesObj);
-	// this.phasesObj[this.phase].gameMove();
-	// console.log(this.phasesObj["pickingTeam"]);
-	// console.log(this.phasesObj["pickingTeam"].gameMove());
 
-	// this.avalonRoles = this.avalonRolesObj.getRoles(thisRoom);
-	// console.log(this.avalonRoles);
+	this.commonPhases = (new commonPhasesIndex).getPhases(thisRoom);
+	this.specialRoles = this.avalonRoles;
+	this.specialPhases = this.avalonPhases;
+	this.specialCards = this.avalonCards;
 
 	/*
 		Handle joining:
@@ -108,7 +105,6 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 
 	/* 
 		Receive interactions depending on current state
-
 	*/
 
 	// Game variables
@@ -412,55 +408,130 @@ Game.prototype.startGame = function (options) {
 };
 
 
-var commonPhases = ["pickingTeam", "votingTeam", "votingMission", "finished"];
+
+
+//**************************************************
+//Get phase functions start*************************
+//**************************************************
+
+// var commonPhases = ["pickingTeam", "votingTeam", "votingMission", "finished"];
 Game.prototype.gameMove = function (socket, data) {
 
-	//RUN SPECIAL ROLE AND CARD CHECKS
-	if(this.checkRoleCardSpecialMoves(socket, data) === true){
-		return;
-	}
-
 	// Common phases
-	else if(commonPhases.indexOf(this.phase) !== -1){
-		this.phasesObj[this.phase].gameMove(socket, data);		
+	if(this.commonPhases.hasOwnProperty(this.phase) === true){
+		this.commonPhases[this.phase].gameMove(socket, data);		
 	}
 
 	// Special phases
-	else {
-		// TODO
-		//Run through the possible phases in the game mode folder
-		//Avalon roles (e.g. assassination)
+	else if(this.specialPhases.hasOwnProperty(this.phase) === true){
+		this.specialPhases[this.phase].gameMove(socket, data);
+	}
+
+	// THIS SHOULDN'T HAPPEN!!
+	else{
+		this.sendText(this.allSockets, "ERROR LET ADMIN KNOW IF YOU SEE THIS", "gameplay-text");
 	}
 
 	//RUN SPECIAL ROLE AND CARD CHECKS
-	//Don't know if we need this again at the bottom of this function (already called once at the top)
-	if(this.checkRoleCardSpecialMoves(socket, data) === true){
-		return;
-	}
+	this.checkRoleCardSpecialMoves(socket, data);
 
 	this.distributeGameData();
 };
 
 Game.prototype.toShowGuns = function(){
-
-	//Check all the special roles and cards
-	if(this.checkRoleCardToShowGuns()){
-		return true;
-	}
-
 	// Common phases
-	else if(commonPhases.indexOf(this.phase) !== -1){
-		return this.phasesObj[this.phase].showGuns;		
+	if(this.commonPhases.hasOwnProperty(this.phase) === true){
+		return this.commonPhases[this.phase].showGuns;		
 	}
 
 	// Special phases
-	else {
-		// TODO
-		//Run through the possible phases in the game mode folder
-		//Avalon roles (e.g. assassination)
+	else if(this.specialPhases.hasOwnProperty(this.phase) === true){
+		this.specialPhases[this.phase].showGuns;
 	}
 
+	// THIS SHOULDN'T HAPPEN!!
+	else{
+		this.sendText(this.allSockets, "ERROR LET ADMIN KNOW IF YOU SEE THIS", "gameplay-text");
+	}
 }
+
+Game.prototype.getClientNumOfTargets = function(indexOfPlayer){
+	// Common phases
+	if(this.commonPhases.hasOwnProperty(this.phase) === true){
+		return this.commonPhases[this.phase].numOfTargets(indexOfPlayer);		
+	}
+
+	// Special phases
+	else if(this.specialPhases.hasOwnProperty(this.phase) === true){
+		return this.specialPhases[this.phase].numOfTargets(indexOfPlayer);
+	}
+
+	// THIS SHOULDN'T HAPPEN!!
+	else{
+		this.sendText(this.allSockets, "ERROR LET ADMIN KNOW IF YOU SEE THIS", "gameplay-text");
+	}
+};
+
+Game.prototype.getClientButtonSettings = function(indexOfPlayer){
+	if(indexOfPlayer !== undefined){
+		// Common phases
+		if(this.commonPhases.hasOwnProperty(this.phase) === true){
+			return this.commonPhases[this.phase].buttonSettings(indexOfPlayer);
+		}
+
+		// Special phases
+		else if(this.specialPhases.hasOwnProperty(this.phase) === true){
+			return this.specialPhases[this.phase].buttonSettings(indexOfPlayer);
+		}
+
+		// THIS SHOULDN'T HAPPEN!!
+		else{
+			this.sendText(this.allSockets, "ERROR LET ADMIN KNOW IF YOU SEE THIS", "gameplay-text");
+		}
+	}
+	// User is a spectator
+	else{
+		var obj = {
+			green:{},
+			red: {}
+		};
+
+		obj.green.hidden = true;
+		obj.green.disabled = true;
+		obj.green.setText = "";
+
+		obj.red.hidden = true;
+		obj.red.disabled = true;
+		obj.red.setText = "";
+
+		return obj;
+	}
+};
+
+Game.prototype.getStatusMessage = function(indexOfPlayer){
+
+	// Common phases
+	if(this.commonPhases.hasOwnProperty(this.phase) === true){
+		return this.commonPhases[this.phase].getStatusMessage(indexOfPlayer);
+	}
+
+	// Special phases
+	else if(this.specialPhases.hasOwnProperty(this.phase) === true){
+		return this.specialPhases[this.phase].getStatusMessage(indexOfPlayer);
+	}
+
+	// THIS SHOULDN'T HAPPEN!!
+	else{
+		this.sendText(this.allSockets, "ERROR LET ADMIN KNOW IF YOU SEE THIS", "gameplay-text");
+	}
+};
+
+//**************************************************
+//Get phase functions end***************************
+//**************************************************
+
+
+
 
 
 Game.prototype.incrementTeamLeader = function(){
@@ -532,28 +603,6 @@ Game.prototype.distributeGameData = function(){
 	}
 };
 
-Game.prototype.getClientNumOfTargets = function(indexOfPlayer){
-	//RUN SPECIAL ROLE AND CARD CHECKS
-	// if(this.checkRoleCardSpecialMoves(socket, data) === true){
-	// 	return;
-	// }
-
-	// Common phases
-	if(commonPhases.indexOf(this.phase) !== -1){
-		return this.phasesObj[this.phase].numOfTargets(indexOfPlayer);		
-	}
-
-	// Special phases
-	else {
-		// TODO
-		//Run through the possible phases in the game mode folder
-		//Avalon roles (e.g. assassination)
-	}
-
-	// TODO
-	// Check cards
-
-};
 
 Game.prototype.getGameData = function () {
 	if(this.gameStarted == true){
@@ -698,71 +747,7 @@ Game.prototype.addToChatHistory = function(data){
 	}
 }
 
-Game.prototype.getClientButtonSettings = function(indexOfPlayer){
-	if(indexOfPlayer !== undefined){
-		// Common phases
-		if(commonPhases.indexOf(this.phase) !== -1){
-			return this.phasesObj[this.phase].buttonSettings(indexOfPlayer);
-		}
 
-		// Special phases
-		else {
-			// TODO
-			//Run through the possible phases in the game mode folder
-			//Avalon roles (e.g. assassination)
-		}
-
-		// Check card
-		// TODO
-
-		/*
-
-			else give them spectator button data - last resort, shouldn't happen
-
-		*/
-	}
-	// User is a spectator
-	else{
-		var obj = {
-			green:{},
-			red: {}
-		};
-
-		obj.green.hidden = true;
-		obj.green.disabled = true;
-		obj.green.setText = "";
-
-		obj.red.hidden = true;
-		obj.red.disabled = true;
-		obj.red.setText = "";
-
-		return obj;
-		
-	}
-
-};
-
-Game.prototype.getStatusMessage = function(indexOfPlayer){
-
-	console.log("ASDF");
-	console.log(commonPhases.indexOf(this.phase) !== -1)
-	console.log(this.phase);
-	// Common phases
-	if(commonPhases.indexOf(this.phase) !== -1){
-		console.log(this.phasesObj[this.phase].getStatusMessage(indexOfPlayer));
-		return this.phasesObj[this.phase].getStatusMessage(indexOfPlayer);
-	}
-
-	// Special phases
-	else {
-		// TODO
-		//Run through the possible phases in the game mode folder
-		//Avalon roles (e.g. assassination)
-	}
-
-	// Check cards
-	// TODO
-};
 
 Game.prototype.getStatus = function () {
 	if(this.frozen === true){
@@ -810,11 +795,11 @@ Game.prototype.finishGame = function(toBeWinner){
 
 	if (this.winner === "spies") {
 		// this.gameplayMessage = "The spies have won the game.";
-		this.sendText(this.allSockets, "The spies have won the game.", "gameplay-text");
+		this.sendText(this.allSockets, "The spies have won the game.", "gameplay-text-red");
 	}
 	else if (this.winner === "resistance") {
 		// this.gameplayMessage = "The resistance have won the game.";
-		this.sendText(this.allSockets, "The resistance have won the game.", "gameplay-text");
+		this.sendText(this.allSockets, "The resistance have won the game.", "gameplay-text-blue");
 	}
 
 	this.distributeGameData();
@@ -1014,11 +999,12 @@ Game.prototype.calcMissionVotes = function(votes) {
 
 Game.prototype.checkRoleCardSpecialMoves = function(socket, data){
 	var foundSomething = false;
+
 	for(var i = 0; i < this.roleKeysInPlay.length; i++){
 		//If the function doesn't exist, return null
-		if(!this.avalonRoles[this.roleKeysInPlay[i]].checkSpecialMove){continue;}
+		if(!this.specialRoles[this.roleKeysInPlay[i]].checkSpecialMove){continue;}
 
-		if(this.avalonRoles[this.roleKeysInPlay[i]].checkSpecialMove(socket, data) === true){
+		if(this.specialRoles[this.roleKeysInPlay[i]].checkSpecialMove(socket, data) === true){
 			foundSomething = true;
 			break;
 		}
@@ -1027,9 +1013,9 @@ Game.prototype.checkRoleCardSpecialMoves = function(socket, data){
 	if(foundSomething === false){
 		for(var i = 0; i < this.cardKeysInPlay.length; i++){
 			//If the function doesn't exist, return null
-			if(!this.avalonRoles[this.roleKeysInPlay[i]].checkSpecialMove){continue;}
+			if(!this.specialCards[this.roleKeysInPlay[i]].checkSpecialMove){continue;}
 
-			if(this.avalonCards[this.cardKeysInPlay[i]].checkSpecialMove(socket, data) === true){
+			if(this.specialCards[this.cardKeysInPlay[i]].checkSpecialMove(socket, data) === true){
 				foundSomething = true;
 				break;
 			}
@@ -1038,101 +1024,7 @@ Game.prototype.checkRoleCardSpecialMoves = function(socket, data){
 
 	return foundSomething;
 };
-Game.prototype.checkRoleCardToShowGuns = function(){
-	var data = null;
-	for(var i = 0; i < this.roleKeysInPlay.length; i++){
-		//If the function doesn't exist, return null
-		if(!this.avalonRoles[this.roleKeysInPlay[i]].toShowGuns){continue;}
 
-		data = this.avalonRoles[this.roleKeysInPlay[i]].toShowGuns();
-		if(data !== null){
-			return data;
-		}
-	}
-
-	for(var i = 0; i < this.cardKeysInPlay.length; i++){
-		//If the function doesn't exist, continue
-		if(!this.avalonRoles[this.roleKeysInPlay[i]].toShowGuns){continue;}
-
-		data = this.avalonCards[this.cardKeysInPlay[i]].toShowGuns();
-		if(data !== null){
-			return data;
-		}
-	}
-	return data;
-};
-Game.prototype.checkRoleCardGetClientNumOfTargets = function(indexOfPlayer){
-	var data = null;
-	for(var i = 0; i < this.roleKeysInPlay.length; i++){
-		//If the function doesn't exist, return null
-		if(!this.avalonRoles[this.roleKeysInPlay[i]].getClientNumOfTargets){continue;}
-
-		data = this.avalonRoles[this.roleKeysInPlay[i]].getClientNumOfTargets(indexOfPlayer);
-		if(data !== null){
-			return data;
-		}
-	}
-
-	for(var i = 0; i < this.cardKeysInPlay.length; i++){
-		//If the function doesn't exist, return null
-		if(!this.avalonRoles[this.roleKeysInPlay[i]].getClientNumOfTargets){continue;}
-
-		data = this.avalonCards[this.cardKeysInPlay[i]].getClientNumOfTargets(indexOfPlayer);
-		if(data !== null){
-			return data;
-		}
-	}
-
-	return data;
-};
-Game.prototype.checkRoleCardGetClientButtonSettings = function(indexOfPlayer){
-	var data = null;
-	for(var i = 0; i < this.roleKeysInPlay.length; i++){
-		//If the function doesn't exist, return null
-		if(!this.avalonRoles[this.roleKeysInPlay[i]].getClientButtonSettings){continue;}
-
-		data = this.avalonRoles[this.roleKeysInPlay[i]].getClientButtonSettings(indexOfPlayer);
-		if(data !== null){
-			return data;
-		}
-	}
-
-	for(var i = 0; i < this.cardKeysInPlay.length; i++){
-		//If the function doesn't exist, return null
-		if(!this.avalonRoles[this.roleKeysInPlay[i]].getClientButtonSettings){continue;}
-
-		data = this.avalonCards[this.cardKeysInPlay[i]].getClientButtonSettings(indexOfPlayer);
-		if(data !== null){
-			return data;
-		}
-	}
-
-	return data;
-};
-Game.prototype.checkRoleCardStatusMessage = function(indexOfPlayer){
-	var data = null;
-	for(var i = 0; i < this.roleKeysInPlay.length; i++){
-		//If the function doesn't exist, return null
-		if(!this.avalonRoles[this.roleKeysInPlay[i]].getStatusMessage){continue;}
-
-		data = this.avalonRoles[this.roleKeysInPlay[i]].getStatusMessage(indexOfPlayer);
-		if(data !== null){
-			return data;
-		}
-	}
-
-	for(var i = 0; i < this.cardKeysInPlay.length; i++){
-		//If the function doesn't exist, return null
-		if(!this.avalonRoles[this.roleKeysInPlay[i]].getStatusMessage(indexOfPlayer)){continue;}
-
-		data = this.avalonCards[this.cardKeysInPlay[i]].getStatusMessage();
-		if(data !== null){
-			return data;
-		}
-	}
-
-	return data;
-};
 
 Game.prototype.getRoleCardPublicGameData = function(){
 	var allData = {
@@ -1157,6 +1049,8 @@ Game.prototype.getRoleCardPublicGameData = function(){
 
 	return allData;
 };
+
+
 
 Game.prototype.loadRoleCardData = function(roleData, cardData){
 	this.avalonRoles = (new avalonRolesIndex).getRoles(this);
@@ -1193,10 +1087,6 @@ Game.prototype.loadRoleCardData = function(roleData, cardData){
 		}
 	}
 };
-
-
-
-
 
 
 // If entries don't exist for current missionNum and pickNum, create them

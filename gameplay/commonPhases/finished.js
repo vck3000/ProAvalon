@@ -46,18 +46,7 @@ Finished.prototype.numOfTargets = function(indexOfPlayer){
 }
 
 Finished.prototype.getStatusMessage = function(indexOfPlayer){  
-    var winningTeam;
-    if(this.thisRoom.winner === "Spy"){
-        winningTeam = "spies";
-    }
-    else if(this.thisRoom.winner === "Resistance"){
-        winningTeam = "resistance";
-    }
-    else{
-        winningTeam = "Error...";
-    }
-
-    var str = "Game has finished. The " + winningTeam + " have won.";
+    var str = "Game has finished. The " + this.thisRoom.winner + " have won.";
     return str;
 }
 
