@@ -1,0 +1,27 @@
+function /* TODO: Name of Role*/(thisRoom_) {
+    this.thisRoom = thisRoom_;
+
+    this.specialPhase = /* TODO: If there is a special phase attached to the role e.g. Assassin has Assassination*/;
+
+    this.role = "/* TODO: Name of Role (Note first letter is usually capitalised)*/";
+    this.alliance = "/*TODO: Alliance (Resistance or Spy)*/";
+
+    this.playerShot = "";
+
+    this.see = function(){
+        /* TODO: What the role sees (e.g. Percival sees Merlin and Morgana as "Merlin?") */
+    }
+};
+
+
+/* TODO: Name of Role*/.prototype.checkSpecialMove = function(socket, data){
+    /* TODO: Check if we need to go to a special phase */
+};
+
+/* TODO: Name of Role*/.prototype.getPublicGameData = function(){
+    /* TODO: (Can delete this function. Not absolutely necessary)
+    Public data to show the user(s) e.g. assassin bullet */
+}
+
+
+module.exports = /* TODO: Name of Role*/;

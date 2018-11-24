@@ -1,10 +1,11 @@
-/* Each phase must have:
+/* Each phase should have:
     - Name
     - Whether to show guns or not
     - GameMove to perform operations
     - Buttons that are visible and what text they have
     - Number of targets allowed to be selected
     - Status message to display
+    - Prohibited Indexes to pick (an array)
 */
 var usernamesIndexes = require("../../myFunctions/usernamesIndexes");
 
@@ -36,6 +37,11 @@ function /* TODO: Name of phase*/(thisRoom_) {
 /* TODO: Name of phase*/.prototype.getStatusMessage = function(indexOfPlayer){  
     /* TODO: getStatusMessage*/
 }
+
+/* TODO: Name of phase*/.prototype.getProhibitedIndexesToPick = function(indexOfPlayer){  
+    /* TODO: getProhibitedIndexesToPick in an array*/
+}
+
 
 
 

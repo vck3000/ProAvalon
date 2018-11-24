@@ -1649,12 +1649,10 @@ module.exports = function (io) {
 					message: socket.request.user.username + " has joined the room.",
 					classStr: "server-text-teal",
 					dateCreated: new Date()
-				}			
+				}
 				sendToRoomChat(io, roomId, data);
 
 				updateCurrentGamesList();
-				
-				
 
 			} else {
 				// console.log("Game doesn't exist!");

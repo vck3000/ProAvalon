@@ -1,36 +1,37 @@
 
-
 function LadyOfTheLake(thisRoom_) {
-
     this.thisRoom = thisRoom_;
-	this.card = "Lady of the Lake";
+
+    this.specialPhase = "lady";
+
+    this.card = "Lady of the Lake";
+	this.indexOfPlayerHolding;
 	
-	
-    
-    this.test = function(){
-        // The following lines running successfully shows that each role file can access
-        // the variables and functions from the game room!
-        console.log("HII from Lady of the Lake. The number of sockets is: " + this.thisRoom.allSockets.length);
-    }
+	this.lastMissionUsed = 0;
+	this.ladyHistory = [];
+};
 
+LadyOfTheLake.prototype.setHolder = function(index){
+	this.indexOfPlayerHolding = index;
+	this.ladyHistory.push(index);
+};
 
+LadyOfTheLake.prototype.checkSpecialMove = function(socket, data){
+	// Only use lady of the lake after m2, when the success/fail is revealed, but before the next mission starts.
+	// Only once per mission.
+	if (this.missionHistory.length >= 2 && this.lastMissionUsed !== this.thisRoom.missionNum) {
+		this.phase = "lady";
+		this.lastMissionUsed = this.thisRoom.missionNum;
+	}
+};
+
+LadyOfTheLake.prototype.getPublicGameData = function(){
+    /* TODO: (Can delete this function. Not absolutely necessary)
+    Public data to show the user(s) e.g. who holds the lady of the lake */
 }
-
-LadyOfTheLake.prototype.checkSpecialMove = function(){
-
-}
-
-
-
-// setStatusBarText("Your turn to use the Lady of the Lake. Select one player to use it on.");
-
 
 
 module.exports = LadyOfTheLake;
-
-
-
-
 
 
 		// if (options.lady === true) {

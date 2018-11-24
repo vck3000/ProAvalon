@@ -1,11 +1,3 @@
-/* Each phase must have:
-    - Name
-    - Whether to show guns or not
-    - GameMove to perform operations
-    - Buttons that are visible and what text they have
-    - Number of targets allowed to be selected
-    - Status message to display
-*/
 var usernamesIndexes = require("../../myFunctions/usernamesIndexes");
 
 function VotingTeam(thisRoom_) {

@@ -462,12 +462,12 @@ Game.prototype.startGame = function (options) {
 Game.prototype.gameMove = function (socket, data) {
 
 	// Common phases
-	if(this.commonPhases.hasOwnProperty(this.phase) === true){
+	if(this.commonPhases.hasOwnProperty(this.phase) === true && this.commonPhases[this.phase].gameMove){
 		this.commonPhases[this.phase].gameMove(socket, data);		
 	}
 
 	// Special phases
-	else if(this.specialPhases.hasOwnProperty(this.phase) === true){
+	else if(this.specialPhases.hasOwnProperty(this.phase) === true && this.specialPhases[this.phase].gameMove){
 		this.specialPhases[this.phase].gameMove(socket, data);
 	}
 
@@ -484,12 +484,12 @@ Game.prototype.gameMove = function (socket, data) {
 
 Game.prototype.toShowGuns = function(){
 	// Common phases
-	if(this.commonPhases.hasOwnProperty(this.phase) === true){
+	if(this.commonPhases.hasOwnProperty(this.phase) === true && this.commonPhases[this.phase].showGuns){
 		return this.commonPhases[this.phase].showGuns;		
 	}
 
 	// Special phases
-	else if(this.specialPhases.hasOwnProperty(this.phase) === true){
+	else if(this.specialPhases.hasOwnProperty(this.phase) === true && this.specialPhases[this.phase].showGuns){
 		this.specialPhases[this.phase].showGuns;
 	}
 
@@ -501,12 +501,12 @@ Game.prototype.toShowGuns = function(){
 
 Game.prototype.getClientNumOfTargets = function(indexOfPlayer){
 	// Common phases
-	if(this.commonPhases.hasOwnProperty(this.phase) === true){
+	if(this.commonPhases.hasOwnProperty(this.phase) === true && this.commonPhases[this.phase].numOfTargets){
 		return this.commonPhases[this.phase].numOfTargets(indexOfPlayer);		
 	}
 
 	// Special phases
-	else if(this.specialPhases.hasOwnProperty(this.phase) === true){
+	else if(this.specialPhases.hasOwnProperty(this.phase) === true && this.specialPhases[this.phase].numOfTargets){
 		return this.specialPhases[this.phase].numOfTargets(indexOfPlayer);
 	}
 
@@ -519,12 +519,12 @@ Game.prototype.getClientNumOfTargets = function(indexOfPlayer){
 Game.prototype.getClientButtonSettings = function(indexOfPlayer){
 	if(indexOfPlayer !== undefined){
 		// Common phases
-		if(this.commonPhases.hasOwnProperty(this.phase) === true){
+		if(this.commonPhases.hasOwnProperty(this.phase) === true && this.commonPhases[this.phase].buttonSettings){
 			return this.commonPhases[this.phase].buttonSettings(indexOfPlayer);
 		}
 
 		// Special phases
-		else if(this.specialPhases.hasOwnProperty(this.phase) === true){
+		else if(this.specialPhases.hasOwnProperty(this.phase) === true && this.specialPhases[this.phase].buttonSettings){
 			return this.specialPhases[this.phase].buttonSettings(indexOfPlayer);
 		}
 
@@ -555,12 +555,12 @@ Game.prototype.getClientButtonSettings = function(indexOfPlayer){
 Game.prototype.getStatusMessage = function(indexOfPlayer){
 
 	// Common phases
-	if(this.commonPhases.hasOwnProperty(this.phase) === true){
+	if(this.commonPhases.hasOwnProperty(this.phase) === true && this.commonPhases[this.phase].getStatusMessage){
 		return this.commonPhases[this.phase].getStatusMessage(indexOfPlayer);
 	}
 
 	// Special phases
-	else if(this.specialPhases.hasOwnProperty(this.phase) === true){
+	else if(this.specialPhases.hasOwnProperty(this.phase) === true && this.specialPhases[this.phase].getStatusMessage){
 		return this.specialPhases[this.phase].getStatusMessage(indexOfPlayer);
 	}
 
@@ -569,6 +569,25 @@ Game.prototype.getStatusMessage = function(indexOfPlayer){
 		this.sendText(this.allSockets, "ERROR LET ADMIN KNOW IF YOU SEE THIS", "gameplay-text");
 	}
 };
+
+Game.prototype.getProhibitedIndexesToPick = function(indexOfPlayer){
+
+	// Common phases
+	if(this.commonPhases.hasOwnProperty(this.phase) === true && this.commonPhases[this.phase].getProhibitedIndexesToPick){
+		return this.commonPhases[this.phase].getProhibitedIndexesToPick(indexOfPlayer);
+	}
+
+	// Special phases
+	else if(this.specialPhases.hasOwnProperty(this.phase) === true && this.specialPhases[this.phase].getProhibitedIndexesToPick){
+		return this.specialPhases[this.phase].getProhibitedIndexesToPick(indexOfPlayer);
+	}
+
+	// THIS SHOULDN'T HAPPEN!!
+	else{
+		this.sendText(this.allSockets, "ERROR LET ADMIN KNOW IF YOU SEE THIS", "gameplay-text");
+	}
+};
+
 
 //**************************************************
 //Get phase functions end***************************
@@ -705,6 +724,7 @@ Game.prototype.getGameData = function () {
 			data[i].toShowGuns 				= this.toShowGuns();
 
 			data[i].rolesCards				= this.getRoleCardPublicGameData();
+			data[i].prohibitedIndexesToPicks= this.getProhibitedIndexesToPick(i);
 			
 
 			//if game is finished, reveal everything including roles

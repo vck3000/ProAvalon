@@ -108,7 +108,12 @@ function draw() {
                 drawVotes(gameData.votes);
     
                 if(gameData.numSelectTargets !== 0 && gameData.numSelectTargets !== null){
-                    enableSelectAvatars();
+                    if(gameData.prohibitedIndexesToPicks){
+                        enableSelectAvatars(gameData.prohibitedIndexesToPicks);
+                    }
+                    else{
+                        enableSelectAvatars();
+                    }
                 }
             }
         }
@@ -340,21 +345,24 @@ function assassinationSetup(phase) {
     }
 }
   
-function enableSelectAvatars() {
+function enableSelectAvatars(prohibitedIndexesToPicks) {
     // var numPlayersOnMission = gameData.numPlayersOnMission[gameData.missionNum - 1];
 
     var divs = document.querySelectorAll("#mainRoomBox div");
     //add the event listeners for button press
     for (var i = 0; i < divs.length; i++) {
-        divs[i].addEventListener("click", function () {
-        // console.log("avatar pressed");
-            //toggle the highlight class
-            this.classList.toggle("highlight-avatar");
-            //change the pick team button to enabled/disabled
-            checkSelectAvatarButtons(gameData.numSelectTargets);
-        });
+
+        if(prohibitedIndexesToPicks.includes(i) === false){
+            divs[i].addEventListener("click", function () {
+                // console.log("avatar pressed");
+                    //toggle the highlight class
+                    this.classList.toggle("highlight-avatar");
+                    //change the pick team button to enabled/disabled
+                    checkSelectAvatarButtons(gameData.numSelectTargets);
+                });
+        }
     }
-    checkSelectAvatarButtons(gameData.numSelectTargets);
+    // checkSelectAvatarButtons(gameData.numSelectTargets);
     
 };
 

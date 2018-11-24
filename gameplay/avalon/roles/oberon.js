@@ -1,5 +1,3 @@
-
-
 function Oberon(thisRoom_) {
 
     this.thisRoom = thisRoom_;

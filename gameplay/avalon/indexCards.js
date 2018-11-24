@@ -11,9 +11,11 @@ function index(){
         require("fs").readdirSync(normalizedPath).forEach(function(file) {
             // console.log(file);
     
-            name = file.replace(".js", "");
-    
-            cardImports[name] = require("./cards/" + file);
+            if(file.includes(".js") === true){            
+                name = file.replace(".js", "");
+        
+                cardImports[name] = require("./cards/" + file);
+            }
         });
     
     
