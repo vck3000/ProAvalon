@@ -1,9 +1,9 @@
 /* Each phase must have:
     - Name
+    - Whether to show guns or not
     - GameMove to perform operations
     - Buttons that are visible and what text they have
     - Number of targets allowed to be selected
-    - Whether to show guns or not
     - Status message to display
 */
 var usernamesIndexes = require("../../myFunctions/usernamesIndexes");
@@ -12,6 +12,7 @@ function VotingTeam(thisRoom_) {
     this.thisRoom = thisRoom_;
 
     this.phase = "votingTeam";
+    this.showGuns = true;
 };
 
 VotingTeam.prototype.gameMove = function(socket, data){        
@@ -76,6 +77,91 @@ VotingTeam.prototype.gameMove = function(socket, data){
 };
 
 
+
+// Returns a object with green and red keys. 
+// Green and Red must both have the following properties:
+//  hidden          - Is the button hidden?
+//  disabled        - Is the button disabled?
+//  setText         - What text to display in the button
+VotingTeam.prototype.buttonSettings = function(indexOfPlayer){  
+
+    var obj = {
+		green:{},
+		red: {}
+    };
+    
+    // If user has voted already
+    if(this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playersInGame[indexOfPlayer].username) === -1){
+        obj.green.hidden = true;
+        obj.green.disabled = true;
+        obj.green.setText = "";
+
+        obj.red.hidden = true;
+        obj.red.disabled = true;
+        obj.red.setText = "";
+    }
+    // User has not voted yet
+    else{
+        obj.green.hidden = false;
+        obj.green.disabled = false;
+        obj.green.setText = "Approve";
+
+        obj.red.hidden = false;
+        obj.red.disabled = false;
+        obj.red.setText = "Reject";
+    }
+}
+
+VotingTeam.prototype.numOfTargets = function(indexOfPlayer){    
+    return null;
+}
+
+
+VotingTeam.prototype.getStatusMessage = function(indexOfPlayer){  
+    // If we are spectator
+    if(indexOfPlayer === -1){
+        var str = "";
+        str += "Waiting for votes: ";
+        for (var i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
+            str = str + this.thisRoom.playersYetToVote[i] + ", ";
+        }
+        // Remove last , and replace with .
+        str = str.slice(0, str.length - 2);
+        str += ".";
+
+        return str;
+    }
+    // If user has voted already
+    else if(indexOfPlayer !== undefined && this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playersInGame[indexOfPlayer].username) === -1){
+        var str = "";
+        str += "Waiting for votes: ";
+        for (var i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
+            str = str + this.thisRoom.playersYetToVote[i] + ", ";
+        }
+        // Remove last , and replace with .
+        str = str.slice(0, str.length - 2);
+        str += ".";
+
+        return str;
+    }
+    // User has not voted yet or user is a spectator
+    else{
+        var str = "";
+        str += (this.thisRoom.playersInGame[this.thisRoom.teamLeader].username + " has picked: ");
+
+        for (var i = 0; i < this.thisRoom.proposedTeam.length; i++) {
+            str += this.thisRoom.proposedTeam[i] + ", ";
+        }
+        // Remove last , and replace with .
+        str = str.slice(0, str.length - 2);
+        str += ".";
+
+        return str;
+    }
+}
+
+
+
 function getStrApprovedRejectedPlayers(votes, playersInGame) {
 	var approvedUsernames = "";
 	var rejectedUsernames = "";
@@ -98,8 +184,6 @@ function getStrApprovedRejectedPlayers(votes, playersInGame) {
 
 	return str;
 }
-
-
 
 function calcVotes(votes) {
 	var numOfPlayers = votes.length;
@@ -130,6 +214,8 @@ function calcVotes(votes) {
     
 	return outcome;
 }
+
+
 
 
 

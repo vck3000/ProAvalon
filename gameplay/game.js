@@ -412,14 +412,24 @@ Game.prototype.startGame = function (options) {
 };
 
 
+var commonPhases = ["pickingTeam", "votingTeam", "votingMission", "finished"];
 Game.prototype.gameMove = function (socket, data) {
 
 	//RUN SPECIAL ROLE AND CARD CHECKS
 	if(this.checkRoleCardSpecialMoves(socket, data) === true){
 		return;
 	}
-	else{
+
+	// Common phases
+	else if(commonPhases.indexOf(this.phase) !== -1){
 		this.phasesObj[this.phase].gameMove(socket, data);		
+	}
+
+	// Special phases
+	else {
+		// TODO
+		//Run through the possible phases in the game mode folder
+		//Avalon roles (e.g. assassination)
 	}
 
 	//RUN SPECIAL ROLE AND CARD CHECKS
@@ -431,31 +441,25 @@ Game.prototype.gameMove = function (socket, data) {
 	this.distributeGameData();
 };
 
-var whenToShowGuns = [
-    "votingTeam",
-    "votingMission",
-    "finished"
-];
-
 Game.prototype.toShowGuns = function(){
-	// If the phase doesn't exist on whenToShowGuns, then check cards
-	if(whenToShowGuns.indexOf(this.phase) === -1){
-		
-		//Check all the special roles and cards
-		if(this.checkRoleCardToShowGuns()){
-			return true;
-		}
 
-		// If still we don't have any, then don't show guns
-		else{
-			return false;
-		}
-	}	
-
-	// It is on the list, show guns
-	else{
+	//Check all the special roles and cards
+	if(this.checkRoleCardToShowGuns()){
 		return true;
 	}
+
+	// Common phases
+	else if(commonPhases.indexOf(this.phase) !== -1){
+		return this.phasesObj[this.phase].showGuns;		
+	}
+
+	// Special phases
+	else {
+		// TODO
+		//Run through the possible phases in the game mode folder
+		//Avalon roles (e.g. assassination)
+	}
+
 }
 
 
@@ -529,37 +533,26 @@ Game.prototype.distributeGameData = function(){
 };
 
 Game.prototype.getClientNumOfTargets = function(indexOfPlayer){
-	if(this.phase === "pickingTeam"){
-		var num = this.numPlayersOnMission[this.playersInGame.length - this.minPlayers][this.missionNum - 1];
-		// console.log("Num player for this mission : " + num);
+	//RUN SPECIAL ROLE AND CARD CHECKS
+	// if(this.checkRoleCardSpecialMoves(socket, data) === true){
+	// 	return;
+	// }
 
-		//If we are not the team leader
-		if(indexOfPlayer !== this.teamLeader){
-			return null;
-		}
+	// Common phases
+	if(commonPhases.indexOf(this.phase) !== -1){
+		this.phasesObj[this.phase].numOfTargets(indexOfPlayer);		
+	}
 
-		//In case the mission num is 4*, make it 4.
-		if(num.length > 1){ num = parseInt(num[0]); }
-		else{ num = parseInt(num); }
+	// Special phases
+	else {
+		// TODO
+		//Run through the possible phases in the game mode folder
+		//Avalon roles (e.g. assassination)
+	}
 
-		return num;
-	}
-	else if(this.phase === "votingTeam"){
-		return null;
-	}
-	else if(this.phase === "votingMission"){
-		return null;
-	}
-	else{
-		// Check the roles cards
-		var num = this.checkRoleCardGetClientNumOfTargets(indexOfPlayer);
-		if(num !== null){
-			return num;
-		}
-		else{
-			return null;
-		}
-	}
+	// TODO
+	// Check cards
+
 };
 
 Game.prototype.getGameData = function () {
@@ -698,105 +691,43 @@ Game.prototype.addToChatHistory = function(data){
 	if(this.gameStarted === true){
 		this.chatHistory.push(data);
 	}
+
+
+	if(data.message.includes("phase")){
+		this.sendText(this.allSockets, "The current phase is: " + this.phase + ".", "gameplay-text");
+	}
 }
 
 Game.prototype.getClientButtonSettings = function(indexOfPlayer){
-	var obj = {
-		green:{},
-		red: {}
-	};
-
 	if(indexOfPlayer !== undefined){
-		if(this.phase === "pickingTeam"){
-			// If it is the host
-			if(indexOfPlayer === this.teamLeader){
-				obj.green.hidden = false;
-				obj.green.disabled = true;
-				obj.green.setText = "Pick";
-	
-				obj.red.hidden = true;
-				obj.red.disabled = true;
-				obj.red.setText = "";
-			}
-			// If it is any other player who isn't host
-			else{
-				obj.green.hidden = true;
-				obj.green.disabled = true;
-				obj.green.setText = "";
-	
-				obj.red.hidden = true;
-				obj.red.disabled = true;
-				obj.red.setText = "";
-			}
-			
+		// Common phases
+		if(commonPhases.indexOf(this.phase) !== -1){
+			return this.phasesObj[this.phase].buttonSettings(indexOfPlayer);
 		}
-		else if(this.phase === "votingTeam"){
-			// If user has voted already
-			if(this.playersYetToVote.indexOf(this.playersInGame[indexOfPlayer].username) === -1){
-				obj.green.hidden = true;
-				obj.green.disabled = true;
-				obj.green.setText = "";
-		
-				obj.red.hidden = true;
-				obj.red.disabled = true;
-				obj.red.setText = "";
-			}
-			// User has not voted yet
-			else{
-				obj.green.hidden = false;
-				obj.green.disabled = false;
-				obj.green.setText = "Approve";
-		
-				obj.red.hidden = false;
-				obj.red.disabled = false;
-				obj.red.setText = "Reject";
-			}
+
+		// Special phases
+		else {
+			// TODO
+			//Run through the possible phases in the game mode folder
+			//Avalon roles (e.g. assassination)
 		}
-		else if(this.phase === "votingMission"){
-			if(this.playersYetToVote.indexOf(this.playersInGame[indexOfPlayer].username) === -1){
-				obj.green.hidden = true;
-				obj.green.disabled = true;
-				obj.green.setText = "";
-		
-				obj.red.hidden = true;
-				obj.red.disabled = true;
-				obj.red.setText = "";
-			}
-			// User has not voted yet
-			else{
-				obj.green.hidden = false;
-				obj.green.disabled = false;
-				obj.green.setText = "SUCCEED";
-		
-				obj.red.hidden = false;
-				obj.red.disabled = false;
-				obj.red.setText = "FAIL";
-			}
-		}
-		else{
-			//Check the roles cards
-			obj = this.checkRoleCardGetClientButtonSettings(indexOfPlayer);
-			if(obj !== null){
-				return obj;
-			}
-			//Give spectator data if last resort
-			else{
-				obj = {
-					green: {},
-					red: {}
-				}
-				obj.green.hidden = true;
-				obj.green.disabled = true;
-				obj.green.setText = "";
-		
-				obj.red.hidden = true;
-				obj.red.disabled = true;
-				obj.red.setText = "";
-			}
-		}
+
+		// Check card
+		// TODO
+
+		/*
+
+			else give them spectator button data - last resort, shouldn't happen
+
+		*/
 	}
 	// User is a spectator
 	else{
+		var obj = {
+			green:{},
+			red: {}
+		};
+
 		obj.green.hidden = true;
 		obj.green.disabled = true;
 		obj.green.setText = "";
@@ -804,133 +735,33 @@ Game.prototype.getClientButtonSettings = function(indexOfPlayer){
 		obj.red.hidden = true;
 		obj.red.disabled = true;
 		obj.red.setText = "";
+
+		return obj;
+		
 	}
 
-	
-
-	return obj;
 };
 
 Game.prototype.getStatusMessage = function(indexOfPlayer){
-	if (this.phase === "pickingTeam") {
-		if(indexOfPlayer !== undefined && indexOfPlayer === this.teamLeader){
-			var num = this.numPlayersOnMission[this.playersInGame.length - this.minPlayers][this.missionNum - 1];
 
-			return "Your turn to pick a team. Pick " + num + " players.";
-		}
-		else{
-			console.log(this.teamLeader);
-			return "Waiting for " + this.playersInGame[this.teamLeader].username + " to pick a team.";
-		}
+	console.log("ASDF");
+	console.log(commonPhases.indexOf(this.phase) !== -1)
+	console.log(this.phase);
+	// Common phases
+	if(commonPhases.indexOf(this.phase) !== -1){
+		console.log(this.phasesObj[this.phase].getStatusMessage(indexOfPlayer));
+		return this.phasesObj[this.phase].getStatusMessage(indexOfPlayer);
 	}
-	else if (this.phase === "votingTeam") {
-		// If we are spectator
-		if(indexOfPlayer === -1){
-			var str = "";
-			str += "Waiting for votes: ";
-			for (var i = 0; i < this.playersYetToVote.length; i++) {
-				str = str + this.playersYetToVote[i] + ", ";
-			}
-			// Remove last , and replace with .
-			str = str.slice(0, str.length - 2);
-			str += ".";
 
-			return str;
-		}
-		// If user has voted already
-		else if(indexOfPlayer !== undefined && this.playersYetToVote.indexOf(this.playersInGame[indexOfPlayer].username) === -1){
-			var str = "";
-			str += "Waiting for votes: ";
-			for (var i = 0; i < this.playersYetToVote.length; i++) {
-				str = str + this.playersYetToVote[i] + ", ";
-			}
-			// Remove last , and replace with .
-			str = str.slice(0, str.length - 2);
-			str += ".";
-
-			return str;
-		}
-		// User has not voted yet or user is a spectator
-		else{
-			var str = "";
-			str += (this.playersInGame[this.teamLeader].username + " has picked: ");
-
-			for (var i = 0; i < this.proposedTeam.length; i++) {
-				str += this.proposedTeam[i] + ", ";
-			}
-			// Remove last , and replace with .
-			str = str.slice(0, str.length - 2);
-			str += ".";
-
-			return str;
-		}
-	}
-	else if (this.phase === "votingMission") {
-		// If we are spectator
-		if(indexOfPlayer === -1){
-			var str = "";
-			str += "Waiting for mission votes: ";
-			for (var i = 0; i < this.playersYetToVote.length; i++) {
-				str = str + this.playersYetToVote[i] + ", ";
-			}
-			// Remove last , and replace with .
-			str = str.slice(0, str.length - 2);
-			str += ".";
-	
-			return str;
-		}
-		//If the user is someone who needs to vote success or fail
-		else if(indexOfPlayer !== undefined && this.playersYetToVote.indexOf(this.playersInGame[indexOfPlayer].username) !== -1){
-			var str = "";
-			str += (this.playersInGame[this.teamLeader].username + " has picked: ");
-
-			for (var i = 0; i < this.proposedTeam.length; i++) {
-				str += this.proposedTeam[i] + ", ";
-			}
-			// Remove last , and replace with .
-			str = str.slice(0, str.length - 2);
-			str += ".";
-
-			return str;
-		}
-		else{
-			var str = "";
-			str += "Waiting for mission votes: ";
-			for (var i = 0; i < this.playersYetToVote.length; i++) {
-				str = str + this.playersYetToVote[i] + ", ";
-			}
-			// Remove last , and replace with .
-			str = str.slice(0, str.length - 2);
-			str += ".";
-	
-			return str;
-		}
-	}
-	else if (this.phase === "finished") {
-		var winningTeam;
-		if(this.winner === "Spy"){
-			winningTeam = "spies";
-		}
-		else if(this.winner === "Resistance"){
-			winningTeam = "resistance";
-		}
-		else{
-			winningTeam = "Error...";
-		}
-
-		var str = "Game has finished. The " + winningTeam + " have won.";
-		return str;
-	}
+	// Special phases
 	else {
-		// Check the roles and cards
-		var str = this.checkRoleCardStatusMessage(indexOfPlayer);
-		if(str !== null){
-			return str;
-		}
-		else{
-			return "";
-		}
+		// TODO
+		//Run through the possible phases in the game mode folder
+		//Avalon roles (e.g. assassination)
 	}
+
+	// Check cards
+	// TODO
 };
 
 Game.prototype.getStatus = function () {

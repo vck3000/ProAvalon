@@ -11,9 +11,12 @@ function index(){
         require("fs").readdirSync(normalizedPath).forEach(function(file) {
             // console.log(file);
     
-            name = file.replace(".js", "");
+            // If it is a javascript file, add it
+            if(file.includes(".js") === true){
+                name = file.replace(".js", "");
     
-            commonPhases[name] = require("./commonPhases/" + file);
+                commonPhases[name] = require("./commonPhases/" + file);
+            }
         });
     
     
