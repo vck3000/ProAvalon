@@ -211,8 +211,9 @@ Game.prototype.playerJoinRoom = function (socket, inputPassword) {
 		//sends to players and specs
 		this.distributeGameData();
 
-		if(this.someCutoffPlayersJoined === "no" && this.allSockets.length > 5){
+		if(this.someCutoffPlayersJoined === "no" && this.allSockets.length >= 5){
 			this.frozen = false;
+			this.someCutoffPlayersJoined === "yes";
 		}
 	}
 	else{
