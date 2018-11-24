@@ -189,6 +189,7 @@ Game.prototype.recoverGame = function(){
 	}
 
 
+	
 
 }
 
