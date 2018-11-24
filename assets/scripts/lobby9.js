@@ -166,8 +166,8 @@ function draw() {
         // Roles and cards special data
         if(gameData && gameData.rolesCards){
             // Show the assassin shot
-            if(gameData.rolesCards.assassinShotUsername){
-                drawBullet(getIndexFromUsername(gameData.see.playerShot));
+            if(gameData.rolesCards.roles.assassinShotUsername){
+                drawBullet(getIndexFromUsername(gameData.rolesCards.roles.assassinShotUsername));
             }
         }
 
