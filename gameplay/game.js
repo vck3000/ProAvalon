@@ -189,7 +189,7 @@ Game.prototype.recoverGame = function(){
 	}
 
 
-	
+
 
 }
 
@@ -847,6 +847,10 @@ Game.prototype.finishGame = function(toBeWinner){
 		// this.gameplayMessage = "The resistance have won the game.";
 		this.sendText(this.allSockets, "The resistance have won the game.", "gameplay-text-blue");
 	}
+
+	// Reset votes
+	this.votes = [];
+	this.publicVotes = [];
 
 	this.distributeGameData();
 
