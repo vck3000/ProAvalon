@@ -153,8 +153,6 @@ Assassination.prototype.getStatusMessage = function(indexOfPlayer){
         }
     }
 
-    var obj = {};
-
     if(indexOfPlayer === indexOfAssassin){
         return "Shoot Merlin..."
     }
