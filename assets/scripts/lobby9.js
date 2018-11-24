@@ -719,10 +719,12 @@ function checkSelectAvatarButtons(num) {
     if (countHighlightedAvatars() == num || (countHighlightedAvatars() + "*") == num) {
         console.log("RUN THIS");
         // btnRemoveHidden("green");
+
         btnRemoveDisabled("green");
     }
     else{
         // btnRemoveHidden("green");
+        enableDisableButtons();
     }
 }
 function enableDisableButtons() {
@@ -808,7 +810,6 @@ function enableDisableButtons() {
         if(gameData.buttons.red.hidden === false){btnRemoveHidden("red");}
         if(gameData.buttons.red.disabled === false){btnRemoveDisabled("red");}
         if(gameData.buttons.red.setText !== undefined){btnSetText("red", gameData.buttons.red.setText);}
-        checkSelectAvatarButtons(gameData.numSelectTargets);
     }
 }
 
