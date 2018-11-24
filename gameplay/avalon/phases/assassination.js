@@ -33,6 +33,15 @@ Assassination.prototype.gameMove = function(socket, data){
             if(this.thisRoom.playersInGame[indexOfRequester].role === this.role){
                 var indexOfTarget = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, data);
 
+                // Check the alliance of the target. If they are spy, reject it and ask them to shoot a res.
+                // Note: Allowed to shoot Oberon
+                if(this.thisRoom.playersInGame[indexOfTarget].alliance === "Spy" && 
+                    this.thisRoom.playersInGame[indexOfTarget].role !== "Oberon"){
+
+                    socket.emit("danger-alert", "You are not allowed to shoot a known spy.");
+                    return;
+                }
+
                 // Get merlin's username
                 var merlinUsername = undefined;
                 for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {

@@ -13,9 +13,9 @@ function Oberon(thisRoom_) {
             var obj = {};
             var array = [];
 
-            for (var i = 0; i < this.playersInGame.length; i++) {
-                if (this.playersInGame[i].role === "Oberon") {
-                    array.push(this.playersInGame[i].username);
+            for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
+                if (this.thisRoom.playersInGame[i].role === "Oberon") {
+                    array.push(this.thisRoom.playersInGame[i].username);
                     break;
                 }
             }

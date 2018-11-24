@@ -89,7 +89,7 @@ function draw() {
         drawGuns();
 
         //default greyed out rn
-        enableDisableButtons();
+        // enableDisableButtons();
 
         // console.log(highlightedAvatars);
         restoreHighlightedAvatars(highlightedAvatars);
@@ -173,6 +173,9 @@ function draw() {
 
         activateAvatarButtons();
         enableDisableButtons();
+        if(gameData){
+            checkSelectAvatarButtons(gameData.numSelectTargets);
+        }
 
     }     
     else{
@@ -715,7 +718,7 @@ function drawClaimingPlayers(claimingPlayers){
   }
   
 function checkSelectAvatarButtons(num) {
-    //if they've selected the right number of players, then allow them to sendz`
+    //if they've selected the right number of players, then allow them to send
     if (countHighlightedAvatars() == num || (countHighlightedAvatars() + "*") == num) {
         console.log("RUN THIS");
         // btnRemoveHidden("green");
