@@ -1812,9 +1812,10 @@ module.exports = function (io) {
 				else{
 					saveGameToDb(rooms[socket.request.user.inRoomId]);
 				}
-			} 
 
-			
+				updateCurrentGamesList(io);
+				
+			} 
 		});
 
 		socket.on("setClaim", function(data){

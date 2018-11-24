@@ -210,6 +210,10 @@ Game.prototype.playerJoinRoom = function (socket, inputPassword) {
 		Room.prototype.playerJoinRoom.call(this, socket, inputPassword);		
 		//sends to players and specs
 		this.distributeGameData();
+
+		if(this.someCutoffPlayersJoined === "no" && this.allSockets.length > 5){
+			this.frozen = false;
+		}
 	}
 	else{
 		Room.prototype.playerJoinRoom.call(this, socket, inputPassword);		
@@ -796,12 +800,12 @@ Game.prototype.addToChatHistory = function(data){
 
 
 Game.prototype.getStatus = function () {
-	if(this.frozen === true){
+	if (this.finished === true) {
+		return "Finished";
+	}
+	else if(this.frozen === true){
 		return "Frozen";
 	}
-	else if (this.finished === true) {
-		return "Finished";
-	} 
 	else if (this.gameStarted === true) {
 		return "Game in progress";
 	} 
