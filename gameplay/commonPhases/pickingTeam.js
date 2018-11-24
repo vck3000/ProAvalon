@@ -105,6 +105,8 @@ PickingTeam.prototype.buttonSettings = function(indexOfPlayer){
         obj.red.disabled = true;
         obj.red.setText = "";
     }
+
+    return obj;
 }
 
 

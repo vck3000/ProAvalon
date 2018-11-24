@@ -37,6 +37,8 @@ Finished.prototype.buttonSettings = function(indexOfPlayer){
     obj.red.hidden = true;
     obj.red.disabled = true;
     obj.red.setText = "";
+
+    return obj;    
 }
 
 Finished.prototype.numOfTargets = function(indexOfPlayer){    

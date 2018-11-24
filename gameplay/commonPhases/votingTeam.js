@@ -110,6 +110,8 @@ VotingTeam.prototype.buttonSettings = function(indexOfPlayer){
         obj.red.disabled = false;
         obj.red.setText = "Reject";
     }
+
+    return obj;    
 }
 
 VotingTeam.prototype.numOfTargets = function(indexOfPlayer){    

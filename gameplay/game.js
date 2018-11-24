@@ -540,7 +540,7 @@ Game.prototype.getClientNumOfTargets = function(indexOfPlayer){
 
 	// Common phases
 	if(commonPhases.indexOf(this.phase) !== -1){
-		this.phasesObj[this.phase].numOfTargets(indexOfPlayer);		
+		return this.phasesObj[this.phase].numOfTargets(indexOfPlayer);		
 	}
 
 	// Special phases

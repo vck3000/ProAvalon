@@ -160,6 +160,8 @@ VotingMission.prototype.buttonSettings = function(indexOfPlayer){
         obj.red.disabled = false;
         obj.red.setText = "FAIL";
     }
+
+    return obj;    
 }
 
 VotingMission.prototype.numOfTargets = function(indexOfPlayer){    
