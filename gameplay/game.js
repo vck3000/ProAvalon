@@ -49,6 +49,7 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 	PlayersReadyNotReady.call(this, this.minPlayers);
 
 	var thisRoom = this;
+	this.gameMode = "avalon";
 
 	this.avalonRoles = (new avalonRolesIndex).getRoles(thisRoom);
 	this.avalonPhases = (new avalonPhasesIndex).getPhases(thisRoom);
@@ -152,6 +153,44 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 //Game object inherits all the functions and stuff from Room
 Game.prototype = Object.create(Room.prototype);
 Object.assign(Game.prototype, PlayersReadyNotReady.prototype);
+
+
+
+
+//RECOVER GAME!
+Game.prototype.recoverGame = function(){
+
+	// Set a few variables back to new state
+	this.allSockets = [];
+	this.socketsOfPlayers = [];
+	this.frozen = true;
+	this.timeFrozenLoaded = new Date();
+	this.someCutoffPlayersJoined = "no";
+
+	// Reload all objects so that their functions are also generated
+	// Functions are not stored with JSONified during storage
+	this.commonPhases = (new commonPhasesIndex).getPhases(this);
+
+	//New Room Object - Just add in the new functions we need
+	var roomFunctions = {};
+
+	Game.prototype = Object.assign(Game.prototype, roomFunctions);
+	Object.assign(Game.prototype, PlayersReadyNotReady.prototype);
+
+	
+	if(this.gameMode === "avalon"){
+		this.avalonRoles = (new avalonRolesIndex).getRoles(this);
+		this.avalonPhases = (new avalonPhasesIndex).getPhases(this);
+		this.avalonCards = (new avalonCardsIndex).getCards(this);
+		
+		this.specialRoles = this.avalonRoles;
+		this.specialPhases = this.avalonPhases;
+		this.specialCards = this.avalonCards;
+	}
+
+
+
+}
 
 //------------------------------------------------
 // METHOD OVERRIDES ------------------------------
@@ -265,7 +304,6 @@ Game.prototype.startGame = function (options) {
 		this.playersInGame[i] = {};
 		//assign them the sockets but with shuffled. 
 		this.playersInGame[i].username = this.socketsOfPlayers[i].request.user.username;
-		this.playersInGame[i].socketId = this.socketsOfPlayers[i].id;
 		this.playersInGame[i].userId = this.socketsOfPlayers[i].request.user._id;
 
 		this.playersInGame[i].request = this.socketsOfPlayers[i].request;
@@ -278,8 +316,8 @@ Game.prototype.startGame = function (options) {
 	}
 
 
-	for(var key in this.avalonRoles){
-		if(this.avalonRoles.hasOwnProperty(key)){
+	for(var key in this.specialRoles){
+		if(this.specialRoles.hasOwnProperty(key)){
 			console.log("Key: " + key);
 		}
 	}
@@ -296,13 +334,13 @@ Game.prototype.startGame = function (options) {
 			if(options[key] === true){
 
 				// If a role file exists for this
-				if(this.avalonRoles.hasOwnProperty(key)){
+				if(this.specialRoles.hasOwnProperty(key)){
 					// If it is a res:
-					if(this.avalonRoles[key].alliance === "Resistance"){
-						this.resRoles.push(this.avalonRoles[key].role);
+					if(this.specialRoles[key].alliance === "Resistance"){
+						this.resRoles.push(this.specialRoles[key].role);
 					}
-					else if(this.avalonRoles[key].alliance === "Spy"){
-						this.spyRoles.push(this.avalonRoles[key].role);
+					else if(this.specialRoles[key].alliance === "Spy"){
+						this.spyRoles.push(this.specialRoles[key].role);
 					}
 					else{
 						console.log("THIS SHOULD NOT HAPPEN! Invalid role file. Look in game.js file.");
@@ -311,7 +349,7 @@ Game.prototype.startGame = function (options) {
 				}
 
 				// If a card file exists for this
-				else if(this.avalonCards.hasOwnProperty(key)){
+				else if(this.specialCards.hasOwnProperty(key)){
 					this.cardKeysInPlay.push(key);
 					//Initialise the card
 				}
@@ -367,7 +405,7 @@ Game.prototype.startGame = function (options) {
 		// Lowercase the role to give the file name
 		let roleLower = this.playersInGame[i].role.toLowerCase();
 
-		this.playersInGame[i].see = this.avalonRoles[roleLower].see();
+		this.playersInGame[i].see = this.specialRoles[roleLower].see();
 	}
 
 	//set game start parameters
@@ -549,7 +587,14 @@ Game.prototype.getRoomPlayers = function () {
 		var roomPlayers = [];
 		
 		for (var i = 0; i < this.playersInGame.length; i++) {
-			var isClaiming = this.claimingPlayers[this.playersInGame[i].request.user.username];
+			var isClaiming;
+			//If the player's username exists on the list of claiming:
+			if(this.claimingPlayers.indexOf(this.playersInGame[i].request.user.username) !== -1){
+				isClaiming = true;
+			}
+			else{
+				isClaiming = false;
+			}
 
 			roomPlayers[i] = {
 				username: this.playersInGame[i].request.user.username,
@@ -734,8 +779,8 @@ Game.prototype.getGameDataForSpectators = function () {
 //Misc game room functions
 Game.prototype.addToChatHistory = function(data){
 	//FOR TESTING
-	// this.avalonRoles.merlin.test();
-	// this.avalonRoles.percival.test();
+	// this.specialRoles.merlin.test();
+	// this.specialRoles.percival.test();
 
 	if(this.gameStarted === true){
 		this.chatHistory.push(data);
@@ -1033,17 +1078,17 @@ Game.prototype.getRoleCardPublicGameData = function(){
 	};
 	for(var i = 0; i < this.roleKeysInPlay.length; i++){
 		//If the function doesn't exist, return null
-		if(!this.avalonRoles[this.roleKeysInPlay[i]].getPublicGameData){continue;}
+		if(!this.specialRoles[this.roleKeysInPlay[i]].getPublicGameData){continue;}
 
-		let data = this.avalonRoles[this.roleKeysInPlay[i]].getPublicGameData();
+		let data = this.specialRoles[this.roleKeysInPlay[i]].getPublicGameData();
 		Object.assign(allData.roles, data);
 	}
 
 	for(var i = 0; i < this.cardKeysInPlay.length; i++){
 		//If the function doesn't exist, return null
-		if(!this.avalonRoles[this.roleKeysInPlay[i]].getPublicGameData()){continue;}
+		if(!this.specialRoles[this.roleKeysInPlay[i]].getPublicGameData()){continue;}
 
-		let data = this.avalonCards[this.cardKeysInPlay[i]].getPublicGameData();
+		let data = this.specialCards[this.cardKeysInPlay[i]].getPublicGameData();
 		Object.assign(allData.cards, data);
 	}
 
@@ -1052,41 +1097,41 @@ Game.prototype.getRoleCardPublicGameData = function(){
 
 
 
-Game.prototype.loadRoleCardData = function(roleData, cardData){
-	this.avalonRoles = (new avalonRolesIndex).getRoles(this);
-	this.avalonCards = (new avalonCardsIndex).getCards(this);
+// Game.prototype.loadRoleCardData = function(roleData, cardData){
+// 	this.specialRoles = (new avalonRolesIndex).getRoles(this);
+// 	this.specialCards = (new avalonCardsIndex).getCards(this);
 
-	//For every role
-	for(var k1 in roleData){
-		if(roleData.hasOwnProperty(k1)){
+// 	//For every role
+// 	for(var k1 in roleData){
+// 		if(roleData.hasOwnProperty(k1)){
 
-			//For every piece of data
-			for(var k2 in roleData[k1]){
-				if(roleData[k1].hasOwnProperty(k2)){
-					this.avalonRoles[k1][k2] = roleData[k1][k2];
-				}
-			}
+// 			//For every piece of data
+// 			for(var k2 in roleData[k1]){
+// 				if(roleData[k1].hasOwnProperty(k2)){
+// 					this.specialRoles[k1][k2] = roleData[k1][k2];
+// 				}
+// 			}
 
-			// For every role, update the "thisRoom" to point to this
-			this.avalonRoles[k1]["thisRoom"] = this;
-		}
-	}
+// 			// For every role, update the "thisRoom" to point to this
+// 			this.specialRoles[k1]["thisRoom"] = this;
+// 		}
+// 	}
 	
-	//For every role
-	for(var k1 in cardData){
-		if(cardData.hasOwnProperty(k1)){
+// 	//For every role
+// 	for(var k1 in cardData){
+// 		if(cardData.hasOwnProperty(k1)){
 
-			//For every piece of data
-			for(var k2 in cardData[k1]){
-				if(cardData[k1].hasOwnProperty(k2)){
-					this.avalonCards[k1][k2] = cardData[k1][k2];
-				}
-			}
-			// For every card, update the "thisRoom" to point to this
-			this.avalonCards[k1]["thisRoom"] = this;
-		}
-	}
-};
+// 			//For every piece of data
+// 			for(var k2 in cardData[k1]){
+// 				if(cardData[k1].hasOwnProperty(k2)){
+// 					this.specialCards[k1][k2] = cardData[k1][k2];
+// 				}
+// 			}
+// 			// For every card, update the "thisRoom" to point to this
+// 			this.specialCards[k1]["thisRoom"] = this;
+// 		}
+// 	}
+// };
 
 
 // If entries don't exist for current missionNum and pickNum, create them

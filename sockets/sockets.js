@@ -160,6 +160,7 @@ function saveGamesAndSendWarning(senderSocket) {
 }
 
 
+// RECOVERING SAVED GAMES!
 savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 	if(err){console.log(err);}
 	else{
@@ -177,6 +178,7 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 			
 					rooms[storedData["roomId"]] = new gameRoom();
 			
+					//Assigning in all the previous variables
 					for(var key in storedData){
 						if(storedData.hasOwnProperty(key)){
 							// console.log("typeof: " + typeof(key))
@@ -190,21 +192,16 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 						}
 					}
 
-					rooms[storedData["roomId"]].loadRoleCardData(storedData["avalonRoles"], storedData["avalonCards"]);
+					// rooms[storedData["roomId"]].loadRoleCardData(storedData["avalonRoles"], storedData["avalonCards"]);
 					// rooms[storedData["roomId"]].reloadParentFunctions();
 					
 
 					rooms[storedData["roomId"]].restartSaved = true;
-					rooms[storedData["roomId"]].allSockets = [];
-					rooms[storedData["roomId"]].socketsOfPlayers = [];
-					
-					rooms[storedData["roomId"]].frozen = true;
+					rooms[storedData["roomId"]].savedGameRecordId = foundSaveGame.id;					
+					rooms[storedData["roomId"]].recoverGame();
 
-					rooms[storedData["roomId"]].timeFrozenLoaded = new Date();
-		
-					rooms[storedData["roomId"]].someCutoffPlayersJoined = "no";
+
 					
-					rooms[storedData["roomId"]].savedGameRecordId = foundSaveGame.id;
 					
 					// console.log("Game loaded");
 
