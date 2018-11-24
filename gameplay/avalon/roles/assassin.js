@@ -1,7 +1,6 @@
 var usernamesIndexes = require("../../../myFunctions/usernamesIndexes");
 
 function Assassin(thisRoom_) {
-
     this.thisRoom = thisRoom_;
 
     this.specialPhase = "assassination";
@@ -113,8 +112,6 @@ Assassin.prototype.checkSpecialMove = function(socket, data){
                             break;
                         }
                     }
-
-
                 }
                 else{
                     console.log(data);
@@ -137,7 +134,6 @@ Assassin.prototype.toShowGuns = function(){
 };
 
 Assassin.prototype.getClientNumOfTargets = function(indexOfPlayer){
-
     if(indexOfPlayer !== undefined && indexOfPlayer !== null){
         if(this.isSpecialPhase() && this.thisRoom.playersInGame[indexOfPlayer].role === this.role){
             return 1;
@@ -146,7 +142,6 @@ Assassin.prototype.getClientNumOfTargets = function(indexOfPlayer){
             return null;
         }
     }
-
 };
 
 

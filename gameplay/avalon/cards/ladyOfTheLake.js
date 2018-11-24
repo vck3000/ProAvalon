@@ -5,7 +5,7 @@ function LadyOfTheLake(thisRoom_) {
     this.thisRoom = thisRoom_;
 	this.card = "Lady of the Lake";
 	
-
+	
     
     this.test = function(){
         // The following lines running successfully shows that each role file can access

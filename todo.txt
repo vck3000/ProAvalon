@@ -7,57 +7,17 @@ To-do list:
 
 - sort by ...... options?
 
-- hide stats option
-
-- Autocomplete when typing names
-
-- hover over mission in center of table highlights participating members
-
 - the second tab (if enabled) that is non-chat is a bit too short and should stretch down to the proper height
 
 - have alt-text for hovering over lady of the lake
-
 
 - /roomChat should only work in a room, /allChat should only work in lobby. perhaps just merge back to the /chat cmd and it'll know which to print when used (but if they'll be automatic, then ignore this).
 
 - After clicking the = icon by an avatar, the icon should change colors (ideally to the color that he'll be highlighted to) so i know that it worked
 
-- BUG: Having the char '[' anywhere in the text triggers the quoting feature and truncs any preceding chars. Instead it should be according to the format "[mm:hh] ValidUsername: MsgActuallySaid" and any text added before/after the quote should end up in the lines before/after the quote
-- Have Quoted text a color other than grey so its more distinctive from regular chat/spectators. light purple?
-
-
-
 - Custom colours for specific people
 
 
-
-
-
-
-👶🏼👶🏽👶🏾👶🏿
-
--Learn REGEX
-
--Learn Bitwise operations...?
-
-
-
-***************************************************************************************
-On hold
-***************************************************************************************
-
--Max number of players
--percy cant see merlins
--weird bug where u cant join and get a u tried to start the game issue
-
-
-
-
-
-6 or 8 inch futon
-cotton only
-
-check on ebay
 
 Hak:
 List of suggestions
@@ -375,3 +335,15 @@ PERHAPS ITS FIXED NOW WITH THE SOCKETS REFACTOR?
 - direct messages
 - Have an overlay on the Stats Graph for the "Site Average" for each of the bars (average calculated over players who have played at least 50 games). basically a tick for each role showing how i stack up and so i know what is considered "good"
 - Statistics page 
+- hide stats option
+
+- Autocomplete when typing names
+
+- hover over mission in center of table highlights participating members
+- BUG: Having the char '[' anywhere in the text triggers the quoting feature and truncs any preceding chars. Instead it should be according to the format "[mm:hh] ValidUsername: MsgActuallySaid" and any text added before/after the quote should end up in the lines before/after the quote
+- Have Quoted text a color other than grey so its more distinctive from regular chat/spectators. light purple?
+
+
+-Max number of players
+-percy cant see merlins
+-weird bug where u cant join and get a u tried to start the game issue

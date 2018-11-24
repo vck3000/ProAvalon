@@ -1,4 +1,3 @@
-
 function Percival(thisRoom_) {
 
     this.thisRoom = thisRoom_;
@@ -15,9 +14,7 @@ function Percival(thisRoom_) {
             classStr: "server-text"
         }
 
-
         this.thisRoom.io.in(this.thisRoom.roomId).emit("roomChatToClient", data);
-        
     }
 
     // Percival sees Merlin and Morgana
@@ -30,11 +27,9 @@ function Percival(thisRoom_) {
                 array.push(this.thisRoom.playersInGame[i].username);
             }
         } 
-        
         obj.merlins = array;
         return obj;
     }
-
 }
 
 
