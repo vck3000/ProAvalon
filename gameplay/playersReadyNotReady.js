@@ -60,7 +60,7 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
         if (this.socketsOfPlayers.length < this.minPlayers) {
             //NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
             // console.log("Not enough players.");
-            this.socketsOfPlayers[0].emit("danger-alert", "Minimum 5 players to start. ")
+            this.socketsOfPlayers[0].emit("danger-alert", "Minimum 5 players to start. ");
             return false;
         } else if (this.gameStarted === true) {
             // console.log("Game already started!");

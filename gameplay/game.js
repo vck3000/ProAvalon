@@ -467,10 +467,124 @@ Game.prototype.startGame = function (options) {
 	};
 
 	this.distributeGameData();
+
+	this.botIndexes = [];
+	for(var i = 0; i < this.socketsOfPlayers.length; i++){
+		if(this.socketsOfPlayers[i].request.user.bot === true){
+			this.botIndexes.push(i);
+		}
+	}
+
+	this.checkBotMoves();
+
 	return true;
 };
 
+Game.prototype.checkBotMoves = function () {
+	var thisRoom = this;
 
+	setInterval(function(){
+		console.log("Num of bots: " + thisRoom.botIndexes.length);
+		for(var i = 0; i < thisRoom.botIndexes.length; i++){
+			console.log("===================");
+			console.log("Bot playing move: ");
+			console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
+			console.log("Bot index: ");
+			console.log(i);
+			console.log(thisRoom.botIndexes[i]);
+			
+
+
+			var buttons = thisRoom.getClientButtonSettings(thisRoom.botIndexes[i]);
+			var numOfTargets = thisRoom.getClientNumOfTargets(thisRoom.botIndexes[i]);
+			var prohibitedIndexesToPick = thisRoom.getProhibitedIndexesToPick(thisRoom.botIndexes[i]);
+			if(prohibitedIndexesToPick === undefined){
+				prohibitedIndexesToPick = [];
+			}
+			
+			console.log(buttons);
+			var canHitGreen = false;
+			var canHitRed = false;
+			if(buttons.green.hidden !== true){
+				canHitGreen = true;
+			}
+			if(buttons.red.hidden !== true){
+				canHitRed = true;
+			}
+
+			// If we can't make any moves, don't do anything
+			if((canHitGreen === false && canHitRed === false) || (numOfTargets === 0 || numOfTargets === undefined)){
+				console.log("Cant make any moves");
+				console.log("Bot playing move: ");
+				console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
+
+				console.log(canHitGreen);
+				console.log(canHitRed);
+				console.log(numOfTargets);
+				continue;
+			}
+
+			if(buttons.green.hidden === false && buttons.green.disabled === false &&
+			buttons.red.hidden === false && buttons.red.disabled === false){
+					var num = Math.round(Math.random());
+					var str = "";
+					if(num === 0){
+						str = "no";
+					}
+					else{
+						str = "yes";
+					}
+					thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]], str);
+					continue;
+			}
+
+			
+			var prohibitedUsernamesToPick = [];
+
+			for(var j = 0; j < prohibitedIndexesToPick.length; j++){
+				prohibitedUsernamesToPick.push(thisRoom.playersInGame[prohibitedIndexesToPick[j]].request.user.username);
+			}
+
+			var allPlayerUsernames = [];
+			for(var j = 0; j < thisRoom.playersInGame.length; j++){
+				allPlayerUsernames.push(thisRoom.playersInGame[j].request.user.username);
+			}
+
+			// Subtract out all the usernames we cannot pick.
+			var allowedUsernamesToPick = allPlayerUsernames.filter(function(uname){
+				if(prohibitedUsernamesToPick.includes(uname) === true){
+					return false;
+				}
+				else{
+					return true;
+				}
+			});
+
+			var randomNums0toPlayerCount = [];
+			//shuffle the players around. Make sure to redistribute thisRoom room player data in sockets.
+			for(var j = 0; j < allowedUsernamesToPick.length; j++){
+				randomNums0toPlayerCount[i] = j;
+			}
+			randomNums0toPlayerCount = shuffle(randomNums0toPlayerCount);
+
+
+			var selectUsernames = [];
+			for(var j = 0; j < numOfTargets; j++){
+				selectUsernames.push(allowedUsernamesToPick[j]);
+			}
+
+			console.log("Select usernames: ");
+			console.log(selectUsernames);
+
+			console.log("Bot playing move: ");
+			console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
+			console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
+
+
+			thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]], selectUsernames);
+		}
+	}, 2000);
+}
 
 
 //**************************************************

@@ -1001,7 +1001,7 @@ var actionsObj = {
 				}
 				
 				if(rooms[senderSocket.request.user.inRoomId]){
-					dummySockets = [];
+					var dummySockets = [];
 
 
 					for(var i = 0; i < args[1]; i++){
@@ -1019,6 +1019,13 @@ var actionsObj = {
 						};
 						rooms[senderSocket.request.user.inRoomId].playerJoinRoom(dummySockets[i]);
 						rooms[senderSocket.request.user.inRoomId].playerSitDown(dummySockets[i]);
+
+						//Save a copy of the sockets within botSockets
+						if(!rooms[senderSocket.request.user.inRoomId].botSockets){
+							rooms[senderSocket.request.user.inRoomId].botSockets = [];
+						}
+						rooms[senderSocket.request.user.inRoomId].botSockets.push(dummySockets[i]);
+						
 						
 					};
 
