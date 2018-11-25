@@ -440,11 +440,11 @@ function gameDateCompare(a,b) {
 router.get("/ajax/getStatistics", function(req, res){
 
 
-	//TEMPORARY! REMOVE THIS LATER!!
-	var obj = JSON.parse(fs.readFileSync('./routes/SampleStatistic.json', 'utf8'));
-	res.status(200).send(obj);
-	return;
-	//TEMPORARY! REMOVE THIS LATER!!
+	// //TEMPORARY! REMOVE THIS LATER!!
+	// var obj = JSON.parse(fs.readFileSync('./routes/SampleStatistic.json', 'utf8'));
+	// res.status(200).send(obj);
+	// return;
+	// //TEMPORARY! REMOVE THIS LATER!!
 	
 
 	gameRecord.find({}).exec(function(err, records){

@@ -884,18 +884,11 @@ Game.prototype.finishGame = function(toBeWinner){
 	//game clean up
 	this.finished = true;
 
-	if(toBeWinner === "Resistance"){
-		this.winner = "resistance";
-	}
-	else if(toBeWinner === "Spy"){
-		this.winner = "spies";
-	}
-
-	if (this.winner === "spies") {
+	if (this.winner === "Spy") {
 		// this.gameplayMessage = "The spies have won the game.";
 		this.sendText(this.allSockets, "The spies have won the game.", "gameplay-text-red");
 	}
-	else if (this.winner === "resistance") {
+	else if (this.winner === "Resistance") {
 		// this.gameplayMessage = "The resistance have won the game.";
 		this.sendText(this.allSockets, "The resistance have won the game.", "gameplay-text-blue");
 	}
@@ -929,6 +922,11 @@ Game.prototype.finishGame = function(toBeWinner){
 			role: this.playersInGame[i].role
 		}
 	}
+
+	var ladyChain;
+	if(this.specialCards && this.specialCards["lady of the lake"]){
+		ladyChain = this.specialCards["lady of the lake"].ladyChain;
+	}
 	
 	var objectToStore = {
 		timeGameStarted: this.startGameTime,
@@ -945,7 +943,7 @@ Game.prototype.finishGame = function(toBeWinner){
 		voteHistory: this.voteHistory,
 		playerRoles: playerRolesVar,
 
-		ladyChain: this.ladyChain,
+		ladyChain: ladyChain,
 		whoAssassinShot: this.whoAssassinShot,
 
 		moreThanOneFailMissions: this.moreThanOneFailMissions

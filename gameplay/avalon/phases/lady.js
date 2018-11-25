@@ -24,6 +24,16 @@ Lady.prototype.gameMove = function(socket, data){
         return;
     }
 
+    console.log("typeof Data: ");
+    console.log(typeof(data));
+
+    if(typeof(data) === "object" || typeof(data) === "array"){
+        data = data[0];
+    }
+
+    console.log("Data: ");
+    console.log(data);
+
     //Check that the target's username exists
     var targetUsername = data;
     var found = false;
@@ -40,16 +50,20 @@ Lady.prototype.gameMove = function(socket, data){
     
     var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
     var ladyHistory = this.thisRoom.specialCards[this.card.toLowerCase()].ladyHistory;
-    var targetIndex = getIndexFromUsername(this.playersInGame, data);
+    var targetIndex = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, data);
 
     //Get index of socket 
     var indexOfSocket = undefined;
     for(var i = 0; i < this.thisRoom.playersInGame.length; i++){
-        if(this.thisRoom.playersInGame.username === socket.request.user.username){
+        console.log("Comparing: " + this.thisRoom.playersInGame[i].username + " with " + socket.request.user.username);
+        if(this.thisRoom.playersInGame[i].username === socket.request.user.username){
             indexOfSocket = i;
             break;
         }
     }
+
+    console.log("Index of socket: ");
+    console.log(indexOfSocket);
 
     // If the requester is the lady holder, do the lady stuff
     if(indexOfCardHolder === indexOfSocket){
@@ -63,14 +77,14 @@ Lady.prototype.gameMove = function(socket, data){
         var alliance = this.thisRoom.playersInGame[targetIndex].alliance;
 
         //emit to the lady holder the person's alliance
-        socket.emit("lady-info", /*"Player " + */targetUsername + " is a " + alliance);
+        socket.emit("lady-info", /*"Player " + */targetUsername + " is a " + alliance + ".");
         // console.log("Player " + target + " is a " + alliance);
 
         //update lady location
         this.thisRoom.specialCards[this.card.toLowerCase()].setHolder(targetIndex);
 
         // this.gameplayMessage = (socket.request.user.username + " has carded " + target);
-        this.thisRoom.sendText(this.thisRoom.allSockets, (socket.request.user.username + " has carded " + target + "."), "gameplay-text");
+        this.thisRoom.sendText(this.thisRoom.allSockets, (socket.request.user.username + " has carded " + targetUsername + "."), "gameplay-text");
 
 
         //update phase
@@ -78,6 +92,8 @@ Lady.prototype.gameMove = function(socket, data){
     }
     // The requester is not the lady holder. Ignore the request.
     else{
+        socket.emit("danger-alert", "You do not hold the card.");      
+
         return;
     }
 

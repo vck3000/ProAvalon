@@ -163,7 +163,7 @@ Room.prototype.playerLeaveRoom = function (socket) {
 	}
 
 	// Destroy room if there's no one in it anymore
-	if (this.allSockets.length === 0) {
+	if (this.allSockets.length === 0 && this.frozen !== true) {
 		console.log("Room: " + this.roomId + " is empty, destroying...");
 		this.destroyRoom = true;
 	}
@@ -226,6 +226,10 @@ Room.prototype.sendText = function(sockets, incString, stringType) {
 	};
 	for (var i = 0; i < this.allSockets.length; i++) {
 		this.allSockets[i].emit("roomChatToClient", data);
+	}
+
+	if(this.gameStarted && this.gameStarted === true){
+		addToChatHistory(data);
 	}
 };
 

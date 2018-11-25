@@ -51,7 +51,7 @@ Assassination.prototype.gameMove = function(socket, data){
                 }
 
                 //set the player shot in the assassin role object
-			    this.thisRoom.avalonRoles["assassin"].playerShot = data;
+			    this.thisRoom.specialRoles["assassin"].playerShot = data;
                 
                 if(indexOfTarget !== -1){
                     if(this.thisRoom.playersInGame[indexOfTarget].role === "Merlin"){

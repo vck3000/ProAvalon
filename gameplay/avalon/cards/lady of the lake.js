@@ -28,8 +28,25 @@ LadyOfTheLake.prototype.checkSpecialMove = function(socket, data){
 	// Only use lady of the lake after m2, when the success/fail is revealed, but before the next mission starts.
 	// Only once per mission.
 
-	// First card starts at the start of M3
-	if (this.thisRoom.missionHistory.length >= 3 && this.lastMissionUsed !== this.thisRoom.missionNum) {
+	// First card starts at the end of M2
+
+	// Game finished? Don't run lady if there are 3 successes or fails
+	var numSuccess = 0;
+	var numFail = 0;
+	for(var i = 0; i < this.thisRoom.missionHistory.length; i++){
+		if(this.thisRoom.missionHistory[i] === "succeeded"){
+			numSuccess += 1;
+		}
+		else if(this.thisRoom.missionHistory[i] === "failed"){
+			numFail += 1;
+		}
+	}
+
+	if (this.thisRoom.missionHistory.length >= 2 && 
+		this.lastMissionUsed !== this.thisRoom.missionNum && 
+		numSuccess < 3 && 
+		numFail < 3
+		) {
 		this.thisRoom.phase = "lady";
 		this.lastMissionUsed = this.thisRoom.missionNum;
 

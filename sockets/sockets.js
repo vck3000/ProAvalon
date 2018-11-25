@@ -85,7 +85,7 @@ function saveGameToDb(roomToSave){
 	}
 }
 function deleteSaveGameFromDb(room){
-	if(process.env.MY_PLATFORM === "online"){
+	// if(process.env.MY_PLATFORM === "online"){
 		// console.log("room id to remove");
 		// console.log(roomToSave.savedGameRecordId);
 		savedGameObj.findByIdAndRemove(room.savedGameRecordId, function(err){
@@ -96,7 +96,7 @@ function deleteSaveGameFromDb(room){
 				// console.log("Successfully removed this save game from db");
 			}
 		});
-	}
+	// }
 
 }
 
@@ -1954,13 +1954,14 @@ function isMuted(socket){
 }
 
 
-function playerLeaveRoomCheckDestroy(socket){
+function playerLeaveRoomCheckDestroy(socket, modKill){
 
 	if(socket.request.user.inRoomId && rooms[socket.request.user.inRoomId]){
 		//leave the room
 		rooms[socket.request.user.inRoomId].playerLeaveRoom(socket);
 
 		var toDestroy = rooms[socket.request.user.inRoomId].destroyRoom;
+
 		if(toDestroy){
 			deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
 			rooms[socket.request.user.inRoomId] = undefined;
@@ -1990,10 +1991,6 @@ function playerLeaveRoomCheckDestroy(socket){
 
 		updateCurrentGamesList();
 	}
-
-	
-
-
 }
 
 
