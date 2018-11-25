@@ -390,12 +390,9 @@ Room.prototype.sendOutGameModesInRoomToSocket = function(targetSocket){
 		}
 	}
 
-	//Send the data to all sockets within the room.
-	for(var i = 0; i < this.allSockets.length; i++){
-		if(this.allSockets[i]){
-			this.allSockets[i].emit("update-game-modes-in-room", obj);
-		}
-	}
+	//Send the data to the socket.
+	targetSocket.emit("update-game-modes-in-room", obj);
+	
 };
 
 
