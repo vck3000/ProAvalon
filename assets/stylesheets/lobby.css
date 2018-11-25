@@ -644,11 +644,11 @@ well {
 
 .btn-mine.active {
     /*border: 3px solid green !important;*/
-    background-color: #d6ffd8 !important;
+    background-color: rgba(163, 244, 255, 0.6) !important;
 }
 .dark .btn-mine.active {
     /*border: 3px solid green !important;*/
-    background-color: #3fff3873 !important;
+    background-color: rgba(0, 224, 255, 0.4) !important;
 }
 
 .dark .btn-mine {
@@ -657,6 +657,7 @@ well {
     background: black;
 }
 .btn-mine {
+    height: 40px;
     border: 3px solid black;
     border-radius: 10px !important;
     background-color: #e5e5e5;
@@ -1028,7 +1029,7 @@ i {
 
 
 
-.approveLabel{
+.approveLabel {
     position: absolute;
     top: -10%;
     left: 50%;
@@ -1036,12 +1037,22 @@ i {
     transform: translateX(-50%);
 }
 
-.rejectLabel{
+.rejectLabel {
     position: absolute;
     top: -10%;
     left: 50%;
     text-align: center;
     transform: translateX(-50%);
+}
+
+.cardsContainer {
+    position: absolute;
+    right: 0%;
+    /* float: right; */
+}
+.cardObject {
+    /* position: absolute; */
+    display: block;
 }
 
 
@@ -1090,4 +1101,26 @@ i {
     /* border-radius: 10px; */
 
     transform: translate(-10%, -20%);
+}
+
+
+.roleCardDescription {
+    /* height: 38px; */
+    /* transform: translateY(50%); */
+    display: block;
+    margin-bottom: 0px;
+}
+
+.dark .panel-body {
+    background-color: #444444;
+}
+
+.dark .panel-default .panel-heading {
+    background-color: #333333;
+    color: white;
+    border-color: transparent;
+}
+
+.dark select {
+    background-color: #444444;
 }

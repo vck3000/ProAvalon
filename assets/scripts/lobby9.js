@@ -119,41 +119,16 @@ function draw() {
         }
 
         else {
+            // TODO REMOVE THIS LATER
             //if we are the host
             if (ownUsername === getUsernameFromIndex(0)) {
                 currentOptions = getOptions();
                 var str = "";
 
-                for (var key in currentOptions) {
-                    if (currentOptions.hasOwnProperty(key)) {
-                        if (currentOptions[key] === true) {
-                            if (key === "merlin") {
-                                str += "Merlin, ";
-                            }
-                            else if (key === "assassin") {
-                                str += "Assassin, ";
-                            }
-                            else if (key === "percival") {
-                                str += "Percival, ";
-                            }
-                            else if (key === "morgana") {
-                                str += "Morgana, ";
-                            }
-                            else if (key === "lady") {
-                                str += "Lady of the Lake, ";
-                            }
-                            else if (key === "mordred") {
-                                str += "Mordred, ";
-                            }
-                            else if (key === "oberon") {
-                                str += "Oberon, ";
-                            }
-                            else {
-                                str += "Error, unexpected option."
-                            }
-                        }
-                    }
-                }
+                currentOptions.forEach(function(element){
+                    str += element + ", ";
+                });
+
 
                 //remove the last , and replace with .
                 str = str.slice(0, str.length - 2);
@@ -168,13 +143,7 @@ function draw() {
             }
         }
 
-        // Roles and cards special data
-        if(gameData && gameData.rolesCards){
-            // Show the assassin shot
-            if(gameData.rolesCards.roles.assassinShotUsername){
-                drawBullet(getIndexFromUsername(gameData.rolesCards.roles.assassinShotUsername));
-            }
-        }
+        runPublicDataAvalon(gameData);
 
         activateAvatarButtons();
         enableDisableButtons();
@@ -188,128 +157,106 @@ function draw() {
     } 
 }
   
-  var selectedAvatars = {};
-  var numOfStatesOfHighlight = 2;
-  var selectedChat = {};
-  function activateAvatarButtons() {
-      // console.log("activate avatar buttons");
-      // console.log("LOL");
-      // if(OPTION THING ADD HERE){
-      var highlightButtons = document.querySelectorAll("#mainRoomBox div #highlightAvatarButton");
-      //add the event listeners for button press
-  
-      // console.log("added " + highlightButtons.length + " many listeners for highlightbuttons");
-  
-      for (var i = 0; i < highlightButtons.length; i++) {
-          // console.log(i);
-  
-          highlightButtons[i].addEventListener("click", function () {
-              // //toggle the highlight class
-              // var divs = document.querySelectorAll("#mainRoomBox div");
-              // var uniqueNum = i;
-            // console.log("click for highlight avatar");
-  
-              // this.parentElement.classList.toggle("selected-avatar");
-              var username = this.parentElement.parentElement.getAttribute("usernameofplayer");
-              // console.log("username: " + username);
-  
-              if (selectedAvatars[username] !== undefined) {
-                  selectedAvatars[username] += 1;
-              }
-              else {
-                  selectedAvatars[username] = 1;
-              }
-  
-              selectedAvatars[username] = selectedAvatars[username] % (numOfStatesOfHighlight + 1);
-            // console.log("Selected avatars num: " + selectedAvatars[username])
-              draw();
-          });
-      }
-  
-  
-  
-      var highlightChatButtons = document.querySelectorAll("#mainRoomBox div #highlightChatButton");
-      //add the event listeners for button press
-      for (var i = 0; i < highlightChatButtons.length; i++) {
-          highlightChatButtons[i].addEventListener("click", function () {
-              // //toggle the highlight class
-            // console.log("click for highlight chat");
-  
-              var username = this.parentElement.parentElement.getAttribute("usernameofplayer");
-              var chatItems = $(".room-chat-list li span[username='" + username + "']");
-  
+var selectedAvatars = {};
+var numOfStatesOfHighlight = 2;
+var selectedChat = {};
+function activateAvatarButtons() {
+    // console.log("activate avatar buttons");
+    // console.log("LOL");
+    // if(OPTION THING ADD HERE){
+    var highlightButtons = document.querySelectorAll("#mainRoomBox div #highlightAvatarButton");
+    //add the event listeners for button press
+
+    // console.log("added " + highlightButtons.length + " many listeners for highlightbuttons");
+
+    for (var i = 0; i < highlightButtons.length; i++) {
+        // console.log(i);
+
+        highlightButtons[i].addEventListener("click", function () {
+            // //toggle the highlight class
+            // var divs = document.querySelectorAll("#mainRoomBox div");
+            // var uniqueNum = i;
+        // console.log("click for highlight avatar");
+
+            // this.parentElement.classList.toggle("selected-avatar");
+            var username = this.parentElement.parentElement.getAttribute("usernameofplayer");
+            // console.log("username: " + username);
+
+            if (selectedAvatars[username] !== undefined) {
+                selectedAvatars[username] += 1;
+            }
+            else {
+                selectedAvatars[username] = 1;
+            }
+
+            selectedAvatars[username] = selectedAvatars[username] % (numOfStatesOfHighlight + 1);
+        // console.log("Selected avatars num: " + selectedAvatars[username])
+            draw();
+        });
+    }
 
 
-              var playerHighlightColour = docCookies.getItem("player" + getIndexFromUsername(username) + "HighlightColour");
 
-              var setHighlightColorToYellow = $(".setHighlightColorsToYellow")[0].checked;
+    var highlightChatButtons = document.querySelectorAll("#mainRoomBox div #highlightChatButton");
+    //add the event listeners for button press
+    for (var i = 0; i < highlightChatButtons.length; i++) {
+        highlightChatButtons[i].addEventListener("click", function () {
+            // //toggle the highlight class
+        // console.log("click for highlight chat");
 
-              if(setHighlightColorToYellow === true){
-                playerHighlightColour = "#ffff9e";
-              }
-              
-            // console.log("Player highlight colour: " + playerHighlightColour);
-  
-              if (selectedChat[username] === true) {
-                  selectedChat[username] = false;
-                  chatItems.css("background-color", "transparent");
-              }
-              else {
-                // console.log("set true");
-                  selectedChat[username] = true;
-                  chatItems.css("background-color", "" + playerHighlightColour);
-              }
-              draw();
-          });
-      }
-  }
-  
-  
-  
-  function drawBullet(indexOfPlayer) {
-  
-      //set the div string and add the star\\
-      var str = $("#mainRoomBox div")[indexOfPlayer].innerHTML;
+            var username = this.parentElement.parentElement.getAttribute("usernameofplayer");
+            var chatItems = $(".room-chat-list li span[username='" + username + "']");
 
-      var darkModeEnabled = $("#option_display_dark_theme")[0].checked;
-      if(darkModeEnabled === true){
-        str = str + "<span><img src='pictures/bullet-dark.png' class='bullet'></span>";
-      }
-      else{
-        str = str + "<span><img src='pictures/bullet.png' class='bullet'></span>";
-      }
 
-      //update the str in the div
-      $("#mainRoomBox div")[indexOfPlayer].innerHTML = str;
-  
-      // $(".bullet")[0].style.top = 0;
-  
-  }
-  
-  function drawVotes(votes) {
-      var divs = document.querySelectorAll("#mainRoomBox div");
-  
-      if (votes) {
-          for (var i = 0; i < divs.length; i++) {
-              if(votes[i] === "approve"){
-                  $($("#mainRoomBox div")[i]).find(".approveLabel").removeClass("invisible");
-              }
-              if(votes[i] === "reject"){
-                  $($("#mainRoomBox div")[i]).find(".rejectLabel").removeClass("invisible");
-              }
-              // document.querySelectorAll("#mainRoomBox div")[i].classList.add(votes[i]);
-          }
-      }
-      else {
-          for (var i = 0; i < divs.length; i++) {
-              // document.querySelectorAll("#mainRoomBox div")[i].classList.remove("approve");
-              // document.querySelectorAll("#mainRoomBox div")[i].classList.remove("reject");
-  
-              $($("#mainRoomBox div")[i]).find(".approveLabel").addClass("invisible");
-              $($("#mainRoomBox div")[i]).find(".rejectLabel").addClass("invisible");
-          }
-      }
-  }
+
+            var playerHighlightColour = docCookies.getItem("player" + getIndexFromUsername(username) + "HighlightColour");
+
+            var setHighlightColorToYellow = $(".setHighlightColorsToYellow")[0].checked;
+
+            if(setHighlightColorToYellow === true){
+            playerHighlightColour = "#ffff9e";
+            }
+            
+        // console.log("Player highlight colour: " + playerHighlightColour);
+
+            if (selectedChat[username] === true) {
+                selectedChat[username] = false;
+                chatItems.css("background-color", "transparent");
+            }
+            else {
+            // console.log("set true");
+                selectedChat[username] = true;
+                chatItems.css("background-color", "" + playerHighlightColour);
+            }
+            draw();
+        });
+    }
+}
+
+function drawVotes(votes) {
+    var divs = document.querySelectorAll("#mainRoomBox div");
+
+    if (votes) {
+        for (var i = 0; i < divs.length; i++) {
+            if(votes[i] === "approve"){
+                $($("#mainRoomBox div")[i]).find(".approveLabel").removeClass("invisible");
+            }
+            if(votes[i] === "reject"){
+                $($("#mainRoomBox div")[i]).find(".rejectLabel").removeClass("invisible");
+            }
+            // document.querySelectorAll("#mainRoomBox div")[i].classList.add(votes[i]);
+        }
+    }
+    else {
+        for (var i = 0; i < divs.length; i++) {
+            // document.querySelectorAll("#mainRoomBox div")[i].classList.remove("approve");
+            // document.querySelectorAll("#mainRoomBox div")[i].classList.remove("reject");
+
+            $($("#mainRoomBox div")[i]).find(".approveLabel").addClass("invisible");
+            $($("#mainRoomBox div")[i]).find(".rejectLabel").addClass("invisible");
+        }
+    }
+}
   
   
 function assassinationSetup(phase) {
@@ -925,7 +872,6 @@ function strOfAvatar(playerData, alliance) {
 
     //add in the role of the player, and the percy info
     var role = "";
-    var lady = "";
 
     //to get the lengths of the words or usernames
     var canvas = document.createElement("canvas");
@@ -953,21 +899,6 @@ function strOfAvatar(playerData, alliance) {
             role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + "Merlin?" + "</p>";
         }
     }
-
-    if (gameStarted === true && gameData && playerData.username === getUsernameFromIndex(gameData.lady)) {
-
-        var nameWid = ctx.measureText(playerData.username).width;
-        var widOfBox = $("#mainRoomBox div").width();
-
-        var littleProtrudingEdgeWid = (nameWid - widOfBox) / 2;
-        var offsetDist = (nameWid - littleProtrudingEdgeWid) + 5;
-
-    
-        lady = "<span class='glyphicon glyphicon-book' style='top: 50%; transform: translateY(-50%); position: absolute; right: " + offsetDist + "px'></span> ";
-    }
-
-
-
 
     //add in the hammer star
     var hammerStar = "";
@@ -1018,10 +949,11 @@ function strOfAvatar(playerData, alliance) {
 
     str += '<span class="label label-success invisible approveLabel">Approve</span>';
     str += '<span class="label label-danger invisible rejectLabel">Reject</span>';
+    str += '<span class="cardsContainer"></span>';
 
 
     str += "<img class='avatarImgInRoom' src='" + picLink + "'>";
-    str += "<p class='username-p' style='white-space:nowrap; position:relative;'>" + lady + " " + playerData.username + " " + hammerStar + " </p>" + role + "</div>";
+    str += "<p class='username-p' style='white-space:nowrap; position:relative;'>" + " " + playerData.username + " " + hammerStar + " </p>" + role + "</div>";
 
 
     return str;
@@ -1339,17 +1271,31 @@ function drawVoteHistory(data) {
 
 
 function getOptions() {
+    // console.log($("#rolesCardsButtonGroup label"));
+    var rolesCards = $("#rolesCardsButtonGroup label");
 
-    var data = {
-        merlin: $("#merlin")[0].checked,
-        assassin: $("#assassin")[0].checked,
-        percival: $("#percival")[0].checked,
-        morgana: $("#morgana")[0].checked,
-        lady: $("#lady")[0].checked,
-        mordred: $("#mordred")[0].checked,
-        oberon: $("#oberon")[0].checked
+    var selectedRolesCards = [];
+    for(var i = 0; i < rolesCards.length; i++){
+
+        // Check if this role/card is selected or not
+        var isActive = false;
+        for(var j = 0; j < rolesCards[i].classList.length; j++){
+            if(rolesCards[i].classList[j] === "active"){
+                isActive = true;
+                break;
+            }
+        }
+        // If it is not selected, don't add it.
+        if(isActive === false){
+            continue;
+        }
+
+        var name = rolesCards[i].innerText.trim();
+        selectedRolesCards.push(name);
     }
-    return data;
+    // console.log(selectedRolesCards);
+
+    return selectedRolesCards;
 }
 
 function getKickPlayers() {
@@ -1722,13 +1668,6 @@ function showYourTurnNotification(ToF){
         console.log("error in show your turn notifications");
     }
 }
-
-$(".maxNumPlayers").on("change", function(e){
-    // console.log("Change");
-    // console.log(e.target.value);
-
-    socket.emit("update-room-max-players", e.target.value);
-});
 
 function getGunPos(icon) {
     var position = {};

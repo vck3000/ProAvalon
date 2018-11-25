@@ -5,6 +5,9 @@ function Merlin(thisRoom_) {
 
     this.role = "Merlin";
     this.alliance = "Resistance";
+
+    this.description = "Knows the identity of the spies.";
+    this.orderPriorityInOptions = 100;
     
     this.test = function(){
         // The following lines running successfully shows that each role file can access

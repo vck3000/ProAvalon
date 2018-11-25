@@ -7,6 +7,9 @@ function Mordred(thisRoom_) {
     this.role = "Mordred";
     this.alliance = "Spy";
 
+    this.description = "A spy who is invisible to Merlin.";
+    this.orderPriorityInOptions = 60;
+
     //Morded sees all spies except oberon
     this.see = function(){
         if(this.thisRoom.gameStarted === true){

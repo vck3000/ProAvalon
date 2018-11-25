@@ -5,6 +5,9 @@ function Oberon(thisRoom_) {
     this.role = "Oberon";
     this.alliance = "Spy";
 
+    this.description = "Oberon and Spies do not know each other."
+    this.orderPriorityInOptions = 50;
+
     //Oberon only sees him/herself
     this.see = function(){
         if(this.thisRoom.gameStarted === true){

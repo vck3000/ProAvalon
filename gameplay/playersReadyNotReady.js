@@ -87,7 +87,13 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options) {
 
         this.gamePlayerLeftDuringReady = false;
 
-        var rolesInStr = getRolesInStr(options);
+        var rolesInStr = "";
+        options.forEach(function(element){
+            rolesInStr += element + ", ";
+        });
+        //remove the last , and replace with .
+        rolesInStr = rolesInStr.slice(0, rolesInStr.length - 2);
+        rolesInStr += ".";
 
         for (var i = 0; i < this.socketsOfPlayers.length; i++) {
             this.socketsOfPlayers[i].emit("game-starting", rolesInStr);

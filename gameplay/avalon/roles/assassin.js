@@ -8,6 +8,9 @@ function Assassin(thisRoom_) {
     this.role = "Assassin";
     this.alliance = "Spy";
 
+    this.description = "Wields the gun to assassinate Merlin.";
+    this.orderPriorityInOptions = 90;
+
     this.playerShot = "";
 
     //Assassin sees all spies except oberon

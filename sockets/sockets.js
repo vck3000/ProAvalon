@@ -9,26 +9,15 @@ var createNotificationObj = require("../myFunctions/createNotification");
 
 
 var avatarRequest = require("../models/avatarRequest");
-
 var User  = require("../models/user");
 var banIp = require("../models/banIp");
-
-
 const JSON = require('circular-json');
-
-
 var modsArray = require("../modsadmins/mods");
 var adminsArray = require("../modsadmins/admins");
 
-
-
-
-
 const dateResetRequired = 1531125110385;
 
-
 var allSockets = [];
-
 var rooms = [];
 
 //retain only 5 mins.
@@ -36,6 +25,18 @@ var allChatHistory = [];
 var allChat5Min = [];
 
 var nextRoomId = 1;
+
+// Get all the possible gameModes
+var fs = require("fs");
+var gameModeNames = [];
+fs.readdirSync("./gameplay/").filter(function (file) {
+	if(fs.statSync("./gameplay"+'/'+file).isDirectory() === true && file !== "commonPhases"){
+		gameModeNames.push(file);
+	}
+});
+// console.log(gameModeNames);
+
+
 
 
 process.on('SIGINT', gracefulShutdown);
@@ -1299,11 +1300,12 @@ module.exports = function (io) {
 			if(adminsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1 ){
 				//send the user the list of commands
 				socket.emit("adminCommands", adminCommands);
-
 			}
 
 			socket.emit("checkSettingsResetDate", dateResetRequired);
-
+			//Pass in the gameModes for the new room menu.
+			socket.emit("gameModes", gameModeNames);
+			
 			User.findOne({username: socket.request.user.username}).exec(function(err, foundUser){
 				if(foundUser.mutedPlayers){
 					socket.emit("updateMutedPlayers", foundUser.mutedPlayers);
@@ -1604,7 +1606,7 @@ module.exports = function (io) {
 				while(rooms[nextRoomId]){
 					nextRoomId++;
 				}
-				rooms[nextRoomId] = new gameRoom(socket.request.user.username, nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword);
+				rooms[nextRoomId] = new gameRoom(socket.request.user.username, nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword, dataObj.gameMode);
                 var privateStr = ("" === dataObj.newRoomPassword) ? "" : "private ";
                 //broadcast to all chat
 				var data = {
@@ -1790,6 +1792,13 @@ module.exports = function (io) {
 		socket.on("update-room-max-players", function (number) {
 			if (rooms[socket.request.user.inRoomId]) {
 				rooms[socket.request.user.inRoomId].updateMaxNumPlayers(socket, number);
+			}
+			updateCurrentGamesList();
+		});
+
+		socket.on("update-room-game-mode", function (gameMode) {
+			if (rooms[socket.request.user.inRoomId]) {
+				rooms[socket.request.user.inRoomId].updateGameModesInRoom(socket, gameMode);
 			}
 			updateCurrentGamesList();
 		});

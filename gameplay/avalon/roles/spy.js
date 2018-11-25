@@ -6,6 +6,8 @@ function Spy(thisRoom_) {
     this.role = "Spy";
     this.alliance = "Spy";
 
+    this.description = "A standard Spy member.";
+
     //Spy sees all spies except oberon
     this.see = function(){
         if(this.thisRoom.gameStarted === true){

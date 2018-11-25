@@ -1,6 +1,27 @@
 //room object
 
-function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_) {
+// Get all the gamemodes and their roles/cards/phases.
+var gameModeNames = [];
+var fs = require("fs");
+fs.readdirSync("./gameplay/").filter(function (file) {
+	if(fs.statSync("./gameplay"+'/'+file).isDirectory() === true && file !== "commonPhases"){
+		gameModeNames.push(file);
+	}
+});
+// console.log(gameModeNames);
+var gameModeObj = {};
+for(var i = 0; i < gameModeNames.length; i++){
+	gameModeObj[gameModeNames[i]] = {};
+
+	gameModeObj[gameModeNames[i]]["Roles"] = require("./" + gameModeNames[i] + "/indexRoles");
+	gameModeObj[gameModeNames[i]]["Phases"] = require("./" + gameModeNames[i] + "/indexPhases");
+	gameModeObj[gameModeNames[i]]["Cards"] = require("./" + gameModeNames[i] + "/indexCards");
+}
+
+var commonPhasesIndex = require("./indexCommonPhases");
+
+
+function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) {
 
 	var thisRoom = this;
 	
@@ -18,6 +39,11 @@ function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_) {
     this.io 						= io_;
 	this.maxNumPlayers 				= maxNumPlayers_;
 	this.joinPassword 				= newRoomPassword_;
+	this.gameMode 					= gameMode_;
+	// Default value of avalon.
+	if(gameModeNames.includes(this.gameMode) === false){
+		this.gameMode = "avalon";
+	}
 
 	// Misc. variables
 	this.canJoin 					= true;    
@@ -30,6 +56,13 @@ function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_) {
 	// Arrays containing lower cased usernames
 	this.kickedPlayers 				= [];
 	this.claimingPlayers 			= [];
+
+	
+	// Phases Cards and Roles to use
+	this.commonPhases = (new commonPhasesIndex).getPhases(thisRoom);
+	this.specialRoles = (new gameModeObj[this.gameMode]["Roles"]).getRoles(thisRoom);
+	this.specialPhases = (new gameModeObj[this.gameMode]["Phases"]).getPhases(thisRoom);
+	this.specialCards = (new gameModeObj[this.gameMode]["Cards"]).getCards(thisRoom);
 
 };
 
@@ -66,6 +99,8 @@ Room.prototype.playerJoinRoom = function (socket, inputPassword) {
 	this.allSockets.push(socket);
 
 	this.updateRoomPlayers();
+
+	this.sendOutGameModesInRoomToSocket(socket);
 
 	return true;
 };
@@ -257,7 +292,7 @@ Room.prototype.getSocketsOfSpectators = function(){
 	// If there is a socket that is sitting down within the socketsOfSpecs (which was at first a clone of allSockets)
 	// then remove that socket. Do this for all socketsOfPlayers
 	for(var i = 0; i < this.socketsOfPlayers.length; i++){
-		var index = socketsOfSpecs.indexOf(this.socketsOfPlayers[i]);	
+		var index = socketsOfSpecs.indexOf(this.socketsOfPlayers[i]);
 		if(index !== -1){
 			socketsOfSpecs.splice(index, 1);
 		}
@@ -274,6 +309,94 @@ Room.prototype.updateMaxNumPlayers = function(socket, number){
 };
 
 
+Room.prototype.updateGameModesInRoom = function(socket, gameMode){
+	if(gameModeNames.includes(gameMode) === true && socket.request.user.username === this.host){
+		this.gameMode = gameMode;
+
+		this.specialRoles = (new gameModeObj[this.gameMode]["Roles"]).getRoles(this);
+		this.specialPhases = (new gameModeObj[this.gameMode]["Phases"]).getPhases(this);
+		this.specialCards = (new gameModeObj[this.gameMode]["Cards"]).getCards(this);
+
+		//Send the data to all sockets within the room.
+		for(var i = 0; i < this.allSockets.length; i++){
+			if(this.allSockets[i]){
+				this.sendOutGameModesInRoomToSocket(this.allSockets[i]);
+			}
+		}
+	}
+	else{
+		socket.emit("danger-alert", "Eror happened when changing Game Mode. Let the admin know if you see this.");
+	}
+};
+
+Room.prototype.sendOutGameModesInRoomToSocket = function(targetSocket){
+
+	//Get the names and descriptions of roles and cards to send to players
+	var roleNames = [];
+	var roleDescriptions = [];
+	var roleAlliances = [];
+	var rolePriorities = [];
+	var cardNames = [];
+	var cardDescriptions = [];
+	var cardPriorities = [];
+	
+	var skipRoles = ["Resistance", "Spy"];
+
+	for(var key in this.specialRoles){
+		if(this.specialRoles.hasOwnProperty(key) === true){
+			// Skip Resistance and Spy since they are default roles always enabled.
+			if(skipRoles.includes(this.specialRoles[key].role) === true){
+				continue;
+			}
+
+			roleNames.push(this.specialRoles[key].role);
+			roleDescriptions.push(this.specialRoles[key].description);
+			roleAlliances.push(this.specialRoles[key].alliance);
+			if(!this.specialRoles[key].orderPriorityInOptions){
+				rolePriorities.push(0);
+			}
+			else{
+				rolePriorities.push(this.specialRoles[key].orderPriorityInOptions);
+			}
+		}
+	}
+
+	for(var key in this.specialCards){
+		if(this.specialCards.hasOwnProperty(key) === true){
+			cardNames.push(this.specialCards[key].card);
+			cardDescriptions.push(this.specialCards[key].description);
+			if(!this.specialCards[key].orderPriorityInOptions){
+				cardPriorities.push(0);
+			}
+			else{
+				cardPriorities.push(this.specialCards[key].orderPriorityInOptions);
+			}
+		}
+	}
+
+	var obj = {
+		// Todo: Send over the roles/cards in the gamemode. Upon changing gamemode, resend.
+		gameModes: gameModeNames,
+		roles: {
+			roleNames: roleNames,
+			alliances: roleAlliances,
+			descriptions: roleDescriptions,
+			orderPriorities: rolePriorities
+		},
+		cards: {
+			cardNames: cardNames,
+			descriptions: cardDescriptions,
+			orderPriorities: cardPriorities
+		}
+	}
+
+	//Send the data to all sockets within the room.
+	for(var i = 0; i < this.allSockets.length; i++){
+		if(this.allSockets[i]){
+			this.allSockets[i].emit("update-game-modes-in-room", obj);
+		}
+	}
+};
 
 
 

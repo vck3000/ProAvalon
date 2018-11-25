@@ -4,6 +4,9 @@ function Percival(thisRoom_) {
 
     this.role = "Percival";
     this.alliance = "Resistance";
+
+    this.description = "Knows the identity of Merlin and Morgana.";
+    this.orderPriorityInOptions = 80;
     
     this.test = function(){
         // The following lines running successfully shows that each role file can access

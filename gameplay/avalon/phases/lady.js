@@ -23,12 +23,24 @@ Lady.prototype.gameMove = function(socket, data){
     if(socket === undefined || data === undefined){
         return;
     }
+
+    //Check that the target's username exists
+    var targetUsername = data;
+    var found = false;
+    for(var i = 0; i < this.thisRoom.playersInGame.length; i++){
+        if(this.thisRoom.playersInGame[i].username === targetUsername){
+            found = true;
+            break;
+        }
+    }
+    if(found === false){
+        socket.emit("danger-alert", "Error: User does not exist. Tell the admin if you see this.");      
+        return;
+    }
     
     var indexOfCardHolder = this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
     var ladyHistory = this.thisRoom.specialCards[this.card].ladyHistory;
-    var targetUsername = data;
-    var targetIndex = getIndexFromUsername(this.playersInGame, data)
-
+    var targetIndex = getIndexFromUsername(this.playersInGame, data);
 
     //Get index of socket 
     var indexOfSocket = undefined;
@@ -44,7 +56,7 @@ Lady.prototype.gameMove = function(socket, data){
         // Check if we can card that person
         if(ladyHistory.includes(data) === true){
             socket.emit("danger-alert", "You cannot card that person.");      
-            return;      
+            return;
         }
 
         //grab the target's alliance
@@ -56,10 +68,6 @@ Lady.prototype.gameMove = function(socket, data){
 
         //update lady location
         this.thisRoom.specialCards[this.card].setHolder(targetIndex);
-
-        // update the ladyChain array
-        var targetRole = this.thisRoom.playersInGame[targetIndex].role;
-        this.thisRoom.specialCards[this.card].ladyChain.push(targetRole);
 
         // this.gameplayMessage = (socket.request.user.username + " has carded " + target);
         this.thisRoom.sendText(this.thisRoom.allSockets, (socket.request.user.username + " has carded " + target + "."), "gameplay-text");
@@ -75,7 +83,7 @@ Lady.prototype.gameMove = function(socket, data){
 
 };
 
-Lady.prototype.buttonSettings = function(indexOfPlayer){  
+Lady.prototype.buttonSettings = function(indexOfPlayer){
     //Get the index of the lady
     var indexOfCardHolder = this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
 

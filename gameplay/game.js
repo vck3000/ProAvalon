@@ -1,3 +1,5 @@
+var fs = require("fs");
+
 var util = require("util");
 var Room = require("./room");
 var PlayersReadyNotReady = require("./playersReadyNotReady");
@@ -9,15 +11,29 @@ var mongoose = require("mongoose");
 var User = require("../models/user");
 var GameRecord = require("../models/gameRecord");
 
-mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
-
-
-var avalonRolesIndex = require("./avalon/indexRoles");
-var avalonPhasesIndex = require("./avalon/indexPhases")
-var avalonCardsIndex = require("./avalon/indexCards");
 var commonPhasesIndex = require("./indexCommonPhases");
 
-function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
+// Get all the gamemodes and their roles/cards/phases.
+var gameModeNames = [];
+fs.readdirSync("./gameplay/").filter(function (file) {
+	if(fs.statSync("./gameplay"+'/'+file).isDirectory() === true && file !== "commonPhases"){
+		gameModeNames.push(file);
+	}
+});
+// console.log(gameModeNames);
+var gameModeObj = {};
+for(var i = 0; i < gameModeNames.length; i++){
+	gameModeObj[gameModeNames[i]] = {};
+
+	gameModeObj[gameModeNames[i]]["Roles"] = require("./" + gameModeNames[i] + "/indexRoles");
+	gameModeObj[gameModeNames[i]]["Phases"] = require("./" + gameModeNames[i] + "/indexPhases");
+	gameModeObj[gameModeNames[i]]["Cards"] = require("./" + gameModeNames[i] + "/indexCards");
+}
+
+
+mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
+
+function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_){
 	//********************************
 	//CONSTANTS
 	//********************************
@@ -45,21 +61,10 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_){
 	];
 
 	//Get the Room properties
-	Room.call(this, host_, roomId_, io_, maxNumPlayers_, newRoomPassword_);
+	Room.call(this, host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_);
 	PlayersReadyNotReady.call(this, this.minPlayers);
 
 	var thisRoom = this;
-	this.gameMode = "avalon";
-
-	this.avalonRoles = (new avalonRolesIndex).getRoles(thisRoom);
-	this.avalonPhases = (new avalonPhasesIndex).getPhases(thisRoom);
-	this.avalonCards = (new avalonCardsIndex).getCards(thisRoom);
-
-
-	this.commonPhases = (new commonPhasesIndex).getPhases(thisRoom);
-	this.specialRoles = this.avalonRoles;
-	this.specialPhases = this.avalonPhases;
-	this.specialCards = this.avalonCards;
 
 	/*
 		Handle joining:
@@ -177,20 +182,9 @@ Game.prototype.recoverGame = function(){
 	Game.prototype = Object.assign(Game.prototype, roomFunctions);
 	Object.assign(Game.prototype, PlayersReadyNotReady.prototype);
 
-	
-	if(this.gameMode === "avalon"){
-		this.avalonRoles = (new avalonRolesIndex).getRoles(this);
-		this.avalonPhases = (new avalonPhasesIndex).getPhases(this);
-		this.avalonCards = (new avalonCardsIndex).getCards(this);
-		
-		this.specialRoles = this.avalonRoles;
-		this.specialPhases = this.avalonPhases;
-		this.specialCards = this.avalonCards;
-	}
-
-
-
-
+	this.specialRoles = (new gameModeObj[this.gameMode]["Roles"]).getRoles(this);
+	this.specialPhases = (new gameModeObj[this.gameMode]["Phases"]).getPhases(this);
+	this.specialCards = (new gameModeObj[this.gameMode]["Cards"]).getCards(this);
 }
 
 //------------------------------------------------
@@ -333,39 +327,33 @@ Game.prototype.startGame = function (options) {
 	this.resRoles = [];
 	this.spyRoles = [];
 
-	// For every role we get given:
-	for(var key in options){
-		if(options.hasOwnProperty(key)){
-			// If the role is selected in game: 
-			if(options[key] === true){
-
-				// If a role file exists for this
-				if(this.specialRoles.hasOwnProperty(key)){
-					// If it is a res:
-					if(this.specialRoles[key].alliance === "Resistance"){
-						this.resRoles.push(this.specialRoles[key].role);
-					}
-					else if(this.specialRoles[key].alliance === "Spy"){
-						this.spyRoles.push(this.specialRoles[key].role);
-					}
-					else{
-						console.log("THIS SHOULD NOT HAPPEN! Invalid role file. Look in game.js file.");
-					}
-					this.roleKeysInPlay.push(key)
-				}
-
-				// If a card file exists for this
-				else if(this.specialCards.hasOwnProperty(key)){
-					this.cardKeysInPlay.push(key);
-					//Initialise the card
-				}
-				else{
-					console.log("Warning: Client requested a role that doesn't exist -> " + key);
-				}
+	for(var i = 0; i < options.length; i++){
+		var op = options[i].toLowerCase();
+		console.log(op);
+		// If a role file exists for this
+		if(this.specialRoles.hasOwnProperty(op)){
+			// If it is a res:
+			if(this.specialRoles[op].alliance === "Resistance"){
+				this.resRoles.push(this.specialRoles[op].role);
 			}
+			else if(this.specialRoles[op].alliance === "Spy"){
+				this.spyRoles.push(this.specialRoles[op].role);
+			}
+			else{
+				console.log("THIS SHOULD NOT HAPPEN! Invalid role file. Look in game.js file.");
+			}
+			this.roleKeysInPlay.push(op)
 		}
-	}
 
+		// If a card file exists for this
+		else if(this.specialCards.hasOwnProperty(op)){
+			this.cardKeysInPlay.push(op);
+		}
+		else{
+			console.log("Warning: Client requested a role that doesn't exist -> " + op);
+		}
+	};
+		
 	var resPlayers = [];
 	var spyPlayers = [];
 
@@ -425,15 +413,14 @@ Game.prototype.startGame = function (options) {
 	this.missionHistory = [];
 
 	var str = "Game started with: ";
-	//add res roles: 
-	for (var i = 0; i < this.resRoles.length; i++) {
-		str += (this.resRoles[i] + ", ");
+	for (var i = 0; i < this.roleKeysInPlay.length; i++) {
+		var capitalised = this.roleKeysInPlay[i][0].toUpperCase() + this.roleKeysInPlay[i].slice(1, this.roleKeysInPlay[i].length);
+		str += (capitalised + ", ");
 	}
-	for (var i = 0; i < this.spyRoles.length; i++) {
-		str += (this.spyRoles[i] + ", ");
+	for (var i = 0; i < this.cardKeysInPlay.length; i++) {
+		var capitalised = this.cardKeysInPlay[i][0].toUpperCase() + this.cardKeysInPlay[i].slice(1, this.cardKeysInPlay[i].length);
+		str += (capitalised + ", ");
 	}
-
-	// TODO: Need to add cards here!!!
 
 	//remove the last , and replace with .
 	str = str.slice(0, str.length - 2);
@@ -446,6 +433,11 @@ Game.prototype.startGame = function (options) {
 	for (var i = 0; i < this.playersInGame.length; i++) {
 		this.voteHistory[this.playersInGame[i].request.user.username] = [];
 	}
+
+	// Initialise all the Cards
+	for(var i = 0; i < this.cardKeysInPlay.length; i++){
+		this.specialCards[this.cardKeysInPlay[i]].initialise();
+	};
 
 	this.distributeGameData();
 	return true;
@@ -597,7 +589,6 @@ Game.prototype.getProhibitedIndexesToPick = function(indexOfPlayer){
 	}
 };
 
-
 //**************************************************
 //Get phase functions end***************************
 //**************************************************
@@ -732,7 +723,7 @@ Game.prototype.getGameData = function () {
 			data[i].roomId 					= this.roomId;
 			data[i].toShowGuns 				= this.toShowGuns();
 
-			data[i].rolesCards				= this.getRoleCardPublicGameData();
+			data[i].publicData				= this.getRoleCardPublicGameData();
 			data[i].prohibitedIndexesToPicks= this.getProhibitedIndexesToPick(i);
 			
 
@@ -796,7 +787,7 @@ Game.prototype.getGameDataForSpectators = function () {
 	data.roomId 						= this.roomId;
 	data.toShowGuns 					= this.toShowGuns();
 
-	data.rolesCards						= this.getRoleCardPublicGameData();
+	data.publicData						= this.getRoleCardPublicGameData();
 	
 
 	//if game is finished, reveal everything including roles
@@ -1097,7 +1088,7 @@ Game.prototype.checkRoleCardSpecialMoves = function(socket, data){
 	if(foundSomething === false){
 		for(var i = 0; i < this.cardKeysInPlay.length; i++){
 			//If the function doesn't exist, return null
-			if(!this.specialCards[this.roleKeysInPlay[i]].checkSpecialMove){continue;}
+			if(!this.specialCards[this.cardKeysInPlay[i]].checkSpecialMove){continue;}
 
 			if(this.specialCards[this.cardKeysInPlay[i]].checkSpecialMove(socket, data) === true){
 				foundSomething = true;
@@ -1125,11 +1116,12 @@ Game.prototype.getRoleCardPublicGameData = function(){
 
 	for(var i = 0; i < this.cardKeysInPlay.length; i++){
 		//If the function doesn't exist, return null
-		if(!this.specialRoles[this.roleKeysInPlay[i]].getPublicGameData()){continue;}
+		if(!this.specialCards[this.cardKeysInPlay[i]].getPublicGameData){continue;}
 
 		let data = this.specialCards[this.cardKeysInPlay[i]].getPublicGameData();
 		Object.assign(allData.cards, data);
 	}
+
 
 	return allData;
 };
@@ -1266,28 +1258,6 @@ function generateAssignmentOrders(num) {
 
 	return rolesAssignment;
 }
-
-
-
-// Unused function??
-
-// function getRolesInStr(options) {
-// 	var str = "";
-
-// 	if (options.merlin === true) { str += "Merlin, "; }
-// 	if (options.assassin === true) { str += "Assassin, "; }
-// 	if (options.percival === true) { str += "Percival, "; }
-// 	if (options.morgana === true) { str += "Morgana, "; }
-// 	if (options.mordred === true) { str += "Mordred, "; }
-// 	if (options.oberon === true) { str += "Oberon, "; }
-// 	if (options.lady === true) { str += "Lady of the Lake, "; }
-
-// 	//remove the last , and replace with .
-// 	str = str.slice(0, str.length - 2);
-// 	str += ".";
-
-// 	return str;
-// }
 
 function getAllSpies(thisRoom) {
 	if (thisRoom.gameStarted === true) {

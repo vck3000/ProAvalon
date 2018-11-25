@@ -6,9 +6,6 @@ function /* TODO: Name of Role*/(thisRoom_) {
     this.role = "/* TODO: Name of Role (Note first letter is usually capitalised)*/";
     this.alliance = "/*TODO: Alliance (Resistance or Spy)*/";
 
-    this.description = "/*TODO: Brief description of the role*/";
-    this.orderPriorityInOptions = /*TODO: Number to determine priority. The higher the number, the higher on the list*/;
-
     this.playerShot = "";
 
     this.see = function(){

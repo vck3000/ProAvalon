@@ -7,6 +7,9 @@ function Morgana(thisRoom_) {
     this.role = "Morgana";
     this.alliance = "Spy";
 
+    this.description = "A spy who looks like Merlin to Percival.";
+    this.orderPriorityInOptions = 70;
+
     //Morgana sees all spies except oberon
     this.see = function(){
         if(this.thisRoom.gameStarted === true){

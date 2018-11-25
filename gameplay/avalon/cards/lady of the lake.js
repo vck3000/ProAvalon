@@ -14,9 +14,14 @@ function LadyOfTheLake(thisRoom_) {
 	this.ladyChain = []; // To be stored in the database later.
 };
 
+LadyOfTheLake.prototype.initialise = function(){
+	this.setHolder((this.thisRoom.teamLeader + 1) % this.thisRoom.playersInGame.length);
+};
+
 LadyOfTheLake.prototype.setHolder = function(index){
 	this.indexOfPlayerHolding = index;
 	this.ladyHistory.push(index);
+	this.ladyChain.push(this.thisRoom.playersInGame[index].role);
 };
 
 LadyOfTheLake.prototype.checkSpecialMove = function(socket, data){
@@ -24,15 +29,16 @@ LadyOfTheLake.prototype.checkSpecialMove = function(socket, data){
 	// Only once per mission.
 
 	// First card starts at the start of M3
-	if (this.missionHistory.length >= 3 && this.lastMissionUsed !== this.thisRoom.missionNum) {
-		this.phase = "lady";
+	if (this.thisRoom.missionHistory.length >= 3 && this.lastMissionUsed !== this.thisRoom.missionNum) {
+		this.thisRoom.phase = "lady";
 		this.lastMissionUsed = this.thisRoom.missionNum;
 	}
 };
 
 LadyOfTheLake.prototype.getPublicGameData = function(){
     /* TODO: (Can delete this function. Not absolutely necessary)
-    Public data to show the user(s) e.g. who holds the lady of the lake */
+	Public data to show the user(s) e.g. who holds the lady of the lake */
+	return {indexLadyHolder: this.indexOfPlayerHolding}
 }
 
 
