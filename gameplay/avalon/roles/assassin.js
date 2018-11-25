@@ -60,6 +60,8 @@ Assassin.prototype.checkSpecialMove = function(socket, data){
             }
         }
     }
+
+    return false;
 };
 
 Assassin.prototype.getPublicGameData = function(){

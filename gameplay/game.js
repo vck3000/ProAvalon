@@ -1,5 +1,8 @@
 var fs = require("fs");
 
+// Load the full build.
+var _ = require('lodash');
+
 var util = require("util");
 var Room = require("./room");
 var PlayersReadyNotReady = require("./playersReadyNotReady");
@@ -163,7 +166,7 @@ Object.assign(Game.prototype, PlayersReadyNotReady.prototype);
 
 
 //RECOVER GAME!
-Game.prototype.recoverGame = function(){
+Game.prototype.recoverGame = function(storedData){
 
 	// Set a few variables back to new state
 	this.allSockets = [];
@@ -185,6 +188,30 @@ Game.prototype.recoverGame = function(){
 	this.specialRoles = (new gameModeObj[this.gameMode]["Roles"]).getRoles(this);
 	this.specialPhases = (new gameModeObj[this.gameMode]["Phases"]).getPhases(this);
 	this.specialCards = (new gameModeObj[this.gameMode]["Cards"]).getCards(this);
+
+
+	//Roles
+	// Remove the circular dependency
+	for(var key in storedData.specialRoles){
+		if(storedData.specialRoles.hasOwnProperty(key)){
+			delete(storedData.specialRoles[key].thisRoom); 
+		}
+	}
+	// Merge in the objects
+	_.merge(this.specialRoles, storedData.specialRoles);
+
+	// Cards
+	// Remove the circular dependency
+	for(var key in storedData.specialCards){
+		if(storedData.specialCards.hasOwnProperty(key)){
+			delete(storedData.specialCards[key].thisRoom); 
+		}
+	}
+	// Merge in the objects
+	_.merge(this.specialCards, storedData.specialCards);
+
+	
+	// Object.assign();
 }
 
 //------------------------------------------------
@@ -455,7 +482,7 @@ Game.prototype.gameMove = function (socket, data) {
 
 	// Common phases
 	if(this.commonPhases.hasOwnProperty(this.phase) === true && this.commonPhases[this.phase].gameMove){
-		this.commonPhases[this.phase].gameMove(socket, data);		
+		this.commonPhases[this.phase].gameMove(socket, data);
 	}
 
 	// Special phases

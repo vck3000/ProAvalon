@@ -32,6 +32,11 @@ LadyOfTheLake.prototype.checkSpecialMove = function(socket, data){
 	if (this.thisRoom.missionHistory.length >= 3 && this.lastMissionUsed !== this.thisRoom.missionNum) {
 		this.thisRoom.phase = "lady";
 		this.lastMissionUsed = this.thisRoom.missionNum;
+
+		return true;
+	}
+	else{
+		return false;
 	}
 };
 

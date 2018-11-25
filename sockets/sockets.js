@@ -178,28 +178,30 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 					var storedData = JSON.parse(foundSaveGame.room);
 			
 					rooms[storedData["roomId"]] = new gameRoom();
-			
-					//Assigning in all the previous variables
-					for(var key in storedData){
-						if(storedData.hasOwnProperty(key)){
-							// console.log("typeof: " + typeof(key))
-							rooms[storedData["roomId"]][key] = storedData[key];
-							// console.log("copied over: " + key);
-							// if(key === "startGameTime"){
 
-								// console.log(storedData[key]);
-								// console.log(new Date - storedData[key]);
-							// }
-						}
-					}
+					Object.assign(rooms[storedData["roomId"]], storedData);
+			
+					// //Assigning in all the previous variables
+					// for(var key in storedData){
+					// 	if(storedData.hasOwnProperty(key)){
+					// 		// console.log("typeof: " + typeof(key))
+					// 		rooms[storedData["roomId"]][key] = storedData[key];
+					// 		// console.log("copied over: " + key);
+					// 		// if(key === "startGameTime"){
+
+					// 			// console.log(storedData[key]);
+					// 			// console.log(new Date - storedData[key]);
+					// 		// }
+					// 	}
+					// }
 
 					// rooms[storedData["roomId"]].loadRoleCardData(storedData["avalonRoles"], storedData["avalonCards"]);
 					// rooms[storedData["roomId"]].reloadParentFunctions();
 					
 
 					rooms[storedData["roomId"]].restartSaved = true;
-					rooms[storedData["roomId"]].savedGameRecordId = foundSaveGame.id;					
-					rooms[storedData["roomId"]].recoverGame();
+					rooms[storedData["roomId"]].savedGameRecordId = foundSaveGame.id;		
+					rooms[storedData["roomId"]].recoverGame(storedData);
 
 
 					

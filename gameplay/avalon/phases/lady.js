@@ -38,8 +38,8 @@ Lady.prototype.gameMove = function(socket, data){
         return;
     }
     
-    var indexOfCardHolder = this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
-    var ladyHistory = this.thisRoom.specialCards[this.card].ladyHistory;
+    var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
+    var ladyHistory = this.thisRoom.specialCards[this.card.toLowerCase()].ladyHistory;
     var targetIndex = getIndexFromUsername(this.playersInGame, data);
 
     //Get index of socket 
@@ -67,7 +67,7 @@ Lady.prototype.gameMove = function(socket, data){
         // console.log("Player " + target + " is a " + alliance);
 
         //update lady location
-        this.thisRoom.specialCards[this.card].setHolder(targetIndex);
+        this.thisRoom.specialCards[this.card.toLowerCase()].setHolder(targetIndex);
 
         // this.gameplayMessage = (socket.request.user.username + " has carded " + target);
         this.thisRoom.sendText(this.thisRoom.allSockets, (socket.request.user.username + " has carded " + target + "."), "gameplay-text");
@@ -85,7 +85,7 @@ Lady.prototype.gameMove = function(socket, data){
 
 Lady.prototype.buttonSettings = function(indexOfPlayer){
     //Get the index of the lady
-    var indexOfCardHolder = this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
+    var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
 
     var obj = {
         green: {},
@@ -115,7 +115,7 @@ Lady.prototype.buttonSettings = function(indexOfPlayer){
 }
 
 Lady.prototype.numOfTargets = function(indexOfPlayer){    
-    var indexOfCardHolder = this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
+    var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
 
     if(indexOfPlayer !== undefined && indexOfPlayer !== null){
         // If indexOfPlayer is the lady holder, one player to select 
@@ -130,7 +130,7 @@ Lady.prototype.numOfTargets = function(indexOfPlayer){
 
 
 Lady.prototype.getStatusMessage = function(indexOfPlayer){  
-    var indexOfCardHolder = this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
+    var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
 
     if(indexOfPlayer === indexOfCardHolder){
         return "Choose a player to use the Lady of the Lake on.";
@@ -138,12 +138,12 @@ Lady.prototype.getStatusMessage = function(indexOfPlayer){
     // If it is any other player who isn't special role
     else{
         var usernameOfCardHolder = this.thisRoom.playersInGame[indexOfCardHolder].username;
-        return "Waiting for " + usernameOfAssassin + " to use the Lady of the Lake on someone."
+        return "Waiting for " + usernameOfCardHolder + " to use the Lady of the Lake on someone."
     }
 }
 
 Lady.prototype.getProhibitedIndexesToPick = function(indexOfPlayer){  
-    var ladyHistory = this.thisRoom.specialCards[this.card].ladyHistory;
+    var ladyHistory = this.thisRoom.specialCards[this.card.toLowerCase()].ladyHistory;
 
     return ladyHistory;
 }
