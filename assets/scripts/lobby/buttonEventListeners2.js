@@ -64,7 +64,7 @@ function greenButtonFunction() {
             socket.emit("join-game", roomId);
         }
         else if (gameStarted === false) {
-            socket.emit("startGame", getOptions());
+            socket.emit("startGame", getOptions(), $($(".gameModeSelect")[1]).val());
         }
         else {
             if(gameData.phase === "votingTeam" || gameData.phase === "votingMission"){

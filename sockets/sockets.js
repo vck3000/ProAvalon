@@ -1766,13 +1766,13 @@ module.exports = function (io) {
 			}
 		});
 
-		socket.on("startGame", function (data) {
+		socket.on("startGame", function (data, gameMode) {
 			//start the game
 			console.log(socket.request.user.inRoomId);
 			if (rooms[socket.request.user.inRoomId]) {
 
 				if (socket.request.user.inRoomId && socket.request.user.username === rooms[socket.request.user.inRoomId].host) {
-					rooms[socket.request.user.inRoomId].hostTryStartGame(data);
+					rooms[socket.request.user.inRoomId].hostTryStartGame(data, gameMode);
 					//socket.emit("update-room-players", rooms[roomId].getPlayers());
 				} else {
 					// console.log("Room doesn't exist or user is not host, cannot start game");

@@ -45,7 +45,7 @@ playersReadyNotReady.prototype.playerNotReady = function (username) {
     }
 };
 
-playersReadyNotReady.prototype.hostTryStartGame = function (options) {
+playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
     console.log("HOST TRY START GAME");
     if(this.hostTryStartGameDate){
         // 11 seconds
@@ -96,7 +96,7 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options) {
         rolesInStr += ".";
 
         for (var i = 0; i < this.socketsOfPlayers.length; i++) {
-            this.socketsOfPlayers[i].emit("game-starting", rolesInStr);
+            this.socketsOfPlayers[i].emit("game-starting", rolesInStr, gameMode);
         }
 
         var socketsOfSpecs = this.getSocketsOfSpectators();

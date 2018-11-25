@@ -597,12 +597,19 @@ $(".maxNumPlayers").on("change", function(e){
     // console.log("Change");
     // console.log(e.target.value);
 
+    $($(".maxNumPlayers")[0]).val(e.target.value);
+    $($(".maxNumPlayers")[1]).val(e.target.value);
+
     socket.emit("update-room-max-players", e.target.value);
 });
 
 $(".gameModeSelect").on("change", function(e){
     // console.log("Change");
     // console.log(e.target.value);
+
+    
+    $($(".gameModeSelect")[0]).val(e.target.value);
+    $($(".gameModeSelect")[1]).val(e.target.value);
 
     socket.emit("update-room-game-mode", e.target.value);
 });
