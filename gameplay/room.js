@@ -229,7 +229,7 @@ Room.prototype.sendText = function(sockets, incString, stringType) {
 	}
 
 	if(this.gameStarted && this.gameStarted === true){
-		addToChatHistory(data);
+		this.addToChatHistory(data);
 	}
 };
 
