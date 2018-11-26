@@ -13,6 +13,8 @@ function LadyOfTheLake(thisRoom_) {
 	this.ladyHistoryUsernames = [];
 
 	this.ladyChain = []; // To be stored in the database later.
+
+    this.description = "Reveals the alliance of the person being carded to the card holder.";
 };
 
 LadyOfTheLake.prototype.initialise = function(){
@@ -62,7 +64,11 @@ LadyOfTheLake.prototype.checkSpecialMove = function(socket, data){
 LadyOfTheLake.prototype.getPublicGameData = function(){
     /* TODO: (Can delete this function. Not absolutely necessary)
 	Public data to show the user(s) e.g. who holds the lady of the lake */
-	return {indexLadyHolder: this.indexOfPlayerHolding}
+	return {
+		lady: {
+			index: this.indexOfPlayerHolding
+		}
+	}
 }
 
 
