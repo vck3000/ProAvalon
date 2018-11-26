@@ -105,7 +105,7 @@ socket.on('checkNewPlayerShowIntro', function(){
     else{
         Swal({
             title: "Welcome!",
-            html: "Welcome to ProAvalon! Here we play The Resistance: Avalon at a higher level than most casual games. <br><br>Please check the forums to acquaint yourself with the various strategies that we use while playing this game online to enjoy games the most!",
+            html: "Welcome to ProAvalon! Here we play The Resistance: Avalon in a much more different way than you’d play with your family or friends. Please check the forums to acquaint yourself with the various strategies that we use while playing this game online.",
             type: "success",
             allowEnterKey: false
         });
