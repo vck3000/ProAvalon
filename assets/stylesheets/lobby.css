@@ -1048,6 +1048,7 @@ i {
 .cardsContainer {
     position: absolute;
     right: 0%;
+    transform: translateX(100%);
     /* float: right; */
 }
 .cardObject {
