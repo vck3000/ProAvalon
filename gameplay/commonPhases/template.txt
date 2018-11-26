@@ -1,0 +1,50 @@
+/* Each phase should have:
+    - Name
+    - Whether to show guns or not
+    - GameMove to perform operations
+    - Buttons that are visible and what text they have
+    - Number of targets allowed to be selected
+    - Status message to display
+    - Prohibited Indexes to pick (an array)
+*/
+var usernamesIndexes = require("../../myFunctions/usernamesIndexes");
+
+function /* TODO: Name of phase*/(thisRoom_) {
+    this.thisRoom = thisRoom_;
+
+    this.phase = "/* TODO: Name of phase*/";
+    this.showGuns = /* TODO: true or false*/;
+};
+
+/* TODO: Name of phase*/.prototype.gameMove = function(socket, data){        
+    /* TODO: GameMove*/
+};
+
+// Returns a object with green and red keys. 
+// Green and Red must both have the following properties:
+//  hidden          - Is the button hidden?
+//  disabled        - Is the button disabled?
+//  setText         - What text to display in the button
+/* TODO: Name of phase*/.prototype.buttonSettings = function(indexOfPlayer){  
+    /* TODO: buttonSettings*/
+}
+
+/* TODO: Name of phase*/.prototype.numOfTargets = function(indexOfPlayer){    
+    /* TODO: numOfTargets*/
+}
+
+
+/* TODO: Name of phase*/.prototype.getStatusMessage = function(indexOfPlayer){  
+    /* TODO: getStatusMessage*/
+}
+
+/* TODO: Name of phase*/.prototype.getProhibitedIndexesToPick = function(indexOfPlayer){  
+    /* TODO: getProhibitedIndexesToPick in an array*/
+}
+
+
+
+
+
+module.exports = /* TODO: Name of phase*/;
+

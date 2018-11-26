@@ -1,5 +1,5 @@
 //sockets
-var avalonRoom = require("../gameplay/avalonRoom");
+var gameRoom = require("../gameplay/game");
 
 var savedGameObj = require("../models/savedGame");
 var modAction = require("../models/modAction");
@@ -9,26 +9,17 @@ var createNotificationObj = require("../myFunctions/createNotification");
 
 
 var avatarRequest = require("../models/avatarRequest");
-
 var User  = require("../models/user");
 var banIp = require("../models/banIp");
-
-
 const JSON = require('circular-json');
-
-
 var modsArray = require("../modsadmins/mods");
 var adminsArray = require("../modsadmins/admins");
 
+const dateResetRequired			 			= 1531125110385;
 
-
-
-
-const dateResetRequired = 1531125110385;
-
+const newUpdateNotificationRequired 		= 1543219117905;
 
 var allSockets = [];
-
 var rooms = [];
 
 //retain only 5 mins.
@@ -36,6 +27,18 @@ var allChatHistory = [];
 var allChat5Min = [];
 
 var nextRoomId = 1;
+
+// Get all the possible gameModes
+var fs = require("fs");
+var gameModeNames = [];
+fs.readdirSync("./gameplay/").filter(function (file) {
+	if(fs.statSync("./gameplay"+'/'+file).isDirectory() === true && file !== "commonPhases"){
+		gameModeNames.push(file);
+	}
+});
+// console.log(gameModeNames);
+
+
 
 
 process.on('SIGINT', gracefulShutdown);
@@ -83,11 +86,11 @@ function saveGameToDb(roomToSave){
 		}
 	}
 }
-function deleteSaveGameFromDb(roomToSave){
+function deleteSaveGameFromDb(room){
 	// if(process.env.MY_PLATFORM === "online"){
 		// console.log("room id to remove");
 		// console.log(roomToSave.savedGameRecordId);
-		savedGameObj.findByIdAndRemove(roomToSave.savedGameRecordId, function(err){
+		savedGameObj.findByIdAndRemove(room.savedGameRecordId, function(err){
 			if(err){
 				console.log(err);
 			}
@@ -160,6 +163,7 @@ function saveGamesAndSendWarning(senderSocket) {
 }
 
 
+// RECOVERING SAVED GAMES!
 savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 	if(err){console.log(err);}
 	else{
@@ -175,36 +179,40 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 			
 					var storedData = JSON.parse(foundSaveGame.room);
 			
-					rooms[storedData["roomId"]] = new avalonRoom();
-			
-					for(var key in storedData){
-						if(storedData.hasOwnProperty(key)){
-							// console.log("typeof: " + typeof(key))
-							rooms[storedData["roomId"]][key] = storedData[key];
-							// console.log("copied over: " + key);
-							// if(key === "startGameTime"){
+					rooms[storedData["roomId"]] = new gameRoom();
 
-								// console.log(storedData[key]);
-								// console.log(new Date - storedData[key]);
-							// }
-						}
-					}
+					Object.assign(rooms[storedData["roomId"]], storedData);
 			
-					rooms[storedData["roomId"]].restartSaved = true;
-					rooms[storedData["roomId"]].socketsChangedOnce = false;
-					rooms[storedData["roomId"]].frozen = true;
+					// //Assigning in all the previous variables
+					// for(var key in storedData){
+					// 	if(storedData.hasOwnProperty(key)){
+					// 		// console.log("typeof: " + typeof(key))
+					// 		rooms[storedData["roomId"]][key] = storedData[key];
+					// 		// console.log("copied over: " + key);
+					// 		// if(key === "startGameTime"){
 
-					rooms[storedData["roomId"]].timeFrozenLoaded = new Date();
-		
-					rooms[storedData["roomId"]].someCutoffPlayersJoined = "no";
+					// 			// console.log(storedData[key]);
+					// 			// console.log(new Date - storedData[key]);
+					// 		// }
+					// 	}
+					// }
+
+					// rooms[storedData["roomId"]].loadRoleCardData(storedData["avalonRoles"], storedData["avalonCards"]);
+					// rooms[storedData["roomId"]].reloadParentFunctions();
 					
-					rooms[storedData["roomId"]].savedGameRecordId = foundSaveGame.id;
+
+					rooms[storedData["roomId"]].restartSaved = true;
+					rooms[storedData["roomId"]].savedGameRecordId = foundSaveGame.id;		
+					rooms[storedData["roomId"]].recoverGame(storedData);
+
+
+					
 					
 					// console.log("Game loaded");
 
 					// console.log("platform: " + process.env.MY_PLATFORM);
 					if(process.env.MY_PLATFORM === "online"){
-						// foundSaveGame.remove();
+						foundSaveGame.remove();
 					}
 				}
 			}
@@ -352,9 +360,8 @@ var actionsObj = {
             run: function (data, senderSocket) {
                 var args = data.args;
                 //code
-                if(rooms[senderSocket.request.user.inRoomId]){
-                    return rooms[senderSocket.request.user.inRoomId].getChatHistory();
-    
+                if(rooms[senderSocket.request.user.inRoomId] && rooms[senderSocket.request.user.inRoomId].gameStarted === true){
+                    return rooms[senderSocket.request.user.inRoomId].chatHistory;
                 }
                 else{
                     return {message: "The game hasn't started yet. There is no chat to display.", classStr: "server-text"}
@@ -982,13 +989,159 @@ var actionsObj = {
 				});
                 return;
             }
+		},
+
+		maddbots: {
+            command: "maddbots",
+            help: "/maddbots <number>: Add <number> bots to the room.",
+            run: function (data, senderSocket, roomIdInput) {
+                var args = data.args;
+    
+                if(!args[1]){
+					senderSocket.emit("messageCommandReturnStr", {message: "Specify a number.", classStr: "server-text"});
+                    return;
+				}
+
+				var roomId;
+				if(senderSocket === undefined){
+					roomId = roomIdInput;
+				}
+				else{
+					roomId = senderSocket.request.user.inRoomId;
+				}
+				
+				if(rooms[roomId]){
+					var dummySockets = [];
+
+					for(var i = 0; i < args[1]; i++){
+
+						dummySockets[i] = {
+							request: {
+								user: {
+									username: "Bot" + i,
+									bot: true
+								}
+							},
+							emit: function(){
+
+							}
+						};
+						rooms[roomId].playerJoinRoom(dummySockets[i]);
+						rooms[roomId].playerSitDown(dummySockets[i]);
+
+						//Save a copy of the sockets within botSockets
+						if(!rooms[roomId].botSockets){
+							rooms[roomId].botSockets = [];
+						}
+						rooms[roomId].botSockets.push(dummySockets[i]);
+					};
+				}
+                return;
+            }
+		},
+
+		mtestgame: {
+            command: "mtestgame",
+            help: "/mtestgame <number>: Add <number> bots to a test game and start it automatically.",
+            run: function (data, senderSocket, io) {
+                var args = data.args;
+    
+                if(!args[1]){
+					senderSocket.emit("messageCommandReturnStr", {message: "Specify a number.", classStr: "server-text"});
+                    return;
+				}
+
+				//Get the next room Id
+				while(rooms[nextRoomId]){
+					nextRoomId++;
+				}
+				dataObj = {
+					maxNumPlayers: 10,
+					newRoomPassword: "",
+					gameMode: "avalon"
+				}
+
+
+
+				//Create the room
+				rooms[nextRoomId] = new gameRoom("Bot game", nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword, dataObj.gameMode);
+                var privateStr = ("" === dataObj.newRoomPassword) ? "" : "private ";
+                //broadcast to all chat
+				var messageData = {
+					message: "Bot game" + " has created " + privateStr + "room " + nextRoomId + ".",
+					classStr: "server-text"
+				}
+				sendToAllChat(io, messageData);
+
+				//Add the bots to the room
+				actionsObj.modCommands.maddbots.run(data, undefined, nextRoomId);
+
+				//Start the game.
+				var options = ["Merlin", "Assassin", "Percival", "Morgana", "Lady of the lake"];
+				rooms[nextRoomId].hostTryStartGame(options, "avalon");
+
+				updateCurrentGamesList();
+
+                return;
+            }
+		},
+
+		mremovefrozen: {
+			command: "mremovefrozen",
+            help: "/mremovefrozen: Remove all frozen rooms and the corresponding save files in the database.",
+            run: function (data, senderSocket) {
+
+				for(var i = 0; i < rooms.length; i++){
+					if(rooms[i] && rooms[i].frozen === true){
+						deleteSaveGameFromDb(rooms[i]);
+						rooms[i] = undefined;
+					}
+				}
+				updateCurrentGamesList();
+                return;
+            }
+		},
+
+		mclose: {
+			command: "mclose",
+            help: "/mclose <roomId>: Close room <roomId>. Also removes the corresponding save files in the database.",
+            run: function (data, senderSocket) {
+                var args = data.args;
+    
+                if(!args[1]){
+					senderSocket.emit("messageCommandReturnStr", {message: "Specify a number.", classStr: "server-text"});
+                    return;
+				}
+
+				if(rooms[args[1]] !== undefined){
+					// Disconnect everyone
+					for(var i = 0; i < rooms[args[1]].allSockets.length; i++){
+						rooms[args[1]].allSockets[i].emit("leave-room-requested");
+					}
+				}
+
+				// Stop bots thread if they are playing:
+				if(rooms[args[1]].interval){
+					clearInterval(rooms[args[1]].interval);
+					rooms[args[1]].interval = undefined;
+				}
+
+				// Forcefully close room
+				if(rooms[args[1]]){
+					deleteSaveGameFromDb(rooms[args[1]]);
+					rooms[args[1]] = undefined;
+				}
+
+				updateCurrentGamesList();
+                return;
+            }
 		}
     },
     
     adminCommands: {
         a: {
             command: "a",
-            help: "/a: ...shows mods commands",
+            help: "/a: ...shows mods commands", 
             run: function (data) {
                 var args = data.args;
                 //do stuff
@@ -1239,11 +1392,14 @@ module.exports = function (io) {
 			if(adminsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1 ){
 				//send the user the list of commands
 				socket.emit("adminCommands", adminCommands);
-
 			}
 
 			socket.emit("checkSettingsResetDate", dateResetRequired);
-
+			socket.emit("checkNewUpdate", newUpdateNotificationRequired);
+			socket.emit("checkNewPlayerShowIntro", "");
+			//Pass in the gameModes for the new room menu.
+			socket.emit("gameModes", gameModeNames);
+			
 			User.findOne({username: socket.request.user.username}).exec(function(err, foundUser){
 				if(foundUser.mutedPlayers){
 					socket.emit("updateMutedPlayers", foundUser.mutedPlayers);
@@ -1427,15 +1583,15 @@ module.exports = function (io) {
 			
 
 			if (userCommands[data.command]) {
-				var dataToSend = userCommands[data.command].run(data, socket);
+				var dataToSend = userCommands[data.command].run(data, socket, io);
 				socket.emit("messageCommandReturnStr", dataToSend);
 			}
 			else if(modCommands[data.command] && modsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1){
-				var dataToSend = modCommands[data.command].run(data, socket);
+				var dataToSend = modCommands[data.command].run(data, socket, io);
 				socket.emit("messageCommandReturnStr", dataToSend);
 			}
 			else if(adminCommands[data.command] && adminsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1){
-				var dataToSend = adminCommands[data.command].run(data, socket);
+				var dataToSend = adminCommands[data.command].run(data, socket, io);
 				socket.emit("messageCommandReturnStr", dataToSend);
 			}
 			else {
@@ -1544,7 +1700,7 @@ module.exports = function (io) {
 				while(rooms[nextRoomId]){
 					nextRoomId++;
 				}
-				rooms[nextRoomId] = new avalonRoom(socket.request.user.username, nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword);
+				rooms[nextRoomId] = new gameRoom(socket.request.user.username, nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword, dataObj.gameMode);
                 var privateStr = ("" === dataObj.newRoomPassword) ? "" : "private ";
                 //broadcast to all chat
 				var data = {
@@ -1574,30 +1730,25 @@ module.exports = function (io) {
 			
 			//if the room exists
 			if (rooms[roomId]) {
-				// console.log("room id is: ");
-				// console.log(roomId);
 
 				//join the room
-				var ToF = rooms[roomId].playerJoinRoom(socket, inputPassword);
+				rooms[roomId].playerJoinRoom(socket, inputPassword);
 
-				if(ToF === true){
-					//set the room id into the socket obj
-					socket.request.user.inRoomId = roomId;
+				//set the room id into the socket obj
+				socket.request.user.inRoomId = roomId;
 
-					//join the room chat
-					socket.join(roomId);
+				//join the room chat
+				socket.join(roomId);
 
-					//emit to say to others that someone has joined
-					var data = {
-						message: socket.request.user.username + " has joined the room.",
-						classStr: "server-text-teal",
-						dateCreated: new Date()
-					}			
-					sendToRoomChat(io, roomId, data);
-
-					updateCurrentGamesList();
+				//emit to say to others that someone has joined
+				var data = {
+					message: socket.request.user.username + " has joined the room.",
+					classStr: "server-text-teal",
+					dateCreated: new Date()
 				}
-				
+				sendToRoomChat(io, roomId, data);
+
+				updateCurrentGamesList();
 
 			} else {
 				// console.log("Game doesn't exist!");
@@ -1614,7 +1765,7 @@ module.exports = function (io) {
 					// console.log("Game status is: " + rooms[roomId].getStatus());
 
 					if (rooms[roomId].getStatus() === "Waiting") {
-						var ToF = rooms[roomId].playerJoinGame(socket);
+						var ToF = rooms[roomId].playerSitDown(socket);
 						console.log(socket.request.user.username + " has joined room " + roomId + ": " + ToF);
 					}
 					else {
@@ -1707,13 +1858,13 @@ module.exports = function (io) {
 			}
 		});
 
-		socket.on("startGame", function (data) {
+		socket.on("startGame", function (data, gameMode) {
 			//start the game
+			console.log(socket.request.user.inRoomId);
 			if (rooms[socket.request.user.inRoomId]) {
-				if (socket.request.user.inRoomId && socket.request.user.username === rooms[socket.request.user.inRoomId].getHostUsername()) {
 
-					rooms[socket.request.user.inRoomId].hostTryStartGame(data);
-
+				if (socket.request.user.inRoomId && socket.request.user.username === rooms[socket.request.user.inRoomId].host) {
+					rooms[socket.request.user.inRoomId].hostTryStartGame(data, gameMode);
 					//socket.emit("update-room-players", rooms[roomId].getPlayers());
 				} else {
 					// console.log("Room doesn't exist or user is not host, cannot start game");
@@ -1739,6 +1890,13 @@ module.exports = function (io) {
 			updateCurrentGamesList();
 		});
 
+		socket.on("update-room-game-mode", function (gameMode) {
+			if (rooms[socket.request.user.inRoomId]) {
+				rooms[socket.request.user.inRoomId].updateGameModesInRoom(socket, gameMode);
+			}
+			updateCurrentGamesList();
+		});
+
 
 		
 
@@ -1755,50 +1913,11 @@ module.exports = function (io) {
 				else{
 					saveGameToDb(rooms[socket.request.user.inRoomId]);
 				}
-			}
 
-			
+				updateCurrentGamesList(io);
+				
+			} 
 		});
-
-		// //when a player picks a team
-		// socket.on("pickedTeam", function (data) {
-		// 	if (rooms[socket.request.user.inRoomId]) {
-		// 		rooms[socket.request.user.inRoomId].playerPickTeam(socket, data);
-		// 	}
-		// });
- 
-		// socket.on("pickVote", function (data) {
-		// 	if (rooms[socket.request.user.inRoomId]) {
-		// 		rooms[socket.request.user.inRoomId].pickVote(socket, data);
-				
-		// 	}
-
-		// });
-
-		// socket.on("missionVote", function (data) {
-		// 	if (rooms[socket.request.user.inRoomId]) {
-		// 		rooms[socket.request.user.inRoomId].missionVote(socket, data);
-				
-		// 	}
-		// 	//update all the games list (also including the status because game status changes when a mission is voted for)
-		// 	updateCurrentGamesList(io);
-		// });
-
-		// socket.on("assassinate", function (data) {
-		// 	if (rooms[socket.request.user.inRoomId]) {
-		// 		rooms[socket.request.user.inRoomId].assassinate(socket, data);
-				
-		// 	}
-		// 	//update all the games list (also including the status because game status changes when a mission is voted for)
-		// 	updateCurrentGamesList(io);
-		// });
-
-		// socket.on("lady", function (data) {
-		// 	if (rooms[socket.request.user.inRoomId]) {
-		// 		rooms[socket.request.user.inRoomId].useLady(socket, data);
-				
-		// 	}
-		// });
 
 		socket.on("setClaim", function(data){
 			if (rooms[socket.request.user.inRoomId]) {
@@ -1833,8 +1952,8 @@ var updateCurrentGamesList = function () {
 				gamesList[i].passwordLocked = false;
 			}
 			//get room ID
-			gamesList[i].roomId = rooms[i].getRoomId();
-			gamesList[i].hostUsername = rooms[i].getHostUsername();
+			gamesList[i].roomId = rooms[i].roomId;
+			gamesList[i].hostUsername = rooms[i].host;
 			if(rooms[i].gameStarted === true){
 				gamesList[i].numOfPlayersInside = rooms[i].playersInGame.length;
 				gamesList[i].missionHistory = rooms[i].missionHistory;
@@ -1844,8 +1963,8 @@ var updateCurrentGamesList = function () {
 			else{
 				gamesList[i].numOfPlayersInside = rooms[i].socketsOfPlayers.length;
 			}
-                        gamesList[i].maxNumPlayers = rooms[i].maxNumPlayers;
-			gamesList[i].numOfSpectatorsInside = rooms[i].getSocketsOfSpectators().length;
+			gamesList[i].maxNumPlayers = rooms[i].maxNumPlayers;
+			gamesList[i].numOfSpectatorsInside = rooms[i].allSockets.length - rooms[i].socketsOfPlayers.length;
 		}
 	}
 	allSockets.forEach(function(sock){
@@ -1927,15 +2046,23 @@ function isMuted(socket){
 }
 
 
-function playerLeaveRoomCheckDestroy(socket){
+function playerLeaveRoomCheckDestroy(socket, modKill){
 
 	if(socket.request.user.inRoomId && rooms[socket.request.user.inRoomId]){
 		//leave the room
 		rooms[socket.request.user.inRoomId].playerLeaveRoom(socket);
 
-		var toDestroy = rooms[socket.request.user.inRoomId].toDestroy();
+		var toDestroy = rooms[socket.request.user.inRoomId].destroyRoom;
+
 		if(toDestroy){
 			deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
+
+			// Stop bots thread if they are playing:
+			if(rooms[socket.request.user.inRoomId].interval){
+				clearInterval(rooms[socket.request.user.inRoomId].interval);
+				rooms[socket.request.user.inRoomId].interval = undefined;
+			}
+
 			rooms[socket.request.user.inRoomId] = undefined;
 		}
 
@@ -1963,10 +2090,6 @@ function playerLeaveRoomCheckDestroy(socket){
 
 		updateCurrentGamesList();
 	}
-
-	
-
-
 }
 
 

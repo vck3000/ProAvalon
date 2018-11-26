@@ -46,11 +46,31 @@ function redButtonFunction() {
 
                 $("#kickModalContent")[0].innerHTML = str;
             }
+
+
             
         }
         else {
-            if(gameData.phase === "votingTeam" || gameData.phase === "votingMission"){
-                socket.emit("gameMove", "no");                
+            if (gameData.phase === "voting") {
+              // console.log("Voted reject");
+                // socket.emit("pickVote", "reject");
+                socket.emit("gameMove", {gameMove: "pickVote", clientData: "reject"});
+                
+            }
+            else if (gameData.phase === "missionVoting") {
+              // console.log("Voted fail");
+
+
+                if (gameData.alliance === "Resistance") {
+                    // console.log("You aren't a spy! You cannot fail a mission!");
+                    // socket.emit("missionVote", "succeed");
+                    showDangerAlert("You are resistance. Surely you want to succeed!");
+                } else {
+                    // socket.emit("missionVote", "fail");
+                    socket.emit("gameMove", {gameMove: "missionVote", clientData: "fail"});
+                    
+                }
+
             }
         }
         $("#mainRoomBox div").removeClass("highlight-avatar");
@@ -64,15 +84,41 @@ function greenButtonFunction() {
             socket.emit("join-game", roomId);
         }
         else if (gameStarted === false) {
-            socket.emit("startGame", getOptions(), $($(".gameModeSelect")[1]).val());
+            socket.emit("startGame", getOptions());
         }
         else {
-            if(gameData.phase === "votingTeam" || gameData.phase === "votingMission"){
-                socket.emit("gameMove", "yes");                
+            if (gameData.phase === "pickingTeam") {
+                var arr = getHighlightedAvatars();
+              // console.log(arr);
+                socket.emit("gameMove", {gameMove: "playerPickTeam", clientData: arr});
             }
-            else{
-                socket.emit("gameMove", getHighlightedAvatars());                
+            else if (gameData.phase === "votingTeam") {
+                // console.log("Voted approve");
+                socket.emit("gameMove", {gameMove: "pickVote", clientData: "yes"});
+              
+                // socket.emit("pickVote", "approve");
             }
+            else if (gameData.phase === "votingMission") {
+                // console.log("Voted succeed");
+                socket.emit("gameMove", {gameMove: "missionVote", clientData: "yes"});
+
+                // socket.emit("missionVote", "succeed");
+            }
+            else if (gameData.phase === "assassination") {
+                // console.log("Assasinate!!!");
+                socket.emit("gameMove", {gameMove: "assassinate", clientData: getHighlightedAvatars()});
+
+              
+                // socket.emit("assassinate", getHighlightedAvatars());
+            }
+            else if (gameData.phase === "lady") {
+                socket.emit("gameMove", {gameMove: "useLady", clientData: getHighlightedAvatars()[0]});
+
+                
+                // console.log("Lady: " + getHighlightedAvatars()[0]);
+                // socket.emit("lady", getHighlightedAvatars()[0]);
+            }
+
         }
 
         $("#mainRoomBox div").removeClass("highlight-avatar");
@@ -126,16 +172,12 @@ document.querySelector("#success-alert-box-button").addEventListener("click", fu
 });
 
 document.querySelector("#backButton").addEventListener("click", function () {
-    leaveRoom();
-});
-
-function leaveRoom(){  
     changeView();
     socket.emit("leave-room", "");
 
     // console.log("LEAVE");
     resetAllGameData();
-}
+});
 
 document.querySelector("#claimButton").addEventListener("click", function () {
     //INCOMPLETE
@@ -172,14 +214,8 @@ $("#createNewRoomButton").on("click", function(data){
 
     var sendObj = {
         maxNumPlayers: $($(".maxNumPlayers")[1]).val(),
-        newRoomPassword: $("#newRoomPassword").val(),
-        gameMode: $($(".gameModeSelect")[1]).val()
+        newRoomPassword: $("#newRoomPassword").val()
     };
-
-    // Update the settings in the in room settings menu.
-    $($(".maxNumPlayers")[0]).val(sendObj.maxNumPlayers);
-    $($(".gameModeSelect")[0]).val(sendObj.gameMode);
-
 
     if (inRoom === false) {
         socket.emit("newRoom", sendObj);

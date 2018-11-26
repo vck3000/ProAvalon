@@ -429,34 +429,24 @@
 					<h4>Select the roles/items you would like in the game.</h4>
 					<h6>Default roles have been pre-selected.</h6>
 
+					<label>Game mode:</label>
+					<select class="gameModeSelect" name="gameMode">
+						<!-- The usual values look like the below. This part is inserted dynamically in lobby.js -->
+						<!-- <option value="avalon">Avalon</option> -->
+						<!-- <option value="hunter">Hunter</option> -->
+						<!-- <option value="original">Original</option> -->
+					</select>
+					<br>
 
-					<div class="btn-group-vertical" data-toggle="buttons">
-						<label class="btn btn-mine active">
-							<input name="merlinassassin" id="merlinassassin" type="checkbox" autocomplete="off" checked> Merlin + Assassin
-						</label>
-						<br>
-						<label class="btn btn-mine active">
-							<input name="percival" id="percival" type="checkbox" autocomplete="off" checked> Percival
-						</label>
-						<br>
-						<label class="btn btn-mine active">
-							<input name="morgana" id="morgana" type="checkbox" autocomplete="off" checked> Morgana
-						</label>
-						<br>
-						<label class="btn btn-mine">
-							<input name="lady" id="lady" type="checkbox" autocomplete="off"> Lady of the Lake
-						</label>
-						<br>
-						<label class="btn btn-mine">
-							<input name="mordred" id="mordred" type="checkbox" autocomplete="off"> Mordred
-						</label>
-						<br>
-						<label class="btn btn-mine">
-							<input name="oberon" id="oberon" type="checkbox" autocomplete="off"> Oberon
-						</label>
+
+					<div class="row">
+						<div class="btn-group-vertical col-sm-4 col-xs-12" data-toggle="buttons" id="rolesCardsButtonGroup">
+						</div>
+
+						<div class="btn-group-vertical col-sm-8 col-xs-12" data-toggle="buttons" id="rolesCardsButtonGroupDescription">
+						</div>
 					</div>
 
-					<br>
 					<br>
 
 					<label>Max number of players:</label>
@@ -606,10 +596,18 @@
 				<div class="modal-body">
 					<h4>Select your room options!</h4>
 					<h6>Default settings have been pre-selected.</h6>
+					
+					<label>Game mode:</label>
+					<select class="gameModeSelect" name="gameMode">
+						<!-- The usual values look like the below. This part is inserted dynamically in lobby.js -->
+						<!-- <option value="avalon">Avalon</option> -->
+						<!-- <option value="hunter">Hunter</option> -->
+						<!-- <option value="original">Original</option> -->
+					</select>
 					<br>
 
 					<label>Max number of players:</label>
-					<select class="maxNumPlayers" name="maxNumPlayers">
+					<select class="maxNumPlayers soflow" name="maxNumPlayers">
 						<option value="5">5</option>
 						<option value="6">6</option>
 						<option value="7">7</option>
@@ -655,6 +653,7 @@
 	<script type="text/javascript" src="scripts/lobby/sockets/commands2.js"></script>
 	<script type="text/javascript" src="scripts/lobby/sockets/myNotifications.js"></script>
 	<script type="text/javascript" src="scripts/lobby/sockets/game.js"></script>
+	<script type="text/javascript" src="scripts/lobby/publicData/avalon.js"></script>
 
 
 	<% include partials/footer%>

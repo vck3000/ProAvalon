@@ -9,6 +9,9 @@ var gameRecordSchema = new mongoose.Schema({
 	winningTeam: String,
 	spyTeam: [String],
 	resistanceTeam: [String],
+
+	gameMode: String,
+
 	numberOfPlayers: Number,
 	//E.g. mission fails, mission suceeds and dodge bullet, assassination
 	howTheGameWasWon: String,
@@ -16,6 +19,10 @@ var gameRecordSchema = new mongoose.Schema({
 	roles: [String],
 
 	ladyChain: [String],
+	ladyHistoryUsernames: [String],
+
+	sireChain: [String],
+	sireHistoryUsernames: [String],
 
 	missionHistory: [String],
 	voteHistory: Object,

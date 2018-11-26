@@ -18,6 +18,7 @@
     "ejs": "^2.5.7",
     "express": "^4.16.2",
     "express-session": "^1.15.6",
+    "lodash": "^4.17.11",
     "method-override": "^2.3.10",
     "mongoose": "^5.0.1",
     "passport": "^0.4.0",

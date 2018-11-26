@@ -7,12 +7,20 @@
 //======================================
 //GAME SOCKET ROUTES
 //======================================
-socket.on("game-starting", function (roles) {
+socket.on("game-starting", function (roles, gameMode) {
     var secondsLeft = 10;
     let timerInterval;
 
+    var gameModeCap;
+    if(gameMode){
+        gameModeCap = gameMode[0].toUpperCase() + gameMode.slice(1, gameMode.length);
+    }
+    else{
+        gameModeCap = "";
+    }
+
     Swal({
-        title: "Game is starting!",
+        title: gameModeCap + " game is starting!",
         html: "<strong></strong> seconds left. <br><br>Roles are: " + roles,
         type: "info",
         confirmButtonText: "Ready",

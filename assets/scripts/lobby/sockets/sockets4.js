@@ -54,9 +54,68 @@ socket.on('checkSettingsResetDate', function(serverResetDate){
         }
     }
     else{
-        // resetSettings();
+        docCookies.setItem("lastSettingsResetDate", new Date().toString(), Infinity);
     }
 });
+
+socket.on('checkNewUpdate', function(serverLastUpdateDate){
+    serverLastUpdateDate = new Date(serverLastUpdateDate);
+  // console.log("check reset date");
+
+  // console.log(docCookies.hasItem("lastUpdateNotificationDate"));
+
+    //check if we need to reset settings
+    if(docCookies.hasItem("lastUpdateNotificationDate")){
+        var lastDate = new Date(docCookies.getItem("lastUpdateNotificationDate"));
+
+      // console.log(serverLastUpdateDate);
+      // console.log(lastDate);
+
+      // console.log(serverLastUpdateDate > lastDate);
+
+        if(serverLastUpdateDate > lastDate){
+            Swal({
+                title: "New updates!",
+                html: "There were some new updates! Check it out in the logs!",
+                type: "info",
+                allowEnterKey: false
+            });
+        }
+
+        docCookies.setItem("lastUpdateNotificationDate", new Date().toString(), Infinity);
+    }
+    else{
+
+        if(serverLastUpdateDate > lastDate){
+            Swal({
+                title: "New updates!",
+                html: "There were some new updates! Check it out in the logs!",
+                type: "info",
+                allowEnterKey: false
+            });
+        }
+        docCookies.setItem("lastUpdateNotificationDate", new Date().toString(), Infinity);
+    }
+});
+
+socket.on('checkNewPlayerShowIntro', function(){
+
+    if(docCookies.hasItem("seenNewPlayerIntro")){
+
+    }
+    else{
+        Swal({
+            title: "Welcome!",
+            html: "Welcome to ProAvalon! Here we play The Resistance: Avalon at a higher level than most casual games. <br><br>Please check the forums to acquaint yourself with the various strategies that we use while playing this game online to enjoy games the most!",
+            type: "success",
+            allowEnterKey: false
+        });
+        
+        docCookies.setItem("seenNewPlayerIntro", new Date().toString(), Infinity);
+    }
+});
+
+
 
 socket.on("serverRestartWarning", function(){
     var message = `<div style='text-align: left;'>
@@ -464,3 +523,157 @@ socket.on("update-room-info", function(data){
     }
 });
 
+// Update the new room menu with the gameModes available.
+socket.on("gameModes", function(gameModeNames){
+    // <option value="avalon">Avalon</option>
+    // <option value="hunter">Hunter</option>
+
+    var str = "";
+
+    gameModeNames.forEach(function(name){
+        str += "<option value='" + name + "'>" + name[0].toUpperCase() + name.slice(1, name.length) + "</option>";
+    })
+
+    $(".gameModeSelect")[0].innerHTML = str;
+    $(".gameModeSelect")[1].innerHTML = str;
+});
+
+// Update the role and card settings inside the room (cog).
+var defaultActiveRoles = ["Merlin", "Assassin", "Percival", "Morgana"];
+var skipRoles = ["Resistance", "Spy"];
+
+socket.on("update-game-modes-in-room", function(gameModeObj){
+    var str = "";
+
+    var count = 0;
+    
+    // Roles
+    for(var i = 0; i < gameModeObj.roles.roleNames.length; i++){
+        var name = gameModeObj.roles.roleNames[i];
+        // Skip over certain roles since they are enabled by default
+        if(skipRoles.includes(name) === true){
+            continue;
+        }
+
+        var active;
+        if(defaultActiveRoles.includes(name) === true){
+            active = "active";
+        }
+        else{
+            active = "";
+        }
+
+        str += "<label class='btn btn-mine " + active + "'>";
+        str += "<input style='display: none;' name='" + name.toLowerCase() + "' id='" + name.toLowerCase() + "' type='checkbox' autocomplete='off' checked> " + name;
+        str += "</label>";
+        str += "<br>";
+    }
+
+    // Cards
+    for(var i = 0; i < gameModeObj.cards.cardNames.length; i++){
+        var name = gameModeObj.cards.cardNames[i];
+
+        str += "<label class='btn btn-mine'>";
+        str += "<input style='display: none;' name='" + name.toLowerCase() + "' id='" + name.toLowerCase() + "' type='checkbox' autocomplete='off' checked> " + name;
+        str += "</label>";
+        str += "<br>";
+    }
+    // Set it in
+    $("#rolesCardsButtonGroup")[0].innerHTML = str;
+
+    // Reset, now do descriptions
+    // Roles
+    str = "";
+    for(var i = 0; i < gameModeObj.roles.roleNames.length; i++){
+        var name = gameModeObj.roles.roleNames[i];
+        //Skip over certain roles since they are enabled by default
+        if(skipRoles.includes(name) === true){
+            continue;
+        }
+
+        var greenOrRed;
+        if(gameModeObj.roles.alliances[i] === "Resistance"){
+            greenOrRed = "success";
+        }
+        else if(gameModeObj.roles.alliances[i] === "Spy"){
+            greenOrRed = "danger";
+        }
+        else{
+            greenOrRed = "";
+        }
+
+        str += `<div class="panel panel-${greenOrRed} roleCardDescription">
+            <div class="panel-heading roleCardDescription" role="tab" id="heading${count}">
+            <h4 class="panel-title">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#rolesCardsButtonGroupDescription" href="#collapse-cardRole${count}" aria-expanded="false" aria-controls="collapse-cardRole${count}">
+                ${gameModeObj.roles.alliances[i]}
+            </a>
+            </h4>
+            </div>
+            <div id="collapse-cardRole${count}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${count}">
+            <div class="panel-body">
+                ${gameModeObj.roles.descriptions[i]}
+            </div>
+            </div>
+            </div>`;
+
+        // str += "<span class='roleCardDescription'>";
+        // str += gameModeObj.roles.descriptions[i];
+        // str += "</span>";
+
+        str += "<br>";
+        count += 1;
+    }
+    // Cards
+    for(var i = 0; i < gameModeObj.cards.cardNames.length; i++){
+        var name = gameModeObj.cards.cardNames[i];
+
+        str += `<div class="panel panel-default roleCardDescription">
+        <div class="panel-heading roleCardDescription" role="tab" id="heading${count}">
+        <h4 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#rolesCardsButtonGroupDescription" href="#collapse-cardRole${count}" aria-expanded="false" aria-controls="collapse-cardRole${count}">
+            Card
+        </a>
+        </h4>
+        </div>
+        <div id="collapse-cardRole${count}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${count}">
+        <div class="panel-body">
+            ${gameModeObj.cards.descriptions[i]}
+        </div>
+        </div>
+        </div>`;
+
+        str += "<br>";
+        
+        count += 1;
+    }
+    // Set it in
+    $("#rolesCardsButtonGroupDescription")[0].innerHTML = str;
+});
+
+
+$(".maxNumPlayers").on("change", function(e){
+    // console.log("Change");
+    // console.log(e.target.value);
+
+    $($(".maxNumPlayers")[0]).val(e.target.value);
+    $($(".maxNumPlayers")[1]).val(e.target.value);
+
+    socket.emit("update-room-max-players", e.target.value);
+});
+
+$(".gameModeSelect").on("change", function(e){
+    // console.log("Change");
+    // console.log(e.target.value);
+
+    
+    $($(".gameModeSelect")[0]).val(e.target.value);
+    $($(".gameModeSelect")[1]).val(e.target.value);
+
+    socket.emit("update-room-game-mode", e.target.value);
+});
+
+// Update the new room menu with the gameModes available.
+socket.on("leave-room-requested", function(){
+    leaveRoom();
+});

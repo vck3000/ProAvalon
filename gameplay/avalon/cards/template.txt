@@ -1,0 +1,25 @@
+function /* TODO: Name of Card*/(thisRoom_) {
+    this.thisRoom = thisRoom_;
+
+    this.specialPhase = /* TODO: If there is a special phase attached to the role e.g. Lady of the Lake has lady*/;
+
+    this.card = "/* TODO: Name of Card (Note first letter is usually capitalised)*/";
+    this.indexOfPlayerHolding;
+
+};
+
+/* TODO: Name of Card*/.prototype.setHolder = function(socket, data){
+    this.indexOfPlayerHolding = /* TODO: Complete this section */
+}
+
+/* TODO: Name of Card*/.prototype.checkSpecialMove = function(socket, data){
+    /* TODO: Check if we need to go to a special phase */
+};
+
+/* TODO: Name of Card*/.prototype.getPublicGameData = function(){
+    /* TODO: (Can delete this function. Not absolutely necessary)
+    Public data to show the user(s) e.g. who holds the lady of the lake */
+}
+
+
+module.exports = /* TODO: Name of Card*/;
