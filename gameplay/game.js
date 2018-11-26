@@ -1037,6 +1037,10 @@ Game.prototype.finishGame = function(toBeWinner){
 	this.distributeGameData();
 
 
+	// If there was a bot in the game, do not store into the database.
+	if(this.botIndexes.length !== 0){
+		return;
+	}
 
 	//store data into the database:
 	var rolesCombined = [];
@@ -1183,7 +1187,6 @@ Game.prototype.finishGame = function(toBeWinner){
 					// console.log("SAVE SAVE");
 
 				}
-				
 			}
 		});
 	});

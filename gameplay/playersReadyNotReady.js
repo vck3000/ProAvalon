@@ -82,28 +82,33 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
                 this.playersYetToReady.splice(i, 1);
             }
         }
-
         this.options = options;
 
-        this.gamePlayerLeftDuringReady = false;
-
-        var rolesInStr = "";
-        options.forEach(function(element){
-            rolesInStr += element + ", ";
-        });
-        //remove the last , and replace with .
-        rolesInStr = rolesInStr.slice(0, rolesInStr.length - 2);
-        rolesInStr += ".";
-
-        for (var i = 0; i < this.socketsOfPlayers.length; i++) {
-            this.socketsOfPlayers[i].emit("game-starting", rolesInStr, gameMode);
+        // If the room is full of bots, start game
+        if(this.playersYetToReady.length === 0){
+            this.startGame(options);
         }
-
-        var socketsOfSpecs = this.getSocketsOfSpectators();
-        socketsOfSpecs.forEach(function(sock){
-            sock.emit("spec-game-starting", null);
-        });
-        this.sendText(this.allSockets, "The game is starting!", "gameplay-text");
+        else{
+            this.gamePlayerLeftDuringReady = false;
+    
+            var rolesInStr = "";
+            options.forEach(function(element){
+                rolesInStr += element + ", ";
+            });
+            //remove the last , and replace with .
+            rolesInStr = rolesInStr.slice(0, rolesInStr.length - 2);
+            rolesInStr += ".";
+    
+            for (var i = 0; i < this.socketsOfPlayers.length; i++) {
+                this.socketsOfPlayers[i].emit("game-starting", rolesInStr, gameMode);
+            }
+    
+            var socketsOfSpecs = this.getSocketsOfSpectators();
+            socketsOfSpecs.forEach(function(sock){
+                sock.emit("spec-game-starting", null);
+            });
+            this.sendText(this.allSockets, "The game is starting!", "gameplay-text");
+        }
     }
 };
 

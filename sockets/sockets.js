@@ -992,17 +992,24 @@ var actionsObj = {
 		maddbots: {
             command: "maddbots",
             help: "/maddbots <number>: Add <number> bots to the room.",
-            run: function (data, senderSocket) {
+            run: function (data, senderSocket, roomIdInput) {
                 var args = data.args;
     
                 if(!args[1]){
 					senderSocket.emit("messageCommandReturnStr", {message: "Specify a number.", classStr: "server-text"});
                     return;
 				}
-				
-				if(rooms[senderSocket.request.user.inRoomId]){
-					var dummySockets = [];
 
+				var roomId;
+				if(senderSocket === undefined){
+					roomId = roomIdInput;
+				}
+				else{
+					roomId = senderSocket.request.user.inRoomId;
+				}
+				
+				if(rooms[roomId]){
+					var dummySockets = [];
 
 					for(var i = 0; i < args[1]; i++){
 
@@ -1017,23 +1024,62 @@ var actionsObj = {
 
 							}
 						};
-						rooms[senderSocket.request.user.inRoomId].playerJoinRoom(dummySockets[i]);
-						rooms[senderSocket.request.user.inRoomId].playerSitDown(dummySockets[i]);
+						rooms[roomId].playerJoinRoom(dummySockets[i]);
+						rooms[roomId].playerSitDown(dummySockets[i]);
 
 						//Save a copy of the sockets within botSockets
-						if(!rooms[senderSocket.request.user.inRoomId].botSockets){
-							rooms[senderSocket.request.user.inRoomId].botSockets = [];
+						if(!rooms[roomId].botSockets){
+							rooms[roomId].botSockets = [];
 						}
-						rooms[senderSocket.request.user.inRoomId].botSockets.push(dummySockets[i]);
-						
-						
+						rooms[roomId].botSockets.push(dummySockets[i]);
 					};
+				}
+                return;
+            }
+		},
 
+		mtestGame: {
+            command: "mtestGame",
+            help: "/mtestGame <number>: Add <number> bots to a test game and start it automatically.",
+            run: function (data, senderSocket, io) {
+                var args = data.args;
+    
+                if(!args[1]){
+					senderSocket.emit("messageCommandReturnStr", {message: "Specify a number.", classStr: "server-text"});
+                    return;
+				}
 
+				//Get the next room Id
+				while(rooms[nextRoomId]){
+					nextRoomId++;
+				}
+				dataObj = {
+					maxNumPlayers: 10,
+					newRoomPassword: "",
+					gameMode: "avalon"
 				}
 
 
-				
+
+				//Create the room
+				rooms[nextRoomId] = new gameRoom("Bot game", nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword, dataObj.gameMode);
+                var privateStr = ("" === dataObj.newRoomPassword) ? "" : "private ";
+                //broadcast to all chat
+				var messageData = {
+					message: "Bot game" + " has created " + privateStr + "room " + nextRoomId + ".",
+					classStr: "server-text"
+				}
+				sendToAllChat(io, messageData);
+
+				//Add the bots to the room
+				actionsObj.modCommands.maddbots.run(data, undefined, nextRoomId);
+
+				//Start the game.
+				var options = ["Merlin", "Assassin", "Percival", "Morgana", "Lady of the lake"];
+				rooms[nextRoomId].hostTryStartGame(options, "avalon");
+
+				updateCurrentGamesList();
+
                 return;
             }
 		},
@@ -1056,7 +1102,7 @@ var actionsObj = {
 
 		mclose: {
 			command: "mclose",
-            help: "/mclose <roomId>: Close room <roomId>.",
+            help: "/mclose <roomId>: Close room <roomId>. Also removes the corresponding save files in the database.",
             run: function (data, senderSocket) {
                 var args = data.args;
     
@@ -1528,15 +1574,15 @@ module.exports = function (io) {
 			
 
 			if (userCommands[data.command]) {
-				var dataToSend = userCommands[data.command].run(data, socket);
+				var dataToSend = userCommands[data.command].run(data, socket, io);
 				socket.emit("messageCommandReturnStr", dataToSend);
 			}
 			else if(modCommands[data.command] && modsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1){
-				var dataToSend = modCommands[data.command].run(data, socket);
+				var dataToSend = modCommands[data.command].run(data, socket, io);
 				socket.emit("messageCommandReturnStr", dataToSend);
 			}
 			else if(adminCommands[data.command] && adminsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1){
-				var dataToSend = adminCommands[data.command].run(data, socket);
+				var dataToSend = adminCommands[data.command].run(data, socket, io);
 				socket.emit("messageCommandReturnStr", dataToSend);
 			}
 			else {
