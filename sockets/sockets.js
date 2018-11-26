@@ -1120,6 +1120,12 @@ var actionsObj = {
 					}
 				}
 
+				// Stop bots thread if they are playing:
+				if(rooms[args[1]].interval){
+					clearInterval(rooms[args[1]].interval);
+					rooms[args[1]].interval = undefined;
+				}
+
 				// Forcefully close room
 				if(rooms[args[1]]){
 					deleteSaveGameFromDb(rooms[args[1]]);
@@ -2051,6 +2057,13 @@ function playerLeaveRoomCheckDestroy(socket, modKill){
 
 		if(toDestroy){
 			deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
+
+			// Stop bots thread if they are playing:
+			if(rooms[socket.request.user.inRoomId].interval){
+				clearInterval(rooms[socket.request.user.inRoomId].interval);
+				rooms[socket.request.user.inRoomId].interval = undefined;
+			}
+
 			rooms[socket.request.user.inRoomId] = undefined;
 		}
 

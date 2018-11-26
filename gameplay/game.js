@@ -376,6 +376,7 @@ Game.prototype.startGame = function (options) {
 		else if(this.specialCards.hasOwnProperty(op)){
 			this.cardKeysInPlay.push(op);
 		}
+		
 		else{
 			console.log("Warning: Client requested a role that doesn't exist -> " + op);
 		}
@@ -426,6 +427,9 @@ Game.prototype.startGame = function (options) {
 		// Lowercase the role to give the file name
 		let roleLower = this.playersInGame[i].role.toLowerCase();
 
+		// console.log(this.specialRoles);
+		// console.log();
+		// console.log(roleLower);
 		this.playersInGame[i].see = this.specialRoles[roleLower].see();
 	}
 
@@ -499,8 +503,15 @@ Game.prototype.checkBotMoves = function () {
 		for(var i = 0; i < thisRoom.botIndexes.length; i++){
 			var count = 0;
 
+			// Because we rely on the sockets of players to be exactly matching the players in game
+			// if they aren't the same size, they aren't. Don't go on.
+			if(thisRoom.socketsOfPlayers.length !== thisRoom.playersInGame.length){
+				continue;
+			}
+
 			console.log("===================");
 			console.log("Bot playing move: ");
+			
 			console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
 			console.log("Bot index: ");
 			console.log(i);
