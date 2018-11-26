@@ -158,8 +158,9 @@ Room.prototype.playerLeaveRoom = function (socket) {
 	this.playerStandUp(socket);
 	
 	// Set the host to the first person in the sitting down array in case the previous host left
-	if(this.socketsOfPlayers[0]){
+	if(this.socketsOfPlayers[0] !== undefined){
 		this.host = this.socketsOfPlayers[0].request.user.username;
+		console.log("new host: " + this.host);
 	}
 
 	// Destroy room if there's no one in it anymore
