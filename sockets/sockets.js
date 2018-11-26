@@ -1038,9 +1038,9 @@ var actionsObj = {
             }
 		},
 
-		mtestGame: {
-            command: "mtestGame",
-            help: "/mtestGame <number>: Add <number> bots to a test game and start it automatically.",
+		mtestgame: {
+            command: "mtestgame",
+            help: "/mtestgame <number>: Add <number> bots to a test game and start it automatically.",
             run: function (data, senderSocket, io) {
                 var args = data.args;
     
