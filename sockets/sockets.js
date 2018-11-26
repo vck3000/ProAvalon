@@ -1136,13 +1136,12 @@ var actionsObj = {
                 return;
             }
 		}
-		
     },
     
     adminCommands: {
         a: {
             command: "a",
-            help: "/a: ...shows mods commands",
+            help: "/a: ...shows mods commands", 
             run: function (data) {
                 var args = data.args;
                 //do stuff

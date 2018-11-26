@@ -1098,6 +1098,9 @@ Game.prototype.finishGame = function(toBeWinner){
 		spyTeam: this.spyUsernames,
 		resistanceTeam: this.resistanceUsernames,
 		numberOfPlayers: this.playersInGame.length,
+
+		gameMode: this.gameMode,
+
 		howTheGameWasWon: this.howWasWon,
 		roles: rolesCombined,
 

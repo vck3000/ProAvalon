@@ -9,6 +9,9 @@ var gameRecordSchema = new mongoose.Schema({
 	winningTeam: String,
 	spyTeam: [String],
 	resistanceTeam: [String],
+
+	gameMode: String,
+
 	numberOfPlayers: Number,
 	//E.g. mission fails, mission suceeds and dodge bullet, assassination
 	howTheGameWasWon: String,
