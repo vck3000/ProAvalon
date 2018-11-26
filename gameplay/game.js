@@ -488,11 +488,12 @@ Game.prototype.checkBotMoves = function () {
 
 	var wholeLoopDelay = (numOfBots + 1) * timeEachLoop;
 
-	var interval = setInterval(function(){
+	this.interval = setInterval(function(){
 		if(thisRoom.finished === true){
-			clearInterval(interval);
+			clearInterval(thisRoom.interval);
+			thisRoom.interval = undefined;
 		}
-		
+
 
 		console.log("Num of bots: " + thisRoom.botIndexes.length);
 		for(var i = 0; i < thisRoom.botIndexes.length; i++){

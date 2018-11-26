@@ -1052,7 +1052,37 @@ var actionsObj = {
 				updateCurrentGamesList();
                 return;
             }
+		},
+
+		mclose: {
+			command: "mclose",
+            help: "/mclose <roomId>: Close room <roomId>.",
+            run: function (data, senderSocket) {
+                var args = data.args;
+    
+                if(!args[1]){
+					senderSocket.emit("messageCommandReturnStr", {message: "Specify a number.", classStr: "server-text"});
+                    return;
+				}
+
+				if(rooms[args[1]] !== undefined){
+					// Disconnect everyone
+					for(var i = 0; i < rooms[args[1]].allSockets.length; i++){
+						rooms[args[1]].allSockets[i].emit("leave-room-requested");
+					}
+				}
+
+				// Forcefully close room
+				if(rooms[args[1]]){
+					deleteSaveGameFromDb(rooms[args[1]]);
+					rooms[args[1]] = undefined;
+				}
+
+				updateCurrentGamesList();
+                return;
+            }
 		}
+		
     },
     
     adminCommands: {

@@ -126,12 +126,16 @@ document.querySelector("#success-alert-box-button").addEventListener("click", fu
 });
 
 document.querySelector("#backButton").addEventListener("click", function () {
+    leaveRoom();
+});
+
+function leaveRoom(){  
     changeView();
     socket.emit("leave-room", "");
 
     // console.log("LEAVE");
     resetAllGameData();
-});
+}
 
 document.querySelector("#claimButton").addEventListener("click", function () {
     //INCOMPLETE

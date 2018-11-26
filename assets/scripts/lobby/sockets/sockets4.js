@@ -613,3 +613,8 @@ $(".gameModeSelect").on("change", function(e){
 
     socket.emit("update-room-game-mode", e.target.value);
 });
+
+// Update the new room menu with the gameModes available.
+socket.on("leave-room-requested", function(){
+    leaveRoom();
+});
