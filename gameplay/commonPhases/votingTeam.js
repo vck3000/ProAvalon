@@ -51,6 +51,8 @@ VotingTeam.prototype.gameMove = function(socket, data){
                 this.thisRoom.missionHistory[this.thisRoom.missionHistory.length] = "failed";
 
                 this.thisRoom.howWasWon = "Hammer rejected.";
+		        this.thisRoom.sendText(this.thisRoom.allSockets, "The hammer was rejected.", "gameplay-text-red");
+                
                 this.thisRoom.finishGame("Spy");
             }
             else if (outcome === "no") {

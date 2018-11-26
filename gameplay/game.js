@@ -540,13 +540,13 @@ Game.prototype.checkBotMoves = function () {
 			if(buttons.green.hidden === false && buttons.green.disabled === false &&
 			buttons.red.hidden === false && buttons.red.disabled === false){
 					var num = Math.round(Math.random());
-					var str = "";
-					if(num === 0){
-						str = "no";
-					}
-					else{
-						str = "yes";
-					}
+					var str = "no";
+					// if(num === 0){
+					// 	str = "no";
+					// }
+					// else{
+					// 	str = "yes";
+					// }
 					thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]], str);
 					count += 1;
 					continue;
@@ -1020,6 +1020,7 @@ Game.prototype.finishGame = function(toBeWinner){
 
 	//game clean up
 	this.finished = true;
+	this.winner = toBeWinner;
 
 	if (this.winner === "Spy") {
 		// this.gameplayMessage = "The spies have won the game.";
