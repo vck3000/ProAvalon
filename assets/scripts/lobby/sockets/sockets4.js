@@ -546,12 +546,12 @@ socket.on("update-game-modes-in-room", function(gameModeObj){
         str += `<div class="panel panel-${greenOrRed} roleCardDescription">
             <div class="panel-heading roleCardDescription" role="tab" id="heading${count}">
             <h4 class="panel-title">
-            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse${count}" aria-expanded="false" aria-controls="collapse${count}">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#rolesCardsButtonGroupDescription" href="#collapse-cardRole${count}" aria-expanded="false" aria-controls="collapse-cardRole${count}">
                 ${gameModeObj.roles.alliances[i]}
             </a>
             </h4>
             </div>
-            <div id="collapse${count}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${count}">
+            <div id="collapse-cardRole${count}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${count}">
             <div class="panel-body">
                 ${gameModeObj.roles.descriptions[i]}
             </div>
@@ -572,12 +572,12 @@ socket.on("update-game-modes-in-room", function(gameModeObj){
         str += `<div class="panel panel-default roleCardDescription">
         <div class="panel-heading roleCardDescription" role="tab" id="heading${count}">
         <h4 class="panel-title">
-        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse${count}" aria-expanded="false" aria-controls="collapse${count}">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#rolesCardsButtonGroupDescription" href="#collapse-cardRole${count}" aria-expanded="false" aria-controls="collapse-cardRole${count}">
             Card
         </a>
         </h4>
         </div>
-        <div id="collapse${count}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${count}">
+        <div id="collapse-cardRole${count}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${count}">
         <div class="panel-body">
             ${gameModeObj.cards.descriptions[i]}
         </div>
