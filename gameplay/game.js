@@ -483,9 +483,21 @@ Game.prototype.startGame = function (options) {
 Game.prototype.checkBotMoves = function () {
 	var thisRoom = this;
 
-	setInterval(function(){
+	var numOfBots = thisRoom.botIndexes.length;
+	var timeEachLoop = 1000; // in ms
+
+	var wholeLoopDelay = (numOfBots + 1) * timeEachLoop;
+
+	var interval = setInterval(function(){
+		if(thisRoom.finished === true){
+			clearInterval(interval);
+		}
+		
+
 		console.log("Num of bots: " + thisRoom.botIndexes.length);
 		for(var i = 0; i < thisRoom.botIndexes.length; i++){
+			var count = 0;
+
 			console.log("===================");
 			console.log("Bot playing move: ");
 			console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
@@ -535,6 +547,7 @@ Game.prototype.checkBotMoves = function () {
 						str = "yes";
 					}
 					thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]], str);
+					count += 1;
 					continue;
 			}
 
@@ -563,14 +576,14 @@ Game.prototype.checkBotMoves = function () {
 			var randomNums0toPlayerCount = [];
 			//shuffle the players around. Make sure to redistribute thisRoom room player data in sockets.
 			for(var j = 0; j < allowedUsernamesToPick.length; j++){
-				randomNums0toPlayerCount[i] = j;
+				randomNums0toPlayerCount[j] = j;
 			}
 			randomNums0toPlayerCount = shuffle(randomNums0toPlayerCount);
 
 
 			var selectUsernames = [];
 			for(var j = 0; j < numOfTargets; j++){
-				selectUsernames.push(allowedUsernamesToPick[j]);
+				selectUsernames.push(allowedUsernamesToPick[randomNums0toPlayerCount[j]]);
 			}
 
 			console.log("Select usernames: ");
@@ -578,12 +591,21 @@ Game.prototype.checkBotMoves = function () {
 
 			console.log("Bot playing move: ");
 			console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
-			console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
 
+			console.log("Allowed usernames: ");
+			console.log(allowedUsernamesToPick);
+
+			console.log("Prohibited indices: ");
+			console.log(prohibitedIndexesToPick);
 
 			thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]], selectUsernames);
+			// setTimeout(function(index){
+				// thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[index]], selectUsernames);
+			// }, count*timeEachLoop, i);
+			
+			count += 1;
 		}
-	}, 2000);
+	}, 1000); //wholeLoopDelay);
 }
 
 
