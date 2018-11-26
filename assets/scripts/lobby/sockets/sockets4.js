@@ -54,9 +54,68 @@ socket.on('checkSettingsResetDate', function(serverResetDate){
         }
     }
     else{
-        // resetSettings();
+        docCookies.setItem("lastSettingsResetDate", new Date().toString(), Infinity);
     }
 });
+
+socket.on('checkNewUpdate', function(serverLastUpdateDate){
+    serverLastUpdateDate = new Date(serverLastUpdateDate);
+  // console.log("check reset date");
+
+  // console.log(docCookies.hasItem("lastUpdateNotificationDate"));
+
+    //check if we need to reset settings
+    if(docCookies.hasItem("lastUpdateNotificationDate")){
+        var lastDate = new Date(docCookies.getItem("lastUpdateNotificationDate"));
+
+      // console.log(serverLastUpdateDate);
+      // console.log(lastDate);
+
+      // console.log(serverLastUpdateDate > lastDate);
+
+        if(serverLastUpdateDate > lastDate){
+            Swal({
+                title: "New updates!",
+                html: "There were some new updates! Check it out in the logs!",
+                type: "info",
+                allowEnterKey: false
+            });
+        }
+
+        docCookies.setItem("lastUpdateNotificationDate", new Date().toString(), Infinity);
+    }
+    else{
+
+        if(serverLastUpdateDate > lastDate){
+            Swal({
+                title: "New updates!",
+                html: "There were some new updates! Check it out in the logs!",
+                type: "info",
+                allowEnterKey: false
+            });
+        }
+        docCookies.setItem("lastUpdateNotificationDate", new Date().toString(), Infinity);
+    }
+});
+
+socket.on('checkNewPlayerShowIntro', function(){
+
+    if(docCookies.hasItem("seenNewPlayerIntro")){
+
+    }
+    else{
+        Swal({
+            title: "Welcome!",
+            html: "Welcome to ProAvalon! Here we play The Resistance: Avalon at a higher level than most casual games. <br><br>Please check the forums to acquaint yourself with the various strategies that we use while playing this game online to enjoy games the most!",
+            type: "success",
+            allowEnterKey: false
+        });
+        
+        docCookies.setItem("seenNewPlayerIntro", new Date().toString(), Infinity);
+    }
+});
+
+
 
 socket.on("serverRestartWarning", function(){
     var message = `<div style='text-align: left;'>

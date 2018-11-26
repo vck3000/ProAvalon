@@ -15,7 +15,9 @@ const JSON = require('circular-json');
 var modsArray = require("../modsadmins/mods");
 var adminsArray = require("../modsadmins/admins");
 
-const dateResetRequired = 1531125110385;
+const dateResetRequired			 			= 1531125110385;
+
+const newUpdateNotificationRequired 		= 1543219117905;
 
 var allSockets = [];
 var rooms = [];
@@ -1388,6 +1390,8 @@ module.exports = function (io) {
 			}
 
 			socket.emit("checkSettingsResetDate", dateResetRequired);
+			socket.emit("checkNewUpdate", newUpdateNotificationRequired);
+			socket.emit("checkNewPlayerShowIntro", "");
 			//Pass in the gameModes for the new room menu.
 			socket.emit("gameModes", gameModeNames);
 			

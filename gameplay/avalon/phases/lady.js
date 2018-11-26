@@ -84,7 +84,7 @@ Lady.prototype.gameMove = function(socket, data){
         this.thisRoom.specialCards[this.card.toLowerCase()].setHolder(targetIndex);
 
         // this.gameplayMessage = (socket.request.user.username + " has carded " + target);
-        this.thisRoom.sendText(this.thisRoom.allSockets, (socket.request.user.username + " has carded " + targetUsername + "."), "gameplay-text");
+        this.thisRoom.sendText(this.thisRoom.allSockets, (socket.request.user.username + " has used " + this.card + " on " + targetUsername + "."), "gameplay-text");
 
 
         //update phase

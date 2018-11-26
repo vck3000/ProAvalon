@@ -1293,7 +1293,7 @@ function getOptions() {
         var name = rolesCards[i].innerText.trim();
         selectedRolesCards.push(name);
     }
-    // console.log(selectedRolesCards);
+    console.log(selectedRolesCards);
 
     return selectedRolesCards;
 }

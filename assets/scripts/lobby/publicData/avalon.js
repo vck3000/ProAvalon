@@ -1,3 +1,16 @@
+var cards = {
+    lady: {
+        glyph: "glyphicon-book",
+        toolTip: "Lady of the Lake"
+    },
+
+    sire: {
+        glyph: "glyphicon-ice-lolly",
+        toolTip: "Sire of the Lake"
+    }
+}
+
+
 function runPublicDataAvalon(gameDataInc) {
     var gd = gameDataInc;
 
@@ -8,22 +21,33 @@ function runPublicDataAvalon(gameDataInc) {
             drawBullet(getIndexFromUsername(gd.publicData.roles.assassinShotUsername));
         }
 
-        // Draw the lady of the lake
-        if(gd.publicData.cards.indexLadyHolder !== undefined){
-            var index = gd.publicData.cards.indexLadyHolder;
-            var lady = "<span data-toggle='tooltip' data-placement='left' title='Tooltip on left' class='cardObject glyphicon glyphicon-book' style=''></span> ";
-            var padding = "<span class='cardObject glyphicon glyphicon-asterisk' style='visibility: hidden;'></span> ";
 
-            $($(".playerDiv")[index]).find(".cardsContainer")[0].innerHTML += lady;
-            $($(".playerDiv")[index]).find(".cardsContainer")[0].innerHTML += padding;
+        
+        // Reset cards container
+        $(".playerDiv").find(".cardsContainer")[0].innerHTML = "";
 
-            $($(".playerDiv")[index]).find(".cardsContainer")[0].innerHTML += lady;
-            $($(".playerDiv")[index]).find(".cardsContainer")[0].innerHTML += padding;
+        //Draw cards:
+        for(var key in gd.publicData.cards){
+            if(gd.publicData.cards.hasOwnProperty(key) === true){
+                // Skip if we don't have any record of the card to draw/display.
+                if(cards.hasOwnProperty(key) === false){
+                    continue;
+                }
 
-            // Initialise the tooltip.
-            $(".cardObject").tooltip();
+                var index = gd.publicData.cards[key].index;
+                var card = "<span data-toggle='tooltip' data-placement='left' title='" + cards[key].toolTip + "' class='cardObject glyphicon " + cards[key].glyph + "' style=''></span> ";
 
+                var padding = "<span class='cardObject glyphicon glyphicon-asterisk' style='visibility: hidden;'></span> ";
+
+                $($(".playerDiv")[index]).find(".cardsContainer")[0].innerHTML += card;
+                $($(".playerDiv")[index]).find(".cardsContainer")[0].innerHTML += padding;
+
+                // Initialise the tooltip.
+                $(".cardObject").tooltip();
+            }
         }
+
+        
 
 
         

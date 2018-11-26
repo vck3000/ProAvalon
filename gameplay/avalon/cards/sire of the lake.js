@@ -17,7 +17,12 @@ function SireOfTheLake(thisRoom_) {
 };
 
 SireOfTheLake.prototype.initialise = function(){
-	this.setHolder((this.thisRoom.teamLeader + 1) % this.thisRoom.playersInGame.length);
+	// If lady of the lake is in the game, give the card to the next person.
+	var addOne = 0;
+	if(this.thisRoom.options.includes("Lady of the Lake")){
+		addOne = 1;
+	}
+	this.setHolder((this.thisRoom.teamLeader + 1 + addOne) % this.thisRoom.playersInGame.length);
 };
 
 SireOfTheLake.prototype.setHolder = function(index){

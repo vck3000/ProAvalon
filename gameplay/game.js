@@ -541,12 +541,12 @@ Game.prototype.checkBotMoves = function () {
 			buttons.red.hidden === false && buttons.red.disabled === false){
 					var num = Math.round(Math.random());
 					var str = "no";
-					// if(num === 0){
-					// 	str = "no";
-					// }
-					// else{
-					// 	str = "yes";
-					// }
+					if(num === 0){
+						str = "no";
+					}
+					else{
+						str = "yes";
+					}
 					thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]], str);
 					count += 1;
 					continue;
@@ -1038,8 +1038,8 @@ Game.prototype.finishGame = function(toBeWinner){
 	this.distributeGameData();
 
 
-	// If there was a bot in the game, do not store into the database.
-	if(this.botIndexes.length !== 0){
+	// If there was a bot in the game and this is the online server, do not store into the database.
+	if(process.env.MY_PLATFORM === "online" && this.botIndexes.length !== 0){
 		return;
 	}
 
@@ -1071,6 +1071,13 @@ Game.prototype.finishGame = function(toBeWinner){
 		ladyChain = this.specialCards["lady of the lake"].ladyChain;
 		ladyHistoryUsernames = this.specialCards["lady of the lake"].ladyHistoryUsernames;
 	}
+
+	var sireChain = undefined;
+	var sireHistoryUsernames = undefined;
+	if(this.specialCards && this.specialCards["sire of the lake"]){
+		sireChain = this.specialCards["sire of the lake"].sireChain;
+		sireHistoryUsernames = this.specialCards["sire of the lake"].sireHistoryUsernames;
+	}
 	
 	var objectToStore = {
 		timeGameStarted: this.startGameTime,
@@ -1089,6 +1096,10 @@ Game.prototype.finishGame = function(toBeWinner){
 
 		ladyChain: ladyChain,
 		ladyHistoryUsernames: ladyHistoryUsernames,
+
+		sireChain: sireChain,
+		sireHistoryUsernames: sireHistoryUsernames,
+
 		whoAssassinShot: this.whoAssassinShot,
 
 		moreThanOneFailMissions: this.moreThanOneFailMissions
