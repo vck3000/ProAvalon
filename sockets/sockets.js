@@ -1118,19 +1118,21 @@ var actionsObj = {
 					for(var i = 0; i < rooms[args[1]].allSockets.length; i++){
 						rooms[args[1]].allSockets[i].emit("leave-room-requested");
 					}
+
+					// Stop bots thread if they are playing:
+					if(rooms[args[1]].interval){
+						clearInterval(rooms[args[1]].interval);
+						rooms[args[1]].interval = undefined;
+					}
+
+					// Forcefully close room
+					if(rooms[args[1]]){
+						deleteSaveGameFromDb(rooms[args[1]]);
+						rooms[args[1]] = undefined;
+					}
 				}
 
-				// Stop bots thread if they are playing:
-				if(rooms[args[1]].interval){
-					clearInterval(rooms[args[1]].interval);
-					rooms[args[1]].interval = undefined;
-				}
-
-				// Forcefully close room
-				if(rooms[args[1]]){
-					deleteSaveGameFromDb(rooms[args[1]]);
-					rooms[args[1]] = undefined;
-				}
+				
 
 				updateCurrentGamesList();
                 return;
