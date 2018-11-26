@@ -285,11 +285,17 @@ Game.prototype.playerLeaveRoom = function(socket){
 	}
 	// If one person left in the room, the host would change
 	// after the game started. So this will fix it
-	var origHost = this.host;
+
+	var origHost;
+	if(this.gameStarted === true){
+		origHost = this.host;
+	}
 	
 	Room.prototype.playerLeaveRoom.call(this, socket);
 
-	this.host = origHost;
+	if(this.gameStarted === true){
+		this.host = origHost;
+	}
 };
 	
 

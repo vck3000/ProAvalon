@@ -86,14 +86,13 @@ socket.on('checkNewUpdate', function(serverLastUpdateDate){
     }
     else{
 
-        if(serverLastUpdateDate > lastDate){
-            Swal({
-                title: "New updates!",
-                html: "There were some new updates! Check it out in the logs!",
-                type: "info",
-                allowEnterKey: false
-            });
-        }
+        Swal({
+            title: "New updates!",
+            html: "There were some new updates! Check it out in the logs!",
+            type: "info",
+            allowEnterKey: false
+        });
+        
         docCookies.setItem("lastUpdateNotificationDate", new Date().toString(), Infinity);
     }
 });

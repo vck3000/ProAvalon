@@ -1953,6 +1953,7 @@ var updateCurrentGamesList = function () {
 			}
 			//get room ID
 			gamesList[i].roomId = rooms[i].roomId;
+			console.log("Room " + rooms[i].roomId + " has host: " + rooms[i].host);
 			gamesList[i].hostUsername = rooms[i].host;
 			if(rooms[i].gameStarted === true){
 				gamesList[i].numOfPlayersInside = rooms[i].playersInGame.length;
