@@ -1064,9 +1064,11 @@ Game.prototype.finishGame = function(toBeWinner){
 		}
 	}
 
-	var ladyChain;
+	var ladyChain = undefined;
+	var ladyHistoryUsernames = undefined;
 	if(this.specialCards && this.specialCards["lady of the lake"]){
 		ladyChain = this.specialCards["lady of the lake"].ladyChain;
+		ladyHistoryUsernames = this.specialCards["lady of the lake"].ladyHistoryUsernames;
 	}
 	
 	var objectToStore = {
@@ -1085,6 +1087,7 @@ Game.prototype.finishGame = function(toBeWinner){
 		playerRoles: playerRolesVar,
 
 		ladyChain: ladyChain,
+		ladyHistoryUsernames: ladyHistoryUsernames,
 		whoAssassinShot: this.whoAssassinShot,
 
 		moreThanOneFailMissions: this.moreThanOneFailMissions

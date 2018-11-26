@@ -16,6 +16,7 @@ var gameRecordSchema = new mongoose.Schema({
 	roles: [String],
 
 	ladyChain: [String],
+	ladyHistoryUsernames: [String],
 
 	missionHistory: [String],
 	voteHistory: Object,

@@ -10,6 +10,7 @@ function LadyOfTheLake(thisRoom_) {
 	this.lastMissionUsed = 0;
 
 	this.ladyHistory = []; // To be stored in the database later.
+	this.ladyHistoryUsernames = [];
 
 	this.ladyChain = []; // To be stored in the database later.
 };
@@ -21,6 +22,7 @@ LadyOfTheLake.prototype.initialise = function(){
 LadyOfTheLake.prototype.setHolder = function(index){
 	this.indexOfPlayerHolding = index;
 	this.ladyHistory.push(index);
+	this.ladyHistoryUsernames.push(this.thisRoom.playersInGame[index].username);
 	this.ladyChain.push(this.thisRoom.playersInGame[index].role);
 };
 
