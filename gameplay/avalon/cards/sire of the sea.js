@@ -1,9 +1,9 @@
-function SireOfTheLake(thisRoom_) {
+function SireOfTheSea(thisRoom_) {
     this.thisRoom = thisRoom_;
 
     this.specialPhase = "sire";
 
-	this.card = "Sire of the Lake";
+	this.card = "Sire of the Sea";
 	
 	this.indexOfPlayerHolding;
 	this.lastMissionUsed = 0;
@@ -16,8 +16,8 @@ function SireOfTheLake(thisRoom_) {
     this.description = "Reveals the card holder's alliance to the person being carded.";
 };
 
-SireOfTheLake.prototype.initialise = function(){
-	// If lady of the lake is in the game, give the card to the next person.
+SireOfTheSea.prototype.initialise = function(){
+	// If lady of the sea is in the game, give the card to the next person.
 	var addOne = 0;
 	if(this.thisRoom.options.includes("Lady of the Lake")){
 		addOne = 1;
@@ -25,15 +25,15 @@ SireOfTheLake.prototype.initialise = function(){
 	this.setHolder((this.thisRoom.teamLeader + 1 + addOne) % this.thisRoom.playersInGame.length);
 };
 
-SireOfTheLake.prototype.setHolder = function(index){
+SireOfTheSea.prototype.setHolder = function(index){
 	this.indexOfPlayerHolding = index;
 	this.sireHistory.push(index);
 	this.sireHistoryUsernames.push(this.thisRoom.playersInGame[index].username);
 	this.sireChain.push(this.thisRoom.playersInGame[index].role);
 };
 
-SireOfTheLake.prototype.checkSpecialMove = function(socket, data){
-	// Only use sire of the lake after m2, when the success/fail is revealed, but before the next mission starts.
+SireOfTheSea.prototype.checkSpecialMove = function(socket, data){
+	// Only use sire of the sea after m2, when the success/fail is revealed, but before the next mission starts.
 	// Only once per mission.
 
 	// First card starts at the end of M2
@@ -65,9 +65,9 @@ SireOfTheLake.prototype.checkSpecialMove = function(socket, data){
 	}
 };
 
-SireOfTheLake.prototype.getPublicGameData = function(){
+SireOfTheSea.prototype.getPublicGameData = function(){
     /* TODO: (Can delete this function. Not absolutely necessary)
-	Public data to show the user(s) e.g. who holds the sire of the lake */
+	Public data to show the user(s) e.g. who holds the sire of the sea */
 	return {
 		sire: {
 			index: this.indexOfPlayerHolding
@@ -76,4 +76,4 @@ SireOfTheLake.prototype.getPublicGameData = function(){
 }
 
 
-module.exports = SireOfTheLake;
+module.exports = SireOfTheSea;

@@ -16,7 +16,7 @@ function Sire(thisRoom_) {
     this.phase = "sire";
     this.showGuns = false;
 
-    this.card = "Sire of the Lake";
+    this.card = "Sire of the Sea";
 };
 
 Sire.prototype.gameMove = function(socket, data){        
@@ -167,12 +167,12 @@ Sire.prototype.getStatusMessage = function(indexOfPlayer){
     var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
 
     if(indexOfPlayer === indexOfCardHolder){
-        return "Choose a player to use the Sire of the Lake on.";
+        return "Choose a player to use the Sire of the Sea on.";
     }
     // If it is any other player who isn't special role
     else{
         var usernameOfCardHolder = this.thisRoom.playersInGame[indexOfCardHolder].username;
-        return "Waiting for " + usernameOfCardHolder + " to use the Sire of the Lake on someone."
+        return "Waiting for " + usernameOfCardHolder + " to use the Sire of the Sea on someone."
     }
 }
 
