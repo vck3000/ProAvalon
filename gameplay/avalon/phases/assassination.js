@@ -154,7 +154,7 @@ Assassination.prototype.getStatusMessage = function(indexOfPlayer){
     }
 
     if(indexOfPlayer === indexOfAssassin){
-        return "Shoot Merlin..."
+        return "Shoot Merlin."
     }
     // If it is any other player who isn't special role
     else{
