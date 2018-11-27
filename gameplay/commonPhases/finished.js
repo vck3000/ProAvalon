@@ -37,8 +37,17 @@ Finished.prototype.numOfTargets = function(indexOfPlayer){
     return null;
 }
 
-Finished.prototype.getStatusMessage = function(indexOfPlayer){  
-    var str = "Game has finished. The " + this.thisRoom.winner + " have won.";
+Finished.prototype.getStatusMessage = function(indexOfPlayer){ 
+    
+    var winner = "Error, undefined";
+    if(this.thisRoom.winner === "Resistance"){
+        winner = "resistance";
+    }
+    else if(this.thisRoom.winner === "Spy"){
+        winner = "spies";
+    }
+    
+    var str = "Game has finished. The " + winner + " have won.";
     return str;
 }
 
