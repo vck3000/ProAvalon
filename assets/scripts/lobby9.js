@@ -79,6 +79,13 @@ function draw() {
     
         drawAndPositionAvatars();
 
+
+        setTimeout(function(){
+            // Enable the tooltip for hammer after 2 seconds for the screen to load and reposition
+            $(".hammerSpan").tooltip();
+        }, 2000);
+        
+
         drawTeamLeaderStar();
 
         drawMiddleBoxes();
@@ -392,11 +399,6 @@ function drawAndPositionAvatars() {
 
     //set the divs into the box
     $("#mainRoomBox").html(str);
-
-    // Enable the tooltip for hammer
-    // Initialise the tooltip.
-    $(".hammerSpan").tooltip();
-
 
     //===============================================
     //POSITIONING SECTION
