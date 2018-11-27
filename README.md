@@ -41,6 +41,7 @@ switched to db TheNewResistanceUsers
 > npm install
 ```
 5. Create an admin account (Optional)
+
 On the registration page, create an account ProNub with any password you like.
 Or you can edit the admins file and not stage it in your future commits.
 
