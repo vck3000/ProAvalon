@@ -13,7 +13,7 @@ var express = require("express"),
 	LocalStrategy = require("passport-local"),
 	passportSocketIo = require("passport.socketio"),
 	cookieParser = require('cookie-parser'),
-	flash = require("connect-flash")
+	flash = require("connect-flash");
 
 var port = process.env.PORT || 80;
 var dbLoc = process.env.DATABASEURL || "mongodb://localhost/TheNewResistanceUsers";
