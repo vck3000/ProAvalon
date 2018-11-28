@@ -920,26 +920,28 @@ function strOfAvatar(playerData, alliance) {
         role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + gameData.see.roles[getIndexFromUsername(playerData.username)] + "</p>";
     }
 
-    else if (gameStarted === true) {
+    else if (gameStarted === true && gameData !== undefined) {
         
         //if rendering our own player, give it the role tag
         if (playerData.username === ownUsername) {
             var roleWid = ctx.measureText(gameData.role).width + 20;
             role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + gameData.role + "</p>";
         }
-        else if (gameData.see && gameData.see.merlins && gameData.see.merlins.indexOf(playerData.username) !== -1) {
-            var roleWid = ctx.measureText("Merlin?").width + 20;
-            role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + "Merlin?" + "</p>";
-        }
-        else if (gameData.see && gameData.see.isolde && gameData.see.isolde.indexOf(playerData.username) !== -1) {
-            var roleWid = ctx.measureText("Isolde").width + 20;
-            role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + "Isolde" + "</p>";
-        }
-        else if (gameData.see && gameData.see.tristan && gameData.see.tristan.indexOf(playerData.username) !== -1) {
-            var roleWid = ctx.measureText("Tristan").width + 20;
-            role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + "Tristan" + "</p>";
-        }
 
+        else if (gameData.see && gameData.see) {
+            for(var key in gameData.see){
+                if(gameData.see.hasOwnProperty(key)){
+                    var roleTag = gameData.see[key].roleTag;
+                    var username = key;
+                    // console.log(username + " has role tag: " + roleTag);
+
+                    if(playerData.username === username){
+                        var roleWid = ctx.measureText(roleTag).width + 20;
+                        role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + roleTag + "</p>";
+                    }
+                }
+            }
+        }
     }
 
     //add in the hammer star
@@ -1568,6 +1570,8 @@ function updateDarkTheme(checked) {
         $("#removeHighlight").removeClass("buttonDark");
         $("#removeHighlight2").removeClass("buttonDark");
     }
+
+    draw();
 }
 
 function updateTwoTabs(checked){

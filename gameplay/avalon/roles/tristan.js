@@ -8,16 +8,18 @@ function Tristan(thisRoom_) {
     this.orderPriorityInOptions = 50;
 
     this.see = function(){
-        var obj = {};
-        var array = [];
+        var roleTag = {};
 
         for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
             if (this.thisRoom.playersInGame[i].role === "Isolde") {
-                array.push(this.thisRoom.playersInGame[i].username);
+                roleTag[this.thisRoom.playersInGame[i].username] = {};
+                roleTag[this.thisRoom.playersInGame[i].username].roleTag = "Isolde";
             }
         } 
-        obj.isolde = array;
-        return obj;
+
+        console.log(roleTag);
+        
+        return roleTag;
     }
 };
 

@@ -4,8 +4,8 @@
 <script src="/libraries/cookies_min.js"></script>
 <script src="/libraries/jscolor.js"></script>
 
-<link rel="stylesheet" type="text/css" href="/stylesheets/lobby.css">
-<link rel="stylesheet" type="text/css" href="/libraries/jquery-ui-1.12.1/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="<%-getVersionedPath('/stylesheets/lobby.css')%>">
+<link rel="stylesheet" type="text/css" href="<%-getVersionedPath('/libraries/jquery-ui-1.12.1/jquery-ui.min.css')%>">
 
 
 
@@ -639,24 +639,24 @@
 	</script>
 
 
-	<script type="text/javascript" src="libraries/jquery-ui-1.12.1/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="<%-getVersionedPath('/libraries/jquery-ui-1.12.1/jquery-ui.min.js')%>"></script>
 
+	<!--<script type="text/javascript" src="<%-getVersionedPath('/scripts/lobby9.js')%>"></script>-->
+	<script type="text/javascript" src="<%-getVersionedPath('/scripts/lobby9.js')%>"></script>
 
-	<script type="text/javascript" src="scripts/lobby9.js"></script>
+	<script type="text/javascript" src="<%-getVersionedPath('/scripts/lobby/autocomplete.js')%>"></script>
+	<script type="text/javascript" src="<%-getVersionedPath('/scripts/lobby/statusBarHeight.js')%>"></script>
+	<script type="text/javascript" src="<%-getVersionedPath('/scripts/lobby/chat4.js')%>"></script>
+	<script type="text/javascript" src="<%-getVersionedPath('/scripts/lobby/options.js')%>"></script>
+	<script type="text/javascript" src="<%-getVersionedPath('/scripts/lobby/buttonEventListeners2.js')%>"></script>
+	<script type="text/javascript" src="<%-getVersionedPath('/scripts/lobby/icons.js')%>"></script>
 
-	<script type="text/javascript" src="scripts/lobby/autocomplete.js"></script>
-	<script type="text/javascript" src="scripts/lobby/statusBarHeight.js"></script>
-	<script type="text/javascript" src="scripts/lobby/chat4.js"></script>
-	<script type="text/javascript" src="scripts/lobby/options.js"></script>
-	<script type="text/javascript" src="scripts/lobby/buttonEventListeners2.js"></script>
-	<script type="text/javascript" src="scripts/lobby/icons.js"></script>
-
-	<script type="text/javascript" src="scripts/lobby/sockets/sockets4.js"></script>
-	<script type="text/javascript" src="scripts/lobby/sockets/commands2.js"></script>
-	<script type="text/javascript" src="scripts/lobby/sockets/myNotifications.js"></script>
-	<script type="text/javascript" src="scripts/lobby/sockets/game.js"></script>
+	<script type="text/javascript" src="<%-getVersionedPath('/scripts/lobby/sockets/sockets4.js')%>"></script>
+	<script type="text/javascript" src="<%-getVersionedPath('/scripts/lobby/sockets/commands2.js')%>"></script>
+	<script type="text/javascript" src="<%-getVersionedPath('/scripts/lobby/sockets/myNotifications.js')%>"></script>
+	<script type="text/javascript" src="<%-getVersionedPath('/scripts/lobby/sockets/game.js')%>"></script>
 	
-	<script type="text/javascript" src="scripts/lobby/publicData/avalon.js"></script>
+	<script type="text/javascript" src="<%-getVersionedPath('/scripts/lobby/publicData/avalon.js')%>"></script>
 
 
 	<% include partials/footer%>

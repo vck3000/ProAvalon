@@ -8,16 +8,16 @@ function Isolde(thisRoom_) {
     this.orderPriorityInOptions = 50;
 
     this.see = function(){
-        var obj = {};
-        var array = [];
+        var roleTag = {};
 
         for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
             if (this.thisRoom.playersInGame[i].role === "Tristan") {
-                array.push(this.thisRoom.playersInGame[i].username);
+                roleTag[this.thisRoom.playersInGame[i].username] = {};
+                roleTag[this.thisRoom.playersInGame[i].username].roleTag = "Tristan";
             }
-        } 
-        obj.tristan = array;
-        return obj;
+        }
+        
+        return roleTag;
     }
 };
 

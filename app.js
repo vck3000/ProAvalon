@@ -15,6 +15,24 @@ var express = require("express"),
 	cookieParser = require('cookie-parser'),
 	flash = require("connect-flash");
 
+
+var path = require('path');
+var staticify = require('staticify')(path.join(__dirname, 'assets'));
+app.use(staticify.middleware);
+
+app.locals = {
+	getVersionedPath: staticify.getVersionedPath 
+};
+
+//if the production site, then use a cache that lasts for 30 mins.
+// if(platform === "online"){
+	app.use(express.static("assets", {maxAge: 1800000})); //expires in 30 minutes.
+// }
+// else{
+// 	app.use(express.static("assets")); //expires every time.	
+// }
+
+
 var port = process.env.PORT || 80;
 var dbLoc = process.env.DATABASEURL || "mongodb://localhost/TheNewResistanceUsers";
 
@@ -102,15 +120,6 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.set("view engine", "ejs");
-//if the production site, then use a cache that lasts for 30 mins.
-if(platform === "online"){
-	app.use(express.static("assets", {maxAge: 1800000})); //expires in 30 minutes.
-}
-else{
-	app.use(express.static("assets")); //expires in 30 minutes.	
-}
-// var path = require('path'); 
-// app.use(express.static(path.join(__dirname, 'assets'), { maxAge: '2 days' }));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));

@@ -22,16 +22,16 @@ function Percival(thisRoom_) {
 
     // Percival sees Merlin and Morgana
     this.see = function(){
-        var obj = {};
-        var array = [];
+        var roleTag = {};
 
         for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
-            if (this.thisRoom.playersInGame[i].role === "Merlin" || this.thisRoom.playersInGame[i].role === "Morgana") {
-                array.push(this.thisRoom.playersInGame[i].username);
+            if (this.thisRoom.playersInGame[i].role === "Merlin" || this.thisRoom.playersInGame[i].role === "Morgana"){
+                roleTag[this.thisRoom.playersInGame[i].username] = {};
+                roleTag[this.thisRoom.playersInGame[i].username].roleTag = "Merlin?";
             }
         } 
-        obj.merlins = array;
-        return obj;
+        
+        return roleTag;
     }
 }
 
