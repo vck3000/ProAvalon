@@ -21,7 +21,7 @@ var staticify = require('staticify')(path.join(__dirname, 'assets'));
 app.use(staticify.middleware);
 
 app.locals = {
-	getVersionedPath: staticify.getVersionedPath
+	getVersionedPath: staticify.getVersionedPath 
 };
 
 //if the production site, then use a cache that lasts for 30 mins.
