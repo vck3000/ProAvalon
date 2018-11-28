@@ -105,7 +105,7 @@ socket.on('checkNewPlayerShowIntro', function(){
     else{
         Swal({
             title: "Welcome!",
-            html: "Welcome to ProAvalon! Here we play The Resistance Avalon competitively against the best of the best social deduction players around the world. Please check the forums to acquiant yourself with the various strategies that we use while playing this game online.",
+            html: "Welcome to ProAvalon! Here we play The Resistance Avalon competitively against the best of the best social deduction players around the world. Please check the forums to acquaint yourself with the various strategies that we use while playing this game online.",
             type: "success",
             allowEnterKey: false
         });
