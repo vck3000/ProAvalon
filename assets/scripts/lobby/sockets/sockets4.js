@@ -331,7 +331,7 @@ socket.on("update-current-games-list", function (currentGames) {
                 //change to the game room view
                 changeView();
 
-                setTimeout(function(){
+                setTimeout(function(){ 
                     checkMessageForCommands("/roomchat", "roomChat");
                 }, 500);
             });
