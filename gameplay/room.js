@@ -68,7 +68,6 @@ function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) 
 
 
 Room.prototype.playerJoinRoom = function (socket, inputPassword) {
-
 	console.log(socket.request.user.username + " has joined room " + this.roomId); 
 
 	//if the room has a password and user hasn't put one in yet

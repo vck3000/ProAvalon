@@ -332,7 +332,6 @@ socket.on("update-current-games-list", function (currentGames) {
                 changeView();
 
                 setTimeout(function(){
-                    $(".room-chat-list").html("");                      
                     checkMessageForCommands("/roomchat", "roomChat");
                 }, 500);
             });

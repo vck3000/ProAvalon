@@ -228,17 +228,18 @@ Game.prototype.playerJoinRoom = function (socket, inputPassword) {
 				break;
 			}
 		}
-		Room.prototype.playerJoinRoom.call(this, socket, inputPassword);		
-		//sends to players and specs
-		this.distributeGameData();
+
 
 		if(this.someCutoffPlayersJoined === "no" && this.allSockets.length >= 5){
 			this.frozen = false;
 			this.someCutoffPlayersJoined === "yes";
 		}
+
+		return Room.prototype.playerJoinRoom.call(this, socket, inputPassword);
+		
 	}
 	else{
-		Room.prototype.playerJoinRoom.call(this, socket, inputPassword);		
+		return Room.prototype.playerJoinRoom.call(this, socket, inputPassword);		
 	}
 };
 

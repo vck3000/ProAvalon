@@ -1737,25 +1737,30 @@ module.exports = function (io) {
 			
 			//if the room exists
 			if (rooms[roomId]) {
-
 				//join the room
-				rooms[roomId].playerJoinRoom(socket, inputPassword);
+				if(rooms[roomId].playerJoinRoom(socket, inputPassword) === true){
+					//sends to players and specs
+					rooms[roomId].distributeGameData();	
 
-				//set the room id into the socket obj
-				socket.request.user.inRoomId = roomId;
+					//set the room id into the socket obj
+					socket.request.user.inRoomId = roomId;
 
-				//join the room chat
-				socket.join(roomId);
+					//join the room chat
+					socket.join(roomId);
 
-				//emit to say to others that someone has joined
-				var data = {
-					message: socket.request.user.username + " has joined the room.",
-					classStr: "server-text-teal",
-					dateCreated: new Date()
+					//emit to say to others that someone has joined
+					var data = {
+						message: socket.request.user.username + " has joined the room.",
+						classStr: "server-text-teal",
+						dateCreated: new Date()
+					}
+					sendToRoomChat(io, roomId, data);
+
+					updateCurrentGamesList();
 				}
-				sendToRoomChat(io, roomId, data);
-
-				updateCurrentGamesList();
+				else{
+					// no need to do anything?
+				}
 
 			} else {
 				// console.log("Game doesn't exist!");

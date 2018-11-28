@@ -1468,16 +1468,6 @@ function checkMessageForCommands(message, chatBox) {
                   // console.log("Command: " + commands[key].command + " called.");
                     commandCalled = commands[key].command;
                     validCommandFound = true;
-
-                    if(commands[key].command === "roomChat"){
-                        //reset room chat
-                        $(".room-chat-list").html("");
-                    }
-                    else if(commands[key].command === "allChat"){
-                        //reset all chat
-                        $(".all-chat-list").html("");
-                    }
-
                     break;
                 }
             }
@@ -1530,9 +1520,14 @@ function checkMessageForCommands(message, chatBox) {
                 addToRoomChat(data);
             }
         }
+        // If game hasn't started and we have the roomchat command, don't do anything.
+        else if(gameData === undefined && messageCommand === "roomchat"){
+            // Do nothing
+        }
         else {
             // sending command to server
             // console.log("Sending command: " + messageCommand + " to server.");
+            console.log("ASDF");
             socket.emit("messageCommand", { command: messageCommand, args: arrayMessage });
         }
 
