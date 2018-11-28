@@ -8,7 +8,7 @@ function Assassin(thisRoom_) {
     this.role = "Assassin";
     this.alliance = "Spy";
 
-    this.description = "Wields the gun to assassinate Merlin.";
+    this.description = "If the resistance win 3 missions, the Assassin can shoot one person for Merlin, or two people for Tristan and Isolde. If they are correct, the spies win!";
     this.orderPriorityInOptions = 90;
 
     this.playerShot = "";

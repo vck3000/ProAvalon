@@ -58,8 +58,9 @@ socket.on('checkSettingsResetDate', function(serverResetDate){
     }
 });
 
-socket.on('checkNewUpdate', function(serverLastUpdateDate){
-    serverLastUpdateDate = new Date(serverLastUpdateDate);
+socket.on('checkNewUpdate', function(data){
+
+    serverLastUpdateDate = new Date(data.date);
   // console.log("check reset date");
 
   // console.log(docCookies.hasItem("lastUpdateNotificationDate"));
@@ -76,7 +77,7 @@ socket.on('checkNewUpdate', function(serverLastUpdateDate){
         if(serverLastUpdateDate > lastDate){
             Swal({
                 title: "New updates!",
-                html: "There were some new updates! Check it out in the logs!",
+                html: data.msg,
                 type: "info",
                 allowEnterKey: false
             });
@@ -88,7 +89,7 @@ socket.on('checkNewUpdate', function(serverLastUpdateDate){
 
         Swal({
             title: "New updates!",
-            html: "There were some new updates! Check it out in the logs!",
+            html: data.msg,
             type: "info",
             allowEnterKey: false
         });
@@ -583,6 +584,8 @@ socket.on("update-game-modes-in-room", function(gameModeObj){
     // Reset, now do descriptions
     // Roles
     str = "";
+    infoIconString = '<img class="infoIconsSettings pull-right" style="width: 16px; height: 16px;" data-toggle="tooltip" data-placement="left" title="' + icons["info"].toolTip + '" src="' + icons["info"].glyph + '" />';
+
     for(var i = 0; i < gameModeObj.roles.roleNames.length; i++){
         var name = gameModeObj.roles.roleNames[i];
         //Skip over certain roles since they are enabled by default
@@ -605,7 +608,7 @@ socket.on("update-game-modes-in-room", function(gameModeObj){
             <div class="panel-heading roleCardDescription" role="tab" id="heading${count}">
             <h4 class="panel-title">
             <a class="collapsed" role="button" data-toggle="collapse" data-parent="#rolesCardsButtonGroupDescription" href="#collapse-cardRole${count}" aria-expanded="false" aria-controls="collapse-cardRole${count}">
-                ${gameModeObj.roles.alliances[i]}
+                ${gameModeObj.roles.alliances[i]} ${infoIconString}
             </a>
             </h4>
             </div>
@@ -631,7 +634,7 @@ socket.on("update-game-modes-in-room", function(gameModeObj){
         <div class="panel-heading roleCardDescription" role="tab" id="heading${count}">
         <h4 class="panel-title">
         <a class="collapsed" role="button" data-toggle="collapse" data-parent="#rolesCardsButtonGroupDescription" href="#collapse-cardRole${count}" aria-expanded="false" aria-controls="collapse-cardRole${count}">
-            Card
+            Card  ${infoIconString}
         </a>
         </h4>
         </div>
@@ -648,6 +651,8 @@ socket.on("update-game-modes-in-room", function(gameModeObj){
     }
     // Set it in
     $("#rolesCardsButtonGroupDescription")[0].innerHTML = str;
+    $(".infoIconsSettings").tooltip();
+    
 });
 
 

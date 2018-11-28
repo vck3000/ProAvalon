@@ -17,7 +17,8 @@ var adminsArray = require("../modsadmins/admins");
 
 const dateResetRequired			 			= 1531125110385;
 
-const newUpdateNotificationRequired 		= 1543219117905;
+const newUpdateNotificationRequired 		= 1543413780485;
+const updateMessage = `New roles added!<br><br>Tristan and Isolde are resistance members who know each other, however they can be shot together by the Assassin.<br><br>If Merlin is also in the game, the Assassin can choose to shoot one person for Merlin, or two people for Tristan and Isolde together!<br><br>Have fun!`;
 
 var allSockets = [];
 var rooms = [];
@@ -1401,7 +1402,7 @@ module.exports = function (io) {
 			}
 
 			socket.emit("checkSettingsResetDate", dateResetRequired);
-			socket.emit("checkNewUpdate", newUpdateNotificationRequired);
+			socket.emit("checkNewUpdate", {date: newUpdateNotificationRequired, msg: updateMessage});
 			socket.emit("checkNewPlayerShowIntro", "");
 			//Pass in the gameModes for the new room menu.
 			socket.emit("gameModes", gameModeNames);
