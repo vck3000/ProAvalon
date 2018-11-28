@@ -203,6 +203,7 @@ var userOptions = {
               // console.log("dark theme change " + checked);
                 //dark theme
                 updateDarkTheme(checked);
+                draw();
 
                 //save their option in cookie
                 docCookies.setItem("optionDisplayDarkTheme", checked.toString(), Infinity);

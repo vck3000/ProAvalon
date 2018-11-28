@@ -1568,6 +1568,8 @@ function updateDarkTheme(checked) {
         $("#removeHighlight").removeClass("buttonDark");
         $("#removeHighlight2").removeClass("buttonDark");
     }
+
+    draw();
 }
 
 function updateTwoTabs(checked){
