@@ -114,14 +114,28 @@ function draw() {
                 //draw the votes if there are any to show
                 drawVotes(gameData.votes);
     
-                if(gameData.numSelectTargets !== 0 && gameData.numSelectTargets !== null){
-                    if(gameData.prohibitedIndexesToPicks){
-                        enableSelectAvatars(gameData.prohibitedIndexesToPicks);
-                    }
-                    else{
-                        enableSelectAvatars();
+
+                if(typeof(gameData.numSelectTargets) === "number"){
+                    if(gameData.numSelectTargets !== 0 && gameData.numSelectTargets !== null){
+                        if(gameData.prohibitedIndexesToPicks){
+                            enableSelectAvatars(gameData.prohibitedIndexesToPicks);
+                        }
+                        else{
+                            enableSelectAvatars();
+                        }
                     }
                 }
+                else if(typeof(gameData.numSelectTargets) === "object" && gameData.numSelectTargets !== undefined && gameData.numSelectTargets !== null){
+                    if(gameData.numSelectTargets[0] !== 0 && gameData.numSelectTargets !== null){
+                        if(gameData.prohibitedIndexesToPicks){
+                            enableSelectAvatars(gameData.prohibitedIndexesToPicks);
+                        }
+                        else{
+                            enableSelectAvatars();
+                        }
+                    }
+                }
+                
             }
         }
 
@@ -679,17 +693,31 @@ function drawClaimingPlayers(claimingPlayers){
   }
   
 function checkSelectAvatarButtons(num) {
-    //if they've selected the right number of players, then allow them to send
-    if (countHighlightedAvatars() == num || (countHighlightedAvatars() + "*") == num) {
-        console.log("RUN THIS");
-        // btnRemoveHidden("green");
 
-        btnRemoveDisabled("green");
+    if(typeof(num) === "number"){
+        //if they've selected the right number of players, then allow them to send
+        if (countHighlightedAvatars() == num || (countHighlightedAvatars() + "*") == num) {
+            // console.log("RUN THIS");
+            // btnRemoveHidden("green");
+
+            btnRemoveDisabled("green");
+        }
+        else{
+            // btnRemoveHidden("green");
+            enableDisableButtons();
+        }
     }
-    else{
-        // btnRemoveHidden("green");
-        enableDisableButtons();
+    else if(typeof(num) === "object" && num !== null && num !== undefined){
+        //if they've selected the right number of players, then allow them to send
+        if (num.includes(countHighlightedAvatars()) === true) {
+            btnRemoveDisabled("green");
+        }
+        else{
+            // btnRemoveHidden("green");
+            enableDisableButtons();
+        }
     }
+
 }
 function enableDisableButtons() {
     //Hide the buttons. Unhide them as we need.
@@ -901,9 +929,17 @@ function strOfAvatar(playerData, alliance) {
         }
         else if (gameData.see && gameData.see.merlins && gameData.see.merlins.indexOf(playerData.username) !== -1) {
             var roleWid = ctx.measureText("Merlin?").width + 20;
-
             role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + "Merlin?" + "</p>";
         }
+        else if (gameData.see && gameData.see.isolde && gameData.see.isolde.indexOf(playerData.username) !== -1) {
+            var roleWid = ctx.measureText("Isolde").width + 20;
+            role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + "Isolde" + "</p>";
+        }
+        else if (gameData.see && gameData.see.tristan && gameData.see.tristan.indexOf(playerData.username) !== -1) {
+            var roleWid = ctx.measureText("Tristan").width + 20;
+            role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + "Tristan" + "</p>";
+        }
+
     }
 
     //add in the hammer star

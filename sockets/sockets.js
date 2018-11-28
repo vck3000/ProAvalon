@@ -90,14 +90,18 @@ function deleteSaveGameFromDb(room){
 	// if(process.env.MY_PLATFORM === "online"){
 		// console.log("room id to remove");
 		// console.log(roomToSave.savedGameRecordId);
-		savedGameObj.findByIdAndRemove(room.savedGameRecordId, function(err){
-			if(err){
-				console.log(err);
-			}
-			else{
-				// console.log("Successfully removed this save game from db");
-			}
-		});
+
+
+		// savedGameObj.findByIdAndRemove(room.savedGameRecordId, function(err){
+		// 	if(err){
+		// 		console.log(err);
+		// 	}
+		// 	else{
+		// 		// console.log("Successfully removed this save game from db");
+		// 	}
+		// });
+
+
 	// }
 
 }

@@ -16,6 +16,7 @@ var gameRecordSchema = new mongoose.Schema({
 	//E.g. mission fails, mission suceeds and dodge bullet, assassination
 	howTheGameWasWon: String,
 	whoAssassinShot: String,
+	whoAssassinShot2: String,
 	roles: [String],
 
 	ladyChain: [String],

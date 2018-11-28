@@ -30,6 +30,10 @@ function runPublicDataAvalon(gameDataInc) {
         if(gd.publicData.roles.assassinShotUsername){
             drawBullet(getIndexFromUsername(gd.publicData.roles.assassinShotUsername));
         }
+        if(gd.publicData.roles.assassinShotUsername2){
+            drawBullet(getIndexFromUsername(gd.publicData.roles.assassinShotUsername2));
+        }
+
         
         // Reset cards container
         $(".playerDiv").find(".cardsContainer")[0].innerHTML = "";

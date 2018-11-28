@@ -1116,6 +1116,7 @@ Game.prototype.finishGame = function(toBeWinner){
 		sireHistoryUsernames: sireHistoryUsernames,
 
 		whoAssassinShot: this.whoAssassinShot,
+		whoAssassinShot2: this.whoAssassinShot2,
 
 		moreThanOneFailMissions: this.moreThanOneFailMissions
 	};

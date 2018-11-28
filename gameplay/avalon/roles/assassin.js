@@ -12,6 +12,7 @@ function Assassin(thisRoom_) {
     this.orderPriorityInOptions = 90;
 
     this.playerShot = "";
+    this.playerShot2 = "";
 
     //Assassin sees all spies except oberon
     this.see = function(){
@@ -53,7 +54,26 @@ Assassin.prototype.checkSpecialMove = function(socket, data){
                 }
             }
 
-            if(numOfSuccesses === 3){
+            // Check if Merlin exists.
+            var merlinExists = false;
+            // Check if iso tristan are both in the game.
+            var tristExists = false;
+            var isoExists = false;
+
+            for(var i = 0; i < this.thisRoom.playersInGame.length; i++){
+                if(this.thisRoom.playersInGame[i].role === "Merlin"){
+                    merlinExists = true;
+                }
+                if(this.thisRoom.playersInGame[i].role === "Tristan"){
+                    tristExists = true;
+                }
+                
+                if(this.thisRoom.playersInGame[i].role === "Isolde"){
+                    isoExists = true;
+                }
+            }
+
+            if(numOfSuccesses === 3 && ((merlinExists === true) || (tristExists === true && isoExists === true)) ) {
                 // Set the assassination phase
                 this.thisRoom.phase = this.specialPhase;
                 return true;
@@ -66,7 +86,10 @@ Assassin.prototype.checkSpecialMove = function(socket, data){
 
 Assassin.prototype.getPublicGameData = function(){
     if( this.playerShot !== ""){
-        return { assassinShotUsername: this.playerShot };
+        return { 
+            assassinShotUsername: this.playerShot ,
+            assassinShotUsername2: this.playerShot2 
+        };
     }
     else {
         return null;
