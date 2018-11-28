@@ -4,18 +4,22 @@ var mongoose = require("mongoose");
 var gameRecordSchema = new mongoose.Schema({
 
 	timeGameStarted: Date, 
+	// 
 	timeAssassinationStarted: Date,
 	timeGameFinished: Date,
 	winningTeam: String,
 	spyTeam: [String],
 	resistanceTeam: [String],
 
-	gameMode: String,
+	// 
+	gameMode: String, 
 
 	numberOfPlayers: Number,
 	//E.g. mission fails, mission suceeds and dodge bullet, assassination
 	howTheGameWasWon: String,
+	// 
 	whoAssassinShot: String,
+	// 
 	whoAssassinShot2: String,
 	roles: [String],
 

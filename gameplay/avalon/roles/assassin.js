@@ -75,6 +75,7 @@ Assassin.prototype.checkSpecialMove = function(socket, data){
 
             if(numOfSuccesses === 3 && ((merlinExists === true) || (tristExists === true && isoExists === true)) ) {
                 // Set the assassination phase
+                this.thisRoom.startAssassinationTime = new Date();
                 this.thisRoom.phase = this.specialPhase;
                 return true;
             }
@@ -87,7 +88,7 @@ Assassin.prototype.checkSpecialMove = function(socket, data){
 Assassin.prototype.getPublicGameData = function(){
     if( this.playerShot !== ""){
         return { 
-            assassinShotUsername: this.playerShot ,
+            assassinShotUsername: this.playerShot,
             assassinShotUsername2: this.playerShot2 
         };
     }
