@@ -498,132 +498,134 @@ Game.prototype.checkBotMoves = function () {
 
 	var wholeLoopDelay = (numOfBots + 1) * timeEachLoop;
 
-	this.interval = setInterval(function(){
-		if(thisRoom.finished === true){
-			clearInterval(thisRoom.interval);
-			thisRoom.interval = undefined;
-		}
-
-
-		console.log("Num of bots: " + thisRoom.botIndexes.length);
-		for(var i = 0; i < thisRoom.botIndexes.length; i++){
-			var count = 0;
-
-			// Because we rely on the sockets of players to be exactly matching the players in game
-			// if they aren't the same size, they aren't. Don't go on.
-			if(thisRoom.socketsOfPlayers.length !== thisRoom.playersInGame.length){
-				continue;
+	if(this.botIndexes.length !== 0){
+		this.interval = setInterval(function(){
+			if(thisRoom.finished === true){
+				clearInterval(thisRoom.interval);
+				thisRoom.interval = undefined;
 			}
-
-			console.log("===================");
-			console.log("Bot playing move: ");
-			
-			console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
-			console.log("Bot index: ");
-			console.log(i);
-			console.log(thisRoom.botIndexes[i]);
-			
-
-
-			var buttons = thisRoom.getClientButtonSettings(thisRoom.botIndexes[i]);
-			var numOfTargets = thisRoom.getClientNumOfTargets(thisRoom.botIndexes[i]);
-			var prohibitedIndexesToPick = thisRoom.getProhibitedIndexesToPick(thisRoom.botIndexes[i]);
-			if(prohibitedIndexesToPick === undefined){
-				prohibitedIndexesToPick = [];
-			}
-			
-			console.log(buttons);
-			var canHitGreen = false;
-			var canHitRed = false;
-			if(buttons.green.hidden !== true){
-				canHitGreen = true;
-			}
-			if(buttons.red.hidden !== true){
-				canHitRed = true;
-			}
-
-			// If we can't make any moves, don't do anything
-			if((canHitGreen === false && canHitRed === false) || (numOfTargets === 0 || numOfTargets === undefined)){
-				console.log("Cant make any moves");
+	
+	
+			// console.log("Num of bots: " + thisRoom.botIndexes.length);
+			for(var i = 0; i < thisRoom.botIndexes.length; i++){
+				var count = 0;
+	
+				// Because we rely on the sockets of players to be exactly matching the players in game
+				// if they aren't the same size, they aren't. Don't go on.
+				if(thisRoom.socketsOfPlayers.length !== thisRoom.playersInGame.length){
+					continue;
+				}
+	
+				console.log("===================");
 				console.log("Bot playing move: ");
+				
 				console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
-
-				console.log(canHitGreen);
-				console.log(canHitRed);
-				console.log(numOfTargets);
-				continue;
-			}
-
-			if(buttons.green.hidden === false && buttons.green.disabled === false &&
-			buttons.red.hidden === false && buttons.red.disabled === false){
-					var num = Math.round(Math.random());
-					var str = "no";
-					if(num === 0){
-						str = "no";
+				console.log("Bot index: ");
+				console.log(i);
+				console.log(thisRoom.botIndexes[i]);
+				
+	
+	
+				var buttons = thisRoom.getClientButtonSettings(thisRoom.botIndexes[i]);
+				var numOfTargets = thisRoom.getClientNumOfTargets(thisRoom.botIndexes[i]);
+				var prohibitedIndexesToPick = thisRoom.getProhibitedIndexesToPick(thisRoom.botIndexes[i]);
+				if(prohibitedIndexesToPick === undefined){
+					prohibitedIndexesToPick = [];
+				}
+				
+				console.log(buttons);
+				var canHitGreen = false;
+				var canHitRed = false;
+				if(buttons.green.hidden !== true){
+					canHitGreen = true;
+				}
+				if(buttons.red.hidden !== true){
+					canHitRed = true;
+				}
+	
+				// If we can't make any moves, don't do anything
+				if((canHitGreen === false && canHitRed === false) || (numOfTargets === 0 || numOfTargets === undefined)){
+					console.log("Cant make any moves");
+					console.log("Bot playing move: ");
+					console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
+	
+					console.log(canHitGreen);
+					console.log(canHitRed);
+					console.log(numOfTargets);
+					continue;
+				}
+	
+				if(buttons.green.hidden === false && buttons.green.disabled === false &&
+				buttons.red.hidden === false && buttons.red.disabled === false){
+						var num = Math.round(Math.random());
+						var str = "no";
+						if(num === 0){
+							str = "no";
+						}
+						else{
+							str = "yes";
+						}
+						thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]], str);
+						count += 1;
+						continue;
+				}
+	
+				
+				var prohibitedUsernamesToPick = [];
+	
+				for(var j = 0; j < prohibitedIndexesToPick.length; j++){
+					prohibitedUsernamesToPick.push(thisRoom.playersInGame[prohibitedIndexesToPick[j]].request.user.username);
+				}
+	
+				var allPlayerUsernames = [];
+				for(var j = 0; j < thisRoom.playersInGame.length; j++){
+					allPlayerUsernames.push(thisRoom.playersInGame[j].request.user.username);
+				}
+	
+				// Subtract out all the usernames we cannot pick.
+				var allowedUsernamesToPick = allPlayerUsernames.filter(function(uname){
+					if(prohibitedUsernamesToPick.includes(uname) === true){
+						return false;
 					}
 					else{
-						str = "yes";
+						return true;
 					}
-					thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]], str);
-					count += 1;
-					continue;
-			}
-
-			
-			var prohibitedUsernamesToPick = [];
-
-			for(var j = 0; j < prohibitedIndexesToPick.length; j++){
-				prohibitedUsernamesToPick.push(thisRoom.playersInGame[prohibitedIndexesToPick[j]].request.user.username);
-			}
-
-			var allPlayerUsernames = [];
-			for(var j = 0; j < thisRoom.playersInGame.length; j++){
-				allPlayerUsernames.push(thisRoom.playersInGame[j].request.user.username);
-			}
-
-			// Subtract out all the usernames we cannot pick.
-			var allowedUsernamesToPick = allPlayerUsernames.filter(function(uname){
-				if(prohibitedUsernamesToPick.includes(uname) === true){
-					return false;
+				});
+	
+				var randomNums0toPlayerCount = [];
+				//shuffle the players around. Make sure to redistribute thisRoom room player data in sockets.
+				for(var j = 0; j < allowedUsernamesToPick.length; j++){
+					randomNums0toPlayerCount[j] = j;
 				}
-				else{
-					return true;
+				randomNums0toPlayerCount = shuffle(randomNums0toPlayerCount);
+	
+	
+				var selectUsernames = [];
+				for(var j = 0; j < numOfTargets; j++){
+					selectUsernames.push(allowedUsernamesToPick[randomNums0toPlayerCount[j]]);
 				}
-			});
-
-			var randomNums0toPlayerCount = [];
-			//shuffle the players around. Make sure to redistribute thisRoom room player data in sockets.
-			for(var j = 0; j < allowedUsernamesToPick.length; j++){
-				randomNums0toPlayerCount[j] = j;
+	
+				console.log("Select usernames: ");
+				console.log(selectUsernames);
+	
+				console.log("Bot playing move: ");
+				console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
+	
+				console.log("Allowed usernames: ");
+				console.log(allowedUsernamesToPick);
+	
+				console.log("Prohibited indices: ");
+				console.log(prohibitedIndexesToPick);
+	
+				thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]], selectUsernames);
+				// setTimeout(function(index){
+					// thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[index]], selectUsernames);
+				// }, count*timeEachLoop, i);
+				
+				count += 1;
 			}
-			randomNums0toPlayerCount = shuffle(randomNums0toPlayerCount);
-
-
-			var selectUsernames = [];
-			for(var j = 0; j < numOfTargets; j++){
-				selectUsernames.push(allowedUsernamesToPick[randomNums0toPlayerCount[j]]);
-			}
-
-			console.log("Select usernames: ");
-			console.log(selectUsernames);
-
-			console.log("Bot playing move: ");
-			console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
-
-			console.log("Allowed usernames: ");
-			console.log(allowedUsernamesToPick);
-
-			console.log("Prohibited indices: ");
-			console.log(prohibitedIndexesToPick);
-
-			thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]], selectUsernames);
-			// setTimeout(function(index){
-				// thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[index]], selectUsernames);
-			// }, count*timeEachLoop, i);
-			
-			count += 1;
-		}
-	}, 1000); //wholeLoopDelay);
+		}, 1000); //wholeLoopDelay);
+	}
 }
 
 
