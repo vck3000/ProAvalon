@@ -127,7 +127,12 @@ PickingTeam.prototype.getStatusMessage = function(indexOfPlayer){
     }
     else{
         console.log(this.thisRoom.teamLeader);
-        return "Waiting for " + this.thisRoom.playersInGame[this.thisRoom.teamLeader].username + " to pick a team.";
+        if(this.thisRoom.playersInGame[this.thisRoom.teamLeader]){
+            return "Waiting for " + this.thisRoom.playersInGame[this.thisRoom.teamLeader].username + " to pick a team.";
+        }
+        else{
+            return "ERROR: Tell the admin if you see this, code 10.";
+        }
     }
 }
 
