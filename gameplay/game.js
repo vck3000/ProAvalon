@@ -992,11 +992,6 @@ Game.prototype.addToChatHistory = function(data){
 	if(this.gameStarted === true){
 		this.chatHistory.push(data);
 	}
-
-
-	if(data.message.includes("phase")){
-		this.sendText(this.allSockets, "The current phase is: " + this.phase + ".", "gameplay-text");
-	}
 }
 
 
