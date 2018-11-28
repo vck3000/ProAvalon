@@ -19,19 +19,21 @@ middlewareObj.checkProfileOwnership = function (req, res, next) {
 				req.flash("error", "User not found!");
 				res.redirect("back");
 			} else {
-				foundUser = foundUser[0]
-				console.log("asdfasdf");
-				console.log(foundUser.username);
-				//does user own campground?
-				if (foundUser.username && foundUser.username === req.user.username) {
-					next();
-				} else {
-					// console.log(foundUser.username.replace(" ", ""));
-					// console.log(req.user.username.replace(" ", ""));
-
-					req.flash("error", "You are not the owner!");
-					console.log(req.user._id + " " + req.user.username +  " has attempted to do something bad");
-					res.redirect("back");
+				if(foundUser){
+					foundUser = foundUser[0];
+					console.log("asdfasdf");
+					console.log(foundUser.username);
+					//does user own campground?
+					if (foundUser.username && foundUser.username === req.user.username) {
+						next();
+					} else {
+						// console.log(foundUser.username.replace(" ", ""));
+						// console.log(req.user.username.replace(" ", ""));
+	
+						req.flash("error", "You are not the owner!");
+						console.log(req.user._id + " " + req.user.username +  " has attempted to do something bad");
+						res.redirect("back");
+					}
 				}
 			}
 		});
