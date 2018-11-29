@@ -15,7 +15,7 @@ const JSON = require('circular-json');
 var modsArray = require("../modsadmins/mods");
 var adminsArray = require("../modsadmins/admins");
 
-const dateResetRequired			 			= 1531125110385;
+const dateResetRequired			 			= 1543480412695;
 
 const newUpdateNotificationRequired 		= 1543480412695;
 const updateMessage = `
