@@ -17,8 +17,18 @@ var adminsArray = require("../modsadmins/admins");
 
 const dateResetRequired			 			= 1531125110385;
 
-const newUpdateNotificationRequired 		= 1543413780485;
-const updateMessage = `New roles added!<br><br>Tristan and Isolde are resistance members who know each other, however they can be shot together by the Assassin.<br><br>If Merlin is also in the game, the Assassin can choose to shoot one person for Merlin, or two people for Tristan and Isolde together!<br><br>Have fun!`;
+const newUpdateNotificationRequired 		= 1543474790014;
+const updateMessage = `
+
+New card added!
+
+<br><br>
+
+Ref of the Lake is the same as Lady of the Lake, except it can only be used after the previous mission failed. This will help Resistance early game but on the other hand help Spies late game.
+
+<br><br>Have fun!
+
+`;
 
 var allSockets = [];
 var rooms = [];
