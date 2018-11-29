@@ -17,7 +17,7 @@ var adminsArray = require("../modsadmins/admins");
 
 const dateResetRequired			 			= 1531125110385;
 
-const newUpdateNotificationRequired 		= 1543474790014;
+const newUpdateNotificationRequired 		= 1543480412695;
 const updateMessage = `
 
 New card added!
