@@ -153,6 +153,8 @@ function addToAllChat(data) {
 
                 var filteredMessage = data[i].message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
 
+                filteredMessage = linkifyHtml(filteredMessage);
+
                 var str = "";
                 if (data[i].classStr && data[i].classStr !== "") {
                     str = "<li class='" + data[i].classStr + "'><span class='date-text'>" + date + "</span> " + filteredMessage;
@@ -286,6 +288,9 @@ function addToRoomChat(data) {
                 //prevent XSS injection
                 var filteredMessage = data[i].message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
                 // console.log("Filtered message: " + filteredMessage);
+
+                filteredMessage = linkifyHtml(filteredMessage);
+
                 var str = "";
 
 
