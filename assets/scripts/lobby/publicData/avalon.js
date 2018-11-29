@@ -5,10 +5,10 @@ function runPublicDataAvalon(gameDataInc) {
     if(gd){
         // Show the assassin shot
         if(gd.publicData.roles.assassinShotUsername){
-            drawBullet(getIndexFromUsername(gd.publicData.roles.assassinShotUsername));
+            drawAssassinateIcon(getIndexFromUsername(gd.publicData.roles.assassinShotUsername));
         }
         if(gd.publicData.roles.assassinShotUsername2){
-            drawBullet(getIndexFromUsername(gd.publicData.roles.assassinShotUsername2));
+            drawAssassinateIcon(getIndexFromUsername(gd.publicData.roles.assassinShotUsername2));
         }
 
         
@@ -55,21 +55,37 @@ function runPublicDataAvalon(gameDataInc) {
 
 
 
-function drawBullet(indexOfPlayer) {
+function drawAssassinateIcon(indexOfPlayer) {
 
     //set the div string and add the star\\
     var str = $("#mainRoomBox div")[indexOfPlayer].innerHTML;
 
     var darkModeEnabled = $("#option_display_dark_theme")[0].checked;
-    if(darkModeEnabled === true){
-    str = str + "<span><img src='pictures/bullet-dark.png' class='bullet'></span>";
+    var useBullet = $("#optionDisplayUseOldGameIcons")[0].checked;
+
+    var icon;
+    if(useBullet === true && darkModeEnabled === false){
+        icon = "bullet";
     }
-    else{
-    str = str + "<span><img src='pictures/bullet.png' class='bullet'></span>";
+    else if(useBullet === true && darkModeEnabled === true){
+        icon = "bulletDark";
     }
+    else if(useBullet === false){
+        icon = "dagger";
+    }
+
+    str = str + "<span><img class='assassinateIcon' src='" + pics[icon].path + "' style='" + pics[icon].style + "'></span>";
 
     //update the str in the div
     $("#mainRoomBox div")[indexOfPlayer].innerHTML = str;
+
+    if(useBullet === false){
+        // var raiseBy = $(".assassinateIcon").height()*0.22;
+        playerRatio = $(".playerDiv").height()/128;
+        // k is a random constant to scale with
+        var k = -20;
+        $(".assassinateIcon").css("top", (playerRatio*k) + "px");
+    }
 
     // $(".bullet")[0].style.top = 0;
 }

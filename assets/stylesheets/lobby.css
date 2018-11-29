@@ -324,23 +324,7 @@ p {
     /* border: 5px solid transparent; */
 }
 
-.leaderStar {
-    z-index: 2;
-    position: absolute;
-    right: 0;
-    /*bottom: 0;*/
-    height: 30%;
-    transform: translate(-10%, -140%);
-}
 
-.bullet {
-    top: -60px;
-    /*left: -200px;*/
-    position: absolute;
-    transform: translate(-50%, 50%);
-    width: 50px;
-    height: 50px;
-}
 
 .gunBefore {
     z-index: 2;

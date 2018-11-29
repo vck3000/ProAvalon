@@ -79,6 +79,7 @@ VotingMission.prototype.gameMove = function(socket, data){
 
         
         //if we get all the votes in, then do this.thisRoom
+        this.thisRoom.lastProposedTeam = this.thisRoom.proposedTeam;
         this.thisRoom.proposedTeam = [];
         this.thisRoom.missionVotes = [];
 

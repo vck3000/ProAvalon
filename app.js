@@ -24,13 +24,7 @@ app.locals = {
 	getVersionedPath: staticify.getVersionedPath 
 };
 
-//if the production site, then use a cache that lasts for 30 mins.
-// if(platform === "online"){
-	app.use(express.static("assets", {maxAge: 1800000})); //expires in 30 minutes.
-// }
-// else{
-// 	app.use(express.static("assets")); //expires every time.	
-// }
+app.use(express.static("assets", {maxAge: "30d"})); //expires in 30 days.
 
 
 var port = process.env.PORT || 80;
