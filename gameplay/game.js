@@ -1113,7 +1113,9 @@ Game.prototype.finishGame = function(toBeWinner){
 		gameMode: this.gameMode,
 
 		howTheGameWasWon: this.howWasWon,
+		
 		roles: rolesCombined,
+		cards: this.cardKeysInPlay,
 
 		missionHistory: this.missionHistory,
 		voteHistory: this.voteHistory,
@@ -1122,8 +1124,8 @@ Game.prototype.finishGame = function(toBeWinner){
 		ladyChain: ladyChain,
 		ladyHistoryUsernames: ladyHistoryUsernames,
 
-		ladyChain: ladyChain,
-		ladyHistoryUsernames: ladyHistoryUsernames,
+		refChain: refChain,
+		refHistoryUsernames: refHistoryUsernames,
 
 		sireChain: sireChain,
 		sireHistoryUsernames: sireHistoryUsernames,

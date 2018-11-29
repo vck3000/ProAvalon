@@ -21,7 +21,9 @@ var gameRecordSchema = new mongoose.Schema({
 	whoAssassinShot: String,
 	// 
 	whoAssassinShot2: String,
+	
 	roles: [String],
+	cards: [String],
 
 	ladyChain: [String],
 	ladyHistoryUsernames: [String],
