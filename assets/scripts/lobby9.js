@@ -1527,7 +1527,7 @@ function checkMessageForCommands(message, chatBox) {
         else {
             // sending command to server
             // console.log("Sending command: " + messageCommand + " to server.");
-            console.log("ASDF");
+            // console.log("ASDF");
             socket.emit("messageCommand", { command: messageCommand, args: arrayMessage });
         }
 
