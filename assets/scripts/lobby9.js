@@ -78,6 +78,7 @@ function draw() {
         highlightedAvatars = getHighlightedAvatars();
     
         drawAndPositionAvatars();
+        drawClaimingPlayers(roomPlayersData.claimingPlayers);
 
 
         setTimeout(function(){
@@ -87,13 +88,12 @@ function draw() {
         
 
         drawTeamLeaderStar();
-
         drawMiddleBoxes();
-        scaleMiddleBoxes();
-
-        drawClaimingPlayers(roomPlayersData.claimingPlayers);
-
         drawGuns();
+        runPublicDataAvalon(gameData);
+
+        scaleGameComponents();
+        
 
         //default greyed out rn
         // enableDisableButtons();
@@ -164,7 +164,6 @@ function draw() {
             }
         }
 
-        runPublicDataAvalon(gameData);
 
         activateAvatarButtons();
         enableDisableButtons();
@@ -537,9 +536,9 @@ function drawAndPositionAvatars() {
 
   
 
-  var lastPickNum = 0;
-  var lastMissionNum = 0;
-  function drawGuns() {
+var lastPickNum = 0;
+var lastMissionNum = 0;
+function drawGuns() {
     $(".gun img").css("width", $("#mainRoomBox div").width() + "px"); 
     $(".gun").css("width", $("#mainRoomBox div").width() + "px"); 
 
@@ -578,8 +577,12 @@ function drawAndPositionAvatars() {
 
                 var widOfGun = $(".gun").width();
                 var heightOfGun = $(".gun").height();
-                var icon = docCookies.getItem("optionDisplayProposedTeamIcon");
-                var offsetGunPos = getGunPos(icon);
+                var useGun = $("#optionDisplayUseOldGameIcons")[0].checked;
+                var icon;
+                if(useGun === false){icon = "shieldOrange";}
+                else{icon = "gun";}
+                var offsetGunPos = pics[icon].position;
+                
                 $($(".gun")[i]).animate({
                     top: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*offsetGunPos.y) + "px" ,
                     left: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/offsetGunPos.x) + "px",
@@ -597,37 +600,64 @@ function drawAndPositionAvatars() {
     }
 }
 
-  function adjustGunPositions(){
+function adjustGunPositions(){
     if(gameData && gameData.proposedTeam){     
         for (var i = 0; i < gameData.proposedTeam.length; i++) {
 
             var widOfGun = $(".gun").width();
             var heightOfGun = $(".gun").height();
-            var icon = docCookies.getItem("optionDisplayProposedTeamIcon");
-            var offsetGunPos = getGunPos(icon);
+            var useGun = $("#optionDisplayUseOldGameIcons")[0].checked;
+            var icon;
+            if(useGun === false){icon = "shieldOrange";}
+            else{icon = "gun";}
+            var offsetGunPos = pics[icon].position;
             $($(".gun")[i]).css("top", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*offsetGunPos.y) + "px"); 
             $($(".gun")[i]).css("left", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/offsetGunPos.x) + "px");           
         }
     }
-  }
+}
+function getGunPos(icon) {
+    var position = {};
+    if (icon === "shield") {
+        position = {
+            "x": 2,
+            "y": 1.85       
+        }
+    } else {
+        // default: icon = "gun"
+        position = {
+            "x": 2,
+            "y": 1.5
+        }
+    }
+    return position;
+}
+
   
-  function drawTeamLeaderStar() {
-      var playerIndex;
-      if (gameStarted === false) {
-          playerIndex = 0;
-      } else {
-          playerIndex = gameData.teamLeader;
-      }
-      //set the div string and add the star
-      if ($("#mainRoomBox div")[playerIndex]) {
-          var str = $("#mainRoomBox div")[playerIndex].innerHTML;
-          str = str + "<span><img src='pictures/leader.png' class='leaderStar'></span>";
-          //update the str in the div
-          $("#mainRoomBox div")[playerIndex].innerHTML = str;
-  
-          $(".leaderStar")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
-      }
-  }
+function drawTeamLeaderStar() {
+    var playerIndex;
+    if (gameStarted === false) {
+        playerIndex = 0;
+    } else {
+        playerIndex = gameData.teamLeader;
+    }
+    //set the div string and add the star
+    if ($("#mainRoomBox div")[playerIndex]) {
+        var str = $("#mainRoomBox div")[playerIndex].innerHTML;
+
+        var icon;
+        if($("#optionDisplayUseOldGameIcons")[0].checked === true){
+            icon = "star";
+        }
+        else{
+            icon = "crown";
+        }
+
+        str = str + "<img class='leaderIcon' src='" + pics[icon].path + "' style='" + pics[icon].style + "'>";
+        //update the str in the div
+        $("#mainRoomBox div")[playerIndex].innerHTML = str;
+    }
+}
 
 function drawClaimingPlayers(claimingPlayers){
 
@@ -655,42 +685,40 @@ function drawClaimingPlayers(claimingPlayers){
     }
 }
   
-  function drawExitedPlayers(playersStillInRoom){
-  
-      var arrayOfUsernames = []
-      for(var i = 0; i < roomPlayersData.length; i++){
-          arrayOfUsernames.push(roomPlayersData[i].username);
-      }
-  
-  
-      for(var i = 0; i < arrayOfUsernames.length; i++){
-          // if(roomPlayersData[i].claim && roomPlayersData[i].claim === true){
-          if(playersStillInRoom.indexOf(arrayOfUsernames[i]) === -1){
-  
-              // var j = playersStillInRoom.indexOf(arrayOfUsernames[i]);
-  
-              // if ($("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])]) {
-              //     var str = $("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])].innerHTML;
-              //     str = str + "<span><img src='pictures/leave.png' class='leaveIcon'></span>";
-              //     //update the str in the div
-              //     $("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])].innerHTML = str;
-          
-              //     // $(".claimIcon")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
-              // }
-  
-  
-              if ($(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])]) {
-                  $(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])].classList.add("leftRoom");
-              }
-          }
-          else{
-              if ($(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])]) {
-                  $(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])].classList.remove("leftRoom");
-              }
-          }
-      }
-  
-  }
+function drawExitedPlayers(playersStillInRoom){
+
+    var arrayOfUsernames = []
+    for(var i = 0; i < roomPlayersData.length; i++){
+        arrayOfUsernames.push(roomPlayersData[i].username);
+    }
+
+    for(var i = 0; i < arrayOfUsernames.length; i++){
+        // if(roomPlayersData[i].claim && roomPlayersData[i].claim === true){
+        if(playersStillInRoom.indexOf(arrayOfUsernames[i]) === -1){
+
+            // var j = playersStillInRoom.indexOf(arrayOfUsernames[i]);
+
+            // if ($("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])]) {
+            //     var str = $("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])].innerHTML;
+            //     str = str + "<span><img src='pictures/leave.png' class='leaveIcon'></span>";
+            //     //update the str in the div
+            //     $("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])].innerHTML = str;
+        
+            //     // $(".claimIcon")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
+            // }
+
+
+            if ($(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])]) {
+                $(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])].classList.add("leftRoom");
+            }
+        }
+        else{
+            if ($(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])]) {
+                $(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])].classList.remove("leftRoom");
+            }
+        }
+    }
+}
   
 function checkSelectAvatarButtons(num) {
 
@@ -1343,7 +1371,7 @@ function getOptions() {
         var name = rolesCards[i].innerText.trim();
         selectedRolesCards.push(name);
     }
-    console.log(selectedRolesCards);
+    // console.log(selectedRolesCards);
 
     return selectedRolesCards;
 }
@@ -1602,7 +1630,7 @@ function escapeHtml(unsafe) {
          .replace(/'/g, "&#039;");
 }
 
-function scaleMiddleBoxes(){
+function scaleGameComponents(){
     gameTableHeight = $("#mainRoomBox").height();
 
     var startScalingHeight = 400;
@@ -1618,27 +1646,56 @@ function scaleMiddleBoxes(){
         ratioToReduce = 1;
     }
 
-    // $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")")
-    // $("#missionsBox").css("transform-origin", "bottom");
+    // Scale the middle boxes
     $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")");
-    var playerDivHeightRatio = $(".playerDiv").height()/128; 
-    var proposedTeamIcon = docCookies.getItem("optionDisplayProposedTeamIcon");
 
+    // Scale the guns/pick icon
+    var playerDivHeightRatio = $(".playerDiv").height()/128; 
+    var useGun = docCookies.getItem("optionDisplayUseOldGameIcons");
     var maxHeight = 0;
     var maxWidth = 0;
-    if(proposedTeamIcon === "shield"){
+    // Use shield
+    if(useGun === "false"){
         maxHeight = 51;
         maxWidth = 40;
-    } else {
+    } 
+    // Use gun
+    else {
         maxHeight = 45;
         maxWidth = 128;
     }
   
-    $(".gunImg").css("height", "100%");  
-    $(".gunImg").css("height", "100%");    
+    // $(".gunImg").css("height", "100%");  
+    // $(".gunImg").css("height", "100%");    
     //needs to be scaled this way as reducing img size still overshoots
     $(".gunImg").css("max-height", maxHeight*playerDivHeightRatio + "px");
     $(".gunImg").css("max-width", maxWidth*playerDivHeightRatio + "px");
+
+    // Scale the crown/leader star in the same way
+    var useStar = docCookies.getItem("optionDisplayUseOldGameIcons");
+    // Use star
+    if(useStar === "true"){
+        maxHeight = 32;
+    } 
+    // Use crown
+    else {
+        maxHeight = 51;
+    }
+    $(".leaderIcon").css("max-height", maxHeight*(playerDivHeightRatio-0.05) + "px");
+
+    // Scale the Assassin icon in the same way
+    var useBullet = docCookies.getItem("optionDisplayUseOldGameIcons");
+    // Use bullet
+    if(useBullet === "true"){
+        maxHeight = parseInt(pics["bullet"].maxHeight);
+    } 
+    // Use dagger
+    else {
+        maxHeight = parseInt(pics["dagger"].maxHeight);
+    }
+    $(".assassinateIcon").css("max-height", maxHeight*(playerDivHeightRatio) + "px");
+
+    // Scale the approve reject labels
     var startScalingHeight = 200;
     var maxHeightOfBoxes = 60; //in px
     var scaleFactor = maxHeightOfBoxes/startScalingHeight;
@@ -1716,22 +1773,6 @@ function showYourTurnNotification(ToF){
     }
 }
 
-function getGunPos(icon) {
-    var position = {};
-    if (icon === "shield") {
-        position = {
-            "x": 2,
-            "y": 1.85       
-        }
-    } else {
-        // default: icon = "gun"
-        position = {
-            "x": 2,
-            "y": 1.5
-        }
-    }
-    return position;
-}
 
 
 function btnRemoveHidden(btnStr){
