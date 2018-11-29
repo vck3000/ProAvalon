@@ -7,12 +7,6 @@ var icons = {
         toolTip: "Lady of the Lake"
     },
 
-    ref: {
-        glyph: "glyphicon-book",
-        iconType: "bootstrapGlyphicon",
-        toolTip: "Ref of the Lake"
-    },
-
     sire: {
         glyph: "glyphicon-ice-lolly",
         iconType: "bootstrapGlyphicon",

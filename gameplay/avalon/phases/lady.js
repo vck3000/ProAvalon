@@ -49,11 +49,6 @@ Lady.prototype.gameMove = function(socket, data){
     }
     
     var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
-    
-    if(this.thisRoom.refOfTheLake === true){
-        indexOfCardHolder = this.thisRoom.specialCards["ref of the lake"].indexOfPlayerHolding;
-    }
-    
     var ladyHistory = this.thisRoom.specialCards[this.card.toLowerCase()].ladyHistory;
     var targetIndex = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, data);
 
@@ -108,10 +103,6 @@ Lady.prototype.buttonSettings = function(indexOfPlayer){
     //Get the index of the lady
     var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
 
-    if(this.thisRoom.refOfTheLake === true){
-        indexOfCardHolder = this.thisRoom.specialCards["ref of the lake"].indexOfPlayerHolding;
-    }
-
     var obj = {
         green: {},
         red: {}
@@ -142,10 +133,6 @@ Lady.prototype.buttonSettings = function(indexOfPlayer){
 Lady.prototype.numOfTargets = function(indexOfPlayer){    
     var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
 
-    if(this.thisRoom.refOfTheLake === true){
-        indexOfCardHolder = this.thisRoom.specialCards["ref of the lake"].indexOfPlayerHolding;
-    }
-
     if(indexOfPlayer !== undefined && indexOfPlayer !== null){
         // If indexOfPlayer is the lady holder, one player to select 
         if(indexOfPlayer === indexOfCardHolder){
@@ -160,10 +147,6 @@ Lady.prototype.numOfTargets = function(indexOfPlayer){
 
 Lady.prototype.getStatusMessage = function(indexOfPlayer){  
     var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
-
-    if(this.thisRoom.refOfTheLake === true){
-        indexOfCardHolder = this.thisRoom.specialCards["ref of the lake"].indexOfPlayerHolding;
-    }
 
     if(indexOfPlayer === indexOfCardHolder){
         return "Choose a player to use the Lady of the Lake on.";

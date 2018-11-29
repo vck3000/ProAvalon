@@ -278,7 +278,7 @@ Assassination.prototype.getStatusMessage = function(indexOfPlayer){
     // If it is any other player who isn't special role
     else{
         var usernameOfAssassin = this.thisRoom.playersInGame[indexOfAssassin].username;
-        return "Waiting for " + usernameOfAssassin + " to assassinate Merlin or Tristan and Isolde."
+        return "Waiting for " + usernameOfAssassin + " to assassinate Merlin."
     }
 }
 

@@ -11,17 +11,20 @@ var gameRecordSchema = new mongoose.Schema({
 	spyTeam: [String],
 	resistanceTeam: [String],
 
+	// 
 	gameMode: String, 
 
 	numberOfPlayers: Number,
+	//E.g. mission fails, mission suceeds and dodge bullet, assassination
 	howTheGameWasWon: String,
+	// 
 	whoAssassinShot: String,
+	// 
 	whoAssassinShot2: String,
 	roles: [String],
 
 	ladyChain: [String],
 	ladyHistoryUsernames: [String],
-	refOfTheLake: Boolean,
 
 	sireChain: [String],
 	sireHistoryUsernames: [String],
