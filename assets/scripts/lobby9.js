@@ -1513,7 +1513,7 @@ function checkMessageForCommands(message, chatBox) {
                 classStr: "server-text",
                 dateCreated: new Date()
             }
-            if (chatBox === "allChat") {
+            if (chatBox === "allChat") { 
                 addToAllChat(data);
             }
             else if (chatBox === "roomChat") {
