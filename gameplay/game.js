@@ -1096,9 +1096,9 @@ Game.prototype.finishGame = function(toBeWinner){
 
 	var sireChain = undefined;
 	var sireHistoryUsernames = undefined;
-	if(this.specialCards && this.specialCards["sire of the lake"]){
-		sireChain = this.specialCards["sire of the lake"].sireChain;
-		sireHistoryUsernames = this.specialCards["sire of the lake"].sireHistoryUsernames;
+	if(this.specialCards && this.specialCards["sire of the sea"]){
+		sireChain = this.specialCards["sire of the sea"].sireChain;
+		sireHistoryUsernames = this.specialCards["sire of the sea"].sireHistoryUsernames;
 	}
 	
 	var objectToStore = {
