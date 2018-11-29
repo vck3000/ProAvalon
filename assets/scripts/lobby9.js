@@ -616,23 +616,6 @@ function adjustGunPositions(){
         }
     }
 }
-function getGunPos(icon) {
-    var position = {};
-    if (icon === "shield") {
-        position = {
-            "x": 2,
-            "y": 1.85       
-        }
-    } else {
-        // default: icon = "gun"
-        position = {
-            "x": 2,
-            "y": 1.5
-        }
-    }
-    return position;
-}
-
   
 function drawTeamLeaderStar() {
     var playerIndex;
