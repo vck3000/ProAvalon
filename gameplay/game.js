@@ -1114,6 +1114,7 @@ Game.prototype.finishGame = function(toBeWinner){
 
 		ladyChain: ladyChain,
 		ladyHistoryUsernames: ladyHistoryUsernames,
+		refOfTheLake: this.refOfTheLake,
 
 		sireChain: sireChain,
 		sireHistoryUsernames: sireHistoryUsernames,
