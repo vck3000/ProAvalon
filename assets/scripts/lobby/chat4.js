@@ -153,7 +153,13 @@ function addToAllChat(data) {
 
                 var filteredMessage = data[i].message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
 
-                filteredMessage = linkifyHtml(filteredMessage);
+                filteredMessage = linkifyHtml(filteredMessage,   {
+                    validate: {
+                        url: function (value) {
+                        return /^(http|ftp)s?:\/\/|www/.test(value);
+                        }
+                    }
+                });
 
                 var str = "";
                 if (data[i].classStr && data[i].classStr !== "") {
@@ -289,7 +295,13 @@ function addToRoomChat(data) {
                 var filteredMessage = data[i].message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
                 // console.log("Filtered message: " + filteredMessage);
 
-                filteredMessage = linkifyHtml(filteredMessage);
+                filteredMessage = linkifyHtml(filteredMessage,   {
+                    validate: {
+                        url: function (value) {
+                        return /^(http|ftp)s?:\/\/|www/.test(value);
+                        }
+                    }
+                });
 
                 var str = "";
 
