@@ -24,7 +24,7 @@ New card added!
 
 <br><br>
 
-Ref of the Lake is the same as Lady of the Lake, except it can only be used after the previous mission failed. This will help Resistance early game but on the other hand help Spies late game.
+Ref of the Rain is the same as Lady of the Lake, except it can only be used after the previous mission failed. This will help Resistance early game but on the other hand help Spies late game.
 
 <br><br>Have fun!
 
