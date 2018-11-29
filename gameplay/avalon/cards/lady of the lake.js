@@ -14,7 +14,7 @@ function LadyOfTheLake(thisRoom_) {
 
 	this.ladyChain = []; // To be stored in the database later.
 
-    this.description = "Reveals the alliance of the person being carded to the card holder.";
+    this.description = "Reveals the alliance of the person being carded to the card holder. The card is used after each Mission after Mission 2.";
 };
 
 LadyOfTheLake.prototype.initialise = function(){
@@ -47,6 +47,7 @@ LadyOfTheLake.prototype.checkSpecialMove = function(socket, data){
 	}
 
 	if (this.thisRoom.missionHistory.length >= 2 && 
+		this.thisRoom.howWasWon !== "Hammer rejected." &&
 		this.lastMissionUsed !== this.thisRoom.missionNum && 
 		numSuccess < 3 && 
 		numFail < 3

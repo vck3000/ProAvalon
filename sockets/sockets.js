@@ -1092,7 +1092,7 @@ var actionsObj = {
 				actionsObj.modCommands.maddbots.run(data, undefined, nextRoomId);
 
 				//Start the game.
-				var options = ["Merlin", "Assassin", "Percival", "Morgana", "Lady of the lake"];
+				var options = ["Merlin", "Assassin", "Percival", "Morgana", "Ref of the Rain"];
 				rooms[nextRoomId].hostTryStartGame(options, "avalon");
 
 				updateCurrentGamesList();

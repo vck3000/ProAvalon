@@ -1087,6 +1087,13 @@ Game.prototype.finishGame = function(toBeWinner){
 		ladyHistoryUsernames = this.specialCards["lady of the lake"].ladyHistoryUsernames;
 	}
 
+	var refChain = undefined;
+	var refHistoryUsernames = undefined;
+	if(this.specialCards && this.specialCards["ref of the rain"]){
+		refChain = this.specialCards["ref of the rain"].refChain;
+		refHistoryUsernames = this.specialCards["ref of the rain"].refHistoryUsernames;
+	}
+
 	var sireChain = undefined;
 	var sireHistoryUsernames = undefined;
 	if(this.specialCards && this.specialCards["sire of the lake"]){
@@ -1111,6 +1118,9 @@ Game.prototype.finishGame = function(toBeWinner){
 		missionHistory: this.missionHistory,
 		voteHistory: this.voteHistory,
 		playerRoles: playerRolesVar,
+
+		ladyChain: ladyChain,
+		ladyHistoryUsernames: ladyHistoryUsernames,
 
 		ladyChain: ladyChain,
 		ladyHistoryUsernames: ladyHistoryUsernames,
