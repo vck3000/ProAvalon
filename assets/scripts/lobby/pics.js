@@ -83,7 +83,13 @@ var pics = {
             height: 100px;
         `,
         maxHeight: "100px",
-    }
+    },
+
+
+    //base res
+    baseRes: {
+        path: "avatars/base-res.png"
+    },
 
 }
 

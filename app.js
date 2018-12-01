@@ -15,16 +15,16 @@ var express = require("express"),
 	cookieParser = require('cookie-parser'),
 	flash = require("connect-flash");
 
+app.use(express.static("assets", {maxAge: 1800000})); //expires in 30 minutes.	
 
 var path = require('path');
-var staticify = require('staticify')(path.join(__dirname, 'assets'));
+// var staticify = require('staticify')(path.join(__dirname, 'assets'));
+var staticify = require('staticify')('assets');
 app.use(staticify.middleware);
 
 app.locals = {
 	getVersionedPath: staticify.getVersionedPath 
 };
-
-app.use(express.static("assets", {maxAge: "30d"})); //expires in 30 days.
 
 
 var port = process.env.PORT || 80;

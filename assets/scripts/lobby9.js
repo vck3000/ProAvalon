@@ -897,7 +897,7 @@ function strOfAvatar(playerData, alliance) {
             }
             
         } else {
-            picLink = 'avatars/base-res.png'
+            picLink = pics["baseRes"].path; //'avatars/base-res.png';
         }
     }
     else {
