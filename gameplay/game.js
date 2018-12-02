@@ -1036,12 +1036,10 @@ Game.prototype.finishGame = function(toBeWinner){
 	this.winner = toBeWinner;
 
 	if (this.winner === "Spy") {
-		// this.gameplayMessage = "The spies have won the game.";
-		this.sendText(this.allSockets, "The spies have won the game.", "gameplay-text-red");
+		this.sendText(this.allSockets, "The spies win!", "gameplay-text-red");
 	}
 	else if (this.winner === "Resistance") {
-		// this.gameplayMessage = "The resistance have won the game.";
-		this.sendText(this.allSockets, "The resistance have won the game.", "gameplay-text-blue");
+		this.sendText(this.allSockets, "The resistance wins!", "gameplay-text-blue");
 	}
 
 	// Reset votes
