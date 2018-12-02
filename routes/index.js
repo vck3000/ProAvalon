@@ -833,12 +833,14 @@ router.get("/ajax/hideNotification", function(req, res){
 			console.log(err);
 		}
 
-		User.findOne({username: req.user.username}).populate("notifications").exec(async function(err, foundUser){
+		if(req && req.user){
+			User.findOne({username: req.user.username}).populate("notifications").exec(async function(err, foundUser){
 
-			foundUser.markModified("notifications");
-			await foundUser.save();
-
-		});
+				foundUser.markModified("notifications");
+				await foundUser.save();
+	
+			});
+		}
 	});
 
 	res.status(200).send("done");
