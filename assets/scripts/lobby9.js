@@ -87,7 +87,7 @@ function draw() {
         }, 2000);
         
 
-        drawTeamLeaderStar();
+        drawTeamLeader();
         drawMiddleBoxes();
         drawGuns();
         runPublicDataAvalon(gameData);
@@ -581,6 +581,11 @@ function drawGuns() {
                 var icon;
                 if(useGun === false){icon = "shieldOrange";}
                 else{icon = "gun";}
+                if($("#optionDisplayUseSmallIconsCrownShield")[0].checked === false){
+                    if(icon === "shieldOrange"){
+                        icon = "shieldOrangeBig";
+                    }
+                }
                 var offsetGunPos = pics[icon].position;
                 
                 $($(".gun")[i]).animate({
@@ -610,6 +615,11 @@ function adjustGunPositions(){
             var icon;
             if(useGun === false){icon = "shieldOrange";}
             else{icon = "gun";}
+            if($("#optionDisplayUseSmallIconsCrownShield")[0].checked === false){
+                if(icon === "shieldOrange"){
+                    icon = "shieldOrangeBig";
+                }
+            }
             var offsetGunPos = pics[icon].position;
             $($(".gun")[i]).css("top", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*offsetGunPos.y) + "px"); 
             $($(".gun")[i]).css("left", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/offsetGunPos.x) + "px");           
@@ -617,7 +627,7 @@ function adjustGunPositions(){
     }
 }
   
-function drawTeamLeaderStar() {
+function drawTeamLeader() {
     var playerIndex;
     if (gameStarted === false) {
         playerIndex = 0;
@@ -633,7 +643,13 @@ function drawTeamLeaderStar() {
             icon = "star";
         }
         else{
-            icon = "crown";
+            if($("#optionDisplayUseSmallIconsCrownShield")[0].checked === true){
+                icon = "crown";
+            }
+            else{
+                icon = "crownBig";
+            }
+            
         }
 
         str = str + "<img class='leaderIcon' src='" + pics[icon].path + "' style='" + pics[icon].style + "'>";
@@ -1639,13 +1655,19 @@ function scaleGameComponents(){
     var maxWidth = 0;
     // Use shield
     if(useGun === "false"){
-        maxHeight = 51;
-        maxWidth = 40;
+        if($("#optionDisplayUseSmallIconsCrownShield")[0].checked === true){
+            maxHeight = pics["shieldOrange"].maxDims.y;
+            maxWidth = pics["shieldOrange"].maxDims.x;
+        }
+        else{
+            maxHeight = pics["shieldOrangeBig"].maxDims.y;
+            maxWidth = pics["shieldOrangeBig"].maxDims.x;
+        }
     } 
     // Use gun
     else {
-        maxHeight = 45;
-        maxWidth = 128;
+        maxHeight = pics["gun"].maxDims.y;
+        maxWidth = pics["gun"].maxDims.x;
     }
   
     // $(".gunImg").css("height", "100%");  
@@ -1658,13 +1680,22 @@ function scaleGameComponents(){
     var useStar = docCookies.getItem("optionDisplayUseOldGameIcons");
     // Use star
     if(useStar === "true"){
-        maxHeight = 32;
+        maxHeight = pics["star"].maxDims.y;
+        maxWidth = pics["star"].maxDims.x;
     } 
     // Use crown
     else {
-        maxHeight = 51;
+        if($("#optionDisplayUseSmallIconsCrownShield")[0].checked === true){
+            maxHeight = pics["crown"].maxDims.y;
+            maxWidth = pics["crown"].maxDims.x;
+        }
+        else{
+            maxHeight = pics["crownBig"].maxDims.y;
+            maxWidth = pics["crownBig"].maxDims.x;  
+        }
     }
     $(".leaderIcon").css("max-height", maxHeight*(playerDivHeightRatio-0.05) + "px");
+    $(".leaderIcon").css("max-width", maxWidth*playerDivHeightRatio + "px");
 
     // Scale the Assassin icon in the same way
     var useBullet = docCookies.getItem("optionDisplayUseOldGameIcons");

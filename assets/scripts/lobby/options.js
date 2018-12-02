@@ -54,7 +54,7 @@ var userOptions = {
     },
 
     optionDisplayHeightOfAvatarContainer: {
-        defaultValue: $("#div1Resize").parent().height()*0.5,
+        defaultValue: $("#div1Resize").parent().height()*0.45,
         onLoad: function () {
             //get cookie data
             var containerHeight = docCookies.getItem("optionDisplayHeightOfAvatarContainer");
@@ -320,6 +320,46 @@ var userOptions = {
                 setTimeout(function(){
                     draw();
                 }, 1000);
+            });
+        }
+    },
+
+    optionDisplayUseSmallIconsCrownShield: {
+        defaultValue: "false",
+        onLoad: function(){
+            //check if optionDisplayProposedTeamIcon exists in cookies
+            var isOptionExists = docCookies.hasItem("optionDisplayUseSmallIconsCrownShield");
+            //if not, set it
+            if (isOptionExists === false) {
+                //save it in cookie
+                docCookies.setItem("optionDisplayUseSmallIconsCrownShield", false, Infinity);
+            } 
+
+            var getOption = docCookies.getItem("optionDisplayUseSmallIconsCrownShield");
+
+            //set check marks
+            if (getOption === false || getOption === "false") {
+                $("#optionDisplayUseSmallIconsCrownShield")[0].checked = false;
+            }
+            else if(getOption === true || getOption === "true"){
+                $("#optionDisplayUseSmallIconsCrownShield")[0].checked = true;
+            }
+            else{
+                docCookies.setItem("optionDisplayUseSmallIconsCrownShield", false, Infinity);
+            }
+        },
+        initialiseEventListener: function(){
+            $("#optionDisplayUseSmallIconsCrownShield")[0].addEventListener("click", function () {
+                //when they press it...
+                var newCheck = $("#optionDisplayUseSmallIconsCrownShield")[0].checked;
+                //save their option in cookie
+                docCookies.setItem("optionDisplayUseSmallIconsCrownShield", newCheck, Infinity);
+
+                //Need to redraw and rescale
+                draw();
+                draw();
+
+
             });
         }
     },

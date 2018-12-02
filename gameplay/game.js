@@ -1334,44 +1334,6 @@ Game.prototype.getRoleCardPublicGameData = function(){
 };
 
 
-
-// Game.prototype.loadRoleCardData = function(roleData, cardData){
-// 	this.specialRoles = (new avalonRolesIndex).getRoles(this);
-// 	this.specialCards = (new avalonCardsIndex).getCards(this);
-
-// 	//For every role
-// 	for(var k1 in roleData){
-// 		if(roleData.hasOwnProperty(k1)){
-
-// 			//For every piece of data
-// 			for(var k2 in roleData[k1]){
-// 				if(roleData[k1].hasOwnProperty(k2)){
-// 					this.specialRoles[k1][k2] = roleData[k1][k2];
-// 				}
-// 			}
-
-// 			// For every role, update the "thisRoom" to point to this
-// 			this.specialRoles[k1]["thisRoom"] = this;
-// 		}
-// 	}
-	
-// 	//For every role
-// 	for(var k1 in cardData){
-// 		if(cardData.hasOwnProperty(k1)){
-
-// 			//For every piece of data
-// 			for(var k2 in cardData[k1]){
-// 				if(cardData[k1].hasOwnProperty(k2)){
-// 					this.specialCards[k1][k2] = cardData[k1][k2];
-// 				}
-// 			}
-// 			// For every card, update the "thisRoom" to point to this
-// 			this.specialCards[k1]["thisRoom"] = this;
-// 		}
-// 	}
-// };
-
-
 // If entries don't exist for current missionNum and pickNum, create them
 Game.prototype.VHCheckUndefined = function(){
 	for (var i = 0; i < this.playersInGame.length; i++) {
