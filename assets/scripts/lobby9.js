@@ -1282,7 +1282,18 @@ function drawVoteHistory(data) {
     str += "<tr><td></td>";
 
     for (var i = 0; i < data.missionNum; i++) {
-        str += "<td style='width: 11em;' colspan='' class='missionHeader" + (i + 1) + "'>Mission " + (i + 1) + "</td>";
+        var colour;
+        if(data.missionHistory[i] === "succeeded"){
+            colour = "#99c4ff";
+        }
+        else if(data.missionHistory[i] === "failed"){
+            colour = "rgb(255, 187, 187)";
+        }
+        else{
+            colour = "transparent";
+        }
+        
+        str += "<td style='width: 11em; background-color: " + colour + "; color: black;' colspan='' class='missionHeader" + (i + 1) + "'>Mission " + (i + 1) + "</td>";
     }
     str += "</tr>";
 
