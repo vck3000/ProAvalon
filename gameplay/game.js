@@ -452,12 +452,10 @@ Game.prototype.startGame = function (options) {
 
 	var str = "Game started with: ";
 	for (var i = 0; i < this.roleKeysInPlay.length; i++) {
-		var capitalised = this.roleKeysInPlay[i][0].toUpperCase() + this.roleKeysInPlay[i].slice(1, this.roleKeysInPlay[i].length);
-		str += (capitalised + ", ");
+		str += this.specialRoles[this.roleKeysInPlay[i]].role + ", ";
 	}
 	for (var i = 0; i < this.cardKeysInPlay.length; i++) {
-		var capitalised = this.cardKeysInPlay[i][0].toUpperCase() + this.cardKeysInPlay[i].slice(1, this.cardKeysInPlay[i].length);
-		str += (capitalised + ", ");
+		str += this.specialCards[this.cardKeysInPlay[i]].card + ", ";
 	}
 
 	//remove the last , and replace with .
