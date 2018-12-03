@@ -1017,13 +1017,15 @@ function strOfAvatar(playerData, alliance) {
         selectedAvatar = "selected-avatar-2";
     }
 
-    var highlightChatButtonClass;
+    // Set the colour of the button itself
+    var colourToHighlightChatButton;
+    var indexOfPlayer = getIndexFromUsername(playerData.username);
+    var searchTerm = "player" + indexOfPlayer + "HighlightColour";
     if(selectedChat[playerData.username] === true){
-        // Set the colour of the button itself
-        highlightChatButtonClass = "highlightChatButtonSelected";
+        colourToHighlightChatButton = docCookies.getItem(searchTerm);
     }
     else{
-        highlightChatButtonClass = "";
+        colourToHighlightChatButton = "";
     }
     
 
@@ -1031,7 +1033,7 @@ function strOfAvatar(playerData, alliance) {
 
     str += "<span class='avatarOptionButtons'>";
     str += "<span id='highlightAvatarButton' class='glyphicon glyphicon-user avatarButton'></span>";
-    str += "<span id='highlightChatButton' class='glyphicon glyphicon glyphicon-menu-hamburger avatarButton " + highlightChatButtonClass + "'></span>";
+    str += "<span id='highlightChatButton' style='background-color: " + colourToHighlightChatButton + ";' class='glyphicon glyphicon glyphicon-menu-hamburger avatarButton'></span>";
     str += "</span>";
 
     str += '<span class="label label-success invisible approveLabel">Approve</span>';
