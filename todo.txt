@@ -9,11 +9,9 @@ To-do list:
 
 - the second tab (if enabled) that is non-chat is a bit too short and should stretch down to the proper height
 
-- have alt-text for hovering over lady of the lake
 
 - /roomChat should only work in a room, /allChat should only work in lobby. perhaps just merge back to the /chat cmd and it'll know which to print when used (but if they'll be automatic, then ignore this).
 
-- After clicking the = icon by an avatar, the icon should change colors (ideally to the color that he'll be highlighted to) so i know that it worked
 
 - Custom colours for specific people
 
@@ -21,7 +19,6 @@ To-do list:
 
 Hak:
 List of suggestions
-•	Private/public games. Adding passwords
 •	Displaying name/number of room in this room
 •	Changing properties of game in room such as ranked/unranked or Avalon/resistance
 •	Res-only chat
@@ -44,7 +41,6 @@ List of suggestions
 •	Better SEO(in progress, Tony wrote it so maybe he knows something about it)
 •	Sorting posts on forum
 •	Mark as read in forum
-•	Display fail/success in vote history
 
 also from old suggestion:anonymous mode
 
@@ -347,3 +343,8 @@ PERHAPS ITS FIXED NOW WITH THE SOCKETS REFACTOR?
 -Max number of players
 -percy cant see merlins
 -weird bug where u cant join and get a u tried to start the game issue
+- have alt-text for hovering over lady of the lake
+
+•	Private/public games. Adding passwords
+- After clicking the = icon by an avatar, the icon should change colors (ideally to the color that he'll be highlighted to) so i know that it worked
+•	Display fail/success in vote history
