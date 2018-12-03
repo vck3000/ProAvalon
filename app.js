@@ -43,8 +43,8 @@ var MongoDBStore = require('connect-mongodb-session')(session);
 
 var store = new MongoDBStore({
 	// uri: 'mongodb://localhost/TheNewResistanceUsers',
-	uri: 'mongodb://127.0.0.1/TheNewResistanceUsers',
-	// uri: dbLoc,
+	// uri: 'mongodb://127.0.0.1/TheNewResistanceUsers',
+	uri: dbLoc,
 	collection: 'mySessions'
 });
 
