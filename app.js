@@ -43,8 +43,8 @@ var MongoDBStore = require('connect-mongodb-session')(session);
 
 var store = new MongoDBStore({
 	// uri: 'mongodb://localhost/TheNewResistanceUsers',
-	// uri: 'mongodb://127.0.0.1/TheNewResistanceUsers',
-	uri: dbLoc,
+	uri: 'mongodb://127.0.0.1/TheNewResistanceUsers',
+	// uri: dbLoc,
 	collection: 'mySessions'
 });
 
@@ -138,6 +138,7 @@ app.use("/profile", profileRoutes);
 
 //start server listening
 var IP = process.env.IP || "192.168.1.66";
+// IP = "127.0.0.1";
 // var server = app.listen(port, IP , function(){
 var server = app.listen(port, function () {
 	console.log("Server has started on " + IP + ":" + port + "!");

@@ -1112,3 +1112,8 @@ i {
 .dark select {
     background-color: #444444;
 }
+
+
+.highlightChatButtonSelected {
+    background-color: #BBFFBB
+ }

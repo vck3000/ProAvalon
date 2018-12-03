@@ -1017,11 +1017,21 @@ function strOfAvatar(playerData, alliance) {
         selectedAvatar = "selected-avatar-2";
     }
 
+    var highlightChatButtonClass;
+    if(selectedChat[playerData.username] === true){
+        // Set the colour of the button itself
+        highlightChatButtonClass = "highlightChatButtonSelected";
+    }
+    else{
+        highlightChatButtonClass = "";
+    }
+    
+
     var str = "<div usernameofplayer='" + playerData.username + "' class='playerDiv " + selectedAvatar + "''>";
 
     str += "<span class='avatarOptionButtons'>";
     str += "<span id='highlightAvatarButton' class='glyphicon glyphicon-user avatarButton'></span>";
-    str += "<span id='highlightChatButton' class='glyphicon glyphicon glyphicon-menu-hamburger avatarButton'></span>";
+    str += "<span id='highlightChatButton' class='glyphicon glyphicon glyphicon-menu-hamburger avatarButton " + highlightChatButtonClass + "'></span>";
     str += "</span>";
 
     str += '<span class="label label-success invisible approveLabel">Approve</span>';
