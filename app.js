@@ -165,6 +165,182 @@ io.use(passportSocketIo.authorize({
 }));
 
 
+
+// var query = { 
+// 	$or: [
+//         {
+//             _id: "5b8d71eebe34c50014c9ac08"
+//         },
+//         {
+//             _id: "5b5df4b9a694130014ee4c0e"
+//         },
+//         {
+//             _id: "5be74d1dd2cfc00014637590"
+//         },
+//         {
+//             _id: "5bbb7dc9cdf89b0013e67921"
+//         },
+//         {
+//             _id: "5b9434435b07de00147414e6"
+//         },
+//         {
+//             _id: "5b98e045635d0e00142bd2e7"
+//         },
+//         {
+//             _id: "5b9435b55b07de00147414ec"
+//         },
+//         {
+//             _id: "5bf6ea908954ee0014835c90"
+//         },
+//         {
+//             _id: "5bd194a1b4fc8d0013e98956"
+//         },
+//         {
+//             _id: "5b6bed7a2264bd001497c215"
+//         },
+//         {
+//             _id: "5b8503f5f318140014a82d4e"
+//         },
+//         {
+//             _id: "5b5845a925e03c0014cab279"
+//         },
+//         {
+//             _id: "5beb0cff7531ec001453290a"
+//         },
+//         {
+//             _id: "5bec649055fb47001438be89"
+//         },
+//         {
+//             _id: "5b75cced3f4e0500147bbfe0"
+//         },
+//         {
+//             _id: "5bd3503b7c22ed0013bcf51f"
+//         },
+//         {
+//             _id: "5b685e804cf1770014db3144"
+//         },
+//         {
+//             _id: "5bf17c576b740e0014444227"
+//         },
+//         {
+//             _id: "5b74e17983d07b001499d790"
+//         },
+//         {
+//             _id: "5b8d88d2be34c50014c9ac16"
+//         },
+//         {
+//             _id: "5b8b031a1e9e7f0014cf14e0"
+//         },
+//         {
+//             _id: "5b8af5ea1e9e7f0014cf14d2"
+//         },
+//         {
+//             _id: "5b9286c12dbc950014c647ac"
+//         },
+//         {
+//             _id: "5b58b314f0c4670014ca6c3b"
+//         },
+//         {
+//             _id: "5bf9709a8e40f30014c2ff18"
+//         },
+//         {
+//             _id: "5b5a2c95c3d9730014bbb446"
+//         },
+//         {
+//             _id: "5b58b5ecf0c4670014ca6c3d"
+//         },
+//         {
+//             _id: "5b6ceff339802f00146c4ccf"
+//         },
+//         {
+//             _id: "5b96b43bee816c0014e3d179"
+//         },
+//         {
+//             _id: "5bb8ffd456347200131c2efc"
+//         },
+//         {
+//             _id: "5b7747bffbf77c0014849374"
+//         },
+//         {
+//             _id: "5b5cd0836d73170014297af0"
+//         },
+//         {
+//             _id: "5b5ba9f9d778360014790c91"
+//         },
+//         {
+//             _id: "5b64dcfed2a0660014abfa5e"
+//         },
+//         {
+//             _id: "5b80867886e88f00146568ac"
+//         },
+//         {
+//             _id: "5bb3eb0ab52b51001375721c"
+//         },
+//         {
+//             _id: "5b9d433dcc74270014ddc61c"
+//         },
+//         {
+//             _id: "5bfb47fc6fabf300145ad361"
+//         },
+//         {
+//             _id: "5bff31a3bcdca00014d87df8"
+//         },
+//         {
+//             _id: "5b7b2babc3f814001441240a"
+//         },
+//         {
+//             _id: "5b59f3b5c3d9730014bbb427"
+//         },
+//         {
+//             _id: "5c03601b7a671e0014c669e3"
+//         },
+//         {
+//             _id: "5bee371e6c57a7001494045e"
+//         },
+//         {
+//             _id: "5c040f884ac9820014a1cc09"
+//         },
+//         {
+//             _id: "5c058e65a936b50014b24858"
+//         },
+//         {
+//             _id: "5c05b32fa936b50014b24879"
+//         },
+//         {
+//             _id: "5c05b3f5a936b50014b2487d"
+//         },
+//         {
+//             _id: "5c05b4d7a936b50014b24883"
+//         },
+//         {
+//             _id: "5c05b53ca936b50014b2488b"
+//         },
+//         {
+//             _id: "5c05b604a936b50014b248a3"
+//         },
+//         {
+//             _id: "5c05c1e2ec12dc0014c6aafc"
+//         },
+//         {
+//             _id: "5c05c2ebec12dc0014c6ab25"
+//         }
+//     ]
+// };
+
+// setTimeout(function(){
+
+// 	console.log("test");
+// 	User.find(query).then(function(foundUsers){
+
+// 			for(var i = 0; i < foundUsers.length; i++){
+// 				console.log(foundUsers[i].username);
+// 			}
+		
+// 	});
+
+// }, 3000);
+
+
 //REMOVE THIS SOON AFTER UPLOADING TO SERVER ONCE
 // User.find({}).populate("notifications").exec(function(err, foundUsers){
 // 	// for(var i = 0; i < foundUsers.length; i++){
