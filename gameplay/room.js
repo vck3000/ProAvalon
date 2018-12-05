@@ -226,7 +226,7 @@ Room.prototype.sendText = function(sockets, incString, stringType) {
 	};
 	for (var i = 0; i < this.allSockets.length; i++) {
                 var tmpSocket = this.allSockets[i];
-		if (tmpSocket) tmpSocket.emit("roomChatToClient", data);
+		if (tmpSocket && typeof tmpSocket !== "undefined") tmpSocket.emit("roomChatToClient", data);
 	}
 
 	if(this.gameStarted && this.gameStarted === true){
@@ -251,7 +251,7 @@ Room.prototype.updateRoomPlayers = function(){
 	//Send the data to all sockets within the room.
 	for(var i = 0; i < this.allSockets.length; i++){
                 var tmpSocket = this.allSockets[i];
-		if(tmpSocket){
+		if (tmpSocket && typeof tmpSocket !== "undefined") {
 			tmpSocket.emit("update-room-players", this.getRoomPlayers());
 			tmpSocket.emit("update-room-spectators", usernamesOfSpecs);
 			tmpSocket.emit("update-room-info", {maxNumPlayers: this.maxNumPlayers});
