@@ -1143,12 +1143,13 @@ Game.prototype.finishGame = function (toBeWinner) {
         chatHistory: this.chatHistory
     };
 
-    GameRecord.create(objectToStore, function (err) {
+    GameRecord.create(objectToStore, function (err, record) {
         if (err) {
             console.log(err);
         }
         else {
             // console.log("Stored game data successfully.");
+            this.gameRecordId = record.id;
         }
     });
 
