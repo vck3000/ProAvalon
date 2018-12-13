@@ -172,7 +172,7 @@ router.post("/", checkIpBan, sanitiseUsername,/* usernameToLowerCase, */function
 });
 
 //login route
-router.post("/login", checkIpBan, sanitiseUsername, /*usernameToLowerCase,*/ passport.authenticate("local", {
+router.post("/login", sanitiseUsername, /*usernameToLowerCase,*/ passport.authenticate("local", {
 	successRedirect: "/lobby",
 	failureRedirect: "/loginFail"
 }));

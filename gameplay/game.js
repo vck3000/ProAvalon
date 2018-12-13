@@ -36,6 +36,15 @@ for(var i = 0; i < gameModeNames.length; i++){
 
 mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
 
+/**
+ * 
+ * @param {String} host_ Host username
+ * @param {Number} roomId_ Room ID
+ * @param {IO} io_ IO chat for sockets
+ * @param {Number} maxNumPlayers_ Maximum number of players allowed to sit down
+ * @param {String} newRoomPassword_ Password to join the room
+ * @param {String} gameMode_ Gamemode - avalon/hunter/etc.
+ */
 function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_){
 	//********************************
 	//CONSTANTS
