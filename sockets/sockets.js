@@ -102,7 +102,6 @@ function deleteSaveGameFromDb(room) {
     // console.log("room id to remove");
     // console.log(roomToSave.savedGameRecordId);
 
-
     savedGameObj.findByIdAndRemove(room.savedGameRecordId, function (err) {
         if (err) {
             console.log(err);
@@ -112,9 +111,21 @@ function deleteSaveGameFromDb(room) {
         }
     });
 
+    updateGameRecordChat(room);
+}
+var GameRecord = require("../models/gameRecord");
 
-    // }
+function updateGameRecordChat(room) {
+    console.log("A");
+    if (room.gameRecordId !== undefined) {
+        console.log("B");
+        GameRecord.findById(room.gameRecordId, function (err, record) {
+            record.chatHistory = JSON.stringify(room.chatHistory);
+            record.save();
+            console.log("C");
 
+        });
+    }
 }
 
 function saveGamesAndSendWarning(senderSocket) {

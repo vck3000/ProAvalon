@@ -36,7 +36,7 @@ var gameRecordSchema = new mongoose.Schema({
 
     moreThanOneFailMissions: [Boolean],
     
-    chatHistory: [Object]
+    chatHistory: String
 });
 //compile schema into a model
 var gameRecord = mongoose.model("gameRecord", gameRecordSchema);

@@ -86,11 +86,7 @@ function addRoomChatEventListeners(e, roomChatWindow) {
         if (message && message.length > 0) {
             //append 0 in front of single digit minutes
 
-            var date = d.getMinutes();
-            // if(date < 10){date = "0" + date;}
-
             var data = {
-                date: date,
                 message: message
             }
 

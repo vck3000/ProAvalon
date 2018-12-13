@@ -230,7 +230,7 @@ Room.prototype.sendText = function(sockets, incString, stringType) {
 
     // This is bad code! Relying on game.js which inherits this file...
 	if(this.gameStarted && this.gameStarted === true){
-		this.addToChatHistory(data);
+        this.addToChatHistory(data);
 	}
 };
 

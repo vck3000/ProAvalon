@@ -524,13 +524,13 @@ Game.prototype.checkBotMoves = function () {
                     continue;
                 }
 
-                console.log("===================");
-                console.log("Bot playing move: ");
+                // console.log("===================");
+                // console.log("Bot playing move: ");
 
-                console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
-                console.log("Bot index: ");
-                console.log(i);
-                console.log(thisRoom.botIndexes[i]);
+                // console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
+                // console.log("Bot index: ");
+                // console.log(i);
+                // console.log(thisRoom.botIndexes[i]);
 
 
 
@@ -541,7 +541,7 @@ Game.prototype.checkBotMoves = function () {
                     prohibitedIndexesToPick = [];
                 }
 
-                console.log(buttons);
+                // console.log(buttons);
                 var canHitGreen = false;
                 var canHitRed = false;
                 if (buttons.green.hidden !== true) {
@@ -553,13 +553,13 @@ Game.prototype.checkBotMoves = function () {
 
                 // If we can't make any moves, don't do anything
                 if ((canHitGreen === false && canHitRed === false) || (numOfTargets === 0 || numOfTargets === undefined)) {
-                    console.log("Cant make any moves");
-                    console.log("Bot playing move: ");
-                    console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
+                    // console.log("Cant make any moves");
+                    // console.log("Bot playing move: ");
+                    // console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
 
-                    console.log(canHitGreen);
-                    console.log(canHitRed);
-                    console.log(numOfTargets);
+                    // console.log(canHitGreen);
+                    // console.log(canHitRed);
+                    // console.log(numOfTargets);
                     continue;
                 }
 
@@ -573,6 +573,10 @@ Game.prototype.checkBotMoves = function () {
                     else {
                         str = "yes";
                     }
+
+                    //Temporary:
+                    str = "yes";
+
                     thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]], str);
                     count += 1;
                     continue;
@@ -613,17 +617,17 @@ Game.prototype.checkBotMoves = function () {
                     selectUsernames.push(allowedUsernamesToPick[randomNums0toPlayerCount[j]]);
                 }
 
-                console.log("Select usernames: ");
-                console.log(selectUsernames);
+                // console.log("Select usernames: ");
+                // console.log(selectUsernames);
 
-                console.log("Bot playing move: ");
-                console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
+                // console.log("Bot playing move: ");
+                // console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
 
-                console.log("Allowed usernames: ");
-                console.log(allowedUsernamesToPick);
+                // console.log("Allowed usernames: ");
+                // console.log(allowedUsernamesToPick);
 
-                console.log("Prohibited indices: ");
-                console.log(prohibitedIndexesToPick);
+                // console.log("Prohibited indices: ");
+                // console.log(prohibitedIndexesToPick);
 
                 thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]], selectUsernames);
                 // setTimeout(function(index){
@@ -1023,8 +1027,9 @@ Game.prototype.getStatus = function () {
 
 
 
-Game.prototype.finishGame = function (toBeWinner) {
+Game.prototype.finishGame = async function (toBeWinner) {
     this.phase = "finished";
+    var thisRoom = this;
 
     if (this.checkRoleCardSpecialMoves() === true) {
         return;
@@ -1140,18 +1145,22 @@ Game.prototype.finishGame = function (toBeWinner) {
 
         moreThanOneFailMissions: this.moreThanOneFailMissions,
 
-        chatHistory: this.chatHistory
+        chatHistory: JSON.stringify(this.chatHistory)
     };
 
-    GameRecord.create(objectToStore, function (err, record) {
+    console.log("AAAA");
+    await GameRecord.create(objectToStore, function (err, record) {
         if (err) {
             console.log(err);
         }
         else {
-            // console.log("Stored game data successfully.");
-            this.gameRecordId = record.id;
+            console.log("Stored game data successfully.");
+            thisRoom.gameRecordId = record.id;
         }
     });
+    console.log("BBBB");
+    
+    
 
     //store player data:
     var timeFinished = new Date();
