@@ -4,22 +4,18 @@ var mongoose = require("mongoose");
 var gameRecordSchema = new mongoose.Schema({
 
 	timeGameStarted: Date, 
-	// 
 	timeAssassinationStarted: Date,
 	timeGameFinished: Date,
 	winningTeam: String,
 	spyTeam: [String],
 	resistanceTeam: [String],
 
-	// 
-	gameMode: String, 
-
+	gameMode: String, //Avalon? Original? Hunter?
 	numberOfPlayers: Number,
 	//E.g. mission fails, mission suceeds and dodge bullet, assassination
-	howTheGameWasWon: String,
-	// 
+    howTheGameWasWon: String,
+    // Two of them for Tristan / Isolde
 	whoAssassinShot: String,
-	// 
 	whoAssassinShot2: String,
 	
 	roles: [String],
@@ -38,8 +34,9 @@ var gameRecordSchema = new mongoose.Schema({
 	voteHistory: Object,
 	playerRoles: Object,
 
-	moreThanOneFailMissions: [Boolean]
-	
+    moreThanOneFailMissions: [Boolean],
+    
+    chatHistory: [Object]
 });
 //compile schema into a model
 var gameRecord = mongoose.model("gameRecord", gameRecordSchema);
