@@ -13,7 +13,6 @@ createNotifObj.createNotification = function(userIDTarget, stringToSay, link){
 		User.findById(mongoose.Types.ObjectId(userIDTarget)).populate("notifications")
 		.exec(function(err, foundUser){
 
-			console.log(foundUser.username);
 
 		if(err){
 			console.log(err);

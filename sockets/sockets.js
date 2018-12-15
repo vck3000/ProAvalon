@@ -1565,18 +1565,24 @@ module.exports = function (io) {
 				if(userNotFound === false && newModAction.bannedPlayer && newModAction.bannedPlayer.username){
 					// console.log("****************");
 					modAction.create(newModAction,function(err, newModActionCreated){
-						// console.log(newModActionCreated);
-						//push new mod action into the array of currently active ones loaded.
-						currentModActions.push(newModActionCreated);
-						//if theyre online
-						if(newModActionCreated.type === "ban" && allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)] ){
-							allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)].disconnect(true);
-						}
-						else if(newModActionCreated.type === "mute" && allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)] ){
-							allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)].emit("muteNotification", newModActionCreated);
-						}
+                        if(newModActionCreated !== undefined){
+                            // console.log(newModActionCreated);
+                            //push new mod action into the array of currently active ones loaded.
+                            currentModActions.push(newModActionCreated);
+                            //if theyre online
+                            if(newModActionCreated.type === "ban" && allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)] ){
+                                allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)].disconnect(true);
+                            }
+                            else if(newModActionCreated.type === "mute" && allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)] ){
+                                allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)].emit("muteNotification", newModActionCreated);
+                            }
 
-						socket.emit("messageCommandReturnStr", {message: newModActionCreated.bannedPlayer.username + " has received a " + newModActionCreated.type + " modAction. Thank you :).", classStr: "server-text"});
+                            socket.emit("messageCommandReturnStr", {message: newModActionCreated.bannedPlayer.username + " has received a " + newModActionCreated.type + " modAction. Thank you :).", classStr: "server-text"});
+                        }
+                        else{
+                            socket.emit("messageCommandReturnStr", {message: "Something went wrong...", classStr: "server-text"});
+                        }
+
 					});
 				}
 				else{
