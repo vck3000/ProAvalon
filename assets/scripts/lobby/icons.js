@@ -8,7 +8,7 @@ var icons = {
     },
 
     ref: {
-        glyph: "glyphicon-book",
+        glyph: "glyphicon-cloud",
         iconType: "bootstrapGlyphicon",
         toolTip: "Ref of the Rain"
     },
