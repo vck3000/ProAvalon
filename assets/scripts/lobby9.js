@@ -1286,7 +1286,10 @@ function generatePlayerLocations(numOfPlayers, a, b) {
     return object;
 }
 
+
+// Note this function will also draw the card history
 function drawVoteHistory(data) {
+    // Vote history:
     var numOfPicksPerMission = [];
     var str = "";
     //top row where missions are displayed
@@ -1316,17 +1319,9 @@ function drawVoteHistory(data) {
     //for every username in a clockwise direction
     for (var i = roomPlayersData.length-1; i > 0; i--){
         keyArray[roomPlayersData.length - i] = (roomPlayersData[i].username);
-      // console.log("Push: " + roomPlayersData[i].username);
-      // console.log("i: " + i);
     } 
-    
-  // console.log("key array:" );
-  // console.log(keyArray);
 
-
-    // for(var k = keyArray.length - 1; k >= 0; k--){
     for(var k = 0; k < keyArray.length; k++){
-        // console.log(key + " -> " + data.voteHistory[key]);
         str += "<tr>";
         //print username in the first column
         str += "<td>" + keyArray[k] + "</td>";
@@ -1363,8 +1358,39 @@ function drawVoteHistory(data) {
         var allHeaders = $(id);
     
         $(id).attr("colspan", numOfPicksPerMission[i]);
-    
     }
+
+
+    // Card history:
+
+    var str = "<h5 style='margin: 0;'><b><u>Card history:</u></b></h5>";
+
+
+    for(var key in data.publicData.cards){
+        if(data.publicData.cards.hasOwnProperty(key) === true){
+            var c = data.publicData.cards[key];
+
+            if(c.history !== undefined && c.name !== undefined) {
+                str += "<em>" + c.name + ": </em>";
+            }
+    
+            c.history.forEach(function(username) {
+                str += username + " -> ";
+            });
+        }
+
+        str = str.slice(0, str.length - 4);
+        str += "<br>";
+    }
+
+
+
+    $(".cardHistoryClass")[0].innerHTML = str;
+    $(".cardHistoryClass")[1].innerHTML = str;
+
+
+
+    //  ProNub -> Bot2 -> Bot123 ->
 
     
 }
@@ -1446,6 +1472,9 @@ function resetAllGameData() {
     // $("#voteHistoryTable")[0].innerHTML = "";
     $(".voteHistoryTableClass")[0].innerHTML = "";
     $(".voteHistoryTableClass")[1].innerHTML = "";
+
+    $(".cardHistoryClass")[0].innerHTML = "";
+    $(".cardHistoryClass")[1].innerHTML = "";
 
     $("#missionsBox").addClass("invisible");
     

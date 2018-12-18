@@ -67,7 +67,9 @@ LadyOfTheLake.prototype.getPublicGameData = function(){
 	Public data to show the user(s) e.g. who holds the lady of the lake */
 	return {
 		lady: {
-			index: this.indexOfPlayerHolding
+            index: this.indexOfPlayerHolding,
+            history: this.ladyHistoryUsernames,
+            name: this.card
 		}
 	}
 }

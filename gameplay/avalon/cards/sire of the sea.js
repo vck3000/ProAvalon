@@ -70,7 +70,9 @@ SireOfTheSea.prototype.getPublicGameData = function(){
 	Public data to show the user(s) e.g. who holds the sire of the sea */
 	return {
 		sire: {
-			index: this.indexOfPlayerHolding
+            index: this.indexOfPlayerHolding,
+            history: this.sireHistoryUsernames,
+            name: this.card
 		}
 	}
 }

@@ -73,7 +73,9 @@ RefOfTheLake.prototype.getPublicGameData = function(){
 	Public data to show the user(s) e.g. who holds the ref of the rain */
 	return {
 		ref: {
-			index: this.indexOfPlayerHolding
+            index: this.indexOfPlayerHolding,
+            history: this.refHistoryUsernames,
+            name: this.card
 		}
 	}
 }
