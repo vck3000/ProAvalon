@@ -1299,7 +1299,7 @@ function drawVoteHistory(data) {
             colour = "#99c4ff";
         }
         else if(data.missionHistory[i] === "failed"){
-            colour = "rgb(255, 187, 187)"; 
+            colour = "#fa4f4f"; 
         }
         else{
             colour = "transparent";
