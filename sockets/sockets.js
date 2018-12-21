@@ -17,16 +17,14 @@ var adminsArray = require("../modsadmins/admins");
 
 const dateResetRequired			 			= 1543480412695;
 
-const newUpdateNotificationRequired 		= 1543480412695;
+const newUpdateNotificationRequired 		= 1545361924457;
 const updateMessage = `
 
-New card added!
+Hey there!
 
 <br><br>
 
-Ref of the Rain is the same as Lady of the Lake, except it can only be used after the previous mission failed. This will help Resistance early game but on the other hand help Spies late game.
-
-<br><br>Have fun!
+There were some major fixes to the server, please let me know if there are any crashes/abnormalities. Thanks.
 
 `;
 
