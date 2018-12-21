@@ -86,7 +86,7 @@ function saveGameToDb(roomToSave){
 				else{
 					rooms[rooms.indexOf(roomToSave)].savedGameRecordId = savedGame.id;
 					// console.log("Successfully created this save game");
-					
+
 				}
 			});
 		}
@@ -123,7 +123,7 @@ function saveGamesAndSendWarning(senderSocket) {
 			if(senderSocket){
 				allSockets[key].emit("serverRestartWarning");
 			}else{
-				// allSockets[key].emit("serverDailyRestartWarning");				
+				// allSockets[key].emit("serverDailyRestartWarning");
 			}
 		}
 	}
@@ -137,7 +137,7 @@ function saveGamesAndSendWarning(senderSocket) {
 	// 	if(rooms[i] && rooms[i].gameStarted === true && rooms[i].finished !== true){
 	// 		console.log("rooms");
 	// 		// console.log(rooms[i]);
-			
+
 	// 		savedGameObj.create({room: JSON.stringify(rooms[i])}, function(err, savedGame){
 	// 			if(err){
 	// 				console.log(err);
@@ -168,7 +168,7 @@ function saveGamesAndSendWarning(senderSocket) {
 	// }
 
 	// console.log(numOfGamesEncountered);
-	
+
 	if(numOfGamesEncountered === 0){
 		return {message: "Successful. But no games needed to be saved.", classStr: "server-text"};
 	}
@@ -191,13 +191,13 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 				if(foundSaveGame){
 					// console.log("Parsed:");
 					// console.log(JSON.parse(foundSaveGame.room));
-			
+
 					var storedData = JSON.parse(foundSaveGame.room);
-			
+
 					rooms[storedData["roomId"]] = new gameRoom();
 
 					Object.assign(rooms[storedData["roomId"]], storedData);
-			
+
 					// //Assigning in all the previous variables
 					// for(var key in storedData){
 					// 	if(storedData.hasOwnProperty(key)){
@@ -214,15 +214,15 @@ savedGameObj.find({}).exec(function(err, foundSaveGameArray){
 
 					// rooms[storedData["roomId"]].loadRoleCardData(storedData["avalonRoles"], storedData["avalonCards"]);
 					// rooms[storedData["roomId"]].reloadParentFunctions();
-					
+
 
 					rooms[storedData["roomId"]].restartSaved = true;
-					rooms[storedData["roomId"]].savedGameRecordId = foundSaveGame.id;		
+					rooms[storedData["roomId"]].savedGameRecordId = foundSaveGame.id;
 					rooms[storedData["roomId"]].recoverGame(storedData);
 
 
-					
-					
+
+
 					// console.log("Game loaded");
 
 					// console.log("platform: " + process.env.MY_PLATFORM);
@@ -244,18 +244,18 @@ var actionsObj = {
             help: "/help: ...shows help",
             run: function (data) {
                 //do stuff
-    
+
                 var dataToReturn = [];
                 var i = 0;
-    
+
                 //starting break in the chat
                 // data[i] = {message: "-------------------------", classStr: "server-text"};
-    
+
                 // var str = [];
                 // str[i] = "-------------------------";
-    
+
                 i++;
-    
+
                 for (var key in actionsObj.userCommands) {
                     if (actionsObj.userCommands.hasOwnProperty(key)) {
                         if(!actionsObj.userCommands[key].modsOnly){
@@ -274,26 +274,26 @@ var actionsObj = {
                 return dataToReturn;
             }
         },
-    
+
         buzz: {
             command: "buzz",
             help: "/buzz <playername>: Buzz a player.",
             run: function (data, senderSocket) {
-				var args = data.args;		
-				
+				var args = data.args;
+
 				data.args[2] = data.args[1];
 				data.args[1] = "buzz";
 
 				return actionsObj.userCommands.interactUser.run(data, senderSocket);
             }
         },
-    
+
         slap: {
             command: "slap",
             help: "/slap <playername>: Slap a player for fun.",
             run: function (data, senderSocket) {
-				var args = data.args;		
-				
+				var args = data.args;
+
 				data.args[2] = data.args[1];
 				data.args[1] = "slap";
 
@@ -301,30 +301,42 @@ var actionsObj = {
             }
 		},
 
-		lick: {
+    lick: {
             command: "lick",
             help: "/lick <playername>: Lick a player.",
             run: function (data, senderSocket) {
-				var args = data.args;		
-				
-				data.args[2] = data.args[1];
-				data.args[1] = "lick";
+        var args = data.args;
 
-				return actionsObj.userCommands.interactUser.run(data, senderSocket);
+        data.args[2] = data.args[1];
+        data.args[1] = "lick";
+
+        return actionsObj.userCommands.interactUser.run(data, senderSocket);
             }
         },
-		
+    poke: {
+            command: "poke",
+            help: "/poke <playername>: poke a player.",
+            run: function (data, senderSocket) {
+        var args = data.args;
+
+        data.args[2] = data.args[1];
+        data.args[1] = "poke";
+
+        return actionsObj.userCommands.interactUser.run(data, senderSocket);
+            }
+        },
+
 		interactUser: {
 			command: "interactUser",
 			help: "/interactUser <slap/buzz/lick> <playername>: Interact with a player.",
             run: function (data, senderSocket) {
-				var args = data.args;			
-				
-				var possibleInteracts = ["buzz", "slap", "lick"];
+				var args = data.args;
+
+				var possibleInteracts = ["buzz", "slap", "lick", "poke"];
 				if(possibleInteracts.indexOf(args[1]) === -1){
-                    return {message: "You can only slap, buzz or lick, not " + args[1] + ".", classStr: "server-text", dateCreated: new Date()};
+                    return {message: "You can only slap, buzz, poke or lick, not " + args[1] + ".", classStr: "server-text", dateCreated: new Date()};
 				}
-				
+
                 var slapSocket = allSockets[getIndexFromUsername(allSockets, args[2], true)];
                 if (slapSocket) {
 
@@ -332,6 +344,7 @@ var actionsObj = {
 					if(args[1] === "buzz"){verbPast = "buzzed";}
 					else if(args[1] === "slap"){verbPast = "slapped";}
 					else if(args[1] === "lick"){verbPast = "licked";}
+          else if(args[1] === "poke"){verbPast = "poked";}
 
 					var dataToSend = {
 						username: senderSocket.request.user.username,
@@ -352,14 +365,14 @@ var actionsObj = {
 					else if(slapSocket.request.user.inRoomId && rooms[slapSocket.request.user.inRoomId] && rooms[slapSocket.request.user.inRoomId].gameStarted === true){
 						slappedInGame = true;
 						socketThatWasSlappedInGame = slapSocket;
-					} 
+					}
 
 					if(slappedInGame === true){
 						var str = senderSocket.request.user.username + " has " + verbPast + " " + slapSocket.request.user.username + ". (In game)";
 						rooms[socketThatWasSlappedInGame.request.user.inRoomId].sendText(rooms[socketThatWasSlappedInGame.request.user.inRoomId].allSockets, str, "server-text");
 					}
 
-					
+
                 return; // {message: "You have " + verbPast + " " + args[2] + "!", classStr: "server-text"};
                 }
                 else {
@@ -368,7 +381,7 @@ var actionsObj = {
                 }
             }
 		},
-    
+
         roomchat: {
             command: "roomchat",
             help: "/roomchat: Get a copy of the chat for the current game.",
@@ -383,7 +396,7 @@ var actionsObj = {
                 }
             }
         },
-    
+
         allchat: {
             command: "allchat",
             help: "/allchat: Get a copy of the last 5 minutes of allchat.",
@@ -393,36 +406,36 @@ var actionsObj = {
                 return allChat5Min;
             }
         },
-    
+
         roll: {
             command: "roll",
             help: "/roll <optional number>: Returns a random number between 1 and 10 or 1 and optional number.",
             run: function (data, senderSocket) {
                 var args = data.args;
-                
+
                 //code
                 if(args[1]){
                     if(isNaN(args[1]) === false){
                         return {message: (Math.floor(Math.random() * args[1]) + 1).toString(), classStr: "server-text"}
                     }
                     else{
-                        return {message: "That is not a valid number!", classStr: "server-text"}	
+                        return {message: "That is not a valid number!", classStr: "server-text"}
                     }
                 }
-                
+
                 else{
                     return {message: (Math.floor(Math.random() * 10) + 1).toString(), classStr: "server-text"}
                 }
-                
+
             }
 		},
 
 		mute: {
             command: "mute",
-            help: "/mute: Mute a player who is being annoying in chat/buzzing/slapping/licking you.",
+            help: "/mute: Mute a player who is being annoying in chat/buzzing/slapping/licking/poking you.",
             run: function (data, senderSocket) {
                 var args = data.args;
-				
+
 				if(args[1]){
 					User.findOne({username: args[1]}).exec(function(err, foundUserToMute){
 						if(err){console.log(err);}
@@ -439,13 +452,13 @@ var actionsObj = {
 												userCallingMute.mutedPlayers.push(foundUserToMute.username);
 												userCallingMute.markModified("mutedPlayers");
 												userCallingMute.save();
-												senderSocket.emit("updateMutedPlayers", userCallingMute.mutedPlayers);					
+												senderSocket.emit("updateMutedPlayers", userCallingMute.mutedPlayers);
 												senderSocket.emit("messageCommandReturnStr", {message: "Muted " + args[1] + " successfully.", classStr: "server-text"});
 											}
 											else{
 												senderSocket.emit("messageCommandReturnStr", {message: "You have already muted " + args[1] + ".", classStr: "server-text"});
 											}
-											
+
 										}
 									}
 								});
@@ -465,7 +478,7 @@ var actionsObj = {
             help: "/unmute: Unmute a player.",
             run: function (data, senderSocket) {
                 var args = data.args;
-				
+
 				if(args[1]){
 					User.findOne({username: senderSocket.request.user.username}).exec(function(err, foundUser){
 						if(err){console.log(err);}
@@ -480,12 +493,12 @@ var actionsObj = {
 									foundUser.mutedPlayers.splice(index, 1);
 									foundUser.markModified("mutedPlayers");
 									foundUser.save();
-	
-									senderSocket.emit("updateMutedPlayers", foundUser.mutedPlayers);					
-									senderSocket.emit("messageCommandReturnStr", {message: "Unmuted " + args[1] + " successfully.", classStr: "server-text"});	
+
+									senderSocket.emit("updateMutedPlayers", foundUser.mutedPlayers);
+									senderSocket.emit("messageCommandReturnStr", {message: "Unmuted " + args[1] + " successfully.", classStr: "server-text"});
 								}
 								else{
-									senderSocket.emit("messageCommandReturnStr", {message: "Could not find " + args[1] + ".", classStr: "server-text"});										
+									senderSocket.emit("messageCommandReturnStr", {message: "Could not find " + args[1] + ".", classStr: "server-text"});
 								}
 							}
 						}
@@ -503,12 +516,12 @@ var actionsObj = {
             help: "/getmutedplayers: See who you have muted.",
             run: function (data, senderSocket) {
 				var args = data.args;
-				
+
 				if(args[1] === senderSocket.request.user.username){
-					senderSocket.emit("messageCommandReturnStr", {message: "Why would you mute yourself...?", classStr:"server-text"});					
+					senderSocket.emit("messageCommandReturnStr", {message: "Why would you mute yourself...?", classStr:"server-text"});
 					return;
 				}
-				
+
 				User.findOne({username: senderSocket.request.user.username}).exec(function(err, foundUser){
 					if(err){console.log(err);}
 					else{
@@ -519,7 +532,7 @@ var actionsObj = {
 
 							var dataToReturn = [];
 							dataToReturn[0] = {message: "Muted players:", classStr: "server-text"};
-							
+
 							for(var i = 0; i < foundUser.mutedPlayers.length; i++){
 								dataToReturn[i+1] = {message: "-" + foundUser.mutedPlayers[i], classStr: "server-text"};
 							}
@@ -530,7 +543,7 @@ var actionsObj = {
 							// console.log(dataToReturn);
 
 							senderSocket.emit("messageCommandReturnStr", dataToReturn);
-							
+
 						}
 					}
 				});
@@ -580,15 +593,15 @@ var actionsObj = {
 					senderSocket.emit("messageCommandReturnStr", dataToReturn);
 				});
 
-				
-				
+
+
             }
 		},
 		r: {
             command: "r",
             help: "/r: Reply to a mod who just messaged you.",
             run: function (data, senderSocket) {
-				
+
 				var args = data.args;
                 var str = senderSocket.request.user.username + "->" + lastWhisperObj[senderSocket.request.user.username] + " (whisper): ";
 				for(var i = 1; i < args.length; i++){
@@ -603,7 +616,7 @@ var actionsObj = {
 					dateCreated: new Date(),
 					classStr: "whisper"
 				};
-				
+
 				//this sendToSocket is the moderator
 				var sendToSocket = allSockets[getIndexFromUsername(allSockets, lastWhisperObj[senderSocket.request.user.username], true)];
 
@@ -626,14 +639,14 @@ var actionsObj = {
             }
         }
     },
-    
-    
+
+
     modCommands: {
         m: {
             command: "m",
             help: "/m: displays /mhelp",
             run: function (data, senderSocket) {
-    
+
                 return actionsObj.modCommands["mhelp"].run(data, senderSocket);
             }
         },
@@ -641,7 +654,7 @@ var actionsObj = {
             command: "mban",
             help: "/mban: Open the ban interface",
             run: function (data, senderSocket) {
-    
+
                 // console.log(senderSocket.request.user.username);
                 if(modsArray.indexOf(senderSocket.request.user.username.toLowerCase()) !== -1){
                     senderSocket.emit("openModModal");
@@ -658,7 +671,7 @@ var actionsObj = {
             help: "/mipban <username>: Ban the IP of the player given. /munban does not undo this ban. Contact ProNub to remove an IP ban.",
             run: function (data, senderSocket) {
 				var args = data.args;
-    
+
 				if(!args[1]){
 					senderSocket.emit("messageCommandReturnStr", {message: "Specify a username", classStr: "server-text"});
 					return {message: "Specify a username.", classStr: "server-text"};
@@ -679,18 +692,18 @@ var actionsObj = {
 								modWhoBanned: {id: foundUser._id, username: foundUser.username},
 								whenMade: new Date(),
 							}
-	
+
 							banIp.create(banIpData, function(err, newBan){
 								if(err){console.log(err);}
 								else{
 									allSockets[getIndexFromUsername(allSockets, args[1].toLowerCase(), true)].disconnect(true);
-									
-									senderSocket.emit("messageCommandReturnStr", {message: "Successfully ip banned user " + args[1], classStr: "server-text"});								
+
+									senderSocket.emit("messageCommandReturnStr", {message: "Successfully ip banned user " + args[1], classStr: "server-text"});
 								}
 							});
 						}
 						else{
-							senderSocket.emit("messageCommandReturnStr", {message: "Could not find the player to ban.", classStr: "server-text"});		
+							senderSocket.emit("messageCommandReturnStr", {message: "Could not find the player to ban.", classStr: "server-text"});
 						}
 					}
 
@@ -698,9 +711,9 @@ var actionsObj = {
 						//send error message back
 						senderSocket.emit("messageCommandReturnStr", {message: "Could not find your user data (your own one, not the person you're trying to ban)", classStr: "server-text"});
 					}
-					
+
 				});
-				
+
             }
 		},
         mhelp: {
@@ -712,7 +725,7 @@ var actionsObj = {
                 var dataToReturn = [];
                 var i = 0;
                 i++;
-    
+
                 for (var key in actionsObj.modCommands) {
                     if (actionsObj.modCommands.hasOwnProperty(key)) {
                         if(!actionsObj.modCommands[key].modsOnly){
@@ -727,7 +740,7 @@ var actionsObj = {
                     }
                 }
                 return dataToReturn;
-                
+
             }
         },
         munban: {
@@ -735,11 +748,11 @@ var actionsObj = {
             help: "/munban <player name>: Removes ALL existing bans OR mutes on a player's name.",
             run: async function (data, senderSocket) {
                 var args = data.args;
-    
+
                 if(!args[1]){
                     return {message: "Specify a username.", classStr: "server-text"}
                 }
-    
+
                 modAction.find({'bannedPlayer.username': args[1]}, function(err, foundModAction){
                     // console.log("foundmodaction");
                     // console.log(foundModAction);
@@ -751,9 +764,9 @@ var actionsObj = {
                             }
                             else{
                                 // console.log("Successfully unbanned " + args[1] + ".");
-                                senderSocket.emit("messageCommandReturnStr", {message: "Successfully unbanned " + args[1] + ".", classStr: "server-text"});					
-    
-    
+                                senderSocket.emit("messageCommandReturnStr", {message: "Successfully unbanned " + args[1] + ".", classStr: "server-text"});
+
+
                                 //load up all the modActions again to update
                                 modAction.find({whenRelease: {$gt: new Date()}, type: "mute"}, function(err, allModActions){
                                     currentModActions = [];
@@ -770,10 +783,10 @@ var actionsObj = {
                         senderSocket.emit("messageCommandReturnStr", {message: args[1] + " does not have a ban.", classStr: "server-text"});
                     }
                 });
-                
+
             }
         },
-    
+
         mcurrentbans: {
             command: "mcurrentbans",
             help: "/mcurrentbans: Show a list of currently active bans.",
@@ -783,7 +796,7 @@ var actionsObj = {
                 var dataToReturn = [];
                 var i = 0;
                 i++;
-    
+
                 modAction.find({
 					$or: [
 						{type: "mute"},
@@ -797,11 +810,11 @@ var actionsObj = {
 						}
 						else if(modActionFound.type === "mute"){
 							message = modActionFound.bannedPlayer.username + " was muted for " + modActionFound.reason + " by " + modActionFound.modWhoBanned.username + ", description: '" + modActionFound.descriptionByMod + "' until: " + modActionFound.whenRelease.toString();
-						}	
-    
+						}
+
                         dataToReturn[dataToReturn.length] = {message: message, classStr: "server-text"};
                     });
-    
+
                     if(dataToReturn.length === 0){
                         senderSocket.emit("messageCommandReturnStr", {message: "No one is banned! Yay!", classStr: "server-text"});
                     }
@@ -815,7 +828,7 @@ var actionsObj = {
             command: "mcompareips",
             help: "/mcompareips: Get usernames of players with the same IP.",
             run: async function (data, senderSocket) {
-                var args = data.args;				
+                var args = data.args;
 
 				var slapSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
 
@@ -848,7 +861,7 @@ var actionsObj = {
 				// var str = "";
 				var dataToReturn = [];
 				dataToReturn[0] = {message: "-------------------------", classStr: "server-text", dateCreated: new Date()};
-				
+
 
 				for(var i = 0; i < duplicateIps.length; i++){
 					//for each ip, search through the whole users to see who has the ips
@@ -865,7 +878,7 @@ var actionsObj = {
 				}
 
 				senderSocket.emit("messageCommandReturnStr", dataToReturn);
-				
+
                 return;
             }
 		},
@@ -874,28 +887,28 @@ var actionsObj = {
             help: "/mdc <player name>: Disconnect a player.",
             run: async function (data, senderSocket) {
                 var args = data.args;
-    
+
                 if(!args[1]){
 					senderSocket.emit("messageCommandReturnStr", {message: "Specify a username.", classStr: "server-text"});
                     return;
 				}
-				
+
 
 				var targetSock = allSockets[getIndexFromUsername(allSockets, args[1], true)];
                 if (targetSock) {
 					targetSock.disconnect();
 					senderSocket.emit("messageCommandReturnStr", {message: "Disconnected " + args[1] + " successfully.", classStr: "server-text"});
-					
+
                 	return;
                 }
                 else {
 					senderSocket.emit("messageCommandReturnStr", {message: "Could not find username", classStr: "server-text"});
 				}
-				
+
                 return;
             }
 		},
-		
+
 		mnotify: {
             command: "mnotify",
             help: "/mnotify <player name> <text to leave for player>: Leaves a message for a player that will appear in their notifications. Note your name will be added to the end of the message to them.",
@@ -908,10 +921,10 @@ var actionsObj = {
 				}
 
 				str += ("(From: " + senderSocket.request.user.username + ")");
-				
+
 				User.findOne({usernameLower: args[1].toLowerCase()}).exec(function(err, foundUser){
 					if(err){
-						console.log(err);							
+						console.log(err);
 						senderSocket.emit("messageCommandReturnStr", {message: "Server error... let me know if you see this.", classStr: "server-text"});
 					}
 					else{
@@ -919,7 +932,7 @@ var actionsObj = {
 							var userIdTarget = foundUser._id;
 							var stringToSay = str;
 							var link = "#";
-	
+
 							createNotificationObj.createNotification(userIdTarget, stringToSay, link);
 							senderSocket.emit("messageCommandReturnStr", {message: "Sent to " + foundUser.username + " successfully! Here was your message: " + str, classStr: "server-text"});
 						}
@@ -931,14 +944,14 @@ var actionsObj = {
                 return;
             }
 		},
-		
+
 		mwhisper: {
             command: "mwhisper",
             help: "/mwhisper <player name> <text to send>: Sends a whisper to a player.",
             run: async function (data, senderSocket) {
                 var args = data.args;
                 var str = senderSocket.request.user.username + "->" + args[1] + " (whisper): ";
-				for(var i = 2; i < args.length; i++){ 
+				for(var i = 2; i < args.length; i++){
 					str += args[i];
 					str += " ";
 				}
@@ -950,7 +963,7 @@ var actionsObj = {
 					dateCreated: new Date(),
 					classStr: "whisper"
 				}
-				
+
 				var sendToSocket = allSockets[getIndexFromUsername(allSockets, args[1], true)];
 
 				if(!sendToSocket){
@@ -969,7 +982,7 @@ var actionsObj = {
 
 					senderSocket.emit("allChatToClient", dataMessage);
 					senderSocket.emit("roomChatToClient", dataMessage);
-					
+
 					//set the last whisper person
 					lastWhisperObj[sendToSocket.request.user.username] = senderSocket.request.user.username;
 
@@ -977,7 +990,7 @@ var actionsObj = {
 				}
 
                 return;
-				
+
             }
 		},
 
@@ -986,12 +999,12 @@ var actionsObj = {
             help: "/mremoveavatar <player name>: Remove <player name>'s avatar.",
             run: async function (data, senderSocket) {
                 var args = data.args;
-    
+
                 if(!args[1]){
 					senderSocket.emit("messageCommandReturnStr", {message: "Specify a username.", classStr: "server-text"});
                     return;
 				}
-				
+
 				User.findOne({usernameLower: args[1].toLowerCase()}).populate("notifications").exec(function(err, foundUser){
 					if(err){console.log(err);}
 					else{
@@ -1011,7 +1024,7 @@ var actionsObj = {
             help: "/maddbots <number>: Add <number> bots to the room.",
             run: function (data, senderSocket, roomIdInput) {
                 var args = data.args;
-    
+
                 if(!args[1]){
 					senderSocket.emit("messageCommandReturnStr", {message: "Specify a number.", classStr: "server-text"});
                     return;
@@ -1024,7 +1037,7 @@ var actionsObj = {
 				else{
 					roomId = senderSocket.request.user.inRoomId;
 				}
-				
+
 				if(rooms[roomId]){
 					var dummySockets = [];
 
@@ -1060,7 +1073,7 @@ var actionsObj = {
             help: "/mtestgame <number>: Add <number> bots to a test game and start it automatically.",
             run: function (data, senderSocket, io) {
                 var args = data.args;
-    
+
                 if(!args[1]){
 					senderSocket.emit("messageCommandReturnStr", {message: "Specify a number.", classStr: "server-text"});
                     return;
@@ -1122,7 +1135,7 @@ var actionsObj = {
             help: "/mclose <roomId>: Close room <roomId>. Also removes the corresponding save files in the database.",
             run: function (data, senderSocket) {
                 var args = data.args;
-    
+
                 if(!args[1]){
 					senderSocket.emit("messageCommandReturnStr", {message: "Specify a number.", classStr: "server-text"});
                     return;
@@ -1147,25 +1160,25 @@ var actionsObj = {
 					}
 				}
 
-				
+
 
 				updateCurrentGamesList();
                 return;
             }
 		}
     },
-    
+
     adminCommands: {
         a: {
             command: "a",
-            help: "/a: ...shows mods commands", 
+            help: "/a: ...shows mods commands",
             run: function (data) {
                 var args = data.args;
                 //do stuff
                 var dataToReturn = [];
                 var i = 0;
                 i++;
-    
+
                 for (var key in actionsObj.adminCommands) {
                     if (actionsObj.adminCommands.hasOwnProperty(key)) {
                         if(!actionsObj.adminCommands[key].modsOnly){
@@ -1182,7 +1195,7 @@ var actionsObj = {
                 return dataToReturn;
             }
         },
-    
+
         admintest: {
             command: "admintest",
             help: "/admintest: Testing that only the admin can access this command",
@@ -1192,7 +1205,7 @@ var actionsObj = {
                 return {message: "admintest has been run.", classStr: "server-text"};
             }
         },
-    
+
         aServerRestartWarning: {
             command: "aServerRestartWarning",
             help: "/aServerRestartWarning: Only for the admin to use :)",
@@ -1216,7 +1229,7 @@ var actionsObj = {
                 var args = data.args;
 				//do stuff
 				process.exit(0);
-				
+
 
 
                 return {message: "killS has been run.", classStr: "server-text"};
@@ -1228,7 +1241,7 @@ var actionsObj = {
             help: "/aram: get the ram used",
             run: function (data) {
                 var args = data.args;
-				
+
 				const used = process.memoryUsage().heapUsed / 1024 / 1024;
 				// console.log(`The script uses approximately ${Math.round(used * 100) / 100} MB`);
 
@@ -1241,13 +1254,13 @@ var actionsObj = {
             help: "/aip <player name>: Get the ip of the player.",
             run: async function (data, senderSocket) {
                 var args = data.args;
-    
+
                 if(!args[1]){
 					// console.log("a");
 					senderSocket.emit("messageCommandReturnStr", {message: "Specify a username", classStr: "server-text"});
                     return {message: "Specify a username.", classStr: "server-text"}
 				}
-				
+
 
 				var slapSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
                 if (slapSocket) {
@@ -1255,17 +1268,17 @@ var actionsObj = {
 					var clientIpAddress = slapSocket.request.headers['x-forwarded-for'] || slapSocket.request.connection.remoteAddress;
 
 					senderSocket.emit("messageCommandReturnStr", {message: clientIpAddress, classStr: "server-text"});
-					
+
                 	return {message: "slapSocket.request.user.username", classStr: "server-text"};
                 }
                 else {
 					// console.log("c");
-					
+
 					senderSocket.emit("messageCommandReturnStr", {message: "No IP found or invalid username", classStr: "server-text"});
-					
+
                     return {message: "There is no such player.", classStr: "server-text"};
 				}
-				
+
 
                 return;
             }
@@ -1275,7 +1288,7 @@ var actionsObj = {
             help: "/aipban <ip>: Ban the IP of the IP given. /munban does not undo this ban. Contact ProNub to remove an IP ban.",
             run: function (data, senderSocket) {
 				var args = data.args;
-    
+
 				if(!args[1]){
 					senderSocket.emit("messageCommandReturnStr", {message: "Specify an IP", classStr: "server-text"});
 					return {message: "Specify a username.", classStr: "server-text"};
@@ -1296,19 +1309,19 @@ var actionsObj = {
 						banIp.create(banIpData, function(err, newBan){
 							if(err){console.log(err);}
 							else{
-								senderSocket.emit("messageCommandReturnStr", {message: "Successfully banned ip " + args[1], classStr: "server-text"});								
+								senderSocket.emit("messageCommandReturnStr", {message: "Successfully banned ip " + args[1], classStr: "server-text"});
 							}
 						});
-						
+
 					}
 
 					else{
 						//send error message back
 						senderSocket.emit("messageCommandReturnStr", {message: "Could not find your user data (your own one, not the person you're trying to ban)", classStr: "server-text"});
 					}
-					
+
 				});
-				
+
             }
 		}
     }
@@ -1322,7 +1335,7 @@ var adminCommands = actionsObj.adminCommands;
 
 //load up all the modActions that are not released yet
 modAction.find({whenRelease: {$gt: new Date()}, type: "mute"}, function(err, allModActions){
-	
+
 	for(var i = 0; i < allModActions.length; i++){
 		currentModActions.push(allModActions[i]);
 	}
@@ -1367,9 +1380,9 @@ module.exports = function (io) {
 
 			console.log(socket.request.user.username + " has connected under socket ID: " + socket.id);
 
-			
 
-			
+
+
 
 
 			//send the user its ID to store on their side.
@@ -1397,10 +1410,10 @@ module.exports = function (io) {
 								}
 							}
 							else{
-								socket.emit("messageCommandReturnStr", {message: "There are no pending custom avatar requests!", classStr: "server-text"});							
+								socket.emit("messageCommandReturnStr", {message: "There are no pending custom avatar requests!", classStr: "server-text"});
 							}
 						}, 3000);
-						
+
 					}
 				});
 			}
@@ -1416,7 +1429,7 @@ module.exports = function (io) {
 			socket.emit("checkNewPlayerShowIntro", "");
 			//Pass in the gameModes for the new room menu.
 			socket.emit("gameModes", gameModeNames);
-			
+
 			User.findOne({username: socket.request.user.username}).exec(function(err, foundUser){
 				if(foundUser.mutedPlayers){
 					socket.emit("updateMutedPlayers", foundUser.mutedPlayers);
@@ -1439,16 +1452,16 @@ module.exports = function (io) {
 			updateCurrentGamesList(io);
 		},500);
 
-		
+
 
 
 		//when a user disconnects/leaves the whole website
 		socket.on("disconnect", function (data) {
 			//debugging
 			console.log(socket.request.user.username + " has left the lobby.");
-			
+
 			var playerIds = getPlayerIdsFromAllSockets();
-			
+
 
 			//remove them from all sockets
 			allSockets.splice(allSockets.indexOf(socket), 1);
@@ -1463,7 +1476,7 @@ module.exports = function (io) {
 			}
 			sendToAllChat(io, data);
 
-			//Note, by default when socket disconnects, it leaves from all rooms. 
+			//Note, by default when socket disconnects, it leaves from all rooms.
 			//If user disconnected from within a room, the leave room function will send a message to other players in room.
 
 			//if they are in a room, say they're leaving the room.
@@ -1545,7 +1558,7 @@ module.exports = function (io) {
 				if(userNotFound === true){
 					return;
 				}
-				
+
 				await User.findById(socket.request.user.id, function(err, foundUser){
 					if(err){console.log(err);}
 					else{
@@ -1602,8 +1615,8 @@ module.exports = function (io) {
 			// console.log("data0: " + data.command);
 			// console.log("mod command exists: " + modCommands[data.command]);
 			// console.log("Index of mods" + modsArray.indexOf(socket.request.user.username.toLowerCase()));
-			
-			
+
+
 
 			if (userCommands[data.command]) {
 				var dataToSend = userCommands[data.command].run(data, socket, io);
@@ -1627,12 +1640,12 @@ module.exports = function (io) {
 				socket.emit("messageCommandReturnStr", dataToSend);
 			}
 		});
-		
+
 		socket.on("interactUserPlayed", function (data){
 
 			// socket.emit("interactUserPlayed", {success: false, interactedBy: data.username, myUsername: ownUsername, verb: data.verb, verbPast: data.verbPast});
 			var socketWhoInitiatedInteract = allSockets[getIndexFromUsername(allSockets, data.interactedBy, true)];
-			
+
 			if(socketWhoInitiatedInteract){
 				var messageStr;
 				if(data.success === true){
@@ -1686,7 +1699,7 @@ module.exports = function (io) {
 			//debugging
 
 			var toContinue = !isMuted(socket);
-			
+
 			if(toContinue){
 				console.log("roomchat: " + data.message + " by: " + socket.request.user.username);
 				//get the username and put it into the data object
@@ -1705,7 +1718,7 @@ module.exports = function (io) {
 
 				if (socket.request.user.inRoomId) {
 					//send out that data object to all clients in room
-					
+
 					sendToRoomChat(io, socket.request.user.inRoomId, data);
 					// io.in(data.roomId).emit("roomChatToClient", data);
 				}
@@ -1729,7 +1742,7 @@ module.exports = function (io) {
 				var data = {
 					message: socket.request.user.username + " has created " + privateStr + "room " + nextRoomId + ".",
 					classStr: "server-text"
-				}			
+				}
 				sendToAllChat(io, data);
 
 				// console.log(data.message);
@@ -1750,13 +1763,13 @@ module.exports = function (io) {
 		socket.on("join-room", function (roomId, inputPassword) {
 
 			// console.log("inputpassword: " + inputPassword);
-			
+
 			//if the room exists
 			if (rooms[roomId]) {
 				//join the room
 				if(rooms[roomId].playerJoinRoom(socket, inputPassword) === true){
 					//sends to players and specs
-					rooms[roomId].distributeGameData();	
+					rooms[roomId].distributeGameData();
 
 					//set the room id into the socket obj
 					socket.request.user.inRoomId = roomId;
@@ -1788,7 +1801,7 @@ module.exports = function (io) {
 
 			if(toContinue){
 				if (rooms[roomId]) {
-					
+
 					//if the room has not started yet, throw them into the room
 					// console.log("Game status is: " + rooms[roomId].getStatus());
 
@@ -1811,7 +1824,7 @@ module.exports = function (io) {
 
 			if(toContinue){
 				if (rooms[roomId]) {
-					
+
 					//if the room has not started yet, remove them from players list
 					// console.log("Game status is: " + rooms[roomId].getStatus());
 
@@ -1848,9 +1861,9 @@ module.exports = function (io) {
 				socket.leave(socket.request.user.inRoomId);
 
 				playerLeaveRoomCheckDestroy(socket);
-				
-				
-				
+
+
+
 				updateCurrentGamesList();
 			}
 		});
@@ -1864,7 +1877,7 @@ module.exports = function (io) {
 					dateCreated: new Date()
 				}
 				sendToRoomChat(io, socket.request.user.inRoomId, data);
-				
+
 
 				if (rooms[socket.request.user.inRoomId].playerReady(username) === true) {
 					//game will auto start if the above returned true
@@ -1907,7 +1920,7 @@ module.exports = function (io) {
 			console.log("received kick player request: " + username);
 			if (rooms[socket.request.user.inRoomId]) {
 				rooms[socket.request.user.inRoomId].kickPlayer(username, socket);
-				
+
 			}
 		});
 
@@ -1926,7 +1939,7 @@ module.exports = function (io) {
 		});
 
 
-		
+
 
 		//************************
 		//game data stuff
@@ -1945,8 +1958,8 @@ module.exports = function (io) {
 				}
 
 				updateCurrentGamesList(io);
-				
-			} 
+
+			}
 		});
 
 		socket.on("setClaim", function(data){
@@ -1965,7 +1978,7 @@ module.exports = function (io) {
 
 
 var updateCurrentGamesList = function () {
-	//prepare room data to send to players. 
+	//prepare room data to send to players.
 	var gamesList = [];
 	for (var i = 0; i < rooms.length; i++) {
 		//If the game exists
@@ -2022,14 +2035,14 @@ var fiveMinsInMillis = 1000 * 60 * 5;
 function sendToAllChat(io, data){
 	var date = new Date();
 	data.dateCreated = date;
-	
+
 
 	allSockets.forEach(function(sock){
 		sock.emit("allChatToClient", data);
 	});
 	// io.in("allChat").emit("allChatToClient", data);
 
-	
+
 
 	allChatHistory.push(data);
 
@@ -2098,8 +2111,8 @@ function playerLeaveRoomCheckDestroy(socket, modKill){
 		}
 
 		//if room is frozen for more than 1hr then remove.
-		if(rooms[socket.request.user.inRoomId] 
-			&& rooms[socket.request.user.inRoomId].timeFrozenLoaded 
+		if(rooms[socket.request.user.inRoomId]
+			&& rooms[socket.request.user.inRoomId].timeFrozenLoaded
 			&& rooms[socket.request.user.inRoomId].getStatus() === "Frozen"
 			&& rooms[socket.request.user.inRoomId].allSockets.length === 0){
 
@@ -2158,7 +2171,7 @@ function getIndexFromUsername(sockets, username, caseInsensitive){
 					return i;
 				}
 			}
-			
+
 		}
 	}
 	return null;
