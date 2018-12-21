@@ -76,7 +76,7 @@ function draw() {
     // console.log("draw called");
     if (roomPlayersData) {
         highlightedAvatars = getHighlightedAvatars();
-    
+
         drawAndPositionAvatars();
 
         drawTeamLeaderStar();
@@ -94,7 +94,7 @@ function draw() {
         // console.log(highlightedAvatars);
         restoreHighlightedAvatars(highlightedAvatars);
 
-        
+
         if (gameStarted === true) {
 
             drawExitedPlayers(gameData.gamePlayersInRoom);
@@ -143,7 +143,7 @@ function draw() {
 
 
                 setStatusBarText(str);
-                
+
             }
 
             else if (gameData.phase === "missionVoting") {
@@ -179,7 +179,7 @@ function draw() {
                 str += ".";
 
                 setStatusBarText(str);
-                
+
 
                 drawGuns();
                 drawVotes(gameData.votes);
@@ -188,7 +188,7 @@ function draw() {
                 //for the assassin: set up their stuff to shoot
                 if (gameData.role === "Assassin") {
                 setStatusBarText("Shoot merlin.");
-                    
+
                     // console.log
                     assassinationSetup(gameData.phase);
                 }
@@ -205,7 +205,7 @@ function draw() {
             }
             else if (gameData.phase === "lady") {
                 setStatusBarText(gameData.statusMessage);
-                
+
                 if (ownUsername === getUsernameFromIndex(gameData.lady)) {
                     ladySetup(gameData.phase, gameData.ladyablePeople);
                 }
@@ -214,7 +214,7 @@ function draw() {
 
             else if (gameData.phase === "finished") {
                 setStatusBarText(gameData.statusMessage);
-                
+
             //   enableDisableButtons();
                 if (gameData.see.playerShot) {
                     drawBullet(getIndexFromUsername(gameData.see.playerShot));
@@ -267,11 +267,11 @@ function draw() {
                 str += ".";
 
                 setStatusBarText("Current roles: " + str);
-                
+
             }
             else {
                 setStatusBarText("Waiting for game to start... ");
-                
+
             }
         }
 
@@ -280,14 +280,14 @@ function draw() {
         //do this
         //if we are the team leader---------------------------------------------
         if (gameData && getIndexFromUsername(ownUsername) === gameData.teamLeader && gameData.phase === "picking") {
-            enableDisableButtonsLeader(gameData.numPlayersOnMission[gameData.missionNum - 1]);  
+            enableDisableButtonsLeader(gameData.numPlayersOnMission[gameData.missionNum - 1]);
         }
-    }     
+    }
     else{
         $("#mainRoomBox")[0].innerHTML = "";
-    } 
+    }
 }
-  
+
   var selectedAvatars = {};
   var numOfStatesOfHighlight = 2;
   var selectedChat = {};
@@ -297,47 +297,47 @@ function draw() {
       // if(OPTION THING ADD HERE){
       var highlightButtons = document.querySelectorAll("#mainRoomBox div #highlightAvatarButton");
       //add the event listeners for button press
-  
+
       // console.log("added " + highlightButtons.length + " many listeners for highlightbuttons");
-  
+
       for (var i = 0; i < highlightButtons.length; i++) {
           // console.log(i);
-  
+
           highlightButtons[i].addEventListener("click", function () {
               // //toggle the highlight class
               // var divs = document.querySelectorAll("#mainRoomBox div");
               // var uniqueNum = i;
             // console.log("click for highlight avatar");
-  
+
               // this.parentElement.classList.toggle("selected-avatar");
               var username = this.parentElement.parentElement.getAttribute("usernameofplayer");
               // console.log("username: " + username);
-  
+
               if (selectedAvatars[username] !== undefined) {
                   selectedAvatars[username] += 1;
               }
               else {
                   selectedAvatars[username] = 1;
               }
-  
+
               selectedAvatars[username] = selectedAvatars[username] % (numOfStatesOfHighlight + 1);
             // console.log("Selected avatars num: " + selectedAvatars[username])
               draw();
           });
       }
-  
-  
-  
+
+
+
       var highlightChatButtons = document.querySelectorAll("#mainRoomBox div #highlightChatButton");
       //add the event listeners for button press
       for (var i = 0; i < highlightChatButtons.length; i++) {
           highlightChatButtons[i].addEventListener("click", function () {
               // //toggle the highlight class
             // console.log("click for highlight chat");
-  
+
               var username = this.parentElement.parentElement.getAttribute("usernameofplayer");
               var chatItems = $(".room-chat-list li span[username='" + username + "']");
-  
+
 
 
               var playerHighlightColour = docCookies.getItem("player" + getIndexFromUsername(username) + "HighlightColour");
@@ -347,9 +347,9 @@ function draw() {
               if(setHighlightColorToYellow === true){
                 playerHighlightColour = "#ffff9e";
               }
-              
+
             // console.log("Player highlight colour: " + playerHighlightColour);
-  
+
               if (selectedChat[username] === true) {
                   selectedChat[username] = false;
                   chatItems.css("background-color", "transparent");
@@ -363,11 +363,11 @@ function draw() {
           });
       }
   }
-  
-  
-  
+
+
+
   function drawBullet(indexOfPlayer) {
-  
+
       //set the div string and add the star\\
       var str = $("#mainRoomBox div")[indexOfPlayer].innerHTML;
 
@@ -381,14 +381,14 @@ function draw() {
 
       //update the str in the div
       $("#mainRoomBox div")[indexOfPlayer].innerHTML = str;
-  
+
       // $(".bullet")[0].style.top = 0;
-  
+
   }
-  
+
   function drawVotes(votes) {
       var divs = document.querySelectorAll("#mainRoomBox div");
-  
+
       if (votes) {
           for (var i = 0; i < divs.length; i++) {
               if(votes[i] === "approve"){
@@ -404,14 +404,14 @@ function draw() {
           for (var i = 0; i < divs.length; i++) {
               // document.querySelectorAll("#mainRoomBox div")[i].classList.remove("approve");
               // document.querySelectorAll("#mainRoomBox div")[i].classList.remove("reject");
-  
+
               $($("#mainRoomBox div")[i]).find(".approveLabel").addClass("invisible");
               $($("#mainRoomBox div")[i]).find(".rejectLabel").addClass("invisible");
           }
       }
   }
-  
-  
+
+
 function assassinationSetup(phase) {
     if (phase === "assassination") {
         var divs = document.querySelectorAll("#mainRoomBox div");
@@ -439,12 +439,12 @@ function assassinationSetup(phase) {
                 });
 
             }
-            
-            
+
+
         }
     }
 }
-  
+
 function teamLeaderSetup(phase) {
     var numPlayersOnMission = gameData.numPlayersOnMission[gameData.missionNum - 1];
 
@@ -475,7 +475,7 @@ function teamLeaderSetup(phase) {
 
         setStatusBarText("Your turn to use the Lady of the Lake. Select one player to use it on.");
 
-        
+
           var divs = document.querySelectorAll("#mainRoomBox div");
           //add the event listeners for button press
           for (var i = 0; i < divs.length; i++) {
@@ -491,7 +491,7 @@ function teamLeaderSetup(phase) {
           }
       }
   }
-  
+
   function drawMiddleBoxes() {
       //draw missions and numPick
       //j<5 because there are only 5 missions/picks each game
@@ -507,13 +507,13 @@ function teamLeaderSetup(phase) {
                   document.querySelectorAll(".missionBox")[j].classList.add("missionBoxFail");
                   document.querySelectorAll(".missionBox")[j].classList.remove("missionBoxSucceed");
               }
-  
+
               //draw in the number of players in each mission
               var numPlayersOnMission = gameData.numPlayersOnMission[j];
               if (numPlayersOnMission) {
                   document.querySelectorAll(".missionBox")[j].innerHTML = "<p>" + numPlayersOnMission + "</p>";
               }
-  
+
               //picks boxes
               var pickNum = gameData.pickNum;
               if (j < pickNum) {
@@ -558,7 +558,7 @@ function drawAndPositionAvatars() {
     if (gameStarted === true) {
         //draw the players according to what the client sees (their role sees)
         for (var i = 0; i < numPlayers; i++) {
-            //check if the user is on the spy list. 
+            //check if the user is on the spy list.
             //if they are, they are spy
             if (gameData.see && gameData.see.spies && gameData.see.spies.indexOf(roomPlayersData[i].username) !== -1) {
                 str = str + strOfAvatar(roomPlayersData[i], "spy");
@@ -593,7 +593,7 @@ function drawAndPositionAvatars() {
     scaleWidthDown = 0.8;
     }
     else{
-    scaleWidthDown = 0.8;  
+    scaleWidthDown = 0.8;
     }
     const scaleHeightDown = 1;
 
@@ -607,7 +607,7 @@ function drawAndPositionAvatars() {
         // console.log("player position: asdflaksdjf;lksjdf");
         var offsetX = w / 2;
         var offsetY = h / 2;
-        
+
         //reduce the height so that the bottom of avatars dont crash into the bottom.
         offsetY = offsetY * 1;
 
@@ -637,11 +637,11 @@ function drawAndPositionAvatars() {
     //   if($($(divs[i])[0]).find(".role-p")[0] ){
     //     var canvas = document.createElement("canvas");
     //     var ctx=canvas.getContext("2d");
-        
+
     //     ctx.font = $("#option_display_font_size_text").val(); + "px";
     //     var roleHere = $($(divs[i])[0]).find(".role-p")[0].innerHTML;
     //     console.log($($(divs[i])[0]).find(".role-p")[0].innerHTML);
-        
+
     //     var widthOfRole = ctx.measureText(roleHere).width;
 
     //     console.log("width: " + widthOfRole);
@@ -667,7 +667,7 @@ function drawAndPositionAvatars() {
 
 
 
-        
+
     divs[i].style.width = divs[i].offsetHeight * ratioXtoY + "px";
 
 
@@ -701,7 +701,7 @@ function drawAndPositionAvatars() {
 
 
 
-  
+
 
 
   var whenToShowGuns = [
@@ -714,35 +714,35 @@ function drawAndPositionAvatars() {
   var lastPickNum = 0;
   var lastMissionNum = 0;
   function drawGuns() {
-    $(".gun img").css("width", $("#mainRoomBox div").width() + "px"); 
-    $(".gun").css("width", $("#mainRoomBox div").width() + "px"); 
+    $(".gun img").css("width", $("#mainRoomBox div").width() + "px");
+    $(".gun").css("width", $("#mainRoomBox div").width() + "px");
 
-    
+
 
     if(gameData && gameData.phase){
         if(whenToShowGuns.indexOf(gameData.phase) === -1){
-            $(".gun").css("left", "50%"); 
-            $(".gun").css("top", "50%"); 
-            $(".gun").css("transform", "translate(-50%,-50%)"); 
-            $(".gun").removeClass("gunAfter"); 
-            $(".gun").addClass("gunBefore"); 
+            $(".gun").css("left", "50%");
+            $(".gun").css("top", "50%");
+            $(".gun").css("transform", "translate(-50%,-50%)");
+            $(".gun").removeClass("gunAfter");
+            $(".gun").addClass("gunBefore");
         }
     }
     else{
-        $(".gun").css("left", "50%"); 
-        $(".gun").css("top", "50%"); 
-        $(".gun").css("transform", "translate(-50%,-50%)"); 
-        $(".gun").removeClass("gunAfter"); 
-        $(".gun").addClass("gunBefore"); 
+        $(".gun").css("left", "50%");
+        $(".gun").css("top", "50%");
+        $(".gun").css("transform", "translate(-50%,-50%)");
+        $(".gun").removeClass("gunAfter");
+        $(".gun").addClass("gunBefore");
     }
-    
+
     if(gameData && (lastPickNum !== gameData.pickNum || lastMissionNum !== gameData.missionNum)){
-        // $(".gun").css("width", $("#mainRoomBox div").width() + "px"); 
-        $(".gun").css("left", "50%"); 
-        $(".gun").css("top", "50%"); 
-        $(".gun").css("transform", "translate(-50%,-50%)"); 
-        $(".gun").removeClass("gunAfter"); 
-        $(".gun").addClass("gunBefore"); 
+        // $(".gun").css("width", $("#mainRoomBox div").width() + "px");
+        $(".gun").css("left", "50%");
+        $(".gun").css("top", "50%");
+        $(".gun").css("transform", "translate(-50%,-50%)");
+        $(".gun").removeClass("gunAfter");
+        $(".gun").addClass("gunBefore");
 
         if(gameData && gameData.proposedTeam){
             // gameData.propsedTeam
@@ -758,12 +758,12 @@ function drawAndPositionAvatars() {
                     top: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*offsetGunPos.y) + "px" ,
                     left: $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/offsetGunPos.x) + "px",
                 }, 500);
-                $($(".gun")[i]).removeClass("gunBefore"); 
-                $($(".gun")[i]).addClass("gunAfter"); 
+                $($(".gun")[i]).removeClass("gunBefore");
+                $($(".gun")[i]).addClass("gunAfter");
 
                 lastPickNum = gameData.pickNum;
                 lastMissionNum = gameData.missionNum;
-            }   
+            }
         }
     }
     else{
@@ -772,19 +772,19 @@ function drawAndPositionAvatars() {
 }
 
   function adjustGunPositions(){
-    if(gameData && gameData.proposedTeam){     
+    if(gameData && gameData.proposedTeam){
         for (var i = 0; i < gameData.proposedTeam.length; i++) {
 
             var widOfGun = $(".gun").width();
             var heightOfGun = $(".gun").height();
             var icon = docCookies.getItem("optionDisplayProposedTeamIcon");
             var offsetGunPos = getGunPos(icon);
-            $($(".gun")[i]).css("top", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*offsetGunPos.y) + "px"); 
-            $($(".gun")[i]).css("left", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/offsetGunPos.x) + "px");           
+            $($(".gun")[i]).css("top", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().top + (heightOfGun*offsetGunPos.y) + "px");
+            $($(".gun")[i]).css("left", $($("#mainRoomBox div")[getIndexFromUsername(gameData.proposedTeam[i])]).position().left + (widOfGun/offsetGunPos.x) + "px");
         }
     }
   }
-  
+
   function drawTeamLeaderStar() {
       var playerIndex;
       if (gameStarted === false) {
@@ -798,7 +798,7 @@ function drawAndPositionAvatars() {
           str = str + "<span><img src='pictures/leader.png' class='leaderStar'></span>";
           //update the str in the div
           $("#mainRoomBox div")[playerIndex].innerHTML = str;
-  
+
           $(".leaderStar")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
       }
   }
@@ -810,7 +810,7 @@ function drawClaimingPlayers(claimingPlayers){
     if (isSpectator === false) {
         $(buttons["claim"]).removeClass("disabled");
     }
-    
+
     for(var i = 0; i < roomPlayersData.length; i++){
         if(roomPlayersData[i].claim && roomPlayersData[i].claim === true){
             if ($("#mainRoomBox div")[getIndexFromUsername(roomPlayersData[i].username)]) {
@@ -818,7 +818,7 @@ function drawClaimingPlayers(claimingPlayers){
                 str = str + "<span><img src='pictures/claim.png' class='claimIcon'></span>";
                 //update the str in the div
                 $("#mainRoomBox div")[getIndexFromUsername(roomPlayersData[i].username)].innerHTML = str;
-        
+
                 // $(".claimIcon")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
             }
 
@@ -828,31 +828,31 @@ function drawClaimingPlayers(claimingPlayers){
         }
     }
 }
-  
+
   function drawExitedPlayers(playersStillInRoom){
-  
+
       var arrayOfUsernames = []
       for(var i = 0; i < roomPlayersData.length; i++){
           arrayOfUsernames.push(roomPlayersData[i].username);
       }
-  
-  
+
+
       for(var i = 0; i < arrayOfUsernames.length; i++){
           // if(roomPlayersData[i].claim && roomPlayersData[i].claim === true){
           if(playersStillInRoom.indexOf(arrayOfUsernames[i]) === -1){
-  
+
               // var j = playersStillInRoom.indexOf(arrayOfUsernames[i]);
-  
+
               // if ($("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])]) {
               //     var str = $("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])].innerHTML;
               //     str = str + "<span><img src='pictures/leave.png' class='leaveIcon'></span>";
               //     //update the str in the div
               //     $("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])].innerHTML = str;
-          
+
               //     // $(".claimIcon")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
               // }
-  
-  
+
+
               if ($(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])]) {
                   $(".avatarImgInRoom")[getIndexFromUsername(arrayOfUsernames[i])].classList.add("leftRoom");
               }
@@ -863,9 +863,9 @@ function drawClaimingPlayers(claimingPlayers){
               }
           }
       }
-  
+
   }
-  
+
 function enableDisableButtonsLeader(numPlayersOnMission) {
     enableDisableButtons();
     //if they've selected the right number of players, then allow them to send
@@ -884,7 +884,7 @@ function enableDisableButtons() {
     document.querySelector(buttons["red"]).classList.add("hidden");
         // Claim button is never hidden, only disabled
     // document.querySelector(buttons["claim"]).classList.add("hidden");
-    
+
     //Disable the buttons. Enable them as we need them.
     document.querySelector(buttons["green"]).classList.add("disabled");
     document.querySelector(buttons["red"]).classList.add("disabled");
@@ -900,7 +900,7 @@ function enableDisableButtons() {
         }
     }
     isSpectator = !isPlayer;
-    
+
     //determine if we are spectator or not
     for(var i = 0; i < roomPlayersData.length; i++){
         if(roomPlayersData[i].username === ownUsername){
@@ -913,7 +913,7 @@ function enableDisableButtons() {
     if(isSpectator === false){
         btnRemoveDisabled("claim");
     }
-      
+
     if (gameStarted === false) {
         //Host
         if (ownUsername === getUsernameFromIndex(0)) {
@@ -1105,7 +1105,7 @@ function strOfAvatar(playerData, alliance) {
                 //stored locally, need to add the path to it
                 picLink = 'avatars/' + playerData.avatarImgRes;
             }
-            
+
         } else {
             picLink = 'avatars/base-res.png'
         }
@@ -1138,12 +1138,12 @@ function strOfAvatar(playerData, alliance) {
     //can improve this code here
     if (gameStarted === true && gameData.phase === "finished") {
         var roleWid = ctx.measureText(gameData.see.roles[getIndexFromUsername(playerData.username)]).width + 20;
-        
+
         role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + gameData.see.roles[getIndexFromUsername(playerData.username)] + "</p>";
     }
 
     else if (gameStarted === true) {
-        
+
         //if rendering our own player, give it the role tag
         if (playerData.username === ownUsername) {
             var roleWid = ctx.measureText(gameData.role).width + 20;
@@ -1164,7 +1164,7 @@ function strOfAvatar(playerData, alliance) {
         var littleProtrudingEdgeWid = (nameWid - widOfBox) / 2;
         var offsetDist = (nameWid - littleProtrudingEdgeWid) + 5;
 
-    
+
         lady = "<span class='glyphicon glyphicon-book' style='top: 50%; transform: translateY(-50%); position: absolute; right: " + offsetDist + "px'></span> ";
     }
 
@@ -1178,7 +1178,7 @@ function strOfAvatar(playerData, alliance) {
     var nameWid = ctx.measureText(playerData.username).width;
     // console.log(nameWid);
 
-    
+
 
     var widOfBox = $("#mainRoomBox div").width();
     // console.log(widOfBox);
@@ -1186,7 +1186,7 @@ function strOfAvatar(playerData, alliance) {
     var littleProtrudingEdgeWid = (nameWid - widOfBox) / 2;
     var offsetDist = (nameWid - littleProtrudingEdgeWid) + 5;
 
-    
+
 
     // console.log(offsetDist);
 
@@ -1255,8 +1255,8 @@ function scrollDown(chatBox, hardScroll) {
         chatBox = chatBox.slice(1, chatBox.length);
     }
 
-    
-    
+
+
     var searchStrScrollBox = "#" + chatBox;
     var searchStrListBox = "#" + chatBox + "-list";
 
@@ -1278,21 +1278,21 @@ function scrollDown(chatBox, hardScroll) {
     if(lastMessages.length !== 0){
         var lastMessage = lastMessages[lastMessages.length-1];
         var extraHeight = $(lastMessage).height() - 20;
-    
+
         var i = lastMessages.length-1 - 1;
         while(lastMessage.classList.contains("myQuote")){
             lastMessage = lastMessages[i];
             extraHeight += $(lastMessage).height() - 20;
             i--;
         }
-    
-        
-    
+
+
+
         heightOfLastMessage = ((lastMessages.length-1) - i)*20;
-    
+
       // console.log("Height: " + heightOfLastMessage);
-    
-    
+
+
         if((listBox.height() - scrollBox.scrollTop() - scrollBox.height()) > 5 + heightOfLastMessage + extraHeight){
             //Show user that there is a new message with the red bar.
             //Show because the only time this will trigger is when a new message comes in anyway
@@ -1310,7 +1310,7 @@ function scrollDown(chatBox, hardScroll) {
         scrollBox.scrollTop(scrollBox[0].scrollHeight);
     }
 
-    
+
 }
 
 var arrayOfChatBoxes = [
@@ -1371,7 +1371,7 @@ function toRadians(angle) {
 }
 
 //some setups result in collisions of avatars
-//so set up some custom degree positions for avatars at certain 
+//so set up some custom degree positions for avatars at certain
 //game sizes
 
 //key = num of players in game
@@ -1488,8 +1488,8 @@ function drawVoteHistory(data) {
         keyArray[roomPlayersData.length - i] = (roomPlayersData[i].username);
       // console.log("Push: " + roomPlayersData[i].username);
       // console.log("i: " + i);
-    } 
-    
+    }
+
   // console.log("key array:" );
   // console.log(keyArray);
 
@@ -1520,7 +1520,7 @@ function drawVoteHistory(data) {
                 numOfPicksPerMission[i]++;
             }
         }
-        str += "</tr>"; 
+        str += "</tr>";
     }
 
     $(".voteHistoryTableClass")[0].innerHTML = str;
@@ -1531,12 +1531,12 @@ function drawVoteHistory(data) {
         var id = ".missionHeader" + (i + 1);
 
         var allHeaders = $(id);
-    
+
         $(id).attr("colspan", numOfPicksPerMission[i]);
-    
+
     }
 
-    
+
 }
 
 
@@ -1594,7 +1594,7 @@ function resetAllGameData() {
     //hide the options cog
     document.querySelector("#options-button").classList.add("hidden");
 
-    //reset room-chat 
+    //reset room-chat
     // console.log("RESET ROOM CHAT");
     $(".room-chat-list").html("");
 
@@ -1604,7 +1604,7 @@ function resetAllGameData() {
     $(".voteHistoryTableClass")[1].innerHTML = "";
 
     $("#missionsBox").addClass("invisible");
-    
+
     lastPickNum = 0;
     lastMissionNum = 0;
 
@@ -1623,7 +1623,7 @@ function extendTabContentToBottomInRoom() {
     //extending the tab content to the bottom of the page:
 
     //20 pixel diff for navbar
-    
+
 
 
 
@@ -1698,7 +1698,7 @@ function checkMessageForCommands(message, chatBox) {
                       // console.log("Command: " + commands[key].command + " called.");
                         commandCalled = modCommands[key].command;
                         validCommandFound = true;
-    
+
                         break;
                     }
                 }
@@ -1714,7 +1714,7 @@ function checkMessageForCommands(message, chatBox) {
                         // console.log("Command: " + commands[key].command + " called.");
                         commandCalled = adminCommands[key].command;
                         validCommandFound = true;
-    
+
                         break;
                     }
                 }
@@ -1723,8 +1723,8 @@ function checkMessageForCommands(message, chatBox) {
 
         if (validCommandFound === false) {
           // console.log("Command invalid");
-            var str = "/"+ messageCommand + " is not a valid command. Type /help for a list of commands."; 
-            var data = { 
+            var str = "/"+ messageCommand + " is not a valid command. Type /help for a list of commands.";
+            var data = {
                 message: str,
                 classStr: "server-text",
                 dateCreated: new Date()
@@ -1799,7 +1799,7 @@ function unescapeHtml(unsafe) {
          .replace(/&gt;/g, ">")
          .replace(/&quot;/g, '"')
          .replace(/&#039;/g, "'")
-      
+
 }
 
 function escapeHtml(unsafe) {
@@ -1830,7 +1830,7 @@ function scaleMiddleBoxes(){
     // $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")")
     // $("#missionsBox").css("transform-origin", "bottom");
     $("#missionsBox").css("transform", "translateX(-50%) scale(" + ratioToReduce + ")");
-    var playerDivHeightRatio = $(".playerDiv").height()/128; 
+    var playerDivHeightRatio = $(".playerDiv").height()/128;
     var proposedTeamIcon = docCookies.getItem("optionDisplayProposedTeamIcon");
 
     var maxHeight = 0;
@@ -1842,9 +1842,9 @@ function scaleMiddleBoxes(){
         maxHeight = 45;
         maxWidth = 128;
     }
-  
-    $(".gunImg").css("height", "100%");  
-    $(".gunImg").css("height", "100%");    
+
+    $(".gunImg").css("height", "100%");
+    $(".gunImg").css("height", "100%");
     //needs to be scaled this way as reducing img size still overshoots
     $(".gunImg").css("max-height", maxHeight*playerDivHeightRatio + "px");
     $(".gunImg").css("max-width", maxWidth*playerDivHeightRatio + "px");
@@ -1873,7 +1873,8 @@ var sounds = {
     "game-end": "game-end.mp3",
     "highDing": "highDing.mp3",
     "game-start-ready": "game-start-ready.mp3",
-    "lick": "lick.mp3"
+    "lick": "lick.mp3",
+    "poke": "poke.mp3"
 }
 
 //get all the sound files and prepare them.
@@ -1906,7 +1907,7 @@ function displayNotification(title, body, icon, tag){
             icon: icon,
             tag: tag
         }
-    
+
         var notif = new Notification(title, options);
     }
 }
@@ -1937,7 +1938,7 @@ function getGunPos(icon) {
     if (icon === "shield") {
         position = {
             "x": 2,
-            "y": 1.85       
+            "y": 1.85
         }
     } else {
         // default: icon = "gun"

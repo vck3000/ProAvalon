@@ -73,7 +73,7 @@ var userOptions = {
 
 
             //set up div 1 to be resizable in north and south directions
-            $("#div1Resize").resizable({ 
+            $("#div1Resize").resizable({
                 handles: 's'
             });
             //on resize of div 1, resize div 2.
@@ -99,7 +99,7 @@ var userOptions = {
                 //update the new resizeable heights
                 $("#div1Resize").resizable("option","minHeight",parseInt($(window).height()*0.25,10));
                 $("#div1Resize").resizable("option","maxHeight",parseInt($(window).height()*0.66,10));
-                
+
             });
 
 
@@ -127,7 +127,7 @@ var userOptions = {
 
                 //Make the height adjustments to div 2
                 userOptions["optionDisplayHeightOfAvatarContainer"].avatarContainerHeightAdjust();
-                
+
             });
         },
 
@@ -267,7 +267,7 @@ var userOptions = {
                 var checked = $("#option_display_compact_view")[0].checked;
 
                 updateCompactView(checked);
-                
+
 
                 //save their option in cookie
                 docCookies.setItem("optionDisplayCompactView", checked.toString(), Infinity);
@@ -286,7 +286,7 @@ var userOptions = {
                 icon = true;
                 //save it in cookie
                 docCookies.setItem("optionDisplayUseOldGameIcons", false, Infinity);
-            } 
+            }
             else {
                 //else load it
                 icon = docCookies.getItem("optionDisplayUseOldGameIcons");
@@ -333,7 +333,7 @@ var userOptions = {
             if (isOptionExists === false) {
                 //save it in cookie
                 docCookies.setItem("optionDisplayUseSmallIconsCrownShield", false, Infinity);
-            } 
+            }
 
             var getOption = docCookies.getItem("optionDisplayUseSmallIconsCrownShield");
 
@@ -367,7 +367,7 @@ var userOptions = {
     //---------------------------------------------
     //Sound Notifications
     //---------------------------------------------
-    
+
     optionNotificationsSoundEnable: {
         defaultValue: "true",
         onLoad: function(){
@@ -419,8 +419,8 @@ var userOptions = {
             var volume = docCookies.getItem("optionNotificationsSoundVolume");
 
             //set the value in the users display
-            $("#option_notifications_sound_volume")[0].value = volume;   
-            
+            $("#option_notifications_sound_volume")[0].value = volume;
+
             //update the number when slider changes
             var volumeSlider = document.getElementById("option_notifications_sound_volume");
             var volumeDisplay = $("#volumeValue");
@@ -428,7 +428,7 @@ var userOptions = {
             volumeDisplay[0].innerHTML = volumeSlider.value;
 
 
-        
+
             volumeSlider.oninput = function(){
                 volumeDisplay[0].innerHTML = volumeSlider.value;
             };
@@ -441,7 +441,7 @@ var userOptions = {
             });
         }
     },
-    
+
 
     optionNotificationsSoundPlayersJoiningRoom: {
         defaultValue: "false",
@@ -577,6 +577,28 @@ var userOptions = {
         }
     },
 
+    optionNotificationsSoundPoke: {
+        defaultValue: "true",
+        onLoad: function(){
+            var checked;
+            var savedSetting = docCookies.getItem("optionNotificationsSoundPoke");
+            if(savedSetting === "true"){
+                checked = true;
+            }
+            else if(savedSetting === "false"){
+                checked = false;
+            }
+            $("#option_notifications_sound_slap")[0].checked = checked;
+        },
+        initialiseEventListener: function() {
+            $("#option_notifications_sound_poke")[0].addEventListener("click", function () {
+                var checked = $("#option_notifications_sound_poke")[0].checked;
+                //save their option in cookie
+                docCookies.setItem("optionNotificationsSoundPoke", checked.toString(), Infinity);
+            });
+        }
+    },
+
     optionNotificationsSoundSlap: {
         defaultValue: "true",
         onLoad: function(){
@@ -607,7 +629,7 @@ var userOptions = {
 
             //set the value in the users display
             $("#option_notifications_buzz_slap_timeout")[0].value = seconds;
-            
+
         },
         initialiseEventListener: function() {
             $("#option_notifications_buzz_slap_timeout")[0].addEventListener("click", function () {
@@ -774,7 +796,7 @@ var userOptions = {
             });
         }
     },
-    
+
 }
 
 //run through each userOption load and initialiseEventListener
@@ -802,11 +824,11 @@ for (var keys in userOptions) {
 
 
 var defaultColours = [
-    '#ff6d6d', 
+    '#ff6d6d',
     '#ffff9e',
     "#c5b5ff",
     "#ff9b9b",
-    '#9aa888', 
+    '#9aa888',
     '#96ff96',
     '#72afac',
     '#a8d6ff',
@@ -839,14 +861,14 @@ function update(picker){
 
     for(var i = 0; i < 10; i++){
         $("#player" + i + "HighlightColour")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));
-        $("#player" + i + "HighlightColour2")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));  
+        $("#player" + i + "HighlightColour2")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));
     }
-    
+
 
     //refresh the chat highlight colour at the same time
 
     var username = getUsernameFromIndex(picker.playerColourID);
-    
+
   // console.log("Player highlight colour: " + playerHighlightColour);
 
     //only need to change colour if the user has selected that player's chat.
@@ -868,7 +890,7 @@ function updateCompactView(input){
 
         $(".well").css("margin-bottom", "0px");
         $(".well").css("margin-top", "0px");
-        
+
     }
     else{
         $("#tabs1").css("padding-right", "15px");
@@ -876,7 +898,7 @@ function updateCompactView(input){
 
         $(".well").css("margin-bottom", "20px");
         $(".well").css("margin-top", "20px");
-        
+
 
     }
 }
@@ -885,7 +907,7 @@ function updateGunImage(input) {
     if (input === false || input === "false") {
             //when shields are used
             $(".gunImg").attr("src",pics["shieldOrange"].path);
-    } 
+    }
     else if(input === true || input === "true"){
         //when guns are used
         $(".gunImg").attr("src", pics["gun"].path);
