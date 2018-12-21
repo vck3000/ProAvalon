@@ -1466,16 +1466,20 @@ module.exports = function (io) {
 			//Note, by default when socket disconnects, it leaves from all rooms. 
 			//If user disconnected from within a room, the leave room function will send a message to other players in room.
 
+            var username = socket.request.user.username;
+            var inRoomId = socket.request.user.inRoomId;
+
+			playerLeaveRoomCheckDestroy(socket);
+
 			//if they are in a room, say they're leaving the room.
 			var data = {
-				message: socket.request.user.username + " has left the room.",
+				message: username + " has left the room.",
 				classStr: "server-text-teal",
 				dateCreated: new Date()
 			}
-			sendToRoomChat(io, socket.request.user.inRoomId, data);
+			sendToRoomChat(io, inRoomId, data);
 			// io.in(socket.request.user.inRoomId).emit("player-left-room", socket.request.user.username);
 
-			playerLeaveRoomCheckDestroy(socket, io);
 		});
 
 
@@ -1487,15 +1491,12 @@ module.exports = function (io) {
 				var userNotFound = false;
 
 				data.forEach(async function(item){
-					// console.log("b");
 					if(item.name === "banPlayerUsername"){
-						// console.log("b(a)");
 						//not case sensitive
 						await User.findOne({usernameLower: item.value.toLowerCase()}, function(err, foundUser){
 							if(err){console.log(err);}
 							else{
 								// foundUser = foundUser[0];
-								// console.log("b(b)");
 								if(!foundUser){
 									socket.emit("messageCommandReturnStr", {message: "User not found. Please check spelling and caps.", classStr: "server-text"});
 									userNotFound = true;
@@ -1540,8 +1541,6 @@ module.exports = function (io) {
 					}
 				});
 
-				// console.log("c");
-
 				if(userNotFound === true){
 					return;
 				}
@@ -1552,18 +1551,14 @@ module.exports = function (io) {
 						newModAction.modWhoBanned = {};
 						newModAction.modWhoBanned.id = foundUser._id;
 						newModAction.modWhoBanned.username = foundUser.username;
-						// console.log("1");
 					}
 				});
-
-				// console.log("2");
 
 				newModAction.whenMade = new Date();
 				newModAction.whenRelease = newModAction.whenMade.getTime() + newModAction.durationToBan.getTime();
 
 				// console.log(newModAction);
 				if(userNotFound === false && newModAction.bannedPlayer && newModAction.bannedPlayer.username){
-					// console.log("****************");
 					modAction.create(newModAction,function(err, newModActionCreated){
                         if(newModActionCreated !== undefined){
                             // console.log(newModActionCreated);
@@ -1888,7 +1883,6 @@ module.exports = function (io) {
 
 		socket.on("startGame", function (data, gameMode) {
 			//start the game
-			console.log(socket.request.user.inRoomId);
 			if (rooms[socket.request.user.inRoomId]) {
 
 				if (socket.request.user.inRoomId && socket.request.user.username === rooms[socket.request.user.inRoomId].host) {
@@ -2077,10 +2071,10 @@ function isMuted(socket){
 }
 
 
-function playerLeaveRoomCheckDestroy(socket, modKill){
+function playerLeaveRoomCheckDestroy(socket){
 
 	if(socket.request.user.inRoomId && rooms[socket.request.user.inRoomId]){
-		//leave the room
+        //leave the room
 		rooms[socket.request.user.inRoomId].playerLeaveRoom(socket);
 
 		var toDestroy = rooms[socket.request.user.inRoomId].destroyRoom;

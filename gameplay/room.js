@@ -147,14 +147,15 @@ Room.prototype.playerLeaveRoom = function (socket) {
         this.gamePlayerLeftDuringReady = true;
     }
 
+    // In case they were sitting down, remove them
+    this.playerStandUp(socket);
+
     // Remove them from all sockets
     var index = this.allSockets.indexOf(socket);
     if (index !== -1) {
         this.allSockets.splice(index, 1);
     }
 
-    // In case they were sitting down, remove them
-    this.playerStandUp(socket);
 
     // Set the host to the first person in the sitting down array in case the previous host left
     if (this.socketsOfPlayers[0] !== undefined) {

@@ -46,7 +46,7 @@ playersReadyNotReady.prototype.playerNotReady = function (username) {
 };
 
 playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
-    console.log("HOST TRY START GAME");
+    // console.log("HOST TRY START GAME");
     if(this.hostTryStartGameDate){
         // 11 seconds
         if(new Date - this.hostTryStartGameDate > 1000*11){
@@ -78,7 +78,7 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
         // If there are bots, remove them.
         for(var i = this.playersYetToReady.length - 1; i >= 0 ; i--){
             if( this.playersYetToReady[i].request.user.bot === true ){
-                console.log("Removed bot: " + i);
+                // console.log("Removed bot: " + i);
                 this.playersYetToReady.splice(i, 1);
             }
         }
