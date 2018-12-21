@@ -292,7 +292,18 @@ Game.prototype.playerLeaveRoom = function(socket){
 		} 
 
 		this.distributeGameData();
-	}
+    }
+    else{
+        // If we are in player ready not ready phase, then make them not ready and then perform
+        // the usual leave room procedures.
+        if(this.playersYetToReady !== undefined && this.playersYetToReady.length !== undefined && this.playersYetToReady.length !== 0){
+            this.playerNotReady();
+            var username = socket.request.user.username;
+            this.sendText(this.allSockets, username + " is not ready.", "server-text");
+        }
+
+    }
+    
 	// If one person left in the room, the host would change
 	// after the game started. So this will fix it
 
@@ -300,7 +311,7 @@ Game.prototype.playerLeaveRoom = function(socket){
 	if(this.gameStarted === true){
 		origHost = this.host;
 	}
-	
+    
 	Room.prototype.playerLeaveRoom.call(this, socket);
 
 	if(this.gameStarted === true){
@@ -359,11 +370,11 @@ Game.prototype.startGame = function (options) {
 	}
 
 
-	for(var key in this.specialRoles){
-		if(this.specialRoles.hasOwnProperty(key)){
-			console.log("Key: " + key);
-		}
-	}
+	// for(var key in this.specialRoles){
+	// 	if(this.specialRoles.hasOwnProperty(key)){
+	// 		console.log("Key: " + key);
+	// 	}
+	// }
 
 	//Give roles to the players according to their alliances
 	//Get roles:
@@ -372,7 +383,7 @@ Game.prototype.startGame = function (options) {
 
 	for(var i = 0; i < options.length; i++){
 		var op = options[i].toLowerCase();
-		console.log(op);
+		// console.log(op);
 		// If a role file exists for this
 		if(this.specialRoles.hasOwnProperty(op)){
 			// If it is a res:
@@ -524,13 +535,13 @@ Game.prototype.checkBotMoves = function () {
 					continue;
 				}
 	
-				console.log("===================");
-				console.log("Bot playing move: ");
+				// console.log("===================");
+				// console.log("Bot playing move: ");
 				
-				console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
-				console.log("Bot index: ");
-				console.log(i);
-				console.log(thisRoom.botIndexes[i]);
+				// console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
+				// console.log("Bot index: ");
+				// console.log(i);
+				// console.log(thisRoom.botIndexes[i]);
 				
 	
 	
@@ -541,7 +552,7 @@ Game.prototype.checkBotMoves = function () {
 					prohibitedIndexesToPick = [];
 				}
 				
-				console.log(buttons);
+				// console.log(buttons);
 				var canHitGreen = false;
 				var canHitRed = false;
 				if(buttons.green.hidden !== true){
@@ -553,13 +564,13 @@ Game.prototype.checkBotMoves = function () {
 	
 				// If we can't make any moves, don't do anything
 				if((canHitGreen === false && canHitRed === false) || (numOfTargets === 0 || numOfTargets === undefined)){
-					console.log("Cant make any moves");
-					console.log("Bot playing move: ");
-					console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
+					// console.log("Cant make any moves");
+					// console.log("Bot playing move: ");
+					// console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
 	
-					console.log(canHitGreen);
-					console.log(canHitRed);
-					console.log(numOfTargets);
+					// console.log(canHitGreen);
+					// console.log(canHitRed);
+					// console.log(numOfTargets);
 					continue;
 				}
 	
@@ -613,17 +624,17 @@ Game.prototype.checkBotMoves = function () {
 					selectUsernames.push(allowedUsernamesToPick[randomNums0toPlayerCount[j]]);
 				}
 	
-				console.log("Select usernames: ");
-				console.log(selectUsernames);
+				// console.log("Select usernames: ");
+				// console.log(selectUsernames);
 	
-				console.log("Bot playing move: ");
-				console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
+				// console.log("Bot playing move: ");
+				// console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
 	
-				console.log("Allowed usernames: ");
-				console.log(allowedUsernamesToPick);
+				// console.log("Allowed usernames: ");
+				// console.log(allowedUsernamesToPick);
 	
-				console.log("Prohibited indices: ");
-				console.log(prohibitedIndexesToPick);
+				// console.log("Prohibited indices: ");
+				// console.log(prohibitedIndexesToPick);
 	
 				thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]], selectUsernames);
 				// setTimeout(function(index){

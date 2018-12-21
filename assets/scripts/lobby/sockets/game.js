@@ -71,7 +71,8 @@ socket.on("spec-game-starting", function(data){
         title:"A game is starting!",
         text: "You cannot join the game unless someone is not ready.",
         type: "info",
-        allowEnterKey: false
+        allowEnterKey: false,
+        timer: 11000
     });
 
     // document.querySelector("#green-button").classList.contains("hidden")

@@ -21,6 +21,15 @@ var buttons = {
 setInterval(function(){
     extendTabContentToBottomInRoom();
 
+    // Extend the div1resize box to be full width
+    // if the difference between the widths is close enough to 0, then change width
+    if(Math.abs($("#div1Resize").width() - $("#div1Resize").parent().width() * 0.95) > 1){
+        console.log("Changed width:");
+        $("#div1Resize").width($("#div1Resize").parent().width());
+        draw();
+        draw();
+    }
+
 }, 1000);
 
 //Prevents the window height from changing when android keyboard is pulled up.
@@ -59,7 +68,7 @@ var isSpectator = false;
 
 //window resize, repaint the users
 window.addEventListener('resize', function () {
-  // console.log("Resized");
+    // console.log("Resized");
 
 
     checkStatusBarWithHeight();
