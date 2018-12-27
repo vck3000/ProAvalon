@@ -13,6 +13,12 @@ What things you need to install the software and how to install them
 - MongoDB
 - Git
 
+
+Things that I use that you may find useful:
+ - Microsoft VS Code (IDE)
+ - ConEmu (Windows program to open multiple cmds (terminals) in one window
+
+
 ### Installing
 
 1. Clone (using git) a copy of the code:
