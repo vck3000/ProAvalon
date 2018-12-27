@@ -13,19 +13,19 @@
 	<!-- Sweet alert! -->
 	<!-- <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> -->
 	<!--<script src="/libraries/sweetalert2.1.0.min.js"></script>-->
-	
+
 	<script type="text/javascript" src="/libraries/sweetalert2/dist/sweetalert2.all.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@7.1.0/dist/promise.min.js"></script>
 
 
 
 
-	<meta name="viewport" content="width=device-width, initial-scale=1" /> 
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<meta name="description" content="Play The Resistance Avalon online with us! A wonderful community awaits you.">
 	<meta name="keywords" content="Play, The Resistance, Avalon, Online">
 	<meta name="google-site-verification" content="quBJj75OINJaklLWexWakzylhy8HkfaHi1_2KwsB3d0" />
-	
-	
+
+
 </head>
 <body>
 
@@ -75,7 +75,7 @@
 			background-color: #444444;
 		}
 
-		
+
 
 		.notificationItem:hover {
 			background-color: #ddd;
@@ -221,7 +221,7 @@
 					<% if(locals.isMod && isMod === true){ %>
 						<li><a href="/mod">Moderation</a></li>
 					<% } %>
-					
+
 
 					<%}%>
 
@@ -233,7 +233,7 @@
 					<!-- <li><a href="#">About</a></li> -->
 
 					<!-- <li><a href="#">Contact us</a></li> -->
-			
+
 					<% if(currentUser){%>
 
 					<% if(locals.userNotifications) {%>
@@ -251,14 +251,14 @@
 										}
 									%>
 									<%=num%>
-								
+
 									</span>
 								<% } %>
-								
-							</a> 
+
+							</a>
 
 							<ul class="dropdown-menu" id="notificationsList">
-							
+
 								<li class="notificationItem"><a>
 									<p class="notificationText"><span style="visibility: hidden; white-space: normal;">a</span></p>
 									<p><span class="notificationDate"><span style="visibility: hidden; white-space: normal;">a</span></span><span class="hideAll">Hide all<span class="hidden"></span></span></p>
@@ -282,7 +282,7 @@
 
 												// if(new Date().toDateString() === dateToShow){
 												// 	dateToShow = new Date(userNotifications[i].date).
-												// }	
+												// }
 											%>
 
 
@@ -290,9 +290,9 @@
 											<span class="notificationHide" >Hide<span class="hidden userNotificationIdToRemove" ><%=userNotifications[i]._id%></span></span>
 											</p>
 											<!--<p><%= userNotifications[i].link %></p>-->
-											
+
 										</li>
-										
+
 										<% if(!(i === 0)) { %>
 											<hr>
 										<% } %>
@@ -305,12 +305,12 @@
 						</li>
 					<% } %>
 
-					
-					<% if(locals.optionsCog){ %> 
+
+					<% if(locals.optionsCog){ %>
 						<li>
 							<a href="#" role="button" data-toggle="modal" data-target="#optionsModal" class="optionsCog">
 								<span class="glyphicon glyphicon-cog"></span>
-							</a> 
+							</a>
 						</li>
 					<% } %>
 					<!-- <li><a href="#">Hi there, <%=currentUser.username%></a></li> -->
@@ -330,12 +330,12 @@
 		<!-- MY NOTIFICATION REQUESTS - does NOT need to reload -->
 		<a id="danger-alert-box-button" class="inactive-window">
 			<div class="alert alert-danger inactive-window" id="danger-alert-box">
-			</div>	
+			</div>
 		</a>
 
 		<a id="success-alert-box-button" class="inactive-window">
 			<div class="alert alert-success inactive-window" id="success-alert-box">
-			</div>	
+			</div>
 		</a>
 
 
@@ -380,10 +380,10 @@
 
 
 <style>
-	#leftOptionsCategories ul li { 
-		background: #EAEAEA; 
+	#leftOptionsCategories ul li {
+		background: #EAEAEA;
 	}
-	#leftOptionsCategories ul li:nth-child(odd) { 
+	#leftOptionsCategories ul li:nth-child(odd) {
 		background: #E2E2E2;
 	}
 
@@ -396,7 +396,7 @@
 	#leftOptionsCategoriesTable tbody tr td {
 		border: transparent 2px solid;
 
-		
+
 	}
 
 	#leftOptionsCategoriesTable tbody tr td:hover {
@@ -412,7 +412,7 @@
 	}
 
 	#borderBar {
-		border-left: 2px solid gray; 
+		border-left: 2px solid gray;
 		height: 100%;
 		width:0px;
 		padding: 0px;
@@ -420,7 +420,7 @@
 	}
 
 	.optionsInputList {
-		
+
 	}
 
 	.dark .myActive {
@@ -441,8 +441,8 @@
 	#rightOptionsMenu {
 		overflow: auto;
 	}
-	
-	
+
+
 </style>
 
 
@@ -487,7 +487,7 @@
 										</span>
 									</td>
 								</tr>
-								
+
 							</tbody>
 						</table>
 					</div>
@@ -499,7 +499,7 @@
 							<h4><u>Display: </u></h4>
 							<div>
 								<label>Font size: <input type="text" name="option_display_font_size_text" id="option_display_font_size_text" style="width: 3em;"></label>
-							</div>	
+							</div>
 							<div>
 								<label>Height of avatar area: <input type="text" name="option_display_avatar_container_height_text" id="option_display_avatar_container_height_text" style="width: 3em;"></label>
 							</div>
@@ -525,12 +525,12 @@
 								<label><input type="checkbox" name="optionDisplayUseSmallIconsCrownShield" id="optionDisplayUseSmallIconsCrownShield"> Use smaller icons for the crown and shield</label>
 							</div>
 
-							
+
 						</div>
 
 						<div id="notificationsOptionsMenu" class="hidden rightMenu">
 							<h4><u>Notifications: </u></h4>
-							
+
 							<div class="subBox">
 								<h5><u>Sound: </u></h5>
 								<div>
@@ -575,6 +575,9 @@
 								<div>
 									<label><input type="checkbox" name="option_notifications_sound_slap" id="option_notifications_sound_slap"> Slapping</label>
 								</div>
+								<div>
+									<label><input type="checkbox" name="option_notifications_sound_poke" id="option_notifications_sound_poke"> Poking</label>
+								</div>
 							</div>
 
 							<div>
@@ -611,7 +614,7 @@
 								</div>
 
 
-								
+
 							</div>
 						</div>
 
@@ -638,10 +641,10 @@
 										.then((result) => {
 											console.log(result);
 										if (result.value) {
-											
+
 											//get all the keys
 											var keys = docCookies.keys();
-						
+
 											//remove each item
 											for(var i = 0; i < keys.length; i++){
 												docCookies.removeItem(keys[i]);
@@ -655,7 +658,7 @@
 												//reload
 												location.reload();
 											});
-					
+
 										} else {
 											Swal("Your settings are safe!");
 										}
@@ -663,7 +666,7 @@
 								}
 							</script>
 						</div>
-						
+
 					</div>
 
 
@@ -688,7 +691,7 @@ $(document).ready(function(){
 		// console.log(this);
 	});
 
-	
+
 	// $('.userNotificationIdToRemove').on('click', function (event) {
 	// 	setTimeout(function(e){
 	// 		$(event).parent("notificationsDropdown a").parent().toggleClass('open');
@@ -699,8 +702,8 @@ $(document).ready(function(){
 
 
 	$('body').on('click', function (e) {
-		if (!$('#notificationsDropdown').is(e.target) 
-			&& $('#notificationsDropdown').has(e.target).length === 0 
+		if (!$('#notificationsDropdown').is(e.target)
+			&& $('#notificationsDropdown').has(e.target).length === 0
 			&& $('.open').has(e.target).length === 0
 		) {
 			$('#notificationsDropdown').removeClass('open');
@@ -708,7 +711,7 @@ $(document).ready(function(){
 	});
 
 	$(".notificationText").on('click', function(e){
-		
+
 		if(e.innerText !== "a" && $(e.target).parent().parent().hasClass("unseen") === true){
 			// seenNotificationFunction
 			// console.log($(e.target).parent().parent().find(".userNotificationIdToRemove")[0].innerHTML);
@@ -736,7 +739,7 @@ $(document).ready(function(){
 				notifs[i].remove();
 				$(notifs[i]).next().remove();
 			}
-			
+
 			$(".badge")[0].innerHTML = 0;
 
 			$("#notificationsList hr").remove();
@@ -753,9 +756,9 @@ $(document).ready(function(){
 		// console.log("click");
 		// console.log(this.children[0].innerHTML);
 		hideFunction(this.children[0].innerHTML);
-		
+
 		// console.log(this.parent().innerHTML);
-		
+
 		var notifs = $("#notificationsList li");
 
 		var notifsIds = $("#notificationsList li").find(".userNotificationIdToRemove");
@@ -763,20 +766,20 @@ $(document).ready(function(){
 		for(var i = 0; i < notifsIds.length; i++){
 
 			// console.log(notifs);
-			
+
 				if(notifs.length === 2){
 					notifs[1].innerHTML = "";
 					$(".badge")[0].innerHTML = 0;
 					// console.log("been here");
 				}
-				
+
 				else if(notifsIds[i] && notifsIds[i].innerHTML === this.children[0].innerHTML){
 					// console.log(i);
 
 					$(notifs[i+1]).addClass("hidden");
 					$(notifs[i+1]).next().addClass("hidden");
-					// notifs.splice(i, 1);					
-					
+					// notifs.splice(i, 1);
+
 					if($(this).parent().parent().hasClass("unseen") === true){
 						$(".badge")[0].innerHTML -= 1;
 					}
@@ -821,8 +824,8 @@ function hideAllNotifs(){
 	success: function(){console.log("ajax success");},
 	error: function(err){console.log(err);}
 	});
-	
-	
+
+
 
 
 /*
@@ -885,28 +888,28 @@ function hideAllNotifs(){
 	function closeAllMenuOptions(){
 		for(var i = 0; i < optionsList.length; i++){
 			$("#" + optionsList[i] + "OptionsMenu").addClass("hidden");
-		} 
+		}
 	}
 
 	function removeMyActiveOffAllButtons() {
 		for(var i = 0; i < optionsList.length; i++){
 			$("#" + optionsList[i] + "OptionsButton").removeClass("myActive");
-		} 
+		}
 	}
 
-	
+
 //Collapse the mobile navbar if the user clicks out of it.
 $(document).ready(function () {
     $(document).click(function (event) {
         var clickover = $(event.target);
 		var _opened = $(".navbar-collapse").hasClass("collapse in");
-		
+
 		// console.log(clickover);
 
 		if (
-			_opened === true 
+			_opened === true
 			&& !clickover.hasClass("navbar-toggler")
-			&& !clickover.hasClass("badge") 
+			&& !clickover.hasClass("badge")
 			&& !clickover.hasClass("optionsCog")
 			&& !clickover.hasClass("dropDownNotification")
 		 ) {
