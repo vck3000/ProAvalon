@@ -121,7 +121,7 @@ function saveGamesAndSendWarning(senderSocket) {
 			if (senderSocket) {
 				allSockets[key].emit("serverRestartWarning");
 			} else {
-				// allSockets[key].emit("serverDailyRestartWarning");				
+				// allSockets[key].emit("serverDailyRestartWarning");
 			}
 		}
 	}
@@ -311,6 +311,18 @@ var actionsObj = {
 				return actionsObj.userCommands.interactUser.run(data, senderSocket);
 			}
 		},
+		poke: {
+			command: "poke",
+			help: "/poke <playername>: poke a player.",
+			run: function (data, senderSocket) {
+				var args = data.args;
+
+				data.args[2] = data.args[1];
+				data.args[1] = "poke";
+
+				return actionsObj.userCommands.interactUser.run(data, senderSocket);
+			}
+		},
 
 		interactUser: {
 			command: "interactUser",
@@ -318,9 +330,9 @@ var actionsObj = {
 			run: function (data, senderSocket) {
 				var args = data.args;
 
-				var possibleInteracts = ["buzz", "slap", "lick"];
+				var possibleInteracts = ["buzz", "slap", "lick", "poke"];
 				if (possibleInteracts.indexOf(args[1]) === -1) {
-					return { message: "You can only slap, buzz or lick, not " + args[1] + ".", classStr: "server-text", dateCreated: new Date() };
+					return { message: "You can only slap, buzz, poke or lick, not " + args[1] + ".", classStr: "server-text", dateCreated: new Date() };
 				}
 
 				var slapSocket = allSockets[getIndexFromUsername(allSockets, args[2], true)];
@@ -330,6 +342,7 @@ var actionsObj = {
 					if (args[1] === "buzz") { verbPast = "buzzed"; }
 					else if (args[1] === "slap") { verbPast = "slapped"; }
 					else if (args[1] === "lick") { verbPast = "licked"; }
+					else if (args[1] === "poke") { verbPast = "poked"; }
 
 					var dataToSend = {
 						username: senderSocket.request.user.username,
@@ -417,7 +430,7 @@ var actionsObj = {
 
 		mute: {
 			command: "mute",
-			help: "/mute: Mute a player who is being annoying in chat/buzzing/slapping/licking you.",
+			help: "/mute: Mute a player who is being annoying in chat/buzzing/slapping/licking/poking you.",
 			run: function (data, senderSocket) {
 				var args = data.args;
 
@@ -1265,6 +1278,7 @@ var actionsObj = {
 				}
 
 
+
 				return;
 			}
 		},
@@ -1461,7 +1475,7 @@ module.exports = function (io) {
 			}
 			sendToAllChat(io, data);
 
-			//Note, by default when socket disconnects, it leaves from all rooms. 
+			//Note, by default when socket disconnects, it leaves from all rooms.
 			//If user disconnected from within a room, the leave room function will send a message to other players in room.
 
 			var username = socket.request.user.username;
@@ -1957,7 +1971,7 @@ module.exports = function (io) {
 
 
 var updateCurrentGamesList = function () {
-	//prepare room data to send to players. 
+	//prepare room data to send to players.
 	var gamesList = [];
 	for (var i = 0; i < rooms.length; i++) {
 		//If the game exists

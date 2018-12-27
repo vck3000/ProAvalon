@@ -401,7 +401,7 @@ function drawAndPositionAvatars() {
     if (gameStarted === true) {
         //draw the players according to what the client sees (their role sees)
         for (var i = 0; i < numPlayers; i++) {
-            //check if the user is on the spy list. 
+            //check if the user is on the spy list.
             //if they are, they are spy
             if (gameData.see && gameData.see.spies && gameData.see.spies.indexOf(roomPlayersData[i].username) !== -1) {
                 str = str + strOfAvatar(roomPlayersData[i], "spy");
@@ -486,8 +486,6 @@ function drawAndPositionAvatars() {
 
         //     var widthOfRole = ctx.measureText(roleHere).width;
 
-        //     console.log("width: " + widthOfRole);
-
         //     if(divs[i].offsetHeight < widthOfRole){
         //         divs[i].style.width =  widthOfRole + "px";
 
@@ -505,6 +503,7 @@ function drawAndPositionAvatars() {
         //   var ctx=canvas.getContext("2d");
         //   var roleHere = $($(divs[i]).find(".role-p")).innerHTML;
         //   var widthOfRole = Math.floor(ctx.measureText(roleHere).width);
+
 
 
 
@@ -571,7 +570,7 @@ function drawGuns() {
     }
 
     if (gameData && (lastPickNum !== gameData.pickNum || lastMissionNum !== gameData.missionNum)) {
-        // $(".gun").css("width", $("#mainRoomBox div").width() + "px"); 
+        // $(".gun").css("width", $("#mainRoomBox div").width() + "px");
         $(".gun").css("left", "50%");
         $(".gun").css("top", "50%");
         $(".gun").css("transform", "translate(-50%,-50%)");
@@ -1199,7 +1198,7 @@ function toRadians(angle) {
 }
 
 //some setups result in collisions of avatars
-//so set up some custom degree positions for avatars at certain 
+//so set up some custom degree positions for avatars at certain
 //game sizes
 
 //key = num of players in game
@@ -1473,7 +1472,7 @@ function resetAllGameData() {
     //hide the options cog
     document.querySelector("#options-button").classList.add("hidden");
 
-    //reset room-chat 
+    //reset room-chat
     // console.log("RESET ROOM CHAT");
     $(".room-chat-list").html("");
 
@@ -1731,8 +1730,8 @@ function scaleGameComponents() {
         maxWidth = pics["gun"].maxDims.x;
     }
 
-    // $(".gunImg").css("height", "100%");  
-    // $(".gunImg").css("height", "100%");    
+    // $(".gunImg").css("height", "100%");
+    // $(".gunImg").css("height", "100%");
     //needs to be scaled this way as reducing img size still overshoots
     $(".gunImg").css("max-height", maxHeight * playerDivHeightRatio + "px");
     $(".gunImg").css("max-width", maxWidth * playerDivHeightRatio + "px");
@@ -1796,7 +1795,8 @@ var sounds = {
     "game-end": "game-end.mp3",
     "highDing": "highDing.mp3",
     "game-start-ready": "game-start-ready.mp3",
-    "lick": "lick.mp3"
+    "lick": "lick.mp3",
+    "poke": "poke.mp3"
 }
 
 //get all the sound files and prepare them.
