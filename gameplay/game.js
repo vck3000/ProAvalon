@@ -999,6 +999,9 @@ Game.prototype.getGameDataForSpectators = function () {
 		data.see.roles = getRevealedRoles(this);
 		data.proposedTeam = this.lastProposedTeam;
 	}
+	else if (this.phase === "assassination") {
+		data.proposedTeam = this.lastProposedTeam;
+	}
 
 	return data;
 }
