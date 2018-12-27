@@ -28,7 +28,7 @@ DATABASEURL = "mongodb://localhost/TheNewResistanceUsers"
 ```
 3. Create the database in MongoDB:
 ```
-Start the database:
+Start the database: (Note: You may need to create folder C:/data/db to start the database server correctly, read the message in your terminal)
 > mongod
 Open a mongo shell (in a new terminal or command prompt):
 > mongo
@@ -40,10 +40,6 @@ switched to db TheNewResistanceUsers
 ```
 > npm install
 ```
-5. Create an admin account (Optional)
-
-On the registration page, create an account ProNub with any password you like.
-Or you can edit the admins file and not stage it in your future commits.
 
 ## Running
 ```
@@ -54,6 +50,11 @@ Or with nodemon (automatically restarts the server when changes are saved):
 nodemon app.js
 ```
 
+## Optional: Create an admin account
+On the registration page, create an account ProNub with any password you like.
+Or you can edit the admins file and not stage it in your future commits.
+
+
 ## Overview
 This is a Node.js express application that is currently deployed on Heroku. There are three stages: Production (live server), Development/staging (master branch of this repo) and other Heroku servers for each pull request.
 
@@ -63,7 +64,7 @@ After a pull request has been merged to master, it will be on the development se
 
 ---
 
-User authentication is handled by Passport.js and client-server communication is handled by Socket.io. They are combined by [passport.socketio](https://www.npmjs.com/package/passport.socketio)
+User authentication is handled by Passport.js and client-server communication is handled by Socket.io. They are combined by [passport.socketio](https://www.npmjs.com/package/passport.socketio).
 
 
 The server is run from app.js. 
