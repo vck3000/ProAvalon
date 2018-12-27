@@ -47,6 +47,11 @@ switched to db TheNewResistanceUsers
 > npm install
 ```
 
+5. Optional: (This will install nodemon globally)
+```
+>  npm install -g nodemon
+```
+
 ## Running
 ```
 node app.js
