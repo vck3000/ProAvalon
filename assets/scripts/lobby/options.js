@@ -588,7 +588,7 @@ var userOptions = {
             else if (savedSetting === "false") {
                 checked = false;
             }
-            $("#option_notifications_sound_slap")[0].checked = checked;
+            $("#option_notifications_sound_poke")[0].checked = checked;
         },
         initialiseEventListener: function () {
             $("#option_notifications_sound_poke")[0].addEventListener("click", function () {
