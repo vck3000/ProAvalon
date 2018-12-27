@@ -137,7 +137,7 @@ app.use("/profile", profileRoutes);
 // seedDB();
 
 //start server listening
-var IP = process.env.IP || "192.168.1.66";
+var IP = process.env.IP || "127.0.0.1";
 // IP = "127.0.0.1";
 // var server = app.listen(port, IP , function(){
 var server = app.listen(port, function () {
