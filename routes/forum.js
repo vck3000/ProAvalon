@@ -211,6 +211,11 @@ router.get("/page/:category/:pageNum", middleware.isLoggedIn, function (req, res
 
 				var userNotifications = [];
 
+				var isMod = false;
+				if (req.isAuthenticated() && modsArray.indexOf(req.user.username.toLowerCase()) !== -1) {
+					isMod = true;
+				}
+
 				if (req.user.username) {
 					await User.findOne({ username: req.user.username }).populate("notifications").exec(function (err, foundUser) {
 						if (foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined) {
@@ -224,7 +229,8 @@ router.get("/page/:category/:pageNum", middleware.isLoggedIn, function (req, res
 							currentUser: req.user,
 							pageNum: req.params.pageNum,
 							activeCategory: req.params.category,
-							userNotifications: userNotifications
+							userNotifications: userNotifications,
+							isMod: isMod
 						});
 					});
 				}
@@ -233,7 +239,8 @@ router.get("/page/:category/:pageNum", middleware.isLoggedIn, function (req, res
 						allPinnedThreads: [],
 						allForumThreads: allForumThreads,
 						pageNum: req.params.pageNum,
-						activeCategory: req.params.category
+						activeCategory: req.params.category,
+						isMod: isMod
 					});
 				}
 
@@ -345,7 +352,7 @@ router.get("/page/:pageNum", middleware.isLoggedIn, function (req, res) {
 									pageNum: req.params.pageNum,
 									activeCategory: req.params.category,
 									userNotifications: userNotifications,
-									mod: mod
+									isMod: mod
 								});
 							});
 						}
@@ -355,7 +362,7 @@ router.get("/page/:pageNum", middleware.isLoggedIn, function (req, res) {
 								allForumThreads: allForumThreads,
 								pageNum: req.params.pageNum,
 								activeCategory: req.params.category,
-								mod: mod
+								isMod: mod
 							});
 						}
 

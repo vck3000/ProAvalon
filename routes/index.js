@@ -227,7 +227,7 @@ router.get("/lobby", middleware.isLoggedIn, checkIpBan, async function (req, res
 			}
 
 			// console.log("c");
-			isMod = false;
+			var isMod = false;
 			if (req.isAuthenticated() && modsArray.indexOf(req.user.username.toLowerCase()) !== -1) {
 				isMod = true;
 			}
