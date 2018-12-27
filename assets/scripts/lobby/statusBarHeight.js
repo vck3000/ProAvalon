@@ -1,13 +1,13 @@
-$(document).ready(function(){
+$(document).ready(function () {
     checkStatusBarWithHeight();
 });
 //if the users screen is big enough, then we can make the center status bar big
-function checkStatusBarWithHeight(){
+function checkStatusBarWithHeight() {
     const cutOffHeight = 800
-    if($(window).height() > cutOffHeight){
-        $("#status").removeClass("well-sm");        
+    if ($(window).height() > cutOffHeight) {
+        $("#status").removeClass("well-sm");
     }
-    else{
+    else {
         $("#status").addClass("well-sm");
         $("#status").addClass("well-sm");
     }
@@ -15,7 +15,7 @@ function checkStatusBarWithHeight(){
 
 }
 
-function setStatusBarText(strToSet){
+function setStatusBarText(strToSet) {
 
     document.querySelector("#status").innerText = strToSet;
 
@@ -24,7 +24,7 @@ function setStatusBarText(strToSet){
 
     //to get the lengths of the words or usernames
     var canvas = document.createElement("canvas");
-    var ctx=canvas.getContext("2d");
+    var ctx = canvas.getContext("2d");
 
     ctx.font = $("#option_display_font_size_text").val() + "px sans-serif";
 
@@ -43,7 +43,7 @@ function setStatusBarText(strToSet){
     var widOfText = wid;
     var widOfButtons = $(".game-buttons-div").width();
 
-    if((widOfText + widOfButtons) > totalWid){
+    if ((widOfText + widOfButtons) > totalWid) {
 
         // $(".game-buttons-div").css("right", "0%");
 
@@ -52,5 +52,5 @@ function setStatusBarText(strToSet){
 
     }
 
-    
+
 }

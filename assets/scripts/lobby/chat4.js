@@ -118,32 +118,32 @@ function addToAllChat(data) {
     // console.log("raw data");
     // console.log(data);
 
-    if(data){
+    if (data) {
         //if it is not an array, force it into a array
         if (data[0] === undefined) {
-        //   console.log("force array");
+            //   console.log("force array");
             data = [data];
-        }  
+        }
 
-      // console.log("add to all chat: ");
-      // console.log(data);
+        // console.log("add to all chat: ");
+        // console.log(data);
 
         for (var i = 0; i < data.length; i++) {
-            if(data[i] && data[i].message){
+            if (data[i] && data[i].message) {
                 //set up the date:
                 var date;
                 var d;
-                if(data[i].dateCreated){
+                if (data[i].dateCreated) {
                     d = new Date(data[i].dateCreated);
                 }
-                else{
-                    d = new Date();                        
+                else {
+                    d = new Date();
                 }
                 var hour = d.getHours();
                 var min = d.getMinutes();
                 if (hour < 10) { hour = "0" + hour; }
                 if (min < 10) { min = "0" + min; }
-                date = "[" + hour + ":" + min + "]"; 
+                date = "[" + hour + ":" + min + "]";
 
                 // if(!data[i].dateCreated){
                 //     date = "[" + "]";
@@ -153,10 +153,10 @@ function addToAllChat(data) {
 
                 var filteredMessage = data[i].message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
 
-                filteredMessage = linkifyHtml(filteredMessage,   {
+                filteredMessage = linkifyHtml(filteredMessage, {
                     validate: {
                         url: function (value) {
-                        return /^(http|ftp)s?:\/\/|www/.test(value);
+                            return /^(http|ftp)s?:\/\/|www/.test(value);
                         }
                     }
                 });
@@ -170,7 +170,7 @@ function addToAllChat(data) {
                 }
 
                 //if they've muted this player, then just dont show anything. reset str to nothing.
-                if(isPlayerMuted(data[i].username) === true){
+                if (isPlayerMuted(data[i].username) === true) {
                     str = "";
                 }
 
@@ -178,16 +178,16 @@ function addToAllChat(data) {
                 scrollDown("all-chat-lobby");
                 scrollDown("all-chat-room");
                 scrollDown("all-chat-room2");
-                
+
 
                 //yellow notification on the tabs in room.
                 if ($(".nav-tabs #all-chat-in-game-tab").hasClass("active") === false) {
-                    $(".nav-tabs #all-chat-in-game-tab")[0].classList.add("newMessage"); 
+                    $(".nav-tabs #all-chat-in-game-tab")[0].classList.add("newMessage");
                 }
-                
-                if(!roomPlayersData){
+
+                if (!roomPlayersData) {
                     // console.log("REMOVED");
-                    $(".nav-tabs #all-chat-in-game-tab")[0].classList.remove("newMessage"); 
+                    $(".nav-tabs #all-chat-in-game-tab")[0].classList.remove("newMessage");
                 }
             }
         }
@@ -195,10 +195,10 @@ function addToAllChat(data) {
 }
 
 
-function unhighlightAllChat(){
+function unhighlightAllChat() {
     var usernames = Object.keys(selectedChat)
 
-    usernames.forEach(function(user){
+    usernames.forEach(function (user) {
         selectedChat[user] = false;
         var chatItems = $(".room-chat-list li span[username='" + user + "']");
         chatItems.css("background-color", "transparent");
@@ -209,18 +209,18 @@ var roomChatHistory = [];
 
 function addToRoomChat(data) {
     //if it is not an array, force it into a array
-    if(data){
+    if (data) {
         if (data[0] === undefined) {
             data = [data];
         }
 
         var usernamesOfPlayersInGame = [];
-        if(gameStarted === true){
-            roomPlayersData.forEach(function(obj){
+        if (gameStarted === true) {
+            roomPlayersData.forEach(function (obj) {
                 usernamesOfPlayersInGame.push(obj.username);
             });
         }
-    
+
         for (var i = 0; i < data.length; i++) {
             //format the date
             // var d = new Date();
@@ -229,25 +229,25 @@ function addToRoomChat(data) {
             // if (hour < 10) { hour = "0" + hour; }
             // if (min < 10) { min = "0" + min; }
             // var date = "[" + hour + ":" + min + "]";
-    
-            
+
+
             if (data[i] && data[i].message) {
                 //set up the date:
                 var date;
-                
+
                 // console.log(data[i].dateCreated);
                 var d;
-                if(data[i].dateCreated){
+                if (data[i].dateCreated) {
                     d = new Date(data[i].dateCreated);
                 }
-                else{
-                    d = new Date();                        
+                else {
+                    d = new Date();
                 }
                 var hour = d.getHours();
                 var min = d.getMinutes();
                 if (hour < 10) { hour = "0" + hour; }
                 if (min < 10) { min = "0" + min; }
-                date = "[" + hour + ":" + min + "]"; 
+                date = "[" + hour + ":" + min + "]";
                 data[i].dateStr = date;
 
                 // if(!data[i].dateCreated){
@@ -260,18 +260,18 @@ function addToRoomChat(data) {
                 var muteSpectators = $(".muteSpecs")[0].checked;
                 //if they dont exist in players in room, if game is started, and if mute spectators
                 var thisMessageSpectator = false;
-                
+
                 //oldSpectators is the var stored in sockets file that 
                 //has a list of usernames of spectators
-                if(oldSpectators.indexOf(data[i].username) !== -1 && gameStarted === true && muteSpectators === true){
+                if (oldSpectators.indexOf(data[i].username) !== -1 && gameStarted === true && muteSpectators === true) {
                     //this message is muted. 
                     //dont do anything
                     addClass = "hidden-spectator-chat spectator-chat";
                     thisMessageSpectator = true;
-                    
+
                 }
-                else{
-                    if(oldSpectators.indexOf(data[i].username) !== -1 && gameStarted === true){
+                else {
+                    if (oldSpectators.indexOf(data[i].username) !== -1 && gameStarted === true) {
                         addClass = "spectator-chat";
                         thisMessageSpectator = true;
                     }
@@ -283,10 +283,10 @@ function addToRoomChat(data) {
                 // console.log(data[i].classStr);
                 // console.log(muteJoinLeave);
 
-                if(data[i].classStr === "server-text-teal" && muteJoinLeave === true){
+                if (data[i].classStr === "server-text-teal" && muteJoinLeave === true) {
                     thisMessageJoinLeave = true;
                     addClass += " hidden-spectator-chat";
-                    
+
                 }
 
 
@@ -295,10 +295,10 @@ function addToRoomChat(data) {
                 var filteredMessage = data[i].message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&nbsp;/, "&amp;nbsp;");
                 // console.log("Filtered message: " + filteredMessage);
 
-                filteredMessage = linkifyHtml(filteredMessage,   {
+                filteredMessage = linkifyHtml(filteredMessage, {
                     validate: {
                         url: function (value) {
-                        return /^(http|ftp)s?:\/\/|www/.test(value);
+                            return /^(http|ftp)s?:\/\/|www/.test(value);
                         }
                     }
                 });
@@ -316,14 +316,13 @@ function addToRoomChat(data) {
                 var quotesList = rawQuotedString.split("[").slice(1);
 
                 var s = "";
-                while (quotesList.length > 0)
-                {
+                while (quotesList.length > 0) {
                     var lastQuote = "[" + quotesList.pop();
                     s = lastQuote + s;
                     //console.log('s = ' + s);
 
                     // parse "[hh:mm]", "username" and everything after the ": "
-                    var dateStr = s.slice(0,7);
+                    var dateStr = s.slice(0, 7);
                     var username = s.slice(8, s.indexOf(': '));
                     var text = s.slice(s.indexOf(': ') + 2);
                     //console.log('dateStr = ' + dateStr);
@@ -332,12 +331,11 @@ function addToRoomChat(data) {
 
                     // verify all quotes are either a server message or have actually been said
                     if (roomChatHistory.filter(d => (['server-text-teal', 'server-text'].includes(d.classStr) && // either msg from server
-                                                     s.slice(8).trim() === d.message.trim()) ||
-                                                    (d.username === username &&     // or was said by that user
-                                                     d.dateStr.slice(4,6) === dateStr.slice(4,6) &&    // only check that the minutes are correct (to ignore timezone)
-                                                     d.message.startsWith(text.trim()))
-                                              ).length > 0)
-                    {
+                        s.slice(8).trim() === d.message.trim()) ||
+                        (d.username === username &&     // or was said by that user
+                            d.dateStr.slice(4, 6) === dateStr.slice(4, 6) &&    // only check that the minutes are correct (to ignore timezone)
+                            d.message.startsWith(text.trim()))
+                    ).length > 0) {
                         quotedStrings.push(s);
                         console.log('pushed ' + s);
                         s = "";
@@ -418,14 +416,14 @@ function addToRoomChat(data) {
                     scrollDown("room-chat-room2");
                 }
 
-                if(thisMessageSpectator === true && muteSpectators === true ){
+                if (thisMessageSpectator === true && muteSpectators === true) {
                     //if the person talking is a spectator, and if mute spectators is checked,
                     //then dont show yellow notification. Otherwise show.
                 }
-                else if(thisMessageJoinLeave === true && muteJoinLeave === true){
+                else if (thisMessageJoinLeave === true && muteJoinLeave === true) {
                     //It is a message that is joining or leaving
                 }
-                else{
+                else {
                     //yellow notification on the tabs in room.
                     if ($(".nav-tabs #room-chat-in-game-tab").hasClass("active") === false) {
                         $(".nav-tabs #room-chat-in-game-tab")[0].classList.add("newMessage");
@@ -437,11 +435,11 @@ function addToRoomChat(data) {
     }
 }
 
-function isPlayerMuted(username){
-    if(mutedPlayers.indexOf(username) !== -1){
+function isPlayerMuted(username) {
+    if (mutedPlayers.indexOf(username) !== -1) {
         return true;
     }
-    else{
+    else {
         return false;
     }
 }
@@ -461,29 +459,29 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 
     console.log("change tab " + target);
 
-    if($(target).find(".chat-window")[0]){
-        scrollDown( $(target).find(".chat-window")[0].id , true);
+    if ($(target).find(".chat-window")[0]) {
+        scrollDown($(target).find(".chat-window")[0].id, true);
     }
-  
+
 
 });
 
 //When the player presses the mmute specs button
-$(".muteSpecs").on("change", function(e){
+$(".muteSpecs").on("change", function (e) {
     // console.log(e);
     // console.log(e.target.checked);
 
     var muteButtons = $(".muteSpecs");
-    
-    for(var i = 0; i < muteButtons.length; i++){
+
+    for (var i = 0; i < muteButtons.length; i++) {
         muteButtons[i].checked = e.target.checked;
     }
 
-    if(e.target.checked === true){
+    if (e.target.checked === true) {
         $(".spectator-chat").addClass("hidden-spectator-chat");
     }
-    else{
-        $(".spectator-chat").removeClass("hidden-spectator-chat");        
+    else {
+        $(".spectator-chat").removeClass("hidden-spectator-chat");
     }
 
     scrollDown("room-chat-room", true);
@@ -492,24 +490,24 @@ $(".muteSpecs").on("change", function(e){
 
 
 //When the player presses the mmute specs button
-$(".mutejoinleave").on("change", function(e){
+$(".mutejoinleave").on("change", function (e) {
     // console.log(e);
     // console.log(e.target.checked);
 
     var muteButtons = $(".mutejoinleave");
-    
-    for(var i = 0; i < muteButtons.length; i++){
+
+    for (var i = 0; i < muteButtons.length; i++) {
         muteButtons[i].checked = e.target.checked;
     }
 
     //Note! Careful here, we only use this server-text-teal class for
     //player joining and leaving so thats why it works
     //if in the future we add more teal server text it will hide those too!
-    if(e.target.checked === true){
+    if (e.target.checked === true) {
         $(".server-text-teal").addClass("hidden-spectator-chat");
     }
-    else{
-        $(".server-text-teal").removeClass("hidden-spectator-chat");        
+    else {
+        $(".server-text-teal").removeClass("hidden-spectator-chat");
     }
 
     scrollDown("room-chat-room", true);
@@ -519,32 +517,32 @@ $(".mutejoinleave").on("change", function(e){
 
 
 //When the player sets the color to yellow
-$(".setHighlightColorsToYellow").on("change", function(e){
+$(".setHighlightColorsToYellow").on("change", function (e) {
     var checkBoxes = $(".setHighlightColorsToYellow");
-    
-    for(var i = 0; i < checkBoxes.length; i++){
+
+    for (var i = 0; i < checkBoxes.length; i++) {
         checkBoxes[i].checked = e.target.checked;
     }
 
     var usernames = Object.keys(selectedChat);
 
-    if(e.target.checked === true){
+    if (e.target.checked === true) {
         var color = "#ffff9e";
-        usernames.forEach(function(user){
-            if(selectedChat[user] === true){
+        usernames.forEach(function (user) {
+            if (selectedChat[user] === true) {
                 var chatItems = $(".room-chat-list li span[username='" + user + "']");
                 chatItems.css("background-color", color);
             }
-        });   
+        });
     }
-    else{
-        usernames.forEach(function(user){
-            if(selectedChat[user] === true){
+    else {
+        usernames.forEach(function (user) {
+            if (selectedChat[user] === true) {
                 var chatItems = $(".room-chat-list li span[username='" + user + "']");
                 var color = docCookies.getItem("player" + getIndexFromUsername(user) + 'HighlightColour');
                 chatItems.css("background-color", color);
             }
-        });   
+        });
     }
 
 });

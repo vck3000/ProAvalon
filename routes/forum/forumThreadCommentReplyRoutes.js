@@ -7,7 +7,7 @@ var lastIds = require("../../models/lastIds");
 var middleware = require("../../middleware");
 var sanitizeHtml = require('sanitize-html');
 var getTimeDiffInString = require("../../assets/myLibraries/getTimeDiffInString");
-var User 			= require("../../models/user");
+var User = require("../../models/user");
 var createNotificationObj = require("../../myFunctions/createNotification");
 
 var mongoose = require('mongoose');
@@ -39,12 +39,12 @@ router.post("/:id/:commentId/:replyId", middleware.isLoggedIn, async function (r
 	createCommentReply(req, res);
 });
 
-function createCommentReply(req, res){
+function createCommentReply(req, res) {
 
 	var d = new Date();
 
 	var commentReplyData = {
-		
+
 		text: sanitizeHtml(req.body.comment.text, {
 			allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
 			allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
@@ -58,45 +58,45 @@ function createCommentReply(req, res){
 		likes: 0,
 	}
 
-	if(req.params.replyId){
+	if (req.params.replyId) {
 		// commentReplyData.clients = [req.params.replyId];
 		// console.log("Got replyId");
 		var id = mongoose.Types.ObjectId('4edd40c86762e0fb12000003');
 
-		forumThreadCommentReply.findById(mongoose.Types.ObjectId(req.params.replyId)).exec(function(err, foundReply){
+		forumThreadCommentReply.findById(mongoose.Types.ObjectId(req.params.replyId)).exec(function (err, foundReply) {
 			//If there was someone who this reply was targetted to
 			commentReplyData.replyingUsername = [foundReply.author.username];
-			
+
 			createReply(req, res, commentReplyData, foundReply);
 		});
 	}
-	else{
-		createReply(req, res, commentReplyData);		
+	else {
+		createReply(req, res, commentReplyData);
 	}
 
-	
+
 }
 
 
-function createReply (req, res, commentReplyData, replyingToThisReply) {
+function createReply(req, res, commentReplyData, replyingToThisReply) {
 	//the creator has already seen it
 	commentReplyData.seenUsers = [req.user.username.toLowerCase()];
 
-	forumThreadCommentReply.create(commentReplyData, function (err, newCommentReply) {				
+	forumThreadCommentReply.create(commentReplyData, function (err, newCommentReply) {
 		// console.log("new commentReply: " + newCommentReply);
-		forumThread.findById(mongoose.Types.ObjectId(req.params.id), function(err, foundForum){
+		forumThread.findById(mongoose.Types.ObjectId(req.params.id), function (err, foundForum) {
 
-			
+
 
 			forumThreadComment.findById(req.params.commentId).populate("replies").exec(function (err, foundForumThreadComment) {
 				if (foundForumThreadComment.replies === undefined) {
 					foundForumThreadComment.replies = [];
 				}
-	
+
 				foundForumThreadComment.replies.push(newCommentReply);
 				foundForumThreadComment.save();
-	
-				if(replyingToThisReply){
+
+				if (replyingToThisReply) {
 					//create notif to replying target
 					var userIdTarget = mongoose.Types.ObjectId(replyingToThisReply.author.id);
 					var stringToSay = req.user.username + " has replied to your reply.";
@@ -108,53 +108,53 @@ function createReply (req, res, commentReplyData, replyingToThisReply) {
 					// console.log(replyingToThisReply.author.id);
 					// console.log(foundForumThreadComment.author.id);
 					// console.log(replyingToThisReply.author.id.equals(foundForumThreadComment.author.id));
-					
-					if(foundForumThreadComment.author.id && replyingToThisReply.author.id.equals(foundForumThreadComment.author.id)){
+
+					if (foundForumThreadComment.author.id && replyingToThisReply.author.id.equals(foundForumThreadComment.author.id)) {
 						//dont create two notifications for a player
 					}
-					else{
-						if(foundForumThreadComment.author.id){
+					else {
+						if (foundForumThreadComment.author.id) {
 							//create notif to main comment person
 							var userIdTarget = mongoose.Types.ObjectId(foundForumThreadComment.author.id);
 							var stringToSay = req.user.username + " has replied to your comment.";
 							var link = ("/forum/show/" + foundForum._id + "#" + newCommentReply._id);
-		
+
 							createNotificationObj.createNotification(userIdTarget, stringToSay, link);
 						}
 					}
 				}
-				else{
-					if(foundForumThreadComment.author.id){
+				else {
+					if (foundForumThreadComment.author.id) {
 						//create notif to main comment person
 						var userIdTarget = mongoose.Types.ObjectId(foundForumThreadComment.author.id);
 						var stringToSay = req.user.username + " has replied to your comment.";
 						var link = ("/forum/show/" + foundForum._id + "#" + newCommentReply._id);
-	
+
 						createNotificationObj.createNotification(userIdTarget, stringToSay, link);
 					}
 				}
 
 				console.log(foundForumThreadComment);
 				console.log("author");
-				console.log(foundForumThreadComment.author);				
-	
+				console.log(foundForumThreadComment.author);
+
 				forumThread.findById(req.params.id).populate("comments").exec(function (err, foundForumThread) {
 					foundForumThread.markModified("comments");
 					//add 1 to the num of comments
 					foundForumThread.numOfComments = foundForumThread.numOfComments + 1;
-	
+
 					//update time last edited
 					foundForumThread.timeLastEdit = new Date();
 					foundForumThread.whoLastEdit = req.user.username;
-					
-	
+
+
 					foundForumThread.save();
 				});
-	
+
 				//redirect to same forum thread
 				res.redirect("/forum/show/" + req.params.id);
 
-			
+
 			});
 
 			//since there is a new comment, the thread is now refreshed and no one has seen the new changes yet,
@@ -173,18 +173,18 @@ router.get("/:id/:comment_id/:reply_id/edit", middleware.checkForumThreadComment
 		if (err) {
 			console.log("ERROR: " + err);
 		}
-		else{
-			if(foundReply.disabled === true){
+		else {
+			if (foundReply.disabled === true) {
 				req.flash("error", "You cannot edit a deleted reply.");
 				res.redirect("back");
 			}
-			else{
+			else {
 				var userNotifications = [];
 
-				await User.findById(req.user._id).populate("notifications").exec(function(err, foundUser){
-					if(!err){userNotifications = foundUser.userNotifications;}
+				await User.findById(req.user._id).populate("notifications").exec(function (err, foundUser) {
+					if (!err) { userNotifications = foundUser.userNotifications; }
 				});
-		
+
 				res.render("forum/comment/reply/edit", { reply: foundReply, comment: { id: req.params.comment_id }, forumThread: { id: req.params.id }, userNotifications: userNotifications });
 			}
 		}
@@ -201,11 +201,11 @@ router.put("/:id/:comment_id/:reply_id", middleware.checkForumThreadCommentReply
 		if (err) {
 			res.redirect("/forum");
 		} else {
-			if(foundReply.disabled === true){
+			if (foundReply.disabled === true) {
 				req.flash("error", "You cannot edit a deleted reply.");
 				res.redirect("back");
 			}
-			else{
+			else {
 				foundReply.text = sanitizeHtml(req.body.reply.text, {
 					allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
 					allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
@@ -220,8 +220,8 @@ router.put("/:id/:comment_id/:reply_id", middleware.checkForumThreadCommentReply
 					foundForumThreadComment.markModified("replies");
 					//update time last edited
 					foundForumThreadComment.timeLastEdit = new Date();
-					
-					
+
+
 
 					await foundForumThreadComment.save();
 
@@ -267,9 +267,9 @@ router.delete("/deleteCommentReply/:id/:comment_id/:reply_id", middleware.checkF
 			foundReply.disabled = true;
 			foundReply.oldText = foundReply.text;
 			foundReply.text = "*Deleted*";
-			
 
-			foundReply.save(function(){
+
+			foundReply.save(function () {
 				forumThreadComment.findById(req.params.comment_id).populate("replies").exec(async function (err, foundComment) {
 					if (err) {
 						console.log(err);
@@ -277,10 +277,10 @@ router.delete("/deleteCommentReply/:id/:comment_id/:reply_id", middleware.checkF
 					else {
 						foundComment.markModified("replies");
 						await foundComment.save();
-	
+
 						// console.log("A");
-	
-	
+
+
 						forumThread.findById(req.params.id).populate("comments").exec(async function (err, foundForumThread) {
 							if (err) {
 								console.log(err);

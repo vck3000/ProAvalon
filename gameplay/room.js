@@ -227,7 +227,7 @@ Room.prototype.sendText = function (sockets, incString, stringType) {
     };
     for (var i = 0; i < this.allSockets.length; i++) {
         var tmpSocket = this.allSockets[i];
-        if (tmpSocket && typeof(tmpSocket) !== "undefined") {
+        if (tmpSocket && typeof (tmpSocket) !== "undefined") {
             tmpSocket.emit("roomChatToClient", data);
         }
     }

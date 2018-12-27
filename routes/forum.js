@@ -10,10 +10,10 @@ var sanitizeHtml = require('sanitize-html');
 var pinnedThread = require("../models/pinnedThread");
 var getTimeDiffInString = require("../assets/myLibraries/getTimeDiffInString");
 
-var User 			= require("../models/user");
+var User = require("../models/user");
 var createNotificationObj = require("../myFunctions/createNotification");
 
-var mongoose 		= require("mongoose");
+var mongoose = require("mongoose");
 
 
 var modsArray = require("../modsadmins/mods");
@@ -38,7 +38,7 @@ router.get("/", middleware.isLoggedIn, function (req, res) {
 
 //Player liking a thing
 // router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function(req, res){
-router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function(req, res){
+router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function (req, res) {
 	console.log("Routed here");
 
 	var splitted = req.params.bigId.split("=");
@@ -47,16 +47,16 @@ router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function(req, res){
 	commentId = splitted[1];
 	replyId = splitted[2];
 
-	forumThread.findById(forumId).populate("comments").exec(function(err, foundThread){
-		if(!foundThread){
+	forumThread.findById(forumId).populate("comments").exec(function (err, foundThread) {
+		if (!foundThread) {
 			res.status(200).send("failed");
 		}
-		else{
-			if(req.params.type === "forum"){
-				if(foundThread.whoLikedId === undefined){
+		else {
+			if (req.params.type === "forum") {
+				if (foundThread.whoLikedId === undefined) {
 					foundThread.whoLikedId = [];
 				}
-				if(foundThread.whoLikedId.indexOf(req.user._id) !== -1){
+				if (foundThread.whoLikedId.indexOf(req.user._id) !== -1) {
 					//person has already liked it
 					//therefore, unlike it and remove their name
 					var i = foundThread.whoLikedId.indexOf(req.user._id);
@@ -65,7 +65,7 @@ router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function(req, res){
 					foundThread.likes -= 1;
 					res.status(200).send("unliked");
 				}
-				else{
+				else {
 					//add a like
 					foundThread.whoLikedId.push(req.user._id);
 					foundThread.likes += 1;
@@ -81,13 +81,13 @@ router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function(req, res){
 					console.log(foundThread);
 				}
 			}
-			else{
-				forumThreadComment.findById(commentId).populate("replies").exec(function(err, foundComment){
-					if(req.params.type === "comment"){
-						if(foundComment.whoLikedId === undefined){
+			else {
+				forumThreadComment.findById(commentId).populate("replies").exec(function (err, foundComment) {
+					if (req.params.type === "comment") {
+						if (foundComment.whoLikedId === undefined) {
 							foundComment.whoLikedId = [];
 						}
-						if(foundComment.whoLikedId.indexOf(req.user._id) !== -1){
+						if (foundComment.whoLikedId.indexOf(req.user._id) !== -1) {
 							//person has already liked it
 							//therefore, unlike it and remove their name
 							var i = foundComment.whoLikedId.indexOf(req.user._id);
@@ -96,7 +96,7 @@ router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function(req, res){
 							foundComment.likes -= 1;
 							res.status(200).send("unliked");
 						}
-						else{
+						else {
 							//add a like
 							foundComment.whoLikedId.push(req.user._id);
 							foundComment.likes += 1;
@@ -108,18 +108,18 @@ router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function(req, res){
 							var link = ("/forum/show/" + foundThread._id + "#" + foundComment._id);
 
 							createNotificationObj.createNotification(userIdTarget, stringToSay, link);
-							
 
-							
+
+
 						}
 					}
-					else{
-						forumThreadCommentReply.findById(replyId).exec(function(err, foundReply){
-							if(req.params.type === "reply"){
-								if(foundReply.whoLikedId === undefined){
+					else {
+						forumThreadCommentReply.findById(replyId).exec(function (err, foundReply) {
+							if (req.params.type === "reply") {
+								if (foundReply.whoLikedId === undefined) {
 									foundReply.whoLikedId = [];
 								}
-								if(foundReply.whoLikedId.indexOf(req.user._id) !== -1){
+								if (foundReply.whoLikedId.indexOf(req.user._id) !== -1) {
 									//person has already liked it
 									//therefore, unlike it and remove their name
 									var i = foundReply.whoLikedId.indexOf(req.user._id);
@@ -128,7 +128,7 @@ router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function(req, res){
 									foundReply.likes -= 1;
 									res.status(200).send("unliked");
 								}
-								else{
+								else {
 									//add a like
 									foundReply.whoLikedId.push(req.user._id);
 									foundReply.likes += 1;
@@ -142,24 +142,24 @@ router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function(req, res){
 									createNotificationObj.createNotification(userIdTarget, stringToSay, link);
 
 								}
-								foundReply.save(function(){
-									foundComment.save(function(){
-										foundThread.markModified("comments");	
+								foundReply.save(function () {
+									foundComment.save(function () {
+										foundThread.markModified("comments");
 										foundThread.save();
 									});
 								});
 								foundComment.markModified("replies");
 							}
-							else{
-								res.status(200).send("error");								
+							else {
+								res.status(200).send("error");
 							}
 						});
 					}
-					foundComment.save(function(){
-						foundThread.markModified("comments");	
+					foundComment.save(function () {
+						foundThread.markModified("comments");
 						foundThread.save();
 					});
-					foundThread.markModified("comments");					
+					foundThread.markModified("comments");
 				});
 			}
 			foundThread.save();
@@ -168,9 +168,9 @@ router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function(req, res){
 });
 
 
-router.get("/page/:category/:pageNum", middleware.isLoggedIn, function(req, res){
+router.get("/page/:category/:pageNum", middleware.isLoggedIn, function (req, res) {
 	console.log("category");
-	
+
 	//if theres an invalid page num, redirect toLowerCase() page 1
 	if (req.params.pageNum < 1) {
 		res.redirect("/forum/page/" + req.params.category + "/1");
@@ -184,7 +184,7 @@ router.get("/page/:category/:pageNum", middleware.isLoggedIn, function(req, res)
 	if (req.params.numOfResultsPerPage) {
 		NUM_OF_RESULTS_PER_PAGE = req.params.numOfResultsPerPage;
 	}
-	
+
 	var skipNumber = 0;
 	//if we have a specified pageNum, then skip a bit
 	if (req.params.pageNum) {
@@ -195,8 +195,8 @@ router.get("/page/:category/:pageNum", middleware.isLoggedIn, function(req, res)
 	forumThread.find({
 		category: req.params.category,
 		$or: [
-			{disabled: undefined},
-			{disabled: false}
+			{ disabled: undefined },
+			{ disabled: false }
 		]
 	}).sort({ timeLastEdit: 'descending' }).skip(skipNumber).limit(NUM_OF_RESULTS_PER_PAGE)
 		.exec(async function (err, allForumThreads) {
@@ -211,35 +211,35 @@ router.get("/page/:category/:pageNum", middleware.isLoggedIn, function(req, res)
 
 				var userNotifications = [];
 
-				if(req.user.username){
-					await User.findOne({username: req.user.username}).populate("notifications").exec(function(err, foundUser){
-						if(foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined){
+				if (req.user.username) {
+					await User.findOne({ username: req.user.username }).populate("notifications").exec(function (err, foundUser) {
+						if (foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined) {
 							userNotifications = foundUser.notifications;
 							// console.log(foundUser.notifications);
 						}
-						
+
 						res.render("forum/index", {
 							allPinnedThreads: [],
 							allForumThreads: allForumThreads,
 							currentUser: req.user,
 							pageNum: req.params.pageNum,
 							activeCategory: req.params.category,
-							userNotifications: userNotifications 
-						});				
+							userNotifications: userNotifications
+						});
 					});
 				}
-				else{
+				else {
 					res.render("forum/index", {
 						allPinnedThreads: [],
 						allForumThreads: allForumThreads,
 						pageNum: req.params.pageNum,
 						activeCategory: req.params.category
-					});	
+					});
 				}
-				
 
-				
-						
+
+
+
 			}
 		});
 });
@@ -276,23 +276,23 @@ router.get("/page/:pageNum", middleware.isLoggedIn, function (req, res) {
 	}
 
 	var or = [
-		{disabled: undefined},
-		{disabled: false}
+		{ disabled: undefined },
+		{ disabled: false }
 	]
 
 	var mod = false;
 	//if they're mod then allow them toLowerCase() see disabled posts.
-	var modSee = {disabled: false};
-	if(modsArray.indexOf(req.user.username.toLowerCase()) !== -1){
-		modSee = {disabled: true}; 
+	var modSee = { disabled: false };
+	if (modsArray.indexOf(req.user.username.toLowerCase()) !== -1) {
+		modSee = { disabled: true };
 		mod = true;
 	}
 
 
 	forumThread.find({
 		$or: [
-			{disabled: undefined},
-			{disabled: false},
+			{ disabled: undefined },
+			{ disabled: false },
 			modSee
 		]
 	}).sort({ timeLastEdit: 'descending' }).skip(skipNumber).limit(NUM_OF_RESULTS_PER_PAGE)
@@ -315,26 +315,26 @@ router.get("/page/:pageNum", middleware.isLoggedIn, function (req, res) {
 
 						for (var i = 0; i < allPinnedThreadIds.length; i++) {
 							await forumThread.findById(allPinnedThreadIds[i].forumThread.id, function (err, pinnedThread) {
-								if(err){
+								if (err) {
 									console.log(err);
 								}
-								else{
-									if(pinnedThread && pinnedThread.timeLastEdit){
+								else {
+									if (pinnedThread && pinnedThread.timeLastEdit) {
 										pinnedThread.timeSinceString = getTimeDiffInString(pinnedThread.timeLastEdit);
 										allPinnedThreads.push(pinnedThread);
 									}
-									
+
 								}
-								
+
 							});
 						}
 
-						
+
 						var userNotifications = [];
 
-						if(req.user.username){
-							await User.findOne({username: req.user.username}).populate("notifications").exec(function(err, foundUser){
-								if(foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined){
+						if (req.user.username) {
+							await User.findOne({ username: req.user.username }).populate("notifications").exec(function (err, foundUser) {
+								if (foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined) {
 									userNotifications = foundUser.notifications;
 									console.log(foundUser.notifications);
 								}
@@ -346,7 +346,7 @@ router.get("/page/:pageNum", middleware.isLoggedIn, function (req, res) {
 									activeCategory: req.params.category,
 									userNotifications: userNotifications,
 									mod: mod
-								});		
+								});
 							});
 						}
 						else {
@@ -356,11 +356,11 @@ router.get("/page/:pageNum", middleware.isLoggedIn, function (req, res) {
 								pageNum: req.params.pageNum,
 								activeCategory: req.params.category,
 								mod: mod
-								});		
+							});
 						}
-						
 
-					
+
+
 					}
 				});
 			}
@@ -368,20 +368,20 @@ router.get("/page/:pageNum", middleware.isLoggedIn, function (req, res) {
 });
 
 
-router.post("/modAction", middleware.isMod, function(req, res){
+router.post("/modAction", middleware.isMod, function (req, res) {
 	console.log(req.body);
 	console.log("Reached forum mod action.");
 
 	var replyId;
-	if(req.body.idOfReply !== ""){
+	if (req.body.idOfReply !== "") {
 		replyId = mongoose.Types.ObjectId(req.body.idOfReply);
 	}
 	var commentId;
-	if(req.body.idOfComment !== ""){
+	if (req.body.idOfComment !== "") {
 		commentId = mongoose.Types.ObjectId(req.body.idOfComment);
 	}
 	var forumId;
-	if(req.body.idOfForum !== ""){
+	if (req.body.idOfForum !== "") {
 		forumId = mongoose.Types.ObjectId(req.body.idOfForum);
 	}
 
@@ -402,7 +402,7 @@ router.post("/modAction", middleware.isMod, function(req, res){
 		descriptionByMod: req.body.descriptionByMod,
 		idOfReply: replyId,
 		idOfComment: commentId,
-		idOfForum: forumId ,
+		idOfForum: forumId,
 		elementDeleted: req.body.typeOfForumElement
 	};
 
@@ -410,35 +410,35 @@ router.post("/modAction", middleware.isMod, function(req, res){
 
 
 
-	forumThread.findById(req.body.idOfForum).populate({ path: "comments", populate: { path: "replies"}}).exec(function(err, foundForumThread){
-		if(err){console.log(err);}
-		else{
-			if(req.body.typeOfForumElement === "forum"){
+	forumThread.findById(req.body.idOfForum).populate({ path: "comments", populate: { path: "replies" } }).exec(function (err, foundForumThread) {
+		if (err) { console.log(err); }
+		else {
+			if (req.body.typeOfForumElement === "forum") {
 				console.log("modaction forum");
 				foundForumThread.disabled = true;
 				foundForumThread.save();
 			}
-			else{
-				forumThreadComment.findById(req.body.idOfComment).populate("replies").exec(function(err, comment){
-					if(req.body.typeOfForumElement === "comment"){
+			else {
+				forumThreadComment.findById(req.body.idOfComment).populate("replies").exec(function (err, comment) {
+					if (req.body.typeOfForumElement === "comment") {
 						console.log("modaction comment");
 						comment.oldText = comment.text;
 						comment.text = "*Deleted*";
 						comment.disabled = true;
-						comment.save(function(){
+						comment.save(function () {
 							foundForumThread.markModified("comments");
 							foundForumThread.save();
 						});
 					}
-					else{
-						forumThreadCommentReply.findById(req.body.idOfReply).exec(function(err, reply){
+					else {
+						forumThreadCommentReply.findById(req.body.idOfReply).exec(function (err, reply) {
 							console.log("modaction reply");
 							reply.oldText = reply.text;
 							reply.text = "*Deleted*";
 							reply.disabled = true;
-							reply.save(function(){
+							reply.save(function () {
 								comment.markModified("replies");
-								comment.save(function(){
+								comment.save(function () {
 									foundForumThread.markModified("comments");
 									foundForumThread.save();
 								});
@@ -450,54 +450,54 @@ router.post("/modAction", middleware.isMod, function(req, res){
 		}
 	});
 
-	
+
 });
 
 
 
 
 
-router.post("/pinThread", middleware.isMod, function(req, res){
+router.post("/pinThread", middleware.isMod, function (req, res) {
 	console.log(req.body);
 	console.log("Reached pin thread.");
 
 	var idOfThread = "";
-	for(var key in req.body){
-		if(req.body.hasOwnProperty(key)){
+	for (var key in req.body) {
+		if (req.body.hasOwnProperty(key)) {
 			idOfThread = key;
 		}
 	}
 	console.log(idOfThread);
 
-	pinnedThread.findOne({forumThread: {id: mongoose.Types.ObjectId(idOfThread)}}).exec(function(err, pin){
+	pinnedThread.findOne({ forumThread: { id: mongoose.Types.ObjectId(idOfThread) } }).exec(function (err, pin) {
 		console.log(pin);
-		if(err){
+		if (err) {
 			console.log(err);
 		}
-		else{
-			if(pin !== null){
+		else {
+			if (pin !== null) {
 				console.log("removing");
-				pinnedThread.findByIdAndRemove(pin._id, function(err){
-					if(err){
+				pinnedThread.findByIdAndRemove(pin._id, function (err) {
+					if (err) {
 						console.log(err);
 					}
-					else{
+					else {
 						console.log("done");
 					}
 				});
 			}
-			else{
-				forumThread.findById(mongoose.Types.ObjectId(idOfThread)).exec(function(err, foundForumThread){
-					if(foundForumThread){
-						pinnedThread.create({forumThread: {id: foundForumThread.id}});
+			else {
+				forumThread.findById(mongoose.Types.ObjectId(idOfThread)).exec(function (err, foundForumThread) {
+					if (foundForumThread) {
+						pinnedThread.create({ forumThread: { id: foundForumThread.id } });
 					}
 				});
 			}
 		}
-		
+
 	});
 
-	
+
 
 });
 

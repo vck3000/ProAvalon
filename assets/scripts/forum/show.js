@@ -6,10 +6,10 @@ function goBack() {
 
 
 function showAddComment() {
-    if($(".addCommentDiv")[0].style.display === "block"){
+    if ($(".addCommentDiv")[0].style.display === "block") {
         $(".addCommentDiv")[0].style.display = "none";
     }
-    else{
+    else {
         $(".addCommentDiv")[0].style.display = "block";
     }
 }
@@ -22,8 +22,8 @@ function showAddComment() {
 //get all the reply anchor links
 var replies = document.querySelectorAll(".reply");
 //for each anchor link, add an event listener to its respective replyBox
-replies.forEach(function(reply){
-    reply.addEventListener("click", function(){
+replies.forEach(function (reply) {
+    reply.addEventListener("click", function () {
         var parent = this.parentNode;
         //go up one more level
         parent = parent.parentNode;
@@ -32,14 +32,14 @@ replies.forEach(function(reply){
 
         var replyBox;
         //Among all the childNodes, find a replyBox (that will be its respective replyBox)
-        for(var i = 0; i < childNodes.length; i++){
-            if(childNodes[i].classList && childNodes[i].classList.contains("replyBox")){
+        for (var i = 0; i < childNodes.length; i++) {
+            if (childNodes[i].classList && childNodes[i].classList.contains("replyBox")) {
                 replyBox = childNodes[i];
                 break;
             }
         }
         //Toggle its hidden state to show/hide
-        if(replyBox){
+        if (replyBox) {
             replyBox.classList.toggle("hidden");
             console.log(replyBox.querySelector("textarea"));
             $(replyBox.querySelector("textarea")).summernote();
@@ -55,8 +55,8 @@ replies.forEach(function(reply){
 //get all the reply anchor links
 var likes = document.querySelectorAll(".like");
 //for each anchor link, add an event listener to its respective replyBox
-likes.forEach(function(like){
-    like.addEventListener("click", function(){
+likes.forEach(function (like) {
+    like.addEventListener("click", function () {
 
         var thisLike = this;
 
@@ -66,7 +66,7 @@ likes.forEach(function(like){
         var idOfReply = this.getAttribute("idofreply");
         var idOfComment = this.getAttribute("idofcomment");
         var idOfForum = this.getAttribute("idofforum");
-        
+
 
         console.log(idOfReply);
         console.log(idOfComment);
@@ -74,25 +74,25 @@ likes.forEach(function(like){
 
 
         xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("GET","/forum/ajax/like/" + typeofelement + "/" + idOfForum + "=" + idOfComment + "=" + idOfReply, true);
+        xmlhttp.open("GET", "/forum/ajax/like/" + typeofelement + "/" + idOfForum + "=" + idOfComment + "=" + idOfReply, true);
 
-        xmlhttp.onreadystatechange=function(){
-            if (xmlhttp.readyState==4 && xmlhttp.status==200){
-                var message=xmlhttp.responseText;
-                console.log(message);   
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                var message = xmlhttp.responseText;
+                console.log(message);
 
-                if(message === "liked"){
-                    $(thisLike).notify("Liked",  { position:"right", autoHideDelay: 1000, className: "success"});
+                if (message === "liked") {
+                    $(thisLike).notify("Liked", { position: "right", autoHideDelay: 1000, className: "success" });
                     $("#" + idofelement + "likes")[0].innerText = parseInt($("#" + idofelement + "likes")[0].innerText) + 1
                     $(thisLike)[0].innerText = "Unlike";
                 }
-                else if(message === "unliked"){
-                    $(thisLike).notify("Unliked",  { position:"right", autoHideDelay: 1000, className: "info"});
+                else if (message === "unliked") {
+                    $(thisLike).notify("Unliked", { position: "right", autoHideDelay: 1000, className: "info" });
                     $("#" + idofelement + "likes")[0].innerText = parseInt($("#" + idofelement + "likes")[0].innerText) - 1
                     $(thisLike)[0].innerText = "Like";
                 }
-                else{
-                    $(thisLike).notify("Error! Something went wrong...",  { position:"right", autoHideDelay: 1000, className: "error"});
+                else {
+                    $(thisLike).notify("Error! Something went wrong...", { position: "right", autoHideDelay: 1000, className: "error" });
                 }
             }
         }
@@ -110,9 +110,9 @@ likes.forEach(function(like){
 //get all the delete anchor links
 var deletes = document.querySelectorAll(".deleteComment");
 //for each anchor link, add an event listener to its respective replyBox
-deletes.forEach(function(singleDelete){
-    singleDelete.addEventListener("click", function(){
-        
+deletes.forEach(function (singleDelete) {
+    singleDelete.addEventListener("click", function () {
+
         var linkToDelete = this.getAttribute('linktodelete');
 
         swal({
@@ -121,23 +121,23 @@ deletes.forEach(function(singleDelete){
             showCancelButton: true,
             reverseButtons: true
         })
-        .then((result) => {
-            if (result.value) {
-                $.ajax({
-                type: "DELETE",
-                url: linkToDelete,
-                // data: "name=someValue",
-            });
-            
-            swal("Your comment will be deleted.").then(function(){
-                location.reload();
+            .then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        type: "DELETE",
+                        url: linkToDelete,
+                        // data: "name=someValue",
+                    });
+
+                    swal("Your comment will be deleted.").then(function () {
+                        location.reload();
+                    });
+
+                } else {
+                    swal("Nothing was deleted.");
+                }
             });
 
-            } else {
-            swal("Nothing was deleted.");
-            }
-        });
-        
     });
 });
 
@@ -148,34 +148,34 @@ deletes.forEach(function(singleDelete){
 //get all the delete anchor links
 var deletes = document.querySelectorAll(".deleteCommentReply");
 //for each anchor link, add an event listener to its respective replyBox
-deletes.forEach(function(singleDelete){
-    singleDelete.addEventListener("click", function(){
-        
+deletes.forEach(function (singleDelete) {
+    singleDelete.addEventListener("click", function () {
+
         var linkToDelete = this.getAttribute('linktodelete');
 
         swal({
             title: "Are you sure you want to delete your reply?",
-            type: "warning",            
+            type: "warning",
             showCancelButton: true,
             reverseButtons: true
         })
-        .then((result) => {
-    
-            if (result.value) {
-                $.ajax({
-                type: "DELETE",
-                url: linkToDelete,
-                // data: "name=someValue",
+            .then((result) => {
+
+                if (result.value) {
+                    $.ajax({
+                        type: "DELETE",
+                        url: linkToDelete,
+                        // data: "name=someValue",
+                    });
+
+                    swal("Your reply will be deleted. ").then(function () {
+                        location.reload();
+                    });
+
+                } else {
+                    swal("Nothing was deleted.");
+                }
             });
-            
-            swal("Your reply will be deleted. ").then(function(){
-                location.reload();
-            });
-    
-            } else {
-                swal("Nothing was deleted.");
-            }
-        });
     });
 });
 
@@ -227,8 +227,8 @@ deletes.forEach(function(singleDelete){
 //             para.setAttribute("contenteditable", "true");
 //             para.focus();
 //         }
-        
-        
+
+
 
 //         console.log(para);
 

@@ -9,8 +9,8 @@ function Oberon(thisRoom_) {
     this.orderPriorityInOptions = 50;
 
     //Oberon only sees him/herself
-    this.see = function(){
-        if(this.thisRoom.gameStarted === true){
+    this.see = function () {
+        if (this.thisRoom.gameStarted === true) {
             var obj = {};
             var array = [];
 
@@ -20,14 +20,14 @@ function Oberon(thisRoom_) {
                     break;
                 }
             }
-            
+
             obj.spies = array;
             return obj;
         }
     }
 
-    this.checkSpecialMove = function(){
-        
+    this.checkSpecialMove = function () {
+
     }
 
 }

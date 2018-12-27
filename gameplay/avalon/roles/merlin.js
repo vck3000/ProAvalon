@@ -8,8 +8,8 @@ function Merlin(thisRoom_) {
 
     this.description = "Knows the identity of the spies.";
     this.orderPriorityInOptions = 100;
-    
-    this.test = function(){
+
+    this.test = function () {
         // The following lines running successfully shows that each role file can access
         // the variables and functions from the game room!
         console.log("HII from merlin. The number of sockets is: " + this.thisRoom.allSockets.length);
@@ -17,8 +17,8 @@ function Merlin(thisRoom_) {
 };
 
 
-Merlin.prototype.see = function(){        
-    if(this.thisRoom.gameStarted === true){
+Merlin.prototype.see = function () {
+    if (this.thisRoom.gameStarted === true) {
         var obj = {};
 
         var array = [];
@@ -35,16 +35,16 @@ Merlin.prototype.see = function(){
                 }
             }
         }
-        
+
         obj.spies = array;
         return obj;
     }
 };
 
 
-Merlin.prototype.checkSpecialMove = function(){
+Merlin.prototype.checkSpecialMove = function () {
     // Merlin has no special move
-    
+
     // To be honest, Merlin seeing the spies can be considered a "Special Move"
     // If we were to put that into here, in the startGame() function in the game.js file
     // Run all the role special moves once, and here, forcefully change the 

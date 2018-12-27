@@ -3,15 +3,15 @@
 //==========================================
 socket.on("commands", function (commands) {
     assignCommands(commands);
-}); 
+});
 
 var modCommands;
 socket.on("modCommands", function (commands) {
 
-    if(!modCommands){
-        $("#modActionCloseButton").on("click", function(){
+    if (!modCommands) {
+        $("#modActionCloseButton").on("click", function () {
             $("#modModal").modal("hide");
-            
+
             // console.log($("#modactionform").serializeArray());
             var data = $("#modactionform").serializeArray();
 
@@ -19,34 +19,34 @@ socket.on("modCommands", function (commands) {
         });
     }
     modCommands = commands;
-}); 
+});
 
 var adminCommands;
 socket.on("adminCommands", function (commands) {
     adminCommands = commands;
-}); 
+});
 
 
 socket.on("messageCommandReturnStr", function (dataInc) {
-    if(dataInc){
+    if (dataInc) {
         // console.log(dataInc);
-    
-        if(!dataInc.dateCreated){
+
+        if (!dataInc.dateCreated) {
             dataInc.dateCreated = new Date();
         }
-    
+
         if (lastChatBoxCommand === "allChat") {
             addToAllChat(dataInc);
         }
         else if (lastChatBoxCommand === "roomChat") {
             addToRoomChat(dataInc);
         }
-        else{
-            addToAllChat(dataInc);        
+        else {
+            addToAllChat(dataInc);
         }
-      // console.log("received return str");
+        // console.log("received return str");
     }
-    
+
 });
 
 var timeLastBuzzSlap;
@@ -63,27 +63,27 @@ var verbToMp3 = {
 
 socket.on("interactUser", function (data) {
     var interacted = false;
-    
-    if(isPlayerMuted(data.username) === false){
-        if($("#option_notifications_sound_slap")[0].checked === true){
-            if(!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $("#option_notifications_buzz_slap_timeout")[0].value){
+
+    if (isPlayerMuted(data.username) === false) {
+        if ($("#option_notifications_sound_slap")[0].checked === true) {
+            if (!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $("#option_notifications_buzz_slap_timeout")[0].value) {
                 var mp3String = verbToMp3[data.verb];
-                if(mp3String === undefined){mp3String = data.verb;}
+                if (mp3String === undefined) { mp3String = data.verb; }
                 playSound(mp3String);
 
-                socket.emit("interactUserPlayed", {success: true, interactedBy: data.username, myUsername: ownUsername, verb: data.verb, verbPast: data.verbPast});
+                socket.emit("interactUserPlayed", { success: true, interactedBy: data.username, myUsername: ownUsername, verb: data.verb, verbPast: data.verbPast });
                 interacted = true;
 
                 timeLastBuzzSlap = new Date();
 
                 var dataString = {
-                    message: "You have been " + data.verbPast + " by " + data.username + ".", 
+                    message: "You have been " + data.verbPast + " by " + data.username + ".",
                     classStr: "server-text",
                     dateCreated: new Date()
                 }
 
                 var timeDelay = interactUserMessageTimeOffset[data.verb];
-                if(timeDelay === undefined){timeDelay = 0;}
+                if (timeDelay === undefined) { timeDelay = 0; }
 
                 setTimeout(function () {
                     // if (lastChatBoxCommand === "allChat") {
@@ -92,22 +92,22 @@ socket.on("interactUser", function (data) {
                     // else if (lastChatBoxCommand === "roomChat") {
                     //     addToRoomChat(dataString);
                     // }else{
-                        addToAllChat(dataString);
-                        addToRoomChat(dataString);                        
+                    addToAllChat(dataString);
+                    addToRoomChat(dataString);
                     // }
                 }, timeDelay);
 
                 //only display notif if its a buzz
-                if(data.verb === "buzz"){
-                    if($("#option_notifications_desktop_buzz")[0].checked === true){
+                if (data.verb === "buzz") {
+                    if ($("#option_notifications_desktop_buzz")[0].checked === true) {
                         displayNotification(username + " has buzzed you!", "", "avatars/base-spy.png", "buzz");
                     }
                 }
             }
         }
     }
-    if(interacted === false){
-        socket.emit("interactUserPlayed", {success: false, interactedBy: data.username, myUsername: ownUsername, verb: data.verb, verbPast: data.verbPast});
+    if (interacted === false) {
+        socket.emit("interactUserPlayed", { success: false, interactedBy: data.username, myUsername: ownUsername, verb: data.verb, verbPast: data.verbPast });
     }
 });
 
@@ -151,7 +151,7 @@ socket.on("interactUser", function (data) {
 //         if(!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $("#option_notifications_buzz_slap_timeout")[0].value){
 //             if($("#option_notifications_sound_buzz")[0].checked === true){
 //                 playSound("ding");
-    
+
 //                 var data = { 
 //                     message: "You have been buzzed by " + username + ".", 
 //                     classStr: "server-text",
@@ -166,13 +166,13 @@ socket.on("interactUser", function (data) {
 //                     }
 //                 }, 0);
 //             }
-    
+
 //             if($("#option_notifications_desktop_buzz")[0].checked === true){
 //                 displayNotification(username + " has buzzed you!", "", "avatars/base-spy.png", "buzz");
 //             }
 //         }
 //     }
-    
+
 // });
 
 // socket.on("lick", function (username) {

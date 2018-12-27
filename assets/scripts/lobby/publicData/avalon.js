@@ -2,37 +2,37 @@ function runPublicDataAvalon(gameDataInc) {
     var gd = gameDataInc;
 
     // Roles and cards special data
-    if(gd){
+    if (gd) {
         // Show the assassin shot
-        if(gd.publicData.roles.assassinShotUsername){
+        if (gd.publicData.roles.assassinShotUsername) {
             drawAssassinateIcon(getIndexFromUsername(gd.publicData.roles.assassinShotUsername));
         }
-        if(gd.publicData.roles.assassinShotUsername2){
+        if (gd.publicData.roles.assassinShotUsername2) {
             drawAssassinateIcon(getIndexFromUsername(gd.publicData.roles.assassinShotUsername2));
         }
 
-        
+
         // Reset cards container
         $(".playerDiv").find(".cardsContainer")[0].innerHTML = "";
 
         //Draw cards:
-        for(var key in gd.publicData.cards){
-            if(gd.publicData.cards.hasOwnProperty(key) === true){
+        for (var key in gd.publicData.cards) {
+            if (gd.publicData.cards.hasOwnProperty(key) === true) {
                 // Skip if we don't have any record of the card to draw/display.
-                if(icons.hasOwnProperty(key) === false){
+                if (icons.hasOwnProperty(key) === false) {
                     continue;
                 }
 
                 var index = gd.publicData.cards[key].index;
 
                 var card;
-                if(icons[key].iconType === "bootstrapGlyphicon"){
+                if (icons[key].iconType === "bootstrapGlyphicon") {
                     card = "<span data-toggle='tooltip' data-placement='left' title='" + icons[key].toolTip + "' class='cardObject glyphicon " + icons[key].glyph + "' style=''></span> ";
                 }
-                else if(icons[key].iconType === "base64"){
+                else if (icons[key].iconType === "base64") {
                     card = '<img class="cardObject" data-toggle="tooltip" data-placement="left" title="' + icons[key].toolTip + '" src="' + icons[key].glyph + '" />';
                 }
-                else{
+                else {
                     card = "Undefined! Something went wrong.";
                 }
 
@@ -46,10 +46,10 @@ function runPublicDataAvalon(gameDataInc) {
             }
         }
 
-        
 
 
-        
+
+
     }
 }
 
@@ -64,13 +64,13 @@ function drawAssassinateIcon(indexOfPlayer) {
     var useBullet = $("#optionDisplayUseOldGameIcons")[0].checked;
 
     var icon;
-    if(useBullet === true && darkModeEnabled === false){
+    if (useBullet === true && darkModeEnabled === false) {
         icon = "bullet";
     }
-    else if(useBullet === true && darkModeEnabled === true){
+    else if (useBullet === true && darkModeEnabled === true) {
         icon = "bulletDark";
     }
-    else if(useBullet === false){
+    else if (useBullet === false) {
         icon = "dagger";
     }
 
@@ -79,12 +79,12 @@ function drawAssassinateIcon(indexOfPlayer) {
     //update the str in the div
     $("#mainRoomBox div")[indexOfPlayer].innerHTML = str;
 
-    if(useBullet === false){
+    if (useBullet === false) {
         // var raiseBy = $(".assassinateIcon").height()*0.22;
-        playerRatio = $(".playerDiv").height()/128;
+        playerRatio = $(".playerDiv").height() / 128;
         // k is a random constant to scale with
         var k = -20;
-        $(".assassinateIcon").css("top", (playerRatio*k) + "px");
+        $(".assassinateIcon").css("top", (playerRatio * k) + "px");
     }
 
     // $(".bullet")[0].style.top = 0;

@@ -19,13 +19,13 @@ var commonPhasesIndex = require("./indexCommonPhases");
 // Get all the gamemodes and their roles/cards/phases.
 var gameModeNames = [];
 fs.readdirSync("./gameplay/").filter(function (file) {
-	if(fs.statSync("./gameplay"+'/'+file).isDirectory() === true && file !== "commonPhases"){
+	if (fs.statSync("./gameplay" + '/' + file).isDirectory() === true && file !== "commonPhases") {
 		gameModeNames.push(file);
 	}
 });
 // console.log(gameModeNames);
 var gameModeObj = {};
-for(var i = 0; i < gameModeNames.length; i++){
+for (var i = 0; i < gameModeNames.length; i++) {
 	gameModeObj[gameModeNames[i]] = {};
 
 	gameModeObj[gameModeNames[i]]["Roles"] = require("./" + gameModeNames[i] + "/indexRoles");
@@ -45,7 +45,7 @@ mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
  * @param {String} newRoomPassword_ Password to join the room
  * @param {String} gameMode_ Gamemode - avalon/hunter/etc.
  */
-function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_){
+function Game(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) {
 	//********************************
 	//CONSTANTS
 	//********************************
@@ -126,44 +126,44 @@ function Game (host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_)
 	*/
 
 	// Game variables
-	this.gameStarted 					= false;
-	this.finished 						= false;
+	this.gameStarted = false;
+	this.finished = false;
 
-	this.phase					 		= "pickingTeam";
+	this.phase = "pickingTeam";
 
-	this.playersInGame 					= [];
-	this.playerUsernamesInGame			= [];
+	this.playersInGame = [];
+	this.playerUsernamesInGame = [];
 
 	this.resistanceUsernames = [];
 	this.spyUsernames = [];
 
-	this.roleKeysInPlay					= [];
-	this.cardKeysInPlay					= [];
+	this.roleKeysInPlay = [];
+	this.cardKeysInPlay = [];
 
-	this.teamLeader 					= 0;
-	this.hammer 						= 0;
-	this.missionNum 					= 0;
-	this.pickNum 						= 0;
-	this.missionHistory 				= [];
-	this.proposedTeam 					= [];
-	this.lastProposedTeam 				= [];
-	this.votes 							= [];
+	this.teamLeader = 0;
+	this.hammer = 0;
+	this.missionNum = 0;
+	this.pickNum = 0;
+	this.missionHistory = [];
+	this.proposedTeam = [];
+	this.lastProposedTeam = [];
+	this.votes = [];
 	//Only show all the votes when they've all come in, not one at a time
-	this.publicVotes 					= []; 
-	this.missionVotes 					= [];
+	this.publicVotes = [];
+	this.missionVotes = [];
 
-	this.voteHistory 					= {};
+	this.voteHistory = {};
 
 	// Game misc variables
-	this.winner							= "";
-	this.moreThanOneFailMissions 		= [];
-	this.options 						= undefined;
+	this.winner = "";
+	this.moreThanOneFailMissions = [];
+	this.options = undefined;
 
 	// Room variables
-	this.destroyRoom 					= false;
-	
+	this.destroyRoom = false;
+
 	// Room misc variables
-	this.chatHistory 					= []; // Here because chatHistory records after game starts
+	this.chatHistory = []; // Here because chatHistory records after game starts
 
 }
 
@@ -175,7 +175,7 @@ Object.assign(Game.prototype, PlayersReadyNotReady.prototype);
 
 
 //RECOVER GAME!
-Game.prototype.recoverGame = function(storedData){
+Game.prototype.recoverGame = function (storedData) {
 
 	// Set a few variables back to new state
 	this.allSockets = [];
@@ -201,9 +201,9 @@ Game.prototype.recoverGame = function(storedData){
 
 	//Roles
 	// Remove the circular dependency
-	for(var key in storedData.specialRoles){
-		if(storedData.specialRoles.hasOwnProperty(key)){
-			delete(storedData.specialRoles[key].thisRoom); 
+	for (var key in storedData.specialRoles) {
+		if (storedData.specialRoles.hasOwnProperty(key)) {
+			delete (storedData.specialRoles[key].thisRoom);
 		}
 	}
 	// Merge in the objects
@@ -211,15 +211,15 @@ Game.prototype.recoverGame = function(storedData){
 
 	// Cards
 	// Remove the circular dependency
-	for(var key in storedData.specialCards){
-		if(storedData.specialCards.hasOwnProperty(key)){
-			delete(storedData.specialCards[key].thisRoom); 
+	for (var key in storedData.specialCards) {
+		if (storedData.specialCards.hasOwnProperty(key)) {
+			delete (storedData.specialCards[key].thisRoom);
 		}
 	}
 	// Merge in the objects
 	_.merge(this.specialCards, storedData.specialCards);
 
-	
+
 	// Object.assign();
 }
 
@@ -227,39 +227,39 @@ Game.prototype.recoverGame = function(storedData){
 // METHOD OVERRIDES ------------------------------
 //------------------------------------------------
 Game.prototype.playerJoinRoom = function (socket, inputPassword) {
-	if(this.gameStarted === true){
+	if (this.gameStarted === true) {
 		//if the new socket is a player, add them to the sockets of players
-		for(var i = 0; i < this.playersInGame.length; i++){
-			if(this.playersInGame[i].username === socket.request.user.username){
+		for (var i = 0; i < this.playersInGame.length; i++) {
+			if (this.playersInGame[i].username === socket.request.user.username) {
 				this.socketsOfPlayers.splice(i, 0, socket);
 				this.playersInGame[i].request = socket.request;
-				
+
 				break;
 			}
 		}
 
 
-		if(this.someCutoffPlayersJoined === "no" && this.allSockets.length >= 5){
+		if (this.someCutoffPlayersJoined === "no" && this.allSockets.length >= 5) {
 			this.frozen = false;
 			this.someCutoffPlayersJoined === "yes";
 		}
 
 		return Room.prototype.playerJoinRoom.call(this, socket, inputPassword);
-		
+
 	}
-	else{
-		return Room.prototype.playerJoinRoom.call(this, socket, inputPassword);		
+	else {
+		return Room.prototype.playerJoinRoom.call(this, socket, inputPassword);
 	}
 };
 
-Game.prototype.playerSitDown = function(socket){
+Game.prototype.playerSitDown = function (socket) {
 	// If the game has started 
-	if(this.gameStarted === true){
+	if (this.gameStarted === true) {
 		socket.emit("danger-alert", "Game has already started.");
 		return;
 	}
 	// If the ready/not ready phase is ongoing
-	else if(this.canJoin === false){
+	else if (this.canJoin === false) {
 		socket.emit("danger-alert", "The game is currently trying to start (ready/not ready phase). You can join if someone is not ready, or after 10 seconds has elapsed.");
 		return;
 	}
@@ -267,14 +267,14 @@ Game.prototype.playerSitDown = function(socket){
 	Room.prototype.playerSitDown.call(this, socket);
 };
 
-Game.prototype.playerStandUp = function(socket){
+Game.prototype.playerStandUp = function (socket) {
 	//If the ready/not ready phase is ongoing
-	if(this.canJoin === false){
+	if (this.canJoin === false) {
 		// socket.emit("danger-alert", "The game is currently trying to start (ready/not ready phase). You cannot stand up now.");
 		return;
 	}
 	// If the game has started
-	else if(this.gameStarted === true){
+	else if (this.gameStarted === true) {
 		socket.emit("danger-alert", "The game has started... You shouldn't be able to see that stand up button!");
 		return;
 	}
@@ -282,47 +282,47 @@ Game.prototype.playerStandUp = function(socket){
 	Room.prototype.playerStandUp.call(this, socket);
 };
 
-Game.prototype.playerLeaveRoom = function(socket){
-	if(this.gameStarted === true){
+Game.prototype.playerLeaveRoom = function (socket) {
+	if (this.gameStarted === true) {
 
 		//if they exist in socketsOfPlayers, then remove them
 		var index = this.socketsOfPlayers.indexOf(socket);
-		if(index !== -1){
-			this.socketsOfPlayers.splice(index, 1);	
-		} 
+		if (index !== -1) {
+			this.socketsOfPlayers.splice(index, 1);
+		}
 
 		this.distributeGameData();
-    }
-    else{
-        // If we are in player ready not ready phase, then make them not ready and then perform
-        // the usual leave room procedures.
-        if(this.playersYetToReady !== undefined && this.playersYetToReady.length !== undefined && this.playersYetToReady.length !== 0){
-            this.playerNotReady();
-            var username = socket.request.user.username;
-            this.sendText(this.allSockets, username + " is not ready.", "server-text");
-        }
+	}
+	else {
+		// If we are in player ready not ready phase, then make them not ready and then perform
+		// the usual leave room procedures.
+		if (this.playersYetToReady !== undefined && this.playersYetToReady.length !== undefined && this.playersYetToReady.length !== 0) {
+			this.playerNotReady();
+			var username = socket.request.user.username;
+			this.sendText(this.allSockets, username + " is not ready.", "server-text");
+		}
 
-    }
-    
+	}
+
 	// If one person left in the room, the host would change
 	// after the game started. So this will fix it
 
 	var origHost;
-	if(this.gameStarted === true){
+	if (this.gameStarted === true) {
 		origHost = this.host;
 	}
-    
+
 	Room.prototype.playerLeaveRoom.call(this, socket);
 
-	if(this.gameStarted === true){
+	if (this.gameStarted === true) {
 		this.host = origHost;
 	}
 };
-	
+
 
 //start game
 Game.prototype.startGame = function (options) {
-	if(this.socketsOfPlayers.length < 5 || this.socketsOfPlayers.length > 10 || this.gamePlayerLeftDuringReady === true){
+	if (this.socketsOfPlayers.length < 5 || this.socketsOfPlayers.length > 10 || this.gamePlayerLeftDuringReady === true) {
 		this.canJoin = true;
 		this.gamePlayerLeftDuringReady = false;
 		return false;
@@ -337,19 +337,19 @@ Game.prototype.startGame = function (options) {
 
 	var shuffledPlayerAssignments = [];
 	//shuffle the players around. Make sure to redistribute this room player data in sockets.
-	for(var i = 0; i < this.socketsOfPlayers.length; i++){
+	for (var i = 0; i < this.socketsOfPlayers.length; i++) {
 		shuffledPlayerAssignments[i] = i;
 	}
 	shuffledPlayerAssignments = shuffle(shuffledPlayerAssignments);
 
 	var tempSockets = [];
 	//create temp sockets
-	for(var i = 0; i < this.socketsOfPlayers.length; i++){
+	for (var i = 0; i < this.socketsOfPlayers.length; i++) {
 		tempSockets[i] = this.socketsOfPlayers[i];
 	}
 
 	//assign the shuffled sockets
-	for(var i = 0; i < this.socketsOfPlayers.length; i++){
+	for (var i = 0; i < this.socketsOfPlayers.length; i++) {
 		this.socketsOfPlayers[i] = tempSockets[shuffledPlayerAssignments[i]];
 	}
 
@@ -381,46 +381,46 @@ Game.prototype.startGame = function (options) {
 	this.resRoles = [];
 	this.spyRoles = [];
 
-	for(var i = 0; i < options.length; i++){
+	for (var i = 0; i < options.length; i++) {
 		var op = options[i].toLowerCase();
 		// console.log(op);
 		// If a role file exists for this
-		if(this.specialRoles.hasOwnProperty(op)){
+		if (this.specialRoles.hasOwnProperty(op)) {
 			// If it is a res:
-			if(this.specialRoles[op].alliance === "Resistance"){
+			if (this.specialRoles[op].alliance === "Resistance") {
 				this.resRoles.push(this.specialRoles[op].role);
 			}
-			else if(this.specialRoles[op].alliance === "Spy"){
+			else if (this.specialRoles[op].alliance === "Spy") {
 				this.spyRoles.push(this.specialRoles[op].role);
 			}
-			else{
+			else {
 				console.log("THIS SHOULD NOT HAPPEN! Invalid role file. Look in game.js file.");
 			}
 			this.roleKeysInPlay.push(op)
 		}
 
 		// If a card file exists for this
-		else if(this.specialCards.hasOwnProperty(op)){
+		else if (this.specialCards.hasOwnProperty(op)) {
 			this.cardKeysInPlay.push(op);
 		}
-		
-		else{
+
+		else {
 			console.log("Warning: Client requested a role that doesn't exist -> " + op);
 		}
 	};
-		
+
 	var resPlayers = [];
 	var spyPlayers = [];
 
 	for (var i = 0; i < this.playersInGame.length; i++) {
 		if (this.playersInGame[i].alliance === "Resistance") {
-			resPlayers.push(i); 
+			resPlayers.push(i);
 			this.resistanceUsernames.push(this.playersInGame[i].username);
 		}
 		else if (this.playersInGame[i].alliance === "Spy") {
 			spyPlayers.push(i);
 			this.spyUsernames.push(this.playersInGame[i].username);
-			
+
 		}
 	}
 
@@ -491,15 +491,15 @@ Game.prototype.startGame = function (options) {
 	}
 
 	// Initialise all the Cards
-	for(var i = 0; i < this.cardKeysInPlay.length; i++){
+	for (var i = 0; i < this.cardKeysInPlay.length; i++) {
 		this.specialCards[this.cardKeysInPlay[i]].initialise();
 	};
 
 	this.distributeGameData();
 
 	this.botIndexes = [];
-	for(var i = 0; i < this.socketsOfPlayers.length; i++){
-		if(this.socketsOfPlayers[i].request.user.bot === true){
+	for (var i = 0; i < this.socketsOfPlayers.length; i++) {
+		if (this.socketsOfPlayers[i].request.user.bot === true) {
 			this.botIndexes.push(i);
 		}
 	}
@@ -517,130 +517,130 @@ Game.prototype.checkBotMoves = function () {
 
 	var wholeLoopDelay = (numOfBots + 1) * timeEachLoop;
 
-	if(this.botIndexes.length !== 0){
-		this.interval = setInterval(function(){
-			if(thisRoom.finished === true){
+	if (this.botIndexes.length !== 0) {
+		this.interval = setInterval(function () {
+			if (thisRoom.finished === true) {
 				clearInterval(thisRoom.interval);
 				thisRoom.interval = undefined;
 			}
-	
-	
+
+
 			// console.log("Num of bots: " + thisRoom.botIndexes.length);
-			for(var i = 0; i < thisRoom.botIndexes.length; i++){
+			for (var i = 0; i < thisRoom.botIndexes.length; i++) {
 				var count = 0;
-	
+
 				// Because we rely on the sockets of players to be exactly matching the players in game
 				// if they aren't the same size, they aren't. Don't go on.
-				if(thisRoom.socketsOfPlayers.length !== thisRoom.playersInGame.length){
+				if (thisRoom.socketsOfPlayers.length !== thisRoom.playersInGame.length) {
 					continue;
 				}
-	
+
 				// console.log("===================");
 				// console.log("Bot playing move: ");
-				
+
 				// console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
 				// console.log("Bot index: ");
 				// console.log(i);
 				// console.log(thisRoom.botIndexes[i]);
-				
-	
-	
+
+
+
 				var buttons = thisRoom.getClientButtonSettings(thisRoom.botIndexes[i]);
 				var numOfTargets = thisRoom.getClientNumOfTargets(thisRoom.botIndexes[i]);
 				var prohibitedIndexesToPick = thisRoom.getProhibitedIndexesToPick(thisRoom.botIndexes[i]);
-				if(prohibitedIndexesToPick === undefined){
+				if (prohibitedIndexesToPick === undefined) {
 					prohibitedIndexesToPick = [];
 				}
-				
+
 				// console.log(buttons);
 				var canHitGreen = false;
 				var canHitRed = false;
-				if(buttons.green.hidden !== true){
+				if (buttons.green.hidden !== true) {
 					canHitGreen = true;
 				}
-				if(buttons.red.hidden !== true){
+				if (buttons.red.hidden !== true) {
 					canHitRed = true;
 				}
-	
+
 				// If we can't make any moves, don't do anything
-				if((canHitGreen === false && canHitRed === false) || (numOfTargets === 0 || numOfTargets === undefined)){
+				if ((canHitGreen === false && canHitRed === false) || (numOfTargets === 0 || numOfTargets === undefined)) {
 					// console.log("Cant make any moves");
 					// console.log("Bot playing move: ");
 					// console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
-	
+
 					// console.log(canHitGreen);
 					// console.log(canHitRed);
 					// console.log(numOfTargets);
 					continue;
 				}
-	
-				if(buttons.green.hidden === false && buttons.green.disabled === false &&
-				buttons.red.hidden === false && buttons.red.disabled === false){
-						var num = Math.round(Math.random());
-						var str = "no";
-						if(num === 0){
-							str = "no";
-						}
-						else{
-							str = "yes";
-						}
-						thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]], str);
-						count += 1;
-						continue;
+
+				if (buttons.green.hidden === false && buttons.green.disabled === false &&
+					buttons.red.hidden === false && buttons.red.disabled === false) {
+					var num = Math.round(Math.random());
+					var str = "no";
+					if (num === 0) {
+						str = "no";
+					}
+					else {
+						str = "yes";
+					}
+					thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]], str);
+					count += 1;
+					continue;
 				}
-	
-				
+
+
 				var prohibitedUsernamesToPick = [];
-	
-				for(var j = 0; j < prohibitedIndexesToPick.length; j++){
+
+				for (var j = 0; j < prohibitedIndexesToPick.length; j++) {
 					prohibitedUsernamesToPick.push(thisRoom.playersInGame[prohibitedIndexesToPick[j]].request.user.username);
 				}
-	
+
 				var allPlayerUsernames = [];
-				for(var j = 0; j < thisRoom.playersInGame.length; j++){
+				for (var j = 0; j < thisRoom.playersInGame.length; j++) {
 					allPlayerUsernames.push(thisRoom.playersInGame[j].request.user.username);
 				}
-	
+
 				// Subtract out all the usernames we cannot pick.
-				var allowedUsernamesToPick = allPlayerUsernames.filter(function(uname){
-					if(prohibitedUsernamesToPick.includes(uname) === true){
+				var allowedUsernamesToPick = allPlayerUsernames.filter(function (uname) {
+					if (prohibitedUsernamesToPick.includes(uname) === true) {
 						return false;
 					}
-					else{
+					else {
 						return true;
 					}
 				});
-	
+
 				var randomNums0toPlayerCount = [];
 				//shuffle the players around. Make sure to redistribute thisRoom room player data in sockets.
-				for(var j = 0; j < allowedUsernamesToPick.length; j++){
+				for (var j = 0; j < allowedUsernamesToPick.length; j++) {
 					randomNums0toPlayerCount[j] = j;
 				}
 				randomNums0toPlayerCount = shuffle(randomNums0toPlayerCount);
-	
-	
+
+
 				var selectUsernames = [];
-				for(var j = 0; j < numOfTargets; j++){
+				for (var j = 0; j < numOfTargets; j++) {
 					selectUsernames.push(allowedUsernamesToPick[randomNums0toPlayerCount[j]]);
 				}
-	
+
 				// console.log("Select usernames: ");
 				// console.log(selectUsernames);
-	
+
 				// console.log("Bot playing move: ");
 				// console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
-	
+
 				// console.log("Allowed usernames: ");
 				// console.log(allowedUsernamesToPick);
-	
+
 				// console.log("Prohibited indices: ");
 				// console.log(prohibitedIndexesToPick);
-	
+
 				thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]], selectUsernames);
 				// setTimeout(function(index){
-					// thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[index]], selectUsernames);
+				// thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[index]], selectUsernames);
 				// }, count*timeEachLoop, i);
-				
+
 				count += 1;
 			}
 		}, 1000); //wholeLoopDelay);
@@ -656,17 +656,17 @@ Game.prototype.checkBotMoves = function () {
 Game.prototype.gameMove = function (socket, data) {
 
 	// Common phases
-	if(this.commonPhases.hasOwnProperty(this.phase) === true && this.commonPhases[this.phase].gameMove){
+	if (this.commonPhases.hasOwnProperty(this.phase) === true && this.commonPhases[this.phase].gameMove) {
 		this.commonPhases[this.phase].gameMove(socket, data);
 	}
 
 	// Special phases
-	else if(this.specialPhases.hasOwnProperty(this.phase) === true && this.specialPhases[this.phase].gameMove){
+	else if (this.specialPhases.hasOwnProperty(this.phase) === true && this.specialPhases[this.phase].gameMove) {
 		this.specialPhases[this.phase].gameMove(socket, data);
 	}
 
 	// THIS SHOULDN'T HAPPEN!! We always require a gameMove function to change phases
-	else{
+	else {
 		this.sendText(this.allSockets, "ERROR LET ADMIN KNOW IF YOU SEE THIS code 1", "gameplay-text");
 	}
 
@@ -676,72 +676,72 @@ Game.prototype.gameMove = function (socket, data) {
 	this.distributeGameData();
 };
 
-Game.prototype.toShowGuns = function(){
+Game.prototype.toShowGuns = function () {
 	// Common phases
-	if(this.commonPhases.hasOwnProperty(this.phase) === true && this.commonPhases[this.phase].showGuns){
-		return this.commonPhases[this.phase].showGuns;		
+	if (this.commonPhases.hasOwnProperty(this.phase) === true && this.commonPhases[this.phase].showGuns) {
+		return this.commonPhases[this.phase].showGuns;
 	}
 
 	// Special phases
-	else if(this.specialPhases.hasOwnProperty(this.phase) === true && this.specialPhases[this.phase].showGuns){
+	else if (this.specialPhases.hasOwnProperty(this.phase) === true && this.specialPhases[this.phase].showGuns) {
 		this.specialPhases[this.phase].showGuns;
 	}
 
-	else{
+	else {
 		return false;
 	}
 }
 
-Game.prototype.getClientNumOfTargets = function(indexOfPlayer){
+Game.prototype.getClientNumOfTargets = function (indexOfPlayer) {
 	// Common phases
-	if(this.commonPhases.hasOwnProperty(this.phase) === true && this.commonPhases[this.phase].numOfTargets){
-		return this.commonPhases[this.phase].numOfTargets(indexOfPlayer);		
+	if (this.commonPhases.hasOwnProperty(this.phase) === true && this.commonPhases[this.phase].numOfTargets) {
+		return this.commonPhases[this.phase].numOfTargets(indexOfPlayer);
 	}
 
 	// Special phases
-	else if(this.specialPhases.hasOwnProperty(this.phase) === true && this.specialPhases[this.phase].numOfTargets){
+	else if (this.specialPhases.hasOwnProperty(this.phase) === true && this.specialPhases[this.phase].numOfTargets) {
 		return this.specialPhases[this.phase].numOfTargets(indexOfPlayer);
 	}
 
-	else{
+	else {
 		return 0;
 	}
 };
 
-Game.prototype.getClientButtonSettings = function(indexOfPlayer){
-	if(indexOfPlayer !== undefined){
+Game.prototype.getClientButtonSettings = function (indexOfPlayer) {
+	if (indexOfPlayer !== undefined) {
 		// Common phases
-		if(this.commonPhases.hasOwnProperty(this.phase) === true && this.commonPhases[this.phase].buttonSettings){
+		if (this.commonPhases.hasOwnProperty(this.phase) === true && this.commonPhases[this.phase].buttonSettings) {
 			return this.commonPhases[this.phase].buttonSettings(indexOfPlayer);
 		}
 
 		// Special phases
-		else if(this.specialPhases.hasOwnProperty(this.phase) === true && this.specialPhases[this.phase].buttonSettings){
+		else if (this.specialPhases.hasOwnProperty(this.phase) === true && this.specialPhases[this.phase].buttonSettings) {
 			return this.specialPhases[this.phase].buttonSettings(indexOfPlayer);
 		}
 
-		else{
+		else {
 			//Spectator data
 			var obj = {
-				green:{},
+				green: {},
 				red: {}
 			};
-	
+
 			obj.green.hidden = true;
 			obj.green.disabled = true;
 			obj.green.setText = "";
-	
+
 			obj.red.hidden = true;
 			obj.red.disabled = true;
 			obj.red.setText = "";
-	
+
 			return obj;
 		}
 	}
 	// User is a spectator
-	else{
+	else {
 		var obj = {
-			green:{},
+			green: {},
 			red: {}
 		};
 
@@ -757,36 +757,36 @@ Game.prototype.getClientButtonSettings = function(indexOfPlayer){
 	}
 };
 
-Game.prototype.getStatusMessage = function(indexOfPlayer){
+Game.prototype.getStatusMessage = function (indexOfPlayer) {
 
 	// Common phases
-	if(this.commonPhases.hasOwnProperty(this.phase) === true && this.commonPhases[this.phase].getStatusMessage){
+	if (this.commonPhases.hasOwnProperty(this.phase) === true && this.commonPhases[this.phase].getStatusMessage) {
 		return this.commonPhases[this.phase].getStatusMessage(indexOfPlayer);
 	}
 
 	// Special phases
-	else if(this.specialPhases.hasOwnProperty(this.phase) === true && this.specialPhases[this.phase].getStatusMessage){
+	else if (this.specialPhases.hasOwnProperty(this.phase) === true && this.specialPhases[this.phase].getStatusMessage) {
 		return this.specialPhases[this.phase].getStatusMessage(indexOfPlayer);
 	}
 
-	else{
+	else {
 		return "There is no status message for the current phase... Let admin know if you see this code 5.";
 	}
 };
 
-Game.prototype.getProhibitedIndexesToPick = function(indexOfPlayer){
+Game.prototype.getProhibitedIndexesToPick = function (indexOfPlayer) {
 
 	// Common phases
-	if(this.commonPhases.hasOwnProperty(this.phase) === true && this.commonPhases[this.phase].getProhibitedIndexesToPick){
+	if (this.commonPhases.hasOwnProperty(this.phase) === true && this.commonPhases[this.phase].getProhibitedIndexesToPick) {
 		return this.commonPhases[this.phase].getProhibitedIndexesToPick(indexOfPlayer);
 	}
 
 	// Special phases
-	else if(this.specialPhases.hasOwnProperty(this.phase) === true && this.specialPhases[this.phase].getProhibitedIndexesToPick){
+	else if (this.specialPhases.hasOwnProperty(this.phase) === true && this.specialPhases[this.phase].getProhibitedIndexesToPick) {
 		return this.specialPhases[this.phase].getProhibitedIndexesToPick(indexOfPlayer);
 	}
 
-	else{
+	else {
 		return undefined;
 	}
 };
@@ -799,7 +799,7 @@ Game.prototype.getProhibitedIndexesToPick = function(indexOfPlayer){
 
 
 
-Game.prototype.incrementTeamLeader = function(){
+Game.prototype.incrementTeamLeader = function () {
 	//move to next team Leader, and reset it back to the start if 
 	//we go into negative numbers
 	this.teamLeader--;
@@ -810,16 +810,16 @@ Game.prototype.incrementTeamLeader = function(){
 }
 
 Game.prototype.getRoomPlayers = function () {
-	if(this.gameStarted === true){
+	if (this.gameStarted === true) {
 		var roomPlayers = [];
-		
+
 		for (var i = 0; i < this.playersInGame.length; i++) {
 			var isClaiming;
 			//If the player's username exists on the list of claiming:
-			if(this.claimingPlayers.indexOf(this.playersInGame[i].request.user.username) !== -1){
+			if (this.claimingPlayers.indexOf(this.playersInGame[i].request.user.username) !== -1) {
 				isClaiming = true;
 			}
-			else{
+			else {
 				isClaiming = false;
 			}
 
@@ -838,37 +838,37 @@ Game.prototype.getRoomPlayers = function () {
 		}
 		return roomPlayers;
 	}
-	else{
+	else {
 		return Room.prototype.getRoomPlayers.call(this);
 	}
 }
 
 
 
-Game.prototype.distributeGameData = function(){
+Game.prototype.distributeGameData = function () {
 	//distribute roles to each player
 
 	this.updateRoomPlayers();
 
-	if(this.gameStarted === true){
+	if (this.gameStarted === true) {
 
 		var gameData = this.getGameData();
 
-		for(var i = 0; i < this.playersInGame.length; i++){
+		for (var i = 0; i < this.playersInGame.length; i++) {
 			var index = usernamesIndexes.getIndexFromUsername(this.socketsOfPlayers, this.playersInGame[i].request.user.username);
 
 			//need to go through all sockets, but only send to the socket of players in game
-			if(this.socketsOfPlayers[index]){
+			if (this.socketsOfPlayers[index]) {
 				this.socketsOfPlayers[index].emit("game-data", gameData[i])
 
 				// console.log("Sent to player: " + this.playersInGame[i].request.user.username + " role " + gameData[i].role);
 			}
 		}
-	
+
 		var gameDataForSpectators = this.getGameDataForSpectators();
 
 		var sockOfSpecs = this.getSocketsOfSpectators();
-		sockOfSpecs.forEach(function(sock){
+		sockOfSpecs.forEach(function (sock) {
 			sock.emit("game-data", gameDataForSpectators);
 			// console.log("(for loop) Sent to spectator: " + sock.request.user.username);
 		});
@@ -877,7 +877,7 @@ Game.prototype.distributeGameData = function(){
 
 
 Game.prototype.getGameData = function () {
-	if(this.gameStarted == true){
+	if (this.gameStarted == true) {
 		var data = {};
 
 		var playerRoles = this.playersInGame;
@@ -895,39 +895,39 @@ Game.prototype.getGameData = function () {
 			};
 
 			//add on these common variables:
-			data[i].buttons 				= this.getClientButtonSettings(i);
+			data[i].buttons = this.getClientButtonSettings(i);
 
-			data[i].statusMessage 			= this.getStatusMessage(i);
-			
-			data[i].missionNum 				= this.missionNum;
-			data[i].missionHistory 			= this.missionHistory;
-			data[i].pickNum 				= this.pickNum;
-			data[i].teamLeader 				= this.teamLeader;
-			data[i].hammer 					= this.hammer;
+			data[i].statusMessage = this.getStatusMessage(i);
 
-			data[i].playersYetToVote 		= this.playersYetToVote;
-			data[i].phase 					= this.phase;
-			data[i].proposedTeam 			= this.proposedTeam;
+			data[i].missionNum = this.missionNum;
+			data[i].missionHistory = this.missionHistory;
+			data[i].pickNum = this.pickNum;
+			data[i].teamLeader = this.teamLeader;
+			data[i].hammer = this.hammer;
 
-			data[i].numPlayersOnMission 	= this.numPlayersOnMission[playerRoles.length - this.minPlayers]; //- 5
-			data[i].numSelectTargets		= this.getClientNumOfTargets(i);
+			data[i].playersYetToVote = this.playersYetToVote;
+			data[i].phase = this.phase;
+			data[i].proposedTeam = this.proposedTeam;
 
-			data[i].votes 					= this.publicVotes;
-			data[i].voteHistory 			= this.voteHistory;
-			data[i].hammer 					= this.hammer;
-			data[i].winner 					= this.winner;
+			data[i].numPlayersOnMission = this.numPlayersOnMission[playerRoles.length - this.minPlayers]; //- 5
+			data[i].numSelectTargets = this.getClientNumOfTargets(i);
 
-			data[i].gameplayMessage 		= this.gameplayMessage;
+			data[i].votes = this.publicVotes;
+			data[i].voteHistory = this.voteHistory;
+			data[i].hammer = this.hammer;
+			data[i].winner = this.winner;
 
-			data[i].spectator 				= false;
-			data[i].gamePlayersInRoom 		= getUsernamesOfPlayersInRoom(this);
+			data[i].gameplayMessage = this.gameplayMessage;
 
-			data[i].roomId 					= this.roomId;
-			data[i].toShowGuns 				= this.toShowGuns();
+			data[i].spectator = false;
+			data[i].gamePlayersInRoom = getUsernamesOfPlayersInRoom(this);
 
-			data[i].publicData				= this.getRoleCardPublicGameData();
-			data[i].prohibitedIndexesToPicks= this.getProhibitedIndexesToPick(i);
-			
+			data[i].roomId = this.roomId;
+			data[i].toShowGuns = this.toShowGuns();
+
+			data[i].publicData = this.getRoleCardPublicGameData();
+			data[i].prohibitedIndexesToPicks = this.getProhibitedIndexesToPick(i);
+
 
 			//if game is finished, reveal everything including roles
 			if (this.phase === "finished") {
@@ -942,10 +942,10 @@ Game.prototype.getGameData = function () {
 		}
 		return data;
 	}
-	else{
+	else {
 		return "Game hasn't started";
 	}
-	
+
 };
 
 
@@ -956,41 +956,41 @@ Game.prototype.getGameDataForSpectators = function () {
 	//set up the spectator data object
 	var data = {};
 
-	data.see 							= {};
-	data.see.spies 						= [];
-	data.see.merlins 					= [];
+	data.see = {};
+	data.see.spies = [];
+	data.see.merlins = [];
 
-	data.buttons 						= this.getClientButtonSettings();
+	data.buttons = this.getClientButtonSettings();
 
-	data.statusMessage 					= this.getStatusMessage(-1);
-	data.missionNum 					= this.missionNum;
-	data.missionHistory 				= this.missionHistory;
-	data.pickNum 						= this.pickNum;
-	data.teamLeader 					= this.teamLeader;
-	data.hammer 						= this.hammer;
+	data.statusMessage = this.getStatusMessage(-1);
+	data.missionNum = this.missionNum;
+	data.missionHistory = this.missionHistory;
+	data.pickNum = this.pickNum;
+	data.teamLeader = this.teamLeader;
+	data.hammer = this.hammer;
 
-	data.playersYetToVote 				= this.playersYetToVote;
-	data.phase 							= this.phase;
-	data.proposedTeam 					= this.proposedTeam;
+	data.playersYetToVote = this.playersYetToVote;
+	data.phase = this.phase;
+	data.proposedTeam = this.proposedTeam;
 
-	data.numPlayersOnMission 			= this.numPlayersOnMission[playerRoles.length - this.minPlayers]; //- 5
-	data.numSelectTargets				= this.getClientNumOfTargets();
+	data.numPlayersOnMission = this.numPlayersOnMission[playerRoles.length - this.minPlayers]; //- 5
+	data.numSelectTargets = this.getClientNumOfTargets();
 
-	data.votes 							= this.publicVotes;
-	data.voteHistory 					= this.voteHistory;
-	data.hammer 						= this.hammer;
-	data.winner 						= this.winner;
+	data.votes = this.publicVotes;
+	data.voteHistory = this.voteHistory;
+	data.hammer = this.hammer;
+	data.winner = this.winner;
 
-	data.gameplayMessage 				= this.gameplayMessage;
+	data.gameplayMessage = this.gameplayMessage;
 
-	data.spectator 						= true;
-	data.gamePlayersInRoom 				= getUsernamesOfPlayersInRoom(this);	
+	data.spectator = true;
+	data.gamePlayersInRoom = getUsernamesOfPlayersInRoom(this);
 
-	data.roomId 						= this.roomId;
-	data.toShowGuns 					= this.toShowGuns();
+	data.roomId = this.roomId;
+	data.toShowGuns = this.toShowGuns();
 
-	data.publicData						= this.getRoleCardPublicGameData();
-	
+	data.publicData = this.getRoleCardPublicGameData();
+
 
 	//if game is finished, reveal everything including roles
 	if (this.phase === "finished") {
@@ -1005,12 +1005,12 @@ Game.prototype.getGameDataForSpectators = function () {
 
 
 //Misc game room functions
-Game.prototype.addToChatHistory = function(data){
+Game.prototype.addToChatHistory = function (data) {
 	//FOR TESTING
 	// this.specialRoles.merlin.test();
 	// this.specialRoles.percival.test();
 
-	if(this.gameStarted === true){
+	if (this.gameStarted === true) {
 		this.chatHistory.push(data);
 	}
 }
@@ -1021,12 +1021,12 @@ Game.prototype.getStatus = function () {
 	if (this.finished === true) {
 		return "Finished";
 	}
-	else if(this.frozen === true){
+	else if (this.frozen === true) {
 		return "Frozen";
 	}
 	else if (this.gameStarted === true) {
 		return "Game in progress";
-	} 
+	}
 	else {
 		return "Waiting";
 	}
@@ -1034,20 +1034,20 @@ Game.prototype.getStatus = function () {
 
 
 
-Game.prototype.finishGame = function(toBeWinner){
+Game.prototype.finishGame = function (toBeWinner) {
 	this.phase = "finished";
 
-	if(this.checkRoleCardSpecialMoves() === true){
+	if (this.checkRoleCardSpecialMoves() === true) {
 		return;
 	}
 
 	// If after the special card/role check the phase is
 	// not finished now, then don't run the rest of the code below
-	if(this.phase !== "finished"){
+	if (this.phase !== "finished") {
 		return;
 	}
 
-	for(var i = 0; i < this.allSockets.length; i++){
+	for (var i = 0; i < this.allSockets.length; i++) {
 		this.allSockets[i].emit("gameEnded");
 	}
 
@@ -1070,26 +1070,26 @@ Game.prototype.finishGame = function(toBeWinner){
 
 
 	// If there was a bot in the game and this is the online server, do not store into the database.
-	if(process.env.MY_PLATFORM === "online" && this.botIndexes.length !== 0){
+	if (process.env.MY_PLATFORM === "online" && this.botIndexes.length !== 0) {
 		return;
 	}
 
 	//store data into the database:
 	var rolesCombined = [];
-	
+
 	//combine roles
-	for(var i = 0; i < (this.resRoles.length + this.spyRoles.length); i++){
-		if(i < this.resRoles.length){
+	for (var i = 0; i < (this.resRoles.length + this.spyRoles.length); i++) {
+		if (i < this.resRoles.length) {
 			rolesCombined[i] = this.resRoles[i];
 		}
-		else{
-			rolesCombined[i] = this.spyRoles[i-this.resRoles.length];
+		else {
+			rolesCombined[i] = this.spyRoles[i - this.resRoles.length];
 		}
 	}
 
 	var playerRolesVar = {};
 
-	for(var i = 0; i < this.playersInGame.length; i++){
+	for (var i = 0; i < this.playersInGame.length; i++) {
 		playerRolesVar[this.playersInGame[i].username] = {
 			alliance: this.playersInGame[i].alliance,
 			role: this.playersInGame[i].role
@@ -1098,25 +1098,25 @@ Game.prototype.finishGame = function(toBeWinner){
 
 	var ladyChain = undefined;
 	var ladyHistoryUsernames = undefined;
-	if(this.specialCards && this.specialCards["lady of the lake"]){
+	if (this.specialCards && this.specialCards["lady of the lake"]) {
 		ladyChain = this.specialCards["lady of the lake"].ladyChain;
 		ladyHistoryUsernames = this.specialCards["lady of the lake"].ladyHistoryUsernames;
 	}
 
 	var refChain = undefined;
 	var refHistoryUsernames = undefined;
-	if(this.specialCards && this.specialCards["ref of the rain"]){
+	if (this.specialCards && this.specialCards["ref of the rain"]) {
 		refChain = this.specialCards["ref of the rain"].refChain;
 		refHistoryUsernames = this.specialCards["ref of the rain"].refHistoryUsernames;
 	}
 
 	var sireChain = undefined;
 	var sireHistoryUsernames = undefined;
-	if(this.specialCards && this.specialCards["sire of the sea"]){
+	if (this.specialCards && this.specialCards["sire of the sea"]) {
 		sireChain = this.specialCards["sire of the sea"].sireChain;
 		sireHistoryUsernames = this.specialCards["sire of the sea"].sireHistoryUsernames;
 	}
-	
+
 	var objectToStore = {
 		timeGameStarted: this.startGameTime,
 		timeAssassinationStarted: this.startAssassinationTime,
@@ -1129,7 +1129,7 @@ Game.prototype.finishGame = function(toBeWinner){
 		gameMode: this.gameMode,
 
 		howTheGameWasWon: this.howWasWon,
-		
+
 		roles: rolesCombined,
 		cards: this.cardKeysInPlay,
 
@@ -1152,11 +1152,11 @@ Game.prototype.finishGame = function(toBeWinner){
 		moreThanOneFailMissions: this.moreThanOneFailMissions
 	};
 
-	GameRecord.create(objectToStore, function(err){
-		if(err){
+	GameRecord.create(objectToStore, function (err) {
+		if (err) {
 			console.log(err);
 		}
-		else{
+		else {
 			// console.log("Stored game data successfully.");
 		}
 	});
@@ -1171,41 +1171,41 @@ Game.prototype.finishGame = function(toBeWinner){
 	var playersInGameVar = this.playersInGame;
 	var winnerVar = this.winner;
 
-	this.playersInGame.forEach(function(player){
+	this.playersInGame.forEach(function (player) {
 
-		User.findById(player.userId).populate("modAction").populate("notifications").exec(function(err, foundUser){
-			if(err){console.log(err);}
-			else{
-				if(foundUser){
+		User.findById(player.userId).populate("modAction").populate("notifications").exec(function (err, foundUser) {
+			if (err) { console.log(err); }
+			else {
+				if (foundUser) {
 					foundUser.totalTimePlayed = new Date(foundUser.totalTimePlayed.getTime() + gameDuration.getTime());
-				
+
 					//update individual player statistics
 					foundUser.totalGamesPlayed += 1;
 
-					if(winnerVar === player.alliance){
+					if (winnerVar === player.alliance) {
 						foundUser.totalWins += 1;
-						if(winnerVar === "Resistance"){
+						if (winnerVar === "Resistance") {
 							foundUser.totalResWins += 1;
 						}
-					} else{
+					} else {
 						//loss
 						foundUser.totalLosses += 1;
-						if(winnerVar === "Spy"){
+						if (winnerVar === "Spy") {
 							foundUser.totalResLosses += 1;
 						}
 					}
 
 					//checks that the var exists
-					if(!foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"]){
+					if (!foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"]) {
 						foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"] = {
 							wins: 0,
 							losses: 0
 						};
 					}
-					if(!foundUser.roleStats[playersInGameVar.length + "p"]){
+					if (!foundUser.roleStats[playersInGameVar.length + "p"]) {
 						foundUser.roleStats[playersInGameVar.length + "p"] = {};
 					}
-					if(!foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()]){
+					if (!foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()]) {
 						foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()] = {
 							wins: 0,
 							losses: 0
@@ -1213,12 +1213,12 @@ Game.prototype.finishGame = function(toBeWinner){
 					}
 
 
-					if(winnerVar === player.alliance){
+					if (winnerVar === player.alliance) {
 						//checks
-						if(isNaN(foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].losses)){
+						if (isNaN(foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].losses)) {
 							foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].wins = 0;
 						}
-						if(isNaN(foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].wins)){
+						if (isNaN(foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].wins)) {
 							foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].wins = 0;
 						}
 						// console.log("=NaN?");
@@ -1227,12 +1227,12 @@ Game.prototype.finishGame = function(toBeWinner){
 						foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].wins += 1;
 						foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].wins += 1;
 					}
-					else{
+					else {
 						//checks
-						if(isNaN(foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].losses)){
+						if (isNaN(foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].losses)) {
 							foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].losses = 0;
 						}
-						if(isNaN(foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].losses)){
+						if (isNaN(foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].losses)) {
 							foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].losses = 0;
 						}
 
@@ -1244,7 +1244,7 @@ Game.prototype.finishGame = function(toBeWinner){
 
 					foundUser.markModified("winsLossesGameSizeBreakdown");
 					foundUser.markModified("roleStats");
-					
+
 					foundUser.save();
 					// console.log("SAVE SAVE");
 
@@ -1254,7 +1254,7 @@ Game.prototype.finishGame = function(toBeWinner){
 	});
 };
 
-Game.prototype.calcMissionVotes = function(votes) {
+Game.prototype.calcMissionVotes = function (votes) {
 
 	var requiresTwoFails = false;
 	if (this.playersInGame.length >= 7 && this.missionNum === 4) {
@@ -1299,25 +1299,25 @@ Game.prototype.calcMissionVotes = function(votes) {
 };
 
 
-Game.prototype.checkRoleCardSpecialMoves = function(socket, data){
+Game.prototype.checkRoleCardSpecialMoves = function (socket, data) {
 	var foundSomething = false;
 
-	for(var i = 0; i < this.roleKeysInPlay.length; i++){
+	for (var i = 0; i < this.roleKeysInPlay.length; i++) {
 		//If the function doesn't exist, return null
-		if(!this.specialRoles[this.roleKeysInPlay[i]].checkSpecialMove){continue;}
+		if (!this.specialRoles[this.roleKeysInPlay[i]].checkSpecialMove) { continue; }
 
-		if(this.specialRoles[this.roleKeysInPlay[i]].checkSpecialMove(socket, data) === true){
+		if (this.specialRoles[this.roleKeysInPlay[i]].checkSpecialMove(socket, data) === true) {
 			foundSomething = true;
 			break;
 		}
 	}
 	// If we haven't found something in the roles, check the cards
-	if(foundSomething === false){
-		for(var i = 0; i < this.cardKeysInPlay.length; i++){
+	if (foundSomething === false) {
+		for (var i = 0; i < this.cardKeysInPlay.length; i++) {
 			//If the function doesn't exist, return null
-			if(!this.specialCards[this.cardKeysInPlay[i]].checkSpecialMove){continue;}
+			if (!this.specialCards[this.cardKeysInPlay[i]].checkSpecialMove) { continue; }
 
-			if(this.specialCards[this.cardKeysInPlay[i]].checkSpecialMove(socket, data) === true){
+			if (this.specialCards[this.cardKeysInPlay[i]].checkSpecialMove(socket, data) === true) {
 				foundSomething = true;
 				break;
 			}
@@ -1328,22 +1328,22 @@ Game.prototype.checkRoleCardSpecialMoves = function(socket, data){
 };
 
 
-Game.prototype.getRoleCardPublicGameData = function(){
+Game.prototype.getRoleCardPublicGameData = function () {
 	var allData = {
 		roles: {},
 		cards: {}
 	};
-	for(var i = 0; i < this.roleKeysInPlay.length; i++){
+	for (var i = 0; i < this.roleKeysInPlay.length; i++) {
 		//If the function doesn't exist, return null
-		if(!this.specialRoles[this.roleKeysInPlay[i]].getPublicGameData){continue;}
+		if (!this.specialRoles[this.roleKeysInPlay[i]].getPublicGameData) { continue; }
 
 		let data = this.specialRoles[this.roleKeysInPlay[i]].getPublicGameData();
 		Object.assign(allData.roles, data);
 	}
 
-	for(var i = 0; i < this.cardKeysInPlay.length; i++){
+	for (var i = 0; i < this.cardKeysInPlay.length; i++) {
 		//If the function doesn't exist, return null
-		if(!this.specialCards[this.cardKeysInPlay[i]].getPublicGameData){continue;}
+		if (!this.specialCards[this.cardKeysInPlay[i]].getPublicGameData) { continue; }
 
 		let data = this.specialCards[this.cardKeysInPlay[i]].getPublicGameData();
 		Object.assign(allData.cards, data);
@@ -1355,7 +1355,7 @@ Game.prototype.getRoleCardPublicGameData = function(){
 
 
 // If entries don't exist for current missionNum and pickNum, create them
-Game.prototype.VHCheckUndefined = function(){
+Game.prototype.VHCheckUndefined = function () {
 	for (var i = 0; i < this.playersInGame.length; i++) {
 		if (this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1] === undefined) {
 			this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1] = [];
@@ -1366,7 +1366,7 @@ Game.prototype.VHCheckUndefined = function(){
 	}
 }
 
-Game.prototype.VHUpdateTeamPick = function(){
+Game.prototype.VHUpdateTeamPick = function () {
 	this.VHCheckUndefined();
 
 	for (var i = 0; i < this.playersInGame.length; i++) {
@@ -1380,7 +1380,7 @@ Game.prototype.VHUpdateTeamPick = function(){
 	}
 }
 
-Game.prototype.VHUpdateTeamVotes = function(){
+Game.prototype.VHUpdateTeamVotes = function () {
 	this.VHCheckUndefined();
 
 	for (var i = 0; i < this.playersInGame.length; i++) {
@@ -1476,14 +1476,14 @@ function getRevealedRoles(thisRoom) {
 }
 
 function getUsernamesOfPlayersInRoom(thisRoom) {
-	if(thisRoom.gameStarted === true){
+	if (thisRoom.gameStarted === true) {
 		var array = [];
-		for(var i = 0; i < thisRoom.socketsOfPlayers.length; i++){
+		for (var i = 0; i < thisRoom.socketsOfPlayers.length; i++) {
 			array.push(thisRoom.socketsOfPlayers[i].request.user.username);
 		}
 		return array;
 	}
-	else{
+	else {
 		return [];
 	}
 }

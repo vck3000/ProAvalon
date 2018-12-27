@@ -2,9 +2,9 @@
 var forumThread = require("../models/forumThread");
 var forumThreadComment = require("../models/forumThreadComment");
 var forumThreadCommentReply = require("../models/forumThreadCommentReply");
-var User 			= require("../models/user");
+var User = require("../models/user");
 
-var flash 		= require("connect-flash");
+var flash = require("connect-flash");
 
 var middlewareObj = {};
 
@@ -14,12 +14,12 @@ var adminsArray = require("../modsadmins/admins");
 
 middlewareObj.checkProfileOwnership = function (req, res, next) {
 	if (req.isAuthenticated()) {
-		User.find({username: req.params.profileUsername.replace(" ", "")}, function (err, foundUser) {
+		User.find({ username: req.params.profileUsername.replace(" ", "") }, function (err, foundUser) {
 			if (err) {
 				req.flash("error", "User not found!");
 				res.redirect("back");
 			} else {
-				if(foundUser){
+				if (foundUser) {
 					foundUser = foundUser[0];
 					console.log("asdfasdf");
 					console.log(foundUser.username);
@@ -29,9 +29,9 @@ middlewareObj.checkProfileOwnership = function (req, res, next) {
 					} else {
 						// console.log(foundUser.username.replace(" ", ""));
 						// console.log(req.user.username.replace(" ", ""));
-	
+
 						req.flash("error", "You are not the owner!");
-						console.log(req.user._id + " " + req.user.username +  " has attempted to do something bad");
+						console.log(req.user._id + " " + req.user.username + " has attempted to do something bad");
 						res.redirect("back");
 					}
 				}
@@ -52,11 +52,11 @@ middlewareObj.checkForumThreadOwnership = function (req, res, next) {
 			} else {
 				//does user own campground?
 				if (foundForumThread.author.id && foundForumThread.author.id.equals(req.user._id)) {
-					
+
 					next();
 				} else {
 					req.flash("error", "You are not the owner!");
-					console.log(req.user._id + " " + req.user.username +  " has attempted to do something bad");
+					console.log(req.user._id + " " + req.user.username + " has attempted to do something bad");
 					res.redirect("back");
 				}
 			}
@@ -74,7 +74,7 @@ middlewareObj.checkForumThreadCommentOwnership = function (req, res, next) {
 				res.redirect("back");
 			} else {
 				//does user own comment?
-				if(foundComment === undefined || foundComment === null){
+				if (foundComment === undefined || foundComment === null) {
 					req.flash("error", "Comment not found?");
 					console.log("lol " + req.params.comment_id)
 					res.redirect("back");
@@ -128,10 +128,10 @@ middlewareObj.isLoggedIn = function (req, res, next) {
 
 middlewareObj.isMod = function (req, res, next) {
 
-	if(req.isAuthenticated() && modsArray.indexOf(req.user.username.toLowerCase()) !== -1){
+	if (req.isAuthenticated() && modsArray.indexOf(req.user.username.toLowerCase()) !== -1) {
 		return next();
 	}
-	else{
+	else {
 		console.log("not a mod");
 		req.flash("error", "You are not a moderator.");
 		res.redirect("/");
@@ -140,10 +140,10 @@ middlewareObj.isMod = function (req, res, next) {
 
 middlewareObj.isAdmin = function (req, res, next) {
 
-	if(req.isAuthenticated() && admins.indexOf(req.user.username.toLowerCase()) !== -1){
+	if (req.isAuthenticated() && admins.indexOf(req.user.username.toLowerCase()) !== -1) {
 		return next();
 	}
-	else{
+	else {
 		console.log("not a admin");
 		req.flash("error", "You are not an admin.");
 		res.redirect("/");

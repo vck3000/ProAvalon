@@ -14,7 +14,7 @@ var pics = {
             height: 64px;
         `,
         maxDims: {
-            y: 64, 
+            y: 64,
             // x: 32//Unused
         }
     },

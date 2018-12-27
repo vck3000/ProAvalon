@@ -3,31 +3,26 @@ var mongoose = require("mongoose");
 //SCHEMA SETUP
 var gameRecordSchema = new mongoose.Schema({
 
-	timeGameStarted: Date, 
-	// 
+	timeGameStarted: Date,
 	timeAssassinationStarted: Date,
 	timeGameFinished: Date,
 	winningTeam: String,
 	spyTeam: [String],
 	resistanceTeam: [String],
 
-	// 
-	gameMode: String, 
+	gameMode: String,
 
 	numberOfPlayers: Number,
-	//E.g. mission fails, mission suceeds and dodge bullet, assassination
 	howTheGameWasWon: String,
-	// 
 	whoAssassinShot: String,
-	// 
 	whoAssassinShot2: String,
-	
+
 	roles: [String],
 	cards: [String],
 
 	ladyChain: [String],
 	ladyHistoryUsernames: [String],
-	
+
 	refChain: [String],
 	refHistoryUsernames: [String],
 
@@ -39,7 +34,7 @@ var gameRecordSchema = new mongoose.Schema({
 	playerRoles: Object,
 
 	moreThanOneFailMissions: [Boolean]
-	
+
 });
 //compile schema into a model
 var gameRecord = mongoose.model("gameRecord", gameRecordSchema);

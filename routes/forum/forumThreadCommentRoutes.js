@@ -6,7 +6,7 @@ var lastIds = require("../../models/lastIds");
 var middleware = require("../../middleware");
 var sanitizeHtml = require('sanitize-html');
 var getTimeDiffInString = require("../../assets/myLibraries/getTimeDiffInString");
-var User 			= require("../../models/user");
+var User = require("../../models/user");
 var mongoose = require('mongoose');
 
 var createNotificationObj = require("../../myFunctions/createNotification");
@@ -75,7 +75,7 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 
 			//Set up a new notification
 			console.log(foundForumThread.author);
-			if(foundForumThread.author.id){
+			if (foundForumThread.author.id) {
 
 				//create notif
 				var userIdTarget = mongoose.Types.ObjectId(foundForumThread.author.id);
@@ -84,7 +84,7 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 
 				createNotificationObj.createNotification(userIdTarget, stringToSay, link);
 			}
-			
+
 
 			//redirect to same forum thread
 			res.redirect("/forum/show/" + req.params.id);
@@ -93,7 +93,7 @@ router.post("/:id/comment", middleware.isLoggedIn, async function (req, res) {
 			//except for the one who made the comment
 			foundForumThread.seenUsers = [req.user.username.toLowerCase()];
 			foundForumThread.save();
-			
+
 		});
 
 
@@ -109,15 +109,15 @@ router.get("/:id/:comment_id/edit", middleware.checkForumThreadCommentOwnership,
 		if (err) {
 			console.log("ERROR: " + err);
 		}
-		if(foundComment.disabled === true){
+		if (foundComment.disabled === true) {
 			req.flash("error", "Comment has been deleted.");
 			res.redirect("back");
 		}
-		else{
+		else {
 			var userNotifications = [];
 
-			await User.findById(req.user._id).populate("notifications").exec(function(err, foundUser){
-				if(!err){userNotifications = foundUser.userNotifications;}
+			await User.findById(req.user._id).populate("notifications").exec(function (err, foundUser) {
+				if (!err) { userNotifications = foundUser.userNotifications; }
 			});
 			res.render("forum/comment/edit", { comment: foundComment, forumThread: { id: req.params.id }, userNotifications: userNotifications });
 		}
@@ -141,35 +141,35 @@ router.put("/:id/:comment_id", middleware.checkForumThreadCommentOwnership, func
 			console.log("AAA");
 			console.log(foundComment.disabled);
 
-			if(foundComment.disabled === true){
+			if (foundComment.disabled === true) {
 				req.flash("error", "You cannot edit a deleted comment.");
 				//make them refresh to see the req.flash;
 				res.redirect('back');
 			}
-			else{
+			else {
 				foundComment.text = sanitizeHtml(req.body.comment.text, {
 					allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
 					allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
 				}),
-	
-	
-				foundComment.edited = true;
+
+
+					foundComment.edited = true;
 				foundComment.timeLastEdit = new Date();
-	
+
 				await foundComment.save();
-	
+
 				// forumThread.findById(req.params.id)
 				forumThread.findById(req.params.id).populate("comments").exec(async function (err, foundForumThread) {
 					console.log("found forum thread:");
 					console.log(req.params.id);
-	
+
 					foundForumThread.markModified("comments");
 					//update time last edited
 					foundForumThread.timeLastEdit = new Date();
 					foundForumThread.whoLastEdit = req.user.username;
-					
+
 					await foundForumThread.save();
-	
+
 					//redirect to the forum page
 					// req.flash("success", "Comment updated successfully.");
 					res.redirect("/forum/show/" + req.params.id);
@@ -197,16 +197,16 @@ router.delete("/deleteComment/:id/:comment_id", middleware.checkForumThreadComme
 			foundComment.text = "*Deleted*";
 
 
-			foundComment.save(function(){
+			foundComment.save(function () {
 				forumThread.findById(req.params.id).populate("comments").exec(async function (err, foundForumThread) {
 					foundForumThread.markModified("comments");
 					await foundForumThread.save();
 				});
-	
+
 				res.redirect("/forum/" + req.params.id);
 			});
 
-			
+
 		}
 	});
 });

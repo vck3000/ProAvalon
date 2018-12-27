@@ -23,7 +23,7 @@ function showSuccessAlert(data) {
 
 function showDangerAlert(data) {
 
-    if(data === "You have been disconnected! Please refresh the page."){
+    if (data === "You have been disconnected! Please refresh the page.") {
         document.querySelector("#danger-alert-box").classList.add("disconnect");
     }
 

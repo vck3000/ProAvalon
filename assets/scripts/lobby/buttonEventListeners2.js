@@ -1,4 +1,4 @@
-	
+
 function redButtonFunction() {
     // if the button isn't disabled
     if (document.querySelector("#red-button").classList.contains("disabled") === false) {
@@ -7,38 +7,38 @@ function redButtonFunction() {
         }
         else if (gameStarted === false) {
             //if we are spectating
-            if(document.querySelector("#red-button").innerText === "Spectate"){
+            if (document.querySelector("#red-button").innerText === "Spectate") {
                 socket.emit("standUpFromGame");
                 //remove claim status when a player sits down
                 //then stands up
                 socket.emit("setClaim", false);
-                
+
                 enableDisableButtons();
             }
             //we are the host, open kick menu
-            else{
+            else {
                 //host kicking
                 // Set the kick modal content
                 var str = "<h4>Select the players you want to kick.</h4>";
 
                 str += '<div class="btn-group-vertical" data-toggle="buttons">';
-				
+
                 for (var i = 0; i < roomPlayersData.length; i++) {
-					if (ownUsername !== roomPlayersData[i].username){
-						str += '<label class="btn btn-mine">';
+                    if (ownUsername !== roomPlayersData[i].username) {
+                        str += '<label class="btn btn-mine">';
 
-						str += '<input name="' + roomPlayersData[i].username + '" id="' + roomPlayersData[i].username + '" type="checkbox" autocomplete="off">' + roomPlayersData[i].username;
+                        str += '<input name="' + roomPlayersData[i].username + '" id="' + roomPlayersData[i].username + '" type="checkbox" autocomplete="off">' + roomPlayersData[i].username;
 
-						str += "</label>";
-						str += "<br>";
+                        str += "</label>";
+                        str += "<br>";
                     }
-                    else{
+                    else {
                         str += '<label class="btn btn-mine" style="display: none;">';
 
-						str += '<input name="' + roomPlayersData[i].username + '" id="' + roomPlayersData[i].username + '" type="checkbox" autocomplete="off">' + roomPlayersData[i].username;
+                        str += '<input name="' + roomPlayersData[i].username + '" id="' + roomPlayersData[i].username + '" type="checkbox" autocomplete="off">' + roomPlayersData[i].username;
 
-						str += "</label>";
-						str += "<br>";
+                        str += "</label>";
+                        str += "<br>";
                     }
                 }
 
@@ -46,11 +46,11 @@ function redButtonFunction() {
 
                 $("#kickModalContent")[0].innerHTML = str;
             }
-            
+
         }
         else {
-            if(gameData.phase === "votingTeam" || gameData.phase === "votingMission"){
-                socket.emit("gameMove", "no");                
+            if (gameData.phase === "votingTeam" || gameData.phase === "votingMission") {
+                socket.emit("gameMove", "no");
             }
         }
         $("#mainRoomBox div").removeClass("highlight-avatar");
@@ -67,11 +67,11 @@ function greenButtonFunction() {
             socket.emit("startGame", getOptions(), $($(".gameModeSelect")[1]).val());
         }
         else {
-            if(gameData.phase === "votingTeam" || gameData.phase === "votingMission"){
-                socket.emit("gameMove", "yes");                
+            if (gameData.phase === "votingTeam" || gameData.phase === "votingMission") {
+                socket.emit("gameMove", "yes");
             }
-            else{
-                socket.emit("gameMove", getHighlightedAvatars());                
+            else {
+                socket.emit("gameMove", getHighlightedAvatars());
             }
         }
 
@@ -101,7 +101,7 @@ $("#kickButton")[0].addEventListener("click", function () {
     for (var key in players) {
         if (players.hasOwnProperty(key)) {
             socket.emit("kickPlayer", key);
-          // console.log("kick player: " + key);
+            // console.log("kick player: " + key);
         }
     }
 });
@@ -110,14 +110,14 @@ $("#kickButton")[0].addEventListener("click", function () {
 
 document.querySelector("#danger-alert-box-button").addEventListener("click", function () {
 
-    if(document.querySelector("#danger-alert-box").classList.contains("disconnect")){
+    if (document.querySelector("#danger-alert-box").classList.contains("disconnect")) {
 
     }
-    else{
+    else {
         document.querySelector("#danger-alert-box").classList.add("inactive-window");
         document.querySelector("#danger-alert-box-button").classList.add("inactive-window");
     }
-    
+
 });
 
 document.querySelector("#success-alert-box-button").addEventListener("click", function () {
@@ -129,7 +129,7 @@ document.querySelector("#backButton").addEventListener("click", function () {
     leaveRoom();
 });
 
-function leaveRoom(){  
+function leaveRoom() {
     changeView();
     socket.emit("leave-room", "");
 
@@ -143,7 +143,7 @@ document.querySelector("#claimButton").addEventListener("click", function () {
     // click a disabled claim button
     if (isSpectator === false) {
         var btnText = $("#claimButton").text();
-        if (btnText === "Claim"){
+        if (btnText === "Claim") {
             socket.emit("setClaim", true);
         } else {
             socket.emit("setClaim", false);
@@ -153,7 +153,7 @@ document.querySelector("#claimButton").addEventListener("click", function () {
 
 
 //New room code (When its opened, open the modal and reset to default settings)
-$("#newRoom").on("click", function(data){
+$("#newRoom").on("click", function (data) {
     $('#newRoomModal').modal('show');
     //password empty default
     $("#newRoomPassword").val("");
@@ -162,11 +162,11 @@ $("#newRoom").on("click", function(data){
 
     // $(".gun").css("visibility", "hidden");
 
-    $(".gun").removeClass("gunAfter"); 
-    $(".gun").addClass("gunBefore"); 
+    $(".gun").removeClass("gunAfter");
+    $(".gun").addClass("gunBefore");
 });
 
-$("#createNewRoomButton").on("click", function(data){
+$("#createNewRoomButton").on("click", function (data) {
     // console.log( $($(".maxNumPlayers")[1]).val() );
     // console.log( $("#newRoomPassword").val() );
 
@@ -183,7 +183,7 @@ $("#createNewRoomButton").on("click", function(data){
 
     if (inRoom === false) {
         socket.emit("newRoom", sendObj);
-        
+
         resetAllGameData();
         inRoom = true;
     }

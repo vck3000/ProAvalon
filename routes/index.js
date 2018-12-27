@@ -1,10 +1,10 @@
-var express 		= require("express");
-var router 			= express.Router();
-var passport 		= require("passport");
-var User 			= require("../models/user");
-var myNotification	= require("../models/notification");
-var flash 			= require("connect-flash");
-var sanitizeHtml 	= require('sanitize-html');
+var express = require("express");
+var router = express.Router();
+var passport = require("passport");
+var User = require("../models/user");
+var myNotification = require("../models/notification");
+var flash = require("connect-flash");
+var sanitizeHtml = require('sanitize-html');
 var mongoose = require("mongoose");
 var fs = require('fs');
 
@@ -22,150 +22,150 @@ var adminsArray = require("../modsadmins/admins");
 
 
 //Index route
-router.get("/", function(req, res){
+router.get("/", function (req, res) {
 	res.render("index");
 });
 
 //register route
-router.get("/register", function(req, res){
-	res.render("register", {platform: process.env.MY_PLATFORM});
+router.get("/register", function (req, res) {
+	res.render("register", { platform: process.env.MY_PLATFORM });
 });
 
 //Post of the register route
-router.post("/", checkIpBan, sanitiseUsername,/* usernameToLowerCase, */function(req, res){
+router.post("/", checkIpBan, sanitiseUsername,/* usernameToLowerCase, */function (req, res) {
 	// console.log("escaped: " + escapeText(req.body.username));
 
 	// var escapedUsername = escapeText(req.body.username);
-	
+
 	//if we are local, we can skip the captcha
-	if(process.env.MY_PLATFORM === "local" || process.env.MY_PLATFORM === "staging"){
+	if (process.env.MY_PLATFORM === "local" || process.env.MY_PLATFORM === "staging") {
 		//duplicate code as below
 		var newUser = new User({
 			username: req.body.username,
 			usernameLower: req.body.username.toLowerCase(),
 			dateJoined: new Date()
 		});
-	
+
 		//set default values
-		for(var key in defaultValuesForUser){
-			if(defaultValuesForUser.hasOwnProperty(key)){
+		for (var key in defaultValuesForUser) {
+			if (defaultValuesForUser.hasOwnProperty(key)) {
 				newUser[key] = defaultValuesForUser[key];
 			}
 		}
-	
-		if(req.body.username.indexOf(" ") !== -1){
+
+		if (req.body.username.indexOf(" ") !== -1) {
 			req.flash("error", "Sign up failed. Please do not use spaces in your username.");
 			res.redirect("register");
-			return;	
+			return;
 		}
-		else if(req.body.username.length > 25){
+		else if (req.body.username.length > 25) {
 			req.flash("error", "Sign up failed. Please do not use more than 25 characters in your username.");
 			res.redirect("register");
-			return;	
+			return;
 		}
-	
-		else if(usernameContainsBadCharacter(req.body.username) == true){
+
+		else if (usernameContainsBadCharacter(req.body.username) == true) {
 			req.flash("error", "Please do not use an illegal character");
 			res.redirect("register");
-			return;	
+			return;
 		}
-	
-		else{
-			User.register(newUser, req.body.password, function(err, user){
-				if(err){
+
+		else {
+			User.register(newUser, req.body.password, function (err, user) {
+				if (err) {
 					console.log("ERROR: " + err);
 					req.flash("error", "Sign up failed. Most likely that username is taken.");
 					res.redirect("register");
-				} else{
+				} else {
 					//successful, get them to log in again
 					// req.flash("success", "Sign up successful. Please log in.");
 					// res.redirect("/");
-					passport.authenticate("local")(req, res, function(){
+					passport.authenticate("local")(req, res, function () {
 						res.redirect("/lobby");
 					});
 				}
 			});
-		}	
+		}
 	}
 
 
 
 	//we are online, require the captcha
-	else{
+	else {
 		req.body.captcha = req.body['g-recaptcha-response'];
-		
 
-		if(
+
+		if (
 			req.body.captcha === undefined ||
 			req.body.captcha === '' ||
 			req.body.captcha === null
-		  ){
+		) {
 			req.flash("error", "The captcha failed or was not inputted.");
 			res.redirect("register");
-			return;	
+			return;
 		}
-	
-		 const secretKey = process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
-	
-		 const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.captcha}&remoteip=${req.connection.remoteAddress}`;
-	
-		 request(verifyUrl, (err, response, body) => {
+
+		const secretKey = process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
+
+		const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.captcha}&remoteip=${req.connection.remoteAddress}`;
+
+		request(verifyUrl, (err, response, body) => {
 			body = JSON.parse(body);
 			// console.log(body);
-		
+
 			// If Not Successful
-			if(body.success !== undefined && !body.success){
+			if (body.success !== undefined && !body.success) {
 				req.flash("error", "Failed captcha verification.");
-				res.redirect("register");	
-				return;	
+				res.redirect("register");
+				return;
 			}
-		
+
 			var newUser = new User({
 				username: req.body.username,
 				usernameLower: req.body.username.toLowerCase(),
 				dateJoined: new Date()
 			});
-		
+
 			//set default values
-			for(var key in defaultValuesForUser){
-				if(defaultValuesForUser.hasOwnProperty(key)){
+			for (var key in defaultValuesForUser) {
+				if (defaultValuesForUser.hasOwnProperty(key)) {
 					newUser[key] = defaultValuesForUser[key];
 				}
 			}
-		
-			if(req.body.username.indexOf(" ") !== -1){
+
+			if (req.body.username.indexOf(" ") !== -1) {
 				req.flash("error", "Sign up failed. Please do not use spaces in your username.");
 				res.redirect("register");
-				return;	
+				return;
 			}
-			else if(req.body.username.length > 25){
+			else if (req.body.username.length > 25) {
 				req.flash("error", "Sign up failed. Please do not use more than 25 characters in your username.");
 				res.redirect("register");
-				return;	
+				return;
 			}
-		
-			else if(usernameContainsBadCharacter(req.body.username) == true){
+
+			else if (usernameContainsBadCharacter(req.body.username) == true) {
 				req.flash("error", "Please do not use an illegal character");
 				res.redirect("register");
-				return;	
+				return;
 			}
-		
-			else{
-				User.register(newUser, req.body.password, function(err, user){
-					if(err){
+
+			else {
+				User.register(newUser, req.body.password, function (err, user) {
+					if (err) {
 						console.log("ERROR: " + err);
 						req.flash("error", "Sign up failed. Most likely that username is taken.");
 						res.redirect("register");
-					} else{
+					} else {
 						//successful, get them to log in again
 						// req.flash("success", "Sign up successful. Please log in.");
 						// res.redirect("/");
-						passport.authenticate("local")(req, res, function(){
+						passport.authenticate("local")(req, res, function () {
 							res.redirect("/lobby");
 						});
 					}
 				});
-			}	
+			}
 		});
 
 	}
@@ -177,7 +177,7 @@ router.post("/login", sanitiseUsername, /*usernameToLowerCase,*/ passport.authen
 	failureRedirect: "/loginFail"
 }));
 
-router.get("/loginFail", function(req, res){
+router.get("/loginFail", function (req, res) {
 	req.flash("error", "Log in failed! Please try again.");
 	res.redirect("/");
 });
@@ -186,23 +186,23 @@ router.get("/loginFail", function(req, res){
 
 
 //lobby route
-router.get("/lobby", middleware.isLoggedIn, checkIpBan, async function(req, res){
-	
+router.get("/lobby", middleware.isLoggedIn, checkIpBan, async function (req, res) {
+
 	// console.log(res.app.locals.originalUsername);
-	User.findOne({username: req.user.username}).populate("notifications").exec(async function(err, foundUser){
-		if(err){
+	User.findOne({ username: req.user.username }).populate("notifications").exec(async function (err, foundUser) {
+		if (err) {
 			// res.render("lobby", {currentUser: req.user, headerActive: "lobby", userNotifications: [{text: "There was a problem loading your notifications.", optionsCog: true}] });
 			console.log(err);
 			req.flash("error", "Something has gone wrong! Please contact a moderator or admin.");
 			res.redirect("/");
 		}
-		else{
+		else {
 
 			currentModActions = [];
 			//load up all the modActions that are not released yet and are bans
-			await modAction.find({whenRelease: {$gt: new Date()}, type: "ban"}, function(err, allModActions){
-				
-				for(var i = 0; i < allModActions.length; i++){
+			await modAction.find({ whenRelease: { $gt: new Date() }, type: "ban" }, function (err, allModActions) {
+
+				for (var i = 0; i < allModActions.length; i++) {
 					currentModActions.push(allModActions[i]);
 				}
 				// console.log("bans:");
@@ -212,14 +212,14 @@ router.get("/lobby", middleware.isLoggedIn, checkIpBan, async function(req, res)
 
 			// console.log("b");
 
-			for(var i = 0; i < currentModActions.length; i++){
-				if(req.user.id.toString() === currentModActions[i].bannedPlayer.id.toString()){
-					if(currentModActions[i].type === "ban"){
+			for (var i = 0; i < currentModActions.length; i++) {
+				if (req.user.id.toString() === currentModActions[i].bannedPlayer.id.toString()) {
+					if (currentModActions[i].type === "ban") {
 						var message = "You have been banned. The ban will be released on " + currentModActions[i].whenRelease + ". Ban description: '" + currentModActions[i].descriptionByMod + "'";
 						message += " Reflect on your actions.";
 						req.flash("error", message);
 						res.redirect("/")
-	
+
 						// console.log(req.user.username + " is still banned and cannot join the lobby.");
 						return;
 					}
@@ -228,30 +228,30 @@ router.get("/lobby", middleware.isLoggedIn, checkIpBan, async function(req, res)
 
 			// console.log("c");
 			isMod = false;
-			if(req.isAuthenticated() && modsArray.indexOf(req.user.username.toLowerCase()) !== -1){
+			if (req.isAuthenticated() && modsArray.indexOf(req.user.username.toLowerCase()) !== -1) {
 				isMod = true;
 			}
 
 
 			res.render("lobby", {
-				currentUser: req.user, 
-				headerActive: "lobby", 
-				userNotifications: foundUser.notifications, 
+				currentUser: req.user,
+				headerActive: "lobby",
+				userNotifications: foundUser.notifications,
 				optionsCog: true,
 				isMod: isMod
 			});
-		
+
 			//check that they have all the default values.
-			for(var keys in defaultValuesForUser){
-				if(defaultValuesForUser.hasOwnProperty(keys)){
+			for (var keys in defaultValuesForUser) {
+				if (defaultValuesForUser.hasOwnProperty(keys)) {
 					//if they don't have a default value, then give them a default value.
-					if(!foundUser[keys]){
+					if (!foundUser[keys]) {
 						foundUser[keys] = defaultValuesForUser[keys];
 					}
 				}
 			}
 			foundUser.save();
-		
+
 		}
 
 	});
@@ -263,47 +263,47 @@ router.get("/lobby", middleware.isLoggedIn, checkIpBan, async function(req, res)
 
 
 //logout 
-router.get("/logout", function(req, res){
+router.get("/logout", function (req, res) {
 	//doesn't work since we destroy the session right after...
 	// req.flash("success", "Logged you out!");
 	req.session.destroy(function (err) {
-	    res.redirect('/'); //Inside a callback… bulletproof!
-	});	
+		res.redirect('/'); //Inside a callback… bulletproof!
+	});
 });
 
-router.get("/log", function(req, res){
-	res.render("log", {currentUser: req.user, headerActive: "log", path: "log"});
+router.get("/log", function (req, res) {
+	res.render("log", { currentUser: req.user, headerActive: "log", path: "log" });
 })
 
-router.get("/rules", function(req, res){
-	res.render("rules", {currentUser: req.user, headerActive: "rules"});
+router.get("/rules", function (req, res) {
+	res.render("rules", { currentUser: req.user, headerActive: "rules" });
 })
 
-router.get("/testmodal", function(req, res){
-	res.render("testmodal", {currentUser: req.user});
+router.get("/testmodal", function (req, res) {
+	res.render("testmodal", { currentUser: req.user });
 });
-router.get("/testmodal2", function(req, res){
-	res.render("testmodal2", {currentUser: req.user});
-});
-
-router.get("/testAutoCompleteUsernames", function(req, res){
-	res.render("testAutoCompleteUsernames", {currentUser: req.user});
+router.get("/testmodal2", function (req, res) {
+	res.render("testmodal2", { currentUser: req.user });
 });
 
-router.get("/about", function(req, res){
-	res.render("about", {currentUser: req.user, headerActive: "about"});
+router.get("/testAutoCompleteUsernames", function (req, res) {
+	res.render("testAutoCompleteUsernames", { currentUser: req.user });
 });
 
-router.get("/security", function(req, res){
-	res.render("security", {currentUser: req.user});
+router.get("/about", function (req, res) {
+	res.render("about", { currentUser: req.user, headerActive: "about" });
 });
 
-router.get("/troubleshooting", function(req, res){
-	res.render("troubleshooting", {currentUser: req.user});
+router.get("/security", function (req, res) {
+	res.render("security", { currentUser: req.user });
 });
 
-router.get("/statistics", function(req, res){
-	res.render("statistics", {currentUser: req.user, headerActive: "stats"});
+router.get("/troubleshooting", function (req, res) {
+	res.render("troubleshooting", { currentUser: req.user });
+});
+
+router.get("/statistics", function (req, res) {
+	res.render("statistics", { currentUser: req.user, headerActive: "stats" });
 });
 
 
@@ -317,27 +317,27 @@ router.get("/statistics", function(req, res){
 // 4) Comment and reply removes
 // 5) Avatar request approve/rejects
 
-router.get("/mod/ajax/data/:pageIndex", function(req, res){
+router.get("/mod/ajax/data/:pageIndex", function (req, res) {
 	//get all the mod actions
-	if(req.params.pageIndex){
+	if (req.params.pageIndex) {
 		pageIndex = req.params.pageIndex;
 
 		var logs = [];
 
-		modAction.find({}, async function(err, foundModActions){
-			if(err){console.log(err);}
+		modAction.find({}, async function (err, foundModActions) {
+			if (err) { console.log(err); }
 
-			else{
+			else {
 				logsObj = [];
-				await foundModActions.forEach(function(action){
+				await foundModActions.forEach(function (action) {
 					stringsArray = [];
-					switch(action.type){
+					switch (action.type) {
 						case "ban":
 							stringsArray[0] = (action.modWhoBanned.username + " has banned " + action.bannedPlayer.username);
 							stringsArray[0] += " for reason: " + action.reason + ".";
-		
+
 							var dur = action.durationToBan;
-							
+
 							stringsArray.push("The ban was made on " + action.whenMade);
 							stringsArray.push("The ban will last for: " + (dur.getFullYear() - 1970) + " yrs, " + dur.getMonth() + " mths, " + dur.getDay() + " days, " + dur.getHours() + " hrs.");
 							stringsArray.push("The ban will be released on: " + action.whenRelease);
@@ -359,26 +359,26 @@ router.get("/mod/ajax/data/:pageIndex", function(req, res){
 						case "remove":
 							stringsArray[0] = action.modWhoBanned.username + " removed " + action.bannedPlayer.username + "'s " + action.elementDeleted + ".";
 							stringsArray[0] += " Reason: " + action.reason + ".";
-		
+
 							stringsArray[1] = "The removal occured on " + action.whenMade;
 							stringsArray[2] = "Moderator message: " + action.descriptionByMod;
-		
+
 							//Get the extra link bit (The # bit to select to a specific comment/reply)
 							linkStr = "";
-							if(action.elementDeleted === "forum"){
+							if (action.elementDeleted === "forum") {
 								//Dont need the extra bit here
 							}
-							else if(action.elementDeleted == "comment"){
+							else if (action.elementDeleted == "comment") {
 								linkStr == "#" + action.idOfComment;
 							}
-							else if(action.elementDeleted == "reply"){
+							else if (action.elementDeleted == "reply") {
 								linkStr == "#" + action.idOfReply;
 							}
-		
+
 							stringsArray[3] = "The link to the article is: <a href='/forum/show/" + action.idOfForum + linkStr + "'>Here</a>";
 							break;
 					}
-		
+
 					var log = {};
 					log.stringsArray = stringsArray;
 					log.date = action.whenMade;
@@ -397,8 +397,8 @@ router.get("/mod/ajax/data/:pageIndex", function(req, res){
 				//sort in newest to oldest
 				obj.logs.sort(compareLogObjs);
 
-				obj.logs = obj.logs.slice(parseInt(pageIndex)*10, (parseInt(pageIndex)+1)*10);
-		
+				obj.logs = obj.logs.slice(parseInt(pageIndex) * 10, (parseInt(pageIndex) + 1) * 10);
+
 				res.status(200).send(obj);
 				// console.log("B");
 
@@ -409,35 +409,35 @@ router.get("/mod/ajax/data/:pageIndex", function(req, res){
 	}
 });
 
-function compareLogObjs(a,b) {
+function compareLogObjs(a, b) {
 	if (a.date < b.date)
-	  return 1;
+		return 1;
 	if (a.date > b.date)
-	  return -1;
+		return -1;
 	return 0;
-  }
+}
 
 
-router.get("/mod", middleware.isMod, function(req, res){
-	res.render("mod/mod", {currentUser: req.user, isMod: true, headerActive: "mod"});
+router.get("/mod", middleware.isMod, function (req, res) {
+	res.render("mod/mod", { currentUser: req.user, isMod: true, headerActive: "mod" });
 });
 
 
-function gameDateCompare(a,b) {
-	if (a.date < b.date){
+function gameDateCompare(a, b) {
+	if (a.date < b.date) {
 		return -1;
 	}
-	if (a.date > b.date){
+	if (a.date > b.date) {
 		return 1;
 	}
-	else{
+	else {
 		return 0;
 	}
 }
 
 
 //Get public statistics
-router.get("/ajax/getStatistics", function(req, res){
+router.get("/ajax/getStatistics", function (req, res) {
 
 
 	// //TEMPORARY! REMOVE THIS LATER!!
@@ -445,13 +445,13 @@ router.get("/ajax/getStatistics", function(req, res){
 	// res.status(200).send(obj);
 	// return;
 	// //TEMPORARY! REMOVE THIS LATER!!
-	
 
-	gameRecord.find({}).exec(function(err, records){
-		if(err){
+
+	gameRecord.find({}).exec(function (err, records) {
+		if (err) {
 			console.log(err);
 		}
-		else{
+		else {
 			// console.log("records.length");
 			// console.log(records.length);
 			var obj = {};
@@ -463,24 +463,24 @@ router.get("/ajax/getStatistics", function(req, res){
 			var gamesPlayedData = {};
 			var xAxisVars = [];
 			var yAxisVars = [];
-			for(var i = 0; i < records.length; i++){
+			for (var i = 0; i < records.length; i++) {
 				var timeFinish = records[i].timeGameFinished;
 				// Round to nearest day
 				var dayFinished = new Date(timeFinish.getFullYear(), timeFinish.getMonth(), timeFinish.getDate());
 
 				// Count the number of games played on the same day
-				if(gamesPlayedData[dayFinished.getTime()] === undefined){
+				if (gamesPlayedData[dayFinished.getTime()] === undefined) {
 					gamesPlayedData[dayFinished.getTime()] = 1;
 				}
-				else{
+				else {
 					gamesPlayedData[dayFinished.getTime()] = gamesPlayedData[dayFinished.getTime()] + 1;
 				}
 			}
 
 			var gamesPlayedDataArray = [];
 			// Turn it into an array of objects
-			for(var key in gamesPlayedData){
-				if(gamesPlayedData.hasOwnProperty(key)){
+			for (var key in gamesPlayedData) {
+				if (gamesPlayedData.hasOwnProperty(key)) {
 
 					var newObj = {
 						date: key,
@@ -495,7 +495,7 @@ router.get("/ajax/getStatistics", function(req, res){
 			gamesPlayedDataArray.sort(gameDateCompare);
 
 			// Split it into the two axis
-			for(var i = 0; i < gamesPlayedDataArray.length; i++){
+			for (var i = 0; i < gamesPlayedDataArray.length; i++) {
 				xAxisVars.push(gamesPlayedDataArray[i].date);
 				yAxisVars.push(gamesPlayedDataArray[i].value);
 				// yAxisVars.push(new Date(gamesPlayedDataArray[i].value)); // This line seems to make server hang..?
@@ -507,13 +507,13 @@ router.get("/ajax/getStatistics", function(req, res){
 
 			obj.siteTrafficGamesPlayedXAxis = xAxisVars;
 			obj.siteTrafficGamesPlayedYAxis = yAxisVars;
-		
+
 
 			//**********************************************
 			//Getting the average duration of each game
 			//**********************************************
 			var averageGameDuration = new Date(0);
-			for(var i = 0; i < records.length; i++){
+			for (var i = 0; i < records.length; i++) {
 				var duration = new Date(records[i].timeGameFinished.getTime() - records[i].timeGameStarted.getTime());
 				averageGameDuration = new Date(averageGameDuration.getTime() + duration.getTime());
 			}
@@ -525,13 +525,13 @@ router.get("/ajax/getStatistics", function(req, res){
 			//**********************************************
 			var resWins = 0;
 			var spyWins = 0;
-			for(var i = 0; i < records.length; i++){
-				if(records[i].winningTeam === "Resistance"){
+			for (var i = 0; i < records.length; i++) {
+				if (records[i].winningTeam === "Resistance") {
 					resWins++;
 					// console.log("res win: ");
 					// console.log(resWins);
 				}
-				else if(records[i].winningTeam === "Spy"){
+				else if (records[i].winningTeam === "Spy") {
 					spyWins++;
 					// console.log("spy win: ");
 					// console.log(spyWins);
@@ -549,31 +549,31 @@ router.get("/ajax/getStatistics", function(req, res){
 			//Getting the assassination win rate
 			//**********************************************
 			var rolesShotObj = {};
-			for(var i = 0; i < records.length; i++){
+			for (var i = 0; i < records.length; i++) {
 				var roleShot = records[i].whoAssassinShot;
-				if(roleShot){
+				if (roleShot) {
 					// console.log("a");
-					if(rolesShotObj[roleShot] !== undefined){
+					if (rolesShotObj[roleShot] !== undefined) {
 						rolesShotObj[roleShot] = rolesShotObj[roleShot] + 1;
 						// console.log(roleShot + " was shot, total count: " + rolesShotObj[roleShot]);
 
 					}
-					else{
+					else {
 						rolesShotObj[roleShot] = 0;
 					}
 				}
 			}
 
 			obj.assassinRolesShot = rolesShotObj;
-			
-			
+
+
 			//**********************************************
 			//Getting the average duration of each assassination
 			//**********************************************
 			var averageAssassinationDuration = new Date(0);
 			var count = 0;
-			for(var i = 0; i < records.length; i++){
-				if(records[i].timeAssassinationStarted){
+			for (var i = 0; i < records.length; i++) {
+				if (records[i].timeAssassinationStarted) {
 					var duration = new Date(records[i].timeGameFinished.getTime() - records[i].timeAssassinationStarted.getTime());
 					averageAssassinationDuration = new Date(averageAssassinationDuration.getTime() + duration.getTime());
 					count++;
@@ -586,20 +586,20 @@ router.get("/ajax/getStatistics", function(req, res){
 			//**********************************************
 			var gameSizeWins = {};
 
-			for(var i = 0; i < records.length; i++){
-				if(!gameSizeWins[records[i].numberOfPlayers]){
+			for (var i = 0; i < records.length; i++) {
+				if (!gameSizeWins[records[i].numberOfPlayers]) {
 					gameSizeWins[records[i].numberOfPlayers] = {};
 					gameSizeWins[records[i].numberOfPlayers].spy = 0;
 					gameSizeWins[records[i].numberOfPlayers].res = 0;
 				}
 
-				if(records[i].winningTeam === "Spy"){
+				if (records[i].winningTeam === "Spy") {
 					gameSizeWins[records[i].numberOfPlayers].spy++;
 				}
-				else if(records[i].winningTeam === "Resistance"){
+				else if (records[i].winningTeam === "Resistance") {
 					gameSizeWins[records[i].numberOfPlayers].res++;
 				}
-				else{
+				else {
 					console.log("error, winning team not recognised: " + records[i].winningTeam);
 				}
 
@@ -612,9 +612,9 @@ router.get("/ajax/getStatistics", function(req, res){
 			//**********************************************
 			var spyWinBreakdown = {};
 
-			for(var i = 0; i < records.length; i++){
-				if(records[i].winningTeam === "Spy"){
-					if(!spyWinBreakdown[records[i].howTheGameWasWon]){
+			for (var i = 0; i < records.length; i++) {
+				if (records[i].winningTeam === "Spy") {
+					if (!spyWinBreakdown[records[i].howTheGameWasWon]) {
 						spyWinBreakdown[records[i].howTheGameWasWon] = 0;
 					}
 
@@ -628,47 +628,47 @@ router.get("/ajax/getStatistics", function(req, res){
 			//Getting the Lady of the lake wins breakdown
 			//**********************************************
 			var ladyBreakdown = {
-					"resStart": {
-						"resWin": 0, 
-						"spyWin": 0
-					}, 
-					"spyStart": {
-						"resWin": 0, 
-						"spyWin": 0
-					}
-				};
+				"resStart": {
+					"resWin": 0,
+					"spyWin": 0
+				},
+				"spyStart": {
+					"resWin": 0,
+					"spyWin": 0
+				}
+			};
 
 
-				
+
 			//IMPORTANT, MUST KEEP THESE ROLES UP TO DATE!
 			//SHOULD MAKE AN EXTERNAL FILE OF THESE ALLIANCES
 			var resRoles = ["Merlin", "Percival", "Resistance"];
 			var spyRoles = ["Assassin", "Morgana", "Spy", "Mordred", "Oberon"];
 
-			
-			for(var i = 0; i < records.length; i++){
-				if(records[i].ladyChain.length > 0){
-					
+
+			for (var i = 0; i < records.length; i++) {
+				if (records[i].ladyChain.length > 0) {
+
 
 					//if the first person who held the card is a res
-					if(resRoles.indexOf(records[i].ladyChain[0]) !== -1){
-						if(records[i].winningTeam === "Resistance"){
+					if (resRoles.indexOf(records[i].ladyChain[0]) !== -1) {
+						if (records[i].winningTeam === "Resistance") {
 							ladyBreakdown.resStart.resWin++;
 						}
-						else if(records[i].winningTeam === "Spy"){
+						else if (records[i].winningTeam === "Spy") {
 							ladyBreakdown.resStart.spyWin++;
 						}
 					}
 					//if the first person who held the card is a spy
-					else if(spyRoles.indexOf(records[i].ladyChain[0]) !== -1){
-						if(records[i].winningTeam === "Resistance"){
+					else if (spyRoles.indexOf(records[i].ladyChain[0]) !== -1) {
+						if (records[i].winningTeam === "Resistance") {
 							ladyBreakdown.spyStart.resWin++;
 						}
-						else if(records[i].winningTeam === "Spy"){
+						else if (records[i].winningTeam === "Spy") {
 							ladyBreakdown.spyStart.spyWin++;
 						}
 					}
-					else{
+					else {
 						console.log("ERROR no alliance assigned to role: " + records[i].ladyChain[0]);
 					}
 				}
@@ -682,20 +682,20 @@ router.get("/ajax/getStatistics", function(req, res){
 			//**********************************************
 			var averageGameDurations = [];
 			var countForGameSize = [];
-			for(var i = 5; i < 11; i++){
+			for (var i = 5; i < 11; i++) {
 				averageGameDurations[i] = new Date(0);
 				countForGameSize[i] = 0;
 			}
 
 			// console.log(averageGameDurations);
 
-			for(var i = 0; i < records.length; i++){
+			for (var i = 0; i < records.length; i++) {
 				var duration = new Date(records[i].timeGameFinished.getTime() - records[i].timeGameStarted.getTime());
 
 				// console.log(records[i].numberOfPlayers);
 
 				averageGameDurations[records[i].numberOfPlayers] = new Date(averageGameDurations[records[i].numberOfPlayers].getTime() + duration.getTime());
-				countForGameSize[records[i].numberOfPlayers] ++;
+				countForGameSize[records[i].numberOfPlayers]++;
 			}
 			obj['5paverageGameDuration'] = new Date(averageGameDurations[5].getTime() / countForGameSize['5']);
 			obj['6paverageGameDuration'] = new Date(averageGameDurations[6].getTime() / countForGameSize['6']);
@@ -703,8 +703,8 @@ router.get("/ajax/getStatistics", function(req, res){
 			obj['8paverageGameDuration'] = new Date(averageGameDurations[8].getTime() / countForGameSize['8']);
 			obj['9paverageGameDuration'] = new Date(averageGameDurations[9].getTime() / countForGameSize['9']);
 			obj['10paverageGameDuration'] = new Date(averageGameDurations[10].getTime() / countForGameSize['10']);
-			
-			
+
+
 			// for(var i = 5; i < 11; i++){
 			// 	console.log(countForGameSize[i]);
 			// }
@@ -714,7 +714,7 @@ router.get("/ajax/getStatistics", function(req, res){
 
 
 			res.status(200).send(obj);
-			
+
 
 			// One person had issues with publically showing their number of games played...?
 
@@ -729,15 +729,15 @@ router.get("/ajax/getStatistics", function(req, res){
 			// 	var usernamesTopGamesPlayedReduced = [];
 			// 	for(var i = 0; i < usernamesTopGamesPlayed.length; i++){
 			// 		usernamesTopGamesPlayedReduced[i] = {};
-					
+
 			// 		usernamesTopGamesPlayedReduced[i].username = usernamesTopGamesPlayed[i].username;
 			// 		usernamesTopGamesPlayedReduced[i].totalGamesPlayed = usernamesTopGamesPlayed[i].totalGamesPlayed;
-					
+
 			// 	}
 
 			// 	obj.usernamesTopGamesPlayed = usernamesTopGamesPlayedReduced;
 
-				
+
 			// });
 
 		}
@@ -746,15 +746,15 @@ router.get("/ajax/getStatistics", function(req, res){
 
 
 
-router.get("/ajax/profile/getProfileData/:profileUsername", function(req, res){
-	User.findOne({username: req.params.profileUsername}, function(err, foundUser){
-		if(err){
+router.get("/ajax/profile/getProfileData/:profileUsername", function (req, res) {
+	User.findOne({ username: req.params.profileUsername }, function (err, foundUser) {
+		if (err) {
 			console.log(err);
 			res.status(200).send("error");
-			
+
 		}
-		else{
-			if(foundUser){
+		else {
+			if (foundUser) {
 				var sendUserData = {};
 				sendUserData.username = foundUser.username;
 				sendUserData.avatarImgRes = foundUser.avatarImgRes;
@@ -765,7 +765,7 @@ router.get("/ajax/profile/getProfileData/:profileUsername", function(req, res){
 				sendUserData.biography = foundUser.biography;
 				sendUserData.hideStats = foundUser.hideStats;
 
-				if(!foundUser.hideStats){
+				if (!foundUser.hideStats) {
 					sendUserData.totalGamesPlayed = foundUser.totalGamesPlayed;
 					sendUserData.totalWins = foundUser.totalWins;
 					sendUserData.totalLosses = foundUser.totalLosses;
@@ -774,11 +774,11 @@ router.get("/ajax/profile/getProfileData/:profileUsername", function(req, res){
 					sendUserData.totalResWins = foundUser.totalResWins;
 					sendUserData.totalResLosses = foundUser.totalResLosses;
 				}
-	
-	
+
+
 				res.status(200).send(sendUserData);
 			}
-			
+
 
 
 
@@ -789,77 +789,77 @@ router.get("/ajax/profile/getProfileData/:profileUsername", function(req, res){
 
 
 
-router.get("/ajax/seenNotification", function(req, res){
+router.get("/ajax/seenNotification", function (req, res) {
 	// console.log("seen nofication");
 	// console.log(req.query.idOfNotif);
 
 
 	// console.log(mongoose.Types.ObjectId(req.query.idOfNotif));
 
-	myNotification.findById(mongoose.Types.ObjectId(req.query.idOfNotif), function(err, notif){
-		if(err){
+	myNotification.findById(mongoose.Types.ObjectId(req.query.idOfNotif), function (err, notif) {
+		if (err) {
 			console.log(err);
 		}
-		if(notif && notif !== null && notif !== undefined){
+		if (notif && notif !== null && notif !== undefined) {
 			notif.seen = true;
 			var promiseReturned = notif.save();
-	
-			promiseReturned.then(function(){
-				User.findOne({username: req.user.username}).populate("notifications").exec(async function(err, foundUser){
-	
+
+			promiseReturned.then(function () {
+				User.findOne({ username: req.user.username }).populate("notifications").exec(async function (err, foundUser) {
+
 					foundUser.markModified("notifications");
 					await foundUser.save();
-		
+
 				});
 			});
 		}
-		
+
 	});
 
 	res.status(200).send("done");
-	
+
 });
 
 
-router.get("/ajax/hideNotification", function(req, res){
+router.get("/ajax/hideNotification", function (req, res) {
 	// console.log("hide nofication");
 	// console.log(req.query.idOfNotif);
 
 
 	// console.log(mongoose.Types.ObjectId(req.query.idOfNotif));
 
-	myNotification.findByIdAndRemove(mongoose.Types.ObjectId(req.query.idOfNotif), function(err){
-		if(err){
+	myNotification.findByIdAndRemove(mongoose.Types.ObjectId(req.query.idOfNotif), function (err) {
+		if (err) {
 			console.log(err);
 		}
 
-		if(req !== undefined && req.user !== undefined){
-			User.findOne({username: req.user.username}).populate("notifications").exec(async function(err, foundUser){
+		if (req !== undefined && req.user !== undefined) {
+			User.findOne({ username: req.user.username }).populate("notifications").exec(async function (err, foundUser) {
 
 				foundUser.markModified("notifications");
 				await foundUser.save();
-	
+
 			});
 		}
 	});
 
 	res.status(200).send("done");
-	
+
 });
 
-router.get("/ajax/hideAllNotifications", function(req, res){
+router.get("/ajax/hideAllNotifications", function (req, res) {
 	// console.log("hide all nofications");
 
-	User.findById(req.user._id).populate("notifications").exec(async function(err, foundUser){
-		if(err){
+	User.findById(req.user._id).populate("notifications").exec(async function (err, foundUser) {
+		if (err) {
 			console.log(err);
 		}
 		// console.log(foundUser.notifications);
 
-		foundUser.notifications.forEach(function(notif){
+		foundUser.notifications.forEach(function (notif) {
 			// console.log("removing notif");
 			// console.log(notif);
-			myNotification.findByIdAndRemove(notif._id, function(err){
+			myNotification.findByIdAndRemove(notif._id, function (err) {
 				// console.log("callback");
 			});
 		});
@@ -870,7 +870,7 @@ router.get("/ajax/hideAllNotifications", function(req, res){
 		foundUser.save();
 
 	});
-	res.status(200).send("done");	
+	res.status(200).send("done");
 });
 
 
@@ -903,13 +903,13 @@ router.get("/ajax/hideAllNotifications", function(req, res){
 // 	next();
 // }
 
-function escapeTextUsername(req, res, next){
+function escapeTextUsername(req, res, next) {
 	req.body.username = escapeText(req.body.username);
 	next();
 }
 
-function sanitiseUsername(req, res, next){
-	
+function sanitiseUsername(req, res, next) {
+
 	req.body.username = sanitizeHtml(req.body.username, {
 		allowedTags: [],
 		allowedAttributes: []
@@ -923,24 +923,24 @@ var foundBannedIpsArray = [];
 //load it once on startup
 // updateBannedIps();
 
-function updateBannedIps(){
-	return banIp.find({}, function(err, foundBannedIps){
-		if(err){console.log(err);}
-		else{
+function updateBannedIps() {
+	return banIp.find({}, function (err, foundBannedIps) {
+		if (err) { console.log(err); }
+		else {
 			bannedIps = [];
 			// console.log(foundBannedIps);
-			if(foundBannedIps){
-				foundBannedIps.forEach(function(oneBannedIp){
+			if (foundBannedIps) {
+				foundBannedIps.forEach(function (oneBannedIp) {
 					bannedIps.push(oneBannedIp.bannedIp);
 					foundBannedIpsArray.push(oneBannedIp);
 				});
 			}
-		}	
+		}
 	}).exec();
 }
 
 
-async function checkIpBan(req, res, next){
+async function checkIpBan(req, res, next) {
 	var clientIpAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 	// console.log("clientIpAddress: " + clientIpAddress);
 
@@ -954,24 +954,24 @@ async function checkIpBan(req, res, next){
 
 	// console.log(typeof(bannedIps[0]));
 	// console.log(typeof(clientIpAddress));
-	
 
-	if(bannedIps.indexOf(clientIpAddress) === -1){
+
+	if (bannedIps.indexOf(clientIpAddress) === -1) {
 		// console.log("NEXT");
 		next();
 	}
-	else{
+	else {
 		var index = bannedIps.indexOf(clientIpAddress);
 
 		var username = req.body.username || req.user.username;
 		username = username.toLowerCase();
 
-		if(!foundBannedIpsArray[index].usernamesAssociated){
+		if (!foundBannedIpsArray[index].usernamesAssociated) {
 			foundBannedIpsArray[index].usernamesAssociated = [];
 		}
 
 		//if their username isnt associated with the ip ban, add their username to it for record.
-		if(foundBannedIpsArray[index].usernamesAssociated.indexOf(username) === -1){
+		if (foundBannedIpsArray[index].usernamesAssociated.indexOf(username) === -1) {
 			foundBannedIpsArray[index].usernamesAssociated.push(username);
 		}
 
@@ -982,7 +982,7 @@ async function checkIpBan(req, res, next){
 		res.redirect("/");
 	}
 
-	
+
 }
 
 
@@ -990,28 +990,28 @@ async function checkIpBan(req, res, next){
 module.exports = router;
 
 
-function usernameContainsBadCharacter(str){
+function usernameContainsBadCharacter(str) {
 	//only allow alphanumerical
 	var regx = /^[A-Za-z0-9]+$/;
-	  
-	if(str.includes('&amp;') || 
-			str.includes('&lt;') ||
-			str.includes('&gt;') ||
-			str.includes('&apos;') ||
-			str.includes('&quot;') ||
-			str.includes("[") ||
-			str.includes("]") ||
-			str.includes("/") ||
-			str.includes("\\") ||
-			str.includes("&") ||
-			str.includes(";")
-		){
+
+	if (str.includes('&amp;') ||
+		str.includes('&lt;') ||
+		str.includes('&gt;') ||
+		str.includes('&apos;') ||
+		str.includes('&quot;') ||
+		str.includes("[") ||
+		str.includes("]") ||
+		str.includes("/") ||
+		str.includes("\\") ||
+		str.includes("&") ||
+		str.includes(";")
+	) {
 		return true;
 	}
-	else if(!regx.test(str)){
+	else if (!regx.test(str)) {
 		return true;
 	}
-	else{
+	else {
 		return false;
 	}
 
@@ -1050,22 +1050,22 @@ var defaultValuesForUser = {
 	roleStats: {
 		"5p": {
 			"merlin": {
-				
+
 			},
 			"percival": {
-				
+
 			},
 			"assassin": {
-				
+
 			},
 			"morgana": {
-				
+
 			},
 			"spy": {
-				
+
 			},
 			"resistance": {
-				
+
 			}
 		}
 	},

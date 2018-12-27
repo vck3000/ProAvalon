@@ -19,7 +19,7 @@ var UserSchema = new mongoose.Schema({
 
 	totalGamesPlayed: Number,
 
-	
+
 	totalWins: Number,
 	totalResWins: Number,
 	totalLosses: Number,
@@ -32,7 +32,7 @@ var UserSchema = new mongoose.Schema({
 	timeZone: String,
 	biography: String,
 
-	
+
 	//dont need to worry about roleWins growing out of control
 	//since there are a limited amount of roles, and each role 
 	//only has one Number attached to it
@@ -42,7 +42,7 @@ var UserSchema = new mongoose.Schema({
 		{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "notification"
-		} 
+		}
 	],
 
 
@@ -50,7 +50,7 @@ var UserSchema = new mongoose.Schema({
 		{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "ModAction"
-		} 
+		}
 	],
 
 	mutedPlayers: [

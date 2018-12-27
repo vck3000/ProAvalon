@@ -15,24 +15,24 @@ function Assassin(thisRoom_) {
     this.playerShot2 = "";
 
     //Assassin sees all spies except oberon
-    this.see = function(){
-        if(this.thisRoom.gameStarted === true){
+    this.see = function () {
+        if (this.thisRoom.gameStarted === true) {
             var obj = {};
             var array = [];
 
             for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
-				if (this.thisRoom.playersInGame[i].alliance === "Spy") {
+                if (this.thisRoom.playersInGame[i].alliance === "Spy") {
 
-					if (this.thisRoom.playersInGame[i].role === "Oberon") {
-						//don't add oberon
-					}
-					else {
-						//add the spy
-						array.push(this.thisRoom.playersInGame[i].username);
-					}
-				}
+                    if (this.thisRoom.playersInGame[i].role === "Oberon") {
+                        //don't add oberon
+                    }
+                    else {
+                        //add the spy
+                        array.push(this.thisRoom.playersInGame[i].username);
+                    }
+                }
             }
-            
+
             obj.spies = array;
             return obj;
         }
@@ -40,16 +40,16 @@ function Assassin(thisRoom_) {
 };
 
 //Assassination phase
-Assassin.prototype.checkSpecialMove = function(socket, data){
+Assassin.prototype.checkSpecialMove = function (socket, data) {
     //Check for assassination mode and enter it if it is the right time
-    if(this.playerShot === ""){
+    if (this.playerShot === "") {
         // If we have the right conditions, we go into assassination phase
-        if(this.thisRoom.phase === "finished"){
+        if (this.thisRoom.phase === "finished") {
             //Get the number of successes:
             var numOfSuccesses = 0;
 
-            for(var i = 0; i < this.thisRoom.missionHistory.length; i++){
-                if(this.thisRoom.missionHistory[i] === "succeeded"){
+            for (var i = 0; i < this.thisRoom.missionHistory.length; i++) {
+                if (this.thisRoom.missionHistory[i] === "succeeded") {
                     numOfSuccesses++;
                 }
             }
@@ -60,20 +60,20 @@ Assassin.prototype.checkSpecialMove = function(socket, data){
             var tristExists = false;
             var isoExists = false;
 
-            for(var i = 0; i < this.thisRoom.playersInGame.length; i++){
-                if(this.thisRoom.playersInGame[i].role === "Merlin"){
+            for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
+                if (this.thisRoom.playersInGame[i].role === "Merlin") {
                     merlinExists = true;
                 }
-                if(this.thisRoom.playersInGame[i].role === "Tristan"){
+                if (this.thisRoom.playersInGame[i].role === "Tristan") {
                     tristExists = true;
                 }
-                
-                if(this.thisRoom.playersInGame[i].role === "Isolde"){
+
+                if (this.thisRoom.playersInGame[i].role === "Isolde") {
                     isoExists = true;
                 }
             }
 
-            if(numOfSuccesses === 3 && ((merlinExists === true) || (tristExists === true && isoExists === true)) ) {
+            if (numOfSuccesses === 3 && ((merlinExists === true) || (tristExists === true && isoExists === true))) {
                 // Set the assassination phase
                 this.thisRoom.startAssassinationTime = new Date();
                 this.thisRoom.phase = this.specialPhase;
@@ -85,11 +85,11 @@ Assassin.prototype.checkSpecialMove = function(socket, data){
     return false;
 };
 
-Assassin.prototype.getPublicGameData = function(){
-    if( this.playerShot !== ""){
-        return { 
+Assassin.prototype.getPublicGameData = function () {
+    if (this.playerShot !== "") {
+        return {
             assassinShotUsername: this.playerShot,
-            assassinShotUsername2: this.playerShot2 
+            assassinShotUsername2: this.playerShot2
         };
     }
     else {

@@ -2,49 +2,49 @@ var mongoose = require("mongoose");
 
 //SCHEMA SETUP
 var modActionSchema = new mongoose.Schema({
-    type: String, //ban, mute?
+	type: String, //ban, mute?
 
-    bannedPlayer: {
+	bannedPlayer: {
 		id: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User"
 		},
 		username: String
-    },
-    
-    
-    modWhoBanned: {
+	},
+
+
+	modWhoBanned: {
 		id: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User"
 		},
 		username: String
-    },
-    
-
-    reason: String,
+	},
 
 
-    whenMade: Date,
+	reason: String,
 
-    durationToBan: Date,
-    whenRelease: Date,
 
-    descriptionByMod: String,
+	whenMade: Date,
 
-    originalContent: String,
+	durationToBan: Date,
+	whenRelease: Date,
 
-    idOfReply: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "ForumThreadCommentReply"
-    },
-    idOfComment: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "ForumThreadComment"
-    },
-    idOfForum: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "ForumThread"
+	descriptionByMod: String,
+
+	originalContent: String,
+
+	idOfReply: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "ForumThreadCommentReply"
+	},
+	idOfComment: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "ForumThreadComment"
+	},
+	idOfForum: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "ForumThread"
 	},
 	elementDeleted: String
 });

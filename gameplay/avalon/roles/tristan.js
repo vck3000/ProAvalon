@@ -7,7 +7,7 @@ function Tristan(thisRoom_) {
     this.description = "Tristan and Isolde both see each other.";
     this.orderPriorityInOptions = 50;
 
-    this.see = function(){
+    this.see = function () {
         var roleTag = {};
 
         for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
@@ -15,10 +15,10 @@ function Tristan(thisRoom_) {
                 roleTag[this.thisRoom.playersInGame[i].username] = {};
                 roleTag[this.thisRoom.playersInGame[i].username].roleTag = "Isolde";
             }
-        } 
+        }
 
         console.log(roleTag);
-        
+
         return roleTag;
     }
 };

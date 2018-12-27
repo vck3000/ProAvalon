@@ -3,19 +3,19 @@ var mongoose = require("mongoose");
 //SCHEMA SETUP
 var banIpSchema = new mongoose.Schema({
 	type: String, //ban, mute?
-	
+
 	bannedIp: String,
-    
-    modWhoBanned: {
+
+	modWhoBanned: {
 		id: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User"
 		},
 		username: String
-    },
+	},
 
 	whenMade: Date,
-	
+
 	usernamesAssociated: [String]
 });
 

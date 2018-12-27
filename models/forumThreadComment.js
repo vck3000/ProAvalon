@@ -24,7 +24,7 @@ var commentSchema = new mongoose.Schema({
 		{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "ForumThreadCommentReply"
-		} 
+		}
 	],
 
 	seenUsers: [String]

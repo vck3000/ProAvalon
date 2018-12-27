@@ -7,21 +7,21 @@ function VotingTeam(thisRoom_) {
     this.showGuns = true;
 };
 
-VotingTeam.prototype.gameMove = function(socket, data){        
+VotingTeam.prototype.gameMove = function (socket, data) {
     // Get the index of the user who is trying to vote
     var i = this.thisRoom.playersYetToVote.indexOf(socket.request.user.username);
 
     //Check the data is valid (if it is not a "yes" or a "no")
-    if( !(data === "yes" || data === "no") ){
+    if (!(data === "yes" || data === "no")) {
         return;
     }
 
     // If they haven't voted yet
-    if(i !== -1){
-        if(data === "yes"){
+    if (i !== -1) {
+        if (data === "yes") {
             this.thisRoom.votes[usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username)] = "approve";
         }
-        else if(data === "no"){
+        else if (data === "no") {
             this.thisRoom.votes[usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username)] = "reject";
         }
         else {
@@ -32,14 +32,14 @@ VotingTeam.prototype.gameMove = function(socket, data){
         this.thisRoom.playersYetToVote.splice(i, 1);
 
         // If we have all of our votes, proceed onward
-        if(this.thisRoom.playersYetToVote.length === 0){
+        if (this.thisRoom.playersYetToVote.length === 0) {
             this.thisRoom.publicVotes = this.thisRoom.votes;
             this.thisRoom.VHUpdateTeamVotes();
-            
+
 
             var outcome = calcVotes(this.thisRoom.votes);
 
-            if(outcome === "yes"){
+            if (outcome === "yes") {
                 this.thisRoom.phase = "votingMission";
                 this.thisRoom.playersYetToVote = this.thisRoom.proposedTeam.slice();
 
@@ -47,12 +47,12 @@ VotingTeam.prototype.gameMove = function(socket, data){
                 this.thisRoom.sendText(this.thisRoom.allSockets, str, "gameplay-text");
             }
             //Hammer reject
-            else if(outcome === "no" && this.thisRoom.pickNum >= 5){
+            else if (outcome === "no" && this.thisRoom.pickNum >= 5) {
                 this.thisRoom.missionHistory[this.thisRoom.missionHistory.length] = "failed";
 
                 this.thisRoom.howWasWon = "Hammer rejected.";
-		        this.thisRoom.sendText(this.thisRoom.allSockets, "The hammer was rejected.", "gameplay-text-red");
-                
+                this.thisRoom.sendText(this.thisRoom.allSockets, "The hammer was rejected.", "gameplay-text-red");
+
                 this.thisRoom.finishGame("Spy");
             }
             else if (outcome === "no") {
@@ -77,15 +77,15 @@ VotingTeam.prototype.gameMove = function(socket, data){
 //  hidden          - Is the button hidden?
 //  disabled        - Is the button disabled?
 //  setText         - What text to display in the button
-VotingTeam.prototype.buttonSettings = function(indexOfPlayer){  
+VotingTeam.prototype.buttonSettings = function (indexOfPlayer) {
 
     var obj = {
-		green:{},
-		red: {}
+        green: {},
+        red: {}
     };
-    
+
     // If user has voted already
-    if(this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playersInGame[indexOfPlayer].username) === -1){
+    if (this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playersInGame[indexOfPlayer].username) === -1) {
         obj.green.hidden = true;
         obj.green.disabled = true;
         obj.green.setText = "";
@@ -95,7 +95,7 @@ VotingTeam.prototype.buttonSettings = function(indexOfPlayer){
         obj.red.setText = "";
     }
     // User has not voted yet
-    else{
+    else {
         obj.green.hidden = false;
         obj.green.disabled = false;
         obj.green.setText = "Approve";
@@ -105,17 +105,17 @@ VotingTeam.prototype.buttonSettings = function(indexOfPlayer){
         obj.red.setText = "Reject";
     }
 
-    return obj;    
+    return obj;
 }
 
-VotingTeam.prototype.numOfTargets = function(indexOfPlayer){    
+VotingTeam.prototype.numOfTargets = function (indexOfPlayer) {
     return null;
 }
 
 
-VotingTeam.prototype.getStatusMessage = function(indexOfPlayer){  
+VotingTeam.prototype.getStatusMessage = function (indexOfPlayer) {
     // If we are spectator
-    if(indexOfPlayer === -1){
+    if (indexOfPlayer === -1) {
         var str = "";
         str += "Waiting for votes: ";
         for (var i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
@@ -128,7 +128,7 @@ VotingTeam.prototype.getStatusMessage = function(indexOfPlayer){
         return str;
     }
     // If user has voted already
-    else if(indexOfPlayer !== undefined && this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playersInGame[indexOfPlayer].username) === -1){
+    else if (indexOfPlayer !== undefined && this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playersInGame[indexOfPlayer].username) === -1) {
         var str = "";
         str += "Waiting for votes: ";
         for (var i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
@@ -141,7 +141,7 @@ VotingTeam.prototype.getStatusMessage = function(indexOfPlayer){
         return str;
     }
     // User has not voted yet or user is a spectator
-    else{
+    else {
         var str = "";
         str += (this.thisRoom.playersInGame[this.thisRoom.teamLeader].username + " has picked: ");
 
@@ -159,56 +159,56 @@ VotingTeam.prototype.getStatusMessage = function(indexOfPlayer){
 
 
 function getStrApprovedRejectedPlayers(votes, playersInGame) {
-	var approvedUsernames = "";
-	var rejectedUsernames = "";
+    var approvedUsernames = "";
+    var rejectedUsernames = "";
 
-	for (var i = 0; i < votes.length; i++) {
+    for (var i = 0; i < votes.length; i++) {
 
-		if (votes[i] === "approve") {
-			approvedUsernames = approvedUsernames + playersInGame[i].username + ", ";
-		}
-		else if (votes[i] === "reject") {
-			rejectedUsernames = rejectedUsernames + playersInGame[i].username + ", ";
-		}
-		else {
-			console.log("ERROR! Unknown vote: " + votes[i]);
-		}
-	}
-	// Disabled approve rejected people.
-	// var str = "<p>Approved: " + approvedUsernames + "</p> <p>Rejected: " + rejectedUsernames + "</p>"
-	var str = "";
+        if (votes[i] === "approve") {
+            approvedUsernames = approvedUsernames + playersInGame[i].username + ", ";
+        }
+        else if (votes[i] === "reject") {
+            rejectedUsernames = rejectedUsernames + playersInGame[i].username + ", ";
+        }
+        else {
+            console.log("ERROR! Unknown vote: " + votes[i]);
+        }
+    }
+    // Disabled approve rejected people.
+    // var str = "<p>Approved: " + approvedUsernames + "</p> <p>Rejected: " + rejectedUsernames + "</p>"
+    var str = "";
 
-	return str;
+    return str;
 }
 
 function calcVotes(votes) {
-	var numOfPlayers = votes.length;
-	var countApp = 0;
-	var countRej = 0;
-	var outcome;
+    var numOfPlayers = votes.length;
+    var countApp = 0;
+    var countRej = 0;
+    var outcome;
 
-	for (var i = 0; i < numOfPlayers; i++) {
-		if (votes[i] === "approve") {
-			// console.log("app");
-			countApp++;
-		}
-		else if (votes[i] === "reject") {
-			// console.log("rej");
-			countRej++;
-		}
-		else {
-			console.log("Bad vote: " + votes[i]);
-		}
-	}
-	//calcuate the outcome
-	if (countApp > countRej) {
-		outcome = "yes";
-	}
-	else {
-		outcome = "no";
+    for (var i = 0; i < numOfPlayers; i++) {
+        if (votes[i] === "approve") {
+            // console.log("app");
+            countApp++;
+        }
+        else if (votes[i] === "reject") {
+            // console.log("rej");
+            countRej++;
+        }
+        else {
+            console.log("Bad vote: " + votes[i]);
+        }
     }
-    
-	return outcome;
+    //calcuate the outcome
+    if (countApp > countRej) {
+        outcome = "yes";
+    }
+    else {
+        outcome = "no";
+    }
+
+    return outcome;
 }
 
 

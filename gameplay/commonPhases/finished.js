@@ -7,7 +7,7 @@ function Finished(thisRoom_) {
     this.showGuns = true;
 };
 
-Finished.prototype.gameMove = function(socket, data){        
+Finished.prototype.gameMove = function (socket, data) {
     // Do nothing, game is finished.
 };
 
@@ -16,10 +16,10 @@ Finished.prototype.gameMove = function(socket, data){
 //  hidden          - Is the button hidden?
 //  disabled        - Is the button disabled?
 //  setText         - What text to display in the button
-Finished.prototype.buttonSettings = function(indexOfPlayer){  
+Finished.prototype.buttonSettings = function (indexOfPlayer) {
     var obj = {
-		green:{},
-		red: {}
+        green: {},
+        red: {}
     };
 
     obj.green.hidden = true;
@@ -30,23 +30,23 @@ Finished.prototype.buttonSettings = function(indexOfPlayer){
     obj.red.disabled = true;
     obj.red.setText = "";
 
-    return obj;    
+    return obj;
 }
 
-Finished.prototype.numOfTargets = function(indexOfPlayer){    
+Finished.prototype.numOfTargets = function (indexOfPlayer) {
     return null;
 }
 
-Finished.prototype.getStatusMessage = function(indexOfPlayer){ 
-    
+Finished.prototype.getStatusMessage = function (indexOfPlayer) {
+
     var winner = "Error, undefined";
-    if(this.thisRoom.winner === "Resistance"){
+    if (this.thisRoom.winner === "Resistance") {
         winner = "resistance";
     }
-    else if(this.thisRoom.winner === "Spy"){
+    else if (this.thisRoom.winner === "Spy") {
         winner = "spies";
     }
-    
+
     var str = "Game has finished. The " + winner + " have won.";
     return str;
 }

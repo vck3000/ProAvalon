@@ -15,7 +15,7 @@ var express = require("express"),
 	cookieParser = require('cookie-parser'),
 	flash = require("connect-flash");
 
-app.use(express.static("assets", {maxAge: 1800000})); //expires in 30 minutes.	
+app.use(express.static("assets", { maxAge: 1800000 })); //expires in 30 minutes.	
 
 var path = require('path');
 // var staticify = require('staticify')(path.join(__dirname, 'assets'));
@@ -23,7 +23,7 @@ var staticify = require('staticify')('assets');
 app.use(staticify.middleware);
 
 app.locals = {
-	getVersionedPath: staticify.getVersionedPath 
+	getVersionedPath: staticify.getVersionedPath
 };
 
 
@@ -82,21 +82,21 @@ app.use(function (req, res, next) {
 // console.log("b");
 // console.log(process.env.MY_PLATFORM);
 var platform = process.env.MY_PLATFORM || "local";
-if(platform === "online" || platform === "staging"){
-	app.use(function(request, response, next){
+if (platform === "online" || platform === "staging") {
+	app.use(function (request, response, next) {
 		// console.log("A");
-		if(request.headers["x-forwarded-proto"] !== "https"){
+		if (request.headers["x-forwarded-proto"] !== "https") {
 			// console.log("redirect to https");
 			// console.log(request.headers.host);
 			// console.log(request.hostname);
 
 			// console.log(request.url);
-	
+
 			// console.log("https://" + request.hostname + request.url)
-	
+
 			response.redirect("https://" + request.hostname + request.url);
 		}
-		else{
+		else {
 			next();
 		}
 	});
@@ -335,7 +335,7 @@ io.use(passportSocketIo.authorize({
 // 			for(var i = 0; i < foundUsers.length; i++){
 // 				console.log(foundUsers[i].username);
 // 			}
-		
+
 // 	});
 
 // }, 3000);
@@ -445,12 +445,12 @@ io.use(passportSocketIo.authorize({
 // 		console.log("c");
 // 		gameRecords.forEach(function(record){
 // 			var gameDuration = new Date(record.timeGameFinished.getTime() - record.timeGameStarted.getTime());
-	
+
 // 			console.log("Duration: ");
 // 			console.log(gameDuration);
 // 			console.log("Duration getTime: ");
 // 			console.log(gameDuration.getTime());
-	
+
 // 			record.spyTeam.forEach(function(spyPlayer){
 // 				if(!peopleTotalTime[spyPlayer.toLowerCase()]){
 // 					peopleTotalTime[spyPlayer.toLowerCase()] = new Date(gameDuration.getTime());
@@ -471,7 +471,7 @@ io.use(passportSocketIo.authorize({
 // 		});
 
 
-		
+
 
 // 		for(var key in peopleTotalTime){
 // 			if(peopleTotalTime.hasOwnProperty(key)){

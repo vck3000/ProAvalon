@@ -1,11 +1,11 @@
 
 function LadyOfTheLake(thisRoom_) {
-    this.thisRoom = thisRoom_;
+	this.thisRoom = thisRoom_;
 
-    this.specialPhase = "lady";
+	this.specialPhase = "lady";
 
 	this.card = "Lady of the Lake";
-	
+
 	this.indexOfPlayerHolding;
 	this.lastMissionUsed = 0;
 
@@ -14,21 +14,21 @@ function LadyOfTheLake(thisRoom_) {
 
 	this.ladyChain = []; // To be stored in the database later.
 
-    this.description = "Reveals the alliance of the person being carded to the card holder. The card is used after each Mission after Mission 2.";
+	this.description = "Reveals the alliance of the person being carded to the card holder. The card is used after each Mission after Mission 2.";
 };
 
-LadyOfTheLake.prototype.initialise = function(){
+LadyOfTheLake.prototype.initialise = function () {
 	this.setHolder((this.thisRoom.teamLeader + 1) % this.thisRoom.playersInGame.length);
 };
 
-LadyOfTheLake.prototype.setHolder = function(index){
+LadyOfTheLake.prototype.setHolder = function (index) {
 	this.indexOfPlayerHolding = index;
 	this.ladyHistory.push(index);
 	this.ladyHistoryUsernames.push(this.thisRoom.playersInGame[index].username);
 	this.ladyChain.push(this.thisRoom.playersInGame[index].role);
 };
 
-LadyOfTheLake.prototype.checkSpecialMove = function(socket, data){
+LadyOfTheLake.prototype.checkSpecialMove = function (socket, data) {
 	// Only use lady of the lake after m2, when the success/fail is revealed, but before the next mission starts.
 	// Only once per mission.
 
@@ -37,39 +37,39 @@ LadyOfTheLake.prototype.checkSpecialMove = function(socket, data){
 	// Game finished? Don't run lady if there are 3 successes or fails
 	var numSuccess = 0;
 	var numFail = 0;
-	for(var i = 0; i < this.thisRoom.missionHistory.length; i++){
-		if(this.thisRoom.missionHistory[i] === "succeeded"){
+	for (var i = 0; i < this.thisRoom.missionHistory.length; i++) {
+		if (this.thisRoom.missionHistory[i] === "succeeded") {
 			numSuccess += 1;
 		}
-		else if(this.thisRoom.missionHistory[i] === "failed"){
+		else if (this.thisRoom.missionHistory[i] === "failed") {
 			numFail += 1;
 		}
 	}
 
-	if (this.thisRoom.missionHistory.length >= 2 && 
+	if (this.thisRoom.missionHistory.length >= 2 &&
 		this.thisRoom.howWasWon !== "Hammer rejected." &&
-		this.lastMissionUsed !== this.thisRoom.missionNum && 
-		numSuccess < 3 && 
+		this.lastMissionUsed !== this.thisRoom.missionNum &&
+		numSuccess < 3 &&
 		numFail < 3
-		) {
+	) {
 		this.thisRoom.phase = "lady";
 		this.lastMissionUsed = this.thisRoom.missionNum;
 
 		return true;
 	}
-	else{
+	else {
 		return false;
 	}
 };
 
-LadyOfTheLake.prototype.getPublicGameData = function(){
+LadyOfTheLake.prototype.getPublicGameData = function () {
     /* TODO: (Can delete this function. Not absolutely necessary)
 	Public data to show the user(s) e.g. who holds the lady of the lake */
 	return {
 		lady: {
-            index: this.indexOfPlayerHolding,
-            history: this.ladyHistoryUsernames,
-            name: this.card
+			index: this.indexOfPlayerHolding,
+			history: this.ladyHistoryUsernames,
+			name: this.card
 		}
 	}
 }

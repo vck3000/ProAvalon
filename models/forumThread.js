@@ -12,7 +12,7 @@ var forumThreadSchema = new mongoose.Schema({
 	disabled: Boolean,
 
 	timeCreated: Date,
-	
+
 	likes: Number,
 	whoLikedId: [],
 	numOfComments: Number,
@@ -23,7 +23,7 @@ var forumThreadSchema = new mongoose.Schema({
 	numberId: Number,
 
 	edited: Boolean,
-	
+
 
 	author: {
 		id: {
@@ -36,7 +36,7 @@ var forumThreadSchema = new mongoose.Schema({
 		{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "ForumThreadComment"
-		} 
+		}
 	],
 
 	category: String,

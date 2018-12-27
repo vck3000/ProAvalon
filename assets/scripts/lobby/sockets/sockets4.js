@@ -15,11 +15,11 @@ socket.on("roomChatToClient", function (data) {
     // console.log(data);
 });
 
-socket.on("joinedGameSuccess", function(data){
+socket.on("joinedGameSuccess", function (data) {
     isSpectator = false;
 });
 
-socket.on('disconnect', function(){
+socket.on('disconnect', function () {
     // window.location= "/";
     // alert("You have been disconnected!");
     showDangerAlert("You have been disconnected! Please refresh the page.");
@@ -27,54 +27,54 @@ socket.on('disconnect', function(){
 });
 
 var mutedPlayers = [];
-socket.on('updateMutedPlayers', function(data){
+socket.on('updateMutedPlayers', function (data) {
     mutedPlayers = data;
     // console.log("Muted players: ");
     // console.log(mutedPlayers);
 });
 
 
-socket.on('checkSettingsResetDate', function(serverResetDate){
+socket.on('checkSettingsResetDate', function (serverResetDate) {
     serverResetDate = new Date(serverResetDate);
-  // console.log("check reset date");
+    // console.log("check reset date");
 
-  // console.log(docCookies.hasItem("lastSettingsResetDate"));
+    // console.log(docCookies.hasItem("lastSettingsResetDate"));
 
     //check if we need to reset settings
-    if(docCookies.hasItem("lastSettingsResetDate")){
+    if (docCookies.hasItem("lastSettingsResetDate")) {
         var lastDate = new Date(docCookies.getItem("lastSettingsResetDate"));
 
-      // console.log(serverResetDate);
-      // console.log(lastDate);
+        // console.log(serverResetDate);
+        // console.log(lastDate);
 
-      // console.log(serverResetDate > lastDate);
+        // console.log(serverResetDate > lastDate);
 
-        if(serverResetDate > lastDate){
+        if (serverResetDate > lastDate) {
             resetSettings();
         }
     }
-    else{
+    else {
         docCookies.setItem("lastSettingsResetDate", new Date().toString(), Infinity);
     }
 });
 
-socket.on('checkNewUpdate', function(data){
+socket.on('checkNewUpdate', function (data) {
 
     serverLastUpdateDate = new Date(data.date);
-  // console.log("check reset date");
+    // console.log("check reset date");
 
-  // console.log(docCookies.hasItem("lastUpdateNotificationDate"));
+    // console.log(docCookies.hasItem("lastUpdateNotificationDate"));
 
     //check if we need to reset settings
-    if(docCookies.hasItem("lastUpdateNotificationDate")){
+    if (docCookies.hasItem("lastUpdateNotificationDate")) {
         var lastDate = new Date(docCookies.getItem("lastUpdateNotificationDate"));
 
-      // console.log(serverLastUpdateDate);
-      // console.log(lastDate);
+        // console.log(serverLastUpdateDate);
+        // console.log(lastDate);
 
-      // console.log(serverLastUpdateDate > lastDate);
+        // console.log(serverLastUpdateDate > lastDate);
 
-        if(serverLastUpdateDate > lastDate){
+        if (serverLastUpdateDate > lastDate) {
             Swal({
                 title: "New updates!",
                 html: data.msg,
@@ -85,7 +85,7 @@ socket.on('checkNewUpdate', function(data){
 
         docCookies.setItem("lastUpdateNotificationDate", new Date().toString(), Infinity);
     }
-    else{
+    else {
 
         Swal({
             title: "New updates!",
@@ -93,31 +93,31 @@ socket.on('checkNewUpdate', function(data){
             type: "info",
             allowEnterKey: false
         });
-        
+
         docCookies.setItem("lastUpdateNotificationDate", new Date().toString(), Infinity);
     }
 });
 
-socket.on('checkNewPlayerShowIntro', function(){
+socket.on('checkNewPlayerShowIntro', function () {
 
-    if(docCookies.hasItem("seenNewPlayerIntro")){
+    if (docCookies.hasItem("seenNewPlayerIntro")) {
 
     }
-    else{
+    else {
         Swal({
             title: "Welcome!",
             html: "Welcome to ProAvalon! Here we play The Resistance Avalon competitively against the best of the best social deduction players around the world. Please check the forums to acquaint yourself with the various strategies that we use while playing this game online.",
             type: "success",
             allowEnterKey: false
         });
-        
+
         docCookies.setItem("seenNewPlayerIntro", new Date().toString(), Infinity);
     }
 });
 
 
 
-socket.on("serverRestartWarning", function(){
+socket.on("serverRestartWarning", function () {
     var message = `<div style='text-align: left;'>
     <style>
         #swalUl li{
@@ -146,19 +146,19 @@ socket.on("serverRestartWarning", function(){
 
 
 
-    }).then(() =>{
+    }).then(() => {
         // location.reload();
     });
 });
 
-socket.on("serverRestartingNow", function(){
+socket.on("serverRestartingNow", function () {
 
     Swal({
         title: "Server restarting now",
         text: "The server is restarting now either due to an update, or for its daily restart.",
         type: "warning",
         allowEnterKey: false
-    }).then(() =>{
+    }).then(() => {
         // location.reload();
     });
 });
@@ -176,7 +176,7 @@ socket.on("muteNotification", function (modAction) {
     
     The description of your ban is: ` + modAction.descriptionByMod
 
-    + `<br><br>
+        + `<br><br>
     
     You can exit this message by pressing escape.`;
 
@@ -186,26 +186,26 @@ socket.on("muteNotification", function (modAction) {
         html: message,
         type: "warning",
         // buttons: false,
-        
+
         allowEnterKey: false
 
-    }).then(() =>{
+    }).then(() => {
         // location.reload();
     });
 });
 
-function resetSettings(){
+function resetSettings() {
     Swal({
         title: "New updates!",
         html: "Due to some new updates, a reset of your personal settings is required.<br><br>I apologise for the inconvenience caused :(.",
         type: "warning",
         allowEnterKey: false
-    }).then(() =>{
+    }).then(() => {
         //get all the keys
         var keys = docCookies.keys();
-                                    
+
         //remove each item
-        for(var i = 0; i < keys.length; i++){
+        for (var i = 0; i < keys.length; i++) {
             docCookies.removeItem(keys[i]);
         }
         docCookies.setItem("lastSettingsResetDate", new Date().toString(), Infinity);
@@ -213,7 +213,7 @@ function resetSettings(){
         Swal({
             title: "Poof! Your settings have been reset!",
             type: "success",
-        }).then(() =>{
+        }).then(() => {
             //reload
             location.reload();
         });
@@ -221,11 +221,11 @@ function resetSettings(){
 }
 
 socket.on("gameEnded", function (data) {
-    if($("#option_notifications_sound_game_ending")[0].checked === true){
+    if ($("#option_notifications_sound_game_ending")[0].checked === true) {
         playSound("game-end");
     }
-    
-    if($("#option_notifications_desktop_game_ending")[0].checked === true){
+
+    if ($("#option_notifications_desktop_game_ending")[0].checked === true) {
         displayNotification("Game has ended!", "", "avatars/base-spy.png", "gameEnded");
     }
 });
@@ -256,7 +256,7 @@ socket.on("update-current-players-list", function (currentPlayers) {
     });
     $(".player-count").text(currentPlayers.length);
 });
-  
+
 socket.on("update-current-games-list", function (currentGames) {
     // console.log(currentGames);
     //remove all the entries inside the table:
@@ -268,47 +268,47 @@ socket.on("update-current-games-list", function (currentGames) {
         //if the current game exists, add it
         if (currentGame) {
             var lockStr = "";
-            if(currentGame.passwordLocked === true){
+            if (currentGame.passwordLocked === true) {
                 lockStr = " <span class='glyphicon glyphicon-lock'></span>";
             }
             // console.log("lock str: " + lockStr);
 
-            
-            if(currentGame.missionHistory){
+
+            if (currentGame.missionHistory) {
                 var missionHistoryStr = "<span style='white-space:nowrap; display: inline-block;'>";
                 var fontSize = docCookies.getItem("optionDisplayFontSize") + "px";
 
-                currentGame.missionHistory.forEach(function(hist){
-                    if(hist === "succeeded"){
-                        missionHistoryStr += "<span class='missionBoxSucceed lobbyMissionBox' style='height: " + fontSize + "; width: " + fontSize + ";'></span>";                    
+                currentGame.missionHistory.forEach(function (hist) {
+                    if (hist === "succeeded") {
+                        missionHistoryStr += "<span class='missionBoxSucceed lobbyMissionBox' style='height: " + fontSize + "; width: " + fontSize + ";'></span>";
                     }
-                    else{
-                        missionHistoryStr += "<span class='missionBoxFail lobbyMissionBox' style='height: " + fontSize + "; width: " + fontSize + ";'></span>";                    
+                    else {
+                        missionHistoryStr += "<span class='missionBoxFail lobbyMissionBox' style='height: " + fontSize + "; width: " + fontSize + ";'></span>";
                     }
                 });
-                for(var i = 0; i < 5 - currentGame.missionHistory.length; i++){
-                    missionHistoryStr += "<span class='missionBoxDefault lobbyMissionBox' style='height: " + fontSize + "; width: " + fontSize + ";'></span>";                    
+                for (var i = 0; i < 5 - currentGame.missionHistory.length; i++) {
+                    missionHistoryStr += "<span class='missionBoxDefault lobbyMissionBox' style='height: " + fontSize + "; width: " + fontSize + ";'></span>";
                 }
-    
+
                 missionHistoryStr += "</span>";
             }
-            else{
+            else {
                 var missionHistoryStr = "";
             }
-            
 
-            var str = "<tr> <td><strong>Room#" + 
-                currentGame.roomId + lockStr + "</strong>: " + 
-                currentGame.status + " [" + currentGame.numOfPlayersInside +  "/" + currentGame.maxNumPlayers + "]" + 
-                "<hr>"+ 
-                "Spectators: " + currentGame.numOfSpectatorsInside + 
-                "<br>Host: " + currentGame.hostUsername + 
+
+            var str = "<tr> <td><strong>Room#" +
+                currentGame.roomId + lockStr + "</strong>: " +
+                currentGame.status + " [" + currentGame.numOfPlayersInside + "/" + currentGame.maxNumPlayers + "]" +
+                "<hr>" +
+                "Spectators: " + currentGame.numOfSpectatorsInside +
+                "<br>Host: " + currentGame.hostUsername +
                 "<br>" + missionHistoryStr +
                 "</td> </tr>";
 
-           
-           
-           
+
+
+
             $("#current-games-table tbody").append(str);
 
 
@@ -331,7 +331,7 @@ socket.on("update-current-games-list", function (currentGames) {
                 //change to the game room view
                 changeView();
 
-                setTimeout(function(){ 
+                setTimeout(function () {
                     checkMessageForCommands("/roomchat", "roomChat");
                 }, 500);
             });
@@ -349,7 +349,7 @@ socket.on("update-current-games-list", function (currentGames) {
         document.querySelectorAll("#current-games-table")[0].classList.remove("current-games-table-off");
     }
 });
-  
+
 socket.on("auto-join-room-id", function (roomId_, newRoomPassword) {
     // console.log("newRoomPassword: " + newRoomPassword);
     // console.log("auto join room");
@@ -367,9 +367,9 @@ socket.on("auto-join-room-id", function (roomId_, newRoomPassword) {
 
 
 socket.on("update-status-message", function (data) {
-if (data) {
-    $("#status").textContent = data;
-}
+    if (data) {
+        $("#status").textContent = data;
+    }
 });
 
 
@@ -393,19 +393,19 @@ socket.on("update-room-players", function (data) {
     // updateSpectatorsList();
     draw();
 
-    if(oldData && oldData.length < roomPlayersData.length && roomPlayersData.length > 1){
-        if($("#option_notifications_sound_players_joining_game")[0].checked === true){
+    if (oldData && oldData.length < roomPlayersData.length && roomPlayersData.length > 1) {
+        if ($("#option_notifications_sound_players_joining_game")[0].checked === true) {
             playSound('ding');
         }
-        
-        if($("#option_notifications_desktop_players_joining_game")[0].checked === true){
+
+        if ($("#option_notifications_desktop_players_joining_game")[0].checked === true) {
             displayNotification("New player in game!  [" + (roomPlayersData.length) + "p]", roomPlayersData[roomPlayersData.length - 1].username + " has joined the game!", "avatars/base-res.png", "newPlayerInGame");
         }
     }
 });
 
 var oldSpectators = [];
-socket.on("update-room-spectators", function(spectatorUsernames){
+socket.on("update-room-spectators", function (spectatorUsernames) {
     $("#spectators-table tbody tr td").remove();
     $("#spectators-table tbody tr").remove();
 
@@ -440,24 +440,24 @@ socket.on("update-room-spectators", function(spectatorUsernames){
     // console.log(oldSpectators);
     // console.log(spectatorUsernames);
 
-    for(var i = 0; i < oldSpectators.length; i++){
-        if(oldSpectators.indexOf(spectatorUsernames[i]) === -1){
+    for (var i = 0; i < oldSpectators.length; i++) {
+        if (oldSpectators.indexOf(spectatorUsernames[i]) === -1) {
             newUsernameIndex = i;
         }
     }
-    if(newUsernameIndex === -1){
+    if (newUsernameIndex === -1) {
         newUsernameIndex = spectatorUsernames.length - 1;
     }
 
     // console.log("new player: " + spectatorUsernames[newUsernameIndex]);
 
     // if an extra person joins the room
-    if(spectatorUsernames && oldSpectators.length < spectatorUsernames.length && spectatorUsernames[newUsernameIndex] !== ownUsername){
-        if($("#option_notifications_sound_players_joining_room")[0].checked === true){
+    if (spectatorUsernames && oldSpectators.length < spectatorUsernames.length && spectatorUsernames[newUsernameIndex] !== ownUsername) {
+        if ($("#option_notifications_sound_players_joining_room")[0].checked === true) {
             playSound('highDing');
         }
 
-        if($("#option_notifications_desktop_players_joining_room")[0].checked === true && oldSpectators.length < spectatorUsernames.length && spectatorUsernames.indexOf(ownUsername) === -1){
+        if ($("#option_notifications_desktop_players_joining_room")[0].checked === true && oldSpectators.length < spectatorUsernames.length && spectatorUsernames.indexOf(ownUsername) === -1) {
             displayNotification("New player in room.", spectatorUsernames[newUsernameIndex] + " has joined the room.", "avatars/base-res.png", "newPlayerInRoom");
         }
     }
@@ -466,34 +466,34 @@ socket.on("update-room-spectators", function(spectatorUsernames){
 });
 
 
-socket.on("joinPassword", function(roomId){
+socket.on("joinPassword", function (roomId) {
 
 
-    (async function getEmail () {
-        const {value: inputPassword} = await swal({
+    (async function getEmail() {
+        const { value: inputPassword } = await swal({
             title: "Type in the room password",
             type: "info",
             input: 'text',
             allowEnterKey: true,
             showCancelButton: true,
         });
-        
+
         if (inputPassword) {
             // swal('Entered password: ' + inputPassword);
             socket.emit("join-room", roomId, inputPassword);
         }
-        else{
+        else {
             changeView();
         }
-        })();
+    })();
 
 });
 
-socket.on("changeView", function(targetLocation){
+socket.on("changeView", function (targetLocation) {
     changeView();
 });
 
-socket.on("wrongRoomPassword", function(){
+socket.on("wrongRoomPassword", function () {
     swal({
         title: "Incorrect password",
         type: "warning",
@@ -501,35 +501,35 @@ socket.on("wrongRoomPassword", function(){
     });
 });
 
-socket.on("correctRoomPassword", function(){
+socket.on("correctRoomPassword", function () {
     //call roomchat
-    setTimeout(function(){
-        $(".room-chat-list").html("");                      
+    setTimeout(function () {
+        $(".room-chat-list").html("");
         checkMessageForCommands("/roomchat", "roomChat");
     }, 500);
 });
 
 //this part at the moment only updates the max number of players in a game.
-socket.on("update-room-info", function(data){
+socket.on("update-room-info", function (data) {
     // data.maxNumPlayers
     $(".gameInfoMaxPlayers")[0].innerText = roomPlayersData.length + "/" + data.maxNumPlayers;
     //if a game has started
-    if(gameData){
+    if (gameData) {
         $(".gameInfoMaxPlayers").addClass("hidden");
     }
-    else{
-        $(".gameInfoMaxPlayers").removeClass("hidden");        
+    else {
+        $(".gameInfoMaxPlayers").removeClass("hidden");
     }
 });
 
 // Update the new room menu with the gameModes available.
-socket.on("gameModes", function(gameModeNames){
+socket.on("gameModes", function (gameModeNames) {
     // <option value="avalon">Avalon</option>
     // <option value="hunter">Hunter</option>
 
     var str = "";
 
-    gameModeNames.forEach(function(name){
+    gameModeNames.forEach(function (name) {
         str += "<option value='" + name + "'>" + name[0].toUpperCase() + name.slice(1, name.length) + "</option>";
     })
 
@@ -541,24 +541,24 @@ socket.on("gameModes", function(gameModeNames){
 var defaultActiveRoles = ["Merlin", "Assassin", "Percival", "Morgana"];
 var skipRoles = ["Resistance", "Spy"];
 
-socket.on("update-game-modes-in-room", function(gameModeObj){
+socket.on("update-game-modes-in-room", function (gameModeObj) {
     var str = "";
 
     var count = 0;
-    
+
     // Roles
-    for(var i = 0; i < gameModeObj.roles.roleNames.length; i++){
+    for (var i = 0; i < gameModeObj.roles.roleNames.length; i++) {
         var name = gameModeObj.roles.roleNames[i];
         // Skip over certain roles since they are enabled by default
-        if(skipRoles.includes(name) === true){
+        if (skipRoles.includes(name) === true) {
             continue;
         }
 
         var active;
-        if(defaultActiveRoles.includes(name) === true){
+        if (defaultActiveRoles.includes(name) === true) {
             active = "active";
         }
-        else{
+        else {
             active = "";
         }
 
@@ -569,7 +569,7 @@ socket.on("update-game-modes-in-room", function(gameModeObj){
     }
 
     // Cards
-    for(var i = 0; i < gameModeObj.cards.cardNames.length; i++){
+    for (var i = 0; i < gameModeObj.cards.cardNames.length; i++) {
         var name = gameModeObj.cards.cardNames[i];
 
         str += "<label class='btn btn-mine'>";
@@ -585,21 +585,21 @@ socket.on("update-game-modes-in-room", function(gameModeObj){
     str = "";
     infoIconString = '<img class="infoIconsSettings pull-right" style="width: 16px; height: 16px;" data-toggle="tooltip" data-placement="left" title="' + icons["info"].toolTip + '" src="' + icons["info"].glyph + '" />';
 
-    for(var i = 0; i < gameModeObj.roles.roleNames.length; i++){
+    for (var i = 0; i < gameModeObj.roles.roleNames.length; i++) {
         var name = gameModeObj.roles.roleNames[i];
         //Skip over certain roles since they are enabled by default
-        if(skipRoles.includes(name) === true){
+        if (skipRoles.includes(name) === true) {
             continue;
         }
 
         var greenOrRed;
-        if(gameModeObj.roles.alliances[i] === "Resistance"){
+        if (gameModeObj.roles.alliances[i] === "Resistance") {
             greenOrRed = "success";
         }
-        else if(gameModeObj.roles.alliances[i] === "Spy"){
+        else if (gameModeObj.roles.alliances[i] === "Spy") {
             greenOrRed = "danger";
         }
-        else{
+        else {
             greenOrRed = "";
         }
 
@@ -626,7 +626,7 @@ socket.on("update-game-modes-in-room", function(gameModeObj){
         count += 1;
     }
     // Cards
-    for(var i = 0; i < gameModeObj.cards.cardNames.length; i++){
+    for (var i = 0; i < gameModeObj.cards.cardNames.length; i++) {
         var name = gameModeObj.cards.cardNames[i];
 
         str += `<div class="panel panel-default roleCardDescription">
@@ -645,17 +645,17 @@ socket.on("update-game-modes-in-room", function(gameModeObj){
         </div>`;
 
         str += "<br>";
-        
+
         count += 1;
     }
     // Set it in
     $("#rolesCardsButtonGroupDescription")[0].innerHTML = str;
     $(".infoIconsSettings").tooltip();
-    
+
 });
 
 
-$(".maxNumPlayers").on("change", function(e){
+$(".maxNumPlayers").on("change", function (e) {
     // console.log("Change");
     // console.log(e.target.value);
 
@@ -665,11 +665,11 @@ $(".maxNumPlayers").on("change", function(e){
     socket.emit("update-room-max-players", e.target.value);
 });
 
-$(".gameModeSelect").on("change", function(e){
+$(".gameModeSelect").on("change", function (e) {
     // console.log("Change");
     // console.log(e.target.value);
 
-    
+
     $($(".gameModeSelect")[0]).val(e.target.value);
     $($(".gameModeSelect")[1]).val(e.target.value);
 
@@ -677,6 +677,6 @@ $(".gameModeSelect").on("change", function(e){
 });
 
 // Update the new room menu with the gameModes available.
-socket.on("leave-room-requested", function(){
+socket.on("leave-room-requested", function () {
     leaveRoom();
 });

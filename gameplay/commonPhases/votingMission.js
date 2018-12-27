@@ -7,7 +7,7 @@ function VotingMission(thisRoom_) {
     this.showGuns = true;
 };
 
-VotingMission.prototype.gameMove = function(socket, data){        
+VotingMission.prototype.gameMove = function (socket, data) {
     var i = this.thisRoom.playersYetToVote.indexOf(socket.request.user.username);
 
     //if this.thisRoom vote is coming from someone who hasn't voted yet
@@ -19,7 +19,7 @@ VotingMission.prototype.gameMove = function(socket, data){
         else if (data === "no") {
             // If the user is a res, they shouldn't be allowed to fail
             var index = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username);
-            if(index !== -1 && this.thisRoom.playersInGame[index].alliance === "Resistance"){
+            if (index !== -1 && this.thisRoom.playersInGame[index].alliance === "Resistance") {
                 socket.emit("danger-alert", "You are resistance! Surely you want to succeed!");
                 return;
             }
@@ -54,7 +54,7 @@ VotingMission.prototype.gameMove = function(socket, data){
             //get number of fails
             var numOfVotedFails = countFails(this.thisRoom.missionVotes);
 
-            if (numOfVotedFails === 0) {	
+            if (numOfVotedFails === 0) {
                 this.thisRoom.sendText(this.thisRoom.allSockets, "Mission " + this.thisRoom.missionNum + " succeeded.", "gameplay-text-blue");
             }
             else {
@@ -65,11 +65,11 @@ VotingMission.prototype.gameMove = function(socket, data){
             //get number of fails
             var numOfVotedFails = countFails(this.thisRoom.missionVotes);
 
-            if(numOfVotedFails > 1){
+            if (numOfVotedFails > 1) {
                 this.thisRoom.moreThanOneFailMissions[this.thisRoom.missionNum] = true;
             }
 
-            if (numOfVotedFails === 1) {	
+            if (numOfVotedFails === 1) {
                 this.thisRoom.sendText(this.thisRoom.allSockets, "Mission " + this.thisRoom.missionNum + " failed with " + numOfVotedFails + " fail.", "gameplay-text-red");
             }
             else {
@@ -77,7 +77,7 @@ VotingMission.prototype.gameMove = function(socket, data){
             }
         }
 
-        
+
         //if we get all the votes in, then do this.thisRoom
         this.thisRoom.lastProposedTeam = this.thisRoom.proposedTeam;
         this.thisRoom.proposedTeam = [];
@@ -106,7 +106,7 @@ VotingMission.prototype.gameMove = function(socket, data){
             this.thisRoom.finishGame("Resistance");
         }
         // If the game goes on
-        else{
+        else {
             this.thisRoom.missionNum++;
             this.thisRoom.pickNum = 1;
             this.thisRoom.teamLeader--;
@@ -114,7 +114,7 @@ VotingMission.prototype.gameMove = function(socket, data){
                 this.thisRoom.teamLeader = this.thisRoom.socketsOfPlayers.length - 1;
             }
             this.thisRoom.hammer = ((this.thisRoom.teamLeader - 5 + 1 + this.thisRoom.playersInGame.length) % this.thisRoom.playersInGame.length);
-            this.thisRoom.phase = "pickingTeam";	
+            this.thisRoom.phase = "pickingTeam";
         }
     }
 };
@@ -126,15 +126,15 @@ VotingMission.prototype.gameMove = function(socket, data){
 //  hidden          - Is the button hidden?
 //  disabled        - Is the button disabled?
 //  setText         - What text to display in the button
-VotingMission.prototype.buttonSettings = function(indexOfPlayer){  
+VotingMission.prototype.buttonSettings = function (indexOfPlayer) {
 
     var obj = {
-		green:{},
-		red: {}
+        green: {},
+        red: {}
     };
-    
+
     // If user has voted
-    if(this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playersInGame[indexOfPlayer].username) === -1){
+    if (this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playersInGame[indexOfPlayer].username) === -1) {
         obj.green.hidden = true;
         obj.green.disabled = true;
         obj.green.setText = "";
@@ -144,7 +144,7 @@ VotingMission.prototype.buttonSettings = function(indexOfPlayer){
         obj.red.setText = "";
     }
     // User has not voted yet
-    else{
+    else {
         obj.green.hidden = false;
         obj.green.disabled = false;
         obj.green.setText = "SUCCEED";
@@ -154,16 +154,16 @@ VotingMission.prototype.buttonSettings = function(indexOfPlayer){
         obj.red.setText = "FAIL";
     }
 
-    return obj;    
+    return obj;
 }
 
-VotingMission.prototype.numOfTargets = function(indexOfPlayer){    
+VotingMission.prototype.numOfTargets = function (indexOfPlayer) {
     return null;
 }
 
-VotingMission.prototype.getStatusMessage = function(indexOfPlayer){  
+VotingMission.prototype.getStatusMessage = function (indexOfPlayer) {
     // If we are spectator
-    if(indexOfPlayer === -1){
+    if (indexOfPlayer === -1) {
         var str = "";
         str += "Waiting for mission votes: ";
         for (var i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
@@ -176,7 +176,7 @@ VotingMission.prototype.getStatusMessage = function(indexOfPlayer){
         return str;
     }
     //If the user is someone who needs to vote success or fail
-    else if(indexOfPlayer !== undefined && this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playersInGame[indexOfPlayer].username) !== -1){
+    else if (indexOfPlayer !== undefined && this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playersInGame[indexOfPlayer].username) !== -1) {
         var str = "";
         str += (this.thisRoom.playersInGame[this.thisRoom.teamLeader].username + " has picked: ");
 
@@ -189,7 +189,7 @@ VotingMission.prototype.getStatusMessage = function(indexOfPlayer){
 
         return str;
     }
-    else{
+    else {
         var str = "";
         str += "Waiting for mission votes: ";
         for (var i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
@@ -206,13 +206,13 @@ VotingMission.prototype.getStatusMessage = function(indexOfPlayer){
 
 
 function countFails(votes) {
-	var numOfVotedFails = 0;
-	for (var i = 0; i < votes.length; i++) {
-		if (votes[i] === "fail") {
-			numOfVotedFails++;
-		}
-	}
-	return numOfVotedFails;
+    var numOfVotedFails = 0;
+    for (var i = 0; i < votes.length; i++) {
+        if (votes[i] === "fail") {
+            numOfVotedFails++;
+        }
+    }
+    return numOfVotedFails;
 }
 
 

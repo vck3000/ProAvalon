@@ -8,12 +8,12 @@ function Resistance(thisRoom_) {
 
     this.description = "A standard Resistance member.";
 
-    this.see = function(){
+    this.see = function () {
         return undefined;
     }
 
-    this.checkSpecialMove = function(){
-        
+    this.checkSpecialMove = function () {
+
     }
 
 }
