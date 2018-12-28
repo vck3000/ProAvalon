@@ -202,6 +202,7 @@ function unhighlightAllChat() {
         selectedChat[user] = false;
         var chatItems = $(".room-chat-list li span[username='" + user + "']");
         chatItems.css("background-color", "transparent");
+        chatItems.css("color", "");
     });
 }
 
@@ -353,6 +354,7 @@ function addToRoomChat(data) {
                 //set the highlight chat if the user has been selected already
                 var highlightChatColour = "";
                 var setHighlightColorToYellow = $(".setHighlightColorsToYellow")[0].checked;
+                var highlightForegroundColorHtml = ";";
 
                 // console.log("true?"  + selectedChat[data[i].username]);
 
@@ -363,6 +365,7 @@ function addToRoomChat(data) {
                     else {
                         highlightChatColour = docCookies.getItem("player" + getIndexFromUsername(data[i].username) + 'HighlightColour');
                     }
+                    highlightForegroundColorHtml = "color: #333;";
                 }
 
                 //if its a server text or special text
@@ -371,7 +374,9 @@ function addToRoomChat(data) {
                 }
                 //its a user's chat so put some other stuff on it
                 else {
-                    str = "<li class='" + addClass + "'><span style='background-color: " + highlightChatColour + "' username='" + data[i].username + "'><span class='date-text'> " + date + "</span> <span class='username-text'>" + data[i].username + ":</span> " + (unquotedMessage || "<i>Quoting:</i>") + "</span></li>";
+                    str = "<li class='" + addClass + "'><span style='" + highlightForegroundColorHtml + "background-color: " + highlightChatColour
+                        + "' username='" + data[i].username + "'><span class='date-text'> " + date + "</span> <span class='username-text'>"
+                        + data[i].username + ":</span> " + (unquotedMessage || "<i>Quoting:</i>") + "</span></li>";
                 }
 
                 //if they've muted this player, then just dont show anything. reset str to nothing.
