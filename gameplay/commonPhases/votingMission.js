@@ -109,10 +109,12 @@ VotingMission.prototype.gameMove = function (socket, data) {
         else {
             this.thisRoom.missionNum++;
             this.thisRoom.pickNum = 1;
+            
             this.thisRoom.teamLeader--;
             if (this.thisRoom.teamLeader < 0) {
-                this.thisRoom.teamLeader = this.thisRoom.socketsOfPlayers.length - 1;
+                this.thisRoom.teamLeader = this.thisRoom.playersInGame.length - 1;
             }
+
             this.thisRoom.hammer = ((this.thisRoom.teamLeader - 5 + 1 + this.thisRoom.playersInGame.length) % this.thisRoom.playersInGame.length);
             this.thisRoom.phase = "pickingTeam";
         }
