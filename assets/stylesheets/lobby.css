@@ -1113,3 +1113,7 @@ textarea .dark {
 .highlightChatButtonSelected {
     background-color: #BBFFBB
  }
+
+ .glyphicon-ok {
+    color: black
+ }
