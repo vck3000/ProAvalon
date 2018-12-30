@@ -232,7 +232,7 @@ function addToRoomChat(data) {
             // var date = "[" + hour + ":" + min + "]";
 
 
-            if (data[i] && data[i].message) {
+            if (data[i] && data[i].message.trim()) {
                 //set up the date:
                 var date;
 
@@ -331,11 +331,12 @@ function addToRoomChat(data) {
                     //console.log('text = ' + text);
 
                     // verify all quotes are either a server message or have actually been said
-                    if (roomChatHistory.filter(d => (['server-text-teal', 'server-text'].includes(d.classStr) && // either msg from server
-                        s.slice(8).trim() === d.message.trim()) ||
-                        (d.username === username &&     // or was said by that user
-                            d.dateStr.slice(4, 6) === dateStr.slice(4, 6) &&    // only check that the minutes are correct (to ignore timezone)
-                            d.message.startsWith(text.trim()))
+                    if (roomChatHistory.filter(d => (d.classStr !== null
+                                && s.slice(8).trim() === d.message.trim()) ||
+                        (username === d.username        // or was said by that user. only check the one's place of the minutes
+                                && dateStr[3] === ":"       // (to ignore timezones, which can be off by hours or even half-hours)
+                                && dateStr[5] === d.dateStr[5]
+                                && d.message.startsWith(text.trim()))
                     ).length > 0) {
                         quotedStrings.push(s);
                         console.log('pushed ' + s);
@@ -350,7 +351,7 @@ function addToRoomChat(data) {
                 data[i].message = unquotedMessage.trim();
 
 
-                // Handle the non-quoted parts                
+                // Handle the non-quoted parts
                 //set the highlight chat if the user has been selected already
                 var highlightChatColour = "";
                 var setHighlightColorToYellow = $(".setHighlightColorsToYellow")[0].checked;
@@ -376,7 +377,7 @@ function addToRoomChat(data) {
                 else {
                     str = "<li class='" + addClass + "'><span style='" + highlightForegroundColorHtml + "background-color: " + highlightChatColour
                         + "' username='" + data[i].username + "'><span class='date-text'> " + date + "</span> <span class='username-text'>"
-                        + data[i].username + ":</span> " + (unquotedMessage || "<i>Quoting:</i>") + "</span></li>";
+                        + data[i].username + ":</span> " + (unquotedMessage.trim() || "<i>Quoting:</i>") + "</span></li>";
                 }
 
                 //if they've muted this player, then just dont show anything. reset str to nothing.
