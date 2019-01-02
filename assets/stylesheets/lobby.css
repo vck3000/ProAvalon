@@ -791,10 +791,6 @@ textarea .dark {
     border: 1px #000000 solid;
 }
 
-i {
-    color: #333;
-}
-
 .dark input {
     background-color: #333333;
 }
@@ -1045,7 +1041,7 @@ i {
 
 
 .whisper {
-    color: purple;
+    color: mediumpurple;
     font-weight: 700;
 }
 
@@ -1116,4 +1112,8 @@ i {
 
 .highlightChatButtonSelected {
     background-color: #BBFFBB
+ }
+
+ .glyphicon-ok {
+    color: black
  }

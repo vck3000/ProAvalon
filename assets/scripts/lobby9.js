@@ -251,11 +251,13 @@ function activateAvatarButtons() {
             if (selectedChat[username] === true) {
                 selectedChat[username] = false;
                 chatItems.css("background-color", "transparent");
+                chatItems.css("color", "");
             }
             else {
                 // console.log("set true");
                 selectedChat[username] = true;
                 chatItems.css("background-color", "" + playerHighlightColour);
+                chatItems.css("color", "#333");
             }
             draw();
         });
