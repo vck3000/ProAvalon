@@ -339,7 +339,7 @@ router.get("/mod/ajax/data/:pageIndex", function (req, res) {
 							var dur = action.durationToBan;
 
 							stringsArray.push("The ban was made on " + action.whenMade);
-							stringsArray.push("The ban will last for: " + (dur.getFullYear() - 1970) + " yrs, " + dur.getMonth() + " mths, " + dur.getDay() + " days, " + dur.getHours() + " hrs.");
+							// stringsArray.push("The ban will last for: " + (dur.getFullYear() - 1970) + " yrs, " + dur.getMonth() + " mths, " + dur.getDay() + " days, " + dur.getHours() + " hrs.");
 							stringsArray.push("The ban will be released on: " + action.whenRelease);
 							stringsArray.push("Moderator message: " + action.descriptionByMod);
 							break;
@@ -351,7 +351,7 @@ router.get("/mod/ajax/data/:pageIndex", function (req, res) {
 
 							stringsArray.push("The mute was made on " + action.whenMade);
 							// -1970 years because thats the start of computer time
-							stringsArray.push("The mute will last for: " + (dur.getFullYear() - 1970) + " yrs, " + dur.getMonth() + " mths, " + dur.getDay() + " days, " + dur.getHours() + " hrs.");
+							// stringsArray.push("The mute will last for: " + (dur.getFullYear() - 1970) + " yrs, " + dur.getMonth() + " mths, " + dur.getDay() + " days, " + dur.getHours() + " hrs.");
 							stringsArray.push("The mute will be released on: " + action.whenRelease);
 							stringsArray.push("Moderator message: " + action.descriptionByMod);
 							break;

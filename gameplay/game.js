@@ -1175,7 +1175,7 @@ Game.prototype.finishGame = function (toBeWinner) {
 			console.log(err);
 		}
 		else {
-			// console.log("Stored game data successfully.");
+			console.log("Stored game data successfully.");
 		}
 	});
 
