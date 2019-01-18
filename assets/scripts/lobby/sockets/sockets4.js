@@ -22,7 +22,7 @@ socket.on("joinedGameSuccess", function (data) {
 socket.on('disconnect', function () {
     // window.location= "/";
     // alert("You have been disconnected!");
-    showDangerAlert("You have been disconnected! Please refresh the page.");
+    showDangerAlert("You have been disconnected! Please refresh the page or click here to reload.");
     socket.disconnect();
 });
 
