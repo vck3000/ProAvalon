@@ -122,7 +122,11 @@ p {
 }
 
 .tab-window-full-bottom{
-    height: 100%;
+    height: -webkit-calc(100% + 29px);
+    height: expression(100% + 29px);
+    height: -moz-calc(100% + 29px);
+    height: -o-calc(100% + 29px);
+    height: calc(100% + 29px);
     border: 1px solid #d3d3d3;
     border-radius: 5px;
     overflow-y: auto;
