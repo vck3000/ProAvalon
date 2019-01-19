@@ -36,6 +36,10 @@
     	padding-bottom: 50px;
     }
 
+    img {
+    	height:50px;
+    	width:50px;
+    }
 </style>
 
 <div class="container">
@@ -45,20 +49,18 @@
 			<table class="myTable">
 				<tr>
 					<th>Username</th>
+					<th>Res Avatar</th>
+					<th>Spy Avatar</th>
 					<th>Nationality</th>
 					<th>Biography</th>
-					<th>Games Played</th>
-					<th>Games Won</th>
-					<th>Games Lost</th>
 				</tr>
 				<% users.forEach(function(user){ %>
 				<tr>
-					<td><img src = "<%= user.avatarImgRes %>"><%= user.username %></td>
+					<td><%= user.username %></td>
+					<td><img src="<%= user.avatarImgRes %>"></td>
+					<td><img src="<%= user.avatarImgSpy %>"></td>
 					<td><%= user.nationality %></td>
 					<td><%= user.biography.slice(3,user.biography.length-4) %></td>
-					<td><%= user.totalGamesPlayed %></td>
-					<td><%= user.totalWins %></td>
-					<td><%= user.totalLosses %></td>
 				</tr>
 				<% }); %>
 			</table>
