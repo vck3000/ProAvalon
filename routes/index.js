@@ -21,6 +21,19 @@ var modsArray = require("../modsadmins/mods");
 var adminsArray = require("../modsadmins/admins");
 
 
+//Community route
+router.get("/community", function(req, res){
+	// Get all campgrounds from DB
+	User.find({}, function(err, allUsers){
+		if(err) {
+			console.log(err);
+		}
+		else {
+			res.render("community", {users:allUsers, currentUser:req.user});
+		}		
+	});
+});
+
 //Index route
 router.get("/", function (req, res) {
 	res.render("index");
