@@ -32,33 +32,39 @@
     	background-color:#f5f5f5;
     }
 
+    h3 {
+    	padding-bottom: 50px;
+    }
+
 </style>
 
 <div class="container">
-	<header class="jumbotron">
-		<div class="container">
-			<h3 class="uppercase">View our players from all over the world</h3>
-		</div>
-	</header>
-
-	<div class="row">
-		<table class="myTable">
-			<tr>
-				<th>Username</th>
-				<th>Nationality</th>
-				<th>Biography</th>
-				<th>Games Played</th>
-			</tr>
-			<% users.forEach(function(user){ %>
-			<tr>
-				<td><img src = "<%= user.avatarImgRes %>"><%= user.username %></td>
-				<td><%= user.nationality %></td>
-				<td><%= user.biography %></td>
-				<td><%= user.totalGamesPlayed %></td>
-			</tr>
-			<% }); %>
-		</table>
+	<div class="jumbotron">
+		<h3 class="uppercase">View our players from all over the world</h3>
+		<div class="row">
+			<table class="myTable">
+				<tr>
+					<th>Username</th>
+					<th>Nationality</th>
+					<th>Biography</th>
+					<th>Games Played</th>
+					<th>Games Won</th>
+					<th>Games Lost</th>
+				</tr>
+				<% users.forEach(function(user){ %>
+				<tr>
+					<td><img src = "<%= user.avatarImgRes %>"><%= user.username %></td>
+					<td><%= user.nationality %></td>
+					<td><%= user.biography.slice(3,user.biography.length-4) %></td>
+					<td><%= user.totalGamesPlayed %></td>
+					<td><%= user.totalWins %></td>
+					<td><%= user.totalLosses %></td>
+				</tr>
+				<% }); %>
+			</table>
 		</div>
 	</div>
+</div>
+
 
 <% include partials/footer %>
