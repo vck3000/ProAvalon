@@ -1,70 +1,171 @@
 <% include partials/header %>
-
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 <style>
-    .myContainer {
-        border-radius: 50px;
 
-        padding-top: 5%;
-        padding-bottom: 5%;
-        margin-bottom: 30px;
+    .myContainer {
+        border-radius: 20px;
+        background-color: #e8eaf6;
+        margin: 0 auto;
         color: inherit;
-        background-color: #eee;
-        
-        width:95%;
+        width: 95%;
+        font-family: roboto;
+    }
+
+    .header {
+        text-align: center;
+        margin: 0 auto;
+        padding-top: 20px;
+        width: 60%;
     }
 
     .myTable {
-    	width: 100%;
-    }
-
-    .myTable td, th{
-        border-bottom: 1px solid #ddd;
-        /* table-layout: fixed; */
-
-        /* width: 100%; */
+        table-layout: fixed;
+        margin: 0 auto;
+        width: 90%;
     }
 
     .myTable th{
-        height: 30px;
+        background-color: #3949ab;
+        color: white;
+        font-weight: 400;
     }
+
+    .myTable th, td{
+        border-top: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+        overflow: hidden;
+        padding: 0 10px;
+    }
+
 
     .myTable tr:hover {
     	background-color:#f5f5f5;
     }
 
-    h3 {
-    	padding-bottom: 50px;
+    .myTable img {
+        height:60px;
+        padding: 5px 0;
+        object-fit: contain;
     }
 
-    img {
-    	height:50px;
-    	width:50px;
+    .myTable p {
+        background-color: transparent !important;
     }
+
+    .bio {
+        width: 40%;
+    }
+
+    .cell {
+        height: 60px;
+        display: block;
+        overflow: auto;
+    }
+
+    ::-webkit-scrollbar {
+    width: 0px;  /* remove scrollbar space */
+    background: transparent;  /* optional: just make scrollbar invisible */
+    }
+
+    h4 {
+        margin: 10px 5%;
+        color: #3f51b5;
+    }
+
+    /*hide games played*/
+    .games{
+        display:none;
+        width:0;
+        height:0;
+        opacity:0;
+        visibility: collapse;
+    } 
+
+
+@media screen and (max-width: 600px) {
+    .myTable {
+        font-size: 12px;
+    }
+    .myTable td {
+        word-wrap: break-word;
+        padding: 0;
+    }
+
+    .myTable img {
+        height:40px;
+        padding: 0;
+    }
+
+    .cell {
+        height: 60px;
+        display: block;
+        overflow: auto;
+    }
+
+    ::-webkit-scrollbar {
+    width: 0px;  /* remove scrollbar space */
+    background: transparent;  /* optional: just make scrollbar invisible */
+    }
+
+    .nat{
+        display:none;
+        width:0;
+        height:0;
+        opacity:0;
+        visibility: collapse;
+    } 
+}
+
+
 </style>
 
-<div class="container">
-	<div class="jumbotron">
-		<h3 class="uppercase">View our players from all over the world</h3>
-		<div class="row">
-			<table class="myTable">
-				<tr>
-					<th>Username</th>
-					<th>Res Avatar</th>
-					<th>Spy Avatar</th>
-					<th>Nationality</th>
-					<th>Biography</th>
-				</tr>
-				<% users.forEach(function(user){ %>
-				<tr>
-					<td><%= user.username %></td>
-					<td><img src="<%= user.avatarImgRes %>"></td>
-					<td><img src="<%= user.avatarImgSpy %>"></td>
-					<td><%= user.nationality %></td>
-					<td><%= user.biography.slice(3,user.biography.length-4) %></td>
-				</tr>
-				<% }); %>
-			</table>
-		</div>
+<div class="myContainer">
+	<h3 class="header">View our players from all over the world</h3>
+	<div class="row">
+        <table class="myTable">
+            <h4>Moderators</h4>
+            <tr>
+                <th>Username</th>
+                <th>Res Avatar</th>
+                <th>Spy Avatar</th>
+                <th class="nat">Nationality</th>
+                <th class="bio">Biography</th>
+                <th class="games">#Games</th>
+            </tr>
+            
+            <% mods.forEach(function(mod){ %>
+            <tr>
+                <td><%= mod.username %></td>
+                <td><img src="<%- mod.avatarImgRes %>"></td>
+                <td><img src="<%- mod.avatarImgSpy %>"></td>
+                <td class="nat"><%- mod.nationality %></td>
+                <td class="cell"><%- mod.biography %></td>
+                <td class="games"><%- mod.totalGamesPlayed %></td>
+            </tr>
+            <% }); %>
+        </table>
+    
+		<table class="myTable">
+            <h4>Players</h4>
+            <tr>
+                <th>Username</th>
+                <th>Res Avatar</th>
+                <th>Spy Avatar</th>
+                <th class="nat">Nationality</th>
+                <th class="bio">Biography</th>
+                <th class="games">#Games</th>
+            </tr>
+			<% users.forEach(function(user){ %>
+			<tr>
+				<td><%= user.username %></td>
+				<td><img src="<%- user.avatarImgRes %>"></td>
+				<td><img src="<%- user.avatarImgSpy %>"></td>
+				<td class="nat"><%- user.nationality %></td>
+				<td class="cell"><%- user.biography %></td>
+                <td class="games"><%- user.totalGamesPlayed %></td>
+			</tr>
+			<% }); %>
+		</table>
 	</div>
 </div>
 
