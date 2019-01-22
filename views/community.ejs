@@ -1,0 +1,178 @@
+<% include partials/header %>
+<link href="https://fonts.googleapis.com/css?family=Roboto:400,500" rel="stylesheet">
+<style>
+
+    .myContainer {
+        border-radius: 20px;
+        background-color: #e8eaf6;
+        margin: 0 auto;
+        color: inherit;
+        width: 95%;
+        font-family: roboto;
+    }
+
+    .header {
+        text-align: center;
+        margin: 0 auto;
+        padding: 20px 0;
+        width: 60%;
+        font-weight: 500;
+    }
+
+    .myTable {
+        table-layout: fixed;
+        margin: 20px auto;
+        width: 90%;
+    }
+
+    .myTable th{
+        background-color: #7986cb;
+        color: white;
+        font-weight: 500;
+        height: 30px;
+        overflow: hidden;
+        text-transform: uppercase;
+        padding: 0 10px;
+    }
+
+    .myTable td{
+        border-top: 1px solid #D3D3D3;
+        padding: 0 10px;
+    }
+
+
+    .myTable tr:hover {
+    	background-color:#c5cae9;
+    }
+
+    .myTable img {
+        height:60px;
+        padding: 5px 0;
+        object-fit: contain;
+    }
+
+    .myTable p {
+        background-color: transparent !important;
+    }
+
+    .bio {
+        width: 45%;
+    }
+
+    .cell {
+        height: 60px;
+        display: block;
+        overflow: auto;
+    }
+
+    ::-webkit-scrollbar {
+    width: 0px;  /* remove scrollbar space */
+    background: transparent;  /* optional: just make scrollbar invisible */
+    }
+
+    h4 {
+        margin: 0 0 0 5%;
+        padding: 0 10px;
+        color: #3f51b5;
+        font-weight: 500;
+    }
+
+    /*hide games played*/
+    .games{
+        display:none;
+        width:0;
+        height:0;
+        opacity:0;
+        visibility: collapse;
+    } 
+
+
+@media screen and (max-width: 600px) {
+    .myTable {
+        font-size: 12px;
+    }
+    .myTable td th {
+        word-wrap: break-word;
+        padding: 0;
+    }
+
+    .myTable img {
+        height:40px;
+        padding: 0;
+    }
+
+    .cell {
+        height: 60px;
+        display: block;
+        overflow: auto;
+    }
+
+    ::-webkit-scrollbar {
+    width: 0px;  /* remove scrollbar space */
+    background: transparent;  /* optional: just make scrollbar invisible */
+    }
+
+    .nat{
+        display:none;
+        width:0;
+        height:0;
+        opacity:0;
+        visibility: collapse;
+    } 
+}
+
+
+</style>
+
+<div class="myContainer">
+	<h3 class="header">View our players from all over the world!</h3>
+	<div class="row">
+        <table class="myTable">
+            <h4>Moderators</h4>
+            <tr>
+                <th>Username</th>
+                <th>Res Avatar</th>
+                <th>Spy Avatar</th>
+                <th class="nat">Nationality</th>
+                <th class="bio">Biography</th>
+                <th class="games">#Games</th>
+            </tr>
+            
+            <% mods.forEach(function(mod){ %>
+            <tr>
+                <td><%= mod.username %></td>
+                <td><img src="<%- mod.avatarImgRes %>"></td>
+                <td><img src="<%- mod.avatarImgSpy %>"></td>
+                <td class="nat"><%- mod.nationality %></td>
+                <td class="cell"><%- mod.biography %></td>
+                <td class="games"><%- mod.totalGamesPlayed %></td>
+            </tr>
+            <% }); %>
+        </table>
+    
+		<table class="myTable">
+            <h4>Players</h4>
+            <tr>
+                <th>Username</th>
+                <th>Res Avatar</th>
+                <th>Spy Avatar</th>
+                <th class="nat">Nationality</th>
+                <th class="bio">Biography</th>
+                <th class="games">#Games</th>
+            </tr>
+			<% users.forEach(function(user){ %>
+			<tr>
+				<td><%= user.username %></td>
+				<td><img src="<%- user.avatarImgRes %>"></td>
+				<td><img src="<%- user.avatarImgSpy %>"></td>
+				<td class="nat"><%- user.nationality %></td>
+				<td class="cell"><%- user.biography %></td>
+                <td class="games"><%- user.totalGamesPlayed %></td>
+			</tr>
+			<% }); %>
+		</table>
+	</div>
+</div>
+
+
+<% include partials/footer %>
