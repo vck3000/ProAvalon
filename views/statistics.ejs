@@ -10,6 +10,7 @@
 <style>
     .myContainer {
         border-radius: 50px;
+
         padding-top: 5%;
         padding-bottom: 5%;
         margin-bottom: 30px;
@@ -301,59 +302,59 @@
         }
 
         var gamesPlayedStatsConfig = {
-			type: 'line',
-			data: {
-				labels: gamesPlayedXAxis,
-				datasets: [{
-					label: 'Games Played per day',
-					backgroundColor: "rgba(255, 102, 102, 0.4)",
-					borderColor: "rgba(255, 102, 102, 1)",
-					data: grd.siteTrafficGamesPlayedYAxis,
+            type: 'line',
+            data: {
+                labels: gamesPlayedXAxis,
+                datasets: [{
+                    label: 'Games Played per day',
+                    backgroundColor: "rgba(255, 102, 102, 0.4)",
+                    borderColor: "rgba(255, 102, 102, 1)",
+                    data: grd.siteTrafficGamesPlayedYAxis,
                     fill: false,
                     lineTension: 0,
                     borderWidth: 2
-				}]
-			},
-			options: {
+                }]
+            },
+            options: {
                 responsive: true,
                 maintainAspectRatio: true,
-				title: {
-					display: true,
-					text: 'Site traffic data'
-				},
-				tooltips: {
-					mode: 'index',
-					intersect: false,
-				},
-				hover: {
-					mode: 'nearest',
-					intersect: true
-				},
-				scales: {
-					xAxes: [{
-						type: 'time',
-						time: {
-							// format: timeFormat,
-							// round: 'day'
-							tooltipFormat: 'ddd, ll'
-						},
-						scaleLabel: {
-							display: true,
-							labelString: 'Date'
-						}
-					}],
-					yAxes: [{
-						scaleLabel: {
-							display: true,
-							labelString: 'Games Played'
+                title: {
+                    display: true,
+                    text: 'Site traffic data'
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            // format: timeFormat,
+                            // round: 'day'
+                            tooltipFormat: 'ddd, ll'
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Date'
+                        }
+                    }],
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Games Played'
                         },
                         ticks: {
                             beginAtZero: true
                         }
-					}]
-				}
-			}
-		};
+                    }]
+                }
+            }
+        };
 
 
 
