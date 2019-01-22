@@ -83,7 +83,6 @@
                     
                         <script>
                             var postId = "<%=forumThread._id%>";
-
                             function deleteFunction(){
                                 swal({
                                     title: "Are you sure you want to delete?",
@@ -94,7 +93,6 @@
                                     reverseButtons: true
                                 })
                                 .then((result) => {
-
                                     if (result.value) {
                                         $.ajax({
                                             type: "DELETE",
@@ -108,7 +106,6 @@
                                         }).then(function(){
                                             window.location.replace("/forum");
                                         });
-
                                     } else {
                                     swal({
                                         title: "Nothing was deleted.",
@@ -179,9 +176,7 @@
                         classesToAdd += "post-unseen ";
                     }
                 %>                
-
                 <div class="individualMainComment" id=<%=comment.id%>>
-
            
                 
                     <div class="individualComment <%=classesToAdd%>">
@@ -195,19 +190,15 @@
                             <span id=<%=comment._id + "likes"%>> <%=comment.likes%></span>
                         
                         </p>
-
                         
-
                         <div class="mainCommentText text">
                             <%-comment.text%>
                         </div>
-
                         <% if(comment.disabled && comment.disabled === true && locals.mod && mod === true){ %>
                             <div style="color: gray">
                                 Old deleted text: (only mods see :P) <%-comment.oldText%>
                             </div>
                         <% } %>
-
                         <% if(comment.edited === true){ %>
                             [Edited]
                         <% } %>
@@ -230,26 +221,21 @@
                                     Unlike
                                 <% } %>
                             </a>
-
                             <% if(currentUser && comment.author.id && comment.author.id.equals(currentUser.id)){ %>
                                 <a class="edit" href="/forum/<%=forumThread._id%>/<%=comment._id%>/edit">Edit</a>
-
                                 <a class="deleteComment" linkToDelete="/forum/deleteComment/<%=forumThread._id%>/<%=comment._id%>">
                                 Remove
                                 </a>
                             <% } %>
-
                             <% if(locals.mod){ %>
                                 <a class="btn btn-danger btn-sm modButton hidden" idOfElement="<%=comment._id%>" typeOfElement="comment" authorId="<%=comment.author.id%>" authorUsername="<%=comment.author.username%>">Mod Remove</a>
                             <% } %>
                         
                         </p>
-
                         <div class="mainCommentEditButtons hidden">
                             <a class="btn btn-default btn-sm">Cancel</a>
                             <a class="btn btn-primary btn-sm">Submit</a>
                         </div>
-
                         <!-- Reply box for main comment -->
                         <div class="replyBox hidden">
                             <form class="comment-form" action="/forum/<%=forumThread._id%>/<%=comment._id%>" method="POST">
@@ -262,17 +248,14 @@
                             <br>
                         </div>
                     </div>
-
                     <!-- Replies to the main comment -->
                     <% if(comment.replies){ comment.replies.forEach(function(reply){ %>
-
                     <%
                         var classesToAdd = "";
                         if(!reply.seenUsers || reply.seenUsers.indexOf(currentUser.username.toLowerCase()) === -1){
                             classesToAdd += "post-unseen ";
                         }
                     %>                
-
                         <div class="replyToComment <%=classesToAdd%>"  id=<%=reply.id%>>
                             <p>
                                 <% if(reply.disabled && reply.disabled === true){ %>
@@ -282,7 +265,6 @@
                                 <span class="timeSince"><%=reply.timeSinceString%> ago</span>
                                 <span class="glyphicon glyphicon-thumbs-up"></span>
                                 <span id=<%=reply._id + "likes"%>> <%=reply.likes%></span>
-
                                 <% if(reply.replyingUsername) { %>
                                     <span class="replyingUsername"> @<%=reply.replyingUsername%></span>
                                 <% } %>
@@ -291,17 +273,14 @@
                             <div class="text">
                                 <%-reply.text%> 
                             </div>
-
                             <% if(reply.disabled && reply.disabled === true && locals.mod && mod === true){ %>
                                 <div style="color: gray">
                                     Old deleted text: (only mods see :P) <%-reply.oldText%>
                                 </div>
                             <% } %>
-
                             <% if(reply.edited === true){ %>
                             [Edited]
                             <% } %>
-
                             <p class="commentOptions">
                         
                                 <a class="reply">Reply</a>
@@ -321,27 +300,22 @@
                                         Unlike
                                     <% } %>
                                 </a>
-
                                 <% if(currentUser && reply.author.id && reply.author.id.equals(currentUser.id)){ %>
                                     
                                     <a class="edit" href="/forum/<%=forumThread._id%>/<%=comment._id%>/<%=reply._id%>/edit">Edit</a>
-
                                     <a class="edit deleteCommentReply" linkToDelete="/forum/deleteCommentReply/<%=forumThread._id%>/<%=comment._id%>/<%=reply._id%>">
                                     Remove
                                     </a>
                                 
                                 <% } %>
-
                                 <% if(locals.mod){ %>
                                     <a class="btn btn-danger btn-sm modButton hidden" idOfElement="<%=reply._id%>" typeOfElement="reply" authorId="<%=reply.author.id%>" authorUsername="<%=reply.author.username%>">Mod Remove</a>
                                 <% } %>
                             </p>
-
                             <div class="mainCommentEditButtons hidden">
                             <a class="btn btn-default btn-sm">Cancel</a>
                             <a class="btn btn-primary btn-sm">Submit</a>
                             </div>
-
                             <!-- Reply box for main comment -->
                             <div class="replyBox hidden">
                                 <form class="comment-form" action="/forum/<%=forumThread._id%>/<%=comment._id%>/<%=reply._id%>" method="POST">
@@ -353,7 +327,6 @@
                                 </form>
                                 <br>
                             </div>
-
                         </div>    
                     <% }); } %>
                 </div>
@@ -451,12 +424,9 @@
 
 
 <script type="text/javascript">
-
     $(document).ready(function() {
         $('#commentTextArea').summernote();
         // $('.commentReply').summernote();
-
-
         <%if(locals.mod){ %>
             <%if(mod === true){ %>
                 $("#modActionCloseButton").on("click", function(){
@@ -480,13 +450,10 @@
                             location.reload();
                         }
                     });
-
                     console.log(data);
                     
                     //create ajax
                 });
-
-
                 $("#pinButton").on("click", function(e){
                     var data = $(e.target).attr("idOfElement");
                     console.log(data);
@@ -507,35 +474,27 @@
             <% } %>                           
         <% } %>
         
-
     });
-
     function toggleModOptions(){
         $(".modButton").toggleClass("hidden");
         $(".modButtonPin").toggleClass("hidden");
     }
-
-
     $(".modButton").on("click", function(e){
         // console.log($(e.target).attr("idOfElement"));
         // console.log($(e.target).attr("typeOfElement"));
         // console.log($(e.target).attr("authorId"));
         // console.log($(e.target).attr("authorUsername"));
-
         var idOfElement = $(e.target).attr("idOfElement");
         var typeOfElement = $(e.target).attr("typeOfElement");
         var authorId = $(e.target).attr("authorId");
         var authorUsername = $(e.target).attr("authorUsername");
-
         var text = $(e.target).closest("div").find(".text")[0].innerHTML;
         console.log($(e.target).closest("div").find(".text")[0].innerHTML);
-
         $("#modModal").modal("show");
         $("#banPlayerUsername").val(authorUsername);
         $("#modActionBanningElementText")[0].innerHTML = text;
         $("#typeOfForumElement").val(typeOfElement);
         $("#idOfPlayerToBan").val(authorId);
-
         if(typeOfElement === "reply"){
             $("#idOfReply").val($($(e.target).closest(".replyToComment")).attr("id"));
             $("#idOfComment").val($($(e.target).closest(".individualMainComment")).attr("id"));
@@ -551,10 +510,7 @@
             $("#idOfComment").val("");
             $("#idOfForum").val($($(e.target).closest(".myContainer")).attr("id"));
         }
-
-
     });
-
 </script>
 
 <% if(locals.mod && mod === true){ %>
@@ -568,4 +524,3 @@
 
 
 <% include ../partials/footer%>
-
