@@ -3,7 +3,7 @@
 <link rel="stylesheet" type="text/css" href="/stylesheets/forum/show.css">
 
 <% include ../partials/forumInclude%>
-												
+                                                
 
 <%   var bg_converter = {};                    %>
 <%   bg_converter["avalon"] = "success";       %>
@@ -53,7 +53,7 @@
             <% } %>
 
             <p class="commentOptions">
-                <a class="like" idOfElement=<%=forumThread._id%> idOfForum=<%=forumThread._id%> typeofelement='forum'>
+                <a class="like" style="cursor: pointer" idOfElement=<%=forumThread._id%> idOfForum=<%=forumThread._id%> typeofelement='forum'>
                     <%               
                     var isInside = false;
                         Object.keys(idsOfLikedPosts).forEach(function(key) {
@@ -213,8 +213,8 @@
                         <% } %>
                         <p class="commentOptions">
                         
-                            <a class="reply">Reply</a>
-                            <a class="like " idOfElement=<%=comment._id%> idofcomment=<%=comment._id%> idOfForum=<%=forumThread._id%> typeofelement='comment'>
+                            <a class="reply" style="cursor: pointer">Reply</a>
+                            <a class="like" style="cursor: pointer" idOfElement=<%=comment._id%> idofcomment=<%=comment._id%> idOfForum=<%=forumThread._id%> typeofelement='comment'>
                                 <%               
                                 var isInside = false;
                                     Object.keys(idsOfLikedPosts).forEach(function(key) {
@@ -234,7 +234,7 @@
                             <% if(currentUser && comment.author.id && comment.author.id.equals(currentUser.id)){ %>
                                 <a class="edit" href="/forum/<%=forumThread._id%>/<%=comment._id%>/edit">Edit</a>
 
-                                <a class="deleteComment" linkToDelete="/forum/deleteComment/<%=forumThread._id%>/<%=comment._id%>">
+                                <a class="deleteComment" style="cursor: pointer" linkToDelete="/forum/deleteComment/<%=forumThread._id%>/<%=comment._id%>">
                                 Remove
                                 </a>
                             <% } %>
@@ -304,8 +304,8 @@
 
                             <p class="commentOptions">
                         
-                                <a class="reply">Reply</a>
-                                <a class="like" idOfElement=<%=reply._id%> idOfReply=<%=reply._id%> idOfComment=<%=comment._id%> idOfForum=<%=forumThread._id%> typeofelement='reply'>
+                                <a class="reply" style="cursor: pointer">Reply</a>
+                                <a class="like" style="cursor: pointer" idOfElement=<%=reply._id%> idOfReply=<%=reply._id%> idOfComment=<%=comment._id%> idOfForum=<%=forumThread._id%> typeofelement='reply'>
                                     <%               
                                     var isInside = false;
                                         Object.keys(idsOfLikedPosts).forEach(function(key) {
@@ -324,9 +324,9 @@
 
                                 <% if(currentUser && reply.author.id && reply.author.id.equals(currentUser.id)){ %>
                                     
-                                    <a class="edit" href="/forum/<%=forumThread._id%>/<%=comment._id%>/<%=reply._id%>/edit">Edit</a>
+                                    <a class="edit" style="cursor: pointer" href="/forum/<%=forumThread._id%>/<%=comment._id%>/<%=reply._id%>/edit">Edit</a>
 
-                                    <a class="edit deleteCommentReply" linkToDelete="/forum/deleteCommentReply/<%=forumThread._id%>/<%=comment._id%>/<%=reply._id%>">
+                                    <a class="edit deleteCommentReply" style="cursor: pointer" linkToDelete="/forum/deleteCommentReply/<%=forumThread._id%>/<%=comment._id%>/<%=reply._id%>">
                                     Remove
                                     </a>
                                 
