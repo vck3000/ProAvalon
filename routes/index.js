@@ -19,7 +19,7 @@ const request = require('request');
 
 var modsArray = require("../modsadmins/mods");
 var adminsArray = require("../modsadmins/admins");
-
+// exclude pronub from new mods array
 var newModsArray = modsArray.filter(mod => mod != "pronub");
 
 //Community route
@@ -27,7 +27,7 @@ router.get("/community", function(req, res){
 	// Get all players with more than 50 games excluding mods
 	User.find( {
 		"totalGamesPlayed": { $gt : 49 },
-		"usernameLower" : { $nin : modsArray },
+		"usernameLower" : { $nin : newModsArray },
 		"hideStats": null
 		}, function(err, allUsers){
 			if(err) {

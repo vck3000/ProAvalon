@@ -6,6 +6,7 @@
         border-radius: 20px;
         background-color: #e8eaf6;
         margin: 0 auto;
+        padding-bottom: 20px;
         color: inherit;
         width: 95%;
         font-family: roboto;
@@ -46,13 +47,18 @@
     }
 
     .myTable img {
-        height:60px;
+        height:50px;
         padding: 5px 0;
         object-fit: contain;
     }
 
     .myTable p {
         background-color: transparent !important;
+        margin: 0;
+        display: flex;
+        height: 60px;
+        justify-content: center;
+        flex-direction: column;
     }
 
     .bio {
@@ -63,6 +69,8 @@
         height: 60px;
         display: block;
         overflow: auto;
+/*        display: flex;
+        flex-direction: column;*/
     }
 
     ::-webkit-scrollbar {
@@ -77,6 +85,10 @@
         font-weight: 500;
     }
 
+    button {
+        margin: 0 0 0 5%;
+    }
+
     /*hide games played*/
     .games{
         display:none;
@@ -86,10 +98,9 @@
         visibility: collapse;
     } 
 
-
 @media screen and (max-width: 600px) {
     .myTable {
-        font-size: 12px;
+        font-size: 11px;
     }
     .myTable td th {
         word-wrap: break-word;
@@ -112,6 +123,7 @@
     background: transparent;  /* optional: just make scrollbar invisible */
     }
 
+    /*hide nat*/
     .nat{
         display:none;
         width:0;
@@ -141,16 +153,28 @@
             <% mods.forEach(function(mod){ %>
             <tr>
                 <td><%= mod.username %></td>
-                <td><img src="<%- mod.avatarImgRes %>"></td>
-                <td><img src="<%- mod.avatarImgSpy %>"></td>
-                <td class="nat"><%- mod.nationality %></td>
+                <%if (mod.avatarImgRes === null) { %>
+                    <td><img src="https://www.proavalon.com/avatars/base-res.png"></td>
+                <% } else { %>
+                    <td><img src="<%= mod.avatarImgRes %>"></td>
+                <% } %>
+                <%if (mod.avatarImgSpy === null) { %>
+                    <td><img src="https://www.proavalon.com/avatars/base-spy.png"></td>                
+                <% } else { %>
+                    <td><img src="<%= user.avatarImgSpy %>"></td>
+                <% } %>
+                <%if (mod.nationality === "") { %>
+                    <td class="nat">United Nations</td>
+                <% } else { %>                
+                    <td class="nat"><%= mod.nationality %></td>
+                <% } %>
                 <td class="cell"><%- mod.biography %></td>
-                <td class="games"><%- mod.totalGamesPlayed %></td>
+                <td class="games"><%= mod.totalGamesPlayed %></td>
             </tr>
             <% }); %>
         </table>
     
-		<table class="myTable">
+		<table class="myTable" id="userTable">
             <h4>Players</h4>
             <tr>
                 <th>Username</th>
@@ -160,19 +184,86 @@
                 <th class="bio">Biography</th>
                 <th class="games">#Games</th>
             </tr>
+
 			<% users.forEach(function(user){ %>
 			<tr>
 				<td><%= user.username %></td>
-				<td><img src="<%- user.avatarImgRes %>"></td>
-				<td><img src="<%- user.avatarImgSpy %>"></td>
-				<td class="nat"><%- user.nationality %></td>
+                <%if (user.avatarImgRes === null) { %>
+                    <td><img src="https://www.proavalon.com/avatars/base-res.png"></td>
+                <% } else { %>
+				    <td><img src="<%= user.avatarImgRes %>"></td>
+                <% } %>
+                <%if (user.avatarImgSpy === null) { %>
+                    <td><img src="https://www.proavalon.com/avatars/base-spy.png"></td>                
+                <% } else { %>
+				    <td><img src="<%= user.avatarImgSpy %>"></td>
+                <% } %>
+                <%if (user.nationality === "") { %>
+                    <td class="nat">United Nations</td>    
+                <% } else { %>
+				    <td class="nat"><%= user.nationality %></td>
+                <% } %>
 				<td class="cell"><%- user.biography %></td>
-                <td class="games"><%- user.totalGamesPlayed %></td>
-			</tr>
+                <td class="games"><%= user.totalGamesPlayed %></td>
+            </tr>
 			<% }); %>
 		</table>
 	</div>
 </div>
 
+<!-- show more button -->
+<script type="text/javascript">
+$(function() {
+  /* initial variables */
+  var numRows = $('#userTable').find('tr').length;
+  var SHOWN = 50;
+  var MORE = 500;
+
+  /* get how many more can be shown */
+  var getNumMore = function(ns) {
+      var more = MORE;
+      var leftOver = numRows - ns;
+      if ((leftOver) < more) {
+        more = leftOver;
+      }
+      return more;
+    }
+    /* how many are shown */
+  var getInitialNumShown = function() {
+      var shown = SHOWN;
+      if (numRows < shown) {
+        shown = numRows;
+      }
+      return shown;
+    }
+    /* set how many are initially shown */
+  var numShown = getInitialNumShown();
+
+  /* set the numMore if less than 20 */
+  var numMore = getNumMore(numShown);
+
+  /* set more html */
+  if (numMore > 0) {
+    var more_html = '<p><button id="more">Show <span style="font-weight: bold;">' + numMore + '</span> More...</button></p>';
+    $('#userTable').find('tr:gt(' + (numShown - 1) + ')').hide().end().after(more_html);
+  }
+  $('#more').click(function() {
+    /* determine how much more we should update */
+    numMore = getNumMore(numShown);
+    /* update num shown */
+    numShown = numShown + numMore;
+    $('#userTable').find('tr:lt(' + numShown + ')').show();
+
+    /* determine if to show more and how much left over */
+    numMore = getNumMore(numShown);
+    if (numMore > 0) {
+      $('#more span').html(numMore);
+    } else {
+      $('#more').remove();
+    }
+  });
+
+});    
+</script>
 
 <% include partials/footer %>
