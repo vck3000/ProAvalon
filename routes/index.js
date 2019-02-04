@@ -303,7 +303,7 @@ router.get("/troubleshooting", function (req, res) {
 });
 
 router.get("/statistics", function (req, res) {
-	res.render("statistics", { currentUser: req.user, headerActive: "stats" });
+	res.render("statisticsTemp", { currentUser: req.user, headerActive: "stats" });
 });
 
 

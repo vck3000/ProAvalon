@@ -210,6 +210,7 @@ router.post("/:profileUsername", middleware.checkProfileOwnership, function (req
 			req.body.nationCode = "UN";
 		}
 
+        //If the user somehow doesn't input a valid nation, default to UN
 		if (nationalitiesAll.indexOf(req.body.nationality) === -1) {
 			req.body.nationality = "United Nations";
 		}
