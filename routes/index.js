@@ -11,6 +11,7 @@ var fs = require('fs');
 
 var modAction = require("../models/modAction");
 var gameRecord = require("../models/gameRecord");
+var statsCumulative = require("../models/statsCumulative");
 var banIp = require("../models/banIp");
 
 
@@ -303,7 +304,7 @@ router.get("/troubleshooting", function (req, res) {
 });
 
 router.get("/statistics", function (req, res) {
-	res.render("statisticsTemp", { currentUser: req.user, headerActive: "stats" });
+	res.render("statistics", { currentUser: req.user, headerActive: "stats" });
 });
 
 
@@ -437,70 +438,35 @@ function gameDateCompare(a, b) {
 
 
 
-var waitDelay = 2000; //milliseconds
-// Keep recursing until the data is ready, then send it to the user
-var waitStatsFunction = function(res){
-    // Check every 5 seconds to see if the object is updated
-    setTimeout(function(){
-        if(clientStatsData !== "undefined" && clientStatsData !== "Loading"){
-            res.status(200).send(clientStatsData);
-            return;
-        }
-        else{
-            // If the object isn't ready, then recurse and wait another 5 seconds.
-            setTimeout(function(){
-                waitStatsFunction(res)
-            }, waitDelay);
-        }
-    }, waitDelay);
-}
-
-//Get public statistics
-var clientStatsData = undefined;
-var clientStatsTimeCreated = undefined;
-var thresholdMillisReloadStats = 1000*60*10; // 10 mins
 router.get("/ajax/getStatistics", function (req, res) {
 
-    // Keep recursing until the data is ready, then send it to the user
-    if(clientStatsData === "Loading"){
-        waitStatsFunction(res);
-        return;
-    }
-
-    // If we have the stats data loaded, and we have the time created:
-    if(clientStatsData !== undefined && clientStatsTimeCreated !== undefined){
-        // If the last stats data was loaded for less time then the threshold, serve it to the user.
-        if((new Date()).getTime() - clientStatsTimeCreated.getTime() < thresholdMillisReloadStats){
-            res.status(200).send(clientStatsData);
-            return;
+    statsCumulative.findOne({}).exec(function(err, record) {
+       if(err) {
+           console.log(err);
+           res.status(200).send("Something went wrong");
+       } 
+       else{
+        //    console.log(record);
+           if(record === undefined || record === null){
+                res.status(200).send("Something went wrong");
+            }
+            else{
+                // console.log(record);
+                res.status(200).send(JSON.parse(record.data));
+            }
         }
-    }
-
-    // If the user hasn't received their data (because we haven't got the stats data loaded or its too old)
-    // Then reload the stats and serve it.
-
-    // console.log("Start stats");
-
-    clientStatsData = "Loading";
-    clientStatsTimeCreated = new Date();
-
-    //TEMPORARY DELAY TO SIMULATE WEBSITE!
-    // setTimeout(function(){
-
-    // //TEMPORARY! REMOVE THIS LATER!!
-    // var obj = JSON.parse(fs.readFileSync('./routes/SampleStatistic.json', 'utf8'));
-    // res.status(200).send(obj);
-    // return;
-    // //TEMPORARY! REMOVE THIS LATER!!
+    });
+});
 
 
+
+
+var hardUpdateStatsFunction = function(){
     gameRecord.find({}).exec(function (err, records) {
         if (err) {
             console.log(err);
         }
         else {
-            // console.log("records.length");
-            // console.log(records.length);
             var obj = {};
             obj.totalgamesplayed = records.length;
 
@@ -689,7 +655,7 @@ router.get("/ajax/getStatistics", function (req, res) {
 
             //IMPORTANT, MUST KEEP THESE ROLES UP TO DATE!
             //SHOULD MAKE AN EXTERNAL FILE OF THESE ALLIANCES
-            var resRoles = ["Merlin", "Percival", "Resistance"];
+            var resRoles = ["Merlin", "Percival", "Resistance", "Isolde", "Tristan"];
             var spyRoles = ["Assassin", "Morgana", "Spy", "Mordred", "Oberon"];
 
 
@@ -751,50 +717,41 @@ router.get("/ajax/getStatistics", function (req, res) {
             obj['9paverageGameDuration'] = new Date(averageGameDurations[9].getTime() / countForGameSize['9']);
             obj['10paverageGameDuration'] = new Date(averageGameDurations[10].getTime() / countForGameSize['10']);
 
-
-            // for(var i = 5; i < 11; i++){
-            // 	console.log(countForGameSize[i]);
-            // }
-
-
-
             obj.timeCreated = new Date();
 
             clientStatsData = obj;
 
-            res.status(200).send(clientStatsData);
+
+            console.log("Done processing, now saving.");
+            statsCumulative.findOne({}, function(err, data) {
+                if(err){
+                    console.log(err);
+                    console.log("ERROR");
+
+                }
+                else{
+                    if(data === null || data === undefined){
+                        statsCumulative.create({data: JSON.stringify(clientStatsData)});
+                    }
+                    else{
+                        statsCumulative.findOneAndUpdate({}, {data: JSON.stringify(clientStatsData)});
+                    }
+                    console.log("Successfully saved.");
+                }
+            })
 
 
-            // One person had issues with publically showing their number of games played...?
-
-            // User.find({}).populate("notifications").exec(function(err, users){
-
-            // 	users.sort(function(a, b){
-            // 		return b.totalGamesPlayed - a.totalGamesPlayed;
-            // 	});
-
-            // 	var usernamesTopGamesPlayed = users.slice(0, 20);
-
-            // 	var usernamesTopGamesPlayedReduced = [];
-            // 	for(var i = 0; i < usernamesTopGamesPlayed.length; i++){
-            // 		usernamesTopGamesPlayedReduced[i] = {};
-
-            // 		usernamesTopGamesPlayedReduced[i].username = usernamesTopGamesPlayed[i].username;
-            // 		usernamesTopGamesPlayedReduced[i].totalGamesPlayed = usernamesTopGamesPlayed[i].totalGamesPlayed;
-
-            // 	}
-
-            // 	obj.usernamesTopGamesPlayed = usernamesTopGamesPlayedReduced;
-
-
-            // });
-            // console.log("End stats");
-
+            
+            
+            // res.status(200).send(clientStatsData);
         }
     });
+}
 
-    // }, 3000);
-});
+var hardUpdateStats = false;
+if(hardUpdateStats === true){
+    hardUpdateStatsFunction();
+}
 
 
 
