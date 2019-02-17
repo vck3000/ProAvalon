@@ -5,7 +5,8 @@ var modsArray = [
     "pronub",
     "bocaben",
     "maddie",
-    "morningcatt"
+    "morningcatt",
+    "modme"
 ];
 
 module.exports = modsArray;
