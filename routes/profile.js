@@ -7,6 +7,9 @@ var mongoose = require("mongoose");
 var avatarRequest = require("../models/avatarRequest");
 var createNotificationObj = require("../myFunctions/createNotification");
 
+const passportLocalMongoose = require('passport-local-mongoose');
+const passport = require('passport');
+
 
 var sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2', 'u', 'span', 'br'];
 var sanitizeHtmlAllowedAttributesForumThread = {
@@ -170,6 +173,69 @@ router.post("/:profileUsername/changeavatar", middleware.checkProfileOwnership, 
 	});
 });
 
+
+
+//Show the change password edit page
+router.get("/:profileUsername/changepassword", middleware.checkProfileOwnership, function (req, res) {
+	User.findOne({ usernameLower: req.params.profileUsername.toLowerCase() }, function (err, foundUser) {
+		if (err) {
+			console.log(err);
+		}
+		else {
+			res.render("profile/changepassword", { userData: foundUser });
+		}
+	});
+});
+
+
+// Update the password
+router.post("/:profileUsername/changepassword", middleware.checkProfileOwnership, async function (req, res) {
+
+    console.log("Received a change password request from " + req.params.profileUsername.toLowerCase());
+
+    var oldPW = req.body.oldPassword;
+    var newPW = req.body.newPassword;
+    var newPWConf = req.body.newPasswordConfirm;
+
+    if(newPW === undefined || newPW === null){
+        req.flash("error", "Please enter a new password.");
+        res.redirect("/profile/" + req.params.profileUsername + "/changepassword");
+        return;
+    } 
+    else if(oldPW === undefined || oldPW === null){
+        req.flash("error", "Please enter your old password.");
+        res.redirect("/profile/" + req.params.profileUsername + "/changepassword");
+        return;
+    }
+
+    else if(newPW !== newPWConf){
+        req.flash("error", "Your new passwords did not match. Please try again.");
+        res.redirect("/profile/" + req.params.profileUsername + "/changepassword");
+        return;
+    }
+
+    else if(newPW.length < 4){
+        req.flash("error", "Please enter a password that is longer than 3 characters");
+        res.redirect("/profile/" + req.params.profileUsername + "/changepassword");
+        return;
+    }
+
+    else{
+        const theUser = req.user;
+        await theUser.changePassword(oldPW, newPW, function(err){
+            if(err){
+                req.flash("error", err.message);
+                res.redirect("/profile/" + req.params.profileUsername + "/changepassword");
+            }
+            else{
+                console.log("Success");
+                req.flash("success", "Your password has been successfully changed.");
+                res.redirect("/profile/" + req.params.profileUsername);
+            }
+        });
+    }
+
+});
 
 
 //show the edit page

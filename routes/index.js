@@ -20,9 +20,15 @@ const request = require('request');
 
 var modsArray = require("../modsadmins/mods");
 var adminsArray = require("../modsadmins/admins");
+
+// Prevent too many requests
+const rateLimit = require("express-rate-limit");
+// app.enable("trust proxy"); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
+
+
+
 // exclude pronub from new mods array
 var newModsArray = modsArray.filter(mod => mod != "pronub");
-
 //Community route
 router.get("/community", function(req, res){
 	// Get all players with more than 50 games excluding mods
@@ -62,8 +68,13 @@ router.get("/register", function (req, res) {
 	res.render("register", { platform: process.env.MY_PLATFORM });
 });
 
+const registerLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 60 minutes
+    max: 3
+});
+
 //Post of the register route
-router.post("/", checkIpBan, sanitiseUsername,/* usernameToLowerCase, */function (req, res) {
+router.post("/", registerLimiter, checkIpBan, sanitiseUsername,/* usernameToLowerCase, */function (req, res) {
 	// console.log("escaped: " + escapeText(req.body.username));
 
 	// var escapedUsername = escapeText(req.body.username);
@@ -202,8 +213,14 @@ router.post("/", checkIpBan, sanitiseUsername,/* usernameToLowerCase, */function
 	}
 });
 
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5
+});
+
 //login route
-router.post("/login", sanitiseUsername, /*usernameToLowerCase,*/ passport.authenticate("local", {
+router.post("/login", loginLimiter, sanitiseUsername, /*usernameToLowerCase,*/ passport.authenticate("local", {
 	successRedirect: "/lobby",
 	failureRedirect: "/loginFail"
 }));
@@ -492,11 +509,14 @@ router.get("/ajax/getStatistics", function (req, res) {
 
 
 var hardUpdateStatsFunction = function(){
+    console.log("Starting hard update stats...");
     gameRecord.find({}).exec(function (err, records) {
         if (err) {
             console.log(err);
         }
         else {
+
+            console.log(records.length + " games loaded.");
             var obj = {};
             obj.totalgamesplayed = records.length;
 
@@ -753,26 +773,19 @@ var hardUpdateStatsFunction = function(){
 
 
             console.log("Done processing, now saving.");
-            statsCumulative.findOne({}, function(err, data) {
+
+            statsCumulative.remove({}, function(err){
                 if(err){
                     console.log(err);
-                    console.log("ERROR");
-
                 }
                 else{
-                    if(data === null || data === undefined){
-                        statsCumulative.create({data: JSON.stringify(clientStatsData)});
-                    }
-                    else{
-                        statsCumulative.findOneAndUpdate({}, {data: JSON.stringify(clientStatsData)});
-                    }
-                    console.log("Successfully saved.");
+                    console.log("Removed past cumulative object");
+                    statsCumulative.create({data: JSON.stringify(clientStatsData)}, function(err){
+                        console.log("Successfully saved new cumulative object");
+                    });
                 }
-            })
+            }); 
 
-
-            
-            
             // res.status(200).send(clientStatsData);
         }
     });
@@ -790,7 +803,6 @@ router.get("/ajax/profile/getProfileData/:profileUsername", function (req, res) 
 		if (err) {
 			console.log(err);
 			res.status(200).send("error");
-
 		}
 		else {
 			if (foundUser) {
@@ -1108,5 +1120,5 @@ var defaultValuesForUser = {
 			}
 		}
 	},
-	notificationS: {}
+	notifications: {}
 }
