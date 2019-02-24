@@ -14,6 +14,8 @@ var mongoose = require('mongoose');
 var modsArray = require("../../modsadmins/mods");
 var adminsArray = require("../../modsadmins/admins");
 
+// Prevent too many requests
+const rateLimit = require("express-rate-limit");
 
 
 var sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2', 'u', 'span', 'br'];
@@ -242,10 +244,15 @@ lastIds.findOne({}).exec(async function (err, returnedLastId) {
 });
 
 
+const newForumLimiter = rateLimit({
+    windowMs: 12 * 60 * 60 * 1000, // 12 hours
+    max: 3
+});
+
 /**********************************************************/
 //Create a new forumThread
 /**********************************************************/
-router.post("/", middleware.isLoggedIn, async function (req, res) {
+router.post("/", newForumLimiter, middleware.isLoggedIn, async function (req, res) {
 	const util = require('util');
 
     //get the category based on the user selection

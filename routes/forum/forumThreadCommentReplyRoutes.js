@@ -12,6 +12,9 @@ var createNotificationObj = require("../../myFunctions/createNotification");
 
 var mongoose = require('mongoose');
 
+// Prevent too many requests
+const rateLimit = require("express-rate-limit");
+
 // var sanitizeHtmlAllowedTagsForumThread = ['u'];
 var sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2', 'u', 'span', 'br'];
 var sanitizeHtmlAllowedAttributesForumThread = {
@@ -28,11 +31,14 @@ var sanitizeHtmlAllowedAttributesForumThread = {
 };
 
 
-
+const newForumLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hours
+    max: 15
+});
 /**********************************************************/
 //Create a new comment reply route
 /**********************************************************/
-router.post("/:id/:commentId", middleware.isLoggedIn, async function (req, res) {
+router.post("/:id/:commentId", newForumLimiter, middleware.isLoggedIn, async function (req, res) {
 	createCommentReply(req, res);
 });
 router.post("/:id/:commentId/:replyId", middleware.isLoggedIn, async function (req, res) {

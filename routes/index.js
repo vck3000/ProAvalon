@@ -21,6 +21,9 @@ const request = require('request');
 var modsArray = require("../modsadmins/mods");
 var adminsArray = require("../modsadmins/admins");
 
+// Prevent too many requests
+const rateLimit = require("express-rate-limit");
+// app.enable("trust proxy"); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
 
 //Index route
 router.get("/", function (req, res) {
@@ -32,8 +35,13 @@ router.get("/register", function (req, res) {
 	res.render("register", { platform: process.env.MY_PLATFORM });
 });
 
+const registerLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 60 minutes
+    max: 3
+});
+
 //Post of the register route
-router.post("/", checkIpBan, sanitiseUsername,/* usernameToLowerCase, */function (req, res) {
+router.post("/", registerLimiter, checkIpBan, sanitiseUsername,/* usernameToLowerCase, */function (req, res) {
 	// console.log("escaped: " + escapeText(req.body.username));
 
 	// var escapedUsername = escapeText(req.body.username);
@@ -172,8 +180,14 @@ router.post("/", checkIpBan, sanitiseUsername,/* usernameToLowerCase, */function
 	}
 });
 
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5
+});
+
 //login route
-router.post("/login", sanitiseUsername, /*usernameToLowerCase,*/ passport.authenticate("local", {
+router.post("/login", loginLimiter, sanitiseUsername, /*usernameToLowerCase,*/ passport.authenticate("local", {
 	successRedirect: "/lobby",
 	failureRedirect: "/loginFail"
 }));
@@ -756,7 +770,6 @@ router.get("/ajax/profile/getProfileData/:profileUsername", function (req, res) 
 		if (err) {
 			console.log(err);
 			res.status(200).send("error");
-
 		}
 		else {
 			if (foundUser) {
@@ -1074,5 +1087,5 @@ var defaultValuesForUser = {
 			}
 		}
 	},
-	notificationS: {}
+	notifications: {}
 }
