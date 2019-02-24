@@ -32,14 +32,14 @@ var sanitizeHtmlAllowedAttributesForumThread = {
 };
 
 
-const newForumLimiter = rateLimit({
+const newCommentLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hours
     max: 15
 });
 /**********************************************************/
 //Create new comment route
 /**********************************************************/
-router.post("/:id/comment", newForumLimiter, middleware.isLoggedIn, async function (req, res) {
+router.post("/:id/comment", newCommentLimiter, middleware.isLoggedIn, async function (req, res) {
 
 	var commentData = {
 

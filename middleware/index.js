@@ -21,8 +21,6 @@ middlewareObj.checkProfileOwnership = function (req, res, next) {
 			} else {
 				if (foundUser) {
 					foundUser = foundUser[0];
-					console.log("asdfasdf");
-					console.log(foundUser.username);
 					//does user own campground?
 					if (foundUser.username && foundUser.username === req.user.username) {
 						next();

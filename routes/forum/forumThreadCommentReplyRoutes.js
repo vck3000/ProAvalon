@@ -31,17 +31,17 @@ var sanitizeHtmlAllowedAttributesForumThread = {
 };
 
 
-const newForumLimiter = rateLimit({
+const newReplyLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hours
     max: 15
 });
 /**********************************************************/
 //Create a new comment reply route
 /**********************************************************/
-router.post("/:id/:commentId", newForumLimiter, middleware.isLoggedIn, async function (req, res) {
+router.post("/:id/:commentId", newReplyLimiter, middleware.isLoggedIn, async function (req, res) {
 	createCommentReply(req, res);
 });
-router.post("/:id/:commentId/:replyId", middleware.isLoggedIn, async function (req, res) {
+router.post("/:id/:commentId/:replyId", newReplyLimiter, middleware.isLoggedIn, async function (req, res) {
 	createCommentReply(req, res);
 });
 
