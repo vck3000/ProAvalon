@@ -3,12 +3,9 @@ var router = express.Router();
 var middleware = require("../middleware");
 var sanitizeHtml = require('sanitize-html');
 var User = require("../models/user");
-var mongoose = require("mongoose");
 var avatarRequest = require("../models/avatarRequest");
 var createNotificationObj = require("../myFunctions/createNotification");
 
-const passportLocalMongoose = require('passport-local-mongoose');
-const passport = require('passport');
 
 
 var sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2', 'u', 'span', 'br'];
