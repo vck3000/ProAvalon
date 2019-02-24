@@ -25,6 +25,39 @@ var adminsArray = require("../modsadmins/admins");
 const rateLimit = require("express-rate-limit");
 // app.enable("trust proxy"); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
 
+
+
+// exclude pronub from new mods array
+var newModsArray = modsArray.filter(mod => mod != "pronub");
+//Community route
+router.get("/community", function(req, res){
+	// Get all players with more than 50 games excluding mods
+	User.find( {
+		"totalGamesPlayed": { $gt : 49 },
+		"usernameLower" : { $nin : newModsArray },
+		"hideStats": null
+		}, function(err, allUsers){
+			if(err) {
+				console.log(err);
+			}
+			else {
+		      	// Get mods excluding pronub
+		      	User.find( {
+		          "usernameLower" : { $in : newModsArray }
+		        },
+		        function(err, allMods){
+		        	if(err) {
+		            	console.log(err);
+		          	}
+		          	else {
+		            	res.render("community", {users:allUsers, mods:allMods, currentUser:req.user});
+          			}
+	        	});
+        	}
+	// sort by games played
+	}).sort({totalGamesPlayed: -1});
+});
+
 //Index route
 router.get("/", function (req, res) {
 	res.render("index");
