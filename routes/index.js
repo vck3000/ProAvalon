@@ -462,11 +462,14 @@ router.get("/ajax/getStatistics", function (req, res) {
 
 
 var hardUpdateStatsFunction = function(){
+    console.log("Starting hard update stats...");
     gameRecord.find({}).exec(function (err, records) {
         if (err) {
             console.log(err);
         }
         else {
+
+            console.log(records.length + " games loaded.");
             var obj = {};
             obj.totalgamesplayed = records.length;
 
@@ -723,26 +726,19 @@ var hardUpdateStatsFunction = function(){
 
 
             console.log("Done processing, now saving.");
-            statsCumulative.findOne({}, function(err, data) {
+
+            statsCumulative.remove({}, function(err){
                 if(err){
                     console.log(err);
-                    console.log("ERROR");
-
                 }
                 else{
-                    if(data === null || data === undefined){
-                        statsCumulative.create({data: JSON.stringify(clientStatsData)});
-                    }
-                    else{
-                        statsCumulative.findOneAndUpdate({}, {data: JSON.stringify(clientStatsData)});
-                    }
-                    console.log("Successfully saved.");
+                    console.log("Removed past cumulative object");
+                    statsCumulative.create({data: JSON.stringify(clientStatsData)}, function(err){
+                        console.log("Successfully saved new cumulative object");
+                    });
                 }
-            })
+            }); 
 
-
-            
-            
             // res.status(200).send(clientStatsData);
         }
     });
