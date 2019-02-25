@@ -17,15 +17,24 @@ var adminsArray = require("../modsadmins/admins");
 
 const dateResetRequired = 1543480412695;
 
-const newUpdateNotificationRequired = 1545361924457;
+const newUpdateNotificationRequired = 1551095116448;
 const updateMessage = `
 
-Hey there!
+<h1>IMPORTANT</h1>
 
-<br><br>
+<br>
 
-There were some major fixes to the server, please let me know if there are any crashes/abnormalities. Thanks.
+I have recently patched a vulnerability in the code. Users with very simple, guessable passwords are at risk. Those who have been identified as suspicious have been directly contacted already.
 
+<br>
+<br>
+
+As a result I recommend everyone change their passwords to ensure complete safety. You can do this through your profile now. Bocaben recommended me use LastPass and I enjoy it thoroughly. I encourage you to also use LastPass or a similar password manager. 
+
+<br>
+<br>
+
+Thanks guys
 `;
 
 var allSockets = [];
