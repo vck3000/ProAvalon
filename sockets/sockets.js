@@ -1166,13 +1166,34 @@ var actionsObj = {
 						rooms[args[1]] = undefined;
 					}
 				}
-
-
-
 				updateCurrentGamesList();
 				return;
 			}
+		},
+		mannounce: {
+			command: "mannounce",
+			help: "/mannounce <message>",
+			run: function (data, senderSocket) {
+				var args = data.args;
+				if (!args[1]) {
+					senderSocket.emit("messageCommandReturnStr", { message: "Please enter a message...", classStr: "server-text" });
+					return;
+				}
+				
+				var str = "";
+				for(var i = 1; i < args.length; i++){
+					str += args[i];
+					str += " ";
+				}
+
+				str += "<br><br>From: " + senderSocket.request.user.username;
+
+				allSockets.forEach(function(sock){
+					sock.emit("mannounce", str);
+				});
+			}
 		}
+		// socket.emit("checkNewUpdate", { date: newUpdateNotificationRequired, msg: updateMessage });
 	},
 
 	adminCommands: {

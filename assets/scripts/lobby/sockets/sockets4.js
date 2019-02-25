@@ -98,8 +98,16 @@ socket.on('checkNewUpdate', function (data) {
     }
 });
 
-socket.on('checkNewPlayerShowIntro', function () {
+socket.on('mannounce', function (str) {
+    Swal({
+        title: "Moderator announcement!",
+        html: str,
+        type: "info",
+        allowEnterKey: false
+    });
+});
 
+socket.on('checkNewPlayerShowIntro', function () {
     if (docCookies.hasItem("seenNewPlayerIntro")) {
 
     }
@@ -142,10 +150,6 @@ socket.on("serverRestartWarning", function () {
         html: message,
         type: "info",
         allowEnterKey: false
-
-
-
-
     }).then(() => {
         // location.reload();
     });
