@@ -1172,7 +1172,7 @@ var actionsObj = {
 		},
 		mannounce: {
 			command: "mannounce",
-			help: "/mannounce <message>",
+			help: "/mannounce <message>: Sends a sweet alert to all online players with an included message. It automatically says the username of the mod that executed the command.",
 			run: function (data, senderSocket) {
 				var args = data.args;
 				if (!args[1]) {
@@ -1193,7 +1193,6 @@ var actionsObj = {
 				});
 			}
 		}
-		// socket.emit("checkNewUpdate", { date: newUpdateNotificationRequired, msg: updateMessage });
 	},
 
 	adminCommands: {
