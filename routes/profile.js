@@ -145,6 +145,7 @@ router.post("/:profileUsername/changeavatar", middleware.checkProfileOwnership, 
 	console.log("For user " + req.params.profileUsername);
 	console.log("Res link: " + req.body.reslink);
 	console.log("Spy link: " + req.body.spylink);
+	console.log("Message to mod: " + req.body.msgToMod);
 
 	//sometimes https links dont show up correctly
 	// req.body.reslink.replace("https", "http");
@@ -155,6 +156,7 @@ router.post("/:profileUsername/changeavatar", middleware.checkProfileOwnership, 
 
 		resLink: sanitizeHtml(req.body.reslink),
 		spyLink: sanitizeHtml(req.body.spylink),
+		msgToMod: sanitizeHtml(req.body.msgToMod),
 
 		dateRequested: new Date(),
 
@@ -251,11 +253,11 @@ router.get("/:profileUsername/edit", middleware.checkProfileOwnership, function 
 //update a biography
 router.post("/:profileUsername", middleware.checkProfileOwnership, function (req, res) {
 
-	console.log("biography update");
-	console.log(req.body.biography);
-	console.log(req.body.nationality);
-	console.log(req.body.nationCode);
-	console.log(req.body.hideStats);
+	// console.log("biography update");
+	// console.log(req.body.biography);
+	// console.log(req.body.nationality);
+	// console.log(req.body.nationCode);
+	// console.log(req.body.hideStats);
 
 
 	if (!req.body.biography) {
@@ -293,12 +295,8 @@ router.post("/:profileUsername", middleware.checkProfileOwnership, function (req
 
 				foundUser.nationality = sanitizeHtml(req.body.nationality);
 				foundUser.nationCode = sanitizeHtml(req.body.nationCode.toLowerCase());
-
 				foundUser.hideStats = req.body.hideStats;
-
 				foundUser.save();
-
-
 
 				res.redirect("/profile/" + foundUser.username);
 			}
@@ -306,11 +304,7 @@ router.post("/:profileUsername", middleware.checkProfileOwnership, function (req
 	}
 	else {
 		res.redirect("/profile/" + req.params.profileUsername);
-
 	}
-
-
-
 });
 
 //show the profile page
@@ -327,7 +321,6 @@ router.get("/:profileUsername", middleware.isLoggedIn, function (req, res) {
 
 
 module.exports = router;
-
 
 
 var nationCodesAll = [
