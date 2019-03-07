@@ -1108,6 +1108,5 @@ var defaultValuesForUser = {
 
 			}
 		}
-	},
-	notifications: {}
+	}
 }
