@@ -16,7 +16,6 @@ var avatarRequestSchema = new mongoose.Schema({
 
 	modComment: String,
 	approved: Boolean
-
 });
 
 module.exports = mongoose.model("AvatarRequest", avatarRequestSchema);

@@ -365,14 +365,26 @@ router.get("/statistics", function (req, res) {
 // 4) Comment and reply removes
 // 5) Avatar request approve/rejects
 
-router.get("/mod/ajax/data/:pageIndex", function (req, res) {
+router.get("/mod/ajax/logData/:pageIndex", function (req, res) {
 	//get all the mod actions
+	var pageIndex;
 	if (req.params.pageIndex) {
 		pageIndex = req.params.pageIndex;
+		if(pageIndex < 0){
+			pageIndex = 0;
+		}
 
 		var logs = [];
 
-		modAction.find({}, async function (err, foundModActions) {
+		var NUM_OF_RESULTS_PER_PAGE = 10;
+		// Page 0 is the first page.
+		var skipNumber = pageIndex * NUM_OF_RESULTS_PER_PAGE;
+
+		modAction.find({})
+		.sort({ whenMade: 'descending'})
+		.skip(skipNumber)
+		.limit(NUM_OF_RESULTS_PER_PAGE)
+		.exec(async function (err, foundModActions) {
 			if (err) { console.log(err); }
 
 			else {
@@ -384,10 +396,8 @@ router.get("/mod/ajax/data/:pageIndex", function (req, res) {
 							stringsArray[0] = (action.modWhoBanned.username + " has banned " + action.bannedPlayer.username);
 							stringsArray[0] += " for reason: " + action.reason + ".";
 
-							var dur = action.durationToBan;
 
 							stringsArray.push("The ban was made on " + action.whenMade);
-							// stringsArray.push("The ban will last for: " + (dur.getFullYear() - 1970) + " yrs, " + dur.getMonth() + " mths, " + dur.getDay() + " days, " + dur.getHours() + " hrs.");
 							stringsArray.push("The ban will be released on: " + action.whenRelease);
 							stringsArray.push("Moderator message: " + action.descriptionByMod);
 							break;
@@ -395,11 +405,9 @@ router.get("/mod/ajax/data/:pageIndex", function (req, res) {
 							stringsArray[0] = (action.modWhoBanned.username + " has muted " + action.bannedPlayer.username);
 							stringsArray[0] += " for reason: " + action.reason + ".";
 
-							var dur = action.durationToBan;
 
 							stringsArray.push("The mute was made on " + action.whenMade);
 							// -1970 years because thats the start of computer time
-							// stringsArray.push("The mute will last for: " + (dur.getFullYear() - 1970) + " yrs, " + dur.getMonth() + " mths, " + dur.getDay() + " days, " + dur.getHours() + " hrs.");
 							stringsArray.push("The mute will be released on: " + action.whenRelease);
 							stringsArray.push("Moderator message: " + action.descriptionByMod);
 							break;
@@ -434,36 +442,17 @@ router.get("/mod/ajax/data/:pageIndex", function (req, res) {
 					logsObj.push(log);
 				});
 
-
-				// console.log("A");
-
-
-
 				var obj = {};
 				obj.logs = logsObj;
 
 				//sort in newest to oldest
-				obj.logs.sort(compareLogObjs);
-
-				obj.logs = obj.logs.slice(parseInt(pageIndex) * 10, (parseInt(pageIndex) + 1) * 10);
+				// obj.logs.sort(compareLogObjs);
 
 				res.status(200).send(obj);
-				// console.log("B");
-
-
 			}
 		});
-
 	}
 });
-
-function compareLogObjs(a, b) {
-	if (a.date < b.date)
-		return 1;
-	if (a.date > b.date)
-		return -1;
-	return 0;
-}
 
 
 router.get("/mod", middleware.isMod, function (req, res) {

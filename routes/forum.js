@@ -247,12 +247,7 @@ router.get("/page/:category/:pageNum", middleware.isLoggedIn, function (req, res
 
 //main page that users land on
 router.get("/page/:pageNum", middleware.isLoggedIn, function (req, res) {
-	console.log("pageNum");
-	//rendering the campgrounds.ejs file
-	//and also passing in the array data
-	//first campgrounds is the name of the obj we are passing
-	//the second one is the data from the above array we are providing
-	// res.render("campgrounds", {campgrounds: campgrounds});
+	// console.log("pageNum");
 
 	//if theres an invalid page num, redirect toLowerCase() page 1
 	if (req.params.pageNum < 1) {

@@ -60,7 +60,7 @@
 
     $( document ).ready(function() {
         xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("GET", "/mod/ajax/data/0", true);
+        xmlhttp.open("GET", "/mod/ajax/logData/0", true);
 
         xmlhttp.onreadystatechange=function(){
             if (xmlhttp.readyState==4 && xmlhttp.status==200){
@@ -106,7 +106,7 @@
     var index = 1;
     function loadMoreLogs(){
         xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("GET", "/mod/ajax/data/" + index, true);
+        xmlhttp.open("GET", "/mod/ajax/logData/" + index, true);
 
         xmlhttp.onreadystatechange=function(){
             if (xmlhttp.readyState==4 && xmlhttp.status==200){
