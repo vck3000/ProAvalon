@@ -73,11 +73,14 @@ Lady.prototype.gameMove = function (socket, data) {
             return;
         }
 
-        //grab the target's alliance
+        //grab the target's alliance and role
         var alliance = this.thisRoom.playersInGame[targetIndex].alliance;
-
-        //emit to the lady holder the person's alliance
-        socket.emit("lady-info", /*"Player " + */targetUsername + " is a " + alliance + ".");
+        var role = this.thisRoom.playersInGame[targetIndex].role;
+         //emit to the lady holder the person's alliance unless they're Rogue in which case their role is shown
+        if( role !== "Rogue") {
+            socket.emit("lady-info", /*"Player " + */targetUsername + " is a " + alliance + ".");
+            }
+        else  socket.emit("lady-info", /*"Player " + */targetUsername + " is the Rogue.");
         // console.log("Player " + target + " is a " + alliance);
 
         //update lady location

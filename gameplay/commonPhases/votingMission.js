@@ -17,10 +17,10 @@ VotingMission.prototype.gameMove = function (socket, data) {
             // console.log("received succeed from " + socket.request.user.username);
         }
         else if (data === "no") {
-            // If the user is a res, they shouldn't be allowed to fail
+            // If the user is a res or rogue, they shouldn't be allowed to fail
             var index = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username);
-            if (index !== -1 && this.thisRoom.playersInGame[index].alliance === "Resistance") {
-                socket.emit("danger-alert", "You are resistance! Surely you want to succeed!");
+            if (index !== -1 && this.thisRoom.playersInGame[index].alliance === "Resistance" || index !== -1 && this.thisRoom.playersInGame[index].role === "Rogue") {
+                socket.emit("danger-alert", "You are "+ this.thisRoom.playersInGame[index].alliance + "! You cannot fail a mission.");
                 return;
             }
 

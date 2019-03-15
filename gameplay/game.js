@@ -387,6 +387,13 @@ Game.prototype.startGame = function (options) {
 	//Get roles:
 	this.resRoles = [];
 	this.spyRoles = [];
+	//Checks whether the Rogue is in play, and if it is, it allows for four spies in 9p
+	var isRogueIncluded =this.spyRoles.includes("Rogue")
+	if(isRogueIncluded == "True") {
+    	this.alliances[8] = "Spy"
+	}
+	else {
+}
 
 	for (var i = 0; i < options.length; i++) {
 		var op = options[i].toLowerCase();
