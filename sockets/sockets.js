@@ -332,16 +332,27 @@ var actionsObj = {
 				return actionsObj.userCommands.interactUser.run(data, senderSocket);
 			}
 		},
+		punch: {
+			command: "punch",
+			help: "/punch <playername>: punch a player.",
+			run: function (data, senderSocket) {
+				var args = data.args;
 
+				data.args[2] = data.args[1];
+				data.args[1] = "punch";
+
+				return actionsObj.userCommands.interactUser.run(data, senderSocket);
+			}
+		},
 		interactUser: {
 			command: "interactUser",
 			help: "/interactUser <slap/buzz/lick> <playername>: Interact with a player.",
 			run: function (data, senderSocket) {
 				var args = data.args;
 
-				var possibleInteracts = ["buzz", "slap", "lick", "poke"];
+				var possibleInteracts = ["buzz", "slap", "lick", "poke", "punch"];
 				if (possibleInteracts.indexOf(args[1]) === -1) {
-					return { message: "You can only slap, buzz, poke or lick, not " + args[1] + ".", classStr: "server-text", dateCreated: new Date() };
+					return { message: "You can only slap, buzz, poke, punch or lick, not " + args[1] + ".", classStr: "server-text", dateCreated: new Date() };
 				}
 
 				var slapSocket = allSockets[getIndexFromUsername(allSockets, args[2], true)];
@@ -352,6 +363,7 @@ var actionsObj = {
 					else if (args[1] === "slap") { verbPast = "slapped"; }
 					else if (args[1] === "lick") { verbPast = "licked"; }
 					else if (args[1] === "poke") { verbPast = "poked"; }
+					else if (args[1] === "punch") { verbPast = "punched"; }
 
 					var dataToSend = {
 						username: senderSocket.request.user.username,
@@ -439,7 +451,7 @@ var actionsObj = {
 
 		mute: {
 			command: "mute",
-			help: "/mute: Mute a player who is being annoying in chat/buzzing/slapping/licking/poking you.",
+			help: "/mute: Mute a player who is being annoying in chat/buzzing/slapping/licking/poking/tickling you.",
 			run: function (data, senderSocket) {
 				var args = data.args;
 
