@@ -136,6 +136,8 @@ socket.on("lady-info", function (message) {
 
 
 hoverMissionBoxHighlightPlayerSetup();
+hoverPickBoxHighlightPlayerSetup();
+
 function hoverMissionBoxHighlightPlayerSetup() {
 
     $(".missionBox").hover(
@@ -146,27 +148,18 @@ function hoverMissionBoxHighlightPlayerSetup() {
             // console.log(this.getAttribute("id").slice(-1));
 
             var missionNum = this.getAttribute("id").slice(-1);
+            // Return if the mission hasn't completed yet
+            if (missionNum >= gameData.missionHistory.length) {
+                return;
+            }
             // Grab players to highlight
-            var participatingTeamHighlight = getPlayersOnMission(parseInt(missionNum));
+            var participatingTeamAndLeader = getPlayersOnMissionPickAndLeader(parseInt(missionNum));
 
-            // console.log("Participating members:");
-            // console.log(participatingTeamHighlight);
+            highlightTeamAndOutlineLeader(participatingTeamAndLeader)
 
-            var darkThemeBool = docCookies.getItem("optionDisplayDarkTheme") === "true"
-
-            // For the players on the team
-            participatingTeamHighlight.forEach(function (username) {
-                if (darkThemeBool) {
-                    $('[usernameofplayer="' + username + '"]').addClass("highlight-participating-dark");
-                }
-                else {
-                    $('[usernameofplayer="' + username + '"]').addClass("highlight-participating");
-                    $(this).css("background-color", "rgba(255, 255, 0, 1)");
-                }
-            });
-
-            // Only outline the missionBox if we have something to show
-            if (participatingTeamHighlight.length !== 0) {
+            var darkThemeBool = docCookies.getItem("optionDisplayDarkTheme") === true
+            // Only edit the css if we have something to show
+            if (participatingTeamAndLeader.team.length !== 0) {
                 // For the missionBox itself
                 if (darkThemeBool) {
                     $(this).css("outline", "5px solid rgba(255, 255, 0, 0.65)");
@@ -177,39 +170,118 @@ function hoverMissionBoxHighlightPlayerSetup() {
             }
         },
         // Upon unhover:
-        function () {
-            // Reset all the displays for this function
-            $(".playerDiv").removeClass("highlight-participating");
-            $(".playerDiv").removeClass("highlight-participating-dark");
-            $(".playerDiv").css("opacity", "");
-
-            $(this).css("outline", "");
-            $(this).css("opacity", "");
-        });
+        removeTeamHighlightAndLeaderOutline);
 }
 
-function getPlayersOnMission(missionNum) {
-    // If we haven't played enough missions dont highlight anything
-    if (missionNum > gameData.missionHistory.length - 1) {
-        return [];
+function hoverPickBoxHighlightPlayerSetup() {
+    $(".pickBox").hover(
+        // on hover
+        function() {
+            var pickNum = this.getAttribute("id").slice(-1)
+            var participatingTeamAndLeader = getPlayersOnMissionPickAndLeader(gameData.missionNum - 1, parseInt(pickNum));
+
+            highlightTeamAndOutlineLeader(participatingTeamAndLeader)
+
+            var darkThemeBool = docCookies.getItem("optionDisplayDarkTheme") === true
+            // Only edit the css if we have something to show
+            if (participatingTeamAndLeader.team.length !== 0) {
+                // Since pickBoxes are small, we'll just fill them with yellow.
+                if (darkThemeBool) {
+                    $(this).addClass("highlight-pick-dark");
+                }
+                else {
+                    $(this).addClass("highlight-pick");
+                }
+            }
+        },
+        // on unhover
+        removeTeamHighlightAndLeaderOutline);
+}
+
+// Takes an object of type:
+// {
+//    team: [string],
+//    leader: string
+// }
+// and highlights the team members, and outlines the leader
+function highlightTeamAndOutlineLeader(teamAndLeader) {
+    var darkThemeBool = docCookies.getItem("optionDisplayDarkTheme") === true;
+
+    teamAndLeader.team.forEach(function (username) {
+        if (darkThemeBool) {
+            $('[usernameofplayer="' + username + '"]').addClass("highlight-participating-dark");
+        }
+        else {
+            $('[usernameofplayer="' + username + '"]').addClass("highlight-participating");
+        }
+    });
+
+    var leader = teamAndLeader.leader
+    if (leader.length > 0) {
+        $('[usernameofplayer="' + leader + '"]').addClass("outline-leader")
+    }
+}
+
+function removeTeamHighlightAndLeaderOutline() {
+    // Reset all the displays for this function
+    $(".playerDiv").removeClass("highlight-participating");
+    $(".playerDiv").removeClass("highlight-participating-dark");
+    $(".pickBox").removeClass("highlight-pick");
+    $(".pickBox").removeClass("highlight-pick-dark");
+    $(".playerDiv").removeClass("outline-leader");
+    $(".playerDiv").css("opacity", "");
+
+    $(this).css("outline", "");
+    $(this).css("opacity", "");
+}
+
+// Given a mission number and the pick number, returns the people on that mission pick
+// If pickNum is -1, then returns the people on the last pick of that mission
+function getPlayersOnMissionPickAndLeader(missionNum, pickNum=-1) {
+    // We need a player key to see vote history to get the number of picks in the mission
+    var firstPlayerKey = Object.keys(gameData.voteHistory)[0];
+
+    // The first case prevents us from erroring when we hover over the first pick of a mission before the arrays update
+    // The second case prevents us from prematurely highlighting missions that aren't complete.
+    if (missionNum >= gameData.voteHistory[firstPlayerKey].length) {
+        return {
+            team: [],
+            leader: []
+        };
+    }
+    var numPicksInMission = gameData.voteHistory[firstPlayerKey][missionNum].length;
+    if (pickNum >= numPicksInMission) {
+        return {
+            team: [],
+            leader: []
+        };
     } else {
         var team = [];
+        var leader = ""
         // For each player:
         for (var key in gameData.voteHistory) {
             if (gameData.voteHistory.hasOwnProperty(key) === true) {
                 // console.log(key);
-                // Get the length of the mission (how many picks in the mission because we grab the last pick)
-                var missionLen = gameData.voteHistory[key][missionNum].length;
+                if (pickNum == -1) {
+                    // Get the length of the mission (how many picks in the mission because we grab the last pick)
+                    pickNum = gameData.voteHistory[key][missionNum].length-1;
+                }
                 // console.log("a: " + missionLen);
 
                 // If the user was picked, add to the list
-                if (gameData.voteHistory[key][missionNum][missionLen - 1].includes("VHpicked") === true) {
+                if (gameData.voteHistory[key][missionNum][pickNum].includes("VHpicked") === true) {
                     team.push(key);
+                }
+                if (gameData.voteHistory[key][missionNum][pickNum].includes("VHleader")) {
+                    leader = key;
                 }
             }
         }
 
-        return team;
+        return {
+            team: team,
+            leader: leader
+        };
     }
 }
 
