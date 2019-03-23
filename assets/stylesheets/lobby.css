@@ -377,7 +377,7 @@ p {
 }
 
 
-/* Highlighting of avatars/chat */
+/* Highlighting/outlining of avatars/chat */
 
 .highlight-avatar {
     background-color: #ffff00 !important;
@@ -391,11 +391,25 @@ p {
     border-radius: 10px;
 }
 
+.highlight-pick {
+    background-color: rgb(255, 255, 0) !important;
+    border-radius: 10px;
+}
+
 .highlight-participating-dark {
     background-color: rgba(255, 255, 0, 0.65)  !important;
     border-radius: 10px;
 }
 
+.highlight-pick-dark {
+    background-color: rgba(255, 255, 0, 0.65)  !important;
+    border-radius: 10px;
+}
+
+.outline-leader {
+    box-shadow: 0 0 3pt 2pt red;
+    border-radius: 10px;
+}
 
 
 .selected-chat {
