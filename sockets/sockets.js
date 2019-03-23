@@ -2194,55 +2194,45 @@ function startGame(data, gameMode) {
     updateCurrentGamesList(ioGlobal);
 }
 
-function kickPlayer() {
-    return function (username) {
-        console.log("received kick player request: " + username);
-        if (rooms[this.request.user.inRoomId]) {
-            rooms[this.request.user.inRoomId].kickPlayer(username, this);
-        }
-    };
+function kickPlayer(username) {
+    console.log("received kick player request: " + username);
+    if (rooms[this.request.user.inRoomId]) {
+        rooms[this.request.user.inRoomId].kickPlayer(username, this);
+    }
 }
 
-function setClaim() {
-    return function (data) {
-        if (rooms[this.request.user.inRoomId]) {
-            rooms[this.request.user.inRoomId].setClaim(this, data);
-        }
-    };
+function setClaim(data) {
+    if (rooms[this.request.user.inRoomId]) {
+        rooms[this.request.user.inRoomId].setClaim(this, data);
+    }
 }
 
-function gameMove() {
-    return function (data) {
+function gameMove(data) {
+    if (rooms[this.request.user.inRoomId]) {
+        rooms[this.request.user.inRoomId].gameMove(this, data);
         if (rooms[this.request.user.inRoomId]) {
-            rooms[this.request.user.inRoomId].gameMove(this, data);
-            if (rooms[this.request.user.inRoomId]) {
-                if (rooms[this.request.user.inRoomId].finished === true) {
-                    deleteSaveGameFromDb(rooms[this.request.user.inRoomId]);
-                }
-                else {
-                    saveGameToDb(rooms[this.request.user.inRoomId]);
-                }
+            if (rooms[this.request.user.inRoomId].finished === true) {
+                deleteSaveGameFromDb(rooms[this.request.user.inRoomId]);
             }
-            updateCurrentGamesList(ioGlobal);
+            else {
+                saveGameToDb(rooms[this.request.user.inRoomId]);
+            }
         }
-    };
+        updateCurrentGamesList(ioGlobal);
+    }
 }
 
-function updateRoomGameMode() {
-    return function (gameMode) {
-        if (rooms[this.request.user.inRoomId]) {
-            rooms[this.request.user.inRoomId].updateGameModesInRoom(this, gameMode);
-        }
-        updateCurrentGamesList();
-    };
+function updateRoomGameMode(gameMode) {
+    if (rooms[this.request.user.inRoomId]) {
+        rooms[this.request.user.inRoomId].updateGameModesInRoom(this, gameMode);
+    }
+    updateCurrentGamesList();
 }
 
-function updateRoomMaxPlayers() {
-    return function (number) {
-        if (rooms[this.request.user.inRoomId]) {
-            rooms[this.request.user.inRoomId].updateMaxNumPlayers(this, number);
-        }
-        updateCurrentGamesList();
-    };
+function updateRoomMaxPlayers(number) {
+    if (rooms[this.request.user.inRoomId]) {
+        rooms[this.request.user.inRoomId].updateMaxNumPlayers(this, number);
+    }
+    updateCurrentGamesList();
 }
 
