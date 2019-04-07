@@ -1374,7 +1374,7 @@ var adminCommands = actionsObj.adminCommands;
 
 
 //load up all the modActions that are not released yet
-modAction.find({ whenRelease: { $gt: new Date() }, type: "mute" }, function (err, allModActions) {
+modAction.find({ whenRelease: { $gt: new Date() }, $or:[{type: "mute"},{type: "ban"}] }, function (err, allModActions) {
 
 	for (var i = 0; i < allModActions.length; i++) {
 		currentModActions.push(allModActions[i]);
@@ -1416,6 +1416,10 @@ module.exports = function (io) {
 				if (currentModActions[i].bannedPlayer.id && socket.request.user.id.toString() === currentModActions[i].bannedPlayer.id.toString()) {
 					if (currentModActions[i].type === "mute") {
 						socket.emit("muteNotification", currentModActions[i]);
+					}
+					else if (currentModActions[i].type === "ban") {
+						socket.emit("redirect", "/")
+						socket.disconnect();
 					}
 				}
 			}
@@ -1492,7 +1496,7 @@ module.exports = function (io) {
 			// console.log("update current players list");
 			// console.log(getPlayerUsernamesFromAllSockets());
 			updateCurrentGamesList(io);
-		}, 500);
+		}, 1000);
 
 
 
@@ -1599,7 +1603,11 @@ module.exports = function (io) {
 					});
 				}
 				else {
-					socket.emit("messageCommandReturnStr", { message: "Something went wrong... Contact the admin!", classStr: "server-text" });
+					var str = "Something went wrong... Contact the admin! Details: ";
+					str += "UserNotFound: " + userNotFound;
+					str += "\t newModAction.bannedPlayer: " + newModAction.bannedPlayer;
+					str += "\t newModAction.username: " + newModAction.username;
+					socket.emit("messageCommandReturnStr", { message: str, classStr: "server-text" });
 				}
 			}
 			else {

@@ -74,7 +74,7 @@ const registerLimiter = rateLimit({
 });
 
 //Post of the register route
-router.post("/", registerLimiter, checkIpBan, sanitiseUsername,/* usernameToLowerCase, */function (req, res) {
+router.post("/", registerLimiter, checkIpBan, checkCurrentBan, sanitiseUsername, function (req, res) {
 	// console.log("escaped: " + escapeText(req.body.username));
 
 	// var escapedUsername = escapeText(req.body.username);
@@ -220,7 +220,7 @@ const loginLimiter = rateLimit({
 });
 
 //login route
-router.post("/login", loginLimiter, sanitiseUsername, /*usernameToLowerCase,*/ passport.authenticate("local", {
+router.post("/login", loginLimiter, sanitiseUsername, checkCurrentBan, passport.authenticate("local", {
 	successRedirect: "/lobby",
 	failureRedirect: "/loginFail"
 }));
@@ -234,7 +234,7 @@ router.get("/loginFail", function (req, res) {
 
 
 //lobby route
-router.get("/lobby", middleware.isLoggedIn, checkIpBan, async function (req, res) {
+router.get("/lobby", middleware.isLoggedIn, checkIpBan, checkCurrentBan, async function (req, res) {
 
 	// console.log(res.app.locals.originalUsername);
 	User.findOne({ username: req.user.username }).populate("notifications").exec(async function (err, foundUser) {
@@ -246,35 +246,6 @@ router.get("/lobby", middleware.isLoggedIn, checkIpBan, async function (req, res
 		}
 		else {
 
-			currentModActions = [];
-			//load up all the modActions that are not released yet and are bans
-			await modAction.find({ whenRelease: { $gt: new Date() }, type: "ban" }, function (err, allModActions) {
-
-				for (var i = 0; i < allModActions.length; i++) {
-					currentModActions.push(allModActions[i]);
-				}
-				// console.log("bans:");
-				// console.log(currentModActions);
-				// console.log("a");
-			});
-
-			// console.log("b");
-
-			for (var i = 0; i < currentModActions.length; i++) {
-				if (req.user.id.toString() === currentModActions[i].bannedPlayer.id.toString()) {
-					if (currentModActions[i].type === "ban") {
-						var message = "You have been banned. The ban will be released on " + currentModActions[i].whenRelease + ". Ban description: '" + currentModActions[i].descriptionByMod + "'";
-						message += " Reflect on your actions.";
-						req.flash("error", message);
-						res.redirect("/")
-
-						// console.log(req.user.username + " is still banned and cannot join the lobby.");
-						return;
-					}
-				}
-			}
-
-			// console.log("c");
 			isMod = false;
 			if (req.isAuthenticated() && modsArray.indexOf(req.user.username.toLowerCase()) !== -1) {
 				isMod = true;
@@ -982,19 +953,8 @@ function updateBannedIps() {
 
 async function checkIpBan(req, res, next) {
 	var clientIpAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-	// console.log("clientIpAddress: " + clientIpAddress);
-
-	// console.log("before BannedIps: ");
-	// console.log(bannedIps);
 
 	await updateBannedIps();
-
-	// console.log("after BannedIps: ");
-	// console.log(bannedIps);
-
-	// console.log(typeof(bannedIps[0]));
-	// console.log(typeof(clientIpAddress));
-
 
 	if (bannedIps.indexOf(clientIpAddress) === -1) {
 		// console.log("NEXT");
@@ -1021,10 +981,38 @@ async function checkIpBan(req, res, next) {
 		req.flash("error", "You have been banned.");
 		res.redirect("/");
 	}
-
-
 }
 
+async function checkCurrentBan(req, res, next) {
+
+	var currentModActions = [];
+	//load up all the modActions that are not released yet and are bans
+	await modAction.find({ whenRelease: { $gt: new Date() }, type: "ban" }, function (err, allModActions) {
+
+		for (var i = 0; i < allModActions.length; i++) {
+			currentModActions.push(allModActions[i]);
+		}
+	});
+
+	for (var i = 0; i < currentModActions.length; i++) {
+		if (req.user.username.toString() === currentModActions[i].bannedPlayer.username.toString()) {
+			if (currentModActions[i].type === "ban") {
+				console.log("TRUE");
+				console.log(currentModActions[i]);
+				console.log(req.user.username);
+				console.log(currentModActions[i].bannedPlayer.username);
+				var message = "You have been banned. The ban will be released on " + currentModActions[i].whenRelease + ". Ban description: '" + currentModActions[i].descriptionByMod + "'";
+				message += " Reflect on your actions.";
+				req.flash("error", message);
+				res.redirect("/")
+
+				// console.log(req.user.username + " is still banned and cannot join the lobby.");
+				return;
+			}
+		}
+	}
+
+}
 
 
 module.exports = router;

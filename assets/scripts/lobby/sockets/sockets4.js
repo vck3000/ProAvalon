@@ -684,3 +684,8 @@ $(".gameModeSelect").on("change", function (e) {
 socket.on("leave-room-requested", function () {
     leaveRoom();
 });
+
+
+socket.on("redirect", function(dest){
+    window.location.href = dest;
+})
