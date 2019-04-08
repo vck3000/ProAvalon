@@ -220,7 +220,7 @@ const loginLimiter = rateLimit({
 });
 
 //login route
-router.post("/login", loginLimiter, sanitiseUsername, checkCurrentBan, passport.authenticate("local", {
+router.post("/login", loginLimiter, sanitiseUsername, passport.authenticate("local", {
 	successRedirect: "/lobby",
 	failureRedirect: "/loginFail"
 }));
@@ -995,7 +995,7 @@ async function checkCurrentBan(req, res, next) {
 	});
 
 	for (var i = 0; i < currentModActions.length; i++) {
-		if (req.user.username.toString() === currentModActions[i].bannedPlayer.username.toString()) {
+		if (currentModActions[i].bannedPlayer !== undefined && req.user !== undefined && req.user.username.toString() === currentModActions[i].bannedPlayer.username.toString()) {
 			if (currentModActions[i].type === "ban") {
 				console.log("TRUE");
 				console.log(currentModActions[i]);
@@ -1011,6 +1011,8 @@ async function checkCurrentBan(req, res, next) {
 			}
 		}
 	}
+
+	next();
 
 }
 

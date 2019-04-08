@@ -786,15 +786,7 @@ var actionsObj = {
 								senderSocket.emit("messageCommandReturnStr", { message: "Successfully unbanned " + args[1] + ".", classStr: "server-text" });
 
 
-								//load up all the modActions again to update
-								modAction.find({ whenRelease: { $gt: new Date() }, type: "mute" }, function (err, allModActions) {
-									currentModActions = [];
-									for (var i = 0; i < allModActions.length; i++) {
-										currentModActions.push(allModActions[i]);
-									}
-									// console.log("mute");
-									// console.log(currentModActions);
-								});
+								reloadCurrentModActions()
 							}
 						});
 					}
@@ -1373,15 +1365,17 @@ var modCommands = actionsObj.modCommands;
 var adminCommands = actionsObj.adminCommands;
 
 
-//load up all the modActions that are not released yet
-modAction.find({ whenRelease: { $gt: new Date() }, $or:[{type: "mute"},{type: "ban"}] }, function (err, allModActions) {
+function reloadCurrentModActions(){
+	//load up all the modActions that are not released yet
+	modAction.find({ whenRelease: { $gt: new Date() }, $or:[{type: "mute"},{type: "ban"}] }, function (err, allModActions) {
 
-	for (var i = 0; i < allModActions.length; i++) {
-		currentModActions.push(allModActions[i]);
-	}
-	// console.log("mute");
-	// console.log(currentModActions);
-});
+		for (var i = 0; i < allModActions.length; i++) {
+			currentModActions.push(allModActions[i]);
+		}
+		// console.log("mute");
+		// console.log(currentModActions);
+	});
+}
 
 
 ioGlobal = {};
