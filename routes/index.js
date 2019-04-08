@@ -465,9 +465,43 @@ router.get("/ajax/getStatistics", function (req, res) {
     });
 });
 
+var anonymizeArray = function(array, idmap) {
+    var anonArray = [];
+    for (var i = 0; i < array.length; i++) {
+	anonArray.push(idmap[array[i]]);
+    }
+    return anonArray;
+}
+
+var anonymizeMapKeys = function(map, idmap) {
+    var anonMap = JSON.parse(JSON.stringify(map));
+    for (var key in map) {
+        if (!map.hasOwnProperty(key)) {
+	    continue;
+	}
+	if (key !== idmap[key]) {
+    	    Object.defineProperty(anonMap, idmap[key], Object.getOwnPropertyDescriptor(anonMap, key));
+    	    delete anonMap[key];
+	}
+    }
+    return anonMap;
+}
 
 var anonymizeStats = function(records) {
-    anonymizedRecords = records;
+    var anonymizedRecords = JSON.parse(JSON.stringify(records));
+    var usernamesMap = {}, idx = 0;
+    for (var key in records.playerRolesVar) {
+        if (records.playerRolesVar.hasOwnProperty(key)) {
+	    usernamesMap[key] = idx++;
+	}
+    }
+    anonymizedRecords.spyTeam = anonymizeArray(records.spyTeam, usernamesMap);
+    anonymizedRecords.resistanceTeam = anonymizeArray(records.resistanceTeam, usernamesMap);
+    anonymizedRecords.ladyHistoryUsernames = anonymizeArray(records.ladyHistoryUsernames, usernamesMap);
+    anonymizedRecords.refHistoryUsernames = anonymizeArray(records.refHistoryUsernames, usernamesMap);
+    anonymizedRecords.sireHistoryUsernames = anonymizeArray(records.sireHistoryUsernames, usernamesMap);
+    anonymizedRecords.voteHistory = anonymizeMapKeys(records.voteHistory, usernamesMap);
+    anonymizedRecords.playerRoles = anonymizeMapKeys(records.playerRoles, usernamesMap);
     return anonymizedRecords;
 }
 
