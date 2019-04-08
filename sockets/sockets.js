@@ -1522,6 +1522,9 @@ module.exports = function (io) {
 								newModAction.bannedPlayer = {};
 								newModAction.bannedPlayer.id = foundUser._id;
 								newModAction.bannedPlayer.username = foundUser.username;
+								
+								socket.emit("messageCommandReturnStr", { message: "User found, Adding in details...\t", classStr: "server-text" });
+
 							}
 						});
 					}
