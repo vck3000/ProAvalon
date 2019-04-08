@@ -466,7 +466,10 @@ router.get("/ajax/getStatistics", function (req, res) {
 });
 
 
-
+var anonymizeStats = function(records) {
+    anonymizedRecords = records;
+    return anonymizedRecords;
+}
 
 var hardUpdateStatsFunction = function(){
     console.log("Starting hard update stats...");
@@ -728,6 +731,8 @@ var hardUpdateStatsFunction = function(){
             obj['10paverageGameDuration'] = new Date(averageGameDurations[10].getTime() / countForGameSize['10']);
 
             obj.timeCreated = new Date();
+
+	    obj.anonymizedData = anonymizeStats(records);
 
             clientStatsData = obj;
 
