@@ -481,7 +481,9 @@ socket.on("joinPassword", function (roomId) {
             allowEnterKey: true,
             showCancelButton: true,
             inputAttributes: {
-                autocapitalize: "off"
+                autocapitalize: "off",
+                autocomplete: "off",
+                autocorrect: "off",
             },
         });
 
