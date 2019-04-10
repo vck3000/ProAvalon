@@ -497,7 +497,6 @@ var anonymizeStats = function(records) {
     var anonymizedRecords = [];
     for (var key in records) {
 	var record = records[key];
-	console.log(JSON.stringify(record));
 	var anonymizedRecord = JSON.parse(JSON.stringify(record));
 	var usernamesMap = {}, idx = 0;
 	for (var key in record.playerRoles) {
@@ -505,7 +504,6 @@ var anonymizeStats = function(records) {
 	        usernamesMap[key] = idx++;
 	    }
 	}
-	console.log(JSON.stringify(usernamesMap));
 	anonymizedRecord.spyTeam = anonymizeArray(record.spyTeam, usernamesMap);
 	anonymizedRecord.resistanceTeam = anonymizeArray(record.resistanceTeam, usernamesMap);
 	anonymizedRecord.ladyHistoryUsernames = anonymizeArray(record.ladyHistoryUsernames, usernamesMap);
