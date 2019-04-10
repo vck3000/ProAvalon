@@ -237,7 +237,6 @@
             
 
             <br>
-	    <a id="downloadStats" download="logs.json"><button class="btn">Download logs</button></a>
             <br>
             <br>
             <br>
@@ -288,8 +287,6 @@
         $("#statsDiv").removeClass("hidden");
 
         $("#timeCreated")[0].innerText = new Date(grd.timeCreated).toString();
-
-        $("#downloadStats")[0].href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(grd.anonymizedData));
 
         //***********************************
         //Site traffic stats
