@@ -265,9 +265,9 @@
         // Read anonymized logs data.
         var fs = require('fs');
         var logsAnon = JSON.parse(fs.readFileSync('gameRecordsDataAnon.json', 'utf8'));
-	$("#downloadStats")[0].href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(logsAnon));
-	$("#downloadStats")[0].click();
-	$("#downloadStats")[0].href = "";
+	      $("#downloadStats")[0].href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(logsAnon));
+	      $("#downloadStats")[0].click();
+	      $("#downloadStats")[0].href = "";
     }
 
     $( document ).ready(function() {
