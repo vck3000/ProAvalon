@@ -466,6 +466,9 @@ router.get("/ajax/getStatistics", function (req, res) {
 });
 
 var anonymizeArray = function(array, idmap) {
+    if (!array) {
+	return array;
+    }
     var anonArray = [];
     for (var i = 0; i < array.length; i++) {
 	anonArray.push(idmap[array[i]]);
@@ -474,6 +477,9 @@ var anonymizeArray = function(array, idmap) {
 }
 
 var anonymizeMapKeys = function(map, idmap) {
+    if (!map) {
+	return map;
+    }
     var anonMap = JSON.parse(JSON.stringify(map));
     for (var key in map) {
         if (!map.hasOwnProperty(key)) {
@@ -488,22 +494,38 @@ var anonymizeMapKeys = function(map, idmap) {
 }
 
 var anonymizeStats = function(records) {
-    var anonymizedRecords = JSON.parse(JSON.stringify(records));
-    var usernamesMap = {}, idx = 0;
-    for (var key in records.playerRolesVar) {
-        if (records.playerRolesVar.hasOwnProperty(key)) {
-	    usernamesMap[key] = idx++;
+    var anonymizedRecords = [];
+    for (var key in records) {
+	var record = records[key];
+	console.log(JSON.stringify(record));
+	var anonymizedRecord = JSON.parse(JSON.stringify(record));
+	var usernamesMap = {}, idx = 0;
+	for (var key in record.playerRoles) {
+	    if (record.playerRoles.hasOwnProperty(key)) {
+	        usernamesMap[key] = idx++;
+	    }
 	}
+	console.log(JSON.stringify(usernamesMap));
+	anonymizedRecord.spyTeam = anonymizeArray(record.spyTeam, usernamesMap);
+	anonymizedRecord.resistanceTeam = anonymizeArray(record.resistanceTeam, usernamesMap);
+	anonymizedRecord.ladyHistoryUsernames = anonymizeArray(record.ladyHistoryUsernames, usernamesMap);
+	anonymizedRecord.refHistoryUsernames = anonymizeArray(record.refHistoryUsernames, usernamesMap);
+	anonymizedRecord.sireHistoryUsernames = anonymizeArray(record.sireHistoryUsernames, usernamesMap);
+	anonymizedRecord.voteHistory = anonymizeMapKeys(record.voteHistory, usernamesMap);
+	anonymizedRecord.playerRoles = anonymizeMapKeys(record.playerRoles, usernamesMap);
+	anonymizedRecords.push(anonymizedRecord);
     }
-    anonymizedRecords.spyTeam = anonymizeArray(records.spyTeam, usernamesMap);
-    anonymizedRecords.resistanceTeam = anonymizeArray(records.resistanceTeam, usernamesMap);
-    anonymizedRecords.ladyHistoryUsernames = anonymizeArray(records.ladyHistoryUsernames, usernamesMap);
-    anonymizedRecords.refHistoryUsernames = anonymizeArray(records.refHistoryUsernames, usernamesMap);
-    anonymizedRecords.sireHistoryUsernames = anonymizeArray(records.sireHistoryUsernames, usernamesMap);
-    anonymizedRecords.voteHistory = anonymizeMapKeys(records.voteHistory, usernamesMap);
-    anonymizedRecords.playerRoles = anonymizeMapKeys(records.playerRoles, usernamesMap);
     return anonymizedRecords;
 }
+
+// Read in the game records
+var fs = require('fs');
+var gameRecordsData = JSON.parse(fs.readFileSync('gameRecordsDataShort.json', 'utf8'));
+
+// Anonymize it using gameRecordsData
+var gameRecordsDataAnon = anonymizeStats(gameRecordsData); 
+
+fs.writeFile('gameRecordsDataAnon.json', JSON.stringify(gameRecordsDataAnon));
 
 var hardUpdateStatsFunction = function(){
     console.log("Starting hard update stats...");
@@ -765,8 +787,6 @@ var hardUpdateStatsFunction = function(){
             obj['10paverageGameDuration'] = new Date(averageGameDurations[10].getTime() / countForGameSize['10']);
 
             obj.timeCreated = new Date();
-
-	    obj.anonymizedData = anonymizeStats(records);
 
             clientStatsData = obj;
 
