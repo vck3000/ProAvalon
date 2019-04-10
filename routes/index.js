@@ -505,6 +505,20 @@ var anonymizeStats = function(records) {
     return anonymizedRecords;
 }
 
+
+// Read in the game records
+var fs = require('fs');
+var gameRecordsData = JSON.parse(fs.readFileSync('gameRecordsDataShort.json', 'utf8'));
+
+// TODO
+//Replace this with your function to anonymise it using gameRecordsData
+var gameRecordsDataAnon = {test: "test string"}; 
+
+fs.writeFile('gameRecordsDataAnon.json', JSON.stringify(gameRecordsDataAnon));
+
+
+
+
 var hardUpdateStatsFunction = function(){
     console.log("Starting hard update stats...");
     gameRecord.find({}).exec(function (err, records) {
