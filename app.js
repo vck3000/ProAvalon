@@ -29,6 +29,7 @@ app.locals = {
 
 var port = process.env.PORT || 80;
 var dbLoc = process.env.DATABASEURL || "mongodb://localhost/TheNewResistanceUsers";
+console.log("Using database url: " + dbLoc);
 
 // console.log(process.env.DATABASEURL);
 // mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
