@@ -237,7 +237,8 @@
             
 
             <br>
-	    <a id="downloadStats" download="logs.json"><button class="btn">Download logs</button></a>
+	    <button class="btn" onclick="downloadLogs()">Download anonymized logs</button>
+	    <a id="downloadStats" download="logs.json"></a>
             <br>
             <br>
             <br>
@@ -259,6 +260,15 @@
 
 <script>
     var gameRecordsData;
+    
+    downloadLogs() {
+        // Read anonymized logs data.
+        var fs = require('fs');
+        var logsAnon = JSON.parse(fs.readFileSync('gameRecordsDataAnon.json', 'utf8'));
+	$("#downloadStats")[0].href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(logsAnon));
+	$("#downloadStats")[0].click();
+	$("#downloadStats")[0].href = "";
+    }
 
     $( document ).ready(function() {
         $(function () {
@@ -288,8 +298,6 @@
         $("#statsDiv").removeClass("hidden");
 
         $("#timeCreated")[0].innerText = new Date(grd.timeCreated).toString();
-
-        $("#downloadStats")[0].href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(grd.anonymizedData));
 
         //***********************************
         //Site traffic stats
