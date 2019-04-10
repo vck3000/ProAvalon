@@ -1156,4 +1156,4 @@ var defaultValuesForUser = {
 			}
 		}
 	}
-}
+} 
