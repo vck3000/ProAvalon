@@ -3,4 +3,5 @@ node_modules/*
 package-lock.json
 banips.txt
 myStuff/*
-gameRecordsData*
+assets/gameRecordsData/*
+!assets/gameRecordsData/gameRecordsDataAnon.json

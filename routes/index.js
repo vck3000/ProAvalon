@@ -819,12 +819,12 @@ var hardUpdateStatsFunction = function(){
 
             // res.status(200).send(clientStatsData);
         }
-    });
+    }); 
 }
 
 var hardUpdateStats = true;
 if(hardUpdateStats === true && process.env.MY_PLATFORM == "local"){
-    hardUpdateStatsFunction();
+	setTimeout(hardUpdateStatsFunction, 5000);
 }
 
 
