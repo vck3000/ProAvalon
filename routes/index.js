@@ -518,13 +518,13 @@ var anonymizeStats = function(records) {
 }
 
 // Read in the game records
-var fs = require('fs');
-var gameRecordsData = JSON.parse(fs.readFileSync('assets/gameRecordsData/gameRecordsDataSample2.json', 'utf8'));
+// var fs = require('fs');
+// var gameRecordsData = JSON.parse(fs.readFileSync('assets/gameRecordsData/gameRecordsDataSample2.json', 'utf8'));
 
-// Anonymize it using gameRecordsData
-var gameRecordsDataAnon = anonymizeStats(gameRecordsData); 
+// // Anonymize it using gameRecordsData
+// var gameRecordsDataAnon = anonymizeStats(gameRecordsData); 
 
-fs.writeFileSync('assets/gameRecordsData/gameRecordsDataAnon.json', JSON.stringify(gameRecordsDataAnon));
+// fs.writeFileSync('assets/gameRecordsData/gameRecordsDataAnon.json', JSON.stringify(gameRecordsDataAnon));
 
 
 router.get("/gameRecordsData", function (req, res) {
@@ -540,7 +540,14 @@ var hardUpdateStatsFunction = function(){
         }
         else {
 
-            console.log(records.length + " games loaded.");
+			console.log(records.length + " games loaded.");
+			fs.writeFileSync('assets/gameRecordsData/gameRecordsData.json', JSON.stringify(records));
+			// Anonymize it using gameRecordsData
+			var gameRecordsDataAnon = anonymizeStats(records); 
+
+			fs.writeFileSync('assets/gameRecordsData/gameRecordsDataAnon.json', JSON.stringify(gameRecordsDataAnon));
+
+
             var obj = {};
             obj.totalgamesplayed = records.length;
 
@@ -815,8 +822,8 @@ var hardUpdateStatsFunction = function(){
     });
 }
 
-var hardUpdateStats = false;
-if(hardUpdateStats === true){
+var hardUpdateStats = true;
+if(hardUpdateStats === true && process.env.MY_PLATFORM == "local"){
     hardUpdateStatsFunction();
 }
 
