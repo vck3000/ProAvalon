@@ -1404,35 +1404,37 @@ module.exports = function (io) {
 				newModAction.whenMade = new Date();
 				newModAction.whenRelease = newModAction.whenMade.getTime() + newModAction.durationToBan.getTime();
 
-				// console.log(newModAction);
-				if (userNotFound === false && newModAction.bannedPlayer && newModAction.bannedPlayer.username) {
-					modAction.create(newModAction, function (err, newModActionCreated) {
-						if (newModActionCreated !== undefined) {
-							// console.log(newModActionCreated);
-							//push new mod action into the array of currently active ones loaded.
-							currentModActions.push(newModActionCreated);
-							//if theyre online
-							if (newModActionCreated.type === "ban" && allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)]) {
-								allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)].disconnect(true);
-							}
-							else if (newModActionCreated.type === "mute" && allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)]) {
-								allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)].emit("muteNotification", newModActionCreated);
-							}
+                setTimeout(function(){
+                    // console.log(newModAction);
+                    if (userNotFound === false && newModAction.bannedPlayer && newModAction.bannedPlayer.username) {
+                        modAction.create(newModAction, function (err, newModActionCreated) {
+                            if (newModActionCreated !== undefined) {
+                                // console.log(newModActionCreated);
+                                //push new mod action into the array of currently active ones loaded.
+                                currentModActions.push(newModActionCreated);
+                                //if theyre online
+                                if (newModActionCreated.type === "ban" && allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)]) {
+                                    allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)].disconnect(true);
+                                }
+                                else if (newModActionCreated.type === "mute" && allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)]) {
+                                    allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)].emit("muteNotification", newModActionCreated);
+                                }
 
-							socket.emit("messageCommandReturnStr", { message: newModActionCreated.bannedPlayer.username + " has received a " + newModActionCreated.type + " modAction. Thank you :).", classStr: "server-text" });
-						}
-						else {
-							socket.emit("messageCommandReturnStr", { message: "Something went wrong...", classStr: "server-text" });
-						}
-					});
-				}
-				else {
-					var str = "Something went wrong... Contact the admin! Details: ";
-					str += "UserNotFound: " + userNotFound;
-					str += "\t newModAction.bannedPlayer: " + newModAction.bannedPlayer;
-					str += "\t newModAction.username: " + newModAction.username;
-					socket.emit("messageCommandReturnStr", { message: str, classStr: "server-text" });
-				}
+                                socket.emit("messageCommandReturnStr", { message: newModActionCreated.bannedPlayer.username + " has received a " + newModActionCreated.type + " modAction. Thank you :).", classStr: "server-text" });
+                            }
+                            else {
+                                socket.emit("messageCommandReturnStr", { message: "Something went wrong...", classStr: "server-text" });
+                            }
+                        });
+                    }
+                    else {
+                        var str = "Something went wrong... Contact the admin! Details: ";
+                        str += "UserNotFound: " + userNotFound;
+                        str += "\t newModAction.bannedPlayer: " + newModAction.bannedPlayer;
+                        str += "\t newModAction.username: " + newModAction.username;
+                        socket.emit("messageCommandReturnStr", { message: str, classStr: "server-text" });
+                    }
+                }, 3000);
 			}
 			else {
 				//create a report. someone doing something bad.
