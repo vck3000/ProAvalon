@@ -1202,7 +1202,8 @@ var adminCommands = actionsObj.adminCommands;
 function reloadCurrentModActions(){
 	//load up all the modActions that are not released yet
 	modAction.find({ whenRelease: { $gt: new Date() }, $or:[{type: "mute"},{type: "ban"}] }, function (err, allModActions) {
-
+        //reset currentModActions
+        currentModActions = [];
 		for (var i = 0; i < allModActions.length; i++) {
 			currentModActions.push(allModActions[i]);
 		}
