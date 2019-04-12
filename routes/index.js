@@ -465,7 +465,71 @@ router.get("/ajax/getStatistics", function (req, res) {
     });
 });
 
+var anonymizeArray = function(array, idmap) {
+    if (!array) {
+	return array;
+    }
+    var anonArray = [];
+    for (var i = 0; i < array.length; i++) {
+	anonArray.push(idmap[array[i]]);
+    }
+    return anonArray;
+}
 
+var anonymizeMapKeys = function(map, idmap) {
+    if (!map) {
+	return map;
+    }
+    var anonMap = JSON.parse(JSON.stringify(map));
+    for (var key in map) {
+        if (!map.hasOwnProperty(key)) {
+	    continue;
+	}
+	if (key !== idmap[key]) {
+    	    Object.defineProperty(anonMap, idmap[key], Object.getOwnPropertyDescriptor(anonMap, key));
+    	    delete anonMap[key];
+	}
+    }
+    return anonMap;
+}
+
+var anonymizeStats = function(records) {
+    var anonymizedRecords = [];
+    for (var key in records) {
+	var record = records[key];
+	var anonymizedRecord = JSON.parse(JSON.stringify(record));
+	var usernamesMap = {};
+	var usernamesPossible = 'abcdefghijklmnopqrstuvwxyz', idx = 0;
+	for (var key in record.playerRoles) {
+	    if (record.playerRoles.hasOwnProperty(key)) {
+	        usernamesMap[key] = usernamesPossible[idx++];
+	    }
+	}
+	anonymizedRecord.spyTeam = anonymizeArray(record.spyTeam, usernamesMap);
+	anonymizedRecord.resistanceTeam = anonymizeArray(record.resistanceTeam, usernamesMap);
+	anonymizedRecord.ladyHistoryUsernames = anonymizeArray(record.ladyHistoryUsernames, usernamesMap);
+	anonymizedRecord.refHistoryUsernames = anonymizeArray(record.refHistoryUsernames, usernamesMap);
+	anonymizedRecord.sireHistoryUsernames = anonymizeArray(record.sireHistoryUsernames, usernamesMap);
+	anonymizedRecord.voteHistory = anonymizeMapKeys(record.voteHistory, usernamesMap);
+	anonymizedRecord.playerRoles = anonymizeMapKeys(record.playerRoles, usernamesMap);
+	anonymizedRecords.push(anonymizedRecord);
+    }
+    return anonymizedRecords;
+}
+
+// Read in the game records
+// var fs = require('fs');
+// var gameRecordsData = JSON.parse(fs.readFileSync('assets/gameRecordsData/gameRecordsDataSample2.json', 'utf8'));
+
+// // Anonymize it using gameRecordsData
+// var gameRecordsDataAnon = anonymizeStats(gameRecordsData); 
+
+// fs.writeFileSync('assets/gameRecordsData/gameRecordsDataAnon.json', JSON.stringify(gameRecordsDataAnon));
+
+
+router.get("/gameRecordsData", function (req, res) {
+	res.download("assets/gameRecordsData/gameRecordsDataAnon.json");
+});
 
 
 var hardUpdateStatsFunction = function(){
@@ -476,7 +540,14 @@ var hardUpdateStatsFunction = function(){
         }
         else {
 
-            console.log(records.length + " games loaded.");
+			console.log(records.length + " games loaded.");
+			fs.writeFileSync('assets/gameRecordsData/gameRecordsData.json', JSON.stringify(records));
+			// Anonymize it using gameRecordsData
+			var gameRecordsDataAnon = anonymizeStats(records); 
+
+			fs.writeFileSync('assets/gameRecordsData/gameRecordsDataAnon.json', JSON.stringify(gameRecordsDataAnon));
+
+
             var obj = {};
             obj.totalgamesplayed = records.length;
 
@@ -748,12 +819,12 @@ var hardUpdateStatsFunction = function(){
 
             // res.status(200).send(clientStatsData);
         }
-    });
+    }); 
 }
 
 var hardUpdateStats = false;
-if(hardUpdateStats === true){
-    hardUpdateStatsFunction();
+if(hardUpdateStats === true && process.env.MY_PLATFORM == "local"){
+	setTimeout(hardUpdateStatsFunction, 5000);
 }
 
 

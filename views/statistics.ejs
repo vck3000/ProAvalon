@@ -237,6 +237,7 @@
             
 
             <br>
+	    <a class="btn btn-info" href="/gameRecordsData">Download anonymized logs</a>
             <br>
             <br>
             <br>
@@ -258,6 +259,8 @@
 
 <script>
     var gameRecordsData;
+    
+
 
     $( document ).ready(function() {
         $(function () {
@@ -270,6 +273,7 @@
 
         xmlhttp.onreadystatechange=function(){
             if (xmlhttp.readyState==4 && xmlhttp.status==200){
+                console.log(xmlhttp.responseText)
                 gameRecordsData=JSON.parse(xmlhttp.responseText);
                 console.log(gameRecordsData);
 

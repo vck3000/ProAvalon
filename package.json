@@ -34,5 +34,9 @@
     "socket.io": "^2.0.4",
     "staticify": "^3.1.0",
     "sweetalert2": "^7.25.6"
+  },
+
+  "nodemonConfig": {
+    "ignore": ["assets/gameRecordsData/*"]
   }
 }
