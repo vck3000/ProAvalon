@@ -237,8 +237,7 @@
             
 
             <br>
-	    <button class="btn" onclick="downloadLogs()">Download anonymized logs</button>
-	    <a id="downloadStats" download="logs.json"></a>
+	    <a class="btn btn-info" href="/gameRecordsData">Download anonymized logs</a>
             <br>
             <br>
             <br>
@@ -261,14 +260,7 @@
 <script>
     var gameRecordsData;
     
-    downloadLogs() {
-        // Read anonymized logs data.
-        var fs = require('fs');
-        var logsAnon = JSON.parse(fs.readFileSync('gameRecordsDataAnon.json', 'utf8'));
-	      $("#downloadStats")[0].href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(logsAnon));
-	      $("#downloadStats")[0].click();
-	      $("#downloadStats")[0].href = "";
-    }
+
 
     $( document ).ready(function() {
         $(function () {
@@ -281,6 +273,7 @@
 
         xmlhttp.onreadystatechange=function(){
             if (xmlhttp.readyState==4 && xmlhttp.status==200){
+                console.log(xmlhttp.responseText)
                 gameRecordsData=JSON.parse(xmlhttp.responseText);
                 console.log(gameRecordsData);
 

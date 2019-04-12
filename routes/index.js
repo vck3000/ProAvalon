@@ -498,10 +498,11 @@ var anonymizeStats = function(records) {
     for (var key in records) {
 	var record = records[key];
 	var anonymizedRecord = JSON.parse(JSON.stringify(record));
-	var usernamesMap = {}, idx = 0;
+	var usernamesMap = {};
+	var usernamesPossible = 'abcdefghijklmnopqrstuvwxyz', idx = 0;
 	for (var key in record.playerRoles) {
 	    if (record.playerRoles.hasOwnProperty(key)) {
-	        usernamesMap[key] = idx++;
+	        usernamesMap[key] = usernamesPossible[idx++];
 	    }
 	}
 	anonymizedRecord.spyTeam = anonymizeArray(record.spyTeam, usernamesMap);
@@ -517,13 +518,19 @@ var anonymizeStats = function(records) {
 }
 
 // Read in the game records
-var fs = require('fs');
-var gameRecordsData = JSON.parse(fs.readFileSync('gameRecordsDataShort.json', 'utf8'));
+// var fs = require('fs');
+// var gameRecordsData = JSON.parse(fs.readFileSync('assets/gameRecordsData/gameRecordsDataSample2.json', 'utf8'));
 
-// Anonymize it using gameRecordsData
-var gameRecordsDataAnon = anonymizeStats(gameRecordsData); 
+// // Anonymize it using gameRecordsData
+// var gameRecordsDataAnon = anonymizeStats(gameRecordsData); 
 
-fs.writeFile('gameRecordsDataAnon.json', JSON.stringify(gameRecordsDataAnon));
+// fs.writeFileSync('assets/gameRecordsData/gameRecordsDataAnon.json', JSON.stringify(gameRecordsDataAnon));
+
+
+router.get("/gameRecordsData", function (req, res) {
+	res.download("assets/gameRecordsData/gameRecordsDataAnon.json");
+});
+
 
 var hardUpdateStatsFunction = function(){
     console.log("Starting hard update stats...");
@@ -533,7 +540,14 @@ var hardUpdateStatsFunction = function(){
         }
         else {
 
-            console.log(records.length + " games loaded.");
+			console.log(records.length + " games loaded.");
+			fs.writeFileSync('assets/gameRecordsData/gameRecordsData.json', JSON.stringify(records));
+			// Anonymize it using gameRecordsData
+			var gameRecordsDataAnon = anonymizeStats(records); 
+
+			fs.writeFileSync('assets/gameRecordsData/gameRecordsDataAnon.json', JSON.stringify(gameRecordsDataAnon));
+
+
             var obj = {};
             obj.totalgamesplayed = records.length;
 
@@ -805,12 +819,12 @@ var hardUpdateStatsFunction = function(){
 
             // res.status(200).send(clientStatsData);
         }
-    });
+    }); 
 }
 
 var hardUpdateStats = false;
-if(hardUpdateStats === true){
-    hardUpdateStatsFunction();
+if(hardUpdateStats === true && process.env.MY_PLATFORM == "local"){
+	setTimeout(hardUpdateStatsFunction, 5000);
 }
 
 
