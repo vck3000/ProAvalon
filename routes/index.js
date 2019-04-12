@@ -518,6 +518,7 @@ var anonymizeStats = function(records) {
 }
 
 // Read in the game records
+<<<<<<< HEAD
 // var fs = require('fs');
 // var gameRecordsData = JSON.parse(fs.readFileSync('assets/gameRecordsData/gameRecordsDataSample2.json', 'utf8'));
 
@@ -531,6 +532,18 @@ router.get("/gameRecordsData", function (req, res) {
 	res.download("assets/gameRecordsData/gameRecordsDataAnon.json");
 });
 
+=======
+var fs = require('fs');
+var gameRecordsData = JSON.parse(fs.readFileSync('gameRecordsDataShort.json', 'utf8'));
+
+// TODO
+//Replace this with your function to anonymise it using gameRecordsData
+var gameRecordsDataAnon = {test: "test string"}; 
+
+fs.writeFile('gameRecordsDataAnon.json', JSON.stringify(gameRecordsDataAnon));
+
+
+>>>>>>> 929330c43caf5daa652049a15f98799be655ecd6
 
 var hardUpdateStatsFunction = function(){
     console.log("Starting hard update stats...");
