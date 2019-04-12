@@ -498,7 +498,7 @@ var anonymizeStats = function(records) {
     for (var key in records) {
 	var record = records[key];
 	var anonymizedRecord = JSON.parse(JSON.stringify(record));
-	var usernamesMap = {}
+	var usernamesMap = {};
 	var usernamesPossible = 'abcdefghijklmnopqrstuvwxyz', idx = 0;
 	for (var key in record.playerRoles) {
 	    if (record.playerRoles.hasOwnProperty(key)) {
