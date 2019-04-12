@@ -648,7 +648,7 @@ var actionsObj = {
 					// console.log("foundmodaction");
 					// console.log(foundModAction);
 					if (foundModAction.length !== 0) {
-						modAction.remove({ 'bannedPlayer.username': args[1] }, function (err, foundModAction) {
+						modAction.remove({ 'bannedPlayer.usernameLower': args[1].toLowerCase() }, function (err, foundModAction) {
 							if (err) {
 								console.log(err);
 								senderSocket.emit("messageCommandReturnStr", { message: "Something went wrong.", classStr: "server-text" });
