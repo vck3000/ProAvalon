@@ -644,7 +644,7 @@ var actionsObj = {
 					return { message: "Specify a username.", classStr: "server-text" }
 				}
 
-				modAction.find({ 'bannedPlayer.username': args[1] }, function (err, foundModAction) {
+				modAction.find({ 'bannedPlayer.usernameLower': args[1].toLowerCase() }, function (err, foundModAction) {
 					// console.log("foundmodaction");
 					// console.log(foundModAction);
 					if (foundModAction.length !== 0) {
@@ -1347,7 +1347,8 @@ module.exports = function (io) {
 								// console.log(foundUser);
 								newModAction.bannedPlayer = {};
 								newModAction.bannedPlayer.id = foundUser._id;
-								newModAction.bannedPlayer.username = foundUser.username;
+                                newModAction.bannedPlayer.username = foundUser.username;
+                                newModAction.bannedPlayer.usernameLower = foundUser.usernameLower;
 								
 								socket.emit("messageCommandReturnStr", { message: "User found, Adding in details...\t", classStr: "server-text" });
 
