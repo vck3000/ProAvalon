@@ -1009,7 +1009,8 @@ function updateBannedIps() {
 	return banIp.find({}, function (err, foundBannedIps) {
 		if (err) { console.log(err); }
 		else {
-			bannedIps = [];
+            bannedIps = [];
+            foundBannedIpsArray = [];
 			// console.log(foundBannedIps);
 			if (foundBannedIps) {
 				foundBannedIps.forEach(function (oneBannedIp) {
@@ -1056,32 +1057,32 @@ async function checkIpBan(req, res, next) {
 
 async function checkCurrentBan(req, res, next) {
 
-	var currentModActions = [];
-	//load up all the modActions that are not released yet and are bans
-	await modAction.find({ whenRelease: { $gt: new Date() }, type: "ban" }, function (err, allModActions) {
+	// var currentModActions = [];
+	// //load up all the modActions that are not released yet and are bans
+	// await modAction.find({ whenRelease: { $gt: new Date() }, type: "ban" }, function (err, allModActions) {
 
-		for (var i = 0; i < allModActions.length; i++) {
-			currentModActions.push(allModActions[i]);
-		}
-	});
+	// 	for (var i = 0; i < allModActions.length; i++) {
+	// 		currentModActions.push(allModActions[i]);
+	// 	}
+	// });
 
-	for (var i = 0; i < currentModActions.length; i++) {
-		if (currentModActions[i].bannedPlayer !== undefined && req.user !== undefined && req.user.username.toString() === currentModActions[i].bannedPlayer.username.toString()) {
-			if (currentModActions[i].type === "ban") {
-				console.log("TRUE");
-				console.log(currentModActions[i]);
-				console.log(req.user.username);
-				console.log(currentModActions[i].bannedPlayer.username);
-				var message = "You have been banned. The ban will be released on " + currentModActions[i].whenRelease + ". Ban description: '" + currentModActions[i].descriptionByMod + "'";
-				message += " Reflect on your actions.";
-				req.flash("error", message);
-				res.redirect("/")
+	// for (var i = 0; i < currentModActions.length; i++) {
+	// 	if (currentModActions[i].bannedPlayer !== undefined && req.user !== undefined && req.user.username.toString() === currentModActions[i].bannedPlayer.username.toString()) {
+	// 		if (currentModActions[i].type === "ban") {
+	// 			console.log("TRUE");
+	// 			console.log(currentModActions[i]);
+	// 			console.log(req.user.username);
+	// 			console.log(currentModActions[i].bannedPlayer.username);
+	// 			var message = "You have been banned. The ban will be released on " + currentModActions[i].whenRelease + ". Ban description: '" + currentModActions[i].descriptionByMod + "'";
+	// 			message += " Reflect on your actions.";
+	// 			req.flash("error", message);
+	// 			res.redirect("/")
 
-				// console.log(req.user.username + " is still banned and cannot join the lobby.");
-				return;
-			}
-		}
-	}
+	// 			// console.log(req.user.username + " is still banned and cannot join the lobby.");
+	// 			return;
+	// 		}
+	// 	}
+	// }
 
 	next();
 
