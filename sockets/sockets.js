@@ -1332,7 +1332,7 @@ module.exports = function (io) {
 				var newModAction = {};
 				var userNotFound = false;
 
-				data.forEach(async function (item) {
+				await data.forEach(async function (item) {
 					if (item.name === "banPlayerUsername") {
 						//not case sensitive
 						await User.findOne({ usernameLower: item.value.toLowerCase() }, function (err, foundUser) {
