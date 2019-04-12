@@ -54,24 +54,15 @@ fs.readdirSync("./gameplay/").filter(function (file) {
 		gameModeNames.push(file);
 	}
 });
-// console.log(gameModeNames);
-
-
-
 
 process.on('SIGINT', gracefulShutdown);
 process.on('SIGTERM', gracefulShutdown);
 
 function gracefulShutdown() {
-	// if(process.env.MY_PLATFORM === "online"){
-	// 	saveGamesAndSendWarning();
-	// }
-	// else{
-	sendWarning();
-	// }
-
+    sendWarning();
+    
 	console.log("Graceful shutdown request");
-
+    process.exit();
 }
 
 
@@ -93,7 +84,6 @@ function saveGameToDb(roomToSave) {
 				else {
 					rooms[rooms.indexOf(roomToSave)].savedGameRecordId = savedGame.id;
 					// console.log("Successfully created this save game");
-
 				}
 			});
 		}
@@ -105,11 +95,6 @@ function saveGameToDb(roomToSave) {
 	}
 }
 function deleteSaveGameFromDb(room) {
-	// if(process.env.MY_PLATFORM === "online"){
-	// console.log("room id to remove");
-	// console.log(roomToSave.savedGameRecordId);
-
-
 	savedGameObj.findByIdAndRemove(room.savedGameRecordId, function (err) {
 		if (err) {
 			console.log(err);
@@ -118,70 +103,6 @@ function deleteSaveGameFromDb(room) {
 			// console.log("Successfully removed this save game from db");
 		}
 	});
-
-
-	// }
-
-}
-
-function saveGamesAndSendWarning(senderSocket) {
-	for (var key in allSockets) {
-		if (allSockets.hasOwnProperty(key)) {
-			if (senderSocket) {
-				allSockets[key].emit("serverRestartWarning");
-			} else {
-				// allSockets[key].emit("serverDailyRestartWarning");
-			}
-		}
-	}
-
-	var numOfGamesSaved = 0;
-	var numOfGamesEncountered = 0;
-	var promises = [];
-
-	// //save the games
-	// for(var i = 0; i < rooms.length; i++){
-	// 	if(rooms[i] && rooms[i].gameStarted === true && rooms[i].finished !== true){
-	// 		console.log("rooms");
-	// 		// console.log(rooms[i]);
-
-	// 		savedGameObj.create({room: JSON.stringify(rooms[i])}, function(err, savedGame){
-	// 			if(err){
-	// 				console.log(err);
-	// 			}
-	// 			console.log(savedGame);
-	// 			numOfGamesSaved++;
-
-	// 			console.log("created");
-	// 			console.log(numOfGamesSaved >= numOfGamesEncountered);
-	// 			console.log(numOfGamesSaved);
-	// 			console.log(numOfGamesEncountered);
-
-	// 			if(numOfGamesSaved >= numOfGamesEncountered){
-	// 				var data = {message: "Successful. Saved " + numOfGamesSaved + " games.", classStr: "server-text"};
-	// 				if(senderSocket){
-	// 					senderSocket.emit("messageCommandReturnStr", data);
-	// 				}
-
-	// 				// //if its a heroku update
-	// 				// if(!senderSocket){
-	// 				// 	process.exit(0);
-	// 				// }
-	// 			}
-
-	// 		});
-	// 		numOfGamesEncountered++;
-	// 	}
-	// }
-
-	// console.log(numOfGamesEncountered);
-
-	if (numOfGamesEncountered === 0) {
-		return { message: "Successful. But no games needed to be saved.", classStr: "server-text" };
-	}
-	else {
-		return { message: "Successful. But still saving games.", classStr: "server-text" };
-	}
 }
 
 
@@ -191,51 +112,18 @@ savedGameObj.find({}).exec(function (err, foundSaveGameArray) {
 	else {
 		for (var key in foundSaveGameArray) {
 			if (foundSaveGameArray.hasOwnProperty(key)) {
-				// console.log(foundSaveGameArray);
-
-				var foundSaveGame = foundSaveGameArray[key];
-
+                var foundSaveGame = foundSaveGameArray[key];
+                
 				if (foundSaveGame) {
-					// console.log("Parsed:");
-					// console.log(JSON.parse(foundSaveGame.room));
-
 					var storedData = JSON.parse(foundSaveGame.room);
 
 					rooms[storedData["roomId"]] = new gameRoom();
 
 					Object.assign(rooms[storedData["roomId"]], storedData);
 
-					// //Assigning in all the previous variables
-					// for(var key in storedData){
-					// 	if(storedData.hasOwnProperty(key)){
-					// 		// console.log("typeof: " + typeof(key))
-					// 		rooms[storedData["roomId"]][key] = storedData[key];
-					// 		// console.log("copied over: " + key);
-					// 		// if(key === "startGameTime"){
-
-					// 			// console.log(storedData[key]);
-					// 			// console.log(new Date - storedData[key]);
-					// 		// }
-					// 	}
-					// }
-
-					// rooms[storedData["roomId"]].loadRoleCardData(storedData["avalonRoles"], storedData["avalonCards"]);
-					// rooms[storedData["roomId"]].reloadParentFunctions();
-
-
 					rooms[storedData["roomId"]].restartSaved = true;
 					rooms[storedData["roomId"]].savedGameRecordId = foundSaveGame.id;
 					rooms[storedData["roomId"]].recoverGame(storedData);
-
-
-
-
-					// console.log("Game loaded");
-
-					// console.log("platform: " + process.env.MY_PLATFORM);
-					// if(process.env.MY_PLATFORM === "online"){
-					// foundSaveGame.remove();
-					// }
 				}
 			}
 		}
@@ -255,29 +143,16 @@ var actionsObj = {
 				var dataToReturn = [];
 				var i = 0;
 
-				//starting break in the chat
-				// data[i] = {message: "-------------------------", classStr: "server-text"};
-
-				// var str = [];
-				// str[i] = "-------------------------";
-
 				i++;
 
 				for (var key in actionsObj.userCommands) {
 					if (actionsObj.userCommands.hasOwnProperty(key)) {
 						if (!actionsObj.userCommands[key].modsOnly) {
-							// console.log(key + " -> " + p[key]);
 							dataToReturn[i] = { message: actionsObj.userCommands[key].help, classStr: "server-text", dateCreated: new Date() };
-							// str[i] = userCommands[key].help;
 							i++;
-							//create a break in the chat
-							// data[i] = {message: "-------------------------", classStr: "server-text"};
-							// i++;
 						}
 					}
 				}
-				// return "Commands are: commandA, help";
-				// return str;
 				return dataToReturn;
 			}
 		},
@@ -391,7 +266,6 @@ var actionsObj = {
 						rooms[socketThatWasSlappedInGame.request.user.inRoomId].sendText(rooms[socketThatWasSlappedInGame.request.user.inRoomId].allSockets, str, "server-text");
 					}
 
-
 					return; // {message: "You have " + verbPast + " " + args[2] + "!", classStr: "server-text"};
 				}
 				else {
@@ -441,11 +315,9 @@ var actionsObj = {
 						return { message: "That is not a valid number!", classStr: "server-text" }
 					}
 				}
-
 				else {
 					return { message: (Math.floor(Math.random() * 10) + 1).toString(), classStr: "server-text" }
 				}
-
 			}
 		},
 
@@ -853,8 +725,6 @@ var actionsObj = {
 					ips.push(clientIpAddress);
 				}
 
-				var names = ['Mike', 'Matt', 'Nancy', 'Adam', 'Jenny', 'Nancy', 'Carl']
-
 				var uniq = ips
 					.map((ip) => {
 						return { count: 1, ip: ip }
@@ -866,10 +736,6 @@ var actionsObj = {
 
 				var duplicateIps = Object.keys(uniq).filter((a) => uniq[a] > 1)
 
-				// console.log(duplicateIps) // [ 'Nancy' ]
-				// var indexesOfDuplicates = [][];
-
-				// var str = "";
 				var dataToReturn = [];
 				dataToReturn[0] = { message: "-------------------------", classStr: "server-text", dateCreated: new Date() };
 
@@ -882,14 +748,10 @@ var actionsObj = {
 							dataToReturn.push({ message: usernames[j], classStr: "server-text", dateCreated: new Date() })
 						}
 					}
-
 					dataToReturn.push({ message: "-------------------------", classStr: "server-text", dateCreated: new Date() })
-
-
 				}
 
 				senderSocket.emit("messageCommandReturnStr", dataToReturn);
-
 				return;
 			}
 		},
@@ -904,7 +766,6 @@ var actionsObj = {
 					return;
 				}
 
-
 				var targetSock = allSockets[getIndexFromUsername(allSockets, args[1], true)];
 				if (targetSock) {
 					targetSock.disconnect();
@@ -915,7 +776,6 @@ var actionsObj = {
 				else {
 					senderSocket.emit("messageCommandReturnStr", { message: "Could not find username", classStr: "server-text" });
 				}
-
 				return;
 			}
 		},
@@ -986,7 +846,6 @@ var actionsObj = {
 						sendToSocket.emit("allChatToClient", { message: "You can do /r <message> to reply.", classStr: "whisper", dateCreated: new Date() });
 						sendToSocket.emit("roomChatToClient", { message: "You can do /r <message> to reply.", classStr: "whisper", dateCreated: new Date() });
 					}
-
 
 					sendToSocket.emit("allChatToClient", dataMessage);
 					sendToSocket.emit("roomChatToClient", dataMessage);
@@ -1213,13 +1072,8 @@ var actionsObj = {
 				for (var key in actionsObj.adminCommands) {
 					if (actionsObj.adminCommands.hasOwnProperty(key)) {
 						if (!actionsObj.adminCommands[key].modsOnly) {
-							// console.log(key + " -> " + p[key]);
 							dataToReturn[i] = { message: actionsObj.adminCommands[key].help, classStr: "server-text" };
-							// str[i] = userCommands[key].help;
 							i++;
-							//create a break in the chat
-							// data[i] = {message: "-------------------------", classStr: "server-text"};
-							// i++;
 						}
 					}
 				}
@@ -1237,22 +1091,6 @@ var actionsObj = {
 			}
 		},
 
-		aServerRestartWarning: {
-			command: "aServerRestartWarning",
-			help: "/aServerRestartWarning: Only for the admin to use :)",
-			run: function (data, senderSocket) {
-				var args = data.args;
-				// console.log(allSockets);
-				//code
-				if (adminsArray.indexOf(senderSocket.request.user.username.toLowerCase()) !== -1) {
-					saveGamesAndSendWarning(senderSocket);
-				}
-				else {
-					return { message: "You are not the admin...", classStr: "server-text" };
-				}
-			}
-		},
-
 		killS: {
 			command: "killS",
 			help: "/killS: test kill",
@@ -1260,8 +1098,6 @@ var actionsObj = {
 				var args = data.args;
 				//do stuff
 				process.exit(0);
-
-
 
 				return { message: "killS has been run.", classStr: "server-text" };
 			}
@@ -1309,10 +1145,6 @@ var actionsObj = {
 
 					return { message: "There is no such player.", classStr: "server-text" };
 				}
-
-
-
-				return;
 			}
 		},
 		aipban: {
@@ -1344,16 +1176,12 @@ var actionsObj = {
 								senderSocket.emit("messageCommandReturnStr", { message: "Successfully banned ip " + args[1], classStr: "server-text" });
 							}
 						});
-
 					}
-
 					else {
 						//send error message back
 						senderSocket.emit("messageCommandReturnStr", { message: "Could not find your user data (your own one, not the person you're trying to ban)", classStr: "server-text" });
 					}
-
 				});
-
 			}
 		}
 	}
@@ -1419,11 +1247,6 @@ module.exports = function (io) {
 			}
 
 			console.log(socket.request.user.username + " has connected under socket ID: " + socket.id);
-
-
-
-
-
 
 			//send the user its ID to store on their side.
 			socket.emit("username", socket.request.user.username);
@@ -1493,11 +1316,8 @@ module.exports = function (io) {
 		}, 1000);
 
 
-
-
 		//when a user disconnects/leaves the whole website
 		socket.on("disconnect", disconnect);
-
 
 		socket.on("modAction", async function (data) {
 
@@ -1596,7 +1416,6 @@ module.exports = function (io) {
 						else {
 							socket.emit("messageCommandReturnStr", { message: "Something went wrong...", classStr: "server-text" });
 						}
-
 					});
 				}
 				else {
@@ -1617,59 +1436,34 @@ module.exports = function (io) {
 		//=======================================
 
 		socket.on("messageCommand", messageCommand);
-
 		socket.on("interactUserPlayed", interactUserPlayed);
-
 		//when a user tries to send a message to all chat
 		socket.on("allChatFromClient", allChatFromClient);
-
 		//when a user tries to send a message to room
 		socket.on("roomChatFromClient", roomChatFromClient);
-
-
 		//when a new room is created
 		socket.on("newRoom", newRoom);
-
 		//when a player joins a room
 		socket.on("join-room", joinRoom);
-
 		socket.on("join-game", joinGame);
-
 		socket.on("standUpFromGame", standUpFromGame);
-
 
 		//when a player leaves a room
 		socket.on("leave-room", leaveRoom);
-
 		socket.on("player-ready", playerReady);
-
 		socket.on("player-not-ready", playerNotReady);
-
 		socket.on("startGame", startGame);
-
 		socket.on("kickPlayer", kickPlayer);
-
 		socket.on("update-room-max-players", updateRoomMaxPlayers);
-
 		socket.on("update-room-game-mode", updateRoomGameMode);
-
-
-
 
 		//************************
 		//game data stuff
 		//************************
 		socket.on("gameMove", gameMove);
-
 		socket.on("setClaim", setClaim);
-
-
-
 	});
 }
-
-
-
 
 
 var updateCurrentGamesList = function () {
@@ -1712,7 +1506,6 @@ var updateCurrentGamesList = function () {
 }
 
 
-
 function textLengthFilter(str) {
 	var lengthLimit = 500;
 
@@ -1724,7 +1517,6 @@ function textLengthFilter(str) {
 	}
 }
 
-
 var fiveMinsInMillis = 1000 * 60 * 5;
 
 function sendToAllChat(io, data) {
@@ -1734,11 +1526,8 @@ function sendToAllChat(io, data) {
 
 	allSockets.forEach(function (sock) {
 		sock.emit("allChatToClient", data);
-	});
-	// io.in("allChat").emit("allChatToClient", data);
-
-
-
+    });
+    
 	allChatHistory.push(data);
 
 	allChat5Min.push(data);
@@ -1750,19 +1539,15 @@ function sendToAllChat(io, data) {
 			break;
 		}
 		i++;
-	}
+    }
 
 	if (i !== 0) {
-		//console.log("Messages older than 5 mins detected. Deleting old ones. index: " + i);
-		//starting from index 0, remove i items.
 		allChat5Min.splice(0, i);
 	}
 }
 
 function sendToRoomChat(io, roomId, data) {
 	io.in(roomId).emit("roomChatToClient", data);
-	// io.in(socket.request.user.inRoomId).emit("player-ready", username + " is ready.");
-
 	if (rooms[roomId]) {
 		rooms[roomId].addToChatHistory(data);
 	}
@@ -1771,11 +1556,8 @@ function sendToRoomChat(io, roomId, data) {
 function isMuted(socket) {
 	returnVar = false;
 	currentModActions.forEach(function (oneModAction) {
-		// console.log(oneModAction);
 		if (oneModAction.type === "mute" && oneModAction.bannedPlayer && oneModAction.bannedPlayer.id && oneModAction.bannedPlayer.id.toString() === socket.request.user.id.toString()) {
 			socket.emit("muteNotification", oneModAction);
-			// console.log("TRUEEEE");
-
 			returnVar = true;
 			return;
 		}
@@ -1786,7 +1568,6 @@ function isMuted(socket) {
 
 
 function playerLeaveRoomCheckDestroy(socket) {
-
 	if (socket.request.user.inRoomId && rooms[socket.request.user.inRoomId]) {
 		//leave the room
 		rooms[socket.request.user.inRoomId].playerLeaveRoom(socket);
@@ -1871,7 +1652,6 @@ function getIndexFromUsername(sockets, username, caseInsensitive) {
 	}
 	return null;
 }
-
 
 function disconnect(data) {
     //debugging
