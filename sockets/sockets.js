@@ -680,11 +680,17 @@ var actionsObj = {
 				var i = 0;
 				i++;
 
+                // Cutoff so we dont return perma bans (that are 1000 years long)
+                cutOffDate = new Date("2999-12-17T03:24:00");
 				modAction.find({
 					$or: [
 						{ type: "mute" },
 						{ type: "ban" }
-					]
+                    ],
+                    $and: [
+                        {whenRelease: {$lte: cutOffDate}},
+                        {whenRelease: {$gte: new Date()}}
+                    ]
 				}, function (err, foundModActions) {
 					foundModActions.forEach(function (modActionFound) {
 						var message = "";
