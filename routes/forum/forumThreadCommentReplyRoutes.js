@@ -96,30 +96,42 @@ function createReply(req, res, commentReplyData, replyingToThisReply) {
                 req.flash("error", "There was an error creating your reply. Please let the admin know.")
                 res.redirect("/forum/show/" + req.params.id);
             }
-            else{
+            else if(foundForum !== undefined || foundForum !== null){
                 forumThreadComment.findById(req.params.commentId).populate("replies").exec(function (err, foundForumThreadComment) {
-                    if (foundForumThreadComment.replies === undefined) {
-                        foundForumThreadComment.replies = [];
-                    }
-    
-                    foundForumThreadComment.replies.push(newCommentReply);
-                    foundForumThreadComment.save();
-    
-                    if (replyingToThisReply) {
-                        //create notif to replying target
-                        var userIdTarget = mongoose.Types.ObjectId(replyingToThisReply.author.id);
-                        var stringToSay = req.user.username + " has replied to your reply.";
-                        var link = ("/forum/show/" + foundForum._id + "#" + newCommentReply._id);
-    
-                        createNotificationObj.createNotification(userIdTarget, stringToSay, link);
-    
-                        // console.log("**********************************");
-                        // console.log(replyingToThisReply.author.id);
-                        // console.log(foundForumThreadComment.author.id);
-                        // console.log(replyingToThisReply.author.id.equals(foundForumThreadComment.author.id));
-    
-                        if (foundForumThreadComment.author.id && replyingToThisReply.author.id.equals(foundForumThreadComment.author.id)) {
-                            //dont create two notifications for a player
+                    if(foundForumThreadComment !== undefined || foundForumThreadComment !== null){
+                        if (foundForumThreadComment.replies === undefined) {
+                            foundForumThreadComment.replies = [];
+                        }
+        
+                        foundForumThreadComment.replies.push(newCommentReply);
+                        foundForumThreadComment.save();
+        
+                        if (replyingToThisReply) {
+                            //create notif to replying target
+                            var userIdTarget = mongoose.Types.ObjectId(replyingToThisReply.author.id);
+                            var stringToSay = req.user.username + " has replied to your reply.";
+                            var link = ("/forum/show/" + foundForum._id + "#" + newCommentReply._id);
+        
+                            createNotificationObj.createNotification(userIdTarget, stringToSay, link);
+        
+                            // console.log("**********************************");
+                            // console.log(replyingToThisReply.author.id);
+                            // console.log(foundForumThreadComment.author.id);
+                            // console.log(replyingToThisReply.author.id.equals(foundForumThreadComment.author.id));
+        
+                            if (foundForumThreadComment.author.id && replyingToThisReply.author.id.equals(foundForumThreadComment.author.id)) {
+                                //dont create two notifications for a player
+                            }
+                            else {
+                                if (foundForumThreadComment.author.id) {
+                                    //create notif to main comment person
+                                    var userIdTarget = mongoose.Types.ObjectId(foundForumThreadComment.author.id);
+                                    var stringToSay = req.user.username + " has replied to your comment.";
+                                    var link = ("/forum/show/" + foundForum._id + "#" + newCommentReply._id);
+        
+                                    createNotificationObj.createNotification(userIdTarget, stringToSay, link);
+                                }
+                            }
                         }
                         else {
                             if (foundForumThreadComment.author.id) {
@@ -127,47 +139,40 @@ function createReply(req, res, commentReplyData, replyingToThisReply) {
                                 var userIdTarget = mongoose.Types.ObjectId(foundForumThreadComment.author.id);
                                 var stringToSay = req.user.username + " has replied to your comment.";
                                 var link = ("/forum/show/" + foundForum._id + "#" + newCommentReply._id);
-    
+        
                                 createNotificationObj.createNotification(userIdTarget, stringToSay, link);
                             }
                         }
-                    }
-                    else {
-                        if (foundForumThreadComment.author.id) {
-                            //create notif to main comment person
-                            var userIdTarget = mongoose.Types.ObjectId(foundForumThreadComment.author.id);
-                            var stringToSay = req.user.username + " has replied to your comment.";
-                            var link = ("/forum/show/" + foundForum._id + "#" + newCommentReply._id);
-    
-                            createNotificationObj.createNotification(userIdTarget, stringToSay, link);
-                        }
-                    }
-    
-                    // console.log(foundForumThreadComment);
-                    // console.log("author");
-                    // console.log(foundForumThreadComment.author);
-    
-                    forumThread.findById(req.params.id).populate("comments").exec(function (err, foundForumThread) {
-                        foundForumThread.markModified("comments");
-                        //add 1 to the num of comments
-                        foundForumThread.numOfComments = foundForumThread.numOfComments + 1;
-    
-                        //update time last edited
-                        foundForumThread.timeLastEdit = new Date();
-                        foundForumThread.whoLastEdit = req.user.username;
-    
-    
-                        foundForumThread.save();
-                    });
-    
+        
+                        // console.log(foundForumThreadComment);
+                        // console.log("author");
+                        // console.log(foundForumThreadComment.author);
+        
+                        forumThread.findById(req.params.id).populate("comments").exec(function (err, foundForumThread) {
+                            foundForumThread.markModified("comments");
+                            //add 1 to the num of comments
+                            foundForumThread.numOfComments = foundForumThread.numOfComments + 1;
+        
+                            //update time last edited
+                            foundForumThread.timeLastEdit = new Date();
+                            foundForumThread.whoLastEdit = req.user.username;
+        
+        
+                            foundForumThread.save();
+                        });
+                    }    
                     //redirect to same forum thread
                     res.redirect("/forum/show/" + req.params.id);
-    
                 });
                 //since there is a new comment, the thread is now refreshed and no one has seen the new changes yet,
                 //except for the one who made the comment
                 foundForum.seenUsers = [req.user.username.toLowerCase()];
                 foundForum.save();
+            }
+            else{
+                console.log(err);
+                req.flash("error", "There was an error creating your reply. Please let the admin know.")
+                res.redirect("/forum/show/" + req.params.id);
             }
 		});
 	});
