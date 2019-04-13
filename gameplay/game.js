@@ -245,7 +245,7 @@ Game.prototype.playerJoinRoom = function (socket, inputPassword) {
         // If the player failed the join, remove their socket.
         if(resultOfRoomJoin === false){
             var index = this.socketsOfPlayers.indexOf(socket);
-            this.socketsOfPlayers.splice(i, 1);
+            this.socketsOfPlayers.splice(index, 1);
         }
 
         return resultOfRoomJoin;
