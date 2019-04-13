@@ -55,7 +55,7 @@ Ref.prototype.gameMove = function (socket, data) {
     //Get index of socket 
     var indexOfSocket = undefined;
     for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
-        console.log("Comparing: " + this.thisRoom.playersInGame[i].username + " with " + socket.request.user.username);
+        // console.log("Comparing: " + this.thisRoom.playersInGame[i].username + " with " + socket.request.user.username);
         if (this.thisRoom.playersInGame[i].username === socket.request.user.username) {
             indexOfSocket = i;
             break;

@@ -1270,7 +1270,7 @@ Game.prototype.calcMissionVotes = function (votes) {
 			countFail++;
 		}
 		else {
-			console.log("Bad vote: " + votes[i]);
+			// console.log("Bad vote: " + votes[i]);
 		}
 	}
 

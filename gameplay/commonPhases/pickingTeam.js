@@ -16,7 +16,7 @@ PickingTeam.prototype.gameMove = function (socket, data) {
         this.thisRoom.publicVotes = [];
 
         var num = this.thisRoom.numPlayersOnMission[this.thisRoom.playersInGame.length - this.thisRoom.minPlayers][this.thisRoom.missionNum - 1];
-        console.log("Num player for this.thisRoom mission : " + num);
+        // console.log("Num player for this.thisRoom mission : " + num);
 
         //In case the mission num is 4*, make it 4.
         if (num.length > 1) { num = parseInt(num[0]); }
@@ -126,7 +126,7 @@ PickingTeam.prototype.getStatusMessage = function (indexOfPlayer) {
         return "Your turn to pick a team. Pick " + num + " players.";
     }
     else {
-        console.log(this.thisRoom.teamLeader);
+        // console.log(this.thisRoom.teamLeader);
         if (this.thisRoom.playersInGame[this.thisRoom.teamLeader]) {
             return "Waiting for " + this.thisRoom.playersInGame[this.thisRoom.teamLeader].username + " to pick a team.";
         }

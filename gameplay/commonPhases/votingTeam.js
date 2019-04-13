@@ -197,7 +197,7 @@ function calcVotes(votes) {
             countRej++;
         }
         else {
-            console.log("Bad vote: " + votes[i]);
+            // console.log("Bad vote: " + votes[i]);
         }
     }
     //calcuate the outcome
