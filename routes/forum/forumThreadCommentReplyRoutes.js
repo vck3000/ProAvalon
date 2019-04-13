@@ -71,7 +71,7 @@ function createCommentReply(req, res) {
 
 		forumThreadCommentReply.findById(mongoose.Types.ObjectId(req.params.replyId)).exec(function (err, foundReply) {
 			//If there was someone who this reply was targetted to
-			commentReplyData.replyingUsername = [foundReply.author.username];
+			commentReplyData.replyingUsername = foundReply.author.username;
 
 			createReply(req, res, commentReplyData, foundReply);
 		});
@@ -89,11 +89,17 @@ function createReply(req, res, commentReplyData, replyingToThisReply) {
 	commentReplyData.seenUsers = [req.user.username.toLowerCase()];
 
 	forumThreadCommentReply.create(commentReplyData, function (err, newCommentReply) {
+        if(err){
+            console.log(err);
+            req.flash("error", "There was an error creating your reply code 1. Please let the admin know.")
+            res.redirect("/forum/show/" + req.params.id);
+            return;
+        }
 		// console.log("new commentReply: " + newCommentReply);
 		forumThread.findById(mongoose.Types.ObjectId(req.params.id), function (err, foundForum) {
             if(err){
                 console.log(err);
-                req.flash("error", "There was an error creating your reply. Please let the admin know.")
+                req.flash("error", "There was an error creating your reply code 2. Please let the admin know.")
                 res.redirect("/forum/show/" + req.params.id);
             }
             else if(foundForum !== undefined || foundForum !== null){
