@@ -456,10 +456,6 @@ Game.prototype.startGame = function (options) {
 	for (var i = 0; i < this.playersInGame.length; i++) {
 		// Lowercase the role to give the file name
 		let roleLower = this.playersInGame[i].role.toLowerCase();
-
-		// console.log(this.specialRoles);
-		// console.log();
-		// console.log(roleLower);
 		this.playersInGame[i].see = this.specialRoles[roleLower].see();
 	}
 
@@ -470,7 +466,6 @@ Game.prototype.startGame = function (options) {
 
 	this.missionNum = 1;
 	this.pickNum = 1;
-	// this.missionHistory = ["succeeded", "failed", "succeeded"];
 	this.missionHistory = [];
 
 	var str = "Game started with: ";
@@ -484,7 +479,6 @@ Game.prototype.startGame = function (options) {
 	//remove the last , and replace with .
 	str = str.slice(0, str.length - 2);
 	str += ".";
-	// this.gameplayMessage = str;
 	this.sendText(this.allSockets, str, "gameplay-text");
 
 
@@ -640,13 +634,9 @@ Game.prototype.checkBotMoves = function () {
 				// console.log(prohibitedIndexesToPick);
 
 				thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]], selectUsernames);
-				// setTimeout(function(index){
-				// thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[index]], selectUsernames);
-				// }, count*timeEachLoop, i);
-
 				count += 1;
 			}
-		}, 1000); //wholeLoopDelay);
+		}, 1000);
 	}
 }
 
@@ -799,9 +789,6 @@ Game.prototype.getProhibitedIndexesToPick = function (indexOfPlayer) {
 //**************************************************
 
 
-
-
-
 Game.prototype.incrementTeamLeader = function () {
 	//move to next team Leader, and reset it back to the start if 
 	//we go into negative numbers
@@ -850,20 +837,15 @@ Game.prototype.getRoomPlayers = function () {
 
 Game.prototype.distributeGameData = function () {
 	//distribute roles to each player
-
 	this.updateRoomPlayers();
 
 	if (this.gameStarted === true) {
-
 		var gameData = this.getGameData();
-
 		for (var i = 0; i < this.playersInGame.length; i++) {
 			var index = usernamesIndexes.getIndexFromUsername(this.socketsOfPlayers, this.playersInGame[i].request.user.username);
-
 			//need to go through all sockets, but only send to the socket of players in game
 			if (this.socketsOfPlayers[index]) {
 				this.socketsOfPlayers[index].emit("game-data", gameData[i])
-
 				// console.log("Sent to player: " + this.playersInGame[i].request.user.username + " role " + gameData[i].role);
 			}
 		}
@@ -882,7 +864,6 @@ Game.prototype.distributeGameData = function () {
 Game.prototype.getGameData = function () {
 	if (this.gameStarted == true) {
 		var data = {};
-
 		var playerRoles = this.playersInGame;
 
 		//set up the object first, because we cannot pass an array through
@@ -1026,10 +1007,7 @@ Game.prototype.addToChatHistory = function (data) {
     if (data.message === "-playersingame"){
         this.sendText(null, "Players in game length is: " + this.playersInGame.length, "server-text");
     }
-
 }
-
-
 
 Game.prototype.getStatus = function () {
 	if (this.finished === true) {
@@ -1045,8 +1023,6 @@ Game.prototype.getStatus = function () {
 		return "Waiting";
 	}
 }
-
-
 
 Game.prototype.finishGame = function (toBeWinner) {
 	this.phase = "finished";
@@ -1439,13 +1415,6 @@ function shuffle(array) {
 	}
 	return array;
 }
-
-
-
-
-
-
-
 
 function generateAssignmentOrders(num) {
 	var rolesAssignment = [];
