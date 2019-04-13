@@ -10,7 +10,6 @@ var PlayersReadyNotReady = require("./playersReadyNotReady");
 var usernamesIndexes = require("../myFunctions/usernamesIndexes");
 
 
-var mongoose = require("mongoose");
 var User = require("../models/user");
 var GameRecord = require("../models/gameRecord");
 
@@ -34,7 +33,6 @@ for (var i = 0; i < gameModeNames.length; i++) {
 }
 
 
-mongoose.connect("mongodb://localhost/TheNewResistanceUsers");
 
 /**
  * 
@@ -219,8 +217,6 @@ Game.prototype.recoverGame = function (storedData) {
 	// Merge in the objects
 	_.merge(this.specialCards, storedData.specialCards);
 
-
-	// Object.assign();
 }
 
 //------------------------------------------------
