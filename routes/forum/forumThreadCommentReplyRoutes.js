@@ -116,11 +116,11 @@ function createReply(req, res, commentReplyData, replyingToThisReply) {
                             //create notif to replying target
                             var userIdTarget = mongoose.Types.ObjectId(replyingToThisReply.author.id);
                             var stringToSay = req.user.username + " has replied to your reply.";
-                            console.log(foundForum);
-                            console.log("**************");
-                            console.log("**************");
-                            console.log("**************");
-                            console.log(newCommentReply);
+                            // console.log(foundForum);
+                            // console.log("**************");
+                            // console.log("**************");
+                            // console.log("**************");
+                            // console.log(newCommentReply);
                             var link = ("/forum/show/" + foundForum._id + "#" + newCommentReply._id);
         
                             createNotificationObj.createNotification(userIdTarget, stringToSay, link);
