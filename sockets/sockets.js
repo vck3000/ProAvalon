@@ -1273,14 +1273,17 @@ module.exports = function (io) {
 						setTimeout(function () {
 							if (allAvatarRequests.length !== 0) {
 								if (allAvatarRequests.length === 1) {
-									socket.emit("messageCommandReturnStr", { message: "There is " + allAvatarRequests.length + " pending custom avatar request.", classStr: "server-text" });
+                                    socket.emit("allChatToClient", { message: "There is " + allAvatarRequests.length + " pending custom avatar request.", classStr: "server-text" });
+                                    socket.emit("roomChatToClient", { message: "There is " + allAvatarRequests.length + " pending custom avatar request.", classStr: "server-text" });
 								}
 								else {
-									socket.emit("messageCommandReturnStr", { message: "There are " + allAvatarRequests.length + " pending custom avatar requests.", classStr: "server-text" });
+                                    socket.emit("allChatToClient", { message: "There are " + allAvatarRequests.length + " pending custom avatar requests.", classStr: "server-text" });
+                                    socket.emit("roomChatToClient", { message: "There are " + allAvatarRequests.length + " pending custom avatar requests.", classStr: "server-text" });
 								}
 							}
 							else {
-								socket.emit("messageCommandReturnStr", { message: "There are no pending custom avatar requests!", classStr: "server-text" });
+                                socket.emit("allChatToClient", { message: "There are no pending custom avatar requests!", classStr: "server-text" });
+                                socket.emit("roomChatToClient", { message: "There are no pending custom avatar requests!", classStr: "server-text" });
 							}
 						}, 3000);
 
