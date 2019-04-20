@@ -8,8 +8,8 @@ createNotifObj = {};
 
 
 
-createNotifObj.createNotification = function (userIDTarget, stringToSay, link) {
-	if (userIDTarget) {
+createNotifObj.createNotification = function (userIDTarget, stringToSay, link, madeBy) {
+	if (userIDTarget && madeBy) {
 		User.findById(mongoose.Types.ObjectId(userIDTarget)).populate("notifications")
 			.exec(function (err, foundUser) {
 
@@ -34,7 +34,7 @@ createNotifObj.createNotification = function (userIDTarget, stringToSay, link) {
 						// console.log("sameNotifExists: " + sameNotifExists);
 
 						//if the notification is for the person who made it (i.e. If I comment on my own post)
-						if (stringToSay.includes(foundUser.username) === false && sameNotifExists === false) {
+						if (madeBy.toLowerCase() !== foundUser.username.toLowerCase() && sameNotifExists === false) {
 
 							notificationVar = {
 								text: stringToSay,
@@ -42,7 +42,9 @@ createNotifObj.createNotification = function (userIDTarget, stringToSay, link) {
 								link: link,
 
 								forPlayer: foundUser.username,
-								seen: false
+                                seen: false,
+                                
+                                madeBy: madeBy.toLowerCase()
 							}
 
 							myNotification.create(notificationVar, function (err, newNotif) {
@@ -51,13 +53,16 @@ createNotifObj.createNotification = function (userIDTarget, stringToSay, link) {
 									foundUser.notifications.push(newNotif);
 									foundUser.markModified("notifications");
 									foundUser.save();
-								}
+                                }
 							});
 						}
 					}
 				}
 			});
-	}
+    }
+    else{
+        console.log("Missing a parameter - userIDTarget: " + userIDTarget + "\tmadeBy: " + madeBy);
+    }
 }
 
 

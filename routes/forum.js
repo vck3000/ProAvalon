@@ -76,7 +76,7 @@ router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function (req, res)
 					var stringToSay = req.user.username + " has liked your post!";
 					var link = ("/forum/show/" + foundThread._id);
 
-					createNotificationObj.createNotification(userIdTarget, stringToSay, link);
+					createNotificationObj.createNotification(userIdTarget, stringToSay, link, req.user.username);
 
 					console.log(foundThread);
 				}
@@ -107,7 +107,7 @@ router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function (req, res)
 							var stringToSay = req.user.username + " has liked your comment!";
 							var link = ("/forum/show/" + foundThread._id + "#" + foundComment._id);
 
-							createNotificationObj.createNotification(userIdTarget, stringToSay, link);
+							createNotificationObj.createNotification(userIdTarget, stringToSay, link, req.user.username);
 
 
 
@@ -139,7 +139,7 @@ router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function (req, res)
 									var stringToSay = req.user.username + " has liked your reply!";
 									var link = ("/forum/show/" + foundThread._id + "#" + foundReply._id);
 
-									createNotificationObj.createNotification(userIdTarget, stringToSay, link);
+									createNotificationObj.createNotification(userIdTarget, stringToSay, link, req.user.username);
 
 								}
 								foundReply.save(function () {

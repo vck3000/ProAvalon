@@ -89,7 +89,7 @@ router.post("/:id/comment", newCommentLimiter, middleware.isLoggedIn, async func
 				var stringToSay = req.user.username + " has commented on your post.";
 				var link = ("/forum/show/" + foundForumThread._id + "#" + newComment._id);
 
-				createNotificationObj.createNotification(userIdTarget, stringToSay, link);
+				createNotificationObj.createNotification(userIdTarget, stringToSay, link, req.user.username);
 			}
 
 
