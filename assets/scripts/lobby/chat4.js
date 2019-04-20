@@ -359,7 +359,7 @@ function addToRoomChat(data) {
 
                 // console.log("true?"  + selectedChat[data[i].username]);
 
-                if (selectedChat[data[i].username] === true) {
+                if (selectedChat[data[i].username] === true && getIndexFromUsername(data[i].username) !== undefined) {
                     if (setHighlightColorToYellow === true) {
                         highlightChatColour = "#ffff9e";
                     }
