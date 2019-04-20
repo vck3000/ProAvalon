@@ -8,7 +8,8 @@ var notificationSchema = new mongoose.Schema({
 	link: String,
 
 	forPlayer: String,
-	seen: Boolean
+    seen: Boolean,
+    madeBy: String
 
 });
 //compile schema into a model
