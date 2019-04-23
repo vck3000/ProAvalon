@@ -335,6 +335,7 @@ Game.prototype.startGame = function (options) {
 
 	//make game started after the checks for game already started
 	this.gameStarted = true;
+	this.merlinguesses = {};
 
 	var rolesAssignment = generateAssignmentOrders(this.socketsOfPlayers.length);
 
@@ -1052,6 +1053,27 @@ Game.prototype.finishGame = function (toBeWinner) {
 		this.sendText(this.allSockets, "The resistance wins!", "gameplay-text-blue");
 	}
 
+	// Post results of Merlin guesses
+	if (this.resRoles.indexOf("Merlin") !== -1) {
+		var guessesByTarget = reverseMapFromMap(this.merlinguesses);
+		
+		var incorrectGuessersText = "";
+		var usernameOfMerlin = this.playersInGame.find(player => player.role === "Merlin").username;
+		for (var target in guessesByTarget) {
+            if (guessesByTarget.hasOwnProperty(target)) {
+                if (target === usernameOfMerlin) {
+                    this.sendText(this.allSockets, "Correct guessers were: " + guessesByTarget[target].join(', '), "server-text");
+                }
+                else {
+                    incorrectGuessersText += `${guessesByTarget[target].join(', ')} (->${target}); `;
+                }
+            }
+        }
+		if (incorrectGuessersText !== "") {
+			this.sendText(this.allSockets, "Incorrect guessers were: " + incorrectGuessersText, "server-text");
+        }
+	}
+
 	// Reset votes
 	this.votes = [];
 	this.publicVotes = [];
@@ -1470,3 +1492,12 @@ function getUsernamesOfPlayersInRoom(thisRoom) {
 		return [];
 	}
 }
+
+var id = function (x) { return x; };
+
+var reverseMapFromMap = function (map, f) {
+	return Object.keys(map).reduce(function (acc, k) {
+        acc[map[k]] = (acc[map[k]] || []).concat((f || id)(k));
+		return acc;
+	}, {});
+};
