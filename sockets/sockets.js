@@ -1326,7 +1326,27 @@ module.exports = function (io) {
 			io.in("allChat").emit("update-current-players-list", getPlayerUsernamesFromAllSockets());
 			// console.log("update current players list");
 			// console.log(getPlayerUsernamesFromAllSockets());
-			updateCurrentGamesList(io);
+            updateCurrentGamesList(io);
+
+            // message mods if player's ip matches another player
+            matchedIpsUsernames = [];
+            var joiningIpAddress = socket.request.headers['x-forwarded-for'] || socket.request.connection.remoteAddress;
+            var joiningUsername = socket.request.user.username;
+            for (var i = 0; i < allSockets.length; i++) {
+                var clientIpAddress = allSockets[i].request.headers['x-forwarded-for'] || allSockets[i].request.connection.remoteAddress;
+                var clientUsername = allSockets[i].request.user.username;
+                console.log(clientUsername);
+                console.log(clientIpAddress);
+                if (clientIpAddress === joiningIpAddress && clientUsername !== joiningUsername)
+                    matchedIpsUsernames.push(clientUsername);
+            }
+            if (matchedIpsUsernames.length > 0) {
+                var data = {
+                    message: "MOD WARNING! " + socket.request.user.username + " has just logged in with the same IP as: " + matchedIpsUsernames.join(", "),
+                    classStr: "server-text"
+                }
+                sendToAllMods(io, data);
+            }
 		}, 1000);
 
 
@@ -1568,6 +1588,18 @@ function sendToRoomChat(io, roomId, data) {
 	if (rooms[roomId]) {
 		rooms[roomId].addToChatHistory(data);
 	}
+}
+
+function sendToAllMods(io, data) {
+    var date = new Date();
+    data.dateCreated = date;
+
+    allSockets.forEach(function (sock) {
+        if (modsArray.indexOf(sock.request.user.username.toLowerCase()) !== -1)
+            sock.emit("allChatToClient", data);
+            sock.emit("roomChatToClient", data);
+    });
+
 }
 
 function isMuted(socket) {
