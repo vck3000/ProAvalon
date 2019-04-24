@@ -123,7 +123,7 @@ function createReply(req, res, commentReplyData, replyingToThisReply) {
                             // console.log(newCommentReply);
                             var link = ("/forum/show/" + foundForum._id + "#" + newCommentReply._id);
         
-                            createNotificationObj.createNotification(userIdTarget, stringToSay, link);
+                            createNotificationObj.createNotification(userIdTarget, stringToSay, link, req.user.username);
         
                             // console.log("**********************************");
                             // console.log(replyingToThisReply.author.id);
@@ -140,7 +140,7 @@ function createReply(req, res, commentReplyData, replyingToThisReply) {
                                     var stringToSay = req.user.username + " has replied to your comment.";
                                     var link = ("/forum/show/" + foundForum._id + "#" + newCommentReply._id);
         
-                                    createNotificationObj.createNotification(userIdTarget, stringToSay, link);
+                                    createNotificationObj.createNotification(userIdTarget, stringToSay, link, req.user.username);
                                 }
                             }
                         }
@@ -151,7 +151,7 @@ function createReply(req, res, commentReplyData, replyingToThisReply) {
                                 var stringToSay = req.user.username + " has replied to your comment.";
                                 var link = ("/forum/show/" + foundForum._id + "#" + newCommentReply._id);
         
-                                createNotificationObj.createNotification(userIdTarget, stringToSay, link);
+                                createNotificationObj.createNotification(userIdTarget, stringToSay, link, req.user.username);
                             }
                         }
         

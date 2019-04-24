@@ -83,7 +83,7 @@ router.post("/mod/ajax/processavatarrequest", middleware.isLoggedIn, middleware.
 							}
 
 							// createNotifObj.createNotification = function(userIDTarget, stringToSay, link){
-							createNotificationObj.createNotification(foundUser._id, str, "#");
+							createNotificationObj.createNotification(foundUser._id, str, "#", req.user.username);
 						}
 
 					});
@@ -105,7 +105,7 @@ router.post("/mod/ajax/processavatarrequest", middleware.isLoggedIn, middleware.
 
 
 							// createNotifObj.createNotification = function(userIDTarget, stringToSay, link){
-							createNotificationObj.createNotification(foundUser._id, str, "#");
+							createNotificationObj.createNotification(foundUser._id, str, "#", req.user.username);
 						}
 					});
 				}

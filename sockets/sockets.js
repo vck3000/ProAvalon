@@ -810,7 +810,7 @@ var actionsObj = {
 							var stringToSay = str;
 							var link = "#";
 
-							createNotificationObj.createNotification(userIdTarget, stringToSay, link);
+							createNotificationObj.createNotification(userIdTarget, stringToSay, link, senderSocket.request.user.username);
 							senderSocket.emit("messageCommandReturnStr", { message: "Sent to " + foundUser.username + " successfully! Here was your message: " + str, classStr: "server-text" });
 						}
 						else {
