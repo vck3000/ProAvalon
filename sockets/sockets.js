@@ -1336,8 +1336,8 @@ module.exports = function (io) {
 			for (var i = 0; i < allSockets.length; i++) {
 				var clientIpAddress = allSockets[i].request.headers['x-forwarded-for'] || allSockets[i].request.connection.remoteAddress;
 				var clientUsername = allSockets[i].request.user.username;
-				console.log(clientUsername);
-				console.log(clientIpAddress);
+				// console.log(clientUsername);
+				// console.log(clientIpAddress);
 				if (clientIpAddress === joiningIpAddress && clientUsername !== joiningUsername)
 					matchedIpsUsernames.push(clientUsername);
 			}
