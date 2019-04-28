@@ -1597,10 +1597,10 @@ function sendToAllMods(io, data) {
 	data.dateCreated = date;
 
 	allSockets.forEach(function (sock) {
-        if (modsArray.indexOf(sock.request.user.username.toLowerCase()) !== -1) {
-            sock.emit("allChatToClient", data);
-            sock.emit("roomChatToClient", data);
-        }
+		if (modsArray.indexOf(sock.request.user.username.toLowerCase()) !== -1) {
+			sock.emit("allChatToClient", data);
+			sock.emit("roomChatToClient", data);
+		}
 	});
 
 }
