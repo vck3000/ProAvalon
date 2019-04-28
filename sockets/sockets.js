@@ -677,8 +677,6 @@ var actionsObj = {
 				var args = data.args;
 				//do stuff
 				var dataToReturn = [];
-				var i = 0;
-				i++;
 
                 // Cutoff so we dont return perma bans (that are 1000 years long)
                 cutOffDate = new Date("2999-12-17T03:24:00");
@@ -692,6 +690,7 @@ var actionsObj = {
                         {whenRelease: {$gte: new Date()}}
                     ]
 				}, function (err, foundModActions) {
+                    console.log(foundModActions);
 					foundModActions.forEach(function (modActionFound) {
 						var message = "";
 						if (modActionFound.type === "ban") {
