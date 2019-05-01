@@ -531,37 +531,17 @@ var actionsObj = {
 		},
 		guessmerlin: {
 			command: "guessmerlin",
-			help: "/guessmerlin <playername>: Solely for fun, secretly submit your guess of who you think merlin is at your current table.",
+			help: "/guessmerlin <playername>: Solely for fun, secretly submit your guess of who you think is Merlin.",
 			run: function (data, senderSocket) {
-
-				var args = data.args;
-
 				// Check the guesser is at a table
-                if (senderSocket.request.user.inRoomId === undefined || rooms[senderSocket.request.user.inRoomId].gameStarted !== true)
-					return { message: "You must be at a running table to guess Merlin.", classStr: "server-text" };
-
-				// Check Merlin is in play
-				if (rooms[senderSocket.request.user.inRoomId].resRoles.indexOf("Merlin") === -1)
-					return { message: "This game does not include Merlin.", classStr: "server-text" };
-
-				// Check the guesser isnt guessing himself
-				if (senderSocket.request.user.username === args[1])
-					return { message: "You cannot guess yourself.", classStr: "server-text" };
-
-				// Check the guesser and guessed are even in the same room
-				var guessedSocket = allSockets[getIndexFromUsername(allSockets, args[1], true)];
-				if (!guessedSocket || rooms[senderSocket.request.user.inRoomId].playerUsernamesInGame.indexOf(args[1]) === -1)
-					return { message: "No such user is playing at your table.", classStr: "server-text" };
-
-				// Check the guesser isnt Merlin/Percy
-				var senderRole = rooms[senderSocket.request.user.inRoomId].playersInGame.find(
-					player => player.username === senderSocket.request.user.username).role;
-				if (senderRole === "Merlin" || senderRole === "Percival")
-					return { message: "Merlin/Percy cannot guess.", classStr: "server-text" };
-
-				// Accept the guess
-				rooms[senderSocket.request.user.inRoomId].merlinguesses[senderSocket.request.user.username] = args[1];
-				return { message: `You have guessed that ${args[1]} is Merlin. Good luck!`, classStr: "server-text" };
+				if (senderSocket.request.user.inRoomId === undefined || rooms[senderSocket.request.user.inRoomId].gameStarted !== true) {
+					messageToClient = "You must be at a running table to guess Merlin.";
+				}
+				else {
+					messageToClient = rooms[senderSocket.request.user.inRoomId].submitMerlinGuess(senderSocket.request.user.username, data.args[1]);
+				}
+				
+				return { message: messageToClient, classStr: "server-text noselect" };
 			}
 		}
 	},
