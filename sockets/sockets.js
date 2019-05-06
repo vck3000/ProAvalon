@@ -528,6 +528,21 @@ var actionsObj = {
 				}
 				return;
 			}
+		},
+		guessmerlin: {
+			command: "guessmerlin",
+			help: "/guessmerlin <playername>: Solely for fun, secretly submit your guess of who you think is Merlin.",
+			run: function (data, senderSocket) {
+				// Check the guesser is at a table
+				if (senderSocket.request.user.inRoomId === undefined || rooms[senderSocket.request.user.inRoomId].gameStarted !== true) {
+					messageToClient = "You must be at a running table to guess Merlin.";
+				}
+				else {
+					messageToClient = rooms[senderSocket.request.user.inRoomId].submitMerlinGuess(senderSocket.request.user.username, data.args[1]);
+				}
+				
+				return { message: messageToClient, classStr: "server-text noselect" };
+			}
 		}
 	},
 
@@ -1597,9 +1612,10 @@ function sendToAllMods(io, data) {
 	data.dateCreated = date;
 
 	allSockets.forEach(function (sock) {
-		if (modsArray.indexOf(sock.request.user.username.toLowerCase()) !== -1)
+		if (modsArray.indexOf(sock.request.user.username.toLowerCase()) !== -1) {
 			sock.emit("allChatToClient", data);
 			sock.emit("roomChatToClient", data);
+		}
 	});
 
 }

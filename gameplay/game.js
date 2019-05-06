@@ -336,6 +336,7 @@ Game.prototype.startGame = function (options) {
 
 	//make game started after the checks for game already started
 	this.gameStarted = true;
+	this.merlinguesses = {};
 
 	var rolesAssignment = generateAssignmentOrders(this.socketsOfPlayers.length);
 
@@ -1055,6 +1056,27 @@ Game.prototype.finishGame = function (toBeWinner) {
 		this.sendText(this.allSockets, "The resistance wins!", "gameplay-text-blue");
 	}
 
+	// Post results of Merlin guesses
+	if (this.resRoles.indexOf("Merlin") !== -1) {
+		var guessesByTarget = reverseMapFromMap(this.merlinguesses);
+		
+		var incorrectGuessersText = [];
+		var usernameOfMerlin = this.playersInGame.find(player => player.role === "Merlin").username;
+		for (var target in guessesByTarget) {
+			if (guessesByTarget.hasOwnProperty(target)) {
+				if (target === usernameOfMerlin) {
+					this.sendText(this.allSockets, "Correct Merlin guessers were: " + guessesByTarget[target].join(', '), "server-text");
+				}
+				else {
+					incorrectGuessersText.push(`${guessesByTarget[target].join(', ')} (->${target})`);
+				}
+			}
+		}
+		if (incorrectGuessersText.length > 0) {
+			this.sendText(this.allSockets, "Incorrect Merlin guessers were: " + incorrectGuessersText.join('; '), "server-text");
+		}
+	}
+
 	// Reset votes
 	this.votes = [];
 	this.publicVotes = [];
@@ -1384,12 +1406,34 @@ Game.prototype.VHUpdateTeamVotes = function () {
 
 // console.log((new Game).__proto__);
 
+Game.prototype.submitMerlinGuess = function (guesserUsername, targetUsername) {
+	// Check Merlin is in play
+	if (this.resRoles.indexOf("Merlin") === -1) {
+		return "This game does not include Merlin.";
+	}
+
+	// Check the guesser isnt guessing himself
+	if (guesserUsername === targetUsername) {
+		return "You cannot guess yourself.";
+	}
+
+	// Check the target is even playing
+	if (this.playerUsernamesInGame.indexOf(targetUsername) === -1) {
+		return "No such user is playing at your table.";
+	}
+
+	// Check the guesser isnt Merlin/Percy
+	var guesserPlayer = this.playersInGame.find(player => player.username === guesserUsername);
+	if (guesserPlayer !== undefined && ["Merlin", "Percival", "Assassin"].indexOf(guesserPlayer.role) !== -1) {
+		return `${guesserPlayer.role} cannot submit a guess.`;
+	}
+
+	// Accept the guess
+	this.merlinguesses[guesserUsername] = targetUsername;
+	return `You have guessed that ${targetUsername} is Merlin. Good luck!`;
+};
+
 module.exports = Game;
-
-
-
-
-
 
 
 
@@ -1474,3 +1518,12 @@ function getUsernamesOfPlayersInRoom(thisRoom) {
 		return [];
 	}
 }
+
+var id = function (x) { return x; };
+
+var reverseMapFromMap = function (map, f) {
+	return Object.keys(map).reduce(function (acc, k) {
+        acc[map[k]] = (acc[map[k]] || []).concat((f || id)(k));
+		return acc;
+	}, {});
+};

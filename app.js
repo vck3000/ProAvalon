@@ -180,3 +180,82 @@ io.use(passportSocketIo.authorize({
 	// fail:         onAuthorizeFail,     // *optional* callback on fail/error 
 	passport: passport
 }));
+
+
+
+
+// setTimeout(function(){
+
+// 	console.log("Starting gameRecord database fix...");
+
+// 	var gameRecord = require("./models/gameRecord");
+
+// 	gameRecord.find({}).exec(function (err, records) {
+// 		// gameRecord.find({}).skip(17000).limit(100).exec(function (err, records) {
+// 		if (err) {
+// 			console.log(err);
+// 		}
+// 		else {
+// 			console.log(records.length + " games loaded.");
+
+// 			var missingGameMode = 0;
+// 			var missingLadyCard = 0;
+// 			// var count = 0;
+// 			records.forEach(async function(r){
+// 				// console.log(r);
+
+
+// 				if(r.gameMode == undefined){
+// 					missingGameMode += 1;
+// 					console.log("missing gameMode: " + missingGameMode);
+// 					if(missingGameMode % 1000 == 0){
+// 						console.log(r);
+// 					}
+
+// 					r.gameMode = "avalon";
+// 					r.markModified("gameMode");
+// 					await r.save();
+// 				}
+
+// 				if(r.sireChain.length > 0 && r.cards.includes("sire of the sea") == false){
+// 					console.log("Sire");
+// 					console.log(r.sireChain + "\t" + r.cards);
+// 					console.log(r.timeGameFinished);
+
+
+// 					r.cards.push("sire of the sea");
+// 					r.markModified("cards");
+// 					await r.save();
+// 				}
+
+// 				if(r.ladyChain.length > 0 && r.cards.includes("lady of the lake") == false){
+// 					console.log("Lady");
+// 					console.log(r.ladyChain + "\t" + r.cards);
+// 					console.log(r.timeGameFinished);
+
+// 					r.cards.push("lady of the lake");
+// 					r.markModified("cards");
+// 					await r.save();
+// 				}
+
+// 				if(r.refChain.length > 0 && r.cards.includes("ref of the rain") == false){
+// 					console.log("Ref");
+// 					console.log(r.refChain + "\t" + r.cards);
+// 					console.log(r.timeGameFinished);
+			
+// 					r.cards.push("ref of the rain");
+// 					r.markModified("cards");
+// 					await r.save();
+// 				}
+
+// 				// count += 1;
+// 				// if(count % 2000 == 0){
+// 				// 	console.log(r);
+// 				// }
+// 			});
+
+
+// 			console.log("Done!");
+// 		}
+// 	});
+// }, 5000);
