@@ -1149,7 +1149,7 @@ Game.prototype.finishGame = function (toBeWinner) {
 		cards: this.cardKeysInPlay,
 
         missionHistory: this.missionHistory,
-        numFailsHistory = this.numFailsHistory,
+        numFailsHistory: this.numFailsHistory,
 		voteHistory: this.voteHistory,
 		playerRoles: playerRolesVar,
 
