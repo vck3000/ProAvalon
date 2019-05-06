@@ -142,7 +142,8 @@ function Game(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) 
 	this.hammer = 0;
 	this.missionNum = 0;
 	this.pickNum = 0;
-	this.missionHistory = [];
+    this.missionHistory = [];
+    this.numFailsHistory = [];
 	this.proposedTeam = [];
 	this.lastProposedTeam = [];
 	this.votes = [];
@@ -884,7 +885,8 @@ Game.prototype.getGameData = function () {
 			data[i].statusMessage = this.getStatusMessage(i);
 
 			data[i].missionNum = this.missionNum;
-			data[i].missionHistory = this.missionHistory;
+            data[i].missionHistory = this.missionHistory;
+            data[i].numFailsHistory = this.numFailsHistory;
 			data[i].pickNum = this.pickNum;
 			data[i].teamLeader = this.teamLeader;
 			data[i].hammer = this.hammer;
@@ -949,7 +951,8 @@ Game.prototype.getGameDataForSpectators = function () {
 	data.statusMessage = this.getStatusMessage(-1);
 	data.missionNum = this.missionNum;
 	data.missionHistory = this.missionHistory;
-	data.pickNum = this.pickNum;
+    data.numFailsHistory = this.numFailsHistory;
+    data.pickNum = this.pickNum;
 	data.teamLeader = this.teamLeader;
 	data.hammer = this.hammer;
 
@@ -1123,7 +1126,8 @@ Game.prototype.finishGame = function (toBeWinner) {
 		roles: rolesCombined,
 		cards: this.cardKeysInPlay,
 
-		missionHistory: this.missionHistory,
+        missionHistory: this.missionHistory,
+        numFailsHistory = this.numFailsHistory,
 		voteHistory: this.voteHistory,
 		playerRoles: playerRolesVar,
 
