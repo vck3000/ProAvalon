@@ -1412,13 +1412,15 @@ Game.prototype.submitMerlinGuess = function (guesserUsername, targetUsername) {
 		return "This game does not include Merlin.";
 	}
 
+	var targetUsernameCase = this.playerUsernamesInGame.find(p => p.toLowerCase() === targetUsername.toLowerCase());
+	
 	// Check the guesser isnt guessing himself
-	if (guesserUsername === targetUsername) {
+	if (guesserUsername === targetUsernameCase) {
 		return "You cannot guess yourself.";
 	}
 
 	// Check the target is even playing
-	if (this.playerUsernamesInGame.indexOf(targetUsername) === -1) {
+	if (targetUsernameCase === undefined) {
 		return "No such user is playing at your table.";
 	}
 
@@ -1429,8 +1431,8 @@ Game.prototype.submitMerlinGuess = function (guesserUsername, targetUsername) {
 	}
 
 	// Accept the guess
-	this.merlinguesses[guesserUsername] = targetUsername;
-	return `You have guessed that ${targetUsername} is Merlin. Good luck!`;
+	this.merlinguesses[guesserUsername] = targetUsernameCase;
+	return `You have guessed that ${targetUsernameCase} is Merlin. Good luck!`;
 };
 
 module.exports = Game;
