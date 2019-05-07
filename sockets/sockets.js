@@ -732,9 +732,6 @@ var actionsObj = {
 			command: "mcompareips",
 			help: "/mcompareips: Get usernames of players with the same IP.",
 			run: async function (data, senderSocket) {
-				var args = data.args;
-
-				var slapSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
 
 				var usernames = [];
 				var ips = [];
@@ -748,30 +745,35 @@ var actionsObj = {
 
 				var uniq = ips
 					.map((ip) => {
-						return { count: 1, ip: ip }
+						return { count: 1, ip: ip };
 					})
 					.reduce((a, b) => {
-						a[b.ip] = (a[b.ip] || 0) + b.count
-						return a
+						a[b.ip] = (a[b.ip] || 0) + b.count;
+						return a;
 					}, {});
 
-				var duplicateIps = Object.keys(uniq).filter((a) => uniq[a] > 1)
+				var duplicateIps = Object.keys(uniq).filter((a) => uniq[a] > 1);
 
 				var dataToReturn = [];
-				dataToReturn[0] = { message: "-------------------------", classStr: "server-text", dateCreated: new Date() };
 
-
-				for (var i = 0; i < duplicateIps.length; i++) {
-					//for each ip, search through the whole users to see who has the ips
-
-					for (var j = 0; j < ips.length; j++) {
-						if (ips[j] === duplicateIps[i]) {
-							dataToReturn.push({ message: usernames[j], classStr: "server-text", dateCreated: new Date() })
-						}
-					}
-					dataToReturn.push({ message: "-------------------------", classStr: "server-text", dateCreated: new Date() })
+				if (duplicateIps.length === 0) {
+					dataToReturn[0] = { message: "There are no users with matching IPs.", classStr: "server-text", dateCreated: new Date() };
 				}
+				else {
+					dataToReturn[0] = { message: "-------------------------", classStr: "server-text", dateCreated: new Date() };
 
+
+					for (var i = 0; i < duplicateIps.length; i++) {
+						//for each ip, search through the whole users to see who has the ips
+
+						for (var j = 0; j < ips.length; j++) {
+							if (ips[j] === duplicateIps[i]) {
+								dataToReturn.push({ message: usernames[j], classStr: "server-text", dateCreated: new Date() });
+							}
+						}
+						dataToReturn.push({ message: "-------------------------", classStr: "server-text", dateCreated: new Date() });
+					}
+				}
 				senderSocket.emit("messageCommandReturnStr", dataToReturn);
 				return;
 			}
@@ -1280,6 +1282,9 @@ module.exports = function (io) {
 				//send the user the list of commands
 				socket.emit("modCommands", modCommands);
 
+				// mcompareips
+				setTimeout(function () { actionsObj.modCommands.mcompareips.run(null, socket); }, 3000);
+
 				avatarRequest.find({ processed: false }).exec(function (err, allAvatarRequests) {
 					if (err) { console.log(err); }
 					else {
@@ -1338,6 +1343,27 @@ module.exports = function (io) {
 			// console.log("update current players list");
 			// console.log(getPlayerUsernamesFromAllSockets());
 			updateCurrentGamesList(io);
+
+			// message mods if player's ip matches another player
+			matchedIpsUsernames = [];
+			var joiningIpAddress = socket.request.headers['x-forwarded-for'] || socket.request.connection.remoteAddress;
+			var joiningUsername = socket.request.user.username;
+			for (var i = 0; i < allSockets.length; i++) {
+				var clientIpAddress = allSockets[i].request.headers['x-forwarded-for'] || allSockets[i].request.connection.remoteAddress;
+				var clientUsername = allSockets[i].request.user.username;
+				// console.log(clientUsername);
+				// console.log(clientIpAddress);
+				if (clientIpAddress === joiningIpAddress && clientUsername !== joiningUsername)
+					matchedIpsUsernames.push(clientUsername);
+			}
+			if (matchedIpsUsernames.length > 0) {
+				sendToAllMods(io, { message: "MOD WARNING! '" + socket.request.user.username + "' has just logged in with the same IP as: ", classStr: "server-text" });
+				sendToAllMods(io, { message: "-------------------------", classStr: "server-text" });
+				for (var i = 0; i < matchedIpsUsernames.length; i++) {
+					sendToAllMods(io, { message: matchedIpsUsernames[i], classStr: "server-text" });
+				}
+				sendToAllMods(io, { message: "-------------------------", classStr: "server-text" });
+			}
 		}, 1000);
 
 
@@ -1579,6 +1605,19 @@ function sendToRoomChat(io, roomId, data) {
 	if (rooms[roomId]) {
 		rooms[roomId].addToChatHistory(data);
 	}
+}
+
+function sendToAllMods(io, data) {
+	var date = new Date();
+	data.dateCreated = date;
+
+	allSockets.forEach(function (sock) {
+		if (modsArray.indexOf(sock.request.user.username.toLowerCase()) !== -1) {
+			sock.emit("allChatToClient", data);
+			sock.emit("roomChatToClient", data);
+		}
+	});
+
 }
 
 function isMuted(socket) {
