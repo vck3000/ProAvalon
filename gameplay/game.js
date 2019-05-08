@@ -1412,6 +1412,9 @@ Game.prototype.submitMerlinGuess = function (guesserUsername, targetUsername) {
 		return "This game does not include Merlin.";
 	}
 
+	if (!targetUsername) {
+		return "User not specified.";
+	}
 	var targetUsernameCase = this.playerUsernamesInGame.find(p => p.toLowerCase() === targetUsername.toLowerCase());
 	
 	// Check the guesser isnt guessing himself
@@ -1420,7 +1423,7 @@ Game.prototype.submitMerlinGuess = function (guesserUsername, targetUsername) {
 	}
 
 	// Check the target is even playing
-	if (targetUsernameCase === undefined) {
+	if (!targetUsernameCase) {
 		return "No such user is playing at your table.";
 	}
 
