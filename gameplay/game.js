@@ -1413,7 +1413,7 @@ Game.prototype.submitMerlinGuess = function (guesserUsername, targetUsername) {
 	}
 
 	if (!targetUsername) {
-		return "No such user is playing at your table.";
+		return "User not specified.";
 	}
 	var targetUsernameCase = this.playerUsernamesInGame.find(p => p.toLowerCase() === targetUsername.toLowerCase());
 	
