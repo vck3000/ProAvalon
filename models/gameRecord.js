@@ -30,7 +30,8 @@ var gameRecordSchema = new mongoose.Schema({
 	sireHistoryUsernames: [String],
 
 	missionHistory: [String],
-	voteHistory: Object,
+    numFailsHistory: [Number],
+    voteHistory: Object,
 	playerRoles: Object,
 
 	moreThanOneFailMissions: [Boolean]

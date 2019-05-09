@@ -142,7 +142,8 @@ function Game(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) 
 	this.hammer = 0;
 	this.missionNum = 0;
 	this.pickNum = 0;
-	this.missionHistory = [];
+    this.missionHistory = [];
+    this.numFailsHistory = [];
 	this.proposedTeam = [];
 	this.lastProposedTeam = [];
 	this.votes = [];
@@ -335,6 +336,7 @@ Game.prototype.startGame = function (options) {
 
 	//make game started after the checks for game already started
 	this.gameStarted = true;
+	this.merlinguesses = {};
 
 	var rolesAssignment = generateAssignmentOrders(this.socketsOfPlayers.length);
 
@@ -884,7 +886,8 @@ Game.prototype.getGameData = function () {
 			data[i].statusMessage = this.getStatusMessage(i);
 
 			data[i].missionNum = this.missionNum;
-			data[i].missionHistory = this.missionHistory;
+            data[i].missionHistory = this.missionHistory;
+            data[i].numFailsHistory = this.numFailsHistory;
 			data[i].pickNum = this.pickNum;
 			data[i].teamLeader = this.teamLeader;
             data[i].teamLeaderReversed = gameReverseIndex(this.teamLeader, this.playersInGame.length);
@@ -954,7 +957,8 @@ Game.prototype.getGameDataForSpectators = function () {
 	data.statusMessage = this.getStatusMessage(-1);
 	data.missionNum = this.missionNum;
 	data.missionHistory = this.missionHistory;
-	data.pickNum = this.pickNum;
+    data.numFailsHistory = this.numFailsHistory;
+    data.pickNum = this.pickNum;
 	data.teamLeader = this.teamLeader;
 	data.hammer = this.hammer;
 
@@ -1057,6 +1061,27 @@ Game.prototype.finishGame = function (toBeWinner) {
 		this.sendText(this.allSockets, "The resistance wins!", "gameplay-text-blue");
 	}
 
+	// Post results of Merlin guesses
+	if (this.resRoles.indexOf("Merlin") !== -1) {
+		var guessesByTarget = reverseMapFromMap(this.merlinguesses);
+		
+		var incorrectGuessersText = [];
+		var usernameOfMerlin = this.playersInGame.find(player => player.role === "Merlin").username;
+		for (var target in guessesByTarget) {
+			if (guessesByTarget.hasOwnProperty(target)) {
+				if (target === usernameOfMerlin) {
+					this.sendText(this.allSockets, "Correct Merlin guessers were: " + guessesByTarget[target].join(', '), "server-text");
+				}
+				else {
+					incorrectGuessersText.push(`${guessesByTarget[target].join(', ')} (->${target})`);
+				}
+			}
+		}
+		if (incorrectGuessersText.length > 0) {
+			this.sendText(this.allSockets, "Incorrect Merlin guessers were: " + incorrectGuessersText.join('; '), "server-text");
+		}
+	}
+
 	// Reset votes
 	this.votes = [];
 	this.publicVotes = [];
@@ -1128,7 +1153,8 @@ Game.prototype.finishGame = function (toBeWinner) {
 		roles: rolesCombined,
 		cards: this.cardKeysInPlay,
 
-		missionHistory: this.missionHistory,
+        missionHistory: this.missionHistory,
+        numFailsHistory: this.numFailsHistory,
 		voteHistory: this.voteHistory,
 		playerRoles: playerRolesVar,
 
@@ -1385,12 +1411,39 @@ Game.prototype.VHUpdateTeamVotes = function () {
 
 // console.log((new Game).__proto__);
 
+Game.prototype.submitMerlinGuess = function (guesserUsername, targetUsername) {
+	// Check Merlin is in play
+	if (this.resRoles.indexOf("Merlin") === -1) {
+		return "This game does not include Merlin.";
+	}
+
+	if (!targetUsername) {
+		return "User not specified.";
+	}
+	var targetUsernameCase = this.playerUsernamesInGame.find(p => p.toLowerCase() === targetUsername.toLowerCase());
+	
+	// Check the guesser isnt guessing himself
+	if (guesserUsername === targetUsernameCase) {
+		return "You cannot guess yourself.";
+	}
+
+	// Check the target is even playing
+	if (!targetUsernameCase) {
+		return "No such user is playing at your table.";
+	}
+
+	// Check the guesser isnt Merlin/Percy
+	var guesserPlayer = this.playersInGame.find(player => player.username === guesserUsername);
+	if (guesserPlayer !== undefined && ["Merlin", "Percival", "Assassin"].indexOf(guesserPlayer.role) !== -1) {
+		return `${guesserPlayer.role} cannot submit a guess.`;
+	}
+
+	// Accept the guess
+	this.merlinguesses[guesserUsername] = targetUsernameCase;
+	return `You have guessed that ${targetUsernameCase} is Merlin. Good luck!`;
+};
+
 module.exports = Game;
-
-
-
-
-
 
 
 
@@ -1498,3 +1551,12 @@ function gameReverseIndex(num, numPlayers) {
         return numPlayers - num;
     }
 }
+
+var id = function (x) { return x; };
+
+var reverseMapFromMap = function (map, f) {
+	return Object.keys(map).reduce(function (acc, k) {
+        acc[map[k]] = (acc[map[k]] || []).concat((f || id)(k));
+		return acc;
+	}, {});
+};
