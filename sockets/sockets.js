@@ -1,5 +1,6 @@
 //sockets
 var gameRoom = require("../gameplay/game");
+const axios = require('axios');
 
 var savedGameObj = require("../models/savedGame");
 var modAction = require("../models/modAction");
@@ -551,6 +552,55 @@ var actionsObj = {
 			help: "/gm <playername>: Shortcut for /guessmerlin",
 			run: function (data, senderSocket) {
 				return actionsObj.userCommands.guessmerlin.run(data, senderSocket);
+			}
+        },
+
+        getbots: {
+			command: "getbots",
+			help: "/getbots: Run this in a bot-compatible room. Prints a list of available bots to add, as well as their supported game modes",
+			run: function (data, senderSocket) {
+                console.log(process.env.DeepRoleAPIKey)
+
+                axios.request({ 
+                    method: 'get', // Requests are made with either POST or GET
+                    url: 'https://deeprole-proavalon.herokuapp.com/debug/v0/info',
+                    headers: {
+                      'Authorization': process.env.DeepRoleAPIKey,
+                      'Content-Type': 'application/json'
+                    }, 
+                    data: {}, // A JSON payload sent by ProAvalon.com
+                }).then(function (response) {
+                    // Your API's response is available as response.data
+                    if(response.statusCode = 200){
+
+                    }
+                    console.log("TestRes");
+                    console.log(response.data);
+                    dataToReturn = {
+				        message: JSON.stringify(response.data), classStr: "server-text noselect"
+                    };
+                    senderSocket.emit("messageCommandReturnStr", dataToReturn);
+                    
+                }).catch(function (error) {
+                // Your API returned an error.
+                });
+
+                return;
+			}
+        },
+
+        addbot: {
+			command: "addbot",
+			help: "/addbot <type>: Run this in a bot-compatible room. Add a bot to the room.",
+			run: function (data, senderSocket, roomIdInput) {
+              
+			}
+        },
+        rembot: {
+			command: "rembot",
+			help: "/rembot: Run this in a bot-compatible room. Removes a bot from the room.",
+			run: function (data, senderSocket, roomIdInput) {
+				
 			}
 		}
 	},

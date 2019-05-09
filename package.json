@@ -10,6 +10,7 @@
   "author": "Victor Kuo",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.18.0",
     "body-parser": "^1.18.2",
     "circular-json": "^0.5.5",
     "connect-flash": "^0.1.1",
@@ -35,8 +36,9 @@
     "staticify": "^3.1.0",
     "sweetalert2": "^7.25.6"
   },
-
   "nodemonConfig": {
-    "ignore": ["assets/gameRecordsData/*"]
+    "ignore": [
+      "assets/gameRecordsData/*"
+    ]
   }
 }
