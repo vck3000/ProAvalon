@@ -906,8 +906,8 @@ Game.prototype.getGameData = function () {
 			data[i].hammerReversed = gameReverseIndex(this.hammer, this.playersInGame.length);
 			data[i].winner = this.winner;
 
-            data[i].playerUsernamesOrdered = this.getRoomPlayerUsernames();
-            data[i].playerUsernamesOrderedReversed = gameReverseArray(this.getRoomPlayerUsernames());
+            data[i].playerUsernamesOrdered = getUsernamesOfPlayersInGame(this);
+            data[i].playerUsernamesOrderedReversed = gameReverseArray(getUsernamesOfPlayersInGame(this));
 
 			data[i].gameplayMessage = this.gameplayMessage;
 
@@ -959,7 +959,8 @@ Game.prototype.getGameDataForSpectators = function () {
 	data.missionHistory = this.missionHistory;
     data.numFailsHistory = this.numFailsHistory;
     data.pickNum = this.pickNum;
-	data.teamLeader = this.teamLeader;
+    data.teamLeader = this.teamLeader;
+    data.teamLeaderReversed = gameReverseIndex(this.teamLeader, this.playersInGame.length);
 	data.hammer = this.hammer;
 
 	data.playersYetToVote = this.playersYetToVote;
@@ -972,7 +973,11 @@ Game.prototype.getGameDataForSpectators = function () {
 	data.votes = this.publicVotes;
 	data.voteHistory = this.voteHistory;
 	data.hammer = this.hammer;
-	data.winner = this.winner;
+    data.hammerReversed = gameReverseIndex(this.hammer, this.playersInGame.length);
+    data.winner = this.winner;
+
+    data.playerUsernamesOrdered = getUsernamesOfPlayersInGame(this);
+    data.playerUsernamesOrderedReversed = gameReverseArray(getUsernamesOfPlayersInGame(this));
 
 	data.gameplayMessage = this.gameplayMessage;
 
@@ -1521,6 +1526,19 @@ function getUsernamesOfPlayersInRoom(thisRoom) {
 		var array = [];
 		for (var i = 0; i < thisRoom.socketsOfPlayers.length; i++) {
 			array.push(thisRoom.socketsOfPlayers[i].request.user.username);
+		}
+		return array;
+	}
+	else {
+		return [];
+	}
+}
+
+function getUsernamesOfPlayersInGame(thisRoom) {
+	if (thisRoom.gameStarted === true) {
+		var array = [];
+		for (var i = 0; i < thisRoom.playersInGame.length; i++) {
+			array.push(thisRoom.playersInGame[i].request.user.username);
 		}
 		return array;
 	}
