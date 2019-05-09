@@ -262,6 +262,15 @@ Room.prototype.updateRoomPlayers = function () {
     }
 };
 
+Room.prototype.getRoomPlayerUsernames = function () {
+    var roomPlayers = [];
+    for (var i = 0; i < this.socketsOfPlayers.length; i++) {
+        roomPlayers[i] = this.socketsOfPlayers[i].request.user.username;
+    }
+    return roomPlayers;
+}
+
+
 Room.prototype.getRoomPlayers = function () {
     var roomPlayers = [];
 

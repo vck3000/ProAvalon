@@ -887,6 +887,7 @@ Game.prototype.getGameData = function () {
 			data[i].missionHistory = this.missionHistory;
 			data[i].pickNum = this.pickNum;
 			data[i].teamLeader = this.teamLeader;
+            data[i].teamLeaderReversed = gameReverseIndex(this.teamLeader, this.playersInGame.length);
 			data[i].hammer = this.hammer;
 
 			data[i].playersYetToVote = this.playersYetToVote;
@@ -899,7 +900,11 @@ Game.prototype.getGameData = function () {
 			data[i].votes = this.publicVotes;
 			data[i].voteHistory = this.voteHistory;
 			data[i].hammer = this.hammer;
+			data[i].hammerReversed = gameReverseIndex(this.hammer, this.playersInGame.length);
 			data[i].winner = this.winner;
+
+            data[i].playerUsernamesOrdered = this.getRoomPlayerUsernames();
+            data[i].playerUsernamesOrderedReversed = gameReverseArray(this.getRoomPlayerUsernames());
 
 			data[i].gameplayMessage = this.gameplayMessage;
 
@@ -1469,4 +1474,27 @@ function getUsernamesOfPlayersInRoom(thisRoom) {
 	else {
 		return [];
 	}
+}
+
+function gameReverseArray(arr) {
+    if(arr.length == 0){
+        return [];
+    }
+    var firstEntry = arr.slice(0, 1);
+    var remainder = arr.slice(1);
+    var reversedRem = remainder.reverse();
+
+    // console.log(firstEntry);
+    // console.log(reversedRem);
+
+    return firstEntry.concat(reversedRem);
+}
+
+function gameReverseIndex(num, numPlayers) {
+    if(num == 0){
+        return 0;
+    }
+    else{
+        return numPlayers - num;
+    }
 }
