@@ -157,8 +157,10 @@ Room.prototype.playerLeaveRoom = function (socket) {
     }
 
 
+    var newHostSocket;
     // Set the host to the first person in the sitting down array in case the previous host left
     if (this.socketsOfPlayers[0] !== undefined) {
+        newHostSocket = this.socketsOfPlayers[0];
         this.host = this.socketsOfPlayers[0].request.user.username;
         console.log("new host: " + this.host);
     }
@@ -170,6 +172,11 @@ Room.prototype.playerLeaveRoom = function (socket) {
     }
 
     this.updateRoomPlayers();
+
+    // If the new host is a bot... leave the room.
+    if (newHostSocket !== undefined && newHostSocket.isBotSocket === true){
+        this.playerLeaveRoom(newHostSocket);
+    }
 };
 
 
