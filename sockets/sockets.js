@@ -567,18 +567,18 @@ var actionsObj = {
 				if (senderSocket.request.user.inRoomId === undefined) {
 					return {
 						message: "You must be in a bot-capable room to run this command!",
-						classStr: "server-text noselect"
+						classStr: "server-text"
 					};
 				} else if (rooms[senderSocket.request.user.inRoomId].gameMode !== 'avalonBot') {
 					return {
 						message: "This room is not bot capable. Please join a bot-capable room.",
-						classStr: "server-text noselect"
+						classStr: "server-text"
 					}
 				}
 
 				senderSocket.emit("messageCommandReturnStr", {
 					message: "Fetching bots...",
-					classStr: "server-text noselect"
+					classStr: "server-text"
 				});
 
 				var botInfoRequests = enabledBots.map(function(botAPI) {
