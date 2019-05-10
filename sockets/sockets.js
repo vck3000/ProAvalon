@@ -24,24 +24,19 @@ const APIBotSocket = _bot.APIBotSocket;
 
 const dateResetRequired = 1543480412695;
 
-const newUpdateNotificationRequired = 1551095116448;
+const newUpdateNotificationRequired = 1557512579418;
 const updateMessage = `
 
-<h1>IMPORTANT</h1>
+<h1>BOTS HAVE HIT THE ROADS FELLAS!</h1>
 
 <br>
 
-I have recently patched a vulnerability in the code. Users with very simple, guessable passwords are at risk. Those who have been identified as suspicious have been directly contacted already.
-
-<br>
-<br>
-
-As a result I recommend everyone change their passwords to ensure complete safety. You can do this through your profile now. Bocaben recommended me use LastPass and I enjoy it thoroughly. I encourage you to also use LastPass or a similar password manager. 
+Make sure you select avalonBot gameMode. <br> Check out /help to see commands to interact with bots.
 
 <br>
 <br>
 
-Thanks guys
+Thanks guys, and in particular Detry322 for making this possible!
 `;
 
 var allSockets = [];
