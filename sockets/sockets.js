@@ -1786,7 +1786,7 @@ var updateCurrentGamesList = function () {
 			}
 			//get room ID
             gamesList[i].roomId = rooms[i].roomId;
-            gamesList[i].gameMode = rooms[i].gameMode;
+            gamesList[i].gameMode = rooms[i].gameMode.charAt(0).toUpperCase() + rooms[i].gameMode.slice(1);
 			// console.log("Room " + rooms[i].roomId + " has host: " + rooms[i].host);
 			gamesList[i].hostUsername = rooms[i].host;
 			if (rooms[i].gameStarted === true) {
