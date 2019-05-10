@@ -708,10 +708,13 @@ var actionsObj = {
 					addedBots.push(botName)
 				}
 
-				sendToRoomChat(ioGlobal, currentRoomId, {
-					message: senderSocket.request.user.username + " added bots to this room: " + addedBots.join(', '),
-					classStr: "server-text-teal"
-				});
+                if (addedBots.length > 0){
+                    sendToRoomChat(ioGlobal, currentRoomId, {
+                        message: senderSocket.request.user.username + " added bots to this room: " + addedBots.join(', '),
+                        classStr: "server-text-teal"
+                    });
+                }
+				
 			}
         },
         rembot: {
