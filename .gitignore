@@ -3,6 +3,6 @@ node_modules/*
 package-lock.json
 banips.txt
 myStuff/*
-assets/gameRecordsData/
-!assets/gameRecordsData/gameRecordsDataAnon.json
+# assets/gameRecordsData/
+# !assets/gameRecordsData/gameRecordsDataAnon.json
 notes.js
