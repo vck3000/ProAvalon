@@ -214,7 +214,7 @@ APIBotSocket.prototype.handleRequestAction = function (game, availableButtons, a
     }).catch(function(error) {
         if (error.response) {
             callback(false, "The bot crashed during request.");
-            console.log(error.response);
+            // console.log(error.response);
         } else {
             callback(false, "The bot is no longer online.");
         }

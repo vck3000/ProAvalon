@@ -10,7 +10,11 @@ var gameRecordSchema = new mongoose.Schema({
 	spyTeam: [String],
 	resistanceTeam: [String],
 
-	gameMode: String,
+    gameMode: String,
+    botUsernames: [String],
+
+    playerUsernamesOrdered: [String],
+    playerUsernamesOrderedReversed: [String],
 
 	numberOfPlayers: Number,
 	howTheGameWasWon: String,
@@ -32,9 +36,7 @@ var gameRecordSchema = new mongoose.Schema({
 	missionHistory: [String],
     numFailsHistory: [Number],
     voteHistory: Object,
-	playerRoles: Object,
-
-	moreThanOneFailMissions: [Boolean]
+	playerRoles: Object
 
 });
 //compile schema into a model

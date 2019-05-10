@@ -46,6 +46,12 @@ playersReadyNotReady.prototype.playerNotReady = function (username) {
 };
 
 playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
+    // Must have at least one bot in the game to play a "bot" gameMode
+    if(gameMode.toLowerCase().includes("bot") === true && (this.botSockets === undefined || this.botSockets.length === 0 )){
+        this.sendText(this.allSockets, "Please play in a normal game mode if you do not have any bots.", "gameplay-text");
+        return false;
+    }
+
     // console.log("HOST TRY START GAME");
     if (this.hostTryStartGameDate) {
         // 11 seconds

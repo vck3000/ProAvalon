@@ -155,7 +155,6 @@ function Game(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) 
 
 	// Game misc variables
 	this.winner = "";
-	this.moreThanOneFailMissions = [];
 	this.options = undefined;
 
 	// Room variables
@@ -163,7 +162,6 @@ function Game(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) 
 
 	// Room misc variables
 	this.chatHistory = []; // Here because chatHistory records after game starts
-
 }
 
 //Game object inherits all the functions and stuff from Room
@@ -519,7 +517,7 @@ Game.prototype.startGame = function (options) {
 				thisGame.playerLeaveRoom(botSocket);
 			}
 		})
-	})
+	});
 
 	this.checkBotMoves(pendingBots);
 
@@ -540,13 +538,6 @@ Game.prototype.checkBotMoves = function (pendingBots) {
 		if (thisRoom.finished === true) {
 			clearInterval(thisRoom.interval);
 			thisRoom.interval = undefined;
-		}
-
-		// Because we rely on the sockets of players to be exactly matching the players in game
-		// if they aren't the same size, they aren't. Don't go on.
-		// TODO: Do we still rely on this?
-		if (thisRoom.socketsOfPlayers.length !== thisRoom.playersInGame.length) {
-			return;
 		}
 
 		thisRoom.botSockets.forEach(function (botSocket) {
@@ -1089,9 +1080,9 @@ Game.prototype.finishGame = function (toBeWinner) {
 
 
 	// If there was a bot in the game and this is the online server, do not store into the database.
-	if (process.env.MY_PLATFORM === "online" && this.botIndexes.length !== 0) {
-		return;
-	}
+	// if (process.env.MY_PLATFORM === "online" && this.botIndexes.length !== 0) {
+	// 	return;
+	// }
 
 	//store data into the database:
 	var rolesCombined = [];
@@ -1134,7 +1125,7 @@ Game.prototype.finishGame = function (toBeWinner) {
 	if (this.specialCards && this.specialCards["sire of the sea"]) {
 		sireChain = this.specialCards["sire of the sea"].sireChain;
 		sireHistoryUsernames = this.specialCards["sire of the sea"].sireHistoryUsernames;
-	}
+    }
 
 	var objectToStore = {
 		timeGameStarted: this.startGameTime,
@@ -1145,7 +1136,11 @@ Game.prototype.finishGame = function (toBeWinner) {
 		resistanceTeam: this.resistanceUsernames,
 		numberOfPlayers: this.playersInGame.length,
 
-		gameMode: this.gameMode,
+        gameMode: this.gameMode,
+        botUsernames: this.botSockets.map(function(botSocket){ return botSocket.request.user.username }),
+
+        playerUsernamesOrdered: getUsernamesOfPlayersInGame(this),
+        playerUsernamesOrderedReversed: gameReverseArray(getUsernamesOfPlayersInGame(this)),
 
 		howTheGameWasWon: this.howWasWon,
 
@@ -1168,8 +1163,6 @@ Game.prototype.finishGame = function (toBeWinner) {
 
 		whoAssassinShot: this.whoAssassinShot,
 		whoAssassinShot2: this.whoAssassinShot2,
-
-		moreThanOneFailMissions: this.moreThanOneFailMissions
 	};
 
 	GameRecord.create(objectToStore, function (err) {

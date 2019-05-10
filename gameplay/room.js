@@ -326,10 +326,10 @@ Room.prototype.updateMaxNumPlayers = function (socket, number) {
 
 Room.prototype.updateGameModesInRoom = function (socket, gameMode) {
     if (gameModeNames.includes(gameMode) === true && socket.request.user.username === this.host) {
-        this.gameMode = gameMode;
-        var thisRoom = this;
+        // If the new gameMode doesnt include bot, but originally does, then remove the bots that may have been added
+        if(gameMode.toLowerCase().includes("bot") == false && this.botSockets !== undefined && this.botSockets.length > 0){
+            var thisRoom = this;
 
-        if(gameMode.includes("Bot") == false){
             var botSockets = this.botSockets.slice() || [];
             botsToRemove = botSockets;
             botsToRemove.forEach(function(botSocket) {
@@ -339,13 +339,17 @@ Room.prototype.updateGameModesInRoom = function (socket, gameMode) {
                     thisRoom.botSockets.splice(thisRoom.botSockets.indexOf(botSocket), 1);
                 }
             });
-
             var removedBots = botsToRemove.map(function(botSocket) { return botSocket.request.user.username });
-            sendToRoomChat(ioGlobal, thisId, {
-                message: senderSocket.request.user.username + " removed bots from this room: " + removedBots.join(', '),
-                classStr: "server-text-teal"
-            });
+
+            if (removedBots.length > 0) {
+                var message = socket.request.user.username + " removed bots from this room: " + removedBots.join(', ');
+                var classStr = "server-text-teal";
+                this.sendText(this.socketsOfPlayers, message, classStr);
+            }
         }
+
+        this.gameMode = gameMode;
+        var thisRoom = this;
 
         this.specialRoles = (new gameModeObj[this.gameMode]["Roles"]).getRoles(this);
         this.specialPhases = (new gameModeObj[this.gameMode]["Phases"]).getPhases(this);

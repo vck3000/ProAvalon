@@ -632,7 +632,7 @@ var actionsObj = {
 						message: "You must be in a bot-capable room to run this command!",
 						classStr: "server-text"
 					};
-				} else if (rooms[senderSocket.request.user.inRoomId].gameMode !== 'avalonBot') {
+				} else if (rooms[senderSocket.request.user.inRoomId].gameMode.toLowerCase().includes("bot") === false) {
 					return {
 						message: "This room is not bot capable. Please join a bot-capable room.",
 						classStr: "server-text"
@@ -682,7 +682,14 @@ var actionsObj = {
 
 				var addedBots = [];
 				for (var i = 0; i < numBots; i++) {
-                    var botName = botAPI.name + "#" + Math.floor(Math.random() * 100000);
+                    var botName = botAPI.name + "#" + Math.floor(Math.random() * 100);
+
+                    // Avoid a username clash!
+                    var currentUsernames = currentRoom.socketsOfPlayers.map(function(sock){ return sock.request.user.username; });
+                    if(currentUsernames.includes(botName)){
+                        i--;
+                        continue;
+                    }
 
                     var dummySocket;
                     if (botAPI.name == "SimpleBot") {
@@ -716,12 +723,12 @@ var actionsObj = {
 						message: "You must be in a bot-capable room to run this command!",
 						classStr: "server-text"
 					};
-				} else if (rooms[senderSocket.request.user.inRoomId].gameMode !== 'avalonBot') {
+				} else if (rooms[senderSocket.request.user.inRoomId].gameMode.toLowerCase().includes("bot") === false) {
 					return {
 						message: "This room is not bot capable. Please join a bot-capable room.",
 						classStr: "server-text"
 					}
-                } else if(rooms[senderSocket.request.user.inRoomId].host !== socket.request.user.username){
+                } else if(rooms[senderSocket.request.user.inRoomId].host !== senderSocket.request.user.username){
                     return {
 						message: "You are not the host.",
 						classStr: "server-text"
@@ -1158,7 +1165,16 @@ var actionsObj = {
 					var dummySockets = [];
 
 					for (var i = 0; i < args[1]; i++) {
-						dummySockets[i] = new SimpleBotSocket("Bot" + i);
+                        var botName = "SimpleBot" + "#" + Math.floor(Math.random() * 100);
+
+                        // Avoid a username clash!
+                        var currentUsernames = rooms[roomId].socketsOfPlayers.map(function(sock){ return sock.request.user.username; });
+                        if(currentUsernames.includes(botName)){
+                            i--;
+                            continue;
+                        }
+
+						dummySockets[i] = new SimpleBotSocket(botName);
 						rooms[roomId].playerJoinRoom(dummySockets[i]);
 						rooms[roomId].playerSitDown(dummySockets[i]);
 
@@ -1182,7 +1198,12 @@ var actionsObj = {
 				if (!args[1]) {
 					senderSocket.emit("messageCommandReturnStr", { message: "Specify a number.", classStr: "server-text" });
 					return;
-				}
+                }
+                
+                if (parseInt(args[1]) > 10 || parseInt(args[1]) < 1){
+                    senderSocket.emit("messageCommandReturnStr", { message: "Specify a number between 1 and 10.", classStr: "server-text" });
+					return;
+                }
 
 				//Get the next room Id
 				while (rooms[nextRoomId]) {
