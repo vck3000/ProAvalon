@@ -187,6 +187,10 @@ Room.prototype.kickPlayer = function (username, socket) {
         //Make them stand up forcefully
         this.playerStandUp(socketOfTarget);
 
+        if (socketOfTarget.isBotSocket) {
+            this.playerLeaveRoom(socketOfTarget);
+        }
+
 
         // Add to kickedPlayers array
         this.kickedPlayers.push(username.toLowerCase());
