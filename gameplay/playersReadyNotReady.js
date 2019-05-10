@@ -51,6 +51,10 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
         this.sendText(this.allSockets, "Please play in a normal game mode if you do not have any bots.", "gameplay-text");
         return false;
     }
+    else if(gameMode.toLowerCase().includes("bot") === false && this.botSockets !== undefined && this.botSockets.length !== 0){
+        this.sendText(this.allSockets, "You cannot have bots play in normal game modes. Please use a bot game mode.", "gameplay-text");
+        return false;
+    }
 
     // console.log("HOST TRY START GAME");
     if (this.hostTryStartGameDate) {

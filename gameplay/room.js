@@ -108,6 +108,10 @@ Room.prototype.playerJoinRoom = function (socket, inputPassword) {
 Room.prototype.playerSitDown = function (socket) {
     socketUsername = socket.request.user.username;
 
+    if(socketUsername === this.host && this.gameMode.toLowerCase().includes("bot") === true){
+        this.sendText([socket], "Type /help to see the commands available to interact with bots!", "server-text");
+    }
+
     // If they were kicked and banned
     if (this.kickedPlayers.indexOf(socketUsername.toLowerCase()) !== -1) {
         socket.emit("danger-alert", "You have been banned from this room. You cannot join.");
@@ -162,6 +166,11 @@ Room.prototype.playerLeaveRoom = function (socket) {
     if (this.socketsOfPlayers[0] !== undefined) {
         newHostSocket = this.socketsOfPlayers[0];
         this.host = this.socketsOfPlayers[0].request.user.username;
+
+        if(this.gameMode.toLowerCase().includes("bot") === true){
+            this.sendText([this.socketsOfPlayers[0]], "Type /help to see the commands available to interact with bots!", "server-text");
+        }
+
         console.log("new host: " + this.host);
     }
 
