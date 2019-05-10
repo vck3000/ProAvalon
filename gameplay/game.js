@@ -1205,87 +1205,89 @@ Game.prototype.finishGame = function (toBeWinner) {
 		});
 	});
 
-	this.playersInGame.forEach(function (player) {
+    if(botUsernames.length === 0){
+        this.playersInGame.forEach(function (player) {
 
-		User.findById(player.userId).populate("modAction").populate("notifications").exec(function (err, foundUser) {
-			if (err) { console.log(err); }
-			else {
-				if (foundUser) {
-					foundUser.totalTimePlayed = new Date(foundUser.totalTimePlayed.getTime() + gameDuration.getTime());
-
-					//update individual player statistics
-					foundUser.totalGamesPlayed += 1;
-
-					if (winnerVar === player.alliance) {
-						foundUser.totalWins += 1;
-						if (winnerVar === "Resistance") {
-							foundUser.totalResWins += 1;
-						}
-					} else {
-						//loss
-						foundUser.totalLosses += 1;
-						if (winnerVar === "Spy") {
-							foundUser.totalResLosses += 1;
-						}
-					}
-
-					//checks that the var exists
-					if (!foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"]) {
-						foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"] = {
-							wins: 0,
-							losses: 0
-						};
-					}
-					if (!foundUser.roleStats[playersInGameVar.length + "p"]) {
-						foundUser.roleStats[playersInGameVar.length + "p"] = {};
-					}
-					if (!foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()]) {
-						foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()] = {
-							wins: 0,
-							losses: 0
-						};
-					}
-
-
-					if (winnerVar === player.alliance) {
-						//checks
-						if (isNaN(foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].losses)) {
-							foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].wins = 0;
-						}
-						if (isNaN(foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].wins)) {
-							foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].wins = 0;
-						}
-						// console.log("=NaN?");
-						// console.log(isNaN(foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].wins));
-
-						foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].wins += 1;
-						foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].wins += 1;
-					}
-					else {
-						//checks
-						if (isNaN(foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].losses)) {
-							foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].losses = 0;
-						}
-						if (isNaN(foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].losses)) {
-							foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].losses = 0;
-						}
-
-						foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].losses += 1;
-						foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].losses += 1;
-					}
-					// console.log("Rolestat for player");
-					// console.log(foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()]);
-
-					foundUser.markModified("winsLossesGameSizeBreakdown");
-					foundUser.markModified("roleStats");
-
-					foundUser.save();
-					// console.log("SAVE SAVE");
-
-				}
-			}
-		});
-	});
+            User.findById(player.userId).populate("modAction").populate("notifications").exec(function (err, foundUser) {
+                if (err) { console.log(err); }
+                else {
+                    if (foundUser) {
+                        foundUser.totalTimePlayed = new Date(foundUser.totalTimePlayed.getTime() + gameDuration.getTime());
+    
+                        //update individual player statistics
+                        foundUser.totalGamesPlayed += 1;
+    
+                        if (winnerVar === player.alliance) {
+                            foundUser.totalWins += 1;
+                            if (winnerVar === "Resistance") {
+                                foundUser.totalResWins += 1;
+                            }
+                        } else {
+                            //loss
+                            foundUser.totalLosses += 1;
+                            if (winnerVar === "Spy") {
+                                foundUser.totalResLosses += 1;
+                            }
+                        }
+    
+                        //checks that the var exists
+                        if (!foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"]) {
+                            foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"] = {
+                                wins: 0,
+                                losses: 0
+                            };
+                        }
+                        if (!foundUser.roleStats[playersInGameVar.length + "p"]) {
+                            foundUser.roleStats[playersInGameVar.length + "p"] = {};
+                        }
+                        if (!foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()]) {
+                            foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()] = {
+                                wins: 0,
+                                losses: 0
+                            };
+                        }
+    
+    
+                        if (winnerVar === player.alliance) {
+                            //checks
+                            if (isNaN(foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].losses)) {
+                                foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].wins = 0;
+                            }
+                            if (isNaN(foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].wins)) {
+                                foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].wins = 0;
+                            }
+                            // console.log("=NaN?");
+                            // console.log(isNaN(foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].wins));
+    
+                            foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].wins += 1;
+                            foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].wins += 1;
+                        }
+                        else {
+                            //checks
+                            if (isNaN(foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].losses)) {
+                                foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].losses = 0;
+                            }
+                            if (isNaN(foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].losses)) {
+                                foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].losses = 0;
+                            }
+    
+                            foundUser.winsLossesGameSizeBreakdown[playersInGameVar.length + "p"].losses += 1;
+                            foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].losses += 1;
+                        }
+                        // console.log("Rolestat for player");
+                        // console.log(foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()]);
+    
+                        foundUser.markModified("winsLossesGameSizeBreakdown");
+                        foundUser.markModified("roleStats");
+    
+                        foundUser.save();
+                        // console.log("SAVE SAVE");
+    
+                    }
+                }
+            });
+        });
+    }
 };
 
 Game.prototype.calcMissionVotes = function (votes) {
