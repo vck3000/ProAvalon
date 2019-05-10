@@ -740,7 +740,14 @@ var actionsObj = {
 
 				var currentRoomId = senderSocket.request.user.inRoomId;
 				var currentRoom = rooms[currentRoomId];
-				var args = data.args;
+                var args = data.args;
+                
+                if (currentRoom.gameStarted === true || currentRoom.canJoin === false) {
+					return {
+						message: "No bots can join this room at this time.",
+						classStr: "server-text"
+					}
+				}
 
 				if (!args[1]) {
 					return {
