@@ -109,7 +109,12 @@ Room.prototype.playerSitDown = function (socket) {
     socketUsername = socket.request.user.username;
 
     if(socketUsername === this.host && this.gameMode.toLowerCase().includes("bot") === true){
-        this.sendText([socket], "Type /help to see the commands available to interact with bots!", "server-text");
+        data = {
+            message: "Type /help to see the commands available to interact with bots!",
+            classStr: "server-text",
+            dateCreated: new Date()
+        };
+        socket.emit("roomChatToClient", data);
     }
 
     // If they were kicked and banned
@@ -168,7 +173,12 @@ Room.prototype.playerLeaveRoom = function (socket) {
         this.host = this.socketsOfPlayers[0].request.user.username;
 
         if(this.gameMode.toLowerCase().includes("bot") === true){
-            this.sendText([this.socketsOfPlayers[0]], "Type /help to see the commands available to interact with bots!", "server-text");
+            data = {
+                message: "Type /help to see the commands available to interact with bots!",
+                classStr: "server-text",
+                dateCreated: new Date()
+            };
+            newHostSocket.emit("roomChatToClient", data);
         }
 
         console.log("new host: " + this.host);
@@ -362,6 +372,17 @@ Room.prototype.updateGameModesInRoom = function (socket, gameMode) {
                 var classStr = "server-text-teal";
                 this.sendText(this.socketsOfPlayers, message, classStr);
             }
+        }
+
+        if(gameMode.toLowerCase().includes("bot") === true){
+            //Get host socket
+            hostSock = this.socketsOfPlayers[0];
+            data = {
+                message: "Type /help to see the commands available to interact with bots!",
+                classStr: "server-text",
+                dateCreated: new Date()
+            };
+            hostSock.emit("roomChatToClient", data);
         }
 
         this.gameMode = gameMode;
