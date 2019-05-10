@@ -1130,7 +1130,14 @@ Game.prototype.finishGame = function (toBeWinner) {
 		sireHistoryUsernames = this.specialCards["sire of the sea"].sireHistoryUsernames;
     }
 
-    console.log(this.gameMode);
+    // console.log(this.gameMode);
+    var botUsernames;
+    if(this.botSockets !== undefined){
+        botUsernames = this.botSockets.map(function(botSocket){ return botSocket.request.user.username });
+    }
+    else{
+        botUsernames = []
+    }
 
 	var objectToStore = {
 		timeGameStarted: this.startGameTime,
@@ -1142,7 +1149,7 @@ Game.prototype.finishGame = function (toBeWinner) {
 		numberOfPlayers: this.playersInGame.length,
 
         gameMode: this.gameMode,
-        botUsernames: this.botSockets.map(function(botSocket){ return botSocket.request.user.username }),
+        botUsernames: botUsernames,
 
         playerUsernamesOrdered: getUsernamesOfPlayersInGame(this),
         playerUsernamesOrderedReversed: gameReverseArray(getUsernamesOfPlayersInGame(this)),
