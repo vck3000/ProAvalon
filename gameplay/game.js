@@ -1127,6 +1127,8 @@ Game.prototype.finishGame = function (toBeWinner) {
 		sireHistoryUsernames = this.specialCards["sire of the sea"].sireHistoryUsernames;
     }
 
+    console.log(this.gameMode);
+
 	var objectToStore = {
 		timeGameStarted: this.startGameTime,
 		timeAssassinationStarted: this.startAssassinationTime,

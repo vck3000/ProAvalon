@@ -539,10 +539,15 @@ var hardUpdateStatsFunction = function(){
             console.log(err);
         }
         else {
-
+            var prevRecordsLength = records.length;
 			console.log(records.length + " games loaded.");
 			fs.writeFileSync('assets/gameRecordsData/gameRecordsData.json', JSON.stringify(records));
-			// Anonymize it using gameRecordsData
+            // Anonymize it using gameRecordsData
+
+            // Filter out the bot games
+            records = records.filter(function(r){ return (r.gameMode === undefined || r.gameMode.toLowerCase().includes("bot") == false)} );
+            console.log("Removed " + (prevRecordsLength - records.length) + " bot games from dataset.");
+
 			var gameRecordsDataAnon = anonymizeStats(records); 
 
 			fs.writeFileSync('assets/gameRecordsData/gameRecordsDataAnon.json', JSON.stringify(gameRecordsDataAnon));
@@ -822,7 +827,7 @@ var hardUpdateStatsFunction = function(){
     }); 
 }
 
-var hardUpdateStats = false;
+var hardUpdateStats = true;
 if(hardUpdateStats === true && process.env.MY_PLATFORM == "local"){
 	setTimeout(hardUpdateStatsFunction, 5000);
 }

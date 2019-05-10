@@ -1212,7 +1212,7 @@ var actionsObj = {
 				dataObj = {
 					maxNumPlayers: 10,
 					newRoomPassword: "",
-					gameMode: "avalon"
+					gameMode: "avalonBot"
 				}
 
 

@@ -75,8 +75,7 @@ SimpleBotSocket.prototype.handleRequestAction = function (game, availableButtons
 // If you want to leave the room, call callback(true)
 // Otherwise, call callback(false)
 SimpleBotSocket.prototype.handleGameOver = function (game, reason, callback) {
-    // To maintain current behavior
-    callback(false);
+    callback(true);
 }
 
 
