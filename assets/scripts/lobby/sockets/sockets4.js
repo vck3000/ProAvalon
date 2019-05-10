@@ -306,6 +306,7 @@ socket.on("update-current-games-list", function (currentGames) {
                 currentGame.status + " [" + currentGame.numOfPlayersInside + "/" + currentGame.maxNumPlayers + "]" +
                 "<hr>" +
                 "Spectators: " + currentGame.numOfSpectatorsInside +
+                "<br>Game mode: " + currentGame.gameMode + 
                 "<br>Host: " + currentGame.hostUsername +
                 "<br>" + missionHistoryStr +
                 "</td> </tr>";

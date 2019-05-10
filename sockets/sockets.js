@@ -1776,7 +1776,8 @@ var updateCurrentGamesList = function () {
 				gamesList[i].numOfPlayersInside = rooms[i].playersInGame.length;
 				gamesList[i].missionHistory = rooms[i].missionHistory;
 				gamesList[i].missionNum = rooms[i].missionNum;
-				gamesList[i].pickNum = rooms[i].pickNum;
+                gamesList[i].pickNum = rooms[i].pickNum;
+                gamesList[i].gameMode = rooms[i].gameMode;
 			}
 			else {
 				gamesList[i].numOfPlayersInside = rooms[i].socketsOfPlayers.length;
