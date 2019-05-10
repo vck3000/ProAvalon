@@ -600,7 +600,10 @@ var actionsObj = {
 						return result != null;
 					}).map(function(result) {
 						return result.name + " - " + JSON.stringify(result.info.capabilities);
-					});
+                    });
+                    
+                    // Hard code this in... (unshift pushes to the start of the array)
+                    botDescriptions.unshift("SimpleBot - Random playing bot...", );
 
 					if (botDescriptions.length === 0) {
 						senderSocket.emit("messageCommandReturnStr", {
@@ -623,7 +626,7 @@ var actionsObj = {
         addbot: {
 			command: "addbot",
 			help: "/addbot <name> [number]: Run this in a bot-compatible room. Add a bot to the room.",
-			run: function (data, senderSocket, roomIdInput) {
+			run: function (data, senderSocket) {
 				if (senderSocket.request.user.inRoomId === undefined || rooms[senderSocket.request.user.inRoomId] === undefined) {
 					return {
 						message: "You must be in a bot-capable room to run this command!",
@@ -634,7 +637,12 @@ var actionsObj = {
 						message: "This room is not bot capable. Please join a bot-capable room.",
 						classStr: "server-text"
 					}
-				}
+				} else if(rooms[senderSocket.request.user.inRoomId].host !== senderSocket.request.user.username){
+                    return {
+						message: "You are not the host.",
+						classStr: "server-text"
+					}
+                }
 
 				var currentRoomId = senderSocket.request.user.inRoomId;
 				var currentRoom = rooms[currentRoomId];
@@ -656,7 +664,7 @@ var actionsObj = {
 				}
 				var botName = args[1];
 				var botAPI = enabledBots.find(function(bot) { return bot.name.toLowerCase() === botName.toLowerCase() });
-				if (!botAPI) {
+				if (!botAPI && botName !== "SimpleBot") {
 					return {
 						message: "Couldn't find a bot called " + botName + ".",
 						classStr: "server-text"
@@ -674,8 +682,16 @@ var actionsObj = {
 
 				var addedBots = [];
 				for (var i = 0; i < numBots; i++) {
-					var botName = botAPI.name + "#" + Math.floor(Math.random() * 100000);
-					var dummySocket = new APIBotSocket(botName, botAPI);
+                    var botName = botAPI.name + "#" + Math.floor(Math.random() * 100000);
+
+                    var dummySocket;
+                    if (botAPI.name == "SimpleBot") {
+                        dummySocket = new SimpleBotSocket(botName);
+                    }
+                    else{
+                        dummySocket = new APIBotSocket(botName, botAPI);
+                    }
+
 					currentRoom.playerJoinRoom(dummySocket);
 					currentRoom.playerSitDown(dummySocket);
 					if (!currentRoom.botSockets) {
@@ -694,7 +710,7 @@ var actionsObj = {
         rembot: {
 			command: "rembot",
 			help: "/rembot (<name>|all): Run this in a bot-compatible room. Removes a bot from the room.",
-			run: function (data, senderSocket, roomIdInput) {
+			run: function (data, senderSocket) {
 				if (senderSocket.request.user.inRoomId === undefined || rooms[senderSocket.request.user.inRoomId] === undefined) {
 					return {
 						message: "You must be in a bot-capable room to run this command!",
@@ -705,7 +721,12 @@ var actionsObj = {
 						message: "This room is not bot capable. Please join a bot-capable room.",
 						classStr: "server-text"
 					}
-				}
+                } else if(rooms[senderSocket.request.user.inRoomId].host !== socket.request.user.username){
+                    return {
+						message: "You are not the host.",
+						classStr: "server-text"
+					}
+                }
 
 				var currentRoomId = senderSocket.request.user.inRoomId;
 				var currentRoom = rooms[currentRoomId];
@@ -1238,7 +1259,7 @@ var actionsObj = {
 
 					// Forcefully close room
 					if (rooms[args[1]]) {
-						destroyRoom(rooms[args[1]]);
+						destroyRoom(rooms[args[1]].roomId);
 					}
 				}
 				updateCurrentGamesList();
@@ -1829,7 +1850,8 @@ function destroyRoom(roomId) {
 	if (rooms[roomId].interval) {
 		clearInterval(rooms[roomId].interval);
 		rooms[roomId].interval = undefined;
-	}
+    }
+    var thisGame = rooms[roomId];
 	rooms[roomId].socketsOfPlayers.filter(function (socket) { return socket.isBotSocket; }).forEach(function (botSocket) {
 		botSocket.handleGameOver(thisGame, "complete", function () {}); // This room is getting destroyed. No need to leave.
 	});

@@ -3,15 +3,20 @@ const axios = require('axios');
 var enabledBots = [];
 if (process.env.BOT_DEEPROLE_API_KEY) {
     enabledBots.push({
+        name: "SimpleBot",
+        urlBase: undefined,
+        authorizationKey: undefined
+    });
+    enabledBots.push({
         name: "DeepRole",
         urlBase: "https://deeprole-proavalon.herokuapp.com/deeprole",
         authorizationKey: process.env.BOT_DEEPROLE_API_KEY
-    })
+    });
     enabledBots.push({
         name: "DebugRole",
         urlBase: "https://deeprole-proavalon.herokuapp.com/debug",
         authorizationKey: process.env.BOT_DEEPROLE_API_KEY
-    })
+    });
 }
 
 function SimpleBotSocket(username) {
@@ -51,7 +56,7 @@ SimpleBotSocket.prototype.handleRequestAction = function (game, availableButtons
     if (numOfTargets == 0) {
         callback({
             buttonPressed: buttonPressed
-        })
+        });
     }
 
     // Progressively remove players until it is the right length
@@ -85,7 +90,7 @@ function makeBotAPIRequest(botAPI, method, endpoint, data, timeout) {
         },
         data: data,
         timeout: timeout || 0
-    })
+    });
 }
 
 
@@ -152,14 +157,14 @@ APIBotSocket.prototype.handleReadyNotReady = function (game, callback) {
 // if the bot initialized successfully, call callback(true)
 // if the bot failed to initialize, call callback(false) or callback(false, "<reason>")
 APIBotSocket.prototype.handleGameStart = function (game, callback) {
-    // Simple bots are always initialized.
     var thisSocket = this;
     var playerIndex = game.playersInGame.findIndex(function(player) { return player.username == thisSocket.request.user.username; });
+    console.log("Player " + thisSocket.request.user.username + " is at index: " + playerIndex);
     var gameData = game.getGameData()[playerIndex];
 
     var apiData = {
         numPlayers: gameData.playerUsernamesOrderedReversed.length,
-        roles: gameData.roles.filter(function (role) { return role != "Assassin" && role != "Merlin" }),
+        roles: gameData.roles.filter(function (role) { return role != "Assassin" && role != "Merlin" }), //TODO: Is this needed?
         cards: gameData.cards,
         teamLeader: gameData.teamLeaderReversed,
         players: gameData.playerUsernamesOrderedReversed,
@@ -168,7 +173,6 @@ APIBotSocket.prototype.handleGameStart = function (game, callback) {
         see: gameData.see,
     };
 
-    var thisSocket = this;
     makeBotAPIRequest(this.botAPI, 'POST', '/v0/session', apiData, 3000).then(function(response) {
         if (response.status !== 200 || !response.data.sessionID) {
             callback(false, "Bot returned an invalid response.");
@@ -189,6 +193,7 @@ APIBotSocket.prototype.handleGameStart = function (game, callback) {
 // handleRequestAction: Called when the server is requesting an action from your bot.
 // When you have a move available, call callback with the selected button and players
 // If you errored, call callback(false)
+//TODO: Do we need this many input parameters?
 APIBotSocket.prototype.handleRequestAction = function (game, availableButtons, availablePlayers, numOfTargets, callback) {
     var thisSocket = this;
     var playerIndex = game.playersInGame.findIndex(function(player) { return player.username == thisSocket.request.user.username; });
@@ -209,6 +214,7 @@ APIBotSocket.prototype.handleRequestAction = function (game, availableButtons, a
     }).catch(function(error) {
         if (error.response) {
             callback(false, "The bot crashed during request.");
+            console.log(error.response);
         } else {
             callback(false, "The bot is no longer online.");
         }

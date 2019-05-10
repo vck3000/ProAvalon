@@ -327,6 +327,25 @@ Room.prototype.updateMaxNumPlayers = function (socket, number) {
 Room.prototype.updateGameModesInRoom = function (socket, gameMode) {
     if (gameModeNames.includes(gameMode) === true && socket.request.user.username === this.host) {
         this.gameMode = gameMode;
+        var thisRoom = this;
+
+        if(gameMode.includes("Bot") == false){
+            var botSockets = this.botSockets.slice() || [];
+            botsToRemove = botSockets;
+            botsToRemove.forEach(function(botSocket) {
+                thisRoom.playerLeaveRoom(botSocket);
+
+                if (thisRoom.botSockets && thisRoom.botSockets.indexOf(botSocket) !== -1) {
+                    thisRoom.botSockets.splice(thisRoom.botSockets.indexOf(botSocket), 1);
+                }
+            });
+
+            var removedBots = botsToRemove.map(function(botSocket) { return botSocket.request.user.username });
+            sendToRoomChat(ioGlobal, thisId, {
+                message: senderSocket.request.user.username + " removed bots from this room: " + removedBots.join(', '),
+                classStr: "server-text-teal"
+            });
+        }
 
         this.specialRoles = (new gameModeObj[this.gameMode]["Roles"]).getRoles(this);
         this.specialPhases = (new gameModeObj[this.gameMode]["Phases"]).getPhases(this);

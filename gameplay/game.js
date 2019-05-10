@@ -580,7 +580,7 @@ Game.prototype.checkBotMoves = function (pendingBots) {
 			pendingBots.push(botSocket);
 
 			var availablePlayers = thisRoom.playersInGame
-				.filter(function (player, playerIndex) {
+				.filter(function (player, playerIndex) { //TODO how does this work? :O. Where does playerIndex come from?
 					return prohibitedIndexesToPick.indexOf(playerIndex) === -1;
 				}).map(function (player) {
 					return player.request.user.username;
@@ -619,7 +619,7 @@ Game.prototype.checkBotMoves = function (pendingBots) {
 
 				pendingBots.splice(pendingBots.indexOf(botSocket), 1);
 
-				// Make the move
+				// Make the move //TODO In the future gameMove should receive both buttonPressed and selectedPlayers
 				if (numOfTargets == 0 || numOfTargets == null) {
 					thisRoom.gameMove(botSocket, move.buttonPressed);
 				} else {
@@ -637,6 +637,7 @@ Game.prototype.checkBotMoves = function (pendingBots) {
 //**************************************************
 
 // var commonPhases = ["pickingTeam", "votingTeam", "votingMission", "finished"];
+//TODO In the future gameMove should receive both buttonPressed and selectedPlayers
 Game.prototype.gameMove = function (socket, data) {
 
 	// Common phases
