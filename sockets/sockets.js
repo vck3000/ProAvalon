@@ -16,6 +16,12 @@ const JSON = require('circular-json');
 var modsArray = require("../modsadmins/mods");
 var adminsArray = require("../modsadmins/admins");
 
+const _bot = require("./bot");
+const enabledBots = _bot.enabledBots;
+const makeBotAPIRequest = _bot.makeBotAPIRequest;
+const SimpleBotSocket = _bot.SimpleBotSocket;
+const APIBotSocket = _bot.APIBotSocket;
+
 const dateResetRequired = 1543480412695;
 
 const newUpdateNotificationRequired = 1551095116448;
@@ -130,7 +136,6 @@ savedGameObj.find({}).exec(function (err, foundSaveGameArray) {
 		}
 	}
 });
-
 
 var lastWhisperObj = {};
 var actionsObj = {
@@ -559,48 +564,186 @@ var actionsObj = {
 			command: "getbots",
 			help: "/getbots: Run this in a bot-compatible room. Prints a list of available bots to add, as well as their supported game modes",
 			run: function (data, senderSocket) {
-                console.log(process.env.DeepRoleAPIKey)
+				if (senderSocket.request.user.inRoomId === undefined) {
+					return {
+						message: "You must be in a bot-capable room to run this command!",
+						classStr: "server-text noselect"
+					};
+				} else if (rooms[senderSocket.request.user.inRoomId].gameMode !== 'avalonBot') {
+					return {
+						message: "This room is not bot capable. Please join a bot-capable room.",
+						classStr: "server-text noselect"
+					}
+				}
 
-                axios.request({ 
-                    method: 'get', // Requests are made with either POST or GET
-                    url: 'https://deeprole-proavalon.herokuapp.com/debug/v0/info',
-                    headers: {
-                      'Authorization': process.env.DeepRoleAPIKey,
-                      'Content-Type': 'application/json'
-                    }, 
-                    data: {}, // A JSON payload sent by ProAvalon.com
-                }).then(function (response) {
-                    // Your API's response is available as response.data
-                    if(response.statusCode = 200){
+				senderSocket.emit("messageCommandReturnStr", {
+					message: "Fetching bots...",
+					classStr: "server-text noselect"
+				});
 
-                    }
-                    console.log("TestRes");
-                    console.log(response.data);
-                    dataToReturn = {
-				        message: JSON.stringify(response.data), classStr: "server-text noselect"
-                    };
-                    senderSocket.emit("messageCommandReturnStr", dataToReturn);
-                    
-                }).catch(function (error) {
-                // Your API returned an error.
-                });
+				var botInfoRequests = enabledBots.map(function(botAPI) {
+					return makeBotAPIRequest(botAPI, 'GET', '/v0/info', {}, 2000).then(function(response) {
+						if (response.status !== 200) {
+							return null;
+						}
+						return {
+							name: botAPI.name,
+							info: response.data
+						}
+					}).catch(function(response) {
+						return null;
+					});
+				});
 
-                return;
+				axios.all(botInfoRequests).then(function(botInfoResponses) {
+					var botDescriptions = botInfoResponses.filter(function(result) {
+						return result != null;
+					}).map(function(result) {
+						return result.name + " - " + JSON.stringify(result.info.capabilities);
+					});
+
+					if (botDescriptions.length === 0) {
+						senderSocket.emit("messageCommandReturnStr", {
+							message: "No bots are currently available.",
+							classStr: "server-text noselect"
+						});
+					} else {
+						var messages = ["The following bots are online:"].concat(botDescriptions);
+						senderSocket.emit("messageCommandReturnStr", messages.map(function(message) {
+							return {
+								message: message,
+								classStr: "server-text noselect"
+							}
+						}));
+					}
+				});
 			}
         },
 
         addbot: {
 			command: "addbot",
-			help: "/addbot <type>: Run this in a bot-compatible room. Add a bot to the room.",
+			help: "/addbot <name> [number]: Run this in a bot-compatible room. Add a bot to the room.",
 			run: function (data, senderSocket, roomIdInput) {
-              
+				if (senderSocket.request.user.inRoomId === undefined || rooms[senderSocket.request.user.inRoomId] === undefined) {
+					return {
+						message: "You must be in a bot-capable room to run this command!",
+						classStr: "server-text noselect"
+					};
+				} else if (rooms[senderSocket.request.user.inRoomId].gameMode !== 'avalonBot') {
+					return {
+						message: "This room is not bot capable. Please join a bot-capable room.",
+						classStr: "server-text noselect"
+					}
+				}
+
+				var currentRoomId = senderSocket.request.user.inRoomId;
+				var currentRoom = rooms[currentRoomId];
+
+				if (currentRoom.gameStarted === true || currentRoom.canJoin === false) {
+					return {
+						message: "No bots can join this room at this time.",
+						classStr: "server-text noselect"
+					}
+				}
+
+				var args = data.args;
+
+				if (!args[1]) {
+					return {
+						message: "Specify a bot. Use /getbots to see online bots.",
+						classStr: "server-text noselect"
+					};
+				}
+				var botName = args[1];
+				var botAPI = enabledBots.find(function(bot) { return bot.name.toLowerCase() === botName.toLowerCase() });
+				if (!botAPI) {
+					return {
+						message: "Couldn't find a bot called " + botName + ".",
+						classStr: "server-text noselect"
+					}
+				}
+
+				var numBots = +args[2] || 1;
+
+				if (currentRoom.socketsOfPlayers.length + numBots > currentRoom.maxNumPlayers) {
+					return {
+						message: "Adding " + numBots + " bot(s) would make this room too full.",
+						classStr: "server-text noselect"
+					}
+				}
+
+				var addedBots = [];
+				for (var i = 0; i < numBots; i++) {
+					var botName = botAPI.name + "#" + Math.floor(Math.random() * 100000);
+					var dummySocket = new APIBotSocket(botName, botAPI);
+					currentRoom.playerJoinRoom(dummySocket);
+					currentRoom.playerSitDown(dummySocket);
+					if (!currentRoom.botSockets) {
+						currentRoom.botSockets = [];
+					}
+					currentRoom.botSockets.push(dummySocket);
+					addedBots.push(botName)
+				}
+
+				sendToRoomChat(ioGlobal, currentRoomId, {
+					message: senderSocket.request.user.username + " added bots to this room: " + addedBots.join(', '),
+					classStr: "server-text-teal"
+				});
 			}
         },
         rembot: {
 			command: "rembot",
-			help: "/rembot: Run this in a bot-compatible room. Removes a bot from the room.",
+			help: "/rembot (<name>|all): Run this in a bot-compatible room. Removes a bot from the room.",
 			run: function (data, senderSocket, roomIdInput) {
-				
+				if (senderSocket.request.user.inRoomId === undefined || rooms[senderSocket.request.user.inRoomId] === undefined) {
+					return {
+						message: "You must be in a bot-capable room to run this command!",
+						classStr: "server-text noselect"
+					};
+				} else if (rooms[senderSocket.request.user.inRoomId].gameMode !== 'avalonBot') {
+					return {
+						message: "This room is not bot capable. Please join a bot-capable room.",
+						classStr: "server-text noselect"
+					}
+				}
+
+				var currentRoomId = senderSocket.request.user.inRoomId;
+				var currentRoom = rooms[currentRoomId];
+				var args = data.args;
+
+				if (!args[1]) {
+					return {
+						message: "Specify a bot to remove, or use \"/rembot all\" to remove all bots.",
+						classStr: "server-text noselect"
+					};
+				}
+				var botName = args[1];
+				var botSockets = currentRoom.botSockets.slice() || [];
+				var botsToRemove = (botName === 'all')
+					? botSockets
+					: botSockets.filter(function(socket) {
+						return socket.request.user.username.toLowerCase() === botName.toLowerCase()
+					  });
+				if (botsToRemove.length === 0) {
+					return {
+						message: "Couldn't find any bots with that name to remove.",
+						classStr: "server-text noselect"
+					};
+				}
+
+				botsToRemove.forEach(function(botSocket) {
+					currentRoom.playerLeaveRoom(botSocket);
+
+					if (currentRoom.botSockets && currentRoom.botSockets.indexOf(botSocket) !== -1) {
+						currentRoom.botSockets.splice(currentRoom.botSockets.indexOf(botSocket), 1);
+					}
+				});
+
+				var removedBots = botsToRemove.map(function(botSocket) { return botSocket.request.user.username });
+				sendToRoomChat(ioGlobal, currentRoomId, {
+					message: senderSocket.request.user.username + " removed bots from this room: " + removedBots.join(', '),
+					classStr: "server-text-teal"
+				});
 			}
 		}
 	},
@@ -994,18 +1137,7 @@ var actionsObj = {
 					var dummySockets = [];
 
 					for (var i = 0; i < args[1]; i++) {
-
-						dummySockets[i] = {
-							request: {
-								user: {
-									username: "Bot" + i,
-									bot: true
-								}
-							},
-							emit: function () {
-
-							}
-						};
+						dummySockets[i] = new SimpleBotSocket("Bot" + i);
 						rooms[roomId].playerJoinRoom(dummySockets[i]);
 						rooms[roomId].playerSitDown(dummySockets[i]);
 
@@ -1073,8 +1205,7 @@ var actionsObj = {
 
 				for (var i = 0; i < rooms.length; i++) {
 					if (rooms[i] && rooms[i].frozen === true) {
-						deleteSaveGameFromDb(rooms[i]);
-						rooms[i] = undefined;
+						destroyRoom(rooms[i].roomId);
 					}
 				}
 				updateCurrentGamesList();
@@ -1107,8 +1238,7 @@ var actionsObj = {
 
 					// Forcefully close room
 					if (rooms[args[1]]) {
-						deleteSaveGameFromDb(rooms[args[1]]);
-						rooms[args[1]] = undefined;
+						destroyRoom(rooms[args[1]]);
 					}
 				}
 				updateCurrentGamesList();
@@ -1692,6 +1822,21 @@ function isMuted(socket) {
 	return returnVar;
 }
 
+function destroyRoom(roomId) {
+	deleteSaveGameFromDb(rooms[roomId]);
+
+	// Stop bots thread if they are playing:
+	if (rooms[roomId].interval) {
+		clearInterval(rooms[roomId].interval);
+		rooms[roomId].interval = undefined;
+	}
+	rooms[roomId].socketsOfPlayers.filter(function (socket) { return socket.isBotSocket; }).forEach(function (botSocket) {
+		botSocket.handleGameOver(thisGame, "complete", function () {}); // This room is getting destroyed. No need to leave.
+	});
+
+	rooms[roomId] = undefined;
+}
+
 
 function playerLeaveRoomCheckDestroy(socket) {
 	if (socket.request.user.inRoomId && rooms[socket.request.user.inRoomId]) {
@@ -1701,15 +1846,7 @@ function playerLeaveRoomCheckDestroy(socket) {
 		var toDestroy = rooms[socket.request.user.inRoomId].destroyRoom;
 
 		if (toDestroy) {
-			deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
-
-			// Stop bots thread if they are playing:
-			if (rooms[socket.request.user.inRoomId].interval) {
-				clearInterval(rooms[socket.request.user.inRoomId].interval);
-				rooms[socket.request.user.inRoomId].interval = undefined;
-			}
-
-			rooms[socket.request.user.inRoomId] = undefined;
+			destroyRoom(socket.request.user.inRoomId);
 		}
 
 		//if room is frozen for more than 1hr then remove.
@@ -1722,8 +1859,7 @@ function playerLeaveRoomCheckDestroy(socket) {
 			var timeToKill = 1000 * 60 * 5; //5 mins
 			// var timeToKill = 1000*10; //10s
 			if ((curr.getTime() - rooms[socket.request.user.inRoomId].timeFrozenLoaded.getTime()) > timeToKill) {
-				deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
-				rooms[socket.request.user.inRoomId] = undefined;
+				destroyRoom(socket.request.user.inRoomId);
 
 				console.log("Been more than " + timeToKill / 1000 + " seconds, removing this frozen game.");
 			}

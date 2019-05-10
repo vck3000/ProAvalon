@@ -498,148 +498,137 @@ Game.prototype.startGame = function (options) {
 
 	this.botIndexes = [];
 	for (var i = 0; i < this.socketsOfPlayers.length; i++) {
-		if (this.socketsOfPlayers[i].request.user.bot === true) {
+		if (this.socketsOfPlayers[i].isBotSocket === true) {
 			this.botIndexes.push(i);
 		}
 	}
 
-	this.checkBotMoves();
+	var thisGame = this;
+	var pendingBots = [];
+	this.socketsOfPlayers.filter(function(socket) { return socket.isBotSocket }).forEach(function(botSocket) {
+		pendingBots.push(botSocket);
+		botSocket.handleGameStart(thisGame, function (success, reason) {
+			if (success) {
+				pendingBots.splice(pendingBots.indexOf(botSocket), 1);
+			} else {
+				var message = botSocket.request.user.username + " failed to initialize and has left the game.";
+				if (reason) {
+					message += " Reason: " +  reason;
+				}
+				thisGame.sendText(thisGame.allSockets, message, "server-text-teal");
+				thisGame.playerLeaveRoom(botSocket);
+			}
+		})
+	})
+
+	this.checkBotMoves(pendingBots);
 
 	return true;
 };
 
-Game.prototype.checkBotMoves = function () {
+Game.prototype.checkBotMoves = function (pendingBots) {
+	if (this.botIndexes.length === 0) {
+		return;
+	}
+
+	var timeEachLoop = 1000;
+
 	var thisRoom = this;
 
-	var numOfBots = thisRoom.botIndexes.length;
-	var timeEachLoop = 1000; // in ms
+	// Players whose moves we're waiting for
+	this.interval = setInterval(function () {
+		if (thisRoom.finished === true) {
+			clearInterval(thisRoom.interval);
+			thisRoom.interval = undefined;
+		}
 
-	var wholeLoopDelay = (numOfBots + 1) * timeEachLoop;
+		// Because we rely on the sockets of players to be exactly matching the players in game
+		// if they aren't the same size, they aren't. Don't go on.
+		// TODO: Do we still rely on this?
+		if (thisRoom.socketsOfPlayers.length !== thisRoom.playersInGame.length) {
+			return;
+		}
 
-	if (this.botIndexes.length !== 0) {
-		this.interval = setInterval(function () {
-			if (thisRoom.finished === true) {
-				clearInterval(thisRoom.interval);
-				thisRoom.interval = undefined;
+		thisRoom.botSockets.forEach(function (botSocket) {
+			var botIndex = thisRoom.socketsOfPlayers.indexOf(botSocket);
+
+			var buttons = thisRoom.getClientButtonSettings(botIndex);
+			var numOfTargets = thisRoom.getClientNumOfTargets(botIndex);
+			var prohibitedIndexesToPick = thisRoom.getProhibitedIndexesToPick(botIndex) || [];
+
+			var availableButtons = []
+			if (buttons.green.hidden !== true) {
+				availableButtons.push("yes");
+			}
+			var seatIndex = usernamesIndexes.getIndexFromUsername(thisRoom.playersInGame, botSocket.request.user.username);
+			var onMissionAndResistance = (thisRoom.phase == 'votingMission' && thisRoom.playersInGame[seatIndex].alliance === "Resistance");
+			// Add a special case so resistance bots can't fail missions.
+			if (buttons.red.hidden !== true && onMissionAndResistance === false) {
+				availableButtons.push("no");
 			}
 
+			// Skip bots we don't need moves from.
+			if (availableButtons.length == 0) {
+				return;
+			}
 
-			// console.log("Num of bots: " + thisRoom.botIndexes.length);
-			for (var i = 0; i < thisRoom.botIndexes.length; i++) {
-				var count = 0;
+			// Skip bots whose moves are pending. (We're waiting for them to respond).
+			if (pendingBots.indexOf(botSocket) !== -1) {
+				return;
+			}
 
-				// Because we rely on the sockets of players to be exactly matching the players in game
-				// if they aren't the same size, they aren't. Don't go on.
-				if (thisRoom.socketsOfPlayers.length !== thisRoom.playersInGame.length) {
-					continue;
-				}
+			pendingBots.push(botSocket);
 
-				// console.log("===================");
-				// console.log("Bot playing move: ");
-
-				// console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
-				// console.log("Bot index: ");
-				// console.log(i);
-				// console.log(thisRoom.botIndexes[i]);
-
-
-
-				var buttons = thisRoom.getClientButtonSettings(thisRoom.botIndexes[i]);
-				var numOfTargets = thisRoom.getClientNumOfTargets(thisRoom.botIndexes[i]);
-				var prohibitedIndexesToPick = thisRoom.getProhibitedIndexesToPick(thisRoom.botIndexes[i]);
-				if (prohibitedIndexesToPick === undefined) {
-					prohibitedIndexesToPick = [];
-				}
-
-				// console.log(buttons);
-				var canHitGreen = false;
-				var canHitRed = false;
-				if (buttons.green.hidden !== true) {
-					canHitGreen = true;
-				}
-				if (buttons.red.hidden !== true) {
-					canHitRed = true;
-				}
-
-				// If we can't make any moves, don't do anything
-				if ((canHitGreen === false && canHitRed === false) || (numOfTargets === 0 || numOfTargets === undefined)) {
-					// console.log("Cant make any moves");
-					// console.log("Bot playing move: ");
-					// console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
-
-					// console.log(canHitGreen);
-					// console.log(canHitRed);
-					// console.log(numOfTargets);
-					continue;
-				}
-
-				if (buttons.green.hidden === false && buttons.green.disabled === false &&
-					buttons.red.hidden === false && buttons.red.disabled === false) {
-					var num = Math.round(Math.random());
-					var str = "no";
-					if (num === 0) {
-						str = "no";
-					}
-					else {
-						str = "yes";
-					}
-					thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]], str);
-					count += 1;
-					continue;
-				}
-
-
-				var prohibitedUsernamesToPick = [];
-
-				for (var j = 0; j < prohibitedIndexesToPick.length; j++) {
-					prohibitedUsernamesToPick.push(thisRoom.playersInGame[prohibitedIndexesToPick[j]].request.user.username);
-				}
-
-				var allPlayerUsernames = [];
-				for (var j = 0; j < thisRoom.playersInGame.length; j++) {
-					allPlayerUsernames.push(thisRoom.playersInGame[j].request.user.username);
-				}
-
-				// Subtract out all the usernames we cannot pick.
-				var allowedUsernamesToPick = allPlayerUsernames.filter(function (uname) {
-					if (prohibitedUsernamesToPick.includes(uname) === true) {
-						return false;
-					}
-					else {
-						return true;
-					}
+			var availablePlayers = thisRoom.playersInGame
+				.filter(function (player, playerIndex) {
+					return prohibitedIndexesToPick.indexOf(playerIndex) === -1;
+				}).map(function (player) {
+					return player.request.user.username;
 				});
 
-				var randomNums0toPlayerCount = [];
-				//shuffle the players around. Make sure to redistribute thisRoom room player data in sockets.
-				for (var j = 0; j < allowedUsernamesToPick.length; j++) {
-					randomNums0toPlayerCount[j] = j;
+			botSocket.handleRequestAction(thisRoom, availableButtons, availablePlayers, numOfTargets, function (move, reason) {
+				// Check for move failure.
+				if (move === false) {
+					var message = botSocket.request.user.username + " failed to make a move and has left the game.";
+					if (reason) {
+						message += " Reason: " +  reason;
+					}
+					thisRoom.sendText(thisRoom.allSockets, message, "server-text-teal");
+					thisRoom.playerLeaveRoom(botSocket);
+					return;
 				}
-				randomNums0toPlayerCount = shuffle(randomNums0toPlayerCount);
 
+				// Check for move validity.
+				var pressedValidButton = (availableButtons.indexOf(move.buttonPressed) !== -1);
+				var selectedValidPlayers = (
+					numOfTargets === 0 || numOfTargets === null || (
+						move.selectedPlayers &&
+						numOfTargets === move.selectedPlayers.length &&
+						move.selectedPlayers.every(function (player) {
+							return availablePlayers.indexOf(player) !== -1;
+						})
+					)
+				);
 
-				var selectUsernames = [];
-				for (var j = 0; j < numOfTargets; j++) {
-					selectUsernames.push(allowedUsernamesToPick[randomNums0toPlayerCount[j]]);
+				if (!pressedValidButton || !selectedValidPlayers) {
+					var message = botSocket.request.user.username + " made an illegal move and has left the game. Move: " + JSON.stringify(move);
+					thisRoom.sendText(thisRoom.allSockets, message, "server-text-teal");
+					thisRoom.playerLeaveRoom(botSocket);
+					return;
 				}
 
-				// console.log("Select usernames: ");
-				// console.log(selectUsernames);
+				pendingBots.splice(pendingBots.indexOf(botSocket), 1);
 
-				// console.log("Bot playing move: ");
-				// console.log(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]].request.user.username);
+				// Make the move
+				if (numOfTargets == 0 || numOfTargets == null) {
+					thisRoom.gameMove(botSocket, move.buttonPressed);
+				} else {
+					thisRoom.gameMove(botSocket, move.selectedPlayers);
+				}
+			});
+		});
 
-				// console.log("Allowed usernames: ");
-				// console.log(allowedUsernamesToPick);
-
-				// console.log("Prohibited indices: ");
-				// console.log(prohibitedIndexesToPick);
-
-				thisRoom.gameMove(thisRoom.socketsOfPlayers[thisRoom.botIndexes[i]], selectUsernames);
-				count += 1;
-			}
-		}, 1000);
-	}
+	}, timeEachLoop);
 }
 
 
@@ -920,6 +909,10 @@ Game.prototype.getGameData = function () {
 			data[i].publicData = this.getRoleCardPublicGameData();
 			data[i].prohibitedIndexesToPicks = this.getProhibitedIndexesToPick(i);
 
+			data[i].roles = this.playersInGame.map(function (player) { return player.role; });
+			// This is hacky but it works, for now...
+			data[i].cards = this.options.filter(function (option) { return option.indexOf('of the') !== -1; });
+
 
 			//if game is finished, reveal everything including roles
 			if (this.phase === "finished") {
@@ -1196,6 +1189,15 @@ Game.prototype.finishGame = function (toBeWinner) {
 
 	var playersInGameVar = this.playersInGame;
 	var winnerVar = this.winner;
+
+	var thisGame = this;
+	this.socketsOfPlayers.filter(function (socket) { return socket.isBotSocket; }).forEach(function (botSocket) {
+		botSocket.handleGameOver(thisGame, "complete", function (shouldLeave) {
+			if (shouldLeave) {
+				thisGame.playerLeaveRoom(botSocket);
+			}
+		});
+	});
 
 	this.playersInGame.forEach(function (player) {
 
