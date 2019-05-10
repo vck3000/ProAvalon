@@ -159,7 +159,7 @@ APIBotSocket.prototype.handleReadyNotReady = function (game, callback) {
 APIBotSocket.prototype.handleGameStart = function (game, callback) {
     var thisSocket = this;
     var playerIndex = game.playersInGame.findIndex(function(player) { return player.username == thisSocket.request.user.username; });
-    console.log("Player " + thisSocket.request.user.username + " is at index: " + playerIndex);
+    // console.log("Player " + thisSocket.request.user.username + " is at index: " + playerIndex); //Don't worry, the above line works perfectly...!
     var gameData = game.getGameData()[playerIndex];
 
     var apiData = {
