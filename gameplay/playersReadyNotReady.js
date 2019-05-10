@@ -46,6 +46,12 @@ playersReadyNotReady.prototype.playerNotReady = function (username) {
 };
 
 playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
+    // Must have at least one bot in the game to play a "bot" gameMode
+    if(gameMode.toLowerCase().includes("bot") === true && (this.botSockets === undefined || this.botSockets.length === 0 )){
+        this.sendText(this.allSockets, "Please play in a normal game mode if you do not have any bots.", "gameplay-text");
+        return false;
+    }
+
     // console.log("HOST TRY START GAME");
     if (this.hostTryStartGameDate) {
         // 11 seconds
@@ -75,40 +81,49 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
         //.slice to clone
         this.playersYetToReady = this.socketsOfPlayers.slice();
 
-        // If there are bots, remove them.
-        for (var i = this.playersYetToReady.length - 1; i >= 0; i--) {
-            if (this.playersYetToReady[i].request.user.bot === true) {
-                // console.log("Removed bot: " + i);
-                this.playersYetToReady.splice(i, 1);
-            }
-        }
         this.options = options;
 
-        // If the room is full of bots, start game
-        if (this.playersYetToReady.length === 0) {
-            this.startGame(options);
-        }
-        else {
-            this.gamePlayerLeftDuringReady = false;
-
-            var rolesInStr = "";
-            options.forEach(function (element) {
-                rolesInStr += element + ", ";
+        // If there are bots, check if they are ready.
+        // This step has to be done on the next event loop cycle to ensure the code below it runs.
+        var thisGame = this;
+        setImmediate(function() {
+            thisGame.socketsOfPlayers.forEach(function(playerSocket) {
+                if (playerSocket.isBotSocket) {
+                    playerSocket.handleReadyNotReady(thisGame, function(botReady, reason) {
+                        if (botReady) {
+                            thisGame.playerReady(playerSocket.request.user.username);
+                        } else {
+                            var message = playerSocket.request.user.username + " is not ready."
+                            if (reason) {
+                                message += " Reason: " + reason;
+                            }
+                            thisGame.sendText(this.allSockets, message, "server-text");
+                            thisGame.playerNotReady(playerSocket.request.user.username);
+                        }
+                    });
+                }
             });
-            //remove the last , and replace with .
-            rolesInStr = rolesInStr.slice(0, rolesInStr.length - 2);
-            rolesInStr += ".";
+        });
 
-            for (var i = 0; i < this.socketsOfPlayers.length; i++) {
-                this.socketsOfPlayers[i].emit("game-starting", rolesInStr, gameMode);
-            }
+        this.gamePlayerLeftDuringReady = false;
 
-            var socketsOfSpecs = this.getSocketsOfSpectators();
-            socketsOfSpecs.forEach(function (sock) {
-                sock.emit("spec-game-starting", null);
-            });
-            this.sendText(this.allSockets, "The game is starting!", "gameplay-text");
+        var rolesInStr = "";
+        options.forEach(function (element) {
+            rolesInStr += element + ", ";
+        });
+        //remove the last , and replace with .
+        rolesInStr = rolesInStr.slice(0, rolesInStr.length - 2);
+        rolesInStr += ".";
+
+        for (var i = 0; i < this.socketsOfPlayers.length; i++) {
+            this.socketsOfPlayers[i].emit("game-starting", rolesInStr, gameMode);
         }
+
+        var socketsOfSpecs = this.getSocketsOfSpectators();
+        socketsOfSpecs.forEach(function (sock) {
+            sock.emit("spec-game-starting", null);
+        });
+        this.sendText(this.allSockets, "The game is starting!", "gameplay-text");
     }
 };
 

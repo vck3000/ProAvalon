@@ -49,12 +49,11 @@ VotingMission.prototype.gameMove = function (socket, data) {
             console.log("ERROR! Outcome was: " + outcome);
         }
 
+        var numOfVotedFails = countFails(this.thisRoom.missionVotes);
+        this.thisRoom.numFailsHistory.push(numOfVotedFails);
+
         //for the gameplay message
         if (outcome === "succeeded") {
-            //get number of fails
-            var numOfVotedFails = countFails(this.thisRoom.missionVotes);
-            this.thisRoom.numFailsHistory.push(numOfVotedFails);
-
             if (numOfVotedFails === 0) {
                 this.thisRoom.sendText(this.thisRoom.allSockets, "Mission " + this.thisRoom.missionNum + " succeeded.", "gameplay-text-blue");
             }
@@ -63,14 +62,6 @@ VotingMission.prototype.gameMove = function (socket, data) {
             }
         }
         else if (outcome === "failed") {
-            //get number of fails
-            var numOfVotedFails = countFails(this.thisRoom.missionVotes);
-            this.thisRoom.numFailsHistory.push(numOfVotedFails);
-
-            if (numOfVotedFails > 1) {
-                this.thisRoom.moreThanOneFailMissions[this.thisRoom.missionNum] = true;
-            }
-
             if (numOfVotedFails === 1) {
                 this.thisRoom.sendText(this.thisRoom.allSockets, "Mission " + this.thisRoom.missionNum + " failed with " + numOfVotedFails + " fail.", "gameplay-text-red");
             }

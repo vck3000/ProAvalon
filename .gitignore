@@ -5,3 +5,4 @@ banips.txt
 myStuff/*
 assets/gameRecordsData/
 !assets/gameRecordsData/gameRecordsDataAnon.json
+notes.js

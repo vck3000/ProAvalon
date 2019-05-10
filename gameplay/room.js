@@ -157,8 +157,10 @@ Room.prototype.playerLeaveRoom = function (socket) {
     }
 
 
+    var newHostSocket;
     // Set the host to the first person in the sitting down array in case the previous host left
     if (this.socketsOfPlayers[0] !== undefined) {
+        newHostSocket = this.socketsOfPlayers[0];
         this.host = this.socketsOfPlayers[0].request.user.username;
         console.log("new host: " + this.host);
     }
@@ -170,6 +172,11 @@ Room.prototype.playerLeaveRoom = function (socket) {
     }
 
     this.updateRoomPlayers();
+
+    // If the new host is a bot... leave the room.
+    if (newHostSocket !== undefined && newHostSocket.isBotSocket === true){
+        this.playerLeaveRoom(newHostSocket);
+    }
 };
 
 
@@ -186,6 +193,10 @@ Room.prototype.kickPlayer = function (username, socket) {
 
         //Make them stand up forcefully
         this.playerStandUp(socketOfTarget);
+
+        if (socketOfTarget.isBotSocket) {
+            this.playerLeaveRoom(socketOfTarget);
+        }
 
 
         // Add to kickedPlayers array
@@ -322,7 +333,30 @@ Room.prototype.updateMaxNumPlayers = function (socket, number) {
 
 Room.prototype.updateGameModesInRoom = function (socket, gameMode) {
     if (gameModeNames.includes(gameMode) === true && socket.request.user.username === this.host) {
+        // If the new gameMode doesnt include bot, but originally does, then remove the bots that may have been added
+        if(gameMode.toLowerCase().includes("bot") == false && this.botSockets !== undefined && this.botSockets.length > 0){
+            var thisRoom = this;
+
+            var botSockets = this.botSockets.slice() || [];
+            botsToRemove = botSockets;
+            botsToRemove.forEach(function(botSocket) {
+                thisRoom.playerLeaveRoom(botSocket);
+
+                if (thisRoom.botSockets && thisRoom.botSockets.indexOf(botSocket) !== -1) {
+                    thisRoom.botSockets.splice(thisRoom.botSockets.indexOf(botSocket), 1);
+                }
+            });
+            var removedBots = botsToRemove.map(function(botSocket) { return botSocket.request.user.username });
+
+            if (removedBots.length > 0) {
+                var message = socket.request.user.username + " removed bots from this room: " + removedBots.join(', ');
+                var classStr = "server-text-teal";
+                this.sendText(this.socketsOfPlayers, message, classStr);
+            }
+        }
+
         this.gameMode = gameMode;
+        var thisRoom = this;
 
         this.specialRoles = (new gameModeObj[this.gameMode]["Roles"]).getRoles(this);
         this.specialPhases = (new gameModeObj[this.gameMode]["Phases"]).getPhases(this);
