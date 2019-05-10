@@ -311,7 +311,7 @@ socket.on("update-current-games-list", function (currentGames) {
                 "<br>" + missionHistoryStr +
                 "</td> </tr>";
 
-
+            console.log(currentGame.gameMode);
 
 
             $("#current-games-table tbody").append(str);

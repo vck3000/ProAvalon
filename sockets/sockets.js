@@ -1779,7 +1779,8 @@ var updateCurrentGamesList = function () {
 				gamesList[i].passwordLocked = false;
 			}
 			//get room ID
-			gamesList[i].roomId = rooms[i].roomId;
+            gamesList[i].roomId = rooms[i].roomId;
+            gamesList[i].gameMode = rooms[i].gameMode;
 			// console.log("Room " + rooms[i].roomId + " has host: " + rooms[i].host);
 			gamesList[i].hostUsername = rooms[i].host;
 			if (rooms[i].gameStarted === true) {
@@ -1787,7 +1788,6 @@ var updateCurrentGamesList = function () {
 				gamesList[i].missionHistory = rooms[i].missionHistory;
 				gamesList[i].missionNum = rooms[i].missionNum;
                 gamesList[i].pickNum = rooms[i].pickNum;
-                gamesList[i].gameMode = rooms[i].gameMode;
 			}
 			else {
 				gamesList[i].numOfPlayersInside = rooms[i].socketsOfPlayers.length;
