@@ -170,9 +170,10 @@ Room.prototype.playerLeaveRoom = function (socket) {
     // Set the host to the first person in the sitting down array in case the previous host left
     if (this.socketsOfPlayers[0] !== undefined) {
         newHostSocket = this.socketsOfPlayers[0];
+        var oldHost = this.host;
         this.host = this.socketsOfPlayers[0].request.user.username;
 
-        if(this.gameMode.toLowerCase().includes("bot") === true){
+        if(this.gameMode.toLowerCase().includes("bot") === true && oldHost !== this.host){
             data = {
                 message: "Type /help to see the commands available to interact with bots!",
                 classStr: "server-text",
