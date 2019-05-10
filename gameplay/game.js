@@ -292,13 +292,13 @@ Game.prototype.playerLeaveRoom = function (socket) {
 		//if they exist in socketsOfPlayers, then remove them
 		var index = this.socketsOfPlayers.indexOf(socket);
 		if (index !== -1) {
-            console.log("Removing index " + index);
+            // console.log("Removing index " + index);
 			this.socketsOfPlayers.splice(index, 1);
         }
         // Remove from all sockets as well
         index = this.allSockets.indexOf(socket);
 		if (index !== -1) {
-            console.log("Removing index " + index);
+            // console.log("Removing index " + index);
 			this.allSockets.splice(index, 1);
 		}
 
