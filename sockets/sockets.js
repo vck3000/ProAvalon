@@ -744,7 +744,7 @@ var actionsObj = {
                 
                 if (currentRoom.gameStarted === true || currentRoom.canJoin === false) {
 					return {
-						message: "No bots can join this room at this time.",
+						message: "No bots can be removed from this room at this time.",
 						classStr: "server-text"
 					}
 				}
