@@ -71,14 +71,14 @@ Room.prototype.playerJoinRoom = function (socket, inputPassword) {
     console.log(socket.request.user.username + " has joined room " + this.roomId);
 
     //if the room has a password and user hasn't put one in yet
-    if (this.joinPassword !== undefined && inputPassword === undefined) {
+    if (this.joinPassword !== undefined && inputPassword === undefined && (socket.isBotSocket === undefined || socket.isBotSocket === false)) {
         socket.emit("joinPassword", this.roomId);
         // console.log("No password inputted!");
 
         return false;
     }
     //if the room has a password and user HAS put a password in
-    else if (this.joinPassword !== undefined && inputPassword !== undefined) {
+    else if (this.joinPassword !== undefined && inputPassword !== undefined && (socket.isBotSocket === undefined || socket.isBotSocket === false)) {
         if (this.joinPassword === inputPassword) {
             // console.log("Correct password!");
 
@@ -168,7 +168,7 @@ Room.prototype.playerLeaveRoom = function (socket) {
 
     var newHostSocket;
     // Set the host to the first person in the sitting down array in case the previous host left
-    if (this.socketsOfPlayers[0] !== undefined) {
+    if (this.socketsOfPlayers[0] !== undefined && this.gameStarted === false) {
         newHostSocket = this.socketsOfPlayers[0];
         var oldHost = this.host;
         this.host = this.socketsOfPlayers[0].request.user.username;
