@@ -1141,11 +1141,17 @@ var actionsObj = {
 				User.findOne({ usernameLower: args[1].toLowerCase() }).populate("notifications").exec(function (err, foundUser) {
 					if (err) { console.log(err); }
 					else {
-						foundUser.avatarImgRes = "";
-						foundUser.avatarImgSpy = "";
-						foundUser.save();
-
-						senderSocket.emit("messageCommandReturnStr", { message: "Successfully removed " + args[1] + "'s avatar.", classStr: "server-text" });
+                        if(foundUser !== undefined){
+                            foundUser.avatarImgRes = "";
+                            foundUser.avatarImgSpy = "";
+                            foundUser.save();
+    
+                            senderSocket.emit("messageCommandReturnStr", { message: "Successfully removed " + args[1] + "'s avatar.", classStr: "server-text" });
+                        }
+                        else{
+                            senderSocket.emit("messageCommandReturnStr", { message: "Could not find " + args[1] + "'s avatar. If you think this is a problem, contact admin.", classStr: "server-text" });
+                        }
+						
 					}
 				});
 				return;
