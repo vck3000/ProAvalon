@@ -33,7 +33,7 @@ var newModsArray = modsArray.filter(mod => mod != "pronub");
 router.get("/community", function(req, res){
 	// Get all players with more than 50 games excluding mods
 	User.find( {
-		"totalGamesPlayed": { $gt : 49 },
+		"totalGamesPlayed": { $gt : 99 },
 		"usernameLower" : { $nin : newModsArray },
 		"hideStats": null
 		}, function(err, allUsers){
