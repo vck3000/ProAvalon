@@ -605,14 +605,14 @@ var actionsObj = {
 					if (botDescriptions.length === 0) {
 						senderSocket.emit("messageCommandReturnStr", {
 							message: "No bots are currently available.",
-							classStr: "server-text noselect"
+							classStr: "server-text"
 						});
 					} else {
 						var messages = ["The following bots are online:"].concat(botDescriptions);
 						senderSocket.emit("messageCommandReturnStr", messages.map(function(message) {
 							return {
 								message: message,
-								classStr: "server-text noselect"
+								classStr: "server-text"
 							}
 						}));
 					}
@@ -627,12 +627,12 @@ var actionsObj = {
 				if (senderSocket.request.user.inRoomId === undefined || rooms[senderSocket.request.user.inRoomId] === undefined) {
 					return {
 						message: "You must be in a bot-capable room to run this command!",
-						classStr: "server-text noselect"
+						classStr: "server-text"
 					};
 				} else if (rooms[senderSocket.request.user.inRoomId].gameMode !== 'avalonBot') {
 					return {
 						message: "This room is not bot capable. Please join a bot-capable room.",
-						classStr: "server-text noselect"
+						classStr: "server-text"
 					}
 				}
 
@@ -642,7 +642,7 @@ var actionsObj = {
 				if (currentRoom.gameStarted === true || currentRoom.canJoin === false) {
 					return {
 						message: "No bots can join this room at this time.",
-						classStr: "server-text noselect"
+						classStr: "server-text"
 					}
 				}
 
@@ -651,7 +651,7 @@ var actionsObj = {
 				if (!args[1]) {
 					return {
 						message: "Specify a bot. Use /getbots to see online bots.",
-						classStr: "server-text noselect"
+						classStr: "server-text"
 					};
 				}
 				var botName = args[1];
@@ -659,7 +659,7 @@ var actionsObj = {
 				if (!botAPI) {
 					return {
 						message: "Couldn't find a bot called " + botName + ".",
-						classStr: "server-text noselect"
+						classStr: "server-text"
 					}
 				}
 
@@ -668,7 +668,7 @@ var actionsObj = {
 				if (currentRoom.socketsOfPlayers.length + numBots > currentRoom.maxNumPlayers) {
 					return {
 						message: "Adding " + numBots + " bot(s) would make this room too full.",
-						classStr: "server-text noselect"
+						classStr: "server-text"
 					}
 				}
 
@@ -698,12 +698,12 @@ var actionsObj = {
 				if (senderSocket.request.user.inRoomId === undefined || rooms[senderSocket.request.user.inRoomId] === undefined) {
 					return {
 						message: "You must be in a bot-capable room to run this command!",
-						classStr: "server-text noselect"
+						classStr: "server-text"
 					};
 				} else if (rooms[senderSocket.request.user.inRoomId].gameMode !== 'avalonBot') {
 					return {
 						message: "This room is not bot capable. Please join a bot-capable room.",
-						classStr: "server-text noselect"
+						classStr: "server-text"
 					}
 				}
 
@@ -714,7 +714,7 @@ var actionsObj = {
 				if (!args[1]) {
 					return {
 						message: "Specify a bot to remove, or use \"/rembot all\" to remove all bots.",
-						classStr: "server-text noselect"
+						classStr: "server-text"
 					};
 				}
 				var botName = args[1];
@@ -727,7 +727,7 @@ var actionsObj = {
 				if (botsToRemove.length === 0) {
 					return {
 						message: "Couldn't find any bots with that name to remove.",
-						classStr: "server-text noselect"
+						classStr: "server-text"
 					};
 				}
 
