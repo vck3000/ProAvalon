@@ -543,7 +543,7 @@ Game.prototype.checkBotMoves = function (pendingBots) {
 		thisRoom.botSockets.forEach(function (botSocket) {
             var botIndex = thisRoom.socketsOfPlayers.indexOf(botSocket);
             if(botIndex === -1){
-                continue;
+                return;
             }
 
 			var buttons = thisRoom.getClientButtonSettings(botIndex);
