@@ -68,7 +68,8 @@
     .cell {
         height: 60px;
         display: block;
-        overflow: auto;
+        overflow: hidden;
+        text-overflow: ellipsis;
 /*        display: flex;
         flex-direction: column;*/
     }
@@ -98,6 +99,9 @@
         visibility: collapse;
     } 
 
+    .username{
+        color: black;
+    }
 @media screen and (max-width: 600px) {
     .myTable {
         font-size: 11px;
@@ -152,14 +156,14 @@
             
             <% mods.forEach(function(mod){ %>
             <tr>
-                <td><%= mod.username %></td>
+                <td><a class="username" href="/profile/<%= mod.username %>" ><%= mod.username %></a></td>
                 <%if (mod.avatarImgRes === null) { %>
-                    <td><img src="https://www.proavalon.com/avatars/base-res.png"></td>
+                    <td><img src="/avatars/base-res.png"></td>
                 <% } else { %>
                     <td><img src="<%= mod.avatarImgRes %>"></td>
                 <% } %>
                 <%if (mod.avatarImgSpy === null) { %>
-                    <td><img src="https://www.proavalon.com/avatars/base-spy.png"></td>                
+                    <td><img src="/avatars/base-spy.png"></td>                
                 <% } else { %>
                     <td><img src="<%= mod.avatarImgSpy %>"></td>
                 <% } %>
@@ -187,14 +191,14 @@
 
 			<% users.forEach(function(user){ %>
 			<tr>
-				<td><%= user.username %></td>
+				<td><a class="username" href="/profile/<%= user.username %>" ><%= user.username %></a></td>
                 <%if (user.avatarImgRes === null) { %>
-                    <td><img src="https://www.proavalon.com/avatars/base-res.png"></td>
+                    <td><img src="/avatars/base-res.png"></td>
                 <% } else { %>
 				    <td><img src="<%= user.avatarImgRes %>"></td>
                 <% } %>
                 <%if (user.avatarImgSpy === null) { %>
-                    <td><img src="https://www.proavalon.com/avatars/base-spy.png"></td>                
+                    <td><img src="/avatars/base-spy.png"></td>                
                 <% } else { %>
 				    <td><img src="<%= user.avatarImgSpy %>"></td>
                 <% } %>
