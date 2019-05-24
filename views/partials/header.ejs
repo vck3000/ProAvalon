@@ -160,6 +160,16 @@
 			color: #777;
 		}
 
+		/* This will auto-drop down the dropboxes when hovering in navbar button*/
+		/* ul.nav li.dropdown:hover > ul.dropdown-menu {
+			display: block;    
+		} */
+		
+		.dropdown-nav{
+			width: 100%;
+			text-align: left;
+			padding: 10px 10px;
+		}
 
 
 	</style>
@@ -214,6 +224,13 @@
 						<button class="dropdown-nav" type="button" id="community-dropdown" data-toggle="dropdown">Community<span class="caret"></span></button>
 
 						<ul class="dropdown-menu">
+							<!-- Members -->
+							<% if(headerActive === "community"){ %>
+								<li class="active"><a href="/community">Members</a></li>
+								<%} %>
+								<% if(headerActive !== "community"){ %>
+								<li><a href="/community">Members</a></li>
+								<% } %>
 
 							<!-- Forums -->
 							<% if(headerActive === "forums"){ %>
