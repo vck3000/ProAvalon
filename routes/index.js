@@ -50,7 +50,7 @@ router.get("/community", function(req, res){
 		            	console.log(err);
 		          	}
 		          	else {
-		            	res.render("community", {users:allUsers, mods:allMods, currentUser:req.user});
+		            	res.render("community", {users:allUsers, mods:allMods, currentUser:req.user, headerActive: "community"});
           			}
 	        	});
         	}
