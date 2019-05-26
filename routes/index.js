@@ -827,7 +827,7 @@ var hardUpdateStatsFunction = function(){
     }); 
 }
 
-var hardUpdateStats = false;
+var hardUpdateStats = true;
 if(hardUpdateStats === true && process.env.MY_PLATFORM == "local"){
 	setTimeout(hardUpdateStatsFunction, 5000);
 }
