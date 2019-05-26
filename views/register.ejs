@@ -5,29 +5,51 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
 
+<style type="text/css">
+	.login-form {
+		max-width: 340px;
+		width: 100%;
+    	margin: 20px auto;
+	}
+    .login-form form {
+    	margin-bottom: 15px;
+        background: #f7f7f7;
+        box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+		border: #b5b5b5 2px solid;
+        padding: 30px;
+    }
+    .login-form h2 {
+        margin: 0 0 15px;
+    }
+    .form-control, .btn {
+        min-height: 38px;
+        border-radius: 2px;
+    }
+    .btn {        
+        font-size: 15px;
+        font-weight: bold;
+    }
+</style>
+
 
 <div class="container">
 
 	<div class="container center myContainer">
-		<h2><u>Sign up!</u></h2>
 
-	<!-- 	<form action="/" method="POST" id="registerId">
-			<input type="text" name="username" placeholder="Username">
-			<input type="password" name="password" placeholder="Password">
-			<button>Submit!</button>
-		</form> -->
-	</div>
+	<div class="login-form">
+		<form action="/" method="POST" id="registerId" data-toggle="validator">  
+	
 
-	<br>
+			<h2 class="text-center">Sign up!</h2> 
 
-	<div class="container center" id="myDiv">
-
-		<form class="form-horizontal" action="/" method="POST" id="registerId" data-toggle="validator">
 			<div class="form-group" >
 				<label class="alignLeft pull-left">Username</label>
 				<input type="text" id="username" name="username" class="form-control" placeholder="Username" required>
 				<div class="help-block with-errors"></div>
 			</div>
+
+			<hr>
+
 			<div class="form-group">
 				<label class="alignLeft pull-left">Password</label>
 				<input type="password" name="password" class="form-control" placeholder="Password" required id="inputPassword" data-minlength="4">
@@ -41,23 +63,12 @@
 				<div class="help-block with-errors"></div>
 			</div>
 
+			<br>
+
 			<div class="form-group">
-				<div class="col-sm-offset-2 col-sm-10">
-					<button type="submit" class="btn btn-default center">Submit</button>
-				</div>
+				<button type="submit" class="btn btn-primary btn-block">Submit</button>
 			</div>
-			<br>
 
-			<% if(locals.platform && platform === "online"){ %>
-			<div class="g-recaptcha" data-sitekey="6LdaNWYUAAAAAEZaewme7gGpvL1c1_zPzbVKiF18"></div>
-			<% } else{ %>
-			<div>Platform is <%=platform%>. No need for captcha.</div>
-			<% } %>
-
-			<br>
-			<div>
-				<p>Note: Only alphanumerical characters are allowed in the username (a-z, A-Z and 1-9)</p>
-			</div>
 		</form>
 	</div>
 
