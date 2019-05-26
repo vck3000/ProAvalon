@@ -151,25 +151,48 @@
 			/* margin: auto;*/
 
 		}
+		@media screen and (min-width:768px){
+			.wideNavbarLink{
+				display: block !important;
+			}
+			.narrowNavbarLink{
+				display: none !important;
+			}
 
-		.dropdown-nav {
+			.dropdown:hover .dropdown-menu {
+				display: block;
+				margin-top: 0; // remove the gap so it doesn't close
+			}
+		}
+
+		@media screen and (max-width:768px){
+			.wideNavbarLink{
+				display: none !important;
+			}
+			.narrowNavbarLink{
+				display: block !important;
+			}
+		}
+
+		
+		/* .dropdown-nav {
 			border: none;
 			background: none;
 			margin: 0;
 			padding: 15px 10px;
 			color: #777;
-		}
+		} */
 
 		/* This will auto-drop down the dropboxes when hovering in navbar button*/
 		/* ul.nav li.dropdown:hover > ul.dropdown-menu {
 			display: block;    
 		} */
-		
+/* 		
 		.dropdown-nav{
 			width: 100%;
 			text-align: left;
-			padding: 10px 10px;
-		}
+			/* padding: 10px 10px; */
+		/*} */
 
 
 	</style>
@@ -221,7 +244,8 @@
 
 					<!-- Community dropdown -->
 					<li class="dropdown">
-						<button class="dropdown-nav" type="button" id="community-dropdown" data-toggle="dropdown">Community<span class="caret"></span></button>
+						<a href="#" class="dropdown-toggle wideNavbarLink" data-toggle="" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+						<a href="#" class="dropdown-toggle narrowNavbarLink" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
 
 						<ul class="dropdown-menu">
 							<!-- Members -->
@@ -246,7 +270,8 @@
 
 					<!-- Development dropdown -->
 					<li class="dropdown">
-						<button class="dropdown-nav" type="button" id="dev-dropdown" data-toggle="dropdown">Development<span class="caret"></span></button>
+						<a href="#" class="dropdown-toggle wideNavbarLink" data-toggle="" role="button" aria-haspopup="true" aria-expanded="false">Development <span class="caret"></span></a>
+						<a href="#" class="dropdown-toggle narrowNavbarLink" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Development <span class="caret"></span></a>
 
 						<ul class="dropdown-menu">
 							<!-- Log -->
