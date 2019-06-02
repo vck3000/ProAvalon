@@ -62,8 +62,23 @@
 				<input type="password" name="confirmPassword" class="form-control" placeholder="Confirm password" required data-match="#inputPassword" data-match-error="Passwords do not match.">
 				<div class="help-block with-errors"></div>
 			</div>
+			
+			<br>
+
+			<% if(locals.platform && platform === "online"){ %>
+			<div class="g-recaptcha" data-sitekey="6LdaNWYUAAAAAEZaewme7gGpvL1c1_zPzbVKiF18"></div>
+			<% } else{ %>
+			<div>Platform is <%=platform%>. No need for captcha.</div>
+			<% } %>
 
 			<br>
+
+			<div>
+				<p>Note: Only alphanumerical characters are allowed in the username (a-z, A-Z and 1-9)</p>
+			</div>
+
+			<br>
+
 
 			<div class="form-group">
 				<button type="submit" class="btn btn-primary btn-block">Submit</button>
