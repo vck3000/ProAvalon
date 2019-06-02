@@ -307,7 +307,8 @@ Game.prototype.playerLeaveRoom = function (socket) {
 	else {
 		// If we are in player ready not ready phase, then make them not ready and then perform
 		// the usual leave room procedures.
-		if (this.playersYetToReady !== undefined && this.playersYetToReady.length !== undefined && this.playersYetToReady.length !== 0) {
+		var index = this.socketsOfPlayers.indexOf(socket);
+		if (index !== -1 && this.playersYetToReady !== undefined && this.playersYetToReady.length !== undefined && this.playersYetToReady.length !== 0) {
 			this.playerNotReady();
 			var username = socket.request.user.username;
 			this.sendText(this.allSockets, username + " is not ready.", "server-text");
