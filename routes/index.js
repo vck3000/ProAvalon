@@ -68,7 +68,12 @@ router.get("/register", function (req, res) {
 	res.render("register", { platform: process.env.MY_PLATFORM });
 });
 
-const registerLimiter = rateLimit({
+const registerLimiter = process.env.MY_PLATFORM === "local" ?
+rateLimit({
+    max: 0 // Disable if we are local
+})
+:
+rateLimit({
     windowMs: 60 * 60 * 1000, // 60 minutes
     max: 3
 });
@@ -214,7 +219,12 @@ router.post("/", registerLimiter, checkIpBan, checkCurrentBan, sanitiseUsername,
 });
 
 
-const loginLimiter = rateLimit({
+const loginLimiter = process.env.MY_PLATFORM === "local" ?
+rateLimit({
+    max: 0 // Disable if we are local
+})
+:
+rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5
 });
@@ -827,7 +837,7 @@ var hardUpdateStatsFunction = function(){
     }); 
 }
 
-var hardUpdateStats = true;
+var hardUpdateStats = false;
 if(hardUpdateStats === true && process.env.MY_PLATFORM == "local"){
 	setTimeout(hardUpdateStatsFunction, 5000);
 }

@@ -244,7 +244,12 @@ lastIds.findOne({}).exec(async function (err, returnedLastId) {
 });
 
 
-const newForumLimiter = rateLimit({
+const newForumLimiter = process.env.MY_PLATFORM === "local" ?
+rateLimit({
+    max: 0 // Disable if we are local
+})
+:
+rateLimit({
     windowMs: 12 * 60 * 60 * 1000, // 12 hours
     max: 3
 });
