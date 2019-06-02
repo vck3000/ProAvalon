@@ -837,10 +837,10 @@ var hardUpdateStatsFunction = function(){
     }); 
 }
 
-var hardUpdateStats = false;
-if(hardUpdateStats === true && process.env.MY_PLATFORM == "local"){
+router.get("/updateStats", function(req, res){
 	setTimeout(hardUpdateStatsFunction, 5000);
-}
+	res.send("Starting update...");
+});
 
 
 
