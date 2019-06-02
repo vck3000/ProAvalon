@@ -42,6 +42,7 @@ var store = new MongoDBStore({
 
 // Catch errors
 store.on('error', function (error) {
+	console.log("--------------\nIs your mongoDB server running?\n--------------")
 	assert.ifError(error);
 	assert.ok(false);
 });
