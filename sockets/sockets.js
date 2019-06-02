@@ -1243,7 +1243,7 @@ var actionsObj = {
 
 				//Start the game.
 				var options = ["Merlin", "Assassin", "Percival", "Morgana", "Ref of the Rain", "Sire of the Sea", "Lady of the Lake"];
-				rooms[nextRoomId].hostTryStartGame(options, "avalon");
+				rooms[nextRoomId].hostTryStartGame(options, "avalonBot");
 
 				updateCurrentGamesList();
 
