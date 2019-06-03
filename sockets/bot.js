@@ -1,12 +1,13 @@
 const axios = require('axios');
 
 var enabledBots = [];
+enabledBots.push({
+    name: "SimpleBot",
+    urlBase: undefined,
+    authorizationKey: undefined
+});
+
 if (process.env.BOT_DEEPROLE_API_KEY) {
-    enabledBots.push({
-        name: "SimpleBot",
-        urlBase: undefined,
-        authorizationKey: undefined
-    });
     enabledBots.push({
         name: "DeepRole",
         urlBase: "https://deeprole-proavalon.herokuapp.com/deeprole",
