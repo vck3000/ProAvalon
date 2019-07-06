@@ -54,11 +54,11 @@ var timeLastBuzzSlap;
 var interactUserMessageTimeOffset = {
     //default value is 0
     "slap": 1100
-}
+};
 var verbToMp3 = {
     //default value is the data.verb variable
     "buzz": "ding"
-}
+};
 
 
 socket.on("interactUser", function (data) {
@@ -80,7 +80,7 @@ socket.on("interactUser", function (data) {
                     message: "You have been " + data.verbPast + " by " + data.username + ".",
                     classStr: "server-text",
                     dateCreated: new Date()
-                }
+                };
 
                 var timeDelay = interactUserMessageTimeOffset[data.verb];
                 if (timeDelay === undefined) { timeDelay = 0; }

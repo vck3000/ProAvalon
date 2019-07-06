@@ -74,10 +74,10 @@ var userOptions = {
 
             //set up div 1 to be resizable in north and south directions
             $("#div1Resize").resizable({
-                handles: 's'
+                handles: "s"
             });
             //on resize of div 1, resize div 2.
-            $('#div1Resize').resize(function () {
+            $("#div1Resize").resize(function () {
                 //Make the height adjustments
                 userOptions["optionDisplayHeightOfAvatarContainer"].avatarContainerHeightAdjust();
                 //save the new heights
@@ -89,7 +89,7 @@ var userOptions = {
             });
             //on whole window resize, resize both divs.
             $(window).resize(function () {
-                $('#div1Resize').width($("#div2Resize").parent().width());
+                $("#div1Resize").width($("#div2Resize").parent().width());
 
                 //save the new heights
                 docCookies.setItem("optionDisplayHeightOfAvatarContainer", $("#div1Resize").height(), Infinity);
@@ -132,7 +132,7 @@ var userOptions = {
         },
 
         avatarContainerHeightAdjust: function () {
-            $('#div2Resize').height($('#div2Resize').parent().height() - $("#div1Resize").height());
+            $("#div2Resize").height($("#div2Resize").parent().height() - $("#div1Resize").height());
 
             //extend the tab content to bottom
             extendTabContentToBottomInRoom();
@@ -819,7 +819,7 @@ var userOptions = {
         }
     },
 
-}
+};
 
 //run through each userOption load and initialiseEventListener
 //create the default values if the cookie doesn't have the option stored.
@@ -846,28 +846,28 @@ for (var keys in userOptions) {
 
 
 var defaultColours = [
-    '#ff6d6d',
-    '#ffff9e',
+    "#ff6d6d",
+    "#ffff9e",
     "#c5b5ff",
     "#ff9b9b",
-    '#9aa888',
-    '#96ff96',
-    '#72afac',
-    '#a8d6ff',
-    '#9999ff',
-    '#ff93ff'
-]
+    "#9aa888",
+    "#96ff96",
+    "#72afac",
+    "#a8d6ff",
+    "#9999ff",
+    "#ff93ff"
+];
 
 //When document has loaded, reinit the jscolor
 $(document).ready(function () {
     //On first run, update the colours
 
     for (var i = 0; i < 10; i++) {
-        if (!docCookies.hasItem('player' + i + "HighlightColour")) {
-            docCookies.setItem('player' + i + "HighlightColour", defaultColours[i], Infinity);
+        if (!docCookies.hasItem("player" + i + "HighlightColour")) {
+            docCookies.setItem("player" + i + "HighlightColour", defaultColours[i], Infinity);
         }
-        $("#player" + i + "HighlightColour")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));
-        $("#player" + i + "HighlightColour2")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));
+        $("#player" + i + "HighlightColour")[0].jscolor.fromString(docCookies.getItem("player" + i + "HighlightColour"));
+        $("#player" + i + "HighlightColour2")[0].jscolor.fromString(docCookies.getItem("player" + i + "HighlightColour"));
     }
 });
 
@@ -879,11 +879,11 @@ function update(picker) {
     // console.log(picker.playerColourID);
     // console.log(picker.col);
 
-    docCookies.setItem('player' + picker.playerColourID + "HighlightColour", picker.col, Infinity);
+    docCookies.setItem("player" + picker.playerColourID + "HighlightColour", picker.col, Infinity);
 
     for (var i = 0; i < 10; i++) {
-        $("#player" + i + "HighlightColour")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));
-        $("#player" + i + "HighlightColour2")[0].jscolor.fromString(docCookies.getItem('player' + i + "HighlightColour"));
+        $("#player" + i + "HighlightColour")[0].jscolor.fromString(docCookies.getItem("player" + i + "HighlightColour"));
+        $("#player" + i + "HighlightColour2")[0].jscolor.fromString(docCookies.getItem("player" + i + "HighlightColour"));
     }
 
 

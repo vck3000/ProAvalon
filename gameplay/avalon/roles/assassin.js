@@ -36,8 +36,8 @@ function Assassin(thisRoom_) {
             obj.spies = array;
             return obj;
         }
-    }
-};
+    };
+}
 
 //Assassination phase
 Assassin.prototype.checkSpecialMove = function (socket, data) {
@@ -95,7 +95,7 @@ Assassin.prototype.getPublicGameData = function () {
     else {
         return null;
     }
-}
+};
 
 
 module.exports = Assassin;

@@ -10,11 +10,11 @@ function Resistance(thisRoom_) {
 
     this.see = function () {
         return undefined;
-    }
+    };
 
     this.checkSpecialMove = function () {
 
-    }
+    };
 
 }
 

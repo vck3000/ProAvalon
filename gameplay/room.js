@@ -4,7 +4,7 @@
 var gameModeNames = [];
 var fs = require("fs");
 fs.readdirSync("./gameplay/").filter(function (file) {
-    if (fs.statSync("./gameplay" + '/' + file).isDirectory() === true && file !== "commonPhases") {
+    if (fs.statSync("./gameplay" + "/" + file).isDirectory() === true && file !== "commonPhases") {
         gameModeNames.push(file);
     }
 });
@@ -64,7 +64,7 @@ function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) 
     this.specialPhases = (new gameModeObj[this.gameMode]["Phases"]).getPhases(thisRoom);
     this.specialCards = (new gameModeObj[this.gameMode]["Cards"]).getCards(thisRoom);
 
-};
+}
 
 
 Room.prototype.playerJoinRoom = function (socket, inputPassword) {
@@ -316,7 +316,7 @@ Room.prototype.getRoomPlayers = function () {
             avatarImgSpy: this.socketsOfPlayers[i].request.user.avatarImgSpy,
             avatarHide: this.socketsOfPlayers[i].request.user.avatarHide,
             claim: isClaiming
-        }
+        };
 
         //give the host the teamLeader star
         if (roomPlayers[i].username === this.host) {
@@ -366,10 +366,10 @@ Room.prototype.updateGameModesInRoom = function (socket, gameMode) {
                     thisRoom.botSockets.splice(thisRoom.botSockets.indexOf(botSocket), 1);
                 }
             });
-            var removedBots = botsToRemove.map(function(botSocket) { return botSocket.request.user.username });
+            var removedBots = botsToRemove.map(function(botSocket) { return botSocket.request.user.username; });
 
             if (removedBots.length > 0) {
-                var message = socket.request.user.username + " removed bots from this room: " + removedBots.join(', ');
+                var message = socket.request.user.username + " removed bots from this room: " + removedBots.join(", ");
                 var classStr = "server-text-teal";
                 this.sendText(this.socketsOfPlayers, message, classStr);
             }
@@ -464,7 +464,7 @@ Room.prototype.sendOutGameModesInRoomToSocket = function (targetSocket) {
             descriptions: cardDescriptions,
             orderPriorities: cardPriorities
         }
-    }
+    };
 
     //Send the data to the socket.
     targetSocket.emit("update-game-modes-in-room", obj);

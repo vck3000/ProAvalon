@@ -21,28 +21,28 @@ function redButtonFunction() {
                 // Set the kick modal content
                 var str = "<h4>Select the players you want to kick.</h4>";
 
-                str += '<div class="btn-group-vertical" data-toggle="buttons">';
+                str += "<div class=\"btn-group-vertical\" data-toggle=\"buttons\">";
 
                 for (var i = 0; i < roomPlayersData.length; i++) {
                     if (ownUsername !== roomPlayersData[i].username) {
-                        str += '<label class="btn btn-mine">';
+                        str += "<label class=\"btn btn-mine\">";
 
-                        str += '<input name="' + roomPlayersData[i].username + '" id="' + roomPlayersData[i].username + '" type="checkbox" autocomplete="off">' + roomPlayersData[i].username;
+                        str += "<input name=\"" + roomPlayersData[i].username + "\" id=\"" + roomPlayersData[i].username + "\" type=\"checkbox\" autocomplete=\"off\">" + roomPlayersData[i].username;
 
                         str += "</label>";
                         str += "<br>";
                     }
                     else {
-                        str += '<label class="btn btn-mine" style="display: none;">';
+                        str += "<label class=\"btn btn-mine\" style=\"display: none;\">";
 
-                        str += '<input name="' + roomPlayersData[i].username + '" id="' + roomPlayersData[i].username + '" type="checkbox" autocomplete="off">' + roomPlayersData[i].username;
+                        str += "<input name=\"" + roomPlayersData[i].username + "\" id=\"" + roomPlayersData[i].username + "\" type=\"checkbox\" autocomplete=\"off\">" + roomPlayersData[i].username;
 
                         str += "</label>";
                         str += "<br>";
                     }
                 }
 
-                str += '</div>';
+                str += "</div>";
 
                 $("#kickModalContent")[0].innerHTML = str;
             }
@@ -134,10 +134,10 @@ document.querySelector("#green-button").addEventListener("click", greenButtonFun
 document.querySelector("#red-button").addEventListener("click", redButtonFunction);
 
 //re-draw the game screen when the modal is closed to update the roles in the center well.
-$('#roleOptionsModal').on('hidden.bs.modal', function (e) {
+$("#roleOptionsModal").on("hidden.bs.modal", function (e) {
     draw();
     // console.log("test");
-})
+});
 
 // Set the event listener for the button
 $("#kickButton")[0].addEventListener("click", function () {
@@ -196,7 +196,7 @@ document.querySelector("#claimButton").addEventListener("click", function () {
 
 //New room code (When its opened, open the modal and reset to default settings)
 $("#newRoom").on("click", function (data) {
-    $('#newRoomModal').modal('show');
+    $("#newRoomModal").modal("show");
     //password empty default
     $("#newRoomPassword").val("");
     //10p default

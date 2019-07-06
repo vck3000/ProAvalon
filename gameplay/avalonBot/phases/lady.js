@@ -17,7 +17,7 @@ function Lady(thisRoom_) {
     this.showGuns = false;
 
     this.card = "Lady of the Lake";
-};
+}
 
 Lady.prototype.gameMove = function (socket, data) {
     if (socket === undefined || data === undefined) {
@@ -128,7 +128,7 @@ Lady.prototype.buttonSettings = function (indexOfPlayer) {
         obj.red.setText = "";
     }
     return obj;
-}
+};
 
 Lady.prototype.numOfTargets = function (indexOfPlayer) {
     var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
@@ -142,7 +142,7 @@ Lady.prototype.numOfTargets = function (indexOfPlayer) {
             return null;
         }
     }
-}
+};
 
 
 Lady.prototype.getStatusMessage = function (indexOfPlayer) {
@@ -154,15 +154,15 @@ Lady.prototype.getStatusMessage = function (indexOfPlayer) {
     // If it is any other player who isn't special role
     else {
         var usernameOfCardHolder = this.thisRoom.playersInGame[indexOfCardHolder].username;
-        return "Waiting for " + usernameOfCardHolder + " to use the Lady of the Lake on someone."
+        return "Waiting for " + usernameOfCardHolder + " to use the Lady of the Lake on someone.";
     }
-}
+};
 
 Lady.prototype.getProhibitedIndexesToPick = function (indexOfPlayer) {
     var ladyHistory = this.thisRoom.specialCards[this.card.toLowerCase()].ladyHistory;
 
     return ladyHistory;
-}
+};
 
 
 

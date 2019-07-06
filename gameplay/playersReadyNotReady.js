@@ -97,7 +97,7 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
                         if (botReady) {
                             thisGame.playerReady(playerSocket.request.user.username);
                         } else {
-                            var message = playerSocket.request.user.username + " is not ready."
+                            var message = playerSocket.request.user.username + " is not ready.";
                             if (reason) {
                                 message += " Reason: " + reason;
                             }
@@ -137,8 +137,8 @@ function getRolesInStr(options) {
 
     var str = "";
 
-    if (options.merlin === true) { str += "Merlin, " }
-    if (options.assassin === true) { str += "Assassin, " }
+    if (options.merlin === true) { str += "Merlin, "; }
+    if (options.assassin === true) { str += "Assassin, "; }
     if (options.percival === true) { str += "Percival, "; }
     if (options.morgana === true) { str += "Morgana, "; }
     if (options.mordred === true) { str += "Mordred, "; }

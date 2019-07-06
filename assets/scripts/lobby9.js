@@ -16,7 +16,7 @@ var buttons = {
     "red": "#red-button",
     "green": "#green-button",
     "claim": "#claimButton"
-}
+};
 
 setInterval(function () {
     extendTabContentToBottomInRoom();
@@ -49,7 +49,7 @@ setTimeout(function () {
 }, 300);
 
 //when the navbar is closed, re-exted the tab content to bottom.
-$('.navbar-collapse').on('hidden.bs.collapse', function () {
+$(".navbar-collapse").on("hidden.bs.collapse", function () {
     extendTabContentToBottomInRoom();
 });
 
@@ -67,7 +67,7 @@ var inRoom = false;
 var isSpectator = false;
 
 //window resize, repaint the users
-window.addEventListener('resize', function () {
+window.addEventListener("resize", function () {
     // console.log("Resized");
 
 
@@ -342,7 +342,7 @@ function enableSelectAvatars(prohibitedIndexesToPicks) {
     }
     // checkSelectAvatarButtons(gameData.numSelectTargets);
 
-};
+}
 
 
 function drawMiddleBoxes() {
@@ -696,7 +696,7 @@ function drawClaimingPlayers(claimingPlayers) {
 
 function drawExitedPlayers(playersStillInRoom) {
 
-    var arrayOfUsernames = []
+    var arrayOfUsernames = [];
     for (var i = 0; i < roomPlayersData.length; i++) {
         arrayOfUsernames.push(roomPlayersData[i].username);
     }
@@ -919,7 +919,7 @@ function strOfAvatar(playerData, alliance) {
             }
             else {
                 //stored locally, need to add the path to it
-                picLink = 'avatars/' + playerData.avatarImgRes;
+                picLink = "avatars/" + playerData.avatarImgRes;
             }
 
         } else {
@@ -933,11 +933,11 @@ function strOfAvatar(playerData, alliance) {
             }
             else {
                 //stored locally, need to add the path to it
-                picLink = 'avatars/' + playerData.avatarImgSpy;
+                picLink = "avatars/" + playerData.avatarImgSpy;
             }
 
         } else {
-            picLink = 'avatars/base-spy.png'
+            picLink = "avatars/base-spy.png";
         }
     }
 
@@ -1046,9 +1046,9 @@ function strOfAvatar(playerData, alliance) {
     str += "<span id='highlightChatButton' style='background-color: " + colourToHighlightChatButton + ";' class='glyphicon glyphicon glyphicon-menu-hamburger avatarButton'></span>";
     str += "</span>";
 
-    str += '<span class="label label-success invisible approveLabel">Approve</span>';
-    str += '<span class="label label-danger invisible rejectLabel">Reject</span>';
-    str += '<span class="cardsContainer"></span>';
+    str += "<span class=\"label label-success invisible approveLabel\">Approve</span>";
+    str += "<span class=\"label label-danger invisible rejectLabel\">Reject</span>";
+    str += "<span class=\"cardsContainer\"></span>";
 
 
     str += "<img class='avatarImgInRoom' src='" + picLink + "'>";
@@ -1148,7 +1148,7 @@ var arrayOfChatBoxes = [
     "#room-chat-room",
     "#all-chat-room2",
     "#room-chat-room2"
-]
+];
 
 for (var i = 0; i < arrayOfChatBoxes.length; i++) {
     var chatBoxToEvent = arrayOfChatBoxes[i];
@@ -1256,7 +1256,7 @@ var customSteps = {
         9: 347
 
     }
-}
+};
 
 function generatePlayerLocations(numOfPlayers, a, b) {
     //CONICS :D
@@ -1292,7 +1292,7 @@ function generatePlayerLocations(numOfPlayers, a, b) {
     var object = {
         x: x_,
         y: y_
-    }
+    };
     return object;
 }
 
@@ -1539,7 +1539,7 @@ function checkMessageForCommands(message, chatBox) {
     arrayMessage = message.split(" ");
     // console.log("arr message: " + arrayMessage);
 
-    if (message[0] === '/') {
+    if (message[0] === "/") {
         // console.log("COMMAND INPUT DETECTED");
         var validCommandFound = false;
 
@@ -1601,7 +1601,7 @@ function checkMessageForCommands(message, chatBox) {
                 message: str,
                 classStr: "server-text",
                 dateCreated: new Date()
-            }
+            };
             if (chatBox === "allChat") {
                 addToAllChat(data);
             }
@@ -1677,8 +1677,8 @@ function unescapeHtml(unsafe) {
         .replace(/&amp;/g, "&")
         .replace(/&lt;/g, "<")
         .replace(/&gt;/g, ">")
-        .replace(/&quot;/g, '"')
-        .replace(/&#039;/g, "'")
+        .replace(/&quot;/g, "\"")
+        .replace(/&#039;/g, "'");
 
 }
 
@@ -1800,13 +1800,13 @@ var sounds = {
     "lick": "lick.mp3",
     "poke": "poke.mp3",
     "punch": "punch.mp3"
-}
+};
 
 //get all the sound files and prepare them.
 var soundFiles = {};
 for (var key in sounds) {
     if (sounds.hasOwnProperty(key)) {
-        soundFiles[key] = new Audio('sounds/' + sounds[key])
+        soundFiles[key] = new Audio("sounds/" + sounds[key]);
     }
 }
 
@@ -1831,7 +1831,7 @@ function displayNotification(title, body, icon, tag) {
             body: body,
             icon: icon,
             tag: tag
-        }
+        };
 
         var notif = new Notification(title, options);
     }

@@ -17,7 +17,7 @@ function Sire(thisRoom_) {
     this.showGuns = false;
 
     this.card = "Sire of the Sea";
-};
+}
 
 Sire.prototype.gameMove = function (socket, data) {
     if (socket === undefined || data === undefined) {
@@ -146,7 +146,7 @@ Sire.prototype.buttonSettings = function (indexOfPlayer) {
         obj.red.setText = "";
     }
     return obj;
-}
+};
 
 Sire.prototype.numOfTargets = function (indexOfPlayer) {
     var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
@@ -160,7 +160,7 @@ Sire.prototype.numOfTargets = function (indexOfPlayer) {
             return null;
         }
     }
-}
+};
 
 
 Sire.prototype.getStatusMessage = function (indexOfPlayer) {
@@ -172,15 +172,15 @@ Sire.prototype.getStatusMessage = function (indexOfPlayer) {
     // If it is any other player who isn't special role
     else {
         var usernameOfCardHolder = this.thisRoom.playersInGame[indexOfCardHolder].username;
-        return "Waiting for " + usernameOfCardHolder + " to use the Sire of the Sea on someone."
+        return "Waiting for " + usernameOfCardHolder + " to use the Sire of the Sea on someone.";
     }
-}
+};
 
 Sire.prototype.getProhibitedIndexesToPick = function (indexOfPlayer) {
     var sireHistory = this.thisRoom.specialCards[this.card.toLowerCase()].sireHistory;
 
     return sireHistory;
-}
+};
 
 
 

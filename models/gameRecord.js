@@ -3,12 +3,12 @@ var mongoose = require("mongoose");
 //SCHEMA SETUP
 var gameRecordSchema = new mongoose.Schema({
 
-	timeGameStarted: Date,
-	timeAssassinationStarted: Date,
-	timeGameFinished: Date,
-	winningTeam: String,
-	spyTeam: [String],
-	resistanceTeam: [String],
+    timeGameStarted: Date,
+    timeAssassinationStarted: Date,
+    timeGameFinished: Date,
+    winningTeam: String,
+    spyTeam: [String],
+    resistanceTeam: [String],
 
     gameMode: String,
     botUsernames: [String],
@@ -16,27 +16,27 @@ var gameRecordSchema = new mongoose.Schema({
     playerUsernamesOrdered: [String],
     playerUsernamesOrderedReversed: [String],
 
-	numberOfPlayers: Number,
-	howTheGameWasWon: String,
-	whoAssassinShot: String,
-	whoAssassinShot2: String,
+    numberOfPlayers: Number,
+    howTheGameWasWon: String,
+    whoAssassinShot: String,
+    whoAssassinShot2: String,
 
-	roles: [String],
-	cards: [String],
+    roles: [String],
+    cards: [String],
 
-	ladyChain: [String],
-	ladyHistoryUsernames: [String],
+    ladyChain: [String],
+    ladyHistoryUsernames: [String],
 
-	refChain: [String],
-	refHistoryUsernames: [String],
+    refChain: [String],
+    refHistoryUsernames: [String],
 
-	sireChain: [String],
-	sireHistoryUsernames: [String],
+    sireChain: [String],
+    sireHistoryUsernames: [String],
 
-	missionHistory: [String],
+    missionHistory: [String],
     numFailsHistory: [Number],
     voteHistory: Object,
-	playerRoles: Object
+    playerRoles: Object
 
 });
 //compile schema into a model

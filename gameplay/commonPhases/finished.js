@@ -5,7 +5,7 @@ function Finished(thisRoom_) {
 
     this.phase = "finished";
     this.showGuns = true;
-};
+}
 
 Finished.prototype.gameMove = function (socket, data) {
     // Do nothing, game is finished.
@@ -31,11 +31,11 @@ Finished.prototype.buttonSettings = function (indexOfPlayer) {
     obj.red.setText = "";
 
     return obj;
-}
+};
 
 Finished.prototype.numOfTargets = function (indexOfPlayer) {
     return null;
-}
+};
 
 Finished.prototype.getStatusMessage = function (indexOfPlayer) {
 
@@ -49,7 +49,7 @@ Finished.prototype.getStatusMessage = function (indexOfPlayer) {
 
     var str = "Game has finished. The " + winner + " have won.";
     return str;
-}
+};
 
 
 module.exports = Finished;

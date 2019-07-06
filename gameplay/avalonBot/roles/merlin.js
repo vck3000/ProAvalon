@@ -13,8 +13,8 @@ function Merlin(thisRoom_) {
         // The following lines running successfully shows that each role file can access
         // the variables and functions from the game room!
         console.log("HII from merlin. The number of sockets is: " + this.thisRoom.allSockets.length);
-    }
-};
+    };
+}
 
 
 Merlin.prototype.see = function () {
@@ -49,7 +49,7 @@ Merlin.prototype.checkSpecialMove = function () {
     // If we were to put that into here, in the startGame() function in the game.js file
     // Run all the role special moves once, and here, forcefully change the 
     // see variable of the merlin's data object which will be sent to him.
-}
+};
 
 
 module.exports = Merlin;

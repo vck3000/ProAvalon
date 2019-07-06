@@ -5,7 +5,7 @@ function VotingMission(thisRoom_) {
 
     this.phase = "votingMission";
     this.showGuns = true;
-};
+}
 
 VotingMission.prototype.gameMove = function (socket, data) {
     var i = this.thisRoom.playersYetToVote.indexOf(socket.request.user.username);
@@ -150,11 +150,11 @@ VotingMission.prototype.buttonSettings = function (indexOfPlayer) {
     }
 
     return obj;
-}
+};
 
 VotingMission.prototype.numOfTargets = function (indexOfPlayer) {
     return null;
-}
+};
 
 VotingMission.prototype.getStatusMessage = function (indexOfPlayer) {
     // If we are spectator
@@ -196,7 +196,7 @@ VotingMission.prototype.getStatusMessage = function (indexOfPlayer) {
 
         return str;
     }
-}
+};
 
 
 

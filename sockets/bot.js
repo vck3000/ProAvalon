@@ -1,4 +1,4 @@
-const axios = require('axios');
+const axios = require("axios");
 
 var enabledBots = [];
 enabledBots.push({
@@ -27,7 +27,7 @@ function SimpleBotSocket(username) {
             username: username,
             bot: true
         }
-    }
+    };
 }
 // Dummy function needed.
 SimpleBotSocket.prototype.emit = function(){};
@@ -38,7 +38,7 @@ SimpleBotSocket.prototype.emit = function(){};
 SimpleBotSocket.prototype.handleReadyNotReady = function (game, callback) {
     // Simple bots are always ready.
     callback(true);
-}
+};
 
 // handleGameStart: Called when the game has commenced.
 // if the bot initialized successfully, call callback(true)
@@ -46,7 +46,7 @@ SimpleBotSocket.prototype.handleReadyNotReady = function (game, callback) {
 SimpleBotSocket.prototype.handleGameStart = function (game, callback) {
     // Simple bots are always initialized.
     callback(true);
-}
+};
 
 // handleRequestAction: Called when the server is requesting an action from your bot.
 // When you have a move available, call callback with the selected button and players
@@ -70,14 +70,14 @@ SimpleBotSocket.prototype.handleRequestAction = function (game, availableButtons
         buttonPressed: buttonPressed,
         selectedPlayers: selectedPlayers
     });
-}
+};
 
 // handleGameOver: Called when the game finishes or closes
 // If you want to leave the room, call callback(true)
 // Otherwise, call callback(false)
 SimpleBotSocket.prototype.handleGameOver = function (game, reason, callback) {
     callback(true);
-}
+};
 
 
 function makeBotAPIRequest(botAPI, method, endpoint, data, timeout) {
@@ -131,7 +131,7 @@ APIBotSocket.prototype.emit = function(){};
 // if the bot isn't ready, call callback(false) or callback(false, "<reason>")
 APIBotSocket.prototype.handleReadyNotReady = function (game, callback) {
     // Check if the API supports this game type. If yes, ready up.
-    makeBotAPIRequest(this.botAPI, 'GET', '/v0/info', {}, 4000).then(function(response) {
+    makeBotAPIRequest(this.botAPI, "GET", "/v0/info", {}, 4000).then(function(response) {
         if (response.status !== 200) {
             callback(false, "Bot returned an invalid response.");
             return;
@@ -151,7 +151,7 @@ APIBotSocket.prototype.handleReadyNotReady = function (game, callback) {
             callback(false, "The bot is no longer online.");
         }
     });
-}
+};
 
 // handleGameStart: Called when the game has commenced.
 // if the bot initialized successfully, call callback(true)
@@ -164,7 +164,7 @@ APIBotSocket.prototype.handleGameStart = function (game, callback) {
 
     var apiData = {
         numPlayers: gameData.playerUsernamesOrderedReversed.length,
-        roles: gameData.roles.filter(function (role) { return role != "Assassin" && role != "Merlin" }), //TODO: Is this needed?
+        roles: gameData.roles.filter(function (role) { return role != "Assassin" && role != "Merlin"; }), //TODO: Is this needed?
         cards: gameData.cards,
         teamLeader: gameData.teamLeaderReversed,
         players: gameData.playerUsernamesOrderedReversed,
@@ -173,7 +173,7 @@ APIBotSocket.prototype.handleGameStart = function (game, callback) {
         see: gameData.see,
     };
 
-    makeBotAPIRequest(this.botAPI, 'POST', '/v0/session', apiData, 3000).then(function(response) {
+    makeBotAPIRequest(this.botAPI, "POST", "/v0/session", apiData, 3000).then(function(response) {
         if (response.status !== 200 || !response.data.sessionID) {
             callback(false, "Bot returned an invalid response.");
             return;
@@ -188,7 +188,7 @@ APIBotSocket.prototype.handleGameStart = function (game, callback) {
             callback(false, "The bot is no longer online.");
         }
     });
-}
+};
 
 // handleRequestAction: Called when the server is requesting an action from your bot.
 // When you have a move available, call callback with the selected button and players
@@ -204,7 +204,7 @@ APIBotSocket.prototype.handleRequestAction = function (game, availableButtons, a
         gameInfo: gameData
     };
 
-    makeBotAPIRequest(this.botAPI, 'POST', '/v0/session/act', apiData, 20000).then(function(response) {
+    makeBotAPIRequest(this.botAPI, "POST", "/v0/session/act", apiData, 20000).then(function(response) {
         if (response.status !== 200) {
             callback(false, "Bot returned an invalid response.");
             return;
@@ -219,7 +219,7 @@ APIBotSocket.prototype.handleRequestAction = function (game, availableButtons, a
             callback(false, "The bot is no longer online.");
         }
     });
-}
+};
 
 // handleGameOver: Called when the game finishes or closes
 // If you want to leave the room, call callback(true)
@@ -234,14 +234,14 @@ APIBotSocket.prototype.handleGameOver = function (game, reason, callback) {
         gameInfo: gameData
     };
 
-    makeBotAPIRequest(this.botAPI, 'POST', '/v0/session/gameover', apiData, 1000);
+    makeBotAPIRequest(this.botAPI, "POST", "/v0/session/gameover", apiData, 1000);
 
     callback(game.phase == "finished");
-}
+};
 
 module.exports = {
     enabledBots: enabledBots,
     makeBotAPIRequest: makeBotAPIRequest,
     SimpleBotSocket: SimpleBotSocket,
     APIBotSocket: APIBotSocket
-}
+};

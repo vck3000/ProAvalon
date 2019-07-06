@@ -13,7 +13,7 @@ function HunterTestPhase(thisRoom_) {
 
     this.phase = "hunterTestPhase";
     this.showGuns = true;
-};
+}
 
 HunterTestPhase.prototype.gameMove = function (socket, data) {
     /* TODO: GameMove*/
@@ -26,20 +26,20 @@ HunterTestPhase.prototype.gameMove = function (socket, data) {
 //  setText         - What text to display in the button
 HunterTestPhase.prototype.buttonSettings = function (indexOfPlayer) {
     /* TODO: buttonSettings*/
-}
+};
 
 HunterTestPhase.prototype.numOfTargets = function (indexOfPlayer) {
     /* TODO: numOfTargets*/
-}
+};
 
 
 HunterTestPhase.prototype.getStatusMessage = function (indexOfPlayer) {
     /* TODO: getStatusMessage*/
-}
+};
 
 HunterTestPhase.prototype.getProhibitedIndexesToPick = function (indexOfPlayer) {
     /* TODO: getProhibitedIndexesToPick in an array*/
-}
+};
 
 
 

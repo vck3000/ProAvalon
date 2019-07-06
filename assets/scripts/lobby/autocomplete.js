@@ -2,7 +2,7 @@
 var autoCompleteStrs = [];
 
 var lastKeyPress;
-$(".chat-message-input").on('keydown', function (e) {
+$(".chat-message-input").on("keydown", function (e) {
     // console.log(e.which);   
 
     //if person presses the 'tab' button.

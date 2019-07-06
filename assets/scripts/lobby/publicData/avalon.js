@@ -30,7 +30,7 @@ function runPublicDataAvalon(gameDataInc) {
                     card = "<span data-toggle='tooltip' data-placement='left' title='" + icons[key].toolTip + "' class='cardObject glyphicon " + icons[key].glyph + "' style=''></span> ";
                 }
                 else if (icons[key].iconType === "base64") {
-                    card = '<img class="cardObject" data-toggle="tooltip" data-placement="left" title="' + icons[key].toolTip + '" src="' + icons[key].glyph + '" />';
+                    card = "<img class=\"cardObject\" data-toggle=\"tooltip\" data-placement=\"left\" title=\"" + icons[key].toolTip + "\" src=\"" + icons[key].glyph + "\" />";
                 }
                 else {
                     card = "Undefined! Something went wrong.";

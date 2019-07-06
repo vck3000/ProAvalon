@@ -19,7 +19,7 @@ socket.on("joinedGameSuccess", function (data) {
     isSpectator = false;
 });
 
-socket.on('disconnect', function () {
+socket.on("disconnect", function () {
     // window.location= "/";
     // alert("You have been disconnected!");
     showDangerAlert("You have been disconnected! Please refresh the page or click here to reload.");
@@ -27,14 +27,14 @@ socket.on('disconnect', function () {
 });
 
 var mutedPlayers = [];
-socket.on('updateMutedPlayers', function (data) {
+socket.on("updateMutedPlayers", function (data) {
     mutedPlayers = data;
     // console.log("Muted players: ");
     // console.log(mutedPlayers);
 });
 
 
-socket.on('checkSettingsResetDate', function (serverResetDate) {
+socket.on("checkSettingsResetDate", function (serverResetDate) {
     serverResetDate = new Date(serverResetDate);
     // console.log("check reset date");
 
@@ -58,7 +58,7 @@ socket.on('checkSettingsResetDate', function (serverResetDate) {
     }
 });
 
-socket.on('checkNewUpdate', function (data) {
+socket.on("checkNewUpdate", function (data) {
 
     serverLastUpdateDate = new Date(data.date);
     // console.log("check reset date");
@@ -98,7 +98,7 @@ socket.on('checkNewUpdate', function (data) {
     }
 });
 
-socket.on('mannounce', function (str) {
+socket.on("mannounce", function (str) {
     Swal({
         title: "Moderator announcement!",
         html: str,
@@ -107,7 +107,7 @@ socket.on('mannounce', function (str) {
     });
 });
 
-socket.on('checkNewPlayerShowIntro', function () {
+socket.on("checkNewPlayerShowIntro", function () {
     if (docCookies.hasItem("seenNewPlayerIntro")) {
 
     }
@@ -400,7 +400,7 @@ socket.on("update-room-players", function (data) {
 
     if (oldData && oldData.length < roomPlayersData.length && roomPlayersData.length > 1) {
         if ($("#option_notifications_sound_players_joining_game")[0].checked === true) {
-            playSound('ding');
+            playSound("ding");
         }
 
         if ($("#option_notifications_desktop_players_joining_game")[0].checked === true) {
@@ -459,7 +459,7 @@ socket.on("update-room-spectators", function (spectatorUsernames) {
     // if an extra person joins the room
     if (spectatorUsernames && oldSpectators.length < spectatorUsernames.length && spectatorUsernames[newUsernameIndex] !== ownUsername) {
         if ($("#option_notifications_sound_players_joining_room")[0].checked === true) {
-            playSound('highDing');
+            playSound("highDing");
         }
 
         if ($("#option_notifications_desktop_players_joining_room")[0].checked === true && oldSpectators.length < spectatorUsernames.length && spectatorUsernames.indexOf(ownUsername) === -1) {
@@ -478,7 +478,7 @@ socket.on("joinPassword", function (roomId) {
         const { value: inputPassword } = await swal({
             title: "Type in the room password",
             type: "info",
-            input: 'text',
+            input: "text",
             allowEnterKey: true,
             showCancelButton: true,
             inputAttributes: {
@@ -541,7 +541,7 @@ socket.on("gameModes", function (gameModeNames) {
 
     gameModeNames.forEach(function (name) {
         str += "<option value='" + name + "'>" + name[0].toUpperCase() + name.slice(1, name.length) + "</option>";
-    })
+    });
 
     $(".gameModeSelect")[0].innerHTML = str;
     $(".gameModeSelect")[1].innerHTML = str;
@@ -593,7 +593,7 @@ socket.on("update-game-modes-in-room", function (gameModeObj) {
     // Reset, now do descriptions
     // Roles
     str = "";
-    infoIconString = '<img class="infoIconsSettings pull-right" style="width: 16px; height: 16px;" data-toggle="tooltip" data-placement="left" title="' + icons["info"].toolTip + '" src="' + icons["info"].glyph + '" />';
+    infoIconString = "<img class=\"infoIconsSettings pull-right\" style=\"width: 16px; height: 16px;\" data-toggle=\"tooltip\" data-placement=\"left\" title=\"" + icons["info"].toolTip + "\" src=\"" + icons["info"].glyph + "\" />";
 
     for (var i = 0; i < gameModeObj.roles.roleNames.length; i++) {
         var name = gameModeObj.roles.roleNames[i];
@@ -694,4 +694,4 @@ socket.on("leave-room-requested", function () {
 
 socket.on("redirect", function(dest){
     window.location.href = dest;
-})
+});

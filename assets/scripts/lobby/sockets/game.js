@@ -36,12 +36,12 @@ socket.on("game-starting", function (roles, gameMode) {
         onOpen: () => {
             // swal.showLoading()
             timerInterval = setInterval(() => {
-                swal.getContent().querySelector('strong')
-                    .textContent = Math.floor(swal.getTimerLeft() / 1000)
-            }, 100)
+                swal.getContent().querySelector("strong")
+                    .textContent = Math.floor(swal.getTimerLeft() / 1000);
+            }, 100);
         },
         onClose: () => {
-            clearInterval(timerInterval)
+            clearInterval(timerInterval);
         }
 
     }).then(function (result) {
@@ -102,7 +102,7 @@ socket.on("game-data", function (data) {
                     classStr: "server-text noselect",
                     message: str,
                     dateCreated: new Date()
-                }
+                };
                 addToRoomChat(data);
             }
 
@@ -155,9 +155,9 @@ function hoverMissionBoxHighlightPlayerSetup() {
             // Grab players to highlight
             var participatingTeamAndLeader = getPlayersOnMissionPickAndLeader(parseInt(missionNum));
 
-            highlightTeamAndOutlineLeader(participatingTeamAndLeader)
+            highlightTeamAndOutlineLeader(participatingTeamAndLeader);
 
-            var darkThemeBool = docCookies.getItem("optionDisplayDarkTheme") === true
+            var darkThemeBool = docCookies.getItem("optionDisplayDarkTheme") === true;
             // Only edit the css if we have something to show
             if (participatingTeamAndLeader.team.length !== 0) {
                 // For the missionBox itself
@@ -177,12 +177,12 @@ function hoverPickBoxHighlightPlayerSetup() {
     $(".pickBox").hover(
         // on hover
         function() {
-            var pickNum = this.getAttribute("id").slice(-1)
+            var pickNum = this.getAttribute("id").slice(-1);
             var participatingTeamAndLeader = getPlayersOnMissionPickAndLeader(gameData.missionNum - 1, parseInt(pickNum));
 
-            highlightTeamAndOutlineLeader(participatingTeamAndLeader)
+            highlightTeamAndOutlineLeader(participatingTeamAndLeader);
 
-            var darkThemeBool = docCookies.getItem("optionDisplayDarkTheme") === true
+            var darkThemeBool = docCookies.getItem("optionDisplayDarkTheme") === true;
             // Only edit the css if we have something to show
             if (participatingTeamAndLeader.team.length !== 0) {
                 // Since pickBoxes are small, we'll just fill them with yellow.
@@ -209,16 +209,16 @@ function highlightTeamAndOutlineLeader(teamAndLeader) {
 
     teamAndLeader.team.forEach(function (username) {
         if (darkThemeBool) {
-            $('[usernameofplayer="' + username + '"]').addClass("highlight-participating-dark");
+            $("[usernameofplayer=\"" + username + "\"]").addClass("highlight-participating-dark");
         }
         else {
-            $('[usernameofplayer="' + username + '"]').addClass("highlight-participating");
+            $("[usernameofplayer=\"" + username + "\"]").addClass("highlight-participating");
         }
     });
 
-    var leader = teamAndLeader.leader
+    var leader = teamAndLeader.leader;
     if (leader.length > 0) {
-        $('[usernameofplayer="' + leader + '"]').addClass("outline-leader")
+        $("[usernameofplayer=\"" + leader + "\"]").addClass("outline-leader");
     }
 }
 
@@ -257,7 +257,7 @@ function getPlayersOnMissionPickAndLeader(missionNum, pickNum=-1) {
         };
     } else {
         var team = [];
-        var leader = ""
+        var leader = "";
         // For each player:
         for (var key in gameData.voteHistory) {
             if (gameData.voteHistory.hasOwnProperty(key) === true) {

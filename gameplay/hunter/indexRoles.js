@@ -28,7 +28,7 @@ function index() {
         }
 
         return obj;
-    }
+    };
 }
 
 module.exports = index;

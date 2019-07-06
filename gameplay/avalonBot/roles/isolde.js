@@ -18,8 +18,8 @@ function Isolde(thisRoom_) {
         }
 
         return roleTag;
-    }
-};
+    };
+}
 
 
 module.exports = Isolde;

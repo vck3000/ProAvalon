@@ -5,7 +5,7 @@ function VotingTeam(thisRoom_) {
 
     this.phase = "votingTeam";
     this.showGuns = true;
-};
+}
 
 VotingTeam.prototype.gameMove = function (socket, data) {
     // Get the index of the user who is trying to vote
@@ -106,11 +106,11 @@ VotingTeam.prototype.buttonSettings = function (indexOfPlayer) {
     }
 
     return obj;
-}
+};
 
 VotingTeam.prototype.numOfTargets = function (indexOfPlayer) {
     return null;
-}
+};
 
 
 VotingTeam.prototype.getStatusMessage = function (indexOfPlayer) {
@@ -154,7 +154,7 @@ VotingTeam.prototype.getStatusMessage = function (indexOfPlayer) {
 
         return str;
     }
-}
+};
 
 
 

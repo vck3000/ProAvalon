@@ -30,4 +30,4 @@ function showDangerAlert(data) {
     document.querySelector("#danger-alert-box").classList.remove("inactive-window");
     document.querySelector("#danger-alert-box-button").classList.remove("inactive-window");
     document.querySelector("#danger-alert-box").innerHTML = data + " <span class='glyphicon glyphicon-remove pull-right'></span>";
-};
+}

@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "start": "node app.js",
+    "lint": "eslint . --fix --ignore-pattern '/assets/libraries/*'"
   },
   "author": "Victor Kuo",
   "license": "ISC",
@@ -40,5 +41,8 @@
     "ignore": [
       "assets/gameRecordsData/*"
     ]
+  },
+  "devDependencies": {
+    "eslint": "^6.0.1"
   }
 }

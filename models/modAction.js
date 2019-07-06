@@ -2,52 +2,52 @@ var mongoose = require("mongoose");
 
 //SCHEMA SETUP
 var modActionSchema = new mongoose.Schema({
-	type: String, //ban, mute?
+    type: String, //ban, mute?
 
-	bannedPlayer: {
-		id: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "User"
-		},
+    bannedPlayer: {
+        id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
         username: String,
         usernameLower: String
-	},
+    },
 
 
-	modWhoBanned: {
-		id: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "User"
-		},
-		username: String
-	},
+    modWhoBanned: {
+        id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        username: String
+    },
 
 
-	reason: String,
+    reason: String,
 
 
-	whenMade: Date,
+    whenMade: Date,
 
-	durationToBan: Date,
-	whenRelease: Date,
+    durationToBan: Date,
+    whenRelease: Date,
 
-	descriptionByMod: String,
+    descriptionByMod: String,
 
-	originalContent: String,
+    originalContent: String,
 
-	idOfReply: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: "ForumThreadCommentReply"
-	},
-	idOfComment: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: "ForumThreadComment"
-	},
-	idOfForum: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: "ForumThread"
-	},
-	elementDeleted: String
+    idOfReply: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ForumThreadCommentReply"
+    },
+    idOfComment: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ForumThreadComment"
+    },
+    idOfForum: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ForumThread"
+    },
+    elementDeleted: String
 });
 
 //compile schema into a model

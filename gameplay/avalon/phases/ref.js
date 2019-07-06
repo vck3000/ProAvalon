@@ -17,7 +17,7 @@ function Ref(thisRoom_) {
     this.showGuns = false;
 
     this.card = "Ref of the Rain";
-};
+}
 
 Ref.prototype.gameMove = function (socket, data) {
     if (socket === undefined || data === undefined) {
@@ -128,7 +128,7 @@ Ref.prototype.buttonSettings = function (indexOfPlayer) {
         obj.red.setText = "";
     }
     return obj;
-}
+};
 
 Ref.prototype.numOfTargets = function (indexOfPlayer) {
     var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
@@ -142,7 +142,7 @@ Ref.prototype.numOfTargets = function (indexOfPlayer) {
             return null;
         }
     }
-}
+};
 
 
 Ref.prototype.getStatusMessage = function (indexOfPlayer) {
@@ -154,15 +154,15 @@ Ref.prototype.getStatusMessage = function (indexOfPlayer) {
     // If it is any other player who isn't special role
     else {
         var usernameOfCardHolder = this.thisRoom.playersInGame[indexOfCardHolder].username;
-        return "Waiting for " + usernameOfCardHolder + " to use the Ref of the Rain on someone."
+        return "Waiting for " + usernameOfCardHolder + " to use the Ref of the Rain on someone.";
     }
-}
+};
 
 Ref.prototype.getProhibitedIndexesToPick = function (indexOfPlayer) {
     var refHistory = this.thisRoom.specialCards[this.card.toLowerCase()].refHistory;
 
     return refHistory;
-}
+};
 
 
 

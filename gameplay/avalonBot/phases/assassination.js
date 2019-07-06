@@ -19,7 +19,7 @@ function Assassination(thisRoom_) {
 
     this.finishedShot = false;
 
-};
+}
 
 Assassination.prototype.gameMove = function (socket, data) {
     if (this.finishedShot === false) {
@@ -217,7 +217,7 @@ Assassination.prototype.buttonSettings = function (indexOfPlayer) {
         obj.red.setText = "";
     }
     return obj;
-}
+};
 
 Assassination.prototype.numOfTargets = function (indexOfPlayer) {
     if (indexOfPlayer !== undefined && indexOfPlayer !== null) {
@@ -260,7 +260,7 @@ Assassination.prototype.numOfTargets = function (indexOfPlayer) {
             return null;
         }
     }
-}
+};
 
 
 Assassination.prototype.getStatusMessage = function (indexOfPlayer) {
@@ -273,14 +273,14 @@ Assassination.prototype.getStatusMessage = function (indexOfPlayer) {
     }
 
     if (indexOfPlayer === indexOfAssassin) {
-        return "Choose someone to assassinate."
+        return "Choose someone to assassinate.";
     }
     // If it is any other player who isn't special role
     else {
         var usernameOfAssassin = this.thisRoom.playersInGame[indexOfAssassin].username;
-        return "Waiting for " + usernameOfAssassin + " to assassinate."
+        return "Waiting for " + usernameOfAssassin + " to assassinate.";
     }
-}
+};
 
 Assassination.prototype.getProhibitedIndexesToPick = function (indexOfPlayer) {
     var spyIndexes = [];
@@ -292,7 +292,7 @@ Assassination.prototype.getProhibitedIndexesToPick = function (indexOfPlayer) {
     }
 
     return spyIndexes;
-}
+};
 
 
 

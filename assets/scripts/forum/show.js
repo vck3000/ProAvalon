@@ -83,19 +83,19 @@ likes.forEach(function (like) {
 
                 if (message === "liked") {
                     $(thisLike).notify("Liked", { position: "right", autoHideDelay: 1000, className: "success" });
-                    $("#" + idofelement + "likes")[0].innerText = parseInt($("#" + idofelement + "likes")[0].innerText) + 1
+                    $("#" + idofelement + "likes")[0].innerText = parseInt($("#" + idofelement + "likes")[0].innerText) + 1;
                     $(thisLike)[0].innerText = "Unlike";
                 }
                 else if (message === "unliked") {
                     $(thisLike).notify("Unliked", { position: "right", autoHideDelay: 1000, className: "info" });
-                    $("#" + idofelement + "likes")[0].innerText = parseInt($("#" + idofelement + "likes")[0].innerText) - 1
+                    $("#" + idofelement + "likes")[0].innerText = parseInt($("#" + idofelement + "likes")[0].innerText) - 1;
                     $(thisLike)[0].innerText = "Like";
                 }
                 else {
                     $(thisLike).notify("Error! Something went wrong...", { position: "right", autoHideDelay: 1000, className: "error" });
                 }
             }
-        }
+        };
         xmlhttp.send();
 
 
@@ -113,7 +113,7 @@ var deletes = document.querySelectorAll(".deleteComment");
 deletes.forEach(function (singleDelete) {
     singleDelete.addEventListener("click", function () {
 
-        var linkToDelete = this.getAttribute('linktodelete');
+        var linkToDelete = this.getAttribute("linktodelete");
 
         swal({
             title: "Are you sure you want to delete your comment?",
@@ -151,7 +151,7 @@ var deletes = document.querySelectorAll(".deleteCommentReply");
 deletes.forEach(function (singleDelete) {
     singleDelete.addEventListener("click", function () {
 
-        var linkToDelete = this.getAttribute('linktodelete');
+        var linkToDelete = this.getAttribute("linktodelete");
 
         swal({
             title: "Are you sure you want to delete your reply?",

@@ -15,10 +15,10 @@ function Percival(thisRoom_) {
         var data = {
             message: "LOLOL FROM PERCY",
             classStr: "server-text"
-        }
+        };
 
         this.thisRoom.io.in(this.thisRoom.roomId).emit("roomChatToClient", data);
-    }
+    };
 
     // Percival sees Merlin and Morgana
     this.see = function () {
@@ -32,7 +32,7 @@ function Percival(thisRoom_) {
         }
 
         return roleTag;
-    }
+    };
 }
 
 

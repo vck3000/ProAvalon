@@ -143,5 +143,5 @@ var pics = {
         path: "avatars/base-res.png"
     },
 
-}
+};
 

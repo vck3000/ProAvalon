@@ -30,11 +30,11 @@ function Spy(thisRoom_) {
             obj.spies = array;
             return obj;
         }
-    }
+    };
 
     this.checkSpecialMove = function () {
 
-    }
+    };
 }
 
 

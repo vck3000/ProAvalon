@@ -38,7 +38,7 @@ function addAllChatEventListeners(e, allChatWindow) {
             var data = {
                 date: date,
                 message: message
-            }
+            };
 
             //reset the value of the textbox
             allChatWindow.value = "";
@@ -92,7 +92,7 @@ function addRoomChatEventListeners(e, roomChatWindow) {
             var data = {
                 date: date,
                 message: message
-            }
+            };
 
             //reset the value of the textbox
             roomChatWindow.value = "";
@@ -196,7 +196,7 @@ function addToAllChat(data) {
 
 
 function unhighlightAllChat() {
-    var usernames = Object.keys(selectedChat)
+    var usernames = Object.keys(selectedChat);
 
     usernames.forEach(function (user) {
         selectedChat[user] = false;
@@ -324,8 +324,8 @@ function addToRoomChat(data) {
 
                     // parse "[hh:mm]", "username" and everything after the ": "
                     var dateStr = s.slice(0, 7);
-                    var username = s.slice(8, s.indexOf(': '));
-                    var text = s.slice(s.indexOf(': ') + 2);
+                    var username = s.slice(8, s.indexOf(": "));
+                    var text = s.slice(s.indexOf(": ") + 2);
                     //console.log('dateStr = ' + dateStr);
                     //console.log('username = ' + username);
                     //console.log('text = ' + text);
@@ -339,7 +339,7 @@ function addToRoomChat(data) {
                                 && d.message.startsWith(text.trim()))
                     ).length > 0) {
                         quotedStrings.push(s);
-                        console.log('pushed ' + s);
+                        console.log("pushed " + s);
                         s = "";
                     }
                 }
@@ -364,7 +364,7 @@ function addToRoomChat(data) {
                         highlightChatColour = "#ffff9e";
                     }
                     else {
-                        highlightChatColour = docCookies.getItem("player" + getIndexFromUsername(data[i].username) + 'HighlightColour');
+                        highlightChatColour = docCookies.getItem("player" + getIndexFromUsername(data[i].username) + "HighlightColour");
                     }
                     highlightForegroundColorHtml = "color: #333;";
                 }
@@ -452,15 +452,15 @@ function isPlayerMuted(username) {
 
 //Remove the new message yellow background colour when
 //user selects the tab
-$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-    var target = $(e.target).attr("href") // activated tab
+$("a[data-toggle=\"tab\"]").on("shown.bs.tab", function (e) {
+    var target = $(e.target).attr("href"); // activated tab
     // console.log(target);
 
     if (target === "#all-chat-in-game" || target === "#all-chat-in-game2") {
-        $(".nav-tabs #all-chat-in-game-tab").removeClass("newMessage")
+        $(".nav-tabs #all-chat-in-game-tab").removeClass("newMessage");
     }
     else if (target === "#room-chat-in-game" || target === "#room-chat-in-game2") {
-        $(".nav-tabs #room-chat-in-game-tab").removeClass("newMessage")
+        $(".nav-tabs #room-chat-in-game-tab").removeClass("newMessage");
     }
 
     console.log("change tab " + target);
@@ -545,7 +545,7 @@ $(".setHighlightColorsToYellow").on("change", function (e) {
         usernames.forEach(function (user) {
             if (selectedChat[user] === true) {
                 var chatItems = $(".room-chat-list li span[username='" + user + "']");
-                var color = docCookies.getItem("player" + getIndexFromUsername(user) + 'HighlightColour');
+                var color = docCookies.getItem("player" + getIndexFromUsername(user) + "HighlightColour");
                 chatItems.css("background-color", color);
             }
         });

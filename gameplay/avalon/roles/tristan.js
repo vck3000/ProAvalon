@@ -20,8 +20,8 @@ function Tristan(thisRoom_) {
         console.log(roleTag);
 
         return roleTag;
-    }
-};
+    };
+}
 
 
 module.exports = Tristan;

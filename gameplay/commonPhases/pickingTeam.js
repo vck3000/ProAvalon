@@ -5,7 +5,7 @@ function PickingTeam(thisRoom_) {
 
     this.phase = "pickingTeam";
     this.showGuns = false;
-};
+}
 
 
 PickingTeam.prototype.gameMove = function (socket, data) {
@@ -99,7 +99,7 @@ PickingTeam.prototype.buttonSettings = function (indexOfPlayer) {
     }
 
     return obj;
-}
+};
 
 
 PickingTeam.prototype.numOfTargets = function (indexOfPlayer) {
@@ -116,7 +116,7 @@ PickingTeam.prototype.numOfTargets = function (indexOfPlayer) {
     else { num = parseInt(num); }
 
     return num;
-}
+};
 
 
 PickingTeam.prototype.getStatusMessage = function (indexOfPlayer) {
@@ -134,7 +134,7 @@ PickingTeam.prototype.getStatusMessage = function (indexOfPlayer) {
             return "ERROR: Tell the admin if you see this, code 10.";
         }
     }
-}
+};
 
 
 
