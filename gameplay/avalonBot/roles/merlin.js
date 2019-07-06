@@ -18,7 +18,7 @@ function Merlin(thisRoom_) {
 
 
 Merlin.prototype.see = function () {
-    if (this.thisRoom.gameStarted === true) {
+    if (this.thisRoom.gameStarted) {
         var obj = {};
 
         var array = [];

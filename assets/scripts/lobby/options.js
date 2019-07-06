@@ -296,7 +296,7 @@ var userOptions = {
             if (icon === false || icon === "false") {
                 $("#optionDisplayUseOldGameIcons")[0].checked = false;
             }
-            else if (icon === true || icon === "true") {
+            else if (icon || icon === "true") {
                 $("#optionDisplayUseOldGameIcons")[0].checked = true;
             }
             else {
@@ -341,7 +341,7 @@ var userOptions = {
             if (getOption === false || getOption === "false") {
                 $("#optionDisplayUseSmallIconsCrownShield")[0].checked = false;
             }
-            else if (getOption === true || getOption === "true") {
+            else if (getOption || getOption === "true") {
                 $("#optionDisplayUseSmallIconsCrownShield")[0].checked = true;
             }
             else {
@@ -894,7 +894,7 @@ function update(picker) {
     // console.log("Player highlight colour: " + playerHighlightColour);
 
     //only need to change colour if the user has selected that player's chat.
-    if (selectedChat[username] === true) {
+    if (selectedChat[username]) {
         var chatItems = $(".room-chat-list li span[username='" + username + "']");
         var playerHighlightColour = docCookies.getItem("player" + getIndexFromUsername(username) + "HighlightColour");
 
@@ -906,7 +906,7 @@ function update(picker) {
 
 
 function updateCompactView(input) {
-    if (input === true) {
+    if (input) {
         $("#tabs1").css("padding-right", "0px");
         $("#tabs2").css("padding-left", "0px");
 
@@ -930,7 +930,7 @@ function updateGunImage(input) {
         //when shields are used
         $(".gunImg").attr("src", pics["shieldOrange"].path);
     }
-    else if (input === true || input === "true") {
+    else if (input || input === "true") {
         //when guns are used
         $(".gunImg").attr("src", pics["gun"].path);
     }

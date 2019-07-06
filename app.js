@@ -104,7 +104,7 @@ var requireLoggedInRoutes = [
 async function checkLoggedIn(req, res, next){
     var banned = undefined;
     for(var i = 0; i < requireLoggedInRoutes.length; i++){
-        if(req.originalUrl.startsWith(requireLoggedInRoutes[i]) == true){
+        if(req.originalUrl.startsWith(requireLoggedInRoutes[i])){
             // Check for logged in.
             if(req.isAuthenticated() == false){
                 req.flash("error", "Please log in to view this page.");
@@ -137,7 +137,7 @@ async function checkLoggedIn(req, res, next){
         }
     }
 
-    if(banned == true){
+    if(banned){
         // console.log("banned");
         return;
     }

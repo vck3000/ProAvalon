@@ -121,7 +121,7 @@ router.get("/:id/:comment_id/edit", middleware.checkForumThreadCommentOwnership,
         if (err) {
             console.log("ERROR: " + err);
         }
-        if (foundComment.disabled === true) {
+        if (foundComment.disabled) {
             req.flash("error", "Comment has been deleted.");
             res.redirect("back");
         }
@@ -153,7 +153,7 @@ router.put("/:id/:comment_id", middleware.checkForumThreadCommentOwnership, func
             console.log("AAA");
             console.log(foundComment.disabled);
 
-            if (foundComment.disabled === true) {
+            if (foundComment.disabled) {
                 req.flash("error", "You cannot edit a deleted comment.");
                 //make them refresh to see the req.flash;
                 res.redirect("back");

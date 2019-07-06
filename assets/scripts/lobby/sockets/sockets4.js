@@ -225,11 +225,11 @@ function resetSettings() {
 }
 
 socket.on("gameEnded", function (data) {
-    if ($("#option_notifications_sound_game_ending")[0].checked === true) {
+    if ($("#option_notifications_sound_game_ending")[0].checked) {
         playSound("game-end");
     }
 
-    if ($("#option_notifications_desktop_game_ending")[0].checked === true) {
+    if ($("#option_notifications_desktop_game_ending")[0].checked) {
         displayNotification("Game has ended!", "", "avatars/base-spy.png", "gameEnded");
     }
 });
@@ -272,7 +272,7 @@ socket.on("update-current-games-list", function (currentGames) {
         //if the current game exists, add it
         if (currentGame) {
             var lockStr = "";
-            if (currentGame.passwordLocked === true) {
+            if (currentGame.passwordLocked) {
                 lockStr = " <span class='glyphicon glyphicon-lock'></span>";
             }
             // console.log("lock str: " + lockStr);
@@ -399,11 +399,11 @@ socket.on("update-room-players", function (data) {
     draw();
 
     if (oldData && oldData.length < roomPlayersData.length && roomPlayersData.length > 1) {
-        if ($("#option_notifications_sound_players_joining_game")[0].checked === true) {
+        if ($("#option_notifications_sound_players_joining_game")[0].checked) {
             playSound("ding");
         }
 
-        if ($("#option_notifications_desktop_players_joining_game")[0].checked === true) {
+        if ($("#option_notifications_desktop_players_joining_game")[0].checked) {
             displayNotification("New player in game!  [" + (roomPlayersData.length) + "p]", roomPlayersData[roomPlayersData.length - 1].username + " has joined the game!", "avatars/base-res.png", "newPlayerInGame");
         }
     }
@@ -458,11 +458,11 @@ socket.on("update-room-spectators", function (spectatorUsernames) {
 
     // if an extra person joins the room
     if (spectatorUsernames && oldSpectators.length < spectatorUsernames.length && spectatorUsernames[newUsernameIndex] !== ownUsername) {
-        if ($("#option_notifications_sound_players_joining_room")[0].checked === true) {
+        if ($("#option_notifications_sound_players_joining_room")[0].checked) {
             playSound("highDing");
         }
 
-        if ($("#option_notifications_desktop_players_joining_room")[0].checked === true && oldSpectators.length < spectatorUsernames.length && spectatorUsernames.indexOf(ownUsername) === -1) {
+        if ($("#option_notifications_desktop_players_joining_room")[0].checked && oldSpectators.length < spectatorUsernames.length && spectatorUsernames.indexOf(ownUsername) === -1) {
             displayNotification("New player in room.", spectatorUsernames[newUsernameIndex] + " has joined the room.", "avatars/base-res.png", "newPlayerInRoom");
         }
     }
@@ -560,12 +560,12 @@ socket.on("update-game-modes-in-room", function (gameModeObj) {
     for (var i = 0; i < gameModeObj.roles.roleNames.length; i++) {
         var name = gameModeObj.roles.roleNames[i];
         // Skip over certain roles since they are enabled by default
-        if (skipRoles.includes(name) === true) {
+        if (skipRoles.includes(name)) {
             continue;
         }
 
         var active;
-        if (defaultActiveRoles.includes(name) === true) {
+        if (defaultActiveRoles.includes(name)) {
             active = "active";
         }
         else {
@@ -598,7 +598,7 @@ socket.on("update-game-modes-in-room", function (gameModeObj) {
     for (var i = 0; i < gameModeObj.roles.roleNames.length; i++) {
         var name = gameModeObj.roles.roleNames[i];
         //Skip over certain roles since they are enabled by default
-        if (skipRoles.includes(name) === true) {
+        if (skipRoles.includes(name)) {
             continue;
         }
 

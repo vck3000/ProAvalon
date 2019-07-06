@@ -52,7 +52,7 @@ router.post("/", sanitiseUsername,/* usernameToLowerCase, */function (req, res) 
         res.redirect("register");
     }
 
-    else if (usernameContainsBadCharacter(req.body.username) == true) {
+    else if (usernameContainsBadCharacter(req.body.username)) {
         req.flash("error", "Please do not use an illegal character");
         res.redirect("register");
     }

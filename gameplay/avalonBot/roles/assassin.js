@@ -16,7 +16,7 @@ function Assassin(thisRoom_) {
 
     //Assassin sees all spies except oberon
     this.see = function () {
-        if (this.thisRoom.gameStarted === true) {
+        if (this.thisRoom.gameStarted) {
             var obj = {};
             var array = [];
 
@@ -73,7 +73,7 @@ Assassin.prototype.checkSpecialMove = function (socket, data) {
                 }
             }
 
-            if (numOfSuccesses === 3 && ((merlinExists === true) || (tristExists === true && isoExists === true))) {
+            if (numOfSuccesses === 3 && ((merlinExists) || (tristExists && isoExists))) {
                 // Set the assassination phase
                 this.thisRoom.startAssassinationTime = new Date();
                 this.thisRoom.phase = this.specialPhase;

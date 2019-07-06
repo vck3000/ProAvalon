@@ -17,7 +17,7 @@ playersReadyNotReady.prototype.playerReady = function (username) {
                     sock.emit("spec-game-starting-finished", null);
                 });
 
-                if (this.startGame(this.options) === true) {
+                if (this.startGame(this.options)) {
                     return true;
                 }
                 else {
@@ -47,7 +47,7 @@ playersReadyNotReady.prototype.playerNotReady = function (username) {
 
 playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
     // Must have at least one bot in the game to play a "bot" gameMode
-    if(gameMode.toLowerCase().includes("bot") === true && (this.botSockets === undefined || this.botSockets.length === 0 )){
+    if(gameMode.toLowerCase().includes("bot") && (this.botSockets === undefined || this.botSockets.length === 0 )){
         this.sendText(this.allSockets, "Please play in a normal game mode if you do not have any bots.", "gameplay-text");
         return false;
     }
@@ -65,14 +65,14 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
         }
     }
 
-    if (this.canJoin === true) {
+    if (this.canJoin) {
         //check before starting
         if (this.socketsOfPlayers.length < this.minPlayers) {
             //NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
             // console.log("Not enough players.");
             this.socketsOfPlayers[0].emit("danger-alert", "Minimum 5 players to start. ");
             return false;
-        } else if (this.gameStarted === true) {
+        } else if (this.gameStarted) {
             // console.log("Game already started!");
             return false;
         }
@@ -137,13 +137,13 @@ function getRolesInStr(options) {
 
     var str = "";
 
-    if (options.merlin === true) { str += "Merlin, "; }
-    if (options.assassin === true) { str += "Assassin, "; }
-    if (options.percival === true) { str += "Percival, "; }
-    if (options.morgana === true) { str += "Morgana, "; }
-    if (options.mordred === true) { str += "Mordred, "; }
-    if (options.oberon === true) { str += "Oberon, "; }
-    if (options.lady === true) { str += "Lady of the Lake, "; }
+    if (options.merlin) { str += "Merlin, "; }
+    if (options.assassin) { str += "Assassin, "; }
+    if (options.percival) { str += "Percival, "; }
+    if (options.morgana) { str += "Morgana, "; }
+    if (options.mordred) { str += "Mordred, "; }
+    if (options.oberon) { str += "Oberon, "; }
+    if (options.lady) { str += "Lady of the Lake, "; }
 
     //remove the last , and replace with .
     str = str.slice(0, str.length - 2);

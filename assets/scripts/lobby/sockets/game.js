@@ -56,11 +56,11 @@ socket.on("game-starting", function (roles, gameMode) {
         }
     });
 
-    if ($("#option_notifications_sound_game_starting")[0].checked === true) {
+    if ($("#option_notifications_sound_game_starting")[0].checked) {
         playSound("game-start-ready");
     }
 
-    if ($("#option_notifications_desktop_game_starting")[0].checked === true) {
+    if ($("#option_notifications_desktop_game_starting")[0].checked) {
         displayNotification("Game starting!", "Are you ready?", "avatars/base-spy.png", "gameStarting");
     }
 
@@ -106,7 +106,7 @@ socket.on("game-data", function (data) {
                 addToRoomChat(data);
             }
 
-            if ($("#option_notifications_sound_game_starting")[0].checked === true) {
+            if ($("#option_notifications_sound_game_starting")[0].checked) {
                 // playSound("game-start");
             }
         }
@@ -157,7 +157,7 @@ function hoverMissionBoxHighlightPlayerSetup() {
 
             highlightTeamAndOutlineLeader(participatingTeamAndLeader);
 
-            var darkThemeBool = docCookies.getItem("optionDisplayDarkTheme") === true;
+            var darkThemeBool = docCookies.getItem("optionDisplayDarkTheme");
             // Only edit the css if we have something to show
             if (participatingTeamAndLeader.team.length !== 0) {
                 // For the missionBox itself
@@ -182,7 +182,7 @@ function hoverPickBoxHighlightPlayerSetup() {
 
             highlightTeamAndOutlineLeader(participatingTeamAndLeader);
 
-            var darkThemeBool = docCookies.getItem("optionDisplayDarkTheme") === true;
+            var darkThemeBool = docCookies.getItem("optionDisplayDarkTheme");
             // Only edit the css if we have something to show
             if (participatingTeamAndLeader.team.length !== 0) {
                 // Since pickBoxes are small, we'll just fill them with yellow.
@@ -205,7 +205,7 @@ function hoverPickBoxHighlightPlayerSetup() {
 // }
 // and highlights the team members, and outlines the leader
 function highlightTeamAndOutlineLeader(teamAndLeader) {
-    var darkThemeBool = docCookies.getItem("optionDisplayDarkTheme") === true;
+    var darkThemeBool = docCookies.getItem("optionDisplayDarkTheme");
 
     teamAndLeader.team.forEach(function (username) {
         if (darkThemeBool) {
@@ -260,7 +260,7 @@ function getPlayersOnMissionPickAndLeader(missionNum, pickNum=-1) {
         var leader = "";
         // For each player:
         for (var key in gameData.voteHistory) {
-            if (gameData.voteHistory.hasOwnProperty(key) === true) {
+            if (gameData.voteHistory.hasOwnProperty(key)) {
                 // console.log(key);
                 if (pickNum == -1) {
                     // Get the length of the mission (how many picks in the mission because we grab the last pick)
@@ -269,7 +269,7 @@ function getPlayersOnMissionPickAndLeader(missionNum, pickNum=-1) {
                 // console.log("a: " + missionLen);
 
                 // If the user was picked, add to the list
-                if (gameData.voteHistory[key][missionNum][pickNum].includes("VHpicked") === true) {
+                if (gameData.voteHistory[key][missionNum][pickNum].includes("VHpicked")) {
                     team.push(key);
                 }
                 if (gameData.voteHistory[key][missionNum][pickNum].includes("VHleader")) {

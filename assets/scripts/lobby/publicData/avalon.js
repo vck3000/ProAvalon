@@ -17,7 +17,7 @@ function runPublicDataAvalon(gameDataInc) {
 
         //Draw cards:
         for (var key in gd.publicData.cards) {
-            if (gd.publicData.cards.hasOwnProperty(key) === true) {
+            if (gd.publicData.cards.hasOwnProperty(key)) {
                 // Skip if we don't have any record of the card to draw/display.
                 if (icons.hasOwnProperty(key) === false) {
                     continue;
@@ -64,10 +64,10 @@ function drawAssassinateIcon(indexOfPlayer) {
     var useBullet = $("#optionDisplayUseOldGameIcons")[0].checked;
 
     var icon;
-    if (useBullet === true && darkModeEnabled === false) {
+    if (useBullet && darkModeEnabled === false) {
         icon = "bullet";
     }
-    else if (useBullet === true && darkModeEnabled === true) {
+    else if (useBullet && darkModeEnabled) {
         icon = "bulletDark";
     }
     else if (useBullet === false) {

@@ -47,7 +47,7 @@
             </div>
             <br>
             
-            <% if(forumThread.edited === true){ %>
+            <% if(forumThread.edited){ %>
                 <br>
                 [Edited]
             <% } %>
@@ -186,7 +186,7 @@
                 
                     <div class="individualComment <%=classesToAdd%>">
                         <p>
-                            <% if(comment.disabled && comment.disabled === true){ %>
+                            <% if(comment.disabled && comment.disabled){ %>
                             <span style="color: red;" class="glyphicon glyphicon-ban-circle"></span>                            
                             <% } %>
                             <strong><%=comment.author.username%></strong> 
@@ -202,13 +202,13 @@
                             <%-comment.text%>
                         </div>
 
-                        <% if(comment.disabled && comment.disabled === true && locals.mod && mod === true){ %>
+                        <% if(comment.disabled && comment.disabled && locals.mod && mod){ %>
                             <div style="color: gray">
                                 Old deleted text: (only mods see :P) <%-comment.oldText%>
                             </div>
                         <% } %>
 
-                        <% if(comment.edited === true){ %>
+                        <% if(comment.edited){ %>
                             [Edited]
                         <% } %>
                         <p class="commentOptions">
@@ -275,7 +275,7 @@
 
                         <div class="replyToComment <%=classesToAdd%>"  id=<%=reply.id%>>
                             <p>
-                                <% if(reply.disabled && reply.disabled === true){ %>
+                                <% if(reply.disabled && reply.disabled){ %>
                                 <span style="color: red;" class="glyphicon glyphicon-ban-circle"></span>                            
                                 <% } %>
                                 <strong><%=reply.author.username%></strong>
@@ -292,13 +292,13 @@
                                 <%-reply.text%> 
                             </div>
 
-                            <% if(reply.disabled && reply.disabled === true && locals.mod && mod === true){ %>
+                            <% if(reply.disabled && reply.disabled && locals.mod && mod){ %>
                                 <div style="color: gray">
                                     Old deleted text: (only mods see :P) <%-reply.oldText%>
                                 </div>
                             <% } %>
 
-                            <% if(reply.edited === true){ %>
+                            <% if(reply.edited){ %>
                             [Edited]
                             <% } %>
 
@@ -458,7 +458,7 @@
 
 
         <%if(locals.mod){ %>
-            <%if(mod === true){ %>
+            <%if(mod){ %>
                 $("#modActionCloseButton").on("click", function(){
                     $("#modModal").modal("hide");
                     
@@ -557,7 +557,7 @@
 
 </script>
 
-<% if(locals.mod && mod === true){ %>
+<% if(locals.mod && mod){ %>
     <script>
         function toggleDeletedPosts(){
             $(".individualMainComment .disabled").toggleClass("unhiddenDisabled");

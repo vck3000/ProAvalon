@@ -2,7 +2,7 @@
 function redButtonFunction() {
     // if the button isn't disabled
     if (document.querySelector("#red-button").classList.contains("disabled") === false) {
-        if (isSpectator === true) {
+        if (isSpectator) {
 
         }
         else if (gameStarted === false) {
@@ -60,7 +60,7 @@ function redButtonFunction() {
 function greenButtonFunction() {
     //if button isn't disabled: 
     if (document.querySelector("#green-button").classList.contains("disabled") === false) {
-        if (isSpectator === true) {
+        if (isSpectator) {
             socket.emit("join-game", roomId);
         }
         else if (gameStarted === false) {

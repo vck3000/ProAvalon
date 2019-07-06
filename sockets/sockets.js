@@ -52,7 +52,7 @@ var nextRoomId = 1;
 var fs = require("fs");
 var gameModeNames = [];
 fs.readdirSync("./gameplay/").filter(function (file) {
-    if (fs.statSync("./gameplay" + "/" + file).isDirectory() === true && file !== "commonPhases") {
+    if (fs.statSync("./gameplay" + "/" + file).isDirectory() && file !== "commonPhases") {
         gameModeNames.push(file);
     }
 });
@@ -77,7 +77,7 @@ function sendWarning() {
 }
 
 function saveGameToDb(roomToSave) {
-    if (roomToSave.gameStarted === true && roomToSave.finished !== true) {
+    if (roomToSave.gameStarted && roomToSave.finished !== true) {
         if (roomToSave.savedGameRecordId === undefined) {
             savedGameObj.create({ room: JSON.stringify(roomToSave) }, function (err, savedGame) {
                 if (err) {
@@ -253,16 +253,16 @@ var actionsObj = {
                     var slappedInGame = false;
                     var socketThatWasSlappedInGame = undefined;
                     //need to know which person is in the room, if theyre both then it doesnt matter who.
-                    if (senderSocket.request.user.inRoomId && rooms[senderSocket.request.user.inRoomId] && rooms[senderSocket.request.user.inRoomId].gameStarted === true) {
+                    if (senderSocket.request.user.inRoomId && rooms[senderSocket.request.user.inRoomId] && rooms[senderSocket.request.user.inRoomId].gameStarted) {
                         slappedInGame = true;
                         socketThatWasSlappedInGame = senderSocket;
                     }
-                    else if (slapSocket.request.user.inRoomId && rooms[slapSocket.request.user.inRoomId] && rooms[slapSocket.request.user.inRoomId].gameStarted === true) {
+                    else if (slapSocket.request.user.inRoomId && rooms[slapSocket.request.user.inRoomId] && rooms[slapSocket.request.user.inRoomId].gameStarted) {
                         slappedInGame = true;
                         socketThatWasSlappedInGame = slapSocket;
                     }
 
-                    if (slappedInGame === true) {
+                    if (slappedInGame) {
                         var str = senderSocket.request.user.username + " has " + verbPast + " " + slapSocket.request.user.username + ". (In game)";
                         rooms[socketThatWasSlappedInGame.request.user.inRoomId].sendText(rooms[socketThatWasSlappedInGame.request.user.inRoomId].allSockets, str, "server-text");
                     }
@@ -282,7 +282,7 @@ var actionsObj = {
             run: function (data, senderSocket) {
                 var args = data.args;
                 //code
-                if (rooms[senderSocket.request.user.inRoomId] && rooms[senderSocket.request.user.inRoomId].gameStarted === true) {
+                if (rooms[senderSocket.request.user.inRoomId] && rooms[senderSocket.request.user.inRoomId].gameStarted) {
                     return rooms[senderSocket.request.user.inRoomId].chatHistory;
                 }
                 else {
@@ -642,7 +642,7 @@ var actionsObj = {
                 var currentRoomId = senderSocket.request.user.inRoomId;
                 var currentRoom = rooms[currentRoomId];
 
-                if (currentRoom.gameStarted === true || currentRoom.canJoin === false) {
+                if (currentRoom.gameStarted || currentRoom.canJoin === false) {
                     return {
                         message: "No bots can join this room at this time.",
                         classStr: "server-text"
@@ -737,7 +737,7 @@ var actionsObj = {
                 var currentRoom = rooms[currentRoomId];
                 var args = data.args;
                 
-                if (currentRoom.gameStarted === true || currentRoom.canJoin === false) {
+                if (currentRoom.gameStarted || currentRoom.canJoin === false) {
                     return {
                         message: "No bots can be removed from this room at this time.",
                         classStr: "server-text"
@@ -1257,7 +1257,7 @@ var actionsObj = {
             run: function (data, senderSocket) {
 
                 for (var i = 0; i < rooms.length; i++) {
-                    if (rooms[i] && rooms[i].frozen === true) {
+                    if (rooms[i] && rooms[i].frozen) {
                         destroyRoom(rooms[i].roomId);
                     }
                 }
@@ -1674,7 +1674,7 @@ module.exports = function (io) {
                     }
                 });
 
-                if (userNotFound === true) {
+                if (userNotFound) {
                     return;
                 }
 
@@ -1784,7 +1784,7 @@ var updateCurrentGamesList = function () {
             gamesList[i].gameMode = rooms[i].gameMode.charAt(0).toUpperCase() + rooms[i].gameMode.slice(1);
             // console.log("Room " + rooms[i].roomId + " has host: " + rooms[i].host);
             gamesList[i].hostUsername = rooms[i].host;
-            if (rooms[i].gameStarted === true) {
+            if (rooms[i].gameStarted) {
                 gamesList[i].numOfPlayersInside = rooms[i].playersInGame.length;
                 gamesList[i].missionHistory = rooms[i].missionHistory;
                 gamesList[i].missionNum = rooms[i].missionNum;
@@ -2035,7 +2035,7 @@ function interactUserPlayed(data) {
 
     if (socketWhoInitiatedInteract) {
         var messageStr;
-        if (data.success === true) {
+        if (data.success) {
             messageStr = data.myUsername + " was " + data.verbPast + "!";
         }
         else {
@@ -2149,7 +2149,7 @@ function joinRoom(roomId, inputPassword) {
     //if the room exists
     if (rooms[roomId]) {
         //join the room
-        if (rooms[roomId].playerJoinRoom(this, inputPassword) === true) {
+        if (rooms[roomId].playerJoinRoom(this, inputPassword)) {
             //sends to players and specs
             rooms[roomId].distributeGameData();
 
@@ -2260,7 +2260,7 @@ function playerReady(username) {
         sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
 
 
-        if (rooms[this.request.user.inRoomId].playerReady(username) === true) {
+        if (rooms[this.request.user.inRoomId].playerReady(username)) {
             //game will auto start if the above returned true
         }
     }
@@ -2313,7 +2313,7 @@ function gameMove(data) {
     if (rooms[this.request.user.inRoomId]) {
         rooms[this.request.user.inRoomId].gameMove(this, data);
         if (rooms[this.request.user.inRoomId]) {
-            if (rooms[this.request.user.inRoomId].finished === true) {
+            if (rooms[this.request.user.inRoomId].finished) {
                 deleteSaveGameFromDb(rooms[this.request.user.inRoomId]);
             }
             else {

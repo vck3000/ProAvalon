@@ -244,15 +244,15 @@ Assassination.prototype.numOfTargets = function (indexOfPlayer) {
                 }
             }
 
-            if (tristExists === true && isoExists === true && merlinExists) {
+            if (tristExists && isoExists && merlinExists) {
                 return [1, 2];
             }
 
-            else if (tristExists === true && isoExists === true) {
+            else if (tristExists && isoExists) {
                 return 2;
             }
 
-            else if (merlinExists === true) {
+            else if (merlinExists) {
                 return 1;
             }
         }

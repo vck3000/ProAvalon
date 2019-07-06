@@ -111,7 +111,7 @@ router.post("/", registerLimiter, checkIpBan, checkCurrentBan, sanitiseUsername,
             return;
         }
         
-        else if (usernameContainsBadCharacter(req.body.username) == true) {
+        else if (usernameContainsBadCharacter(req.body.username)) {
             req.flash("error", "Please do not use an illegal character");
             res.redirect("register");
             return;
@@ -191,7 +191,7 @@ router.post("/", registerLimiter, checkIpBan, checkCurrentBan, sanitiseUsername,
                     return;
                 }
                 
-                else if (usernameContainsBadCharacter(req.body.username) == true) {
+                else if (usernameContainsBadCharacter(req.body.username)) {
                     req.flash("error", "Please do not use an illegal character");
                     res.redirect("register");
                     return;

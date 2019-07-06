@@ -52,7 +52,7 @@ RefOfTheLake.prototype.checkSpecialMove = function (socket, data) {
         lastMissionFailed = true;
     }
 
-    if (lastMissionFailed === true &&
+    if (lastMissionFailed &&
 		this.thisRoom.howWasWon !== "Hammer rejected." &&
 		this.lastMissionUsed !== this.thisRoom.missionNum &&
 		numSuccess < 3 &&

@@ -15,7 +15,7 @@
         <h1>Forums</h1>
 
 
-        <% if(locals.mod && mod === true){ %>
+        <% if(locals.mod && mod){ %>
             <button class="btn btn-info" onclick="toggleDeletedPosts()">Mod see deleted posts</button>
         <br>
         <br>
@@ -126,7 +126,7 @@
                             classesToAdd += "post-unseen ";
                          }
 
-                        if(forumThread.disabled && forumThread.disabled === true){ 
+                        if(forumThread.disabled && forumThread.disabled){ 
                             classesToAdd += "hidden disabled "
                         }%>
                         <li class="<%=classesToAdd%>">
@@ -134,7 +134,7 @@
                                 <div class="bg-<%=bg_converter[forumThread.category]%> discussionContainer">
                                     <div class="discussionTitleBox">
                                         <div class="discussionTitle">
-                                            <% if(forumThread.disabled === true){ %>
+                                            <% if(forumThread.disabled){ %>
                                                 <span style="color: red;" class="glyphicon glyphicon-ban-circle"></span>
                                             <% } %>
                                             #<%=forumThread.numberId%>: <%=forumThread.title%>
@@ -231,7 +231,7 @@
 </div>
     
 
-<% if(locals.mod && mod === true){ %>
+<% if(locals.mod && mod){ %>
 <script>
 function toggleDeletedPosts(){
 

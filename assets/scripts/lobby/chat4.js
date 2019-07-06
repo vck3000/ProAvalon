@@ -44,7 +44,7 @@ function addAllChatEventListeners(e, allChatWindow) {
             allChatWindow.value = "";
 
             //check message, if false then no command.
-            if (checkMessageForCommands(message, "allChat") === true) {
+            if (checkMessageForCommands(message, "allChat")) {
                 //do nothing, all will be done in function checkMessageForCommands.
             }
             else {
@@ -98,7 +98,7 @@ function addRoomChatEventListeners(e, roomChatWindow) {
             roomChatWindow.value = "";
 
             //check message, if false then no command.
-            if (checkMessageForCommands(message, "roomChat") === true) {
+            if (checkMessageForCommands(message, "roomChat")) {
                 //do nothing, all will be done in function checkMessageForCommands.
             }
             else {
@@ -170,7 +170,7 @@ function addToAllChat(data) {
                 }
 
                 //if they've muted this player, then just dont show anything. reset str to nothing.
-                if (isPlayerMuted(data[i].username) === true) {
+                if (isPlayerMuted(data[i].username)) {
                     str = "";
                 }
 
@@ -216,7 +216,7 @@ function addToRoomChat(data) {
         }
 
         var usernamesOfPlayersInGame = [];
-        if (gameStarted === true) {
+        if (gameStarted) {
             roomPlayersData.forEach(function (obj) {
                 usernamesOfPlayersInGame.push(obj.username);
             });
@@ -264,7 +264,7 @@ function addToRoomChat(data) {
 
                 //oldSpectators is the var stored in sockets file that 
                 //has a list of usernames of spectators
-                if (oldSpectators.indexOf(data[i].username) !== -1 && gameStarted === true && muteSpectators === true) {
+                if (oldSpectators.indexOf(data[i].username) !== -1 && gameStarted && muteSpectators) {
                     //this message is muted. 
                     //dont do anything
                     addClass = "hidden-spectator-chat spectator-chat";
@@ -272,7 +272,7 @@ function addToRoomChat(data) {
 
                 }
                 else {
-                    if (oldSpectators.indexOf(data[i].username) !== -1 && gameStarted === true) {
+                    if (oldSpectators.indexOf(data[i].username) !== -1 && gameStarted) {
                         addClass = "spectator-chat";
                         thisMessageSpectator = true;
                     }
@@ -284,7 +284,7 @@ function addToRoomChat(data) {
                 // console.log(data[i].classStr);
                 // console.log(muteJoinLeave);
 
-                if (data[i].classStr === "server-text-teal" && muteJoinLeave === true) {
+                if (data[i].classStr === "server-text-teal" && muteJoinLeave) {
                     thisMessageJoinLeave = true;
                     addClass += " hidden-spectator-chat";
 
@@ -359,8 +359,8 @@ function addToRoomChat(data) {
 
                 // console.log("true?"  + selectedChat[data[i].username]);
 
-                if (selectedChat[data[i].username] === true && getIndexFromUsername(data[i].username) !== undefined) {
-                    if (setHighlightColorToYellow === true) {
+                if (selectedChat[data[i].username] && getIndexFromUsername(data[i].username) !== undefined) {
+                    if (setHighlightColorToYellow) {
                         highlightChatColour = "#ffff9e";
                     }
                     else {
@@ -381,7 +381,7 @@ function addToRoomChat(data) {
                 }
 
                 //if they've muted this player, then just dont show anything. reset str to nothing.
-                if (isPlayerMuted(data[i].username) === true) {
+                if (isPlayerMuted(data[i].username)) {
                     str = "";
                 }
 
@@ -413,7 +413,7 @@ function addToRoomChat(data) {
                     }
 
                     //if they've muted this player, then just dont show anything. reset str to nothing.
-                    if (isPlayerMuted(data[i].username) === true) {
+                    if (isPlayerMuted(data[i].username)) {
                         strQuotes = "";
                     }
 
@@ -422,11 +422,11 @@ function addToRoomChat(data) {
                     scrollDown("room-chat-room2");
                 }
 
-                if (thisMessageSpectator === true && muteSpectators === true) {
+                if (thisMessageSpectator && muteSpectators) {
                     //if the person talking is a spectator, and if mute spectators is checked,
                     //then dont show yellow notification. Otherwise show.
                 }
-                else if (thisMessageJoinLeave === true && muteJoinLeave === true) {
+                else if (thisMessageJoinLeave && muteJoinLeave) {
                     //It is a message that is joining or leaving
                 }
                 else {
@@ -483,7 +483,7 @@ $(".muteSpecs").on("change", function (e) {
         muteButtons[i].checked = e.target.checked;
     }
 
-    if (e.target.checked === true) {
+    if (e.target.checked) {
         $(".spectator-chat").addClass("hidden-spectator-chat");
     }
     else {
@@ -509,7 +509,7 @@ $(".mutejoinleave").on("change", function (e) {
     //Note! Careful here, we only use this server-text-teal class for
     //player joining and leaving so thats why it works
     //if in the future we add more teal server text it will hide those too!
-    if (e.target.checked === true) {
+    if (e.target.checked) {
         $(".server-text-teal").addClass("hidden-spectator-chat");
     }
     else {
@@ -532,10 +532,10 @@ $(".setHighlightColorsToYellow").on("change", function (e) {
 
     var usernames = Object.keys(selectedChat);
 
-    if (e.target.checked === true) {
+    if (e.target.checked) {
         var color = "#ffff9e";
         usernames.forEach(function (user) {
-            if (selectedChat[user] === true) {
+            if (selectedChat[user]) {
                 var chatItems = $(".room-chat-list li span[username='" + user + "']");
                 chatItems.css("background-color", color);
             }
@@ -543,7 +543,7 @@ $(".setHighlightColorsToYellow").on("change", function (e) {
     }
     else {
         usernames.forEach(function (user) {
-            if (selectedChat[user] === true) {
+            if (selectedChat[user]) {
                 var chatItems = $(".room-chat-list li span[username='" + user + "']");
                 var color = docCookies.getItem("player" + getIndexFromUsername(user) + "HighlightColour");
                 chatItems.css("background-color", color);

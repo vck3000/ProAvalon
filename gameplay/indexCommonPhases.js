@@ -12,7 +12,7 @@ function index() {
             // console.log(file);
 
             // If it is a javascript file, add it
-            if (file.includes(".js") === true) {
+            if (file.includes(".js")) {
                 name = file.replace(".js", "");
 
                 commonPhases[name] = require("./commonPhases/" + file);

@@ -292,7 +292,7 @@
 							<li><a href="https://github.com/vck3000/ProAvalon">Github</a></li>
 						</ul>
 					</li>
-					<% if(locals.isMod && isMod === true){ %>
+					<% if(locals.isMod && isMod){ %>
 					<li><a href="/mod">Moderation</a></li>
 					<% } %>
 
@@ -796,7 +796,7 @@ $(document).ready(function(){
 
 	$(".notificationText").on('click', function(e){
 
-		if(e.innerText !== "a" && $(e.target).parent().parent().hasClass("unseen") === true){
+		if(e.innerText !== "a" && $(e.target).parent().parent().hasClass("unseen")){
 			// seenNotificationFunction
 			// console.log($(e.target).parent().parent().find(".userNotificationIdToRemove")[0].innerHTML);
 			var id = $(e.target).parent().parent().find(".userNotificationIdToRemove")[0].innerHTML;
@@ -864,7 +864,7 @@ $(document).ready(function(){
 					$(notifs[i+1]).next().addClass("hidden");
 					// notifs.splice(i, 1);
 
-					if($(this).parent().parent().hasClass("unseen") === true){
+					if($(this).parent().parent().hasClass("unseen")){
 						$(".badge")[0].innerHTML -= 1;
 					}
 
@@ -991,7 +991,7 @@ $(document).ready(function () {
 		// console.log(clickover);
 
 		if (
-			_opened === true
+			_opened
 			&& !clickover.hasClass("navbar-toggler")
 			&& !clickover.hasClass("badge")
 			&& !clickover.hasClass("optionsCog")

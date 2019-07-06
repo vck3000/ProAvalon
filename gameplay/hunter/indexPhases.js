@@ -12,7 +12,7 @@ function index() {
             // console.log(file);
 
             // If it is a javascript file, add it
-            if (file.includes(".js") === true) {
+            if (file.includes(".js")) {
                 // Trim .js at the end of the file name
                 name = file.replace(".js", "");
 

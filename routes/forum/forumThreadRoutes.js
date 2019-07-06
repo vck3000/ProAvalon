@@ -66,7 +66,7 @@ router.get("/show/:id", middleware.isLoggedIn, function (req, res) {
 
                 // 	for(var i = foundForumThread.comments.length - 1; i >= 0; i--){
                 // 		// console.log(foundForumThread.comments[i].disabled);
-                // 		if(foundForumThread.comments[i].disabled && foundForumThread.comments[i].disabled === true){
+                // 		if(foundForumThread.comments[i].disabled && foundForumThread.comments[i].disabled){
                 // 			console.log("Remove a comment");
                 // 			foundForumThread.comments[i].oldText = "";
                 // 		}
@@ -164,7 +164,7 @@ router.get("/show/:id", middleware.isLoggedIn, function (req, res) {
                     // console.log(isMod);
 
                     //if forumthread.disabled is true, and also the person is not a mod, then dont show
-                    if(foundForumThread.disabled === true && isMod === false){
+                    if(foundForumThread.disabled && isMod === false){
                         req.flash("error", "Thread is deleted.");
                         res.redirect("/forum/page/1");
                     }
@@ -213,7 +213,7 @@ router.get("/show/:id", middleware.isLoggedIn, function (req, res) {
 	
                             //only need to comm.save() if there was a change.
                             //otherwise save some resources and skip saving.
-                            if(changesMade === true){
+                            if(changesMade){
                                 comm.markModified("replies");
                                 await comm.save();
                             }
@@ -335,7 +335,7 @@ router.post("/", newForumLimiter, middleware.isLoggedIn, async function (req, re
 /**********************************************************/
 router.get("/:id/edit", middleware.checkForumThreadOwnership, function (req, res) {
     forumThread.findById(req.params.id, async function (err, foundForumThread) {
-        if(foundForumThread.disabled === true){
+        if(foundForumThread.disabled){
             req.flash("error", "You cannot edit a deleted forum thread.");
             res.redirect("back");
         }
@@ -388,12 +388,12 @@ router.put("/:id", middleware.checkForumThreadOwnership, function (req, res) {
             req.flash("error", "There was an error finding your forum thread.");
             res.redirect("/forum");
         } 
-        else if(foundForumThread.disabled === true){
+        else if(foundForumThread.disabled){
             req.flash("error", "You cannot edit a deleted forum thread.");
             res.redirect("back");
         }
         else {
-            if (categoryChange === true) {
+            if (categoryChange) {
                 //update the category
                 foundForumThread.category = category;
             }

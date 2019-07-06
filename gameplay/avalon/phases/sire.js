@@ -68,7 +68,7 @@ Sire.prototype.gameMove = function (socket, data) {
     // If the requester is the sire holder, do the sire stuff
     if (indexOfCardHolder === indexOfSocket) {
         // Check if we can card that person
-        if (sireHistory.includes(data) === true) {
+        if (sireHistory.includes(data)) {
             socket.emit("danger-alert", "You cannot card that person.");
             return;
         }

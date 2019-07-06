@@ -12,7 +12,7 @@ function Mordred(thisRoom_) {
 
     //Morded sees all spies except oberon
     this.see = function () {
-        if (this.thisRoom.gameStarted === true) {
+        if (this.thisRoom.gameStarted) {
             var obj = {};
             var array = [];
 

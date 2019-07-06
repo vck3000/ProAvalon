@@ -50,7 +50,7 @@ var nextRoomId = 1;
 var fs = require("fs");
 var gameModeNames = [];
 fs.readdirSync("./gameplay/").filter(function (file) {
-    if (fs.statSync("./gameplay" + "/" + file).isDirectory() === true && file !== "commonPhases") {
+    if (fs.statSync("./gameplay" + "/" + file).isDirectory() && file !== "commonPhases") {
         gameModeNames.push(file);
     }
 });
@@ -84,7 +84,7 @@ function sendWarning() {
 }
 
 function saveGameToDb(roomToSave) {
-    if (roomToSave.gameStarted === true && roomToSave.finished !== true) {
+    if (roomToSave.gameStarted && roomToSave.finished !== true) {
         if (roomToSave.savedGameRecordId === undefined) {
             savedGameObj.create({ room: JSON.stringify(roomToSave) }, function (err, savedGame) {
                 if (err) {
@@ -141,7 +141,7 @@ function saveGamesAndSendWarning(senderSocket) {
 
     // //save the games
     // for(var i = 0; i < rooms.length; i++){
-    // 	if(rooms[i] && rooms[i].gameStarted === true && rooms[i].finished !== true){
+    // 	if(rooms[i] && rooms[i].gameStarted && rooms[i].finished !== true){
     // 		console.log("rooms");
     // 		// console.log(rooms[i]);
 
@@ -377,16 +377,16 @@ var actionsObj = {
                     var slappedInGame = false;
                     var socketThatWasSlappedInGame = undefined;
                     //need to know which person is in the room, if theyre both then it doesnt matter who.
-                    if (senderSocket.request.user.inRoomId && rooms[senderSocket.request.user.inRoomId] && rooms[senderSocket.request.user.inRoomId].gameStarted === true) {
+                    if (senderSocket.request.user.inRoomId && rooms[senderSocket.request.user.inRoomId] && rooms[senderSocket.request.user.inRoomId].gameStarted) {
                         slappedInGame = true;
                         socketThatWasSlappedInGame = senderSocket;
                     }
-                    else if (slapSocket.request.user.inRoomId && rooms[slapSocket.request.user.inRoomId] && rooms[slapSocket.request.user.inRoomId].gameStarted === true) {
+                    else if (slapSocket.request.user.inRoomId && rooms[slapSocket.request.user.inRoomId] && rooms[slapSocket.request.user.inRoomId].gameStarted) {
                         slappedInGame = true;
                         socketThatWasSlappedInGame = slapSocket;
                     }
 
-                    if (slappedInGame === true) {
+                    if (slappedInGame) {
                         var str = senderSocket.request.user.username + " has " + verbPast + " " + slapSocket.request.user.username + ". (In game)";
                         rooms[socketThatWasSlappedInGame.request.user.inRoomId].sendText(rooms[socketThatWasSlappedInGame.request.user.inRoomId].allSockets, str, "server-text");
                     }
@@ -407,7 +407,7 @@ var actionsObj = {
             run: function (data, senderSocket) {
                 var args = data.args;
                 //code
-                if (rooms[senderSocket.request.user.inRoomId] && rooms[senderSocket.request.user.inRoomId].gameStarted === true) {
+                if (rooms[senderSocket.request.user.inRoomId] && rooms[senderSocket.request.user.inRoomId].gameStarted) {
                     return rooms[senderSocket.request.user.inRoomId].chatHistory;
                 }
                 else {
@@ -1139,7 +1139,7 @@ var actionsObj = {
             run: function (data, senderSocket) {
 
                 for (var i = 0; i < rooms.length; i++) {
-                    if (rooms[i] && rooms[i].frozen === true) {
+                    if (rooms[i] && rooms[i].frozen) {
                         deleteSaveGameFromDb(rooms[i]);
                         rooms[i] = undefined;
                     }
@@ -1594,7 +1594,7 @@ module.exports = function (io) {
                     }
                 });
 
-                if (userNotFound === true) {
+                if (userNotFound) {
                     return;
                 }
 
@@ -1683,7 +1683,7 @@ module.exports = function (io) {
 
             if (socketWhoInitiatedInteract) {
                 var messageStr;
-                if (data.success === true) {
+                if (data.success) {
                     messageStr = data.myUsername + " was " + data.verbPast + "!";
                 }
                 else {
@@ -1802,7 +1802,7 @@ module.exports = function (io) {
             //if the room exists
             if (rooms[roomId]) {
                 //join the room
-                if (rooms[roomId].playerJoinRoom(socket, inputPassword) === true) {
+                if (rooms[roomId].playerJoinRoom(socket, inputPassword)) {
                     //sends to players and specs
                     rooms[roomId].distributeGameData();
 
@@ -1914,7 +1914,7 @@ module.exports = function (io) {
                 sendToRoomChat(io, socket.request.user.inRoomId, data);
 
 
-                if (rooms[socket.request.user.inRoomId].playerReady(username) === true) {
+                if (rooms[socket.request.user.inRoomId].playerReady(username)) {
                     //game will auto start if the above returned true
                 }
             }
@@ -1983,7 +1983,7 @@ module.exports = function (io) {
                 rooms[socket.request.user.inRoomId].gameMove(socket, data);
 
                 if (rooms[socket.request.user.inRoomId]) {
-                    if (rooms[socket.request.user.inRoomId].finished === true) {
+                    if (rooms[socket.request.user.inRoomId].finished) {
                         deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
                     }
                     else {
@@ -2032,7 +2032,7 @@ var updateCurrentGamesList = function () {
             gamesList[i].roomId = rooms[i].roomId;
             // console.log("Room " + rooms[i].roomId + " has host: " + rooms[i].host);
             gamesList[i].hostUsername = rooms[i].host;
-            if (rooms[i].gameStarted === true) {
+            if (rooms[i].gameStarted) {
                 gamesList[i].numOfPlayersInside = rooms[i].playersInGame.length;
                 gamesList[i].missionHistory = rooms[i].missionHistory;
                 gamesList[i].missionNum = rooms[i].missionNum;

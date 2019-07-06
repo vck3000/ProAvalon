@@ -68,7 +68,7 @@ Ref.prototype.gameMove = function (socket, data) {
     // If the requester is the ref holder, do the ref stuff
     if (indexOfCardHolder === indexOfSocket) {
         // Check if we can card that person
-        if (refHistory.includes(data) === true) {
+        if (refHistory.includes(data)) {
             socket.emit("danger-alert", "You cannot card that person.");
             return;
         }

@@ -4,7 +4,7 @@
 var gameModeNames = [];
 var fs = require("fs");
 fs.readdirSync("./gameplay/").filter(function (file) {
-    if (fs.statSync("./gameplay" + "/" + file).isDirectory() === true && file !== "commonPhases") {
+    if (fs.statSync("./gameplay/" + file).isDirectory() && file !== "commonPhases") {
         gameModeNames.push(file);
     }
 });
@@ -108,7 +108,7 @@ Room.prototype.playerJoinRoom = function (socket, inputPassword) {
 Room.prototype.playerSitDown = function (socket) {
     socketUsername = socket.request.user.username;
 
-    if(socketUsername === this.host && this.gameMode.toLowerCase().includes("bot") === true){
+    if(socketUsername === this.host && this.gameMode.toLowerCase().includes("bot")){
         data = {
             message: "Type /help to see the commands available to interact with bots!",
             classStr: "server-text",
@@ -173,7 +173,7 @@ Room.prototype.playerLeaveRoom = function (socket) {
         var oldHost = this.host;
         this.host = this.socketsOfPlayers[0].request.user.username;
 
-        if(this.gameMode.toLowerCase().includes("bot") === true && oldHost !== this.host){
+        if(this.gameMode.toLowerCase().includes("bot") && oldHost !== this.host){
             data = {
                 message: "Type /help to see the commands available to interact with bots!",
                 classStr: "server-text",
@@ -194,7 +194,7 @@ Room.prototype.playerLeaveRoom = function (socket) {
     this.updateRoomPlayers();
 
     // If the new host is a bot... leave the room.
-    if (newHostSocket !== undefined && newHostSocket.isBotSocket === true){
+    if (newHostSocket !== undefined && newHostSocket.isBotSocket){
         this.playerLeaveRoom(newHostSocket);
     }
 };
@@ -236,7 +236,7 @@ Room.prototype.setClaim = function (socket, data) {
     index = this.claimingPlayers.indexOf(username);
 
     // If they want to claim and also don't exist on the claimingPlayers array
-    if (data === true && index === -1) {
+    if (data && index === -1) {
         this.claimingPlayers.push(username);
     }
     // If they want to unclaim and also do exist on the claimingPlayers array
@@ -263,7 +263,7 @@ Room.prototype.sendText = function (sockets, incString, stringType) {
         }
     }
 
-    if (this.gameStarted && this.gameStarted === true) {
+    if (this.gameStarted && this.gameStarted) {
         this.addToChatHistory(data);
     }
 };
@@ -352,7 +352,7 @@ Room.prototype.updateMaxNumPlayers = function (socket, number) {
 
 
 Room.prototype.updateGameModesInRoom = function (socket, gameMode) {
-    if (gameModeNames.includes(gameMode) === true && socket.request.user.username === this.host) {
+    if (gameModeNames.includes(gameMode) && socket.request.user.username === this.host) {
         // If the new gameMode doesnt include bot, but originally does, then remove the bots that may have been added
         if(gameMode.toLowerCase().includes("bot") == false && this.botSockets !== undefined && this.botSockets.length > 0){
             var thisRoom = this;
@@ -375,7 +375,7 @@ Room.prototype.updateGameModesInRoom = function (socket, gameMode) {
             }
         }
 
-        if(gameMode.toLowerCase().includes("bot") === true){
+        if(gameMode.toLowerCase().includes("bot")){
             //Get host socket
             hostSock = this.socketsOfPlayers[0];
             data = {
@@ -419,9 +419,9 @@ Room.prototype.sendOutGameModesInRoomToSocket = function (targetSocket) {
     var skipRoles = ["Resistance", "Spy"];
 
     for (var key in this.specialRoles) {
-        if (this.specialRoles.hasOwnProperty(key) === true) {
+        if (this.specialRoles.hasOwnProperty(key)) {
             // Skip Resistance and Spy since they are default roles always enabled.
-            if (skipRoles.includes(this.specialRoles[key].role) === true) {
+            if (skipRoles.includes(this.specialRoles[key].role)) {
                 continue;
             }
 
@@ -438,7 +438,7 @@ Room.prototype.sendOutGameModesInRoomToSocket = function (targetSocket) {
     }
 
     for (var key in this.specialCards) {
-        if (this.specialCards.hasOwnProperty(key) === true) {
+        if (this.specialCards.hasOwnProperty(key)) {
             cardNames.push(this.specialCards[key].card);
             cardDescriptions.push(this.specialCards[key].description);
             if (!this.specialCards[key].orderPriorityInOptions) {

@@ -111,7 +111,7 @@ function draw() {
         restoreHighlightedAvatars(highlightedAvatars);
 
 
-        if (gameStarted === true) {
+        if (gameStarted) {
             drawExitedPlayers(gameData.gamePlayersInRoom);
 
             if (gameData.finished !== true) {
@@ -242,13 +242,13 @@ function activateAvatarButtons() {
 
             var setHighlightColorToYellow = $(".setHighlightColorsToYellow")[0].checked;
 
-            if (setHighlightColorToYellow === true) {
+            if (setHighlightColorToYellow) {
                 playerHighlightColour = "#ffff9e";
             }
 
             // console.log("Player highlight colour: " + playerHighlightColour);
 
-            if (selectedChat[username] === true) {
+            if (selectedChat[username]) {
                 selectedChat[username] = false;
                 chatItems.css("background-color", "transparent");
                 chatItems.css("color", "");
@@ -400,7 +400,7 @@ function drawAndPositionAvatars() {
     //generate the divs in the html
     var str = "";
     // console.log("Game started: " + gameStarted);
-    if (gameStarted === true) {
+    if (gameStarted) {
         //draw the players according to what the client sees (their role sees)
         for (var i = 0; i < numPlayers; i++) {
             //check if the user is on the spy list.
@@ -649,11 +649,11 @@ function drawTeamLeader() {
         var str = $("#mainRoomBox div")[playerIndex].innerHTML;
 
         var icon;
-        if ($("#optionDisplayUseOldGameIcons")[0].checked === true) {
+        if ($("#optionDisplayUseOldGameIcons")[0].checked) {
             icon = "star";
         }
         else {
-            if ($("#optionDisplayUseSmallIconsCrownShield")[0].checked === true) {
+            if ($("#optionDisplayUseSmallIconsCrownShield")[0].checked) {
                 icon = "crown";
             }
             else {
@@ -677,7 +677,7 @@ function drawClaimingPlayers(claimingPlayers) {
     }
 
     for (var i = 0; i < roomPlayersData.length; i++) {
-        if (roomPlayersData[i].claim && roomPlayersData[i].claim === true) {
+        if (roomPlayersData[i].claim && roomPlayersData[i].claim) {
             if ($("#mainRoomBox div")[getIndexFromUsername(roomPlayersData[i].username)]) {
                 var str = $("#mainRoomBox div")[getIndexFromUsername(roomPlayersData[i].username)].innerHTML;
                 str = str + "<span><img src='pictures/claim.png' class='claimIcon'></span>";
@@ -702,7 +702,7 @@ function drawExitedPlayers(playersStillInRoom) {
     }
 
     for (var i = 0; i < arrayOfUsernames.length; i++) {
-        // if(roomPlayersData[i].claim && roomPlayersData[i].claim === true){
+        // if(roomPlayersData[i].claim && roomPlayersData[i].claim){
         if (playersStillInRoom.indexOf(arrayOfUsernames[i]) === -1) {
 
             // var j = playersStillInRoom.indexOf(arrayOfUsernames[i]);
@@ -746,7 +746,7 @@ function checkSelectAvatarButtons(num) {
     }
     else if (typeof (num) === "object" && num !== null && num !== undefined) {
         //if they've selected the right number of players, then allow them to send
-        if (num.includes(countHighlightedAvatars()) === true) {
+        if (num.includes(countHighlightedAvatars())) {
             btnRemoveDisabled("green");
         }
         else {
@@ -812,7 +812,7 @@ function enableDisableButtons() {
             document.querySelector("#options-button").classList.remove("hidden");
         }
         //we are spectator
-        else if (isSpectator === true) {
+        else if (isSpectator) {
             btnRemoveHidden("green");
             btnRemoveDisabled("green");
             btnSetText("green", "Join");
@@ -831,7 +831,7 @@ function enableDisableButtons() {
         }
     }
     //if game started and we are a player:
-    else if (gameStarted === true && isSpectator === false) {
+    else if (gameStarted && isSpectator === false) {
         if (gameData.buttons.green.hidden === false) { btnRemoveHidden("green"); }
         if (gameData.buttons.green.disabled === false) { btnRemoveDisabled("green"); }
         if (gameData.buttons.green.setText !== undefined) { btnSetText("green", gameData.buttons.green.setText); }
@@ -855,7 +855,7 @@ function countHighlightedAvatars() {
     var divs = document.querySelectorAll("#mainRoomBox div");
     var count = 0;
     for (var i = 0; i < divs.length; i++) {
-        if (divs[i].classList.contains("highlight-avatar") === true) {
+        if (divs[i].classList.contains("highlight-avatar")) {
             count++;
         }
     }
@@ -870,7 +870,7 @@ function getHighlightedAvatars() {
     var arr = [];
 
     for (var i = 0; i < divs.length; i++) {
-        if (divs[i].classList.contains("highlight-avatar") === true) {
+        if (divs[i].classList.contains("highlight-avatar")) {
             //we need to use getUsernameFromIndex otherwise
             //we will get info from the individual player
             //such as a percy seeing a merlin?.
@@ -951,13 +951,13 @@ function strOfAvatar(playerData, alliance) {
 
 
     //can improve this code here
-    if (gameStarted === true && gameData.phase === "finished") {
+    if (gameStarted && gameData.phase === "finished") {
         var roleWid = ctx.measureText(gameData.see.roles[getIndexFromUsername(playerData.username)]).width + 20;
 
         role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + gameData.see.roles[getIndexFromUsername(playerData.username)] + "</p>";
     }
 
-    else if (gameStarted === true && gameData !== undefined) {
+    else if (gameStarted && gameData !== undefined) {
 
         //if rendering our own player, give it the role tag
         if (playerData.username === ownUsername) {
@@ -1031,7 +1031,7 @@ function strOfAvatar(playerData, alliance) {
     var colourToHighlightChatButton;
     var indexOfPlayer = getIndexFromUsername(playerData.username);
     var searchTerm = "player" + indexOfPlayer + "HighlightColour";
-    if (selectedChat[playerData.username] === true) {
+    if (selectedChat[playerData.username]) {
         colourToHighlightChatButton = docCookies.getItem(searchTerm);
     }
     else {
@@ -1133,7 +1133,7 @@ function scrollDown(chatBox, hardScroll) {
         }
     }
 
-    if (hardScroll === true) {
+    if (hardScroll) {
         // $("#mydiv").scrollTop($("#mydiv")[0].scrollHeight);
 
         scrollBox.scrollTop(scrollBox[0].scrollHeight);
@@ -1347,7 +1347,7 @@ function drawVoteHistory(data) {
 
                 str += "<td class='" + data.voteHistory[keyArray[k]][i][j] + "''>";
 
-                if (data.voteHistory[keyArray[k]][i][j].includes("VHpicked") === true) {
+                if (data.voteHistory[keyArray[k]][i][j].includes("VHpicked")) {
                     str += "<i class='glyphicon glyphicon-ok'></i>";
                 }
 
@@ -1377,7 +1377,7 @@ function drawVoteHistory(data) {
 
 
     for (var key in data.publicData.cards) {
-        if (data.publicData.cards.hasOwnProperty(key) === true) {
+        if (data.publicData.cards.hasOwnProperty(key)) {
             var c = data.publicData.cards[key];
 
             if (c.history !== undefined && c.name !== undefined) {
@@ -1439,8 +1439,8 @@ function getKickPlayers() {
 
     for (var i = 0; i < roomPlayersData.length; i++) {
         // console.log(unescapeHtml(roomPlayersData[i].username));
-        // if ($("#" + roomPlayersData[i].username)[0].checked === true) {
-        if ($("#" + $.escapeSelector(unescapeHtml(roomPlayersData[i].username)))[0].checked === true) {
+        // if ($("#" + roomPlayersData[i].username)[0].checked) {
+        if ($("#" + $.escapeSelector(unescapeHtml(roomPlayersData[i].username)))[0].checked) {
             data[roomPlayersData[i].username] = true;
         }
     }
@@ -1630,7 +1630,7 @@ function checkMessageForCommands(message, chatBox) {
 
 
 function updateDarkTheme(checked) {
-    if (checked === true) {
+    if (checked) {
         $("body")[0].classList.add("dark");
         $(".well").addClass("dark");
         $("input").addClass("dark");
@@ -1659,7 +1659,7 @@ function updateDarkTheme(checked) {
 }
 
 function updateTwoTabs(checked) {
-    if (checked === true) {
+    if (checked) {
         $("#tabs1").addClass("col-xs-6");
         $("#tabs1").addClass("tabs1TwoTabs");
         $("#tabs2").addClass("tabs2TwoTabs");
@@ -1717,7 +1717,7 @@ function scaleGameComponents() {
     var maxWidth = 0;
     // Use shield
     if (useGun === "false") {
-        if ($("#optionDisplayUseSmallIconsCrownShield")[0].checked === true) {
+        if ($("#optionDisplayUseSmallIconsCrownShield")[0].checked) {
             maxHeight = pics["shieldOrange"].maxDims.y;
             maxWidth = pics["shieldOrange"].maxDims.x;
         }
@@ -1747,7 +1747,7 @@ function scaleGameComponents() {
     }
     // Use crown
     else {
-        if ($("#optionDisplayUseSmallIconsCrownShield")[0].checked === true) {
+        if ($("#optionDisplayUseSmallIconsCrownShield")[0].checked) {
             maxHeight = pics["crown"].maxDims.y;
             maxWidth = pics["crown"].maxDims.x;
         }
@@ -1826,7 +1826,7 @@ function playSound(soundToPlay) {
 
 function displayNotification(title, body, icon, tag) {
 
-    if (Notification.permission === "granted" && $("#option_notifications_desktop_enable")[0].checked === true) {
+    if (Notification.permission === "granted" && $("#option_notifications_desktop_enable")[0].checked) {
         var options = {
             body: body,
             icon: icon,
@@ -1840,7 +1840,7 @@ function displayNotification(title, body, icon, tag) {
 
 function showYourTurnNotification(ToF) {
     //Display the green button if its your turn.
-    if (ToF === true) {
+    if (ToF) {
         $(buttons["green"]).removeClass("hidden");
     }
     else if (ToF === false) {

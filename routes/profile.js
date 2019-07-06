@@ -64,7 +64,7 @@ router.post("/mod/ajax/processavatarrequest", middleware.isLoggedIn, middleware.
                 foundReq.approved = req.body.decision;
                 foundReq.modWhoProcessed = req.user.username;
 
-                if (req.body.decision === true || req.body.decision === "true") {
+                if (req.body.decision || req.body.decision === "true") {
                     console.log("search lower user: " + foundReq.forUsername.toLowerCase());
 
                     User.findOne({ usernameLower: foundReq.forUsername.toLowerCase() }).populate("notifications").exec(function (err, foundUser) {

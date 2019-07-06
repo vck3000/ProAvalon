@@ -68,7 +68,7 @@ Lady.prototype.gameMove = function (socket, data) {
     // If the requester is the lady holder, do the lady stuff
     if (indexOfCardHolder === indexOfSocket) {
         // Check if we can card that person
-        if (ladyHistory.includes(data) === true) {
+        if (ladyHistory.includes(data)) {
             socket.emit("danger-alert", "You cannot card that person.");
             return;
         }

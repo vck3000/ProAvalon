@@ -10,7 +10,7 @@ function Oberon(thisRoom_) {
 
     //Oberon only sees him/herself
     this.see = function () {
-        if (this.thisRoom.gameStarted === true) {
+        if (this.thisRoom.gameStarted) {
             var obj = {};
             var array = [];
 

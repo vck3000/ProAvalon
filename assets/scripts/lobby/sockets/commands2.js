@@ -65,7 +65,7 @@ socket.on("interactUser", function (data) {
     var interacted = false;
 
     if (isPlayerMuted(data.username) === false) {
-        if ($("#option_notifications_sound_slap")[0].checked === true) {
+        if ($("#option_notifications_sound_slap")[0].checked) {
             if (!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $("#option_notifications_buzz_slap_timeout")[0].value) {
                 var mp3String = verbToMp3[data.verb];
                 if (mp3String === undefined) { mp3String = data.verb; }
@@ -99,7 +99,7 @@ socket.on("interactUser", function (data) {
 
                 //only display notif if its a buzz
                 if (data.verb === "buzz") {
-                    if ($("#option_notifications_desktop_buzz")[0].checked === true) {
+                    if ($("#option_notifications_desktop_buzz")[0].checked) {
                         displayNotification(username + " has buzzed you!", "", "avatars/base-spy.png", "buzz");
                     }
                 }
@@ -116,7 +116,7 @@ socket.on("interactUser", function (data) {
 //     var interacted = false;
 
 //     if(isPlayerMuted(username) === false){
-//         if($("#option_notifications_sound_slap")[0].checked === true){
+//         if($("#option_notifications_sound_slap")[0].checked){
 //             if(!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $("#option_notifications_buzz_slap_timeout")[0].value){
 //                 playSound("slap");
 
@@ -149,7 +149,7 @@ socket.on("interactUser", function (data) {
 // socket.on("buzz", function (username) {
 //     if(isPlayerMuted(username) === false){
 //         if(!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $("#option_notifications_buzz_slap_timeout")[0].value){
-//             if($("#option_notifications_sound_buzz")[0].checked === true){
+//             if($("#option_notifications_sound_buzz")[0].checked){
 //                 playSound("ding");
 
 //                 var data = { 
@@ -167,7 +167,7 @@ socket.on("interactUser", function (data) {
 //                 }, 0);
 //             }
 
-//             if($("#option_notifications_desktop_buzz")[0].checked === true){
+//             if($("#option_notifications_desktop_buzz")[0].checked){
 //                 displayNotification(username + " has buzzed you!", "", "avatars/base-spy.png", "buzz");
 //             }
 //         }
@@ -178,7 +178,7 @@ socket.on("interactUser", function (data) {
 // socket.on("lick", function (username) {
 //     if(isPlayerMuted(username) === false){    
 //         if(!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $("#option_notifications_buzz_slap_timeout")[0].value){
-//             if($("#option_notifications_sound_buzz")[0].checked === true){
+//             if($("#option_notifications_sound_buzz")[0].checked){
 //                 playSound("lick");
 
 //                 var data = { 

@@ -202,7 +202,7 @@ router.get("/:id/:comment_id/:reply_id/edit", middleware.checkForumThreadComment
             console.log("ERROR: " + err);
         }
         else {
-            if (foundReply.disabled === true) {
+            if (foundReply.disabled) {
                 req.flash("error", "You cannot edit a deleted reply.");
                 res.redirect("back");
             }
@@ -229,7 +229,7 @@ router.put("/:id/:comment_id/:reply_id", middleware.checkForumThreadCommentReply
         if (err) {
             res.redirect("/forum");
         } else {
-            if (foundReply.disabled === true) {
+            if (foundReply.disabled) {
                 req.flash("error", "You cannot edit a deleted reply.");
                 res.redirect("back");
             }
