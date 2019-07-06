@@ -77,7 +77,7 @@ function sendWarning() {
 }
 
 function saveGameToDb(roomToSave) {
-    if (roomToSave.gameStarted && roomToSave.finished !== true) {
+    if (roomToSave.gameStarted && !roomToSave.finished) {
         if (roomToSave.savedGameRecordId === undefined) {
             savedGameObj.create({ room: JSON.stringify(roomToSave) }, function (err, savedGame) {
                 if (err) {
@@ -535,8 +535,8 @@ var actionsObj = {
             help: "/guessmerlin <playername>: Solely for fun, submit your guess of who you think is Merlin.",
             run: function (data, senderSocket) {
                 // Check the guesser is at a table
-                if (senderSocket.request.user.inRoomId === undefined
-						|| rooms[senderSocket.request.user.inRoomId].gameStarted !== true
+                if (!senderSocket.request.user.inRoomId
+						|| !rooms[senderSocket.request.user.inRoomId].gameStarted
 						|| rooms[senderSocket.request.user.inRoomId].phase === "finished") {
                     messageToClient = "You must be at a running table to guess Merlin.";
                 }

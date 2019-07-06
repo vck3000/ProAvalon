@@ -186,7 +186,7 @@ Room.prototype.playerLeaveRoom = function (socket) {
     }
 
     // Destroy room if there's no one in it anymore
-    if (this.allSockets.length === 0 && this.frozen !== true) {
+    if (this.allSockets.length === 0 && !this.frozen) {
         console.log("Room: " + this.roomId + " is empty, destroying...");
         this.destroyRoom = true;
     }

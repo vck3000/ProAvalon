@@ -114,7 +114,7 @@ function draw() {
         if (gameStarted) {
             drawExitedPlayers(gameData.gamePlayersInRoom);
 
-            if (gameData.finished !== true) {
+            if (!gameData.finished) {
                 $("#missionsBox").removeClass("invisible");
 
                 //give it the default status message

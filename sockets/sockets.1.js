@@ -84,8 +84,8 @@ function sendWarning() {
 }
 
 function saveGameToDb(roomToSave) {
-    if (roomToSave.gameStarted && roomToSave.finished !== true) {
-        if (roomToSave.savedGameRecordId === undefined) {
+    if (roomToSave.gameStarted && !roomToSave.finished) {
+        if (!roomToSave.savedGameRecordId) {
             savedGameObj.create({ room: JSON.stringify(roomToSave) }, function (err, savedGame) {
                 if (err) {
                     console.log(err);
