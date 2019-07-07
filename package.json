@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
-    "lint": "eslint . --fix --ignore-pattern '/assets/libraries/*'"
+    "lint": "eslint . --fix --ignore-pattern '/assets/*'",
+    "precommit": "npm run lint"
   },
   "author": "Victor Kuo",
   "license": "ISC",
