@@ -6,7 +6,7 @@ $(".chat-message-input").on("keydown", function (e) {
     // console.log(e.which);   
 
     //if person presses the 'tab' button.
-    if (e.which == 9) {
+    if (e.which === 9) {
         e.preventDefault();
         // do your code
 

@@ -286,11 +286,6 @@ router.get("/lobby", middleware.isLoggedIn, checkIpBan, checkCurrentBan, async f
     });
 });
     
-    
-    
-    
-    
-    
 //logout 
 router.get("/logout", function (req, res) {
     //doesn't work since we destroy the session right after...
@@ -311,6 +306,7 @@ router.get("/rules", function (req, res) {
 router.get("/testmodal", function (req, res) {
     res.render("testmodal", { currentUser: req.user });
 });
+
 router.get("/testmodal2", function (req, res) {
     res.render("testmodal2", { currentUser: req.user });
 });

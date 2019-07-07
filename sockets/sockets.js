@@ -162,8 +162,6 @@ var actionsObj = {
             command: "buzz",
             help: "/buzz <playername>: Buzz a player.",
             run: function (data, senderSocket) {
-                var args = data.args;
-
                 data.args[2] = data.args[1];
                 data.args[1] = "buzz";
 
@@ -175,8 +173,6 @@ var actionsObj = {
             command: "slap",
             help: "/slap <playername>: Slap a player for fun.",
             run: function (data, senderSocket) {
-                var args = data.args;
-
                 data.args[2] = data.args[1];
                 data.args[1] = "slap";
 
@@ -188,8 +184,6 @@ var actionsObj = {
             command: "lick",
             help: "/lick <playername>: Lick a player.",
             run: function (data, senderSocket) {
-                var args = data.args;
-
                 data.args[2] = data.args[1];
                 data.args[1] = "lick";
 
@@ -200,8 +194,6 @@ var actionsObj = {
             command: "poke",
             help: "/poke <playername>: poke a player.",
             run: function (data, senderSocket) {
-                var args = data.args;
-
                 data.args[2] = data.args[1];
                 data.args[1] = "poke";
 
@@ -212,8 +204,6 @@ var actionsObj = {
             command: "punch",
             help: "/punch <playername>: punch a player.",
             run: function (data, senderSocket) {
-                var args = data.args;
-
                 data.args[2] = data.args[1];
                 data.args[1] = "punch";
 
@@ -247,7 +237,6 @@ var actionsObj = {
                         verbPast: verbPast
                     };
                     slapSocket.emit("interactUser", dataToSend);
-
 
                     //if the sendersocket is in a game, then send a message to everyone in the game.
                     var slappedInGame = false;
