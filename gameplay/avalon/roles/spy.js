@@ -1,14 +1,12 @@
+import Role from "./role";
 
-function Spy(thisRoom_) {
-    this.thisRoom = thisRoom_;
+export default class Spy extends Role {
+    constructor(thisRoom) {
+        super(thisRoom, "Spy", "Spy", "A standard Spy member.");
+    }
 
-    this.role = "Spy";
-    this.alliance = "Spy";
-
-    this.description = "A standard Spy member.";
-
-    // Spy sees all spies except oberon
-    this.see = function () {
+    // Spy sees all spies except Oberon
+    see() {
         if (this.thisRoom.gameStarted) {
             const obj = {};
             const array = [];
@@ -27,12 +25,5 @@ function Spy(thisRoom_) {
             obj.spies = array;
             return obj;
         }
-    };
-
-    this.checkSpecialMove = function () {
-
-    };
+    }
 }
-
-
-module.exports = Spy;

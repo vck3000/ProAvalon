@@ -1,13 +1,11 @@
-function Isolde(thisRoom_) {
-    this.thisRoom = thisRoom_;
+import Role from "./role";
 
-    this.role = "Isolde";
-    this.alliance = "Resistance";
+export default class Isolde extends Role {
+    constructor(thisRoom) {
+        super(thisRoom, "Isolde", "Resistance", "Tristan and Isolde both see each other.", 50);
+    }
 
-    this.description = "Tristan and Isolde both see each other.";
-    this.orderPriorityInOptions = 50;
-
-    this.see = function () {
+    see() {
         const roleTag = {};
 
         for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
@@ -18,8 +16,5 @@ function Isolde(thisRoom_) {
         }
 
         return roleTag;
-    };
+    }
 }
-
-
-module.exports = Isolde;

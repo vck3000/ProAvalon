@@ -14,8 +14,8 @@ function index() {
             // If it is a javascript file, add it
             if (file.includes(".js")) {
                 name = file.replace(".js", "");
-
-                roleImports[name] = require(`./roles/${file}`);
+                import * as temp from `./roles/${file}`;
+                roleImports[name] = temp;
             }
         });
 

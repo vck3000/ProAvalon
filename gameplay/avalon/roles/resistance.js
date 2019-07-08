@@ -1,20 +1,11 @@
+import Role from "./role";
 
-function Resistance(thisRoom_) {
-    this.thisRoom = thisRoom_;
+export default class Resistance extends Role {
+    constructor(thisRoom) {
+        super(thisRoom, "Resistance", "Resistance", "A standard Resistance member.");
+    }
 
-    this.role = "Resistance";
-    this.alliance = "Resistance";
-
-    this.description = "A standard Resistance member.";
-
-    this.see = function () {
+    see() {
         return undefined;
-    };
-
-    this.checkSpecialMove = function () {
-
-    };
+    }
 }
-
-
-module.exports = Resistance;

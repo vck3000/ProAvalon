@@ -123,7 +123,7 @@ savedGameObj.find({}).exec((err, foundSaveGameArray) => {
 });
 
 const lastWhisperObj = {};
-let actionsObj = {
+const actionsObj = {
     userCommands: {
         help: {
             command: "help",
@@ -587,7 +587,7 @@ let actionsObj = {
                         classStr: "server-text",
                     };
                 }
-                let botName = args[1];
+                const botName = args[1];
                 const botAPI = enabledBots.find(bot => bot.name.toLowerCase() === botName.toLowerCase());
                 if (!botAPI && botName !== "SimpleBot") {
                     return {
@@ -607,7 +607,7 @@ let actionsObj = {
 
                 const addedBots = [];
                 for (let i = 0; i < numBots; i++) {
-                    let botName = `${botAPI.name}#${Math.floor(Math.random() * 100)}`;
+                    const botName = `${botAPI.name}#${Math.floor(Math.random() * 100)}`;
 
                     // Avoid a username clash!
                     const currentUsernames = currentRoom.socketsOfPlayers.map(sock => sock.request.user.username);
@@ -1820,11 +1820,11 @@ function disconnect(data) {
     // send out the new updated current player list
     this.in("allChat").emit("update-current-players-list", getPlayerUsernamesFromAllSockets());
     // tell all clients that the user has left
-    let data = {
+    let toSend = {
         message: `${this.request.user.username} has left the lobby.`,
         classStr: "server-text-teal",
     };
-    sendToAllChat(ioGlobal, data);
+    sendToAllChat(ioGlobal, toSend);
 
     // Note, by default when this disconnects, it leaves from all rooms.
     // If user disconnected from within a room, the leave room function will send a message to other players in room.
@@ -1835,12 +1835,12 @@ function disconnect(data) {
     playerLeaveRoomCheckDestroy(this);
 
     // if they are in a room, say they're leaving the room.
-    let data = {
+    toSend = {
         message: `${username} has left the room.`,
         classStr: "server-text-teal",
         dateCreated: new Date(),
     };
-    sendToRoomChat(ioGlobal, inRoomId, data);
+    sendToRoomChat(ioGlobal, inRoomId, toSend);
 }
 
 function messageCommand(data) {

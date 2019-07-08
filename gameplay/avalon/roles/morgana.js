@@ -1,19 +1,14 @@
+import Role from "./role";
 
-
-function Morgana(thisRoom_) {
-    this.thisRoom = thisRoom_;
-
-    this.role = "Morgana";
-    this.alliance = "Spy";
-
-    this.description = "A spy who looks like Merlin to Percival.";
-    this.orderPriorityInOptions = 70;
+export default class Morgana extends Role {
+    constructor(thisRoom) {
+        super(thisRoom, "Morgana", "Spy", "A spy who looks like Merlin to Percival.", 70);
+    }
 
     // Morgana sees all spies except oberon
-    this.see = function () {
+    see() {
         if (this.thisRoom.gameStarted) {
-            const obj = {};
-            const array = [];
+            const obj = { spies: [] };
 
             for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
                 if (this.thisRoom.playersInGame[i].alliance === "Spy") {
@@ -21,20 +16,12 @@ function Morgana(thisRoom_) {
                         // don't add oberon
                     } else {
                         // add the spy
-                        array.push(this.thisRoom.playersInGame[i].username);
+                        obj.spies.push(this.thisRoom.playersInGame[i].username);
                     }
                 }
             }
 
-            obj.spies = array;
             return obj;
         }
-    };
-
-    this.checkSpecialMove = function () {
-
-    };
+    }
 }
-
-
-module.exports = Morgana;

@@ -1,13 +1,11 @@
-function Percival(thisRoom_) {
-    this.thisRoom = thisRoom_;
+import Role from "./role";
 
-    this.role = "Percival";
-    this.alliance = "Resistance";
+export default class Percival extends Role {
+    constructor(thisRoom) {
+        super(thisRoom, "Percival", "Resistance", "Knows the identity of Merlin and Morgana.", 80);
+    }
 
-    this.description = "Knows the identity of Merlin and Morgana.";
-    this.orderPriorityInOptions = 80;
-
-    this.test = function () {
+    test() {
     // The following lines running successfully shows that each role file can access
     // the variables and functions from the game room!
         console.log("HII from Percival. I will send messages to players through socket.emit()");
@@ -17,10 +15,10 @@ function Percival(thisRoom_) {
         };
 
         this.thisRoom.io.in(this.thisRoom.roomId).emit("roomChatToClient", data);
-    };
+    }
 
     // Percival sees Merlin and Morgana
-    this.see = function () {
+    see() {
         const roleTag = {};
 
         for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
@@ -31,8 +29,5 @@ function Percival(thisRoom_) {
         }
 
         return roleTag;
-    };
+    }
 }
-
-
-module.exports = Percival;

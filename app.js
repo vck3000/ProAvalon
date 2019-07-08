@@ -2,6 +2,24 @@
 // INITIALISATION
 //= ====================================
 
+const passport = require("passport");
+const passportSocketIo = require("passport.socketio");
+const express = require("express");
+
+const app = express();
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const methodOverride = require("method-override");
+const LocalStrategy = require("passport-local");
+const cookieParser = require("cookie-parser");
+const flash = require("connect-flash");
+
+const User = require("./models/user");
+const profileRoutes = require("./routes/profile");
+const forumRoutes = require("./routes/forum");
+const indexRoutes = require("./routes/index");
+const modAction = require("./models/modAction");
+
 app.use(express.static("assets", { maxAge: 1800000 })); // expires in 30 minutes.
 
 const staticify = require("staticify")("assets");
@@ -153,24 +171,6 @@ const server = app.listen(port, () => {
 const socket = require("socket.io");
 
 const io = socket(server);
-let passportSocketIo = require("passport.socketio");
-let express = require("express");
-
-let app = express();
-let mongoose = require("mongoose");
-let bodyParser = require("body-parser");
-let methodOverride = require("method-override");
-let passport = require("passport");
-let LocalStrategy = require("passport-local");
-let passportSocketIo = require("passport.socketio");
-const cookieParser = require("cookie-parser");
-let flash = require("connect-flash");
-let User = require("./models/user");
-const profileRoutes = require("./routes/profile");
-const forumRoutes = require("./routes/forum");
-const indexRoutes = require("./routes/index");
-const modAction = require("./models/modAction");
-
 require("./sockets/sockets")(io);
 
 io.use(passportSocketIo.authorize({

@@ -1,34 +1,23 @@
-function Oberon(thisRoom_) {
-    this.thisRoom = thisRoom_;
+import Role from "./role";
 
-    this.role = "Oberon";
-    this.alliance = "Spy";
-
-    this.description = "Oberon and Spies do not know each other.";
-    this.orderPriorityInOptions = 50;
+export default class Oberon extends Role {
+    constructor(thisRoom) {
+        super(thisRoom, "Oberon", "Spy", "Oberon and Spies do not know each other.", 50);
+    }
 
     // Oberon only sees him/herself
-    this.see = function () {
-        if (this.thisRoom.gameStarted) {
-            const obj = {};
-            const array = [];
+    see() {
+        if (!this.thisRoom.gameStarted) return;
 
-            for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
-                if (this.thisRoom.playersInGame[i].role === "Oberon") {
-                    array.push(this.thisRoom.playersInGame[i].username);
-                    break;
-                }
+        const obj = { spies: [] };
+
+        for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
+            if (this.thisRoom.playersInGame[i].role === "Oberon") {
+                obj.spies.push(this.thisRoom.playersInGame[i].username);
+                break;
             }
-
-            obj.spies = array;
-            return obj;
         }
-    };
 
-    this.checkSpecialMove = function () {
-
-    };
+        return obj;
+    }
 }
-
-
-module.exports = Oberon;
