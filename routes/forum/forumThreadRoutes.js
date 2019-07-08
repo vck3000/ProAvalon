@@ -1,25 +1,26 @@
-var express = require("express");
-var router = express.Router();
-var forumThread = require("../../models/forumThread");
-var forumThreadComment = require("../../models/forumThreadComment");
-var forumThreadCommentReply = require("../../models/forumThreadCommentReply");
-var lastIds = require("../../models/lastIds");
-var middleware = require("../../middleware");
-var sanitizeHtml = require("sanitize-html");
-var getTimeDiffInString = require("../../assets/myLibraries/getTimeDiffInString");
-var User 			= require("../../models/user");
+const express = require("express");
 
-var mongoose = require("mongoose");
+const router = express.Router();
+const sanitizeHtml = require("sanitize-html");
+const mongoose = require("mongoose");
+const rateLimit = require("express-rate-limit");
+const forumThread = require("../../models/forumThread");
+const forumThreadComment = require("../../models/forumThreadComment");
+const forumThreadCommentReply = require("../../models/forumThreadCommentReply");
+const lastIds = require("../../models/lastIds");
+const middleware = require("../../middleware");
+const getTimeDiffInString = require("../../assets/myLibraries/getTimeDiffInString");
+const User 			= require("../../models/user");
 
-var modsArray = require("../../modsadmins/mods");
-var adminsArray = require("../../modsadmins/admins");
+
+const modsArray = require("../../modsadmins/mods");
+const adminsArray = require("../../modsadmins/admins");
 
 // Prevent too many requests
-const rateLimit = require("express-rate-limit");
 
 
-var sanitizeHtmlAllowedTagsForumThread = ["img", "iframe", "h1", "h2", "u", "span", "br"];
-var sanitizeHtmlAllowedAttributesForumThread = {
+const sanitizeHtmlAllowedTagsForumThread = ["img", "iframe", "h1", "h2", "u", "span", "br"];
+const sanitizeHtmlAllowedAttributesForumThread = {
     a: ["href", "name", "target"],
     img: ["src", "style"],
     iframe: ["src", "style"],
@@ -29,44 +30,43 @@ var sanitizeHtmlAllowedAttributesForumThread = {
     p: ["style"],
 
     span: ["style"],
-    b: ["style"]
+    b: ["style"],
 };
 
 
-/**********************************************************/
-//Show the forumThread
-/**********************************************************/
-router.get("/show/:id", middleware.isLoggedIn, function (req, res) {
+/** ******************************************************* */
+// Show the forumThread
+/** ******************************************************* */
+router.get("/show/:id", middleware.isLoggedIn, (req, res) => {
     forumThread.findById(req.params.id)
     // .populate("comments")
     // .populate({ path: "comments", populate: { path: "replies" } })
-        .populate({ path: "comments", populate: { path: "replies"}})
-        .exec( async function (err, foundForumThread) {
+        .populate({ path: "comments", populate: { path: "replies" } })
+        .exec(async (err, foundForumThread) => {
             if (err) {
                 // console.log(err);
                 console.log("Thread not found, redirecting");
                 res.redirect("/forum");
-            }
-            else {
+            } else {
                 if (foundForumThread === null) {
                     console.log("Thread not found, redirecting");
                     res.redirect("/forum");
                     return;
                 }
 
-                var mod = false;
-                //if they're mod then allow them see disabled posts.
-                if(modsArray.indexOf(req.user.username.toLowerCase()) !== -1){
+                let mod = false;
+                // if they're mod then allow them see disabled posts.
+                if (modsArray.indexOf(req.user.username.toLowerCase()) !== -1) {
                     mod = true;
                 }
 
                 // remove any replies and comments that are disabled if not a moderator is viewing
-                // if(mod === false){
+                // if (mod === false) {
                 // 	console.log(foundForumThread.comments);
 
-                // 	for(var i = foundForumThread.comments.length - 1; i >= 0; i--){
+                // 	for (var i = foundForumThread.comments.length - 1; i >= 0; i--) {
                 // 		// console.log(foundForumThread.comments[i].disabled);
-                // 		if(foundForumThread.comments[i].disabled && foundForumThread.comments[i].disabled){
+                // 		if (foundForumThread.comments[i].disabled && foundForumThread.comments[i].disabled) {
                 // 			console.log("Remove a comment");
                 // 			foundForumThread.comments[i].oldText = "";
                 // 		}
@@ -74,17 +74,16 @@ router.get("/show/:id", middleware.isLoggedIn, function (req, res) {
                 // }
 
 
-
-                //update the time since string for forumThread
-                var timeSince = getTimeDiffInString(foundForumThread.timeLastEdit);
+                // update the time since string for forumThread
+                const timeSince = getTimeDiffInString(foundForumThread.timeLastEdit);
                 foundForumThread.timeSinceString = timeSince;
 
-                //update the time since string for each comment
-                foundForumThread.comments.forEach(function (comment) {
+                // update the time since string for each comment
+                foundForumThread.comments.forEach((comment) => {
                     comment.timeSinceString = getTimeDiffInString(comment.timeLastEdit);
 
-                    //update the time since string for each reply to a comment
-                    comment.replies.forEach(function (reply) {
+                    // update the time since string for each reply to a comment
+                    comment.replies.forEach((reply) => {
                         reply.timeSinceString = getTimeDiffInString(reply.timeLastEdit);
                         // console.log("client: ");
                         // console.log(reply.clients);
@@ -93,13 +92,13 @@ router.get("/show/:id", middleware.isLoggedIn, function (req, res) {
                     // console.log(comment.replies);
                 });
 
-                var userIdString = req.user._id.toString().replace(" ", "");
+                const userIdString = req.user._id.toString().replace(" ", "");
 
-                var idsOfLikedPosts = [];
-                //have they liked the main post already?
-                if(foundForumThread.whoLikedId){
-                    for(var i = 0; i < foundForumThread.whoLikedId.length; i++){
-                        if(foundForumThread.whoLikedId[i] && foundForumThread.whoLikedId[i].toString().replace(" ", "") === userIdString){
+                const idsOfLikedPosts = [];
+                // have they liked the main post already?
+                if (foundForumThread.whoLikedId) {
+                    for (let i = 0; i < foundForumThread.whoLikedId.length; i++) {
+                        if (foundForumThread.whoLikedId[i] && foundForumThread.whoLikedId[i].toString().replace(" ", "") === userIdString) {
                             idsOfLikedPosts[0] = foundForumThread._id;
                             console.log("added");
                             break;
@@ -111,22 +110,22 @@ router.get("/show/:id", middleware.isLoggedIn, function (req, res) {
                 // console.log(typeof(foundForumThread.whoLikedId[0].toString()));
                 // console.log(typeof(userIdString));
                 // console.log(foundForumThread.whoLikedId[0].toString === userIdString);
-			
 
-                foundForumThread.comments.forEach(function (comment) {
-                    if(comment.whoLikedId){
-                        for(var i = 0; i < comment.whoLikedId.length; i++){
-                            if(comment.whoLikedId[i] && comment.whoLikedId[i].toString().replace(" ", "") === userIdString){
-                                idsOfLikedPosts.push(comment._id);					
+
+                foundForumThread.comments.forEach((comment) => {
+                    if (comment.whoLikedId) {
+                        for (let i = 0; i < comment.whoLikedId.length; i++) {
+                            if (comment.whoLikedId[i] && comment.whoLikedId[i].toString().replace(" ", "") === userIdString) {
+                                idsOfLikedPosts.push(comment._id);
                             }
                         }
                     }
 
-                    comment.replies.forEach(function (reply) {
-                        if(reply.whoLikedId){
-                            for(var i = 0; i < reply.whoLikedId.length; i++){
-                                if(reply.whoLikedId[i] && reply.whoLikedId[i].toString().replace(" ", "") === userIdString){
-                                    idsOfLikedPosts.push(reply._id);					
+                    comment.replies.forEach((reply) => {
+                        if (reply.whoLikedId) {
+                            for (let i = 0; i < reply.whoLikedId.length; i++) {
+                                if (reply.whoLikedId[i] && reply.whoLikedId[i].toString().replace(" ", "") === userIdString) {
+                                    idsOfLikedPosts.push(reply._id);
                                 }
                             }
                         }
@@ -146,16 +145,16 @@ router.get("/show/:id", middleware.isLoggedIn, function (req, res) {
                 // console.log(idsOfLikedPosts);
 
 
-                var userNotifications = [];
+                let userNotifications = [];
 
-                await User.findOne({username: req.user.username}).populate("notifications").exec(function(err, foundUser){
-                    if(foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined){
+                await User.findOne({ username: req.user.username }).populate("notifications").exec((err, foundUser) => {
+                    if (foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined) {
                         userNotifications = foundUser.notifications;
                         // console.log(foundUser.notifications);
                     }
 
-                    var isMod = false;
-                    if(modsArray.indexOf(req.user.username.toLowerCase()) !== -1){
+                    let isMod = false;
+                    if (modsArray.indexOf(req.user.username.toLowerCase()) !== -1) {
                         isMod = true;
                     }
 
@@ -163,62 +162,60 @@ router.get("/show/:id", middleware.isLoggedIn, function (req, res) {
                     // console.log(foundForumThread.disabled);
                     // console.log(isMod);
 
-                    //if forumthread.disabled is true, and also the person is not a mod, then dont show
-                    if(foundForumThread.disabled && isMod === false){
+                    // if forumthread.disabled is true, and also the person is not a mod, then dont show
+                    if (foundForumThread.disabled && isMod === false) {
                         req.flash("error", "Thread is deleted.");
                         res.redirect("/forum/page/1");
-                    }
-                    else{
-
+                    } else {
                         res.render("forum/show", {
-                            userNotifications: userNotifications,
-                            forumThread: foundForumThread, 
+                            userNotifications,
+                            forumThread: foundForumThread,
                             currentUser: req.user,
-                            idsOfLikedPosts: idsOfLikedPosts,
-                            mod: isMod
-                        });		
+                            idsOfLikedPosts,
+                            mod: isMod,
+                        });
 
-                        //Below is seen/unseen code
-	
-                        //if there is no seen users array, create it and add the user
-                        if(!foundForumThread.seenUsers){
+                        // Below is seen/unseen code
+
+                        // if there is no seen users array, create it and add the user
+                        if (!foundForumThread.seenUsers) {
                             foundForumThread.seenUsers = [];
                         }
-                        //if the viewing user isnt on the list, then add them.
-                        if(foundForumThread.seenUsers.indexOf(req.user.username.toLowerCase()) === -1){
+                        // if the viewing user isnt on the list, then add them.
+                        if (foundForumThread.seenUsers.indexOf(req.user.username.toLowerCase()) === -1) {
                             foundForumThread.seenUsers.push(req.user.username.toLowerCase());
                         }
-	
+
                         // for every comment, add the user to seen users
-                        foundForumThread.comments.forEach(async function (comm){
-                            var changesMade = false;
-						
-                            //see all the comments
-                            if(!comm.seenUsers){comm.seenUsers = [];}
-                            //if the user isnt on the list, add them. otherwise no need.
-                            if(comm.seenUsers.indexOf(req.user.username.toLowerCase()) === -1){
+                        foundForumThread.comments.forEach(async (comm) => {
+                            let changesMade = false;
+
+                            // see all the comments
+                            if (!comm.seenUsers) { comm.seenUsers = []; }
+                            // if the user isnt on the list, add them. otherwise no need.
+                            if (comm.seenUsers.indexOf(req.user.username.toLowerCase()) === -1) {
                                 comm.seenUsers.push(req.user.username.toLowerCase());
                                 changesMade = true;
                             }
-                            //see all the replies
-                            comm.replies.forEach(async function (rep){
-                                if(!rep.seenUsers){rep.seenUsers = [];}
-                                //if the user isnt on the list, add them. otherwise no need.
-                                if(rep.seenUsers.indexOf(req.user.username.toLowerCase()) === -1){
+                            // see all the replies
+                            comm.replies.forEach(async (rep) => {
+                                if (!rep.seenUsers) { rep.seenUsers = []; }
+                                // if the user isnt on the list, add them. otherwise no need.
+                                if (rep.seenUsers.indexOf(req.user.username.toLowerCase()) === -1) {
                                     rep.seenUsers.push(req.user.username.toLowerCase());
                                     changesMade = true;
                                     await rep.save();
                                 }
                             });
-	
-                            //only need to comm.save() if there was a change.
-                            //otherwise save some resources and skip saving.
-                            if(changesMade){
+
+                            // only need to comm.save() if there was a change.
+                            // otherwise save some resources and skip saving.
+                            if (changesMade) {
                                 comm.markModified("replies");
                                 await comm.save();
                             }
                         });
-                        //there is always at least one change, so just save.
+                        // there is always at least one change, so just save.
                         foundForumThread.markModified("comments");
                         foundForumThread.save();
                     }
@@ -227,70 +224,64 @@ router.get("/show/:id", middleware.isLoggedIn, function (req, res) {
         });
 });
 
-/**********************************************************/
-//Show the create new forumThread page
-/**********************************************************/
-router.get("/new", middleware.isLoggedIn, function (req, res) {
+/** ******************************************************* */
+// Show the create new forumThread page
+/** ******************************************************* */
+router.get("/new", middleware.isLoggedIn, (req, res) => {
     // console.log("NEW STUFF ");
-    res.render("forum/new", { currentUser: req.user, userNotifications: []});
+    res.render("forum/new", { currentUser: req.user, userNotifications: [] });
 });
 
 
-//if this is the first.
-lastIds.findOne({}).exec(async function (err, returnedLastId) {
-    if(!returnedLastId){
-        await lastIds.create({number: 1});
+// if this is the first.
+lastIds.findOne({}).exec(async (err, returnedLastId) => {
+    if (!returnedLastId) {
+        await lastIds.create({ number: 1 });
     }
 });
 
 
-const newForumLimiter = process.env.MY_PLATFORM === "local" ?
-    rateLimit({
-        max: 0 // Disable if we are local
+const newForumLimiter = process.env.MY_PLATFORM === "local"
+    ? rateLimit({
+        max: 0, // Disable if we are local
     })
-    :
-    rateLimit({
+    : rateLimit({
         windowMs: 12 * 60 * 60 * 1000, // 12 hours
-        max: 3
+        max: 3,
     });
 
-/**********************************************************/
-//Create a new forumThread
-/**********************************************************/
-router.post("/", newForumLimiter, middleware.isLoggedIn, async function (req, res) {
+/** ******************************************************* */
+// Create a new forumThread
+/** ******************************************************* */
+router.post("/", newForumLimiter, middleware.isLoggedIn, async (req, res) => {
     const util = require("util");
 
-    //get the category based on the user selection
-    var category = "";
+    // get the category based on the user selection
+    let category = "";
     if (req.body.avalon) {
         category = "avalon";
-    }
-    else if (req.body.offTopic) {
+    } else if (req.body.offTopic) {
         category = "offTopic";
-    }
-    else if (req.body.suggestion) {
+    } else if (req.body.suggestion) {
         category = "suggestion";
-    }
-    else if (req.body.bug) {
+    } else if (req.body.bug) {
         category = "bug";
-    }
-    else {
+    } else {
         category = "offTopic";
     }
-    
-    //grab the next number id from db
-    var number = 0;
-    await lastIds.findOne({}).exec(async function (err, returnedLastId) {
 
-        if(!returnedLastId){
-            await lastIds.create({number: 1});
+    // grab the next number id from db
+    let number = 0;
+    await lastIds.findOne({}).exec(async (err, returnedLastId) => {
+        if (!returnedLastId) {
+            await lastIds.create({ number: 1 });
         }
 
         number = returnedLastId.number;
         returnedLastId.number++;
         await returnedLastId.save();
 
-        var newForumThread = {
+        const newForumThread = {
             title: sanitizeHtml(req.body.title),
             description: sanitizeHtml(req.body.description, {
                 allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
@@ -305,20 +296,19 @@ router.post("/", newForumLimiter, middleware.isLoggedIn, async function (req, re
             whoLastEdit: req.user.username,
             author: {
                 id: req.user._id,
-                username: req.user.username
+                username: req.user.username,
             },
             comments: [],
-            category: category,
-            numberId: number
+            category,
+            numberId: number,
         };
 
-        //create a new campground and save to DB
-        forumThread.create(newForumThread, function (err, newlyCreated) {
+        // create a new campground and save to DB
+        forumThread.create(newForumThread, (err, newlyCreated) => {
             if (err) {
                 console.log(err);
-            }
-            else {
-                //redirect back to campgrounds page
+            } else {
+                // redirect back to campgrounds page
                 res.redirect("/forum");
             }
         });
@@ -326,104 +316,93 @@ router.post("/", newForumLimiter, middleware.isLoggedIn, async function (req, re
 });
 
 
-
-
-
-
-/**********************************************************/
-//Show the edit forumThread route
-/**********************************************************/
-router.get("/:id/edit", middleware.checkForumThreadOwnership, function (req, res) {
-    forumThread.findById(req.params.id, async function (err, foundForumThread) {
-        if(foundForumThread.disabled){
+/** ******************************************************* */
+// Show the edit forumThread route
+/** ******************************************************* */
+router.get("/:id/edit", middleware.checkForumThreadOwnership, (req, res) => {
+    forumThread.findById(req.params.id, async (err, foundForumThread) => {
+        if (foundForumThread.disabled) {
             req.flash("error", "You cannot edit a deleted forum thread.");
             res.redirect("back");
-        }
-        else{
-            var userNotifications = [];
+        } else {
+            let userNotifications = [];
 
-            await User.findOne({username: req.user.username}).populate("notifications").exec(function(err, foundUser){
-                if(foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined){
+            await User.findOne({ username: req.user.username }).populate("notifications").exec((err, foundUser) => {
+                if (foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined) {
                     userNotifications = foundUser.notifications;
                     console.log(foundUser.notifications);
                 }
-				
-                res.render("forum/edit", { forumThread: foundForumThread, currentUser: req.user, userNotifications: userNotifications });
-	
+
+                res.render("forum/edit", { forumThread: foundForumThread, currentUser: req.user, userNotifications });
             });
         }
     });
 });
 
-/**********************************************************/
-//Update the forumThread route
-/**********************************************************/
-router.put("/:id", middleware.checkForumThreadOwnership, function (req, res) {
-    //find and update the correct campground
+/** ******************************************************* */
+// Update the forumThread route
+/** ******************************************************* */
+router.put("/:id", middleware.checkForumThreadOwnership, (req, res) => {
+    // find and update the correct campground
 
-    var category = "";
-    var categoryChange = false;
+    let category = "";
+    let categoryChange = false;
     if (req.body.avalon) {
         category = "avalon";
         categoryChange = true;
-    }
-    else if (req.body.offTopic) {
+    } else if (req.body.offTopic) {
         category = "offTopic";
         categoryChange = true;
-    }
-    else if (req.body.suggestion) {
+    } else if (req.body.suggestion) {
         category = "suggestion";
         categoryChange = true;
-    }
-    else if (req.body.bug) {
+    } else if (req.body.bug) {
         category = "bug";
         categoryChange = true;
     }
 
-    //Even though EJS <%= %> doesn't allow for injection, it still displays and in case it fails,
-    //we should sanitize the title anyway.
+    // Even though EJS <%= %> doesn't allow for injection, it still displays and in case it fails,
+    // we should sanitize the title anyway.
 
-    forumThread.findById(req.params.id, function (err, foundForumThread) {
+    forumThread.findById(req.params.id, (err, foundForumThread) => {
         if (err) {
             req.flash("error", "There was an error finding your forum thread.");
             res.redirect("/forum");
-        } 
-        else if(foundForumThread.disabled){
+        } else if (foundForumThread.disabled) {
             req.flash("error", "You cannot edit a deleted forum thread.");
             res.redirect("back");
-        }
-        else {
+        } else {
             if (categoryChange) {
-                //update the category
+                // update the category
                 foundForumThread.category = category;
             }
-		
-            //add the required changes for an edit
+
+            // add the required changes for an edit
             foundForumThread.edited = true;
             foundForumThread.timeLastEdit = new Date();
             foundForumThread.whoLastEdit = req.user.username;
-			
-            //sanitize the description once again
+
+            // sanitize the description once again
             foundForumThread.description = sanitizeHtml(req.body.forumThread.description, {
                 allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
                 allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
             });
 
             foundForumThread.title = sanitizeHtml(req.body.forumThread.title);
-			
+
             foundForumThread.save();
 
-            res.redirect("/forum/show/" + foundForumThread.id);
+            res.redirect(`/forum/show/${foundForumThread.id}`);
         }
     });
 });
 
 
-/**********************************************************/
-//Destroy the forumThread route
-/**********************************************************/
-router.delete("/deleteForumThread/:id", middleware.checkForumThreadOwnership, function (req, res) {
-    forumThread.findById(req.params.id, function (err, foundForumThread) {
+/** ******************************************************* */
+// Destroy the forumThread route
+/** ******************************************************* */
+router.delete("/deleteForumThread/:id", middleware.checkForumThreadOwnership, (req, res) => {
+    forumThread.findById(req.params.id, (err, foundForumThread) => {
         if (err) {
             res.redirect("/forum");
         } else {

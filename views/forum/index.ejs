@@ -15,31 +15,31 @@
         <h1>Forums</h1>
 
 
-        <% if(locals.mod && mod){ %>
+        <% if (locals.mod && mod) { %>
             <button class="btn btn-info" onclick="toggleDeletedPosts()">Mod see deleted posts</button>
         <br>
         <br>
         <% } %>
 
-        <% if(typeof activeCategory !== 'undefined' && activeCategory === "avalon"){ %>
+        <% if (typeof activeCategory !== 'undefined' && activeCategory === "avalon") { %>
             <a type="button" class="btn btn-success active" href="/forum/page/1">Avalon</a>
         <% } else { %>
             <a type="button" class="btn btn-success" href="/forum/page/avalon/1">Avalon</a>
         <% } %>
 
-        <% if(typeof activeCategory !== 'undefined' && activeCategory === "offTopic"){ %>
+        <% if (typeof activeCategory !== 'undefined' && activeCategory === "offTopic") { %>
             <a type="button" class="btn btn-info active" href="/forum/page/1">Off-topic</a>
         <% } else { %>
             <a type="button" class="btn btn-info" href="/forum/page/offTopic/1">Off-topic</a>
         <% } %>
 
-        <% if(typeof activeCategory !== 'undefined' && activeCategory === "suggestion"){ %>
+        <% if (typeof activeCategory !== 'undefined' && activeCategory === "suggestion") { %>
         <a type="button" class="btn btn-warning active" href="/forum/page/1">Suggestions</a>
         <% } else { %>
         <a type="button" class="btn btn-warning" href="/forum/page/suggestion/1">Suggestions</a>
         <% } %>
 
-        <% if(typeof activeCategory !== 'undefined' && activeCategory === "bug"){ %>
+        <% if (typeof activeCategory !== 'undefined' && activeCategory === "bug") { %>
         <a type="button" class="btn btn-danger active" href="/forum/page/1">Bugs</a>
         <% } else { %>
         <a type="button" class="btn btn-danger" href="/forum/page/bug/1">Bugs</a>
@@ -55,7 +55,7 @@
 
     <br>
 
-    <% if(pageNum == 1 && allPinnedThreads.length !== 0) { %> 
+    <% if (pageNum == 1 && allPinnedThreads.length !== 0) { %> 
 
         <div class="panel panel-success">
             <div class="panel-heading">Pinned threads</div>
@@ -65,11 +65,11 @@
                 <div class="container-fluid">
                     <ol class="forumsList">
 
-                        <%allPinnedThreads.forEach(function(forumThread){ %>
+                        <%allPinnedThreads.forEach(function (forumThread) { %>
                             <%/* if the forum thread doesnt have a seen variable, or the viewing user is not on the seen list */ %>
-                            <%if(!forumThread.seenUsers || forumThread.seenUsers.indexOf(currentUser.username.toLowerCase() ) === -1 ){%>
+                            <%if (!forumThread.seenUsers || forumThread.seenUsers.indexOf(currentUser.username.toLowerCase() ) === -1 ) {%>
                                 <li class="post-unseen">
-                            <% } else{ %>
+                            <% } else { %>
                                 <li>
                             <% } %>
                                 <a href="/forum/show/<%=forumThread._id%>">
@@ -94,7 +94,7 @@
                                                 <span><%=forumThread.timeSinceString%> </span>
                                             </div>
                                             <div>
-                                            <% if(forumThread.whoLastEdit) { %>
+                                            <% if (forumThread.whoLastEdit) { %>
                                                 <span><span class="glyphicon glyphicon-edit"></span> <%=forumThread.whoLastEdit%></span>
                                             <% } %>
                                             </div>
@@ -119,14 +119,14 @@
 
             <div class="container-fluid">
                 <ol class="forumsList">
-                    <%allForumThreads.forEach(function(forumThread){ %>
+                    <%allForumThreads.forEach(function (forumThread) { %>
 
                         <% var classesToAdd = "";%>
-                        <%if(!forumThread.seenUsers || forumThread.seenUsers.indexOf(currentUser.username.toLowerCase() ) === -1 ){
+                        <%if (!forumThread.seenUsers || forumThread.seenUsers.indexOf(currentUser.username.toLowerCase() ) === -1 ) {
                             classesToAdd += "post-unseen ";
                          }
 
-                        if(forumThread.disabled && forumThread.disabled){ 
+                        if (forumThread.disabled && forumThread.disabled) { 
                             classesToAdd += "hidden disabled "
                         }%>
                         <li class="<%=classesToAdd%>">
@@ -134,7 +134,7 @@
                                 <div class="bg-<%=bg_converter[forumThread.category]%> discussionContainer">
                                     <div class="discussionTitleBox">
                                         <div class="discussionTitle">
-                                            <% if(forumThread.disabled){ %>
+                                            <% if (forumThread.disabled) { %>
                                                 <span style="color: red;" class="glyphicon glyphicon-ban-circle"></span>
                                             <% } %>
                                             #<%=forumThread.numberId%>: <%=forumThread.title%>
@@ -161,7 +161,7 @@
                                             </span>
                                         </div>
                                         <div>
-                                        <% if(forumThread.whoLastEdit) { %>
+                                        <% if (forumThread.whoLastEdit) { %>
                                             <span><span class="glyphicon glyphicon-edit"></span> <%=forumThread.whoLastEdit%></span>
                                         <% } %>
                                         </div>
@@ -181,18 +181,18 @@
 
     <% var categoryAdd; %>
 
-    <% if(typeof activeCategory !== 'undefined'){ 
+    <% if (typeof activeCategory !== 'undefined') { 
         categoryAdd = "/" + activeCategory;
-     } else{ 
+     } else { 
         categoryAdd = "";
      } %>
     <nav aria-label="Page navigation">
         <ul class="pagination">
             <li>
-            <% if(pageNum-1 == 0) {%>
+            <% if (pageNum-1 == 0) {%>
                 <% var str = "/forum/page" + categoryAdd + "/1"; %>
                 <a href=<%=str%> aria-label="Previous">
-            <% } else{ %>
+            <% } else { %>
                 <% var str = "/forum/page" + categoryAdd + "/" + (pageNum-1); %>
             
                 <a href=<%=str%> aria-label="Previous">
@@ -205,11 +205,11 @@
             <% var HALF_NUM_OF_PAGES_TO_SHOW_ON_PAGER = Math.floor(NUM_OF_PAGES_TO_SHOW_ON_PAGER/2); %>
             
             <% var startingPageNum = pageNum - HALF_NUM_OF_PAGES_TO_SHOW_ON_PAGER; %>
-            <% if(startingPageNum < 1) {startingPageNum = 1;} %>
+            <% if (startingPageNum < 1) {startingPageNum = 1;} %>
             
 
-            <% for(var i = startingPageNum; i < NUM_OF_PAGES_TO_SHOW_ON_PAGER + startingPageNum; i++){ %>
-                <% if(i == pageNum){ %>
+            <% for (var i = startingPageNum; i < NUM_OF_PAGES_TO_SHOW_ON_PAGER + startingPageNum; i++) { %>
+                <% if (i == pageNum) { %>
                     <li class="active">
                 <% } else { %>
                     <li>
@@ -231,9 +231,9 @@
 </div>
     
 
-<% if(locals.mod && mod){ %>
+<% if (locals.mod && mod) { %>
 <script>
-function toggleDeletedPosts(){
+function toggleDeletedPosts() {
 
     $(".forumsList .disabled").toggleClass("unhiddenDisabled");
     $(".forumsList .disabled").toggleClass("hidden");

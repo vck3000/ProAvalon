@@ -1,6 +1,6 @@
-var mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-var replySchema = new mongoose.Schema({
+const replySchema = new mongoose.Schema({
     text: String,
     oldText: String,
 
@@ -9,9 +9,9 @@ var replySchema = new mongoose.Schema({
     author: {
         id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
+            ref: "User",
         },
-        username: String
+        username: String,
     },
 
     timeCreated: Date,
@@ -22,9 +22,7 @@ var replySchema = new mongoose.Schema({
 
     replyingUsername: String,
 
-    seenUsers: [String]
-
-
+    seenUsers: [String],
 
 
 });

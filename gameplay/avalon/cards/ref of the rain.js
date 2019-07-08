@@ -35,37 +35,35 @@ RefOfTheLake.prototype.checkSpecialMove = function (socket, data) {
     // First card starts at the end of M2
 
     // Game finished? Don't run ref if there are 3 successes or fails
-    var numSuccess = 0;
-    var numFail = 0;
-    for (var i = 0; i < this.thisRoom.missionHistory.length; i++) {
+    let numSuccess = 0;
+    let numFail = 0;
+    for (let i = 0; i < this.thisRoom.missionHistory.length; i++) {
         if (this.thisRoom.missionHistory[i] === "succeeded") {
             numSuccess += 1;
-        }
-        else if (this.thisRoom.missionHistory[i] === "failed") {
+        } else if (this.thisRoom.missionHistory[i] === "failed") {
             numFail += 1;
         }
     }
 
     // Run card after the previous mission failed.
-    var lastMissionFailed = false;
+    let lastMissionFailed = false;
     if (this.thisRoom.missionHistory[this.thisRoom.missionHistory.length - 1] === "failed") {
         lastMissionFailed = true;
     }
 
-    if (lastMissionFailed &&
-		this.thisRoom.howWasWon !== "Hammer rejected." &&
-		this.lastMissionUsed !== this.thisRoom.missionNum &&
-		numSuccess < 3 &&
-		numFail < 3
+    if (lastMissionFailed
+		&& this.thisRoom.howWasWon !== "Hammer rejected."
+		&& this.lastMissionUsed !== this.thisRoom.missionNum
+		&& numSuccess < 3
+		&& numFail < 3
     ) {
         this.thisRoom.phase = "ref";
         this.lastMissionUsed = this.thisRoom.missionNum;
 
         return true;
     }
-    else {
-        return false;
-    }
+
+    return false;
 };
 
 RefOfTheLake.prototype.getPublicGameData = function () {
@@ -75,8 +73,8 @@ RefOfTheLake.prototype.getPublicGameData = function () {
         ref: {
             index: this.indexOfPlayerHolding,
             history: this.refHistoryUsernames,
-            name: this.card
-        }
+            name: this.card,
+        },
     };
 };
 

@@ -1,7 +1,7 @@
-var mongoose = require("mongoose");
-var passportLocalMongoose = require("passport-local-mongoose");
+const mongoose = require("mongoose");
+const passportLocalMongoose = require("passport-local-mongoose");
 
-var UserSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
     username: String,
     usernameLower: String,
     password: String,
@@ -33,29 +33,29 @@ var UserSchema = new mongoose.Schema({
     biography: String,
 
 
-    //dont need to worry about roleWins growing out of control
-    //since there are a limited amount of roles, and each role 
-    //only has one Number attached to it
+    // dont need to worry about roleWins growing out of control
+    // since there are a limited amount of roles, and each role
+    // only has one Number attached to it
     roleStats: Object,
 
     notifications: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "notification"
-        }
+            ref: "notification",
+        },
     ],
 
 
     modAction: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "ModAction"
-        }
+            ref: "ModAction",
+        },
     ],
 
     mutedPlayers: [
-        String
-    ]
+        String,
+    ],
 });
 
 

@@ -96,29 +96,29 @@
 
 <script>
 	
-if($("#imgBigLogo").width() < 560){
+if ($("#imgBigLogo").width() < 560) {
 	$($("#vid1")[0]).width($("#imgBigLogo").width());
 }
 
 
-$( document ).ready(function() {
+$( document ).ready(function () {
 	setupPageStuff();
-	setInterval(function(){
+	setInterval(function () {
 		setupPageStuff();
 		console.log("a");
 	},1000);
 });
 
 
-function setupPageStuff(){
+function setupPageStuff() {
 	var scaleWidDownForm = 0.6;
 	$("#form").width($("#scroll").width()*scaleWidDownForm + "px");
 	
 	var leftPosOfScroll;
-	if($("#scroll").css("left") === "auto"){
+	if ($("#scroll").css("left") === "auto") {
 		leftPosOfScroll = $($("#form").parent()).width()*1.07/2;
 	}
-	else{
+	else {
 		leftPosOfScroll = parseInt($("#scroll").css("left"), 10);
 	}
 	var offset = $("#scroll").width()/2;
@@ -140,7 +140,7 @@ function setupPageStuff(){
 	$("#scrollDiv").height($("#scroll").height());
 }
 
-$( window ).resize(function() {
+$( window ).resize(function () {
 	setupPageStuff();
 });
 

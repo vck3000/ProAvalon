@@ -35,31 +35,29 @@ LadyOfTheLake.prototype.checkSpecialMove = function (socket, data) {
     // First card starts at the end of M2
 
     // Game finished? Don't run lady if there are 3 successes or fails
-    var numSuccess = 0;
-    var numFail = 0;
-    for (var i = 0; i < this.thisRoom.missionHistory.length; i++) {
+    let numSuccess = 0;
+    let numFail = 0;
+    for (let i = 0; i < this.thisRoom.missionHistory.length; i++) {
         if (this.thisRoom.missionHistory[i] === "succeeded") {
             numSuccess += 1;
-        }
-        else if (this.thisRoom.missionHistory[i] === "failed") {
+        } else if (this.thisRoom.missionHistory[i] === "failed") {
             numFail += 1;
         }
     }
 
-    if (this.thisRoom.missionHistory.length >= 2 &&
-		this.thisRoom.howWasWon !== "Hammer rejected." &&
-		this.lastMissionUsed !== this.thisRoom.missionNum &&
-		numSuccess < 3 &&
-		numFail < 3
+    if (this.thisRoom.missionHistory.length >= 2
+		&& this.thisRoom.howWasWon !== "Hammer rejected."
+		&& this.lastMissionUsed !== this.thisRoom.missionNum
+		&& numSuccess < 3
+		&& numFail < 3
     ) {
         this.thisRoom.phase = "lady";
         this.lastMissionUsed = this.thisRoom.missionNum;
 
         return true;
     }
-    else {
-        return false;
-    }
+
+    return false;
 };
 
 LadyOfTheLake.prototype.getPublicGameData = function () {
@@ -69,8 +67,8 @@ LadyOfTheLake.prototype.getPublicGameData = function () {
         lady: {
             index: this.indexOfPlayerHolding,
             history: this.ladyHistoryUsernames,
-            name: this.card
-        }
+            name: this.card,
+        },
     };
 };
 

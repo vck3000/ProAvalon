@@ -16,7 +16,7 @@ function /* TODO: Name of phase*/(thisRoom_) {
     this.showGuns = /* TODO: true or false*/;
 };
 
-/* TODO: Name of phase*/.prototype.gameMove = function(socket, data){        
+/* TODO: Name of phase*/.prototype.gameMove = function (socket, data) {        
     /* TODO: GameMove*/
 };
 
@@ -25,20 +25,20 @@ function /* TODO: Name of phase*/(thisRoom_) {
 //  hidden          - Is the button hidden?
 //  disabled        - Is the button disabled?
 //  setText         - What text to display in the button
-/* TODO: Name of phase*/.prototype.buttonSettings = function(indexOfPlayer){  
+/* TODO: Name of phase*/.prototype.buttonSettings = function (indexOfPlayer) {  
     /* TODO: buttonSettings*/
 }
 
-/* TODO: Name of phase*/.prototype.numOfTargets = function(indexOfPlayer){    
+/* TODO: Name of phase*/.prototype.numOfTargets = function (indexOfPlayer) {    
     /* TODO: numOfTargets*/
 }
 
 
-/* TODO: Name of phase*/.prototype.getStatusMessage = function(indexOfPlayer){  
+/* TODO: Name of phase*/.prototype.getStatusMessage = function (indexOfPlayer) {  
     /* TODO: getStatusMessage*/
 }
 
-/* TODO: Name of phase*/.prototype.getProhibitedIndexesToPick = function(indexOfPlayer){  
+/* TODO: Name of phase*/.prototype.getProhibitedIndexesToPick = function (indexOfPlayer) {  
     /* TODO: getProhibitedIndexesToPick in an array*/
 }
 

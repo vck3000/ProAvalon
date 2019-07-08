@@ -1,7 +1,7 @@
-var mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-//SCHEMA SETUP
-var gameRecordSchema = new mongoose.Schema({
+// SCHEMA SETUP
+const gameRecordSchema = new mongoose.Schema({
 
     timeGameStarted: Date,
     timeAssassinationStarted: Date,
@@ -36,10 +36,10 @@ var gameRecordSchema = new mongoose.Schema({
     missionHistory: [String],
     numFailsHistory: [Number],
     voteHistory: Object,
-    playerRoles: Object
+    playerRoles: Object,
 
 });
-//compile schema into a model
-var gameRecord = mongoose.model("gameRecord", gameRecordSchema);
+// compile schema into a model
+const gameRecord = mongoose.model("gameRecord", gameRecordSchema);
 
 module.exports = gameRecord;

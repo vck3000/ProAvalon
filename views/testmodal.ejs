@@ -77,14 +77,14 @@
 
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script type="text/javascript">
-	$("#myButton").on("click", function(){
+	$("#myButton").on("click", function () {
 		swal({
 			title: "Game is starting!",
 			text: "Roles are: as;dlkfj",
 			icon: "info",
 			// button: "Ready!",
 			buttons: ["Not ready", "Ready"]
-		}).then(function(value){
+		}).then(function (value) {
 			// swal(("The returned value is: " + value));
 		});
 	});
@@ -310,7 +310,7 @@
 
 							<script src="/libraries/cookies_min.js"></script>
 							<script>
-								function resetCookies(){
+								function resetCookies() {
 									swal({
 										title: "Do you really want to reset your settings?",
 										text: "Settings such as height of gameplay area, dark mode, colour will be reset. You will not be able to recover your settings!",
@@ -325,7 +325,7 @@
 											var keys = docCookies.keys();
 						
 											//remove each item
-											for(var i = 0; i < keys.length; i++){
+											for (var i = 0; i < keys.length; i++) {
 												docCookies.removeItem(keys[i]);
 											}
 						
@@ -370,8 +370,8 @@ var a;
 		"reset"
 	]
 
-	for(var i = 0; i < optionsList.length; i++){
-		$("#" + optionsList[i] + "OptionsButton").on("click", function(){
+	for (var i = 0; i < optionsList.length; i++) {
+		$("#" + optionsList[i] + "OptionsButton").on("click", function () {
 			console.log(this);
 			a = this;
 
@@ -390,14 +390,14 @@ var a;
 		});
 	}
 
-	function closeAllMenuOptions(){
-		for(var i = 0; i < optionsList.length; i++){
+	function closeAllMenuOptions() {
+		for (var i = 0; i < optionsList.length; i++) {
 			$("#" + optionsList[i] + "OptionsMenu").addClass("hidden");
 		} 
 	}
 
 	function removeMyActiveOffAllButtons() {
-		for(var i = 0; i < optionsList.length; i++){
+		for (var i = 0; i < optionsList.length; i++) {
 			$("#" + optionsList[i] + "OptionsButton").removeClass("myActive");
 		} 
 	}
@@ -408,13 +408,13 @@ var a;
 
 
 
-<button onclick="testNotif()"> test notification </button>
+<button onclick="testNotif ()"> test notification </button>
 
 <script>
 
-	function testNotif(){
+	function testNotif () {
 		
-		if(Notification.permission !== "granted"){
+		if (Notification.permission !== "granted") {
 			Notification.requestPermission();
 		}
 

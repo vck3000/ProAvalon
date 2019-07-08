@@ -1,15 +1,15 @@
-var express = require("express");
-var router = express.Router();
-var middleware = require("../middleware");
-var sanitizeHtml = require("sanitize-html");
-var User = require("../models/user");
-var avatarRequest = require("../models/avatarRequest");
-var createNotificationObj = require("../myFunctions/createNotification");
+const express = require("express");
+
+const router = express.Router();
+const sanitizeHtml = require("sanitize-html");
+const middleware = require("../middleware");
+const User = require("../models/user");
+const avatarRequest = require("../models/avatarRequest");
+const createNotificationObj = require("../myFunctions/createNotification");
 
 
-
-var sanitizeHtmlAllowedTagsForumThread = ["img", "iframe", "h1", "h2", "u", "span", "br"];
-var sanitizeHtmlAllowedAttributesForumThread = {
+const sanitizeHtmlAllowedTagsForumThread = ["img", "iframe", "h1", "h2", "u", "span", "br"];
+const sanitizeHtmlAllowedAttributesForumThread = {
     a: ["href", "name", "target"],
     img: ["src", "style"],
     iframe: ["src", "style"],
@@ -19,7 +19,7 @@ var sanitizeHtmlAllowedAttributesForumThread = {
     p: ["style"],
 
     span: ["style"],
-    b: ["style"]
+    b: ["style"],
 };
 
 
@@ -28,130 +28,113 @@ var sanitizeHtmlAllowedAttributesForumThread = {
 // });
 
 
-
-//Show the mod approving rejecting page
-router.get("/avatargetlinktutorial", middleware.isLoggedIn, function (req, res) {
+// Show the mod approving rejecting page
+router.get("/avatargetlinktutorial", middleware.isLoggedIn, (req, res) => {
     res.render("profile/avatargetlinktutorial");
-
 });
 
 
-//Show the mod approving rejecting page
-router.get("/mod/customavatar", middleware.isMod, function (req, res) {
-
-    avatarRequest.find({ processed: false }).exec(function (err, allAvatarRequests) {
-        if (err) { console.log(err); }
-        else {
+// Show the mod approving rejecting page
+router.get("/mod/customavatar", middleware.isMod, (req, res) => {
+    avatarRequest.find({ processed: false }).exec((err, allAvatarRequests) => {
+        if (err) { console.log(err); } else {
             res.render("mod/customavatar", { customAvatarRequests: allAvatarRequests });
         }
     });
 });
 
-//moderator approve or reject custom avatar requests
+// moderator approve or reject custom avatar requests
 // /profile/mod/ajax/processavatarrequest
-router.post("/mod/ajax/processavatarrequest", middleware.isLoggedIn, middleware.isMod, function (req, res) {
+router.post("/mod/ajax/processavatarrequest", middleware.isLoggedIn, middleware.isMod, (req, res) => {
     console.log("process avatar request");
     console.log(req.body.decision);
     console.log(req.body.avatarreqid);
     console.log(req.body.modcomment);
 
-    avatarRequest.findById(req.body.avatarreqid).exec(function (err, foundReq) {
-        if (err) { console.log(err); }
-        else {
-            if (foundReq) {
-                foundReq.processed = true;
-                foundReq.modComment = req.body.modcomment;
-                foundReq.approved = req.body.decision;
-                foundReq.modWhoProcessed = req.user.username;
+    avatarRequest.findById(req.body.avatarreqid).exec((err, foundReq) => {
+        if (err) { console.log(err); } else if (foundReq) {
+            foundReq.processed = true;
+            foundReq.modComment = req.body.modcomment;
+            foundReq.approved = req.body.decision;
+            foundReq.modWhoProcessed = req.user.username;
 
-                if (req.body.decision || req.body.decision === "true") {
-                    console.log("search lower user: " + foundReq.forUsername.toLowerCase());
+            if (req.body.decision || req.body.decision === "true") {
+                console.log(`search lower user: ${foundReq.forUsername.toLowerCase()}`);
 
-                    User.findOne({ usernameLower: foundReq.forUsername.toLowerCase() }).populate("notifications").exec(function (err, foundUser) {
-                        if (err) { console.log(err); }
-                        else {
-                            foundUser.avatarImgRes = foundReq.resLink;
-                            foundUser.avatarImgSpy = foundReq.spyLink;
+                User.findOne({ usernameLower: foundReq.forUsername.toLowerCase() }).populate("notifications").exec((err, foundUser) => {
+                    if (err) { console.log(err); } else {
+                        foundUser.avatarImgRes = foundReq.resLink;
+                        foundUser.avatarImgSpy = foundReq.spyLink;
 
-                            // console.log(foundUser);
+                        // console.log(foundUser);
 
-                            foundUser.save();
+                        foundUser.save();
 
-                            var str = "Your avatar request was approved by " + foundReq.modWhoProcessed + "!";
-                            if (foundReq.modComment) {
-                                str += " Their comment was: " + foundReq.modComment;
-                            }
-
-                            // createNotifObj.createNotification = function(userIDTarget, stringToSay, link){
-                            createNotificationObj.createNotification(foundUser._id, str, "#", req.user.username);
+                        let str = `Your avatar request was approved by ${foundReq.modWhoProcessed}!`;
+                        if (foundReq.modComment) {
+                            str += ` Their comment was: ${foundReq.modComment}`;
                         }
 
-                    });
-                }
+                        // createNotifObj.createNotification = function (userIDTarget, stringToSay, link) {
+                        createNotificationObj.createNotification(foundUser._id, str, "#", req.user.username);
+                    }
+                });
+            } else if (req.body.decision === false || req.body.decision === "false") {
+                console.log(`search lower user: ${foundReq.forUsername.toLowerCase()}`);
 
-                else if (req.body.decision === false || req.body.decision === "false") {
-                    console.log("search lower user: " + foundReq.forUsername.toLowerCase());
+                User.findOne({ usernameLower: foundReq.forUsername.toLowerCase() }).populate("notifications").exec((err, foundUser) => {
+                    if (err) { console.log(err); } else {
+                        let str = `Your avatar request was rejected by ${foundReq.modWhoProcessed}.`;
 
-                    User.findOne({ usernameLower: foundReq.forUsername.toLowerCase() }).populate("notifications").exec(function (err, foundUser) {
-                        if (err) { console.log(err); }
-                        else {
-                            var str = "Your avatar request was rejected by " + foundReq.modWhoProcessed + ".";
-
-                            if (foundReq.modComment) {
-                                str += " Their comment was: " + foundReq.modComment;
-                            }
-
-                            console.log("string: " + str);
-
-
-                            // createNotifObj.createNotification = function(userIDTarget, stringToSay, link){
-                            createNotificationObj.createNotification(foundUser._id, str, "#", req.user.username);
+                        if (foundReq.modComment) {
+                            str += ` Their comment was: ${foundReq.modComment}`;
                         }
-                    });
-                }
-                else {
-                    console.log("error, decision isnt anything recognisable...: " + req.body.decision);
-                }
 
-                foundReq.save();
+                        console.log(`string: ${str}`);
+
+
+                        // createNotifObj.createNotification = function (userIDTarget, stringToSay, link) {
+                        createNotificationObj.createNotification(foundUser._id, str, "#", req.user.username);
+                    }
+                });
+            } else {
+                console.log(`error, decision isnt anything recognisable...: ${req.body.decision}`);
             }
+
+            foundReq.save();
         }
     });
 
     // console.log(mongoose.Types.ObjectId(req.query.idOfNotif));
 
     res.status(200).send("done");
-
 });
 
 
-
-//Show the customavatar edit page
-router.get("/:profileUsername/changeavatar", middleware.checkProfileOwnership, function (req, res) {
-    User.findOne({ usernameLower: req.params.profileUsername.toLowerCase() }, function (err, foundUser) {
+// Show the customavatar edit page
+router.get("/:profileUsername/changeavatar", middleware.checkProfileOwnership, (req, res) => {
+    User.findOne({ usernameLower: req.params.profileUsername.toLowerCase() }, (err, foundUser) => {
         if (err) {
             console.log(err);
-        }
-        else {
+        } else {
             res.render("profile/changeavatar", { userData: foundUser });
         }
     });
 });
 
-//Update the customavatar
-router.post("/:profileUsername/changeavatar", middleware.checkProfileOwnership, function (req, res) {
-
+// Update the customavatar
+router.post("/:profileUsername/changeavatar", middleware.checkProfileOwnership, (req, res) => {
     console.log("Recieved change avatar");
-    console.log("For user " + req.params.profileUsername);
-    console.log("Res link: " + req.body.reslink);
-    console.log("Spy link: " + req.body.spylink);
-    console.log("Message to mod: " + req.body.msgToMod);
+    console.log(`For user ${req.params.profileUsername}`);
+    console.log(`Res link: ${req.body.reslink}`);
+    console.log(`Spy link: ${req.body.spylink}`);
+    console.log(`Message to mod: ${req.body.msgToMod}`);
 
-    //sometimes https links dont show up correctly
+    // sometimes https links dont show up correctly
     // req.body.reslink.replace("https", "http");
     // req.body.spylink.replace("https", "http");
 
-    var avatarRequestData = {
+    const avatarRequestData = {
         forUsername: req.params.profileUsername.toLowerCase(),
 
         resLink: sanitizeHtml(req.body.reslink),
@@ -160,27 +143,24 @@ router.post("/:profileUsername/changeavatar", middleware.checkProfileOwnership, 
 
         dateRequested: new Date(),
 
-        processed: false
+        processed: false,
     };
 
-    avatarRequest.create(avatarRequestData, function (err, createdRequest) {
-        if (err) { console.log(err); }
-        else {
+    avatarRequest.create(avatarRequestData, (err, createdRequest) => {
+        if (err) { console.log(err); } else {
             req.flash("success", "Your submission was received! Please wait for a moderator to process your request.");
-            res.redirect("/profile/" + req.params.profileUsername);
+            res.redirect(`/profile/${req.params.profileUsername}`);
         }
     });
 });
 
 
-
-//Show the change password edit page
-router.get("/:profileUsername/changepassword", middleware.checkProfileOwnership, function (req, res) {
-    User.findOne({ usernameLower: req.params.profileUsername.toLowerCase() }, function (err, foundUser) {
+// Show the change password edit page
+router.get("/:profileUsername/changepassword", middleware.checkProfileOwnership, (req, res) => {
+    User.findOne({ usernameLower: req.params.profileUsername.toLowerCase() }, (err, foundUser) => {
         if (err) {
             console.log(err);
-        }
-        else {
+        } else {
             res.render("profile/changepassword", { userData: foundUser });
         }
     });
@@ -188,71 +168,55 @@ router.get("/:profileUsername/changepassword", middleware.checkProfileOwnership,
 
 
 // Update the password
-router.post("/:profileUsername/changepassword", middleware.checkProfileOwnership, async function (req, res) {
+router.post("/:profileUsername/changepassword", middleware.checkProfileOwnership, async (req, res) => {
+    console.log(`Received a change password request from ${req.params.profileUsername.toLowerCase()}`);
 
-    console.log("Received a change password request from " + req.params.profileUsername.toLowerCase());
+    const oldPW = req.body.oldPassword;
+    const newPW = req.body.newPassword;
+    const newPWConf = req.body.newPasswordConfirm;
 
-    var oldPW = req.body.oldPassword;
-    var newPW = req.body.newPassword;
-    var newPWConf = req.body.newPasswordConfirm;
-
-    if(newPW === undefined || newPW === null){
+    if (newPW === undefined || newPW === null) {
         req.flash("error", "Please enter a new password.");
-        res.redirect("/profile/" + req.params.profileUsername + "/changepassword");
-        return;
-    } 
-    else if(oldPW === undefined || oldPW === null){
+        res.redirect(`/profile/${req.params.profileUsername}/changepassword`);
+    } else if (oldPW === undefined || oldPW === null) {
         req.flash("error", "Please enter your old password.");
-        res.redirect("/profile/" + req.params.profileUsername + "/changepassword");
-        return;
-    }
-
-    else if(newPW !== newPWConf){
+        res.redirect(`/profile/${req.params.profileUsername}/changepassword`);
+    } else if (newPW !== newPWConf) {
         req.flash("error", "Your new passwords did not match. Please try again.");
-        res.redirect("/profile/" + req.params.profileUsername + "/changepassword");
-        return;
-    }
-
-    else if(newPW.length < 4){
+        res.redirect(`/profile/${req.params.profileUsername}/changepassword`);
+    } else if (newPW.length < 4) {
         req.flash("error", "Please enter a password that is longer than 3 characters");
-        res.redirect("/profile/" + req.params.profileUsername + "/changepassword");
-        return;
-    }
-
-    else{
+        res.redirect(`/profile/${req.params.profileUsername}/changepassword`);
+    } else {
         const theUser = req.user;
-        await theUser.changePassword(oldPW, newPW, function(err){
-            if(err){
+        await theUser.changePassword(oldPW, newPW, (err) => {
+            if (err) {
                 req.flash("error", err.message);
-                res.redirect("/profile/" + req.params.profileUsername + "/changepassword");
-            }
-            else{
+                res.redirect(`/profile/${req.params.profileUsername}/changepassword`);
+            } else {
                 console.log("Success");
                 req.flash("success", "Your password has been successfully changed.");
-                res.redirect("/profile/" + req.params.profileUsername);
+                res.redirect(`/profile/${req.params.profileUsername}`);
             }
         });
     }
-
 });
 
 
-//show the edit page
-router.get("/:profileUsername/edit", middleware.checkProfileOwnership, function (req, res) {
-    User.findOne({ usernameLower: req.params.profileUsername.toLowerCase() }, function (err, foundUser) {
+// show the edit page
+router.get("/:profileUsername/edit", middleware.checkProfileOwnership, (req, res) => {
+    User.findOne({ usernameLower: req.params.profileUsername.toLowerCase() }, (err, foundUser) => {
         if (err) {
             console.log(err);
-        }
-        else {
+        } else {
             res.render("profile/edit", { userData: foundUser });
         }
     });
 });
 
 
-//update a biography
-router.post("/:profileUsername", middleware.checkProfileOwnership, function (req, res) {
-
+// update a biography
+router.post("/:profileUsername", middleware.checkProfileOwnership, (req, res) => {
     // console.log("biography update");
     // console.log(req.body.biography);
     // console.log(req.body.nationality);
@@ -265,29 +229,28 @@ router.post("/:profileUsername", middleware.checkProfileOwnership, function (req
     }
 
     if (req.body.nationality && req.body.nationCode) {
-        //some browsers are screwing up and sending two nation codes back
+    // some browsers are screwing up and sending two nation codes back
         if (typeof (req.body.nationCode) === "array" || typeof (req.body.nationCode) === "object") {
             req.body.nationCode = req.body.nationCode[req.body.nationCode.length - 1];
         }
 
-        //if the user somehow doesn't input a nation code, default UN
+        // if the user somehow doesn't input a nation code, default UN
         if (nationCodesAll.indexOf(req.body.nationCode) === -1) {
             req.body.nationCode = "UN";
         }
 
-        //If the user somehow doesn't input a valid nation, default to UN
+        // If the user somehow doesn't input a valid nation, default to UN
         if (nationalitiesAll.indexOf(req.body.nationality) === -1) {
             req.body.nationality = "United Nations";
         }
 
 
-        User.find({ usernameLower: req.params.profileUsername.toLowerCase() }).populate("notifications").exec(function (err, foundUser) {
+        User.find({ usernameLower: req.params.profileUsername.toLowerCase() }).populate("notifications").exec((err, foundUser) => {
             foundUser = foundUser[0];
 
             if (err) {
                 console.log(err);
-            }
-            else {
+            } else {
                 foundUser.biography = sanitizeHtml(req.body.biography, {
                     allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
                     allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
@@ -298,22 +261,20 @@ router.post("/:profileUsername", middleware.checkProfileOwnership, function (req
                 foundUser.hideStats = req.body.hideStats;
                 foundUser.save();
 
-                res.redirect("/profile/" + foundUser.username);
+                res.redirect(`/profile/${foundUser.username}`);
             }
         });
-    }
-    else {
-        res.redirect("/profile/" + req.params.profileUsername);
+    } else {
+        res.redirect(`/profile/${req.params.profileUsername}`);
     }
 });
 
-//show the profile page
-router.get("/:profileUsername", middleware.isLoggedIn, function (req, res) {
-    User.findOne({ usernameLower: req.params.profileUsername.toLowerCase() }, function (err, foundUser) {
+// show the profile page
+router.get("/:profileUsername", middleware.isLoggedIn, (req, res) => {
+    User.findOne({ usernameLower: req.params.profileUsername.toLowerCase() }, (err, foundUser) => {
         if (err) {
             console.log(err);
-        }
-        else {
+        } else {
             res.render("profile/profile", { userData: foundUser, personViewingUsername: req.user.username });
         }
     });

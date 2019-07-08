@@ -327,7 +327,7 @@
 
 <script>
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         $('#biography').summernote();
         // $('.commentReply').summernote();
 
@@ -338,18 +338,18 @@
         var nationCode = '<%=userData.nationCode%>.toUpperCase()';
         var nationality = '<%=userData.nationality%>';
 
-        if(nationCode && nationality && nationCode !== '' && nationality !== ''){
+        if (nationCode && nationality && nationCode !== '' && nationality !== '') {
             console.log(      $("option:contains('" + nationality + "')")         );
             $("option:contains('" + nationality + "')").attr("selected", "selected");
             updateFlag();
         }
-        else{
+        else {
             $("option:contains('United Nations')").attr("selected", "selected");
             updateFlag();
         }
     });
 
-    $("#selectNation").on("change", function(e){
+    $("#selectNation").on("change", function (e) {
         // console.log($("#selectNation").find(":selected")[0]);
         // console.log($("#selectNation").find(":selected")[0].innerText);
         // console.log($("#selectNation").find(":selected").val());
@@ -358,7 +358,7 @@
 
     });
 
-    function updateFlag(){
+    function updateFlag() {
         var countryCode = $("#selectNation").find(":selected").val();
         var countryName = $("#selectNation").find(":selected")[0].innerText;
 

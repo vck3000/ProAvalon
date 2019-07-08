@@ -1,6 +1,5 @@
 
 function Resistance(thisRoom_) {
-
     this.thisRoom = thisRoom_;
 
     this.role = "Resistance";
@@ -15,7 +14,6 @@ function Resistance(thisRoom_) {
     this.checkSpecialMove = function () {
 
     };
-
 }
 
 

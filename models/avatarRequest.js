@@ -1,6 +1,6 @@
-var mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-var avatarRequestSchema = new mongoose.Schema({
+const avatarRequestSchema = new mongoose.Schema({
 
     forUsername: String,
 
@@ -16,7 +16,7 @@ var avatarRequestSchema = new mongoose.Schema({
     processed: Boolean,
 
     modComment: String,
-    approved: Boolean
+    approved: Boolean,
 });
 
 module.exports = mongoose.model("AvatarRequest", avatarRequestSchema);

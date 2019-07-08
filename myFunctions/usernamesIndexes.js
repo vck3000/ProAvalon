@@ -1,8 +1,8 @@
-var obj = {};
+const obj = {};
 
 
 obj.getIndexFromUsername = function (sockets, username) {
-    for (var i = 0; i < sockets.length; i++) {
+    for (let i = 0; i < sockets.length; i++) {
         if (username === sockets[i].request.user.username) {
             return i;
         }

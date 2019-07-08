@@ -8,15 +8,15 @@ function /* TODO: Name of Card*/(thisRoom_) {
 
 };
 
-/* TODO: Name of Card*/.prototype.setHolder = function(socket, data){
+/* TODO: Name of Card*/.prototype.setHolder = function (socket, data) {
     this.indexOfPlayerHolding = /* TODO: Complete this section */
 }
 
-/* TODO: Name of Card*/.prototype.checkSpecialMove = function(socket, data){
+/* TODO: Name of Card*/.prototype.checkSpecialMove = function (socket, data) {
     /* TODO: Check if we need to go to a special phase */
 };
 
-/* TODO: Name of Card*/.prototype.getPublicGameData = function(){
+/* TODO: Name of Card*/.prototype.getPublicGameData = function () {
     /* TODO: (Can delete this function. Not absolutely necessary)
     Public data to show the user(s) e.g. who holds the lady of the lake */
 }

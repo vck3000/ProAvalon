@@ -1,7 +1,7 @@
-var mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-//SCHEMA SETUP
-var notificationSchema = new mongoose.Schema({
+// SCHEMA SETUP
+const notificationSchema = new mongoose.Schema({
 
     text: String,
     date: Date,
@@ -9,10 +9,10 @@ var notificationSchema = new mongoose.Schema({
 
     forPlayer: String,
     seen: Boolean,
-    madeBy: String
+    madeBy: String,
 
 });
-//compile schema into a model
-var notification = mongoose.model("notification", notificationSchema);
+// compile schema into a model
+const notification = mongoose.model("notification", notificationSchema);
 
 module.exports = notification;

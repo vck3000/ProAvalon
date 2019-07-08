@@ -262,7 +262,7 @@
     
 
 
-    $( document ).ready(function() {
+    $( document ).ready(function () {
         $(function () {
             $('[data-toggle="tooltip"]').tooltip();
         });
@@ -271,8 +271,8 @@
         xmlhttp = new XMLHttpRequest();
         xmlhttp.open("GET","/ajax/getStatistics", true);
 
-        xmlhttp.onreadystatechange=function(){
-            if (xmlhttp.readyState==4 && xmlhttp.status==200){
+        xmlhttp.onreadystatechange=function () {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200) {
                 console.log(xmlhttp.responseText)
                 gameRecordsData=JSON.parse(xmlhttp.responseText);
                 console.log(gameRecordsData);
@@ -285,7 +285,7 @@
 
 
     var grd;
-    function drawData(){
+    function drawData() {
         grd = gameRecordsData;
         $("#loading").addClass("hidden");
         $("#statsDiv").removeClass("hidden");
@@ -298,7 +298,7 @@
 
         // Convert millis from epoch to a date object for use in the graph.
         var gamesPlayedXAxis = [];
-        for(var i = 0; i < grd.siteTrafficGamesPlayedXAxis.length; i++){
+        for (var i = 0; i < grd.siteTrafficGamesPlayedXAxis.length; i++) {
             
             
 

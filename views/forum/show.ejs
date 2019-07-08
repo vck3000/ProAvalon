@@ -15,7 +15,7 @@
 <div class="myContainer" id="<%=forumThread.id%>">
 
     <button id="backButton" class="btn btn-warning" onclick="goBack()">Back</button>
-    <% if(locals.mod){ %>
+    <% if (locals.mod) { %>
         <!--<button id="backButton" class="btn btn-info pull-right" onclick="toggleDeletedPosts()">Mod see deleted</button><br><br>-->
         <button id="backButton" class="btn btn-info pull-right" onclick="toggleModOptions()">Mod Actions</button>
     <% } %>
@@ -47,7 +47,7 @@
             </div>
             <br>
             
-            <% if(forumThread.edited){ %>
+            <% if (forumThread.edited) { %>
                 <br>
                 [Edited]
             <% } %>
@@ -56,14 +56,14 @@
                 <a class="like" style="cursor: pointer" idOfElement=<%=forumThread._id%> idOfForum=<%=forumThread._id%> typeofelement='forum'>
                     <%               
                     var isInside = false;
-                        Object.keys(idsOfLikedPosts).forEach(function(key) {
+                        Object.keys(idsOfLikedPosts).forEach(function (key) {
                             if (idsOfLikedPosts[key].toString().replace(" ", "") == forumThread._id.toString().replace(" ", "")) {
                                 isInside = true;
                             }
                         });
                     %>
 
-                    <% if(!isInside){ %>
+                    <% if (!isInside) { %>
                         Like
                     <% } else { %>
                         Unlike
@@ -73,18 +73,18 @@
             
 
 
-            <% if(currentUser && forumThread.author.id && forumThread.author.id.equals(currentUser.id)){ %>
+            <% if (currentUser && forumThread.author.id && forumThread.author.id.equals(currentUser.id)) { %>
                 <br>
                 <div class="editForumThreadButtons">
                     <a class="btn btn-warning" href="/forum/<%=forumThread._id%>/edit">Edit</a>
-                    <a class="btn btn-danger" onclick="deleteFunction()">
+                    <a class="btn btn-danger" onclick="deletefunction ()">
                     
                     DELETE
                     
                         <script>
                             var postId = "<%=forumThread._id%>";
 
-                            function deleteFunction(){
+                            function deletefunction () {
                                 swal({
                                     title: "Are you sure you want to delete?",
                                     text: "All comments and replies will also be deleted.",
@@ -105,7 +105,7 @@
                                         swal({
                                             title: "Your thread has been deleted.",
                                             type: "success"
-                                        }).then(function(){
+                                        }).then(function () {
                                             window.location.replace("/forum");
                                         });
 
@@ -124,7 +124,7 @@
             <%}%>
 
 
-            <% if(locals.mod){ %>
+            <% if (locals.mod) { %>
                 <br>
                 <a class="btn btn-danger btn-sm modButton hidden" idOfElement="<%=forumThread._id%>" typeOfElement="forum" authorId="<%=forumThread.author.id%>"  authorUsername="<%=forumThread.author.username%>">Mod Remove</a>
                 <a id="pinButton" class="btn btn-success btn-sm modButtonPin hidden" idOfElement="<%=forumThread._id%>" typeOfElement="forum" authorId="<%=forumThread.author.id%>"  authorUsername="<%=forumThread.author.username%>">Pin thread</a>
@@ -172,10 +172,10 @@
         <!-- COMMENTS -->
         <div class="comments">
 
-            <%forumThread.comments.forEach(function(comment){ %>
+            <%forumThread.comments.forEach(function (comment) { %>
                 <%
                     var classesToAdd = "";
-                    if(!comment.seenUsers || comment.seenUsers.indexOf(currentUser.username.toLowerCase()) === -1){
+                    if (!comment.seenUsers || comment.seenUsers.indexOf(currentUser.username.toLowerCase()) === -1) {
                         classesToAdd += "post-unseen ";
                     }
                 %>                
@@ -186,7 +186,7 @@
                 
                     <div class="individualComment <%=classesToAdd%>">
                         <p>
-                            <% if(comment.disabled && comment.disabled){ %>
+                            <% if (comment.disabled && comment.disabled) { %>
                             <span style="color: red;" class="glyphicon glyphicon-ban-circle"></span>                            
                             <% } %>
                             <strong><%=comment.author.username%></strong> 
@@ -202,13 +202,13 @@
                             <%-comment.text%>
                         </div>
 
-                        <% if(comment.disabled && comment.disabled && locals.mod && mod){ %>
+                        <% if (comment.disabled && comment.disabled && locals.mod && mod) { %>
                             <div style="color: gray">
                                 Old deleted text: (only mods see :P) <%-comment.oldText%>
                             </div>
                         <% } %>
 
-                        <% if(comment.edited){ %>
+                        <% if (comment.edited) { %>
                             [Edited]
                         <% } %>
                         <p class="commentOptions">
@@ -217,21 +217,21 @@
                             <a class="like" style="cursor: pointer" idOfElement=<%=comment._id%> idofcomment=<%=comment._id%> idOfForum=<%=forumThread._id%> typeofelement='comment'>
                                 <%               
                                 var isInside = false;
-                                    Object.keys(idsOfLikedPosts).forEach(function(key) {
+                                    Object.keys(idsOfLikedPosts).forEach(function (key) {
                                         if (idsOfLikedPosts[key].toString().replace(" ", "") == comment._id.toString().replace(" ", "")) {
                                             isInside = true;
                                         }
                                     });
                                 %>
                                 
-                                <% if(!isInside){ %>
+                                <% if (!isInside) { %>
                                     Like
                                 <% } else { %>
                                     Unlike
                                 <% } %>
                             </a>
 
-                            <% if(currentUser && comment.author.id && comment.author.id.equals(currentUser.id)){ %>
+                            <% if (currentUser && comment.author.id && comment.author.id.equals(currentUser.id)) { %>
                                 <a class="edit" href="/forum/<%=forumThread._id%>/<%=comment._id%>/edit">Edit</a>
 
                                 <a class="deleteComment" style="cursor: pointer" linkToDelete="/forum/deleteComment/<%=forumThread._id%>/<%=comment._id%>">
@@ -239,7 +239,7 @@
                                 </a>
                             <% } %>
 
-                            <% if(locals.mod){ %>
+                            <% if (locals.mod) { %>
                                 <a class="btn btn-danger btn-sm modButton hidden" idOfElement="<%=comment._id%>" typeOfElement="comment" authorId="<%=comment.author.id%>" authorUsername="<%=comment.author.username%>">Mod Remove</a>
                             <% } %>
                         
@@ -264,18 +264,18 @@
                     </div>
 
                     <!-- Replies to the main comment -->
-                    <% if(comment.replies){ comment.replies.forEach(function(reply){ %>
+                    <% if (comment.replies) { comment.replies.forEach(function (reply) { %>
 
                     <%
                         var classesToAdd = "";
-                        if(!reply.seenUsers || reply.seenUsers.indexOf(currentUser.username.toLowerCase()) === -1){
+                        if (!reply.seenUsers || reply.seenUsers.indexOf(currentUser.username.toLowerCase()) === -1) {
                             classesToAdd += "post-unseen ";
                         }
                     %>                
 
                         <div class="replyToComment <%=classesToAdd%>"  id=<%=reply.id%>>
                             <p>
-                                <% if(reply.disabled && reply.disabled){ %>
+                                <% if (reply.disabled && reply.disabled) { %>
                                 <span style="color: red;" class="glyphicon glyphicon-ban-circle"></span>                            
                                 <% } %>
                                 <strong><%=reply.author.username%></strong>
@@ -283,7 +283,7 @@
                                 <span class="glyphicon glyphicon-thumbs-up"></span>
                                 <span id=<%=reply._id + "likes"%>> <%=reply.likes%></span>
 
-                                <% if(reply.replyingUsername) { %>
+                                <% if (reply.replyingUsername) { %>
                                     <span class="replyingUsername"> @<%=reply.replyingUsername%></span>
                                 <% } %>
                             </p>
@@ -292,13 +292,13 @@
                                 <%-reply.text%> 
                             </div>
 
-                            <% if(reply.disabled && reply.disabled && locals.mod && mod){ %>
+                            <% if (reply.disabled && reply.disabled && locals.mod && mod) { %>
                                 <div style="color: gray">
                                     Old deleted text: (only mods see :P) <%-reply.oldText%>
                                 </div>
                             <% } %>
 
-                            <% if(reply.edited){ %>
+                            <% if (reply.edited) { %>
                             [Edited]
                             <% } %>
 
@@ -308,21 +308,21 @@
                                 <a class="like" style="cursor: pointer" idOfElement=<%=reply._id%> idOfReply=<%=reply._id%> idOfComment=<%=comment._id%> idOfForum=<%=forumThread._id%> typeofelement='reply'>
                                     <%               
                                     var isInside = false;
-                                        Object.keys(idsOfLikedPosts).forEach(function(key) {
+                                        Object.keys(idsOfLikedPosts).forEach(function (key) {
                                             if (idsOfLikedPosts[key].toString().replace(" ", "") == reply._id.toString().replace(" ", "")) {
                                                 isInside = true;
                                             }
                                         });
                                     %>
                                     
-                                    <% if(!isInside){ %>
+                                    <% if (!isInside) { %>
                                         Like
                                     <% } else { %>
                                         Unlike
                                     <% } %>
                                 </a>
 
-                                <% if(currentUser && reply.author.id && reply.author.id.equals(currentUser.id)){ %>
+                                <% if (currentUser && reply.author.id && reply.author.id.equals(currentUser.id)) { %>
                                     
                                     <a class="edit" style="cursor: pointer" href="/forum/<%=forumThread._id%>/<%=comment._id%>/<%=reply._id%>/edit">Edit</a>
 
@@ -332,7 +332,7 @@
                                 
                                 <% } %>
 
-                                <% if(locals.mod){ %>
+                                <% if (locals.mod) { %>
                                     <a class="btn btn-danger btn-sm modButton hidden" idOfElement="<%=reply._id%>" typeOfElement="reply" authorId="<%=reply.author.id%>" authorUsername="<%=reply.author.username%>">Mod Remove</a>
                                 <% } %>
                             </p>
@@ -452,14 +452,14 @@
 
 <script type="text/javascript">
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         $('#commentTextArea').summernote();
         // $('.commentReply').summernote();
 
 
-        <%if(locals.mod){ %>
-            <%if(mod){ %>
-                $("#modActionCloseButton").on("click", function(){
+        <%if (locals.mod) { %>
+            <%if (mod) { %>
+                $("#modActionCloseButton").on("click", function () {
                     $("#modModal").modal("hide");
                     
                     var data = $("#modactionform").serializeArray();
@@ -471,11 +471,11 @@
                         
                         dataType:'json',
                         url: '/forum/modAction',                      
-                        success: function(data) {
+                        success: function (data) {
                             console.log('success');
                                                        
                         },
-                        error: function(error) {
+                        error: function (error) {
                             // console.log("some error in fetching the notifications");
                             location.reload();
                         }
@@ -487,7 +487,7 @@
                 });
 
 
-                $("#pinButton").on("click", function(e){
+                $("#pinButton").on("click", function (e) {
                     var data = $(e.target).attr("idOfElement");
                     console.log(data);
                     
@@ -496,10 +496,10 @@
                         data: data,
                         dataType:'json',
                         url: '/forum/pinThread',                      
-                        success: function(data) {
+                        success: function (data) {
                             console.log('success');
                         },
-                        error: function(error) {
+                        error: function (error) {
                             location.reload();
                         }
                     });
@@ -510,13 +510,13 @@
 
     });
 
-    function toggleModOptions(){
+    function toggleModOptions() {
         $(".modButton").toggleClass("hidden");
         $(".modButtonPin").toggleClass("hidden");
     }
 
 
-    $(".modButton").on("click", function(e){
+    $(".modButton").on("click", function (e) {
         // console.log($(e.target).attr("idOfElement"));
         // console.log($(e.target).attr("typeOfElement"));
         // console.log($(e.target).attr("authorId"));
@@ -536,17 +536,17 @@
         $("#typeOfForumElement").val(typeOfElement);
         $("#idOfPlayerToBan").val(authorId);
 
-        if(typeOfElement === "reply"){
+        if (typeOfElement === "reply") {
             $("#idOfReply").val($($(e.target).closest(".replyToComment")).attr("id"));
             $("#idOfComment").val($($(e.target).closest(".individualMainComment")).attr("id"));
             $("#idOfForum").val($($(e.target).closest(".myContainer")).attr("id"));
         }
-        else if(typeOfElement === "comment"){
+        else if (typeOfElement === "comment") {
             $("#idOfReply").val("");
             $("#idOfComment").val($($(e.target).closest(".individualMainComment")).attr("id"));
             $("#idOfForum").val($($(e.target).closest(".myContainer")).attr("id"));
         }
-        else{
+        else {
             $("#idOfReply").val("");
             $("#idOfComment").val("");
             $("#idOfForum").val($($(e.target).closest(".myContainer")).attr("id"));
@@ -557,9 +557,9 @@
 
 </script>
 
-<% if(locals.mod && mod){ %>
+<% if (locals.mod && mod) { %>
     <script>
-        function toggleDeletedPosts(){
+        function toggleDeletedPosts() {
             $(".individualMainComment .disabled").toggleClass("unhiddenDisabled");
             $(".individualMainComment .disabled").toggleClass("hidden");
         }

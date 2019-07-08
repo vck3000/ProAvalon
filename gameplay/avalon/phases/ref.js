@@ -8,7 +8,7 @@
     - Prohibited Indexes to pick (an array)
 */
 
-var usernamesIndexes = require("../../../myFunctions/usernamesIndexes");
+const usernamesIndexes = require("../../../myFunctions/usernamesIndexes");
 
 function Ref(thisRoom_) {
     this.thisRoom = thisRoom_;
@@ -34,9 +34,9 @@ Ref.prototype.gameMove = function (socket, data) {
     // console.log("Data: ");
     // console.log(data);
 
-    //Check that the target's username exists
-    var targetUsername = data;
-    var found = false;
+    // Check that the target's username exists
+    const targetUsername = data;
+    let found = false;
     for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
         if (this.thisRoom.playersInGame[i].username === targetUsername) {
             found = true;
@@ -48,14 +48,14 @@ Ref.prototype.gameMove = function (socket, data) {
         return;
     }
 
-    var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
-    var refHistory = this.thisRoom.specialCards[this.card.toLowerCase()].refHistory;
-    var targetIndex = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, data);
+    const indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
+    const { refHistory } = this.thisRoom.specialCards[this.card.toLowerCase()];
+    const targetIndex = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, data);
 
-    //Get index of socket 
-    var indexOfSocket = undefined;
+    // Get index of socket
+    let indexOfSocket;
     for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
-        // console.log("Comparing: " + this.thisRoom.playersInGame[i].username + " with " + socket.request.user.username);
+    // console.log("Comparing: " + this.thisRoom.playersInGame[i].username + " with " + socket.request.user.username);
         if (this.thisRoom.playersInGame[i].username === socket.request.user.username) {
             indexOfSocket = i;
             break;
@@ -67,45 +67,42 @@ Ref.prototype.gameMove = function (socket, data) {
 
     // If the requester is the ref holder, do the ref stuff
     if (indexOfCardHolder === indexOfSocket) {
-        // Check if we can card that person
+    // Check if we can card that person
         if (refHistory.includes(data)) {
             socket.emit("danger-alert", "You cannot card that person.");
             return;
         }
 
-        //grab the target's alliance
-        var alliance = this.thisRoom.playersInGame[targetIndex].alliance;
+        // grab the target's alliance
+        const { alliance } = this.thisRoom.playersInGame[targetIndex];
 
-        //emit to the ref holder the person's alliance
-        socket.emit("lady-info", /*"Player " + */targetUsername + " is a " + alliance + ".");
+        // emit to the ref holder the person's alliance
+        socket.emit("lady-info", /* "Player " + */`${targetUsername} is a ${alliance}.`);
         // console.log("Player " + target + " is a " + alliance);
 
-        //update ref location
+        // update ref location
         this.thisRoom.specialCards[this.card.toLowerCase()].setHolder(targetIndex);
 
         // this.gameplayMessage = (socket.request.user.username + " has carded " + target);
-        this.thisRoom.sendText(this.thisRoom.allSockets, (socket.request.user.username + " has used " + this.card + " on " + targetUsername + "."), "gameplay-text");
+        this.thisRoom.sendText(this.thisRoom.allSockets, (`${socket.request.user.username} has used ${this.card} on ${targetUsername}.`), "gameplay-text");
 
 
-        //update phase
+        // update phase
         this.thisRoom.phase = "pickingTeam";
     }
     // The requester is not the ref holder. Ignore the request.
     else {
         socket.emit("danger-alert", "You do not hold the card.");
-
-        return;
     }
-
 };
 
 Ref.prototype.buttonSettings = function (indexOfPlayer) {
-    //Get the index of the ref
-    var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
+    // Get the index of the ref
+    const indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
 
-    var obj = {
+    const obj = {
         green: {},
-        red: {}
+        red: {},
     };
 
     if (indexOfPlayer === indexOfCardHolder) {
@@ -131,42 +128,36 @@ Ref.prototype.buttonSettings = function (indexOfPlayer) {
 };
 
 Ref.prototype.numOfTargets = function (indexOfPlayer) {
-    var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
+    const indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
 
     if (indexOfPlayer !== undefined && indexOfPlayer !== null) {
-        // If indexOfPlayer is the ref holder, one player to select 
+    // If indexOfPlayer is the ref holder, one player to select
         if (indexOfPlayer === indexOfCardHolder) {
             return 1;
         }
-        else {
-            return null;
-        }
+
+        return null;
     }
 };
 
 
 Ref.prototype.getStatusMessage = function (indexOfPlayer) {
-    var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
+    const indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
 
     if (indexOfPlayer === indexOfCardHolder) {
         return "Choose a player to use the Ref of the Rain on.";
     }
     // If it is any other player who isn't special role
-    else {
-        var usernameOfCardHolder = this.thisRoom.playersInGame[indexOfCardHolder].username;
-        return "Waiting for " + usernameOfCardHolder + " to use the Ref of the Rain on someone.";
-    }
+
+    const usernameOfCardHolder = this.thisRoom.playersInGame[indexOfCardHolder].username;
+    return `Waiting for ${usernameOfCardHolder} to use the Ref of the Rain on someone.`;
 };
 
 Ref.prototype.getProhibitedIndexesToPick = function (indexOfPlayer) {
-    var refHistory = this.thisRoom.specialCards[this.card.toLowerCase()].refHistory;
+    const { refHistory } = this.thisRoom.specialCards[this.card.toLowerCase()];
 
     return refHistory;
 };
 
 
-
-
-
 module.exports = Ref;
-

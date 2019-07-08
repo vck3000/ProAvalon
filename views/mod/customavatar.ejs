@@ -94,9 +94,9 @@
     <br>
     <br>
 
-    <% if(locals.customAvatarRequests){ %>
+    <% if (locals.customAvatarRequests) { %>
 
-        <% customAvatarRequests.forEach(function(avreq){ %>
+        <% customAvatarRequests.forEach(function (avreq) { %>
 
         <div class="panel panel-default rootRequest singleReq" reqId="<%=avreq.id%>">
             <div class="panel-heading"><h2>For user: <%=avreq.forUsername%></h2></div>
@@ -161,26 +161,26 @@
 
     <% } %>
 
-    <% if(customAvatarRequests.length === 0){ %>
+    <% if (customAvatarRequests.length === 0) { %>
         <div class="well">No requests!</div>
     <% } %>
 
 
 <script>
 
-$( document ).ready(function() {
+$( document ).ready(function () {
     console.log( "ready!" );
 
     // <div class="imgdimensions">test x asdf px</div>
     
-    setInterval(function(){
+    setInterval(function () {
         var imgdimensions = $(".imgdimensions");
         var links = $(".link");
 
         console.log(imgdimensions);
         console.log("test");
     
-        for(var i = 0; i < imgdimensions.length; i++){
+        for (var i = 0; i < imgdimensions.length; i++) {
             console.log(imgdimensions[i].parentElement.children[0]);
     
             var x = imgdimensions[i].parentElement.children[0].clientWidth;
@@ -194,13 +194,13 @@ $( document ).ready(function() {
     }, 1000);
     
 
-    // imgdimensions.forEach(function(dim){
+    // imgdimensions.forEach(function (dim) {
     //     console.log(dim.parent().children(0));
     // });
 
 
 
-    $(".approve").on("click", function(e){
+    $(".approve").on("click", function (e) {
 
         console.log("app");
         // console.log(e);
@@ -224,7 +224,7 @@ $( document ).ready(function() {
     
 
 
-    $(".reject").on("click", function(e){
+    $(".reject").on("click", function (e) {
 
         console.log("rej");
         // console.log(e);
@@ -251,7 +251,7 @@ $( document ).ready(function() {
 });
 
 
-function processAvatarRequest(decision, avatarreqid, comment){
+function processAvatarRequest(decision, avatarreqid, comment) {
 
     $.ajax({
         url: "/profile/mod/ajax/processavatarrequest",
@@ -261,8 +261,8 @@ function processAvatarRequest(decision, avatarreqid, comment){
             avatarreqid: avatarreqid,
             modcomment: comment
         },
-        success: function(){console.log("ajax success");},
-        error: function(err){console.log(err);}
+        success: function () {console.log("ajax success");},
+        error: function (err) {console.log(err);}
     });
 
 }

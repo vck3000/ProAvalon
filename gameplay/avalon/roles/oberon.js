@@ -1,5 +1,4 @@
 function Oberon(thisRoom_) {
-
     this.thisRoom = thisRoom_;
 
     this.role = "Oberon";
@@ -8,13 +7,13 @@ function Oberon(thisRoom_) {
     this.description = "Oberon and Spies do not know each other.";
     this.orderPriorityInOptions = 50;
 
-    //Oberon only sees him/herself
+    // Oberon only sees him/herself
     this.see = function () {
         if (this.thisRoom.gameStarted) {
-            var obj = {};
-            var array = [];
+            const obj = {};
+            const array = [];
 
-            for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
+            for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
                 if (this.thisRoom.playersInGame[i].role === "Oberon") {
                     array.push(this.thisRoom.playersInGame[i].username);
                     break;
@@ -29,7 +28,6 @@ function Oberon(thisRoom_) {
     this.checkSpecialMove = function () {
 
     };
-
 }
 
 

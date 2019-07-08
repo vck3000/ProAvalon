@@ -153,8 +153,8 @@
 
 <script>
 
-$( document ).ready(function() {
-    $("#load").on("click", function(e){
+$( document ).ready(function () {
+    $("#load").on("click", function (e) {
         // $("#reslink")[0].value;
         // $("#spylink")[0].value;
 
@@ -163,8 +163,8 @@ $( document ).ready(function() {
 
         var imgdimensions = $(".imgdimensions");
 
-        setInterval(function(){
-            for(var i = 0; i < imgdimensions.length; i++){
+        setInterval(function () {
+            for (var i = 0; i < imgdimensions.length; i++) {
                 console.log(imgdimensions[i].parentElement.children[0]);
         
                 var x = imgdimensions[i].parentElement.children[0].clientWidth;

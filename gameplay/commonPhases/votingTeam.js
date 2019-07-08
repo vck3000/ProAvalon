@@ -1,4 +1,4 @@
-var usernamesIndexes = require("../../myFunctions/usernamesIndexes");
+const usernamesIndexes = require("../../myFunctions/usernamesIndexes");
 
 function VotingTeam(thisRoom_) {
     this.thisRoom = thisRoom_;
@@ -9,9 +9,9 @@ function VotingTeam(thisRoom_) {
 
 VotingTeam.prototype.gameMove = function (socket, data) {
     // Get the index of the user who is trying to vote
-    var i = this.thisRoom.playersYetToVote.indexOf(socket.request.user.username);
+    const i = this.thisRoom.playersYetToVote.indexOf(socket.request.user.username);
 
-    //Check the data is valid (if it is not a "yes" or a "no")
+    // Check the data is valid (if it is not a "yes" or a "no")
     if (!(data === "yes" || data === "no")) {
         return;
     }
@@ -20,15 +20,13 @@ VotingTeam.prototype.gameMove = function (socket, data) {
     if (i !== -1) {
         if (data === "yes") {
             this.thisRoom.votes[usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username)] = "approve";
-        }
-        else if (data === "no") {
+        } else if (data === "no") {
             this.thisRoom.votes[usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username)] = "reject";
-        }
-        else {
+        } else {
             console.log("ERROR! this.thisRoom should definitely not happen. Game.js votingTeam.");
         }
 
-        //remove the player from players yet to vote
+        // remove the player from players yet to vote
         this.thisRoom.playersYetToVote.splice(i, 1);
 
         // If we have all of our votes, proceed onward
@@ -37,16 +35,16 @@ VotingTeam.prototype.gameMove = function (socket, data) {
             this.thisRoom.VHUpdateTeamVotes();
 
 
-            var outcome = calcVotes(this.thisRoom.votes);
+            const outcome = calcVotes(this.thisRoom.votes);
 
             if (outcome === "yes") {
                 this.thisRoom.phase = "votingMission";
                 this.thisRoom.playersYetToVote = this.thisRoom.proposedTeam.slice();
 
-                var str = "Mission " + this.thisRoom.missionNum + "." + this.thisRoom.pickNum + " was approved." + getStrApprovedRejectedPlayers(this.thisRoom.votes, this.thisRoom.playersInGame);
+                var str = `Mission ${this.thisRoom.missionNum}.${this.thisRoom.pickNum} was approved.${getStrApprovedRejectedPlayers(this.thisRoom.votes, this.thisRoom.playersInGame)}`;
                 this.thisRoom.sendText(this.thisRoom.allSockets, str, "gameplay-text");
             }
-            //Hammer reject
+            // Hammer reject
             else if (outcome === "no" && this.thisRoom.pickNum >= 5) {
                 this.thisRoom.missionHistory[this.thisRoom.missionHistory.length] = "failed";
 
@@ -54,12 +52,11 @@ VotingTeam.prototype.gameMove = function (socket, data) {
                 this.thisRoom.sendText(this.thisRoom.allSockets, "The hammer was rejected.", "gameplay-text-red");
 
                 this.thisRoom.finishGame("Spy");
-            }
-            else if (outcome === "no") {
+            } else if (outcome === "no") {
                 this.thisRoom.proposedTeam = [];
                 this.thisRoom.phase = "pickingTeam";
 
-                var str = "Mission " + this.thisRoom.missionNum + "." + this.thisRoom.pickNum + " was rejected." + getStrApprovedRejectedPlayers(this.thisRoom.votes, this.thisRoom.playersInGame);
+                var str = `Mission ${this.thisRoom.missionNum}.${this.thisRoom.pickNum} was rejected.${getStrApprovedRejectedPlayers(this.thisRoom.votes, this.thisRoom.playersInGame)}`;
                 this.thisRoom.sendText(this.thisRoom.allSockets, str, "gameplay-text");
 
                 this.thisRoom.incrementTeamLeader();
@@ -71,17 +68,15 @@ VotingTeam.prototype.gameMove = function (socket, data) {
 };
 
 
-
-// Returns a object with green and red keys. 
+// Returns a object with green and red keys.
 // Green and Red must both have the following properties:
 //  hidden          - Is the button hidden?
 //  disabled        - Is the button disabled?
 //  setText         - What text to display in the button
 VotingTeam.prototype.buttonSettings = function (indexOfPlayer) {
-
-    var obj = {
+    const obj = {
         green: {},
-        red: {}
+        red: {},
     };
 
     // If user has voted already
@@ -119,7 +114,7 @@ VotingTeam.prototype.getStatusMessage = function (indexOfPlayer) {
         var str = "";
         str += "Waiting for votes: ";
         for (var i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
-            str = str + this.thisRoom.playersYetToVote[i] + ", ";
+            str = `${str + this.thisRoom.playersYetToVote[i]}, `;
         }
         // Remove last , and replace with .
         str = str.slice(0, str.length - 2);
@@ -128,11 +123,11 @@ VotingTeam.prototype.getStatusMessage = function (indexOfPlayer) {
         return str;
     }
     // If user has voted already
-    else if (indexOfPlayer !== undefined && this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playersInGame[indexOfPlayer].username) === -1) {
+    if (indexOfPlayer !== undefined && this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playersInGame[indexOfPlayer].username) === -1) {
         var str = "";
         str += "Waiting for votes: ";
         for (var i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
-            str = str + this.thisRoom.playersYetToVote[i] + ", ";
+            str = `${str + this.thisRoom.playersYetToVote[i]}, `;
         }
         // Remove last , and replace with .
         str = str.slice(0, str.length - 2);
@@ -141,70 +136,62 @@ VotingTeam.prototype.getStatusMessage = function (indexOfPlayer) {
         return str;
     }
     // User has not voted yet or user is a spectator
-    else {
-        var str = "";
-        str += (this.thisRoom.playersInGame[this.thisRoom.teamLeader].username + " has picked: ");
 
-        for (var i = 0; i < this.thisRoom.proposedTeam.length; i++) {
-            str += this.thisRoom.proposedTeam[i] + ", ";
-        }
-        // Remove last , and replace with .
-        str = str.slice(0, str.length - 2);
-        str += ".";
+    var str = "";
+    str += (`${this.thisRoom.playersInGame[this.thisRoom.teamLeader].username} has picked: `);
 
-        return str;
+    for (var i = 0; i < this.thisRoom.proposedTeam.length; i++) {
+        str += `${this.thisRoom.proposedTeam[i]}, `;
     }
+    // Remove last , and replace with .
+    str = str.slice(0, str.length - 2);
+    str += ".";
+
+    return str;
 };
 
 
-
 function getStrApprovedRejectedPlayers(votes, playersInGame) {
-    var approvedUsernames = "";
-    var rejectedUsernames = "";
+    let approvedUsernames = "";
+    let rejectedUsernames = "";
 
-    for (var i = 0; i < votes.length; i++) {
-
+    for (let i = 0; i < votes.length; i++) {
         if (votes[i] === "approve") {
-            approvedUsernames = approvedUsernames + playersInGame[i].username + ", ";
-        }
-        else if (votes[i] === "reject") {
-            rejectedUsernames = rejectedUsernames + playersInGame[i].username + ", ";
-        }
-        else {
-            console.log("ERROR! Unknown vote: " + votes[i]);
+            approvedUsernames = `${approvedUsernames + playersInGame[i].username}, `;
+        } else if (votes[i] === "reject") {
+            rejectedUsernames = `${rejectedUsernames + playersInGame[i].username}, `;
+        } else {
+            console.log(`ERROR! Unknown vote: ${votes[i]}`);
         }
     }
     // Disabled approve rejected people.
     // var str = "<p>Approved: " + approvedUsernames + "</p> <p>Rejected: " + rejectedUsernames + "</p>"
-    var str = "";
+    const str = "";
 
     return str;
 }
 
 function calcVotes(votes) {
-    var numOfPlayers = votes.length;
-    var countApp = 0;
-    var countRej = 0;
-    var outcome;
+    const numOfPlayers = votes.length;
+    let countApp = 0;
+    let countRej = 0;
+    let outcome;
 
-    for (var i = 0; i < numOfPlayers; i++) {
+    for (let i = 0; i < numOfPlayers; i++) {
         if (votes[i] === "approve") {
             // console.log("app");
             countApp++;
-        }
-        else if (votes[i] === "reject") {
+        } else if (votes[i] === "reject") {
             // console.log("rej");
             countRej++;
-        }
-        else {
+        } else {
             // console.log("Bad vote: " + votes[i]);
         }
     }
-    //calcuate the outcome
+    // calcuate the outcome
     if (countApp > countRej) {
         outcome = "yes";
-    }
-    else {
+    } else {
         outcome = "no";
     }
 
@@ -212,9 +199,4 @@ function calcVotes(votes) {
 }
 
 
-
-
-
-
 module.exports = VotingTeam;
-

@@ -16,34 +16,30 @@ function HunterTestPhase(thisRoom_) {
 }
 
 HunterTestPhase.prototype.gameMove = function (socket, data) {
-    /* TODO: GameMove*/
+    /* TODO: GameMove */
 };
 
-// Returns a object with green and red keys. 
+// Returns a object with green and red keys.
 // Green and Red must both have the following properties:
 //  hidden          - Is the button hidden?
 //  disabled        - Is the button disabled?
 //  setText         - What text to display in the button
 HunterTestPhase.prototype.buttonSettings = function (indexOfPlayer) {
-    /* TODO: buttonSettings*/
+    /* TODO: buttonSettings */
 };
 
 HunterTestPhase.prototype.numOfTargets = function (indexOfPlayer) {
-    /* TODO: numOfTargets*/
+    /* TODO: numOfTargets */
 };
 
 
 HunterTestPhase.prototype.getStatusMessage = function (indexOfPlayer) {
-    /* TODO: getStatusMessage*/
+    /* TODO: getStatusMessage */
 };
 
 HunterTestPhase.prototype.getProhibitedIndexesToPick = function (indexOfPlayer) {
-    /* TODO: getProhibitedIndexesToPick in an array*/
+    /* TODO: getProhibitedIndexesToPick in an array */
 };
 
 
-
-
-
 module.exports = HunterTestPhase;
-

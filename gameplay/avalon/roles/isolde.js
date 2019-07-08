@@ -8,9 +8,9 @@ function Isolde(thisRoom_) {
     this.orderPriorityInOptions = 50;
 
     this.see = function () {
-        var roleTag = {};
+        const roleTag = {};
 
-        for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
+        for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
             if (this.thisRoom.playersInGame[i].role === "Tristan") {
                 roleTag[this.thisRoom.playersInGame[i].username] = {};
                 roleTag[this.thisRoom.playersInGame[i].username].roleTag = "Tristan";

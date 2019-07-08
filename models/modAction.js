@@ -1,25 +1,25 @@
-var mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-//SCHEMA SETUP
-var modActionSchema = new mongoose.Schema({
-    type: String, //ban, mute?
+// SCHEMA SETUP
+const modActionSchema = new mongoose.Schema({
+    type: String, // ban, mute?
 
     bannedPlayer: {
         id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
+            ref: "User",
         },
         username: String,
-        usernameLower: String
+        usernameLower: String,
     },
 
 
     modWhoBanned: {
         id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
+            ref: "User",
         },
-        username: String
+        username: String,
     },
 
 
@@ -37,20 +37,20 @@ var modActionSchema = new mongoose.Schema({
 
     idOfReply: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "ForumThreadCommentReply"
+        ref: "ForumThreadCommentReply",
     },
     idOfComment: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "ForumThreadComment"
+        ref: "ForumThreadComment",
     },
     idOfForum: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "ForumThread"
+        ref: "ForumThread",
     },
-    elementDeleted: String
+    elementDeleted: String,
 });
 
-//compile schema into a model
-var modAction = mongoose.model("ModAction", modActionSchema);
+// compile schema into a model
+const modAction = mongoose.model("ModAction", modActionSchema);
 
 module.exports = modAction;

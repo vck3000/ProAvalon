@@ -154,7 +154,7 @@
                 <th class="games">#Games</th>
             </tr>
             
-            <% mods.forEach(function(mod){ %>
+            <% mods.forEach(function (mod) { %>
             <tr>
                 <td><a class="username" href="/profile/<%= mod.username %>" ><%= mod.username %></a></td>
                 <%if (mod.avatarImgRes === null) { %>
@@ -189,7 +189,7 @@
                 <th class="games">#Games</th>
             </tr>
 
-			<% users.forEach(function(user){ %>
+			<% users.forEach(function (user) { %>
 			<tr>
 				<td><a class="username" href="/profile/<%= user.username %>" ><%= user.username %></a></td>
                 <%if (user.avatarImgRes === null) { %>
@@ -217,14 +217,14 @@
 
 <!-- show more button -->
 <script type="text/javascript">
-$(function() {
+$(function () {
   /* initial variables */
   var numRows = $('#userTable').find('tr').length;
   var SHOWN = 50;
   var MORE = 500;
 
   /* get how many more can be shown */
-  var getNumMore = function(ns) {
+  var getNumMore = function (ns) {
       var more = MORE;
       var leftOver = numRows - ns;
       if ((leftOver) < more) {
@@ -233,7 +233,7 @@ $(function() {
       return more;
     }
     /* how many are shown */
-  var getInitialNumShown = function() {
+  var getInitialNumShown = function () {
       var shown = SHOWN;
       if (numRows < shown) {
         shown = numRows;
@@ -251,7 +251,7 @@ $(function() {
     var more_html = '<p><button id="more">Show <span style="font-weight: bold;">' + numMore + '</span> More...</button></p>';
     $('#userTable').find('tr:gt(' + (numShown - 1) + ')').hide().end().after(more_html);
   }
-  $('#more').click(function() {
+  $('#more').click(function () {
     /* determine how much more we should update */
     numMore = getNumMore(numShown);
     /* update num shown */

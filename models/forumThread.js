@@ -1,7 +1,7 @@
-var mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-//SCHEMA SETUP
-var forumThreadSchema = new mongoose.Schema({
+// SCHEMA SETUP
+const forumThreadSchema = new mongoose.Schema({
     title: String,
     oldTitle: String,
     // price: String,
@@ -28,22 +28,22 @@ var forumThreadSchema = new mongoose.Schema({
     author: {
         id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
+            ref: "User",
         },
-        username: String
+        username: String,
     },
     comments: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "ForumThreadComment"
-        }
+            ref: "ForumThreadComment",
+        },
     ],
 
     category: String,
 
-    seenUsers: [String]
+    seenUsers: [String],
 });
-//compile schema into a model
-var forumThread = mongoose.model("ForumThread", forumThreadSchema);
+// compile schema into a model
+const forumThread = mongoose.model("ForumThread", forumThreadSchema);
 
 module.exports = forumThread;

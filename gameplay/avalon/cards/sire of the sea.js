@@ -18,7 +18,7 @@ function SireOfTheSea(thisRoom_) {
 
 SireOfTheSea.prototype.initialise = function () {
     // If lady of the sea is in the game, give the card to the next person.
-    var addOne = 0;
+    let addOne = 0;
     if (this.thisRoom.options.includes("Lady of the Lake")) {
         addOne = 1;
     }
@@ -39,30 +39,28 @@ SireOfTheSea.prototype.checkSpecialMove = function (socket, data) {
     // First card starts at the end of M2
 
     // Game finished? Don't run sire if there are 3 successes or fails
-    var numSuccess = 0;
-    var numFail = 0;
-    for (var i = 0; i < this.thisRoom.missionHistory.length; i++) {
+    let numSuccess = 0;
+    let numFail = 0;
+    for (let i = 0; i < this.thisRoom.missionHistory.length; i++) {
         if (this.thisRoom.missionHistory[i] === "succeeded") {
             numSuccess += 1;
-        }
-        else if (this.thisRoom.missionHistory[i] === "failed") {
+        } else if (this.thisRoom.missionHistory[i] === "failed") {
             numFail += 1;
         }
     }
 
-    if (this.thisRoom.missionHistory.length >= 2 &&
-		this.lastMissionUsed !== this.thisRoom.missionNum &&
-		numSuccess < 3 &&
-		numFail < 3
+    if (this.thisRoom.missionHistory.length >= 2
+		&& this.lastMissionUsed !== this.thisRoom.missionNum
+		&& numSuccess < 3
+		&& numFail < 3
     ) {
         this.thisRoom.phase = "sire";
         this.lastMissionUsed = this.thisRoom.missionNum;
 
         return true;
     }
-    else {
-        return false;
-    }
+
+    return false;
 };
 
 SireOfTheSea.prototype.getPublicGameData = function () {
@@ -72,8 +70,8 @@ SireOfTheSea.prototype.getPublicGameData = function () {
         sire: {
             index: this.indexOfPlayerHolding,
             history: this.sireHistoryUsernames,
-            name: this.card
-        }
+            name: this.card,
+        },
     };
 };
 

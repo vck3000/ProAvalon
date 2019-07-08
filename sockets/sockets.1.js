@@ -1,19 +1,20 @@
-//sockets
-var gameRoom = require("../gameplay/game");
+// sockets
+const gameRoom = require("../gameplay/game");
 
-var savedGameObj = require("../models/savedGame");
-var modAction = require("../models/modAction");
-var currentModActions = [];
-var myNotification = require("../models/notification");
-var createNotificationObj = require("../myFunctions/createNotification");
+const savedGameObj = require("../models/savedGame");
+const modAction = require("../models/modAction");
+
+let currentModActions = [];
+const myNotification = require("../models/notification");
+const createNotificationObj = require("../myFunctions/createNotification");
 
 
-var avatarRequest = require("../models/avatarRequest");
-var User = require("../models/user");
-var banIp = require("../models/banIp");
+const avatarRequest = require("../models/avatarRequest");
+const User = require("../models/user");
+const banIp = require("../models/banIp");
 const JSON = require("circular-json");
-var modsArray = require("../modsadmins/mods");
-var adminsArray = require("../modsadmins/admins");
+const modsArray = require("../modsadmins/mods");
+const adminsArray = require("../modsadmins/admins");
 
 const dateResetRequired = 1543480412695;
 
@@ -37,46 +38,44 @@ As a result I recommend everyone change their passwords to ensure complete safet
 Thanks guys
 `;
 
-var allSockets = [];
-var rooms = [];
+const allSockets = [];
+const rooms = [];
 
-//retain only 5 mins.
-var allChatHistory = [];
-var allChat5Min = [];
+// retain only 5 mins.
+const allChatHistory = [];
+const allChat5Min = [];
 
-var nextRoomId = 1;
+let nextRoomId = 1;
 
 // Get all the possible gameModes
-var fs = require("fs");
-var gameModeNames = [];
-fs.readdirSync("./gameplay/").filter(function (file) {
-    if (fs.statSync("./gameplay" + "/" + file).isDirectory() && file !== "commonPhases") {
+const fs = require("fs");
+
+const gameModeNames = [];
+fs.readdirSync("./gameplay/").filter((file) => {
+    if (fs.statSync(`${"./gameplay" + "/"}${file}`).isDirectory() && file !== "commonPhases") {
         gameModeNames.push(file);
     }
 });
 // console.log(gameModeNames);
 
 
-
-
 process.on("SIGINT", gracefulShutdown);
 process.on("SIGTERM", gracefulShutdown);
 
 function gracefulShutdown() {
-    // if(process.env.MY_PLATFORM === "online"){
+    // if (process.env.MY_PLATFORM === "online") {
     // 	saveGamesAndSendWarning();
     // }
-    // else{
+    // else {
     sendWarning();
     // }
 
     console.log("Graceful shutdown request");
-
 }
 
 
 function sendWarning() {
-    for (var key in allSockets) {
+    for (const key in allSockets) {
         if (allSockets.hasOwnProperty(key)) {
             allSockets[key].emit("serverRestartingNow");
         }
@@ -86,46 +85,41 @@ function sendWarning() {
 function saveGameToDb(roomToSave) {
     if (roomToSave.gameStarted && !roomToSave.finished) {
         if (!roomToSave.savedGameRecordId) {
-            savedGameObj.create({ room: JSON.stringify(roomToSave) }, function (err, savedGame) {
+            savedGameObj.create({ room: JSON.stringify(roomToSave) }, (err, savedGame) => {
                 if (err) {
                     console.log(err);
-                }
-                else {
+                } else {
                     rooms[rooms.indexOf(roomToSave)].savedGameRecordId = savedGame.id;
                     // console.log("Successfully created this save game");
-
                 }
             });
-        }
-        else {
-            savedGameObj.findByIdAndUpdate(roomToSave.savedGameRecordId, { room: JSON.stringify(roomToSave) }, function (err, savedGame) {
+        } else {
+            savedGameObj.findByIdAndUpdate(roomToSave.savedGameRecordId, { room: JSON.stringify(roomToSave) }, (err, savedGame) => {
                 // console.log("Successfully saved this game");
             });
         }
     }
 }
 function deleteSaveGameFromDb(room) {
-    // if(process.env.MY_PLATFORM === "online"){
+    // if (process.env.MY_PLATFORM === "online") {
     // console.log("room id to remove");
     // console.log(roomToSave.savedGameRecordId);
 
 
-    savedGameObj.findByIdAndRemove(room.savedGameRecordId, function (err) {
+    savedGameObj.findByIdAndRemove(room.savedGameRecordId, (err) => {
         if (err) {
             console.log(err);
-        }
-        else {
+        } else {
             // console.log("Successfully removed this save game from db");
         }
     });
 
 
     // }
-
 }
 
 function saveGamesAndSendWarning(senderSocket) {
-    for (var key in allSockets) {
+    for (const key in allSockets) {
         if (allSockets.hasOwnProperty(key)) {
             if (senderSocket) {
                 allSockets[key].emit("serverRestartWarning");
@@ -135,18 +129,18 @@ function saveGamesAndSendWarning(senderSocket) {
         }
     }
 
-    var numOfGamesSaved = 0;
-    var numOfGamesEncountered = 0;
-    var promises = [];
+    const numOfGamesSaved = 0;
+    const numOfGamesEncountered = 0;
+    const promises = [];
 
     // //save the games
-    // for(var i = 0; i < rooms.length; i++){
-    // 	if(rooms[i] && rooms[i].gameStarted && rooms[i].finished !== true){
+    // for (var i = 0; i < rooms.length; i++) {
+    // 	if (rooms[i] && rooms[i].gameStarted && rooms[i].finished !== true) {
     // 		console.log("rooms");
     // 		// console.log(rooms[i]);
 
-    // 		savedGameObj.create({room: JSON.stringify(rooms[i])}, function(err, savedGame){
-    // 			if(err){
+    // 		savedGameObj.create({room: JSON.stringify(rooms[i])}, function (err, savedGame) {
+    // 			if (err) {
     // 				console.log(err);
     // 			}
     // 			console.log(savedGame);
@@ -157,14 +151,14 @@ function saveGamesAndSendWarning(senderSocket) {
     // 			console.log(numOfGamesSaved);
     // 			console.log(numOfGamesEncountered);
 
-    // 			if(numOfGamesSaved >= numOfGamesEncountered){
+    // 			if (numOfGamesSaved >= numOfGamesEncountered) {
     // 				var data = {message: "Successful. Saved " + numOfGamesSaved + " games.", classStr: "server-text"};
-    // 				if(senderSocket){
+    // 				if (senderSocket) {
     // 					senderSocket.emit("messageCommandReturnStr", data);
     // 				}
 
     // 				// //if its a heroku update
-    // 				// if(!senderSocket){
+    // 				// if (!senderSocket) {
     // 				// 	process.exit(0);
     // 				// }
     // 			}
@@ -179,39 +173,37 @@ function saveGamesAndSendWarning(senderSocket) {
     if (numOfGamesEncountered === 0) {
         return { message: "Successful. But no games needed to be saved.", classStr: "server-text" };
     }
-    else {
-        return { message: "Successful. But still saving games.", classStr: "server-text" };
-    }
+
+    return { message: "Successful. But still saving games.", classStr: "server-text" };
 }
 
 
 // RECOVERING SAVED GAMES!
-savedGameObj.find({}).exec(function (err, foundSaveGameArray) {
-    if (err) { console.log(err); }
-    else {
-        for (var key in foundSaveGameArray) {
+savedGameObj.find({}).exec((err, foundSaveGameArray) => {
+    if (err) { console.log(err); } else {
+        for (const key in foundSaveGameArray) {
             if (foundSaveGameArray.hasOwnProperty(key)) {
                 // console.log(foundSaveGameArray);
 
-                var foundSaveGame = foundSaveGameArray[key];
+                const foundSaveGame = foundSaveGameArray[key];
 
                 if (foundSaveGame) {
                     // console.log("Parsed:");
                     // console.log(JSON.parse(foundSaveGame.room));
 
-                    var storedData = JSON.parse(foundSaveGame.room);
+                    const storedData = JSON.parse(foundSaveGame.room);
 
-                    rooms[storedData["roomId"]] = new gameRoom();
+                    rooms[storedData.roomId] = new gameRoom();
 
-                    Object.assign(rooms[storedData["roomId"]], storedData);
+                    Object.assign(rooms[storedData.roomId], storedData);
 
                     // //Assigning in all the previous variables
-                    // for(var key in storedData){
-                    // 	if(storedData.hasOwnProperty(key)){
+                    // for (var key in storedData) {
+                    // 	if (storedData.hasOwnProperty(key)) {
                     // 		// console.log("typeof: " + typeof(key))
                     // 		rooms[storedData["roomId"]][key] = storedData[key];
                     // 		// console.log("copied over: " + key);
-                    // 		// if(key === "startGameTime"){
+                    // 		// if (key === "startGameTime") {
 
                     // 			// console.log(storedData[key]);
                     // 			// console.log(new Date - storedData[key]);
@@ -223,17 +215,15 @@ savedGameObj.find({}).exec(function (err, foundSaveGameArray) {
                     // rooms[storedData["roomId"]].reloadParentFunctions();
 
 
-                    rooms[storedData["roomId"]].restartSaved = true;
-                    rooms[storedData["roomId"]].savedGameRecordId = foundSaveGame.id;
-                    rooms[storedData["roomId"]].recoverGame(storedData);
-
-
+                    rooms[storedData.roomId].restartSaved = true;
+                    rooms[storedData.roomId].savedGameRecordId = foundSaveGame.id;
+                    rooms[storedData.roomId].recoverGame(storedData);
 
 
                     // console.log("Game loaded");
 
                     // console.log("platform: " + process.env.MY_PLATFORM);
-                    // if(process.env.MY_PLATFORM === "online"){
+                    // if (process.env.MY_PLATFORM === "online") {
                     // foundSaveGame.remove();
                     // }
                 }
@@ -243,19 +233,19 @@ savedGameObj.find({}).exec(function (err, foundSaveGameArray) {
 });
 
 
-var lastWhisperObj = {};
+const lastWhisperObj = {};
 var actionsObj = {
     userCommands: {
         help: {
             command: "help",
             help: "/help: ...shows help",
-            run: function (data) {
-                //do stuff
+            run(data) {
+                // do stuff
 
-                var dataToReturn = [];
-                var i = 0;
+                const dataToReturn = [];
+                let i = 0;
 
-                //starting break in the chat
+                // starting break in the chat
                 // data[i] = {message: "-------------------------", classStr: "server-text"};
 
                 // var str = [];
@@ -263,14 +253,14 @@ var actionsObj = {
 
                 i++;
 
-                for (var key in actionsObj.userCommands) {
+                for (const key in actionsObj.userCommands) {
                     if (actionsObj.userCommands.hasOwnProperty(key)) {
                         if (!actionsObj.userCommands[key].modsOnly) {
                             // console.log(key + " -> " + p[key]);
                             dataToReturn[i] = { message: actionsObj.userCommands[key].help, classStr: "server-text", dateCreated: new Date() };
                             // str[i] = userCommands[key].help;
                             i++;
-                            //create a break in the chat
+                            // create a break in the chat
                             // data[i] = {message: "-------------------------", classStr: "server-text"};
                             // i++;
                         }
@@ -279,374 +269,335 @@ var actionsObj = {
                 // return "Commands are: commandA, help";
                 // return str;
                 return dataToReturn;
-            }
+            },
         },
 
         buzz: {
             command: "buzz",
             help: "/buzz <playername>: Buzz a player.",
-            run: function (data, senderSocket) {
-                var args = data.args;
+            run(data, senderSocket) {
+                const { args } = data;
 
                 data.args[2] = data.args[1];
                 data.args[1] = "buzz";
 
                 return actionsObj.userCommands.interactUser.run(data, senderSocket);
-            }
+            },
         },
 
         slap: {
             command: "slap",
             help: "/slap <playername>: Slap a player for fun.",
-            run: function (data, senderSocket) {
-                var args = data.args;
+            run(data, senderSocket) {
+                const { args } = data;
 
                 data.args[2] = data.args[1];
                 data.args[1] = "slap";
 
                 return actionsObj.userCommands.interactUser.run(data, senderSocket);
-            }
+            },
         },
 
         lick: {
             command: "lick",
             help: "/lick <playername>: Lick a player.",
-            run: function (data, senderSocket) {
-                var args = data.args;
+            run(data, senderSocket) {
+                const { args } = data;
 
                 data.args[2] = data.args[1];
                 data.args[1] = "lick";
 
                 return actionsObj.userCommands.interactUser.run(data, senderSocket);
-            }
+            },
         },
         poke: {
             command: "poke",
             help: "/poke <playername>: poke a player.",
-            run: function (data, senderSocket) {
-                var args = data.args;
+            run(data, senderSocket) {
+                const { args } = data;
 
                 data.args[2] = data.args[1];
                 data.args[1] = "poke";
 
                 return actionsObj.userCommands.interactUser.run(data, senderSocket);
-            }
+            },
         },
         punch: {
             command: "punch",
             help: "/punch <playername>: punch a player.",
-            run: function (data, senderSocket) {
-                var args = data.args;
+            run(data, senderSocket) {
+                const { args } = data;
 
                 data.args[2] = data.args[1];
                 data.args[1] = "punch";
 
                 return actionsObj.userCommands.interactUser.run(data, senderSocket);
-            }
+            },
         },
         interactUser: {
             command: "interactUser",
             help: "/interactUser <slap/buzz/lick> <playername>: Interact with a player.",
-            run: function (data, senderSocket) {
-                var args = data.args;
+            run(data, senderSocket) {
+                const { args } = data;
 
-                var possibleInteracts = ["buzz", "slap", "lick", "poke", "punch"];
+                const possibleInteracts = ["buzz", "slap", "lick", "poke", "punch"];
                 if (possibleInteracts.indexOf(args[1]) === -1) {
-                    return { message: "You can only slap, buzz, poke, punch or lick, not " + args[1] + ".", classStr: "server-text", dateCreated: new Date() };
+                    return { message: `You can only slap, buzz, poke, punch or lick, not ${args[1]}.`, classStr: "server-text", dateCreated: new Date() };
                 }
 
-                var slapSocket = allSockets[getIndexFromUsername(allSockets, args[2], true)];
+                const slapSocket = allSockets[getIndexFromUsername(allSockets, args[2], true)];
                 if (slapSocket) {
+                    let verbPast = "";
+                    if (args[1] === "buzz") { verbPast = "buzzed"; } else if (args[1] === "slap") { verbPast = "slapped"; } else if (args[1] === "lick") { verbPast = "licked"; } else if (args[1] === "poke") { verbPast = "poked"; } else if (args[1] === "punch") { verbPast = "punched"; }
 
-                    var verbPast = "";
-                    if (args[1] === "buzz") { verbPast = "buzzed"; }
-                    else if (args[1] === "slap") { verbPast = "slapped"; }
-                    else if (args[1] === "lick") { verbPast = "licked"; }
-                    else if (args[1] === "poke") { verbPast = "poked"; }
-                    else if (args[1] === "punch") { verbPast = "punched"; }
-
-                    var dataToSend = {
+                    const dataToSend = {
                         username: senderSocket.request.user.username,
                         verb: args[1],
-                        verbPast: verbPast
+                        verbPast,
                     };
                     slapSocket.emit("interactUser", dataToSend);
 
 
-                    //if the sendersocket is in a game, then send a message to everyone in the game.
-                    var slappedInGame = false;
-                    var socketThatWasSlappedInGame = undefined;
-                    //need to know which person is in the room, if theyre both then it doesnt matter who.
+                    // if the sendersocket is in a game, then send a message to everyone in the game.
+                    let slappedInGame = false;
+                    let socketThatWasSlappedInGame;
+                    // need to know which person is in the room, if theyre both then it doesnt matter who.
                     if (senderSocket.request.user.inRoomId && rooms[senderSocket.request.user.inRoomId] && rooms[senderSocket.request.user.inRoomId].gameStarted) {
                         slappedInGame = true;
                         socketThatWasSlappedInGame = senderSocket;
-                    }
-                    else if (slapSocket.request.user.inRoomId && rooms[slapSocket.request.user.inRoomId] && rooms[slapSocket.request.user.inRoomId].gameStarted) {
+                    } else if (slapSocket.request.user.inRoomId && rooms[slapSocket.request.user.inRoomId] && rooms[slapSocket.request.user.inRoomId].gameStarted) {
                         slappedInGame = true;
                         socketThatWasSlappedInGame = slapSocket;
                     }
 
                     if (slappedInGame) {
-                        var str = senderSocket.request.user.username + " has " + verbPast + " " + slapSocket.request.user.username + ". (In game)";
+                        const str = `${senderSocket.request.user.username} has ${verbPast} ${slapSocket.request.user.username}. (In game)`;
                         rooms[socketThatWasSlappedInGame.request.user.inRoomId].sendText(rooms[socketThatWasSlappedInGame.request.user.inRoomId].allSockets, str, "server-text");
                     }
 
 
-                    return; // {message: "You have " + verbPast + " " + args[2] + "!", classStr: "server-text"};
-                }
-                else {
+                    // {message: "You have " + verbPast + " " + args[2] + "!", classStr: "server-text"};
+                } else {
                     // console.log(allSockets);
                     return { message: "There is no such player.", classStr: "server-text" };
                 }
-            }
+            },
         },
 
         roomchat: {
             command: "roomchat",
             help: "/roomchat: Get a copy of the chat for the current game.",
-            run: function (data, senderSocket) {
-                var args = data.args;
-                //code
+            run(data, senderSocket) {
+                const { args } = data;
+                // code
                 if (rooms[senderSocket.request.user.inRoomId] && rooms[senderSocket.request.user.inRoomId].gameStarted) {
                     return rooms[senderSocket.request.user.inRoomId].chatHistory;
                 }
-                else {
-                    return { message: "The game hasn't started yet. There is no chat to display.", classStr: "server-text" };
-                }
-            }
+
+                return { message: "The game hasn't started yet. There is no chat to display.", classStr: "server-text" };
+            },
         },
 
         allchat: {
             command: "allchat",
             help: "/allchat: Get a copy of the last 5 minutes of allchat.",
-            run: function (data, senderSocket) {
-                //code
-                var args = data.args;
+            run(data, senderSocket) {
+                // code
+                const { args } = data;
                 return allChat5Min;
-            }
+            },
         },
 
         roll: {
             command: "roll",
             help: "/roll <optional number>: Returns a random number between 1 and 10 or 1 and optional number.",
-            run: function (data, senderSocket) {
-                var args = data.args;
+            run(data, senderSocket) {
+                const { args } = data;
 
-                //code
+                // code
                 if (args[1]) {
                     if (isNaN(args[1]) === false) {
                         return { message: (Math.floor(Math.random() * args[1]) + 1).toString(), classStr: "server-text" };
                     }
-                    else {
-                        return { message: "That is not a valid number!", classStr: "server-text" };
-                    }
-                }
 
-                else {
-                    return { message: (Math.floor(Math.random() * 10) + 1).toString(), classStr: "server-text" };
+                    return { message: "That is not a valid number!", classStr: "server-text" };
                 }
-
-            }
+                return { message: (Math.floor(Math.random() * 10) + 1).toString(), classStr: "server-text" };
+            },
         },
 
         mute: {
             command: "mute",
             help: "/mute: Mute a player who is being annoying in chat/buzzing/slapping/licking/poking/tickling you.",
-            run: function (data, senderSocket) {
-                var args = data.args;
+            run(data, senderSocket) {
+                const { args } = data;
 
                 if (args[1]) {
-                    User.findOne({ username: args[1] }).exec(function (err, foundUserToMute) {
-                        if (err) { console.log(err); }
-                        else {
-                            if (foundUserToMute) {
-                                User.findOne({ username: senderSocket.request.user.username }).exec(function (err, userCallingMute) {
-                                    if (err) { console.log(err); }
-                                    else {
-                                        if (userCallingMute) {
-                                            if (!userCallingMute.mutedPlayers) {
-                                                userCallingMute.mutedPlayers = [];
-                                            }
-                                            if (userCallingMute.mutedPlayers.indexOf(foundUserToMute.username) === -1) {
-                                                userCallingMute.mutedPlayers.push(foundUserToMute.username);
-                                                userCallingMute.markModified("mutedPlayers");
-                                                userCallingMute.save();
-                                                senderSocket.emit("updateMutedPlayers", userCallingMute.mutedPlayers);
-                                                senderSocket.emit("messageCommandReturnStr", { message: "Muted " + args[1] + " successfully.", classStr: "server-text" });
-                                            }
-                                            else {
-                                                senderSocket.emit("messageCommandReturnStr", { message: "You have already muted " + args[1] + ".", classStr: "server-text" });
-                                            }
-
-                                        }
+                    User.findOne({ username: args[1] }).exec((err, foundUserToMute) => {
+                        if (err) { console.log(err); } else if (foundUserToMute) {
+                            User.findOne({ username: senderSocket.request.user.username }).exec((err, userCallingMute) => {
+                                if (err) { console.log(err); } else if (userCallingMute) {
+                                    if (!userCallingMute.mutedPlayers) {
+                                        userCallingMute.mutedPlayers = [];
                                     }
-                                });
-                            }
-                            else {
-                                senderSocket.emit("messageCommandReturnStr", { message: args[1] + " was not found.", classStr: "server-text" });
-                                return;
-                            }
+                                    if (userCallingMute.mutedPlayers.indexOf(foundUserToMute.username) === -1) {
+                                        userCallingMute.mutedPlayers.push(foundUserToMute.username);
+                                        userCallingMute.markModified("mutedPlayers");
+                                        userCallingMute.save();
+                                        senderSocket.emit("updateMutedPlayers", userCallingMute.mutedPlayers);
+                                        senderSocket.emit("messageCommandReturnStr", { message: `Muted ${args[1]} successfully.`, classStr: "server-text" });
+                                    } else {
+                                        senderSocket.emit("messageCommandReturnStr", { message: `You have already muted ${args[1]}.`, classStr: "server-text" });
+                                    }
+                                }
+                            });
+                        } else {
+                            senderSocket.emit("messageCommandReturnStr", { message: `${args[1]} was not found.`, classStr: "server-text" });
                         }
                     });
                 }
-            }
+            },
         },
 
         unmute: {
             command: "unmute",
             help: "/unmute: Unmute a player.",
-            run: function (data, senderSocket) {
-                var args = data.args;
+            run(data, senderSocket) {
+                const { args } = data;
 
                 if (args[1]) {
-                    User.findOne({ username: senderSocket.request.user.username }).exec(function (err, foundUser) {
-                        if (err) { console.log(err); }
-                        else {
-                            if (foundUser) {
-                                if (!foundUser.mutedPlayers) {
-                                    foundUser.mutedPlayers = [];
-                                }
-                                var index = foundUser.mutedPlayers.indexOf(args[1]);
+                    User.findOne({ username: senderSocket.request.user.username }).exec((err, foundUser) => {
+                        if (err) { console.log(err); } else if (foundUser) {
+                            if (!foundUser.mutedPlayers) {
+                                foundUser.mutedPlayers = [];
+                            }
+                            const index = foundUser.mutedPlayers.indexOf(args[1]);
 
-                                if (index !== -1) {
-                                    foundUser.mutedPlayers.splice(index, 1);
-                                    foundUser.markModified("mutedPlayers");
-                                    foundUser.save();
+                            if (index !== -1) {
+                                foundUser.mutedPlayers.splice(index, 1);
+                                foundUser.markModified("mutedPlayers");
+                                foundUser.save();
 
-                                    senderSocket.emit("updateMutedPlayers", foundUser.mutedPlayers);
-                                    senderSocket.emit("messageCommandReturnStr", { message: "Unmuted " + args[1] + " successfully.", classStr: "server-text" });
-                                }
-                                else {
-                                    senderSocket.emit("messageCommandReturnStr", { message: "Could not find " + args[1] + ".", classStr: "server-text" });
-                                }
+                                senderSocket.emit("updateMutedPlayers", foundUser.mutedPlayers);
+                                senderSocket.emit("messageCommandReturnStr", { message: `Unmuted ${args[1]} successfully.`, classStr: "server-text" });
+                            } else {
+                                senderSocket.emit("messageCommandReturnStr", { message: `Could not find ${args[1]}.`, classStr: "server-text" });
                             }
                         }
                     });
+                } else {
+                    senderSocket.emit("messageCommandReturnStr", { message: `${args[1]} was not found or was not muted from the start.`, classStr: "server-text" });
                 }
-                else {
-                    senderSocket.emit("messageCommandReturnStr", { message: args[1] + " was not found or was not muted from the start.", classStr: "server-text" });
-                    return;
-                }
-            }
+            },
         },
 
         getmutedplayers: {
             command: "getmutedplayers",
             help: "/getmutedplayers: See who you have muted.",
-            run: function (data, senderSocket) {
-                var args = data.args;
+            run(data, senderSocket) {
+                const { args } = data;
 
                 if (args[1] === senderSocket.request.user.username) {
                     senderSocket.emit("messageCommandReturnStr", { message: "Why would you mute yourself...?", classStr: "server-text" });
                     return;
                 }
 
-                User.findOne({ username: senderSocket.request.user.username }).exec(function (err, foundUser) {
-                    if (err) { console.log(err); }
-                    else {
-                        if (foundUser) {
-                            if (!foundUser.mutedPlayers) {
-                                foundUser.mutedPlayers = [];
-                            }
-
-                            var dataToReturn = [];
-                            dataToReturn[0] = { message: "Muted players:", classStr: "server-text" };
-
-                            for (var i = 0; i < foundUser.mutedPlayers.length; i++) {
-                                dataToReturn[i + 1] = { message: "-" + foundUser.mutedPlayers[i], classStr: "server-text" };
-                            }
-                            if (dataToReturn.length === 1) {
-                                dataToReturn[0] = { message: "You have no muted players.", classStr: "server-text" };
-                            }
-
-                            // console.log(dataToReturn);
-
-                            senderSocket.emit("messageCommandReturnStr", dataToReturn);
-
+                User.findOne({ username: senderSocket.request.user.username }).exec((err, foundUser) => {
+                    if (err) { console.log(err); } else if (foundUser) {
+                        if (!foundUser.mutedPlayers) {
+                            foundUser.mutedPlayers = [];
                         }
+
+                        const dataToReturn = [];
+                        dataToReturn[0] = { message: "Muted players:", classStr: "server-text" };
+
+                        for (let i = 0; i < foundUser.mutedPlayers.length; i++) {
+                            dataToReturn[i + 1] = { message: `-${foundUser.mutedPlayers[i]}`, classStr: "server-text" };
+                        }
+                        if (dataToReturn.length === 1) {
+                            dataToReturn[0] = { message: "You have no muted players.", classStr: "server-text" };
+                        }
+
+                        // console.log(dataToReturn);
+
+                        senderSocket.emit("messageCommandReturnStr", dataToReturn);
                     }
                 });
-            }
+            },
         },
 
         navbar: {
             command: "navbar",
             help: "/navbar: Hides and unhides the top navbar. Some phone screens may look better with the navbar turned off.",
-            run: function (data, senderSocket) {
-                var args = data.args;
+            run(data, senderSocket) {
+                const { args } = data;
                 senderSocket.emit("toggleNavBar");
-            }
+            },
         },
 
         avatarshow: {
             command: "avatarshow",
             help: "/avatarshow: Show your custom avatar!",
-            run: function (data, senderSocket) {
-
-                User.findOne({ usernameLower: senderSocket.request.user.username.toLowerCase() }).populate("notifications").exec(function (err, foundUser) {
+            run(data, senderSocket) {
+                User.findOne({ usernameLower: senderSocket.request.user.username.toLowerCase() }).populate("notifications").exec((err, foundUser) => {
                     foundUser.avatarHide = false;
                     foundUser.save();
 
-                    var dataToReturn = {
+                    const dataToReturn = {
                         message: "Successfully unhidden.",
-                        classStr: "server-text"
+                        classStr: "server-text",
                     };
 
                     senderSocket.emit("messageCommandReturnStr", dataToReturn);
                 });
-            }
+            },
         },
         avatarhide: {
             command: "avatarhide",
             help: "/avatarhide: Hide your custom avatar.",
-            run: function (data, senderSocket) {
-                User.findOne({ usernameLower: senderSocket.request.user.username.toLowerCase() }).populate("notifications").exec(function (err, foundUser) {
+            run(data, senderSocket) {
+                User.findOne({ usernameLower: senderSocket.request.user.username.toLowerCase() }).populate("notifications").exec((err, foundUser) => {
                     foundUser.avatarHide = true;
                     foundUser.save();
 
-                    var dataToReturn = {
+                    const dataToReturn = {
                         message: "Successfully hidden.",
-                        classStr: "server-text"
+                        classStr: "server-text",
                     };
 
                     senderSocket.emit("messageCommandReturnStr", dataToReturn);
                 });
-
-
-
-            }
+            },
         },
         r: {
             command: "r",
             help: "/r: Reply to a mod who just messaged you.",
-            run: function (data, senderSocket) {
-
-                var args = data.args;
-                var str = senderSocket.request.user.username + "->" + lastWhisperObj[senderSocket.request.user.username] + " (whisper): ";
-                for (var i = 1; i < args.length; i++) {
+            run(data, senderSocket) {
+                const { args } = data;
+                let str = `${senderSocket.request.user.username}->${lastWhisperObj[senderSocket.request.user.username]} (whisper): `;
+                for (let i = 1; i < args.length; i++) {
                     str += args[i];
                     str += " ";
                 }
 
                 // str += ("(From: " + senderSocket.request.user.username + ")");
 
-                var dataMessage = {
+                const dataMessage = {
                     message: str,
                     dateCreated: new Date(),
-                    classStr: "whisper"
+                    classStr: "whisper",
                 };
 
-                //this sendToSocket is the moderator
-                var sendToSocket = allSockets[getIndexFromUsername(allSockets, lastWhisperObj[senderSocket.request.user.username], true)];
+                // this sendToSocket is the moderator
+                const sendToSocket = allSockets[getIndexFromUsername(allSockets, lastWhisperObj[senderSocket.request.user.username], true)];
 
                 if (!sendToSocket) {
                     senderSocket.emit("messageCommandReturnStr", { message: "You haven't been whispered to before.", classStr: "server-text" });
-                }
-                else {
+                } else {
                     sendToSocket.emit("allChatToClient", dataMessage);
                     sendToSocket.emit("roomChatToClient", dataMessage);
 
-                    //set the last whisper person
+                    // set the last whisper person
                     lastWhisperObj[sendToSocket.request.user.username] = senderSocket.request.user.username;
 
                     lastWhisperObj[senderSocket.request.user.username] = sendToSocket.request.user.username;
@@ -654,9 +605,8 @@ var actionsObj = {
                     senderSocket.emit("allChatToClient", dataMessage);
                     senderSocket.emit("roomChatToClient", dataMessage);
                 }
-                return;
-            }
-        }
+            },
+        },
     },
 
 
@@ -664,47 +614,42 @@ var actionsObj = {
         m: {
             command: "m",
             help: "/m: displays /mhelp",
-            run: function (data, senderSocket) {
-
-                return actionsObj.modCommands["mhelp"].run(data, senderSocket);
-            }
+            run(data, senderSocket) {
+                return actionsObj.modCommands.mhelp.run(data, senderSocket);
+            },
         },
         mban: {
             command: "mban",
             help: "/mban: Open the ban interface",
-            run: function (data, senderSocket) {
-
+            run(data, senderSocket) {
                 // console.log(senderSocket.request.user.username);
                 if (modsArray.indexOf(senderSocket.request.user.username.toLowerCase()) !== -1) {
                     senderSocket.emit("openModModal");
                     return { message: "May your judgement bring peace to all!", classStr: "server-text" };
                 }
-                else {
-                    //add a report to this player.
-                    return { message: "You are not a mod. Why are you trying this...", classStr: "server-text" };
-                }
-            }
+
+                // add a report to this player.
+                return { message: "You are not a mod. Why are you trying this...", classStr: "server-text" };
+            },
         },
         mipban: {
             command: "mipban",
             help: "/mipban <username>: Ban the IP of the player given. /munban does not undo this ban. Contact ProNub to remove an IP ban.",
-            run: function (data, senderSocket) {
-                var args = data.args;
+            run(data, senderSocket) {
+                const { args } = data;
 
                 if (!args[1]) {
                     senderSocket.emit("messageCommandReturnStr", { message: "Specify a username", classStr: "server-text" });
                     return { message: "Specify a username.", classStr: "server-text" };
                 }
 
-                User.find({ usernameLower: senderSocket.request.user.username.toLowerCase() }).populate("notifications").exec(function (err, foundUser) {
-                    if (err) { console.log(err); }
-                    else if (foundUser) {
-
-                        var slapSocket = allSockets[getIndexFromUsername(allSockets, args[1], true)];
+                User.find({ usernameLower: senderSocket.request.user.username.toLowerCase() }).populate("notifications").exec((err, foundUser) => {
+                    if (err) { console.log(err); } else if (foundUser) {
+                        const slapSocket = allSockets[getIndexFromUsername(allSockets, args[1], true)];
                         if (slapSocket) {
-                            var clientIpAddress = slapSocket.request.headers["x-forwarded-for"] || slapSocket.request.connection.remoteAddress;
+                            const clientIpAddress = slapSocket.request.headers["x-forwarded-for"] || slapSocket.request.connection.remoteAddress;
 
-                            var banIpData = {
+                            const banIpData = {
                                 type: "ip",
                                 bannedIp: clientIpAddress,
                                 usernamesAssociated: [args[1].toLowerCase()],
@@ -712,84 +657,76 @@ var actionsObj = {
                                 whenMade: new Date(),
                             };
 
-                            banIp.create(banIpData, function (err, newBan) {
-                                if (err) { console.log(err); }
-                                else {
+                            banIp.create(banIpData, (err, newBan) => {
+                                if (err) { console.log(err); } else {
                                     allSockets[getIndexFromUsername(allSockets, args[1].toLowerCase(), true)].disconnect(true);
 
-                                    senderSocket.emit("messageCommandReturnStr", { message: "Successfully ip banned user " + args[1], classStr: "server-text" });
+                                    senderSocket.emit("messageCommandReturnStr", { message: `Successfully ip banned user ${args[1]}`, classStr: "server-text" });
                                 }
                             });
-                        }
-                        else {
+                        } else {
                             senderSocket.emit("messageCommandReturnStr", { message: "Could not find the player to ban.", classStr: "server-text" });
                         }
-                    }
-
-                    else {
-                        //send error message back
+                    } else {
+                        // send error message back
                         senderSocket.emit("messageCommandReturnStr", { message: "Could not find your user data (your own one, not the person you're trying to ban)", classStr: "server-text" });
                     }
-
                 });
-
-            }
+            },
         },
         mhelp: {
             command: "mhelp",
             help: "/mhelp: show commands.",
-            run: function (data, senderSocket) {
-                var args = data.args;
-                //do stuff
-                var dataToReturn = [];
-                var i = 0;
+            run(data, senderSocket) {
+                const { args } = data;
+                // do stuff
+                const dataToReturn = [];
+                let i = 0;
                 i++;
 
-                for (var key in actionsObj.modCommands) {
+                for (const key in actionsObj.modCommands) {
                     if (actionsObj.modCommands.hasOwnProperty(key)) {
                         if (!actionsObj.modCommands[key].modsOnly) {
                             // console.log(key + " -> " + p[key]);
                             dataToReturn[i] = { message: actionsObj.modCommands[key].help, classStr: "server-text" };
                             // str[i] = userCommands[key].help;
                             i++;
-                            //create a break in the chat
+                            // create a break in the chat
                             // data[i] = {message: "-------------------------", classStr: "server-text"};
                             // i++;
                         }
                     }
                 }
                 return dataToReturn;
-
-            }
+            },
         },
         munban: {
             command: "munban",
             help: "/munban <player name>: Removes ALL existing bans OR mutes on a player's name.",
-            run: async function (data, senderSocket) {
-                var args = data.args;
+            async run(data, senderSocket) {
+                const { args } = data;
 
                 if (!args[1]) {
                     return { message: "Specify a username.", classStr: "server-text" };
                 }
 
-                modAction.find({ "bannedPlayer.username": args[1] }, function (err, foundModAction) {
+                modAction.find({ "bannedPlayer.username": args[1] }, (err, foundModAction) => {
                     // console.log("foundmodaction");
                     // console.log(foundModAction);
                     if (foundModAction.length !== 0) {
-                        modAction.remove({ "bannedPlayer.username": args[1] }, function (err, foundModAction) {
+                        modAction.remove({ "bannedPlayer.username": args[1] }, (err, foundModAction) => {
                             if (err) {
                                 console.log(err);
                                 senderSocket.emit("messageCommandReturnStr", { message: "Something went wrong.", classStr: "server-text" });
-                            }
-                            else {
+                            } else {
                                 // console.log("Successfully unbanned " + args[1] + ".");
-                                senderSocket.emit("messageCommandReturnStr", { message: "Successfully unbanned " + args[1] + ".", classStr: "server-text" });
+                                senderSocket.emit("messageCommandReturnStr", { message: `Successfully unbanned ${args[1]}.`, classStr: "server-text" });
 
 
-                                //load up all the modActions again to update
-                                modAction.find({ whenRelease: { $gt: new Date() }, type: "mute" }, function (err, allModActions) {
+                                // load up all the modActions again to update
+                                modAction.find({ whenRelease: { $gt: new Date() }, type: "mute" }, (err, allModActions) => {
                                     currentModActions = [];
-                                    for (var i = 0; i < allModActions.length; i++) {
+                                    for (let i = 0; i < allModActions.length; i++) {
                                         currentModActions.push(allModActions[i]);
                                     }
                                     // console.log("mute");
@@ -797,115 +734,105 @@ var actionsObj = {
                                 });
                             }
                         });
-                    }
-                    else {
-                        senderSocket.emit("messageCommandReturnStr", { message: args[1] + " does not have a ban.", classStr: "server-text" });
+                    } else {
+                        senderSocket.emit("messageCommandReturnStr", { message: `${args[1]} does not have a ban.`, classStr: "server-text" });
                     }
                 });
-
-            }
+            },
         },
 
         mcurrentbans: {
             command: "mcurrentbans",
             help: "/mcurrentbans: Show a list of currently active bans.",
-            run: function (data, senderSocket) {
-                var args = data.args;
-                //do stuff
-                var dataToReturn = [];
-                var i = 0;
+            run(data, senderSocket) {
+                const { args } = data;
+                // do stuff
+                const dataToReturn = [];
+                let i = 0;
                 i++;
 
                 modAction.find({
                     $or: [
                         { type: "mute" },
-                        { type: "ban" }
-                    ]
-                }, function (err, foundModActions) {
-                    foundModActions.forEach(function (modActionFound) {
-                        var message = "";
+                        { type: "ban" },
+                    ],
+                }, (err, foundModActions) => {
+                    foundModActions.forEach((modActionFound) => {
+                        let message = "";
                         if (modActionFound.type === "ban") {
-                            message = modActionFound.bannedPlayer.username + " was banned for " + modActionFound.reason + " by " + modActionFound.modWhoBanned.username + ", description: '" + modActionFound.descriptionByMod + "' until: " + modActionFound.whenRelease.toString();
-                        }
-                        else if (modActionFound.type === "mute") {
-                            message = modActionFound.bannedPlayer.username + " was muted for " + modActionFound.reason + " by " + modActionFound.modWhoBanned.username + ", description: '" + modActionFound.descriptionByMod + "' until: " + modActionFound.whenRelease.toString();
+                            message = `${modActionFound.bannedPlayer.username} was banned for ${modActionFound.reason} by ${modActionFound.modWhoBanned.username}, description: '${modActionFound.descriptionByMod}' until: ${modActionFound.whenRelease.toString()}`;
+                        } else if (modActionFound.type === "mute") {
+                            message = `${modActionFound.bannedPlayer.username} was muted for ${modActionFound.reason} by ${modActionFound.modWhoBanned.username}, description: '${modActionFound.descriptionByMod}' until: ${modActionFound.whenRelease.toString()}`;
                         }
 
-                        dataToReturn[dataToReturn.length] = { message: message, classStr: "server-text" };
+                        dataToReturn[dataToReturn.length] = { message, classStr: "server-text" };
                     });
 
                     if (dataToReturn.length === 0) {
                         senderSocket.emit("messageCommandReturnStr", { message: "No one is banned! Yay!", classStr: "server-text" });
-                    }
-                    else {
+                    } else {
                         senderSocket.emit("messageCommandReturnStr", dataToReturn);
                     }
                 });
-            }
+            },
         },
         mcompareips: {
             command: "mcompareips",
             help: "/mcompareips: Get usernames of players with the same IP.",
-            run: async function (data, senderSocket) {
-                var args = data.args;
+            async run(data, senderSocket) {
+                const { args } = data;
 
-                var slapSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
+                const slapSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
 
-                var usernames = [];
-                var ips = [];
+                const usernames = [];
+                const ips = [];
 
                 for (var i = 0; i < allSockets.length; i++) {
                     usernames.push(allSockets[i].request.user.username);
 
-                    var clientIpAddress = allSockets[i].request.headers["x-forwarded-for"] || allSockets[i].request.connection.remoteAddress;
+                    const clientIpAddress = allSockets[i].request.headers["x-forwarded-for"] || allSockets[i].request.connection.remoteAddress;
                     ips.push(clientIpAddress);
                 }
 
-                var names = ["Mike", "Matt", "Nancy", "Adam", "Jenny", "Nancy", "Carl"];
+                const names = ["Mike", "Matt", "Nancy", "Adam", "Jenny", "Nancy", "Carl"];
 
-                var uniq = ips
-                    .map((ip) => {
-                        return { count: 1, ip: ip };
-                    })
+                const uniq = ips
+                    .map(ip => ({ count: 1, ip }))
                     .reduce((a, b) => {
                         a[b.ip] = (a[b.ip] || 0) + b.count;
                         return a;
                     }, {});
 
-                var duplicateIps = Object.keys(uniq).filter((a) => uniq[a] > 1);
+                const duplicateIps = Object.keys(uniq).filter(a => uniq[a] > 1);
 
                 // console.log(duplicateIps) // [ 'Nancy' ]
                 // var indexesOfDuplicates = [][];
 
                 // var str = "";
-                var dataToReturn = [];
+                const dataToReturn = [];
                 dataToReturn[0] = { message: "-------------------------", classStr: "server-text", dateCreated: new Date() };
 
 
                 for (var i = 0; i < duplicateIps.length; i++) {
-                    //for each ip, search through the whole users to see who has the ips
+                    // for each ip, search through the whole users to see who has the ips
 
-                    for (var j = 0; j < ips.length; j++) {
+                    for (let j = 0; j < ips.length; j++) {
                         if (ips[j] === duplicateIps[i]) {
                             dataToReturn.push({ message: usernames[j], classStr: "server-text", dateCreated: new Date() });
                         }
                     }
 
                     dataToReturn.push({ message: "-------------------------", classStr: "server-text", dateCreated: new Date() });
-
-
                 }
 
                 senderSocket.emit("messageCommandReturnStr", dataToReturn);
-
-                return;
-            }
+            },
         },
         mdc: {
             command: "mdc",
             help: "/mdc <player name>: Disconnect a player.",
-            run: async function (data, senderSocket) {
-                var args = data.args;
+            async run(data, senderSocket) {
+                const { args } = data;
 
                 if (!args[1]) {
                     senderSocket.emit("messageCommandReturnStr", { message: "Specify a username.", classStr: "server-text" });
@@ -913,83 +840,72 @@ var actionsObj = {
                 }
 
 
-                var targetSock = allSockets[getIndexFromUsername(allSockets, args[1], true)];
+                const targetSock = allSockets[getIndexFromUsername(allSockets, args[1], true)];
                 if (targetSock) {
                     targetSock.disconnect();
-                    senderSocket.emit("messageCommandReturnStr", { message: "Disconnected " + args[1] + " successfully.", classStr: "server-text" });
-
-                    return;
-                }
-                else {
+                    senderSocket.emit("messageCommandReturnStr", { message: `Disconnected ${args[1]} successfully.`, classStr: "server-text" });
+                } else {
                     senderSocket.emit("messageCommandReturnStr", { message: "Could not find username", classStr: "server-text" });
                 }
-
-                return;
-            }
+            },
         },
 
         mnotify: {
             command: "mnotify",
             help: "/mnotify <player name> <text to leave for player>: Leaves a message for a player that will appear in their notifications. Note your name will be added to the end of the message to them.",
-            run: async function (data, senderSocket) {
-                var args = data.args;
-                var str = "";
-                for (var i = 2; i < args.length; i++) {
+            async run(data, senderSocket) {
+                const { args } = data;
+                let str = "";
+                for (let i = 2; i < args.length; i++) {
                     str += args[i];
                     str += " ";
                 }
 
-                str += ("(From: " + senderSocket.request.user.username + ")");
+                str += (`(From: ${senderSocket.request.user.username})`);
 
-                User.findOne({ usernameLower: args[1].toLowerCase() }).exec(function (err, foundUser) {
+                User.findOne({ usernameLower: args[1].toLowerCase() }).exec((err, foundUser) => {
                     if (err) {
                         console.log(err);
                         senderSocket.emit("messageCommandReturnStr", { message: "Server error... let me know if you see this.", classStr: "server-text" });
-                    }
-                    else {
-                        if (foundUser) {
-                            var userIdTarget = foundUser._id;
-                            var stringToSay = str;
-                            var link = "#";
+                    } else if (foundUser) {
+                        const userIdTarget = foundUser._id;
+                        const stringToSay = str;
+                        const link = "#";
 
-                            createNotificationObj.createNotification(userIdTarget, stringToSay, link);
-                            senderSocket.emit("messageCommandReturnStr", { message: "Sent to " + foundUser.username + " successfully! Here was your message: " + str, classStr: "server-text" });
-                        }
-                        else {
-                            senderSocket.emit("messageCommandReturnStr", { message: "Could not find " + args[1], classStr: "server-text" });
-                        }
+                        createNotificationObj.createNotification(userIdTarget, stringToSay, link);
+                        senderSocket.emit("messageCommandReturnStr", { message: `Sent to ${foundUser.username} successfully! Here was your message: ${str}`, classStr: "server-text" });
+                    } else {
+                        senderSocket.emit("messageCommandReturnStr", { message: `Could not find ${args[1]}`, classStr: "server-text" });
                     }
                 });
-                return;
-            }
+            },
         },
 
         mwhisper: {
             command: "mwhisper",
             help: "/mwhisper <player name> <text to send>: Sends a whisper to a player.",
-            run: async function (data, senderSocket) {
-                var args = data.args;
-                var str = senderSocket.request.user.username + "->" + args[1] + " (whisper): ";
-                for (var i = 2; i < args.length; i++) {
+            async run(data, senderSocket) {
+                const { args } = data;
+                let str = `${senderSocket.request.user.username}->${args[1]} (whisper): `;
+                for (let i = 2; i < args.length; i++) {
                     str += args[i];
                     str += " ";
                 }
 
                 // str += ("(From: " + senderSocket.request.user.username + ")");
 
-                var dataMessage = {
+                const dataMessage = {
                     message: str,
                     dateCreated: new Date(),
-                    classStr: "whisper"
+                    classStr: "whisper",
                 };
 
-                var sendToSocket = allSockets[getIndexFromUsername(allSockets, args[1], true)];
+                const sendToSocket = allSockets[getIndexFromUsername(allSockets, args[1], true)];
 
                 if (!sendToSocket) {
-                    senderSocket.emit("messageCommandReturnStr", { message: "Could not find " + args[1], classStr: "server-text" });
-                }
-                else {
-                    //send notification that you can do /r for first whisper message
+                    senderSocket.emit("messageCommandReturnStr", { message: `Could not find ${args[1]}`, classStr: "server-text" });
+                } else {
+                    // send notification that you can do /r for first whisper message
                     if (!lastWhisperObj[sendToSocket.request.user.username]) {
                         sendToSocket.emit("allChatToClient", { message: "You can do /r <message> to reply.", classStr: "whisper", dateCreated: new Date() });
                         sendToSocket.emit("roomChatToClient", { message: "You can do /r <message> to reply.", classStr: "whisper", dateCreated: new Date() });
@@ -1002,158 +918,145 @@ var actionsObj = {
                     senderSocket.emit("allChatToClient", dataMessage);
                     senderSocket.emit("roomChatToClient", dataMessage);
 
-                    //set the last whisper person
+                    // set the last whisper person
                     lastWhisperObj[sendToSocket.request.user.username] = senderSocket.request.user.username;
 
                     lastWhisperObj[senderSocket.request.user.username] = sendToSocket.request.user.username;
                 }
-
-                return;
-
-            }
+            },
         },
 
         mremoveavatar: {
             command: "mremoveavatar",
             help: "/mremoveavatar <player name>: Remove <player name>'s avatar.",
-            run: async function (data, senderSocket) {
-                var args = data.args;
+            async run(data, senderSocket) {
+                const { args } = data;
 
                 if (!args[1]) {
                     senderSocket.emit("messageCommandReturnStr", { message: "Specify a username.", classStr: "server-text" });
                     return;
                 }
 
-                User.findOne({ usernameLower: args[1].toLowerCase() }).populate("notifications").exec(function (err, foundUser) {
-                    if (err) { console.log(err); }
-                    else {
+                User.findOne({ usernameLower: args[1].toLowerCase() }).populate("notifications").exec((err, foundUser) => {
+                    if (err) { console.log(err); } else {
                         foundUser.avatarImgRes = "";
                         foundUser.avatarImgSpy = "";
                         foundUser.save();
 
-                        senderSocket.emit("messageCommandReturnStr", { message: "Successfully removed " + args[1] + "'s avatar.", classStr: "server-text" });
+                        senderSocket.emit("messageCommandReturnStr", { message: `Successfully removed ${args[1]}'s avatar.`, classStr: "server-text" });
                     }
                 });
-                return;
-            }
+            },
         },
 
         maddbots: {
             command: "maddbots",
             help: "/maddbots <number>: Add <number> bots to the room.",
-            run: function (data, senderSocket, roomIdInput) {
-                var args = data.args;
+            run(data, senderSocket, roomIdInput) {
+                const { args } = data;
 
                 if (!args[1]) {
                     senderSocket.emit("messageCommandReturnStr", { message: "Specify a number.", classStr: "server-text" });
                     return;
                 }
 
-                var roomId;
+                let roomId;
                 if (senderSocket === undefined) {
                     roomId = roomIdInput;
-                }
-                else {
+                } else {
                     roomId = senderSocket.request.user.inRoomId;
                 }
 
                 if (rooms[roomId]) {
-                    var dummySockets = [];
+                    const dummySockets = [];
 
-                    for (var i = 0; i < args[1]; i++) {
-
+                    for (let i = 0; i < args[1]; i++) {
                         dummySockets[i] = {
                             request: {
                                 user: {
-                                    username: "Bot" + i,
-                                    bot: true
-                                }
+                                    username: `Bot${i}`,
+                                    bot: true,
+                                },
                             },
-                            emit: function () {
+                            emit() {
 
-                            }
+                            },
                         };
                         rooms[roomId].playerJoinRoom(dummySockets[i]);
                         rooms[roomId].playerSitDown(dummySockets[i]);
 
-                        //Save a copy of the sockets within botSockets
+                        // Save a copy of the sockets within botSockets
                         if (!rooms[roomId].botSockets) {
                             rooms[roomId].botSockets = [];
                         }
                         rooms[roomId].botSockets.push(dummySockets[i]);
                     }
                 }
-                return;
-            }
+            },
         },
 
         mtestgame: {
             command: "mtestgame",
             help: "/mtestgame <number>: Add <number> bots to a test game and start it automatically.",
-            run: function (data, senderSocket, io) {
-                var args = data.args;
+            run(data, senderSocket, io) {
+                const { args } = data;
 
                 if (!args[1]) {
                     senderSocket.emit("messageCommandReturnStr", { message: "Specify a number.", classStr: "server-text" });
                     return;
                 }
 
-                //Get the next room Id
+                // Get the next room Id
                 while (rooms[nextRoomId]) {
                     nextRoomId++;
                 }
                 dataObj = {
                     maxNumPlayers: 10,
                     newRoomPassword: "",
-                    gameMode: "avalon"
+                    gameMode: "avalon",
                 };
 
 
-
-                //Create the room
+                // Create the room
                 rooms[nextRoomId] = new gameRoom("Bot game", nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword, dataObj.gameMode);
-                var privateStr = ("" === dataObj.newRoomPassword) ? "" : "private ";
-                //broadcast to all chat
-                var messageData = {
-                    message: "Bot game" + " has created " + privateStr + "room " + nextRoomId + ".",
-                    classStr: "server-text"
+                const privateStr = (dataObj.newRoomPassword === "") ? "" : "private ";
+                // broadcast to all chat
+                const messageData = {
+                    message: `${"Bot game" + " has created "}${privateStr}room ${nextRoomId}.`,
+                    classStr: "server-text",
                 };
                 sendToAllChat(io, messageData);
 
-                //Add the bots to the room
+                // Add the bots to the room
                 actionsObj.modCommands.maddbots.run(data, undefined, nextRoomId);
 
-                //Start the game.
-                var options = ["Merlin", "Assassin", "Percival", "Morgana", "Ref of the Rain", "Sire of the Sea", "Lady of the Lake"];
+                // Start the game.
+                const options = ["Merlin", "Assassin", "Percival", "Morgana", "Ref of the Rain", "Sire of the Sea", "Lady of the Lake"];
                 rooms[nextRoomId].hostTryStartGame(options, "avalon");
 
                 updateCurrentGamesList();
-
-                return;
-            }
+            },
         },
 
         mremovefrozen: {
             command: "mremovefrozen",
             help: "/mremovefrozen: Remove all frozen rooms and the corresponding save files in the database.",
-            run: function (data, senderSocket) {
-
-                for (var i = 0; i < rooms.length; i++) {
+            run(data, senderSocket) {
+                for (let i = 0; i < rooms.length; i++) {
                     if (rooms[i] && rooms[i].frozen) {
                         deleteSaveGameFromDb(rooms[i]);
                         rooms[i] = undefined;
                     }
                 }
                 updateCurrentGamesList();
-                return;
-            }
+            },
         },
 
         mclose: {
             command: "mclose",
             help: "/mclose <roomId>: Close room <roomId>. Also removes the corresponding save files in the database.",
-            run: function (data, senderSocket) {
-                var args = data.args;
+            run(data, senderSocket) {
+                const { args } = data;
 
                 if (!args[1]) {
                     senderSocket.emit("messageCommandReturnStr", { message: "Specify a number.", classStr: "server-text" });
@@ -1162,7 +1065,7 @@ var actionsObj = {
 
                 if (rooms[args[1]] !== undefined) {
                     // Disconnect everyone
-                    for (var i = 0; i < rooms[args[1]].allSockets.length; i++) {
+                    for (let i = 0; i < rooms[args[1]].allSockets.length; i++) {
                         rooms[args[1]].allSockets[i].emit("leave-room-requested");
                     }
 
@@ -1179,120 +1082,117 @@ var actionsObj = {
                     }
                 }
                 updateCurrentGamesList();
-                return;
-            }
+            },
         },
         mannounce: {
             command: "mannounce",
             help: "/mannounce <message>: Sends a sweet alert to all online players with an included message. It automatically says the username of the mod that executed the command.",
-            run: function (data, senderSocket) {
-                var args = data.args;
+            run(data, senderSocket) {
+                const { args } = data;
                 if (!args[1]) {
                     senderSocket.emit("messageCommandReturnStr", { message: "Please enter a message...", classStr: "server-text" });
                     return;
                 }
-				
-                var str = "";
-                for(var i = 1; i < args.length; i++){
+
+                let str = "";
+                for (let i = 1; i < args.length; i++) {
                     str += args[i];
                     str += " ";
                 }
 
-                str += "<br><br>From: " + senderSocket.request.user.username;
+                str += `<br><br>From: ${senderSocket.request.user.username}`;
 
-                allSockets.forEach(function(sock){
+                allSockets.forEach((sock) => {
                     sock.emit("mannounce", str);
                 });
-            }
-        }
+            },
+        },
     },
 
     adminCommands: {
         a: {
             command: "a",
             help: "/a: ...shows mods commands",
-            run: function (data) {
-                var args = data.args;
-                //do stuff
-                var dataToReturn = [];
-                var i = 0;
+            run(data) {
+                const { args } = data;
+                // do stuff
+                const dataToReturn = [];
+                let i = 0;
                 i++;
 
-                for (var key in actionsObj.adminCommands) {
+                for (const key in actionsObj.adminCommands) {
                     if (actionsObj.adminCommands.hasOwnProperty(key)) {
                         if (!actionsObj.adminCommands[key].modsOnly) {
                             // console.log(key + " -> " + p[key]);
                             dataToReturn[i] = { message: actionsObj.adminCommands[key].help, classStr: "server-text" };
                             // str[i] = userCommands[key].help;
                             i++;
-                            //create a break in the chat
+                            // create a break in the chat
                             // data[i] = {message: "-------------------------", classStr: "server-text"};
                             // i++;
                         }
                     }
                 }
                 return dataToReturn;
-            }
+            },
         },
 
         admintest: {
             command: "admintest",
             help: "/admintest: Testing that only the admin can access this command",
-            run: function (data) {
-                var args = data.args;
-                //do stuff
+            run(data) {
+                const { args } = data;
+                // do stuff
                 return { message: "admintest has been run.", classStr: "server-text" };
-            }
+            },
         },
 
         aServerRestartWarning: {
             command: "aServerRestartWarning",
             help: "/aServerRestartWarning: Only for the admin to use :)",
-            run: function (data, senderSocket) {
-                var args = data.args;
+            run(data, senderSocket) {
+                const { args } = data;
                 // console.log(allSockets);
-                //code
+                // code
                 if (adminsArray.indexOf(senderSocket.request.user.username.toLowerCase()) !== -1) {
                     saveGamesAndSendWarning(senderSocket);
-                }
-                else {
+                } else {
                     return { message: "You are not the admin...", classStr: "server-text" };
                 }
-            }
+            },
         },
 
         killS: {
             command: "killS",
             help: "/killS: test kill",
-            run: function (data) {
-                var args = data.args;
-                //do stuff
+            run(data) {
+                const { args } = data;
+                // do stuff
                 process.exit(0);
 
 
-
                 return { message: "killS has been run.", classStr: "server-text" };
-            }
+            },
         },
 
         aram: {
             command: "aram",
             help: "/aram: get the ram used",
-            run: function (data) {
-                var args = data.args;
+            run(data) {
+                const { args } = data;
 
                 const used = process.memoryUsage().heapUsed / 1024 / 1024;
                 // console.log(`The script uses approximately ${Math.round(used * 100) / 100} MB`);
 
                 return { message: `The script uses approximately ${Math.round(used * 100) / 100} MB`, classStr: "server-text" };
-            }
+            },
         },
 
         aip: {
             command: "aip",
             help: "/aip <player name>: Get the ip of the player.",
-            run: async function (data, senderSocket) {
-                var args = data.args;
+            async run(data, senderSocket) {
+                const { args } = data;
 
                 if (!args[1]) {
                     // console.log("a");
@@ -1301,44 +1201,37 @@ var actionsObj = {
                 }
 
 
-                var slapSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
+                const slapSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
                 if (slapSocket) {
                     // console.log("b");
-                    var clientIpAddress = slapSocket.request.headers["x-forwarded-for"] || slapSocket.request.connection.remoteAddress;
+                    const clientIpAddress = slapSocket.request.headers["x-forwarded-for"] || slapSocket.request.connection.remoteAddress;
 
                     senderSocket.emit("messageCommandReturnStr", { message: clientIpAddress, classStr: "server-text" });
 
                     return { message: "slapSocket.request.user.username", classStr: "server-text" };
                 }
-                else {
-                    // console.log("c");
 
-                    senderSocket.emit("messageCommandReturnStr", { message: "No IP found or invalid username", classStr: "server-text" });
+                // console.log("c");
 
-                    return { message: "There is no such player.", classStr: "server-text" };
-                }
+                senderSocket.emit("messageCommandReturnStr", { message: "No IP found or invalid username", classStr: "server-text" });
 
-
-
-                return;
-            }
+                return { message: "There is no such player.", classStr: "server-text" };
+            },
         },
         aipban: {
             command: "aipban",
             help: "/aipban <ip>: Ban the IP of the IP given. /munban does not undo this ban. Contact ProNub to remove an IP ban.",
-            run: function (data, senderSocket) {
-                var args = data.args;
+            run(data, senderSocket) {
+                const { args } = data;
 
                 if (!args[1]) {
                     senderSocket.emit("messageCommandReturnStr", { message: "Specify an IP", classStr: "server-text" });
                     return { message: "Specify a username.", classStr: "server-text" };
                 }
 
-                User.find({ usernameLower: senderSocket.request.user.username.toLowerCase() }).populate("notifications").exec(function (err, foundUser) {
-                    if (err) { console.log(err); }
-                    else if (foundUser) {
-
-                        var banIpData = {
+                User.find({ usernameLower: senderSocket.request.user.username.toLowerCase() }).populate("notifications").exec((err, foundUser) => {
+                    if (err) { console.log(err); } else if (foundUser) {
+                        const banIpData = {
                             type: "ip",
                             bannedIp: args[1],
                             usernamesAssociated: [],
@@ -1346,37 +1239,30 @@ var actionsObj = {
                             whenMade: new Date(),
                         };
 
-                        banIp.create(banIpData, function (err, newBan) {
-                            if (err) { console.log(err); }
-                            else {
-                                senderSocket.emit("messageCommandReturnStr", { message: "Successfully banned ip " + args[1], classStr: "server-text" });
+                        banIp.create(banIpData, (err, newBan) => {
+                            if (err) { console.log(err); } else {
+                                senderSocket.emit("messageCommandReturnStr", { message: `Successfully banned ip ${args[1]}`, classStr: "server-text" });
                             }
                         });
-
-                    }
-
-                    else {
-                        //send error message back
+                    } else {
+                        // send error message back
                         senderSocket.emit("messageCommandReturnStr", { message: "Could not find your user data (your own one, not the person you're trying to ban)", classStr: "server-text" });
                     }
-
                 });
-
-            }
-        }
-    }
+            },
+        },
+    },
 };
 
 
-var userCommands = actionsObj.userCommands;
-var modCommands = actionsObj.modCommands;
-var adminCommands = actionsObj.adminCommands;
+const { userCommands } = actionsObj;
+const { modCommands } = actionsObj;
+const { adminCommands } = actionsObj;
 
 
-//load up all the modActions that are not released yet
-modAction.find({ whenRelease: { $gt: new Date() }, type: "mute" }, function (err, allModActions) {
-
-    for (var i = 0; i < allModActions.length; i++) {
+// load up all the modActions that are not released yet
+modAction.find({ whenRelease: { $gt: new Date() }, type: "mute" }, (err, allModActions) => {
+    for (let i = 0; i < allModActions.length; i++) {
         currentModActions.push(allModActions[i]);
     }
     // console.log("mute");
@@ -1384,11 +1270,9 @@ modAction.find({ whenRelease: { $gt: new Date() }, type: "mute" }, function (err
 });
 
 
-
 module.exports = function (io) {
-    //SOCKETS for each connection
-    io.sockets.on("connection", function (socket) {
-
+    // SOCKETS for each connection
+    io.sockets.on("connection", (socket) => {
         if (socket.request.isAuthenticated()) {
             // console.log("User is authenticated");
         } else {
@@ -1397,20 +1281,20 @@ module.exports = function (io) {
             return;
         }
 
-        //remove any duplicate sockets
-        for (var i = 0; i < allSockets.length; i++) {
+        // remove any duplicate sockets
+        for (let i = 0; i < allSockets.length; i++) {
             if (allSockets[i].request.user.id === socket.request.user.id) {
                 allSockets[i].disconnect(true);
             }
         }
-        //now push their socket in
+        // now push their socket in
         allSockets.push(socket);
 
 
-        //slight delay while client loads
-        setTimeout(function () {
-            //check if they have a ban or a mute
-            for (var i = 0; i < currentModActions.length; i++) {
+        // slight delay while client loads
+        setTimeout(() => {
+            // check if they have a ban or a mute
+            for (let i = 0; i < currentModActions.length; i++) {
                 if (currentModActions[i].bannedPlayer.id && socket.request.user.id.toString() === currentModActions[i].bannedPlayer.id.toString()) {
                     if (currentModActions[i].type === "mute") {
                         socket.emit("muteNotification", currentModActions[i]);
@@ -1418,71 +1302,63 @@ module.exports = function (io) {
                 }
             }
 
-            console.log(socket.request.user.username + " has connected under socket ID: " + socket.id);
+            console.log(`${socket.request.user.username} has connected under socket ID: ${socket.id}`);
 
 
-
-
-
-
-            //send the user its ID to store on their side.
+            // send the user its ID to store on their side.
             socket.emit("username", socket.request.user.username);
-            //send the user the list of commands
+            // send the user the list of commands
             socket.emit("commands", userCommands);
 
-            //if the mods name is inside the array
+            // if the mods name is inside the array
             if (modsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1) {
-                //send the user the list of commands
+                // send the user the list of commands
                 socket.emit("modCommands", modCommands);
 
-                avatarRequest.find({ processed: false }).exec(function (err, allAvatarRequests) {
-                    if (err) { console.log(err); }
-                    else {
+                avatarRequest.find({ processed: false }).exec((err, allAvatarRequests) => {
+                    if (err) { console.log(err); } else {
                         socket.emit("", modCommands);
 
-                        setTimeout(function () {
+                        setTimeout(() => {
                             if (allAvatarRequests.length !== 0) {
                                 if (allAvatarRequests.length === 1) {
-                                    socket.emit("messageCommandReturnStr", { message: "There is " + allAvatarRequests.length + " pending custom avatar request.", classStr: "server-text" });
+                                    socket.emit("messageCommandReturnStr", { message: `There is ${allAvatarRequests.length} pending custom avatar request.`, classStr: "server-text" });
+                                } else {
+                                    socket.emit("messageCommandReturnStr", { message: `There are ${allAvatarRequests.length} pending custom avatar requests.`, classStr: "server-text" });
                                 }
-                                else {
-                                    socket.emit("messageCommandReturnStr", { message: "There are " + allAvatarRequests.length + " pending custom avatar requests.", classStr: "server-text" });
-                                }
-                            }
-                            else {
+                            } else {
                                 socket.emit("messageCommandReturnStr", { message: "There are no pending custom avatar requests!", classStr: "server-text" });
                             }
                         }, 3000);
-
                     }
                 });
             }
 
-            //if the admin name is inside the array
+            // if the admin name is inside the array
             if (adminsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1) {
-                //send the user the list of commands
+                // send the user the list of commands
                 socket.emit("adminCommands", adminCommands);
             }
 
             socket.emit("checkSettingsResetDate", dateResetRequired);
             socket.emit("checkNewUpdate", { date: newUpdateNotificationRequired, msg: updateMessage });
             socket.emit("checkNewPlayerShowIntro", "");
-            //Pass in the gameModes for the new room menu.
+            // Pass in the gameModes for the new room menu.
             socket.emit("gameModes", gameModeNames);
 
-            User.findOne({ username: socket.request.user.username }).exec(function (err, foundUser) {
+            User.findOne({ username: socket.request.user.username }).exec((err, foundUser) => {
                 if (foundUser.mutedPlayers) {
                     socket.emit("updateMutedPlayers", foundUser.mutedPlayers);
                 }
             });
 
 
-            //automatically join the all chat
+            // automatically join the all chat
             socket.join("allChat");
-            //socket sends to all players
-            var data = {
-                message: socket.request.user.username + " has joined the lobby.",
-                classStr: "server-text-teal"
+            // socket sends to all players
+            const data = {
+                message: `${socket.request.user.username} has joined the lobby.`,
+                classStr: "server-text-teal",
             };
             sendToAllChat(io, data);
 
@@ -1493,62 +1369,57 @@ module.exports = function (io) {
         }, 500);
 
 
+        // when a user disconnects/leaves the whole website
+        socket.on("disconnect", (data) => {
+            // debugging
+            console.log(`${socket.request.user.username} has left the lobby.`);
+
+            const playerIds = getPlayerIdsFromAllSockets();
 
 
-        //when a user disconnects/leaves the whole website
-        socket.on("disconnect", function (data) {
-            //debugging
-            console.log(socket.request.user.username + " has left the lobby.");
-
-            var playerIds = getPlayerIdsFromAllSockets();
-
-
-            //remove them from all sockets
+            // remove them from all sockets
             allSockets.splice(allSockets.indexOf(socket), 1);
 
 
-            //send out the new updated current player list
+            // send out the new updated current player list
             socket.in("allChat").emit("update-current-players-list", getPlayerUsernamesFromAllSockets());
-            //tell all clients that the user has left
+            // tell all clients that the user has left
             var data = {
-                message: socket.request.user.username + " has left the lobby.",
-                classStr: "server-text-teal"
+                message: `${socket.request.user.username} has left the lobby.`,
+                classStr: "server-text-teal",
             };
             sendToAllChat(io, data);
 
-            //Note, by default when socket disconnects, it leaves from all rooms.
-            //If user disconnected from within a room, the leave room function will send a message to other players in room.
+            // Note, by default when socket disconnects, it leaves from all rooms.
+            // If user disconnected from within a room, the leave room function will send a message to other players in room.
 
-            var username = socket.request.user.username;
-            var inRoomId = socket.request.user.inRoomId;
+            const { username } = socket.request.user;
+            const { inRoomId } = socket.request.user;
 
             playerLeaveRoomCheckDestroy(socket);
 
-            //if they are in a room, say they're leaving the room.
+            // if they are in a room, say they're leaving the room.
             var data = {
-                message: username + " has left the room.",
+                message: `${username} has left the room.`,
                 classStr: "server-text-teal",
-                dateCreated: new Date()
+                dateCreated: new Date(),
             };
             sendToRoomChat(io, inRoomId, data);
             // io.in(socket.request.user.inRoomId).emit("player-left-room", socket.request.user.username);
-
         });
 
 
-        socket.on("modAction", async function (data) {
-
+        socket.on("modAction", async (data) => {
             if (modsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1) {
                 // var parsedData = JSON.parse(data);
-                var newModAction = {};
-                var userNotFound = false;
+                const newModAction = {};
+                let userNotFound = false;
 
-                data.forEach(async function (item) {
+                data.forEach(async (item) => {
                     if (item.name === "banPlayerUsername") {
-                        //not case sensitive
-                        await User.findOne({ usernameLower: item.value.toLowerCase() }, function (err, foundUser) {
-                            if (err) { console.log(err); }
-                            else {
+                        // not case sensitive
+                        await User.findOne({ usernameLower: item.value.toLowerCase() }, (err, foundUser) => {
+                            if (err) { console.log(err); } else {
                                 // foundUser = foundUser[0];
                                 if (!foundUser) {
                                     socket.emit("messageCommandReturnStr", { message: "User not found. Please check spelling and caps.", classStr: "server-text" });
@@ -1561,22 +1432,19 @@ module.exports = function (io) {
                                 newModAction.bannedPlayer.username = foundUser.username;
                             }
                         });
-                    }
-                    else if (item.name === "typeofmodaction") {
+                    } else if (item.name === "typeofmodaction") {
                         newModAction.type = item.value;
-                    }
-                    else if (item.name === "reasonofmodaction") {
+                    } else if (item.name === "reasonofmodaction") {
                         newModAction.reason = item.value;
-                    }
-                    else if (item.name === "durationofmodaction") {
-                        var oneSec = 1000;
-                        var oneMin = oneSec * 60;
-                        var oneHr = oneMin * 60;
-                        var oneDay = oneHr * 24;
-                        var oneMonth = oneDay * 30;
-                        var oneYear = oneMonth * 12;
-                        //30 min, 3hr, 1 day, 3 day, 7 day, 1 month
-                        var durations = [
+                    } else if (item.name === "durationofmodaction") {
+                        const oneSec = 1000;
+                        const oneMin = oneSec * 60;
+                        const oneHr = oneMin * 60;
+                        const oneDay = oneHr * 24;
+                        const oneMonth = oneDay * 30;
+                        const oneYear = oneMonth * 12;
+                        // 30 min, 3hr, 1 day, 3 day, 7 day, 1 month
+                        const durations = [
                             oneMin * 30,
                             oneHr * 3,
                             oneDay,
@@ -1585,11 +1453,10 @@ module.exports = function (io) {
                             oneMonth,
                             oneMonth * 6,
                             oneYear,
-                            oneYear * 1000
+                            oneYear * 1000,
                         ];
                         newModAction.durationToBan = new Date(durations[item.value]);
-                    }
-                    else if (item.name === "descriptionByMod") {
+                    } else if (item.name === "descriptionByMod") {
                         newModAction.descriptionByMod = item.value;
                     }
                 });
@@ -1598,9 +1465,8 @@ module.exports = function (io) {
                     return;
                 }
 
-                await User.findById(socket.request.user.id, function (err, foundUser) {
-                    if (err) { console.log(err); }
-                    else {
+                await User.findById(socket.request.user.id, (err, foundUser) => {
+                    if (err) { console.log(err); } else {
                         newModAction.modWhoBanned = {};
                         newModAction.modWhoBanned.id = foundUser._id;
                         newModAction.modWhoBanned.username = foundUser.username;
@@ -1612,136 +1478,125 @@ module.exports = function (io) {
 
                 // console.log(newModAction);
                 if (userNotFound === false && newModAction.bannedPlayer && newModAction.bannedPlayer.username) {
-                    modAction.create(newModAction, function (err, newModActionCreated) {
+                    modAction.create(newModAction, (err, newModActionCreated) => {
                         if (newModActionCreated !== undefined) {
                             // console.log(newModActionCreated);
-                            //push new mod action into the array of currently active ones loaded.
+                            // push new mod action into the array of currently active ones loaded.
                             currentModActions.push(newModActionCreated);
-                            //if theyre online
+                            // if theyre online
                             if (newModActionCreated.type === "ban" && allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)]) {
                                 allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)].disconnect(true);
-                            }
-                            else if (newModActionCreated.type === "mute" && allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)]) {
+                            } else if (newModActionCreated.type === "mute" && allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)]) {
                                 allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)].emit("muteNotification", newModActionCreated);
                             }
 
-                            socket.emit("messageCommandReturnStr", { message: newModActionCreated.bannedPlayer.username + " has received a " + newModActionCreated.type + " modAction. Thank you :).", classStr: "server-text" });
-                        }
-                        else {
+                            socket.emit("messageCommandReturnStr", { message: `${newModActionCreated.bannedPlayer.username} has received a ${newModActionCreated.type} modAction. Thank you :).`, classStr: "server-text" });
+                        } else {
                             socket.emit("messageCommandReturnStr", { message: "Something went wrong...", classStr: "server-text" });
                         }
-
                     });
-                }
-                else {
+                } else {
                     socket.emit("messageCommandReturnStr", { message: "Something went wrong... Contact the admin!", classStr: "server-text" });
                 }
-            }
-            else {
-                //create a report. someone doing something bad.
+            } else {
+                // create a report. someone doing something bad.
             }
         });
 
-        //=======================================
-        //COMMANDS
-        //=======================================
+        //= ======================================
+        // COMMANDS
+        //= ======================================
 
-        socket.on("messageCommand", function (data) {
+        socket.on("messageCommand", (data) => {
             // console.log("data0: " + data.command);
             // console.log("mod command exists: " + modCommands[data.command]);
             // console.log("Index of mods" + modsArray.indexOf(socket.request.user.username.toLowerCase()));
 
 
-
             if (userCommands[data.command]) {
                 var dataToSend = userCommands[data.command].run(data, socket, io);
                 socket.emit("messageCommandReturnStr", dataToSend);
-            }
-            else if (modCommands[data.command] && modsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1) {
+            } else if (modCommands[data.command] && modsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1) {
                 var dataToSend = modCommands[data.command].run(data, socket, io);
                 socket.emit("messageCommandReturnStr", dataToSend);
-            }
-            else if (adminCommands[data.command] && adminsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1) {
+            } else if (adminCommands[data.command] && adminsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1) {
                 var dataToSend = adminCommands[data.command].run(data, socket, io);
                 socket.emit("messageCommandReturnStr", dataToSend);
-            }
-            else {
+            } else {
                 var dataToSend = {
                     message: "Invalid command.",
                     classStr: "server-text",
-                    dateCreated: new Date()
+                    dateCreated: new Date(),
                 };
 
                 socket.emit("messageCommandReturnStr", dataToSend);
             }
         });
 
-        socket.on("interactUserPlayed", function (data) {
-
+        socket.on("interactUserPlayed", (data) => {
             // socket.emit("interactUserPlayed", {success: false, interactedBy: data.username, myUsername: ownUsername, verb: data.verb, verbPast: data.verbPast});
-            var socketWhoInitiatedInteract = allSockets[getIndexFromUsername(allSockets, data.interactedBy, true)];
+            const socketWhoInitiatedInteract = allSockets[getIndexFromUsername(allSockets, data.interactedBy, true)];
 
             if (socketWhoInitiatedInteract) {
-                var messageStr;
+                let messageStr;
                 if (data.success) {
-                    messageStr = data.myUsername + " was " + data.verbPast + "!";
+                    messageStr = `${data.myUsername} was ${data.verbPast}!`;
+                } else {
+                    messageStr = `${data.myUsername} was not ${data.verbPast}, most likely because they have already been ${data.verbPast} recently.`;
                 }
-                else {
-                    messageStr = data.myUsername + " was not " + data.verbPast + ", most likely because they have already been " + data.verbPast + " recently.";
-                }
-                var dataToSend = {
+                const dataToSend = {
                     message: messageStr,
                     classStr: "server-text",
-                    dateCreated: new Date()
+                    dateCreated: new Date(),
                 };
 
                 socketWhoInitiatedInteract.emit("messageCommandReturnStr", dataToSend);
             }
         });
 
-        //when a user tries to send a message to all chat
-        socket.on("allChatFromClient", function (data) {
-            //socket.emit("danger-alert", "test alert asdf");
-            //debugging
+        // when a user tries to send a message to all chat
+        socket.on("allChatFromClient", (data) => {
+            // socket.emit("danger-alert", "test alert asdf");
+            // debugging
 
-            var toContinue = !isMuted(socket);
+            const toContinue = !isMuted(socket);
 
             // console.log(toContinue);
 
             if (toContinue) {
-                console.log("allchat: " + data.message + " by: " + socket.request.user.username);
-                //get the username and put it into the data object
+                console.log(`allchat: ${data.message} by: ${socket.request.user.username}`);
+                // get the username and put it into the data object
 
-                var validUsernames = getPlayerUsernamesFromAllSockets();
+                const validUsernames = getPlayerUsernamesFromAllSockets();
 
-                //if the username is not valid, i.e. one that they actually logged in as
+                // if the username is not valid, i.e. one that they actually logged in as
                 if (validUsernames.indexOf(socket.request.user.username) === -1) {
                     return;
                 }
 
                 data.username = socket.request.user.username;
-                //send out that data object to all other clients (except the one who sent the message)
+                // send out that data object to all other clients (except the one who sent the message)
                 data.message = textLengthFilter(data.message);
-                //no classStr since its a player message
+                // no classStr since its a player message
 
                 sendToAllChat(io, data);
             }
         });
 
-        //when a user tries to send a message to room
-        socket.on("roomChatFromClient", function (data) {
+        // when a user tries to send a message to room
+        socket.on("roomChatFromClient", (data) => {
             // socket.emit("danger-alert", "test alert asdf");
-            //debugging
+            // debugging
 
-            var toContinue = !isMuted(socket);
+            const toContinue = !isMuted(socket);
 
             if (toContinue) {
-                console.log("roomchat: " + data.message + " by: " + socket.request.user.username);
-                //get the username and put it into the data object
+                console.log(`roomchat: ${data.message} by: ${socket.request.user.username}`);
+                // get the username and put it into the data object
 
-                var validUsernames = getPlayerUsernamesFromAllSockets();
+                const validUsernames = getPlayerUsernamesFromAllSockets();
 
-                //if the username is not valid, i.e. one that they actually logged in as
+                // if the username is not valid, i.e. one that they actually logged in as
                 if (validUsernames.indexOf(socket.request.user.username) === -1) {
                     return;
                 }
@@ -1752,7 +1607,7 @@ module.exports = function (io) {
                 data.dateCreated = new Date();
 
                 if (socket.request.user.inRoomId) {
-                    //send out that data object to all clients in room
+                    // send out that data object to all clients in room
 
                     sendToRoomChat(io, socket.request.user.inRoomId, data);
                     // io.in(data.roomId).emit("roomChatToClient", data);
@@ -1761,90 +1616,84 @@ module.exports = function (io) {
         });
 
 
-        //when a new room is created
-        socket.on("newRoom", function (dataObj) {
-
-            var toContinue = !isMuted(socket);
+        // when a new room is created
+        socket.on("newRoom", (dataObj) => {
+            const toContinue = !isMuted(socket);
 
             if (toContinue && dataObj) {
-                //while rooms exist already (in case of a previously saved and retrieved game)
+                // while rooms exist already (in case of a previously saved and retrieved game)
                 while (rooms[nextRoomId]) {
                     nextRoomId++;
                 }
                 rooms[nextRoomId] = new gameRoom(socket.request.user.username, nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword, dataObj.gameMode);
-                var privateStr = ("" === dataObj.newRoomPassword) ? "" : "private ";
-                //broadcast to all chat
-                var data = {
-                    message: socket.request.user.username + " has created " + privateStr + "room " + nextRoomId + ".",
-                    classStr: "server-text"
+                const privateStr = (dataObj.newRoomPassword === "") ? "" : "private ";
+                // broadcast to all chat
+                const data = {
+                    message: `${socket.request.user.username} has created ${privateStr}room ${nextRoomId}.`,
+                    classStr: "server-text",
                 };
                 sendToAllChat(io, data);
 
                 // console.log(data.message);
 
-                //send to allChat including the host of the game
+                // send to allChat including the host of the game
                 // io.in("allChat").emit("new-game-created", str);
-                //send back room id to host so they can auto connect
+                // send back room id to host so they can auto connect
                 socket.emit("auto-join-room-id", nextRoomId, dataObj.newRoomPassword);
 
-                //increment index for next game
+                // increment index for next game
                 nextRoomId++;
 
                 updateCurrentGamesList();
             }
         });
 
-        //when a player joins a room
-        socket.on("join-room", function (roomId, inputPassword) {
-
+        // when a player joins a room
+        socket.on("join-room", (roomId, inputPassword) => {
             // console.log("inputpassword: " + inputPassword);
 
-            //if the room exists
+            // if the room exists
             if (rooms[roomId]) {
-                //join the room
+                // join the room
                 if (rooms[roomId].playerJoinRoom(socket, inputPassword)) {
-                    //sends to players and specs
+                    // sends to players and specs
                     rooms[roomId].distributeGameData();
 
-                    //set the room id into the socket obj
+                    // set the room id into the socket obj
                     socket.request.user.inRoomId = roomId;
 
-                    //join the room chat
+                    // join the room chat
                     socket.join(roomId);
 
-                    //emit to say to others that someone has joined
-                    var data = {
-                        message: socket.request.user.username + " has joined the room.",
+                    // emit to say to others that someone has joined
+                    const data = {
+                        message: `${socket.request.user.username} has joined the room.`,
                         classStr: "server-text-teal",
-                        dateCreated: new Date()
+                        dateCreated: new Date(),
                     };
                     sendToRoomChat(io, roomId, data);
 
                     updateCurrentGamesList();
-                }
-                else {
+                } else {
                     // no need to do anything?
                 }
-
             } else {
                 // console.log("Game doesn't exist!");
             }
         });
 
-        socket.on("join-game", function (roomId) {
-            var toContinue = !isMuted(socket);
+        socket.on("join-game", (roomId) => {
+            const toContinue = !isMuted(socket);
 
             if (toContinue) {
                 if (rooms[roomId]) {
-
-                    //if the room has not started yet, throw them into the room
+                    // if the room has not started yet, throw them into the room
                     // console.log("Game status is: " + rooms[roomId].getStatus());
 
                     if (rooms[roomId].getStatus() === "Waiting") {
-                        var ToF = rooms[roomId].playerSitDown(socket);
-                        console.log(socket.request.user.username + " has joined room " + roomId + ": " + ToF);
-                    }
-                    else {
+                        const ToF = rooms[roomId].playerSitDown(socket);
+                        console.log(`${socket.request.user.username} has joined room ${roomId}: ${ToF}`);
+                    } else {
                         // console.log("Game has started, player " + socket.request.user.username + " is not allowed to join.");
                     }
                     updateCurrentGamesList();
@@ -1852,22 +1701,20 @@ module.exports = function (io) {
             }
         });
 
-        socket.on("standUpFromGame", function () {
-            var toContinue = !isMuted(socket);
+        socket.on("standUpFromGame", () => {
+            const toContinue = !isMuted(socket);
 
-            var roomId = socket.request.user.inRoomId;
+            const roomId = socket.request.user.inRoomId;
 
             if (toContinue) {
                 if (rooms[roomId]) {
-
-                    //if the room has not started yet, remove them from players list
+                    // if the room has not started yet, remove them from players list
                     // console.log("Game status is: " + rooms[roomId].getStatus());
 
                     if (rooms[roomId].getStatus() === "Waiting") {
-                        var ToF = rooms[roomId].playerStandUp(socket);
+                        const ToF = rooms[roomId].playerStandUp(socket);
                         // console.log(socket.request.user.username + " has stood up from room " + roomId + ": " + ToF);
-                    }
-                    else {
+                    } else {
                         // console.log("Game has started, player " + socket.request.user.username + " is not allowed to stand up.");
                     }
                     updateCurrentGamesList();
@@ -1876,57 +1723,55 @@ module.exports = function (io) {
         });
 
 
-        //when a player leaves a room
-        socket.on("leave-room", function () {
+        // when a player leaves a room
+        socket.on("leave-room", () => {
             // console.log("In room id");
             // console.log(socket.request.user.inRoomId);
 
             if (rooms[socket.request.user.inRoomId]) {
-                console.log(socket.request.user.username + " is leaving room: " + socket.request.user.inRoomId);
-                //broadcast to let others know
+                console.log(`${socket.request.user.username} is leaving room: ${socket.request.user.inRoomId}`);
+                // broadcast to let others know
 
-                var data = {
-                    message: socket.request.user.username + " has left the room.",
+                const data = {
+                    message: `${socket.request.user.username} has left the room.`,
                     classStr: "server-text-teal",
-                    dateCreated: new Date()
+                    dateCreated: new Date(),
                 };
                 sendToRoomChat(io, socket.request.user.inRoomId, data);
 
-                //leave the room chat
+                // leave the room chat
                 socket.leave(socket.request.user.inRoomId);
 
                 playerLeaveRoomCheckDestroy(socket);
-
 
 
                 updateCurrentGamesList();
             }
         });
 
-        socket.on("player-ready", function (username) {
+        socket.on("player-ready", (username) => {
             if (rooms[socket.request.user.inRoomId]) {
-
-                var data = {
-                    message: username + " is ready.",
+                const data = {
+                    message: `${username} is ready.`,
                     classStr: "server-text",
-                    dateCreated: new Date()
+                    dateCreated: new Date(),
                 };
                 sendToRoomChat(io, socket.request.user.inRoomId, data);
 
 
                 if (rooms[socket.request.user.inRoomId].playerReady(username)) {
-                    //game will auto start if the above returned true
+                    // game will auto start if the above returned true
                 }
             }
         });
 
-        socket.on("player-not-ready", function (username) {
+        socket.on("player-not-ready", (username) => {
             if (rooms[socket.request.user.inRoomId]) {
                 rooms[socket.request.user.inRoomId].playerNotReady(username);
-                var data = {
-                    message: username + " is not ready.",
+                const data = {
+                    message: `${username} is not ready.`,
                     classStr: "server-text",
-                    dateCreated: new Date()
+                    dateCreated: new Date(),
                 };
                 sendToRoomChat(io, socket.request.user.inRoomId, data);
 
@@ -1934,13 +1779,12 @@ module.exports = function (io) {
             }
         });
 
-        socket.on("startGame", function (data, gameMode) {
-            //start the game
+        socket.on("startGame", (data, gameMode) => {
+            // start the game
             if (rooms[socket.request.user.inRoomId]) {
-
                 if (socket.request.user.inRoomId && socket.request.user.username === rooms[socket.request.user.inRoomId].host) {
                     rooms[socket.request.user.inRoomId].hostTryStartGame(data, gameMode);
-                    //socket.emit("update-room-players", rooms[roomId].getPlayers());
+                    // socket.emit("update-room-players", rooms[roomId].getPlayers());
                 } else {
                     // console.log("Room doesn't exist or user is not host, cannot start game");
                     socket.emit("danger-alert", "You are not the host. You cannot start the game.");
@@ -1950,22 +1794,21 @@ module.exports = function (io) {
             updateCurrentGamesList(io);
         });
 
-        socket.on("kickPlayer", function (username) {
-            console.log("received kick player request: " + username);
+        socket.on("kickPlayer", (username) => {
+            console.log(`received kick player request: ${username}`);
             if (rooms[socket.request.user.inRoomId]) {
                 rooms[socket.request.user.inRoomId].kickPlayer(username, socket);
-
             }
         });
 
-        socket.on("update-room-max-players", function (number) {
+        socket.on("update-room-max-players", (number) => {
             if (rooms[socket.request.user.inRoomId]) {
                 rooms[socket.request.user.inRoomId].updateMaxNumPlayers(socket, number);
             }
             updateCurrentGamesList();
         });
 
-        socket.on("update-room-game-mode", function (gameMode) {
+        socket.on("update-room-game-mode", (gameMode) => {
             if (rooms[socket.request.user.inRoomId]) {
                 rooms[socket.request.user.inRoomId].updateGameModesInRoom(socket, gameMode);
             }
@@ -1973,62 +1816,51 @@ module.exports = function (io) {
         });
 
 
-
-
-        //************************
-        //game data stuff
-        //************************
-        socket.on("gameMove", function (data) {
+        //* ***********************
+        // game data stuff
+        //* ***********************
+        socket.on("gameMove", (data) => {
             if (rooms[socket.request.user.inRoomId]) {
                 rooms[socket.request.user.inRoomId].gameMove(socket, data);
 
                 if (rooms[socket.request.user.inRoomId]) {
                     if (rooms[socket.request.user.inRoomId].finished) {
                         deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
-                    }
-                    else {
+                    } else {
                         saveGameToDb(rooms[socket.request.user.inRoomId]);
                     }
                 }
 
                 updateCurrentGamesList(io);
-
             }
         });
 
-        socket.on("setClaim", function (data) {
+        socket.on("setClaim", (data) => {
             if (rooms[socket.request.user.inRoomId]) {
                 rooms[socket.request.user.inRoomId].setClaim(socket, data);
             }
         });
-
-
-
     });
 };
 
 
-
-
-
 var updateCurrentGamesList = function () {
-    //prepare room data to send to players.
-    var gamesList = [];
-    for (var i = 0; i < rooms.length; i++) {
-        //If the game exists
+    // prepare room data to send to players.
+    const gamesList = [];
+    for (let i = 0; i < rooms.length; i++) {
+    // If the game exists
         if (rooms[i]) {
-            //create new array to send
+            // create new array to send
             gamesList[i] = {};
-            //get status of game
+            // get status of game
             gamesList[i].status = rooms[i].getStatus();
 
             if (rooms[i].joinPassword !== undefined) {
                 gamesList[i].passwordLocked = true;
-            }
-            else {
+            } else {
                 gamesList[i].passwordLocked = false;
             }
-            //get room ID
+            // get room ID
             gamesList[i].roomId = rooms[i].roomId;
             // console.log("Room " + rooms[i].roomId + " has host: " + rooms[i].host);
             gamesList[i].hostUsername = rooms[i].host;
@@ -2037,52 +1869,48 @@ var updateCurrentGamesList = function () {
                 gamesList[i].missionHistory = rooms[i].missionHistory;
                 gamesList[i].missionNum = rooms[i].missionNum;
                 gamesList[i].pickNum = rooms[i].pickNum;
-            }
-            else {
+            } else {
                 gamesList[i].numOfPlayersInside = rooms[i].socketsOfPlayers.length;
             }
             gamesList[i].maxNumPlayers = rooms[i].maxNumPlayers;
             gamesList[i].numOfSpectatorsInside = rooms[i].allSockets.length - rooms[i].socketsOfPlayers.length;
         }
     }
-    allSockets.forEach(function (sock) {
+    allSockets.forEach((sock) => {
         sock.emit("update-current-games-list", gamesList);
     });
 };
 
 
-
 function textLengthFilter(str) {
-    var lengthLimit = 500;
+    const lengthLimit = 500;
 
     if (str.length > lengthLimit) {
         return str.slice(0, lengthLimit);
     }
-    else {
-        return str;
-    }
+
+    return str;
 }
 
 
-var fiveMinsInMillis = 1000 * 60 * 5;
+const fiveMinsInMillis = 1000 * 60 * 5;
 
 function sendToAllChat(io, data) {
-    var date = new Date();
+    const date = new Date();
     data.dateCreated = date;
 
 
-    allSockets.forEach(function (sock) {
+    allSockets.forEach((sock) => {
         sock.emit("allChatToClient", data);
     });
     // io.in("allChat").emit("allChatToClient", data);
-
 
 
     allChatHistory.push(data);
 
     allChat5Min.push(data);
 
-    var i = 0;
+    let i = 0;
 
     while (date - allChat5Min[i].dateCreated > fiveMinsInMillis) {
         if (i >= allChat5Min.length) {
@@ -2092,8 +1920,8 @@ function sendToAllChat(io, data) {
     }
 
     if (i !== 0) {
-        //console.log("Messages older than 5 mins detected. Deleting old ones. index: " + i);
-        //starting from index 0, remove i items.
+    // console.log("Messages older than 5 mins detected. Deleting old ones. index: " + i);
+    // starting from index 0, remove i items.
         allChat5Min.splice(0, i);
     }
 }
@@ -2109,14 +1937,13 @@ function sendToRoomChat(io, roomId, data) {
 
 function isMuted(socket) {
     returnVar = false;
-    currentModActions.forEach(function (oneModAction) {
-        // console.log(oneModAction);
+    currentModActions.forEach((oneModAction) => {
+    // console.log(oneModAction);
         if (oneModAction.type === "mute" && oneModAction.bannedPlayer && oneModAction.bannedPlayer.id && oneModAction.bannedPlayer.id.toString() === socket.request.user.id.toString()) {
             socket.emit("muteNotification", oneModAction);
             // console.log("TRUEEEE");
 
             returnVar = true;
-            return;
         }
     });
 
@@ -2125,12 +1952,11 @@ function isMuted(socket) {
 
 
 function playerLeaveRoomCheckDestroy(socket) {
-
     if (socket.request.user.inRoomId && rooms[socket.request.user.inRoomId]) {
-        //leave the room
+    // leave the room
         rooms[socket.request.user.inRoomId].playerLeaveRoom(socket);
 
-        var toDestroy = rooms[socket.request.user.inRoomId].destroyRoom;
+        const toDestroy = rooms[socket.request.user.inRoomId].destroyRoom;
 
         if (toDestroy) {
             deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
@@ -2144,23 +1970,21 @@ function playerLeaveRoomCheckDestroy(socket) {
             rooms[socket.request.user.inRoomId] = undefined;
         }
 
-        //if room is frozen for more than 1hr then remove.
+        // if room is frozen for more than 1hr then remove.
         if (rooms[socket.request.user.inRoomId]
 			&& rooms[socket.request.user.inRoomId].timeFrozenLoaded
 			&& rooms[socket.request.user.inRoomId].getStatus() === "Frozen"
 			&& rooms[socket.request.user.inRoomId].allSockets.length === 0) {
-
-            var curr = new Date();
-            var timeToKill = 1000 * 60 * 5; //5 mins
+            const curr = new Date();
+            const timeToKill = 1000 * 60 * 5; // 5 mins
             // var timeToKill = 1000*10; //10s
             if ((curr.getTime() - rooms[socket.request.user.inRoomId].timeFrozenLoaded.getTime()) > timeToKill) {
                 deleteSaveGameFromDb(rooms[socket.request.user.inRoomId]);
                 rooms[socket.request.user.inRoomId] = undefined;
 
-                console.log("Been more than " + timeToKill / 1000 + " seconds, removing this frozen game.");
-            }
-            else {
-                console.log("Frozen game has only loaded for " + (curr.getTime() - rooms[socket.request.user.inRoomId].timeFrozenLoaded.getTime()) / 1000 + " seconds, Dont remove yet.");
+                console.log(`Been more than ${timeToKill / 1000} seconds, removing this frozen game.`);
+            } else {
+                console.log(`Frozen game has only loaded for ${(curr.getTime() - rooms[socket.request.user.inRoomId].timeFrozenLoaded.getTime()) / 1000} seconds, Dont remove yet.`);
             }
         }
 
@@ -2172,21 +1996,21 @@ function playerLeaveRoomCheckDestroy(socket) {
 
 
 function getPlayerUsernamesFromAllSockets() {
-    var array = [];
-    for (var i = 0; i < allSockets.length; i++) {
+    const array = [];
+    for (let i = 0; i < allSockets.length; i++) {
         array[i] = allSockets[i].request.user.username;
     }
-    array.sort(function (a, b) {
-        var textA = a.toUpperCase();
-        var textB = b.toUpperCase();
+    array.sort((a, b) => {
+        const textA = a.toUpperCase();
+        const textB = b.toUpperCase();
         return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
     });
 
     return array;
 }
 function getPlayerIdsFromAllSockets() {
-    var array = [];
-    for (var i = 0; i < allSockets.length; i++) {
+    const array = [];
+    for (let i = 0; i < allSockets.length; i++) {
         array[i] = allSockets[i].request.user.id;
     }
     return array;
@@ -2194,18 +2018,14 @@ function getPlayerIdsFromAllSockets() {
 
 function getIndexFromUsername(sockets, username, caseInsensitive) {
     if (sockets && username) {
-        for (var i = 0; i < sockets.length; i++) {
+        for (let i = 0; i < sockets.length; i++) {
             if (caseInsensitive) {
                 if (sockets[i].request.user.username.toLowerCase() === username.toLowerCase()) {
                     return i;
                 }
+            } else if (sockets[i].request.user.username === username) {
+                return i;
             }
-            else {
-                if (sockets[i].request.user.username === username) {
-                    return i;
-                }
-            }
-
         }
     }
     return null;

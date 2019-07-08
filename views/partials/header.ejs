@@ -43,18 +43,18 @@
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
 
-					<% if(headerActive){%>
+					<% if (headerActive) {%>
 
 					<!-- Lobby -->
-					<% if(headerActive === "lobby"){ %>
+					<% if (headerActive === "lobby") { %>
 					<li class="active"><a href="/lobby">Lobby</a></li>
 					<% } %>
-					<% if(headerActive !== "lobby"){ %>
+					<% if (headerActive !== "lobby") { %>
 					<li><a href="/lobby">Lobby</a></li>
 					<% } %>
 
 					<!-- Rules -->
-					<% if(headerActive === "rules"){ %>
+					<% if (headerActive === "rules") { %>
                         <li class="active"><a href="/rules">Rules</a></li>
 					<% } %>
 					<% else { %>
@@ -62,7 +62,7 @@
 					<% } %>
 
 					<!-- Statistics -->
-					<% if(headerActive === "stats"){ %>
+					<% if (headerActive === "stats") { %>
 					<li class="active"><a href="/statistics">Stats</a></li>
 					<% } %>
 					<% else { %>
@@ -76,18 +76,18 @@
 
 						<ul class="dropdown-menu">
 							<!-- Members -->
-							<% if(headerActive === "community"){ %>
+							<% if (headerActive === "community") { %>
 								<li class="active"><a href="/community">Members</a></li>
 								<% } %>
-								<% if(headerActive !== "community"){ %>
+								<% if (headerActive !== "community") { %>
 								<li><a href="/community">Members</a></li>
 								<% } %>
 
 							<!-- Forums -->
-							<% if(headerActive === "forums"){ %>
+							<% if (headerActive === "forums") { %>
 							<li class="active"><a href="/forum">Forums</a></li>
 							<% } %>
-							<% if(headerActive !== "forums"){ %>
+							<% if (headerActive !== "forums") { %>
 							<li><a href="/forum">Forums</a></li>
 							<% } %>
 							<!-- Facebook -->
@@ -102,25 +102,25 @@
 
 						<ul class="dropdown-menu">
 							<!-- Log -->
-							<% if(headerActive === "log"){ %>
+							<% if (headerActive === "log") { %>
 							<li class="active"><a href="/log">Log</a></li>
 							<% } %>
-							<% if(headerActive !== "log"){ %>
+							<% if (headerActive !== "log") { %>
 							<li><a href="/log">Log</a></li>
 							<% } %>
 
 							<!-- About -->
-							<% if(headerActive === "about"){ %>
+							<% if (headerActive === "about") { %>
 							<li class="active"><a href="/about">About</a></li>
 							<% } %>
-							<% if(headerActive !== "about"){ %>
+							<% if (headerActive !== "about") { %>
 							<li><a href="/about">About</a></li>
 							<% } %>
 
 							<li><a href="https://github.com/vck3000/ProAvalon">Github</a></li>
 						</ul>
 					</li>
-					<% if(locals.isMod && isMod){ %>
+					<% if (locals.isMod && isMod) { %>
 					<li><a href="/mod">Moderation</a></li>
 					<% } %>
 
@@ -136,17 +136,17 @@
 
 					<!-- <li><a href="#">Contact us</a></li> -->
 
-					<% if(currentUser) { %>
-                        <% if(locals.userNotifications) { %>
+					<% if (currentUser) { %>
+                        <% if (locals.userNotifications) { %>
                         <li class="dropdown" id="notificationsDropdown">
                             <a href="#" id="dropDownNotification" class="dropDownNotification">
                                 <!--<span class="glyphicon glyphicon-info-sign"></span>-->
-                                <% if(locals.userNotifications) {%>
+                                <% if (locals.userNotifications) {%>
                                 <span class="badge">
                                     <%
                                         var num = 0;
-                                        for(var i = 0; i < userNotifications.length; i++){
-                                            if(userNotifications[i].seen === false || !userNotifications[i].seen){
+                                        for (var i = 0; i < userNotifications.length; i++) {
+                                            if (userNotifications[i].seen === false || !userNotifications[i].seen) {
                                                 num++;
                                             }
                                         }
@@ -164,13 +164,13 @@
                                             class="hideAll">Hide all<span class="hidden"></span></span></p>
                                     </a>
                                 </li>
-                                <% if(locals.userNotifications && userNotifications.length !== 0){ %>
+                                <% if (locals.userNotifications && userNotifications.length !== 0) { %>
                                     <hr>
                                 <% } %>
 
-                                <% if(locals.userNotifications) { %>
+                                <% if (locals.userNotifications) { %>
                                     <% for (var i = userNotifications.length - 1; i >= 0; i--) { %>
-                                        <% if(!userNotifications[i].seen || !userNotifications[i].seen) { %>
+                                        <% if (!userNotifications[i].seen || !userNotifications[i].seen) { %>
                                         <li class="notificationItem unseen" idOfNotif=<%=userNotifications[i]._id%>>
                                         <% } else { %>
                                         <li class="notificationItem" idOfNotif=<%=userNotifications[i]._id%>>
@@ -186,7 +186,7 @@
                                                 // var dateToShow = new Date(userNotifications[i].date).toDateString();
                                                 var dateToShow = new Date(userNotifications[i].date).toLocaleString('en-GB',{hour12: true});
 
-                                                // if(new Date().toDateString() === dateToShow){
+                                                // if (new Date().toDateString() === dateToShow) {
                                                 // 	dateToShow = new Date(userNotifications[i].date).
                                                 // } -->
                                             %>
@@ -205,7 +205,7 @@
 
                                         </li>
 
-                                        <% if(!(i === 0)) { %>
+                                        <% if (!(i === 0)) { %>
                                             <hr>
                                         <% } %>
 
@@ -218,7 +218,7 @@
                         <% } %>
 
 
-                        <% if(locals.optionsCog){ %>
+                        <% if (locals.optionsCog) { %>
                         <li>
                             <a href="#" role="button" data-toggle="modal" data-target="#optionsModal" class="optionsCog">
                                 <span class="glyphicon glyphicon-cog"></span>
@@ -252,13 +252,13 @@
 
 
 		<!-- FLASH NOTIFICATION REQUESTS - does need to reload -->
-		<% if(error && error.length > 0){ %>
+		<% if (error && error.length > 0) { %>
 		<div class="alert alert-danger" role="alert">
 			<%= error%>
 		</div>
 		<% }%>
 
-		<% if(success && success.length > 0){ %>
+		<% if (success && success.length > 0) { %>
 		<div class="alert alert-success" role="alert">
 			<%= success%>
 		</div>
@@ -369,7 +369,7 @@
                                         </label>
                                         <p><div id="testBuzzButton" class="btn btn-default btn-xs">Test buzz</div></p>
                                         <script>
-                                            $("#testBuzzButton").on("click", function(){
+                                            $("#testBuzzButton").on("click", function () {
                                                 playSound("buzz");
                                             });
                                         </script>
@@ -449,7 +449,7 @@
 
                                 <script src="/libraries/cookies_min.js"></script>
                                 <script>
-                                    function resetCookies(){
+                                    function resetCookies() {
                                         Swal({
                                             title: "Do you really want to reset your settings?",
                                             text: "Settings such as height of gameplay area, dark mode, colour will be reset. You will not be able to recover your settings!",
@@ -469,7 +469,7 @@
                                                 var keys = docCookies.keys();
 
                                                 //remove each item
-                                                for(var i = 0; i < keys.length; i++){
+                                                for (var i = 0; i < keys.length; i++) {
                                                     docCookies.removeItem(keys[i]);
                                                 }
 

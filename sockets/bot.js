@@ -1,22 +1,22 @@
 const axios = require("axios");
 
-var enabledBots = [];
+const enabledBots = [];
 enabledBots.push({
     name: "SimpleBot",
     urlBase: undefined,
-    authorizationKey: undefined
+    authorizationKey: undefined,
 });
 
 if (process.env.BOT_DEEPROLE_API_KEY) {
     enabledBots.push({
         name: "DeepRole",
         urlBase: "https://deeprole-proavalon.herokuapp.com/deeprole",
-        authorizationKey: process.env.BOT_DEEPROLE_API_KEY
+        authorizationKey: process.env.BOT_DEEPROLE_API_KEY,
     });
     enabledBots.push({
         name: "DebugRole",
         urlBase: "https://deeprole-proavalon.herokuapp.com/debug",
-        authorizationKey: process.env.BOT_DEEPROLE_API_KEY
+        authorizationKey: process.env.BOT_DEEPROLE_API_KEY,
     });
 }
 
@@ -24,13 +24,13 @@ function SimpleBotSocket(username) {
     this.isBotSocket = true;
     this.request = {
         user: {
-            username: username,
-            bot: true
-        }
+            username,
+            bot: true,
+        },
     };
 }
 // Dummy function needed.
-SimpleBotSocket.prototype.emit = function(){};
+SimpleBotSocket.prototype.emit = function () {};
 
 // handleReadyNotReady: Called when the game is about to start.
 // if the bot is ready, call callback(true)
@@ -53,22 +53,22 @@ SimpleBotSocket.prototype.handleGameStart = function (game, callback) {
 // If you errored, call callback(false)
 SimpleBotSocket.prototype.handleRequestAction = function (game, availableButtons, availablePlayers, numOfTargets, callback) {
     // Simple bots play randomly
-    var buttonPressed = availableButtons[Math.floor(Math.random() * availableButtons.length)];
+    const buttonPressed = availableButtons[Math.floor(Math.random() * availableButtons.length)];
     if (numOfTargets == 0) {
         callback({
-            buttonPressed: buttonPressed
+            buttonPressed,
         });
     }
 
     // Progressively remove players until it is the right length
-    var selectedPlayers = availablePlayers.slice();
+    const selectedPlayers = availablePlayers.slice();
     while (selectedPlayers.length > numOfTargets) {
         selectedPlayers.splice(Math.floor(Math.random() * selectedPlayers.length), 1);
     }
 
     callback({
-        buttonPressed: buttonPressed,
-        selectedPlayers: selectedPlayers
+        buttonPressed,
+        selectedPlayers,
     });
 };
 
@@ -82,33 +82,31 @@ SimpleBotSocket.prototype.handleGameOver = function (game, reason, callback) {
 
 function makeBotAPIRequest(botAPI, method, endpoint, data, timeout) {
     return axios.request({
-        method: method,
+        method,
         url: botAPI.urlBase + endpoint,
         headers: {
-            "Authorization": botAPI.authorizationKey,
-            "Content-Type": "application/json"
+            Authorization: botAPI.authorizationKey,
+            "Content-Type": "application/json",
         },
-        data: data,
-        timeout: timeout || 0
+        data,
+        timeout: timeout || 0,
     });
 }
 
 
 function checkBotCapabilities(game, capabilities) {
     // Check if any single capability matches.
-    return capabilities.some(function (capability) {
-        var numPlayers = game.socketsOfPlayers.length;
+    return capabilities.some((capability) => {
+        const numPlayers = game.socketsOfPlayers.length;
         if (capability.numPlayers.indexOf(numPlayers) === -1) {
             return false;
         }
 
-        return game.options.every(function(option) {
-            return (
-                ["Assassin", "Merlin"].indexOf(option) !== -1 ||
-                capability.roles.indexOf(option) !== -1 ||
-                capability.cards.indexOf(option) !== -1
-            );
-        });
+        return game.options.every(option => (
+            ["Assassin", "Merlin"].indexOf(option) !== -1
+                || capability.roles.indexOf(option) !== -1
+                || capability.cards.indexOf(option) !== -1
+        ));
     });
 }
 
@@ -117,34 +115,34 @@ function APIBotSocket(username, botAPI) {
     this.isBotSocket = true;
     this.request = {
         user: {
-            username: username,
-            bot: true
-        }
+            username,
+            bot: true,
+        },
     };
     this.botAPI = botAPI;
 }
 // Dummy function needed.
-APIBotSocket.prototype.emit = function(){};
+APIBotSocket.prototype.emit = function () {};
 
 // handleReadyNotReady: Called when the game is about to start.
 // if the bot is ready, call callback(true)
 // if the bot isn't ready, call callback(false) or callback(false, "<reason>")
 APIBotSocket.prototype.handleReadyNotReady = function (game, callback) {
     // Check if the API supports this game type. If yes, ready up.
-    makeBotAPIRequest(this.botAPI, "GET", "/v0/info", {}, 4000).then(function(response) {
+    makeBotAPIRequest(this.botAPI, "GET", "/v0/info", {}, 4000).then((response) => {
         if (response.status !== 200) {
             callback(false, "Bot returned an invalid response.");
             return;
         }
 
-        var capabilities = response.data.capabilities;
+        const { capabilities } = response.data;
 
         if (checkBotCapabilities(game, capabilities) === false) {
             callback(false, "Bot doesn't support this game type.");
         } else {
             callback(true);
         }
-    }).catch(function(error) {
+    }).catch((error) => {
         if (error.response) {
             callback(false, "The bot crashed during request.");
         } else {
@@ -157,14 +155,14 @@ APIBotSocket.prototype.handleReadyNotReady = function (game, callback) {
 // if the bot initialized successfully, call callback(true)
 // if the bot failed to initialize, call callback(false) or callback(false, "<reason>")
 APIBotSocket.prototype.handleGameStart = function (game, callback) {
-    var thisSocket = this;
-    var playerIndex = game.playersInGame.findIndex(function(player) { return player.username == thisSocket.request.user.username; });
+    const thisSocket = this;
+    const playerIndex = game.playersInGame.findIndex(player => player.username == thisSocket.request.user.username);
     // console.log("Player " + thisSocket.request.user.username + " is at index: " + playerIndex); //Don't worry, the above line works perfectly...!
-    var gameData = game.getGameData()[playerIndex];
+    const gameData = game.getGameData()[playerIndex];
 
-    var apiData = {
+    const apiData = {
         numPlayers: gameData.playerUsernamesOrderedReversed.length,
-        roles: gameData.roles.filter(function (role) { return role != "Assassin" && role != "Merlin"; }), //TODO: Is this needed?
+        roles: gameData.roles.filter(role => role != "Assassin" && role != "Merlin"), // TODO: Is this needed?
         cards: gameData.cards,
         teamLeader: gameData.teamLeaderReversed,
         players: gameData.playerUsernamesOrderedReversed,
@@ -173,7 +171,7 @@ APIBotSocket.prototype.handleGameStart = function (game, callback) {
         see: gameData.see,
     };
 
-    makeBotAPIRequest(this.botAPI, "POST", "/v0/session", apiData, 3000).then(function(response) {
+    makeBotAPIRequest(this.botAPI, "POST", "/v0/session", apiData, 3000).then((response) => {
         if (response.status !== 200 || !response.data.sessionID) {
             callback(false, "Bot returned an invalid response.");
             return;
@@ -181,7 +179,7 @@ APIBotSocket.prototype.handleGameStart = function (game, callback) {
 
         thisSocket.sessionID = response.data.sessionID;
         callback(true);
-    }).catch(function(error) {
+    }).catch((error) => {
         if (error.response) {
             callback(false, "The bot crashed during request.");
         } else {
@@ -193,25 +191,25 @@ APIBotSocket.prototype.handleGameStart = function (game, callback) {
 // handleRequestAction: Called when the server is requesting an action from your bot.
 // When you have a move available, call callback with the selected button and players
 // If you errored, call callback(false)
-//TODO: Do we need this many input parameters?
+// TODO: Do we need this many input parameters?
 APIBotSocket.prototype.handleRequestAction = function (game, availableButtons, availablePlayers, numOfTargets, callback) {
-    var thisSocket = this;
-    var playerIndex = game.playersInGame.findIndex(function(player) { return player.username == thisSocket.request.user.username; });
-    var gameData = game.getGameData()[playerIndex];
+    const thisSocket = this;
+    const playerIndex = game.playersInGame.findIndex(player => player.username == thisSocket.request.user.username);
+    const gameData = game.getGameData()[playerIndex];
 
-    var apiData = {
+    const apiData = {
         sessionID: this.sessionID,
-        gameInfo: gameData
+        gameInfo: gameData,
     };
 
-    makeBotAPIRequest(this.botAPI, "POST", "/v0/session/act", apiData, 20000).then(function(response) {
+    makeBotAPIRequest(this.botAPI, "POST", "/v0/session/act", apiData, 20000).then((response) => {
         if (response.status !== 200) {
             callback(false, "Bot returned an invalid response.");
             return;
         }
 
         callback(response.data);
-    }).catch(function(error) {
+    }).catch((error) => {
         if (error.response) {
             callback(false, "The bot crashed during request.");
             // console.log(error.response);
@@ -225,13 +223,13 @@ APIBotSocket.prototype.handleRequestAction = function (game, availableButtons, a
 // If you want to leave the room, call callback(true)
 // Otherwise, call callback(false)
 APIBotSocket.prototype.handleGameOver = function (game, reason, callback) {
-    var thisSocket = this;
-    var playerIndex = game.playersInGame.findIndex(function(player) { return player.username == thisSocket.request.user.username; });
-    var gameData = game.getGameData()[playerIndex];
+    const thisSocket = this;
+    const playerIndex = game.playersInGame.findIndex(player => player.username == thisSocket.request.user.username);
+    const gameData = game.getGameData()[playerIndex];
 
-    var apiData = {
+    const apiData = {
         sessionID: this.sessionID,
-        gameInfo: gameData
+        gameInfo: gameData,
     };
 
     makeBotAPIRequest(this.botAPI, "POST", "/v0/session/gameover", apiData, 1000);
@@ -240,8 +238,8 @@ APIBotSocket.prototype.handleGameOver = function (game, reason, callback) {
 };
 
 module.exports = {
-    enabledBots: enabledBots,
-    makeBotAPIRequest: makeBotAPIRequest,
-    SimpleBotSocket: SimpleBotSocket,
-    APIBotSocket: APIBotSocket
+    enabledBots,
+    makeBotAPIRequest,
+    SimpleBotSocket,
+    APIBotSocket,
 };

@@ -10,7 +10,7 @@ function ResChief(thisRoom_) {
     this.playerShot = "";
 
     this.see = function () {
-        /* TODO: What the role sees (e.g. Percival sees Merlin and Morgana as "Merlin?") */
+    /* TODO: What the role sees (e.g. Percival sees Merlin and Morgana as "Merlin?") */
     };
 }
 
