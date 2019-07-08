@@ -10,7 +10,7 @@ const forumThreadCommentReply = require("../../models/forumThreadCommentReply");
 const lastIds = require("../../models/lastIds");
 const middleware = require("../../middleware");
 const getTimeDiffInString = require("../../assets/myLibraries/getTimeDiffInString");
-const User 			= require("../../models/user");
+const User = require("../../models/user");
 
 
 const modsArray = require("../../modsadmins/mods");
@@ -61,16 +61,16 @@ router.get("/show/:id", middleware.isLoggedIn, (req, res) => {
                 }
 
                 // remove any replies and comments that are disabled if not a moderator is viewing
-                // if (mod === false) {
-                // 	console.log(foundForumThread.comments);
+                // if (!mod) {
+                //     console.log(foundForumThread.comments);
 
-                // 	for (var i = foundForumThread.comments.length - 1; i >= 0; i--) {
-                // 		// console.log(foundForumThread.comments[i].disabled);
-                // 		if (foundForumThread.comments[i].disabled && foundForumThread.comments[i].disabled) {
-                // 			console.log("Remove a comment");
-                // 			foundForumThread.comments[i].oldText = "";
-                // 		}
-                // 	}
+                //     for (let i = foundForumThread.comments.length - 1; i >= 0; i--) {
+                //         // console.log(foundForumThread.comments[i].disabled);
+                //         if (foundForumThread.comments[i].disabled && foundForumThread.comments[i].disabled) {
+                //             console.log("Remove a comment");
+                //             foundForumThread.comments[i].oldText = "";
+                //         }
+                //     }
                 // }
 
 
@@ -139,7 +139,7 @@ router.get("/show/:id", middleware.isLoggedIn, (req, res) => {
                 // console.log(foundForumThread.whoLikedId[1]._id.toString());
 
                 // console.log("equal?");
-                // console.log(foundForumThread.whoLikedId[0]._id == (req.user._id.toString()));
+                // console.log(foundForumThread.whoLikedId[0]._id === (req.user._id.toString()));
 
                 // console.log("ids");
                 // console.log(idsOfLikedPosts);

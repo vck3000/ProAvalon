@@ -20,11 +20,11 @@
     const year = month * 12;
 
 
-    var getDatesString = function (time) {
+    let getDatesString = function (time) {
 
-        var varTime = time;
+        let varTime = time;
 
-        var str = "";
+        let str = "";
 
         if (Math.floor(varTime/year) !== 0) {
             str += Math.floor(varTime/year) + " yrs, ";
@@ -176,7 +176,7 @@
         <h1><span id="username"></span> was not found!</h1>
 
         <script>
-            var lastBit = window.location.href.substr(window.location.href.lastIndexOf('/') + 1);
+            let lastBit = window.location.href.substr(window.location.href.lastIndexOf('/') + 1);
             console.log(lastBit);
             $("#username")[0].innerText = lastBit;
         </script>
@@ -222,7 +222,7 @@ $("#searchButton").on("click", function (e) {
 <% if (userData && userData.username) { %>
 
 <script>
-    var userData;
+    let userData;
     
 
     $( document ).ready(function () {
@@ -238,7 +238,7 @@ $("#searchButton").on("click", function (e) {
 
         $( ".avatarImg" ).hover(
             function () {
-                var str = "";
+                let str = "";
                 if (userData.avatarImgSpy) { 
                     if (userData.avatarImgSpy.includes("http")) { 
                         str = "<%=userData.avatarImgSpy%>";
@@ -254,7 +254,7 @@ $("#searchButton").on("click", function (e) {
             }, 
             
             function () {
-                var str = "";
+                let str = "";
                 if (userData.avatarImgRes) { 
                     if (userData.avatarImgRes.includes("http")) { 
                         str = "<%=userData.avatarImgRes%>";
@@ -312,21 +312,21 @@ $("#searchButton").on("click", function (e) {
 
 
 
-        var blue1 = 'rgba(54, 162, 235, 0.3)';
-        var blue2 = 'rgba(54, 162, 235, 0.5)';
-        var blueBorder = 'rgba(54, 162, 235, 1)';
+        let blue1 = 'rgba(54, 162, 235, 0.3)';
+        let blue2 = 'rgba(54, 162, 235, 0.5)';
+        let blueBorder = 'rgba(54, 162, 235, 1)';
 
-        var red1 = 'rgba(255, 99, 132, 0.3)';
-        var red2 = 'rgba(255, 99, 132, 0.5)';
-        var redBorder = 'rgba(255, 99, 132, 1)';
+        let red1 = 'rgba(255, 99, 132, 0.3)';
+        let red2 = 'rgba(255, 99, 132, 0.5)';
+        let redBorder = 'rgba(255, 99, 132, 1)';
 
-        var roleStats = userData.roleStats;
+        let roleStats = userData.roleStats;
         //collect the total wins and losses of each role and of each game size played
-        var generalRoleStats = {};
-        for (var gameSize in roleStats) {
+        let generalRoleStats = {};
+        for (let gameSize in roleStats) {
             if (roleStats.hasOwnProperty(gameSize)) {
 
-                for (var role in roleStats[gameSize]) {
+                for (let role in roleStats[gameSize]) {
                     if (roleStats[gameSize].hasOwnProperty(role)) {
                         if (!generalRoleStats[role]) {
                             generalRoleStats[role] = {
@@ -355,14 +355,14 @@ $("#searchButton").on("click", function (e) {
 
        // console.log(generalRoleStats);
 
-        var spyWins = userData.totalWins - userData.totalResWins;
-        var spyLosses = userData.totalLosses - userData.totalResLosses;
+        let spyWins = userData.totalWins - userData.totalResWins;
+        let spyLosses = userData.totalLosses - userData.totalResLosses;
 
 
         
         //create array for the chartjs hover stats:
         //first two entries are overall res and overall spy
-        var generalRoleStatsArray = [
+        let generalRoleStatsArray = [
             {
                 wins: userData.totalResWins,
                 losses: userData.totalResLosses
@@ -374,7 +374,7 @@ $("#searchButton").on("click", function (e) {
         ];
         i = 2;
 
-        for (var key in generalRoleStats) {
+        for (let key in generalRoleStats) {
             if (generalRoleStats.hasOwnProperty(key)) {
                 generalRoleStatsArray[i] = generalRoleStats[key];
                 i++;
@@ -385,13 +385,13 @@ $("#searchButton").on("click", function (e) {
 
 
 
-        var generalLabelsArray = ["Overall Resistance", "Overall Spy"];
+        let generalLabelsArray = ["Overall Resistance", "Overall Spy"];
 
-        var generalData = [Math.floor(userData.totalResWins/ (userData.totalResWins+userData.totalResLosses) * 100), Math.floor((spyWins) / (spyLosses + spyWins) * 100)];
-        var backgroundColor = [blue1, red1];
-        var borderColor = [blueBorder, redBorder];
+        let generalData = [Math.floor(userData.totalResWins/ (userData.totalResWins+userData.totalResLosses) * 100), Math.floor((spyWins) / (spyLosses + spyWins) * 100)];
+        let backgroundColor = [blue1, red1];
+        let borderColor = [blueBorder, redBorder];
 
-        for (var role in generalRoleStats) {
+        for (let role in generalRoleStats) {
             if (generalRoleStats.hasOwnProperty(role)) {
 
                 // console.log(role);
@@ -407,7 +407,7 @@ $("#searchButton").on("click", function (e) {
                 }
 
 
-                var percentWon = Math.floor((generalRoleStats[role].wins / (generalRoleStats[role].wins + generalRoleStats[role].losses)) * 100);
+                let percentWon = Math.floor((generalRoleStats[role].wins / (generalRoleStats[role].wins + generalRoleStats[role].losses)) * 100);
                 generalData.push(percentWon);
 
               //  console.log("percentWon");
@@ -419,7 +419,7 @@ $("#searchButton").on("click", function (e) {
 
 
                 //Now capitalise
-                var role = capitalizeFirstLetter(role);
+                let role = capitalizeFirstLetter(role);
                 generalLabelsArray.push(role);
                 // console.log(generalLabelsArray);
                 
@@ -437,7 +437,7 @@ $("#searchButton").on("click", function (e) {
         }
         
         
-        var dataGeneral = {
+        let dataGeneral = {
             labels: generalLabelsArray,
             datasets: [{
                 label: 'Winrate',
@@ -447,7 +447,7 @@ $("#searchButton").on("click", function (e) {
                 borderWidth: 1
             }],
         }
-        var optionsGeneral = {
+        let optionsGeneral = {
             scales: {
                 yAxes: [{
                     ticks: {
@@ -487,7 +487,7 @@ $("#searchButton").on("click", function (e) {
 
 
 
-        var dataSample = {
+        let dataSample = {
             labels: ["Resistance", "Spy", "Merlin", "Percival", "Assassin", "Morgana"],
             datasets: [{
                 label: 'Winrate %',
@@ -518,8 +518,8 @@ $("#searchButton").on("click", function (e) {
 
        // $("#tempdiv")[0].innerHTML = JSON.stringify(generalRoleStats) ;
 
-        var ctx = document.getElementById("statsChart");
-        var myChart = new Chart(ctx, {
+        let ctx = document.getElementById("statsChart");
+        let myChart = new Chart(ctx, {
             type: 'horizontalBar',
             data: dataGeneral,
             options: optionsGeneral

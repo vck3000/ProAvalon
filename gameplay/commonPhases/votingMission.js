@@ -8,7 +8,7 @@ function VotingMission(thisRoom_) {
 }
 
 VotingMission.prototype.gameMove = function (socket, data) {
-    var i = this.thisRoom.playersYetToVote.indexOf(socket.request.user.username);
+    const i = this.thisRoom.playersYetToVote.indexOf(socket.request.user.username);
 
     // if this.thisRoom vote is coming from someone who hasn't voted yet
     if (i !== -1) {
@@ -71,7 +71,7 @@ VotingMission.prototype.gameMove = function (socket, data) {
         // count number of succeeds and fails
         let numOfSucceeds = 0;
         let numOfFails = 0;
-        for (var i = 0; i < this.thisRoom.missionHistory.length; i++) {
+        for (let i = 0; i < this.thisRoom.missionHistory.length; i++) {
             if (this.thisRoom.missionHistory[i] === "succeeded") {
                 numOfSucceeds++;
             } else if (this.thisRoom.missionHistory[i] === "failed") {
@@ -147,9 +147,9 @@ VotingMission.prototype.numOfTargets = function (indexOfPlayer) {
 VotingMission.prototype.getStatusMessage = function (indexOfPlayer) {
     // If we are spectator
     if (indexOfPlayer === -1) {
-        var str = "";
+        let str = "";
         str += "Waiting for mission votes: ";
-        for (var i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
+        for (let i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
             str = `${str + this.thisRoom.playersYetToVote[i]}, `;
         }
         // Remove last , and replace with .
@@ -160,10 +160,10 @@ VotingMission.prototype.getStatusMessage = function (indexOfPlayer) {
     }
     // If the user is someone who needs to vote success or fail
     if (indexOfPlayer !== undefined && this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playersInGame[indexOfPlayer].username) !== -1) {
-        var str = "";
+        let str = "";
         str += (`${this.thisRoom.playersInGame[this.thisRoom.teamLeader].username} has picked: `);
 
-        for (var i = 0; i < this.thisRoom.proposedTeam.length; i++) {
+        for (let i = 0; i < this.thisRoom.proposedTeam.length; i++) {
             str += `${this.thisRoom.proposedTeam[i]}, `;
         }
         // Remove last , and replace with .
@@ -173,9 +173,9 @@ VotingMission.prototype.getStatusMessage = function (indexOfPlayer) {
         return str;
     }
 
-    var str = "";
+    let str = "";
     str += "Waiting for mission votes: ";
-    for (var i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
+    for (let i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
         str = `${str + this.thisRoom.playersYetToVote[i]}, `;
     }
     // Remove last , and replace with .

@@ -46,7 +46,7 @@ Assassin.prototype.checkSpecialMove = function (socket, data) {
             // Get the number of successes:
             let numOfSuccesses = 0;
 
-            for (var i = 0; i < this.thisRoom.missionHistory.length; i++) {
+            for (let i = 0; i < this.thisRoom.missionHistory.length; i++) {
                 if (this.thisRoom.missionHistory[i] === "succeeded") {
                     numOfSuccesses++;
                 }
@@ -58,7 +58,7 @@ Assassin.prototype.checkSpecialMove = function (socket, data) {
             let tristExists = false;
             let isoExists = false;
 
-            for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
+            for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
                 if (this.thisRoom.playersInGame[i].role === "Merlin") {
                     merlinExists = true;
                 }

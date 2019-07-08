@@ -43,7 +43,7 @@
 
 
     .myTable tr:hover {
-    	background-color:#c5cae9;
+        background-color:#c5cae9;
     }
 
     .myTable img {
@@ -141,8 +141,8 @@
 </style>
 
 <div class="myContainer">
-	<h3 class="header">View our players from all over the world!</h3>
-	<div class="row">
+    <h3 class="header">View our players from all over the world!</h3>
+    <div class="row">
         <table class="myTable">
             <h4>Moderators</h4>
             <tr>
@@ -178,7 +178,7 @@
             <% }); %>
         </table>
     
-		<table class="myTable" id="userTable">
+        <table class="myTable" id="userTable">
             <h4>Players</h4>
             <tr>
                 <th>Username</th>
@@ -189,66 +189,66 @@
                 <th class="games">#Games</th>
             </tr>
 
-			<% users.forEach(function (user) { %>
-			<tr>
-				<td><a class="username" href="/profile/<%= user.username %>" ><%= user.username %></a></td>
+            <% users.forEach(function (user) { %>
+            <tr>
+                <td><a class="username" href="/profile/<%= user.username %>" ><%= user.username %></a></td>
                 <%if (user.avatarImgRes === null) { %>
                     <td><img src="/avatars/base-res.png"></td>
                 <% } else { %>
-				    <td><img src="<%= user.avatarImgRes %>"></td>
+                    <td><img src="<%= user.avatarImgRes %>"></td>
                 <% } %>
                 <%if (user.avatarImgSpy === null) { %>
                     <td><img src="/avatars/base-spy.png"></td>                
                 <% } else { %>
-				    <td><img src="<%= user.avatarImgSpy %>"></td>
+                    <td><img src="<%= user.avatarImgSpy %>"></td>
                 <% } %>
                 <%if (user.nationality === "") { %>
                     <td class="nat">United Nations</td>    
                 <% } else { %>
-				    <td class="nat"><%= user.nationality %></td>
+                    <td class="nat"><%= user.nationality %></td>
                 <% } %>
-				<td class="cell"><%- user.biography %></td>
+                <td class="cell"><%- user.biography %></td>
                 <td class="games"><%= user.totalGamesPlayed %></td>
             </tr>
-			<% }); %>
-		</table>
-	</div>
+            <% }); %>
+        </table>
+    </div>
 </div>
 
 <!-- show more button -->
 <script type="text/javascript">
 $(function () {
   /* initial variables */
-  var numRows = $('#userTable').find('tr').length;
-  var SHOWN = 50;
-  var MORE = 500;
+  let numRows = $('#userTable').find('tr').length;
+  let SHOWN = 50;
+  let MORE = 500;
 
   /* get how many more can be shown */
-  var getNumMore = function (ns) {
-      var more = MORE;
-      var leftOver = numRows - ns;
+  let getNumMore = function (ns) {
+      let more = MORE;
+      let leftOver = numRows - ns;
       if ((leftOver) < more) {
         more = leftOver;
       }
       return more;
     }
     /* how many are shown */
-  var getInitialNumShown = function () {
-      var shown = SHOWN;
+  let getInitialNumShown = function () {
+      let shown = SHOWN;
       if (numRows < shown) {
         shown = numRows;
       }
       return shown;
     }
     /* set how many are initially shown */
-  var numShown = getInitialNumShown();
+  let numShown = getInitialNumShown();
 
   /* set the numMore if less than 20 */
-  var numMore = getNumMore(numShown);
+  let numMore = getNumMore(numShown);
 
   /* set more html */
   if (numMore > 0) {
-    var more_html = '<p><button id="more">Show <span style="font-weight: bold;">' + numMore + '</span> More...</button></p>';
+    let more_html = '<p><button id="more">Show <span style="font-weight: bold;">' + numMore + '</span> More...</button></p>';
     $('#userTable').find('tr:gt(' + (numShown - 1) + ')').hide().end().after(more_html);
   }
   $('#more').click(function () {

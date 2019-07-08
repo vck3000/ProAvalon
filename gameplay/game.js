@@ -102,14 +102,14 @@ function Game(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) 
 
 
     Table:
-    Phase	|	String
-    1			"pickingTeam"
-    2			"votingTeam"
-    3			"votingMission"
-    4			"finished"
+    Phase    |    String
+    1            "pickingTeam"
+    2            "votingTeam"
+    3            "votingMission"
+    4            "finished"
 
     Misc Phases:
-    Phase	|	String
+    Phase    |    String
     "lady"
     "assassination"
 
@@ -192,7 +192,7 @@ Game.prototype.recoverGame = function (storedData) {
 
     // Roles
     // Remove the circular dependency
-    for (var key in storedData.specialRoles) {
+    for (const key in storedData.specialRoles) {
         if (storedData.specialRoles.hasOwnProperty(key)) {
             delete (storedData.specialRoles[key].thisRoom);
         }
@@ -202,7 +202,7 @@ Game.prototype.recoverGame = function (storedData) {
 
     // Cards
     // Remove the circular dependency
-    for (var key in storedData.specialCards) {
+    for (const key in storedData.specialCards) {
         if (storedData.specialCards.hasOwnProperty(key)) {
             delete (storedData.specialCards[key].thisRoom);
         }
@@ -235,7 +235,7 @@ Game.prototype.playerJoinRoom = function (socket, inputPassword) {
         const resultOfRoomJoin = Room.prototype.playerJoinRoom.call(this, socket, inputPassword);
 
         // If the player failed the join, remove their socket.
-        if (resultOfRoomJoin === false) {
+        if (!resultOfRoomJoin) {
             const index = this.socketsOfPlayers.indexOf(socket);
             if (index !== -1) {
                 this.socketsOfPlayers.splice(index, 1);
@@ -255,7 +255,7 @@ Game.prototype.playerSitDown = function (socket) {
         return;
     }
     // If the ready/not ready phase is ongoing
-    if (this.canJoin === false) {
+    if (!this.canJoin) {
         socket.emit("danger-alert", "The game is currently trying to start (ready/not ready phase). You can join if someone is not ready, or after 10 seconds has elapsed.");
         return;
     }
@@ -265,7 +265,7 @@ Game.prototype.playerSitDown = function (socket) {
 
 Game.prototype.playerStandUp = function (socket) {
     // If the ready/not ready phase is ongoing
-    if (this.canJoin === false) {
+    if (!this.canJoin) {
     // socket.emit("danger-alert", "The game is currently trying to start (ready/not ready phase). You cannot stand up now.");
         return;
     }
@@ -281,7 +281,7 @@ Game.prototype.playerStandUp = function (socket) {
 Game.prototype.playerLeaveRoom = function (socket) {
     if (this.gameStarted) {
     // if they exist in socketsOfPlayers, then remove them
-        var index = this.socketsOfPlayers.indexOf(socket);
+        let index = this.socketsOfPlayers.indexOf(socket);
         if (index !== -1) {
             // console.log("Removing index " + index);
             this.socketsOfPlayers.splice(index, 1);
@@ -297,7 +297,7 @@ Game.prototype.playerLeaveRoom = function (socket) {
     } else {
     // If we are in player ready not ready phase, then make them not ready and then perform
     // the usual leave room procedures.
-        var index = this.socketsOfPlayers.indexOf(socket);
+        const index = this.socketsOfPlayers.indexOf(socket);
         if (index !== -1 && this.playersYetToReady !== undefined && this.playersYetToReady.length !== undefined && this.playersYetToReady.length !== 0) {
             this.playerNotReady();
             const { username } = socket.request.user;
@@ -339,24 +339,24 @@ Game.prototype.startGame = function (options) {
 
     let shuffledPlayerAssignments = [];
     // shuffle the players around. Make sure to redistribute this room player data in sockets.
-    for (var i = 0; i < this.socketsOfPlayers.length; i++) {
+    for (let i = 0; i < this.socketsOfPlayers.length; i++) {
         shuffledPlayerAssignments[i] = i;
     }
     shuffledPlayerAssignments = shuffle(shuffledPlayerAssignments);
 
     const tempSockets = [];
     // create temp sockets
-    for (var i = 0; i < this.socketsOfPlayers.length; i++) {
+    for (let i = 0; i < this.socketsOfPlayers.length; i++) {
         tempSockets[i] = this.socketsOfPlayers[i];
     }
 
     // assign the shuffled sockets
-    for (var i = 0; i < this.socketsOfPlayers.length; i++) {
+    for (let i = 0; i < this.socketsOfPlayers.length; i++) {
         this.socketsOfPlayers[i] = tempSockets[shuffledPlayerAssignments[i]];
     }
 
     // Now we initialise roles
-    for (var i = 0; i < this.socketsOfPlayers.length; i++) {
+    for (let i = 0; i < this.socketsOfPlayers.length; i++) {
         this.playersInGame[i] = {};
         // assign them the sockets but with shuffled.
         this.playersInGame[i].username = this.socketsOfPlayers[i].request.user.username;
@@ -372,10 +372,10 @@ Game.prototype.startGame = function (options) {
     }
 
 
-    // for (var key in this.specialRoles) {
-    // 	if (this.specialRoles.hasOwnProperty(key)) {
-    // 		console.log("Key: " + key);
-    // 	}
+    // for (let key in this.specialRoles) {
+    //     if (this.specialRoles.hasOwnProperty(key)) {
+    //         console.log("Key: " + key);
+    //     }
     // }
 
     // Give roles to the players according to their alliances
@@ -383,7 +383,7 @@ Game.prototype.startGame = function (options) {
     this.resRoles = [];
     this.spyRoles = [];
 
-    for (var i = 0; i < options.length; i++) {
+    for (let i = 0; i < options.length; i++) {
         const op = options[i].toLowerCase();
         // console.log(op);
         // If a role file exists for this
@@ -410,7 +410,7 @@ Game.prototype.startGame = function (options) {
     const resPlayers = [];
     const spyPlayers = [];
 
-    for (var i = 0; i < this.playersInGame.length; i++) {
+    for (let i = 0; i < this.playersInGame.length; i++) {
         if (this.playersInGame[i].alliance === "Resistance") {
             resPlayers.push(i);
             this.resistanceUsernames.push(this.playersInGame[i].username);
@@ -422,21 +422,21 @@ Game.prototype.startGame = function (options) {
 
     // Assign the res roles randomly
     rolesAssignment = generateAssignmentOrders(resPlayers.length);
-    for (var i = 0; i < rolesAssignment.length; i++) {
+    for (let i = 0; i < rolesAssignment.length; i++) {
         this.playersInGame[resPlayers[i]].role = this.resRoles[rolesAssignment[i]];
     // console.log("res role: " + resRoles[rolesAssignment[i]]);
     }
 
     // Assign the spy roles randomly
     rolesAssignment = generateAssignmentOrders(spyPlayers.length);
-    for (var i = 0; i < rolesAssignment.length; i++) {
+    for (let i = 0; i < rolesAssignment.length; i++) {
         this.playersInGame[spyPlayers[i]].role = this.spyRoles[rolesAssignment[i]];
     // console.log("spy role: " + spyRoles[rolesAssignment[i]]);
     }
 
 
     // for those players with no role, set their role to their alliance (i.e. for Resistance VT and Spy VS)
-    for (var i = 0; i < this.playersInGame.length; i++) {
+    for (let i = 0; i < this.playersInGame.length; i++) {
     // console.log(this.playersInGame[i].role);
         if (this.playersInGame[i].role === undefined) {
             this.playersInGame[i].role = this.playersInGame[i].alliance;
@@ -446,7 +446,7 @@ Game.prototype.startGame = function (options) {
 
     // Prepare the data for each person to see for the rest of the game.
     // The following data do not change as the game goes on.
-    for (var i = 0; i < this.playersInGame.length; i++) {
+    for (let i = 0; i < this.playersInGame.length; i++) {
     // Lowercase the role to give the file name
         const roleLower = this.playersInGame[i].role.toLowerCase();
         this.playersInGame[i].see = this.specialRoles[roleLower].see();
@@ -462,10 +462,10 @@ Game.prototype.startGame = function (options) {
     this.missionHistory = [];
 
     let str = "Game started with: ";
-    for (var i = 0; i < this.roleKeysInPlay.length; i++) {
+    for (let i = 0; i < this.roleKeysInPlay.length; i++) {
         str += `${this.specialRoles[this.roleKeysInPlay[i]].role}, `;
     }
-    for (var i = 0; i < this.cardKeysInPlay.length; i++) {
+    for (let i = 0; i < this.cardKeysInPlay.length; i++) {
         str += `${this.specialCards[this.cardKeysInPlay[i]].card}, `;
     }
 
@@ -476,19 +476,19 @@ Game.prototype.startGame = function (options) {
 
 
     // seed the starting data into the VH
-    for (var i = 0; i < this.playersInGame.length; i++) {
+    for (let i = 0; i < this.playersInGame.length; i++) {
         this.voteHistory[this.playersInGame[i].request.user.username] = [];
     }
 
     // Initialise all the Cards
-    for (var i = 0; i < this.cardKeysInPlay.length; i++) {
+    for (let i = 0; i < this.cardKeysInPlay.length; i++) {
         this.specialCards[this.cardKeysInPlay[i]].initialise();
     }
 
     this.distributeGameData();
 
     this.botIndexes = [];
-    for (var i = 0; i < this.socketsOfPlayers.length; i++) {
+    for (let i = 0; i < this.socketsOfPlayers.length; i++) {
         if (this.socketsOfPlayers[i].isBotSocket) {
             this.botIndexes.push(i);
         }
@@ -547,12 +547,12 @@ Game.prototype.checkBotMoves = function (pendingBots) {
             if (!buttons.green.hidden) availableButtons.push("yes");
 
             const seatIndex = usernamesIndexes.getIndexFromUsername(thisRoom.playersInGame, botSocket.request.user.username);
-            const onMissionAndResistance = (thisRoom.phase == "votingMission" && thisRoom.playersInGame[seatIndex].alliance === "Resistance");
+            const onMissionAndResistance = (thisRoom.phase === "votingMission" && thisRoom.playersInGame[seatIndex].alliance === "Resistance");
             // Add a special case so resistance bots can't fail missions.
             if (!buttons.red.hidden && !onMissionAndResistance) availableButtons.push("no");
 
             // Skip bots we don't need moves from.
-            if (availableButtons.length == 0) return;
+            if (availableButtons.length === 0) return;
 
             // Skip bots whose moves are pending. (We're waiting for them to respond).
             if (pendingBots.indexOf(botSocket) !== -1) return;
@@ -569,7 +569,7 @@ Game.prototype.checkBotMoves = function (pendingBots) {
             botSocket.handleRequestAction(thisRoom, availableButtons, availablePlayers, numOfTargets, (move, reason) => {
                 // Check for move failure.
                 if (!move) {
-                    var message = `${botSocket.request.user.username} failed to make a move and has left the game.`;
+                    let message = `${botSocket.request.user.username} failed to make a move and has left the game.`;
                     if (reason) message += ` Reason: ${reason}`;
                     thisRoom.sendText(thisRoom.allSockets, message, "server-text-teal");
                     thisRoom.playerLeaveRoom(botSocket);
@@ -589,7 +589,7 @@ Game.prototype.checkBotMoves = function (pendingBots) {
                 );
 
                 if (!pressedValidButton || !selectedValidPlayers) {
-                    var message = `${botSocket.request.user.username} made an illegal move and has left the game. Move: ${JSON.stringify(move)}`;
+                    const message = `${botSocket.request.user.username} made an illegal move and has left the game. Move: ${JSON.stringify(move)}`;
                     thisRoom.sendText(thisRoom.allSockets, message, "server-text-teal");
                     thisRoom.playerLeaveRoom(botSocket);
                     return;
@@ -598,7 +598,7 @@ Game.prototype.checkBotMoves = function (pendingBots) {
                 pendingBots.splice(pendingBots.indexOf(botSocket), 1);
 
                 // Make the move //TODO In the future gameMove should receive both buttonPressed and selectedPlayers
-                if (numOfTargets == 0 || numOfTargets == null) {
+                if (numOfTargets === 0 || numOfTargets === null) {
                     thisRoom.gameMove(botSocket, move.buttonPressed);
                 } else {
                     thisRoom.gameMove(botSocket, move.selectedPlayers);
@@ -613,7 +613,7 @@ Game.prototype.checkBotMoves = function (pendingBots) {
 // Get phase functions start*************************
 //* *************************************************
 
-// var commonPhases = ["pickingTeam", "votingTeam", "votingMission", "finished"];
+// let commonPhases = ["pickingTeam", "votingTeam", "votingMission", "finished"];
 // TODO In the future gameMove should receive both buttonPressed and selectedPlayers
 Game.prototype.gameMove = function (socket, data) {
     // Common phases
@@ -748,7 +748,7 @@ Game.prototype.getRoomPlayers = function () {
         const roomPlayers = [];
 
         for (let i = 0; i < this.playersInGame.length; i++) {
-            var isClaiming;
+            let isClaiming;
             // If the player's username exists on the list of claiming:
             if (this.claimingPlayers.indexOf(this.playersInGame[i].request.user.username) !== -1) {
                 isClaiming = true;
@@ -988,7 +988,7 @@ Game.prototype.finishGame = function (toBeWinner) {
         return;
     }
 
-    for (var i = 0; i < this.allSockets.length; i++) {
+    for (let i = 0; i < this.allSockets.length; i++) {
         this.allSockets[i].emit("gameEnded");
     }
 
@@ -1031,14 +1031,14 @@ Game.prototype.finishGame = function (toBeWinner) {
 
     // If there was a bot in the game and this is the online server, do not store into the database.
     // if (process.env.MY_PLATFORM === "online" && this.botIndexes.length !== 0) {
-    // 	return;
+    //     return;
     // }
 
     // store data into the database:
     const rolesCombined = [];
 
     // combine roles
-    for (var i = 0; i < (this.resRoles.length + this.spyRoles.length); i++) {
+    for (let i = 0; i < (this.resRoles.length + this.spyRoles.length); i++) {
         if (i < this.resRoles.length) {
             rolesCombined[i] = this.resRoles[i];
         } else {
@@ -1046,9 +1046,9 @@ Game.prototype.finishGame = function (toBeWinner) {
         }
     }
 
-    const playerRolesVar = {};
+    const playerRoleslet = {};
 
-    for (var i = 0; i < this.playersInGame.length; i++) {
+    for (let i = 0; i < this.playersInGame.length; i++) {
         playerRolesVar[this.playersInGame[i].username] = {
             alliance: this.playersInGame[i].alliance,
             role: this.playersInGame[i].role,
@@ -1137,8 +1137,8 @@ Game.prototype.finishGame = function (toBeWinner) {
     const gameDuration = new Date(timeFinished - timeStarted);
 
 
-    const playersInGameVar = this.playersInGame;
-    const winnerVar = this.winner;
+    const playersInGamelet = this.playersInGame;
+    const winnerlet = this.winner;
 
     const thisGame = this;
     this.socketsOfPlayers.filter(socket => socket.isBotSocket).forEach((botSocket) => {
@@ -1158,20 +1158,20 @@ Game.prototype.finishGame = function (toBeWinner) {
                     // update individual player statistics
                     foundUser.totalGamesPlayed += 1;
 
-                    if (winnerVar === player.alliance) {
+                    if (winnerlet === player.alliance) {
                         foundUser.totalWins += 1;
-                        if (winnerVar === "Resistance") {
+                        if (winnerlet === "Resistance") {
                             foundUser.totalResWins += 1;
                         }
                     } else {
                         // loss
                         foundUser.totalLosses += 1;
-                        if (winnerVar === "Spy") {
+                        if (winnerlet === "Spy") {
                             foundUser.totalResLosses += 1;
                         }
                     }
 
-                    // checks that the var exists
+                    // checks that the let exists
                     if (!foundUser.winsLossesGameSizeBreakdown[`${playersInGameVar.length}p`]) {
                         foundUser.winsLossesGameSizeBreakdown[`${playersInGameVar.length}p`] = {
                             wins: 0,
@@ -1189,7 +1189,7 @@ Game.prototype.finishGame = function (toBeWinner) {
                     }
 
 
-                    if (winnerVar === player.alliance) {
+                    if (winnerlet === player.alliance) {
                         // checks
                         if (isNaN(foundUser.winsLossesGameSizeBreakdown[`${playersInGameVar.length}p`].losses)) {
                             foundUser.winsLossesGameSizeBreakdown[`${playersInGameVar.length}p`].wins = 0;
@@ -1271,7 +1271,7 @@ Game.prototype.calcMissionVotes = function (votes) {
 Game.prototype.checkRoleCardSpecialMoves = function (socket, data) {
     let foundSomething = false;
 
-    for (var i = 0; i < this.roleKeysInPlay.length; i++) {
+    for (let i = 0; i < this.roleKeysInPlay.length; i++) {
     // If the function doesn't exist, return null
         if (!this.specialRoles[this.roleKeysInPlay[i]].checkSpecialMove) { continue; }
 
@@ -1281,8 +1281,8 @@ Game.prototype.checkRoleCardSpecialMoves = function (socket, data) {
         }
     }
     // If we haven't found something in the roles, check the cards
-    if (foundSomething === false) {
-        for (var i = 0; i < this.cardKeysInPlay.length; i++) {
+    if (!foundSomething) {
+        for (let i = 0; i < this.cardKeysInPlay.length; i++) {
             // If the function doesn't exist, return null
             if (!this.specialCards[this.cardKeysInPlay[i]].checkSpecialMove) { continue; }
 
@@ -1302,7 +1302,7 @@ Game.prototype.getRoleCardPublicGameData = function () {
         roles: {},
         cards: {},
     };
-    for (var i = 0; i < this.roleKeysInPlay.length; i++) {
+    for (let i = 0; i < this.roleKeysInPlay.length; i++) {
     // If the function doesn't exist, return null
         if (!this.specialRoles[this.roleKeysInPlay[i]].getPublicGameData) { continue; }
 
@@ -1310,7 +1310,7 @@ Game.prototype.getRoleCardPublicGameData = function () {
         Object.assign(allData.roles, data);
     }
 
-    for (var i = 0; i < this.cardKeysInPlay.length; i++) {
+    for (let i = 0; i < this.cardKeysInPlay.length; i++) {
     // If the function doesn't exist, return null
         if (!this.specialCards[this.cardKeysInPlay[i]].getPublicGameData) { continue; }
 
@@ -1483,7 +1483,7 @@ function getUsernamesOfPlayersInGame(thisRoom) {
 }
 
 function gameReverseArray(arr) {
-    if (arr.length == 0) {
+    if (arr.length === 0) {
         return [];
     }
     const firstEntry = arr.slice(0, 1);
@@ -1497,7 +1497,7 @@ function gameReverseArray(arr) {
 }
 
 function gameReverseIndex(num, numPlayers) {
-    if (num == 0) {
+    if (num === 0) {
         return 0;
     }
 
@@ -1506,7 +1506,7 @@ function gameReverseIndex(num, numPlayers) {
 
 const id = function (x) { return x; };
 
-var reverseMapFromMap = function (map, f) {
+let reverseMapFromMap = function (map, f) {
     return Object.keys(map).reduce((acc, k) => {
         acc[map[k]] = (acc[map[k]] || []).concat((f || id)(k));
         return acc;

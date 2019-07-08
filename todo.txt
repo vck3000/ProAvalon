@@ -19,28 +19,28 @@ To-do list:
 
 Hak:
 List of suggestions
-•	Displaying name/number of room in this room
-•	Changing properties of game in room such as ranked/unranked or Avalon/resistance
-•	Res-only chat
-•	Option to remake game, without creating new
-•	Custom name rooms
-•	/Buzzall option (something like this is good, but private players prolly don’t want be buzzed)
-•	Coloring chat (choosing own color or for others)
-•	Showing host/all players in room
-•	Option to alone upload avatars and rating them, so image may be banned (I don’t like it)
-•	Match history
+•    Displaying name/number of room in this room
+•    Changing properties of game in room such as ranked/unranked or Avalon/resistance
+•    Res-only chat
+•    Option to remake game, without creating new
+•    Custom name rooms
+•    /Buzzall option (something like this is good, but private players prolly don’t want be buzzed)
+•    Coloring chat (choosing own color or for others)
+•    Showing host/all players in room
+•    Option to alone upload avatars and rating them, so image may be banned (I don’t like it)
+•    Match history
 
-•	Seperating different players chat
-•	Readjusting approve/reject button (they aren’t so close and are always at same place)
-•	Mvp voting after game (I don’t like it)
-•	Levels
-•	Assassination clock and picking/voting clock (I like having infinity time for everything, but maybe its good to have some clock)
-•	Button to res/spy another player
-•	Vote history always visible
+•    Seperating different players chat
+•    Readjusting approve/reject button (they aren’t so close and are always at same place)
+•    Mvp voting after game (I don’t like it)
+•    Levels
+•    Assassination clock and picking/voting clock (I like having infinity time for everything, but maybe its good to have some clock)
+•    Button to res/spy another player
+•    Vote history always visible
 
-•	Better SEO(in progress, Tony wrote it so maybe he knows something about it)
-•	Sorting posts on forum
-•	Mark as read in forum
+•    Better SEO(in progress, Tony wrote it so maybe he knows something about it)
+•    Sorting posts on forum
+•    Mark as read in forum
 
 also from old suggestion:anonymous mode
 
@@ -52,9 +52,9 @@ DONE:
 
 
 Hak:
-•	Disable copying certain texts (maybe useful link http://stackoverflow.com/questions/8957443/prevent-copying-text-in-web-page/12021733#12021733)
-•	Fitting game room better in browser (done) 
-•	Logout button (done)
+•    Disable copying certain texts (maybe useful link http://stackoverflow.com/questions/8957443/prevent-copying-text-in-web-page/12021733#12021733)
+•    Fitting game room better in browser (done) 
+•    Logout button (done)
 
 
 
@@ -90,7 +90,7 @@ Mine:
 -Add in who rej, who app
 -Show number of fails
 -Add gameplay text in game chat
--SPECTATOR MODE	
+-SPECTATOR MODE    
 -VH
 -make res not able to fail
 -role customisation
@@ -345,6 +345,6 @@ PERHAPS ITS FIXED NOW WITH THE SOCKETS REFACTOR?
 -weird bug where u cant join and get a u tried to start the game issue
 - have alt-text for hovering over lady of the lake
 
-•	Private/public games. Adding passwords
+•    Private/public games. Adding passwords
 - After clicking the = icon by an avatar, the icon should change colors (ideally to the color that he'll be highlighted to) so i know that it worked
-•	Display fail/success in vote history
+•    Display fail/success in vote history

@@ -19,7 +19,7 @@ function index() {
         });
 
 
-        for (var name in cardImports) {
+        for (const name in cardImports) {
             if (cardImports.hasOwnProperty(name)) {
                 // Initialise it
                 obj[name] = new cardImports[name](thisRoom);

@@ -41,7 +41,7 @@ function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) 
     this.joinPassword = newRoomPassword_;
     this.gameMode = gameMode_;
     // Default value of avalon.
-    if (gameModeNames.includes(this.gameMode) === false) {
+    if (!gameModeNames.includes(this.gameMode)) {
         this.gameMode = "avalon";
     }
 
@@ -237,7 +237,7 @@ Room.prototype.setClaim = function (socket, data) {
         this.claimingPlayers.push(username);
     }
     // If they want to unclaim and also do exist on the claimingPlayers array
-    else if (data === false) {
+    else if (!data) {
         this.claimingPlayers.splice(index, 1);
     }
 
@@ -294,7 +294,7 @@ Room.prototype.getRoomPlayers = function () {
     const roomPlayers = [];
 
     for (let i = 0; i < this.socketsOfPlayers.length; i++) {
-        var isClaiming;
+        let isClaiming;
         // If the player's username exists on the list of claiming:
         if (this.claimingPlayers.indexOf(this.socketsOfPlayers[i].request.user.username) !== -1) {
             isClaiming = true;
@@ -347,8 +347,8 @@ Room.prototype.updateMaxNumPlayers = function (socket, number) {
 Room.prototype.updateGameModesInRoom = function (socket, gameMode) {
     if (gameModeNames.includes(gameMode) && socket.request.user.username === this.host) {
     // If the new gameMode doesnt include bot, but originally does, then remove the bots that may have been added
-        if (gameMode.toLowerCase().includes("bot") == false && this.botSockets !== undefined && this.botSockets.length > 0) {
-            var thisRoom = this;
+        if (gameMode.toLowerCase().includes("bot") === false && this.botSockets !== undefined && this.botSockets.length > 0) {
+            const thisRoom = this;
 
             const botSockets = this.botSockets.slice() || [];
             botsToRemove = botSockets;
@@ -380,7 +380,7 @@ Room.prototype.updateGameModesInRoom = function (socket, gameMode) {
         }
 
         this.gameMode = gameMode;
-        var thisRoom = this;
+        const thisRoom = this;
 
         this.specialRoles = (new gameModeObj[this.gameMode].Roles()).getRoles(this);
         this.specialPhases = (new gameModeObj[this.gameMode].Phases()).getPhases(this);
@@ -409,7 +409,7 @@ Room.prototype.sendOutGameModesInRoomToSocket = function (targetSocket) {
 
     const skipRoles = ["Resistance", "Spy"];
 
-    for (var key in this.specialRoles) {
+    for (const key in this.specialRoles) {
         if (this.specialRoles.hasOwnProperty(key)) {
             // Skip Resistance and Spy since they are default roles always enabled.
             if (skipRoles.includes(this.specialRoles[key].role)) {
@@ -427,7 +427,7 @@ Room.prototype.sendOutGameModesInRoomToSocket = function (targetSocket) {
         }
     }
 
-    for (var key in this.specialCards) {
+    for (const key in this.specialCards) {
         if (this.specialCards.hasOwnProperty(key)) {
             cardNames.push(this.specialCards[key].card);
             cardDescriptions.push(this.specialCards[key].description);

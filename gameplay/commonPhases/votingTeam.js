@@ -41,7 +41,7 @@ VotingTeam.prototype.gameMove = function (socket, data) {
                 this.thisRoom.phase = "votingMission";
                 this.thisRoom.playersYetToVote = this.thisRoom.proposedTeam.slice();
 
-                var str = `Mission ${this.thisRoom.missionNum}.${this.thisRoom.pickNum} was approved.${getStrApprovedRejectedPlayers(this.thisRoom.votes, this.thisRoom.playersInGame)}`;
+                const str = `Mission ${this.thisRoom.missionNum}.${this.thisRoom.pickNum} was approved.${getStrApprovedRejectedPlayers(this.thisRoom.votes, this.thisRoom.playersInGame)}`;
                 this.thisRoom.sendText(this.thisRoom.allSockets, str, "gameplay-text");
             }
             // Hammer reject
@@ -56,7 +56,7 @@ VotingTeam.prototype.gameMove = function (socket, data) {
                 this.thisRoom.proposedTeam = [];
                 this.thisRoom.phase = "pickingTeam";
 
-                var str = `Mission ${this.thisRoom.missionNum}.${this.thisRoom.pickNum} was rejected.${getStrApprovedRejectedPlayers(this.thisRoom.votes, this.thisRoom.playersInGame)}`;
+                const str = `Mission ${this.thisRoom.missionNum}.${this.thisRoom.pickNum} was rejected.${getStrApprovedRejectedPlayers(this.thisRoom.votes, this.thisRoom.playersInGame)}`;
                 this.thisRoom.sendText(this.thisRoom.allSockets, str, "gameplay-text");
 
                 this.thisRoom.incrementTeamLeader();
@@ -111,9 +111,9 @@ VotingTeam.prototype.numOfTargets = function (indexOfPlayer) {
 VotingTeam.prototype.getStatusMessage = function (indexOfPlayer) {
     // If we are spectator
     if (indexOfPlayer === -1) {
-        var str = "";
+        let str = "";
         str += "Waiting for votes: ";
-        for (var i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
+        for (let i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
             str = `${str + this.thisRoom.playersYetToVote[i]}, `;
         }
         // Remove last , and replace with .
@@ -124,9 +124,9 @@ VotingTeam.prototype.getStatusMessage = function (indexOfPlayer) {
     }
     // If user has voted already
     if (indexOfPlayer !== undefined && this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playersInGame[indexOfPlayer].username) === -1) {
-        var str = "";
+        let str = "";
         str += "Waiting for votes: ";
-        for (var i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
+        for (let i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
             str = `${str + this.thisRoom.playersYetToVote[i]}, `;
         }
         // Remove last , and replace with .
@@ -137,10 +137,10 @@ VotingTeam.prototype.getStatusMessage = function (indexOfPlayer) {
     }
     // User has not voted yet or user is a spectator
 
-    var str = "";
+    let str = "";
     str += (`${this.thisRoom.playersInGame[this.thisRoom.teamLeader].username} has picked: `);
 
-    for (var i = 0; i < this.thisRoom.proposedTeam.length; i++) {
+    for (let i = 0; i < this.thisRoom.proposedTeam.length; i++) {
         str += `${this.thisRoom.proposedTeam[i]}, `;
     }
     // Remove last , and replace with .
@@ -165,7 +165,7 @@ function getStrApprovedRejectedPlayers(votes, playersInGame) {
         }
     }
     // Disabled approve rejected people.
-    // var str = "<p>Approved: " + approvedUsernames + "</p> <p>Rejected: " + rejectedUsernames + "</p>"
+    // let str = "<p>Approved: " + approvedUsernames + "</p> <p>Rejected: " + rejectedUsernames + "</p>"
     const str = "";
 
     return str;

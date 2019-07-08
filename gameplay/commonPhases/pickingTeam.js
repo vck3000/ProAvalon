@@ -22,13 +22,13 @@ PickingTeam.prototype.gameMove = function (socket, data) {
         if (num.length > 1) { num = parseInt(num[0]); } else { num = parseInt(num); }
 
         // Check that the data is valid (i.e. includes only usernames of players)
-        for (var i = 0; i < num; i++) {
+        for (let i = 0; i < num; i++) {
             // If the data doesn't have the right number of users
             // Or has an empty element
             if (!data[i]) {
                 return;
             }
-            if (this.thisRoom.playerUsernamesInGame.includes(data[i]) === false) {
+            if (!this.thisRoom.playerUsernamesInGame.includes(data[i])) {
                 return;
             }
         }
@@ -42,7 +42,7 @@ PickingTeam.prototype.gameMove = function (socket, data) {
         // Send out the gameplay text
         //--------------------------------------
         let str = "";
-        for (var i = 0; i < data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
             str += `${data[i]}, `;
         }
 

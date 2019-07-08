@@ -2,141 +2,141 @@
 <html>
 
 <head>
-	<title>Play The Resistance Avalon Online!</title>
+    <title>Play The Resistance Avalon Online!</title>
 
-	<link rel="stylesheet" type="text/css" href="/libraries/bootstrap-3.3.7-dist/css/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="/stylesheets/header.css">
-	<link rel="icon" href="/testicon.png" sizes="16x16">
+    <link rel="stylesheet" type="text/css" href="/libraries/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/header.css">
+    <link rel="icon" href="/testicon.png" sizes="16x16">
 
-	<script type="text/javascript" src="/libraries/jquery-3.2.1.js"></script>
-	<script type="text/javascript" src="/libraries/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
-	<!-- Sweet alert! -->
-	<!-- <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> -->
-	<!--<script src="/libraries/sweetalert2.1.0.min.js"></script>-->
+    <script type="text/javascript" src="/libraries/jquery-3.2.1.js"></script>
+    <script type="text/javascript" src="/libraries/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <!-- Sweet alert! -->
+    <!-- <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> -->
+    <!--<script src="/libraries/sweetalert2.1.0.min.js"></script>-->
 
-	<script type="text/javascript" src="/libraries/sweetalert2/dist/sweetalert2.all.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@7.1.0/dist/promise.min.js"></script>
+    <script type="text/javascript" src="/libraries/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@7.1.0/dist/promise.min.js"></script>
 
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<meta name="description" content="Play The Resistance Avalon online with us! A wonderful community awaits you.">
-	<meta name="keywords" content="Play, The Resistance, Avalon, Online">
-	<meta name="google-site-verification" content="quBJj75OINJaklLWexWakzylhy8HkfaHi1_2KwsB3d0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Play The Resistance Avalon online with us! A wonderful community awaits you.">
+    <meta name="keywords" content="Play, The Resistance, Avalon, Online">
+    <meta name="google-site-verification" content="quBJj75OINJaklLWexWakzylhy8HkfaHi1_2KwsB3d0" />
 </head>
 
 <body>
 
-	<nav class="navbar navbar-default container-fullwidth">
-		<div id="navBarContainerId">
-			<!-- Brand and toggle get grouped for better mobile display -->
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle navbar-toggler collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
-				 aria-expanded="false">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-				<a class="navbar-brand" href="/"><img id="brand" alt="Brand" src="../../../../pictures/logo.png"></a>
-			</div>
+    <nav class="navbar navbar-default container-fullwidth">
+        <div id="navBarContainerId">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle navbar-toggler collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+                 aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/"><img id="brand" alt="Brand" src="../../../../pictures/logo.png"></a>
+            </div>
 
-			<!-- Collect the nav links, forms, and other content for toggling -->
-			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-				<ul class="nav navbar-nav">
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
 
-					<% if (headerActive) {%>
+                    <% if (headerActive) {%>
 
-					<!-- Lobby -->
-					<% if (headerActive === "lobby") { %>
-					<li class="active"><a href="/lobby">Lobby</a></li>
-					<% } %>
-					<% if (headerActive !== "lobby") { %>
-					<li><a href="/lobby">Lobby</a></li>
-					<% } %>
+                    <!-- Lobby -->
+                    <% if (headerActive === "lobby") { %>
+                    <li class="active"><a href="/lobby">Lobby</a></li>
+                    <% } %>
+                    <% if (headerActive !== "lobby") { %>
+                    <li><a href="/lobby">Lobby</a></li>
+                    <% } %>
 
-					<!-- Rules -->
-					<% if (headerActive === "rules") { %>
+                    <!-- Rules -->
+                    <% if (headerActive === "rules") { %>
                         <li class="active"><a href="/rules">Rules</a></li>
-					<% } %>
-					<% else { %>
+                    <% } %>
+                    <% else { %>
                         <li><a href="/rules">Rules</a></li>
-					<% } %>
+                    <% } %>
 
-					<!-- Statistics -->
-					<% if (headerActive === "stats") { %>
-					<li class="active"><a href="/statistics">Stats</a></li>
-					<% } %>
-					<% else { %>
-					<li><a href="/statistics">Stats</a></li>
-					<% } %>
+                    <!-- Statistics -->
+                    <% if (headerActive === "stats") { %>
+                    <li class="active"><a href="/statistics">Stats</a></li>
+                    <% } %>
+                    <% else { %>
+                    <li><a href="/statistics">Stats</a></li>
+                    <% } %>
 
-					<!-- Community dropdown -->
-					<li class="dropdown">
-						<a class="dropdown-toggle wideNavbarLink" data-toggle="" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
-						<a class="dropdown-toggle narrowNavbarLink" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+                    <!-- Community dropdown -->
+                    <li class="dropdown">
+                        <a class="dropdown-toggle wideNavbarLink" data-toggle="" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+                        <a class="dropdown-toggle narrowNavbarLink" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
 
-						<ul class="dropdown-menu">
-							<!-- Members -->
-							<% if (headerActive === "community") { %>
-								<li class="active"><a href="/community">Members</a></li>
-								<% } %>
-								<% if (headerActive !== "community") { %>
-								<li><a href="/community">Members</a></li>
-								<% } %>
+                        <ul class="dropdown-menu">
+                            <!-- Members -->
+                            <% if (headerActive === "community") { %>
+                                <li class="active"><a href="/community">Members</a></li>
+                                <% } %>
+                                <% if (headerActive !== "community") { %>
+                                <li><a href="/community">Members</a></li>
+                                <% } %>
 
-							<!-- Forums -->
-							<% if (headerActive === "forums") { %>
-							<li class="active"><a href="/forum">Forums</a></li>
-							<% } %>
-							<% if (headerActive !== "forums") { %>
-							<li><a href="/forum">Forums</a></li>
-							<% } %>
-							<!-- Facebook -->
-							<li><a href="https://www.facebook.com/groups/1788396528083787/">Facebook</a></li>
-						</ul>
-					</li>
+                            <!-- Forums -->
+                            <% if (headerActive === "forums") { %>
+                            <li class="active"><a href="/forum">Forums</a></li>
+                            <% } %>
+                            <% if (headerActive !== "forums") { %>
+                            <li><a href="/forum">Forums</a></li>
+                            <% } %>
+                            <!-- Facebook -->
+                            <li><a href="https://www.facebook.com/groups/1788396528083787/">Facebook</a></li>
+                        </ul>
+                    </li>
 
-					<!-- Development dropdown -->
-					<li class="dropdown">
-						<a class="dropdown-toggle wideNavbarLink" data-toggle="" role="button" aria-haspopup="true" aria-expanded="false">Development <span class="caret"></span></a>
-						<a class="dropdown-toggle narrowNavbarLink" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Development <span class="caret"></span></a>
+                    <!-- Development dropdown -->
+                    <li class="dropdown">
+                        <a class="dropdown-toggle wideNavbarLink" data-toggle="" role="button" aria-haspopup="true" aria-expanded="false">Development <span class="caret"></span></a>
+                        <a class="dropdown-toggle narrowNavbarLink" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Development <span class="caret"></span></a>
 
-						<ul class="dropdown-menu">
-							<!-- Log -->
-							<% if (headerActive === "log") { %>
-							<li class="active"><a href="/log">Log</a></li>
-							<% } %>
-							<% if (headerActive !== "log") { %>
-							<li><a href="/log">Log</a></li>
-							<% } %>
+                        <ul class="dropdown-menu">
+                            <!-- Log -->
+                            <% if (headerActive === "log") { %>
+                            <li class="active"><a href="/log">Log</a></li>
+                            <% } %>
+                            <% if (headerActive !== "log") { %>
+                            <li><a href="/log">Log</a></li>
+                            <% } %>
 
-							<!-- About -->
-							<% if (headerActive === "about") { %>
-							<li class="active"><a href="/about">About</a></li>
-							<% } %>
-							<% if (headerActive !== "about") { %>
-							<li><a href="/about">About</a></li>
-							<% } %>
+                            <!-- About -->
+                            <% if (headerActive === "about") { %>
+                            <li class="active"><a href="/about">About</a></li>
+                            <% } %>
+                            <% if (headerActive !== "about") { %>
+                            <li><a href="/about">About</a></li>
+                            <% } %>
 
-							<li><a href="https://github.com/vck3000/ProAvalon">Github</a></li>
-						</ul>
-					</li>
-					<% if (locals.isMod && isMod) { %>
-					<li><a href="/mod">Moderation</a></li>
-					<% } %>
-
-
-					<% }%>
-
-					<!-- <li><a href="#">News</a></li> -->
-				</ul>
+                            <li><a href="https://github.com/vck3000/ProAvalon">Github</a></li>
+                        </ul>
+                    </li>
+                    <% if (locals.isMod && isMod) { %>
+                    <li><a href="/mod">Moderation</a></li>
+                    <% } %>
 
 
-				<ul class="nav navbar-nav navbar-right">
-					<!-- <li><a href="#">About</a></li> -->
+                    <% }%>
 
-					<!-- <li><a href="#">Contact us</a></li> -->
+                    <!-- <li><a href="#">News</a></li> -->
+                </ul>
 
-					<% if (currentUser) { %>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <!-- <li><a href="#">About</a></li> -->
+
+                    <!-- <li><a href="#">Contact us</a></li> -->
+
+                    <% if (currentUser) { %>
                         <% if (locals.userNotifications) { %>
                         <li class="dropdown" id="notificationsDropdown">
                             <a href="#" id="dropDownNotification" class="dropDownNotification">
@@ -144,8 +144,8 @@
                                 <% if (locals.userNotifications) {%>
                                 <span class="badge">
                                     <%
-                                        var num = 0;
-                                        for (var i = 0; i < userNotifications.length; i++) {
+                                        let num = 0;
+                                        for (let i = 0; i < userNotifications.length; i++) {
                                             if (userNotifications[i].seen === false || !userNotifications[i].seen) {
                                                 num++;
                                             }
@@ -169,7 +169,7 @@
                                 <% } %>
 
                                 <% if (locals.userNotifications) { %>
-                                    <% for (var i = userNotifications.length - 1; i >= 0; i--) { %>
+                                    <% for (let i = userNotifications.length - 1; i >= 0; i--) { %>
                                         <% if (!userNotifications[i].seen || !userNotifications[i].seen) { %>
                                         <li class="notificationItem unseen" idOfNotif=<%=userNotifications[i]._id%>>
                                         <% } else { %>
@@ -183,11 +183,11 @@
                                             </a>
 
                                             <%
-                                                // var dateToShow = new Date(userNotifications[i].date).toDateString();
-                                                var dateToShow = new Date(userNotifications[i].date).toLocaleString('en-GB',{hour12: true});
+                                                // let dateToShow = new Date(userNotifications[i].date).toDateString();
+                                                let dateToShow = new Date(userNotifications[i].date).toLocaleString('en-GB',{hour12: true});
 
                                                 // if (new Date().toDateString() === dateToShow) {
-                                                // 	dateToShow = new Date(userNotifications[i].date).
+                                                //     dateToShow = new Date(userNotifications[i].date).
                                                 // } -->
                                             %>
 
@@ -230,41 +230,41 @@
                         <li><a href="/profile/<%=currentUser.username%>" class="" id="originalUsername"><%=currentUser.username%></a></li>
 
                         <li><a href="/logout">Log out</a></li>
-					<% } %>
+                    <% } %>
 
-				</ul>
-			</div> <!-- /.navbar-collapse -->
-		</div> <!-- /.container-fluid -->
-	</nav>
+                </ul>
+            </div> <!-- /.navbar-collapse -->
+        </div> <!-- /.container-fluid -->
+    </nav>
 
-	<div class="container">
+    <div class="container">
 
-		<!-- MY NOTIFICATION REQUESTS - does NOT need to reload -->
-		<a id="danger-alert-box-button" class="inactive-window">
-			<div class="alert alert-danger inactive-window" id="danger-alert-box">
-			</div>
-		</a>
+        <!-- MY NOTIFICATION REQUESTS - does NOT need to reload -->
+        <a id="danger-alert-box-button" class="inactive-window">
+            <div class="alert alert-danger inactive-window" id="danger-alert-box">
+            </div>
+        </a>
 
-		<a id="success-alert-box-button" class="inactive-window">
-			<div class="alert alert-success inactive-window" id="success-alert-box">
-			</div>
-		</a>
+        <a id="success-alert-box-button" class="inactive-window">
+            <div class="alert alert-success inactive-window" id="success-alert-box">
+            </div>
+        </a>
 
 
-		<!-- FLASH NOTIFICATION REQUESTS - does need to reload -->
-		<% if (error && error.length > 0) { %>
-		<div class="alert alert-danger" role="alert">
-			<%= error%>
-		</div>
-		<% }%>
+        <!-- FLASH NOTIFICATION REQUESTS - does need to reload -->
+        <% if (error && error.length > 0) { %>
+        <div class="alert alert-danger" role="alert">
+            <%= error%>
+        </div>
+        <% }%>
 
-		<% if (success && success.length > 0) { %>
-		<div class="alert alert-success" role="alert">
-			<%= success%>
-		</div>
-		<% }%>
+        <% if (success && success.length > 0) { %>
+        <div class="alert alert-success" role="alert">
+            <%= success%>
+        </div>
+        <% }%>
 
-	</div>
+    </div>
 
     <!-- Modal -->
     <div id="optionsModal" class="modal fade" role="dialog">
@@ -466,10 +466,10 @@
                                             if (result.value) {
 
                                                 //get all the keys
-                                                var keys = docCookies.keys();
+                                                let keys = docCookies.keys();
 
                                                 //remove each item
-                                                for (var i = 0; i < keys.length; i++) {
+                                                for (let i = 0; i < keys.length; i++) {
                                                     docCookies.removeItem(keys[i]);
                                                 }
 

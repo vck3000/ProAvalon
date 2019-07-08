@@ -5,7 +5,7 @@
 <% include ../partials/forumInclude%>
                                                 
 
-<%   var bg_converter = {};                    %>
+<%   let bg_converter = {};                    %>
 <%   bg_converter["avalon"] = "success";       %>
 <%   bg_converter["offTopic"] = "info";        %>
 <%   bg_converter["suggestion"] = "warning";   %>
@@ -55,9 +55,9 @@
             <p class="commentOptions">
                 <a class="like" style="cursor: pointer" idOfElement=<%=forumThread._id%> idOfForum=<%=forumThread._id%> typeofelement='forum'>
                     <%               
-                    var isInside = false;
+                    let isInside = false;
                         Object.keys(idsOfLikedPosts).forEach(function (key) {
-                            if (idsOfLikedPosts[key].toString().replace(" ", "") == forumThread._id.toString().replace(" ", "")) {
+                            if (idsOfLikedPosts[key].toString().replace(" ", "") === forumThread._id.toString().replace(" ", "")) {
                                 isInside = true;
                             }
                         });
@@ -82,7 +82,7 @@
                     DELETE
                     
                         <script>
-                            var postId = "<%=forumThread._id%>";
+                            let postId = "<%=forumThread._id%>";
 
                             function deletefunction () {
                                 swal({
@@ -174,7 +174,7 @@
 
             <%forumThread.comments.forEach(function (comment) { %>
                 <%
-                    var classesToAdd = "";
+                    let classesToAdd = "";
                     if (!comment.seenUsers || comment.seenUsers.indexOf(currentUser.username.toLowerCase()) === -1) {
                         classesToAdd += "post-unseen ";
                     }
@@ -216,9 +216,9 @@
                             <a class="reply" style="cursor: pointer">Reply</a>
                             <a class="like" style="cursor: pointer" idOfElement=<%=comment._id%> idofcomment=<%=comment._id%> idOfForum=<%=forumThread._id%> typeofelement='comment'>
                                 <%               
-                                var isInside = false;
+                                let isInside = false;
                                     Object.keys(idsOfLikedPosts).forEach(function (key) {
-                                        if (idsOfLikedPosts[key].toString().replace(" ", "") == comment._id.toString().replace(" ", "")) {
+                                        if (idsOfLikedPosts[key].toString().replace(" ", "") === comment._id.toString().replace(" ", "")) {
                                             isInside = true;
                                         }
                                     });
@@ -267,7 +267,7 @@
                     <% if (comment.replies) { comment.replies.forEach(function (reply) { %>
 
                     <%
-                        var classesToAdd = "";
+                        let classesToAdd = "";
                         if (!reply.seenUsers || reply.seenUsers.indexOf(currentUser.username.toLowerCase()) === -1) {
                             classesToAdd += "post-unseen ";
                         }
@@ -307,9 +307,9 @@
                                 <a class="reply" style="cursor: pointer">Reply</a>
                                 <a class="like" style="cursor: pointer" idOfElement=<%=reply._id%> idOfReply=<%=reply._id%> idOfComment=<%=comment._id%> idOfForum=<%=forumThread._id%> typeofelement='reply'>
                                     <%               
-                                    var isInside = false;
+                                    let isInside = false;
                                         Object.keys(idsOfLikedPosts).forEach(function (key) {
-                                            if (idsOfLikedPosts[key].toString().replace(" ", "") == reply._id.toString().replace(" ", "")) {
+                                            if (idsOfLikedPosts[key].toString().replace(" ", "") === reply._id.toString().replace(" ", "")) {
                                                 isInside = true;
                                             }
                                         });
@@ -462,7 +462,7 @@
                 $("#modActionCloseButton").on("click", function () {
                     $("#modModal").modal("hide");
                     
-                    var data = $("#modactionform").serializeArray();
+                    let data = $("#modactionform").serializeArray();
                     
                     $.ajax({
                         type: 'POST',
@@ -488,7 +488,7 @@
 
 
                 $("#pinButton").on("click", function (e) {
-                    var data = $(e.target).attr("idOfElement");
+                    let data = $(e.target).attr("idOfElement");
                     console.log(data);
                     
                     $.ajax({
@@ -522,12 +522,12 @@
         // console.log($(e.target).attr("authorId"));
         // console.log($(e.target).attr("authorUsername"));
 
-        var idOfElement = $(e.target).attr("idOfElement");
-        var typeOfElement = $(e.target).attr("typeOfElement");
-        var authorId = $(e.target).attr("authorId");
-        var authorUsername = $(e.target).attr("authorUsername");
+        let idOfElement = $(e.target).attr("idOfElement");
+        let typeOfElement = $(e.target).attr("typeOfElement");
+        let authorId = $(e.target).attr("authorId");
+        let authorUsername = $(e.target).attr("authorUsername");
 
-        var text = $(e.target).closest("div").find(".text")[0].innerHTML;
+        let text = $(e.target).closest("div").find(".text")[0].innerHTML;
         console.log($(e.target).closest("div").find(".text")[0].innerHTML);
 
         $("#modModal").modal("show");

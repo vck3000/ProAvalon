@@ -78,10 +78,10 @@
 
         str = "";
         
-        for (var i = 0; i < data.logs.length; i++) {
+        for (let i = 0; i < data.logs.length; i++) {
 
             descriptionStr = "";
-            for (var j = 1; j < data.logs[i].stringsArray.length; j++) {
+            for (let j = 1; j < data.logs[i].stringsArray.length; j++) {
                 descriptionStr += "<p>" + data.logs[i].stringsArray[j] + "</p>";
             }
 
@@ -103,7 +103,7 @@
         $("#logsDiv")[0].innerHTML = str;
     }
 
-    var index = 1;
+    let index = 1;
     function loadMoreLogs() {
         xmlhttp = new XMLHttpRequest();
         xmlhttp.open("GET", "/mod/ajax/logData/" + index, true);

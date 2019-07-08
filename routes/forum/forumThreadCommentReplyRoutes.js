@@ -1,22 +1,21 @@
 const express = require("express");
-
-const router = express.Router();
 const sanitizeHtml = require("sanitize-html");
 const mongoose = require("mongoose");
 const rateLimit = require("express-rate-limit");
+
 const forumThread = require("../../models/forumThread");
 const forumThreadComment = require("../../models/forumThreadComment");
 const forumThreadCommentReply = require("../../models/forumThreadCommentReply");
-const lastIds = require("../../models/lastIds");
+
 const middleware = require("../../middleware");
-const getTimeDiffInString = require("../../assets/myLibraries/getTimeDiffInString");
 const User = require("../../models/user");
 const createNotificationObj = require("../../myFunctions/createNotification");
 
+const router = express.Router();
 
 // Prevent too many requests
 
-// var sanitizeHtmlAllowedTagsForumThread = ['u'];
+// let sanitizeHtmlAllowedTagsForumThread = ['u'];
 const sanitizeHtmlAllowedTagsForumThread = ["img", "iframe", "h1", "h2", "u", "span", "br"];
 const sanitizeHtmlAllowedAttributesForumThread = {
     a: ["href", "name", "target"],
@@ -114,14 +113,14 @@ function createReply(req, res, commentReplyData, replyingToThisReply) {
 
                         if (replyingToThisReply) {
                             // create notif to replying target
-                            var userIdTarget = mongoose.Types.ObjectId(replyingToThisReply.author.id);
-                            var stringToSay = `${req.user.username} has replied to your reply.`;
+                            const userIdTarget = mongoose.Types.ObjectId(replyingToThisReply.author.id);
+                            const stringToSay = `${req.user.username} has replied to your reply.`;
                             // console.log(foundForum);
                             // console.log("**************");
                             // console.log("**************");
                             // console.log("**************");
                             // console.log(newCommentReply);
-                            var link = (`/forum/show/${foundForum._id}#${newCommentReply._id}`);
+                            const link = (`/forum/show/${foundForum._id}#${newCommentReply._id}`);
 
                             createNotificationObj.createNotification(userIdTarget, stringToSay, link, req.user.username);
 
@@ -134,17 +133,17 @@ function createReply(req, res, commentReplyData, replyingToThisReply) {
                                 // dont create two notifications for a player
                             } else if (foundForumThreadComment.author.id) {
                                 // create notif to main comment person
-                                var userIdTarget = mongoose.Types.ObjectId(foundForumThreadComment.author.id);
-                                var stringToSay = `${req.user.username} has replied to your comment.`;
-                                var link = (`/forum/show/${foundForum._id}#${newCommentReply._id}`);
+                                const userIdTarget = mongoose.Types.ObjectId(foundForumThreadComment.author.id);
+                                const stringToSay = `${req.user.username} has replied to your comment.`;
+                                const link = (`/forum/show/${foundForum._id}#${newCommentReply._id}`);
 
                                 createNotificationObj.createNotification(userIdTarget, stringToSay, link, req.user.username);
                             }
                         } else if (foundForumThreadComment.author.id) {
                             // create notif to main comment person
-                            var userIdTarget = mongoose.Types.ObjectId(foundForumThreadComment.author.id);
-                            var stringToSay = `${req.user.username} has replied to your comment.`;
-                            var link = (`/forum/show/${foundForum._id}#${newCommentReply._id}`);
+                            const userIdTarget = mongoose.Types.ObjectId(foundForumThreadComment.author.id);
+                            const stringToSay = `${req.user.username} has replied to your comment.`;
+                            const link = (`/forum/show/${foundForum._id}#${newCommentReply._id}`);
 
                             createNotificationObj.createNotification(userIdTarget, stringToSay, link, req.user.username);
                         }

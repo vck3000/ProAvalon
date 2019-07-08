@@ -81,7 +81,7 @@ const registerLimiter = process.env.MY_PLATFORM === "local"
 router.post("/", registerLimiter, checkIpBan, checkCurrentBan, sanitiseUsername, (req, res) => {
     // console.log("escaped: " + escapeText(req.body.username));
 
-    // var escapedUsername = escapeText(req.body.username);
+    // let escapedUsername = escapeText(req.body.username);
 
     // if we are local, we can skip the captcha
     if (process.env.MY_PLATFORM === "local" || process.env.MY_PLATFORM === "staging") {
@@ -369,10 +369,10 @@ router.get("/mod/ajax/logData/:pageIndex", (req, res) => {
                             linkStr = "";
                             if (action.elementDeleted === "forum") {
                                 // Dont need the extra bit here
-                            } else if (action.elementDeleted == "comment") {
-                                linkStr == `#${action.idOfComment}`;
-                            } else if (action.elementDeleted == "reply") {
-                                linkStr == `#${action.idOfReply}`;
+                            } else if (action.elementDeleted === "comment") {
+                                linkStr === `#${action.idOfComment}`;
+                            } else if (action.elementDeleted === "reply") {
+                                linkStr === `#${action.idOfReply}`;
                             }
 
                             stringsArray[3] = `The link to the article is: <a href='/forum/show/${action.idOfForum}${linkStr}'>Here</a>`;
@@ -463,13 +463,13 @@ const anonymizeMapKeys = function (map, idmap) {
 
 const anonymizeStats = function (records) {
     const anonymizedRecords = [];
-    for (var key in records) {
+    for (const key in records) {
         const record = records[key];
         const anonymizedRecord = JSON.parse(JSON.stringify(record));
         const usernamesMap = {};
         const usernamesPossible = "abcdefghijklmnopqrstuvwxyz";
         let idx = 0;
-        for (var key in record.playerRoles) {
+        for (const key in record.playerRoles) {
             if (record.playerRoles.hasOwnProperty(key)) {
                 usernamesMap[key] = usernamesPossible[idx++];
             }
@@ -487,11 +487,11 @@ const anonymizeStats = function (records) {
 };
 
 // Read in the game records
-// var fs = require('fs');
-// var gameRecordsData = JSON.parse(fs.readFileSync('assets/gameRecordsData/gameRecordsDataSample2.json', 'utf8'));
+// let fs = require('fs');
+// let gameRecordsData = JSON.parse(fs.readFileSync('assets/gameRecordsData/gameRecordsDataSample2.json', 'utf8'));
 
 // // Anonymize it using gameRecordsData
-// var gameRecordsDataAnon = anonymizeStats(gameRecordsData);
+// let gameRecordsDataAnon = anonymizeStats(gameRecordsData);
 
 // fs.writeFileSync('assets/gameRecordsData/gameRecordsDataAnon.json', JSON.stringify(gameRecordsDataAnon));
 
@@ -513,7 +513,7 @@ const hardUpdateStatsFunction = function () {
             // Anonymize it using gameRecordsData
 
             // Filter out the bot games
-            records = records.filter(r => (r.gameMode === undefined || r.gameMode.toLowerCase().includes("bot") == false));
+            records = records.filter(r => (r.gameMode === undefined || r.gameMode.toLowerCase().includes("bot") === false));
             console.log(`Removed ${prevRecordsLength - records.length} bot games from dataset.`);
 
             const gameRecordsDataAnon = anonymizeStats(records);
@@ -530,7 +530,7 @@ const hardUpdateStatsFunction = function () {
             const gamesPlayedData = {};
             const xAxisVars = [];
             const yAxisVars = [];
-            for (var i = 0; i < records.length; i++) {
+            for (let i = 0; i < records.length; i++) {
                 const timeFinish = records[i].timeGameFinished;
                 // Round to nearest day
                 const dayFinished = new Date(timeFinish.getFullYear(), timeFinish.getMonth(), timeFinish.getDate());
@@ -560,7 +560,7 @@ const hardUpdateStatsFunction = function () {
             gamesPlayedDataArray.sort(gameDateCompare);
 
             // Split it into the two axis
-            for (var i = 0; i < gamesPlayedDataArray.length; i++) {
+            for (let i = 0; i < gamesPlayedDataArray.length; i++) {
                 xAxisVars.push(gamesPlayedDataArray[i].date);
                 yAxisVars.push(gamesPlayedDataArray[i].value);
                 // yAxisVars.push(new Date(gamesPlayedDataArray[i].value)); // This line seems to make server hang..?
@@ -578,8 +578,8 @@ const hardUpdateStatsFunction = function () {
             // Getting the average duration of each game
             //* *********************************************
             let averageGameDuration = new Date(0);
-            for (var i = 0; i < records.length; i++) {
-                var duration = new Date(records[i].timeGameFinished.getTime() - records[i].timeGameStarted.getTime());
+            for (let i = 0; i < records.length; i++) {
+                const duration = new Date(records[i].timeGameFinished.getTime() - records[i].timeGameStarted.getTime());
                 averageGameDuration = new Date(averageGameDuration.getTime() + duration.getTime());
             }
             obj.averageGameDuration = new Date(averageGameDuration.getTime() / records.length);
@@ -590,7 +590,7 @@ const hardUpdateStatsFunction = function () {
             //* *********************************************
             let resWins = 0;
             let spyWins = 0;
-            for (var i = 0; i < records.length; i++) {
+            for (let i = 0; i < records.length; i++) {
                 if (records[i].winningTeam === "Resistance") {
                     resWins++;
                     // console.log("res win: ");
@@ -611,7 +611,7 @@ const hardUpdateStatsFunction = function () {
             // Getting the assassination win rate
             //* *********************************************
             const rolesShotObj = {};
-            for (var i = 0; i < records.length; i++) {
+            for (let i = 0; i < records.length; i++) {
                 const roleShot = records[i].whoAssassinShot;
                 if (roleShot) {
                     // console.log("a");
@@ -632,9 +632,9 @@ const hardUpdateStatsFunction = function () {
             //* *********************************************
             let averageAssassinationDuration = new Date(0);
             let count = 0;
-            for (var i = 0; i < records.length; i++) {
+            for (let i = 0; i < records.length; i++) {
                 if (records[i].timeAssassinationStarted) {
-                    var duration = new Date(records[i].timeGameFinished.getTime() - records[i].timeAssassinationStarted.getTime());
+                    const duration = new Date(records[i].timeGameFinished.getTime() - records[i].timeAssassinationStarted.getTime());
                     averageAssassinationDuration = new Date(averageAssassinationDuration.getTime() + duration.getTime());
                     count++;
                 }
@@ -646,7 +646,7 @@ const hardUpdateStatsFunction = function () {
             //* *********************************************
             const gameSizeWins = {};
 
-            for (var i = 0; i < records.length; i++) {
+            for (let i = 0; i < records.length; i++) {
                 if (!gameSizeWins[records[i].numberOfPlayers]) {
                     gameSizeWins[records[i].numberOfPlayers] = {};
                     gameSizeWins[records[i].numberOfPlayers].spy = 0;
@@ -669,7 +669,7 @@ const hardUpdateStatsFunction = function () {
             //* *********************************************
             const spyWinBreakdown = {};
 
-            for (var i = 0; i < records.length; i++) {
+            for (let i = 0; i < records.length; i++) {
                 if (records[i].winningTeam === "Spy") {
                     if (!spyWinBreakdown[records[i].howTheGameWasWon]) {
                         spyWinBreakdown[records[i].howTheGameWasWon] = 0;
@@ -702,7 +702,7 @@ const hardUpdateStatsFunction = function () {
             const spyRoles = ["Assassin", "Morgana", "Spy", "Mordred", "Oberon"];
 
 
-            for (var i = 0; i < records.length; i++) {
+            for (let i = 0; i < records.length; i++) {
                 if (records[i].ladyChain.length > 0) {
                     // if the first person who held the card is a res
                     if (resRoles.indexOf(records[i].ladyChain[0]) !== -1) {
@@ -732,15 +732,15 @@ const hardUpdateStatsFunction = function () {
             //* *********************************************
             const averageGameDurations = [];
             const countForGameSize = [];
-            for (var i = 5; i < 11; i++) {
+            for (let i = 5; i < 11; i++) {
                 averageGameDurations[i] = new Date(0);
                 countForGameSize[i] = 0;
             }
 
             // console.log(averageGameDurations);
 
-            for (var i = 0; i < records.length; i++) {
-                var duration = new Date(records[i].timeGameFinished.getTime() - records[i].timeGameStarted.getTime());
+            for (let i = 0; i < records.length; i++) {
+                const duration = new Date(records[i].timeGameFinished.getTime() - records[i].timeGameStarted.getTime());
 
                 // console.log(records[i].numberOfPlayers);
 
@@ -899,7 +899,7 @@ router.get("/ajax/hideAllNotifications", (req, res) => {
 //= ====================================
 // this part should be in another file now.
 // router.get("/forum", function (req, res) {
-// 	res.render("forum", {currentUser: req.user});
+//     res.render("forum", {currentUser: req.user});
 // })
 
 
@@ -907,17 +907,17 @@ router.get("/ajax/hideAllNotifications", (req, res) => {
 // MIDDLEWARE
 //= ====================================
 // function isLoggedIn(req, res, next) {
-// 	if (req.isAuthenticated()) {
-// 		return next();
-// 	}
-// 	console.log("User is not logged in");
-// 	res.redirect("/");
+//     if (req.isAuthenticated()) {
+//         return next();
+//     }
+//     console.log("User is not logged in");
+//     res.redirect("/");
 // }
 
 // function usernameToLowerCase(req, res, next) {
-// 	res.app.locals.originalUsername = req.body.username;
-// 	req.body.username = req.body.username.toLowerCase();
-// 	next();
+//     res.app.locals.originalUsername = req.body.username;
+//     req.body.username = req.body.username.toLowerCase();
+//     next();
 // }
 
 function escapeTextUsername(req, res, next) {
@@ -988,31 +988,31 @@ async function checkIpBan(req, res, next) {
 }
 
 async function checkCurrentBan(req, res, next) {
-    // var currentModActions = [];
+    // let currentModActions = [];
     // //load up all the modActions that are not released yet and are bans
     // await modAction.find({ whenRelease: { $gt: new Date() }, type: "ban" }, function (err, allModActions) {
 
-    // 	for (var i = 0; i < allModActions.length; i++) {
-    // 		currentModActions.push(allModActions[i]);
-    // 	}
+    //     for (let i = 0; i < allModActions.length; i++) {
+    //         currentModActions.push(allModActions[i]);
+    //     }
     // });
 
-    // for (var i = 0; i < currentModActions.length; i++) {
-    // 	if (currentModActions[i].bannedPlayer !== undefined && req.user !== undefined && req.user.username.toString() === currentModActions[i].bannedPlayer.username.toString()) {
-    // 		if (currentModActions[i].type === "ban") {
-    // 			console.log("TRUE");
-    // 			console.log(currentModActions[i]);
-    // 			console.log(req.user.username);
-    // 			console.log(currentModActions[i].bannedPlayer.username);
-    // 			var message = "You have been banned. The ban will be released on " + currentModActions[i].whenRelease + ". Ban description: '" + currentModActions[i].descriptionByMod + "'";
-    // 			message += " Reflect on your actions.";
-    // 			req.flash("error", message);
-    // 			res.redirect("/")
+    // for (let i = 0; i < currentModActions.length; i++) {
+    //     if (currentModActions[i].bannedPlayer !== undefined && req.user !== undefined && req.user.username.toString() === currentModActions[i].bannedPlayer.username.toString()) {
+    //         if (currentModActions[i].type === "ban") {
+    //             console.log("TRUE");
+    //             console.log(currentModActions[i]);
+    //             console.log(req.user.username);
+    //             console.log(currentModActions[i].bannedPlayer.username);
+    //             let message = "You have been banned. The ban will be released on " + currentModActions[i].whenRelease + ". Ban description: '" + currentModActions[i].descriptionByMod + "'";
+    //             message += " Reflect on your actions.";
+    //             req.flash("error", message);
+    //             res.redirect("/")
 
-    // 			// console.log(req.user.username + " is still banned and cannot join the lobby.");
-    // 			return;
-    // 		}
-    // 	}
+    //             // console.log(req.user.username + " is still banned and cannot join the lobby.");
+    //             return;
+    //         }
+    //     }
     // }
 
     next();
@@ -1059,7 +1059,7 @@ function escapeText(str) {
 }
 
 
-var defaultValuesForUser = {
+let defaultValuesForUser = {
     avatarImgRes: null,
     avatarImgSpy: null,
 

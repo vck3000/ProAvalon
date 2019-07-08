@@ -37,13 +37,13 @@ Sire.prototype.gameMove = function (socket, data) {
     // Check that the target's username exists
     const targetUsername = data;
     let found = false;
-    for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
+    for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
         if (this.thisRoom.playersInGame[i].username === targetUsername) {
             found = true;
             break;
         }
     }
-    if (found === false) {
+    if (!found) {
         socket.emit("danger-alert", "Error: User does not exist. Tell the admin if you see this.");
         return;
     }
@@ -54,7 +54,7 @@ Sire.prototype.gameMove = function (socket, data) {
 
     // Get index of socket
     let indexOfSocket;
-    for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
+    for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
     // console.log("Comparing: " + this.thisRoom.playersInGame[i].username + " with " + socket.request.user.username);
         if (this.thisRoom.playersInGame[i].username === socket.request.user.username) {
             indexOfSocket = i;
@@ -75,14 +75,14 @@ Sire.prototype.gameMove = function (socket, data) {
 
         // grab the carders's alliance
         let alliance;
-        for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
+        for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
             if (this.thisRoom.playersInGame[i].username === socket.request.user.username) {
                 alliance = this.thisRoom.playersInGame[i].alliance;
             }
         }
 
         let socketOfTarget;
-        for (var i = 0; i < this.thisRoom.socketsOfPlayers.length; i++) {
+        for (let i = 0; i < this.thisRoom.socketsOfPlayers.length; i++) {
             if (this.thisRoom.socketsOfPlayers[i].request.user.username === targetUsername) {
                 socketOfTarget = this.thisRoom.socketsOfPlayers[i];
                 break;

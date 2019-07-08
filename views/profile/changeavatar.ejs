@@ -161,14 +161,14 @@ $( document ).ready(function () {
         $(".resImg").attr("src", $("#reslink")[0].value);
         $(".spyImg").attr("src", $("#spylink")[0].value);
 
-        var imgdimensions = $(".imgdimensions");
+        let imgdimensions = $(".imgdimensions");
 
         setInterval(function () {
-            for (var i = 0; i < imgdimensions.length; i++) {
+            for (let i = 0; i < imgdimensions.length; i++) {
                 console.log(imgdimensions[i].parentElement.children[0]);
         
-                var x = imgdimensions[i].parentElement.children[0].clientWidth;
-                var y = imgdimensions[i].parentElement.children[0].clientHeight;
+                let x = imgdimensions[i].parentElement.children[0].clientWidth;
+                let y = imgdimensions[i].parentElement.children[0].clientHeight;
         
         
                 imgdimensions[i].innerText = x + "x" + y + " px";

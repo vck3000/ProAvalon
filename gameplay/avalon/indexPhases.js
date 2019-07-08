@@ -21,7 +21,7 @@ function index() {
         });
 
 
-        for (var name in phases) {
+        for (const name in phases) {
             if (phases.hasOwnProperty(name)) {
                 // Initialise it
                 obj[name] = new phases[name](thisRoom);

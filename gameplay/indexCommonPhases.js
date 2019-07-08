@@ -20,7 +20,7 @@ function index() {
         });
 
 
-        for (var name in commonPhases) {
+        for (const name in commonPhases) {
             if (commonPhases.hasOwnProperty(name)) {
                 // Initialise it
                 obj[name] = new commonPhases[name](thisRoom);

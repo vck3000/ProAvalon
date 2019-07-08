@@ -46,10 +46,10 @@ LadyOfTheLake.prototype.checkSpecialMove = function (socket, data) {
     }
 
     if (this.thisRoom.missionHistory.length >= 2
-		&& this.thisRoom.howWasWon !== "Hammer rejected."
-		&& this.lastMissionUsed !== this.thisRoom.missionNum
-		&& numSuccess < 3
-		&& numFail < 3
+        && this.thisRoom.howWasWon !== "Hammer rejected."
+        && this.lastMissionUsed !== this.thisRoom.missionNum
+        && numSuccess < 3
+        && numFail < 3
     ) {
         this.thisRoom.phase = "lady";
         this.lastMissionUsed = this.thisRoom.missionNum;
@@ -62,7 +62,7 @@ LadyOfTheLake.prototype.checkSpecialMove = function (socket, data) {
 
 LadyOfTheLake.prototype.getPublicGameData = function () {
     /* TODO: (Can delete this function. Not absolutely necessary)
-	Public data to show the user(s) e.g. who holds the lady of the lake */
+    Public data to show the user(s) e.g. who holds the lady of the lake */
     return {
         lady: {
             index: this.indexOfPlayerHolding,

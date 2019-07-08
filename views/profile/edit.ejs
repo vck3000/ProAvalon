@@ -335,8 +335,8 @@
         $('#hideStats').prop('checked', '<%=userData.hideStats%>');
 
         
-        var nationCode = '<%=userData.nationCode%>.toUpperCase()';
-        var nationality = '<%=userData.nationality%>';
+        let nationCode = '<%=userData.nationCode%>.toUpperCase()';
+        let nationality = '<%=userData.nationality%>';
 
         if (nationCode && nationality && nationCode !== '' && nationality !== '') {
             console.log(      $("option:contains('" + nationality + "')")         );
@@ -359,8 +359,8 @@
     });
 
     function updateFlag() {
-        var countryCode = $("#selectNation").find(":selected").val();
-        var countryName = $("#selectNation").find(":selected")[0].innerText;
+        let countryCode = $("#selectNation").find(":selected").val();
+        let countryName = $("#selectNation").find(":selected")[0].innerText;
 
         $("#nationality").val(countryName); 
 

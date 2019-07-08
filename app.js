@@ -94,7 +94,7 @@ async function checkLoggedIn(req, res, next) {
     for (let i = 0; i < requireLoggedInRoutes.length; i++) {
         if (req.originalUrl.startsWith(requireLoggedInRoutes[i])) {
             // Check for logged in.
-            if (req.isAuthenticated() == false) {
+            if (!req.isAuthenticated()) {
                 req.flash("error", "Please log in to view this page.");
                 res.redirect("/");
                 return;
@@ -107,7 +107,7 @@ async function checkLoggedIn(req, res, next) {
                 } else {
                     // console.log("A");
                     // console.log(m);
-                    if (m == null || m == undefined) {
+                    if (m === null || m === undefined) {
                         // all good
                     } else {
                         let message = `You have been banned. The ban will be released on ${m.whenRelease}. Ban description: '${m.descriptionByMod}'`;
@@ -141,7 +141,7 @@ app.use("/profile", profileRoutes);
 
 // start server listening
 const IP = process.env.IP || "127.0.0.1";
-// var server = app.listen(port, IP , function () {
+// let server = app.listen(port, IP , function () {
 const server = app.listen(port, () => {
     console.log(`Server has started on http://${IP}:${port}`);
 });
@@ -153,19 +153,19 @@ const server = app.listen(port, () => {
 const socket = require("socket.io");
 
 const io = socket(server);
-var passportSocketIo = require("passport.socketio");
-var express = require("express");
+let passportSocketIo = require("passport.socketio");
+let express = require("express");
 
-var app = express();
-var mongoose = require("mongoose");
-var bodyParser = require("body-parser");
-var methodOverride = require("method-override");
-var passport = require("passport");
-var LocalStrategy = require("passport-local");
-var passportSocketIo = require("passport.socketio");
+let app = express();
+let mongoose = require("mongoose");
+let bodyParser = require("body-parser");
+let methodOverride = require("method-override");
+let passport = require("passport");
+let LocalStrategy = require("passport-local");
+let passportSocketIo = require("passport.socketio");
 const cookieParser = require("cookie-parser");
-var flash = require("connect-flash");
-var User = require("./models/user");
+let flash = require("connect-flash");
+let User = require("./models/user");
 const profileRoutes = require("./routes/profile");
 const forumRoutes = require("./routes/forum");
 const indexRoutes = require("./routes/index");
@@ -186,76 +186,76 @@ io.use(passportSocketIo.authorize({
 
 // setTimeout(function () {
 
-// 	console.log("Starting gameRecord database fix...");
+//     console.log("Starting gameRecord database fix...");
 
-// 	var gameRecord = require("./models/gameRecord");
+//     let gameRecord = require("./models/gameRecord");
 
-// 	gameRecord.find({}).exec(function (err, records) {
-// 		// gameRecord.find({}).skip(17000).limit(100).exec(function (err, records) {
-// 		if (err) {
-// 			console.log(err);
-// 		}
-// 		else {
-// 			console.log(records.length + " games loaded.");
+//     gameRecord.find({}).exec(function (err, records) {
+//         // gameRecord.find({}).skip(17000).limit(100).exec(function (err, records) {
+//         if (err) {
+//             console.log(err);
+//         }
+//         else {
+//             console.log(records.length + " games loaded.");
 
-// 			var missingGameMode = 0;
-// 			var missingLadyCard = 0;
-// 			// var count = 0;
-// 			records.forEach(async function (r) {
-// 				// console.log(r);
-
-
-// 				if (r.gameMode == undefined) {
-// 					missingGameMode += 1;
-// 					console.log("missing gameMode: " + missingGameMode);
-// 					if (missingGameMode % 1000 == 0) {
-// 						console.log(r);
-// 					}
-
-// 					r.gameMode = "avalon";
-// 					r.markModified("gameMode");
-// 					await r.save();
-// 				}
-
-// 				if (r.sireChain.length > 0 && r.cards.includes("sire of the sea") == false) {
-// 					console.log("Sire");
-// 					console.log(r.sireChain + "\t" + r.cards);
-// 					console.log(r.timeGameFinished);
+//             let missingGameMode = 0;
+//             let missingLadyCard = 0;
+//             // let count = 0;
+//             records.forEach(async function (r) {
+//                 // console.log(r);
 
 
-// 					r.cards.push("sire of the sea");
-// 					r.markModified("cards");
-// 					await r.save();
-// 				}
+//                 if (r.gameMode === undefined) {
+//                     missingGameMode += 1;
+//                     console.log("missing gameMode: " + missingGameMode);
+//                     if (missingGameMode % 1000 === 0) {
+//                         console.log(r);
+//                     }
 
-// 				if (r.ladyChain.length > 0 && r.cards.includes("lady of the lake") == false) {
-// 					console.log("Lady");
-// 					console.log(r.ladyChain + "\t" + r.cards);
-// 					console.log(r.timeGameFinished);
+//                     r.gameMode = "avalon";
+//                     r.markModified("gameMode");
+//                     await r.save();
+//                 }
 
-// 					r.cards.push("lady of the lake");
-// 					r.markModified("cards");
-// 					await r.save();
-// 				}
-
-// 				if (r.refChain.length > 0 && r.cards.includes("ref of the rain") == false) {
-// 					console.log("Ref");
-// 					console.log(r.refChain + "\t" + r.cards);
-// 					console.log(r.timeGameFinished);
-
-// 					r.cards.push("ref of the rain");
-// 					r.markModified("cards");
-// 					await r.save();
-// 				}
-
-// 				// count += 1;
-// 				// if (count % 2000 == 0) {
-// 				// 	console.log(r);
-// 				// }
-// 			});
+//                 if (r.sireChain.length > 0 && r.cards.includes("sire of the sea") === false) {
+//                     console.log("Sire");
+//                     console.log(r.sireChain + "\t" + r.cards);
+//                     console.log(r.timeGameFinished);
 
 
-// 			console.log("Done!");
-// 		}
-// 	});
+//                     r.cards.push("sire of the sea");
+//                     r.markModified("cards");
+//                     await r.save();
+//                 }
+
+//                 if (r.ladyChain.length > 0 && r.cards.includes("lady of the lake") === false) {
+//                     console.log("Lady");
+//                     console.log(r.ladyChain + "\t" + r.cards);
+//                     console.log(r.timeGameFinished);
+
+//                     r.cards.push("lady of the lake");
+//                     r.markModified("cards");
+//                     await r.save();
+//                 }
+
+//                 if (r.refChain.length > 0 && r.cards.includes("ref of the rain") === false) {
+//                     console.log("Ref");
+//                     console.log(r.refChain + "\t" + r.cards);
+//                     console.log(r.timeGameFinished);
+
+//                     r.cards.push("ref of the rain");
+//                     r.markModified("cards");
+//                     await r.save();
+//                 }
+
+//                 // count += 1;
+//                 // if (count % 2000 === 0) {
+//                 //     console.log(r);
+//                 // }
+//             });
+
+
+//             console.log("Done!");
+//         }
+//     });
 // }, 5000);

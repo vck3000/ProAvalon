@@ -22,7 +22,7 @@
     // $(".chat-message-input").keypress(function (e) {
     //     console.log(e.which);   
 
-    //     if (e.which == 9) {
+    //     if (e.which === 9) {
     //         e.preventDefault();
     //         // do your code
     //     }
@@ -32,19 +32,19 @@
     $(".chat-message-input").val("asd");
 
 
-    var lastKeyPress;
+    let lastKeyPress;
     $(".chat-message-input").on('keydown', function (e) {
         // console.log(e.which);   
 
         //if person presses the 'tab' button.
-        if (e.which == 9) {
+        if (e.which === 9) {
             e.preventDefault();
             // do your code
 
             // console.log('a');
             // console.log($(e.target).val());
-            var newWord;
-            var lastWord;
+            let newWord;
+            let lastWord;
             if (lastKeyPress === 9) {
                 console.log(goodPossibleStrings);
                 //if our last keypress is still a tab, put the next possible autocomplete str in
@@ -70,18 +70,18 @@
             if (newWord) {
                 //get the new str after replacing
                 //split the current stuff up:
-                var splitted = $(e.target).val().split(" ");
+                let splitted = $(e.target).val().split(" ");
                 splitted[splitted.length-1] = newWord;
 
-                var together = "";
-                for (var i = 0; i < splitted.length; i++) {
+                let together = "";
+                for (let i = 0; i < splitted.length; i++) {
                     together = together + splitted[i];
                     if (i !== splitted.length - 1) {
                         together += " ";
                     }
                 }
 
-                var newStr = together;
+                let newStr = together;
                                 
                 //set the new text
                 $(e.target).val(newStr);    
@@ -92,7 +92,7 @@
 
 
 
-    // var autoCompleteStrs = [
+    // let autoCompleteStrs = [
     //     "asdf",
     //     "ProNub",
     //     "asddddddd",
@@ -101,7 +101,7 @@
     //     "afee",
     // ];
 
-    var autoCompleteStrs = [
+    let autoCompleteStrs = [
         "aa",
         "ab",
         "ac",
@@ -115,26 +115,26 @@
     ];
 
     function getLastWord(words) {
-        var n = words.split(" ");
+        let n = words.split(" ");
         return n[n.length - 1];
     }
 
     //state variables
-    var goodPossibleStrings = [];
-    var currentAutoCompleteWord = "";
+    let goodPossibleStrings = [];
+    let currentAutoCompleteWord = "";
 
     function autoComplete(currentStr, possibleStrs) {
-        var lastWord = getLastWord(currentStr);
+        let lastWord = getLastWord(currentStr);
         console.log(lastWord);
 
         goodPossibleStrings = [];
 
         //for every possible auto complete str
-        for (var i = 0; i < possibleStrs.length; i++) {
+        for (let i = 0; i < possibleStrs.length; i++) {
             
             //for the length of the last word
             //check each character. if they match good, if they dont, break
-            for (var j = 0; j < lastWord.length; j++) {
+            for (let j = 0; j < lastWord.length; j++) {
                 if (lastWord[j].toLowerCase() === possibleStrs[i][j].toLowerCase()) {
                     //good
                 }

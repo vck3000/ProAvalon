@@ -21,7 +21,7 @@ function Assassination(thisRoom_) {
 }
 
 Assassination.prototype.gameMove = function (socket, data) {
-    if (this.finishedShot === false) {
+    if (!this.finishedShot) {
     // Carry out the assassination move
         if (socket && data) {
             // Check that the person making this request is the assassin
@@ -44,7 +44,7 @@ Assassination.prototype.gameMove = function (socket, data) {
 
                     // Get merlin's username
                     let merlinUsername;
-                    for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
+                    for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
                         if (this.thisRoom.playersInGame[i].role === "Merlin") {
                             merlinUsername = this.thisRoom.playersInGame[i].username;
                         }
@@ -70,7 +70,7 @@ Assassination.prototype.gameMove = function (socket, data) {
                         this.finishedShot = true;
 
                         // For gameRecord - get the role that was shot
-                        for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
+                        for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
                             if (this.thisRoom.playersInGame[i].username === data) {
                                 this.thisRoom.whoAssassinShot = this.thisRoom.playersInGame[i].role;
                                 break;
@@ -106,7 +106,7 @@ Assassination.prototype.gameMove = function (socket, data) {
                     // Get isolde's username
                     let tristanUsername = "";
                     let isoldeUsername = "";
-                    for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
+                    for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
                         if (this.thisRoom.playersInGame[i].role === "Tristan") {
                             tristanUsername = this.thisRoom.playersInGame[i].username;
                         }
@@ -146,7 +146,7 @@ Assassination.prototype.gameMove = function (socket, data) {
 
                     // console.log("playersInGame");
                     // For gameRecord - get the role that was shot
-                    for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
+                    for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
                         // console.log(this.thisRoom.playersInGame[i].username + " is " + this.thisRoom.playersInGame[i].role);
                         // console.log("data0: " + data[0]);
                         // console.log("data1: " + data[1]);

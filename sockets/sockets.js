@@ -1,41 +1,36 @@
 // sockets
+// Get all the possible gameModes
 const axios = require("axios");
+const JSON = require("circular-json");
+const fs = require("fs");
+
 const gameRoom = require("../gameplay/game");
 
 const savedGameObj = require("../models/savedGame");
 const modAction = require("../models/modAction");
 
 let currentModActions = [];
-const myNotification = require("../models/notification");
 const createNotificationObj = require("../myFunctions/createNotification");
-
 
 const avatarRequest = require("../models/avatarRequest");
 const User = require("../models/user");
 const banIp = require("../models/banIp");
-const JSON = require("circular-json");
 const modsArray = require("../modsadmins/mods");
 const adminsArray = require("../modsadmins/admins");
 
-const _bot = require("./bot");
-
-const { enabledBots } = _bot;
-const { makeBotAPIRequest } = _bot;
-const { SimpleBotSocket } = _bot;
-const { APIBotSocket } = _bot;
+const {
+    enabledBots, makeBotAPIRequest, SimpleBotSocket, APIBotSocket,
+} = require("./bot");
 
 const dateResetRequired = 1543480412695;
 
 const newUpdateNotificationRequired = 1557512579418;
 const updateMessage = `
+<p><h1>BOTS HAVE HIT THE ROADS FELLAS!</h1></p>
 
-<h1>BOTS HAVE HIT THE ROADS FELLAS!</h1>
+<p>Make sure you select avalonBot gameMode.</p>
+<p>Check out /help to see commands to interact with bots.</p>
 
-<br>
-
-Make sure you select avalonBot gameMode. <br> Check out /help to see commands to interact with bots.
-
-<br>
 <br>
 
 Thanks guys, and in particular Detry322 for making this possible!
@@ -51,8 +46,6 @@ const allChat5Min = [];
 let nextRoomId = 1;
 
 // Get all the possible gameModes
-const fs = require("fs");
-
 const gameModeNames = [];
 fs.readdirSync("./gameplay/").filter((file) => {
     if (fs.statSync(`${"./gameplay" + "/"}${file}`).isDirectory() && file !== "commonPhases") {
@@ -65,11 +58,9 @@ process.on("SIGTERM", gracefulShutdown);
 
 function gracefulShutdown() {
     sendWarning();
-
     console.log("Graceful shutdown request");
     process.exit();
 }
-
 
 function sendWarning() {
     for (const key in allSockets) {
@@ -97,6 +88,7 @@ function saveGameToDb(roomToSave) {
         }
     }
 }
+
 function deleteSaveGameFromDb(room) {
     savedGameObj.findByIdAndRemove(room.savedGameRecordId, (err) => {
         if (err) {
@@ -106,7 +98,6 @@ function deleteSaveGameFromDb(room) {
         }
     });
 }
-
 
 // RECOVERING SAVED GAMES!
 savedGameObj.find({}).exec((err, foundSaveGameArray) => {
@@ -132,7 +123,7 @@ savedGameObj.find({}).exec((err, foundSaveGameArray) => {
 });
 
 const lastWhisperObj = {};
-var actionsObj = {
+let actionsObj = {
     userCommands: {
         help: {
             command: "help",
@@ -289,7 +280,7 @@ var actionsObj = {
 
                 // code
                 if (args[1]) {
-                    if (isNaN(args[1]) === false) {
+                    if (!isNaN(args[1])) {
                         return { message: (Math.floor(Math.random() * args[1]) + 1).toString(), classStr: "server-text" };
                     }
 
@@ -486,8 +477,8 @@ var actionsObj = {
             run(data, senderSocket) {
                 // Check the guesser is at a table
                 if (!senderSocket.request.user.inRoomId
-						|| !rooms[senderSocket.request.user.inRoomId].gameStarted
-						|| rooms[senderSocket.request.user.inRoomId].phase === "finished") {
+                        || !rooms[senderSocket.request.user.inRoomId].gameStarted
+                        || rooms[senderSocket.request.user.inRoomId].phase === "finished") {
                     messageToClient = "You must be at a running table to guess Merlin.";
                 } else {
                     messageToClient = rooms[senderSocket.request.user.inRoomId].submitMerlinGuess(senderSocket.request.user.username, data.args[1]);
@@ -509,15 +500,15 @@ var actionsObj = {
             help: "/getbots: Run this in a bot-compatible room. Prints a list of available bots to add, as well as their supported game modes",
             run(data, senderSocket) {
                 // if (senderSocket.request.user.inRoomId === undefined) {
-                // 	return {
-                // 		message: "You must be in a bot-capable room to run this command!",
-                // 		classStr: "server-text"
-                // 	};
+                //     return {
+                //         message: "You must be in a bot-capable room to run this command!",
+                //         classStr: "server-text"
+                //     };
                 // } else if (rooms[senderSocket.request.user.inRoomId].gameMode !== 'avalonBot') {
-                // 	return {
-                // 		message: "This room is not bot capable. Please join a bot-capable room.",
-                // 		classStr: "server-text"
-                // 	}
+                //     return {
+                //         message: "This room is not bot capable. Please join a bot-capable room.",
+                //         classStr: "server-text"
+                //     }
                 // }
 
                 senderSocket.emit("messageCommandReturnStr", {
@@ -566,7 +557,7 @@ var actionsObj = {
                         message: "You must be in a bot-capable room to run this command!",
                         classStr: "server-text",
                     };
-                } if (rooms[senderSocket.request.user.inRoomId].gameMode.toLowerCase().includes("bot") === false) {
+                } if (!rooms[senderSocket.request.user.inRoomId].gameMode.toLowerCase().includes("bot")) {
                     return {
                         message: "This room is not bot capable. Please join a bot-capable room.",
                         classStr: "server-text",
@@ -596,7 +587,7 @@ var actionsObj = {
                         classStr: "server-text",
                     };
                 }
-                var botName = args[1];
+                let botName = args[1];
                 const botAPI = enabledBots.find(bot => bot.name.toLowerCase() === botName.toLowerCase());
                 if (!botAPI && botName !== "SimpleBot") {
                     return {
@@ -616,7 +607,7 @@ var actionsObj = {
 
                 const addedBots = [];
                 for (let i = 0; i < numBots; i++) {
-                    var botName = `${botAPI.name}#${Math.floor(Math.random() * 100)}`;
+                    let botName = `${botAPI.name}#${Math.floor(Math.random() * 100)}`;
 
                     // Avoid a username clash!
                     const currentUsernames = currentRoom.socketsOfPlayers.map(sock => sock.request.user.username);
@@ -625,8 +616,8 @@ var actionsObj = {
                         continue;
                     }
 
-                    var dummySocket;
-                    if (botAPI.name == "SimpleBot") {
+                    let dummySocket;
+                    if (botAPI.name === "SimpleBot") {
                         dummySocket = new SimpleBotSocket(botName);
                     } else {
                         dummySocket = new APIBotSocket(botName, botAPI);
@@ -658,7 +649,7 @@ var actionsObj = {
                         message: "You must be in a bot-capable room to run this command!",
                         classStr: "server-text",
                     };
-                } if (rooms[senderSocket.request.user.inRoomId].gameMode.toLowerCase().includes("bot") === false) {
+                } if (!rooms[senderSocket.request.user.inRoomId].gameMode.toLowerCase().includes("bot")) {
                     return {
                         message: "This room is not bot capable. Please join a bot-capable room.",
                         classStr: "server-text",
@@ -888,7 +879,7 @@ var actionsObj = {
                 const usernames = [];
                 const ips = [];
 
-                for (var i = 0; i < allSockets.length; i++) {
+                for (let i = 0; i < allSockets.length; i++) {
                     usernames.push(allSockets[i].request.user.username);
 
                     const clientIpAddress = allSockets[i].request.headers["x-forwarded-for"] || allSockets[i].request.connection.remoteAddress;
@@ -912,7 +903,7 @@ var actionsObj = {
                     dataToReturn[0] = { message: "-------------------------", classStr: "server-text", dateCreated: new Date() };
 
 
-                    for (var i = 0; i < duplicateIps.length; i++) {
+                    for (let i = 0; i < duplicateIps.length; i++) {
                         // for each ip, search through the whole users to see who has the ips
 
                         for (let j = 0; j < ips.length; j++) {
@@ -1380,7 +1371,7 @@ module.exports = function (io) {
         // slight delay while client loads
         setTimeout(() => {
             // check if they have a ban or a mute
-            for (var i = 0; i < currentModActions.length; i++) {
+            for (let i = 0; i < currentModActions.length; i++) {
                 if (currentModActions[i].bannedPlayer.id && socket.request.user.id.toString() === currentModActions[i].bannedPlayer.id.toString()) {
                     if (currentModActions[i].type === "mute") {
                         socket.emit("muteNotification", currentModActions[i]);
@@ -1465,7 +1456,7 @@ module.exports = function (io) {
             matchedIpsUsernames = [];
             const joiningIpAddress = socket.request.headers["x-forwarded-for"] || socket.request.connection.remoteAddress;
             const joiningUsername = socket.request.user.username;
-            for (var i = 0; i < allSockets.length; i++) {
+            for (let i = 0; i < allSockets.length; i++) {
                 const clientIpAddress = allSockets[i].request.headers["x-forwarded-for"] || allSockets[i].request.connection.remoteAddress;
                 const clientUsername = allSockets[i].request.user.username;
                 // console.log(clientUsername);
@@ -1475,7 +1466,7 @@ module.exports = function (io) {
             if (matchedIpsUsernames.length > 0) {
                 sendToAllMods(io, { message: `MOD WARNING! '${socket.request.user.username}' has just logged in with the same IP as: `, classStr: "server-text" });
                 sendToAllMods(io, { message: "-------------------------", classStr: "server-text" });
-                for (var i = 0; i < matchedIpsUsernames.length; i++) {
+                for (let i = 0; i < matchedIpsUsernames.length; i++) {
                     sendToAllMods(io, { message: matchedIpsUsernames[i], classStr: "server-text" });
                 }
                 sendToAllMods(io, { message: "-------------------------", classStr: "server-text" });
@@ -1488,7 +1479,7 @@ module.exports = function (io) {
 
         socket.on("modAction", async (data) => {
             if (modsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1) {
-                // var parsedData = JSON.parse(data);
+                // let parsedData = JSON.parse(data);
                 const newModAction = {};
                 let userNotFound = false;
 
@@ -1624,7 +1615,7 @@ module.exports = function (io) {
 };
 
 
-var updateCurrentGamesList = function () {
+function updateCurrentGamesList() {
     // prepare room data to send to players.
     const gamesList = [];
     for (let i = 0; i < rooms.length; i++) {
@@ -1660,8 +1651,7 @@ var updateCurrentGamesList = function () {
     allSockets.forEach((sock) => {
         sock.emit("update-current-games-list", gamesList);
     });
-};
-
+}
 
 function textLengthFilter(str) {
     const lengthLimit = 500;
@@ -1722,11 +1712,11 @@ function sendToAllMods(io, data) {
 }
 
 function isMuted(socket) {
-    returnVar = false;
+    returnlet = false;
     currentModActions.forEach((oneModAction) => {
         if (oneModAction.type === "mute" && oneModAction.bannedPlayer && oneModAction.bannedPlayer.id && oneModAction.bannedPlayer.id.toString() === socket.request.user.id.toString()) {
             socket.emit("muteNotification", oneModAction);
-            returnVar = true;
+            returnlet = true;
         }
     });
 
@@ -1763,12 +1753,12 @@ function playerLeaveRoomCheckDestroy(socket) {
 
         // if room is frozen for more than 1hr then remove.
         if (rooms[socket.request.user.inRoomId]
-			&& rooms[socket.request.user.inRoomId].timeFrozenLoaded
-			&& rooms[socket.request.user.inRoomId].getStatus() === "Frozen"
-			&& rooms[socket.request.user.inRoomId].allSockets.length === 0) {
+            && rooms[socket.request.user.inRoomId].timeFrozenLoaded
+            && rooms[socket.request.user.inRoomId].getStatus() === "Frozen"
+            && rooms[socket.request.user.inRoomId].allSockets.length === 0) {
             const curr = new Date();
             const timeToKill = 1000 * 60 * 5; // 5 mins
-            // var timeToKill = 1000*10; //10s
+            // let timeToKill = 1000*10; //10s
             if ((curr.getTime() - rooms[socket.request.user.inRoomId].timeFrozenLoaded.getTime()) > timeToKill) {
                 destroyRoom(socket.request.user.inRoomId);
 
@@ -1830,7 +1820,7 @@ function disconnect(data) {
     // send out the new updated current player list
     this.in("allChat").emit("update-current-players-list", getPlayerUsernamesFromAllSockets());
     // tell all clients that the user has left
-    var data = {
+    let data = {
         message: `${this.request.user.username} has left the lobby.`,
         classStr: "server-text-teal",
     };
@@ -1845,7 +1835,7 @@ function disconnect(data) {
     playerLeaveRoomCheckDestroy(this);
 
     // if they are in a room, say they're leaving the room.
-    var data = {
+    let data = {
         message: `${username} has left the room.`,
         classStr: "server-text-teal",
         dateCreated: new Date(),
@@ -1858,16 +1848,16 @@ function messageCommand(data) {
     // console.log("mod command exists: " + modCommands[data.command]);
     // console.log("Index of mods" + modsArray.indexOf(socket.request.user.username.toLowerCase()));
     if (userCommands[data.command]) {
-        var dataToSend = userCommands[data.command].run(data, this, ioGlobal);
+        const dataToSend = userCommands[data.command].run(data, this, ioGlobal);
         this.emit("messageCommandReturnStr", dataToSend);
     } else if (modCommands[data.command] && modsArray.indexOf(this.request.user.username.toLowerCase()) !== -1) {
-        var dataToSend = modCommands[data.command].run(data, this, ioGlobal);
+        const dataToSend = modCommands[data.command].run(data, this, ioGlobal);
         this.emit("messageCommandReturnStr", dataToSend);
     } else if (adminCommands[data.command] && adminsArray.indexOf(this.request.user.username.toLowerCase()) !== -1) {
-        var dataToSend = adminCommands[data.command].run(data, this, ioGlobal);
+        const dataToSend = adminCommands[data.command].run(data, this, ioGlobal);
         this.emit("messageCommandReturnStr", dataToSend);
     } else {
-        var dataToSend = {
+        const dataToSend = {
             message: "Invalid command.",
             classStr: "server-text",
             dateCreated: new Date(),

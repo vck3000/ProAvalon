@@ -54,7 +54,7 @@ SimpleBotSocket.prototype.handleGameStart = function (game, callback) {
 SimpleBotSocket.prototype.handleRequestAction = function (game, availableButtons, availablePlayers, numOfTargets, callback) {
     // Simple bots play randomly
     const buttonPressed = availableButtons[Math.floor(Math.random() * availableButtons.length)];
-    if (numOfTargets == 0) {
+    if (numOfTargets === 0) {
         callback({
             buttonPressed,
         });
@@ -137,7 +137,7 @@ APIBotSocket.prototype.handleReadyNotReady = function (game, callback) {
 
         const { capabilities } = response.data;
 
-        if (checkBotCapabilities(game, capabilities) === false) {
+        if (!checkBotCapabilities(game, capabilities)) {
             callback(false, "Bot doesn't support this game type.");
         } else {
             callback(true);
@@ -156,7 +156,7 @@ APIBotSocket.prototype.handleReadyNotReady = function (game, callback) {
 // if the bot failed to initialize, call callback(false) or callback(false, "<reason>")
 APIBotSocket.prototype.handleGameStart = function (game, callback) {
     const thisSocket = this;
-    const playerIndex = game.playersInGame.findIndex(player => player.username == thisSocket.request.user.username);
+    const playerIndex = game.playersInGame.findIndex(player => player.username === thisSocket.request.user.username);
     // console.log("Player " + thisSocket.request.user.username + " is at index: " + playerIndex); //Don't worry, the above line works perfectly...!
     const gameData = game.getGameData()[playerIndex];
 
@@ -194,7 +194,7 @@ APIBotSocket.prototype.handleGameStart = function (game, callback) {
 // TODO: Do we need this many input parameters?
 APIBotSocket.prototype.handleRequestAction = function (game, availableButtons, availablePlayers, numOfTargets, callback) {
     const thisSocket = this;
-    const playerIndex = game.playersInGame.findIndex(player => player.username == thisSocket.request.user.username);
+    const playerIndex = game.playersInGame.findIndex(player => player.username === thisSocket.request.user.username);
     const gameData = game.getGameData()[playerIndex];
 
     const apiData = {
@@ -224,7 +224,7 @@ APIBotSocket.prototype.handleRequestAction = function (game, availableButtons, a
 // Otherwise, call callback(false)
 APIBotSocket.prototype.handleGameOver = function (game, reason, callback) {
     const thisSocket = this;
-    const playerIndex = game.playersInGame.findIndex(player => player.username == thisSocket.request.user.username);
+    const playerIndex = game.playersInGame.findIndex(player => player.username === thisSocket.request.user.username);
     const gameData = game.getGameData()[playerIndex];
 
     const apiData = {
@@ -234,7 +234,7 @@ APIBotSocket.prototype.handleGameOver = function (game, reason, callback) {
 
     makeBotAPIRequest(this.botAPI, "POST", "/v0/session/gameover", apiData, 1000);
 
-    callback(game.phase == "finished");
+    callback(game.phase === "finished");
 };
 
 module.exports = {

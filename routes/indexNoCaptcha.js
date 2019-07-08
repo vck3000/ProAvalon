@@ -28,7 +28,7 @@ router.get("/register", (req, res) => {
 router.post("/", sanitiseUsername, /* usernameToLowerCase, */(req, res) => {
     // console.log("escaped: " + escapeText(req.body.username));
 
-    // var escapedUsername = escapeText(req.body.username);
+    // let escapedUsername = escapeText(req.body.username);
 
     const newUser = new User({
         username: req.body.username,
@@ -263,7 +263,7 @@ router.get("/ajax/hideAllNotifications", (req, res) => {
 //= ====================================
 // this part should be in another file now.
 // router.get("/forum", function (req, res) {
-// 	res.render("forum", {currentUser: req.user});
+//     res.render("forum", {currentUser: req.user});
 // })
 
 
@@ -271,17 +271,17 @@ router.get("/ajax/hideAllNotifications", (req, res) => {
 // MIDDLEWARE
 //= ====================================
 // function isLoggedIn(req, res, next) {
-// 	if (req.isAuthenticated()) {
-// 		return next();
-// 	}
-// 	console.log("User is not logged in");
-// 	res.redirect("/");
+//     if (req.isAuthenticated()) {
+//         return next();
+//     }
+//     console.log("User is not logged in");
+//     res.redirect("/");
 // }
 
 // function usernameToLowerCase(req, res, next) {
-// 	res.app.locals.originalUsername = req.body.username;
-// 	req.body.username = req.body.username.toLowerCase();
-// 	next();
+//     res.app.locals.originalUsername = req.body.username;
+//     req.body.username = req.body.username.toLowerCase();
+//     next();
 // }
 
 function escapeTextUsername(req, res, next) {
@@ -303,12 +303,12 @@ module.exports = router;
 
 function usernameContainsBadCharacter(str) {
     if (str.includes("&amp;")
-		|| str.includes("&lt;")
-		|| str.includes("&gt;")
-		|| str.includes("&apos;")
-		|| str.includes("&quot;")
-		|| str.includes("[")
-		|| str.includes("]")) {
+        || str.includes("&lt;")
+        || str.includes("&gt;")
+        || str.includes("&apos;")
+        || str.includes("&quot;")
+        || str.includes("[")
+        || str.includes("]")) {
         return true;
     }
 
@@ -327,7 +327,7 @@ function escapeText(str) {
 }
 
 
-var defaultValuesForUser = {
+let defaultValuesForUser = {
     avatarImgRes: null,
     avatarImgSpy: null,
 

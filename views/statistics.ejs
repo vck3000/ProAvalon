@@ -237,7 +237,7 @@
             
 
             <br>
-	    <a class="btn btn-info" href="/gameRecordsData">Download anonymized logs</a>
+        <a class="btn btn-info" href="/gameRecordsData">Download anonymized logs</a>
             <br>
             <br>
             <br>
@@ -258,7 +258,7 @@
 
 
 <script>
-    var gameRecordsData;
+    let gameRecordsData;
     
 
 
@@ -284,7 +284,7 @@
     });
 
 
-    var grd;
+    let grd;
     function drawData() {
         grd = gameRecordsData;
         $("#loading").addClass("hidden");
@@ -297,8 +297,8 @@
         //***********************************
 
         // Convert millis from epoch to a date object for use in the graph.
-        var gamesPlayedXAxis = [];
-        for (var i = 0; i < grd.siteTrafficGamesPlayedXAxis.length; i++) {
+        let gamesPlayedXAxis = [];
+        for (let i = 0; i < grd.siteTrafficGamesPlayedXAxis.length; i++) {
             
             
 
@@ -308,74 +308,74 @@
             // console.log(typeof(grd.siteTrafficGamesPlayedXAxis[i]));
         }
 
-        var gamesPlayedStatsConfig = {
-			type: 'line',
-			data: {
-				labels: gamesPlayedXAxis,
-				datasets: [{
-					label: 'Games Played per day',
-					backgroundColor: "rgba(255, 102, 102, 0.4)",
-					borderColor: "rgba(255, 102, 102, 1)",
-					data: grd.siteTrafficGamesPlayedYAxis,
+        let gamesPlayedStatsConfig = {
+            type: 'line',
+            data: {
+                labels: gamesPlayedXAxis,
+                datasets: [{
+                    label: 'Games Played per day',
+                    backgroundColor: "rgba(255, 102, 102, 0.4)",
+                    borderColor: "rgba(255, 102, 102, 1)",
+                    data: grd.siteTrafficGamesPlayedYAxis,
                     fill: false,
                     lineTension: 0,
                     borderWidth: 2
-				}]
-			},
-			options: {
+                }]
+            },
+            options: {
                 responsive: true,
                 maintainAspectRatio: true,
-				title: {
-					display: true,
-					text: 'Site traffic data'
-				},
-				tooltips: {
-					mode: 'index',
-					intersect: false,
-				},
-				hover: {
-					mode: 'nearest',
-					intersect: true
-				},
-				scales: {
-					xAxes: [{
-						type: 'time',
-						time: {
-							// format: timeFormat,
-							// round: 'day'
-							tooltipFormat: 'ddd, ll'
-						},
-						scaleLabel: {
-							display: true,
-							labelString: 'Date'
-						}
-					}],
-					yAxes: [{
-						scaleLabel: {
-							display: true,
-							labelString: 'Games Played'
+                title: {
+                    display: true,
+                    text: 'Site traffic data'
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            // format: timeFormat,
+                            // round: 'day'
+                            tooltipFormat: 'ddd, ll'
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Date'
+                        }
+                    }],
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Games Played'
                         },
                         ticks: {
                             beginAtZero: true
                         }
-					}]
-				}
-			}
-		};
+                    }]
+                }
+            }
+        };
 
 
 
 
-        var ctx = document.getElementById("gamesPlayedChart");
-        var myChart = new Chart(ctx, gamesPlayedStatsConfig);
+        let ctx = document.getElementById("gamesPlayedChart");
+        let myChart = new Chart(ctx, gamesPlayedStatsConfig);
 
 
         
         //***********************************
         //General stats
         //***********************************
-        var resWinPercent = Math.round(grd.totalResWins/grd.totalgamesplayed*100);
-        var spyWinPercent = Math.round(grd.totalSpyWins/grd.totalgamesplayed*100);
+        let resWinPercent = Math.round(grd.totalResWins/grd.totalgamesplayed*100);
+        let spyWinPercent = Math.round(grd.totalSpyWins/grd.totalgamesplayed*100);
         $("#totalgamesplayed")[0].innerText = grd.totalgamesplayed + " games";
         $("#totalreswins")[0].innerText = grd.totalResWins + " games, " + resWinPercent + "%";
         $("#totalspywins")[0].innerText = grd.totalSpyWins + " games, " + spyWinPercent + "%";
@@ -409,7 +409,7 @@
         //***********************************
         //Assassination stats
         //***********************************
-        var totalAssassinShots = grd.assassinRolesShot["Merlin"] + 
+        let totalAssassinShots = grd.assassinRolesShot["Merlin"] + 
                         grd.assassinRolesShot["Percival"] +
                         grd.assassinRolesShot["Resistance"];
 

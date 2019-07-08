@@ -20,7 +20,7 @@ function index() {
         });
 
 
-        for (var name in roleImports) {
+        for (const name in roleImports) {
             if (roleImports.hasOwnProperty(name)) {
                 // Initialise it
                 obj[name] = new roleImports[name](thisRoom);

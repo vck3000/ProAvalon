@@ -4,144 +4,144 @@
 
 
 <style>
-	body {
-		// background-image: url("/pictures/0c42a04b087d6faaea1b410fbb0c4198_original.jpg");
-		// background-repeat: no-repeat;
-		// background-attachment: fixed;
-		// background-size: cover;
-		
-		// filter: brightness(50%);
-	}
+    body {
+        // background-image: url("/pictures/0c42a04b087d6faaea1b410fbb0c4198_original.jpg");
+        // background-repeat: no-repeat;
+        // background-attachment: fixed;
+        // background-size: cover;
+        
+        // filter: brightness(50%);
+    }
 
-	.jumbotron{
-		border-radius: 5px;
-		// padding-top: 0px;
-	}
+    .jumbotron{
+        border-radius: 5px;
+        // padding-top: 0px;
+    }
 
-	#scrollDiv {
-		// filter: brightness(75%);
-		
-	}
+    #scrollDiv {
+        // filter: brightness(75%);
+        
+    }
 
-	.myContainer {
-		padding-right: 15px;
-		padding-left: 15px;
-		margin-right: auto;
-		margin-left: auto;
-		width:90%;
-	}
+    .myContainer {
+        padding-right: 15px;
+        padding-left: 15px;
+        margin-right: auto;
+        margin-left: auto;
+        width:90%;
+    }
 
-	#scroll {
-		position:absolute;
-		transform: translateX(-50%);
-		z-index: -1;
-	}
+    #scroll {
+        position:absolute;
+        transform: translateX(-50%);
+        z-index: -1;
+    }
 
 
 </style>
 
 
 
-	<div class="myContainer">
-		<div class="row">
-			<div id="scrollDiv" class="col-md-5" style="height: 500px;">
+    <div class="myContainer">
+        <div class="row">
+            <div id="scrollDiv" class="col-md-5" style="height: 500px;">
 
-				<img src="/pictures/scroll-min.png" id="scroll">
+                <img src="/pictures/scroll-min.png" id="scroll">
 
-				<form id="form" action="/login" method="POST">
-					<h3 id="loginHeading">Log in!</h3>
-					<div class="form-group">
-						<label for="username">Username: </label>
-						<input type="username" class="form-control" id="username" placeholder="Username" name="username">
-					</div>
-					<div class="form-group">
-						<label for="password">Password: </label>
-						<input type="password" class="form-control" id="password" placeholder="Password", name="password">
-					</div>
-					<button type="submit" class="btn btn-default">Play</button>
+                <form id="form" action="/login" method="POST">
+                    <h3 id="loginHeading">Log in!</h3>
+                    <div class="form-group">
+                        <label for="username">Username: </label>
+                        <input type="username" class="form-control" id="username" placeholder="Username" name="username">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password: </label>
+                        <input type="password" class="form-control" id="password" placeholder="Password", name="password">
+                    </div>
+                    <button type="submit" class="btn btn-default">Play</button>
 
-					<a href="/register" class="btn btn-default pull-right">Register</a>
-					<div>
-						<a href="/troubleshooting" class=" pull-right" style="">Having issues?</a>
-					</div>
-				</form>
-			</div>
+                    <a href="/register" class="btn btn-default pull-right">Register</a>
+                    <div>
+                        <a href="/troubleshooting" class=" pull-right" style="">Having issues?</a>
+                    </div>
+                </form>
+            </div>
 
-			<div class="col-md-7 jumbotron pd-3">
-			
-				<div>
-					<img id="imgBigLogo" src="/pictures/logo-min.png" style="width: 100%; text-align: center;">
-				</div>
+            <div class="col-md-7 jumbotron pd-3">
+            
+                <div>
+                    <img id="imgBigLogo" src="/pictures/logo-min.png" style="width: 100%; text-align: center;">
+                </div>
 
-				<h1>A game of deception</h1>
-				<p id="testId">Can you outwit your opponents?</p>
-				
+                <h1>A game of deception</h1>
+                <p id="testId">Can you outwit your opponents?</p>
+                
 
-				<div class='hero-unit'>
+                <div class='hero-unit'>
 
-					<p></p>
-					<p style="font-size: 18px">This is a free online version of the popular game <a href="http://www.amazon.com/Indie-Boards-Cards-RES2IBC-Resistance/dp/B008A2BA8G"><em>The Resistance</em></a> (designed by Don Eskridge), wherein a small band of revolutionaries must use logic and deduction in order to ferret out the spies who have infiltrated their ranks and are sabatoging the cell's presumably heroic acts of rebellion against government tyranny.</p>
+                    <p></p>
+                    <p style="font-size: 18px">This is a free online version of the popular game <a href="http://www.amazon.com/Indie-Boards-Cards-RES2IBC-Resistance/dp/B008A2BA8G"><em>The Resistance</em></a> (designed by Don Eskridge), wherein a small band of revolutionaries must use logic and deduction in order to ferret out the spies who have infiltrated their ranks and are sabatoging the cell's presumably heroic acts of rebellion against government tyranny.</p>
 
-					<br>
-					<a href="/community">See our community page for regular players!</a>
-				</div>
-				
-			</div>
-			
+                    <br>
+                    <a href="/community">See our community page for regular players!</a>
+                </div>
+                
+            </div>
+            
 
-		</div>
-		
-	</div>
+        </div>
+        
+    </div>
 
 
 <script>
-	
+    
 if ($("#imgBigLogo").width() < 560) {
-	$($("#vid1")[0]).width($("#imgBigLogo").width());
+    $($("#vid1")[0]).width($("#imgBigLogo").width());
 }
 
 
 $( document ).ready(function () {
-	setupPageStuff();
-	setInterval(function () {
-		setupPageStuff();
-		console.log("a");
-	},1000);
+    setupPageStuff();
+    setInterval(function () {
+        setupPageStuff();
+        console.log("a");
+    },1000);
 });
 
 
 function setupPageStuff() {
-	var scaleWidDownForm = 0.6;
-	$("#form").width($("#scroll").width()*scaleWidDownForm + "px");
-	
-	var leftPosOfScroll;
-	if ($("#scroll").css("left") === "auto") {
-		leftPosOfScroll = $($("#form").parent()).width()*1.07/2;
-	}
-	else {
-		leftPosOfScroll = parseInt($("#scroll").css("left"), 10);
-	}
-	var offset = $("#scroll").width()/2;
+    let scaleWidDownForm = 0.6;
+    $("#form").width($("#scroll").width()*scaleWidDownForm + "px");
+    
+    let leftPosOfScroll;
+    if ($("#scroll").css("left") === "auto") {
+        leftPosOfScroll = $($("#form").parent()).width()*1.07/2;
+    }
+    else {
+        leftPosOfScroll = parseInt($("#scroll").css("left"), 10);
+    }
+    let offset = $("#scroll").width()/2;
 
-	var leftPosToScroll = leftPosOfScroll - offset;
+    let leftPosToScroll = leftPosOfScroll - offset;
 
-	var distToCenter = (parseInt($("#scroll").width() , 10) - parseInt($("#form").width(), 10) ) / 2;
+    let distToCenter = (parseInt($("#scroll").width() , 10) - parseInt($("#form").width(), 10) ) / 2;
 
-	$("#form").css("left", (leftPosToScroll + distToCenter) + "px");
-	// $("#form").css("left", (leftPosToScroll + distToCenter) + "px");
-	$("#form").css("top", $("#scroll").height()*0.2 + "px");
-	
-	// $("#testId")[0].innerText = $("#form").parent();
-	// console.log($($("#form").parent()).find("#scroll"));
-
-
+    $("#form").css("left", (leftPosToScroll + distToCenter) + "px");
+    // $("#form").css("left", (leftPosToScroll + distToCenter) + "px");
+    $("#form").css("top", $("#scroll").height()*0.2 + "px");
+    
+    // $("#testId")[0].innerText = $("#form").parent();
+    // console.log($($("#form").parent()).find("#scroll"));
 
 
-	$("#scrollDiv").height($("#scroll").height());
+
+
+    $("#scrollDiv").height($("#scroll").height());
 }
 
 $( window ).resize(function () {
-	setupPageStuff();
+    setupPageStuff();
 });
 
 

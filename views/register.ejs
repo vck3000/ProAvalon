@@ -6,16 +6,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
 
 <style type="text/css">
-	.login-form {
-		max-width: 340px;
-		width: 100%;
-    	margin: 20px auto;
-	}
+    .login-form {
+        max-width: 340px;
+        width: 100%;
+        margin: 20px auto;
+    }
     .login-form form {
-    	margin-bottom: 15px;
+        margin-bottom: 15px;
         background: #f7f7f7;
         box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-		border: #b5b5b5 2px solid;
+        border: #b5b5b5 2px solid;
         padding: 30px;
     }
     .login-form h2 {
@@ -34,58 +34,58 @@
 
 <div class="container">
 
-	<div class="container center myContainer">
+    <div class="container center myContainer">
 
-	<div class="login-form">
-		<form action="/" method="POST" id="registerId" data-toggle="validator">  
-	
+    <div class="login-form">
+        <form action="/" method="POST" id="registerId" data-toggle="validator">  
+    
 
-			<h2 class="text-center">Sign up!</h2> 
+            <h2 class="text-center">Sign up!</h2> 
 
-			<div class="form-group" >
-				<label class="alignLeft pull-left">Username</label>
-				<input type="text" id="username" name="username" class="form-control" placeholder="Username" required>
-				<div class="help-block with-errors"></div>
-			</div>
+            <div class="form-group" >
+                <label class="alignLeft pull-left">Username</label>
+                <input type="text" id="username" name="username" class="form-control" placeholder="Username" required>
+                <div class="help-block with-errors"></div>
+            </div>
 
-			<hr>
+            <hr>
 
-			<div class="form-group">
-				<label class="alignLeft pull-left">Password</label>
-				<input type="password" name="password" class="form-control" placeholder="Password" required id="inputPassword" data-minlength="4">
-				<!-- <div class="help-block">Minimum of 4 characters</div> -->
-				<div class="help-block with-errors"></div>
-			</div>
+            <div class="form-group">
+                <label class="alignLeft pull-left">Password</label>
+                <input type="password" name="password" class="form-control" placeholder="Password" required id="inputPassword" data-minlength="4">
+                <!-- <div class="help-block">Minimum of 4 characters</div> -->
+                <div class="help-block with-errors"></div>
+            </div>
 
-			<div class="form-group">
-				<label class="alignLeft pull-left">Confirm password</label>
-				<input type="password" name="confirmPassword" class="form-control" placeholder="Confirm password" required data-match="#inputPassword" data-match-error="Passwords do not match.">
-				<div class="help-block with-errors"></div>
-			</div>
-			
-			<br>
+            <div class="form-group">
+                <label class="alignLeft pull-left">Confirm password</label>
+                <input type="password" name="confirmPassword" class="form-control" placeholder="Confirm password" required data-match="#inputPassword" data-match-error="Passwords do not match.">
+                <div class="help-block with-errors"></div>
+            </div>
+            
+            <br>
 
-			<% if (locals.platform && platform === "online") { %>
-			<div class="g-recaptcha" data-sitekey="6LdaNWYUAAAAAEZaewme7gGpvL1c1_zPzbVKiF18"></div>
-			<% } else { %>
-			<div>Platform is <%=platform%>. No need for captcha.</div>
-			<% } %>
+            <% if (locals.platform && platform === "online") { %>
+            <div class="g-recaptcha" data-sitekey="6LdaNWYUAAAAAEZaewme7gGpvL1c1_zPzbVKiF18"></div>
+            <% } else { %>
+            <div>Platform is <%=platform%>. No need for captcha.</div>
+            <% } %>
 
-			<br>
+            <br>
 
-			<div>
-				<p>Note: Only alphanumerical characters are allowed in the username (a-z, A-Z and 1-9)</p>
-			</div>
+            <div>
+                <p>Note: Only alphanumerical characters are allowed in the username (a-z, A-Z and 1-9)</p>
+            </div>
 
-			<br>
+            <br>
 
 
-			<div class="form-group">
-				<button type="submit" class="btn btn-primary btn-block">Submit</button>
-			</div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-block">Submit</button>
+            </div>
 
-		</form>
-	</div>
+        </form>
+    </div>
 
 </div>
 

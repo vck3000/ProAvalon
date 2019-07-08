@@ -16,7 +16,7 @@ const createNotificationObj = require("../../myFunctions/createNotification");
 // Prevent too many requests
 
 
-// var sanitizeHtmlAllowedTagsForumThread = ['u'];
+// let sanitizeHtmlAllowedTagsForumThread = ['u'];
 
 const sanitizeHtmlAllowedTagsForumThread = ["img", "iframe", "h1", "h2", "u", "span", "br"];
 const sanitizeHtmlAllowedAttributesForumThread = {

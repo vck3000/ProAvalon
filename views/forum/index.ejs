@@ -2,7 +2,7 @@
 <% include ../partials/forumInclude %>
 
 
-<%   var bg_converter = {};                    %>
+<%   let bg_converter = {};                    %>
 <%   bg_converter["avalon"] = "success";       %>
 <%   bg_converter["offTopic"] = "info";        %>
 <%   bg_converter["suggestion"] = "warning";   %>
@@ -55,7 +55,7 @@
 
     <br>
 
-    <% if (pageNum == 1 && allPinnedThreads.length !== 0) { %> 
+    <% if (pageNum === 1 && allPinnedThreads.length !== 0) { %> 
 
         <div class="panel panel-success">
             <div class="panel-heading">Pinned threads</div>
@@ -121,7 +121,7 @@
                 <ol class="forumsList">
                     <%allForumThreads.forEach(function (forumThread) { %>
 
-                        <% var classesToAdd = "";%>
+                        <% let classesToAdd = "";%>
                         <%if (!forumThread.seenUsers || forumThread.seenUsers.indexOf(currentUser.username.toLowerCase() ) === -1 ) {
                             classesToAdd += "post-unseen ";
                          }
@@ -179,7 +179,7 @@
         </div>
     </div>
 
-    <% var categoryAdd; %>
+    <% let categoryAdd; %>
 
     <% if (typeof activeCategory !== 'undefined') { 
         categoryAdd = "/" + activeCategory;
@@ -189,11 +189,11 @@
     <nav aria-label="Page navigation">
         <ul class="pagination">
             <li>
-            <% if (pageNum-1 == 0) {%>
-                <% var str = "/forum/page" + categoryAdd + "/1"; %>
+            <% if (pageNum-1 === 0) {%>
+                <% let str = "/forum/page" + categoryAdd + "/1"; %>
                 <a href=<%=str%> aria-label="Previous">
             <% } else { %>
-                <% var str = "/forum/page" + categoryAdd + "/" + (pageNum-1); %>
+                <% let str = "/forum/page" + categoryAdd + "/" + (pageNum-1); %>
             
                 <a href=<%=str%> aria-label="Previous">
             <% } %>
@@ -201,15 +201,15 @@
                 </a>
             </li>
 
-            <% var NUM_OF_PAGES_TO_SHOW_ON_PAGER = 5; %>
-            <% var HALF_NUM_OF_PAGES_TO_SHOW_ON_PAGER = Math.floor(NUM_OF_PAGES_TO_SHOW_ON_PAGER/2); %>
+            <% let NUM_OF_PAGES_TO_SHOW_ON_PAGER = 5; %>
+            <% let HALF_NUM_OF_PAGES_TO_SHOW_ON_PAGER = Math.floor(NUM_OF_PAGES_TO_SHOW_ON_PAGER/2); %>
             
-            <% var startingPageNum = pageNum - HALF_NUM_OF_PAGES_TO_SHOW_ON_PAGER; %>
+            <% let startingPageNum = pageNum - HALF_NUM_OF_PAGES_TO_SHOW_ON_PAGER; %>
             <% if (startingPageNum < 1) {startingPageNum = 1;} %>
             
 
-            <% for (var i = startingPageNum; i < NUM_OF_PAGES_TO_SHOW_ON_PAGER + startingPageNum; i++) { %>
-                <% if (i == pageNum) { %>
+            <% for (let i = startingPageNum; i < NUM_OF_PAGES_TO_SHOW_ON_PAGER + startingPageNum; i++) { %>
+                <% if (i === pageNum) { %>
                     <li class="active">
                 <% } else { %>
                     <li>
@@ -220,7 +220,7 @@
             <% } %>
             
             <li>
-                <% var str = "/forum/page" + categoryAdd + "/" + (parseInt(pageNum)+1); %>
+                <% let str = "/forum/page" + categoryAdd + "/" + (parseInt(pageNum)+1); %>
             
                 <a href=<%=str%> aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>

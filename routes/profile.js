@@ -24,7 +24,7 @@ const sanitizeHtmlAllowedAttributesForumThread = {
 
 
 // router.get("/", middleware.isLoggedIn, function (req, res) {
-// 	res.redirect("/forum/page/1");
+//     res.redirect("/forum/page/1");
 // });
 
 
@@ -284,7 +284,7 @@ router.get("/:profileUsername", middleware.isLoggedIn, (req, res) => {
 module.exports = router;
 
 
-var nationCodesAll = [
+let nationCodesAll = [
     "UN",
     "AF",
     "AX",
@@ -538,7 +538,7 @@ var nationCodesAll = [
 ];
 
 
-var nationalitiesAll = [
+let nationalitiesAll = [
     "United Nations",
     "Afghanistan",
     "Åland Islands",

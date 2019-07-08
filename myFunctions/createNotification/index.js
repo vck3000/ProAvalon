@@ -29,7 +29,7 @@ createNotifObj.createNotification = function (userIDTarget, stringToSay, link, m
 
                     // if the notification is for the person who made it (i.e. If I comment on my own post)
                     if (madeBy.toLowerCase() !== foundUser.username.toLowerCase() && sameNotifExists === false) {
-                        notificationVar = {
+                        notificationlet = {
                             text: stringToSay,
                             date: new Date(),
                             link,
