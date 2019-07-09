@@ -1,53 +1,10 @@
 <% include ./partials/header %>
 
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
 
-
-<style>
-    .myContainer {
-        border-radius: 50px;
-
-        padding-top: 5%;
-        padding-bottom: 5%;
-        margin-bottom: 30px;
-        color: inherit;
-        background-color: #eee;
-        
-        width:95%;
-    }
-
-    .myTable {
-        border: 1px solid black;
-        /* table-layout: fixed; */
-
-        /* width: 100%; */
-    }
-
-    .myTable tbody tr td{
-        border: 1px solid black;
-    }
-
-    .myTable thead tr td{
-        border: 1px solid black;
-    }
-
-    .table-nonfluid {
-        width: auto !important;
-    }
-
-    #gamesPlayedChart {
-        width: 100%;
-        /*height: 50%;*/
-        border: 1px solid red;
-
-        max-width: 1000px;
-    }
-
-</style>
+<link rel="stylesheet" type="text/css" href="<%-getVersionedPath('/stylesheets/statistics.css')%>">
 
 <div class="container myContainer">
     <h1><u>Statistics</u></h1>
@@ -234,11 +191,10 @@
                 </tbody>
             </table>
 
-            
-
             <br>
-        <a class="btn btn-info" href="/gameRecordsData">Download anonymized logs</a>
-            <br>
+            <p>
+                <a class="btn btn-info" href="/gameRecordsData">Download anonymized logs</a>
+            </p>
             <br>
             <br>
             <br>
@@ -247,7 +203,6 @@
             
             </div>
         </div>
-        
     </div>
 </div>
 
@@ -255,222 +210,6 @@
 <br>
 <br>
 
-
-
-<script>
-    let gameRecordsData;
-    
-
-
-    $( document ).ready(function () {
-        $(function () {
-            $('[data-toggle="tooltip"]').tooltip();
-        });
-
-
-        xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("GET","/ajax/getStatistics", true);
-
-        xmlhttp.onreadystatechange=function () {
-            if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-                console.log(xmlhttp.responseText)
-                gameRecordsData=JSON.parse(xmlhttp.responseText);
-                console.log(gameRecordsData);
-
-                drawData();
-            }
-        }
-        xmlhttp.send();
-    });
-
-
-    let grd;
-    function drawData() {
-        grd = gameRecordsData;
-        $("#loading").addClass("hidden");
-        $("#statsDiv").removeClass("hidden");
-
-        $("#timeCreated")[0].innerText = new Date(grd.timeCreated).toString();
-
-        //***********************************
-        //Site traffic stats
-        //***********************************
-
-        // Convert millis from epoch to a date object for use in the graph.
-        let gamesPlayedXAxis = [];
-        for (let i = 0; i < grd.siteTrafficGamesPlayedXAxis.length; i++) {
-            
-            
-
-
-
-            gamesPlayedXAxis[i] = moment(grd.siteTrafficGamesPlayedXAxis[i], "x").format("DD MMM YYYY hh:mm a"); //parse string 
-            // console.log(typeof(grd.siteTrafficGamesPlayedXAxis[i]));
-        }
-
-        let gamesPlayedStatsConfig = {
-            type: 'line',
-            data: {
-                labels: gamesPlayedXAxis,
-                datasets: [{
-                    label: 'Games Played per day',
-                    backgroundColor: "rgba(255, 102, 102, 0.4)",
-                    borderColor: "rgba(255, 102, 102, 1)",
-                    data: grd.siteTrafficGamesPlayedYAxis,
-                    fill: false,
-                    lineTension: 0,
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                title: {
-                    display: true,
-                    text: 'Site traffic data'
-                },
-                tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                },
-                hover: {
-                    mode: 'nearest',
-                    intersect: true
-                },
-                scales: {
-                    xAxes: [{
-                        type: 'time',
-                        time: {
-                            // format: timeFormat,
-                            // round: 'day'
-                            tooltipFormat: 'ddd, ll'
-                        },
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Date'
-                        }
-                    }],
-                    yAxes: [{
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Games Played'
-                        },
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
-                }
-            }
-        };
-
-
-
-
-        let ctx = document.getElementById("gamesPlayedChart");
-        let myChart = new Chart(ctx, gamesPlayedStatsConfig);
-
-
-        
-        //***********************************
-        //General stats
-        //***********************************
-        let resWinPercent = Math.round(grd.totalResWins/grd.totalgamesplayed*100);
-        let spyWinPercent = Math.round(grd.totalSpyWins/grd.totalgamesplayed*100);
-        $("#totalgamesplayed")[0].innerText = grd.totalgamesplayed + " games";
-        $("#totalreswins")[0].innerText = grd.totalResWins + " games, " + resWinPercent + "%";
-        $("#totalspywins")[0].innerText = grd.totalSpyWins + " games, " + spyWinPercent + "%";
-        $("#averagegameduration")[0].innerText = new Date(grd.averageGameDuration).getUTCMinutes() + " mins " + new Date(grd.averageGameDuration).getUTCSeconds() + " seconds";
-
-
-
-        //***********************************
-        //Game size win rate breakdown stats
-        //***********************************
-        $("#5preswin")[0].innerText = grd.gameSizeWins[5].res + " wins, " + Math.round(grd.gameSizeWins[5].res / (grd.gameSizeWins[5].res + grd.gameSizeWins[5].spy) * 100) + "%";
-        $("#5pspywin")[0].innerText = grd.gameSizeWins[5].spy + " wins, " + Math.round(grd.gameSizeWins[5].spy / (grd.gameSizeWins[5].res + grd.gameSizeWins[5].spy) * 100) + "%";
-
-        $("#6preswin")[0].innerText = grd.gameSizeWins[6].res + " wins, " + Math.round(grd.gameSizeWins[6].res / (grd.gameSizeWins[6].res + grd.gameSizeWins[6].spy) * 100) + "%";
-        $("#6pspywin")[0].innerText = grd.gameSizeWins[6].spy + " wins, " + Math.round(grd.gameSizeWins[6].spy / (grd.gameSizeWins[6].res + grd.gameSizeWins[6].spy) * 100) + "%";
-
-        $("#7preswin")[0].innerText = grd.gameSizeWins[7].res + " wins, " + Math.round(grd.gameSizeWins[7].res / (grd.gameSizeWins[7].res + grd.gameSizeWins[7].spy) * 100) + "%";
-        $("#7pspywin")[0].innerText = grd.gameSizeWins[7].spy + " wins, " + Math.round(grd.gameSizeWins[7].spy / (grd.gameSizeWins[7].res + grd.gameSizeWins[7].spy) * 100) + "%";
-
-        $("#8preswin")[0].innerText = grd.gameSizeWins[8].res + " wins, " + Math.round(grd.gameSizeWins[8].res / (grd.gameSizeWins[8].res + grd.gameSizeWins[8].spy) * 100) + "%";
-        $("#8pspywin")[0].innerText = grd.gameSizeWins[8].spy + " wins, " + Math.round(grd.gameSizeWins[8].spy / (grd.gameSizeWins[8].res + grd.gameSizeWins[8].spy) * 100) + "%";
-
-        $("#9preswin")[0].innerText = grd.gameSizeWins[9].res + " wins, " + Math.round(grd.gameSizeWins[9].res / (grd.gameSizeWins[9].res + grd.gameSizeWins[9].spy) * 100) + "%";
-        $("#9pspywin")[0].innerText = grd.gameSizeWins[9].spy + " wins, " + Math.round(grd.gameSizeWins[9].spy / (grd.gameSizeWins[9].res + grd.gameSizeWins[9].spy) * 100) + "%";
-
-        $("#10preswin")[0].innerText = grd.gameSizeWins[10].res + " wins, " + Math.round(grd.gameSizeWins[10].res / (grd.gameSizeWins[10].res + grd.gameSizeWins[10].spy) * 100) + "%";
-        $("#10pspywin")[0].innerText = grd.gameSizeWins[10].spy + " wins, " + Math.round(grd.gameSizeWins[10].spy / (grd.gameSizeWins[10].res + grd.gameSizeWins[10].spy) * 100) + "%";
-
-
-
-        //***********************************
-        //Assassination stats
-        //***********************************
-        let totalAssassinShots = grd.assassinRolesShot["Merlin"] + 
-                        grd.assassinRolesShot["Percival"] +
-                        grd.assassinRolesShot["Resistance"];
-
-        $("#totalMerlinShot")[0].innerText = grd.assassinRolesShot["Merlin"] + " times, " + Math.round(grd.assassinRolesShot["Merlin"] / totalAssassinShots * 100) + "%";
-        $("#totalPercivalShot")[0].innerText = grd.assassinRolesShot["Percival"] + " times, " + Math.round(grd.assassinRolesShot["Percival"] / totalAssassinShots * 100) + "%";
-        $("#totalResistanceShot")[0].innerText = grd.assassinRolesShot["Resistance"] + " times, " + Math.round(grd.assassinRolesShot["Resistance"] / totalAssassinShots * 100) + "%";
-        
-        $("#averageassassinationduration")[0].innerText = new Date(grd.averageAssassinationDuration).getUTCMinutes() + " mins " + new Date(grd.averageAssassinationDuration).getUTCSeconds() + " seconds";
-
-
-        
-        
-
-
-        //***********************************
-        //Spy wins breakdown
-        //***********************************
-        $("#spywinfailingmissions")[0].innerText = grd.spyWinBreakdown["Mission fails."] + " times, " + Math.round(grd.spyWinBreakdown["Mission fails."]/grd.totalSpyWins*100) + "%";
-        $("#spywinassassinatingmerlin")[0].innerText = grd.spyWinBreakdown["Assassinated Merlin correctly."] + " times, " + Math.round(grd.spyWinBreakdown["Assassinated Merlin correctly."]/grd.totalSpyWins*100) + "%";
-        $("#spywinhammerreject")[0].innerText = grd.spyWinBreakdown["Hammer rejected."] + " times, " + Math.round(grd.spyWinBreakdown["Hammer rejected."]/grd.totalSpyWins*100) + "%";
-
-
-
-        //***********************************
-        //Lady of the lake wins breakdown
-        //***********************************
-        $("#resStartResWin")[0].innerText = grd.ladyBreakdown["resStart"]["resWin"] + " times, " + Math.round(grd.ladyBreakdown["resStart"]["resWin"] / (grd.ladyBreakdown["resStart"]["resWin"] + grd.ladyBreakdown["resStart"]["spyWin"]) * 100) + "%";
-        $("#resStartSpyWin")[0].innerText = grd.ladyBreakdown["resStart"]["spyWin"] + " times, " + Math.round(grd.ladyBreakdown["resStart"]["spyWin"] / (grd.ladyBreakdown["resStart"]["resWin"] + grd.ladyBreakdown["resStart"]["spyWin"]) * 100) + "%";
-
-        $("#spyStartResWin")[0].innerText = grd.ladyBreakdown["spyStart"]["resWin"] + " times, " + Math.round(grd.ladyBreakdown["spyStart"]["resWin"] / (grd.ladyBreakdown["spyStart"]["resWin"] + grd.ladyBreakdown["spyStart"]["spyWin"]) * 100) + "%";
-        $("#spyStartSpyWin")[0].innerText = grd.ladyBreakdown["spyStart"]["spyWin"] + " times, " + Math.round(grd.ladyBreakdown["spyStart"]["spyWin"] / (grd.ladyBreakdown["spyStart"]["resWin"] + grd.ladyBreakdown["spyStart"]["spyWin"]) * 100) + "%";
-
-
-        //***********************************
-        //Game duration by size breakdown
-        //***********************************
-
-        $("#averagegameduration")[0].innerText = new Date(grd['averageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['5paverageGameDuration']).getUTCSeconds() + " seconds";
-
-
-        $("#5paveragegameduration")[0].innerText = new Date(grd['5paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['5paverageGameDuration']).getUTCSeconds() + " seconds";
-        $("#6paveragegameduration")[0].innerText = new Date(grd['6paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['6paverageGameDuration']).getUTCSeconds() + " seconds";
-        $("#7paveragegameduration")[0].innerText = new Date(grd['7paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['7paverageGameDuration']).getUTCSeconds() + " seconds";
-        $("#8paveragegameduration")[0].innerText = new Date(grd['8paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['8paverageGameDuration']).getUTCSeconds() + " seconds";
-        $("#9paveragegameduration")[0].innerText = new Date(grd['9paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['9paverageGameDuration']).getUTCSeconds() + " seconds";
-        $("#10paveragegameduration")[0].innerText = new Date(grd['10paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['10paverageGameDuration']).getUTCSeconds() + " seconds";
-
-
-        // $("#testDiv")[0].innerText = JSON.stringify(grd);
-
-    }
-
-</script>
-
-
-
-
+<script src="/scripts/statistics.js"></script>
 
 <% include ./partials/footer %>
-
-
-
-
-
