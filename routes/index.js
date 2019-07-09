@@ -11,12 +11,10 @@ const rateLimit = require("express-rate-limit");
 const User = require("../models/user");
 const myNotification = require("../models/notification");
 
-
 const modAction = require("../models/modAction");
 const gameRecord = require("../models/gameRecord");
 const statsCumulative = require("../models/statsCumulative");
 const banIp = require("../models/banIp");
-
 
 const middleware = require("../middleware");
 
@@ -25,7 +23,6 @@ const adminsArray = require("../modsadmins/admins");
 
 // Prevent too many requests
 // app.enable("trust proxy"); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
-
 
 // exclude pronub from new mods array
 const newModsArray = modsArray.filter(mod => mod != "pronub");
@@ -328,67 +325,67 @@ router.get("/mod/ajax/logData/:pageIndex", (req, res) => {
             .skip(skipNumber)
             .limit(NUM_OF_RESULTS_PER_PAGE)
             .exec(async (err, foundModActions) => {
-                if (err) { console.log(err); } else {
-                    const logsObj = [];
-                    await foundModActions.forEach((action) => {
-                        const stringsArray = [];
-                        switch (action.type) {
-                        case "ban":
-                            stringsArray[0] = (`${action.modWhoBanned.username} has banned ${action.bannedPlayer.username}`);
-                            stringsArray[0] += ` for reason: ${action.reason}.`;
-
-
-                            stringsArray.push(`The ban was made on ${action.whenMade}`);
-                            stringsArray.push(`The ban will be released on: ${action.whenRelease}`);
-                            stringsArray.push(`Moderator message: ${action.descriptionByMod}`);
-                            break;
-                        case "mute":
-                            stringsArray[0] = (`${action.modWhoBanned.username} has muted ${action.bannedPlayer.username}`);
-                            stringsArray[0] += ` for reason: ${action.reason}.`;
-
-
-                            stringsArray.push(`The mute was made on ${action.whenMade}`);
-                            // -1970 years because thats the start of computer time
-                            stringsArray.push(`The mute will be released on: ${action.whenRelease}`);
-                            stringsArray.push(`Moderator message: ${action.descriptionByMod}`);
-                            break;
-                            // Forum remove
-                        case "remove":
-                            stringsArray[0] = `${action.modWhoBanned.username} removed ${action.bannedPlayer.username}'s ${action.elementDeleted}.`;
-                            stringsArray[0] += ` Reason: ${action.reason}.`;
-
-                            stringsArray[1] = `The removal occured on ${action.whenMade}`;
-                            stringsArray[2] = `Moderator message: ${action.descriptionByMod}`;
-
-                            // Get the extra link bit (The # bit to select to a specific comment/reply)
-                            const linkStr = "";
-                            if (action.elementDeleted === "forum") {
-                                // Dont need the extra bit here
-                            } else if (action.elementDeleted === "comment") {
-                                linkStr === `#${action.idOfComment}`;
-                            } else if (action.elementDeleted === "reply") {
-                                linkStr === `#${action.idOfReply}`;
-                            }
-
-                            stringsArray[3] = `The link to the article is: <a href='/forum/show/${action.idOfForum}${linkStr}'>Here</a>`;
-                            break;
-                        }
-
-                        const log = {};
-                        log.stringsArray = stringsArray;
-                        log.date = action.whenMade;
-
-                        logsObj.push(log);
-                    });
-
-                    const obj = {};
-                    obj.logs = logsObj;
-
-                    // sort in newest to oldest
-                    // obj.logs.sort(compareLogObjs);
-
-                    res.status(200).send(obj);
+                if (err) {
+                    console.log(err);
+                    return;
                 }
+
+                let logsObj = [];
+                await foundModActions.forEach((action) => {
+                    let stringsArray = [];
+
+                    switch (action.type) {
+                    case "ban":
+                        stringsArray = [
+                            `${action.modWhoBanned.username} has banned ${action.bannedPlayer.username} for reason: ${action.reason}.`,
+                            `The ban was made on ${action.whenMade}`,
+                            `The ban will be released on: ${action.whenRelease}`,
+                            `Moderator message: ${action.descriptionByMod}`
+                        ];
+                        break;
+
+                    case "mute":
+                        stringsArray = [
+                            `${action.modWhoBanned.username} has muted ${action.bannedPlayer.username} for reason: ${action.reason}.`,
+                            `The mute was made on ${action.whenMade}`,
+                            `The mute will be released on: ${action.whenRelease}`,
+                            `Moderator message: ${action.descriptionByMod}`
+                        ];
+                        break;
+
+                    // Forum remove
+                    case "remove":
+                        // Get the extra link bit (The # bit to select to a specific comment/reply)
+                        let linkStrMap = {
+                            comment: `#${action.idOfComment}`,
+                            reply: `#${action.idOfReply}`
+                        };
+
+                        stringsArray = [
+                            `${action.modWhoBanned.username} removed ${action.bannedPlayer.username}'s ${action.elementDeleted}. Reason: ${action.reason}.`,
+                            `The removal occured on ${action.whenMade}`,
+                            `Moderator message: ${action.descriptionByMod}`,
+                            `The link to the article is: <a href='/forum/show/${action.idOfForum}${linkStrMap[action.elementDeleted] || ""}'>Here</a>`
+                        ];
+                        break;
+                    }
+
+                    const log = {
+                        stringsArray,
+                        date: action.whenMade,
+                    };
+
+                    logsObj.push(log);
+                });
+
+                const obj = {
+                    logs: logsObj
+                };
+
+                // sort in newest to oldest
+                // obj.logs.sort(compareLogObjs);
+
+                res.status(200).send(obj);
             });
     }
 });
@@ -417,13 +414,7 @@ router.get("/ajax/getStatistics", (req, res) => {
             console.log(err);
             res.status(200).send("Something went wrong");
         } else {
-            //    console.log(record);
-            if (record === undefined || record === null) {
-                res.status(200).send("Something went wrong");
-            } else {
-                // console.log(record);
-                res.status(200).send(JSON.parse(record.data));
-            }
+            res.status(200).send(record ? JSON.parse(record.data) : "Something went wrong");
         }
     });
 });
