@@ -4,7 +4,6 @@ const fs = require("fs");
 const _ = require("lodash");
 
 const Room = require("./room");
-const PlayersReadyNotReady = require("./playersReadyNotReady");
 const usernamesIndexes = require("../myFunctions/usernamesIndexes");
 
 const User = require("../models/user");
@@ -68,9 +67,6 @@ class Game extends Room {
             ["3", "4", "4", "5*", "5"],
             ["3", "4", "4", "5*", "5"],
         ];
-
-        // Get the Room properties
-        PlayersReadyNotReady.call(this, this.minPlayers);
 
         /*
     Handle joining:
@@ -171,16 +167,9 @@ class Game extends Room {
         // Reload all objects so that their functions are also generated
         // Functions are not stored with JSONified during storage
         this.commonPhases = (new commonPhasesIndex()).getPhases(this);
-
-        // New Room Object - Just add in the new functions we need
-        const roomFunctions = {};
-
-        Object.assign(Game.prototype, roomFunctions, PlayersReadyNotReady.prototype);
-
         this.specialRoles = (new gameModeObj[this.gameMode].Roles()).getRoles(this);
         this.specialPhases = (new gameModeObj[this.gameMode].Phases()).getPhases(this);
         this.specialCards = (new gameModeObj[this.gameMode].Cards()).getCards(this);
-
 
         // Roles
         // Remove the circular dependency
@@ -312,6 +301,132 @@ class Game extends Room {
         }
     }
 
+
+    playerReady(username) {
+        if (this.playersYetToReady.length !== 0) {
+            const index = usernamesIndexes.getIndexFromUsername(this.playersYetToReady, username);
+
+            if (index !== -1) {
+                this.playersYetToReady.splice(index, 1);
+                if (this.playersYetToReady.length === 0 && this.canJoin === false) {
+                    // say to spectators that the ready/notready phase is over
+                    const socketsOfSpecs = this.getSocketsOfSpectators();
+                    socketsOfSpecs.forEach((sock) => {
+                        sock.emit("spec-game-starting-finished", null);
+                    });
+
+                    if (this.startGame(this.options)) {
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                return false;
+            }
+        }
+    }
+
+    playerNotReady(username) {
+        if (this.playersYetToReady.length !== 0) {
+            this.playersYetToReady = [];
+            this.canJoin = true;
+
+            const socketsOfSpecs = this.getSocketsOfSpectators();
+            socketsOfSpecs.forEach((sock) => {
+                sock.emit("spec-game-starting-finished", null);
+            });
+
+            return username;
+        }
+    }
+
+    hostTryStartGame(options, gameMode) {
+        // Must have at least one bot in the game to play a "bot" gameMode
+        if (gameMode.toLowerCase().includes("bot") && (!this.botSockets || this.botSockets.length === 0)) {
+            this.sendText(this.allSockets, "Please play in a normal game mode if you do not have any bots.", "gameplay-text");
+            return false;
+        }
+        if (!gameMode.toLowerCase().includes("bot") && this.botSockets && this.botSockets.length !== 0) {
+            this.sendText(this.allSockets, "You cannot have bots play in normal game modes. Please use a bot game mode.", "gameplay-text");
+            return false;
+        }
+
+        // console.log("HOST TRY START GAME");
+        if (this.hostTryStartGameDate) {
+            // 11 seconds
+            if (new Date() - this.hostTryStartGameDate > 1000 * 11) {
+                this.canJoin = true;
+                this.playersYetToReady = [];
+            }
+        }
+
+        if (this.canJoin) {
+            // check before starting
+            if (this.socketsOfPlayers.length < this.minPlayers) {
+                // NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
+                // console.log("Not enough players.");
+                this.socketsOfPlayers[0].emit("danger-alert", "Minimum 5 players to start. ");
+                return false;
+            } if (this.gameStarted) {
+                // console.log("Game already started!");
+                return false;
+            }
+
+            this.hostTryStartGameDate = new Date();
+
+            // makes it so that others cannot join the room anymore
+            this.canJoin = false;
+
+            // .slice to clone
+            this.playersYetToReady = this.socketsOfPlayers.slice();
+
+            this.options = options;
+
+            // If there are bots, check if they are ready.
+            // This step has to be done on the next event loop cycle to ensure the code below it runs.
+            const thisGame = this;
+            setImmediate(() => {
+                thisGame.socketsOfPlayers.forEach((playerSocket) => {
+                    if (playerSocket.isBotSocket) {
+                        playerSocket.handleReadyNotReady(thisGame, function (botReady, reason) {
+                            if (botReady) {
+                                thisGame.playerReady(playerSocket.request.user.username);
+                            } else {
+                                let message = `${playerSocket.request.user.username} is not ready.`;
+                                if (reason) {
+                                    message += ` Reason: ${reason}`;
+                                }
+                                thisGame.sendText(this.allSockets, message, "server-text");
+                                thisGame.playerNotReady(playerSocket.request.user.username);
+                            }
+                        });
+                    }
+                });
+            });
+
+            this.gamePlayerLeftDuringReady = false;
+
+            let rolesInStr = "";
+            options.forEach((element) => {
+                rolesInStr += `${element}, `;
+            });
+            // remove the last , and replace with .
+            rolesInStr = rolesInStr.slice(0, rolesInStr.length - 2);
+            rolesInStr += ".";
+
+            for (let i = 0; i < this.socketsOfPlayers.length; i++) {
+                this.socketsOfPlayers[i].emit("game-starting", rolesInStr, gameMode);
+            }
+
+            const socketsOfSpecs = this.getSocketsOfSpectators();
+            socketsOfSpecs.forEach((sock) => {
+                sock.emit("spec-game-starting", null);
+            });
+
+            this.sendText(this.allSockets, "The game is starting!", "gameplay-text");
+        }
+    }
 
     // start game
     startGame(options) {
@@ -1383,8 +1498,6 @@ class Game extends Room {
         return `You have guessed that ${targetUsernameCase} is Merlin. Good luck!`;
     }
 }
-
-Object.assign(Game.prototype, PlayersReadyNotReady.prototype);
 
 module.exports = Game;
 
