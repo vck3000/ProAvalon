@@ -33,7 +33,7 @@ class Assassination extends Phase {
                 }
 
                 // Get merlin's username
-                let merlinUsername = this.thisRoom.playersInGame.find(p => p.role === "Merlin").username;
+                const merlinUsername = this.thisRoom.playersInGame.find(p => p.role === "Merlin").username;
 
                 // set the player shot in the assassin role object
                 this.thisRoom.specialRoles.assassin.playerShot = data;

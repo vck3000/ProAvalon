@@ -10,9 +10,8 @@ class Ref extends Phase {
     gameMove(socket, data) {
         if (!socket || !data) return;
 
-        if (["object", "array"].includes(typeof (data)))
-            return data[0];
-            
+        if (["object", "array"].includes(typeof data)) return data[0];
+
         // Check that the target's username exists
         const targetUsername = data;
         let found = false;
