@@ -1,4 +1,4 @@
-export default class SireOfTheSea {
+module.exports = class SireOfTheSea {
     constructor(thisRoom) {
         this.thisRoom = thisRoom;
 
@@ -75,4 +75,4 @@ export default class SireOfTheSea {
             },
         };
     }
-}
+};

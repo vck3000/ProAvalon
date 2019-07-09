@@ -10,7 +10,7 @@
 
 const usernamesIndexes = require("../../../myFunctions/usernamesIndexes");
 
-export default class Lady {
+module.exports = class Lady {
     constructor(thisRoom) {
         this.thisRoom = thisRoom;
 
@@ -159,4 +159,4 @@ export default class Lady {
 
         return ladyHistory;
     }
-}
+};

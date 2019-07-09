@@ -1,4 +1,4 @@
-export default class Role {
+module.exports = class Role {
     constructor(thisRoom, role, alliance, description, orderPriorityInAlliance) {
         this.thisRoom = thisRoom;
         this.role = role;
@@ -14,4 +14,4 @@ export default class Role {
     checkSpecialMove() {
 
     }
-}
+};

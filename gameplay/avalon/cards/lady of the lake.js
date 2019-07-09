@@ -1,4 +1,4 @@
-export default class LadyOfTheLake {
+module.exports = class LadyOfTheLake {
     constructor(thisRoom) {
         this.thisRoom = thisRoom;
 
@@ -71,4 +71,4 @@ export default class LadyOfTheLake {
             },
         };
     }
-}
+};

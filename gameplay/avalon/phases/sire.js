@@ -10,9 +10,9 @@
 
 const usernamesIndexes = require("../../../myFunctions/usernamesIndexes");
 
-export default class Sire {
+module.exports = class Sire {
     constructor(thisRoom) {
-        this.thisRoom = thisRoom_;
+        this.thisRoom = thisRoom;
 
         this.phase = "sire";
         this.showGuns = false;
@@ -177,4 +177,4 @@ export default class Sire {
 
         return sireHistory;
     }
-}
+};

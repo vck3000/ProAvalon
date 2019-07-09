@@ -1,6 +1,6 @@
-import Role from "./role";
+const Role = require("./role");
 
-export default class Percival extends Role {
+module.exports = class Percival extends Role {
     constructor(thisRoom) {
         super(thisRoom, "Percival", "Resistance", "Knows the identity of Merlin and Morgana.", 80);
     }
@@ -30,4 +30,4 @@ export default class Percival extends Role {
 
         return roleTag;
     }
-}
+};

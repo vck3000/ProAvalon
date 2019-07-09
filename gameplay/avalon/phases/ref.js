@@ -10,7 +10,7 @@
 
 const usernamesIndexes = require("../../../myFunctions/usernamesIndexes");
 
-export default class Ref {
+module.exports = class Ref {
     constructor(thisRoom) {
         this.thisRoom = thisRoom;
 
@@ -159,4 +159,4 @@ export default class Ref {
 
         return refHistory;
     }
-}
+};

@@ -21,7 +21,7 @@ for (let i = 0; i < gameModeNames.length; i++) {
 
 const commonPhasesIndex = require("./indexCommonPhases");
 
-export default class Room {
+module.exports = class Room {
     constructor(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) {
         const thisRoom = this;
 
@@ -104,10 +104,10 @@ export default class Room {
 
 
     playerSitDown(socket) {
-        socketUsername = socket.request.user.username;
+        const socketUsername = socket.request.user.username;
 
         if (socketUsername === this.host && this.gameMode.toLowerCase().includes("bot")) {
-            data = {
+            const data = {
                 message: "Type /help to see the commands available to interact with bots!",
                 classStr: "server-text",
                 dateCreated: new Date(),
@@ -116,7 +116,7 @@ export default class Room {
         }
 
         // If they were kicked and banned
-        if (this.kickedPlayers.indexOf(socketUsername.toLowerCase()) !== -1) {
+        if (this.kickedPlayers.includes(socketUsername.toLowerCase())) {
             socket.emit("danger-alert", "You have been banned from this room. You cannot join.");
             return;
         }
@@ -225,12 +225,13 @@ export default class Room {
         }
     }
 
+    /**
+     * @param data presents whether they want to CLAIM (true) or UNCLAIM (false)
+     */
     setClaim(socket, data) {
-    // data presents whether they want to CLAIM (true) or UNCLAIM (false)
+        const { username } = socket.request.user;
 
-        username = socket.request.user.username;
-
-        index = this.claimingPlayers.indexOf(username);
+        const index = this.claimingPlayers.indexOf(username);
 
         // If they want to claim and also don't exist on the claimingPlayers array
         if (data && index === -1) {
@@ -247,11 +248,12 @@ export default class Room {
 
     // Note this sends text to ALL players and ALL spectators
     sendText(sockets, incString, stringType) {
-        data = {
+        const data = {
             message: incString,
             classStr: stringType,
             dateCreated: new Date(),
         };
+
         for (let i = 0; i < this.allSockets.length; i++) {
             const tmpSocket = this.allSockets[i];
             if (tmpSocket && typeof (tmpSocket) !== "undefined") {
@@ -265,12 +267,13 @@ export default class Room {
     }
 
     updateRoomPlayers() {
-    // Get the usernames of spectators
+        // Get the usernames of spectators
         const usernamesOfSpecs = [];
         const socketsOfSpectators = this.getSocketsOfSpectators();
         socketsOfSpectators.forEach((sock) => {
             usernamesOfSpecs.push(sock.request.user.username);
         });
+
         // Sort the usernames
         usernamesOfSpecs.sort((a, b) => {
             const textA = a.toUpperCase();
@@ -301,7 +304,6 @@ export default class Room {
             } else {
                 isClaiming = false;
             }
-
 
             roomPlayers[i] = {
                 username: this.socketsOfPlayers[i].request.user.username,
@@ -370,8 +372,8 @@ export default class Room {
 
             if (gameMode.toLowerCase().includes("bot")) {
             // Get host socket
-                hostSock = this.socketsOfPlayers[0];
-                data = {
+                const hostSock = this.socketsOfPlayers[0];
+                const data = {
                     message: "Type /help to see the commands available to interact with bots!",
                     classStr: "server-text",
                     dateCreated: new Date(),
@@ -380,7 +382,6 @@ export default class Room {
             }
 
             this.gameMode = gameMode;
-            const thisRoom = this;
 
             this.specialRoles = (new gameModeObj[this.gameMode].Roles()).getRoles(this);
             this.specialPhases = (new gameModeObj[this.gameMode].Phases()).getPhases(this);
@@ -458,7 +459,7 @@ export default class Room {
         // Send the data to the socket.
         targetSocket.emit("update-game-modes-in-room", obj);
     }
-}
+};
 
 
 function getIndexFromUsername(sockets, username) {

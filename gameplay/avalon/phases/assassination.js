@@ -8,7 +8,7 @@
 */
 const usernamesIndexes = require("../../../myFunctions/usernamesIndexes");
 
-export default class Assassination {
+module.exports = class Assassination {
     constructor(thisRoom) {
         this.thisRoom = thisRoom;
 
@@ -281,4 +281,4 @@ export default class Assassination {
 
         return spyIndexes;
     }
-}
+};

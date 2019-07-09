@@ -56,16 +56,14 @@
                     <!-- Rules -->
                     <% if (headerActive === "rules") { %>
                         <li class="active"><a href="/rules">Rules</a></li>
-                    <% } %>
-                    <% else { %>
+                    <% } else { %>
                         <li><a href="/rules">Rules</a></li>
                     <% } %>
 
                     <!-- Statistics -->
                     <% if (headerActive === "stats") { %>
                     <li class="active"><a href="/statistics">Stats</a></li>
-                    <% } %>
-                    <% else { %>
+                    <% } else { %>
                     <li><a href="/statistics">Stats</a></li>
                     <% } %>
 
@@ -164,6 +162,7 @@
                                             class="hideAll">Hide all<span class="hidden"></span></span></p>
                                     </a>
                                 </li>
+
                                 <% if (locals.userNotifications && userNotifications.length !== 0) { %>
                                     <hr>
                                 <% } %>

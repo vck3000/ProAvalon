@@ -47,8 +47,8 @@
             let lastWord;
             if (lastKeyPress === 9) {
                 console.log(goodPossibleStrings);
-                //if our last keypress is still a tab, put the next possible autocomplete str in
-                lastWord = currentAutoCompleteWord;
+                //if our last keypress is still a tab, put the next possible autocome str in
+                lastWord = currentAutoComeWord;
 
                 if (goodPossibleStrings.indexOf(lastWord) + 1  > goodPossibleStrings.length - 1) {
                     newWord = goodPossibleStrings[0];
@@ -58,13 +58,13 @@
                     newWord = goodPossibleStrings[ goodPossibleStrings.indexOf(lastWord) + 1 ];
                 }
 
-                //set the new current auto complete word
-                currentAutoCompleteWord = newWord;
+                //set the new current auto come word
+                currentAutoComeWord = newWord;
             }
             else {
                 //if its out first time pressing tab
                 lastWord = getLastWord($(e.target).val());
-                newWord = autoComplete($(e.target).val(), autoCompleteStrs.sort());
+                newWord = autoCome($(e.target).val(), autoComeStrs.sort());
             }
             //if we get a new word
             if (newWord) {
@@ -74,7 +74,7 @@
                 splitted[splitted.length-1] = newWord;
 
                 let together = "";
-                for (let i = 0; i < splitted.length; i++) {
+                for  i = 0; i < splitted.length; i++) {
                     together = together + splitted[i];
                     if (i !== splitted.length - 1) {
                         together += " ";
@@ -92,7 +92,7 @@
 
 
 
-    // let autoCompleteStrs = [
+    // let autoComeStrs = [
     //     "asdf",
     //     "ProNub",
     //     "asddddddd",
@@ -101,7 +101,7 @@
     //     "afee",
     // ];
 
-    let autoCompleteStrs = [
+    let autoComeStrs = [
         "aa",
         "ab",
         "ac",
@@ -121,20 +121,20 @@
 
     //state variables
     let goodPossibleStrings = [];
-    let currentAutoCompleteWord = "";
+    let currentAutoComeWord = "";
 
-    function autoComplete(currentStr, possibleStrs) {
+    function autoCome(currentStr, possibleStrs) {
         let lastWord = getLastWord(currentStr);
         console.log(lastWord);
 
         goodPossibleStrings = [];
 
-        //for every possible auto complete str
-        for (let i = 0; i < possibleStrs.length; i++) {
+        //for every possible auto come str
+        for  i = 0; i < possibleStrs.length; i++) {
             
             //for the length of the last word
             //check each character. if they match good, if they dont, break
-            for (let j = 0; j < lastWord.length; j++) {
+            for  j = 0; j < lastWord.length; j++) {
                 if (lastWord[j].toLowerCase() === possibleStrs[i][j].toLowerCase()) {
                     //good
                 }
@@ -151,8 +151,8 @@
         }
 
         console.log(goodPossibleStrings);
-        currentAutoCompleteWord = goodPossibleStrings[0];
-        return currentAutoCompleteWord;
+        currentAutoComeWord = goodPossibleStrings[0];
+        return currentAutoComeWord;
     }
 
     

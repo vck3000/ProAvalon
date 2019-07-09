@@ -1,6 +1,6 @@
-import Role from "./role";
+const Role = require("./role");
 
-export default class Oberon extends Role {
+module.exports = class Oberon extends Role {
     constructor(thisRoom) {
         super(thisRoom, "Oberon", "Spy", "Oberon and Spies do not know each other.", 50);
     }
@@ -20,4 +20,4 @@ export default class Oberon extends Role {
 
         return obj;
     }
-}
+};

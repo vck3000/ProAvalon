@@ -1,5 +1,5 @@
 /** An abstract class for different cards in the game of Avalon. */
-export default class Card {
+module.exports = class Card {
     /**
      * Create a new card type.
      * @param {*} thisRoom
@@ -27,4 +27,4 @@ export default class Card {
      */
     getPublicGameData() {
     }
-}
+};

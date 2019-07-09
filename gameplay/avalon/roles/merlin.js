@@ -1,6 +1,6 @@
-import Role from "./role";
+const Role = require("./role");
 
-export default class Merlin extends Role {
+module.exports = class Merlin extends Role {
     constructor(thisRoom) {
         super(thisRoom, "Merlin", "Resistance", "Knows the identity of the spies.", 100);
     }
@@ -38,4 +38,4 @@ export default class Merlin extends Role {
     // If we were to put that into here, in the startGame() function in the game.js file
     // Run all the role special moves once, and here, forcefully change the
     // see variable of the merlin's data object which will be sent to him.
-}
+};

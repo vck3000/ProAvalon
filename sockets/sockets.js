@@ -1712,15 +1712,15 @@ function sendToAllMods(io, data) {
 }
 
 function isMuted(socket) {
-    returnlet = false;
+    let ret = false;
     currentModActions.forEach((oneModAction) => {
         if (oneModAction.type === "mute" && oneModAction.bannedPlayer && oneModAction.bannedPlayer.id && oneModAction.bannedPlayer.id.toString() === socket.request.user.id.toString()) {
             socket.emit("muteNotification", oneModAction);
-            returnlet = true;
+            ret = true;
         }
     });
 
-    return returnVar;
+    return ret;
 }
 
 function destroyRoom(roomId) {
@@ -1829,8 +1829,7 @@ function disconnect(data) {
     // Note, by default when this disconnects, it leaves from all rooms.
     // If user disconnected from within a room, the leave room function will send a message to other players in room.
 
-    const { username } = this.request.user;
-    const { inRoomId } = this.request.user;
+    const { username, inRoomId } = this.request.user;
 
     playerLeaveRoomCheckDestroy(this);
 
