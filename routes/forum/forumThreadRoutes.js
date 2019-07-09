@@ -153,10 +153,7 @@ router.get("/show/:id", middleware.isLoggedIn, (req, res) => {
                         // console.log(foundUser.notifications);
                     }
 
-                    let isMod = false;
-                    if (modsArray.indexOf(req.user.username.toLowerCase()) !== -1) {
-                        isMod = true;
-                    }
+                    const isMod = modsArray.includes(req.user.username.toLowerCase());
 
                     // console.log("AAA");
                     // console.log(foundForumThread.disabled);

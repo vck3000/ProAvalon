@@ -475,16 +475,18 @@ const actionsObj = {
             command: "guessmerlin",
             help: "/guessmerlin <playername>: Solely for fun, submit your guess of who you think is Merlin.",
             run(data, senderSocket) {
+                let message;
+
                 // Check the guesser is at a table
                 if (!senderSocket.request.user.inRoomId
                         || !rooms[senderSocket.request.user.inRoomId].gameStarted
                         || rooms[senderSocket.request.user.inRoomId].phase === "finished") {
-                    messageToClient = "You must be at a running table to guess Merlin.";
+                    message = "You must be at a running table to guess Merlin.";
                 } else {
-                    messageToClient = rooms[senderSocket.request.user.inRoomId].submitMerlinGuess(senderSocket.request.user.username, data.args[1]);
+                    message = rooms[senderSocket.request.user.inRoomId].submitMerlinGuess(senderSocket.request.user.username, data.args[1]);
                 }
 
-                return { message: messageToClient, classStr: "server-text noselect" };
+                return { message, classStr: "server-text noselect" };
             },
         },
         gm: {
@@ -835,14 +837,11 @@ const actionsObj = {
             command: "mcurrentbans",
             help: "/mcurrentbans: Show a list of currently active bans.",
             run(data, senderSocket) {
-                const { args } = data;
                 // do stuff
                 const dataToReturn = [];
-                let i = 0;
-                i++;
 
                 // Cutoff so we dont return perma bans (that are 1000 years long)
-                cutOffDate = new Date("2999-12-17T03:24:00");
+                const cutOffDate = new Date("2999-12-17T03:24:00");
                 modAction.find({
                     $or: [
                         { type: "mute" },
@@ -1103,12 +1102,12 @@ const actionsObj = {
                 while (rooms[nextRoomId]) {
                     nextRoomId++;
                 }
-                dataObj = {
+
+                const dataObj = {
                     maxNumPlayers: 10,
                     newRoomPassword: "",
                     gameMode: "avalonBot",
                 };
-
 
                 // Create the room
                 rooms[nextRoomId] = new gameRoom("Bot game", nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword, dataObj.gameMode);
@@ -1453,7 +1452,7 @@ module.exports = function (io) {
             updateCurrentGamesList(io);
 
             // message mods if player's ip matches another player
-            matchedIpsUsernames = [];
+            const matchedIpsUsernames = [];
             const joiningIpAddress = socket.request.headers["x-forwarded-for"] || socket.request.connection.remoteAddress;
             const joiningUsername = socket.request.user.username;
             for (let i = 0; i < allSockets.length; i++) {

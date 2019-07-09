@@ -231,10 +231,7 @@ router.get("/lobby", middleware.isLoggedIn, checkIpBan, checkCurrentBan, async (
             req.flash("error", "Something has gone wrong! Please contact a moderator or admin.");
             res.redirect("/");
         } else {
-            isMod = false;
-            if (req.isAuthenticated() && modsArray.indexOf(req.user.username.toLowerCase()) !== -1) {
-                isMod = true;
-            }
+            const isMod = req.isAuthenticated() && modsArray.includes(req.user.username.toLowerCase());
 
 
             res.render("lobby", {
@@ -322,8 +319,6 @@ router.get("/mod/ajax/logData/:pageIndex", (req, res) => {
             pageIndex = 0;
         }
 
-        const logs = [];
-
         const NUM_OF_RESULTS_PER_PAGE = 10;
         // Page 0 is the first page.
         const skipNumber = pageIndex * NUM_OF_RESULTS_PER_PAGE;
@@ -334,9 +329,9 @@ router.get("/mod/ajax/logData/:pageIndex", (req, res) => {
             .limit(NUM_OF_RESULTS_PER_PAGE)
             .exec(async (err, foundModActions) => {
                 if (err) { console.log(err); } else {
-                    logsObj = [];
+                    const logsObj = [];
                     await foundModActions.forEach((action) => {
-                        stringsArray = [];
+                        const stringsArray = [];
                         switch (action.type) {
                         case "ban":
                             stringsArray[0] = (`${action.modWhoBanned.username} has banned ${action.bannedPlayer.username}`);
@@ -366,7 +361,7 @@ router.get("/mod/ajax/logData/:pageIndex", (req, res) => {
                             stringsArray[2] = `Moderator message: ${action.descriptionByMod}`;
 
                             // Get the extra link bit (The # bit to select to a specific comment/reply)
-                            linkStr = "";
+                            const linkStr = "";
                             if (action.elementDeleted === "forum") {
                                 // Dont need the extra bit here
                             } else if (action.elementDeleted === "comment") {
@@ -756,9 +751,6 @@ const hardUpdateStatsFunction = function () {
 
             obj.timeCreated = new Date();
 
-            clientStatsData = obj;
-
-
             console.log("Done processing, now saving.");
 
             statsCumulative.remove({}, (err) => {
@@ -766,13 +758,13 @@ const hardUpdateStatsFunction = function () {
                     console.log(err);
                 } else {
                     console.log("Removed past cumulative object");
-                    statsCumulative.create({ data: JSON.stringify(clientStatsData) }, (err) => {
+                    statsCumulative.create({ data: JSON.stringify(obj) }, (err) => {
                         console.log("Successfully saved new cumulative object");
                     });
                 }
             });
 
-            // res.status(200).send(clientStatsData);
+            // res.status(200).send(obj);
         }
     });
 };

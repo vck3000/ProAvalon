@@ -162,7 +162,7 @@ APIBotSocket.prototype.handleGameStart = function (game, callback) {
 
     const apiData = {
         numPlayers: gameData.playerUsernamesOrderedReversed.length,
-        roles: gameData.roles.filter(role => role != "Assassin" && role != "Merlin"), // TODO: Is this needed?
+        roles: gameData.roles.filter(role => role !== "Assassin" && role !== "Merlin"), // TODO: Is this needed?
         cards: gameData.cards,
         teamLeader: gameData.teamLeaderReversed,
         players: gameData.playerUsernamesOrderedReversed,

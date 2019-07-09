@@ -22,7 +22,7 @@ for (let i = 0; i < gameModeNames.length; i++) {
 const commonPhasesIndex = require("./indexCommonPhases");
 
 module.exports = class Room {
-    constructor(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) {
+    constructor(host, roomId, io, maxNumPlayers, newRoomPassword, gameMode) {
         const thisRoom = this;
 
         if (newRoomPassword_ === "") {
@@ -34,12 +34,12 @@ module.exports = class Room {
         }
 
         // Object input variables
-        this.host = host_;
-        this.roomId = roomId_;
-        this.io = io_;
-        this.maxNumPlayers = maxNumPlayers_;
-        this.joinPassword = newRoomPassword_;
-        this.gameMode = gameMode_;
+        this.host = host;
+        this.roomId = roomId;
+        this.io = io;
+        this.maxNumPlayers = maxNumPlayers;
+        this.joinPassword = newRoomPassword;
+        this.gameMode = gameMode;
         // Default value of avalon.
         if (!gameModeNames.includes(this.gameMode)) {
             this.gameMode = "avalon";

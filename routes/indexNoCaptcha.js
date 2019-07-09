@@ -91,7 +91,7 @@ router.get("/lobby", middleware.isLoggedIn, async (req, res) => {
             req.flash("error", "Something has gone wrong! Please contact a moderator or admin.");
             res.redirect("/");
         } else {
-            currentModActions = [];
+            const currentModActions = [];
             // load up all the modActions that are not released yet and are bans
             await modAction.find({ whenRelease: { $gt: new Date() }, type: "ban" }, (err, allModActions) => {
                 for (let i = 0; i < allModActions.length; i++) {

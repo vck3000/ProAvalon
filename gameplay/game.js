@@ -1099,7 +1099,7 @@ class Game extends Room {
             missionHistory: this.missionHistory,
             numFailsHistory: this.numFailsHistory,
             voteHistory: this.voteHistory,
-            playerRoles: playerRoles,
+            playerRoles,
 
             ladyChain,
             ladyHistoryUsernames,
@@ -1129,7 +1129,7 @@ class Game extends Room {
         const gameDuration = new Date(timeFinished - timeStarted);
 
 
-        const playersInGame = this.playersInGame;
+        const { playersInGame } = this;
         const winnerlet = this.winner;
 
         const thisGame = this;
