@@ -1,53 +1,42 @@
-const usernamesIndexes = require("../../myFunctions/usernamesIndexes");
+const Phase = require("./phase");
 
-function Finished(thisRoom_) {
-    this.thisRoom = thisRoom_;
-
-    this.phase = "finished";
-    this.showGuns = true;
-}
-
-Finished.prototype.gameMove = function (socket, data) {
-    // Do nothing, game is finished.
-};
-
-// Returns a object with green and red keys.
-// Green and Red must both have the following properties:
-//  hidden          - Is the button hidden?
-//  disabled        - Is the button disabled?
-//  setText         - What text to display in the button
-Finished.prototype.buttonSettings = function (indexOfPlayer) {
-    const obj = {
-        green: {},
-        red: {},
-    };
-
-    obj.green.hidden = true;
-    obj.green.disabled = true;
-    obj.green.setText = "";
-
-    obj.red.hidden = true;
-    obj.red.disabled = true;
-    obj.red.setText = "";
-
-    return obj;
-};
-
-Finished.prototype.numOfTargets = function (indexOfPlayer) {
-    return null;
-};
-
-Finished.prototype.getStatusMessage = function (indexOfPlayer) {
-    let winner = "Error, undefined";
-    if (this.thisRoom.winner === "Resistance") {
-        winner = "resistance";
-    } else if (this.thisRoom.winner === "Spy") {
-        winner = "spies";
+class Finished extends Phase {
+    constructor(thisRoom) {
+        super(thisRoom, "finished", true);
     }
 
-    const str = `Game has finished. The ${winner} have won.`;
-    return str;
-};
+    buttonSettings(indexOfPlayer) {
+        const obj = {
+            green: {
+                hidden: true,
+                disabled: true,
+                setText: "",
+            },
+            red: {
+                hidden: true,
+                disabled: true,
+                setText: "",
+            },
+        };
 
+        return obj;
+    }
+
+    numOfTargets(indexOfPlayer) {
+        return null;
+    }
+
+    getStatusMessage(indexOfPlayer) {
+        let winner = "Error, undefined";
+        if (this.thisRoom.winner === "Resistance") {
+            winner = "resistance";
+        } else if (this.thisRoom.winner === "Spy") {
+            winner = "spies";
+        }
+
+        const str = `Game has finished. The ${winner} have won.`;
+        return str;
+    }
+}
 
 module.exports = Finished;

@@ -330,7 +330,7 @@ router.get("/mod/ajax/logData/:pageIndex", (req, res) => {
                     return;
                 }
 
-                let logsObj = [];
+                const logsObj = [];
                 await foundModActions.forEach((action) => {
                     let stringsArray = [];
 
@@ -340,7 +340,7 @@ router.get("/mod/ajax/logData/:pageIndex", (req, res) => {
                             `${action.modWhoBanned.username} has banned ${action.bannedPlayer.username} for reason: ${action.reason}.`,
                             `The ban was made on ${action.whenMade}`,
                             `The ban will be released on: ${action.whenRelease}`,
-                            `Moderator message: ${action.descriptionByMod}`
+                            `Moderator message: ${action.descriptionByMod}`,
                         ];
                         break;
 
@@ -349,23 +349,23 @@ router.get("/mod/ajax/logData/:pageIndex", (req, res) => {
                             `${action.modWhoBanned.username} has muted ${action.bannedPlayer.username} for reason: ${action.reason}.`,
                             `The mute was made on ${action.whenMade}`,
                             `The mute will be released on: ${action.whenRelease}`,
-                            `Moderator message: ${action.descriptionByMod}`
+                            `Moderator message: ${action.descriptionByMod}`,
                         ];
                         break;
 
                     // Forum remove
                     case "remove":
                         // Get the extra link bit (The # bit to select to a specific comment/reply)
-                        let linkStrMap = {
+                        const linkStrMap = {
                             comment: `#${action.idOfComment}`,
-                            reply: `#${action.idOfReply}`
+                            reply: `#${action.idOfReply}`,
                         };
 
                         stringsArray = [
                             `${action.modWhoBanned.username} removed ${action.bannedPlayer.username}'s ${action.elementDeleted}. Reason: ${action.reason}.`,
                             `The removal occured on ${action.whenMade}`,
                             `Moderator message: ${action.descriptionByMod}`,
-                            `The link to the article is: <a href='/forum/show/${action.idOfForum}${linkStrMap[action.elementDeleted] || ""}'>Here</a>`
+                            `The link to the article is: <a href='/forum/show/${action.idOfForum}${linkStrMap[action.elementDeleted] || ""}'>Here</a>`,
                         ];
                         break;
                     }
@@ -379,7 +379,7 @@ router.get("/mod/ajax/logData/:pageIndex", (req, res) => {
                 });
 
                 const obj = {
-                    logs: logsObj
+                    logs: logsObj,
                 };
 
                 // sort in newest to oldest

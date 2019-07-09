@@ -1,39 +1,21 @@
-/* Each phase should have:
-    - Name
-    - Whether to show guns or not
-    - GameMove to perform operations
-    - Buttons that are visible and what text they have
-    - Number of targets allowed to be selected
-    - Status message to display
-    - Prohibited Indexes to pick (an array)
-*/
-
+const Phase = require("../../commonPhases/phase");
 const usernamesIndexes = require("../../../myFunctions/usernamesIndexes");
 
-module.exports = class Lady {
+class Lady extends Phase {
     constructor(thisRoom) {
-        this.thisRoom = thisRoom;
-
-        this.phase = "lady";
-        this.showGuns = false;
+        super(thisRoom, "lady", false);
 
         this.card = "Lady of the Lake";
     }
 
     gameMove(socket, data) {
-        if (socket === undefined || data === undefined) {
+        if (!socket || !data) {
             return;
         }
 
-        // console.log("typeof Data: ");
-        // console.log(typeof(data));
-
-        if (typeof (data) === "object" || typeof (data) === "array") {
+        if (["object", "array"].includes(typeof data)) {
             data = data[0];
         }
-
-        // console.log("Data: ");
-        // console.log(data);
 
         // Check that the target's username exists
         const targetUsername = data;
@@ -44,13 +26,13 @@ module.exports = class Lady {
                 break;
             }
         }
+
         if (!found) {
             socket.emit("danger-alert", "Error: User does not exist. Tell the admin if you see this.");
             return;
         }
 
-        const indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
-        const { ladyHistory } = this.thisRoom.specialCards[this.card.toLowerCase()];
+        const { ladyHistory, indexOfPlayerHolding: indexOfCardHolder } = this.thisRoom.specialCards[this.card.toLowerCase()];
         const targetIndex = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, data);
 
         // Get index of socket
@@ -98,7 +80,7 @@ module.exports = class Lady {
     }
 
     buttonSettings(indexOfPlayer) {
-    // Get the index of the lady
+        // Get the index of the lady
         const indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
 
         const obj = {
@@ -159,4 +141,6 @@ module.exports = class Lady {
 
         return ladyHistory;
     }
-};
+}
+
+module.exports = Lady;

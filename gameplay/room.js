@@ -25,12 +25,12 @@ module.exports = class Room {
     constructor(host, roomId, io, maxNumPlayers, newRoomPassword, gameMode) {
         const thisRoom = this;
 
-        if (newRoomPassword_ === "") {
-            newRoomPassword_ = undefined;
+        if (newRoomPassword === "") {
+            newRoomPassword = undefined;
         }
 
-        if (maxNumPlayers_ === "" || maxNumPlayers_ < 5 || maxNumPlayers_ > 10) {
-            maxNumPlayers_ = 10;
+        if (maxNumPlayers === "" || maxNumPlayers < 5 || maxNumPlayers > 10) {
+            maxNumPlayers = 10;
         }
 
         // Object input variables
@@ -40,6 +40,7 @@ module.exports = class Room {
         this.maxNumPlayers = maxNumPlayers;
         this.joinPassword = newRoomPassword;
         this.gameMode = gameMode;
+
         // Default value of avalon.
         if (!gameModeNames.includes(this.gameMode)) {
             this.gameMode = "avalon";
@@ -56,7 +57,6 @@ module.exports = class Room {
         // Arrays containing lower cased usernames
         this.kickedPlayers = [];
         this.claimingPlayers = [];
-
 
         // Phases, Cards, and Roles to use
         this.commonPhases = (new commonPhasesIndex()).getPhases(thisRoom);

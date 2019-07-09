@@ -1,40 +1,18 @@
-/* Each phase should have:
-    - Name
-    - Whether to show guns or not
-    - GameMove to perform operations
-    - Buttons that are visible and what text they have
-    - Number of targets allowed to be selected
-    - Status message to display
-    - Prohibited Indexes to pick (an array)
-*/
-
+const Phase = require("../../commonPhases/phase");
 const usernamesIndexes = require("../../../myFunctions/usernamesIndexes");
 
-module.exports = class Ref {
+class Ref extends Phase {
     constructor(thisRoom) {
-        this.thisRoom = thisRoom;
-
-        this.phase = "ref";
-        this.showGuns = false;
-
+        super(thisRoom, "ref", false);
         this.card = "Ref of the Rain";
     }
 
     gameMove(socket, data) {
-        if (socket === undefined || data === undefined) {
-            return;
-        }
+        if (!socket || !data) return;
 
-        // console.log("typeof Data: ");
-        // console.log(typeof(data));
-
-        if (typeof (data) === "object" || typeof (data) === "array") {
-            data = data[0];
-        }
-
-        // console.log("Data: ");
-        // console.log(data);
-
+        if (["object", "array"].includes(typeof (data)))
+            return data[0];
+            
         // Check that the target's username exists
         const targetUsername = data;
         let found = false;
@@ -98,7 +76,7 @@ module.exports = class Ref {
     }
 
     buttonSettings(indexOfPlayer) {
-    // Get the index of the ref
+        // Get the index of the ref
         const indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
 
         const obj = {
@@ -159,4 +137,6 @@ module.exports = class Ref {
 
         return refHistory;
     }
-};
+}
+
+module.exports = Ref;

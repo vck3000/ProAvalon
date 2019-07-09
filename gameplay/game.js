@@ -19,7 +19,7 @@ fs.readdirSync("./gameplay/").filter((file) => {
         gameModeNames.push(file);
     }
 });
-// console.log(gameModeNames);
+
 const gameModeObj = {};
 for (let i = 0; i < gameModeNames.length; i++) {
     gameModeObj[gameModeNames[i]] = {};

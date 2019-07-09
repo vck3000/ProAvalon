@@ -3,7 +3,7 @@
 function index() {
     // Import all the roles from AVALON
     this.getRoles = function (thisRoom) {
-        const normalizedPath = require("path").join(__dirname, "./roles");
+        const normalizedPath = require("path").join(__dirname, "../avalon/roles");
 
         const roleImports = {};
         const obj = {};
@@ -15,7 +15,7 @@ function index() {
             if (file.includes(".js")) {
                 name = file.replace(".js", "");
 
-                roleImports[name] = require(`./roles/${file}`);
+                roleImports[name] = require(`../avalon/roles/${file}`);
             }
         });
 
