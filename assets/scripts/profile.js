@@ -5,116 +5,111 @@ const day = hour * 24;
 const month = day * 30;
 const year = month * 12;
 
-let getDatesString = function (time) {
+const getDatesString = function (time) {
     let varTime = time;
     let str = "";
-    let units = {};
+    const units = {};
     units[year] = "yrs";
     units[month] = "mths";
     units[day] = "days";
     units[hour] = "hrs";
     units[min] = "mins";
-    units[sec] = "secs"
-    
-    for (let time of [year, month, day, hour, min, sec]) {
-        if (Math.floor(varTime/time) !== 0) {
-            str += Math.floor(varTime/time) + ` ${units[time]}, `;
-            varTime = varTime - Math.floor(varTime/time)*time;
+    units[sec] = "secs";
+
+    for (const time of [year, month, day, hour, min, sec]) {
+        if (Math.floor(varTime / time) !== 0) {
+            str += `${Math.floor(varTime / time)} ${units[time]}, `;
+            varTime -= Math.floor(varTime / time) * time;
         }
     }
-    
-    return str.slice(0, -2) + ".";
-}
+
+    return `${str.slice(0, -2)}.`;
+};
 
 let userData;
 
-$( document ).ready(function () {
-    
-    $( ".avatarImg" ).hover(function () {
+$(document).ready(() => {
+    $(".avatarImg").hover(() => {
         let str = "";
-        if (userData.avatarImgSpy) { 
-            if (userData.avatarImgSpy.includes("http")) { 
+        if (userData.avatarImgSpy) {
+            if (userData.avatarImgSpy.includes("http")) {
                 str = "<%=userData.avatarImgSpy%>";
             } else {
                 str = "../avatars/<%=userData.avatarImgSpy%>";
-            } 
-        } else { 
+            }
+        } else {
             str = "../avatars/base-spy.png";
-        } 
+        }
         $(".avatarImg").attr("src", str);
-    }, function () {
+    }, () => {
         let str = "";
-        if (userData.avatarImgRes) { 
-            if (userData.avatarImgRes.includes("http")) { 
+        if (userData.avatarImgRes) {
+            if (userData.avatarImgRes.includes("http")) {
                 str = "<%=userData.avatarImgRes%>";
             } else {
                 str = "../avatars/<%=userData.avatarImgRes%>";
-            } 
-        } else { 
+            }
+        } else {
             str = "../avatars/base-res.png";
-        } 
-        
+        }
+
         console.log("res");
         $(".avatarImg").attr("src", str);
     });
-    
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip();
+
+    $(() => {
+        $("[data-toggle=\"tooltip\"]").tooltip();
     });
-    
-    
+
     xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("GET","/ajax/profile/getProfileData/" + $("#profileUsername")[0].innerHTML, true);    
-    xmlhttp.onreadystatechange=function () {
-        if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+    xmlhttp.open("GET", `/ajax/profile/getProfileData/${$("#profileUsername")[0].innerHTML}`, true);
+    xmlhttp.onreadystatechange = function () {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             userData = JSON.parse(xmlhttp.responseText);
             if (!userData.hideStats) {
                 drawCharts();
             }
-            
         }
-    }
+    };
     xmlhttp.send();
 });
 
 function drawCharts() {
-    
     const allianceOfRole = {
-        "Merlin": "Resistance",
-        "Percival": "Resistance",
-        "Assassin": "Spy",
-        "Morgana": "Spy",
-        "Mordred": "Spy",
-        "Oberon": "Spy",
-        "Resistance": "Resistance",
-        "Spy": "Spy",
-        "Tristan": "Resistance",
-        "Isolde": "Resistance"
-    }
-    
-    let blue1 = 'rgba(54, 162, 235, 0.3)';
-    let blue2 = 'rgba(54, 162, 235, 0.5)';
-    let blueBorder = 'rgba(54, 162, 235, 1)';
-    
-    let red1 = 'rgba(255, 99, 132, 0.3)';
-    let red2 = 'rgba(255, 99, 132, 0.5)';
-    let redBorder = 'rgba(255, 99, 132, 1)';
-    
-    let roleStats = userData.roleStats;
-    //collect the total wins and losses of each role and of each game size played
-    let generalRoleStats = {};
-    for (let gameSize in roleStats) {
+        Merlin: "Resistance",
+        Percival: "Resistance",
+        Assassin: "Spy",
+        Morgana: "Spy",
+        Mordred: "Spy",
+        Oberon: "Spy",
+        Resistance: "Resistance",
+        Spy: "Spy",
+        Tristan: "Resistance",
+        Isolde: "Resistance",
+    };
+
+    const blue1 = "rgba(54, 162, 235, 0.3)";
+    const blue2 = "rgba(54, 162, 235, 0.5)";
+    const blueBorder = "rgba(54, 162, 235, 1)";
+
+    const red1 = "rgba(255, 99, 132, 0.3)";
+    const red2 = "rgba(255, 99, 132, 0.5)";
+    const redBorder = "rgba(255, 99, 132, 1)";
+
+    const { roleStats } = userData;
+    // collect the total wins and losses of each role and of each game size played
+    const generalRoleStats = {};
+    for (const gameSize in roleStats) {
         if (roleStats.hasOwnProperty(gameSize)) {
-            
-            for (let role in roleStats[gameSize]) {
+            for (const role in roleStats[gameSize]) {
                 if (roleStats[gameSize].hasOwnProperty(role)) {
                     if (!generalRoleStats[role]) {
                         generalRoleStats[role] = {
                             wins: 0,
-                            losses: 0
+                            losses: 0,
                         };
                     }
-                    
+
                     if (!isNaN(roleStats[gameSize][role].wins)) {
                         generalRoleStats[role].wins += roleStats[gameSize][role].wins;
                     }
@@ -125,135 +120,134 @@ function drawCharts() {
             }
         }
     }
-    
-    let spyWins = userData.totalWins - userData.totalResWins;
-    let spyLosses = userData.totalLosses - userData.totalResLosses;
-    
-    //create array for the chartjs hover stats:
-    //first two entries are overall res and overall spy
-    let generalRoleStatsArray = [
+
+    const spyWins = userData.totalWins - userData.totalResWins;
+    const spyLosses = userData.totalLosses - userData.totalResLosses;
+
+    // create array for the chartjs hover stats:
+    // first two entries are overall res and overall spy
+    const generalRoleStatsArray = [
         {
             wins: userData.totalResWins,
-            losses: userData.totalResLosses
+            losses: userData.totalResLosses,
         },
         {
             wins: spyWins,
-            losses: spyLosses
-        }
+            losses: spyLosses,
+        },
     ];
     i = 2;
-    for (let key in generalRoleStats) {
+    for (const key in generalRoleStats) {
         if (generalRoleStats.hasOwnProperty(key)) {
             generalRoleStatsArray[i] = generalRoleStats[key];
             i++;
         }
     }
-    
-    let generalLabelsArray = ["Overall Resistance", "Overall Spy"];
-    
-    let generalData = [Math.floor(userData.totalResWins/ (userData.totalResWins+userData.totalResLosses) * 100), Math.floor((spyWins) / (spyLosses + spyWins) * 100)];
-    let backgroundColor = [blue1, red1];
-    let borderColor = [blueBorder, redBorder];
-    
-    for (let role in generalRoleStats) {
+
+    const generalLabelsArray = ["Overall Resistance", "Overall Spy"];
+
+    const generalData = [Math.floor(userData.totalResWins / (userData.totalResWins + userData.totalResLosses) * 100), Math.floor((spyWins) / (spyLosses + spyWins) * 100)];
+    const backgroundColor = [blue1, red1];
+    const borderColor = [blueBorder, redBorder];
+
+    for (const role in generalRoleStats) {
         if (generalRoleStats.hasOwnProperty(role)) {
             if (isNaN(generalRoleStats[role].losses) || generalRoleStats[role].losses === null) {
                 generalRoleStats[role].losses = 0;
             }
-            
+
             if (isNaN(generalRoleStats[role].wins) || generalRoleStats[role].wins === null) {
                 generalRoleStats[role].wins = 0;
             }
-            
-            let percentWon = Math.floor((generalRoleStats[role].wins / (generalRoleStats[role].wins + generalRoleStats[role].losses)) * 100);
+
+            const percentWon = Math.floor((generalRoleStats[role].wins / (generalRoleStats[role].wins + generalRoleStats[role].losses)) * 100);
             generalData.push(percentWon);
-            
-            let role = capitalizeFirstLetter(role);
-            generalLabelsArray.push(role);
-            
-            if (allianceOfRole[role] === "Resistance") {
+
+            let capsRole = capitalizeFirstLetter(role);
+            generalLabelsArray.push(capsRole);
+
+            if (allianceOfRole[capsR] === "Resistance") {
                 backgroundColor.push(blue1);
-                borderColor.push(blueBorder);  
-            }
-            else {
+                borderColor.push(blueBorder);
+            } else {
                 borderColor.push(redBorder);
-                backgroundColor.push(red1);  
+                backgroundColor.push(red1);
             }
         }
     }
-    
-    let dataGeneral = {
+
+    const dataGeneral = {
         labels: generalLabelsArray,
         datasets: [{
-            label: 'Winrate',
+            label: "Winrate",
             data: generalData,
-            backgroundColor: backgroundColor,
-            borderColor: borderColor,
-            borderWidth: 1
+            backgroundColor,
+            borderColor,
+            borderWidth: 1,
         }],
     };
-    
-    let optionsGeneral = {
+
+    const optionsGeneral = {
         scales: {
             yAxes: [{
                 ticks: {
-                    beginAtZero:true,
-                    
-                }
+                    beginAtZero: true,
+
+                },
             }],
             xAxes: [{
                 ticks: {
                     suggestedMin: 0,
                     suggestedMax: 100,
-                    
-                    callback: function (value, index, values) {
-                        return value + '%';
-                    }
-                }
-            }]
+
+                    callback(value, index, values) {
+                        return `${value}%`;
+                    },
+                },
+            }],
         },
-        
-        //give back % and also num of games on hover
+
+        // give back % and also num of games on hover
         tooltips: {
             callbacks: {
-                label: function (tooltipItem, chartData) {
+                label(tooltipItem, chartData) {
                     // return "lmao";
-                    return chartData.labels[tooltipItem.index] + ': ' + chartData.datasets[0].data[tooltipItem.index] + '%' + " " + "[" + generalRoleStatsArray[tooltipItem.index].wins + "W/" + generalRoleStatsArray[tooltipItem.index].losses + "L]";                    
-                }
-            }
+                    return `${chartData.labels[tooltipItem.index]}: ${chartData.datasets[0].data[tooltipItem.index]}%` + " " + `[${generalRoleStatsArray[tooltipItem.index].wins}W/${generalRoleStatsArray[tooltipItem.index].losses}L]`;
+                },
+            },
         },
     };
-    
-    let dataSample = {
+
+    const dataSample = {
         labels: ["Resistance", "Spy", "Merlin", "Percival", "Assassin", "Morgana"],
         datasets: [{
-            label: 'Winrate %',
+            label: "Winrate %",
             data: [54, 67, 45, 70, 45, 30],
             backgroundColor: [
                 blue1,
                 blue2,
                 red1,
                 red2,
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
+                "rgba(153, 102, 255, 0.2)",
+                "rgba(255, 159, 64, 0.2)",
             ],
             borderColor: [
                 blueBorder,
                 blueBorder,
                 redBorder,
                 redBorder,
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
+                "rgba(153, 102, 255, 1)",
+                "rgba(255, 159, 64, 1)",
             ],
-            borderWidth: 1
-        }]
-    }
-    
-    let ctx = document.getElementById("statsChart");
-    let myChart = new Chart(ctx, {
-        type: 'horizontalBar',
+            borderWidth: 1,
+        }],
+    };
+
+    const ctx = document.getElementById("statsChart");
+    const myChart = new Chart(ctx, {
+        type: "horizontalBar",
         data: dataGeneral,
-        options: optionsGeneral
+        options: optionsGeneral,
     });
 }
 

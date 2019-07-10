@@ -1,22 +1,22 @@
-//https://css-tricks.com/data-uris/
+// https://css-tricks.com/data-uris/
 
-var icons = {
+const icons = {
     lady: {
         glyph: "glyphicon-book",
         iconType: "bootstrapGlyphicon",
-        toolTip: "Lady of the Lake"
+        toolTip: "Lady of the Lake",
     },
 
     ref: {
         glyph: "glyphicon-cloud",
         iconType: "bootstrapGlyphicon",
-        toolTip: "Ref of the Rain"
+        toolTip: "Ref of the Rain",
     },
 
     sire: {
         glyph: "glyphicon-ice-lolly",
         iconType: "bootstrapGlyphicon",
-        toolTip: "Sire of the Sea"
+        toolTip: "Sire of the Sea",
     },
 
     hammer: {
@@ -25,7 +25,7 @@ var icons = {
         iconType: "base64",
         toolTip: "Hammer",
         credit: "<div>Icons made by <a href=\"https://www.flaticon.com/authors/dave-gandy\" title=\"Dave Gandy\">Dave Gandy</a> from <a href=\"https://www.flaticon.com/\" 			    title=\"Flaticon\">www.flaticon.com</a> is licensed by <a href=\"http://creativecommons.org/licenses/by/3.0/\" 			    title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",
-        link: "https://www.flaticon.com/free-icon/legal-hammer_25687"
+        link: "https://www.flaticon.com/free-icon/legal-hammer_25687",
     },
 
     "hammer-dark": {
@@ -34,7 +34,7 @@ var icons = {
         iconType: "base64",
         toolTip: "Hammer",
         credit: "<div>Icons made by <a href=\"https://www.flaticon.com/authors/dave-gandy\" title=\"Dave Gandy\">Dave Gandy</a> from <a href=\"https://www.flaticon.com/\" 			    title=\"Flaticon\">www.flaticon.com</a> is licensed by <a href=\"http://creativecommons.org/licenses/by/3.0/\" 			    title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",
-        link: "https://www.flaticon.com/free-icon/legal-hammer_25687"
+        link: "https://www.flaticon.com/free-icon/legal-hammer_25687",
     },
 
     info: {
@@ -42,7 +42,7 @@ var icons = {
         iconType: "base64",
         toolTip: "Description",
         credit: "<div>Icons made by <a href=\"https://www.flaticon.com/authors/good-ware\" title=\"Good Ware\">Good Ware</a> from <a href=\"https://www.flaticon.com/\" 			    title=\"Flaticon\">www.flaticon.com</a> is licensed by <a href=\"http://creativecommons.org/licenses/by/3.0/\" 			    title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",
-        link: "https://www.flaticon.com/free-icon/information_685815"
+        link: "https://www.flaticon.com/free-icon/information_685815",
     },
 
     infoDark: {
@@ -50,7 +50,6 @@ var icons = {
         iconType: "base64",
         toolTip: "Description",
         credit: "<div>Icons made by <a href=\"https://www.flaticon.com/authors/good-ware\" title=\"Good Ware\">Good Ware</a> from <a href=\"https://www.flaticon.com/\" 			    title=\"Flaticon\">www.flaticon.com</a> is licensed by <a href=\"http://creativecommons.org/licenses/by/3.0/\" 			    title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",
-        link: "https://www.flaticon.com/free-icon/information_685815"
-    }
+        link: "https://www.flaticon.com/free-icon/information_685815",
+    },
 };
-

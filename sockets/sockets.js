@@ -63,11 +63,7 @@ function gracefulShutdown() {
 }
 
 function sendWarning() {
-    for (const key in allSockets) {
-        if (allSockets.hasOwnProperty(key)) {
-            allSockets[key].emit("serverRestartingNow");
-        }
-    }
+    Object.values(allSockets).forEach((socket) => socket.emit("serverRestartingNow"));
 }
 
 function saveGameToDb(roomToSave) {

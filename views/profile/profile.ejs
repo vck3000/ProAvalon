@@ -16,6 +16,8 @@
     <br>
 
     <% if (userData && userData.username) { %>
+        <script src="/scripts/profile.js"></script>
+
         <div class="row">
             <div class="col-xs-12" id="topRow">
                 <div class="row">
@@ -98,7 +100,6 @@
                             </tr>
                             <tr>
                                 <td class="statsCol1">Total time played: </td>
-                                <!--<td class="statsCol2"> <%=getDatesString(userData.totalTimePlayed)%> </td>-->
                                 <td class="statsCol2"> <%=Math.floor(userData.totalTimePlayed.getTime()/(1000*60*60))%> hrs</td>
                             </tr>
                         </tbody>
@@ -153,11 +154,5 @@ $("#searchButton").on("click", function (e) {
 });
 
 </script>
-
-<% if (userData && userData.username) { %>
-    <script src="/scripts/profile.js"></script>
-<% } %>
-
-<div id="tempdiv"></div>
 
 <% include ../partials/footer %>
