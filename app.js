@@ -1,6 +1,7 @@
 //= ====================================
 // INITIALISATION
 //= ====================================
+require("dotenv").config();
 
 const passport = require("passport");
 const passportSocketIo = require("passport.socketio");
