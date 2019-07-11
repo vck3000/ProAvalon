@@ -1,6 +1,27 @@
 //= ====================================
 // INITIALISATION
 //= ====================================
+const express = require("express");
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const flash = require("connect-flash");
+
+const mongoose = require("mongoose");
+const methodOverride = require("method-override");
+
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const passportSocketIo = require("passport.socketio");
+const socket = require("socket.io");
+
+const User = require("./models/user");
+const modAction = require("./models/modAction");
+
+const profileRoutes = require("./routes/profile");
+const forumRoutes = require("./routes/forum");
+const indexRoutes = require("./routes/index");
+
+const app = express();
 
 app.use(express.static("assets", { maxAge: 1800000 })); // expires in 30 minutes.
 
@@ -150,26 +171,8 @@ const server = app.listen(port, () => {
 //= ====================================
 // SOCKETS
 //= ====================================
-const socket = require("socket.io");
 
 const io = socket(server);
-var passportSocketIo = require("passport.socketio");
-var express = require("express");
-
-var app = express();
-var mongoose = require("mongoose");
-var bodyParser = require("body-parser");
-var methodOverride = require("method-override");
-var passport = require("passport");
-var LocalStrategy = require("passport-local");
-var passportSocketIo = require("passport.socketio");
-const cookieParser = require("cookie-parser");
-var flash = require("connect-flash");
-var User = require("./models/user");
-const profileRoutes = require("./routes/profile");
-const forumRoutes = require("./routes/forum");
-const indexRoutes = require("./routes/index");
-const modAction = require("./models/modAction");
 
 require("./sockets/sockets")(io);
 
