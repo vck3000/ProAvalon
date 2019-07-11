@@ -1,22 +1,22 @@
-var mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-var avatarRequestSchema = new mongoose.Schema({
+const avatarRequestSchema = new mongoose.Schema({
 
-	forUsername: String,
+    forUsername: String,
 
-	resLink: String,
-	spyLink: String,
-	msgToMod: String,
+    resLink: String,
+    spyLink: String,
+    msgToMod: String,
 
-	dateRequested: Date,
+    dateRequested: Date,
 
-	dateProcessed: Date,
-	modWhoProcessed: String,
+    dateProcessed: Date,
+    modWhoProcessed: String,
 
-	processed: Boolean,
+    processed: Boolean,
 
-	modComment: String,
-	approved: Boolean
+    modComment: String,
+    approved: Boolean,
 });
 
 module.exports = mongoose.model("AvatarRequest", avatarRequestSchema);

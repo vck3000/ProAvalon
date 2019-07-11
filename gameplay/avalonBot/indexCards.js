@@ -1,35 +1,33 @@
-//This file helps us load in the roles from the folder
+// This file helps us load in the roles from the folder
 
-function index(){
-    //Import all the roles from AVALON
-    this.getCards = function(thisRoom){
-        var normalizedPath = require("path").join(__dirname, "./cards");
+function index() {
+    // Import all the roles from AVALON
+    this.getCards = function (thisRoom) {
+        const normalizedPath = require("path").join(__dirname, "./cards");
 
-        var cardImports = {};
-        var obj = {};
-    
-        require("fs").readdirSync(normalizedPath).forEach(function(file) {
+        const cardImports = {};
+        const obj = {};
+
+        require("fs").readdirSync(normalizedPath).forEach((file) => {
             // console.log(file);
-    
-            if(file.includes(".js") === true){            
+
+            if (file.includes(".js") === true) {
                 name = file.replace(".js", "");
-        
-                cardImports[name] = require("./cards/" + file);
+
+                cardImports[name] = require(`./cards/${file}`);
             }
         });
-    
-    
-        for(var name in cardImports){
-            if(cardImports.hasOwnProperty(name)){
-                //Initialise it
+
+
+        for (var name in cardImports) {
+            if (cardImports.hasOwnProperty(name)) {
+                // Initialise it
                 obj[name] = new cardImports[name](thisRoom);
             }
         }
 
         return obj;
-    }
+    };
 }
 
 module.exports = index;
-
-

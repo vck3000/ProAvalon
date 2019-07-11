@@ -1,85 +1,73 @@
-//=====================================
-//INITIALISATION
-//=====================================
-var express = require("express"),
-	app = express(),
-	mongoose = require("mongoose"),
-	bodyParser = require("body-parser"),
-	methodOverride = require("method-override"),
-	User = require("./models/user"),
-	passport = require("passport"),
-	LocalStrategy = require("passport-local"),
-	passportSocketIo = require("passport.socketio"),
-	cookieParser = require('cookie-parser'),
-	flash = require("connect-flash");
-var modAction = require("./models/modAction");
+//= ====================================
+// INITIALISATION
+//= ====================================
 
-app.use(express.static("assets", { maxAge: 1800000 })); //expires in 30 minutes.	
+app.use(express.static("assets", { maxAge: 1800000 })); // expires in 30 minutes.
 
-var staticify = require('staticify')('assets');
+const staticify = require("staticify")("assets");
+
 app.use(staticify.middleware);
 
 app.locals = {
-	getVersionedPath: staticify.getVersionedPath
+    getVersionedPath: staticify.getVersionedPath,
 };
 
-var port = process.env.PORT || 80;
-var dbLoc = process.env.DATABASEURL || "mongodb://localhost/TheNewResistanceUsers";
-console.log("Using database url: " + dbLoc);
+const port = process.env.PORT || 80;
+const dbLoc = process.env.DATABASEURL || "mongodb://localhost/TheNewResistanceUsers";
+console.log(`Using database url: ${dbLoc}`);
 
 mongoose.connect(dbLoc);
 
-var session = require("express-session");
-var MongoDBStore = require('connect-mongodb-session')(session);
+const session = require("express-session");
+const MongoDBStore = require("connect-mongodb-session")(session);
 
-var store = new MongoDBStore({
-	// uri: 'mongodb://localhost/TheNewResistanceUsers',
-	// uri: 'mongodb://127.0.0.1/TheNewResistanceUsers',
-	uri: dbLoc,
-	collection: 'mySessions'
+const store = new MongoDBStore({
+    // uri: 'mongodb://localhost/TheNewResistanceUsers',
+    // uri: 'mongodb://127.0.0.1/TheNewResistanceUsers',
+    uri: dbLoc,
+    collection: "mySessions",
 });
 
 
 // Catch errors
-store.on('error', function (error) {
-	console.log("--------------\nIs your mongoDB server running?\n--------------")
-	assert.ifError(error);
-	assert.ok(false);
+store.on("error", (error) => {
+    console.log("--------------\nIs your mongoDB server running?\n--------------");
+    assert.ifError(error);
+    assert.ok(false);
 });
 
 
-//authentication
-var secretKey = process.env.MY_SECRET_KEY || "MySecretKey";
+// authentication
+const secretKey = process.env.MY_SECRET_KEY || "MySecretKey";
 app.use(session({
-	secret: secretKey,
-	resave: false,
-	saveUninitialized: false,
-	store: store
+    secret: secretKey,
+    resave: false,
+    saveUninitialized: false,
+    store,
 }));
 
 
 app.use(flash());
-//res.locals variables
-app.use(function (req, res, next) {
-	res.locals.currentUser = req.user;
-	// headerActive default should be nothing, otherwise specify in the routes index.js file
-	res.locals.headerActive = " ";
-	res.locals.error = req.flash("error");
-	res.locals.success = req.flash("success");
-	next();
+// res.locals variables
+app.use((req, res, next) => {
+    res.locals.currentUser = req.user;
+    // headerActive default should be nothing, otherwise specify in the routes index.js file
+    res.locals.headerActive = " ";
+    res.locals.error = req.flash("error");
+    res.locals.success = req.flash("success");
+    next();
 });
 
-//HTTPS REDIRECT
-var platform = process.env.MY_PLATFORM || "local";
+// HTTPS REDIRECT
+const platform = process.env.MY_PLATFORM || "local";
 if (platform === "online" || platform === "staging") {
-	app.use(function (request, response, next) {
-		if (request.headers["x-forwarded-proto"] !== "https") {
-			response.redirect("https://" + request.hostname + request.url);
-		}
-		else {
-			next();
-		}
-	});
+    app.use((request, response, next) => {
+        if (request.headers["x-forwarded-proto"] !== "https") {
+            response.redirect(`https://${request.hostname}${request.url}`);
+        } else {
+            next();
+        }
+    });
 }
 
 app.use(passport.initialize());
@@ -95,49 +83,46 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 
-var requireLoggedInRoutes = [
+const requireLoggedInRoutes = [
     "/lobby",
     "/forum",
-    "/profile"
-]
+    "/profile",
+];
 
-async function checkLoggedIn(req, res, next){
-    var banned = undefined;
-    for(var i = 0; i < requireLoggedInRoutes.length; i++){
-        if(req.originalUrl.startsWith(requireLoggedInRoutes[i]) == true){
+async function checkLoggedIn(req, res, next) {
+    let banned;
+    for (let i = 0; i < requireLoggedInRoutes.length; i++) {
+        if (req.originalUrl.startsWith(requireLoggedInRoutes[i]) == true) {
             // Check for logged in.
-            if(req.isAuthenticated() == false){
+            if (req.isAuthenticated() == false) {
                 req.flash("error", "Please log in to view this page.");
                 res.redirect("/");
                 return;
             }
 
             // Check bans
-            await modAction.findOne({"bannedPlayer.usernameLower": req.user.username.toLowerCase()}, function(err, m){
-                if(err){
+            await modAction.findOne({ "bannedPlayer.usernameLower": req.user.username.toLowerCase() }, (err, m) => {
+                if (err) {
                     console.log(err);
-                }
-                else{
+                } else {
                     // console.log("A");
                     // console.log(m);
-                    if (m == null || m == undefined){
+                    if (m == null || m == undefined) {
                         // all good
-                    }
-                    else{
-                        var message = "You have been banned. The ban will be released on " + m.whenRelease + ". Ban description: '" + m.descriptionByMod + "'";
+                    } else {
+                        let message = `You have been banned. The ban will be released on ${m.whenRelease}. Ban description: '${m.descriptionByMod}'`;
                         message += " Reflect on your actions.";
                         req.flash("error", message);
                         res.redirect("/");
                         banned = true;
-                        return;
                     }
                 }
             });
             // console.log("Logged in!");
         }
-    };
+    }
 
-    if(banned == true){
+    if (banned == true) {
         // console.log("banned");
         return;
     }
@@ -146,43 +131,57 @@ async function checkLoggedIn(req, res, next){
 app.use(checkLoggedIn);
 
 
-var indexRoutes = require("./routes/index");
 app.use(indexRoutes);
 
-var forumRoutes = require("./routes/forum");
+
 app.use("/forum", forumRoutes);
 
-var profileRoutes = require("./routes/profile");
+
 app.use("/profile", profileRoutes);
 
-//start server listening
-var IP = process.env.IP || "127.0.0.1";
+// start server listening
+const IP = process.env.IP || "127.0.0.1";
 // var server = app.listen(port, IP , function(){
-var server = app.listen(port, function () {
-	console.log("Server has started on " + IP + ":" + port + "!");
+const server = app.listen(port, () => {
+    console.log(`Server has started on ${IP}:${port}!`);
 });
 
 
-//=====================================
-//SOCKETS
-//=====================================
-var socket = require("socket.io");
-var io = socket(server),
-	passportSocketIo = require("passport.socketio");
+//= ====================================
+// SOCKETS
+//= ====================================
+const socket = require("socket.io");
+
+const io = socket(server);
+var passportSocketIo = require("passport.socketio");
+var express = require("express");
+
+var app = express();
+var mongoose = require("mongoose");
+var bodyParser = require("body-parser");
+var methodOverride = require("method-override");
+var passport = require("passport");
+var LocalStrategy = require("passport-local");
+var passportSocketIo = require("passport.socketio");
+const cookieParser = require("cookie-parser");
+var flash = require("connect-flash");
+var User = require("./models/user");
+const profileRoutes = require("./routes/profile");
+const forumRoutes = require("./routes/forum");
+const indexRoutes = require("./routes/index");
+const modAction = require("./models/modAction");
 
 require("./sockets/sockets")(io);
 
 io.use(passportSocketIo.authorize({
-	cookieParser: cookieParser, //optional your cookie-parser middleware function. Defaults to require('cookie-parser') 
-	// key:          'express.sid',       //make sure is the same as in your session settings in app.js 
-	secret: secretKey,      //make sure is the same as in your session settings in app.js 
-	store: store,        //you need to use the same sessionStore you defined in the app.use(session({... in app.js 
-	// success:      onAuthorizeSuccess,  // *optional* callback on success 
-	// fail:         onAuthorizeFail,     // *optional* callback on fail/error 
-	passport: passport
+    cookieParser, // optional your cookie-parser middleware function. Defaults to require('cookie-parser')
+    // key:          'express.sid',       //make sure is the same as in your session settings in app.js
+    secret: secretKey, // make sure is the same as in your session settings in app.js
+    store, // you need to use the same sessionStore you defined in the app.use(session({... in app.js
+    // success:      onAuthorizeSuccess,  // *optional* callback on success
+    // fail:         onAuthorizeFail,     // *optional* callback on fail/error
+    passport,
 }));
-
-
 
 
 // setTimeout(function(){
@@ -243,7 +242,7 @@ io.use(passportSocketIo.authorize({
 // 					console.log("Ref");
 // 					console.log(r.refChain + "\t" + r.cards);
 // 					console.log(r.timeGameFinished);
-			
+
 // 					r.cards.push("ref of the rain");
 // 					r.markModified("cards");
 // 					await r.save();
