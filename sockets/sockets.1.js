@@ -64,7 +64,7 @@ process.on("SIGTERM", gracefulShutdown);
 
 function gracefulShutdown() {
     // if(process.env.MY_PLATFORM === "online"){
-    // 	saveGamesAndSendWarning();
+    //     saveGamesAndSendWarning();
     // }
     // else{
     sendWarning();
@@ -135,37 +135,37 @@ function saveGamesAndSendWarning(senderSocket) {
 
     // //save the games
     // for(var i = 0; i < rooms.length; i++){
-    // 	if(rooms[i] && rooms[i].gameStarted === true && rooms[i].finished !== true){
-    // 		console.log("rooms");
-    // 		// console.log(rooms[i]);
+    //     if(rooms[i] && rooms[i].gameStarted === true && rooms[i].finished !== true){
+    //         console.log("rooms");
+    //         // console.log(rooms[i]);
 
-    // 		savedGameObj.create({room: JSON.stringify(rooms[i])}, function(err, savedGame){
-    // 			if(err){
-    // 				console.log(err);
-    // 			}
-    // 			console.log(savedGame);
-    // 			numOfGamesSaved++;
+    //         savedGameObj.create({room: JSON.stringify(rooms[i])}, function(err, savedGame){
+    //             if(err){
+    //                 console.log(err);
+    //             }
+    //             console.log(savedGame);
+    //             numOfGamesSaved++;
 
-    // 			console.log("created");
-    // 			console.log(numOfGamesSaved >= numOfGamesEncountered);
-    // 			console.log(numOfGamesSaved);
-    // 			console.log(numOfGamesEncountered);
+    //             console.log("created");
+    //             console.log(numOfGamesSaved >= numOfGamesEncountered);
+    //             console.log(numOfGamesSaved);
+    //             console.log(numOfGamesEncountered);
 
-    // 			if(numOfGamesSaved >= numOfGamesEncountered){
-    // 				var data = {message: "Successful. Saved " + numOfGamesSaved + " games.", classStr: "server-text"};
-    // 				if(senderSocket){
-    // 					senderSocket.emit("messageCommandReturnStr", data);
-    // 				}
+    //             if(numOfGamesSaved >= numOfGamesEncountered){
+    //                 var data = {message: "Successful. Saved " + numOfGamesSaved + " games.", classStr: "server-text"};
+    //                 if(senderSocket){
+    //                     senderSocket.emit("messageCommandReturnStr", data);
+    //                 }
 
-    // 				// //if its a heroku update
-    // 				// if(!senderSocket){
-    // 				// 	process.exit(0);
-    // 				// }
-    // 			}
+    //                 // //if its a heroku update
+    //                 // if(!senderSocket){
+    //                 //     process.exit(0);
+    //                 // }
+    //             }
 
-    // 		});
-    // 		numOfGamesEncountered++;
-    // 	}
+    //         });
+    //         numOfGamesEncountered++;
+    //     }
     // }
 
     // console.log(numOfGamesEncountered);
@@ -199,16 +199,16 @@ savedGameObj.find({}).exec((err, foundSaveGameArray) => {
 
                     // //Assigning in all the previous variables
                     // for(var key in storedData){
-                    // 	if(storedData.hasOwnProperty(key)){
-                    // 		// console.log("typeof: " + typeof(key))
-                    // 		rooms[storedData["roomId"]][key] = storedData[key];
-                    // 		// console.log("copied over: " + key);
-                    // 		// if(key === "startGameTime"){
+                    //     if(storedData.hasOwnProperty(key)){
+                    //         // console.log("typeof: " + typeof(key))
+                    //         rooms[storedData["roomId"]][key] = storedData[key];
+                    //         // console.log("copied over: " + key);
+                    //         // if(key === "startGameTime"){
 
-                    // 			// console.log(storedData[key]);
-                    // 			// console.log(new Date - storedData[key]);
-                    // 		// }
-                    // 	}
+                    //             // console.log(storedData[key]);
+                    //             // console.log(new Date - storedData[key]);
+                    //         // }
+                    //     }
                     // }
 
                     // rooms[storedData["roomId"]].loadRoleCardData(storedData["avalonRoles"], storedData["avalonCards"]);
@@ -376,7 +376,7 @@ var actionsObj = {
                     }
 
 
-					 // {message: "You have " + verbPast + " " + args[2] + "!", classStr: "server-text"};
+                    // {message: "You have " + verbPast + " " + args[2] + "!", classStr: "server-text"};
                 } else {
                     // console.log(allSockets);
                     return { message: "There is no such player.", classStr: "server-text" };
@@ -1972,9 +1972,9 @@ function playerLeaveRoomCheckDestroy(socket) {
 
         // if room is frozen for more than 1hr then remove.
         if (rooms[socket.request.user.inRoomId]
-			&& rooms[socket.request.user.inRoomId].timeFrozenLoaded
-			&& rooms[socket.request.user.inRoomId].getStatus() === "Frozen"
-			&& rooms[socket.request.user.inRoomId].allSockets.length === 0) {
+            && rooms[socket.request.user.inRoomId].timeFrozenLoaded
+            && rooms[socket.request.user.inRoomId].getStatus() === "Frozen"
+            && rooms[socket.request.user.inRoomId].allSockets.length === 0) {
             const curr = new Date();
             const timeToKill = 1000 * 60 * 5; // 5 mins
             // var timeToKill = 1000*10; //10s

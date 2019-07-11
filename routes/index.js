@@ -40,20 +40,20 @@ router.get("/community", (req, res) => {
         if (err) {
             console.log(err);
         } else {
-		      	// Get mods excluding pronub
-		      	User.find({
-		          usernameLower: { $in: newModsArray },
-		        },
-		        (err, allMods) => {
-		        	if (err) {
-		            	console.log(err);
-		          	} else {
-		            	res.render("community", {
+            // Get mods excluding pronub
+            User.find({
+                usernameLower: { $in: newModsArray },
+            },
+            (err, allMods) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    res.render("community", {
                         users: allUsers, mods: allMods, currentUser: req.user, headerActive: "community",
                     });
-          			}
-	        	});
-        	}
+                }
+            });
+        }
         // sort by games played
     }).sort({ totalGamesPlayed: -1 });
 });
@@ -134,8 +134,8 @@ router.post("/", registerLimiter, checkIpBan, checkCurrentBan, sanitiseUsername,
 
         if (
             req.body.captcha === undefined
-			|| req.body.captcha === ""
-			|| req.body.captcha === null
+            || req.body.captcha === ""
+            || req.body.captcha === null
         ) {
             req.flash("error", "The captcha failed or was not inputted.");
             res.redirect("register");
@@ -451,11 +451,11 @@ const anonymizeMapKeys = function (map, idmap) {
     const anonMap = JSON.parse(JSON.stringify(map));
     for (const key in map) {
         if (!map.hasOwnProperty(key)) {
-	    continue;
+            continue;
         }
         if (key !== idmap[key]) {
-    	    Object.defineProperty(anonMap, idmap[key], Object.getOwnPropertyDescriptor(anonMap, key));
-    	    delete anonMap[key];
+            Object.defineProperty(anonMap, idmap[key], Object.getOwnPropertyDescriptor(anonMap, key));
+            delete anonMap[key];
         }
     }
     return anonMap;
@@ -470,9 +470,9 @@ const anonymizeStats = function (records) {
         const usernamesPossible = "abcdefghijklmnopqrstuvwxyz";
         let idx = 0;
         for (var key in record.playerRoles) {
-	    if (record.playerRoles.hasOwnProperty(key)) {
-	        usernamesMap[key] = usernamesPossible[idx++];
-	    }
+            if (record.playerRoles.hasOwnProperty(key)) {
+                usernamesMap[key] = usernamesPossible[idx++];
+            }
         }
         anonymizedRecord.spyTeam = anonymizeArray(record.spyTeam, usernamesMap);
         anonymizedRecord.resistanceTeam = anonymizeArray(record.resistanceTeam, usernamesMap);
@@ -899,7 +899,7 @@ router.get("/ajax/hideAllNotifications", (req, res) => {
 //= ====================================
 // this part should be in another file now.
 // router.get("/forum", function(req, res){
-// 	res.render("forum", {currentUser: req.user});
+//     res.render("forum", {currentUser: req.user});
 // })
 
 
@@ -907,17 +907,17 @@ router.get("/ajax/hideAllNotifications", (req, res) => {
 // MIDDLEWARE
 //= ====================================
 // function isLoggedIn(req, res, next){
-// 	if(req.isAuthenticated()){
-// 		return next();
-// 	}
-// 	console.log("User is not logged in");
-// 	res.redirect("/");
+//     if(req.isAuthenticated()){
+//         return next();
+//     }
+//     console.log("User is not logged in");
+//     res.redirect("/");
 // }
 
 // function usernameToLowerCase(req, res, next){
-// 	res.app.locals.originalUsername = req.body.username;
-// 	req.body.username = req.body.username.toLowerCase();
-// 	next();
+//     res.app.locals.originalUsername = req.body.username;
+//     req.body.username = req.body.username.toLowerCase();
+//     next();
 // }
 
 function escapeTextUsername(req, res, next) {
@@ -992,27 +992,27 @@ async function checkCurrentBan(req, res, next) {
     // //load up all the modActions that are not released yet and are bans
     // await modAction.find({ whenRelease: { $gt: new Date() }, type: "ban" }, function (err, allModActions) {
 
-    // 	for (var i = 0; i < allModActions.length; i++) {
-    // 		currentModActions.push(allModActions[i]);
-    // 	}
+    //     for (var i = 0; i < allModActions.length; i++) {
+    //         currentModActions.push(allModActions[i]);
+    //     }
     // });
 
     // for (var i = 0; i < currentModActions.length; i++) {
-    // 	if (currentModActions[i].bannedPlayer !== undefined && req.user !== undefined && req.user.username.toString() === currentModActions[i].bannedPlayer.username.toString()) {
-    // 		if (currentModActions[i].type === "ban") {
-    // 			console.log("TRUE");
-    // 			console.log(currentModActions[i]);
-    // 			console.log(req.user.username);
-    // 			console.log(currentModActions[i].bannedPlayer.username);
-    // 			var message = "You have been banned. The ban will be released on " + currentModActions[i].whenRelease + ". Ban description: '" + currentModActions[i].descriptionByMod + "'";
-    // 			message += " Reflect on your actions.";
-    // 			req.flash("error", message);
-    // 			res.redirect("/")
+    //     if (currentModActions[i].bannedPlayer !== undefined && req.user !== undefined && req.user.username.toString() === currentModActions[i].bannedPlayer.username.toString()) {
+    //         if (currentModActions[i].type === "ban") {
+    //             console.log("TRUE");
+    //             console.log(currentModActions[i]);
+    //             console.log(req.user.username);
+    //             console.log(currentModActions[i].bannedPlayer.username);
+    //             var message = "You have been banned. The ban will be released on " + currentModActions[i].whenRelease + ". Ban description: '" + currentModActions[i].descriptionByMod + "'";
+    //             message += " Reflect on your actions.";
+    //             req.flash("error", message);
+    //             res.redirect("/")
 
-    // 			// console.log(req.user.username + " is still banned and cannot join the lobby.");
-    // 			return;
-    // 		}
-    // 	}
+    //             // console.log(req.user.username + " is still banned and cannot join the lobby.");
+    //             return;
+    //         }
+    //     }
     // }
 
     next();
@@ -1027,16 +1027,16 @@ function usernameContainsBadCharacter(str) {
     const regx = /^[A-Za-z0-9]+$/;
 
     if (str.includes("&amp;")
-		|| str.includes("&lt;")
-		|| str.includes("&gt;")
-		|| str.includes("&apos;")
-		|| str.includes("&quot;")
-		|| str.includes("[")
-		|| str.includes("]")
-		|| str.includes("/")
-		|| str.includes("\\")
-		|| str.includes("&")
-		|| str.includes(";")
+        || str.includes("&lt;")
+        || str.includes("&gt;")
+        || str.includes("&apos;")
+        || str.includes("&quot;")
+        || str.includes("[")
+        || str.includes("]")
+        || str.includes("/")
+        || str.includes("\\")
+        || str.includes("&")
+        || str.includes(";")
     ) {
         return true;
     }

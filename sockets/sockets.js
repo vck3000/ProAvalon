@@ -260,7 +260,7 @@ var actionsObj = {
                         rooms[socketThatWasSlappedInGame.request.user.inRoomId].sendText(rooms[socketThatWasSlappedInGame.request.user.inRoomId].allSockets, str, "server-text");
                     }
 
-					 // {message: "You have " + verbPast + " " + args[2] + "!", classStr: "server-text"};
+                    // {message: "You have " + verbPast + " " + args[2] + "!", classStr: "server-text"};
                 } else {
                     // console.log(allSockets);
                     return { message: "There is no such player.", classStr: "server-text" };
@@ -497,8 +497,8 @@ var actionsObj = {
             run(data, senderSocket) {
                 // Check the guesser is at a table
                 if (senderSocket.request.user.inRoomId === undefined
-						|| rooms[senderSocket.request.user.inRoomId].gameStarted !== true
-						|| rooms[senderSocket.request.user.inRoomId].phase === "finished") {
+                        || rooms[senderSocket.request.user.inRoomId].gameStarted !== true
+                        || rooms[senderSocket.request.user.inRoomId].phase === "finished") {
                     messageToClient = "You must be at a running table to guess Merlin.";
                 } else {
                     messageToClient = rooms[senderSocket.request.user.inRoomId].submitMerlinGuess(senderSocket.request.user.username, data.args[1]);
@@ -520,15 +520,15 @@ var actionsObj = {
             help: "/getbots: Run this in a bot-compatible room. Prints a list of available bots to add, as well as their supported game modes",
             run(data, senderSocket) {
                 // if (senderSocket.request.user.inRoomId === undefined) {
-                // 	return {
-                // 		message: "You must be in a bot-capable room to run this command!",
-                // 		classStr: "server-text"
-                // 	};
+                //     return {
+                //         message: "You must be in a bot-capable room to run this command!",
+                //         classStr: "server-text"
+                //     };
                 // } else if (rooms[senderSocket.request.user.inRoomId].gameMode !== 'avalonBot') {
-                // 	return {
-                // 		message: "This room is not bot capable. Please join a bot-capable room.",
-                // 		classStr: "server-text"
-                // 	}
+                //     return {
+                //         message: "This room is not bot capable. Please join a bot-capable room.",
+                //         classStr: "server-text"
+                //     }
                 // }
 
                 senderSocket.emit("messageCommandReturnStr", {
@@ -1774,9 +1774,9 @@ function playerLeaveRoomCheckDestroy(socket) {
 
         // if room is frozen for more than 1hr then remove.
         if (rooms[socket.request.user.inRoomId]
-			&& rooms[socket.request.user.inRoomId].timeFrozenLoaded
-			&& rooms[socket.request.user.inRoomId].getStatus() === "Frozen"
-			&& rooms[socket.request.user.inRoomId].allSockets.length === 0) {
+            && rooms[socket.request.user.inRoomId].timeFrozenLoaded
+            && rooms[socket.request.user.inRoomId].getStatus() === "Frozen"
+            && rooms[socket.request.user.inRoomId].allSockets.length === 0) {
             const curr = new Date();
             const timeToKill = 1000 * 60 * 5; // 5 mins
             // var timeToKill = 1000*10; //10s

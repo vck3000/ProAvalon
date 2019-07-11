@@ -24,7 +24,7 @@ const sanitizeHtmlAllowedAttributesForumThread = {
 
 
 // router.get("/", middleware.isLoggedIn, function (req, res) {
-// 	res.redirect("/forum/page/1");
+//     res.redirect("/forum/page/1");
 // });
 
 
