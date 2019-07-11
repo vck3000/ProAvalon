@@ -52,10 +52,10 @@ RefOfTheLake.prototype.checkSpecialMove = function (socket, data) {
     }
 
     if (lastMissionFailed === true
-		&& this.thisRoom.howWasWon !== "Hammer rejected."
-		&& this.lastMissionUsed !== this.thisRoom.missionNum
-		&& numSuccess < 3
-		&& numFail < 3
+        && this.thisRoom.howWasWon !== "Hammer rejected."
+        && this.lastMissionUsed !== this.thisRoom.missionNum
+        && numSuccess < 3
+        && numFail < 3
     ) {
         this.thisRoom.phase = "ref";
         this.lastMissionUsed = this.thisRoom.missionNum;
@@ -68,7 +68,7 @@ RefOfTheLake.prototype.checkSpecialMove = function (socket, data) {
 
 RefOfTheLake.prototype.getPublicGameData = function () {
     /* TODO: (Can delete this function. Not absolutely necessary)
-	Public data to show the user(s) e.g. who holds the ref of the rain */
+    Public data to show the user(s) e.g. who holds the ref of the rain */
     return {
         ref: {
             index: this.indexOfPlayerHolding,

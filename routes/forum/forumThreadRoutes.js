@@ -10,7 +10,7 @@ const forumThreadCommentReply = require("../../models/forumThreadCommentReply");
 const lastIds = require("../../models/lastIds");
 const middleware = require("../../middleware");
 const getTimeDiffInString = require("../../assets/myLibraries/getTimeDiffInString");
-const User 			= require("../../models/user");
+const User             = require("../../models/user");
 
 
 const modsArray = require("../../modsadmins/mods");
@@ -62,15 +62,15 @@ router.get("/show/:id", middleware.isLoggedIn, (req, res) => {
 
                 // remove any replies and comments that are disabled if not a moderator is viewing
                 // if(mod === false){
-                // 	console.log(foundForumThread.comments);
+                //     console.log(foundForumThread.comments);
 
-                // 	for(var i = foundForumThread.comments.length - 1; i >= 0; i--){
-                // 		// console.log(foundForumThread.comments[i].disabled);
-                // 		if(foundForumThread.comments[i].disabled && foundForumThread.comments[i].disabled === true){
-                // 			console.log("Remove a comment");
-                // 			foundForumThread.comments[i].oldText = "";
-                // 		}
-                // 	}
+                //     for(var i = foundForumThread.comments.length - 1; i >= 0; i--){
+                //         // console.log(foundForumThread.comments[i].disabled);
+                //         if(foundForumThread.comments[i].disabled && foundForumThread.comments[i].disabled === true){
+                //             console.log("Remove a comment");
+                //             foundForumThread.comments[i].oldText = "";
+                //         }
+                //     }
                 // }
 
 

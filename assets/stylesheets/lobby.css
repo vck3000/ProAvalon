@@ -309,7 +309,7 @@ p {
     width: 100%;
     /*resize: none;*/
     /*position: absolute;*/
-    /*position: relative;	*/
+    /*position: relative;    */
 }
 
 
@@ -319,7 +319,7 @@ p {
     display: inline-block;
     position: absolute;
     /*Slightly bias toward the top because of the words underneath the picture/div
-	hence 40% */
+    hence 40% */
     transform: translate(-50%, 100%);
     text-align: center;
     box-sizing: border-box;

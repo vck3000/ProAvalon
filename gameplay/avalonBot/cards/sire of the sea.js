@@ -50,9 +50,9 @@ SireOfTheSea.prototype.checkSpecialMove = function (socket, data) {
     }
 
     if (this.thisRoom.missionHistory.length >= 2
-		&& this.lastMissionUsed !== this.thisRoom.missionNum
-		&& numSuccess < 3
-		&& numFail < 3
+        && this.lastMissionUsed !== this.thisRoom.missionNum
+        && numSuccess < 3
+        && numFail < 3
     ) {
         this.thisRoom.phase = "sire";
         this.lastMissionUsed = this.thisRoom.missionNum;
@@ -65,7 +65,7 @@ SireOfTheSea.prototype.checkSpecialMove = function (socket, data) {
 
 SireOfTheSea.prototype.getPublicGameData = function () {
     /* TODO: (Can delete this function. Not absolutely necessary)
-	Public data to show the user(s) e.g. who holds the sire of the sea */
+    Public data to show the user(s) e.g. who holds the sire of the sea */
     return {
         sire: {
             index: this.indexOfPlayerHolding,
