@@ -1,449 +1,449 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Play The Resistance Avalon Online!</title>
+	<title>Play The Resistance Avalon Online!</title>
 
-    <link rel="stylesheet" type="text/css" href="/libraries/bootstrap-3.3.7-dist/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/stylesheets/header.css">
-    <link rel="icon" href="/testicon.png" sizes="16x16">
-
-
-    <script type="text/javascript" src="/libraries/jquery-3.2.1.js"></script>
-    <script type="text/javascript" src="/libraries/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
-    <!-- Sweet alert! -->
-    <!-- <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> -->
-    <!--<script src="/libraries/sweetalert2.1.0.min.js"></script>-->
-
-    <script type="text/javascript" src="/libraries/sweetalert2/dist/sweetalert2.all.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@7.1.0/dist/promise.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="/libraries/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/header.css">
+	<link rel="icon" href="/testicon.png" sizes="16x16">
 
 
+	<script type="text/javascript" src="/libraries/jquery-3.2.1.js"></script>
+	<script type="text/javascript" src="/libraries/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+	<!-- Sweet alert! -->
+	<!-- <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> -->
+	<!--<script src="/libraries/sweetalert2.1.0.min.js"></script>-->
+
+	<script type="text/javascript" src="/libraries/sweetalert2/dist/sweetalert2.all.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@7.1.0/dist/promise.min.js"></script>
 
 
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Play The Resistance Avalon online with us! A wonderful community awaits you.">
-    <meta name="keywords" content="Play, The Resistance, Avalon, Online">
-    <meta name="google-site-verification" content="quBJj75OINJaklLWexWakzylhy8HkfaHi1_2KwsB3d0" />
+
+
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="description" content="Play The Resistance Avalon online with us! A wonderful community awaits you.">
+	<meta name="keywords" content="Play, The Resistance, Avalon, Online">
+	<meta name="google-site-verification" content="quBJj75OINJaklLWexWakzylhy8HkfaHi1_2KwsB3d0" />
 
 
 </head>
 <body>
 
-    <style>
-        .swal2-popup {
-            font-size: 1.6rem !important;
-        }
-
-        .fontButton{
-            width: 30px;
-            height: 30px;
-            border: 1px solid black;
-        }
-
-
-        .dropdown-menu>li>a {
-            display: block;
-            padding: 3px 20px;
-            clear: both;
-            font-weight: 400;
-            line-height: 1.42857143;
-            color: #333;
-            white-space: nowrap;
-        }
-
-        .dark .dropdown-menu>li>a{
-            color: #c1c1c1;
-        }
-
-        a>hr {
-            margin-top: 5px;
-            margin-bottom: 5px;
-        }
-
-        .dropdown-menu>li>a:hover {
-            background-color: transparent;
-        }
-
-
-        .notificationItem {
-            position: relative;
-            background-color: #eee;
-            border-radius: 10px;
-        }
-
-        .dark .notificationItem {
-            background-color: #444444;
-        }
-
-
-
-        .notificationItem:hover {
-            background-color: #ddd;
-        }
-        .dark .notificationItem:hover {
-            background-color: #3D3D3D;
-        }
-
-        .notificationText {
-            font-weight: 700;
-        }
-
-        .notificationDate {
-            /* font-size: 0.5em; */
-            padding: 5px 10px;
-        }
-
-        .notificationHide {
-            /* font-size: 0.5em; */
-            position: absolute;
-            right: 10%;
-        }
-
-        .notificationHide:hover {
-            color: blue;
-            text-decoration: underline;
-        }
-
-        .dark .notificationHide:hover {
-            color: white;
-            text-decoration: underline;
-        }
-
-
-        .hideAll {
-            /* font-size: 0.5em; */
-            position: absolute;
-            right: 10%;
-        }
-
-        .hideAll:hover {
-            color: blue;
-            text-decoration: underline;
-        }
-
-        .dark .hideAll:hover {
-            color: white;
-            text-decoration: underline;
-        }
-
-        hr {
-            padding-top:2px;
-            padding-bottom: 2px;
-
-            margin-top:2px;
-            margin-bottom: 2px;
-        }
-
-        .unseen {
-            background-color: rgba(188, 214, 255, 0.6)
-        }
-        .unseen:hover {
-            background-color: rgba(188, 214, 255, 1) !important;
-        }
-
-        #navBarContainerId {
-             margin-left: 15px;
-             margin-right: 15px;
-
-            /* width: 75%;*/
-            /* margin: auto;*/
-
-        }
-        @media screen and (min-width:768px){
-            .wideNavbarLink{
-                display: block !important;
-            }
-            .narrowNavbarLink{
-                display: none !important;
-            }
-
-            .dropdown:hover .dropdown-menu {
-                display: block;
-                margin-top: 0; // remove the gap so it doesn't close
-            }
-        }
-
-        @media screen and (max-width:768px){
-            .wideNavbarLink{
-                display: none !important;
-            }
-            .narrowNavbarLink{
-                display: block !important;
-            }
-        }
-
-        li a:focus {
-            outline: none;
-        }
-
-        .dropdown-menu > .active > a, .dropdown-menu > .active > a:focus, .dropdown-menu > .active > a:hover {
-            background-color: #e7e7e7;
-            color: #555;
-        }
-
-        nav a:hover, .navbar-default .navbar-nav > li > a:focus, .navbar-default .navbar-nav > li > a:hover,
-        .dropdown-menu > li > a:hover {
-            background-color: #e7e7e7;
-            color: #555;
-        }
-
-        .dropdown-menu > li > a {
-            color: #777;
-        }
-        .dropdown-menu > li > a:hover {
-            color: #555;
-        }
-
-    </style>
-
-
-    <nav class="navbar navbar-default container-fullwidth ">
-        <div class="" id="navBarContainerId">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle navbar-toggler collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
-                 aria-expanded="false">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="/"><img id="brand" alt="Brand" src="../../../../pictures/logo.png"></a>
-            </div>
-
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-
-                    <% if(headerActive){%>
-
-                    <!-- Lobby -->
-                    <% if(headerActive === "lobby"){ %>
-                    <li class="active"><a href="/lobby">Lobby</a></li>
-                    <%} %>
-                    <% if(headerActive !== "lobby"){ %>
-                    <li><a href="/lobby">Lobby</a></li>
-                    <% } %>
-
-                    <!-- Rules -->
-                    <% if(headerActive === "rules"){ %>
-                    <li class="active"><a href="/rules">Rules</a></li>
-                    <%} %>
-                    <% if(headerActive !== "rules"){ %>
-                    <li><a href="/rules">Rules</a></li>
-                    <% } %>
-
-                    <!-- Statistics -->
-                    <% if(headerActive === "stats"){ %>
-                    <li class="active"><a href="/statistics">Stats</a></li>
-                    <%} %>
-                    <% if(headerActive !== "stats"){ %>
-                    <li><a href="/statistics">Stats</a></li>
-                    <% } %>
-
-                    <!-- Community dropdown -->
-                    <li class="dropdown">
-                        <a class="dropdown-toggle wideNavbarLink" data-toggle="" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
-                        <a class="dropdown-toggle narrowNavbarLink" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
-
-                        <ul class="dropdown-menu">
-                            <!-- Members -->
-                            <% if(headerActive === "community"){ %>
-                                <li class="active"><a href="/community">Members</a></li>
-                                <%} %>
-                                <% if(headerActive !== "community"){ %>
-                                <li><a href="/community">Members</a></li>
-                                <% } %>
-
-                            <!-- Forums -->
-                            <% if(headerActive === "forums"){ %>
-                            <li class="active"><a href="/forum">Forums</a></li>
-                            <%} %>
-                            <% if(headerActive !== "forums"){ %>
-                            <li><a href="/forum">Forums</a></li>
-                            <% } %>
-                            <!-- Facebook -->
-                            <li><a href="https://www.facebook.com/groups/1788396528083787/">Facebook</a></li>
-                        </ul>
-                    </li>
-
-                    <!-- Development dropdown -->
-                    <li class="dropdown">
-                        <a class="dropdown-toggle wideNavbarLink" data-toggle="" role="button" aria-haspopup="true" aria-expanded="false">Development <span class="caret"></span></a>
-                        <a class="dropdown-toggle narrowNavbarLink" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Development <span class="caret"></span></a>
-
-                        <ul class="dropdown-menu">
-                            <!-- Log -->
-                            <% if(headerActive === "log"){ %>
-                            <li class="active"><a href="/log">Log</a></li>
-                            <%} %>
-                            <% if(headerActive !== "log"){ %>
-                            <li><a href="/log">Log</a></li>
-                            <% } %>
-
-                            <!-- About -->
-                            <% if(headerActive === "about"){ %>
-                            <li class="active"><a href="/about">About</a></li>
-                            <%} %>
-                            <% if(headerActive !== "about"){ %>
-                            <li><a href="/about">About</a></li>
-                            <% } %>
-
-                            <li><a href="https://github.com/vck3000/ProAvalon">Github</a></li>
-                        </ul>
-                    </li>
-                    <% if(locals.isMod && isMod === true){ %>
-                    <li><a href="/mod">Moderation</a></li>
-                    <% } %>
-
-
-                    <%}%>
-
-                    <!-- <li><a href="#">News</a></li> -->
-                </ul>
-
-
-                <ul class="nav navbar-nav navbar-right">
-                    <!-- <li><a href="#">About</a></li> -->
-
-                    <!-- <li><a href="#">Contact us</a></li> -->
-
-                    <% if(currentUser){%>
-
-                    <% if(locals.userNotifications) {%>
-                    <li class="dropdown" id="notificationsDropdown">
-                        <a href="#" id="dropDownNotification" class="dropDownNotification">
-                            <!--<span class="glyphicon glyphicon-info-sign"></span>-->
-                            <% if(locals.userNotifications){%>
-                            <span class="badge">
-                                <%
-                                        var num = 0;
-                                        for(var i = 0; i < userNotifications.length; i++){
-                                            if(userNotifications[i].seen === false || !userNotifications[i].seen){
-                                                num++;
-                                            }
-                                        }
-                                    %>
-                                <%=num%>
-
-                            </span>
-                            <% } %>
-
-                        </a>
-
-                        <ul class="dropdown-menu" id="notificationsList">
-
-                            <li class="notificationItem"><a>
-                                    <p class="notificationText"><span style="visibility: hidden; white-space: normal;">a</span></p>
-                                    <p><span class="notificationDate"><span style="visibility: hidden; white-space: normal;">a</span></span><span
-                                         class="hideAll">Hide all<span class="hidden"></span></span></p>
-                                </a>
-                            </li>
-                            <% if(locals.userNotifications && userNotifications.length !== 0){ %>
-                            <hr>
-                            <% } %>
-
-                            <% if(locals.userNotifications) { for(var i = userNotifications.length - 1; i >= 0; i--){ %>
-                            <% if(userNotifications[i].seen === false || userNotifications[i].seen=== undefined){ %>
-                            <li class="notificationItem unseen" idOfNotif=<%=userNotifications[i]._id%>>
-                                <% } else{ %>
-                            <li class="notificationItem" idOfNotif=<%=userNotifications[i]._id%>>
-                                <% } %>
-                                <a href="<%=userNotifications[i].link%>">
-                                    <p class="notificationText" style="white-space: normal;">
-                                        <%=userNotifications[i].text%>
-                                    </p>
-                                </a>
-
-                                <%
-                                    <!-- // var dateToShow = new Date(userNotifications[i].date).toDateString();
-                                    var dateToShow = new Date(userNotifications[i].date).toLocaleString('en-GB',{hour12: true});
-
-                                    // if(new Date().toDateString() === dateToShow){
-                                    //     dateToShow = new Date(userNotifications[i].date).
-                                    // } -->
-                                %>
-
-
-                                <p><span class="notificationDate">
-                                        <%=dateToShow%></span>
-                                    <span class="notificationHide">Hide<span class="hidden userNotificationIdToRemove">
-                                            <%=userNotifications[i]._id%></span></span>
-                                </p>
-                                <!--<p><%= userNotifications[i].link %></p>-->
-
-                            </li>
-
-                            <% if(!(i === 0)) { %>
-                            <hr>
-                            <% } %>
-
-                            <% } %>
-                            <% } %>
-                        </ul>
-
-
-                    </li>
-                    <% } %>
-
-
-                    <% if(locals.optionsCog){ %>
-                    <li>
-                        <a href="#" role="button" data-toggle="modal" data-target="#optionsModal" class="optionsCog">
-                            <span class="glyphicon glyphicon-cog"></span>
-                        </a>
-                    </li>
-                    <% } %>
-                    <!-- <li><a href="#">Hi there, <%=currentUser.username%></a></li> -->
-                    <li><a href="/profile/<%=currentUser.username%>" class="" id="originalUsername"><%=currentUser.username%></a></li>
-
-                    <li><a href="/logout">Log out</a></li>
-                    <%}%>
-
-                </ul>
-            </div><!-- /.navbar-collapse -->
-        </div><!-- /.container-fluid -->
-    </nav>
-
-    <div class="container">
-
-
-        <!-- MY NOTIFICATION REQUESTS - does NOT need to reload -->
-        <a id="danger-alert-box-button" class="inactive-window">
-            <div class="alert alert-danger inactive-window" id="danger-alert-box">
-            </div>
-        </a>
-
-        <a id="success-alert-box-button" class="inactive-window">
-            <div class="alert alert-success inactive-window" id="success-alert-box">
-            </div>
-        </a>
-
-
-        <!-- FLASH NOTIFICATION REQUESTS - does need to reload -->
-        <% if(error && error.length > 0){ %>
-        <div class="alert alert-danger" role="alert">
-            <%= error%>
-        </div>
-        <%}%>
-
-        <% if(success && success.length > 0){ %>
-        <div class="alert alert-success" role="alert">
-            <%= success%>
-        </div>
-        <%}%>
-
-    </div>
-
-    <style type="text/css">
-    .inactive-window{
-        display: none;
-    }
-
-    nav div ul li a {
-        padding-left: 10px !important;
-        padding-right: 10px !important;
-    }
+	<style>
+		.swal2-popup {
+			font-size: 1.6rem !important;
+		}
+
+		.fontButton{
+			width: 30px;
+			height: 30px;
+			border: 1px solid black;
+		}
+
+
+		.dropdown-menu>li>a {
+			display: block;
+			padding: 3px 20px;
+			clear: both;
+			font-weight: 400;
+			line-height: 1.42857143;
+			color: #333;
+			white-space: nowrap;
+		}
+
+		.dark .dropdown-menu>li>a{
+			color: #c1c1c1;
+		}
+
+		a>hr {
+			margin-top: 5px;
+			margin-bottom: 5px;
+		}
+
+		.dropdown-menu>li>a:hover {
+			background-color: transparent;
+		}
+
+
+		.notificationItem {
+			position: relative;
+			background-color: #eee;
+			border-radius: 10px;
+		}
+
+		.dark .notificationItem {
+			background-color: #444444;
+		}
+
+
+
+		.notificationItem:hover {
+			background-color: #ddd;
+		}
+		.dark .notificationItem:hover {
+			background-color: #3D3D3D;
+		}
+
+		.notificationText {
+			font-weight: 700;
+		}
+
+		.notificationDate {
+			/* font-size: 0.5em; */
+			padding: 5px 10px;
+		}
+
+		.notificationHide {
+			/* font-size: 0.5em; */
+			position: absolute;
+			right: 10%;
+		}
+
+		.notificationHide:hover {
+			color: blue;
+			text-decoration: underline;
+		}
+
+		.dark .notificationHide:hover {
+			color: white;
+			text-decoration: underline;
+		}
+
+
+		.hideAll {
+			/* font-size: 0.5em; */
+			position: absolute;
+			right: 10%;
+		}
+
+		.hideAll:hover {
+			color: blue;
+			text-decoration: underline;
+		}
+
+		.dark .hideAll:hover {
+			color: white;
+			text-decoration: underline;
+		}
+
+		hr {
+			padding-top:2px;
+			padding-bottom: 2px;
+
+			margin-top:2px;
+			margin-bottom: 2px;
+		}
+
+		.unseen {
+			background-color: rgba(188, 214, 255, 0.6)
+		}
+		.unseen:hover {
+			background-color: rgba(188, 214, 255, 1) !important;
+		}
+
+		#navBarContainerId {
+			 margin-left: 15px;
+			 margin-right: 15px;
+
+			/* width: 75%;*/
+			/* margin: auto;*/
+
+		}
+		@media screen and (min-width:768px){
+			.wideNavbarLink{
+				display: block !important;
+			}
+			.narrowNavbarLink{
+				display: none !important;
+			}
+
+			.dropdown:hover .dropdown-menu {
+				display: block;
+				margin-top: 0; // remove the gap so it doesn't close
+			}
+		}
+
+		@media screen and (max-width:768px){
+			.wideNavbarLink{
+				display: none !important;
+			}
+			.narrowNavbarLink{
+				display: block !important;
+			}
+		}
+
+		li a:focus {
+			outline: none;
+		}
+
+		.dropdown-menu > .active > a, .dropdown-menu > .active > a:focus, .dropdown-menu > .active > a:hover {
+			background-color: #e7e7e7;
+			color: #555;
+		}
+
+		nav a:hover, .navbar-default .navbar-nav > li > a:focus, .navbar-default .navbar-nav > li > a:hover,
+		.dropdown-menu > li > a:hover {
+			background-color: #e7e7e7;
+			color: #555;
+		}
+
+		.dropdown-menu > li > a {
+			color: #777;
+		}
+		.dropdown-menu > li > a:hover {
+			color: #555;
+		}
+
+	</style>
+
+
+	<nav class="navbar navbar-default container-fullwidth ">
+		<div class="" id="navBarContainerId">
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle navbar-toggler collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+				 aria-expanded="false">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="/"><img id="brand" alt="Brand" src="../../../../pictures/logo.png"></a>
+			</div>
+
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav">
+
+					<% if(headerActive){%>
+
+					<!-- Lobby -->
+					<% if(headerActive === "lobby"){ %>
+					<li class="active"><a href="/lobby">Lobby</a></li>
+					<%} %>
+					<% if(headerActive !== "lobby"){ %>
+					<li><a href="/lobby">Lobby</a></li>
+					<% } %>
+
+					<!-- Rules -->
+					<% if(headerActive === "rules"){ %>
+					<li class="active"><a href="/rules">Rules</a></li>
+					<%} %>
+					<% if(headerActive !== "rules"){ %>
+					<li><a href="/rules">Rules</a></li>
+					<% } %>
+
+					<!-- Statistics -->
+					<% if(headerActive === "stats"){ %>
+					<li class="active"><a href="/statistics">Stats</a></li>
+					<%} %>
+					<% if(headerActive !== "stats"){ %>
+					<li><a href="/statistics">Stats</a></li>
+					<% } %>
+
+					<!-- Community dropdown -->
+					<li class="dropdown">
+						<a class="dropdown-toggle wideNavbarLink" data-toggle="" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+						<a class="dropdown-toggle narrowNavbarLink" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+
+						<ul class="dropdown-menu">
+							<!-- Members -->
+							<% if(headerActive === "community"){ %>
+								<li class="active"><a href="/community">Members</a></li>
+								<%} %>
+								<% if(headerActive !== "community"){ %>
+								<li><a href="/community">Members</a></li>
+								<% } %>
+
+							<!-- Forums -->
+							<% if(headerActive === "forums"){ %>
+							<li class="active"><a href="/forum">Forums</a></li>
+							<%} %>
+							<% if(headerActive !== "forums"){ %>
+							<li><a href="/forum">Forums</a></li>
+							<% } %>
+							<!-- Facebook -->
+							<li><a href="https://www.facebook.com/groups/1788396528083787/">Facebook</a></li>
+						</ul>
+					</li>
+
+					<!-- Development dropdown -->
+					<li class="dropdown">
+						<a class="dropdown-toggle wideNavbarLink" data-toggle="" role="button" aria-haspopup="true" aria-expanded="false">Development <span class="caret"></span></a>
+						<a class="dropdown-toggle narrowNavbarLink" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Development <span class="caret"></span></a>
+
+						<ul class="dropdown-menu">
+							<!-- Log -->
+							<% if(headerActive === "log"){ %>
+							<li class="active"><a href="/log">Log</a></li>
+							<%} %>
+							<% if(headerActive !== "log"){ %>
+							<li><a href="/log">Log</a></li>
+							<% } %>
+
+							<!-- About -->
+							<% if(headerActive === "about"){ %>
+							<li class="active"><a href="/about">About</a></li>
+							<%} %>
+							<% if(headerActive !== "about"){ %>
+							<li><a href="/about">About</a></li>
+							<% } %>
+
+							<li><a href="https://github.com/vck3000/ProAvalon">Github</a></li>
+						</ul>
+					</li>
+					<% if(locals.isMod && isMod === true){ %>
+					<li><a href="/mod">Moderation</a></li>
+					<% } %>
+
+
+					<%}%>
+
+					<!-- <li><a href="#">News</a></li> -->
+				</ul>
+
+
+				<ul class="nav navbar-nav navbar-right">
+					<!-- <li><a href="#">About</a></li> -->
+
+					<!-- <li><a href="#">Contact us</a></li> -->
+
+					<% if(currentUser){%>
+
+					<% if(locals.userNotifications) {%>
+					<li class="dropdown" id="notificationsDropdown">
+						<a href="#" id="dropDownNotification" class="dropDownNotification">
+							<!--<span class="glyphicon glyphicon-info-sign"></span>-->
+							<% if(locals.userNotifications){%>
+							<span class="badge">
+								<%
+										var num = 0;
+										for(var i = 0; i < userNotifications.length; i++){
+											if(userNotifications[i].seen === false || !userNotifications[i].seen){
+												num++;
+											}
+										}
+									%>
+								<%=num%>
+
+							</span>
+							<% } %>
+
+						</a>
+
+						<ul class="dropdown-menu" id="notificationsList">
+
+							<li class="notificationItem"><a>
+									<p class="notificationText"><span style="visibility: hidden; white-space: normal;">a</span></p>
+									<p><span class="notificationDate"><span style="visibility: hidden; white-space: normal;">a</span></span><span
+										 class="hideAll">Hide all<span class="hidden"></span></span></p>
+								</a>
+							</li>
+							<% if(locals.userNotifications && userNotifications.length !== 0){ %>
+							<hr>
+							<% } %>
+
+							<% if(locals.userNotifications) { for(var i = userNotifications.length - 1; i >= 0; i--){ %>
+							<% if(userNotifications[i].seen === false || userNotifications[i].seen=== undefined){ %>
+							<li class="notificationItem unseen" idOfNotif=<%=userNotifications[i]._id%>>
+								<% } else{ %>
+							<li class="notificationItem" idOfNotif=<%=userNotifications[i]._id%>>
+								<% } %>
+								<a href="<%=userNotifications[i].link%>">
+									<p class="notificationText" style="white-space: normal;">
+										<%=userNotifications[i].text%>
+									</p>
+								</a>
+
+								<%
+									<!-- // var dateToShow = new Date(userNotifications[i].date).toDateString();
+									var dateToShow = new Date(userNotifications[i].date).toLocaleString('en-GB',{hour12: true});
+
+									// if(new Date().toDateString() === dateToShow){
+									// 	dateToShow = new Date(userNotifications[i].date).
+									// } -->
+								%>
+
+
+								<p><span class="notificationDate">
+										<%=dateToShow%></span>
+									<span class="notificationHide">Hide<span class="hidden userNotificationIdToRemove">
+											<%=userNotifications[i]._id%></span></span>
+								</p>
+								<!--<p><%= userNotifications[i].link %></p>-->
+
+							</li>
+
+							<% if(!(i === 0)) { %>
+							<hr>
+							<% } %>
+
+							<% } %>
+							<% } %>
+						</ul>
+
+
+					</li>
+					<% } %>
+
+
+					<% if(locals.optionsCog){ %>
+					<li>
+						<a href="#" role="button" data-toggle="modal" data-target="#optionsModal" class="optionsCog">
+							<span class="glyphicon glyphicon-cog"></span>
+						</a>
+					</li>
+					<% } %>
+					<!-- <li><a href="#">Hi there, <%=currentUser.username%></a></li> -->
+					<li><a href="/profile/<%=currentUser.username%>" class="" id="originalUsername"><%=currentUser.username%></a></li>
+
+					<li><a href="/logout">Log out</a></li>
+					<%}%>
+
+				</ul>
+			</div><!-- /.navbar-collapse -->
+		</div><!-- /.container-fluid -->
+	</nav>
+
+	<div class="container">
+
+
+		<!-- MY NOTIFICATION REQUESTS - does NOT need to reload -->
+		<a id="danger-alert-box-button" class="inactive-window">
+			<div class="alert alert-danger inactive-window" id="danger-alert-box">
+			</div>
+		</a>
+
+		<a id="success-alert-box-button" class="inactive-window">
+			<div class="alert alert-success inactive-window" id="success-alert-box">
+			</div>
+		</a>
+
+
+		<!-- FLASH NOTIFICATION REQUESTS - does need to reload -->
+		<% if(error && error.length > 0){ %>
+		<div class="alert alert-danger" role="alert">
+			<%= error%>
+		</div>
+		<%}%>
+
+		<% if(success && success.length > 0){ %>
+		<div class="alert alert-success" role="alert">
+			<%= success%>
+		</div>
+		<%}%>
+
+	</div>
+
+	<style type="text/css">
+	.inactive-window{
+		display: none;
+	}
+
+	nav div ul li a {
+		padding-left: 10px !important;
+		padding-right: 10px !important;
+	}
 
 </style>
 
@@ -461,67 +461,67 @@
 
 
 <style>
-    #leftOptionsCategories ul li {
-        background: #EAEAEA;
-    }
-    #leftOptionsCategories ul li:nth-child(odd) {
-        background: #E2E2E2;
-    }
+	#leftOptionsCategories ul li {
+		background: #EAEAEA;
+	}
+	#leftOptionsCategories ul li:nth-child(odd) {
+		background: #E2E2E2;
+	}
 
-    .optionCategoriesText {
-        margin: 0px;
-        padding-top: 5px;
-        padding-bottom: 5px;
-    }
+	.optionCategoriesText {
+		margin: 0px;
+		padding-top: 5px;
+		padding-bottom: 5px;
+	}
 
-    #leftOptionsCategoriesTable tbody tr td {
-        border: transparent 2px solid;
+	#leftOptionsCategoriesTable tbody tr td {
+		border: transparent 2px solid;
 
 
-    }
+	}
 
-    #leftOptionsCategoriesTable tbody tr td:hover {
-        border: green 2px solid;
+	#leftOptionsCategoriesTable tbody tr td:hover {
+		border: green 2px solid;
 
-    }
+	}
 
-    .lobby-table {
-        border-radius: 5px;
-        /*border: 1px solid #ddd;*/
-        border-collapse: separate;
-        border-spacing: 1px;
-    }
+	.lobby-table {
+		border-radius: 5px;
+		/*border: 1px solid #ddd;*/
+		border-collapse: separate;
+		border-spacing: 1px;
+	}
 
-    #borderBar {
-        border-left: 2px solid gray;
-        height: 100%;
-        width:0px;
-        padding: 0px;
-        margin-left: 15px;
-    }
+	#borderBar {
+		border-left: 2px solid gray;
+		height: 100%;
+		width:0px;
+		padding: 0px;
+		margin-left: 15px;
+	}
 
-    .optionsInputList {
+	.optionsInputList {
 
-    }
+	}
 
-    .dark .myActive {
-        background-color: #5b5b5b !important;
-    }
-    .myActive {
-        background: #ABABAB;
-    }
+	.dark .myActive {
+		background-color: #5b5b5b !important;
+	}
+	.myActive {
+		background: #ABABAB;
+	}
 
-    .subBox {
-        border-radius: 15px;
-        border: 1px dashed gray;
-        padding-left: 15px;
+	.subBox {
+		border-radius: 15px;
+		border: 1px dashed gray;
+		padding-left: 15px;
 
-        margin-bottom: 10px;
-    }
+		margin-bottom: 10px;
+	}
 
-    #rightOptionsMenu {
-        overflow: auto;
-    }
+	#rightOptionsMenu {
+		overflow: auto;
+	}
 
 
 </style>
@@ -529,405 +529,405 @@
 
 <!-- Modal -->
 <div id="optionsModal" class="modal fade" role="dialog">
-    <div class="modal-dialog modal-lg">
+	<div class="modal-dialog modal-lg">
 
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h2 class="modal-title">Settings</h2>
-            </div>
-            <div class="modal-body" >
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h2 class="modal-title">Settings</h2>
+			</div>
+			<div class="modal-body" >
 
-                <div class="row" style="height: 60vh; ">
+				<div class="row" style="height: 60vh; ">
 
-                    <div id="leftOptionsCategories" class="col-xs-4 col-md-3">
+					<div id="leftOptionsCategories" class="col-xs-4 col-md-3">
 
-                        <table id="leftOptionsCategoriesTable" class="table table-bordered table-striped lobby-table">
-                            <tbody>
-                                <tr>
-                                    <td id="displayOptionsButton" class="myActive">
-                                        <span class="optionCategoriesText">
-                                            Display
-                                        </span>
-                                    </td>
-                                </tr>
+						<table id="leftOptionsCategoriesTable" class="table table-bordered table-striped lobby-table">
+							<tbody>
+								<tr>
+									<td id="displayOptionsButton" class="myActive">
+										<span class="optionCategoriesText">
+											Display
+										</span>
+									</td>
+								</tr>
 
-                                <tr>
-                                    <td id="notificationsOptionsButton">
-                                        <span class="optionCategoriesText">
-                                            Notifications
-                                        </span>
-                                    </td>
-                                </tr>
+								<tr>
+									<td id="notificationsOptionsButton">
+										<span class="optionCategoriesText">
+											Notifications
+										</span>
+									</td>
+								</tr>
 
-                                <tr>
-                                    <td id="resetOptionsButton">
-                                        <span class="optionCategoriesText">
-                                            Reset
-                                        </span>
-                                    </td>
-                                </tr>
+								<tr>
+									<td id="resetOptionsButton">
+										<span class="optionCategoriesText">
+											Reset
+										</span>
+									</td>
+								</tr>
 
-                            </tbody>
-                        </table>
-                    </div>
-                    <div id="borderBar" class="col-xs-1">
-                    </div>
+							</tbody>
+						</table>
+					</div>
+					<div id="borderBar" class="col-xs-1">
+					</div>
 
-                    <div id="rightOptionsMenu" class="col-xs-7 col-md-8">
-                        <div id="displayOptionsMenu" class="rightMenu">
-                            <h4><u>Display: </u></h4>
-                            <div>
-                                <label>Font size: <input type="text" name="option_display_font_size_text" id="option_display_font_size_text" style="width: 3em;"></label>
-                            </div>
-                            <div>
-                                <label>Height of avatar area: <input type="text" name="option_display_avatar_container_height_text" id="option_display_avatar_container_height_text" style="width: 3em;"></label>
-                            </div>
-                            <div>
-                                <label>Max height of avatars (px): <input type="text" name="option_display_max_avatar_height" id="option_display_max_avatar_height" style="width: 3em;"></label>
-                            </div>
-                            <div>
-                                <label><input type="checkbox" name="option_display_dark_theme" id="option_display_dark_theme"> Dark theme</label>
-                            </div>
-                            <div>
-                                <label><input type="checkbox" name="option_display_two_tabs" id="option_display_two_tabs"> Two tabs</label>
-                            </div>
-                            <div>
-                                <label><input type="checkbox" name="option_display_original_avatars" id="option_display_original_avatars"> Use original avatars (hide custom avatars)</label>
-                            </div>
-                            <div>
-                                <label><input type="checkbox" name="option_display_compact_view" id="option_display_compact_view"> Compact view</label>
-                            </div>
-                            <div>
-                                <label><input type="checkbox" name="optionDisplayUseOldGameIcons" id="optionDisplayUseOldGameIcons"> Use old game icons (guns, leader star, bullet)</label>
-                            </div>
-                            <div>
-                                <label><input type="checkbox" name="optionDisplayUseSmallIconsCrownShield" id="optionDisplayUseSmallIconsCrownShield"> Use smaller icons for the crown and shield</label>
-                            </div>
-
-
-                        </div>
-
-                        <div id="notificationsOptionsMenu" class="hidden rightMenu">
-                            <h4><u>Notifications: </u></h4>
-
-                            <div class="subBox">
-                                <h5><u>Sound: </u></h5>
-                                <div>
-                                    <label><input type="checkbox" name="option_notifications_sound_enable" id="option_notifications_sound_enable"> Enabled </label>
-                                </div>
-                                <div>
-                                    <label><input type="checkbox" name="option_notifications_sound_enable_in_game" id="option_notifications_sound_enable_in_game"> Enabled in game</label>
-                                </div>
-                                <div>
-                                    <label style="display: inline-flex">
-                                        Volume:
-                                        <span style="padding-left: 15px;"></span>
-                                        <input type="range" min=0 max=100 value=100 name="option_notifications_sound_volume" id="option_notifications_sound_volume">
-                                        <span style="padding-left: 15px;"></span>
-                                        <span id="volumeValue">100</span>
-                                    </label>
-                                    <p><div id="testBuzzButton" class="btn btn-default btn-xs">Test buzz</div></p>
-                                    <script>
-                                        $("#testBuzzButton").on("click", function(){
-                                            playSound("buzz");
-                                        });
-                                    </script>
-                                </div>
-                                <div>
-                                    <label><input type="checkbox" name="option_notifications_sound_players_joining_room" id="option_notifications_sound_players_joining_room"> Players joining room </label>
-                                </div>
-                                <div>
-                                    <label><input type="checkbox" name="option_notifications_sound_players_joining_game" id="option_notifications_sound_players_joining_game"> Players joining game </label>
-                                </div>
-                                <div>
-                                    <label><input type="checkbox" name="option_notifications_sound_game_starting" id="option_notifications_sound_game_starting"> Game starting </label>
-                                </div>
-                                <div>
-                                    <label><input type="checkbox" name="option_notifications_sound_your_turn" id="option_notifications_sound_your_turn"><span style="text-decoration: line-through;"> Your turn when not viewing </span></label>
-                                </div>
-                                <div>
-                                    <label><input type="checkbox" name="option_notifications_sound_game_ending" id="option_notifications_sound_game_ending"> Game ending</label>
-                                </div>
-                                <div>
-                                    <label><input type="checkbox" name="option_notifications_sound_buzz" id="option_notifications_sound_buzz"> Buzzing </label>
-                                </div>
-                                <div>
-                                    <label><input type="checkbox" name="option_notifications_sound_slap" id="option_notifications_sound_slap"> Slapping</label>
-                                </div>
-                                <div>
-                                    <label><input type="checkbox" name="option_notifications_sound_poke" id="option_notifications_sound_poke"> Poking</label>
-                                </div>
-                                <div>
-                                    <label><input type="checkbox" name="option_notifications_sound_punch" id="option_notifications_sound_punch"> Tickling</label>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label><input type="text" name="option_notifications_buzz_slap_timeout" id="option_notifications_buzz_slap_timeout" style="width: 3em;"> Seconds before you can be buzzed or slapped again</label>
-                            </div>
+					<div id="rightOptionsMenu" class="col-xs-7 col-md-8">
+						<div id="displayOptionsMenu" class="rightMenu">
+							<h4><u>Display: </u></h4>
+							<div>
+								<label>Font size: <input type="text" name="option_display_font_size_text" id="option_display_font_size_text" style="width: 3em;"></label>
+							</div>
+							<div>
+								<label>Height of avatar area: <input type="text" name="option_display_avatar_container_height_text" id="option_display_avatar_container_height_text" style="width: 3em;"></label>
+							</div>
+							<div>
+								<label>Max height of avatars (px): <input type="text" name="option_display_max_avatar_height" id="option_display_max_avatar_height" style="width: 3em;"></label>
+							</div>
+							<div>
+								<label><input type="checkbox" name="option_display_dark_theme" id="option_display_dark_theme"> Dark theme</label>
+							</div>
+							<div>
+								<label><input type="checkbox" name="option_display_two_tabs" id="option_display_two_tabs"> Two tabs</label>
+							</div>
+							<div>
+								<label><input type="checkbox" name="option_display_original_avatars" id="option_display_original_avatars"> Use original avatars (hide custom avatars)</label>
+							</div>
+							<div>
+								<label><input type="checkbox" name="option_display_compact_view" id="option_display_compact_view"> Compact view</label>
+							</div>
+							<div>
+								<label><input type="checkbox" name="optionDisplayUseOldGameIcons" id="optionDisplayUseOldGameIcons"> Use old game icons (guns, leader star, bullet)</label>
+							</div>
+							<div>
+								<label><input type="checkbox" name="optionDisplayUseSmallIconsCrownShield" id="optionDisplayUseSmallIconsCrownShield"> Use smaller icons for the crown and shield</label>
+							</div>
 
 
-                            <div class="subBox">
-                                <h5><u>Desktop notifications: </u></h5>
-                                <div class="btn btn-default btn-md" onclick="Notification.requestPermission();">
-                                    Request permissions
-                                </div>
-                                <div>
-                                    <label><input type="checkbox" name="option_notifications_desktop_enable" id="option_notifications_desktop_enable"> Enabled </label>
-                                </div>
-                                <div>
-                                    <label><input type="checkbox" name="option_notifications_desktop_players_joining_room" id="option_notifications_desktop_players_joining_room"> Players joining room </label>
-                                </div>
-                                <div>
-                                    <label><input type="checkbox" name="option_notifications_desktop_players_joining_game" id="option_notifications_desktop_players_joining_game"> Players joining game </label>
-                                </div>
-                                <div>
-                                    <label><input type="checkbox" name="option_notifications_desktop_game_starting" id="option_notifications_desktop_game_starting"> Game starting </label>
-                                </div>
+						</div>
 
-                                <div>
-                                    <label><input type="checkbox" name="option_notifications_desktop_your_turn" id="option_notifications_desktop_your_turn"><span style="text-decoration: line-through;"> Your turn when not viewing  </span></label>
-                                </div>
-                                <div>
-                                    <label><input type="checkbox" name="option_notifications_desktop_game_ending" id="option_notifications_desktop_game_ending"> Game ending</label>
-                                </div>
-                                <div>
-                                    <label><input type="checkbox" name="option_notifications_desktop_buzz" id="option_notifications_desktop_buzz"> Buzz </label>
-                                </div>
+						<div id="notificationsOptionsMenu" class="hidden rightMenu">
+							<h4><u>Notifications: </u></h4>
+
+							<div class="subBox">
+								<h5><u>Sound: </u></h5>
+								<div>
+									<label><input type="checkbox" name="option_notifications_sound_enable" id="option_notifications_sound_enable"> Enabled </label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_notifications_sound_enable_in_game" id="option_notifications_sound_enable_in_game"> Enabled in game</label>
+								</div>
+								<div>
+									<label style="display: inline-flex">
+										Volume:
+										<span style="padding-left: 15px;"></span>
+										<input type="range" min=0 max=100 value=100 name="option_notifications_sound_volume" id="option_notifications_sound_volume">
+										<span style="padding-left: 15px;"></span>
+										<span id="volumeValue">100</span>
+									</label>
+									<p><div id="testBuzzButton" class="btn btn-default btn-xs">Test buzz</div></p>
+									<script>
+										$("#testBuzzButton").on("click", function(){
+											playSound("buzz");
+										});
+									</script>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_notifications_sound_players_joining_room" id="option_notifications_sound_players_joining_room"> Players joining room </label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_notifications_sound_players_joining_game" id="option_notifications_sound_players_joining_game"> Players joining game </label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_notifications_sound_game_starting" id="option_notifications_sound_game_starting"> Game starting </label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_notifications_sound_your_turn" id="option_notifications_sound_your_turn"><span style="text-decoration: line-through;"> Your turn when not viewing </span></label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_notifications_sound_game_ending" id="option_notifications_sound_game_ending"> Game ending</label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_notifications_sound_buzz" id="option_notifications_sound_buzz"> Buzzing </label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_notifications_sound_slap" id="option_notifications_sound_slap"> Slapping</label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_notifications_sound_poke" id="option_notifications_sound_poke"> Poking</label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_notifications_sound_punch" id="option_notifications_sound_punch"> Tickling</label>
+								</div>
+							</div>
+
+							<div>
+								<label><input type="text" name="option_notifications_buzz_slap_timeout" id="option_notifications_buzz_slap_timeout" style="width: 3em;"> Seconds before you can be buzzed or slapped again</label>
+							</div>
 
 
+							<div class="subBox">
+								<h5><u>Desktop notifications: </u></h5>
+								<div class="btn btn-default btn-md" onclick="Notification.requestPermission();">
+									Request permissions
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_notifications_desktop_enable" id="option_notifications_desktop_enable"> Enabled </label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_notifications_desktop_players_joining_room" id="option_notifications_desktop_players_joining_room"> Players joining room </label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_notifications_desktop_players_joining_game" id="option_notifications_desktop_players_joining_game"> Players joining game </label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_notifications_desktop_game_starting" id="option_notifications_desktop_game_starting"> Game starting </label>
+								</div>
 
-                            </div>
-                        </div>
+								<div>
+									<label><input type="checkbox" name="option_notifications_desktop_your_turn" id="option_notifications_desktop_your_turn"><span style="text-decoration: line-through;"> Your turn when not viewing  </span></label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_notifications_desktop_game_ending" id="option_notifications_desktop_game_ending"> Game ending</label>
+								</div>
+								<div>
+									<label><input type="checkbox" name="option_notifications_desktop_buzz" id="option_notifications_desktop_buzz"> Buzz </label>
+								</div>
 
 
 
-                        <div id="resetOptionsMenu" class="hidden rightMenu">
-                            <h4><u>Reset: </u></h4>
-                            <button class="btn btn-danger" onclick="resetCookies()">Reset all settings</button>
-
-                            <script src="/libraries/cookies_min.js"></script>
-                            <script>
-                                function resetCookies(){
-                                    Swal({
-                                        title: "Do you really want to reset your settings?",
-                                        text: "Settings such as height of gameplay area, dark mode, colour will be reset. You will not be able to recover your settings!",
-                                        type: "warning",
-                                        showCancelButton: true,
-                                        confirmButtonText: "Delete",
-                                        reverseButtons: true,
-                                        focusCancel: true,
-                                        confirmButtonColor: "#ff4f3f"
-                                        // buttons: ["Cancel", "Delete"],
-                                        })
-                                        .then((result) => {
-                                            console.log(result);
-                                        if (result.value) {
-
-                                            //get all the keys
-                                            var keys = docCookies.keys();
-
-                                            //remove each item
-                                            for(var i = 0; i < keys.length; i++){
-                                                docCookies.removeItem(keys[i]);
-                                            }
-
-                                            docCookies.setItem("lastSettingsResetDate", new Date().toString(), Infinity);
-                                            Swal({
-                                                title: "Poof! Your settings have been reset!",
-                                                type: "success",
-                                            }).then(() =>{
-                                                //reload
-                                                location.reload();
-                                            });
-
-                                        } else {
-                                            Swal("Your settings are safe!");
-                                        }
-                                    });
-                                }
-                            </script>
-                        </div>
-
-                    </div>
+							</div>
+						</div>
 
 
 
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
+						<div id="resetOptionsMenu" class="hidden rightMenu">
+							<h4><u>Reset: </u></h4>
+							<button class="btn btn-danger" onclick="resetCookies()">Reset all settings</button>
 
-    </div>
+							<script src="/libraries/cookies_min.js"></script>
+							<script>
+								function resetCookies(){
+									Swal({
+										title: "Do you really want to reset your settings?",
+										text: "Settings such as height of gameplay area, dark mode, colour will be reset. You will not be able to recover your settings!",
+										type: "warning",
+										showCancelButton: true,
+										confirmButtonText: "Delete",
+										reverseButtons: true,
+										focusCancel: true,
+										confirmButtonColor: "#ff4f3f"
+										// buttons: ["Cancel", "Delete"],
+										})
+										.then((result) => {
+											console.log(result);
+										if (result.value) {
+
+											//get all the keys
+											var keys = docCookies.keys();
+
+											//remove each item
+											for(var i = 0; i < keys.length; i++){
+												docCookies.removeItem(keys[i]);
+											}
+
+											docCookies.setItem("lastSettingsResetDate", new Date().toString(), Infinity);
+											Swal({
+												title: "Poof! Your settings have been reset!",
+												type: "success",
+											}).then(() =>{
+												//reload
+												location.reload();
+											});
+
+										} else {
+											Swal("Your settings are safe!");
+										}
+									});
+								}
+							</script>
+						</div>
+
+					</div>
+
+
+
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+
+	</div>
 </div>
 
 <script>
 
 $(document).ready(function(){
 
-    $('#dropDownNotification').on('click', function (event) {
-        $(this).parent().toggleClass('open');
-        // console.log("test");
-        // console.log(this);
-    });
+	$('#dropDownNotification').on('click', function (event) {
+		$(this).parent().toggleClass('open');
+		// console.log("test");
+		// console.log(this);
+	});
 
 
-    // $('.userNotificationIdToRemove').on('click', function (event) {
-    //     setTimeout(function(e){
-    //         $(event).parent("notificationsDropdown a").parent().toggleClass('open');
-    //     }, 100)
-    //     console.log("test");
-    //     console.log(this);
-    // });
+	// $('.userNotificationIdToRemove').on('click', function (event) {
+	// 	setTimeout(function(e){
+	// 		$(event).parent("notificationsDropdown a").parent().toggleClass('open');
+	// 	}, 100)
+	// 	console.log("test");
+	// 	console.log(this);
+	// });
 
 
-    $('body').on('click', function (e) {
-        if (!$('#notificationsDropdown').is(e.target)
-            && $('#notificationsDropdown').has(e.target).length === 0
-            && $('.open').has(e.target).length === 0
-        ) {
-            $('#notificationsDropdown').removeClass('open');
-        }
-    });
+	$('body').on('click', function (e) {
+		if (!$('#notificationsDropdown').is(e.target)
+			&& $('#notificationsDropdown').has(e.target).length === 0
+			&& $('.open').has(e.target).length === 0
+		) {
+			$('#notificationsDropdown').removeClass('open');
+		}
+	});
 
-    $(".notificationText").on('click', function(e){
+	$(".notificationText").on('click', function(e){
 
-        if(e.innerText !== "a" && $(e.target).parent().parent().hasClass("unseen") === true){
-            // seenNotificationFunction
-            // console.log($(e.target).parent().parent().find(".userNotificationIdToRemove")[0].innerHTML);
-            var id = $(e.target).parent().parent().find(".userNotificationIdToRemove")[0].innerHTML;
+		if(e.innerText !== "a" && $(e.target).parent().parent().hasClass("unseen") === true){
+			// seenNotificationFunction
+			// console.log($(e.target).parent().parent().find(".userNotificationIdToRemove")[0].innerHTML);
+			var id = $(e.target).parent().parent().find(".userNotificationIdToRemove")[0].innerHTML;
 
-            seenNotificationFunction(id);
+			seenNotificationFunction(id);
 
-            $(".badge")[0].innerHTML -= 1;
+			$(".badge")[0].innerHTML -= 1;
 
-            $(e.target).parent().parent().removeClass("unseen");
-
-
-        }
-    });
+			$(e.target).parent().parent().removeClass("unseen");
 
 
-
-    $(".hideAll").on("click", function(){
-        var notifs = $("#notificationsList li");
-
-        if(notifs){
-            for(var i = 1; i < notifs.length; i++){
-                // hideFunction(notifs[i].getAttribute("idOfNotif"));
-                hideAllNotifs();
-                notifs[i].remove();
-                $(notifs[i]).next().remove();
-            }
-
-            $(".badge")[0].innerHTML = 0;
-
-            $("#notificationsList hr").remove();
-        }
-
-
-    });
+		}
+	});
 
 
 
+	$(".hideAll").on("click", function(){
+		var notifs = $("#notificationsList li");
+
+		if(notifs){
+			for(var i = 1; i < notifs.length; i++){
+				// hideFunction(notifs[i].getAttribute("idOfNotif"));
+				hideAllNotifs();
+				notifs[i].remove();
+				$(notifs[i]).next().remove();
+			}
+
+			$(".badge")[0].innerHTML = 0;
+
+			$("#notificationsList hr").remove();
+		}
 
 
-    $(".notificationHide").on("click", function(){
-        // console.log("click");
-        // console.log(this.children[0].innerHTML);
-        hideFunction(this.children[0].innerHTML);
+	});
 
-        // console.log(this.parent().innerHTML);
 
-        var notifs = $("#notificationsList li");
 
-        var notifsIds = $("#notificationsList li").find(".userNotificationIdToRemove");
 
-        for(var i = 0; i < notifsIds.length; i++){
 
-            // console.log(notifs);
+	$(".notificationHide").on("click", function(){
+		// console.log("click");
+		// console.log(this.children[0].innerHTML);
+		hideFunction(this.children[0].innerHTML);
 
-                if(notifs.length === 2){
-                    notifs[1].innerHTML = "";
-                    $(".badge")[0].innerHTML = 0;
-                    // console.log("been here");
-                }
+		// console.log(this.parent().innerHTML);
 
-                else if(notifsIds[i] && notifsIds[i].innerHTML === this.children[0].innerHTML){
-                    // console.log(i);
+		var notifs = $("#notificationsList li");
 
-                    $(notifs[i+1]).addClass("hidden");
-                    $(notifs[i+1]).next().addClass("hidden");
-                    // notifs.splice(i, 1);
+		var notifsIds = $("#notificationsList li").find(".userNotificationIdToRemove");
 
-                    if($(this).parent().parent().hasClass("unseen") === true){
-                        $(".badge")[0].innerHTML -= 1;
-                    }
+		for(var i = 0; i < notifsIds.length; i++){
 
-                    break;
-                }
-        }
-    });
+			// console.log(notifs);
+
+				if(notifs.length === 2){
+					notifs[1].innerHTML = "";
+					$(".badge")[0].innerHTML = 0;
+					// console.log("been here");
+				}
+
+				else if(notifsIds[i] && notifsIds[i].innerHTML === this.children[0].innerHTML){
+					// console.log(i);
+
+					$(notifs[i+1]).addClass("hidden");
+					$(notifs[i+1]).next().addClass("hidden");
+					// notifs.splice(i, 1);
+
+					if($(this).parent().parent().hasClass("unseen") === true){
+						$(".badge")[0].innerHTML -= 1;
+					}
+
+					break;
+				}
+		}
+	});
 });
 
 function hideFunction(idOfNotification){
-    // console.log(idOfNotification);
+	// console.log(idOfNotification);
 
-    $.ajax({
-    url: "/ajax/hideNotification",
-    type: "GET",
-    data: {idOfNotif: idOfNotification},
-    success: function(){console.log("ajax success");},
-    error: function(err){console.log(err);}
-    });
+	$.ajax({
+	url: "/ajax/hideNotification",
+	type: "GET",
+	data: {idOfNotif: idOfNotification},
+	success: function(){console.log("ajax success");},
+	error: function(err){console.log(err);}
+	});
 }
 
 function seenNotificationFunction(idOfNotification){
-    // console.log(idOfNotification);
+	// console.log(idOfNotification);
 
-    $.ajax({
-    url: "/ajax/seenNotification",
-    type: "GET",
-    data: {idOfNotif: idOfNotification},
-    success: function(){console.log("ajax success");},
-    error: function(err){console.log(err);}
-    });
+	$.ajax({
+	url: "/ajax/seenNotification",
+	type: "GET",
+	data: {idOfNotif: idOfNotification},
+	success: function(){console.log("ajax success");},
+	error: function(err){console.log(err);}
+	});
 }
 
 
 function hideAllNotifs(){
-    // console.log(idOfNotification);
+	// console.log(idOfNotification);
 
-    $.ajax({
-    url: "/ajax/hideAllNotifications",
-    type: "GET",
-    success: function(){console.log("ajax success");},
-    error: function(err){console.log(err);}
-    });
+	$.ajax({
+	url: "/ajax/hideAllNotifications",
+	type: "GET",
+	success: function(){console.log("ajax success");},
+	error: function(err){console.log(err);}
+	});
 
 
 
 
 /*
-    xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("GET","/ajax/hideNotification", true);
+	xmlhttp = new XMLHttpRequest();
+	xmlhttp.open("GET","/ajax/hideNotification", true);
 
-    console.log("/profile/getProfileDataAJAX/" + $("#profileUsername")[0].innerHTML);
+	console.log("/profile/getProfileDataAJAX/" + $("#profileUsername")[0].innerHTML);
 
 
-    xmlhttp.onreadystatechange=function(){
-        if (xmlhttp.readyState==4 && xmlhttp.status==200){
-            userData=JSON.parse(xmlhttp.responseText);
-            console.log(userData);
+	xmlhttp.onreadystatechange=function(){
+		if (xmlhttp.readyState==4 && xmlhttp.status==200){
+			userData=JSON.parse(xmlhttp.responseText);
+			console.log(userData);
 
-            drawCharts();
-        }
-    }
-    xmlhttp.send();*/
+			drawCharts();
+		}
+	}
+	xmlhttp.send();*/
 
 }
 
@@ -941,62 +941,62 @@ function hideAllNotifs(){
 
 
 
-    var a;
+	var a;
 
-    var optionsList = [
-        "display",
-        "notifications",
-        "reset"
-    ]
+	var optionsList = [
+		"display",
+		"notifications",
+		"reset"
+	]
 
-    for(var i = 0; i < optionsList.length; i++){
-        $("#" + optionsList[i] + "OptionsButton").on("click", function(){
-            // console.log(this);
-            a = this;
+	for(var i = 0; i < optionsList.length; i++){
+		$("#" + optionsList[i] + "OptionsButton").on("click", function(){
+			// console.log(this);
+			a = this;
 
-            var openThisMenu = this.innerText.toLowerCase().slice(0, this.innerText.length) + "OptionsMenu";
-            // console.log("open this: " + openThisMenu);
+			var openThisMenu = this.innerText.toLowerCase().slice(0, this.innerText.length) + "OptionsMenu";
+			// console.log("open this: " + openThisMenu);
 
-            closeAllMenuOptions();
+			closeAllMenuOptions();
 
-            $("#" + openThisMenu).removeClass("hidden");
-
-
-            removeMyActiveOffAllButtons();
-            this.classList.add("myActive");
+			$("#" + openThisMenu).removeClass("hidden");
 
 
-        });
-    }
+			removeMyActiveOffAllButtons();
+			this.classList.add("myActive");
 
-    function closeAllMenuOptions(){
-        for(var i = 0; i < optionsList.length; i++){
-            $("#" + optionsList[i] + "OptionsMenu").addClass("hidden");
-        }
-    }
 
-    function removeMyActiveOffAllButtons() {
-        for(var i = 0; i < optionsList.length; i++){
-            $("#" + optionsList[i] + "OptionsButton").removeClass("myActive");
-        }
-    }
+		});
+	}
+
+	function closeAllMenuOptions(){
+		for(var i = 0; i < optionsList.length; i++){
+			$("#" + optionsList[i] + "OptionsMenu").addClass("hidden");
+		}
+	}
+
+	function removeMyActiveOffAllButtons() {
+		for(var i = 0; i < optionsList.length; i++){
+			$("#" + optionsList[i] + "OptionsButton").removeClass("myActive");
+		}
+	}
 
 
 //Collapse the mobile navbar if the user clicks out of it.
 $(document).ready(function () {
     $(document).click(function (event) {
         var clickover = $(event.target);
-        var _opened = $(".navbar-collapse").hasClass("collapse in");
+		var _opened = $(".navbar-collapse").hasClass("collapse in");
 
-        // console.log(clickover);
+		// console.log(clickover);
 
-        if (
-            _opened === true
-            && !clickover.hasClass("navbar-toggler")
-            && !clickover.hasClass("badge")
-            && !clickover.hasClass("optionsCog")
-            && !clickover.hasClass("dropDownNotification")
-         ) {
+		if (
+			_opened === true
+			&& !clickover.hasClass("navbar-toggler")
+			&& !clickover.hasClass("badge")
+			&& !clickover.hasClass("optionsCog")
+			&& !clickover.hasClass("dropDownNotification")
+		 ) {
             $("button.navbar-toggler").click();
         }
     });

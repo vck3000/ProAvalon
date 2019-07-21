@@ -5,8 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js",
-    "lint": "eslint . --fix"
+    "start": "node app.js"
   },
   "author": "Victor Kuo",
   "license": "ISC",
@@ -40,10 +39,5 @@
     "ignore": [
       "assets/gameRecordsData/*"
     ]
-  },
-  "devDependencies": {
-    "eslint": "^5.16.0",
-    "eslint-config-airbnb-base": "^13.2.0",
-    "eslint-plugin-import": "^2.18.0"
   }
 }

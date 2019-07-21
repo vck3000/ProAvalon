@@ -1,18 +1,19 @@
-//= =========================================
-// COMMANDS
-//= =========================================
-socket.on("commands", (commands) => {
+//==========================================
+//COMMANDS
+//==========================================
+socket.on("commands", function (commands) {
     assignCommands(commands);
 });
 
-let modCommands;
-socket.on("modCommands", (commands) => {
+var modCommands;
+socket.on("modCommands", function (commands) {
+
     if (!modCommands) {
-        $("#modActionCloseButton").on("click", () => {
+        $("#modActionCloseButton").on("click", function () {
             $("#modModal").modal("hide");
 
             // console.log($("#modactionform").serializeArray());
-            const data = $("#modactionform").serializeArray();
+            var data = $("#modactionform").serializeArray();
 
             socket.emit("modAction", data);
         });
@@ -20,13 +21,13 @@ socket.on("modCommands", (commands) => {
     modCommands = commands;
 });
 
-let adminCommands;
-socket.on("adminCommands", (commands) => {
+var adminCommands;
+socket.on("adminCommands", function (commands) {
     adminCommands = commands;
 });
 
 
-socket.on("messageCommandReturnStr", (dataInc) => {
+socket.on("messageCommandReturnStr", function (dataInc) {
     if (dataInc) {
         // console.log(dataInc);
 
@@ -36,54 +37,55 @@ socket.on("messageCommandReturnStr", (dataInc) => {
 
         if (lastChatBoxCommand === "allChat") {
             addToAllChat(dataInc);
-        } else if (lastChatBoxCommand === "roomChat") {
+        }
+        else if (lastChatBoxCommand === "roomChat") {
             addToRoomChat(dataInc);
-        } else {
+        }
+        else {
             addToAllChat(dataInc);
         }
         // console.log("received return str");
     }
+
 });
 
-let timeLastBuzzSlap;
-// the following two objects are only for special cases where they are not the default value
-const interactUserMessageTimeOffset = {
-    // default value is 0
-    slap: 1100,
-};
-const verbToMp3 = {
-    // default value is the data.verb variable
-    buzz: "ding",
-};
+var timeLastBuzzSlap;
+//the following two objects are only for special cases where they are not the default value
+var interactUserMessageTimeOffset = {
+    //default value is 0
+    "slap": 1100
+}
+var verbToMp3 = {
+    //default value is the data.verb variable
+    "buzz": "ding"
+}
 
 
-socket.on("interactUser", (data) => {
-    let interacted = false;
+socket.on("interactUser", function (data) {
+    var interacted = false;
 
     if (isPlayerMuted(data.username) === false) {
         if ($("#option_notifications_sound_slap")[0].checked === true) {
             if (!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $("#option_notifications_buzz_slap_timeout")[0].value) {
-                let mp3String = verbToMp3[data.verb];
+                var mp3String = verbToMp3[data.verb];
                 if (mp3String === undefined) { mp3String = data.verb; }
                 playSound(mp3String);
 
-                socket.emit("interactUserPlayed", {
-                    success: true, interactedBy: data.username, myUsername: ownUsername, verb: data.verb, verbPast: data.verbPast,
-                });
+                socket.emit("interactUserPlayed", { success: true, interactedBy: data.username, myUsername: ownUsername, verb: data.verb, verbPast: data.verbPast });
                 interacted = true;
 
                 timeLastBuzzSlap = new Date();
 
-                const dataString = {
-                    message: `You have been ${data.verbPast} by ${data.username}.`,
+                var dataString = {
+                    message: "You have been " + data.verbPast + " by " + data.username + ".",
                     classStr: "server-text",
-                    dateCreated: new Date(),
-                };
+                    dateCreated: new Date()
+                }
 
-                let timeDelay = interactUserMessageTimeOffset[data.verb];
+                var timeDelay = interactUserMessageTimeOffset[data.verb];
                 if (timeDelay === undefined) { timeDelay = 0; }
 
-                setTimeout(() => {
+                setTimeout(function () {
                     // if (lastChatBoxCommand === "allChat") {
                     //     addToAllChat(dataString);
                     // }
@@ -95,19 +97,17 @@ socket.on("interactUser", (data) => {
                     // }
                 }, timeDelay);
 
-                // only display notif if its a buzz
+                //only display notif if its a buzz
                 if (data.verb === "buzz") {
                     if ($("#option_notifications_desktop_buzz")[0].checked === true) {
-                        displayNotification(`${username} has buzzed you!`, "", "avatars/base-spy.png", "buzz");
+                        displayNotification(username + " has buzzed you!", "", "avatars/base-spy.png", "buzz");
                     }
                 }
             }
         }
     }
     if (interacted === false) {
-        socket.emit("interactUserPlayed", {
-            success: false, interactedBy: data.username, myUsername: ownUsername, verb: data.verb, verbPast: data.verbPast,
-        });
+        socket.emit("interactUserPlayed", { success: false, interactedBy: data.username, myUsername: ownUsername, verb: data.verb, verbPast: data.verbPast });
     }
 });
 
@@ -126,7 +126,7 @@ socket.on("interactUser", (data) => {
 //                 timeLastBuzzSlap = new Date();
 
 //                 var data = {
-//                     message: "You have been slapped by " + username + ".",
+//                     message: "You have been slapped by " + username + ".", 
 //                     classStr: "server-text",
 //                     dateCreated: new Date()
 //                 }
@@ -152,8 +152,8 @@ socket.on("interactUser", (data) => {
 //             if($("#option_notifications_sound_buzz")[0].checked === true){
 //                 playSound("ding");
 
-//                 var data = {
-//                     message: "You have been buzzed by " + username + ".",
+//                 var data = { 
+//                     message: "You have been buzzed by " + username + ".", 
 //                     classStr: "server-text",
 //                     dateCreated: new Date()
 //                 }
@@ -176,13 +176,13 @@ socket.on("interactUser", (data) => {
 // });
 
 // socket.on("lick", function (username) {
-//     if(isPlayerMuted(username) === false){
+//     if(isPlayerMuted(username) === false){    
 //         if(!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $("#option_notifications_buzz_slap_timeout")[0].value){
 //             if($("#option_notifications_sound_buzz")[0].checked === true){
 //                 playSound("lick");
 
-//                 var data = {
-//                     message: "You have been licked by " + username + ".",
+//                 var data = { 
+//                     message: "You have been licked by " + username + ".", 
 //                     classStr: "server-text",
 //                     dateCreated: new Date()
 //                 }
@@ -199,6 +199,6 @@ socket.on("interactUser", (data) => {
 //     }
 // });
 
-socket.on("toggleNavBar", (username) => {
+socket.on("toggleNavBar", function (username) {
     $(".navbar").toggle("hidden");
 });

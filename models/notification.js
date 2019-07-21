@@ -1,18 +1,18 @@
-const mongoose = require("mongoose");
+var mongoose = require("mongoose");
 
-// SCHEMA SETUP
-const notificationSchema = new mongoose.Schema({
+//SCHEMA SETUP
+var notificationSchema = new mongoose.Schema({
 
-    text: String,
-    date: Date,
-    link: String,
+	text: String,
+	date: Date,
+	link: String,
 
-    forPlayer: String,
+	forPlayer: String,
     seen: Boolean,
-    madeBy: String,
+    madeBy: String
 
 });
-// compile schema into a model
-const notification = mongoose.model("notification", notificationSchema);
+//compile schema into a model
+var notification = mongoose.model("notification", notificationSchema);
 
 module.exports = notification;

@@ -1,34 +1,34 @@
 
 /** {
-    border: 1px red solid;
+	border: 1px red solid;
 }*/
 
 .myContainer {
-    padding-top: 30px;
+	padding-top: 30px;
 }
 
 .form-group {
-    
+	
 }
 .alignLeft {
-    text-align: left;
+	text-align: left;
 }
 
 .center {
-    text-align: center;
+	text-align: center;
 }
 
 
 form {
-    vertical-align: bottom;
+	vertical-align: bottom;
 }
 
 #myDiv {
-    width: 100%;
-    max-width: 300px;
+	width: 100%;
+	max-width: 300px;
 
 }
 
 li {
-    margin: auto;
+	margin: auto;
 }
