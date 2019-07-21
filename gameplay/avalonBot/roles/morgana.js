@@ -1,24 +1,24 @@
 
 
-function Morgana(thisRoom_) {
-
-    this.thisRoom = thisRoom_;
-
-    this.role = "Morgana";
-    this.alliance = "Spy";
-
-    this.description = "A spy who looks like Merlin to Percival.";
-    this.orderPriorityInOptions = 70;
-
+class Morgana {
+    constructor(thisRoom) {
+        this.thisRoom = thisRoom;
+        
+        this.role = "Morgana";
+        this.alliance = "Spy";
+        
+        this.description = "A spy who looks like Merlin to Percival.";
+        this.orderPriorityInOptions = 70;
+    }
     //Morgana sees all spies except oberon
-    this.see = function () {
+    see () {
         if (this.thisRoom.gameStarted === true) {
             var obj = {};
             var array = [];
-
+            
             for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
                 if (this.thisRoom.playersInGame[i].alliance === "Spy") {
-
+                    
                     if (this.thisRoom.playersInGame[i].role === "Oberon") {
                         //don't add oberon
                     }
@@ -28,16 +28,16 @@ function Morgana(thisRoom_) {
                     }
                 }
             }
-
+            
             obj.spies = array;
             return obj;
         }
     }
-
-    this.checkSpecialMove = function () {
-
+    
+    checkSpecialMove () {
+        
     }
-
+    
 }
 
 

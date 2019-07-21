@@ -8,41 +8,42 @@
     - Prohibited Indexes to pick (an array)
 */
 
-function HunterTestPhase(thisRoom_) {
-    this.thisRoom = thisRoom_;
+class HunterTestPhase {
+    constructor(thisRoom) {
+        this.thisRoom = thisRoom;
 
-    this.phase = "hunterTestPhase";
-    this.showGuns = true;
+        this.phase = "hunterTestPhase";
+        this.showGuns = true;
+    };
+
+
+    gameMove (socket, data) {
+        /* TODO: GameMove*/
+    };
+
+    // Returns a object with green and red keys. 
+    // Green and Red must both have the following properties:
+    //  hidden          - Is the button hidden?
+    //  disabled        - Is the button disabled?
+    //  setText         - What text to display in the button
+    buttonSettings (indexOfPlayer) {
+        /* TODO: buttonSettings*/
+    }
+
+    numOfTargets (indexOfPlayer) {
+        /* TODO: numOfTargets*/
+    }
+
+
+    getStatusMessage (indexOfPlayer) {
+        /* TODO: getStatusMessage*/
+    }
+
+    getProhibitedIndexesToPick (indexOfPlayer) {
+        /* TODO: getProhibitedIndexesToPick in an array*/
+    }
+
 };
-
-HunterTestPhase.prototype.gameMove = function (socket, data) {
-    /* TODO: GameMove*/
-};
-
-// Returns a object with green and red keys. 
-// Green and Red must both have the following properties:
-//  hidden          - Is the button hidden?
-//  disabled        - Is the button disabled?
-//  setText         - What text to display in the button
-HunterTestPhase.prototype.buttonSettings = function (indexOfPlayer) {
-    /* TODO: buttonSettings*/
-}
-
-HunterTestPhase.prototype.numOfTargets = function (indexOfPlayer) {
-    /* TODO: numOfTargets*/
-}
-
-
-HunterTestPhase.prototype.getStatusMessage = function (indexOfPlayer) {
-    /* TODO: getStatusMessage*/
-}
-
-HunterTestPhase.prototype.getProhibitedIndexesToPick = function (indexOfPlayer) {
-    /* TODO: getProhibitedIndexesToPick in an array*/
-}
-
-
-
 
 
 module.exports = HunterTestPhase;
