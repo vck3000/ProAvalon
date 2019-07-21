@@ -1,8 +1,8 @@
 
 
-// all in lower case
-const adminsArray = [
-    "pronub",
+//all in lower case
+var adminsArray = [
+    "pronub"
 ];
 
 module.exports = adminsArray;

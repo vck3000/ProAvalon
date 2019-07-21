@@ -8,9 +8,9 @@ function Tristan(thisRoom_) {
     this.orderPriorityInOptions = 50;
 
     this.see = function () {
-        const roleTag = {};
+        var roleTag = {};
 
-        for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
+        for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
             if (this.thisRoom.playersInGame[i].role === "Isolde") {
                 roleTag[this.thisRoom.playersInGame[i].username] = {};
                 roleTag[this.thisRoom.playersInGame[i].username].roleTag = "Isolde";
@@ -20,8 +20,8 @@ function Tristan(thisRoom_) {
         console.log(roleTag);
 
         return roleTag;
-    };
-}
+    }
+};
 
 
 module.exports = Tristan;

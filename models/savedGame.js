@@ -1,10 +1,10 @@
-const mongoose = require("mongoose");
+var mongoose = require("mongoose");
 
-// SCHEMA SETUP
-const savedGameSchema = new mongoose.Schema({
-    room: String,
+//SCHEMA SETUP
+var savedGameSchema = new mongoose.Schema({
+    room: String
 });
-// compile schema into a model
-const savedGame = mongoose.model("savedGame", savedGameSchema);
+//compile schema into a model
+var savedGame = mongoose.model("savedGame", savedGameSchema);
 
 module.exports = savedGame;

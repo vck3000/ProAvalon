@@ -43,7 +43,7 @@
 
 
     .myTable tr:hover {
-        background-color:#c5cae9;
+    	background-color:#c5cae9;
     }
 
     .myTable img {
@@ -141,8 +141,8 @@
 </style>
 
 <div class="myContainer">
-    <h3 class="header">View our players from all over the world!</h3>
-    <div class="row">
+	<h3 class="header">View our players from all over the world!</h3>
+	<div class="row">
         <table class="myTable">
             <h4>Moderators</h4>
             <tr>
@@ -178,7 +178,7 @@
             <% }); %>
         </table>
     
-        <table class="myTable" id="userTable">
+		<table class="myTable" id="userTable">
             <h4>Players</h4>
             <tr>
                 <th>Username</th>
@@ -189,30 +189,30 @@
                 <th class="games">#Games</th>
             </tr>
 
-            <% users.forEach(function(user){ %>
-            <tr>
-                <td><a class="username" href="/profile/<%= user.username %>" ><%= user.username %></a></td>
+			<% users.forEach(function(user){ %>
+			<tr>
+				<td><a class="username" href="/profile/<%= user.username %>" ><%= user.username %></a></td>
                 <%if (user.avatarImgRes === null) { %>
                     <td><img src="/avatars/base-res.png"></td>
                 <% } else { %>
-                    <td><img src="<%= user.avatarImgRes %>"></td>
+				    <td><img src="<%= user.avatarImgRes %>"></td>
                 <% } %>
                 <%if (user.avatarImgSpy === null) { %>
                     <td><img src="/avatars/base-spy.png"></td>                
                 <% } else { %>
-                    <td><img src="<%= user.avatarImgSpy %>"></td>
+				    <td><img src="<%= user.avatarImgSpy %>"></td>
                 <% } %>
                 <%if (user.nationality === "") { %>
                     <td class="nat">United Nations</td>    
                 <% } else { %>
-                    <td class="nat"><%= user.nationality %></td>
+				    <td class="nat"><%= user.nationality %></td>
                 <% } %>
-                <td class="cell"><%- user.biography %></td>
+				<td class="cell"><%- user.biography %></td>
                 <td class="games"><%= user.totalGamesPlayed %></td>
             </tr>
-            <% }); %>
-        </table>
-    </div>
+			<% }); %>
+		</table>
+	</div>
 </div>
 
 <!-- show more button -->

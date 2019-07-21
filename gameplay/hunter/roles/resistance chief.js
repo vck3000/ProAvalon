@@ -11,8 +11,8 @@ function ResChief(thisRoom_) {
 
     this.see = function () {
         /* TODO: What the role sees (e.g. Percival sees Merlin and Morgana as "Merlin?") */
-    };
-}
+    }
+};
 
 
 ResChief.prototype.checkSpecialMove = function (socket, data) {
@@ -21,7 +21,7 @@ ResChief.prototype.checkSpecialMove = function (socket, data) {
 ResChief.prototype.getPublicGameData = function () {
     /* TODO: (Can delete this function. Not absolutely necessary)
     Public data to show the user(s) e.g. assassin bullet */
-};
+}
 
 
 module.exports = ResChief;

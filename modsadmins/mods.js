@@ -1,12 +1,12 @@
 
 
-// all in lower case
-const modsArray = [
+//all in lower case
+var modsArray = [
     "pronub",
     "bocaben",
     "maddie",
     "morningcatt",
-    "tyrrox",
+    "tyrrox"
 ];
 
 module.exports = modsArray;

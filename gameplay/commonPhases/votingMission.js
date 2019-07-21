@@ -1,23 +1,24 @@
-const usernamesIndexes = require("../../myFunctions/usernamesIndexes");
+var usernamesIndexes = require("../../myFunctions/usernamesIndexes");
 
 function VotingMission(thisRoom_) {
     this.thisRoom = thisRoom_;
 
     this.phase = "votingMission";
     this.showGuns = true;
-}
+};
 
 VotingMission.prototype.gameMove = function (socket, data) {
     var i = this.thisRoom.playersYetToVote.indexOf(socket.request.user.username);
 
-    // if this.thisRoom vote is coming from someone who hasn't voted yet
+    //if this.thisRoom vote is coming from someone who hasn't voted yet
     if (i !== -1) {
         if (data === "yes") {
             this.thisRoom.missionVotes[usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username)] = "succeed";
             // console.log("received succeed from " + socket.request.user.username);
-        } else if (data === "no") {
+        }
+        else if (data === "no") {
             // If the user is a res, they shouldn't be allowed to fail
-            const index = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username);
+            var index = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username);
             if (index !== -1 && this.thisRoom.playersInGame[index].alliance === "Resistance") {
                 socket.emit("danger-alert", "You are resistance! Surely you want to succeed!");
                 return;
@@ -25,66 +26,75 @@ VotingMission.prototype.gameMove = function (socket, data) {
 
             this.thisRoom.missionVotes[usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username)] = "fail";
             // console.log("received fail from " + socket.request.user.username);
-        } else {
-            console.log(`ERROR! Expected yes or no (success/fail), got: ${data}`);
         }
-        // remove the player from players yet to vote
+        else {
+            console.log("ERROR! Expected yes or no (success/fail), got: " + data);
+        }
+        //remove the player from players yet to vote
         this.thisRoom.playersYetToVote.splice(i, 1);
-    } else {
-        console.log(`Player ${socket.request.user.username} has already voted or is not in the game`);
+    }
+    else {
+        console.log("Player " + socket.request.user.username + " has already voted or is not in the game");
     }
 
 
     // If we have all the votes in
     if (this.thisRoom.playersYetToVote.length === 0) {
-        const outcome = this.thisRoom.calcMissionVotes(this.thisRoom.missionVotes);
+
+        var outcome = this.thisRoom.calcMissionVotes(this.thisRoom.missionVotes);
         if (outcome) {
             this.thisRoom.missionHistory.push(outcome);
-        } else {
-            console.log(`ERROR! Outcome was: ${outcome}`);
+        }
+        else {
+            console.log("ERROR! Outcome was: " + outcome);
         }
 
-        const numOfVotedFails = countFails(this.thisRoom.missionVotes);
+        var numOfVotedFails = countFails(this.thisRoom.missionVotes);
         this.thisRoom.numFailsHistory.push(numOfVotedFails);
 
-        // for the gameplay message
+        //for the gameplay message
         if (outcome === "succeeded") {
             if (numOfVotedFails === 0) {
-                this.thisRoom.sendText(this.thisRoom.allSockets, `Mission ${this.thisRoom.missionNum} succeeded.`, "gameplay-text-blue");
-            } else {
-                this.thisRoom.sendText(this.thisRoom.allSockets, `Mission ${this.thisRoom.missionNum} succeeded, but with ${numOfVotedFails} fail.`, "gameplay-text-blue");
+                this.thisRoom.sendText(this.thisRoom.allSockets, "Mission " + this.thisRoom.missionNum + " succeeded.", "gameplay-text-blue");
             }
-        } else if (outcome === "failed") {
+            else {
+                this.thisRoom.sendText(this.thisRoom.allSockets, "Mission " + this.thisRoom.missionNum + " succeeded, but with " + numOfVotedFails + " fail.", "gameplay-text-blue");
+            }
+        }
+        else if (outcome === "failed") {
             if (numOfVotedFails === 1) {
-                this.thisRoom.sendText(this.thisRoom.allSockets, `Mission ${this.thisRoom.missionNum} failed with ${numOfVotedFails} fail.`, "gameplay-text-red");
-            } else {
-                this.thisRoom.sendText(this.thisRoom.allSockets, `Mission ${this.thisRoom.missionNum} failed with ${numOfVotedFails} fails.`, "gameplay-text-red");
+                this.thisRoom.sendText(this.thisRoom.allSockets, "Mission " + this.thisRoom.missionNum + " failed with " + numOfVotedFails + " fail.", "gameplay-text-red");
+            }
+            else {
+                this.thisRoom.sendText(this.thisRoom.allSockets, "Mission " + this.thisRoom.missionNum + " failed with " + numOfVotedFails + " fails.", "gameplay-text-red");
             }
         }
 
 
-        // if we get all the votes in, then do this.thisRoom
+        //if we get all the votes in, then do this.thisRoom
         this.thisRoom.lastProposedTeam = this.thisRoom.proposedTeam;
         this.thisRoom.proposedTeam = [];
         this.thisRoom.missionVotes = [];
 
-        // count number of succeeds and fails
-        let numOfSucceeds = 0;
-        let numOfFails = 0;
+        //count number of succeeds and fails
+        var numOfSucceeds = 0;
+        var numOfFails = 0;
         for (var i = 0; i < this.thisRoom.missionHistory.length; i++) {
             if (this.thisRoom.missionHistory[i] === "succeeded") {
                 numOfSucceeds++;
-            } else if (this.thisRoom.missionHistory[i] === "failed") {
+            }
+            else if (this.thisRoom.missionHistory[i] === "failed") {
                 numOfFails++;
             }
         }
 
 
-        // game over if more than 3 fails or successes
+        //game over if more than 3 fails or successes
         if (numOfFails >= 3) {
             this.thisRoom.winner = "Spy";
             this.thisRoom.finishGame("Spy");
-        } else if (numOfSucceeds >= 3) {
+        }
+        else if (numOfSucceeds >= 3) {
             this.thisRoom.winner = "Resistance";
             this.thisRoom.finishGame("Resistance");
         }
@@ -92,7 +102,7 @@ VotingMission.prototype.gameMove = function (socket, data) {
         else {
             this.thisRoom.missionNum++;
             this.thisRoom.pickNum = 1;
-
+            
             this.thisRoom.teamLeader--;
             if (this.thisRoom.teamLeader < 0) {
                 this.thisRoom.teamLeader = this.thisRoom.playersInGame.length - 1;
@@ -105,15 +115,17 @@ VotingMission.prototype.gameMove = function (socket, data) {
 };
 
 
-// Returns a object with green and red keys.
+
+// Returns a object with green and red keys. 
 // Green and Red must both have the following properties:
 //  hidden          - Is the button hidden?
 //  disabled        - Is the button disabled?
 //  setText         - What text to display in the button
 VotingMission.prototype.buttonSettings = function (indexOfPlayer) {
-    const obj = {
+
+    var obj = {
         green: {},
-        red: {},
+        red: {}
     };
 
     // If user has voted
@@ -138,11 +150,11 @@ VotingMission.prototype.buttonSettings = function (indexOfPlayer) {
     }
 
     return obj;
-};
+}
 
 VotingMission.prototype.numOfTargets = function (indexOfPlayer) {
     return null;
-};
+}
 
 VotingMission.prototype.getStatusMessage = function (indexOfPlayer) {
     // If we are spectator
@@ -150,7 +162,7 @@ VotingMission.prototype.getStatusMessage = function (indexOfPlayer) {
         var str = "";
         str += "Waiting for mission votes: ";
         for (var i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
-            str = `${str + this.thisRoom.playersYetToVote[i]}, `;
+            str = str + this.thisRoom.playersYetToVote[i] + ", ";
         }
         // Remove last , and replace with .
         str = str.slice(0, str.length - 2);
@@ -158,13 +170,13 @@ VotingMission.prototype.getStatusMessage = function (indexOfPlayer) {
 
         return str;
     }
-    // If the user is someone who needs to vote success or fail
-    if (indexOfPlayer !== undefined && this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playersInGame[indexOfPlayer].username) !== -1) {
+    //If the user is someone who needs to vote success or fail
+    else if (indexOfPlayer !== undefined && this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playersInGame[indexOfPlayer].username) !== -1) {
         var str = "";
-        str += (`${this.thisRoom.playersInGame[this.thisRoom.teamLeader].username} has picked: `);
+        str += (this.thisRoom.playersInGame[this.thisRoom.teamLeader].username + " has picked: ");
 
         for (var i = 0; i < this.thisRoom.proposedTeam.length; i++) {
-            str += `${this.thisRoom.proposedTeam[i]}, `;
+            str += this.thisRoom.proposedTeam[i] + ", ";
         }
         // Remove last , and replace with .
         str = str.slice(0, str.length - 2);
@@ -172,29 +184,34 @@ VotingMission.prototype.getStatusMessage = function (indexOfPlayer) {
 
         return str;
     }
+    else {
+        var str = "";
+        str += "Waiting for mission votes: ";
+        for (var i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
+            str = str + this.thisRoom.playersYetToVote[i] + ", ";
+        }
+        // Remove last , and replace with .
+        str = str.slice(0, str.length - 2);
+        str += ".";
 
-    var str = "";
-    str += "Waiting for mission votes: ";
-    for (var i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
-        str = `${str + this.thisRoom.playersYetToVote[i]}, `;
+        return str;
     }
-    // Remove last , and replace with .
-    str = str.slice(0, str.length - 2);
-    str += ".";
+}
 
-    return str;
-};
 
 
 function countFails(votes) {
-    let numOfVotedFails = 0;
-    for (let i = 0; i < votes.length; i++) {
+    var numOfVotedFails = 0;
+    for (var i = 0; i < votes.length; i++) {
         if (votes[i] === "fail") {
             numOfVotedFails++;
         }
     }
     return numOfVotedFails;
 }
+
+
+
 
 
 module.exports = VotingMission;
