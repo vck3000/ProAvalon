@@ -45,6 +45,12 @@
         <a type="button" class="btn btn-danger" href="/forum/page/bug/1">Bugs</a>
         <% } %>
 
+        <% if(typeof activeCategory !== 'undefined' && activeCategory === "my_posts"){ %>
+        <a type="button" class="btn btn-danger active" href="/forum/page/1">My Posts</a>
+        <% } else { %>
+        <a type="button" class="btn btn-danger" href="/forum/page/my_posts/1">My Posts</a>
+        <% } %>
+
         <br>
         <br>
 
