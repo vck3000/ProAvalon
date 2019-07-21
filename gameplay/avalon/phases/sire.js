@@ -20,7 +20,7 @@ class Sire {
         this.card = "Sire of the Sea";
     };
     
-    Sire.prototype.gameMove = function (socket, data) {
+    gameMove (socket, data) {
         if (socket === undefined || data === undefined) {
             return;
         }
@@ -118,7 +118,7 @@ class Sire {
         
     };
     
-    Sire.prototype.buttonSettings = function (indexOfPlayer) {
+    buttonSettings (indexOfPlayer) {
         //Get the index of the sire
         var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
         
@@ -149,7 +149,7 @@ class Sire {
         return obj;
     }
     
-    Sire.prototype.numOfTargets = function (indexOfPlayer) {
+    numOfTargets (indexOfPlayer) {
         var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
         
         if (indexOfPlayer !== undefined && indexOfPlayer !== null) {
@@ -164,7 +164,7 @@ class Sire {
     }
     
     
-    Sire.prototype.getStatusMessage = function (indexOfPlayer) {
+    getStatusMessage (indexOfPlayer) {
         var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
         
         if (indexOfPlayer === indexOfCardHolder) {
@@ -177,7 +177,7 @@ class Sire {
         }
     }
     
-    Sire.prototype.getProhibitedIndexesToPick = function (indexOfPlayer) {
+    getProhibitedIndexesToPick (indexOfPlayer) {
         var sireHistory = this.thisRoom.specialCards[this.card.toLowerCase()].sireHistory;
         
         return sireHistory;

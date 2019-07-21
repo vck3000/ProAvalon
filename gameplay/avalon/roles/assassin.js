@@ -2,7 +2,7 @@ var usernamesIndexes = require("../../../myFunctions/usernamesIndexes");
 
 class Assassin {
     constructor(thisRoom) {
-        this.thisRoom = thisRoom_;
+        this.thisRoom = thisRoom;
         
         this.specialPhase = "assassination";
         
