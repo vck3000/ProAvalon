@@ -21,7 +21,6 @@
     "express-rate-limit": "^3.4.0",
     "express-session": "^1.15.6",
     "linkifyjs": "^2.1.7",
-    "lodash": "^4.17.11",
     "method-override": "^2.3.10",
     "mongoose": "^5.0.1",
     "passport": "^0.4.0",
