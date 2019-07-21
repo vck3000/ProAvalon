@@ -68,6 +68,13 @@ router.get("/register", function (req, res) {
 	res.render("register", { platform: process.env.MY_PLATFORM });
 });
 
+
+//sitedown route
+router.get("/sitedown", function (req, res) {
+	res.render("sitedown");
+});
+
+
 const registerLimiter = process.env.MY_PLATFORM === "local" ?
 rateLimit({
     max: 0 // Disable if we are local
@@ -81,6 +88,8 @@ rateLimit({
 //Post of the register route
 router.post("/", registerLimiter, checkIpBan, checkCurrentBan, sanitiseUsername, function (req, res) {
 	// console.log("escaped: " + escapeText(req.body.username));
+	res.redirect("sitedown");
+	return;
 
 	// var escapedUsername = escapeText(req.body.username);
 
