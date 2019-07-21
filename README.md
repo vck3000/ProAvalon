@@ -75,6 +75,13 @@ Or with nodemon (automatically restarts the server when changes are saved):
 > nodemon app.js
 ```
 
+## Linting
+
+The rules are specified in `.eslintrc.json`. See https://eslint.org for more information on ESLint.
+```
+> npm run lint
+```
+Your code will also automatically lint whenever you commit.
 
 ## Optional: Create an admin account
 
