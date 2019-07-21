@@ -1,21 +1,21 @@
 
-function Resistance(thisRoom_) {
-
-    this.thisRoom = thisRoom_;
-
-    this.role = "Resistance";
-    this.alliance = "Resistance";
-
-    this.description = "A standard Resistance member.";
-
-    this.see = function () {
+class Resistance {
+    constructor(thisRoom) {
+        this.thisRoom = thisRoom;
+        
+        this.role = "Resistance";
+        this.alliance = "Resistance";
+        
+        this.description = "A standard Resistance member.";
+    }
+    see () {
         return undefined;
     }
-
-    this.checkSpecialMove = function () {
-
+    
+    checkSpecialMove () {
+        
     }
-
+    
 }
 
 
