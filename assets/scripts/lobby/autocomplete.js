@@ -1,58 +1,56 @@
 
-var autoCompleteStrs = [];
+const autoCompleteStrs = [];
 
-var lastKeyPress;
-$(".chat-message-input").on('keydown', function (e) {
-    // console.log(e.which);   
+let lastKeyPress;
+$(".chat-message-input").on("keydown", (e) => {
+    // console.log(e.which);
 
-    //if person presses the 'tab' button.
+    // if person presses the 'tab' button.
     if (e.which == 9) {
         e.preventDefault();
         // do your code
 
         // console.log('a');
         // console.log($(e.target).val());
-        var newWord;
-        var lastWord;
+        let newWord;
+        let lastWord;
         if (lastKeyPress === 9) {
             // console.log(goodPossibleStrings);
-            //if our last keypress is still a tab, put the next possible autocomplete str in
+            // if our last keypress is still a tab, put the next possible autocomplete str in
             lastWord = currentAutoCompleteWord;
 
             if (goodPossibleStrings.indexOf(lastWord) + 1 > goodPossibleStrings.length - 1) {
                 newWord = goodPossibleStrings[0];
-            }
-            else {
+            } else {
                 // console.log("last word: " + lastWord);
                 newWord = goodPossibleStrings[goodPossibleStrings.indexOf(lastWord) + 1];
             }
 
-            //set the new current auto complete word
+            // set the new current auto complete word
             currentAutoCompleteWord = newWord;
-        }
-        else {
-            //if its out first time pressing tab
+        } else {
+            // if its out first time pressing tab
             lastWord = getLastWord($(e.target).val());
             newWord = autoComplete($(e.target).val(), autoCompleteStrs.sort());
         }
-        //if we get a new word
+        // if we get a new word
         if (newWord) {
-            //get the new str after replacing
-            //split the current stuff up:
-            var splitted = $(e.target).val().split(" ");
+            // get the new str after replacing
+            // split the current stuff up:
+            const splitted = $(e.target).val().split(" ");
             splitted[splitted.length - 1] = newWord;
 
-            var together = "";
-            for (var i = 0; i < splitted.length; i++) {
-                together = together + splitted[i];
+            let together = "";
+            for (let i = 0; i < splitted.length; i++) {
+                together += splitted[i];
                 if (i !== splitted.length - 1) {
                     together += " ";
                 }
             }
 
-            var newStr = together;
+            const newStr = together;
 
-            //set the new text
+            // set the new text
             $(e.target).val(newStr);
         }
     }
@@ -60,36 +58,34 @@ $(".chat-message-input").on('keydown', function (e) {
 });
 
 function getLastWord(words) {
-    var n = words.split(" ");
+    const n = words.split(" ");
     return n[n.length - 1];
 }
 
-//state variables
+// state variables
 var goodPossibleStrings = [];
 var currentAutoCompleteWord = "";
 
 function autoComplete(currentStr, possibleStrs) {
-    var lastWord = getLastWord(currentStr);
+    const lastWord = getLastWord(currentStr);
     // console.log(lastWord);
 
     goodPossibleStrings = [];
 
-    //for every possible auto complete str
-    for (var i = 0; i < possibleStrs.length; i++) {
-
-        //for the length of the last word
-        //check each character. if they match good, if they dont, break
-        for (var j = 0; j < lastWord.length; j++) {
+    // for every possible auto complete str
+    for (let i = 0; i < possibleStrs.length; i++) {
+        // for the length of the last word
+        // check each character. if they match good, if they dont, break
+        for (let j = 0; j < lastWord.length; j++) {
             if (lastWord[j].toLowerCase() === possibleStrs[i][j].toLowerCase()) {
-                //good
-            }
-            else {
-                //bad
+                // good
+            } else {
+                // bad
                 break;
             }
 
             if (j === lastWord.length - 1) {
-                //passed all the checks, add to good possible strings
+                // passed all the checks, add to good possible strings
                 goodPossibleStrings.push(possibleStrs[i]);
             }
         }

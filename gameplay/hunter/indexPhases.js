@@ -1,14 +1,14 @@
-//This file helps us load in the roles from the folder
+// This file helps us load in the roles from the folder
 
 function index() {
-    //Import all the roles from AVALON
+    // Import all the roles from AVALON
     this.getPhases = function (thisRoom) {
-        var normalizedPath = require("path").join(__dirname, "./phases");
+        const normalizedPath = require("path").join(__dirname, "./phases");
 
-        var phases = {};
-        var obj = {};
+        const phases = {};
+        const obj = {};
 
-        require("fs").readdirSync(normalizedPath).forEach(function (file) {
+        require("fs").readdirSync(normalizedPath).forEach((file) => {
             // console.log(file);
 
             // If it is a javascript file, add it
@@ -16,22 +16,20 @@ function index() {
                 // Trim .js at the end of the file name
                 name = file.replace(".js", "");
 
-                phases[name] = require("./phases/" + file);
+                phases[name] = require(`./phases/${file}`);
             }
         });
 
 
         for (var name in phases) {
             if (phases.hasOwnProperty(name)) {
-                //Initialise it
+                // Initialise it
                 obj[name] = new phases[name](thisRoom);
             }
         }
 
         return obj;
-    }
+    };
 }
 
 module.exports = index;
-
-

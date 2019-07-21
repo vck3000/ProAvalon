@@ -1,25 +1,25 @@
-var usernamesIndexes = require("../../myFunctions/usernamesIndexes");
+const usernamesIndexes = require("../../myFunctions/usernamesIndexes");
 
 function Finished(thisRoom_) {
     this.thisRoom = thisRoom_;
 
     this.phase = "finished";
     this.showGuns = true;
-};
+}
 
 Finished.prototype.gameMove = function (socket, data) {
     // Do nothing, game is finished.
 };
 
-// Returns a object with green and red keys. 
+// Returns a object with green and red keys.
 // Green and Red must both have the following properties:
 //  hidden          - Is the button hidden?
 //  disabled        - Is the button disabled?
 //  setText         - What text to display in the button
 Finished.prototype.buttonSettings = function (indexOfPlayer) {
-    var obj = {
+    const obj = {
         green: {},
-        red: {}
+        red: {},
     };
 
     obj.green.hidden = true;
@@ -31,26 +31,23 @@ Finished.prototype.buttonSettings = function (indexOfPlayer) {
     obj.red.setText = "";
 
     return obj;
-}
+};
 
 Finished.prototype.numOfTargets = function (indexOfPlayer) {
     return null;
-}
+};
 
 Finished.prototype.getStatusMessage = function (indexOfPlayer) {
-
-    var winner = "Error, undefined";
+    let winner = "Error, undefined";
     if (this.thisRoom.winner === "Resistance") {
         winner = "resistance";
-    }
-    else if (this.thisRoom.winner === "Spy") {
+    } else if (this.thisRoom.winner === "Spy") {
         winner = "spies";
     }
 
-    var str = "Game has finished. The " + winner + " have won.";
+    const str = `Game has finished. The ${winner} have won.`;
     return str;
-}
+};
 
 
 module.exports = Finished;
-

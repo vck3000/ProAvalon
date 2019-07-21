@@ -39,8 +39,7 @@ myObj = {
     ],
 
 
-}
-
+};
 
 
 module.exports = myObj;

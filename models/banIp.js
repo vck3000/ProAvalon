@@ -1,25 +1,25 @@
-var mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-//SCHEMA SETUP
-var banIpSchema = new mongoose.Schema({
-	type: String, //ban, mute?
+// SCHEMA SETUP
+const banIpSchema = new mongoose.Schema({
+    type: String, // ban, mute?
 
-	bannedIp: String,
+    bannedIp: String,
 
-	modWhoBanned: {
-		id: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "User"
-		},
-		username: String
-	},
+    modWhoBanned: {
+        id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        },
+        username: String,
+    },
 
-	whenMade: Date,
+    whenMade: Date,
 
-	usernamesAssociated: [String]
+    usernamesAssociated: [String],
 });
 
-//compile schema into a model
-var banIp = mongoose.model("BanIp", banIpSchema);
+// compile schema into a model
+const banIp = mongoose.model("BanIp", banIpSchema);
 
 module.exports = banIp;
