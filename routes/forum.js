@@ -192,13 +192,23 @@ router.get("/page/:category/:pageNum", middleware.isLoggedIn, function (req, res
 		skipNumber = (req.params.pageNum - 1) * NUM_OF_RESULTS_PER_PAGE;
 	}
 
-	forumThread.find({
-		category: req.params.category,
-		$or: [
-			{ disabled: undefined },
-			{ disabled: false }
-		]
-	}).sort({ timeLastEdit: 'descending' }).skip(skipNumber).limit(NUM_OF_RESULTS_PER_PAGE)
+	(
+		req.params.category === 'my_posts' ? 
+		forumThread.find({
+			'author.username': req.user.username,
+			$or: [
+				{ disabled: undefined },
+				{ disabled: false }
+			]
+		}) :
+		forumThread.find({
+			category: req.params.category,
+			$or: [
+				{ disabled: undefined },
+				{ disabled: false }
+			]
+		})
+	).sort({ timeLastEdit: 'descending' }).skip(skipNumber).limit(NUM_OF_RESULTS_PER_PAGE)
 		.exec(async function (err, allForumThreads) {
 
 			if (err) {
