@@ -88,8 +88,9 @@ rateLimit({
 //Post of the register route
 router.post("/", registerLimiter, checkIpBan, checkCurrentBan, sanitiseUsername, function (req, res) {
 	// console.log("escaped: " + escapeText(req.body.username));
-	res.redirect("sitedown");
-	return;
+
+	// res.redirect("sitedown");
+	// return;
 
 	// var escapedUsername = escapeText(req.body.username);
 
