@@ -9,12 +9,11 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Pre-requisites
 
-What things you need to install the software and how to install them
 - [Node.js](https://nodejs.org/en/) v7.6 or later
 - [MongoDB](https://www.mongodb.com/)
 - [Git](https://git-scm.com/)
 
-Things that I use that you may find useful:
+Other useful resources:
 - [Visual Studio Code](https://code.visualstudio.com/), a code editor/IDE by Microsoft
 - [ConEmu](https://conemu.github.io/) (Windows program to open multiple cmds (terminals) in one window
 
@@ -22,33 +21,37 @@ Things that I use that you may find useful:
 
 1. Clone (using git) a copy of the code:
 ```
-> cd C:/YourFolder
+> cd path/to/your/folder
 > git clone https://github.com/vck3000/ProAvalon.git
 ```
 
 2. Set up the required environment variables on your machine:
+
+Method 1: Set permanent environment variables on you rmachine:
 ```
 MY_PLATFORM = "local"
 MY_SECRET_KEY = "AnythingThatYouWant"
 DATABASEURL = "mongodb://localhost/TheNewResistanceUsers"
 ```
-To do this on Mac, run the following in your terminal:
+
+Method 2: Create a file named `.env` in the root directory with the following lines:
 ```
-> export MY_PLATFORM=local
-> export MY_SECRET_KEY=INSERT_ANYTHING_YOU_WANT
-> export DATABASEURL=mongodb://localhost/TheNewResistanceUsers
+MY_PLATFORM=local
+MY_SECRET_KEY=INSERT_ANYTHING_YOU_WANT_HERE
+DATABASEURL=mongodb://localhost/TheNewResistanceUsers
 ```
 
 3. Create the database in MongoDB:
-    1. Start the database (Note: You may need to create folder `C:/data/db` to start the database server correctly, read the message in your terminal):
+    1. Create the folder `/data/db` (`C:/data/db` on Windows).
+    2. Start the database:
     ```
     > mongod
     ```
-    2. Open a mongo shell (in a new terminal or command prompt):
+    3. Open a mongo shell (in a new terminal or command prompt):
     ```
     > mongo
     ```
-    3. Create the database:
+    4. Create the database:
     ```
     > use TheNewResistanceUsers
     switched to db TheNewResistanceUsers
