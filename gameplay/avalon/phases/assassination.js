@@ -63,14 +63,14 @@ class Assassination {
                                 this.thisRoom.winner = "Spy";
                                 this.thisRoom.howWasWon = "Assassinated Merlin correctly.";
                                 
-                                this.thisRoom.sendText(this.thisRoom.allSockets, "The assassin has shot " + merlinUsername + "! They were correct!", classStr = "gameplay-text-red");
+                                this.thisRoom.sendText(this.thisRoom.allSockets, "The assassin has shot " + merlinUsername + "! They were correct!", "gameplay-text-red");
                             }
                             else {
                                 this.thisRoom.winner = "Resistance";
                                 this.thisRoom.howWasWon = "Mission successes and assassin shot wrong.";
                                 
                                 // console.log("THIS WAS RUN ONCE");
-                                this.thisRoom.sendText(this.thisRoom.allSockets, "The assassin has shot " + data + "! " + data + " was not merlin, " + merlinUsername + " was!", classStr = "gameplay-text-blue");
+                                this.thisRoom.sendText(this.thisRoom.allSockets, "The assassin has shot " + data + "! " + data + " was not merlin, " + merlinUsername + " was!", "gameplay-text-blue");
                             }
                             
                             this.finishedShot = true;
@@ -141,7 +141,7 @@ class Assassination {
                             this.thisRoom.winner = "Spy";
                             this.thisRoom.howWasWon = "Assassinated Tristan and Isolde correctly.";
                             
-                            this.thisRoom.sendText(this.thisRoom.allSockets, "The assassin has shot " + tristanUsername + " and " + isoldeUsername + "! They were correct!", classStr = "gameplay-text-red");
+                            this.thisRoom.sendText(this.thisRoom.allSockets, "The assassin has shot " + tristanUsername + " and " + isoldeUsername + "! They were correct!", "gameplay-text-red");
                             
                         }
                         else {
@@ -149,7 +149,7 @@ class Assassination {
                             this.thisRoom.howWasWon = "Mission successes and assassin shot wrong.";
                             
                             // console.log("THIS WAS RUN ONCE");
-                            this.thisRoom.sendText(this.thisRoom.allSockets, "The assassin has shot " + data[0] + " and " + data[1] + "! " + data[0] + " and " + data[1] + " were not Tristan and Isolde, " + tristanUsername + " and " + isoldeUsername + " were!", classStr = "gameplay-text-blue");
+                            this.thisRoom.sendText(this.thisRoom.allSockets, "The assassin has shot " + data[0] + " and " + data[1] + "! " + data[0] + " and " + data[1] + " were not Tristan and Isolde, " + tristanUsername + " and " + isoldeUsername + " were!", "gameplay-text-blue");
                         }
                         
                         this.finishedShot = true;
