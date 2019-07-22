@@ -1268,7 +1268,7 @@ var actionsObj = {
 
 		mclose: {
 			command: "mclose",
-			help: "/mclose <roomId>: Close room <roomId>. Also removes the corresponding save files in the database.",
+			help: "/mclose <roomId> [<roomId> <roomId> ...]: Close room <roomId>. Also removes the corresponding save files in the database. Can take multiple room IDs.",
 			run: function (data, senderSocket) {
 				var args = data.args;
 
@@ -1277,23 +1277,33 @@ var actionsObj = {
 					return;
 				}
 
-				if (rooms[args[1]] !== undefined) {
-					// Disconnect everyone
-					for (var i = 0; i < rooms[args[1]].allSockets.length; i++) {
-						rooms[args[1]].allSockets[i].emit("leave-room-requested");
-					}
+				var roomIdsToClose = args.splice(1)
+				// console.log(roomIdsToClose);
 
-					// Stop bots thread if they are playing:
-					if (rooms[args[1]].interval) {
-						clearInterval(rooms[args[1]].interval);
-						rooms[args[1]].interval = undefined;
+				roomIdsToClose.forEach((idToClose) => {
+					if (rooms[idToClose] !== undefined) {
+						// Disconnect everyone
+						for (var i = 0; i < rooms[idToClose].allSockets.length; i++) {
+							rooms[idToClose].allSockets[i].emit("leave-room-requested");
+						}
+	
+						// Stop bots thread if they are playing:
+						if (rooms[idToClose].interval) {
+							clearInterval(rooms[idToClose].interval);
+							rooms[idToClose].interval = undefined;
+						}
+	
+						// Forcefully close room
+						if (rooms[idToClose]) {
+							destroyRoom(rooms[idToClose].roomId);
+						}
+						senderSocket.emit("messageCommandReturnStr", { message: `Closed room ${idToClose}.`, classStr: "server-text" });
 					}
+					else{
+						senderSocket.emit("messageCommandReturnStr", { message: `Could not close room ${idToClose}.`, classStr: "server-text" });
+					}
+				});
 
-					// Forcefully close room
-					if (rooms[args[1]]) {
-						destroyRoom(rooms[args[1]].roomId);
-					}
-				}
 				updateCurrentGamesList();
 				return;
 			}
