@@ -630,9 +630,9 @@ Game.prototype.checkBotMoves = function (pendingBots) {
 
 				// Make the move //TODO In the future gameMove should receive both buttonPressed and selectedPlayers
 				if (numOfTargets == 0 || numOfTargets == null) {
-					thisRoom.gameMove(botSocket, move.buttonPressed, []);
+					thisRoom.gameMove(botSocket, [move.buttonPressed, []]);
 				} else {
-					thisRoom.gameMove(botSocket, "yes", move.selectedPlayers);
+					thisRoom.gameMove(botSocket, ["yes", move.selectedPlayers]);
 				}
 			});
 		});
@@ -647,7 +647,20 @@ Game.prototype.checkBotMoves = function (pendingBots) {
 
 // var commonPhases = ["pickingTeam", "votingTeam", "votingMission", "finished"];
 //TODO In the future gameMove should receive both buttonPressed and selectedPlayers
-Game.prototype.gameMove = function (socket, buttonPressed, selectedPlayers) {
+Game.prototype.gameMove = function (socket, data) {
+	if (data.length !== 2){
+		return;
+	}
+	
+	buttonPressed = data[0];
+	selectedPlayers = data[1];
+
+	console.log(buttonPressed, selectedPlayers)
+
+	if (selectedPlayers === undefined || selectedPlayers === null) {
+		selectedPlayers = []
+	}
+
 
 	// Common phases
 	if (this.commonPhases.hasOwnProperty(this.phase) === true && this.commonPhases[this.phase].gameMove) {

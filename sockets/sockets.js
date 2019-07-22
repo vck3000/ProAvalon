@@ -1423,7 +1423,7 @@ var actionsObj = {
 					if (targetSimulatedSocket.emit === undefined) {
 						targetSimulatedSocket.emit = function(){};
 					}
-					thisRoom.gameMove(targetSimulatedSocket, button, targetsCaps);
+					thisRoom.gameMove(targetSimulatedSocket, [button, targetsCaps]);
 					
 					return;
 				}
