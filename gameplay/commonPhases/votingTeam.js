@@ -7,21 +7,21 @@ function VotingTeam(thisRoom_) {
     this.showGuns = true;
 };
 
-VotingTeam.prototype.gameMove = function (socket, data) {
+VotingTeam.prototype.gameMove = function (socket, buttonPressed, selectedPlayers) {
     // Get the index of the user who is trying to vote
     var i = this.thisRoom.playersYetToVote.indexOf(socket.request.user.username);
 
     //Check the data is valid (if it is not a "yes" or a "no")
-    if (!(data === "yes" || data === "no")) {
+    if (!(buttonPressed === "yes" || buttonPressed === "no")) {
         return;
     }
 
     // If they haven't voted yet
     if (i !== -1) {
-        if (data === "yes") {
+        if (buttonPressed === "yes") {
             this.thisRoom.votes[usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username)] = "approve";
         }
-        else if (data === "no") {
+        else if (buttonPressed === "no") {
             this.thisRoom.votes[usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username)] = "reject";
         }
         else {

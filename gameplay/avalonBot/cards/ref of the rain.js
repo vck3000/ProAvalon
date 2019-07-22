@@ -28,7 +28,7 @@ class RefOfTheLake {
         this.refChain.push(this.thisRoom.playersInGame[index].role);
     };
     
-    checkSpecialMove (socket, data) {
+    checkSpecialMove (socket, buttonPressed, selectedPlayers) {
         // Only use ref of the rain after m2, when the success/fail is revealed, but before the next mission starts.
         // Only once per mission.
         

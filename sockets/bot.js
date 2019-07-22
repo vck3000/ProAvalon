@@ -195,7 +195,6 @@ class APIBotSocket {
     // handleRequestAction: Called when the server is requesting an action from your bot.
     // When you have a move available, call callback with the selected button and players
     // If you errored, call callback(false)
-    //TODO: Do we need this many input parameters?
     handleRequestAction (game, availableButtons, availablePlayers, numOfTargets, callback) {
         var thisSocket = this;
         var playerIndex = game.playersInGame.findIndex(function(player) { return player.username == thisSocket.request.user.username; });

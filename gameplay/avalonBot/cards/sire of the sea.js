@@ -33,7 +33,7 @@ class SireOfTheSea {
         this.sireChain.push(this.thisRoom.playersInGame[index].role);
     };
     
-    checkSpecialMove (socket, data) {
+    checkSpecialMove (socket, buttonPressed, selectedPlayers) {
         // Only use sire of the sea after m2, when the success/fail is revealed, but before the next mission starts.
         // Only once per mission.
         

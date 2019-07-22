@@ -28,7 +28,7 @@ class LadyOfTheLake {
         this.ladyChain.push(this.thisRoom.playersInGame[index].role);
     };
     
-    checkSpecialMove (socket, data) {
+    checkSpecialMove (socket, buttonPressed, selectedPlayers) {
         // Only use lady of the lake after m2, when the success/fail is revealed, but before the next mission starts.
         // Only once per mission.
         

@@ -7,16 +7,16 @@ function VotingMission(thisRoom_) {
     this.showGuns = true;
 };
 
-VotingMission.prototype.gameMove = function (socket, data) {
+VotingMission.prototype.gameMove = function (socket, buttonPressed, selectedPlayers) {
     var i = this.thisRoom.playersYetToVote.indexOf(socket.request.user.username);
 
     //if this.thisRoom vote is coming from someone who hasn't voted yet
     if (i !== -1) {
-        if (data === "yes") {
+        if (buttonPressed === "yes") {
             this.thisRoom.missionVotes[usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username)] = "succeed";
             // console.log("received succeed from " + socket.request.user.username);
         }
-        else if (data === "no") {
+        else if (buttonPressed === "no") {
             // If the user is a res, they shouldn't be allowed to fail
             var index = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username);
             if (index !== -1 && this.thisRoom.playersInGame[index].alliance === "Resistance") {
@@ -28,7 +28,7 @@ VotingMission.prototype.gameMove = function (socket, data) {
             // console.log("received fail from " + socket.request.user.username);
         }
         else {
-            console.log("ERROR! Expected yes or no (success/fail), got: " + data);
+            console.log("ERROR! Expected yes or no (success/fail), got: " + buttonPressed);
         }
         //remove the player from players yet to vote
         this.thisRoom.playersYetToVote.splice(i, 1);

@@ -40,7 +40,7 @@ class Assassin {
     }
     
     //Assassination phase
-    checkSpecialMove (socket, data) {
+    checkSpecialMove (socket, buttonPressed, selectedPlayers) {
         //Check for assassination mode and enter it if it is the right time
         if (this.playerShot === "") {
             // If we have the right conditions, we go into assassination phase

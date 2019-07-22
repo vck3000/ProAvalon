@@ -584,11 +584,16 @@ Game.prototype.checkBotMoves = function (pendingBots) {
 			pendingBots.push(botSocket);
 
 			var availablePlayers = thisRoom.playersInGame
-				.filter(function (player, playerIndex) { //TODO how does this work? :O. Where does playerIndex come from?
+				.filter(function (player, playerIndex) { 
 					return prohibitedIndexesToPick.indexOf(playerIndex) === -1;
 				}).map(function (player) {
 					return player.request.user.username;
 				});
+
+			// If there are 0 number of targets, there are no available players.
+			if (numOfTargets === null) {
+				var availablePlayers = []
+			}
 
 			botSocket.handleRequestAction(thisRoom, availableButtons, availablePlayers, numOfTargets, function (move, reason) {
 				// Check for move failure.
@@ -625,9 +630,9 @@ Game.prototype.checkBotMoves = function (pendingBots) {
 
 				// Make the move //TODO In the future gameMove should receive both buttonPressed and selectedPlayers
 				if (numOfTargets == 0 || numOfTargets == null) {
-					thisRoom.gameMove(botSocket, move.buttonPressed);
+					thisRoom.gameMove(botSocket, move.buttonPressed, []);
 				} else {
-					thisRoom.gameMove(botSocket, move.selectedPlayers);
+					thisRoom.gameMove(botSocket, "yes", move.selectedPlayers);
 				}
 			});
 		});
@@ -642,16 +647,16 @@ Game.prototype.checkBotMoves = function (pendingBots) {
 
 // var commonPhases = ["pickingTeam", "votingTeam", "votingMission", "finished"];
 //TODO In the future gameMove should receive both buttonPressed and selectedPlayers
-Game.prototype.gameMove = function (socket, data) {
+Game.prototype.gameMove = function (socket, buttonPressed, selectedPlayers) {
 
 	// Common phases
 	if (this.commonPhases.hasOwnProperty(this.phase) === true && this.commonPhases[this.phase].gameMove) {
-		this.commonPhases[this.phase].gameMove(socket, data);
+		this.commonPhases[this.phase].gameMove(socket, buttonPressed, selectedPlayers);
 	}
 
 	// Special phases
 	else if (this.specialPhases.hasOwnProperty(this.phase) === true && this.specialPhases[this.phase].gameMove) {
-		this.specialPhases[this.phase].gameMove(socket, data);
+		this.specialPhases[this.phase].gameMove(socket, buttonPressed, selectedPlayers);
 	}
 
 	// THIS SHOULDN'T HAPPEN!! We always require a gameMove function to change phases
@@ -660,7 +665,7 @@ Game.prototype.gameMove = function (socket, data) {
 	}
 
 	//RUN SPECIAL ROLE AND CARD CHECKS
-	this.checkRoleCardSpecialMoves(socket, data);
+	this.checkRoleCardSpecialMoves(socket, buttonPressed, selectedPlayers);
 
 	this.distributeGameData();
 };

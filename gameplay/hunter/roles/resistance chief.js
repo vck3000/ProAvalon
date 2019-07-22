@@ -15,7 +15,7 @@ class ResChief {
         }
     };
 
-    checkSpecialMove (socket, data) {
+    checkSpecialMove (socket, buttonPressed, selectedPlayers) {
         /* TODO: Check if we need to go to a special phase */
     };
     getPublicGameData () {

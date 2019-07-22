@@ -50,7 +50,7 @@ function redButtonFunction() {
         }
         else {
             if (gameData.phase === "votingTeam" || gameData.phase === "votingMission") {
-                socket.emit("gameMove", "no");
+                socket.emit("gameMove", "no", []);
             }
         }
         $("#mainRoomBox div").removeClass("highlight-avatar");
@@ -68,10 +68,10 @@ function greenButtonFunction() {
         }
         else {
             if (gameData.phase === "votingTeam" || gameData.phase === "votingMission") {
-                socket.emit("gameMove", "yes");
+                socket.emit("gameMove", "yes", []);
             }
             else {
-                socket.emit("gameMove", getHighlightedAvatars());
+                socket.emit("gameMove", "yes", getHighlightedAvatars());
             }
         }
 

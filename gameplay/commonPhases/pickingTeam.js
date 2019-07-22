@@ -8,7 +8,11 @@ function PickingTeam(thisRoom_) {
 };
 
 
-PickingTeam.prototype.gameMove = function (socket, data) {
+PickingTeam.prototype.gameMove = function (socket, buttonPressed, selectedPlayers) {
+    if (buttonPressed !== "yes") {
+        this.thisRoom.sendText(this.thisRoom.allSockets, `Button pressed was ${buttonPressed}. Let admin know if you see this.`, "gameplay-text");
+        return;
+    }
     // If the person requesting is the host
     if (usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username) === this.thisRoom.teamLeader) {
         //Reset votes
@@ -26,16 +30,16 @@ PickingTeam.prototype.gameMove = function (socket, data) {
         for (var i = 0; i < num; i++) {
             // If the data doesn't have the right number of users
             // Or has an empty element
-            if (!data[i]) {
+            if (!selectedPlayers[i]) {
                 return;
             }
-            if (this.thisRoom.playerUsernamesInGame.includes(data[i]) === false) {
+            if (this.thisRoom.playerUsernamesInGame.includes(selectedPlayers[i]) === false) {
                 return;
             }
         }
 
         //Continue if it passes the above check
-        this.thisRoom.proposedTeam = data;
+        this.thisRoom.proposedTeam = selectedPlayers;
         //.slice to clone the array
         this.thisRoom.playersYetToVote = this.thisRoom.playerUsernamesInGame.slice();
 
@@ -43,8 +47,8 @@ PickingTeam.prototype.gameMove = function (socket, data) {
         //Send out the gameplay text
         //--------------------------------------
         var str = "";
-        for (var i = 0; i < data.length; i++) {
-            str += data[i] + ", ";
+        for (var i = 0; i < selectedPlayers.length; i++) {
+            str += selectedPlayers[i] + ", ";
         }
 
         var str2 = socket.request.user.username + " has picked: " + str;

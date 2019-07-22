@@ -7,7 +7,7 @@ function Finished(thisRoom_) {
     this.showGuns = true;
 };
 
-Finished.prototype.gameMove = function (socket, data) {
+Finished.prototype.gameMove = function (socket, buttonPressed, selectedPlayers) {
     // Do nothing, game is finished.
 };
 

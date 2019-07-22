@@ -22,22 +22,27 @@ class Assassination {
         
     };
     
-    gameMove (socket, data) {
+    gameMove (socket, buttonPressed, selectedPlayers) {
+        if (buttonPressed !== "yes") {
+            this.thisRoom.sendText(this.thisRoom.allSockets, `Button pressed was ${buttonPressed}. Let admin know if you see this.`, "gameplay-text");
+            return;
+        }
+
         if (this.finishedShot === false) {
             // Carry out the assassination move
-            if (socket && data) {
+            if (socket && selectedPlayers) {
                 
                 // Check that the person making this request is the assassin
                 var indexOfRequester = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username);
                 if (this.thisRoom.playersInGame[indexOfRequester].role === this.role) {
                     
                     // Just shoot Merlin
-                    if (data.length === 1) {
-                        if (typeof (data) === "object" || typeof (data) === "array") {
-                            data = data[0];
+                    if (selectedPlayers.length === 1) {
+                        if (typeof (selectedPlayers) === "object" || typeof (selectedPlayers) === "array") {
+                            selectedPlayers = selectedPlayers[0];
                         }
                         
-                        var indexOfTarget = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, data);
+                        var indexOfTarget = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, selectedPlayers);
                         // Check the alliance of the target. If they are spy, reject it and ask them to shoot a res.
                         // Note: Allowed to shoot Oberon
                         if (this.thisRoom.playersInGame[indexOfTarget].alliance === "Spy" &&
@@ -56,28 +61,28 @@ class Assassination {
                         }
                         
                         //set the player shot in the assassin role object
-                        this.thisRoom.specialRoles["assassin"].playerShot = data;
+                        this.thisRoom.specialRoles["assassin"].playerShot = selectedPlayers;
                         
                         if (indexOfTarget !== -1) {
                             if (this.thisRoom.playersInGame[indexOfTarget].role === "Merlin") {
                                 this.thisRoom.winner = "Spy";
                                 this.thisRoom.howWasWon = "Assassinated Merlin correctly.";
                                 
-                                this.thisRoom.sendText(this.thisRoom.allSockets, "The assassin has shot " + merlinUsername + "! They were correct!", classStr = "gameplay-text-red");
+                                this.thisRoom.sendText(this.thisRoom.allSockets, "The assassin has shot " + merlinUsername + "! They were correct!", "gameplay-text-red");
                             }
                             else {
                                 this.thisRoom.winner = "Resistance";
                                 this.thisRoom.howWasWon = "Mission successes and assassin shot wrong.";
                                 
                                 // console.log("THIS WAS RUN ONCE");
-                                this.thisRoom.sendText(this.thisRoom.allSockets, "The assassin has shot " + data + "! " + data + " was not merlin, " + merlinUsername + " was!", classStr = "gameplay-text-blue");
+                                this.thisRoom.sendText(this.thisRoom.allSockets, "The assassin has shot " + selectedPlayers + "! " + selectedPlayers + " was not merlin, " + merlinUsername + " was!", "gameplay-text-blue");
                             }
                             
                             this.finishedShot = true;
                             
                             //For gameRecord - get the role that was shot
                             for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
-                                if (this.thisRoom.playersInGame[i].username === data) {
+                                if (this.thisRoom.playersInGame[i].username === selectedPlayers) {
                                     this.thisRoom.whoAssassinShot = this.thisRoom.playersInGame[i].role;
                                     break;
                                 }
@@ -86,15 +91,15 @@ class Assassination {
                             this.thisRoom.finishGame(this.thisRoom.winner);
                         }
                         else {
-                            console.log(data);
+                            console.log(selectedPlayers);
                             socket.emit("danger-alert", "Bad assassination data. Tell the admin if you see this!");
                         }
                     }
                     
                     // Only shoot Tristan and Isolde together
-                    else if (data.length === 2) {
-                        var i0 = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, data[0]);
-                        var i1 = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, data[1]);
+                    else if (selectedPlayers.length === 2) {
+                        var i0 = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, selectedPlayers[0]);
+                        var i1 = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, selectedPlayers[1]);
                         // Check the alliance of the target. If they are spy, reject it and ask them to shoot a res.
                         // Note: Allowed to shoot Oberon
                         if (this.thisRoom.playersInGame[i0].alliance === "Spy" &&
@@ -123,8 +128,8 @@ class Assassination {
                         }
                         
                         //set the player shot in the assassin role object
-                        this.thisRoom.specialRoles["assassin"].playerShot = data[0];
-                        this.thisRoom.specialRoles["assassin"].playerShot2 = data[1];
+                        this.thisRoom.specialRoles["assassin"].playerShot = selectedPlayers[0];
+                        this.thisRoom.specialRoles["assassin"].playerShot2 = selectedPlayers[1];
                         
                         var correctComboShot = false;
                         if (
@@ -141,7 +146,7 @@ class Assassination {
                             this.thisRoom.winner = "Spy";
                             this.thisRoom.howWasWon = "Assassinated Tristan and Isolde correctly.";
                             
-                            this.thisRoom.sendText(this.thisRoom.allSockets, "The assassin has shot " + tristanUsername + " and " + isoldeUsername + "! They were correct!", classStr = "gameplay-text-red");
+                            this.thisRoom.sendText(this.thisRoom.allSockets, "The assassin has shot " + tristanUsername + " and " + isoldeUsername + "! They were correct!", "gameplay-text-red");
                             
                         }
                         else {
@@ -149,7 +154,7 @@ class Assassination {
                             this.thisRoom.howWasWon = "Mission successes and assassin shot wrong.";
                             
                             // console.log("THIS WAS RUN ONCE");
-                            this.thisRoom.sendText(this.thisRoom.allSockets, "The assassin has shot " + data[0] + " and " + data[1] + "! " + data[0] + " and " + data[1] + " were not Tristan and Isolde, " + tristanUsername + " and " + isoldeUsername + " were!", classStr = "gameplay-text-blue");
+                            this.thisRoom.sendText(this.thisRoom.allSockets, "The assassin has shot " + selectedPlayers[0] + " and " + selectedPlayers[1] + "! " + selectedPlayers[0] + " and " + selectedPlayers[1] + " were not Tristan and Isolde, " + tristanUsername + " and " + isoldeUsername + " were!", "gameplay-text-blue");
                         }
                         
                         this.finishedShot = true;
@@ -161,11 +166,11 @@ class Assassination {
                             // console.log("data0: " + data[0]);
                             // console.log("data1: " + data[1]);
                             
-                            if (this.thisRoom.playersInGame[i].username === data[0]) {
+                            if (this.thisRoom.playersInGame[i].username === selectedPlayers[0]) {
                                 this.thisRoom.whoAssassinShot = this.thisRoom.playersInGame[i].role;
                             }
                             
-                            if (this.thisRoom.playersInGame[i].username === data[1]) {
+                            if (this.thisRoom.playersInGame[i].username === selectedPlayers[1]) {
                                 this.thisRoom.whoAssassinShot2 = this.thisRoom.playersInGame[i].role;
                             }
                         }

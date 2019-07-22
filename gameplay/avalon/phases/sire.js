@@ -20,23 +20,28 @@ class Sire {
         this.card = "Sire of the Sea";
     };
     
-    gameMove (socket, data) {
-        if (socket === undefined || data === undefined) {
+    gameMove (socket, buttonPressed, selectedPlayers) {
+        if (buttonPressed !== "yes") {
+            this.thisRoom.sendText(this.thisRoom.allSockets, `Button pressed was ${buttonPressed}. Let admin know if you see this.`, "gameplay-text");
+            return;
+        }
+        
+        if (socket === undefined || selectedPlayers === undefined) {
             return;
         }
         
         // console.log("typeof Data: ");
         // console.log(typeof(data));
         
-        if (typeof (data) === "object" || typeof (data) === "array") {
-            data = data[0];
+        if (typeof (selectedPlayers) === "object" || typeof (selectedPlayers) === "array") {
+            selectedPlayers = selectedPlayers[0];
         }
         
         // console.log("Data: ");
         // console.log(data);
         
         //Check that the target's username exists
-        var targetUsername = data;
+        var targetUsername = selectedPlayers;
         var found = false;
         for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
             if (this.thisRoom.playersInGame[i].username === targetUsername) {
@@ -51,7 +56,7 @@ class Sire {
         
         var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
         var sireHistory = this.thisRoom.specialCards[this.card.toLowerCase()].sireHistory;
-        var targetIndex = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, data);
+        var targetIndex = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, selectedPlayers);
         
         //Get index of socket 
         var indexOfSocket = undefined;
@@ -69,7 +74,7 @@ class Sire {
         // If the requester is the sire holder, do the sire stuff
         if (indexOfCardHolder === indexOfSocket) {
             // Check if we can card that person
-            if (sireHistory.includes(data) === true) {
+            if (sireHistory.includes(selectedPlayers) === true) {
                 socket.emit("danger-alert", "You cannot card that person.");
                 return;
             }

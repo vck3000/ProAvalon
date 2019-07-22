@@ -17,7 +17,7 @@ class HunterTestPhase {
     };
 
 
-    gameMove (socket, data) {
+    gameMove (socket, buttonPressed, selectedPlayers) {
         /* TODO: GameMove*/
     };
 

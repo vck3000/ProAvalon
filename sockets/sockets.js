@@ -1330,6 +1330,104 @@ var actionsObj = {
 					sock.emit("mannounce", str);
 				});
 			}
+		},
+
+		mforcemove: {
+			command: "mforcemove",
+			help: "/mforcemove <username> [button] [target]: Forces a player to make a move. To see what moves are available, enter the target's username. To force the move, input button and/or target.",
+			run: function (data, senderSocket) {
+				var args = data.args;
+
+				var username = args[1];
+				var button = args[2];
+				var targets = args.splice(3);
+
+				var thisRoom = rooms[senderSocket.request.user.inRoomId]
+
+				if (thisRoom === undefined){
+					senderSocket.emit("messageCommandReturnStr", { message: `Please enter a room to use this command.`, classStr: "server-text" });
+					return;
+				}
+
+				if (thisRoom.gameStarted === false) {
+					senderSocket.emit("messageCommandReturnStr", { message: `The game has not started.`, classStr: "server-text" });
+					return;
+				}
+
+				if(args.length <= 1){
+					senderSocket.emit("messageCommandReturnStr", { message: `Please enter valid arguments.`, classStr: "server-text" });
+					return;
+				}
+				
+				var playerIndex = getIndexFromUsername(thisRoom.playersInGame, username, true);
+				// Update username to be the correct case.
+				username = thisRoom.playersInGame[playerIndex].request.user.username
+				
+				if (playerIndex === undefined){
+					senderSocket.emit("messageCommandReturnStr", { message: `Could not find player ${username}.`, classStr: "server-text" });
+					return;
+				}
+
+				// If we have a username only:
+				if (args.length === 2){
+					var buttons = thisRoom.getClientButtonSettings(playerIndex);
+					var numOfTargets = thisRoom.getClientNumOfTargets(playerIndex);
+					var prohibitedIndexesToPick = thisRoom.getProhibitedIndexesToPick(playerIndex) || [];
+			
+					var availableButtons = []
+					if (buttons.green.hidden !== true) {
+						availableButtons.push("yes");
+					}
+					var onMissionAndResistance = (thisRoom.phase == 'votingMission' && thisRoom.playersInGame[playerIndex].alliance === "Resistance");
+					// Add a special case so resistance can't fail missions.
+					if (buttons.red.hidden !== true && onMissionAndResistance === false) {
+						availableButtons.push("no");
+					}
+			
+					var availablePlayers = thisRoom.playersInGame
+						.filter(function (player, playerIndex) { 
+							return prohibitedIndexesToPick.indexOf(playerIndex) === -1;
+						}).map(function (player) {
+							return player.request.user.username;
+						});
+
+					// If there are 0 number of targets, there are no available players.
+					if (numOfTargets === null) {
+						var availablePlayers = null; // null here so that the user can see this. For other operations, set to [].
+					}
+
+					if (availableButtons.length !== 0) {
+						senderSocket.emit("messageCommandReturnStr", { message: `---------------`, classStr: "server-text" });
+						senderSocket.emit("messageCommandReturnStr", { message: `Player ${username} can make the following moves:`, classStr: "server-text" });
+						senderSocket.emit("messageCommandReturnStr", { message: `Buttons: ${availableButtons}.`, classStr: "server-text" });
+						senderSocket.emit("messageCommandReturnStr", { message: `Targets: ${availablePlayers}.`, classStr: "server-text" });
+						senderSocket.emit("messageCommandReturnStr", { message: `Number of targets: ${numOfTargets}.`, classStr: "server-text" });
+						senderSocket.emit("messageCommandReturnStr", { message: `---------------`, classStr: "server-text" });
+					}
+					else {
+						senderSocket.emit("messageCommandReturnStr", { message: `Player ${username} cannot make any moves.`, classStr: "server-text" });
+					}
+				}
+				// User is trying to force move.
+				else {
+					// Raise the caps for target usernames
+					targetsCaps = [];
+					targets.forEach((t) => {
+						var playerIndex = getIndexFromUsername(thisRoom.playersInGame, t, true);
+						targetsCaps.push(thisRoom.playersInGame[playerIndex].request.user.username)
+					});
+
+					senderSocket.emit("messageCommandReturnStr", { message: `Received: ${username}, ${button}, ${targetsCaps}`, classStr: "server-text" });
+					
+					var targetSimulatedSocket = thisRoom.playersInGame[playerIndex];
+					if (targetSimulatedSocket.emit === undefined) {
+						targetSimulatedSocket.emit = function(){};
+					}
+					thisRoom.gameMove(targetSimulatedSocket, button, targetsCaps);
+					
+					return;
+				}
+			}
 		}
 	},
 
@@ -1974,10 +2072,9 @@ function getIndexFromUsername(sockets, username, caseInsensitive) {
 					return i;
 				}
 			}
-
 		}
 	}
-	return null;
+	return undefined;
 }
 
 function disconnect(data) {
@@ -2320,6 +2417,7 @@ function setClaim(data) {
 }
 
 function gameMove(data) {
+	console.log(data);
     if (rooms[this.request.user.inRoomId]) {
         rooms[this.request.user.inRoomId].gameMove(this, data);
         if (rooms[this.request.user.inRoomId]) {
