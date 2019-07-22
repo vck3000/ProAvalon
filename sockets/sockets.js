@@ -1268,7 +1268,7 @@ var actionsObj = {
 
 		mclose: {
 			command: "mclose",
-			help: "/mclose <roomId>: Close room <roomId>. Also removes the corresponding save files in the database.",
+			help: "/mclose <roomId> [<roomId> <roomId> ...]: Close room <roomId>. Also removes the corresponding save files in the database. Can take multiple room IDs.",
 			run: function (data, senderSocket) {
 				var args = data.args;
 
