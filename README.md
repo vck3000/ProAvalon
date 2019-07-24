@@ -27,7 +27,7 @@ Other useful resources:
 
 2. Set up the required environment variables on your machine:
 
-Method 1: Set permanent environment variables on you rmachine:
+Method 1: Set permanent environment variables on your machine:
 ```
 MY_PLATFORM = "local"
 MY_SECRET_KEY = "AnythingThatYouWant"
