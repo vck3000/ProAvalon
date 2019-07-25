@@ -1336,8 +1336,10 @@ var actionsObj = {
 			command: "mforcemove",
 			help: "/mforcemove <username> [button] [target]: Forces a player to make a move. To see what moves are available, enter the target's username. To force the move, input button and/or target.",
 			run: function (data, senderSocket) {
-				var args = data.args;
+                var args = data.args;
 
+                senderSocket.emit("messageCommandReturnStr", { message: `You have entered: ${args.join(" ")}`, classStr: "server-text" });
+                
 				var username = args[1];
 				var button = args[2];
 				var targets = args.splice(3);
@@ -1360,16 +1362,17 @@ var actionsObj = {
 				}
 				
 				var playerIndex = getIndexFromUsername(thisRoom.playersInGame, username, true);
-				// Update username to be the correct case.
-				username = thisRoom.playersInGame[playerIndex].request.user.username
 				
 				if (playerIndex === undefined){
 					senderSocket.emit("messageCommandReturnStr", { message: `Could not find player ${username}.`, classStr: "server-text" });
 					return;
-				}
+                }
+
+                // Update username to be the correct case.
+				username = thisRoom.playersInGame[playerIndex].request.user.username
 
 				// If we have a username only:
-				if (args.length === 2){
+				if (args.length === 2 || button === ""){
 					var buttons = thisRoom.getClientButtonSettings(playerIndex);
 					var numOfTargets = thisRoom.getClientNumOfTargets(playerIndex);
 					var prohibitedIndexesToPick = thisRoom.getProhibitedIndexesToPick(playerIndex) || [];
@@ -1410,14 +1413,19 @@ var actionsObj = {
 				}
 				// User is trying to force move.
 				else {
-					// Raise the caps for target usernames
-					targetsCaps = [];
-					targets.forEach((t) => {
-						var playerIndex = getIndexFromUsername(thisRoom.playersInGame, t, true);
-						targetsCaps.push(thisRoom.playersInGame[playerIndex].request.user.username)
-					});
-
-					senderSocket.emit("messageCommandReturnStr", { message: `Received: ${username}, ${button}, ${targetsCaps}`, classStr: "server-text" });
+                    // Raise the caps for target usernames
+                    targetsCaps = [];
+                    for (var i = 0; i < targets.length; i++) {
+                        var playerIndex = getIndexFromUsername(thisRoom.playersInGame, targets[i], true);
+                        var playerSimulatedSocket = thisRoom.playersInGame[playerIndex];
+                        if (playerSimulatedSocket === undefined) {
+                            senderSocket.emit("messageCommandReturnStr", { message: `Could not find player ${targets[i]}.`, classStr: "server-text" });
+                            return;
+                        }
+						targetsCaps.push()
+                    }
+                    
+					senderSocket.emit("messageCommandReturnStr", { message: `Received ---> Player: ${username} | Button: ${button} | Targets: ${targetsCaps}.`, classStr: "server-text" });
 					
 					var targetSimulatedSocket = thisRoom.playersInGame[playerIndex];
 					if (targetSimulatedSocket.emit === undefined) {

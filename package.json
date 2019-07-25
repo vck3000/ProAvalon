@@ -10,7 +10,7 @@
   "author": "Victor Kuo",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "body-parser": "^1.18.2",
     "circular-json": "^0.5.5",
     "connect-flash": "^0.1.1",
