@@ -1425,7 +1425,8 @@ var actionsObj = {
 						targetsCaps.push()
                     }
                     
-					senderSocket.emit("messageCommandReturnStr", { message: `Received ---> Player: ${username} | Button: ${button} | Targets: ${targetsCaps}.`, classStr: "server-text" });
+                    thisRoom.sendText(thisRoom.allSockets, `Moderator ${senderSocket.request.user.username} has forced a move: `, "server-text");
+					thisRoom.sendText(thisRoom.allSockets, `Player: ${username} | Button: ${button} | Targets: ${targetsCaps}.`, "server-text");
 					
 					var targetSimulatedSocket = thisRoom.playersInGame[playerIndex];
 					if (targetSimulatedSocket.emit === undefined) {
