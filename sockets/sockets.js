@@ -1422,7 +1422,7 @@ var actionsObj = {
                             senderSocket.emit("messageCommandReturnStr", { message: `Could not find player ${targets[i]}.`, classStr: "server-text" });
                             return;
                         }
-						targetsCaps.push()
+						targetsCaps.push(thisRoom.playersInGame[playerIndex].request.user.username)
                     }
                     
                     thisRoom.sendText(thisRoom.allSockets, `Moderator ${senderSocket.request.user.username} has forced a move: `, "server-text");
