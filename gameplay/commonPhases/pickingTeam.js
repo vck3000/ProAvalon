@@ -64,7 +64,7 @@ PickingTeam.prototype.gameMove = function (socket, buttonPressed, selectedPlayer
         this.thisRoom.phase = "votingTeam";
     }
     else {
-        console.log("User is not the team leader. Cannot pick.");
+        console.log("User " + socket.request.user.username + " is not the team leader. Cannot pick.");
     }
 };
 

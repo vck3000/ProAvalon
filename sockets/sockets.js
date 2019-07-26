@@ -1411,20 +1411,29 @@ var actionsObj = {
 						senderSocket.emit("messageCommandReturnStr", { message: `Player ${username} cannot make any moves.`, classStr: "server-text" });
 					}
 				}
+
+
+
 				// User is trying to force move.
 				else {
                     // Raise the caps for target usernames
                     targetsCaps = [];
                     for (var i = 0; i < targets.length; i++) {
-                        var playerIndex = getIndexFromUsername(thisRoom.playersInGame, targets[i], true);
-                        var playerSimulatedSocket = thisRoom.playersInGame[playerIndex];
+                        var playerIndexFound = getIndexFromUsername(thisRoom.playersInGame, targets[i], true);
+                        var playerSimulatedSocket = thisRoom.playersInGame[playerIndexFound];
                         if (playerSimulatedSocket === undefined) {
                             senderSocket.emit("messageCommandReturnStr", { message: `Could not find player ${targets[i]}.`, classStr: "server-text" });
                             return;
                         }
-						targetsCaps.push(thisRoom.playersInGame[playerIndex].request.user.username)
+						targetsCaps.push(thisRoom.playersInGame[playerIndexFound].request.user.username)
                     }
-                    
+					var numOfTargets = thisRoom.getClientNumOfTargets(playerIndex);
+
+					if (numOfTargets !== targetsCaps.length && numOfTargets !== null) {
+						senderSocket.emit("messageCommandReturnStr", { message: `Wrong number of targets inputted. You have given ${targetsCaps.length} targets. Expected ${numOfTargets}.`, classStr: "server-text" });
+						return;
+					}
+
                     thisRoom.sendText(thisRoom.allSockets, `Moderator ${senderSocket.request.user.username} has forced a move: `, "server-text");
 					thisRoom.sendText(thisRoom.allSockets, `Player: ${username} | Button: ${button} | Targets: ${targetsCaps}.`, "server-text");
 					

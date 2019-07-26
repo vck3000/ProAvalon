@@ -628,7 +628,8 @@ Game.prototype.checkBotMoves = function (pendingBots) {
 
 				pendingBots.splice(pendingBots.indexOf(botSocket), 1);
 
-				// Make the move //TODO In the future gameMove should receive both buttonPressed and selectedPlayers
+				//! Note: the inputs into gameMove() here are legacy inputs. New bots should conform to the new inputs expected by gameMove. 
+				// Make the move 
 				if (numOfTargets == 0 || numOfTargets == null) {
 					thisRoom.gameMove(botSocket, [move.buttonPressed, []]);
 				} else {
