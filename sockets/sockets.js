@@ -1427,12 +1427,6 @@ var actionsObj = {
                         }
 						targetsCaps.push(thisRoom.playersInGame[playerIndexFound].request.user.username)
                     }
-					var numOfTargets = thisRoom.getClientNumOfTargets(playerIndex);
-
-					if (numOfTargets !== targetsCaps.length && numOfTargets !== null) {
-						senderSocket.emit("messageCommandReturnStr", { message: `Wrong number of targets inputted. You have given ${targetsCaps.length} targets. Expected ${numOfTargets}.`, classStr: "server-text" });
-						return;
-					}
 
                     thisRoom.sendText(thisRoom.allSockets, `Moderator ${senderSocket.request.user.username} has forced a move: `, "server-text");
 					thisRoom.sendText(thisRoom.allSockets, `Player: ${username} | Button: ${button} | Targets: ${targetsCaps}.`, "server-text");

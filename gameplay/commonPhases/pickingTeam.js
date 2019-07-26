@@ -13,6 +13,13 @@ PickingTeam.prototype.gameMove = function (socket, buttonPressed, selectedPlayer
         this.thisRoom.sendText(this.thisRoom.allSockets, `Button pressed was ${buttonPressed}. Let admin know if you see this.`, "gameplay-text");
         return;
     }
+
+    var numOfTargets = this.thisRoom.getClientNumOfTargets(this.thisRoom.teamLeader);
+    if (numOfTargets !== selectedPlayers.length && numOfTargets !== null) {
+        this.thisRoom.sendText(this.thisRoom.allSockets, `Wrong number of targets inputted. You have given ${selectedPlayers.length} targets. Expected ${numOfTargets}.`, "server-text");
+        return;
+    }
+
     // If the person requesting is the host
     if (usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username) === this.thisRoom.teamLeader) {
         //Reset votes
