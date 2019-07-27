@@ -22,7 +22,7 @@ class Ref {
     
     gameMove (socket, buttonPressed, selectedPlayers) {
         if (buttonPressed !== "yes") {
-            this.thisRoom.sendText(this.thisRoom.allSockets, `Button pressed was ${buttonPressed}. Let admin know if you see this.`, "gameplay-text");
+            // this.thisRoom.sendText(this.thisRoom.allSockets, `Button pressed was ${buttonPressed}. Let admin know if you see this.`, "gameplay-text");
             return;
         }
 
