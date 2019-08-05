@@ -35,7 +35,7 @@ var redirectURL;
 if (process.env.MY_PLATFORM === "local") {
     redirectURL = 'http://127.0.0.1/patreon/oauth/test_redirect';
 }
-else if (process.env.MY_PLATFORM === "beta") {
+else if (process.env.MY_PLATFORM === "staging") {
     redirectURL = 'https://proavalonbetatesting-pr-222.herokuapp.com/patreon/oauth/test_redirect';
 }
 else {
