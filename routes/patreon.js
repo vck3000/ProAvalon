@@ -31,7 +31,16 @@ var CLIENT_SECRET = process.env.patreon_client_secret;
 
 var patreonOAuthClient = patreonOAuth(CLIENT_ID, CLIENT_SECRET);
 
-var redirectURL = 'http://127.0.0.1:3000/patreon/oauth/test_redirect';
+var redirectURL;
+if (process.env.MY_PLATFORM === "local") {
+    redirectURL = 'http://127.0.0.1/patreon/oauth/test_redirect';
+}
+else if (process.env.MY_PLATFORM === "beta") {
+    redirectURL = 'https://proavalonbetatesting-pr-222.herokuapp.com/patreon/oauth/test_redirect';
+}
+else {
+    // TODO
+}
 
 let database = {}
 
@@ -65,10 +74,11 @@ router.get('/oauth/test_redirect', (req, res) => {
             var { id } = rawJson.data
             database[id] = { ...rawJson.data, token }
             console.log(`Saved user ${store.find('user', id).full_name} to the database`)
-            console.log(`${JSON.stringify(database[id], null, 4)}`)
+            console.log(`${JSON.stringify(database[id], null, 6)}`)
 
             patreonInfoTemp.create({
                 name: store.find('user', id).full_name,
+                serialized: JSON.stringify(database[id], null, 6),
                 token: token
             })
 
@@ -145,7 +155,7 @@ function oauthExampleTpl({ name, campaigns }) {
     <body>
         <div class="container">
             <h1>Welcome, ${name}!</h1>
-            <h2>Campaigns</h2>
+            <p>Thank you for helping me gather some data. In case you were interested, below is all the info I get to see off your profile:</p>
             <div class="jsonsample">${JSON.stringify(campaigns, null, 4)}</div>
         </div>
     </body>
