@@ -3,23 +3,7 @@ var router = express.Router();
 var middleware = require("../middleware");
 var User = require("../models/user");
 var patreonInfoTemp = require("../models/patreonInfoTemp");
-
-
-// //Show the mod approving rejecting page
-// router.get("/avatargetlinktutorial", middleware.isLoggedIn, function (req, res) {
-// 	res.render("profile/avatargetlinktutorial");
-// });
-
-
-// //Show the mod approving rejecting page
-// router.get("/mod/customavatar", middleware.isMod, function (req, res) {
-// 	avatarRequest.find({ processed: false }).exec(function (err, allAvatarRequests) {
-// 		if (err) { console.log(err); }
-// 		else {
-// 			res.render("mod/customavatar", { customAvatarRequests: allAvatarRequests });
-// 		}
-// 	});
-// });
+var patreonHelper = require("../myFunctions/patreonHelper");
 
 var url = require("url")
 var patreon = require("patreon");
@@ -43,6 +27,43 @@ else {
 }
 
 let database = {}
+
+function getPledges(access_token, callback) {
+
+    var apiClient = patreonAPI(access_token);
+
+    // make api requests concurrently
+    return apiClient('/current_user')
+        .then(({ store, rawJson }) => {
+            // var _user = store.find('user', id)
+            // var campaign = _user.campaign ? _user.campaign.serialize().data : null
+            var data = rawJson.data ? rawJson.data : null
+            var page = oauthExampleTpl({
+                name: rawJson.data.attributes.first_name,
+                campaigns: [data]
+            })
+
+            console.log(rawJson.data.attributes.full_name)
+            console.log(rawJson.data.id)
+            if (rawJson.included) {
+                console.log(rawJson.included[0].attributes.amount_cents)
+                console.log(rawJson.included[0].attributes.declined_since)
+            }
+
+
+            // return res.send(page)
+        }).catch((err) => {
+            var { status, statusText } = err
+            console.log('Failed to retrieve campaign info')
+            console.log(err)
+            // return res.json({ status, statusText })
+        })
+}
+
+getPledges(process.env.myTempToken, (res) => {
+    console.log(JSON.stringify(res));
+})
+
 
 var loginUrl = url.format({
     protocol: 'https',
@@ -73,13 +94,33 @@ router.get('/oauth/test_redirect', (req, res) => {
         .then(({ store, rawJson }) => {
             var { id } = rawJson.data
             database[id] = { ...rawJson.data, token }
-            console.log(`Saved user ${store.find('user', id).full_name} to the database`)
-            console.log(`${JSON.stringify(database[id], null, 6)}`)
+            // console.log(`Saved user ${store.find('user', id).full_name} to the database`)
+            // console.log(`${JSON.stringify(database[id], null, 6)}`)
+            // console.log(`${store.find}`)
+
+            console.log(rawJson.data.attributes.full_name)
+            console.log(rawJson.data.id)
+            console.log(JSON.stringify(rawJson))
+            if (rawJson.included) {
+                console.log(rawJson.included[0].attributes.amount_cents)
+                console.log(rawJson.included[0].attributes.declined_since)
+            }
+
+            let patreon_full_name = rawJson.data.attributes.full_name;
+            let patreon_id = rawJson.data.id;
+            let patreon_amount_cents = rawJson.included ? rawJson.included[0].attributes.amount_cents : undefined;
+            let patreon_declined_since = rawJson.included ? rawJson.included[0].attributes.declined_since : undefined;
+
 
             patreonInfoTemp.create({
                 name: store.find('user', id).full_name,
                 serialized: JSON.stringify(database[id], null, 6),
-                token: token
+                token: token,
+
+                patreon_full_name: patreon_full_name,
+                patreon_id: patreon_id,
+                patreon_amount_cents: patreon_amount_cents,
+                patreon_declined_since: patreon_declined_since
             })
 
             return res.redirect(`/patreon/protected/${id}`)
@@ -100,26 +141,23 @@ router.get('/protected/:id', (req, res) => {
     if (!user || !user.token) {
         return res.redirect('/')
     }
-    // 15685660
-    // 15685660
-
-    // 57pdyH4AhRp7fGOJOyoBH6r9Cjfjrh0wzpWtq3hXkV8
-    // 4CCBCeX34semL9QBSW2NX7K_VoJ0D6BnJvu9pQRKm3E
-
+    // var user = {};
+    // user.token = process.env.myTempToken
 
     var apiClient = patreonAPI(user.token)
 
     console.log("Token: " + user.token);
 
     // make api requests concurrently
-    apiClient('/current_user/campaigns')
-        .then(({ store }) => {
-            var _user = store.find('user', id)
+    apiClient('/current_user')
+        .then(({ store, rawJson }) => {
+            // var _user = store.find('user', id)
+            // console.log(JSON.stringify(rawJson))
             // var campaign = _user.campaign ? _user.campaign.serialize().data : null
-            var campaign = _user ? _user.serialize().data : null
+            var data = rawJson.data ? rawJson : null
             var page = oauthExampleTpl({
-                name: _user.first_name,
-                campaigns: [campaign]
+                name: rawJson.data.attributes.first_name,
+                campaigns: [data]
             })
             return res.send(page)
         }).catch((err) => {
@@ -156,7 +194,7 @@ function oauthExampleTpl({ name, campaigns }) {
         <div class="container">
             <h1>Welcome, ${name}!</h1>
             <p>Thank you for helping me gather some data. In case you were interested, below is all the info I get to see off your profile:</p>
-            <div class="jsonsample">${JSON.stringify(campaigns, null, 4)}</div>
+            <div class="jsonsample">${JSON.stringify(campaigns)}</div>
         </div>
     </body>
 </html>`
