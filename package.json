@@ -29,6 +29,7 @@
     "passport-local-mongoose": "^4.4.0",
     "passport-one-session-per-user": "^1.0.3",
     "passport.socketio": "^3.7.0",
+    "patreon": "^0.4.1",
     "request": "^2.87.0",
     "sanitize-html": "^1.18.2",
     "save": "^2.3.2",

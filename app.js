@@ -97,52 +97,52 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 
 var requireLoggedInRoutes = [
-    "/lobby",
-    "/forum",
-    "/profile"
+	"/lobby",
+	"/forum",
+	"/profile"
 ]
 
-async function checkLoggedIn(req, res, next){
-    var banned = undefined;
-    for(var i = 0; i < requireLoggedInRoutes.length; i++){
-        if(req.originalUrl.startsWith(requireLoggedInRoutes[i]) == true){
-            // Check for logged in.
-            if(req.isAuthenticated() == false){
-                req.flash("error", "Please log in to view this page.");
-                res.redirect("/");
-                return;
-            }
+async function checkLoggedIn(req, res, next) {
+	var banned = undefined;
+	for (var i = 0; i < requireLoggedInRoutes.length; i++) {
+		if (req.originalUrl.startsWith(requireLoggedInRoutes[i]) == true) {
+			// Check for logged in.
+			if (req.isAuthenticated() == false) {
+				req.flash("error", "Please log in to view this page.");
+				res.redirect("/");
+				return;
+			}
 
-            // Check bans
-            await modAction.findOne({"bannedPlayer.usernameLower": req.user.username.toLowerCase()}, function(err, m){
-                if(err){
-                    console.log(err);
-                }
-                else{
-                    // console.log("A");
-                    // console.log(m);
-                    if (m == null || m == undefined){
-                        // all good
-                    }
-                    else{
-                        var message = "You have been banned. The ban will be released on " + m.whenRelease + ". Ban description: '" + m.descriptionByMod + "'";
-                        message += " Reflect on your actions.";
-                        req.flash("error", message);
-                        res.redirect("/");
-                        banned = true;
-                        return;
-                    }
-                }
-            });
-            // console.log("Logged in!");
-        }
-    };
+			// Check bans
+			await modAction.findOne({ "bannedPlayer.usernameLower": req.user.username.toLowerCase() }, function (err, m) {
+				if (err) {
+					console.log(err);
+				}
+				else {
+					// console.log("A");
+					// console.log(m);
+					if (m == null || m == undefined) {
+						// all good
+					}
+					else {
+						var message = "You have been banned. The ban will be released on " + m.whenRelease + ". Ban description: '" + m.descriptionByMod + "'";
+						message += " Reflect on your actions.";
+						req.flash("error", message);
+						res.redirect("/");
+						banned = true;
+						return;
+					}
+				}
+			});
+			// console.log("Logged in!");
+		}
+	};
 
-    if(banned == true){
-        // console.log("banned");
-        return;
-    }
-    next();
+	if (banned == true) {
+		// console.log("banned");
+		return;
+	}
+	next();
 }
 app.use(checkLoggedIn);
 
@@ -155,6 +155,9 @@ app.use("/forum", forumRoutes);
 
 var profileRoutes = require("./routes/profile");
 app.use("/profile", profileRoutes);
+
+var patreonRoutes = require("./routes/patreon");
+app.use("/patreon", patreonRoutes);
 
 //start server listening
 var IP = process.env.IP || "127.0.0.1";
@@ -244,7 +247,7 @@ io.use(passportSocketIo.authorize({
 // 					console.log("Ref");
 // 					console.log(r.refChain + "\t" + r.cards);
 // 					console.log(r.timeGameFinished);
-			
+
 // 					r.cards.push("ref of the rain");
 // 					r.markModified("cards");
 // 					await r.save();
