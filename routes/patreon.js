@@ -60,9 +60,9 @@ function getPledges(access_token, callback) {
         })
 }
 
-getPledges(process.env.myTempToken, (res) => {
-    console.log(JSON.stringify(res));
-})
+// getPledges(process.env.myTempToken, (res) => {
+//     console.log(JSON.stringify(res));
+// })
 
 
 var loginUrl = url.format({
