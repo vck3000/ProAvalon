@@ -1,5 +1,4 @@
-
-const autoCompleteStrs = [];
+var autoCompleteStrs = [];
 
 let lastKeyPress;
 $(".chat-message-input").on("keydown", (e) => {
