@@ -8,12 +8,6 @@ var currentModActions = [];
 var myNotification = require("../models/notification");
 var createNotificationObj = require("../myFunctions/createNotification");
 
-var getRewards = require("../rewards/getRewards");
-//! Remove later
-getRewardsObj = new getRewards();
-getRewardsObj.mainTest();
-getRewardsObj.getRewardsForUser({ username: "test" });
-
 var avatarRequest = require("../models/avatarRequest");
 var User = require("../models/user");
 var banIp = require("../models/banIp");

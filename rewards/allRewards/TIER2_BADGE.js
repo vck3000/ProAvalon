@@ -1,10 +1,11 @@
 var constants = require("../constants");
 
 obj = {
+    key: constants.TIER2_BADGE,
     adminReq: false,
-    modReq: true,
+    modReq: false,
     gamesPlayedReq: 0,
-    donationReq: 0
+    donationReq: constants.tier2_donation
 }
 
 module.exports = obj;

@@ -80,7 +80,7 @@ router.get('/', (req, res) => {
 router.get('/oauth/test_redirect', (req, res) => {
     var { code } = req.query
     let token
-
+    console.log("HIHI");
     if (!req.user) {
         req.flash("error", "Please sign in to link your patreon account.")
         res.redirect("/");
@@ -161,8 +161,6 @@ router.get('/oauth/test_redirect', (req, res) => {
                                 console.log("Patreon ID is not expired. Updating details.");
                                 patreonIdObj.amount_cents = patreon_amount_cents;
                                 patreonIdObj.markModified("amount_cents");
-                                patreonIdObj.declined_since = patreon_declined_since;
-                                patreonIdObj.markModified("declined_since");
                                 await patreonIdObj.save();
 
                                 req.flash("success", "This Patreon ID has not expired and is already linked with an account. Its details have been updated however.");

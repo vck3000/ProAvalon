@@ -1,7 +1,6 @@
 var constants = require("../constants");
 
 obj = {
-    key: constants.ADMIN_BADGE,
     adminReq: true,
     modReq: false,
     gamesPlayedReq: 0,

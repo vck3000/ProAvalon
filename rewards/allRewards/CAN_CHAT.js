@@ -2,8 +2,8 @@ var constants = require("../constants");
 
 obj = {
     adminReq: false,
-    modReq: true,
-    gamesPlayedReq: 0,
+    modReq: false,
+    gamesPlayedReq: 3,
     donationReq: 0
 }
 
