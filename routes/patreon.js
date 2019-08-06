@@ -2,7 +2,6 @@ var express = require("express");
 var router = express.Router();
 var middleware = require("../middleware");
 var User = require("../models/user");
-var patreonInfoTemp = require("../models/patreonInfoTemp");
 var PatreonId = require("../models/patreonId");
 var patreonHelper = require("../myFunctions/patreonHelper");
 
