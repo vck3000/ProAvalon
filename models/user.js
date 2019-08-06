@@ -55,7 +55,9 @@ var UserSchema = new mongoose.Schema({
 
 	mutedPlayers: [
 		String
-	]
+	],
+
+	patreonId: String
 });
 
 

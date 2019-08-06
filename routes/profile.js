@@ -3,9 +3,10 @@ var router = express.Router();
 var middleware = require("../middleware");
 var sanitizeHtml = require('sanitize-html');
 var User = require("../models/user");
+var PatreonId = require("../models/patreonId");
 var avatarRequest = require("../models/avatarRequest");
 var createNotificationObj = require("../myFunctions/createNotification");
-
+var url = require("url");
 
 
 var sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2', 'u', 'span', 'br'];
@@ -190,52 +191,65 @@ router.get("/:profileUsername/changepassword", middleware.checkProfileOwnership,
 // Update the password
 router.post("/:profileUsername/changepassword", middleware.checkProfileOwnership, async function (req, res) {
 
-    console.log("Received a change password request from " + req.params.profileUsername.toLowerCase());
+	console.log("Received a change password request from " + req.params.profileUsername.toLowerCase());
 
-    var oldPW = req.body.oldPassword;
-    var newPW = req.body.newPassword;
-    var newPWConf = req.body.newPasswordConfirm;
+	var oldPW = req.body.oldPassword;
+	var newPW = req.body.newPassword;
+	var newPWConf = req.body.newPasswordConfirm;
 
-    if(newPW === undefined || newPW === null){
-        req.flash("error", "Please enter a new password.");
-        res.redirect("/profile/" + req.params.profileUsername + "/changepassword");
-        return;
-    } 
-    else if(oldPW === undefined || oldPW === null){
-        req.flash("error", "Please enter your old password.");
-        res.redirect("/profile/" + req.params.profileUsername + "/changepassword");
-        return;
-    }
+	if (newPW === undefined || newPW === null) {
+		req.flash("error", "Please enter a new password.");
+		res.redirect("/profile/" + req.params.profileUsername + "/changepassword");
+		return;
+	}
+	else if (oldPW === undefined || oldPW === null) {
+		req.flash("error", "Please enter your old password.");
+		res.redirect("/profile/" + req.params.profileUsername + "/changepassword");
+		return;
+	}
 
-    else if(newPW !== newPWConf){
-        req.flash("error", "Your new passwords did not match. Please try again.");
-        res.redirect("/profile/" + req.params.profileUsername + "/changepassword");
-        return;
-    }
+	else if (newPW !== newPWConf) {
+		req.flash("error", "Your new passwords did not match. Please try again.");
+		res.redirect("/profile/" + req.params.profileUsername + "/changepassword");
+		return;
+	}
 
-    else if(newPW.length < 4){
-        req.flash("error", "Please enter a password that is longer than 3 characters");
-        res.redirect("/profile/" + req.params.profileUsername + "/changepassword");
-        return;
-    }
+	else if (newPW.length < 4) {
+		req.flash("error", "Please enter a password that is longer than 3 characters");
+		res.redirect("/profile/" + req.params.profileUsername + "/changepassword");
+		return;
+	}
 
-    else{
-        const theUser = req.user;
-        await theUser.changePassword(oldPW, newPW, function(err){
-            if(err){
-                req.flash("error", err.message);
-                res.redirect("/profile/" + req.params.profileUsername + "/changepassword");
-            }
-            else{
-                console.log("Success");
-                req.flash("success", "Your password has been successfully changed.");
-                res.redirect("/profile/" + req.params.profileUsername);
-            }
-        });
-    }
-
+	else {
+		const theUser = req.user;
+		await theUser.changePassword(oldPW, newPW, function (err) {
+			if (err) {
+				req.flash("error", err.message);
+				res.redirect("/profile/" + req.params.profileUsername + "/changepassword");
+			}
+			else {
+				console.log("Success");
+				req.flash("success", "Your password has been successfully changed.");
+				res.redirect("/profile/" + req.params.profileUsername);
+			}
+		});
+	}
 });
 
+var CLIENT_ID = process.env.patreon_client_ID;
+var redirectURL = process.env.patreon_redirectURL;
+
+var loginUrl = url.format({
+	protocol: 'https',
+	host: 'patreon.com',
+	pathname: '/oauth2/authorize',
+	query: {
+		response_type: 'code',
+		client_id: CLIENT_ID,
+		redirect_uri: redirectURL,
+		state: 'chill'
+	}
+});
 
 //show the edit page
 router.get("/:profileUsername/edit", middleware.checkProfileOwnership, function (req, res) {
@@ -244,7 +258,19 @@ router.get("/:profileUsername/edit", middleware.checkProfileOwnership, function 
 			console.log(err);
 		}
 		else {
-			res.render("profile/edit", { userData: foundUser });
+			if (foundUser.patreonId) {
+				PatreonId.findOne({ "id": foundUser.patreonId })
+					.exec()
+					.then(patreonIdObj => {
+						res.render("profile/edit", { userData: foundUser, patreonLoginUrl: loginUrl, patreonId: patreonIdObj });
+					})
+					.catch(err => {
+						res.render("profile/edit", { userData: foundUser, patreonLoginUrl: loginUrl });
+					})
+			}
+			else {
+				res.render("profile/edit", { userData: foundUser, patreonLoginUrl: loginUrl });
+			}
 		}
 	});
 });
@@ -275,7 +301,7 @@ router.post("/:profileUsername", middleware.checkProfileOwnership, function (req
 			req.body.nationCode = "UN";
 		}
 
-        //If the user somehow doesn't input a valid nation, default to UN
+		//If the user somehow doesn't input a valid nation, default to UN
 		if (nationalitiesAll.indexOf(req.body.nationality) === -1) {
 			req.body.nationality = "United Nations";
 		}

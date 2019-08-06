@@ -33,6 +33,24 @@
 
     <a class="btn btn-danger" href="/profile/<%=userData.username%>/changepassword">Change password</a>
 
+    <br>
+    <br>
+
+    <a class="btn btn-warning" href=<%=patreonLoginUrl%>>Link to Patreon</a>
+    <% if (userData.patreonId && patreonId) { %>
+        <p>Linked Patreon Data:</p>
+        <ul>
+            <li>PatreonId: <%=patreonId.id%></li>
+            <li>Name: <%=patreonId.name%></li>
+            <li>Tied to account: <%=patreonId.in_game_username%></li>
+            <% if (patreonId.amount_cents) { %>
+                <li>Pledge (cents): <%=patreonId.amount_cents%></li>
+            <% } else { %>
+                <li>Pledge (cents): Null</li>
+            <% } %>
+            <li>Expires: <%=patreonId.expires%></li>
+        </ul>
+    <% } %>
 
     <form action="/profile/<%=userData.username%>" method="POST">
 
