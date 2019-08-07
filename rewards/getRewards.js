@@ -52,13 +52,25 @@ class GetRewards {
         }
 
         // Check for patreon donations
-        if (reward.donationReq !== 0 && (patreonDetails.declined_since !== null || patreonDetails.amount_cents < reward.donationReq)) {
+        if (reward.donationReq !== 0 && (
+            // Payment has been declined
+            patreonDetails.declined_since !== null ||
+
+            // Payment is not high enough
+            patreonDetails.amount_cents < reward.donationReq ||
+
+            // Username linked is not the current user
+            patreonDetails.in_game_username.toLowerCase() !== user.username.toLowerCase() ||
+
+            // Passed the 32 day valid period
+            new Date() > new Date(patreonDetails.expires))
+        ) {
             // Fail case.
             return false;
         }
 
+        // If we pass all the above, this reward has been satisfied.
         return true;
-
     }
 
     async getAllRewardsForUser(user) {

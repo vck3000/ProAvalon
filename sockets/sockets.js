@@ -1618,6 +1618,7 @@ module.exports = function (io) {
 			}
 		}
 
+		socket.request.displayUsername = socket.request.user.username;
 		// Grab their rewards
 		socket.rewards = await getRewardsObj.getAllRewardsForUser(socket.request.user);
 		console.log("Socket rewards: ");
@@ -1896,31 +1897,31 @@ var applyApplicableRewards = function (socket) {
 
 	// Admin badge
 	if (socket.rewards.includes(REWARDS.ADMIN_BADGE)) {
-		socket.request.displayUsername = socket.request.user.username + " [A]";
-		// socket.request.displayUsername = "[A] " + socket.request.user.username;
+		socket.request.displayUsername = socket.request.displayUsername + " [A]";
+		// socket.request.displayUsername = "[A] " + socket.request.displayUsername;
 	}
 	// Moderator badge
 	else if (socket.rewards.includes(REWARDS.MOD_BADGE)) {
-		socket.request.displayUsername = socket.request.user.username + " [M]";
-		// socket.request.displayUsername = "[M] " + socket.request.user.username;
+		socket.request.displayUsername = socket.request.displayUsername + " [M]";
+		// socket.request.displayUsername = "[M] " + socket.request.displayUsername;
 	}
 
 
 	// Tier4 badge
 	if (socket.rewards.includes(REWARDS.TIER4_BADGE)) {
-		socket.request.displayUsername = socket.request.user.username + " [T4]";
+		socket.request.displayUsername = socket.request.displayUsername + " [T4]";
 	}
 	// Tier3 badge
 	else if (socket.rewards.includes(REWARDS.TIER3_BADGE)) {
-		socket.request.displayUsername = socket.request.user.username + " [T3]";
+		socket.request.displayUsername = socket.request.displayUsername + " [T3]";
 	}
 	// Tier2 badge
 	else if (socket.rewards.includes(REWARDS.TIER2_BADGE)) {
-		socket.request.displayUsername = socket.request.user.username + " [T2]";
+		socket.request.displayUsername = socket.request.displayUsername + " [T2]";
 	}
 	// Tier1 badge
 	else if (socket.rewards.includes(REWARDS.TIER1_BADGE)) {
-		socket.request.displayUsername = socket.request.user.username + " [T1]";
+		socket.request.displayUsername = socket.request.displayUsername + " [T1]";
 	}
 
 
