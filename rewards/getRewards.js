@@ -54,6 +54,11 @@ class GetRewards {
 
         // Check for patreon donations
         // TODO Test this logic
+        console.log(patreonDetails.declined_since);
+        console.log(patreonDetails.amount_cents);
+        console.log(reward.donationReq);
+
+
         if (reward.donationReq !== 0 && (patreonDetails.declined_since !== null || patreonDetails.amount_cents < reward.donationReq)) {
             // Fail case.
             return false;
