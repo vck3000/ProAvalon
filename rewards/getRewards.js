@@ -15,7 +15,7 @@ class GetRewards {
         console.log(this.allRewards);
     }
 
-    async userHasReward(user, reward, patreonDetails) {
+    async userHasReward(user, reward, patreonDetails = undefined) {
 
         if (!patreonDetails) {
             console.log("Getting patreon details...");
