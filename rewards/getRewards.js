@@ -35,13 +35,13 @@ class GetRewards {
         }
 
         // Check for admin
-        if (reward.adminReq === true && adminsArray.indexOf(user.username.toLowerCase()) === -1) {
+        if (reward.adminReq === true && !adminsArray.includes(user.username.toLowerCase())) {
             // Fail case.
             return false;
         }
 
         // Check for mod
-        if (reward.modReq === true && modsArray.indexOf(user.username.toLowerCase()) === -1) {
+        if (reward.modReq === true && !modsArray.includes(user.username.toLowerCase())) {
             // Fail case.
             return false;
         }
@@ -82,7 +82,7 @@ class GetRewards {
 
         for (var key in this.allRewards) {
             if (this.allRewards.hasOwnProperty(key)) {
-                if (this.userHasReward(user, this.allRewards[key], patreonDetails)) {
+                if (await this.userHasReward(user, this.allRewards[key], patreonDetails) === true) {
                     rewardsSatisfied.push(key);
                 }
             }

@@ -273,14 +273,6 @@ router.get("/lobby", middleware.isLoggedIn, checkIpBan, checkCurrentBan, async f
                 isMod = true;
             }
 
-
-            var getRewards = require("../rewards/getRewards");
-            //! Remove later
-            getRewardsObj = new getRewards();
-            getRewardsObj.mainTest();
-            getRewardsObj.getAllRewardsForUser(foundUser);
-
-
             res.render("lobby", {
                 currentUser: req.user,
                 headerActive: "lobby",

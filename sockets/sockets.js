@@ -8,6 +8,11 @@ var currentModActions = [];
 var myNotification = require("../models/notification");
 var createNotificationObj = require("../myFunctions/createNotification");
 
+var getRewards = require("../rewards/getRewards");
+var getRewardsObj = new getRewards();
+
+const REWARDS = require("../rewards/constants");
+
 var avatarRequest = require("../models/avatarRequest");
 var User = require("../models/user");
 var banIp = require("../models/banIp");
@@ -1596,7 +1601,7 @@ ioGlobal = {};
 module.exports = function (io) {
 	//SOCKETS for each connection
 	ioGlobal = io;
-	io.sockets.on("connection", function (socket) {
+	io.sockets.on("connection", async function (socket) {
 
 		if (socket.request.isAuthenticated()) {
 			// console.log("User is authenticated");
@@ -1612,6 +1617,14 @@ module.exports = function (io) {
 				allSockets[i].disconnect(true);
 			}
 		}
+
+		// Grab their rewards
+		socket.rewards = await getRewardsObj.getAllRewardsForUser(socket.request.user);
+		console.log("Socket rewards: ");
+		console.log(socket.rewards);
+
+		socket = applyApplicableRewards(socket);
+
 		//now push their socket in
 		allSockets.push(socket);
 
@@ -1700,11 +1713,10 @@ module.exports = function (io) {
 			}
 			sendToAllChat(io, data);
 
-			io.in("allChat").emit("update-current-players-list", getPlayerUsernamesFromAllSockets());
+			updateCurrentPlayersList(io);
 			// console.log("update current players list");
 			// console.log(getPlayerUsernamesFromAllSockets());
 			updateCurrentGamesList(io);
-
 			// message mods if player's ip matches another player
 			matchedIpsUsernames = [];
 			var joiningIpAddress = socket.request.headers['x-forwarded-for'] || socket.request.connection.remoteAddress;
@@ -1880,6 +1892,45 @@ module.exports = function (io) {
 	});
 }
 
+var applyApplicableRewards = function (socket) {
+
+	// Admin badge
+	if (socket.rewards.includes(REWARDS.ADMIN_BADGE)) {
+		// socket.request.displayUsername = socket.request.user.username + " [A]";
+		socket.request.displayUsername = "[A] " + socket.request.user.username;
+	}
+	// Moderator badge
+	else if (socket.rewards.includes(REWARDS.MOD_BADGE)) {
+		// socket.request.displayUsername = socket.request.user.username + " [M]";
+		socket.request.displayUsername = "[M] " + socket.request.user.username;
+	}
+
+
+
+	// Tier1 badge
+	if (socket.rewards.includes(REWARDS.TIER1_BADGE)) {
+		socket.request.displayUsername = socket.request.user.username + " [T1]";
+	}
+	// Tier2 badge
+	else if (socket.rewards.includes(REWARDS.TIER2_BADGE)) {
+		socket.request.displayUsername = socket.request.user.username + " [T2]";
+	}
+	// Tier3 badge
+	else if (socket.rewards.includes(REWARDS.TIER3_BADGE)) {
+		socket.request.displayUsername = socket.request.user.username + " [T3]";
+	}
+	// Tier4 badge
+	else if (socket.rewards.includes(REWARDS.TIER4_BADGE)) {
+		socket.request.displayUsername = socket.request.user.username + " [T4]";
+	}
+
+
+	return socket;
+}
+
+var updateCurrentPlayersList = function () {
+	ioGlobal.in("allChat").emit("update-current-players-list", getPlayerDisplayUsernamesFromAllSockets());
+}
 
 var updateCurrentGamesList = function () {
 	//prepare room data to send to players.
@@ -2049,6 +2100,19 @@ function playerLeaveRoomCheckDestroy(socket) {
 }
 
 
+function getPlayerDisplayUsernamesFromAllSockets() {
+	var array = [];
+	for (var i = 0; i < allSockets.length; i++) {
+		array[i] = allSockets[i].request.displayUsername ? allSockets[i].request.displayUsername : allSockets[i].request.user.username;
+	}
+	array.sort(function (a, b) {
+		var textA = a.toUpperCase();
+		var textB = b.toUpperCase();
+		return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+	});
+	return array;
+}
+
 function getPlayerUsernamesFromAllSockets() {
 	var array = [];
 	for (var i = 0; i < allSockets.length; i++) {
@@ -2059,9 +2123,9 @@ function getPlayerUsernamesFromAllSockets() {
 		var textB = b.toUpperCase();
 		return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
 	});
-
 	return array;
 }
+
 function getPlayerIdsFromAllSockets() {
 	var array = [];
 	for (var i = 0; i < allSockets.length; i++) {
@@ -2095,7 +2159,7 @@ function disconnect(data) {
 	allSockets.splice(allSockets.indexOf(this), 1);
 
 	//send out the new updated current player list
-	this.in("allChat").emit("update-current-players-list", getPlayerUsernamesFromAllSockets());
+	updateCurrentPlayersList();
 	//tell all clients that the user has left
 	var data = {
 		message: this.request.user.username + " has left the lobby.",
@@ -2187,7 +2251,7 @@ function allChatFromClient(data) {
 			return;
 		}
 
-		data.username = this.request.user.username;
+		data.username = this.request.displayUsername ? this.request.displayUsername : this.request.user.username;
 		//send out that data object to all other clients (except the one who sent the message)
 		data.message = textLengthFilter(data.message);
 		//no classStr since its a player message
@@ -2213,7 +2277,7 @@ function roomChatFromClient(data) {
 			return;
 		}
 
-		data.username = this.request.user.username;
+		data.username = this.request.displayUsername ? this.request.displayUsername : this.request.user.username;
 
 		data.message = textLengthFilter(data.message);
 		data.dateCreated = new Date();
