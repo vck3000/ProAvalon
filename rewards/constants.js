@@ -5,7 +5,7 @@ module.exports = {
     TIER2_BADGE: "TIER2_BADGE",
     TIER3_BADGE: "TIER3_BADGE",
     TIER4_BADGE: "TIER4_BADGE",
-    CAN_CHAT: "CAN_CHAT",
+    CAN_ALL_CHAT: "CAN_ALL_CHAT",
 
     tier1_donation: 200,
     tier2_donation: 500,

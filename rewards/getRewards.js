@@ -15,6 +15,54 @@ class GetRewards {
         console.log(this.allRewards);
     }
 
+    async userHasReward(user, reward, patreonDetails) {
+
+        if (!patreonDetails) {
+            console.log("Getting patreon details...");
+
+            await PatreonId.find({ "id": user.patreonId })
+                .exec()
+                .then(obj => {
+                    patreonDetails = obj;
+                    console.log("Gotten patreon details.")
+                })
+                .catch(err => {
+                    console.log(err);
+                })
+        }
+        else {
+            console.log("Was given patreon details")
+        }
+
+        // Check for admin
+        if (reward.adminReq === true && adminsArray.indexOf(user.username.toLowerCase()) === -1) {
+            // Fail case.
+            return false;
+        }
+
+        // Check for mod
+        if (reward.modReq === true && modsArray.indexOf(user.username.toLowerCase()) === -1) {
+            // Fail case.
+            return false;
+        }
+
+        // Check for games played
+        if (reward.gamesPlayedReq !== 0 && user.totalGamesPlayed < reward.gamesPlayedReq) {
+            // Fail case.
+            return false;
+        }
+
+        // Check for patreon donations
+        // TODO Test this logic
+        if (reward.donationReq !== 0 && (patreonDetails.declined_since !== null || patreonDetails.amount_cents < reward.donationReq)) {
+            // Fail case.
+            return false;
+        }
+
+        return true;
+
+    }
+
     async getAllRewardsForUser(user) {
         var rewardsSatisfied = [];
 
@@ -34,36 +82,9 @@ class GetRewards {
 
         for (var key in this.allRewards) {
             if (this.allRewards.hasOwnProperty(key)) {
-
-                let reward = this.allRewards[key];
-
-                // Check for admin
-                if (reward.adminReq === true && adminsArray.indexOf(user.username.toLowerCase()) === -1) {
-                    // Fail case.
-                    continue;
+                if (this.userHasReward(user, this.allRewards[key], patreonDetails)) {
+                    rewardsSatisfied.push(key);
                 }
-
-                // Check for mod
-                if (reward.modReq === true && modsArray.indexOf(user.username.toLowerCase()) === -1) {
-                    // Fail case.
-                    continue;
-                }
-
-                // Check for games played
-                if (reward.gamesPlayedReq !== 0 && user.totalGamesPlayed < reward.gamesPlayedReq) {
-                    // Fail case.
-                    continue;
-                }
-
-
-                // Check for patreon donations
-                // TODO Test this logic
-                if (reward.donationReq !== 0 && (patreonDetails.declined_since !== null || patreonDetails.amount_cents < reward.donationReq)) {
-                    // Fail case.
-                    continue;
-                }
-
-                rewardsSatisfied.push(key);
             }
         }
 
