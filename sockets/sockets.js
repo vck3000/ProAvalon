@@ -1896,13 +1896,13 @@ var applyApplicableRewards = function (socket) {
 
 	// Admin badge
 	if (socket.rewards.includes(REWARDS.ADMIN_BADGE)) {
-		// socket.request.displayUsername = socket.request.user.username + " [A]";
-		socket.request.displayUsername = "[A] " + socket.request.user.username;
+		socket.request.displayUsername = socket.request.user.username + " [A]";
+		// socket.request.displayUsername = "[A] " + socket.request.user.username;
 	}
 	// Moderator badge
 	else if (socket.rewards.includes(REWARDS.MOD_BADGE)) {
-		// socket.request.displayUsername = socket.request.user.username + " [M]";
-		socket.request.displayUsername = "[M] " + socket.request.user.username;
+		socket.request.displayUsername = socket.request.user.username + " [M]";
+		// socket.request.displayUsername = "[M] " + socket.request.user.username;
 	}
 
 
