@@ -1906,22 +1906,21 @@ var applyApplicableRewards = function (socket) {
 	}
 
 
-
-	// Tier1 badge
-	if (socket.rewards.includes(REWARDS.TIER1_BADGE)) {
-		socket.request.displayUsername = socket.request.user.username + " [T1]";
-	}
-	// Tier2 badge
-	else if (socket.rewards.includes(REWARDS.TIER2_BADGE)) {
-		socket.request.displayUsername = socket.request.user.username + " [T2]";
+	// Tier4 badge
+	if (socket.rewards.includes(REWARDS.TIER4_BADGE)) {
+		socket.request.displayUsername = socket.request.user.username + " [T4]";
 	}
 	// Tier3 badge
 	else if (socket.rewards.includes(REWARDS.TIER3_BADGE)) {
 		socket.request.displayUsername = socket.request.user.username + " [T3]";
 	}
-	// Tier4 badge
-	else if (socket.rewards.includes(REWARDS.TIER4_BADGE)) {
-		socket.request.displayUsername = socket.request.user.username + " [T4]";
+	// Tier2 badge
+	else if (socket.rewards.includes(REWARDS.TIER2_BADGE)) {
+		socket.request.displayUsername = socket.request.user.username + " [T2]";
+	}
+	// Tier1 badge
+	else if (socket.rewards.includes(REWARDS.TIER1_BADGE)) {
+		socket.request.displayUsername = socket.request.user.username + " [T1]";
 	}
 
 

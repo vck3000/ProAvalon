@@ -15,7 +15,7 @@ class GetRewards {
         console.log(this.allRewards);
     }
 
-    async userHasReward(user, reward, patreonDetails = undefined) {
+    async userHasReward(user, reward, patreonDetails) {
 
         if (!patreonDetails) {
             console.log("Getting patreon details...");
@@ -33,7 +33,6 @@ class GetRewards {
         else {
             console.log("Was given patreon details")
         }
-
         // Check for admin
         if (reward.adminReq === true && !adminsArray.includes(user.username.toLowerCase())) {
             // Fail case.
@@ -53,12 +52,6 @@ class GetRewards {
         }
 
         // Check for patreon donations
-        // TODO Test this logic
-        console.log(patreonDetails.declined_since);
-        console.log(patreonDetails.amount_cents);
-        console.log(reward.donationReq);
-
-
         if (reward.donationReq !== 0 && (patreonDetails.declined_since !== null || patreonDetails.amount_cents < reward.donationReq)) {
             // Fail case.
             return false;
@@ -73,7 +66,8 @@ class GetRewards {
 
         let patreonDetails;
 
-        await PatreonId.find({ "id": user.patreonId })
+        console.log(user.patreonId);
+        await PatreonId.findOne({ "id": user.patreonId })
             .exec()
             .then(obj => {
                 patreonDetails = obj;
@@ -87,7 +81,8 @@ class GetRewards {
 
         for (var key in this.allRewards) {
             if (this.allRewards.hasOwnProperty(key)) {
-                if (await this.userHasReward(user, this.allRewards[key], patreonDetails) === true) {
+                var hasReward = await this.userHasReward(user, this.allRewards[key], patreonDetails);
+                if (hasReward === true) {
                     rewardsSatisfied.push(key);
                 }
             }
