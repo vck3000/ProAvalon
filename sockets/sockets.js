@@ -320,7 +320,48 @@ var actionsObj = {
 					return { message: (Math.floor(Math.random() * 10) + 1).toString(), classStr: "server-text" }
 				}
 			}
-		},
+        },
+        
+        mods: {
+            command: 'mods',
+            help: '/mods: Shows a list of online moderators.',
+            run() {
+                const modUsers = getPlayerUsernamesFromAllSockets().filter((username) => modsArray.includes(username));
+                const message = `Currently online mods: ${modUsers.length > 0 ? modUsers.join(', ') : 'None'}.`;
+                return { message, classStr: "server-text" };
+            }
+        },
+
+        pmmod: {
+            command: 'pmmod',
+            help: '/pmmod: Sends a private message to an online moderator.',
+            run(data, senderSocket) {
+                const { args } = data;
+                // We check for various possible errors and notify the user
+                if (!args[1]) return { message: 'Please specify a mod to message. Type /mods to get a list of online mods.', classStr: 'server-text' };
+                if (!args[2]) return { message: 'Please specify a message to send.', classStr: 'server-text' };
+                if (!modsArray.includes(args[1])) return { message: 'That user is not a mod. You may not private message them.', classStr: 'server-text' };
+                const modSocket = allSockets[getIndexFromUsername(allSockets, args[1], true)];
+                if (!modSocket) return senderSocket.emit('messageCommandReturnStr', { message: "Could not find " + args[1], classStr: "server-text" });
+
+				let str = `${senderSocket.request.user.username}->${args[1]} (whisper): ${args.slice(2).join(' ')}`;
+                
+				const dataMessage = {
+					message: str,
+					dateCreated: new Date(),
+					classStr: "whisper"
+                };
+                
+                senderSocket.emit('allChatToClient', dataMessage);
+                senderSocket.emit('roomChatToClient', dataMessage);
+
+                modSocket.emit('allChatToClient', dataMessage);
+                modSocket.emit('roomChatToClient', dataMessage)
+
+                lastWhisperObj[modSocket.request.user.username] = senderSocket.request.user.username;
+                lastWhisperObj[senderSocket.request.user.username] = modSocket.request.user.username;
+            }
+        },
 
 		mute: {
 			command: "mute",
