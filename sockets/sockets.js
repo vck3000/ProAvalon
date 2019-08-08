@@ -133,6 +133,8 @@ savedGameObj.find({}).exec(function (err, foundSaveGameArray) {
 });
 
 var lastWhisperObj = {};
+var pmmodCooldowns = {};
+const PMMOD_TIMEOUT = 3000; // 3 seconds
 var actionsObj = {
 	userCommands: {
 		help: {
@@ -337,7 +339,13 @@ var actionsObj = {
             help: '/pmmod: Sends a private message to an online moderator.',
             run(data, senderSocket) {
                 const { args } = data;
-                // We check for various possible errors and notify the user
+                // We check if they are spamming, i.e. have sent a PM before the timeout is up
+                const lastPmTime = pmmodCooldowns[senderSocket.id];
+                if (lastPmTime) {
+                    const remaining = new Date() - lastPmTime;
+                    if (remaining < PMMOD_TIMEOUT) return { message: `Please wait ${Math.ceil((PMMOD_TIMEOUT - remaining) / 1000)} seconds before sending another pm!` };
+                }
+                // Checks for various missing fields or errors
                 if (!args[1]) return { message: 'Please specify a mod to message. Type /mods to get a list of online mods.', classStr: 'server-text' };
                 if (!args[2]) return { message: 'Please specify a message to send.', classStr: 'server-text' };
                 if (!modsArray.includes(args[1])) return { message: 'That user is not a mod. You may not private message them.', classStr: 'server-text' };
@@ -360,6 +368,9 @@ var actionsObj = {
 
                 lastWhisperObj[modSocket.request.user.username] = senderSocket.request.user.username;
                 lastWhisperObj[senderSocket.request.user.username] = modSocket.request.user.username;
+
+                // Set a cooldown for the sender until they can send another pm
+                pmmodCooldowns[senderSocket.id] = new Date();
             }
         },
 
