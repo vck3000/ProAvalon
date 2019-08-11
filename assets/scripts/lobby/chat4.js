@@ -332,11 +332,11 @@ function addToRoomChat(data) {
 
                     // verify all quotes are either a server message or have actually been said
                     if (roomChatHistory.filter(d => (d.classStr !== null
-                                && s.slice(8).trim() === d.message.trim()) ||
+                        && s.slice(8).trim() === d.message.trim()) ||
                         (username === d.username        // or was said by that user. only check the one's place of the minutes
-                                && dateStr[3] === ":"       // (to ignore timezones, which can be off by hours or even half-hours)
-                                && dateStr[5] === d.dateStr[5]
-                                && d.message.startsWith(text.trim()))
+                            && dateStr[3] === ":"       // (to ignore timezones, which can be off by hours or even half-hours)
+                            && dateStr[5] === d.dateStr[5]
+                            && d.message.startsWith(text.trim()))
                     ).length > 0) {
                         quotedStrings.push(s);
                         console.log('pushed ' + s);
@@ -358,13 +358,17 @@ function addToRoomChat(data) {
                 var highlightForegroundColorHtml = ";";
 
                 // console.log("true?"  + selectedChat[data[i].username]);
+                var usernameOnly = data[i].username;
+                if (data[i].username) {
+                    usernameOnly = data[i].username.split(" ")[0];
+                }
 
-                if (selectedChat[data[i].username] === true && getIndexFromUsername(data[i].username) !== undefined) {
+                if (selectedChat[usernameOnly] === true && getIndexFromUsername(usernameOnly) !== undefined) {
                     if (setHighlightColorToYellow === true) {
                         highlightChatColour = "#ffff9e";
                     }
                     else {
-                        highlightChatColour = docCookies.getItem("player" + getIndexFromUsername(data[i].username) + 'HighlightColour');
+                        highlightChatColour = docCookies.getItem("player" + getIndexFromUsername(usernameOnly) + 'HighlightColour');
                     }
                     highlightForegroundColorHtml = "color: #333;";
                 }
@@ -376,7 +380,7 @@ function addToRoomChat(data) {
                 //its a user's chat so put some other stuff on it
                 else {
                     str = "<li class='" + addClass + "'><span style='" + highlightForegroundColorHtml + "background-color: " + highlightChatColour
-                        + "' username='" + data[i].username + "'><span class='date-text'> " + date + "</span> <span class='username-text'>"
+                        + "' username='" + usernameOnly + "'><span class='date-text'> " + date + "</span> <span class='username-text'>"
                         + data[i].username + ":</span> " + (unquotedMessage.trim() || "<i>Quoting:</i>") + "</span></li>";
                 }
 

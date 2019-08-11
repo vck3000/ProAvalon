@@ -52,10 +52,19 @@ $(".chat-message-input").on('keydown', function (e) {
 
             var newStr = together;
 
-            newStr = newStr.split(" ")[0];
+            newStr = newStr.split(" ");
+            newNewStr = "";
+            for (var s of newStr) {
+                if (s.includes("<span")) {
+                    break;
+                }
+                newNewStr += s + " ";
+            }
+
+            newNewStr = newNewStr.slice(0, newNewStr.length - 1);
 
             //set the new text
-            $(e.target).val(newStr);
+            $(e.target).val(newNewStr);
         }
     }
     lastKeyPress = e.which;
