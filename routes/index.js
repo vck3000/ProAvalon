@@ -30,224 +30,226 @@ const rateLimit = require("express-rate-limit");
 // exclude pronub from new mods array
 var newModsArray = modsArray.filter(mod => mod != "pronub");
 //Community route
-router.get("/community", function(req, res){
-	// Get all players with more than 50 games excluding mods
-	User.find( {
-		"totalGamesPlayed": { $gt : 99 },
-		"usernameLower" : { $nin : newModsArray },
-		"hideStats": null
-		}, function(err, allUsers){
-			if(err) {
-				console.log(err);
-			}
-			else {
-		      	// Get mods excluding pronub
-		      	User.find( {
-		          "usernameLower" : { $in : newModsArray }
-		        },
-		        function(err, allMods){
-		        	if(err) {
-		            	console.log(err);
-		          	}
-		          	else {
-		            	res.render("community", {users:allUsers, mods:allMods, currentUser:req.user, headerActive: "community"});
-          			}
-	        	});
-        	}
-	// sort by games played
-	}).sort({totalGamesPlayed: -1});
+router.get("/community", function (req, res) {
+    // Get all players with more than 50 games excluding mods
+    User.find({
+        "totalGamesPlayed": { $gt: 99 },
+        "usernameLower": { $nin: newModsArray },
+        "hideStats": null
+    }, function (err, allUsers) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            // Get mods excluding pronub
+            User.find({
+                "usernameLower": { $in: newModsArray }
+            },
+                function (err, allMods) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    else {
+                        res.render("community", { users: allUsers, mods: allMods, currentUser: req.user, headerActive: "community" });
+                    }
+                });
+        }
+        // sort by games played
+    }).sort({ totalGamesPlayed: -1 });
 });
 
 //Index route
 router.get("/", function (req, res) {
-	res.render("index");
+    res.render("index");
 });
 
 //register route
 router.get("/register", function (req, res) {
-	res.render("register", { platform: process.env.MY_PLATFORM });
+    res.render("register", { platform: process.env.MY_PLATFORM });
 });
 
 
 //sitedown route
 router.get("/sitedown", function (req, res) {
-	res.render("sitedown");
+    res.render("sitedown");
 });
 
 
 const registerLimiter = process.env.MY_PLATFORM === "local" ?
-rateLimit({
-    max: 0 // Disable if we are local
-})
-:
-rateLimit({
-    windowMs: 60 * 60 * 1000, // 60 minutes
-    max: 3
-});
+    rateLimit({
+        max: 0 // Disable if we are local
+    })
+    :
+    rateLimit({
+        windowMs: 60 * 60 * 1000, // 60 minutes
+        max: 3
+    });
 
 //Post of the register route
 router.post("/", registerLimiter, checkIpBan, checkCurrentBan, sanitiseUsername, function (req, res) {
-	// console.log("escaped: " + escapeText(req.body.username));
+    // console.log("escaped: " + escapeText(req.body.username));
 
-	// res.redirect("sitedown");
-	// return;
+    // res.redirect("sitedown");
+    // return;
 
-	// var escapedUsername = escapeText(req.body.username);
+    // var escapedUsername = escapeText(req.body.username);
 
-	//if we are local, we can skip the captcha
-	if (process.env.MY_PLATFORM === "local" || process.env.MY_PLATFORM === "staging") {
-		//duplicate code as below
-		var newUser = new User({
-			username: req.body.username,
-			usernameLower: req.body.username.toLowerCase(),
-			dateJoined: new Date()
-		});
+    //if we are local, we can skip the captcha
+    if (process.env.MY_PLATFORM === "local" || process.env.MY_PLATFORM === "staging") {
+        //duplicate code as below
+        var newUser = new User({
+            username: req.body.username,
+            usernameLower: req.body.username.toLowerCase(),
+            dateJoined: new Date()
+        });
 
-		//set default values
-		for (var key in defaultValuesForUser) {
-			if (defaultValuesForUser.hasOwnProperty(key)) {
-				newUser[key] = defaultValuesForUser[key];
-			}
-		}
+        //set default values
+        for (var key in defaultValuesForUser) {
+            if (defaultValuesForUser.hasOwnProperty(key)) {
+                newUser[key] = defaultValuesForUser[key];
+            }
+        }
 
-		if (req.body.username.indexOf(" ") !== -1) {
-			req.flash("error", "Sign up failed. Please do not use spaces in your username.");
-			res.redirect("register");
-			return;
-		}
-		else if (req.body.username.length > 25) {
-			req.flash("error", "Sign up failed. Please do not use more than 25 characters in your username.");
-			res.redirect("register");
-			return;
-		}
+        if (req.body.username.indexOf(" ") !== -1) {
+            req.flash("error", "Sign up failed. Please do not use spaces in your username.");
+            res.redirect("register");
+            return;
+        }
+        else if (req.body.username.length > 25) {
+            req.flash("error", "Sign up failed. Please do not use more than 25 characters in your username.");
+            res.redirect("register");
+            return;
+        }
 
-		else if (usernameContainsBadCharacter(req.body.username) == true) {
-			req.flash("error", "Please do not use an illegal character");
-			res.redirect("register");
-			return;
-		}
+        else if (usernameContainsBadCharacter(req.body.username) == true) {
+            req.flash("error", "Please do not use an illegal character");
+            res.redirect("register");
+            return;
+        }
 
-		else {
-			User.register(newUser, req.body.password, function (err, user) {
-				if (err) {
-					console.log("ERROR: " + err);
-					req.flash("error", "Sign up failed. Most likely that username is taken.");
-					res.redirect("register");
-				} else {
-					//successful, get them to log in again
-					// req.flash("success", "Sign up successful. Please log in.");
-					// res.redirect("/");
-					passport.authenticate("local")(req, res, function () {
-						res.redirect("/lobby");
-					});
-				}
-			});
-		}
-	}
+        else {
+            User.register(newUser, req.body.password, function (err, user) {
+                if (err) {
+                    console.log("ERROR: " + err);
+                    req.flash("error", "Sign up failed. Most likely that username is taken.");
+                    res.redirect("register");
+                } else {
+                    //successful, get them to log in again
+                    // req.flash("success", "Sign up successful. Please log in.");
+                    // res.redirect("/");
 
+                    passport.authenticate("local")(req, res, function () {
+                        res.redirect("/lobby");
+                    });
 
-
-	//we are online, require the captcha
-	else {
-		req.body.captcha = req.body['g-recaptcha-response'];
+                }
+            });
+        }
+    }
 
 
-		if (
-			req.body.captcha === undefined ||
-			req.body.captcha === '' ||
-			req.body.captcha === null
-		) {
-			req.flash("error", "The captcha failed or was not inputted.");
-			res.redirect("register");
-			return;
-		}
 
-		const secretKey = process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
+    //we are online, require the captcha
+    else {
+        req.body.captcha = req.body['g-recaptcha-response'];
 
-		const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.captcha}&remoteip=${req.connection.remoteAddress}`;
 
-		request(verifyUrl, (err, response, body) => {
-			body = JSON.parse(body);
-			// console.log(body);
+        if (
+            req.body.captcha === undefined ||
+            req.body.captcha === '' ||
+            req.body.captcha === null
+        ) {
+            req.flash("error", "The captcha failed or was not inputted.");
+            res.redirect("register");
+            return;
+        }
 
-			// If Not Successful
-			if (body.success !== undefined && !body.success) {
-				req.flash("error", "Failed captcha verification.");
-				res.redirect("register");
-				return;
-			}
+        const secretKey = process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
 
-			var newUser = new User({
-				username: req.body.username,
-				usernameLower: req.body.username.toLowerCase(),
-				dateJoined: new Date()
-			});
+        const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.captcha}&remoteip=${req.connection.remoteAddress}`;
 
-			//set default values
-			for (var key in defaultValuesForUser) {
-				if (defaultValuesForUser.hasOwnProperty(key)) {
-					newUser[key] = defaultValuesForUser[key];
-				}
-			}
+        request(verifyUrl, (err, response, body) => {
+            body = JSON.parse(body);
+            // console.log(body);
 
-			if (req.body.username.indexOf(" ") !== -1) {
-				req.flash("error", "Sign up failed. Please do not use spaces in your username.");
-				res.redirect("register");
-				return;
-			}
-			else if (req.body.username.length > 25) {
-				req.flash("error", "Sign up failed. Please do not use more than 25 characters in your username.");
-				res.redirect("register");
-				return;
-			}
+            // If Not Successful
+            if (body.success !== undefined && !body.success) {
+                req.flash("error", "Failed captcha verification.");
+                res.redirect("register");
+                return;
+            }
 
-			else if (usernameContainsBadCharacter(req.body.username) == true) {
-				req.flash("error", "Please do not use an illegal character");
-				res.redirect("register");
-				return;
-			}
+            var newUser = new User({
+                username: req.body.username,
+                usernameLower: req.body.username.toLowerCase(),
+                dateJoined: new Date()
+            });
 
-			else {
-				User.register(newUser, req.body.password, function (err, user) {
-					if (err) {
-						console.log("ERROR: " + err);
-						req.flash("error", "Sign up failed. Most likely that username is taken.");
-						res.redirect("register");
-					} else {
-						//successful, get them to log in again
-						// req.flash("success", "Sign up successful. Please log in.");
-						// res.redirect("/");
-						passport.authenticate("local")(req, res, function () {
-							res.redirect("/lobby");
-						});
-					}
-				});
-			}
-		});
+            //set default values
+            for (var key in defaultValuesForUser) {
+                if (defaultValuesForUser.hasOwnProperty(key)) {
+                    newUser[key] = defaultValuesForUser[key];
+                }
+            }
 
-	}
+            if (req.body.username.indexOf(" ") !== -1) {
+                req.flash("error", "Sign up failed. Please do not use spaces in your username.");
+                res.redirect("register");
+                return;
+            }
+            else if (req.body.username.length > 25) {
+                req.flash("error", "Sign up failed. Please do not use more than 25 characters in your username.");
+                res.redirect("register");
+                return;
+            }
+
+            else if (usernameContainsBadCharacter(req.body.username) == true) {
+                req.flash("error", "Please do not use an illegal character");
+                res.redirect("register");
+                return;
+            }
+
+            else {
+                User.register(newUser, req.body.password, function (err, user) {
+                    if (err) {
+                        console.log("ERROR: " + err);
+                        req.flash("error", "Sign up failed. Most likely that username is taken.");
+                        res.redirect("register");
+                    } else {
+                        //successful, get them to log in again
+                        // req.flash("success", "Sign up successful. Please log in.");
+                        // res.redirect("/");
+                        passport.authenticate("local")(req, res, function () {
+                            res.redirect("/lobby");
+                        });
+                    }
+                });
+            }
+        });
+
+    }
 });
 
 
 const loginLimiter = process.env.MY_PLATFORM === "local" ?
-rateLimit({
-    max: 0 // Disable if we are local
-})
-:
-rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5
-});
+    rateLimit({
+        max: 0 // Disable if we are local
+    })
+    :
+    rateLimit({
+        windowMs: 15 * 60 * 1000, // 15 minutes
+        max: 5
+    });
 
 //login route
 router.post("/login", loginLimiter, sanitiseUsername, passport.authenticate("local", {
-	successRedirect: "/lobby",
-	failureRedirect: "/loginFail"
+    successRedirect: "/lobby",
+    failureRedirect: "/loginFail"
 }));
 
 router.get("/loginFail", function (req, res) {
-	req.flash("error", "Log in failed! Please try again.");
-	res.redirect("/");
+    req.flash("error", "Log in failed! Please try again.");
+    res.redirect("/");
 });
 
 
@@ -256,44 +258,43 @@ router.get("/loginFail", function (req, res) {
 //lobby route
 router.get("/lobby", middleware.isLoggedIn, checkIpBan, checkCurrentBan, async function (req, res) {
 
-	// console.log(res.app.locals.originalUsername);
-	User.findOne({ username: req.user.username }).populate("notifications").exec(async function (err, foundUser) {
-		if (err) {
-			// res.render("lobby", {currentUser: req.user, headerActive: "lobby", userNotifications: [{text: "There was a problem loading your notifications.", optionsCog: true}] });
-			console.log(err);
-			req.flash("error", "Something has gone wrong! Please contact a moderator or admin.");
-			res.redirect("/");
-		}
-		else {
+    // console.log(res.app.locals.originalUsername);
+    User.findOne({ username: req.user.username }).populate("notifications").exec(async function (err, foundUser) {
+        if (err) {
+            // res.render("lobby", {currentUser: req.user, headerActive: "lobby", userNotifications: [{text: "There was a problem loading your notifications.", optionsCog: true}] });
+            console.log(err);
+            req.flash("error", "Something has gone wrong! Please contact a moderator or admin.");
+            res.redirect("/");
+        }
+        else {
 
-			isMod = false;
-			if (req.isAuthenticated() && modsArray.indexOf(req.user.username.toLowerCase()) !== -1) {
-				isMod = true;
-			}
+            isMod = false;
+            if (req.isAuthenticated() && modsArray.indexOf(req.user.username.toLowerCase()) !== -1) {
+                isMod = true;
+            }
 
+            res.render("lobby", {
+                currentUser: req.user,
+                headerActive: "lobby",
+                userNotifications: foundUser.notifications,
+                optionsCog: true,
+                isMod: isMod
+            });
 
-			res.render("lobby", {
-				currentUser: req.user,
-				headerActive: "lobby",
-				userNotifications: foundUser.notifications,
-				optionsCog: true,
-				isMod: isMod
-			});
+            //check that they have all the default values.
+            for (var keys in defaultValuesForUser) {
+                if (defaultValuesForUser.hasOwnProperty(keys)) {
+                    //if they don't have a default value, then give them a default value.
+                    if (!foundUser[keys]) {
+                        foundUser[keys] = defaultValuesForUser[keys];
+                    }
+                }
+            }
+            foundUser.save();
 
-			//check that they have all the default values.
-			for (var keys in defaultValuesForUser) {
-				if (defaultValuesForUser.hasOwnProperty(keys)) {
-					//if they don't have a default value, then give them a default value.
-					if (!foundUser[keys]) {
-						foundUser[keys] = defaultValuesForUser[keys];
-					}
-				}
-			}
-			foundUser.save();
+        }
 
-		}
-
-	});
+    });
 });
 
 
@@ -303,46 +304,46 @@ router.get("/lobby", middleware.isLoggedIn, checkIpBan, checkCurrentBan, async f
 
 //logout 
 router.get("/logout", function (req, res) {
-	//doesn't work since we destroy the session right after...
-	// req.flash("success", "Logged you out!");
-	req.session.destroy(function (err) {
-		res.redirect('/'); //Inside a callback… bulletproof!
-	});
+    //doesn't work since we destroy the session right after...
+    // req.flash("success", "Logged you out!");
+    req.session.destroy(function (err) {
+        res.redirect('/'); //Inside a callback… bulletproof!
+    });
 });
 
 router.get("/log", function (req, res) {
-	res.render("log", { currentUser: req.user, headerActive: "log", path: "log" });
+    res.render("log", { currentUser: req.user, headerActive: "log", path: "log" });
 })
 
 router.get("/rules", function (req, res) {
-	res.render("rules", { currentUser: req.user, headerActive: "rules" });
+    res.render("rules", { currentUser: req.user, headerActive: "rules" });
 })
 
 router.get("/testmodal", function (req, res) {
-	res.render("testmodal", { currentUser: req.user });
+    res.render("testmodal", { currentUser: req.user });
 });
 router.get("/testmodal2", function (req, res) {
-	res.render("testmodal2", { currentUser: req.user });
+    res.render("testmodal2", { currentUser: req.user });
 });
 
 router.get("/testAutoCompleteUsernames", function (req, res) {
-	res.render("testAutoCompleteUsernames", { currentUser: req.user });
+    res.render("testAutoCompleteUsernames", { currentUser: req.user });
 });
 
 router.get("/about", function (req, res) {
-	res.render("about", { currentUser: req.user, headerActive: "about" });
+    res.render("about", { currentUser: req.user, headerActive: "about" });
 });
 
 router.get("/security", function (req, res) {
-	res.render("security", { currentUser: req.user });
+    res.render("security", { currentUser: req.user });
 });
 
 router.get("/troubleshooting", function (req, res) {
-	res.render("troubleshooting", { currentUser: req.user });
+    res.render("troubleshooting", { currentUser: req.user });
 });
 
 router.get("/statistics", function (req, res) {
-	res.render("statistics", { currentUser: req.user, headerActive: "stats" });
+    res.render("statistics", { currentUser: req.user, headerActive: "stats" });
 });
 
 
@@ -357,127 +358,127 @@ router.get("/statistics", function (req, res) {
 // 5) Avatar request approve/rejects
 
 router.get("/mod/ajax/logData/:pageIndex", function (req, res) {
-	//get all the mod actions
-	var pageIndex;
-	if (req.params.pageIndex) {
-		pageIndex = req.params.pageIndex;
-		if(pageIndex < 0){
-			pageIndex = 0;
-		}
+    //get all the mod actions
+    var pageIndex;
+    if (req.params.pageIndex) {
+        pageIndex = req.params.pageIndex;
+        if (pageIndex < 0) {
+            pageIndex = 0;
+        }
 
-		var logs = [];
+        var logs = [];
 
-		var NUM_OF_RESULTS_PER_PAGE = 10;
-		// Page 0 is the first page.
-		var skipNumber = pageIndex * NUM_OF_RESULTS_PER_PAGE;
+        var NUM_OF_RESULTS_PER_PAGE = 10;
+        // Page 0 is the first page.
+        var skipNumber = pageIndex * NUM_OF_RESULTS_PER_PAGE;
 
-		modAction.find({})
-		.sort({ whenMade: 'descending'})
-		.skip(skipNumber)
-		.limit(NUM_OF_RESULTS_PER_PAGE)
-		.exec(async function (err, foundModActions) {
-			if (err) { console.log(err); }
+        modAction.find({})
+            .sort({ whenMade: 'descending' })
+            .skip(skipNumber)
+            .limit(NUM_OF_RESULTS_PER_PAGE)
+            .exec(async function (err, foundModActions) {
+                if (err) { console.log(err); }
 
-			else {
-				logsObj = [];
-				await foundModActions.forEach(function (action) {
-					stringsArray = [];
-					switch (action.type) {
-						case "ban":
-							stringsArray[0] = (action.modWhoBanned.username + " has banned " + action.bannedPlayer.username);
-							stringsArray[0] += " for reason: " + action.reason + ".";
-
-
-							stringsArray.push("The ban was made on " + action.whenMade);
-							stringsArray.push("The ban will be released on: " + action.whenRelease);
-							stringsArray.push("Moderator message: " + action.descriptionByMod);
-							break;
-						case "mute":
-							stringsArray[0] = (action.modWhoBanned.username + " has muted " + action.bannedPlayer.username);
-							stringsArray[0] += " for reason: " + action.reason + ".";
+                else {
+                    logsObj = [];
+                    await foundModActions.forEach(function (action) {
+                        stringsArray = [];
+                        switch (action.type) {
+                            case "ban":
+                                stringsArray[0] = (action.modWhoBanned.username + " has banned " + action.bannedPlayer.username);
+                                stringsArray[0] += " for reason: " + action.reason + ".";
 
 
-							stringsArray.push("The mute was made on " + action.whenMade);
-							// -1970 years because thats the start of computer time
-							stringsArray.push("The mute will be released on: " + action.whenRelease);
-							stringsArray.push("Moderator message: " + action.descriptionByMod);
-							break;
-						// Forum remove
-						case "remove":
-							stringsArray[0] = action.modWhoBanned.username + " removed " + action.bannedPlayer.username + "'s " + action.elementDeleted + ".";
-							stringsArray[0] += " Reason: " + action.reason + ".";
+                                stringsArray.push("The ban was made on " + action.whenMade);
+                                stringsArray.push("The ban will be released on: " + action.whenRelease);
+                                stringsArray.push("Moderator message: " + action.descriptionByMod);
+                                break;
+                            case "mute":
+                                stringsArray[0] = (action.modWhoBanned.username + " has muted " + action.bannedPlayer.username);
+                                stringsArray[0] += " for reason: " + action.reason + ".";
 
-							stringsArray[1] = "The removal occured on " + action.whenMade;
-							stringsArray[2] = "Moderator message: " + action.descriptionByMod;
 
-							//Get the extra link bit (The # bit to select to a specific comment/reply)
-							linkStr = "";
-							if (action.elementDeleted === "forum") {
-								//Dont need the extra bit here
-							}
-							else if (action.elementDeleted == "comment") {
-								linkStr == "#" + action.idOfComment;
-							}
-							else if (action.elementDeleted == "reply") {
-								linkStr == "#" + action.idOfReply;
-							}
+                                stringsArray.push("The mute was made on " + action.whenMade);
+                                // -1970 years because thats the start of computer time
+                                stringsArray.push("The mute will be released on: " + action.whenRelease);
+                                stringsArray.push("Moderator message: " + action.descriptionByMod);
+                                break;
+                            // Forum remove
+                            case "remove":
+                                stringsArray[0] = action.modWhoBanned.username + " removed " + action.bannedPlayer.username + "'s " + action.elementDeleted + ".";
+                                stringsArray[0] += " Reason: " + action.reason + ".";
 
-							stringsArray[3] = "The link to the article is: <a href='/forum/show/" + action.idOfForum + linkStr + "'>Here</a>";
-							break;
-					}
+                                stringsArray[1] = "The removal occured on " + action.whenMade;
+                                stringsArray[2] = "Moderator message: " + action.descriptionByMod;
 
-					var log = {};
-					log.stringsArray = stringsArray;
-					log.date = action.whenMade;
+                                //Get the extra link bit (The # bit to select to a specific comment/reply)
+                                linkStr = "";
+                                if (action.elementDeleted === "forum") {
+                                    //Dont need the extra bit here
+                                }
+                                else if (action.elementDeleted == "comment") {
+                                    linkStr == "#" + action.idOfComment;
+                                }
+                                else if (action.elementDeleted == "reply") {
+                                    linkStr == "#" + action.idOfReply;
+                                }
 
-					logsObj.push(log);
-				});
+                                stringsArray[3] = "The link to the article is: <a href='/forum/show/" + action.idOfForum + linkStr + "'>Here</a>";
+                                break;
+                        }
 
-				var obj = {};
-				obj.logs = logsObj;
+                        var log = {};
+                        log.stringsArray = stringsArray;
+                        log.date = action.whenMade;
 
-				//sort in newest to oldest
-				// obj.logs.sort(compareLogObjs);
+                        logsObj.push(log);
+                    });
 
-				res.status(200).send(obj);
-			}
-		});
-	}
+                    var obj = {};
+                    obj.logs = logsObj;
+
+                    //sort in newest to oldest
+                    // obj.logs.sort(compareLogObjs);
+
+                    res.status(200).send(obj);
+                }
+            });
+    }
 });
 
 
 router.get("/mod", middleware.isMod, function (req, res) {
-	res.render("mod/mod", { currentUser: req.user, isMod: true, headerActive: "mod" });
+    res.render("mod/mod", { currentUser: req.user, isMod: true, headerActive: "mod" });
 });
 
 
 function gameDateCompare(a, b) {
-	if (a.date < b.date) {
-		return -1;
-	}
-	if (a.date > b.date) {
-		return 1;
-	}
-	else {
-		return 0;
-	}
+    if (a.date < b.date) {
+        return -1;
+    }
+    if (a.date > b.date) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
 }
 
 
 
 router.get("/ajax/getStatistics", function (req, res) {
 
-    statsCumulative.findOne({}).exec(function(err, record) {
-       if(err) {
-           console.log(err);
-           res.status(200).send("Something went wrong");
-       } 
-       else{
-        //    console.log(record);
-           if(record === undefined || record === null){
+    statsCumulative.findOne({}).exec(function (err, record) {
+        if (err) {
+            console.log(err);
+            res.status(200).send("Something went wrong");
+        }
+        else {
+            //    console.log(record);
+            if (record === undefined || record === null) {
                 res.status(200).send("Something went wrong");
             }
-            else{
+            else {
                 // console.log(record);
                 res.status(200).send(JSON.parse(record.data));
             }
@@ -485,54 +486,54 @@ router.get("/ajax/getStatistics", function (req, res) {
     });
 });
 
-var anonymizeArray = function(array, idmap) {
+var anonymizeArray = function (array, idmap) {
     if (!array) {
-	return array;
+        return array;
     }
     var anonArray = [];
     for (var i = 0; i < array.length; i++) {
-	anonArray.push(idmap[array[i]]);
+        anonArray.push(idmap[array[i]]);
     }
     return anonArray;
 }
 
-var anonymizeMapKeys = function(map, idmap) {
+var anonymizeMapKeys = function (map, idmap) {
     if (!map) {
-	return map;
+        return map;
     }
     var anonMap = JSON.parse(JSON.stringify(map));
     for (var key in map) {
         if (!map.hasOwnProperty(key)) {
-	    continue;
-	}
-	if (key !== idmap[key]) {
-    	    Object.defineProperty(anonMap, idmap[key], Object.getOwnPropertyDescriptor(anonMap, key));
-    	    delete anonMap[key];
-	}
+            continue;
+        }
+        if (key !== idmap[key]) {
+            Object.defineProperty(anonMap, idmap[key], Object.getOwnPropertyDescriptor(anonMap, key));
+            delete anonMap[key];
+        }
     }
     return anonMap;
 }
 
-var anonymizeStats = function(records) {
+var anonymizeStats = function (records) {
     var anonymizedRecords = [];
     for (var key in records) {
-	var record = records[key];
-	var anonymizedRecord = JSON.parse(JSON.stringify(record));
-	var usernamesMap = {};
-	var usernamesPossible = 'abcdefghijklmnopqrstuvwxyz', idx = 0;
-	for (var key in record.playerRoles) {
-	    if (record.playerRoles.hasOwnProperty(key)) {
-	        usernamesMap[key] = usernamesPossible[idx++];
-	    }
-	}
-	anonymizedRecord.spyTeam = anonymizeArray(record.spyTeam, usernamesMap);
-	anonymizedRecord.resistanceTeam = anonymizeArray(record.resistanceTeam, usernamesMap);
-	anonymizedRecord.ladyHistoryUsernames = anonymizeArray(record.ladyHistoryUsernames, usernamesMap);
-	anonymizedRecord.refHistoryUsernames = anonymizeArray(record.refHistoryUsernames, usernamesMap);
-	anonymizedRecord.sireHistoryUsernames = anonymizeArray(record.sireHistoryUsernames, usernamesMap);
-	anonymizedRecord.voteHistory = anonymizeMapKeys(record.voteHistory, usernamesMap);
-	anonymizedRecord.playerRoles = anonymizeMapKeys(record.playerRoles, usernamesMap);
-	anonymizedRecords.push(anonymizedRecord);
+        var record = records[key];
+        var anonymizedRecord = JSON.parse(JSON.stringify(record));
+        var usernamesMap = {};
+        var usernamesPossible = 'abcdefghijklmnopqrstuvwxyz', idx = 0;
+        for (var key in record.playerRoles) {
+            if (record.playerRoles.hasOwnProperty(key)) {
+                usernamesMap[key] = usernamesPossible[idx++];
+            }
+        }
+        anonymizedRecord.spyTeam = anonymizeArray(record.spyTeam, usernamesMap);
+        anonymizedRecord.resistanceTeam = anonymizeArray(record.resistanceTeam, usernamesMap);
+        anonymizedRecord.ladyHistoryUsernames = anonymizeArray(record.ladyHistoryUsernames, usernamesMap);
+        anonymizedRecord.refHistoryUsernames = anonymizeArray(record.refHistoryUsernames, usernamesMap);
+        anonymizedRecord.sireHistoryUsernames = anonymizeArray(record.sireHistoryUsernames, usernamesMap);
+        anonymizedRecord.voteHistory = anonymizeMapKeys(record.voteHistory, usernamesMap);
+        anonymizedRecord.playerRoles = anonymizeMapKeys(record.playerRoles, usernamesMap);
+        anonymizedRecords.push(anonymizedRecord);
     }
     return anonymizedRecords;
 }
@@ -548,11 +549,11 @@ var anonymizeStats = function(records) {
 
 
 router.get("/gameRecordsData", function (req, res) {
-	res.download("assets/gameRecordsData/gameRecordsDataAnon.json");
+    res.download("assets/gameRecordsData/gameRecordsDataAnon.json");
 });
 
 
-var hardUpdateStatsFunction = function(){
+var hardUpdateStatsFunction = function () {
     console.log("Starting hard update stats...");
     gameRecord.find({}).exec(function (err, records) {
         if (err) {
@@ -560,17 +561,17 @@ var hardUpdateStatsFunction = function(){
         }
         else {
             var prevRecordsLength = records.length;
-			console.log(records.length + " games loaded.");
-			fs.writeFileSync('assets/gameRecordsData/gameRecordsData.json', JSON.stringify(records));
+            console.log(records.length + " games loaded.");
+            fs.writeFileSync('assets/gameRecordsData/gameRecordsData.json', JSON.stringify(records));
             // Anonymize it using gameRecordsData
 
             // Filter out the bot games
-            records = records.filter(function(r){ return (r.gameMode === undefined || r.gameMode.toLowerCase().includes("bot") == false)} );
+            records = records.filter(function (r) { return (r.gameMode === undefined || r.gameMode.toLowerCase().includes("bot") == false) });
             console.log("Removed " + (prevRecordsLength - records.length) + " bot games from dataset.");
 
-			var gameRecordsDataAnon = anonymizeStats(records); 
+            var gameRecordsDataAnon = anonymizeStats(records);
 
-			fs.writeFileSync('assets/gameRecordsData/gameRecordsDataAnon.json', JSON.stringify(gameRecordsDataAnon));
+            fs.writeFileSync('assets/gameRecordsData/gameRecordsDataAnon.json', JSON.stringify(gameRecordsDataAnon));
 
 
             var obj = {};
@@ -830,154 +831,154 @@ var hardUpdateStatsFunction = function(){
 
             console.log("Done processing, now saving.");
 
-            statsCumulative.remove({}, function(err){
-                if(err){
+            statsCumulative.remove({}, function (err) {
+                if (err) {
                     console.log(err);
                 }
-                else{
+                else {
                     console.log("Removed past cumulative object");
-                    statsCumulative.create({data: JSON.stringify(clientStatsData)}, function(err){
+                    statsCumulative.create({ data: JSON.stringify(clientStatsData) }, function (err) {
                         console.log("Successfully saved new cumulative object");
                     });
                 }
-            }); 
+            });
 
             // res.status(200).send(clientStatsData);
         }
-    }); 
+    });
 }
 
-router.get("/updateStats", function(req, res){
-	setTimeout(hardUpdateStatsFunction, 5000);
-	res.send("Starting update...");
+router.get("/updateStats", function (req, res) {
+    setTimeout(hardUpdateStatsFunction, 5000);
+    res.send("Starting update...");
 });
 
 
 
 router.get("/ajax/profile/getProfileData/:profileUsername", function (req, res) {
-	User.findOne({ username: req.params.profileUsername }, function (err, foundUser) {
-		if (err) {
-			console.log(err);
-			res.status(200).send("error");
-		}
-		else {
-			if (foundUser) {
-				var sendUserData = {};
-				sendUserData.username = foundUser.username;
-				sendUserData.avatarImgRes = foundUser.avatarImgRes;
-				sendUserData.avatarImgSpy = foundUser.avatarImgSpy;
-				sendUserData.nationality = foundUser.nationality;
-				sendUserData.nationCode = foundUser.nationCode;
-				sendUserData.dateJoined = foundUser.dateJoined;
-				sendUserData.biography = foundUser.biography;
-				sendUserData.hideStats = foundUser.hideStats;
+    User.findOne({ username: req.params.profileUsername }, function (err, foundUser) {
+        if (err) {
+            console.log(err);
+            res.status(200).send("error");
+        }
+        else {
+            if (foundUser) {
+                var sendUserData = {};
+                sendUserData.username = foundUser.username;
+                sendUserData.avatarImgRes = foundUser.avatarImgRes;
+                sendUserData.avatarImgSpy = foundUser.avatarImgSpy;
+                sendUserData.nationality = foundUser.nationality;
+                sendUserData.nationCode = foundUser.nationCode;
+                sendUserData.dateJoined = foundUser.dateJoined;
+                sendUserData.biography = foundUser.biography;
+                sendUserData.hideStats = foundUser.hideStats;
 
-				if (!foundUser.hideStats) {
-					sendUserData.totalGamesPlayed = foundUser.totalGamesPlayed;
-					sendUserData.totalWins = foundUser.totalWins;
-					sendUserData.totalLosses = foundUser.totalLosses;
-					sendUserData.totalTimePlayed = foundUser.totalTimePlayed;
-					sendUserData.roleStats = foundUser.roleStats;
-					sendUserData.totalResWins = foundUser.totalResWins;
-					sendUserData.totalResLosses = foundUser.totalResLosses;
-				}
-
-
-				res.status(200).send(sendUserData);
-			}
+                if (!foundUser.hideStats) {
+                    sendUserData.totalGamesPlayed = foundUser.totalGamesPlayed;
+                    sendUserData.totalWins = foundUser.totalWins;
+                    sendUserData.totalLosses = foundUser.totalLosses;
+                    sendUserData.totalTimePlayed = foundUser.totalTimePlayed;
+                    sendUserData.roleStats = foundUser.roleStats;
+                    sendUserData.totalResWins = foundUser.totalResWins;
+                    sendUserData.totalResLosses = foundUser.totalResLosses;
+                }
 
 
+                res.status(200).send(sendUserData);
+            }
 
 
-		}
-	});
-	// console.log("Received AJAX request");
+
+
+        }
+    });
+    // console.log("Received AJAX request");
 });
 
 
 
 router.get("/ajax/seenNotification", function (req, res) {
-	// console.log("seen nofication");
-	// console.log(req.query.idOfNotif);
+    // console.log("seen nofication");
+    // console.log(req.query.idOfNotif);
 
 
-	// console.log(mongoose.Types.ObjectId(req.query.idOfNotif));
+    // console.log(mongoose.Types.ObjectId(req.query.idOfNotif));
 
-	myNotification.findById(mongoose.Types.ObjectId(req.query.idOfNotif), function (err, notif) {
-		if (err) {
-			console.log(err);
-		}
-		if (notif && notif !== null && notif !== undefined) {
-			notif.seen = true;
-			var promiseReturned = notif.save();
+    myNotification.findById(mongoose.Types.ObjectId(req.query.idOfNotif), function (err, notif) {
+        if (err) {
+            console.log(err);
+        }
+        if (notif && notif !== null && notif !== undefined) {
+            notif.seen = true;
+            var promiseReturned = notif.save();
 
-			promiseReturned.then(function () {
-				User.findOne({ username: req.user.username }).populate("notifications").exec(async function (err, foundUser) {
+            promiseReturned.then(function () {
+                User.findOne({ username: req.user.username }).populate("notifications").exec(async function (err, foundUser) {
 
-					foundUser.markModified("notifications");
-					await foundUser.save();
+                    foundUser.markModified("notifications");
+                    await foundUser.save();
 
-				});
-			});
-		}
+                });
+            });
+        }
 
-	});
+    });
 
-	res.status(200).send("done");
+    res.status(200).send("done");
 
 });
 
 
 router.get("/ajax/hideNotification", function (req, res) {
-	// console.log("hide nofication");
-	// console.log(req.query.idOfNotif);
+    // console.log("hide nofication");
+    // console.log(req.query.idOfNotif);
 
 
-	// console.log(mongoose.Types.ObjectId(req.query.idOfNotif));
+    // console.log(mongoose.Types.ObjectId(req.query.idOfNotif));
 
-	myNotification.findByIdAndRemove(mongoose.Types.ObjectId(req.query.idOfNotif), function (err) {
-		if (err) {
-			console.log(err);
-		}
+    myNotification.findByIdAndRemove(mongoose.Types.ObjectId(req.query.idOfNotif), function (err) {
+        if (err) {
+            console.log(err);
+        }
 
-		if (req !== undefined && req.user !== undefined) {
-			User.findOne({ username: req.user.username }).populate("notifications").exec(async function (err, foundUser) {
+        if (req !== undefined && req.user !== undefined) {
+            User.findOne({ username: req.user.username }).populate("notifications").exec(async function (err, foundUser) {
 
-				foundUser.markModified("notifications");
-				await foundUser.save();
+                foundUser.markModified("notifications");
+                await foundUser.save();
 
-			});
-		}
-	});
+            });
+        }
+    });
 
-	res.status(200).send("done");
+    res.status(200).send("done");
 
 });
 
 router.get("/ajax/hideAllNotifications", function (req, res) {
-	// console.log("hide all nofications");
+    // console.log("hide all nofications");
 
-	User.findById(req.user._id).populate("notifications").exec(async function (err, foundUser) {
-		if (err) {
-			console.log(err);
-		}
-		// console.log(foundUser.notifications);
+    User.findById(req.user._id).populate("notifications").exec(async function (err, foundUser) {
+        if (err) {
+            console.log(err);
+        }
+        // console.log(foundUser.notifications);
 
-		foundUser.notifications.forEach(function (notif) {
-			// console.log("removing notif");
-			// console.log(notif);
-			myNotification.findByIdAndRemove(notif._id, function (err) {
-				// console.log("callback");
-			});
-		});
+        foundUser.notifications.forEach(function (notif) {
+            // console.log("removing notif");
+            // console.log(notif);
+            myNotification.findByIdAndRemove(notif._id, function (err) {
+                // console.log("callback");
+            });
+        });
 
-		foundUser.notifications = [];
+        foundUser.notifications = [];
 
-		foundUser.markModified("notifications");
-		foundUser.save();
+        foundUser.markModified("notifications");
+        foundUser.save();
 
-	});
-	res.status(200).send("done");
+    });
+    res.status(200).send("done");
 });
 
 
@@ -1011,18 +1012,18 @@ router.get("/ajax/hideAllNotifications", function (req, res) {
 // }
 
 function escapeTextUsername(req, res, next) {
-	req.body.username = escapeText(req.body.username);
-	next();
+    req.body.username = escapeText(req.body.username);
+    next();
 }
 
 function sanitiseUsername(req, res, next) {
 
-	req.body.username = sanitizeHtml(req.body.username, {
-		allowedTags: [],
-		allowedAttributes: []
-	});
+    req.body.username = sanitizeHtml(req.body.username, {
+        allowedTags: [],
+        allowedAttributes: []
+    });
 
-	next();
+    next();
 }
 
 var bannedIps = [];
@@ -1031,85 +1032,85 @@ var foundBannedIpsArray = [];
 // updateBannedIps();
 
 function updateBannedIps() {
-	return banIp.find({}, function (err, foundBannedIps) {
-		if (err) { console.log(err); }
-		else {
+    return banIp.find({}, function (err, foundBannedIps) {
+        if (err) { console.log(err); }
+        else {
             bannedIps = [];
             foundBannedIpsArray = [];
-			// console.log(foundBannedIps);
-			if (foundBannedIps) {
-				foundBannedIps.forEach(function (oneBannedIp) {
-					bannedIps.push(oneBannedIp.bannedIp);
-					foundBannedIpsArray.push(oneBannedIp);
-				});
-			}
-		}
-	}).exec();
+            // console.log(foundBannedIps);
+            if (foundBannedIps) {
+                foundBannedIps.forEach(function (oneBannedIp) {
+                    bannedIps.push(oneBannedIp.bannedIp);
+                    foundBannedIpsArray.push(oneBannedIp);
+                });
+            }
+        }
+    }).exec();
 }
 
 
 async function checkIpBan(req, res, next) {
-	var clientIpAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    var clientIpAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
-	await updateBannedIps();
+    await updateBannedIps();
 
-	if (bannedIps.indexOf(clientIpAddress) === -1) {
-		// console.log("NEXT");
-		next();
-	}
-	else {
-		var index = bannedIps.indexOf(clientIpAddress);
+    if (bannedIps.indexOf(clientIpAddress) === -1) {
+        // console.log("NEXT");
+        next();
+    }
+    else {
+        var index = bannedIps.indexOf(clientIpAddress);
 
-		var username = req.body.username || req.user.username;
-		username = username.toLowerCase();
+        var username = req.body.username || req.user.username;
+        username = username.toLowerCase();
 
-		if (!foundBannedIpsArray[index].usernamesAssociated) {
-			foundBannedIpsArray[index].usernamesAssociated = [];
-		}
+        if (!foundBannedIpsArray[index].usernamesAssociated) {
+            foundBannedIpsArray[index].usernamesAssociated = [];
+        }
 
-		//if their username isnt associated with the ip ban, add their username to it for record.
-		if (foundBannedIpsArray[index].usernamesAssociated.indexOf(username) === -1) {
-			foundBannedIpsArray[index].usernamesAssociated.push(username);
-		}
+        //if their username isnt associated with the ip ban, add their username to it for record.
+        if (foundBannedIpsArray[index].usernamesAssociated.indexOf(username) === -1) {
+            foundBannedIpsArray[index].usernamesAssociated.push(username);
+        }
 
-		foundBannedIpsArray[index].save();
+        foundBannedIpsArray[index].save();
 
 
-		req.flash("error", "You have been banned.");
-		res.redirect("/");
-	}
+        req.flash("error", "You have been banned.");
+        res.redirect("/");
+    }
 }
 
 async function checkCurrentBan(req, res, next) {
 
-	// var currentModActions = [];
-	// //load up all the modActions that are not released yet and are bans
-	// await modAction.find({ whenRelease: { $gt: new Date() }, type: "ban" }, function (err, allModActions) {
+    // var currentModActions = [];
+    // //load up all the modActions that are not released yet and are bans
+    // await modAction.find({ whenRelease: { $gt: new Date() }, type: "ban" }, function (err, allModActions) {
 
-	// 	for (var i = 0; i < allModActions.length; i++) {
-	// 		currentModActions.push(allModActions[i]);
-	// 	}
-	// });
+    // 	for (var i = 0; i < allModActions.length; i++) {
+    // 		currentModActions.push(allModActions[i]);
+    // 	}
+    // });
 
-	// for (var i = 0; i < currentModActions.length; i++) {
-	// 	if (currentModActions[i].bannedPlayer !== undefined && req.user !== undefined && req.user.username.toString() === currentModActions[i].bannedPlayer.username.toString()) {
-	// 		if (currentModActions[i].type === "ban") {
-	// 			console.log("TRUE");
-	// 			console.log(currentModActions[i]);
-	// 			console.log(req.user.username);
-	// 			console.log(currentModActions[i].bannedPlayer.username);
-	// 			var message = "You have been banned. The ban will be released on " + currentModActions[i].whenRelease + ". Ban description: '" + currentModActions[i].descriptionByMod + "'";
-	// 			message += " Reflect on your actions.";
-	// 			req.flash("error", message);
-	// 			res.redirect("/")
+    // for (var i = 0; i < currentModActions.length; i++) {
+    // 	if (currentModActions[i].bannedPlayer !== undefined && req.user !== undefined && req.user.username.toString() === currentModActions[i].bannedPlayer.username.toString()) {
+    // 		if (currentModActions[i].type === "ban") {
+    // 			console.log("TRUE");
+    // 			console.log(currentModActions[i]);
+    // 			console.log(req.user.username);
+    // 			console.log(currentModActions[i].bannedPlayer.username);
+    // 			var message = "You have been banned. The ban will be released on " + currentModActions[i].whenRelease + ". Ban description: '" + currentModActions[i].descriptionByMod + "'";
+    // 			message += " Reflect on your actions.";
+    // 			req.flash("error", message);
+    // 			res.redirect("/")
 
-	// 			// console.log(req.user.username + " is still banned and cannot join the lobby.");
-	// 			return;
-	// 		}
-	// 	}
-	// }
+    // 			// console.log(req.user.username + " is still banned and cannot join the lobby.");
+    // 			return;
+    // 		}
+    // 	}
+    // }
 
-	next();
+    next();
 
 }
 
@@ -1118,82 +1119,82 @@ module.exports = router;
 
 
 function usernameContainsBadCharacter(str) {
-	//only allow alphanumerical
-	var regx = /^[A-Za-z0-9]+$/;
+    //only allow alphanumerical
+    var regx = /^[A-Za-z0-9]+$/;
 
-	if (str.includes('&amp;') ||
-		str.includes('&lt;') ||
-		str.includes('&gt;') ||
-		str.includes('&apos;') ||
-		str.includes('&quot;') ||
-		str.includes("[") ||
-		str.includes("]") ||
-		str.includes("/") ||
-		str.includes("\\") ||
-		str.includes("&") ||
-		str.includes(";")
-	) {
-		return true;
-	}
-	else if (!regx.test(str)) {
-		return true;
-	}
-	else {
-		return false;
-	}
+    if (str.includes('&amp;') ||
+        str.includes('&lt;') ||
+        str.includes('&gt;') ||
+        str.includes('&apos;') ||
+        str.includes('&quot;') ||
+        str.includes("[") ||
+        str.includes("]") ||
+        str.includes("/") ||
+        str.includes("\\") ||
+        str.includes("&") ||
+        str.includes(";")
+    ) {
+        return true;
+    }
+    else if (!regx.test(str)) {
+        return true;
+    }
+    else {
+        return false;
+    }
 
 }
 
 
 function escapeText(str) {
-	return str
-		.replace(/&/g, '&amp;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;')
-		.replace(/'/g, '&apos;')
-		.replace(/"/g, '&quot;')
-		.replace(/(?:\r\n|\r|\n)/g, ' <br>');
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/'/g, '&apos;')
+        .replace(/"/g, '&quot;')
+        .replace(/(?:\r\n|\r|\n)/g, ' <br>');
 };
 
 
 var defaultValuesForUser = {
-	avatarImgRes: null,
-	avatarImgSpy: null,
+    avatarImgRes: null,
+    avatarImgSpy: null,
 
-	totalTimePlayed: 0,
-	totalGamesPlayed: 0,
+    totalTimePlayed: 0,
+    totalGamesPlayed: 0,
 
-	totalWins: 0,
-	totalResWins: 0,
-	totalLosses: 0,
-	totalResLosses: 0,
+    totalWins: 0,
+    totalResWins: 0,
+    totalLosses: 0,
+    totalResLosses: 0,
 
-	winsLossesGameSizeBreakdown: {},
+    winsLossesGameSizeBreakdown: {},
 
-	nationality: "",
-	timeZone: "",
-	biography: "",
+    nationality: "",
+    timeZone: "",
+    biography: "",
 
-	roleStats: {
-		"5p": {
-			"merlin": {
+    roleStats: {
+        "5p": {
+            "merlin": {
 
-			},
-			"percival": {
+            },
+            "percival": {
 
-			},
-			"assassin": {
+            },
+            "assassin": {
 
-			},
-			"morgana": {
+            },
+            "morgana": {
 
-			},
-			"spy": {
+            },
+            "spy": {
 
-			},
-			"resistance": {
+            },
+            "resistance": {
 
-			}
-		}
-	}
+            }
+        }
+    }
 }
