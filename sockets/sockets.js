@@ -1897,31 +1897,31 @@ var applyApplicableRewards = function (socket) {
 
 	// Admin badge
 	if (socket.rewards.includes(REWARDS.ADMIN_BADGE)) {
-		socket.request.displayUsername = socket.request.displayUsername + " [A]";
+		socket.request.displayUsername = socket.request.displayUsername + " <span class='badge' data-toggle='tooltip' data-placement='right' title='Admin' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>A</span>";
 		// socket.request.displayUsername = "[A] " + socket.request.displayUsername;
 	}
 	// Moderator badge
 	else if (socket.rewards.includes(REWARDS.MOD_BADGE)) {
-		socket.request.displayUsername = socket.request.displayUsername + " [M]";
+		socket.request.displayUsername = socket.request.displayUsername + " <span class='badge' data-toggle='tooltip' data-placement='right' title='Moderator' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>M</span>";
 		// socket.request.displayUsername = "[M] " + socket.request.displayUsername;
 	}
 
 
 	// Tier4 badge
 	if (socket.rewards.includes(REWARDS.TIER4_BADGE)) {
-		socket.request.displayUsername = socket.request.displayUsername + " [T4]";
+		socket.request.displayUsername = socket.request.displayUsername + " <span class='badge' data-toggle='tooltip' data-placement='right' title='Patreon T4' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>T4</span>";
 	}
 	// Tier3 badge
 	else if (socket.rewards.includes(REWARDS.TIER3_BADGE)) {
-		socket.request.displayUsername = socket.request.displayUsername + " [T3]";
+		socket.request.displayUsername = socket.request.displayUsername + " <span class='badge' data-toggle='tooltip' data-placement='right' title='Patreon T3' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>T3</span>";
 	}
 	// Tier2 badge
 	else if (socket.rewards.includes(REWARDS.TIER2_BADGE)) {
-		socket.request.displayUsername = socket.request.displayUsername + " [T2]";
+		socket.request.displayUsername = socket.request.displayUsername + " <span class='badge' data-toggle='tooltip' data-placement='right' title='Patreon T2' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>T2</span>";
 	}
 	// Tier1 badge
 	else if (socket.rewards.includes(REWARDS.TIER1_BADGE)) {
-		socket.request.displayUsername = socket.request.displayUsername + " [T1]";
+		socket.request.displayUsername = socket.request.displayUsername + " <span class='badge' data-toggle='tooltip' data-placement='right' title='Patreon T1' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>T1</span>";
 	}
 
 

@@ -69,13 +69,11 @@ function getPledges(access_token, callback) {
 //     }
 // });
 
-router.get('/', (req, res) => {
-    res.send(`<a href="${loginUrl}">Login with Patreon</a>`)
+// router.get('/', (req, res) => {
+//     res.send(`<a href="${loginUrl}">Login with Patreon</a>`)
 
-    // <a href="https://www.patreon.com/bePatron?u=15685660" data-patreon-widget-type="become-patron-button">Become a Patron!</a><script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
-
-
-});
+//     // <a href="https://www.patreon.com/bePatron?u=15685660" data-patreon-widget-type="become-patron-button">Become a Patron!</a><script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
+// });
 
 router.get('/oauth/test_redirect', (req, res) => {
     var { code } = req.query
