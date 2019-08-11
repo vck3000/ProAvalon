@@ -75,7 +75,7 @@ function getPledges(access_token, callback) {
 //     // <a href="https://www.patreon.com/bePatron?u=15685660" data-patreon-widget-type="become-patron-button">Become a Patron!</a><script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
 // });
 
-router.get('/oauth/test_redirect', (req, res) => {
+router.get('/oauth/redirect', (req, res) => {
     var { code } = req.query
     let token
     console.log("HIHI");
