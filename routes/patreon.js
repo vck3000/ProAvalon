@@ -69,18 +69,16 @@ function getPledges(access_token, callback) {
 //     }
 // });
 
-router.get('/', (req, res) => {
-    res.send(`<a href="${loginUrl}">Login with Patreon</a>`)
+// router.get('/', (req, res) => {
+//     res.send(`<a href="${loginUrl}">Login with Patreon</a>`)
 
-    // <a href="https://www.patreon.com/bePatron?u=15685660" data-patreon-widget-type="become-patron-button">Become a Patron!</a><script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
+//     // <a href="https://www.patreon.com/bePatron?u=15685660" data-patreon-widget-type="become-patron-button">Become a Patron!</a><script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
+// });
 
-
-});
-
-router.get('/oauth/test_redirect', (req, res) => {
+router.get('/oauth/redirect', (req, res) => {
     var { code } = req.query
     let token
-
+    console.log("HIHI");
     if (!req.user) {
         req.flash("error", "Please sign in to link your patreon account.")
         res.redirect("/");
@@ -161,8 +159,6 @@ router.get('/oauth/test_redirect', (req, res) => {
                                 console.log("Patreon ID is not expired. Updating details.");
                                 patreonIdObj.amount_cents = patreon_amount_cents;
                                 patreonIdObj.markModified("amount_cents");
-                                patreonIdObj.declined_since = patreon_declined_since;
-                                patreonIdObj.markModified("declined_since");
                                 await patreonIdObj.save();
 
                                 req.flash("success", "This Patreon ID has not expired and is already linked with an account. Its details have been updated however.");

@@ -52,6 +52,8 @@ $(".chat-message-input").on('keydown', function (e) {
 
             var newStr = together;
 
+            newStr = newStr.split(" ")[0];
+
             //set the new text
             $(e.target).val(newStr);
         }
