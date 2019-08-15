@@ -1,10 +1,10 @@
-var mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-//SCHEMA SETUP
-var statsCumulativeSchema = new mongoose.Schema({
-    data: String
+// SCHEMA SETUP
+const statsCumulativeSchema = new mongoose.Schema({
+    data: String,
 });
-//compile schema into a model
-var statsCumulative = mongoose.model("statsCumulative", statsCumulativeSchema);
+// compile schema into a model
+const statsCumulative = mongoose.model('statsCumulative', statsCumulativeSchema);
 
 module.exports = statsCumulative;

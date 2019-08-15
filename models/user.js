@@ -1,66 +1,66 @@
-var mongoose = require("mongoose");
-var passportLocalMongoose = require("passport-local-mongoose");
+const mongoose = require('mongoose');
+const passportLocalMongoose = require('passport-local-mongoose');
 
-var UserSchema = new mongoose.Schema({
-	username: String,
-	usernameLower: String,
-	password: String,
-	avatarImgRes: String,
-	avatarImgSpy: String,
+const UserSchema = new mongoose.Schema({
+    username: String,
+    usernameLower: String,
+    password: String,
+    avatarImgRes: String,
+    avatarImgSpy: String,
 
-	avatarHide: Boolean,
+    avatarHide: Boolean,
 
-	hideStats: Boolean,
-
-
-	dateJoined: Date,
-	totalTimePlayed: Date,
+    hideStats: Boolean,
 
 
-	totalGamesPlayed: Number,
+    dateJoined: Date,
+    totalTimePlayed: Date,
 
 
-	totalWins: Number,
-	totalResWins: Number,
-	totalLosses: Number,
-	totalResLosses: Number,
-
-	winsLossesGameSizeBreakdown: Object,
-
-	nationality: String,
-	nationCode: String,
-	timeZone: String,
-	biography: String,
+    totalGamesPlayed: Number,
 
 
-	//dont need to worry about roleWins growing out of control
-	//since there are a limited amount of roles, and each role 
-	//only has one Number attached to it
-	roleStats: Object,
+    totalWins: Number,
+    totalResWins: Number,
+    totalLosses: Number,
+    totalResLosses: Number,
 
-	notifications: [
-		{
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "notification"
-		}
-	],
+    winsLossesGameSizeBreakdown: Object,
+
+    nationality: String,
+    nationCode: String,
+    timeZone: String,
+    biography: String,
 
 
-	modAction: [
-		{
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "ModAction"
-		}
-	],
+    // dont need to worry about roleWins growing out of control
+    // since there are a limited amount of roles, and each role
+    // only has one Number attached to it
+    roleStats: Object,
 
-	mutedPlayers: [
-		String
-	],
+    notifications: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'notification',
+        },
+    ],
 
-	patreonId: String
+
+    modAction: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'ModAction',
+        },
+    ],
+
+    mutedPlayers: [
+        String,
+    ],
+
+    patreonId: String,
 });
 
 
 UserSchema.plugin(passportLocalMongoose);
 
-module.exports = mongoose.model("User", UserSchema);
+module.exports = mongoose.model('User', UserSchema);

@@ -1,21 +1,21 @@
-//This file helps us load in the rewards from the folder
+// This file helps us load in the rewards from the folder
 
 class index {
-    //Import all the rewards
+    // Import all the rewards
     getAllRewards(thisRoom) {
-        var normalizedPath = require("path").join(__dirname, "./allRewards");
+        const normalizedPath = require('path').join(__dirname, './allRewards');
 
-        var allRewards = {};
+        const allRewards = {};
 
-        require("fs").readdirSync(normalizedPath).forEach(function (file) {
+        require('fs').readdirSync(normalizedPath).forEach((file) => {
             // console.log(file);
 
             // If it is a javascript file, add it
-            if (file.includes(".js") === true) {
+            if (file.includes('.js') === true) {
                 // Trim .js at the end of the file name
-                let name = file.replace(".js", "");
+                const name = file.replace('.js', '');
 
-                allRewards[name] = require("./allRewards/" + file);
+                allRewards[name] = require(`./allRewards/${file}`);
             }
         });
 
@@ -24,5 +24,3 @@ class index {
 }
 
 module.exports = index;
-
-
