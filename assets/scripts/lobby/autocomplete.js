@@ -1,5 +1,5 @@
 
-var autoCompleteStrs = [];
+let autoCompleteStrs = []; // eslint-disable-line
 
 var lastKeyPress;
 $(".chat-message-input").on('keydown', function (e) {
