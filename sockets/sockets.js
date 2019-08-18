@@ -132,6 +132,8 @@ savedGameObj.find({}).exec((err, foundSaveGameArray) => {
 });
 
 const lastWhisperObj = {};
+var pmmodCooldowns = {};
+const PMMOD_TIMEOUT = 3000; // 3 seconds
 var actionsObj = {
     userCommands: {
         help: {
@@ -260,7 +262,7 @@ var actionsObj = {
                         rooms[socketThatWasSlappedInGame.request.user.inRoomId].sendText(rooms[socketThatWasSlappedInGame.request.user.inRoomId].allSockets, str, 'server-text');
                     }
 
-					 // {message: "You have " + verbPast + " " + args[2] + "!", classStr: "server-text"};
+                    // {message: "You have " + verbPast + " " + args[2] + "!", classStr: "server-text"};
                 } else {
                     // console.log(allSockets);
                     return { message: 'There is no such player.', classStr: 'server-text' };
@@ -309,6 +311,56 @@ var actionsObj = {
                 return { message: (Math.floor(Math.random() * 10) + 1).toString(), classStr: 'server-text' };
             },
         },
+
+        mods: {
+            command: 'mods',
+            help: '/mods: Shows a list of online moderators.',
+            run() {
+                const modUsers = getPlayerUsernamesFromAllSockets().filter((username) => modsArray.includes(username.toLowerCase()));
+                const message = `Currently online mods: ${modUsers.length > 0 ? modUsers.join(', ') : 'None'}.`;
+                return { message, classStr: "server-text" };
+            }
+        },
+
+        pmmod: {
+            command: 'pmmod',
+            help: '/pmmod <mod_username> <message>: Sends a private message to an online moderator.',
+            run(data, senderSocket) {
+                const { args } = data;
+                // We check if they are spamming, i.e. have sent a PM before the timeout is up
+                const lastPmTime = pmmodCooldowns[senderSocket.id];
+                if (lastPmTime) {
+                    const remaining = new Date() - lastPmTime;
+                    if (remaining < PMMOD_TIMEOUT) return { message: `Please wait ${Math.ceil((PMMOD_TIMEOUT - remaining) / 1000)} seconds before sending another pm!`, classStr: 'server-text' };
+                }
+                // Checks for various missing fields or errors
+                if (!args[1]) return { message: 'Please specify a mod to message. Type /mods to get a list of online mods.', classStr: 'server-text' };
+                if (!args[2]) return { message: 'Please specify a message to send.', classStr: 'server-text' };
+                const modSocket = allSockets[getIndexFromUsername(allSockets, args[1], true)];
+                if (!modSocket) return { message: `Could not find ${args[1]}.`, classStr: "server-text" }
+                if (modSocket.id === senderSocket.id) return { message: 'You cannot private message yourself!', classStr: "server-text" };
+                if (!modsArray.includes(args[1].toLowerCase())) return { message: `${args[1]} is not a mod. You may not private message them.`, classStr: 'server-text' };
+
+                let str = `${senderSocket.request.user.username}->${modSocket.request.user.username} (pmmod): ${args.slice(2).join(' ')}`;
+
+                const dataMessage = {
+                    message: str,
+                    dateCreated: new Date(),
+                    classStr: "whisper"
+                };
+
+                senderSocket.emit('allChatToClient', dataMessage);
+                senderSocket.emit('roomChatToClient', dataMessage);
+
+                modSocket.emit('allChatToClient', dataMessage);
+                modSocket.emit('roomChatToClient', dataMessage);
+
+                // Set a cooldown for the sender until they can send another pm
+                pmmodCooldowns[senderSocket.id] = new Date();
+            }
+        },
+
+
 
         mute: {
             command: 'mute',
@@ -497,8 +549,8 @@ var actionsObj = {
             run(data, senderSocket) {
                 // Check the guesser is at a table
                 if (senderSocket.request.user.inRoomId === undefined
-					|| rooms[senderSocket.request.user.inRoomId].gameStarted !== true
-					|| rooms[senderSocket.request.user.inRoomId].phase === 'finished') {
+                    || rooms[senderSocket.request.user.inRoomId].gameStarted !== true
+                    || rooms[senderSocket.request.user.inRoomId].phase === 'finished') {
                     messageToClient = 'You must be at a running table to guess Merlin.';
                 } else {
                     messageToClient = rooms[senderSocket.request.user.inRoomId].submitMerlinGuess(senderSocket.request.user.username, data.args[1]);
@@ -1930,9 +1982,9 @@ function playerLeaveRoomCheckDestroy(socket) {
 
         // if room is frozen for more than 1hr then remove.
         if (rooms[socket.request.user.inRoomId]
-			&& rooms[socket.request.user.inRoomId].timeFrozenLoaded
-			&& rooms[socket.request.user.inRoomId].getStatus() === 'Frozen'
-			&& rooms[socket.request.user.inRoomId].allSockets.length === 0) {
+            && rooms[socket.request.user.inRoomId].timeFrozenLoaded
+            && rooms[socket.request.user.inRoomId].getStatus() === 'Frozen'
+            && rooms[socket.request.user.inRoomId].allSockets.length === 0) {
             const curr = new Date();
             const timeToKill = 1000 * 60 * 5; // 5 mins
             // var timeToKill = 1000*10; //10s
@@ -2133,6 +2185,12 @@ function roomChatFromClient(data) {
             sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
             // ioGlobal.in(data.roomId).emit("roomChatToClient", data);
         }
+        var thisGame = rooms[roomId];
+        rooms[roomId].socketsOfPlayers.filter(function (socket) { return socket.isBotSocket; }).forEach(function (botSocket) {
+            botSocket.handleGameOver(thisGame, "complete", function () { }); // This room is getting destroyed. No need to leave.
+        });
+
+        rooms[roomId] = undefined;
     }
 }
 
@@ -2216,7 +2274,6 @@ function joinGame(roomId) {
             } else {
                 // console.log("Game has started, player " + this.request.user.username + " is not allowed to join.");
             }
-            updateCurrentGamesList();
         }
     }
 }
@@ -2237,7 +2294,6 @@ function standUpFromGame() {
             } else {
                 // console.log("Game has started, player " + this.request.user.username + " is not allowed to stand up.");
             }
-            updateCurrentGamesList();
         }
     }
 }
