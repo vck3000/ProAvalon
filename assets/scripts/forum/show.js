@@ -1,71 +1,69 @@
 function goBack() {
     // window.history.back();
-    //redirect back to forum page
-    window.location.replace("/forum");
+    // redirect back to forum page
+    window.location.replace('/forum');
 }
 
 
 function showAddComment() {
-    if ($(".addCommentDiv")[0].style.display === "block") {
-        $(".addCommentDiv")[0].style.display = "none";
-    }
-    else {
-        $(".addCommentDiv")[0].style.display = "block";
+    if ($('.addCommentDiv')[0].style.display === 'block') {
+        $('.addCommentDiv')[0].style.display = 'none';
+    } else {
+        $('.addCommentDiv')[0].style.display = 'block';
     }
 }
 
 
-//==============================================================================
-//Attach all the reply anchor links to their respective replyBox
-//==============================================================================
+//= =============================================================================
+// Attach all the reply anchor links to their respective replyBox
+//= =============================================================================
 
-//get all the reply anchor links
-var replies = document.querySelectorAll(".reply");
-//for each anchor link, add an event listener to its respective replyBox
-replies.forEach(function (reply) {
-    reply.addEventListener("click", function () {
-        var parent = this.parentNode;
-        //go up one more level
+// get all the reply anchor links
+const replies = document.querySelectorAll('.reply');
+// for each anchor link, add an event listener to its respective replyBox
+replies.forEach((reply) => {
+    reply.addEventListener('click', function () {
+        let parent = this.parentNode;
+        // go up one more level
         parent = parent.parentNode;
-        //get the child nodes of parent
-        var childNodes = parent.childNodes;
+        // get the child nodes of parent
+        const { childNodes } = parent;
 
-        var replyBox;
-        //Among all the childNodes, find a replyBox (that will be its respective replyBox)
-        for (var i = 0; i < childNodes.length; i++) {
-            if (childNodes[i].classList && childNodes[i].classList.contains("replyBox")) {
+        let replyBox;
+        // Among all the childNodes, find a replyBox (that will be its respective replyBox)
+        for (let i = 0; i < childNodes.length; i++) {
+            if (childNodes[i].classList && childNodes[i].classList.contains('replyBox')) {
                 replyBox = childNodes[i];
                 break;
             }
         }
-        //Toggle its hidden state to show/hide
+        // Toggle its hidden state to show/hide
         if (replyBox) {
-            replyBox.classList.toggle("hidden");
-            console.log(replyBox.querySelector("textarea"));
-            $(replyBox.querySelector("textarea")).summernote();
+            replyBox.classList.toggle('hidden');
+            console.log(replyBox.querySelector('textarea'));
+            $(replyBox.querySelector('textarea')).summernote();
         }
     });
 });
 
 
-//==============================================================================
-//Attach all the likes to the ajax requestse
-//==============================================================================
+//= =============================================================================
+// Attach all the likes to the ajax requestse
+//= =============================================================================
 
-//get all the reply anchor links
-var likes = document.querySelectorAll(".like");
-//for each anchor link, add an event listener to its respective replyBox
-likes.forEach(function (like) {
-    like.addEventListener("click", function () {
+// get all the reply anchor links
+const likes = document.querySelectorAll('.like');
+// for each anchor link, add an event listener to its respective replyBox
+likes.forEach((like) => {
+    like.addEventListener('click', function () {
+        const thisLike = this;
 
-        var thisLike = this;
+        const idofelement = this.getAttribute('idofelement');
+        const typeofelement = this.getAttribute('typeofelement');
 
-        var idofelement = this.getAttribute("idofelement");
-        var typeofelement = this.getAttribute("typeofelement");
-
-        var idOfReply = this.getAttribute("idofreply");
-        var idOfComment = this.getAttribute("idofcomment");
-        var idOfForum = this.getAttribute("idofforum");
+        const idOfReply = this.getAttribute('idofreply');
+        const idOfComment = this.getAttribute('idofcomment');
+        const idOfForum = this.getAttribute('idofforum');
 
 
         console.log(idOfReply);
@@ -74,124 +72,114 @@ likes.forEach(function (like) {
 
 
         xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("GET", "/forum/ajax/like/" + typeofelement + "/" + idOfForum + "=" + idOfComment + "=" + idOfReply, true);
+        xmlhttp.open('GET', `/forum/ajax/like/${typeofelement}/${idOfForum}=${idOfComment}=${idOfReply}`, true);
 
         xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                var message = xmlhttp.responseText;
+                const message = xmlhttp.responseText;
                 console.log(message);
 
-                if (message === "liked") {
-                    $(thisLike).notify("Liked", { position: "right", autoHideDelay: 1000, className: "success" });
-                    $("#" + idofelement + "likes")[0].innerText = parseInt($("#" + idofelement + "likes")[0].innerText) + 1
-                    $(thisLike)[0].innerText = "Unlike";
-                }
-                else if (message === "unliked") {
-                    $(thisLike).notify("Unliked", { position: "right", autoHideDelay: 1000, className: "info" });
-                    $("#" + idofelement + "likes")[0].innerText = parseInt($("#" + idofelement + "likes")[0].innerText) - 1
-                    $(thisLike)[0].innerText = "Like";
-                }
-                else {
-                    $(thisLike).notify("Error! Something went wrong...", { position: "right", autoHideDelay: 1000, className: "error" });
+                if (message === 'liked') {
+                    $(thisLike).notify('Liked', { position: 'right', autoHideDelay: 1000, className: 'success' });
+                    $(`#${idofelement}likes`)[0].innerText = parseInt($(`#${idofelement}likes`)[0].innerText) + 1;
+                    $(thisLike)[0].innerText = 'Unlike';
+                } else if (message === 'unliked') {
+                    $(thisLike).notify('Unliked', { position: 'right', autoHideDelay: 1000, className: 'info' });
+                    $(`#${idofelement}likes`)[0].innerText = parseInt($(`#${idofelement}likes`)[0].innerText) - 1;
+                    $(thisLike)[0].innerText = 'Like';
+                } else {
+                    $(thisLike).notify('Error! Something went wrong...', { position: 'right', autoHideDelay: 1000, className: 'error' });
                 }
             }
-        }
+        };
         xmlhttp.send();
-
-
     });
 });
 
 
-//==============================================================================
-//Attach all the Delete anchor links to their respective replyBox
-//==============================================================================
+//= =============================================================================
+// Attach all the Delete anchor links to their respective replyBox
+//= =============================================================================
 
-//get all the delete anchor links
-var deletes = document.querySelectorAll(".deleteComment");
-//for each anchor link, add an event listener to its respective replyBox
-deletes.forEach(function (singleDelete) {
-    singleDelete.addEventListener("click", function () {
-
-        var linkToDelete = this.getAttribute('linktodelete');
+// get all the delete anchor links
+var deletes = document.querySelectorAll('.deleteComment');
+// for each anchor link, add an event listener to its respective replyBox
+deletes.forEach((singleDelete) => {
+    singleDelete.addEventListener('click', function () {
+        const linkToDelete = this.getAttribute('linktodelete');
 
         swal({
-            title: "Are you sure you want to delete your comment?",
-            type: "warning",
+            title: 'Are you sure you want to delete your comment?',
+            type: 'warning',
             showCancelButton: true,
-            reverseButtons: true
+            reverseButtons: true,
         })
             .then((result) => {
                 if (result.value) {
                     $.ajax({
-                        type: "DELETE",
+                        type: 'DELETE',
                         url: linkToDelete,
                         // data: "name=someValue",
                     });
 
-                    swal("Your comment will be deleted.").then(function () {
+                    swal('Your comment will be deleted.').then(() => {
                         location.reload();
                     });
-
                 } else {
-                    swal("Nothing was deleted.");
+                    swal('Nothing was deleted.');
                 }
             });
-
     });
 });
 
-//==============================================================================
-//Attach all the Delete anchor links to their respective replyBox
-//==============================================================================
+//= =============================================================================
+// Attach all the Delete anchor links to their respective replyBox
+//= =============================================================================
 
-//get all the delete anchor links
-var deletes = document.querySelectorAll(".deleteCommentReply");
-//for each anchor link, add an event listener to its respective replyBox
-deletes.forEach(function (singleDelete) {
-    singleDelete.addEventListener("click", function () {
-
-        var linkToDelete = this.getAttribute('linktodelete');
+// get all the delete anchor links
+var deletes = document.querySelectorAll('.deleteCommentReply');
+// for each anchor link, add an event listener to its respective replyBox
+deletes.forEach((singleDelete) => {
+    singleDelete.addEventListener('click', function () {
+        const linkToDelete = this.getAttribute('linktodelete');
 
         swal({
-            title: "Are you sure you want to delete your reply?",
-            type: "warning",
+            title: 'Are you sure you want to delete your reply?',
+            type: 'warning',
             showCancelButton: true,
-            reverseButtons: true
+            reverseButtons: true,
         })
             .then((result) => {
-
                 if (result.value) {
                     $.ajax({
-                        type: "DELETE",
+                        type: 'DELETE',
                         url: linkToDelete,
                         // data: "name=someValue",
                     });
 
-                    swal("Your reply will be deleted. ").then(function () {
+                    swal('Your reply will be deleted. ').then(() => {
                         location.reload();
                     });
-
                 } else {
-                    swal("Nothing was deleted.");
+                    swal('Nothing was deleted.');
                 }
             });
     });
 });
 
 
-//==============================================================================    
-//Attach all the Edit anchor links to enable editing:
-//==============================================================================
-//Show the cancel/submit button
+//= =============================================================================
+// Attach all the Edit anchor links to enable editing:
+//= =============================================================================
+// Show the cancel/submit button
 // var edits = document.querySelectorAll(".edit");
 
 // edits.forEach(function(edit){
 //     edit.addEventListener("click", function(){
 //         //get parent
-//         var parent = this.parentNode;    
+//         var parent = this.parentNode;
 //         //Go up one more
-//         parent = parent.parentNode;    
+//         parent = parent.parentNode;
 //         //get the child nodes of parent
 //         var childNodes = parent.childNodes;
 
@@ -229,9 +217,7 @@ deletes.forEach(function (singleDelete) {
 //         }
 
 
-
 //         console.log(para);
 
 //     });
 // });
-

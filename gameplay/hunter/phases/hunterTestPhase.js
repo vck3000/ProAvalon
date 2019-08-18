@@ -12,39 +12,37 @@ class HunterTestPhase {
     constructor(thisRoom) {
         this.thisRoom = thisRoom;
 
-        this.phase = "hunterTestPhase";
+        this.phase = 'hunterTestPhase';
         this.showGuns = true;
-    };
+    }
 
 
-    gameMove (socket, buttonPressed, selectedPlayers) {
-        /* TODO: GameMove*/
-    };
+    gameMove(socket, buttonPressed, selectedPlayers) {
+        /* TODO: GameMove */
+    }
 
-    // Returns a object with green and red keys. 
+    // Returns a object with green and red keys.
     // Green and Red must both have the following properties:
     //  hidden          - Is the button hidden?
     //  disabled        - Is the button disabled?
     //  setText         - What text to display in the button
-    buttonSettings (indexOfPlayer) {
-        /* TODO: buttonSettings*/
+    buttonSettings(indexOfPlayer) {
+        /* TODO: buttonSettings */
     }
 
-    numOfTargets (indexOfPlayer) {
-        /* TODO: numOfTargets*/
+    numOfTargets(indexOfPlayer) {
+        /* TODO: numOfTargets */
     }
 
 
-    getStatusMessage (indexOfPlayer) {
-        /* TODO: getStatusMessage*/
+    getStatusMessage(indexOfPlayer) {
+        /* TODO: getStatusMessage */
     }
 
-    getProhibitedIndexesToPick (indexOfPlayer) {
-        /* TODO: getProhibitedIndexesToPick in an array*/
+    getProhibitedIndexesToPick(indexOfPlayer) {
+        /* TODO: getProhibitedIndexesToPick in an array */
     }
-
-};
+}
 
 
 module.exports = HunterTestPhase;
-
