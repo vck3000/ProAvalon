@@ -18,19 +18,19 @@ class GetRewards {
 
     async userHasReward(user, reward, patreonDetails) {
         if (!patreonDetails) {
-            console.log('Getting patreon details...');
+            // console.log('Getting patreon details...');
 
             await PatreonId.find({ id: user.patreonId })
                 .exec()
                 .then((obj) => {
                     patreonDetails = obj;
-                    console.log('Gotten patreon details.');
+                    // console.log('Gotten patreon details.');
                 })
                 .catch((err) => {
                     console.log(err);
                 });
         } else {
-            console.log('Was given patreon details');
+            // console.log('Was given patreon details');
         }
         // Check for admin
         if (reward.adminReq === true && !adminsArray.includes(user.username.toLowerCase())) {
@@ -77,18 +77,17 @@ class GetRewards {
 
         let patreonDetails;
 
-        console.log(user.patreonId);
         await PatreonId.findOne({ id: user.patreonId })
             .exec()
             .then((obj) => {
                 patreonDetails = obj;
-                console.log('Gotten patreon details.');
+                // console.log('Gotten patreon details.');
             })
             .catch((err) => {
                 console.log(err);
             });
 
-        console.log('Starting checks. This should happen AFTER we have patreon details.');
+        // console.log('Starting checks. This should happen AFTER we have patreon details.');
 
         for (const key in this.allRewards) {
             if (this.allRewards.hasOwnProperty(key)) {
@@ -99,8 +98,8 @@ class GetRewards {
             }
         }
 
-        console.log(`${user.username} has the following rewards:`);
-        console.log(rewardsSatisfied);
+        // console.log(`${user.username} has the following rewards:`);
+        // console.log(rewardsSatisfied);
         return rewardsSatisfied;
     }
 }
