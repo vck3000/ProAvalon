@@ -337,11 +337,11 @@ var actionsObj = {
                 if (!args[1]) return { message: 'Please specify a mod to message. Type /mods to get a list of online mods.', classStr: 'server-text' };
                 if (!args[2]) return { message: 'Please specify a message to send.', classStr: 'server-text' };
                 const modSocket = allSockets[getIndexFromUsername(allSockets, args[1], true)];
-                if (!modSocket) return senderSocket.emit('messageCommandReturnStr', { message: `Could not find ${args[1]}`, classStr: "server-text" });
+                if (!modSocket) return { message: `Could not find ${args[1]}.`, classStr: "server-text" }
                 if (modSocket.id === senderSocket.id) return { message: 'You cannot private message yourself!', classStr: "server-text" };
                 if (!modsArray.includes(args[1].toLowerCase())) return { message: `${args[1]} is not a mod. You may not private message them.`, classStr: 'server-text' };
 
-                let str = `${senderSocket.request.user.username}->${args[1]} (pmmod): ${args.slice(2).join(' ')}`;
+                let str = `${senderSocket.request.user.username}->${modSocket.request.user.username} (pmmod): ${args.slice(2).join(' ')}`;
 
                 const dataMessage = {
                     message: str,
