@@ -2216,12 +2216,6 @@ function roomChatFromClient(data) {
             sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
             // ioGlobal.in(data.roomId).emit("roomChatToClient", data);
         }
-        var thisGame = rooms[roomId];
-        rooms[roomId].socketsOfPlayers.filter(function (socket) { return socket.isBotSocket; }).forEach(function (botSocket) {
-            botSocket.handleGameOver(thisGame, "complete", function () { }); // This room is getting destroyed. No need to leave.
-        });
-
-        rooms[roomId] = undefined;
     }
 }
 
