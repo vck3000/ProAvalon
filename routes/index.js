@@ -193,7 +193,7 @@ router.post('/', registerLimiter, checkIpBan, checkCurrentBan, sanitiseUsername,
             } else {
                 User.register(newUser, req.body.password, (err, user) => {
                     if (err) {
-                        console.log(`ERROR: ${  err}`);
+                        console.log(`ERROR: ${err}`);
                         req.flash('error', 'Sign up failed. Most likely that username is taken.');
                         res.redirect('register');
                     } else {
