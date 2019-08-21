@@ -35,13 +35,6 @@ router.post('/', sanitiseUsername, /* usernameToLowerCase, */(req, res) => {
         dateJoined: new Date(),
     });
 
-    // set default values
-    for (const key in defaultValuesForUser) {
-        if (defaultValuesForUser.hasOwnProperty(key)) {
-            newUser[key] = defaultValuesForUser[key];
-        }
-    }
-
     if (req.body.username.indexOf(' ') !== -1) {
         req.flash('error', 'Sign up failed. Please do not use spaces in your username.');
         res.redirect('register');
@@ -124,17 +117,6 @@ router.get('/lobby', middleware.isLoggedIn, async (req, res) => {
             res.render('lobby', {
                 currentUser: req.user, headerActive: 'lobby', userNotifications: foundUser.notifications, optionsCog: true,
             });
-
-            // check that they have all the default values.
-            for (const keys in defaultValuesForUser) {
-                if (defaultValuesForUser.hasOwnProperty(keys)) {
-                    // if they don't have a default value, then give them a default value.
-                    if (!foundUser[keys]) {
-                        foundUser[keys] = defaultValuesForUser[keys];
-                    }
-                }
-            }
-            foundUser.save();
         }
     });
 });
@@ -325,47 +307,3 @@ function escapeText(str) {
         .replace(/"/g, '&quot;')
         .replace(/(?:\r\n|\r|\n)/g, ' <br>');
 }
-
-
-var defaultValuesForUser = {
-    avatarImgRes: null,
-    avatarImgSpy: null,
-
-    totalTimePlayed: 0,
-    totalGamesPlayed: 0,
-
-    totalWins: 0,
-    totalResWins: 0,
-    totalLosses: 0,
-    totalResLosses: 0,
-
-    winsLossesGameSizeBreakdown: {},
-
-    nationality: '',
-    timeZone: '',
-    biography: '',
-
-    roleStats: {
-        '5p': {
-            merlin: {
-
-            },
-            percival: {
-
-            },
-            assassin: {
-
-            },
-            morgana: {
-
-            },
-            spy: {
-
-            },
-            resistance: {
-
-            },
-        },
-    },
-    notificationS: {},
-};
