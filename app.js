@@ -12,7 +12,7 @@ const methodOverride = require('method-override');
 const User = require('./models/user');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
-var passportSocketIo = require('passport.socketio');
+const passportSocketIo = require('passport.socketio');
 const cookieParser = require('cookie-parser');
 const flash = require('connect-flash');
 const modAction = require('./models/modAction');
@@ -176,7 +176,6 @@ const server = app.listen(port, () => {
 const socket = require('socket.io');
 
 const io = socket(server);
-var passportSocketIo = require('passport.socketio');
 
 require('./sockets/sockets')(io);
 
