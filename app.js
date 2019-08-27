@@ -17,6 +17,11 @@ const cookieParser = require('cookie-parser');
 const flash = require('connect-flash');
 const modAction = require('./models/modAction');
 
+const indexRoutes = require('./routes/index');
+const forumRoutes = require('./routes/forum');
+const profileRoutes = require('./routes/profile');
+const patreonRoutes = require('./routes/patreon');
+
 app.use(express.static('assets', { maxAge: 1800000 })); // expires in 30 minutes.
 
 const staticify = require('staticify')('assets');
@@ -98,44 +103,34 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 
-const requireLoggedInRoutes = [
-    '/lobby',
-    '/forum',
-    '/profile',
-];
-
 async function checkLoggedIn(req, res, next) {
     let banned;
-    for (let i = 0; i < requireLoggedInRoutes.length; i++) {
-        if (req.originalUrl.startsWith(requireLoggedInRoutes[i]) == true) {
-            // Check for logged in.
-            if (req.isAuthenticated() == false) {
-                req.flash('error', 'Please log in to view this page.');
-                res.redirect('/');
-                return;
-            }
-
-            // Check bans
-            await modAction.findOne({ 'bannedPlayer.usernameLower': req.user.username.toLowerCase() }, (err, m) => {
-                if (err) {
-                    console.log(err);
-                } else {
-                    // console.log("A");
-                    // console.log(m);
-                    if (m == null || m == undefined) {
-                        // all good
-                    } else {
-                        let message = `You have been banned. The ban will be released on ${m.whenRelease}. Ban description: '${m.descriptionByMod}'`;
-                        message += ' Reflect on your actions.';
-                        req.flash('error', message);
-                        res.redirect('/');
-                        banned = true;
-                    }
-                }
-            });
-            // console.log("Logged in!");
-        }
+    // Check for logged in.
+    if (req.isAuthenticated() == false) {
+        req.flash('error', 'Please log in to view this page.');
+        res.redirect('/');
+        return;
     }
+
+    // Check bans
+    await modAction.findOne({ 'bannedPlayer.usernameLower': req.user.username.toLowerCase() }, (err, m) => {
+        if (err) {
+            console.log(err);
+        } else {
+            // console.log("A");
+            // console.log(m);
+            if (m == null || m == undefined) {
+                // all good
+            } else {
+                let message = `You have been banned. The ban will be released on ${m.whenRelease}. Ban description: '${m.descriptionByMod}'`;
+                message += ' Reflect on your actions.';
+                req.flash('error', message);
+                res.redirect('/');
+                banned = true;
+            }
+        }
+    });
+    // console.log("Logged in!");
 
     if (banned == true) {
         // console.log("banned");
@@ -143,24 +138,14 @@ async function checkLoggedIn(req, res, next) {
     }
     next();
 }
-app.use(checkLoggedIn);
-
-
-const indexRoutes = require('./routes/index');
 
 app.use(indexRoutes);
-
-const forumRoutes = require('./routes/forum');
-
-app.use('/forum', forumRoutes);
-
-const profileRoutes = require('./routes/profile');
-
-app.use('/profile', profileRoutes);
-
-const patreonRoutes = require('./routes/patreon');
-
 app.use('/patreon', patreonRoutes);
+
+// Lobby, forum, and profile routes require a logged in user
+app.use(checkLoggedIn);
+app.use('/forum', forumRoutes);
+app.use('/profile', profileRoutes);
 
 // start server listening
 const IP = process.env.IP || '127.0.0.1';
