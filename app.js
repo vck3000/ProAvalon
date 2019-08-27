@@ -18,6 +18,7 @@ const flash = require('connect-flash');
 const modAction = require('./models/modAction');
 
 const indexRoutes = require('./routes/index');
+const lobbyRoutes = require('./routes/lobby');
 const forumRoutes = require('./routes/forum');
 const profileRoutes = require('./routes/profile');
 const patreonRoutes = require('./routes/patreon');
@@ -144,6 +145,7 @@ app.use('/patreon', patreonRoutes);
 
 // Lobby, forum, and profile routes require a logged in user
 app.use(checkLoggedIn);
+app.use('/lobby', lobbyRoutes);
 app.use('/forum', forumRoutes);
 app.use('/profile', profileRoutes);
 
