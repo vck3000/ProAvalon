@@ -6,7 +6,7 @@ const rateLimit = require('express-rate-limit');
 
 const forumThread = require('../../models/forumThread');
 const forumThreadComment = require('../../models/forumThreadComment');
-const middleware = require('../../middleware');
+const middleware = require('../middleware');
 const User = require('../../models/user');
 
 const createNotificationObj = require('../../myFunctions/createNotification');

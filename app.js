@@ -16,10 +16,8 @@ const session = require('express-session');
 const socket = require('socket.io');
 
 const User = require('./models/user');
-const modAction = require('./models/modAction');
-const modsArray = require('./modsadmins/mods');
 
-const asyncMiddleware = require('./routes/asyncMiddleware');
+const { isLoggedIn } = require('./routes/middleware');
 const indexRoutes = require('./routes/index');
 const lobbyRoutes = require('./routes/lobby');
 const forumRoutes = require('./routes/forum');
@@ -107,29 +105,7 @@ app.use(indexRoutes);
 app.use('/patreon', patreonRoutes);
 
 // Lobby, forum, and profile routes require a logged in user
-app.use(asyncMiddleware(async (req, res, next) => {
-    // Check if the user is logged in.
-    if (!req.isAuthenticated()) {
-        req.flash('error', 'Please log in to view this page.');
-        res.redirect('/');
-        return;
-    }
-
-    // Check bans
-    const m = await modAction.findOne({ 'bannedPlayer.usernameLower': req.user.username.toLowerCase() }).exec();
-    if (!m) {
-        const foundUser = await User.findOne({ username: req.user.username }).populate('notifications').exec();
-        res.locals.userNotifications = foundUser.notifications;
-        res.locals.isMod = modsArray.includes(req.user.username.toLowerCase());
-        next();
-        return;
-    }
-
-    let message = `You have been banned. The ban will be released on ${m.whenRelease}. Ban description: '${m.descriptionByMod}'`;
-    message += ' Reflect on your actions.';
-    req.flash('error', message);
-    res.redirect('/');
-}));
+app.use(isLoggedIn);
 
 app.use('/lobby', lobbyRoutes);
 app.use('/forum', forumRoutes);

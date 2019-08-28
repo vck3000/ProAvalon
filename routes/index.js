@@ -14,7 +14,7 @@ const statsCumulative = require('../models/statsCumulative');
 
 const checkIpBan = require('./checkIpBan');
 
-const middleware = require('../middleware');
+const middleware = require('./middleware');
 
 const modsArray = require('../modsadmins/mods');
 
@@ -859,33 +859,6 @@ router.get('/ajax/hideAllNotifications', (req, res) => {
     });
     res.status(200).send('done');
 });
-
-
-//= ====================================
-// Forum
-//= ====================================
-// this part should be in another file now.
-// router.get("/forum", function(req, res){
-// 	res.render("forum", {currentUser: req.user});
-// })
-
-
-//= ====================================
-// MIDDLEWARE
-//= ====================================
-// function isLoggedIn(req, res, next){
-// 	if(req.isAuthenticated()){
-// 		return next();
-// 	}
-// 	console.log("User is not logged in");
-// 	res.redirect("/");
-// }
-
-// function usernameToLowerCase(req, res, next){
-// 	res.app.locals.originalUsername = req.body.username;
-// 	req.body.username = req.body.username.toLowerCase();
-// 	next();
-// }
 
 function escapeTextUsername(req, res, next) {
     req.body.username = escapeText(req.body.username);

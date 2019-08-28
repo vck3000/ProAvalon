@@ -8,7 +8,7 @@ const forumThreadComment = require('../../models/forumThreadComment');
 const forumThreadCommentReply = require('../../models/forumThreadCommentReply');
 const User = require('../../models/user');
 
-const middleware = require('../../middleware');
+const middleware = require('../middleware');
 const createNotificationObj = require('../../myFunctions/createNotification');
 
 const router = new Router();

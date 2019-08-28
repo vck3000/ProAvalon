@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const forumThread = require('../models/forumThread');
 const forumThreadComment = require('../models/forumThreadComment');
 const forumThreadCommentReply = require('../models/forumThreadCommentReply');
-const middleware = require('../middleware');
+const { isMod } = require('./middleware');
 
 const pinnedThread = require('../models/pinnedThread');
 const getTimeDiffInString = require('../assets/myLibraries/getTimeDiffInString');
@@ -323,7 +323,7 @@ router.get('/page/:pageNum', (req, res) => {
 });
 
 
-router.post('/modAction', middleware.isMod, (req, res) => {
+router.post('/modAction', isMod, (req, res) => {
     console.log(req.body);
     console.log('Reached forum mod action.');
 
@@ -401,7 +401,7 @@ router.post('/modAction', middleware.isMod, (req, res) => {
 });
 
 
-router.post('/pinThread', middleware.isMod, (req, res) => {
+router.post('/pinThread', isMod, (req, res) => {
     console.log(req.body);
     console.log('Reached pin thread.');
 

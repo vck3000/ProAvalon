@@ -2,7 +2,7 @@ const { Router } = require('express');
 const sanitizeHtml = require('sanitize-html');
 const rateLimit = require('express-rate-limit');
 
-const middleware = require('../../middleware');
+const middleware = require('../middleware');
 const getTimeDiffInString = require('../../assets/myLibraries/getTimeDiffInString');
 
 const lastIds = require('../../models/lastIds');
