@@ -1,23 +1,18 @@
-const express = require('express');
-
-const router = express.Router();
+const { Router } = require('express');
 const sanitizeHtml = require('sanitize-html');
-const mongoose = require('mongoose');
 const rateLimit = require('express-rate-limit');
-const forumThread = require('../../models/forumThread');
-const forumThreadComment = require('../../models/forumThreadComment');
-const forumThreadCommentReply = require('../../models/forumThreadCommentReply');
-const lastIds = require('../../models/lastIds');
+
 const middleware = require('../../middleware');
 const getTimeDiffInString = require('../../assets/myLibraries/getTimeDiffInString');
-const User 			= require('../../models/user');
 
+const lastIds = require('../../models/lastIds');
+const User = require('../../models/user');
+const forumThread = require('../../models/forumThread');
 
 const modsArray = require('../../modsadmins/mods');
-const adminsArray = require('../../modsadmins/admins');
 
 // Prevent too many requests
-
+const router = new Router();
 
 const sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2', 'u', 'span', 'br'];
 const sanitizeHtmlAllowedAttributesForumThread = {
@@ -37,7 +32,7 @@ const sanitizeHtmlAllowedAttributesForumThread = {
 /** ******************************************************* */
 // Show the forumThread
 /** ******************************************************* */
-router.get('/show/:id', middleware.isLoggedIn, (req, res) => {
+router.get('/show/:id', (req, res) => {
     forumThread.findById(req.params.id)
     // .populate("comments")
     // .populate({ path: "comments", populate: { path: "replies" } })
@@ -53,26 +48,6 @@ router.get('/show/:id', middleware.isLoggedIn, (req, res) => {
                     res.redirect('/forum');
                     return;
                 }
-
-                let mod = false;
-                // if they're mod then allow them see disabled posts.
-                if (modsArray.indexOf(req.user.username.toLowerCase()) !== -1) {
-                    mod = true;
-                }
-
-                // remove any replies and comments that are disabled if not a moderator is viewing
-                // if(mod === false){
-                // 	console.log(foundForumThread.comments);
-
-                // 	for(var i = foundForumThread.comments.length - 1; i >= 0; i--){
-                // 		// console.log(foundForumThread.comments[i].disabled);
-                // 		if(foundForumThread.comments[i].disabled && foundForumThread.comments[i].disabled === true){
-                // 			console.log("Remove a comment");
-                // 			foundForumThread.comments[i].oldText = "";
-                // 		}
-                // 	}
-                // }
-
 
                 // update the time since string for forumThread
                 const timeSince = getTimeDiffInString(foundForumThread.timeLastEdit);
@@ -132,94 +107,73 @@ router.get('/show/:id', middleware.isLoggedIn, (req, res) => {
                     });
                 });
 
-                // console.log("id of user");
-                // console.log(req.user._id);
-
-                // console.log(" who like dforum");
-                // console.log(foundForumThread.whoLikedId[1]._id.toString());
-
-                // console.log("equal?");
-                // console.log(foundForumThread.whoLikedId[0]._id == (req.user._id.toString()));
-
-                // console.log("ids");
-                // console.log(idsOfLikedPosts);
-
-
                 let userNotifications = [];
 
-                await User.findOne({ username: req.user.username }).populate('notifications').exec((err, foundUser) => {
-                    if (foundUser.notifications && foundUser.notifications !== null || foundUser.notifications !== undefined) {
-                        userNotifications = foundUser.notifications;
-                        // console.log(foundUser.notifications);
+                const foundUser = await User.findOne({ username: req.user.username }).populate('notifications').exec();
+            
+                if (foundUser.notifications) {
+                    userNotifications = foundUser.notifications;
+                }
+
+                const isMod = modsArray.includes(req.user.username.toLowerCase());
+
+                // if the forumthread is disabled and  the person is not a mod, then don't show
+                if (foundForumThread.disabled && !isMod) {
+                    req.flash('error', 'Thread has been deleted.');
+                    res.redirect('/forum/page/1');
+                } else {
+                    res.render('forum/show', {
+                        userNotifications,
+                        forumThread: foundForumThread,
+                        currentUser: req.user,
+                        idsOfLikedPosts,
+                        mod: isMod,
+                    });
+
+                    // Below is seen/unseen code
+
+                    // if there is no seen users array, create it and add the user
+                    if (!foundForumThread.seenUsers) {
+                        foundForumThread.seenUsers = [];
+                    }
+                    // if the viewing user isnt on the list, then add them.
+                    if (foundForumThread.seenUsers.indexOf(req.user.username.toLowerCase()) === -1) {
+                        foundForumThread.seenUsers.push(req.user.username.toLowerCase());
                     }
 
-                    let isMod = false;
-                    if (modsArray.indexOf(req.user.username.toLowerCase()) !== -1) {
-                        isMod = true;
-                    }
+                    // for every comment, add the user to seen users
+                    foundForumThread.comments.forEach(async (comm) => {
+                        let changesMade = false;
 
-                    // console.log("AAA");
-                    // console.log(foundForumThread.disabled);
-                    // console.log(isMod);
-
-                    // if forumthread.disabled is true, and also the person is not a mod, then dont show
-                    if (foundForumThread.disabled === true && isMod === false) {
-                        req.flash('error', 'Thread is deleted.');
-                        res.redirect('/forum/page/1');
-                    } else {
-                        res.render('forum/show', {
-                            userNotifications,
-                            forumThread: foundForumThread,
-                            currentUser: req.user,
-                            idsOfLikedPosts,
-                            mod: isMod,
-                        });
-
-                        // Below is seen/unseen code
-
-                        // if there is no seen users array, create it and add the user
-                        if (!foundForumThread.seenUsers) {
-                            foundForumThread.seenUsers = [];
+                        // see all the comments
+                        if (!comm.seenUsers) { comm.seenUsers = []; }
+                        // if the user isnt on the list, add them. otherwise no need.
+                        if (comm.seenUsers.indexOf(req.user.username.toLowerCase()) === -1) {
+                            comm.seenUsers.push(req.user.username.toLowerCase());
+                            changesMade = true;
                         }
-                        // if the viewing user isnt on the list, then add them.
-                        if (foundForumThread.seenUsers.indexOf(req.user.username.toLowerCase()) === -1) {
-                            foundForumThread.seenUsers.push(req.user.username.toLowerCase());
-                        }
-
-                        // for every comment, add the user to seen users
-                        foundForumThread.comments.forEach(async (comm) => {
-                            let changesMade = false;
-
-                            // see all the comments
-                            if (!comm.seenUsers) { comm.seenUsers = []; }
+                        // see all the replies
+                        comm.replies.forEach(async (rep) => {
+                            if (!rep.seenUsers) { rep.seenUsers = []; }
                             // if the user isnt on the list, add them. otherwise no need.
-                            if (comm.seenUsers.indexOf(req.user.username.toLowerCase()) === -1) {
-                                comm.seenUsers.push(req.user.username.toLowerCase());
+                            if (rep.seenUsers.indexOf(req.user.username.toLowerCase()) === -1) {
+                                rep.seenUsers.push(req.user.username.toLowerCase());
                                 changesMade = true;
-                            }
-                            // see all the replies
-                            comm.replies.forEach(async (rep) => {
-                                if (!rep.seenUsers) { rep.seenUsers = []; }
-                                // if the user isnt on the list, add them. otherwise no need.
-                                if (rep.seenUsers.indexOf(req.user.username.toLowerCase()) === -1) {
-                                    rep.seenUsers.push(req.user.username.toLowerCase());
-                                    changesMade = true;
-                                    await rep.save();
-                                }
-                            });
-
-                            // only need to comm.save() if there was a change.
-                            // otherwise save some resources and skip saving.
-                            if (changesMade === true) {
-                                comm.markModified('replies');
-                                await comm.save();
+                                await rep.save();
                             }
                         });
-                        // there is always at least one change, so just save.
-                        foundForumThread.markModified('comments');
-                        foundForumThread.save();
-                    }
-                });
+
+                        // only need to comm.save() if there was a change.
+                        // otherwise save some resources and skip saving.
+                        if (changesMade === true) {
+                            comm.markModified('replies');
+                            await comm.save();
+                        }
+                    });
+                    // there is always at least one change, so just save.
+                    foundForumThread.markModified('comments');
+                    foundForumThread.save();
+                }
             }
         });
 });
@@ -227,9 +181,8 @@ router.get('/show/:id', middleware.isLoggedIn, (req, res) => {
 /** ******************************************************* */
 // Show the create new forumThread page
 /** ******************************************************* */
-router.get('/new', middleware.isLoggedIn, (req, res) => {
-    // console.log("NEW STUFF ");
-    res.render('forum/new', { currentUser: req.user, userNotifications: [] });
+router.get('/new', (req, res) => {
+    res.render('forum/new');
 });
 
 
@@ -253,7 +206,7 @@ const newForumLimiter = process.env.MY_PLATFORM === 'local'
 /** ******************************************************* */
 // Create a new forumThread
 /** ******************************************************* */
-router.post('/', newForumLimiter, middleware.isLoggedIn, async (req, res) => {
+router.post('/', newForumLimiter, async (req, res) => {
     const util = require('util');
 
     // get the category based on the user selection

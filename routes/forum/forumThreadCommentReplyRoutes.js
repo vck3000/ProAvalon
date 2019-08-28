@@ -1,22 +1,20 @@
-const express = require('express');
-
-const router = express.Router();
+const { Router } = require('express');
 const sanitizeHtml = require('sanitize-html');
 const mongoose = require('mongoose');
 const rateLimit = require('express-rate-limit');
+
 const forumThread = require('../../models/forumThread');
 const forumThreadComment = require('../../models/forumThreadComment');
 const forumThreadCommentReply = require('../../models/forumThreadCommentReply');
-const lastIds = require('../../models/lastIds');
-const middleware = require('../../middleware');
-const getTimeDiffInString = require('../../assets/myLibraries/getTimeDiffInString');
 const User = require('../../models/user');
+
+const middleware = require('../../middleware');
 const createNotificationObj = require('../../myFunctions/createNotification');
 
+const router = new Router();
 
 // Prevent too many requests
 
-// var sanitizeHtmlAllowedTagsForumThread = ['u'];
 const sanitizeHtmlAllowedTagsForumThread = ['img', 'iframe', 'h1', 'h2', 'u', 'span', 'br'];
 const sanitizeHtmlAllowedAttributesForumThread = {
     a: ['href', 'name', 'target'],
@@ -43,10 +41,10 @@ const newReplyLimiter = process.env.MY_PLATFORM === 'local'
 /** ******************************************************* */
 // Create a new comment reply route
 /** ******************************************************* */
-router.post('/:id/:commentId', newReplyLimiter, middleware.isLoggedIn, async (req, res) => {
+router.post('/:id/:commentId', newReplyLimiter, (req, res) => {
     createCommentReply(req, res);
 });
-router.post('/:id/:commentId/:replyId', newReplyLimiter, middleware.isLoggedIn, async (req, res) => {
+router.post('/:id/:commentId/:replyId', newReplyLimiter, (req, res) => {
     createCommentReply(req, res);
 });
 
@@ -54,7 +52,6 @@ function createCommentReply(req, res) {
     const d = new Date();
 
     const commentReplyData = {
-
         text: sanitizeHtml(req.body.comment.text, {
             allowedTags: sanitizeHtml.defaults.allowedTags.concat(sanitizeHtmlAllowedTagsForumThread),
             allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
@@ -69,21 +66,15 @@ function createCommentReply(req, res) {
     };
 
     if (req.params.replyId) {
-        // commentReplyData.clients = [req.params.replyId];
-        // console.log("Got replyId");
-        const id = mongoose.Types.ObjectId('4edd40c86762e0fb12000003');
-
         forumThreadCommentReply.findById(mongoose.Types.ObjectId(req.params.replyId)).exec((err, foundReply) => {
-            // If there was someone who this reply was targetted to
+            // If there was someone who this reply was targeted to
             commentReplyData.replyingUsername = foundReply.author.username;
-
             createReply(req, res, commentReplyData, foundReply);
         });
     } else {
         createReply(req, res, commentReplyData);
     }
 }
-
 
 function createReply(req, res, commentReplyData, replyingToThisReply) {
     // the creator has already seen it

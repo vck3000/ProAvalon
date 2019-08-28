@@ -24,14 +24,8 @@ const sanitizeHtmlAllowedAttributesForumThread = {
     b: ['style'],
 };
 
-
-// router.get("/", middleware.isLoggedIn, function (req, res) {
-// 	res.redirect("/forum/page/1");
-// });
-
-
 // Show the mod approving rejecting page
-router.get('/avatargetlinktutorial', middleware.isLoggedIn, (req, res) => {
+router.get('/avatargetlinktutorial', (req, res) => {
     res.render('profile/avatargetlinktutorial');
 });
 
@@ -47,7 +41,7 @@ router.get('/mod/customavatar', middleware.isMod, (req, res) => {
 
 // moderator approve or reject custom avatar requests
 // /profile/mod/ajax/processavatarrequest
-router.post('/mod/ajax/processavatarrequest', middleware.isLoggedIn, middleware.isMod, (req, res) => {
+router.post('/mod/ajax/processavatarrequest', middleware.isMod, (req, res) => {
     console.log('process avatar request');
     console.log(req.body.decision);
     console.log(req.body.avatarreqid);
@@ -295,7 +289,7 @@ router.post('/:profileUsername', middleware.checkProfileOwnership, (req, res) =>
 });
 
 // show the profile page
-router.get('/:profileUsername', middleware.isLoggedIn, (req, res) => {
+router.get('/:profileUsername', (req, res) => {
     User.findOne({ usernameLower: req.params.profileUsername.toLowerCase() }, (err, foundUser) => {
         if (err) {
             console.log(err);

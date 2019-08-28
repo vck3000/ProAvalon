@@ -1,20 +1,19 @@
-const express = require('express');
+const { Router } = require('express');
 
-const router = express.Router();
 const sanitizeHtml = require('sanitize-html');
 const mongoose = require('mongoose');
 const rateLimit = require('express-rate-limit');
+
 const forumThread = require('../../models/forumThread');
 const forumThreadComment = require('../../models/forumThreadComment');
-const lastIds = require('../../models/lastIds');
 const middleware = require('../../middleware');
-const getTimeDiffInString = require('../../assets/myLibraries/getTimeDiffInString');
 const User = require('../../models/user');
 
 const createNotificationObj = require('../../myFunctions/createNotification');
 
-// Prevent too many requests
+const router = new Router();
 
+// Prevent too many requests
 
 // var sanitizeHtmlAllowedTagsForumThread = ['u'];
 
@@ -44,7 +43,7 @@ const newCommentLimiter = process.env.MY_PLATFORM === 'local'
 /** ******************************************************* */
 // Create new comment route
 /** ******************************************************* */
-router.post('/:id/comment', newCommentLimiter, middleware.isLoggedIn, async (req, res) => {
+router.post('/:id/comment', newCommentLimiter, async (req, res) => {
     const commentData = {
 
         text: sanitizeHtml(req.body.comment.text, {

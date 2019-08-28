@@ -108,17 +108,6 @@ middlewareObj.checkForumThreadCommentReplyOwnership = function (req, res, next) 
     }
 };
 
-middlewareObj.isLoggedIn = function (req, res, next) {
-    if (req.isAuthenticated()) {
-        console.log(`middleware: logged in as ${req.user._id} and ${req.user.username}`);
-        // req.flash("success", "succeeded test, logged in correctly");
-        return next();
-    }
-    req.flash('error', 'You need to be logged in to do that!');
-    res.redirect('/');
-};
-
-
 middlewareObj.isMod = function (req, res, next) {
     if (req.isAuthenticated() && modsArray.indexOf(req.user.username.toLowerCase()) !== -1) {
         return next();

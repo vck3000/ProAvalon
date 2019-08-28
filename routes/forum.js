@@ -1,12 +1,8 @@
-const express = require('express');
-
-const router = express.Router();
-const sanitizeHtml = require('sanitize-html');
+const { Router } = require('express');
 const mongoose = require('mongoose');
 const forumThread = require('../models/forumThread');
 const forumThreadComment = require('../models/forumThreadComment');
 const forumThreadCommentReply = require('../models/forumThreadCommentReply');
-const lastIds = require('../models/lastIds');
 const middleware = require('../middleware');
 
 const pinnedThread = require('../models/pinnedThread');
@@ -15,33 +11,25 @@ const getTimeDiffInString = require('../assets/myLibraries/getTimeDiffInString')
 const User = require('../models/user');
 const createNotificationObj = require('../myFunctions/createNotification');
 
-
 const modsArray = require('../modsadmins/mods');
-const adminsArray = require('../modsadmins/admins');
 const modAction = require('../models/modAction');
 
-
-// grab the routes
 const forumThreadRoutes = require('../routes/forum/forumThreadRoutes');
-
-router.use(forumThreadRoutes);
-
 const forumThreadCommentRoutes = require('../routes/forum/forumThreadCommentRoutes');
-
-router.use(forumThreadCommentRoutes);
-
 const forumThreadCommentReplyRoutes = require('../routes/forum/forumThreadCommentReplyRoutes');
 
+const router = new Router();
+
+router.use(forumThreadRoutes);
+router.use(forumThreadCommentRoutes);
 router.use(forumThreadCommentReplyRoutes);
 
-
-router.get('/', middleware.isLoggedIn, (req, res) => {
+router.get('/', (req, res) => {
     res.redirect('/forum/page/1');
 });
 
 // Player liking a thing
-// router.get("/ajax/like/:type/:bigId", middleware.isLoggedIn, function(req, res){
-router.get('/ajax/like/:type/:bigId', middleware.isLoggedIn, (req, res) => {
+router.get('/ajax/like/:type/:bigId', (req, res) => {
     console.log('Routed here');
 
     const splitted = req.params.bigId.split('=');
@@ -159,10 +147,7 @@ router.get('/ajax/like/:type/:bigId', middleware.isLoggedIn, (req, res) => {
     });
 });
 
-
-router.get('/page/:category/:pageNum', middleware.isLoggedIn, (req, res) => {
-    console.log('category');
-
+router.get('/page/:category/:pageNum', (req, res) => {
     // if theres an invalid page num, redirect toLowerCase() page 1
     if (req.params.pageNum < 1) {
         res.redirect(`/forum/page/${req.params.category}/1`);
@@ -241,7 +226,7 @@ router.get('/page/:category/:pageNum', middleware.isLoggedIn, (req, res) => {
 
 
 // main page that users land on
-router.get('/page/:pageNum', middleware.isLoggedIn, (req, res) => {
+router.get('/page/:pageNum', (req, res) => {
     // console.log("pageNum");
 
     // if theres an invalid page num, redirect toLowerCase() page 1
@@ -265,18 +250,9 @@ router.get('/page/:pageNum', middleware.isLoggedIn, (req, res) => {
         skipNumber = (req.params.pageNum - 1) * NUM_OF_RESULTS_PER_PAGE;
     }
 
-    const or = [
-        { disabled: undefined },
-        { disabled: false },
-    ];
-
-    let mod = false;
-    // if they're mod then allow them toLowerCase() see disabled posts.
-    let modSee = { disabled: false };
-    if (modsArray.indexOf(req.user.username.toLowerCase()) !== -1) {
-        modSee = { disabled: true };
-        mod = true;
-    }
+    const mod = modsArray.includes(req.user.username.toLowerCase());
+    // if they're mod then allow them to see disabled posts.
+    const modSee = { disabled: mod };
 
 
     forumThread.find({

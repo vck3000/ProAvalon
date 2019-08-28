@@ -1,18 +1,13 @@
-const express = require('express');
-
-const router = express.Router();
-const passport = require('passport');
-const flash = require('connect-flash');
-const sanitizeHtml = require('sanitize-html');
+const { Router } = require('express');
 const mongoose = require('mongoose');
+const passport = require('passport');
+const sanitizeHtml = require('sanitize-html');
+
 const myNotification = require('../models/notification');
 const User = require('../models/user');
-
 const modAction = require('../models/modAction');
 
-
-const middleware = require('../middleware');
-
+const router = new Router();
 
 // Index route
 router.get('/', (req, res) => {
@@ -82,7 +77,7 @@ router.get('/loginFail', (req, res) => {
 
 
 // lobby route
-router.get('/lobby', middleware.isLoggedIn, async (req, res) => {
+router.get('/lobby', async (req, res) => {
     // console.log(res.app.locals.originalUsername);
     User.findOne({ username: req.user.username }).populate('notifications').exec(async (err, foundUser) => {
         if (err) {
