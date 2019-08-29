@@ -12,9 +12,7 @@ const modAction = require('../models/modAction');
 const gameRecord = require('../models/gameRecord');
 const statsCumulative = require('../models/statsCumulative');
 
-const checkIpBan = require('./checkIpBan');
-
-const middleware = require('./middleware');
+const { isMod, checkIpBan } = require('./middleware');
 
 const modsArray = require('../modsadmins/mods');
 
@@ -366,7 +364,7 @@ router.get('/mod/ajax/logData/:pageIndex', (req, res) => {
 });
 
 
-router.get('/mod', middleware.isMod, (req, res) => {
+router.get('/mod', isMod, (req, res) => {
     res.render('mod/mod', { currentUser: req.user, isMod: true, headerActive: 'mod' });
 });
 

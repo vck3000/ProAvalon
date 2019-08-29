@@ -69,7 +69,6 @@ app.use(flash());
 
 // res.locals variables
 app.use((req, res, next) => {
-    res.locals.currentUser = req.user;
     // headerActive default should be nothing, otherwise specify in routes/index.js
     res.locals.headerActive = ' ';
     res.locals.error = req.flash('error');
