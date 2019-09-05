@@ -1,9 +1,10 @@
+const constants = require('../constants');
+
 obj = {
-    key: <KEY>,
-    gamesPlayedReq: 0,
-    minDonationReq: 0,
+    adminReq: false,
     modReq: false,
-    adminReq: false
-}
+    gamesPlayedReq: 0,
+    donationReq: 0,
+};
 
 module.exports = obj;

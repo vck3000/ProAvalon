@@ -1,15 +1,15 @@
 myObj = {
     bots: [
-        "Bot1",
-        "Bot2",
-        "Bot3",
-        "Bot4",
-        "Bot5",
-        "Bot6",
-        "Bot7",
-        "Bot8",
-        "Bot9",
-        "Bot10",
+        'Bot1',
+        'Bot2',
+        'Bot3',
+        'Bot4',
+        'Bot5',
+        'Bot6',
+        'Bot7',
+        'Bot8',
+        'Bot9',
+        'Bot10',
     ],
 
     pokemon: [
@@ -75,21 +75,20 @@ myObj = {
     ],
 
     animeCharacters: [
-        "Lelouch",
-        "Suzaku",
-        "Naruto",
-        "Sasuke",
-        "Okabe",
-        "Makise",
-        "Luffy",
-        "Zoro",
-        "Yagami",
-        "L",
+        'Lelouch',
+        'Suzaku',
+        'Naruto',
+        'Sasuke',
+        'Okabe',
+        'Makise',
+        'Luffy',
+        'Zoro',
+        'Yagami',
+        'L',
     ],
 
 
-}
-
+};
 
 
 module.exports = myObj;

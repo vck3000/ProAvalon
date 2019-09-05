@@ -2,20 +2,20 @@
 class Resistance {
     constructor(thisRoom) {
         this.thisRoom = thisRoom;
-        
-        this.role = "Resistance";
-        this.alliance = "Resistance";
-        
-        this.description = "A standard Resistance member.";
+
+        this.role = 'Resistance';
+        this.alliance = 'Resistance';
+
+        this.description = 'A standard Resistance member.';
     }
-    see () {
+
+    see() {
         return undefined;
     }
-    
-    checkSpecialMove () {
-        
+
+    checkSpecialMove() {
+
     }
-    
 }
 
 

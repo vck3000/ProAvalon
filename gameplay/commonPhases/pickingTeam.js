@@ -1,40 +1,39 @@
-var usernamesIndexes = require("../../myFunctions/usernamesIndexes");
+const usernamesIndexes = require('../../myFunctions/usernamesIndexes');
 
 function PickingTeam(thisRoom_) {
     this.thisRoom = thisRoom_;
 
-    this.phase = "pickingTeam";
+    this.phase = 'pickingTeam';
     this.showGuns = false;
-};
+}
 
 
 PickingTeam.prototype.gameMove = function (socket, buttonPressed, selectedPlayers) {
-    if (buttonPressed !== "yes") {
+    if (buttonPressed !== 'yes') {
         // this.thisRoom.sendText(this.thisRoom.allSockets, `Button pressed was ${buttonPressed}. Let admin know if you see this.`, "gameplay-text");
         return;
     }
 
-    var numOfTargets = this.thisRoom.getClientNumOfTargets(this.thisRoom.teamLeader);
+    const numOfTargets = this.thisRoom.getClientNumOfTargets(this.thisRoom.teamLeader);
     if (numOfTargets !== selectedPlayers.length && numOfTargets !== null) {
-        this.thisRoom.sendText(this.thisRoom.allSockets, `Wrong number of targets inputted. You have given ${selectedPlayers.length} targets. Expected ${numOfTargets}.`, "server-text");
+        this.thisRoom.sendText(this.thisRoom.allSockets, `Wrong number of targets inputted. You have given ${selectedPlayers.length} targets. Expected ${numOfTargets}.`, 'server-text');
         return;
     }
 
     const indexOfPlayer = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username);
     // If the person requesting is the host
     if (indexOfPlayer === this.thisRoom.teamLeader) {
-        //Reset votes
+        // Reset votes
         this.thisRoom.votes = [];
         this.thisRoom.publicVotes = [];
 
-        var num = this.thisRoom.numPlayersOnMission[this.thisRoom.playersInGame.length - this.thisRoom.minPlayers][this.thisRoom.missionNum - 1];
+        let num = this.thisRoom.numPlayersOnMission[this.thisRoom.playersInGame.length - this.thisRoom.minPlayers][this.thisRoom.missionNum - 1];
         // console.log("Num player for this.thisRoom mission : " + num);
 
-        //In case the mission num is 4*, make it 4.
-        if (num.length > 1) { num = parseInt(num[0]); }
-        else { num = parseInt(num); }
+        // In case the mission num is 4*, make it 4.
+        if (num.length > 1) { num = parseInt(num[0]); } else { num = parseInt(num); }
 
-        //Check that the data is valid (i.e. includes only usernames of players)
+        // Check that the data is valid (i.e. includes only usernames of players)
         for (var i = 0; i < num; i++) {
             // If the data doesn't have the right number of users
             // Or has an empty element
@@ -46,111 +45,102 @@ PickingTeam.prototype.gameMove = function (socket, buttonPressed, selectedPlayer
             }
         }
 
-        //Continue if it passes the above check
+        // Continue if it passes the above check
         this.thisRoom.proposedTeam = selectedPlayers;
-        //.slice to clone the array
+        // .slice to clone the array
         this.thisRoom.playersYetToVote = this.thisRoom.playerUsernamesInGame.slice();
 
         //--------------------------------------
-        //Send out the gameplay text
+        // Send out the gameplay text
         //--------------------------------------
-        var str = "";
+        let str = '';
         for (var i = 0; i < selectedPlayers.length; i++) {
-            str += selectedPlayers[i] + ", ";
+            str += `${selectedPlayers[i]}, `;
         }
 
-        var str2 = this.thisRoom.playerUsernamesInGame[indexOfPlayer] + " has picked: " + str;
+        let str2 = `${this.thisRoom.playerUsernamesInGame[indexOfPlayer]} has picked: ${str}`;
 
-        //remove the last , and replace with .
+        // remove the last , and replace with .
         str2 = str2.slice(0, str2.length - 2);
-        str2 += ".";
+        str2 += '.';
 
-        this.thisRoom.sendText(this.thisRoom.allSockets, str2, "gameplay-text");
+        this.thisRoom.sendText(this.thisRoom.allSockets, str2, 'gameplay-text');
 
         this.thisRoom.VHUpdateTeamPick();
 
-        this.thisRoom.phase = "votingTeam";
-    }
-    else {
-        console.log("User " + this.thisRoom.playerUsernamesInGame[indexOfPlayer] + " is not the team leader. Cannot pick.");
+        this.thisRoom.phase = 'votingTeam';
+    } else {
+        console.log(`User ${this.thisRoom.playerUsernamesInGame[indexOfPlayer]} is not the team leader. Cannot pick.`);
     }
 };
 
 
-// Returns a object with green and red keys. 
+// Returns a object with green and red keys.
 // Green and Red must both have the following properties:
 //  hidden          - Is the button hidden?
 //  disabled        - Is the button disabled?
 //  setText         - What text to display in the button
 PickingTeam.prototype.buttonSettings = function (indexOfPlayer) {
-
-    var obj = {
+    const obj = {
         green: {},
-        red: {}
+        red: {},
     };
 
     // If it is the host
     if (indexOfPlayer === this.thisRoom.teamLeader) {
         obj.green.hidden = false;
         obj.green.disabled = true;
-        obj.green.setText = "Pick";
+        obj.green.setText = 'Pick';
 
         obj.red.hidden = true;
         obj.red.disabled = true;
-        obj.red.setText = "";
+        obj.red.setText = '';
     }
     // If it is any other player who isn't host
     else {
         obj.green.hidden = true;
         obj.green.disabled = true;
-        obj.green.setText = "";
+        obj.green.setText = '';
 
         obj.red.hidden = true;
         obj.red.disabled = true;
-        obj.red.setText = "";
+        obj.red.setText = '';
     }
 
     return obj;
-}
+};
 
 
 PickingTeam.prototype.numOfTargets = function (indexOfPlayer) {
-    var num = this.thisRoom.numPlayersOnMission[this.thisRoom.playersInGame.length - this.thisRoom.minPlayers][this.thisRoom.missionNum - 1];
+    let num = this.thisRoom.numPlayersOnMission[this.thisRoom.playersInGame.length - this.thisRoom.minPlayers][this.thisRoom.missionNum - 1];
     // console.log("Num player for this.thisRoom mission : " + num);
 
-    //If we are not the team leader
+    // If we are not the team leader
     if (indexOfPlayer !== this.thisRoom.teamLeader) {
         return null;
     }
 
-    //In case the mission num is 4*, make it 4.
-    if (num.length > 1) { num = parseInt(num[0]); }
-    else { num = parseInt(num); }
+    // In case the mission num is 4*, make it 4.
+    if (num.length > 1) { num = parseInt(num[0]); } else { num = parseInt(num); }
 
     return num;
-}
+};
 
 
 PickingTeam.prototype.getStatusMessage = function (indexOfPlayer) {
     if (indexOfPlayer !== undefined && indexOfPlayer === this.thisRoom.teamLeader) {
-        var num = this.thisRoom.numPlayersOnMission[this.thisRoom.playersInGame.length - this.thisRoom.minPlayers][this.thisRoom.missionNum - 1];
+        const num = this.thisRoom.numPlayersOnMission[this.thisRoom.playersInGame.length - this.thisRoom.minPlayers][this.thisRoom.missionNum - 1];
 
-        return "Your turn to pick a team. Pick " + num + " players.";
+        return `Your turn to pick a team. Pick ${num} players.`;
     }
     else {
         // console.log(this.thisRoom.teamLeader);
         if (this.thisRoom.playersInGame[this.thisRoom.teamLeader]) {
-            return "Waiting for " + this.thisRoom.playerUsernamesInGame[this.thisRoom.teamLeader] + " to pick a team.";
-        }
-        else {
-            return "ERROR: Tell the admin if you see this, code 10.";
-        }
+            return `Waiting for ${this.thisRoom.playerUsernamesInGame[this.thisRoom.teamLeader]} to pick a team.`;
+        }            
     }
-}
-
+    return 'ERROR: Tell the admin if you see this, code 10.';
+};
 
 
 module.exports = PickingTeam;
-
-
-

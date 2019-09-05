@@ -1,55 +1,56 @@
-var express = require("express");
-var router = express.Router();
-var middleware = require("../middleware");
-var User = require("../models/user");
-var PatreonId = require("../models/patreonId");
-var patreonHelper = require("../myFunctions/patreonHelper");
+const express = require('express');
 
-var url = require("url")
-var patreon = require("patreon");
-var patreonAPI = patreon.patreon;
-var patreonOAuth = patreon.oauth;
-
-var CLIENT_ID = process.env.patreon_client_ID;
-var CLIENT_SECRET = process.env.patreon_client_secret;
-
-var patreonOAuthClient = patreonOAuth(CLIENT_ID, CLIENT_SECRET);
-
-var patreon_redirectURL = process.env.patreon_redirectURL;
+const router = express.Router();
+const url = require('url');
+const patreon = require('patreon');
+const middleware = require('../middleware');
+const User = require('../models/user');
+const PatreonId = require('../models/patreonId');
+const patreonHelper = require('../myFunctions/patreonHelper');
 
 
-let database = {}
+const patreonAPI = patreon.patreon;
+const patreonOAuth = patreon.oauth;
+
+const CLIENT_ID = process.env.patreon_client_ID;
+const CLIENT_SECRET = process.env.patreon_client_secret;
+
+const patreonOAuthClient = patreonOAuth(CLIENT_ID, CLIENT_SECRET);
+
+const { patreon_redirectURL } = process.env;
+
+
+const database = {};
 
 function getPledges(access_token, callback) {
-
-    var apiClient = patreonAPI(access_token);
+    const apiClient = patreonAPI(access_token);
 
     // make api requests concurrently
     return apiClient('/current_user')
         .then(({ store, rawJson }) => {
             // var _user = store.find('user', id)
             // var campaign = _user.campaign ? _user.campaign.serialize().data : null
-            var data = rawJson.data ? rawJson.data : null
-            var page = oauthExampleTpl({
+            const data = rawJson.data ? rawJson.data : null;
+            const page = oauthExampleTpl({
                 name: rawJson.data.attributes.first_name,
-                campaigns: [data]
-            })
+                campaigns: [data],
+            });
 
-            console.log(rawJson.data.attributes.full_name)
-            console.log(rawJson.data.id)
+            console.log(rawJson.data.attributes.full_name);
+            console.log(rawJson.data.id);
             if (rawJson.included) {
-                console.log(rawJson.included[0].attributes.amount_cents)
-                console.log(rawJson.included[0].attributes.declined_since)
+                console.log(rawJson.included[0].attributes.amount_cents);
+                console.log(rawJson.included[0].attributes.declined_since);
             }
 
 
             // return res.send(page)
         }).catch((err) => {
-            var { status, statusText } = err
-            console.log('Failed to retrieve campaign info')
-            console.log(err)
+            const { status, statusText } = err;
+            console.log('Failed to retrieve campaign info');
+            console.log(err);
             // return res.json({ status, statusText })
-        })
+        });
 }
 
 // getPledges(process.env.myTempToken, (res) => {
@@ -76,23 +77,23 @@ function getPledges(access_token, callback) {
 // });
 
 router.get('/oauth/redirect', (req, res) => {
-    var { code } = req.query
-    let token
-    console.log("HIHI");
+    const { code } = req.query;
+    let token;
+    console.log('HIHI');
     if (!req.user) {
-        req.flash("error", "Please sign in to link your patreon account.")
-        res.redirect("/");
+        req.flash('error', 'Please sign in to link your patreon account.');
+        res.redirect('/');
     }
 
     return patreonOAuthClient.getTokens(code, patreon_redirectURL)
         .then(({ access_token }) => {
-            token = access_token // eslint-disable-line camelcase
-            var apiClient = patreonAPI(token)
-            return apiClient('/current_user')
+            token = access_token; // eslint-disable-line camelcase
+            const apiClient = patreonAPI(token);
+            return apiClient('/current_user');
         })
         .then(async ({ store, rawJson }) => {
-            var { id } = rawJson.data
-            database[id] = { ...rawJson.data, token }
+            const { id } = rawJson.data;
+            database[id] = { ...rawJson.data, token };
 
             // console.log(rawJson.data.attributes.full_name)
             // console.log(rawJson.data.id)
@@ -102,92 +103,89 @@ router.get('/oauth/redirect', (req, res) => {
             //     console.log(rawJson.included[0].attributes.declined_since)
             // }
 
-            let patreon_full_name = rawJson.data.attributes.full_name;
-            let patreon_id = rawJson.data.id;
-            let patreon_amount_cents = rawJson.included ? rawJson.included[0].attributes.amount_cents : undefined;
-            let patreon_declined_since = rawJson.included ? rawJson.included[0].attributes.declined_since : undefined;
+            const patreon_full_name = rawJson.data.attributes.full_name;
+            const patreon_id = rawJson.data.id;
+            const patreon_amount_cents = rawJson.included ? rawJson.included[0].attributes.amount_cents : undefined;
+            const patreon_declined_since = rawJson.included ? rawJson.included[0].attributes.declined_since : undefined;
 
 
             function addDays(date, days) {
-                var result = new Date(date);
+                const result = new Date(date);
                 result.setDate(result.getDate() + days);
                 return result;
             }
 
 
-            return PatreonId.findOne({ "id": patreon_id })
+            return PatreonId.findOne({ id: patreon_id })
                 .exec(async (err, patreonIdObj) => {
                     // If the patreonId doesn't exist, create it.
-                    if (err) { console.log(err); }
-                    else {
+                    if (err) { console.log(err); } else {
                         // console.log(patreonIdObj);
 
                         if (!patreonIdObj) {
                             console.log("Patreon ID doesn't exist in database. Creating...");
                             await PatreonId.create({
                                 name: patreon_full_name,
-                                token: token,
+                                token,
                                 id: patreon_id,
                                 amount_cents: patreon_amount_cents,
                                 declined_since: patreon_declined_since,
-                                expires: addDays(new Date(), 32), //lasts for 32 days before needs a refresh
-                                in_game_username: req.user.username
+                                expires: addDays(new Date(), 32), // lasts for 32 days before needs a refresh
+                                in_game_username: req.user.username,
                             })
                                 .then((obj) => {
-                                    console.log("Created Patreon ID. Now linking with user...");
+                                    console.log('Created Patreon ID. Now linking with user...');
                                     req.user.patreonId = patreon_id;
-                                    req.user.markModified("patreonId");
-                                    return req.user.save()
+                                    req.user.markModified('patreonId');
+                                    return req.user.save();
                                 })
                                 .then((obj) => {
-                                    console.log("Successfully linked up user and Patreon!");
-                                    req.flash("success", "Success! Your account has now been linked! Please re-log in again to see the changes.");
-                                })
-                        }
-                        else {
-                            console.log("Patreon ID exists. Checking expired...");
+                                    console.log('Successfully linked up user and Patreon!');
+                                    req.flash('success', 'Success! Your account has now been linked! Please re-log in again to see the changes.');
+                                });
+                        } else {
+                            console.log('Patreon ID exists. Checking expired...');
 
-                            console.log("Updating token... (should do this every time)");
+                            console.log('Updating token... (should do this every time)');
                             patreonIdObj.token = token;
-                            patreonIdObj.markModified("token");
+                            patreonIdObj.markModified('token');
                             await patreonIdObj.save()
-                                .then(obj => {
+                                .then((obj) => {
                                     console.log("Successfully updated patreonId's token.");
-                                })
+                                });
 
                             if (new Date() < new Date(patreonIdObj.expires)) {
-                                console.log("Patreon ID is not expired. Updating details.");
+                                console.log('Patreon ID is not expired. Updating details.');
                                 patreonIdObj.amount_cents = patreon_amount_cents;
-                                patreonIdObj.markModified("amount_cents");
+                                patreonIdObj.markModified('amount_cents');
                                 await patreonIdObj.save();
 
-                                req.flash("success", "This Patreon ID has not expired and is already linked with an account. Its details have been updated however.");
-                            }
-                            else {
-                                console.log("Patreon ID is expired. Updating...")
-                                PatreonId.findOneAndReplace({ "id": patreon_id }, {
+                                req.flash('success', 'This Patreon ID has not expired and is already linked with an account. Its details have been updated however.');
+                            } else {
+                                console.log('Patreon ID is expired. Updating...');
+                                PatreonId.findOneAndReplace({ id: patreon_id }, {
                                     name: patreon_full_name,
-                                    token: token,
+                                    token,
                                     id: patreon_id,
                                     amount_cents: patreon_amount_cents,
                                     declined_since: patreon_declined_since,
-                                    expires: addDays(new Date(), 32), //lasts for 32 days before it needs a refresh
-                                    in_game_username: req.user.username
+                                    expires: addDays(new Date(), 32), // lasts for 32 days before it needs a refresh
+                                    in_game_username: req.user.username,
                                 })
-                                    .then(obj => {
-                                        console.log("Updated successfully.");
-                                        req.flash("success", "Success! Your account has now been updated! Please log in again to see the changes.");
-                                    })
+                                    .then((obj) => {
+                                        console.log('Updated successfully.');
+                                        req.flash('success', 'Success! Your account has now been updated! Please log in again to see the changes.');
+                                    });
                             }
                         }
                     }
-                    return res.redirect(`/profile/${req.user.username}`)
+                    return res.redirect(`/profile/${req.user.username}`);
                 });
         })
 
         .catch((err) => {
             console.log(err);
-            req.flash("error", "Something went terribly wrong... :(");
+            req.flash('error', 'Something went terribly wrong... :(');
             res.redirect('/profile/${req.user.username}');
         });
 });
@@ -229,7 +227,6 @@ router.get('/oauth/redirect', (req, res) => {
 // });
 
 
-
 // function oauthExampleTpl({ name, campaigns }) {
 //     return `
 // <!DOCTYPE html>
@@ -259,10 +256,6 @@ router.get('/oauth/redirect', (req, res) => {
 //     </body>
 // </html>`
 // }
-
-
-
-
 
 
 module.exports = router;

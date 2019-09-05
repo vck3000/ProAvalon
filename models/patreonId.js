@@ -1,16 +1,16 @@
-var mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-//SCHEMA SETUP
-var patreonIdSchema = new mongoose.Schema({
-	name: String,
-	token: String,
-	id: String,
-	amount_cents: String,
-	declined_since: String,
-	expires: Date,
-	in_game_username: String
+// SCHEMA SETUP
+const patreonIdSchema = new mongoose.Schema({
+    name: String,
+    token: String,
+    id: String,
+    amount_cents: String,
+    declined_since: String,
+    expires: Date,
+    in_game_username: String,
 });
-//compile schema into a model
-var patreonId = mongoose.model("patreonId", patreonIdSchema);
+// compile schema into a model
+const patreonId = mongoose.model('patreonId', patreonIdSchema);
 
 module.exports = patreonId;
