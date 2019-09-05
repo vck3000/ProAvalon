@@ -24,7 +24,7 @@ class LadyOfTheLake {
     setHolder (index) {
         this.indexOfPlayerHolding = index;
         this.ladyHistory.push(index);
-        this.ladyHistoryUsernames.push(this.thisRoom.playersInGame[index].username);
+        this.ladyHistoryUsernames.push(this.thisRoom.playerUsernamesInGame[index]);
         this.ladyChain.push(this.thisRoom.playersInGame[index].role);
     };
     

@@ -20,8 +20,9 @@ PickingTeam.prototype.gameMove = function (socket, buttonPressed, selectedPlayer
         return;
     }
 
+    const indexOfPlayer = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username);
     // If the person requesting is the host
-    if (usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username) === this.thisRoom.teamLeader) {
+    if (indexOfPlayer === this.thisRoom.teamLeader) {
         //Reset votes
         this.thisRoom.votes = [];
         this.thisRoom.publicVotes = [];
@@ -58,7 +59,7 @@ PickingTeam.prototype.gameMove = function (socket, buttonPressed, selectedPlayer
             str += selectedPlayers[i] + ", ";
         }
 
-        var str2 = socket.request.user.username + " has picked: " + str;
+        var str2 = this.thisRoom.playerUsernamesInGame[indexOfPlayer] + " has picked: " + str;
 
         //remove the last , and replace with .
         str2 = str2.slice(0, str2.length - 2);
@@ -71,7 +72,7 @@ PickingTeam.prototype.gameMove = function (socket, buttonPressed, selectedPlayer
         this.thisRoom.phase = "votingTeam";
     }
     else {
-        console.log("User " + socket.request.user.username + " is not the team leader. Cannot pick.");
+        console.log("User " + this.thisRoom.playerUsernamesInGame[indexOfPlayer] + " is not the team leader. Cannot pick.");
     }
 };
 
@@ -139,7 +140,7 @@ PickingTeam.prototype.getStatusMessage = function (indexOfPlayer) {
     else {
         // console.log(this.thisRoom.teamLeader);
         if (this.thisRoom.playersInGame[this.thisRoom.teamLeader]) {
-            return "Waiting for " + this.thisRoom.playersInGame[this.thisRoom.teamLeader].username + " to pick a team.";
+            return "Waiting for " + this.thisRoom.playerUsernamesInGame[this.thisRoom.teamLeader] + " to pick a team.";
         }
         else {
             return "ERROR: Tell the admin if you see this, code 10.";

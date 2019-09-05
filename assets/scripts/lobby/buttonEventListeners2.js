@@ -64,7 +64,7 @@ function greenButtonFunction() {
             socket.emit("join-game", roomId);
         }
         else if (gameStarted === false) {
-            socket.emit("startGame", getOptions(), $($(".gameModeSelect")[1]).val());
+            socket.emit("startGame", getOptions(), $($(".gameModeSelect")[1]).val(), $($(".anonModeSelect")[1]).val());
         }
         else {
             if (gameData.phase === "votingTeam" || gameData.phase === "votingMission") {
@@ -173,12 +173,14 @@ $("#createNewRoomButton").on("click", function (data) {
     var sendObj = {
         maxNumPlayers: $($(".maxNumPlayers")[1]).val(),
         newRoomPassword: $("#newRoomPassword").val(),
-        gameMode: $($(".gameModeSelect")[1]).val()
+        gameMode: $($(".gameModeSelect")[1]).val(),
+        anonMode: $($(".anonModeSelect")[1]).val()
     };
 
     // Update the settings in the in room settings menu.
     $($(".maxNumPlayers")[0]).val(sendObj.maxNumPlayers);
     $($(".gameModeSelect")[0]).val(sendObj.gameMode);
+    $($(".anonModeSelect")[0]).val(sendObj.anonMode);
 
 
     if (inRoom === false) {

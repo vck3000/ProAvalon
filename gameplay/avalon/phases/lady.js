@@ -42,21 +42,14 @@ class Lady {
         
         //Check that the target's username exists
         var targetUsername = selectedPlayers;
-        var found = false;
-        for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
-            if (this.thisRoom.playersInGame[i].username === targetUsername) {
-                found = true;
-                break;
-            }
-        }
-        if (found === false) {
+        const targetIndex = this.thisRoom.playerUsernamesInGame.findIndex(username => username === targetUsername);
+        if (targetIndex === -1) {
             socket.emit("danger-alert", "Error: User does not exist. Tell the admin if you see this.");
             return;
         }
         
         var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
         var ladyHistory = this.thisRoom.specialCards[this.card.toLowerCase()].ladyHistory;
-        var targetIndex = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, selectedPlayers);
         
         //Get index of socket 
         var indexOfSocket = undefined;
@@ -90,7 +83,7 @@ class Lady {
             this.thisRoom.specialCards[this.card.toLowerCase()].setHolder(targetIndex);
             
             // this.gameplayMessage = (socket.request.user.username + " has carded " + target);
-            this.thisRoom.sendText(this.thisRoom.allSockets, (socket.request.user.username + " has used " + this.card + " on " + targetUsername + "."), "gameplay-text");
+            this.thisRoom.sendText(this.thisRoom.allSockets, (this.thisRoom.playerUsernamesInGame[indexOfSocket] + " has used " + this.card + " on " + targetUsername + "."), "gameplay-text");
             
             
             //update phase
@@ -159,7 +152,7 @@ class Lady {
         }
         // If it is any other player who isn't special role
         else {
-            var usernameOfCardHolder = this.thisRoom.playersInGame[indexOfCardHolder].username;
+            var usernameOfCardHolder = this.thisRoom.playerUsernamesInGame[indexOfCardHolder];
             return "Waiting for " + usernameOfCardHolder + " to use the Lady of the Lake on someone."
         }
     }

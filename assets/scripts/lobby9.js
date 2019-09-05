@@ -405,7 +405,7 @@ function drawAndPositionAvatars() {
         for (var i = 0; i < numPlayers; i++) {
             //check if the user is on the spy list.
             //if they are, they are spy
-            if (gameData.see && gameData.see.spies && gameData.see.spies.indexOf(roomPlayersData[i].username) !== -1) {
+            if (gameData.see && gameData.see.spies && gameData.see.spies.indexOf(roomPlayersData[i].realUsername) !== -1) {
                 str = str + strOfAvatar(roomPlayersData[i], "spy");
             }
             //else they are a res
@@ -687,7 +687,7 @@ function drawClaimingPlayers(claimingPlayers) {
                 // $(".claimIcon")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
             }
 
-            if (roomPlayersData[i].username === ownUsername) {
+            if (roomPlayersData[i].realUsername === ownUsername) {
                 $(buttons["claim"])[0].innerText = "Unclaim";
             }
         }
@@ -772,7 +772,7 @@ function enableDisableButtons() {
     //are we a player sitting down?
     var isPlayer = false;
     for (var i = 0; i < roomPlayersData.length; i++) {
-        if (roomPlayersData[i].username === ownUsername) {
+        if (roomPlayersData[i].realUsername === ownUsername) {
             //if we are a player sitting down, then yes, we are a player
             isPlayer = true;
             break;
@@ -782,7 +782,7 @@ function enableDisableButtons() {
 
     //determine if we are spectator or not
     for (var i = 0; i < roomPlayersData.length; i++) {
-        if (roomPlayersData[i].username === ownUsername) {
+        if (roomPlayersData[i].realUsername === ownUsername) {
             isSpectator = false;
             break;
         }
@@ -898,7 +898,6 @@ function getIndexFromUsername(username) {
     else {
         return false;
     }
-
 }
 
 function getUsernameFromIndex(index) {
@@ -960,7 +959,7 @@ function strOfAvatar(playerData, alliance) {
     else if (gameStarted === true && gameData !== undefined) {
 
         //if rendering our own player, give it the role tag
-        if (playerData.username === ownUsername) {
+        if (playerData.realUsername === ownUsername) {
             var roleWid = ctx.measureText(gameData.role).width + 20;
             role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + gameData.role + "</p>";
         }
@@ -972,7 +971,7 @@ function strOfAvatar(playerData, alliance) {
                     var username = key;
                     // console.log(username + " has role tag: " + roleTag);
 
-                    if (playerData.username === username) {
+                    if (playerData.realUsername === username) {
                         var roleWid = ctx.measureText(roleTag).width + 20;
                         role = "<p class='role-p' style='width: " + roleWid + "px; margin: auto;'>" + roleTag + "</p>";
                     }
@@ -983,12 +982,12 @@ function strOfAvatar(playerData, alliance) {
 
     //add in the hammer star
     var hammerStar = "";
+    
+    const shownUsername = playerData.username + ((gameStarted === true && gameData.phase === "finished") ? " - " + playerData.realUsername : "");
     // console.log(playerData.username);
     // console.log(ctx.font);
-    var nameWid = ctx.measureText(playerData.username).width;
+    var nameWid = ctx.measureText(shownUsername).width;
     // console.log(nameWid);
-
-
 
     var widOfBox = $("#mainRoomBox div").width();
     // console.log(widOfBox);
@@ -1038,7 +1037,6 @@ function strOfAvatar(playerData, alliance) {
         colourToHighlightChatButton = "";
     }
 
-
     var str = "<div usernameofplayer='" + playerData.username + "' class='playerDiv " + selectedAvatar + "''>";
 
     str += "<span class='avatarOptionButtons'>";
@@ -1052,7 +1050,7 @@ function strOfAvatar(playerData, alliance) {
 
 
     str += "<img class='avatarImgInRoom' src='" + picLink + "'>";
-    str += "<p class='username-p' style='white-space:nowrap; position:relative;'>" + " " + playerData.username + " " + hammerStar + " </p>" + role + "</div>";
+    str += "<p class='username-p' style='white-space:nowrap; position:relative;'>" + " " + shownUsername + " " + hammerStar + " </p>" + role + "</div>";
 
 
     return str;

@@ -20,9 +20,11 @@ for (var i = 0; i < gameModeNames.length; i++) {
 
 var commonPhasesIndex = require("./indexCommonPhases");
 
+var anonModes = require("./anon");
+var anonModeNames = Object.keys(anonModes);
 
-function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) {
 
+function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_, anonMode_) {
     var thisRoom = this;
 
     if (newRoomPassword_ === "") {
@@ -40,6 +42,7 @@ function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) 
     this.maxNumPlayers = maxNumPlayers_;
     this.joinPassword = newRoomPassword_;
     this.gameMode = gameMode_;
+    this.anonMode = anonMode_;
     // Default value of avalon.
     if (gameModeNames.includes(this.gameMode) === false) {
         this.gameMode = "avalon";
@@ -106,7 +109,7 @@ Room.prototype.playerJoinRoom = function (socket, inputPassword) {
 
 
 Room.prototype.playerSitDown = function (socket) {
-    socketUsername = socket.request.user.username;
+    const socketUsername = socket.request.user.username;
 
     if(socketUsername === this.host && this.gameMode.toLowerCase().includes("bot") === true){
         data = {
@@ -296,35 +299,40 @@ Room.prototype.updateRoomPlayers = function () {
 
 
 Room.prototype.getRoomPlayers = function () {
-    var roomPlayers = [];
+    if (this.gameStarted === false) {
+        var roomPlayers = [];
 
-    for (var i = 0; i < this.socketsOfPlayers.length; i++) {
+        for (var i = 0; i < this.socketsOfPlayers.length; i++) {
 
-        var isClaiming;
-        //If the player's username exists on the list of claiming:
-        if (this.claimingPlayers.indexOf(this.socketsOfPlayers[i].request.user.username) !== -1) {
-            isClaiming = true;
+            var isClaiming;
+            //If the player's username exists on the list of claiming:
+            if (this.claimingPlayers.indexOf(this.socketsOfPlayers[i].request.user.username) !== -1) {
+                isClaiming = true;
+            }
+            else {
+                isClaiming = false;
+            }
+
+            roomPlayers[i] = {
+                username: this.socketsOfPlayers[i].request.user.username,
+                realUsername: this.socketsOfPlayers[i].request.user.username,
+                avatarImgRes: this.socketsOfPlayers[i].request.user.avatarImgRes,
+                avatarImgSpy: this.socketsOfPlayers[i].request.user.avatarImgSpy,
+                avatarHide: this.socketsOfPlayers[i].request.user.avatarHide,
+                claim: isClaiming
+            }
+
+            //give the host the teamLeader star
+            if (roomPlayers[i].username === this.host) {
+                roomPlayers[i].teamLeader = true;
+            }
         }
-        else {
-            isClaiming = false;
-        }
 
-
-        roomPlayers[i] = {
-            username: this.socketsOfPlayers[i].request.user.username,
-            avatarImgRes: this.socketsOfPlayers[i].request.user.avatarImgRes,
-            avatarImgSpy: this.socketsOfPlayers[i].request.user.avatarImgSpy,
-            avatarHide: this.socketsOfPlayers[i].request.user.avatarHide,
-            claim: isClaiming
-        }
-
-        //give the host the teamLeader star
-        if (roomPlayers[i].username === this.host) {
-            roomPlayers[i].teamLeader = true;
-        }
+        return roomPlayers;
     }
-
-    return roomPlayers;
+    else {
+        return Game.prototype.getRoomPlayers();
+    }
 };
 
 Room.prototype.getSocketsOfSpectators = function () {
@@ -471,10 +479,14 @@ Room.prototype.sendOutGameModesInRoomToSocket = function (targetSocket) {
 
 };
 
-
-
-
-
+Room.prototype.updateAnonModesInRoom = function(socket, anonMode){
+    if(anonModeNames.includes(anonMode) && socket.request.user.username === this.host){
+        this.anonMode = anonMode;
+    }
+    else{
+        socket.emit("danger-alert", "Eror happened when changing Anonymous Mode. Let the admin know if you see this.");
+    }
+}
 
 function getIndexFromUsername(sockets, username) {
     for (var i = 0; i < sockets.length; i++) {

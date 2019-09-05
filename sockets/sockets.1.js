@@ -55,6 +55,7 @@ fs.readdirSync("./gameplay/").filter(function (file) {
 	}
 });
 // console.log(gameModeNames);
+var anonModeNames = Object.keys(require("../anon"));
 
 
 
@@ -1125,7 +1126,7 @@ var actionsObj = {
 
 				//Start the game.
 				var options = ["Merlin", "Assassin", "Percival", "Morgana", "Ref of the Rain", "Sire of the Sea", "Lady of the Lake"];
-				rooms[nextRoomId].hostTryStartGame(options, "avalon");
+				rooms[nextRoomId].hostTryStartGame(options, "avalon", "Off");
 
 				updateCurrentGamesList();
 
@@ -1469,6 +1470,8 @@ module.exports = function (io) {
 			socket.emit("checkNewPlayerShowIntro", "");
 			//Pass in the gameModes for the new room menu.
 			socket.emit("gameModes", gameModeNames);
+			//Pass in the anonModes for the new room menu.
+			socket.emit("anonModes", anonModeNames);
 
 			User.findOne({ username: socket.request.user.username }).exec(function (err, foundUser) {
 				if (foundUser.mutedPlayers) {
@@ -1497,8 +1500,9 @@ module.exports = function (io) {
 
 		//when a user disconnects/leaves the whole website
 		socket.on("disconnect", function (data) {
+			var username = socket.request.user.username;
 			//debugging
-			console.log(socket.request.user.username + " has left the lobby.");
+			console.log(username + " has left the lobby.");
 
 			var playerIds = getPlayerIdsFromAllSockets();
 
@@ -1511,7 +1515,7 @@ module.exports = function (io) {
 			socket.in("allChat").emit("update-current-players-list", getPlayerUsernamesFromAllSockets());
 			//tell all clients that the user has left
 			var data = {
-				message: socket.request.user.username + " has left the lobby.",
+				message: username + " has left the lobby.",
 				classStr: "server-text-teal"
 			}
 			sendToAllChat(io, data);
@@ -1519,10 +1523,18 @@ module.exports = function (io) {
 			//Note, by default when socket disconnects, it leaves from all rooms.
 			//If user disconnected from within a room, the leave room function will send a message to other players in room.
 
-			var username = socket.request.user.username;
-			var inRoomId = socket.request.user.inRoomId;
+			var inRoomId = this.request.user.inRoomId;
+			const currentRoom = rooms[inRoomId];
 
 			playerLeaveRoomCheckDestroy(socket);
+
+
+			if (currentRoom && currentRoom.gameStarted && currentRoom.gameStarted === true && currentRoom.anonMode && currentRoom.anonMode !== "Off") {
+				const index = currentRoom.playersInGame.findIndex(player => player.username === username);
+				if (index !== -1) {
+					username = currentRoom.playerUsernamesInGame[index];
+				}
+			}
 
 			//if they are in a room, say they're leaving the room.
 			var data = {
@@ -1752,6 +1764,13 @@ module.exports = function (io) {
 				data.dateCreated = new Date();
 
 				if (socket.request.user.inRoomId) {
+					const currentRoom = rooms[this.request.user.inRoomId];
+					if (currentRoom.gameStarted && currentRoom.gameStarted === true && currentRoom.anonMode && currentRoom.anonMode !== "Off") {
+						const index = currentRoom.playersInGame.findIndex(player => player.username === this.request.user.username);
+						if (index !== -1) {
+							data.username = currentRoom.playerUsernamesInGame[index];
+						}		
+					}
 					//send out that data object to all clients in room
 
 					sendToRoomChat(io, socket.request.user.inRoomId, data);
@@ -1812,9 +1831,18 @@ module.exports = function (io) {
 					//join the room chat
 					socket.join(roomId);
 
+					let currentRoom = rooms[roomId];
+					let username = this.request.user.username;
+					if (currentRoom.gameStarted && currentRoom.gameStarted === true && currentRoom.anonMode && currentRoom.anonMode !== "Off") {
+						const index = currentRoom.playersInGame.findIndex(player => player.username === username); 
+						if (index !== -1) {
+							username = currentRoom.playerUsernamesInGame[index];
+						}
+					}
+
 					//emit to say to others that someone has joined
 					var data = {
-						message: socket.request.user.username + " has joined the room.",
+						message: username + " has joined the room.",
 						classStr: "server-text-teal",
 						dateCreated: new Date()
 					}
@@ -1880,20 +1908,27 @@ module.exports = function (io) {
 		socket.on("leave-room", function () {
 			// console.log("In room id");
 			// console.log(socket.request.user.inRoomId);
-
-			if (rooms[socket.request.user.inRoomId]) {
-				console.log(socket.request.user.username + " is leaving room: " + socket.request.user.inRoomId);
+			const currentRoomId = this.request.user.inRoomId;
+			const currentRoom = rooms[this.request.user.inRoomId];
+			if (currentRoom) {
+				console.log(this.request.user.username + " is leaving room: " + currentRoomId);
 				//broadcast to let others know
-
+				let username = this.request.user.username;
+				if (currentRoom.gameStarted && currentRoom.gameStarted === true && currentRoom.anonMode && currentRoom.anonMode !== "Off") {
+					const index = currentRoom.playersInGame.findIndex(player => player.username === username); 
+					if (index !== -1) {
+						username = currentRoom.playerUsernamesInGame[index];
+					}
+				}
 				var data = {
-					message: socket.request.user.username + " has left the room.",
+					message: username + " has left the room.",
 					classStr: "server-text-teal",
 					dateCreated: new Date()
 				}
-				sendToRoomChat(io, socket.request.user.inRoomId, data);
-
+				sendToRoomChat(ioGlobal, currentRoomId, data);
+		
 				//leave the room chat
-				socket.leave(socket.request.user.inRoomId);
+				this.leave(currentRoomId);
 
 				playerLeaveRoomCheckDestroy(socket);
 
@@ -1934,12 +1969,12 @@ module.exports = function (io) {
 			}
 		});
 
-		socket.on("startGame", function (data, gameMode) {
+		socket.on("startGame", function (data, gameMode, anonMode) {
 			//start the game
 			if (rooms[socket.request.user.inRoomId]) {
 
 				if (socket.request.user.inRoomId && socket.request.user.username === rooms[socket.request.user.inRoomId].host) {
-					rooms[socket.request.user.inRoomId].hostTryStartGame(data, gameMode);
+					rooms[socket.request.user.inRoomId].hostTryStartGame(data, gameMode, anonMode);
 					//socket.emit("update-room-players", rooms[roomId].getPlayers());
 				} else {
 					// console.log("Room doesn't exist or user is not host, cannot start game");
@@ -1972,8 +2007,11 @@ module.exports = function (io) {
 			updateCurrentGamesList();
 		});
 
-
-
+		socket.on("update-room-anon-mode", function (anonMode) {
+			if (rooms[socket.request.user.inRoomId]) {
+				rooms[socket.request.user.inRoomId].updateAnonModesInRoom(socket, anonMode);
+			}
+		});
 
 		//************************
 		//game data stuff

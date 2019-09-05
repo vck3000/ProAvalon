@@ -42,21 +42,14 @@ class Sire {
         
         //Check that the target's username exists
         var targetUsername = selectedPlayers;
-        var found = false;
-        for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
-            if (this.thisRoom.playersInGame[i].username === targetUsername) {
-                found = true;
-                break;
-            }
-        }
-        if (found === false) {
+        const targetIndex = this.thisRoom.playerUsernamesInGame.findIndex(username => username === targetUsername);
+        if (targetIndex === -1) {
             socket.emit("danger-alert", "Error: User does not exist. Tell the admin if you see this.");
             return;
         }
         
         var indexOfCardHolder = this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
         var sireHistory = this.thisRoom.specialCards[this.card.toLowerCase()].sireHistory;
-        var targetIndex = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, selectedPlayers);
         
         //Get index of socket 
         var indexOfSocket = undefined;
@@ -89,7 +82,7 @@ class Sire {
             
             var socketOfTarget = undefined;
             for (var i = 0; i < this.thisRoom.socketsOfPlayers.length; i++) {
-                if (this.thisRoom.socketsOfPlayers[i].request.user.username === targetUsername) {
+                if (this.thisRoom.socketsOfPlayers[i].request.user.username === this.thisRoom.playersInGame[targetIndex].username) {
                     socketOfTarget = this.thisRoom.socketsOfPlayers[i];
                     break;
                 }
@@ -101,14 +94,14 @@ class Sire {
             
             //emit to the sire holder the person's alliance
             // note that the display is the same as lady's display
-            socketOfTarget.emit("lady-info", /*"Player " + */socket.request.user.username + " is a " + alliance + ".");
+            socketOfTarget.emit("lady-info", /*"Player " + */this.thisRoom.playerUsernamesInGame[indexOfSocket] + " is a " + alliance + ".");
             // console.log("Player " + target + " is a " + alliance);
             
             //update sire location
             this.thisRoom.specialCards[this.card.toLowerCase()].setHolder(targetIndex);
             
             // this.gameplayMessage = (socket.request.user.username + " has carded " + target);
-            this.thisRoom.sendText(this.thisRoom.allSockets, (socket.request.user.username + " has used " + this.card + " on " + targetUsername + "."), "gameplay-text");
+            this.thisRoom.sendText(this.thisRoom.allSockets, (this.thisRoom.playerUsernamesInGame[indexOfSocket] + " has used " + this.card + " on " + targetUsername + "."), "gameplay-text");
             
             
             //update phase
@@ -177,7 +170,7 @@ class Sire {
         }
         // If it is any other player who isn't special role
         else {
-            var usernameOfCardHolder = this.thisRoom.playersInGame[indexOfCardHolder].username;
+            var usernameOfCardHolder = this.thisRoom.playerUsernamesInGame[indexOfCardHolder];
             return "Waiting for " + usernameOfCardHolder + " to use the Sire of the Sea on someone."
         }
     }

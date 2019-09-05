@@ -29,7 +29,7 @@ class SireOfTheSea {
     setHolder (index) {
         this.indexOfPlayerHolding = index;
         this.sireHistory.push(index);
-        this.sireHistoryUsernames.push(this.thisRoom.playersInGame[index].username);
+        this.sireHistoryUsernames.push(this.thisRoom.playerUsernamesInGame[index]);
         this.sireChain.push(this.thisRoom.playersInGame[index].role);
     };
     

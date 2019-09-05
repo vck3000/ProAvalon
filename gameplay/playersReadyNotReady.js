@@ -17,7 +17,7 @@ playersReadyNotReady.prototype.playerReady = function (username) {
                     sock.emit("spec-game-starting-finished", null);
                 });
 
-                if (this.startGame(this.options) === true) {
+                if (this.startGame(this.options, this.anonNames) === true) {
                     return true;
                 }
                 else {
@@ -45,7 +45,7 @@ playersReadyNotReady.prototype.playerNotReady = function (username) {
     }
 };
 
-playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
+playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode, anonMode) {
     // Must have at least one bot in the game to play a "bot" gameMode
     if(gameMode.toLowerCase().includes("bot") === true && (this.botSockets === undefined || this.botSockets.length === 0 )){
         this.sendText(this.allSockets, "Please play in a normal game mode if you do not have any bots.", "gameplay-text");
@@ -87,6 +87,8 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
 
         this.options = options;
 
+        this.anonNames = anonMode !== "Off" ? require("./anon")[anonMode] : undefined;
+
         // If there are bots, check if they are ready.
         // This step has to be done on the next event loop cycle to ensure the code below it runs.
         var thisGame = this;
@@ -120,7 +122,7 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
         rolesInStr += ".";
 
         for (var i = 0; i < this.socketsOfPlayers.length; i++) {
-            this.socketsOfPlayers[i].emit("game-starting", rolesInStr, gameMode);
+            this.socketsOfPlayers[i].emit("game-starting", rolesInStr, gameMode, anonMode);
         }
 
         var socketsOfSpecs = this.getSocketsOfSpectators();

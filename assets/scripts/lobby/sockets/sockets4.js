@@ -547,6 +547,21 @@ socket.on("gameModes", function (gameModeNames) {
     $(".gameModeSelect")[1].innerHTML = str;
 });
 
+// Update the new room menu with the anonModes available.
+socket.on("anonModes", function (anonModeNames) {
+    // <option value="pokemons">pokemons</option>
+    // <option value="bots">Bots</option>
+
+    var str = '<option value="Off">Off</option>';
+
+    anonModeNames.forEach(function (name) {
+        str += "<option value='" + name + "'>" + name[0].toUpperCase() + name.slice(1, name.length) + "</option>";
+    })
+
+    $(".anonModeSelect")[0].innerHTML = str;
+    $(".anonModeSelect")[1].innerHTML = str;
+});
+
 // Update the role and card settings inside the room (cog).
 var defaultActiveRoles = ["Merlin", "Assassin", "Percival", "Morgana"];
 var skipRoles = ["Resistance", "Spy"];
@@ -684,6 +699,17 @@ $(".gameModeSelect").on("change", function (e) {
     $($(".gameModeSelect")[1]).val(e.target.value);
 
     socket.emit("update-room-game-mode", e.target.value);
+});
+
+$(".anonModeSelect").on("change", function (e) {
+    // console.log("Change");
+    // console.log(e.target.value);
+
+
+    $($(".anonModeSelect")[0]).val(e.target.value);
+    $($(".anonModeSelect")[1]).val(e.target.value);
+
+    socket.emit("update-room-anon-mode", e.target.value);
 });
 
 // Update the new room menu with the gameModes available.

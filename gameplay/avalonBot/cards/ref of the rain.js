@@ -24,7 +24,7 @@ class RefOfTheLake {
     setHolder (index) {
         this.indexOfPlayerHolding = index;
         this.refHistory.push(index);
-        this.refHistoryUsernames.push(this.thisRoom.playersInGame[index].username);
+        this.refHistoryUsernames.push(this.thisRoom.playerUsernamesInGame[index]);
         this.refChain.push(this.thisRoom.playersInGame[index].role);
     };
     

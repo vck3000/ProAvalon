@@ -8,8 +8,9 @@ function VotingTeam(thisRoom_) {
 };
 
 VotingTeam.prototype.gameMove = function (socket, buttonPressed, selectedPlayers) {
+    const index = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username);
     // Get the index of the user who is trying to vote
-    var i = this.thisRoom.playersYetToVote.indexOf(socket.request.user.username);
+    var yetToVoteIndex = this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playerUsernamesInGame[index]);
 
     //Check the data is valid (if it is not a "yes" or a "no")
     if (!(buttonPressed === "yes" || buttonPressed === "no")) {
@@ -17,19 +18,19 @@ VotingTeam.prototype.gameMove = function (socket, buttonPressed, selectedPlayers
     }
 
     // If they haven't voted yet
-    if (i !== -1) {
+    if (yetToVoteIndex !== -1) {
         if (buttonPressed === "yes") {
-            this.thisRoom.votes[usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username)] = "approve";
+            this.thisRoom.votes[index] = "approve";
         }
         else if (buttonPressed === "no") {
-            this.thisRoom.votes[usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username)] = "reject";
+            this.thisRoom.votes[index] = "reject";
         }
         else {
             console.log("ERROR! this.thisRoom should definitely not happen. Game.js votingTeam.");
         }
 
         //remove the player from players yet to vote
-        this.thisRoom.playersYetToVote.splice(i, 1);
+        this.thisRoom.playersYetToVote.splice(yetToVoteIndex, 1);
 
         // If we have all of our votes, proceed onward
         if (this.thisRoom.playersYetToVote.length === 0) {
@@ -85,7 +86,7 @@ VotingTeam.prototype.buttonSettings = function (indexOfPlayer) {
     };
 
     // If user has voted already
-    if (this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playersInGame[indexOfPlayer].username) === -1) {
+    if (this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playerUsernamesInGame[indexOfPlayer]) === -1) {
         obj.green.hidden = true;
         obj.green.disabled = true;
         obj.green.setText = "";
@@ -128,7 +129,7 @@ VotingTeam.prototype.getStatusMessage = function (indexOfPlayer) {
         return str;
     }
     // If user has voted already
-    else if (indexOfPlayer !== undefined && this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playersInGame[indexOfPlayer].username) === -1) {
+    else if (indexOfPlayer !== undefined && this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playerUsernamesInGame[indexOfPlayer]) === -1) {
         var str = "";
         str += "Waiting for votes: ";
         for (var i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
@@ -143,7 +144,7 @@ VotingTeam.prototype.getStatusMessage = function (indexOfPlayer) {
     // User has not voted yet or user is a spectator
     else {
         var str = "";
-        str += (this.thisRoom.playersInGame[this.thisRoom.teamLeader].username + " has picked: ");
+        str += (this.thisRoom.playerUsernamesInGame[this.thisRoom.teamLeader] + " has picked: ");
 
         for (var i = 0; i < this.thisRoom.proposedTeam.length; i++) {
             str += this.thisRoom.proposedTeam[i] + ", ";

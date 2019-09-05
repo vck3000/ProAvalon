@@ -42,7 +42,7 @@ class Assassination {
                             selectedPlayers = selectedPlayers[0];
                         }
                         
-                        var indexOfTarget = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, selectedPlayers);
+                        var indexOfTarget = this.thisRoom.playerUsernamesInGame.findIndex(username => username === selectedPlayers);
                         // Check the alliance of the target. If they are spy, reject it and ask them to shoot a res.
                         // Note: Allowed to shoot Oberon
                         if (this.thisRoom.playersInGame[indexOfTarget].alliance === "Spy" &&
@@ -56,7 +56,7 @@ class Assassination {
                         var merlinUsername = undefined;
                         for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
                             if (this.thisRoom.playersInGame[i].role === "Merlin") {
-                                merlinUsername = this.thisRoom.playersInGame[i].username;
+                                merlinUsername = this.thisRoom.playerUsernamesInGame[i];
                             }
                         }
                         
@@ -82,7 +82,7 @@ class Assassination {
                             
                             //For gameRecord - get the role that was shot
                             for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
-                                if (this.thisRoom.playersInGame[i].username === selectedPlayers) {
+                                if (this.thisRoom.playerUsernamesInGame[i] === selectedPlayers) {
                                     this.thisRoom.whoAssassinShot = this.thisRoom.playersInGame[i].role;
                                     break;
                                 }
@@ -98,8 +98,8 @@ class Assassination {
                     
                     // Only shoot Tristan and Isolde together
                     else if (selectedPlayers.length === 2) {
-                        var i0 = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, selectedPlayers[0]);
-                        var i1 = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, selectedPlayers[1]);
+                        var i0 = this.thisRoom.playerUsernamesInGame.findIndex(username => username === selectedPlayers[0]);
+                        var i1 = this.thisRoom.playerUsernamesInGame.findIndex(username => username === selectedPlayers[1]);
                         // Check the alliance of the target. If they are spy, reject it and ask them to shoot a res.
                         // Note: Allowed to shoot Oberon
                         if (this.thisRoom.playersInGame[i0].alliance === "Spy" &&
@@ -120,10 +120,10 @@ class Assassination {
                         var isoldeUsername = "";
                         for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
                             if (this.thisRoom.playersInGame[i].role === "Tristan") {
-                                tristanUsername = this.thisRoom.playersInGame[i].username;
+                                tristanUsername = this.thisRoom.playerUsernamesInGame[i];
                             }
                             if (this.thisRoom.playersInGame[i].role === "Isolde") {
-                                isoldeUsername = this.thisRoom.playersInGame[i].username;
+                                isoldeUsername = this.thisRoom.playerUsernamesInGame[i];
                             }
                         }
                         
@@ -166,11 +166,11 @@ class Assassination {
                             // console.log("data0: " + data[0]);
                             // console.log("data1: " + data[1]);
                             
-                            if (this.thisRoom.playersInGame[i].username === selectedPlayers[0]) {
+                            if (this.thisRoom.playerUsernamesInGame[i] === selectedPlayers[0]) {
                                 this.thisRoom.whoAssassinShot = this.thisRoom.playersInGame[i].role;
                             }
                             
-                            if (this.thisRoom.playersInGame[i].username === selectedPlayers[1]) {
+                            if (this.thisRoom.playerUsernamesInGame[i] === selectedPlayers[1]) {
                                 this.thisRoom.whoAssassinShot2 = this.thisRoom.playersInGame[i].role;
                             }
                         }
@@ -283,7 +283,7 @@ class Assassination {
         }
         // If it is any other player who isn't special role
         else {
-            var usernameOfAssassin = this.thisRoom.playersInGame[indexOfAssassin].username;
+            var usernameOfAssassin = this.thisRoom.playerUsernamesInGame[indexOfAssassin];
             return "Waiting for " + usernameOfAssassin + " to assassinate."
         }
     }

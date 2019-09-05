@@ -8,30 +8,31 @@ function VotingMission(thisRoom_) {
 };
 
 VotingMission.prototype.gameMove = function (socket, buttonPressed, selectedPlayers) {
-    var i = this.thisRoom.playersYetToVote.indexOf(socket.request.user.username);
+    const index = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username);
+    // Get the index of the user who is trying to vote
+    var yetToVoteIndex = this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playerUsernamesInGame[index]);
 
     //if this.thisRoom vote is coming from someone who hasn't voted yet
-    if (i !== -1) {
+    if (yetToVoteIndex !== -1) {
         if (buttonPressed === "yes") {
-            this.thisRoom.missionVotes[usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username)] = "succeed";
+            this.thisRoom.missionVotes[index] = "succeed";
             // console.log("received succeed from " + socket.request.user.username);
         }
         else if (buttonPressed === "no") {
             // If the user is a res, they shouldn't be allowed to fail
-            var index = usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username);
             if (index !== -1 && this.thisRoom.playersInGame[index].alliance === "Resistance") {
                 socket.emit("danger-alert", "You are resistance! Surely you want to succeed!");
                 return;
             }
 
-            this.thisRoom.missionVotes[usernamesIndexes.getIndexFromUsername(this.thisRoom.playersInGame, socket.request.user.username)] = "fail";
+            this.thisRoom.missionVotes[index] = "fail";
             // console.log("received fail from " + socket.request.user.username);
         }
         else {
             console.log("ERROR! Expected yes or no (success/fail), got: " + buttonPressed);
         }
         //remove the player from players yet to vote
-        this.thisRoom.playersYetToVote.splice(i, 1);
+        this.thisRoom.playersYetToVote.splice(yetToVoteIndex, 1);
     }
     else {
         console.log("Player " + socket.request.user.username + " has already voted or is not in the game");
@@ -129,7 +130,7 @@ VotingMission.prototype.buttonSettings = function (indexOfPlayer) {
     };
 
     // If user has voted
-    if (this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playersInGame[indexOfPlayer].username) === -1) {
+    if (this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playerUsernamesInGame[indexOfPlayer]) === -1) {
         obj.green.hidden = true;
         obj.green.disabled = true;
         obj.green.setText = "";
@@ -171,9 +172,9 @@ VotingMission.prototype.getStatusMessage = function (indexOfPlayer) {
         return str;
     }
     //If the user is someone who needs to vote success or fail
-    else if (indexOfPlayer !== undefined && this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playersInGame[indexOfPlayer].username) !== -1) {
+    else if (indexOfPlayer !== undefined && this.thisRoom.playersYetToVote.indexOf(this.thisRoom.playerUsernamesInGame[indexOfPlayer]) !== -1) {
         var str = "";
-        str += (this.thisRoom.playersInGame[this.thisRoom.teamLeader].username + " has picked: ");
+        str += (this.thisRoom.playerUsernamesInGame[this.thisRoom.teamLeader] + " has picked: ");
 
         for (var i = 0; i < this.thisRoom.proposedTeam.length; i++) {
             str += this.thisRoom.proposedTeam[i] + ", ";

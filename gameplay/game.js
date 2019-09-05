@@ -42,8 +42,9 @@ for (var i = 0; i < gameModeNames.length; i++) {
  * @param {Number} maxNumPlayers_ Maximum number of players allowed to sit down
  * @param {String} newRoomPassword_ Password to join the room
  * @param {String} gameMode_ Gamemode - avalon/hunter/etc.
+ * @param {String} anonMode_ Anonmode - pokemons/animeCharacters/etc.
  */
-function Game(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) {
+function Game(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_, anonMode_) {
 	//********************************
 	//CONSTANTS
 	//********************************
@@ -71,7 +72,7 @@ function Game(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) 
 	];
 
 	//Get the Room properties
-	Room.call(this, host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_);
+	Room.call(this, host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_, anonMode_);
 	PlayersReadyNotReady.call(this, this.minPlayers);
 
 	var thisRoom = this;
@@ -333,7 +334,7 @@ Game.prototype.playerLeaveRoom = function (socket) {
 
 
 //start game
-Game.prototype.startGame = function (options) {
+Game.prototype.startGame = function (options, anonNames) {
 	if (this.socketsOfPlayers.length < 5 || this.socketsOfPlayers.length > 10 || this.gamePlayerLeftDuringReady === true) {
 		this.canJoin = true;
 		this.gamePlayerLeftDuringReady = false;
@@ -365,23 +366,15 @@ Game.prototype.startGame = function (options) {
 	for (var i = 0; i < this.socketsOfPlayers.length; i++) {
 		this.socketsOfPlayers[i] = tempSockets[shuffledPlayerAssignments[i]];
 	}
+	this.playerUsernamesInGame = anonNames ? shuffle([...anonNames]).slice(0, this.socketsOfPlayers.length) : this.socketsOfPlayers.map(s => s.request.user.username);
 
-	//Now we initialise roles
-	for (var i = 0; i < this.socketsOfPlayers.length; i++) {
-		this.playersInGame[i] = {};
-		//assign them the sockets but with shuffled. 
-		this.playersInGame[i].username = this.socketsOfPlayers[i].request.user.username;
-		this.playersInGame[i].userId = this.socketsOfPlayers[i].request.user._id;
-
-		this.playersInGame[i].request = this.socketsOfPlayers[i].request;
-
-		//set the role to be from the roles array with index of the value
-		//of the rolesAssignment which has been shuffled
-		this.playersInGame[i].alliance = this.alliances[rolesAssignment[i]];
-
-		this.playerUsernamesInGame.push(this.socketsOfPlayers[i].request.user.username);
-	}
-
+	//Now we initialise roles	
+	this.playersInGame = this.socketsOfPlayers.map((player, ind) => ({
+		username: player.request.user.username,
+		userId: player.request.user._id,
+		request: player.request,
+		alliance: this.alliances[rolesAssignment[ind]],
+	}));
 
 	// for(var key in this.specialRoles){
 	// 	if(this.specialRoles.hasOwnProperty(key)){
@@ -493,9 +486,7 @@ Game.prototype.startGame = function (options) {
 
 
 	//seed the starting data into the VH
-	for (var i = 0; i < this.playersInGame.length; i++) {
-		this.voteHistory[this.playersInGame[i].request.user.username] = [];
-	}
+	this.playerUsernamesInGame.forEach(username => this.voteHistory[username] = []);
 
 	// Initialise all the Cards
 	for (var i = 0; i < this.cardKeysInPlay.length; i++) {
@@ -583,12 +574,10 @@ Game.prototype.checkBotMoves = function (pendingBots) {
 
 			pendingBots.push(botSocket);
 
-			var availablePlayers = thisRoom.playersInGame
-				.filter(function (player, playerIndex) { 
+			var availablePlayers = thisRoom.playerUsernamesInGame
+				.filter(function (_, playerIndex) { 
 					return prohibitedIndexesToPick.indexOf(playerIndex) === -1;
-				}).map(function (player) {
-					return player.request.user.username;
-				});
+				})
 
 			// If there are 0 number of targets, there are no available players.
 			if (numOfTargets === null) {
@@ -829,15 +818,16 @@ Game.prototype.getRoomPlayers = function () {
 			}
 
 			roomPlayers[i] = {
-				username: this.playersInGame[i].request.user.username,
-				avatarImgRes: this.playersInGame[i].request.user.avatarImgRes,
-				avatarImgSpy: this.playersInGame[i].request.user.avatarImgSpy,
+				username: this.playerUsernamesInGame[i],
+				realUsername: this.playersInGame[i].request.user.username,
+				avatarImgRes: (this.anonMode && this.anonMode !== "Off") ? null : this.playersInGame[i].request.user.avatarImgRes,
+				avatarImgSpy: (this.anonMode && this.anonMode !== "Off") ? null : this.playersInGame[i].request.user.avatarImgSpy,
 				avatarHide: this.playersInGame[i].request.user.avatarHide,
 				claim: isClaiming
 			}
 
 			//give the host the teamLeader star
-			if (roomPlayers[i].username === this.host) {
+			if (this.playersInGame[i].username === this.host) {
 				roomPlayers[i].teamLeader = true;
 			}
 		}
@@ -889,7 +879,7 @@ Game.prototype.getGameData = function () {
 				alliance: playerRoles[i].alliance,
 				role: playerRoles[i].role,
 				see: playerRoles[i].see,
-				username: playerRoles[i].username,
+				username: this.playerUsernamesInGame[i],
 				socketId: playerRoles[i].socketId
 			};
 
@@ -1422,12 +1412,10 @@ Game.prototype.getRoleCardPublicGameData = function () {
 // If entries don't exist for current missionNum and pickNum, create them
 Game.prototype.VHCheckUndefined = function () {
 	for (var i = 0; i < this.playersInGame.length; i++) {
-		if (this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1] === undefined) {
-			this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1] = [];
-		}
-		if (this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1][this.pickNum - 1] === undefined) {
-			this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1][this.pickNum - 1] = "";
-		}
+		if (this.voteHistory[this.playerUsernamesInGame[i]][this.missionNum - 1] === undefined)
+			this.voteHistory[this.playerUsernamesInGame[i]][this.missionNum - 1] = [];
+		if (this.voteHistory[this.playerUsernamesInGame[i]][this.missionNum - 1][this.pickNum - 1] === undefined)
+			this.voteHistory[this.playerUsernamesInGame[i]][this.missionNum - 1][this.pickNum - 1] = "";
 	}
 }
 
@@ -1435,12 +1423,12 @@ Game.prototype.VHUpdateTeamPick = function () {
 	this.VHCheckUndefined();
 
 	for (var i = 0; i < this.playersInGame.length; i++) {
-		if (this.proposedTeam.indexOf(this.playersInGame[i].request.user.username) !== -1) {
-			this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1][this.pickNum - 1] += "VHpicked ";
+		if (this.proposedTeam.indexOf(this.playerUsernamesInGame[i]) !== -1) {
+			this.voteHistory[this.playerUsernamesInGame[i]][this.missionNum - 1][this.pickNum - 1] += "VHpicked ";
 		}
 
 		if (i === this.teamLeader) {
-			this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1][this.pickNum - 1] += "VHleader ";
+			this.voteHistory[this.playerUsernamesInGame[i]][this.missionNum - 1][this.pickNum - 1] += "VHleader ";
 		}
 	}
 }
@@ -1449,7 +1437,7 @@ Game.prototype.VHUpdateTeamVotes = function () {
 	this.VHCheckUndefined();
 
 	for (var i = 0; i < this.playersInGame.length; i++) {
-		this.voteHistory[this.playersInGame[i].request.user.username][this.missionNum - 1][this.pickNum - 1] += ("VH" + this.votes[i]);
+		this.voteHistory[this.playerUsernamesInGame[i]][this.missionNum - 1][this.pickNum - 1] += ("VH" + this.votes[i]);
 	}
 }
 
@@ -1564,7 +1552,8 @@ function getUsernamesOfPlayersInRoom(thisRoom) {
 	if (thisRoom.gameStarted === true) {
 		var array = [];
 		for (var i = 0; i < thisRoom.socketsOfPlayers.length; i++) {
-			array.push(thisRoom.socketsOfPlayers[i].request.user.username);
+			const index = thisRoom.playersInGame.findIndex(player => player.username === thisRoom.socketsOfPlayers[i].request.user.username);
+			array.push(thisRoom.playerUsernamesInGame[index]);
 		}
 		return array;
 	}

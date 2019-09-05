@@ -7,7 +7,7 @@
 //======================================
 //GAME SOCKET ROUTES
 //======================================
-socket.on("game-starting", function (roles, gameMode) {
+socket.on("game-starting", function (roles, gameMode, anonMode) {
     var secondsLeft = 10;
     let timerInterval;
 
@@ -19,9 +19,11 @@ socket.on("game-starting", function (roles, gameMode) {
         gameModeCap = "";
     }
 
+    const anonModeCap = (anonMode && anonMode !== "Off") ? `<br>Anonymous mode: ${anonMode}` : ``;
+
     Swal({
         title: gameModeCap + " game is starting!",
-        html: "<strong></strong> seconds left. <br><br>Roles are: " + roles,
+        html: "<strong></strong> seconds left. <br><br>Roles are: " + roles + anonModeCap,
         type: "info",
         confirmButtonText: "Ready",
         showConfirmButton: true,

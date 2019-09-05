@@ -214,13 +214,7 @@ function addToRoomChat(data) {
         if (data[0] === undefined) {
             data = [data];
         }
-
-        var usernamesOfPlayersInGame = [];
-        if (gameStarted === true) {
-            roomPlayersData.forEach(function (obj) {
-                usernamesOfPlayersInGame.push(obj.username);
-            });
-        }
+    
 
         for (var i = 0; i < data.length; i++) {
             //format the date
@@ -362,13 +356,13 @@ function addToRoomChat(data) {
                 if (data[i].username) {
                     usernameOnly = data[i].username.split(" ")[0];
                 }
-
-                if (selectedChat[usernameOnly] === true && getIndexFromUsername(usernameOnly) !== undefined) {
+                var usernameIndex = getIndexFromUsername(usernameOnly);
+                if (selectedChat[usernameOnly] === true && usernameIndex !== undefined) {
                     if (setHighlightColorToYellow === true) {
                         highlightChatColour = "#ffff9e";
                     }
                     else {
-                        highlightChatColour = docCookies.getItem("player" + getIndexFromUsername(usernameOnly) + 'HighlightColour');
+                        highlightChatColour = docCookies.getItem("player" + usernameIndex + 'HighlightColour');
                     }
                     highlightForegroundColorHtml = "color: #333;";
                 }
