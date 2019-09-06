@@ -1181,11 +1181,12 @@ var actionsObj = {
                     maxNumPlayers: 10,
                     newRoomPassword: '',
                     gameMode: 'avalonBot',
+                    anonMode: 'Off',
                 };
 
 
                 // Create the room
-                rooms[nextRoomId] = new gameRoom('Bot game', nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword, dataObj.gameMode);
+                rooms[nextRoomId] = new gameRoom('Bot game', nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword, dataObj.gameMode, dataObj.anonMode);
                 const privateStr = (dataObj.newRoomPassword === '') ? '' : 'private ';
                 // broadcast to all chat
                 const messageData = {
@@ -2074,6 +2075,21 @@ function getPlayerIdsFromAllSockets() {
     return array;
 }
 
+function getInGameUsername(thisRoom, username, displayUsername) {
+    if (thisRoom && thisRoom.gameStarted && thisRoom.gameStarted === true && thisRoom.anonMode && thisRoom.anonMode !== "Off") {
+		const index = thisRoom.playersInGame.findIndex(player => player.username === username);
+		if (index !== -1) {
+			if (thisRoom.phase === 'finished') {
+                return `${thisRoom.playerUsernamesInGame[index]} - ${displayUsername ? displayUsername : username}`;
+            }
+            else {
+                return thisRoom.playerUsernamesInGame[index];
+            }
+		}
+    }
+    return displayUsername ? displayUsername : username;
+}
+
 function getIndexFromUsername(sockets, username, caseInsensitive) {
     if (sockets && username) {
         for (let i = 0; i < sockets.length; i++) {
@@ -2090,7 +2106,7 @@ function getIndexFromUsername(sockets, username, caseInsensitive) {
 }
 
 function disconnect(data) {
-	let username = this.request.user.username;
+	const username = this.request.user.username;
     // debugging
     console.log(`${username} has left the lobby.`);
     // remove them from all sockets
@@ -2109,20 +2125,13 @@ function disconnect(data) {
     // If user disconnected from within a room, the leave room function will send a message to other players in room.
 
 	const { inRoomId } = this.request.user;
-	const currentRoom = rooms[inRoomId];
 
 	playerLeaveRoomCheckDestroy(this);
 	
-	if (currentRoom && currentRoom.gameStarted && currentRoom.gameStarted === true && currentRoom.anonMode && currentRoom.anonMode !== "Off") {
-		const index = currentRoom.playersInGame.findIndex(player => player.username === username);
-		if (index !== -1) {
-			username = currentRoom.playerUsernamesInGame[index];
-		}
-	}
 
     // if they are in a room, say they're leaving the room.
     var data = {
-        message: `${username} has left the room.`,
+        message: `${getInGameUsername(rooms[inRoomId], username)} has left the room.`,
         classStr: 'server-text-teal',
         dateCreated: new Date(),
     };
@@ -2218,24 +2227,13 @@ function roomChatFromClient(data) {
             return;
         }
 
-        data.username = this.request.displayUsername ? this.request.displayUsername : this.request.user.username;
+        const shownUsername = this.request.displayUsername ? this.request.displayUsername : this.request.user.username;
 
         data.message = textLengthFilter(data.message);
         data.dateCreated = new Date();
 
 		if (this.request.user.inRoomId) {
-			const currentRoom = rooms[this.request.user.inRoomId];
-			if (currentRoom.gameStarted && currentRoom.gameStarted === true && currentRoom.anonMode && currentRoom.anonMode !== 'Off') {
-				const index = currentRoom.playersInGame.findIndex(player => player.username === this.request.user.username);
-				if (index !== -1) {
-					if (currentRoom.phase === 'finished') {
-						data.username = `${currentRoom.playerUsernamesInGame[index]} - ${data.username}`;
-					}
-					else {
-						data.username = currentRoom.playerUsernamesInGame[index];
-					}					
-				}		
-			}
+			data.username = getInGameUsername(rooms[this.request.user.inRoomId], this.request.user.username, shownUsername);
 			
 			// send out that data object to all clients in room
 
@@ -2289,22 +2287,13 @@ function joinRoom(roomId, inputPassword) {
 
             // set the room id into the this obj
 			this.request.user.inRoomId = roomId;
-			
-			let currentRoom = rooms[roomId];
-			let username = this.request.user.username;
-			if (currentRoom.gameStarted && currentRoom.gameStarted === true && currentRoom.anonMode && currentRoom.anonMode !== 'Off') {
-				const index = currentRoom.playersInGame.findIndex(player => player.username === username); 
-				if (index !== -1) {
-					username = currentRoom.playerUsernamesInGame[index];
-				}
-			}
 
             // join the room chat
             this.join(roomId);
 
             // emit to say to others that someone has joined
             const data = {
-                message: `${username} has joined the room.`,
+                message: `${getInGameUsername( rooms[roomId], this.request.user.username)} has joined the room.`,
                 classStr: 'server-text-teal',
                 dateCreated: new Date(),
             };
@@ -2367,15 +2356,8 @@ function leaveRoom() {
         console.log(`${this.request.user.username} is leaving room: ${this.request.user.inRoomId}`);
         // broadcast to let others know
 
-		let username = this.request.user.username;
-		if (currentRoom.gameStarted && currentRoom.gameStarted === true && currentRoom.anonMode && currentRoom.anonMode !== 'Off') {
-			const index = currentRoom.playersInGame.findIndex(player => player.username === username); 
-			if (index !== -1) {
-				username = currentRoom.playerUsernamesInGame[index];
-			}
-		}
         const data = {
-            message: `${username} has left the room.`,
+            message: `${getInGameUsername(currentRoom, this.request.user.username)} has left the room.`,
             classStr: 'server-text-teal',
             dateCreated: new Date(),
         };

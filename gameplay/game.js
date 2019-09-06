@@ -890,6 +890,7 @@ Game.prototype.getGameData = function () {
             data[i].roles = this.playersInGame.map((player) => player.role);
             // This is hacky but it works, for now...
             data[i].cards = this.options.filter((option) => option.indexOf('of the') !== -1);
+            data[i].isAnon = this.anonMode && this.anonMode !== 'Off';
 
 
             // if game is finished, reveal everything including roles

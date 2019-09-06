@@ -906,7 +906,7 @@ function strOfAvatar(playerData, alliance) {
     //add in the hammer star
     var hammerStar = '';
     
-    const shownUsername = playerData.username + ((gameStarted === true && gameData.phase === 'finished') ? ` -  ${playerData.realUsername}` : '');
+    const shownUsername = playerData.isAnon ? `${playerData.username}${((gameStarted === true && gameData.phase === 'finished') ? ` -  ${playerData.realUsername}` : '')}` : playerData.username;
     // console.log(playerData.username);
     // console.log(ctx.font);
     var nameWid = ctx.measureText(shownUsername).width;
