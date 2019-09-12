@@ -1611,9 +1611,16 @@ module.exports = function (io) {
             socket.emit('username', socket.request.user.username);
             // send the user the list of commands
             socket.emit('commands', userCommands);
+            
+            // initialise not mod and not admin
+            socket.isModSocket = false;
+            socket.isAdminSocket = false;
 
             // if the mods name is inside the array
             if (modsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1) {
+                // promote to mod socket
+                socket.isModSocket = true;
+                
                 // send the user the list of commands
                 socket.emit('modCommands', modCommands);
 
@@ -1644,6 +1651,9 @@ module.exports = function (io) {
 
             // if the admin name is inside the array
             if (adminsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1) {
+                // promote to admin socket
+                socket.isAdminSocket = true;
+
                 // send the user the list of commands
                 socket.emit('adminCommands', adminCommands);
             }
