@@ -46,6 +46,7 @@ VotingTeam.prototype.gameMove = function (socket, buttonPressed, selectedPlayers
             }
             // Hammer reject
             else if (outcome === 'no' && this.thisRoom.pickNum >= 5) {
+                this.thisRoom.lastProposedTeam = this.thisRoom.proposedTeam;
                 this.thisRoom.missionHistory[this.thisRoom.missionHistory.length] = 'failed';
 
                 this.thisRoom.howWasWon = 'Hammer rejected.';
