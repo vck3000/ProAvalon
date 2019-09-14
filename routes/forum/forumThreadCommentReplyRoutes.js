@@ -293,6 +293,8 @@ router.delete('/deleteCommentReply/:id/:comment_id/:reply_id', middleware.checkF
                             if (err) {
                                 console.log(err);
                             } else {
+                                const link = `/forum/show/${foundForumThread._id}#${foundReply._id}`;
+                                createNotificationObj.createNotification(mongoose.Types.ObjectId(foundReply.author.id), 'Your reply was removed!', link, req.user.username);
                                 foundForumThread.markModified('comments');
                                 await foundForumThread.save();
                                 // console.log("B");
