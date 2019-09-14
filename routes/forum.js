@@ -389,8 +389,13 @@ router.post('/modAction', middleware.isMod, (req, res) => {
 
 
     forumThread.findById(req.body.idOfForum).populate({ path: 'comments', populate: { path: 'replies' } }).exec((err, foundForumThread) => {
-        if (err) { console.log(err); } else if (req.body.typeOfForumElement === 'forum') {
+        if (err) { console.log(err); }
+        else if (req.body.typeOfForumElement === 'forum') {
             console.log('modaction forum');
+
+            const link = `#`;
+            createNotificationObj.createNotification(mongoose.Types.ObjectId(foundForumThread.author.id), 'Your post was removed.', link, req.user.username);
+
             foundForumThread.disabled = true;
             foundForumThread.save();
         } else {
@@ -405,7 +410,7 @@ router.post('/modAction', middleware.isMod, (req, res) => {
                         foundForumThread.save();
                     });
                     const link = `/forum/show/${foundForumThread._id}#${comment._id}`;
-                    createNotificationObj.createNotification(mongoose.Types.ObjectId(comment.author.id), 'Your comment was removed!', link, req.user.username);
+                    createNotificationObj.createNotification(mongoose.Types.ObjectId(comment.author.id), 'Your comment was removed.', link, req.user.username);
                 } else {
                     forumThreadCommentReply.findById(req.body.idOfReply).exec((err, reply) => {
                         console.log('modaction reply');
@@ -420,7 +425,7 @@ router.post('/modAction', middleware.isMod, (req, res) => {
                             });
                         });
                         const link = `/forum/show/${foundForumThread._id}#${reply._id}`;
-                        createNotificationObj.createNotification(mongoose.Types.ObjectId(reply.author.id), 'Your reply was removed!', link, req.user.username);
+                        createNotificationObj.createNotification(mongoose.Types.ObjectId(reply.author.id), 'Your reply was removed.', link, req.user.username);
                     });
                 }
             });

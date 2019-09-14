@@ -155,7 +155,7 @@ router.put('/:id/:comment_id', middleware.checkForumThreadCommentOwnership, (req
                 }),
 
 
-                foundComment.edited = true;
+                    foundComment.edited = true;
                 foundComment.timeLastEdit = new Date();
 
                 await foundComment.save();
@@ -201,8 +201,6 @@ router.delete('/deleteComment/:id/:comment_id', middleware.checkForumThreadComme
 
             foundComment.save(() => {
                 forumThread.findById(req.params.id).populate('comments').exec(async (err, foundForumThread) => {
-                    const link = `/forum/show/${foundForumThread._id}#${foundComment._id}`;
-                    createNotificationObj.createNotification(mongoose.Types.ObjectId(foundComment.author.id), 'Your comment was removed!', link, req.user.username);
                     foundForumThread.markModified('comments');
                     await foundForumThread.save();
                 });
