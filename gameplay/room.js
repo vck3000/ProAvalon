@@ -69,29 +69,33 @@ function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) 
 Room.prototype.playerJoinRoom = function (socket, inputPassword) {
     console.log(`${socket.request.user.username} has joined room ${this.roomId}`);
 
-    // if the room has a password and user hasn't put one in yet
-    if (this.joinPassword !== undefined && inputPassword === undefined && (socket.isBotSocket === undefined || socket.isBotSocket === false)) {
-        socket.emit('joinPassword', this.roomId);
-        // console.log("No password inputted!");
+    // check if the player is a moderator or an admin, if so bypass
+    if (!(socket.isModSocket || socket.isAdminSocket)) {
+        // if the room has a password and user hasn't put one in yet
+        if (this.joinPassword !== undefined && inputPassword === undefined && (socket.isBotSocket === undefined || socket.isBotSocket === false)) {
+            socket.emit('joinPassword', this.roomId);
+            // console.log("No password inputted!");
 
-        return false;
-    }
-    // if the room has a password and user HAS put a password in
-    if (this.joinPassword !== undefined && inputPassword !== undefined && (socket.isBotSocket === undefined || socket.isBotSocket === false)) {
-        if (this.joinPassword === inputPassword) {
-            // console.log("Correct password!");
-
-            socket.emit('correctRoomPassword');
-            // continue on
-        } else {
-            // console.log("Wrong password!");
-
-            // socket.emit("danger-alert", "The password you have inputted is incorrect.");
-            socket.emit('wrongRoomPassword');
-            socket.emit('changeView', 'lobby');
             return false;
         }
+        // if the room has a password and user HAS put a password in
+        if (this.joinPassword !== undefined && inputPassword !== undefined && (socket.isBotSocket === undefined || socket.isBotSocket === false)) {
+            if (this.joinPassword === inputPassword) {
+                // console.log("Correct password!");
+
+                socket.emit('correctRoomPassword');
+                // continue on
+            } else {
+                // console.log("Wrong password!");
+
+                // socket.emit("danger-alert", "The password you have inputted is incorrect.");
+                socket.emit('wrongRoomPassword');
+                socket.emit('changeView', 'lobby');
+                return false;
+            }
+        }
     }
+    
 
     this.allSockets.push(socket);
 
