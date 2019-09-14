@@ -155,7 +155,7 @@ router.put('/:id/:comment_id', middleware.checkForumThreadCommentOwnership, (req
                 }),
 
 
-                foundComment.edited = true;
+                    foundComment.edited = true;
                 foundComment.timeLastEdit = new Date();
 
                 await foundComment.save();

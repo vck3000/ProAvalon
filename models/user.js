@@ -2,64 +2,125 @@ const mongoose = require('mongoose');
 const passportLocalMongoose = require('passport-local-mongoose');
 
 const UserSchema = new mongoose.Schema({
-    username: String,
+    username: {
+        type: String,
+        required: true,
+    },
     usernameLower: String,
-    password: String,
-    avatarImgRes: String,
-    avatarImgSpy: String,
+    password: {
+        type: String,
+        // Not sure exactly how passportjs handles this, 
+        // but we don't give this parameter to Mongoose when creating.
+        // required: true, 
+    },
 
+    avatarImgRes: {
+        type: String,
+        default: null,
+    },
+    avatarImgSpy: {
+        type: String,
+        default: null,
+    },
     avatarHide: Boolean,
 
     hideStats: Boolean,
 
-
     dateJoined: Date,
-    totalTimePlayed: Date,
+    totalTimePlayed: {
+        type: Date,
+        default: 0,
+    },
 
+    totalGamesPlayed: {
+        type: Number,
+        default: 0,
+    },
 
-    totalGamesPlayed: Number,
+    totalWins: {
+        type: Number,
+        default: 0,
+    },
+    totalResWins: {
+        type: Number,
+        default: 0,
+    },
+    totalLosses: {
+        type: Number,
+        default: 0,
+    },
+    totalResLosses: {
+        type: Number,
+        default: 0,
+    },
 
+    winsLossesGameSizeBreakdown: {
+        type: Object,
+        default: {},
+    },
 
-    totalWins: Number,
-    totalResWins: Number,
-    totalLosses: Number,
-    totalResLosses: Number,
-
-    winsLossesGameSizeBreakdown: Object,
-
-    nationality: String,
-    nationCode: String,
-    timeZone: String,
-    biography: String,
+    nationality: {
+        type: String,
+        default: '',
+    },
+    nationCode: {
+        type: String,
+        default: '',
+    },
+    timeZone: {
+        type: String,
+        default: '',
+    },
+    biography: {
+        type: String,
+        default: '',
+    },
 
 
     // dont need to worry about roleWins growing out of control
     // since there are a limited amount of roles, and each role
     // only has one Number attached to it
-    roleStats: Object,
+    roleStats: {
+        type: Object,
+        default: {
+            '5p': {
+                merlin: {
 
-    notifications: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'notification',
+                },
+                percival: {
+
+                },
+                assassin: {
+
+                },
+                morgana: {
+
+                },
+                spy: {
+
+                },
+                resistance: {
+
+                },
+            },
         },
-    ],
+    },
+
+    notifications: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'notification',
+    }],
 
 
-    modAction: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'ModAction',
-        },
-    ],
+    modAction: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'ModAction',
+    }],
 
-    mutedPlayers: [
-        String,
-    ],
+    mutedPlayers: [String],
 
     patreonId: String,
 });
-
 
 UserSchema.plugin(passportLocalMongoose);
 
