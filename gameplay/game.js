@@ -592,8 +592,8 @@ Game.prototype.checkBotMoves = function (pendingBots) {
                 const selectedValidPlayers = (
                     numOfTargets === 0 || numOfTargets === null || (
                         move.selectedPlayers
-						&& numOfTargets === move.selectedPlayers.length
-						&& move.selectedPlayers.every((player) => availablePlayers.indexOf(player) !== -1)
+                        && numOfTargets === move.selectedPlayers.length
+                        && move.selectedPlayers.every((player) => availablePlayers.indexOf(player) !== -1)
                     )
                 );
 
@@ -633,7 +633,7 @@ Game.prototype.gameMove = function (socket, data) {
     buttonPressed = data[0];
     selectedPlayers = data[1];
 
-    console.log(buttonPressed, selectedPlayers);
+    // console.log(buttonPressed, selectedPlayers);
 
     if (selectedPlayers === undefined || selectedPlayers === null) {
         selectedPlayers = [];

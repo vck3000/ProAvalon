@@ -783,23 +783,6 @@ const processRecords = function (records) {
     // res.status(200).send(clientStatsData);
 }
 
-// Read in the game records
-// var fs = require('fs');
-// var gameRecordsData = JSON.parse(fs.readFileSync('assets/gameRecordsData/gameRecordsData.json', 'utf8'));
-
-// // Filter out the bot games
-// var records = gameRecordsData;
-// const prevRecordsLength = records.length;
-// records = records.filter((r) => (r.gameMode === undefined || r.gameMode.toLowerCase().includes('bot') == false));
-// console.log(`Removed ${prevRecordsLength - records.length} bot games from dataset.`);
-
-// // Anonymize it using gameRecordsData
-// var gameRecordsDataAnon = anonymizeStats(records);
-
-// fs.writeFileSync('assets/gameRecordsData/gameRecordsDataAnon.json', JSON.stringify(gameRecordsDataAnon));
-
-// processRecords(records);
-
 
 router.get('/updateStats', (req, res) => {
     setTimeout(hardUpdateStatsFunction, 5000);
