@@ -2382,7 +2382,7 @@ function standUpFromGame() {
 function leaveRoom() {
     // console.log("In room id");
     // console.log(this.request.user.inRoomId);
-	const { inRoomId } = this.request.user.inRoomId;
+	const { inRoomId } = this.request.user;
 	const currentRoom = rooms[inRoomId];
     if (currentRoom) {
         console.log(`${this.request.user.username} is leaving room: ${this.request.user.inRoomId}`);

@@ -785,8 +785,8 @@ Game.prototype.getRoomPlayers = function () {
 			roomPlayers[i] = {
 				username: this.playerUsernamesInGame[i],
 				realUsername: this.playersInGame[i].request.user.username,
-				avatarImgRes: (this.anonMode && this.anonMode !== 'Off') ? null : this.playersInGame[i].request.user.avatarImgRes,
-				avatarImgSpy: (this.anonMode && this.anonMode !== 'Off') ? null : this.playersInGame[i].request.user.avatarImgSpy,
+				avatarImgRes: this.playersInGame[i].request.user.avatarImgRes,
+				avatarImgSpy: this.playersInGame[i].request.user.avatarImgSpy,
 				avatarHide: this.playersInGame[i].request.user.avatarHide,
 				claim: isClaiming
 			}

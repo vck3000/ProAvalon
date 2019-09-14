@@ -844,7 +844,8 @@ function getUsernameFromIndex(index) {
 function strOfAvatar(playerData, alliance) {
     let picLink;
     if (alliance === 'res') {
-        if ((playerData.avatarImgRes && $('#option_display_original_avatars')[0].checked === false) && (!playerData.avatarHide || playerData.avatarHide === false)) {
+        if ((playerData.avatarImgRes && $('#option_display_original_avatars')[0].checked === false) && (!playerData.avatarHide || playerData.avatarHide === false)
+            && !(gameStarted && gameData && gameData.isAnon && gameData.phase !== 'finished')) {
             if (playerData.avatarImgRes.includes('http')) {
                 picLink = playerData.avatarImgRes;
             } else {
@@ -906,7 +907,7 @@ function strOfAvatar(playerData, alliance) {
     //add in the hammer star
     var hammerStar = '';
     
-    const shownUsername = playerData.isAnon ? `${playerData.username}${((gameStarted === true && gameData.phase === 'finished') ? ` -  ${playerData.realUsername}` : '')}` : playerData.username;
+    const shownUsername = (gameData && gameData.isAnon) ? `${playerData.username}${((gameStarted === true && gameData.phase === 'finished') ? ` -  ${playerData.realUsername}` : '')}` : playerData.username;
     // console.log(playerData.username);
     // console.log(ctx.font);
     var nameWid = ctx.measureText(shownUsername).width;
