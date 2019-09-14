@@ -84,7 +84,7 @@ const registerLimiter = process.env.MY_PLATFORM === 'local'
         max: 3,
     });
 
-// Post of the register route
+// Post of the register route - Create an account.
 router.post('/', registerLimiter, checkIpBan, checkCurrentBan, sanitiseUsername, (req, res) => {
     // console.log("escaped: " + escapeText(req.body.username));
 

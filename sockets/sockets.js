@@ -1422,7 +1422,7 @@ var actionsObj = {
                         return { message: `Game has not started.`, classStr: 'server-text' };
                     }
                     rooms[roomId].sendText(rooms[roomId].allSockets, `Moderator ${senderSocket.request.user.username} has revealed all roles.`, 'server-text');
-                    
+
                     // reveal role for each user
                     rooms[roomId].playersInGame.forEach((user) => {
                         senderSocket.emit('messageCommandReturnStr', { message: `${user.username}'s role is ${user.role.toUpperCase()}.`, classStr: 'server-text' });
@@ -1633,7 +1633,7 @@ module.exports = function (io) {
             socket.emit('username', socket.request.user.username);
             // send the user the list of commands
             socket.emit('commands', userCommands);
-            
+
             // initialise not mod and not admin
             socket.isModSocket = false;
             socket.isAdminSocket = false;
@@ -1642,7 +1642,7 @@ module.exports = function (io) {
             if (modsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1) {
                 // promote to mod socket
                 socket.isModSocket = true;
-                
+
                 // send the user the list of commands
                 socket.emit('modCommands', modCommands);
 
@@ -2439,7 +2439,7 @@ function setClaim(data) {
 }
 
 function gameMove(data) {
-    console.log(data);
+    // console.log(data);
     if (rooms[this.request.user.inRoomId]) {
         rooms[this.request.user.inRoomId].gameMove(this, data);
         if (rooms[this.request.user.inRoomId]) {
