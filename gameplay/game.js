@@ -1008,6 +1008,9 @@ Game.prototype.getStatus = function () {
     if (this.frozen === true) {
         return 'Frozen';
     }
+    if (this.phase === "paused") {
+        return 'Paused';
+    }
     if (this.gameStarted === true) {
         return 'Game in progress';
     }
