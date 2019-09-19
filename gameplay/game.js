@@ -42,7 +42,8 @@ for (let i = 0; i < gameModeNames.length; i++) {
  * @param {String} newRoomPassword_ Password to join the room
  * @param {String} gameMode_ Gamemode - avalon/hunter/etc.
  */
-function Game(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) {
+function Game(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_, callback_) {
+    this.callback = callback_;
     //* *******************************
     // CONSTANTS
     //* *******************************
@@ -1071,6 +1072,8 @@ Game.prototype.finishGame = function (toBeWinner) {
 
     this.distributeGameData();
 
+    // Let sockets.js know that we've finished the game
+    this.callback("finishGame", this);
 
     // If there was a bot in the game and this is the online server, do not store into the database.
     // if (process.env.MY_PLATFORM === "online" && this.botIndexes.length !== 0) {

@@ -95,7 +95,7 @@ Room.prototype.playerJoinRoom = function (socket, inputPassword) {
             }
         }
     }
-    
+
 
     this.allSockets.push(socket);
 

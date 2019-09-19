@@ -1183,7 +1183,7 @@ var actionsObj = {
 
 
                 // Create the room
-                rooms[nextRoomId] = new gameRoom('Bot game', nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword, dataObj.gameMode);
+                rooms[nextRoomId] = new gameRoom('Bot game', nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword, dataObj.gameMode, socketCallback);
                 const privateStr = (dataObj.newRoomPassword === '') ? '' : 'private ';
                 // broadcast to all chat
                 const messageData = {
@@ -1434,7 +1434,7 @@ var actionsObj = {
                 }
             }
         },
-        
+
         mtogglepause: {
             command: 'mtogglepause',
             help: "/mtogglepause : Pauses or unpauses the current room.",
@@ -1890,6 +1890,16 @@ module.exports = function (io) {
     });
 };
 
+function socketCallback(action, room) {
+    if (action === "finishGame") {
+        var data = {
+            message: `Room ${room.roomId} has finished!`,
+            classStr: 'server-text-teal',
+        };
+        sendToAllChat(ioGlobal, data);
+    }
+}
+
 var applyApplicableRewards = function (socket) {
     // Admin badge
     if (socket.rewards.includes(REWARDS.ADMIN_BADGE)) {
@@ -2281,7 +2291,7 @@ function newRoom(dataObj) {
         while (rooms[nextRoomId]) {
             nextRoomId++;
         }
-        rooms[nextRoomId] = new gameRoom(this.request.user.username, nextRoomId, ioGlobal, dataObj.maxNumPlayers, dataObj.newRoomPassword, dataObj.gameMode);
+        rooms[nextRoomId] = new gameRoom(this.request.user.username, nextRoomId, ioGlobal, dataObj.maxNumPlayers, dataObj.newRoomPassword, dataObj.gameMode, socketCallback);
         const privateStr = (dataObj.newRoomPassword === '') ? '' : 'private ';
         // broadcast to all chat
         const data = {
