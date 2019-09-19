@@ -41,7 +41,7 @@ Paused.prototype.numOfTargets = function (indexOfPlayer) {
 };
 
 Paused.prototype.getStatusMessage = function (indexOfPlayer) {
-    return 'A moderator has paused the game. All actions are prevented.';
+    return 'A staff member has paused the game. All actions are prevented.';
 };
 
 module.exports = Paused;

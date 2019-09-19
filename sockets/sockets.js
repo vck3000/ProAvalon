@@ -1441,7 +1441,6 @@ var actionsObj = {
             run(data, senderSocket) {
                 const currentRoom = rooms[senderSocket.request.user.inRoomId];
                 if (currentRoom) {
-                    // if unpaused, we pause
                     // if not started or finished, no action
                     if (!currentRoom.gameStarted) {
                         return { message: `Game has not started.`, classStr: 'server-text' };
@@ -1449,7 +1448,8 @@ var actionsObj = {
                     if (currentRoom.phase == 'finished') {
                         return { message: `Game has finished.`, classStr: 'server-text' };
                     }
-                    currentRoom.togglePause(senderSocket.request.user.username);
+                    // else call game.js pause
+                    currentRoom.togglePause(senderSocket);
                 }
                 else {
                     return { message: `You are not in a room.`, classStr: 'server-text' }

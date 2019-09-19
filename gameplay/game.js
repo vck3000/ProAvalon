@@ -1434,16 +1434,26 @@ Game.prototype.submitMerlinGuess = function (guesserUsername, targetUsername) {
     return `You have guessed that ${targetUsernameCase} is Merlin. Good luck!`;
 };
 
-Game.prototype.togglePause = function (modUsername) {
+Game.prototype.togglePause = function (staffSocket) {
     // if paused, we unpause
     if (this.phase === 'paused') {
-        this.sendText(this.allSockets, `Moderator ${modUsername} has unpaused the game.`, 'server-text');
+        if (staffSocket.isAdminSocket) {
+            this.sendText(this.allSockets, `Admin ${staffSocket.request.user.username} has unpaused the game.`, 'server-text');
+        }
+        else {
+            this.sendText(this.allSockets, `Moderator ${staffSocket.request.user.username} has unpaused the game.`, 'server-text');
+        }
         this.phase = this.phaseBeforePause;
         this.distributeGameData();
     }
     // if unpaused, we pause
     else {
-        this.sendText(this.allSockets, `Moderator ${modUsername} has paused the game.`, 'server-text');
+        if (staffSocket.isAdminSocket) {
+            this.sendText(this.allSockets, `Admin ${staffSocket.request.user.username} has paused the game.`, 'server-text');
+        }
+        else {
+            this.sendText(this.allSockets, `Moderator ${staffSocket.request.user.username} has paused the game.`, 'server-text');
+        }
         // store the current phase, change to paused and update.
         this.phaseBeforePause = this.phase;
         this.phase = 'paused';
