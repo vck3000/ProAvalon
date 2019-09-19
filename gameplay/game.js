@@ -126,6 +126,7 @@ function Game(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) 
     this.finished = false;
 
     this.phase = 'pickingTeam';
+    this.phaseBeforePause = '';
 
     this.playersInGame = [];
     this.playerUsernamesInGame = [];
@@ -1007,6 +1008,9 @@ Game.prototype.getStatus = function () {
     if (this.frozen === true) {
         return 'Frozen';
     }
+    if (this.phase === "paused") {
+        return 'Paused';
+    }
     if (this.gameStarted === true) {
         return 'Game in progress';
     }
@@ -1428,6 +1432,23 @@ Game.prototype.submitMerlinGuess = function (guesserUsername, targetUsername) {
     // Accept the guess
     this.merlinguesses[guesserUsername] = targetUsernameCase;
     return `You have guessed that ${targetUsernameCase} is Merlin. Good luck!`;
+};
+
+Game.prototype.togglePause = function (modUsername) {
+    // if paused, we unpause
+    if (this.phase === 'paused') {
+        this.sendText(this.allSockets, `Moderator ${modUsername} has unpaused the game.`, 'server-text');
+        this.phase = this.phaseBeforePause;
+        this.distributeGameData();
+    }
+    // if unpaused, we pause
+    else {
+        this.sendText(this.allSockets, `Moderator ${modUsername} has paused the game.`, 'server-text');
+        // store the current phase, change to paused and update.
+        this.phaseBeforePause = this.phase;
+        this.phase = 'paused';
+        this.distributeGameData();
+    }
 };
 
 module.exports = Game;
