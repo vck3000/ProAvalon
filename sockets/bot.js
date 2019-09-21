@@ -7,18 +7,19 @@ enabledBots.push({
     authorizationKey: undefined,
 });
 
-if (process.env.BOT_DEEPROLE_API_KEY) {
-    enabledBots.push({
-        name: 'DeepRole',
-        urlBase: 'https://deeprole-proavalon.herokuapp.com/deeprole',
-        authorizationKey: process.env.BOT_DEEPROLE_API_KEY,
-    });
-    enabledBots.push({
-        name: 'DebugRole',
-        urlBase: 'https://deeprole-proavalon.herokuapp.com/debug',
-        authorizationKey: process.env.BOT_DEEPROLE_API_KEY,
-    });
-}
+// Temporarily disable bots
+// if (process.env.BOT_DEEPROLE_API_KEY) {
+//     enabledBots.push({
+//         name: 'DeepRole',
+//         urlBase: 'https://deeprole-proavalon.herokuapp.com/deeprole',
+//         authorizationKey: process.env.BOT_DEEPROLE_API_KEY,
+//     });
+//     enabledBots.push({
+//         name: 'DebugRole',
+//         urlBase: 'https://deeprole-proavalon.herokuapp.com/debug',
+//         authorizationKey: process.env.BOT_DEEPROLE_API_KEY,
+//     });
+// }
 
 class SimpleBotSocket {
     constructor(username) {
@@ -32,7 +33,7 @@ class SimpleBotSocket {
     }
 
     // Dummy function needed.
-    emit() {}
+    emit() { }
 
     // handleReadyNotReady: Called when the game is about to start.
     // if the bot is ready, call callback(true)
@@ -106,8 +107,8 @@ function checkBotCapabilities(game, capabilities) {
 
         return game.options.every((option) => (
             ['Assassin', 'Merlin'].indexOf(option) !== -1
-                || capability.roles.indexOf(option) !== -1
-                || capability.cards.indexOf(option) !== -1
+            || capability.roles.indexOf(option) !== -1
+            || capability.cards.indexOf(option) !== -1
         ));
     });
 }
@@ -126,7 +127,7 @@ class APIBotSocket {
     }
 
     // Dummy function needed.
-    emit() {}
+    emit() { }
 
     // handleReadyNotReady: Called when the game is about to start.
     // if the bot is ready, call callback(true)
