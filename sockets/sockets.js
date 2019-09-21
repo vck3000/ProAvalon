@@ -125,6 +125,7 @@ savedGameObj.find({}).exec((err, foundSaveGameArray) => {
                     rooms[storedData.roomId].restartSaved = true;
                     rooms[storedData.roomId].savedGameRecordId = foundSaveGame.id;
                     rooms[storedData.roomId].recoverGame(storedData);
+                    rooms[storedData.roomId].callback = socketCallback;
                 }
             }
         }

@@ -1073,7 +1073,9 @@ Game.prototype.finishGame = function (toBeWinner) {
     this.distributeGameData();
 
     // Let sockets.js know that we've finished the game
-    this.callback("finishGame", this);
+    if (this.callback) { // Remove this if statement later
+        this.callback("finishGame", this);
+    }
 
     // If there was a bot in the game and this is the online server, do not store into the database.
     // if (process.env.MY_PLATFORM === "online" && this.botIndexes.length !== 0) {
