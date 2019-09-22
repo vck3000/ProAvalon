@@ -225,7 +225,7 @@ router.post('/modAction', isMod, asyncMiddleware(async (req) => {
         return;
     }
     const comment = await forumThreadComment.findById(req.body.idOfComment).populate('replies').exec();
-    const reply = null;
+    var reply = null;
     if (req.body.idOfReply) {
         reply = await forumThreadCommentReply.findById(req.body.idOfReply).exec();
     }

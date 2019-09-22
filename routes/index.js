@@ -796,11 +796,11 @@ router.get('/ajax/seenNotification', (req, res) => {
 
 
 router.get('/ajax/hideNotification', (req, res) => {
-    console.log("hide notification");
-    console.log(req.query.idOfNotif);
+    // console.log("hide notification");
+    // console.log(req.query.idOfNotif);
 
 
-    console.log(mongoose.Types.ObjectId(req.query.idOfNotif));
+    // console.log(mongoose.Types.ObjectId(req.query.idOfNotif));
     myNotification.findByIdAndRemove(mongoose.Types.ObjectId(req.query.idOfNotif), (err) => {
         if (err) {
             console.log(err);
