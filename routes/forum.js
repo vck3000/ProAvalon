@@ -225,12 +225,15 @@ router.post('/modAction', isMod, asyncMiddleware(async (req) => {
         return;
     }
     const comment = await forumThreadComment.findById(req.body.idOfComment).populate('replies').exec();
-    const reply = await forumThreadCommentReply.findById(req.body.idOfReply).exec();
+    const reply = null;
+    if (req.body.idOfReply) {
+        reply = await forumThreadCommentReply.findById(req.body.idOfReply).exec();
+    }
     const found = req.body.typeOfForumElement === 'comment' ? comment : reply;
 
     // Send the notification
     const link = `/forum/show/${foundForumThread._id}#${found._id}`;
-    createNotificationObj.createNotification(mongoose.Types.ObjectId(found.author.id), 'Your reply was removed.', link, req.user.username);
+    createNotificationObj.createNotification(found.author.id, 'Your reply was removed.', link, req.user.username);
     
     found.oldText = found.text;
     found.text = '*Deleted*';
@@ -238,7 +241,9 @@ router.post('/modAction', isMod, asyncMiddleware(async (req) => {
 
     comment.markModified('replies');
     foundForumThread.markModified('comments');
-    await reply.save();
+    if (req.body.idOfReply) {
+        await reply.save();
+    }
     await comment.save();
     await foundForumThread.save();
 }));

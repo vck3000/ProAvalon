@@ -798,8 +798,8 @@ $(document).ready(function(){
 
 		if(e.innerText !== "a" && $(e.target).parent().parent().hasClass("unseen") === true){
 			// seenNotificationFunction
-			// console.log($(e.target).parent().parent().find(".userNotificationIdToRemove")[0].innerHTML);
-			var id = $(e.target).parent().parent().find(".userNotificationIdToRemove")[0].innerHTML;
+			// console.log($(e.target).parent().parent().find(".userNotificationIdToRemove")[0].innerHTML.trim());
+			var id = $(e.target).parent().parent().find(".userNotificationIdToRemove")[0].innerHTML.trim();
 
 			seenNotificationFunction(id);
 
