@@ -11,19 +11,19 @@
   "author": "Victor Kuo",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.18.1",
+    "axios": "^0.19.0",
     "body-parser": "^1.18.2",
     "circular-json": "^0.5.5",
     "connect-flash": "^0.1.1",
-    "connect-mongodb-session": "^1.4.0",
+    "connect-mongodb-session": "^2.2.0",
     "cookie-parser": "^1.4.3",
     "dotenv": "^8.1.0",
     "ejs": "^2.5.7",
     "express": "^4.16.2",
-    "express-rate-limit": "^3.4.0",
+    "express-rate-limit": "^5.0.0",
     "express-session": "^1.15.6",
     "linkifyjs": "^2.1.7",
-    "method-override": "^2.3.10",
+    "method-override": "^3.0.0",
     "mongoose": "^5.0.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
@@ -36,7 +36,7 @@
     "save": "^2.3.2",
     "socket.io": "^2.0.4",
     "staticify": "^3.1.0",
-    "sweetalert2": "^7.25.6"
+    "sweetalert2": "^8.17.6"
   },
   "nodemonConfig": {
     "ignore": [
