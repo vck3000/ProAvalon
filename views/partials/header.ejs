@@ -308,7 +308,7 @@
 
 					<!-- <li><a href="#">Contact us</a></li> -->
 
-					<% if(currentUser){%>
+					<% if(typeof currentUser !== 'undefined'){%>
 
 					<% if(locals.userNotifications) {%>
 					<li class="dropdown" id="notificationsDropdown">
