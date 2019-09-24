@@ -1,31 +1,25 @@
-const express = require('express');
-
-const router = express.Router();
+const { Router } = require('express');
 const passport = require('passport');
-const flash = require('connect-flash');
 const sanitizeHtml = require('sanitize-html');
 const mongoose = require('mongoose');
 const fs = require('fs');
 const request = require('request');
 const rateLimit = require('express-rate-limit');
+
 const User = require('../models/user');
 const myNotification = require('../models/notification');
-
-
 const modAction = require('../models/modAction');
 const gameRecord = require('../models/gameRecord');
 const statsCumulative = require('../models/statsCumulative');
-const banIp = require('../models/banIp');
 
-
-const middleware = require('../middleware');
+const { isMod, checkIpBan } = require('./middleware');
 
 const modsArray = require('../modsadmins/mods');
-const adminsArray = require('../modsadmins/admins');
 
 // Prevent too many requests
 // app.enable("trust proxy"); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
 
+const router = new Router();
 
 // exclude pronub from new mods array
 const newModsArray = modsArray.filter((mod) => mod != 'pronub');
@@ -84,8 +78,8 @@ const registerLimiter = process.env.MY_PLATFORM === 'local'
         max: 3,
     });
 
-// Post of the register route - Create an account.
-router.post('/', registerLimiter, checkIpBan, checkCurrentBan, sanitiseUsername, (req, res) => {
+// Post of the register route - Create an account
+router.post('/', registerLimiter, checkIpBan, sanitiseUsername, (req, res) => {
     // console.log("escaped: " + escapeText(req.body.username));
 
     // res.redirect("sitedown");
@@ -217,33 +211,7 @@ router.get('/loginFail', (req, res) => {
     res.redirect('/');
 });
 
-
-// lobby route
-router.get('/lobby', middleware.isLoggedIn, checkIpBan, checkCurrentBan, async (req, res) => {
-    // console.log(res.app.locals.originalUsername);
-    User.findOne({ username: req.user.username }).populate('notifications').exec(async (err, foundUser) => {
-        if (err) {
-            // res.render("lobby", {currentUser: req.user, headerActive: "lobby", userNotifications: [{text: "There was a problem loading your notifications.", optionsCog: true}] });
-            console.log(err);
-            req.flash('error', 'Something has gone wrong! Please contact a moderator or admin.');
-            res.redirect('/');
-        } else {
-            isMod = false;
-            if (req.isAuthenticated() && modsArray.indexOf(req.user.username.toLowerCase()) !== -1) {
-                isMod = true;
-            }
-
-            res.render('lobby', {
-                currentUser: req.user,
-                headerActive: 'lobby',
-                userNotifications: foundUser.notifications,
-                optionsCog: true,
-                isMod,
-            });
-        }
-    });
-});
-
+// /lobby route is in a separate file.
 
 // logout
 router.get('/logout', (req, res) => {
@@ -384,7 +352,7 @@ router.get('/mod/ajax/logData/:pageIndex', (req, res) => {
 });
 
 
-router.get('/mod', middleware.isMod, (req, res) => {
+router.get('/mod', isMod, (req, res) => {
     res.render('mod/mod', { currentUser: req.user, isMod: true, headerActive: 'mod' });
 });
 
@@ -828,12 +796,11 @@ router.get('/ajax/seenNotification', (req, res) => {
 
 
 router.get('/ajax/hideNotification', (req, res) => {
-    // console.log("hide nofication");
+    // console.log("hide notification");
     // console.log(req.query.idOfNotif);
 
 
     // console.log(mongoose.Types.ObjectId(req.query.idOfNotif));
-
     myNotification.findByIdAndRemove(mongoose.Types.ObjectId(req.query.idOfNotif), (err) => {
         if (err) {
             console.log(err);
@@ -875,33 +842,6 @@ router.get('/ajax/hideAllNotifications', (req, res) => {
     res.status(200).send('done');
 });
 
-
-//= ====================================
-// Forum
-//= ====================================
-// this part should be in another file now.
-// router.get("/forum", function(req, res){
-// 	res.render("forum", {currentUser: req.user});
-// })
-
-
-//= ====================================
-// MIDDLEWARE
-//= ====================================
-// function isLoggedIn(req, res, next){
-// 	if(req.isAuthenticated()){
-// 		return next();
-// 	}
-// 	console.log("User is not logged in");
-// 	res.redirect("/");
-// }
-
-// function usernameToLowerCase(req, res, next){
-// 	res.app.locals.originalUsername = req.body.username;
-// 	req.body.username = req.body.username.toLowerCase();
-// 	next();
-// }
-
 function escapeTextUsername(req, res, next) {
     req.body.username = escapeText(req.body.username);
     next();
@@ -915,91 +855,6 @@ function sanitiseUsername(req, res, next) {
 
     next();
 }
-
-let bannedIps = [];
-let foundBannedIpsArray = [];
-// load it once on startup
-// updateBannedIps();
-
-function updateBannedIps() {
-    return banIp.find({}, (err, foundBannedIps) => {
-        if (err) { console.log(err); } else {
-            bannedIps = [];
-            foundBannedIpsArray = [];
-            // console.log(foundBannedIps);
-            if (foundBannedIps) {
-                foundBannedIps.forEach((oneBannedIp) => {
-                    bannedIps.push(oneBannedIp.bannedIp);
-                    foundBannedIpsArray.push(oneBannedIp);
-                });
-            }
-        }
-    }).exec();
-}
-
-
-async function checkIpBan(req, res, next) {
-    const clientIpAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-
-    await updateBannedIps();
-
-    if (bannedIps.indexOf(clientIpAddress) === -1) {
-        // console.log("NEXT");
-        next();
-    } else {
-        const index = bannedIps.indexOf(clientIpAddress);
-
-        let username = req.body.username || req.user.username;
-        username = username.toLowerCase();
-
-        if (!foundBannedIpsArray[index].usernamesAssociated) {
-            foundBannedIpsArray[index].usernamesAssociated = [];
-        }
-
-        // if their username isnt associated with the ip ban, add their username to it for record.
-        if (foundBannedIpsArray[index].usernamesAssociated.indexOf(username) === -1) {
-            foundBannedIpsArray[index].usernamesAssociated.push(username);
-        }
-
-        foundBannedIpsArray[index].save();
-
-
-        req.flash('error', 'You have been banned.');
-        res.redirect('/');
-    }
-}
-
-async function checkCurrentBan(req, res, next) {
-    // var currentModActions = [];
-    // //load up all the modActions that are not released yet and are bans
-    // await modAction.find({ whenRelease: { $gt: new Date() }, type: "ban" }, function (err, allModActions) {
-
-    // 	for (var i = 0; i < allModActions.length; i++) {
-    // 		currentModActions.push(allModActions[i]);
-    // 	}
-    // });
-
-    // for (var i = 0; i < currentModActions.length; i++) {
-    // 	if (currentModActions[i].bannedPlayer !== undefined && req.user !== undefined && req.user.username.toString() === currentModActions[i].bannedPlayer.username.toString()) {
-    // 		if (currentModActions[i].type === "ban") {
-    // 			console.log("TRUE");
-    // 			console.log(currentModActions[i]);
-    // 			console.log(req.user.username);
-    // 			console.log(currentModActions[i].bannedPlayer.username);
-    // 			var message = "You have been banned. The ban will be released on " + currentModActions[i].whenRelease + ". Ban description: '" + currentModActions[i].descriptionByMod + "'";
-    // 			message += " Reflect on your actions.";
-    // 			req.flash("error", message);
-    // 			res.redirect("/")
-
-    // 			// console.log(req.user.username + " is still banned and cannot join the lobby.");
-    // 			return;
-    // 		}
-    // 	}
-    // }
-
-    next();
-}
-
 
 module.exports = router;
 
