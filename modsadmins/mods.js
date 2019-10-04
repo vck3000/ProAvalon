@@ -4,6 +4,8 @@ const modsArray = [
     'pronub',
     'morningcatt',
     'tyrrox',
+    'citc',
+    'pam'
 ];
 
 module.exports = modsArray;
