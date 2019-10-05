@@ -1970,6 +1970,7 @@ var updateCurrentGamesList = function () {
             }
             gamesList[i].maxNumPlayers = rooms[i].maxNumPlayers;
             gamesList[i].numOfSpectatorsInside = rooms[i].allSockets.length - rooms[i].socketsOfPlayers.length;
+            gamesList[i].winner = rooms[i].winner;
         }
     }
     allSockets.forEach((sock) => {

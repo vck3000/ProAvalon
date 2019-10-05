@@ -73,6 +73,48 @@ p {
     border: transparent 1px solid;
 }
 
+/* Text colors for game statuses while waiting in the lobby */
+.game-waiting {
+    color: #20ee20;
+}
+
+.game-in-progress {
+    color: #eeee20;
+}
+
+.game-res-win {
+    color: #2020ee;
+}
+
+.game-spy-win {
+    color: #ee2020;
+}
+
+.game-frozen {
+    color: #202020;
+}
+
+/* Dark mode text colors for game statuses */
+.dark .game-waiting {
+    color: #57e857;
+}
+
+.dark .game-ongoing {
+    color: #e8e857;
+}
+
+.dark .game-res-win {
+    color: #5757e8;
+}
+
+.dark .game-spy-win {
+    color: #e85757;
+}
+
+.dark .game-frozen {
+    color: #575757;
+}
+
 .spectators-table-on {
     border-collapse: separate;
     border-spacing: 1px;

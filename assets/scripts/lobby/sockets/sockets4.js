@@ -253,6 +253,7 @@ socket.on('update-current-players-list', (currentPlayers) => {
     $('.player-count').text(currentPlayers.length);
 });
 
+// Called from updateCurrentGamesList() in /sockets/sockets.js
 socket.on('update-current-games-list', (currentGames) => {
     // console.log(currentGames);
     // remove all the entries inside the table:
@@ -290,16 +291,28 @@ socket.on('update-current-games-list', (currentGames) => {
                 var missionHistoryStr = '';
             }
 
+            // These tags specify css selectors
+            const status = {
+                Waiting: 'game-waiting',
+                'Game in progress': 'game-in-progress',
+                Frozen: 'game-frozen',
+                Finished: currentGame.winner === 'Spy' ? 'game-spy-win' : 'game-res-win',
+            }[currentGame.status];
 
-            const str = `<tr> <td><strong>Room#${
-                currentGame.roomId}${lockStr}</strong>: ${
-                currentGame.status} [${currentGame.numOfPlayersInside}/${currentGame.maxNumPlayers}]`
-                + '<hr>'
-                + `Spectators: ${currentGame.numOfSpectatorsInside
-                }<br>Game mode: ${currentGame.gameMode
-                }<br>Host: ${currentGame.hostUsername
-                }<br>${missionHistoryStr
-                }</td> </tr>`;
+            const str = `
+            <tr>
+                <td>
+                    <span class="${status}"><strong>Room#${currentGame.roomId}${lockStr}</strong>: ${currentGame.status}</span> [${currentGame.numOfPlayersInside}/${currentGame.maxNumPlayers}]
+                    <hr>
+                    Spectators: ${currentGame.numOfSpectatorsInside}
+                    <br>
+                    Game mode: ${currentGame.gameMode}
+                    <br>
+                    Host: ${currentGame.hostUsername}
+                    <br>
+                    ${missionHistoryStr}
+                </td>
+            </tr>`;
 
             console.log(currentGame.gameMode);
 
