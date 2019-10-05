@@ -87,9 +87,13 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 
-# Project files
+# VS Code
+.vscode/
 
-!node_modules/passport-local-mongoose/
+# NPM package lock
 package-lock.json
+
+# Project files
+!node_modules/passport-local-mongoose/
 assets/gameRecordsData/
 !assets/gameRecordsData/gameRecordsDataAnon.json
