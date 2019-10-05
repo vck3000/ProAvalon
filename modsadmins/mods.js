@@ -5,7 +5,7 @@ const modsArray = [
     'morningcatt',
     'tyrrox',
     'citc',
-    'pam'
+    'pam',
 ];
 
 module.exports = modsArray;

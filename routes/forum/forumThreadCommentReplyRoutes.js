@@ -132,8 +132,8 @@ async function createReply(req, res, commentReplyData, replyingToThisReply) {
     // since there is a new comment, the thread is now refreshed and no one has seen the new
     // changes yet, except for the one who made the comment
     foundForum.seenUsers = [req.user.username.toLowerCase()];
-    foundForum.markModified("seenUsers");
-    foundForum.save().catch(err => {
+    foundForum.markModified('seenUsers');
+    foundForum.save().catch((err) => {
         console.log(err);
     });
 

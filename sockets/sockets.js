@@ -133,7 +133,7 @@ savedGameObj.find({}).exec((err, foundSaveGameArray) => {
 });
 
 const lastWhisperObj = {};
-var pmmodCooldowns = {};
+const pmmodCooldowns = {};
 const PMMOD_TIMEOUT = 3000; // 3 seconds
 var actionsObj = {
     userCommands: {
@@ -319,8 +319,8 @@ var actionsObj = {
             run() {
                 const modUsers = getPlayerUsernamesFromAllSockets().filter((username) => modsArray.includes(username.toLowerCase()));
                 const message = `Currently online mods: ${modUsers.length > 0 ? modUsers.join(', ') : 'None'}.`;
-                return { message, classStr: "server-text" };
-            }
+                return { message, classStr: 'server-text' };
+            },
         },
 
         pmmod: {
@@ -338,16 +338,16 @@ var actionsObj = {
                 if (!args[1]) return { message: 'Please specify a mod to message. Type /mods to get a list of online mods.', classStr: 'server-text' };
                 if (!args[2]) return { message: 'Please specify a message to send.', classStr: 'server-text' };
                 const modSocket = allSockets[getIndexFromUsername(allSockets, args[1], true)];
-                if (!modSocket) return { message: `Could not find ${args[1]}.`, classStr: "server-text" }
-                if (modSocket.id === senderSocket.id) return { message: 'You cannot private message yourself!', classStr: "server-text" };
+                if (!modSocket) return { message: `Could not find ${args[1]}.`, classStr: 'server-text' };
+                if (modSocket.id === senderSocket.id) return { message: 'You cannot private message yourself!', classStr: 'server-text' };
                 if (!modsArray.includes(args[1].toLowerCase())) return { message: `${args[1]} is not a mod. You may not private message them.`, classStr: 'server-text' };
 
-                let str = `${senderSocket.request.user.username}->${modSocket.request.user.username} (pmmod): ${args.slice(2).join(' ')}`;
+                const str = `${senderSocket.request.user.username}->${modSocket.request.user.username} (pmmod): ${args.slice(2).join(' ')}`;
 
                 const dataMessage = {
                     message: str,
                     dateCreated: new Date(),
-                    classStr: "whisper"
+                    classStr: 'whisper',
                 };
 
                 senderSocket.emit('allChatToClient', dataMessage);
@@ -358,9 +358,8 @@ var actionsObj = {
 
                 // Set a cooldown for the sender until they can send another pm
                 pmmodCooldowns[senderSocket.id] = new Date();
-            }
+            },
         },
-
 
 
         mute: {
@@ -1385,7 +1384,7 @@ var actionsObj = {
 
         mrevealrole: {
             command: 'mrevealrole',
-            help: "/mrevealrole <username>: Reveal the role of a player. You must be present in the room for this to work.",
+            help: '/mrevealrole <username>: Reveal the role of a player. You must be present in the room for this to work.',
             run(data, senderSocket) {
                 const { args } = data;
 
@@ -1398,65 +1397,60 @@ var actionsObj = {
                 if (rooms[roomId]) {
                     const user = rooms[roomId].playersInGame[getIndexFromUsername(rooms[roomId].playersInGame, args[1], true)];
                     if (!rooms[roomId].gameStarted) {
-                        return { message: `Game has not started.`, classStr: 'server-text' }
+                        return { message: 'Game has not started.', classStr: 'server-text' };
                     }
-                    else if (!user) {
-                        return { message: `Could not find ${args[1]}.`, classStr: 'server-text' }
+                    if (!user) {
+                        return { message: `Could not find ${args[1]}.`, classStr: 'server-text' };
                     }
                     rooms[roomId].sendText(rooms[roomId].allSockets, `Moderator ${senderSocket.request.user.username} has revealed the role of ${user.username}.`, 'server-text');
                     return { message: `${user.username}'s role is ${user.role.toUpperCase()}.`, classStr: 'server-text' };
                 }
-                else {
-                    return { message: `Could not find ${args[1]}, or you are not in a room.`, classStr: 'server-text' };
-                }
 
-            }
+                return { message: `Could not find ${args[1]}, or you are not in a room.`, classStr: 'server-text' };
+            },
         },
 
         mrevealallroles: {
             command: 'mrevealallroles',
-            help: "/mrevealallroles : Reveals the roles of all players in the current room.",
+            help: '/mrevealallroles : Reveals the roles of all players in the current room.',
             run(data, senderSocket) {
                 const roomId = senderSocket.request.user.inRoomId;
                 if (rooms[roomId]) {
                     if (!rooms[roomId].gameStarted) {
-                        return { message: `Game has not started.`, classStr: 'server-text' };
+                        return { message: 'Game has not started.', classStr: 'server-text' };
                     }
                     rooms[roomId].sendText(rooms[roomId].allSockets, `Moderator ${senderSocket.request.user.username} has revealed all roles.`, 'server-text');
 
                     // reveal role for each user
                     rooms[roomId].playersInGame.forEach((user) => {
                         senderSocket.emit('messageCommandReturnStr', { message: `${user.username}'s role is ${user.role.toUpperCase()}.`, classStr: 'server-text' });
-                    })
-                    return;
+                    });
+                } else {
+                    return { message: 'You are not in a room.', classStr: 'server-text' };
                 }
-                else {
-                    return { message: `You are not in a room.`, classStr: 'server-text' };
-                }
-            }
+            },
         },
 
         mtogglepause: {
             command: 'mtogglepause',
-            help: "/mtogglepause : Pauses or unpauses the current room.",
+            help: '/mtogglepause : Pauses or unpauses the current room.',
             run(data, senderSocket) {
                 const currentRoom = rooms[senderSocket.request.user.inRoomId];
                 if (currentRoom) {
                     // if unpaused, we pause
                     // if not started or finished, no action
                     if (!currentRoom.gameStarted) {
-                        return { message: `Game has not started.`, classStr: 'server-text' };
+                        return { message: 'Game has not started.', classStr: 'server-text' };
                     }
                     if (currentRoom.phase == 'finished') {
-                        return { message: `Game has finished.`, classStr: 'server-text' };
+                        return { message: 'Game has finished.', classStr: 'server-text' };
                     }
                     currentRoom.togglePause(senderSocket.request.user.username);
+                } else {
+                    return { message: 'You are not in a room.', classStr: 'server-text' };
                 }
-                else {
-                    return { message: `You are not in a room.`, classStr: 'server-text' }
-                }
-            }
-        }
+            },
+        },
     },
 
     adminCommands: {
@@ -1892,8 +1886,8 @@ module.exports = function (io) {
 };
 
 function socketCallback(action, room) {
-    if (action === "finishGame") {
-        var data = {
+    if (action === 'finishGame') {
+        const data = {
             message: `Room ${room.roomId} has finished!`,
             classStr: 'server-text-teal',
         };

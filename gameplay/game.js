@@ -1009,7 +1009,7 @@ Game.prototype.getStatus = function () {
     if (this.frozen === true) {
         return 'Frozen';
     }
-    if (this.phase === "paused") {
+    if (this.phase === 'paused') {
         return 'Paused';
     }
     if (this.gameStarted === true) {
@@ -1074,7 +1074,7 @@ Game.prototype.finishGame = function (toBeWinner) {
 
     // Let sockets.js know that we've finished the game
     if (this.callback) { // Remove this if statement later
-        this.callback("finishGame", this);
+        this.callback('finishGame', this);
     }
 
     // If there was a bot in the game and this is the online server, do not store into the database.

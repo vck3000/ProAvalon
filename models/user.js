@@ -9,9 +9,9 @@ const UserSchema = new mongoose.Schema({
     usernameLower: String,
     password: {
         type: String,
-        // Not sure exactly how passportjs handles this, 
+        // Not sure exactly how passportjs handles this,
         // but we don't give this parameter to Mongoose when creating.
-        // required: true, 
+        // required: true,
     },
 
     avatarImgRes: {

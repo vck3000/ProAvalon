@@ -87,7 +87,7 @@ router.get('/:id/:comment_id/edit', checkForumThreadCommentOwnership, asyncMiddl
         res.redirect('back');
         return;
     }
-    res.render('forum/comment/edit', { comment: foundComment, forumThread: { id: req.params.id }});
+    res.render('forum/comment/edit', { comment: foundComment, forumThread: { id: req.params.id } });
 }));
 
 

@@ -184,7 +184,8 @@ router.get('/page/:pageNum', asyncMiddleware(async (req, res) => {
 
 
 router.post('/modAction', isMod, asyncMiddleware(async (req) => {
-    let replyId, commentId, forumId;
+    let replyId; let commentId; let
+        forumId;
     if (req.body.idOfReply !== '') {
         replyId = ObjectId(req.body.idOfReply);
     }
@@ -225,7 +226,7 @@ router.post('/modAction', isMod, asyncMiddleware(async (req) => {
         return;
     }
     const comment = await forumThreadComment.findById(req.body.idOfComment).populate('replies').exec();
-    var reply = null;
+    let reply = null;
     if (req.body.idOfReply) {
         reply = await forumThreadCommentReply.findById(req.body.idOfReply).exec();
     }
@@ -234,7 +235,7 @@ router.post('/modAction', isMod, asyncMiddleware(async (req) => {
     // Send the notification
     const link = `/forum/show/${foundForumThread._id}#${found._id}`;
     createNotificationObj.createNotification(found.author.id, 'Your reply was removed.', link, req.user.username);
-    
+
     found.oldText = found.text;
     found.text = '*Deleted*';
     found.disabled = true;
