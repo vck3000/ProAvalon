@@ -566,8 +566,27 @@ var actionsObj = {
             run(data, senderSocket) {
                 return actionsObj.userCommands.guessmerlin.run(data, senderSocket);
             },
+        },        
+        app: {
+            command: 'app',
+            help: '/app: Approve ongoing mission',
+            run: createRunVote('yes', 'votingTeam'),
         },
-
+        rej: {
+            command: 'rej',
+            help: '/rej: Reject ongoing mission',
+            run: createRunVote('no', 'votingTeam'),
+        },
+        succ: {
+            command: 'succ',
+            help: '/succ: Succeed ongoing mission',
+            run: createRunVote('yes', 'votingMission'),
+        },
+        fail: {
+            command: 'fail',
+            help: '/fail: Fail ongoing mission',
+            run: createRunVote('no', 'votingMission'),
+        },
         getbots: {
             command: 'getbots',
             help: '/getbots: Run this in a bot-compatible room. Prints a list of available bots to add, as well as their supported game modes',
@@ -1582,6 +1601,27 @@ var actionsObj = {
         },
     },
 };
+
+function createRunVote (move, phase) {
+    return function (data, senderSocket) {
+        if (senderSocket.request.user.inRoomId === undefined
+            || rooms[senderSocket.request.user.inRoomId].gameStarted !== true
+            || rooms[senderSocket.request.user.inRoomId].phase === 'finished'
+            || getIndexFromUsername(rooms[senderSocket.request.user.inRoomId].playersInGame, senderSocket.request.user.username, false) === undefined) {
+            return {
+                message: 'You must be in a running game to use this command!',
+                classStr: 'server-text',
+            };
+        }
+        if (rooms[senderSocket.request.user.inRoomId].phase !== phase) {
+            return {
+                message: 'You cannot use this command in this phase.',
+                classStr: 'server-text',
+            };
+        }
+        gameMove.call(senderSocket, [move, []]);
+    }
+}
 
 
 const { userCommands } = actionsObj;
