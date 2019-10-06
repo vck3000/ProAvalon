@@ -26,8 +26,13 @@ socket.on('modCommands', (commands) => {
                         })
                         .then(function (response) {
                             //handle success
-                            console.log(response);
+                            // console.log(response);
+
                             $('#modModal').modal('hide');
+
+                            // Clear the form for next input.
+                            $("#modactionform")[0].reset();
+
                             Swal.close()
                             Swal.fire({
                                 title: response.data,
@@ -35,7 +40,6 @@ socket.on('modCommands', (commands) => {
                             });
                         })
                         .catch(function (err) {
-                            //handle error
                             Swal.close()
                             Swal.fire({
                                 title: err.response.data,

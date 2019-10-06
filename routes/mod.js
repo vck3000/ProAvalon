@@ -8,6 +8,7 @@ router.post('/ban', (req, res) => {
     // res.status(404);
     // res.send('None shall pass');
 
+    res.status(200);
     res.send("You've reached the ban POST route.");
     
     console.log("Ban POST");
