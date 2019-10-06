@@ -21,8 +21,17 @@ module.exports = {
                         // console.log("Successfully unbanned " + args[1] + ".");
                         senderSocket.emit('messageCommandReturnStr', { message: `Successfully unbanned ${args[1]}.`, classStr: 'server-text' });
 
-
-                        reloadCurrentModActions();
+                        // load up all the modActions that are not released yet
+                        modAction.find({ whenRelease: { $gt: new Date() }, $or: [{ type: 'mute' }, { type: 'ban' }] }, (err, allModActions) => {
+                            // reset currentModActions
+                            currentModActions = [];
+                            for (let i = 0; i < allModActions.length; i++) {
+                                currentModActions.push(allModActions[i]);
+                            }
+                            // console.log("mute");
+                            // console.log(currentModActions);
+                        });
+                
                     }
                 });
             } else {

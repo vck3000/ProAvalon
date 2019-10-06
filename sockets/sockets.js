@@ -21,6 +21,7 @@ const banIp = require('../models/banIp');
 const JSON = require('circular-json');
 const modsArray = require('../modsadmins/mods');
 const adminsArray = require('../modsadmins/admins');
+const fs = require('fs');
 
 const _bot = require('./bot');
 
@@ -40,6 +41,18 @@ const updateMessage = `
 
 Check out the forums for more information on how to connect your Patreon account :).
 `;
+
+const state = {
+    allSockets: [],
+    rooms: [],
+    allChatHistory: [],
+    allChat5Min: [],
+    nextRoomId: 1,
+    lastWhisperObj: {},
+    pmmodCooldowns: {},
+};
+
+const PMMOD_TIMEOUT = 3000; // 3 seconds
 
 const allSockets = [];
 const rooms = [];
@@ -132,28 +145,9 @@ savedGameObj.find({}).exec((err, foundSaveGameArray) => {
     }
 });
 
-const lastWhisperObj = {};
-var pmmodCooldowns = {};
-const PMMOD_TIMEOUT = 3000; // 3 seconds
-
-const { userCommands } = actionsObj;
-const { modCommands } = actionsObj;
-const { adminCommands } = actionsObj;
-
-
-function reloadCurrentModActions() {
-    // load up all the modActions that are not released yet
-    modAction.find({ whenRelease: { $gt: new Date() }, $or: [{ type: 'mute' }, { type: 'ban' }] }, (err, allModActions) => {
-        // reset currentModActions
-        currentModActions = [];
-        for (let i = 0; i < allModActions.length; i++) {
-            currentModActions.push(allModActions[i]);
-        }
-        // console.log("mute");
-        // console.log(currentModActions);
-    });
-}
-
+const userCommands = fs.readdirSync('./commands/users').filter(filename => filename.endsWith('.js')).map(filename => require(`./commands/users/${filename}`));
+const modCommands = fs.readdirSync('./commands/mods').filter(filename => filename.endsWith('.js')).map(filename => require(`./commands/mods/${filename}`));
+const adminCommands = fs.readdirSync('./commands/admins').filter(filename => filename.endsWith('.js')).map(filename => require(`./commands/admins/${filename}`));
 
 ioGlobal = {};
 
