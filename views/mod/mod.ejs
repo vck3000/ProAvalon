@@ -1,8 +1,13 @@
 <% include ../partials/header %>
 
 <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-<script src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
+<!-- <script src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script> -->
+
+<script type="text/javascript" src="<%-getVersionedPath('/libraries/moment.js')%>"></script>
+
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
 
 <style>
     .myContainer {
@@ -15,6 +20,11 @@
         background-color: #eee;
         
         width:95%;
+    }
+
+    .alignCenterHoriz{
+        text-align: center;
+        background: rgb(200,200,200);
     }
 
 </style>
@@ -63,7 +73,89 @@
 <script type="text/babel">
     'use strict';
 
-    const e = React.createElement;
+    function banText(props) {
+        let data = props.data;
+        let whenMade = moment(data.whenMade);
+        let whenRelease = moment(data.whenRelease);
+        
+        return {
+            title: `${data.modWhoBanned.username} has banned ${data.bannedPlayer.username} for reason ${data.reason}.` ,
+            body: <span>
+                <p>The ban was made on {whenMade.format("LLL")}.</p>
+                <p>The duration specified was: {data.durationToBan}.</p>
+                <p>The ban will be released on: {whenRelease.format("LLL")}.</p>
+                <p>Moderator message: {data.descriptionByMod}.</p>
+            </span>,
+        }
+    }
+
+    function avatarText(props) {
+        let data = props.data;
+        return {
+            title: `${props.modWhoMade.username} has ${data.approved === "true" ? "APPROVED" : "REJECTED"} ${data.username}'s avatar.` ,
+            body: <span>
+                <p>Message to mod: {data.msgToMod}.</p>
+                <p>Mod comment: {data.modComment}.</p>
+
+                <div className="row">
+                    <div className="col-sm-6">
+                        <div className="panel panel-success">
+                            <div className="panel-heading">Res img:</div>
+                            <div className="panel-body alignCenterHoriz">
+                                <img className="avatarImg" src={data.resLink}></img>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-sm-6">
+                        <div className="panel panel-danger">
+                            <div className="panel-heading">Spy img:</div>
+                            <div className="panel-body alignCenterHoriz">
+                                <img className="avatarImg" src={data.spyLink}></img>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </span>,
+        }
+    }
+
+
+    class Log extends React.Component {
+        constructor(props) {
+            super(props);
+        }
+        render() {
+            // console.log(this.props.log);
+            var logText = {
+                title: "Error",
+                body: "Error"
+            };
+
+            switch (this.props.log.type) {
+                case "ban":
+                    logText = banText(this.props.log);
+                    break;
+                case "avatar" :
+                    logText = avatarText(this.props.log);
+                    break;
+            }
+
+            return (
+                <div className="panel panel-info">
+                    <div className="panel-heading">
+                        <h3 className="panel-title">
+                            {logText.title}
+                        </h3>
+                    </div>
+                    <div className="panel-body">
+                        {logText.body}
+                    </div>
+                </div>
+            );
+        }
+    }
+
     class LogTable extends React.Component {
         constructor(props) {
             super(props);
@@ -80,6 +172,7 @@
                 if (xmlhttp.readyState==4 && xmlhttp.status==200){
                     var logs = JSON.parse(xmlhttp.responseText);
                     this.setState({logs: logs})
+
                     console.log(logs);
                 }
             }
@@ -91,94 +184,22 @@
                 return "Loading....."
             }
             else {
-                return "test";
+                const allLogs = this.state.logs.map((log, i) => {
+                    return (
+                        <Log log={this.state.logs[i]} key={this.state.logs[i]._id}/>
+                    )
+                })
+
+                return (
+                    allLogs
+                )
             }
-        }
-    }
-
-    class Log extends React.Component {
-        constructor(props) {
-            super(props);
-            this.state = { liked: false };
-        }
-
-        render() {
-            return "test";
         }
     }
 
     const domContainer = document.querySelector('#logsDiv');
     ReactDOM.render(<LogTable />, domContainer);
 </script>
-<!-- 
-<script>
-
-    $( document ).ready(function() {
-        xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("GET", "/mod/ajax/logData/0", true);
-
-        xmlhttp.onreadystatechange=function(){
-            if (xmlhttp.readyState==4 && xmlhttp.status==200){
-                
-                modData=JSON.parse(xmlhttp.responseText);
-                console.log(modData);
-
-                // updateModData(modData);
-            }
-        }
-        xmlhttp.send();
-    });
-
-    function updateModData(data){
-
-        str = "";
-        
-        for(var i = 0; i < data.logs.length; i++){
-
-            descriptionStr = "";
-            for(var j = 1; j < data.logs[i].stringsArray.length; j++){
-                descriptionStr += "<p>" + data.logs[i].stringsArray[j] + "</p>";
-            }
-
-            str += `<div class="panel panel-info">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                        ` + data.logs[i].stringsArray[0] + `
-                        </h3>
-                    </div>
-                    <div class="panel-body">
-                        ` + descriptionStr + `
-                    </div>
-                </div>`
-
-        }
-
-        
-
-        $("#logsDiv")[0].innerHTML = str;
-    }
-
-    var index = 1;
-    function loadMoreLogs(){
-        xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("GET", "/mod/ajax/logData/" + index, true);
-
-        xmlhttp.onreadystatechange=function(){
-            if (xmlhttp.readyState==4 && xmlhttp.status==200){
-                
-                modData=JSON.parse(xmlhttp.responseText);
-                console.log(modData);
-
-                updateModData(modData);
-            }
-        }
-        xmlhttp.send();
-
-        index++;
-    }
-
-</script> -->
-
 
 
 <% include ../partials/footer %>

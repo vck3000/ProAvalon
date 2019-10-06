@@ -7,6 +7,7 @@ const middleware = require('./middleware');
 const User = require('../models/user');
 const PatreonId = require('../models/patreonId');
 const avatarRequest = require('../models/avatarRequest');
+const ModLog = require('../models/modLog');
 const createNotificationObj = require('../myFunctions/createNotification');
 
 
@@ -42,10 +43,10 @@ router.get('/mod/customavatar', middleware.isMod, (req, res) => {
 // moderator approve or reject custom avatar requests
 // /profile/mod/ajax/processavatarrequest
 router.post('/mod/ajax/processavatarrequest', middleware.isMod, (req, res) => {
-    console.log('process avatar request');
-    console.log(req.body.decision);
-    console.log(req.body.avatarreqid);
-    console.log(req.body.modcomment);
+    // console.log('process avatar request');
+    // console.log(req.body.decision);
+    // console.log(req.body.avatarreqid);
+    // console.log(req.body.modcomment);
 
     avatarRequest.findById(req.body.avatarreqid).exec((err, foundReq) => {
         if (err) { console.log(err); } else if (foundReq) {
@@ -95,7 +96,29 @@ router.post('/mod/ajax/processavatarrequest', middleware.isMod, (req, res) => {
                 });
             } else {
                 console.log(`error, decision isnt anything recognisable...: ${req.body.decision}`);
+                return;
             }
+
+            const modUser = req.user;
+            // Create mod log - Doesn't need to be async
+            ModLog.create({
+                type: "avatar",
+                modWhoMade: {
+                    id: modUser._id,
+                    username: modUser.username,
+                    usernameLower: modUser.usernameLower
+                },
+                data: {
+                    modComment: req.body.modcomment,
+                    approved: req.body.decision,
+                    username: foundReq.forUsername,
+                    msgToMod: foundReq.msgToMod,
+                    resLink: foundReq.resLink,
+                    spyLink: foundReq.spyLink
+                },
+                dateCreated: new Date()
+            });
+
 
             foundReq.save();
         }

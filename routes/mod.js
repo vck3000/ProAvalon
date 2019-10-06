@@ -104,7 +104,8 @@ router.post('/ban', upload.none(), async (req, res) => {
             whenMade: whenMade,
             durationToBan: `${req.body['duration']} ${req.body['duration_units']}`,
             whenRelease: whenRelease,
-            descriptionByMod: req.body['descriptionByMod']
+            descriptionByMod: req.body['descriptionByMod'],
+            reason: req.body.reason
         };
 
         // console.log(banData);
@@ -120,7 +121,7 @@ router.post('/ban', upload.none(), async (req, res) => {
             },
             data: banData,
             dateCreated: new Date()
-        })
+        });
 
         res.status(200);
         res.send(`The ban was successfully made.`);

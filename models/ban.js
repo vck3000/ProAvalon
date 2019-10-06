@@ -31,6 +31,7 @@ const banSchema = new mongoose.Schema({
     whenRelease: Date,
 
     descriptionByMod: String,
+    reason: String,
 });
 
 // compile schema into a model
