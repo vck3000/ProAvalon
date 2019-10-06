@@ -894,7 +894,7 @@ var actionsObj = {
 
                 if (ban) {
                     const dataToReturn = [];
-                    dataToReturn[0] = { message: 'Ban details:.', classStr: 'server-text', dateCreated: new Date() };
+                    dataToReturn[0] = { message: 'Ban details.', classStr: 'server-text', dateCreated: new Date() };
 
                     dataToReturn.push({ message: `Ban made by: ${ban.modWhoBanned.username}`, classStr: 'server-text', dateCreated: new Date() });
                     dataToReturn.push({ message: `Ban made on: ${moment(ban.whenMade).format("LLL")}.`, classStr: 'server-text', dateCreated: new Date() });

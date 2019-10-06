@@ -108,6 +108,7 @@
         return {
             title: `${data.modWhoBanned.username} has UNBANNED ${data.bannedPlayer.username}.` ,
             body: <span>
+                <p>The date the ban was made on was: {whenMade.format("LLL")}.</p>
                 <p>The duration specified was: {data.durationToBan}.</p>
                 <p>The ban will be released on: {whenRelease.format("LLL")}.</p>
                 <p>Moderator message: {data.descriptionByMod}.</p>
