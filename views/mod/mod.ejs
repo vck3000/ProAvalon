@@ -27,6 +27,23 @@
         background: rgb(200,200,200);
     }
 
+    .logButtons{
+        /* position: relative; */
+        /* left: 50%; */
+        /* transform: translateX(-50%); */
+        /* margin: 0 15px 15px 15px; */
+        margin-left: 15px;
+        margin-right: 15px;
+    }
+
+    .pageButtonGroup {
+        position: relative; 
+        left: 50%; 
+        transform: translateX(-50%); 
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+
 </style>
 
 
@@ -59,14 +76,6 @@
         </div>
     </div>
 
-    <button class="btn btn-info" style="    
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%);" onclick="loadMoreLogs()">
-        Load more
-    </button>
-
-
 </div>
 
 
@@ -81,7 +90,7 @@
         return {
             title: `${data.modWhoBanned.username} has banned ${data.bannedPlayer.username} for reason ${data.reason}.` ,
             body: <span>
-                <p>The ban was made on {whenMade.format("LLL")}.</p>
+                <p>The ban was made on: {whenMade.format("LLL")}.</p>
                 <p>The duration specified was: {data.durationToBan}.</p>
                 <p>The ban will be released on: {whenRelease.format("LLL")}.</p>
                 <p>Moderator message: {data.descriptionByMod}.</p>
@@ -94,6 +103,7 @@
         return {
             title: `${props.modWhoMade.username} has ${data.approved === "true" ? "APPROVED" : "REJECTED"} ${data.username}'s avatar.` ,
             body: <span>
+                <p>This request was processed on {moment(props.dateCreated).format("LLL")}.</p>
                 <p>Message to mod: {data.msgToMod}.</p>
                 <p>Mod comment: {data.modComment}.</p>
 
@@ -160,20 +170,41 @@
         constructor(props) {
             super(props);
             this.state = { 
-                logs: null
+                logs: null,
+                logPage: 0
             };
         }
 
         componentDidMount() {
+            this.loadLogs();
+        }
+
+        loadMoreLogs() {
+            this.loadLogs(1);
+        }
+
+        loadLessLogs() {
+            this.loadLogs(-1)
+        }
+
+        loadLogs(numIncrement) {
+            let page = 0;
+
+            if(numIncrement !== undefined) {
+                if (this.state.logPage + numIncrement >= 0) {
+                    page = this.state.logPage + numIncrement;
+                    this.setState({logPage: page})
+                }
+            }
+
             var xmlhttp = new XMLHttpRequest();
-            xmlhttp.open("GET", "/mod/ajax/logData/0", true);
+            xmlhttp.open("GET", "/mod/ajax/logData/" + page, true);
 
             xmlhttp.onreadystatechange = () => {
                 if (xmlhttp.readyState==4 && xmlhttp.status==200){
                     var logs = JSON.parse(xmlhttp.responseText);
                     this.setState({logs: logs})
-
-                    console.log(logs);
+                    // console.log(logs);
                 }
             }
             xmlhttp.send();
@@ -191,7 +222,20 @@
                 })
 
                 return (
-                    allLogs
+                    <span>
+                        <span className="pageButtonGroup">
+                            <button className="btn btn-info logButtons" onClick={() => this.loadLessLogs()}>
+                                Prev page
+                            </button>
+                            <span>Page: {this.state.logPage}</span>
+                            <button className="btn btn-info logButtons" onClick={() => this.loadMoreLogs()}>
+                                Next page
+                            </button>
+                        </span>
+                        
+                        
+                        {allLogs}
+                    </span>
                 )
             }
         }
