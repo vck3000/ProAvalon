@@ -12,7 +12,7 @@ const modAction = require('../models/modAction');
 const gameRecord = require('../models/gameRecord');
 const statsCumulative = require('../models/statsCumulative');
 
-const { isMod, checkIpBan } = require('./middleware');
+const { isMod } = require('./middleware');
 
 const modsArray = require('../modsadmins/mods');
 
@@ -79,7 +79,7 @@ const registerLimiter = process.env.MY_PLATFORM === 'local'
     });
 
 // Post of the register route - Create an account
-router.post('/', registerLimiter, checkIpBan, sanitiseUsername, (req, res) => {
+router.post('/', registerLimiter, sanitiseUsername, (req, res) => {
     // console.log("escaped: " + escapeText(req.body.username));
 
     // res.redirect("sitedown");
