@@ -1,27 +1,30 @@
+const { APIBotSocket, SimpleBotSocket } = require('../../bot');
 
 module.exports = {
     command: 'addbot',
     help: '/addbot <name> [number]: Run this in a bot-compatible room. Add a bot to the room.',
-    run(data, senderSocket) {
-        if (senderSocket.request.user.inRoomId === undefined || rooms[senderSocket.request.user.inRoomId] === undefined) {
+    run(globalState, data, senderSocket) {
+        if (senderSocket.request.user.inRoomId === undefined || globalState.rooms[senderSocket.request.user.inRoomId] === undefined) {
             return {
                 message: 'You must be in a bot-capable room to run this command!',
                 classStr: 'server-text',
             };
-        } if (rooms[senderSocket.request.user.inRoomId].gameMode.toLowerCase().includes('bot') === false) {
+        }
+        
+        const currentRoom = globalState.rooms[senderSocket.request.user.inRoomId];
+        if (currentRoom.gameMode.toLowerCase().includes('bot') === false) {
             return {
                 message: 'This room is not bot capable. Please join a bot-capable room.',
                 classStr: 'server-text',
             };
-        } if (rooms[senderSocket.request.user.inRoomId].host !== senderSocket.request.user.username) {
+        }
+        
+        if (currentRoom.host !== senderSocket.request.user.username) {
             return {
                 message: 'You are not the host.',
                 classStr: 'server-text',
             };
         }
-
-        const currentRoomId = senderSocket.request.user.inRoomId;
-        const currentRoom = rooms[currentRoomId];
 
         if (currentRoom.gameStarted === true || currentRoom.canJoin === false) {
             return {
@@ -38,7 +41,8 @@ module.exports = {
                 classStr: 'server-text',
             };
         }
-        var botName = args[1];
+
+        const botName = args[1];
         const botAPI = enabledBots.find((bot) => bot.name.toLowerCase() === botName.toLowerCase());
         if (!botAPI && botName !== 'SimpleBot') {
             return {
@@ -57,28 +61,21 @@ module.exports = {
         }
 
         const addedBots = [];
-        for (let i = 0; i < numBots; i++) {
-            var botName = `${botAPI.name}#${Math.floor(Math.random() * 100)}`;
+        for (let i = 0; i < numBots; i += 1) {
+            const botFullName = `${botAPI.name}#${Math.floor(Math.random() * 100)}`;
 
             // Avoid a username clash!
             const currentUsernames = currentRoom.socketsOfPlayers.map((sock) => sock.request.user.username);
-            if (currentUsernames.includes(botName)) {
-                i--;
+            if (currentUsernames.includes(botFullName)) {
+                i -= 1;
                 continue;
             }
 
-            var dummySocket;
-            if (botAPI.name == 'SimpleBot') {
-                dummySocket = new SimpleBotSocket(botName);
-            } else {
-                dummySocket = new APIBotSocket(botName, botAPI);
-            }
+            const dummySocket = (botAPI.name === 'SimpleBot') ? new SimpleBotSocket(botName) : new APIBotSocket(botName, botAPI);
 
             currentRoom.playerJoinRoom(dummySocket);
             currentRoom.playerSitDown(dummySocket);
-            if (!currentRoom.botSockets) {
-                currentRoom.botSockets = [];
-            }
+            if (!currentRoom.botSockets) currentRoom.botSockets = [];
             currentRoom.botSockets.push(dummySocket);
             addedBots.push(botName);
         }

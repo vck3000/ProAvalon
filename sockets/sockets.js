@@ -17,21 +17,14 @@ const REWARDS = require('../rewards/constants');
 
 const avatarRequest = require('../models/avatarRequest');
 const User = require('../models/user');
-const banIp = require('../models/banIp');
 const JSON = require('circular-json');
 const modsArray = require('../modsadmins/mods');
 const adminsArray = require('../modsadmins/admins');
 const fs = require('fs');
 
-const _bot = require('./bot');
-
-const { enabledBots } = _bot;
-const { makeBotAPIRequest } = _bot;
-const { SimpleBotSocket } = _bot;
-const { APIBotSocket } = _bot;
+const { enabledBots, makeBotAPIRequest, SimpleBotSocket,  } = require('./bot');
 
 const dateResetRequired = 1543480412695;
-
 const newUpdateNotificationRequired = 1565505539914;
 const updateMessage = `
 
@@ -42,20 +35,19 @@ const updateMessage = `
 Check out the forums for more information on how to connect your Patreon account :).
 `;
 
-const state = {
+const globalState = {
     allSockets: [],
-    rooms: [],
+    globalState.rooms: [],
     allChatHistory: [],
     allChat5Min: [],
     nextRoomId: 1,
     lastWhisperObj: {},
     pmmodCooldowns: {},
+    io: {},
 };
 
-const PMMOD_TIMEOUT = 3000; // 3 seconds
-
 const allSockets = [];
-const rooms = [];
+const globalState.rooms = [];
 
 // retain only 5 mins.
 const allChatHistory = [];
@@ -66,6 +58,7 @@ let nextRoomId = 1;
 // Get all the possible gameModes
 const fs = require('fs');
 
+// Add game mode names
 const gameModeNames = [];
 fs.readdirSync('./gameplay/').filter((file) => {
     if (fs.statSync(`${'./gameplay' + '/'}${file}`).isDirectory() === true && file !== 'commonPhases') {
@@ -99,7 +92,7 @@ function saveGameToDb(roomToSave) {
                 if (err) {
                     console.log(err);
                 } else {
-                    rooms[rooms.indexOf(roomToSave)].savedGameRecordId = savedGame.id;
+                    globalState.rooms[globalState.rooms.indexOf(roomToSave)].savedGameRecordId = savedGame.id;
                     // console.log("Successfully created this save game");
                 }
             });
@@ -131,14 +124,14 @@ savedGameObj.find({}).exec((err, foundSaveGameArray) => {
                 if (foundSaveGame) {
                     const storedData = JSON.parse(foundSaveGame.room);
 
-                    rooms[storedData.roomId] = new gameRoom();
+                    globalState.rooms[storedData.roomId] = new gameRoom();
 
-                    Object.assign(rooms[storedData.roomId], storedData);
+                    Object.assign(globalState.rooms[storedData.roomId], storedData);
 
-                    rooms[storedData.roomId].restartSaved = true;
-                    rooms[storedData.roomId].savedGameRecordId = foundSaveGame.id;
-                    rooms[storedData.roomId].recoverGame(storedData);
-                    rooms[storedData.roomId].callback = socketCallback;
+                    globalState.rooms[storedData.roomId].restartSaved = true;
+                    globalState.rooms[storedData.roomId].savedGameRecordId = foundSaveGame.id;
+                    globalState.rooms[storedData.roomId].recoverGame(storedData);
+                    globalState.rooms[storedData.roomId].callback = socketCallback;
                 }
             }
         }
@@ -149,11 +142,9 @@ const userCommands = fs.readdirSync('./commands/users').filter(filename => filen
 const modCommands = fs.readdirSync('./commands/mods').filter(filename => filename.endsWith('.js')).map(filename => require(`./commands/mods/${filename}`));
 const adminCommands = fs.readdirSync('./commands/admins').filter(filename => filename.endsWith('.js')).map(filename => require(`./commands/admins/${filename}`));
 
-ioGlobal = {};
-
 module.exports = function (io) {
     // SOCKETS for each connection
-    ioGlobal = io;
+    globalState.io = io;
     io.sockets.on('connection', async (socket) => {
         if (socket.request.isAuthenticated()) {
             // console.log("User is authenticated");
@@ -443,79 +434,77 @@ function socketCallback(action, room) {
             message: `Room ${room.roomId} has finished!`,
             classStr: 'server-text-teal',
         };
-        sendToAllChat(ioGlobal, data);
+        sendToAllChat(globalState.io, data);
     }
 }
 
-var applyApplicableRewards = function (socket) {
+function applyApplicableRewards(socket) {
+    const getDisplayUsernameWithBadge = (title, text) => `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='${title}' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>${text}</span>`;
+
     // Admin badge
     if (socket.rewards.includes(REWARDS.ADMIN_BADGE)) {
-        socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Admin' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>A</span>`;
-        // socket.request.displayUsername = "[A] " + socket.request.displayUsername;
+        socket.request.displayUsername = getDisplayUsernameWithBadge('Admin', 'A');
     }
     // Moderator badge
     else if (socket.rewards.includes(REWARDS.MOD_BADGE)) {
-        socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Moderator' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>M</span>`;
-        // socket.request.displayUsername = "[M] " + socket.request.displayUsername;
+        socket.request.displayUsername = getDisplayUsernameWithBadge('Moderator', 'M');
     }
-
 
     // Tier4 badge
     if (socket.rewards.includes(REWARDS.TIER4_BADGE)) {
-        socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Patreon T4' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>T4</span>`;
+        socket.request.displayUsername = getDisplayUsernameWithBadge('Patreon T4', 'T4');
     }
     // Tier3 badge
     else if (socket.rewards.includes(REWARDS.TIER3_BADGE)) {
-        socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Patreon T3' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>T3</span>`;
+        socket.request.displayUsername = getDisplayUsernameWithBadge('Patreon T3', 'T3');
     }
     // Tier2 badge
     else if (socket.rewards.includes(REWARDS.TIER2_BADGE)) {
-        socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Patreon T2' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>T2</span>`;
+        socket.request.displayUsername = getDisplayUsernameWithBadge('Patreon T2', 'T2');
     }
     // Tier1 badge
     else if (socket.rewards.includes(REWARDS.TIER1_BADGE)) {
-        socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Patreon T1' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>T1</span>`;
+        socket.request.displayUsername = getDisplayUsernameWithBadge('Patreon T1', 'T1');
     }
-
 
     return socket;
 };
 
-var updateCurrentPlayersList = function () {
-    ioGlobal.in('allChat').emit('update-current-players-list', getPlayerDisplayUsernamesFromAllSockets());
-};
+function updateCurrentPlayersList() {
+    globalState.io.in('allChat').emit('update-current-players-list', getPlayerDisplayUsernamesFromAllSockets());
+}
 
-var updateCurrentGamesList = function () {
+function updateCurrentGamesList() {
     // prepare room data to send to players.
     const gamesList = [];
-    for (let i = 0; i < rooms.length; i++) {
+    for (let i = 0; i < globalState.rooms.length; i++) {
         // If the game exists
-        if (rooms[i]) {
+        if (globalState.rooms[i]) {
             // create new array to send
             gamesList[i] = {};
             // get status of game
-            gamesList[i].status = rooms[i].getStatus();
+            gamesList[i].status = globalState.rooms[i].getStatus();
 
-            if (rooms[i].joinPassword !== undefined) {
+            if (globalState.rooms[i].joinPassword !== undefined) {
                 gamesList[i].passwordLocked = true;
             } else {
                 gamesList[i].passwordLocked = false;
             }
             // get room ID
-            gamesList[i].roomId = rooms[i].roomId;
-            gamesList[i].gameMode = rooms[i].gameMode.charAt(0).toUpperCase() + rooms[i].gameMode.slice(1);
-            // console.log("Room " + rooms[i].roomId + " has host: " + rooms[i].host);
-            gamesList[i].hostUsername = rooms[i].host;
-            if (rooms[i].gameStarted === true) {
-                gamesList[i].numOfPlayersInside = rooms[i].playersInGame.length;
-                gamesList[i].missionHistory = rooms[i].missionHistory;
-                gamesList[i].missionNum = rooms[i].missionNum;
-                gamesList[i].pickNum = rooms[i].pickNum;
+            gamesList[i].roomId = globalState.rooms[i].roomId;
+            gamesList[i].gameMode = globalState.rooms[i].gameMode.charAt(0).toUpperCase() + globalState.rooms[i].gameMode.slice(1);
+            // console.log("Room " + globalState.rooms[i].roomId + " has host: " + globalState.rooms[i].host);
+            gamesList[i].hostUsername = globalState.rooms[i].host;
+            if (globalState.rooms[i].gameStarted === true) {
+                gamesList[i].numOfPlayersInside = globalState.rooms[i].playersInGame.length;
+                gamesList[i].missionHistory = globalState.rooms[i].missionHistory;
+                gamesList[i].missionNum = globalState.rooms[i].missionNum;
+                gamesList[i].pickNum = globalState.rooms[i].pickNum;
             } else {
-                gamesList[i].numOfPlayersInside = rooms[i].socketsOfPlayers.length;
+                gamesList[i].numOfPlayersInside = globalState.rooms[i].socketsOfPlayers.length;
             }
-            gamesList[i].maxNumPlayers = rooms[i].maxNumPlayers;
-            gamesList[i].numOfSpectatorsInside = rooms[i].allSockets.length - rooms[i].socketsOfPlayers.length;
+            gamesList[i].maxNumPlayers = globalState.rooms[i].maxNumPlayers;
+            gamesList[i].numOfSpectatorsInside = globalState.rooms[i].allSockets.length - globalState.rooms[i].socketsOfPlayers.length;
         }
     }
     allSockets.forEach((sock) => {
@@ -565,8 +554,8 @@ function sendToAllChat(io, data) {
 
 function sendToRoomChat(io, roomId, data) {
     io.in(roomId).emit('roomChatToClient', data);
-    if (rooms[roomId]) {
-        rooms[roomId].addToChatHistory(data);
+    if (globalState.rooms[roomId]) {
+        globalState.rooms[roomId].addToChatHistory(data);
     }
 }
 
@@ -595,47 +584,47 @@ function isMuted(socket) {
 }
 
 function destroyRoom(roomId) {
-    deleteSaveGameFromDb(rooms[roomId]);
+    deleteSaveGameFromDb(globalState.rooms[roomId]);
 
     // Stop bots thread if they are playing:
-    if (rooms[roomId].interval) {
-        clearInterval(rooms[roomId].interval);
-        rooms[roomId].interval = undefined;
+    if (globalState.rooms[roomId].interval) {
+        clearInterval(globalState.rooms[roomId].interval);
+        globalState.rooms[roomId].interval = undefined;
     }
-    const thisGame = rooms[roomId];
-    rooms[roomId].socketsOfPlayers.filter((socket) => socket.isBotSocket).forEach((botSocket) => {
+    const thisGame = globalState.rooms[roomId];
+    globalState.rooms[roomId].socketsOfPlayers.filter((socket) => socket.isBotSocket).forEach((botSocket) => {
         botSocket.handleGameOver(thisGame, 'complete', () => { }); // This room is getting destroyed. No need to leave.
     });
 
-    rooms[roomId] = undefined;
+    globalState.rooms[roomId] = undefined;
 }
 
 
 function playerLeaveRoomCheckDestroy(socket) {
-    if (socket.request.user.inRoomId && rooms[socket.request.user.inRoomId]) {
+    if (socket.request.user.inRoomId && globalState.rooms[socket.request.user.inRoomId]) {
         // leave the room
-        rooms[socket.request.user.inRoomId].playerLeaveRoom(socket);
+        globalState.rooms[socket.request.user.inRoomId].playerLeaveRoom(socket);
 
-        const toDestroy = rooms[socket.request.user.inRoomId].destroyRoom;
+        const toDestroy = globalState.rooms[socket.request.user.inRoomId].destroyRoom;
 
         if (toDestroy) {
             destroyRoom(socket.request.user.inRoomId);
         }
 
         // if room is frozen for more than 1hr then remove.
-        if (rooms[socket.request.user.inRoomId]
-            && rooms[socket.request.user.inRoomId].timeFrozenLoaded
-            && rooms[socket.request.user.inRoomId].getStatus() === 'Frozen'
-            && rooms[socket.request.user.inRoomId].allSockets.length === 0) {
+        if (globalState.rooms[socket.request.user.inRoomId]
+            && globalState.rooms[socket.request.user.inRoomId].timeFrozenLoaded
+            && globalState.rooms[socket.request.user.inRoomId].getStatus() === 'Frozen'
+            && globalState.rooms[socket.request.user.inRoomId].allSockets.length === 0) {
             const curr = new Date();
             const timeToKill = 1000 * 60 * 5; // 5 mins
             // var timeToKill = 1000*10; //10s
-            if ((curr.getTime() - rooms[socket.request.user.inRoomId].timeFrozenLoaded.getTime()) > timeToKill) {
+            if ((curr.getTime() - globalState.rooms[socket.request.user.inRoomId].timeFrozenLoaded.getTime()) > timeToKill) {
                 destroyRoom(socket.request.user.inRoomId);
 
                 console.log(`Been more than ${timeToKill / 1000} seconds, removing this frozen game.`);
             } else {
-                console.log(`Frozen game has only loaded for ${(curr.getTime() - rooms[socket.request.user.inRoomId].timeFrozenLoaded.getTime()) / 1000} seconds, Dont remove yet.`);
+                console.log(`Frozen game has only loaded for ${(curr.getTime() - globalState.rooms[socket.request.user.inRoomId].timeFrozenLoaded.getTime()) / 1000} seconds, Dont remove yet.`);
             }
         }
 
@@ -672,14 +661,6 @@ function getPlayerUsernamesFromAllSockets() {
     return array;
 }
 
-function getPlayerIdsFromAllSockets() {
-    const array = [];
-    for (let i = 0; i < allSockets.length; i++) {
-        array[i] = allSockets[i].request.user.id;
-    }
-    return array;
-}
-
 function getIndexFromUsername(sockets, username, caseInsensitive) {
     if (sockets && username) {
         for (let i = 0; i < sockets.length; i++) {
@@ -708,9 +689,9 @@ function disconnect(data) {
         message: `${this.request.user.username} has left the lobby.`,
         classStr: 'server-text-teal',
     };
-    sendToAllChat(ioGlobal, data);
+    sendToAllChat(globalState.io, data);
 
-    // Note, by default when this disconnects, it leaves from all rooms.
+    // Note, by default when this disconnects, it leaves from all globalState.rooms.
     // If user disconnected from within a room, the leave room function will send a message to other players in room.
 
     const { username } = this.request.user;
@@ -724,7 +705,7 @@ function disconnect(data) {
         classStr: 'server-text-teal',
         dateCreated: new Date(),
     };
-    sendToRoomChat(ioGlobal, inRoomId, data);
+    sendToRoomChat(globalState.io, inRoomId, data);
 }
 
 function messageCommand(data) {
@@ -732,13 +713,13 @@ function messageCommand(data) {
     // console.log("mod command exists: " + modCommands[data.command]);
     // console.log("Index of mods" + modsArray.indexOf(socket.request.user.username.toLowerCase()));
     if (userCommands[data.command]) {
-        var dataToSend = userCommands[data.command].run(data, this, ioGlobal);
+        var dataToSend = userCommands[data.command].run(state, data, this);
         this.emit('messageCommandReturnStr', dataToSend);
     } else if (modCommands[data.command] && modsArray.indexOf(this.request.user.username.toLowerCase()) !== -1) {
-        var dataToSend = modCommands[data.command].run(data, this, ioGlobal);
+        var dataToSend = modCommands[data.command].run(state, data, this);
         this.emit('messageCommandReturnStr', dataToSend);
     } else if (adminCommands[data.command] && adminsArray.indexOf(this.request.user.username.toLowerCase()) !== -1) {
-        var dataToSend = adminCommands[data.command].run(data, this, ioGlobal);
+        var dataToSend = adminCommands[data.command].run(state, data, this);
         this.emit('messageCommandReturnStr', dataToSend);
     } else {
         var dataToSend = {
@@ -771,94 +752,81 @@ function interactUserPlayed(data) {
         socketWhoInitiatedInteract.emit('messageCommandReturnStr', dataToSend);
     }
 }
+
 function allChatFromClient(data) {
-    // this.emit("danger-alert", "test alert asdf");
-    // debugging
+    if (isMuted(this)) return;
 
-    const toContinue = !isMuted(this);
+    console.log(`allchat: ${data.message} by: ${this.request.user.username}`);
+    // get the username and put it into the data object
 
-    // console.log(toContinue);
+    const validUsernames = getPlayerUsernamesFromAllSockets();
 
-    if (toContinue) {
-        console.log(`allchat: ${data.message} by: ${this.request.user.username}`);
-        // get the username and put it into the data object
-
-        const validUsernames = getPlayerUsernamesFromAllSockets();
-
-        // if the username is not valid, i.e. one that they actually logged in as
-        if (validUsernames.indexOf(this.request.user.username) === -1) {
-            return;
-        }
-
-        data.username = this.request.displayUsername ? this.request.displayUsername : this.request.user.username;
-        // send out that data object to all other clients (except the one who sent the message)
-        data.message = textLengthFilter(data.message);
-        // no classStr since its a player message
-
-        sendToAllChat(ioGlobal, data);
+    // if the username is not valid, i.e. one that they actually logged in as
+    if (validUsernames.indexOf(this.request.user.username) === -1) {
+        return;
     }
+
+    data.username = this.request.displayUsername ? this.request.displayUsername : this.request.user.username;
+    // send out that data object to all other clients (except the one who sent the message)
+    data.message = textLengthFilter(data.message);
+    // no classStr since its a player message
+
+    sendToAllChat(globalState.io, data);
 }
 
 function roomChatFromClient(data) {
-    // this.emit("danger-alert", "test alert asdf");
-    // debugging
+    if (isMuted(this)) return;
+    
+    console.log(`roomchat: ${data.message} by: ${this.request.user.username}`);
+    // get the username and put it into the data object
 
-    const toContinue = !isMuted(this);
+    const validUsernames = getPlayerUsernamesFromAllSockets();
 
-    if (toContinue) {
-        console.log(`roomchat: ${data.message} by: ${this.request.user.username}`);
-        // get the username and put it into the data object
+    // if the username is not valid, i.e. one that they actually logged in as
+    if (validUsernames.indexOf(this.request.user.username) === -1) {
+        return;
+    }
 
-        const validUsernames = getPlayerUsernamesFromAllSockets();
+    data.username = this.request.displayUsername ? this.request.displayUsername : this.request.user.username;
 
-        // if the username is not valid, i.e. one that they actually logged in as
-        if (validUsernames.indexOf(this.request.user.username) === -1) {
-            return;
-        }
+    data.message = textLengthFilter(data.message);
+    data.dateCreated = new Date();
 
-        data.username = this.request.displayUsername ? this.request.displayUsername : this.request.user.username;
+    if (this.request.user.inRoomId) {
+        // send out that data object to all clients in room
 
-        data.message = textLengthFilter(data.message);
-        data.dateCreated = new Date();
-
-        if (this.request.user.inRoomId) {
-            // send out that data object to all clients in room
-
-            sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
-            // ioGlobal.in(data.roomId).emit("roomChatToClient", data);
-        }
+        sendToRoomChat(globalState.io, this.request.user.inRoomId, data);
+        // globalState.io.in(data.roomId).emit("roomChatToClient", data);
     }
 }
 
 function newRoom(dataObj) {
-    const toContinue = !isMuted(this);
+    if (isMuted(this) || !dataObj) return;
 
-    if (toContinue && dataObj) {
-        // while rooms exist already (in case of a previously saved and retrieved game)
-        while (rooms[nextRoomId]) {
-            nextRoomId++;
-        }
-        rooms[nextRoomId] = new gameRoom(this.request.user.username, nextRoomId, ioGlobal, dataObj.maxNumPlayers, dataObj.newRoomPassword, dataObj.gameMode, socketCallback);
-        const privateStr = (dataObj.newRoomPassword === '') ? '' : 'private ';
-        // broadcast to all chat
-        const data = {
-            message: `${this.request.user.username} has created ${privateStr}room ${nextRoomId}.`,
-            classStr: 'server-text',
-        };
-        sendToAllChat(ioGlobal, data);
-
-        // console.log(data.message);
-
-        // send to allChat including the host of the game
-        // ioGlobal.in("allChat").emit("new-game-created", str);
-        // send back room id to host so they can auto connect
-        this.emit('auto-join-room-id', nextRoomId, dataObj.newRoomPassword);
-
-        // increment index for next game
+    // while globalState.rooms exist already (in case of a previously saved and retrieved game)
+    while (globalState.rooms[nextRoomId]) {
         nextRoomId++;
-
-        updateCurrentGamesList();
     }
+    globalState.rooms[nextRoomId] = new gameRoom(this.request.user.username, nextRoomId, globalState.io, dataObj.maxNumPlayers, dataObj.newRoomPassword, dataObj.gameMode, socketCallback);
+    const privateStr = (dataObj.newRoomPassword === '') ? '' : 'private ';
+    // broadcast to all chat
+    const data = {
+        message: `${this.request.user.username} has created ${privateStr}room ${nextRoomId}.`,
+        classStr: 'server-text',
+    };
+    sendToAllChat(globalState.io, data);
+
+    // console.log(data.message);
+
+    // send to allChat including the host of the game
+    // globalState.io.in("allChat").emit("new-game-created", str);
+    // send back room id to host so they can auto connect
+    this.emit('auto-join-room-id', nextRoomId, dataObj.newRoomPassword);
+
+    // increment index for next game
+    nextRoomId++;
+
+    updateCurrentGamesList();
 }
 
 
@@ -866,52 +834,40 @@ function joinRoom(roomId, inputPassword) {
     // console.log("inputpassword: " + inputPassword);
 
     // if the room exists
-    if (rooms[roomId]) {
-        // join the room
-        if (rooms[roomId].playerJoinRoom(this, inputPassword) === true) {
-            // sends to players and specs
-            rooms[roomId].distributeGameData();
+    if (!globalState.rooms[roomId]) return;
+    // join the room
+    if (!globalState.rooms[roomId].playerJoinRoom(this, inputPassword)) return;
 
-            // set the room id into the this obj
-            this.request.user.inRoomId = roomId;
+    // sends to players and specs
+    globalState.rooms[roomId].distributeGameData();
 
-            // join the room chat
-            this.join(roomId);
+    // set the room id into the this obj
+    this.request.user.inRoomId = roomId;
 
-            // emit to say to others that someone has joined
-            const data = {
-                message: `${this.request.user.username} has joined the room.`,
-                classStr: 'server-text-teal',
-                dateCreated: new Date(),
-            };
-            sendToRoomChat(ioGlobal, roomId, data);
+    // join the room chat
+    this.join(roomId);
 
-            updateCurrentGamesList();
-        } else {
-            // no need to do anything?
-        }
-    } else {
-        // console.log("Game doesn't exist!");
-    }
+    // emit to say to others that someone has joined
+    const data = {
+        message: `${this.request.user.username} has joined the room.`,
+        classStr: 'server-text-teal',
+        dateCreated: new Date(),
+    };
+    sendToRoomChat(globalState.io, roomId, data);
+
+    updateCurrentGamesList();
 }
 
 
 function joinGame(roomId) {
-    const toContinue = !isMuted(this);
+    if (isMuted(this)
+    || !globalState.rooms[roomId]
+    || globalState.rooms[roomId].getStatus() === 'Waiting') return;
+    // if the room has not started yet, throw them into the room
+    // console.log("Game status is: " + globalState.rooms[roomId].getStatus());
 
-    if (toContinue) {
-        if (rooms[roomId]) {
-            // if the room has not started yet, throw them into the room
-            // console.log("Game status is: " + rooms[roomId].getStatus());
-
-            if (rooms[roomId].getStatus() === 'Waiting') {
-                const ToF = rooms[roomId].playerSitDown(this);
-                console.log(`${this.request.user.username} has joined room ${roomId}: ${ToF}`);
-            } else {
-                // console.log("Game has started, player " + this.request.user.username + " is not allowed to join.");
-            }
-        }
-    }
+    const ToF = globalState.rooms[roomId].playerSitDown(this);
+    console.log(`${this.request.user.username} has joined room ${roomId}: ${ToF}`);
 }
 
 function standUpFromGame() {
@@ -919,129 +875,105 @@ function standUpFromGame() {
 
     const roomId = this.request.user.inRoomId;
 
-    if (toContinue) {
-        if (rooms[roomId]) {
-            // if the room has not started yet, remove them from players list
-            // console.log("Game status is: " + rooms[roomId].getStatus());
+    if (isMuted(this) || !globalState.rooms[roomId]) return;
 
-            if (rooms[roomId].getStatus() === 'Waiting') {
-                const ToF = rooms[roomId].playerStandUp(this);
-                // console.log(this.request.user.username + " has stood up from room " + roomId + ": " + ToF);
-            } else {
-                // console.log("Game has started, player " + this.request.user.username + " is not allowed to stand up.");
-            }
-        }
-    }
+    // if the room has not started yet, remove them from players list
+    if (globalState.rooms[roomId].getStatus() === 'Waiting')
+        globalState.rooms[roomId].playerStandUp(this);
 }
 
 function leaveRoom() {
-    // console.log("In room id");
-    // console.log(this.request.user.inRoomId);
+    if (!globalState.rooms[this.request.user.inRoomId]) return;
+    console.log(`${this.request.user.username} is leaving room: ${this.request.user.inRoomId}`);
 
-    if (rooms[this.request.user.inRoomId]) {
-        console.log(`${this.request.user.username} is leaving room: ${this.request.user.inRoomId}`);
-        // broadcast to let others know
+    // broadcast to let others know
+    const data = {
+        message: `${this.request.user.username} has left the room.`,
+        classStr: 'server-text-teal',
+        dateCreated: new Date(),
+    };
+    sendToRoomChat(globalState.io, this.request.user.inRoomId, data);
 
-        const data = {
-            message: `${this.request.user.username} has left the room.`,
-            classStr: 'server-text-teal',
-            dateCreated: new Date(),
-        };
-        sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
-
-        // leave the room chat
-        this.leave(this.request.user.inRoomId);
-
-        playerLeaveRoomCheckDestroy(this);
-
-
-        updateCurrentGamesList();
-    }
+    // leave the room chat
+    this.leave(this.request.user.inRoomId);
+    playerLeaveRoomCheckDestroy(this);
+    updateCurrentGamesList();
 }
 
 function playerReady(username) {
-    if (rooms[this.request.user.inRoomId]) {
-        const data = {
-            message: `${username} is ready.`,
-            classStr: 'server-text',
-            dateCreated: new Date(),
-        };
-        sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
-
-
-        if (rooms[this.request.user.inRoomId].playerReady(username) === true) {
-            // game will auto start if the above returned true
-        }
-    }
+    if (!globalState.rooms[this.request.user.inRoomId]) return;
+    const data = {
+        message: `${username} is ready.`,
+        classStr: 'server-text',
+        dateCreated: new Date(),
+    };
+    sendToRoomChat(globalState.io, this.request.user.inRoomId, data);
 }
 
 function playerNotReady(username) {
-    if (rooms[this.request.user.inRoomId]) {
-        rooms[this.request.user.inRoomId].playerNotReady(username);
-        const data = {
-            message: `${username} is not ready.`,
-            classStr: 'server-text',
-            dateCreated: new Date(),
-        };
-        sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
-
-        // ioGlobal.in(this.request.user.inRoomId).emit("player-not-ready", username + " is not ready.");
-    }
+    if (!globalState.rooms[this.request.user.inRoomId]) return;
+    globalState.rooms[this.request.user.inRoomId].playerNotReady(username);
+    const data = {
+        message: `${username} is not ready.`,
+        classStr: 'server-text',
+        dateCreated: new Date(),
+    };
+    sendToRoomChat(globalState.io, this.request.user.inRoomId, data);
 }
 
 function startGame(data, gameMode) {
     // start the game
-    if (rooms[this.request.user.inRoomId]) {
-        if (this.request.user.inRoomId && this.request.user.username === rooms[this.request.user.inRoomId].host) {
-            rooms[this.request.user.inRoomId].hostTryStartGame(data, gameMode);
-            // this.emit("update-room-players", rooms[roomId].getPlayers());
+    if (globalState.rooms[this.request.user.inRoomId]) {
+        if (this.request.user.inRoomId && this.request.user.username === globalState.rooms[this.request.user.inRoomId].host) {
+            globalState.rooms[this.request.user.inRoomId].hostTryStartGame(data, gameMode);
+            // this.emit("update-room-players", globalState.rooms[roomId].getPlayers());
         } else {
             // console.log("Room doesn't exist or user is not host, cannot start game");
             this.emit('danger-alert', 'You are not the host. You cannot start the game.');
             return;
         }
     }
-    updateCurrentGamesList(ioGlobal);
+    updateCurrentGamesList(globalState.io);
 }
 
 function kickPlayer(username) {
     console.log(`received kick player request: ${username}`);
-    if (rooms[this.request.user.inRoomId]) {
-        rooms[this.request.user.inRoomId].kickPlayer(username, this);
+    if (globalState.rooms[this.request.user.inRoomId]) {
+        globalState.rooms[this.request.user.inRoomId].kickPlayer(username, this);
     }
 }
 
 function setClaim(data) {
-    if (rooms[this.request.user.inRoomId]) {
-        rooms[this.request.user.inRoomId].setClaim(this, data);
+    if (globalState.rooms[this.request.user.inRoomId]) {
+        globalState.rooms[this.request.user.inRoomId].setClaim(this, data);
     }
 }
 
 function gameMove(data) {
     // console.log(data);
-    if (rooms[this.request.user.inRoomId]) {
-        rooms[this.request.user.inRoomId].gameMove(this, data);
-        if (rooms[this.request.user.inRoomId]) {
-            if (rooms[this.request.user.inRoomId].finished === true) {
-                deleteSaveGameFromDb(rooms[this.request.user.inRoomId]);
+    if (globalState.rooms[this.request.user.inRoomId]) {
+        globalState.rooms[this.request.user.inRoomId].gameMove(this, data);
+        if (globalState.rooms[this.request.user.inRoomId]) {
+            if (globalState.rooms[this.request.user.inRoomId].finished === true) {
+                deleteSaveGameFromDb(globalState.rooms[this.request.user.inRoomId]);
             } else {
-                saveGameToDb(rooms[this.request.user.inRoomId]);
+                saveGameToDb(globalState.rooms[this.request.user.inRoomId]);
             }
         }
-        updateCurrentGamesList(ioGlobal);
+        updateCurrentGamesList(globalState.io);
     }
 }
 
 function updateRoomGameMode(gameMode) {
-    if (rooms[this.request.user.inRoomId]) {
-        rooms[this.request.user.inRoomId].updateGameModesInRoom(this, gameMode);
+    if (globalState.rooms[this.request.user.inRoomId]) {
+        globalState.rooms[this.request.user.inRoomId].updateGameModesInRoom(this, gameMode);
     }
     updateCurrentGamesList();
 }
 
 function updateRoomMaxPlayers(number) {
-    if (rooms[this.request.user.inRoomId]) {
-        rooms[this.request.user.inRoomId].updateMaxNumPlayers(this, number);
+    if (globalState.rooms[this.request.user.inRoomId]) {
+        globalState.rooms[this.request.user.inRoomId].updateMaxNumPlayers(this, number);
     }
     updateCurrentGamesList();
 }

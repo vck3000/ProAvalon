@@ -1,3 +1,4 @@
+const PMMOD_TIMEOUT = 3000; // 3 seconds
 
 module.exports = {
     command: 'pmmod',
