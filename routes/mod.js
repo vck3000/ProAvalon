@@ -95,7 +95,7 @@ router.post('/ban', upload.none(), async (req, res) => {
                 username: banUser.username,
                 usernameLower: banUser.usernameLower
             },
-            bannedIps: banUser.IPAddresses,
+            bannedIPs: banUser.IPAddresses,
             modWhoBanned: {
                 id: modUser._id,
                 username: modUser.username,

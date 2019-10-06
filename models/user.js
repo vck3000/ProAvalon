@@ -121,7 +121,8 @@ const UserSchema = new mongoose.Schema({
 
     patreonId: String,
 
-    IPAddresses: [String]
+    IPAddresses: [String],
+    lastIPAddress: String
 });
 
 UserSchema.plugin(passportLocalMongoose);

@@ -1,9 +1,12 @@
+const moment = require('moment');
+
 const forumThread = require('../models/forumThread');
 const forumThreadComment = require('../models/forumThreadComment');
 const forumThreadCommentReply = require('../models/forumThreadCommentReply');
 const User = require('../models/user');
 const modAction = require('../models/modAction');
 const banIp = require('../models/banIp');
+const Ban = require('../models/ban');
 
 const modsArray = require('../modsadmins/mods');
 const admins = require('../modsadmins/admins');
@@ -27,64 +30,75 @@ const isLoggedIn = asyncMiddleware(async (req, res, next) => {
         return;
     }
 
+    // Have to find the user to get notifications.
+    const user = await User.findOne({ usernameLower: req.user.username.toLowerCase() }).populate('notifications').exec();
+    const clientIpAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    console.log(clientIpAddress);
+
+    // Track IPs
+    if (!user.IPAddresses.includes(clientIpAddress)) {
+        user.IPAddresses.push(clientIpAddress);
+        user.markModified("IPAdresses");
+    }
+    user.lastIPAddress = clientIpAddress;
+    user.markModified("lastIPAddress");
+    user.save();
+
+
+    // Check bans!!!
+    // USER ban
+    ban = await Ban.findOne({
+        'bannedPlayer.id': user._id,        // User ID match
+        'whenRelease': {$gt: new Date() },  // Unexpired ban
+        'userban': true,                    // User ban
+        'disabled': false                   // Ban must be active
+    });
+    if (ban) {
+        let message = `You have been banned. The ban will be released on ${moment(ban.whenRelease).format("LLL")}. Ban description: '${ban.descriptionByMod}'`;
+        req.flash('error', message);
+        res.redirect('/');
+
+        // Track IPs
+        if (!ban.bannedIPs.includes(clientIpAddress)) {
+            ban.bannedIPs.push(clientIpAddress);
+            ban.markModified("IPAdresses");
+            ban.save();
+        }
+        return;
+    }
+
+    // IP ban
+    ban = await Ban.findOne({
+        'bannedIPs': clientIpAddress,       // IP match
+        'whenRelease': {$gt: new Date() },  // Unexpired ban
+        'ipban': true,                      // IP ban
+        'disabled': false                   // Ban must be active
+    });
+    if (ban) {
+        let message = `You have been banned. The ban will be released on ${moment(ban.whenRelease).format("LLL")}. Ban description: '${ban.descriptionByMod}'`;
+        req.flash('error', message);
+        res.redirect('/');
+        return;
+    }
+
+
+    // Pass on some variables for all ejs files to use, mainly header partial view
+    res.locals.currentUser = user;
+    res.locals.userNotifications = user.notifications;
+    res.locals.mod = modsArray.includes(user.username.toLowerCase());
+    res.locals.isMod = modsArray.includes(user.username.toLowerCase());
+
     next();
-    
-    // Check bans
-    // const m = await modAction.findOne({ 'bannedPlayer.usernameLower': req.user.username.toLowerCase() }).exec();
-    // if (!m) {
-    //     const foundUser = await User.findOne({ username: req.user.username }).populate('notifications').exec();
-    //     res.locals.currentUser = req.user;
-    //     res.locals.userNotifications = foundUser.notifications;
-    //     res.locals.mod = modsArray.includes(req.user.username.toLowerCase());
-    //     res.locals.isMod = modsArray.includes(req.user.username.toLowerCase());
-    //     next();
-    //     return;
-    // }
+});
 
-    // let message = `You have been banned. The ban will be released on ${m.whenRelease}. Ban description: '${m.descriptionByMod}'`;
-    // message += ' Reflect on your actions.';
-    // req.flash('error', message);
-    // res.redirect('/');
+exports.isLoggedIn = isLoggedIn;
 
-
-
-
-
-    // TODO REMOVE THIS
-    // exports.checkIpBan = asyncMiddleware(async (req, res, next) => {
-    //     const clientIpAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-
-    //     const foundBannedIps = await banIp.find({}).exec();
-
-    //     const bannedIps = (foundBannedIps || []).map((ip) => ip.bannedIp);
-    //     const foundBannedIpsArray = (foundBannedIps || []).slice();
-
-    //     if (!bannedIps.includes(clientIpAddress)) {
-    //         next();
-    //         return;
-    //     }
-
-    //     const index = bannedIps.indexOf(clientIpAddress);
-    //     const username = (req.body.username || req.user.username).toLowerCase();
-
-    //     if (!foundBannedIpsArray[index].usernamesAssociated) {
-    //         foundBannedIpsArray[index].usernamesAssociated = [];
-    //     }
-
-    //     // if their username isnt associated with the ip ban, add their username to it for record.
-    //     if (!foundBannedIpsArray[index].usernamesAssociated.includes(username)) {
-    //         foundBannedIpsArray[index].usernamesAssociated.push(username);
-    //     }
-
-    //     foundBannedIpsArray[index].save();
-
-    //     req.flash('error', 'You have been banned.');
-    //     res.redirect('/');
-    // });
-
-
+const trackIP = asyncMiddleware(async (req, res, next) => {
 
 });
+
+exports.trackIP = trackIP;
+
 
 const checkOwnership = (name, model, query, isOwner) => [
     isLoggedIn,
@@ -103,8 +117,6 @@ const checkOwnership = (name, model, query, isOwner) => [
     }),
 ];
 
-exports.isLoggedIn = isLoggedIn;
-
 exports.checkProfileOwnership = checkOwnership('User', User, (req) => ({
     username: req.params.profileUsername.replace(' ', ''),
 }), (req, user) => user.username && user.username === req.user.username);
@@ -121,14 +133,14 @@ exports.checkForumThreadCommentReplyOwnership = checkOwnership('Reply', forumThr
     _id: req.params.reply_id,
 }), (req, reply) => reply.author.id && reply.author.id.equals(req.user._id));
 
-exports.isMod = [isLoggedIn, (req, res, next) => {
+exports.isMod = isLoggedIn, (req, res, next) => {
     if (modsArray.includes(req.user.username.toLowerCase())) {
         next();
     } else {
         req.flash('error', 'You are not a moderator.');
         res.redirect('/');
     }
-}];
+};
 
 exports.isAdmin = (req, res, next) => {
     if (admins.includes(req.user.username.toLowerCase())) {

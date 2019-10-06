@@ -32,6 +32,11 @@ const banSchema = new mongoose.Schema({
 
     descriptionByMod: String,
     reason: String,
+
+    disabled: {
+        type: Boolean,
+        default: false
+    }
 });
 
 // compile schema into a model

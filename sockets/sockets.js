@@ -3,9 +3,7 @@ const axios = require('axios');
 const gameRoom = require('../gameplay/game');
 
 const savedGameObj = require('../models/savedGame');
-const modAction = require('../models/modAction');
 
-let currentModActions = [];
 const myNotification = require('../models/notification');
 const createNotificationObj = require('../myFunctions/createNotification');
 
@@ -17,7 +15,7 @@ const REWARDS = require('../rewards/constants');
 
 const avatarRequest = require('../models/avatarRequest');
 const User = require('../models/user');
-const banIp = require('../models/banIp');
+const Ban = require('../models/ban');
 const JSON = require('circular-json');
 const modsArray = require('../modsadmins/mods');
 const adminsArray = require('../modsadmins/admins');
@@ -69,7 +67,6 @@ function gracefulShutdown() {
     console.log('Graceful shutdown request');
     process.exit();
 }
-
 
 function sendWarning() {
     for (const key in allSockets) {
@@ -881,70 +878,39 @@ var actionsObj = {
                     return { message: 'Specify a username.', classStr: 'server-text' };
                 }
 
-                modAction.find({ 'bannedPlayer.usernameLower': args[1].toLowerCase() }, (err, foundModAction) => {
-                    // console.log("foundmodaction");
-                    // console.log(foundModAction);
-                    if (foundModAction.length !== 0) {
-                        modAction.remove({ 'bannedPlayer.usernameLower': args[1].toLowerCase() }, (err, foundModAction) => {
-                            if (err) {
-                                console.log(err);
-                                senderSocket.emit('messageCommandReturnStr', { message: 'Something went wrong.', classStr: 'server-text' });
-                            } else {
-                                // console.log("Successfully unbanned " + args[1] + ".");
-                                senderSocket.emit('messageCommandReturnStr', { message: `Successfully unbanned ${args[1]}.`, classStr: 'server-text' });
+                ban = await Ban.findOne({ 'bannedPlayer.usernameLower': args[1].toLowerCase() });
+                if (ban) {
+                    ban.disabled = true;
+                    ban.markModified('disabled');
+                    await ban.save();    
+                }
+
+                senderSocket.emit('messageCommandReturnStr', { message: `Successfully unbanned ${args[1]}. Their record still remains, however.`, classStr: 'server-text' });
 
 
-                                reloadCurrentModActions();
-                            }
-                        });
-                    } else {
-                        senderSocket.emit('messageCommandReturnStr', { message: `${args[1]} does not have a ban.`, classStr: 'server-text' });
-                    }
-                });
+
+                // modAction.find({ 'bannedPlayer.usernameLower': args[1].toLowerCase() }, (err, foundModAction) => {
+                //     // console.log("foundmodaction");
+                //     // console.log(foundModAction);
+                //     if (foundModAction.length !== 0) {
+                //         modAction.remove({ 'bannedPlayer.usernameLower': args[1].toLowerCase() }, (err, foundModAction) => {
+                //             if (err) {
+                //                 console.log(err);
+                //                 senderSocket.emit('messageCommandReturnStr', { message: 'Something went wrong.', classStr: 'server-text' });
+                //             } else {
+                //                 // console.log("Successfully unbanned " + args[1] + ".");
+                //                 senderSocket.emit('messageCommandReturnStr', { message: `Successfully unbanned ${args[1]}.`, classStr: 'server-text' });
+
+
+                //             }
+                //         });
+                //     } else {
+                //         senderSocket.emit('messageCommandReturnStr', { message: `${args[1]} does not have a ban.`, classStr: 'server-text' });
+                //     }
+                // });
             },
         },
 
-        mcurrentbans: {
-            command: 'mcurrentbans',
-            help: '/mcurrentbans: Show a list of currently active bans.',
-            run(data, senderSocket) {
-                const { args } = data;
-                // do stuff
-                const dataToReturn = [];
-                let i = 0;
-                i++;
-
-                // Cutoff so we dont return perma bans (that are 1000 years long)
-                cutOffDate = new Date('2999-12-17T03:24:00');
-                modAction.find({
-                    $or: [
-                        { type: 'mute' },
-                        { type: 'ban' },
-                    ],
-                    $and: [
-                        { whenRelease: { $lte: cutOffDate } },
-                        { whenRelease: { $gte: new Date() } },
-                    ],
-                }, (err, foundModActions) => {
-                    foundModActions.forEach((modActionFound) => {
-                        let message = '';
-                        if (modActionFound.type === 'ban') {
-                            message = `${modActionFound.bannedPlayer.username} was banned for ${modActionFound.reason} by ${modActionFound.modWhoBanned.username}, description: '${modActionFound.descriptionByMod}' until: ${modActionFound.whenRelease.toString()}`;
-                        } else if (modActionFound.type === 'mute') {
-                            message = `${modActionFound.bannedPlayer.username} was muted for ${modActionFound.reason} by ${modActionFound.modWhoBanned.username}, description: '${modActionFound.descriptionByMod}' until: ${modActionFound.whenRelease.toString()}`;
-                        }
-
-                        dataToReturn[dataToReturn.length] = { message, classStr: 'server-text' };
-                    });
-
-                    if (dataToReturn.length === 0) {
-                        senderSocket.emit('messageCommandReturnStr', { message: 'No one is banned! Yay!', classStr: 'server-text' });
-                    } else {
-                        senderSocket.emit('messageCommandReturnStr', dataToReturn);
-                    }
-                });
-            },
-        },
         mcompareips: {
             command: 'mcompareips',
             help: '/mcompareips: Get usernames of players with the same IP.',
@@ -1438,7 +1404,7 @@ var actionsObj = {
 
         mtogglepause: {
             command: 'mtogglepause',
-            help: "/mtogglepause : Pauses or unpauses the current room.",
+            help: "/mtogglepause: Pauses or unpauses the current room.",
             run(data, senderSocket) {
                 const currentRoom = rooms[senderSocket.request.user.inRoomId];
                 if (currentRoom) {
@@ -1454,6 +1420,61 @@ var actionsObj = {
                 }
                 else {
                     return { message: `You are not in a room.`, classStr: 'server-text' }
+                }
+            }
+        },
+
+        miplinkedaccs: {
+            command: 'miplinkedaccs',
+            help: "/miplinkedaccs <username>: Finds all accounts that have shared the same IPs the specified user.",
+            async run(data, senderSocket) {
+                const { args } = data;
+
+                var linkedUsernames = [];
+
+                var IPsToVisit = []
+
+                // Track down each user account linked to all IPs.
+                // Only need too return usernameLower and IPAddresses from the query
+                const user = await User.findOne({'usernameLower': args[1].toLowerCase()}, 'usernameLower IPAddresses');
+                if (user) {
+                    linkedUsernames.push(user.usernameLower);
+                    IPsToVisit = user.IPAddresses;
+                    console.log(user);
+
+                    while (IPsToVisit.length !== 0) {
+                        const nextIP = IPsToVisit.pop();
+                        const linkedUsers = await User.find({'IPAddresses': nextIP}, 'usernameLower IPAddresses');
+
+                        for (u of linkedUsers) {
+                            // If this user hasn't been checked yet, add their username to the list and their IPs.
+                            if(!linkedUsernames.includes(u.usernameLower)) {
+                                linkedUsernames.push(u.usernameLower);
+                                IPsToVisit = IPsToVisit.concat(u.IPAddresses);
+                            }
+                        }
+                        console.log("Checking IP " + nextIP);
+                    }
+
+                    // Send out data in a readable way to the mod.
+                    const dataToReturn = [];
+                    if (linkedUsernames.length === 0) {
+                        dataToReturn[0] = { message: 'There are no users with matching IPs (weird).', classStr: 'server-text', dateCreated: new Date() };
+                    } 
+                    else {
+                        dataToReturn[0] = { message: '-------------------------', classStr: 'server-text', dateCreated: new Date() };
+
+                        for (username of linkedUsernames) {
+                            dataToReturn.push({ message: username, classStr: 'server-text', dateCreated: new Date() });
+                        }
+
+                        dataToReturn.push({ message: '-------------------------', classStr: 'server-text', dateCreated: new Date() });                        
+                    }
+                    senderSocket.emit('messageCommandReturnStr', dataToReturn);
+                    
+                }
+                else{
+                    senderSocket.emit('messageCommandReturnStr', { message: `Could not find user ${args[1]}.`, classStr: 'server-text', dateCreated: new Date() });
                 }
             }
         }
@@ -1588,21 +1609,6 @@ const { userCommands } = actionsObj;
 const { modCommands } = actionsObj;
 const { adminCommands } = actionsObj;
 
-
-function reloadCurrentModActions() {
-    // load up all the modActions that are not released yet
-    modAction.find({ whenRelease: { $gt: new Date() }, $or: [{ type: 'mute' }, { type: 'ban' }] }, (err, allModActions) => {
-        // reset currentModActions
-        currentModActions = [];
-        for (let i = 0; i < allModActions.length; i++) {
-            currentModActions.push(allModActions[i]);
-        }
-        // console.log("mute");
-        // console.log(currentModActions);
-    });
-}
-
-
 ioGlobal = {};
 
 module.exports = function (io) {
@@ -1638,18 +1644,6 @@ module.exports = function (io) {
 
         // slight delay while client loads
         setTimeout(() => {
-            // check if they have a ban or a mute
-            for (var i = 0; i < currentModActions.length; i++) {
-                if (currentModActions[i].bannedPlayer.id && socket.request.user.id.toString() === currentModActions[i].bannedPlayer.id.toString()) {
-                    if (currentModActions[i].type === 'mute') {
-                        socket.emit('muteNotification', currentModActions[i]);
-                    } else if (currentModActions[i].type === 'ban') {
-                        socket.emit('redirect', '/');
-                        socket.disconnect();
-                    }
-                }
-            }
-
             console.log(`${socket.request.user.username} has connected under socket ID: ${socket.id}`);
 
             // send the user its ID to store on their side.
@@ -1934,18 +1928,6 @@ function sendToAllMods(io, data) {
     });
 }
 
-function isMuted(socket) {
-    returnVar = false;
-    currentModActions.forEach((oneModAction) => {
-        if (oneModAction.type === 'mute' && oneModAction.bannedPlayer && oneModAction.bannedPlayer.id && oneModAction.bannedPlayer.id.toString() === socket.request.user.id.toString()) {
-            socket.emit('muteNotification', oneModAction);
-            returnVar = true;
-        }
-    });
-
-    return returnVar;
-}
-
 function destroyRoom(roomId) {
     deleteSaveGameFromDb(rooms[roomId]);
 
@@ -2124,68 +2106,53 @@ function interactUserPlayed(data) {
     }
 }
 function allChatFromClient(data) {
-    // this.emit("danger-alert", "test alert asdf");
-    // debugging
+    console.log(`allchat: ${data.message} by: ${this.request.user.username}`);
+    // get the username and put it into the data object
 
-    const toContinue = !isMuted(this);
+    const validUsernames = getPlayerUsernamesFromAllSockets();
 
-    // console.log(toContinue);
-
-    if (toContinue) {
-        console.log(`allchat: ${data.message} by: ${this.request.user.username}`);
-        // get the username and put it into the data object
-
-        const validUsernames = getPlayerUsernamesFromAllSockets();
-
-        // if the username is not valid, i.e. one that they actually logged in as
-        if (validUsernames.indexOf(this.request.user.username) === -1) {
-            return;
-        }
-
-        data.username = this.request.displayUsername ? this.request.displayUsername : this.request.user.username;
-        // send out that data object to all other clients (except the one who sent the message)
-        data.message = textLengthFilter(data.message);
-        // no classStr since its a player message
-
-        sendToAllChat(ioGlobal, data);
+    // if the username is not valid, i.e. one that they actually logged in as
+    if (validUsernames.indexOf(this.request.user.username) === -1) {
+        return;
     }
+
+    data.username = this.request.displayUsername ? this.request.displayUsername : this.request.user.username;
+    // send out that data object to all other clients (except the one who sent the message)
+    data.message = textLengthFilter(data.message);
+    // no classStr since its a player message
+
+    sendToAllChat(ioGlobal, data);
+    
 }
 
 function roomChatFromClient(data) {
-    // this.emit("danger-alert", "test alert asdf");
-    // debugging
 
-    const toContinue = !isMuted(this);
+    console.log(`roomchat: ${data.message} by: ${this.request.user.username}`);
+    // get the username and put it into the data object
 
-    if (toContinue) {
-        console.log(`roomchat: ${data.message} by: ${this.request.user.username}`);
-        // get the username and put it into the data object
+    const validUsernames = getPlayerUsernamesFromAllSockets();
 
-        const validUsernames = getPlayerUsernamesFromAllSockets();
-
-        // if the username is not valid, i.e. one that they actually logged in as
-        if (validUsernames.indexOf(this.request.user.username) === -1) {
-            return;
-        }
-
-        data.username = this.request.displayUsername ? this.request.displayUsername : this.request.user.username;
-
-        data.message = textLengthFilter(data.message);
-        data.dateCreated = new Date();
-
-        if (this.request.user.inRoomId) {
-            // send out that data object to all clients in room
-
-            sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
-            // ioGlobal.in(data.roomId).emit("roomChatToClient", data);
-        }
+    // if the username is not valid, i.e. one that they actually logged in as
+    if (validUsernames.indexOf(this.request.user.username) === -1) {
+        return;
     }
+
+    data.username = this.request.displayUsername ? this.request.displayUsername : this.request.user.username;
+
+    data.message = textLengthFilter(data.message);
+    data.dateCreated = new Date();
+
+    if (this.request.user.inRoomId) {
+        // send out that data object to all clients in room
+
+        sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
+        // ioGlobal.in(data.roomId).emit("roomChatToClient", data);
+    }
+    
 }
 
 function newRoom(dataObj) {
-    const toContinue = !isMuted(this);
-
-    if (toContinue && dataObj) {
+    if (dataObj) {
         // while rooms exist already (in case of a previously saved and retrieved game)
         while (rooms[nextRoomId]) {
             nextRoomId++;
@@ -2249,41 +2216,35 @@ function joinRoom(roomId, inputPassword) {
 
 
 function joinGame(roomId) {
-    const toContinue = !isMuted(this);
+    if (rooms[roomId]) {
+        // if the room has not started yet, throw them into the room
+        // console.log("Game status is: " + rooms[roomId].getStatus());
 
-    if (toContinue) {
-        if (rooms[roomId]) {
-            // if the room has not started yet, throw them into the room
-            // console.log("Game status is: " + rooms[roomId].getStatus());
-
-            if (rooms[roomId].getStatus() === 'Waiting') {
-                const ToF = rooms[roomId].playerSitDown(this);
-                console.log(`${this.request.user.username} has joined room ${roomId}: ${ToF}`);
-            } else {
-                // console.log("Game has started, player " + this.request.user.username + " is not allowed to join.");
-            }
+        if (rooms[roomId].getStatus() === 'Waiting') {
+            const ToF = rooms[roomId].playerSitDown(this);
+            console.log(`${this.request.user.username} has joined room ${roomId}: ${ToF}`);
+        } else {
+            // console.log("Game has started, player " + this.request.user.username + " is not allowed to join.");
         }
     }
+    
 }
 
 function standUpFromGame() {
-    const toContinue = !isMuted(this);
-
     const roomId = this.request.user.inRoomId;
 
-    if (toContinue) {
-        if (rooms[roomId]) {
-            // if the room has not started yet, remove them from players list
-            // console.log("Game status is: " + rooms[roomId].getStatus());
+    if (rooms[roomId]) {
+        // if the room has not started yet, remove them from players list
+        // console.log("Game status is: " + rooms[roomId].getStatus());
 
-            if (rooms[roomId].getStatus() === 'Waiting') {
-                const ToF = rooms[roomId].playerStandUp(this);
-                // console.log(this.request.user.username + " has stood up from room " + roomId + ": " + ToF);
-            } else {
-                // console.log("Game has started, player " + this.request.user.username + " is not allowed to stand up.");
-            }
+        if (rooms[roomId].getStatus() === 'Waiting') {
+            const ToF = rooms[roomId].playerStandUp(this);
+            // console.log(this.request.user.username + " has stood up from room " + roomId + ": " + ToF);
+        } else {
+            // console.log("Game has started, player " + this.request.user.username + " is not allowed to stand up.");
         }
     }
+    
 }
 
 function leaveRoom() {
