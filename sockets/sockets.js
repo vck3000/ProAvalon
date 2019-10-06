@@ -24,6 +24,8 @@ const JSON = require('circular-json');
 const modsArray = require('../modsadmins/mods');
 const adminsArray = require('../modsadmins/admins');
 
+const moment = require("moment");
+
 const _bot = require('./bot');
 
 const { enabledBots } = _bot;
@@ -804,48 +806,6 @@ var actionsObj = {
                 return { message: 'You are not a mod. Why are you trying this...', classStr: 'server-text' };
             },
         },
-        mipban: {
-            command: 'mipban',
-            help: '/mipban <username>: Ban the IP of the player given. /munban does not undo this ban. Contact ProNub to remove an IP ban.',
-            run(data, senderSocket) {
-                const { args } = data;
-
-                if (!args[1]) {
-                    senderSocket.emit('messageCommandReturnStr', { message: 'Specify a username', classStr: 'server-text' });
-                    return { message: 'Specify a username.', classStr: 'server-text' };
-                }
-
-                User.find({ usernameLower: senderSocket.request.user.username.toLowerCase() }).populate('notifications').exec((err, foundUser) => {
-                    if (err) { console.log(err); } else if (foundUser) {
-                        const slapSocket = allSockets[getIndexFromUsername(allSockets, args[1], true)];
-                        if (slapSocket) {
-                            const clientIpAddress = slapSocket.request.headers['x-forwarded-for'] || slapSocket.request.connection.remoteAddress;
-
-                            const banIpData = {
-                                type: 'ip',
-                                bannedIp: clientIpAddress,
-                                usernamesAssociated: [args[1].toLowerCase()],
-                                modWhoBanned: { id: foundUser._id, username: foundUser.username },
-                                whenMade: new Date(),
-                            };
-
-                            banIp.create(banIpData, (err, newBan) => {
-                                if (err) { console.log(err); } else {
-                                    allSockets[getIndexFromUsername(allSockets, args[1].toLowerCase(), true)].disconnect(true);
-
-                                    senderSocket.emit('messageCommandReturnStr', { message: `Successfully ip banned user ${args[1]}`, classStr: 'server-text' });
-                                }
-                            });
-                        } else {
-                            senderSocket.emit('messageCommandReturnStr', { message: 'Could not find the player to ban.', classStr: 'server-text' });
-                        }
-                    } else {
-                        // send error message back
-                        senderSocket.emit('messageCommandReturnStr', { message: "Could not find your user data (your own one, not the person you're trying to ban)", classStr: 'server-text' });
-                    }
-                });
-            },
-        },
         mhelp: {
             command: 'mhelp',
             help: '/mhelp: show commands.',
@@ -874,7 +834,7 @@ var actionsObj = {
         },
         munban: {
             command: 'munban',
-            help: "/munban <player name>: Removes ALL existing bans OR mutes on a player's name.",
+            help: "/munban <username>: Removes the latest ban for a username.",
             async run(data, senderSocket) {
                 const { args } = data;
 
@@ -882,38 +842,78 @@ var actionsObj = {
                     return { message: 'Specify a username.', classStr: 'server-text' };
                 }
 
-                ban = await Ban.findOne({ 'bannedPlayer.usernameLower': args[1].toLowerCase() });
+                ban = await Ban.findOne({
+                    'bannedPlayer.usernameLower': args[1].toLowerCase(),
+                    'whenRelease': {$gt: new Date()}, 
+                    'disabled': false
+                })
+                .sort({ whenMade: 'descending' });
+
                 if (ban) {
                     ban.disabled = true;
                     ban.markModified('disabled');
-                    await ban.save();    
+                    await ban.save();
+
+                    // Create the ModLog
+                    const modUser = await User.findOne({usernameLower: senderSocket.request.user.username.toLowerCase()});
+                    ModLog.create({
+                        type: "munban",
+                        modWhoMade: {
+                            id: modUser._id,
+                            username: modUser.username,
+                            usernameLower: modUser.usernameLower,
+                        },
+                        data: ban,
+                        dateCreated: new Date()
+                    });
+                    senderSocket.emit('messageCommandReturnStr', { message: `Successfully unbanned ${args[1]}'s latest ban. Their record still remains, however.`, classStr: 'server-text' });
                 }
-
-                senderSocket.emit('messageCommandReturnStr', { message: `Successfully unbanned ${args[1]}. Their record still remains, however.`, classStr: 'server-text' });
-
-
-
-                // modAction.find({ 'bannedPlayer.usernameLower': args[1].toLowerCase() }, (err, foundModAction) => {
-                //     // console.log("foundmodaction");
-                //     // console.log(foundModAction);
-                //     if (foundModAction.length !== 0) {
-                //         modAction.remove({ 'bannedPlayer.usernameLower': args[1].toLowerCase() }, (err, foundModAction) => {
-                //             if (err) {
-                //                 console.log(err);
-                //                 senderSocket.emit('messageCommandReturnStr', { message: 'Something went wrong.', classStr: 'server-text' });
-                //             } else {
-                //                 // console.log("Successfully unbanned " + args[1] + ".");
-                //                 senderSocket.emit('messageCommandReturnStr', { message: `Successfully unbanned ${args[1]}.`, classStr: 'server-text' });
-
-
-                //             }
-                //         });
-                //     } else {
-                //         senderSocket.emit('messageCommandReturnStr', { message: `${args[1]} does not have a ban.`, classStr: 'server-text' });
-                //     }
-                // });
+                 
+                else {
+                    senderSocket.emit('messageCommandReturnStr', { message: `Could not find a ban for ${args[1]}.`, classStr: 'server-text' });
+                }
             },
         },
+
+        mgetban: {
+            command: 'mgetban',
+            help: "/mgetban <username>: Find the players latest active ban that would be undone by /munban.",
+            async run(data, senderSocket) {
+                const { args } = data;
+
+                if (!args[1]) {
+                    return { message: 'Specify a username.', classStr: 'server-text' };
+                }
+
+                ban = await Ban.findOne({
+                    'bannedPlayer.usernameLower': args[1].toLowerCase(),
+                    'whenRelease': {$gt: new Date()}, 
+                    'disabled': false
+                })
+                .sort({ whenMade: 'descending' });
+
+                if (ban) {
+                    const dataToReturn = [];
+                    dataToReturn[0] = { message: 'Ban details:.', classStr: 'server-text', dateCreated: new Date() };
+
+                    dataToReturn.push({ message: `Ban made by: ${ban.modWhoBanned.username}`, classStr: 'server-text', dateCreated: new Date() });
+                    dataToReturn.push({ message: `Ban made on: ${moment(ban.whenMade).format("LLL")}.`, classStr: 'server-text', dateCreated: new Date() });
+                    dataToReturn.push({ message: `Ban duration: ${ban.durationToBan}`, classStr: 'server-text', dateCreated: new Date() });
+                    dataToReturn.push({ message: `Ban to be released on: ${moment(ban.whenRelease).format("LLL")}.`, classStr: 'server-text', dateCreated: new Date() });
+                    dataToReturn.push({ message: `Mod description: ${ban.descriptionByMod}`, classStr: 'server-text', dateCreated: new Date() });
+                    dataToReturn.push({ message: `User ban: ${ban.userBan}`, classStr: 'server-text', dateCreated: new Date() });
+                    dataToReturn.push({ message: `IP ban: ${ban.ipBan}`, classStr: 'server-text', dateCreated: new Date() });
+                    dataToReturn.push({ message: `Single IP ban: ${ban.singleIPBan}`, classStr: 'server-text', dateCreated: new Date() });
+
+                    senderSocket.emit('messageCommandReturnStr', dataToReturn);
+                }
+                 
+                else {
+                    senderSocket.emit('messageCommandReturnStr', { message: `Could not find an active ban for ${args[1]}.`, classStr: 'server-text' });
+                }
+            },
+        },
+        
 
         mcompareips: {
             command: 'mcompareips',

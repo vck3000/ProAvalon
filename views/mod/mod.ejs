@@ -100,6 +100,24 @@
         }
     }
 
+    function munbanText(props) {
+        let data = props.data;
+        let whenMade = moment(data.whenMade);
+        let whenRelease = moment(data.whenRelease);
+        
+        return {
+            title: `${data.modWhoBanned.username} has UNBANNED ${data.bannedPlayer.username}.` ,
+            body: <span>
+                <p>The duration specified was: {data.durationToBan}.</p>
+                <p>The ban will be released on: {whenRelease.format("LLL")}.</p>
+                <p>Moderator message: {data.descriptionByMod}.</p>
+                <p>User ban: {data.userBan ? "true" : "false"}</p>
+                <p>IP ban: {data.ipBan ? "true" : "false"}</p>
+                <p>Single IP ban: {data.singleIPBan ? "true" : "false"} (Note: Don't worry if IP Ban is true too, it's just for the server to know that it still is technically an "IP ban")</p>
+            </span>
+        }
+    }    
+
     function avatarText(props) {
         let data = props.data;
         return {
@@ -155,6 +173,9 @@
             switch (this.props.log.type) {
                 case "ban":
                     logText = banText(this.props.log);
+                    break;
+                case "munban":
+                    logText = munbanText(this.props.log);
                     break;
                 case "avatar":
                     logText = avatarText(this.props.log);

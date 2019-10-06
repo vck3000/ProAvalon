@@ -57,7 +57,7 @@ router.post('/ban', upload.none(), async (req, res) => {
             return;
         }
 
-        const banUser = await User.findOne({usernameLower: req.body['banPlayerUsername']});
+        const banUser = await User.findOne({usernameLower: req.body['banPlayerUsername'].toLowerCase()});
         if (!banUser) {
             res.status(400);
             res.send(`${req.body['banPlayerUsername']} was not found.`);
