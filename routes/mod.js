@@ -2,17 +2,19 @@ const { Router } = require('express');
 const router = new Router();
 const { isMod } = require('./middleware');
 const modAction = require('../models/modAction'); //! Remove this later
+const multer = require('multer');
+const upload = multer();
 
-
-router.post('/ban', (req, res) => {
+router.post('/ban', upload.none(), (req, res) => {
     // res.status(404);
     // res.send('None shall pass');
+    console.log("Ban POST");
+    console.log(req.body);
 
     res.status(200);
     res.send("You've reached the ban POST route.");
     
-    console.log("Ban POST");
-    console.log(req.body);
+
 });
 
 router.get('/', isMod, (req, res) => {

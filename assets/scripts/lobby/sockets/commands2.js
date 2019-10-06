@@ -12,6 +12,11 @@ socket.on('modCommands', (commands) => {
             // Send request out.
             var formElement = document.querySelector("#modactionform");
             var bodyFormData = new FormData(formElement);
+
+            console.log(bodyFormData);
+            for (var [key, value] of bodyFormData.entries()) { 
+                console.log(key, value);
+              }
             
             Swal.fire({
                 title: 'Sending your request...',
@@ -22,16 +27,17 @@ socket.on('modCommands', (commands) => {
                         method: 'POST',
                         url: '/mod/ban',
                         data: bodyFormData,
-                        // config: { headers: {'Content-Type': 'multipart/form-data' }}
+                        
+                        config: { headers: {'Content-Type': 'multipart/form-data'} }
                         })
                         .then(function (response) {
                             //handle success
                             // console.log(response);
 
-                            $('#modModal').modal('hide');
+                            // $('#modModal').modal('hide');
 
                             // Clear the form for next input.
-                            $("#modactionform")[0].reset();
+                            // $("#modactionform")[0].reset();
 
                             Swal.close()
                             Swal.fire({
