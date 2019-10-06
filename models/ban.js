@@ -23,10 +23,11 @@ const banSchema = new mongoose.Schema({
             ref: 'User',
         },
         username: String,
+        usernameLower: String,
     },
 
     whenMade: Date,
-    durationToBan: Date,
+    durationToBan: String,
     whenRelease: Date,
 
     descriptionByMod: String,

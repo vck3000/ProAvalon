@@ -2,19 +2,127 @@ const { Router } = require('express');
 const router = new Router();
 const { isMod } = require('./middleware');
 const modAction = require('../models/modAction'); //! Remove this later
+const User = require('../models/user');
+const Ban = require('../models/ban');
 const multer = require('multer');
 const upload = multer();
 
-router.post('/ban', upload.none(), (req, res) => {
-    // res.status(404);
-    // res.send('None shall pass');
-    console.log("Ban POST");
-    console.log(req.body);
+const requiredFields = ['banPlayerUsername', 'reason', 'duration', 'duration_units', 'descriptionByMod'];
 
-    res.status(200);
-    res.send("You've reached the ban POST route.");
-    
+router.post('/ban', upload.none(), async (req, res) => {
+    // Catch errors so that it's not shown to users.
+    try {
+        // Multiple checks:
+        // 0: Redundant mod check?
 
+        // 1: All fields are filled in and valid
+        for (var s of requiredFields) {
+            if (req.body[s] === undefined || req.body[s] === '') {
+                res.status(400);
+                res.send(`Missing parameter: '${s}'.`);
+                return;
+            }
+        }
+
+        // 1b: Check that duration is a strict number:
+        const durationInt = parseInt(Number(req.body['duration']), 10);
+        if (isNaN(durationInt)) {
+            res.status(400);
+            res.send(`Duration must be a number, not: '${req.body['duration']}'.`);
+            return;
+        }
+
+        // 2: Either userban or IP ban or BOTH checkboxes must be ticked.
+        var boxCount = 0;
+        if (req.body["IPBanCheckbox"] === "on") {
+            boxCount++;
+        }
+        if (req.body["userBanCheckbox"] === "on") {
+            boxCount++;
+        }
+        if (boxCount < 1) {
+            res.status(400);
+            res.send(`Must select at least one type of ban.`);
+            return;
+        }
+
+        const banUser = await User.findOne({usernameLower: req.body['banPlayerUsername']});
+        if (!banUser) {
+            res.status(400);
+            res.send(`${req.body['banPlayerUsername']} was not found.`);
+            return;
+        }
+
+        if (!req.user) {
+            res.status(400);
+            res.send(`Cannot find who you are.`);
+            return;
+        }
+        const modUser = req.user;
+
+        // Get duration for ban:
+        const now = new Date();
+        const whenMade = new Date();
+        var whenRelease;
+        switch (req.body['duration_units']) {
+            case 'hrs':
+                whenRelease = new Date(now.setHours(now.getHours() + durationInt));
+                break;
+            case 'days':
+                whenRelease = new Date(now.setDate(now.getDate() + durationInt));
+                break;
+            case 'months':
+                whenRelease = new Date(now.setMonth(now.getMonth() + durationInt));
+                break;
+            case 'years':
+                whenRelease = new Date(now.setFullYear(now.getFullYear() + durationInt));
+                break;
+            case 'permaban':
+                whenRelease = new Date(now.setFullYear(now.getFullYear() + 1000));
+                break;
+            default:
+                res.status(400);
+                res.send(`Invalid duration units: '${req.body['duration_units']}'.`);
+                return;
+        }
+
+        // Create the data object
+        const banData = {
+            ipban: req.body["IPBanCheckbox"] === "on" ? true : false,
+            userban: req.body["userBanCheckbox"] === "on" ? true : false,
+            bannedPlayer: {
+                id: banUser._id,
+                username: banUser.username,
+                usernameLower: banUser.usernameLower
+            },
+            bannedIps: banUser.IPAddresses,
+            modWhoBanned: {
+                id: modUser._id,
+                username: modUser.username,
+                usernameLower: modUser.usernameLower
+            },
+            whenMade: whenMade,
+            durationToBan: `${req.body['duration']} ${req.body['duration_units']}`,
+            whenRelease: whenRelease,
+            descriptionByMod: req.body['descriptionByMod']
+        };
+
+        console.log(banData);
+        await Ban.create(banData);
+        
+        // TODO
+        // Create mod log
+
+        res.status(200);
+        res.send(`The ban was successfully made.`);
+        return;
+
+    }
+    catch (e) {
+        console.log(e);
+        res.status(400);
+        res.send(`Something went terribly wrong...`);
+    }
 });
 
 router.get('/', isMod, (req, res) => {
@@ -114,109 +222,5 @@ router.get('/ajax/logData/:pageIndex', (req, res) => {
             });
     }
 });
-
-// socket.on('modAction', async (data) => {
-//     if (modsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1) {
-//         // var parsedData = JSON.parse(data);
-//         const newModAction = {};
-//         let userNotFound = false;
-
-//         await data.forEach(async (item) => {
-//             if (item.name === 'banPlayerUsername') {
-//                 // not case sensitive
-//                 await User.findOne({ usernameLower: item.value.toLowerCase() }, (err, foundUser) => {
-//                     if (err) { console.log(err); } else {
-//                         // foundUser = foundUser[0];
-//                         if (!foundUser) {
-//                             socket.emit('messageCommandReturnStr', { message: 'User not found. Please check spelling and caps.', classStr: 'server-text' });
-//                             userNotFound = true;
-//                             return;
-//                         }
-//                         // console.log(foundUser);
-//                         newModAction.bannedPlayer = {};
-//                         newModAction.bannedPlayer.id = foundUser._id;
-//                         newModAction.bannedPlayer.username = foundUser.username;
-//                         newModAction.bannedPlayer.usernameLower = foundUser.usernameLower;
-
-//                         socket.emit('messageCommandReturnStr', { message: 'User found, Adding in details...\t', classStr: 'server-text' });
-//                     }
-//                 });
-//             } else if (item.name === 'typeofmodaction') {
-//                 newModAction.type = item.value;
-//             } else if (item.name === 'reasonofmodaction') {
-//                 newModAction.reason = item.value;
-//             } else if (item.name === 'durationofmodaction') {
-//                 const oneSec = 1000;
-//                 const oneMin = oneSec * 60;
-//                 const oneHr = oneMin * 60;
-//                 const oneDay = oneHr * 24;
-//                 const oneMonth = oneDay * 30;
-//                 const oneYear = oneMonth * 12;
-//                 // 30 min, 3hr, 1 day, 3 day, 7 day, 1 month
-//                 const durations = [
-//                     oneMin * 30,
-//                     oneHr * 3,
-//                     oneDay,
-//                     oneDay * 3,
-//                     oneDay * 7,
-//                     oneMonth,
-//                     oneMonth * 6,
-//                     oneYear,
-//                     oneYear * 1000,
-//                 ];
-//                 newModAction.durationToBan = new Date(durations[item.value]);
-//             } else if (item.name === 'descriptionByMod') {
-//                 newModAction.descriptionByMod = item.value;
-//             }
-//         });
-
-//         if (userNotFound === true) {
-//             return;
-//         }
-
-//         await User.findById(socket.request.user.id, (err, foundUser) => {
-//             if (err) { console.log(err); } else {
-//                 newModAction.modWhoBanned = {};
-//                 newModAction.modWhoBanned.id = foundUser._id;
-//                 newModAction.modWhoBanned.username = foundUser.username;
-//             }
-//         });
-
-//         newModAction.whenMade = new Date();
-//         newModAction.whenRelease = newModAction.whenMade.getTime() + newModAction.durationToBan.getTime();
-
-//         setTimeout(() => {
-//             // console.log(newModAction);
-//             if (userNotFound === false && newModAction.bannedPlayer && newModAction.bannedPlayer.username) {
-//                 modAction.create(newModAction, (err, newModActionCreated) => {
-//                     if (newModActionCreated !== undefined) {
-//                         // console.log(newModActionCreated);
-//                         // push new mod action into the array of currently active ones loaded.
-//                         currentModActions.push(newModActionCreated);
-//                         // if theyre online
-//                         if (newModActionCreated.type === 'ban' && allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)]) {
-//                             allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)].disconnect(true);
-//                         } else if (newModActionCreated.type === 'mute' && allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)]) {
-//                             allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)].emit('muteNotification', newModActionCreated);
-//                         }
-
-//                         socket.emit('messageCommandReturnStr', { message: `${newModActionCreated.bannedPlayer.username} has received a ${newModActionCreated.type} modAction. Thank you :).`, classStr: 'server-text' });
-//                     } else {
-//                         socket.emit('messageCommandReturnStr', { message: 'Something went wrong...', classStr: 'server-text' });
-//                     }
-//                 });
-//             } else {
-//                 let str = 'Something went wrong... Contact the admin! Details: ';
-//                 str += `UserNotFound: ${userNotFound}`;
-//                 str += `\t newModAction.bannedPlayer: ${newModAction.bannedPlayer}`;
-//                 str += `\t newModAction.username: ${newModAction.username}`;
-//                 socket.emit('messageCommandReturnStr', { message: str, classStr: 'server-text' });
-//             }
-//         }, 3000);
-//     } else {
-//         // create a report. someone doing something bad.
-//     }
-// });
-
 
 module.exports = router;
