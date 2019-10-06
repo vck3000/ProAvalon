@@ -84,23 +84,23 @@ router.get('/lobby', middleware.isLoggedIn, async (req, res) => {
             req.flash('error', 'Something has gone wrong! Please contact a moderator or admin.');
             res.redirect('/');
         } else {
-            currentModActions = [];
+            globalState.currentModAtions = [];
             // load up all the modActions that are not released yet and are bans
             await modAction.find({ whenRelease: { $gt: new Date() }, type: 'ban' }, (err, allModActions) => {
                 for (let i = 0; i < allModActions.length; i++) {
-                    currentModActions.push(allModActions[i]);
+                    globalState.currentModAtions.push(allModActions[i]);
                 }
                 // console.log("bans:");
-                // console.log(currentModActions);
+                // console.log(globalState.currentModAtions);
                 // console.log("a");
             });
 
             // console.log("b");
 
-            for (let i = 0; i < currentModActions.length; i++) {
-                if (req.user.id.toString() === currentModActions[i].bannedPlayer.id.toString()) {
-                    if (currentModActions[i].type === 'ban') {
-                        let message = `You have been banned. The ban will be released on ${currentModActions[i].whenRelease}. Ban description: '${currentModActions[i].descriptionByMod}'`;
+            for (let i = 0; i < globalState.currentModAtions.length; i++) {
+                if (req.user.id.toString() === globalState.currentModAtions[i].bannedPlayer.id.toString()) {
+                    if (globalState.currentModAtions[i].type === 'ban') {
+                        let message = `You have been banned. The ban will be released on ${globalState.currentModAtions[i].whenRelease}. Ban description: '${globalState.currentModAtions[i].descriptionByMod}'`;
                         message += ' Reflect on your actions.';
                         req.flash('error', message);
                         res.redirect('/');

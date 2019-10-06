@@ -9,7 +9,7 @@ module.exports = {
             if (!room.gameStarted) {
                 return { message: 'Game has not started.', classStr: 'server-text' };
             }
-            room.sendText(room.globalState.allSockets, `Moderator ${senderSocket.request.user.username} has revealed all roles.`, 'server-text');
+            room.sendText(room.allSockets, `Moderator ${senderSocket.request.user.username} has revealed all roles.`, 'server-text');
 
             // reveal role for each user
             room.playersInGame.forEach((user) => {

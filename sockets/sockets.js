@@ -8,17 +8,19 @@ const modAction = require('../models/modAction');
 const User = require('../models/user');
 const avatarRequest = require('../models/avatarRequest');
 
-const getRewards = require('../rewards/getRewards');
-const getRewardsObj = new getRewards();
-
+const GetRewards = require('../rewards/getRewards');
 const REWARDS = require('../rewards/constants');
+
+const getRewardsObj = new GetRewards();
 
 const modsArray = require('../modsadmins/mods');
 const adminsArray = require('../modsadmins/admins');
 
 const { userCommands, modCommands, adminCommands } = require('./commands');
 
-const { sendToAllChat } = require('./util');
+const {
+    sendToAllChat, sendToRoomChat, socketCallback, getIndexFromUsername, getPlayerUsernamesFromAllSockets
+} = require('./util');
 
 const TEXT_LENGTH_LIMIT = 500;
 const DATE_RESET_REQUIRED = 1543480412695;
@@ -40,18 +42,14 @@ const globalState = {
     nextRoomId: 1,
     lastWhisperObj: {},
     io: {},
-    currentModActions: [],
+    currentModAtions: [],
 };
 
 // Get all the possible gameModes and add their names
 const gameModeNames = require('../gameplay/gameModeNames');
 
 function gracefulShutdown() {
-    for (const key in globalState.allSockets) {
-        if (globalState.allSockets.hasOwnProperty(key)) {
-            globalState.allSockets[key].emit('serverRestartingNow');
-        }
-    }
+    Object.values(globalState.allSockets).forEach((sock) => sock.emit('serverRestartingNow'));
     console.log('Graceful shutdown request');
     process.exit();
 }
@@ -65,7 +63,7 @@ savedGameObj.find({}).exec((err, foundSaveGameArray) => {
         console.log(err);
         return;
     }
-    
+
     Object.values(foundSaveGameArray).forEach((foundSaveGame) => {
         const storedData = JSON.parse(foundSaveGame.room);
 
@@ -93,7 +91,7 @@ module.exports = function (io) {
         }
 
         // remove any duplicate sockets
-        for (let i = 0; i < globalState.allSockets.length; i++) {
+        for (let i = 0; i < globalState.allSockets.length; i += 1) {
             if (globalState.allSockets[i].request.user.id === socket.request.user.id) {
                 globalState.allSockets[i].disconnect(true);
             }
@@ -114,11 +112,11 @@ module.exports = function (io) {
         // slight delay while client loads
         setTimeout(() => {
             // check if they have a ban or a mute
-            for (var i = 0; i < currentModActions.length; i++) {
-                if (currentModActions[i].bannedPlayer.id && socket.request.user.id.toString() === currentModActions[i].bannedPlayer.id.toString()) {
-                    if (currentModActions[i].type === 'mute') {
-                        socket.emit('muteNotification', currentModActions[i]);
-                    } else if (currentModActions[i].type === 'ban') {
+            for (var i = 0; i < globalState.currentModAtions.length; i++) {
+                if (globalState.currentModAtions[i].bannedPlayer.id && socket.request.user.id.toString() === globalState.currentModAtions[i].bannedPlayer.id.toString()) {
+                    if (globalState.currentModAtions[i].type === 'mute') {
+                        socket.emit('muteNotification', globalState.currentModAtions[i]);
+                    } else if (globalState.currentModAtions[i].type === 'ban') {
                         socket.emit('redirect', '/');
                         socket.disconnect();
                     }
@@ -304,7 +302,7 @@ module.exports = function (io) {
                             if (newModActionCreated !== undefined) {
                                 // console.log(newModActionCreated);
                                 // push new mod action into the array of currently active ones loaded.
-                                currentModActions.push(newModActionCreated);
+                                globalState.currentModAtions.push(newModActionCreated);
                                 // if theyre online
                                 if (newModActionCreated.type === 'ban' && globalState.allSockets[getIndexFromUsername(globalState.allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)]) {
                                     globalState.allSockets[getIndexFromUsername(globalState.allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)].disconnect(true);
@@ -394,7 +392,7 @@ function applyApplicableRewards(socket) {
     }
 
     return socket;
-};
+}
 
 function updateCurrentPlayersList() {
     const allDisplayUsernames = globalState.allSockets.map((sock) => sock.request.displayUsername || sock.request.user.username).sort((a, b) => {
@@ -417,7 +415,7 @@ function updateCurrentGamesList() {
             gameMode: room.gameMode.charAt(0).toUpperCase() + room.gameMode.slice(1),
             hostUsername: room.host,
             maxNumPlayers: room.maxNumPlayers,
-            numOfSpectatorsInside: room.globalState.allSockets.length - room.socketsOfPlayers.length,
+            numOfSpectatorsInside: room.allSockets.length - room.socketsOfPlayers.length,
         };
 
         if (room.gameStarted) {
@@ -458,7 +456,7 @@ function sendToAllMods(io, data) {
 
 function isMuted(socket) {
     returnVar = false;
-    currentModActions.forEach((oneModAction) => {
+    globalState.currentModAtions.forEach((oneModAction) => {
         if (oneModAction.type === 'mute' && oneModAction.bannedPlayer && oneModAction.bannedPlayer.id && oneModAction.bannedPlayer.id.toString() === socket.request.user.id.toString()) {
             socket.emit('muteNotification', oneModAction);
             returnVar = true;
@@ -600,7 +598,7 @@ function allChatFromClient(data) {
 
 function roomChatFromClient(data) {
     if (isMuted(this)) return;
-    
+
     console.log(`roomchat: ${data.message} by: ${this.request.user.username}`);
     // get the username and put it into the data object
 
@@ -696,8 +694,7 @@ function standUpFromGame() {
     if (isMuted(this) || !globalState.rooms[inRoomId]) return;
 
     // if the room has not started yet, remove them from players list
-    if (globalState.rooms[inRoomId].getStatus() === 'Waiting')
-        globalState.rooms[inRoomId].playerStandUp(this);
+    if (globalState.rooms[inRoomId].getStatus() === 'Waiting') { globalState.rooms[inRoomId].playerStandUp(this); }
 }
 
 function leaveRoom() {
@@ -743,13 +740,12 @@ function startGame(data, gameMode) {
     // start the game
     const room = globalState.rooms[this.request.user.inRoomId];
     if (room && this.request.user.inRoomId && this.request.user.username === room.host) {
-            room.hostTryStartGame(data, gameMode);
-            // this.emit("update-room-players", globalState.rooms[roomId].getPlayers());
-        } else {
-            // console.log("Room doesn't exist or user is not host, cannot start game");
-            this.emit('danger-alert', 'You are not the host. You cannot start the game.');
-            return;
-        }
+        room.hostTryStartGame(data, gameMode);
+        // this.emit("update-room-players", globalState.rooms[roomId].getPlayers());
+    } else {
+        // console.log("Room doesn't exist or user is not host, cannot start game");
+        this.emit('danger-alert', 'You are not the host. You cannot start the game.');
+        return;
     }
     updateCurrentGamesList(globalState.io);
 }

@@ -1,9 +1,6 @@
-const fs = require('fs');
-
 // Load the full build.
 const _ = require('lodash');
 
-const util = require('util');
 const Room = require('./room');
 const PlayersReadyNotReady = require('./playersReadyNotReady');
 

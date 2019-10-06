@@ -1,5 +1,5 @@
 const fs = require('fs');
 
-const gameModeNames = fs.readdirSync('.').filter((file) => fs.statSync(`${'./'}${file}`).isDirectory() && file !== 'commonPhases');
+const gameModeNames = fs.readdirSync(__dirname).filter((file) => fs.statSync(`${__dirname}/${file}`).isDirectory() && file !== 'commonPhases');
 
 module.exports = gameModeNames;

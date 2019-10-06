@@ -1,13 +1,14 @@
-const { adminCommands } = require('../index');
+const fs = require('fs');
+
+const helpStrs = fs.readdirSync(__dirname)
+    .filter((fname) => fname.endsWith('.js'))
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    .map((fname) => ({ message: require(`./${fname}`).help, classStr: 'server-text' }));
 
 module.exports = {
     command: 'a',
-    help: '/a: ...shows mods commands',
+    help: '/a: shows admin commands',
     run() {
-        const dataToReturn = Object.keys(adminCommands)
-            .filter((key) => !adminCommands[key].modsOnly)
-            .map((key) => ({ message: adminCommands[key].help, classStr: 'server-text' }));
-
-        return dataToReturn;
+        return helpStrs;
     },
 };

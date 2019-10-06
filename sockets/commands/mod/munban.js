@@ -27,10 +27,10 @@ module.exports = {
 
                     // load up all the modActions that are not released yet
                     modAction.find({ whenRelease: { $gt: new Date() }, $or: [{ type: 'mute' }, { type: 'ban' }] }, (_, allModActions) => {
-                        // reset currentModActions
-                        globalState.currentModActions = [];
+                        // reset globalState.currentModAtions
+                        globalState.currentModAtions = [];
                         for (let i = 0; i < allModActions.length; i += 1) {
-                            globalState.currentModActions.push(allModActions[i]);
+                            globalState.currentModAtions.push(allModActions[i]);
                         }
                     });
                 });

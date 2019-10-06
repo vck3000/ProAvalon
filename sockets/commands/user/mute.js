@@ -6,7 +6,7 @@ module.exports = {
     run(globalState, data, senderSocket) {
         const { args } = data;
 
-        if (!args[1]) return { message: 'Please specify the user to mute.' classStr: 'server-text' };
+        if (!args[1]) return { message: 'Please specify the user to mute.', classStr: 'server-text' };
     
         User.findOne({ username: args[1] }).exec((err, foundUserToMute) => {
             if (err) {

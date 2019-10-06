@@ -84,8 +84,8 @@ module.exports = {
                 targetsCaps.push(thisRoom.playersInGame[playerIndexFound].request.user.username);
             }
 
-            thisRoom.sendText(thisRoom.globalState.allSockets, `Moderator ${senderSocket.request.user.username} has forced a move: `, 'server-text');
-            thisRoom.sendText(thisRoom.globalState.allSockets, `Player: ${username} | Button: ${button} | Targets: ${targetsCaps}.`, 'server-text');
+            thisRoom.sendText(thisRoom.allSockets, `Moderator ${senderSocket.request.user.username} has forced a move: `, 'server-text');
+            thisRoom.sendText(thisRoom.allSockets, `Player: ${username} | Button: ${button} | Targets: ${targetsCaps}.`, 'server-text');
 
             const targetSimulatedSocket = thisRoom.playersInGame[playerIndex];
             if (targetSimulatedSocket.emit === undefined) {

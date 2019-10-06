@@ -7,7 +7,7 @@ const commands = {
     adminCommands: {},
 };
 
-const getCommands = (name) => fs.readdirSync(`./${name}`)
+const getCommands = (name) => fs.readdirSync(`${__dirname}/${name}`)
     .filter((filename) => filename.endsWith('.js'))
     .forEach((filename) => {
         commands[`${name}Commands`][filename.slice(0, -3)] = require(`./${name}/${filename}`);
