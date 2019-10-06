@@ -1471,7 +1471,8 @@ var actionsObj = {
                     data: {
                         target: args[1],
                         linkedUsernames: linkedUsernames
-                    }
+                    },
+                    dateCreated: new Date()
                 });
             }
         }

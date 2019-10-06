@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 // SCHEMA SETUP
 const banSchema = new mongoose.Schema({
     
-    ipban: Boolean,
+    userBan: Boolean,
+    ipBan: Boolean,
     singleIPBan: Boolean,
-    userban: Boolean,
 
     bannedPlayer: {
         id: {
@@ -37,7 +37,17 @@ const banSchema = new mongoose.Schema({
     disabled: {
         type: Boolean,
         default: false
+    },
+
+    disabledBy: {
+        id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+        },
+        username: String,
+        usernameLower: String,
     }
+    
 });
 
 // compile schema into a model

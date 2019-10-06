@@ -90,11 +90,13 @@
         return {
             title: `${data.modWhoBanned.username} has banned ${data.bannedPlayer.username} for reason ${data.reason}.` ,
             body: <span>
-                <p>The ban was made on: {whenMade.format("LLL")}.</p>
                 <p>The duration specified was: {data.durationToBan}.</p>
                 <p>The ban will be released on: {whenRelease.format("LLL")}.</p>
                 <p>Moderator message: {data.descriptionByMod}.</p>
-            </span>,
+                <p>User ban: {data.userBan ? "true" : "false"}</p>
+                <p>IP ban: {data.ipBan ? "true" : "false"}</p>
+                <p>Single IP ban: {data.singleIPBan ? "true" : "false"} (Note: Don't worry if IP Ban is true too, it's just for the server to know that it still is technically an "IP ban")</p>
+            </span>
         }
     }
 
@@ -103,7 +105,6 @@
         return {
             title: `${props.modWhoMade.username} has ${data.approved === "true" ? "APPROVED" : "REJECTED"} ${data.username}'s avatar.` ,
             body: <span>
-                <p>This request was processed on {moment(props.dateCreated).format("LLL")}.</p>
                 <p>Message to mod: {data.msgToMod}.</p>
                 <p>Mod comment: {data.modComment}.</p>
 
@@ -125,11 +126,20 @@
                         </div>
                     </div>
                 </div>
-
-            </span>,
+            </span>
         }
     }
 
+    function ipLinkedAccs(props) {
+        let data = props.data;
+        console.log(props.data.linkedUsernames);
+        return {
+            title: `${props.modWhoMade.username} has used /miplinkedaccs on ${props.data.target}.`,
+            body: <div>
+                <p>The usernames that were linked were: {props.data.linkedUsernames.join(", ")}.</p>
+            </div>
+        }
+    }
 
     class Log extends React.Component {
         constructor(props) {
@@ -146,8 +156,11 @@
                 case "ban":
                     logText = banText(this.props.log);
                     break;
-                case "avatar" :
+                case "avatar":
                     logText = avatarText(this.props.log);
+                    break;
+                case "miplinkedaccs":
+                    logText = ipLinkedAccs(this.props.log);
                     break;
             }
 
@@ -159,6 +172,7 @@
                         </h3>
                     </div>
                     <div className="panel-body">
+                        <p>Date: {moment(this.props.log.dateCreated).format("LLL")}</p>
                         {logText.body}
                     </div>
                 </div>

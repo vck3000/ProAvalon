@@ -109,9 +109,9 @@ router.post('/ban', upload.none(), async (req, res) => {
 
         // Create the data object
         const banData = {
-            ipban: (req.body["IPBanCheckbox"] === "on" || req.body["SingleIPBanCheckbox"] === "on") ? true : false,
+            ipBan: (req.body["IPBanCheckbox"] === "on" || req.body["SingleIPBanCheckbox"] === "on") ? true : false,
             singleIPBan: req.body["SingleIPBanCheckbox"] === "on" ? true : false,
-            userban: req.body["userBanCheckbox"] === "on" ? true : false,
+            userBan: req.body["userBanCheckbox"] === "on" ? true : false,
             bannedPlayer: {
                 id: banUser._id,
                 username: banUser.username,
