@@ -23,6 +23,7 @@ const lobbyRoutes = require('./routes/lobby');
 const forumRoutes = require('./routes/forum');
 const profileRoutes = require('./routes/profile');
 const patreonRoutes = require('./routes/patreon');
+const modRoutes = require('./routes/mod');
 
 const assetsPath = path.join(__dirname, 'assets');
 
@@ -100,7 +101,13 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 
+
+// Insert ban checks here.
+// TODO 
+
 app.use(indexRoutes);
+
+app.use('/mod', modRoutes);
 app.use('/patreon', patreonRoutes);
 
 // Lobby, forum, and profile routes require a logged in user

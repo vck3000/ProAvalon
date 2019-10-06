@@ -7,16 +7,16 @@ socket.on('commands', (commands) => {
 
 let modCommands;
 socket.on('modCommands', (commands) => {
-    if (!modCommands) {
-        $('#modActionCloseButton').on('click', () => {
-            $('#modModal').modal('hide');
+    // if (!modCommands) {
+    //     $('#modActionCloseButton').on('click', () => {
+    //         $('#modModal').modal('hide');
 
-            // console.log($("#modactionform").serializeArray());
-            const data = $('#modactionform').serializeArray();
+    //         // console.log($("#modactionform").serializeArray());
+    //         const data = $('#modactionform').serializeArray();
 
-            socket.emit('modAction', data);
-        });
-    }
+    //         socket.emit('modAction', data);
+    //     });
+    // }
     modCommands = commands;
 });
 

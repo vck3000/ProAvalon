@@ -120,6 +120,8 @@ const UserSchema = new mongoose.Schema({
     mutedPlayers: [String],
 
     patreonId: String,
+
+    IPAddresses: [String]
 });
 
 UserSchema.plugin(passportLocalMongoose);

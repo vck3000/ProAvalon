@@ -520,75 +520,68 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal">&times;</button>
-					<h2 class="modal-title" style="color: red; font-weight: 700;">Moderator menu. May your judgement bring peace!</h2>
+					<h2 class="modal-title" style="color: red; font-weight: 700;">Ban menu</h2>
 				</div>
 				
 				<div style="width: 75%; margin: auto;">
 				<br>
-
-					<iframe name="frame" style="display: none;"></iframe>
-					<form action="/modAction" method="POST" target="frame" id="modactionform">
+					<form action="/mod/ban" method="POST" id="modactionform">
 						<div class="form-group">
-							<label for="banPlayerUsername">Username of player to modAction against: <h6 style="display: inline">(It is case sensitive, please be careful! Best to copy paste their username)</h6></label>
-							<input name="banPlayerUsername" type="text" class="form-control" id="banPlayerUsername" placeholder="Username of player to modAction against.">
+							<label for="banPlayerUsername">Username of player to ban: </label>
+							<input name="banPlayerUsername" type="text" class="form-control" id="banPlayerUsername" placeholder="Username" required>
 						</div>
 
 						<div class="form-group">
-							<label for="typeofmodaction">Type of modAction to do: </label>
+							<h3 style="font-weight: 700; display: inline;">Type of ban: </h3><h6 style="display: inline;">Note: If IP ban is selected, all IPs the user has ever logged onto will be banned for the specified duration.</h6>
 							<br>
-							<select name="typeofmodaction" class="form-control" id="typeofmodaction">
-								<option selected>Please select an option</option>
-								<option value="mute">Mute</option>
-								<option value="ban">Ban</option>
-							</select>
+							<label><input type="checkbox" name="userBanCheckbox"> User ban</label> <!--! fill in the id/data-->
+							<br>
+							<label><input type="checkbox" name="IPBanCheckbox"> IP ban</label>
 						</div>
 
 						<div class="form-group">
-							<label for="reasonofmodaction">Reason: </label>
+							<label for="reason">Reason: </label>
 							<br>
-							<select name="reasonofmodaction" class="form-control" id="typeofmodaction">
-								<option selected>Please select an option</option>
+							<select name="reason" class="form-control" id="typeofmodaction" required>
+								<option value="">Please select an option</option>
 								<option value="abusive">Abusive</option>
 								<option value="griefing">Intentional throwing/griefing</option>
 								<option value="afk">Inactivity (AFK)</option>
 								<option value="spam">Spam</option>
 								<option value="cheating">Cheating (multiaccounting or talking outside of game)</option>
+								<option value="other">Other </option>
 							</select>
 						</div>
 
 						<div class="form-group">
-							<label for="durationofmodaction">Duration: </label>
-							<br>
-							<select name="durationofmodaction" class="form-control" id="durationofmodaction">
-								<option selected>Please select an option</option>
-								<option value="0">30 min</option>	
-								<option value="1">3 hrs</option>
-								<option value="2">1 day</option>
-								<option value="3">3 days</option>
-								<option value="4">7 days</option>
-								<option value="5">1 month</option>
-								<option value="6">6 months</option>
-								<option value="7">1 year</option>
-								<option value="8">1000 years</option>
-							</select>
-						</div>			
-
+							<h3 style="font-weight: 700; display: inline;">Duration: </h3><h6 style="display: inline;">Note: If perma ban is selected, the number given is not used.</h6>
+							<div class="input-group" >
+								<input type="text" class="" id="duration" name="duration" placeholder="<number>" required>
+								<select name="duration_units" class="" id="durationofmodaction" required>
+									<option value="">None</option>
+									<option value="hr">hrs</option>
+									<option value="day">days</option>
+									<option value="month">months</option>
+									<option value="year">years</option>
+									<option value="permaban">perma-ban</option>
+								</select>
+							</div>
+						</div>
+						
 						<div class="form-group">
-							<label for="descriptionByMod">Description: <h6 style="display: inline;">This will be publically viewable, just a brief one or two lines would be enough :).</h6></label>
+							<label for="descriptionByMod">Description: <h6 style="display: inline;">The user being banned will see this message. This message will also appear in the moderator logs.</h6></label>
 							<br>
-							<textarea name="descriptionByMod" class="form-control" style="width: 100%;" id="descriptionByMod"></textarea>
+							<textarea name="descriptionByMod" class="form-control" style="width: 100%;" id="descriptionByMod" required></textarea>
 						</div>
 
 						<!--<input type="submit" value="Slam the hammer of judgement!" class="btn btn-danger" id="modActionCloseButton">-->
-						<button id="modActionCloseButton" type="button" class="btn btn-danger" >Slam the hammer of judgement!</button>
+						<button id="modActionCloseButton" type="submit" class="btn btn-danger">Submit</button>
 						<br>
 						<br>
 					</form>
 				</div>
 
-
 				<div class="modal-footer">
-				
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 			</div>

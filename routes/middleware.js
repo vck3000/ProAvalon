@@ -98,6 +98,7 @@ exports.isAdmin = (req, res, next) => {
     }
 };
 
+// TODO REMOVE THIS
 exports.checkIpBan = asyncMiddleware(async (req, res, next) => {
     const clientIpAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
