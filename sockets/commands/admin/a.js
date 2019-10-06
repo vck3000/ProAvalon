@@ -2,12 +2,10 @@
 module.exports = {
     command: 'a',
     help: '/a: ...shows mods commands',
-    run(data) {
-        const { args } = data;
+    run() {
         // do stuff
         const dataToReturn = [];
-        let i = 0;
-        i++;
+        let i = 1;
 
         for (const key in actionsObj.adminCommands) {
             if (actionsObj.adminCommands.hasOwnProperty(key)) {
