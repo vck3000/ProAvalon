@@ -2,7 +2,7 @@
 module.exports = {
     command: 'mban',
     help: '/mban: Open the ban interface',
-    run(data, senderSocket) {
+    run(globalState, data, senderSocket) {
         // console.log(senderSocket.request.user.username);
         if (modsArray.indexOf(senderSocket.request.user.username.toLowerCase()) !== -1) {
             senderSocket.emit('openModModal');

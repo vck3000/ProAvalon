@@ -2,13 +2,13 @@
 module.exports = {
     command: 'getbots',
     help: '/getbots: Run this in a bot-compatible room. Prints a list of available bots to add, as well as their supported game modes',
-    run(data, senderSocket) {
+    run(globalState, data, senderSocket) {
         // if (senderSocket.request.user.inRoomId === undefined) {
         // 	return {
         // 		message: "You must be in a bot-capable room to run this command!",
         // 		classStr: "server-text"
         // 	};
-        // } else if (rooms[senderSocket.request.user.inRoomId].gameMode !== 'avalonBot') {
+        // } else if (globalState.rooms[senderSocket.request.user.inRoomId].gameMode !== 'avalonBot') {
         // 	return {
         // 		message: "This room is not bot capable. Please join a bot-capable room.",
         // 		classStr: "server-text"

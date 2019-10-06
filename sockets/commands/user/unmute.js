@@ -2,7 +2,7 @@
 module.exports = {
     command: 'unmute',
     help: '/unmute: Unmute a player.',
-    run(data, senderSocket) {
+    run(globalState, data, senderSocket) {
         const { args } = data;
 
         if (args[1]) {

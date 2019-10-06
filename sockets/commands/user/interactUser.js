@@ -2,7 +2,7 @@
 module.exports = {
     command: 'interactUser',
     help: '/interactUser <slap/buzz/lick> <playername>: Interact with a player.',
-    run(data, senderSocket) {
+    run(globalState, data, senderSocket) {
         const { args } = data;
 
         const possibleInteracts = ['buzz', 'slap', 'lick', 'poke', 'punch'];
@@ -10,7 +10,7 @@ module.exports = {
             return { message: `You can only slap, buzz, poke, punch or lick, not ${args[1]}.`, classStr: 'server-text', dateCreated: new Date() };
         }
 
-        const slapSocket = allSockets[getIndexFromUsername(allSockets, args[2], true)];
+        const slapSocket = globalState.allSockets[getIndexFromUsername(globalState.allSockets, args[2], true)];
         if (slapSocket) {
             let verbPast = '';
             if (args[1] === 'buzz') { verbPast = 'buzzed'; } else if (args[1] === 'slap') { verbPast = 'slapped'; } else if (args[1] === 'lick') { verbPast = 'licked'; } else if (args[1] === 'poke') { verbPast = 'poked'; } else if (args[1] === 'punch') { verbPast = 'punched'; }
@@ -27,22 +27,22 @@ module.exports = {
             let slappedInGame = false;
             let socketThatWasSlappedInGame;
             // need to know which person is in the room, if theyre both then it doesnt matter who.
-            if (senderSocket.request.user.inRoomId && rooms[senderSocket.request.user.inRoomId] && rooms[senderSocket.request.user.inRoomId].gameStarted === true) {
+            if (senderSocket.request.user.inRoomId && globalState.rooms[senderSocket.request.user.inRoomId] && globalState.rooms[senderSocket.request.user.inRoomId].gameStarted === true) {
                 slappedInGame = true;
                 socketThatWasSlappedInGame = senderSocket;
-            } else if (slapSocket.request.user.inRoomId && rooms[slapSocket.request.user.inRoomId] && rooms[slapSocket.request.user.inRoomId].gameStarted === true) {
+            } else if (slapSocket.request.user.inRoomId && globalState.rooms[slapSocket.request.user.inRoomId] && globalState.rooms[slapSocket.request.user.inRoomId].gameStarted === true) {
                 slappedInGame = true;
                 socketThatWasSlappedInGame = slapSocket;
             }
 
             if (slappedInGame === true) {
                 const str = `${senderSocket.request.user.username} has ${verbPast} ${slapSocket.request.user.username}. (In game)`;
-                rooms[socketThatWasSlappedInGame.request.user.inRoomId].sendText(rooms[socketThatWasSlappedInGame.request.user.inRoomId].allSockets, str, 'server-text');
+                globalState.rooms[socketThatWasSlappedInGame.request.user.inRoomId].sendText(globalState.rooms[socketThatWasSlappedInGame.request.user.inRoomId].globalState.allSockets, str, 'server-text');
             }
 
             // {message: "You have " + verbPast + " " + args[2] + "!", classStr: "server-text"};
         } else {
-            // console.log(allSockets);
+            // console.log(globalState.allSockets);
             return { message: 'There is no such player.', classStr: 'server-text' };
         }
     },

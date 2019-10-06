@@ -2,7 +2,7 @@
 module.exports = {
     command: 'help',
     help: '/help: ...shows help',
-    run(data) {
+    run(globalState, data) {
     // do stuff
 
         const dataToReturn = [];

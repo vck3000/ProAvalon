@@ -2,7 +2,7 @@
 module.exports = {
     command: 'roll',
     help: '/roll <optional number>: Returns a random number between 1 and 10 or 1 and optional number.',
-    run(data, senderSocket) {
+    run(globalState, data, senderSocket) {
         const { args } = data;
 
         // code

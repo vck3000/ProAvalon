@@ -2,7 +2,7 @@
 module.exports = {
     command: 'aip',
     help: '/aip <player name>: Get the ip of the player.',
-    async run(data, senderSocket) {
+    async run(globalState, data, senderSocket) {
         const { args } = data;
 
         if (!args[1]) {
@@ -12,7 +12,7 @@ module.exports = {
         }
 
 
-        const slapSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
+        const slapSocket = globalState.allSockets[getIndexFromUsername(globalState.allSockets, args[1])];
         if (slapSocket) {
             // console.log("b");
             const clientIpAddress = slapSocket.request.headers['x-forwarded-for'] || slapSocket.request.connection.remoteAddress;

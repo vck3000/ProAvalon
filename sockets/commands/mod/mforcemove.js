@@ -2,7 +2,7 @@
 module.exports = {
     command: 'mforcemove',
     help: "/mforcemove <username> [button] [target]: Forces a player to make a move. To see what moves are available, enter the target's username. To force the move, input button and/or target.",
-    run(data, senderSocket) {
+    run(globalState, data, senderSocket) {
         const { args } = data;
 
         senderSocket.emit('messageCommandReturnStr', { message: `You have entered: ${args.join(' ')}`, classStr: 'server-text' });
@@ -11,7 +11,7 @@ module.exports = {
         const button = args[2];
         const targets = args.splice(3);
 
-        const thisRoom = rooms[senderSocket.request.user.inRoomId];
+        const thisRoom = globalState.rooms[senderSocket.request.user.inRoomId];
 
         if (thisRoom === undefined) {
             senderSocket.emit('messageCommandReturnStr', { message: 'Please enter a room to use this command.', classStr: 'server-text' });
@@ -89,8 +89,8 @@ module.exports = {
                 targetsCaps.push(thisRoom.playersInGame[playerIndexFound].request.user.username);
             }
 
-            thisRoom.sendText(thisRoom.allSockets, `Moderator ${senderSocket.request.user.username} has forced a move: `, 'server-text');
-            thisRoom.sendText(thisRoom.allSockets, `Player: ${username} | Button: ${button} | Targets: ${targetsCaps}.`, 'server-text');
+            thisRoom.sendText(thisRoom.globalState.allSockets, `Moderator ${senderSocket.request.user.username} has forced a move: `, 'server-text');
+            thisRoom.sendText(thisRoom.globalState.allSockets, `Player: ${username} | Button: ${button} | Targets: ${targetsCaps}.`, 'server-text');
 
             const targetSimulatedSocket = thisRoom.playersInGame[playerIndex];
             if (targetSimulatedSocket.emit === undefined) {

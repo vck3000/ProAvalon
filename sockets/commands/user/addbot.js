@@ -1,24 +1,27 @@
-const { APIBotSocket, SimpleBotSocket } = require('../../bot');
+const { APIBotSocket, SimpleBotSocket, enabledBots } = require('../../bot');
+const { sendToRoomChat } = require('../../util');
 
 module.exports = {
     command: 'addbot',
     help: '/addbot <name> [number]: Run this in a bot-compatible room. Add a bot to the room.',
+    // eslint-disable-next-line consistent-return
     run(globalState, data, senderSocket) {
-        if (senderSocket.request.user.inRoomId === undefined || globalState.rooms[senderSocket.request.user.inRoomId] === undefined) {
+        const currentRoomId = senderSocket.request.user.inRoomId;
+        if (!currentRoomId || !globalState.rooms[currentRoomId]) {
             return {
                 message: 'You must be in a bot-capable room to run this command!',
                 classStr: 'server-text',
             };
         }
-        
-        const currentRoom = globalState.rooms[senderSocket.request.user.inRoomId];
+
+        const currentRoom = globalState.rooms[currentRoomId];
         if (currentRoom.gameMode.toLowerCase().includes('bot') === false) {
             return {
                 message: 'This room is not bot capable. Please join a bot-capable room.',
                 classStr: 'server-text',
             };
         }
-        
+
         if (currentRoom.host !== senderSocket.request.user.username) {
             return {
                 message: 'You are not the host.',
@@ -81,7 +84,7 @@ module.exports = {
         }
 
         if (addedBots.length > 0) {
-            sendToRoomChat(ioGlobal, currentRoomId, {
+            sendToRoomChat(globalState, currentRoomId, {
                 message: `${senderSocket.request.user.username} added bots to this room: ${addedBots.join(', ')}`,
                 classStr: 'server-text-teal',
             });

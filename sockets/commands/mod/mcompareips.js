@@ -2,14 +2,14 @@
 module.exports = {
     command: 'mcompareips',
     help: '/mcompareips: Get usernames of players with the same IP.',
-    async run(data, senderSocket) {
+    async run(globalState, data, senderSocket) {
         const usernames = [];
         const ips = [];
 
-        for (var i = 0; i < allSockets.length; i++) {
-            usernames.push(allSockets[i].request.user.username);
+        for (var i = 0; i < globalState.allSockets.length; i++) {
+            usernames.push(globalState.allSockets[i].request.user.username);
 
-            const clientIpAddress = allSockets[i].request.headers['x-forwarded-for'] || allSockets[i].request.connection.remoteAddress;
+            const clientIpAddress = globalState.allSockets[i].request.headers['x-forwarded-for'] || globalState.allSockets[i].request.connection.remoteAddress;
             ips.push(clientIpAddress);
         }
 

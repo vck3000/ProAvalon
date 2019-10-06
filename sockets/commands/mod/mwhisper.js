@@ -2,7 +2,7 @@
 module.exports = {
     command: 'mwhisper',
     help: '/mwhisper <player name> <text to send>: Sends a whisper to a player.',
-    async run(data, senderSocket) {
+    async run(globalState, data, senderSocket) {
         const { args } = data;
         let str = `${senderSocket.request.user.username}->${args[1]} (whisper): `;
         for (let i = 2; i < args.length; i++) {
@@ -18,7 +18,7 @@ module.exports = {
             classStr: 'whisper',
         };
 
-        const sendToSocket = allSockets[getIndexFromUsername(allSockets, args[1], true)];
+        const sendToSocket = globalState.allSockets[getIndexFromUsername(globalState.allSockets, args[1], true)];
 
         if (!sendToSocket) {
             senderSocket.emit('messageCommandReturnStr', { message: `Could not find ${args[1]}`, classStr: 'server-text' });

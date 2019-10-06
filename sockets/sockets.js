@@ -1,31 +1,26 @@
-// sockets
-const axios = require('axios');
+const fs = require('fs');
+const JSON = require('circular-json');
+
 const gameRoom = require('../gameplay/game');
 
 const savedGameObj = require('../models/savedGame');
 const modAction = require('../models/modAction');
-
-let currentModActions = [];
-const myNotification = require('../models/notification');
-const createNotificationObj = require('../myFunctions/createNotification');
+const User = require('../models/user');
+const avatarRequest = require('../models/avatarRequest');
 
 const getRewards = require('../rewards/getRewards');
-
 const getRewardsObj = new getRewards();
 
 const REWARDS = require('../rewards/constants');
 
-const avatarRequest = require('../models/avatarRequest');
-const User = require('../models/user');
-const JSON = require('circular-json');
 const modsArray = require('../modsadmins/mods');
 const adminsArray = require('../modsadmins/admins');
-const fs = require('fs');
 
-const { enabledBots, makeBotAPIRequest, SimpleBotSocket,  } = require('./bot');
+const { userCommands, modCommands, adminCommands } = require('./commands');
 
-const dateResetRequired = 1543480412695;
-const newUpdateNotificationRequired = 1565505539914;
+const TEXT_LENGTH_LIMIT = 500;
+const DATE_RESET_REQUIRED = 1543480412695;
+const NEW_UPDATE_NOTIFICATION_REQUIRED = 1565505539914;
 const updateMessage = `
 
 <h1>Patreon Rewards!</h1>
@@ -44,13 +39,11 @@ const globalState = {
     lastWhisperObj: {},
     pmmodCooldowns: {},
     io: {},
+    currentModActions: [],
 };
 
-// retain only 5 mins.
-let nextRoomId = 1;
-
 // Get all the possible gameModes and add their names
-const gameModeNames = fs.readdirSync('./gameplay/').filter((file) => fs.statSync(`${'./gameplay/'}${file}`).isDirectory() === true && file !== 'commonPhases');
+const gameModeNames = require('../gameplay/gameModeNames');
 
 function gracefulShutdown() {
     for (const key in globalState.allSockets) {
@@ -64,25 +57,6 @@ function gracefulShutdown() {
 
 process.on('SIGINT', gracefulShutdown);
 process.on('SIGTERM', gracefulShutdown);
-
-function saveGameToDb(roomToSave) {
-    if (!roomToSave.gameStarted || roomToSave.finished) return;
-
-    if (roomToSave.savedGameRecordId === undefined) {
-        savedGameObj.create({ room: JSON.stringify(roomToSave) }, (err, savedGame) => {
-            if (err) {
-                console.log(err);
-            } else {
-                globalState.rooms[globalState.rooms.indexOf(roomToSave)].savedGameRecordId = savedGame.id;
-                // console.log("Successfully created this save game");
-            }
-        });
-    } else {
-        savedGameObj.findByIdAndUpdate(roomToSave.savedGameRecordId, { room: JSON.stringify(roomToSave) }, (err, savedGame) => {
-            // console.log("Successfully saved this game");
-        });
-    }
-}
 
 function deleteSaveGameFromDb(room) {
     savedGameObj.findByIdAndRemove(room.savedGameRecordId, (err) => {
@@ -113,10 +87,6 @@ savedGameObj.find({}).exec((err, foundSaveGameArray) => {
         }
     }
 });
-
-const userCommands = fs.readdirSync('./commands/users').filter(filename => filename.endsWith('.js')).map(filename => require(`./commands/users/${filename}`));
-const modCommands = fs.readdirSync('./commands/mods').filter(filename => filename.endsWith('.js')).map(filename => require(`./commands/mods/${filename}`));
-const adminCommands = fs.readdirSync('./commands/admins').filter(filename => filename.endsWith('.js')).map(filename => require(`./commands/admins/${filename}`));
 
 module.exports = function (io) {
     // SOCKETS for each connection
@@ -216,8 +186,8 @@ module.exports = function (io) {
                 socket.emit('adminCommands', adminCommands);
             }
 
-            socket.emit('checkSettingsResetDate', dateResetRequired);
-            socket.emit('checkNewUpdate', { date: newUpdateNotificationRequired, msg: updateMessage });
+            socket.emit('checkSettingsResetDate', DATE_RESET_REQUIRED);
+            socket.emit('checkNewUpdate', { date: NEW_UPDATE_NOTIFICATION_REQUIRED, msg: updateMessage });
             socket.emit('checkNewPlayerShowIntro', '');
             // Pass in the gameModes for the new room menu.
             socket.emit('gameModes', gameModeNames);
@@ -238,9 +208,9 @@ module.exports = function (io) {
             };
             sendToAllChat(io, data);
 
-            updateCurrentPlayersList(io);
+            updateCurrentPlayersList();
             // console.log("update current players list");
-            // console.log(getPlayerUsernamesFromglobalState.allSockets());
+            // console.log(getPlayerUsernamesFromAllSockets());
             updateCurrentGamesList(io);
             // message mods if player's ip matches another player
             matchedIpsUsernames = [];
@@ -447,46 +417,48 @@ function applyApplicableRewards(socket) {
 };
 
 function updateCurrentPlayersList() {
-    globalState.io.in('allChat').emit('update-current-players-list', getPlayerDisplayUsernamesFromglobalState.allSockets());
+    const allDisplayUsernames = globalState.allSockets.map((sock) => sock.request.displayUsername || sock.request.user.username).sort((a, b) => {
+        const textA = a.toUpperCase();
+        const textB = b.toUpperCase();
+        return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+    });
+
+    globalState.io.in('allChat').emit('update-current-players-list', allDisplayUsernames);
 }
 
 function updateCurrentGamesList() {
     // prepare room data to send to players.
-    const gamesList = [];
-    for (let i = 0; i < globalState.rooms.length; i++) {
-        const currentRoom = globalState.rooms[i];
-        if (!currentRoom) continue;
-        gamesList[i] = {
-            status: currentRoom.getStatus(),
-            passwordLocked: currentRoom.joinPassword !== undefined,
-            roomId: currentRoom.roomId,
-            gameMode: currentRoom.gameMode.charAt(0).toUpperCase() + currentRoom.gameMode.slice(1),
-            hostUsername: currentRoom.host,
-            maxNumPlayers: currentRoom.maxNumPlayers,
-            numOfSpectatorsInside: currentRoom.globalState.allSockets.length - currentRoom.socketsOfPlayers.length,
+    const gamesList = globalState.rooms.map((room) => {
+        if (!room) return;
+        const obj = {
+            status: room.getStatus(),
+            passwordLocked: room.joinPassword !== undefined,
+            roomId: room.roomId,
+            gameMode: room.gameMode.charAt(0).toUpperCase() + room.gameMode.slice(1),
+            hostUsername: room.host,
+            maxNumPlayers: room.maxNumPlayers,
+            numOfSpectatorsInside: room.globalState.allSockets.length - room.socketsOfPlayers.length,
         };
 
-        if (currentRoom.gameStarted) {
-            gamesList[i].numOfPlayersInside = currentRoom.playersInGame.length;
-            gamesList[i].missionHistory = currentRoom.missionHistory;
-            gamesList[i].missionNum = currentRoom.missionNum;
-            gamesList[i].pickNum = currentRoom.pickNum;
+        if (room.gameStarted) {
+            obj.numOfPlayersInside = room.playersInGame.length;
+            obj.missionHistory = room.missionHistory;
+            obj.missionNum = room.missionNum;
+            obj.pickNum = room.pickNum;
         } else {
-            gamesList[i].numOfPlayersInside = currentRoom.socketsOfPlayers.length;
+            obj.numOfPlayersInside = room.socketsOfPlayers.length;
         }
-    }
+        return obj;
+    });
 
     globalState.allSockets.forEach((sock) => {
         sock.emit('update-current-games-list', gamesList);
     });
-};
-
+}
 
 function textLengthFilter(str) {
-    const lengthLimit = 500;
-
-    if (str.length > lengthLimit) {
-        return str.slice(0, lengthLimit);
+    if (str.length > TEXT_LENGTH_LIMIT) {
+        return str.slice(0, TEXT_LENGTH_LIMIT);
     }
 
     return str;
@@ -515,13 +487,6 @@ function sendToAllChat(io, data) {
 
     if (i !== 0) {
         globalState.allChat5Min.splice(0, i);
-    }
-}
-
-function sendToRoomChat(io, roomId, data) {
-    io.in(roomId).emit('roomChatToClient', data);
-    if (globalState.rooms[roomId]) {
-        globalState.rooms[roomId].addToChatHistory(data);
     }
 }
 
@@ -600,46 +565,13 @@ function playerLeaveRoomCheckDestroy(socket) {
     }
 }
 
-
-function getPlayerDisplayUsernamesFromglobalState.allSockets() {
-    const array = [];
-    for (let i = 0; i < globalState.allSockets.length; i++) {
-        array[i] = globalState.allSockets[i].request.displayUsername ? globalState.allSockets[i].request.displayUsername : globalState.allSockets[i].request.user.username;
-    }
-    array.sort((a, b) => {
+function getPlayerUsernamesFromAllSockets() {
+    const array = globalState.allSockets.map((sock) => sock.request.user.username).sort((a, b) => {
         const textA = a.toUpperCase();
         const textB = b.toUpperCase();
         return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
     });
     return array;
-}
-
-function getPlayerUsernamesFromglobalState.allSockets() {
-    const array = [];
-    for (let i = 0; i < globalState.allSockets.length; i++) {
-        array[i] = globalState.allSockets[i].request.user.username;
-    }
-    array.sort((a, b) => {
-        const textA = a.toUpperCase();
-        const textB = b.toUpperCase();
-        return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-    });
-    return array;
-}
-
-function getIndexFromUsername(sockets, username, caseInsensitive) {
-    if (sockets && username) {
-        for (let i = 0; i < sockets.length; i++) {
-            if (caseInsensitive) {
-                if (sockets[i].request.user.username.toLowerCase() === username.toLowerCase()) {
-                    return i;
-                }
-            } else if (sockets[i].request.user.username === username) {
-                return i;
-            }
-        }
-    }
-    return undefined;
 }
 
 function disconnect(data) {
@@ -651,7 +583,7 @@ function disconnect(data) {
     // send out the new updated current player list
     updateCurrentPlayersList();
     // tell all clients that the user has left
-    var data = {
+    const data = {
         message: `${this.request.user.username} has left the lobby.`,
         classStr: 'server-text-teal',
     };
@@ -671,7 +603,7 @@ function disconnect(data) {
         classStr: 'server-text-teal',
         dateCreated: new Date(),
     };
-    sendToRoomChat(globalState.io, inRoomId, data);
+    sendToRoomChat(globalState, inRoomId, data);
 }
 
 function messageCommand(data) {
@@ -725,7 +657,7 @@ function allChatFromClient(data) {
     console.log(`allchat: ${data.message} by: ${this.request.user.username}`);
     // get the username and put it into the data object
 
-    const validUsernames = getPlayerUsernamesFromglobalState.allSockets();
+    const validUsernames = getPlayerUsernamesFromAllSockets();
 
     // if the username is not valid, i.e. one that they actually logged in as
     if (validUsernames.indexOf(this.request.user.username) === -1) {
@@ -746,7 +678,7 @@ function roomChatFromClient(data) {
     console.log(`roomchat: ${data.message} by: ${this.request.user.username}`);
     // get the username and put it into the data object
 
-    const validUsernames = getPlayerUsernamesFromglobalState.allSockets();
+    const validUsernames = getPlayerUsernamesFromAllSockets();
 
     // if the username is not valid, i.e. one that they actually logged in as
     if (validUsernames.indexOf(this.request.user.username) === -1) {
@@ -761,7 +693,7 @@ function roomChatFromClient(data) {
     if (this.request.user.inRoomId) {
         // send out that data object to all clients in room
 
-        sendToRoomChat(globalState.io, this.request.user.inRoomId, data);
+        sendToRoomChat(globalState, this.request.user.inRoomId, data);
         // globalState.io.in(data.roomId).emit("roomChatToClient", data);
     }
 }
@@ -770,14 +702,14 @@ function newRoom(dataObj) {
     if (isMuted(this) || !dataObj) return;
 
     // while globalState.rooms exist already (in case of a previously saved and retrieved game)
-    while (globalState.rooms[nextRoomId]) {
-        nextRoomId++;
+    while (globalState.rooms[globalState.nextRoomId]) {
+        globalState.nextRoomId++;
     }
-    globalState.rooms[nextRoomId] = new gameRoom(this.request.user.username, nextRoomId, globalState.io, dataObj.maxNumPlayers, dataObj.newRoomPassword, dataObj.gameMode, socketCallback);
+    globalState.rooms[globalState.nextRoomId] = new gameRoom(this.request.user.username, globalState.nextRoomId, globalState.io, dataObj.maxNumPlayers, dataObj.newRoomPassword, dataObj.gameMode, socketCallback);
     const privateStr = (dataObj.newRoomPassword === '') ? '' : 'private ';
     // broadcast to all chat
     const data = {
-        message: `${this.request.user.username} has created ${privateStr}room ${nextRoomId}.`,
+        message: `${this.request.user.username} has created ${privateStr}room ${globalState.nextRoomId}.`,
         classStr: 'server-text',
     };
     sendToAllChat(globalState.io, data);
@@ -787,25 +719,24 @@ function newRoom(dataObj) {
     // send to allChat including the host of the game
     // globalState.io.in("allChat").emit("new-game-created", str);
     // send back room id to host so they can auto connect
-    this.emit('auto-join-room-id', nextRoomId, dataObj.newRoomPassword);
+    this.emit('auto-join-room-id', globalState.nextRoomId, dataObj.newRoomPassword);
 
     // increment index for next game
-    nextRoomId++;
+    globalState.nextRoomId++;
 
     updateCurrentGamesList();
 }
 
 
 function joinRoom(roomId, inputPassword) {
-    // console.log("inputpassword: " + inputPassword);
-
+    const room = globalState.rooms[roomId];
     // if the room exists
-    if (!globalState.rooms[roomId]) return;
+    if (!room) return;
     // join the room
-    if (!globalState.rooms[roomId].playerJoinRoom(this, inputPassword)) return;
+    if (!room.playerJoinRoom(this, inputPassword)) return;
 
     // sends to players and specs
-    globalState.rooms[roomId].distributeGameData();
+    room.distributeGameData();
 
     // set the room id into the this obj
     this.request.user.inRoomId = roomId;
@@ -819,7 +750,8 @@ function joinRoom(roomId, inputPassword) {
         classStr: 'server-text-teal',
         dateCreated: new Date(),
     };
-    sendToRoomChat(globalState.io, roomId, data);
+
+    sendToRoomChat(globalState, roomId, data);
 
     updateCurrentGamesList();
 }
@@ -830,22 +762,18 @@ function joinGame(roomId) {
     || !globalState.rooms[roomId]
     || globalState.rooms[roomId].getStatus() === 'Waiting') return;
     // if the room has not started yet, throw them into the room
-    // console.log("Game status is: " + globalState.rooms[roomId].getStatus());
-
     const ToF = globalState.rooms[roomId].playerSitDown(this);
     console.log(`${this.request.user.username} has joined room ${roomId}: ${ToF}`);
 }
 
 function standUpFromGame() {
-    const toContinue = !isMuted(this);
+    const { inRoomId } = this.request.user;
 
-    const roomId = this.request.user.inRoomId;
-
-    if (isMuted(this) || !globalState.rooms[roomId]) return;
+    if (isMuted(this) || !globalState.rooms[inRoomId]) return;
 
     // if the room has not started yet, remove them from players list
-    if (globalState.rooms[roomId].getStatus() === 'Waiting')
-        globalState.rooms[roomId].playerStandUp(this);
+    if (globalState.rooms[inRoomId].getStatus() === 'Waiting')
+        globalState.rooms[inRoomId].playerStandUp(this);
 }
 
 function leaveRoom() {
@@ -858,7 +786,7 @@ function leaveRoom() {
         classStr: 'server-text-teal',
         dateCreated: new Date(),
     };
-    sendToRoomChat(globalState.io, this.request.user.inRoomId, data);
+    sendToRoomChat(globalState, this.request.user.inRoomId, data);
 
     // leave the room chat
     this.leave(this.request.user.inRoomId);
@@ -873,7 +801,7 @@ function playerReady(username) {
         classStr: 'server-text',
         dateCreated: new Date(),
     };
-    sendToRoomChat(globalState.io, this.request.user.inRoomId, data);
+    sendToRoomChat(globalState, this.request.user.inRoomId, data);
 }
 
 function playerNotReady(username) {
@@ -884,14 +812,14 @@ function playerNotReady(username) {
         classStr: 'server-text',
         dateCreated: new Date(),
     };
-    sendToRoomChat(globalState.io, this.request.user.inRoomId, data);
+    sendToRoomChat(globalState, this.request.user.inRoomId, data);
 }
 
 function startGame(data, gameMode) {
     // start the game
-    if (globalState.rooms[this.request.user.inRoomId]) {
-        if (this.request.user.inRoomId && this.request.user.username === globalState.rooms[this.request.user.inRoomId].host) {
-            globalState.rooms[this.request.user.inRoomId].hostTryStartGame(data, gameMode);
+    const room = globalState.rooms[this.request.user.inRoomId];
+    if (room && this.request.user.inRoomId && this.request.user.username === room.host) {
+            room.hostTryStartGame(data, gameMode);
             // this.emit("update-room-players", globalState.rooms[roomId].getPlayers());
         } else {
             // console.log("Room doesn't exist or user is not host, cannot start game");
@@ -918,11 +846,24 @@ function setClaim(data) {
 function gameMove(data) {
     if (!globalState.rooms[this.request.user.inRoomId]) return;
     globalState.rooms[this.request.user.inRoomId].gameMove(this, data);
-    if (globalState.rooms[this.request.user.inRoomId]) {
-        if (globalState.rooms[this.request.user.inRoomId].finished === true) {
-            deleteSaveGameFromDb(globalState.rooms[this.request.user.inRoomId]);
+
+    if (globalState.rooms[this.request.user.inRoomId].finished === true) {
+        deleteSaveGameFromDb(globalState.rooms[this.request.user.inRoomId]);
+    } else {
+        const roomToSave = globalState.rooms[this.request.user.inRoomId];
+
+        if (!roomToSave.gameStarted || roomToSave.finished) return;
+
+        if (!roomToSave.savedGameRecordId) {
+            savedGameObj.create({ room: JSON.stringify(roomToSave) }, (err, savedGame) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    globalState.rooms[globalState.rooms.indexOf(roomToSave)].savedGameRecordId = savedGame.id;
+                }
+            });
         } else {
-            saveGameToDb(globalState.rooms[this.request.user.inRoomId]);
+            savedGameObj.findByIdAndUpdate(roomToSave.savedGameRecordId, { room: JSON.stringify(roomToSave) });
         }
     }
 

@@ -2,7 +2,7 @@
 module.exports = {
     command: 'mute',
     help: '/mute: Mute a player who is being annoying in chat/buzzing/slapping/licking/poking/tickling you.',
-    run(data, senderSocket) {
+    run(globalState, data, senderSocket) {
         const { args } = data;
 
         if (args[1]) {

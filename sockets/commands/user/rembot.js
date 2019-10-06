@@ -1,30 +1,34 @@
+const { sendToRoomChat } = require('../../util');
 
 module.exports = {
     command: 'rembot',
     help: '/rembot (<name>|all): Run this in a bot-compatible room. Removes a bot from the room.',
-    run(data, senderSocket) {
-        if (senderSocket.request.user.inRoomId === undefined || rooms[senderSocket.request.user.inRoomId] === undefined) {
+    run(globalState, data, senderSocket) {
+        const { args } = data;
+        const { inRoomId, username } = senderSocket.request.user;
+        if (!inRoomId || !globalState.rooms[inRoomId]) {
             return {
                 message: 'You must be in a bot-capable room to run this command!',
                 classStr: 'server-text',
             };
-        } if (rooms[senderSocket.request.user.inRoomId].gameMode.toLowerCase().includes('bot') === false) {
+        }
+
+        const currentRoom = globalState.rooms[inRoomId];
+        if (currentRoom.gameMode.toLowerCase().includes('bot') === false) {
             return {
                 message: 'This room is not bot capable. Please join a bot-capable room.',
                 classStr: 'server-text',
             };
-        } if (rooms[senderSocket.request.user.inRoomId].host !== senderSocket.request.user.username) {
+        }
+
+        if (globalState.rooms[inRoomId].host !== username) {
             return {
                 message: 'You are not the host.',
                 classStr: 'server-text',
             };
         }
 
-        const currentRoomId = senderSocket.request.user.inRoomId;
-        const currentRoom = rooms[currentRoomId];
-        const { args } = data;
-
-        if (currentRoom.gameStarted === true || currentRoom.canJoin === false) {
+        if (currentRoom.gameStarted || !currentRoom.canJoin) {
             return {
                 message: 'No bots can be removed from this room at this time.',
                 classStr: 'server-text',
@@ -37,6 +41,7 @@ module.exports = {
                 classStr: 'server-text',
             };
         }
+
         const botName = args[1];
         const botSockets = currentRoom.botSockets.slice() || [];
         const botsToRemove = (botName === 'all')
@@ -58,8 +63,8 @@ module.exports = {
         });
 
         const removedBots = botsToRemove.map((botSocket) => botSocket.request.user.username);
-        sendToRoomChat(ioGlobal, currentRoomId, {
-            message: `${senderSocket.request.user.username} removed bots from this room: ${removedBots.join(', ')}`,
+        sendToRoomChat(globalState, inRoomId, {
+            message: `${username} removed bots from this room: ${removedBots.join(', ')}`,
             classStr: 'server-text-teal',
         });
     },

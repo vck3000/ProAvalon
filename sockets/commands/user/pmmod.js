@@ -3,7 +3,7 @@ const PMMOD_TIMEOUT = 3000; // 3 seconds
 module.exports = {
     command: 'pmmod',
     help: '/pmmod <mod_username> <message>: Sends a private message to an online moderator.',
-    run(data, senderSocket) {
+    run(globalState, data, senderSocket) {
         const { args } = data;
         // We check if they are spamming, i.e. have sent a PM before the timeout is up
         const lastPmTime = pmmodCooldowns[senderSocket.id];
@@ -14,7 +14,7 @@ module.exports = {
         // Checks for various missing fields or errors
         if (!args[1]) return { message: 'Please specify a mod to message. Type /mods to get a list of online mods.', classStr: 'server-text' };
         if (!args[2]) return { message: 'Please specify a message to send.', classStr: 'server-text' };
-        const modSocket = allSockets[getIndexFromUsername(allSockets, args[1], true)];
+        const modSocket = globalState.allSockets[getIndexFromUsername(globalState.allSockets, args[1], true)];
         if (!modSocket) return { message: `Could not find ${args[1]}.`, classStr: 'server-text' };
         if (modSocket.id === senderSocket.id) return { message: 'You cannot private message yourself!', classStr: 'server-text' };
         if (!modsArray.includes(args[1].toLowerCase())) return { message: `${args[1]} is not a mod. You may not private message them.`, classStr: 'server-text' };

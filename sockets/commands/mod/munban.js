@@ -1,8 +1,9 @@
+const modAction = require('../../../models/modAction');
 
 module.exports = {
     command: 'munban',
     help: "/munban <player name>: Removes ALL existing bans OR mutes on a player's name.",
-    async run(data, senderSocket) {
+    run(globalState, data, senderSocket) {
         const { args } = data;
 
         if (!args[1]) {
@@ -10,29 +11,28 @@ module.exports = {
         }
 
         modAction.find({ 'bannedPlayer.usernameLower': args[1].toLowerCase() }, (err, foundModAction) => {
-            // console.log("foundmodaction");
-            // console.log(foundModAction);
-            if (foundModAction.length !== 0) {
-                modAction.remove({ 'bannedPlayer.usernameLower': args[1].toLowerCase() }, (err, foundModAction) => {
-                    if (err) {
-                        console.log(err);
-                        senderSocket.emit('messageCommandReturnStr', { message: 'Something went wrong.', classStr: 'server-text' });
-                    } else {
-                        // console.log("Successfully unbanned " + args[1] + ".");
-                        senderSocket.emit('messageCommandReturnStr', { message: `Successfully unbanned ${args[1]}.`, classStr: 'server-text' });
+            if (err) {
+                console.log(err);
+                senderSocket.emit('messageCommandReturnStr', { message: 'Something went wrong.', classStr: 'server-text' });
+            }
 
-                        // load up all the modActions that are not released yet
-                        modAction.find({ whenRelease: { $gt: new Date() }, $or: [{ type: 'mute' }, { type: 'ban' }] }, (err, allModActions) => {
-                            // reset currentModActions
-                            currentModActions = [];
-                            for (let i = 0; i < allModActions.length; i++) {
-                                currentModActions.push(allModActions[i]);
-                            }
-                            // console.log("mute");
-                            // console.log(currentModActions);
-                        });
-                
+            if (foundModAction.length !== 0) {
+                modAction.remove({ 'bannedPlayer.usernameLower': args[1].toLowerCase() }, (e) => {
+                    if (e) {
+                        console.log(e);
+                        senderSocket.emit('messageCommandReturnStr', { message: 'Something went wrong.', classStr: 'server-text' });
+                        return;
                     }
+                    senderSocket.emit('messageCommandReturnStr', { message: `Successfully unbanned ${args[1]}.`, classStr: 'server-text' });
+
+                    // load up all the modActions that are not released yet
+                    modAction.find({ whenRelease: { $gt: new Date() }, $or: [{ type: 'mute' }, { type: 'ban' }] }, (_, allModActions) => {
+                        // reset currentModActions
+                        globalState.currentModActions = [];
+                        for (let i = 0; i < allModActions.length; i += 1) {
+                            globalState.currentModActions.push(allModActions[i]);
+                        }
+                    });
                 });
             } else {
                 senderSocket.emit('messageCommandReturnStr', { message: `${args[1]} does not have a ban.`, classStr: 'server-text' });

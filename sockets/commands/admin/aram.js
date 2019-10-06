@@ -2,7 +2,7 @@
 module.exports = {
     command: 'aram',
     help: '/aram: get the ram used',
-    run(data) {
+    run(globalState, data) {
         const { args } = data;
 
         const used = process.memoryUsage().heapUsed / 1024 / 1024;

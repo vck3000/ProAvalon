@@ -2,7 +2,7 @@
 module.exports = {
     command: 'r',
     help: '/r: Reply to a mod who just messaged you.',
-    run(data, senderSocket) {
+    run(globalState, data, senderSocket) {
         const { args } = data;
         let str = `${senderSocket.request.user.username}->${lastWhisperObj[senderSocket.request.user.username]} (whisper): `;
         for (let i = 1; i < args.length; i++) {
@@ -19,7 +19,7 @@ module.exports = {
         };
 
         // this sendToSocket is the moderator
-        const sendToSocket = allSockets[getIndexFromUsername(allSockets, lastWhisperObj[senderSocket.request.user.username], true)];
+        const sendToSocket = globalState.allSockets[getIndexFromUsername(globalState.allSockets, lastWhisperObj[senderSocket.request.user.username], true)];
 
         if (!sendToSocket) {
             senderSocket.emit('messageCommandReturnStr', { message: "You haven't been whispered to before.", classStr: 'server-text' });

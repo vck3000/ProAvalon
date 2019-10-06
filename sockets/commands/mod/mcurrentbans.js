@@ -2,7 +2,7 @@
 module.exports = {
     command: 'mcurrentbans',
     help: '/mcurrentbans: Show a list of currently active bans.',
-    run(data, senderSocket) {
+    run(globalState, data, senderSocket) {
         const { args } = data;
         // do stuff
         const dataToReturn = [];

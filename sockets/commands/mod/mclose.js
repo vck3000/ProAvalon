@@ -2,7 +2,7 @@
 module.exports = {
     command: 'mclose',
     help: '/mclose <roomId> [<roomId> <roomId> ...]: Close room <roomId>. Also removes the corresponding save files in the database. Can take multiple room IDs.',
-    run(data, senderSocket) {
+    run(globalState, data, senderSocket) {
         const { args } = data;
 
         if (!args[1]) {
@@ -14,21 +14,21 @@ module.exports = {
         // console.log(roomIdsToClose);
 
         roomIdsToClose.forEach((idToClose) => {
-            if (rooms[idToClose] !== undefined) {
+            if (globalState.rooms[idToClose] !== undefined) {
                 // Disconnect everyone
-                for (let i = 0; i < rooms[idToClose].allSockets.length; i++) {
-                    rooms[idToClose].allSockets[i].emit('leave-room-requested');
+                for (let i = 0; i < globalState.rooms[idToClose].globalState.allSockets.length; i++) {
+                    globalState.rooms[idToClose].globalState.allSockets[i].emit('leave-room-requested');
                 }
 
                 // Stop bots thread if they are playing:
-                if (rooms[idToClose].interval) {
-                    clearInterval(rooms[idToClose].interval);
-                    rooms[idToClose].interval = undefined;
+                if (globalState.rooms[idToClose].interval) {
+                    clearInterval(globalState.rooms[idToClose].interval);
+                    globalState.rooms[idToClose].interval = undefined;
                 }
 
                 // Forcefully close room
-                if (rooms[idToClose]) {
-                    destroyRoom(rooms[idToClose].roomId);
+                if (globalState.rooms[idToClose]) {
+                    destroyRoom(globalState.rooms[idToClose].roomId);
                 }
                 senderSocket.emit('messageCommandReturnStr', { message: `Closed room ${idToClose}.`, classStr: 'server-text' });
             } else {

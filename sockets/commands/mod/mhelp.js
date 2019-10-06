@@ -2,7 +2,7 @@
 module.exports = {
     command: 'mhelp',
     help: '/mhelp: show commands.',
-    run(data, senderSocket) {
+    run(globalState, data, senderSocket) {
         const { args } = data;
         // do stuff
         const dataToReturn = [];

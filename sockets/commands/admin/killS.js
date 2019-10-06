@@ -2,7 +2,7 @@
 module.exports = {
     command: 'killS',
     help: '/killS: test kill',
-    run(data) {
+    run(globalState, data) {
         const { args } = data;
         // do stuff
         process.exit(0);

@@ -2,7 +2,7 @@
 module.exports = {
     command: 'mremoveavatar',
     help: "/mremoveavatar <player name>: Remove <player name>'s avatar.",
-    async run(data, senderSocket) {
+    async run(globalState, data, senderSocket) {
         const { args } = data;
 
         if (!args[1]) {

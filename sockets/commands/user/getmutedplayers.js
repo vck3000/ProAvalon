@@ -2,7 +2,7 @@
 module.exports = {
     command: 'getmutedplayers',
     help: '/getmutedplayers: See who you have muted.',
-    run(data, senderSocket) {
+    run(globalState, data, senderSocket) {
         const { args } = data;
 
         if (args[1] === senderSocket.request.user.username) {

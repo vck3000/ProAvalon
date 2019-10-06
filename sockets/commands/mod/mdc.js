@@ -2,7 +2,7 @@
 module.exports = {
     command: 'mdc',
     help: '/mdc <player name>: Disconnect a player.',
-    async run(data, senderSocket) {
+    async run(globalState, data, senderSocket) {
         const { args } = data;
 
         if (!args[1]) {
@@ -10,7 +10,7 @@ module.exports = {
             return;
         }
 
-        const targetSock = allSockets[getIndexFromUsername(allSockets, args[1], true)];
+        const targetSock = globalState.allSockets[getIndexFromUsername(globalState.allSockets, args[1], true)];
         if (targetSock) {
             targetSock.disconnect();
             senderSocket.emit('messageCommandReturnStr', { message: `Disconnected ${args[1]} successfully.`, classStr: 'server-text' });

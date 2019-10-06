@@ -2,7 +2,7 @@
 module.exports = {
     command: 'aipban',
     help: '/aipban <ip>: Ban the IP of the IP given. /munban does not undo this ban. Contact ProNub to remove an IP ban.',
-    run(data, senderSocket) {
+    run(globalState, data, senderSocket) {
         const { args } = data;
 
         if (!args[1]) {

@@ -2,7 +2,7 @@
 module.exports = {
     command: 'mnotify',
     help: '/mnotify <player name> <text to leave for player>: Leaves a message for a player that will appear in their notifications. Note your name will be added to the end of the message to them.',
-    async run(data, senderSocket) {
+    async run(globalState, data, senderSocket) {
         const { args } = data;
         let str = '';
         for (let i = 2; i < args.length; i++) {
