@@ -1,20 +1,13 @@
+const { adminCommands } = require('../index');
 
 module.exports = {
     command: 'a',
     help: '/a: ...shows mods commands',
     run() {
-        // do stuff
-        const dataToReturn = [];
-        let i = 1;
+        const dataToReturn = Object.keys(adminCommands)
+            .filter((key) => !adminCommands[key].modsOnly)
+            .map((key) => ({ message: adminCommands[key].help, classStr: 'server-text' }));
 
-        for (const key in actionsObj.adminCommands) {
-            if (actionsObj.adminCommands.hasOwnProperty(key)) {
-                if (!actionsObj.adminCommands[key].modsOnly) {
-                    dataToReturn[i] = { message: actionsObj.adminCommands[key].help, classStr: 'server-text' };
-                    i++;
-                }
-            }
-        }
         return dataToReturn;
     },
 };

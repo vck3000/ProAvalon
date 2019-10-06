@@ -1,8 +1,9 @@
+const { SimpleBotSocket } = require('../../bot');
 
 module.exports = {
     command: 'maddbots',
     help: '/maddbots <number>: Add <number> bots to the room.',
-    run(globalState, data, senderSocket, roomIdInput) {
+    run(globalState, data, senderSocket) {
         const { args } = data;
 
         if (!args[1]) {
@@ -10,36 +11,30 @@ module.exports = {
             return;
         }
 
-        let roomId;
-        if (senderSocket === undefined) {
-            roomId = roomIdInput;
-        } else {
-            roomId = senderSocket.request.user.inRoomId;
-        }
+        const room = globalState.rooms[senderSocket.request.user.inRoomId];
+        if (!room) return;
 
-        if (globalState.rooms[roomId]) {
-            const dummySockets = [];
+        const dummySockets = [];
 
-            for (let i = 0; i < args[1]; i++) {
-                const botName = `${'SimpleBot' + '#'}${Math.floor(Math.random() * 100)}`;
+        for (let i = 0; i < args[1]; i += 1) {
+            const botName = `SimpleBot#${Math.floor(Math.random() * 100)}`;
 
-                // Avoid a username clash!
-                const currentUsernames = globalState.rooms[roomId].socketsOfPlayers.map((sock) => sock.request.user.username);
-                if (currentUsernames.includes(botName)) {
-                    i--;
-                    continue;
-                }
-
-                dummySockets[i] = new SimpleBotSocket(botName);
-                globalState.rooms[roomId].playerJoinRoom(dummySockets[i]);
-                globalState.rooms[roomId].playerSitDown(dummySockets[i]);
-
-                // Save a copy of the sockets within botSockets
-                if (!globalState.rooms[roomId].botSockets) {
-                    globalState.rooms[roomId].botSockets = [];
-                }
-                globalState.rooms[roomId].botSockets.push(dummySockets[i]);
+            // Avoid a username clash!
+            const currentUsernames = room.socketsOfPlayers.map((sock) => sock.request.user.username);
+            if (currentUsernames.includes(botName)) {
+                i -= 1;
+                continue;
             }
+
+            dummySockets[i] = new SimpleBotSocket(botName);
+            room.playerJoinRoom(dummySockets[i]);
+            room.playerSitDown(dummySockets[i]);
+
+            // Save a copy of the sockets within botSockets
+            if (!room.botSockets) {
+                room.botSockets = [];
+            }
+            room.botSockets.push(dummySockets[i]);
         }
     },
 };

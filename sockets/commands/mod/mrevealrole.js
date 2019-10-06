@@ -1,3 +1,4 @@
+const { getIndexFromUsername } = require('../../util');
 
 module.exports = {
     command: 'mrevealrole',

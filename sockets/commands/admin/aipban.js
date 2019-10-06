@@ -1,3 +1,5 @@
+const User = require('../../../models/user');
+const banIp = require('../../../models/banIp');
 
 module.exports = {
     command: 'aipban',
@@ -20,8 +22,8 @@ module.exports = {
                     whenMade: new Date(),
                 };
 
-                banIp.create(banIpData, (err, newBan) => {
-                    if (err) { console.log(err); } else {
+                banIp.create(banIpData, (e) => {
+                    if (e) { console.log(e); } else {
                         senderSocket.emit('messageCommandReturnStr', { message: `Successfully banned ip ${args[1]}`, classStr: 'server-text' });
                     }
                 });

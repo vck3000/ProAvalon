@@ -1,3 +1,5 @@
+const User = require('../../../models/user');
+const createNotificationObj = require('../../../myFunctions/createNotification');
 
 module.exports = {
     command: 'mnotify',
@@ -5,7 +7,7 @@ module.exports = {
     async run(globalState, data, senderSocket) {
         const { args } = data;
         let str = '';
-        for (let i = 2; i < args.length; i++) {
+        for (let i = 2; i < args.length; i += 1) {
             str += args[i];
             str += ' ';
         }

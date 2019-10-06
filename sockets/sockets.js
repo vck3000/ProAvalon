@@ -18,6 +18,8 @@ const adminsArray = require('../modsadmins/admins');
 
 const { userCommands, modCommands, adminCommands } = require('./commands');
 
+const { sendToAllChat } = require('./util');
+
 const TEXT_LENGTH_LIMIT = 500;
 const DATE_RESET_REQUIRED = 1543480412695;
 const NEW_UPDATE_NOTIFICATION_REQUIRED = 1565505539914;
@@ -58,34 +60,25 @@ function gracefulShutdown() {
 process.on('SIGINT', gracefulShutdown);
 process.on('SIGTERM', gracefulShutdown);
 
-function deleteSaveGameFromDb(room) {
-    savedGameObj.findByIdAndRemove(room.savedGameRecordId, (err) => {
-        if (err) console.log(err);
-    });
-}
-
 // RECOVERING SAVED GAMES!
 savedGameObj.find({}).exec((err, foundSaveGameArray) => {
-    if (err) { console.log(err); } else {
-        for (const key in foundSaveGameArray) {
-            if (foundSaveGameArray.hasOwnProperty(key)) {
-                const foundSaveGame = foundSaveGameArray[key];
-
-                if (foundSaveGame) {
-                    const storedData = JSON.parse(foundSaveGame.room);
-
-                    globalState.rooms[storedData.roomId] = new gameRoom();
-
-                    Object.assign(globalState.rooms[storedData.roomId], storedData);
-
-                    globalState.rooms[storedData.roomId].restartSaved = true;
-                    globalState.rooms[storedData.roomId].savedGameRecordId = foundSaveGame.id;
-                    globalState.rooms[storedData.roomId].recoverGame(storedData);
-                    globalState.rooms[storedData.roomId].callback = socketCallback;
-                }
-            }
-        }
+    if (err) {
+        console.log(err);
+        return;
     }
+    
+    Object.values(foundSaveGameArray).forEach((foundSaveGame) => {
+        const storedData = JSON.parse(foundSaveGame.room);
+
+        globalState.rooms[storedData.roomId] = new gameRoom();
+
+        Object.assign(globalState.rooms[storedData.roomId], storedData);
+
+        globalState.rooms[storedData.roomId].restartSaved = true;
+        globalState.rooms[storedData.roomId].savedGameRecordId = foundSaveGame.id;
+        globalState.rooms[storedData.roomId].recoverGame(storedData);
+        globalState.rooms[storedData.roomId].callback = socketCallback;
+    });
 });
 
 module.exports = function (io) {
@@ -206,7 +199,7 @@ module.exports = function (io) {
                 message: `${socket.request.user.username} has joined the lobby.`,
                 classStr: 'server-text-teal',
             };
-            sendToAllChat(io, data);
+            sendToAllChat(globalState, data);
 
             updateCurrentPlayersList();
             // console.log("update current players list");
@@ -374,16 +367,6 @@ module.exports = function (io) {
     });
 };
 
-function socketCallback(action, room) {
-    if (action === "finishGame") {
-        var data = {
-            message: `Room ${room.roomId} has finished!`,
-            classStr: 'server-text-teal',
-        };
-        sendToAllChat(globalState.io, data);
-    }
-}
-
 function applyApplicableRewards(socket) {
     const getDisplayUsernameWithBadge = (title, text) => `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='${title}' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>${text}</span>`;
 
@@ -464,32 +447,6 @@ function textLengthFilter(str) {
     return str;
 }
 
-function sendToAllChat(io, data) {
-    const date = new Date();
-    data.dateCreated = date;
-
-    globalState.allSockets.forEach((sock) => {
-        sock.emit('allChatToClient', data);
-    });
-
-    globalState.allChatHistory.push(data);
-    globalState.allChat5Min.push(data);
-
-    let i = 0;
-
-    // Five minutes in milliseconds
-    while (date - globalState.allChat5Min[i].dateCreated > 1000 * 60 * 5) {
-        if (i >= globalState.allChat5Min.length) {
-            break;
-        }
-        i++;
-    }
-
-    if (i !== 0) {
-        globalState.allChat5Min.splice(0, i);
-    }
-}
-
 function sendToAllMods(io, data) {
     const date = new Date();
     data.dateCreated = date;
@@ -513,23 +470,6 @@ function isMuted(socket) {
 
     return returnVar;
 }
-
-function destroyRoom(roomId) {
-    deleteSaveGameFromDb(globalState.rooms[roomId]);
-
-    // Stop bots thread if they are playing:
-    if (globalState.rooms[roomId].interval) {
-        clearInterval(globalState.rooms[roomId].interval);
-        globalState.rooms[roomId].interval = undefined;
-    }
-    const thisGame = globalState.rooms[roomId];
-    globalState.rooms[roomId].socketsOfPlayers.filter((socket) => socket.isBotSocket).forEach((botSocket) => {
-        botSocket.handleGameOver(thisGame, 'complete', () => { }); // This room is getting destroyed. No need to leave.
-    });
-
-    globalState.rooms[roomId] = undefined;
-}
-
 
 function playerLeaveRoomCheckDestroy(socket) {
     if (socket.request.user.inRoomId && globalState.rooms[socket.request.user.inRoomId]) {
@@ -583,11 +523,11 @@ function disconnect(data) {
     // send out the new updated current player list
     updateCurrentPlayersList();
     // tell all clients that the user has left
-    const data = {
+    const toSend = {
         message: `${this.request.user.username} has left the lobby.`,
         classStr: 'server-text-teal',
     };
-    sendToAllChat(globalState.io, data);
+    sendToAllChat(globalState, toSend);
 
     // Note, by default when this disconnects, it leaves from all globalState.rooms.
     // If user disconnected from within a room, the leave room function will send a message to other players in room.
@@ -598,12 +538,12 @@ function disconnect(data) {
     playerLeaveRoomCheckDestroy(this);
 
     // if they are in a room, say they're leaving the room.
-    var data = {
+    const newToSend = {
         message: `${username} has left the room.`,
         classStr: 'server-text-teal',
         dateCreated: new Date(),
     };
-    sendToRoomChat(globalState, inRoomId, data);
+    sendToRoomChat(globalState, inRoomId, newToSend);
 }
 
 function messageCommand(data) {
@@ -669,7 +609,7 @@ function allChatFromClient(data) {
     data.message = textLengthFilter(data.message);
     // no classStr since its a player message
 
-    sendToAllChat(globalState.io, data);
+    sendToAllChat(globalState, data);
 }
 
 function roomChatFromClient(data) {
@@ -712,7 +652,7 @@ function newRoom(dataObj) {
         message: `${this.request.user.username} has created ${privateStr}room ${globalState.nextRoomId}.`,
         classStr: 'server-text',
     };
-    sendToAllChat(globalState.io, data);
+    sendToAllChat(globalState, data);
 
     // console.log(data.message);
 

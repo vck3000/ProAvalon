@@ -1,4 +1,3 @@
-
 module.exports = {
     command: 'mtogglepause',
     help: '/mtogglepause : Pauses or unpauses the current room.',

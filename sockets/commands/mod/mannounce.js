@@ -1,4 +1,3 @@
-
 module.exports = {
     command: 'mannounce',
     help: '/mannounce <message>: Sends a sweet alert to all online players with an included message. It automatically says the username of the mod that executed the command.',

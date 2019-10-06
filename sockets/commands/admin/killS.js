@@ -2,11 +2,8 @@
 module.exports = {
     command: 'killS',
     help: '/killS: test kill',
-    run(globalState, data) {
-        const { args } = data;
-        // do stuff
+    run() {
         process.exit(0);
-
         return { message: 'killS has been run.', classStr: 'server-text' };
     },
 };

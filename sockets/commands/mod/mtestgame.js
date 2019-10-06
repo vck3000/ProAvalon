@@ -1,3 +1,6 @@
+const GameRoom = require('../../../gameplay/game');
+const { sendToAllChat, updateCurrentGamesList, socketCallback } = require('../../util');
+const maddbots = require('./maddbots');
 
 module.exports = {
     command: 'mtestgame',
@@ -17,9 +20,9 @@ module.exports = {
 
         // Get the next room Id
         while (globalState.rooms[globalState.nextRoomId]) {
-            globalState.nextRoomId++;
+            globalState.nextRoomId += 1;
         }
-        dataObj = {
+        const dataObj = {
             maxNumPlayers: 10,
             newRoomPassword: '',
             gameMode: 'avalonBot',
@@ -27,17 +30,17 @@ module.exports = {
 
 
         // Create the room
-        globalState.rooms[globalState.nextRoomId] = new gameRoom('Bot game', globalState.nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword, dataObj.gameMode, socketCallback);
+        globalState.rooms[globalState.nextRoomId] = new GameRoom('Bot game', globalState.nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword, dataObj.gameMode, socketCallback);
         const privateStr = (dataObj.newRoomPassword === '') ? '' : 'private ';
         // broadcast to all chat
         const messageData = {
-            message: `${'Bot game' + ' has created '}${privateStr}room ${globalState.nextRoomId}.`,
+            message: `Bot game has created ${privateStr}room ${globalState.nextRoomId}.`,
             classStr: 'server-text',
         };
-        sendToAllChat(io, messageData);
+        sendToAllChat(globalState, messageData);
 
         // Add the bots to the room
-        actionsObj.modCommands.maddbots.run(globalState, data, undefined, globalState.nextRoomId);
+        maddbots.run(globalState, data);
 
         // Start the game.
         const options = ['Merlin', 'Assassin', 'Percival', 'Morgana', 'Ref of the Rain', 'Sire of the Sea', 'Lady of the Lake'];

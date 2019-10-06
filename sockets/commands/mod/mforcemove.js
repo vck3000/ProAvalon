@@ -1,3 +1,4 @@
+const { getIndexFromUsername } = require('../../util');
 
 module.exports = {
     command: 'mforcemove',
@@ -54,13 +55,10 @@ module.exports = {
                 availableButtons.push('no');
             }
 
-            var availablePlayers = thisRoom.playersInGame
-                .filter((player, playerIndex) => prohibitedIndexesToPick.indexOf(playerIndex) === -1).map((player) => player.request.user.username);
-
             // If there are 0 number of targets, there are no available players.
-            if (numOfTargets === null) {
-                var availablePlayers = null; // null here so that the user can see this. For other operations, set to [].
-            }
+            // null here so that the user can see this. For other operations, set to [].
+            const availablePlayers = numOfTargets ? thisRoom.playersInGame
+                .filter((player, index) => prohibitedIndexesToPick.indexOf(index) === -1).map((player) => player.request.user.username) : null;
 
             if (availableButtons.length !== 0) {
                 senderSocket.emit('messageCommandReturnStr', { message: '---------------', classStr: 'server-text' });
@@ -72,14 +70,11 @@ module.exports = {
             } else {
                 senderSocket.emit('messageCommandReturnStr', { message: `Player ${username} cannot make any moves.`, classStr: 'server-text' });
             }
-        }
-
-
-        // User is trying to force move.
-        else {
+        } else {
+            // User is trying to force move.
             // Raise the caps for target usernames
-            targetsCaps = [];
-            for (let i = 0; i < targets.length; i++) {
+            const targetsCaps = [];
+            for (let i = 0; i < targets.length; i += 1) {
                 const playerIndexFound = getIndexFromUsername(thisRoom.playersInGame, targets[i], true);
                 const playerSimulatedSocket = thisRoom.playersInGame[playerIndexFound];
                 if (playerSimulatedSocket === undefined) {

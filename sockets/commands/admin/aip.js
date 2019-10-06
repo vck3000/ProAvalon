@@ -1,3 +1,4 @@
+const { getIndexFromUsername } = require('../../util');
 
 module.exports = {
     command: 'aip',
@@ -6,23 +7,17 @@ module.exports = {
         const { args } = data;
 
         if (!args[1]) {
-            // console.log("a");
-            senderSocket.emit('messageCommandReturnStr', { message: 'Specify a username', classStr: 'server-text' });
             return { message: 'Specify a username.', classStr: 'server-text' };
         }
 
-
         const slapSocket = globalState.allSockets[getIndexFromUsername(globalState.allSockets, args[1])];
         if (slapSocket) {
-            // console.log("b");
             const clientIpAddress = slapSocket.request.headers['x-forwarded-for'] || slapSocket.request.connection.remoteAddress;
 
             senderSocket.emit('messageCommandReturnStr', { message: clientIpAddress, classStr: 'server-text' });
 
             return { message: 'slapSocket.request.user.username', classStr: 'server-text' };
         }
-
-        // console.log("c");
 
         senderSocket.emit('messageCommandReturnStr', { message: 'No IP found or invalid username', classStr: 'server-text' });
 

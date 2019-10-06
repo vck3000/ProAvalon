@@ -1,3 +1,6 @@
+const User = require('../../../models/user');
+const banIp = require('../../../models/banIp');
+const { getIndexFromUsername } = require('../../util');
 
 module.exports = {
     command: 'mipban',
@@ -24,8 +27,8 @@ module.exports = {
                         whenMade: new Date(),
                     };
 
-                    banIp.create(banIpData, (err, newBan) => {
-                        if (err) { console.log(err); } else {
+                    banIp.create(banIpData, (e) => {
+                        if (e) { console.log(e); } else {
                             globalState.allSockets[getIndexFromUsername(globalState.allSockets, args[1].toLowerCase(), true)].disconnect(true);
 
                             senderSocket.emit('messageCommandReturnStr', { message: `Successfully ip banned user ${args[1]}`, classStr: 'server-text' });

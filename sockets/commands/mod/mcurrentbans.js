@@ -1,16 +1,14 @@
+const modAction = require('../../../models/modAction');
 
 module.exports = {
     command: 'mcurrentbans',
     help: '/mcurrentbans: Show a list of currently active bans.',
     run(globalState, data, senderSocket) {
-        const { args } = data;
         // do stuff
         const dataToReturn = [];
-        let i = 0;
-        i++;
 
         // Cutoff so we dont return perma bans (that are 1000 years long)
-        cutOffDate = new Date('2999-12-17T03:24:00');
+        const cutOffDate = new Date('2999-12-17T03:24:00');
         modAction.find({
             $or: [
                 { type: 'mute' },

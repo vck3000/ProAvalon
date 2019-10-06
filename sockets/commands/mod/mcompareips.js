@@ -6,10 +6,11 @@ module.exports = {
         const usernames = [];
         const ips = [];
 
-        for (var i = 0; i < globalState.allSockets.length; i++) {
-            usernames.push(globalState.allSockets[i].request.user.username);
+        for (let i = 0; i < globalState.allSockets.length; i += 1) {
+            const sock = globalState.allSockets[i];
+            usernames.push(sock.request.user.username);
 
-            const clientIpAddress = globalState.allSockets[i].request.headers['x-forwarded-for'] || globalState.allSockets[i].request.connection.remoteAddress;
+            const clientIpAddress = sock.request.headers['x-forwarded-for'] || sock.request.connection.remoteAddress;
             ips.push(clientIpAddress);
         }
 
@@ -29,11 +30,10 @@ module.exports = {
         } else {
             dataToReturn[0] = { message: '-------------------------', classStr: 'server-text', dateCreated: new Date() };
 
-
-            for (var i = 0; i < duplicateIps.length; i++) {
+            for (let i = 0; i < duplicateIps.length; i += 1) {
                 // for each ip, search through the whole users to see who has the ips
 
-                for (let j = 0; j < ips.length; j++) {
+                for (let j = 0; j < ips.length; j += 1) {
                     if (ips[j] === duplicateIps[i]) {
                         dataToReturn.push({ message: usernames[j], classStr: 'server-text', dateCreated: new Date() });
                     }

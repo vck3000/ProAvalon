@@ -1,3 +1,4 @@
+const { destroyRoom, updateCurrentGamesList } = require('../../util');
 
 module.exports = {
     command: 'mclose',
@@ -16,7 +17,7 @@ module.exports = {
         roomIdsToClose.forEach((idToClose) => {
             if (globalState.rooms[idToClose] !== undefined) {
                 // Disconnect everyone
-                for (let i = 0; i < globalState.rooms[idToClose].globalState.allSockets.length; i++) {
+                for (let i = 0; i < globalState.rooms[idToClose].globalState.allSockets.length; i += 1) {
                     globalState.rooms[idToClose].globalState.allSockets[i].emit('leave-room-requested');
                 }
 

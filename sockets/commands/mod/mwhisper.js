@@ -1,3 +1,4 @@
+const { getIndexFromUsername } = require('../../util');
 
 module.exports = {
     command: 'mwhisper',
@@ -5,12 +6,10 @@ module.exports = {
     async run(globalState, data, senderSocket) {
         const { args } = data;
         let str = `${senderSocket.request.user.username}->${args[1]} (whisper): `;
-        for (let i = 2; i < args.length; i++) {
+        for (let i = 2; i < args.length; i += 1) {
             str += args[i];
             str += ' ';
         }
-
-        // str += ("(From: " + senderSocket.request.user.username + ")");
 
         const dataMessage = {
             message: str,
@@ -24,7 +23,7 @@ module.exports = {
             senderSocket.emit('messageCommandReturnStr', { message: `Could not find ${args[1]}`, classStr: 'server-text' });
         } else {
             // send notification that you can do /r for first whisper message
-            if (!lastWhisperObj[sendToSocket.request.user.username]) {
+            if (!globalState.lastWhisperObj[sendToSocket.request.user.username]) {
                 sendToSocket.emit('allChatToClient', { message: 'You can do /r <message> to reply.', classStr: 'whisper', dateCreated: new Date() });
                 sendToSocket.emit('roomChatToClient', { message: 'You can do /r <message> to reply.', classStr: 'whisper', dateCreated: new Date() });
             }
@@ -36,9 +35,10 @@ module.exports = {
             senderSocket.emit('roomChatToClient', dataMessage);
 
             // set the last whisper person
-            lastWhisperObj[sendToSocket.request.user.username] = senderSocket.request.user.username;
-
-            lastWhisperObj[senderSocket.request.user.username] = sendToSocket.request.user.username;
+            const senderUsername = senderSocket.request.user.username;
+            const receiverUsername = sendToSocket.request.user.username;
+            globalState.lastWhisperObj[receiverUsername] = senderUsername;
+            globalState.lastWhisperObj[senderUsername] = receiverUsername;
         }
     },
 };

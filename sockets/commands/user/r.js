@@ -4,7 +4,7 @@ module.exports = {
     help: '/r: Reply to a mod who just messaged you.',
     run(globalState, data, senderSocket) {
         const { args } = data;
-        let str = `${senderSocket.request.user.username}->${lastWhisperObj[senderSocket.request.user.username]} (whisper): `;
+        let str = `${senderSocket.request.user.username}->${globalState.lastWhisperObj[senderSocket.request.user.username]} (whisper): `;
         for (let i = 1; i < args.length; i++) {
             str += args[i];
             str += ' ';
@@ -19,7 +19,7 @@ module.exports = {
         };
 
         // this sendToSocket is the moderator
-        const sendToSocket = globalState.allSockets[getIndexFromUsername(globalState.allSockets, lastWhisperObj[senderSocket.request.user.username], true)];
+        const sendToSocket = globalState.allSockets[getIndexFromUsername(globalState.allSockets, globalState.lastWhisperObj[senderSocket.request.user.username], true)];
 
         if (!sendToSocket) {
             senderSocket.emit('messageCommandReturnStr', { message: "You haven't been whispered to before.", classStr: 'server-text' });
@@ -28,9 +28,9 @@ module.exports = {
             sendToSocket.emit('roomChatToClient', dataMessage);
 
             // set the last whisper person
-            lastWhisperObj[sendToSocket.request.user.username] = senderSocket.request.user.username;
+            globalState.lastWhisperObj[sendToSocket.request.user.username] = senderSocket.request.user.username;
 
-            lastWhisperObj[senderSocket.request.user.username] = sendToSocket.request.user.username;
+            globalState.lastWhisperObj[senderSocket.request.user.username] = sendToSocket.request.user.username;
 
             senderSocket.emit('allChatToClient', dataMessage);
             senderSocket.emit('roomChatToClient', dataMessage);

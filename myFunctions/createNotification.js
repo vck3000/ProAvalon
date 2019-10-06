@@ -1,12 +1,8 @@
 const mongoose = require('mongoose');
-const User = require('../../models/user');
-const myNotification = require('../../models/notification');
+const User = require('../models/user');
+const myNotification = require('../models/notification');
 
-
-createNotifObj = {};
-
-
-createNotifObj.createNotification = function (userIDTarget, stringToSay, link, madeBy) {
+exports.createNotification = function (userIDTarget, stringToSay, link, madeBy) {
     if (userIDTarget && madeBy) {
         User.findById(mongoose.Types.ObjectId(userIDTarget)).populate('notifications')
             .exec((err, foundUser) => {
@@ -63,6 +59,3 @@ createNotifObj.createNotification = function (userIDTarget, stringToSay, link, m
         console.log(`Missing a parameter - userIDTarget: ${userIDTarget}\tmadeBy: ${madeBy}`);
     }
 };
-
-
-module.exports = createNotifObj;
