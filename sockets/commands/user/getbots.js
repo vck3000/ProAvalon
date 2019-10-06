@@ -1,20 +1,10 @@
+const axios = require('axios');
+const { enabledBots, makeBotAPIRequest } = require('../../bot');
 
 module.exports = {
     command: 'getbots',
     help: '/getbots: Run this in a bot-compatible room. Prints a list of available bots to add, as well as their supported game modes',
     run(globalState, data, senderSocket) {
-        // if (senderSocket.request.user.inRoomId === undefined) {
-        // 	return {
-        // 		message: "You must be in a bot-capable room to run this command!",
-        // 		classStr: "server-text"
-        // 	};
-        // } else if (globalState.rooms[senderSocket.request.user.inRoomId].gameMode !== 'avalonBot') {
-        // 	return {
-        // 		message: "This room is not bot capable. Please join a bot-capable room.",
-        // 		classStr: "server-text"
-        // 	}
-        // }
-
         senderSocket.emit('messageCommandReturnStr', {
             message: 'Fetching bots...',
             classStr: 'server-text',
@@ -28,7 +18,7 @@ module.exports = {
                 name: botAPI.name,
                 info: response.data,
             };
-        }).catch((response) => null));
+        }).catch((err) => { console.log(err); }));
 
         axios.all(botInfoRequests).then((botInfoResponses) => {
             const botDescriptions = botInfoResponses.filter((result) => result != null).map((result) => `${result.name} - ${JSON.stringify(result.info.capabilities)}`);

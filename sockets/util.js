@@ -83,3 +83,12 @@ exports.socketCallback = (globalState, action, room) => {
         sendToAllChat(globalState, data);
     }
 };
+
+exports.getPlayerUsernamesFromAllSockets = (globalState) => {
+    const array = globalState.allSockets.map((sock) => sock.request.user.username).sort((a, b) => {
+        const textA = a.toUpperCase();
+        const textB = b.toUpperCase();
+        return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+    });
+    return array;
+};

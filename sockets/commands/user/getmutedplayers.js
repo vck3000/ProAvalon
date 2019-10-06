@@ -1,3 +1,4 @@
+const User = require('../../../models/user');
 
 module.exports = {
     command: 'getmutedplayers',
@@ -11,25 +12,29 @@ module.exports = {
         }
 
         User.findOne({ username: senderSocket.request.user.username }).exec((err, foundUser) => {
-            if (err) { console.log(err); } else if (foundUser) {
-                if (!foundUser.mutedPlayers) {
-                    foundUser.mutedPlayers = [];
-                }
-
-                const dataToReturn = [];
-                dataToReturn[0] = { message: 'Muted players:', classStr: 'server-text' };
-
-                for (let i = 0; i < foundUser.mutedPlayers.length; i++) {
-                    dataToReturn[i + 1] = { message: `-${foundUser.mutedPlayers[i]}`, classStr: 'server-text' };
-                }
-                if (dataToReturn.length === 1) {
-                    dataToReturn[0] = { message: 'You have no muted players.', classStr: 'server-text' };
-                }
-
-                // console.log(dataToReturn);
-
-                senderSocket.emit('messageCommandReturnStr', dataToReturn);
+            if (err) {
+                console.log(err);
+                return;
             }
+            if (!foundUser) {
+                return;
+            }
+
+            if (!foundUser.mutedPlayers) {
+                foundUser.mutedPlayers = [];
+            }
+
+            const dataToReturn = [];
+            dataToReturn[0] = { message: 'Muted players:', classStr: 'server-text' };
+
+            for (let i = 0; i < foundUser.mutedPlayers.length; i++) {
+                dataToReturn[i + 1] = { message: `-${foundUser.mutedPlayers[i]}`, classStr: 'server-text' };
+            }
+            if (dataToReturn.length === 1) {
+                dataToReturn[0] = { message: 'You have no muted players.', classStr: 'server-text' };
+            }
+
+            senderSocket.emit('messageCommandReturnStr', dataToReturn);
         });
     },
 };

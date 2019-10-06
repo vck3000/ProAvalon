@@ -1,3 +1,4 @@
+const { getIndexFromUsername } = require('../../util');
 
 module.exports = {
     command: 'r',
@@ -5,12 +6,10 @@ module.exports = {
     run(globalState, data, senderSocket) {
         const { args } = data;
         let str = `${senderSocket.request.user.username}->${globalState.lastWhisperObj[senderSocket.request.user.username]} (whisper): `;
-        for (let i = 1; i < args.length; i++) {
+        for (let i = 1; i < args.length; i += 1) {
             str += args[i];
             str += ' ';
         }
-
-        // str += ("(From: " + senderSocket.request.user.username + ")");
 
         const dataMessage = {
             message: str,
@@ -29,7 +28,6 @@ module.exports = {
 
             // set the last whisper person
             globalState.lastWhisperObj[sendToSocket.request.user.username] = senderSocket.request.user.username;
-
             globalState.lastWhisperObj[senderSocket.request.user.username] = sendToSocket.request.user.username;
 
             senderSocket.emit('allChatToClient', dataMessage);

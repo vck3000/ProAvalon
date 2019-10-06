@@ -39,7 +39,6 @@ const globalState = {
     allChat5Min: [],
     nextRoomId: 1,
     lastWhisperObj: {},
-    pmmodCooldowns: {},
     io: {},
     currentModActions: [],
 };
@@ -202,8 +201,6 @@ module.exports = function (io) {
             sendToAllChat(globalState, data);
 
             updateCurrentPlayersList();
-            // console.log("update current players list");
-            // console.log(getPlayerUsernamesFromAllSockets());
             updateCurrentGamesList(io);
             // message mods if player's ip matches another player
             matchedIpsUsernames = [];
@@ -505,15 +502,6 @@ function playerLeaveRoomCheckDestroy(socket) {
     }
 }
 
-function getPlayerUsernamesFromAllSockets() {
-    const array = globalState.allSockets.map((sock) => sock.request.user.username).sort((a, b) => {
-        const textA = a.toUpperCase();
-        const textB = b.toUpperCase();
-        return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-    });
-    return array;
-}
-
 function disconnect(data) {
     // debugging
     console.log(`${this.request.user.username} has left the lobby.`);
@@ -597,10 +585,8 @@ function allChatFromClient(data) {
     console.log(`allchat: ${data.message} by: ${this.request.user.username}`);
     // get the username and put it into the data object
 
-    const validUsernames = getPlayerUsernamesFromAllSockets();
-
     // if the username is not valid, i.e. one that they actually logged in as
-    if (validUsernames.indexOf(this.request.user.username) === -1) {
+    if (getPlayerUsernamesFromAllSockets(globalState).indexOf(this.request.user.username) === -1) {
         return;
     }
 
@@ -618,10 +604,8 @@ function roomChatFromClient(data) {
     console.log(`roomchat: ${data.message} by: ${this.request.user.username}`);
     // get the username and put it into the data object
 
-    const validUsernames = getPlayerUsernamesFromAllSockets();
-
     // if the username is not valid, i.e. one that they actually logged in as
-    if (validUsernames.indexOf(this.request.user.username) === -1) {
+    if (getPlayerUsernamesFromAllSockets(globalState).indexOf(this.request.user.username) === -1) {
         return;
     }
 

@@ -1,4 +1,8 @@
+const modsArray = require('../../../modsadmins/mods');
+const { getIndexFromUsername } = require('../../util');
+
 const PMMOD_TIMEOUT = 3000; // 3 seconds
+const pmmodCooldowns = {};
 
 module.exports = {
     command: 'pmmod',

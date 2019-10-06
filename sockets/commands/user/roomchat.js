@@ -3,9 +3,8 @@ module.exports = {
     command: 'roomchat',
     help: '/roomchat: Get a copy of the chat for the current game.',
     run(globalState, data, senderSocket) {
-        const { args } = data;
-        // code
-        if (globalState.rooms[senderSocket.request.user.inRoomId] && globalState.rooms[senderSocket.request.user.inRoomId].gameStarted === true) {
+        const room = globalState.rooms[senderSocket.request.user.inRoomId] || {};
+        if (room.gameStarted) {
             return globalState.rooms[senderSocket.request.user.inRoomId].chatHistory;
         }
 
