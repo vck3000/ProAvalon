@@ -34,12 +34,23 @@ router.post('/ban', upload.none(), async (req, res) => {
 
         // 2: Either userban or IP ban or BOTH checkboxes must be ticked.
         var boxCount = 0;
-        if (req.body["IPBanCheckbox"] === "on") {
-            boxCount++;
-        }
         if (req.body["userBanCheckbox"] === "on") {
             boxCount++;
         }
+        if (req.body["IPBanCheckbox"] === "on") {
+            boxCount++;
+        }
+        if (req.body["SingleIPBanCheckbox"] === "on") {
+            boxCount++;
+        }
+
+        // Prohibit both choices. Can only have one.
+        if (req.body["IPBanCheckbox"] === "on" && req.body["SingleIPBanCheckbox"] === "on") {
+            res.status(400);
+            res.send(`May not select both IP ban checkboxes.`);
+            return;
+        }
+        
         if (boxCount < 1) {
             res.status(400);
             res.send(`Must select at least one type of ban.`);
@@ -60,6 +71,16 @@ router.post('/ban', upload.none(), async (req, res) => {
         }
         const modUser = req.user;
 
+        // Single IP ban configuration:
+        var ipsToBan;
+        if (req.body["SingleIPBanCheckbox"] === "on") {
+            ipsToBan = banUser.lastIPAddress;
+        }
+        else{
+            ipsToBan = banUser.IPAddresses;
+        }
+
+                
         // Get duration for ban:
         const now = new Date();
         const whenMade = new Date();
@@ -88,14 +109,15 @@ router.post('/ban', upload.none(), async (req, res) => {
 
         // Create the data object
         const banData = {
-            ipban: req.body["IPBanCheckbox"] === "on" ? true : false,
+            ipban: (req.body["IPBanCheckbox"] === "on" || req.body["SingleIPBanCheckbox"] === "on") ? true : false,
+            singleIPBan: req.body["SingleIPBanCheckbox"] === "on" ? true : false,
             userban: req.body["userBanCheckbox"] === "on" ? true : false,
             bannedPlayer: {
                 id: banUser._id,
                 username: banUser.username,
                 usernameLower: banUser.usernameLower
             },
-            bannedIPs: banUser.IPAddresses,
+            bannedIPs: ipsToBan,
             modWhoBanned: {
                 id: modUser._id,
                 username: modUser.username,

@@ -16,6 +16,10 @@ const REWARDS = require('../rewards/constants');
 const avatarRequest = require('../models/avatarRequest');
 const User = require('../models/user');
 const Ban = require('../models/ban');
+const ModLog = require('../models/modLog');
+
+const IPLinkedAccounts = require('../myFunctions/IPLinkedAccounts');
+
 const JSON = require('circular-json');
 const modsArray = require('../modsadmins/mods');
 const adminsArray = require('../modsadmins/admins');
@@ -1430,52 +1434,45 @@ var actionsObj = {
             async run(data, senderSocket) {
                 const { args } = data;
 
-                var linkedUsernames = [];
-
-                var IPsToVisit = []
-
-                // Track down each user account linked to all IPs.
-                // Only need too return usernameLower and IPAddresses from the query
-                const user = await User.findOne({'usernameLower': args[1].toLowerCase()}, 'usernameLower IPAddresses');
-                if (user) {
-                    linkedUsernames.push(user.usernameLower);
-                    IPsToVisit = user.IPAddresses;
-                    console.log(user);
-
-                    while (IPsToVisit.length !== 0) {
-                        const nextIP = IPsToVisit.pop();
-                        const linkedUsers = await User.find({'IPAddresses': nextIP}, 'usernameLower IPAddresses');
-
-                        for (u of linkedUsers) {
-                            // If this user hasn't been checked yet, add their username to the list and their IPs.
-                            if(!linkedUsernames.includes(u.usernameLower)) {
-                                linkedUsernames.push(u.usernameLower);
-                                IPsToVisit = IPsToVisit.concat(u.IPAddresses);
-                            }
-                        }
-                        console.log("Checking IP " + nextIP);
-                    }
-
-                    // Send out data in a readable way to the mod.
-                    const dataToReturn = [];
-                    if (linkedUsernames.length === 0) {
-                        dataToReturn[0] = { message: 'There are no users with matching IPs (weird).', classStr: 'server-text', dateCreated: new Date() };
-                    } 
-                    else {
-                        dataToReturn[0] = { message: '-------------------------', classStr: 'server-text', dateCreated: new Date() };
-
-                        for (username of linkedUsernames) {
-                            dataToReturn.push({ message: username, classStr: 'server-text', dateCreated: new Date() });
-                        }
-
-                        dataToReturn.push({ message: '-------------------------', classStr: 'server-text', dateCreated: new Date() });                        
-                    }
-                    senderSocket.emit('messageCommandReturnStr', dataToReturn);
-                    
+                // Send out data in a readable way to the mod.
+                var dataToReturn = [];
+                var linkedUsernames;
+                try {
+                    ret = await IPLinkedAccounts(args[1]);
+                    linkedUsernames = ret.linkedUsernames;
+                } catch (e) {
+                    senderSocket.emit('messageCommandReturnStr', { message: e.message, classStr: 'server-text', dateCreated: new Date() });
+                    return;
                 }
-                else{
-                    senderSocket.emit('messageCommandReturnStr', { message: `Could not find user ${args[1]}.`, classStr: 'server-text', dateCreated: new Date() });
+
+                if (linkedUsernames.length === 0) {
+                    dataToReturn[0] = { message: 'There are no users with matching IPs (weird).', classStr: 'server-text', dateCreated: new Date() };
+                } 
+                else {
+                    dataToReturn[0] = { message: '-------------------------', classStr: 'server-text', dateCreated: new Date() };
+            
+                    for (username of linkedUsernames) {
+                        dataToReturn.push({ message: username, classStr: 'server-text', dateCreated: new Date() });
+                    }
+            
+                    dataToReturn.push({ message: '-------------------------', classStr: 'server-text', dateCreated: new Date() });                        
                 }
+                senderSocket.emit('messageCommandReturnStr', dataToReturn);
+                
+                // Create the ModLog
+                const modUser = await User.findOne({usernameLower: senderSocket.request.user.username.toLowerCase()});
+                ModLog.create({
+                    type: "miplinkedaccs",
+                    modWhoMade: {
+                        id: modUser._id,
+                        username: modUser.username,
+                        usernameLower: modUser.usernameLower,
+                    },
+                    data: {
+                        target: args[1],
+                        linkedUsernames: linkedUsernames
+                    }
+                });
             }
         }
     },

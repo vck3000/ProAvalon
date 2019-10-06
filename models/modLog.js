@@ -13,7 +13,10 @@ const modLogSchema = new mongoose.Schema({
     },
     data: Object,
 
-    dateCreated: Date,
+    dateCreated: {
+        type: Date,
+        default: new Date()
+    }
 });
 
 // compile schema into a model

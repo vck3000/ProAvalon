@@ -4,8 +4,7 @@ const forumThread = require('../models/forumThread');
 const forumThreadComment = require('../models/forumThreadComment');
 const forumThreadCommentReply = require('../models/forumThreadCommentReply');
 const User = require('../models/user');
-const modAction = require('../models/modAction');
-const banIp = require('../models/banIp');
+const IPLinkedAccounts = require('../myFunctions/IPLinkedAccounts');
 const Ban = require('../models/ban');
 
 const modsArray = require('../modsadmins/mods');
@@ -57,13 +56,6 @@ const isLoggedIn = asyncMiddleware(async (req, res, next) => {
         let message = `You have been banned. The ban will be released on ${moment(ban.whenRelease).format("LLL")}. Ban description: '${ban.descriptionByMod}'`;
         req.flash('error', message);
         res.redirect('/');
-
-        // Track IPs
-        if (!ban.bannedIPs.includes(clientIpAddress)) {
-            ban.bannedIPs.push(clientIpAddress);
-            ban.markModified("IPAdresses");
-            ban.save();
-        }
         return;
     }
 
@@ -79,6 +71,40 @@ const isLoggedIn = asyncMiddleware(async (req, res, next) => {
         req.flash('error', message);
         res.redirect('/');
         return;
+    }
+
+
+    // Check ALL the possible linked usernames and IPs they could have possibly ever been logged on
+    const { linkedUsernames, linkedIPs } = await IPLinkedAccounts(user.usernameLower);
+    ban = await Ban.findOne({
+        'usernameLower': {                  // Username match
+            $in: linkedUsernames
+        },
+        'whenRelease': {$gt: new Date() },  // Unexpired ban
+        'userban': true,                    // User ban
+        'disabled': false                   // Ban must be active
+    });
+    if (ban && ban.singleIPBan === false) {
+        let message = `You have been banned. The ban will be released on ${moment(ban.whenRelease).format("LLL")}. Ban description: '${ban.descriptionByMod}'`;
+        req.flash('error', message);
+        res.redirect('/');
+        return;
+    }
+
+    // Check all ips.
+    for (ip of linkedIPs) {
+        ban = await Ban.findOne({
+            'bannedIPs': ip,                    // IP match
+            'whenRelease': {$gt: new Date() },  // Unexpired ban
+            'ipban': true,                      // IP ban
+            'disabled': false                   // Ban must be active
+        });
+        if (ban && ban.singleIPBan === false) {
+            let message = `You have been banned. The ban will be released on ${moment(ban.whenRelease).format("LLL")}. Ban description: '${ban.descriptionByMod}'`;
+            req.flash('error', message);
+            res.redirect('/');
+            return;
+        }
     }
 
 

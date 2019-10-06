@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const banSchema = new mongoose.Schema({
     
     ipban: Boolean,
+    singleIPBan: Boolean,
     userban: Boolean,
 
     bannedPlayer: {
