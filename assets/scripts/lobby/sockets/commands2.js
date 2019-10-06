@@ -7,16 +7,51 @@ socket.on('commands', (commands) => {
 
 let modCommands;
 socket.on('modCommands', (commands) => {
-    // if (!modCommands) {
-    //     $('#modActionCloseButton').on('click', () => {
-    //         $('#modModal').modal('hide');
+    if (!modCommands) {
+        $('#modActionCloseButton').on('click', () => {
+            // Send request out.
+            var formElement = document.querySelector("#modactionform");
+            var bodyFormData = new FormData(formElement);
+            
+            Swal.fire({
+                title: 'Sending your request...',
+                onOpen: () => {
+                    Swal.showLoading();
 
-    //         // console.log($("#modactionform").serializeArray());
-    //         const data = $('#modactionform').serializeArray();
+                    axios({
+                        method: 'POST',
+                        url: '/mod/ban',
+                        data: bodyFormData,
+                        // config: { headers: {'Content-Type': 'multipart/form-data' }}
+                        })
+                        .then(function (response) {
+                            //handle success
+                            console.log(response);
+                            $('#modModal').modal('hide');
+                            Swal.close()
+                            Swal.fire({
+                                title: response.data,
+                                type: 'success'
+                            });
+                        })
+                        .catch(function (err) {
+                            //handle error
+                            Swal.close()
+                            Swal.fire({
+                                title: err.response.data,
+                                type: 'error'
+                            });
+                        });
+                }
+            });       
 
-    //         socket.emit('modAction', data);
-    //     });
-    // }
+
+            // console.log($("#modactionform").serializeArray());
+            // const data = $('#modactionform').serializeArray();
+
+            // socket.emit('modAction', data);
+        });
+    }
     modCommands = commands;
 });
 
