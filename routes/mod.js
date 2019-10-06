@@ -1,9 +1,9 @@
 const { Router } = require('express');
 const router = new Router();
 const { isMod } = require('./middleware');
-const modAction = require('../models/modAction'); //! Remove this later
 const User = require('../models/user');
 const Ban = require('../models/ban');
+const ModLog = require('../models/modLog');
 const multer = require('multer');
 const upload = multer();
 
@@ -107,11 +107,20 @@ router.post('/ban', upload.none(), async (req, res) => {
             descriptionByMod: req.body['descriptionByMod']
         };
 
-        console.log(banData);
+        // console.log(banData);
         await Ban.create(banData);
         
-        // TODO
         // Create mod log
+        await ModLog.create({
+            type: "ban",
+            modWhoMade: {
+                id: modUser._id,
+                username: modUser.username,
+                usernameLower: modUser.usernameLower
+            },
+            data: banData,
+            dateCreated: new Date()
+        })
 
         res.status(200);
         res.send(`The ban was successfully made.`);
@@ -153,71 +162,14 @@ router.get('/ajax/logData/:pageIndex', (req, res) => {
         // Page 0 is the first page.
         const skipNumber = pageIndex * NUM_OF_RESULTS_PER_PAGE;
 
-        modAction.find({})
-            .sort({ whenMade: 'descending' })
+        ModLog.find({})
+            .sort({ dateCreated: 'descending' })
             .skip(skipNumber)
             .limit(NUM_OF_RESULTS_PER_PAGE)
-            .exec(async (err, foundModActions) => {
-                if (err) { console.log(err); } else {
-                    logsObj = [];
-                    await foundModActions.forEach((action) => {
-                        stringsArray = [];
-                        switch (action.type) {
-                            case 'ban':
-                                stringsArray[0] = (`${action.modWhoBanned.username} has banned ${action.bannedPlayer.username}`);
-                                stringsArray[0] += ` for reason: ${action.reason}.`;
-
-
-                                stringsArray.push(`The ban was made on ${action.whenMade}`);
-                                stringsArray.push(`The ban will be released on: ${action.whenRelease}`);
-                                stringsArray.push(`Moderator message: ${action.descriptionByMod}`);
-                                break;
-                            case 'mute':
-                                stringsArray[0] = (`${action.modWhoBanned.username} has muted ${action.bannedPlayer.username}`);
-                                stringsArray[0] += ` for reason: ${action.reason}.`;
-
-
-                                stringsArray.push(`The mute was made on ${action.whenMade}`);
-                                // -1970 years because thats the start of computer time
-                                stringsArray.push(`The mute will be released on: ${action.whenRelease}`);
-                                stringsArray.push(`Moderator message: ${action.descriptionByMod}`);
-                                break;
-                            // Forum remove
-                            case 'remove':
-                                stringsArray[0] = `${action.modWhoBanned.username} removed ${action.bannedPlayer.username}'s ${action.elementDeleted}.`;
-                                stringsArray[0] += ` Reason: ${action.reason}.`;
-
-                                stringsArray[1] = `The removal occured on ${action.whenMade}`;
-                                stringsArray[2] = `Moderator message: ${action.descriptionByMod}`;
-
-                                // Get the extra link bit (The # bit to select to a specific comment/reply)
-                                linkStr = '';
-                                if (action.elementDeleted === 'forum') {
-                                    // Dont need the extra bit here
-                                } else if (action.elementDeleted == 'comment') {
-                                    linkStr == `#${action.idOfComment}`;
-                                } else if (action.elementDeleted == 'reply') {
-                                    linkStr == `#${action.idOfReply}`;
-                                }
-
-                                stringsArray[3] = `The link to the article is: <a href='/forum/show/${action.idOfForum}${linkStr}'>Here</a>`;
-                                break;
-                        }
-
-                        const log = {};
-                        log.stringsArray = stringsArray;
-                        log.date = action.whenMade;
-
-                        logsObj.push(log);
-                    });
-
-                    const obj = {};
-                    obj.logs = logsObj;
-
-                    // sort in newest to oldest
-                    // obj.logs.sort(compareLogObjs);
-
-                    res.status(200).send(obj);
+            .exec(async (err, logs) => {
+                if (err) { console.log(err); } 
+                else {
+                    res.status(200).send(logs);
                 }
             });
     }

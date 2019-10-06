@@ -2,15 +2,16 @@ const mongoose = require('mongoose');
 
 // SCHEMA SETUP
 const modLogSchema = new mongoose.Schema({
-    type: String, // ban, mute? avatar approve?
+    type: String,
     modWhoMade: {
         id: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
         },
         username: String,
+        usernameLower: String
     },
-    description: String,
+    data: Object,
 
     dateCreated: Date,
 });

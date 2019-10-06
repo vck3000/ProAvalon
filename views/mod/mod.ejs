@@ -1,5 +1,9 @@
 <% include ../partials/header %>
 
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+<script src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
+
 <style>
     .myContainer {
         border-radius: 50px;
@@ -56,6 +60,57 @@
 </div>
 
 
+<script type="text/babel">
+    'use strict';
+
+    const e = React.createElement;
+    class LogTable extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = { 
+                logs: null
+            };
+        }
+
+        componentDidMount() {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("GET", "/mod/ajax/logData/0", true);
+
+            xmlhttp.onreadystatechange = () => {
+                if (xmlhttp.readyState==4 && xmlhttp.status==200){
+                    var logs = JSON.parse(xmlhttp.responseText);
+                    this.setState({logs: logs})
+                    console.log(logs);
+                }
+            }
+            xmlhttp.send();
+        }
+
+        render() {
+            if (!this.state.logs) {
+                return "Loading....."
+            }
+            else {
+                return "test";
+            }
+        }
+    }
+
+    class Log extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = { liked: false };
+        }
+
+        render() {
+            return "test";
+        }
+    }
+
+    const domContainer = document.querySelector('#logsDiv');
+    ReactDOM.render(<LogTable />, domContainer);
+</script>
+<!-- 
 <script>
 
     $( document ).ready(function() {
@@ -68,7 +123,7 @@
                 modData=JSON.parse(xmlhttp.responseText);
                 console.log(modData);
 
-                updateModData(modData);
+                // updateModData(modData);
             }
         }
         xmlhttp.send();
@@ -122,8 +177,7 @@
         index++;
     }
 
-</script>
-
+</script> -->
 
 
 
