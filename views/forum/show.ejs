@@ -187,9 +187,15 @@
                     <div class="individualComment <%=classesToAdd%>">
                         <p>
                             <% if(comment.disabled && comment.disabled === true){ %>
-                            <span style="color: red;" class="glyphicon glyphicon-ban-circle"></span>                            
+                                <span style="color: red;" class="glyphicon glyphicon-ban-circle"></span>                            
+                                <strong>*Deleted*</strong>                       
+                            <% } else { %>
+                                <strong><%=comment.author.username%></strong>     
                             <% } %>
-                            <strong><%=comment.author.username%></strong> 
+                            <% if(comment.disabled && comment.disabled === true && locals.mod && mod === true){ %>
+                                <strong><%=comment.author.username%> (only mod see)</strong>     
+                            <% } %>
+                            
                             <span class="timeSince"><%=comment.timeSinceString%> ago</span>
                             <span class="glyphicon glyphicon-thumbs-up"></span>
                             <span id=<%=comment._id + "likes"%>> <%=comment.likes%></span>
@@ -276,9 +282,17 @@
                         <div class="replyToComment <%=classesToAdd%>"  id=<%=reply.id%>>
                             <p>
                                 <% if(reply.disabled && reply.disabled === true){ %>
-                                <span style="color: red;" class="glyphicon glyphicon-ban-circle"></span>                            
+                                    <span style="color: red;" class="glyphicon glyphicon-ban-circle"></span>     
+                                    <strong>*Deleted*</strong>                       
+                                <% } else { %>
+                                    <strong><%=reply.author.username%></strong>     
                                 <% } %>
-                                <strong><%=reply.author.username%></strong>
+                                <% if(reply.disabled && reply.disabled === true && locals.mod && mod === true){ %>
+                                    <strong><%=reply.author.username%> (only mod see)</strong>     
+                                <% } %>
+
+                                    
+                                
                                 <span class="timeSince"><%=reply.timeSinceString%> ago</span>
                                 <span class="glyphicon glyphicon-thumbs-up"></span>
                                 <span id=<%=reply._id + "likes"%>> <%=reply.likes%></span>
