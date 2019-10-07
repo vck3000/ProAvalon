@@ -1198,6 +1198,26 @@ Game.prototype.finishGame = function (toBeWinner) {
     });
 
     if (botUsernames.length === 0) {
+        // Calculate team 1v1 elo adjustment
+        const teamResChange = this.calculateResistanceRatingChange(this.winner);
+        const teamSpyChange = -teamResChange;
+
+        // individual changes per player, to one decimal place.
+        const indResChange = Math.round(teamResChange/this.resistanceUsernames.length * 10)/10;
+        const indSpyChange = Math.round(teamSpyChange/this.spyUsernames.length * 10)/10;
+
+        // Broadcast elo adjustments in chat first, if broadcasted in the updating process, its slow
+        this.sendText(this.allSockets, 'Rating Adjustments:', 'server-text');
+        this.playersInGame.forEach((player) => {
+            var rating = player.request.user.playerRating;
+            if (player.alliance === 'Resistance') {
+                this.sendText(this.allSockets, `${player.request.user.username}: ${Math.round(rating)} -> ${Math.round(rating + indResChange)}`, 'server-text');
+            }
+            else if (player.alliance === 'Spy') {
+                this.sendText(this.allSockets, `${player.request.user.username}: ${Math.round(rating)} -> ${Math.round(rating + indSpyChange)}`, 'server-text');
+            }
+        });
+
         this.playersInGame.forEach((player) => {
             User.findById(player.userId).populate('notifications').exec((err, foundUser) => {
                 if (err) { console.log(err); } else if (foundUser) {
@@ -1217,6 +1237,14 @@ Game.prototype.finishGame = function (toBeWinner) {
                         if (winnerVar === 'Spy') {
                             foundUser.totalResLosses += 1;
                         }
+                    }
+
+                    // update player ratings
+                    if (player.alliance === 'Resistance') {
+                        foundUser.playerRating += indResChange;
+                    }
+                    else if (player.alliance === 'Spy') {
+                        foundUser.playerRating += indSpyChange;
                     }
 
                     // checks that the var exists
@@ -1455,6 +1483,58 @@ Game.prototype.togglePause = function (modUsername) {
         this.distributeGameData();
     }
 };
+
+/*
+ELO RATING CALCULATION:
+
+Usual formula = R_new = R_old + k(Actual - Expected)
+
+1. Use average team rating and pit together in a 1v1 format.
+2. Adjust ratings for Res and Spy winrates (constant adjustment based on site winrates, maybe for that player size).
+2. Using k-value k=38, calculate adjustment amount = k(Actual - Expected)
+    a. Actual = 1 for win, 0 for loss
+    b. Expected = 1/(1 + 10^-(R_old - R_opp)/400)
+3. Multiplicative adjustment based on player size.
+4. Divide equally between players on each team and adjust ratings. (Done in the finishGame function)
+*/
+Game.prototype.calculateResistanceRatingChange = function (winningTeam) {
+    // k value parameter for calculation
+    const k = 38
+    // Calculate ratings for each team by averaging elo of players
+    resTeamEloRatings = this.playersInGame.filter(soc => soc.alliance === 'Resistance').map(soc => soc.request.user.playerRating)
+    spyTeamEloRatings = this.playersInGame.filter(soc => soc.alliance === 'Spy').map(soc => soc.request.user.playerRating)
+
+    var total = 0;
+    for(var i=0; i < resTeamEloRatings.length; i++) {
+        total += resTeamEloRatings[i];
+    }
+    var resElo = total/resTeamEloRatings.length;
+
+    total = 0
+    for(var i=0; i < spyTeamEloRatings.length; i++) {
+        total += spyTeamEloRatings[i];
+    }
+    var spyElo = total/spyTeamEloRatings.length;
+
+    // Adjust ratings for sitewide winrates. Currently prototype, using hardcoded based on current.
+    // 58% expected win percentage equates to a elo increase of 56 points.
+    spyElo += 56
+    
+    console.log("Resistance Team Elo: " + resElo);
+    console.log("Spy Team Elo: " + spyElo);
+
+    // Calculate elo change, adjusting for player size, difference is 1- or just -
+    if (winningTeam === 'Resistance') {
+        return k * (1 - (1/(1+Math.pow(10, -(resElo - spyElo)/400)))) * (this.playersInGame.length/5);
+    }
+    else if (winningTeam === 'Spy') {
+        return k * (-1/(1+Math.pow(10, -(resElo - spyElo)/400))) * (this.playersInGame.length/5);
+    }
+    else {
+        // winning team should always be defined
+        this.sendText(this.allSockets, 'Error in elo calculation, no winning team specified.', 'server-text');
+    }
+}
 
 module.exports = Game;
 
