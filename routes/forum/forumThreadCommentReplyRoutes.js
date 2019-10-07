@@ -32,7 +32,7 @@ const newReplyLimiter = process.env.MY_PLATFORM === 'local'
     })
     : rateLimit({
         windowMs: 60 * 60 * 1000, // 1 hours
-        max: 15,
+        max: 10,
     });
 
 /** ******************************************************* */
