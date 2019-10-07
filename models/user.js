@@ -63,6 +63,12 @@ const UserSchema = new mongoose.Schema({
         default: 0,
     },
 
+    playerRating: {
+        // currently elo, possible change in future
+        type: Number,
+        default: 1500,
+    },
+
     winsLossesGameSizeBreakdown: {
         type: Object,
         default: {},
