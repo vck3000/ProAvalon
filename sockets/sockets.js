@@ -33,6 +33,8 @@ const { makeBotAPIRequest } = _bot;
 const { SimpleBotSocket } = _bot;
 const { APIBotSocket } = _bot;
 
+const sanitizeHtml = require('sanitize-html');
+
 const dateResetRequired = 1543480412695;
 
 const newUpdateNotificationRequired = 1565505539914;
@@ -1430,31 +1432,57 @@ var actionsObj = {
 
         miplinkedaccs: {
             command: 'miplinkedaccs',
-            help: "/miplinkedaccs <username>: Finds all accounts that have shared the same IPs the specified user.",
+            help: "/miplinkedaccs <username> <fullTree>: Finds all accounts that have shared the same IPs the specified user. Put anything in <fullTree> to see full tree.",
             async run(data, senderSocket) {
                 const { args } = data;
 
                 // Send out data in a readable way to the mod.
                 var dataToReturn = [];
-                var linkedUsernames;
+                var linkedUsernamesWithLevel;
+                var usernamesTree;
+                var newUsernamesTreeLines = [];
                 try {
-                    ret = await IPLinkedAccounts(args[1]);
-                    linkedUsernames = ret.linkedUsernames;
+                    var ret = await IPLinkedAccounts(args[1], args[2] !== undefined ? true : false);
+                    linkedUsernamesWithLevel = ret.linkedUsernamesWithLevel;
+                    usernamesTree = ret.usernamesTree;
                 } catch (e) {
                     senderSocket.emit('messageCommandReturnStr', { message: e.message, classStr: 'server-text', dateCreated: new Date() });
                     return;
                 }
 
-                if (linkedUsernames.length === 0) {
+                if (linkedUsernamesWithLevel.length === 0) {
                     dataToReturn[0] = { message: 'There are no users with matching IPs (weird).', classStr: 'server-text', dateCreated: new Date() };
                 } 
                 else {
                     dataToReturn[0] = { message: '-------------------------', classStr: 'server-text', dateCreated: new Date() };
-            
-                    for (username of linkedUsernames) {
-                        dataToReturn.push({ message: username, classStr: 'server-text', dateCreated: new Date() });
+                    // Old display:
+                    // for (obj of linkedUsernamesWithLevel) {
+                    //     dataToReturn.push({ message: `${obj.level} - ${obj.username}`, classStr: 'server-text', dateCreated: new Date() });
+                    // }
+
+                    lines = usernamesTree.split("\n");
+                    // console.log(lines);
+                    // Do my special replace white space with forced white space and append
+                    for (line of lines) {
+                        var replace = true;
+                        var newLine = "";
+                        for (ch of line) {
+                            if (ch == ' ' && replace) {
+                                newLine += "&#160;&#160;";
+                            }
+                            else if (!ch.match('/^[a-z0-9]+$/i')) {
+                                newLine += ch;
+                            }
+                            else {
+                                replace = false;
+                                newLine += ch;
+                            }
+                        }
+                        newLine = sanitizeHtml(newLine);
+                        dataToReturn.push({ message: `${newLine}`, classStr: 'server-text', dateCreated: new Date() });
+                        newUsernamesTreeLines.push(newLine);
                     }
-            
+
                     dataToReturn.push({ message: '-------------------------', classStr: 'server-text', dateCreated: new Date() });                        
                 }
                 senderSocket.emit('messageCommandReturnStr', dataToReturn);
@@ -1470,7 +1498,8 @@ var actionsObj = {
                     },
                     data: {
                         target: args[1],
-                        linkedUsernames: linkedUsernames
+                        newUsernamesTreeLines: newUsernamesTreeLines,
+                        fullTree: args[2] !== undefined ? true : false
                     },
                     dateCreated: new Date()
                 });
