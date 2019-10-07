@@ -832,6 +832,46 @@ var actionsObj = {
                 return dataToReturn;
             },
         },
+
+        mgetban: {
+            command: 'mgetban',
+            help: "/mgetban <username>: Find the players latest active ban that would be undone by /munban.",
+            async run(data, senderSocket) {
+                const { args } = data;
+
+                if (!args[1]) {
+                    return { message: 'Specify a username.', classStr: 'server-text' };
+                }
+
+                ban = await Ban.findOne({
+                    'bannedPlayer.usernameLower': args[1].toLowerCase(),
+                    'whenRelease': {$gt: new Date()}, 
+                    'disabled': false
+                })
+                .sort({ whenMade: 'descending' });
+
+                if (ban) {
+                    const dataToReturn = [];
+                    dataToReturn[0] = { message: `Ban details for ${ban.bannedPlayer.username}:`, classStr: 'server-text', dateCreated: new Date() };
+
+                    dataToReturn.push({ message: `Ban made by: ${ban.modWhoBanned.username}`, classStr: 'server-text', dateCreated: new Date() });
+                    dataToReturn.push({ message: `Ban made on: ${moment(ban.whenMade).format("LLL")}.`, classStr: 'server-text', dateCreated: new Date() });
+                    dataToReturn.push({ message: `Ban duration: ${ban.durationToBan}`, classStr: 'server-text', dateCreated: new Date() });
+                    dataToReturn.push({ message: `Ban to be released on: ${moment(ban.whenRelease).format("LLL")}.`, classStr: 'server-text', dateCreated: new Date() });
+                    dataToReturn.push({ message: `Mod description: ${ban.descriptionByMod}`, classStr: 'server-text', dateCreated: new Date() });
+                    dataToReturn.push({ message: `User ban: ${ban.userBan}`, classStr: 'server-text', dateCreated: new Date() });
+                    dataToReturn.push({ message: `IP ban: ${ban.ipBan}`, classStr: 'server-text', dateCreated: new Date() });
+                    dataToReturn.push({ message: `Single IP ban: ${ban.singleIPBan}`, classStr: 'server-text', dateCreated: new Date() });
+
+                    senderSocket.emit('messageCommandReturnStr', dataToReturn);
+                }
+                 
+                else {
+                    senderSocket.emit('messageCommandReturnStr', { message: `Could not find an active ban for ${args[1]}.`, classStr: 'server-text' });
+                }
+            },
+        },
+        
         munban: {
             command: 'munban',
             help: "/munban <username>: Removes the latest ban for a username.",
@@ -873,47 +913,7 @@ var actionsObj = {
                     senderSocket.emit('messageCommandReturnStr', { message: `Could not find a ban for ${args[1]}.`, classStr: 'server-text' });
                 }
             },
-        },
-
-        mgetban: {
-            command: 'mgetban',
-            help: "/mgetban <username>: Find the players latest active ban that would be undone by /munban.",
-            async run(data, senderSocket) {
-                const { args } = data;
-
-                if (!args[1]) {
-                    return { message: 'Specify a username.', classStr: 'server-text' };
-                }
-
-                ban = await Ban.findOne({
-                    'bannedPlayer.usernameLower': args[1].toLowerCase(),
-                    'whenRelease': {$gt: new Date()}, 
-                    'disabled': false
-                })
-                .sort({ whenMade: 'descending' });
-
-                if (ban) {
-                    const dataToReturn = [];
-                    dataToReturn[0] = { message: `Ban details for ${ban.bannedPlayer.username}:`, classStr: 'server-text', dateCreated: new Date() };
-
-                    dataToReturn.push({ message: `Ban made by: ${ban.modWhoBanned.username}`, classStr: 'server-text', dateCreated: new Date() });
-                    dataToReturn.push({ message: `Ban made on: ${moment(ban.whenMade).format("LLL")}.`, classStr: 'server-text', dateCreated: new Date() });
-                    dataToReturn.push({ message: `Ban duration: ${ban.durationToBan}`, classStr: 'server-text', dateCreated: new Date() });
-                    dataToReturn.push({ message: `Ban to be released on: ${moment(ban.whenRelease).format("LLL")}.`, classStr: 'server-text', dateCreated: new Date() });
-                    dataToReturn.push({ message: `Mod description: ${ban.descriptionByMod}`, classStr: 'server-text', dateCreated: new Date() });
-                    dataToReturn.push({ message: `User ban: ${ban.userBan}`, classStr: 'server-text', dateCreated: new Date() });
-                    dataToReturn.push({ message: `IP ban: ${ban.ipBan}`, classStr: 'server-text', dateCreated: new Date() });
-                    dataToReturn.push({ message: `Single IP ban: ${ban.singleIPBan}`, classStr: 'server-text', dateCreated: new Date() });
-
-                    senderSocket.emit('messageCommandReturnStr', dataToReturn);
-                }
-                 
-                else {
-                    senderSocket.emit('messageCommandReturnStr', { message: `Could not find an active ban for ${args[1]}.`, classStr: 'server-text' });
-                }
-            },
-        },
-        
+        },        
 
         mcompareips: {
             command: 'mcompareips',
