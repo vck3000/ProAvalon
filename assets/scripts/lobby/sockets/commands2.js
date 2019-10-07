@@ -34,10 +34,10 @@ socket.on('modCommands', (commands) => {
                             //handle success
                             // console.log(response);
 
-                            // $('#modModal').modal('hide');
+                            $('#modModal').modal('hide');
 
                             // Clear the form for next input.
-                            // $("#modactionform")[0].reset();
+                            $("#modactionform")[0].reset();
 
                             Swal.close()
                             Swal.fire({
