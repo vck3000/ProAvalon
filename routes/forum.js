@@ -226,7 +226,7 @@ router.post('/forumBan', isMod, asyncMiddleware(async (req) => {
             foundForumThread.disabled = true;
             foundForumThread.save();
             
-            forumBanData.originalContent = foundForumThread.description;
+            forumBanData.originalContent = foundForumThread.title;
             
             ForumBan.create(forumBanData);
 
