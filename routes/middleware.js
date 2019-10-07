@@ -32,7 +32,7 @@ const isLoggedIn = asyncMiddleware(async (req, res, next) => {
     // Have to find the user to get notifications.
     const user = await User.findOne({ usernameLower: req.user.username.toLowerCase() }).populate('notifications').exec();
     const clientIpAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    console.log(clientIpAddress);
+    // console.log(clientIpAddress);
 
     // Track IPs
     if (!user.IPAddresses.includes(clientIpAddress)) {

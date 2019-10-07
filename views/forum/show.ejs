@@ -380,7 +380,7 @@
             <br>
 
                 <iframe name="frame" style="display: none;"></iframe>
-                <form action="/modAction" method="POST" target="frame" id="modactionform">
+                <form action="/" method="" target="frame" id="modactionform">
                     <div class="form-group">
                         <label for="banPlayerUsername">Username of player to modAction against: <h6 style="display: inline">(It is case sensitive, please be careful! Best to copy paste their username)</h6></label>
                         <input name="banPlayerUsername" type="text" class="form-control" id="banPlayerUsername" placeholder="Username of player to modAction against.">
@@ -398,10 +398,11 @@
                         <label for="reasonofmodaction">Reason: </label>
                         <br>
                         <select name="reasonofmodaction" class="form-control" id="typeofmodaction">
-                            <option selected>Please select an option</option>
+                            <option value="">Please select an option</option>
                             <option value="abusive">Abusive</option>
                             <option value="unrelated">Unrelated</option>
                             <option value="advertising">Advertising</option>
+                            <option value="other">Other</option>
                         </select>
                     </div>
 
@@ -413,7 +414,7 @@
                     </div>                    
 
                     <div class="form-group">
-                        <label for="descriptionByMod">Description: <h6 style="display: inline;">OPTIONAL: This will be NOT be publically viewable. Just for the sake of a record. Up to you if you want to write anything.</h6></label>
+                        <label for="descriptionByMod">Description: <h6 style="display: inline;">Only viewed by mods in the logs.</h6></label>
                         <br>
                         <textarea name="descriptionByMod" class="form-control" style="width: 100%;" id="descriptionByMod"></textarea>
                     </div>
@@ -460,20 +461,32 @@
         <%if(locals.mod){ %>
             <%if(mod === true){ %>
                 $("#modActionCloseButton").on("click", function(){
-                    $("#modModal").modal("hide");
-                    
                     var data = $("#modactionform").serializeArray();
+
+                    console.log(data);
+                    for (o of data) {
+                        if (o.name === "reasonofmodaction") {
+                            if (o.value === "") {
+                                alert("Please fill in a reason.");
+                                return;
+                            }
+                        }
+                        else if (o.name === "descriptionByMod") {
+                            if (o.value === "") {
+                                alert("Please fill in a short description.");
+                                return;
+                            }
+                        }
+                    }
                     
                     $.ajax({
                         type: 'POST',
                         data: data,
-                        
-                        
+                                                
                         dataType:'json',
-                        url: '/forum/modAction',                      
+                        url: '/forum/forumBan',                      
                         success: function(data) {
-                            console.log('success');
-                                                       
+                            console.log('success');  
                         },
                         error: function(error) {
                             // console.log("some error in fetching the notifications");
@@ -481,9 +494,7 @@
                         }
                     });
 
-                    console.log(data);
-                    
-                    //create ajax
+                    $("#modModal").modal("hide");
                 });
 
 

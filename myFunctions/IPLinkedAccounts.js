@@ -13,7 +13,7 @@ IPLinkedAccounts = async (username) => {
     if (user) {
         linkedUsernames.push(user.usernameLower);
         IPsToVisit = user.IPAddresses;
-        console.log(user);
+        // console.log(user);
     
         while (IPsToVisit.length !== 0) {
             const nextIP = IPsToVisit.pop();
@@ -32,7 +32,7 @@ IPLinkedAccounts = async (username) => {
                 }
             }
     
-            console.log("Checking IP " + nextIP);
+            // console.log("Checking IP " + nextIP);
         }
         const returnObj = {
             linkedUsernames: linkedUsernames,

@@ -149,9 +149,8 @@
         }
     }
 
-    function ipLinkedAccs(props) {
+    function ipLinkedAccsText(props) {
         let data = props.data;
-        console.log(props.data.linkedUsernames);
         return {
             title: `${props.modWhoMade.username} has used /miplinkedaccs on ${props.data.target}.`,
             body: <div>
@@ -159,6 +158,34 @@
             </div>
         }
     }
+    
+    function forumBanText(props) {
+        let data = props.data;
+        let link = "forum/show";
+        if (data.idOfForum !== undefined) {
+            link += "/" + data.idOfForum.toString();
+        }
+
+        if (data.idOfReply !== undefined) {
+            link += "#" + data.idOfReply.toString();
+        }
+        else if (data.idOfComment !== undefined) {
+            link += "#" + data.idOfComment.toString();
+        }
+
+        return {
+            title: `${props.modWhoMade.username} has removed a ${props.data.elementDeleted} by ${props.data.bannedPlayer.username}.`,
+            body: <span>
+                <p>Moderator message: {data.descriptionByMod}.</p>
+                <p>The content was: {data.originalContent}</p>
+                <p>The reason was: {data.reason}</p>
+                <p>The link is: <a href={link}>Here</a></p>
+           </span>
+        }
+    }
+    
+
+    forumBanText
 
     class Log extends React.Component {
         constructor(props) {
@@ -182,7 +209,10 @@
                     logText = avatarText(this.props.log);
                     break;
                 case "miplinkedaccs":
-                    logText = ipLinkedAccs(this.props.log);
+                    logText = ipLinkedAccsText(this.props.log);
+                    break;
+                case "forumBan":
+                    logText = forumBanText(this.props.log);
                     break;
             }
 

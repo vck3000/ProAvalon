@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 // SCHEMA SETUP
-const modActionSchema = new mongoose.Schema({
+const ForumBanSchema = new mongoose.Schema({
     type: String, // ban, mute?
 
     bannedPlayer: {
@@ -22,17 +22,11 @@ const modActionSchema = new mongoose.Schema({
         username: String,
     },
 
-
     reason: String,
-
 
     whenMade: Date,
 
-    durationToBan: Date,
-    whenRelease: Date,
-
     descriptionByMod: String,
-
     originalContent: String,
 
     idOfReply: {
@@ -51,6 +45,6 @@ const modActionSchema = new mongoose.Schema({
 });
 
 // compile schema into a model
-const modAction = mongoose.model('ModAction', modActionSchema);
+const ForumBan = mongoose.model('ForumBan', ForumBanSchema);
 
-module.exports = modAction;
+module.exports = ForumBan;
