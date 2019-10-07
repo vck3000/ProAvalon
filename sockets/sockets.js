@@ -3,9 +3,7 @@ const axios = require('axios');
 const gameRoom = require('../gameplay/game');
 
 const savedGameObj = require('../models/savedGame');
-const modAction = require('../models/modAction');
 
-let currentModActions = [];
 const myNotification = require('../models/notification');
 const createNotificationObj = require('../myFunctions/createNotification');
 
@@ -17,10 +15,16 @@ const REWARDS = require('../rewards/constants');
 
 const avatarRequest = require('../models/avatarRequest');
 const User = require('../models/user');
-const banIp = require('../models/banIp');
+const Ban = require('../models/ban');
+const ModLog = require('../models/modLog');
+
+const IPLinkedAccounts = require('../myFunctions/IPLinkedAccounts');
+
 const JSON = require('circular-json');
 const modsArray = require('../modsadmins/mods');
 const adminsArray = require('../modsadmins/admins');
+
+const moment = require("moment");
 
 const _bot = require('./bot');
 
@@ -69,7 +73,6 @@ function gracefulShutdown() {
     console.log('Graceful shutdown request');
     process.exit();
 }
-
 
 function sendWarning() {
     for (const key in allSockets) {
@@ -803,48 +806,6 @@ var actionsObj = {
                 return { message: 'You are not a mod. Why are you trying this...', classStr: 'server-text' };
             },
         },
-        mipban: {
-            command: 'mipban',
-            help: '/mipban <username>: Ban the IP of the player given. /munban does not undo this ban. Contact ProNub to remove an IP ban.',
-            run(data, senderSocket) {
-                const { args } = data;
-
-                if (!args[1]) {
-                    senderSocket.emit('messageCommandReturnStr', { message: 'Specify a username', classStr: 'server-text' });
-                    return { message: 'Specify a username.', classStr: 'server-text' };
-                }
-
-                User.find({ usernameLower: senderSocket.request.user.username.toLowerCase() }).populate('notifications').exec((err, foundUser) => {
-                    if (err) { console.log(err); } else if (foundUser) {
-                        const slapSocket = allSockets[getIndexFromUsername(allSockets, args[1], true)];
-                        if (slapSocket) {
-                            const clientIpAddress = slapSocket.request.headers['x-forwarded-for'] || slapSocket.request.connection.remoteAddress;
-
-                            const banIpData = {
-                                type: 'ip',
-                                bannedIp: clientIpAddress,
-                                usernamesAssociated: [args[1].toLowerCase()],
-                                modWhoBanned: { id: foundUser._id, username: foundUser.username },
-                                whenMade: new Date(),
-                            };
-
-                            banIp.create(banIpData, (err, newBan) => {
-                                if (err) { console.log(err); } else {
-                                    allSockets[getIndexFromUsername(allSockets, args[1].toLowerCase(), true)].disconnect(true);
-
-                                    senderSocket.emit('messageCommandReturnStr', { message: `Successfully ip banned user ${args[1]}`, classStr: 'server-text' });
-                                }
-                            });
-                        } else {
-                            senderSocket.emit('messageCommandReturnStr', { message: 'Could not find the player to ban.', classStr: 'server-text' });
-                        }
-                    } else {
-                        // send error message back
-                        senderSocket.emit('messageCommandReturnStr', { message: "Could not find your user data (your own one, not the person you're trying to ban)", classStr: 'server-text' });
-                    }
-                });
-            },
-        },
         mhelp: {
             command: 'mhelp',
             help: '/mhelp: show commands.',
@@ -871,9 +832,10 @@ var actionsObj = {
                 return dataToReturn;
             },
         },
-        munban: {
-            command: 'munban',
-            help: "/munban <player name>: Removes ALL existing bans OR mutes on a player's name.",
+
+        mgetban: {
+            command: 'mgetban',
+            help: "/mgetban <username>: Find the players latest active ban that would be undone by /munban.",
             async run(data, senderSocket) {
                 const { args } = data;
 
@@ -881,70 +843,78 @@ var actionsObj = {
                     return { message: 'Specify a username.', classStr: 'server-text' };
                 }
 
-                modAction.find({ 'bannedPlayer.usernameLower': args[1].toLowerCase() }, (err, foundModAction) => {
-                    // console.log("foundmodaction");
-                    // console.log(foundModAction);
-                    if (foundModAction.length !== 0) {
-                        modAction.remove({ 'bannedPlayer.usernameLower': args[1].toLowerCase() }, (err, foundModAction) => {
-                            if (err) {
-                                console.log(err);
-                                senderSocket.emit('messageCommandReturnStr', { message: 'Something went wrong.', classStr: 'server-text' });
-                            } else {
-                                // console.log("Successfully unbanned " + args[1] + ".");
-                                senderSocket.emit('messageCommandReturnStr', { message: `Successfully unbanned ${args[1]}.`, classStr: 'server-text' });
+                ban = await Ban.findOne({
+                    'bannedPlayer.usernameLower': args[1].toLowerCase(),
+                    'whenRelease': {$gt: new Date()}, 
+                    'disabled': false
+                })
+                .sort({ whenMade: 'descending' });
 
+                if (ban) {
+                    const dataToReturn = [];
+                    dataToReturn[0] = { message: `Ban details for ${ban.bannedPlayer.username}:`, classStr: 'server-text', dateCreated: new Date() };
 
-                                reloadCurrentModActions();
-                            }
-                        });
-                    } else {
-                        senderSocket.emit('messageCommandReturnStr', { message: `${args[1]} does not have a ban.`, classStr: 'server-text' });
-                    }
-                });
+                    dataToReturn.push({ message: `Ban made by: ${ban.modWhoBanned.username}`, classStr: 'server-text', dateCreated: new Date() });
+                    dataToReturn.push({ message: `Ban made on: ${moment(ban.whenMade).format("LLL")}.`, classStr: 'server-text', dateCreated: new Date() });
+                    dataToReturn.push({ message: `Ban duration: ${ban.durationToBan}`, classStr: 'server-text', dateCreated: new Date() });
+                    dataToReturn.push({ message: `Ban to be released on: ${moment(ban.whenRelease).format("LLL")}.`, classStr: 'server-text', dateCreated: new Date() });
+                    dataToReturn.push({ message: `Mod description: ${ban.descriptionByMod}`, classStr: 'server-text', dateCreated: new Date() });
+                    dataToReturn.push({ message: `User ban: ${ban.userBan}`, classStr: 'server-text', dateCreated: new Date() });
+                    dataToReturn.push({ message: `IP ban: ${ban.ipBan}`, classStr: 'server-text', dateCreated: new Date() });
+                    dataToReturn.push({ message: `Single IP ban: ${ban.singleIPBan}`, classStr: 'server-text', dateCreated: new Date() });
+
+                    senderSocket.emit('messageCommandReturnStr', dataToReturn);
+                }
+                 
+                else {
+                    senderSocket.emit('messageCommandReturnStr', { message: `Could not find an active ban for ${args[1]}.`, classStr: 'server-text' });
+                }
             },
         },
-
-        mcurrentbans: {
-            command: 'mcurrentbans',
-            help: '/mcurrentbans: Show a list of currently active bans.',
-            run(data, senderSocket) {
+        
+        munban: {
+            command: 'munban',
+            help: "/munban <username>: Removes the latest ban for a username.",
+            async run(data, senderSocket) {
                 const { args } = data;
-                // do stuff
-                const dataToReturn = [];
-                let i = 0;
-                i++;
 
-                // Cutoff so we dont return perma bans (that are 1000 years long)
-                cutOffDate = new Date('2999-12-17T03:24:00');
-                modAction.find({
-                    $or: [
-                        { type: 'mute' },
-                        { type: 'ban' },
-                    ],
-                    $and: [
-                        { whenRelease: { $lte: cutOffDate } },
-                        { whenRelease: { $gte: new Date() } },
-                    ],
-                }, (err, foundModActions) => {
-                    foundModActions.forEach((modActionFound) => {
-                        let message = '';
-                        if (modActionFound.type === 'ban') {
-                            message = `${modActionFound.bannedPlayer.username} was banned for ${modActionFound.reason} by ${modActionFound.modWhoBanned.username}, description: '${modActionFound.descriptionByMod}' until: ${modActionFound.whenRelease.toString()}`;
-                        } else if (modActionFound.type === 'mute') {
-                            message = `${modActionFound.bannedPlayer.username} was muted for ${modActionFound.reason} by ${modActionFound.modWhoBanned.username}, description: '${modActionFound.descriptionByMod}' until: ${modActionFound.whenRelease.toString()}`;
-                        }
+                if (!args[1]) {
+                    return { message: 'Specify a username.', classStr: 'server-text' };
+                }
 
-                        dataToReturn[dataToReturn.length] = { message, classStr: 'server-text' };
+                ban = await Ban.findOne({
+                    'bannedPlayer.usernameLower': args[1].toLowerCase(),
+                    'whenRelease': {$gt: new Date()}, 
+                    'disabled': false
+                })
+                .sort({ whenMade: 'descending' });
+
+                if (ban) {
+                    ban.disabled = true;
+                    ban.markModified('disabled');
+                    await ban.save();
+
+                    // Create the ModLog
+                    const modUser = await User.findOne({usernameLower: senderSocket.request.user.username.toLowerCase()});
+                    ModLog.create({
+                        type: "munban",
+                        modWhoMade: {
+                            id: modUser._id,
+                            username: modUser.username,
+                            usernameLower: modUser.usernameLower,
+                        },
+                        data: ban,
+                        dateCreated: new Date()
                     });
-
-                    if (dataToReturn.length === 0) {
-                        senderSocket.emit('messageCommandReturnStr', { message: 'No one is banned! Yay!', classStr: 'server-text' });
-                    } else {
-                        senderSocket.emit('messageCommandReturnStr', dataToReturn);
-                    }
-                });
+                    senderSocket.emit('messageCommandReturnStr', { message: `Successfully unbanned ${args[1]}'s latest ban. Their record still remains, however.`, classStr: 'server-text' });
+                }
+                 
+                else {
+                    senderSocket.emit('messageCommandReturnStr', { message: `Could not find a ban for ${args[1]}.`, classStr: 'server-text' });
+                }
             },
-        },
+        },        
+
         mcompareips: {
             command: 'mcompareips',
             help: '/mcompareips: Get usernames of players with the same IP.',
@@ -1438,7 +1408,7 @@ var actionsObj = {
 
         mtogglepause: {
             command: 'mtogglepause',
-            help: "/mtogglepause : Pauses or unpauses the current room.",
+            help: "/mtogglepause: Pauses or unpauses the current room.",
             run(data, senderSocket) {
                 const currentRoom = rooms[senderSocket.request.user.inRoomId];
                 if (currentRoom) {
@@ -1455,6 +1425,55 @@ var actionsObj = {
                 else {
                     return { message: `You are not in a room.`, classStr: 'server-text' }
                 }
+            }
+        },
+
+        miplinkedaccs: {
+            command: 'miplinkedaccs',
+            help: "/miplinkedaccs <username>: Finds all accounts that have shared the same IPs the specified user.",
+            async run(data, senderSocket) {
+                const { args } = data;
+
+                // Send out data in a readable way to the mod.
+                var dataToReturn = [];
+                var linkedUsernames;
+                try {
+                    ret = await IPLinkedAccounts(args[1]);
+                    linkedUsernames = ret.linkedUsernames;
+                } catch (e) {
+                    senderSocket.emit('messageCommandReturnStr', { message: e.message, classStr: 'server-text', dateCreated: new Date() });
+                    return;
+                }
+
+                if (linkedUsernames.length === 0) {
+                    dataToReturn[0] = { message: 'There are no users with matching IPs (weird).', classStr: 'server-text', dateCreated: new Date() };
+                } 
+                else {
+                    dataToReturn[0] = { message: '-------------------------', classStr: 'server-text', dateCreated: new Date() };
+            
+                    for (username of linkedUsernames) {
+                        dataToReturn.push({ message: username, classStr: 'server-text', dateCreated: new Date() });
+                    }
+            
+                    dataToReturn.push({ message: '-------------------------', classStr: 'server-text', dateCreated: new Date() });                        
+                }
+                senderSocket.emit('messageCommandReturnStr', dataToReturn);
+                
+                // Create the ModLog
+                const modUser = await User.findOne({usernameLower: senderSocket.request.user.username.toLowerCase()});
+                ModLog.create({
+                    type: "miplinkedaccs",
+                    modWhoMade: {
+                        id: modUser._id,
+                        username: modUser.username,
+                        usernameLower: modUser.usernameLower,
+                    },
+                    data: {
+                        target: args[1],
+                        linkedUsernames: linkedUsernames
+                    },
+                    dateCreated: new Date()
+                });
             }
         }
     },
@@ -1588,21 +1607,6 @@ const { userCommands } = actionsObj;
 const { modCommands } = actionsObj;
 const { adminCommands } = actionsObj;
 
-
-function reloadCurrentModActions() {
-    // load up all the modActions that are not released yet
-    modAction.find({ whenRelease: { $gt: new Date() }, $or: [{ type: 'mute' }, { type: 'ban' }] }, (err, allModActions) => {
-        // reset currentModActions
-        currentModActions = [];
-        for (let i = 0; i < allModActions.length; i++) {
-            currentModActions.push(allModActions[i]);
-        }
-        // console.log("mute");
-        // console.log(currentModActions);
-    });
-}
-
-
 ioGlobal = {};
 
 module.exports = function (io) {
@@ -1638,18 +1642,6 @@ module.exports = function (io) {
 
         // slight delay while client loads
         setTimeout(() => {
-            // check if they have a ban or a mute
-            for (var i = 0; i < currentModActions.length; i++) {
-                if (currentModActions[i].bannedPlayer.id && socket.request.user.id.toString() === currentModActions[i].bannedPlayer.id.toString()) {
-                    if (currentModActions[i].type === 'mute') {
-                        socket.emit('muteNotification', currentModActions[i]);
-                    } else if (currentModActions[i].type === 'ban') {
-                        socket.emit('redirect', '/');
-                        socket.disconnect();
-                    }
-                }
-            }
-
             console.log(`${socket.request.user.username} has connected under socket ID: ${socket.id}`);
 
             // send the user its ID to store on their side.
@@ -1754,108 +1746,6 @@ module.exports = function (io) {
         // when a user disconnects/leaves the whole website
         socket.on('disconnect', disconnect);
 
-        socket.on('modAction', async (data) => {
-            if (modsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1) {
-                // var parsedData = JSON.parse(data);
-                const newModAction = {};
-                let userNotFound = false;
-
-                await data.forEach(async (item) => {
-                    if (item.name === 'banPlayerUsername') {
-                        // not case sensitive
-                        await User.findOne({ usernameLower: item.value.toLowerCase() }, (err, foundUser) => {
-                            if (err) { console.log(err); } else {
-                                // foundUser = foundUser[0];
-                                if (!foundUser) {
-                                    socket.emit('messageCommandReturnStr', { message: 'User not found. Please check spelling and caps.', classStr: 'server-text' });
-                                    userNotFound = true;
-                                    return;
-                                }
-                                // console.log(foundUser);
-                                newModAction.bannedPlayer = {};
-                                newModAction.bannedPlayer.id = foundUser._id;
-                                newModAction.bannedPlayer.username = foundUser.username;
-                                newModAction.bannedPlayer.usernameLower = foundUser.usernameLower;
-
-                                socket.emit('messageCommandReturnStr', { message: 'User found, Adding in details...\t', classStr: 'server-text' });
-                            }
-                        });
-                    } else if (item.name === 'typeofmodaction') {
-                        newModAction.type = item.value;
-                    } else if (item.name === 'reasonofmodaction') {
-                        newModAction.reason = item.value;
-                    } else if (item.name === 'durationofmodaction') {
-                        const oneSec = 1000;
-                        const oneMin = oneSec * 60;
-                        const oneHr = oneMin * 60;
-                        const oneDay = oneHr * 24;
-                        const oneMonth = oneDay * 30;
-                        const oneYear = oneMonth * 12;
-                        // 30 min, 3hr, 1 day, 3 day, 7 day, 1 month
-                        const durations = [
-                            oneMin * 30,
-                            oneHr * 3,
-                            oneDay,
-                            oneDay * 3,
-                            oneDay * 7,
-                            oneMonth,
-                            oneMonth * 6,
-                            oneYear,
-                            oneYear * 1000,
-                        ];
-                        newModAction.durationToBan = new Date(durations[item.value]);
-                    } else if (item.name === 'descriptionByMod') {
-                        newModAction.descriptionByMod = item.value;
-                    }
-                });
-
-                if (userNotFound === true) {
-                    return;
-                }
-
-                await User.findById(socket.request.user.id, (err, foundUser) => {
-                    if (err) { console.log(err); } else {
-                        newModAction.modWhoBanned = {};
-                        newModAction.modWhoBanned.id = foundUser._id;
-                        newModAction.modWhoBanned.username = foundUser.username;
-                    }
-                });
-
-                newModAction.whenMade = new Date();
-                newModAction.whenRelease = newModAction.whenMade.getTime() + newModAction.durationToBan.getTime();
-
-                setTimeout(() => {
-                    // console.log(newModAction);
-                    if (userNotFound === false && newModAction.bannedPlayer && newModAction.bannedPlayer.username) {
-                        modAction.create(newModAction, (err, newModActionCreated) => {
-                            if (newModActionCreated !== undefined) {
-                                // console.log(newModActionCreated);
-                                // push new mod action into the array of currently active ones loaded.
-                                currentModActions.push(newModActionCreated);
-                                // if theyre online
-                                if (newModActionCreated.type === 'ban' && allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)]) {
-                                    allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)].disconnect(true);
-                                } else if (newModActionCreated.type === 'mute' && allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)]) {
-                                    allSockets[getIndexFromUsername(allSockets, newModActionCreated.bannedPlayer.username.toLowerCase(), true)].emit('muteNotification', newModActionCreated);
-                                }
-
-                                socket.emit('messageCommandReturnStr', { message: `${newModActionCreated.bannedPlayer.username} has received a ${newModActionCreated.type} modAction. Thank you :).`, classStr: 'server-text' });
-                            } else {
-                                socket.emit('messageCommandReturnStr', { message: 'Something went wrong...', classStr: 'server-text' });
-                            }
-                        });
-                    } else {
-                        let str = 'Something went wrong... Contact the admin! Details: ';
-                        str += `UserNotFound: ${userNotFound}`;
-                        str += `\t newModAction.bannedPlayer: ${newModAction.bannedPlayer}`;
-                        str += `\t newModAction.username: ${newModAction.username}`;
-                        socket.emit('messageCommandReturnStr', { message: str, classStr: 'server-text' });
-                    }
-                }, 3000);
-            } else {
-                // create a report. someone doing something bad.
-            }
-        });
 
         //= ======================================
         // COMMANDS
@@ -2036,18 +1926,6 @@ function sendToAllMods(io, data) {
     });
 }
 
-function isMuted(socket) {
-    returnVar = false;
-    currentModActions.forEach((oneModAction) => {
-        if (oneModAction.type === 'mute' && oneModAction.bannedPlayer && oneModAction.bannedPlayer.id && oneModAction.bannedPlayer.id.toString() === socket.request.user.id.toString()) {
-            socket.emit('muteNotification', oneModAction);
-            returnVar = true;
-        }
-    });
-
-    return returnVar;
-}
-
 function destroyRoom(roomId) {
     deleteSaveGameFromDb(rooms[roomId]);
 
@@ -2226,68 +2104,53 @@ function interactUserPlayed(data) {
     }
 }
 function allChatFromClient(data) {
-    // this.emit("danger-alert", "test alert asdf");
-    // debugging
+    console.log(`allchat: ${data.message} by: ${this.request.user.username}`);
+    // get the username and put it into the data object
 
-    const toContinue = !isMuted(this);
+    const validUsernames = getPlayerUsernamesFromAllSockets();
 
-    // console.log(toContinue);
-
-    if (toContinue) {
-        console.log(`allchat: ${data.message} by: ${this.request.user.username}`);
-        // get the username and put it into the data object
-
-        const validUsernames = getPlayerUsernamesFromAllSockets();
-
-        // if the username is not valid, i.e. one that they actually logged in as
-        if (validUsernames.indexOf(this.request.user.username) === -1) {
-            return;
-        }
-
-        data.username = this.request.displayUsername ? this.request.displayUsername : this.request.user.username;
-        // send out that data object to all other clients (except the one who sent the message)
-        data.message = textLengthFilter(data.message);
-        // no classStr since its a player message
-
-        sendToAllChat(ioGlobal, data);
+    // if the username is not valid, i.e. one that they actually logged in as
+    if (validUsernames.indexOf(this.request.user.username) === -1) {
+        return;
     }
+
+    data.username = this.request.displayUsername ? this.request.displayUsername : this.request.user.username;
+    // send out that data object to all other clients (except the one who sent the message)
+    data.message = textLengthFilter(data.message);
+    // no classStr since its a player message
+
+    sendToAllChat(ioGlobal, data);
+    
 }
 
 function roomChatFromClient(data) {
-    // this.emit("danger-alert", "test alert asdf");
-    // debugging
 
-    const toContinue = !isMuted(this);
+    console.log(`roomchat: ${data.message} by: ${this.request.user.username}`);
+    // get the username and put it into the data object
 
-    if (toContinue) {
-        console.log(`roomchat: ${data.message} by: ${this.request.user.username}`);
-        // get the username and put it into the data object
+    const validUsernames = getPlayerUsernamesFromAllSockets();
 
-        const validUsernames = getPlayerUsernamesFromAllSockets();
-
-        // if the username is not valid, i.e. one that they actually logged in as
-        if (validUsernames.indexOf(this.request.user.username) === -1) {
-            return;
-        }
-
-        data.username = this.request.displayUsername ? this.request.displayUsername : this.request.user.username;
-
-        data.message = textLengthFilter(data.message);
-        data.dateCreated = new Date();
-
-        if (this.request.user.inRoomId) {
-            // send out that data object to all clients in room
-
-            sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
-            // ioGlobal.in(data.roomId).emit("roomChatToClient", data);
-        }
+    // if the username is not valid, i.e. one that they actually logged in as
+    if (validUsernames.indexOf(this.request.user.username) === -1) {
+        return;
     }
+
+    data.username = this.request.displayUsername ? this.request.displayUsername : this.request.user.username;
+
+    data.message = textLengthFilter(data.message);
+    data.dateCreated = new Date();
+
+    if (this.request.user.inRoomId) {
+        // send out that data object to all clients in room
+
+        sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
+        // ioGlobal.in(data.roomId).emit("roomChatToClient", data);
+    }
+    
 }
 
 function newRoom(dataObj) {
-    const toContinue = !isMuted(this);
-
-    if (toContinue && dataObj) {
+    if (dataObj) {
         // while rooms exist already (in case of a previously saved and retrieved game)
         while (rooms[nextRoomId]) {
             nextRoomId++;
@@ -2351,41 +2214,35 @@ function joinRoom(roomId, inputPassword) {
 
 
 function joinGame(roomId) {
-    const toContinue = !isMuted(this);
+    if (rooms[roomId]) {
+        // if the room has not started yet, throw them into the room
+        // console.log("Game status is: " + rooms[roomId].getStatus());
 
-    if (toContinue) {
-        if (rooms[roomId]) {
-            // if the room has not started yet, throw them into the room
-            // console.log("Game status is: " + rooms[roomId].getStatus());
-
-            if (rooms[roomId].getStatus() === 'Waiting') {
-                const ToF = rooms[roomId].playerSitDown(this);
-                console.log(`${this.request.user.username} has joined room ${roomId}: ${ToF}`);
-            } else {
-                // console.log("Game has started, player " + this.request.user.username + " is not allowed to join.");
-            }
+        if (rooms[roomId].getStatus() === 'Waiting') {
+            const ToF = rooms[roomId].playerSitDown(this);
+            console.log(`${this.request.user.username} has joined room ${roomId}: ${ToF}`);
+        } else {
+            // console.log("Game has started, player " + this.request.user.username + " is not allowed to join.");
         }
     }
+    
 }
 
 function standUpFromGame() {
-    const toContinue = !isMuted(this);
-
     const roomId = this.request.user.inRoomId;
 
-    if (toContinue) {
-        if (rooms[roomId]) {
-            // if the room has not started yet, remove them from players list
-            // console.log("Game status is: " + rooms[roomId].getStatus());
+    if (rooms[roomId]) {
+        // if the room has not started yet, remove them from players list
+        // console.log("Game status is: " + rooms[roomId].getStatus());
 
-            if (rooms[roomId].getStatus() === 'Waiting') {
-                const ToF = rooms[roomId].playerStandUp(this);
-                // console.log(this.request.user.username + " has stood up from room " + roomId + ": " + ToF);
-            } else {
-                // console.log("Game has started, player " + this.request.user.username + " is not allowed to stand up.");
-            }
+        if (rooms[roomId].getStatus() === 'Waiting') {
+            const ToF = rooms[roomId].playerStandUp(this);
+            // console.log(this.request.user.username + " has stood up from room " + roomId + ": " + ToF);
+        } else {
+            // console.log("Game has started, player " + this.request.user.username + " is not allowed to stand up.");
         }
     }
+    
 }
 
 function leaveRoom() {

@@ -1,5 +1,14 @@
 <% include ../partials/header %>
 
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+<!-- <script src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script> -->
+
+<script type="text/javascript" src="<%-getVersionedPath('/libraries/moment.js')%>"></script>
+
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+
 <style>
     .myContainer {
         border-radius: 50px;
@@ -11,6 +20,28 @@
         background-color: #eee;
         
         width:95%;
+    }
+
+    .alignCenterHoriz{
+        text-align: center;
+        background: rgb(200,200,200);
+    }
+
+    .logButtons{
+        /* position: relative; */
+        /* left: 50%; */
+        /* transform: translateX(-50%); */
+        /* margin: 0 15px 15px 15px; */
+        margin-left: 15px;
+        margin-right: 15px;
+    }
+
+    .pageButtonGroup {
+        position: relative; 
+        left: 50%; 
+        transform: translateX(-50%); 
+        display: inline-block;
+        margin-bottom: 15px;
     }
 
 </style>
@@ -45,86 +76,240 @@
         </div>
     </div>
 
-    <button class="btn btn-info" style="    
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%);" onclick="loadMoreLogs()">
-        Load more
-    </button>
-
-
 </div>
 
 
-<script>
+<script type="text/babel">
+    'use strict';
 
-    $( document ).ready(function() {
-        xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("GET", "/mod/ajax/logData/0", true);
-
-        xmlhttp.onreadystatechange=function(){
-            if (xmlhttp.readyState==4 && xmlhttp.status==200){
-                
-                modData=JSON.parse(xmlhttp.responseText);
-                console.log(modData);
-
-                updateModData(modData);
-            }
-        }
-        xmlhttp.send();
-    });
-
-    function updateModData(data){
-
-        str = "";
+    function banText(props) {
+        let data = props.data;
+        let whenMade = moment(data.whenMade);
+        let whenRelease = moment(data.whenRelease);
         
-        for(var i = 0; i < data.logs.length; i++){
+        return {
+            title: `${data.modWhoBanned.username} has banned ${data.bannedPlayer.username} for reason ${data.reason}.` ,
+            body: <span>
+                <p>The duration specified was: {data.durationToBan}.</p>
+                <p>The ban will be released on: {whenRelease.format("LLL")}.</p>
+                <p>Moderator message: {data.descriptionByMod}.</p>
+                <p>User ban: {data.userBan ? "true" : "false"}</p>
+                <p>IP ban: {data.ipBan ? "true" : "false"}</p>
+                <p>Single IP ban: {data.singleIPBan ? "true" : "false"} (Note: Don't worry if IP Ban is true too, it's just for the server to know that it still is technically an "IP ban")</p>
+            </span>
+        }
+    }
 
-            descriptionStr = "";
-            for(var j = 1; j < data.logs[i].stringsArray.length; j++){
-                descriptionStr += "<p>" + data.logs[i].stringsArray[j] + "</p>";
+    function munbanText(props) {
+        let data = props.data;
+        let whenMade = moment(data.whenMade);
+        let whenRelease = moment(data.whenRelease);
+        
+        return {
+            title: `${data.modWhoBanned.username} has UNBANNED ${data.bannedPlayer.username}.` ,
+            body: <span>
+                <p>The date the ban was made on was: {whenMade.format("LLL")}.</p>
+                <p>The duration specified was: {data.durationToBan}.</p>
+                <p>The ban will be released on: {whenRelease.format("LLL")}.</p>
+                <p>Moderator message: {data.descriptionByMod}.</p>
+                <p>User ban: {data.userBan ? "true" : "false"}</p>
+                <p>IP ban: {data.ipBan ? "true" : "false"}</p>
+                <p>Single IP ban: {data.singleIPBan ? "true" : "false"} (Note: Don't worry if IP Ban is true too, it's just for the server to know that it still is technically an "IP ban")</p>
+            </span>
+        }
+    }    
+
+    function avatarText(props) {
+        let data = props.data;
+        return {
+            title: `${props.modWhoMade.username} has ${data.approved === "true" ? "APPROVED" : "REJECTED"} ${data.username}'s avatar.` ,
+            body: <span>
+                <p>Message to mod: {data.msgToMod}.</p>
+                <p>Mod comment: {data.modComment}.</p>
+
+                <div className="row">
+                    <div className="col-sm-6">
+                        <div className="panel panel-success">
+                            <div className="panel-heading">Res img:</div>
+                            <div className="panel-body alignCenterHoriz">
+                                <img className="avatarImg" src={data.resLink}></img>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-sm-6">
+                        <div className="panel panel-danger">
+                            <div className="panel-heading">Spy img:</div>
+                            <div className="panel-body alignCenterHoriz">
+                                <img className="avatarImg" src={data.spyLink}></img>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </span>
+        }
+    }
+
+    function ipLinkedAccsText(props) {
+        let data = props.data;
+        return {
+            title: `${props.modWhoMade.username} has used /miplinkedaccs on ${props.data.target}.`,
+            body: <div>
+                <p>The usernames that were linked were: {props.data.linkedUsernames.join(", ")}.</p>
+            </div>
+        }
+    }
+    
+    function forumBanText(props) {
+        let data = props.data;
+        let link = "forum/show";
+        if (data.idOfForum !== undefined) {
+            link += "/" + data.idOfForum.toString();
+        }
+
+        if (data.idOfReply !== undefined) {
+            link += "#" + data.idOfReply.toString();
+        }
+        else if (data.idOfComment !== undefined) {
+            link += "#" + data.idOfComment.toString();
+        }
+
+        return {
+            title: `${props.modWhoMade.username} has removed a ${props.data.elementDeleted} by ${props.data.bannedPlayer.username}.`,
+            body: <span>
+                <p>Moderator message: {data.descriptionByMod}.</p>
+                <p>The content was: {data.originalContent}</p>
+                <p>The reason was: {data.reason}</p>
+                <p>The link is: <a href={link}>Here</a></p>
+           </span>
+        }
+    }
+    
+
+    forumBanText
+
+    class Log extends React.Component {
+        constructor(props) {
+            super(props);
+        }
+        render() {
+            // console.log(this.props.log);
+            var logText = {
+                title: "Error",
+                body: "Error"
+            };
+
+            switch (this.props.log.type) {
+                case "ban":
+                    logText = banText(this.props.log);
+                    break;
+                case "munban":
+                    logText = munbanText(this.props.log);
+                    break;
+                case "avatar":
+                    logText = avatarText(this.props.log);
+                    break;
+                case "miplinkedaccs":
+                    logText = ipLinkedAccsText(this.props.log);
+                    break;
+                case "forumBan":
+                    logText = forumBanText(this.props.log);
+                    break;
             }
 
-            str += `<div class="panel panel-info">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                        ` + data.logs[i].stringsArray[0] + `
+            return (
+                <div className="panel panel-info">
+                    <div className="panel-heading">
+                        <h3 className="panel-title">
+                            {logText.title}
                         </h3>
                     </div>
-                    <div class="panel-body">
-                        ` + descriptionStr + `
+                    <div className="panel-body">
+                        <p>Date: {moment(this.props.log.dateCreated).format("LLL")}</p>
+                        {logText.body}
                     </div>
-                </div>`
-
+                </div>
+            );
         }
-
-        
-
-        $("#logsDiv")[0].innerHTML = str;
     }
 
-    var index = 1;
-    function loadMoreLogs(){
-        xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("GET", "/mod/ajax/logData/" + index, true);
+    class LogTable extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = { 
+                logs: null,
+                logPage: 0
+            };
+        }
 
-        xmlhttp.onreadystatechange=function(){
-            if (xmlhttp.readyState==4 && xmlhttp.status==200){
-                
-                modData=JSON.parse(xmlhttp.responseText);
-                console.log(modData);
+        componentDidMount() {
+            this.loadLogs();
+        }
 
-                updateModData(modData);
+        loadMoreLogs() {
+            this.loadLogs(1);
+        }
+
+        loadLessLogs() {
+            this.loadLogs(-1)
+        }
+
+        loadLogs(numIncrement) {
+            let page = 0;
+
+            if(numIncrement !== undefined) {
+                if (this.state.logPage + numIncrement >= 0) {
+                    page = this.state.logPage + numIncrement;
+                    this.setState({logPage: page})
+                }
+            }
+
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("GET", "/mod/ajax/logData/" + page, true);
+
+            xmlhttp.onreadystatechange = () => {
+                if (xmlhttp.readyState==4 && xmlhttp.status==200){
+                    var logs = JSON.parse(xmlhttp.responseText);
+                    this.setState({logs: logs})
+                    // console.log(logs);
+                }
+            }
+            xmlhttp.send();
+        }
+
+        render() {
+            if (!this.state.logs) {
+                return "Loading....."
+            }
+            else {
+                const allLogs = this.state.logs.map((log, i) => {
+                    return (
+                        <Log log={this.state.logs[i]} key={this.state.logs[i]._id}/>
+                    )
+                })
+
+                return (
+                    <span>
+                        <span className="pageButtonGroup">
+                            <button className="btn btn-info logButtons" onClick={() => this.loadLessLogs()}>
+                                Prev page
+                            </button>
+                            <span>Page: {this.state.logPage + 1}</span>
+                            <button className="btn btn-info logButtons" onClick={() => this.loadMoreLogs()}>
+                                Next page
+                            </button>
+                        </span>
+                        
+                        
+                        {allLogs}
+                    </span>
+                )
             }
         }
-        xmlhttp.send();
-
-        index++;
     }
 
+    const domContainer = document.querySelector('#logsDiv');
+    ReactDOM.render(<LogTable />, domContainer);
 </script>
-
-
 
 
 <% include ../partials/footer %>

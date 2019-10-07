@@ -198,6 +198,11 @@ router.put('/:id/:comment_id/:reply_id', checkForumThreadCommentReplyOwnership, 
 /** ******************************************************* */
 router.delete('/deleteCommentReply/:id/:comment_id/:reply_id', checkForumThreadCommentReplyOwnership, asyncMiddleware(async (req, res) => {
     const foundReply = await forumThreadCommentReply.findById(req.params.reply_id).exec();
+    if (foundReply.disabled) {
+        req.flash('error', 'You cannot delete a deleted reply.');
+        res.redirect('back');
+        return;
+    }
     foundReply.disabled = true;
     foundReply.oldText = foundReply.text;
     foundReply.text = '*Deleted*';

@@ -4,7 +4,8 @@ const { Types: { ObjectId } } = require('mongoose');
 const forumThread = require('../models/forumThread');
 const forumThreadComment = require('../models/forumThreadComment');
 const forumThreadCommentReply = require('../models/forumThreadCommentReply');
-const modAction = require('../models/modAction');
+const ForumBan = require('../models/forumBan');
+const ModLog = require('../models/modLog');
 const pinnedThread = require('../models/pinnedThread');
 
 const { isMod, asyncMiddleware } = require('./middleware');
@@ -157,8 +158,9 @@ router.get('/page/:pageNum', asyncMiddleware(async (req, res) => {
         .skip(skipNumber)
         .limit(numOfResultsPerPage)
         .exec();
+
     allForumThreads.forEach((thread) => {
-        thread.timeSinceString = getTimeDiffInString(forumThread.timeLastEdit);
+        thread.timeSinceString = getTimeDiffInString(thread.timeLastEdit);
     });
 
     // get all the pinned threads
@@ -183,7 +185,7 @@ router.get('/page/:pageNum', asyncMiddleware(async (req, res) => {
 }));
 
 
-router.post('/modAction', isMod, asyncMiddleware(async (req) => {
+router.post('/forumBan', isMod, asyncMiddleware(async (req) => {
     let replyId, commentId, forumId;
     if (req.body.idOfReply !== '') {
         replyId = ObjectId(req.body.idOfReply);
@@ -195,7 +197,7 @@ router.post('/modAction', isMod, asyncMiddleware(async (req) => {
         forumId = ObjectId(req.body.idOfForum);
     }
 
-    const newModAction = {
+    const forumBanData = {
         type: req.body.typeofmodaction,
         bannedPlayer: {
             id: req.body.idOfPlayerToBan,
@@ -214,38 +216,82 @@ router.post('/modAction', isMod, asyncMiddleware(async (req) => {
         elementDeleted: req.body.typeOfForumElement,
     };
 
-    modAction.create(newModAction);
 
     const foundForumThread = await forumThread.findById(req.body.idOfForum)
         .populate({ path: 'comments', populate: { path: 'replies' } })
         .exec();
+
     if (req.body.typeOfForumElement === 'forum') {
-        foundForumThread.disabled = true;
-        foundForumThread.save();
+        if (foundForumThread.disabled !== true) {
+            foundForumThread.disabled = true;
+            foundForumThread.save();
+            
+            forumBanData.originalContent = foundForumThread.title;
+            
+            ForumBan.create(forumBanData);
+
+            createNotificationObj.createNotification(
+                foundForumThread.author.id, 
+                'Your forum titled "' + foundForumThread.title + '" was removed.', 
+                "#", 
+                req.user.username);
+            
+
+            // Create the log
+            ModLog.create({
+                type: "forumBan",
+                modWhoMade: {
+                    id: req.user.id,
+                    username: req.user.username,
+                    usernameLower: req.user.username.toLowerCase()
+                },
+                data: forumBanData,
+                dateCreated: new Date()
+            });
+        }
         return;
     }
+
     const comment = await forumThreadComment.findById(req.body.idOfComment).populate('replies').exec();
     var reply = null;
     if (req.body.idOfReply) {
         reply = await forumThreadCommentReply.findById(req.body.idOfReply).exec();
     }
+
     const found = req.body.typeOfForumElement === 'comment' ? comment : reply;
 
-    // Send the notification
-    const link = `/forum/show/${foundForumThread._id}#${found._id}`;
-    createNotificationObj.createNotification(found.author.id, 'Your reply was removed.', link, req.user.username);
-    
-    found.oldText = found.text;
-    found.text = '*Deleted*';
-    found.disabled = true;
+    if (found.disabled !== true) {
+        // Send the notification
+        const link = `/forum/show/${foundForumThread._id}#${found._id}`;
+        createNotificationObj.createNotification(found.author.id, 'Your comment/reply was removed.', link, req.user.username);
+        
+        forumBanData.originalContent = found.text;
 
-    comment.markModified('replies');
-    foundForumThread.markModified('comments');
-    if (req.body.idOfReply) {
-        await reply.save();
-    }
-    await comment.save();
-    await foundForumThread.save();
+        found.oldText = found.text;
+        found.text = '*Deleted*';
+        found.disabled = true;
+
+        comment.markModified('replies');
+        foundForumThread.markModified('comments');
+        if (req.body.idOfReply) {
+            await reply.save();
+        }
+        await comment.save();
+        await foundForumThread.save();
+
+        ForumBan.create(forumBanData);
+        // Create the log
+        ModLog.create({
+            type: "forumBan",
+            modWhoMade: {
+                id: req.user.id,
+                username: req.user.username,
+                usernameLower: req.user.username.toLowerCase()
+            },
+            data: forumBanData,
+            dateCreated: new Date()
+        });
+}
 }));
 
 

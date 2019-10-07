@@ -8,11 +8,10 @@ const rateLimit = require('express-rate-limit');
 
 const User = require('../models/user');
 const myNotification = require('../models/notification');
-const modAction = require('../models/modAction');
 const gameRecord = require('../models/gameRecord');
 const statsCumulative = require('../models/statsCumulative');
 
-const { isMod, checkIpBan } = require('./middleware');
+const { isMod } = require('./middleware');
 
 const modsArray = require('../modsadmins/mods');
 
@@ -79,7 +78,7 @@ const registerLimiter = process.env.MY_PLATFORM === 'local'
     });
 
 // Post of the register route - Create an account
-router.post('/', registerLimiter, checkIpBan, sanitiseUsername, (req, res) => {
+router.post('/', registerLimiter, sanitiseUsername, (req, res) => {
     // console.log("escaped: " + escapeText(req.body.username));
 
     // res.redirect("sitedown");
@@ -258,103 +257,6 @@ router.get('/statistics', (req, res) => {
 });
 
 
-// Get the moderation logs to show
-
-// 1) Bans
-// 2) Mutes
-// 3) Forum removes
-// 4) Comment and reply removes
-// 5) Avatar request approve/rejects
-
-router.get('/mod/ajax/logData/:pageIndex', (req, res) => {
-    // get all the mod actions
-    let pageIndex;
-    if (req.params.pageIndex) {
-        pageIndex = req.params.pageIndex;
-        if (pageIndex < 0) {
-            pageIndex = 0;
-        }
-
-        const logs = [];
-
-        const NUM_OF_RESULTS_PER_PAGE = 10;
-        // Page 0 is the first page.
-        const skipNumber = pageIndex * NUM_OF_RESULTS_PER_PAGE;
-
-        modAction.find({})
-            .sort({ whenMade: 'descending' })
-            .skip(skipNumber)
-            .limit(NUM_OF_RESULTS_PER_PAGE)
-            .exec(async (err, foundModActions) => {
-                if (err) { console.log(err); } else {
-                    logsObj = [];
-                    await foundModActions.forEach((action) => {
-                        stringsArray = [];
-                        switch (action.type) {
-                            case 'ban':
-                                stringsArray[0] = (`${action.modWhoBanned.username} has banned ${action.bannedPlayer.username}`);
-                                stringsArray[0] += ` for reason: ${action.reason}.`;
-
-
-                                stringsArray.push(`The ban was made on ${action.whenMade}`);
-                                stringsArray.push(`The ban will be released on: ${action.whenRelease}`);
-                                stringsArray.push(`Moderator message: ${action.descriptionByMod}`);
-                                break;
-                            case 'mute':
-                                stringsArray[0] = (`${action.modWhoBanned.username} has muted ${action.bannedPlayer.username}`);
-                                stringsArray[0] += ` for reason: ${action.reason}.`;
-
-
-                                stringsArray.push(`The mute was made on ${action.whenMade}`);
-                                // -1970 years because thats the start of computer time
-                                stringsArray.push(`The mute will be released on: ${action.whenRelease}`);
-                                stringsArray.push(`Moderator message: ${action.descriptionByMod}`);
-                                break;
-                            // Forum remove
-                            case 'remove':
-                                stringsArray[0] = `${action.modWhoBanned.username} removed ${action.bannedPlayer.username}'s ${action.elementDeleted}.`;
-                                stringsArray[0] += ` Reason: ${action.reason}.`;
-
-                                stringsArray[1] = `The removal occured on ${action.whenMade}`;
-                                stringsArray[2] = `Moderator message: ${action.descriptionByMod}`;
-
-                                // Get the extra link bit (The # bit to select to a specific comment/reply)
-                                linkStr = '';
-                                if (action.elementDeleted === 'forum') {
-                                    // Dont need the extra bit here
-                                } else if (action.elementDeleted == 'comment') {
-                                    linkStr == `#${action.idOfComment}`;
-                                } else if (action.elementDeleted == 'reply') {
-                                    linkStr == `#${action.idOfReply}`;
-                                }
-
-                                stringsArray[3] = `The link to the article is: <a href='/forum/show/${action.idOfForum}${linkStr}'>Here</a>`;
-                                break;
-                        }
-
-                        const log = {};
-                        log.stringsArray = stringsArray;
-                        log.date = action.whenMade;
-
-                        logsObj.push(log);
-                    });
-
-                    const obj = {};
-                    obj.logs = logsObj;
-
-                    // sort in newest to oldest
-                    // obj.logs.sort(compareLogObjs);
-
-                    res.status(200).send(obj);
-                }
-            });
-    }
-});
-
-
-router.get('/mod', isMod, (req, res) => {
-    res.render('mod/mod', { currentUser: req.user, isMod: true, headerActive: 'mod' });
-});
 
 
 function gameDateCompare(a, b) {

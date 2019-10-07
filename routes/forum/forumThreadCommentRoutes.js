@@ -19,7 +19,7 @@ const newCommentLimiter = process.env.MY_PLATFORM === 'local'
     })
     : rateLimit({
         windowMs: 60 * 60 * 1000, // 1 hours
-        max: 15,
+        max: 10,
     });
 
 /** ******************************************************* */
@@ -131,8 +131,13 @@ router.put('/:id/:comment_id', checkForumThreadCommentOwnership, asyncMiddleware
 /** ******************************************************* */
 router.delete('/deleteComment/:id/:comment_id', checkForumThreadCommentOwnership, asyncMiddleware(async (req, res) => {
     const foundComment = await forumThreadComment.findById(req.params.comment_id);
-    console.log('Deleted (disabled) a comment by author.');
-    console.log(`Thread id ${req.params.id}`);
+    if (foundComment.disabled) {
+        req.flash('error', 'Comment has already been deleted.');
+        res.redirect('back');
+        return;
+    }
+    // console.log('Deleted (disabled) a comment by author.');
+    // console.log(`Thread id ${req.params.id}`);
 
     foundComment.disabled = true;
     foundComment.oldText = foundComment.text;

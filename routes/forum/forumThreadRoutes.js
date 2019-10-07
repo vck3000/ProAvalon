@@ -256,6 +256,11 @@ router.put('/:id', checkForumThreadOwnership, asyncMiddleware(async (req, res) =
 /** ******************************************************* */
 router.delete('/deleteForumThread/:id', checkForumThreadOwnership, asyncMiddleware(async (req, res) => {
     const foundForumThread = await forumThread.findById(req.params.id).exec();
+    if (foundForumThread.disabled) {
+        req.flash('error', 'You cannot edit a deleted forum thread.');
+        res.redirect('back');
+        return;
+    }
 
     foundForumThread.disabled = true;
     foundForumThread.save();
