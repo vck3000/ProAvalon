@@ -158,11 +158,13 @@ $('#createNewRoomButton').on('click', (data) => {
         maxNumPlayers: $($('.maxNumPlayers')[1]).val(),
         newRoomPassword: $('#newRoomPassword').val(),
         gameMode: $($('.gameModeSelect')[1]).val(),
+        ranked: $($('.rankedSelect')[1]).val(),
     };
 
     // Update the settings in the in room settings menu.
     $($('.maxNumPlayers')[0]).val(sendObj.maxNumPlayers);
     $($('.gameModeSelect')[0]).val(sendObj.gameMode);
+    $($('.rankedSelect')[0]).val(sendObj.ranked);
 
 
     if (inRoom === false) {

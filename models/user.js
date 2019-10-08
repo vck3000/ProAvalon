@@ -68,6 +68,10 @@ const UserSchema = new mongoose.Schema({
         type: Number,
         default: 1500,
     },
+    ratingBracket: {
+        type: String,
+        default: 'silver'
+    },
 
     winsLossesGameSizeBreakdown: {
         type: Object,

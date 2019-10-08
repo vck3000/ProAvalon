@@ -22,7 +22,7 @@ for (let i = 0; i < gameModeNames.length; i++) {
 const commonPhasesIndex = require('./indexCommonPhases');
 
 
-function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) {
+function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_, ranked_) {
     const thisRoom = this;
 
     if (newRoomPassword_ === '') {
@@ -44,6 +44,7 @@ function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) 
     if (gameModeNames.includes(this.gameMode) === false) {
         this.gameMode = 'avalon';
     }
+    this.ranked = ranked_;
 
     // Misc. variables
     this.canJoin = true;
@@ -361,6 +362,13 @@ Room.prototype.updateMaxNumPlayers = function (socket, number) {
     }
 };
 
+Room.prototype.updateRanked = function (socket, rankedType) {
+    if (socket.request.user.username === this.host) {
+        this.ranked = rankedType === 'ranked';
+    }
+    const rankedChangeMsg = `This room is now ${rankedType}.`
+    this.sendText(this.allSockets, rankedChangeMsg, 'server-text');
+}
 
 Room.prototype.updateGameModesInRoom = function (socket, gameMode) {
     if (gameModeNames.includes(gameMode) === true && socket.request.user.username === this.host) {
