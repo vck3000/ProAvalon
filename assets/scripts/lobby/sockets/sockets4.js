@@ -240,13 +240,67 @@ socket.on('update-current-players-list', (currentPlayers) => {
     $('#current-players-table tbody tr').remove();
 
     // currentOnlinePlayers = currentPlayers;
-    autoCompleteStrs = currentPlayers;
+    autoCompleteStrs = currentPlayers.map((a => a.displayUsername));
 
     // append each player into the list
-    currentPlayers.forEach((currentPlayer) => {
-        // if the current game exists, add it
-        if (currentPlayer) {
-            const str = `<tr> <td> ${currentPlayer}</td> </tr>`;
+    currentPlayers.forEach((player) => {
+        // if the current player exists, add it
+        if (player) {
+            /* const str = `<tr> <td> <span 
+                            class='badge' 
+                            data-toggle='tooltip' 
+                            data-placement='right' 
+                            title='Diamond' 
+                            style='transform: scale(0.9) translateY(-9%); background-color: rgb(0, 100, 250)'>D</span>
+                         ${player.displayUsername}</td> <td align="right"> ${player.playerRating} </tr>`; */
+            
+            str = ''
+            if (player.ratingBracket === 'bronze') {
+                str = `<tr> <td> <span 
+                            class='badge' 
+                            data-toggle='tooltip' 
+                            data-placement='right' 
+                            title='Bronze' 
+                            style='transform: scale(0.9) translateY(-9%); background-color: #cd7f32'>B</span>`
+            } else if (player.ratingBracket === 'silver') {
+                str = `<tr> <td> <span 
+                            class='badge' 
+                            data-toggle='tooltip' 
+                            data-placement='right' 
+                            title='Silver' 
+                            style='transform: scale(0.9) translateY(-9%); background-color: #c0c0c0'>S</span>`
+            } else if (player.ratingBracket === 'gold') {
+                str = `<tr> <td> <span 
+                            class='badge' 
+                            data-toggle='tooltip' 
+                            data-placement='right' 
+                            title='Gold' 
+                            style='transform: scale(0.9) translateY(-9%); background-color: #ffd700'>G</span>`
+            } else if (player.ratingBracket === 'platinum') {
+                str = `<tr> <td> <span 
+                            class='badge' 
+                            data-toggle='tooltip' 
+                            data-placement='right' 
+                            title='Platinum' 
+                            style='transform: scale(0.9) translateY(-9%); background-color: #afeeee'>P</span>`
+            } else if (player.ratingBracket === 'diamond') {
+                str = `<tr> <td> <span 
+                            class='badge' 
+                            data-toggle='tooltip' 
+                            data-placement='right' 
+                            title='Diamond' 
+                            style='transform: scale(0.9) translateY(-9%); background-color: rgb(0, 100, 250)'>D</span>`
+            } else if (player.ratingBracket === 'champion') {
+                str = `<tr> <td> <span 
+                            class='badge' 
+                            data-toggle='tooltip' 
+                            data-placement='right' 
+                            title='Diamond' 
+                            style='transform: scale(0.9) translateY(-9%); background-color: #9370db'>C</span>`
+            }
+
+            str = str + ` ${player.displayUsername}</td> <td align="right"> ${player.playerRating} </td> </tr>`
+            
             $('#current-players-table tbody').append(str);
         }
     });
@@ -290,16 +344,16 @@ socket.on('update-current-games-list', (currentGames) => {
                 var missionHistoryStr = '';
             }
 
-
             const str = `<tr> <td><strong>Room#${
                 currentGame.roomId}${lockStr}</strong>: ${
                 currentGame.status} [${currentGame.numOfPlayersInside}/${currentGame.maxNumPlayers}]`
                 + '<hr>'
-                + `Spectators: ${currentGame.numOfSpectatorsInside
-                }<br>Game mode: ${currentGame.gameMode
-                }<br>Host: ${currentGame.hostUsername
-                }<br>${missionHistoryStr
-                }</td> </tr>`;
+                + `Spectators: ${currentGame.numOfSpectatorsInside}
+                <br>Game mode: ${currentGame.gameMode}
+                <br> Type: ${currentGame.gameType}
+                <br>Host: ${currentGame.hostUsername}
+                <br>${missionHistoryStr}
+                </td> </tr>`;
 
             console.log(currentGame.gameMode);
 
@@ -658,7 +712,29 @@ $('.gameModeSelect').on('change', (e) => {
     $($('.gameModeSelect')[0]).val(e.target.value);
     $($('.gameModeSelect')[1]).val(e.target.value);
 
+    avalonSelectChecks = document.getElementsByClassName("avalonSelectCheck");
+    if (e.target.value === "avalon"){
+        for (let i = 0; i < avalonSelectChecks.length; i++) {
+            avalonSelectChecks[i].style.display = "block";
+        }
+    }
+    else {
+        for (let i = 0; i < avalonSelectChecks.length; i++) {
+            avalonSelectChecks[i].style.display = "none";
+            // set both values to unranked when a non-avalon gameMode is chosen
+            $($('.rankedSelect')[0]).val('unranked');
+            $($('.rankedSelect')[1]).val('unranked');
+        }
+    }
+
     socket.emit('update-room-game-mode', e.target.value);
+});
+
+$('.rankedSelect').on('change', (e) => {
+    $($('.rankedSelect')[0]).val(e.target.value);
+    $($('.rankedSelect')[1]).val(e.target.value);
+
+    socket.emit('update-room-ranked', e.target.value);
 });
 
 // Update the new room menu with the gameModes available.

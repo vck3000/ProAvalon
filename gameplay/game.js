@@ -42,7 +42,7 @@ for (let i = 0; i < gameModeNames.length; i++) {
  * @param {String} newRoomPassword_ Password to join the room
  * @param {String} gameMode_ Gamemode - avalon/hunter/etc.
  */
-function Game(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_, callback_) {
+function Game(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_, ranked_, callback_) {
     this.callback = callback_;
     //* *******************************
     // CONSTANTS
@@ -71,7 +71,7 @@ function Game(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_, 
     ];
 
     // Get the Room properties
-    Room.call(this, host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_);
+    Room.call(this, host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_, ranked_);
     PlayersReadyNotReady.call(this, this.minPlayers);
 
     const thisRoom = this;
@@ -1198,25 +1198,30 @@ Game.prototype.finishGame = function (toBeWinner) {
     });
 
     if (botUsernames.length === 0) {
-        // Calculate team 1v1 elo adjustment
+        // calculate team 1v1 elo adjustment
         const teamResChange = this.calculateResistanceRatingChange(this.winner);
         const teamSpyChange = -teamResChange;
 
         // individual changes per player, to one decimal place.
         const indResChange = Math.round(teamResChange/this.resistanceUsernames.length * 10)/10;
         const indSpyChange = Math.round(teamSpyChange/this.spyUsernames.length * 10)/10;
-
-        // Broadcast elo adjustments in chat first, if broadcasted in the updating process, its slow
-        this.sendText(this.allSockets, 'Rating Adjustments:', 'server-text');
-        this.playersInGame.forEach((player) => {
-            var rating = player.request.user.playerRating;
-            if (player.alliance === 'Resistance') {
-                this.sendText(this.allSockets, `${player.request.user.username}: ${Math.round(rating)} -> ${Math.round(rating + indResChange)}`, 'server-text');
-            }
-            else if (player.alliance === 'Spy') {
-                this.sendText(this.allSockets, `${player.request.user.username}: ${Math.round(rating)} -> ${Math.round(rating + indSpyChange)}`, 'server-text');
-            }
-        });
+        
+        // if we're in a ranked game show the elo adjustments
+        if (this.ranked) {
+            // Broadcast elo adjustments in chat first, if broadcasted in the updating process, its slow
+            this.sendText(this.allSockets, 'Rating Adjustments:', 'server-text');
+            this.playersInGame.forEach((player) => {
+                const rating = player.request.user.playerRating;
+                if (player.alliance === 'Resistance') {
+                    this.sendText(this.allSockets, `${player.request.user.username}: ${Math.round(rating)} -> ${Math.round(rating + indResChange)}`, 'server-text');
+                    player.request.user.playerRating += indResChange;
+                }
+                else if (player.alliance === 'Spy') {
+                    this.sendText(this.allSockets, `${player.request.user.username}: ${Math.round(rating)} -> ${Math.round(rating + indSpyChange)}`, 'server-text');
+                    player.request.user.playerRating += indSpyChange;
+                }
+            });
+        }
 
         this.playersInGame.forEach((player) => {
             User.findById(player.userId).populate('notifications').exec((err, foundUser) => {
@@ -1239,12 +1244,14 @@ Game.prototype.finishGame = function (toBeWinner) {
                         }
                     }
 
-                    // update player ratings
-                    if (player.alliance === 'Resistance') {
-                        foundUser.playerRating += indResChange;
-                    }
-                    else if (player.alliance === 'Spy') {
-                        foundUser.playerRating += indSpyChange;
+                    // if ranked, update player ratings
+                    if (this.ranked) {
+                        if (player.alliance === 'Resistance') {
+                            foundUser.playerRating += indResChange;
+                        }
+                        else if (player.alliance === 'Spy') {
+                            foundUser.playerRating += indSpyChange;
+                        }
                     }
 
                     // checks that the var exists
@@ -1301,6 +1308,8 @@ Game.prototype.finishGame = function (toBeWinner) {
                 }
             });
         });
+        // callback to update players list after rating updates
+        this.callback("updateCurrentPlayersList", this);
     }
 };
 

@@ -153,12 +153,21 @@
                                     </tr>
                                     <tr>
                                         <td class="statsCol1">Total win rate: </td>
-                                        <td class="statsCol2"> <%= Math.floor((userData.totalWins / (userData.totalWins + userData.totalLosses))*100) %>% </td>
+                                        <td class="statsCol2"> <%= Math.floor((userData.totalWins / (userData.totalWins + userData.totalLosses))*100)%>% </td>
                                     </tr>
                                     <tr>
                                         <td class="statsCol1">Total time played: </td>
                                         <!--<td class="statsCol2"> <%=getDatesString(userData.totalTimePlayed)%> </td>-->
                                         <td class="statsCol2"> <%=Math.floor(userData.totalTimePlayed.getTime()/(1000*60*60))%> hrs</td>
+                                    </tr>
+                                    <tr>
+                                        <% if (userData.username === personViewingUsername) {%>
+                                            <td class="statsCol1">Rating: </td>
+                                            <td class="statsCol2"> <%= Math.round(userData.playerRating) %> </td>
+                                        <%} else {%>
+                                            <td class="statsCol1">Rank: </td>
+                                            <td class="statsCol2"> <%= userData.ratingBracket.charAt(0).toUpperCase() + userData.ratingBracket.slice(1) %> </td>
+                                        <% } %>
                                     </tr>
                                 </tbody>
                             </table>
