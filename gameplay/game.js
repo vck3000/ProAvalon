@@ -264,6 +264,9 @@ Game.prototype.playerSitDown = function (socket) {
     }
 
     Room.prototype.playerSitDown.call(this, socket);
+
+    // tell socket.js to show a player sat
+    this.callback("updateCurrentGamesList", this);
 };
 
 Game.prototype.playerStandUp = function (socket) {
@@ -279,6 +282,9 @@ Game.prototype.playerStandUp = function (socket) {
     }
 
     Room.prototype.playerStandUp.call(this, socket);
+
+    // tell socket.js to show a player stood up
+    this.callback("updateCurrentGamesList", this);
 };
 
 Game.prototype.playerLeaveRoom = function (socket) {
@@ -489,6 +495,9 @@ Game.prototype.startGame = function (options) {
     }
 
     this.distributeGameData();
+
+    // tell socket.js to show game started
+    this.callback("updateCurrentGamesList", this);
 
     this.botIndexes = [];
     for (var i = 0; i < this.socketsOfPlayers.length; i++) {
@@ -1042,9 +1051,15 @@ Game.prototype.finishGame = function (toBeWinner) {
 
     if (this.winner === 'Spy') {
         this.sendText(this.allSockets, 'The spies win!', 'gameplay-text-red');
+        // Let sockets.js know that we've finished the game
+        this.callback("finishGameSpyWin", this);
     } else if (this.winner === 'Resistance') {
         this.sendText(this.allSockets, 'The resistance wins!', 'gameplay-text-blue');
+        this.callback("finishGameResWin", this);
     }
+
+    // tell socket.js to show the game has ended
+    this.callback("updateCurrentGamesList", this);
 
     // Post results of Merlin guesses
     if (this.resRoles.indexOf('Merlin') !== -1) {
@@ -1071,11 +1086,6 @@ Game.prototype.finishGame = function (toBeWinner) {
     this.publicVotes = [];
 
     this.distributeGameData();
-
-    // Let sockets.js know that we've finished the game
-    if (this.callback) { // Remove this if statement later
-        this.callback("finishGame", this);
-    }
 
     // If there was a bot in the game and this is the online server, do not store into the database.
     // if (process.env.MY_PLATFORM === "online" && this.botIndexes.length !== 0) {
