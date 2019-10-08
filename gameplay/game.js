@@ -1199,7 +1199,7 @@ Game.prototype.finishGame = function (toBeWinner) {
 
     if (botUsernames.length === 0) {
         this.playersInGame.forEach((player) => {
-            User.findById(player.userId).populate('modAction').populate('notifications').exec((err, foundUser) => {
+            User.findById(player.userId).populate('notifications').exec((err, foundUser) => {
                 if (err) { console.log(err); } else if (foundUser) {
                     foundUser.totalTimePlayed = new Date(foundUser.totalTimePlayed.getTime() + gameDuration.getTime());
 
