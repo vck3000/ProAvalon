@@ -1,6 +1,6 @@
 // sockets
 const axios = require('axios');
-const gameRoom = require('../gameplay/game');
+const gameRoom = require('../gameplay/gameWrapper');
 
 const savedGameObj = require('../models/savedGame');
 
@@ -1811,10 +1811,17 @@ module.exports = function (io) {
 };
 
 function socketCallback(action, room) {
-    if (action === "finishGame") {
+    if (action === "finishGameResWin") {
         var data = {
-            message: `Room ${room.roomId} has finished!`,
-            classStr: 'server-text-teal',
+            message: `Room ${room.roomId} has finished! The Resistance have won!`,
+            classStr: 'all-chat-text-blue',
+        };
+        sendToAllChat(ioGlobal, data);
+    }
+    if (action === "finishGameSpyWin") {
+        var data = {
+            message: `Room ${room.roomId} has finished! The Spies have won!`,
+            classStr: 'all-chat-text-red',
         };
         sendToAllChat(ioGlobal, data);
     }
