@@ -40,8 +40,6 @@ VotingMission.prototype.gameMove = function (socket, buttonPressed, selectedPlay
         const outcome = this.thisRoom.calcMissionVotes(this.thisRoom.missionVotes);
         if (outcome) {
             this.thisRoom.missionHistory.push(outcome);
-            // tell socket.js a mission has finished
-            this.thisRoom.callback("updateCurrentGamesList", this.thisRoom);
         } else {
             console.log(`ERROR! Outcome was: ${outcome}`);
         }

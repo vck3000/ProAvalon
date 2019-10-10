@@ -1,6 +1,6 @@
 // sockets
 const axios = require('axios');
-const gameRoom = require('../gameplay/game');
+const gameRoom = require('../gameplay/gameWrapper');
 
 const savedGameObj = require('../models/savedGame');
 
