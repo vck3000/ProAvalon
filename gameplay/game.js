@@ -1040,6 +1040,12 @@ Game.prototype.finishGame = function (toBeWinner) {
     this.finished = true;
     this.winner = toBeWinner;
 
+    if (this.winner === 'Spy') {	
+        this.sendText(this.allSockets, 'The spies win!', 'gameplay-text-red');	
+    } else if (this.winner === 'Resistance') {	
+        this.sendText(this.allSockets, 'The resistance wins!', 'gameplay-text-blue');	
+    }
+
     // Post results of Merlin guesses
     if (this.resRoles.indexOf('Merlin') !== -1) {
         const guessesByTarget = reverseMapFromMap(this.merlinguesses);
