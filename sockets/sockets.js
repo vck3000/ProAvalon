@@ -975,6 +975,7 @@ var actionsObj = {
 
                 const targetSock = allSockets[getIndexFromUsername(allSockets, args[1], true)];
                 if (targetSock) {
+                    targetSock.emit("redirect", "/logout");
                     targetSock.disconnect();
                     senderSocket.emit('messageCommandReturnStr', { message: `Disconnected ${args[1]} successfully.`, classStr: 'server-text' });
                 } else {

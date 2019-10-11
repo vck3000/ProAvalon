@@ -29,76 +29,72 @@ const isLoggedIn = asyncMiddleware(async (req, res, next) => {
         return;
     }
 
-    // Have to find the user to get notifications.
     const user = await User.findOne({ usernameLower: req.user.username.toLowerCase() }).populate('notifications').exec();
-    const clientIpAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    // console.log(clientIpAddress);
+    // Pass on some variables for all ejs files to use, mainly header partial view
+    res.locals.currentUser = user;
+    res.locals.userNotifications = user.notifications;
+    res.locals.mod = modsArray.includes(user.username.toLowerCase());
+    res.locals.isMod = modsArray.includes(user.username.toLowerCase());
 
-    // Track IPs
-    if (!user.IPAddresses.includes(clientIpAddress)) {
-        user.IPAddresses.push(clientIpAddress);
-        user.markModified("IPAdresses");
+    if (req.session.banCheckPassed === true) {
+        next();
     }
-    user.lastIPAddress = clientIpAddress;
-    user.markModified("lastIPAddress");
-    user.save();
+    else {
+        console.log("CHECKING BANS");
+        // Have to find the user to get notifications.
+        const clientIpAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        // console.log(clientIpAddress);
 
-    // Don't check over multiple times. Once is enough per person per request.
-    if (!res.locals.bansChecked) {
-        res.locals.bansChecked = true;
-        // Check bans!!!
-        // USER ban
-        ban = await Ban.findOne({
-            'bannedPlayer.id': user._id,        // User ID match
-            'whenRelease': {$gt: new Date() },  // Unexpired ban
-            'userBan': true,                    // User ban
-            'disabled': false                   // Ban must be active
-        });
-        if (ban) {
-            let message = `You have been banned. The ban will be released on ${moment(ban.whenRelease).format("LLL")}. Ban description: '${ban.descriptionByMod}'`;
-            req.flash('error', message);
-            res.redirect('/');
-            return;
+        // Track IPs
+        if (!user.IPAddresses.includes(clientIpAddress)) {
+            user.IPAddresses.push(clientIpAddress);
+            user.markModified("IPAdresses");
         }
+        user.lastIPAddress = clientIpAddress;
+        user.markModified("lastIPAddress");
+        user.save();
 
-        // IP ban
-        ban = await Ban.findOne({
-            'bannedIPs': clientIpAddress,       // IP match
-            'whenRelease': {$gt: new Date() },  // Unexpired ban
-            'ipBan': true,                      // IP ban
-            'disabled': false                   // Ban must be active
-        });
-        if (ban) {
-            let message = `You have been banned. The ban will be released on ${moment(ban.whenRelease).format("LLL")}. Ban description: '${ban.descriptionByMod}'`;
-            req.flash('error', message);
-            res.redirect('/');
-            return;
-        }
-
-
-        // Check ALL the possible linked usernames and IPs they could have possibly ever been logged on
-        const { linkedUsernames, linkedIPs } = await IPLinkedAccounts(user.usernameLower);
-        ban = await Ban.findOne({
-            'usernameLower': {                  // Username match
-                $in: linkedUsernames
-            },
-            'whenRelease': {$gt: new Date() },  // Unexpired ban
-            'userBan': true,                    // User ban
-            'disabled': false                   // Ban must be active
-        });
-        if (ban && ban.singleIPBan === false) {
-            let message = `You have been banned. The ban will be released on ${moment(ban.whenRelease).format("LLL")}. Ban description: '${ban.descriptionByMod}'`;
-            req.flash('error', message);
-            res.redirect('/');
-            return;
-        }
-
-        // Check all ips.
-        for (ip of linkedIPs) {
+        // Don't check over multiple times. Once is enough per person per request.
+        if (!res.locals.bansChecked) {
+            res.locals.bansChecked = true;
+            // Check bans!!!
+            // USER ban
             ban = await Ban.findOne({
-                'bannedIPs': ip,                    // IP match
+                'bannedPlayer.id': user._id,        // User ID match
+                'whenRelease': {$gt: new Date() },  // Unexpired ban
+                'userBan': true,                    // User ban
+                'disabled': false                   // Ban must be active
+            });
+            if (ban) {
+                let message = `You have been banned. The ban will be released on ${moment(ban.whenRelease).format("LLL")}. Ban description: '${ban.descriptionByMod}'`;
+                req.flash('error', message);
+                res.redirect('/');
+                return;
+            }
+
+            // IP ban
+            ban = await Ban.findOne({
+                'bannedIPs': clientIpAddress,       // IP match
                 'whenRelease': {$gt: new Date() },  // Unexpired ban
                 'ipBan': true,                      // IP ban
+                'disabled': false                   // Ban must be active
+            });
+            if (ban) {
+                let message = `You have been banned. The ban will be released on ${moment(ban.whenRelease).format("LLL")}. Ban description: '${ban.descriptionByMod}'`;
+                req.flash('error', message);
+                res.redirect('/');
+                return;
+            }
+
+
+            // Check ALL the possible linked usernames and IPs they could have possibly ever been logged on
+            const { linkedUsernames, linkedIPs } = await IPLinkedAccounts(user.usernameLower);
+            ban = await Ban.findOne({
+                'usernameLower': {                  // Username match
+                    $in: linkedUsernames
+                },
+                'whenRelease': {$gt: new Date() },  // Unexpired ban
+                'userBan': true,                    // User ban
                 'disabled': false                   // Ban must be active
             });
             if (ban && ban.singleIPBan === false) {
@@ -107,17 +103,30 @@ const isLoggedIn = asyncMiddleware(async (req, res, next) => {
                 res.redirect('/');
                 return;
             }
+
+            // Check all ips.
+            for (ip of linkedIPs) {
+                ban = await Ban.findOne({
+                    'bannedIPs': ip,                    // IP match
+                    'whenRelease': {$gt: new Date() },  // Unexpired ban
+                    'ipBan': true,                      // IP ban
+                    'disabled': false                   // Ban must be active
+                });
+                if (ban && ban.singleIPBan === false) {
+                    let message = `You have been banned. The ban will be released on ${moment(ban.whenRelease).format("LLL")}. Ban description: '${ban.descriptionByMod}'`;
+                    req.flash('error', message);
+                    res.redirect('/');
+                    return;
+                }
+            }
         }
+
+        req.session.banCheckPassed = true;
+
+        next();
     }
 
 
-    // Pass on some variables for all ejs files to use, mainly header partial view
-    res.locals.currentUser = user;
-    res.locals.userNotifications = user.notifications;
-    res.locals.mod = modsArray.includes(user.username.toLowerCase());
-    res.locals.isMod = modsArray.includes(user.username.toLowerCase());
-
-    next();
 });
 
 exports.isLoggedIn = isLoggedIn;
