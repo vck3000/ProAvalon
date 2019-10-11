@@ -141,7 +141,9 @@ $( document ).ready(function() {
 			);
 
 			// console.log(firstHalf + localBanExpire + secondHalf);
-			banAlertBox.innerText = firstHalf + localBanExpire + secondHalf;
+			if (localBanExpire != "Invalid date") {
+				banAlertBox.innerText = firstHalf + localBanExpire + secondHalf;
+			}
 		}
 	}
 });

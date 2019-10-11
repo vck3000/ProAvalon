@@ -224,6 +224,16 @@ p {
     color: teal;
 }
 
+.all-chat-text-red{
+    color: #bd362f;
+    font-weight: 700;
+}
+
+.all-chat-text-blue{
+    color: #0044cc;
+    font-weight: 700;
+}
+
 .spectator-chat{
     color: rgb(98, 98, 98);
 }

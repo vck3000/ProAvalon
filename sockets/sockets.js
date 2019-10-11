@@ -1173,7 +1173,6 @@ var actionsObj = {
                 const options = ['Merlin', 'Assassin', 'Percival', 'Morgana', 'Ref of the Rain', 'Sire of the Sea', 'Lady of the Lake'];
                 rooms[nextRoomId].hostTryStartGame(options, 'avalonBot');
 
-                updateCurrentGamesList();
             },
         },
 
@@ -1826,6 +1825,9 @@ function socketCallback(action, room) {
         };
         sendToAllChat(ioGlobal, data);
     }
+    if (action === "updateCurrentGamesList") {
+        updateCurrentGamesList()
+    }
 }
 
 var applyApplicableRewards = function (socket) {
@@ -2349,7 +2351,6 @@ function startGame(data, gameMode) {
             return;
         }
     }
-    updateCurrentGamesList(ioGlobal);
 }
 
 function kickPlayer(username) {
@@ -2376,7 +2377,6 @@ function gameMove(data) {
                 saveGameToDb(rooms[this.request.user.inRoomId]);
             }
         }
-        updateCurrentGamesList(ioGlobal);
     }
 }
 
