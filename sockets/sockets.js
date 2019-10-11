@@ -1826,6 +1826,9 @@ function socketCallback(action, room) {
         };
         sendToAllChat(ioGlobal, data);
     }
+    if (action === "updateCurrentGamesList") {
+        updateCurrentGamesList()
+    }
 }
 
 var applyApplicableRewards = function (socket) {

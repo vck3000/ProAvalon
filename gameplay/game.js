@@ -1040,10 +1040,10 @@ Game.prototype.finishGame = function (toBeWinner) {
     this.finished = true;
     this.winner = toBeWinner;
 
-    if (this.winner === 'Spy') {
-        this.sendText(this.allSockets, 'The spies win!', 'gameplay-text-red');
-    } else if (this.winner === 'Resistance') {
-        this.sendText(this.allSockets, 'The resistance wins!', 'gameplay-text-blue');
+    if (this.winner === 'Spy') {	
+        this.sendText(this.allSockets, 'The spies win!', 'gameplay-text-red');	
+    } else if (this.winner === 'Resistance') {	
+        this.sendText(this.allSockets, 'The resistance wins!', 'gameplay-text-blue');	
     }
 
     // Post results of Merlin guesses
@@ -1071,11 +1071,6 @@ Game.prototype.finishGame = function (toBeWinner) {
     this.publicVotes = [];
 
     this.distributeGameData();
-
-    // Let sockets.js know that we've finished the game
-    if (this.callback) { // Remove this if statement later
-        this.callback("finishGame", this);
-    }
 
     // If there was a bot in the game and this is the online server, do not store into the database.
     // if (process.env.MY_PLATFORM === "online" && this.botIndexes.length !== 0) {
