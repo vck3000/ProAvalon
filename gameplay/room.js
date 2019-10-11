@@ -273,7 +273,8 @@ Room.prototype.updateRoomPlayers = function () {
     const usernamesOfSpecs = [];
     const socketsOfSpectators = this.getSocketsOfSpectators();
     socketsOfSpectators.forEach((sock) => {
-        usernamesOfSpecs.push(sock.request.user.username);
+        const dispUsername = sock.request.displayUsername ? sock.request.displayUsername : sock.request.user.username;
+        usernamesOfSpecs.push(dispUsername);
     });
     // Sort the usernames
     usernamesOfSpecs.sort((a, b) => {
