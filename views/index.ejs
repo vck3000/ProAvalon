@@ -1,6 +1,7 @@
 <% include partials/header %>
 
 <link rel="stylesheet" type="text/css" href="/stylesheets/index.css">
+<script type="text/javascript" src="<%-getVersionedPath('/libraries/moment.js')%>"></script>
 
 
 <style>
@@ -107,8 +108,42 @@ $( document ).ready(function() {
 	setupPageStuff();
 	setInterval(function(){
 		setupPageStuff();
-		console.log("a");
+		// console.log("a");
 	},1000);
+
+
+
+	// If we have a ban alert, convert the timestamp from millis to local time.
+	var banAlertBox = $(".alert-danger[role='alert']")[0]
+
+	if (banAlertBox) {
+		var timeStampStr = banAlertBox.innerText;
+
+		if (timeStampStr != "") {
+			var subStr = timeStampStr.substring(
+				timeStampStr.lastIndexOf("&") + 1, 
+				timeStampStr.lastIndexOf("*")
+			);
+
+			// console.log(subStr);
+			// console.log(moment(subStr, "x").format("LLL"));
+
+			var localBanExpire = moment(subStr, "x").format("LLL");
+
+			var firstHalf = timeStampStr.substring(
+				0, 
+				timeStampStr.lastIndexOf("&")
+			);
+
+			var secondHalf = timeStampStr.substring(
+				timeStampStr.lastIndexOf("*") + 1,
+				timeStampStr.length
+			);
+
+			// console.log(firstHalf + localBanExpire + secondHalf);
+			banAlertBox.innerText = firstHalf + localBanExpire + secondHalf;
+		}
+	}
 });
 
 

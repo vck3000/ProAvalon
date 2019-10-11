@@ -66,7 +66,7 @@ const isLoggedIn = asyncMiddleware(async (req, res, next) => {
                 'disabled': false                   // Ban must be active
             });
             if (ban) {
-                let message = `You have been banned. The ban will be released on ${moment(ban.whenRelease).format("LLL")}. Ban description: '${ban.descriptionByMod}'`;
+                let message = `You have been banned. The ban will be released on &${ban.whenRelease.getTime()}*. Ban description: '${ban.descriptionByMod}'`;
                 req.flash('error', message);
                 res.redirect('/');
                 return;
@@ -80,7 +80,7 @@ const isLoggedIn = asyncMiddleware(async (req, res, next) => {
                 'disabled': false                   // Ban must be active
             });
             if (ban) {
-                let message = `You have been banned. The ban will be released on ${moment(ban.whenRelease).format("LLL")}. Ban description: '${ban.descriptionByMod}'`;
+                let message = `You have been banned. The ban will be released on &${ban.whenRelease.getTime()}*. Ban description: '${ban.descriptionByMod}'`;
                 req.flash('error', message);
                 res.redirect('/');
                 return;
@@ -98,7 +98,7 @@ const isLoggedIn = asyncMiddleware(async (req, res, next) => {
                 'disabled': false                   // Ban must be active
             });
             if (ban && ban.singleIPBan === false) {
-                let message = `You have been banned. The ban will be released on ${moment(ban.whenRelease).format("LLL")}. Ban description: '${ban.descriptionByMod}'`;
+                let message = `You have been banned. The ban will be released on &${ban.whenRelease.getTime()}*. Ban description: '${ban.descriptionByMod}'`;
                 req.flash('error', message);
                 res.redirect('/');
                 return;
@@ -113,7 +113,7 @@ const isLoggedIn = asyncMiddleware(async (req, res, next) => {
                     'disabled': false                   // Ban must be active
                 });
                 if (ban && ban.singleIPBan === false) {
-                    let message = `You have been banned. The ban will be released on ${moment(ban.whenRelease).format("LLL")}. Ban description: '${ban.descriptionByMod}'`;
+                    let message = `You have been banned. The ban will be released on &${ban.whenRelease.getTime()}*. Ban description: '${ban.descriptionByMod}'`;
                     req.flash('error', message);
                     res.redirect('/');
                     return;
