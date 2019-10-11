@@ -53,6 +53,9 @@ router.get('/community', (req, res) => {
 
 // Index route
 router.get('/', (req, res) => {
+    if (req.session) {
+        req.session.destroy();
+    }
     res.render('index');
 });
 
