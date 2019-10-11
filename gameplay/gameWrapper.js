@@ -55,7 +55,7 @@ GameWrapper.prototype.gameMove = function (socket, data) {
     Game.prototype.gameMove.call(this, socket, data);
 
     // If the mission number has changed, callback to update the games list.
-    if (beforeHistory != this.missionNum) {
+    if (beforeNum != this.missionNum) {
         this.callback("updateCurrentGamesList");
     }
 };
