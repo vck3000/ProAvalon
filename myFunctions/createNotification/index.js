@@ -50,8 +50,8 @@ createNotifObj.createNotification = function (userIDTarget, stringToSay, link, m
                                     foundUser.notifications = foundUser.notifications.slice(foundUser.notifications.length - maxNumNotifs, foundUser.notifications.length);
                                 }
 
-                                console.log(foundUser.notifications);
-                                console.log(foundUser.notifications.length);
+                                // console.log(foundUser.notifications);
+                                // console.log(foundUser.notifications.length);
                                 foundUser.markModified('notifications');
                                 foundUser.save();
                             }

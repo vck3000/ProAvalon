@@ -1015,11 +1015,32 @@ var actionsObj = {
                         const link = '#';
 
                         createNotificationObj.createNotification(userIdTarget, stringToSay, link, senderSocket.request.user.username);
+
+                        ModLog.create({
+                            type: "mnotify",
+                            modWhoMade: {
+                                id: senderSocket.request.user.id,
+                                username: senderSocket.request.user.username,
+                                usernameLower: senderSocket.request.user.usernameLower
+                            },
+                            data: {
+                                targetUser: {
+                                    id: foundUser._id,
+                                    username: foundUser.username,
+                                    usernameLower: foundUser.usernameLower
+                                },
+                                message: stringToSay
+                            },
+                            dateCreated: new Date()
+                        });
+
                         senderSocket.emit('messageCommandReturnStr', { message: `Sent to ${foundUser.username} successfully! Here was your message: ${str}`, classStr: 'server-text' });
                     } else {
                         senderSocket.emit('messageCommandReturnStr', { message: `Could not find ${args[1]}`, classStr: 'server-text' });
                     }
                 });
+
+                
             },
         },
 

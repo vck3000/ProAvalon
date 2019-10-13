@@ -92,7 +92,7 @@
             body: <span>
                 <p>The duration specified was: {data.durationToBan}.</p>
                 <p>The ban will be released on: {whenRelease.format("LLL")}.</p>
-                <p>Moderator message: {data.descriptionByMod}.</p>
+                <p>Moderator message: '{data.descriptionByMod}'.</p>
                 <p>User ban: {data.userBan ? "true" : "false"}</p>
                 <p>IP ban: {data.ipBan ? "true" : "false"}</p>
                 <p>Single IP ban: {data.singleIPBan ? "true" : "false"} (Note: Don't worry if IP Ban is true too, it's just for the server to know that it still is technically an "IP ban")</p>
@@ -112,7 +112,7 @@
                 <p>The date the ban was made on was: {whenMade.format("LLL")}.</p>
                 <p>The duration specified was: {data.durationToBan}.</p>
                 <p>The ban will be released on: {whenRelease.format("LLL")}.</p>
-                <p>Moderator message: {data.descriptionByMod}.</p>
+                <p>Moderator message: '{data.descriptionByMod}'.</p>
                 <p>User ban: {data.userBan ? "true" : "false"}</p>
                 <p>IP ban: {data.ipBan ? "true" : "false"}</p>
                 <p>Single IP ban: {data.singleIPBan ? "true" : "false"} (Note: Don't worry if IP Ban is true too, it's just for the server to know that it still is technically an "IP ban")</p>
@@ -191,7 +191,7 @@
         return {
             title: `${props.modWhoMade.username} has removed a ${props.data.elementDeleted} by ${props.data.bannedPlayer.username}.`,
             body: <span>
-                <p>Moderator message: {data.descriptionByMod}.</p>
+                <p>Moderator message: '{data.descriptionByMod}'.</p>
                 <p>The content was: {data.originalContent}</p>
                 <p>The reason was: {data.reason}</p>
                 <p>The link is: <a href={link}>Here</a></p>
@@ -213,12 +213,23 @@
         });
 
         return {
-            title: `${props.modWhoMade.username} has used mwhisper on ${data.targetUser.username}.` ,
+            title: `${props.modWhoMade.username} has used mwhisper on ${data.targetUser.username}.`,
             body: <span>
                 {contents}
            </span>
         }
-    }    
+    }
+
+    function mnotifyText(props) {
+        let data = props.data;
+
+        return {
+            title: `${props.modWhoMade.username} has created a notification for ${data.targetUser.username}.`,
+            body: <span>
+                <p>The message left was: '{data.message}'.</p>
+           </span>
+        }
+    }
 
 
 
@@ -251,6 +262,9 @@
                     break;
                 case "mwhisper":
                     logText = mwhisperText(this.props.log);
+                    break;
+                case "mnotify":
+                    logText = mnotifyText(this.props.log);
                     break;
             }
 
