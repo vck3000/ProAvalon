@@ -153,7 +153,16 @@
     function ipLinkedAccsText(props) {
         let data = props.data;
 
-        var treeLines = data.newUsernamesTreeLines.map((x, i) => <p key={i} dangerouslySetInnerHTML={{__html: x}}></p>)
+        var treeLines = data.newUsernamesTreeLines.map(
+            (x, i) => 
+            <p 
+                key={i} 
+                dangerouslySetInnerHTML={{__html: x}} 
+                style={{
+                    margin: 0
+                }}>
+            </p>
+            )
 
         return {
             title: `${props.modWhoMade.username} has used /miplinkedaccs on ${props.data.target}.`,
@@ -190,6 +199,28 @@
         }
     }
     
+    function mwhisperText(props) {
+        let data = props.data;
+
+        let contents = data.log.map((x, i) => {
+            return (
+                <p key={i} style={{
+                    margin: 0
+                }}>
+                    {x.message}
+                </p>
+                )
+        });
+
+        return {
+            title: `${props.modWhoMade.username} has used mwhisper on ${data.targetUser.username}.` ,
+            body: <span>
+                {contents}
+           </span>
+        }
+    }    
+
+
 
     class Log extends React.Component {
         constructor(props) {
@@ -218,6 +249,9 @@
                 case "forumBan":
                     logText = forumBanText(this.props.log);
                     break;
+                case "mwhisper":
+                    logText = mwhisperText(this.props.log);
+                    break;
             }
 
             return (
@@ -229,6 +263,7 @@
                     </div>
                     <div className="panel-body">
                         <p>Date: {moment(this.props.log.dateCreated).format("LLL")}</p>
+                        <hr></hr>
                         {logText.body}
                     </div>
                 </div>
