@@ -1308,8 +1308,6 @@ Game.prototype.finishGame = function (toBeWinner) {
                 }
             });
         });
-        // callback to update players list after rating updates
-        this.callback("updateCurrentPlayersList", this);
     }
 };
 

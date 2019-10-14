@@ -2394,7 +2394,11 @@ module.exports = function (io) {
         // send the user the list of commands
         socket.emit('modCommands', modCommands);
 
-        // mcompareips
+        // now push their socket in
+        allSockets.push(socket);
+
+
+        // slight delay while client loads
         setTimeout(() => {
           actionsObj.modCommands.mcompareips.run(null, socket);
         }, 3000);
@@ -2440,7 +2444,6 @@ module.exports = function (io) {
                 }
               }, 3000);
             }
-<<<<<<< HEAD
           });
       }
 
@@ -2564,90 +2567,31 @@ module.exports = function (io) {
 };
 
 function socketCallback(action, room) {
-  if (action === 'finishGameResWin') {
-    var data = {
-      message: `Room ${room.roomId} has finished! The Resistance have won!`,
-      classStr: 'all-chat-text-blue',
-    };
-    sendToAllChat(ioGlobal, data);
-  }
-  if (action === 'finishGameSpyWin') {
-    var data = {
-      message: `Room ${room.roomId} has finished! The Spies have won!`,
-      classStr: 'all-chat-text-red',
-    };
-    sendToAllChat(ioGlobal, data);
-  }
-  if (action === 'updateCurrentGamesList') {
-    updateCurrentGamesList();
-  }
-=======
-        }, 1000);
-
-
-        // when a user disconnects/leaves the whole website
-        socket.on('disconnect', disconnect);
-
-
-        //= ======================================
-        // COMMANDS
-        //= ======================================
-
-        socket.on('messageCommand', messageCommand);
-        socket.on('interactUserPlayed', interactUserPlayed);
-        // when a user tries to send a message to all chat
-        socket.on('allChatFromClient', allChatFromClient);
-        // when a user tries to send a message to room
-        socket.on('roomChatFromClient', roomChatFromClient);
-        // when a new room is created
-        socket.on('newRoom', newRoom);
-        // when a player joins a room
-        socket.on('join-room', joinRoom);
-        socket.on('join-game', joinGame);
-        socket.on('standUpFromGame', standUpFromGame);
-
-        // when a player leaves a room
-        socket.on('leave-room', leaveRoom);
-        socket.on('player-ready', playerReady);
-        socket.on('player-not-ready', playerNotReady);
-        socket.on('startGame', startGame);
-        socket.on('kickPlayer', kickPlayer);
-        socket.on('update-room-max-players', updateRoomMaxPlayers);
-        socket.on('update-room-game-mode', updateRoomGameMode);
-        socket.on('update-room-ranked', updateRoomRanked);
-
-        //* ***********************
-        // game data stuff
-        //* ***********************
-        socket.on('gameMove', gameMove);
-        socket.on('setClaim', setClaim);
-    });
-};
-
-function socketCallback(action, room) {
-    if (action === "finishGameResWin") {
+    if (action === 'finishGameResWin') {
         var data = {
             message: `Room ${room.roomId} has finished! The Resistance have won!`,
             classStr: 'all-chat-text-blue',
         };
-        sendToAllChat(ioGlobal, data);
+    sendToAllChat(ioGlobal, data);
     }
-    if (action === "finishGameSpyWin") {
+    if (action === 'finishGameSpyWin') {
         var data = {
             message: `Room ${room.roomId} has finished! The Spies have won!`,
             classStr: 'all-chat-text-red',
-        };
-        sendToAllChat(ioGlobal, data);
+    };
+    sendToAllChat(ioGlobal, data);
     }
-<<<<<<< HEAD
-    if (action === "updateCurrentGamesList") {
-        updateCurrentGamesList()
-=======
+    if (action === 'updateCurrentGamesList') {
+        updateCurrentGamesList();
+    }  
     if (action === "updateCurrentPlayersList") {
         updateCurrentPlayersList();
->>>>>>> Adjusted username lists to contain elo ratings. Added ranked and unranked games. WIP interval based skill brackets.
     }
->>>>>>> 544361e6... Adjusted username lists to contain elo ratings. Added ranked and unranked games. Introduction of rating brackets for players. Addition of player rating to profile page.
+    if (action === "adjustRatingBrackets") {
+        room.playersInGame.forEach((player) => {
+            player = assignRatingBracket(player);
+        });
+    }
 }
 
 var applyApplicableRewards = function (socket) {
@@ -2724,49 +2668,6 @@ var assignRatingBracket = function (socket) {
 } 
 
 var updateCurrentPlayersList = function () {
-<<<<<<< HEAD
-  ioGlobal
-    .in('allChat')
-    .emit(
-      'update-current-players-list',
-      getPlayerDisplayUsernamesFromAllSockets()
-    );
-};
-
-var updateCurrentGamesList = function () {
-  // prepare room data to send to players.
-  const gamesList = [];
-  for (let i = 0; i < rooms.length; i++) {
-    // If the game exists
-    if (rooms[i]) {
-      // create new array to send
-      gamesList[i] = {};
-      // get status of game
-      gamesList[i].status = rooms[i].getStatus();
-
-      if (rooms[i].joinPassword !== undefined) {
-        gamesList[i].passwordLocked = true;
-      } else {
-        gamesList[i].passwordLocked = false;
-      }
-      // get room ID
-      gamesList[i].roomId = rooms[i].roomId;
-      gamesList[i].gameMode =
-        rooms[i].gameMode.charAt(0).toUpperCase() + rooms[i].gameMode.slice(1);
-      // console.log("Room " + rooms[i].roomId + " has host: " + rooms[i].host);
-      gamesList[i].hostUsername = rooms[i].host;
-      if (rooms[i].gameStarted === true) {
-        gamesList[i].numOfPlayersInside = rooms[i].playersInGame.length;
-        gamesList[i].missionHistory = rooms[i].missionHistory;
-        gamesList[i].missionNum = rooms[i].missionNum;
-        gamesList[i].pickNum = rooms[i].pickNum;
-      } else {
-        gamesList[i].numOfPlayersInside = rooms[i].socketsOfPlayers.length;
-      }
-      gamesList[i].maxNumPlayers = rooms[i].maxNumPlayers;
-      gamesList[i].numOfSpectatorsInside =
-        rooms[i].allSockets.length - rooms[i].socketsOfPlayers.length;
-=======
     // 2D array of usernames, elo pairs and rating brackets, sorted in order of elo rating
     const playerList = []
     for (let i = 0; i < allSockets.length; i++) {
@@ -2817,12 +2718,10 @@ var updateCurrentGamesList = function () {
             gamesList[i].maxNumPlayers = rooms[i].maxNumPlayers;
             gamesList[i].numOfSpectatorsInside = rooms[i].allSockets.length - rooms[i].socketsOfPlayers.length;
         }
->>>>>>> 544361e6... Adjusted username lists to contain elo ratings. Added ranked and unranked games. Introduction of rating brackets for players. Addition of player rating to profile page.
     }
-  }
-  allSockets.forEach((sock) => {
-    sock.emit('update-current-games-list', gamesList);
-  });
+    allSockets.forEach((sock) => {
+        sock.emit('update-current-games-list', gamesList);
+    });
 };
 
 function textLengthFilter(str) {
@@ -3205,29 +3104,6 @@ function roomChatFromClient(data) {
 }
 
 function newRoom(dataObj) {
-<<<<<<< HEAD
-  if (dataObj) {
-    // while rooms exist already (in case of a previously saved and retrieved game)
-    while (rooms[nextRoomId]) {
-      nextRoomId++;
-    }
-    rooms[nextRoomId] = new gameRoom(
-      this.request.user.username,
-      nextRoomId,
-      ioGlobal,
-      dataObj.maxNumPlayers,
-      dataObj.newRoomPassword,
-      dataObj.gameMode,
-      socketCallback
-    );
-    const privateStr = dataObj.newRoomPassword === '' ? '' : 'private ';
-    // broadcast to all chat
-    const data = {
-      message: `${this.request.user.username} has created ${privateStr}room ${nextRoomId}.`,
-      classStr: 'server-text',
-    };
-    sendToAllChat(ioGlobal, data);
-=======
     if (dataObj) {
         // while rooms exist already (in case of a previously saved and retrieved game)
         while (rooms[nextRoomId]) {
@@ -3243,7 +3119,6 @@ function newRoom(dataObj) {
             classStr: 'server-text',
         };
         sendToAllChat(ioGlobal, data);
->>>>>>> 544361e6... Adjusted username lists to contain elo ratings. Added ranked and unranked games. Introduction of rating brackets for players. Addition of player rating to profile page.
 
     // console.log(data.message);
 
