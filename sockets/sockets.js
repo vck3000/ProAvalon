@@ -378,9 +378,7 @@ var actionsObj = {
                             username: senderSocket.request.user.username,
                             usernameLower: senderSocket.request.user.usernameLower
                         },
-                        message: [
-                            dataMessage.message
-                        ]
+                        message: dataMessage.message
                     },
                     dateCreated: new Date()
                 });
