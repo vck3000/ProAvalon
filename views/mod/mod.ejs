@@ -231,6 +231,16 @@
         }
     }
 
+    function pmmodText(props) {
+        let data = props.data;
+        return {
+            title: `${data.targetUser.username} has used pmmod on ${props.modWhoMade.username}.`,
+            body: <span>
+                <p>{data.message}</p>
+                </span>
+        }
+    }
+
 
 
     class Log extends React.Component {
@@ -265,6 +275,9 @@
                     break;
                 case "mnotify":
                     logText = mnotifyText(this.props.log);
+                    break;
+                case "pmmod":
+                    logText = pmmodText(this.props.log);
                     break;
             }
 
