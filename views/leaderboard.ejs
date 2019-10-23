@@ -1,0 +1,12 @@
+<% include partials/header %>
+
+<div class="container">
+    <h1>Leaderboard</h1>
+    <% for (const key in leaderboard) { %>
+        <p>
+            <strong><%= key %></strong>: <%= leaderboard[key].username || 'Nobody' %>, with <%= leaderboard[key].score %> wins
+        </p>
+    <% } %>
+</div>
+
+<% include partials/footer %>

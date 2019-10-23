@@ -234,12 +234,26 @@
 					<% } %>
 
 					<!-- Statistics -->
-					<% if(headerActive === "stats"){ %>
-					<li class="active"><a href="/statistics">Stats</a></li>
-					<%} %>
-					<% if(headerActive !== "stats"){ %>
-					<li><a href="/statistics">Stats</a></li>
-					<% } %>
+					<li class="dropdown">
+						<a class="dropdown-toggle wideNavbarLink" data-toggle="" role="button" aria-haspopup="true" aria-expanded="false">Statistics <span class="caret"></span></a>
+						<a class="dropdown-toggle narrowNavbarLink" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Statistics <span class="caret"></span></a>
+
+						<ul class="dropdown-menu">
+							<% if(headerActive === "stats"){ %>
+								<li class="active"><a href="/statistics">Stats</a></li>
+							<%} %>
+							<% if(headerActive !== "stats"){ %>
+								<li><a href="/statistics">Stats</a></li>
+							<% } %>
+
+							<% if(headerActive === "leaderboard"){ %>
+								<li class="active"><a href="/leaderboard">Leaderboard</a></li>
+							<%} %>
+							<% if(headerActive !== "leaderboard"){ %>
+								<li><a href="/leaderboard">Leaderboard</a></li>
+							<% } %>
+						</ul>
+					</li>
 
 					<!-- Community dropdown -->
 					<li class="dropdown">

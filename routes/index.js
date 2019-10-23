@@ -259,7 +259,23 @@ router.get('/statistics', (req, res) => {
     res.render('statistics', { currentUser: req.user, headerActive: 'stats' });
 });
 
-
+router.get('/leaderboard', async (req, res) => {
+    const users = await User.find({}).exec();
+    const leaderboard = {};
+    users.forEach((user) => {
+        Object.values(user.roleStats).forEach((obj) => {
+            Object.keys(obj).forEach((key) => {
+                if (!leaderboard[key]) leaderboard[key] = { username: '', score: 0 };
+                let total = 0;
+                if (obj[key].wins) {
+                    total += obj[key].wins;
+                }
+                if (total > leaderboard[key].score) leaderboard[key] = { username: user.username, score: total };
+            });
+        });
+    });
+    res.render('leaderboard', { leaderboard });
+});
 
 
 function gameDateCompare(a, b) {
