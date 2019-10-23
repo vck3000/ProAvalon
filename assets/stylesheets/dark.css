@@ -1,6 +1,9 @@
-
 .dark .dropdown-menu>li>a{
 	color: #c1c1c1;
+}
+
+.dark .dropdown-menu>li.active>a {
+  color: #333333;
 }
 
 .dark .notificationItem {
