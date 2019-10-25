@@ -241,10 +241,16 @@ textarea .dark {
 }
 
 
-.dark .login-form form {
-  background-color: rgb(80, 80, 80);
+.dark .login-form form,
+.dark #searchInput
+ {
+  background: rgb(80, 80, 80);
 }
 
 .dark .myForumContainer {
   color: black;
+}
+
+.dark #statusBarWell {
+  border: 1px solid black;
 }
