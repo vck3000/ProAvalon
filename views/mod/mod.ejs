@@ -106,7 +106,7 @@
         let whenRelease = moment(data.whenRelease);
         
         return {
-            title: `${data.modWhoBanned.username} has UNBANNED ${data.bannedPlayer.username}.` ,
+            title: `${props.modWhoMade.username} has UNBANNED ${data.bannedPlayer.username}.` ,
             body: <span>
                 <p>The original ban was made by: {data.modWhoBanned.username}.</p>
                 <p>The date the ban was made on was: {whenMade.format("LLL")}.</p>
