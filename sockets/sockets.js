@@ -363,6 +363,25 @@ var actionsObj = {
 
                 // Set a cooldown for the sender until they can send another pm
                 pmmodCooldowns[senderSocket.id] = new Date();
+
+                // Create the mod log.
+                mlog = ModLog.create({
+                    type: "pmmod",
+                    modWhoMade: {
+                        id: modSocket.request.user.id,
+                        username: modSocket.request.user.username,
+                        usernameLower: modSocket.request.user.usernameLower
+                    },
+                    data: {
+                        targetUser: {
+                            id: senderSocket.request.user.id,
+                            username: senderSocket.request.user.username,
+                            usernameLower: senderSocket.request.user.usernameLower
+                        },
+                        message: dataMessage.message
+                    },
+                    dateCreated: new Date()
+                });
             }
         },
 
@@ -516,7 +535,14 @@ var actionsObj = {
             help: '/r: Reply to a mod who just messaged you.',
             run(data, senderSocket) {
                 const { args } = data;
-                let str = `${senderSocket.request.user.username}->${lastWhisperObj[senderSocket.request.user.username].username} (whisper): `;
+
+                // If the player has not been whispered to yet.
+                if (!lastWhisperObj[senderSocket.request.user.username.toLowerCase()]) {
+                    return { message: "You haven't been whispered to before.", classStr: 'server-text' };
+                }
+                const sendToSocket = allSockets[getIndexFromUsername(allSockets, lastWhisperObj[senderSocket.request.user.username.toLowerCase()].username, true)];
+
+                let str = `${senderSocket.request.user.username}->${sendToSocket.request.user.username} (whisper): `;
                 for (let i = 1; i < args.length; i++) {
                     str += args[i];
                     str += ' ';
@@ -531,10 +557,10 @@ var actionsObj = {
                 };
 
                 // this sendToSocket is the moderator
-                const sendToSocket = allSockets[getIndexFromUsername(allSockets, lastWhisperObj[senderSocket.request.user.username].username, true)];
 
+                // If the reply target is no longer in the sockets list.
                 if (!sendToSocket) {
-                    senderSocket.emit('messageCommandReturnStr', { message: "You haven't been whispered to before.", classStr: 'server-text' });
+                    senderSocket.emit('messageCommandReturnStr', { message: "Your target has disconnected.", classStr: 'server-text' });
                 } 
                 else {
                     sendToSocket.emit('allChatToClient', dataMessage);
@@ -543,17 +569,10 @@ var actionsObj = {
                     senderSocket.emit('allChatToClient', dataMessage);
                     senderSocket.emit('roomChatToClient', dataMessage);
 
-                    modlog = lastWhisperObj[senderSocket.request.user.username].modlog;
+                    modlog = lastWhisperObj[senderSocket.request.user.username.toLowerCase()].modlog;
                     modlog.data.log.push(dataMessage);
                     modlog.markModified('data');
                     modlog.save()
-
-                    // set the last whisper person
-                    // Change: Don't reset the last whisper. Let only one mwhisper be active at a time.
-                    // lastWhisperObj[sendToSocket.request.user.username] = senderSocket.request.user.username;
-
-                    // lastWhisperObj[senderSocket.request.user.username] = sendToSocket.request.user.username;
-
                 }
             },
         },
@@ -1049,19 +1068,6 @@ var actionsObj = {
             help: '/mwhisper <player name> <text to send>: Sends a whisper to a player.',
             async run(data, senderSocket) {
                 const { args } = data;
-                let str = `${senderSocket.request.user.username}->${args[1]} (whisper): `;
-                for (let i = 2; i < args.length; i++) {
-                    str += args[i];
-                    str += ' ';
-                }
-
-                // str += ("(From: " + senderSocket.request.user.username + ")");
-
-                const dataMessage = {
-                    message: str,
-                    dateCreated: new Date(),
-                    classStr: 'whisper',
-                };
 
                 if (args[1].toLowerCase() === senderSocket.request.user.username.toLowerCase()) {
                     senderSocket.emit('messageCommandReturnStr', { message: `You cannot whisper yourself...`, classStr: 'server-text' });
@@ -1070,10 +1076,22 @@ var actionsObj = {
                 const sendToSocket = allSockets[getIndexFromUsername(allSockets, args[1], true)];
 
                 if (!sendToSocket) {
-                    senderSocket.emit('messageCommandReturnStr', { message: `Could not find ${args[1]}`, classStr: 'server-text' });
+                    senderSocket.emit('messageCommandReturnStr', { message: `Could not find ${args[1]}.`, classStr: 'server-text' });
                 } else {
+                    let str = `${senderSocket.request.user.username}->${sendToSocket.request.user.username} (whisper): `;
+                    for (let i = 2; i < args.length; i++) {
+                        str += args[i];
+                        str += ' ';
+                    }
+    
+                    const dataMessage = {
+                        message: str,
+                        dateCreated: new Date(),
+                        classStr: 'whisper',
+                    };
+
                     // send notification that you can do /r for first whisper message
-                    if (!lastWhisperObj[sendToSocket.request.user.username]) {
+                    if (!lastWhisperObj[sendToSocket.request.user.username.toLowerCase()]) {
                         sendToSocket.emit('allChatToClient', { message: 'You can do /r <message> to reply.', classStr: 'whisper', dateCreated: new Date() });
                         sendToSocket.emit('roomChatToClient', { message: 'You can do /r <message> to reply.', classStr: 'whisper', dateCreated: new Date() });
                     }
@@ -1105,13 +1123,13 @@ var actionsObj = {
                     })
 
                     // set the last whisper person
-                    lastWhisperObj[sendToSocket.request.user.username] = {
-                        username: senderSocket.request.user.username,
+                    lastWhisperObj[sendToSocket.request.user.username.toLowerCase()] = {
+                        username: senderSocket.request.user.username.toLowerCase(),
                         modlog: mlog
                     }
 
-                    lastWhisperObj[senderSocket.request.user.username] = {
-                        username: sendToSocket.request.user.username,
+                    lastWhisperObj[senderSocket.request.user.username.toLowerCase()] = {
+                        username: sendToSocket.request.user.username.toLowerCase(),
                         modlog: mlog
                     }
                 }
