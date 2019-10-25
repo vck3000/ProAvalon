@@ -1,0 +1,256 @@
+.dark {
+  background-color: #444444;
+  color: #CCCCCC;
+  /*$("input")[0].style.backgroundColor ="#444444";*/
+}
+
+.dark .dropdown-menu>li>a{
+	color: #c1c1c1;
+}
+
+.dark .dropdown-menu>li.active>a {
+  color: #333333;
+}
+
+.dark .notificationItem {
+	background-color: #444444;
+}
+
+.dark .notificationItem:hover {
+	background-color: #3D3D3D;
+}
+
+.dark .notificationHide:hover {
+	color: white;
+	text-decoration: underline;
+}
+
+.dark .hideAll:hover {
+	color: white;
+	text-decoration: underline;
+}
+
+.dark .myActive {
+	background-color: #5b5b5b !important;
+}
+
+.dark .showYourTurnNotification{
+  border: rgba(170, 110, 0, 0.75) solid 2px;
+  margin-bottom: 0px !important;
+  margin-top: 0px !important;
+}
+
+.dark .well{ 
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
+.dark .spectator-chat{
+  color: rgb(175, 175, 175);
+}
+
+.dark .gameplay-text-red {
+  color: #fc4141;
+}
+
+.dark .gameplay-text-blue {
+  color: #0087d6;
+}
+
+.dark .selected-avatar-1 {
+  background-color: #579157;
+  border-radius: 5px;
+}
+
+.dark .missionBox {
+  background-color: #898989;
+  color: white;
+}
+
+.dark .missionBoxSucceed {
+  /*color: white;*/
+  /* background-color: #BBFFBB; */
+  background-color: #0044cc;
+  opacity: 0.65;
+  color: white;
+}
+
+.dark .missionBoxFail {
+  /*color: white;*/
+  background-color: #bd362f;
+  /* background-color: #ff6666; */
+  opacity: 0.65;
+  color: white;
+}
+
+.dark .pickBox {
+  border: 1px solid gray;
+}
+
+.dark .pickBoxFill {
+  background-color: gray;
+}
+
+.dark .btn-mine.active {
+  /*border: 3px solid green !important;*/
+  background-color: rgba(0, 224, 255, 0.4) !important;
+}
+
+.dark .btn-mine {
+  color: black;
+  border: 1px solid white;
+  background: black;
+}
+
+.dark .modal-content {
+  background-color: #333;
+}
+
+.dark .modal-content label {
+  color: #CCCCCC;
+}
+
+.dark .dropdown-menu {
+  background-color: #333;
+}
+
+
+
+.dark .table td {
+  border-top: 1px solid #222222;
+}
+
+.dark .table-striped tbody>tr:nth-child(even)>td,
+.dark .table-striped tbody>tr:nth-child(even)>th {
+  background-color: #444444;
+}
+
+.dark .table-striped tbody>tr:nth-child(odd)>td,
+.dark .table-striped tbody>tr:nth-child(odd)>th {
+  background-color: #3d3d3d;
+}
+
+.dark .nav-tabs>.active>a,
+.dark .nav-tabs>.active>a:hover,
+.dark .nav-tabs>.active>a:focus {
+  /*border: 1px solid #222222;*/
+  background-color: #444444;
+  border-bottom-color: transparent;
+}
+
+
+.dark input,
+.dark .nav-tabs>.active>a,
+.dark .nav-tabs>.active>a:hover,
+.dark .nav-tabs>.active>a:focus,
+.dark textarea {
+  color: #CCCCCC;
+  border: 1px #000000 solid;
+}
+
+.dark input {
+  background-color: #333333;
+}
+
+.dark .role-p {
+  background-color: #333333;
+  /*border: 1px solid #dddddd;*/
+  border: 1px solid transparent;
+}
+
+.dark .tab-window {
+  border: 1px black solid;
+}
+
+.dark .missionBoxSucceed {
+  
+  /* background-color: #5cb85c; */
+}
+
+.dark .missionBoxFail {
+  /* background-color: #bd362f; */
+}
+
+.dark .newMessage {
+  background-color: #a09d00;
+}
+
+.dark .chat-window,
+.dark .tab-window-full-bottom {
+  border: 1px solid #000000;
+}
+
+.dark .table-bordered {
+  border: 1px solid #000000;
+}
+
+.dark .table-bordered,
+.current-games-table-off {
+  border: 1px transparent solid;
+}
+
+.dark .date-text {
+  background-color: #333333;
+  border: 1px solid #222222;
+}
+
+.dark #playerHighlightColourButton:hover{
+  border: 1px solid gray;
+
+}
+
+.dark .panel-body {
+  background-color: #444444;
+}
+
+.dark .panel-default .panel-heading {
+  background-color: #333333;
+  color: white;
+  border-color: transparent;
+}
+
+.dark select {
+  background-color: #444444;
+}
+
+input .dark,
+.well .dark,
+textarea .dark {
+    background-color: #333333;
+}
+
+/* .dark .nav-tabs  {
+    background-color: #579157;
+    border-radius: 5px;
+} */
+
+.dark .dropdown-menu > li > a {
+  color: #c1c1c1;
+}
+
+.dropdown-menu > li > a:hover {
+  color: #555;
+}
+
+
+.dark .myContainer, .dark #mainBodyContainer {
+  background-color: #444444;
+  color: #CCCCCC;
+  border: 1px solid black;
+  border-radius: 10px;
+}
+
+
+.dark .login-form form,
+.dark #searchInput
+ {
+  background: rgb(80, 80, 80);
+}
+
+.dark .myForumContainer {
+  color: black;
+}
+
+.dark #statusBarWell {
+  border: 1px solid black;
+}

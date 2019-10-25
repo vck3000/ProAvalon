@@ -12,6 +12,11 @@
         font-family: roboto;
     }
 
+    .dark .myContainer {
+        background-color: #444444;
+        border: 1px solid black;
+    }
+
     .header {
         text-align: center;
         margin: 0 auto;
@@ -86,12 +91,16 @@
         font-weight: 500;
     }
 
+    .dark h4 {
+        color: #7986cb;
+    }
+
     button {
         margin: 0 0 0 5%;
     }
 
     /*hide games played*/
-    .games{
+    .games {
         display:none;
         width:0;
         height:0;
@@ -99,9 +108,17 @@
         visibility: collapse;
     } 
 
-    .username{
-        color: black;
+    .dark tr:hover > td > a,
+    .dark tr:hover{
+        color: black !important;
     }
+
+    .dark a {
+        color: #CCCCCC;
+    }
+
+
+
 @media screen and (max-width: 600px) {
     .myTable {
         font-size: 11px;
