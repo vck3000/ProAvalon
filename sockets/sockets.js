@@ -331,7 +331,7 @@ var actionsObj = {
         pmmod: {
             command: 'pmmod',
             help: '/pmmod <mod_username> <message>: Sends a private message to an online moderator.',
-            run(data, senderSocket) {
+            async run(data, senderSocket) {
                 const { args } = data;
                 // We check if they are spamming, i.e. have sent a PM before the timeout is up
                 const lastPmTime = pmmodCooldowns[senderSocket.id];
@@ -363,6 +363,25 @@ var actionsObj = {
 
                 // Set a cooldown for the sender until they can send another pm
                 pmmodCooldowns[senderSocket.id] = new Date();
+
+                // Create the mod log.
+                mlog = await ModLog.create({
+                    type: "pmmod",
+                    modWhoMade: {
+                        id: modSocket.request.user.id,
+                        username: modSocket.request.user.username,
+                        usernameLower: modSocket.request.user.usernameLower
+                    },
+                    data: {
+                        targetUser: {
+                            id: senderSocket.request.user.id,
+                            username: senderSocket.request.user.username,
+                            usernameLower: senderSocket.request.user.usernameLower
+                        },
+                        message: dataMessage.message
+                    },
+                    dateCreated: new Date()
+                });
             }
         },
 
@@ -516,6 +535,12 @@ var actionsObj = {
             help: '/r: Reply to a mod who just messaged you.',
             run(data, senderSocket) {
                 const { args } = data;
+
+                // If the player has not been whispered to yet.
+                if (!lastWhisperObj[senderSocket.request.user.username]) {
+                    return { message: "You haven't been whispered to before.", classStr: 'server-text' };
+                }
+
                 let str = `${senderSocket.request.user.username}->${lastWhisperObj[senderSocket.request.user.username].username} (whisper): `;
                 for (let i = 1; i < args.length; i++) {
                     str += args[i];
@@ -533,8 +558,9 @@ var actionsObj = {
                 // this sendToSocket is the moderator
                 const sendToSocket = allSockets[getIndexFromUsername(allSockets, lastWhisperObj[senderSocket.request.user.username].username, true)];
 
+                // If the reply target is no longer in the sockets list.
                 if (!sendToSocket) {
-                    senderSocket.emit('messageCommandReturnStr', { message: "You haven't been whispered to before.", classStr: 'server-text' });
+                    senderSocket.emit('messageCommandReturnStr', { message: "Your target has disconnected.", classStr: 'server-text' });
                 } 
                 else {
                     sendToSocket.emit('allChatToClient', dataMessage);
