@@ -30,20 +30,9 @@ p {
     border: orange solid 2px;
 }
 
-.dark .showYourTurnNotification{
-    border: rgba(170, 110, 0, 0.75) solid 2px;
-    margin-bottom: 0px !important;
-    margin-top: 0px !important;
-}
-.dark .well{ 
-    margin-top: 1px;
-    margin-bottom: 1px;
-}
-
 .well-sm {
     
 }
-
 
 /* Lobby items */
 
@@ -210,7 +199,6 @@ p {
     padding-left: 10px;
 }
 
-
 /* TEXT */
 
 .server-text {
@@ -243,10 +231,6 @@ p {
     display: none;
 }
 
-.dark .spectator-chat{
-    color: rgb(175, 175, 175);
-}
-
 .gameplay-text {
     /* color: rgb(255, 0, 0); */
     color: gray;
@@ -259,9 +243,6 @@ p {
     font-style: italic;
     font-weight: 700;
 }
-.dark .gameplay-text-red {
-    color: #fc4141;
-}
 
 .gameplay-text-blue {
     /* color: rgb(255, 0, 0); */
@@ -269,16 +250,6 @@ p {
     font-style: italic;
     font-weight: 700;
 }
-.dark .gameplay-text-blue {
-    color: #0087d6;
-}
-
-
-
-
-
-
-
 
 /* This is Lady */
 .special-text {
@@ -290,7 +261,6 @@ p {
 .username-text {
     font-weight: bold;
 }
-
 
 /*GAME-ROOM AREA*/
 
@@ -322,7 +292,6 @@ p {
     /*position: relative;	*/
 }
 
-
 /*GAME-ROOM ITEMS*/
 
 .playerDiv {
@@ -337,8 +306,6 @@ p {
     max-height: 128px;
     /* border: 5px solid transparent; */
 }
-
-
 
 .gunBefore {
     z-index: 2;
@@ -386,7 +353,6 @@ p {
     
 }
 
-
 /* Highlighting/outlining of avatars/chat */
 
 .highlight-avatar {
@@ -421,7 +387,6 @@ p {
     border-radius: 10px;
 }
 
-
 .selected-chat {
     /* background-color: rgb(255, 255, 0); */
 }
@@ -430,13 +395,6 @@ p {
     background-color: #8BE38B;
     border-radius: 5px;
 }
-
-.dark .selected-avatar-1 {
-    background-color: #579157;
-    border-radius: 5px;
-}
-
-
 
 .selected-avatar-2 {
     background-color: #d9544f81;
@@ -466,7 +424,6 @@ p {
     /*background-color: purple;*/
 }
 
-
 /* Center well */
 
 well {
@@ -491,7 +448,6 @@ well {
 .center-div {
     text-align: center;
 }
-
 
 /* Mission box */
 
@@ -529,15 +485,6 @@ well {
     color: rgb(124, 124, 124);
 }
 
-.dark .missionBox {
-    background-color: #898989;
-    color: white;
-}
-
-
-
-
-
 .missionBox p {
     display: table-cell;
     vertical-align: middle;
@@ -552,14 +499,6 @@ well {
     color: white;
 }
 
-.dark .missionBoxSucceed {
-    /*color: white;*/
-    /* background-color: #BBFFBB; */
-    background-color: #0044cc;
-    opacity: 0.65;
-    color: white;
-}
-
 .missionBoxFail {
     /*color: white;*/
     background-color: #bd362f;
@@ -567,14 +506,6 @@ well {
     opacity: 0.65;
     color: white;
 }
-.dark .missionBoxFail {
-    /*color: white;*/
-    background-color: #bd362f;
-    /* background-color: #ff6666; */
-    opacity: 0.65;
-    color: white;
-}
-
 
 /* black circles */
 
@@ -590,17 +521,10 @@ well {
     margin-right: 1vh;
     /*position: absolute;*/
 }
-.dark .pickBox {
-    border: 1px solid gray;
-}
 
 .pickBoxFill {
     background-color: black;
 }
-.dark .pickBoxFill {
-    background-color: gray;
-}
-
 
 .row {
     width: 100%;
@@ -608,7 +532,6 @@ well {
     display: flex;
     justify-content: space-around;
 }
-
 
 /* Approve reject colours */
 
@@ -643,7 +566,6 @@ well {
     border: black 3px solid;
 }
 
-
 /*Vote history*/
 
 #voteHistoryTable tr td {
@@ -651,30 +573,19 @@ well {
     text-align: center;
 }
 
-
 /*MODALS*/
 
 .btn-mine.active {
     /*border: 3px solid green !important;*/
     background-color: rgba(163, 244, 255, 0.6) !important;
 }
-.dark .btn-mine.active {
-    /*border: 3px solid green !important;*/
-    background-color: rgba(0, 224, 255, 0.4) !important;
-}
 
-.dark .btn-mine {
-    color: black;
-    border: 1px solid white;
-    background: black;
-}
 .btn-mine {
     height: 40px;
     border: 3px solid black;
     border-radius: 10px !important;
     background-color: #e5e5e5;
 }
-
 
 /*This is for the special text like lady, so users cannot select to copy paste*/
 
@@ -719,7 +630,6 @@ h3 {
     } 
  }
 
-
 .game-buttons-div {
     /* padding-top: 1vh; */
     /* padding-bottom: 1vh; */
@@ -728,34 +638,6 @@ h3 {
 .newMessage {
     background-color: yellow;
 }
-
-
-/* Dark mode */
-
-.dark .modal-content {
-    background-color: #333;
-}
-
-.dark .modal-content label {
-    color: #CCCCCC;
-}
-
-.dark .dropdown-menu {
-    background-color: #333;
-}
-
-.dark {
-    background-color: #444444;
-    color: #CCCCCC;
-    /*$("input")[0].style.backgroundColor ="#444444";*/
-}
-
-input .dark,
-.well .dark,
-textarea .dark {
-    background-color: #333333;
-}
-
 
 /*Copied from boot strap*/
 
@@ -787,95 +669,11 @@ textarea .dark {
     *background-color: #151515;
 }
 
-.dark .table td {
-    border-top: 1px solid #222222;
-}
-
-.dark .table-striped tbody>tr:nth-child(even)>td,
-.dark .table-striped tbody>tr:nth-child(even)>th {
-    background-color: #444444;
-}
-
-.dark .table-striped tbody>tr:nth-child(odd)>td,
-.dark .table-striped tbody>tr:nth-child(odd)>th {
-    background-color: #3d3d3d;
-}
-
-.dark .nav-tabs>.active>a,
-.dark .nav-tabs>.active>a:hover,
-.dark .nav-tabs>.active>a:focus {
-    /*border: 1px solid #222222;*/
-    background-color: #444444;
-    border-bottom-color: transparent;
-}
-
-.dark,
-.dark input,
-.dark .nav-tabs>.active>a,
-.dark .nav-tabs>.active>a:hover,
-.dark .nav-tabs>.active>a:focus,
-.dark textarea {
-    color: #CCCCCC;
-    border: 1px #000000 solid;
-}
-
-.dark input {
-    background-color: #333333;
-}
-
-.dark .role-p {
-    background-color: #333333;
-    /*border: 1px solid #dddddd;*/
-    border: 1px solid transparent;
-}
-
-.dark .tab-window {
-    border: 1px black solid;
-}
-
-.dark .missionBoxSucceed {
-    
-    /* background-color: #5cb85c; */
-}
-
-.dark .missionBoxFail {
-    /* background-color: #bd362f; */
-}
-
-.dark .newMessage {
-    background-color: #a09d00;
-}
-
-.dark .chat-window,
-.dark .tab-window-full-bottom {
-    border: 1px solid #000000;
-}
-
-.dark .table-bordered {
-    border: 1px solid #000000;
-}
-
-.dark .table-bordered,
-.current-games-table-off {
-    border: 1px transparent solid;
-}
-
-.dark .date-text {
-    background-color: #333333;
-    border: 1px solid #222222;
-}
-
 .buttonDark {
     background-color: #363636;
     border: 1px solid black;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);   
 }
-.dark #playerHighlightColourButton:hover{
-    border: 1px solid gray;
-
-}
-
-
 
 #div1Resize {
     /* border: 1px solid black; */
@@ -901,17 +699,12 @@ textarea .dark {
     margin: auto;
 }
 
-
-
-
-
 .myQuote{
     color: rgb(107, 107, 107);
     padding-left: 10px;
     border-left: #ccc 3px solid;
 
 }
-
 
 .date-text{
     padding: 2px 4px;
@@ -957,15 +750,12 @@ textarea .dark {
 
 }
 
-
 .leftRoom {
     /* filter: brightness(60%); */
 
     opacity: 0.3;
     filter: alpha(opacity=30); /* For IE8 and earlier */
 }
-
-
 
 #claimButton{
     position: absolute;
@@ -998,7 +788,6 @@ textarea .dark {
     bottom: 5px;
     width: 100%;
 }
-
 
 .displayNoneClass {
     display: none;
@@ -1036,8 +825,6 @@ textarea .dark {
     /* display:block; */
 }
 
-
-
 .approveLabel {
     position: absolute;
     top: -10%;
@@ -1067,19 +854,10 @@ textarea .dark {
     height: 16px;
 }
 
-
 .whisper {
     color: mediumpurple;
     font-weight: 700;
 }
-
-
-
-/* .dark .nav-tabs  {
-    background-color: #579157;
-    border-radius: 5px;
-} */
-
 
 .lobbyMissionBox {
     display: inline-block;
@@ -1106,15 +884,12 @@ textarea .dark {
     /* border: 1px solid gray; */
     /* background-color: rgb(231, 231, 231); */
 
-
-
     /* padding: 3px; */
 
     /* border-radius: 10px; */
 
     transform: translate(-10%, -20%);
 }
-
 
 .roleCardDescription {
     /* height: 38px; */
@@ -1123,7 +898,7 @@ textarea .dark {
     margin-bottom: 0px;
 }
 
-.dark .panel-body {
+/* .dark .panel-body {
     background-color: #444444;
 }
 
@@ -1135,7 +910,7 @@ textarea .dark {
 
 .dark select {
     background-color: #444444;
-}
+} */
 
 .highlightChatButtonSelected {
     background-color: #BBFFBB

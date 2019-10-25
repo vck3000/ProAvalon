@@ -1,2 +1,38 @@
+	<script>
+            if (typeof updateDarkTheme === "undefined") {
+                  function updateDarkTheme(checked) {
+                        if (checked === true && window.location.pathname !== "/") {
+                                    $("body")[0].classList.add("dark");
+                                    $(".well").addClass("dark");
+                                    $("input").addClass("dark");
+                                    $("textarea").addClass("dark");
+                                    $(".btn-default").addClass("btn-inverse");
+                                    $(".navbar").addClass("navbar-inverse");
+                                    $("#playerHighlightColourButton").addClass("buttonDark");
+                                    $("#playerHighlightColourButton2").addClass("buttonDark");
+                                    $("#removeHighlight").addClass("buttonDark");
+                                    $("#removeHighlight2").addClass("buttonDark");
+                        }
+                        else {
+                                    $("body")[0].classList.remove("dark");
+                                    $(".well").removeClass("dark");
+                                    $("input").removeClass("dark");
+                                    $("textarea").removeClass("dark");
+                                    $(".btn-default").removeClass("btn-inverse");
+                                    $(".navbar").removeClass("navbar-inverse");
+                                    $("#playerHighlightColourButton").removeClass("buttonDark");
+                                    $("#playerHighlightColourButton2").removeClass("buttonDark");
+                                    $("#removeHighlight").removeClass("buttonDark");
+                                    $("#removeHighlight2").removeClass("buttonDark");
+                        }
+                  }
+            }
+
+            if (docCookies.getItem("optionDisplayDarkTheme") === "true") {
+                  //update the dark theme if cookie data is true
+                  updateDarkTheme(true);
+                  //show its checked on their screen
+            }
+	</script>
 </body>
 </html>
