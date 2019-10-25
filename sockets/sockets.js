@@ -1131,8 +1131,8 @@ var actionsObj = {
 
                 User.findOne({ usernameLower: args[1].toLowerCase() }).populate('notifications').exec((err, foundUser) => {
                     if (err) { console.log(err); } else if (foundUser !== undefined) {
-                        foundUser.avatarImgRes = '';
-                        foundUser.avatarImgSpy = '';
+                        foundUser.avatarImgRes = null;
+                        foundUser.avatarImgSpy = null;
                         foundUser.save();
 
                         senderSocket.emit('messageCommandReturnStr', { message: `Successfully removed ${args[1]}'s avatar.`, classStr: 'server-text' });
