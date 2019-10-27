@@ -152,6 +152,18 @@
                         <td class="statsCol2" id="totalResistanceShot"></td>
                     </tr>
                     <tr>
+                        <td class="statsCol1">Tristan/Isolde shot: </td>
+                        <td class="statsCol2" id="totalTristanIsoldeShot"></td>
+                    </tr>
+                    <tr>
+                        <td class="statsCol1">Oberon shot: </td>
+                        <td class="statsCol2" id="totalOberonShot"></td>
+                    </tr>
+                    <tr>
+                        <td class="statsCol1">Total shots: </td>
+                        <td class="statsCol2" id="totalShots"></td>
+                    </tr>
+                    <tr>
                         <td class="statsCol1">Average assassination time: </td>
                         <td class="statsCol2" id="averageassassinationduration"></td>
                     </tr>
@@ -416,11 +428,17 @@
         //***********************************
         var totalAssassinShots = grd.assassinRolesShot["Merlin"] + 
                         grd.assassinRolesShot["Percival"] +
-                        grd.assassinRolesShot["Resistance"];
+                        grd.assassinRolesShot["Resistance"] + 
+                        grd.assassinRolesShot["Tristan"] + 
+                        grd.assassinRolesShot["Isolde"] + 
+                        grd.assassinRolesShot["Oberon"];
 
         $("#totalMerlinShot")[0].innerText = grd.assassinRolesShot["Merlin"] + " times, " + Math.round(grd.assassinRolesShot["Merlin"] / totalAssassinShots * 100) + "%";
         $("#totalPercivalShot")[0].innerText = grd.assassinRolesShot["Percival"] + " times, " + Math.round(grd.assassinRolesShot["Percival"] / totalAssassinShots * 100) + "%";
         $("#totalResistanceShot")[0].innerText = grd.assassinRolesShot["Resistance"] + " times, " + Math.round(grd.assassinRolesShot["Resistance"] / totalAssassinShots * 100) + "%";
+        $("#totalTristanIsoldeShot")[0].innerText = (grd.assassinRolesShot["Tristan"] + grd.assassinRolesShot["Isolde"]) + " times, " + Math.round((grd.assassinRolesShot["Tristan"] + grd.assassinRolesShot["Isolde"]) / totalAssassinShots * 100) + "%";
+        $("#totalOberonShot")[0].innerText = grd.assassinRolesShot["Oberon"] + " times, " + Math.round(grd.assassinRolesShot["Oberon"] / totalAssassinShots * 100) + "%";
+        $("#totalShots")[0].innerText = totalAssassinShots + " times.";
         
         $("#averageassassinationduration")[0].innerText = new Date(grd.averageAssassinationDuration).getUTCMinutes() + " mins " + new Date(grd.averageAssassinationDuration).getUTCSeconds() + " seconds";
 

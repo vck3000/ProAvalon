@@ -413,8 +413,6 @@ const processRecords = function (records) {
     // Sort it
     gamesPlayedDataArray.sort(gameDateCompare);
 
-    fs.writeFileSync('assets/gameRecordsData/test.json', JSON.stringify(gamesPlayedDataArray));
-
     // Split it into the two axis
     for (var i = 0; i < gamesPlayedDataArray.length; i++) {
         xAxisVars.push(gamesPlayedDataArray[i].date);
@@ -475,7 +473,7 @@ const processRecords = function (records) {
                 rolesShotObj[roleShot] = rolesShotObj[roleShot] + 1;
                 // console.log(roleShot + " was shot, total count: " + rolesShotObj[roleShot]);
             } else {
-                rolesShotObj[roleShot] = 0;
+                rolesShotObj[roleShot] = 1;
             }
         }
     }
@@ -524,6 +522,26 @@ const processRecords = function (records) {
     // Getting the spy wins breakdown
     //* *********************************************
     const spyWinBreakdown = {};
+
+    // ONE TIME FIX
+    for (var i = 0; i < records.length; i++) {
+        if (records[i].winningTeam === 'Spy') {
+            if (records[i].howTheGameWasWon === undefined) {
+                records[i].howTheGameWasWon = "Mission fails.";
+                records[i].markModified("howTheGameWasWon");
+                records[i].save();
+            }
+        }
+
+        if (records[i].winningTeam === 'Resistance') {
+            if (records[i].howTheGameWasWon === undefined) {
+                records[i].howTheGameWasWon = "Mission successes.";
+                records[i].markModified("howTheGameWasWon");
+                records[i].save();
+            }
+        }
+    }
+
 
     for (var i = 0; i < records.length; i++) {
         if (records[i].winningTeam === 'Spy') {

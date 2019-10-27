@@ -83,9 +83,11 @@ VotingMission.prototype.gameMove = function (socket, buttonPressed, selectedPlay
         // game over if more than 3 fails or successes
         if (numOfFails >= 3) {
             this.thisRoom.winner = 'Spy';
+            this.thisRoom.howWasWon = "Mission fails.";
             this.thisRoom.finishGame('Spy');
         } else if (numOfSucceeds >= 3) {
             this.thisRoom.winner = 'Resistance';
+            this.thisRoom.howWasWon = "Mission successes";
             this.thisRoom.finishGame('Resistance');
         }
         // If the game goes on
