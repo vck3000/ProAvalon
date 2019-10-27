@@ -2056,6 +2056,14 @@ function destroyRoom(roomId) {
     });
 
     rooms[roomId] = undefined;
+
+    console.log(`Destroyed room ${roomId}.`)
+    // Ask nicely to garbage collect:
+    if (global.gc) {
+        console.log("Running GC!");
+        global.gc();
+        console.log("Finished GC!");
+    }
 }
 
 
