@@ -523,26 +523,6 @@ const processRecords = function (records) {
     //* *********************************************
     const spyWinBreakdown = {};
 
-    // ONE TIME FIX
-    for (var i = 0; i < records.length; i++) {
-        if (records[i].winningTeam === 'Spy') {
-            if (records[i].howTheGameWasWon === undefined) {
-                records[i].howTheGameWasWon = "Mission fails.";
-                records[i].markModified("howTheGameWasWon");
-                records[i].save();
-            }
-        }
-
-        if (records[i].winningTeam === 'Resistance') {
-            if (records[i].howTheGameWasWon === undefined) {
-                records[i].howTheGameWasWon = "Mission successes.";
-                records[i].markModified("howTheGameWasWon");
-                records[i].save();
-            }
-        }
-    }
-
-
     for (var i = 0; i < records.length; i++) {
         if (records[i].winningTeam === 'Spy') {
             if (!spyWinBreakdown[records[i].howTheGameWasWon]) {
