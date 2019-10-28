@@ -41,6 +41,21 @@ router.get('/community', (req, res) => {
                     if (err) {
                         console.log(err);
                     } else {
+
+                        // Sort allMods:
+                        let sortOrder = ['morningcatt', 'tyrrox', 'citc', 'pam'];
+                        for (username of sortOrder) {
+                            // Grab the mod data:
+                            let modData = undefined;
+                            for (user of allMods) {
+                                if (user.usernameLower === username) {
+                                    modData = user;
+                                    break;
+                                }
+                            }
+                            allMods = [...allMods.filter(user => user !== modData), modData];  
+                        }
+
                         res.render('community', {
                             users: allUsers, mods: allMods, currentUser: req.user, headerActive: 'community',
                         });
