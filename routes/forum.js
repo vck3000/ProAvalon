@@ -291,7 +291,7 @@ router.post('/forumBan', isMod, asyncMiddleware(async (req) => {
             data: forumBanData,
             dateCreated: new Date()
         });
-}
+    }
 }));
 
 

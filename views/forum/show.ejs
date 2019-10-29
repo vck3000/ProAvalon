@@ -564,17 +564,17 @@
         if(typeOfElement === "reply"){
             $("#idOfReply").val($($(e.target).closest(".replyToComment")).attr("id"));
             $("#idOfComment").val($($(e.target).closest(".individualMainComment")).attr("id"));
-            $("#idOfForum").val($($(e.target).closest(".myContainer")).attr("id"));
+            $("#idOfForum").val($($(e.target).closest(".myForumContainer")).attr("id"));
         }
         else if(typeOfElement === "comment"){
             $("#idOfReply").val("");
             $("#idOfComment").val($($(e.target).closest(".individualMainComment")).attr("id"));
-            $("#idOfForum").val($($(e.target).closest(".myContainer")).attr("id"));
+            $("#idOfForum").val($($(e.target).closest(".myForumContainer")).attr("id"));
         }
         else{
             $("#idOfReply").val("");
             $("#idOfComment").val("");
-            $("#idOfForum").val($($(e.target).closest(".myContainer")).attr("id"));
+            $("#idOfForum").val($($(e.target).closest(".myForumContainer")).attr("id"));
         }
 
 
