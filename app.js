@@ -28,7 +28,7 @@ const modRoutes = require('./routes/mod');
 const assetsPath = path.join(__dirname, 'assets');
 
 const app = express();
-app.use(express.static(assetsPath, { maxAge: 1800000 })); // expires in 30 minutes.
+app.use(express.static(assetsPath, { maxAge: 518400000 })); // expires in 7 days.
 
 const staticify = require('staticify')(assetsPath);
 
