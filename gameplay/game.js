@@ -1198,8 +1198,14 @@ Game.prototype.finishGame = function (toBeWinner) {
     });
 
     if (botUsernames.length === 0) {
+        // Check if the game contains any provisional players.
+        var provisionalGame = false;
+        if (this.playersInGame.filter(soc => soc.request.user.ratingBracket === 'unranked').length > 0){
+            provisionalGame = true;
+        }
+
         // calculate team 1v1 elo adjustment
-        const teamResChange = this.calculateResistanceRatingChange(this.winner);
+        const teamResChange = this.calculateResistanceRatingChange(this.winner, provisionalGame);
         const teamSpyChange = -teamResChange;
 
         // individual changes per player, to one decimal place.
@@ -1208,17 +1214,44 @@ Game.prototype.finishGame = function (toBeWinner) {
         
         // if we're in a ranked game show the elo adjustments
         if (this.ranked) {
+            // Get the old player ratings (with usernames) for use in provisional calculations.
+            oldPlayersInfo = this.playersInGame.map(soc => {
+                data = {};
+                data.username = soc.request.user.username;
+                data.rating = soc.request.user.playerRating;
+                return data;
+            });
+
             // Broadcast elo adjustments in chat first, if broadcasted in the updating process, its slow
             this.sendText(this.allSockets, 'Rating Adjustments:', 'server-text');
             this.playersInGame.forEach((player) => {
                 const rating = player.request.user.playerRating;
-                if (player.alliance === 'Resistance') {
-                    this.sendText(this.allSockets, `${player.request.user.username}: ${Math.round(rating)} -> ${Math.round(rating + indResChange)}`, 'server-text');
-                    player.request.user.playerRating += indResChange;
+                // If player is provisional, different adjustment.
+                if (player.request.user.ratingBracket === 'unranked') {
+                    // Ensure this value is changed in time for the callbacks, requires a refresh to get the actual db value.
+                    player.request.user.totalRankedGamesPlayed += 1;
+
+                    // If there are multiple provisional players, use all ratings, otherwise just the other players' ratings.
+                    if (this.playersInGame.filter(soc => soc.request.user.ratingBracket === 'unranked').length > 1) {
+                        playerRatings = oldPlayersInfo.map(data => data.rating);
+                        player.request.user.playerRating = this.calculateNewProvisionalRating(this.winner, player, playerRatings);
+                    }
+                    else {
+                        otherPlayerRatings = oldPlayersInfo.filter(data => !(data.username === player.request.user.username)).map(data => data.rating);
+                        player.request.user.playerRating = this.calculateNewProvisionalRating(this.winner, player, otherPlayerRatings);
+                    }
+                    difference = Math.round((player.request.user.playerRating - rating)*10)/10;
+                    this.sendText(this.allSockets, `${player.request.user.username}: ${Math.round(rating)} -> ${Math.round(player.request.user.playerRating)} (${(difference > 0 ? "+"+difference : difference)})`, 'server-text');
                 }
-                else if (player.alliance === 'Spy') {
-                    this.sendText(this.allSockets, `${player.request.user.username}: ${Math.round(rating)} -> ${Math.round(rating + indSpyChange)}`, 'server-text');
-                    player.request.user.playerRating += indSpyChange;
+                else {
+                    if (player.alliance === 'Resistance') {
+                        this.sendText(this.allSockets, `${player.request.user.username}: ${Math.round(rating)} -> ${Math.round(rating + indResChange)} (${(indResChange > 0 ? "+"+indResChange : indResChange)})`, 'server-text');
+                        player.request.user.playerRating += indResChange;
+                    }
+                    else if (player.alliance === 'Spy') {
+                        this.sendText(this.allSockets, `${player.request.user.username}: ${Math.round(rating)} -> ${Math.round(rating + indSpyChange)} (${(indSpyChange > 0 ? "+"+indSpyChange : indSpyChange)})`, 'server-text');
+                        player.request.user.playerRating += indSpyChange;
+                    }
                 }
             });
         }
@@ -1244,13 +1277,19 @@ Game.prototype.finishGame = function (toBeWinner) {
                         }
                     }
 
-                    // if ranked, update player ratings
+                    // if ranked, update player ratings and increase ranked games played
                     if (this.ranked) {
-                        if (player.alliance === 'Resistance') {
-                            foundUser.playerRating += indResChange;
+                        foundUser.totalRankedGamesPlayed += 1;
+                        if (foundUser.ratingBracket === 'unranked') {
+                            foundUser.playerRating = player.request.user.playerRating;
                         }
-                        else if (player.alliance === 'Spy') {
-                            foundUser.playerRating += indSpyChange;
+                        else {
+                            if (player.alliance === 'Resistance') {
+                                foundUser.playerRating += indResChange;
+                            }
+                            else if (player.alliance === 'Spy') {
+                                foundUser.playerRating += indSpyChange;
+                            }
                         }
                     }
 
@@ -1494,7 +1533,7 @@ Game.prototype.togglePause = function (modUsername) {
 /*
 ELO RATING CALCULATION:
 
-Usual formula = R_new = R_old + k(Actual - Expected)
+Usual formula: R_new = R_old + k(Actual - Expected)
 
 1. Use average team rating and pit together in a 1v1 format.
 2. Adjust ratings for Res and Spy winrates (constant adjustment based on site winrates, maybe for that player size).
@@ -1502,11 +1541,12 @@ Usual formula = R_new = R_old + k(Actual - Expected)
     a. Actual = 1 for win, 0 for loss
     b. Expected = 1/(1 + 10^-(R_old - R_opp)/400)
 3. Multiplicative adjustment based on player size.
-4. Divide equally between players on each team and adjust ratings. (Done in the finishGame function)
+4. If provisional players are in the game, adjust the elo changes based on how close they are to being experienced.
+5. Divide equally between players on each team and adjust ratings. (Done in the finishGame function)
 */
-Game.prototype.calculateResistanceRatingChange = function (winningTeam) {
+Game.prototype.calculateResistanceRatingChange = function (winningTeam, provisionalGame) {
     // k value parameter for calculation
-    const k = 38
+    const k = 42;
     // Calculate ratings for each team by averaging elo of players
     resTeamEloRatings = this.playersInGame.filter(soc => soc.alliance === 'Resistance').map(soc => soc.request.user.playerRating)
     spyTeamEloRatings = this.playersInGame.filter(soc => soc.alliance === 'Spy').map(soc => soc.request.user.playerRating)
@@ -1531,17 +1571,77 @@ Game.prototype.calculateResistanceRatingChange = function (winningTeam) {
     console.log("Spy Team Elo: " + spyElo);
 
     // Calculate elo change, adjusting for player size, difference is 1- or just -
+    var eloChange = 0;
     if (winningTeam === 'Resistance') {
-        return k * (1 - (1/(1+Math.pow(10, -(resElo - spyElo)/400)))) * (this.playersInGame.length/5);
+        eloChange = k * (1 - (1/(1+Math.pow(10, -(resElo - spyElo)/400)))) * (this.playersInGame.length/5);
     }
     else if (winningTeam === 'Spy') {
-        return k * (-1/(1+Math.pow(10, -(resElo - spyElo)/400))) * (this.playersInGame.length/5);
+        eloChange = k * (-1/(1+Math.pow(10, -(resElo - spyElo)/400))) * (this.playersInGame.length/5);
     }
     else {
         // winning team should always be defined
         this.sendText(this.allSockets, 'Error in elo calculation, no winning team specified.', 'server-text');
     }
-}
+
+    // If the game is provisional, apply a multiplicative reduction in elo change based on how experienced the players are.
+    if (provisionalGame) {
+        provisionalPlayers = this.playersInGame.filter(soc => soc.request.user.ratingBracket === 'unranked');
+        var totalProvisionalGames = 0;
+        for (i=0; i < provisionalPlayers.length; i++) {
+            totalProvisionalGames += provisionalPlayers[i].request.user.totalRankedGamesPlayed;
+        }
+        eloChange = (((this.provisionalGamesRequired/2)+(totalProvisionalGames/(provisionalPlayers.length*2)))/this.provisionalGamesRequired) * eloChange;
+    }
+    return eloChange;
+};
+
+/*
+PROVISIONAL ELO RATING CALCULATION:
+
+If there is only one provisional player in the game:
+Formula: R_new = (R_old*N_old + sum(otherPlayerRatings)/numOtherPlayers + 200*TeamAdjustment*Result)/(N_old+1)
+    where N_old = Number of games played
+          Result = 1 for win, 0 for loss
+
+If there is more than one provisional player in the game:
+Formula: R_new = (R_old*N_old + sum(allPlayerRatings)/numPlayers + 200*TeamAdjustment*Result)/(N_old+1)
+    where N_old = Number of games played
+          Result = 1 for win, 0 for loss
+
+This rating style takes into account all the ratings of the players in the games that you play with to determine your starting point.
+For the first few games it will result in wild rating changes, but will level out towards the end of the provisional section.
+Could possibly lead to some people abusing their early rating by only playing with strong players and getting lucky, but should level out in the end.
+*/
+Game.prototype.calculateNewProvisionalRating = function (winningTeam, playerSocket, playerRatings) {
+    var Result = (playerSocket.alliance === winningTeam) ? 1 : -1;
+    
+    // Calculate new rating
+    const R_old = playerSocket.request.user.playerRating;
+    const N_old = playerSocket.request.user.totalRankedGamesPlayed;
+    const ratingsSum = playerRatings.reduce((sum, a) => sum+a,0);
+
+    // Prototype team adjustment is hardcoded, players are rewarded more for winning and penalised less for losing as res.
+    // Also all changes are scaled with relation to team size to prevent deflation in provisional games.
+    var teamAdj = 0;
+    if (playerSocket.alliance === "Resistance") {
+        if (winningTeam === playerSocket.alliance) {
+            teamAdj = 0.58/0.42 * 2/3;
+        }
+        else {
+            teamAdj = 2/3;
+        }
+    }
+    else {
+        if (winningTeam === playerSocket.alliance) {
+            teamAdj = 1;
+        }
+        else {
+            teamAdj = 0.58/0.42;
+        }
+    }
+
+    return (R_old*N_old + ratingsSum/playerRatings.length + 200*teamAdj*Result)/(N_old+1)
+};
 
 module.exports = Game;
 

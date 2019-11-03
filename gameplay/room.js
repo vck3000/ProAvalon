@@ -45,6 +45,8 @@ function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_, 
         this.gameMode = 'avalon';
     }
     this.ranked = ranked_;
+    this.gamesRequiredForRanked = 100;
+    this.provisionalGamesRequired = 20;
 
     // Misc. variables
     this.canJoin = true;
@@ -132,12 +134,17 @@ Room.prototype.playerSitDown = function (socket) {
 
     // If they were kicked and banned
     if (this.kickedPlayers.indexOf(socketUsername.toLowerCase()) !== -1) {
-        socket.emit('danger-alert', 'You have been banned from this room. You cannot join.');
+        socket.emit('danger-alert', 'The host has kicked you from this room. You cannot join.');
         return;
     }
     // If there are too many players already sitting down
     if (this.socketsOfPlayers.length >= this.maxNumPlayers) {
         socket.emit('danger-alert', 'The game has reached the limit for number of players.');
+        return;
+    }
+    // If the room is ranked and the player doesn't have enough games to sit.
+    if (this.ranked && socket.request.user.totalGamesPlayed < this.gamesRequiredForRanked) {
+        socket.emit('danger-alert', `You do not have the required experience to sit in ranked games. Please play ${this.gamesRequiredForRanked} unranked games first.`);
         return;
     }
     // If they already exist, no need to add

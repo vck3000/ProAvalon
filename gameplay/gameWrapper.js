@@ -108,8 +108,10 @@ GameWrapper.prototype.finishGame = function(toBeWinner) {
                             const username = afterRanks[i].username;
                             const oldRank = beforeRanks[j].ratingBracket;
                             const newRank = afterRanks[i].ratingBracket;
+
+                            // Very dirty implementation, adjust rating brackets to objects with in built ordering?
                             if ((oldRank === 'champion' && newRank === 'diamond') || (oldRank === 'diamond' && newRank === 'platinum') || (oldRank === 'platinum' && newRank === 'gold') || 
-                                (oldRank === 'gold' && newRank === 'silver') || (oldRank === 'silver' && newRank === 'bronze')) {
+                                (oldRank === 'gold' && newRank === 'silver') || (oldRank === 'silver' && newRank === 'bronze') || (oldRank === 'bronze' && newRank === 'iron')) {
                                 this.sendText(this.allSockets, `${username} has been demoted to ${newRank.charAt(0).toUpperCase() + newRank.slice(1)}.`, 'all-chat-text-red');
                             }
                             else {
