@@ -507,6 +507,7 @@ var actionsObj = {
       },
     },
 
+<<<<<<< HEAD
     mute: {
       command: 'mute',
       help:
@@ -543,6 +544,68 @@ var actionsObj = {
                     senderSocket.emit('messageCommandReturnStr', {
                       message: `Muted ${args[1]} successfully.`,
                       classStr: 'server-text',
+=======
+                senderSocket.emit('allChatToClient', dataMessage);
+                senderSocket.emit('roomChatToClient', dataMessage);
+
+                modSocket.emit('allChatToClient', dataMessage);
+                modSocket.emit('roomChatToClient', dataMessage);
+
+                // Set a cooldown for the sender until they can send another pm
+                pmmodCooldowns[senderSocket.id] = new Date();
+                
+                // Create the mod log.
+                mlog = ModLog.create({
+                    type: "pmmod",
+                    modWhoMade: {
+                        id: modSocket.request.user.id,
+                        username: modSocket.request.user.username,
+                        usernameLower: modSocket.request.user.usernameLower
+                    },
+                    data: {
+                        targetUser: {
+                            id: senderSocket.request.user.id,
+                            username: senderSocket.request.user.username,
+                            usernameLower: senderSocket.request.user.usernameLower
+                        },
+                        message: dataMessage.message
+                    },
+                    dateCreated: new Date()
+                });
+            }
+        },
+
+
+
+        mute: {
+            command: 'mute',
+            help: '/mute: Mute a player who is being annoying in chat/buzzing/slapping/licking/poking/tickling you.',
+            run(data, senderSocket) {
+                const { args } = data;
+
+                if (args[1]) {
+                    User.findOne({ username: args[1] }).exec((err, foundUserToMute) => {
+                        if (err) { console.log(err); } else if (foundUserToMute) {
+                            User.findOne({ username: senderSocket.request.user.username }).exec((err, userCallingMute) => {
+                                if (err) { console.log(err); } else if (userCallingMute) {
+                                    if (!userCallingMute.mutedPlayers) {
+                                        userCallingMute.mutedPlayers = [];
+                                    }
+                                    if (userCallingMute.mutedPlayers.indexOf(foundUserToMute.username) === -1) {
+                                        userCallingMute.mutedPlayers.push(foundUserToMute.username);
+                                        userCallingMute.markModified('mutedPlayers');
+                                        userCallingMute.save();
+                                        senderSocket.emit('updateMutedPlayers', userCallingMute.mutedPlayers);
+                                        senderSocket.emit('messageCommandReturnStr', { message: `Muted ${args[1]} successfully.`, classStr: 'server-text' });
+                                    } else {
+                                        senderSocket.emit('messageCommandReturnStr', { message: `You have already muted ${args[1]}.`, classStr: 'server-text' });
+                                    }
+                                }
+                            });
+                        } else {
+                            senderSocket.emit('messageCommandReturnStr', { message: `${args[1]} was not found.`, classStr: 'server-text' });
+                        }
+>>>>>>> d8ed6080... Added provisional rating system and gating for players who don't have enough games for ranked. Unranked players now show at the bottom of the player list. Bug fixes. Adjusted parameters to live levels.
                     });
                   } else {
                     senderSocket.emit('messageCommandReturnStr', {
@@ -2628,38 +2691,55 @@ var applyApplicableRewards = function (socket) {
 
 // Assign players their rating bracket
 var assignRatingBracket = function (socket) {
+    const provisionalGames = 20;
     const beforeBracket = socket.request.user.ratingBracket;
     const socketRating = socket.request.user.playerRating;
+    const bronzeBase = 1300;
     const silverBase = 1400;
     const goldBase = 1550;
-    const platBase = 1700
+    const platBase = 1700;
     const diamondBase = 1800;
     const championBase = 1900;
 
-    if (socketRating < silverBase) {
+    if (socket.request.user.totalRankedGamesPlayed < provisionalGames) {
+        socket.request.user.ratingBracket = 'unranked';
+        socket.request.ratingBadge = `<span class='badge' data-toggle='tooltip' data-placement='right' title='Unranked' style='transform: scale(0.9) translateY(-9%); background-color: #a9a9a9'>?</span>`
+    }
+    else if (socketRating < bronzeBase) {
+        socket.request.user.ratingBracket = 'iron';
+        socket.request.ratingBadge = `<span class='badge' data-toggle='tooltip' data-placement='right' title='Iron' style='transform: scale(0.9) translateY(-9%); background-color: #303030'>I</span>`
+    }
+    else if (socketRating >= bronzeBase && socketRating < silverBase) {
         socket.request.user.ratingBracket = 'bronze';
+        socket.request.ratingBadge = `<span class='badge' data-toggle='tooltip' data-placement='right' title='Bronze' style='transform: scale(0.9) translateY(-9%); background-color: #cd7f32'>B</span>`
     }
     else if (socketRating >= silverBase && socketRating < goldBase) {
         socket.request.user.ratingBracket = 'silver';
+        socket.request.ratingBadge = `<span class='badge' data-toggle='tooltip' data-placement='right' title='Silver' style='transform: scale(0.9) translateY(-9%); background-color: #c0c0c0'>S</span>`
     }
     else if (socketRating >= goldBase && socketRating < platBase) {
         socket.request.user.ratingBracket = 'gold';
+        socket.request.ratingBadge = `<span class='badge' data-toggle='tooltip' data-placement='right' title='Gold' style='transform: scale(0.9) translateY(-9%); background-color: #ffd700'>G</span>`
     }
     else if (socketRating >= platBase && socketRating < diamondBase) {
         socket.request.user.ratingBracket = 'platinum';
+        socket.request.ratingBadge = `<span class='badge' data-toggle='tooltip' data-placement='right' title='Platinum' style='transform: scale(0.9) translateY(-9%); background-color: #afeeee'>P</span>`
     }
     else if (socketRating >= diamondBase && socketRating < championBase) {
         socket.request.user.ratingBracket = 'diamond';
+        socket.request.ratingBadge = `<span class='badge' data-toggle='tooltip' data-placement='right' title='Diamond' style='transform: scale(0.9) translateY(-9%); background-color: rgb(0, 100, 250)'>D</span>`
     }
     else if (socketRating >= championBase) {
         socket.request.user.ratingBracket = 'champion';
+        socket.request.ratingBadge = `<span class='badge' data-toggle='tooltip' data-placement='right' title='Champion' style='transform: scale(0.9) translateY(-9%); background-color: #9370db'>C</span>`
     }
 
     // If the rating bracket changes, update the database entry.
     if (socket.request.user.ratingBracket != beforeBracket) {
-        User.findById(socket.userId).populate('notifications').exec((err, foundUser) => {
+        User.findOne({ username: socket.request.user.username }).populate('notifications').exec((err, foundUser) => {
             if (err) { console.log(err); } else if (foundUser) {
                 foundUser.ratingBracket = socket.request.user.ratingBracket;
+                foundUser.save();
             }
         });
     }
@@ -2675,6 +2755,7 @@ var updateCurrentPlayersList = function () {
         playerList[i].displayUsername = allSockets[i].request.displayUsername ? allSockets[i].request.displayUsername : allSockets[i].request.user.username;
         playerList[i].playerRating = Math.round(allSockets[i].request.user.playerRating);
         playerList[i].ratingBracket = allSockets[i].request.user.ratingBracket;
+        playerList[i].ratingBadge = allSockets[i].request.ratingBadge;
     }
     playerList.sort((a, b) => {
         return (a.playerRating < b.playerRating) ? 1 : (a.playerRating > b.playerRating) ? -1 : 0
@@ -2800,6 +2881,7 @@ function destroyRoom(roomId) {
       botSocket.handleGameOver(thisGame, 'complete', () => {}); // This room is getting destroyed. No need to leave.
     });
 
+<<<<<<< HEAD
   rooms[roomId] = undefined;
 
   console.log(`Destroyed room ${roomId}.`);
@@ -2809,6 +2891,17 @@ function destroyRoom(roomId) {
   //     global.gc();
   //     console.log("Finished GC!");
   // }
+=======
+    rooms[roomId] = undefined;
+    
+    console.log(`Destroyed room ${roomId}.`)
+    // Ask nicely to garbage collect:
+    // if (global.gc) {
+    //     console.log("Running GC!");
+    //     global.gc();
+    //     console.log("Finished GC!");
+    // }
+>>>>>>> d8ed6080... Added provisional rating system and gating for players who don't have enough games for ranked. Unranked players now show at the bottom of the player list. Bug fixes. Adjusted parameters to live levels.
 }
 
 function playerLeaveRoomCheckDestroy(socket) {

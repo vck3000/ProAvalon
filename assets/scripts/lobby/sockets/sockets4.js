@@ -242,68 +242,27 @@ socket.on('update-current-players-list', (currentPlayers) => {
     // currentOnlinePlayers = currentPlayers;
     autoCompleteStrs = currentPlayers.map((a => a.displayUsername));
 
-    // append each player into the list
-    currentPlayers.forEach((player) => {
+    unrankedPlayers = currentPlayers.filter(x => x.ratingBracket === "unranked");
+    rankedPlayers = currentPlayers.filter(x => !(x.ratingBracket === "unranked"));
+
+    // append each ranked player into the list first.
+    rankedPlayers.forEach((player) => {
         // if the current player exists, add it
         if (player) {
-            /* const str = `<tr> <td> <span 
-                            class='badge' 
-                            data-toggle='tooltip' 
-                            data-placement='right' 
-                            title='Diamond' 
-                            style='transform: scale(0.9) translateY(-9%); background-color: rgb(0, 100, 250)'>D</span>
-                         ${player.displayUsername}</td> <td align="right"> ${player.playerRating} </tr>`; */
-            
-            str = ''
-            if (player.ratingBracket === 'bronze') {
-                str = `<tr> <td> <span 
-                            class='badge' 
-                            data-toggle='tooltip' 
-                            data-placement='right' 
-                            title='Bronze' 
-                            style='transform: scale(0.9) translateY(-9%); background-color: #cd7f32'>B</span>`
-            } else if (player.ratingBracket === 'silver') {
-                str = `<tr> <td> <span 
-                            class='badge' 
-                            data-toggle='tooltip' 
-                            data-placement='right' 
-                            title='Silver' 
-                            style='transform: scale(0.9) translateY(-9%); background-color: #c0c0c0'>S</span>`
-            } else if (player.ratingBracket === 'gold') {
-                str = `<tr> <td> <span 
-                            class='badge' 
-                            data-toggle='tooltip' 
-                            data-placement='right' 
-                            title='Gold' 
-                            style='transform: scale(0.9) translateY(-9%); background-color: #ffd700'>G</span>`
-            } else if (player.ratingBracket === 'platinum') {
-                str = `<tr> <td> <span 
-                            class='badge' 
-                            data-toggle='tooltip' 
-                            data-placement='right' 
-                            title='Platinum' 
-                            style='transform: scale(0.9) translateY(-9%); background-color: #afeeee'>P</span>`
-            } else if (player.ratingBracket === 'diamond') {
-                str = `<tr> <td> <span 
-                            class='badge' 
-                            data-toggle='tooltip' 
-                            data-placement='right' 
-                            title='Diamond' 
-                            style='transform: scale(0.9) translateY(-9%); background-color: rgb(0, 100, 250)'>D</span>`
-            } else if (player.ratingBracket === 'champion') {
-                str = `<tr> <td> <span 
-                            class='badge' 
-                            data-toggle='tooltip' 
-                            data-placement='right' 
-                            title='Diamond' 
-                            style='transform: scale(0.9) translateY(-9%); background-color: #9370db'>C</span>`
-            }
-
-            str = str + ` ${player.displayUsername}</td> <td align="right"> ${player.playerRating} </td> </tr>`
-            
+            str = `<tr> <td>${player.displayUsername}</td> <td align="right">${player.ratingBadge} ${player.playerRating}</td> </tr>`
             $('#current-players-table tbody').append(str);
         }
     });
+
+    // second append all unranked players to the bottom
+    unrankedPlayers.forEach((player) => {
+        // if the current player exists, add it
+        if (player) {
+            str = `<tr> <td>${player.displayUsername}</td> <td align="right">${player.ratingBadge} ${player.playerRating}</td> </tr>`
+            $('#current-players-table tbody').append(str);
+        }
+    });
+
     $('.player-count').text(currentPlayers.length);
 });
 
