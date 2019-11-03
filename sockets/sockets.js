@@ -2426,6 +2426,11 @@ function playerNotReady(username) {
 
 function startGame(data, gameMode) {
     // start the game
+    if (gameMode === null || gameMode === undefined){
+        this.emit('danger-alert', 'Something went wrong. Cannot detect game mode specified.');
+        return;
+    }
+
     if (rooms[this.request.user.inRoomId]) {
         if (this.request.user.inRoomId && this.request.user.username === rooms[this.request.user.inRoomId].host) {
             rooms[this.request.user.inRoomId].hostTryStartGame(data, gameMode);
