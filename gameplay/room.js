@@ -103,6 +103,12 @@ Room.prototype.playerJoinRoom = function (socket, inputPassword) {
 
     this.sendOutGameModesInRoomToSocket(socket);
 
+    // If a player joins the game while empty ensure that the destruction process is aborted
+    if (this.destroyRoom) {
+        this.destroyRoom = false;
+        console.log(`Player joined empty room ${this.roomId}, destruction aborted.`)
+    }
+
     return true;
 };
 
@@ -189,7 +195,7 @@ Room.prototype.playerLeaveRoom = function (socket) {
 
     // Destroy room if there's no one in it anymore
     if (this.allSockets.length === 0 && this.frozen !== true) {
-        console.log(`Room: ${this.roomId} is empty, destroying...`);
+        console.log(`Room: ${this.roomId} is empty, attempting to destroy...`);
         this.destroyRoom = true;
     }
 
