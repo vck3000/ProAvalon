@@ -2077,6 +2077,10 @@ function playerLeaveRoomCheckDestroy(socket) {
         // if the game has started, wait to destroy to prevent lag spikes closing ongoing rooms
         if (toDestroy) {
             if (rooms[roomId].gameStarted) {
+                // If the timeout already exists, clear it
+                if (rooms[roomId].destroyTimeoutObj) {
+                    clearTimeout(rooms[roomId].destroyTimeoutObj);
+                }
                 rooms[roomId].destroyTimeoutObj = setTimeout(() => {
                     destroyRoom(roomId);
                     updateCurrentGamesList();
