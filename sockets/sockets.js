@@ -2068,30 +2068,40 @@ function destroyRoom(roomId) {
 
 
 function playerLeaveRoomCheckDestroy(socket) {
-    if (socket.request.user.inRoomId && rooms[socket.request.user.inRoomId]) {
+    roomId = socket.request.user.inRoomId;
+    if (roomId && rooms[roomId]) {
         // leave the room
-        rooms[socket.request.user.inRoomId].playerLeaveRoom(socket);
+        rooms[roomId].playerLeaveRoom(socket);
+        const toDestroy = rooms[roomId].destroyRoom;
 
-        const toDestroy = rooms[socket.request.user.inRoomId].destroyRoom;
-
+        // if the game has started, wait to destroy to prevent lag spikes closing ongoing rooms
         if (toDestroy) {
-            destroyRoom(socket.request.user.inRoomId);
+            if (rooms[roomId].gameStarted) {
+                // If the timeout already exists, clear it
+                if (rooms[roomId].destroyTimeoutObj) {
+                    clearTimeout(rooms[roomId].destroyTimeoutObj);
+                }
+                rooms[roomId].destroyTimeoutObj = setTimeout(() => {
+                    destroyRoom(roomId);
+                    updateCurrentGamesList();
+                }, 30000);
+            }
+            else {
+                destroyRoom(roomId);
+            }
         }
 
         // if room is frozen for more than 1hr then remove.
-        if (rooms[socket.request.user.inRoomId]
-            && rooms[socket.request.user.inRoomId].timeFrozenLoaded
-            && rooms[socket.request.user.inRoomId].getStatus() === 'Frozen'
-            && rooms[socket.request.user.inRoomId].allSockets.length === 0) {
+        if (rooms[roomId] && rooms[roomId].timeFrozenLoaded && rooms[roomId].getStatus() === 'Frozen' && rooms[roomId].allSockets.length === 0) {
             const curr = new Date();
             const timeToKill = 1000 * 60 * 5; // 5 mins
             // var timeToKill = 1000*10; //10s
-            if ((curr.getTime() - rooms[socket.request.user.inRoomId].timeFrozenLoaded.getTime()) > timeToKill) {
-                destroyRoom(socket.request.user.inRoomId);
+            if ((curr.getTime() - rooms[roomId].timeFrozenLoaded.getTime()) > timeToKill) {
+                destroyRoom(roomId);
 
                 console.log(`Been more than ${timeToKill / 1000} seconds, removing this frozen game.`);
             } else {
-                console.log(`Frozen game has only loaded for ${(curr.getTime() - rooms[socket.request.user.inRoomId].timeFrozenLoaded.getTime()) / 1000} seconds, Dont remove yet.`);
+                console.log(`Frozen game has only loaded for ${(curr.getTime() - rooms[roomId].timeFrozenLoaded.getTime()) / 1000} seconds, Dont remove yet.`);
             }
         }
 

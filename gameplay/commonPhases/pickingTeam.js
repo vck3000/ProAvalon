@@ -15,8 +15,8 @@ PickingTeam.prototype.gameMove = function (socket, buttonPressed, selectedPlayer
     }
 
     const numOfTargets = this.thisRoom.getClientNumOfTargets(this.thisRoom.teamLeader);
+    // catch wrong number of targets
     if (numOfTargets !== selectedPlayers.length && numOfTargets !== null) {
-        this.thisRoom.sendText(this.thisRoom.allSockets, `Wrong number of targets inputted. You have given ${selectedPlayers.length} targets. Expected ${numOfTargets}.`, 'server-text');
         return;
     }
 

@@ -63,6 +63,9 @@ function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_) 
     this.specialRoles = (new gameModeObj[this.gameMode].Roles()).getRoles(thisRoom);
     this.specialPhases = (new gameModeObj[this.gameMode].Phases()).getPhases(thisRoom);
     this.specialCards = (new gameModeObj[this.gameMode].Cards()).getCards(thisRoom);
+
+    // timeout object for game closing
+    this.destroyTimeoutObj;
 }
 
 
@@ -102,6 +105,13 @@ Room.prototype.playerJoinRoom = function (socket, inputPassword) {
     this.updateRoomPlayers();
 
     this.sendOutGameModesInRoomToSocket(socket);
+
+    // If a player joins the game while empty ensure that the destruction process is aborted
+    if (this.destroyRoom) {
+        this.destroyRoom = false;
+        clearTimeout(this.destroyTimeoutObj);
+        console.log(`Player joined empty room ${this.roomId}, destruction aborted.`)
+    }
 
     return true;
 };
@@ -189,7 +199,7 @@ Room.prototype.playerLeaveRoom = function (socket) {
 
     // Destroy room if there's no one in it anymore
     if (this.allSockets.length === 0 && this.frozen !== true) {
-        console.log(`Room: ${this.roomId} is empty, destroying...`);
+        console.log(`Room: ${this.roomId} is empty, attempting to destroy...`);
         this.destroyRoom = true;
     }
 
