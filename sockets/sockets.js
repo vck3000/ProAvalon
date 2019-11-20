@@ -103,13 +103,15 @@ function saveGameToDb(roomToSave) {
     }
 }
 function deleteSaveGameFromDb(room) {
-    savedGameObj.findByIdAndRemove(room.savedGameRecordId, (err) => {
-        if (err) {
-            console.log(err);
-        } else {
-            // console.log("Successfully removed this save game from db");
-        }
-    });
+    if (room) {
+            savedGameObj.findByIdAndRemove(room.savedGameRecordId, (err) => {
+            if (err) {
+                console.log(err);
+            } else {
+                // console.log("Successfully removed this save game from db");
+            }
+        });
+    }
 }
 
 
