@@ -2072,16 +2072,13 @@ function playerLeaveRoomCheckDestroy(socket) {
     if (roomId && rooms[roomId]) {
         // leave the room
         rooms[roomId].playerLeaveRoom(socket);
-        var toDestroy = rooms[roomId].destroyRoom;
+        const toDestroy = rooms[roomId].destroyRoom;
 
         // if the game has started, wait to destroy to prevent lag spikes closing ongoing rooms
         if (toDestroy) {
             if (rooms[roomId].gameStarted) {
-                setTimeout(() => {
-                    toDestroy = rooms[roomId].destroyRoom;
-                    if (toDestroy) {
-                        destroyRoom(roomId);
-                    }
+                rooms[roomId].destroyTimeoutObj = setTimeout(() => {
+                    destroyRoom(roomId);
                     updateCurrentGamesList();
                 }, 30000);
             }
