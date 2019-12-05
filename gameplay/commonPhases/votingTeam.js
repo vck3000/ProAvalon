@@ -62,6 +62,7 @@ VotingTeam.prototype.gameMove = function (socket, buttonPressed, selectedPlayers
 
                 this.thisRoom.incrementTeamLeader();
             }
+            this.thisRoom.requireSave = true;
         }
 
         this.thisRoom.distributeGameData();
