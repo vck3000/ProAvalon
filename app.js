@@ -129,9 +129,11 @@ const io = socket(server);
 
 require('./sockets/sockets')(io);
 
-io.use(passportSocketIo.authorize({
-    cookieParser,
-    secret: secretKey, // same as in your session settings
-    store, // same as sessionStore in app.use(session({...
-    passport,
-}));
+if(process.env.TESTING !== "true") {
+    io.use(passportSocketIo.authorize({
+        cookieParser,
+        secret: secretKey, // same as in your session settings
+        store, // same as sessionStore in app.use(session({...
+        passport,
+    }));    
+}
