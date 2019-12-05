@@ -2181,7 +2181,7 @@ function disconnect(data) {
     // console.log(allSockets);
 
 
-    delete allSockets[allSockets.indexOf(this)];
+    // delete allSockets[allSockets.indexOf(this)];
     allSockets.splice(allSockets.indexOf(this), 1);
 
 
