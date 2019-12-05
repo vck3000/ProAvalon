@@ -2121,7 +2121,12 @@ function getPlayerDisplayUsernamesFromAllSockets() {
     const array = [];
     console.log(allSockets.length);
     for (let i = 0; i < allSockets.length; i++) {
-        array[i] = allSockets[i].request.displayUsername ? allSockets[i].request.displayUsername : allSockets[i].request.user.username;
+        if(allSockets[i] !== undefined) {
+            array[i] = allSockets[i].request.displayUsername ? allSockets[i].request.displayUsername : allSockets[i].request.user.username;
+        }
+        else {
+            array[i] = "<error>";
+        }
     }
     array.sort((a, b) => {
         const textA = a.toUpperCase();
