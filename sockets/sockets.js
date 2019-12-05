@@ -2476,7 +2476,11 @@ function gameMove(data) {
             if (rooms[this.request.user.inRoomId].finished === true) {
                 deleteSaveGameFromDb(rooms[this.request.user.inRoomId]);
             } else {
-                saveGameToDb(rooms[this.request.user.inRoomId]);
+                if (rooms[this.request.user.inRoomId].requireSave === true) {
+                    rooms[this.request.user.inRoomId].requireSave = false;
+                    saveGameToDb(rooms[this.request.user.inRoomId]);
+                    console.log(`Saving game ${this.request.user.inRoomId}`);
+                }
             }
         }
     }
