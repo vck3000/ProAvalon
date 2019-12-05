@@ -1723,6 +1723,7 @@ module.exports = function (io) {
     // SOCKETS for each connection
     ioGlobal = io;
     io.sockets.on('connection', async (socket) => {
+        console.log("Connection requested.");
         if (socket.request.isAuthenticated()) {
             // console.log("User is authenticated");
         } else {
@@ -2253,7 +2254,7 @@ function interactUserPlayed(data) {
     }
 }
 function allChatFromClient(data) {
-    console.log(`allchat: ${data.message} by: ${this.request.user.username}`);
+    // console.log(`allchat: ${data.message} by: ${this.request.user.username}`);
     // get the username and put it into the data object
 
     const validUsernames = getPlayerUsernamesFromAllSockets();
@@ -2297,7 +2298,7 @@ function allChatFromClient(data) {
 
 function roomChatFromClient(data) {
 
-    console.log(`roomchat: ${data.message} by: ${this.request.user.username}`);
+    // console.log(`roomchat: ${data.message} by: ${this.request.user.username}`);
     // get the username and put it into the data object
 
     const validUsernames = getPlayerUsernamesFromAllSockets();
