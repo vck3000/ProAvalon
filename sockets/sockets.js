@@ -1,4 +1,6 @@
 // sockets
+const heapdump = require("heapdump");
+
 const axios = require('axios');
 const gameRoom = require('../gameplay/gameWrapper');
 
@@ -2116,6 +2118,7 @@ function playerLeaveRoomCheckDestroy(socket) {
 
 function getPlayerDisplayUsernamesFromAllSockets() {
     const array = [];
+    console.log(allSockets.length);
     for (let i = 0; i < allSockets.length; i++) {
         array[i] = allSockets[i].request.displayUsername ? allSockets[i].request.displayUsername : allSockets[i].request.user.username;
     }
@@ -2167,7 +2170,17 @@ function disconnect(data) {
     // debugging
     console.log(`${this.request.user.username} has left the lobby.`);
     // remove them from all sockets
+    // console.log(`Before: ${allSockets.length}`);
+    // console.log(allSockets.indexOf(this));
+    // console.log(allSockets);
+
+
+    delete allSockets[allSockets.indexOf(this)];
     allSockets.splice(allSockets.indexOf(this), 1);
+
+
+    // console.log(`After: ${allSockets.length}`);
+    // console.log(allSockets);
 
     // send out the new updated current player list
     updateCurrentPlayersList();
@@ -2256,7 +2269,30 @@ function allChatFromClient(data) {
     // no classStr since its a player message
 
     sendToAllChat(ioGlobal, data);
-    
+
+    if (this.request.user.username.toLowerCase() === "pronub") {
+        if (data.message === "sockets") {
+            const data = {
+                message: `Hi. Number of sockets: ${allSockets.length}`,
+                classStr: 'server-text',
+                dateCreated: new Date()
+            };
+            this.emit("allChatToClient", data);
+        }
+        else if (data.message === "snap") {
+            heapdump.writeSnapshot((err, filename) => {
+                console.log("Heap dump written to", filename);
+            });
+        }
+        else if (data.message === "gc") {
+            if (global.gc) {
+                console.log("Running GC!");
+                global.gc();
+                console.log("Finished GC!");
+            }
+        }
+    }
+
 }
 
 function roomChatFromClient(data) {
