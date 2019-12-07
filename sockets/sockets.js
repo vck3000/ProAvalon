@@ -1,5 +1,4 @@
 // sockets
-const heapdump = require("heapdump");
 
 const axios = require('axios');
 const gameRoom = require('../gameplay/gameWrapper');
@@ -2285,11 +2284,11 @@ function allChatFromClient(data) {
             };
             this.emit("allChatToClient", data);
         }
-        else if (data.message === "snap") {
-            heapdump.writeSnapshot((err, filename) => {
-                console.log("Heap dump written to", filename);
-            });
-        }
+        // else if (data.message === "snap") {
+        //     heapdump.writeSnapshot((err, filename) => {
+        //         console.log("Heap dump written to", filename);
+        //     });
+        // }
         else if (data.message === "gc") {
             if (global.gc) {
                 console.log("Running GC!");
