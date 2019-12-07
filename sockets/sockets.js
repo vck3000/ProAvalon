@@ -2048,6 +2048,10 @@ function sendToAllMods(io, data) {
 }
 
 function destroyRoom(roomId) {
+    if (rooms[roomId] === undefined || rooms[roomId] === null) {
+        return;
+    }
+
     deleteSaveGameFromDb(rooms[roomId]);
 
     // Stop bots thread if they are playing:
