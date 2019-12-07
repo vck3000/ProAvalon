@@ -7,15 +7,10 @@ const forumThreadCommentReply = require('../models/forumThreadCommentReply');
 const ForumBan = require('../models/forumBan');
 const ModLog = require('../models/modLog');
 const pinnedThread = require('../models/pinnedThread');
-
 const { isMod, asyncMiddleware } = require('./middleware');
-
 const getTimeDiffInString = require('../assets/myLibraries/getTimeDiffInString');
-
 const createNotificationObj = require('../myFunctions/createNotification');
-
 const modsArray = require('../modsadmins/mods');
-
 const forumThreadRoutes = require('../routes/forum/forumThreadRoutes');
 const forumThreadCommentRoutes = require('../routes/forum/forumThreadCommentRoutes');
 const forumThreadCommentReplyRoutes = require('../routes/forum/forumThreadCommentReplyRoutes');

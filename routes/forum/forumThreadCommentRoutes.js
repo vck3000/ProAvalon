@@ -10,6 +10,8 @@ const { asyncMiddleware, checkForumThreadCommentOwnership } = require('../middle
 
 const { allowedHtmlAttributes, allowedHtmlTags } = require('./sanitizeRestrictions');
 const createNotificationObj = require('../../myFunctions/createNotification');
+const REWARDS = require("../../rewards/constants");
+const { userHasReward } = require("../../rewards/getRewards");
 
 const router = new Router();
 
@@ -26,6 +28,13 @@ const newCommentLimiter = process.env.MY_PLATFORM === 'local'
 // Create new comment route
 /** ******************************************************* */
 router.post('/:id/comment', newCommentLimiter, asyncMiddleware(async (req, res) => {
+    let CAN_POST = await userHasReward(req.user, REWARDS.CAN_ADD_FORUM, undefined);
+    if (!CAN_POST) {
+        req.flash('error', 'You need 10 games to comment on a forum thread.');
+        res.redirect('back');
+        return;
+    }
+
     const commentData = {
         text: sanitizeHtml(req.body.comment.text, {
             allowedTags: sanitizeHtml.defaults.allowedTags.concat(allowedHtmlTags),

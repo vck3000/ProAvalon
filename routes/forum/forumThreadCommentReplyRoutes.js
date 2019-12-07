@@ -9,6 +9,8 @@ const forumThreadCommentReply = require('../../models/forumThreadCommentReply');
 
 const { checkForumThreadCommentReplyOwnership, asyncMiddleware } = require('../middleware');
 const createNotificationObj = require('../../myFunctions/createNotification');
+const REWARDS = require("../../rewards/constants");
+const { userHasReward } = require("../../rewards/getRewards");
 
 const router = new Router();
 
@@ -45,7 +47,14 @@ router.post('/:id/:commentId/:replyId', newReplyLimiter, (req, res) => {
     createCommentReply(req, res);
 });
 
-function createCommentReply(req, res) {
+async function createCommentReply(req, res) {
+    let CAN_POST = await userHasReward(req.user, REWARDS.CAN_ADD_FORUM, undefined);
+    if (!CAN_POST) {
+        req.flash('error', 'You need 10 games to reply to a comment.');
+        res.redirect('back');
+        return;
+    }
+
     const d = new Date();
 
     const commentReplyData = {

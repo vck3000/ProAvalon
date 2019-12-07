@@ -8,6 +8,8 @@ const getTimeDiffInString = require('../../assets/myLibraries/getTimeDiffInStrin
 const lastIds = require('../../models/lastIds');
 const forumThread = require('../../models/forumThread');
 const { allowedHtmlTags, allowedHtmlAttributes } = require('./sanitizeRestrictions');
+const REWARDS = require("../../rewards/constants");
+const { userHasReward } = require("../../rewards/getRewards");
 
 // Prevent too many requests
 const router = new Router();
@@ -132,6 +134,14 @@ const newForumLimiter = process.env.MY_PLATFORM === 'local'
 // Create a new forumThread
 /** ******************************************************* */
 router.post('/', newForumLimiter, asyncMiddleware(async (req, res) => {
+    let CAN_POST = await userHasReward(req.user, REWARDS.CAN_ADD_FORUM, undefined);
+    if (!CAN_POST) {
+        req.flash('error', 'You need 10 games to create a forum thread.');
+        res.redirect('back');
+        return;
+    }
+
+    // return;
     // get the category based on the user selection
     let category = '';
     if (req.body.avalon) {

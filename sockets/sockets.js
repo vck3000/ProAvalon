@@ -8,9 +8,7 @@ const savedGameObj = require('../models/savedGame');
 const myNotification = require('../models/notification');
 const createNotificationObj = require('../myFunctions/createNotification');
 
-const getRewards = require('../rewards/getRewards');
-
-const getRewardsObj = new getRewards();
+const { getAllRewardsForUser } = require('../rewards/getRewards');
 
 const REWARDS = require('../rewards/constants');
 
@@ -1741,7 +1739,7 @@ module.exports = function (io) {
 
         socket.request.displayUsername = socket.request.user.username;
         // Grab their rewards
-        socket.rewards = await getRewardsObj.getAllRewardsForUser(socket.request.user);
+        socket.rewards = await getAllRewardsForUser(socket.request.user);
         console.log('Socket rewards: ');
         console.log(socket.rewards);
 
