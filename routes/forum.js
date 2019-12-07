@@ -14,6 +14,8 @@ const modsArray = require('../modsadmins/mods');
 const forumThreadRoutes = require('../routes/forum/forumThreadRoutes');
 const forumThreadCommentRoutes = require('../routes/forum/forumThreadCommentRoutes');
 const forumThreadCommentReplyRoutes = require('../routes/forum/forumThreadCommentReplyRoutes');
+const REWARDS = require("../rewards/constants");
+const { userHasReward } = require("../rewards/getRewards");
 
 const router = new Router();
 
@@ -27,6 +29,13 @@ router.get('/', (req, res) => {
 
 // Player liking a thing
 router.get('/ajax/like/:type/:bigId', asyncMiddleware(async (req, res) => {
+
+    let CAN_POST = await userHasReward(req.user, REWARDS.CAN_ADD_FORUM, undefined);
+    if (!CAN_POST) {
+        res.status(200).send('You need 10 games to like a forum/comment.');
+        return;
+    }
+
     const [forumId, commentId, replyId] = req.params.bigId.split('=');
     const { type } = req.params;
 
@@ -66,11 +75,13 @@ router.get('/ajax/like/:type/:bigId', asyncMiddleware(async (req, res) => {
         found.likes += 1;
         res.status(200).send('liked');
 
+        var link = `/forum/show/${forumId}#${found._id}`;
+
         // create notif to replying target
         createNotificationObj.createNotification(
             found.author.id,
-            `${req.user.username} has liked your post!`,
-            `/forum/show/${found._id}`,
+            `${req.user.username} has liked your ${type}!`,
+            link,
             req.user.username,
         );
     }

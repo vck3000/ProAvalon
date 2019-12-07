@@ -87,7 +87,10 @@ likes.forEach((like) => {
                     $(thisLike).notify('Unliked', { position: 'right', autoHideDelay: 1000, className: 'info' });
                     $(`#${idofelement}likes`)[0].innerText = parseInt($(`#${idofelement}likes`)[0].innerText) - 1;
                     $(thisLike)[0].innerText = 'Like';
-                } else {
+                } else if (message === 'You need 10 games to like a forum/comment.') {
+                    $(thisLike).notify('You need 10 games to like a forum/comment.', { position: 'right', autoHideDelay: 3000, className: 'error' });
+                }
+                else {
                     $(thisLike).notify('Error! Something went wrong...', { position: 'right', autoHideDelay: 1000, className: 'error' });
                 }
             }
