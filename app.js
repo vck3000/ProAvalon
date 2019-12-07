@@ -39,7 +39,9 @@ const port = process.env.PORT || 80;
 const dbLoc = process.env.DATABASEURL || 'mongodb://localhost/TheNewResistanceUsers';
 console.log(`Using database url: ${dbLoc}`);
 
-mongoose.connect(dbLoc);
+mongoose.connect(dbLoc, {
+    retryWrites: false
+});
 
 // Create a MongoDB session store
 const MongoDBStore = require('connect-mongodb-session')(session);
@@ -129,11 +131,10 @@ const io = socket(server);
 
 require('./sockets/sockets')(io);
 
-if(process.env.TESTING !== "true") {
-    io.use(passportSocketIo.authorize({
-        cookieParser,
-        secret: secretKey, // same as in your session settings
-        store, // same as sessionStore in app.use(session({...
-        passport,
-    }));    
-}
+io.use(passportSocketIo.authorize({
+    cookieParser,
+    secret: secretKey, // same as in your session settings
+    store, // same as sessionStore in app.use(session({...
+    passport,
+}));    
+

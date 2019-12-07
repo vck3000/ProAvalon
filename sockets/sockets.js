@@ -2081,19 +2081,19 @@ function playerLeaveRoomCheckDestroy(socket) {
 
         // if the game has started, wait to destroy to prevent lag spikes closing ongoing rooms
         if (toDestroy) {
-            if (rooms[roomId].gameStarted) {
-                // If the timeout already exists, clear it
-                if (rooms[roomId].destroyTimeoutObj) {
-                    clearTimeout(rooms[roomId].destroyTimeoutObj);
-                }
-                rooms[roomId].destroyTimeoutObj = setTimeout(() => {
-                    destroyRoom(roomId);
-                    updateCurrentGamesList();
-                }, 30000);
-            }
-            else {
+            // if (rooms[roomId].gameStarted) {
+            //     // If the timeout already exists, clear it
+            //     if (rooms[roomId].destroyTimeoutObj) {
+            //         clearTimeout(rooms[roomId].destroyTimeoutObj);
+            //     }
+            //     rooms[roomId].destroyTimeoutObj = setTimeout(() => {
+            //         destroyRoom(roomId);
+            //         updateCurrentGamesList();
+            //     }, 30000);
+            // }
+            // else {
                 destroyRoom(roomId);
-            }
+            // }
         }
 
         // if room is frozen for more than 1hr then remove.
@@ -2520,8 +2520,8 @@ function gameMove(data) {
             } else {
                 if (rooms[this.request.user.inRoomId].requireSave === true) {
                     rooms[this.request.user.inRoomId].requireSave = false;
-                    console.log("Saving game.");
                     saveGameToDb(rooms[this.request.user.inRoomId]);
+                    console.log(`Saving game ${this.request.user.inRoomId}`);
                 }
             }
         }
