@@ -221,6 +221,9 @@ Room.prototype.kickPlayer = function (username, socket) {
                 socketOfTarget = this.allSockets[i];
             }
         }
+        if (socketOfTarget === null) {
+            return;
+        }
 
         // Make them stand up forcefully
         this.playerStandUp(socketOfTarget);

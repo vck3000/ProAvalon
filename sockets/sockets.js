@@ -544,28 +544,29 @@ var actionsObj = {
                     return { message: "You haven't been whispered to before.", classStr: 'server-text' };
                 }
                 const sendToSocket = allSockets[getIndexFromUsername(allSockets, lastWhisperObj[senderSocket.request.user.username.toLowerCase()].username, true)];
-
-                let str = `${senderSocket.request.user.username}->${sendToSocket.request.user.username} (whisper): `;
-                for (let i = 1; i < args.length; i++) {
-                    str += args[i];
-                    str += ' ';
+                if (sendToSocket === undefined || sendToSocket === null) {
+                    return;
                 }
-
-                // str += ("(From: " + senderSocket.request.user.username + ")");
-
-                const dataMessage = {
-                    message: str,
-                    dateCreated: new Date(),
-                    classStr: 'whisper',
-                };
-
                 // this sendToSocket is the moderator
-
                 // If the reply target is no longer in the sockets list.
                 if (!sendToSocket) {
                     senderSocket.emit('messageCommandReturnStr', { message: "Your target has disconnected.", classStr: 'server-text' });
                 } 
                 else {
+                    let str = `${senderSocket.request.user.username}->${sendToSocket.request.user.username} (whisper): `;
+                    for (let i = 1; i < args.length; i++) {
+                        str += args[i];
+                        str += ' ';
+                    }
+    
+                    // str += ("(From: " + senderSocket.request.user.username + ")");
+    
+                    const dataMessage = {
+                        message: str,
+                        dateCreated: new Date(),
+                        classStr: 'whisper',
+                    };
+
                     sendToSocket.emit('allChatToClient', dataMessage);
                     sendToSocket.emit('roomChatToClient', dataMessage);
 
