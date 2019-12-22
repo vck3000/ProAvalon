@@ -27,6 +27,8 @@
     "moment": "^2.24.0",
     "mongoose": "^5.0.1",
     "multer": "^1.4.2",
+    "nodemailer": "^6.4.0",
+    "nodemailer-smtp-transport": "^2.7.4",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^4.4.0",

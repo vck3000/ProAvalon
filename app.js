@@ -138,3 +138,32 @@ io.use(passportSocketIo.authorize({
     passport,
 }));    
 
+
+
+var nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
+console.log(process.env.EMAIL_ADDRESS);
+var transporter = nodemailer.createTransport(smtpTransport({
+  service: 'gmail',
+  host: 'smtp.gmail.com',
+  auth: {
+    user: process.env.EMAIL_ADDRESS,
+    pass: process.env.EMAIL_PASSWORD
+  }
+}));
+
+var mailOptions = {
+  from: `"ProAvalon Admin" <${process.env.PROAVALON_EMAIL_ADDRESS}>`,
+  to: process.env.MY_EMAIL_ADDRESS,
+  subject: 'Test email with NodeMailer.',
+  html: `<p><b>Hello</b> to myself <img src="cid:note@example.com"/></p>
+  <p>Here's a nyan cat for you as an embedded attachment:<br/><img src="cid:nyan@example.com"/></p>`
+};
+
+transporter.sendMail(mailOptions, function(error, info){
+  if (error) {
+    console.log(error);
+  } else {
+    console.log('Email sent: ' + info.response);
+  }
+});
