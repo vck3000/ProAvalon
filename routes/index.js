@@ -342,8 +342,8 @@ const anonymizeStats = function (records) {
         const record = records[key];
         const anonymizedRecord = JSON.parse(JSON.stringify(record));
         const usernamesMap = {};
-        const usernamesPossible = 'abcdefghijklmnopqrstuvwxyz'; let
-            idx = 0;
+        const usernamesPossible = 'abcdefghijklmnopqrstuvwxyz'; 
+        let idx = 0;
         for (var key in record.playerRoles) {
             if (record.playerRoles.hasOwnProperty(key)) {
                 usernamesMap[key] = usernamesPossible[idx++];
@@ -351,6 +351,8 @@ const anonymizeStats = function (records) {
         }
         anonymizedRecord.spyTeam = anonymizeArray(record.spyTeam, usernamesMap);
         anonymizedRecord.resistanceTeam = anonymizeArray(record.resistanceTeam, usernamesMap);
+        anonymizedRecord.playerUsernamesOrdered = anonymizeArray(record.playerUsernamesOrdered, usernamesMap);
+        anonymizedRecord.playerUsernamesOrderedReversed = anonymizeArray(record.playerUsernamesOrderedReversed, usernamesMap);
         anonymizedRecord.ladyHistoryUsernames = anonymizeArray(record.ladyHistoryUsernames, usernamesMap);
         anonymizedRecord.refHistoryUsernames = anonymizeArray(record.refHistoryUsernames, usernamesMap);
         anonymizedRecord.sireHistoryUsernames = anonymizeArray(record.sireHistoryUsernames, usernamesMap);
@@ -368,52 +370,259 @@ router.get('/gameRecordsData', (req, res) => {
 
 const hardUpdateStatsFunction = function () {
     console.log('Starting hard update stats...');
-    gameRecord.find({}).exec((err, records) => {
-        if (err) {
-            console.log(err);
-        } else {
-            processRecords(records);
-        }
-    });
+    processRecords();
 };
 
-const processRecords = function (records) {
-    const prevRecordsLength = records.length;
-    console.log(`${records.length} games loaded.`);
-    fs.writeFileSync('assets/gameRecordsData/gameRecordsData.json', JSON.stringify(records));
-    // Anonymize it using gameRecordsData
+const processRecords = async function (records) {
+    const numOfRecords = await gameRecord.countDocuments();
+    const recordsPerLoop = 100;
+    
+    // Delete the current gamerecord json files.
+    try {
+        fs.unlinkSync('assets/gameRecordsData/gameRecordsDataAnon.json');
+    }
+    catch(e) {
+        // Don't worry if any of this fails
+    }
+    try {
+        fs.unlinkSync('assets/gameRecordsData/gameRecordsData.json');
+    }
+    catch (e) {
+        // Don't worry if any of this fails
+    }
 
-    // Filter out the bot games
-    records = records.filter((r) => (r.gameMode === undefined || r.gameMode.toLowerCase().includes('bot') == false));
-    console.log(`Removed ${prevRecordsLength - records.length} bot games from dataset.`);
+    // Create a file stream to write out the data synchronously
+    let anonStream = fs.createWriteStream("assets/gameRecordsData/gameRecordsDataAnon.json", {flags:'a'});
 
-    const gameRecordsDataAnon = anonymizeStats(records);
+    let numBotGames = 0;
 
-    fs.writeFileSync('assets/gameRecordsData/gameRecordsDataAnon.json', JSON.stringify(gameRecordsDataAnon));
-
-
+    // Set up the object that stores the stats
     const obj = {};
-    obj.totalgamesplayed = records.length;
-
-    //* **********************************
+    //* *********************************************
     // Site traffic stats - one data point per day
-    //* **********************************
+    //* ********************************************* 
     const gamesPlayedData = {};
     const xAxisVars = [];
     const yAxisVars = [];
-    for (var i = 0; i < records.length; i++) {
-        const timeFinish = records[i].timeGameFinished;
-        // Round to nearest day
-        const dayFinished = new Date(timeFinish.getFullYear(), timeFinish.getMonth(), timeFinish.getDate());
 
-        // Count the number of games played on the same day
-        if (gamesPlayedData[dayFinished.getTime()] === undefined) {
-            gamesPlayedData[dayFinished.getTime()] = 1;
-        } else {
-            gamesPlayedData[dayFinished.getTime()] = gamesPlayedData[dayFinished.getTime()] + 1;
-        }
+    //* *********************************************
+    // Getting the average duration of each game
+    //* *********************************************
+    let averageGameDuration = new Date(0);
+
+    //* *********************************************
+    // Getting the win rate of alliances globally
+    //* *********************************************
+    let resWins = 0;
+    let spyWins = 0;
+
+    //* *********************************************
+    // Getting the assassination win rate
+    //* *********************************************
+    const rolesShotObj = {};
+
+    //* *********************************************
+    // Getting the average duration of each assassination
+    //* *********************************************
+    let averageAssassinationDuration = new Date(0);
+    let count = 0;
+
+    //* *********************************************
+    // Getting the win rate for each game size
+    //* *********************************************
+    const gameSizeWins = {};
+
+    //* *********************************************
+    // Getting the spy wins breakdown
+    //* *********************************************
+    const spyWinBreakdown = {};
+
+    //* *********************************************
+    // Getting the Lady of the lake wins breakdown
+    //* *********************************************
+    const ladyBreakdown = {
+        resStart: {resWin: 0,spyWin: 0,},
+        spyStart: {resWin: 0,spyWin: 0,},
+    };
+
+    // IMPORTANT, MUST KEEP THESE ROLES UP TO DATE!
+    // SHOULD MAKE AN EXTERNAL FILE OF THESE ALLIANCES
+    const resRoles = ['Merlin', 'Percival', 'Resistance', 'Isolde', 'Tristan'];
+    const spyRoles = ['Assassin', 'Morgana', 'Spy', 'Mordred', 'Oberon'];
+
+    //* *********************************************
+    // Getting the average duration of each game
+    //* *********************************************
+    const averageGameDurations = [];
+    const countForGameSize = [];
+    for (var i = 5; i < 11; i++) {
+        averageGameDurations[i] = new Date(0);
+        countForGameSize[i] = 0;
     }
 
+    for (loopNum = 0; loopNum < numOfRecords/recordsPerLoop; loopNum++) {
+        const skipNumber = loopNum * recordsPerLoop;
+
+        records = await gameRecord.find({})
+        .sort({ timeGameFinished: 'descending' })
+        .skip(skipNumber)
+        .limit(recordsPerLoop);
+
+        const prevRecordsLength = records.length;
+        // TODO fs.writeFileSync('assets/gameRecordsData/gameRecordsData.json', JSON.stringify(records));
+        // Filter out the bot games
+        records = records.filter((r) => (r.gameMode === undefined || r.gameMode.toLowerCase().includes('bot') == false));
+        
+        // Keep track of number of bot games
+        numBotGames += prevRecordsLength - records.length;
+    
+        // Anonymize it using gameRecordsData
+        const gameRecordsDataAnon = anonymizeStats(records);
+        
+        // Write out to anon stream
+        anonStream.write(JSON.stringify(gameRecordsDataAnon));
+    
+
+        //* *********************************************
+        // Site traffic stats - one data point per day
+        //* *********************************************
+        for (var i = 0; i < records.length; i++) {
+            const timeFinish = records[i].timeGameFinished;
+            // Round to nearest day
+            const dayFinished = new Date(timeFinish.getFullYear(), timeFinish.getMonth(), timeFinish.getDate());
+    
+            // Count the number of games played on the same day
+            if (gamesPlayedData[dayFinished.getTime()] === undefined) {
+                gamesPlayedData[dayFinished.getTime()] = 1;
+            } else {
+                gamesPlayedData[dayFinished.getTime()] = gamesPlayedData[dayFinished.getTime()] + 1;
+            }
+        }
+    
+        //* *********************************************
+        // Getting the average duration of each game
+        //* *********************************************
+        for (var i = 0; i < records.length; i++) {
+            var duration = new Date(records[i].timeGameFinished.getTime() - records[i].timeGameStarted.getTime());
+            averageGameDuration = new Date(averageGameDuration.getTime() + duration.getTime());
+        }
+    
+    
+        //* *********************************************
+        // Getting the win rate of alliances globally
+        //* *********************************************
+        for (var i = 0; i < records.length; i++) {
+            if (records[i].winningTeam === 'Resistance') {
+                resWins++;
+            } else if (records[i].winningTeam === 'Spy') {
+                spyWins++;
+            }
+        }
+    
+        //* *********************************************
+        // Getting the assassination win rate
+        //* *********************************************
+        for (var i = 0; i < records.length; i++) {
+            const roleShot = records[i].whoAssassinShot;
+            if (roleShot) {
+                // console.log("a");
+                if (rolesShotObj[roleShot] !== undefined) {
+                    rolesShotObj[roleShot] = rolesShotObj[roleShot] + 1;
+                    // console.log(roleShot + " was shot, total count: " + rolesShotObj[roleShot]);
+                } else {
+                    rolesShotObj[roleShot] = 1;
+                }
+            }
+        }    
+    
+        //* *********************************************
+        // Getting the average duration of each assassination
+        //* *********************************************
+        for (var i = 0; i < records.length; i++) {
+            if (records[i].timeAssassinationStarted) {
+                var duration = new Date(records[i].timeGameFinished.getTime() - records[i].timeAssassinationStarted.getTime());
+                averageAssassinationDuration = new Date(averageAssassinationDuration.getTime() + duration.getTime());
+                count++;
+            }
+        }
+    
+        //* *********************************************
+        // Getting the win rate for each game size
+        //* *********************************************    
+        for (var i = 0; i < records.length; i++) {
+            if (!gameSizeWins[records[i].numberOfPlayers]) {
+                gameSizeWins[records[i].numberOfPlayers] = {};
+                gameSizeWins[records[i].numberOfPlayers].spy = 0;
+                gameSizeWins[records[i].numberOfPlayers].res = 0;
+            }
+    
+            if (records[i].winningTeam === 'Spy') {
+                gameSizeWins[records[i].numberOfPlayers].spy++;
+            } else if (records[i].winningTeam === 'Resistance') {
+                gameSizeWins[records[i].numberOfPlayers].res++;
+            } else {
+                console.log(`error, winning team not recognised: ${records[i].winningTeam}`);
+            }
+        }
+    
+        //* *********************************************
+        // Getting the spy wins breakdown
+        //* *********************************************
+        for (var i = 0; i < records.length; i++) {
+            if (records[i].winningTeam === 'Spy') {
+                if (!spyWinBreakdown[records[i].howTheGameWasWon]) {
+                    spyWinBreakdown[records[i].howTheGameWasWon] = 0;
+                }
+    
+                spyWinBreakdown[records[i].howTheGameWasWon]++;
+            }
+        }
+    
+        //* *********************************************
+        // Getting the Lady of the lake wins breakdown
+        //* *********************************************    
+        for (var i = 0; i < records.length; i++) {
+            if (records[i].ladyChain.length > 0) {
+                // if the first person who held the card is a res
+                if (resRoles.indexOf(records[i].ladyChain[0]) !== -1) {
+                    if (records[i].winningTeam === 'Resistance') {
+                        ladyBreakdown.resStart.resWin++;
+                    } else if (records[i].winningTeam === 'Spy') {
+                        ladyBreakdown.resStart.spyWin++;
+                    }
+                }
+                // if the first person who held the card is a spy
+                else if (spyRoles.indexOf(records[i].ladyChain[0]) !== -1) {
+                    if (records[i].winningTeam === 'Resistance') {
+                        ladyBreakdown.spyStart.resWin++;
+                    } else if (records[i].winningTeam === 'Spy') {
+                        ladyBreakdown.spyStart.spyWin++;
+                    }
+                } else {
+                    console.log(`ERROR no alliance assigned to role: ${records[i].ladyChain[0]}`);
+                }
+            }
+        }
+    
+        //* *********************************************
+        // Getting the average duration of each game
+        //* *********************************************
+        for (var i = 0; i < records.length; i++) {
+            var duration = new Date(records[i].timeGameFinished.getTime() - records[i].timeGameStarted.getTime());
+            averageGameDurations[records[i].numberOfPlayers] = new Date(averageGameDurations[records[i].numberOfPlayers].getTime() + duration.getTime());
+            countForGameSize[records[i].numberOfPlayers]++;
+        }
+
+        console.log( Math.round(loopNum / (numOfRecords/recordsPerLoop) * 10000)/100 + "% percent processed.");
+    }
+
+    // Post data gathering
+
+    obj.totalgamesplayed = numOfRecords - numBotGames;
+    
+    //* *********************************************
+    // Site traffic stats - one data point per day
+    //* *********************************************
     const gamesPlayedDataArray = [];
     // Turn it into an array of objects
     for (const key in gamesPlayedData) {
@@ -426,198 +635,59 @@ const processRecords = function (records) {
             gamesPlayedDataArray.push(newObj);
         }
     }
-
     // Sort it
     gamesPlayedDataArray.sort(gameDateCompare);
-
     // Split it into the two axis
     for (var i = 0; i < gamesPlayedDataArray.length; i++) {
         xAxisVars.push(gamesPlayedDataArray[i].date);
         yAxisVars.push(gamesPlayedDataArray[i].value);
         // yAxisVars.push(new Date(gamesPlayedDataArray[i].value)); // This line seems to make server hang..?
     }
-
     // Remove the last entry since the day isn't over yet...
     xAxisVars.pop();
     yAxisVars.pop();
-
     obj.siteTrafficGamesPlayedXAxis = xAxisVars;
     obj.siteTrafficGamesPlayedYAxis = yAxisVars;
-
 
     //* *********************************************
     // Getting the average duration of each game
     //* *********************************************
-    let averageGameDuration = new Date(0);
-    for (var i = 0; i < records.length; i++) {
-        var duration = new Date(records[i].timeGameFinished.getTime() - records[i].timeGameStarted.getTime());
-        averageGameDuration = new Date(averageGameDuration.getTime() + duration.getTime());
-    }
-    obj.averageGameDuration = new Date(averageGameDuration.getTime() / records.length);
-
+    obj.averageGameDuration = new Date(averageGameDuration.getTime() / obj.totalgamesplayed);
 
     //* *********************************************
     // Getting the win rate of alliances globally
     //* *********************************************
-    let resWins = 0;
-    let spyWins = 0;
-    for (var i = 0; i < records.length; i++) {
-        if (records[i].winningTeam === 'Resistance') {
-            resWins++;
-            // console.log("res win: ");
-            // console.log(resWins);
-        } else if (records[i].winningTeam === 'Spy') {
-            spyWins++;
-            // console.log("spy win: ");
-            // console.log(spyWins);
-        }
-        // console.log("winning team:");
-        // console.log(records[i].winningTeam);
-    }
     obj.totalResWins = resWins;
     obj.totalSpyWins = spyWins;
 
-
     //* *********************************************
-    // Getting the assassination win rate
+    // Getting the win rate of alliances globally
     //* *********************************************
-    const rolesShotObj = {};
-    for (var i = 0; i < records.length; i++) {
-        const roleShot = records[i].whoAssassinShot;
-        if (roleShot) {
-            // console.log("a");
-            if (rolesShotObj[roleShot] !== undefined) {
-                rolesShotObj[roleShot] = rolesShotObj[roleShot] + 1;
-                // console.log(roleShot + " was shot, total count: " + rolesShotObj[roleShot]);
-            } else {
-                rolesShotObj[roleShot] = 1;
-            }
-        }
-    }
-
     obj.assassinRolesShot = rolesShotObj;
-
 
     //* *********************************************
     // Getting the average duration of each assassination
     //* *********************************************
-    let averageAssassinationDuration = new Date(0);
-    let count = 0;
-    for (var i = 0; i < records.length; i++) {
-        if (records[i].timeAssassinationStarted) {
-            var duration = new Date(records[i].timeGameFinished.getTime() - records[i].timeAssassinationStarted.getTime());
-            averageAssassinationDuration = new Date(averageAssassinationDuration.getTime() + duration.getTime());
-            count++;
-        }
-    }
     obj.averageAssassinationDuration = new Date(averageAssassinationDuration.getTime() / count);
 
     //* *********************************************
     // Getting the win rate for each game size
     //* *********************************************
-    const gameSizeWins = {};
-
-    for (var i = 0; i < records.length; i++) {
-        if (!gameSizeWins[records[i].numberOfPlayers]) {
-            gameSizeWins[records[i].numberOfPlayers] = {};
-            gameSizeWins[records[i].numberOfPlayers].spy = 0;
-            gameSizeWins[records[i].numberOfPlayers].res = 0;
-        }
-
-        if (records[i].winningTeam === 'Spy') {
-            gameSizeWins[records[i].numberOfPlayers].spy++;
-        } else if (records[i].winningTeam === 'Resistance') {
-            gameSizeWins[records[i].numberOfPlayers].res++;
-        } else {
-            console.log(`error, winning team not recognised: ${records[i].winningTeam}`);
-        }
-    }
     obj.gameSizeWins = gameSizeWins;
-
 
     //* *********************************************
     // Getting the spy wins breakdown
     //* *********************************************
-    const spyWinBreakdown = {};
-
-    for (var i = 0; i < records.length; i++) {
-        if (records[i].winningTeam === 'Spy') {
-            if (!spyWinBreakdown[records[i].howTheGameWasWon]) {
-                spyWinBreakdown[records[i].howTheGameWasWon] = 0;
-            }
-
-            spyWinBreakdown[records[i].howTheGameWasWon]++;
-        }
-    }
     obj.spyWinBreakdown = spyWinBreakdown;
-
 
     //* *********************************************
     // Getting the Lady of the lake wins breakdown
-    //* *********************************************
-    const ladyBreakdown = {
-        resStart: {
-            resWin: 0,
-            spyWin: 0,
-        },
-        spyStart: {
-            resWin: 0,
-            spyWin: 0,
-        },
-    };
-
-
-    // IMPORTANT, MUST KEEP THESE ROLES UP TO DATE!
-    // SHOULD MAKE AN EXTERNAL FILE OF THESE ALLIANCES
-    const resRoles = ['Merlin', 'Percival', 'Resistance', 'Isolde', 'Tristan'];
-    const spyRoles = ['Assassin', 'Morgana', 'Spy', 'Mordred', 'Oberon'];
-
-
-    for (var i = 0; i < records.length; i++) {
-        if (records[i].ladyChain.length > 0) {
-            // if the first person who held the card is a res
-            if (resRoles.indexOf(records[i].ladyChain[0]) !== -1) {
-                if (records[i].winningTeam === 'Resistance') {
-                    ladyBreakdown.resStart.resWin++;
-                } else if (records[i].winningTeam === 'Spy') {
-                    ladyBreakdown.resStart.spyWin++;
-                }
-            }
-            // if the first person who held the card is a spy
-            else if (spyRoles.indexOf(records[i].ladyChain[0]) !== -1) {
-                if (records[i].winningTeam === 'Resistance') {
-                    ladyBreakdown.spyStart.resWin++;
-                } else if (records[i].winningTeam === 'Spy') {
-                    ladyBreakdown.spyStart.spyWin++;
-                }
-            } else {
-                console.log(`ERROR no alliance assigned to role: ${records[i].ladyChain[0]}`);
-            }
-        }
-    }
+    //* *********************************************    
     obj.ladyBreakdown = ladyBreakdown;
-
 
     //* *********************************************
     // Getting the average duration of each game
     //* *********************************************
-    const averageGameDurations = [];
-    const countForGameSize = [];
-    for (var i = 5; i < 11; i++) {
-        averageGameDurations[i] = new Date(0);
-        countForGameSize[i] = 0;
-    }
-
-    // console.log(averageGameDurations);
-
-    for (var i = 0; i < records.length; i++) {
-        var duration = new Date(records[i].timeGameFinished.getTime() - records[i].timeGameStarted.getTime());
-
-        // console.log(records[i].numberOfPlayers);
-
-        averageGameDurations[records[i].numberOfPlayers] = new Date(averageGameDurations[records[i].numberOfPlayers].getTime() + duration.getTime());
-        countForGameSize[records[i].numberOfPlayers]++;
-    }
     obj['5paverageGameDuration'] = new Date(averageGameDurations[5].getTime() / countForGameSize['5']);
     obj['6paverageGameDuration'] = new Date(averageGameDurations[6].getTime() / countForGameSize['6']);
     obj['7paverageGameDuration'] = new Date(averageGameDurations[7].getTime() / countForGameSize['7']);
@@ -629,9 +699,8 @@ const processRecords = function (records) {
 
     clientStatsData = obj;
 
-
     console.log('Done processing, now saving.');
-
+    
     statsCumulative.remove({}, (err) => {
         if (err) {
             console.log(err);
@@ -643,12 +712,15 @@ const processRecords = function (records) {
         }
     });
 
-    // res.status(200).send(clientStatsData);
+    console.log(numOfRecords);
+
+    anonStream.end();
+    return;
 }
 
 
 router.get('/updateStats', (req, res) => {
-    setTimeout(hardUpdateStatsFunction, 5000);
+    setTimeout(hardUpdateStatsFunction, 1000);
     res.send('Starting update...');
 });
 

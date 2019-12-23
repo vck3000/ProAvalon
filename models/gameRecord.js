@@ -39,6 +39,8 @@ const gameRecordSchema = new mongoose.Schema({
     playerRoles: Object,
 
 });
+
+gameRecordSchema.index({timeGameFinished: 1});
 // compile schema into a model
 const gameRecord = mongoose.model('gameRecord', gameRecordSchema);
 
