@@ -17,8 +17,9 @@ const socket = require('socket.io');
 
 const User = require('./models/user');
 
-const { isLoggedIn } = require('./routes/middleware');
+const { isLoggedIn, emailVerified } = require('./routes/middleware');
 const indexRoutes = require('./routes/index');
+const { emailVerificationRoutes } = require('./routes/emailVerification');
 const lobbyRoutes = require('./routes/lobby');
 const forumRoutes = require('./routes/forum');
 const profileRoutes = require('./routes/profile');
@@ -109,11 +110,15 @@ app.use(methodOverride('_method'));
 
 app.use(indexRoutes);
 
-app.use('/mod', modRoutes);
-app.use('/patreon', patreonRoutes);
-
 // Lobby, forum, and profile routes require a logged in user
 app.use(isLoggedIn);
+
+app.use('/emailVerification', emailVerificationRoutes);
+
+app.use(emailVerified);
+
+app.use('/mod', modRoutes);
+app.use('/patreon', patreonRoutes);
 
 app.use('/lobby', lobbyRoutes);
 app.use('/forum', forumRoutes);
@@ -137,33 +142,3 @@ io.use(passportSocketIo.authorize({
     store, // same as sessionStore in app.use(session({...
     passport,
 }));    
-
-
-
-var nodemailer = require('nodemailer');
-var smtpTransport = require('nodemailer-smtp-transport');
-console.log(process.env.EMAIL_ADDRESS);
-var transporter = nodemailer.createTransport(smtpTransport({
-  service: 'gmail',
-  host: 'smtp.gmail.com',
-  auth: {
-    user: process.env.EMAIL_ADDRESS,
-    pass: process.env.EMAIL_PASSWORD
-  }
-}));
-
-var mailOptions = {
-  from: `"ProAvalon Admin" <${process.env.PROAVALON_EMAIL_ADDRESS}>`,
-  to: process.env.MY_EMAIL_ADDRESS,
-  subject: 'Test email with NodeMailer.',
-  html: `<p><b>Hello</b> to myself <img src="cid:note@example.com"/></p>
-  <p>Here's a nyan cat for you as an embedded attachment:<br/><img src="cid:nyan@example.com"/></p>`
-};
-
-transporter.sendMail(mailOptions, function(error, info){
-  if (error) {
-    console.log(error);
-  } else {
-    console.log('Email sent: ' + info.response);
-  }
-});

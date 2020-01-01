@@ -13,6 +13,8 @@ const statsCumulative = require('../models/statsCumulative');
 
 const { isMod } = require('./middleware');
 
+const { validEmail, emailExists } = require('../routes/emailVerification');
+
 const modsArray = require('../modsadmins/mods');
 
 // Prevent too many requests
@@ -70,9 +72,10 @@ router.get('/community', (req, res) => {
 
 // Index route
 router.get('/', (req, res) => {
-    if (req.session) {
-        req.session.destroy();
-    }
+    // TODO Check if this is ok.
+    // if (req.session) {
+    //     req.session.destroy();
+    // }
     res.render('index');
 });
 
@@ -98,57 +101,14 @@ const registerLimiter = process.env.MY_PLATFORM === 'local'
     });
 
 // Post of the register route - Create an account
-router.post('/', registerLimiter, sanitiseUsername, (req, res) => {
-    // console.log("escaped: " + escapeText(req.body.username));
-
-    // res.redirect("sitedown");
-    // return;
-
-    // var escapedUsername = escapeText(req.body.username);
-
+router.post('/', registerLimiter, sanitiseUsername, sanitiseEmail, async (req, res) => {
     // if we are local, we can skip the captcha
-    if (process.env.MY_PLATFORM === 'local' || process.env.MY_PLATFORM === 'staging') {
-        // duplicate code as below
-        const newUser = new User({
-            username: req.body.username,
-            usernameLower: req.body.username.toLowerCase(),
-            dateJoined: new Date(),
-        });
-
-        if (req.body.username.indexOf(' ') !== -1) {
-            req.flash('error', 'Sign up failed. Please do not use spaces in your username.');
-            res.redirect('register');
-        } else if (req.body.username.length > 25) {
-            req.flash('error', 'Sign up failed. Please do not use more than 25 characters in your username.');
-            res.redirect('register');
-        } else if (usernameContainsBadCharacter(req.body.username) == true) {
-            req.flash('error', 'Please do not use an illegal character');
-            res.redirect('register');
-        } else {
-            User.register(newUser, req.body.password, (err, user) => {
-                if (err) {
-                    console.log(`ERROR: ${err}`);
-                    req.flash('error', 'Sign up failed. Most likely that username is taken.');
-                    res.redirect('register');
-                } else {
-                    // successful, get them to log in again
-                    // req.flash("success", "Sign up successful. Please log in.");
-                    // res.redirect("/");
-
-                    passport.authenticate('local')(req, res, () => {
-                        res.redirect('/lobby');
-                    });
-                }
-            });
-        }
+    if (process.env.MY_PLATFORM === 'local') {
+        // Nothing special
     }
 
-
-    // we are online, require the captcha
-    else {
+    else if (process.env.MY_PLATFORM === 'online' || process.env.MY_PLATFORM === 'staging') {
         req.body.captcha = req.body['g-recaptcha-response'];
-
-
         if (
             req.body.captcha === undefined
             || req.body.captcha === ''
@@ -163,49 +123,67 @@ router.post('/', registerLimiter, sanitiseUsername, (req, res) => {
 
         const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.captcha}&remoteip=${req.connection.remoteAddress}`;
 
-        request(verifyUrl, (err, response, body) => {
-            body = JSON.parse(body);
-            // console.log(body);
+        body = await request(verifyUrl);
 
-            // If Not Successful
-            if (body.success !== undefined && !body.success) {
-                req.flash('error', 'Failed captcha verification.');
-                res.redirect('register');
-                return;
-            }
+        body = JSON.parse(body);
 
-            const newUser = new User({
-                username: req.body.username,
-                usernameLower: req.body.username.toLowerCase(),
-                dateJoined: new Date(),
+        // If Not Successful
+        if (body.success !== undefined && !body.success) {
+            req.flash('error', 'Failed captcha verification.');
+            res.redirect('register');
+            return;
+        }
+    }
+
+
+    // duplicate code as below
+    const newUser = new User({
+        username: req.body.username,
+        usernameLower: req.body.username.toLowerCase(),
+        dateJoined: new Date(),
+        emailAddress: req.body.emailAddress
+    });
+
+    if (req.body.username.indexOf(' ') !== -1) {
+        req.flash('error', 'Sign up failed. Please do not use spaces in your username.');
+        res.redirect('register');
+    } 
+    else if (req.body.username.length > 25) {
+        req.flash('error', 'Sign up failed. Please do not use more than 25 characters in your username.');
+        res.redirect('register');
+    } 
+    else if (usernameContainsBadCharacter(req.body.username) === true) {
+        req.flash('error', 'Please do not use an illegal character.');
+        res.redirect('register');
+    } 
+    else if (validEmail(req.body.emailAddress) === false) {
+        req.flash('error', 'Please provide a valid email address.');
+        res.redirect('register');
+    } 
+    else {
+        if (emailExists(req.body.emailAddress)) {
+            req.flash('error', 'This email address is already in use.');
+            res.redirect('register');
+        }
+        else {
+            User.register(newUser, req.body.password, (err, user) => {
+                if (err) {
+                    console.log(`ERROR: ${err}`);
+                    req.flash('error', 'Sign up failed. Most likely that username is taken.');
+                    res.redirect('register');
+                } else {
+                    // successful, get them to log in again
+                    // req.flash("success", "Sign up successful. Please log in.");
+                    // res.redirect("/");
+
+                    passport.authenticate('local')(req, res, () => {
+                        res.redirect('/lobby');
+                    });
+
+                    sendEmailVerification(user);
+                }
             });
-
-            if (req.body.username.indexOf(' ') !== -1) {
-                req.flash('error', 'Sign up failed. Please do not use spaces in your username.');
-                res.redirect('register');
-            } else if (req.body.username.length > 25) {
-                req.flash('error', 'Sign up failed. Please do not use more than 25 characters in your username.');
-                res.redirect('register');
-            } else if (usernameContainsBadCharacter(req.body.username) == true) {
-                req.flash('error', 'Please do not use an illegal character');
-                res.redirect('register');
-            } else {
-                User.register(newUser, req.body.password, (err, user) => {
-                    if (err) {
-                        console.log(`ERROR: ${err}`);
-                        req.flash('error', 'Sign up failed. Most likely that username is taken.');
-                        res.redirect('register');
-                    } else {
-                        // successful, get them to log in again
-                        // req.flash("success", "Sign up successful. Please log in.");
-                        // res.redirect("/");
-                        passport.authenticate('local')(req, res, () => {
-                            res.redirect('/lobby');
-                        });
-                    }
-                });
-            }
-        });
+        }
     }
 });
 
@@ -228,6 +206,25 @@ router.post('/login', loginLimiter, sanitiseUsername, passport.authenticate('loc
 router.get('/loginFail', (req, res) => {
     req.flash('error', 'Log in failed! Please try again.');
     res.redirect('/');
+});
+
+// Special route that needs to exist here as the user may not be logged in yet.
+router.get('/emailVerification/verifyEmailRequest', async (req, res) => {
+    var user = await User.findOne({emailToken: req.query.token});
+    if (user) {
+        user.emailVerified = true;
+        user.emailToken = undefined;
+        user.markModified("emailVerified");
+        user.markModified("emailToken");
+        user.save();
+
+        req.flash("success", "Email verified! Thank you!");
+        res.redirect("/");
+    }
+    else {
+        req.flash("error", "The link provided for email verification is invalid or expired. Please log in and press the 'Resend verification email' button.");
+        res.redirect('/');
+    }
 });
 
 // /lobby route is in a separate file.
@@ -769,6 +766,15 @@ function escapeTextUsername(req, res, next) {
 
 function sanitiseUsername(req, res, next) {
     req.body.username = sanitizeHtml(req.body.username, {
+        allowedTags: [],
+        allowedAttributes: [],
+    });
+
+    next();
+}
+
+function sanitiseEmail(req, res, next) {
+    req.body.emailAddress = sanitizeHtml(req.body.emailAddress, {
         allowedTags: [],
         allowedAttributes: [],
     });
