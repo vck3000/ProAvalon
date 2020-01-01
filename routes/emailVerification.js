@@ -39,7 +39,7 @@ router.post('/addNewEmail', checkEmailVerifiedAlready, async (req, res) => {
         // All is good.
         console.log("A");
         req.user.emailAddress = req.body.emailAddress;
-        req.user.markModified("emailAddress");
+        await req.user.markModified("emailAddress");
         console.log("B");
         await req.user.save();
         console.log("C");
