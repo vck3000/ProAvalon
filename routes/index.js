@@ -210,7 +210,7 @@ router.get('/loginFail', (req, res) => {
 
 // Special route that needs to exist here as the user may not be logged in yet.
 router.get('/emailVerification/verifyEmailRequest', async (req, res) => {
-    var user = await User.findOne({emailToken: req.query.token});
+    var user = await User.findOne({emailToken: req.query.token}).populate('notifications').exec();
     if (user) {
         user.emailVerified = true;
         user.emailToken = undefined;

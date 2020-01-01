@@ -55,7 +55,7 @@ function validEmail(email) {
 }
 
 async function emailExists(email) {
-    var userEmailDuplicate = await User.findOne({emailAddress: email});
+    var userEmailDuplicate = await User.findOne({emailAddress: email}).populate('notifications').exec();
     if (userEmailDuplicate) {
         return true;
     }
