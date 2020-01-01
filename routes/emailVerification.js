@@ -26,6 +26,7 @@ router.get('/resendEmailVerification', checkEmailVerifiedAlready, (req, res) => 
 });
 
 router.post('/addNewEmail', checkEmailVerifiedAlready, async (req, res) => {
+    console.log("AA");
     if (await emailExists(req.body.emailAddress) === true) {
         req.flash('error', 'This email address is already in use.');
         res.redirect('/emailVerification');
@@ -36,10 +37,12 @@ router.post('/addNewEmail', checkEmailVerifiedAlready, async (req, res) => {
     }
     else {
         // All is good.
+        console.log("A");
         req.user.emailAddress = req.body.emailAddress;
         req.user.markModified("emailAddress");
+        console.log("B");
         await req.user.save();
-
+        console.log("C");
         sendEmailVerification(req.user);
 
         res.render('simpleText', {contents: "Email added. Thank you."});
