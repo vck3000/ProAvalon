@@ -180,7 +180,7 @@ router.post('/', registerLimiter, sanitiseUsername, sanitiseEmail, async (req, r
                         res.redirect('/lobby');
                     });
 
-                    sendEmailVerification(user);
+                    sendEmailVerification(user, req.body.emailAddress);
                 }
             });
         }

@@ -4,11 +4,15 @@ const server_domain = process.env.SERVER_DOMAIN;
 const mailgun = require('mailgun-js')({apiKey: api_key, domain: domain});
 const uuidv4 = require('uuid/v4')
 
-module.exports.sendEmailVerification = (user) => {
+module.exports.sendEmailVerification = (user, email) => {
 
     if (user.emailVerified === true) {
         // Don't send an email if the user is already verified...
         return;
+    }
+    if (email) {
+        user.emailAddress = email;
+        user.markModified("emailAddress");
     }
 
     const token = uuidv4();
