@@ -17,8 +17,9 @@ const socket = require('socket.io');
 
 const User = require('./models/user');
 
-const { isLoggedIn } = require('./routes/middleware');
+const { isLoggedIn, emailVerified } = require('./routes/middleware');
 const indexRoutes = require('./routes/index');
+const { emailVerificationRoutes } = require('./routes/emailVerification');
 const lobbyRoutes = require('./routes/lobby');
 const forumRoutes = require('./routes/forum');
 const profileRoutes = require('./routes/profile');
@@ -109,11 +110,15 @@ app.use(methodOverride('_method'));
 
 app.use(indexRoutes);
 
-app.use('/mod', modRoutes);
-app.use('/patreon', patreonRoutes);
-
 // Lobby, forum, and profile routes require a logged in user
 app.use(isLoggedIn);
+
+app.use('/emailVerification', emailVerificationRoutes);
+
+app.use(emailVerified);
+
+app.use('/mod', modRoutes);
+app.use('/patreon', patreonRoutes);
 
 app.use('/lobby', lobbyRoutes);
 app.use('/forum', forumRoutes);
@@ -137,4 +142,3 @@ io.use(passportSocketIo.authorize({
     store, // same as sessionStore in app.use(session({...
     passport,
 }));    
-

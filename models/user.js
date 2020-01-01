@@ -14,6 +14,14 @@ const UserSchema = new mongoose.Schema({
         // required: true, 
     },
 
+    emailAddress: String,
+    emailVerified: {
+        type: Boolean,
+        default: false
+    },
+    // I've decided it is ok to not have these email tokens expire. 
+    emailToken: String,
+
     avatarImgRes: {
         type: String,
         default: null,
@@ -27,6 +35,7 @@ const UserSchema = new mongoose.Schema({
     hideStats: Boolean,
 
     dateJoined: Date,
+    
     totalTimePlayed: {
         type: Date,
         default: 0,

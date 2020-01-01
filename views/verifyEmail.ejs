@@ -1,0 +1,95 @@
+<% include ./partials/header %>
+
+
+<style type="text/css">
+	.login-form {
+		width: 340px;
+    	margin: 50px auto;
+	}
+    .login-form form {
+    	margin-bottom: 15px;
+        background: #f7f7f7;
+        box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+        border: #b5b5b5 2px solid;
+        padding: 30px;
+    }
+    .login-form h2 {
+        margin: 0 0 15px;
+    }
+    h4 {
+        width: 75%;
+        margin: 0px auto;
+    }
+    .form-control, .btn {
+        min-height: 38px;
+        border-radius: 2px;
+    }
+    .btn {
+        font-size: 15px;
+        font-weight: bold;
+    }
+
+    #mainBodyContainer {
+        background-color: rgb(245, 245, 245);
+        border-radius: 10px;
+        padding: 10px;
+        text-align: center;
+        width: 75%;
+    }
+
+    .dark #mainBodyContainer {
+        background-color: #444444;
+        color: #CCCCCC;
+        width: 75%;
+    }
+
+</style>
+
+
+<div class="container myContainer" id="mainBodyContainer">
+
+    <h2 class="text-center">Welcome <%=currentUser.username%>!</h2> 
+    <% if (currentUser.emailAddress) { %>
+    <h3 class="text-center">Please verify your email address at <%=currentUser.emailAddress%>. </h3 class="text-center">
+    <p>(Only you are able to see this)</p>
+    <p class="text-center">To do this, please click on the link sent to the email address you provided on sign up.</p>
+    <p class="text-center">If you run into any issues, please contact the admin. Contact details are in the <a href="/about">about page</a>.</p>
+
+    <br>
+
+    <a class="btn btn-primary" href="/emailVerification/resendEmailVerification">Resend verification email</a>
+
+    <% } else { %>
+    <h4 class="text-center">In order to combat trolling and excessive alternate account creation, ProAvalon now requires email verification.</h4 class="text-center">
+    <br>
+    <h4>Please kindly provide a valid email address.</h4>
+    <br>
+    <p class="text-center">If you run into any issues, please contact the admin. Contact details are in the <a href="/about">about page</a>.</p>
+
+    <div class="login-form">
+        <form action="/emailVerification/addNewEmail" method="POST">
+
+            <!-- <h2 class="text-center">Change your password</h2>  -->
+
+            <div class="form-group">
+                <input type="email" name="emailAddress" class="form-control" placeholder="Email Address" required="required">
+            </div>
+
+            <br>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-block">Submit</button>
+            </div>
+
+        </form>
+    </div>
+
+    <% } %>
+
+    <br>
+    <br>
+</div>
+
+
+
+<% include ./partials/footer %>
