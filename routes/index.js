@@ -103,11 +103,11 @@ const registerLimiter = process.env.MY_PLATFORM === 'local'
 // Post of the register route - Create an account
 router.post('/', registerLimiter, sanitiseUsername, sanitiseEmail, async (req, res) => {
     // if we are local, we can skip the captcha
-    if (process.env.MY_PLATFORM === 'local') {
+    if (process.env.MY_PLATFORM === 'local' || process.env.MY_PLATFORM === 'staging') {
         // Nothing special
     }
 
-    else if (process.env.MY_PLATFORM === 'online' || process.env.MY_PLATFORM === 'staging') {
+    else if (process.env.MY_PLATFORM === 'online') {
         req.body.captcha = req.body['g-recaptcha-response'];
         if (
             req.body.captcha === undefined
