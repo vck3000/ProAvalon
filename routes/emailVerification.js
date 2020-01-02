@@ -38,8 +38,8 @@ router.post('/addNewEmail', checkEmailVerifiedAlready, async (req, res) => {
     else {
         // All is good.
         sendEmailVerification(req.user, req.body.emailAddress);
-
-        res.render('simpleText', {contents: "Email added. Thank you."});
+        req.flash('success', "Email added. Thank you.");
+        res.redirect('/emailVerification');
     }
 });
 
