@@ -62,9 +62,10 @@ async function emailExists(email) {
 
 function emailContainsBadCharacter(str) {
     // only allow alphanumerical and @ and . symbols.
-    const regx = /^[A-Za-z0-9\@\.]+$/;
+    const regx = /^[A-Za-z0-9\@\._-]+$/;
 
-    if (str.includes('&lt;')
+    if (!regx.test(str)
+        || str.includes('&lt;')
         || str.includes('&gt;')
         || str.includes('&apos;')
         || str.includes('&quot;')
@@ -77,9 +78,7 @@ function emailContainsBadCharacter(str) {
     ) {
         return true;
     }
-    if (!regx.test(str)) {
-        return true;
-    }
+
 
     return false;
 }

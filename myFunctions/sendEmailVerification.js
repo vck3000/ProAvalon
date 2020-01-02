@@ -11,6 +11,7 @@ module.exports.sendEmailVerification = (user, email) => {
         return;
     }
     if (email) {
+        email = email.toLowerCase();
         user.emailAddress = email;
         user.markModified("emailAddress");
     }
