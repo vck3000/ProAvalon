@@ -41,17 +41,18 @@ const isLoggedIn = asyncMiddleware(async (req, res, next) => {
     }
     else {
         console.log("CHECKING BANS");
-        const clientIpAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        const clientIpAddress = req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         // console.log(clientIpAddress);
 
         // Track IPs
-        if (!user.IPAddresses.includes(clientIpAddress)) {
+        if (clientIpAddress !== null && clientIpAddress !== undefined && !user.IPAddresses.includes(clientIpAddress)) {
             user.IPAddresses.push(clientIpAddress);
             user.markModified("IPAdresses");
+
+            user.lastIPAddress = clientIpAddress;
+            user.markModified("lastIPAddress");
+            user.save();
         }
-        user.lastIPAddress = clientIpAddress;
-        user.markModified("lastIPAddress");
-        user.save();
 
         // Don't check over multiple times. Once is enough per person per request.
         if (!res.locals.bansChecked) {
@@ -71,18 +72,20 @@ const isLoggedIn = asyncMiddleware(async (req, res, next) => {
                 return;
             }
 
-            // IP ban
-            ban = await Ban.findOne({
-                'bannedIPs': clientIpAddress,       // IP match
-                'whenRelease': {$gt: new Date() },  // Unexpired ban
-                'ipBan': true,                      // IP ban
-                'disabled': false                   // Ban must be active
-            });
-            if (ban) {
-                let message = `You have been banned. The ban will be released on &${ban.whenRelease.getTime()}*. Ban description: '${ban.descriptionByMod}'`;
-                req.flash('error', message);
-                res.redirect('/');
-                return;
+            if (clientIpAddress !== null && clientIpAddress && undefined) {
+                // IP ban
+                ban = await Ban.findOne({
+                    'bannedIPs': clientIpAddress,       // IP match
+                    'whenRelease': {$gt: new Date() },  // Unexpired ban
+                    'ipBan': true,                      // IP ban
+                    'disabled': false                   // Ban must be active
+                });
+                if (ban) {
+                    let message = `You have been banned. The ban will be released on &${ban.whenRelease.getTime()}*. Ban description: '${ban.descriptionByMod}'`;
+                    req.flash('error', message);
+                    res.redirect('/');
+                    return;
+                }
             }
 
             // Due to performance issues and massive sprawling bans, this has been disabled.

@@ -14,6 +14,7 @@ const statsCumulative = require('../models/statsCumulative');
 const { isMod } = require('./middleware');
 
 const { validEmail, emailExists } = require('../routes/emailVerification');
+const { sendEmailVerification } = require('../myFunctions/sendEmailVerification');
 
 const modsArray = require('../modsadmins/mods');
 
@@ -160,30 +161,30 @@ router.post('/', registerLimiter, sanitiseUsername, sanitiseEmail, async (req, r
         req.flash('error', 'Please provide a valid email address.');
         res.redirect('register');
     } 
+    else if (await emailExists(req.body.emailAddress)) {
+        console.log(req.body.emailAddress);
+        console.log("In email exists... is true")
+        req.flash('error', 'This email address is already in use.');
+        res.redirect('register');
+    }
     else {
-        if (emailExists(req.body.emailAddress)) {
-            req.flash('error', 'This email address is already in use.');
-            res.redirect('register');
-        }
-        else {
-            User.register(newUser, req.body.password, (err, user) => {
-                if (err) {
-                    console.log(`ERROR: ${err}`);
-                    req.flash('error', 'Sign up failed. Most likely that username is taken.');
-                    res.redirect('register');
-                } else {
-                    // successful, get them to log in again
-                    // req.flash("success", "Sign up successful. Please log in.");
-                    // res.redirect("/");
+        User.register(newUser, req.body.password, (err, user) => {
+            if (err) {
+                console.log(`ERROR: ${err}`);
+                req.flash('error', 'Sign up failed. Most likely that username is taken.');
+                res.redirect('register');
+            } else {
+                // successful, get them to log in again
+                // req.flash("success", "Sign up successful. Please log in.");
+                // res.redirect("/");
 
-                    passport.authenticate('local')(req, res, () => {
-                        res.redirect('/lobby');
-                    });
+                passport.authenticate('local')(req, res, () => {
+                    res.redirect('/lobby');
+                });
 
-                    sendEmailVerification(user, req.body.emailAddress);
-                }
-            });
-        }
+                sendEmailVerification(user, req.body.emailAddress);
+            }
+        });
     }
 });
 
