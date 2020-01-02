@@ -184,8 +184,6 @@ exports.isAdmin = (req, res, next) => {
 };
 
 exports.emailVerified = (req, res, next) => {
-    console.log("Checking email verified...")
-    console.log(req.user.emailVerified);
     if (req.user.emailVerified === true) {
         next();
     }

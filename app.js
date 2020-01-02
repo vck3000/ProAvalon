@@ -60,6 +60,12 @@ store.on('error', (err) => {
     assert.ok(false);
 });
 
+process.on('unhandledRejection', (reason, p) => {
+    console.log('Unhandled Rejection at: Promise', p, 'reason:', reason, 'reason.stack:', reason.stack);
+    // application specific logging, throwing an error, or other logic here
+});
+
+
 // authentication
 const secretKey = process.env.MY_SECRET_KEY || 'MySecretKey';
 app.use(session({
