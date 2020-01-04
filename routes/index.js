@@ -126,7 +126,7 @@ router.post('/', registerLimiter, sanitiseUsername, sanitiseEmail, async (req, r
 
         body = await request(verifyUrl);
 
-        body = JSON.parse(body);
+        // body = JSON.parse(body);
 
         // If Not Successful
         if (body.success !== undefined && !body.success) {
