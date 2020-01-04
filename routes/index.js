@@ -852,6 +852,8 @@ function sanitiseEmail(req, res, next) {
         allowedAttributes: [],
     });
 
+    req.body.emailAddress = req.body.emailAddress.toLowerCase();
+
     next();
 }
 
