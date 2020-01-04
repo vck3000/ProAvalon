@@ -147,4 +147,4 @@ io.use(passportSocketIo.authorize({
     secret: secretKey, // same as in your session settings
     store, // same as sessionStore in app.use(session({...
     passport,
-}));    
+}));
