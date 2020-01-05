@@ -1454,7 +1454,7 @@ var actionsObj = {
                     else if (!user) {
                         return { message: `Could not find ${args[1]}.`, classStr: 'server-text' }
                     }
-                    rooms[roomId].sendText(rooms[roomId].allSockets, `Moderator ${senderSocket.request.user.username} has revealed the role of ${user.username}.`, 'server-text');
+                    rooms[roomId].sendText(rooms[roomId].allSockets, `Moderator ${senderSocket.request.user.username} has learned the role of ${user.username}.`, 'server-text');
                     return { message: `${user.username}'s role is ${user.role.toUpperCase()}.`, classStr: 'server-text' };
                 }
                 else {
@@ -1473,7 +1473,7 @@ var actionsObj = {
                     if (!rooms[roomId].gameStarted) {
                         return { message: `Game has not started.`, classStr: 'server-text' };
                     }
-                    rooms[roomId].sendText(rooms[roomId].allSockets, `Moderator ${senderSocket.request.user.username} has revealed all roles.`, 'server-text');
+                    rooms[roomId].sendText(rooms[roomId].allSockets, `Moderator ${senderSocket.request.user.username} has learned all roles.`, 'server-text');
 
                     // reveal role for each user
                     rooms[roomId].playersInGame.forEach((user) => {
