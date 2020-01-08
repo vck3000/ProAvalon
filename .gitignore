@@ -93,3 +93,4 @@ typings/
 package-lock.json
 assets/gameRecordsData/
 !assets/gameRecordsData/gameRecordsDataAnon.json
+.vscode/
