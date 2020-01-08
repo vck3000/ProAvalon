@@ -5,11 +5,15 @@ const mailgun = require('mailgun-js')({apiKey: api_key, domain: domain});
 const uuidv4 = require('uuid/v4')
 
 module.exports.sendEmailVerification = (user, email) => {
+    if (process.env.MY_PLATFORM !== "online") {
+        return;
+    }
 
     if (user.emailVerified === true) {
         // Don't send an email if the user is already verified...
         return;
     }
+    
     if (email) {
         email = email.toLowerCase();
         user.emailAddress = email;
