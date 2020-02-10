@@ -1,0 +1,15 @@
+version: '3'
+services:
+  frontend:
+    container_name: frontend
+    ports:
+      - 3000:3000
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      MY_ENV: test
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+      - /usr/src/app/.next
