@@ -1,0 +1,27 @@
+version: '3'
+services:
+  frontend:
+    container_name: frontend
+    ports:
+      - 3000:3000
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    environment:
+      MY_ENV: test_frontend
+    volumes:
+      - ./packages/frontend:/usr/src/app/packages/frontend
+      - /usr/src/app/packages/frontend/node_modules
+      - /usr/src/app/packages/frontend/.next
+  backend:
+    container_name: backend
+    ports:
+      - 3001:3001
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    environment:
+      MY_ENV: test_backend
+    volumes:
+      - ./packages/backend:/usr/src/app/packages/backend
+      - /usr/src/app/packages/backend/node_modules

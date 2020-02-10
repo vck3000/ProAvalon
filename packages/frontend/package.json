@@ -22,8 +22,8 @@
     ],
     "./**/*.{js,jsx,ts,tsx,css,scss,md}": [
       "prettier --write",
-      "npm run test",
       "npm run lint",
+      "npm run test",
       "git add"
     ]
   },
