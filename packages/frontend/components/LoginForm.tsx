@@ -15,7 +15,7 @@ function LoginForm(props: Props): ReactElement {
   const [remember, setRemember] = React.useState(shouldRemember);
 
   const handleUsernameChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ): void => {
     const { value } = e.target;
     setUsername(value);
@@ -23,7 +23,7 @@ function LoginForm(props: Props): ReactElement {
   };
 
   const handlePasswordChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ): void => {
     const { value } = e.target;
     setPassword(value);
@@ -31,7 +31,7 @@ function LoginForm(props: Props): ReactElement {
   };
 
   const handleRememberChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ): void => {
     const { checked } = e.target;
     setRemember(checked);
