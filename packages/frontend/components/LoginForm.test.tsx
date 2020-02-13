@@ -3,7 +3,7 @@ import {
   render,
   // fireEvent,
   // waitForElement,
-  RenderResult
+  RenderResult,
 } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 
@@ -24,7 +24,7 @@ const renderLoginForm = (props: Partial<Props> = {}): RenderResult => {
     onSubmit() {
       // Empty
     },
-    shouldRemember: true
+    shouldRemember: true,
   };
   // eslint-disable-next-line react/jsx-props-no-spreading
   return render(<LoginForm {...defaultProps} {...props} />);
@@ -43,7 +43,7 @@ describe('<LoginForm />', () => {
     expect(loginForm).toHaveFormValues({
       username: '',
       password: '',
-      remember: true
+      remember: true,
     });
   });
 });

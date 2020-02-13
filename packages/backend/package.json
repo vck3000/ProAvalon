@@ -1,16 +1,43 @@
 {
-  "name": "backend",
+  "name": "proavalon_backend",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
-  "scripts": {
-    "start": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "",
   "license": "ISC",
+  "scripts": {
+    "precommit": "lint-staged",
+    "start": "nodemon app.js",
+    "lint": "eslint './**/*.{js,jsx,ts,tsx}' --max-warnings 0",
+    "test": "jest",
+    "test:watch": "jest --watchAll"
+  },
+  "lint-staged": {
+    "*.json": [
+      "prettier --write"
+    ],
+    "./**/*.{js,jsx,ts,tsx,css,scss,md}": [
+      "prettier --write",
+      "npm run lint",
+      "npm run test"
+    ]
+  },
   "dependencies": {
     "express": "^4.17.1",
     "nodemon": "^2.0.2"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.19.2",
+    "@typescript-eslint/parser": "^2.19.2",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-jest": "^23.7.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "jest": "^25.1.0",
+    "lint-staged": "^10.0.7",
+    "prettier": "1.19.1",
+    "typescript": "^3.7.5"
   }
 }
