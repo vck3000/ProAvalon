@@ -1,8 +1,19 @@
 import React from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
+import fetch from 'isomorphic-unfetch';
 // import { NextPage } from 'next';
 import Nav from '../components/nav';
 import LoginForm from '../components/LoginForm';
+
+// From client side, we need to access through outside the docker network.
+// I.e. through our host computer
+const testServerConnection = async (): Promise<void> => {
+  const res = await fetch('http://localhost:3001/');
+  const text = await res.text();
+  // eslint-disable-next-line no-alert
+  alert(text);
+};
 
 const Home = (): React.ReactElement => (
   <div>
@@ -18,6 +29,10 @@ const Home = (): React.ReactElement => (
       <p className="description">
         To get started, edit <code>pages/index.js</code> and save to reload.
       </p>
+
+      <button onClick={testServerConnection} type="button">
+        Test docker server connection
+      </button>
 
       <div className="row">
         <a href="https://nextjs.org/docs" className="card">
@@ -35,6 +50,11 @@ const Home = (): React.ReactElement => (
           <h3>Examples &rarr;</h3>
           <p>Find other example boilerplates on the Next.js GitHub.</p>
         </a>
+        <Link href="/testserver">
+          <a className="card">
+            <h3>Test server docker connection</h3>
+          </a>
+        </Link>
       </div>
 
       <LoginForm

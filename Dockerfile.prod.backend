@@ -1,0 +1,34 @@
+# Build stage
+FROM node:13 AS builder
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+COPY tsconfig*.json ./
+COPY ./src ./src
+
+RUN npm i lerna -g --loglevel notice
+
+# Copy relevant packages
+COPY packages/backend ./packages/backend
+
+COPY lerna.json .
+RUN lerna bootstrap
+
+RUN npm run build
+
+# Production stage
+FROM node:13-alpine
+
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY package*.json ./
+RUN npm ci --quiet --only=production
+
+# Only copy what we need
+COPY --from=builder /usr/src/app/build ./build
+
+# May need to expose port later
+
+# CMD run something - start up the server? 
