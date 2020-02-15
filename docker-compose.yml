@@ -6,7 +6,7 @@ services:
       - 3000:3000
     build:
       context: .
-      dockerfile: Dockerfile.frontend
+      dockerfile: Dockerfile.dev.frontend
     environment:
       MY_ENV: test_frontend
     volumes:
@@ -19,7 +19,7 @@ services:
       - 3001:3001
     build:
       context: .
-      dockerfile: Dockerfile.backend
+      dockerfile: Dockerfile.dev.backend
     environment:
       MY_ENV: test_backend
     volumes:

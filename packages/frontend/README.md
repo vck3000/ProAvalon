@@ -1,0 +1,1 @@
+Remember to remove the isomorphic-unfetch dependency if we don't need it as it is here for testing the connection to the backend.

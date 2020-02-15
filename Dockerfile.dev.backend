@@ -7,17 +7,12 @@ RUN npm i lerna -g --loglevel notice
 
 # Installing dependencies
 COPY package*.json ./
-RUN npm install
-
-# Copy root package.json
-COPY package.json .
-RUN npm install --loglevel notice
 
 # Now copy relevant packages
-COPY packages/frontend ./packages/frontend
+COPY packages/backend ./packages/backend
 
 COPY lerna.json .
 RUN lerna bootstrap
 
 # Dev mode
-CMD [ "npm" , "--prefix", "packages/frontend", "run", "dev" ]
+CMD [ "npm" , "--prefix", "packages/backend", "run", "dev" ]
