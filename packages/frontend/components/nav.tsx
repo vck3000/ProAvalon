@@ -27,7 +27,9 @@ const Nav = (): ReactElement => (
     <style jsx>
       {`
         :global(body) {
-          margin: 0;
+           {
+            /* margin: 0; */
+          }
           font-family: -apple-system, BlinkMacSystemFont, Avenir Next, Avenir,
             Helvetica, sans-serif;
         }
@@ -39,7 +41,8 @@ const Nav = (): ReactElement => (
           justify-content: space-between;
         }
         nav > ul {
-          padding: 4px 16px;
+          padding: 4px 0px;
+          margin: 0px 0px;
         }
         li {
           display: flex;

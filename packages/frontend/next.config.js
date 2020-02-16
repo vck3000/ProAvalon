@@ -1,5 +1,7 @@
 /* eslint-disable */
-module.exports = {
+const withCSS = require('@zeit/next-css');
+
+module.exports = withCSS({
   webpack: (config, { dev }) => {
     if (dev) {
       config.module.rules.push({
@@ -36,4 +38,4 @@ module.exports = {
     // Will be available on both server and client
     apiUrl: 'http://localhost:3001',
   },
-};
+});

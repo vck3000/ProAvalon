@@ -1,127 +1,146 @@
+import React from 'react';
 import Head from 'next/head';
-import Link from 'next/link';
-import fetch from 'isomorphic-unfetch';
 // import { NextPage } from 'next';
-import getConfig from 'next/config';
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Button from 'react-bootstrap/Button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faLock } from '@fortawesome/free-solid-svg-icons';
+
 import Nav from '../components/nav';
-import LoginForm from '../components/LoginForm';
-
-const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
-const apiUrl = serverRuntimeConfig.apiUrl || publicRuntimeConfig.apiUrl;
-
-// From client side, we need to access through outside the docker network.
-// I.e. through our host computer
-const testServerConnection = async (): Promise<void> => {
-  const res = await fetch(apiUrl);
-  const text = await res.text();
-  // eslint-disable-next-line no-alert
-  alert(text);
-};
 
 const Home = (): React.ReactElement => (
   <div>
     <Head>
       <title>Home</title>
       <link rel="icon" href="/favicon.ico" />
+      <link
+        rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+        crossOrigin="anonymous"
+      />
+      <link
+        href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+        rel="stylesheet"
+      />
     </Head>
 
-    <Nav />
+    <div>
+      <img src="/Starsinthesky.jpg" className="background" alt="background" />
+      <Nav />
 
-    <div className="hero">
-      <h1 className="title">Welcome to Next.js! Test</h1>
-      <p className="description">
-        To get started, edit <code>pages/index.js</code> and save to reload.
-      </p>
-
-      <button onClick={testServerConnection} type="button">
-        Test docker server connection
-      </button>
-
-      <div className="row">
-        <a href="https://nextjs.org/docs" className="card">
-          <h3>Documentation &rarr;</h3>
-          <p>Learn more about Next.js in the documentation.</p>
-        </a>
-        <a href="https://nextjs.org/learn" className="card">
-          <h3>Next.js Learn &rarr;</h3>
-          <p>Learn about Next.js by following an interactive tutorial!</p>
-        </a>
-        <a
-          href="https://github.com/zeit/next.js/tree/master/examples"
-          className="card"
+      <div className="center_div">
+        <img src="/proavalon.jpg" alt="proavalon" className="logo" />
+        <div
+          style={{
+            fontWeight: 1000,
+            fontSize: '200%',
+            marginTop: '5px',
+          }}
         >
-          <h3>Examples &rarr;</h3>
-          <p>Find other example boilerplates on the Next.js GitHub.</p>
-        </a>
-        <Link href="/testserver">
-          <a className="card">
-            <h3>Test server docker connection</h3>
-          </a>
-        </Link>
-      </div>
+          A GAME OF DECEPTION
+        </div>
+        <div
+          style={{
+            transform: 'translate(0%, -35%)',
+          }}
+        >
+          CAN YOU OUTWIT YOUR OPPONENTS?
+        </div>
+        <div
+          style={{
+            textAlign: 'justify',
+            textJustify: 'inter-word',
+            textAlignLast: 'center',
+            marginBottom: '25px',
+          }}
+        >
+          This is a free online version of the popular game The Resistance
+          (designed by Don Eskridge), wherein a small band of revolutionaries
+          must use logic and deduction in order to ferret out the spies who have
+          infiltrated their ranks and are sabotaging the cell&apos;s presumably
+          heroic acts of rebellion against government tyranny.
+        </div>
+        <div className="form_wrapper">
+          <Form>
+            <Form.Group controlId="formUsername">
+              <InputGroup>
+                <InputGroup.Prepend>
+                  <InputGroup.Text>
+                    <FontAwesomeIcon icon={faUser} />
+                  </InputGroup.Text>
+                </InputGroup.Prepend>
+                <Form.Control type="text" placeholder="Username" required />
+              </InputGroup>
+            </Form.Group>
 
-      <LoginForm
-        shouldRemember
-        onUsernameChange={(): void => {
-          // Empty
-        }}
-        onPasswordChange={(): void => {
-          // Empty
-        }}
-        onRememberChange={(): void => {
-          // Empty
-        }}
-        onSubmit={(): void => {
-          // Empty
-        }}
-      />
+            <Form.Group controlId="formPassword">
+              <InputGroup>
+                <InputGroup.Prepend>
+                  <InputGroup.Text>
+                    <FontAwesomeIcon icon={faLock} />
+                  </InputGroup.Text>
+                </InputGroup.Prepend>
+                <Form.Control type="password" placeholder="Password" required />
+              </InputGroup>
+            </Form.Group>
+
+            <Form.Group controlId="formRememberMe">
+              <Form.Check type="checkbox" label="Remember me" />
+            </Form.Group>
+
+            <Button variant="primary" type="submit">
+              Submit
+            </Button>
+          </Form>
+        </div>
+      </div>
     </div>
 
     <style jsx>
       {`
-        .hero {
+        .background {
+          pointer-events: none;
+          position: absolute;
           width: 100%;
-          color: #333;
+          height: 100%;
+          z-index: -1;
         }
-        .title {
-          margin: 0;
-          width: 100%;
-          padding-top: 80px;
-          line-height: 1.15;
-          font-size: 48px;
+
+        .logo {
+          max-width: 275px;
         }
-        .title,
-        .description {
+
+        .center_div {
+          color: white;
+          max-width: 500px;
+          position: relative;
+          top: 42%;
+          left: 50%;
+          transform: translate(-50%, -50%);
           text-align: center;
         }
-        .row {
-          max-width: 880px;
-          margin: 80px auto 40px;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-around;
+
+        .form_wrapper {
+          max-width: 300px;
+          margin: 0 auto;
         }
-        .card {
-          padding: 18px 18px 24px;
-          width: 220px;
-          text-align: left;
-          text-decoration: none;
-          color: #434343;
-          border: 1px solid #9b9b9b;
+      `}
+    </style>
+
+    <style global jsx>
+      {`
+        html,
+        body,
+        body > div:first-child,
+        div#__next,
+        div#__next > div,
+        div#__next > div > div {
+          height: 100%;
         }
-        .card:hover {
-          border-color: #067df7;
-        }
-        .card h3 {
-          margin: 0;
-          color: #067df7;
-          font-size: 18px;
-        }
-        .card p {
-          margin: 0;
-          padding: 12px 0 0;
-          font-size: 13px;
-          color: #333;
+        body {
+          margin: 0px;
         }
       `}
     </style>
