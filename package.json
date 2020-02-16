@@ -1,6 +1,12 @@
 {
   "name": "root",
   "private": true,
+  "scripts": {
+    "bootstrap": "lerna bootstrap --hoist",
+    "build": "npm --prefix packages/frontend run build && npm --prefix packages/backend run build",
+    "lint": "npm --prefix packages/frontend run lint && npm --prefix packages/backend run lint",
+    "test": "npm --prefix packages/frontend test && npm --prefix packages/backend test"
+  },
   "devDependencies": {
     "husky": "^4.2.3",
     "lerna": "^3.20.2"
