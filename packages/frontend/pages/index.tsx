@@ -3,13 +3,17 @@ import Head from 'next/head';
 import Link from 'next/link';
 import fetch from 'isomorphic-unfetch';
 // import { NextPage } from 'next';
+import getConfig from 'next/config';
 import Nav from '../components/nav';
 import LoginForm from '../components/LoginForm';
+
+const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
+const apiUrl = serverRuntimeConfig.apiUrl || publicRuntimeConfig.apiUrl;
 
 // From client side, we need to access through outside the docker network.
 // I.e. through our host computer
 const testServerConnection = async (): Promise<void> => {
-  const res = await fetch('http://localhost:3001/');
+  const res = await fetch(apiUrl);
   const text = await res.text();
   // eslint-disable-next-line no-alert
   alert(text);
