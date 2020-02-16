@@ -1,4 +1,3 @@
-import React from 'react';
 import Head from 'next/head';
 import fetch from 'isomorphic-unfetch';
 import { NextPage } from 'next';

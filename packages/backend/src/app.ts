@@ -5,10 +5,12 @@ const app = express();
 const port = 3001;
 app.use(cors());
 
-app.set('json spaces', 40);
-
-app.get('/', (req, res) => {
-  // console.log('Hello');
+// _req underscore so that we tell the linter that we
+// intentionally aren't going to use it. Can also do
+// `{}` instead of `_req`
+app.get('/', (_req, res) => {
+  // eslint-disable-next-line no-console
+  console.log('Hello');
   res.send('Hello World!');
 });
 
