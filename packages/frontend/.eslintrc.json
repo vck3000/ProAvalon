@@ -4,6 +4,7 @@
     "es6": true
   },
   "extends": [
+    "eslint:recommended",
     "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:jest/recommended",
@@ -34,8 +35,8 @@
   "rules": {
     "react/jsx-one-expression-per-line": "off",
     "jsx-a11y/anchor-is-valid": "off", // <a> tags sometimes have their href attr set in <Link> from NextJS.
+    // Turn off this rule for ts and tsx files:
     "react/jsx-filename-extension": [
-      // Turn off this rule for ts and tsx files
       1,
       { "extensions": [".js", ".jsx", ".ts", ".tsx"] }
     ],
@@ -49,6 +50,8 @@
         "ts": "never",
         "tsx": "never"
       }
-    ]
+    ],
+    // Next.JS Doesn't require the import React statement at the top of its pages
+    "react/react-in-jsx-scope": "off"
   }
 }
