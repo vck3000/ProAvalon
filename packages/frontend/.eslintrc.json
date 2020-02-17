@@ -8,8 +8,8 @@
     "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:jest/recommended",
-    "prettier",
-    "airbnb"
+    "airbnb",
+    "prettier"
   ],
   "globals": {
     "Atomics": "readonly",
