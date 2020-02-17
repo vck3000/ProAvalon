@@ -28,6 +28,8 @@ const Nav = (): ReactElement => (
       {`
         nav {
           text-align: center;
+          width: 100%;
+          position: fixed;
         }
         ul {
           display: flex;
