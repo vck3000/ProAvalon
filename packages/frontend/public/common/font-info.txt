@@ -1,0 +1,8 @@
+
+
+
+Text font:
+https://fonts.google.com/specimen/Montserrat
+
+Nav bar Serif font:
+https://fonts.google.com/specimen/Alike+Angular
