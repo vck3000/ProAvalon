@@ -17,7 +17,7 @@ const Home = (): React.ReactElement => (
 
     <div>
       <img
-        src="/index/star-background.png"
+        src="/index/star-background-min.png"
         alt="proavalon"
         className="background_img_overlay"
       />
@@ -37,7 +37,7 @@ const Home = (): React.ReactElement => (
         </div>
         <div className="form_wrapper">
           <img
-            src="/index/login-glow.png"
+            src="/index/login-glow-min.png"
             className="login_glow"
             alt="login_glow"
           />
