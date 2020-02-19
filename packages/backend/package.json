@@ -2,14 +2,14 @@
   "name": "proavalon_backend",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/app.js",
+  "main": "build/app.js",
   "author": "",
   "license": "ISC",
   "scripts": {
     "precommit": "npm run build && lint-staged",
     "build": "tsc",
-    "start": "nodemon dist/app.js",
-    "dev": "nodemon",
+    "start": "nodemon build/app.js",
+    "dev": "ts-node-dev ./src/app.ts",
     "lint": "eslint './**/*.{js,jsx,ts,tsx}' --max-warnings 0",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watchAll"
@@ -45,7 +45,7 @@
     "jest": "^25.1.0",
     "lint-staged": "^10.0.7",
     "prettier": "1.19.1",
-    "ts-node": "^8.6.2",
+    "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "^3.7.5"
   }
 }

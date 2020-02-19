@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import func from './asdf';
 
 const app = express();
 const port = 3001;
@@ -10,8 +11,9 @@ app.use(cors());
 // `{}` instead of `_req`
 app.get('/', (_req, res) => {
   // eslint-disable-next-line no-console
-  console.log('Hello');
-  res.send('Hello World!');
+  console.log('Hello123123');
+  func();
+  res.send('Hello World!12345 asdf');
 });
 
 app.listen(port);

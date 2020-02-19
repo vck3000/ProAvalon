@@ -1,0 +1,29 @@
+# Build stage
+FROM node:13 AS build
+
+ARG SERVICE
+ENV SERVICE "$SERVICE"
+
+RUN echo "Building PROD env for ${SERVICE}."
+
+WORKDIR /usr/src/app
+
+# Copy over the files
+COPY package*.json ./
+COPY lerna.json ./
+COPY packages/${SERVICE} ./packages/${SERVICE}
+
+# Install dependencies
+RUN npm ci --ignore-scripts --no-optional
+RUN npx lerna bootstrap --ignore-scripts -- --no-optional
+
+# Build and prune away the devDependencies
+RUN cd packages/${SERVICE} && npm run build && npm prune --production
+
+# Production stage
+FROM node:13-alpine
+WORKDIR /usr/src/app
+ENV NODE_ENV="production"
+
+COPY --from=build /usr/src/app/packages/${SERVICE} ./packages/${SERVICE}
+CMD [ "npm" , "--prefix", "packages/${SERVICE}", "run", "start" ]

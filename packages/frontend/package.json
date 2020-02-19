@@ -6,7 +6,7 @@
     "precommit": "npm run build && lint-staged",
     "dev": "next dev",
     "build": "next build",
-    "start": "next start -p $PORT",
+    "start": "next start",
     "lint": "eslint './**/*.{js,jsx,ts,tsx}' --max-warnings 0",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watchAll"
