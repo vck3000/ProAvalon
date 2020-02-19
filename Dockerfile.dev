@@ -1,0 +1,20 @@
+FROM node:13
+
+ARG SERVICE
+ENV SERVICE="$SERVICE"
+
+RUN echo "Building DEV env for ${SERVICE}."
+
+# Setting working directory. All the path will be relative to WORKDIR
+WORKDIR /usr/src/app
+
+# Copy over required files
+COPY package*.json ./
+COPY packages/${SERVICE} ./packages/${SERVICE}
+COPY lerna.json .
+
+# Install packages
+RUN npx lerna bootstrap
+
+# Dev mode
+CMD [ "npm" , "--prefix", "packages/${SERVICE}", "run", "dev" ]
