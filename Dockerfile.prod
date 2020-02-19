@@ -1,6 +1,8 @@
 # Build stage
 FROM node:13 AS build
 
+ENV NODE_ENV="development"
+
 ARG SERVICE
 ENV SERVICE "$SERVICE"
 

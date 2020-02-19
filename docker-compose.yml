@@ -3,7 +3,7 @@ services:
   backend:
     container_name: backend
     ports:
-      - 3001:3001
+      - ${BACKEND_PORT}:3001
     build:
       context: .
       dockerfile: Dockerfile.${ENV}
@@ -17,7 +17,7 @@ services:
   frontend:
     container_name: frontend
     ports:
-      - 3000:3000
+      - ${FRONTEND_PORT}:3000
     build:
       context: .
       dockerfile: Dockerfile.${ENV}
