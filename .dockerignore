@@ -1,0 +1,6 @@
+*
+!packages/backend/*
+!packages/frontend/*
+!./**/package-lock.json
+!./**/package.json
+!lerna.json

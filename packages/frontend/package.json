@@ -1,0 +1,61 @@
+{
+  "name": "proavalon_frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "precommit": "npm run build && lint-staged",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint './**/*.{js,jsx,ts,tsx}' --max-warnings 0",
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watchAll"
+  },
+  "lint-staged": {
+    "*.json": [
+      "prettier --write"
+    ],
+    "./**/*.{js,jsx,ts,tsx,css,scss}": [
+      "prettier --write",
+      "npm run lint",
+      "npm run test"
+    ]
+  },
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.1.1",
+    "@testing-library/react": "^9.4.0",
+    "@types/jest": "^25.1.2",
+    "@zeit/next-css": "^1.0.1",
+    "isomorphic-unfetch": "^3.0.0",
+    "jest": "^25.1.0",
+    "next": "9.2.1",
+    "react": "16.12.0",
+    "react-dom": "16.12.0",
+    "semantic-ui-react": "^0.88.2",
+    "ts-jest": "^25.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^13.7.0",
+    "@types/react": "^16.9.19",
+    "@types/react-dom": "^16.9.5",
+    "@typescript-eslint/eslint-plugin": "^2.19.0",
+    "@typescript-eslint/parser": "^2.19.0",
+    "babel-eslint": "^10.0.3",
+    "css-loader": "^3.4.2",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-loader": "^3.0.3",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-jest": "^23.7.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.18.3",
+    "eslint-plugin-react-hooks": "^1.7.0",
+    "file-loader": "^5.0.2",
+    "lint-staged": "^10.0.7",
+    "prettier": "^1.19.1",
+    "typescript": "^3.7.5",
+    "url-loader": "^3.0.0"
+  }
+}
