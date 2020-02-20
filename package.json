@@ -7,15 +7,13 @@
     "lint": "npm --prefix packages/frontend run lint && npm --prefix packages/backend run lint",
     "test": "npm --prefix packages/frontend test && npm --prefix packages/backend test"
   },
-  "devDependencies": {
-    "lerna": "^3.20.2"
-  },
   "husky": {
     "hooks": {
       "pre-commit": "lerna run --concurrency 1 --stream precommit"
     }
   },
-  "dependencies": {
-    "husky": "^4.2.3"
+  "devDependencies": {
+    "husky": "^4.2.3",
+    "lerna": "^3.20.2"
   }
 }
