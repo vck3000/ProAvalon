@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import { Button, Form } from 'semantic-ui-react';
+import { GOLD, GOLD_HOVER } from '../components/colours';
 
 import Nav from '../components/nav';
 
@@ -15,14 +16,14 @@ const Home = (): React.ReactElement => (
       />
     </Head>
 
+    <Nav />
+
     <div>
       <img
         src="/index/star-background-min.png"
         alt="proavalon"
         className="background_img_overlay"
       />
-
-      <Nav />
 
       <div className="center_div">
         <img src="/common/logo.png" alt="logo" className="logo" />
@@ -124,7 +125,7 @@ const Home = (): React.ReactElement => (
         // We need the !important tags to override semantic
         // global is used to pass the styles down to children classes
         .form_wrapper :global(.login) {
-          background: #a37d18 none !important;
+          background: ${GOLD} none !important;
           width: 100%;
           color: white;
         }
@@ -134,7 +135,7 @@ const Home = (): React.ReactElement => (
         }
 
         .form_wrapper :global(.login:hover) {
-          background: #8a6d20 none !important;
+          background: ${GOLD_HOVER} none !important;
         }
 
         .form_wrapper .signup {
@@ -143,13 +144,13 @@ const Home = (): React.ReactElement => (
 
         .form_wrapper .signup a {
           transition: color 0.1s ease;
-          color: #a37d18;
+          color: ${GOLD};
           font-family: Montserrat-Bold;
           text-decoration: underline;
         }
 
         .form_wrapper .signup a:hover {
-          color: #8a6d20;
+          color: ${GOLD_HOVER};
         }
 
         .deception {
