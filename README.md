@@ -12,6 +12,7 @@ These instructions will get you a copy of the project up and running on your loc
 - [Git](https://git-scm.com/)
 - [Docker](https://docs.docker.com/) and [Docker Compose](https://docs.docker.com/compose/)
   - These are available together as Docker Desktop for [Mac](https://docs.docker.com/docker-for-mac/install/) and [Windows](https://docs.docker.com/docker-for-windows/install/)
+  - Linux Docker comes with Docker Compose!
 
 Here are some other useful resources:
 
@@ -43,9 +44,10 @@ If you do not run Windows Pro or Enterprise, you will not be able to install Doc
 > cd path/to/parent/folder
 > git clone https://github.com/vck3000/ProAvalon.git
 > cd ProAvalon
+> git checkout newPA
 ```
 
-1. Install node modules. Local installation of the packages is required for intellisense.
+2. Install node modules. Local installation of the packages is required for intellisense.
 
 ```
 > npm install # this will install lerna in the root directory
