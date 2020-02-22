@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "bootstrap": "lerna bootstrap --hoist",
+    "bootstrap": "lerna bootstrap",
     "build": "npm --prefix packages/frontend run build && npm --prefix packages/backend run build",
     "lint": "npm --prefix packages/frontend run lint && npm --prefix packages/backend run lint",
     "test": "npm --prefix packages/frontend test && npm --prefix packages/backend test"
