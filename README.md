@@ -50,8 +50,9 @@ If you do not run Windows Pro or Enterprise, you will not be able to install Doc
 2. Install node modules. Local installation of the packages is required for intellisense.
 
 ```
-> npm install # this will install lerna in the root directory
-> npm run bootstrap # this will install all of the required dependencies
+> npm install # This will install lerna and the pre-commit hooks.
+> npm install -g lerna # This will install lerna globally
+> npm run bootstrap # This will install all of the required dependencies in each package
 ```
 
 3. Set up environment variables. Copy `.env.example` and rename it to `.env`.
