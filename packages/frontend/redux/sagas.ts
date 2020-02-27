@@ -1,14 +1,6 @@
 import { SagaIterator } from 'redux-saga';
-import { put, all, call } from 'redux-saga/effects';
-
-import { changeTheme } from './actions';
-
-function* changeThemeSaga(): SagaIterator {
-  yield put(changeTheme())
-}
+import { all } from 'redux-saga/effects';
 
 export default function* rootSaga(): SagaIterator {
-  yield all([
-    call(changeThemeSaga)
-  ])
+  yield all([])
 }
