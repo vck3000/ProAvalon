@@ -1,10 +1,21 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { AppProps } from 'next/app';
+import { Store } from 'redux'
 import { ReactElement } from 'react';
+import { Provider } from 'react-redux';
+import withRedux from 'next-redux-wrapper';
+import withReduxSaga from 'next-redux-saga';
+import createStore from "../redux/store";
 
-const MyApp = ({ Component, pageProps }: AppProps): ReactElement => (
+interface Props extends AppProps {
+  store: Store;
+}
+
+const MyApp = ({ Component, pageProps, store }: Props): ReactElement => (
   <>
-    <Component {...pageProps} />
+    <Provider store={store}>
+      <Component {...pageProps} />
+    </Provider>
     <style global jsx>
       {`
         @font-face {
@@ -37,4 +48,4 @@ const MyApp = ({ Component, pageProps }: AppProps): ReactElement => (
   </>
 );
 
-export default MyApp;
+export default withRedux(createStore)(withReduxSaga(MyApp));
