@@ -1,6 +1,8 @@
 import React, { ReactElement } from 'react';
 import Link from 'next/link';
-import { GOLD } from './colours';
+import { COMMON_COLORS } from './colors';
+
+const { GOLD } = COMMON_COLORS;
 
 const Nav = (): ReactElement => (
   <nav>
