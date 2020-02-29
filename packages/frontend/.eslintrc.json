@@ -52,6 +52,8 @@
       }
     ],
     // Next.JS Doesn't require the import React statement at the top of its pages
-    "react/react-in-jsx-scope": "off"
+    "react/react-in-jsx-scope": "off",
+    // Avoid conflict with Prettier
+    "react/jsx-curly-newline": "off"
   }
 }

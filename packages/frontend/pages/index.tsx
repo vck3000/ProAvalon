@@ -1,23 +1,26 @@
-import { connect } from "react-redux";
-import { Dispatch } from 'redux';
+import { ReactElement } from 'react';
+import { connect } from 'react-redux';
 import Head from 'next/head';
 import Link from 'next/link';
 import { Button, Form } from 'semantic-ui-react';
-import { GOLD, GOLD_HOVER, ColourTheme, DAY_COLOURS } from '../components/colours';
 
 import Nav from '../components/nav';
-import { changeTheme, CustomAction } from '../redux/actions';
-import { State, ReducersState } from '../redux/reducers';
+import { RootState } from '../store/index';
+import { ThemeOptions, UserOptionsState } from '../store/userOptions/types';
+import { setTheme } from '../store/userOptions/actions';
+import { COMMON_COLORS } from '../components/colors';
+
+const { GOLD, GOLD_HOVER } = COMMON_COLORS;
 
 interface Props {
-  theme?: ColourTheme;
-  handleThemeChange?: () => void;
+  theme: ThemeOptions;
+  setTheme: typeof setTheme;
 }
 
-const Home = (props: Props): React.ReactElement => {
-  const { handleThemeChange } = props;
-  let { theme } = props;
-  theme = theme || DAY_COLOURS;
+const Home = (props: Props): ReactElement => {
+  const { theme } = props;
+  // eslint-disable-next-line no-shadow
+  const { setTheme } = props;
 
   return (
     <div className="background">
@@ -46,9 +49,9 @@ const Home = (props: Props): React.ReactElement => {
           <div className="blurb">
             This is a free online version of the popular game The Resistance
             (designed by Don Eskridge), wherein a small band of revolutionaries
-            must use logic and deduction in order to ferret out the spies who have
-            infiltrated their ranks and are sabotaging the cell&apos;s presumably
-            heroic acts of rebellion against government tyranny.
+            must use logic and deduction in order to ferret out the spies who
+            have infiltrated their ranks and are sabotaging the cell&apos;s
+            presumably heroic acts of rebellion against government tyranny.
           </div>
           <div className="form_wrapper">
             <img
@@ -85,8 +88,15 @@ const Home = (props: Props): React.ReactElement => {
             </Form>
           </div>
           <div>
-            Change Theme
-            <input type="checkbox" id="toggle" className="checkbox" checked={theme.TYPE === 'night'} onChange={handleThemeChange} />
+            Dark theme
+            <input
+              type="checkbox"
+              checked={theme.name === 'night'}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
+                const themeName = e.target.checked ? 'night' : 'day';
+                setTheme(themeName);
+              }}
+            />
           </div>
         </div>
       </div>
@@ -94,7 +104,7 @@ const Home = (props: Props): React.ReactElement => {
       <style jsx>
         {`
           .background {
-            background-color: ${theme.BACKGROUND};
+            background-color: ${theme.colors.BACKGROUND};
             z-index: -1;
           }
 
@@ -113,7 +123,7 @@ const Home = (props: Props): React.ReactElement => {
           }
 
           .center_div {
-            color: ${theme.COLOUR};
+            color: ${theme.colors.COLOR};
             max-width: 490px;
             width: 90%;
             position: relative;
@@ -246,17 +256,17 @@ const Home = (props: Props): React.ReactElement => {
         `}
       </style>
     </div>
-)};
+  );
+};
 
-const mapStateToProps = (state: ReducersState): State => ({
-  theme: state.reducer.theme
+const mapStateToProps = (
+  state: RootState,
+): Pick<UserOptionsState, 'theme'> => ({
+  theme: state.userOptions.theme,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch): Props => ({
-  handleThemeChange: (): CustomAction => dispatch(changeTheme())
-});
+const mapDispatchToProps = {
+  setTheme,
+};
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Home);
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
