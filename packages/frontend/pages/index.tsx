@@ -1,6 +1,5 @@
 import { ReactElement } from 'react';
 import { connect } from 'react-redux';
-import Head from 'next/head';
 import Link from 'next/link';
 import { Button, Form } from 'semantic-ui-react';
 
@@ -24,14 +23,7 @@ const Home = (props: Props): ReactElement => {
 
   return (
     <div className="background">
-      <Head>
-        <title>Home</title>
-        <link rel="icon" href="/favicon.png" />
-        <link
-          rel="stylesheet"
-          href="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css"
-        />
-      </Head>
+      <title>Home</title>
 
       <Nav />
 
@@ -242,6 +234,7 @@ const Home = (props: Props): ReactElement => {
 
       <style global jsx>
         {`
+          // CSS to make NextJS Page one page tall
           html,
           body,
           body > div:first-child,
