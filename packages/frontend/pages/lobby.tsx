@@ -5,6 +5,8 @@ import { Grid } from 'semantic-ui-react';
 import { RootState } from '../store/index';
 import { ThemeOptions, UserOptionsState } from '../store/userOptions/types';
 
+import OnlinePlayers from '../components/lobby/onlinePlayers';
+
 interface Props {
   theme: ThemeOptions;
 }
@@ -21,12 +23,29 @@ const Lobby = (props: Props): ReactElement => {
           <Grid.Row>Taako</Grid.Row>
           <Grid.Row>Announcements</Grid.Row>
           <Grid.Row>Latest avatars</Grid.Row>
-          <Grid.Row>Online players</Grid.Row>
+          <Grid.Row>
+            <OnlinePlayers
+              players={[
+                { username: 'ProNub' },
+                { username: 'Skies' },
+                { username: 'Pam' },
+                { username: 'Pam2' },
+                { username: 'Pam3' },
+                { username: 'Pam4' },
+                { username: 'Pam5' },
+                { username: 'Pam6' },
+                { username: 'Pam7' },
+                { username: 'Pam8' },
+                { username: 'Pam9' },
+              ]}
+              maxHeight="350px"
+            />
+          </Grid.Row>
         </Grid.Column>
 
         <Grid.Column width={11}>
           <Grid.Row className="navbar">Navbar</Grid.Row>
-          <Grid padded>
+          <Grid>
             <Grid.Row>
               <Grid.Column width={10}>Chat</Grid.Column>
               <Grid.Column width={6}>Games menu</Grid.Column>
