@@ -1,11 +1,14 @@
 import { ReactElement } from 'react';
 import { connect } from 'react-redux';
 import { Grid } from 'semantic-ui-react';
+import Link from 'next/link';
 
 import { RootState } from '../store/index';
 import { ThemeOptions, UserOptionsState } from '../store/userOptions/types';
 
+import Nav from '../components/nav';
 import OnlinePlayers from '../components/lobby/onlinePlayers';
+import Taako from '../components/lobby/taako';
 
 interface Props {
   theme: ThemeOptions;
@@ -18,9 +21,17 @@ const Lobby = (props: Props): ReactElement => {
     <div className="container">
       <title>Lobby</title>
       <Grid divided="vertically" padded className="main_grid">
-        <Grid.Column width={5} stretched>
-          <Grid.Row>ProAvalon logo</Grid.Row>
-          <Grid.Row>Taako</Grid.Row>
+        <Grid.Column width={4}>
+          <Grid.Row className="logo_wrapper">
+            <Link href="/">
+              <a>
+                <img src="/common/logo.png" alt="logo" className="logo" />
+              </a>
+            </Link>
+          </Grid.Row>
+          <Grid.Row className="taako_wrapper">
+            <Taako />
+          </Grid.Row>
           <Grid.Row>Announcements</Grid.Row>
           <Grid.Row>Latest avatars</Grid.Row>
           <Grid.Row>
@@ -44,7 +55,9 @@ const Lobby = (props: Props): ReactElement => {
         </Grid.Column>
 
         <Grid.Column width={11}>
-          <Grid.Row className="navbar">Navbar</Grid.Row>
+          <Grid.Row className="navbar">
+            <Nav />
+          </Grid.Row>
           <Grid>
             <Grid.Row>
               <Grid.Column width={10}>Chat</Grid.Column>
@@ -57,8 +70,7 @@ const Lobby = (props: Props): ReactElement => {
       <style jsx>
         {`
           .container {
-            // Required to compensate for Grid -1rem margin-top.
-            padding-top: 1rem;
+            padding: 30px;
             background-color: ${theme.colors.BACKGROUND};
             z-index: -1;
             color: ${theme.colors.COLOR};
@@ -66,6 +78,15 @@ const Lobby = (props: Props): ReactElement => {
 
           .ui.grid {
             margin-top: 0;
+          }
+
+          .logo_wrapper {
+            margin: 0 auto;
+          }
+
+          .logo {
+            max-width: 200px;
+            width: 100%;
           }
         `}
       </style>
@@ -85,7 +106,7 @@ const Lobby = (props: Props): ReactElement => {
           }
 
           .main_grid {
-            height: 100vh;
+            height: 100%;
           }
         `}
       </style>

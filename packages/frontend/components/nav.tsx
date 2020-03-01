@@ -42,15 +42,14 @@ const Nav = (): ReactElement => (
       {`
         nav {
           width: 100%;
-          position: fixed;
         }
         nav > .nav_div {
           border-top: 2px solid ${GOLD};
           border-bottom: 2px solid ${GOLD};
           position: relative;
-          width: 80%;
-          padding: 6px 50px;
-          margin: 20px auto 0px auto;
+          width: 100%;
+          padding: 2px 50px;
+          margin: 0 auto;
         }
         nav > .nav_div > ul {
           padding: 0;
@@ -63,8 +62,8 @@ const Nav = (): ReactElement => (
           position: absolute;
           right: 0%;
           top: -2px;
-          height: 48px;
-          width: 48px;
+          height: 41px;
+          width: 41px;
           background-color: ${GOLD};
           clip-path: polygon(
             100% 0%,
@@ -80,8 +79,8 @@ const Nav = (): ReactElement => (
           position: absolute;
           left: 0%;
           top: -2px;
-          height: 48px;
-          width: 48px;
+          height: 41px;
+          width: 41px;
           background-color: ${GOLD};
           clip-path: polygon(
             100% 0%,
@@ -91,7 +90,7 @@ const Nav = (): ReactElement => (
             35% 50%,
             108% 0%
           );
-          scale: -1;
+          transform: rotate(180deg);
         }
         li {
           display: flex;

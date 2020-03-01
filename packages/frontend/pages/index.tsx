@@ -24,9 +24,11 @@ const Home = (props: Props): ReactElement => {
   return (
     <div className="background">
       <title>Home</title>
-
-      <Nav />
-
+      <div className="nav_wrapper">
+        <div className="nav_width_wrapper">
+          <Nav />
+        </div>
+      </div>
       <div>
         <img
           src="/index/star-background-min.png"
@@ -105,6 +107,17 @@ const Home = (props: Props): ReactElement => {
             position: absolute;
             width: 100%;
             height: 100%;
+          }
+
+          .nav_wrapper {
+            position: fixed;
+            width: 100%;
+            margin-top: 20px;
+          }
+
+          .nav_width_wrapper {
+            width: 80%;
+            margin: 0 auto;
           }
 
           .logo {
