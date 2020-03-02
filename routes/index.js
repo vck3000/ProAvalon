@@ -74,9 +74,9 @@ router.get('/community', (req, res) => {
 // Index route
 router.get('/', (req, res) => {
     // TODO Check if this is ok.
-    // if (req.session) {
-    //     req.session.destroy();
-    // }
+    if (req.session) {
+        req.session.destroy();
+    }
     res.render('index');
 });
 
