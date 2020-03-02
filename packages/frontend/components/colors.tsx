@@ -11,6 +11,8 @@ export interface IColorTheme {
   GOLD_HOVER: string;
   MISSION_BLUE: string;
   MISSION_RED: string;
+  ANNOUNCE_GOLD_BACKGROUND: string;
+  ANNOUNCE_GOLD_TEXT: string;
 }
 
 export const DAY_COLORS: IColorTheme = {
@@ -26,6 +28,8 @@ export const DAY_COLORS: IColorTheme = {
   GOLD_HOVER: '#8a6d20',
   MISSION_BLUE: '#3663a4',
   MISSION_RED: '#87504d',
+  ANNOUNCE_GOLD_BACKGROUND: '#a37d18',
+  ANNOUNCE_GOLD_TEXT: '#bab07a',
 };
 
 export const NIGHT_COLORS: IColorTheme = {
@@ -41,4 +45,6 @@ export const NIGHT_COLORS: IColorTheme = {
   GOLD_HOVER: '#8a6d20',
   MISSION_BLUE: '#3663a4',
   MISSION_RED: '#87504d',
+  ANNOUNCE_GOLD_BACKGROUND: '#a37d18',
+  ANNOUNCE_GOLD_TEXT: '#bab07a',
 };

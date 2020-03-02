@@ -65,12 +65,14 @@ const OnlinePlayers = (props: Props): ReactElement => {
             font-family: Montserrat-Bold;
             text-align: center;
             background: ${theme.colors.LIGHT};
+            border: none;
           }
 
           .wrapper :global(.row td) {
             font-family: Montserrat-Bold;
             color: ${theme.colors.TEXT};
             padding: 0.5em 1.2em;
+            border: none;
           }
 
           .wrapper :global(.row:nth-child(odd)) {
@@ -79,6 +81,14 @@ const OnlinePlayers = (props: Props): ReactElement => {
 
           .wrapper :global(.row:nth-child(even)) {
             background: ${theme.colors.LIGHT};
+          }
+
+          .wrapper :global(table) {
+            border: none;
+          }
+
+          .wrapper::-webkit-scrollbar {
+            display: none;
           }
         `}
       </style>
