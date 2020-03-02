@@ -1,12 +1,12 @@
 import {
   SET_THEME,
   SET_BUZZABLE,
-  UserOptionsState,
+  IUserOptionsState,
   UserOptionsActionTypes,
 } from './types';
 import { NIGHT_COLORS, DAY_COLORS } from '../../components/colors';
 
-const initialState: UserOptionsState = {
+const initialState: IUserOptionsState = {
   theme: {
     name: 'night',
     colors: NIGHT_COLORS,
@@ -15,9 +15,9 @@ const initialState: UserOptionsState = {
 };
 
 const reducer = (
-  state: UserOptionsState = initialState,
+  state: IUserOptionsState = initialState,
   action: UserOptionsActionTypes,
-): UserOptionsState => {
+): IUserOptionsState => {
   switch (action.type) {
     case SET_THEME:
       return {

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "precommit": "npm run build && lint-staged",
+    "precommit": "lint-staged && npm run build",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

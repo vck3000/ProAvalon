@@ -7,11 +7,11 @@ import withRedux from 'next-redux-wrapper';
 import withReduxSaga from 'next-redux-saga';
 import createStore from '../store';
 
-interface Props extends AppProps {
+interface IProps extends AppProps {
   store: Store;
 }
 
-const MyApp = ({ Component, pageProps, store }: Props): ReactElement => (
+const MyApp = ({ Component, pageProps, store }: IProps): ReactElement => (
   <>
     <Provider store={store}>
       <Component {...pageProps} />

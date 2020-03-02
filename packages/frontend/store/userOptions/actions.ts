@@ -1,20 +1,20 @@
 import {
   SET_THEME,
   ThemeOptions,
-  SetThemeAction,
+  ISetThemeAction,
   SET_BUZZABLE,
   BuzzableOptions,
-  SetBuzzableAction,
+  ISetBuzzableAction,
 } from './types';
 
-export const setTheme = (name: ThemeOptions['name']): SetThemeAction => {
+export const setTheme = (name: ThemeOptions['name']): ISetThemeAction => {
   return {
     type: SET_THEME,
     name,
   };
 };
 
-export const setBuzzable = (buzzable: BuzzableOptions): SetBuzzableAction => {
+export const setBuzzable = (buzzable: BuzzableOptions): ISetBuzzableAction => {
   return {
     type: SET_BUZZABLE,
     buzzable,

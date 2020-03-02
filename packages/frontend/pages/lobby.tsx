@@ -4,17 +4,19 @@ import { Grid } from 'semantic-ui-react';
 import Link from 'next/link';
 
 import { RootState } from '../store/index';
-import { ThemeOptions, UserOptionsState } from '../store/userOptions/types';
+import { ThemeOptions, IUserOptionsState } from '../store/userOptions/types';
 
 import Nav from '../components/nav';
 import OnlinePlayers from '../components/lobby/onlinePlayers';
 import Taako from '../components/lobby/taako';
+import Chat from '../components/lobby/chat';
+import GamesMenu from '../components/lobby/gamesMenu/gamesMenu';
 
-interface Props {
+interface IProps {
   theme: ThemeOptions;
 }
 
-const Lobby = (props: Props): ReactElement => {
+const Lobby = (props: IProps): ReactElement => {
   const { theme } = props;
 
   return (
@@ -54,16 +56,20 @@ const Lobby = (props: Props): ReactElement => {
           </Grid.Row>
         </Grid.Column>
 
-        <Grid.Column width={11}>
+        <Grid.Column width={12} className="center">
           <Grid.Row className="navbar">
             <Nav />
           </Grid.Row>
-          <Grid>
-            <Grid.Row>
-              <Grid.Column width={10}>Chat</Grid.Column>
-              <Grid.Column width={6}>Games menu</Grid.Column>
-            </Grid.Row>
-          </Grid>
+          <Grid.Row style={{ flex: 1 }}>
+            <Grid className="chat_games">
+              <Grid.Column width={11}>
+                <Chat />
+              </Grid.Column>
+              <Grid.Column width={5}>
+                <GamesMenu />
+              </Grid.Column>
+            </Grid>
+          </Grid.Row>
         </Grid.Column>
       </Grid>
 
@@ -73,15 +79,11 @@ const Lobby = (props: Props): ReactElement => {
             padding: 30px;
             background-color: ${theme.colors.BACKGROUND};
             z-index: -1;
-            color: ${theme.colors.COLOR};
+            color: ${theme.colors.TEXT};
           }
 
           .ui.grid {
             margin-top: 0;
-          }
-
-          .logo_wrapper {
-            margin: 0 auto;
           }
 
           .logo {
@@ -108,6 +110,23 @@ const Lobby = (props: Props): ReactElement => {
           .main_grid {
             height: 100%;
           }
+
+          .container .center {
+            display: flex !important;
+            flex-direction: column;
+          }
+
+          .container .logo_wrapper {
+            text-align: center;
+          }
+
+          .container .chat_games {
+            height: 100%;
+          }
+
+          .ui.grid {
+            margin: 0;
+          }
         `}
       </style>
     </div>
@@ -116,7 +135,7 @@ const Lobby = (props: Props): ReactElement => {
 
 const mapStateToProps = (
   state: RootState,
-): Pick<UserOptionsState, 'theme'> => ({
+): Pick<IUserOptionsState, 'theme'> => ({
   theme: state.userOptions.theme,
 });
 

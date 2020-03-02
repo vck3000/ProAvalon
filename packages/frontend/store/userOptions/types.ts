@@ -1,14 +1,14 @@
-import { ColorTheme } from '../../components/colors';
+import { IColorTheme } from '../../components/colors';
 
 // Determines the theme to display.
 export const SET_THEME = 'SET_THEME';
 // Theme options is an object with the name of the theme, and a bunch of colours
 export type ThemeOptions = {
   name: 'day' | 'night';
-  colors: ColorTheme;
+  colors: IColorTheme;
 };
 // This is the action that will set a new theme. We only require 'day' or 'night'
-export interface SetThemeAction {
+export interface ISetThemeAction {
   type: typeof SET_THEME;
   name: ThemeOptions['name'];
 }
@@ -17,16 +17,16 @@ export interface SetThemeAction {
 export const SET_BUZZABLE = 'SET_BUZZABLE';
 export type BuzzableOptions = boolean;
 
-export interface SetBuzzableAction {
+export interface ISetBuzzableAction {
   type: typeof SET_BUZZABLE;
   buzzable: BuzzableOptions;
 }
 
 // Add other user options here
 
-export interface UserOptionsState {
+export interface IUserOptionsState {
   theme: ThemeOptions;
   buzzable: BuzzableOptions;
 }
 
-export type UserOptionsActionTypes = SetThemeAction | SetBuzzableAction;
+export type UserOptionsActionTypes = ISetThemeAction | ISetBuzzableAction;

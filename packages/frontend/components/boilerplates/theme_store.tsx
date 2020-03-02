@@ -4,11 +4,11 @@ import { connect } from 'react-redux';
 import { RootState } from '../../store';
 import { ThemeOptions } from '../../store/userOptions/types';
 
-interface StateProps {
+interface IStateProps {
   theme: ThemeOptions;
 }
 
-type Props = StateProps;
+type Props = IStateProps;
 
 const SetThisUp = (props: Props): ReactElement => {
   const { theme } = props;
@@ -17,18 +17,18 @@ const SetThisUp = (props: Props): ReactElement => {
   theme;
 
   return (
-    <div className="">
+    <>
       <style jsx>
         {`
           .replace_me_with_something_useful {
           }
         `}
       </style>
-    </div>
+    </>
   );
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState): IStateProps => ({
   theme: state.userOptions.theme,
 });
 
