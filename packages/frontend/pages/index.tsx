@@ -5,18 +5,15 @@ import { Button, Form } from 'semantic-ui-react';
 
 import Nav from '../components/nav';
 import { RootState } from '../store/index';
-import { ThemeOptions, UserOptionsState } from '../store/userOptions/types';
+import { ThemeOptions, IUserOptionsState } from '../store/userOptions/types';
 import { setTheme } from '../store/userOptions/actions';
-import { COMMON_COLORS } from '../components/colors';
 
-const { GOLD, GOLD_HOVER } = COMMON_COLORS;
-
-interface Props {
+interface IProps {
   theme: ThemeOptions;
   setTheme: typeof setTheme;
 }
 
-const Home = (props: Props): ReactElement => {
+const Home = (props: IProps): ReactElement => {
   const { theme } = props;
   // eslint-disable-next-line no-shadow
   const { setTheme } = props;
@@ -128,7 +125,7 @@ const Home = (props: Props): ReactElement => {
           }
 
           .center_div {
-            color: ${theme.colors.COLOR};
+            color: ${theme.colors.TEXT};
             max-width: 490px;
             width: 90%;
             position: relative;
@@ -158,7 +155,7 @@ const Home = (props: Props): ReactElement => {
           // We need the !important tags to override semantic
           // global is used to pass the styles down to children classes
           .form_wrapper :global(.login) {
-            background: ${GOLD} none !important;
+            background: ${theme.colors.GOLD} none !important;
             width: 100%;
             color: white;
           }
@@ -168,7 +165,7 @@ const Home = (props: Props): ReactElement => {
           }
 
           .form_wrapper :global(.login:hover) {
-            background: ${GOLD_HOVER} none !important;
+            background: ${theme.colors.GOLD_HOVER} none !important;
           }
 
           .form_wrapper .signup {
@@ -177,13 +174,13 @@ const Home = (props: Props): ReactElement => {
 
           .form_wrapper .signup a {
             transition: color 0.1s ease;
-            color: ${GOLD};
+            color: ${theme.colors.GOLD};
             font-family: Montserrat-Bold;
             text-decoration: underline;
           }
 
           .form_wrapper .signup a:hover {
-            color: ${GOLD_HOVER};
+            color: ${theme.colors.GOLD_HOVER};
           }
 
           .deception {
@@ -267,7 +264,7 @@ const Home = (props: Props): ReactElement => {
 
 const mapStateToProps = (
   state: RootState,
-): Pick<UserOptionsState, 'theme'> => ({
+): Pick<IUserOptionsState, 'theme'> => ({
   theme: state.userOptions.theme,
 });
 

@@ -2,28 +2,25 @@ import React, { ReactElement } from 'react';
 import { Table } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
-import { COMMON_COLORS } from '../colors';
 import { RootState } from '../../store';
 import { ThemeOptions } from '../../store/userOptions/types';
 
-const { GOLD } = COMMON_COLORS;
-
 type Reward = 'badge' | 'winner';
 
-interface Player {
+interface IPlayer {
   username: string;
   extras?: [Reward];
 }
 
-interface OwnProps {
-  players: Player[];
+interface IOwnProps {
+  players: IPlayer[];
   maxHeight?: string;
 }
-interface StateProps {
+interface IStateProps {
   theme: ThemeOptions;
 }
 
-type Props = OwnProps & StateProps;
+type Props = IOwnProps & IStateProps;
 
 const OnlinePlayers = (props: Props): ReactElement => {
   const { players, theme, maxHeight } = props;
@@ -64,24 +61,24 @@ const OnlinePlayers = (props: Props): ReactElement => {
           }
 
           .wrapper :global(.online_players) {
-            color: ${GOLD};
+            color: ${theme.colors.GOLD};
             font-family: Montserrat-Bold;
             text-align: center;
-            background: #212121;
+            background: ${theme.colors.LIGHT};
           }
 
           .wrapper :global(.row td) {
             font-family: Montserrat-Bold;
-            color: ${theme.colors.COLOR};
+            color: ${theme.colors.TEXT};
             padding: 0.5em 1.2em;
           }
 
           .wrapper :global(.row:nth-child(odd)) {
-            background: #2f2e2a;
+            background: ${theme.colors.ALT_LIGHT};
           }
 
           .wrapper :global(.row:nth-child(even)) {
-            background: #212121;
+            background: ${theme.colors.LIGHT};
           }
         `}
       </style>
@@ -89,11 +86,11 @@ const OnlinePlayers = (props: Props): ReactElement => {
   );
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState): IStateProps => ({
   theme: state.userOptions.theme,
 });
 
 export default connect(
   mapStateToProps,
   null,
-)(OnlinePlayers as (props: OwnProps) => ReactElement);
+)(OnlinePlayers as (props: IOwnProps) => ReactElement);

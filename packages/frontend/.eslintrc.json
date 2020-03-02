@@ -54,6 +54,12 @@
     // Next.JS Doesn't require the import React statement at the top of its pages
     "react/react-in-jsx-scope": "off",
     // Avoid conflict with Prettier
-    "react/jsx-curly-newline": "off"
+    "react/jsx-curly-newline": "off",
+    "@typescript-eslint/interface-name-prefix": [
+      1,
+      {
+        "prefixWithI": "always"
+      }
+    ]
   }
 }

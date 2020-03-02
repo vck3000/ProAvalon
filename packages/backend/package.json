@@ -6,7 +6,7 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "precommit": "npm run build && lint-staged",
+    "precommit": "lint-staged && npm run build",
     "build": "tsc",
     "start": "nodemon build/app.js",
     "dev": "ts-node-dev ./src/app.ts",

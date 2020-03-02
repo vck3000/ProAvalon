@@ -7,11 +7,11 @@ import {
 } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 
-import LoginForm, { Props } from './LoginForm';
+import LoginForm, { IProps } from './LoginForm';
 // import LoginForm from './LoginForm';
 
-const renderLoginForm = (props: Partial<Props> = {}): RenderResult => {
-  const defaultProps: Props = {
+const renderLoginForm = (props: Partial<IProps> = {}): RenderResult => {
+  const defaultProps: IProps = {
     onPasswordChange() {
       // Empty
     },
