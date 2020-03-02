@@ -11,6 +11,7 @@ import OnlinePlayers from '../components/lobby/onlinePlayers';
 import Taako from '../components/lobby/taako';
 import Chat from '../components/lobby/chat';
 import GamesMenu from '../components/lobby/gamesMenu/gamesMenu';
+import Announcements from '../components/lobby/announcements';
 
 interface IProps {
   theme: ThemeOptions;
@@ -34,8 +35,15 @@ const Lobby = (props: IProps): ReactElement => {
           <Grid.Row className="taako_wrapper">
             <Taako />
           </Grid.Row>
-          <Grid.Row>Announcements</Grid.Row>
-          <Grid.Row>Latest avatars</Grid.Row>
+          <Grid.Row className="taako_wrapper">
+            <Announcements
+              messages={[
+                {id: '1', link: "/announcements/123", text: "New Patreon rewards!"},
+                {id: '2', link: "/announcements/123", text: "Morgana cannot lie anymore!"},
+                {id: '3', link: "/announcements/123", text: "Players will now be allowed to wear bows"},
+              ]}
+            />
+          </Grid.Row>
           <Grid.Row>
             <OnlinePlayers
               players={[
