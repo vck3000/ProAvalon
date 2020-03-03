@@ -10,13 +10,12 @@ import { setTheme } from '../store/userOptions/actions';
 
 interface IProps {
   theme: ThemeOptions;
-  setTheme: typeof setTheme;
+  dispatchSetTheme: typeof setTheme;
 }
 
 const Home = (props: IProps): ReactElement => {
   const { theme } = props;
-  // eslint-disable-next-line no-shadow
-  const { setTheme } = props;
+  const { dispatchSetTheme } = props;
 
   return (
     <div className="background">
@@ -85,7 +84,7 @@ const Home = (props: IProps): ReactElement => {
               checked={theme.name === 'night'}
               onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
                 const themeName = e.target.checked ? 'night' : 'day';
-                setTheme(themeName);
+                dispatchSetTheme(themeName);
               }}
             />
           </div>
@@ -269,7 +268,7 @@ const mapStateToProps = (
 });
 
 const mapDispatchToProps = {
-  setTheme,
+  dispatchSetTheme: setTheme,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

@@ -18,15 +18,14 @@ import Announcements from '../components/lobby/announcements';
 interface IProps {
   theme: ThemeOptions;
   windowProps: WindowProps;
-  getWindowWidth: typeof getWindowWidth;
+  dispatchGetWindowWidth: typeof getWindowWidth;
 }
 
 const Lobby = (props: IProps): ReactElement => {
-  // eslint-disable-next-line no-shadow
-  const { theme, windowProps, getWindowWidth } = props;
+  const { theme, windowProps, dispatchGetWindowWidth } = props;
   
   useEffect(() => {
-    const resizeWindow = (): IGetWidthAction => getWindowWidth(window.innerWidth);
+    const resizeWindow = (): IGetWidthAction => dispatchGetWindowWidth(window.innerWidth);
     window.addEventListener('resize', resizeWindow);
   }, [])
 
@@ -161,7 +160,7 @@ const mapStateToProps = (
 });
 
 const mapDispatchToProps = {
-  getWindowWidth,
+  dispatchGetWindowWidth: getWindowWidth,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Lobby);
