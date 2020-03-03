@@ -20,8 +20,6 @@ interface IProps {
 }
 
 const Lobby = ({ theme, mobileView }: IProps): ReactElement => {
-  console.log('mobileView', mobileView);
-
   return (
     <div className="container">
       <title>Lobby</title>
@@ -76,7 +74,7 @@ const Lobby = ({ theme, mobileView }: IProps): ReactElement => {
                 <Chat />
               </Grid.Column>
               <Grid.Column width={5}>
-                <GamesMenu />
+                {!mobileView && <GamesMenu /> /* show only in desktop view */}
               </Grid.Column>
             </Grid>
           </Grid.Row>

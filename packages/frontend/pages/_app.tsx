@@ -27,7 +27,6 @@ const MyApp = ({
   useEffect(() => {
     const resizeWindow = (): void => {
       if (window.innerWidth <= 400 && !mobileView || window.innerWidth > 400 && mobileView) {
-        console.log(window.innerWidth);
         dispatchSetMobileView(!mobileView);
       }
     };
