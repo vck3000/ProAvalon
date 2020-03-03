@@ -4,14 +4,15 @@ import { connect } from 'react-redux';
 import { RootState } from '../../store';
 import { ThemeOptions } from '../../store/userOptions/types';
 
-interface IMessage {
+interface IAnnouncement {
   id: string;
+  timestamp: Date;
   link: string;
   text: string;
 }
 
 interface IOwnProps {
-  messages: IMessage[];
+  announcements: IAnnouncement[];
 }
 
 interface IStateProps {
@@ -21,16 +22,16 @@ interface IStateProps {
 type Props = IOwnProps & IStateProps;
 
 const Announcements = (props: Props): ReactElement => {
-  const { theme, messages } = props;
+  const { theme, announcements } = props;
 
   return (
     <div className="wrapper">
       <div className="announcements_header">
-        Latest Announcements
+        LATEST ANNOUNCEMENTS
       </div>
       <div className="announcements">
-        {messages.map(({id, text}) => {
-          return <div key={id} className="message">{text}</div>
+        {announcements.map(({id, text, timestamp}) => {
+          return <div key={id} className="announcement">{`${timestamp.getUTCMonth() + 1}/${timestamp.getUTCDate()} ${text}`}</div>
         })}
       </div>
       <div className="announcements_bottom_padding" />
@@ -45,7 +46,6 @@ const Announcements = (props: Props): ReactElement => {
           .announcements_header {
             font-family: Montserrat-Bold;
             text-align: center;
-            text-transform: uppercase;
             color: ${theme.colors.ANNOUNCE_GOLD_TEXT};
             padding: 0.93em 0.78em;
             background: ${theme.colors.ANNOUNCE_GOLD_BACKGROUND};
@@ -63,7 +63,7 @@ const Announcements = (props: Props): ReactElement => {
             width: 100%;
           }
 
-          .message {
+          .announcement {
             padding: 0.5em;
           }
         `}

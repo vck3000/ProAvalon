@@ -1,26 +1,22 @@
 import {
-  GET_WIDTH,
-  IWindowPropsState,
-  IGetWidthAction
+  SET_MOBILE_VIEW,
+  ISystemState,
+  SystemActionTypes
 } from './types';
 
-const initialState: IWindowPropsState = {
-  windowProps: {
-    width: 1200
-  }
+const initialState: ISystemState = {
+  mobileView: false,
 };
 
 const reducer = (
-  state: IWindowPropsState = initialState,
-  action: IGetWidthAction,
-): IWindowPropsState => {
+  state: ISystemState = initialState,
+  action: SystemActionTypes,
+): ISystemState => {
   switch (action.type) {
-    case GET_WIDTH:
+    case SET_MOBILE_VIEW:
       return {
         ...state,
-        windowProps: {
-          width: action.width
-        }
+        mobileView: action.mobileView,
       };
 
     default:
