@@ -12,7 +12,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import userOptionsReducer from './userOptions/reducers';
 import { IUserOptionsState } from './userOptions/types';
 import windowPropsReducer from './system/reducers'
-import { IWindowPropsState } from './system/types';
+import { ISystemState } from './system/types';
 
 import rootSaga from './userOptions/sagas';
 
@@ -21,10 +21,10 @@ import rootSaga from './userOptions/sagas';
 // ^explanation for combineReducers<{}>
 const rootReducer = combineReducers<{
   userOptions: IUserOptionsState;
-  windowProps: IWindowPropsState;
+  system: ISystemState;
 }>({
   userOptions: userOptionsReducer,
-  windowProps: windowPropsReducer
+  system: windowPropsReducer
 });
 
 const bindMiddleware = (middleware: Middleware[]): StoreEnhancer => {

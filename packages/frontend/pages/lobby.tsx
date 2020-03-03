@@ -1,35 +1,26 @@
-import { ReactElement, useEffect } from 'react';
+import { ReactElement } from 'react';
 import { connect } from 'react-redux';
 import { Grid } from 'semantic-ui-react';
 import Link from 'next/link';
 
 import { RootState } from '../store/index';
 import { ThemeOptions, IUserOptionsState } from '../store/userOptions/types';
-import { WindowProps, IWindowPropsState, IGetWidthAction } from '../store/system/types';
-import getWindowWidth from '../store/system/actions';
+import { MobileView, ISystemState } from '../store/system/types';
 
 import Nav from '../components/nav';
 import OnlinePlayers from '../components/lobby/onlinePlayers';
 import Taako from '../components/lobby/taako';
-import Chat from '../components/lobby/chat';
+import Chat, { dateGenObj } from '../components/lobby/chat';
 import GamesMenu from '../components/lobby/gamesMenu/gamesMenu';
 import Announcements from '../components/lobby/announcements';
 
 interface IProps {
   theme: ThemeOptions;
-  windowProps: WindowProps;
-  dispatchGetWindowWidth: typeof getWindowWidth;
+  mobileView: MobileView;
 }
 
-const Lobby = (props: IProps): ReactElement => {
-  const { theme, windowProps, dispatchGetWindowWidth } = props;
-  
-  useEffect(() => {
-    const resizeWindow = (): IGetWidthAction => dispatchGetWindowWidth(window.innerWidth);
-    window.addEventListener('resize', resizeWindow);
-  }, [])
-
-  console.log('windowProps', windowProps);
+const Lobby = ({ theme, mobileView }: IProps): ReactElement => {
+  console.log('mobileView', mobileView);
 
   return (
     <div className="container">
@@ -46,12 +37,12 @@ const Lobby = (props: IProps): ReactElement => {
           <Grid.Row className="taako_wrapper">
             <Taako />
           </Grid.Row>
-          <Grid.Row className="taako_wrapper">
+          <Grid.Row>
             <Announcements
-              messages={[
-                {id: '1', link: "/announcements/123", text: "New Patreon rewards!"},
-                {id: '2', link: "/announcements/123", text: "Morgana cannot lie anymore!"},
-                {id: '3', link: "/announcements/123", text: "Players will now be allowed to wear bows"},
+              announcements={[
+                {id: '1', timestamp: new Date(dateGenObj.next().value as number), link: "/announcements/123", text: "New Patreon rewards!"},
+                {id: '2', timestamp: new Date(dateGenObj.next().value as number), link: "/announcements/123", text: "Morgana cannot lie anymore!"},
+                {id: '3', timestamp: new Date(dateGenObj.next().value as number), link: "/announcements/123", text: "Players will now be allowed to wear bows"},
               ]}
             />
           </Grid.Row>
@@ -154,13 +145,9 @@ const Lobby = (props: IProps): ReactElement => {
 
 const mapStateToProps = (
   state: RootState,
-): Pick<IUserOptionsState & IWindowPropsState, 'theme' | 'windowProps'> => ({
+): Pick<IUserOptionsState & ISystemState, 'theme' | 'mobileView'> => ({
   theme: state.userOptions.theme,
-  windowProps: state.windowProps.windowProps
+  mobileView: state.system.mobileView,
 });
 
-const mapDispatchToProps = {
-  dispatchGetWindowWidth: getWindowWidth,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Lobby);
+export default connect(mapStateToProps, null)(Lobby);

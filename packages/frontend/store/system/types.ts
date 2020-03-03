@@ -1,14 +1,14 @@
-export const GET_WIDTH = 'GET_WIDTH';
+export const SET_MOBILE_VIEW = 'SET_MOBILE_VIEW';
 
-export type WindowProps = {
-  width: number;
-};
+export type MobileView = boolean;
 
-export interface IGetWidthAction {
-  type: typeof GET_WIDTH;
-  width: WindowProps['width'];
-};
-
-export interface IWindowPropsState {
-  windowProps: WindowProps;
+export interface ISetMobileViewAction {
+  type: typeof SET_MOBILE_VIEW;
+  mobileView: MobileView;
 }
+
+export interface ISystemState {
+  mobileView: MobileView;
+}
+
+export type SystemActionTypes = ISetMobileViewAction;
