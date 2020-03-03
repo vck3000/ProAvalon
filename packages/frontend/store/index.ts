@@ -11,14 +11,20 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 
 import userOptionsReducer from './userOptions/reducers';
 import { IUserOptionsState } from './userOptions/types';
+import windowPropsReducer from './system/reducers'
+import { IWindowPropsState } from './system/types';
 
 import rootSaga from './userOptions/sagas';
 
 // Combine reducers and generate the type definition of the AppState
 // https://github.com/reduxjs/redux/pull/3679
 // ^explanation for combineReducers<{}>
-const rootReducer = combineReducers<{ userOptions: IUserOptionsState }>({
+const rootReducer = combineReducers<{
+  userOptions: IUserOptionsState;
+  windowProps: IWindowPropsState;
+}>({
   userOptions: userOptionsReducer,
+  windowProps: windowPropsReducer
 });
 
 const bindMiddleware = (middleware: Middleware[]): StoreEnhancer => {
