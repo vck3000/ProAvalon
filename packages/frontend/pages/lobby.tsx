@@ -28,7 +28,7 @@ const Lobby = (props: IProps): ReactElement => {
   useEffect(() => {
     const resizeWindow = (): IGetWidthAction => getWindowWidth(window.innerWidth);
     window.addEventListener('resize', resizeWindow);
-  })
+  }, [])
 
   console.log('windowProps', windowProps);
 
