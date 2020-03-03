@@ -1,10 +1,12 @@
-import { ReactElement } from 'react';
+import { ReactElement, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Grid } from 'semantic-ui-react';
 import Link from 'next/link';
 
 import { RootState } from '../store/index';
 import { ThemeOptions, IUserOptionsState } from '../store/userOptions/types';
+import { WindowProps, IWindowPropsState, IGetWidthAction } from '../store/system/types';
+import getWindowWidth from '../store/system/actions';
 
 import Nav from '../components/nav';
 import OnlinePlayers from '../components/lobby/onlinePlayers';
@@ -15,10 +17,20 @@ import Announcements from '../components/lobby/announcements';
 
 interface IProps {
   theme: ThemeOptions;
+  windowProps: WindowProps;
+  getWindowWidth: typeof getWindowWidth;
 }
 
 const Lobby = (props: IProps): ReactElement => {
-  const { theme } = props;
+  // eslint-disable-next-line no-shadow
+  const { theme, windowProps, getWindowWidth } = props;
+  
+  useEffect(() => {
+    const resizeWindow = (): IGetWidthAction => getWindowWidth(window.innerWidth);
+    window.addEventListener('resize', resizeWindow);
+  })
+
+  console.log('windowProps', windowProps);
 
   return (
     <div className="container">
@@ -143,8 +155,13 @@ const Lobby = (props: IProps): ReactElement => {
 
 const mapStateToProps = (
   state: RootState,
-): Pick<IUserOptionsState, 'theme'> => ({
+): Pick<IUserOptionsState & IWindowPropsState, 'theme' | 'windowProps'> => ({
   theme: state.userOptions.theme,
+  windowProps: state.windowProps.windowProps
 });
 
-export default connect(mapStateToProps, null)(Lobby);
+const mapDispatchToProps = {
+  getWindowWidth,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Lobby);
