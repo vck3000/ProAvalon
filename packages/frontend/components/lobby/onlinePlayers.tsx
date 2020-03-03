@@ -87,8 +87,27 @@ const OnlinePlayers = (props: Props): ReactElement => {
             border: none;
           }
 
-          .wrapper::-webkit-scrollbar {
-            display: none;
+          .wrapper :global(tbody) {
+            display: block;
+            overflow: auto;
+            height: 250px;
+          }
+
+          .wrapper :global(th, tr) {
+            display: block;
+            width: 100%;
+          }
+
+          .wrapper :global(tbody)::-webkit-scrollbar{
+            width: 0.5em;
+          }
+
+          .wrapper :global(tbody)::-webkit-scrollbar-track {
+            background-color: ${theme.colors.LIGHT};
+          }
+
+          .wrapper :global(tbody)::-webkit-scrollbar {
+            background-color: ${theme.colors.ALT_LIGHT};
           }
         `}
       </style>

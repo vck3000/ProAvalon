@@ -18,7 +18,7 @@ function* dateGenerator(): Generator {
   }
 }
 
-const dateGenObj = dateGenerator();
+export const dateGenObj = dateGenerator();
 
 const messages: IMessage[] = [
   {
@@ -308,6 +308,18 @@ const Chat = (props: Props): ReactElement => {
             margin: 0;
             padding-top: 5px;
             padding-left: 15px;
+          }
+
+          .chat_list::-webkit-scrollbar{
+            width: 0.5em;
+          }
+
+          .chat_list::-webkit-scrollbar-track {
+            background-color: ${theme.colors.LIGHT};
+          }
+
+          .chat_list::-webkit-scrollbar {
+            background-color: ${theme.colors.ALT_LIGHT};
           }
 
           .chat_list li {

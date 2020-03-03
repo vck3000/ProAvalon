@@ -1,14 +1,14 @@
 import {
-  WindowProps,
-  GET_WIDTH,
-  IGetWidthAction
+  SET_MOBILE_VIEW,
+  ISystemState,
+  ISetMobileViewAction
 } from './types';
 
-const getWindowWidth = (width: WindowProps['width']): IGetWidthAction => {
+const setMobileView = (mobileView: ISystemState['mobileView']): ISetMobileViewAction => {
   return {
-    type: GET_WIDTH,
-    width,
+    type: SET_MOBILE_VIEW,
+    mobileView,
   };
 };
 
-export default getWindowWidth;
+export default setMobileView;
