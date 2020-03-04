@@ -24,8 +24,9 @@ const MissionHistory = (props: Props): ReactElement => {
   return (
     <>
       <div className="wrapper">
-        {missionHistory.map((mission) => (
-          <div className={`circle ${mission}`} />
+        {missionHistory.map((mission, i) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <div key={i} className={`circle ${mission}`} />
         ))}
       </div>
       <style jsx>

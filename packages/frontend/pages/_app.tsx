@@ -21,12 +21,15 @@ const MyApp = ({
   pageProps,
   store,
   dispatchSetMobileView,
-  mobileView
+  mobileView,
 }: IProps): ReactElement => {
-  
   useEffect(() => {
+    const MOBILE_VIEW_CUTOFF = 600;
     const resizeWindow = (): void => {
-      if (window.innerWidth <= 400 && !mobileView || window.innerWidth > 400 && mobileView) {
+      if (
+        (window.innerWidth <= MOBILE_VIEW_CUTOFF && !mobileView) ||
+        (window.innerWidth > MOBILE_VIEW_CUTOFF && mobileView)
+      ) {
         dispatchSetMobileView(!mobileView);
       }
     };
@@ -70,11 +73,10 @@ const MyApp = ({
         `}
       </style>
     </>
-)};
+  );
+};
 
-const mapStateToProps = (
-  state: RootState,
-): ISystemState => ({
+const mapStateToProps = (state: RootState): ISystemState => ({
   mobileView: state.system.mobileView,
 });
 
@@ -82,6 +84,6 @@ const mapDispatchToProps = {
   dispatchSetMobileView: setMobileView,
 };
 
-export default withRedux(createStore)(withReduxSaga(
-  connect(mapStateToProps, mapDispatchToProps)(MyApp)
-));
+export default withRedux(createStore)(
+  withReduxSaga(connect(mapStateToProps, mapDispatchToProps)(MyApp)),
+);
