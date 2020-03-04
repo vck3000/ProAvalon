@@ -48,7 +48,7 @@ const GameMenu = (): ReactElement => {
     <>
       <div className="wrapper">
         {gameCardsData.map((gameCardData) => (
-          <GameCard data={gameCardData} />
+          <GameCard key={gameCardData.id} data={gameCardData} />
         ))}
       </div>
       <style jsx>
