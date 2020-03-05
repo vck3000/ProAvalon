@@ -7,6 +7,7 @@ import withRedux from 'next-redux-wrapper';
 import withReduxSaga from 'next-redux-saga';
 
 import createStore, { RootState } from '../store';
+import { IUserOptionsState, ThemeOptions } from '../store/userOptions/types';
 import { MobileView, ISystemState } from '../store/system/types';
 import setMobileView from '../store/system/actions';
 
@@ -14,6 +15,7 @@ interface IProps extends AppProps {
   store: Store;
   dispatchSetMobileView: typeof setMobileView;
   mobileView: MobileView;
+  theme: ThemeOptions;
 }
 
 const MyApp = ({
@@ -22,6 +24,7 @@ const MyApp = ({
   store,
   dispatchSetMobileView,
   mobileView,
+  theme,
 }: IProps): ReactElement => {
   useEffect(() => {
     const MOBILE_VIEW_CUTOFF = 600;
@@ -33,6 +36,7 @@ const MyApp = ({
         dispatchSetMobileView(!mobileView);
       }
     };
+    resizeWindow();
 
     window.addEventListener('resize', resizeWindow);
     return (): void => window.removeEventListener('resize', resizeWindow);
@@ -69,6 +73,8 @@ const MyApp = ({
           body {
             font-family: 'Montserrat-Regular', sans-serif;
             min-width: 200px;
+            background-color: ${theme.colors.BACKGROUND};
+            color: ${theme.colors.TEXT};
           }
         `}
       </style>
@@ -76,8 +82,11 @@ const MyApp = ({
   );
 };
 
-const mapStateToProps = (state: RootState): ISystemState => ({
+const mapStateToProps = (
+  state: RootState,
+): Pick<ISystemState & IUserOptionsState, 'mobileView' | 'theme'> => ({
   mobileView: state.system.mobileView,
+  theme: state.userOptions.theme,
 });
 
 const mapDispatchToProps = {

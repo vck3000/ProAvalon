@@ -94,7 +94,6 @@ const Home = (props: IProps): ReactElement => {
       <style jsx>
         {`
           .background {
-            background-color: ${theme.colors.BACKGROUND};
             z-index: -1;
           }
 
