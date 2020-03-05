@@ -123,6 +123,8 @@ const slides = [<LobbyInfo />, <Chat />, <GamesMenu />];
 
 const LobbyMobile = ({ theme }: Pick<IStateProps, 'theme'>): ReactElement => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const translate = activeIndex * 400; // change to window width
+  const transition = 0.5;
 
   return (
     <div className="carousel">
@@ -146,18 +148,17 @@ const LobbyMobile = ({ theme }: Pick<IStateProps, 'theme'>): ReactElement => {
       </div>
 
       <div className="slider">
-        {slides.map(
-          (slide, i): ReactElement => {
-            return (
-              <div
-                key={indicators[i]}
-                className={i === activeIndex ? 'slide active' : 'slide'}
-              >
-                {slide}
-              </div>
-            );
-          },
-        )}
+        <div className="slider-content">
+          {slides.map(
+            (slide, i): ReactElement => {
+              return (
+                <div key={indicators[i]} className="slide">
+                  {slide}
+                </div>
+              );
+            },
+          )}
+        </div>
       </div>
 
       <style jsx>
@@ -191,12 +192,25 @@ const LobbyMobile = ({ theme }: Pick<IStateProps, 'theme'>): ReactElement => {
           }
 
           .slider {
+            position: relative;
+            margin: 0 auto;
+            overflow: hidden;
             height: 100%;
+          }
+
+          .slider-content {
+            transform: translateX(-${translate}px);
+            transition: transform ease-out ${transition}s;
+            height: 100%;
+            display: flex;
           }
 
           .slide {
             height: 100%;
-            display: none;
+            min-width: 400px; // change to window width
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
           }
 
           .slide.active {
