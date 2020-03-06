@@ -2,11 +2,9 @@ export const SET_MOBILE_VIEW = 'SET_MOBILE_VIEW';
 export const SET_WINDOW_DIMENSIONS = 'SET_WINDOW_DIMENSIONS';
 
 export type MobileView = boolean;
-export type Width = number;
-export type Height = number;
 export type WindowDimensions = {
-  width: Width;
-  height: Height;
+  width: number;
+  height: number;
 };
 
 export interface ISetMobileViewAction {

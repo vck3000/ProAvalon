@@ -4,8 +4,7 @@ import {
   ISystemState,
   ISetMobileViewAction,
   ISetWindowDimensionsAction,
-  Width,
-  Height,
+  WindowDimensions,
 } from './types';
 
 export const setMobileView = (
@@ -18,8 +17,8 @@ export const setMobileView = (
 };
 
 export const setWindowDimensions = (
-  width: Width,
-  height: Height,
+  width: WindowDimensions['width'],
+  height: WindowDimensions['height'],
 ): ISetWindowDimensionsAction => {
   return {
     type: SET_WINDOW_DIMENSIONS,
