@@ -1,14 +1,28 @@
 import {
   SET_MOBILE_VIEW,
+  SET_WINDOW_DIMENSIONS,
   ISystemState,
-  ISetMobileViewAction
+  ISetMobileViewAction,
+  ISetWindowDimensionsAction,
+  Width,
+  Height,
 } from './types';
 
-const setMobileView = (mobileView: ISystemState['mobileView']): ISetMobileViewAction => {
+export const setMobileView = (
+  mobileView: ISystemState['mobileView'],
+): ISetMobileViewAction => {
   return {
     type: SET_MOBILE_VIEW,
     mobileView,
   };
 };
 
-export default setMobileView;
+export const setWindowDimensions = (
+  width: Width,
+  height: Height,
+): ISetWindowDimensionsAction => {
+  return {
+    type: SET_WINDOW_DIMENSIONS,
+    windowDimensions: { width, height },
+  };
+};

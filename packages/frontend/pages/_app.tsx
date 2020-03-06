@@ -9,11 +9,12 @@ import withReduxSaga from 'next-redux-saga';
 import createStore, { RootState } from '../store';
 import { IUserOptionsState, ThemeOptions } from '../store/userOptions/types';
 import { MobileView, ISystemState } from '../store/system/types';
-import setMobileView from '../store/system/actions';
+import { setMobileView, setWindowDimensions } from '../store/system/actions';
 
 interface IProps extends AppProps {
   store: Store;
   dispatchSetMobileView: typeof setMobileView;
+  dispatchSetWindowDimensions: typeof setWindowDimensions;
   mobileView: MobileView;
   theme: ThemeOptions;
 }
@@ -23,6 +24,7 @@ const MyApp = ({
   pageProps,
   store,
   dispatchSetMobileView,
+  dispatchSetWindowDimensions,
   mobileView,
   theme,
 }: IProps): ReactElement => {
@@ -35,6 +37,7 @@ const MyApp = ({
       ) {
         dispatchSetMobileView(!mobileView);
       }
+      dispatchSetWindowDimensions(window.innerWidth, window.innerHeight);
     };
     resizeWindow();
 
@@ -91,6 +94,7 @@ const mapStateToProps = (
 
 const mapDispatchToProps = {
   dispatchSetMobileView: setMobileView,
+  dispatchSetWindowDimensions: setWindowDimensions,
 };
 
 export default withRedux(createStore)(

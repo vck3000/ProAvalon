@@ -5,7 +5,11 @@ import Link from 'next/link';
 
 import { RootState } from '../store/index';
 import { ThemeOptions, IUserOptionsState } from '../store/userOptions/types';
-import { MobileView, ISystemState } from '../store/system/types';
+import {
+  MobileView,
+  ISystemState,
+  WindowDimensions,
+} from '../store/system/types';
 
 import Nav from '../components/nav';
 import OnlinePlayers from '../components/lobby/onlinePlayers';
@@ -17,17 +21,21 @@ import Announcements from '../components/lobby/announcements';
 interface IStateProps {
   theme: ThemeOptions;
   mobileView: MobileView;
+  windowDimensions: WindowDimensions;
 }
 
-const Lobby = ({ mobileView, theme }: IStateProps): ReactElement => (
+const Lobby = ({
+  mobileView,
+  theme,
+  windowDimensions,
+}: IStateProps): ReactElement => (
   <>
     <title>Lobby</title>
-    {mobileView ? <LobbyMobile theme={theme} /> : <LobbyDesktop />}
-    <style jsx>
-      {`
-        //dsds
-      `}
-    </style>
+    {mobileView ? (
+      <LobbyMobile theme={theme} windowDimensions={windowDimensions} />
+    ) : (
+      <LobbyDesktop />
+    )}
     <style global jsx>
       {`
         // CSS to make NextJS Page one page tall
@@ -121,9 +129,12 @@ const LobbyInfo = (): ReactElement => (
 const indicators = ['LOBBY', 'CHAT', 'GAMES'];
 const slides = [<LobbyInfo />, <Chat />, <GamesMenu />];
 
-const LobbyMobile = ({ theme }: Pick<IStateProps, 'theme'>): ReactElement => {
+const LobbyMobile = ({
+  theme,
+  windowDimensions,
+}: Pick<IStateProps, 'theme' | 'windowDimensions'>): ReactElement => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const translate = activeIndex * 400; // change to window width
+  const translate = activeIndex * windowDimensions.width;
   const transition = 0.5;
 
   return (
@@ -207,7 +218,7 @@ const LobbyMobile = ({ theme }: Pick<IStateProps, 'theme'>): ReactElement => {
 
           .slide {
             height: 100%;
-            min-width: 400px; // change to window width
+            min-width: ${windowDimensions.width}px;
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
@@ -319,9 +330,13 @@ const LobbyDesktop = (): ReactElement => (
 
 const mapStateToProps = (
   state: RootState,
-): Pick<IUserOptionsState & ISystemState, 'theme' | 'mobileView'> => ({
+): Pick<
+  IUserOptionsState & ISystemState,
+  'theme' | 'mobileView' | 'windowDimensions'
+> => ({
   theme: state.userOptions.theme,
   mobileView: state.system.mobileView,
+  windowDimensions: state.system.windowDimensions,
 });
 
 export default connect(mapStateToProps, null)(Lobby);
