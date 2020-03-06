@@ -1,11 +1,16 @@
 import {
   SET_MOBILE_VIEW,
   ISystemState,
-  SystemActionTypes
+  SystemActionTypes,
+  SET_WINDOW_DIMENSIONS,
 } from './types';
 
 const initialState: ISystemState = {
   mobileView: false,
+  windowDimensions: {
+    width: 0,
+    height: 0,
+  },
 };
 
 const reducer = (
@@ -18,7 +23,11 @@ const reducer = (
         ...state,
         mobileView: action.mobileView,
       };
-
+    case SET_WINDOW_DIMENSIONS:
+      return {
+        ...state,
+        windowDimensions: action.windowDimensions,
+      };
     default:
       return state;
   }
