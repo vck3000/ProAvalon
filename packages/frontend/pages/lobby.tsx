@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import { Grid } from 'semantic-ui-react';
 import Link from 'next/link';
@@ -134,8 +134,7 @@ const LobbyMobile = ({
   windowDimensions,
 }: Pick<IStateProps, 'theme' | 'windowDimensions'>): ReactElement => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const translate = activeIndex * windowDimensions.width;
-  const transition = 0.5;
+  const sliderRef = useRef(document.createElement('div'));
 
   return (
     <div className="carousel">
@@ -145,7 +144,12 @@ const LobbyMobile = ({
             <button
               key={indicators[i]}
               type="button"
-              onClick={(): void => setActiveIndex(i)}
+              onClick={(): void => {
+                sliderRef.current.scrollTo({
+                  left: sliderRef.current.scrollWidth * (i / 3),
+                  behavior: 'smooth',
+                });
+              }}
               className={
                 i === activeIndex
                   ? 'carousel__indicator active'
@@ -158,7 +162,16 @@ const LobbyMobile = ({
         })}
       </div>
 
-      <div className="slider">
+      <div
+        className="slider"
+        ref={sliderRef}
+        onScroll={(): void => {
+          const i = Math.round(
+            (sliderRef.current.scrollLeft * 3) / sliderRef.current.scrollWidth,
+          );
+          setActiveIndex(i);
+        }}
+      >
         <div className="slider-content">
           {slides.map(
             (slide, i): ReactElement => {
@@ -205,13 +218,16 @@ const LobbyMobile = ({
           .slider {
             position: relative;
             margin: 0 auto;
-            overflow: hidden;
             height: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-coordinate: 0 0;
+            scroll-snap-points-x: repeat(100%);
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
           }
 
           .slider-content {
-            transform: translateX(-${translate}px);
-            transition: transform ease-out ${transition}s;
             height: 100%;
             display: flex;
           }
@@ -222,6 +238,7 @@ const LobbyMobile = ({
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
+            scroll-snap-align: start;
           }
 
           .slide.active {
