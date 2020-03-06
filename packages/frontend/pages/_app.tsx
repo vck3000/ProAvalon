@@ -5,6 +5,7 @@ import { ReactElement, useEffect } from 'react';
 import { Provider, connect } from 'react-redux';
 import withRedux from 'next-redux-wrapper';
 import withReduxSaga from 'next-redux-saga';
+import { debounce } from 'lodash';
 
 import createStore, { RootState } from '../store';
 import { IUserOptionsState, ThemeOptions } from '../store/userOptions/types';
@@ -30,7 +31,7 @@ const MyApp = ({
 }: IProps): ReactElement => {
   useEffect(() => {
     const MOBILE_VIEW_CUTOFF = 600;
-    const resizeWindow = (): void => {
+    const resizeWindow = debounce((): void => {
       if (
         (window.innerWidth <= MOBILE_VIEW_CUTOFF && !mobileView) ||
         (window.innerWidth > MOBILE_VIEW_CUTOFF && mobileView)
@@ -38,7 +39,7 @@ const MyApp = ({
         dispatchSetMobileView(!mobileView);
       }
       dispatchSetWindowDimensions(window.innerWidth, window.innerHeight);
-    };
+    }, 400);
     resizeWindow();
 
     window.addEventListener('resize', resizeWindow);

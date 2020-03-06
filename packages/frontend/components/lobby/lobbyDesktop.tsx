@@ -18,7 +18,7 @@ const LobbyDesktop = (): ReactElement => (
             </a>
           </Link>
         </Grid.Row>
-        {LobbyLeftPanel}
+        <LobbyLeftPanel />
       </Grid.Column>
 
       <Grid.Column width={12} className="center">

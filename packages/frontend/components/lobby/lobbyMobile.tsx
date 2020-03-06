@@ -33,7 +33,7 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
               type="button"
               onClick={(): void => {
                 sliderRef.current.scrollTo({
-                  left: sliderRef.current.scrollWidth * (i / 3),
+                  left: sliderRef.current.scrollWidth * (i / slides.length),
                   behavior: 'smooth',
                 });
               }}
@@ -54,7 +54,8 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
         ref={sliderRef}
         onScroll={(): void => {
           const i = Math.round(
-            (sliderRef.current.scrollLeft * 3) / sliderRef.current.scrollWidth,
+            (sliderRef.current.scrollLeft / sliderRef.current.scrollWidth) *
+              slides.length,
           );
           setActiveIndex(i);
         }}
@@ -126,6 +127,7 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
             background-repeat: no-repeat;
             background-position: center;
             scroll-snap-align: start;
+            scroll-snap-stop: always;
           }
 
           .slide.active {
