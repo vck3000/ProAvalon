@@ -5,7 +5,8 @@ import { ReactElement, useEffect } from 'react';
 import { Provider, connect } from 'react-redux';
 import withRedux from 'next-redux-wrapper';
 import withReduxSaga from 'next-redux-saga';
-import { debounce } from 'lodash';
+
+import throttle from '../utils/throttle';
 
 import createStore, { RootState } from '../store';
 import { IUserOptionsState, ThemeOptions } from '../store/userOptions/types';
@@ -29,19 +30,23 @@ const MyApp = ({
   mobileView,
   theme,
 }: IProps): ReactElement => {
+  // Set up window event listener to set mobileView, width and height.
   useEffect(() => {
     const MOBILE_VIEW_CUTOFF = 600;
-    const resizeWindow = debounce((): void => {
+    const resizeWindow = throttle((): void => {
       if (
         (window.innerWidth <= MOBILE_VIEW_CUTOFF && !mobileView) ||
         (window.innerWidth > MOBILE_VIEW_CUTOFF && mobileView)
       ) {
         dispatchSetMobileView(!mobileView);
       }
+      // Always send out a width and height update.
       dispatchSetWindowDimensions(window.innerWidth, window.innerHeight);
-    }, 400);
+    }, 100);
+
     resizeWindow();
 
+    // Add event listener and remove when resize.
     window.addEventListener('resize', resizeWindow);
     return (): void => window.removeEventListener('resize', resizeWindow);
   }, [mobileView]);
