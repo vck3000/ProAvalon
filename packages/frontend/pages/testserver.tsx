@@ -3,7 +3,7 @@ import fetch from 'isomorphic-unfetch';
 import { NextPage } from 'next';
 import getConfig from 'next/config';
 
-import Nav from '../components/nav';
+import NavIndex from '../components/nav/navIndex';
 
 const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
 const apiUrl = serverRuntimeConfig.apiUrl || publicRuntimeConfig.apiUrl;
@@ -19,7 +19,7 @@ const TestServer: NextPage<Props> = ({ backendResponse }: Props) => (
       <link rel="icon" href="/favicon.ico" />
     </Head>
 
-    <Nav />
+    <NavIndex />
 
     {backendResponse}
   </div>

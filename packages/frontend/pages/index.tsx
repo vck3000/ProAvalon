@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import Link from 'next/link';
 import { Button, Form } from 'semantic-ui-react';
 
-import Nav from '../components/nav';
+import Nav from '../components/nav/navIndex';
 import { RootState } from '../store/index';
 import { ThemeOptions, IUserOptionsState } from '../store/userOptions/types';
 import { setTheme } from '../store/userOptions/actions';
@@ -20,12 +20,8 @@ const Home = (props: IProps): ReactElement => {
   return (
     <div className="background">
       <title>Home</title>
-      <div className="nav_wrapper">
-        <div className="nav_width_wrapper">
-          <Nav />
-        </div>
-      </div>
-      <div>
+      <Nav />
+      <div className="content_wrapper">
         <img
           src="/index/star-background-min.png"
           alt="proavalon"
@@ -95,6 +91,7 @@ const Home = (props: IProps): ReactElement => {
         {`
           .background {
             z-index: -1;
+            height: 100%;
           }
 
           .background .background_img_overlay {
@@ -106,13 +103,17 @@ const Home = (props: IProps): ReactElement => {
 
           .nav_wrapper {
             position: fixed;
+            height: 100%;
             width: 100%;
-            margin-top: 20px;
           }
 
           .nav_width_wrapper {
             width: 80%;
             margin: 0 auto;
+          }
+
+          .content_wrapper {
+            height: 100%;
           }
 
           .logo {
@@ -246,9 +247,7 @@ const Home = (props: IProps): ReactElement => {
           html,
           body,
           body > div:first-child,
-          div#__next,
-          div#__next > div,
-          div#__next > div > div {
+          div#__next {
             height: 100%;
           }
           body {

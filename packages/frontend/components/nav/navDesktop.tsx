@@ -2,8 +2,8 @@ import React, { ReactElement } from 'react';
 import { connect } from 'react-redux';
 import Link from 'next/link';
 
-import { RootState } from '../store';
-import { ThemeOptions } from '../store/userOptions/types';
+import { RootState } from '../../store';
+import { ThemeOptions } from '../../store/userOptions/types';
 
 interface IStateProps {
   theme: ThemeOptions;
@@ -11,9 +11,7 @@ interface IStateProps {
 
 type Props = IStateProps;
 
-const Nav = (props: Props): ReactElement => {
-  const { theme } = props;
-
+const NavDesktop = ({ theme }: Props): ReactElement => {
   return (
     <nav>
       <div className="nav_div">
@@ -122,4 +120,4 @@ const mapStateToProps = (state: RootState): IStateProps => ({
   theme: state.userOptions.theme,
 });
 
-export default connect(mapStateToProps, null)(Nav as () => ReactElement);
+export default connect(mapStateToProps, null)(NavDesktop as () => ReactElement);

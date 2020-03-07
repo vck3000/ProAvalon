@@ -21,14 +21,12 @@ const Taako = (): ReactElement => (
         .taako {
           max-width: 125px;
           width: 50%;
-          z-index: 2;
         }
 
         .taako_text {
           position: relative;
           width: 50%;
           max-width: 125px;
-          z-index: 3;
         }
       `}
     </style>

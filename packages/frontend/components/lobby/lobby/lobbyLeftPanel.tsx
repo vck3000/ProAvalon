@@ -1,10 +1,10 @@
 import { ReactElement } from 'react';
 import { Grid } from 'semantic-ui-react';
 
-import Taako from './taako';
-import Announcements from './announcements';
-import { dateGenObj } from './chat';
-import OnlinePlayers from './onlinePlayers';
+import Taako from '../taako';
+import Announcements from '../announcements';
+import { dateGenObj } from '../chat';
+import OnlinePlayers from '../onlinePlayers';
 
 const LobbyLeftPanel = (): ReactElement => (
   <>
