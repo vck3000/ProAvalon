@@ -185,13 +185,10 @@ exports.isAdmin = (req, res, next) => {
 };
 
 exports.emailVerified = (req, res, next) => {
-    if (process.env.MY_PLATFORM !== "online") {
-        next();
-    }
-
     if (req.user.emailVerified === true) {
         next();
     }
-
-    res.redirect('/emailVerification');
+    else {
+        res.redirect('/emailVerification');
+    }
 };
