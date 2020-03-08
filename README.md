@@ -99,6 +99,15 @@ If the above does not work, run `docker container ls` and replace `cache` with r
 
 NOTE: Database data is persisted in `./database_data/`.
 
+### Docker limitations
+When a new npm package is installed in `packages/backend` or `packages/frontend`, the docker images must be rebuilt. Since this is a fairly long process, an alternative solution is to enter the docker container and `npm install` a second time.
+
+```
+> docker container ls
+> docker exec -it <container_id> /bin/bash
+> ... (`cd` and `npm install --save` package)
+```
+
 ## Overview
 
 This is a new complete rewrite of ProAvalon. It is currently in development stage.
