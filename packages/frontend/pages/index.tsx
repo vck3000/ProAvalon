@@ -7,20 +7,23 @@ import Nav from '../components/nav/navIndex';
 import { RootState } from '../store/index';
 import { ThemeOptions, IUserOptionsState } from '../store/userOptions/types';
 import { setTheme } from '../store/userOptions/actions';
+import { ISystemState, MobileView } from '../store/system/types';
 
 interface IProps {
   theme: ThemeOptions;
   dispatchSetTheme: typeof setTheme;
+  mobileView: MobileView;
 }
 
 const Home = (props: IProps): ReactElement => {
-  const { theme } = props;
-  const { dispatchSetTheme } = props;
+  const { theme, dispatchSetTheme, mobileView } = props;
 
   return (
     <div className="background">
       <title>Home</title>
-      <Nav />
+      <div className="nav_wrapper">
+        <Nav />
+      </div>
       <div className="content_wrapper">
         <img
           src="/index/star-background-min.png"
@@ -101,16 +104,18 @@ const Home = (props: IProps): ReactElement => {
             height: 100%;
           }
 
-          .nav_wrapper {
-            position: fixed;
-            height: 100%;
-            width: 100%;
-          }
-
-          .nav_width_wrapper {
-            width: 80%;
-            margin: 0 auto;
-          }
+          // TODO: Break this out into a layout later for nav when we need to reuse
+          ${!mobileView
+            ? `.nav_wrapper {
+              width: 80%;
+              max-width: 1000px;
+              margin: 30px auto 0 auto;
+            }`
+            : `.nav_wrapper {
+              position: absolute;
+              top: 0px;
+              right: 0px;
+            }`}
 
           .content_wrapper {
             height: 100%;
@@ -128,7 +133,7 @@ const Home = (props: IProps): ReactElement => {
             max-width: 490px;
             width: 90%;
             position: relative;
-            top: 42%;
+            top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
@@ -261,7 +266,8 @@ const Home = (props: IProps): ReactElement => {
 
 const mapStateToProps = (
   state: RootState,
-): Pick<IUserOptionsState, 'theme'> => ({
+): Pick<ISystemState & IUserOptionsState, 'mobileView' | 'theme'> => ({
+  mobileView: state.system.mobileView,
   theme: state.userOptions.theme,
 });
 
