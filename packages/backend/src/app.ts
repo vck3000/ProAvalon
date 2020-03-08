@@ -5,6 +5,7 @@ import flash from 'express-flash';
 import mongo from 'connect-mongo';
 import mongoose from 'mongoose';
 import passport from 'passport';
+
 import func from './asdf';
 
 import * as userController from './controllers/user';
@@ -38,9 +39,39 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
-// _req underscore so that we tell the linter that we
-// intentionally aren't going to use it. Can also do
-// `{}` instead of `_req`
+mongoose
+  .connect('mongodb://root:password@mongo/proavalon?authSource=admin', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    const { Schema } = mongoose;
+
+    const BlogPost = mongoose.connection.model(
+      'BlogPost',
+      new Schema({
+        author: String,
+        title: String,
+        body: String,
+        date: Date,
+      }),
+    );
+
+    BlogPost.create({
+      author: 'Victor',
+      title: 'Test',
+      body: 'Body',
+      date: new Date(),
+    }).then(() => {
+      // eslint-disable-next-line no-console
+      console.log('Created');
+    });
+  })
+  .catch((err) => {
+    // eslint-disable-next-line no-console
+    console.log(err);
+  });
+
 app.get('/', (_req, res) => {
   // eslint-disable-next-line no-console
   console.log('Hello123123');

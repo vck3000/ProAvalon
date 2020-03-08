@@ -50,17 +50,6 @@ const NavMobile = ({ theme }: Props): ReactElement => {
       />
       <div className="side_menu">
         <ul>
-          <li className="logo_li">
-            <Link href="/">
-              <a>
-                <img
-                  src="/common/logo.png"
-                  className="logo_nav"
-                  alt="logo_nav"
-                />
-              </a>
-            </Link>
-          </li>
           <li>
             <Link href="/lobby">
               <a>Lobby</a>
@@ -92,9 +81,6 @@ const NavMobile = ({ theme }: Props): ReactElement => {
       <style jsx>
         {`
           .wrapper {
-            position: absolute;
-            top: 0px;
-            right: 0px;
           }
 
           .overlay {
@@ -152,14 +138,6 @@ const NavMobile = ({ theme }: Props): ReactElement => {
             font-size: 20px;
           }
 
-          .side_menu .logo_li {
-            padding: 0 0 15px 0;
-          }
-
-          .side_menu .logo_li .logo_nav {
-            width: 105%;
-          }
-
           /*! * Hamburgers * @description Tasty CSS-animated hamburgers * @author Jonathan Suh @jonsuh * @site https://jonsuh.com/hamburgers * @link https://github.com/jonsuh/hamburgers */
           .hamburger {
             padding: 15px 15px;
@@ -176,9 +154,7 @@ const NavMobile = ({ theme }: Props): ReactElement => {
             margin: 0;
             overflow: visible;
 
-            position: absolute;
-            top: 0px;
-            right: 0px;
+            position: relative;
             z-index: 9999;
           }
           .hamburger:focus {

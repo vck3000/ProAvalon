@@ -14,7 +14,6 @@ interface IPlayer {
 
 interface IOwnProps {
   players: IPlayer[];
-  maxHeight?: string;
 }
 interface IStateProps {
   theme: ThemeOptions;
@@ -23,30 +22,36 @@ interface IStateProps {
 type Props = IOwnProps & IStateProps;
 
 const OnlinePlayers = (props: Props): ReactElement => {
-  const { players, theme, maxHeight } = props;
+  const { players, theme } = props;
   const numPlayers = players.length;
 
-  const useMaxHeight = maxHeight || '100%';
   return (
-    <div>
-      <div style={{ maxHeight: useMaxHeight }} className="wrapper">
-        <Table celled compact unstackable style={{ background: 'transparent' }}>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell className="online_players">
-                ONLINE PLAYERS ({numPlayers})
-              </Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-
-          <Table.Body>
-            {players.map((player) => (
-              <Table.Row key={player.username} className="row">
-                <Table.Cell>{player.username}</Table.Cell>
+    <>
+      <div className="wrapper">
+        <div className="online_players_inner_wrapper">
+          <Table
+            celled
+            compact
+            unstackable
+            style={{ background: 'transparent' }}
+          >
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell className="online_players">
+                  ONLINE PLAYERS ({numPlayers})
+                </Table.HeaderCell>
               </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
+            </Table.Header>
+
+            <Table.Body>
+              {players.map((player) => (
+                <Table.Row key={player.username} className="row">
+                  <Table.Cell>{player.username}</Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table>
+        </div>
       </div>
 
       <style jsx>
@@ -57,10 +62,19 @@ const OnlinePlayers = (props: Props): ReactElement => {
 
           .wrapper {
             height: 100%;
+            position: relative;
+          }
+
+          .online_players_inner_wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             overflow: auto;
           }
 
-          .wrapper :global(.online_players) {
+          .online_players_inner_wrapper :global(.online_players) {
             color: ${theme.colors.GOLD};
             font-family: Montserrat-Bold;
             text-align: center;
@@ -68,50 +82,50 @@ const OnlinePlayers = (props: Props): ReactElement => {
             border: none;
           }
 
-          .wrapper :global(.row td) {
+          .online_players_inner_wrapper :global(.row td) {
             font-family: Montserrat-Bold;
             color: ${theme.colors.TEXT};
             padding: 0.5em 1.2em;
             border: none;
           }
 
-          .wrapper :global(.row:nth-child(odd)) {
+          .online_players_inner_wrapper :global(.row:nth-child(odd)) {
             background: ${theme.colors.ALT_LIGHT};
           }
 
-          .wrapper :global(.row:nth-child(even)) {
+          .online_players_inner_wrapper :global(.row:nth-child(even)) {
             background: ${theme.colors.LIGHT};
           }
 
-          .wrapper :global(table) {
+          .online_players_inner_wrapper :global(table) {
             border: none;
           }
 
-          .wrapper :global(tbody) {
+          .online_players_inner_wrapper :global(tbody) {
             display: block;
             overflow: auto;
-            height: 250px;
           }
 
-          .wrapper :global(th, tr) {
+          .online_players_inner_wrapper :global(th, tr) {
             display: block;
             width: 100%;
           }
 
-          .wrapper :global(tbody)::-webkit-scrollbar{
+          .online_players_inner_wrapper :global(tbody)::-webkit-scrollbar {
             width: 0.5em;
           }
 
-          .wrapper :global(tbody)::-webkit-scrollbar-track {
+          .online_players_inner_wrapper
+            :global(tbody)::-webkit-scrollbar-track {
             background-color: ${theme.colors.LIGHT};
           }
 
-          .wrapper :global(tbody)::-webkit-scrollbar {
+          .online_players_inner_wrapper :global(tbody)::-webkit-scrollbar {
             background-color: ${theme.colors.ALT_LIGHT};
           }
         `}
       </style>
-    </div>
+    </>
   );
 };
 

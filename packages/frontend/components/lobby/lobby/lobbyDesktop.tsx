@@ -11,7 +11,7 @@ const LobbyDesktop = (): ReactElement => (
   <div className="container">
     <Grid divided="vertically" padded className="main_grid">
       <Grid.Column width={4}>
-        <Grid.Row>
+        <div className="left_wrapper">
           <div className="logo_wrapper">
             <Link href="/">
               <a>
@@ -19,8 +19,10 @@ const LobbyDesktop = (): ReactElement => (
               </a>
             </Link>
           </div>
-        </Grid.Row>
-        <LobbyLeftPanel />
+          <div className="lobbyleftPanel">
+            <LobbyLeftPanel />
+          </div>
+        </div>
       </Grid.Column>
 
       <Grid.Column width={12} className="center">
@@ -43,8 +45,9 @@ const LobbyDesktop = (): ReactElement => (
     <style jsx>
       {`
         .container {
-          padding: 30px;
+          padding: 5px 5px 30px 5px;
           z-index: -1;
+          height: 100%;
         }
 
         .ui.grid {
@@ -54,6 +57,17 @@ const LobbyDesktop = (): ReactElement => (
         .logo {
           max-width: 200px;
           width: 100%;
+        }
+
+        .left_wrapper {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          flex-wrap: nowrap;
+        }
+
+        .lobbyleftPanel {
+          flex-grow: 1;
         }
       `}
     </style>
