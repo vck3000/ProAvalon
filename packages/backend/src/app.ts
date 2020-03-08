@@ -1,76 +1,48 @@
+/* eslint-disable no-shadow */
 import express from 'express';
 import cors from 'cors';
 import session from 'express-session';
-import flash from 'express-flash';
-import mongo from 'connect-mongo';
+import connect from 'connect-redis';
+import redis from 'redis';
 import mongoose from 'mongoose';
 import passport from 'passport';
 
 import func from './asdf';
 
+// Controllers (route handlers)
 import * as userController from './controllers/user';
 
-const mongoUrl = process.env.DATABASEURL || 'mongodb://mongo/proavalon';
+// API keys and Passport configuration
+import * as passportConfig from './config/passport';
+
+const mongoUrl = process.env.DATABASEURL
+  || 'mongodb://root:password@mongo/proavalon?authSource=admin';
 const secretKey = process.env.MY_SECRET_KEY || 'MySecretKey';
 
 const app = express();
 const port = process.env.PORT || 3001;
 
-const MongoStore = mongo(session);
-
-mongoose.connect('mongodb://mongo/proavalon', {
-  useNewUrlParser: true,
-});
+const RedisStore = connect(session);
+const redisClient = redis.createClient(6379, 'redis');
 
 app.set('port', port);
 app.use(express.json());
-app.use(session({
-  resave: true,
-  saveUninitialized: true,
-  secret: secretKey,
-  store: new MongoStore({ // change to redis store
-    url: mongoUrl,
-    autoReconnect: true,
-    collection: 'mySessions',
+app.use(
+  session({
+    resave: true,
+    saveUninitialized: true,
+    secret: secretKey,
+    store: new RedisStore({ client: redisClient }),
   }),
-}));
+);
 app.use(cors());
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(flash());
 
-mongoose
-  .connect('mongodb://root:password@mongo/proavalon?authSource=admin', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    const { Schema } = mongoose;
-
-    const BlogPost = mongoose.connection.model(
-      'BlogPost',
-      new Schema({
-        author: String,
-        title: String,
-        body: String,
-        date: Date,
-      }),
-    );
-
-    BlogPost.create({
-      author: 'Victor',
-      title: 'Test',
-      body: 'Body',
-      date: new Date(),
-    }).then(() => {
-      // eslint-disable-next-line no-console
-      console.log('Created');
-    });
-  })
-  .catch((err) => {
-    // eslint-disable-next-line no-console
-    console.log(err);
-  });
+mongoose.connect(mongoUrl, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 app.get('/', (_req, res) => {
   // eslint-disable-next-line no-console
@@ -79,10 +51,13 @@ app.get('/', (_req, res) => {
   res.send('Hello World!12345 asdf');
 });
 
-app.get('/login', userController.getLogin);
+app.get('/lobby', passportConfig.isAuthenticated, (_req, res) => {
+  res.send('signed in to lobby');
+});
+
 app.post('/login', userController.postLogin);
-app.get('/signup', userController.getSignup);
 app.post('/signup', userController.postSignup);
+app.get('/logout', userController.logout);
 
 app.listen(port);
 
