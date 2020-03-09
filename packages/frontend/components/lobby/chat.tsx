@@ -264,8 +264,7 @@ const GetOpacity = (i: number, numMessages: number): number => {
   );
 };
 
-const Chat = (props: Props): ReactElement => {
-  const { theme } = props;
+const Chat = ({ theme }: Props): ReactElement => {
 
   return (
     <>

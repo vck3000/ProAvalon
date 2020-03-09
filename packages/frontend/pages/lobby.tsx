@@ -27,6 +27,14 @@ const Lobby = (): ReactElement => (
         .ui.grid {
           margin: 0;
         }
+
+        button {
+          border: none;
+        }
+
+        button:focus {
+          outline: none;
+        }
       `}
     </style>
   </>

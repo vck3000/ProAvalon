@@ -49,6 +49,14 @@ const LobbyLeftPanel = (): ReactElement => (
             { username: 'Pam7' },
             { username: 'Pam8' },
             { username: 'Pam9' },
+            { username: 'Pam10' },
+            { username: 'Pam11' },
+            { username: 'Pam12' },
+            { username: 'Pam13' },
+            { username: 'Pam14' },
+            { username: 'Pam15' },
+            { username: 'Pam16' },
+            { username: 'Pam17' },
           ]}
         />
       </div>

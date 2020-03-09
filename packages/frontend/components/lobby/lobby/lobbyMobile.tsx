@@ -93,7 +93,7 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
       <style jsx>
         {`
           .top_nav {
-            display: flex;
+            display: -webkit-inline-box;
             justify-content: space-between;
           }
 
@@ -121,7 +121,6 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
           }
 
           .carousel_indicator {
-            all: unset;
             font-family: Montserrat-Bold;
             background-color: ${theme.colors.BACKGROUND};
             color: ${theme.colors.TEXT_GRAY};
@@ -154,7 +153,6 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
           }
 
           .slide {
-            height: 100%;
             min-width: ${windowDimensions.width}px;
             background-size: cover;
             background-repeat: no-repeat;
