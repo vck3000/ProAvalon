@@ -1,4 +1,3 @@
-/* eslint-disable no-shadow */
 import passport from 'passport';
 import { Request, Response, NextFunction } from 'express';
 import { check, validationResult } from 'express-validator';
@@ -19,9 +18,9 @@ export const postLogin = async (
     return res.redirect('/');
   }
 
-  return passport.authenticate('local', (err: Error, user: UserDocument) => {
-    if (err) {
-      return next(err);
+  return passport.authenticate('local', (authErr: Error, user: UserDocument) => {
+    if (authErr) {
+      return next(authErr);
     }
     if (!user) {
       return res.send({ msg: 'Invalid password.' });
@@ -95,8 +94,8 @@ export const postSignup = async (
     },
   );
 
-  await user.save((err) => {
-    if (err) return next(err);
+  await user.save((saveErr) => {
+    if (saveErr) return next(saveErr);
     return req.logIn(user, (err) => {
       if (err) {
         return next(err);

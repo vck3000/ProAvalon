@@ -1,4 +1,3 @@
-/* eslint-disable no-shadow */
 import passport from 'passport';
 import passportLocal from 'passport-local';
 
@@ -21,9 +20,9 @@ passport.use(
   new LocalStrategy((username, password, done) => {
     User.findOne(
       { usernameLower: username.toLowerCase() },
-      (err: Error, user: UserDocument) => {
-        if (err) {
-          return done(err);
+      (findOneErr: Error, user: UserDocument) => {
+        if (findOneErr) {
+          return done(findOneErr);
         }
         if (!user) {
           return done(null, false, { message: 'User not found' });

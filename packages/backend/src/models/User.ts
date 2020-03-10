@@ -1,4 +1,3 @@
-/* eslint-disable no-shadow */
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
 
@@ -137,8 +136,8 @@ userSchema.pre('save', function save(this: UserDocument, next: (err?: Error) => 
   if (!this.isModified('password')) return next();
   return bcrypt.genSalt(10, (err: Error, salt: string) => {
     if (err) return next(err);
-    return bcrypt.hash(this.password, salt, (err: mongoose.Error, hash: string) => {
-      if (err) return next(err);
+    return bcrypt.hash(this.password, salt, (hashErr: mongoose.Error, hash: string) => {
+      if (hashErr) return next(hashErr);
       this.password = hash;
       return next();
     });
