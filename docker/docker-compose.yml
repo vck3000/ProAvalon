@@ -19,10 +19,8 @@ services:
     ports:
       - 8080:80
       - 8081:443
-    environment:
-      - MY_PLATFORM=local
-      - MY_SECRET_KEY=HAMBURGER
-      - DATABASEURL=mongodb://mongo/TheNewResistanceUsers
+    env_file: 
+      - settings.env
     networks:
       - avalon-network
     depends_on:
