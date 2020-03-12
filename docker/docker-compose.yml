@@ -25,6 +25,16 @@ services:
       - avalon-network
     depends_on:
       - mongo
+    volumes:
+      - ../assets:/node-server/assets
+      - ../gameplay:/node-server/gameplay
+      - ../models:/node-server/models
+      - ../modsadmins:/node-server/modsadmins
+      - ../myFunctions:/node-server/myFunctions
+      - ../rewards:/node-server/rewards
+      - ../routes:/node-server/routes
+      - ../sockets:/node-server/sockets
+      - ../views:/node-server/views
 
 volumes:
   avalon-mongo-dbdata:
