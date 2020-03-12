@@ -1,26 +1,52 @@
-import { ReactElement } from 'react';
+import { ReactElement, useState } from 'react';
 import { connect } from 'react-redux';
 import Link from 'next/link';
 import { Button, Form } from 'semantic-ui-react';
+import Router from 'next/router';
 
 import Nav from '../components/nav/navIndex';
+import { FlashMessages, Message, Messages } from '../components/Flash';
+import { dateGenObj } from '../components/lobby/chat';
+
 import { RootState } from '../store/index';
 import { ThemeOptions, IUserOptionsState } from '../store/userOptions/types';
 import { setTheme } from '../store/userOptions/actions';
 import { ISystemState, MobileView } from '../store/system/types';
+import { User } from '../store/authentication/types';
+import loginUser from '../store/authentication/actions';
 
 interface IProps {
   theme: ThemeOptions;
   dispatchSetTheme: typeof setTheme;
   mobileView: MobileView;
+  dispatchLoginUser: typeof loginUser;
+  isAuthenticated: User['isAuthenticated'];
 }
 
-const Home = (props: IProps): ReactElement => {
-  const { theme, dispatchSetTheme, mobileView } = props;
-
+const Home = ({
+  theme,
+  dispatchSetTheme,
+  mobileView,
+  dispatchLoginUser,
+  isAuthenticated,
+}: IProps): ReactElement => {
+  const initialState = {
+    username: '',
+    password: '',
+  };
+  const [flashMessages, setFlashMessages] = useState([] as Messages);
+  const [inputs, setInputs] = useState(initialState);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    e.persist();
+    return setInputs(() => ({ ...inputs, [e.target.name]: e.target.value }));
+  };
+  const handleFlashMessages = (message: Message): void => {
+    return setFlashMessages(() => [...flashMessages, message]);
+  };
   return (
     <div className="background">
       <title>Home</title>
+      <FlashMessages messages={flashMessages} />
       <div className="nav_wrapper">
         <Nav />
       </div>
@@ -48,22 +74,46 @@ const Home = (props: IProps): ReactElement => {
               className="login_glow"
               alt="login_glow"
             />
-            <Form>
+            <Form
+              onSubmit={async (
+                e: React.FormEvent<HTMLFormElement>,
+              ): Promise<boolean | void> => {
+                e.preventDefault();
+                await dispatchLoginUser(inputs);
+                if (!isAuthenticated) {
+                  return handleFlashMessages({
+                    timestamp: new Date(dateGenObj.next().value as number),
+                    header: 'Log in failed! Please try again.',
+                    type: 'error',
+                  });
+                }
+                setInputs(() => initialState);
+                return Router.push('/lobby');
+              }}
+            >
               <Form.Field>
                 <Form.Input
-                  className="myInput"
                   name="username"
                   icon="user"
                   iconPosition="left"
                   placeholder="Username"
+                  value={inputs.username}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+                    handleInputChange(e)
+                  }
                 />
               </Form.Field>
               <Form.Field>
                 <Form.Input
+                  type="password"
                   name="password"
                   icon="lock"
                   iconPosition="left"
                   placeholder="Password"
+                  value={inputs.password}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+                    handleInputChange(e)
+                  }
                 />{' '}
               </Form.Field>
               <Button type="submit" className="login">
@@ -266,13 +316,18 @@ const Home = (props: IProps): ReactElement => {
 
 const mapStateToProps = (
   state: RootState,
-): Pick<ISystemState & IUserOptionsState, 'mobileView' | 'theme'> => ({
+): Pick<
+  ISystemState & IUserOptionsState & User,
+  'mobileView' | 'theme' | 'isAuthenticated'
+> => ({
   mobileView: state.system.mobileView,
   theme: state.userOptions.theme,
+  isAuthenticated: state.authentication.user.isAuthenticated,
 });
 
 const mapDispatchToProps = {
   dispatchSetTheme: setTheme,
+  dispatchLoginUser: loginUser,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

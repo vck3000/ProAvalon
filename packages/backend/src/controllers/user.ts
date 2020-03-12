@@ -7,7 +7,7 @@ export const postLogin = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<void> => {
+): Promise<Response> => {
   await check('password', 'Password cannot be blank')
     .isLength({ min: 4 })
     .run(req);
@@ -15,7 +15,7 @@ export const postLogin = async (
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return res.redirect('/');
+    return res.send({ isAuthenticated: false, errors: errors.array() });
   }
 
   return passport.authenticate('local', (authErr: Error, user: UserDocument) => {
@@ -23,7 +23,7 @@ export const postLogin = async (
       return next(authErr);
     }
     if (!user) {
-      return res.send({ msg: 'Invalid password.' });
+      return res.send({ isAuthenticated: false });
     }
     return req.logIn(user, (err) => {
       if (err) {
@@ -31,7 +31,7 @@ export const postLogin = async (
       }
       // eslint-disable-next-line no-console
       console.log('==> login user', user);
-      return res.redirect('/lobby');
+      return res.send({ isAuthenticated: true, username: user.username });
     });
   })(req, res, next);
 };
@@ -59,7 +59,7 @@ export const postSignup = async (
 
   if (!errors.isEmpty()) {
     res.send(errors.array());
-    return res.redirect('/');
+    res.send();
   }
 
   const user = new User({
@@ -102,7 +102,7 @@ export const postSignup = async (
       }
       // eslint-disable-next-line no-console
       console.log('==> saving user', user);
-      return res.redirect('/lobby');
+      return res.send({ username: user.username });
     });
   });
 };

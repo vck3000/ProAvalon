@@ -13,8 +13,10 @@ import userOptionsReducer from './userOptions/reducers';
 import { IUserOptionsState } from './userOptions/types';
 import systemReducer from './system/reducers';
 import { ISystemState } from './system/types';
+import authenticationReducer from './authentication/reducers';
+import { IAuthenticationState } from './authentication/types';
 
-import rootSaga from './userOptions/sagas';
+import rootSaga from './sagas';
 
 // Combine reducers and generate the type definition of the AppState
 // https://github.com/reduxjs/redux/pull/3679
@@ -22,9 +24,11 @@ import rootSaga from './userOptions/sagas';
 const rootReducer = combineReducers<{
   userOptions: IUserOptionsState;
   system: ISystemState;
+  authentication: IAuthenticationState;
 }>({
   userOptions: userOptionsReducer,
   system: systemReducer,
+  authentication: authenticationReducer,
 });
 
 const bindMiddleware = (middleware: Middleware[]): StoreEnhancer => {

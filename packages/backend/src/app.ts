@@ -25,6 +25,12 @@ const RedisStore = connect(session);
 const redisClient = redis.createClient(6379, 'redis');
 
 app.set('port', port);
+
+const corsOptions = {
+  credentials: true,
+  origin: 'http://localhost:3000',
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(
   session({
@@ -34,7 +40,6 @@ app.use(
     store: new RedisStore({ client: redisClient }),
   }),
 );
-app.use(cors());
 app.use(passport.initialize());
 app.use(passport.session());
 
