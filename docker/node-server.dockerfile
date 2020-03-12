@@ -12,4 +12,4 @@ VOLUME /node-server/rewards
 VOLUME /node-server/routes
 VOLUME /node-server/sockets
 VOLUME /node-server/views
-ENTRYPOINT $(npm bin)/nodemon app.js
+ENTRYPOINT $(npm bin)/nodemon -L app.js
