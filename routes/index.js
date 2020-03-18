@@ -181,8 +181,14 @@ router.post('/', registerLimiter, sanitiseUsername, sanitiseEmail, async (req, r
                 passport.authenticate('local')(req, res, () => {
                     res.redirect('/lobby');
                 });
-
-                sendEmailVerification(user, req.body.emailAddress);
+                if (process.env.MY_PLATFORM === 'online') {
+                    sendEmailVerification(user, req.body.emailAddress);
+                }
+                else {
+                    user.emailVerified = true;
+                    user.markModified('emailVerified');
+                    user.save();
+                }
             }
         });
     }

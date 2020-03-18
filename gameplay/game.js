@@ -860,6 +860,11 @@ Game.prototype.getGameData = function () {
                 socketId: playerRoles[i].socketId,
             };
 
+            // Some roles such as Galahad require modifying display role.
+            if (playerRoles[i].displayRole !== undefined) {
+                data[i].role = playerRoles[i].displayRole;
+            }
+            
             // add on these common variables:
             data[i].buttons = this.getClientButtonSettings(i);
 
