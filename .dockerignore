@@ -2,6 +2,5 @@
 .gitignore
 .git/
 .github/
-.circleci/
 docker/
 README.md
