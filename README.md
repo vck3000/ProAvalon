@@ -5,7 +5,82 @@ Online platform for The Resistance! [Play the game](https://www.ProAvalon.com).
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. You can either use the Local configuration or the Docker configuration for developing.
+
+## Local environment configuration
+
+### Pre-requisites
+
+- [Node.js](https://nodejs.org/en/) v7.6 or later
+- [MongoDB](https://www.mongodb.com/)
+- [Git](https://git-scm.com/)
+
+Other useful resources:
+- [Visual Studio Code](https://code.visualstudio.com/), a code editor/IDE by Microsoft
+- [ConEmu](https://conemu.github.io/) (Windows program to open multiple cmds (terminals) in one window
+
+### Installing
+
+1. Clone (using git) a copy of the code:
+```
+> cd path/to/your/folder
+> git clone https://github.com/vck3000/ProAvalon.git
+```
+
+2. Set up the required environment variables on your machine:
+
+Method 1: Set permanent environment variables on your machine:
+```
+MY_PLATFORM = "local"
+MY_SECRET_KEY = "AnythingThatYouWant"
+DATABASEURL = "mongodb://localhost/TheNewResistanceUsers"
+```
+
+Method 2: Create a file named `.env` in the root directory with the following lines:
+```
+MY_PLATFORM=local
+MY_SECRET_KEY=INSERT_ANYTHING_YOU_WANT_HERE
+DATABASEURL=mongodb://localhost/TheNewResistanceUsers
+```
+
+3. Create the database in MongoDB:
+    1. Create the folder `/data/db` (`C:/data/db` on Windows).
+    2. Start the database:
+    ```
+    > mongod
+    ```
+    3. Open a mongo shell (in a new terminal or command prompt):
+    ```
+    > mongo
+    ```
+    4. Create the database:
+    ```
+    > use TheNewResistanceUsers
+    switched to db TheNewResistanceUsers
+    ```
+
+4. Install Node modules
+```
+> npm install
+```
+
+5. Optional: (This will install nodemon globally)
+```
+>  npm install -g nodemon
+```
+
+
+### Running
+
+```
+> node app.js
+```
+Or with nodemon (automatically restarts the server when changes are saved):
+```
+> nodemon app.js
+```
+
+## Docker configuration
 
 ### Pre-requisites
 
@@ -32,7 +107,7 @@ MY_PLATFORM = "local"
 MY_SECRET_KEY = "AnythingThatYouWant"
 ```
 
-## Running
+### Running
 
 1. Set up your Docker environment. If you use Docker, it should already be set. If you installed Docker Toolbox you should first start the Docker machine with:
 ```
