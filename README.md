@@ -2,6 +2,9 @@
 
 Online platform for The Resistance! [Play the game](https://www.ProAvalon.com).
 
+# DEPRECATED BRANCH
+We are actively developing a new re-write of ProAvalon on newPA branch. If you are interested in assisting, please make an issue and I will contact you!
+
 
 ## Getting Started
 
