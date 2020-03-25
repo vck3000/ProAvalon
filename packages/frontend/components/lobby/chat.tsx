@@ -310,7 +310,7 @@ const Chat = (props: Props): ReactElement => {
             padding-left: 15px;
           }
 
-          .chat_list::-webkit-scrollbar{
+          .chat_list::-webkit-scrollbar {
             width: 0.5em;
           }
 
