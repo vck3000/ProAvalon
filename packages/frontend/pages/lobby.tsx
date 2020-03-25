@@ -18,7 +18,6 @@ const Lobby = (): ReactElement => (
 
         body {
           margin: 0px;
-          overflow: hidden;
         }
 
         .ui.grid {

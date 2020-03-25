@@ -25,16 +25,22 @@ const LobbyDesktop = (): ReactElement => (
         </div>
       </Grid.Column>
 
-      <Grid.Column width={12} className="center">
-        <Grid.Row className="navbar">
+      <Grid.Column width={12} className="center" style={{ height: '100%' }}>
+        <Grid.Row className="navbar" style={{ height: '5%' }}>
           <NavIndex />
         </Grid.Row>
-        <Grid.Row style={{ height: '100%' }}>
+        <Grid.Row style={{ height: '95%' }}>
           <Grid style={{ height: '100%' }}>
-            <Grid.Column width={11}>
+            <Grid.Column
+              width={11}
+              style={{ height: '100%', padding: '0 5px 0 0' }}
+            >
               <Chat />
             </Grid.Column>
-            <Grid.Column width={5}>
+            <Grid.Column
+              width={5}
+              style={{ height: '100%', padding: '0 0 0 5px' }}
+            >
               <GamesMenu />
             </Grid.Column>
           </Grid>

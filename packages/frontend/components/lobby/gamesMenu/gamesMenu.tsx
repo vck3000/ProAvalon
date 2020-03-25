@@ -85,7 +85,7 @@ const GameMenu = (): ReactElement => {
         {`
           .wrapper {
             height: 100%;
-            overflow: scroll;
+            overflow-y: scroll;
           }
         `}
       </style>

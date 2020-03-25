@@ -300,7 +300,7 @@ const Chat = (props: Props): ReactElement => {
 
           .chat_list {
             position: absolute;
-            bottom: 0px;
+            top: 0px;
             list-style: none;
             max-height: 100%;
             width: 100%;
