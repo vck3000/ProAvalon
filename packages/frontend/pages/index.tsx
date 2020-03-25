@@ -257,6 +257,7 @@ const Home = (props: IProps): ReactElement => {
           }
           body {
             margin: 0px;
+            overflow: hidden;
           }
         `}
       </style>
