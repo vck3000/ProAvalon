@@ -116,6 +116,7 @@ const GameCard = (props: Props): ReactElement => {
 
           .avatar {
             max-width: 50px;
+            max-height: 50px;
             width: 20%;
           }
         `}

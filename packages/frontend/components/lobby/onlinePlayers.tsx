@@ -56,10 +56,6 @@ const OnlinePlayers = (props: Props): ReactElement => {
 
       <style jsx>
         {`
-          .list {
-            border: 1px solid red;
-          }
-
           .wrapper {
             height: 100%;
             position: relative;
