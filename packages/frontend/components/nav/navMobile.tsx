@@ -11,6 +11,8 @@ interface IStateProps {
 
 type Props = IStateProps;
 
+const animateTime = 0.5;
+
 const toggleMenu = (
   e:
     | React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -19,9 +21,30 @@ const toggleMenu = (
 ): void => {
   const parent = e.currentTarget.parentElement;
   if (parent) {
-    parent.getElementsByClassName('hamburger')[0].classList.toggle('active');
-    parent.getElementsByClassName('overlay')[0].classList.toggle('active');
-    parent.getElementsByClassName('side_menu')[0].classList.toggle('active');
+    const hamburgerCL = parent.getElementsByClassName('hamburger')[0].classList;
+    const overlayCL = parent.getElementsByClassName('overlay')[0].classList;
+    const sideMenuCL = parent.getElementsByClassName('side_menu')[0].classList;
+
+    if (hamburgerCL.contains('active')) {
+      overlayCL.remove('animate');
+      sideMenuCL.remove('animate');
+
+      hamburgerCL.remove('active');
+
+      setTimeout(() => {
+        overlayCL.remove('active');
+        sideMenuCL.remove('active');
+      }, animateTime * 1000);
+    } else {
+      hamburgerCL.add('active');
+      overlayCL.add('active');
+      sideMenuCL.add('active');
+
+      setTimeout(() => {
+        overlayCL.add('animate');
+        sideMenuCL.add('animate');
+      }, 50);
+    }
   }
 };
 
@@ -92,10 +115,15 @@ const NavMobile = ({ theme }: Props): ReactElement => {
             z-index: 2;
             background-color: rgba(0, 0, 0, 0.5); /* Black w/opacity */
 
-            transition: ease 0.25s;
+            transition: ease ${animateTime / 2}s;
             transform: translateX(100%);
+
+            display: none;
           }
           .overlay.active {
+            display: block;
+          }
+          .overlay.animate {
             transform: translateX(0%);
           }
           .overlay:focus {
@@ -108,13 +136,18 @@ const NavMobile = ({ theme }: Props): ReactElement => {
             right: 0px;
             height: 100vh;
             z-index: 3;
-            transition: 0.5s;
+            transition: ease ${animateTime}s;
             transform: translateX(100%);
             background-color: ${theme.colors.BACKGROUND};
 
             padding-top: 60px;
+
+            display: none;
           }
           .side_menu.active {
+            display: block;
+          }
+          .side_menu.animate {
             transform: translateX(0%);
           }
 
