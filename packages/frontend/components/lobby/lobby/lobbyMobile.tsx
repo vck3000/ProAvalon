@@ -1,4 +1,4 @@
-import { ReactElement, useState, useRef } from 'react';
+import { ReactElement, useState, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 import Link from 'next/link';
 
@@ -26,16 +26,42 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
   const [activeIndex, setActiveIndex] = useState(0);
   const sliderRef = useRef(document.createElement('div'));
 
+  const wrapperRef = useRef(document.createElement('div'));
+  const wrapperDiv = wrapperRef.current;
+
+  const wrapperSliderRef = useRef(document.createElement('div'));
+
+  useEffect(() => {
+    // Do some fancy math to set the height of the wrapper_slider.
+    let height = wrapperDiv.offsetHeight;
+
+    for (let i = 0; i < wrapperDiv.children.length; i += 1) {
+      const child = wrapperDiv.children[i];
+      if (!child.classList.contains('wrapper_slider')) {
+        height -= wrapperDiv.children[i].clientHeight;
+      }
+    }
+    if (height !== 0) {
+      wrapperSliderRef.current.style.height = `${height.toString()}px`;
+    }
+  });
+
   return (
     <>
-      <div className="wrapper">
-        <div className="top_nav">
-          <Link href="/">
-            <a>
-              <img src="/common/logo.png" className="logo_nav" alt="logo_nav" />
-            </a>
-          </Link>
-          <NavIndex />
+      <div className="wrapper" ref={wrapperRef}>
+        <div>
+          <div className="top_nav">
+            <Link href="/">
+              <a>
+                <img
+                  src="/common/logo.png"
+                  className="logo_nav"
+                  alt="logo_nav"
+                />
+              </a>
+            </Link>
+            <NavIndex />
+          </div>
         </div>
         <div className="wrapper_nav">
           <div className="carousel_nav">
@@ -63,7 +89,7 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
           </div>
         </div>
 
-        <div className="wrapper_slider">
+        <div className="wrapper_slider" ref={wrapperSliderRef}>
           <div
             className="slider"
             ref={sliderRef}
@@ -75,7 +101,7 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
               setActiveIndex(i);
             }}
           >
-            <div className="slider-content">
+            <div className="slider_content">
               {slides.map(
                 (slide, i): ReactElement => {
                   return (
@@ -111,7 +137,7 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
           }
 
           .wrapper_slider {
-            flex-grow: 1;
+            display: flex;
           }
 
           .carousel_nav {
@@ -137,9 +163,9 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
           }
 
           .slider {
+            flex-grow: 1;
             position: relative;
             margin: 0 auto;
-            height: 100%;
             overflow-x: auto;
             overflow-y: hidden;
             scroll-snap-coordinate: 0 0;
@@ -148,9 +174,10 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
             -webkit-overflow-scrolling: touch;
           }
 
-          .slider-content {
+          .slider_content {
             height: 100%;
             display: flex;
+            align-items: stretch;
           }
 
           .slide {

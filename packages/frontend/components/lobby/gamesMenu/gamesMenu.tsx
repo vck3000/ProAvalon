@@ -32,6 +32,36 @@ const gameCardsData: IGameCardData[] = [
       '/game_room/base-res.png',
     ],
   },
+  {
+    id: 195,
+    status: 'finished',
+    missionHistory: ['success', 'success', 'fail', 'fail', 'fail'],
+    host: 'ProNub',
+    mode: 'Avalon',
+    spectators: 75830,
+    avatarLinks: [
+      'https://cdn.discordapp.com/attachments/430166478193688597/481009331622510602/pronub-res.png',
+      '/game_room/base-res.png',
+      '/game_room/base-res.png',
+      '/game_room/base-res.png',
+      '/game_room/base-res.png',
+    ],
+  },
+  {
+    id: 196,
+    status: 'finished',
+    missionHistory: ['success', 'success', 'fail', 'fail', 'fail'],
+    host: 'ProNub',
+    mode: 'Avalon',
+    spectators: 75830,
+    avatarLinks: [
+      'https://cdn.discordapp.com/attachments/430166478193688597/481009331622510602/pronub-res.png',
+      '/game_room/base-res.png',
+      '/game_room/base-res.png',
+      '/game_room/base-res.png',
+      '/game_room/base-res.png',
+    ],
+  },
 ];
 
 // export interface IGameCardData {
@@ -55,6 +85,7 @@ const GameMenu = (): ReactElement => {
         {`
           .wrapper {
             height: 100%;
+            overflow: scroll;
           }
         `}
       </style>
