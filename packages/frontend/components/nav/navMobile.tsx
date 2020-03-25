@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { RootState } from '../../store';
 import { ThemeOptions } from '../../store/userOptions/types';
 
+import throttle from '../../utils/throttle';
+
 interface IStateProps {
   theme: ThemeOptions;
 }
@@ -13,40 +15,45 @@ type Props = IStateProps;
 
 const animateTime = 0.5;
 
-const toggleMenu = (
-  e:
-    | React.MouseEvent<HTMLButtonElement, MouseEvent>
-    | React.MouseEvent<HTMLDivElement, MouseEvent>
-    | React.KeyboardEvent<HTMLDivElement>,
-): void => {
-  const parent = e.currentTarget.parentElement;
-  if (parent) {
-    const hamburgerCL = parent.getElementsByClassName('hamburger')[0].classList;
-    const overlayCL = parent.getElementsByClassName('overlay')[0].classList;
-    const sideMenuCL = parent.getElementsByClassName('side_menu')[0].classList;
+const toggleMenu = throttle(
+  (
+    e:
+      | React.MouseEvent<HTMLButtonElement, MouseEvent>
+      | React.MouseEvent<HTMLDivElement, MouseEvent>
+      | React.KeyboardEvent<HTMLDivElement>,
+  ): void => {
+    const parent = e.currentTarget.parentElement;
+    if (parent) {
+      const hamburgerCL = parent.getElementsByClassName('hamburger')[0]
+        .classList;
+      const overlayCL = parent.getElementsByClassName('overlay')[0].classList;
+      const sideMenuCL = parent.getElementsByClassName('side_menu')[0]
+        .classList;
 
-    if (hamburgerCL.contains('active')) {
-      overlayCL.remove('animate');
-      sideMenuCL.remove('animate');
+      if (hamburgerCL.contains('active')) {
+        overlayCL.remove('animate');
+        sideMenuCL.remove('animate');
 
-      hamburgerCL.remove('active');
+        hamburgerCL.remove('active');
 
-      setTimeout(() => {
-        overlayCL.remove('active');
-        sideMenuCL.remove('active');
-      }, animateTime * 1000);
-    } else {
-      hamburgerCL.add('active');
-      overlayCL.add('active');
-      sideMenuCL.add('active');
+        setTimeout(() => {
+          overlayCL.remove('active');
+          sideMenuCL.remove('active');
+        }, animateTime * 1000);
+      } else {
+        hamburgerCL.add('active');
+        overlayCL.add('active');
+        sideMenuCL.add('active');
 
-      setTimeout(() => {
-        overlayCL.add('animate');
-        sideMenuCL.add('animate');
-      }, 50);
+        setTimeout(() => {
+          overlayCL.add('animate');
+          sideMenuCL.add('animate');
+        }, 50);
+      }
     }
-  }
-};
+  },
+  animateTime * 1000,
+);
 
 const NavMobile = ({ theme }: Props): ReactElement => {
   return (
@@ -72,33 +79,35 @@ const NavMobile = ({ theme }: Props): ReactElement => {
         aria-label="Menu Overlay"
       />
       <div className="side_menu">
-        <ul>
-          <li>
-            <Link href="/lobby">
-              <a>Lobby</a>
-            </Link>
-          </li>
-          <li>
-            <Link href="/rules">
-              <a>Rules</a>
-            </Link>
-          </li>
-          <li>
-            <Link href="/">
-              <a>Community</a>
-            </Link>
-          </li>
-          <li>
-            <Link href="/stats">
-              <a>Stats</a>
-            </Link>
-          </li>
-          <li>
-            <Link href="/">
-              <a>Development</a>
-            </Link>
-          </li>
-        </ul>
+        <div>
+          <ul>
+            <li>
+              <Link href="/lobby">
+                <a>Lobby</a>
+              </Link>
+            </li>
+            <li>
+              <Link href="/rules">
+                <a>Rules</a>
+              </Link>
+            </li>
+            <li>
+              <Link href="/">
+                <a>Community</a>
+              </Link>
+            </li>
+            <li>
+              <Link href="/stats">
+                <a>Stats</a>
+              </Link>
+            </li>
+            <li>
+              <Link href="/">
+                <a>Development</a>
+              </Link>
+            </li>
+          </ul>
+        </div>
       </div>
 
       <style jsx>
@@ -111,7 +120,7 @@ const NavMobile = ({ theme }: Props): ReactElement => {
             top: 0px;
             right: 0px;
             height: 100vh;
-            width: 80vh;
+            width: 100vw;
             z-index: 2;
             background-color: rgba(0, 0, 0, 0.5); /* Black w/opacity */
 

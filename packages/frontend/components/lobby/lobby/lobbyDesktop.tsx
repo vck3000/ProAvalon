@@ -9,7 +9,7 @@ import Chat from '../chat';
 
 const LobbyDesktop = (): ReactElement => (
   <div className="container">
-    <Grid divided="vertically" padded className="main_grid">
+    <Grid divided="vertically" padded style={{ height: '100%' }}>
       <Grid.Column width={4}>
         <div className="left_wrapper">
           <div className="logo_wrapper">
