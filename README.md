@@ -82,15 +82,18 @@ If you do not run Windows Pro or Enterprise, you will not be able to install Doc
 ```
 
 ### In-built developer tools
+
 The Docker-compose file spins up all the dependencies in one command.
 This includes:
+
 - Redis (in memory database)
 - MongoDB (database)
 - Mongo-express (web interface for MongoDB)
 
 To access Mongo-express' web interface, simply go to `localhost:8081`.
 
-To manually connect to Redis via the CLI: 
+To manually connect to Redis via the CLI:
+
 ```
 > docker run -it --name redis_CLI --net proavalon_default --link cache:redis --rm redis redis-cli -h redis -p 6379
 ```
@@ -98,6 +101,16 @@ To manually connect to Redis via the CLI:
 If the above does not work, run `docker container ls` and replace `cache` with redis' container name. Otherwise, double check the network name via `docker network ls`.
 
 NOTE: Database data is persisted in `./database_data/`.
+
+### Docker limitations
+
+When a new npm package is installed in `packages/backend` or `packages/frontend`, the docker images must be rebuilt. Since this is a fairly long process, an alternative solution is to enter the docker container and `npm install` a second time.
+
+```
+> docker container ls
+> docker exec -it <container_id> /bin/bash
+> ... (`cd` and `npm install --save` package)
+```
 
 ## Overview
 

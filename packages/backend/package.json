@@ -1,18 +1,26 @@
 {
-  "name": "proavalon_backend",
-  "version": "1.0.0",
+  "name": "backend",
+  "version": "0.0.1",
   "description": "",
-  "main": "build/app.js",
   "author": "",
-  "license": "ISC",
+  "private": true,
+  "license": "UNLICENSED",
   "scripts": {
     "precommit": "lint-staged && npm run build",
-    "build": "tsc",
-    "start": "nodemon build/app.js",
-    "dev": "ts-node-dev ./src/app.ts",
-    "lint": "eslint './**/*.{js,jsx,ts,tsx}' --max-warnings 0",
+    "prebuild": "rimraf build",
+    "build": "nest build",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node build/main",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --max-warnings 0",
     "test": "jest --passWithNoTests",
-    "test:watch": "jest --watchAll"
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "dev": "nest start --watch --preserveWatchOutput"
   },
   "lint-staged": {
     "*.json": [
@@ -25,27 +33,49 @@
     ]
   },
   "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.17.1",
-    "nodemon": "^2.0.2"
+    "@nestjs/common": "^7.0.0",
+    "@nestjs/core": "^7.0.0",
+    "@nestjs/platform-express": "^7.0.0",
+    "@nestjs/testing": "^7.0.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^3.0.2",
+    "rxjs": "^6.5.4"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.6",
-    "@types/express": "^4.17.2",
-    "@types/jest": "^25.1.2",
-    "@types/node": "^13.7.1",
-    "@typescript-eslint/eslint-plugin": "^2.19.2",
-    "@typescript-eslint/parser": "^2.19.2",
+    "@nestjs/cli": "^7.0.0",
+    "@nestjs/schematics": "^7.0.0",
+    "@types/express": "^4.17.3",
+    "@types/jest": "25.1.4",
+    "@types/node": "^13.9.1",
+    "@types/supertest": "^2.0.8",
+    "@typescript-eslint/eslint-plugin": "^2.23.0",
+    "@typescript-eslint/parser": "^2.23.0",
     "eslint": "^6.8.0",
-    "eslint-config-airbnb-base": "^14.0.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-import": "^2.20.1",
-    "eslint-plugin-jest": "^23.7.0",
-    "eslint-plugin-prettier": "^3.1.2",
     "jest": "^25.1.0",
     "lint-staged": "^10.0.7",
-    "prettier": "1.19.1",
-    "ts-node-dev": "^1.0.0-pre.44",
-    "typescript": "^3.7.5"
+    "prettier": "^1.19.1",
+    "supertest": "^4.0.2",
+    "ts-jest": "25.2.1",
+    "ts-loader": "^6.2.1",
+    "ts-node": "^8.6.2",
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^3.7.4"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".spec.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
   }
 }

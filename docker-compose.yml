@@ -12,6 +12,7 @@ services:
   mongo:
     image: mongo:4.2.3 # Use stable version
     environment:
+      MONGO_INITDB_DATABASE: proavalon
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
     ports:
@@ -29,9 +30,12 @@ services:
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: password
+    restart: on-failure
 
   backend:
     container_name: backend
+    depends_on:
+      - mongo
     ports:
       - ${BACKEND_PORT}:3001
     build:
