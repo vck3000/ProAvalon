@@ -13,6 +13,7 @@ export type MessageType =
   | 'create_room';
 
 export interface IMessage {
+  id: string;
   timestamp: Date;
   username: string;
   message: string;
