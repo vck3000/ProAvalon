@@ -42,6 +42,8 @@
         "ts": "never",
         "tsx": "never"
       }
-    ]
+    ],
+    // Avoid conflict with Prettier
+    "object-curly-newline": "off"
   }
 }
