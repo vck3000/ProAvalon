@@ -85,8 +85,14 @@ function sendWarning() {
 
 function saveGameToDb(roomToSave) {
     if (roomToSave.gameStarted === true && roomToSave.finished !== true) {
+        // Take out io stuff since we don't need it.
+        let deepCopyRoom = JSON.parse(JSON.stringify(roomToSave));
+        deepCopyRoom.io = undefined;
+        deepCopyRoom.allSockets = undefined;
+        deepCopyRoom.socketsOfPlayers = undefined;
+
         if (roomToSave.savedGameRecordId === undefined) {
-            savedGameObj.create({ room: JSON.stringify(roomToSave) }, (err, savedGame) => {
+            savedGameObj.create({ room: JSON.stringify(deepCopyRoom) }, (err, savedGame) => {
                 if (err) {
                     console.log(err);
                 } else {
@@ -95,7 +101,7 @@ function saveGameToDb(roomToSave) {
                 }
             });
         } else {
-            savedGameObj.findByIdAndUpdate(roomToSave.savedGameRecordId, { room: JSON.stringify(roomToSave) }, (err, savedGame) => {
+            savedGameObj.findByIdAndUpdate(roomToSave.savedGameRecordId, { room: JSON.stringify(deepCopyRoom) }, (err, savedGame) => {
                 // console.log("Successfully saved this game");
             });
         }
@@ -113,30 +119,43 @@ function deleteSaveGameFromDb(room) {
     }
 }
 
+setTimeout(async () => {
+    console.log("Loading save games");
+    let run = true;
+    let i = 0;
+    while (run) {
+        // RECOVERING SAVED GAMES!
+        await new Promise((resolve) => {
+            savedGameObj.find({}).skip(i).limit(1).exec((err, foundSaveGameArr) => {
 
-// RECOVERING SAVED GAMES!
-savedGameObj.find({}).exec((err, foundSaveGameArray) => {
-    if (err) { console.log(err); } else {
-        for (const key in foundSaveGameArray) {
-            if (foundSaveGameArray.hasOwnProperty(key)) {
-                const foundSaveGame = foundSaveGameArray[key];
+                const foundSaveGame = foundSaveGameArr[0];
 
-                if (foundSaveGame) {
-                    const storedData = JSON.parse(foundSaveGame.room);
+                if (foundSaveGame && foundSaveGame.room) {
 
+                    const storedData = JSON.parse(foundSaveGame.room);        
+                    console.log("Loaded room " + storedData.roomId);
+                    
                     rooms[storedData.roomId] = new gameRoom();
-
+        
                     Object.assign(rooms[storedData.roomId], storedData);
-
+        
                     rooms[storedData.roomId].restartSaved = true;
                     rooms[storedData.roomId].savedGameRecordId = foundSaveGame.id;
                     rooms[storedData.roomId].recoverGame(storedData);
                     rooms[storedData.roomId].callback = socketCallback;
                 }
-            }
-        }
+        
+                else {
+                    console.log("Finishing load save game");
+                    run = false;
+                }
+                resolve();
+            });
+        });
+        
+        i += 1;
     }
-});
+}, 1000)
 
 const lastWhisperObj = {};
 var pmmodCooldowns = {};
