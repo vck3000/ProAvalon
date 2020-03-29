@@ -1,19 +1,16 @@
-import React, { ReactElement, useState, useEffect } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { connect } from 'react-redux';
 
-import socket from '../../socket/socketConnection';
+import socket from '../../socket/socket';
+
 import { RootState } from '../../store';
 import { ThemeOptions } from '../../store/userOptions/types';
-
 import Message from './message';
 import { IMessage } from '../../store/chat/types';
-import { receivedMessage } from '../../store/chat/actions';
 
 interface IStateProps {
   theme: ThemeOptions;
-  message: IMessage;
   messages: IMessage[];
-  dispatchReceivedMessage: typeof receivedMessage;
 }
 
 type Props = IStateProps;
@@ -29,24 +26,7 @@ const GetOpacity = (i: number, numMessages: number): number => {
   );
 };
 
-socket.on('msgToClient', (messageReceived: IMessage) => {
-  // eslint-disable-next-line no-console
-  console.log('msgToClient', messageReceived);
-});
-
-const Chat = ({
-  theme,
-  messages,
-  dispatchReceivedMessage,
-}: Props): ReactElement => {
-  useEffect(() => {
-    socket.on('msgToClient', (messageReceived: IMessage) => {
-      // eslint-disable-next-line no-console
-      // console.log('msgToClient', messageReceived);
-      dispatchReceivedMessage(messageReceived);
-    });
-  }, []);
-
+const Chat = ({ theme, messages }: Props): ReactElement => {
   const [messageText, setMessageText] = useState('');
 
   return (
@@ -55,7 +35,7 @@ const Chat = ({
         <div className="chat">
           <ul className="chat_list">
             {messages.map((chatMessage: IMessage, i: number) => (
-              <li key={chatMessage.id}>
+              <li key={chatMessage.timestamp.toString()}>
                 <Message
                   message={chatMessage}
                   opacity={GetOpacity(i, messages.length)}
@@ -153,11 +133,4 @@ const mapStateToProps = (
   messages: state.chat.messages,
 });
 
-const mapDispatchToProps = {
-  dispatchReceivedMessage: receivedMessage,
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(Chat as () => ReactElement);
+export default connect(mapStateToProps, null)(Chat as () => ReactElement);
