@@ -5,4 +5,5 @@ socket.on('connect', () => {
   // eslint-disable-next-line no-console
   console.log(`connected to ${socket.id}`);
 });
+
 export default socket;

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Message } from './types/Message.type';
+import { Message } from './interfaces/message.interface';
 @Injectable()
 export class ChatService {
   messages: Message[] = [];
@@ -9,7 +9,7 @@ export class ChatService {
   }
 
   getLastMessage(): Message {
-    return this.messages[this.size() - 1];
+    return this.messages[this.messages.length - 1];
   }
 
   getMessages(): Message[] {

@@ -44,16 +44,15 @@ interface ISagaStore extends Store {
   sagaTask: any;
 }
 
-function configureStore(initialState: RootState): Store {
-  const sagaMiddleware = createSagaMiddleware();
-  const store = createStore(
-    rootReducer,
-    initialState,
-    bindMiddleware([sagaMiddleware]),
-  );
+const sagaMiddleware = createSagaMiddleware();
+export const store = createStore(
+  rootReducer,
+  {},
+  bindMiddleware([sagaMiddleware]),
+);
 
+function configureStore(): Store {
   (store as ISagaStore).sagaTask = sagaMiddleware.run(rootSaga);
-
   return store;
 }
 
