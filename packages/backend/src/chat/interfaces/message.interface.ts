@@ -7,9 +7,8 @@ export type MessageType =
   | 'create_room';
 
 export interface Message {
-  id: string;
-  timestamp: Date;
-  username: string;
-  message: string;
-  type: MessageType;
+  readonly timestamp: Date;
+  readonly username: string;
+  readonly messageText: string;
+  readonly type: MessageType;
 }

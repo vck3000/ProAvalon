@@ -7,11 +7,14 @@ import withRedux from 'next-redux-wrapper';
 import withReduxSaga from 'next-redux-saga';
 
 import throttle from '../utils/throttle';
+import { SetSocketChat } from '../socket/chat';
 
 import createStore, { RootState } from '../store';
 import { IUserOptionsState, ThemeOptions } from '../store/userOptions/types';
 import { MobileView, ISystemState } from '../store/system/types';
 import { setMobileView, setWindowDimensions } from '../store/system/actions';
+
+SetSocketChat();
 
 interface IProps extends AppProps {
   store: Store;
