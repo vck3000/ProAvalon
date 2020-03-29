@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement, useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import socket from '../../socket/socketConnection';
@@ -7,13 +7,12 @@ import { ThemeOptions } from '../../store/userOptions/types';
 
 import Message from './message';
 import { IMessage } from '../../store/chat/types';
-import { setMessage, receivedMessage } from '../../store/chat/actions';
+import { receivedMessage } from '../../store/chat/actions';
 
 interface IStateProps {
   theme: ThemeOptions;
   message: IMessage;
   messages: IMessage[];
-  dispatchSetMessage: typeof setMessage;
   dispatchReceivedMessage: typeof receivedMessage;
 }
 
@@ -30,20 +29,25 @@ const GetOpacity = (i: number, numMessages: number): number => {
   );
 };
 
+socket.on('msgToClient', (messageReceived: IMessage) => {
+  // eslint-disable-next-line no-console
+  console.log('msgToClient', messageReceived);
+});
+
 const Chat = ({
   theme,
-  message,
   messages,
-  dispatchSetMessage,
   dispatchReceivedMessage,
 }: Props): ReactElement => {
   useEffect(() => {
     socket.on('msgToClient', (messageReceived: IMessage) => {
       // eslint-disable-next-line no-console
-      console.log('msgToClient');
+      // console.log('msgToClient', messageReceived);
       dispatchReceivedMessage(messageReceived);
     });
   }, []);
+
+  const [messageText, setMessageText] = useState('');
 
   return (
     <>
@@ -64,15 +68,15 @@ const Chat = ({
         <input
           className="text_input"
           placeholder="Type your message here..."
-          value={message.messageText}
+          value={messageText}
           onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
-            dispatchSetMessage(e.target.value);
+            setMessageText(e.target.value);
           }}
           onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>): void => {
             if (e.key === 'Enter') {
               // set new timestamp when emitting message to server
-              socket.emit('msgToServer', { ...message, timestamp: new Date() });
-              dispatchSetMessage('');
+              socket.emit('msgToServer', messageText);
+              setMessageText('');
             }
           }}
         />
@@ -144,14 +148,12 @@ const Chat = ({
 
 const mapStateToProps = (
   state: RootState,
-): Pick<IStateProps, 'theme' | 'message' | 'messages'> => ({
+): Pick<IStateProps, 'theme' | 'messages'> => ({
   theme: state.userOptions.theme,
-  message: state.chat.message,
   messages: state.chat.messages,
 });
 
 const mapDispatchToProps = {
-  dispatchSetMessage: setMessage,
   dispatchReceivedMessage: receivedMessage,
 };
 
