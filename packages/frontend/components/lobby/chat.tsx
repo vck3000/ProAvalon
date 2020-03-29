@@ -1,256 +1,21 @@
-import React, { ReactElement, useState, useEffect } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import { connect } from 'react-redux';
-import io from 'socket.io-client';
 
+import socket from '../../socket/socketConnection';
 import { RootState } from '../../store';
 import { ThemeOptions } from '../../store/userOptions/types';
 
-import Message, { IMessage } from './message';
+import Message from './message';
+import { IMessage } from '../../store/chat/types';
+import { setMessage, receivedMessage } from '../../store/chat/actions';
 
 interface IStateProps {
   theme: ThemeOptions;
+  message: IMessage;
+  messages: IMessage[];
+  dispatchSetMessage: typeof setMessage;
+  dispatchReceivedMessage: typeof receivedMessage;
 }
-
-function* dateGenerator(): Generator {
-  let d = 1583135940000;
-  while (true) {
-    d += 1;
-    yield d;
-  }
-}
-
-export const dateGenObj = dateGenerator();
-
-// const exampleMessages: Omit<IMessage, 'id'>[] = [
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: '',
-//     message: `Nikolaj has left the lobby.`,
-//     type: 'player_leave_lobby',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: '',
-//     message: `Maria has left the lobby.`,
-//     type: 'player_leave_lobby',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: '',
-//     message: `Nikolaj has left the lobby.`,
-//     type: 'player_leave_lobby',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: '',
-//     message: `Maria has left the lobby.`,
-//     type: 'player_leave_lobby',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: '',
-//     message: `Nikolaj has left the lobby.`,
-//     type: 'player_leave_lobby',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: '',
-//     message: `Maria has left the lobby.`,
-//     type: 'player_leave_lobby',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: '',
-//     message: `Nikolaj has left the lobby.`,
-//     type: 'player_leave_lobby',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: '',
-//     message: `Maria has left the lobby.`,
-//     type: 'player_leave_lobby',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: '',
-//     message: `Maria has joined the lobby.`,
-//     type: 'player_join_lobby',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: '',
-//     message: `Bassem has joined the lobby.`,
-//     type: 'player_join_lobby',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'pam',
-//     message: `btw im copying this chat for something im making`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'tofy',
-//     message: `you gotta avalon`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: '',
-//     message: `benjk has joined the lobby.`,
-//     type: 'player_join_lobby',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'pam',
-//     message: `so keep that in mind`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: '',
-//     message: `benjk has left the lobby.`,
-//     type: 'player_leave_lobby',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: '',
-//     message: `benjk has joined the lobby.`,
-//     type: 'player_join_lobby',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'helloperson',
-//     message: `hey pam`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'pam',
-//     message: `hi person`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'pam',
-//     message: `tofy cutie`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'tofy',
-//     message: `nou`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'Maria',
-//     message: `yes`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'tofy',
-//     message: `we can start over`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'Maria',
-//     message: `!`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'tofy',
-//     message: `hai`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'tofy',
-//     message: `the chat`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'pam',
-//     message: `helloperson`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: '',
-//     message: `Maria has created room #193`,
-//     type: 'create_room',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'Maria',
-//     message: `nou`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'tofy',
-//     message: `bass`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'tofy',
-//     message: `...`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'tofy',
-//     message: `WE JUST`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'tofy',
-//     message: `STARTED AGAIN`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'pam',
-//     message: `it's ok, i can remove bass`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'pam',
-//     message: `:D`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'Bassem',
-//     message: `</3`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'helloperson',
-//     message: `lol`,
-//     type: 'chat',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: '',
-//     message: `Maria has joined the lobby`,
-//     type: 'player_join_lobby',
-//   },
-//   {
-//     timestamp: new Date(dateGenObj.next().value as number),
-//     username: 'pam',
-//     message: `Room 141 has finished! The Spies have won!`,
-//     type: 'spy_win',
-//   },
-// ];
 
 type Props = IStateProps;
 
@@ -265,40 +30,20 @@ const GetOpacity = (i: number, numMessages: number): number => {
   );
 };
 
-const socket = io('http://localhost:3001');
-
-const exampleMessage: Omit<IMessage, 'id'> = {
-  timestamp: new Date(dateGenObj.next().value as number),
-  username: 'nikolaj',
-  message: '',
-  type: 'chat',
-};
-
-const Chat = (props: Props): ReactElement => {
-  const { theme } = props;
-  const [messages, setMessages] = useState<IMessage[]>([]);
-  const [messageCount, setMessageCount] = useState(0);
-
-  const [message, setMessage] = useState<Omit<IMessage, 'id'>>(exampleMessage);
-
-  const receivedMessage = (messageReceived: IMessage): void => {
-    setMessages([
-      ...messages,
-      { ...messageReceived, timestamp: new Date(messageReceived.timestamp) },
-    ]);
-  };
-
+const Chat = ({
+  theme,
+  message,
+  messages,
+  dispatchSetMessage,
+  dispatchReceivedMessage,
+}: Props): ReactElement => {
   useEffect(() => {
     socket.on('msgToClient', (messageReceived: IMessage) => {
-      receivedMessage(messageReceived);
+      // eslint-disable-next-line no-console
+      console.log('msgToClient');
+      dispatchReceivedMessage(messageReceived);
     });
-  }, [messageCount]); // only re-run the effect if new message comes in
-
-  const sendMessage = (): void => {
-    socket.emit('msgToServer', { ...message, timestamp: new Date() });
-    setMessage({ ...message, message: '' });
-    setMessageCount(messageCount + 1);
-  };
+  }, []);
 
   return (
     <>
@@ -319,16 +64,15 @@ const Chat = (props: Props): ReactElement => {
         <input
           className="text_input"
           placeholder="Type your message here..."
-          value={message.message}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-            setMessage({
-              ...message,
-              message: e.target.value,
-            })
-          }
+          value={message.messageText}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
+            dispatchSetMessage(e.target.value);
+          }}
           onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>): void => {
             if (e.key === 'Enter') {
-              sendMessage();
+              // set new timestamp when emitting message to server
+              socket.emit('msgToServer', { ...message, timestamp: new Date() });
+              dispatchSetMessage('');
             }
           }}
         />
@@ -398,8 +142,20 @@ const Chat = (props: Props): ReactElement => {
   );
 };
 
-const mapStateToProps = (state: RootState): IStateProps => ({
+const mapStateToProps = (
+  state: RootState,
+): Pick<IStateProps, 'theme' | 'message' | 'messages'> => ({
   theme: state.userOptions.theme,
+  message: state.chat.message,
+  messages: state.chat.messages,
 });
 
-export default connect(mapStateToProps, null)(Chat as () => ReactElement);
+const mapDispatchToProps = {
+  dispatchSetMessage: setMessage,
+  dispatchReceivedMessage: receivedMessage,
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Chat as () => ReactElement);

@@ -2,8 +2,8 @@ import { ReactElement } from 'react';
 
 import Taako from '../taako';
 import Announcements from '../announcements';
-import { dateGenObj } from '../chat';
 import OnlinePlayers from '../onlinePlayers';
+import dateGenObj from '../../../utils/dateGenerator';
 
 const LobbyLeftPanel = (): ReactElement => (
   <>
