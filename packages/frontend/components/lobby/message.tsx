@@ -3,22 +3,7 @@ import { connect } from 'react-redux';
 
 import { RootState } from '../../store';
 import { ThemeOptions } from '../../store/userOptions/types';
-
-export type MessageType =
-  | 'chat'
-  | 'res_win'
-  | 'spy_win'
-  | 'player_join_lobby'
-  | 'player_leave_lobby'
-  | 'create_room';
-
-export interface IMessage {
-  id: string;
-  timestamp: Date;
-  username: string;
-  message: string;
-  type: MessageType;
-}
+import { IMessage } from '../../store/chat/types';
 
 interface IStateProps {
   theme: ThemeOptions;
@@ -37,8 +22,8 @@ const Message = (props: Props): ReactElement => {
   return (
     <span className="wrapper">
       <span className="timestamp">
-        [{`0${message.timestamp.getHours() % 12}`.slice(-2)}:
-        {`0${message.timestamp.getMinutes()}`.slice(-2)}]
+        [{`0${new Date(message.timestamp).getHours() % 12}`.slice(-2)}:
+        {`0${new Date(message.timestamp).getMinutes()}`.slice(-2)}]
       </span>
 
       <span className={message.type}>
@@ -47,9 +32,9 @@ const Message = (props: Props): ReactElement => {
         ) : null}
 
         {message.type === 'chat' ? (
-          <span>{message.message}</span>
+          <span>{message.messageText}</span>
         ) : (
-          <span className="pad_left">{message.message}</span>
+          <span className="pad_left">{message.messageText}</span>
         )}
       </span>
 
