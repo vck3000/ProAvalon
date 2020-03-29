@@ -42,7 +42,7 @@ const Chat = ({ theme, messages }: Props): ReactElement => {
         <div className="chat">
           <ul className="chat_list" ref={chatRef}>
             {messages.map((chatMessage: IMessage, i: number) => (
-              <li key={chatMessage.timestamp.toString()}>
+              <li key={new Date(chatMessage.timestamp).getTime()}>
                 <Message
                   message={chatMessage}
                   opacity={GetOpacity(i, messages.length)}
