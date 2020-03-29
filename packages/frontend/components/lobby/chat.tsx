@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useState, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import socket from '../../socket/socket';
@@ -28,12 +28,19 @@ const GetOpacity = (i: number, numMessages: number): number => {
 
 const Chat = ({ theme, messages }: Props): ReactElement => {
   const [messageText, setMessageText] = useState('');
+  const chatRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  }, [messages.length]);
 
   return (
     <>
       <div className="wrapper">
         <div className="chat">
-          <ul className="chat_list">
+          <ul className="chat_list" ref={chatRef}>
             {messages.map((chatMessage: IMessage, i: number) => (
               <li key={chatMessage.timestamp.toString()}>
                 <Message
