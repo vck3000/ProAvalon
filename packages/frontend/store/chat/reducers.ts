@@ -1,6 +1,5 @@
 import {
   SET_CONNECTED,
-  SET_MESSAGE,
   RECEIVED_MESSAGE,
   ChatActionTypes,
   IChatState,
@@ -11,14 +10,14 @@ import dateGenObj from '../../utils/dateGenerator';
 
 const exampleMessages: IMessage[] = [
   {
-    id: '1',
+    id: 'a',
     timestamp: new Date(dateGenObj.next().value as number),
     username: '',
     messageText: `Nikolaj has left the lobby.`,
     type: 'player_leave_lobby',
   },
   {
-    id: '2',
+    id: 'b',
     timestamp: new Date(dateGenObj.next().value as number),
     username: '',
     messageText: `Maria has left the lobby.`,
@@ -28,12 +27,6 @@ const exampleMessages: IMessage[] = [
 
 const initialState: IChatState = {
   messages: exampleMessages,
-  message: {
-    timestamp: new Date(),
-    username: 'nikolaj',
-    messageText: '',
-    type: 'chat',
-  },
   isConnected: false,
 };
 
@@ -42,11 +35,6 @@ const reducer = (
   action: ChatActionTypes,
 ): IChatState => {
   switch (action.type) {
-    case SET_MESSAGE:
-      return {
-        ...state,
-        message: { ...state.message, messageText: action.messageText },
-      };
     case RECEIVED_MESSAGE:
       return {
         ...state,
