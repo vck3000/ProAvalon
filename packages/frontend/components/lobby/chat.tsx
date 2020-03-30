@@ -28,11 +28,26 @@ const GetOpacity = (i: number, numMessages: number): number => {
 
 const Chat = ({ theme, messages }: Props): ReactElement => {
   const [messageText, setMessageText] = useState('');
+  const [scrollDown, setScrollDown] = useState(true);
   const chatRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
+    const SCROLL_CUTOFF = 40;
     if (chatRef.current) {
-      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+      const scrollDistance =
+        chatRef.current.scrollHeight -
+        chatRef.current.scrollTop -
+        chatRef.current.clientHeight;
+      if (
+        (scrollDown && scrollDistance > SCROLL_CUTOFF) ||
+        (!scrollDown && scrollDistance <= SCROLL_CUTOFF)
+      ) {
+        setScrollDown(!scrollDown);
+      }
+
+      if (scrollDown) {
+        chatRef.current.scrollTop = chatRef.current.scrollHeight;
+      }
     }
   }, [messages.length]);
 
@@ -60,9 +75,9 @@ const Chat = ({ theme, messages }: Props): ReactElement => {
             setMessageText(e.target.value);
           }}
           onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>): void => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && messageText) {
               // set new timestamp when emitting message to server
-              socket.emit('msgToServer', messageText);
+              socket.emit('allChatToServer', messageText);
               setMessageText('');
             }
           }}
