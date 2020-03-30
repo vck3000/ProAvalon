@@ -32,9 +32,9 @@ const Message = (props: Props): ReactElement => {
         ) : null}
 
         {message.type === 'chat' ? (
-          <span>{message.messageText}</span>
+          <span>{message.text}</span>
         ) : (
-          <span className="pad_left">{message.messageText}</span>
+          <span className="pad_left">{message.text}</span>
         )}
       </span>
 

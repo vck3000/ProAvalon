@@ -9,6 +9,6 @@ export type MessageType =
 export interface Message {
   readonly timestamp: Date;
   readonly username: string;
-  readonly messageText: string;
+  readonly text: string;
   readonly type: MessageType;
 }

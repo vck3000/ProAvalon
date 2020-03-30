@@ -7,6 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { ChatService } from './chat.service';
+import { Message } from './interfaces/message.interface';
 
 @WebSocketGateway()
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -15,23 +16,35 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private chatService: ChatService) {}
 
   async handleConnection(client: Socket) {
-    // eslint-disable-next-line no-console
-    console.log(`connected to ${client.id}`);
+    const msg = this.chatService.storeMessage({
+      timestamp: new Date(),
+      username: 'nikolaj',
+      text: `${client.id} has joined the lobby`,
+      type: 'player_join_lobby',
+    });
+    this.server.emit('allChatToClient', msg);
   }
 
   async handleDisconnect(client: Socket) {
-    // eslint-disable-next-line no-console
-    console.log(`disconnected from ${client.id}`);
-  }
-
-  @SubscribeMessage('msgToServer')
-  async handleMessage(_client: Socket, messageText: string) {
-    this.chatService.storeMessage({
+    const msg = this.chatService.storeMessage({
       timestamp: new Date(),
       username: 'nikolaj',
-      messageText,
-      type: 'chat',
+      text: `${client.id} has left the lobby`,
+      type: 'player_leave_lobby',
     });
-    this.server.emit('msgToClient', this.chatService.getLastMessage());
+    this.server.emit('allChatToClient', msg);
+  }
+
+  @SubscribeMessage('allChatToServer')
+  async handleMessage(client: Socket, text: Message['text']) {
+    if (text) {
+      const msg = this.chatService.storeMessage({
+        timestamp: new Date(),
+        username: client.id,
+        text,
+        type: 'chat',
+      });
+      this.server.emit('allChatToClient', msg);
+    }
   }
 }
