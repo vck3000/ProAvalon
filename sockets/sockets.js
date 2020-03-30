@@ -92,7 +92,9 @@ function saveGameToDb(roomToSave) {
         deepCopyRoom.socketsOfPlayers = undefined;
 
         for (i = 0; i < deepCopyRoom.playersInGame.length; i++) {
-            deepCopyRoom.playersInGame[i].request = undefined;
+            deepCopyRoom.playersInGame[i].request = {
+                user: {}
+            };
         }
 
         if (roomToSave.savedGameRecordId === undefined) {
