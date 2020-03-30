@@ -1,10 +1,9 @@
 import {
-  IsConnected,
-  ISetConnected,
-  SET_CONNECTED,
   IMessage,
   RECEIVED_MESSAGE,
   IReceivedMessageAction,
+  SET_MESSAGES,
+  ISetMessagesAction,
 } from './types';
 
 export const receivedMessage = (message: IMessage): IReceivedMessageAction => {
@@ -14,9 +13,9 @@ export const receivedMessage = (message: IMessage): IReceivedMessageAction => {
   };
 };
 
-export const setConnected = (isConnected: IsConnected): ISetConnected => {
+export const setMessages = (messages: IMessage[]): ISetMessagesAction => {
   return {
-    type: SET_CONNECTED,
-    isConnected,
+    type: SET_MESSAGES,
+    messages,
   };
 };

@@ -1,7 +1,6 @@
 export const RECEIVED_MESSAGE = 'RECEIVED_MESSAGE';
-export const SET_CONNECTED = 'SET_CONNECTED';
+export const SET_MESSAGES = 'SET_MESSAGES';
 
-export type IsConnected = boolean;
 export type MessageType =
   | 'chat'
   | 'res_win'
@@ -13,13 +12,8 @@ export type MessageType =
 export interface IMessage {
   timestamp: Date;
   username: string;
-  messageText: string;
+  text: string;
   type: MessageType;
-}
-
-export interface ISetConnected {
-  type: typeof SET_CONNECTED;
-  isConnected: IsConnected;
 }
 
 export interface IReceivedMessageAction {
@@ -27,9 +21,13 @@ export interface IReceivedMessageAction {
   message: IMessage;
 }
 
-export interface IChatState {
+export interface ISetMessagesAction {
+  type: typeof SET_MESSAGES;
   messages: IMessage[];
-  isConnected: IsConnected;
 }
 
-export type ChatActionTypes = ISetConnected | IReceivedMessageAction;
+export interface IChatState {
+  messages: IMessage[];
+}
+
+export type ChatActionTypes = ISetMessagesAction | IReceivedMessageAction;

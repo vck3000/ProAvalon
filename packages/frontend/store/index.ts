@@ -16,7 +16,7 @@ import { ISystemState } from './system/types';
 import chatReducer from './chat/reducers';
 import { IChatState } from './chat/types';
 
-import rootSaga from './userOptions/sagas';
+import rootSaga from './sagas';
 
 // Combine reducers and generate the type definition of the AppState
 // https://github.com/reduxjs/redux/pull/3679

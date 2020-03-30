@@ -5,7 +5,7 @@ import { receivedMessage } from '../store/chat/actions';
 
 // eslint-disable-next-line import/prefer-default-export
 export const SetSocketChat = (): void => {
-  socket.on('msgToClient', (message: IMessage) => {
+  socket.on('allChatToClient', (message: IMessage) => {
     store.dispatch(receivedMessage(message));
   });
 };
