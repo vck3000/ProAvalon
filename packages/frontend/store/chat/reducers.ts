@@ -22,7 +22,7 @@ const reducer = (
     case SET_MESSAGES:
       return {
         ...state,
-        messages: state.messages.concat(action.messages),
+        messages: action.messages,
       };
     default:
       return state;

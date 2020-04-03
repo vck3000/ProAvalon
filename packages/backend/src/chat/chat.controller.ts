@@ -2,7 +2,7 @@ import { Controller, Get, Res, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
 import { ChatService } from './chat.service';
 
-@Controller('messages')
+@Controller('allchat')
 export class ChatController {
   constructor(private chatService: ChatService) {}
 
