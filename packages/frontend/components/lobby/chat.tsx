@@ -28,27 +28,26 @@ const GetOpacity = (i: number, numMessages: number): number => {
 
 const Chat = ({ theme, messages }: Props): ReactElement => {
   const [messageText, setMessageText] = useState('');
-  const [scrollDown, setScrollDown] = useState(true);
   const chatRef = useRef<HTMLUListElement>(null);
 
-  useEffect(() => {
+  useEffect((): void | (() => void | undefined) => {
     const SCROLL_CUTOFF = 40;
-    if (chatRef.current) {
+    const chat = chatRef.current;
+    if (chat) {
+      const scrollToTop = (): void => {
+        chat.scrollTop = chat.scrollHeight;
+      };
+
       const scrollDistance =
-        chatRef.current.scrollHeight -
-        chatRef.current.scrollTop -
-        chatRef.current.clientHeight;
-      if (
-        (scrollDown && scrollDistance > SCROLL_CUTOFF) ||
-        (!scrollDown && scrollDistance <= SCROLL_CUTOFF)
-      ) {
-        setScrollDown(!scrollDown);
+        chat.scrollHeight - chat.scrollTop - chat.clientHeight;
+      if (scrollDistance < SCROLL_CUTOFF) {
+        scrollToTop();
       }
 
-      if (scrollDown) {
-        chatRef.current.scrollTop = chatRef.current.scrollHeight;
-      }
+      window.addEventListener('load', scrollToTop);
+      return (): void => window.removeEventListener('load', scrollToTop);
     }
+    return undefined;
   }, [messages.length]);
 
   return (
