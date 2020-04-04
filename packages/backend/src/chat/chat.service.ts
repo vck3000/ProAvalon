@@ -253,6 +253,12 @@ export class ChatService {
 
   storeMessage(message: Message) {
     this.messages.push(message);
+    if (this.messages.length > 50) {
+      this.messages = this.messages.slice(
+        this.messages.length - 50,
+        this.messages.length,
+      );
+    }
     return message;
   }
 }
