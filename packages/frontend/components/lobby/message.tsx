@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { RootState } from '../../store';
 import { ThemeOptions } from '../../store/userOptions/types';
-import { IMessage } from '../../store/chat/types';
+import { IMessage } from '../../store/chat/message.types';
 
 interface IStateProps {
   theme: ThemeOptions;

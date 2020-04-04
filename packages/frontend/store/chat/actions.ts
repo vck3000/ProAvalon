@@ -1,10 +1,10 @@
+import { IMessage } from './message.types';
 import {
-  IMessage,
-  RECEIVED_MESSAGE,
   IReceivedMessageAction,
-  SET_MESSAGES,
+  RECEIVED_MESSAGE,
   ISetMessagesAction,
-} from './types';
+  SET_MESSAGES,
+} from './actions.types';
 
 export const receivedMessage = (message: IMessage): IReceivedMessageAction => {
   return {
