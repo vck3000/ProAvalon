@@ -1,8 +1,8 @@
 import axios, { AxiosResponse } from 'axios';
 import { SagaIterator } from 'redux-saga';
-import { call, put } from 'redux-saga/effects';
+import { call, put, takeLatest } from 'redux-saga/effects';
 
-import { IMessage } from './types';
+import { IMessage } from './message.types';
 import getApiUrl from '../../api/config';
 
 export function get(
@@ -21,4 +21,8 @@ export function* getAllChat(): SagaIterator {
   console.log('getallchat');
   const messages = yield call(get, '/allchat');
   yield put({ type: 'SET_MESSAGES', messages });
+}
+
+export function* watchGetAllChat(): SagaIterator {
+  yield takeLatest('GET_ALL_CHAT', getAllChat);
 }

@@ -1,5 +1,5 @@
 import socket from './socket';
-import { IMessage } from '../store/chat/types';
+import { IMessage } from '../store/chat/message.types';
 import { store } from '../store';
 import { receivedMessage } from '../store/chat/actions';
 
