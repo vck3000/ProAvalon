@@ -3,12 +3,12 @@ import { SagaIterator } from 'redux-saga';
 import { call, put } from 'redux-saga/effects';
 
 import { IMessage } from './types';
-import apiUrl from '../../api/config';
+import getApiUrl from '../../api/config';
 
 export function get(
   path: string,
 ): Promise<AxiosResponse<IMessage[]> | IMessage[]> {
-  const url = `${apiUrl}${path}`;
+  const url = `${getApiUrl()}${path}`;
 
   return axios({
     method: 'get',
@@ -17,6 +17,8 @@ export function get(
 }
 
 export function* getAllChat(): SagaIterator {
+  // eslint-disable-next-line no-console
+  console.log('getallchat');
   const messages = yield call(get, '/allchat');
   yield put({ type: 'SET_MESSAGES', messages });
 }
