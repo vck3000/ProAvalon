@@ -94,6 +94,14 @@ const MyApp = ({
   );
 };
 
+// Disable all getInitialProps. Check next.config.js for information.
+// MyApp.getInitialProps = async (appContext: AppContext): Promise<AppInitialProps> => {
+//   // calls page's `getInitialProps` and fills `appProps.pageProps`
+//   const appProps = await App.getInitialProps(appContext);
+
+//   return { ...appProps }
+// }
+
 const mapStateToProps = (
   state: RootState,
 ): Pick<ISystemState & IUserOptionsState, 'mobileView' | 'theme'> => ({
