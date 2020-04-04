@@ -60,6 +60,7 @@
       {
         "prefixWithI": "always"
       }
-    ]
+    ],
+    "import/prefer-default-export": "off"
   }
 }
