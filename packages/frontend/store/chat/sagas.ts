@@ -1,13 +1,12 @@
 import axios, { AxiosResponse } from 'axios';
 import { SagaIterator } from 'redux-saga';
-import { call, put, takeLatest } from 'redux-saga/effects';
+import { call, put, takeLatest, fork } from 'redux-saga/effects';
 
 import { IMessage } from './message.types';
 import getApiUrl from '../../api/config';
+import { SET_MESSAGES, GET_ALL_CHAT } from './actions.types';
 
-export function get(
-  path: string,
-): Promise<AxiosResponse<IMessage[]> | IMessage[]> {
+function get(path: string): Promise<AxiosResponse<IMessage[]> | IMessage[]> {
   const url = `${getApiUrl()}${path}`;
 
   return axios({
@@ -16,13 +15,15 @@ export function get(
   }).then((resp: { data: IMessage[] }) => resp.data);
 }
 
-export function* getAllChat(): SagaIterator {
-  // eslint-disable-next-line no-console
-  console.log('getallchat');
+function* getAllChat(): SagaIterator {
   const messages = yield call(get, '/allchat');
-  yield put({ type: 'SET_MESSAGES', messages });
+  yield put({ type: SET_MESSAGES, messages });
 }
 
-export function* watchGetAllChat(): SagaIterator {
-  yield takeLatest('GET_ALL_CHAT', getAllChat);
+function* watchGetAllChat(): SagaIterator {
+  yield takeLatest(GET_ALL_CHAT, getAllChat);
+}
+
+export function* chatSaga(): SagaIterator {
+  yield fork(watchGetAllChat);
 }
