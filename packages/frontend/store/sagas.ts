@@ -1,8 +1,9 @@
 import { SagaIterator } from 'redux-saga';
-import { all, fork } from 'redux-saga/effects';
+import { fork } from 'redux-saga/effects';
 
-import { getAllChat } from './chat/sagas';
+import { watchGetAllChat } from './chat/sagas';
 
 export default function* rootSaga(): SagaIterator {
-  yield all([fork(getAllChat)]);
+  // Add forks below
+  yield fork(watchGetAllChat);
 }

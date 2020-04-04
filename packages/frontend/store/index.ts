@@ -13,8 +13,7 @@ import userOptionsReducer from './userOptions/reducers';
 import { IUserOptionsState } from './userOptions/types';
 import systemReducer from './system/reducers';
 import { ISystemState } from './system/types';
-import chatReducer from './chat/reducers';
-import { IChatState } from './chat/types';
+import chatReducer, { IChatState } from './chat/reducers';
 
 import rootSaga from './sagas';
 

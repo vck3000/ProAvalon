@@ -2,8 +2,12 @@ import {
   SET_MESSAGES,
   RECEIVED_MESSAGE,
   ChatActionTypes,
-  IChatState,
-} from './types';
+} from './actions.types';
+import { IMessage } from './message.types';
+
+export interface IChatState {
+  messages: IMessage[];
+}
 
 const initialState: IChatState = {
   messages: [],
