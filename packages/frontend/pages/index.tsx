@@ -15,9 +15,11 @@ interface IProps {
   mobileView: MobileView;
 }
 
-const Home = (props: IProps): ReactElement => {
-  const { theme, dispatchSetTheme, mobileView } = props;
-
+const Home = ({
+  theme,
+  dispatchSetTheme,
+  mobileView,
+}: IProps): ReactElement => {
   return (
     <div className="background">
       <title>Home</title>

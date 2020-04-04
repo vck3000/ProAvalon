@@ -1,31 +1,48 @@
-import { ReactElement } from 'react';
+import { ReactElement, useEffect } from 'react';
+import { connect } from 'react-redux';
 
 import LobbyIndex from '../components/lobby/lobby/lobbyIndex';
+import { getAllChat } from '../store/chat/actions';
 
-const Lobby = (): ReactElement => (
-  <>
-    <title>Lobby</title>
-    <LobbyIndex />
-    <style global jsx>
-      {`
-        // CSS to make NextJS Page one page tall
-        html,
-        body,
-        body > div:first-child,
-        div#__next {
-          height: 100%;
-        }
+interface IProps {
+  dispatchGetAllChat: typeof getAllChat;
+}
 
-        body {
-          margin: 0px;
-        }
+const Lobby = ({ dispatchGetAllChat }: IProps): ReactElement => {
+  // Get all chat on lobby load.
+  useEffect(() => {
+    dispatchGetAllChat();
+  }, []);
 
-        .ui.grid {
-          margin: 0;
-        }
-      `}
-    </style>
-  </>
-);
+  return (
+    <>
+      <title>Lobby</title>
+      <LobbyIndex />
+      <style global jsx>
+        {`
+          // CSS to make NextJS Page one page tall
+          html,
+          body,
+          body > div:first-child,
+          div#__next {
+            height: 100%;
+          }
 
-export default Lobby;
+          body {
+            margin: 0px;
+          }
+
+          .ui.grid {
+            margin: 0;
+          }
+        `}
+      </style>
+    </>
+  );
+};
+
+const mapDispatchToProps = {
+  dispatchGetAllChat: getAllChat,
+};
+
+export default connect(null, mapDispatchToProps)(Lobby);
