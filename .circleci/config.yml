@@ -20,6 +20,7 @@ jobs:
       - checkout
       - run: echo "lerna installing"
       - run: sudo npm install -g lerna
+      - run: sudo npm i
       - run: lerna bootstrap
 
       # build, lint, test!
