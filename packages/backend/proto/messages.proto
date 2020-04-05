@@ -1,0 +1,29 @@
+// messages.proto
+// package awesomepackage;
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+message ChatRequest { 
+    required string text = 1;   
+}
+
+message ChatResponse {
+    enum ChatResponseType {
+        CHAT = 0;
+        RES_WIN = 1;
+        SPY_WIN = 2;
+        PLAYER_JOIN_LOBBY = 3;
+        PLAYER_LEAVE_LOBBY = 4;
+        CREATE_ROOM = 5;
+    }
+
+    required string text = 1;
+    required string username = 2;
+    required google.protobuf.Timestamp timestamp = 3;
+    required ChatResponseType type = 4;
+}
+
+message ChatResponses {
+    repeated ChatResponse chatResponses = 1;
+}

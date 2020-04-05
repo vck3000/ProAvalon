@@ -6,7 +6,7 @@
     "build": "npm --prefix packages/frontend run build && npm --prefix packages/backend run build",
     "lint": "npm --prefix packages/frontend run lint && npm --prefix packages/backend run lint",
     "test": "npm --prefix packages/frontend test && npm --prefix packages/backend test",
-    "proto": "node_modules/protobufjs/bin/pbjs -t static-module -w commonjs -o proto/bundle.js proto/messages.proto && node_modules/protobufjs/bin/pbjs -t static-module proto/messages.proto | node_modules/protobufjs/bin/pbts -o proto/bundle.d.ts -"
+    "proto": "node_modules/protobufjs/bin/pbjs -t static-module -w commonjs -o proto/bundle.js proto/messages.proto && node_modules/protobufjs/bin/pbjs -t static-module proto/messages.proto | node_modules/protobufjs/bin/pbts -o proto/bundle.d.ts - && cp -R proto/* packages/backend/proto && cp -R proto/* packages/frontend/proto"
   },
   "husky": {
     "hooks": {
