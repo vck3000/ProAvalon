@@ -2,8 +2,8 @@ import React, { ReactElement } from 'react';
 import { Table } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
-import { RootState } from '../../store';
-import { ThemeOptions } from '../../store/userOptions/types';
+import { RootState } from '../../../store';
+import { ThemeOptions } from '../../../store/userOptions/types';
 
 type Reward = 'badge' | 'winner';
 

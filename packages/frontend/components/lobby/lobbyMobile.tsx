@@ -2,17 +2,17 @@ import { ReactElement, useState, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 import Link from 'next/link';
 
-import { RootState } from '../../../store/index';
-import { ThemeOptions } from '../../../store/userOptions/types';
-import { WindowDimensions } from '../../../store/system/types';
+import { RootState } from '../../store/index';
+import { ThemeOptions } from '../../store/userOptions/types';
+import { WindowDimensions } from '../../store/system/types';
 
-import NavIndex from '../../nav/navIndex';
+import NavIndex from '../nav/navIndex';
 
-import Chat from '../chat';
-import LobbyLeftPanel from './lobbyLeftPanel';
-import GamesMenu from '../gamesMenu/gamesMenu';
+import Chat from './mainPanel/chat';
+import LobbyLeftPanel from './leftPanel/home';
+import GamesMenu from './rightPanel/gamesMenu';
 
-const indicators = ['LOBBY', 'CHAT', 'GAMES'];
+const indicators = ['HOME', 'CHAT', 'GAMES'];
 const slides = [<LobbyLeftPanel />, <Chat />, <GamesMenu />];
 
 interface IStateProps {

@@ -1,7 +1,7 @@
 import { ReactElement, useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import LobbyIndex from '../components/lobby/lobby/lobbyIndex';
+import LobbyIndex from '../components/lobby/lobbyIndex';
 import { getAllChat } from '../store/chat/actions';
 
 interface IProps {

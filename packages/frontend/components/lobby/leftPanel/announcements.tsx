@@ -1,8 +1,8 @@
 import React, { ReactElement } from 'react';
 import { connect } from 'react-redux';
 
-import { RootState } from '../../store';
-import { ThemeOptions } from '../../store/userOptions/types';
+import { RootState } from '../../../store';
+import { ThemeOptions } from '../../../store/userOptions/types';
 
 interface IAnnouncement {
   id: string;
