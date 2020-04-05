@@ -54,6 +54,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleDisconnect(client: Socket) {
     this.logger.log(`Player left lobby: ${client.id}.`);
+
     const chatResponse = ChatResponse.create({
       text: `${client.id} has left the lobby`,
       timestamp: getProtoTimestamp(),
@@ -64,6 +65,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.emit(
       SocketEvents.ALL_CHAT_TO_CLIENT,
       ChatResponse.encode(chatResponse).finish(),
+    );
+
+    // Online player count message
+    const count = Object.keys(this.server.sockets.sockets).length;
+    this.logger.log(`Online player count: ${count}.`);
+    const onlinePlayerCountMsg = ChatResponse.create({
+      text: `There are ${count} players connected!`,
+      timestamp: getProtoTimestamp(),
+      username: client.id,
+      type: ChatResponse.ChatResponseType.CREATE_ROOM,
+    });
+    this.chatService.storeMessage(onlinePlayerCountMsg);
+    this.server.emit(
+      SocketEvents.ALL_CHAT_TO_CLIENT,
+      ChatResponse.encode(onlinePlayerCountMsg).finish(),
     );
   }
 

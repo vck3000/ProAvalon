@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import fetch from 'isomorphic-unfetch';
 import { NextPage } from 'next';
-import getApiUrl from '../api/config';
+import { getApiUrl } from '../config';
 
 type Props = {
   backendResponse: string;

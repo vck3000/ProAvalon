@@ -19,4 +19,8 @@ export class ChatService {
     }
     return message;
   }
+
+  deleteAllMessages() {
+    this.messages = [];
+  }
 }

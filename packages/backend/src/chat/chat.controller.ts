@@ -26,4 +26,10 @@ export class ChatController {
     const messages = await this.chatService.getMessages();
     res.status(HttpStatus.OK).json(messages);
   }
+
+  @Get('/deleteall')
+  async deleteAllMessages(@Res() res: Response) {
+    await this.chatService.deleteAllMessages();
+    res.status(HttpStatus.OK).send('Deleted all messages');
+  }
 }

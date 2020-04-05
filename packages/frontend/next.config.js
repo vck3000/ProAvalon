@@ -42,10 +42,12 @@ module.exports = withCSS({
   serverRuntimeConfig: {
     // Will only be available on the server side
     apiUrl: 'http://backend:3001',
+    env: 'server',
   },
 
   publicRuntimeConfig: {
     // Will be available on both server and client
-    apiUrl: process.env.BACKEND_URL || 'http://localhost:3001',
+    apiUrl: process.env.BACKEND_URL,
+    env: 'client',
   },
 });

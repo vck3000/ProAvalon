@@ -60,6 +60,7 @@ services:
         SERVICE: frontend
     environment:
       SERVICE: frontend
+      BACKEND_URL: ${BACKEND_URL}
     volumes:
       - ./packages/frontend:/usr/src/app/packages/frontend
       - /usr/src/app/packages/frontend/node_modules

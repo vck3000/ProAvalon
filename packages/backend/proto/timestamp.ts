@@ -10,6 +10,8 @@ export const getProtoTimestamp = () => {
 
 export const protoTimestampToDate = (timestamp: google.protobuf.ITimestamp) => {
   // JS Date uses milliseconds. Cannot use nanos given in protobuf timestamp.
-  const time = (timestamp.seconds as number) * 1000;
+  const time =
+    (timestamp.seconds as number) * 1000 +
+    (timestamp.nanos as number) / 1000000;
   return new Date(time);
 };

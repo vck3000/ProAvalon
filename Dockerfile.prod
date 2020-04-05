@@ -6,10 +6,7 @@ ENV NODE_ENV="development"
 ARG SERVICE
 ENV SERVICE "$SERVICE"
 
-ARG BACKEND_URL
-ENV BACKEND_URL "$BACKEND_URL"
-
-RUN echo "Building PROD env for ${SERVICE} with backend url: ${BACKEND_URL}."
+RUN echo "Building PROD env for ${SERVICE}."
 
 WORKDIR /usr/src/app
 
