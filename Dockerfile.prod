@@ -9,7 +9,7 @@ ENV SERVICE "$SERVICE"
 ARG BACKEND_URL
 ENV BACKEND_URL "$BACKEND_URL"
 
-RUN echo "Building PROD env for ${SERVICE}."
+RUN echo "Building PROD env for ${SERVICE} with backend url: ${BACKEND_URL}."
 
 WORKDIR /usr/src/app
 

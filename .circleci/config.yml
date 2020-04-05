@@ -36,13 +36,13 @@ jobs:
       - run: |
           if [ $CIRCLE_BRANCH != newPA ]; then exit 0; fi
           TAG=0.1.$CIRCLE_BUILD_NUM
-          docker build -t $DOCKER_USER/proavalon_backend:$TAG -f Dockerfile.prod --build-arg SERVICE=backend --build-arg BACKEND_URL=http://159.203.65.9:3001 .
+          docker build -t $DOCKER_USER/proavalon_backend:$TAG -f Dockerfile.prod --build-arg SERVICE=backend .
           echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
           docker push $DOCKER_USER/proavalon_backend:$TAG
 
       - run: |
           if [ $CIRCLE_BRANCH != newPA ]; then exit 0; fi
           TAG=0.1.$CIRCLE_BUILD_NUM
-          docker build -t $DOCKER_USER/proavalon_frontend:$TAG -f Dockerfile.prod --build-arg SERVICE=frontend .
+          docker build -t $DOCKER_USER/proavalon_frontend:$TAG -f Dockerfile.prod --build-arg SERVICE=frontend --build-arg BACKEND_URL=http://159.203.65.9:3001 .
           echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
           docker push $DOCKER_USER/proavalon_frontend:$TAG
