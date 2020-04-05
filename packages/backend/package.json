@@ -46,6 +46,7 @@
     "@nestjs/websockets": "^7.0.6",
     "eslint-config-airbnb-base": "^14.1.0",
     "express": "^4.17.1",
+    "protobufjs": "~6.8.9",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.4",

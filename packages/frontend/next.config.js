@@ -46,6 +46,6 @@ module.exports = withCSS({
 
   publicRuntimeConfig: {
     // Will be available on both server and client
-    apiUrl: 'http://localhost:3001',
+    apiUrl: process.env.BACKEND_URL || 'http://localhost:3001',
   },
 });
