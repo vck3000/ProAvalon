@@ -31,8 +31,9 @@ const Announcements = (props: Props): ReactElement => {
         {announcements.map(({ id, text, timestamp }) => {
           return (
             <div key={id} className="announcement">
-              {`${timestamp.getUTCMonth() +
-                1}/${timestamp.getUTCDate()} ${text}`}
+              {`${timestamp.getUTCMonth() + 1}
+              /
+              ${timestamp.getUTCDate()} ${text}`}
             </div>
           );
         })}
