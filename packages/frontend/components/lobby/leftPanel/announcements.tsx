@@ -1,8 +1,8 @@
 import React, { ReactElement } from 'react';
 import { connect } from 'react-redux';
 
-import { RootState } from '../../store';
-import { ThemeOptions } from '../../store/userOptions/types';
+import { RootState } from '../../../store';
+import { ThemeOptions } from '../../../store/userOptions/types';
 
 interface IAnnouncement {
   id: string;
@@ -26,12 +26,15 @@ const Announcements = (props: Props): ReactElement => {
 
   return (
     <div className="wrapper">
-      <div className="announcements_header">
-        LATEST ANNOUNCEMENTS
-      </div>
+      <div className="announcements_header">LATEST ANNOUNCEMENTS</div>
       <div className="announcements">
-        {announcements.map(({id, text, timestamp}) => {
-          return <div key={id} className="announcement">{`${timestamp.getUTCMonth() + 1}/${timestamp.getUTCDate()} ${text}`}</div>
+        {announcements.map(({ id, text, timestamp }) => {
+          return (
+            <div key={id} className="announcement">
+              {`${timestamp.getUTCMonth() +
+                1}/${timestamp.getUTCDate()} ${text}`}
+            </div>
+          );
         })}
       </div>
       <div className="announcements_bottom_padding" />
@@ -42,7 +45,7 @@ const Announcements = (props: Props): ReactElement => {
             display: flex;
             flex-direction: column;
           }
-                  
+
           .announcements_header {
             font-family: Montserrat-Bold;
             text-align: center;
@@ -70,15 +73,13 @@ const Announcements = (props: Props): ReactElement => {
       </style>
     </div>
   );
-}
+};
 
 const mapStateToProps = (state: RootState): IStateProps => ({
   theme: state.userOptions.theme,
 });
 
-
 export default connect(
   mapStateToProps,
   null,
 )(Announcements as (props: IOwnProps) => ReactElement);
-

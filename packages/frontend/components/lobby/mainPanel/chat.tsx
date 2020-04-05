@@ -1,15 +1,15 @@
 import React, { ReactElement, useState, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import socket from '../../socket/socket';
+import socket from '../../../socket/socket';
 
-import { RootState } from '../../store';
-import { ThemeOptions } from '../../store/userOptions/types';
+import { RootState } from '../../../store';
+import { ThemeOptions } from '../../../store/userOptions/types';
 import Message from './message';
-import { ChatRequest, ChatResponse } from '../../proto/bundle';
-import { protoTimestampToDate } from '../../proto/timestamp';
-import SocketEvents from '../../proto/socketEvents';
-import { NoSSR } from '../../utils/noSSR';
+import { ChatRequest, ChatResponse } from '../../../proto/bundle';
+import { protoTimestampToDate } from '../../../proto/timestamp';
+import SocketEvents from '../../../proto/socketEvents';
+import { NoSSR } from '../../../utils/noSSR';
 
 interface IStateProps {
   theme: ThemeOptions;

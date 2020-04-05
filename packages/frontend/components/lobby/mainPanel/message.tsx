@@ -1,10 +1,10 @@
 import React, { ReactElement } from 'react';
 import { connect } from 'react-redux';
 
-import { RootState } from '../../store';
-import { ThemeOptions } from '../../store/userOptions/types';
-import { ChatResponse } from '../../proto/bundle';
-import { protoTimestampToDate as pttd } from '../../proto/timestamp';
+import { RootState } from '../../../store';
+import { ThemeOptions } from '../../../store/userOptions/types';
+import { ChatResponse } from '../../../proto/bundle';
+import { protoTimestampToDate as pttd } from '../../../proto/timestamp';
 
 const ChatType = ChatResponse.ChatResponseType;
 

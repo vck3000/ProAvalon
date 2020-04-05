@@ -2,10 +2,10 @@ import { ReactElement } from 'react';
 import { Grid } from 'semantic-ui-react';
 import Link from 'next/link';
 
-import NavIndex from '../../nav/navIndex';
-import GamesMenu from '../gamesMenu/gamesMenu';
-import LobbyLeftPanel from './lobbyLeftPanel';
-import Chat from '../chat';
+import NavIndex from '../nav/navIndex';
+import GamesMenu from './rightPanel/gamesMenu';
+import LobbyLeftPanel from './leftPanel/home';
+import Chat from './mainPanel/chat';
 
 const LobbyDesktop = (): ReactElement => (
   <div className="container">
