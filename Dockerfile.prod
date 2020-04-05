@@ -28,5 +28,7 @@ FROM node:13-alpine
 WORKDIR /usr/src/app
 ENV NODE_ENV="production"
 
+RUN npm install -g @nestjs/cli
+
 COPY --from=build /usr/src/app/packages/${SERVICE} ./packages/${SERVICE}
 CMD [ "npm" , "--prefix", "packages/${SERVICE}", "run", "start" ]

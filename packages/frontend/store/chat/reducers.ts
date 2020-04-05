@@ -3,10 +3,10 @@ import {
   RECEIVED_MESSAGE,
   ChatActionTypes,
 } from './actions.types';
-import { IMessage } from './message.types';
+import { ChatResponse } from '../../proto/bundle';
 
 export interface IChatState {
-  messages: IMessage[];
+  messages: ChatResponse[];
 }
 
 const initialState: IChatState = {

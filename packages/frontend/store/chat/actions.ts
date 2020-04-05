@@ -1,4 +1,4 @@
-import { IMessage } from './message.types';
+import { ChatResponse } from '../../proto/bundle';
 import {
   IReceivedMessageAction,
   ISetMessagesAction,
@@ -8,14 +8,16 @@ import {
   GET_ALL_CHAT,
 } from './actions.types';
 
-export const receivedMessage = (message: IMessage): IReceivedMessageAction => {
+export const receivedMessage = (
+  message: ChatResponse,
+): IReceivedMessageAction => {
   return {
     type: RECEIVED_MESSAGE,
     message,
   };
 };
 
-export const setMessages = (messages: IMessage[]): ISetMessagesAction => {
+export const setMessages = (messages: ChatResponse[]): ISetMessagesAction => {
   return {
     type: SET_MESSAGES,
     messages,

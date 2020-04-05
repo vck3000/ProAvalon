@@ -13,7 +13,6 @@ const Lobby = ({ dispatchGetAllChat }: IProps): ReactElement => {
   useEffect(() => {
     dispatchGetAllChat();
   }, []);
-
   return (
     <>
       <title>Lobby</title>

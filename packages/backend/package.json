@@ -14,7 +14,7 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node build/main",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --max-warnings 0",
+    "lint": "eslint \"{src,test}/**/*.ts\" --max-warnings 0",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
@@ -26,7 +26,7 @@
     "*.json": [
       "prettier --write"
     ],
-    "./**/*.{js,jsx,ts,tsx,css,scss}": [
+    "./!(proto)/**/*.{js,jsx,ts,tsx,css,scss}": [
       "prettier --write",
       "npm run lint",
       "npm run test"

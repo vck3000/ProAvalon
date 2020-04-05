@@ -6,11 +6,14 @@ import socket from '../../socket/socket';
 import { RootState } from '../../store';
 import { ThemeOptions } from '../../store/userOptions/types';
 import Message from './message';
-import { IMessage } from '../../store/chat/message.types';
+import { ChatRequest, ChatResponse } from '../../proto/bundle';
+import { protoTimestampToDate } from '../../proto/timestamp';
+import SocketEvents from '../../proto/socketEvents';
+import { NoSSR } from '../../utils/noSSR';
 
 interface IStateProps {
   theme: ThemeOptions;
-  messages: IMessage[];
+  messages: ChatResponse[];
 }
 
 type Props = IStateProps;
@@ -54,17 +57,25 @@ const Chat = ({ theme, messages }: Props): ReactElement => {
     <>
       <div className="wrapper">
         <div className="chat">
-          <ul className="chat_list" ref={chatRef}>
-            {messages.map((chatMessage: IMessage, i: number) => (
-              <li key={new Date(chatMessage.timestamp).getTime()}>
-                <Message
-                  message={chatMessage}
-                  opacity={GetOpacity(i, messages.length)}
-                />
-              </li>
-            ))}
-            <li className="chat_bottom_padding" />
-          </ul>
+          <NoSSR fallback={<div>Loading...</div>}>
+            <ul className="chat_list" ref={chatRef}>
+              {messages.map((chatMessage: ChatResponse, i: number) => (
+                <li
+                  key={
+                    protoTimestampToDate(chatMessage.timestamp)
+                      .getTime()
+                      .toString() + chatMessage.username
+                  }
+                >
+                  <Message
+                    message={chatMessage}
+                    opacity={GetOpacity(i, messages.length)}
+                  />
+                </li>
+              ))}
+              <li className="chat_bottom_padding" />
+            </ul>
+          </NoSSR>
         </div>
         <input
           className="text_input"
@@ -75,8 +86,11 @@ const Chat = ({ theme, messages }: Props): ReactElement => {
           }}
           onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>): void => {
             if (e.key === 'Enter' && messageText) {
-              // set new timestamp when emitting message to server
-              socket.emit('allChatToServer', messageText);
+              const msg = ChatRequest.create({ text: messageText });
+              socket.emit(
+                SocketEvents.ALL_CHAT_TO_SERVER,
+                ChatRequest.encode(msg).finish(),
+              );
               setMessageText('');
             }
           }}

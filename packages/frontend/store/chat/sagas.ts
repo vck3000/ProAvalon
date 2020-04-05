@@ -2,22 +2,26 @@ import axios, { AxiosResponse } from 'axios';
 import { SagaIterator } from 'redux-saga';
 import { call, put, takeLatest, fork } from 'redux-saga/effects';
 
-import { IMessage } from './message.types';
+import { ChatResponse, ChatResponses } from '../../proto/bundle';
 import getApiUrl from '../../api/config';
 import { SET_MESSAGES, GET_ALL_CHAT } from './actions.types';
 
-function get(path: string): Promise<AxiosResponse<IMessage[]> | IMessage[]> {
+function get(
+  path: string,
+): Promise<AxiosResponse<ChatResponse[]> | ChatResponse[]> {
   const url = `${getApiUrl()}${path}`;
 
   return axios({
     method: 'get',
     url,
-  }).then((resp: { data: IMessage[] }) => resp.data);
+    responseType: 'arraybuffer',
+  }).then((resp) => resp);
 }
 
 function* getAllChat(): SagaIterator {
   const messages = yield call(get, '/allchat');
-  yield put({ type: SET_MESSAGES, messages });
+  const decoded = ChatResponses.decode(new Uint8Array(messages.data));
+  yield put({ type: SET_MESSAGES, messages: decoded.chatResponses });
 }
 
 function* watchGetAllChat(): SagaIterator {

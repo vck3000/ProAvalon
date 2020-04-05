@@ -15,7 +15,7 @@
     "*.json": [
       "prettier --write"
     ],
-    "./**/*.{js,jsx,ts,tsx,css,scss}": [
+    "./!(proto)/**/*.{js,jsx,ts,tsx,css,scss}": [
       "prettier --write",
       "npm run lint",
       "npm run test"
@@ -34,6 +34,7 @@
     "next": "^9.3.4",
     "next-redux-saga": "^4.1.2",
     "next-redux-wrapper": "^5.0.0",
+    "protobufjs": "~6.8.9",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-redux": "^7.2.0",

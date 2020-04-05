@@ -1,0 +1,1 @@
+../../../proto/bundle.d.ts
