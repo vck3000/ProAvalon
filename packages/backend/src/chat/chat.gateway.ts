@@ -85,24 +85,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage(SocketEvents.ALL_CHAT_TO_SERVER)
   async handleMessage(client: Socket, chatRequest: any) {
-    // This is pretty ugly code due to nest js socket passing the data
-    // to us in a very weird format. Is there a better way to do this?
-    // If not, move this into a separate util function.
-
-    // Get the length
-    let i = 0;
-    while (chatRequest[i] !== undefined) {
-      i += 1;
-    }
-
-    // create array with length
-    const arr = new Uint8Array(i);
-
-    // Copy elements into the new array
-    i = 0;
-    while (chatRequest[i] !== undefined) {
+    const obj = JSON.parse(JSON.stringify(chatRequest));
+    const size = Object.keys(obj).length;
+    const arr = new Uint8Array(size);
+    for (let i = 0; i < size; i += 1) {
       arr[i] = chatRequest[i];
-      i += 1;
     }
 
     // Decode
