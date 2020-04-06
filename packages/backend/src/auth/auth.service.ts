@@ -11,11 +11,16 @@ export class AuthService {
 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findOne(username);
-    if (user && this.usersService.comparePassword(pass, user.password)) {
+
+    if (
+      user &&
+      (await this.usersService.comparePassword(pass, user.password))
+    ) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user;
       return result;
     }
+
     return null;
   }
 
@@ -29,5 +34,6 @@ export class AuthService {
   async signup(user: any) {
     const { username, password } = user;
     this.usersService.save({ username, password });
+    return `Signed up username: ${username} with password: ${password}!`;
   }
 }

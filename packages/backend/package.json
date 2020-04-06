@@ -26,7 +26,7 @@
     "*.json": [
       "prettier --write"
     ],
-    "./!(proto)/**/*.{js,jsx,ts,tsx,css,scss}": [
+    "./{src,test}/**/*.{js,jsx,ts,tsx,css,scss}": [
       "prettier --write",
       "npm run lint",
       "npm run test"
@@ -91,6 +91,9 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "setupFiles": [
+      "../.jest/setEnvVars.js"
+    ]
   }
 }

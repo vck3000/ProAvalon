@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import bcrypt = require('bcrypt');
 
@@ -12,26 +12,11 @@ export type User = {
 export class UsersService {
   private readonly users: User[] = [];
 
-  private readonly logger = new Logger(UsersService.name);
-
-  constructor() {
-    this.save({
-      username: 'john',
-      password: 'changeme',
-    });
-  }
-
   async comparePassword(
     password: User['password'],
     hash: User['password'],
   ): Promise<boolean> {
-    return bcrypt.compare(password, hash, (err, res): boolean => {
-      if (err) {
-        this.logger.log(err);
-        return false;
-      }
-      return res;
-    });
+    return bcrypt.compare(password, hash);
   }
 
   async save({ username, password }: Pick<User, 'username' | 'password'>) {
