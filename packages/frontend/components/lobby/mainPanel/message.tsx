@@ -21,7 +21,6 @@ type Props = IOwnProps & IStateProps;
 
 const Message = (props: Props): ReactElement => {
   const { theme, message, opacity } = props;
-
   return (
     <span className="wrapper">
       <span className="timestamp">
@@ -29,15 +28,11 @@ const Message = (props: Props): ReactElement => {
         {`0${pttd(message.timestamp).getMinutes()}`.slice(-2)}]
       </span>
 
-      <span className={message.type.toString()}>
-        {message.type === ChatType.CHAT ? (
-          <>
-            <span className="pad_left">{message.username}: </span>
-            <span>{message.text}</span>
-          </>
-        ) : (
-          <span className="pad_left">{message.text}</span>
-        )}
+      <span className={`chat${message.type}`}>
+        <span className="pad_left">
+          {message.type === ChatType.CHAT && `${message.username}: `}
+          {message.text}
+        </span>
       </span>
 
       <style jsx>
@@ -60,9 +55,9 @@ const Message = (props: Props): ReactElement => {
             color: ${theme.colors.TEXT_RED};
           }
 
-          .${ChatType.PLAYER_JOIN_LOBBY},
-            .${ChatType.PLAYER_LEAVE_LOBBY},
-            .${ChatType.CREATE_ROOM} {
+          .chat${ChatType.PLAYER_JOIN_LOBBY},
+            .chat${ChatType.PLAYER_LEAVE_LOBBY},
+            .chat${ChatType.CREATE_ROOM} {
             color: ${theme.colors.TEXT_GRAY};
           }
         `}
