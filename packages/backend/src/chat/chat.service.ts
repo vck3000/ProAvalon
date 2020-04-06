@@ -12,10 +12,7 @@ export class ChatService {
   storeMessage(message: ChatResponse) {
     this.messages.push(message);
     if (this.messages.length > 50) {
-      this.messages = this.messages.slice(
-        this.messages.length - 50,
-        this.messages.length,
-      );
+      this.messages.splice(0, 1);
     }
     return message;
   }
