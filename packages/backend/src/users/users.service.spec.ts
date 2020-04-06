@@ -15,4 +15,13 @@ describe('UsersService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  it('should compare passwords correctly', async () => {
+    expect(
+      await service.comparePassword(
+        'test_password',
+        '$2b$10$mu19Aeqb23jbI3Cg8.cV8.4L3aijINHasegzF6Mzc9DTuxZfvrGye',
+      ),
+    ).toBe(true);
+  });
 });

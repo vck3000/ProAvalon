@@ -45,6 +45,7 @@ services:
         SERVICE: backend
     environment:
       SERVICE: backend
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
     volumes:
       - ./packages/backend:/usr/src/app/packages/backend
       - /usr/src/app/packages/backend/node_modules
