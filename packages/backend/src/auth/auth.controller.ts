@@ -13,7 +13,7 @@ export class AuthController {
   // and assigns it to the Request object as req.user
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Req() req: any) {
+  async login(@Req() req: Request) {
     return this.authService.login(req.user);
   }
 

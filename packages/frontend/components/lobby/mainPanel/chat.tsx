@@ -61,11 +61,9 @@ const Chat = ({ theme, messages }: Props): ReactElement => {
             <ul className="chat_list" ref={chatRef}>
               {messages.map((chatMessage: ChatResponse, i: number) => (
                 <li
-                  key={
-                    protoTimestampToDate(chatMessage.timestamp)
-                      .getTime()
-                      .toString() + chatMessage.username
-                  }
+                  key={`${protoTimestampToDate(chatMessage.timestamp)
+                    .getTime()
+                    .toString()}_${chatMessage.username}_${chatMessage.type}`}
                 >
                   <Message
                     message={chatMessage}

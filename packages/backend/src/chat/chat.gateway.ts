@@ -62,7 +62,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       type: ChatResponse.ChatResponseType.PLAYER_LEAVE_LOBBY,
     });
     this.chatService.storeMessage(chatResponse);
-    this.server.emit(
+    client.broadcast.emit(
       SocketEvents.ALL_CHAT_TO_CLIENT,
       ChatResponse.encode(chatResponse).finish(),
     );
@@ -77,7 +77,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       type: ChatResponse.ChatResponseType.CREATE_ROOM,
     });
     this.chatService.storeMessage(onlinePlayerCountMsg);
-    this.server.emit(
+    client.broadcast.emit(
       SocketEvents.ALL_CHAT_TO_CLIENT,
       ChatResponse.encode(onlinePlayerCountMsg).finish(),
     );
@@ -85,7 +85,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage(SocketEvents.ALL_CHAT_TO_SERVER)
   async handleMessage(client: Socket, chatRequest: Buffer) {
-    const decoded = ChatRequest.decode(new Uint8Array(chatRequest));
+    const decoded = ChatRequest.decode(chatRequest);
 
     if (decoded.text) {
       this.logger.log(`All chat message: ${client.id}: ${decoded.text} `);
