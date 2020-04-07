@@ -11,7 +11,6 @@ export class AuthService {
 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findOne(username);
-
     if (
       user &&
       (await this.usersService.comparePassword(pass, user.password))
@@ -24,6 +23,7 @@ export class AuthService {
     return null;
   }
 
+  // TODO Fix up these any's soon!
   async login(user: any) {
     const payload = { username: user.username, sub: user.userId };
     return {
@@ -33,7 +33,7 @@ export class AuthService {
 
   async signup(user: any) {
     const { username, password } = user;
-    this.usersService.save({ username, password });
+    await this.usersService.save({ username, password });
     return `Signed up username: ${username} with password: ${password}!`;
   }
 }

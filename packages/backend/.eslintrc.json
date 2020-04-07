@@ -43,8 +43,20 @@
         "tsx": "never"
       }
     ],
+    "import/no-extraneous-dependencies": [
+      "error",
+      { "devDependencies": ["**/*.spec.ts"] }
+    ],
     // Avoid conflict with Prettier
     "object-curly-newline": "off",
     "operator-linebreak": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": "**/*{.spec,.e2e-spec}.ts",
+      "rules": {
+        "no-underscore-dangle": "off"
+      }
+    }
+  ]
 }

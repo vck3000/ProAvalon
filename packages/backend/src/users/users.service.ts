@@ -21,16 +21,16 @@ export class UsersService {
 
   async save({ username, password }: Pick<User, 'username' | 'password'>) {
     const { users } = this;
-    return bcrypt.hash(password, 10, (err, hash): Error | User => {
-      if (err) return err;
-      const user = {
-        userId: users.length.toString(),
-        username,
-        password: hash,
-      };
-      users.push(user);
-      return user;
-    });
+    const hash = await bcrypt.hash(password, 10);
+
+    const user = {
+      userId: users.length.toString(),
+      username,
+      password: hash,
+    };
+
+    users.push(user);
+    return user;
   }
 
   async findOne(username: string): Promise<User | undefined> {
