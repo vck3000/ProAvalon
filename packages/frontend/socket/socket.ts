@@ -15,3 +15,25 @@ if (getEnv() === 'server') {
 }
 
 export default socket;
+
+export const socketEmitProto = (
+  event: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  messageType: any,
+  contents: object,
+): void => {
+  if (
+    messageType &&
+    messageType.create &&
+    messageType.encode &&
+    messageType.verify
+  ) {
+    if (messageType.verify(contents) !== null) {
+      throw messageType.verify(contents);
+    }
+    const msg = messageType.create(contents);
+    socket.emit(event, Buffer.from(messageType.encode(msg).finish()));
+  } else {
+    throw TypeError('Bad message type given.');
+  }
+};
