@@ -84,16 +84,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage(SocketEvents.ALL_CHAT_TO_SERVER)
-  async handleMessage(client: Socket, chatRequest: any) {
-    const obj = JSON.parse(JSON.stringify(chatRequest));
-    const size = Object.keys(obj).length;
-    const arr = new Uint8Array(size);
-    for (let i = 0; i < size; i += 1) {
-      arr[i] = chatRequest[i];
-    }
-
-    // Decode
-    const decoded = ChatRequest.decode(arr);
+  async handleMessage(client: Socket, chatRequest: Buffer) {
+    const decoded = ChatRequest.decode(new Uint8Array(chatRequest));
 
     if (decoded.text) {
       this.logger.log(`All chat message: ${client.id}: ${decoded.text} `);
