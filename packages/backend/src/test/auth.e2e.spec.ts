@@ -26,7 +26,16 @@ describe('Auth', () => {
       .expect(201)
       .expect('Signed up username: test_user with password: test_password!');
 
-    // Login
+    // Bad login
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({
+        username: 'test_user',
+        password: 'bad_password',
+      })
+      .expect(401);
+
+    // Good login
     let AUTH_KEY;
     await request(app.getHttpServer())
       .post('/auth/login')
