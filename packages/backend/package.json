@@ -21,7 +21,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "dev": "nest start --watch --preserveWatchOutput",
-    "localdev": "env JWT_SECRET_KEY=secretKey npm run dev"
+    "localdev": "npm run dev"
   },
   "lint-staged": {
     "*.json": [
@@ -76,6 +76,7 @@
     "eslint-plugin-import": "^2.20.1",
     "jest": "^25.1.0",
     "lint-staged": "^10.0.7",
+    "mongodb-memory-server-core": "^6.5.2",
     "node-mocks-http": "^1.8.1",
     "prettier": "^1.19.1",
     "supertest": "^4.0.2",
