@@ -1,33 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from 'nestjs-typegoose';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 
-export class MockUserModel {
-  username!: string;
-
-  usernameLower!: string;
-
-  password!: string;
-
-  emailAddress!: string;
-
-  constructor(public createUserDto: CreateUserDto) {
-    this.username = createUserDto.username;
-    this.usernameLower = createUserDto.usernameLower;
-    this.password = createUserDto.password;
-    this.emailAddress = createUserDto.emailAddress;
-  }
-
-  save() {
-    return {
-      username: this.username,
-      usernameLower: this.usernameLower,
-      password: this.password,
-      emailAddress: this.emailAddress,
-    };
-  }
-}
+export const mockUserModel = {
+  username: 'test_user',
+  usernameLower: 'test_user',
+  password: '$2b$10$mu19Aeqb23jbI3Cg8.cV8.4L3aijINHasegzF6Mzc9DTuxZfvrGye',
+  emailAddress: 'test_user@gmail.com',
+};
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -39,7 +19,7 @@ describe('UsersService', () => {
         // whenever any consumer injects a Model<User> using an @InjectModel() decorator
         {
           provide: getModelToken('User'),
-          useValue: MockUserModel,
+          useValue: mockUserModel,
         },
         UsersService,
       ],
