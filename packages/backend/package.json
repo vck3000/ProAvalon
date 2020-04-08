@@ -20,7 +20,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "dev": "nest start --watch --preserveWatchOutput"
+    "dev": "nest start --watch --preserveWatchOutput",
+    "localdev": "env JWT_SECRET_KEY=secretKey npm run dev"
   },
   "lint-staged": {
     "*.json": [
@@ -41,6 +42,7 @@
     "@nestjs/platform-socket.io": "^7.0.6",
     "@nestjs/testing": "^7.0.0",
     "@nestjs/websockets": "^7.0.6",
+    "@typegoose/typegoose": "^6.4.0",
     "@types/express": "^4.17.3",
     "@types/jest": "25.1.4",
     "@types/node": "^13.9.1",
@@ -50,6 +52,8 @@
     "bcrypt": "^4.0.1",
     "eslint-config-airbnb-base": "^14.1.0",
     "express": "^4.17.1",
+    "mongoose": "^5.9.7",
+    "nestjs-typegoose": "^7.1.14",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
@@ -63,6 +67,7 @@
     "@nestjs/cli": "^7.0.0",
     "@nestjs/schematics": "^7.0.0",
     "@types/bcrypt": "^3.0.0",
+    "@types/mongoose": "^5.7.8",
     "@types/passport-jwt": "^3.0.3",
     "@typescript-eslint/eslint-plugin": "^2.23.0",
     "@typescript-eslint/parser": "^2.23.0",
