@@ -7,13 +7,14 @@ import { getModelToken } from 'nestjs-typegoose';
 import { AuthService } from '../auth/auth.service';
 import { AuthController } from '../auth/auth.controller';
 import { UsersService } from '../users/users.service';
-import { MockUserModel } from '../users/users.service.spec';
+import { mockUserModel } from '../users/users.service.spec';
 import { LocalStrategy } from '../auth/local.strategy';
 import { JwtStrategy } from '../auth/jwt.strategy';
 import { jwtConstants } from '../auth/jwt-constants';
 
 describe('Auth', () => {
   let app: INestApplication;
+  let service: UsersService;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -31,19 +32,24 @@ describe('Auth', () => {
         JwtStrategy,
         {
           provide: getModelToken('User'),
-          useValue: MockUserModel,
+          useValue: mockUserModel,
         },
         AuthService,
         UsersService,
       ],
     }).compile();
 
+    service = moduleRef.get<UsersService>(UsersService);
     app = moduleRef.createNestApplication();
     await app.init();
   });
 
-  // disabled test temporarily
-  xit('user able to login after signup', async () => {
+  it('user able to login after signup', async () => {
+    jest.spyOn(service, 'save').mockImplementation(async () => mockUserModel);
+    jest
+      .spyOn(service, 'findOne')
+      .mockImplementation(async () => mockUserModel);
+
     // Signup
     await request(app.getHttpServer())
       .post('/auth/signup')
@@ -62,7 +68,6 @@ describe('Auth', () => {
         password: 'bad_password',
       })
       .expect(401);
-
     // Good login
     let AUTH_KEY;
     await request(app.getHttpServer())
@@ -82,7 +87,6 @@ describe('Auth', () => {
       .set('Authorization', `Bearer ${AUTH_KEY}`)
       .expect(200)
       .expect({
-        userId: '0',
         username: 'test_user',
       });
 

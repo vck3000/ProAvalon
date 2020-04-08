@@ -7,7 +7,7 @@ import { AppService } from './app.service';
 import { ChatModule } from './chat/chat.module';
 import { AuthService } from './auth/auth.service';
 import { UsersService } from './users/users.service';
-import { MockUserModel } from './users/users.service.spec';
+import { mockUserModel } from './users/users.service.spec';
 import { LocalStrategy } from './auth/local.strategy';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { jwtConstants } from './auth/jwt-constants';
@@ -33,7 +33,7 @@ describe('AppController', () => {
         JwtStrategy,
         {
           provide: getModelToken('User'),
-          useValue: MockUserModel,
+          useValue: mockUserModel,
         },
         AuthService,
         UsersService,
