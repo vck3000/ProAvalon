@@ -1,39 +1,50 @@
 import { Injectable } from '@nestjs/common';
+import { ReturnModelType } from '@typegoose/typegoose';
+import { InjectModel } from 'nestjs-typegoose';
+import { User } from './user.model';
+import { CreateUserDto } from './dto/create-user.dto';
 
 import bcrypt = require('bcrypt');
 
-export type User = {
-  userId: string;
-  username: string;
-  password: string;
-};
-
 @Injectable()
 export class UsersService {
-  private readonly users: User[] = [];
+  constructor(
+    @InjectModel(User) private readonly UserModel: ReturnModelType<typeof User>,
+  ) {}
 
   async comparePassword(
     password: User['password'],
     hash: User['password'],
   ): Promise<boolean> {
-    return bcrypt.compare(password, hash);
+    const res = await bcrypt.compare(password, hash);
+    return res;
   }
 
-  async save({ username, password }: Pick<User, 'username' | 'password'>) {
-    const { users } = this;
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const createdUser = new this.UserModel(createUserDto);
+    const res = await createdUser.save();
+    return res;
+  }
+
+  async save({
+    username,
+    usernameLower,
+    password,
+    emailAddress,
+  }: CreateUserDto): Promise<User> {
     const hash = await bcrypt.hash(password, 10);
-
-    const user = {
-      userId: users.length.toString(),
+    return this.create({
       username,
+      usernameLower,
       password: hash,
-    };
-
-    users.push(user);
-    return user;
+      emailAddress,
+    });
   }
 
-  async findOne(username: string): Promise<User | undefined> {
-    return this.users.find((user) => user.username === username);
+  async findOne(username: User['username']): Promise<User | null> {
+    const user = await this.UserModel.findOne({
+      usernameLower: username.toLowerCase(),
+    });
+    return user;
   }
 }
