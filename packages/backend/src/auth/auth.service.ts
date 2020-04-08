@@ -15,7 +15,10 @@ export class AuthService {
     pass: string,
   ): Promise<Omit<User, 'password'> | null> {
     const user = await this.usersService.findOne(username);
-    if (user && this.usersService.comparePassword(pass, user.password)) {
+    if (
+      user &&
+      (await this.usersService.comparePassword(pass, user.password))
+    ) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user;
       return result;

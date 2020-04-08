@@ -8,7 +8,7 @@ import { AuthService } from './auth.service';
 import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from './jwt.strategy';
 import { UsersService } from '../users/users.service';
-import { MockUserModel } from '../users/users.service.spec';
+import { mockUserModel } from '../users/users.service.spec';
 
 describe('AuthController', () => {
   let service: AuthController;
@@ -30,7 +30,7 @@ describe('AuthController', () => {
         // mock dependencies that are coming from UsersModule
         {
           provide: getModelToken('User'),
-          useValue: MockUserModel,
+          useValue: mockUserModel,
         },
         UsersService,
       ],
