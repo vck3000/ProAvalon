@@ -3,6 +3,9 @@ import { Request } from 'express';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService } from './auth.service';
+import { User } from '../users/user.model';
+
+type RequestType = Request & { user: User };
 
 @Controller('auth')
 export class AuthController {
@@ -13,7 +16,7 @@ export class AuthController {
   // and assigns it to the Request object as req.user
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Req() req: Request) {
+  async login(@Req() req: RequestType) {
     return this.authService.login(req.user);
   }
 
@@ -24,7 +27,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Req() req: any) {
+  getProfile(@Req() req: Request) {
     return req.user;
   }
 }
