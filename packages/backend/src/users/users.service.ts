@@ -2,10 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { User } from './user.model';
-import { CreateUserDto } from './dto/create-user.dto';
 
 import bcrypt = require('bcrypt');
-
 @Injectable()
 export class UsersService {
   constructor(
@@ -20,30 +18,18 @@ export class UsersService {
     return res;
   }
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const createdUser = new this.UserModel(createUserDto);
-    const res = await createdUser.save();
-    return res;
+  async create(createUserData: User): Promise<User> {
+    const createUserDataHashed = {
+      ...createUserData,
+      password: await bcrypt.hash(createUserData.password, 10),
+    };
+
+    return this.UserModel.create(createUserDataHashed);
   }
 
-  async save({
-    username,
-    usernameLower,
-    password,
-    emailAddress,
-  }: CreateUserDto): Promise<User> {
-    const hash = await bcrypt.hash(password, 10);
-    return this.create({
-      username,
-      usernameLower,
-      password: hash,
-      emailAddress,
-    });
-  }
-
-  async findOne(username: User['username']): Promise<User | null> {
+  async findOne(username: User['username']) {
     const user = await this.UserModel.findOne({
-      usernameLower: username.toLowerCase(),
+      username: username.toLowerCase(),
     });
     return user;
   }

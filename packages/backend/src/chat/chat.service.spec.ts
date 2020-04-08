@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ChatService } from './chat.service';
 import { ChatController } from './chat.controller';
-import { ChatGateway } from './chat.gateway';
 import { ChatResponse } from '../../proto/bundle';
 import { getProtoTimestamp } from '../../proto/timestamp';
 
@@ -12,7 +11,7 @@ describe('ChatService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [],
       controllers: [ChatController],
-      providers: [ChatService, ChatGateway],
+      providers: [ChatService],
     }).compile();
 
     service = module.get<ChatService>(ChatService);

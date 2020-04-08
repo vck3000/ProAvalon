@@ -10,7 +10,7 @@ import { UsersService } from './users/users.service';
 import { mockUserModel } from './users/users.service.spec';
 import { LocalStrategy } from './auth/local.strategy';
 import { JwtStrategy } from './auth/jwt.strategy';
-import { jwtConstants } from './auth/jwt-constants';
+import { JWT_SECRET } from './getEnvVars';
 
 describe('AppController', () => {
   let appController: AppController;
@@ -21,7 +21,7 @@ describe('AppController', () => {
         PassportModule,
         ChatModule,
         JwtModule.register({
-          secret: jwtConstants.secret,
+          secret: JWT_SECRET,
           signOptions: { expiresIn: '60s' },
         }),
       ],

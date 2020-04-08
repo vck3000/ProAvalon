@@ -4,7 +4,7 @@ import { UsersService } from './users.service';
 
 export const mockUserModel = {
   username: 'test_user',
-  usernameLower: 'test_user',
+  displayUsername: 'test_user',
   password: '$2b$10$mu19Aeqb23jbI3Cg8.cV8.4L3aijINHasegzF6Mzc9DTuxZfvrGye',
   emailAddress: 'test_user@gmail.com',
 };

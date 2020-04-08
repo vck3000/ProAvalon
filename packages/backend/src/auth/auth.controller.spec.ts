@@ -2,13 +2,13 @@ import { TestingModule, Test } from '@nestjs/testing';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { getModelToken } from 'nestjs-typegoose';
-import { jwtConstants } from './jwt-constants';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from './jwt.strategy';
 import { UsersService } from '../users/users.service';
 import { mockUserModel } from '../users/users.service.spec';
+import { JWT_SECRET } from '../getEnvVars';
 
 describe('AuthController', () => {
   let service: AuthController;
@@ -18,7 +18,7 @@ describe('AuthController', () => {
       imports: [
         PassportModule,
         JwtModule.register({
-          secret: jwtConstants.secret,
+          secret: JWT_SECRET,
           signOptions: { expiresIn: '60s' },
         }),
       ],
