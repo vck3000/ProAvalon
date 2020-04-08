@@ -1,4 +1,12 @@
-import { Controller, Get, Req, Post, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Req,
+  Post,
+  UseGuards,
+  HttpStatus,
+  HttpException,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
@@ -22,6 +30,10 @@ export class AuthController {
 
   @Post('signup')
   async signup(@Req() req: Request) {
+    const { body } = req;
+    if (!body.username || !body.password || !body.emailAddress) {
+      throw new HttpException('Bad request data', HttpStatus.BAD_REQUEST);
+    }
     return this.authService.signup(req.body);
   }
 

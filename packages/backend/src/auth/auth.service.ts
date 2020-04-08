@@ -20,15 +20,14 @@ export class AuthService {
       (await this.usersService.comparePassword(pass, user.password))
     ) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...result } = user;
+      const { password, ...result } = user.toObject();
       return result;
     }
 
     return null;
   }
 
-  // TODO Fix up these any's soon!
-  async login(user: User | undefined) {
+  async login(user: User | null) {
     if (user) {
       const payload = { username: user.username };
       return {
@@ -39,14 +38,11 @@ export class AuthService {
   }
 
   async signup(user: User): Promise<string> {
-    const { username, password, emailAddress } = user;
-    const res = await this.usersService.save({
-      username,
-      usernameLower: username.toLowerCase(),
-      password,
-      emailAddress,
+    const res = await this.usersService.create({
+      ...user,
+      username: user.username.toLowerCase(),
+      displayUsername: user.username,
     });
-    // might want to change this to the response object in the future
-    return `Signed up username: ${res.username}`;
+    return `Signed up username: ${res.username}.`;
   }
 }
