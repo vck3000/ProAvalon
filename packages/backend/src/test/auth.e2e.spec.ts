@@ -247,7 +247,10 @@ describe('Auth', () => {
         // Missing password
         email: 'test@gmail.com',
       })
-      .expect(HttpStatus.BAD_REQUEST);
+      .expect(HttpStatus.BAD_REQUEST)
+      .expect((res) =>
+        expect(res.body.message[0]).toMatch('Password is missing.'),
+      );
 
     // Bad signup
     await request(app.getHttpServer())
@@ -257,6 +260,7 @@ describe('Auth', () => {
         password: 'test_password',
         email: 'test@gmail.com',
       })
+      .expect(HttpStatus.BAD_REQUEST)
       .expect((res) =>
         expect(res.body.message[0]).toMatch('Username should not be empty.'),
       );
@@ -269,6 +273,7 @@ describe('Auth', () => {
         password: 'test_password',
         email: 'test@gmail.com',
       })
+      .expect(HttpStatus.BAD_REQUEST)
       .expect((res) =>
         expect(res.body.message[0]).toMatch(
           'Username must not contain illegal characters.',
@@ -283,6 +288,7 @@ describe('Auth', () => {
         password: 'test_password',
         email: 'test@gmail.com',
       })
+      .expect(HttpStatus.BAD_REQUEST)
       .expect((res) =>
         expect(res.body.message[0]).toMatch(
           'Username must not start or end with underscore or hyphen.',
@@ -297,6 +303,7 @@ describe('Auth', () => {
         password: 'test_password',
         email: 'test@gmail.com',
       })
+      .expect(HttpStatus.BAD_REQUEST)
       .expect((res) =>
         expect(res.body.message[0]).toMatch(
           'Username must not have more than 25 characters.',
@@ -311,6 +318,7 @@ describe('Auth', () => {
         password: 'tes',
         email: 'test@gmail.com',
       })
+      .expect(HttpStatus.BAD_REQUEST)
       .expect((res) =>
         expect(res.body.message[0]).toMatch(
           'Password must not have less than 4 characters.',
