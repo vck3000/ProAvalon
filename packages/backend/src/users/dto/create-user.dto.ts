@@ -7,7 +7,6 @@ import {
 } from 'class-validator';
 
 export class CreateUserDto {
-  @IsNotEmpty()
   @MaxLength(25, {
     message: 'Username must not have more than 25 characters.',
   })
@@ -17,15 +16,16 @@ export class CreateUserDto {
   @Matches(/^[a-zA-Z0-9][\w]+[a-zA-Z0-9]$/, {
     message: 'Username must not start or end with underscore or hyphen.',
   })
+  @IsNotEmpty({
+    message: 'Username should not be empty.',
+  })
   username!: string;
 
-  @IsNotEmpty()
   @MinLength(4, {
     message: 'Password must not have less than 4 characters.',
   })
   password!: string;
 
-  @IsNotEmpty()
   @IsEmail(
     {},
     {
