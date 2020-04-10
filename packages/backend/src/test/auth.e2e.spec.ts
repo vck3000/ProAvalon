@@ -149,6 +149,18 @@ describe('Auth', () => {
     await request(app.getHttpServer())
       .post('/auth/signup')
       .send({
+        username: '',
+        password: 'test_password',
+        email: 'test@gmail.com',
+      })
+      .expect((res) =>
+        expect(res.body.message[0]).toMatch('Username should not be empty.'),
+      );
+
+    // Bad signup
+    await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({
         username: 'test_user@',
         password: 'test_password',
         email: 'test@gmail.com',
