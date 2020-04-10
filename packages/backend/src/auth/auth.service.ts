@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.model';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -10,11 +11,8 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(
-    username: string,
-    pass: string,
-  ): Promise<Omit<User, 'password'> | null> {
-    const user = await this.usersService.findByUsername(username);
+  async validateUser(username: string, pass: string): Promise<User | null> {
+    const user = await this.usersService.findByUsername(username.toLowerCase());
     if (
       user &&
       (await this.usersService.comparePassword(pass, user.password))
@@ -27,7 +25,7 @@ export class AuthService {
     return null;
   }
 
-  async login(user: User | null) {
+  async login(user: CreateUserDto | null) {
     if (user) {
       const payload = { username: user.username };
       return {
@@ -37,7 +35,7 @@ export class AuthService {
     return null;
   }
 
-  async signup(user: User): Promise<string> {
+  async signup(user: CreateUserDto): Promise<string> {
     const usernameRes = await this.usersService.findByUsername(user.username);
     if (usernameRes) return `Username already exists: ${usernameRes.username}.`;
 
