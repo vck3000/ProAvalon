@@ -27,7 +27,7 @@ export class AuthService {
     return null;
   }
 
-  async login(user: User | null) {
+  async login(user: CreateUserDto | null) {
     if (user) {
       const payload = { username: user.username };
       return {
