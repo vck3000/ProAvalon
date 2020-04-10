@@ -40,11 +40,4 @@ export class UsersService {
     });
     return user;
   }
-
-  async findByEmail(email: User['email']) {
-    const user = await this.UserModel.findOne({
-      email,
-    });
-    return user;
-  }
 }
