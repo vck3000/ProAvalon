@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Response } from 'express';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.model';
 import { CreateUserDto } from '../users/dto/create-user.dto';
@@ -35,18 +36,26 @@ export class AuthService {
     return null;
   }
 
-  async signup(user: CreateUserDto): Promise<string> {
+  async signup(user: CreateUserDto, res: Response): Promise<Response<any>> {
     const usernameRes = await this.usersService.findByUsername(user.username);
-    if (usernameRes) return `Username already exists: ${usernameRes.username}.`;
+    if (usernameRes) {
+      return res
+        .status(HttpStatus.BAD_REQUEST)
+        .send(`Username already exists: ${usernameRes.username}.`);
+    }
 
     const emailRes = await this.usersService.findByEmail(user.email);
-    if (emailRes) return `Email already exists: ${emailRes.email}.`;
+    if (emailRes) {
+      return res
+        .status(HttpStatus.BAD_REQUEST)
+        .send(`Email already exists: ${emailRes.email}.`);
+    }
 
-    const res = await this.usersService.create({
+    const createdUser = await this.usersService.create({
       ...user,
       username: user.username.toLowerCase(),
       displayUsername: user.username,
     });
-    return `Signed up username: ${res.username}.`;
+    return res.send(`Signed up username: ${createdUser.username}.`);
   }
 }

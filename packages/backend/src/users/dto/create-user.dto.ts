@@ -4,6 +4,7 @@ import {
   MaxLength,
   IsEmail,
   Matches,
+  IsDefined,
 } from 'class-validator';
 
 export class CreateUserDto {
@@ -19,10 +20,16 @@ export class CreateUserDto {
   @IsNotEmpty({
     message: 'Username should not be empty.',
   })
+  @IsDefined({
+    message: 'Username is missing.',
+  })
   username!: string;
 
   @MinLength(4, {
     message: 'Password must not have less than 4 characters.',
+  })
+  @IsDefined({
+    message: 'Password is missing.',
   })
   password!: string;
 
@@ -32,5 +39,8 @@ export class CreateUserDto {
       message: 'Email must be valid.',
     },
   )
+  @IsDefined({
+    message: 'Email is missing.',
+  })
   email!: string;
 }
