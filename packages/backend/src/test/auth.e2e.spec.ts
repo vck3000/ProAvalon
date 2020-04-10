@@ -20,7 +20,7 @@ describe('Auth', () => {
   let app: INestApplication;
   let mongoServer: MongoMemoryServer;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     // Set up database
     mongoServer = new MongoMemoryServer();
     const mongoUri = await mongoServer.getUri();
@@ -48,8 +48,9 @@ describe('Auth', () => {
     await app.init();
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await mongoServer.stop();
+    await app.close();
   });
 
   it('user able to login after signup', async () => {
@@ -85,6 +86,41 @@ describe('Auth', () => {
       .expect({
         username: 'test_user',
       });
+  });
+
+  it('should not create user if username or email exists', async () => {
+    // Good signup
+    await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({
+        username: 'test_user',
+        password: 'test_password',
+        emailAddress: 'test@gmail.com',
+      })
+      .expect(HttpStatus.CREATED)
+      .expect('Signed up username: test_user.');
+
+    // Bad signup if username exists
+    await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({
+        username: 'test_user',
+        password: 'test_password',
+        emailAddress: 'test@gmail.com',
+      })
+      .expect(HttpStatus.CREATED)
+      .expect('Username already exists: test_user.');
+
+    // Bad signup if email exists
+    await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({
+        username: 'test_user2',
+        password: 'test_password',
+        emailAddress: 'test@gmail.com',
+      })
+      .expect(HttpStatus.CREATED)
+      .expect('Email already exists: test@gmail.com.');
   });
 
   it('should not create user on bad input', async () => {
@@ -168,9 +204,5 @@ describe('Auth', () => {
       .get('/auth/profile')
       .set('Authorization', `Bearer ${AUTH_KEY}asdf`)
       .expect(HttpStatus.UNAUTHORIZED);
-  });
-
-  afterAll(async () => {
-    await app.close();
   });
 });
