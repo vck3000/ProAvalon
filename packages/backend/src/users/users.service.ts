@@ -34,9 +34,9 @@ export class UsersService {
     return user;
   }
 
-  async findByEmail(emailAddress: User['emailAddress']) {
+  async findByEmail(email: User['email']) {
     const user = await this.UserModel.findOne({
-      emailAddress,
+      email,
     });
     return user;
   }
