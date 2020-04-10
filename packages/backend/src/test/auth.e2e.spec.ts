@@ -60,7 +60,7 @@ describe('Auth', () => {
       .send({
         username: 'test_user',
         password: 'test_password',
-        emailAddress: 'test@gmail.com',
+        email: 'test@gmail.com',
       })
       .expect(HttpStatus.CREATED)
       .expect('Signed up username: test_user.');
@@ -95,7 +95,7 @@ describe('Auth', () => {
       .send({
         username: 'test_user',
         password: 'test_password',
-        emailAddress: 'test@gmail.com',
+        email: 'test@gmail.com',
       })
       .expect(HttpStatus.CREATED)
       .expect('Signed up username: test_user.');
@@ -106,7 +106,7 @@ describe('Auth', () => {
       .send({
         username: 'test_user',
         password: 'test_password',
-        emailAddress: 'test@gmail.com',
+        email: 'test@gmail.com',
       })
       .expect(HttpStatus.CREATED)
       .expect('Username already exists: test_user.');
@@ -117,7 +117,7 @@ describe('Auth', () => {
       .send({
         username: 'test_user2',
         password: 'test_password',
-        emailAddress: 'test@gmail.com',
+        email: 'test@gmail.com',
       })
       .expect(HttpStatus.CREATED)
       .expect('Email already exists: test@gmail.com.');
@@ -140,7 +140,7 @@ describe('Auth', () => {
       .send({
         username: 'test_user',
         // missing password
-        emailAddress: 'test@gmail.com',
+        email: 'test@gmail.com',
       })
       .expect(HttpStatus.BAD_REQUEST);
   });
@@ -152,7 +152,7 @@ describe('Auth', () => {
       .send({
         username: 'test_user',
         password: 'test_password',
-        emailAddress: 'test@gmail.com',
+        email: 'test@gmail.com',
       })
       .expect(HttpStatus.CREATED)
       .expect('Signed up username: test_user.');
@@ -181,7 +181,7 @@ describe('Auth', () => {
       .send({
         username: 'test_user',
         password: 'test_password',
-        emailAddress: 'test@gmail.com',
+        email: 'test@gmail.com',
       })
       .expect(HttpStatus.CREATED)
       .expect('Signed up username: test_user.');

@@ -11,5 +11,5 @@ export class User {
   password!: string;
 
   @prop({ required: true })
-  emailAddress!: string;
+  email!: string;
 }
