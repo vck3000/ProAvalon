@@ -27,9 +27,16 @@ export class UsersService {
     return this.UserModel.create(createUserDataHashed);
   }
 
-  async findOne(username: User['username']) {
+  async findByUsername(username: User['username']) {
     const user = await this.UserModel.findOne({
       username: username.toLowerCase(),
+    });
+    return user;
+  }
+
+  async findByEmail(emailAddress: User['emailAddress']) {
+    const user = await this.UserModel.findOne({
+      emailAddress,
     });
     return user;
   }

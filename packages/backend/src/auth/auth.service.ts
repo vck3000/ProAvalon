@@ -14,7 +14,7 @@ export class AuthService {
     username: string,
     pass: string,
   ): Promise<Omit<User, 'password'> | null> {
-    const user = await this.usersService.findOne(username);
+    const user = await this.usersService.findByUsername(username);
     if (
       user &&
       (await this.usersService.comparePassword(pass, user.password))
@@ -38,6 +38,12 @@ export class AuthService {
   }
 
   async signup(user: User): Promise<string> {
+    const usernameRes = await this.usersService.findByUsername(user.username);
+    if (usernameRes) return `Username already exists: ${usernameRes.username}.`;
+
+    const emailRes = await this.usersService.findByEmail(user.emailAddress);
+    if (emailRes) return `Email already exists: ${emailRes.emailAddress}.`;
+
     const res = await this.usersService.create({
       ...user,
       username: user.username.toLowerCase(),
