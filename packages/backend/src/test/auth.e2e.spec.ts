@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { INestApplication, HttpStatus } from '@nestjs/common';
+import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import * as request from 'supertest';
@@ -45,6 +45,7 @@ describe('Auth', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe());
     await app.init();
   });
 
@@ -139,10 +140,78 @@ describe('Auth', () => {
       .post('/auth/signup')
       .send({
         username: 'test_user',
-        // missing password
+        // Missing password
         email: 'test@gmail.com',
       })
       .expect(HttpStatus.BAD_REQUEST);
+
+    // Bad signup
+    await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({
+        username: 'test_user@',
+        password: 'test_password',
+        email: 'test@gmail.com',
+      })
+      .expect((res) =>
+        expect(res.body.message[0]).toMatch(
+          'Username must not contain illegal characters.',
+        ),
+      );
+
+    // Bad signup
+    await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({
+        username: '_test_user',
+        password: 'test_password',
+        email: 'test@gmail.com',
+      })
+      .expect((res) =>
+        expect(res.body.message[0]).toMatch(
+          'Username must not start or end with underscore or hyphen.',
+        ),
+      );
+
+    // Bad signup
+    await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({
+        username: 'test_user_test_user_test_user',
+        password: 'test_password',
+        email: 'test@gmail.com',
+      })
+      .expect((res) =>
+        expect(res.body.message[0]).toMatch(
+          'Username must not have more than 25 characters.',
+        ),
+      );
+
+    // Bad signup
+    await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({
+        username: 'test_user',
+        password: 'tes',
+        email: 'test@gmail.com',
+      })
+      .expect((res) =>
+        expect(res.body.message[0]).toMatch(
+          'Password must not have less than 4 characters.',
+        ),
+      );
+
+    // Bad signup
+    await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({
+        username: 'test_user',
+        password: 'test_password',
+        email: 'test@g',
+      })
+      .expect((res) =>
+        expect(res.body.message[0]).toMatch('Email must be valid.'),
+      );
   });
 
   it('should not login user on bad password', async () => {

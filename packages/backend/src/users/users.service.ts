@@ -29,7 +29,7 @@ export class UsersService {
 
   async findByUsername(username: User['username']) {
     const user = await this.UserModel.findOne({
-      username: username.toLowerCase(),
+      username,
     });
     return user;
   }
