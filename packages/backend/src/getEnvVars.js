@@ -10,6 +10,6 @@ if (process.env.NODE_ENV === 'production') {
 
 export const MONGO_URL =
   process.env.DATABASE_URL ||
-  'mongodb://localhost:27017/proavalon?authSource=admin';
+  'mongodb://root:password@localhost:27017/proavalon?authSource=admin';
 
 export const JWT_SECRET = process.env.JWT_SECRET_KEY || 'my_secret';
