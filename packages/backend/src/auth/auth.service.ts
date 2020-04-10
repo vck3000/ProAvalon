@@ -41,8 +41,8 @@ export class AuthService {
     const usernameRes = await this.usersService.findByUsername(user.username);
     if (usernameRes) return `Username already exists: ${usernameRes.username}.`;
 
-    const emailRes = await this.usersService.findByEmail(user.emailAddress);
-    if (emailRes) return `Email already exists: ${emailRes.emailAddress}.`;
+    const emailRes = await this.usersService.findByEmail(user.email);
+    if (emailRes) return `Email already exists: ${emailRes.email}.`;
 
     const res = await this.usersService.create({
       ...user,

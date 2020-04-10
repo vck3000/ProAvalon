@@ -31,7 +31,7 @@ export class AuthController {
   @Post('signup')
   async signup(@Req() req: Request) {
     const { body } = req;
-    if (!body.username || !body.password || !body.emailAddress) {
+    if (!body.username || !body.password || !body.email) {
       throw new HttpException('Bad request data', HttpStatus.BAD_REQUEST);
     }
     return this.authService.signup(req.body);
