@@ -4,7 +4,7 @@ export class User {
   @prop({ required: true, lowercase: true })
   username!: string;
 
-  @prop({ requred: true })
+  @prop({ required: true })
   displayUsername!: string;
 
   @prop({ required: true })

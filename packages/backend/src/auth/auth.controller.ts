@@ -1,17 +1,10 @@
-import {
-  Controller,
-  Get,
-  Req,
-  Post,
-  UseGuards,
-  HttpStatus,
-  HttpException,
-} from '@nestjs/common';
+import { Controller, Get, Req, Post, UseGuards, Body } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService } from './auth.service';
 import { User } from '../users/user.model';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 
 type RequestType = Request & { user: User };
 
@@ -29,12 +22,8 @@ export class AuthController {
   }
 
   @Post('signup')
-  async signup(@Req() req: Request) {
-    const { body } = req;
-    if (!body.username || !body.password || !body.email) {
-      throw new HttpException('Bad request data', HttpStatus.BAD_REQUEST);
-    }
-    return this.authService.signup(req.body);
+  async signup(@Body() createUserDto: CreateUserDto) {
+    return this.authService.signup(createUserDto);
   }
 
   @UseGuards(JwtAuthGuard)
