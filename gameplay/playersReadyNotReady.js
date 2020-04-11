@@ -129,25 +129,4 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
     }
 };
 
-
-// Misc functions
-function getRolesInStr(options) {
-    let str = '';
-
-    if (options.merlin === true) { str += 'Merlin, '; }
-    if (options.assassin === true) { str += 'Assassin, '; }
-    if (options.percival === true) { str += 'Percival, '; }
-    if (options.morgana === true) { str += 'Morgana, '; }
-    if (options.mordred === true) { str += 'Mordred, '; }
-    if (options.oberon === true) { str += 'Oberon, '; }
-    if (options.lady === true) { str += 'Lady of the Lake, '; }
-
-    // remove the last , and replace with .
-    str = str.slice(0, str.length - 2);
-    str += '.';
-
-    return str;
-}
-
-
 module.exports = playersReadyNotReady;
