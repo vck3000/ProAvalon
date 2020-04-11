@@ -1,9 +1,10 @@
-import { Injectable, HttpStatus } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.model';
 import { CreateUserDto } from '../users/dto/create-user.dto';
+import { SignUpError } from './exceptions/signUpError';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +27,7 @@ export class AuthService {
     return null;
   }
 
-  async login(user: CreateUserDto | null) {
+  async login(user: User | null) {
     if (user) {
       const payload = { username: user.username };
       return {
@@ -39,16 +40,14 @@ export class AuthService {
   async signup(user: CreateUserDto, res: Response): Promise<Response<any>> {
     const usernameRes = await this.usersService.findByUsername(user.username);
     if (usernameRes) {
-      return res
-        .status(HttpStatus.BAD_REQUEST)
-        .send(`Username already exists: ${usernameRes.username}.`);
+      throw new SignUpError(
+        `Username already exists: ${usernameRes.username}.`,
+      );
     }
 
     const emailRes = await this.usersService.findByEmail(user.email);
     if (emailRes) {
-      return res
-        .status(HttpStatus.BAD_REQUEST)
-        .send(`Email already exists: ${emailRes.email}.`);
+      throw new SignUpError(`Email already exists: ${emailRes.email}.`);
     }
 
     const createdUser = await this.usersService.create({

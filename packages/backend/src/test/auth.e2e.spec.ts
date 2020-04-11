@@ -183,6 +183,36 @@ describe('Auth', () => {
     await request(app.getHttpServer())
       .post('/auth/signup')
       .send({
+        username: 'ab.cd',
+        password: 'test_password',
+        email: 'test@gmail.com',
+      })
+      .expect(HttpStatus.BAD_REQUEST)
+      .expect((res) =>
+        expect(res.body.message[0]).toMatch(
+          'Username must not contain illegal characters.',
+        ),
+      );
+
+    // Bad signup
+    await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({
+        username: 'ab-cd',
+        password: 'test_password',
+        email: 'test@gmail.com',
+      })
+      .expect(HttpStatus.BAD_REQUEST)
+      .expect((res) =>
+        expect(res.body.message[0]).toMatch(
+          'Username must not contain illegal characters.',
+        ),
+      );
+
+    // Bad signup
+    await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({
         username: '_test_user',
         password: 'test_password',
         email: 'test@gmail.com',
