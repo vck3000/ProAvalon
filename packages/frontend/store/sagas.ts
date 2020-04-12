@@ -1,9 +1,10 @@
 import { SagaIterator } from 'redux-saga';
-import { fork } from 'redux-saga/effects';
+import { all, fork } from 'redux-saga/effects';
 
 import { chatSaga } from './chat/sagas';
+import { authSaga } from './auth/sagas';
 
 export default function* rootSaga(): SagaIterator {
   // Add forks below
-  yield fork(chatSaga);
+  yield all([fork(chatSaga), fork(authSaga)]);
 }
