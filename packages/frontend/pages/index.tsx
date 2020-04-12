@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { ReactElement, useState } from 'react';
 import { connect } from 'react-redux';
 import Link from 'next/link';
 import { Button, Form } from 'semantic-ui-react';
@@ -8,18 +8,29 @@ import { RootState } from '../store/index';
 import { ThemeOptions, IUserOptionsState } from '../store/userOptions/types';
 import { setTheme } from '../store/userOptions/actions';
 import { ISystemState, MobileView } from '../store/system/types';
+import { login } from '../store/auth/actions';
 
 interface IProps {
   theme: ThemeOptions;
   dispatchSetTheme: typeof setTheme;
   mobileView: MobileView;
+  dispatchLogin: typeof login;
 }
 
 const Home = ({
   theme,
   dispatchSetTheme,
   mobileView,
+  dispatchLogin,
 }: IProps): ReactElement => {
+  const [inputs, setInputs] = useState({
+    username: '',
+    password: '',
+  });
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    e.persist();
+    return setInputs(() => ({ ...inputs, [e.target.name]: e.target.value }));
+  };
   return (
     <div className="background">
       <title>Home</title>
@@ -50,7 +61,15 @@ const Home = ({
               className="login_glow"
               alt="login_glow"
             />
-            <Form>
+            <Form
+              onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+                handleInputChange(e)
+              }
+              onSubmit={(e: React.FormEvent<HTMLFormElement>): void => {
+                e.preventDefault();
+                dispatchLogin();
+              }}
+            >
               <Form.Field>
                 <Form.Input
                   className="myInput"
@@ -276,6 +295,7 @@ const mapStateToProps = (
 
 const mapDispatchToProps = {
   dispatchSetTheme: setTheme,
+  dispatchLogin: login,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
