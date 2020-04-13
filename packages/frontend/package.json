@@ -5,7 +5,7 @@
   "scripts": {
     "precommit": "lint-staged && npm run build",
     "dev": "next dev",
-    "localdev": "env BACKEND_URL=http://localhost:3001 npm run dev",
+    "localdev": "npm run dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint './**/*.{js,jsx,ts,tsx}' --max-warnings 0",
@@ -70,6 +70,7 @@
     "file-loader": "^5.0.2",
     "lint-staged": "^10.0.7",
     "prettier": "^1.19.1",
+    "redux-saga-test-plan": "^4.0.0-rc.3",
     "typescript": "^3.7.5",
     "url-loader": "^3.0.0"
   }

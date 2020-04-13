@@ -7,8 +7,8 @@ import { TypegooseModule } from 'nestjs-typegoose';
 import { MongoMemoryServer } from 'mongodb-memory-server-core';
 
 import { AuthController } from '../auth/auth.controller';
-import { LocalStrategy } from '../auth/local.strategy';
-import { JwtStrategy } from '../auth/jwt.strategy';
+import { LocalStrategy } from '../auth/util/local.strategy';
+import { JwtStrategy } from '../auth/util/jwt.strategy';
 import { JWT_SECRET } from '../getEnvVars';
 import { UsersModule } from '../users/users.module';
 import { AuthModule } from '../auth/auth.module';
@@ -76,7 +76,7 @@ describe('Auth', () => {
       })
       .expect(HttpStatus.CREATED)
       .then((key) => {
-        AUTH_KEY = key.body.accessToken;
+        AUTH_KEY = key.body.token;
       });
 
     // Good auth key provided
@@ -390,7 +390,7 @@ describe('Auth', () => {
       })
       .expect(HttpStatus.CREATED)
       .then((key) => {
-        AUTH_KEY = key.body.accessToken;
+        AUTH_KEY = key.body.token;
       });
 
     // Bad auth key provided

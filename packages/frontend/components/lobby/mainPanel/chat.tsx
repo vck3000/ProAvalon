@@ -1,7 +1,7 @@
 import React, { ReactElement, useState, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import { socketEmitProto } from '../../../socket/socket';
+import socket from '../../../socket';
 
 import { RootState } from '../../../store';
 import { ThemeOptions } from '../../../store/userOptions/types';
@@ -84,7 +84,7 @@ const Chat = ({ theme, messages }: Props): ReactElement => {
           }}
           onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>): void => {
             if (e.key === 'Enter' && messageText) {
-              socketEmitProto(SocketEvents.ALL_CHAT_TO_SERVER, ChatRequest, {
+              socket.emitProto(SocketEvents.ALL_CHAT_TO_SERVER, ChatRequest, {
                 text: messageText,
               });
               setMessageText('');

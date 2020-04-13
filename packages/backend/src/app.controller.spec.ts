@@ -8,8 +8,8 @@ import { ChatModule } from './chat/chat.module';
 import { AuthService } from './auth/auth.service';
 import { UsersService } from './users/users.service';
 import { mockUserModel } from './users/users.service.spec';
-import { LocalStrategy } from './auth/local.strategy';
-import { JwtStrategy } from './auth/jwt.strategy';
+import { LocalStrategy } from './auth/util/local.strategy';
+import { JwtStrategy } from './auth/util/jwt.strategy';
 import { JWT_SECRET } from './getEnvVars';
 
 describe('AppController', () => {

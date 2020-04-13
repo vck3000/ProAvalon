@@ -3,9 +3,8 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { AuthGateway } from './auth.gateway';
-import { LocalStrategy } from './local.strategy';
-import { JwtStrategy } from './jwt.strategy';
+import { LocalStrategy } from './util/local.strategy';
+import { JwtStrategy } from './util/jwt.strategy';
 import { UsersModule } from '../users/users.module';
 import { JWT_SECRET } from '../getEnvVars';
 
@@ -19,7 +18,7 @@ import { JWT_SECRET } from '../getEnvVars';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, AuthGateway],
+  providers: [AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

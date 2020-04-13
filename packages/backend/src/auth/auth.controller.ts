@@ -9,8 +9,8 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { JwtAuthGuard } from './jwt-auth.guard';
-import { LocalAuthGuard } from './local-auth.guard';
+import { JwtAuthGuard } from './util/jwt-auth.guard';
+import { LocalAuthGuard } from './util/local-auth.guard';
 import { AuthService } from './auth.service';
 import { User } from '../users/user.model';
 import { CreateUserDto } from '../users/dto/create-user.dto';
