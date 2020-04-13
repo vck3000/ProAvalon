@@ -1,38 +1,37 @@
 import { SagaIterator } from 'redux-saga';
-import { call, takeLatest, fork } from 'redux-saga/effects';
-import axios, { AxiosPromise } from 'axios';
-import { User, LOGIN, SIGNUP } from './action.types';
-import { SetSocketAuth } from '../../socket/auth';
+import { call, takeLatest, fork, put } from 'redux-saga/effects';
+import Cookie from 'js-cookie';
+import { LOGIN, SIGNUP, ISignupAction, ILoginAction } from './action.types';
+// import { SetSocketAuth } from '../../socket/auth';
+import { Post } from '../../axios';
 
-const API_ADDRESS = 'http://localhost:3001';
+import { login as loginAction } from './actions';
 
-function post(path: string, data: User): AxiosPromise {
-  const url = `${API_ADDRESS}${path}`;
-
-  return axios({
-    method: 'post',
-    url,
-    data,
+export function* signup(action: ISignupAction): SagaIterator {
+  yield call(Post, '/auth/signup', {
+    username: action.username,
+    password: action.password,
+    email: action.email,
   });
+
+  // Login after a successful signup.
+  yield put(
+    loginAction({ username: action.username, password: action.password }),
+  );
 }
 
-export function* signup(): SagaIterator {
-  yield call(post, '/auth/signup', {
-    // hardcode values for now
-    username: 'test_user',
-    password: 'test_password',
-    email: 'test@gmail.com',
+export function* login(action: ILoginAction): SagaIterator {
+  const response = yield call(Post, '/auth/login', {
+    username: action.username,
+    password: action.password,
   });
-}
 
-export function* login(): SagaIterator {
-  const response = yield call(post, '/auth/login', {
-    // hardcode values for now
-    username: 'test_user',
-    password: 'test_password',
-  });
-  if (response.data.accessToken) {
-    SetSocketAuth(response.data.accessToken);
+  if (response.data.token) {
+    yield call(Cookie.set, 'AUTH_TOKEN', response.data.token);
+    // TODO Restart sockets with the new authentication token.
+  } else {
+    // TODO
+    throw Error('Login failed!');
   }
 }
 

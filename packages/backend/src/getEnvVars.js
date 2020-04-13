@@ -1,5 +1,5 @@
 // Checks for production. Each variable must be defined.
-if (process.env.NODE_ENV === 'production') {
+if (process.env.ENV === 'production') {
   if (!process.env.DATABASE_URL) {
     throw Error('Environment variable DATABASE_URL was not provided');
   }

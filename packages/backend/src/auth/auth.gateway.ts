@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import {
   WebSocketGateway,
   WebSocketServer,
@@ -5,9 +6,9 @@ import {
   OnGatewayConnection,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import { JWT_SECRET } from '../getEnvVars';
+// import { JWT_SECRET } from '../getEnvVars';
 
-import socketioJwt = require('socketio-jwt');
+// import socketioJwt = require('socketio-jwt');
 
 interface CustomSocket extends Socket {
   // eslint-disable-next-line camelcase
@@ -16,16 +17,16 @@ interface CustomSocket extends Socket {
   };
 }
 
-@WebSocketGateway()
+@WebSocketGateway({ namespace: 'auth' })
 export class AuthGateway implements OnGatewayConnection {
   @WebSocketServer() server!: Server;
 
+  private readonly logger = new Logger(AuthGateway.name);
+
   async handleConnection() {
-    socketioJwt.authorize({
-      secret: JWT_SECRET,
-      timeout: 15000, // 15 seconds to send the authentication message
-      decodedPropertyName: 'decoded_token',
-    });
+    this.logger.log('New connection from auth.');
+    const count = Object.keys(this.server.sockets).length;
+    this.logger.log(`auth: Online player count: ${count}.`);
   }
 
   @SubscribeMessage('authenticated')
