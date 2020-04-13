@@ -13,3 +13,6 @@ export const MONGO_URL =
   'mongodb://root:password@localhost:27017/proavalon?authSource=admin';
 
 export const JWT_SECRET = process.env.JWT_SECRET_KEY || 'my_secret';
+
+// Not an environment variable but nice to have here:
+export const JWT_EXPIRY = 24 * 60 * 60; // One day in seconds, not millis!

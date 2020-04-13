@@ -1,36 +1,24 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement } from 'react';
 import { connect } from 'react-redux';
-import Link from 'next/link';
-import { Button, Form } from 'semantic-ui-react';
 
 import Nav from '../components/nav/navIndex';
 import { RootState } from '../store/index';
 import { ThemeOptions, IUserOptionsState } from '../store/userOptions/types';
 import { setTheme } from '../store/userOptions/actions';
 import { ISystemState, MobileView } from '../store/system/types';
-import { login } from '../store/auth/actions';
+import LoginSignupForm from '../components/index/loginSignUpForm';
 
 interface IProps {
   theme: ThemeOptions;
   dispatchSetTheme: typeof setTheme;
   mobileView: MobileView;
-  // dispatchLogin: typeof login;
 }
 
 const Home = ({
   theme,
   dispatchSetTheme,
   mobileView,
-}: // dispatchLogin,
-IProps): ReactElement => {
-  const [inputs, setInputs] = useState({
-    username: '',
-    password: '',
-  });
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    e.persist();
-    return setInputs(() => ({ ...inputs, [e.target.name]: e.target.value }));
-  };
+}: IProps): ReactElement => {
   return (
     <div className="background">
       <title>Home</title>
@@ -61,42 +49,7 @@ IProps): ReactElement => {
               className="login_glow"
               alt="login_glow"
             />
-            <Form
-              onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                handleInputChange(e)
-              }
-              onSubmit={(e: React.FormEvent<HTMLFormElement>): void => {
-                e.preventDefault();
-                // TODO
-                // dispatchLogin();
-              }}
-            >
-              <Form.Field>
-                <Form.Input
-                  className="myInput"
-                  name="username"
-                  icon="user"
-                  iconPosition="left"
-                  placeholder="Username"
-                />
-              </Form.Field>
-              <Form.Field>
-                <Form.Input
-                  name="password"
-                  icon="lock"
-                  iconPosition="left"
-                  placeholder="Password"
-                />{' '}
-              </Form.Field>
-              <Button type="submit" className="login">
-                Login
-              </Button>
-              <div className="signup">
-                <Link href="/signup">
-                  <a>Sign up</a>
-                </Link>
-              </div>
-            </Form>
+            <LoginSignupForm />
           </div>
           <div>
             Dark theme
@@ -194,21 +147,6 @@ IProps): ReactElement => {
             background: ${theme.colors.GOLD_HOVER} none !important;
           }
 
-          .form_wrapper .signup {
-            margin-top: 8px;
-          }
-
-          .form_wrapper .signup a {
-            transition: color 0.1s ease;
-            color: ${theme.colors.GOLD};
-            font-family: Montserrat-Bold;
-            text-decoration: underline;
-          }
-
-          .form_wrapper .signup a:hover {
-            color: ${theme.colors.GOLD_HOVER};
-          }
-
           .deception {
             padding-top: 20px;
             font-family: Montserrat-ExtraBold;
@@ -296,7 +234,6 @@ const mapStateToProps = (
 
 const mapDispatchToProps = {
   dispatchSetTheme: setTheme,
-  dispatchLogin: login,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
