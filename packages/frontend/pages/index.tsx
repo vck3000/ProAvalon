@@ -14,15 +14,15 @@ interface IProps {
   theme: ThemeOptions;
   dispatchSetTheme: typeof setTheme;
   mobileView: MobileView;
-  dispatchLogin: typeof login;
+  // dispatchLogin: typeof login;
 }
 
 const Home = ({
   theme,
   dispatchSetTheme,
   mobileView,
-  dispatchLogin,
-}: IProps): ReactElement => {
+}: // dispatchLogin,
+IProps): ReactElement => {
   const [inputs, setInputs] = useState({
     username: '',
     password: '',
@@ -67,7 +67,8 @@ const Home = ({
               }
               onSubmit={(e: React.FormEvent<HTMLFormElement>): void => {
                 e.preventDefault();
-                dispatchLogin();
+                // TODO
+                // dispatchLogin();
               }}
             >
               <Form.Field>
