@@ -7,6 +7,7 @@ import { JWT_SECRET } from '../../getEnvVars';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
+      // We will likely need to change this to extract jwt from cookie.
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: JWT_SECRET,

@@ -7,8 +7,8 @@ import { TypegooseModule } from 'nestjs-typegoose';
 import { MongoMemoryServer } from 'mongodb-memory-server-core';
 
 import { AuthController } from '../auth/auth.controller';
-import { LocalStrategy } from '../auth/util/local.strategy';
-import { JwtStrategy } from '../auth/util/jwt.strategy';
+import { LocalStrategy } from '../auth/guards/local.strategy';
+import { JwtStrategy } from '../auth/guards/jwt.strategy';
 import { JWT_SECRET } from '../getEnvVars';
 import { UsersModule } from '../users/users.module';
 import { AuthModule } from '../auth/auth.module';

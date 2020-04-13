@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import LobbyIndex from '../components/lobby/lobbyIndex';
 import { getAllChat } from '../store/chat/actions';
+import socket from '../socket';
 
 interface IProps {
   dispatchGetAllChat: typeof getAllChat;
@@ -12,6 +13,7 @@ const Lobby = ({ dispatchGetAllChat }: IProps): ReactElement => {
   // Get all chat on lobby load.
   useEffect(() => {
     dispatchGetAllChat();
+    socket.reinitialize();
   }, []);
   return (
     <>
