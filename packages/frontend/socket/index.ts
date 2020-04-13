@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import io from 'socket.io-client';
 import Cookie from 'js-cookie';
+import Swal from 'sweetalert2';
 
 import { getApiUrl } from '../config';
 import { SetSocketChatEvents } from './chat';
@@ -10,16 +11,18 @@ class SocketConnection {
 
   private token: string | undefined;
 
-  constructor() {
+  reinitialize(): void {
+    // eslint-disable-next-line no-console
+    console.log('Reinitialising socket');
+
     this.token = Cookie.get('AUTH_TOKEN');
 
-    this.setup();
-  }
-
-  setup(): void {
+    if (this.socket) {
+      this.socket.disconnect();
+    }
     // If we are on the client side
     if (typeof window !== 'undefined') {
-      this.socket = io(`${getApiUrl()}/auth`, {
+      this.socket = io(getApiUrl(), {
         reconnection: true,
         reconnectionDelay: 1000,
         reconnectionDelayMax: 5000,
@@ -27,6 +30,15 @@ class SocketConnection {
         query: {
           token: this.token,
         },
+      });
+
+      this.socket.on('unauthorized', (message: string) => {
+        Swal.fire({
+          heightAuto: false,
+          title: 'Oops',
+          text: message,
+          icon: 'error',
+        });
       });
 
       // TODO Do we need this?
@@ -39,6 +51,10 @@ class SocketConnection {
       SetSocketChatEvents(this.socket);
     }
   }
+
+  emit = (event: string, message: any): void => {
+    this.socket.emit(event, message);
+  };
 
   emitProto = (event: string, messageType: any, contents: object): void => {
     if (!this.socket) {
@@ -65,22 +81,3 @@ class SocketConnection {
 // Only have one instance of this running.
 const socket = new SocketConnection();
 export default socket;
-
-// import Cookies from 'js-cookie';
-// import socket from './socket';
-
-// export const SetSocketAuth = (token: string): void => {
-//   const inOneDay = new Date(new Date().getTime() + 1000 * 60 * 60 * 24);
-//   Cookies.set(
-//     'auth__flow__spa__loggedUserObj',
-//     { token },
-//     { expires: inOneDay },
-//   );
-//   socket.on('connect', () => {
-//     socket
-//       .emit('authenticate', { token }) // send the jwt
-//       .on('authenticated', () => {
-//         // do stuff
-//       });
-//   });
-// };

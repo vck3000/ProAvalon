@@ -10,6 +10,7 @@ describe('AuthSaga', () => {
     const fakeRes = {
       data: {
         token: '123abc',
+        expires: 1234,
       },
     };
 
@@ -19,7 +20,9 @@ describe('AuthSaga', () => {
       password: 'test_password',
     })
       .provide([[matchers.call.fn(Post), fakeRes]])
-      .call(Cookie.set, 'AUTH_TOKEN', `${fakeRes.data.token}`)
+      .call(Cookie.set, 'AUTH_TOKEN', fakeRes.data.token, {
+        expires: fakeRes.data.expires,
+      })
       .run();
   });
 });

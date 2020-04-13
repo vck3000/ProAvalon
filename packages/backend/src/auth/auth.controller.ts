@@ -7,10 +7,11 @@ import {
   UseGuards,
   Body,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { JwtAuthGuard } from './util/jwt-auth.guard';
-import { LocalAuthGuard } from './util/local-auth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
 import { User } from '../users/user.model';
 import { CreateUserDto } from '../users/dto/create-user.dto';
@@ -22,12 +23,15 @@ type RequestType = Request & { user: User };
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  private readonly logger = new Logger(AuthController.name);
+
   // Passport automatically creates a user object,
   // based on the value we return from the validate() method,
   // and assigns it to the Request object as req.user
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Req() req: RequestType) {
+    this.logger.log(`${req.user.displayUsername} logged in.`);
     return this.authService.login(req.user);
   }
 
