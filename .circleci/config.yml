@@ -58,8 +58,8 @@ workflows:
     jobs:
       - build
       - docker_deploy_backend:
-        requires:
-          - build
+          requires:
+            - build
       - docker_deploy_frontend:
-        requires:
-          - build
+          requires:
+            - build
