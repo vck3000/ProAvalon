@@ -3,13 +3,13 @@ import { SagaIterator } from 'redux-saga';
 import { call, put, takeLatest, fork } from 'redux-saga/effects';
 
 import { ChatResponse, ChatResponses } from '../../proto/bundle';
-import { getApiUrl } from '../../config';
+import { getBackendUrl } from '../../utils/getEnvVars';
 import { SET_MESSAGES, GET_ALL_CHAT } from './actions.types';
 
 function get(
   path: string,
 ): Promise<AxiosResponse<ChatResponse[]> | ChatResponse[]> {
-  const url = `${getApiUrl()}${path}`;
+  const url = `${getBackendUrl()}${path}`;
 
   return axios({
     method: 'get',

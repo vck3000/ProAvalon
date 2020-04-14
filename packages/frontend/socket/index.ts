@@ -4,7 +4,7 @@ import io from 'socket.io-client';
 import Cookie from 'js-cookie';
 import Swal from 'sweetalert2';
 
-import { getApiUrl } from '../config';
+import { getBackendUrl } from '../utils/getEnvVars';
 import { SetSocketChatEvents } from './chat';
 
 class SocketConnection {
@@ -22,7 +22,7 @@ class SocketConnection {
 
     // If we are on the client side
     if (typeof window !== 'undefined') {
-      this.socket = io(getApiUrl(), {
+      this.socket = io(getBackendUrl(), {
         reconnection: true,
         reconnectionDelay: 1000,
         reconnectionDelayMax: 5000,
