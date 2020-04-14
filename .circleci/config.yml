@@ -59,7 +59,7 @@ workflows:
       - build
       - docker_deploy_backend:
         requires:
-          -build
+          - build
       - docker_deploy_frontend:
         requires:
-          -build
+          - build
