@@ -46,6 +46,27 @@ class SocketConnection {
       });
 
       SetSocketChatEvents(this.socket);
+
+      this.socket.on('forceDisconnect', () => {
+        // Only fire notification if we were in lobby.
+        if (Router.route === '/lobby') {
+          Swal.fire({
+            heightAuto: false,
+            title: 'Disconnected!',
+            text: 'Please reload the page to reconnect.',
+            icon: 'error',
+            confirmButtonText: 'Reload lobby',
+            showCancelButton: true,
+            cancelButtonText: 'Close',
+            focusCancel: true,
+            reverseButtons: true,
+          }).then((result) => {
+            if (result.value) {
+              Router.reload();
+            }
+          });
+        }
+      });
     }
   }
 
