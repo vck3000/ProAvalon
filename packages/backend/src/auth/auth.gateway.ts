@@ -7,6 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
+
 import { UsersService } from '../users/users.service';
 import { ChatService } from '../chat/chat.service';
 import { SocketUser } from '../users/users.socket';
@@ -14,6 +15,7 @@ import { SocketUser } from '../users/users.socket';
 import { ChatResponse } from '../../proto/bundle';
 import { getProtoTimestamp } from '../../proto/timestamp';
 import SocketEvents from '../../proto/socketEvents';
+import { getRedisAdapter } from '../util/redisIoAdapter';
 
 @WebSocketGateway()
 export class AuthGateway implements OnGatewayConnection {
@@ -76,25 +78,32 @@ export class AuthGateway implements OnGatewayConnection {
       );
 
     // Online player count
-    if (this.server.sockets.adapter.rooms.lobby) {
-      const count = this.server.sockets.adapter.rooms.lobby.length;
-      this.logger.log(`Online player count: ${count}.`);
-      const onlinePlayerCountMsg = ChatResponse.create({
-        text: `There are ${count} players connected!`,
-        timestamp: getProtoTimestamp(),
-        username: socket.user.username,
-        type: ChatResponse.ChatResponseType.CREATE_ROOM,
-      });
+    const count = await new Promise((resolve, reject) =>
+      getRedisAdapter(this.server).clients(['lobby'], (err, clients) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(clients.length);
+        }
+      }),
+    );
 
-      this.chatService.storeMessage(onlinePlayerCountMsg);
+    this.logger.log(`Online player count: ${count}.`);
+    const onlinePlayerCountMsg = ChatResponse.create({
+      text: `There are ${count} players connected!`,
+      timestamp: getProtoTimestamp(),
+      username: socket.user.username,
+      type: ChatResponse.ChatResponseType.CREATE_ROOM,
+    });
 
-      socket
-        .to('lobby')
-        .emit(
-          SocketEvents.ALL_CHAT_TO_CLIENT,
-          ChatResponse.encode(onlinePlayerCountMsg).finish(),
-        );
-    }
+    this.chatService.storeMessage(onlinePlayerCountMsg);
+
+    socket
+      .to('lobby')
+      .emit(
+        SocketEvents.ALL_CHAT_TO_CLIENT,
+        ChatResponse.encode(onlinePlayerCountMsg).finish(),
+      );
   }
 
   async handleDisconnect(socket: SocketUser) {
@@ -123,24 +132,31 @@ export class AuthGateway implements OnGatewayConnection {
       );
 
     // Online player count
-    if (this.server.sockets.adapter.rooms.lobby) {
-      const count = this.server.sockets.adapter.rooms.lobby.length;
-      this.logger.log(`Online player count: ${count}.`);
-      const onlinePlayerCountMsg = ChatResponse.create({
-        text: `There are ${count} players connected!`,
-        timestamp: getProtoTimestamp(),
-        username: socket.user.username,
-        type: ChatResponse.ChatResponseType.CREATE_ROOM,
-      });
+    const count = await new Promise((resolve, reject) =>
+      getRedisAdapter(this.server).clients(['lobby'], (err, clients) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(clients.length);
+        }
+      }),
+    );
 
-      this.chatService.storeMessage(onlinePlayerCountMsg);
+    this.logger.log(`Online player count: ${count}.`);
+    const onlinePlayerCountMsg = ChatResponse.create({
+      text: `There are ${count} players connected!`,
+      timestamp: getProtoTimestamp(),
+      username: socket.user.username,
+      type: ChatResponse.ChatResponseType.CREATE_ROOM,
+    });
 
-      socket
-        .to('lobby')
-        .emit(
-          SocketEvents.ALL_CHAT_TO_CLIENT,
-          ChatResponse.encode(onlinePlayerCountMsg).finish(),
-        );
-    }
+    this.chatService.storeMessage(onlinePlayerCountMsg);
+
+    socket
+      .to('lobby')
+      .emit(
+        SocketEvents.ALL_CHAT_TO_CLIENT,
+        ChatResponse.encode(onlinePlayerCountMsg).finish(),
+      );
   }
 }

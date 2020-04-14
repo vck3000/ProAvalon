@@ -5,7 +5,7 @@ import { UsersService } from '../users/users.service';
 import { User } from '../users/user.model';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { SignUpError } from './exceptions/signUpError';
-import { JWT_EXPIRY } from '../getEnvVars';
+import { JWT_EXPIRY } from '../util/getEnvVars';
 
 @Injectable()
 export class AuthService {

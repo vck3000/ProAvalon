@@ -9,12 +9,19 @@ import { MongoMemoryServer } from 'mongodb-memory-server-core';
 import { AuthController } from '../auth/auth.controller';
 import { LocalStrategy } from '../auth/guards/local.strategy';
 import { JwtStrategy } from '../auth/guards/jwt.strategy';
-import { JWT_SECRET } from '../getEnvVars';
+import { JWT_SECRET } from '../util/getEnvVars';
 import { UsersModule } from '../users/users.module';
 import { AuthModule } from '../auth/auth.module';
 
 // Allow extra time for mongodb-memory-server to download if needed
 jest.setTimeout(600000);
+
+// Mock out redis dependency
+jest.mock('../util/redisIoAdapter', () => ({
+  __esModule: true, // this property makes it work
+  default: 'mockedDefaultExport',
+  namedExport: jest.fn(),
+}));
 
 describe('Auth', () => {
   let app: INestApplication;

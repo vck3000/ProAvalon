@@ -8,7 +8,7 @@ import { LocalStrategy } from './guards/local.strategy';
 import { JwtStrategy } from './guards/jwt.strategy';
 import { UsersModule } from '../users/users.module';
 import { AuthGateway } from './auth.gateway';
-import { JWT_SECRET, JWT_EXPIRY } from '../getEnvVars';
+import { JWT_SECRET, JWT_EXPIRY } from '../util/getEnvVars';
 import { ChatModule } from '../chat/chat.module';
 
 @Module({

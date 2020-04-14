@@ -8,7 +8,7 @@ import { LocalStrategy } from './guards/local.strategy';
 import { JwtStrategy } from './guards/jwt.strategy';
 import { UsersService } from '../users/users.service';
 import { mockUserModel } from '../users/users.service.spec';
-import { JWT_SECRET } from '../getEnvVars';
+import { JWT_SECRET } from '../util/getEnvVars';
 
 describe('AuthController', () => {
   let service: AuthController;

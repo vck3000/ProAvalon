@@ -10,7 +10,7 @@ import { UsersService } from './users/users.service';
 import { mockUserModel } from './users/users.service.spec';
 import { LocalStrategy } from './auth/guards/local.strategy';
 import { JwtStrategy } from './auth/guards/jwt.strategy';
-import { JWT_SECRET } from './getEnvVars';
+import { JWT_SECRET } from './util/getEnvVars';
 
 describe('AppController', () => {
   let appController: AppController;
