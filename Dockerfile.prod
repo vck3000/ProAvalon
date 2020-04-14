@@ -11,14 +11,15 @@ RUN echo "Building PROD env for ${SERVICE}."
 WORKDIR /usr/src/app
 
 # Copy over the files
-COPY package*.json ./
-COPY lerna.json ./
+# COPY package*.json ./
+# COPY lerna.json ./
 COPY packages/${SERVICE} ./packages/${SERVICE}
 
 # Install dependencies
-RUN npm ci --ignore-scripts --no-optional
-RUN npm install -g lerna
-RUN lerna bootstrap --ignore-scripts -- --no-optional
+# RUN npm ci --ignore-scripts --no-optional
+# RUN npm install -g lerna
+# RUN lerna bootstrap --ignore-scripts -- --no-optional
+RUN cd packages/${SERVICE} && npm install
 
 # Build and prune away the devDependencies
 RUN cd packages/${SERVICE} && npm run build && npm prune --production
@@ -27,8 +28,15 @@ RUN cd packages/${SERVICE} && npm run build && npm prune --production
 FROM node:13-alpine
 WORKDIR /usr/src/app
 ENV NODE_ENV="production"
-
-RUN npm install -g @nestjs/cli
+ARG SERVICE
 
 COPY --from=build /usr/src/app/packages/${SERVICE} ./packages/${SERVICE}
-CMD [ "npm" , "--prefix", "packages/${SERVICE}", "run", "start" ]
+
+RUN if [ "$SERVICE" == "backend" ]; then \
+  echo Installing Bcrypt... && \
+  cd packages/$SERVICE/node_modules/bcrypt && \
+  npm install . && \
+  npm run install; \
+  fi
+
+CMD [ "npm" , "--prefix", "packages/${SERVICE}", "run", "start:prod" ]

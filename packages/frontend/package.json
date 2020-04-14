@@ -8,6 +8,7 @@
     "localdev": "npm run dev",
     "build": "next build",
     "start": "next start",
+    "start:prod": "next start",
     "lint": "eslint './**/*.{js,jsx,ts,tsx}' --max-warnings 0",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watchAll"

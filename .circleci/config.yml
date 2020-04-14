@@ -28,7 +28,10 @@ jobs:
       - run: npm run lint
       - run: npm run test
 
-      - setup-remote-docker
+      - run: |
+          if [ $CIRCLE_BRANCH != newPA ]; then exit 0; fi
+          setup-remote-docker
+
       # Install Docker
       # - run: apk add docker-cli
 
