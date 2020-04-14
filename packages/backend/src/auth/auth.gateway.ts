@@ -15,17 +15,24 @@ import { SocketUser } from '../users/users.socket';
 import { ChatResponse } from '../../proto/bundle';
 import { getProtoTimestamp } from '../../proto/timestamp';
 import SocketEvents from '../../proto/socketEvents';
-import { getRedisAdapter } from '../util/redisIoAdapter';
+import redisClient from '../util/redisClient';
+import RedisAdapter from '../util/redisAdapter';
 
 @WebSocketGateway()
 export class AuthGateway implements OnGatewayConnection {
+  @WebSocketServer() server!: Server;
+
+  redisAdapter!: RedisAdapter;
+
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
     private chatService: ChatService,
   ) {}
 
-  @WebSocketServer() server!: Server;
+  afterInit() {
+    this.redisAdapter = new RedisAdapter(this.server);
+  }
 
   private readonly logger = new Logger(AuthGateway.name);
 
@@ -38,7 +45,9 @@ export class AuthGateway implements OnGatewayConnection {
     const { token } = socket.handshake.query;
 
     try {
+      // Verify token
       const decoded = this.jwtService.verify(token);
+      // See if user data in token exists
       if (decoded && decoded.username) {
         const user = await this.usersService.findByUsername(decoded.username);
         if (!user) {
@@ -46,15 +55,55 @@ export class AuthGateway implements OnGatewayConnection {
         }
         // eslint-disable-next-line no-param-reassign
         socket.user = user;
+
+        // Check to see if they are already connected on redis
+        const connectedSocketId = await redisClient.get(
+          `users:${user.username}`,
+        );
+
+        // If they are already connected somewhere else, disconnect them.
+        if (connectedSocketId) {
+          this.logger.log(
+            `${user.username} has an active socket. Killing previous...`,
+          );
+          this.server.to(connectedSocketId).emit('forceDisconnect');
+          await this.redisAdapter.remoteDisconnect(connectedSocketId, true);
+        }
       }
     } catch (e) {
       this.logger.log('New socket connection unauthorized...');
-      socket.emit('unauthorized', 'Client socket is not authenticated.');
+      socket.emit('unauthorized', 'Client socket is not authorized.');
       socket.disconnect();
       return;
     }
 
-    this.logger.log('New socket connection authenticated.');
+    this.logger.log('New socket connection authorized.');
+
+    this.logger.log(`Recording ${socket.user.username}'s socket in redis.`);
+    // Set a new record of their connection. 30s to expire as pings happen every 25s.
+    await redisClient.set(
+      `users:${socket.user.username}`,
+      socket.id,
+      'NX',
+      'EX',
+      30,
+    );
+
+    // Attach a listener to the packet for pings.
+    socket.conn.on('packet', async (packet) => {
+      if (packet.type === 'ping') {
+        this.logger.log(
+          `Updating ${socket.user.username}'s socket record in redis.`,
+        );
+        await redisClient.set(
+          `users:${socket.user.username}`,
+          socket.id,
+          'XX',
+          'EX',
+          30,
+        );
+      }
+    });
 
     // Successful authentication
     socket.join('lobby');
@@ -79,7 +128,7 @@ export class AuthGateway implements OnGatewayConnection {
 
     // Online player count
     const count = await new Promise((resolve, reject) =>
-      getRedisAdapter(this.server).clients(['lobby'], (err, clients) => {
+      this.redisAdapter.get().clients(['lobby'], (err, clients) => {
         if (err) {
           reject(err);
         } else {
@@ -113,6 +162,12 @@ export class AuthGateway implements OnGatewayConnection {
       return;
     }
 
+    // Remove their record on redis - no need to await
+    this.logger.log(
+      `Removing ${socket.user.username}'s socket record in redis.`,
+    );
+    redisClient.del(`users:${socket.user.username}`);
+
     this.logger.log(`Player left lobby: ${socket.id}.`);
 
     const chatResponse = ChatResponse.create({
@@ -133,7 +188,7 @@ export class AuthGateway implements OnGatewayConnection {
 
     // Online player count
     const count = await new Promise((resolve, reject) =>
-      getRedisAdapter(this.server).clients(['lobby'], (err, clients) => {
+      this.redisAdapter.get().clients(['lobby'], (err, clients) => {
         if (err) {
           reject(err);
         } else {

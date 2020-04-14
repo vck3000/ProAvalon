@@ -1,5 +1,4 @@
 import { IoAdapter } from '@nestjs/platform-socket.io';
-import { Server } from 'socket.io';
 import * as redisIoAdapter from 'socket.io-redis';
 import { REDIS_HOST, REDIS_PORT } from './getEnvVars';
 
@@ -12,6 +11,3 @@ export class RedisIoAdapter extends IoAdapter {
     return server;
   }
 }
-
-export const getRedisAdapter = (server: Server) =>
-  server.sockets.adapter as redisIoAdapter.RedisAdapter;
