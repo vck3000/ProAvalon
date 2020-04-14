@@ -14,6 +14,13 @@ const Lobby = ({ dispatchGetAllChat }: IProps): ReactElement => {
   useEffect(() => {
     dispatchGetAllChat();
     socket.reinitialize();
+
+    // Cleanup - is run when user leaves the lobby page at the moment.
+    // Perhaps we only want to remove from 'lobby' socket room?
+    // and keep the connection alive?
+    return (): void => {
+      socket.close();
+    };
   }, []);
   return (
     <>

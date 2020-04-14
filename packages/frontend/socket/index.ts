@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import Router from 'next/router';
 import io from 'socket.io-client';
 import Cookie from 'js-cookie';
 import Swal from 'sweetalert2';
@@ -17,9 +18,8 @@ class SocketConnection {
 
     this.token = Cookie.get('AUTH_TOKEN');
 
-    if (this.socket) {
-      this.socket.disconnect();
-    }
+    this.close();
+
     // If we are on the client side
     if (typeof window !== 'undefined') {
       this.socket = io(getApiUrl(), {
@@ -32,25 +32,28 @@ class SocketConnection {
         },
       });
 
-      this.socket.on('unauthorized', (message: string) => {
+      this.socket.on('unauthorized', (/* message: string */) => {
         Swal.fire({
           heightAuto: false,
           title: 'Oops',
-          text: message,
+          text: 'You are not logged in!',
           icon: 'error',
+          confirmButtonText: 'Log in',
+          onClose: () => {
+            Router.push('/');
+          },
         });
-      });
-
-      // TODO Do we need this?
-      this.socket.on('reconnection_attempt', () => {
-        this.socket.io.opts.query = {
-          token: this.token,
-        };
       });
 
       SetSocketChatEvents(this.socket);
     }
   }
+
+  close = (): void => {
+    if (this.socket && this.socket.connected) {
+      this.socket.disconnect();
+    }
+  };
 
   emit = (event: string, message: any): void => {
     this.socket.emit(event, message);
