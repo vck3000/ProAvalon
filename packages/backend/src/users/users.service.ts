@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
+import * as bcrypt from 'bcryptjs';
+
 import { User } from './user.model';
 
-import bcrypt = require('bcrypt');
 @Injectable()
 export class UsersService {
   constructor(

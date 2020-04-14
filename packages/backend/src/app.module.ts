@@ -11,6 +11,7 @@ import { MONGO_URL } from './getEnvVars';
   imports: [
     TypegooseModule.forRoot(MONGO_URL, {
       useNewUrlParser: true,
+      useUnifiedTopology: true,
     }),
     ChatModule,
     AuthModule,

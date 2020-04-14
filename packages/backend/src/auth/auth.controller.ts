@@ -9,6 +9,7 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
+import { ReturnModelType } from '@typegoose/typegoose';
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
@@ -17,7 +18,7 @@ import { User } from '../users/user.model';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { SignUpError } from './exceptions/signUpError';
 
-type RequestType = Request & { user: User };
+type RequestType = Request & { user: ReturnModelType<typeof User> };
 
 @Controller('auth')
 export class AuthController {

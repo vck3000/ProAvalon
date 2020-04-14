@@ -32,11 +32,4 @@ ARG SERVICE
 
 COPY --from=build /usr/src/app/packages/${SERVICE} ./packages/${SERVICE}
 
-RUN if [ "$SERVICE" == "backend" ]; then \
-  echo Installing Bcrypt... && \
-  cd packages/$SERVICE/node_modules/bcrypt && \
-  npm install . && \
-  npm run install; \
-  fi
-
 CMD [ "npm" , "--prefix", "packages/${SERVICE}", "run", "start:prod" ]
