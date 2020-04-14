@@ -8,12 +8,6 @@ jobs:
     docker:
       # specify the version you desire here
       - image: circleci/node:13
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
-
     working_directory: ~/repo
 
     steps:
@@ -28,13 +22,13 @@ jobs:
       - run: npm run lint
       - run: npm run test
 
-      - run: |
-          if [ $CIRCLE_BRANCH != newPA ]; then exit 0; fi
-          setup-remote-docker
+  docker_deploy_backend:
+    docker:
+      - image: circleci/node:13
+    working_directory: ~/repo
 
-      # Install Docker
-      # - run: apk add docker-cli
-
+    steps:
+      - setup-remote-docker
       # Build and push Docker image - Only create and push newPA branch.
       - run: |
           if [ $CIRCLE_BRANCH != newPA ]; then exit 0; fi
@@ -43,9 +37,29 @@ jobs:
           echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
           docker push $DOCKER_USER/proavalon_backend:$TAG
 
+  docker_deploy_frontend:
+    docker:
+      - image: circleci/node:13
+    working_directory: ~/repo
+
+    steps:
+      - setup-remote-docker
+      # Build and push Docker image - Only create and push newPA branch.
       - run: |
           if [ $CIRCLE_BRANCH != newPA ]; then exit 0; fi
           TAG=0.1.$CIRCLE_BUILD_NUM
           docker build -t $DOCKER_USER/proavalon_frontend:$TAG -f Dockerfile.prod --build-arg SERVICE=frontend .
           echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
           docker push $DOCKER_USER/proavalon_frontend:$TAG
+
+workflows:
+  version: 2
+  build_deploy:
+    jobs:
+      - build
+      - docker_deploy_backend:
+        requires:
+          -build
+      - docker_deploy_frontend:
+        requires:
+          -build
