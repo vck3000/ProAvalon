@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 
 import { getBackendUrl } from '../utils/getEnvVars';
 import { SetSocketChatEvents } from './chat';
+import { SetSocketPlayersEvents } from './players';
 
 class SocketConnection {
   private socket!: SocketIOClient.Socket;
@@ -45,6 +46,7 @@ class SocketConnection {
         });
       });
 
+      SetSocketPlayersEvents(this.socket);
       SetSocketChatEvents(this.socket);
 
       this.socket.on('forceDisconnect', () => {
