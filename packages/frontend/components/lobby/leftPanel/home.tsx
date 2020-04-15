@@ -30,30 +30,13 @@ const LobbyLeftPanel = (): ReactElement => (
               id: '3',
               timestamp: new Date(dateGenObj.next().value as number),
               link: '/announcements/123',
-              text: 'Players will now be allowed to wear bows',
+              text: 'Players will now be required to wear bows',
             },
           ]}
         />
       </div>
       <div className="online_players">
-        <OnlinePlayers
-          players={[
-            { username: 'ProNub' },
-            { username: 'Skies' },
-            { username: 'Pam' },
-            { username: 'Pam2' },
-            { username: 'Pam3' },
-            { username: 'Pam4' },
-            { username: 'Pam5' },
-            { username: 'Pam6' },
-            { username: 'Pam7' },
-            { username: 'Pam8' },
-            { username: 'Pam9' },
-            { username: 'Pam10' },
-            { username: 'Pam11' },
-            { username: 'Pam12' },
-          ]}
-        />
+        <OnlinePlayers />
       </div>
     </div>
     <style jsx>

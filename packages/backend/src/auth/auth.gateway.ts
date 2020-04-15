@@ -82,11 +82,19 @@ export class AuthGateway implements OnGatewayConnection {
     this.logger.log(`Recording ${socket.user.username}'s socket in redis.`);
     // Set a new record of their connection. 30s to expire as pings happen every 25s.
     await redisClient.set(
-      `users:${socket.user.username}`,
+      `user:${socket.user.username}`,
       socket.id,
       'NX',
       'EX',
       30,
+    );
+
+    // Set a new record of their connection in a set every 25s.
+    await redisClient.zadd(
+      'onlineusers',
+      'NX',
+      (new Date().getTime() + 25 * 1000).toString(),
+      socket.user.username,
     );
 
     // Attach a listener to the packet for pings.
@@ -96,7 +104,7 @@ export class AuthGateway implements OnGatewayConnection {
           `Updating ${socket.user.username}'s socket record in redis.`,
         );
         await redisClient.set(
-          `users:${socket.user.username}`,
+          `user:${socket.user.username}`,
           socket.id,
           'XX',
           'EX',
@@ -105,8 +113,29 @@ export class AuthGateway implements OnGatewayConnection {
       }
     });
 
+    // Attach a listener to remove online players in the set every 30s.
+    setInterval(async () => {
+      this.logger.log('Updating online players in redis.');
+      // Remove all players that should be disconnected.
+      await redisClient.zremrangebyscore(
+        'onlineusers',
+        '-inf',
+        new Date().getTime().toString(),
+      );
+    }, 30 * 1000);
+
     // Successful authentication
     socket.join('lobby');
+
+    //--------------------------------------------------------
+
+    const onlineUsers = await redisClient.zrange('onlineusers', 0, -1);
+
+    this.logger.log(
+      `${onlineUsers.length} online players: ${onlineUsers.join(', ')}.`,
+    );
+
+    socket.emit(SocketEvents.ONLINE_USERS_TO_CLIENT, onlineUsers);
 
     //--------------------------------------------------------
 
@@ -124,34 +153,6 @@ export class AuthGateway implements OnGatewayConnection {
       .emit(
         SocketEvents.ALL_CHAT_TO_CLIENT,
         ChatResponse.encode(chatResponse).finish(),
-      );
-
-    // Online player count
-    const count = await new Promise((resolve, reject) =>
-      this.redisAdapter.get().clients(['lobby'], (err, clients) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(clients.length);
-        }
-      }),
-    );
-
-    this.logger.log(`Online player count: ${count}.`);
-    const onlinePlayerCountMsg = ChatResponse.create({
-      text: `There are ${count} players connected!`,
-      timestamp: getProtoTimestamp(),
-      username: socket.user.displayUsername,
-      type: ChatResponse.ChatResponseType.CREATE_ROOM,
-    });
-
-    this.chatService.storeMessage(onlinePlayerCountMsg);
-
-    socket
-      .to('lobby')
-      .emit(
-        SocketEvents.ALL_CHAT_TO_CLIENT,
-        ChatResponse.encode(onlinePlayerCountMsg).finish(),
       );
   }
 
@@ -186,32 +187,12 @@ export class AuthGateway implements OnGatewayConnection {
         ChatResponse.encode(chatResponse).finish(),
       );
 
-    // Online player count
-    const count = await new Promise((resolve, reject) =>
-      this.redisAdapter.get().clients(['lobby'], (err, clients) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(clients.length);
-        }
-      }),
+    const onlineUsers = await redisClient.zrange('onlineusers', 0, -1);
+
+    this.logger.log(
+      `${onlineUsers.length} online players: ${onlineUsers.join(', ')}.`,
     );
 
-    this.logger.log(`Online player count: ${count}.`);
-    const onlinePlayerCountMsg = ChatResponse.create({
-      text: `There are ${count} players connected!`,
-      timestamp: getProtoTimestamp(),
-      username: socket.user.displayUsername,
-      type: ChatResponse.ChatResponseType.CREATE_ROOM,
-    });
-
-    this.chatService.storeMessage(onlinePlayerCountMsg);
-
-    socket
-      .to('lobby')
-      .emit(
-        SocketEvents.ALL_CHAT_TO_CLIENT,
-        ChatResponse.encode(onlinePlayerCountMsg).finish(),
-      );
+    socket.emit(SocketEvents.ONLINE_USERS_TO_CLIENT, onlineUsers);
   }
 }
