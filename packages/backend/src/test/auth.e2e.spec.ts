@@ -190,14 +190,14 @@ describe('Auth', () => {
     await request(app.getHttpServer())
       .post('/auth/signup')
       .send({
-        username: 'ab.cd',
+        username: 'ab..cd',
         password: 'test_password',
         email: 'test@gmail.com',
       })
       .expect(HttpStatus.BAD_REQUEST)
       .expect((res) =>
         expect(res.body.message[0]).toMatch(
-          'Username must not contain illegal characters.',
+          'Username must not have more than one underscore, hyphen or period in succession.',
         ),
       );
 
@@ -205,14 +205,14 @@ describe('Auth', () => {
     await request(app.getHttpServer())
       .post('/auth/signup')
       .send({
-        username: 'ab-cd',
+        username: 'ab--cd',
         password: 'test_password',
         email: 'test@gmail.com',
       })
       .expect(HttpStatus.BAD_REQUEST)
       .expect((res) =>
         expect(res.body.message[0]).toMatch(
-          'Username must not contain illegal characters.',
+          'Username must not have more than one underscore, hyphen or period in succession.',
         ),
       );
 
@@ -227,7 +227,7 @@ describe('Auth', () => {
       .expect(HttpStatus.BAD_REQUEST)
       .expect((res) =>
         expect(res.body.message[0]).toMatch(
-          'Username must not start or end with underscore or hyphen.',
+          'Username must not start with or end with an underscore, hyphen or period.',
         ),
       );
 
@@ -298,7 +298,7 @@ describe('Auth', () => {
       .expect(HttpStatus.BAD_REQUEST)
       .expect((res) =>
         expect(res.body.message[0]).toMatch(
-          'Username must not start or end with underscore or hyphen.',
+          'Username must not start with or end with an underscore, hyphen or period.',
         ),
       );
 
