@@ -4,6 +4,7 @@ export interface IColorTheme {
   TEXT_GRAY: string;
   TEXT_GRAY_LIGHT: string;
   TEXT_RED: string;
+  TEXT_PINK: string;
   LIGHT: string;
   ALT_LIGHT: string;
   GOLD: string;
@@ -22,6 +23,7 @@ export const DAY_COLORS: IColorTheme = {
   TEXT_GRAY: '#bab9b6',
   TEXT_GRAY_LIGHT: '#7c818a',
   TEXT_RED: '#8f5543',
+  TEXT_PINK: '#f27474',
   LIGHT: '#deded8',
   ALT_LIGHT: '#e4e3da',
   GOLD: '#a37d18',
@@ -40,6 +42,7 @@ export const NIGHT_COLORS: IColorTheme = {
   TEXT_GRAY: '#4e4e44',
   TEXT_GRAY_LIGHT: '#7c8089',
   TEXT_RED: '#894e3e',
+  TEXT_PINK: '#f27474',
   LIGHT: '#212121',
   ALT_LIGHT: '#2f2e2a',
   GOLD: '#a37d18',
