@@ -147,7 +147,6 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
           }
 
           .carousel_indicator {
-            all: unset;
             font-family: Montserrat-Bold;
             background-color: ${theme.colors.BACKGROUND};
             color: ${theme.colors.TEXT_GRAY};
@@ -155,6 +154,11 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
             border-radius: 16px;
             margin: 0 12px;
             padding: 5px;
+            border: none;
+          }
+
+          .carousel_indicator:focus {
+            outline: none;
           }
 
           .carousel_indicator.active {
