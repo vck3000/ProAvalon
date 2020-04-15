@@ -5,7 +5,6 @@
   "scripts": {
     "precommit": "lint-staged && npm run build",
     "dev": "next dev",
-    "localdev": "npm run dev",
     "build": "next build",
     "start": "next start",
     "start:prod": "next start",
