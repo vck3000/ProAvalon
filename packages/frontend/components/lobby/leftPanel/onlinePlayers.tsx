@@ -58,7 +58,7 @@ const OnlinePlayers = ({ players, theme }: Props): ReactElement => {
             left: 0;
             right: 0;
             bottom: 0;
-            overflow: auto;
+            height: 100%;
           }
 
           .online_players_inner_wrapper :global(.online_players) {
@@ -86,11 +86,13 @@ const OnlinePlayers = ({ players, theme }: Props): ReactElement => {
 
           .online_players_inner_wrapper :global(table) {
             border: none;
+            height: 100%;
           }
 
           .online_players_inner_wrapper :global(tbody) {
             display: block;
             overflow: auto;
+            height: 100%;
           }
 
           .online_players_inner_wrapper :global(th, tr) {

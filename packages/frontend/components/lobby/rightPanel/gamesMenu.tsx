@@ -87,6 +87,10 @@ const GameMenu = (): ReactElement => {
             height: 100%;
             overflow-y: scroll;
           }
+
+          .wrapper::-webkit-scrollbar {
+            width: 0.5em;
+          }
         `}
       </style>
     </>
