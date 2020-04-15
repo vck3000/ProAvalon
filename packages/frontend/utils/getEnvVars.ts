@@ -14,5 +14,9 @@ export const getBackendUrl = (): string => {
   // locally. Therefore, in order for devs to be able to use docker or local
   // server instances at their choice, we shall disable all getInitialProps.
   // If we require this feature in the future, we will discuss it then.
-  return serverRuntimeConfig.apiUrl || publicRuntimeConfig.apiUrl;
+  return (
+    serverRuntimeConfig.apiUrl ||
+    publicRuntimeConfig.apiUrl ||
+    'http://localhost:3001'
+  );
 };
