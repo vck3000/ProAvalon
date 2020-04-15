@@ -1,6 +1,7 @@
 const SocketEvents = {
   ALL_CHAT_TO_CLIENT: 'ALL_CHAT_TO_CLIENT',
   ALL_CHAT_TO_SERVER: 'ALL_CHAT_TO_SERVER',
+  ONLINE_USERS_TO_CLIENT: 'ONLINE_USERS_TO_CLIENT',
 };
 
 export default SocketEvents;

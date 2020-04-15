@@ -4,25 +4,16 @@ import { connect } from 'react-redux';
 
 import { RootState } from '../../../store';
 import { ThemeOptions } from '../../../store/userOptions/types';
+import { IPlayer } from '../../../store/players/actions.types';
 
-type Reward = 'badge' | 'winner';
-
-interface IPlayer {
-  username: string;
-  extras?: [Reward];
-}
-
-interface IOwnProps {
-  players: IPlayer[];
-}
 interface IStateProps {
   theme: ThemeOptions;
+  players: IPlayer[];
 }
 
-type Props = IOwnProps & IStateProps;
+type Props = IStateProps;
 
-const OnlinePlayers = (props: Props): ReactElement => {
-  const { players, theme } = props;
+const OnlinePlayers = ({ players, theme }: Props): ReactElement => {
   const numPlayers = players.length;
 
   return (
@@ -127,9 +118,10 @@ const OnlinePlayers = (props: Props): ReactElement => {
 
 const mapStateToProps = (state: RootState): IStateProps => ({
   theme: state.userOptions.theme,
+  players: state.players.players,
 });
 
 export default connect(
   mapStateToProps,
   null,
-)(OnlinePlayers as (props: IOwnProps) => ReactElement);
+)(OnlinePlayers as () => ReactElement);
