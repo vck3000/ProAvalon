@@ -5,7 +5,24 @@ export interface IPlayersState {
 }
 
 const initialState: IPlayersState = {
-  players: [],
+  players: [
+    { username: 'pam' },
+    { username: 'pam' },
+    { username: 'pam' },
+    { username: 'pam' },
+    { username: 'pam' },
+    { username: 'pam' },
+    { username: 'pam' },
+    { username: 'pam' },
+    { username: 'pam' },
+    { username: 'pam' },
+    { username: 'pam' },
+    { username: 'pam' },
+    { username: 'pam' },
+    { username: 'pam' },
+    { username: 'pam' },
+    { username: 'pam' },
+  ],
 };
 
 const reducer = (
