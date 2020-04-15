@@ -3,10 +3,7 @@ import { connect } from 'react-redux';
 
 import { RootState } from '../../../store';
 import { ThemeOptions } from '../../../store/userOptions/types';
-import { ChatResponse } from '../../../proto/bundle';
-import { protoTimestampToDate as pttd } from '../../../proto/timestamp';
-
-const ChatType = ChatResponse.ChatResponseType;
+import { ChatResponse, ChatResponseType } from '../../../proto/lobbyProto';
 
 interface IStateProps {
   theme: ThemeOptions;
@@ -24,13 +21,13 @@ const Message = (props: Props): ReactElement => {
   return (
     <span className="wrapper">
       <span className="timestamp">
-        [{`0${pttd(message.timestamp).getHours() % 12}`.slice(-2)}:
-        {`0${pttd(message.timestamp).getMinutes()}`.slice(-2)}]
+        [{`0${message.timestamp.getHours() % 12}`.slice(-2)}:
+        {`0${message.timestamp.getMinutes()}`.slice(-2)}]
       </span>
 
       <span className={`chat${message.type}`}>
         <span className="pad_left">
-          {message.type === ChatType.CHAT && `${message.username}: `}
+          {message.type === ChatResponseType.CHAT && `${message.username}: `}
           {message.text}
         </span>
       </span>
@@ -51,13 +48,13 @@ const Message = (props: Props): ReactElement => {
             padding-left: 5px;
           }
 
-          .${ChatType.SPY_WIN} {
+          .${ChatResponseType.SPY_WIN} {
             color: ${theme.colors.TEXT_RED};
           }
 
-          .chat${ChatType.PLAYER_JOIN_LOBBY},
-            .chat${ChatType.PLAYER_LEAVE_LOBBY},
-            .chat${ChatType.CREATE_ROOM} {
+          .chat${ChatResponseType.PLAYER_JOIN_LOBBY},
+            .chat${ChatResponseType.PLAYER_LEAVE_LOBBY},
+            .chat${ChatResponseType.CREATE_ROOM} {
             color: ${theme.colors.TEXT_GRAY};
           }
         `}

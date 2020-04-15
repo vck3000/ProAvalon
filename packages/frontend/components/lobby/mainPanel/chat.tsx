@@ -6,9 +6,11 @@ import socket from '../../../socket';
 import { RootState } from '../../../store';
 import { ThemeOptions } from '../../../store/userOptions/types';
 import Message from './message';
-import { ChatRequest, ChatResponse } from '../../../proto/bundle';
-import { protoTimestampToDate } from '../../../proto/timestamp';
-import SocketEvents from '../../../proto/socketEvents';
+import {
+  SocketEvents,
+  ChatRequest,
+  ChatResponse,
+} from '../../../proto/lobbyProto';
 import { NoSSR } from '../../../utils/noSSR';
 
 interface IStateProps {
@@ -61,9 +63,9 @@ const Chat = ({ theme, messages }: Props): ReactElement => {
             <ul className="chat_list" ref={chatRef}>
               {messages.map((chatMessage: ChatResponse, i: number) => (
                 <li
-                  key={`${protoTimestampToDate(chatMessage.timestamp)
-                    .getTime()
-                    .toString()}_${chatMessage.username}_${chatMessage.type}`}
+                  key={`${chatMessage.timestamp.getTime().toString()}_${
+                    chatMessage.username
+                  }_${chatMessage.type}`}
                 >
                   <Message
                     message={chatMessage}
@@ -84,9 +86,10 @@ const Chat = ({ theme, messages }: Props): ReactElement => {
           }}
           onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>): void => {
             if (e.key === 'Enter' && messageText) {
-              socket.emitProto(SocketEvents.ALL_CHAT_TO_SERVER, ChatRequest, {
+              const msg: ChatRequest = {
                 text: messageText,
-              });
+              };
+              socket.emit(SocketEvents.ALL_CHAT_TO_SERVER, msg);
               setMessageText('');
             }
           }}
