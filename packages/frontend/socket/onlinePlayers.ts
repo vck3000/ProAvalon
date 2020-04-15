@@ -5,7 +5,7 @@ import { IOnlinePlayer } from '../store/onlinePlayers/actions.types';
 
 export const SetSocketPlayersEvents = (socket: SocketIOClient.Socket): void => {
   socket.on(
-    SocketEvents.ONLINE_USERS_TO_CLIENT,
+    SocketEvents.ONLINE_PLAYERS,
     (onlineUsers: IOnlinePlayer['username'][]) => {
       const players = onlineUsers.map((username) => ({
         username,

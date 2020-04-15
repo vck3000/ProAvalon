@@ -57,8 +57,8 @@ describe('Auth', () => {
   });
 
   afterEach(async () => {
-    await mongoServer.stop();
     await app.close();
+    await mongoServer.stop();
   });
 
   it('user able to login after signup', async () => {

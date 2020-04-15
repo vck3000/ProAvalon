@@ -15,8 +15,9 @@ import { SocketUser } from '../users/users.socket';
 import { ChatResponse } from '../../proto/bundle';
 import { getProtoTimestamp } from '../../proto/timestamp';
 import SocketEvents from '../../proto/socketEvents';
-import redisClient from '../util/redisClient';
 import RedisAdapter from '../util/redisAdapter';
+import { OnlinePlayersService } from './online-players/online-players.service';
+import { OnlineSocketsService } from './online-sockets/online-sockets.service';
 
 @WebSocketGateway()
 export class AuthGateway implements OnGatewayConnection {
@@ -28,6 +29,8 @@ export class AuthGateway implements OnGatewayConnection {
     private usersService: UsersService,
     private jwtService: JwtService,
     private chatService: ChatService,
+    private onlinePlayersService: OnlinePlayersService,
+    private onlineSocketsService: OnlineSocketsService,
   ) {}
 
   afterInit() {
@@ -57,8 +60,8 @@ export class AuthGateway implements OnGatewayConnection {
         socket.user = user;
 
         // Check to see if they are already connected on redis
-        const connectedSocketId = await redisClient.get(
-          `users:${user.username}`,
+        const connectedSocketId = await this.onlineSocketsService.connected(
+          socket.user.username,
         );
 
         // If they are already connected somewhere else, disconnect them.
@@ -80,22 +83,9 @@ export class AuthGateway implements OnGatewayConnection {
     this.logger.log('New socket connection authorized.');
 
     this.logger.log(`Recording ${socket.user.username}'s socket in redis.`);
-    // Set a new record of their connection. 30s to expire as pings happen every 25s.
-    await redisClient.set(
-      `user:${socket.user.username}`,
-      socket.id,
-      'NX',
-      'EX',
-      30,
-    );
-
-    // Set a new record of their connection in a set every 25s.
-    await redisClient.zadd(
-      'onlineusers',
-      'NX',
-      (new Date().getTime() + 25 * 1000).toString(),
-      socket.user.username,
-    );
+    // Set a new record of their connection.
+    this.onlineSocketsService.register(socket.user.username, socket.id);
+    this.onlinePlayersService.register(socket.user.username, this.server);
 
     // Attach a listener to the packet for pings.
     socket.conn.on('packet', async (packet) => {
@@ -103,41 +93,15 @@ export class AuthGateway implements OnGatewayConnection {
         this.logger.log(
           `Updating ${socket.user.username}'s socket record in redis.`,
         );
-        await redisClient.set(
-          `user:${socket.user.username}`,
-          socket.id,
-          'XX',
-          'EX',
-          30,
-        );
+        this.onlineSocketsService.update(socket.user.username, socket.id);
+        this.onlinePlayersService.update(socket.user.username);
       }
     });
-
-    // Attach a listener to remove online players in the set every 30s.
-    setInterval(async () => {
-      this.logger.log('Updating online players in redis.');
-      // Remove all players that should be disconnected.
-      await redisClient.zremrangebyscore(
-        'onlineusers',
-        '-inf',
-        new Date().getTime().toString(),
-      );
-    }, 30 * 1000);
 
     // Successful authentication
     socket.join('lobby');
 
-    //--------------------------------------------------------
-
-    const onlineUsers = await redisClient.zrange('onlineusers', 0, -1);
-
-    this.logger.log(
-      `${onlineUsers.length} online players: ${onlineUsers.join(', ')}.`,
-    );
-
-    socket.emit(SocketEvents.ONLINE_USERS_TO_CLIENT, onlineUsers);
-
-    //--------------------------------------------------------
+    // ----------------------------------------------------------
 
     const chatResponse = ChatResponse.create({
       text: `${socket.user.displayUsername} has joined the lobby`,
@@ -164,10 +128,10 @@ export class AuthGateway implements OnGatewayConnection {
     }
 
     // Remove their record on redis - no need to await
-    this.logger.log(
-      `Removing ${socket.user.username}'s socket record in redis.`,
-    );
-    redisClient.del(`users:${socket.user.username}`);
+    this.onlineSocketsService.deregister(socket.user.username);
+    this.onlinePlayersService.deregister(socket.user.username, this.server);
+
+    // ----------------------------------------------------------
 
     this.logger.log(`Player left lobby: ${socket.id}.`);
 
@@ -186,13 +150,5 @@ export class AuthGateway implements OnGatewayConnection {
         SocketEvents.ALL_CHAT_TO_CLIENT,
         ChatResponse.encode(chatResponse).finish(),
       );
-
-    const onlineUsers = await redisClient.zrange('onlineusers', 0, -1);
-
-    this.logger.log(
-      `${onlineUsers.length} online players: ${onlineUsers.join(', ')}.`,
-    );
-
-    socket.emit(SocketEvents.ONLINE_USERS_TO_CLIENT, onlineUsers);
   }
 }
