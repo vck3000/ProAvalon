@@ -32,6 +32,7 @@ const GetOpacity = (i: number, numMessages: number): number => {
 };
 
 const Chat = ({ theme, messages }: Props): ReactElement => {
+  const [isLoaded, setIsLoaded] = useState(false);
   const [messageText, setMessageText] = useState('');
   const chatRef = useRef<HTMLUListElement>(null);
 
@@ -49,8 +50,10 @@ const Chat = ({ theme, messages }: Props): ReactElement => {
         scrollToTop();
       }
 
-      window.addEventListener('load', scrollToTop);
-      return (): void => window.removeEventListener('load', scrollToTop);
+      if (!isLoaded) {
+        scrollToTop();
+        setIsLoaded(true);
+      }
     }
     return undefined;
   }, [messages.length]);
