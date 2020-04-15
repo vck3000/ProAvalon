@@ -1,4 +1,4 @@
-import { ChatResponse } from '../../proto/bundle';
+import { ChatResponse } from '../../proto/lobbyProto';
 
 // Note, action types must be split out here. Cannot collect into one object.
 // Doing so will conflict with Typescript's object type detection in reducers.ts.

@@ -1,4 +1,4 @@
-import SocketEvents from '../proto/socketEvents';
+import { SocketEvents } from '../proto/lobbyProto';
 import { store } from '../store';
 import { setOnlinePlayers } from '../store/onlinePlayers/actions';
 import { IOnlinePlayer } from '../store/onlinePlayers/actions.types';

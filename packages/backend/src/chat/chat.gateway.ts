@@ -6,9 +6,12 @@ import {
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { ChatService } from './chat.service';
-import { ChatRequest, ChatResponse } from '../../proto/bundle';
-import { getProtoTimestamp } from '../../proto/timestamp';
-import SocketEvents from '../../proto/socketEvents';
+import {
+  SocketEvents,
+  ChatRequest,
+  ChatResponse,
+  ChatResponseType,
+} from '../../proto/lobbyProto';
 import { SocketUser } from '../users/users.socket';
 
 @WebSocketGateway()
@@ -20,28 +23,23 @@ export class ChatGateway {
   constructor(private chatService: ChatService) {}
 
   @SubscribeMessage(SocketEvents.ALL_CHAT_TO_SERVER)
-  async handleMessage(socket: SocketUser, chatRequest: any) {
-    const decoded = ChatRequest.decode(chatRequest);
-
-    if (decoded.text) {
+  async handleMessage(socket: SocketUser, chatRequest: ChatRequest) {
+    if (chatRequest.text) {
       this.logger.log(
-        `All chat message: ${socket.user.username}: ${decoded.text} `,
+        `All chat message: ${socket.user.username}: ${chatRequest.text} `,
       );
 
-      const chatResponse = ChatResponse.create({
-        text: decoded.text,
+      const chatResponse: ChatResponse = {
+        text: chatRequest.text,
         username: socket.user.displayUsername,
-        timestamp: getProtoTimestamp(),
-        type: ChatResponse.ChatResponseType.CHAT,
-      });
+        timestamp: new Date(),
+        type: ChatResponseType.CHAT,
+      };
 
       this.chatService.storeMessage(chatResponse);
       this.server
         .to('lobby')
-        .emit(
-          SocketEvents.ALL_CHAT_TO_CLIENT,
-          ChatResponse.encode(chatResponse).finish(),
-        );
+        .emit(SocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
     }
   }
 }

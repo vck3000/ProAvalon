@@ -3,7 +3,7 @@ import {
   RECEIVED_MESSAGE,
   ChatActionTypes,
 } from './actions.types';
-import { ChatResponse } from '../../proto/bundle';
+import { ChatResponse } from '../../proto/lobbyProto';
 
 export interface IChatState {
   messages: ChatResponse[];

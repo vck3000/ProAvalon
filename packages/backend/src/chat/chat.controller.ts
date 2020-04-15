@@ -1,7 +1,7 @@
 import { Controller, Get, Res, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
 import { ChatService } from './chat.service';
-import { ChatResponses } from '../../proto/bundle';
+import { ChatResponse } from '../../proto/lobbyProto';
 
 @Controller('allchat')
 export class ChatController {
@@ -9,16 +9,9 @@ export class ChatController {
 
   @Get()
   async getAllMessages(@Res() res: Response) {
-    const messages = await this.chatService.getMessages();
+    const messages: ChatResponse[] = await this.chatService.getMessages();
 
-    const arr = ChatResponses.encode(
-      ChatResponses.create({
-        chatResponses: messages,
-      }),
-    ).finish();
-
-    res.contentType('application/octet-stream');
-    res.send(arr);
+    res.send(messages);
   }
 
   @Get('/json')
