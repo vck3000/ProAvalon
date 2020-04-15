@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 
 import { getBackendUrl } from '../utils/getEnvVars';
 import { SetSocketChatEvents } from './chat';
-import { SetSocketPlayersEvents } from './players';
+import { SetSocketPlayersEvents } from './onlinePlayers';
 
 class SocketConnection {
   private socket!: SocketIOClient.Socket;
