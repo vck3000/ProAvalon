@@ -4,11 +4,11 @@ import { connect } from 'react-redux';
 
 import { RootState } from '../../../store';
 import { ThemeOptions } from '../../../store/userOptions/types';
-import { IPlayer } from '../../../store/players/actions.types';
+import { IOnlinePlayer } from '../../../store/onlinePlayers/actions.types';
 
 interface IStateProps {
   theme: ThemeOptions;
-  players: IPlayer[];
+  players: IOnlinePlayer[];
 }
 
 type Props = IStateProps;
@@ -120,7 +120,7 @@ const OnlinePlayers = ({ players, theme }: Props): ReactElement => {
 
 const mapStateToProps = (state: RootState): IStateProps => ({
   theme: state.userOptions.theme,
-  players: state.players.players,
+  players: state.onlinePlayers.players,
 });
 
 export default connect(
