@@ -11,11 +11,16 @@ export class CreateUserDto {
   @MaxLength(25, {
     message: 'Username must not have more than 25 characters.',
   })
-  @Matches(/^\w+$/, {
+  @Matches(/^[\w.-]+$/, {
     message: 'Username must not contain illegal characters.',
   })
-  @Matches(/^[a-zA-Z0-9][\w]+[a-zA-Z0-9]$/, {
-    message: 'Username must not start or end with underscore or hyphen.',
+  @Matches(/^[^(-._)][\w.-]+[^(-._)]+$/, {
+    message:
+      'Username must not start with or end with an underscore, hyphen or period.',
+  })
+  @Matches(/^[^(-._)]*(?:[-._][^-._]+)*$/, {
+    message:
+      'Username must not have more than one underscore, hyphen or period in succession.',
   })
   @IsNotEmpty({
     message: 'Username should not be empty.',
