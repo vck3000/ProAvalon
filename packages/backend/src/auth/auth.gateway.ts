@@ -111,9 +111,9 @@ export class AuthGateway implements OnGatewayConnection {
     //--------------------------------------------------------
 
     const chatResponse = ChatResponse.create({
-      text: `${socket.user.username} has joined the lobby`,
+      text: `${socket.user.displayUsername} has joined the lobby`,
       timestamp: getProtoTimestamp(),
-      username: socket.user.username,
+      username: socket.user.displayUsername,
       type: ChatResponse.ChatResponseType.PLAYER_JOIN_LOBBY,
     });
 
@@ -141,7 +141,7 @@ export class AuthGateway implements OnGatewayConnection {
     const onlinePlayerCountMsg = ChatResponse.create({
       text: `There are ${count} players connected!`,
       timestamp: getProtoTimestamp(),
-      username: socket.user.username,
+      username: socket.user.displayUsername,
       type: ChatResponse.ChatResponseType.CREATE_ROOM,
     });
 
@@ -173,7 +173,7 @@ export class AuthGateway implements OnGatewayConnection {
     const chatResponse = ChatResponse.create({
       text: `${socket.user.username} has left the lobby`,
       timestamp: getProtoTimestamp(),
-      username: socket.user.username,
+      username: socket.user.displayUsername,
       type: ChatResponse.ChatResponseType.PLAYER_LEAVE_LOBBY,
     });
 
@@ -201,7 +201,7 @@ export class AuthGateway implements OnGatewayConnection {
     const onlinePlayerCountMsg = ChatResponse.create({
       text: `There are ${count} players connected!`,
       timestamp: getProtoTimestamp(),
-      username: socket.user.username,
+      username: socket.user.displayUsername,
       type: ChatResponse.ChatResponseType.CREATE_ROOM,
     });
 

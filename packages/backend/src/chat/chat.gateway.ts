@@ -30,7 +30,7 @@ export class ChatGateway {
 
       const chatResponse = ChatResponse.create({
         text: decoded.text,
-        username: socket.user.username,
+        username: socket.user.displayUsername,
         timestamp: getProtoTimestamp(),
         type: ChatResponse.ChatResponseType.CHAT,
       });
