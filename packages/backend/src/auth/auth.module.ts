@@ -10,6 +10,8 @@ import { UsersModule } from '../users/users.module';
 import { AuthGateway } from './auth.gateway';
 import { JWT_SECRET, JWT_EXPIRY } from '../util/getEnvVars';
 import { ChatModule } from '../chat/chat.module';
+import { OnlinePlayersService } from './online-players/online-players.service';
+import { OnlineSocketsService } from './online-sockets/online-sockets.service';
 
 @Module({
   imports: [
@@ -22,7 +24,14 @@ import { ChatModule } from '../chat/chat.module';
     ChatModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthGateway, LocalStrategy, JwtStrategy],
+  providers: [
+    AuthService,
+    AuthGateway,
+    LocalStrategy,
+    JwtStrategy,
+    OnlinePlayersService,
+    OnlineSocketsService,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}
