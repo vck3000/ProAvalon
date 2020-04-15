@@ -4,8 +4,6 @@ import { HttpStatus } from '@nestjs/common';
 import { ChatController } from './chat.controller';
 import { ChatService } from './chat.service';
 import { ChatGateway } from './chat.gateway';
-import { ChatResponse, ChatResponses } from '../../proto/bundle';
-import { getProtoTimestamp } from '../../proto/timestamp';
 
 describe('Chat Controller', () => {
   let controller: ChatController;
@@ -26,31 +24,6 @@ describe('Chat Controller', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
-  });
-
-  it('should return messages in binary form', async () => {
-    // Seed some messages.
-    const msg1 = ChatResponse.create({
-      text: 'test',
-      username: 'asdf',
-      timestamp: getProtoTimestamp(),
-      type: ChatResponse.ChatResponseType.CHAT,
-    });
-
-    const msg2 = ChatResponse.create({
-      text: 'test2',
-      username: 'asdf2',
-      timestamp: getProtoTimestamp(),
-      type: ChatResponse.ChatResponseType.CREATE_ROOM,
-    });
-
-    jest.spyOn(service, 'getMessages').mockImplementation(() => [msg1, msg2]);
-
-    await controller.getAllMessages(res);
-
-    expect(ChatResponses.decode(res._getData())).toEqual(
-      ChatResponses.create({ chatResponses: [msg1, msg2] }),
-    );
   });
 
   // Not the best test to make - highly coupled.

@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Server } from 'socket.io';
 
 import redisClient from '../../util/redisClient';
-import SocketEvents from '../../../proto/socketEvents';
+import { SocketEvents } from '../../../proto/lobbyProto';
 
 @Injectable()
 export class OnlinePlayersService {

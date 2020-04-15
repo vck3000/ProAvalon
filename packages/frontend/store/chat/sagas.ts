@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { SagaIterator } from 'redux-saga';
 import { call, put, takeLatest, fork } from 'redux-saga/effects';
 
-import { ChatResponse, ChatResponses } from '../../proto/bundle';
+import { ChatResponse } from '../../proto/lobbyProto';
 import { getBackendUrl } from '../../utils/getEnvVars';
 import { SET_MESSAGES, GET_ALL_CHAT } from './actions.types';
 
@@ -14,14 +14,20 @@ function get(
   return axios({
     method: 'get',
     url,
-    responseType: 'arraybuffer',
-  }).then((resp) => resp);
+    // responseType: 'arraybuffer',
+  }).then((resp) => resp.data);
 }
 
 function* getAllChat(): SagaIterator {
-  const messages = yield call(get, '/allchat');
-  const decoded = ChatResponses.decode(new Uint8Array(messages.data));
-  yield put({ type: SET_MESSAGES, messages: decoded.chatResponses });
+  const chatResponses = (yield call(get, '/allchat')) as ChatResponse[];
+
+  for (let i = 0; i < chatResponses.length; i += 1) {
+    chatResponses[i].timestamp = new Date(chatResponses[i].timestamp);
+  }
+
+  // eslint-disable-next-line no-console
+  console.log(chatResponses);
+  yield put({ type: SET_MESSAGES, messages: chatResponses });
 }
 
 function* watchGetAllChat(): SagaIterator {

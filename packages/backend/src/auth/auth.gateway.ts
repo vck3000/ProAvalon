@@ -12,9 +12,11 @@ import { UsersService } from '../users/users.service';
 import { ChatService } from '../chat/chat.service';
 import { SocketUser } from '../users/users.socket';
 
-import { ChatResponse } from '../../proto/bundle';
-import { getProtoTimestamp } from '../../proto/timestamp';
-import SocketEvents from '../../proto/socketEvents';
+import {
+  SocketEvents,
+  ChatResponse,
+  ChatResponseType,
+} from '../../proto/lobbyProto';
 import RedisAdapter from '../util/redisAdapter';
 import { OnlinePlayersService } from './online-players/online-players.service';
 import { OnlineSocketsService } from './online-sockets/online-sockets.service';
@@ -103,21 +105,16 @@ export class AuthGateway implements OnGatewayConnection {
 
     // ----------------------------------------------------------
 
-    const chatResponse = ChatResponse.create({
+    const chatResponse: ChatResponse = {
       text: `${socket.user.displayUsername} has joined the lobby`,
-      timestamp: getProtoTimestamp(),
+      timestamp: new Date(),
       username: socket.user.displayUsername,
-      type: ChatResponse.ChatResponseType.PLAYER_JOIN_LOBBY,
-    });
+      type: ChatResponseType.PLAYER_JOIN_LOBBY,
+    };
 
     this.chatService.storeMessage(chatResponse);
 
-    socket
-      .to('lobby')
-      .emit(
-        SocketEvents.ALL_CHAT_TO_CLIENT,
-        ChatResponse.encode(chatResponse).finish(),
-      );
+    socket.to('lobby').emit(SocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
   }
 
   async handleDisconnect(socket: SocketUser) {
@@ -135,20 +132,15 @@ export class AuthGateway implements OnGatewayConnection {
 
     this.logger.log(`Player left lobby: ${socket.id}.`);
 
-    const chatResponse = ChatResponse.create({
-      text: `${socket.user.username} has left the lobby`,
-      timestamp: getProtoTimestamp(),
+    const chatResponse: ChatResponse = {
+      text: `${socket.user.displayUsername} has left the lobby`,
+      timestamp: new Date(),
       username: socket.user.displayUsername,
-      type: ChatResponse.ChatResponseType.PLAYER_LEAVE_LOBBY,
-    });
+      type: ChatResponseType.PLAYER_JOIN_LOBBY,
+    };
 
     this.chatService.storeMessage(chatResponse);
 
-    socket
-      .to('lobby')
-      .emit(
-        SocketEvents.ALL_CHAT_TO_CLIENT,
-        ChatResponse.encode(chatResponse).finish(),
-      );
+    socket.to('lobby').emit(SocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
   }
 }

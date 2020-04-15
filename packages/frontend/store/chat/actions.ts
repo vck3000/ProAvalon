@@ -1,4 +1,4 @@
-import { ChatResponse } from '../../proto/bundle';
+import { ChatResponse } from '../../proto/lobbyProto';
 import {
   IReceivedMessageAction,
   ISetMessagesAction,
