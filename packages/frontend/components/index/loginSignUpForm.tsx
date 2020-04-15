@@ -34,17 +34,17 @@ const LoginSignupForm = ({
       return false;
     }
 
-    if (inputs.password !== inputs.confirmPassword) {
-      setError('Passwords do not match!');
-      return false;
-    }
-
     if (inputs.password.length < 4) {
       setError('Password must be at least 4 letters long...');
       return false;
     }
 
-    if (inputs.email === '') {
+    if (!showLoginForm && inputs.password !== inputs.confirmPassword) {
+      setError('Passwords do not match!');
+      return false;
+    }
+
+    if (!showLoginForm && inputs.email === '') {
       setError('Please provide an email address.');
       return false;
     }
@@ -65,6 +65,11 @@ const LoginSignupForm = ({
         }
         onSubmit={(e: React.FormEvent<HTMLFormElement>): void => {
           e.preventDefault();
+
+          if (!checkInputs()) {
+            return;
+          }
+
           dispatchLogin({
             username: inputs.username,
             password: inputs.password,
@@ -89,6 +94,7 @@ const LoginSignupForm = ({
             type="password"
           />
         </Form.Field>
+        {error !== '' ? <div className="error">{error}</div> : null}
         <Button type="submit" className="login">
           Login
         </Button>
@@ -120,6 +126,12 @@ const LoginSignupForm = ({
 
           .signup a:hover {
             color: ${theme.colors.GOLD_HOVER};
+          }
+
+          .error {
+            color: ${theme.colors.TEXT_PINK};
+            padding-bottom: 8px;
+            font-family: Montserrat-Bold;
           }
         `}
       </style>
@@ -216,7 +228,7 @@ const LoginSignupForm = ({
           }
 
           .error {
-            color: red;
+            color: ${theme.colors.TEXT_PINK};
             padding-bottom: 8px;
             font-family: Montserrat-Bold;
           }
