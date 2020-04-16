@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 import NavIndex from '../nav/navIndex';
 import GamesMenu from './rightPanel/gamesMenu';
-import LobbyLeftPanel from './leftPanel/home';
+import HomeIndex from './leftPanel/homeIndex';
 import Chat from './mainPanel/chat';
 
 const LobbyDesktop = (): ReactElement => (
@@ -19,8 +19,8 @@ const LobbyDesktop = (): ReactElement => (
               </a>
             </Link>
           </div>
-          <div className="lobbyleftPanel">
-            <LobbyLeftPanel />
+          <div className="home">
+            <HomeIndex />
           </div>
         </div>
       </Grid.Column>
@@ -72,7 +72,7 @@ const LobbyDesktop = (): ReactElement => (
           flex-wrap: nowrap;
         }
 
-        .lobbyleftPanel {
+        .home {
           flex-grow: 1;
         }
       `}

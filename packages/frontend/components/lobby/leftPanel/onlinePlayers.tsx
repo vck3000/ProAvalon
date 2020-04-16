@@ -5,15 +5,17 @@ import { connect } from 'react-redux';
 import { RootState } from '../../../store';
 import { ThemeOptions } from '../../../store/userOptions/types';
 import { IOnlinePlayer } from '../../../store/onlinePlayers/actions.types';
+import { MobileView } from '../../../store/system/types';
 
 interface IStateProps {
   theme: ThemeOptions;
   players: IOnlinePlayer[];
+  mobileView: MobileView;
 }
 
 type Props = IStateProps;
 
-const OnlinePlayers = ({ players, theme }: Props): ReactElement => {
+const OnlinePlayers = ({ players, theme, mobileView }: Props): ReactElement => {
   const numPlayers = players.length;
 
   return (
@@ -95,6 +97,10 @@ const OnlinePlayers = ({ players, theme }: Props): ReactElement => {
             height: 100%;
           }
 
+          .online_players_inner_wrapper :global(th) {
+            padding: ${mobileView ? '0.7em !important' : '0.93em 0.78em'};
+          }
+
           .online_players_inner_wrapper :global(th, tr) {
             display: block;
             width: 100%;
@@ -121,6 +127,7 @@ const OnlinePlayers = ({ players, theme }: Props): ReactElement => {
 const mapStateToProps = (state: RootState): IStateProps => ({
   theme: state.userOptions.theme,
   players: state.onlinePlayers.players,
+  mobileView: state.system.mobileView,
 });
 
 export default connect(
