@@ -5,7 +5,7 @@ import Announcements from './announcements';
 import OnlinePlayers from './onlinePlayers';
 import dateGenObj from '../../../utils/dateGenerator';
 
-const LobbyLeftPanel = (): ReactElement => (
+const HomeDesktop = (): ReactElement => (
   <>
     <div className="wrapper">
       <div className="taako_wrapper">
@@ -49,10 +49,11 @@ const LobbyLeftPanel = (): ReactElement => (
 
         .online_players {
           flex-grow: 1;
+          height: 100%;
         }
       `}
     </style>
   </>
 );
 
-export default LobbyLeftPanel;
+export default HomeDesktop;

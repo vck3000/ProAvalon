@@ -9,11 +9,11 @@ import { WindowDimensions } from '../../store/system/types';
 import NavIndex from '../nav/navIndex';
 
 import Chat from './mainPanel/chat';
-import LobbyLeftPanel from './leftPanel/home';
+import HomeIndex from './leftPanel/homeIndex';
 import GamesMenu from './rightPanel/gamesMenu';
 
 const indicators = ['HOME', 'CHAT', 'GAMES'];
-const slides = [<LobbyLeftPanel />, <Chat />, <GamesMenu />];
+const slides = [<HomeIndex />, <Chat />, <GamesMenu />];
 
 interface IStateProps {
   theme: ThemeOptions;
@@ -124,7 +124,7 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
           }
 
           .logo_nav {
-            max-width: 200px;
+            max-width: 160px;
             padding: 10px 0 5px 15px;
           }
 
