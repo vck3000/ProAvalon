@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import { RootState } from '../../../store';
 import { ThemeOptions } from '../../../store/userOptions/types';
+import { MobileView } from '../../../store/system/types';
 
 interface IAnnouncement {
   id: string;
@@ -17,13 +18,16 @@ interface IOwnProps {
 
 interface IStateProps {
   theme: ThemeOptions;
+  mobileView: MobileView;
 }
 
 type Props = IOwnProps & IStateProps;
 
-const Announcements = (props: Props): ReactElement => {
-  const { theme, announcements } = props;
-
+const Announcements = ({
+  theme,
+  announcements,
+  mobileView,
+}: Props): ReactElement => {
   return (
     <div className="wrapper">
       <div className="announcements_header">LATEST ANNOUNCEMENTS</div>
@@ -51,7 +55,7 @@ const Announcements = (props: Props): ReactElement => {
             font-family: Montserrat-Bold;
             text-align: center;
             color: ${theme.colors.ANNOUNCE_GOLD_TEXT};
-            padding: 0.93em 0.78em;
+            padding: ${mobileView ? '0.7em' : '0.93em 0.78em'};
             background: ${theme.colors.ANNOUNCE_GOLD_BACKGROUND};
           }
 
@@ -59,7 +63,7 @@ const Announcements = (props: Props): ReactElement => {
             font-family: Montserrat-Regular;
             color: ${theme.colors.ANNOUNCE_GOLD_BACKGROUND};
             background: ${theme.colors.ALT_LIGHT};
-            padding: 0.7em;
+            padding: ${mobileView ? '0.5em' : '0.7em'};
           }
 
           .announcements_bottom_padding {
@@ -78,6 +82,7 @@ const Announcements = (props: Props): ReactElement => {
 
 const mapStateToProps = (state: RootState): IStateProps => ({
   theme: state.userOptions.theme,
+  mobileView: state.system.mobileView,
 });
 
 export default connect(
