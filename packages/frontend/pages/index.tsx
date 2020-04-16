@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 import { connect } from 'react-redux';
 
-import Nav from '../components/nav/navIndex';
+import NavIndex from '../components/nav/navIndex';
 import { RootState } from '../store/index';
 import { ThemeOptions, IUserOptionsState } from '../store/userOptions/types';
 import { setTheme } from '../store/userOptions/actions';
@@ -23,7 +23,7 @@ const Home = ({
     <div className="background">
       <title>Home</title>
       <div className="nav_wrapper">
-        <Nav />
+        <NavIndex />
       </div>
       <div className="content_wrapper">
         <img
@@ -87,9 +87,6 @@ const Home = ({
               margin: 30px auto 0 auto;
             }`
             : `.nav_wrapper {
-              position: absolute;
-              top: 0px;
-              right: 0px;
             }`}
 
           .content_wrapper {

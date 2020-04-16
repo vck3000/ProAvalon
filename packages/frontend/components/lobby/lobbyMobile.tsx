@@ -48,6 +48,7 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
 
   return (
     <>
+      <NavIndex />
       <div className="wrapper" ref={wrapperRef}>
         <div>
           <div className="top_nav">
@@ -60,7 +61,6 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
                 />
               </a>
             </Link>
-            <NavIndex />
           </div>
         </div>
         <div className="wrapper_nav">

@@ -2,7 +2,7 @@ version: '3'
 services:
   redis:
     image: redis:5.0.7-alpine # Use stable version
-    container_name: cache
+    container_name: redis
     ports:
       - 6379:6379
     entrypoint: redis-server --appendonly yes # Start with data persistance
@@ -37,7 +37,7 @@ services:
     depends_on:
       - mongo
     ports:
-      - ${BACKEND_PORT}:3001
+      - 3001:3001
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -56,7 +56,7 @@ services:
   frontend:
     container_name: frontend
     ports:
-      - ${FRONTEND_PORT}:3000
+      - 3000:3000
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -64,7 +64,7 @@ services:
         SERVICE: frontend
     environment:
       SERVICE: frontend
-      BACKEND_URL: ${BACKEND_URL}
+      BACKEND_URL: http://192.168.1.15:3001
     volumes:
       - ./packages/frontend:/usr/src/app/packages/frontend
       - /usr/src/app/packages/frontend/node_modules
@@ -101,7 +101,7 @@ services:
         SERVICE: frontend
     environment:
       SERVICE: frontend
-      BACKEND_URL: http://localhost:3003
+      BACKEND_URL: http://192.168.1.15:3003
     volumes:
       - ./packages/frontend:/usr/src/app/packages/frontend
       - /usr/src/app/packages/frontend/node_modules

@@ -22,7 +22,7 @@ const toggleMenu = throttle(
       | React.MouseEvent<HTMLDivElement, MouseEvent>
       | React.KeyboardEvent<HTMLDivElement>,
   ): void => {
-    const parent = e.currentTarget.parentElement;
+    const parent = e.currentTarget.parentElement?.parentElement;
     if (parent) {
       const hamburgerCL = parent.getElementsByClassName('hamburger')[0]
         .classList;
@@ -57,66 +57,81 @@ const toggleMenu = throttle(
 
 const NavMobile = ({ theme }: Props): ReactElement => {
   return (
-    <div className="wrapper">
-      <button
-        className="hamburger hamburger--minus"
-        type="button"
-        aria-label="Menu"
-        aria-controls="navigation"
-        onClick={toggleMenu}
-      >
-        <span className="hamburger-box">
-          <span className="hamburger-inner" />
-        </span>
-      </button>
-
-      <div
-        className="overlay"
-        onClick={toggleMenu}
-        onKeyDown={toggleMenu}
-        role="button"
-        tabIndex={0}
-        aria-label="Menu Overlay"
-      />
-      <div className="side_menu">
-        <div>
-          <ul>
-            <li>
-              <Link href="/lobby">
-                <a>Lobby</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/rules">
-                <a>Rules</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/">
-                <a>Community</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/stats">
-                <a>Stats</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/">
-                <a>Development</a>
-              </Link>
-            </li>
-          </ul>
+    <>
+      <div className="hamburger_wrapper">
+        <button
+          className="hamburger hamburger--minus"
+          type="button"
+          aria-label="Menu"
+          aria-controls="navigation"
+          onClick={toggleMenu}
+        >
+          <span className="hamburger-box">
+            <span className="hamburger-inner" />
+          </span>
+        </button>
+      </div>
+      <div className="side_menu_wrapper">
+        <div
+          className="overlay"
+          onClick={toggleMenu}
+          onKeyDown={toggleMenu}
+          role="button"
+          tabIndex={0}
+          aria-label="Menu Overlay"
+        />
+        <div className="side_menu">
+          <div>
+            <ul>
+              <li>
+                <Link href="/lobby">
+                  <a>Lobby</a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/rules">
+                  <a>Rules</a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/">
+                  <a>Community</a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/stats">
+                  <a>Stats</a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/">
+                  <a>Development</a>
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
-
       <style jsx>
         {`
           .wrapper {
           }
 
+          .side_menu_wrapper {
+            position: absolute;
+            pointer-events: none;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 100vw;
+
+            overflow: hidden;
+            z-index: 10;
+          }
+
           .overlay {
             position: absolute;
+            pointer-events: auto;
             top: 0px;
             right: 0px;
             height: 100vh;
@@ -141,6 +156,7 @@ const NavMobile = ({ theme }: Props): ReactElement => {
 
           .side_menu {
             position: absolute;
+            pointer-events: auto;
             top: 0px;
             right: 0px;
             height: 100vh;
@@ -178,6 +194,12 @@ const NavMobile = ({ theme }: Props): ReactElement => {
           .side_menu li a {
             color: ${theme.colors.GOLD};
             font-size: 20px;
+          }
+
+          .hamburger_wrapper {
+            position: absolute;
+            top: 0;
+            right: 0;
           }
 
           /*! * Hamburgers * @description Tasty CSS-animated hamburgers * @author Jonathan Suh @jonsuh * @site https://jonsuh.com/hamburgers * @link https://github.com/jonsuh/hamburgers */
@@ -267,7 +289,7 @@ const NavMobile = ({ theme }: Props): ReactElement => {
           }
         `}
       </style>
-    </div>
+    </>
   );
 };
 
