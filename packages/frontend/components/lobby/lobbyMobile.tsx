@@ -153,7 +153,7 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
             font-size: 18px;
             border-radius: 16px;
             margin: 0 12px;
-            padding: 5px;
+            padding: 4px 5px;
             border: none;
           }
 

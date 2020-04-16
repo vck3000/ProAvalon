@@ -61,6 +61,7 @@ const OnlinePlayers = ({ players, theme, mobileView }: Props): ReactElement => {
             right: 0;
             bottom: 0;
             height: 100%;
+            word-break: break-word;
           }
 
           .online_players_inner_wrapper :global(.online_players) {
