@@ -1,8 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Server } from 'socket.io';
+import { validate } from 'class-validator';
+import { plainToClass } from 'class-transformer';
 
 import redisClient from '../../util/redisClient';
 import { SocketEvents } from '../../../proto/lobbyProto';
+import { OnlinePlayer } from './dto/online-players.dto';
 
 @Injectable()
 export class OnlinePlayersService {
@@ -61,6 +64,21 @@ export class OnlinePlayersService {
       `${onlinePlayers.length} online players: ${onlinePlayers.join(', ')}.`,
     );
 
-    server.to('lobby').emit(SocketEvents.ONLINE_PLAYERS, onlinePlayers);
+    const onlinePlayersObj = plainToClass(
+      OnlinePlayer,
+      onlinePlayers.map((username) => ({
+        username,
+        rewards: [],
+      })),
+    );
+
+    const errors = await validate(onlinePlayersObj);
+
+    if (errors.length) {
+      this.logger.error('Validation failed. Error: ', errors.join(', '));
+    } else {
+      this.logger.log('Validation succeed.');
+      server.to('lobby').emit(SocketEvents.ONLINE_PLAYERS, onlinePlayersObj);
+    }
   }
 }

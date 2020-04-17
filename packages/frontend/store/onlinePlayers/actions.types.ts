@@ -2,11 +2,11 @@
 // Doing so will conflict with Typescript's object type detection in reducers.ts.
 export const SET_ONLINE_PLAYERS = 'SET_ONLINE_PLAYERS';
 
-export type Reward = 'badge' | 'winner';
+export enum OnlinePlayerRewards {}
 
 export interface IOnlinePlayer {
   username: string;
-  extras?: [Reward];
+  rewards: OnlinePlayerRewards[];
 }
 
 // Redux actions
