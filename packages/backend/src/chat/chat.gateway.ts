@@ -5,6 +5,8 @@ import {
   SubscribeMessage,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import { transformAndValidate } from 'class-transformer-validator';
+
 import { ChatService } from './chat.service';
 import {
   SocketEvents,
@@ -29,17 +31,22 @@ export class ChatGateway {
         `All chat message: ${socket.user.username}: ${chatRequest.text} `,
       );
 
-      const chatResponse: ChatResponse = {
-        text: chatRequest.text,
-        username: socket.user.displayUsername,
-        timestamp: new Date(),
-        type: ChatResponseType.CHAT,
-      };
+      try {
+        const chatResponse = await transformAndValidate(ChatResponse, {
+          text: chatRequest.text,
+          username: socket.user.displayUsername,
+          timestamp: new Date(),
+          type: ChatResponseType.CHAT,
+        });
 
-      this.chatService.storeMessage(chatResponse);
-      this.server
-        .to('lobby')
-        .emit(SocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
+        this.chatService.storeMessage(chatResponse);
+
+        this.server
+          .to('lobby')
+          .emit(SocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
+      } catch (err) {
+        this.logger.error('Validation failed. Error: ', err);
+      }
     }
   }
 }
