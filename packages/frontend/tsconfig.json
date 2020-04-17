@@ -17,7 +17,8 @@
     "noUnusedLocals": true /* Report errors on unused locals. */,
     "noUnusedParameters": true /* Report errors on unused parameters. */,
     "noImplicitReturns": true /* Report error when not all code paths in function return a value. */,
-    "noFallthroughCasesInSwitch": true /* Report errors for fallthrough cases in switch statement. */
+    "noFallthroughCasesInSwitch": true /* Report errors for fallthrough cases in switch statement. */,
+    "experimentalDecorators": true
   },
   "exclude": ["node_modules", ".next"],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
