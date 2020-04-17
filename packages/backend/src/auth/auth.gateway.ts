@@ -2,12 +2,12 @@ import { Logger } from '@nestjs/common';
 import {
   WebSocketGateway,
   WebSocketServer,
-  // SubscribeMessage,
   OnGatewayConnection,
   SubscribeMessage,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
+import { transformAndValidate } from 'class-transformer-validator';
 
 import { UsersService } from '../users/users.service';
 import { ChatService } from '../chat/chat.service';
@@ -116,16 +116,20 @@ export class AuthGateway implements OnGatewayConnection {
 
     // ----------------------------------------------------------
 
-    const chatResponse: ChatResponse = {
-      text: `${socket.user.displayUsername} has joined the lobby`,
-      timestamp: new Date(),
-      username: socket.user.displayUsername,
-      type: ChatResponseType.PLAYER_JOIN_LOBBY,
-    };
+    try {
+      const chatResponse = await transformAndValidate(ChatResponse, {
+        text: `${socket.user.displayUsername} has joined the lobby`,
+        timestamp: new Date(),
+        username: socket.user.displayUsername,
+        type: ChatResponseType.PLAYER_JOIN_LOBBY,
+      });
 
-    this.chatService.storeMessage(chatResponse);
+      this.chatService.storeMessage(chatResponse);
 
-    socket.to('lobby').emit(SocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
+      socket.to('lobby').emit(SocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
+    } catch (err) {
+      this.logger.error('Validation failed. Error: ', err);
+    }
   }
 
   async handleDisconnect(socket: SocketUser) {
@@ -143,16 +147,20 @@ export class AuthGateway implements OnGatewayConnection {
 
     this.logger.log(`Player left lobby: ${socket.id}.`);
 
-    const chatResponse: ChatResponse = {
-      text: `${socket.user.displayUsername} has left the lobby`,
-      timestamp: new Date(),
-      username: socket.user.displayUsername,
-      type: ChatResponseType.PLAYER_JOIN_LOBBY,
-    };
+    try {
+      const chatResponse = await transformAndValidate(ChatResponse, {
+        text: `${socket.user.displayUsername} has left the lobby`,
+        timestamp: new Date(),
+        username: socket.user.displayUsername,
+        type: ChatResponseType.PLAYER_JOIN_LOBBY,
+      });
 
-    this.chatService.storeMessage(chatResponse);
+      this.chatService.storeMessage(chatResponse);
 
-    socket.to('lobby').emit(SocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
+      socket.to('lobby').emit(SocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
+    } catch (err) {
+      this.logger.error('Validation failed. Error: ', err);
+    }
   }
 
   @SubscribeMessage(SocketEvents.USER_RECONNECT)
