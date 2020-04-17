@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import { getBackendUrl } from '../utils/getEnvVars';
 import { SetSocketChatEvents } from './chat';
 import { SetSocketPlayersEvents } from './onlinePlayers';
+import { SocketEvents } from '../proto/lobbyProto';
 
 class SocketConnection {
   private socket!: SocketIOClient.Socket;
@@ -44,6 +45,17 @@ class SocketConnection {
             Router.push('/');
           },
         });
+      });
+
+      this.socket.on('reconnect_attempt', () => {
+        this.socket.io.opts.query = {
+          token: this.token,
+        };
+      });
+
+      this.socket.on(SocketEvents.CONNECTED, () => {
+        // Request for stuff here.
+        this.socket.emit(SocketEvents.USER_RECONNECT, null);
       });
 
       SetSocketPlayersEvents(this.socket);

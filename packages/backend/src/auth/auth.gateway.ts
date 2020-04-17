@@ -4,6 +4,7 @@ import {
   WebSocketServer,
   // SubscribeMessage,
   OnGatewayConnection,
+  SubscribeMessage,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
@@ -72,7 +73,13 @@ export class AuthGateway implements OnGatewayConnection {
             `${user.username} has an active socket. Killing previous...`,
           );
           this.server.to(connectedSocketId).emit('forceDisconnect');
-          await this.redisAdapter.remoteDisconnect(connectedSocketId, true);
+          try {
+            await this.redisAdapter.remoteDisconnect(connectedSocketId, true);
+          } catch (e) {
+            this.logger.warn(
+              `Failed to remote disconnect ${user.username}'s previous active socket.`,
+            );
+          }
         }
       }
     } catch (e) {
@@ -102,6 +109,10 @@ export class AuthGateway implements OnGatewayConnection {
 
     // Successful authentication
     socket.join('lobby');
+
+    // Let client know that we have finished our checks and that
+    // they can now request data if they need.
+    socket.emit(SocketEvents.CONNECTED, null);
 
     // ----------------------------------------------------------
 
@@ -142,5 +153,11 @@ export class AuthGateway implements OnGatewayConnection {
     this.chatService.storeMessage(chatResponse);
 
     socket.to('lobby').emit(SocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
+  }
+
+  @SubscribeMessage(SocketEvents.USER_RECONNECT)
+  async userReconnect(socket: SocketUser) {
+    this.logger.log(`${socket.user.username} has reconnected`);
+    // Send them all chat or any further data they may require.
   }
 }
