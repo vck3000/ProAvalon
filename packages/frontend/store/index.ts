@@ -55,6 +55,26 @@ export const store = createStore(
 
 function configureStore(): Store {
   (store as ISagaStore).sagaTask = sagaMiddleware.run(rootSaga);
+
+  // Enable Webpack hot module replacement for sagas.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if ((module as any).hot) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (module as any).hot.accept('./sagas', () => {
+      const getNewSagas = rootSaga;
+
+      (store as ISagaStore).sagaTask
+        .cancel()(store as ISagaStore)
+        .sagaTask.done.then(() => {
+          (store as ISagaStore).sagaTask = sagaMiddleware.run(
+            function* replacedSaga() {
+              yield getNewSagas();
+            },
+          );
+        });
+    });
+  }
+
   return store;
 }
 
