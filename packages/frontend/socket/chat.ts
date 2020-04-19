@@ -8,10 +8,7 @@ export const SetSocketChatEvents = (socket: SocketIOClient.Socket): void => {
     SocketEvents.ALL_CHAT_TO_CLIENT,
     async (chatResponse: ChatResponse) => {
       try {
-        const chatRes = await transformAndValidate(ChatResponse, {
-          ...chatResponse,
-          timestamp: new Date(chatResponse.timestamp),
-        });
+        const chatRes = await transformAndValidate(ChatResponse, chatResponse);
         store.dispatch(receivedMessage(chatRes));
       } catch (err) {
         throw Error(`Validation failed. Error: ${err}`);
