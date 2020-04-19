@@ -1,4 +1,7 @@
 import { IsDefined, IsString, IsDate, IsEnum } from 'class-validator';
+import { Type } from 'class-transformer';
+import 'reflect-metadata';
+
 export const SocketEvents = {
   CONNECTED: 'CONNECTED',
   ALL_CHAT_TO_CLIENT: 'ALL_CHAT_TO_CLIENT',
@@ -33,6 +36,7 @@ export class ChatResponse {
 
   @IsDefined()
   @IsDate()
+  @Type(() => Date)
   timestamp!: Date;
 
   @IsDefined()
