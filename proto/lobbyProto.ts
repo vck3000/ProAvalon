@@ -1,3 +1,7 @@
+import { IsDefined, IsString, IsDate, IsEnum } from 'class-validator';
+import { Type } from 'class-transformer';
+import 'reflect-metadata';
+
 export const SocketEvents = {
   CONNECTED: 'CONNECTED',
   ALL_CHAT_TO_CLIENT: 'ALL_CHAT_TO_CLIENT',
@@ -6,9 +10,11 @@ export const SocketEvents = {
   USER_RECONNECT: 'USER_RECONNECT',
 };
 
-export type ChatRequest = {
-  text: string;
-};
+export class ChatRequest {
+  @IsDefined()
+  @IsString()
+  text!: string;
+}
 
 export enum ChatResponseType {
   CHAT = 'CHAT',
@@ -19,9 +25,33 @@ export enum ChatResponseType {
   CREATE_ROOM = 'CREATE_ROOM',
 }
 
-export type ChatResponse = {
-  text: string;
-  username: string;
-  timestamp: Date;
-  type: ChatResponseType;
-};
+export class ChatResponse {
+  @IsDefined()
+  @IsString()
+  text!: string;
+
+  @IsDefined()
+  @IsString()
+  username!: string;
+
+  @IsDefined()
+  @IsDate()
+  @Type(() => Date)
+  timestamp!: Date;
+
+  @IsDefined()
+  @IsEnum(ChatResponseType)
+  type!: ChatResponseType;
+}
+
+// empty
+export enum OnlinePlayerRewards {}
+
+export class OnlinePlayer {
+  @IsString()
+  @IsDefined()
+  username!: string;
+
+  @IsDefined()
+  rewards!: OnlinePlayerRewards[];
+}
