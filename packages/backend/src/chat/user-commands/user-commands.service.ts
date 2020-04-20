@@ -6,7 +6,6 @@ export interface UserCommand {
   verb: string;
   subject: string;
   sender: string;
-  subjectId: string | null;
 }
 
 export const generateChatResponse = (
@@ -21,21 +20,12 @@ export const generateChatResponse = (
 
 @Injectable()
 export class UserCommandsService {
-  getCommand({
-    verb,
-    subject,
-    sender,
-    subjectId,
-  }: UserCommand): ChatResponse[] {
+  getCommand({ verb, subject, sender }: UserCommand): ChatResponse[] {
     if (userActions[verb]) {
       return userActions[verb].run(sender, subject);
     }
     if (userInteractions[verb]) {
-      if (subjectId) {
-        return userInteractions[verb].run(sender, subject);
-      }
-
-      return [generateChatResponse(`User ${subject} does not exist.`, sender)];
+      return userInteractions[verb].run(sender, subject);
     }
     return [generateChatResponse('Invalid command.', sender)];
   }
