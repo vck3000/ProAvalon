@@ -1,13 +1,11 @@
 import { Server } from 'socket.io';
 import * as redisIoAdapter from 'socket.io-redis';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 
 // This class is to wrap methods in promises.
+@WebSocketGateway()
 class RedisAdapter {
-  server: Server;
-
-  constructor(server: Server) {
-    this.server = server;
-  }
+  @WebSocketServer() server!: Server;
 
   get() {
     return this.server.sockets.adapter as redisIoAdapter.RedisAdapter;

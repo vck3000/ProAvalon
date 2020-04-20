@@ -15,8 +15,7 @@ import {
   ChatResponseType,
 } from '../../proto/lobbyProto';
 import { SocketUser } from '../users/users.socket';
-import { UserCommandsService } from './user-commands/user-commands.service';
-import redisClient from '../util/redisClient';
+import { UserCommandsService } from '../chat-commands/user-commands/user-commands.service';
 
 @WebSocketGateway()
 export class ChatGateway {
@@ -58,41 +57,8 @@ export class ChatGateway {
   @SubscribeMessage(SocketEvents.ALL_CHAT_TO_SERVER)
   async handleCommand(socket: SocketUser, chatRequest: ChatRequest) {
     if (chatRequest && chatRequest.text[0] === '/') {
-      const [verb, subject] = chatRequest.text.slice(1).split(' ');
-      const sender = socket.user.displayUsername;
-
-      // Made every method return an array so that it's easy to parse.
-      // Can be changed to check if type is an array or object?
-      const chatResponses = this.userCommandsService.getCommand({
-        verb,
-        sender,
-        subject,
-      });
-
-      const senderId = await redisClient.get(`user:${sender}`);
-
-      if (senderId) {
-        chatResponses.forEach(async (chatResponse: ChatResponse) => {
-          let socketId = senderId;
-          // Fetch socketId again if username is different.
-          if (chatResponse.username !== sender) {
-            socketId =
-              (await redisClient.get(`user:${chatResponse.username}`)) || '';
-            if (socketId) {
-              this.server
-                .to(socketId)
-                .emit(SocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
-            } else {
-              this.server.to(senderId).emit(SocketEvents.ALL_CHAT_TO_CLIENT, {
-                text: `User ${chatResponse.username} does not exist.`,
-                username: sender,
-                timestamp: new Date(),
-                type: ChatResponseType.USER_COMMAND,
-              });
-            }
-          }
-        });
-      }
+      const [command, ...data] = chatRequest.text.slice(1).split(' ');
+      this.userCommandsService.getCommand(command, data, socket);
     }
   }
 }
