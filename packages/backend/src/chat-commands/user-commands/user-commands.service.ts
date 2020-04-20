@@ -6,7 +6,7 @@ import { userInteractions } from './actions/userInteractions';
 
 @Injectable()
 export class UserCommandsService {
-  async getCommand(command: string, data: string[], senderSocket: SocketUser) {
+  async sendCommand(command: string, data: string[], senderSocket: SocketUser) {
     if (userActions[command]) {
       userActions[command].run(data, senderSocket);
     } else if (userInteractions[command]) {
