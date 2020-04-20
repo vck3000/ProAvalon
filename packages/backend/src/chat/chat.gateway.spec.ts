@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ChatGateway } from './chat.gateway';
 import { ChatController } from './chat.controller';
 import { ChatService } from './chat.service';
+import { UserCommandsService } from './user-commands/user-commands.service';
 
 describe('ChatGateway', () => {
   let gateway: ChatGateway;
@@ -10,7 +11,7 @@ describe('ChatGateway', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [],
       controllers: [ChatController],
-      providers: [ChatService, ChatGateway],
+      providers: [ChatService, ChatGateway, UserCommandsService],
     }).compile();
 
     gateway = module.get<ChatGateway>(ChatGateway);

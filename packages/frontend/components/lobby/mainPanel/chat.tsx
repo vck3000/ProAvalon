@@ -12,6 +12,7 @@ import {
   ChatResponse,
 } from '../../../proto/lobbyProto';
 import { NoSSR } from '../../../utils/noSSR';
+import { murmurhash } from '../../../utils/hash';
 
 interface IStateProps {
   theme: ThemeOptions;
@@ -66,9 +67,10 @@ const Chat = ({ theme, messages }: Props): ReactElement => {
             <ul className="chat_list" ref={chatRef}>
               {messages.map((chatMessage: ChatResponse, i: number) => (
                 <li
-                  key={`${chatMessage.timestamp.getTime().toString()}_${
-                    chatMessage.username
-                  }_${chatMessage.type}`}
+                  key={murmurhash(
+                    chatMessage.text,
+                    chatMessage.timestamp.getTime(),
+                  )}
                 >
                   <Message
                     message={chatMessage}
