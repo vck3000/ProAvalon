@@ -10,9 +10,12 @@ interface IProps {
 }
 
 const Lobby = ({ dispatchGetAllChat }: IProps): ReactElement => {
-  // Get all chat on lobby load.
+  // Get all chat on lobby load,
+  // after 0.5s to get joined chat.
   useEffect(() => {
-    dispatchGetAllChat();
+    setTimeout(() => {
+      dispatchGetAllChat();
+    }, 500);
     socket.reinitialize();
 
     // Cleanup - is run when user leaves the lobby page at the moment.

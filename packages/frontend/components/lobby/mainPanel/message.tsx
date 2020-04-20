@@ -54,7 +54,8 @@ const Message = (props: Props): ReactElement => {
 
           .chat${ChatResponseType.PLAYER_JOIN_LOBBY},
             .chat${ChatResponseType.PLAYER_LEAVE_LOBBY},
-            .chat${ChatResponseType.CREATE_ROOM} {
+            .chat${ChatResponseType.CREATE_ROOM},
+            .chat${ChatResponseType.USER_COMMAND} {
             color: ${theme.colors.TEXT_GRAY};
           }
         `}
