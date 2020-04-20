@@ -23,6 +23,7 @@ export enum ChatResponseType {
   PLAYER_JOIN_LOBBY = 'PLAYER_JOIN_LOBBY',
   PLAYER_LEAVE_LOBBY = 'PLAYER_LEAVE_LOBBY',
   CREATE_ROOM = 'CREATE_ROOM',
+  USER_COMMAND = 'USER_COMMAND',
 }
 
 export class ChatResponse {
