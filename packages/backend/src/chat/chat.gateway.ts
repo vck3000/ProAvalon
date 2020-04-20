@@ -58,7 +58,7 @@ export class ChatGateway {
   async handleCommand(socket: SocketUser, chatRequest: ChatRequest) {
     if (chatRequest && chatRequest.text[0] === '/') {
       const [command, ...data] = chatRequest.text.slice(1).split(' ');
-      this.userCommandsService.getCommand(command, data, socket);
+      this.userCommandsService.sendCommand(command, data, socket);
     }
   }
 }
