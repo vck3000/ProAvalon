@@ -37,7 +37,7 @@ export class AuthGateway implements OnGatewayConnection {
   ) {}
 
   afterInit() {
-    this.redisAdapter = new RedisAdapter(this.server);
+    this.redisAdapter = new RedisAdapter();
   }
 
   private readonly logger = new Logger(AuthGateway.name);

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ChatGateway } from './chat.gateway';
 import { ChatController } from './chat.controller';
 import { ChatService } from './chat.service';
-import { UserCommandsService } from './user-commands/user-commands.service';
+import { UserCommandsService } from '../chat-commands/user-commands/user-commands.service';
 
 describe('ChatGateway', () => {
   let gateway: ChatGateway;
