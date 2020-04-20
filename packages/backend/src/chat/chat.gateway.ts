@@ -60,7 +60,6 @@ export class ChatGateway {
     if (chatRequest && chatRequest.text[0] === '/') {
       const [verb, subject] = chatRequest.text.slice(1).split(' ');
       const sender = socket.user.displayUsername;
-      const subjectId = await redisClient.get(`user:${subject}`);
 
       // Made every method return an array so that it's easy to parse.
       // Can be changed to check if type is an array or object?
@@ -68,7 +67,6 @@ export class ChatGateway {
         verb,
         sender,
         subject,
-        subjectId,
       });
 
       const senderId = await redisClient.get(`user:${sender}`);
@@ -80,10 +78,19 @@ export class ChatGateway {
           if (chatResponse.username !== sender) {
             socketId =
               (await redisClient.get(`user:${chatResponse.username}`)) || '';
+            if (socketId) {
+              this.server
+                .to(socketId)
+                .emit(SocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
+            } else {
+              this.server.to(senderId).emit(SocketEvents.ALL_CHAT_TO_CLIENT, {
+                text: `User ${chatResponse.username} does not exist.`,
+                username: sender,
+                timestamp: new Date(),
+                type: ChatResponseType.USER_COMMAND,
+              });
+            }
           }
-          this.server
-            .to(socketId)
-            .emit(SocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
         });
       }
     }
