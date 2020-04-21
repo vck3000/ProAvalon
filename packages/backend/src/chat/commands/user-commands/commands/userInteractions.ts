@@ -1,8 +1,10 @@
 import { SocketUser } from '../../../../users/users.socket';
-import { emitChatResponse } from '../../chatResponse';
+import { emitCommandResponse } from '../../commandResponse';
 import { Command } from '../../commands.types';
+import RedisAdapter from '../../../../redis-adapter/redis-adapter.service';
+import { ChatResponseType } from '../../../../../proto/lobbyProto';
 
-export class UserInteraction implements Command {
+class UserInteraction implements Command {
   command: string;
 
   pastTenseCommand: string;
@@ -15,16 +17,28 @@ export class UserInteraction implements Command {
     this.help = `/${command} <playername>: ${command} a player.`;
   }
 
-  run(data: string[], senderSocket: SocketUser) {
-    emitChatResponse(
+  async run(
+    data: string[],
+    senderSocket: SocketUser,
+    redisAdapter: RedisAdapter,
+  ) {
+    const ret = await redisAdapter.emitToUsername(
+      data[0],
       `${senderSocket.user.displayUsername} has ${this.pastTenseCommand} you!`,
-      // change later
-      senderSocket,
+      ChatResponseType.USER_COMMAND,
     );
-    emitChatResponse(
-      `You have ${this.pastTenseCommand} ${data[0]}!`,
-      senderSocket,
-    );
+
+    if (ret) {
+      emitCommandResponse(
+        `You have ${this.pastTenseCommand} ${data[0]}!`,
+        senderSocket,
+      );
+    } else {
+      emitCommandResponse(
+        `Something went wrong trying to ${this.command} ${data[0]}.`,
+        senderSocket,
+      );
+    }
   }
 }
 

@@ -2,23 +2,23 @@ import { SocketUser } from '../../../../users/users.socket';
 import { emitCommandResponse } from '../../commandResponse';
 import RedisAdapter from '../../../../redis-adapter/redis-adapter.service';
 import { Command } from '../../commands.types';
-import userActions from '../user-commands';
+import modActions from '../mod-commands';
 
-export const Help: Command = {
-  command: 'help',
+export const MHelp: Command = {
+  command: 'm',
 
-  help: '/help: shows the available commands and usage.',
+  help: '/m: shows the available commands and usage.',
 
   run: (
     _data: string[],
     senderSocket: SocketUser,
     _redisAdapter: RedisAdapter,
   ) => {
-    emitCommandResponse('User commands are:', senderSocket);
-    Object.keys({ ...userActions }).forEach((key) => {
-      emitCommandResponse(userActions[key].help, senderSocket);
+    emitCommandResponse('Mod commands are:', senderSocket);
+    Object.keys({ ...modActions }).forEach((key) => {
+      emitCommandResponse(modActions[key].help, senderSocket);
     });
   },
 };
 
-export default Help;
+export default MHelp;

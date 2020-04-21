@@ -1,5 +1,5 @@
 import { SocketUser } from '../../../../users/users.socket';
-import { emitChatResponse } from '../../chatResponse';
+import { emitCommandResponse } from '../../commandResponse';
 import { Command } from '../../commands.types';
 
 export const MTest: Command = {
@@ -8,7 +8,7 @@ export const MTest: Command = {
   run: (_data: string[], senderSocket: SocketUser) => {
     // Check user is a moderator
 
-    emitChatResponse(
+    emitCommandResponse(
       'Running /mtest. You should be a moderator if you see this.',
       senderSocket,
     );

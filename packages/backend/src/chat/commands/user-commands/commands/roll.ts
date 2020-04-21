@@ -1,5 +1,5 @@
 import { SocketUser } from '../../../../users/users.socket';
-import { emitChatResponse } from '../../chatResponse';
+import { emitCommandResponse } from '../../commandResponse';
 import { Command } from '../../commands.types';
 
 export const Roll: Command = {
@@ -7,17 +7,24 @@ export const Roll: Command = {
   help:
     '/roll [number]: Returns a random number between 1 and (10 or specified number).',
   run: (data: string[], senderSocket: SocketUser) => {
-    let num = Number(data[0]);
-    if (!num && num !== 0) {
-      num = 10;
-    }
-    if (num > 0 && Number.isInteger(num)) {
-      emitChatResponse(
-        (Math.floor(Math.random() * num) + 1).toString(),
+    const num = Number(data[0]);
+
+    if (Number.isNaN(num)) {
+      emitCommandResponse(
+        `The RNG gods do not understand your request: ${data[0]}.`,
+        senderSocket,
+      );
+    } else if (num <= 0) {
+      emitCommandResponse(
+        `The RNG gods are not pleased with your request: ${data[0]}.`,
         senderSocket,
       );
     } else {
-      emitChatResponse(`${num} is not a valid positive integer.`, senderSocket);
+      const rolled = Math.floor(Math.random() * num) + 1;
+      emitCommandResponse(
+        `The RNG gods have graced you with: ${rolled}`,
+        senderSocket,
+      );
     }
   },
 };
