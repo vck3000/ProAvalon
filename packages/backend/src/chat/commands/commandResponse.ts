@@ -6,7 +6,7 @@ import {
 } from '../../../proto/lobbyProto';
 import { SocketUser } from '../../users/users.socket';
 
-export const generateChatResponse = (
+export const generateCommandResponse = (
   text: ChatResponse['text'],
   username: ChatResponse['username'],
 ): ChatResponse => ({
@@ -16,9 +16,9 @@ export const generateChatResponse = (
   type: ChatResponseType.USER_COMMAND,
 });
 
-export const emitChatResponse = (text: string, socket: SocketUser) => {
+export const emitCommandResponse = (text: string, socket: SocketUser) => {
   socket.emit(
     SocketEvents.ALL_CHAT_TO_CLIENT,
-    generateChatResponse(text, socket.user.displayUsername),
+    generateCommandResponse(text, socket.user.displayUsername),
   );
 };

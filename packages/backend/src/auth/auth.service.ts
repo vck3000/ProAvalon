@@ -20,8 +20,7 @@ export class AuthService {
       user &&
       (await this.usersService.comparePassword(pass, user.password))
     ) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...result } = user.toObject();
+      const { password: _password, ...result } = user.toObject();
       return result;
     }
 
