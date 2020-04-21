@@ -17,7 +17,7 @@ import { AuthModule } from '../auth/auth.module';
 jest.setTimeout(600000);
 
 // Mock out redis dependency
-jest.mock('../util/redisIoAdapter', () => ({
+jest.mock('../util/redisSocketIoAdapter', () => ({
   __esModule: true, // this property makes it work
   default: 'mockedDefaultExport',
   namedExport: jest.fn(),
