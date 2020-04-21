@@ -15,7 +15,7 @@ import {
   ChatResponseType,
 } from '../../proto/lobbyProto';
 import { SocketUser } from '../users/users.socket';
-import { UserCommandsService } from '../chat-commands/user-commands/user-commands.service';
+import { CommandsService } from './commands/commands.service';
 
 @WebSocketGateway()
 export class ChatGateway {
@@ -25,40 +25,40 @@ export class ChatGateway {
 
   constructor(
     private chatService: ChatService,
-    private userCommandsService: UserCommandsService,
+    private commandsService: CommandsService,
   ) {}
 
   @SubscribeMessage(SocketEvents.ALL_CHAT_TO_SERVER)
   async handleMessage(socket: SocketUser, chatRequest: ChatRequest) {
-    if (chatRequest.text && chatRequest.text[0] !== '/') {
-      this.logger.log(
-        `All chat message: ${socket.user.username}: ${chatRequest.text} `,
-      );
-
-      try {
-        const chatResponse = await transformAndValidate(ChatResponse, {
-          text: chatRequest.text,
-          username: socket.user.displayUsername,
-          timestamp: new Date(),
-          type: ChatResponseType.CHAT,
-        });
-
-        this.chatService.storeMessage(chatResponse);
-
-        this.server
-          .to('lobby')
-          .emit(SocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
-      } catch (err) {
-        this.logger.error('Validation failed. Error: ', err);
+    if (chatRequest.text) {
+      // Commands
+      if (chatRequest.text[0] === '/') {
+        this.commandsService.runCommand(chatRequest.text, socket);
       }
-    }
-  }
 
-  @SubscribeMessage(SocketEvents.ALL_CHAT_TO_SERVER)
-  async handleCommand(socket: SocketUser, chatRequest: ChatRequest) {
-    if (chatRequest && chatRequest.text[0] === '/') {
-      const [command, ...data] = chatRequest.text.slice(1).split(' ');
-      this.userCommandsService.sendCommand(command, data, socket);
+      // Chat message
+      else {
+        this.logger.log(
+          `All chat message: ${socket.user.username}: ${chatRequest.text} `,
+        );
+
+        try {
+          const chatResponse = await transformAndValidate(ChatResponse, {
+            text: chatRequest.text,
+            username: socket.user.displayUsername,
+            timestamp: new Date(),
+            type: ChatResponseType.CHAT,
+          });
+
+          this.chatService.storeMessage(chatResponse);
+
+          this.server
+            .to('lobby')
+            .emit(SocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
+        } catch (err) {
+          this.logger.error('Validation failed. Error: ', err);
+        }
+      }
     }
   }
 }
