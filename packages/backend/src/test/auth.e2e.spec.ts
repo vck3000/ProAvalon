@@ -131,6 +131,41 @@ describe('Auth', () => {
       .expect('Email already exists: test@gmail.com.');
   });
 
+  it('should create user on good input', async () => {
+    // Good signup
+    await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({
+        username: 't',
+        password: 'test_password',
+        email: 't@gmail.com',
+      })
+      .expect(HttpStatus.CREATED)
+      .expect('Signed up username: t.');
+
+    // Good signup
+    await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({
+        username: 't1',
+        password: 'test_password',
+        email: 't1@gmail.com',
+      })
+      .expect(HttpStatus.CREATED)
+      .expect('Signed up username: t1.');
+
+    // Good signup
+    await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({
+        username: 'test-user',
+        password: 'test_password',
+        email: 'test-user@gmail.com',
+      })
+      .expect(HttpStatus.CREATED)
+      .expect('Signed up username: test-user.');
+  });
+
   it('should not create user on bad input', async () => {
     // Bad signup
     await request(app.getHttpServer())
@@ -175,7 +210,7 @@ describe('Auth', () => {
     await request(app.getHttpServer())
       .post('/auth/signup')
       .send({
-        username: 'test_user@',
+        username: 'test user',
         password: 'test_password',
         email: 'test@gmail.com',
       })
@@ -190,7 +225,7 @@ describe('Auth', () => {
     await request(app.getHttpServer())
       .post('/auth/signup')
       .send({
-        username: 'ab..cd',
+        username: 'ab.-cd',
         password: 'test_password',
         email: 'test@gmail.com',
       })
@@ -202,105 +237,34 @@ describe('Auth', () => {
       );
 
     // Bad signup
-    await request(app.getHttpServer())
-      .post('/auth/signup')
-      .send({
-        username: 'ab--cd',
-        password: 'test_password',
-        email: 'test@gmail.com',
-      })
-      .expect(HttpStatus.BAD_REQUEST)
-      .expect((res) =>
-        expect(res.body.message[0]).toMatch(
-          'Username must not have more than one underscore, hyphen or period in succession.',
-        ),
-      );
+    // await request(app.getHttpServer())
+    //   .post('/auth/signup')
+    //   .send({
+    //     username: '_',
+    //     password: 'test_password',
+    //     email: 'test@gmail.com',
+    //   })
+    //   .expect(HttpStatus.BAD_REQUEST)
+    //   .expect((res) =>
+    //     expect(res.body.message[0]).toMatch(
+    //       'Username must not start with an underscore, hyphen or period.',
+    //     ),
+    //   );
 
     // Bad signup
-    await request(app.getHttpServer())
-      .post('/auth/signup')
-      .send({
-        username: '_test_user',
-        password: 'test_password',
-        email: 'test@gmail.com',
-      })
-      .expect(HttpStatus.BAD_REQUEST)
-      .expect((res) =>
-        expect(res.body.message[0]).toMatch(
-          'Username must not start with or end with an underscore, hyphen or period.',
-        ),
-      );
-
-    // Bad signup
-    await request(app.getHttpServer())
-      .post('/auth/signup')
-      .send({
-        username: 'test_user_test_user_test_user',
-        password: 'test_password',
-        email: 'test@gmail.com',
-      })
-      .expect(HttpStatus.BAD_REQUEST)
-      .expect((res) =>
-        expect(res.body.message[0]).toMatch(
-          'Username must not have more than 25 characters.',
-        ),
-      );
-
-    // Bad signup
-    await request(app.getHttpServer())
-      .post('/auth/signup')
-      .send({
-        username: 'test_user',
-        // Missing password
-        email: 'test@gmail.com',
-      })
-      .expect(HttpStatus.BAD_REQUEST)
-      .expect((res) =>
-        expect(res.body.message[0]).toMatch('Password is missing.'),
-      );
-
-    // Bad signup
-    await request(app.getHttpServer())
-      .post('/auth/signup')
-      .send({
-        username: '',
-        password: 'test_password',
-        email: 'test@gmail.com',
-      })
-      .expect(HttpStatus.BAD_REQUEST)
-      .expect((res) =>
-        expect(res.body.message[0]).toMatch('Username should not be empty.'),
-      );
-
-    // Bad signup
-    await request(app.getHttpServer())
-      .post('/auth/signup')
-      .send({
-        username: 'test_user@',
-        password: 'test_password',
-        email: 'test@gmail.com',
-      })
-      .expect(HttpStatus.BAD_REQUEST)
-      .expect((res) =>
-        expect(res.body.message[0]).toMatch(
-          'Username must not contain illegal characters.',
-        ),
-      );
-
-    // Bad signup
-    await request(app.getHttpServer())
-      .post('/auth/signup')
-      .send({
-        username: '_test_user',
-        password: 'test_password',
-        email: 'test@gmail.com',
-      })
-      .expect(HttpStatus.BAD_REQUEST)
-      .expect((res) =>
-        expect(res.body.message[0]).toMatch(
-          'Username must not start with or end with an underscore, hyphen or period.',
-        ),
-      );
+    // await request(app.getHttpServer())
+    //   .post('/auth/signup')
+    //   .send({
+    //     username: 't_',
+    //     password: 'test_password',
+    //     email: 'test@gmail.com',
+    //   })
+    //   .expect(HttpStatus.BAD_REQUEST)
+    //   .expect((res) =>
+    //     expect(res.body.message[0]).toMatch(
+    //       'Username must not end with an underscore, hyphen or period.',
+    //     ),
+    //   );
 
     // Bad signup
     await request(app.getHttpServer())
