@@ -1,8 +1,8 @@
-import { SocketUser } from '../../../users/users.socket';
+import { SocketUser } from '../../../../users/users.socket';
 import { emitChatResponse } from '../../chatResponse';
-import { UserCommand } from '../interfaces/user-commands.interface';
+import { Command } from '../../commands.types';
 
-export class UserInteraction implements UserCommand {
+export class UserInteraction implements Command {
   command: string;
 
   pastTenseCommand: string;

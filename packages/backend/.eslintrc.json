@@ -50,7 +50,8 @@
     // Avoid conflict with Prettier
     "object-curly-newline": "off",
     "operator-linebreak": "off",
-    "function-paren-newline": "off"
+    "function-paren-newline": "off",
+    "brace-style": "off"
   },
   "overrides": [
     {
