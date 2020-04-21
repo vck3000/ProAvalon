@@ -1,5 +1,5 @@
 import { SocketUser } from '../../../../users/users.socket';
-import { emitChatResponse } from '../../chatResponse';
+import { emitCommandResponse } from '../../commandResponse';
 import { Command } from '../../commands.types';
 
 export const ATest: Command = {
@@ -8,7 +8,7 @@ export const ATest: Command = {
   run: (_data: string[], senderSocket: SocketUser) => {
     // Check user is an admin
 
-    emitChatResponse(
+    emitCommandResponse(
       'Running /atest. You should be an admin if you see this.',
       senderSocket,
     );

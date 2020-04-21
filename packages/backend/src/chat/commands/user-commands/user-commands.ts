@@ -5,9 +5,8 @@ import { Command } from '../commands.types';
 
 const UserCommands: Record<string, Command> = {
   ...userInteractions,
+  [Help.command]: Help,
+  [Roll.command]: Roll,
 };
-
-UserCommands[Help.command] = Help;
-UserCommands[Roll.command] = Roll;
 
 export default UserCommands;
