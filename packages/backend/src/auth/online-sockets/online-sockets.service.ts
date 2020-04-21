@@ -6,7 +6,7 @@ import redisClient from '../../util/redisClient';
 export class OnlineSocketsService {
   private readonly logger = new Logger(OnlineSocketsService.name);
 
-  async connected(username: string) {
+  async get(username: string) {
     this.logger.log(`Checking ${username} socket connected...`);
     return redisClient.get(`user:${username}`);
   }

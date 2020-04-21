@@ -12,6 +12,7 @@ import { JWT_SECRET, JWT_EXPIRY } from '../util/getEnvVars';
 import { ChatModule } from '../chat/chat.module';
 import { OnlinePlayersService } from './online-players/online-players.service';
 import { OnlineSocketsService } from './online-sockets/online-sockets.service';
+import RedisAdapterModule from '../redis-adapter/redis-adapter.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { OnlineSocketsService } from './online-sockets/online-sockets.service';
       signOptions: { expiresIn: JWT_EXPIRY },
     }),
     ChatModule,
+    RedisAdapterModule,
   ],
   controllers: [AuthController],
   providers: [
@@ -32,6 +34,6 @@ import { OnlineSocketsService } from './online-sockets/online-sockets.service';
     OnlinePlayersService,
     OnlineSocketsService,
   ],
-  exports: [AuthService],
+  exports: [AuthService, OnlineSocketsService],
 })
 export class AuthModule {}

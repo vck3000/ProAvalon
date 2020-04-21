@@ -18,7 +18,7 @@ import {
   ChatResponse,
   ChatResponseType,
 } from '../../proto/lobbyProto';
-import RedisAdapter from '../util/redisAdapter';
+import RedisAdapter from '../redis-adapter/redis-adapter.service';
 import { OnlinePlayersService } from './online-players/online-players.service';
 import { OnlineSocketsService } from './online-sockets/online-sockets.service';
 
@@ -26,19 +26,14 @@ import { OnlineSocketsService } from './online-sockets/online-sockets.service';
 export class AuthGateway implements OnGatewayConnection {
   @WebSocketServer() server!: Server;
 
-  redisAdapter!: RedisAdapter;
-
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
     private chatService: ChatService,
     private onlinePlayersService: OnlinePlayersService,
     private onlineSocketsService: OnlineSocketsService,
+    private redisAdapter: RedisAdapter,
   ) {}
-
-  afterInit() {
-    this.redisAdapter = new RedisAdapter();
-  }
 
   private readonly logger = new Logger(AuthGateway.name);
 
@@ -63,7 +58,7 @@ export class AuthGateway implements OnGatewayConnection {
         socket.user = user;
 
         // Check to see if they are already connected on redis
-        const connectedSocketId = await this.onlineSocketsService.connected(
+        const connectedSocketId = await this.onlineSocketsService.get(
           socket.user.username,
         );
 
