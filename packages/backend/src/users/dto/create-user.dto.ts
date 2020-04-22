@@ -14,11 +14,9 @@ export class CreateUserDto {
   @Matches(/^[\w.-]+$/, {
     message: 'Username must not contain illegal characters.',
   })
-  @Matches(/^[^(-._)][\w.-]*/, {
-    message: 'Username must not start with an underscore, hyphen or period.',
-  })
-  @Matches(/[\w.-]*[^(-._)]$/, {
-    message: 'Username must not end with an underscore, hyphen or period.',
+  @Matches(/^([a-zA-Z0-9][\w.-]*[a-zA-Z0-9])$|^[a-zA-Z0-9]$/, {
+    message:
+      'Username must not start or end with an underscore, hyphen or period.',
   })
   @Matches(/^[^(-._)]*(?:[-._][^-._]+)*$/, {
     message:
