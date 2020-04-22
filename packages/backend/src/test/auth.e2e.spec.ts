@@ -247,7 +247,7 @@ describe('Auth', () => {
       .expect(HttpStatus.BAD_REQUEST)
       .expect((res) =>
         expect(res.body.message[0]).toMatch(
-          'Username must not start with an underscore, hyphen or period.',
+          'Username must not start or end with an underscore, hyphen or period.',
         ),
       );
 
@@ -262,7 +262,7 @@ describe('Auth', () => {
       .expect(HttpStatus.BAD_REQUEST)
       .expect((res) =>
         expect(res.body.message[0]).toMatch(
-          'Username must not end with an underscore, hyphen or period.',
+          'Username must not start or end with an underscore, hyphen or period.',
         ),
       );
 
