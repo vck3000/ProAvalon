@@ -15,6 +15,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new UnauthorizedException();
     }
+    if (username !== user.displayUsername) {
+      const updatedUser = await this.authService.setDisplayUsername(username);
+      if (updatedUser) return updatedUser;
+    }
     return user;
   }
 }

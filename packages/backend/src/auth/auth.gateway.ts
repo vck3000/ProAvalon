@@ -89,7 +89,10 @@ export class AuthGateway implements OnGatewayConnection {
     this.logger.log(`Recording ${socket.user.username}'s socket in redis.`);
     // Set a new record of their connection.
     this.onlineSocketsService.register(socket.user.username, socket.id);
-    this.onlinePlayersService.register(socket.user.username, this.server);
+    this.onlinePlayersService.register(
+      socket.user.displayUsername,
+      this.server,
+    );
 
     // Attach a listener to the packet for pings.
     socket.conn.on('packet', async (packet) => {
@@ -98,7 +101,7 @@ export class AuthGateway implements OnGatewayConnection {
           `Updating ${socket.user.username}'s socket record in redis.`,
         );
         this.onlineSocketsService.update(socket.user.username, socket.id);
-        this.onlinePlayersService.update(socket.user.username);
+        this.onlinePlayersService.update(socket.user.displayUsername);
       }
     });
 
@@ -136,7 +139,10 @@ export class AuthGateway implements OnGatewayConnection {
 
     // Remove their record on redis - no need to await
     this.onlineSocketsService.deregister(socket.user.username);
-    this.onlinePlayersService.deregister(socket.user.username, this.server);
+    this.onlinePlayersService.deregister(
+      socket.user.displayUsername,
+      this.server,
+    );
 
     // ----------------------------------------------------------
 

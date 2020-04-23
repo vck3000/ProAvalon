@@ -41,4 +41,15 @@ export class UsersService {
     });
     return user;
   }
+
+  async updateDisplayUsername(
+    username: User['username'],
+    displayUsername: User['displayUsername'],
+  ) {
+    const res = await this.UserModel.findOneAndUpdate(
+      { username },
+      { displayUsername },
+    );
+    return res;
+  }
 }
