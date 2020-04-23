@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { DocumentType } from '@typegoose/typegoose';
 import { Response } from 'express';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.model';
@@ -57,5 +58,14 @@ export class AuthService {
       displayUsername: user.username,
     });
     return res.send(`Signed up username: ${createdUser.username}.`);
+  }
+
+  async setDisplayUsername(
+    username: string,
+  ): Promise<DocumentType<User> | null> {
+    return this.usersService.updateDisplayUsername(
+      username.toLowerCase(),
+      username,
+    );
   }
 }
