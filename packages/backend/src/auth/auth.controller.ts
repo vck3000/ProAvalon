@@ -20,6 +20,10 @@ import { SignUpError } from './exceptions/signUpError';
 
 type RequestType = Request & { user: ReturnModelType<typeof User> };
 
+interface RequestUser extends Request {
+  user: DocumentType<User>;
+}
+
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -51,8 +55,9 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Req() req: Request) {
-    const { password: _password, ...result } = req.user as DocumentType<User>;
+  getProfile(@Req() req: RequestUser) {
+    const { username } = req.user.toObject();
+    const result = { username };
     return result;
   }
 }
