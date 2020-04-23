@@ -15,14 +15,16 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, pass: string): Promise<User | null> {
+  async validateUser(
+    username: string,
+    pass: string,
+  ): Promise<DocumentType<User> | null> {
     const user = await this.usersService.findByUsername(username.toLowerCase());
     if (
       user &&
       (await this.usersService.comparePassword(pass, user.password))
     ) {
-      const { password: _password, ...result } = user.toObject();
-      return result;
+      return user;
     }
 
     return null;

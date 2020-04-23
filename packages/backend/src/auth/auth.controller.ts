@@ -9,7 +9,7 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
-import { ReturnModelType } from '@typegoose/typegoose';
+import { ReturnModelType, DocumentType } from '@typegoose/typegoose';
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
@@ -52,6 +52,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Req() req: Request) {
-    return req.user;
+    const { password: _password, ...result } = req.user as DocumentType<User>;
+    return result;
   }
 }
