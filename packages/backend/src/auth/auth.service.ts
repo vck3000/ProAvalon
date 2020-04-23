@@ -70,4 +70,9 @@ export class AuthService {
       username,
     );
   }
+
+  async findUser(username: string) {
+    const user = await this.usersService.findByUsername(username.toLowerCase());
+    return user;
+  }
 }
