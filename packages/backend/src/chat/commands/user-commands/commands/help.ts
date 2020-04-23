@@ -2,7 +2,7 @@ import { SocketUser } from '../../../../users/users.socket';
 import { emitCommandResponse } from '../../commandResponse';
 import RedisAdapter from '../../../../redis-adapter/redis-adapter.service';
 import { Command } from '../../commands.types';
-import userActions from '../user-commands';
+import userCommands from '../user-commands';
 
 export const Help: Command = {
   command: 'help',
@@ -15,8 +15,8 @@ export const Help: Command = {
     _redisAdapter: RedisAdapter,
   ) => {
     emitCommandResponse('User commands are:', senderSocket);
-    Object.keys({ ...userActions }).forEach((key) => {
-      emitCommandResponse(userActions[key].help, senderSocket);
+    Object.keys({ ...userCommands }).forEach((key) => {
+      emitCommandResponse(userCommands[key].help, senderSocket);
     });
   },
 };
