@@ -30,7 +30,7 @@ export class UsersService {
 
   async findByUsername(username: User['username']) {
     const user = await this.UserModel.findOne({
-      username,
+      username: username.toLowerCase(),
     });
     return user;
   }
@@ -42,12 +42,9 @@ export class UsersService {
     return user;
   }
 
-  async updateDisplayUsername(
-    username: User['username'],
-    displayUsername: User['displayUsername'],
-  ) {
+  async updateDisplayUsername(displayUsername: User['displayUsername']) {
     const res = await this.UserModel.findOneAndUpdate(
-      { username },
+      { username: displayUsername.toLowerCase() },
       { displayUsername },
     );
     return res;
