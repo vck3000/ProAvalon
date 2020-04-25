@@ -14,9 +14,10 @@ import { JWT_SECRET } from './util/getEnvVars';
 
 describe('AppController', () => {
   let appController: AppController;
+  let app: TestingModule;
 
   beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
+    app = await Test.createTestingModule({
       imports: [
         PassportModule,
         ChatModule,
@@ -41,6 +42,12 @@ describe('AppController', () => {
     }).compile();
 
     appController = app.get<AppController>(AppController);
+  });
+
+  afterEach(async () => {
+    if (app) {
+      await app.close();
+    }
   });
 
   describe('root', () => {

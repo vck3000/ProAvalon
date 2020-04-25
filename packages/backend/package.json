@@ -28,7 +28,8 @@
     ],
     "./src/**/*.{js,jsx,ts,tsx,css,scss}": [
       "prettier --write",
-      "npm run lint"
+      "npm run lint",
+      "npm run test"
     ]
   },
   "dependencies": {

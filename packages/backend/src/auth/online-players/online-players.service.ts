@@ -1,22 +1,24 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { Server } from 'socket.io';
 import { transformAndValidate } from 'class-transformer-validator';
 
-import redisClient from '../../util/redisClient';
+import RedisClientService from '../../redis-client/redis-client.service';
 import { SocketEvents, OnlinePlayer } from '../../../proto/lobbyProto';
 
 @Injectable()
-export class OnlinePlayersService {
+export class OnlinePlayersService implements OnModuleDestroy {
   private readonly logger = new Logger(OnlinePlayersService.name);
 
-  constructor() {
+  interval: NodeJS.Timeout;
+
+  constructor(private readonly redisClientService: RedisClientService) {
     // Start the interval ONLY ONCE to remove players that should be disconnected.
     this.logger.log(
       'Starting periodic "remove expired online players" requests..',
     );
-    setInterval(async () => {
+    this.interval = setInterval(async () => {
       this.logger.log('Removing expired online players in redis.');
-      await redisClient.zremrangebyscore(
+      await this.redisClientService.redisClient.zremrangebyscore(
         'onlineplayers',
         '-inf',
         new Date().getTime().toString(),
@@ -24,10 +26,16 @@ export class OnlinePlayersService {
     }, 30 * 1000); // 30 seconds
   }
 
+  onModuleDestroy() {
+    if (this.interval) {
+      clearInterval(this.interval);
+    }
+  }
+
   async register(username: string, server: Server) {
     this.logger.log(`Registering ${username}.`);
     // Set a new record of their connection in a set every 25s.
-    await redisClient.zadd(
+    await this.redisClientService.redisClient.zadd(
       'onlineplayers',
       'NX',
       (new Date().getTime() + 25 * 1000).toString(),
@@ -39,7 +47,7 @@ export class OnlinePlayersService {
 
   async update(username: string) {
     this.logger.log(`Updating ${username}.`);
-    return redisClient.zadd(
+    return this.redisClientService.redisClient.zadd(
       'onlineplayers',
       'XX',
       (new Date().getTime() + 25 * 1000).toString(),
@@ -49,7 +57,7 @@ export class OnlinePlayersService {
 
   async deregister(username: string, server: Server) {
     this.logger.log(`Deregistering ${username}.`);
-    await redisClient.zrem('onlineplayers', username);
+    await this.redisClientService.redisClient.zrem('onlineplayers', username);
 
     this.sendOnlinePlayers(server);
   }
@@ -57,7 +65,11 @@ export class OnlinePlayersService {
   // Run privately from register or deregister.
   private async sendOnlinePlayers(server: Server) {
     this.logger.log('Sending all online players');
-    const onlinePlayers = await redisClient.zrange('onlineplayers', 0, -1);
+    const onlinePlayers = await this.redisClientService.redisClient.zrange(
+      'onlineplayers',
+      0,
+      -1,
+    );
     this.logger.log(
       `${onlinePlayers.length} online players: ${onlinePlayers.join(', ')}.`,
     );
@@ -65,7 +77,7 @@ export class OnlinePlayersService {
     try {
       const players = await transformAndValidate(
         OnlinePlayer,
-        onlinePlayers.map((username) => ({
+        onlinePlayers.map((username: string) => ({
           username,
           rewards: [],
         })),

@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import RedisAdapter from './redis-adapter.service';
-import { OnlineSocketsService } from '../auth/online-sockets/online-sockets.service';
+import { OnlineSocketsModule } from '../auth/online-sockets/online-sockets.module';
 
 @Module({
-  providers: [RedisAdapter, OnlineSocketsService],
+  imports: [OnlineSocketsModule],
+  providers: [RedisAdapter],
   exports: [RedisAdapter],
 })
 export default class RedisAdapterModule {}
