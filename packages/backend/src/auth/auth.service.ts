@@ -16,10 +16,12 @@ export class AuthService {
   ) {}
 
   async validateUser(
-    username: string,
+    displayUsername: string,
     pass: string,
   ): Promise<DocumentType<User> | null> {
-    const user = await this.usersService.findByUsername(username.toLowerCase());
+    const user = await this.usersService.findByUsername(
+      displayUsername.toLowerCase(),
+    );
     if (
       user &&
       (await this.usersService.comparePassword(pass, user.password))
@@ -60,19 +62,5 @@ export class AuthService {
       displayUsername: user.username,
     });
     return res.send(`Signed up username: ${createdUser.username}.`);
-  }
-
-  async setDisplayUsername(
-    username: string,
-  ): Promise<DocumentType<User> | null> {
-    return this.usersService.updateDisplayUsername(
-      username.toLowerCase(),
-      username,
-    );
-  }
-
-  async findUser(username: string) {
-    const user = await this.usersService.findByUsername(username.toLowerCase());
-    return user;
   }
 }

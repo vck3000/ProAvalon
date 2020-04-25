@@ -56,8 +56,6 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Req() req: RequestUser) {
-    const { username } = req.user.toObject();
-    const result = { username };
-    return result;
+    return { username: req.user.displayUsername };
   }
 }
