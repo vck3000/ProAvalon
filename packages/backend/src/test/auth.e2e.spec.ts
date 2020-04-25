@@ -12,6 +12,8 @@ import { JwtStrategy } from '../auth/guards/jwt.strategy';
 import { JWT_SECRET } from '../util/getEnvVars';
 import { UsersModule } from '../users/users.module';
 import { AuthModule } from '../auth/auth.module';
+import { ChatModule } from '../chat/chat.module';
+import RedisClientModule from '../redis-client/redis-client.module';
 // import { RedisSocketIoAdapter } from '../util/redisSocketIoAdapter';
 
 // Allow extra time for mongodb-memory-server to download if needed
@@ -40,6 +42,8 @@ describe('Auth', () => {
         }),
         UsersModule,
         AuthModule,
+        ChatModule,
+        RedisClientModule,
       ],
       controllers: [AuthController],
       providers: [LocalStrategy, JwtStrategy],
@@ -54,10 +58,6 @@ describe('Auth', () => {
   afterEach(async () => {
     await app.close();
     await mongoServer.stop();
-  });
-
-  afterAll(() => {
-    setTimeout(() => process.exit(), 1000);
   });
 
   it('user able to login after signup', async () => {

@@ -10,9 +10,9 @@ import { UsersModule } from '../users/users.module';
 import { AuthGateway } from './auth.gateway';
 import { JWT_SECRET, JWT_EXPIRY } from '../util/getEnvVars';
 import { ChatModule } from '../chat/chat.module';
-import { OnlinePlayersService } from './online-players/online-players.service';
-import { OnlineSocketsService } from './online-sockets/online-sockets.service';
 import RedisAdapterModule from '../redis-adapter/redis-adapter.module';
+import { OnlinePlayersModule } from './online-players/online-players.module';
+import { OnlineSocketsModule } from './online-sockets/online-sockets.module';
 
 @Module({
   imports: [
@@ -24,16 +24,11 @@ import RedisAdapterModule from '../redis-adapter/redis-adapter.module';
     }),
     ChatModule,
     RedisAdapterModule,
+    OnlinePlayersModule,
+    OnlineSocketsModule,
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    AuthGateway,
-    LocalStrategy,
-    JwtStrategy,
-    OnlinePlayersService,
-    OnlineSocketsService,
-  ],
-  exports: [AuthService, OnlineSocketsService],
+  providers: [AuthService, AuthGateway, LocalStrategy, JwtStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}

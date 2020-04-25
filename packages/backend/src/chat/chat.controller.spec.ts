@@ -10,9 +10,10 @@ describe('Chat Controller', () => {
   let controller: ChatController;
   let service: ChatService;
   let res: httpMocks.MockResponse<any>;
+  let module: TestingModule;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [CommandsModule],
       controllers: [ChatController],
       providers: [ChatService, ChatGateway],
@@ -25,6 +26,12 @@ describe('Chat Controller', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  afterEach(async () => {
+    if (module) {
+      await module.close();
+    }
   });
 
   // Not the best test to make - highly coupled.
