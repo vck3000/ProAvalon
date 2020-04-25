@@ -12,16 +12,10 @@ import { JwtStrategy } from '../auth/guards/jwt.strategy';
 import { JWT_SECRET } from '../util/getEnvVars';
 import { UsersModule } from '../users/users.module';
 import { AuthModule } from '../auth/auth.module';
+// import { RedisSocketIoAdapter } from '../util/redisSocketIoAdapter';
 
 // Allow extra time for mongodb-memory-server to download if needed
 jest.setTimeout(600000);
-
-// Mock out redis dependency
-jest.mock('../util/redisSocketIoAdapter', () => ({
-  __esModule: true, // this property makes it work
-  default: 'mockedDefaultExport',
-  namedExport: jest.fn(),
-}));
 
 describe('Auth', () => {
   let app: INestApplication;
@@ -53,12 +47,17 @@ describe('Auth', () => {
 
     app = moduleRef.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
+    // app.useWebSocketAdapter(new RedisSocketIoAdapter(app));
     await app.init();
   });
 
   afterEach(async () => {
     await app.close();
     await mongoServer.stop();
+  });
+
+  afterAll(() => {
+    setTimeout(() => process.exit(), 1000);
   });
 
   it('user able to login after signup', async () => {
@@ -369,5 +368,62 @@ describe('Auth', () => {
       .get('/auth/profile')
       .set('Authorization', `Bearer ${AUTH_KEY}asdf`)
       .expect(HttpStatus.UNAUTHORIZED);
+  });
+
+  it('should update displayUsername on login', async () => {
+    // Good signup
+    await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({
+        username: 'asdf',
+        password: 'test_password',
+        email: 'test@gmail.com',
+      })
+      .expect(HttpStatus.CREATED)
+      .expect('Signed up username: asdf.');
+
+    // Good login
+    let AUTH_KEY;
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({
+        username: 'asdf',
+        password: 'test_password',
+      })
+      .expect(HttpStatus.CREATED)
+      .then((key) => {
+        AUTH_KEY = key.body.token;
+      });
+
+    // Good auth key provided
+    await request(app.getHttpServer())
+      .get('/auth/profile')
+      .set('Authorization', `Bearer ${AUTH_KEY}`)
+      .expect(HttpStatus.OK)
+      .expect({
+        username: 'asdf',
+      });
+
+    // Good login
+    // Different case
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({
+        username: 'ASdf',
+        password: 'test_password',
+      })
+      .expect(HttpStatus.CREATED)
+      .then((key) => {
+        AUTH_KEY = key.body.token;
+      });
+
+    // Good auth key provided
+    await request(app.getHttpServer())
+      .get('/auth/profile')
+      .set('Authorization', `Bearer ${AUTH_KEY}`)
+      .expect(HttpStatus.OK)
+      .expect({
+        username: 'ASdf',
+      });
   });
 });
