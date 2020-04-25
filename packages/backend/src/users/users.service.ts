@@ -43,10 +43,15 @@ export class UsersService {
   }
 
   async updateDisplayUsername(displayUsername: User['displayUsername']) {
-    const res = await this.UserModel.findOneAndUpdate(
-      { username: displayUsername.toLowerCase() },
-      { displayUsername },
-    );
-    return res;
+    const user = await this.UserModel.findOne({
+      username: displayUsername.toLowerCase(),
+    });
+    if (user) {
+      user.displayUsername = displayUsername;
+      user.markModified('displayUsername');
+      await user.save();
+      return user;
+    }
+    return null;
   }
 }

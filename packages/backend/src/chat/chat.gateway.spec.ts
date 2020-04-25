@@ -6,15 +6,22 @@ import { CommandsModule } from './commands/commands.module';
 
 describe('ChatGateway', () => {
   let gateway: ChatGateway;
+  let module: TestingModule;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [CommandsModule],
       controllers: [ChatController],
       providers: [ChatService, ChatGateway],
     }).compile();
 
     gateway = module.get<ChatGateway>(ChatGateway);
+  });
+
+  afterEach(async () => {
+    if (module) {
+      await module.close();
+    }
   });
 
   it('should be defined', () => {
