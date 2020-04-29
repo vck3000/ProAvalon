@@ -14,8 +14,7 @@ COPY packages/${SERVICE} ./packages/${SERVICE}
 COPY lerna.json .
 
 # Install packages
-RUN npm install -g lerna
-RUN lerna bootstrap
+RUN npx lerna bootstrap
 
 # Dev mode
 CMD [ "npm" , "--prefix", "packages/${SERVICE}", "run", "dev" ]
