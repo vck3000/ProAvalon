@@ -55,15 +55,7 @@ If you do not run Windows Pro or Enterprise, you will not be able to install Doc
 > npm run bootstrap # This will install all of the required dependencies in each package
 ```
 
-3. Set up environment variables. Copy `.env.example` and rename it to `.env`.
-
-```
-> cp .env.example .env
-```
-
-4. Edit the .env file if required.
-
-5. Build the containers. You only need to do this once at the start and any time you update npm packages.
+3. Build the containers. You only need to do this once at the start and any time you update npm packages.
 
 ```
 > docker-compose up --build # this creates the containers for the front and back end of our code and starts the containers.
