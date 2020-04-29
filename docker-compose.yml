@@ -64,7 +64,7 @@ services:
         SERVICE: frontend
     environment:
       SERVICE: frontend
-      BACKEND_URL: http://192.168.1.15:3001
+      BACKEND_URL: http://localhost:3001
     volumes:
       - ./packages/frontend:/usr/src/app/packages/frontend
       - /usr/src/app/packages/frontend/node_modules
@@ -101,7 +101,7 @@ services:
         SERVICE: frontend
     environment:
       SERVICE: frontend
-      BACKEND_URL: http://192.168.1.15:3003
+      BACKEND_URL: http://localhost:3003
     volumes:
       - ./packages/frontend:/usr/src/app/packages/frontend
       - /usr/src/app/packages/frontend/node_modules
