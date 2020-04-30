@@ -7,7 +7,7 @@ services:
       - 6379:6379
     entrypoint: redis-server --appendonly yes # Start with data persistance
     volumes:
-      - ./database_data/redis/:/data
+      - redis_data:/data
 
   mongo:
     image: mongo:4.2.3 # Use stable version
@@ -18,7 +18,7 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - ./database_data/mongo/:/data/db
+      - mongo_data:/data/db
 
   # Web interface to access the mongoDB server.
   mongo-express:
@@ -106,3 +106,7 @@ services:
       - ./packages/frontend:/usr/src/app/packages/frontend
       - /usr/src/app/packages/frontend/node_modules
       - /usr/src/app/packages/frontend/.next
+
+volumes:
+  mongo_data:
+  redis_data:
