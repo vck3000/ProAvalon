@@ -282,4 +282,61 @@ describe('Auth', () => {
         username: 'ASdf',
       });
   });
+
+  it('should update displayUsername on login', async () => {
+    // Good signup
+    await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({
+        username: 'asdf',
+        password: 'test_password',
+        email: 'test@gmail.com',
+      })
+      .expect(HttpStatus.CREATED)
+      .expect('Signed up username: asdf.');
+
+    // Good login
+    let AUTH_KEY;
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({
+        username: 'asdf',
+        password: 'test_password',
+      })
+      .expect(HttpStatus.CREATED)
+      .then((key) => {
+        AUTH_KEY = key.body.token;
+      });
+
+    // Good auth key provided
+    await request(app.getHttpServer())
+      .get('/auth/profile')
+      .set('Authorization', `Bearer ${AUTH_KEY}`)
+      .expect(HttpStatus.OK)
+      .expect({
+        username: 'asdf',
+      });
+
+    // Good login
+    // Different case
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({
+        username: 'ASdf',
+        password: 'test_password',
+      })
+      .expect(HttpStatus.CREATED)
+      .then((key) => {
+        AUTH_KEY = key.body.token;
+      });
+
+    // Good auth key provided
+    await request(app.getHttpServer())
+      .get('/auth/profile')
+      .set('Authorization', `Bearer ${AUTH_KEY}`)
+      .expect(HttpStatus.OK)
+      .expect({
+        username: 'ASdf',
+      });
+  });
 });

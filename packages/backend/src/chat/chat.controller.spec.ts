@@ -34,6 +34,12 @@ describe('Chat Controller', () => {
     expect(controller).toBeDefined();
   });
 
+  afterEach(async () => {
+    if (module) {
+      await module.close();
+    }
+  });
+
   // Not the best test to make - highly coupled.
   // This is to learn how jest works!
   it('should delete messages', async () => {
