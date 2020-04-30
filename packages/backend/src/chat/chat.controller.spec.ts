@@ -24,14 +24,14 @@ describe('Chat Controller', () => {
     res = httpMocks.createResponse();
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
-
   afterEach(async () => {
     if (module) {
       await module.close();
     }
+  });
+
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
   });
 
   // Not the best test to make - highly coupled.

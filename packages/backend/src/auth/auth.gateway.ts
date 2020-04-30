@@ -110,7 +110,7 @@ export class AuthGateway implements OnGatewayConnection {
 
     // Let client know that we have finished our checks and that
     // they can now request data if they need.
-    socket.emit(SocketEvents.CONNECTED, null);
+    socket.emit(SocketEvents.AUTHORIZED, null);
 
     // ----------------------------------------------------------
 
@@ -123,7 +123,6 @@ export class AuthGateway implements OnGatewayConnection {
       });
 
       this.chatService.storeMessage(chatResponse);
-
       socket.to('lobby').emit(SocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
     } catch (err) {
       this.logger.error('Validation failed. Error: ', err);
