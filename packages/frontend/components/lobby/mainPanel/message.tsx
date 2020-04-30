@@ -42,6 +42,7 @@ const Message = (props: Props): ReactElement => {
 
           .timestamp {
             color: ${theme.colors.GOLD};
+            font-variant-numeric: tabular-nums;
           }
 
           .pad_left {
