@@ -37,6 +37,7 @@ export class AuthController {
   @Post('login')
   async login(@Req() req: RequestType) {
     this.logger.log(`${req.user.displayUsername} logged in.`);
+    // Return the jwt token
     return this.authService.login(req.user);
   }
 

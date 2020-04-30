@@ -53,7 +53,7 @@ class SocketConnection {
         };
       });
 
-      this.socket.on(SocketEvents.CONNECTED, () => {
+      this.socket.on(SocketEvents.AUTHORIZED, () => {
         // Request for stuff here.
         this.socket.emit(SocketEvents.USER_RECONNECT, null);
       });

@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 import 'reflect-metadata';
 
 export const SocketEvents = {
-  CONNECTED: 'CONNECTED',
+  AUTHORIZED: 'AUTHORIZED',
   ALL_CHAT_TO_CLIENT: 'ALL_CHAT_TO_CLIENT',
   ALL_CHAT_TO_SERVER: 'ALL_CHAT_TO_SERVER',
   ONLINE_PLAYERS: 'ONLINE_PLAYERS',

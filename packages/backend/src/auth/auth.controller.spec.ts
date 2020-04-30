@@ -12,9 +12,10 @@ import { JWT_SECRET } from '../util/getEnvVars';
 
 describe('AuthController', () => {
   let service: AuthController;
+  let module: TestingModule;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         PassportModule,
         JwtModule.register({
@@ -37,6 +38,12 @@ describe('AuthController', () => {
     }).compile();
 
     service = module.get<AuthController>(AuthController);
+  });
+
+  afterEach(async () => {
+    if (module) {
+      await module.close();
+    }
   });
 
   it('should be defined', () => {
