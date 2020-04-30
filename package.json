@@ -7,7 +7,8 @@
     "lint": "npm --prefix packages/frontend run lint && npm --prefix packages/backend run lint",
     "test": "npm --prefix packages/frontend test && npm --prefix packages/backend test",
     "test:redis": "docker rm $(docker stop $(docker ps -a -q --filter=\"name=redis-testing\")) ; docker run --name redis-testing -d -p 6379:6379 redis && (npm --prefix packages/frontend test && npm --prefix packages/backend test) ; docker rm $(docker stop $(docker ps -a -q --filter=\"name=redis-testing\"))",
-    "proto": "cp -R proto/* packages/backend/proto && cp -R proto/* packages/frontend/proto"
+    "proto": "cp -R proto/* packages/backend/proto && cp -R proto/* packages/frontend/proto",
+    "reset:db": "docker volume rm proavalon_mongo_data proavalon_redis_data"
   },
   "husky": {
     "hooks": {
