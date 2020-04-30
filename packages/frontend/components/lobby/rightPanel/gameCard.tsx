@@ -1,6 +1,8 @@
 import React, { ReactElement } from 'react';
 import { connect } from 'react-redux';
 
+import Link from 'next/link';
+
 import { RootState } from '../../../store';
 import { ThemeOptions } from '../../../store/userOptions/types';
 import MissionHistory, { MissionHistoryType } from './missionHistory';
@@ -34,40 +36,89 @@ const GameCard = (props: Props): ReactElement => {
   theme;
 
   return (
-    <>
-      <div className="top_half">
-        <p className="room">ROOM #{data.id}</p>
-        <MissionHistory missionHistory={data.missionHistory} />
-        <p className="host">
-          HOST: <span className="normal_font">{data.host}</span>
-        </p>
-        <p className="mode">
-          MODE: <span className="normal_font">{data.mode}</span>
-        </p>
-        <p className="spectators">
-          SPECTATORS: <span className="normal_font">{data.spectators}</span>
-        </p>
-      </div>
-      <div className="bottom_half">
-        <div className="avatar_row">
-          <img src="/game_room/base-res.png" alt="avatar" className="avatar" />
-          <img src="/game_room/base-res.png" alt="avatar" className="avatar" />
-          <img src="/game_room/base-res.png" alt="avatar" className="avatar" />
-          <img src="/game_room/base-res.png" alt="avatar" className="avatar" />
-          <img src="/game_room/base-res.png" alt="avatar" className="avatar" />
+    <Link href="/game/[id]" as={`/game/${data.id}`}>
+      <div className="game_card">
+        <div className="top_half">
+          <p className="room">ROOM #{data.id}</p>
+          <MissionHistory missionHistory={data.missionHistory} />
+          <p className="host">
+            HOST: <span className="normal_font">{data.host}</span>
+          </p>
+          <p className="mode">
+            MODE: <span className="normal_font">{data.mode}</span>
+          </p>
+          <p className="spectators">
+            SPECTATORS: <span className="normal_font">{data.spectators}</span>
+          </p>
         </div>
-        <div className="avatar_row">
-          <img src="/game_room/base-res.png" alt="avatar" className="avatar" />
-          <img src="/game_room/base-res.png" alt="avatar" className="avatar" />
-          <img src="/game_room/base-res.png" alt="avatar" className="avatar" />
-          <img src="/game_room/base-res.png" alt="avatar" className="avatar" />
-          <img src="/game_room/base-res.png" alt="avatar" className="avatar" />
+        <div className="bottom_half">
+          <div className="avatar_row">
+            <img
+              src="/game_room/base-res.png"
+              alt="avatar"
+              className="avatar"
+            />
+            <img
+              src="/game_room/base-res.png"
+              alt="avatar"
+              className="avatar"
+            />
+            <img
+              src="/game_room/base-res.png"
+              alt="avatar"
+              className="avatar"
+            />
+            <img
+              src="/game_room/base-res.png"
+              alt="avatar"
+              className="avatar"
+            />
+            <img
+              src="/game_room/base-res.png"
+              alt="avatar"
+              className="avatar"
+            />
+          </div>
+          <div className="avatar_row">
+            <img
+              src="/game_room/base-res.png"
+              alt="avatar"
+              className="avatar"
+            />
+            <img
+              src="/game_room/base-res.png"
+              alt="avatar"
+              className="avatar"
+            />
+            <img
+              src="/game_room/base-res.png"
+              alt="avatar"
+              className="avatar"
+            />
+            <img
+              src="/game_room/base-res.png"
+              alt="avatar"
+              className="avatar"
+            />
+            <img
+              src="/game_room/base-res.png"
+              alt="avatar"
+              className="avatar"
+            />
+          </div>
         </div>
-      </div>
-      <style jsx>
-        {`
+        <style jsx>
+          {`
           p {
             margin: 0;
+          }
+
+          .game_card {
+            cursor: pointer;
+          }
+
+          .game_card:hover {
+            opacity: 0.75;
           }
 
           .normal_font {
@@ -120,8 +171,9 @@ const GameCard = (props: Props): ReactElement => {
             width: 20%;
           }
         `}
-      </style>
-    </>
+        </style>
+      </div>
+    </Link>
   );
 };
 
