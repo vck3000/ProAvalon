@@ -1,16 +1,14 @@
 import { ReactElement, useState, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
-import Link from 'next/link';
 
 import { RootState } from '../../store/index';
 import { ThemeOptions } from '../../store/userOptions/types';
 import { WindowDimensions } from '../../store/system/types';
 
-import NavIndex from '../nav/navIndex';
-
 import Chat from './mainPanel/chat';
 import HomeIndex from './leftPanel/homeIndex';
 import GamesMenu from './rightPanel/gamesMenu';
+import Layout from '../layout/Layout';
 
 const indicators = ['HOME', 'CHAT', 'GAMES'];
 const slides = [<HomeIndex />, <Chat />, <GamesMenu />];
@@ -47,22 +45,8 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
   });
 
   return (
-    <>
-      <NavIndex />
+    <Layout>
       <div className="wrapper" ref={wrapperRef}>
-        <div>
-          <div className="top_nav">
-            <Link href="/">
-              <a>
-                <img
-                  src="/common/logo.png"
-                  className="logo_nav"
-                  alt="logo_nav"
-                />
-              </a>
-            </Link>
-          </div>
-        </div>
         <div className="wrapper_nav">
           <div className="carousel_nav">
             {slides.map((_slide, i) => {
@@ -201,7 +185,7 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
           }
         `}
       </style>
-    </>
+    </Layout>
   );
 };
 

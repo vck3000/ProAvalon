@@ -1,83 +1,45 @@
 import { ReactElement } from 'react';
 import { Grid } from 'semantic-ui-react';
-import Link from 'next/link';
 
-import NavIndex from '../nav/navIndex';
+import Layout from '../layout/Layout';
 import GamesMenu from './rightPanel/gamesMenu';
 import HomeIndex from './leftPanel/homeIndex';
 import Chat from './mainPanel/chat';
 
 const LobbyDesktop = (): ReactElement => (
-  <div className="container">
-    <Grid divided="vertically" padded style={{ height: '100%' }}>
-      <Grid.Column width={4}>
-        <div className="left_wrapper">
-          <div className="logo_wrapper">
-            <Link href="/">
-              <a>
-                <img src="/common/logo.png" alt="logo" className="logo" />
-              </a>
-            </Link>
-          </div>
-          <div className="home">
-            <HomeIndex />
-          </div>
-        </div>
-      </Grid.Column>
+  <Layout>
+    <div className="lobbyContent">
+      <Grid>
+        <Grid.Column width={4}>
+          <HomeIndex />
+        </Grid.Column>
 
-      <Grid.Column width={12} className="center" style={{ height: '100%' }}>
-        <Grid.Row className="navbar" style={{ height: '5%' }}>
-          <NavIndex />
-        </Grid.Row>
-        <Grid.Row style={{ height: '95%' }}>
-          <Grid style={{ height: '100%' }}>
-            <Grid.Column
-              width={11}
-              style={{ height: '100%', padding: '0 5px 0 0' }}
-            >
-              <Chat />
-            </Grid.Column>
-            <Grid.Column
-              width={5}
-              style={{ height: '100%', padding: '0 0 0 5px' }}
-            >
-              <GamesMenu />
-            </Grid.Column>
-          </Grid>
-        </Grid.Row>
-      </Grid.Column>
-    </Grid>
-
+        <Grid.Column width={8}>
+          <Chat />
+        </Grid.Column>
+        <Grid.Column width={4} style={{ height: '100%', overflowY: 'auto' }}>
+          <GamesMenu />
+        </Grid.Column>
+      </Grid>
+    </div>
     <style jsx>
       {`
-        .container {
-          padding: 5px 5px 30px 5px;
-          z-index: -1;
+        .lobbyContent {
+          flex: 1;
+          overflow: hidden;
+          padding: 0 1rem 1rem 1rem;
+        }
+
+        .lobbyContent > :global(.grid) {
           height: 100%;
         }
 
-        .ui.grid {
-          margin-top: 0;
-        }
-
-        .logo {
-          max-width: 200px;
-          width: 100%;
-        }
-
-        .left_wrapper {
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          flex-wrap: nowrap;
-        }
-
-        .home {
-          flex-grow: 1;
+        .lobbyContent > :global(.grid) > :global(.column) {
+          padding: 0 1rem;
         }
       `}
     </style>
-  </div>
+  </Layout>
 );
 
 export default LobbyDesktop;
