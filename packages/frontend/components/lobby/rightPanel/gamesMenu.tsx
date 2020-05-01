@@ -76,23 +76,9 @@ const gameCardsData: IGameCardData[] = [
 const GameMenu = (): ReactElement => {
   return (
     <>
-      <div className="wrapper">
-        {gameCardsData.map((gameCardData) => (
-          <GameCard key={gameCardData.id} data={gameCardData} />
-        ))}
-      </div>
-      <style jsx>
-        {`
-          .wrapper {
-            height: 100%;
-            overflow-y: scroll;
-          }
-
-          .wrapper::-webkit-scrollbar {
-            width: 0.5em;
-          }
-        `}
-      </style>
+      {gameCardsData.map((gameCardData) => (
+        <GameCard key={gameCardData.id} data={gameCardData} />
+      ))}
     </>
   );
 };
