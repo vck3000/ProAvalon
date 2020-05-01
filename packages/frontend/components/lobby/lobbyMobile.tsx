@@ -24,78 +24,80 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
   const [activeIndex, setActiveIndex] = useState(0);
   const sliderRef = useRef(document.createElement('div'));
 
-  const wrapperRef = useRef(document.createElement('div'));
-  const wrapperDiv = wrapperRef.current;
-
   const wrapperSliderRef = useRef(document.createElement('div'));
 
   useEffect(() => {
     // Do some fancy math to set the height of the wrapper_slider.
-    let height = wrapperDiv.offsetHeight;
+    const parent = wrapperSliderRef.current.parentElement;
+    if (parent) {
+      let height = parent.offsetHeight;
 
-    for (let i = 0; i < wrapperDiv.children.length; i += 1) {
-      const child = wrapperDiv.children[i];
-      if (!child.classList.contains('wrapper_slider')) {
-        height -= wrapperDiv.children[i].clientHeight;
+      for (let i = 0; i < parent.children.length; i += 1) {
+        if (!parent.children[i].classList.contains('wrapper_slider')) {
+          height -= parent.children[i].clientHeight;
+        }
       }
-    }
-    if (height !== 0) {
-      wrapperSliderRef.current.style.height = `${height.toString()}px`;
+
+      if (height > 0) {
+        wrapperSliderRef.current.style.height = `${height.toString()}px`;
+      }
     }
   });
 
   return (
     <Layout>
-      <div className="wrapper" ref={wrapperRef}>
-        <div className="wrapper_nav">
-          <div className="carousel_nav">
-            {slides.map((_slide, i) => {
-              return (
-                <button
-                  key={indicators[i]}
-                  type="button"
-                  onClick={(): void => {
-                    sliderRef.current.scrollTo({
-                      left: sliderRef.current.scrollWidth * (i / slides.length),
-                      behavior: 'smooth',
-                    });
-                  }}
-                  className={
-                    i === activeIndex
-                      ? 'carousel_indicator active'
-                      : 'carousel_indicator'
-                  }
-                >
-                  {indicators[i]}
-                </button>
-              );
-            })}
-          </div>
+      <div className="wrapper_nav">
+        <div className="carousel_nav">
+          {slides.map((_slide, i) => {
+            return (
+              <button
+                key={indicators[i]}
+                type="button"
+                onClick={(): void => {
+                  sliderRef.current.scrollTo({
+                    left: sliderRef.current.scrollWidth * (i / slides.length),
+                    behavior: 'smooth',
+                  });
+                }}
+                className={
+                  i === activeIndex
+                    ? 'carousel_indicator active'
+                    : 'carousel_indicator'
+                }
+              >
+                {indicators[i]}
+              </button>
+            );
+          })}
         </div>
+      </div>
 
-        <div className="wrapper_slider" ref={wrapperSliderRef}>
-          <div
-            className="slider"
-            ref={sliderRef}
-            onScroll={(): void => {
-              const i = Math.round(
-                (sliderRef.current.scrollLeft / sliderRef.current.scrollWidth) *
-                  slides.length,
-              );
-              setActiveIndex(i);
-            }}
-          >
-            <div className="slider_content">
-              {slides.map(
-                (slide, i): ReactElement => {
-                  return (
-                    <div key={indicators[i]} className="slide">
-                      {slide}
-                    </div>
-                  );
-                },
-              )}
-            </div>
+      <div className="wrapper_slider" ref={wrapperSliderRef}>
+        <div
+          className="slider"
+          ref={sliderRef}
+          onScroll={(): void => {
+            const i = Math.round(
+              (sliderRef.current.scrollLeft / sliderRef.current.scrollWidth) *
+                slides.length,
+            );
+            setActiveIndex(i);
+          }}
+        >
+          <div className="slider_content">
+            {slides.map(
+              (slide, i): ReactElement => {
+                return (
+                  <div
+                    key={indicators[i]}
+                    className="slide"
+                    style={{ overflowY: 'scroll' }}
+                  >
+                    {slide}
+                  </div>
+                );
+              },
+            )}
           </div>
         </div>
       </div>
