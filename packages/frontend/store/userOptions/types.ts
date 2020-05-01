@@ -1,11 +1,8 @@
-import { IColorTheme } from '../../components/colors';
-
 // Determines the theme to display.
 export const SET_THEME = 'SET_THEME';
 // Theme options is an object with the name of the theme, and a bunch of colours
 export type ThemeOptions = {
   name: 'day' | 'night';
-  colors: IColorTheme;
 };
 // This is the action that will set a new theme. We only require 'day' or 'night'
 export interface ISetThemeAction {

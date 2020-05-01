@@ -3,17 +3,13 @@ import { Form, Button } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
 import { login, signup } from '../../store/auth/actions';
-import { IUserOptionsState, ThemeOptions } from '../../store/userOptions/types';
-import { RootState } from '../../store';
 
 interface IProps {
-  theme: ThemeOptions;
   dispatchLogin: typeof login;
   dispatchSignup: typeof signup;
 }
 
 const LoginSignupForm = ({
-  theme,
   dispatchLogin,
   dispatchSignup,
 }: IProps): ReactElement => {
@@ -119,17 +115,17 @@ const LoginSignupForm = ({
 
           .signup a {
             transition: color 0.1s ease;
-            color: ${theme.colors.GOLD};
+            color: var(--gold);
             font-family: Montserrat-Bold;
             text-decoration: underline;
           }
 
           .signup a:hover {
-            color: ${theme.colors.GOLD_HOVER};
+            color: var(--gold-hover);
           }
 
           .error {
-            color: ${theme.colors.TEXT_PINK};
+            color: var(--text-pink);
             padding-bottom: 8px;
             font-family: Montserrat-Bold;
           }
@@ -218,17 +214,17 @@ const LoginSignupForm = ({
 
           .signup a {
             transition: color 0.1s ease;
-            color: ${theme.colors.GOLD};
+            color: var(--gold);
             font-family: Montserrat-Bold;
             text-decoration: underline;
           }
 
           .signup a:hover {
-            color: ${theme.colors.GOLD_HOVER};
+            color: var(--gold-hover);
           }
 
           .error {
-            color: ${theme.colors.TEXT_PINK};
+            color: var(--text-pink);
             padding-bottom: 8px;
             font-family: Montserrat-Bold;
           }
@@ -240,15 +236,9 @@ const LoginSignupForm = ({
   return showLoginForm ? loginForm : signupForm;
 };
 
-const mapStateToProps = (
-  state: RootState,
-): Pick<IUserOptionsState, 'theme'> => ({
-  theme: state.userOptions.theme,
-});
-
 const mapDispatchToProps = {
   dispatchLogin: login,
   dispatchSignup: signup,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(LoginSignupForm);
+export default connect(null, mapDispatchToProps)(LoginSignupForm);

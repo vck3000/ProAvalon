@@ -1,23 +1,13 @@
 import React, { ReactElement } from 'react';
-import { connect } from 'react-redux';
-
-import { RootState } from '../../../store';
-import { ThemeOptions } from '../../../store/userOptions/types';
 
 export type MissionHistoryType = 'success' | 'fail' | '';
-
-interface IStateProps {
-  theme: ThemeOptions;
-}
 
 interface IOwnProps {
   missionHistory: MissionHistoryType[];
 }
 
-type Props = IOwnProps & IStateProps;
-
-const MissionHistory = (props: Props): ReactElement => {
-  const { missionHistory, theme } = props;
+const MissionHistory = (props: IOwnProps): ReactElement => {
+  const { missionHistory } = props;
   while (missionHistory.length < 5) {
     missionHistory.push('');
   }
@@ -43,19 +33,19 @@ const MissionHistory = (props: Props): ReactElement => {
             width: 14px;
             margin-right: 3px;
             border-radius: 100%;
-            border: 1px solid ${theme.colors.TEXT_GRAY};
+            border: 1px solid var(--text-gray);
             background: transparent;
             box-sizing: border-box;
           }
 
           .success {
             border: 0;
-            background-color: ${theme.colors.MISSION_BLUE};
+            background-color: var(--mission-blue);
           }
 
           .fail {
             border: 0;
-            background-color: ${theme.colors.MISSION_RED};
+            background-color: var(--mission-red);
           }
         `}
       </style>
@@ -63,11 +53,4 @@ const MissionHistory = (props: Props): ReactElement => {
   );
 };
 
-const mapStateToProps = (state: RootState): IStateProps => ({
-  theme: state.userOptions.theme,
-});
-
-export default connect(
-  mapStateToProps,
-  null,
-)(MissionHistory as (props: IOwnProps) => ReactElement);
+export default MissionHistory;

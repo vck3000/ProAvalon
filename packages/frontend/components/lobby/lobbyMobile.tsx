@@ -2,7 +2,6 @@ import { ReactElement, useState, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import { RootState } from '../../store/index';
-import { ThemeOptions } from '../../store/userOptions/types';
 import { WindowDimensions } from '../../store/system/types';
 
 import Chat from './mainPanel/chat';
@@ -14,13 +13,12 @@ const indicators = ['HOME', 'CHAT', 'GAMES'];
 const slides = [<HomeIndex />, <Chat />, <GamesMenu />];
 
 interface IStateProps {
-  theme: ThemeOptions;
   windowDimensions: WindowDimensions;
 }
 
 type Props = IStateProps;
 
-const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
+const LobbyMobile = ({ windowDimensions }: Props): ReactElement => {
   const [activeIndex, setActiveIndex] = useState(0);
   const sliderRef = useRef(document.createElement('div'));
 
@@ -134,8 +132,8 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
 
           .carousel_indicator {
             font-family: Montserrat-Bold;
-            background-color: ${theme.colors.BACKGROUND};
-            color: ${theme.colors.TEXT_GRAY};
+            background-color: var(--background);
+            color: var(--text-gray);
             font-size: 18px;
             border-radius: 16px;
             margin: 0 12px;
@@ -148,8 +146,8 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
           }
 
           .carousel_indicator.active {
-            background-color: ${theme.colors.SLIDE_GOLD_BACKGROUND} !important;
-            color: ${theme.colors.GOLD} !important;
+            background-color: var(--slide-gold-background) !important;
+            color: var(--gold) !important;
           }
 
           .slider {
@@ -192,7 +190,6 @@ const LobbyMobile = ({ theme, windowDimensions }: Props): ReactElement => {
 };
 
 const mapStateToProps = (state: RootState): IStateProps => ({
-  theme: state.userOptions.theme,
   windowDimensions: state.system.windowDimensions,
 });
 
