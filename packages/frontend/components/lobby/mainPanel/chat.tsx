@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import socket from '../../../socket';
 
 import { RootState } from '../../../store';
-import { ThemeOptions } from '../../../store/userOptions/types';
 import Message from './message';
 import {
   SocketEvents,
@@ -15,7 +14,6 @@ import { NoSSR } from '../../../utils/noSSR';
 import { murmurhash } from '../../../utils/hash';
 
 interface IStateProps {
-  theme: ThemeOptions;
   messages: ChatResponse[];
 }
 
@@ -32,7 +30,7 @@ const GetOpacity = (i: number, numMessages: number): number => {
   );
 };
 
-const Chat = ({ theme, messages }: Props): ReactElement => {
+const Chat = ({ messages }: Props): ReactElement => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [messageText, setMessageText] = useState('');
   const chatRef = useRef<HTMLUListElement>(null);
@@ -109,7 +107,7 @@ const Chat = ({ theme, messages }: Props): ReactElement => {
           }
           .chat {
             position: relative;
-            background-color: ${theme.colors.LIGHT};
+            background-color: var(--light);
             height: 100%;
           }
 
@@ -130,11 +128,11 @@ const Chat = ({ theme, messages }: Props): ReactElement => {
           }
 
           .chat_list::-webkit-scrollbar-track {
-            background-color: ${theme.colors.LIGHT};
+            background-color: var(--light);
           }
 
           .chat_list::-webkit-scrollbar {
-            background-color: ${theme.colors.ALT_LIGHT};
+            background-color: var(--light-alt);
           }
 
           .chat_list li {
@@ -150,13 +148,13 @@ const Chat = ({ theme, messages }: Props): ReactElement => {
             width: 100%;
             border: 0;
             border-radius: 0;
-            background-color: ${theme.colors.ALT_LIGHT};
+            background-color: var(--light-alt);
             padding: 10px 20px;
-            color: ${theme.colors.TEXT};
+            color: var(--text);
           }
 
           .text_input:placeholder {
-            color: ${theme.colors.GOLD};
+            color: var(--gold);
             font-family: Montserrat-Bold;
           }
         `}
@@ -165,10 +163,7 @@ const Chat = ({ theme, messages }: Props): ReactElement => {
   );
 };
 
-const mapStateToProps = (
-  state: RootState,
-): Pick<IStateProps, 'theme' | 'messages'> => ({
-  theme: state.userOptions.theme,
+const mapStateToProps = (state: RootState): Pick<IStateProps, 'messages'> => ({
   messages: state.chat.messages,
 });
 

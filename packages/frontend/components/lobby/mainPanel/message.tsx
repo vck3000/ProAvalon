@@ -1,23 +1,14 @@
 import React, { ReactElement } from 'react';
-import { connect } from 'react-redux';
 
-import { RootState } from '../../../store';
-import { ThemeOptions } from '../../../store/userOptions/types';
 import { ChatResponse, ChatResponseType } from '../../../proto/lobbyProto';
-
-interface IStateProps {
-  theme: ThemeOptions;
-}
 
 interface IOwnProps {
   message: ChatResponse;
   opacity: number;
 }
 
-type Props = IOwnProps & IStateProps;
-
-const Message = (props: Props): ReactElement => {
-  const { theme, message, opacity } = props;
+const Message = (props: IOwnProps): ReactElement => {
+  const { message, opacity } = props;
   return (
     <span className="wrapper">
       <span className="timestamp">
@@ -36,12 +27,12 @@ const Message = (props: Props): ReactElement => {
         {`
           .wrapper {
             font-family: Montserrat-Bold;
-            color: ${theme.colors.TEXT};
+            color: var(--text);
             opacity: ${opacity};
           }
 
           .timestamp {
-            color: ${theme.colors.GOLD};
+            color: var(--gold);
             font-variant-numeric: tabular-nums;
           }
 
@@ -50,14 +41,14 @@ const Message = (props: Props): ReactElement => {
           }
 
           .${ChatResponseType.SPY_WIN} {
-            color: ${theme.colors.TEXT_RED};
+            color: var(--text-win);
           }
 
           .chat${ChatResponseType.PLAYER_JOIN_LOBBY},
             .chat${ChatResponseType.PLAYER_LEAVE_LOBBY},
             .chat${ChatResponseType.CREATE_ROOM},
             .chat${ChatResponseType.USER_COMMAND} {
-            color: ${theme.colors.TEXT_GRAY};
+            color: var(--text-gray);
           }
         `}
       </style>
@@ -65,11 +56,4 @@ const Message = (props: Props): ReactElement => {
   );
 };
 
-const mapStateToProps = (state: RootState): IStateProps => ({
-  theme: state.userOptions.theme,
-});
-
-export default connect(
-  mapStateToProps,
-  null,
-)(Message as (props: IOwnProps) => ReactElement);
+export default Message;

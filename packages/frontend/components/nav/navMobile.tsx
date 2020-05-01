@@ -1,17 +1,7 @@
 import React, { ReactElement } from 'react';
-import { connect } from 'react-redux';
 import Link from 'next/link';
 
-import { RootState } from '../../store';
-import { ThemeOptions } from '../../store/userOptions/types';
-
 import throttle from '../../utils/throttle';
-
-interface IStateProps {
-  theme: ThemeOptions;
-}
-
-type Props = IStateProps;
 
 const animateTime = 0.5;
 
@@ -55,7 +45,7 @@ const toggleMenu = throttle(
   animateTime * 1000,
 );
 
-const NavMobile = ({ theme }: Props): ReactElement => {
+const NavMobile = (): ReactElement => {
   return (
     <>
       <div className="hamburger_wrapper">
@@ -163,7 +153,7 @@ const NavMobile = ({ theme }: Props): ReactElement => {
             z-index: 3;
             transition: ease ${animateTime}s;
             transform: translateX(100%);
-            background-color: ${theme.colors.BACKGROUND};
+            background-color: var(--background);
 
             padding-top: 60px;
 
@@ -192,7 +182,7 @@ const NavMobile = ({ theme }: Props): ReactElement => {
           }
 
           .side_menu li a {
-            color: ${theme.colors.GOLD};
+            color: var(--gold);
             font-size: 20px;
           }
 
@@ -233,7 +223,7 @@ const NavMobile = ({ theme }: Props): ReactElement => {
           .hamburger.active .hamburger-inner,
           .hamburger.active .hamburger-inner::before,
           .hamburger.active .hamburger-inner::after {
-            background-color: ${theme.colors.GOLD};
+            background-color: var(--gold);
           }
           .hamburger-box {
             width: 40px;
@@ -251,7 +241,7 @@ const NavMobile = ({ theme }: Props): ReactElement => {
           .hamburger-inner::after {
             width: 40px;
             height: 4px;
-            background-color: ${theme.colors.GOLD};
+            background-color: var(--gold);
             border-radius: 4px;
             position: absolute;
             transition-property: transform;
@@ -293,8 +283,4 @@ const NavMobile = ({ theme }: Props): ReactElement => {
   );
 };
 
-const mapStateToProps = (state: RootState): IStateProps => ({
-  theme: state.userOptions.theme,
-});
-
-export default connect(mapStateToProps, null)(NavMobile as () => ReactElement);
+export default NavMobile;

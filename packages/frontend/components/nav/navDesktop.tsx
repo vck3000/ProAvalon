@@ -1,17 +1,7 @@
 import React, { ReactElement } from 'react';
-import { connect } from 'react-redux';
 import Link from 'next/link';
 
-import { RootState } from '../../store';
-import { ThemeOptions } from '../../store/userOptions/types';
-
-interface IStateProps {
-  theme: ThemeOptions;
-}
-
-type Props = IStateProps;
-
-const NavDesktop = ({ theme }: Props): ReactElement => {
+const NavDesktop = (): ReactElement => {
   return (
     <nav>
       <div className="nav_div">
@@ -52,8 +42,8 @@ const NavDesktop = ({ theme }: Props): ReactElement => {
             width: 100%;
           }
           nav > .nav_div {
-            border-top: 2px solid ${theme.colors.GOLD};
-            border-bottom: 2px solid ${theme.colors.GOLD};
+            border-top: 2px solid var(--gold);
+            border-bottom: 2px solid var(--gold);
             position: relative;
             width: 100%;
             padding: 2px 50px;
@@ -72,7 +62,7 @@ const NavDesktop = ({ theme }: Props): ReactElement => {
             top: -2px;
             height: 41px;
             width: 41px;
-            background-color: ${theme.colors.GOLD};
+            background-color: var(--gold);
             clip-path: polygon(
               100% 0%,
               28% 50%,
@@ -89,7 +79,7 @@ const NavDesktop = ({ theme }: Props): ReactElement => {
             top: -2px;
             height: 41px;
             width: 41px;
-            background-color: ${theme.colors.GOLD};
+            background-color: var(--gold);
             clip-path: polygon(
               100% 0%,
               28% 50%,
@@ -105,7 +95,7 @@ const NavDesktop = ({ theme }: Props): ReactElement => {
             padding: 6px 8px;
           }
           a {
-            color: ${theme.colors.GOLD};
+            color: var(--gold);
             text-decoration: none;
             font-size: 16px;
             font-family: Montserrat-Bold;
@@ -116,8 +106,4 @@ const NavDesktop = ({ theme }: Props): ReactElement => {
   );
 };
 
-const mapStateToProps = (state: RootState): IStateProps => ({
-  theme: state.userOptions.theme,
-});
-
-export default connect(mapStateToProps, null)(NavDesktop as () => ReactElement);
+export default NavDesktop;

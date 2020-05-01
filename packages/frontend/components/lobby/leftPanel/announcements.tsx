@@ -2,7 +2,6 @@ import React, { ReactElement } from 'react';
 import { connect } from 'react-redux';
 
 import { RootState } from '../../../store';
-import { ThemeOptions } from '../../../store/userOptions/types';
 import { MobileView } from '../../../store/system/types';
 
 interface IAnnouncement {
@@ -17,17 +16,12 @@ interface IOwnProps {
 }
 
 interface IStateProps {
-  theme: ThemeOptions;
   mobileView: MobileView;
 }
 
 type Props = IOwnProps & IStateProps;
 
-const Announcements = ({
-  theme,
-  announcements,
-  mobileView,
-}: Props): ReactElement => {
+const Announcements = ({ announcements, mobileView }: Props): ReactElement => {
   return (
     <div className="wrapper">
       <div className="announcements_header">LATEST ANNOUNCEMENTS</div>
@@ -54,15 +48,15 @@ const Announcements = ({
           .announcements_header {
             font-family: Montserrat-Bold;
             text-align: center;
-            color: ${theme.colors.ANNOUNCE_GOLD_TEXT};
+            color: var(--announce-gold-text);
             padding: ${mobileView ? '0.7em' : '0.93em 0.78em'};
-            background: ${theme.colors.ANNOUNCE_GOLD_BACKGROUND};
+            background: var(--gold);
           }
 
           .announcements {
             font-family: Montserrat-Regular;
-            color: ${theme.colors.ANNOUNCE_GOLD_BACKGROUND};
-            background: ${theme.colors.ALT_LIGHT};
+            color: var(--gold);
+            background: var(--light-alt);
             padding: ${mobileView ? '0.5em' : '0.7em'};
           }
 
@@ -81,7 +75,6 @@ const Announcements = ({
 };
 
 const mapStateToProps = (state: RootState): IStateProps => ({
-  theme: state.userOptions.theme,
   mobileView: state.system.mobileView,
 });
 

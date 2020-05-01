@@ -50,6 +50,11 @@ const MyApp = ({
     return (): void => window.removeEventListener('resize', resizeWindow);
   }, [mobileView]);
 
+  useEffect(() => {
+    if (theme.name === 'night') document.body.classList.add('night');
+    else document.body.classList.remove('night');
+  }, [theme]);
+
   return (
     <>
       <Provider store={store}>
@@ -78,11 +83,47 @@ const MyApp = ({
             src: url('/fonts/Montserrat/Montserrat-Light.ttf');
           }
 
+          :root {
+            --background: #eaeae4;
+            --text: black;
+            --text-gray: #bab9b6;
+            --text-gray-light: #7c818a;
+            --text-red: #8f5543;
+            --text-pink: #f27474;
+            --light: #deded8;
+            --light-alt: #e4e3da;
+            --gold: #a37d18;
+            --gold-light: #bfa751;
+            --gold-hover: #8a6d20;
+            --mission-blue: #3663a4;
+            --mission-red: #87504d;
+            --announce-gold-text: #bab07a;
+            --slide-gold-background: #483e20;
+          }
+
+          .night {
+            --background: #1b1b1b;
+            --text: #eeeeee;
+            --text-gray: #4e4e44;
+            --text-gray-light: #7c8089;
+            --text-red: #894e3e;
+            --text-pink: #f27474;
+            --light: #212121;
+            --light-alt: #2f2e2a;
+            --gold: #a37d18;
+            --gold-light: #bda84f;
+            --gold-hover: #8a6d20;
+            --mission-blue: #3663a4;
+            --mission-red: #87504d;
+            --announce-gold-text: #bab07a;
+            --slide-gold-background: #483e20;
+          }
+
           body {
             font-family: 'Montserrat-Regular', sans-serif;
             min-width: 200px;
-            background-color: ${theme.colors.BACKGROUND};
-            color: ${theme.colors.TEXT};
+            background-color: var(--background);
+            color: var(--text);
           }
         `}
       </style>

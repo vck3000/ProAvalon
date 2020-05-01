@@ -1,10 +1,7 @@
 import React, { ReactElement } from 'react';
-import { connect } from 'react-redux';
 
 import Link from 'next/link';
 
-import { RootState } from '../../../store';
-import { ThemeOptions } from '../../../store/userOptions/types';
 import MissionHistory, { MissionHistoryType } from './missionHistory';
 
 type Status = 'waiting' | 'in progress' | 'finished';
@@ -19,21 +16,12 @@ export interface IGameCardData {
   avatarLinks: string[]; // max 10
 }
 
-interface IStateProps {
-  theme: ThemeOptions;
-}
-
 interface IOwnProps {
   data: IGameCardData;
 }
 
-type Props = IOwnProps & IStateProps;
-
-const GameCard = (props: Props): ReactElement => {
-  const { theme, data } = props;
-  // Remove the following when you start using theme
-  // eslint-disable-next-line no-unused-expressions
-  theme;
+const GameCard = (props: IOwnProps): ReactElement => {
+  const { data } = props;
 
   return (
     <Link href="/game/[id]" as={`/game/${data.id}`}>
@@ -127,33 +115,33 @@ const GameCard = (props: Props): ReactElement => {
 
           .top_half {
             font-family: Montserrat-Bold;
-            background-color: ${theme.colors.LIGHT};
+            background-color: var(--light);
             padding-top: 15px;
             padding-left 15px;
           }
 
           .room {
-            color: ${theme.colors.GOLD_LIGHT};
+            color: var(--gold-light);
           }
 
           .host {
-            color: ${theme.colors.TEXT_GRAY_LIGHT};
+            color: var(--text-gray-light);
             padding-top: 3px;
           }
 
           .mode {
-            color: ${theme.colors.TEXT_GRAY_LIGHT};
+            color: var(--text-gray-light);
             padding-top: 1px;
           }
 
           .spectators {
-            color: ${theme.colors.TEXT_GRAY_LIGHT};
+            color: var(--text-gray-light);
             padding-top: 1px;
             padding-bottom: 3px;
           }
 
           .bottom_half {
-            background-color: ${theme.colors.ALT_LIGHT};
+            background-color: var(--light-alt);
             display: flex;
             flex-wrap: nowrap;
             flex-direction: column;
@@ -177,11 +165,4 @@ const GameCard = (props: Props): ReactElement => {
   );
 };
 
-const mapStateToProps = (state: RootState): IStateProps => ({
-  theme: state.userOptions.theme,
-});
-
-export default connect(
-  mapStateToProps,
-  null,
-)(GameCard as (props: IOwnProps) => ReactElement);
+export default GameCard;

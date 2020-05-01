@@ -101,7 +101,7 @@ const Home = ({
           }
 
           .center_div {
-            color: ${theme.colors.TEXT};
+            color: var(--text);
             max-width: 490px;
             width: 90%;
             position: relative;
@@ -131,7 +131,7 @@ const Home = ({
           // We need the !important tags to override semantic
           // global is used to pass the styles down to children classes
           .form_wrapper :global(.login) {
-            background: ${theme.colors.GOLD} none !important;
+            background: var(--gold) none !important;
             width: 100%;
             color: white;
           }
@@ -141,7 +141,7 @@ const Home = ({
           }
 
           .form_wrapper :global(.login:hover) {
-            background: ${theme.colors.GOLD_HOVER} none !important;
+            background: var(--gold-hover) none !important;
           }
 
           .deception {
