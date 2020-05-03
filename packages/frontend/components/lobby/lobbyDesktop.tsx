@@ -9,7 +9,7 @@ import Chat from './mainPanel/chat';
 const LobbyDesktop = (): ReactElement => (
   <Layout>
     <div className="lobbyContent">
-      <Grid>
+      <Grid style={{ margin: 0 }}>
         <Grid.Column width={4}>
           <HomeIndex />
         </Grid.Column>
