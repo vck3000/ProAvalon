@@ -119,7 +119,17 @@ const MyApp = ({
             --slide-gold-background: #483e20;
           }
 
+          // CSS to make NextJS Page one page tall
+          html,
+          body,
+          body > div:first-child,
+          div#__next {
+            height: 100%;
+          }
+
           body {
+            margin: 0px;
+            overflow: hidden;
             font-family: 'Montserrat-Regular', sans-serif;
             min-width: 200px;
             background-color: var(--background);
