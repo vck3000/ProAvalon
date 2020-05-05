@@ -1,5 +1,6 @@
 import { Controller, Post, Get, Param, Body } from '@nestjs/common';
 import { ForumsService } from './forums.service';
+import { CreateForumpostDto } from './dto/create-forumpost.dto';
 
 @Controller('forums')
 export class ForumsController {
@@ -7,15 +8,9 @@ export class ForumsController {
 
   @Post()
   async addNewForumPost(
-    @Body('text') username: string,
-    @Body('text') title: string,
-    @Body('text') text: string,
+    @Body() createForumpostDto: CreateForumpostDto,
   ) {
-    const postId = await this.forumsService.addPost(
-      username,
-      title,
-      text,
-    );
+    const postId = await this.forumsService.addPost(createForumpostDto);
     return { id: postId };
   }
 
@@ -26,7 +21,8 @@ export class ForumsController {
   }
 
   @Get(':id')
-  getThread(@Param('id') threadId: string) {
-    return threadId;
+  async getPost(@Param('id') postId: string) {
+    const post = await this.forumsService.getSinglePost(postId);
+    return post;
   }
 }

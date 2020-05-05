@@ -1,14 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from 'nestjs-typegoose';
 
-import { ForumsController } from './forums.controller';
-import { ForumsService } from './forums.service';
-
-export const mockForumPost = {
-  username: 'test_user',
-  title: 'test post!',
-  text: 'pls ignore',
-};
+import { ForumsController } from '../forums.controller';
+import { ForumsService } from '../forums.service';
+import { mockForumPost } from './forums.consts';
 
 describe('Forums Controller', () => {
   let controller: ForumsController;
