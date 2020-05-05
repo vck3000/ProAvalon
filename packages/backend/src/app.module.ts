@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { ChatModule } from './chat/chat.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { ForumsModule } from './forums/forums.module';
 import { MONGO_URL } from './util/getEnvVars';
 
 @Module({
@@ -16,6 +17,7 @@ import { MONGO_URL } from './util/getEnvVars';
     ChatModule,
     AuthModule,
     UsersModule,
+    ForumsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
