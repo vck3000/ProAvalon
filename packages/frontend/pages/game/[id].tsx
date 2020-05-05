@@ -1,13 +1,15 @@
 import { ReactElement } from 'react';
 import { useRouter } from 'next/router';
 
-import Layout from '../../components/layout/layout';
+import GameIndex from '../../components/game/game';
 
 const Game = (): ReactElement => {
   const router = useRouter();
   const { id } = router.query;
 
-  return <Layout>Game {id}!</Layout>;
+  return (
+    <GameIndex id={id} />
+  );
 };
 
 export default Game;
