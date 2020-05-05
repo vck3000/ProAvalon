@@ -2,7 +2,7 @@ import { prop } from '@typegoose/typegoose';
 
 export class ForumPost {
   @prop({ required: true, lowercase: true })
-  username!: string;
+  author!: string;
 
   @prop({ required: true })
   title!: string;
