@@ -3,7 +3,7 @@ import { LOGIN_SUCCESS, LOGOUT, AuthActionTypes } from './action.types';
 
 export interface IAuthState {
   user?: {
-    name: string;
+    displayUsername: string;
   };
 }
 
@@ -20,7 +20,7 @@ const reducer = (
       return {
         ...state,
         user: {
-          name: action.username,
+          displayUsername: action.username,
         },
       };
     case LOGOUT:

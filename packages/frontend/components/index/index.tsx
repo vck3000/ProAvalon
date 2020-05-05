@@ -14,7 +14,7 @@ interface IProps {
   mobileView: MobileView;
 }
 
-const SignedOut = ({
+const Index = ({
   theme,
   dispatchSetTheme,
   mobileView,
@@ -217,4 +217,4 @@ const mapDispatchToProps = {
   dispatchSetTheme: setTheme,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(SignedOut);
+export default connect(mapStateToProps, mapDispatchToProps)(Index);

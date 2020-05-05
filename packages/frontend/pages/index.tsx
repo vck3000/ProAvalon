@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 
 import LobbyIndex from '../components/lobby/lobbyIndex';
-import SignedOut from '../components/index/SignedOut';
+import IndexPage from '../components/index/index';
 import useAuth from '../effects/useAuth';
 
 const Index = (): ReactElement => {
@@ -11,7 +11,7 @@ const Index = (): ReactElement => {
 
   const user = useSelector<RootState>((state) => state.auth.user);
 
-  return user ? <LobbyIndex /> : <SignedOut />;
+  return user ? <LobbyIndex /> : <IndexPage />;
 };
 
 export default Index;

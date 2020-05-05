@@ -7,7 +7,7 @@ import { WindowDimensions } from '../../store/system/types';
 import Chat from './mainPanel/chat';
 import HomeIndex from './leftPanel/homeIndex';
 import GamesMenu from './rightPanel/gamesMenu';
-import Layout from '../layout/Layout';
+import Layout from '../layout/layout';
 
 const indicators = ['HOME', 'CHAT', 'GAMES'];
 const slides = [<HomeIndex />, <Chat />, <GamesMenu />];

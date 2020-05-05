@@ -61,7 +61,7 @@ const LoggedIn = ({ username }: { username: string }): ReactElement => {
 
 const NavRight = (): ReactElement => {
   const username = useSelector<RootState, string | undefined>(
-    (state) => state.auth.user?.name,
+    (state) => state.auth.user?.displayUsername,
   );
 
   return username ? (
