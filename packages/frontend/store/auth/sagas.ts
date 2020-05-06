@@ -3,16 +3,22 @@ import { call, takeLatest, fork, put } from 'redux-saga/effects';
 import Cookie from 'js-cookie';
 import Swal from 'sweetalert2';
 
+import socket from '../../socket';
+
 import {
   LOGIN,
   SIGNUP,
   ISignupAction,
   ILoginAction,
   LOGOUT,
+  LOGIN_SUCCESS,
 } from './action.types';
 import { Post } from '../../axios';
 
-import { login as loginAction, loginSuccess } from './actions';
+import {
+  login as loginAction,
+  loginSuccess as loginSuccessAction,
+} from './actions';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const SwalCall = (opts: any): Promise<void> => {
@@ -67,7 +73,7 @@ export function* login(action: ILoginAction): SagaIterator {
       expires: response.data.expires / 86400, // Convert seconds to number of days (as float)
     });
 
-    yield put(loginSuccess({ username: action.username }));
+    yield put(loginSuccessAction({ username: action.username }));
   } catch (e) {
     yield call(SwalCall, {
       title: 'Oops',
@@ -77,7 +83,12 @@ export function* login(action: ILoginAction): SagaIterator {
   }
 }
 
+export function* loginSuccess(): SagaIterator {
+  yield call([socket, socket.reinitialize]);
+}
+
 export function* logout(): SagaIterator {
+  yield call(socket.close);
   yield call(Cookie.remove, 'AUTH_TOKEN');
 }
 
@@ -89,6 +100,10 @@ export function* watchLogin(): SagaIterator {
   yield takeLatest(LOGIN, login);
 }
 
+export function* watchLoginSuccess(): SagaIterator {
+  yield takeLatest(LOGIN_SUCCESS, loginSuccess);
+}
+
 export function* watchLogout(): SagaIterator {
   yield takeLatest(LOGOUT, logout);
 }
@@ -96,5 +111,6 @@ export function* watchLogout(): SagaIterator {
 export function* authSaga(): SagaIterator {
   yield fork(watchSignup);
   yield fork(watchLogin);
+  yield fork(watchLoginSuccess);
   yield fork(watchLogout);
 }
