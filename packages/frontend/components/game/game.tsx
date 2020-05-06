@@ -7,7 +7,7 @@ interface IGameProps {
   id: string | string[];
 }
 
-const Game = ({ id }: IGameProps): ReactElement => {
+const GameIndex = ({ id }: IGameProps): ReactElement => {
   return (
     <Layout>
       <Grid style={{ flex: 1 }}>
@@ -25,4 +25,4 @@ const Game = ({ id }: IGameProps): ReactElement => {
   );
 };
 
-export default Game;
+export default GameIndex;

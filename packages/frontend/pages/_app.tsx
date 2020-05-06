@@ -110,7 +110,7 @@ const MyApp = ({
             --text-red: #894e3e;
             --text-pink: #f27474;
             --light: #212121;
-            --light-inactive: black; /* NEED DARK COLOR */
+            --light-inactive: black; // TODO: NEED DARK COLOR
             --light-alt: #2f2e2a;
             --gold: #a37d18;
             --gold-light: #bda84f;
