@@ -36,6 +36,7 @@ describe('Forums', () => {
 
   afterAll(async () => {
     await app.close();
+    await mongoServer.stop();
   });
 
   it('can post and retrieve from forums', async () => {
@@ -55,6 +56,7 @@ describe('Forums', () => {
       .then((resp) => {
         POST_ID_1 = resp.body.id;
       });
+
     await request(app.getHttpServer())
       .post('/forums')
       .send({
@@ -67,33 +69,30 @@ describe('Forums', () => {
       });
 
     // Can get all posts from forums
-    await request(app.getHttpServer())
+    const getAllPostsResponse = await request(app.getHttpServer())
       .get('/forums')
-      .expect(HttpStatus.OK)
-      .expect([
-        {
-          _id: POST_ID_1,
-          title: POST_TITLE,
-          text: POST_TEXT,
-          __v: 0,
-        },
-        {
-          _id: POST_ID_2,
-          title: POST_TITLE,
-          text: POST_TEXT,
-          __v: 0,
-        }]);
+      .expect(HttpStatus.OK);
+    expect(getAllPostsResponse.body).toHaveLength(2);
+    expect(getAllPostsResponse.body[0]).toEqual(expect.objectContaining({
+      _id: POST_ID_1,
+      title: POST_TITLE,
+      text: POST_TEXT,
+    }));
+    expect(getAllPostsResponse.body[1]).toEqual(expect.objectContaining({
+      _id: POST_ID_2,
+      title: POST_TITLE,
+      text: POST_TEXT,
+    }));
 
     // Can get a single post from forums
-    await request(app.getHttpServer())
+    const getOnePostResponse = await request(app.getHttpServer())
       .get(`/forums/${POST_ID_1}`)
-      .expect(HttpStatus.OK)
-      .expect({
-        _id: POST_ID_1,
-        title: POST_TITLE,
-        text: POST_TEXT,
-        __v: 0,
-      });
+      .expect(HttpStatus.OK);
+    expect(getOnePostResponse.body).toEqual(expect.objectContaining({
+      _id: POST_ID_1,
+      title: POST_TITLE,
+      text: POST_TEXT,
+    }));
   });
 
   it('appropriate errors when posts are not found', async () => {
