@@ -3,12 +3,9 @@ import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { MongoMemoryServer } from 'mongodb-memory-server-core';
-
 import { ForumsController } from '../forums/forums.controller';
 import { ForumsModule } from '../forums/forums.module';
 import { ForumsService } from '../forums/forums.service';
-// import { ForumPost } from '../forums/forums.model';
-// import { mockForumPost } from '../forums/test/forums.consts';
 
 
 describe('Forums', () => {
@@ -39,8 +36,6 @@ describe('Forums', () => {
       providers: [ForumsService],
       controllers: [ForumsController],
     })
-      // .overrideProvider(ForumPost)
-      // .useValue(mockForumPost)
       .overrideProvider(ForumsService)
       .useValue(forumsService)
       .compile();
