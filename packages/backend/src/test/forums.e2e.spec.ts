@@ -40,7 +40,7 @@ describe('Forums', () => {
 
   it('can post and retrieve from forums', async () => {
     let POST_ID_1;
-    let POST_ID_2
+    let POST_ID_2;
     const POST_TITLE = 'Post title';
     const POST_TEXT = 'Post text';
 
