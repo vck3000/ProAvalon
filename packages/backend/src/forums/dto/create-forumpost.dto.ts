@@ -1,14 +1,6 @@
 import { IsDefined, IsNotEmpty } from 'class-validator';
 
-export class CreateForumpostDto {
-  @IsNotEmpty({
-    message: 'Author should not be empty.',
-  })
-  @IsDefined({
-    message: 'Author is missing.',
-  })
-  author!: string;
-
+export class CreateForumPostDto {
   @IsNotEmpty({
     message: 'Title should not be empty.',
   })

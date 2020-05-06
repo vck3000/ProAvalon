@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from 'nestjs-typegoose';
 import { ReturnModelType } from '@typegoose/typegoose';
 
-import { CreateForumpostDto } from './dto/create-forumpost.dto';
+import { CreateForumPostDto } from './dto/create-forumpost.dto';
 import { ForumPost } from './forums.model';
 
 @Injectable()
@@ -11,18 +11,22 @@ export class ForumsService {
     @InjectModel(ForumPost) private readonly ForumPostModel: ReturnModelType<typeof ForumPost>,
   ) {}
 
-  async addPost(createForumpostDto : CreateForumpostDto) {
-    const newPost = new this.ForumPostModel(createForumpostDto);
-    const result = await newPost.save();
+  async addPost(createForumPostDto : CreateForumPostDto) {
+    // #AddAuthorToPost
+    // These posts are being created authorless atm,
+    const result = await this.ForumPostModel.create(createForumPostDto);
     return result.id as string;
   }
 
   async getPosts() {
-    const posts = await this.ForumPostModel.find().exec();
+    const posts = await this.ForumPostModel
+      .find()
+      .limit(10000)
+      .exec();
     return posts as ForumPost[];
   }
 
-  async getSinglePost(id: string) {
+  async getPost(id: string) {
     const post = await this.findPost(id);
     return post;
   }

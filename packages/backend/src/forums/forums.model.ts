@@ -1,7 +1,9 @@
 import { prop } from '@typegoose/typegoose';
 
 export class ForumPost {
-  @prop({ required: true, lowercase: true })
+  // #AddAuthorToPost
+  // Switch to required once we are pulling author from the backend
+  @prop({ required: false, lowercase: true })
   author!: string;
 
   @prop({ required: true })
