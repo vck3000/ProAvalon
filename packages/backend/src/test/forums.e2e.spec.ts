@@ -34,10 +34,17 @@ describe('Forums', () => {
     await app.init();
   });
 
-  let POST_ID: string;
-  const POST_TITLE = 'Post title';
-  const POST_TEXT = 'Post text';
-  it('can post to forums', async () => {
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it('can post and retrieve from forums', async () => {
+    let POST_ID_1;
+    let POST_ID_2
+    const POST_TITLE = 'Post title';
+    const POST_TEXT = 'Post text';
+
+    // Can make some posts in forums
     await request(app.getHttpServer())
       .post('/forums')
       .send({
@@ -46,35 +53,54 @@ describe('Forums', () => {
       })
       .expect(HttpStatus.CREATED)
       .then((resp) => {
-        POST_ID = resp.body.id;
+        POST_ID_1 = resp.body.id;
       });
-  });
+    await request(app.getHttpServer())
+      .post('/forums')
+      .send({
+        title: POST_TITLE,
+        text: POST_TEXT,
+      })
+      .expect(HttpStatus.CREATED)
+      .then((resp) => {
+        POST_ID_2 = resp.body.id;
+      });
 
-  it('can retrieve posts from forums', async () => {
     // Can get all posts from forums
     await request(app.getHttpServer())
       .get('/forums')
       .expect(HttpStatus.OK)
-      .expect([{
-        _id: POST_ID,
-        title: POST_TITLE,
-        text: POST_TEXT,
-        __v: 0,
-      }]);
+      .expect([
+        {
+          _id: POST_ID_1,
+          title: POST_TITLE,
+          text: POST_TEXT,
+          __v: 0,
+        },
+        {
+          _id: POST_ID_2,
+          title: POST_TITLE,
+          text: POST_TEXT,
+          __v: 0,
+        }]);
 
     // Can get a single post from forums
     await request(app.getHttpServer())
-      .get(`/forums/${POST_ID}`)
+      .get(`/forums/${POST_ID_1}`)
       .expect(HttpStatus.OK)
       .expect({
-        _id: POST_ID,
+        _id: POST_ID_1,
         title: POST_TITLE,
         text: POST_TEXT,
         __v: 0,
       });
   });
 
-  afterAll(async () => {
-    await app.close();
+  it('appropriate errors when posts are not found', async () => {
+    // 404 when post id doesn't exist
+    const FAKE_POST_ID = '111111111111111111111111';
+    await request(app.getHttpServer())
+      .get(`/forums/${FAKE_POST_ID}`)
+      .expect(HttpStatus.NOT_FOUND);
   });
 });
