@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { RootState } from '../../store/index';
 import { WindowDimensions } from '../../store/system/types';
 
-import Chat from './mainPanel/chat';
+import Chat from '../chat/allChat';
 import HomeIndex from './leftPanel/homeIndex';
 import GamesMenu from './rightPanel/gamesMenu';
 import Layout from '../layout/layout';

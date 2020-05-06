@@ -10,17 +10,15 @@ interface IGameProps {
 const GameIndex = ({ id }: IGameProps): ReactElement => {
   return (
     <Layout>
-      <Grid style={{ flex: 1 }}>
-        <Grid.Row>Game {id} Content</Grid.Row>
-        <Grid.Row>
-          <Grid.Column width={8}>
-            <TabPane />
-          </Grid.Column>
-          <Grid.Column width={8}>
-            <TabPane />
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
+      <Grid.Row style={{ flex: 1 }}>Game {id} Content</Grid.Row>
+      <Grid.Row style={{ flex: 1 }}>
+        <Grid.Column width={8}>
+          <TabPane />
+        </Grid.Column>
+        <Grid.Column width={8}>
+          <TabPane />
+        </Grid.Column>
+      </Grid.Row>
     </Layout>
   );
 };
