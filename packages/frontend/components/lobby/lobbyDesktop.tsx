@@ -4,7 +4,7 @@ import { Grid } from 'semantic-ui-react';
 import Layout from '../layout/layout';
 import GamesMenu from './rightPanel/gamesMenu';
 import HomeIndex from './leftPanel/homeIndex';
-import Chat from './mainPanel/chat';
+import Chat from '../chat/allChat';
 
 const LobbyDesktop = (): ReactElement => (
   <Layout>

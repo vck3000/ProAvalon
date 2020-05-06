@@ -2,7 +2,15 @@ import { ReactElement } from 'react';
 import { Tab } from 'semantic-ui-react';
 import css from 'styled-jsx/css';
 
+import AllChat from '../chat/allChat';
+
 const { className, styles } = css.resolve`
+  div {
+    height: 100%;
+    display: flex;
+    flex-flow: column;
+  }
+
   div > :global(.ui.attached.tabular.menu) > :global(.item) {
     font-family: 'Montserrat-Bold';
     background: var(--light-inactive);
@@ -21,6 +29,9 @@ const { className, styles } = css.resolve`
 
   div > :global(.attached.active.tab) {
     background: var(--light);
+    flex: 1;
+    display: flex;
+    flex-flow: column;
   }
 `;
 
@@ -31,7 +42,11 @@ const TabPane = (): ReactElement => (
       panes={[
         {
           menuItem: 'ALL CHAT',
-          render: (): ReactElement => <Tab.Pane>All Chat</Tab.Pane>,
+          render: (): ReactElement => (
+            <Tab.Pane>
+              <AllChat />
+            </Tab.Pane>
+          ),
         },
         {
           menuItem: 'GAME CHAT',
