@@ -9,8 +9,8 @@ import { JwtStrategy } from './guards/jwt.strategy';
 import { UsersModule } from '../users/users.module';
 import { AuthGateway } from './auth.gateway';
 import { JWT_SECRET, JWT_EXPIRY } from '../util/getEnvVars';
-import { ChatModule } from '../chat/chat.module';
-import RedisAdapterModule from '../redis-adapter/redis-adapter.module';
+import { AllChatModule } from '../all-chat/all-chat.module';
+import { RedisAdapterModule } from '../redis-adapter/redis-adapter.module';
 import { OnlinePlayersModule } from './online-players/online-players.module';
 import { OnlineSocketsModule } from './online-sockets/online-sockets.module';
 
@@ -22,7 +22,7 @@ import { OnlineSocketsModule } from './online-sockets/online-sockets.module';
       secret: JWT_SECRET,
       signOptions: { expiresIn: JWT_EXPIRY },
     }),
-    ChatModule,
+    AllChatModule,
     RedisAdapterModule,
     OnlinePlayersModule,
     OnlineSocketsModule,

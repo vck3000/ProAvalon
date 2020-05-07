@@ -4,7 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { getModelToken } from 'nestjs-typegoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ChatModule } from './chat/chat.module';
+import { AllChatModule } from './all-chat/all-chat.module';
 import { AuthService } from './auth/auth.service';
 import { UsersService } from './users/users.service';
 import { mockUserModel } from './users/users.service.spec';
@@ -20,7 +20,7 @@ describe('AppController', () => {
     app = await Test.createTestingModule({
       imports: [
         PassportModule,
-        ChatModule,
+        AllChatModule,
         JwtModule.register({
           secret: JWT_SECRET,
           signOptions: { expiresIn: '60s' },

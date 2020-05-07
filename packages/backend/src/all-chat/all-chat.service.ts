@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ChatResponse } from '../../proto/lobbyProto';
 
 @Injectable()
-export class ChatService {
+export class AllChatService {
   messages: ChatResponse[] = [];
 
   getMessages(): ChatResponse[] {

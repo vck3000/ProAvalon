@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { SocketUser } from '../../users/users.socket';
+import { SocketUser } from '../users/users.socket';
 import UserCommands from './user-commands/user-commands';
 import ModCommands from './mod-commands/mod-commands';
 import AdminCommands from './admin-commands/admin-commands';
 import { Command } from './commands.types';
-import RedisAdapter from '../../redis-adapter/redis-adapter.service';
+import RedisAdapter from '../redis-adapter/redis-adapter.service';
 import {
   SocketEvents,
   ChatResponseType,
   ChatResponse,
-} from '../../../proto/lobbyProto';
+} from '../../proto/lobbyProto';
 
 const allCommands: Record<string, Command> = {
   ...UserCommands,

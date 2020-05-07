@@ -1,6 +1,6 @@
-import { SocketUser } from '../../../../users/users.socket';
+import { SocketUser } from '../../../users/users.socket';
 import { emitCommandResponse } from '../../commandResponse';
-import RedisAdapter from '../../../../redis-adapter/redis-adapter.service';
+import RedisAdapter from '../../../redis-adapter/redis-adapter.service';
 import { Command } from '../../commands.types';
 import userCommands from '../user-commands';
 

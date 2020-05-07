@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { CommandsService } from './commands.service';
-import RedisModule from '../../redis-adapter/redis-adapter.module';
+import { RedisAdapterModule } from '../redis-adapter/redis-adapter.module';
 
 @Module({
-  imports: [RedisModule],
+  imports: [RedisAdapterModule],
   providers: [CommandsService],
   exports: [CommandsService],
 })

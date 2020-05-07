@@ -1,4 +1,4 @@
-import { IsDefined, IsString, IsDate, IsEnum } from 'class-validator';
+import { IsDefined, IsString, IsDate, IsEnum, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 import 'reflect-metadata';
 
@@ -8,6 +8,12 @@ export const SocketEvents = {
   ALL_CHAT_TO_SERVER: 'ALL_CHAT_TO_SERVER',
   ONLINE_PLAYERS: 'ONLINE_PLAYERS',
   USER_RECONNECT: 'USER_RECONNECT',
+
+  CREATE_GAME: 'CREATE_GAME',
+  JOIN_GAME: 'JOIN_GAME',
+  LEAVE_GAME: 'LEAVE_GAME',
+  GAME_CHAT_TO_CLIENT: 'GAME_CHAT_TO_CLIENT',
+  GAME_CHAT_TO_SERVER: 'GAME_CHAT_TO_SERVER',
 };
 
 export class ChatRequest {
@@ -22,6 +28,8 @@ export enum ChatResponseType {
   SPY_WIN = 'SPY_WIN',
   PLAYER_JOIN_LOBBY = 'PLAYER_JOIN_LOBBY',
   PLAYER_LEAVE_LOBBY = 'PLAYER_LEAVE_LOBBY',
+  PLAYER_JOIN_GAME = 'PLAYER_JOIN_GAME',
+  PLAYER_LEAVE_GAME = 'PLAYER_LEAVE_GAME',
   CREATE_ROOM = 'CREATE_ROOM',
   USER_COMMAND = 'USER_COMMAND',
 }
@@ -55,4 +63,16 @@ export class OnlinePlayer {
 
   @IsDefined()
   rewards!: OnlinePlayerRewards[];
+}
+
+export class JoinGame {
+  @IsNumber()
+  @IsDefined()
+  id!: number;
+}
+
+export class LeaveGame {
+  @IsNumber()
+  @IsDefined()
+  id!: number;
 }

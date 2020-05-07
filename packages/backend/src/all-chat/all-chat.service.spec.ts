@@ -1,19 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ChatService } from './chat.service';
-import { ChatController } from './chat.controller';
+import { AllChatService } from './all-chat.service';
+import { AllChatController } from './all-chat.controller';
 import { ChatResponse, ChatResponseType } from '../../proto/lobbyProto';
 
-describe('ChatService', () => {
-  let service: ChatService;
+describe('AllChatService', () => {
+  let service: AllChatService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [],
-      controllers: [ChatController],
-      providers: [ChatService],
+      controllers: [AllChatController],
+      providers: [AllChatService],
     }).compile();
 
-    service = module.get<ChatService>(ChatService);
+    service = module.get<AllChatService>(AllChatService);
   });
 
   it('should be defined', () => {
