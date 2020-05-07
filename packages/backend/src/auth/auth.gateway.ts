@@ -166,6 +166,12 @@ export class AuthGateway implements OnGatewayConnection {
   @SubscribeMessage(SocketEvents.USER_RECONNECT)
   async userReconnect(socket: SocketUser) {
     this.logger.log(`${socket.user.username} has reconnected`);
+    // Set a new record of their connection.
+    this.onlineSocketsService.register(socket.user.username, socket.id);
+    this.onlinePlayersService.register(
+      socket.user.displayUsername,
+      this.server,
+    );
     // Send them all chat or any further data they may require.
   }
 }
