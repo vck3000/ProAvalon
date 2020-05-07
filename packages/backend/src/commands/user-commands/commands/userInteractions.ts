@@ -1,8 +1,8 @@
-import { SocketUser } from '../../../../users/users.socket';
+import { SocketUser } from '../../../users/users.socket';
 import { emitCommandResponse } from '../../commandResponse';
 import { Command } from '../../commands.types';
-import RedisAdapter from '../../../../redis-adapter/redis-adapter.service';
-import { ChatResponseType } from '../../../../../proto/lobbyProto';
+import RedisAdapter from '../../../redis-adapter/redis-adapter.service';
+import { ChatResponseType } from '../../../../proto/lobbyProto';
 
 class UserInteraction implements Command {
   command: string;

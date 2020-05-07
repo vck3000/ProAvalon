@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { transformAndValidate } from 'class-transformer-validator';
 
 import { UsersService } from '../users/users.service';
-import { ChatService } from '../chat/chat.service';
+import { AllChatService } from '../all-chat/all-chat.service';
 import { SocketUser } from '../users/users.socket';
 
 import {
@@ -29,7 +29,7 @@ export class AuthGateway implements OnGatewayConnection {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    private chatService: ChatService,
+    private allChatService: AllChatService,
     private onlinePlayersService: OnlinePlayersService,
     private onlineSocketsService: OnlineSocketsService,
     private redisAdapter: RedisAdapter,
@@ -122,7 +122,7 @@ export class AuthGateway implements OnGatewayConnection {
         type: ChatResponseType.PLAYER_JOIN_LOBBY,
       });
 
-      this.chatService.storeMessage(chatResponse);
+      this.allChatService.storeMessage(chatResponse);
       socket.to('lobby').emit(SocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
     } catch (err) {
       this.logger.error('Validation failed. Error: ', err);
@@ -155,7 +155,7 @@ export class AuthGateway implements OnGatewayConnection {
         type: ChatResponseType.PLAYER_JOIN_LOBBY,
       });
 
-      this.chatService.storeMessage(chatResponse);
+      this.allChatService.storeMessage(chatResponse);
 
       socket.to('lobby').emit(SocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
     } catch (err) {

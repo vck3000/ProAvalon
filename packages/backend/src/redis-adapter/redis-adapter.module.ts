@@ -7,4 +7,4 @@ import { OnlineSocketsModule } from '../auth/online-sockets/online-sockets.modul
   providers: [RedisAdapter],
   exports: [RedisAdapter],
 })
-export default class RedisAdapterModule {}
+export class RedisAdapterModule {}

@@ -1,4 +1,4 @@
-import { SocketUser } from '../../../../users/users.socket';
+import { SocketUser } from '../../../users/users.socket';
 import { emitCommandResponse } from '../../commandResponse';
 import { Command } from '../../commands.types';
 

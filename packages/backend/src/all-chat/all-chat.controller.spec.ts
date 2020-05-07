@@ -1,26 +1,26 @@
 import * as httpMocks from 'node-mocks-http';
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus } from '@nestjs/common';
-import { ChatController } from './chat.controller';
-import { ChatService } from './chat.service';
-import { ChatGateway } from './chat.gateway';
-import { CommandsModule } from './commands/commands.module';
+import { AllChatController } from './all-chat.controller';
+import { AllChatService } from './all-chat.service';
+import { AllChatGateway } from './all-chat.gateway';
+import { CommandsModule } from '../commands/commands.module';
 
 describe('Chat Controller', () => {
-  let controller: ChatController;
-  let service: ChatService;
+  let controller: AllChatController;
+  let service: AllChatService;
   let res: httpMocks.MockResponse<any>;
   let module: TestingModule;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
       imports: [CommandsModule],
-      controllers: [ChatController],
-      providers: [ChatService, ChatGateway],
+      controllers: [AllChatController],
+      providers: [AllChatService, AllChatGateway],
     }).compile();
 
-    controller = module.get<ChatController>(ChatController);
-    service = module.get<ChatService>(ChatService);
+    controller = module.get<AllChatController>(AllChatController);
+    service = module.get<AllChatService>(AllChatService);
     res = httpMocks.createResponse();
   });
 

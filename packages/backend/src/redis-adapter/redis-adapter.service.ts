@@ -46,6 +46,29 @@ class RedisAdapter {
     }
     return false;
   }
+
+  clientRooms(id: string) {
+    return new Promise<string[]>((resolve, reject) => {
+      this.get().clientRooms(id, (err, rooms) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(rooms);
+      });
+    });
+  }
+
+  // TODO: Remove if unused later
+  remoteJoin(id: string, room: string) {
+    return new Promise((resolve, reject) => {
+      this.get().remoteJoin(id, room, (err) => {
+        if (err) {
+          reject(err);
+        }
+        resolve();
+      });
+    });
+  }
 }
 
 export default RedisAdapter;

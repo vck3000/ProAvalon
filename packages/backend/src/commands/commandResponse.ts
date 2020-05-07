@@ -3,8 +3,8 @@ import {
   ChatResponse,
   ChatResponseType,
   SocketEvents,
-} from '../../../proto/lobbyProto';
-import { SocketUser } from '../../users/users.socket';
+} from '../../proto/lobbyProto';
+import { SocketUser } from '../users/users.socket';
 
 export const generateCommandResponse = (
   text: ChatResponse['text'],
