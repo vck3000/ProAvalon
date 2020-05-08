@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { Server } from 'socket.io';
 import * as redisIoAdapter from 'socket.io-redis';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
@@ -11,6 +12,8 @@ import {
 @WebSocketGateway()
 class RedisAdapter {
   @WebSocketServer() server!: Server;
+
+  private readonly logger = new Logger(RedisAdapter.name);
 
   constructor(private onlineSocketsService: OnlineSocketsService) {}
 
@@ -68,6 +71,35 @@ class RedisAdapter {
         resolve();
       });
     });
+  }
+
+  async closeRoom(room: string) {
+    // Get all the client ids connected to the room
+    const clients: string[] = await new Promise((resolve, reject) => {
+      this.get().clients([room], (err, connectedSocketIds) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(connectedSocketIds);
+      });
+    });
+
+    // Collect them all into remoteLeave promises
+    const promises = clients.map(
+      (client) =>
+        new Promise((resolve, _reject) => {
+          this.get().remoteLeave(client, room, (err) => {
+            if (err) {
+              // Resolve here so that promise.all doesn't stop on a single reject.
+              this.logger.log(`Could not remoteLeave client: ${err}`);
+              resolve(err);
+            }
+            resolve();
+          });
+        }),
+    );
+
+    return Promise.all(promises);
   }
 }
 
