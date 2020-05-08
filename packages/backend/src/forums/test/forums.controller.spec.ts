@@ -3,7 +3,7 @@ import { getModelToken } from 'nestjs-typegoose';
 
 import { ForumsController } from '../forums.controller';
 import { ForumsService } from '../forums.service';
-import { mockForumPost } from './forums.consts';
+import { mockForumPost, mockForumComment } from './forums.consts';
 
 describe('Forums Controller', () => {
   let controller: ForumsController;
@@ -15,6 +15,10 @@ describe('Forums Controller', () => {
         {
           provide: getModelToken('ForumPost'),
           useValue: mockForumPost,
+        },
+        {
+          provide: getModelToken('ForumComment'),
+          useValue: mockForumComment,
         }, ForumsService],
     }).compile();
 

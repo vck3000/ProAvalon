@@ -6,7 +6,8 @@ import { MongoMemoryServer } from 'mongodb-memory-server-core';
 import { ForumsController } from '../forums/forums.controller';
 import { ForumsModule } from '../forums/forums.module';
 import { ForumsService } from '../forums/forums.service';
-import { ForumPost } from '../forums/forums.model';
+import { ForumPost } from '../forums/model/forumpost.model';
+import { ForumComment } from '../forums/model/forumcomment.model';
 
 
 describe('Forums', () => {
@@ -24,7 +25,7 @@ describe('Forums', () => {
           useUnifiedTopology: true,
         }),
         ForumsModule,
-        TypegooseModule.forFeature([ForumPost]),
+        TypegooseModule.forFeature([ForumPost, ForumComment]),
       ],
       providers: [ForumsService],
       controllers: [ForumsController],
@@ -42,8 +43,10 @@ describe('Forums', () => {
   it('can post and retrieve from forums', async () => {
     let POST_ID_1;
     let POST_ID_2;
+    let COMMENT_ID;
     const POST_TITLE = 'Post title';
     const POST_TEXT = 'Post text';
+    const COMMENT_TEXT = 'Comment text';
 
     // Can make some posts in forums
     await request(app.getHttpServer())
@@ -66,6 +69,18 @@ describe('Forums', () => {
       .expect(HttpStatus.CREATED)
       .then((resp) => {
         POST_ID_2 = resp.body.id;
+      });
+
+    // Can make a comment in forums
+    await request(app.getHttpServer())
+      .post('/forums/reply')
+      .send({
+        parentId: POST_ID_1,
+        text: COMMENT_TEXT,
+      })
+      .expect(HttpStatus.CREATED)
+      .then((resp) => {
+        COMMENT_ID = resp.body.id;
       });
 
     // Can get all posts from forums
@@ -92,6 +107,17 @@ describe('Forums', () => {
       _id: POST_ID_1,
       title: POST_TITLE,
       text: POST_TEXT,
+      replyIds: [COMMENT_ID],
+    }));
+
+    // Can get comments of post
+    const getCommentsResponse = await request(app.getHttpServer())
+      .get(`/forums/${POST_ID_1}/comments`)
+      .expect(HttpStatus.OK);
+    expect(getCommentsResponse.body).toHaveLength(1);
+    expect(getCommentsResponse.body[0]).toEqual(expect.objectContaining({
+      _id: COMMENT_ID,
+      text: COMMENT_TEXT,
     }));
   });
 
