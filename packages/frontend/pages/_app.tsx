@@ -8,16 +8,15 @@ import withReduxSaga from 'next-redux-saga';
 
 import throttle from '../utils/throttle';
 import configureStore, { RootState } from '../store';
-import { IUserOptionsState, ThemeOptions } from '../store/userOptions/types';
 import { MobileView, ISystemState } from '../store/system/types';
 import { setMobileView, setWindowDimensions } from '../store/system/actions';
+import Theme from '../components/theme';
 
 interface IProps extends AppProps {
   store: Store;
   dispatchSetMobileView: typeof setMobileView;
   dispatchSetWindowDimensions: typeof setWindowDimensions;
   mobileView: MobileView;
-  theme: ThemeOptions;
 }
 
 const MyApp = ({
@@ -27,7 +26,6 @@ const MyApp = ({
   dispatchSetMobileView,
   dispatchSetWindowDimensions,
   mobileView,
-  theme,
 }: IProps): ReactElement => {
   // Set up window event listener to set mobileView, width and height.
   useEffect(() => {
@@ -50,14 +48,10 @@ const MyApp = ({
     return (): void => window.removeEventListener('resize', resizeWindow);
   }, [mobileView]);
 
-  useEffect(() => {
-    if (theme.name === 'night') document.body.classList.add('night');
-    else document.body.classList.remove('night');
-  }, [theme]);
-
   return (
     <>
       <Provider store={store}>
+        <Theme />
         <Component {...pageProps} />
       </Provider>
       <style global jsx>
@@ -153,9 +147,8 @@ const MyApp = ({
 
 const mapStateToProps = (
   state: RootState,
-): Pick<ISystemState & IUserOptionsState, 'mobileView' | 'theme'> => ({
+): Pick<ISystemState, 'mobileView'> => ({
   mobileView: state.system.mobileView,
-  theme: state.userOptions.theme,
 });
 
 const mapDispatchToProps = {

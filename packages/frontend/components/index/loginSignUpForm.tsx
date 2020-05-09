@@ -2,7 +2,7 @@ import { ReactElement, useState } from 'react';
 import { Form, Button } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
-import { login, signup } from '../../store/auth/actions';
+import { login, signup } from '../../store/user/actions';
 
 interface IProps {
   dispatchLogin: typeof login;
