@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
-import { loginSuccess } from '../store/auth/actions';
-import { RootState } from '../store';
+import { loginSuccess } from '../store/user/actions';
+import { userSelector } from '../store/user/reducer';
 
-export default function useAuth(): void {
-  const user = useSelector((state: RootState) => state.auth.user);
+export default function useAuth(): ReturnType<typeof userSelector> {
+  const user = useSelector(userSelector);
 
   const dispatch = useDispatch();
 
@@ -19,6 +19,13 @@ export default function useAuth(): void {
       atob(encodedJwt.split('.')[1]),
     );
 
-    dispatch(loginSuccess({ username }));
+    dispatch(
+      loginSuccess({
+        displayName: username,
+        settings: { theme: 'night', buzzable: true },
+      }),
+    );
   }, []);
+
+  return user;
 }

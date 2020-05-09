@@ -2,55 +2,94 @@ import { ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 
-import { RootState } from '../../store';
-import { logout } from '../../store/auth/actions';
-import { ILogoutAction } from '../../store/auth/action.types';
+import { logout, setSetting } from '../../store/user/actions';
+import { userSelector } from '../../store/user/reducer';
 
-const LoggedIn = ({ username }: { username: string }): ReactElement => {
+type Props = {
+  user: NonNullable<ReturnType<typeof userSelector>>;
+};
+
+const LoggedIn = ({ user }: Props): ReactElement => {
+  const { displayName, settings } = user;
+  const { theme } = settings;
+
   const dispatch = useDispatch();
+  const doLogout = (): void => {
+    dispatch(logout());
+  };
+  const setTheme = (): void => {
+    dispatch(
+      setSetting({
+        setting: 'theme',
+        value: theme === 'night' ? 'day' : 'night',
+      }),
+    );
+  };
 
   return (
     <>
-      <div style={{ display: 'flex' }}>
-        <Link href="/profile">
-          <a className="buttons">{username}</a>
-        </Link>
-        <a
-          onClick={(): ILogoutAction => dispatch(logout())}
-          onKeyPress={(): ILogoutAction => dispatch(logout())}
-          role="button"
-          tabIndex={0}
-          className="buttons logout"
-        >
-          Logout
-        </a>
-      </div>
+      <ul>
+        <li>
+          <a
+            onClick={setTheme}
+            onKeyPress={setTheme}
+            role="button"
+            tabIndex={0}
+          >
+            {theme}
+          </a>
+        </li>
+        <li>
+          <Link href="/profile">
+            <a className="buttons">{displayName}</a>
+          </Link>
+        </li>
+        <li>
+          <a
+            onClick={doLogout}
+            onKeyPress={doLogout}
+            role="button"
+            tabIndex={0}
+            className="logout"
+          >
+            Logout
+          </a>
+        </li>
+      </ul>
       <style jsx>
         {`
-          .buttons {
-            position: relative;
+          ul {
+            display: flex;
+            margin: 0;
+            padding: 0;
+          }
+          li {
+            display: flex;
+            list-style-type: none;
+          }
+          a {
             font-family: 'Montserrat-Bold';
             color: white;
             padding: 8px;
             background: var(--gold);
-          }
-          .buttons:hover {
-            background: var(--gold-hover);
-          }
-          .logout {
-            margin-right: 18px;
             cursor: pointer;
           }
-          .logout:after {
+          a:hover {
+            background: var(--gold-hover);
+          }
+          li:last-child {
+            margin-right: 18px;
+          }
+          li:last-child:after {
             content: ' ';
             position: absolute;
             top: 0;
-            right: -18px;
+            right: 0;
             border-right: 18px solid var(--background);
             border-top: 18px solid var(--gold);
             border-bottom: 18px solid var(--gold);
           }
-          .logout:hover:after {
+          li:last-child:hover:after {
             border-color: var(--gold-hover) var(--background);
           }
         `}
@@ -60,12 +99,10 @@ const LoggedIn = ({ username }: { username: string }): ReactElement => {
 };
 
 const NavRight = (): ReactElement => {
-  const username = useSelector<RootState, string | undefined>(
-    (state) => state.auth.user?.displayUsername,
-  );
+  const user = useSelector(userSelector);
 
-  return username ? (
-    <LoggedIn username={username} />
+  return user ? (
+    <LoggedIn user={user} />
   ) : (
     <div
       style={{

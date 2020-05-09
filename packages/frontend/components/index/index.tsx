@@ -1,24 +1,13 @@
 import { ReactElement } from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import NavIndex from '../nav/navIndex';
 import { RootState } from '../../store/index';
-import { ThemeOptions, IUserOptionsState } from '../../store/userOptions/types';
-import { setTheme } from '../../store/userOptions/actions';
-import { ISystemState, MobileView } from '../../store/system/types';
 import LoginSignupForm from './loginSignUpForm';
 
-interface IProps {
-  theme: ThemeOptions;
-  dispatchSetTheme: typeof setTheme;
-  mobileView: MobileView;
-}
+const Index = (): ReactElement => {
+  const mobileView = useSelector((state: RootState) => state.system.mobileView);
 
-const Index = ({
-  theme,
-  dispatchSetTheme,
-  mobileView,
-}: IProps): ReactElement => {
   return (
     <div className="background">
       <title>Home</title>
@@ -50,17 +39,6 @@ const Index = ({
               alt="login_glow"
             />
             <LoginSignupForm />
-          </div>
-          <div>
-            Dark theme
-            <input
-              type="checkbox"
-              checked={theme.name === 'night'}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
-                const themeName = e.target.checked ? 'night' : 'day';
-                dispatchSetTheme(themeName);
-              }}
-            />
           </div>
         </div>
       </div>
@@ -206,15 +184,4 @@ const Index = ({
   );
 };
 
-const mapStateToProps = (
-  state: RootState,
-): Pick<ISystemState & IUserOptionsState, 'mobileView' | 'theme'> => ({
-  mobileView: state.system.mobileView,
-  theme: state.userOptions.theme,
-});
-
-const mapDispatchToProps = {
-  dispatchSetTheme: setTheme,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Index);
+export default Index;
