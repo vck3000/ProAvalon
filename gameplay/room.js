@@ -45,7 +45,7 @@ function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_, 
         this.gameMode = 'avalon';
     }
     this.ranked = ranked_;
-    this.gamesRequiredForRanked = 100;
+    this.gamesRequiredForRanked = 50;
     this.provisionalGamesRequired = 20;
 
     // Misc. variables
@@ -370,6 +370,11 @@ Room.prototype.updateMaxNumPlayers = function (socket, number) {
 };
 
 Room.prototype.updateRanked = function (socket, rankedType) {
+    if (this.joinPassword && rankedType === 'ranked') {
+        this.sendText(this.allSockets, 'This room is private and therefore cannot be ranked.', 'server-text');
+        return;
+    }
+    
     if (socket.request.user.username === this.host) {
         this.ranked = rankedType === 'ranked';
     }
