@@ -507,7 +507,6 @@ var actionsObj = {
       },
     },
 
-<<<<<<< HEAD
     mute: {
       command: 'mute',
       help:
@@ -544,68 +543,6 @@ var actionsObj = {
                     senderSocket.emit('messageCommandReturnStr', {
                       message: `Muted ${args[1]} successfully.`,
                       classStr: 'server-text',
-=======
-                senderSocket.emit('allChatToClient', dataMessage);
-                senderSocket.emit('roomChatToClient', dataMessage);
-
-                modSocket.emit('allChatToClient', dataMessage);
-                modSocket.emit('roomChatToClient', dataMessage);
-
-                // Set a cooldown for the sender until they can send another pm
-                pmmodCooldowns[senderSocket.id] = new Date();
-                
-                // Create the mod log.
-                mlog = ModLog.create({
-                    type: "pmmod",
-                    modWhoMade: {
-                        id: modSocket.request.user.id,
-                        username: modSocket.request.user.username,
-                        usernameLower: modSocket.request.user.usernameLower
-                    },
-                    data: {
-                        targetUser: {
-                            id: senderSocket.request.user.id,
-                            username: senderSocket.request.user.username,
-                            usernameLower: senderSocket.request.user.usernameLower
-                        },
-                        message: dataMessage.message
-                    },
-                    dateCreated: new Date()
-                });
-            }
-        },
-
-
-
-        mute: {
-            command: 'mute',
-            help: '/mute: Mute a player who is being annoying in chat/buzzing/slapping/licking/poking/tickling you.',
-            run(data, senderSocket) {
-                const { args } = data;
-
-                if (args[1]) {
-                    User.findOne({ username: args[1] }).exec((err, foundUserToMute) => {
-                        if (err) { console.log(err); } else if (foundUserToMute) {
-                            User.findOne({ username: senderSocket.request.user.username }).exec((err, userCallingMute) => {
-                                if (err) { console.log(err); } else if (userCallingMute) {
-                                    if (!userCallingMute.mutedPlayers) {
-                                        userCallingMute.mutedPlayers = [];
-                                    }
-                                    if (userCallingMute.mutedPlayers.indexOf(foundUserToMute.username) === -1) {
-                                        userCallingMute.mutedPlayers.push(foundUserToMute.username);
-                                        userCallingMute.markModified('mutedPlayers');
-                                        userCallingMute.save();
-                                        senderSocket.emit('updateMutedPlayers', userCallingMute.mutedPlayers);
-                                        senderSocket.emit('messageCommandReturnStr', { message: `Muted ${args[1]} successfully.`, classStr: 'server-text' });
-                                    } else {
-                                        senderSocket.emit('messageCommandReturnStr', { message: `You have already muted ${args[1]}.`, classStr: 'server-text' });
-                                    }
-                                }
-                            });
-                        } else {
-                            senderSocket.emit('messageCommandReturnStr', { message: `${args[1]} was not found.`, classStr: 'server-text' });
-                        }
->>>>>>> d8ed6080... Added provisional rating system and gating for players who don't have enough games for ranked. Unranked players now show at the bottom of the player list. Bug fixes. Adjusted parameters to live levels.
                     });
                   } else {
                     senderSocket.emit('messageCommandReturnStr', {
@@ -1685,15 +1622,6 @@ var actionsObj = {
         '/mtestgame <number>: Add <number> bots to a test game and start it automatically.',
       run(data, senderSocket, io) {
         const { args } = data;
-                // Create the room
-                rooms[nextRoomId] = new gameRoom('Bot game', nextRoomId, io, dataObj.maxNumPlayers, dataObj.newRoomPassword, dataObj.gameMode, false, socketCallback);
-                const privateStr = (dataObj.newRoomPassword === '') ? '' : 'private ';
-                // broadcast to all chat
-                const messageData = {
-                    message: `${'Bot game' + ' has created '}${privateStr}room ${nextRoomId}.`,
-                    classStr: 'server-text',
-                };
-                sendToAllChat(io, messageData);
 
         if (!args[1]) {
           senderSocket.emit('messageCommandReturnStr', {
@@ -1729,6 +1657,7 @@ var actionsObj = {
           dataObj.maxNumPlayers,
           dataObj.newRoomPassword,
           dataObj.gameMode,
+          false,
           socketCallback
         );
         const privateStr = dataObj.newRoomPassword === '' ? '' : 'private ';
@@ -2417,7 +2346,7 @@ module.exports = function (io) {
         allSockets[i].disconnect(true);
       }
     }
-        
+
     // Assign the socket their rating bracket
     socket = assignRatingBracket(socket);
 
@@ -2456,10 +2385,6 @@ module.exports = function (io) {
 
         // send the user the list of commands
         socket.emit('modCommands', modCommands);
-
-        // now push their socket in
-        allSockets.push(socket);
-
 
         // slight delay while client loads
         setTimeout(() => {
@@ -2620,6 +2545,7 @@ module.exports = function (io) {
     socket.on('kickPlayer', kickPlayer);
     socket.on('update-room-max-players', updateRoomMaxPlayers);
     socket.on('update-room-game-mode', updateRoomGameMode);
+    socket.on('update-room-ranked', updateRoomRanked);
 
     //* ***********************
     // game data stuff
@@ -2635,14 +2561,14 @@ function socketCallback(action, room) {
             message: `Room ${room.roomId} has finished! The Resistance have won!`,
             classStr: 'all-chat-text-blue',
         };
-    sendToAllChat(ioGlobal, data);
+        sendToAllChat(ioGlobal, data);
     }
     if (action === 'finishGameSpyWin') {
         var data = {
             message: `Room ${room.roomId} has finished! The Spies have won!`,
             classStr: 'all-chat-text-red',
-    };
-    sendToAllChat(ioGlobal, data);
+        };
+        sendToAllChat(ioGlobal, data);
     }
     if (action === 'updateCurrentGamesList') {
         updateCurrentGamesList();
@@ -2881,7 +2807,6 @@ function destroyRoom(roomId) {
       botSocket.handleGameOver(thisGame, 'complete', () => {}); // This room is getting destroyed. No need to leave.
     });
 
-<<<<<<< HEAD
   rooms[roomId] = undefined;
 
   console.log(`Destroyed room ${roomId}.`);
@@ -2891,17 +2816,6 @@ function destroyRoom(roomId) {
   //     global.gc();
   //     console.log("Finished GC!");
   // }
-=======
-    rooms[roomId] = undefined;
-    
-    console.log(`Destroyed room ${roomId}.`)
-    // Ask nicely to garbage collect:
-    // if (global.gc) {
-    //     console.log("Running GC!");
-    //     global.gc();
-    //     console.log("Finished GC!");
-    // }
->>>>>>> d8ed6080... Added provisional rating system and gating for players who don't have enough games for ranked. Unranked players now show at the bottom of the player list. Bug fixes. Adjusted parameters to live levels.
 }
 
 function playerLeaveRoomCheckDestroy(socket) {
@@ -3202,9 +3116,10 @@ function newRoom(dataObj) {
         while (rooms[nextRoomId]) {
             nextRoomId++;
         }
-        rankedRoom = (dataObj.ranked === "ranked")
+        privateRoom = !(dataObj.newRoomPassword === '')
+        rankedRoom = (dataObj.ranked === "ranked") && !privateRoom
         rooms[nextRoomId] = new gameRoom(this.request.user.username, nextRoomId, ioGlobal, dataObj.maxNumPlayers, dataObj.newRoomPassword, dataObj.gameMode, rankedRoom, socketCallback);
-        const privateStr = (dataObj.newRoomPassword === '') ? '' : 'private ';
+        const privateStr = !privateRoom ? '' : 'private ';
         const rankedUnrankedStr = rankedRoom ? 'ranked' : 'unranked';
         // broadcast to all chat
         const data = {

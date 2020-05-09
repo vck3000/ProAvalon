@@ -1581,6 +1581,7 @@ Game.prototype.calculateResistanceRatingChange = function (winningTeam, provisio
     else {
         // winning team should always be defined
         this.sendText(this.allSockets, 'Error in elo calculation, no winning team specified.', 'server-text');
+        return;
     }
 
     // If the game is provisional, apply a multiplicative reduction in elo change based on how experienced the players are.
@@ -1590,7 +1591,7 @@ Game.prototype.calculateResistanceRatingChange = function (winningTeam, provisio
         for (i=0; i < provisionalPlayers.length; i++) {
             totalProvisionalGames += provisionalPlayers[i].request.user.totalRankedGamesPlayed;
         }
-        eloChange = (((this.provisionalGamesRequired/2)+(totalProvisionalGames/(provisionalPlayers.length*2)))/this.provisionalGamesRequired) * eloChange;
+        eloChange = ((totalProvisionalGames+(this.playersInGame.length-provisionalPlayers.length)*this.provisionalGamesRequired)/(this.provisionalGamesRequired*this.playersInGame.length)) * eloChange;
     }
     return eloChange;
 };
@@ -1640,7 +1641,13 @@ Game.prototype.calculateNewProvisionalRating = function (winningTeam, playerSock
         }
     }
 
-    return (R_old*N_old + ratingsSum/playerRatings.length + 200*teamAdj*Result)/(N_old+1)
+    var newRating = (R_old*N_old + (ratingsSum/playerRatings.length) + 200*teamAdj*Result)/(N_old+1)
+
+    // Prevent losing rating on win and gaining rating on loss in fringe scenarios with weird players.
+    if ((winningTeam === playerSocket.alliance && newRating < R_old) || (!(winningTeam === playerSocket.alliance) && newRating > R_old)) {
+        newRating = R_old
+    }
+    return newRating
 };
 
 module.exports = Game;
