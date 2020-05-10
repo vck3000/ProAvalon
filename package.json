@@ -6,12 +6,14 @@
     "build": "npm --prefix packages/frontend run build && npm --prefix packages/backend run build",
     "lint": "npm --prefix packages/frontend run lint && npm --prefix packages/backend run lint",
     "test": "npm --prefix packages/frontend test && npm --prefix packages/backend test",
+    "test:int": "npm --prefix packages/backend run test:int",
+    "test:int:circleci": "npm --prefix packages/backend run test:int:circleci",
     "proto": "cp -R proto/* packages/backend/proto && cp -R proto/* packages/frontend/proto",
     "reset:db": "docker volume rm proavalon_mongo_data proavalon_redis_data"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lerna run --concurrency 1 --stream precommit && npm run test"
+      "pre-commit": "lerna run --concurrency 1 --stream precommit && npm run test && npm run test:int"
     }
   },
   "dependencies": {

@@ -9,7 +9,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import * as request from 'supertest';
 import { TypegooseModule } from 'nestjs-typegoose';
-import { MongoMemoryServer } from 'mongodb-memory-server-core';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { AuthController } from '../auth/auth.controller';
 import { LocalStrategy } from '../auth/guards/local.strategy';
@@ -42,7 +42,8 @@ function mockEnvVars() {
   const original = require.requireActual('../util/getEnvVars');
   return {
     ...original, // Pass down all the original variables
-    REDIS_PORT: 6378, // override redis port
+    REDIS_HOST: 'redis-testing',
+    // REDIS_PORT: 6378, // override redis port
   };
 }
 
