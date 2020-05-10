@@ -13,7 +13,7 @@ import { JWT_SECRET } from '../util/getEnvVars';
 import { UsersModule } from '../users/users.module';
 import { AuthModule } from '../auth/auth.module';
 import { AllChatModule } from '../all-chat/all-chat.module';
-import RedisClientModule from '../redis-client/redis-client.module';
+import { RedisClientModule } from '../redis-client/redis-client.module';
 // import { RedisSocketIoAdapter } from '../util/redisSocketIoAdapter';
 
 // Allow extra time for mongodb-memory-server to download if needed

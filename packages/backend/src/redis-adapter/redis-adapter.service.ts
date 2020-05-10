@@ -10,10 +10,10 @@ import {
 } from '../../proto/lobbyProto';
 
 @WebSocketGateway()
-class RedisAdapter {
+class RedisAdapterService {
   @WebSocketServer() server!: Server;
 
-  private readonly logger = new Logger(RedisAdapter.name);
+  private readonly logger = new Logger(RedisAdapterService.name);
 
   constructor(private onlineSocketsService: OnlineSocketsService) {}
 
@@ -103,4 +103,4 @@ class RedisAdapter {
   }
 }
 
-export default RedisAdapter;
+export default RedisAdapterService;
