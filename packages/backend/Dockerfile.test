@@ -1,0 +1,18 @@
+FROM node:13
+
+ARG SERVICE
+ENV SERVICE="BACKEND"
+
+RUN echo "Building TEST env for ${SERVICE}."
+
+# Setting working directory. All the path will be relative to WORKDIR
+WORKDIR /usr/src/app
+
+# Copy over required files
+COPY package*.json ./
+
+# Install packages
+RUN npm i
+
+# Dev mode
+CMD [ "npm", "run", "test:int:jest" ]
