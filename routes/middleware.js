@@ -185,7 +185,7 @@ exports.isAdmin = (req, res, next) => {
 };
 
 exports.emailVerified = (req, res, next) => {
-    if (req.user.emailVerified === true || process.env.MY_PLATFORM != "production") {
+    if (req.user.emailVerified === true || process.env.MY_PLATFORM != "online") {
         next();
     }
     else {

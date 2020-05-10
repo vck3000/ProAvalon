@@ -36,14 +36,14 @@ const sanitizeHtml = require('sanitize-html');
 
 const dateResetRequired = 1543480412695;
 
-const newUpdateNotificationRequired = 1565505539914;
+const newUpdateNotificationRequired = 1589095603188;
 const updateMessage = `
 
-<h1>Patreon Rewards!</h1>
+<h1>Rating System Beta!</h1>
 
 <br>
 
-Check out the forums for more information on how to connect your Patreon account :).
+The beta period for the rating system has begun! Matches can now be either unranked or ranked. Unranked mode tracks only your personal winrate while ranked mode tracks a new player rating alongside your winrate.
 `;
 
 const allSockets = [];
