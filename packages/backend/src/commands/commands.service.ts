@@ -29,8 +29,6 @@ export class CommandsService {
     // Remove the command from the splitted to then give to the command.
     splitted.shift();
 
-    // console.log(Object.keys(allCommands));
-
     if (allCommands[command]) {
       allCommands[command].run(splitted, senderSocket, this.redisAdapter);
     } else {

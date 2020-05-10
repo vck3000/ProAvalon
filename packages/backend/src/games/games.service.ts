@@ -8,8 +8,6 @@ import RedisClientService from '../redis-client/redis-client.service';
 export class GamesService {
   private readonly logger = new Logger(GamesService.name);
 
-  // private games: Map<number, Game> = new Map();
-
   constructor(
     // private readonly redisAdapter: RedisAdapterService,
     private readonly redisClient: RedisClientService,
