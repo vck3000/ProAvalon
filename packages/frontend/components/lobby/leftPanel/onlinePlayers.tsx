@@ -3,7 +3,7 @@ import { Table } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
 import { RootState } from '../../../store';
-import { IOnlinePlayer } from '../../../store/onlinePlayers/actions.types';
+import { IOnlinePlayer } from '../../../store/lobby/onlinePlayers/types';
 import { MobileView } from '../../../store/system/types';
 
 interface IStateProps {
@@ -123,7 +123,7 @@ const OnlinePlayers = ({ players, mobileView }: Props): ReactElement => {
 };
 
 const mapStateToProps = (state: RootState): IStateProps => ({
-  players: state.onlinePlayers.players,
+  players: state.lobby.onlinePlayers,
   mobileView: state.system.mobileView,
 });
 

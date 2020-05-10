@@ -12,7 +12,7 @@ export interface IOnlinePlayer {
 // Redux actions
 export interface ISetOnlinePlayersAction {
   type: typeof SET_ONLINE_PLAYERS;
-  players: IOnlinePlayer[];
+  payload: IOnlinePlayer[];
 }
 
 export type OnlinePlayersActionTypes = ISetOnlinePlayersAction;
