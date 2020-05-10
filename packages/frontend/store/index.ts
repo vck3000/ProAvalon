@@ -12,7 +12,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import systemReducer from './system/reducers';
 import { ISystemState } from './system/types';
 import chatReducer, { IChatState } from './chat/reducers';
-import playersReducer, { IOnlinePlayersState } from './onlinePlayers/reducers';
+import lobby from './lobby/reducer';
 import userReducer from './user/reducer';
 
 import rootSaga from './sagas';
@@ -23,12 +23,12 @@ import rootSaga from './sagas';
 const rootReducer = combineReducers<{
   system: ISystemState;
   chat: IChatState;
-  onlinePlayers: IOnlinePlayersState;
+  lobby: ReturnType<typeof lobby>;
   user: ReturnType<typeof userReducer>;
 }>({
   system: systemReducer,
   chat: chatReducer,
-  onlinePlayers: playersReducer,
+  lobby,
   user: userReducer,
 });
 
