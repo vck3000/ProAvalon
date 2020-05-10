@@ -1,5 +1,4 @@
 import { Test } from '@nestjs/testing';
-import * as io from 'socket.io-client';
 import {
   INestApplication,
   HttpStatus,
@@ -22,12 +21,32 @@ import { AllChatModule } from '../all-chat/all-chat.module';
 import { RedisClientModule } from '../redis-client/redis-client.module';
 import { GamesModule } from '../games/games.module';
 import { SocketEvents } from '../../proto/lobbyProto';
-// import RedisClientService from '../redis-client/redis-client.service';
 import { RedisSocketIoAdapter } from '../util/redisSocketIoAdapter';
 import RedisClientService from '../redis-client/redis-client.service';
 
+import {
+  connectSocketHelper,
+  socketEmit,
+  socketOn,
+  socketOnAll,
+  socketCloseAll,
+  socketNotOn,
+  socketClose,
+} from './util/socket-promise';
+
 // Allow extra time for mongodb-memory-server to download if needed
 jest.setTimeout(600000);
+
+// Mock redis port to match the redis-testing database
+function mockEnvVars() {
+  const original = require.requireActual('../util/getEnvVars');
+  return {
+    ...original, // Pass down all the original variables
+    REDIS_PORT: 6378, // override redis port
+  };
+}
+
+jest.mock('../util/getEnvVars', () => mockEnvVars());
 
 describe('GamesSocket', () => {
   let app: INestApplication;
@@ -35,34 +54,6 @@ describe('GamesSocket', () => {
   let jwtService: JwtService;
   let redisClientService: RedisClientService;
   let connectToSocketIO: (token: string) => SocketIOClient.Socket;
-
-  // Helpers to wrap multiple sockets into promise
-  const promisifyOn = (socket: SocketIOClient.Socket, event: string) =>
-    new Promise((resolve) => socket.on(event, resolve));
-
-  const promisifyEmit = (
-    socket: SocketIOClient.Socket,
-    event: string,
-    data: any,
-  ) => new Promise((resolve) => socket.emit(event, data, resolve));
-
-  // const allSocketsHandle = (sockets: SocketIOClient.Socket[], event: string) =>
-  //   sockets.map((socket) => promisifyOn(socket, event));
-
-  // Mock our redis client
-  const redisClientServiceMock = {
-    redisClient: {
-      get: jest.fn(),
-      set: jest.fn(),
-      zadd: jest.fn(),
-      zrange: jest.fn(),
-      del: jest.fn(),
-      zrem: jest.fn(),
-    },
-  };
-  // The following may need to be in individual tests later on
-  redisClientServiceMock.redisClient.get.mockImplementation(() => null);
-  redisClientServiceMock.redisClient.zrange.mockImplementation(() => []);
 
   beforeEach(async () => {
     // Set up database
@@ -89,11 +80,7 @@ describe('GamesSocket', () => {
       ],
       controllers: [AuthController],
       providers: [LocalStrategy, JwtStrategy],
-    })
-      // Give in our mock redis client
-      // .overrideProvider(RedisClientService)
-      // .useValue(redisClientServiceMock)
-      .compile();
+    }).compile();
 
     app = moduleRef.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
@@ -110,14 +97,7 @@ describe('GamesSocket', () => {
     await app.init();
     await app.listen(0);
     const httpServer = app.getHttpServer();
-    connectToSocketIO = (token: string) =>
-      io.connect(`http://127.0.0.1:${httpServer.address().port}`, {
-        transports: ['websocket'],
-        forceNew: true,
-        query: {
-          token,
-        },
-      });
+    connectToSocketIO = connectSocketHelper(httpServer.address().port);
 
     // Seed some starting users
     await request(app.getHttpServer())
@@ -150,71 +130,91 @@ describe('GamesSocket', () => {
     const jwtToken = jwtService.sign({ username: 'asdf' });
     const socket = await connectToSocketIO(jwtToken);
 
-    await promisifyOn(socket, 'connect');
-    await promisifyOn(socket, SocketEvents.AUTHORIZED);
+    await socketOn(socket, 'connect');
+    await socketOn(socket, SocketEvents.AUTHORIZED);
 
     // Create a new game
-    let result = await promisifyEmit(socket, SocketEvents.CREATE_GAME, null);
+    let result = await socketEmit(socket, SocketEvents.CREATE_GAME, null);
     // Should return the game id of the room, which is 1.
     expect(result).toEqual(1);
 
     // Create another new game
-    result = await promisifyEmit(socket, SocketEvents.CREATE_GAME, null);
+    result = await socketEmit(socket, SocketEvents.CREATE_GAME, null);
     // Should return the game id of the room, which is 2.
     expect(result).toEqual(2);
 
-    socket.on('disconnect', () => {
-      // Delay a bit to allow sockets to disconnect
-      setTimeout(() => {
-        done();
-      }, 500);
-    });
+    socketClose(socket, done);
+  }, 2000);
 
-    socket.disconnect();
-  }, 5000);
+  it('should be able to join, chat and leave in games', async (done) => {
+    const jwtToken1 = jwtService.sign({ username: 'asdf' });
+    const jwtToken2 = jwtService.sign({ username: 'qwer' });
 
-  // it('should chat between sockets', async (done) => {
-  //   const jwtToken1 = jwtService.sign({ username: 'asdf' });
-  //   const jwtToken2 = jwtService.sign({ username: 'qwer' });
+    const sockets = [
+      connectToSocketIO(jwtToken1),
+      connectToSocketIO(jwtToken2),
+    ];
+    sockets.forEach((socket) => socket.on('error', done));
 
-  //   const sockets = [
-  //     connectToSocketIO(jwtToken1),
-  //     connectToSocketIO(jwtToken2),
-  //   ];
-  //   sockets.forEach((socket) => socket.on('error', done));
+    await Promise.all(socketOnAll(sockets, 'connect'));
+    await Promise.all(socketOnAll(sockets, SocketEvents.AUTHORIZED));
 
-  //   await Promise.all(allSocketsHandle(sockets, 'connect'));
-  //   await Promise.all(allSocketsHandle(sockets, SocketEvents.AUTHORIZED));
+    // Create a game
+    const gameId = await socketEmit(sockets[0], SocketEvents.CREATE_GAME, null);
 
-  //   const msg: ChatRequest = {
-  //     text: 'hello message',
-  //   };
+    // Join the game
+    expect(
+      await socketEmit(sockets[0], SocketEvents.JOIN_GAME, {
+        id: gameId,
+      }),
+    ).toEqual('OK');
 
-  //   sockets[0].emit(SocketEvents.ALL_CHAT_TO_SERVER, msg);
+    // Expect a join message from the other user
+    const joinMsg = socketOn(sockets[0], SocketEvents.GAME_CHAT_TO_CLIENT);
 
-  //   const messages = (await Promise.all(
-  //     allSocketsHandle(sockets, SocketEvents.ALL_CHAT_TO_CLIENT),
-  //   )) as ChatResponse[];
+    // Join the game on other user
+    expect(
+      await socketEmit(sockets[1], SocketEvents.JOIN_GAME, {
+        id: gameId,
+      }),
+    ).toEqual('OK');
 
-  //   messages.forEach((message) => {
-  //     expect(message.text).toBe('hello message');
-  //     expect(message.username).toBe('asdf');
-  //   });
+    // Test the join message is received
+    expect(await joinMsg).toEqual(
+      expect.objectContaining({
+        text: 'qwer has joined the room.',
+      }),
+    );
 
-  //   // We should wait until all sockets has disconnected
-  //   await Promise.all(
-  //     sockets.map(
-  //       (socket) =>
-  //         new Promise((resolve) => {
-  //           socket.on('disconnect', (reason: string) => {
-  //             expect(reason).toBe('io client disconnect');
-  //             resolve();
-  //           });
-  //           socket.disconnect();
-  //         }),
-  //     ),
-  //   );
+    // Send a message in game room from any player
+    sockets[0].emit(SocketEvents.GAME_CHAT_TO_SERVER, { text: 'hello world!' });
 
-  //   done();
-  // }, 5000);
+    // Everyone should receive it
+    const messages = await Promise.all(
+      socketOnAll(sockets, SocketEvents.GAME_CHAT_TO_CLIENT),
+    );
+
+    // Both parties expected to receive
+    messages.forEach((msg) =>
+      expect(msg).toEqual(
+        expect.objectContaining({ text: 'hello world!', username: 'asdf' }),
+      ),
+    );
+
+    // --- Leave the room ---
+    // Person leaving shouldn't receive any messages
+    socketNotOn(sockets[0], SocketEvents.GAME_CHAT_TO_CLIENT, done);
+    // Person in room should see the leave message
+    const leaveMsg = socketOn(sockets[1], SocketEvents.GAME_CHAT_TO_CLIENT);
+
+    sockets[0].emit(SocketEvents.LEAVE_GAME, { id: gameId });
+
+    expect(await leaveMsg).toEqual(
+      expect.objectContaining({
+        text: 'asdf has left the room.',
+      }),
+    );
+
+    socketCloseAll(sockets, done);
+  }, 2000);
 });

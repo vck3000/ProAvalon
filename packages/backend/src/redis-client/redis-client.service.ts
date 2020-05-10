@@ -10,7 +10,6 @@ export default class RedisClientService implements OnModuleDestroy {
 
   constructor() {
     this.redisClient = new Redis({ host: REDIS_HOST, port: REDIS_PORT });
-    // console.log('created');
   }
 
   async onModuleDestroy() {

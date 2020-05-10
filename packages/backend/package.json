@@ -15,12 +15,16 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node build/src/main",
     "lint": "eslint \"{src,test}/**/*.ts\" --max-warnings 0",
-    "test": "jest --passWithNoTests --forceExit",
-    "test:watch": "jest --watch --forceExit",
+    "test": "npm run test:unit && npm run test:int",
+    "test:unit": "jest --passWithNoTests",
+    "test:int": "npm run redis-test:start && jest --passWithNoTests --forceExit --runInBand --testRegex ispec\\.ts$ && npm run redis-test:stop",
+    "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "dev": "nest start --watch --preserveWatchOutput"
+    "dev": "nest start --watch --preserveWatchOutput",
+    "redis-test:start": "echo Starting up redis integration testing server && docker run --name redis-testing -d -p 6378:6379 redis",
+    "redis-test:stop": "echo Stopping redis integration testing server && docker rm $(docker stop $(docker ps -a -q --filter=\"name=redis-testing\"))"
   },
   "lint-staged": {
     "*.json": [
@@ -28,8 +32,7 @@
     ],
     "./src/**/*.{js,jsx,ts,tsx,css,scss}": [
       "prettier --write",
-      "npm run lint",
-      "npm run test"
+      "npm run lint"
     ]
   },
   "dependencies": {
@@ -105,7 +108,7 @@
       "ts"
     ],
     "rootDir": "src",
-    "testRegex": ".spec.ts$",
+    "testRegex": "\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
