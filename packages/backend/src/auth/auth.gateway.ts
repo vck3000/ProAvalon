@@ -18,7 +18,7 @@ import {
   ChatResponse,
   ChatResponseType,
 } from '../../proto/lobbyProto';
-import RedisAdapter from '../redis-adapter/redis-adapter.service';
+import RedisAdapterService from '../redis-adapter/redis-adapter.service';
 import { OnlinePlayersService } from './online-players/online-players.service';
 import { OnlineSocketsService } from './online-sockets/online-sockets.service';
 
@@ -32,7 +32,7 @@ export class AuthGateway implements OnGatewayConnection {
     private allChatService: AllChatService,
     private onlinePlayersService: OnlinePlayersService,
     private onlineSocketsService: OnlineSocketsService,
-    private redisAdapter: RedisAdapter,
+    private redisAdapter: RedisAdapterService,
   ) {}
 
   private readonly logger = new Logger(AuthGateway.name);

@@ -18,7 +18,7 @@ import {
   ChatRequest,
 } from '../../proto/lobbyProto';
 import { SocketUser } from '../users/users.socket';
-import RedisAdapter from '../redis-adapter/redis-adapter.service';
+import RedisAdapterService from '../redis-adapter/redis-adapter.service';
 import { CommandsService } from '../commands/commands.service';
 
 @WebSocketGateway()
@@ -30,7 +30,7 @@ export class GamesGateway {
   constructor(
     // private redisAdapter: RedisAdapter,
     private gamesService: GamesService,
-    private redisAdapter: RedisAdapter,
+    private redisAdapter: RedisAdapterService,
     private commandsService: CommandsService,
   ) {}
 
@@ -114,6 +114,7 @@ export class GamesGateway {
 
   @SubscribeMessage(SocketEvents.CREATE_GAME)
   async handleCreateGame(_socket: SocketUser) {
+    this.logger.log('Received create game request');
     return this.gamesService.createGame();
   }
 

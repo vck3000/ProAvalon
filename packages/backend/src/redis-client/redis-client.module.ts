@@ -5,4 +5,4 @@ import RedisClient from './redis-client.service';
   providers: [RedisClient],
   exports: [RedisClient],
 })
-export default class RedisClientModule {}
+export class RedisClientModule {}

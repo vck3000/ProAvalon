@@ -1,7 +1,7 @@
 import { SocketUser } from '../../../users/users.socket';
 import { emitCommandResponse } from '../../commandResponse';
 import { Command } from '../../commands.types';
-import RedisAdapter from '../../../redis-adapter/redis-adapter.service';
+import RedisAdapterService from '../../../redis-adapter/redis-adapter.service';
 import { ChatResponseType } from '../../../../proto/lobbyProto';
 
 class UserInteraction implements Command {
@@ -20,7 +20,7 @@ class UserInteraction implements Command {
   async run(
     data: string[],
     senderSocket: SocketUser,
-    redisAdapter: RedisAdapter,
+    redisAdapter: RedisAdapterService,
   ) {
     const ret = await redisAdapter.emitToUsername(
       data[0],

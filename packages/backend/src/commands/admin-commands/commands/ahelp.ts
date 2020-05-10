@@ -1,6 +1,6 @@
 import { SocketUser } from '../../../users/users.socket';
 import { emitCommandResponse } from '../../commandResponse';
-import RedisAdapter from '../../../redis-adapter/redis-adapter.service';
+import RedisAdapterService from '../../../redis-adapter/redis-adapter.service';
 import { Command } from '../../commands.types';
 import adminActions from '../admin-commands';
 
@@ -12,7 +12,7 @@ export const AHelp: Command = {
   run: (
     _data: string[],
     senderSocket: SocketUser,
-    _redisAdapter: RedisAdapter,
+    _redisAdapter: RedisAdapterService,
   ) => {
     emitCommandResponse('Admin commands are:', senderSocket);
     Object.keys({ ...adminActions }).forEach((key) => {
