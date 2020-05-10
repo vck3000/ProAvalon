@@ -1,7 +1,7 @@
 import { transformAndValidate } from 'class-transformer-validator';
 import { SocketEvents, OnlinePlayer } from '../proto/lobbyProto';
 import { store } from '../store';
-import { setOnlinePlayers } from '../store/onlinePlayers/actions';
+import { setOnlinePlayers } from '../store/lobby/onlinePlayers/actions';
 
 export const SetSocketPlayersEvents = (socket: SocketIOClient.Socket): void => {
   socket.on(

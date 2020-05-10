@@ -1,14 +1,14 @@
 import {
   SET_ONLINE_PLAYERS,
   IOnlinePlayer,
-  ISetOnlinePlayersAction,
-} from './actions.types';
+  OnlinePlayersActionTypes,
+} from './types';
 
 export const setOnlinePlayers = (
   players: IOnlinePlayer[],
-): ISetOnlinePlayersAction => {
+): OnlinePlayersActionTypes => {
   return {
     type: SET_ONLINE_PLAYERS,
-    players,
+    payload: players,
   };
 };
