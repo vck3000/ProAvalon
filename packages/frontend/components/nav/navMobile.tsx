@@ -178,7 +178,7 @@ const NavMobile = (): ReactElement => {
             padding: 10px 5px;
             margin: 0;
 
-            font-family: Montserrat-Bold;
+            font-weight: bold;
           }
 
           .side_menu li a {

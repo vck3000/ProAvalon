@@ -91,6 +91,7 @@ const Chat = ({ messages }: IProps): ReactElement => {
             height: 100%;
             display: flex;
             flex-flow: column;
+            background: var(--light);
           }
 
           input {
@@ -98,11 +99,14 @@ const Chat = ({ messages }: IProps): ReactElement => {
             width: 100%;
             border: 0;
             background: var(--light-alt);
+            font-family: 'Montserrat'; // because semantic-ui overrides it
+            font-weight: 700;
+            color: var(--gold);
           }
           ul {
             list-style: none;
             margin: 0;
-            padding: 0;
+            padding: 0 16px;
             height: 0;
             flex: 1 1 auto;
             overflow-y: auto;

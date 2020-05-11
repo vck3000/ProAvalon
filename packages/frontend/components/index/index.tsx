@@ -124,7 +124,7 @@ const Index = (): ReactElement => {
 
           .deception {
             padding-top: 20px;
-            font-family: Montserrat-ExtraBold;
+            font-weight: 800;
             font-size: 14px;
           }
           @media screen and (min-width: 200px) {
@@ -142,7 +142,7 @@ const Index = (): ReactElement => {
 
           .outwit {
             padding-top: 4px;
-            font-family: Montserrat-Thin;
+            font-weight: 100;
             font-size: 12px;
           }
           @media screen and (min-width: 200px) {
@@ -163,7 +163,7 @@ const Index = (): ReactElement => {
             text-justify: inter-word;
             text-align-last: center;
             margin-bottom: 25px;
-            font-family: Montserrat-Light;
+            font-weight: 300;
             font-size: 10px;
           }
           @media screen and (min-width: 200px) {
