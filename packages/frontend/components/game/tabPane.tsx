@@ -28,7 +28,7 @@ const TabPane = (): ReactElement => {
     <div>
       <ul>
         {tabs.map(({ text }, index) => (
-          <li>
+          <li key={text}>
             <a
               onClick={(): void => setActiveTab(index)}
               onKeyPress={(): void => setActiveTab(index)}
