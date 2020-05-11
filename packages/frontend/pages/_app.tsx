@@ -57,23 +57,28 @@ const MyApp = ({
       <style global jsx>
         {`
           @font-face {
-            font-family: 'Montserrat-Regular';
+            font-family: 'Montserrat';
+            font-weight: 400;
             src: url('/fonts/Montserrat/Montserrat-Regular.ttf');
           }
           @font-face {
-            font-family: 'Montserrat-Bold';
+            font-family: 'Montserrat';
+            font-weight: 700;
             src: url('/fonts/Montserrat/Montserrat-Bold.ttf');
           }
           @font-face {
-            font-family: 'Montserrat-ExtraBold';
+            font-family: 'Montserrat';
+            font-weight: 800;
             src: url('/fonts/Montserrat/Montserrat-ExtraBold.ttf');
           }
           @font-face {
-            font-family: 'Montserrat-Thin';
+            font-family: 'Montserrat';
+            font-weight: 100;
             src: url('/fonts/Montserrat/Montserrat-Thin.ttf');
           }
           @font-face {
-            font-family: 'Montserrat-Light';
+            font-family: 'Montserrat';
+            font-weight: 300;
             src: url('/fonts/Montserrat/Montserrat-Light.ttf');
           }
 
@@ -97,15 +102,15 @@ const MyApp = ({
           }
 
           .night {
-            --background: #1b1b1b;
+            --background: #232323;
             --text: #eeeeee;
             --text-gray: #4e4e44;
             --text-gray-light: #7c8089;
             --text-red: #894e3e;
             --text-pink: #f27474;
-            --light: #212121;
-            --light-inactive: black; // TODO: NEED DARK COLOR
-            --light-alt: #2f2e2a;
+            --light: #161614;
+            --light-inactive: #2e2e2e;
+            --light-alt: #312e27;
             --gold: #a37d18;
             --gold-light: #bda84f;
             --gold-hover: #8a6d20;
@@ -126,7 +131,7 @@ const MyApp = ({
           body {
             margin: 0px;
             overflow: hidden;
-            font-family: 'Montserrat-Regular', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             min-width: 200px;
             background-color: var(--background);
             color: var(--text);
