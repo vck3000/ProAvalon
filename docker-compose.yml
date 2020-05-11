@@ -19,6 +19,7 @@ services:
       - 27017:27017
     volumes:
       - mongo_data:/data/db
+      - mongo_config:/data/configdb
 
   # Web interface to access the mongoDB server.
   mongo-express:
@@ -51,7 +52,6 @@ services:
       REDIS_PORT: 6379
     volumes:
       - ./packages/backend:/usr/src/app/packages/backend
-      - /usr/src/app/packages/backend/node_modules
 
   frontend:
     container_name: frontend
@@ -67,9 +67,8 @@ services:
       BACKEND_URL: http://localhost:3001
     volumes:
       - ./packages/frontend:/usr/src/app/packages/frontend
-      - /usr/src/app/packages/frontend/node_modules
-      - /usr/src/app/packages/frontend/.next
-  # Uncomment to have a second set of servers
+
+  # Second set of servers
   backend2:
     container_name: backend2
     depends_on:
@@ -89,7 +88,7 @@ services:
       REDIS_PORT: 6379
     volumes:
       - ./packages/backend:/usr/src/app/packages/backend
-      - /usr/src/app/packages/backend/node_modules
+
   frontend2:
     container_name: frontend2
     ports:
@@ -104,9 +103,8 @@ services:
       BACKEND_URL: http://localhost:3003
     volumes:
       - ./packages/frontend:/usr/src/app/packages/frontend
-      - /usr/src/app/packages/frontend/node_modules
-      - /usr/src/app/packages/frontend/.next
 
 volumes:
   mongo_data:
+  mongo_config:
   redis_data:
