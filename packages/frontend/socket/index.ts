@@ -4,6 +4,9 @@ import io from 'socket.io-client';
 import Cookie from 'js-cookie';
 import Swal from 'sweetalert2';
 
+import { store } from '../store/index';
+import { logout } from '../store/user/actions';
+
 import { getBackendUrl } from '../utils/getEnvVars';
 import { SetSocketChatEvents } from './chat';
 import { SetSocketPlayersEvents } from './onlinePlayers';
@@ -42,7 +45,9 @@ class SocketConnection {
           icon: 'error',
           confirmButtonText: 'Log in',
           onClose: () => {
-            Router.push('/');
+            // Remove their auth token and logout to show the log in page.
+            Cookie.remove('AUTH_TOKEN');
+            store.dispatch(logout());
           },
         });
       });
