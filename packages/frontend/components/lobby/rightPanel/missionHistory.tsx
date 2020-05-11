@@ -23,8 +23,7 @@ const MissionHistory = (props: IOwnProps): ReactElement => {
         {`
           .wrapper {
             display: flex;
-            padding-left: 5px;
-            padding-top: 5px;
+            padding: 8px 0;
             margin: 0;
           }
 

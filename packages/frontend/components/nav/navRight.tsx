@@ -68,7 +68,7 @@ const LoggedIn = ({ user }: Props): ReactElement => {
             list-style-type: none;
           }
           a {
-            font-family: 'Montserrat-Bold';
+            font-weight: bold;
             color: white;
             padding: 8px;
             background: var(--gold);

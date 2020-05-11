@@ -94,7 +94,7 @@ const NavDesktop = (): ReactElement => {
             color: var(--gold);
             text-decoration: none;
             font-size: 16px;
-            font-family: Montserrat-Bold;
+            font-weight: bold;
             height: 100%;
             width: 100%;
             line-height: 32px;

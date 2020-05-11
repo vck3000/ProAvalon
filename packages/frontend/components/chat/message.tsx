@@ -26,7 +26,7 @@ const Message = (props: IOwnProps): ReactElement => {
       <style jsx>
         {`
           .wrapper {
-            font-family: Montserrat-Bold;
+            font-weight: bold;
             color: var(--text);
             opacity: ${opacity};
           }

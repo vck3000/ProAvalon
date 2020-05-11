@@ -27,16 +27,19 @@ const GameCard = (props: IOwnProps): ReactElement => {
     <Link href="/game/[id]" as={`/game/${data.id}`}>
       <div className="game_card">
         <div className="top_half">
-          <p className="room">ROOM #{data.id}</p>
+          <strong className="room">ROOM #{data.id}</strong>
           <MissionHistory missionHistory={data.missionHistory} />
-          <p className="host">
-            HOST: <span className="normal_font">{data.host}</span>
+          <p>
+            <strong>HOST: </strong>
+            {data.host}
           </p>
-          <p className="mode">
-            MODE: <span className="normal_font">{data.mode}</span>
+          <p>
+            <strong>MODE: </strong>
+            {data.mode}
           </p>
-          <p className="spectators">
-            SPECTATORS: <span className="normal_font">{data.spectators}</span>
+          <p>
+            <strong>SPECTATORS: </strong>
+            {data.spectators}
           </p>
         </div>
         <div className="bottom_half">
@@ -97,68 +100,47 @@ const GameCard = (props: IOwnProps): ReactElement => {
         </div>
         <style jsx>
           {`
-          p {
-            margin: 0;
-          }
+            p {
+              margin: 0;
+              color: var(--text-gray-light);
+            }
 
-          .game_card {
-            cursor: pointer;
-          }
+            .game_card {
+              cursor: pointer;
+            }
 
-          .game_card:hover {
-            opacity: 0.75;
-          }
+            .game_card:hover {
+              opacity: 0.75;
+            }
 
-          .normal_font {
-            font-family: Montserrat-Regular;
-          }
+            .top_half {
+              background-color: var(--light);
+              padding: 16px 16px 8px 16px;
+            }
 
-          .top_half {
-            font-family: Montserrat-Bold;
-            background-color: var(--light);
-            padding-top: 15px;
-            padding-left 15px;
-          }
+            .room {
+              color: var(--gold-light);
+            }
 
-          .room {
-            color: var(--gold-light);
-          }
+            .bottom_half {
+              background-color: var(--light-alt);
+              display: flex;
+              flex-wrap: nowrap;
+              flex-direction: column;
+              padding: 10px;
+            }
 
-          .host {
-            color: var(--text-gray-light);
-            padding-top: 3px;
-          }
+            .avatar_row {
+              display: flex;
+              justify-content: space-evenly;
+            }
 
-          .mode {
-            color: var(--text-gray-light);
-            padding-top: 1px;
-          }
-
-          .spectators {
-            color: var(--text-gray-light);
-            padding-top: 1px;
-            padding-bottom: 3px;
-          }
-
-          .bottom_half {
-            background-color: var(--light-alt);
-            display: flex;
-            flex-wrap: nowrap;
-            flex-direction: column;
-            padding: 10px;
-          }
-
-          .avatar_row {
-            display: flex;
-            justify-content: space-evenly;
-          }
-
-          .avatar {
-            max-width: 50px;
-            max-height: 50px;
-            width: 20%;
-          }
-        `}
+            .avatar {
+              max-width: 50px;
+              max-height: 50px;
+              width: 20%;
+            }
+          `}
         </style>
       </div>
     </Link>
