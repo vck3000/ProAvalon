@@ -26,8 +26,8 @@
     "test:int:jest": "jest --passWithNoTests --forceExit --runInBand --testRegex ispec\\.ts$",
     "redis-test:start": "npm run redis-test:stop && echo Starting up redis integration testing server && docker-compose -f docker-compose-redis-testing.yml up --abort-on-container-exit",
     "redis-test:start:circleci": "npm run redis-test:stop && echo Starting up redis integration testing server && docker-compose -f docker-compose-redis-testing-circleci.yml up --abort-on-container-exit",
-    "redis-test:stop": "echo Stopping redis integration testing server && docker-compose -f docker-compose-redis-testing.yml down",
-    "redis-test:stop:circleci": "echo Stopping redis integration testing server && docker-compose -f docker-compose-redis-testing-circleci.yml down"
+    "redis-test:stop": "echo Stopping redis integration testing server && docker-compose -f docker-compose-redis-testing.yml down -v",
+    "redis-test:stop:circleci": "echo Stopping redis integration testing server && docker-compose -f docker-compose-redis-testing-circleci.yml down -v"
   },
   "lint-staged": {
     "*.json": [

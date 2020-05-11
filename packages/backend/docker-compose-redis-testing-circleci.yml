@@ -5,7 +5,6 @@ services:
     container_name: redis-testing
     ports:
       - 6378:6379
-    entrypoint: redis-server --appendonly yes # Start with data persistance
 
   backend-testing:
     container_name: backend-testing
