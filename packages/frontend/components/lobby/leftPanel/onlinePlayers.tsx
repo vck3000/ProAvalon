@@ -63,14 +63,14 @@ const OnlinePlayers = ({ players, mobileView }: Props): ReactElement => {
 
           .online_players_inner_wrapper :global(.online_players) {
             color: var(--gold);
-            font-family: Montserrat-Bold;
+            font-family: Montserrat;
             text-align: center;
             background: var(--light);
             border: none;
           }
 
           .online_players_inner_wrapper :global(.row td) {
-            font-family: Montserrat-Bold;
+            font-family: Montserrat;
             color: var(--text);
             padding: 0.5em 1.2em;
             border: none;
