@@ -45,7 +45,7 @@
     ],
     "import/no-extraneous-dependencies": [
       "error",
-      { "devDependencies": ["**/*.spec.ts"] }
+      { "devDependencies": ["**/*.spec.ts", "**/*.ispec.ts"] }
     ],
     // Avoid conflict with Prettier
     "object-curly-newline": "off",
@@ -59,11 +59,12 @@
     "@typescript-eslint/no-unused-vars": [
       "error",
       { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
-    ]
+    ],
+    "lines-between-class-members": "off"
   },
   "overrides": [
     {
-      "files": "**/*{.spec,.e2e-spec}.ts",
+      "files": "**/*{.spec,.ispec,.e2e-spec}.ts",
       "rules": {
         "no-underscore-dangle": "off"
       }

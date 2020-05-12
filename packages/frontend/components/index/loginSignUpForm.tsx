@@ -2,7 +2,7 @@ import { ReactElement, useState } from 'react';
 import { Form, Button } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
-import { login, signup } from '../../store/auth/actions';
+import { login, signup } from '../../store/user/actions';
 
 interface IProps {
   dispatchLogin: typeof login;
@@ -116,7 +116,7 @@ const LoginSignupForm = ({
           .signup a {
             transition: color 0.1s ease;
             color: var(--gold);
-            font-family: Montserrat-Bold;
+            font-weight: bold;
             text-decoration: underline;
           }
 
@@ -127,7 +127,7 @@ const LoginSignupForm = ({
           .error {
             color: var(--text-pink);
             padding-bottom: 8px;
-            font-family: Montserrat-Bold;
+            font-weight: bold;
           }
         `}
       </style>
@@ -215,7 +215,7 @@ const LoginSignupForm = ({
           .signup a {
             transition: color 0.1s ease;
             color: var(--gold);
-            font-family: Montserrat-Bold;
+            font-weight: bold;
             text-decoration: underline;
           }
 
@@ -226,7 +226,7 @@ const LoginSignupForm = ({
           .error {
             color: var(--text-pink);
             padding-bottom: 8px;
-            font-family: Montserrat-Bold;
+            font-weight: bold;
           }
         `}
       </style>

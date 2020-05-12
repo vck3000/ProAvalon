@@ -9,13 +9,11 @@ import {
 import createSagaMiddleware from 'redux-saga';
 import { composeWithDevTools } from 'redux-devtools-extension';
 
-import userOptionsReducer from './userOptions/reducers';
-import { IUserOptionsState } from './userOptions/types';
 import systemReducer from './system/reducers';
 import { ISystemState } from './system/types';
 import chatReducer, { IChatState } from './chat/reducers';
-import playersReducer, { IOnlinePlayersState } from './onlinePlayers/reducers';
-import authReducer, { IAuthState } from './auth/reducers';
+import lobby from './lobby/reducer';
+import userReducer from './user/reducer';
 
 import rootSaga from './sagas';
 
@@ -23,17 +21,15 @@ import rootSaga from './sagas';
 // https://github.com/reduxjs/redux/pull/3679
 // ^explanation for combineReducers<{}>
 const rootReducer = combineReducers<{
-  userOptions: IUserOptionsState;
   system: ISystemState;
   chat: IChatState;
-  onlinePlayers: IOnlinePlayersState;
-  auth: IAuthState;
+  lobby: ReturnType<typeof lobby>;
+  user: ReturnType<typeof userReducer>;
 }>({
-  userOptions: userOptionsReducer,
   system: systemReducer,
   chat: chatReducer,
-  onlinePlayers: playersReducer,
-  auth: authReducer,
+  lobby,
+  user: userReducer,
 });
 
 const bindMiddleware = (middleware: Middleware[]): StoreEnhancer => {

@@ -1,40 +1,34 @@
 import { ReactElement } from 'react';
-import { Grid } from 'semantic-ui-react';
 
 import Layout from '../layout/layout';
 import GamesMenu from './rightPanel/gamesMenu';
 import HomeIndex from './leftPanel/homeIndex';
-import Chat from './mainPanel/chat';
+import Chat from '../chat/allChat';
 
 const LobbyDesktop = (): ReactElement => (
   <Layout>
     <div className="lobbyContent">
-      <Grid style={{ margin: 0 }}>
-        <Grid.Column width={4}>
-          <HomeIndex />
-        </Grid.Column>
-
-        <Grid.Column width={8}>
-          <Chat />
-        </Grid.Column>
-        <Grid.Column width={4} style={{ height: '100%', overflowY: 'auto' }}>
-          <GamesMenu />
-        </Grid.Column>
-      </Grid>
+      <div style={{ width: '25%' }}>
+        <HomeIndex />
+      </div>
+      <div style={{ width: '50%' }}>
+        <Chat />
+      </div>
+      <div style={{ height: '100%', width: '25%', overflowY: 'auto' }}>
+        <GamesMenu />
+      </div>
     </div>
     <style jsx>
       {`
         .lobbyContent {
+          display: flex;
           flex: 1;
           overflow: hidden;
           padding: 0 1rem 1rem 1rem;
-        }
-
-        .lobbyContent > :global(.grid) {
           height: 100%;
         }
 
-        .lobbyContent > :global(.grid) > :global(.column) {
+        .lobbyContent > div {
           padding: 0 1rem;
         }
       `}

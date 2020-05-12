@@ -1,54 +1,87 @@
-import { ReactElement } from 'react';
-import { Tab } from 'semantic-ui-react';
-import css from 'styled-jsx/css';
+import { ReactElement, useState } from 'react';
 
-const { className, styles } = css.resolve`
-  div > :global(.ui.attached.tabular.menu) > :global(.item) {
-    font-family: 'Montserrat-Bold';
-    background: var(--light-inactive);
-    border-radius: 0.75rem 0.75rem 0 0 !important;
-    padding: 0 0.75rem;
-    margin-right: 4px;
-    color: var(--text);
-    min-width: 132px;
-    justify-content: center;
-  }
+import AllChat from '../chat/allChat';
 
-  div > :global(.ui.attached.tabular.menu) > :global(.active.item) {
-    background: var(--light);
-    font-weight: 400;
-  }
+const tabs = [
+  {
+    text: 'ALL CHAT',
+    pane: <AllChat />,
+  },
+  {
+    text: 'GAME CHAT',
+    pane: 'Game Chat',
+  },
+  {
+    text: 'VOTE HISTORY',
+    pane: 'Vote History',
+  },
+  {
+    text: 'NOTES',
+    pane: 'Notes',
+  },
+];
 
-  div > :global(.attached.active.tab) {
-    background: var(--light);
-  }
-`;
+const TabPane = (): ReactElement => {
+  const [activeTab, setActiveTab] = useState(0);
 
-const TabPane = (): ReactElement => (
-  <>
-    <Tab
-      className={className}
-      panes={[
-        {
-          menuItem: 'ALL CHAT',
-          render: (): ReactElement => <Tab.Pane>All Chat</Tab.Pane>,
-        },
-        {
-          menuItem: 'GAME CHAT',
-          render: (): ReactElement => <Tab.Pane>Game Chat</Tab.Pane>,
-        },
-        {
-          menuItem: 'VOTE HISTORY',
-          render: (): ReactElement => <Tab.Pane>Vote History</Tab.Pane>,
-        },
-        {
-          menuItem: 'NOTES',
-          render: (): ReactElement => <Tab.Pane>Notes</Tab.Pane>,
-        },
-      ]}
-    />
-    {styles}
-  </>
-);
+  return (
+    <div>
+      <ul>
+        {tabs.map(({ text }, index) => (
+          <li key={text}>
+            <a
+              onClick={(): void => setActiveTab(index)}
+              onKeyPress={(): void => setActiveTab(index)}
+              tabIndex={0}
+              role="button"
+              style={
+                index === activeTab
+                  ? {
+                      background: 'var(--light)',
+                    }
+                  : undefined
+              }
+            >
+              {text}
+            </a>
+          </li>
+        ))}
+      </ul>
+      {tabs[activeTab].pane}
+      <style jsx>
+        {`
+          div {
+            height: 100%;
+            display: flex;
+            flex-flow: column;
+          }
+
+          ul {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+          }
+
+          li {
+            margin-right: 4px;
+            min-width: 132px;
+          }
+
+          a {
+            display: flex;
+            justify-content: center;
+            font-weight: bold;
+            background: var(--light-inactive);
+            border-radius: 0.75rem 0.75rem 0 0 !important;
+            padding: 0.75rem;
+            color: var(--text);
+            cursor: pointer;
+          }
+        `}
+      </style>
+    </div>
+  );
+};
 
 export default TabPane;

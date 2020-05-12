@@ -1,120 +1,48 @@
 import React, { ReactElement } from 'react';
-import { Table } from 'semantic-ui-react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { RootState } from '../../../store';
-import { IOnlinePlayer } from '../../../store/onlinePlayers/actions.types';
-import { MobileView } from '../../../store/system/types';
 
-interface IStateProps {
-  players: IOnlinePlayer[];
-  mobileView: MobileView;
-}
-
-type Props = IStateProps;
-
-const OnlinePlayers = ({ players, mobileView }: Props): ReactElement => {
+const OnlinePlayers = (): ReactElement => {
+  const players = useSelector((state: RootState) => state.lobby.onlinePlayers);
   const numPlayers = players.length;
 
   return (
     <>
-      <div className="wrapper">
-        <div className="online_players_inner_wrapper">
-          <Table
-            celled
-            compact
-            unstackable
-            style={{ background: 'transparent' }}
-          >
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell className="online_players">
-                  ONLINE PLAYERS ({numPlayers})
-                </Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-
-            <Table.Body>
-              {players.map((player) => (
-                <Table.Row key={player.username} className="row">
-                  <Table.Cell>{player.username}</Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table>
-        </div>
+      <div>
+        <strong>ONLINE PLAYERS ({numPlayers})</strong>
       </div>
+      <ul>
+        {players.map((player, i) => (
+          <li
+            key={player.username}
+            style={{
+              background: i % 2 === 0 ? 'var(--light-alt)' : 'var(--light)',
+            }}
+          >
+            {player.username}
+          </li>
+        ))}
+      </ul>
 
       <style jsx>
         {`
-          .wrapper {
-            height: 100%;
-            position: relative;
-          }
-
-          .online_players_inner_wrapper {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            height: 100%;
-          }
-
-          .online_players_inner_wrapper :global(.online_players) {
+          div {
+            padding: 12px;
+            background: var(--light);
             color: var(--gold);
-            font-family: Montserrat-Bold;
             text-align: center;
-            background: var(--light);
-            border: none;
           }
 
-          .online_players_inner_wrapper :global(.row td) {
-            font-family: Montserrat-Bold;
-            color: var(--text);
-            padding: 0.5em 1.2em;
-            border: none;
+          ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
           }
 
-          .online_players_inner_wrapper :global(.row:nth-child(odd)) {
-            background: var(--light-alt);
-          }
-
-          .online_players_inner_wrapper :global(.row:nth-child(even)) {
-            background: var(--light);
-          }
-
-          .online_players_inner_wrapper :global(table) {
-            border: none;
-            height: 100%;
-          }
-
-          .online_players_inner_wrapper :global(tbody) {
-            display: block;
-            overflow: auto;
-            height: 100%;
-          }
-
-          .online_players_inner_wrapper :global(th) {
-            padding: ${mobileView ? '0.7em !important' : '0.93em 0.78em'};
-          }
-
-          .online_players_inner_wrapper :global(th, tr) {
-            display: block;
-            width: 100%;
-          }
-
-          .online_players_inner_wrapper :global(tbody)::-webkit-scrollbar {
-            width: 0.5em;
-          }
-
-          .online_players_inner_wrapper
-            :global(tbody)::-webkit-scrollbar-track {
-            background-color: var(--light);
-          }
-
-          .online_players_inner_wrapper :global(tbody)::-webkit-scrollbar {
-            background-color: var(--light-alt);
+          li {
+            padding: 12px;
+            font-weight: bold;
           }
         `}
       </style>
@@ -122,12 +50,4 @@ const OnlinePlayers = ({ players, mobileView }: Props): ReactElement => {
   );
 };
 
-const mapStateToProps = (state: RootState): IStateProps => ({
-  players: state.onlinePlayers.players,
-  mobileView: state.system.mobileView,
-});
-
-export default connect(
-  mapStateToProps,
-  null,
-)(OnlinePlayers as () => ReactElement);
+export default OnlinePlayers;

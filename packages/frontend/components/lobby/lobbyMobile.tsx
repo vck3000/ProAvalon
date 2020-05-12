@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { RootState } from '../../store/index';
 import { WindowDimensions } from '../../store/system/types';
 
-import Chat from './mainPanel/chat';
+import Chat from '../chat/allChat';
 import HomeIndex from './leftPanel/homeIndex';
 import GamesMenu from './rightPanel/gamesMenu';
 import Layout from '../layout/layout';
@@ -131,7 +131,8 @@ const LobbyMobile = ({ windowDimensions }: Props): ReactElement => {
           }
 
           .carousel_indicator {
-            font-family: Montserrat-Bold;
+            font-family: Montserrat;
+            font-weight: bold;
             background-color: var(--background);
             color: var(--text-gray);
             font-size: 18px;

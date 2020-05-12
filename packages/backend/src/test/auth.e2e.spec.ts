@@ -4,7 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import * as request from 'supertest';
 import { TypegooseModule } from 'nestjs-typegoose';
-import { MongoMemoryServer } from 'mongodb-memory-server-core';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { AuthController } from '../auth/auth.controller';
 import { LocalStrategy } from '../auth/guards/local.strategy';
@@ -13,11 +13,26 @@ import { JWT_SECRET } from '../util/getEnvVars';
 import { UsersModule } from '../users/users.module';
 import { AuthModule } from '../auth/auth.module';
 import { AllChatModule } from '../all-chat/all-chat.module';
-import RedisClientModule from '../redis-client/redis-client.module';
-// import { RedisSocketIoAdapter } from '../util/redisSocketIoAdapter';
+import { RedisClientModule } from '../redis-client/redis-client.module';
+import RedisClientService from '../redis-client/redis-client.service';
 
 // Allow extra time for mongodb-memory-server to download if needed
 jest.setTimeout(600000);
+
+// Mock our redis client
+const redisClientServiceMock = {
+  redisClient: {
+    get: jest.fn(),
+    set: jest.fn(),
+    zadd: jest.fn(),
+    zrange: jest.fn(),
+    del: jest.fn(),
+    zrem: jest.fn(),
+  },
+};
+// The following may need to be in individual tests later on
+redisClientServiceMock.redisClient.get.mockImplementation(() => null);
+redisClientServiceMock.redisClient.zrange.mockImplementation(() => []);
 
 describe('Auth', () => {
   let app: INestApplication;
@@ -47,11 +62,15 @@ describe('Auth', () => {
       ],
       controllers: [AuthController],
       providers: [LocalStrategy, JwtStrategy],
-    }).compile();
+    })
+      // Give in our mock redis client
+      .overrideProvider(RedisClientService)
+      .useValue(redisClientServiceMock)
+      .compile();
 
     app = moduleRef.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
-    // app.useWebSocketAdapter(new RedisSocketIoAdapter(app));
+
     await app.init();
   });
 
@@ -93,7 +112,7 @@ describe('Auth', () => {
       .expect({
         username: 'test_user',
       });
-  });
+  }, 2000);
 
   it('should not create user if username or email exists', async () => {
     // Good signup
@@ -128,7 +147,7 @@ describe('Auth', () => {
       })
       .expect(HttpStatus.BAD_REQUEST)
       .expect('Email already exists: test@gmail.com.');
-  });
+  }, 2000);
 
   it('should create user on good input', async () => {
     // Good signup
@@ -163,7 +182,7 @@ describe('Auth', () => {
       })
       .expect(HttpStatus.CREATED)
       .expect('Signed up username: test-user.');
-  });
+  }, 2000);
 
   it('should not login user on bad password', async () => {
     // Good signup
@@ -185,14 +204,14 @@ describe('Auth', () => {
         password: 'bad_password',
       })
       .expect(HttpStatus.UNAUTHORIZED);
-  });
+  }, 2000);
 
   it('should not get profile if auth key is not provided', async () => {
     // No auth key provided
     await request(app.getHttpServer())
       .get('/auth/profile')
       .expect(HttpStatus.UNAUTHORIZED);
-  });
+  }, 2000);
 
   it('should not give the profile if auth key is incorrect', async () => {
     // Good signup
@@ -224,7 +243,7 @@ describe('Auth', () => {
       .get('/auth/profile')
       .set('Authorization', `Bearer ${AUTH_KEY}asdf`)
       .expect(HttpStatus.UNAUTHORIZED);
-  });
+  }, 2000);
 
   it('should update displayUsername on login', async () => {
     // Good signup
@@ -281,7 +300,7 @@ describe('Auth', () => {
       .expect({
         username: 'ASdf',
       });
-  });
+  }, 2000);
 
   it('should update displayUsername on login', async () => {
     // Good signup
@@ -338,5 +357,5 @@ describe('Auth', () => {
       .expect({
         username: 'ASdf',
       });
-  });
+  }, 2000);
 });

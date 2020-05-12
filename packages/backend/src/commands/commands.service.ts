@@ -4,7 +4,7 @@ import UserCommands from './user-commands/user-commands';
 import ModCommands from './mod-commands/mod-commands';
 import AdminCommands from './admin-commands/admin-commands';
 import { Command } from './commands.types';
-import RedisAdapter from '../redis-adapter/redis-adapter.service';
+import RedisAdapterService from '../redis-adapter/redis-adapter.service';
 import {
   SocketEvents,
   ChatResponseType,
@@ -19,7 +19,7 @@ const allCommands: Record<string, Command> = {
 
 @Injectable()
 export class CommandsService {
-  constructor(private redisAdapter: RedisAdapter) {}
+  constructor(private redisAdapter: RedisAdapterService) {}
 
   runCommand(text: string, senderSocket: SocketUser) {
     // Get first word excluding the initial slash
@@ -28,8 +28,6 @@ export class CommandsService {
 
     // Remove the command from the splitted to then give to the command.
     splitted.shift();
-
-    // console.log(Object.keys(allCommands));
 
     if (allCommands[command]) {
       allCommands[command].run(splitted, senderSocket, this.redisAdapter);

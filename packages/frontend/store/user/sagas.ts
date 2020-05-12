@@ -12,7 +12,7 @@ import {
   ILoginAction,
   LOGOUT,
   LOGIN_SUCCESS,
-} from './action.types';
+} from './types';
 import { Post } from '../../axios';
 
 import {
@@ -34,11 +34,14 @@ const SwalCall = (opts: any): Promise<void> => {
 };
 
 export function* signup(action: ISignupAction): SagaIterator {
+  const {
+    payload: { username, password, email },
+  } = action;
   try {
     const res = yield call(Post, '/auth/signup', {
-      username: action.username,
-      password: action.password,
-      email: action.email,
+      username,
+      password,
+      email,
     });
 
     yield call(SwalCall, {
@@ -48,9 +51,7 @@ export function* signup(action: ISignupAction): SagaIterator {
     });
 
     // Login after a successful signup.
-    yield put(
-      loginAction({ username: action.username, password: action.password }),
-    );
+    yield put(loginAction({ username, password }));
   } catch (e) {
     yield call(SwalCall, {
       title: 'Oops',
@@ -60,11 +61,13 @@ export function* signup(action: ISignupAction): SagaIterator {
   }
 }
 
-export function* login(action: ILoginAction): SagaIterator {
+export function* login({
+  payload: { username, password },
+}: ILoginAction): SagaIterator {
   try {
     const response = yield call(Post, '/auth/login', {
-      username: action.username,
-      password: action.password,
+      username,
+      password,
     });
 
     yield call(Cookie.set, 'AUTH_TOKEN', response.data.token, {
@@ -73,7 +76,13 @@ export function* login(action: ILoginAction): SagaIterator {
       expires: response.data.expires / 86400, // Convert seconds to number of days (as float)
     });
 
-    yield put(loginSuccessAction({ username: action.username }));
+    // TODO: settings should not be hardcoded. Either get the data from the server or tap localstorage
+    yield put(
+      loginSuccessAction({
+        displayName: username,
+        settings: { theme: 'night', buzzable: true },
+      }),
+    );
   } catch (e) {
     yield call(SwalCall, {
       title: 'Oops',

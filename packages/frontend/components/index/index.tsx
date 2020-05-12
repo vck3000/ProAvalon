@@ -1,24 +1,13 @@
 import { ReactElement } from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import NavIndex from '../nav/navIndex';
 import { RootState } from '../../store/index';
-import { ThemeOptions, IUserOptionsState } from '../../store/userOptions/types';
-import { setTheme } from '../../store/userOptions/actions';
-import { ISystemState, MobileView } from '../../store/system/types';
 import LoginSignupForm from './loginSignUpForm';
 
-interface IProps {
-  theme: ThemeOptions;
-  dispatchSetTheme: typeof setTheme;
-  mobileView: MobileView;
-}
+const Index = (): ReactElement => {
+  const mobileView = useSelector((state: RootState) => state.system.mobileView);
 
-const Index = ({
-  theme,
-  dispatchSetTheme,
-  mobileView,
-}: IProps): ReactElement => {
   return (
     <div className="background">
       <title>Home</title>
@@ -50,17 +39,6 @@ const Index = ({
               alt="login_glow"
             />
             <LoginSignupForm />
-          </div>
-          <div>
-            Dark theme
-            <input
-              type="checkbox"
-              checked={theme.name === 'night'}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
-                const themeName = e.target.checked ? 'night' : 'day';
-                dispatchSetTheme(themeName);
-              }}
-            />
           </div>
         </div>
       </div>
@@ -146,7 +124,7 @@ const Index = ({
 
           .deception {
             padding-top: 20px;
-            font-family: Montserrat-ExtraBold;
+            font-weight: 800;
             font-size: 14px;
           }
           @media screen and (min-width: 200px) {
@@ -164,7 +142,7 @@ const Index = ({
 
           .outwit {
             padding-top: 4px;
-            font-family: Montserrat-Thin;
+            font-weight: 100;
             font-size: 12px;
           }
           @media screen and (min-width: 200px) {
@@ -185,7 +163,7 @@ const Index = ({
             text-justify: inter-word;
             text-align-last: center;
             margin-bottom: 25px;
-            font-family: Montserrat-Light;
+            font-weight: 300;
             font-size: 10px;
           }
           @media screen and (min-width: 200px) {
@@ -206,15 +184,4 @@ const Index = ({
   );
 };
 
-const mapStateToProps = (
-  state: RootState,
-): Pick<ISystemState & IUserOptionsState, 'mobileView' | 'theme'> => ({
-  mobileView: state.system.mobileView,
-  theme: state.userOptions.theme,
-});
-
-const mapDispatchToProps = {
-  dispatchSetTheme: setTheme,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Index);
+export default Index;

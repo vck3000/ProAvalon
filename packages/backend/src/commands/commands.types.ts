@@ -1,5 +1,5 @@
 import { SocketUser } from '../users/users.socket';
-import RedisAdapter from '../redis-adapter/redis-adapter.service';
+import RedisAdapterService from '../redis-adapter/redis-adapter.service';
 
 export interface Command {
   command: string;
@@ -7,6 +7,6 @@ export interface Command {
   run: (
     data: string[],
     senderSocket: SocketUser,
-    redisAdapter: RedisAdapter,
+    redisAdapter: RedisAdapterService,
   ) => void;
 }

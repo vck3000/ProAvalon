@@ -17,4 +17,9 @@ export default class Game {
     this.logger.log(`Storing chat -> ${chat.username}: ${chat.text}`);
     this.chatHistory.push(chat);
   }
+
+  getChat() {
+    this.logger.log('Getting full chat...');
+    // Fetch from redis database
+  }
 }

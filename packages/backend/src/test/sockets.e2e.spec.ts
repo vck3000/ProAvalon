@@ -10,7 +10,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import * as request from 'supertest';
 import { TypegooseModule } from 'nestjs-typegoose';
-import { MongoMemoryServer } from 'mongodb-memory-server-core';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { AuthController } from '../auth/auth.controller';
 import { LocalStrategy } from '../auth/guards/local.strategy';
@@ -19,7 +19,7 @@ import { JWT_SECRET, JWT_EXPIRY } from '../util/getEnvVars';
 import { UsersModule } from '../users/users.module';
 import { AuthModule } from '../auth/auth.module';
 import { AllChatModule } from '../all-chat/all-chat.module';
-import RedisClientModule from '../redis-client/redis-client.module';
+import { RedisClientModule } from '../redis-client/redis-client.module';
 import {
   SocketEvents,
   ChatRequest,

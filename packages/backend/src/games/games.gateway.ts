@@ -18,7 +18,7 @@ import {
   ChatRequest,
 } from '../../proto/lobbyProto';
 import { SocketUser } from '../users/users.socket';
-import RedisAdapter from '../redis-adapter/redis-adapter.service';
+import RedisAdapterService from '../redis-adapter/redis-adapter.service';
 import { CommandsService } from '../commands/commands.service';
 
 @WebSocketGateway()
@@ -30,7 +30,7 @@ export class GamesGateway {
   constructor(
     // private redisAdapter: RedisAdapter,
     private gamesService: GamesService,
-    private redisAdapter: RedisAdapter,
+    private redisAdapter: RedisAdapterService,
     private commandsService: CommandsService,
   ) {}
 
@@ -71,9 +71,9 @@ export class GamesGateway {
       }
 
       // Get the user's possible game rooms
-      const gameRooms = (
-        await this.redisAdapter.clientRooms(socket.id)
-      ).filter((room) => room.includes('game'));
+      const gameRooms = Object.keys(socket.rooms).filter((room) =>
+        room.includes('game'),
+      );
 
       if (gameRooms.length !== 1) {
         this.logger
@@ -85,7 +85,7 @@ export class GamesGateway {
 
       // socket.io-redis room name: 'game<id>'
       const room = gameRooms[0];
-      const id = parseInt(room.replace('game', ''), 10);
+      const id = parseInt(room.replace('game:', ''), 10);
 
       // Chat message
       this.logger.log(
@@ -114,6 +114,7 @@ export class GamesGateway {
 
   @SubscribeMessage(SocketEvents.CREATE_GAME)
   async handleCreateGame(_socket: SocketUser) {
+    this.logger.log('Received create game request');
     return this.gamesService.createGame();
   }
 
@@ -121,7 +122,7 @@ export class GamesGateway {
   async handleJoinGame(socket: SocketUser, joinGame: JoinGame) {
     if (joinGame.id && this.gamesService.hasGame(joinGame.id)) {
       // Join the socket io room
-      socket.join(`game${joinGame.id}`);
+      socket.join(`game:${joinGame.id}`);
 
       this.logger.log(
         `${socket.user.displayUsername} has joined game ${joinGame.id}.`,
@@ -139,7 +140,7 @@ export class GamesGateway {
         this.gamesService.storeChat(joinGame.id, chatResponse);
 
         this.server
-          .to(`game${joinGame.id}`)
+          .to(`game:${joinGame.id}`)
           .emit(SocketEvents.GAME_CHAT_TO_CLIENT, chatResponse);
       } catch (err) {
         this.logger.error('Validation failed. Error: ', err);
@@ -153,7 +154,7 @@ export class GamesGateway {
   async handleLeaveGame(socket: SocketUser, leaveGame: LeaveGame) {
     if (leaveGame.id && this.gamesService.hasGame(leaveGame.id)) {
       // Leave the socket io room
-      socket.leave(`game${leaveGame.id}`);
+      socket.leave(`game:${leaveGame.id}`);
 
       this.logger.log(
         `${socket.user.displayUsername} has left game ${leaveGame.id}.`,
@@ -171,7 +172,7 @@ export class GamesGateway {
         this.gamesService.storeChat(leaveGame.id, chatResponse);
 
         this.server
-          .to(`game${leaveGame.id}`)
+          .to(`game:${leaveGame.id}`)
           .emit(SocketEvents.GAME_CHAT_TO_CLIENT, chatResponse);
       } catch (err) {
         this.logger.error('Validation failed. Error: ', err);

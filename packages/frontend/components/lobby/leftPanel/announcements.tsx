@@ -46,7 +46,7 @@ const Announcements = ({ announcements, mobileView }: Props): ReactElement => {
           }
 
           .announcements_header {
-            font-family: Montserrat-Bold;
+            font-weight: bold;
             text-align: center;
             color: var(--announce-gold-text);
             padding: ${mobileView ? '0.7em' : '0.93em 0.78em'};
@@ -54,7 +54,6 @@ const Announcements = ({ announcements, mobileView }: Props): ReactElement => {
           }
 
           .announcements {
-            font-family: Montserrat-Regular;
             color: var(--gold);
             background: var(--light-alt);
             padding: ${mobileView ? '0.5em' : '0.7em'};

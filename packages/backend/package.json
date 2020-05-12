@@ -20,7 +20,14 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "dev": "nest start --watch --preserveWatchOutput"
+    "dev": "nest start --watch --preserveWatchOutput",
+    "test:int": "npm run redis-test:start && npm run redis-test:stop",
+    "test:int:circleci": "npm run redis-test:start:circleci && npm run redis-test:stop:circleci",
+    "test:int:jest": "jest --passWithNoTests --forceExit --runInBand --testRegex ispec\\.ts$",
+    "redis-test:start": "npm run redis-test:stop && echo Starting up redis integration testing server && docker-compose -f docker-compose-redis-testing.yml up --abort-on-container-exit",
+    "redis-test:start:circleci": "npm run redis-test:stop && echo Starting up redis integration testing server && docker-compose -f docker-compose-redis-testing-circleci.yml up --abort-on-container-exit",
+    "redis-test:stop": "echo Stopping redis integration testing server && docker-compose -f docker-compose-redis-testing.yml down -v",
+    "redis-test:stop:circleci": "echo Stopping redis integration testing server && docker-compose -f docker-compose-redis-testing-circleci.yml down -v"
   },
   "lint-staged": {
     "*.json": [
@@ -28,8 +35,7 @@
     ],
     "./src/**/*.{js,jsx,ts,tsx,css,scss}": [
       "prettier --write",
-      "npm run lint",
-      "npm run test"
+      "npm run lint"
     ]
   },
   "dependencies": {
@@ -88,7 +94,7 @@
     "eslint-plugin-import": "^2.20.1",
     "jest": "^25.3.0",
     "lint-staged": "^10.1.3",
-    "mongodb-memory-server-core": "^6.5.2",
+    "mongodb-memory-server": "^6.5.2",
     "node-mocks-http": "^1.8.1",
     "prettier": "^1.19.1",
     "supertest": "^4.0.2",
@@ -105,7 +111,7 @@
       "ts"
     ],
     "rootDir": "src",
-    "testRegex": ".spec.ts$",
+    "testRegex": "\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
