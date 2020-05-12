@@ -1,4 +1,5 @@
-import { arrayProp, prop } from '@typegoose/typegoose';
+import { prop, Ref } from '@typegoose/typegoose';
+import { ForumComment } from './forum-comment.model';
 
 export class ForumPost {
   // #AddAuthorToPost
@@ -12,6 +13,6 @@ export class ForumPost {
   @prop({ required: true })
   text!: string;
 
-  @arrayProp({ items: String })
-  replyIds!: string[];
+  @prop({ ref: ForumComment })
+  replies!: Ref<ForumComment>[];
 }

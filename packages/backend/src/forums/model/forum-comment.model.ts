@@ -1,4 +1,4 @@
-import { prop } from '@typegoose/typegoose';
+import { prop, Ref } from '@typegoose/typegoose';
 
 export class ForumComment {
   // #AddAuthorToPost
@@ -8,4 +8,10 @@ export class ForumComment {
 
   @prop({ required: true })
   text!: string;
+
+  @prop({ ref: ForumComment })
+  replies!: Ref<ForumComment>[];
+
+  @prop({ required: true })
+  isTopLevel!: boolean;
 }

@@ -1,11 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from 'nestjs-typegoose';
-import { ReturnModelType } from '@typegoose/typegoose';
+import { ReturnModelType, DocumentType } from '@typegoose/typegoose';
 
 import { CreateForumPostDto } from './dto/create-forumpost.dto';
 import { CreateForumCommentDto } from './dto/create-forumcomment.dto';
-import { ForumPost } from './model/forumpost.model';
-import { ForumComment } from './model/forumcomment.model';
+import { ForumPost } from './model/forum-post.model';
+import { ForumComment } from './model/forum-comment.model';
+
 
 @Injectable()
 export class ForumsService {
@@ -27,10 +28,31 @@ export class ForumsService {
   async addComment(createForumCommentDto : CreateForumCommentDto) {
     // #AddAuthorToPost
     // These posts are being created authorless atm,
-    const result = await this.ForumCommentModel.create(createForumCommentDto);
-    const parent = await this.findPost(createForumCommentDto.parentId);
-    parent.replyIds.push(result.id as string);
-    await parent.save();
+    let parent;
+    let isTopLevel;
+    parent = await this.ForumPostModel.findById(createForumCommentDto.parentId);
+    if (parent) {
+      isTopLevel = true;
+    } else {
+      parent = await this.ForumCommentModel.findById(createForumCommentDto.parentId);
+
+      if (!parent) {
+        throw new NotFoundException('Cannot find post or comment with specified id.');
+      }
+
+      // Only allow 1 level of nesting
+      if (!parent.isTopLevel) {
+        throw new BadRequestException('Cannot reply to a non-parent comment.');
+      }
+      isTopLevel = false;
+    }
+
+    const result = await this.ForumCommentModel.create({ ...createForumCommentDto, isTopLevel });
+    parent.replies.push(result.id);
+    // This is a hack so Typescript is happy :)
+    // Do not use the return value of this .save()!
+    await (parent as DocumentType<ForumPost>).save();
+    await result.save();
     return result.id as string;
   }
 
@@ -46,20 +68,37 @@ export class ForumsService {
     return this.findPost(id);
   }
 
-  async getComments(id: string) {
+  async getParentComments(id: string) {
     const parent = await this.findPost(id);
-    const commentIds = parent.replyIds;
+    const commentIds = parent.replies;
     const comments = await this.ForumCommentModel.find({
       _id: commentIds,
     });
     return comments as ForumComment[];
   }
 
-  private async findPost(id: string): Promise<any> {
+  async getChildComments(id: string) {
+    const parent = await this.findComment(id);
+    const commentIds = parent.replies;
+    const comments = await this.ForumCommentModel.find({
+      _id: commentIds,
+    });
+    return comments as ForumComment[];
+  }
+
+  private async findPost(id: string): Promise<DocumentType<ForumPost>> {
     const post = await this.ForumPostModel.findById(id);
     if (!post) {
       throw new NotFoundException('Could not find forum post.');
     }
     return post;
+  }
+
+  private async findComment(id: string): Promise<DocumentType<ForumComment>> {
+    const comment = await this.ForumCommentModel.findById(id);
+    if (!comment) {
+      throw new NotFoundException('Could not find forum comment.');
+    }
+    return comment;
   }
 }

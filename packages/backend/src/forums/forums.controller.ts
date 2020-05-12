@@ -15,7 +15,7 @@ export class ForumsController {
     return { id: postId };
   }
 
-  @Post('reply')
+  @Post('comment')
   async addNewForumComment(
     @Body() createForumCommentDto: CreateForumCommentDto,
   ) {
@@ -35,6 +35,11 @@ export class ForumsController {
 
   @Get(':id/comments')
   async getComments(@Param('id') parentId: string) {
-    return this.forumsService.getComments(parentId);
+    return this.forumsService.getParentComments(parentId);
+  }
+
+  @Get(':id/comment-replies')
+  async getCommentReplies(@Param('id') parentId: string) {
+    return this.forumsService.getChildComments(parentId);
   }
 }

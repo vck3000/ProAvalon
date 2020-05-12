@@ -6,8 +6,8 @@ import { MongoMemoryServer } from 'mongodb-memory-server-core';
 import { ForumsController } from '../forums/forums.controller';
 import { ForumsModule } from '../forums/forums.module';
 import { ForumsService } from '../forums/forums.service';
-import { ForumPost } from '../forums/model/forumpost.model';
-import { ForumComment } from '../forums/model/forumcomment.model';
+import { ForumPost } from '../forums/model/forum-post.model';
+import { ForumComment } from '../forums/model/forum-comment.model';
 
 
 describe('Forums', () => {
@@ -44,6 +44,7 @@ describe('Forums', () => {
     let POST_ID_1;
     let POST_ID_2;
     let COMMENT_ID;
+    let CHILD_COMMENT_ID;
     const POST_TITLE = 'Post title';
     const POST_TEXT = 'Post text';
     const COMMENT_TEXT = 'Comment text';
@@ -73,7 +74,7 @@ describe('Forums', () => {
 
     // Can make a comment in forums
     await request(app.getHttpServer())
-      .post('/forums/reply')
+      .post('/forums/comment')
       .send({
         parentId: POST_ID_1,
         text: COMMENT_TEXT,
@@ -82,6 +83,27 @@ describe('Forums', () => {
       .then((resp) => {
         COMMENT_ID = resp.body.id;
       });
+
+    // Can add non top level comment in forums
+    await request(app.getHttpServer())
+      .post('/forums/comment')
+      .send({
+        parentId: COMMENT_ID,
+        text: COMMENT_TEXT,
+      })
+      .expect(HttpStatus.CREATED)
+      .then((resp) => {
+        CHILD_COMMENT_ID = resp.body.id;
+      });
+
+    // Ensure error is thrown when trying to add grandchild comment
+    await request(app.getHttpServer())
+      .post('/forums/comment')
+      .send({
+        parentId: CHILD_COMMENT_ID,
+        text: COMMENT_TEXT,
+      })
+      .expect(HttpStatus.BAD_REQUEST);
 
     // Can get all posts from forums
     const getAllPostsResponse = await request(app.getHttpServer())
@@ -107,7 +129,7 @@ describe('Forums', () => {
       _id: POST_ID_1,
       title: POST_TITLE,
       text: POST_TEXT,
-      replyIds: [COMMENT_ID],
+      replies: [COMMENT_ID],
     }));
 
     // Can get comments of post
@@ -117,6 +139,16 @@ describe('Forums', () => {
     expect(getCommentsResponse.body).toHaveLength(1);
     expect(getCommentsResponse.body[0]).toEqual(expect.objectContaining({
       _id: COMMENT_ID,
+      text: COMMENT_TEXT,
+    }));
+
+    // Can get child comments of a post
+    const getChildCommentsResponse = await request(app.getHttpServer())
+      .get(`/forums/${COMMENT_ID}/comment-replies`)
+      .expect(HttpStatus.OK);
+    expect(getChildCommentsResponse.body).toHaveLength(1);
+    expect(getChildCommentsResponse.body[0]).toEqual(expect.objectContaining({
+      _id: CHILD_COMMENT_ID,
       text: COMMENT_TEXT,
     }));
   });

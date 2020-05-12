@@ -3,8 +3,8 @@ import { TypegooseModule } from 'nestjs-typegoose';
 
 import { ForumsController } from './forums.controller';
 import { ForumsService } from './forums.service';
-import { ForumPost } from './model/forumpost.model';
-import { ForumComment } from './model/forumcomment.model';
+import { ForumPost } from './model/forum-post.model';
+import { ForumComment } from './model/forum-comment.model';
 
 @Module({
   imports: [TypegooseModule.forFeature([ForumPost, ForumComment])],
