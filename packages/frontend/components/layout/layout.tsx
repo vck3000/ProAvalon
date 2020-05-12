@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { connect } from 'react-redux';
+import Head from 'next/head';
 import Link from 'next/link';
-import { Grid } from 'semantic-ui-react';
 
 import { RootState } from '../../store';
 import { MobileView as MobileViewType } from '../../store/system/types';
@@ -11,13 +11,14 @@ import NavMobile from '../nav/navMobile';
 
 interface IOwnProps {
   children: React.ReactNode;
+  title?: string;
 }
 
 type Props = IOwnProps & IStateProps;
 
 const DesktopView = (): ReactElement => (
   <>
-    <Grid.Column width={4} style={{ textAlign: 'center' }}>
+    <div style={{ textAlign: 'center', width: '25%' }}>
       <Link href="/">
         <a>
           <img
@@ -27,10 +28,10 @@ const DesktopView = (): ReactElement => (
           />
         </a>
       </Link>
-    </Grid.Column>
-    <Grid.Column width={12}>
+    </div>
+    <div style={{ flex: 1, paddingLeft: '1rem' }}>
       <NavDesktop />
-    </Grid.Column>
+    </div>
   </>
 );
 
@@ -49,13 +50,18 @@ const MobileView = (): ReactElement => (
   </>
 );
 
-const Layout = ({ children, mobileView }: Props): ReactElement => (
-  <Grid style={{ flexFlow: 'column', height: '100%', margin: 0 }}>
-    <Grid.Row style={{ padding: '1rem', alignItems: 'center' }}>
-      {mobileView ? <MobileView /> : <DesktopView />}
-    </Grid.Row>
-    {children}
-  </Grid>
+const Layout = ({ children, mobileView, title }: Props): ReactElement => (
+  <>
+    <Head>
+      <title>{title || 'ProAvalon'}</title>
+    </Head>
+    <div style={{ display: 'flex', flexFlow: 'column', height: '100%' }}>
+      <div style={{ display: 'flex', padding: '1rem', alignItems: 'center' }}>
+        {mobileView ? <MobileView /> : <DesktopView />}
+      </div>
+      {children}
+    </div>
+  </>
 );
 
 interface IStateProps {
