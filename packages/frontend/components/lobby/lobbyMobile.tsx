@@ -131,6 +131,7 @@ const LobbyMobile = ({ windowDimensions }: Props): ReactElement => {
           }
 
           .carousel_indicator {
+            font-family: Montserrat;
             font-weight: bold;
             background-color: var(--background);
             color: var(--text-gray);
