@@ -153,7 +153,7 @@ describe('Forums', () => {
       .get(`/forums/${COMMENT_ID}/comment-replies`)
       .expect(HttpStatus.OK);
     expect(getChildCommentsResponse.body).toHaveLength(1);
-    
+
     return expect(getChildCommentsResponse.body[0]).toEqual(expect.objectContaining({
       _id: CHILD_COMMENT_ID,
       text: COMMENT_TEXT,
