@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from 'nestjs-typegoose';
 import { ForumsService } from '../forums.service';
-import { mockForumPost } from './forums.consts';
+import { mockForumPost, mockForumComment } from './forums.consts';
 
 describe('ForumsService', () => {
   let service: ForumsService;
@@ -12,6 +12,10 @@ describe('ForumsService', () => {
         {
           provide: getModelToken('ForumPost'),
           useValue: mockForumPost,
+        },
+        {
+          provide: getModelToken('ForumComment'),
+          useValue: mockForumComment,
         }, ForumsService],
     }).compile();
 

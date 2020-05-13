@@ -1,6 +1,7 @@
 import { Controller, Post, Get, Param, Body } from '@nestjs/common';
 import { ForumsService } from './forums.service';
 import { CreateForumPostDto } from './dto/create-forumpost.dto';
+import { CreateForumCommentDto } from './dto/create-forumcomment.dto';
 
 @Controller('forums')
 export class ForumsController {
@@ -14,15 +15,31 @@ export class ForumsController {
     return { id: postId };
   }
 
+  @Post('comment')
+  async addNewForumComment(
+    @Body() createForumCommentDto: CreateForumCommentDto,
+  ) {
+    const commentId = await this.forumsService.addComment(createForumCommentDto);
+    return { id: commentId };
+  }
+
   @Get()
   async getAllPosts() {
-    const posts = await this.forumsService.getPosts();
-    return posts;
+    return this.forumsService.getPosts();
   }
 
   @Get(':id')
   async getPost(@Param('id') postId: string) {
-    const post = await this.forumsService.getPost(postId);
-    return post;
+    return this.forumsService.getPost(postId);
+  }
+
+  @Get(':id/comments')
+  async getComments(@Param('id') parentId: string) {
+    return this.forumsService.getParentComments(parentId);
+  }
+
+  @Get(':id/comment-replies')
+  async getCommentReplies(@Param('id') parentId: string) {
+    return this.forumsService.getChildComments(parentId);
   }
 }
