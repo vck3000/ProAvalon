@@ -1,244 +1,208 @@
 import { ReactElement, useState } from 'react';
-import { Form, Button } from 'semantic-ui-react';
-import { connect } from 'react-redux';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { useDispatch } from 'react-redux';
+import css from 'styled-jsx/css';
 
 import { login, signup } from '../../store/user/actions';
+import Icon from '../icon';
 
-interface IProps {
-  dispatchLogin: typeof login;
-  dispatchSignup: typeof signup;
-}
+const { styles, className } = css.resolve`
+  form {
+    display: flex;
+    flex-flow: column;
+    min-width: 200px;
+  }
 
-const LoginSignupForm = ({
-  dispatchLogin,
-  dispatchSignup,
-}: IProps): ReactElement => {
-  const [inputs, setInputs] = useState({
-    username: '',
-    password: '',
-    confirmPassword: '',
-    email: '',
-  });
+  input {
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    width: 100%;
+  }
+
+  div {
+    color: var(--text-pink);
+    font-weight: bold;
+  }
+`;
+
+const Error = ({ name }: { name: string }): ReactElement => (
+  <ErrorMessage name={name}>
+    {(message): ReactElement => <div className={className}>{message}</div>}
+  </ErrorMessage>
+);
+
+const LoginSignupForm = (): ReactElement => {
+  const dispatch = useDispatch();
 
   const [showLoginForm, setLoginForm] = useState(true);
 
-  const [error, setError] = useState('');
-
-  const checkInputs = (): boolean => {
-    if (inputs.username === '') {
-      setError('Please provide a username.');
-      return false;
-    }
-
-    if (inputs.password.length < 4) {
-      setError('Password must be at least 4 letters long...');
-      return false;
-    }
-
-    if (!showLoginForm && inputs.password !== inputs.confirmPassword) {
-      setError('Passwords do not match!');
-      return false;
-    }
-
-    if (!showLoginForm && inputs.email === '') {
-      setError('Please provide an email address.');
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    e.persist();
-    return setInputs(() => ({ ...inputs, [e.target.name]: e.target.value }));
-  };
-
-  const loginForm = (
+  return (
     <>
-      <Form
-        onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-          handleInputChange(e)
-        }
-        onSubmit={(e: React.FormEvent<HTMLFormElement>): void => {
-          e.preventDefault();
+      <Formik
+        initialValues={{
+          username: '',
+          password: '',
+          confirmPassword: '',
+          email: '',
+        }}
+        validate={(values): Partial<typeof values> => {
+          const errors: Partial<typeof values> = {};
 
-          if (!checkInputs()) {
-            return;
+          if (!values.username) {
+            errors.username = 'Required';
           }
 
-          dispatchLogin({
-            username: inputs.username,
-            password: inputs.password,
-          });
+          if (values.password.length < 4) {
+            errors.password = 'Password must be at least 4 characters long';
+          }
+
+          if (showLoginForm) return errors;
+
+          if (values.password !== values.confirmPassword) {
+            errors.confirmPassword = 'Passwords do not match';
+          }
+
+          if (!values.email) {
+            errors.email = 'Required';
+          }
+
+          return errors;
+        }}
+        onSubmit={(values, { setSubmitting }): void => {
+          if (showLoginForm) {
+            dispatch(
+              login({
+                username: values.username,
+                password: values.password,
+              }),
+            );
+          } else {
+            dispatch(
+              signup({
+                username: values.username,
+                password: values.password,
+                email: values.email,
+              }),
+            );
+          }
+
+          setSubmitting(false);
         }}
       >
-        <Form.Field>
-          <Form.Input
-            className="myInput"
-            name="username"
-            icon="user"
-            iconPosition="left"
-            placeholder="Username"
-          />
-        </Form.Field>
-        <Form.Field>
-          <Form.Input
-            name="password"
-            icon="lock"
-            iconPosition="left"
-            placeholder="Password"
-            type="password"
-          />
-        </Form.Field>
-        {error !== '' ? <div className="error">{error}</div> : null}
-        <Button type="submit" className="login">
-          Login
-        </Button>
-        <div className="signup">
-          <a
-            onClick={(): void => setLoginForm(!showLoginForm)}
-            onKeyPress={(): void => setLoginForm(!showLoginForm)}
-            role="button"
-            tabIndex={0}
-            aria-label="Sign up form"
-          >
-            Sign up
-          </a>
-        </div>
-      </Form>
+        {({ isSubmitting }): ReactElement => (
+          <Form className={className}>
+            <span>
+              <Field
+                name="username"
+                placeholder="Username"
+                className={className}
+              />
+              <Icon name="user" />
+            </span>
+            <Error name="username" />
+            <span>
+              <Field
+                type="password"
+                name="password"
+                placeholder="Password"
+                className={className}
+              />
+              <Icon name="lock" />
+            </span>
+            <Error name="password" />
+            {!showLoginForm && (
+              <>
+                <span>
+                  <Field
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="Confirm Password"
+                    className={className}
+                  />
+                  <Icon name="lock" />
+                </span>
+                <Error name="confirmPassword" />
+                <span>
+                  <Field
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    className={className}
+                  />
+                  <Icon name="envelope" />
+                </span>
+                <Error name="email" />
+              </>
+            )}
+            <button type="submit" disabled={isSubmitting}>
+              {showLoginForm ? 'Login' : 'Sign up'}
+            </button>
+            <button
+              className="inverse"
+              onClick={(): void => setLoginForm(!showLoginForm)}
+              onKeyPress={(): void => setLoginForm(!showLoginForm)}
+              type="button"
+              tabIndex={0}
+              aria-label="Sign up form"
+            >
+              {showLoginForm ? 'Sign up' : 'Login'}
+            </button>
+          </Form>
+        )}
+      </Formik>
+      {styles}
       <style jsx>
         {`
-          .signup {
-            margin-top: 8px;
+          button {
+            background: var(--gold);
+            color: var(--text);
+            border: none;
+            border-radius: 0.25rem;
+            width: 100%;
+            padding: 0.75rem 1.5rem;
+            font-weight: bold;
             cursor: pointer;
+            margin-top: 1rem;
           }
 
-          .signup a {
-            transition: color 0.1s ease;
+          button:hover {
+            background: var(--gold-hover);
+          }
+
+          button:disabled {
+            background: var(--gold-light);
+            cursor: not-allowed;
+          }
+
+          button.inverse {
+            border: 1px solid var(--gold);
+          }
+
+          button.inverse:not(:hover) {
+            background: none;
             color: var(--gold);
-            font-weight: bold;
-            text-decoration: underline;
           }
 
-          .signup a:hover {
-            color: var(--gold-hover);
+          span {
+            position: relative;
+            fill: var(--text-gray-light);
           }
 
-          .error {
-            color: var(--text-pink);
-            padding-bottom: 8px;
-            font-weight: bold;
+          span:not(:first-child) {
+            margin-top: 1rem;
+          }
+
+          span > :global(svg) {
+            position: absolute;
+            height: 1rem;
+            top: 0.75rem;
+            left: 0.875rem;
           }
         `}
       </style>
     </>
   );
-
-  const signupForm = (
-    <>
-      <Form
-        onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-          handleInputChange(e)
-        }
-        onSubmit={(e: React.FormEvent<HTMLFormElement>): void => {
-          e.preventDefault();
-
-          if (!checkInputs()) {
-            return;
-          }
-
-          dispatchSignup({
-            username: inputs.username,
-            password: inputs.password,
-            email: inputs.email,
-          });
-        }}
-      >
-        <Form.Field>
-          <Form.Input
-            className="myInput"
-            name="username"
-            icon="user"
-            iconPosition="left"
-            placeholder="Username"
-          />
-        </Form.Field>
-        <Form.Field>
-          <Form.Input
-            name="password"
-            icon="lock"
-            iconPosition="left"
-            placeholder="Password"
-            type="password"
-          />
-        </Form.Field>
-        <Form.Field>
-          <Form.Input
-            name="confirmPassword"
-            icon="lock"
-            iconPosition="left"
-            placeholder="Confirm password"
-            type="password"
-          />
-        </Form.Field>
-        <Form.Field>
-          <Form.Input
-            name="email"
-            icon="envelope"
-            iconPosition="left"
-            placeholder="Email"
-          />
-        </Form.Field>
-        {error !== '' ? <div className="error">{error}</div> : null}
-        <Button type="submit" className="login">
-          Sign up
-        </Button>
-        <div className="signup">
-          <a
-            onClick={(): void => setLoginForm(!showLoginForm)}
-            onKeyPress={(): void => setLoginForm(!showLoginForm)}
-            role="button"
-            tabIndex={0}
-            aria-label="Login form"
-          >
-            Login
-          </a>
-        </div>
-      </Form>
-      <style jsx>
-        {`
-          .signup {
-            margin-top: 8px;
-            cursor: pointer;
-          }
-
-          .signup a {
-            transition: color 0.1s ease;
-            color: var(--gold);
-            font-weight: bold;
-            text-decoration: underline;
-          }
-
-          .signup a:hover {
-            color: var(--gold-hover);
-          }
-
-          .error {
-            color: var(--text-pink);
-            padding-bottom: 8px;
-            font-weight: bold;
-          }
-        `}
-      </style>
-    </>
-  );
-
-  return showLoginForm ? loginForm : signupForm;
 };
 
-const mapDispatchToProps = {
-  dispatchLogin: login,
-  dispatchSignup: signup,
-};
-
-export default connect(null, mapDispatchToProps)(LoginSignupForm);
+export default LoginSignupForm;
