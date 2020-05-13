@@ -3,3 +3,7 @@ export const mockForumPost = {
   title: 'test post!',
   text: 'pls ignore',
 };
+
+export const mockForumComment = {
+  text: 'some comment',
+};
