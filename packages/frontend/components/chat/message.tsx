@@ -7,25 +7,37 @@ interface IOwnProps {
   opacity: number;
 }
 
+const getMessageClass = (type: ChatResponseType): string => {
+  switch (type) {
+    case ChatResponseType.PLAYER_JOIN_LOBBY:
+    case ChatResponseType.PLAYER_LEAVE_LOBBY:
+    case ChatResponseType.CREATE_ROOM:
+    case ChatResponseType.USER_COMMAND:
+    case ChatResponseType.PLAYER_JOIN_GAME:
+    case ChatResponseType.PLAYER_LEAVE_GAME:
+      return 'meta';
+    default:
+      return '';
+  }
+};
+
 const Message = (props: IOwnProps): ReactElement => {
   const { message, opacity } = props;
   return (
-    <span className="wrapper">
+    <>
       <span className="timestamp">
         [{`0${message.timestamp.getHours() % 12}`.slice(-2)}:
         {`0${message.timestamp.getMinutes()}`.slice(-2)}]
       </span>
 
-      <span className={`chat${message.type}`}>
-        <span className="pad_left">
-          {message.type === ChatResponseType.CHAT && `${message.username}: `}
-          {message.text}
-        </span>
+      <span className={getMessageClass(message.type)}>
+        {message.type === ChatResponseType.CHAT && `${message.username}: `}
+        {message.text}
       </span>
 
       <style jsx>
         {`
-          .wrapper {
+          span {
             font-weight: bold;
             color: var(--text);
             opacity: ${opacity};
@@ -34,25 +46,19 @@ const Message = (props: IOwnProps): ReactElement => {
           .timestamp {
             color: var(--gold);
             font-variant-numeric: tabular-nums;
-          }
-
-          .pad_left {
-            padding-left: 5px;
+            padding-right: 5px;
           }
 
           .${ChatResponseType.SPY_WIN} {
             color: var(--text-win);
           }
 
-          .chat${ChatResponseType.PLAYER_JOIN_LOBBY},
-            .chat${ChatResponseType.PLAYER_LEAVE_LOBBY},
-            .chat${ChatResponseType.CREATE_ROOM},
-            .chat${ChatResponseType.USER_COMMAND} {
+          .meta {
             color: var(--text-gray);
           }
         `}
       </style>
-    </span>
+    </>
   );
 };
 

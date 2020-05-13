@@ -1,24 +1,12 @@
 import { ReactElement, useState } from 'react';
 
-import AllChat from '../chat/allChat';
+import Chat from '../chat/chatContainer';
 
 const tabs = [
-  {
-    text: 'ALL CHAT',
-    pane: <AllChat />,
-  },
-  {
-    text: 'GAME CHAT',
-    pane: 'Game Chat',
-  },
-  {
-    text: 'VOTE HISTORY',
-    pane: 'Vote History',
-  },
-  {
-    text: 'NOTES',
-    pane: 'Notes',
-  },
+  { text: 'ALL CHAT', pane: <Chat id="lobby" /> },
+  { text: 'GAME CHAT', pane: <Chat id="game" /> },
+  { text: 'VOTE HISTORY', pane: <>Vote History</> },
+  { text: 'NOTES', pane: <>Notes</> },
 ];
 
 const TabPane = (): ReactElement => {

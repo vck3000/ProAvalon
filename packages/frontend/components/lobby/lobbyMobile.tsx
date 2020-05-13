@@ -4,13 +4,13 @@ import { connect } from 'react-redux';
 import { RootState } from '../../store/index';
 import { WindowDimensions } from '../../store/system/types';
 
-import Chat from '../chat/allChat';
+import Chat from '../chat/chatContainer';
 import HomeIndex from './leftPanel/homeIndex';
 import GamesMenu from './rightPanel/gamesMenu';
 import Layout from '../layout/layout';
 
 const indicators = ['HOME', 'CHAT', 'GAMES'];
-const slides = [<HomeIndex />, <Chat />, <GamesMenu />];
+const slides = [<HomeIndex />, <Chat id="lobby" />, <GamesMenu />];
 
 interface IStateProps {
   windowDimensions: WindowDimensions;

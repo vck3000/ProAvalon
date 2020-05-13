@@ -3,7 +3,7 @@ import { ReactElement } from 'react';
 import Layout from '../layout/layout';
 import GamesMenu from './rightPanel/gamesMenu';
 import HomeIndex from './leftPanel/homeIndex';
-import Chat from '../chat/allChat';
+import Chat from '../chat/chatContainer';
 
 const LobbyDesktop = (): ReactElement => (
   <Layout>
@@ -12,7 +12,7 @@ const LobbyDesktop = (): ReactElement => (
         <HomeIndex />
       </div>
       <div style={{ width: '50%' }}>
-        <Chat />
+        <Chat id="lobby" />
       </div>
       <div style={{ height: '100%', width: '25%', overflowY: 'auto' }}>
         <GamesMenu />
