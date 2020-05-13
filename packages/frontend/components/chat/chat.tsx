@@ -1,12 +1,7 @@
 import { ReactElement, useState, useRef, useEffect, UIEvent } from 'react';
 
 import Message from './message';
-import {
-  ChatResponse,
-  ChatRequest,
-  SocketEvents,
-} from '../../proto/lobbyProto';
-import socket from '../../socket';
+import { ChatResponse } from '../../proto/lobbyProto';
 import debounce from '../../utils/debounce';
 
 const lastTransparentLine = 60;
@@ -22,9 +17,10 @@ const GetOpacity = (i: number, numMessages: number): number => {
 
 interface IProps {
   messages: ChatResponse[];
+  sendMessage: (message: string) => void;
 }
 
-const Chat = ({ messages }: IProps): ReactElement => {
+const Chat = ({ messages, sendMessage }: IProps): ReactElement => {
   const [input, setInput] = useState('');
 
   const [hasScrolled, setHasScrolled] = useState(false);
@@ -76,10 +72,7 @@ const Chat = ({ messages }: IProps): ReactElement => {
           }}
           onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>): void => {
             if (e.key === 'Enter' && input) {
-              const msg: ChatRequest = {
-                text: input,
-              };
-              socket.emit(SocketEvents.ALL_CHAT_TO_SERVER, msg);
+              sendMessage(input);
               setInput('');
             }
           }}

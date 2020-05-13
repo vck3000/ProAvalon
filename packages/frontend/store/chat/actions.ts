@@ -1,4 +1,3 @@
-import { ChatResponse } from '../../proto/lobbyProto';
 import {
   IReceivedMessageAction,
   ISetMessagesAction,
@@ -6,21 +5,35 @@ import {
   RECEIVED_MESSAGE,
   SET_MESSAGES,
   GET_ALL_CHAT,
-} from './actions.types';
+  IEmitMessageAction,
+  ChatActionTypes,
+  EMIT_MESSAGE,
+} from './types';
 
 export const receivedMessage = (
-  message: ChatResponse,
+  payload: IReceivedMessageAction['payload'],
 ): IReceivedMessageAction => {
   return {
     type: RECEIVED_MESSAGE,
-    message,
+    payload,
   };
 };
 
-export const setMessages = (messages: ChatResponse[]): ISetMessagesAction => {
+export const setMessages = (
+  payload: ISetMessagesAction['payload'],
+): ISetMessagesAction => {
   return {
     type: SET_MESSAGES,
-    messages,
+    payload,
+  };
+};
+
+export const emitMessage = (
+  payload: IEmitMessageAction['payload'],
+): ChatActionTypes => {
+  return {
+    type: EMIT_MESSAGE,
+    payload,
   };
 };
 

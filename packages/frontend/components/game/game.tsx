@@ -1,24 +1,28 @@
 import { ReactElement } from 'react';
-import { Grid } from 'semantic-ui-react';
 import Layout from '../layout/layout';
 import TabPane from './tabPane';
+import useGame from './useGame';
 
 interface IGameProps {
   id: string | string[];
 }
 
 const GameIndex = ({ id }: IGameProps): ReactElement => {
+  const gameID = Number(id);
+
+  useGame(gameID);
+
   return (
     <Layout>
-      <Grid.Row style={{ flex: 1 }}>Game {id} Content</Grid.Row>
-      <Grid.Row style={{ flex: 1 }}>
-        <Grid.Column width={8}>
+      <div style={{ flex: 1 }}>Game {gameID} Content</div>
+      <div style={{ flex: 1, display: 'flex' }}>
+        <div style={{ flex: 1, padding: '1rem' }}>
           <TabPane />
-        </Grid.Column>
-        <Grid.Column width={8}>
+        </div>
+        <div style={{ flex: 1, padding: '1rem' }}>
           <TabPane />
-        </Grid.Column>
-      </Grid.Row>
+        </div>
+      </div>
     </Layout>
   );
 };
