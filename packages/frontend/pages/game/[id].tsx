@@ -7,9 +7,7 @@ const Game = (): ReactElement => {
   const router = useRouter();
   const { id } = router.query;
 
-  return (
-    <GameIndex id={id} />
-  );
+  return <GameIndex gameID={id} />;
 };
 
 export default Game;

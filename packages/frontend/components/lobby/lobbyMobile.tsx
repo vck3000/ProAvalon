@@ -10,7 +10,7 @@ import GamesMenu from './rightPanel/gamesMenu';
 import Layout from '../layout/layout';
 
 const indicators = ['HOME', 'CHAT', 'GAMES'];
-const slides = [<HomeIndex />, <Chat id="lobby" />, <GamesMenu />];
+const slides = [<HomeIndex />, <Chat type="lobby" />, <GamesMenu />];
 
 interface IStateProps {
   windowDimensions: WindowDimensions;
