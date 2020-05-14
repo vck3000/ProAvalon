@@ -9,7 +9,7 @@ export const SetSocketChatEvents = (socket: SocketIOClient.Socket): void => {
     async (chatResponse: ChatResponse) => {
       try {
         const chatRes = await transformAndValidate(ChatResponse, chatResponse);
-        store.dispatch(receivedMessage({ chatID: 'lobby', message: chatRes }));
+        store.dispatch(receivedMessage({ type: 'lobby', message: chatRes }));
       } catch (err) {
         throw Error(`Validation failed. Error: ${err}`);
       }
@@ -21,7 +21,7 @@ export const SetSocketChatEvents = (socket: SocketIOClient.Socket): void => {
     async (chatResponse: ChatResponse): Promise<void> => {
       try {
         const chatRes = await transformAndValidate(ChatResponse, chatResponse);
-        store.dispatch(receivedMessage({ chatID: 'game', message: chatRes }));
+        store.dispatch(receivedMessage({ type: 'game', message: chatRes }));
       } catch (err) {
         throw Error(`Validation failed. Error: ${err}`);
       }

@@ -3,8 +3,8 @@ import { ReactElement, useState } from 'react';
 import Chat from '../chat/chatContainer';
 
 const tabs = [
-  { text: 'ALL CHAT', pane: <Chat id="lobby" /> },
-  { text: 'GAME CHAT', pane: <Chat id="game" /> },
+  { text: 'ALL CHAT', pane: <Chat type="lobby" /> },
+  { text: 'GAME CHAT', pane: <Chat type="game" /> },
   { text: 'VOTE HISTORY', pane: <>Vote History</> },
   { text: 'NOTES', pane: <>Notes</> },
 ];

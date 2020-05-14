@@ -26,14 +26,14 @@ function get(
 }
 
 function* emitMessage({
-  payload: { chatID, message },
+  payload: { type, message },
 }: IEmitMessageAction): SagaIterator {
   const msg: ChatRequest = {
     text: message,
   };
 
   const event =
-    chatID === 'lobby'
+    type === 'lobby'
       ? SocketEvents.ALL_CHAT_TO_SERVER
       : SocketEvents.GAME_CHAT_TO_SERVER;
 
@@ -49,7 +49,7 @@ function* getAllChat(): SagaIterator {
 
   // eslint-disable-next-line no-console
   console.log(chatResponses);
-  yield put(setMessages({ chatID: 'lobby', messages: chatResponses }));
+  yield put(setMessages({ type: 'lobby', messages: chatResponses }));
 }
 
 function* watchEmitMessage(): SagaIterator {

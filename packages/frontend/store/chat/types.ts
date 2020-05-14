@@ -1,5 +1,5 @@
 import { ChatResponse } from '../../proto/lobbyProto';
-import { ChatID } from './reducers';
+import { ChatType } from './reducers';
 
 // Note, action types must be split out here. Cannot collect into one object.
 // Doing so will conflict with Typescript's object type detection in reducers.ts.
@@ -11,7 +11,7 @@ export const GET_ALL_CHAT = 'GET_ALL_CHAT';
 export interface IReceivedMessageAction {
   type: typeof RECEIVED_MESSAGE;
   payload: {
-    chatID: ChatID;
+    type: ChatType;
     message: ChatResponse;
   };
 }
@@ -19,7 +19,7 @@ export interface IReceivedMessageAction {
 export interface ISetMessagesAction {
   type: typeof SET_MESSAGES;
   payload: {
-    chatID: ChatID;
+    type: ChatType;
     messages: ChatResponse[];
   };
 }
@@ -27,7 +27,7 @@ export interface ISetMessagesAction {
 export interface IEmitMessageAction {
   type: typeof EMIT_MESSAGE;
   payload: {
-    chatID: ChatID;
+    type: ChatType;
     message: string;
   };
 }
