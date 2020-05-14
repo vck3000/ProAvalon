@@ -2,11 +2,11 @@ import { RootState } from '..';
 import { SET_MESSAGES, RECEIVED_MESSAGE, ChatActionTypes } from './types';
 import { ChatResponse } from '../../proto/lobbyProto';
 
-export const chatSelector = (chatID: ChatID) => (
+export const chatSelector = (type: ChatType) => (
   state: RootState,
-): ChatResponse[] => state.chat[chatID];
+): ChatResponse[] => state.chat[type];
 
-export type ChatID = keyof IChatState;
+export type ChatType = keyof IChatState;
 
 export interface IChatState {
   lobby: ChatResponse[];
@@ -23,7 +23,7 @@ const reducer = (
 ): IChatState => {
   switch (action.type) {
     case RECEIVED_MESSAGE: {
-      const { chatID, message } = action.payload;
+      const { type: chatID, message } = action.payload;
 
       return {
         ...state,
@@ -33,7 +33,7 @@ const reducer = (
     case SET_MESSAGES:
       return {
         ...state,
-        [action.payload.chatID]: action.payload.messages,
+        [action.payload.type]: action.payload.messages,
       };
     default:
       return state;

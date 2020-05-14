@@ -12,7 +12,7 @@ const LobbyDesktop = (): ReactElement => (
         <HomeIndex />
       </div>
       <div style={{ width: '50%' }}>
-        <Chat id="lobby" />
+        <Chat type="lobby" />
       </div>
       <div style={{ height: '100%', width: '25%', overflowY: 'auto' }}>
         <GamesMenu />
