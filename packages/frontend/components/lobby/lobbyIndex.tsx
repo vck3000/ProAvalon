@@ -23,7 +23,7 @@ const LobbyIndex = ({ mobileView }: Props): ReactElement => {
     setTimeout(() => {
       dispatch(getAllChat());
     }, 500);
-  }, []);
+  }, [dispatch]);
 
   return mobileView ? <LobbyMobile /> : <LobbyDesktop />;
 };

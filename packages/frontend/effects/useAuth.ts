@@ -25,7 +25,7 @@ export default function useAuth(): ReturnType<typeof userSelector> {
         settings: { theme: 'night', buzzable: true },
       }),
     );
-  }, []);
+  }, [dispatch, user]);
 
   return user;
 }
