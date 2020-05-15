@@ -2,6 +2,7 @@ import React, { ReactElement } from 'react';
 import Link from 'next/link';
 
 import throttle from '../../utils/throttle';
+import NavRightMobile from './navRightMobile';
 
 const animateTime = 0.5;
 
@@ -74,11 +75,6 @@ const NavMobile = (): ReactElement => {
           <div>
             <ul>
               <li>
-                <Link href="/lobby">
-                  <a>Lobby</a>
-                </Link>
-              </li>
-              <li>
                 <Link href="/rules">
                   <a>Rules</a>
                 </Link>
@@ -98,6 +94,7 @@ const NavMobile = (): ReactElement => {
                   <a>Development</a>
                 </Link>
               </li>
+              <NavRightMobile />
             </ul>
           </div>
         </div>
@@ -184,6 +181,7 @@ const NavMobile = (): ReactElement => {
           .side_menu li a {
             color: var(--gold);
             font-size: 20px;
+            text-decoration: none;
           }
 
           .hamburger_wrapper {

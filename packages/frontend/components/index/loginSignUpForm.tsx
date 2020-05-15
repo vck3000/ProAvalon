@@ -18,6 +18,7 @@ const { styles, className } = css.resolve`
     border-radius: 0.25rem;
     padding: 0.75rem 1rem 0.75rem 2.5rem;
     width: 100%;
+    box-sizing: border-box;
   }
 
   div {
