@@ -73,6 +73,7 @@ const LoggedIn = ({ user }: Props): ReactElement => {
             padding: 8px;
             background: var(--gold);
             cursor: pointer;
+            text-decoration: none;
           }
           a:hover {
             background: var(--gold-hover);

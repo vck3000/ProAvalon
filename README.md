@@ -119,7 +119,7 @@ The planned infrastructure is as follows:
 The planned dependencies/frameworks are as follows:
 
 - [NodeJS](https://nodejs.org/en/) + [Express](https://expressjs.com/) for backend.
-- [Next.js](https://nextjs.org/) + [React](https://reactjs.org/) + [Redux](https://redux.js.org/) + [Semantic](https://react.semantic-ui.com/) for front end.
+- [Next.js](https://nextjs.org/) + [React](https://reactjs.org/) + [Redux](https://redux.js.org/) for front end.
 - [MongoDB](https://www.mongodb.com/) for main database.
 - [Redis](https://redis.io/) for session and socket management.
 

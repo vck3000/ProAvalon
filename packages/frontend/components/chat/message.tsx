@@ -31,16 +31,26 @@ const Message = (props: IOwnProps): ReactElement => {
       </span>
 
       <span className={getMessageClass(message.type)}>
-        {message.type === ChatResponseType.CHAT && `${message.username}: `}
+        {message.type === ChatResponseType.CHAT && (
+          <>
+            <strong>{message.username}</strong>
+            {`: `}
+          </>
+        )}
         {message.text}
       </span>
 
       <style jsx>
         {`
           span {
-            font-weight: bold;
-            color: var(--text);
             opacity: ${opacity};
+          }
+        `}
+      </style>
+      <style jsx>
+        {`
+          span {
+            color: var(--text);
           }
 
           .timestamp {
