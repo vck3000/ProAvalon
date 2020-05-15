@@ -347,6 +347,45 @@ var actionsObj = {
       },
     },
 
+    roles: {
+      command: 'roles',
+      help: '/roles: List the roles for the current game.',
+      run(data, senderSocket) {
+
+        // Check if user is in a started room
+        if (rooms[senderSocket.request.user.inRoomId] &&
+            rooms[senderSocket.request.user.inRoomId].gameStarted === true) {
+            Game = rooms[senderSocket.reques.user.inRoomId];
+
+            // Add all the roles from the game
+            let str = 'Current roles: ';
+            for (var i = 0; i < Game.roleKeysInPlay.length; i++) {
+                  str += `${Game.specialRoles[Game.roleKeysInPlay[i]].role}, `;
+            }
+              for (var i = 0; i < Game.cardKeysInPlay.length; i++) {
+                  str += `${Game.specialCards[Game.cardKeysInPlay[i]].card}, `;
+            }
+            str = str.slice(0, str.length - 2);
+            str += '.';
+
+            // Return to the user
+            return {
+              message: str,
+              classStr: 'server-text',
+            }
+        }
+
+        else {
+          return {
+            message: "The game hasn't started yet. There are no roles to display.",
+            classStr: 'server-text',
+          }
+        }
+      }
+    },
+
+
+
     roomchat: {
       command: 'roomchat',
       help: '/roomchat: Get a copy of the chat for the current game.',
