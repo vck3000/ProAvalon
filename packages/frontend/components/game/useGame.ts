@@ -4,7 +4,7 @@ import socket from '../../socket';
 import { SocketEvents } from '../../proto/lobbyProto';
 import useAuth from '../../effects/useAuth';
 
-const useGame = (gameID: string | string[]): void => {
+const useGame = (gameID?: string | string[]): void => {
   const user = useAuth();
 
   const router = useRouter();
@@ -21,7 +21,7 @@ const useGame = (gameID: string | string[]): void => {
     return (): void => {
       socket.emit(SocketEvents.LEAVE_GAME, { id: gameID });
     };
-  }, [gameID, user]);
+  }, [gameID, user, router]);
 };
 
 export default useGame;

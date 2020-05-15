@@ -38,7 +38,7 @@ const Chat = ({ messages, sendMessage }: IProps): ReactElement => {
   useEffect(() => {
     if (!hasScrolled && lastMessage.current)
       lastMessage.current.scrollIntoView({ behavior: 'auto' });
-  }, [messages.length]);
+  }, [messages.length, hasScrolled]);
 
   const handleScroll = (event: UIEvent<HTMLUListElement>): void => {
     const list = event.target as HTMLUListElement;
