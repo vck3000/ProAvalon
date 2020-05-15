@@ -88,21 +88,23 @@ const Chat = ({ messages, sendMessage }: IProps): ReactElement => {
           }
 
           input {
-            padding: 16px;
-            width: 100%;
+            padding: 1rem;
             border: 0;
             background: var(--light-alt);
-            font-family: 'Montserrat'; // because semantic-ui overrides it
+            font-family: 'Montserrat';
             font-weight: 700;
             color: var(--gold);
           }
           ul {
             list-style: none;
             margin: 0;
-            padding: 0 16px;
+            padding: 0 1rem;
             height: 0;
             flex: 1 1 auto;
             overflow-y: auto;
+          }
+          li {
+            padding: 0.125rem 0;
           }
         `}
       </style>

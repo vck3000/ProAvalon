@@ -53,12 +53,14 @@ const TabPane = (): ReactElement => {
 
           li {
             margin-right: 4px;
-            min-width: 132px;
+            max-width: 132px;
+            flex: 1 0 auto;
           }
 
           a {
             display: flex;
             justify-content: center;
+            font-size: 0.75rem;
             font-weight: bold;
             background: var(--light-inactive);
             border-radius: 0.75rem 0.75rem 0 0 !important;
