@@ -1,56 +1,24 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { AppProps } from 'next/app';
 import { Store } from 'redux';
-import { ReactElement, useEffect } from 'react';
-import { Provider, connect } from 'react-redux';
+import { ReactElement } from 'react';
+import { Provider } from 'react-redux';
 import withRedux from 'next-redux-wrapper';
 import withReduxSaga from 'next-redux-saga';
 
-import throttle from '../utils/throttle';
-import configureStore, { RootState } from '../store';
-import { MobileView, ISystemState } from '../store/system/types';
-import { setMobileView, setWindowDimensions } from '../store/system/actions';
+import configureStore from '../store';
+import Resize from '../components/resize';
 import Theme from '../components/theme';
 
 interface IProps extends AppProps {
   store: Store;
-  dispatchSetMobileView: typeof setMobileView;
-  dispatchSetWindowDimensions: typeof setWindowDimensions;
-  mobileView: MobileView;
 }
 
-const MyApp = ({
-  Component,
-  pageProps,
-  store,
-  dispatchSetMobileView,
-  dispatchSetWindowDimensions,
-  mobileView,
-}: IProps): ReactElement => {
-  // Set up window event listener to set mobileView, width and height.
-  useEffect(() => {
-    const MOBILE_VIEW_CUTOFF = 600;
-    const resizeWindow = throttle((): void => {
-      if (
-        (window.innerWidth <= MOBILE_VIEW_CUTOFF && !mobileView) ||
-        (window.innerWidth > MOBILE_VIEW_CUTOFF && mobileView)
-      ) {
-        dispatchSetMobileView(!mobileView);
-      }
-      // Always send out a width and height update.
-      dispatchSetWindowDimensions(window.innerWidth, window.innerHeight);
-    }, 100);
-
-    resizeWindow();
-
-    // Add event listener and remove when resize.
-    window.addEventListener('resize', resizeWindow);
-    return (): void => window.removeEventListener('resize', resizeWindow);
-  }, [mobileView]);
-
+const MyApp = ({ Component, pageProps, store }: IProps): ReactElement => {
   return (
     <>
       <Provider store={store}>
+        <Resize />
         <Theme />
         <Component {...pageProps} />
       </Provider>
@@ -150,17 +118,4 @@ const MyApp = ({
 //   return { ...appProps }
 // }
 
-const mapStateToProps = (
-  state: RootState,
-): Pick<ISystemState, 'mobileView'> => ({
-  mobileView: state.system.mobileView,
-});
-
-const mapDispatchToProps = {
-  dispatchSetMobileView: setMobileView,
-  dispatchSetWindowDimensions: setWindowDimensions,
-};
-
-export default withRedux(configureStore)(
-  withReduxSaga(connect(mapStateToProps, mapDispatchToProps)(MyApp)),
-);
+export default withRedux(configureStore)(withReduxSaga(MyApp));

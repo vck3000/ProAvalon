@@ -4,7 +4,7 @@ import TabPane from './tabPane';
 import useGame from './useGame';
 
 interface IGameProps {
-  gameID: string | string[];
+  gameID?: string | string[];
 }
 
 const GameIndex = ({ gameID }: IGameProps): ReactElement => {
