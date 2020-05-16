@@ -1,11 +1,12 @@
 import { ReactElement, useState } from 'react';
 
 import Chat from '../chat/chatContainer';
+import VoteHistory from './voteHistory';
 
 const tabs = [
   { text: 'ALL CHAT', pane: <Chat type="lobby" /> },
   { text: 'GAME CHAT', pane: <Chat type="game" /> },
-  { text: 'VOTE HISTORY', pane: <>Vote History</> },
+  { text: 'VOTE HISTORY', pane: <VoteHistory /> },
   { text: 'NOTES', pane: <>Notes</> },
 ];
 
@@ -35,13 +36,17 @@ const TabPane = (): ReactElement => {
           </li>
         ))}
       </ul>
-      {tabs[activeTab].pane}
+      <div className="pane">{tabs[activeTab].pane}</div>
       <style jsx>
         {`
           div {
             height: 100%;
             display: flex;
             flex-flow: column;
+          }
+
+          div.pane {
+            background: var(--light);
           }
 
           ul {

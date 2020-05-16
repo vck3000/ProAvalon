@@ -14,6 +14,7 @@ import { ISystemState } from './system/types';
 import chatReducer, { IChatState } from './chat/reducers';
 import lobby from './lobby/reducer';
 import userReducer from './user/reducer';
+import game from './game/reducer';
 
 import rootSaga from './sagas';
 
@@ -25,11 +26,13 @@ const rootReducer = combineReducers<{
   chat: IChatState;
   lobby: ReturnType<typeof lobby>;
   user: ReturnType<typeof userReducer>;
+  game: ReturnType<typeof game>;
 }>({
   system: systemReducer,
   chat: chatReducer,
   lobby,
   user: userReducer,
+  game,
 });
 
 const bindMiddleware = (middleware: Middleware[]): StoreEnhancer => {
