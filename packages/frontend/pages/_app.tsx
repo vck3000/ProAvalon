@@ -63,8 +63,11 @@ const MyApp = ({ Component, pageProps, store }: IProps): ReactElement => {
             --gold: #a37d18;
             --gold-light: #bfa751;
             --gold-hover: #8a6d20;
-            --mission-blue: #3663a4;
-            --mission-red: #87504d;
+            --mission-blue: #6f9298;
+            --mission-red: #9e522e;
+            --mission-approve: #a8b46a;
+            --mission-reject: #b99885;
+            --mission-leader: #000000;
             --announce-gold-text: #bab07a;
             --slide-gold-background: #483e20;
           }
@@ -82,8 +85,11 @@ const MyApp = ({ Component, pageProps, store }: IProps): ReactElement => {
             --gold: #a37d18;
             --gold-light: #bda84f;
             --gold-hover: #8a6d20;
-            --mission-blue: #3663a4;
-            --mission-red: #87504d;
+            --mission-blue: #6f9298;
+            --mission-red: #9e522e;
+            --mission-approve: #6f774e;
+            --mission-reject: #6a493a;
+            --mission-leader: #c6c0b4;
             --announce-gold-text: #bab07a;
             --slide-gold-background: #483e20;
           }
