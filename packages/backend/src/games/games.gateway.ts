@@ -120,10 +120,10 @@ export class GamesGateway {
       text: `${socket.user.displayUsername} has created room ${newGameId}`,
       username: socket.user.displayUsername,
       timestamp: new Date(),
-      type: ChatResponseType.CHAT,
+      type: ChatResponseType.CREATE_GAME,
     });
 
-    this.server.to('lobby').emit(SocketEvents.CREATE_GAME, msg);
+    this.server.to('lobby').emit(SocketEvents.ALL_CHAT_TO_CLIENT, msg);
 
     return newGameId;
   }
