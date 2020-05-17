@@ -5,7 +5,6 @@ import {
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Server } from 'socket.io';
-// import { RedisAdapter } from 'socket.io-redis';
 import { transformAndValidate } from 'class-transformer-validator';
 
 import { GamesService } from './games.service';
@@ -28,7 +27,6 @@ export class GamesGateway {
   private readonly logger = new Logger(GamesGateway.name);
 
   constructor(
-    // private redisAdapter: RedisAdapter,
     private gamesService: GamesService,
     private redisAdapter: RedisAdapterService,
     private commandsService: CommandsService,
@@ -120,7 +118,7 @@ export class GamesGateway {
 
   @SubscribeMessage(SocketEvents.JOIN_GAME)
   async handleJoinGame(socket: SocketUser, joinGame: JoinGame) {
-    if (joinGame.id && this.gamesService.hasGame(joinGame.id)) {
+    if (joinGame.id && (await this.gamesService.hasGame(joinGame.id))) {
       // Join the socket io room
       socket.join(`game:${joinGame.id}`);
 
@@ -137,8 +135,6 @@ export class GamesGateway {
           type: ChatResponseType.PLAYER_JOIN_GAME,
         });
 
-        this.gamesService.storeChat(joinGame.id, chatResponse);
-
         this.server
           .to(`game:${joinGame.id}`)
           .emit(SocketEvents.GAME_CHAT_TO_CLIENT, chatResponse);
@@ -152,7 +148,7 @@ export class GamesGateway {
 
   @SubscribeMessage(SocketEvents.LEAVE_GAME)
   async handleLeaveGame(socket: SocketUser, leaveGame: LeaveGame) {
-    if (leaveGame.id && this.gamesService.hasGame(leaveGame.id)) {
+    if (leaveGame.id && (await this.gamesService.hasGame(leaveGame.id))) {
       // Leave the socket io room
       socket.leave(`game:${leaveGame.id}`);
 
@@ -174,6 +170,8 @@ export class GamesGateway {
         this.server
           .to(`game:${leaveGame.id}`)
           .emit(SocketEvents.GAME_CHAT_TO_CLIENT, chatResponse);
+
+        // TODO Remove room if no one is left and game has not started.
       } catch (err) {
         this.logger.error('Validation failed. Error: ', err);
       }

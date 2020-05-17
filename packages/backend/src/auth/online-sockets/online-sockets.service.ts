@@ -10,12 +10,12 @@ export class OnlineSocketsService {
 
   async get(username: string) {
     this.logger.log(`Checking ${username} socket connected...`);
-    return this.redisClientService.redisClient.get(`user:${username}`);
+    return this.redisClientService.client.get(`user:${username}`);
   }
 
   async register(username: string, socketId: string) {
     this.logger.log(`Registering ${username}.`);
-    return this.redisClientService.redisClient.set(
+    return this.redisClientService.client.set(
       `user:${username}`,
       socketId,
       'NX',
@@ -26,7 +26,7 @@ export class OnlineSocketsService {
 
   async update(username: string, socketId: string) {
     this.logger.log(`Updating ${username}.`);
-    return this.redisClientService.redisClient.set(
+    return this.redisClientService.client.set(
       `user:${username}`,
       socketId,
       'XX',
@@ -37,6 +37,6 @@ export class OnlineSocketsService {
 
   async deregister(username: string) {
     this.logger.log(`Deregistering ${username}.`);
-    return this.redisClientService.redisClient.del(`user:${username}`);
+    return this.redisClientService.client.del(`user:${username}`);
   }
 }

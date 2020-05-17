@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 // import Game from './game';
 import { ChatResponse } from '../../proto/lobbyProto';
-// import RedisAdapterService from '../redis-adapter/redis-adapter.service';
+import RedisAdapterService from '../redis-adapter/redis-adapter.service';
 import RedisClientService from '../redis-client/redis-client.service';
 
 @Injectable()
@@ -9,39 +9,47 @@ export class GamesService {
   private readonly logger = new Logger(GamesService.name);
 
   constructor(
-    // private readonly redisAdapter: RedisAdapterService,
-    private readonly redisClient: RedisClientService,
+    private readonly redisClientService: RedisClientService,
+    private readonly redisAdapterService: RedisAdapterService,
   ) {}
 
   async createGame(): Promise<number> {
-    // Get the redis' last game id.
-    const id = await this.redisClient.redisClient.incr('gameid');
+    let nextGameNum = -1;
+    await this.redisClientService.lockDo(
+      'games:open',
+      async (client, multi) => {
+        nextGameNum = Number(await client.get('games:nextNum'));
 
-    // this.id += 1;
-    this.logger.log(`Creating Game ${id}.`);
-    // this.games.set(id, new Game(id));
+        // If nextGameNum hasn't been set yet, start from 1.
+        if (nextGameNum === 0) {
+          nextGameNum = 1;
+          multi.incr('games:nextNum');
+        }
 
-    // Don't have more than 100 concurrent games
-    // TODO: Remove this later
-    // if (this.games.size > 5) {
-    //   const oldestGameId = this.games.keys().next().value;
-    //   this.closeGame(oldestGameId);
-    //   this.logger.log(
-    //     `Deleted Game ${oldestGameId} due to too many open rooms.`,
-    //   );
-    // }
+        multi.rpush('games:open', Number(nextGameNum));
+        multi.incr('games:nextNum');
+      },
+    );
 
-    return id;
+    this.logger.log(`Done creating game ${nextGameNum}.`);
+
+    return nextGameNum;
   }
 
-  closeGame(_id: number): boolean {
-    // this.redisAdapter.closeRoom(`game:${id}`);
-    // return this.games.delete(id);
+  closeGame(id: number): boolean {
+    this.redisAdapterService.closeRoom(`game:${id}`);
+    this.redisClientService.client.lrem('games:open', 0, id.toString());
     return true;
   }
 
-  hasGame(_id: number): boolean {
-    return true;
+  async hasGame(id: number): Promise<boolean> {
+    const ids = await this.redisClientService.client.lrange(
+      'games:open',
+      0,
+      -1,
+    );
+    this.logger.log(`Has game ${id}: ${ids.includes(id.toString())}`);
+    return ids.includes(id.toString());
   }
 
   storeChat(_id: number, _chatResponse: ChatResponse) {
