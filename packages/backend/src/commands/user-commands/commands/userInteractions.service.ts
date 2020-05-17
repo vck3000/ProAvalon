@@ -21,22 +21,22 @@ class Interaction implements Command {
     this.help = `/${command} <playername>: ${command} a player.`;
   }
 
-  async run(senderSocket: SocketUser, data: string[]) {
+  async run(socket: SocketUser, data: string[]) {
     const ret = await this.redisAdapter.emitToUsername(
       data[0],
-      `${senderSocket.user.displayUsername} has ${this.pastTenseCommand} you!`,
+      `${socket.user.displayUsername} has ${this.pastTenseCommand} you!`,
       ChatResponseType.USER_COMMAND,
     );
 
     if (ret) {
       emitCommandResponse(
         `You have ${this.pastTenseCommand} ${data[0]}!`,
-        senderSocket,
+        socket,
       );
     } else {
       emitCommandResponse(
         `Something went wrong trying to ${this.command} ${data[0]}.`,
-        senderSocket,
+        socket,
       );
     }
   }
