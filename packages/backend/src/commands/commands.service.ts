@@ -1,25 +1,40 @@
 import { Injectable } from '@nestjs/common';
 import { SocketUser } from '../users/users.socket';
-import UserCommands from './user-commands/user-commands';
-import ModCommands from './mod-commands/mod-commands';
-import AdminCommands from './admin-commands/admin-commands';
-import { Command } from './commands.types';
-import RedisAdapterService from '../redis-adapter/redis-adapter.service';
+import { Commands } from './commands.types';
 import {
   SocketEvents,
   ChatResponseType,
   ChatResponse,
 } from '../../proto/lobbyProto';
 
-const allCommands: Record<string, Command> = {
-  ...UserCommands,
-  ...ModCommands,
-  ...AdminCommands,
-};
+import UserCommandsService from './user-commands/user-commands.service';
+import UserCommandsHelpService from './user-commands/commands/help.service';
+import ModCommandsService from './mod-commands/mod-commands.service';
+import ModCommandsHelpService from './mod-commands/commands/mhelp.service';
+import AdminCommandsService from './admin-commands/admin-commands.service';
+import AdminCommandsHelpService from './admin-commands/commands/ahelp.service';
 
 @Injectable()
 export class CommandsService {
-  constructor(private redisAdapter: RedisAdapterService) {}
+  allCommands: Commands;
+
+  constructor(
+    private readonly userCommandsService: UserCommandsService,
+    private readonly userCommandsHelpService: UserCommandsHelpService,
+    private readonly modCommandsService: ModCommandsService,
+    private readonly modCommandsHelpService: ModCommandsHelpService,
+    private readonly adminCommandsService: AdminCommandsService,
+    private readonly adminCommandsHelpService: AdminCommandsHelpService,
+  ) {
+    this.allCommands = {
+      ...this.userCommandsService.commands,
+      [this.userCommandsHelpService.command]: this.userCommandsHelpService,
+      ...this.modCommandsService.commands,
+      [this.modCommandsHelpService.command]: this.modCommandsHelpService,
+      ...this.adminCommandsService.commands,
+      [this.adminCommandsHelpService.command]: this.adminCommandsHelpService,
+    };
+  }
 
   runCommand(text: string, senderSocket: SocketUser) {
     // Get first word excluding the initial slash
@@ -29,8 +44,10 @@ export class CommandsService {
     // Remove the command from the splitted to then give to the command.
     splitted.shift();
 
-    if (allCommands[command]) {
-      allCommands[command].run(splitted, senderSocket, this.redisAdapter);
+    // TODO: Only allow mod and admin commands if the user is authorized
+
+    if (this.allCommands[command]) {
+      this.allCommands[command].run(senderSocket, splitted);
     } else {
       const res: ChatResponse = {
         text: `Invalid command: ${text}`,
