@@ -9,19 +9,19 @@ export class RollService implements Command {
   help =
     '/roll [number]: Returns a random number between 1 and 10 or specified number).';
 
-  async run(senderSocket: SocketUser, data: string[]) {
+  async run(socket: SocketUser, data: string[]) {
     let num = Number(data[0]);
 
     // If the user gave something and it's not a number
     if (Number.isNaN(num) && data[0]) {
       emitCommandResponse(
         `The RNG gods do not understand your request: ${data[0]}.`,
-        senderSocket,
+        socket,
       );
     } else if (num <= 0) {
       emitCommandResponse(
         `The RNG gods are not pleased with your request: ${data[0]}.`,
-        senderSocket,
+        socket,
       );
     } else {
       if (!data[0]) {
@@ -30,7 +30,7 @@ export class RollService implements Command {
       const rolled = Math.floor(Math.random() * num) + 1;
       emitCommandResponse(
         `The RNG gods have graced you with: ${rolled}`,
-        senderSocket,
+        socket,
       );
     }
   }

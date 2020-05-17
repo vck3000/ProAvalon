@@ -9,10 +9,10 @@ export class ATestService implements Command {
 
   help = '/atest: Only admins should see this command.';
 
-  async run(senderSocket: SocketUser) {
+  async run(socket: SocketUser) {
     emitCommandResponse(
       'Running /atest. You should be an admin if you see this.',
-      senderSocket,
+      socket,
     );
   }
 }

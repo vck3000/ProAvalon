@@ -14,11 +14,11 @@ class AHelpService implements Command {
     this.adminCommands = this.adminCommandsService.commands;
   }
 
-  async run(senderSocket: SocketUser) {
-    emitCommandResponse('Admin commands are:', senderSocket);
-    emitCommandResponse(this.help, senderSocket);
+  async run(socket: SocketUser) {
+    emitCommandResponse('Admin commands are:', socket);
+    emitCommandResponse(this.help, socket);
     Object.keys({ ...this.adminCommands }).forEach((key) => {
-      emitCommandResponse(this.adminCommands[key].help, senderSocket);
+      emitCommandResponse(this.adminCommands[key].help, socket);
     });
   }
 }

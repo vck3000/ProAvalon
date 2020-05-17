@@ -111,9 +111,21 @@ export class GamesGateway {
   }
 
   @SubscribeMessage(SocketEvents.CREATE_GAME)
-  async handleCreateGame(_socket: SocketUser) {
+  async handleCreateGame(socket: SocketUser) {
     this.logger.log('Received create game request');
-    return this.gamesService.createGame();
+
+    const newGameId = await this.gamesService.createGame();
+
+    const msg = await transformAndValidate(ChatResponse, {
+      text: `${socket.user.displayUsername} has created room ${newGameId}`,
+      username: socket.user.displayUsername,
+      timestamp: new Date(),
+      type: ChatResponseType.CHAT,
+    });
+
+    this.server.to('lobby').emit(SocketEvents.CREATE_GAME, msg);
+
+    return newGameId;
   }
 
   @SubscribeMessage(SocketEvents.JOIN_GAME)

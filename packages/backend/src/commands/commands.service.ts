@@ -36,7 +36,7 @@ export class CommandsService {
     };
   }
 
-  runCommand(text: string, senderSocket: SocketUser) {
+  runCommand(text: string, socket: SocketUser) {
     // Get first word excluding the initial slash
     const splitted = text.split(' ');
     const command = splitted[0].substring(1);
@@ -47,16 +47,16 @@ export class CommandsService {
     // TODO: Only allow mod and admin commands if the user is authorized
 
     if (this.allCommands[command]) {
-      this.allCommands[command].run(senderSocket, splitted);
+      this.allCommands[command].run(socket, splitted);
     } else {
       const res: ChatResponse = {
         text: `Invalid command: ${text}`,
         timestamp: new Date(),
         type: ChatResponseType.USER_COMMAND,
-        username: senderSocket.user.username,
+        username: socket.user.username,
       };
 
-      senderSocket.emit(SocketEvents.ALL_CHAT_TO_CLIENT, res);
+      socket.emit(SocketEvents.ALL_CHAT_TO_CLIENT, res);
     }
   }
 }

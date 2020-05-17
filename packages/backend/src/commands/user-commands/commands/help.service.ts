@@ -14,11 +14,11 @@ export class HelpService implements Command {
     this.userCommands = this.userCommandsService.commands;
   }
 
-  async run(senderSocket: SocketUser, _data: string[]) {
-    emitCommandResponse('User commands are:', senderSocket);
-    emitCommandResponse(this.help, senderSocket);
+  async run(socket: SocketUser, _data: string[]) {
+    emitCommandResponse('User commands are:', socket);
+    emitCommandResponse(this.help, socket);
     Object.keys({ ...this.userCommands }).forEach((key) => {
-      emitCommandResponse(this.userCommands[key].help, senderSocket);
+      emitCommandResponse(this.userCommands[key].help, socket);
     });
   }
 }

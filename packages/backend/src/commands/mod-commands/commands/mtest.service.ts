@@ -9,10 +9,10 @@ export class MTestService implements Command {
 
   help = '/mtest: Only moderators should see this command.';
 
-  async run(senderSocket: SocketUser) {
+  async run(socket: SocketUser) {
     emitCommandResponse(
       'Running /mtest. You should be a moderator if you see this.',
-      senderSocket,
+      socket,
     );
   }
 }
