@@ -14,11 +14,11 @@ class MHelpService implements Command {
     this.modCommands = this.modCommandsService.commands;
   }
 
-  async run(senderSocket: SocketUser) {
-    emitCommandResponse('Mod commands are:', senderSocket);
-    emitCommandResponse(this.help, senderSocket);
+  async run(socket: SocketUser) {
+    emitCommandResponse('Mod commands are:', socket);
+    emitCommandResponse(this.help, socket);
     Object.keys({ ...this.modCommands }).forEach((key) => {
-      emitCommandResponse(this.modCommands[key].help, senderSocket);
+      emitCommandResponse(this.modCommands[key].help, socket);
     });
   }
 }

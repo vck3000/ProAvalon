@@ -6,15 +6,15 @@ import { emitCommandResponse } from '../../commandResponse';
 
 @Injectable()
 export class CreateRoomService implements Command {
-  command = 'createroom';
-  help = "/createroom: Creates a room and returns the new room's id";
+  command = 'creategame';
+  help = "/creategame: Creates a room and returns the new room's id";
 
   constructor(private readonly gamesService: GamesService) {}
 
-  async run(senderSocket: SocketUser) {
+  async run(socket: SocketUser) {
     emitCommandResponse(
       `Created room ${await this.gamesService.createGame()}`,
-      senderSocket,
+      socket,
     );
   }
 }
