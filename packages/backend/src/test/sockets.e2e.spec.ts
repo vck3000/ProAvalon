@@ -48,7 +48,7 @@ describe('Auth', () => {
 
   // Mock our redis client
   const redisClientServiceMock = {
-    redisClient: {
+    client: {
       get: jest.fn(),
       set: jest.fn(),
       zadd: jest.fn(),
@@ -58,8 +58,8 @@ describe('Auth', () => {
     },
   };
   // The following may need to be in individual tests later on
-  redisClientServiceMock.redisClient.get.mockImplementation(() => null);
-  redisClientServiceMock.redisClient.zrange.mockImplementation(() => []);
+  redisClientServiceMock.client.get.mockImplementation(() => null);
+  redisClientServiceMock.client.zrange.mockImplementation(() => []);
 
   beforeEach(async () => {
     // Set up database
