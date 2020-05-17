@@ -11,7 +11,7 @@ const getMessageClass = (type: ChatResponseType): string => {
   switch (type) {
     case ChatResponseType.PLAYER_JOIN_LOBBY:
     case ChatResponseType.PLAYER_LEAVE_LOBBY:
-    case ChatResponseType.CREATE_ROOM:
+    case ChatResponseType.CREATE_GAME:
     case ChatResponseType.USER_COMMAND:
     case ChatResponseType.PLAYER_JOIN_GAME:
     case ChatResponseType.PLAYER_LEAVE_GAME:
