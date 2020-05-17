@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import socket from '../../socket';
@@ -15,7 +16,16 @@ const useGame = (gameID?: string | string[]): void => {
     }
 
     if (user) {
-      socket.emit(SocketEvents.JOIN_GAME, { id: gameID });
+      socket.emit(SocketEvents.JOIN_GAME, { id: gameID }, (msg: string) => {
+        if (msg !== 'OK') {
+          Swal.fire({
+            heightAuto: false,
+            title: 'Oops',
+            text: msg,
+            icon: 'error',
+          });
+        }
+      });
     }
 
     return (): void => {
