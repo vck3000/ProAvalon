@@ -95,8 +95,16 @@ class SocketConnection {
     }
   };
 
-  emit = (event: string, message: any): void => {
-    this.socket.emit(event, message);
+  emit = (
+    event: string,
+    message: any,
+    callback: Function | null = null,
+  ): void => {
+    if (callback) {
+      this.socket.emit(event, message, callback);
+    } else {
+      this.socket.emit(event, message);
+    }
   };
 
   emitProto = (event: string, messageType: any, contents: object): void => {
