@@ -18,7 +18,7 @@ export class OnlinePlayersService implements OnModuleDestroy {
     );
     this.interval = setInterval(async () => {
       this.logger.log('Removing expired online players in redis.');
-      await this.redisClientService.redisClient.zremrangebyscore(
+      await this.redisClientService.client.zremrangebyscore(
         'onlineplayers',
         '-inf',
         new Date().getTime().toString(),
@@ -35,7 +35,7 @@ export class OnlinePlayersService implements OnModuleDestroy {
   async register(username: string, server: Server) {
     this.logger.log(`Registering ${username}.`);
     // Set a new record of their connection in a set every 25s.
-    await this.redisClientService.redisClient.zadd(
+    await this.redisClientService.client.zadd(
       'onlineplayers',
       'NX',
       (new Date().getTime() + 25 * 1000).toString(),
@@ -47,7 +47,7 @@ export class OnlinePlayersService implements OnModuleDestroy {
 
   async update(username: string) {
     this.logger.log(`Updating ${username}.`);
-    return this.redisClientService.redisClient.zadd(
+    return this.redisClientService.client.zadd(
       'onlineplayers',
       'XX',
       (new Date().getTime() + 25 * 1000).toString(),
@@ -57,7 +57,7 @@ export class OnlinePlayersService implements OnModuleDestroy {
 
   async deregister(username: string, server: Server) {
     this.logger.log(`Deregistering ${username}.`);
-    await this.redisClientService.redisClient.zrem('onlineplayers', username);
+    await this.redisClientService.client.zrem('onlineplayers', username);
 
     this.sendOnlinePlayers(server);
   }
@@ -65,7 +65,7 @@ export class OnlinePlayersService implements OnModuleDestroy {
   // Run privately from register or deregister.
   private async sendOnlinePlayers(server: Server) {
     this.logger.log('Sending all online players');
-    const onlinePlayers = await this.redisClientService.redisClient.zrange(
+    const onlinePlayers = await this.redisClientService.client.zrange(
       'onlineplayers',
       0,
       -1,

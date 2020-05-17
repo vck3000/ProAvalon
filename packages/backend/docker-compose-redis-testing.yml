@@ -3,28 +3,19 @@ services:
   redis-testing:
     image: redis:5.0.7-alpine # Use stable version
     container_name: redis-testing
-    ports:
-      - 6378:6379
     entrypoint: redis-server --appendonly yes # Start with data persistance
 
   backend-testing:
     container_name: backend-testing
     depends_on:
       - redis-testing
-    ports:
-      - 3001:3001
     build:
       context: .
       dockerfile: Dockerfile.test
       args:
         SERVICE: backend
     environment:
-      # These aren't actually being used for testing.
       SERVICE: backend
-      JWT_SECRET_KEY: my_secret
-      DATABASE_URL: mongodb://root:password@mongo:27017/proavalon?authSource=admin
-      REDIS_HOST: redis-testing
-      REDIS_PORT: 6379
     volumes:
       - ./:/usr/src/app/
       - /usr/src/app/node_modules
