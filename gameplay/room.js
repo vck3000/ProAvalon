@@ -45,7 +45,7 @@ function Room(host_, roomId_, io_, maxNumPlayers_, newRoomPassword_, gameMode_, 
         this.gameMode = 'avalon';
     }
     this.ranked = ranked_;
-    this.gamesRequiredForRanked = 50;
+    this.gamesRequiredForRanked = 5;
     this.provisionalGamesRequired = 20;
 
     // Misc. variables

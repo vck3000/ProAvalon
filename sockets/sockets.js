@@ -2679,7 +2679,7 @@ var updateCurrentPlayersList = function () {
     for (let i = 0; i < allSockets.length; i++) {
         playerList[i] = {};
         playerList[i].displayUsername = allSockets[i].request.displayUsername ? allSockets[i].request.displayUsername : allSockets[i].request.user.username;
-        playerList[i].playerRating = Math.round(allSockets[i].request.user.playerRating);
+        playerList[i].playerRating = Math.floor(allSockets[i].request.user.playerRating);
         playerList[i].ratingBracket = allSockets[i].request.user.ratingBracket;
         playerList[i].ratingBadge = allSockets[i].request.ratingBadge;
     }
