@@ -8,16 +8,12 @@ import {
 import { Server } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { transformAndValidate } from 'class-transformer-validator';
+import { SocketEvents, ChatResponse, ChatResponseType } from '@proavalon/proto';
 
 import { UsersService } from '../users/users.service';
 import { AllChatService } from '../all-chat/all-chat.service';
 import { SocketUser } from '../users/users.socket';
 
-import {
-  SocketEvents,
-  ChatResponse,
-  ChatResponseType,
-} from '../../proto/lobbyProto';
 import RedisAdapterService from '../redis-adapter/redis-adapter.service';
 import { OnlinePlayersService } from './online-players/online-players.service';
 import { OnlineSocketsService } from './online-sockets/online-sockets.service';

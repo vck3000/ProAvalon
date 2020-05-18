@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ChatResponse, ChatResponseType } from '@proavalon/proto';
 import { AllChatService } from './all-chat.service';
 import { AllChatController } from './all-chat.controller';
-import { ChatResponse, ChatResponseType } from '../../proto/lobbyProto';
 
 describe('AllChatService', () => {
   let service: AllChatService;

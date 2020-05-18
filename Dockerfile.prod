@@ -11,15 +11,18 @@ RUN echo "Building PROD env for ${SERVICE}."
 WORKDIR /usr/src/app
 
 # Copy over the files
-# COPY package*.json ./
-# COPY lerna.json ./
+COPY package*.json ./
+COPY lerna.json ./
 COPY packages/${SERVICE} ./packages/${SERVICE}
+COPY packages/proto ./packages/proto
 
 # Install dependencies
+RUN npm i
+RUN npm run bootstrap
 # RUN npm ci --ignore-scripts --no-optional
 # RUN npm install -g lerna
 # RUN lerna bootstrap --ignore-scripts -- --no-optional
-RUN cd packages/${SERVICE} && npm install
+# RUN cd packages/${SERVICE} && npm install
 
 # Build and prune away the devDependencies
 RUN cd packages/${SERVICE} && npm run build && npm prune --production

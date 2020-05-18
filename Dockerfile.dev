@@ -10,11 +10,13 @@ WORKDIR /usr/src/app
 
 # Copy over required files
 COPY package*.json ./
-COPY packages/${SERVICE} ./packages/${SERVICE}
 COPY lerna.json .
+COPY packages/${SERVICE} ./packages/${SERVICE}
+COPY packages/proto ./packages/proto
 
 # Install packages
-RUN npx lerna bootstrap
+RUN npm i
+RUN npm run bootstrap
 
 # Dev mode
 CMD [ "npm" , "--prefix", "packages/${SERVICE}", "run", "dev" ]

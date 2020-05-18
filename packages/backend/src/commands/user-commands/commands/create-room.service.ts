@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { transformAndValidate } from 'class-transformer-validator';
+import { CreateGameDto, GameMode } from '@proavalon/proto';
 import { GamesService } from '../../../games/games.service';
 import { SocketUser } from '../../../users/users.socket';
 import { Command } from '../../commands.types';
 import { emitCommandResponse } from '../../commandResponse';
-import { CreateGameDto, GameMode } from '../../../../proto/lobbyProto';
 
 @Injectable()
 export class CreateRoomService implements Command {

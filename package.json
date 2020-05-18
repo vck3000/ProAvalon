@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "bootstrap": "lerna bootstrap",
+    "bootstrap": "lerna bootstrap && npm --prefix packages/proto run build",
     "build": "npm --prefix packages/frontend run build && npm --prefix packages/backend run build",
     "lint": "npm --prefix packages/frontend run lint && npm --prefix packages/backend run lint",
     "test": "npm --prefix packages/frontend test && npm --prefix packages/backend test",
@@ -19,7 +19,6 @@
   "dependencies": {
     "class-transformer": "^0.2.3",
     "class-validator": "^0.12.1",
-    "protobufjs": "~6.8.9",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {

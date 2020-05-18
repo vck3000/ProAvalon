@@ -11,6 +11,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import * as request from 'supertest';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { SocketEvents, ChatRequest, ChatResponse } from '@proavalon/proto';
 
 import { AuthController } from '../auth/auth.controller';
 import { LocalStrategy } from '../auth/guards/local.strategy';
@@ -20,11 +21,6 @@ import { UsersModule } from '../users/users.module';
 import { AuthModule } from '../auth/auth.module';
 import { AllChatModule } from '../all-chat/all-chat.module';
 import { RedisClientModule } from '../redis-client/redis-client.module';
-import {
-  SocketEvents,
-  ChatRequest,
-  ChatResponse,
-} from '../../proto/lobbyProto';
 import RedisClientService from '../redis-client/redis-client.service';
 // import { RedisSocketIoAdapter } from '../util/redisSocketIoAdapter';
 

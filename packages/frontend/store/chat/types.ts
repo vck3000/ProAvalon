@@ -1,4 +1,4 @@
-import { ChatResponse } from '../../proto/lobbyProto';
+import { ChatResponse } from '@proavalon/proto';
 import { ChatType } from './reducers';
 
 // Note, action types must be split out here. Cannot collect into one object.

@@ -1,9 +1,9 @@
 import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { Server } from 'socket.io';
 import { transformAndValidate } from 'class-transformer-validator';
+import { SocketEvents, OnlinePlayer } from '@proavalon/proto';
 
 import RedisClientService from '../../redis-client/redis-client.service';
-import { SocketEvents, OnlinePlayer } from '../../../proto/lobbyProto';
 
 @Injectable()
 export class OnlinePlayersService implements OnModuleDestroy {
