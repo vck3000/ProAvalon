@@ -1,25 +1,44 @@
 import { Logger } from '@nestjs/common';
-import { ChatResponse } from '../../proto/lobbyProto';
+import { transformAndValidate } from 'class-transformer-validator';
+import { GameState, GameRoomState, GameStateType } from './types';
+import { SocketUser } from '../users/users.socket';
+import { CreateGameDto } from '../../proto/lobbyProto';
 
 export default class Game {
   private readonly logger: Logger;
 
-  private readonly id: number;
-
-  private chatHistory: ChatResponse[] = [];
-
-  constructor(id: number) {
-    this.id = id;
-    this.logger = new Logger(`Game ${this.id}`);
-  }
-
-  storeChat(chat: ChatResponse) {
-    this.logger.log(`Storing chat -> ${chat.username}: ${chat.text}`);
-    this.chatHistory.push(chat);
+  constructor() {
+    this.logger = new Logger(Game.name);
   }
 
   getChat() {
     this.logger.log('Getting full chat...');
     // Fetch from redis database
+  }
+
+  async createNewGameState(
+    socket: SocketUser,
+    data: CreateGameDto,
+    id: number,
+  ): Promise<GameState | null> {
+    const settingsJSON: GameState = {
+      ...data,
+      id,
+      host: socket.user.displayUsername,
+      roomState: GameRoomState.WAITING,
+      kickedPlayers: [],
+      claimingPlayers: [],
+      playerUsernames: [],
+      roles: {},
+      state: GameStateType.PICKING,
+      data: {},
+      missionHistory: [],
+      numFailsHistory: [],
+    };
+
+    const settings = await transformAndValidate(GameState, settingsJSON);
+    this.logger.log('Passed validation');
+    this.logger.log(settings);
+    return settings;
   }
 }
