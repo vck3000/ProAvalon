@@ -1,7 +1,7 @@
 import { ReactElement, useState, useRef, useEffect, UIEvent } from 'react';
+import { ChatResponse } from '@proavalon/proto';
 
 import Message from './message';
-import { ChatResponse } from '../../proto/lobbyProto';
 import debounce from '../../utils/debounce';
 
 const lastTransparentLine = 60;

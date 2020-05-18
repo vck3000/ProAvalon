@@ -6,8 +6,6 @@ import {
 import { Logger } from '@nestjs/common';
 import { Server } from 'socket.io';
 import { transformAndValidate } from 'class-transformer-validator';
-
-import { GamesService } from './games.service';
 import {
   SocketEvents,
   JoinGame,
@@ -16,7 +14,9 @@ import {
   ChatResponseType,
   ChatRequest,
   CreateGameDto,
-} from '../../proto/lobbyProto';
+} from '@proavalon/proto';
+
+import { GamesService } from './games.service';
 import { SocketUser } from '../users/users.socket';
 import RedisAdapterService from '../redis-adapter/redis-adapter.service';
 import { CommandsService } from '../commands/commands.service';

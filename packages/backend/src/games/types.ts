@@ -1,5 +1,5 @@
 import { IsString, IsEnum, IsInt } from 'class-validator';
-import { CreateGameDto } from '../../proto/lobbyProto';
+import { CreateGameDto } from '@proavalon/proto';
 
 type MissionOutcome = 'success' | 'fail';
 

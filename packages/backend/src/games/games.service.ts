@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
-// import Game from './game';
-import { ChatResponse, CreateGameDto } from '../../proto/lobbyProto';
+import { ChatResponse, CreateGameDto } from '@proavalon/proto';
 import RedisAdapterService from '../redis-adapter/redis-adapter.service';
 import RedisClientService from '../redis-client/redis-client.service';
 import Game from './game';

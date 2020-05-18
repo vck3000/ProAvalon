@@ -1,14 +1,10 @@
 import axios, { AxiosResponse } from 'axios';
 import { SagaIterator } from 'redux-saga';
 import { call, put, takeLatest, fork } from 'redux-saga/effects';
+import { ChatResponse, ChatRequest, SocketEvents } from '@proavalon/proto';
 
 import socket from '../../socket';
 
-import {
-  ChatResponse,
-  ChatRequest,
-  SocketEvents,
-} from '../../proto/lobbyProto';
 import { getBackendUrl } from '../../utils/getEnvVars';
 import { setMessages } from './actions';
 import { GET_ALL_CHAT, EMIT_MESSAGE, IEmitMessageAction } from './types';
