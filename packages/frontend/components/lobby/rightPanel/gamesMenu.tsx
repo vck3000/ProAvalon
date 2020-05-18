@@ -30,6 +30,7 @@ const gameCardsData: IGameCardData[] = [
       '/game_room/base-res.png',
       '/game_room/base-res.png',
       '/game_room/base-res.png',
+      '/game_room/base-res.png',
     ],
   },
   {
@@ -45,6 +46,8 @@ const gameCardsData: IGameCardData[] = [
       '/game_room/base-res.png',
       '/game_room/base-res.png',
       '/game_room/base-res.png',
+      '/game_room/base-res.png',
+      '/game_room/base-res.png',
     ],
   },
   {
@@ -56,6 +59,9 @@ const gameCardsData: IGameCardData[] = [
     spectators: 75830,
     avatarLinks: [
       'https://cdn.discordapp.com/attachments/430166478193688597/481009331622510602/pronub-res.png',
+      '/game_room/base-res.png',
+      '/game_room/base-res.png',
+      '/game_room/base-res.png',
       '/game_room/base-res.png',
       '/game_room/base-res.png',
       '/game_room/base-res.png',

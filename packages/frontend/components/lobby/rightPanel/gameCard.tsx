@@ -42,61 +42,11 @@ const GameCard = (props: IOwnProps): ReactElement => {
             {data.spectators}
           </p>
         </div>
-        <div className="bottom_half">
-          <div className="avatar_row">
-            <img
-              src="/game_room/base-res.png"
-              alt="avatar"
-              className="avatar"
-            />
-            <img
-              src="/game_room/base-res.png"
-              alt="avatar"
-              className="avatar"
-            />
-            <img
-              src="/game_room/base-res.png"
-              alt="avatar"
-              className="avatar"
-            />
-            <img
-              src="/game_room/base-res.png"
-              alt="avatar"
-              className="avatar"
-            />
-            <img
-              src="/game_room/base-res.png"
-              alt="avatar"
-              className="avatar"
-            />
-          </div>
-          <div className="avatar_row">
-            <img
-              src="/game_room/base-res.png"
-              alt="avatar"
-              className="avatar"
-            />
-            <img
-              src="/game_room/base-res.png"
-              alt="avatar"
-              className="avatar"
-            />
-            <img
-              src="/game_room/base-res.png"
-              alt="avatar"
-              className="avatar"
-            />
-            <img
-              src="/game_room/base-res.png"
-              alt="avatar"
-              className="avatar"
-            />
-            <img
-              src="/game_room/base-res.png"
-              alt="avatar"
-              className="avatar"
-            />
-          </div>
+        <div className="avatars">
+          {/* for keys, probably want player names added to game data */}
+          {data.avatarLinks.map((link) => (
+            <img src={link} alt="avatar" className="avatar" />
+          ))}
         </div>
         <style jsx>
           {`
@@ -122,23 +72,16 @@ const GameCard = (props: IOwnProps): ReactElement => {
               color: var(--gold-light);
             }
 
-            .bottom_half {
+            .avatars {
               background-color: var(--light-alt);
               display: flex;
-              flex-wrap: nowrap;
-              flex-direction: column;
+              flex-wrap: wrap;
+              justify-content: space-around;
               padding: 10px;
             }
 
-            .avatar_row {
-              display: flex;
-              justify-content: space-evenly;
-            }
-
             .avatar {
-              max-width: 50px;
               max-height: 50px;
-              width: 20%;
             }
           `}
         </style>
