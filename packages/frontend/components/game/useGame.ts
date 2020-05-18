@@ -1,8 +1,8 @@
 import Swal from 'sweetalert2';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { SocketEvents } from '@proavalon/proto';
 import socket from '../../socket';
-import { SocketEvents } from '../../proto/lobbyProto';
 import useAuth from '../../effects/useAuth';
 
 const useGame = (gameID?: string | string[]): void => {

@@ -6,14 +6,14 @@ import {
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { transformAndValidate } from 'class-transformer-validator';
-
-import { AllChatService } from './all-chat.service';
 import {
   SocketEvents,
   ChatRequest,
   ChatResponse,
   ChatResponseType,
-} from '../../proto/lobbyProto';
+} from '@proavalon/proto';
+
+import { AllChatService } from './all-chat.service';
 import { SocketUser } from '../users/users.socket';
 import { CommandsService } from '../commands/commands.service';
 

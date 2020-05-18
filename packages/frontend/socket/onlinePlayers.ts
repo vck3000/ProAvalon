@@ -1,5 +1,5 @@
 import { transformAndValidate } from 'class-transformer-validator';
-import { SocketEvents, OnlinePlayer } from '../proto/lobbyProto';
+import { SocketEvents, OnlinePlayer } from '@proavalon/proto';
 import { store } from '../store';
 import { setOnlinePlayers } from '../store/lobby/onlinePlayers/actions';
 

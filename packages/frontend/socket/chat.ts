@@ -1,5 +1,7 @@
 import { transformAndValidate } from 'class-transformer-validator';
-import { SocketEvents, ChatResponse } from '../proto/lobbyProto';
+// import { plainToClass } from 'class-transformer';
+// import { SocketEvents, ChatResponse } from '../proto/lobbyProto';
+import { SocketEvents, ChatResponse } from '@proavalon/proto';
 import { store } from '../store';
 import { receivedMessage } from '../store/chat/actions';
 
@@ -9,6 +11,9 @@ export const SetSocketChatEvents = (socket: SocketIOClient.Socket): void => {
     async (chatResponse: ChatResponse) => {
       try {
         const chatRes = await transformAndValidate(ChatResponse, chatResponse);
+        // const chatRes = plainToClass(ChatResponse, chatResponse);
+        // eslint-disable-next-line no-console
+        console.log(chatRes);
         store.dispatch(receivedMessage({ type: 'lobby', message: chatRes }));
       } catch (err) {
         throw Error(`Validation failed. Error: ${err}`);

@@ -1,6 +1,6 @@
+import { ChatResponse } from '@proavalon/proto';
 import { RootState } from '..';
 import { SET_MESSAGES, RECEIVED_MESSAGE, ChatActionTypes } from './types';
-import { ChatResponse } from '../../proto/lobbyProto';
 
 export const chatSelector = (type: ChatType) => (
   state: RootState,

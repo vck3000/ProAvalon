@@ -25,6 +25,7 @@ import { TypegooseModule } from 'nestjs-typegoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import * as Redis from 'ioredis';
 import { transformAndValidateSync } from 'class-transformer-validator';
+import { SocketEvents, CreateGameDto, GameMode } from '@proavalon/proto';
 // import * as util from 'util';
 
 import { AuthController } from '../auth/auth.controller';
@@ -36,7 +37,6 @@ import { AuthModule } from '../auth/auth.module';
 import { AllChatModule } from '../all-chat/all-chat.module';
 import { RedisClientModule } from '../redis-client/redis-client.module';
 import { GamesModule } from '../games/games.module';
-import { SocketEvents, CreateGameDto, GameMode } from '../../proto/lobbyProto';
 import { RedisSocketIoAdapter } from '../util/redisSocketIoAdapter';
 
 import {

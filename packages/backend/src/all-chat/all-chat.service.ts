@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ChatResponse } from '../../proto/lobbyProto';
+import { ChatResponse } from '@proavalon/proto';
 
 @Injectable()
 export class AllChatService {

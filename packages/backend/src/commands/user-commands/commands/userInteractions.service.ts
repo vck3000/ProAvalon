@@ -1,10 +1,10 @@
 // eslint-disable-next-line max-classes-per-file
 import { Injectable } from '@nestjs/common';
+import { ChatResponseType } from '@proavalon/proto';
 import { SocketUser } from '../../../users/users.socket';
 import { emitCommandResponse } from '../../commandResponse';
 import { Command, Commands, CommandsWrapper } from '../../commands.types';
 import RedisAdapterService from '../../../redis-adapter/redis-adapter.service';
-import { ChatResponseType } from '../../../../proto/lobbyProto';
 
 class Interaction implements Command {
   command: string;
