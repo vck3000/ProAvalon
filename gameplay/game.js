@@ -1241,15 +1241,15 @@ Game.prototype.finishGame = function (toBeWinner) {
                         player.request.user.playerRating = this.calculateNewProvisionalRating(this.winner, player, otherPlayerRatings);
                     }
                     difference = Math.round((player.request.user.playerRating - rating)*10)/10;
-                    this.sendText(this.allSockets, `${player.request.user.username}: ${Math.round(rating)} -> ${Math.round(player.request.user.playerRating)} (${(difference > 0 ? "+"+difference : difference)})`, 'server-text');
+                    this.sendText(this.allSockets, `${player.request.user.username}: ${Math.floor(rating)} -> ${Math.floor(player.request.user.playerRating)} (${(difference > 0 ? "+"+difference : difference)})`, 'server-text');
                 }
                 else {
                     if (player.alliance === 'Resistance') {
-                        this.sendText(this.allSockets, `${player.request.user.username}: ${Math.round(rating)} -> ${Math.round(rating + indResChange)} (${(indResChange > 0 ? "+"+indResChange : indResChange)})`, 'server-text');
+                        this.sendText(this.allSockets, `${player.request.user.username}: ${Math.floor(rating)} -> ${Math.floor(rating + indResChange)} (${(indResChange > 0 ? "+"+indResChange : indResChange)})`, 'server-text');
                         player.request.user.playerRating += indResChange;
                     }
                     else if (player.alliance === 'Spy') {
-                        this.sendText(this.allSockets, `${player.request.user.username}: ${Math.round(rating)} -> ${Math.round(rating + indSpyChange)} (${(indSpyChange > 0 ? "+"+indSpyChange : indSpyChange)})`, 'server-text');
+                        this.sendText(this.allSockets, `${player.request.user.username}: ${Math.floor(rating)} -> ${Math.floor(rating + indSpyChange)} (${(indSpyChange > 0 ? "+"+indSpyChange : indSpyChange)})`, 'server-text');
                         player.request.user.playerRating += indSpyChange;
                     }
                 }
@@ -1545,6 +1545,8 @@ Usual formula: R_new = R_old + k(Actual - Expected)
 5. Divide equally between players on each team and adjust ratings. (Done in the finishGame function)
 */
 Game.prototype.calculateResistanceRatingChange = function (winningTeam, provisionalGame) {
+    // Constant changes in elo due to unbalanced winrate, winrate changes translated to elo points.
+    const playerSizeEloChanges = [62, 56, 71, 116, 18, 80]
     // k value parameter for calculation
     const k = 42;
     // Calculate ratings for each team by averaging elo of players
@@ -1563,9 +1565,8 @@ Game.prototype.calculateResistanceRatingChange = function (winningTeam, provisio
     }
     var spyElo = total/spyTeamEloRatings.length;
 
-    // Adjust ratings for sitewide winrates. Currently prototype, using hardcoded based on current.
-    // 58% expected win percentage equates to a elo increase of 56 points.
-    spyElo += 56
+    // Adjust ratings for sitewide winrates. Using hardcoded based on current.    
+    spyElo += playerSizeEloChanges[this.playersInGame.length];
     
     console.log("Resistance Team Elo: " + resElo);
     console.log("Spy Team Elo: " + spyElo);
@@ -1573,10 +1574,10 @@ Game.prototype.calculateResistanceRatingChange = function (winningTeam, provisio
     // Calculate elo change, adjusting for player size, difference is 1- or just -
     var eloChange = 0;
     if (winningTeam === 'Resistance') {
-        eloChange = k * (1 - (1/(1+Math.pow(10, -(resElo - spyElo)/400)))) * (this.playersInGame.length/5);
+        eloChange = k * (1 - (1/(1+Math.pow(10, -(resElo - spyElo)/500)))) * (this.playersInGame.length/5); //smoothed from 400 to 500 division
     }
     else if (winningTeam === 'Spy') {
-        eloChange = k * (-1/(1+Math.pow(10, -(resElo - spyElo)/400))) * (this.playersInGame.length/5);
+        eloChange = k * (-1/(1+Math.pow(10, -(resElo - spyElo)/500))) * (this.playersInGame.length/5); //smoothed from 400 to 500 division
     }
     else {
         // winning team should always be defined
@@ -1614,6 +1615,8 @@ For the first few games it will result in wild rating changes, but will level ou
 Could possibly lead to some people abusing their early rating by only playing with strong players and getting lucky, but should level out in the end.
 */
 Game.prototype.calculateNewProvisionalRating = function (winningTeam, playerSocket, playerRatings) {
+    // Constant changes in elo due to unbalanced winrate, winrate changes translated to elo points.
+    const playerSizeWinrates = [0.57, 0.565, 0.58, 0.63, 0.52, 0.59]
     var Result = (playerSocket.alliance === winningTeam) ? 1 : -1;
     
     // Calculate new rating
@@ -1624,12 +1627,14 @@ Game.prototype.calculateNewProvisionalRating = function (winningTeam, playerSock
     // Prototype team adjustment is hardcoded, players are rewarded more for winning and penalised less for losing as res.
     // Also all changes are scaled with relation to team size to prevent deflation in provisional games.
     var teamAdj = 0;
+    const resReduction = this.spyUsernames.length/this.resistanceUsernames.length;
+    const sizeWinrate = playerSizeWinrates[this.playersInGame.length];
     if (playerSocket.alliance === "Resistance") {
         if (winningTeam === playerSocket.alliance) {
-            teamAdj = 0.58/0.42 * 2/3;
+            teamAdj = sizeWinrate/(1-sizeWinrate) * resReduction;
         }
         else {
-            teamAdj = 2/3;
+            teamAdj = resReduction;
         }
     }
     else {
@@ -1637,7 +1642,7 @@ Game.prototype.calculateNewProvisionalRating = function (winningTeam, playerSock
             teamAdj = 1;
         }
         else {
-            teamAdj = 0.58/0.42;
+            teamAdj = sizeWinrate/(1-sizeWinrate);
         }
     }
 
@@ -1645,7 +1650,13 @@ Game.prototype.calculateNewProvisionalRating = function (winningTeam, playerSock
 
     // Prevent losing rating on win and gaining rating on loss in fringe scenarios with weird players.
     if ((winningTeam === playerSocket.alliance && newRating < R_old) || (!(winningTeam === playerSocket.alliance) && newRating > R_old)) {
-        newRating = R_old
+        newRating = R_old;
+    }
+    if ((winningTeam === playerSocket.alliance && newRating > R_old+100)) {
+        newRating = R_old + 100;
+    }
+    if ((!(winningTeam === playerSocket.alliance) && newRating < R_old-100)) {
+        newRating = R_old - 100;
     }
     return newRating
 };
