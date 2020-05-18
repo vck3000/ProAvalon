@@ -24,6 +24,7 @@ import * as request from 'supertest';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import * as Redis from 'ioredis';
+import { transformAndValidateSync } from 'class-transformer-validator';
 // import * as util from 'util';
 
 import { AuthController } from '../auth/auth.controller';
@@ -35,7 +36,7 @@ import { AuthModule } from '../auth/auth.module';
 import { AllChatModule } from '../all-chat/all-chat.module';
 import { RedisClientModule } from '../redis-client/redis-client.module';
 import { GamesModule } from '../games/games.module';
-import { SocketEvents } from '../../proto/lobbyProto';
+import { SocketEvents, CreateGameDto, GameMode } from '../../proto/lobbyProto';
 import { RedisSocketIoAdapter } from '../util/redisSocketIoAdapter';
 
 import {
@@ -189,8 +190,16 @@ describe('GamesSocket', () => {
     await socketOn(socket2, SocketEvents.AUTHORIZED);
 
     // Create some games concurrently and make sure it is successful.
-    const result1 = socketEmit(socket1, SocketEvents.CREATE_GAME, null);
-    const result2 = socketEmit(socket2, SocketEvents.CREATE_GAME, null);
+    const settings: CreateGameDto = {
+      gameMode: GameMode.AVALON,
+      joinPassword: undefined,
+      maxNumPlayers: 10,
+    };
+
+    const data = transformAndValidateSync(CreateGameDto, settings);
+
+    const result1 = socketEmit(socket1, SocketEvents.CREATE_GAME, data);
+    const result2 = socketEmit(socket2, SocketEvents.CREATE_GAME, data);
 
     // Should return the game id of the room, which is either 1 or 2
     // but not both the same.
@@ -223,7 +232,15 @@ describe('GamesSocket', () => {
     sockets.forEach((socket) => socket.on('error', done));
 
     // Create a game
-    const gameId = await socketEmit(sockets[0], SocketEvents.CREATE_GAME, null);
+    const settings: CreateGameDto = {
+      gameMode: GameMode.AVALON,
+      joinPassword: undefined,
+      maxNumPlayers: 10,
+    };
+
+    const data = transformAndValidateSync(CreateGameDto, settings);
+
+    const gameId = await socketEmit(sockets[0], SocketEvents.CREATE_GAME, data);
 
     // Join the game
     expect(
