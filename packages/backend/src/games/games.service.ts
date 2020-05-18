@@ -1,23 +1,32 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { WsException } from '@nestjs/websockets';
 // import Game from './game';
-import { ChatResponse } from '../../proto/lobbyProto';
+import { ChatResponse, CreateGameDto } from '../../proto/lobbyProto';
 import RedisAdapterService from '../redis-adapter/redis-adapter.service';
 import RedisClientService from '../redis-client/redis-client.service';
+import Game from './game';
+import { SocketUser } from '../users/users.socket';
 
 @Injectable()
 export class GamesService {
   private readonly logger = new Logger(GamesService.name);
 
+  private readonly game: Game;
+
   constructor(
     private readonly redisClientService: RedisClientService,
     private readonly redisAdapterService: RedisAdapterService,
-  ) {}
+  ) {
+    this.game = new Game();
+  }
 
-  async createGame(): Promise<number> {
+  async createGame(socket: SocketUser, data: CreateGameDto): Promise<number> {
+    // Create the game number and open in Redis
     let nextGameNum = -1;
     await this.redisClientService.lockDo(
       'games:open',
       async (client, multi) => {
+        // Get the nextGameNum
         nextGameNum = Number(await client.get('games:nextNum'));
 
         // If nextGameNum hasn't been set yet, start from 1.
@@ -26,14 +35,31 @@ export class GamesService {
           multi.incr('games:nextNum');
         }
 
+        // Add data to Redis
         multi.rpush('games:open', Number(nextGameNum));
         multi.incr('games:nextNum');
       },
     );
 
-    this.logger.log(`Done creating game ${nextGameNum}.`);
+    // Create the game state and save in Redis
+    try {
+      const newGameState = await this.game.createNewGameState(
+        socket,
+        data,
+        nextGameNum,
+      );
+      await this.redisClientService.client.set(
+        `game:${nextGameNum}`,
+        JSON.stringify(newGameState),
+      );
 
-    return nextGameNum;
+      this.logger.log(`Done creating game ${nextGameNum}.`);
+
+      return nextGameNum;
+    } catch (e) {
+      this.logger.error(e);
+      throw new WsException('Failed to create a game.');
+    }
   }
 
   closeGame(id: number): boolean {

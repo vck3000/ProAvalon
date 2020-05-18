@@ -1,4 +1,14 @@
-import { IsDefined, IsString, IsDate, IsEnum, IsNumber } from 'class-validator';
+import {
+  IsDefined,
+  IsString,
+  IsDate,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsInt,
+  Min,
+  Max,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import 'reflect-metadata';
 
@@ -63,6 +73,25 @@ export class OnlinePlayer {
 
   @IsDefined()
   rewards!: OnlinePlayerRewards[];
+}
+
+export enum GameMode {
+  VANILLA = 'VANILLA',
+  AVALON = 'AVALON',
+}
+export class CreateGameDto {
+  // No need for validators here as it is validated within GameState
+  @IsInt()
+  @Min(0)
+  @Max(10)
+  maxNumPlayers!: number;
+
+  @IsOptional()
+  @IsString()
+  joinPassword!: string | undefined;
+
+  @IsEnum(GameMode)
+  gameMode!: GameMode;
 }
 
 export class JoinGame {

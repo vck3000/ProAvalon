@@ -15,6 +15,7 @@ import {
   ChatResponse,
   ChatResponseType,
   ChatRequest,
+  CreateGameDto,
 } from '../../proto/lobbyProto';
 import { SocketUser } from '../users/users.socket';
 import RedisAdapterService from '../redis-adapter/redis-adapter.service';
@@ -111,10 +112,10 @@ export class GamesGateway {
   }
 
   @SubscribeMessage(SocketEvents.CREATE_GAME)
-  async handleCreateGame(socket: SocketUser) {
+  async handleCreateGame(socket: SocketUser, data: CreateGameDto) {
     this.logger.log('Received create game request');
 
-    const newGameId = await this.gamesService.createGame();
+    const newGameId = await this.gamesService.createGame(socket, data);
 
     const msg = await transformAndValidate(ChatResponse, {
       text: `${socket.user.displayUsername} has created room ${newGameId}`,
