@@ -1,6 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
-import { ChatResponse, CreateGameDto } from '@proavalon/proto';
+import {
+  ChatResponse,
+  CreateGameDto,
+  SocketEvents,
+  transformAndValidate,
+  LobbyGame,
+} from '@proavalon/proto';
 import RedisAdapterService from '../redis-adapter/redis-adapter.service';
 import RedisClientService from '../redis-client/redis-client.service';
 import Game from './game';
@@ -10,14 +16,10 @@ import { SocketUser } from '../users/users.socket';
 export class GamesService {
   private readonly logger = new Logger(GamesService.name);
 
-  private readonly game: Game;
-
   constructor(
     private readonly redisClientService: RedisClientService,
     private readonly redisAdapterService: RedisAdapterService,
-  ) {
-    this.game = new Game();
-  }
+  ) {}
 
   async createGame(socket: SocketUser, data: CreateGameDto): Promise<number> {
     // Create the game number and open in Redis
@@ -42,7 +44,7 @@ export class GamesService {
 
     // Create the game state and save in Redis
     try {
-      const newGameState = await this.game.createNewGameState(
+      const newGameState = await Game.createNewGameState(
         socket,
         data,
         nextGameNum,
@@ -53,6 +55,8 @@ export class GamesService {
       );
 
       this.logger.log(`Done creating game ${nextGameNum}.`);
+
+      this.updateLobbyGames();
 
       return nextGameNum;
     } catch (e) {
@@ -83,5 +87,38 @@ export class GamesService {
     //   this.logger.log(`Passing on chat to game ${id}.`);
     //   game.storeChat(chatResponse);
     // }
+  }
+
+  async updateLobbyGames() {
+    // Get games and send it out
+    const gameIds = await this.redisClientService.client.lrange(
+      'games:open',
+      0,
+      -1,
+    );
+
+    const gameStrings = await Promise.all(
+      gameIds.map((gameId) =>
+        this.redisClientService.client.get(`game:${gameId}`),
+      ),
+    );
+
+    this.logger.log(gameStrings);
+
+    const lobbyGames: LobbyGame[] = [];
+    gameStrings.forEach((gameString) => {
+      if (gameString) {
+        lobbyGames.push(new Game(gameString).getLobbyData());
+      }
+    });
+
+    const lobbyGamesValidated = await transformAndValidate(
+      LobbyGame,
+      lobbyGames,
+    );
+
+    this.redisAdapterService.server
+      .to('lobby')
+      .emit(SocketEvents.UPDATE_LOBBY_GAMES, lobbyGamesValidated);
   }
 }

@@ -6,3 +6,4 @@ Sorted Set      onlineplayers                   <displayUsernames>[]
 
 List            games:open                      <game numbers open>[]
 String          games:nextNum                   <next game number>
+String          game:<id>                       JSON.strigify(<game state>)

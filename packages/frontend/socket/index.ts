@@ -11,6 +11,7 @@ import { logout } from '../store/user/actions';
 import { getBackendUrl } from '../utils/getEnvVars';
 import { SetSocketChatEvents } from './chat';
 import { SetSocketPlayersEvents } from './onlinePlayers';
+import { SetLobbyEvents } from './lobby';
 
 class SocketConnection {
   private socket!: SocketIOClient.Socket;
@@ -63,8 +64,10 @@ class SocketConnection {
         this.socket.emit(SocketEvents.USER_RECONNECT, null);
       });
 
+      // TODO These should only be activated in lobby.
       SetSocketPlayersEvents(this.socket);
       SetSocketChatEvents(this.socket);
+      SetLobbyEvents(this.socket);
 
       this.socket.on('forceDisconnect', () => {
         // Only fire notification if we were in lobby.

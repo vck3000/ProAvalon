@@ -5,7 +5,7 @@ services:
     container_name: redis
     ports:
       - 6379:6379
-    entrypoint: redis-server --appendonly yes # Start with data persistance
+    entrypoint: redis-server # --appendonly yes # Don't start with data persistance
     volumes:
       - redis_data:/data
 
