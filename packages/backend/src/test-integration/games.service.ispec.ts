@@ -20,12 +20,16 @@ import {
 } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import * as request from 'supertest';
+import request from 'supertest';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import * as Redis from 'ioredis';
-import { transformAndValidateSync } from 'class-transformer-validator';
-import { SocketEvents, CreateGameDto, GameMode } from '@proavalon/proto';
+import Redis from 'ioredis';
+import {
+  transformAndValidateSync,
+  SocketEvents,
+  CreateGameDto,
+  GameMode,
+} from '@proavalon/proto';
 // import * as util from 'util';
 
 import { AuthController } from '../auth/auth.controller';

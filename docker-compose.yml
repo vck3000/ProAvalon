@@ -52,6 +52,7 @@ services:
       REDIS_PORT: 6379
     volumes:
       - ./packages/backend:/usr/src/app/packages/backend
+      - ./packages/proto:/usr/src/app/packages/proto
 
   frontend:
     container_name: frontend
@@ -67,6 +68,7 @@ services:
       BACKEND_URL: http://localhost:3001
     volumes:
       - ./packages/frontend:/usr/src/app/packages/frontend
+      - ./packages/proto:/usr/src/app/packages/proto
 
   # Second set of servers
   backend2:
@@ -88,6 +90,7 @@ services:
       REDIS_PORT: 6379
     volumes:
       - ./packages/backend:/usr/src/app/packages/backend
+      - ./packages/proto:/usr/src/app/packages/proto
 
   frontend2:
     container_name: frontend2
@@ -103,6 +106,7 @@ services:
       BACKEND_URL: http://localhost:3003
     volumes:
       - ./packages/frontend:/usr/src/app/packages/frontend
+      - ./packages/proto:/usr/src/app/packages/proto
 
 volumes:
   mongo_data:

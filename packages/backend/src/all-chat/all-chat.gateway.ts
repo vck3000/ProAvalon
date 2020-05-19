@@ -5,8 +5,8 @@ import {
   SubscribeMessage,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { transformAndValidate } from 'class-transformer-validator';
 import {
+  transformAndValidate,
   SocketEvents,
   ChatRequest,
   ChatResponse,

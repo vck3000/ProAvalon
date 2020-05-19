@@ -5,8 +5,8 @@ import {
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Server } from 'socket.io';
-import { transformAndValidate } from 'class-transformer-validator';
 import {
+  transformAndValidate,
   SocketEvents,
   JoinGame,
   LeaveGame,
