@@ -1,18 +1,16 @@
 FROM node:13
 
-ARG SERVICE
-ENV SERVICE="BACKEND"
-
-RUN echo "Building TEST env for ${SERVICE}."
-
 # Setting working directory. All the path will be relative to WORKDIR
 WORKDIR /usr/src/app
 
 # Copy over required files
-COPY package*.json ./
+# For now copy everything. Can optimise this by not copying frontend since 
+# there are no integration tests for it.
+COPY ./ ./
 
 # Install packages
 RUN npx lerna bootstrap
+RUN npm run build:proto
 
 # Dev mode
-CMD [ "npm", "run", "test:int:jest" ]
+CMD [ "npm", "run", "test:int:run" ]
