@@ -25,7 +25,8 @@ RUN npm run bootstrap
 # RUN cd packages/${SERVICE} && npm install
 
 # Build and prune away the devDependencies
-RUN cd packages/${SERVICE} && npm run build && npm prune --production
+# --no-package-lock so that npm doesn't delete @proavalon/proto
+RUN cd packages/${SERVICE} && npm run build && npm prune --production --no-package-lock
 
 # Production stage
 FROM node:13-alpine
@@ -34,5 +35,8 @@ ENV NODE_ENV="production"
 ARG SERVICE
 
 COPY --from=build /usr/src/app/packages/${SERVICE} ./packages/${SERVICE}
+# Copy the whole package over. Use --no-package-lock above to prevent this from being 
+# deleted in previous stage
+COPY --from=build /usr/src/app/packages/proto ./packages/proto
 
 CMD [ "npm" , "--prefix", "packages/${SERVICE}", "run", "start:prod" ]
