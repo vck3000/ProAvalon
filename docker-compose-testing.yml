@@ -3,7 +3,6 @@ services:
   redis-testing:
     image: redis:5.0.7-alpine # Use stable version
     container_name: redis-testing
-    entrypoint: redis-server --appendonly yes # Start with data persistance
 
   backend-testing:
     container_name: backend-testing
@@ -17,6 +16,5 @@ services:
     environment:
       SERVICE: backend
     volumes:
-      - ./:/usr/src/app
-      - ../proto:/usr/src/proto
-      - /usr/src/app/node_modules
+      - ./packages/backend/src:/usr/src/app/packages/backend/src
+      - ./packages/proto/build:/usr/src/app/packages/proto/build
