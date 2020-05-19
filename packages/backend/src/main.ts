@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import * as rateLimit from 'express-rate-limit';
-import * as helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { RedisSocketIoAdapter } from './util/redisSocketIoAdapter';
 

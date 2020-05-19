@@ -1,7 +1,11 @@
-import { transformAndValidate } from 'class-transformer-validator';
+// import {  } from 'class-transformer-validator';
 // import { plainToClass } from 'class-transformer';
 // import { SocketEvents, ChatResponse } from '../proto/lobbyProto';
-import { SocketEvents, ChatResponse } from '@proavalon/proto';
+import {
+  transformAndValidate,
+  SocketEvents,
+  ChatResponse,
+} from '@proavalon/proto';
 import { store } from '../store';
 import { receivedMessage } from '../store/chat/actions';
 

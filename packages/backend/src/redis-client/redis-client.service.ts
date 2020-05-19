@@ -1,5 +1,5 @@
 import { Injectable, OnModuleDestroy, Logger } from '@nestjs/common';
-import * as Redis from 'ioredis';
+import Redis from 'ioredis';
 import * as util from 'util';
 import { REDIS_HOST, REDIS_PORT } from '../util/getEnvVars';
 
