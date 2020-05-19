@@ -1,6 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { transformAndValidate } from 'class-transformer-validator';
-import { CreateGameDto } from '@proavalon/proto';
+import { transformAndValidate, CreateGameDto } from '@proavalon/proto';
 import { GameState, GameRoomState, GameStateType } from './types';
 import { SocketUser } from '../users/users.socket';
 

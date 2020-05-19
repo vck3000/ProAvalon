@@ -17,5 +17,6 @@ services:
     environment:
       SERVICE: backend
     volumes:
-      - ./:/usr/src/app/
+      - ./:/usr/src/app
+      - ../proto:/usr/src/proto
       - /usr/src/app/node_modules

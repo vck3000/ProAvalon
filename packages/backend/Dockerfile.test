@@ -12,7 +12,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Install packages
-RUN npm i
+RUN npx lerna bootstrap
 
 # Dev mode
 CMD [ "npm", "run", "test:int:jest" ]

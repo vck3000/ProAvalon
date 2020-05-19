@@ -21,5 +21,6 @@
   "private": true,
   "files": [
     "build/**/*"
-  ]
+  ],
+  "types": "build/index.d.ts"
 }
