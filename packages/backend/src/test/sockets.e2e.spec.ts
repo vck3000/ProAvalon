@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import * as io from 'socket.io-client';
+import io from 'socket.io-client';
 import {
   INestApplication,
   HttpStatus,
@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import * as request from 'supertest';
+import request from 'supertest';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { SocketEvents, ChatRequest, ChatResponse } from '@proavalon/proto';
