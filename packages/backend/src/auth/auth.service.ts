@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { DocumentType } from '@typegoose/typegoose';
 import { Response } from 'express';
+import { CreateUserDto } from '@proavalon/proto';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.model';
-import { CreateUserDto } from '../users/dto/create-user.dto';
 import { SignUpError } from './exceptions/signUpError';
 import { JWT_EXPIRY } from '../util/getEnvVars';
 

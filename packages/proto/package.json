@@ -4,23 +4,40 @@
   "description": "",
   "main": "build/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --passWithNoTests",
     "build": "tsc"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/jest": "^25.2.3",
     "class-transformer": "^0.2.3",
     "class-transformer-validator": "^0.8.0",
     "class-validator": "^0.12.2",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
+    "jest": "^26.0.1",
+    "ts-jest": "^26.0.0",
     "typescript": "^3.9.2"
   },
   "private": true,
   "files": [
     "build/**/*"
   ],
-  "types": "build/index.d.ts"
+  "types": "build/index.d.ts",
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": "\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  }
 }

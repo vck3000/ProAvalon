@@ -11,11 +11,11 @@ import {
 } from '@nestjs/common';
 import { ReturnModelType, DocumentType } from '@typegoose/typegoose';
 import { Request, Response } from 'express';
+import { CreateUserDto } from '@proavalon/proto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
 import { User } from '../users/user.model';
-import { CreateUserDto } from '../users/dto/create-user.dto';
 import { SignUpError } from './exceptions/signUpError';
 
 type RequestType = Request & { user: ReturnModelType<typeof User> };

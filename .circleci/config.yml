@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-  build1:
+  build_and_unit_test:
     docker:
       # specify the version you desire here
       - image: circleci/node:13
@@ -17,13 +17,14 @@ jobs:
       # - run: sudo npm install -g lerna
       - run: sudo npm i
       - run: sudo npx lerna bootstrap
+      - run: sudo npm run build:proto
 
       # build, lint, test!
       - run: npm run build
       - run: npm run lint
       - run: npm run test
 
-  build2:
+  integration_test:
     docker:
       # specify the version you desire here
       - image: circleci/node:13
@@ -33,10 +34,10 @@ jobs:
       - checkout
       - setup-remote-docker
 
-      - run: echo "lerna installing"
+      # - run: echo "lerna installing"
       # - run: sudo npm install -g lerna
-      - run: sudo npm i
-      - run: sudo npx lerna bootstrap
+      # - run: sudo npm i
+      # - run: sudo npx lerna bootstrap
 
       - run: npm run test:int:circleci
 
@@ -73,8 +74,8 @@ workflows:
   version: 2
   build_deploy:
     jobs:
-      - build1
-      - build2
+      - build_and_unit_test
+      - integration_test
       # - docker_deploy_backend:
       #     requires:
       #       - build

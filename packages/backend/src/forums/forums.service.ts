@@ -1,31 +1,32 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from 'nestjs-typegoose';
 import { ReturnModelType, DocumentType } from '@typegoose/typegoose';
+import { CreateForumPostDto, CreateForumCommentDto } from '@proavalon/proto';
 
-import { CreateForumPostDto } from './dto/create-forumpost.dto';
-import { CreateForumCommentDto } from './dto/create-forumcomment.dto';
 import { ForumPost } from './model/forum-post.model';
 import { ForumComment } from './model/forum-comment.model';
-
 
 @Injectable()
 export class ForumsService {
   constructor(
-    @InjectModel(ForumPost) private readonly ForumPostModel: ReturnModelType<typeof ForumPost>,
-    @InjectModel(
-      ForumComment,
-    ) private readonly ForumCommentModel: ReturnModelType<typeof ForumComment>,
+    @InjectModel(ForumPost)
+    private readonly ForumPostModel: ReturnModelType<typeof ForumPost>,
+    @InjectModel(ForumComment)
+    private readonly ForumCommentModel: ReturnModelType<typeof ForumComment>,
   ) {}
 
-
-  async addPost(createForumPostDto : CreateForumPostDto) {
+  async addPost(createForumPostDto: CreateForumPostDto) {
     // #AddAuthorToPost
     // These posts are being created authorless atm,
     const result = await this.ForumPostModel.create(createForumPostDto);
     return result.id as string;
   }
 
-  async addComment(createForumCommentDto : CreateForumCommentDto) {
+  async addComment(createForumCommentDto: CreateForumCommentDto) {
     // #AddAuthorToPost
     // These posts are being created authorless atm,
     let parent;
@@ -34,10 +35,14 @@ export class ForumsService {
     if (parent) {
       isTopLevel = true;
     } else {
-      parent = await this.ForumCommentModel.findById(createForumCommentDto.parentId);
+      parent = await this.ForumCommentModel.findById(
+        createForumCommentDto.parentId,
+      );
 
       if (!parent) {
-        throw new NotFoundException('Cannot find post or comment with specified id.');
+        throw new NotFoundException(
+          'Cannot find post or comment with specified id.',
+        );
       }
 
       // Only allow 1 level of nesting
@@ -47,7 +52,10 @@ export class ForumsService {
       isTopLevel = false;
     }
 
-    const result = await this.ForumCommentModel.create({ ...createForumCommentDto, isTopLevel });
+    const result = await this.ForumCommentModel.create({
+      ...createForumCommentDto,
+      isTopLevel,
+    });
     parent.replies.push(result.id);
     // This is a hack so Typescript is happy :)
     // Do not use the return value of this .save()!
@@ -57,8 +65,7 @@ export class ForumsService {
   }
 
   async getPosts() {
-    const posts = await this.ForumPostModel
-      .find()
+    const posts = await this.ForumPostModel.find()
       .limit(10000)
       .exec();
     return posts as ForumPost[];
