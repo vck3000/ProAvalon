@@ -1566,7 +1566,7 @@ Game.prototype.calculateResistanceRatingChange = function (winningTeam, provisio
     var spyElo = total/spyTeamEloRatings.length;
 
     // Adjust ratings for sitewide winrates. Using hardcoded based on current.    
-    spyElo += playerSizeEloChanges[this.playersInGame.length];
+    spyElo += playerSizeEloChanges[this.playersInGame.length-5];
     
     console.log("Resistance Team Elo: " + resElo);
     console.log("Spy Team Elo: " + spyElo);
@@ -1628,7 +1628,7 @@ Game.prototype.calculateNewProvisionalRating = function (winningTeam, playerSock
     // Also all changes are scaled with relation to team size to prevent deflation in provisional games.
     var teamAdj = 0;
     const resReduction = this.spyUsernames.length/this.resistanceUsernames.length;
-    const sizeWinrate = playerSizeWinrates[this.playersInGame.length];
+    const sizeWinrate = playerSizeWinrates[this.playersInGame.length-5];
     if (playerSocket.alliance === "Resistance") {
         if (winningTeam === playerSocket.alliance) {
             teamAdj = sizeWinrate/(1-sizeWinrate) * resReduction;
