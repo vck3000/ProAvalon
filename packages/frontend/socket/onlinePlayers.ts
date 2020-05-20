@@ -1,8 +1,5 @@
-import {
-  transformAndValidate,
-  SocketEvents,
-  OnlinePlayer,
-} from '@proavalon/proto';
+import { transformAndValidate } from '@proavalon/proto';
+import { SocketEvents, OnlinePlayer } from '@proavalon/proto/lobby';
 import { store } from '../store';
 import { setOnlinePlayers } from '../store/lobby/onlinePlayers/actions';
 

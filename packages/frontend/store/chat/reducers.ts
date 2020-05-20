@@ -1,4 +1,4 @@
-import { ChatResponse } from '@proavalon/proto';
+import { ChatResponse } from '@proavalon/proto/lobby';
 import { RootState } from '..';
 import { SET_MESSAGES, RECEIVED_MESSAGE, ChatActionTypes } from './types';
 

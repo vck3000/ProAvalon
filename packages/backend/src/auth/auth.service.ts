@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { DocumentType } from '@typegoose/typegoose';
 import { Response } from 'express';
-import { CreateUserDto } from '@proavalon/proto';
+import { CreateUserDto } from '@proavalon/proto/user';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.model';
 import { SignUpError } from './exceptions/signUpError';

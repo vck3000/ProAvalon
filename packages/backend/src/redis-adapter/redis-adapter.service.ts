@@ -2,7 +2,11 @@ import { Logger } from '@nestjs/common';
 import { Server } from 'socket.io';
 import * as redisIoAdapter from 'socket.io-redis';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-import { SocketEvents, ChatResponseType, ChatResponse } from '@proavalon/proto';
+import {
+  SocketEvents,
+  ChatResponseType,
+  ChatResponse,
+} from '@proavalon/proto/lobby';
 import { OnlineSocketsService } from '../auth/online-sockets/online-sockets.service';
 
 @WebSocketGateway()

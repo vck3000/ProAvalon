@@ -5,16 +5,14 @@ import {
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Server } from 'socket.io';
+import { transformAndValidate } from '@proavalon/proto';
 import {
-  transformAndValidate,
   SocketEvents,
-  JoinGame,
-  LeaveGame,
   ChatResponse,
   ChatResponseType,
   ChatRequest,
-  CreateGameDto,
-} from '@proavalon/proto';
+} from '@proavalon/proto/lobby';
+import { CreateGameDto, JoinGame, LeaveGame } from '@proavalon/proto/game';
 
 import { GamesService } from './games.service';
 import { SocketUser } from '../users/users.socket';

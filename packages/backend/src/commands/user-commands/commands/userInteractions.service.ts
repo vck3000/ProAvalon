@@ -1,6 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 import { Injectable } from '@nestjs/common';
-import { ChatResponseType } from '@proavalon/proto';
+import { ChatResponseType } from '@proavalon/proto/lobby';
 import { SocketUser } from '../../../users/users.socket';
 import { emitCommandResponse } from '../../commandResponse';
 import { Command, Commands, CommandsWrapper } from '../../commands.types';

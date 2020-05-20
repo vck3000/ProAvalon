@@ -1,5 +1,5 @@
 import { ReactElement, useState, useRef, useEffect, UIEvent } from 'react';
-import { ChatResponse } from '@proavalon/proto';
+import { ChatResponse } from '@proavalon/proto/lobby';
 
 import Message from './message';
 import debounce from '../../utils/debounce';
