@@ -1,50 +1,39 @@
 import React, { ReactElement } from 'react';
-
 import Link from 'next/link';
+import { LobbyGame } from '@proavalon/proto/game';
 
-import MissionHistory, { MissionHistoryType } from './missionHistory';
+import MissionHistory from './missionHistory';
 
-type Status = 'waiting' | 'in progress' | 'finished';
-
-export interface IGameCardData {
-  id: number;
-  status: Status;
-  missionHistory: MissionHistoryType[]; // max 5
-  host: string;
-  mode: string;
-  spectators: number;
-  avatarLinks: string[]; // max 10
-}
+// TODO: add Status to LobbyGame in proto
+// type Status = 'waiting' | 'in progress' | 'finished';
 
 interface IOwnProps {
-  data: IGameCardData;
+  game: LobbyGame;
 }
 
-const GameCard = (props: IOwnProps): ReactElement => {
-  const { data } = props;
-
+const GameCard = ({ game }: IOwnProps): ReactElement => {
   return (
-    <Link href="/game/[id]" as={`/game/${data.id}`}>
+    <Link href="/game/[id]" as={`/game/${game.id}`}>
       <div className="game_card">
         <div className="top_half">
-          <strong className="room">ROOM #{data.id}</strong>
-          <MissionHistory missionHistory={data.missionHistory} />
+          <strong className="room">ROOM #{game.id}</strong>
+          <MissionHistory missionHistory={game.missionHistory} />
           <p>
             <strong>HOST: </strong>
-            {data.host}
+            {game.host}
           </p>
           <p>
             <strong>MODE: </strong>
-            {data.mode}
+            {game.gameMode}
           </p>
           <p>
             <strong>SPECTATORS: </strong>
-            {data.spectators}
+            {game.spectators}
           </p>
         </div>
         <div className="avatars">
           {/* for keys, probably want player names added to game data */}
-          {data.avatarLinks.map((link) => (
+          {game.avatarLinks.map((link) => (
             <img src={link} alt="avatar" className="avatar" />
           ))}
         </div>
