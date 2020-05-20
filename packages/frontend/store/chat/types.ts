@@ -1,4 +1,5 @@
-import { ChatResponse } from '@proavalon/proto';
+import { Lobby } from '@proavalon/proto';
+import ChatResponse = Lobby.ChatResponse;
 import { ChatType } from './reducers';
 
 // Note, action types must be split out here. Cannot collect into one object.

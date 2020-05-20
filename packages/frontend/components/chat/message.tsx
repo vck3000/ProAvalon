@@ -1,6 +1,8 @@
 import React, { ReactElement } from 'react';
 
-import { ChatResponse, ChatResponseType } from '@proavalon/proto';
+import { Lobby } from '@proavalon/proto';
+import ChatResponse = Lobby.ChatResponse;
+import ChatResponseType = Lobby.ChatResponseType;
 
 interface IOwnProps {
   message: ChatResponse;

@@ -1,5 +1,7 @@
 import { Controller, Post, Get, Param, Body } from '@nestjs/common';
-import { CreateForumPostDto, CreateForumCommentDto } from '@proavalon/proto';
+import { Forum } from '@proavalon/proto';
+import CreateForumPostDto = Forum.CreateForumPostDto;
+import CreateForumCommentDto = Forum.CreateForumCommentDto;
 import { ForumsService } from './forums.service';
 
 @Controller('forums')

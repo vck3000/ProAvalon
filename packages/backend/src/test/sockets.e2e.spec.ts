@@ -11,7 +11,10 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import request from 'supertest';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { SocketEvents, ChatRequest, ChatResponse } from '@proavalon/proto';
+import { Lobby } from '@proavalon/proto';
+import SocketEvents = Lobby.SocketEvents;
+import ChatResponse = Lobby.ChatResponse;
+import ChatRequest = Lobby.ChatRequest;
 
 import { AuthController } from '../auth/auth.controller';
 import { LocalStrategy } from '../auth/guards/local.strategy';

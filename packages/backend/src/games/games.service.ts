@@ -1,12 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import {
-  ChatResponse,
-  CreateGameDto,
-  SocketEvents,
   transformAndValidate,
-  LobbyGame,
+  Lobby,
+  Game as GameProto,
 } from '@proavalon/proto';
+import SocketEvents = Lobby.SocketEvents;
+import ChatResponse = Lobby.ChatResponse;
+import LobbyGame = GameProto.LobbyGame;
+import CreateGameDto = GameProto.CreateGameDto;
 import RedisAdapterService from '../redis-adapter/redis-adapter.service';
 import RedisClientService from '../redis-client/redis-client.service';
 import Game from './game';

@@ -5,13 +5,11 @@ import {
   SubscribeMessage,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import {
-  transformAndValidate,
-  SocketEvents,
-  ChatRequest,
-  ChatResponse,
-  ChatResponseType,
-} from '@proavalon/proto';
+import { transformAndValidate, Lobby } from '@proavalon/proto';
+import SocketEvents = Lobby.SocketEvents;
+import ChatRequest = Lobby.ChatRequest;
+import ChatResponse = Lobby.ChatResponse;
+import ChatResponseType = Lobby.ChatResponseType;
 
 import { AllChatService } from './all-chat.service';
 import { SocketUser } from '../users/users.socket';

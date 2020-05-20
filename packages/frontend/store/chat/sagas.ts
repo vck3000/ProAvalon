@@ -1,7 +1,10 @@
 import axios, { AxiosResponse } from 'axios';
 import { SagaIterator } from 'redux-saga';
 import { call, put, takeLatest, fork } from 'redux-saga/effects';
-import { ChatResponse, ChatRequest, SocketEvents } from '@proavalon/proto';
+import { Lobby } from '@proavalon/proto';
+import SocketEvents = Lobby.SocketEvents;
+import ChatResponse = Lobby.ChatResponse;
+import ChatRequest = Lobby.ChatRequest;
 
 import socket from '../../socket';
 

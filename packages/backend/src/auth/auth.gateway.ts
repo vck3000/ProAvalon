@@ -7,12 +7,10 @@ import {
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
-import {
-  transformAndValidate,
-  SocketEvents,
-  ChatResponse,
-  ChatResponseType,
-} from '@proavalon/proto';
+import { transformAndValidate, Lobby } from '@proavalon/proto';
+import SocketEvents = Lobby.SocketEvents;
+import ChatResponse = Lobby.ChatResponse;
+import ChatResponseType = Lobby.ChatResponseType;
 
 import { UsersService } from '../users/users.service';
 import { AllChatService } from '../all-chat/all-chat.service';

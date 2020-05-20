@@ -2,7 +2,10 @@
   "name": "@proavalon/proto",
   "version": "1.0.0",
   "description": "",
-  "main": "build/index.js",
+  "exports": {
+    ".": "./build/index.js",
+    "./lobby": "./build/proto/lobbyProto.js"
+  },
   "scripts": {
     "test": "jest --passWithNoTests",
     "build": "tsc"

@@ -1,10 +1,8 @@
 import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { Server } from 'socket.io';
-import {
-  transformAndValidate,
-  SocketEvents,
-  OnlinePlayer,
-} from '@proavalon/proto';
+import { transformAndValidate, Lobby } from '@proavalon/proto';
+import SocketEvents = Lobby.SocketEvents;
+import OnlinePlayer = Lobby.OnlinePlayer;
 
 import RedisClientService from '../../redis-client/redis-client.service';
 

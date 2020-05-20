@@ -11,7 +11,8 @@ import {
 } from '@nestjs/common';
 import { ReturnModelType, DocumentType } from '@typegoose/typegoose';
 import { Request, Response } from 'express';
-import { CreateUserDto } from '@proavalon/proto';
+import { User as UserProto } from '@proavalon/proto';
+import CreateUserDto = UserProto.CreateUserDto;
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';

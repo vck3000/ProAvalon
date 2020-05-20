@@ -5,16 +5,14 @@ import {
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Server } from 'socket.io';
-import {
-  transformAndValidate,
-  SocketEvents,
-  JoinGame,
-  LeaveGame,
-  ChatResponse,
-  ChatResponseType,
-  ChatRequest,
-  CreateGameDto,
-} from '@proavalon/proto';
+import { transformAndValidate, Lobby, Game } from '@proavalon/proto';
+import SocketEvents = Lobby.SocketEvents;
+import ChatRequest = Lobby.ChatRequest;
+import ChatResponse = Lobby.ChatResponse;
+import ChatResponseType = Lobby.ChatResponseType;
+import JoinGame = Game.JoinGame;
+import LeaveGame = Game.LeaveGame;
+import CreateGameDto = Game.CreateGameDto;
 
 import { GamesService } from './games.service';
 import { SocketUser } from '../users/users.socket';

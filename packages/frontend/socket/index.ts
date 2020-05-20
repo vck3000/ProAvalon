@@ -3,7 +3,8 @@ import Router from 'next/router';
 import io from 'socket.io-client';
 import Cookie from 'js-cookie';
 import Swal from 'sweetalert2';
-import { SocketEvents } from '@proavalon/proto';
+import { Lobby } from '@proavalon/proto';
+import SocketEvents = Lobby.SocketEvents;
 
 import { store } from '../store/index';
 import { logout } from '../store/user/actions';

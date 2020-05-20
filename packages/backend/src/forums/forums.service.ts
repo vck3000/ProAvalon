@@ -5,7 +5,9 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from 'nestjs-typegoose';
 import { ReturnModelType, DocumentType } from '@typegoose/typegoose';
-import { CreateForumPostDto, CreateForumCommentDto } from '@proavalon/proto';
+import { Forum } from '@proavalon/proto';
+import CreateForumPostDto = Forum.CreateForumPostDto;
+import CreateForumCommentDto = Forum.CreateForumCommentDto;
 
 import { ForumPost } from './model/forum-post.model';
 import { ForumComment } from './model/forum-comment.model';

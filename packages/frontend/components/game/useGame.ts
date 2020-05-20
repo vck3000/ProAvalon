@@ -1,7 +1,8 @@
 import Swal from 'sweetalert2';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { SocketEvents } from '@proavalon/proto';
+import { Lobby } from '@proavalon/proto';
+import SocketEvents = Lobby.SocketEvents;
 import socket from '../../socket';
 import useAuth from '../../effects/useAuth';
 

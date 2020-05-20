@@ -1,8 +1,6 @@
-import {
-  transformAndValidate,
-  SocketEvents,
-  ChatResponse,
-} from '@proavalon/proto';
+import { transformAndValidate, Lobby } from '@proavalon/proto';
+import SocketEvents = Lobby.SocketEvents;
+import ChatResponse = Lobby.ChatResponse;
 import { store } from '../store';
 import { receivedMessage } from '../store/chat/actions';
 

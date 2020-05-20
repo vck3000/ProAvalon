@@ -3,7 +3,7 @@ export {
   transformAndValidateSync,
 } from 'class-transformer-validator';
 
-export * from './proto/lobbyProto';
-export * from './proto/forumProto';
-export * from './proto/userProto';
-export * from './proto/gameProto';
+export * as Lobby from './proto/lobbyProto';
+export * as Forum from './proto/forumProto';
+export * as User from './proto/userProto';
+export * as Game from './proto/gameProto';

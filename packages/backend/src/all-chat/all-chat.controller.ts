@@ -1,6 +1,7 @@
 import { Controller, Get, Res, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
-import { ChatResponse } from '@proavalon/proto';
+import { Lobby } from '@proavalon/proto';
+import ChatResponse = Lobby.ChatResponse;
 import { AllChatService } from './all-chat.service';
 
 @Controller('allchat')

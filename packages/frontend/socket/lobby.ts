@@ -1,8 +1,6 @@
-import {
-  transformAndValidate,
-  SocketEvents,
-  LobbyGame,
-} from '@proavalon/proto';
+import { transformAndValidate, Lobby, Game } from '@proavalon/proto';
+import SocketEvents = Lobby.SocketEvents;
+import LobbyGame = Game.LobbyGame;
 
 export const SetLobbyEvents = (socket: SocketIOClient.Socket): void => {
   socket.on(
