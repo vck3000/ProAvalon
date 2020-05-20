@@ -2,7 +2,7 @@
   "name": "@proavalon/proto",
   "version": "1.0.0",
   "description": "",
-  "main": "build/index.js",
+  "main": "index.js",
   "scripts": {
     "test": "jest --passWithNoTests",
     "build": "tsc"
@@ -23,9 +23,9 @@
   },
   "private": true,
   "files": [
-    "build/**/*"
+    "./*.js",
+    "./*.d.ts"
   ],
-  "types": "build/index.d.ts",
   "jest": {
     "moduleFileExtensions": [
       "js",

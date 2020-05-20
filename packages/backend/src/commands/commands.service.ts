@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { SocketEvents, ChatResponseType, ChatResponse } from '@proavalon/proto';
+import {
+  SocketEvents,
+  ChatResponseType,
+  ChatResponse,
+} from '@proavalon/proto/lobby';
 import { SocketUser } from '../users/users.socket';
 import { Commands } from './commands.types';
 

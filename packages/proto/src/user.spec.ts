@@ -1,5 +1,5 @@
 import { validateOrReject } from 'class-validator';
-import { CreateUserDto } from './userProto';
+import { CreateUserDto } from './user';
 
 describe('CreateUserDTO', () => {
   let userDTO: CreateUserDto;

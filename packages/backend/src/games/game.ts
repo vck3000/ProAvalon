@@ -1,14 +1,16 @@
 import { Logger } from '@nestjs/common';
 import {
   transformAndValidate,
-  CreateGameDto,
   transformAndValidateSync,
+} from '@proavalon/proto';
+import {
+  CreateGameDto,
   LobbyGame,
   MissionOutcome,
   GameData,
   GameState,
   GameRoomState,
-} from '@proavalon/proto';
+} from '@proavalon/proto/game';
 import { SocketUser } from '../users/users.socket';
 
 const gameLogger = new Logger('Game');

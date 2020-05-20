@@ -24,12 +24,9 @@ import request from 'supertest';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import Redis from 'ioredis';
-import {
-  transformAndValidateSync,
-  SocketEvents,
-  CreateGameDto,
-  GameMode,
-} from '@proavalon/proto';
+import { transformAndValidateSync } from '@proavalon/proto';
+import { SocketEvents } from '@proavalon/proto/lobby';
+import { CreateGameDto, GameMode } from '@proavalon/proto/game';
 // import * as util from 'util';
 
 import { AuthController } from '../auth/auth.controller';

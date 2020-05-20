@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import {
-  transformAndValidate,
-  CreateGameDto,
-  GameMode,
-} from '@proavalon/proto';
+import { transformAndValidate } from '@proavalon/proto';
+import { CreateGameDto, GameMode } from '@proavalon/proto/game';
 import { GamesService } from '../../../games/games.service';
 import { SocketUser } from '../../../users/users.socket';
 import { Command } from '../../commands.types';

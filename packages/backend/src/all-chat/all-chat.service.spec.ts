@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ChatResponse, ChatResponseType } from '@proavalon/proto';
+import { ChatResponse, ChatResponseType } from '@proavalon/proto/lobby';
 import { AllChatService } from './all-chat.service';
 import { AllChatController } from './all-chat.controller';
 

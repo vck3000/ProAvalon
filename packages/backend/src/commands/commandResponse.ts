@@ -1,4 +1,8 @@
-import { ChatResponse, ChatResponseType, SocketEvents } from '@proavalon/proto';
+import {
+  ChatResponse,
+  ChatResponseType,
+  SocketEvents,
+} from '@proavalon/proto/lobby';
 import { SocketUser } from '../users/users.socket';
 
 export const generateCommandResponse = (
