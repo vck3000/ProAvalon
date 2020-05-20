@@ -218,6 +218,58 @@ var actionsObj = {
       },
     },
 
+    lick: {
+      command: 'lick',
+      help: '/lick <playername>: Lick a player.',
+      run(data, senderSocket) {
+        const { args } = data;
+
+        data.args[2] = data.args[1];
+        data.args[1] = 'lick';
+
+        return actionsObj.userCommands.interactUser.run(data, senderSocket);
+      },
+    },
+
+    pat: {
+      command: 'pat',
+      help: '/pat <playername>: Pat a player.',
+      run(data, senderSocket) {
+        const { args } = data;
+
+        data.args[2] = data.args[1];
+        data.args[1] = 'pat';
+
+        return actionsObj.userCommands.interactUser.run(data, senderSocket);
+      },
+    },
+
+    poke: {
+      command: 'poke',
+      help: '/poke <playername>: Poke a player.',
+      run(data, senderSocket) {
+        const { args } = data;
+
+        data.args[2] = data.args[1];
+        data.args[1] = 'poke';
+
+        return actionsObj.userCommands.interactUser.run(data, senderSocket);
+      },
+    },
+
+    punch: {
+      command: 'punch',
+      help: '/punch <playername>: Punch a player.',
+      run(data, senderSocket) {
+        const { args } = data;
+
+        data.args[2] = data.args[1];
+        data.args[1] = 'punch';
+
+        return actionsObj.userCommands.interactUser.run(data, senderSocket);
+      },
+    },
+
     slap: {
       command: 'slap',
       help: '/slap <playername>: Slap a player for fun.',
@@ -231,53 +283,17 @@ var actionsObj = {
       },
     },
 
-    lick: {
-      command: 'lick',
-      help: '/lick <playername>: Lick a player.',
-      run(data, senderSocket) {
-        const { args } = data;
-
-        data.args[2] = data.args[1];
-        data.args[1] = 'lick';
-
-        return actionsObj.userCommands.interactUser.run(data, senderSocket);
-      },
-    },
-    poke: {
-      command: 'poke',
-      help: '/poke <playername>: poke a player.',
-      run(data, senderSocket) {
-        const { args } = data;
-
-        data.args[2] = data.args[1];
-        data.args[1] = 'poke';
-
-        return actionsObj.userCommands.interactUser.run(data, senderSocket);
-      },
-    },
-    punch: {
-      command: 'punch',
-      help: '/punch <playername>: punch a player.',
-      run(data, senderSocket) {
-        const { args } = data;
-
-        data.args[2] = data.args[1];
-        data.args[1] = 'punch';
-
-        return actionsObj.userCommands.interactUser.run(data, senderSocket);
-      },
-    },
     interactUser: {
       command: 'interactUser',
       help:
-        '/interactUser <slap/buzz/lick> <playername>: Interact with a player.',
+        '/interactUser <buzz/lick/pat/poke/punch/slap> <playername>: Interact with a player.',
       run(data, senderSocket) {
         const { args } = data;
 
-        const possibleInteracts = ['buzz', 'slap', 'lick', 'poke', 'punch'];
+        const possibleInteracts = ['buzz', 'lick', 'pat', 'poke', 'punch', 'slap'];
         if (possibleInteracts.indexOf(args[1]) === -1) {
           return {
-            message: `You can only slap, buzz, poke, punch or lick, not ${args[1]}.`,
+            message: `You can only buzz, lick, pat, poke, punch, or slap; not ${args[1]}.`,
             classStr: 'server-text',
             dateCreated: new Date(),
           };
@@ -289,14 +305,16 @@ var actionsObj = {
           let verbPast = '';
           if (args[1] === 'buzz') {
             verbPast = 'buzzed';
-          } else if (args[1] === 'slap') {
-            verbPast = 'slapped';
           } else if (args[1] === 'lick') {
             verbPast = 'licked';
+          } else if (args[1] === 'pat') {
+            verbPast = 'patted';
           } else if (args[1] === 'poke') {
             verbPast = 'poked';
           } else if (args[1] === 'punch') {
             verbPast = 'punched';
+          } else if (args[1] === 'slap') {
+            verbPast = 'slapped';
           }
 
           const dataToSend = {
