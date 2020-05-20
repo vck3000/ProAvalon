@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --passWithNoTests",
-    "build": "tsc"
+    "build": "tsc",
+    "clean": "rm *.js *.d.ts *.js.map tsconfig.tsbuildinfo"
   },
   "author": "",
   "license": "ISC",
