@@ -1,7 +1,8 @@
 import { ReactElement } from 'react';
 import { useSelector } from 'react-redux';
 
-import NavIndex from '../nav/navIndex';
+import NavDesktop from '../nav/navDesktop';
+import NavMobile from '../nav/navMobile';
 import { RootState } from '../../store/index';
 import LoginSignupForm from './loginSignUpForm';
 
@@ -10,10 +11,17 @@ const Index = (): ReactElement => {
 
   return (
     <div className="background">
-      <title>Home</title>
-      <div className="nav_wrapper">
-        <NavIndex />
-      </div>
+      {mobileView ? (
+        <NavMobile />
+      ) : (
+        <NavDesktop
+          style={{
+            width: '80%',
+            maxWidth: '1000px',
+            margin: '30px auto 0 auto',
+          }}
+        />
+      )}
       <div className="content_wrapper">
         <img
           src="/index/star-background-min.png"
@@ -56,16 +64,6 @@ const Index = (): ReactElement => {
             width: 100%;
             height: 100%;
           }
-
-          // TODO: Break this out into a layout later for nav when we need to reuse
-          ${!mobileView
-            ? `.nav_wrapper {
-              width: 80%;
-              max-width: 1000px;
-              margin: 30px auto 0 auto;
-            }`
-            : `.nav_wrapper {
-            }`}
 
           .content_wrapper {
             height: 100%;
