@@ -13,7 +13,7 @@
     "test:int:circleci": "npm run redis-test:start:circleci && npm run redis-test:stop:circleci",
     "test:int:run": "npm --prefix packages/backend run test:int:run",
     "test:int:rebuild": "docker-compose -f docker-compose-testing.yml build --no-cache",
-    "redis-test:start": "npm run redis-test:stop && docker-compose -f docker-compose-testing.yml up --abort-on-container-exit",
+    "redis-test:start": "npm run redis-test:stop && docker-compose -f docker-compose-testing.yml up --abort-on-container-exit || printf \"\n*** If the integration tests failed, try running npm run test:int:rebuild. ***\n\n\"",
     "redis-test:start:circleci": "npm run redis-test:stop && docker-compose -f docker-compose-testing-circleci.yml up --abort-on-container-exit",
     "redis-test:stop": "docker-compose -f docker-compose-testing.yml down -v",
     "redis-test:stop:circleci": "docker-compose -f docker-compose-testing-circleci.yml down -v"

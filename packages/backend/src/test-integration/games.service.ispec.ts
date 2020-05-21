@@ -192,7 +192,7 @@ describe('GamesSocket', () => {
 
     // Create some games concurrently and make sure it is successful.
     const settings: CreateGameDto = {
-      gameMode: GameMode.AVALON,
+      mode: GameMode.AVALON,
       joinPassword: undefined,
       maxNumPlayers: 10,
     };
@@ -234,7 +234,7 @@ describe('GamesSocket', () => {
 
     // Create a game
     const settings: CreateGameDto = {
-      gameMode: GameMode.AVALON,
+      mode: GameMode.AVALON,
       joinPassword: undefined,
       maxNumPlayers: 10,
     };
