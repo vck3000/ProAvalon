@@ -28,64 +28,55 @@ const LoggedIn = ({ user }: Props): ReactElement => {
 
   return (
     <>
-      <ul>
-        <li>
-          <a
-            onClick={setTheme}
-            onKeyPress={setTheme}
-            role="button"
-            tabIndex={0}
-          >
-            {theme}
-          </a>
-        </li>
-        <li>
-          <Link href="/profile">
-            <a className="buttons">{displayName}</a>
-          </Link>
-        </li>
-        <li>
-          <a
-            onClick={doLogout}
-            onKeyPress={doLogout}
-            role="button"
-            tabIndex={0}
-            className="logout"
-          >
-            Logout
-          </a>
-        </li>
-      </ul>
+      <li>
+        <button type="button" onClick={setTheme}>
+          {theme}
+        </button>
+      </li>
+      <li>
+        <Link href="/profile">
+          <a className="buttons">{displayName}</a>
+        </Link>
+      </li>
+      <li>
+        <button type="button" onClick={doLogout}>
+          Logout
+        </button>
+      </li>
       <style jsx>
         {`
-          ul {
-            display: flex;
-            margin: 0;
-            padding: 0;
-          }
           li {
             display: flex;
-            list-style-type: none;
           }
-          a {
+          a,
+          button {
             font-weight: bold;
             color: white;
-            padding: 8px;
             background: var(--gold);
-            cursor: pointer;
-            text-decoration: none;
+            padding: 0 0.5rem;
           }
-          a:hover {
+          a {
+            text-decoration: none;
+            line-height: 2.25rem;
+          }
+          button {
+            border: none;
+            font-family: inherit;
+            font-size: inherit;
+          }
+          a:hover,
+          button:hover {
             background: var(--gold-hover);
           }
           li:last-child {
-            margin-right: 18px;
+            margin-right: -18px;
+            z-index: 1; /* make hover show over the banner end outline */
           }
           li:last-child:after {
             content: ' ';
             position: absolute;
             top: 0;
-            right: 0;
+            right: -36px;
             border-right: 18px solid var(--background);
             border-top: 18px solid var(--gold);
             border-bottom: 18px solid var(--gold);
@@ -102,19 +93,7 @@ const LoggedIn = ({ user }: Props): ReactElement => {
 const NavRight = (): ReactElement => {
   const user = useSelector(userSelector);
 
-  return user ? (
-    <LoggedIn user={user} />
-  ) : (
-    <div
-      style={{
-        height: '36px',
-        width: '36px',
-        backgroundColor: 'var(--gold)',
-        clipPath:
-          'polygon(100% 0, 50% 50%, 100% 100%, 0 100%, 0 94.5%, 87% 94.5%, 42% 50%, 87% 5.5%, 0 5.5%, 0 0)',
-      }}
-    />
-  );
+  return user ? <LoggedIn user={user} /> : <></>;
 };
 
 export default NavRight;

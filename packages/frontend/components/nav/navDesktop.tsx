@@ -1,11 +1,11 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, CSSProperties } from 'react';
 import Link from 'next/link';
 
 import NavRight from './navRight';
 
-const NavDesktop = (): ReactElement => {
+const NavDesktop = ({ style }: { style?: CSSProperties }): ReactElement => {
   return (
-    <nav>
+    <nav style={style}>
       <ul>
         <li>
           <Link href="/rules">
@@ -27,32 +27,30 @@ const NavDesktop = (): ReactElement => {
             <a>Development</a>
           </Link>
         </li>
+        <NavRight />
       </ul>
-      <NavRight />
 
       <style jsx>
         {`
           nav {
             display: flex;
-            position: relative;
-            width: 100%;
-            padding: 0;
-            margin: 0 auto;
           }
           ul {
+            position: relative;
             flex: 1;
             padding: 0;
             margin: 0;
             display: flex;
-            justify-content: space-between;
-            border-top: 2px solid var(--gold);
-            border-bottom: 2px solid var(--gold);
+            list-style: none;
+          }
+          nav::before,
+          nav::after {
+            content: ' ';
+            height: 2.25rem;
+            width: 2.25rem;
+            background: var(--gold);
           }
           nav::before {
-            content: ' ';
-            height: 36px;
-            width: 36px;
-            background-color: var(--gold);
             clip-path: polygon(
               0 0,
               50% 50%,
@@ -66,36 +64,50 @@ const NavDesktop = (): ReactElement => {
               100% 0
             );
           }
+          nav::after {
+            clip-path: polygon(
+              100% 0,
+              50% 50%,
+              100% 100%,
+              0 100%,
+              0 94.5%,
+              87% 94.5%,
+              42% 50%,
+              87% 5.5%,
+              0 5.5%,
+              0 0
+            );
+          }
           li {
             display: flex;
             flex-grow: 1;
-            list-style-type: none;
             text-align: center;
+            border-top: 2px solid var(--gold);
+            border-bottom: 2px solid var(--gold);
           }
           li:first-child a:hover::before,
           li:last-child a:hover::after {
             content: ' ';
             position: absolute;
-            width: 36px;
+            width: 18px;
             border-top: 18px solid var(--gold);
             border-bottom: 18px solid var(--gold);
             top: 0;
           }
           li:first-child a:hover::before {
             border-left: 18px solid var(--background);
-            left: 0;
+            left: -36px;
           }
+          /* banner right hover style when logged out */
           li:last-child a:hover::after {
             border-right: 18px solid var(--background);
-            right: 0;
+            right: -36px;
             z-index: -1;
           }
           a {
             color: var(--gold);
             text-decoration: none;
-            font-size: 16px;
             font-weight: bold;
-            height: 100%;
             width: 100%;
             line-height: 32px;
           }

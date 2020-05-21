@@ -19,9 +19,7 @@ const DesktopView = (): ReactElement => (
         />
       </a>
     </Link>
-    <div style={{ width: 'calc(75% - 1.5rem)' }}>
-      <NavDesktop />
-    </div>
+    <NavDesktop style={{ width: 'calc(75% - 1.5rem)', paddingLeft: '1rem' }} />
   </>
 );
 
