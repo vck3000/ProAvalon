@@ -68,7 +68,7 @@ export default class Game {
     const lobbyGame: LobbyGame = {
       id: this.data.id,
       host: this.data.host,
-      gameMode: this.data.gameMode,
+      mode: this.data.mode,
       missionHistory: this.getMissionHistory(),
       spectators: 8,
       avatarLinks: [

@@ -27,7 +27,7 @@ export class CreateGameDto {
   joinPassword!: string | undefined;
 
   @IsEnum(GameMode)
-  gameMode!: GameMode;
+  mode!: GameMode;
 }
 
 // Join and leave
@@ -60,7 +60,7 @@ export class LobbyGame {
   host!: string;
 
   @IsEnum(GameMode)
-  gameMode!: string;
+  mode!: string;
 
   @IsInt()
   spectators!: number;
