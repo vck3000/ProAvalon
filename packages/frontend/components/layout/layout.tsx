@@ -1,35 +1,25 @@
 import React, { ReactElement } from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Head from 'next/head';
 import Link from 'next/link';
 
 import { RootState } from '../../store';
-import { MobileView as MobileViewType } from '../../store/system/types';
 
 import NavDesktop from '../nav/navDesktop';
 import NavMobile from '../nav/navMobile';
 
-interface IOwnProps {
-  children: React.ReactNode;
-  title?: string;
-}
-
-type Props = IOwnProps & IStateProps;
-
 const DesktopView = (): ReactElement => (
   <>
-    <div style={{ textAlign: 'center', width: '25%' }}>
-      <Link href="/">
-        <a>
-          <img
-            src="/common/logo.png"
-            alt="logo"
-            style={{ maxWidth: '200px', width: '100%' }}
-          />
-        </a>
-      </Link>
-    </div>
-    <div style={{ flex: 1, paddingLeft: '1rem' }}>
+    <Link href="/">
+      <a style={{ margin: 'auto' }}>
+        <img
+          src="/common/logo.png"
+          alt="logo"
+          style={{ maxWidth: '200px', width: '100%' }}
+        />
+      </a>
+    </Link>
+    <div style={{ width: 'calc(75% - 1.5rem)' }}>
       <NavDesktop />
     </div>
   </>
@@ -50,29 +40,29 @@ const MobileView = (): ReactElement => (
   </>
 );
 
-const Layout = ({ children, mobileView, title }: Props): ReactElement => (
-  <>
-    <Head>
-      <title>{title || 'ProAvalon'}</title>
-    </Head>
-    <div style={{ display: 'flex', flexFlow: 'column', height: '100%' }}>
-      <div style={{ display: 'flex', padding: '1rem', alignItems: 'center' }}>
-        {mobileView ? <MobileView /> : <DesktopView />}
+type Props = {
+  children: React.ReactNode;
+  title?: string;
+};
+
+const Layout = ({ children, title }: Props): ReactElement => {
+  const mobileView = useSelector((state: RootState) => state.system.mobileView);
+
+  return (
+    <>
+      <Head>
+        <title>{title || 'ProAvalon'}</title>
+      </Head>
+      <div style={{ display: 'flex', flexFlow: 'column', height: '100%' }}>
+        <header
+          style={{ display: 'flex', padding: '1rem', alignItems: 'center' }}
+        >
+          {mobileView ? <MobileView /> : <DesktopView />}
+        </header>
+        {children}
       </div>
-      {children}
-    </div>
-  </>
-);
+    </>
+  );
+};
 
-interface IStateProps {
-  mobileView: MobileViewType;
-}
-
-const mapStateToProps = (state: RootState): IStateProps => ({
-  mobileView: state.system.mobileView,
-});
-
-export default connect(
-  mapStateToProps,
-  null,
-)(Layout as ({ children }: IOwnProps) => ReactElement);
+export default Layout;
