@@ -10,11 +10,11 @@ const tabs = [
   { text: 'NOTES', pane: <>Notes</> },
 ];
 
-const TabPane = (): ReactElement => {
+const TabPane = ({ className }: { className?: string }): ReactElement => {
   const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <div>
+    <div className={className}>
       <ul>
         {tabs.map(({ text }, index) => (
           <li key={text}>
