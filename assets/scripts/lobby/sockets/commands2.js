@@ -96,64 +96,56 @@ const interactUserMessageTimeOffset = {
     // default value is 0
     slap: 1100,
 };
-const verbToMp3 = {
-    // default value is the data.verb variable
-    buzz: 'ding',
-};
-
 
 socket.on('interactUser', (data) => {
-    let interacted = false;
+    if (isPlayerMuted(data.username) === true) { return; }
 
-    if (isPlayerMuted(data.username) === false) {
-        if ($('#option_notifications_sound_slap')[0].checked === true) {
-            if (!timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > $('#option_notifications_buzz_slap_timeout')[0].value) {
-                let mp3String = verbToMp3[data.verb];
-                if (mp3String === undefined) { mp3String = data.verb; }
-                playSound(mp3String);
+    let optionEnabled = $(`#option_notifications_sound_${data.verb}`)[0].checked === true;
+    let interactCooldownOption = $('#option_notifications_buzz_slap_timeout')[0].value;
+    let interactOffCooldown = !timeLastBuzzSlap || new Date(new Date() - timeLastBuzzSlap).getSeconds() > interactCooldownOption;
 
-                socket.emit('interactUserPlayed', {
-                    success: true, interactedBy: data.username, myUsername: ownUsername, verb: data.verb, verbPast: data.verbPast,
-                });
-                interacted = true;
+    if (optionEnabled && interactOffCooldown) {
+        playSound(data.verb);
 
-                timeLastBuzzSlap = new Date();
+        socket.emit('interactUserPlayed', {
+            success: true, interactedBy: data.username, myUsername: ownUsername, verb: data.verb, verbPast: data.verbPast,
+        });
 
-                const dataString = {
-                    message: `You have been ${data.verbPast} by ${data.username}.`,
-                    classStr: 'server-text',
-                    dateCreated: new Date(),
-                };
+        timeLastBuzzSlap = new Date();
 
-                let timeDelay = interactUserMessageTimeOffset[data.verb];
-                if (timeDelay === undefined) { timeDelay = 0; }
+        const dataString = {
+            message: `You have been ${data.verbPast} by ${data.username}.`,
+            classStr: 'server-text',
+            dateCreated: new Date(),
+        };
 
-                setTimeout(() => {
-                    // if (lastChatBoxCommand === "allChat") {
-                    //     addToAllChat(dataString);
-                    // }
-                    // else if (lastChatBoxCommand === "roomChat") {
-                    //     addToRoomChat(dataString);
-                    // }else{
-                    addToAllChat(dataString);
-                    addToRoomChat(dataString);
-                    // }
-                }, timeDelay);
+        let timeDelay = interactUserMessageTimeOffset[data.verb] || 0;
 
-                // only display notif if its a buzz
-                if (data.verb === 'buzz') {
-                    if ($('#option_notifications_desktop_buzz')[0].checked === true) {
-                        displayNotification(`${username} has buzzed you!`, '', 'avatars/base-spy.png', 'buzz');
-                    }
-                }
+        setTimeout(() => {
+            // if (lastChatBoxCommand === "allChat") {
+            //     addToAllChat(dataString);
+            // }
+            // else if (lastChatBoxCommand === "roomChat") {
+            //     addToRoomChat(dataString);
+            // }else{
+            addToAllChat(dataString);
+            addToRoomChat(dataString);
+            // }
+        }, timeDelay);
+
+        // only display notif if its a buzz
+        if (data.verb === 'buzz') {
+            if ($('#option_notifications_desktop_buzz')[0].checked === true) {
+                displayNotification(`${username} has buzzed you!`, '', 'avatars/base-spy.png', 'buzz');
             }
         }
+
+        return;
     }
-    if (interacted === false) {
-        socket.emit('interactUserPlayed', {
-            success: false, interactedBy: data.username, myUsername: ownUsername, verb: data.verb, verbPast: data.verbPast,
-        });
-    }
+
+    socket.emit('interactUserPlayed', {
+        success: false, interactedBy: data.username, myUsername: ownUsername, verb: data.verb, verbPast: data.verbPast,
+    });
 });
 
 
