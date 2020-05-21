@@ -24,7 +24,7 @@ const GameCard = ({ game }: IOwnProps): ReactElement => {
           </p>
           <p>
             <strong>MODE: </strong>
-            {game.gameMode}
+            {game.mode}
           </p>
           <p>
             <strong>SPECTATORS: </strong>

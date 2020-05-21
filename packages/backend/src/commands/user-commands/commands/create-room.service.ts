@@ -15,7 +15,7 @@ export class CreateRoomService implements Command {
 
   async run(socket: SocketUser) {
     const settings: CreateGameDto = {
-      gameMode: GameMode.AVALON,
+      mode: GameMode.AVALON,
       joinPassword: undefined,
       maxNumPlayers: 9,
     };
