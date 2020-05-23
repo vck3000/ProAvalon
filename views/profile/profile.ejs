@@ -163,7 +163,7 @@
                                     <tr>
                                         <% if (userData.username === personViewingUsername) {%>
                                             <td class="statsCol1">Rating: </td>
-                                            <td class="statsCol2"> <%= Math.round(userData.playerRating) %> </td>
+                                            <td class="statsCol2"> <%= Math.floor(userData.playerRating) %> </td>
                                         <%} else {%>
                                             <td class="statsCol1">Rank: </td>
                                             <td class="statsCol2"> <%= userData.ratingBracket.charAt(0).toUpperCase() + userData.ratingBracket.slice(1) %> </td>
