@@ -43,7 +43,7 @@ const isLoggedIn = asyncMiddleware(async (req, res, next) => {
         console.log("CHECKING BANS");
         const clientIpAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         // const clientIpAddress = req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        // console.log(clientIpAddress);
+        console.log(clientIpAddress);
 
         // Track IPs
         if (clientIpAddress !== null && clientIpAddress !== undefined && !user.IPAddresses.includes(clientIpAddress)) {
@@ -73,7 +73,8 @@ const isLoggedIn = asyncMiddleware(async (req, res, next) => {
                 return;
             }
 
-            if (clientIpAddress !== null && clientIpAddress && undefined) {
+            if (clientIpAddress !== null && clientIpAddress !== undefined) {
+                console.log("Checking bans");
                 // IP ban
                 ban = await Ban.findOne({
                     'bannedIPs': clientIpAddress,       // IP match
