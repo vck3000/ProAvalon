@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 
 import { ChatResponse, ChatResponseType } from '@proavalon/proto/lobby';
+import Glossary from '../../utils/glossary';
 
 interface IOwnProps {
   message: ChatResponse;
@@ -23,6 +24,7 @@ const getMessageClass = (type: ChatResponseType): string => {
 
 const Message = (props: IOwnProps): ReactElement => {
   const { message, opacity } = props;
+
   return (
     <>
       <span className="timestamp">
@@ -37,7 +39,7 @@ const Message = (props: IOwnProps): ReactElement => {
             {`: `}
           </>
         )}
-        {message.text}
+        {[Glossary.transform(message.text)]}
       </span>
 
       <style jsx>
