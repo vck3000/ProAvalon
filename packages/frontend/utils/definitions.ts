@@ -2,27 +2,26 @@ class Definitions {
     [index: string]: string;
 }
 
+type Aliases = {
+    [index: string]: string[];
+}
+
 const definitions: Definitions = {
     'approve': '1. (Of a player) to vote in favor of (a pick). 2. (Of the majority of the players in the game) to approve (a pick), allowing the players on it to vote for the current mission to succeed or fail. 3. A vote by a player in favor of a pick.',
-    'app': '1. (Of a player) to vote in favor of (a pick). 2. (Of the majority of the players in the game) to approve (a pick), allowing the players on it to vote for the current mission to succeed or fail. 3. A vote by a player in favor of a pick.',
     'assassin': 'A spy who can win the game for the spies if he guesses Merlin correctly after three missions succeed. Used in every standard online Avalon game.',
     'assassinate': '(Of the Assassin) to guess that (a player) is Merlin, winning the game for the spies if his guess is correct.',
     'assassination': 'The phase of the game in which the Assassin deliberates with his spymates in an attempt to guess Merlin, winning the game for the spies if his guess is correct.',
     'allegiance': 'Membership to a team.',
     'anti': '(Of a team) containing as few players as possible from (a previous team).',
     'card': '1. A card which is passed from one player to another at specific times during the game, which reveals the allegiance of the recipient to the passer or vice versa. The Lady of the Lake, the Sire of the Sea, or the Ref of the Rain. 2. To give a card to (another player).',
-    'chain': 'The group of players who have held a card during the game, especially if they have resed one another upon the passing of the card.',
     'card chain': 'The group of players who have held a card during the game, especially if they have resed one another upon the passing of the card.',
     'claim': '1. To profess that one is (a role, especially Percival or Oberon). 2. To do something that causes other players to believe that one is (a role).',
     'clean': '(Of a team) containing no spies.',
     'confirmed': ' (Of a player) unquestionably (a role or allegiance).',
     'conf': '(Of a player) Confirmed; unquestionably (a role or allegiance).',
     'coordinate': '(Of a spy) to attempt to reveal one’s role to one’s spymates in order to make proper use of the fail order.',
-    'cc': 'To claim (a role) which another player has already claimed.',
     'counterclaim': 'To claim (a role) which another player has already claimed.',
-    'crit': 'Critical mission; A mission which takes place after two previous missions have failed.',
     'critical': 'Critical mission; A mission which takes place after two previous missions have failed.',
-    'critical mission': 'A mission which takes place after two previous missions have failed.',
     'danis': 'A principle which states that, in a 6p game, if the first two missions succeed, M3 should not contain all the players from M2, and M4 should be a repick of M2. Named after Avalon player thedaniman.',
     'dead merlin': 'A player who is the only Merlin candidate on a team.',
     'dirty': '(Of a team) containing one or more spies.',
@@ -48,6 +47,7 @@ const definitions: Definitions = {
     'lady': 'A card which begins with the player to the right of M1.1, is passed to another player immediately after M2, M3, and M4, and reveals the allegiance of the recipient to the passer. Used in standard 8-10p online Avalon games.',
     'leader': 'The player whose turn it is to pick.',
     'lovers': '1. Tristan and Isolde. 2. Teammates.',
+    'mc': 'misclick',
     'merlin': 'A resistance who knows who the spies are. If the Assassin guesses Merlin correctly after three missions succeed, the spies win. Used in every standard online Avalon game. The Hidden Agenda equivalent of Commander.',
     'merl': 'A resistance who knows who the spies are. If the Assassin guesses Merlin correctly after three missions succeed, the spies win. Used in every standard online Avalon game. The Hidden Agenda equivalent of Commander.',
     'merlin candidate': 'A player whom the spies consider assassinating.',
@@ -55,12 +55,7 @@ const definitions: Definitions = {
     'mord': 'A spy who is not known by Merlin. Used in standard 9-10p online Avalon games. The Hidden Agenda equivalent of Deep Cover.',
     'mordred': 'A spy who is not known by Merlin. Used in standard 9-10p online Avalon games. The Hidden Agenda equivalent of Deep Cover.',
     'morg': '1. (Of Percival) to believe that (a player whom he sees as “Merlin?”) is Morgana. 2. Morgana.',
-    'morgana': 'A spy who appears as “Merlin?” to Percival. Used in every standard online Avalon game. The Hidden Agenda equivalent of False Commander.',
-    'm1': 'The 1st mission.',
-    'm2': 'The 2nd mission.',
-    'm3': 'The 3nd mission.',
-    'm4': 'The 4th mission.',
-    'm5': 'The 5th mission.',    
+    'morgana': 'A spy who appears as “Merlin?” to Percival. Used in every standard online Avalon game. The Hidden Agenda equivalent of False Commander.',  
     'obe': 'Oberon; A spy who does not know who the other spies are, and is not known by the other spies. Used in standard 7p and 10p online Avalon games. The Hidden Agenda equivalent of Blind Spy.',
     'oberon': 'A spy who does not know who the other spies are, and is not known by the other spies. Used in standard 7p and 10p online Avalon games. The Hidden Agenda equivalent of Blind Spy.',
     'offapp': 'To approve (a pick) one is not on.',
@@ -73,7 +68,6 @@ const definitions: Definitions = {
     'override': 'To res (another player) while disregarding information they have given.',
     'pass': '(Of a mission) to succeed, especially in M4 in 7-10p games, in which two fails are required for a mission to fail.',
     'percival':  'A resistance who knows Merlin and Morgana but does not know who is who, instead seeing both as “Merlin?”. Used in every standard online Avalon game. The Hidden Agenda equivalent of Body Guard.',
-    'percy': 'Percival; A resistance who knows Merlin and Morgana but does not know who is who, instead seeing both as “Merlin?”. Used in every standard online Avalon game. The Hidden Agenda equivalent of Body Guard.',
     'perc': 'Percival; A resistance who knows Merlin and Morgana but does not know who is who, instead seeing both as “Merlin?”. Used in every standard online Avalon game. The Hidden Agenda equivalent of Body Guard.',
     'pick': '1. A team of a specified size put forward by the leader, which each player approves or rejects. If the team is not approved, the player to the left of the leader becomes the leader. 2. To make (a pick). 3. The group of players on a pick.',
     'pickrej': 'To pick (a team) and reject it.',
@@ -96,6 +90,7 @@ const definitions: Definitions = {
     'safe reject': 'To reject (a pick) in a critical mission which you would approve were it not a critical mission.',
     'sire': 'A card which begins with the player two seats to the right of M1.1, is passed to another player immediately after M2, M3, and M4, and reveals the allegiance of the passer to the recipient. Only available on proavalon.com. Not used in standard online Avalon games.',
     'sire of the sea': 'A card which begins with the player two seats to the right of M1.1, is passed to another player immediately after M2, M3, and M4, and reveals the allegiance of the passer to the recipient. Only available on proavalon.com. Not used in standard online Avalon games.',
+    'sh': 'Secret Hilter',
     'shade': 'To spy (another player) subtly.',
     'silver rules': 'Three principles which are less strictly followed than the golden rules',
     'single': '(Of a team) to contain exactly one spy.',
@@ -116,22 +111,41 @@ const definitions: Definitions = {
     'triple fail': '(Of a mission) to fail with three fails.',
     'triple float': '(Of a mission) to succeed despite tripling.',
     'tristan': 'A resistance who knows Isolde. Only available on proavalon.com. Not used in standard online Avalon games.',
-    'unmerl': '(Of a resistance) to do something which causes the spies to believe that you are not Merlin.',
     'unmerlin': '(Of a resistance) to do something which causes the spies to believe that you are not Merlin.',
     'vs': 'Vanilla Spy; A spy with no special role, whose role simply appears as “Spy”.',
     'vanilla spy': 'A spy with no special role, whose role simply appears as “Spy”.',
-    'vanilla town': 'A resistance with no special role, whose role simply appears as “Resistance”.',
-    'vt': 'Vanilla Town; A resistance with no special role, whose role simply appears as “Resistance”.',
+    'vanilla town': 'Vanilla town; A resistance with no special role, whose role simply appears as “Resistance”.',
     'viable': '(Of a team), logical and consistent with known information.',
     'vote': '1. To approve or reject. 2. To succeed or fail. 3. An approve or reject. 4. A success or fail.',
-    'vh': 'Vote history; The history of all picks, votes, and missions in the game, accessible in the bottom tab on proavalon.com.',
-    'vote history': 'The history of all picks, votes, and missions in the game, accessible in the bottom tab on proavalon.com.',
-    '5p': 'A game with 5 players.',
-    '6p': 'A game with 6 players.',
-    '7p': 'A game with 7 players.',
-    '8p': 'A game with 8 players.',
-    '9p': 'A game with 9 players.',
-    '10p': 'A game with 10 players.',
+    'vh': 'Vote history',
 };
+
+const aliases: Aliases = {
+    'approve': ['app'],
+    'counterclaim' : ['cc'],
+    'card chain': ['card'],
+    'critical': ['crit', ],
+    'percival': ['perc', 'perci', 'percy', 'percival'],
+    'unmerlin': ['unmerl'],
+    'vanilla town': ['vt'],
+}
+
+Object.keys(aliases).forEach((key) => {
+    aliases[key].forEach((alias) => {
+        definitions[alias] = definitions[key]
+    })
+})
+
+for (let i = 1; i <= 5; i += 1) {
+    definitions[`m${i}`] = `Mission number ${i}`
+    for (let j = 1; j <= 5; j += 1) {
+        definitions[`${i}.${j}`] = `Pick number ${i} of mission ${j}`
+    }
+}
+
+for (let i = 6; i <= 10; i += 1) {
+    definitions[`${i}p`] = `A game with ${i} players.`
+}
+
 
 export { Definitions, definitions };
