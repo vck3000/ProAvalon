@@ -9,8 +9,8 @@ WORKDIR /usr/src/app
 COPY ./ ./
 
 # Install packages
-RUN npx lerna bootstrap
-RUN npm run build:proto
+RUN npm i
+RUN npm run bootstrap
 
 # Dev mode
 CMD [ "npm", "run", "test:int:run" ]
