@@ -60,7 +60,14 @@
       "error",
       { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
     ],
-    "lines-between-class-members": "off"
+    "lines-between-class-members": "off",
+    // Allow for ... of ... use
+    "no-restricted-syntax": [
+      "error",
+      "ForInStatement",
+      "LabeledStatement",
+      "WithStatement"
+    ]
   },
   "overrides": [
     {
