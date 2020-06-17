@@ -13,6 +13,11 @@ import {
 } from '@proavalon/proto/game';
 import { SocketUser } from '../users/users.socket';
 
+import GameECS from './game-ecs';
+
+const test = new GameECS();
+console.log(test);
+
 const gameLogger = new Logger('Game');
 
 export default class Game {
