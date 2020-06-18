@@ -11,40 +11,67 @@
    on teams, an ability to vote on missions, can use action cards, have a unique
    displayUsername they are tied with, a role name.
 */
-
-import { Logger } from '@nestjs/common';
+import { GameEvent, GameEvents } from '@proavalon/proto/game';
 import { Entity } from './game-entity';
-import { Resistance, Spy, Merlin, Assassin } from './game-assemblages';
+import { System, EventVoteTeam } from './game-systems';
+import { createRoles } from './game-assemblages';
+import { SocketUser } from '../users/users.socket';
 
 export default class GameECS {
   count: number;
   entities: Entity[];
+  systems: System[];
 
   constructor() {
     this.count = 0;
-
     this.entities = [];
-
-    // Some initial testing code;
+    this.systems = [];
   }
 
-  createEntity() {
+  addEntity() {
     // Create a new entity, push to entities, and then return the new entity.
     this.count += 1;
     this.entities.push(new Entity(this.count));
     return this.entities[this.entities.length - 1];
   }
+
+  addSystem(system: System) {
+    this.systems.push(system);
+    // TODO: Do we need to sort systems by priority later?
+  }
+
+  addEntityRole(role: keyof typeof createRoles, socket: SocketUser) {
+    return createRoles[role](this, socket);
+  }
+
+  async event(socket: SocketUser, gameEvent: GameEvent) {
+    if (gameEvent.type) {
+      switch (gameEvent.type) {
+        case GameEvents.PICK:
+          break;
+        case GameEvents.VOTE_TEAM:
+          await EventVoteTeam(this, socket, gameEvent.data);
+          break;
+        case GameEvents.VOTE_MISSION:
+          break;
+        default:
+          // TODO: log a warning message
+          console.warn('Game event type not recognised');
+          break;
+      }
+    } else {
+      // TODO: Make this into a logger warning later
+      console.warn('Bad gameEvent object');
+      throw new Error('bad event type');
+    }
+
+    this.update();
+  }
+
+  // Run each system
+  update() {
+    this.systems.forEach((system) => {
+      system.update(this);
+    });
+  }
 }
-
-setTimeout(() => {
-  const game = new GameECS();
-
-  // Apply on some roles
-  Resistance(game);
-  Spy(game);
-  Merlin(game);
-  Assassin(game);
-  const logger = new Logger('GameECS');
-
-  logger.log(game.entities);
-}, 500);
