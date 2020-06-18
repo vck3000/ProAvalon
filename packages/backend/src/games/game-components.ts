@@ -9,14 +9,14 @@ import { ROLES } from './game-assemblages';
   type (union of classes), but when we are accessing individual attributes of the
   components, we need its individual elements.
 */
-export interface IAllComponents
-  extends ComponentPlayer,
-    ComponentAlliance,
-    ComponentRole,
-    ComponentRole,
-    ComponentVoteTeam,
-    ComponentVoteMission,
-    ComponentSeeAlliance {}
+// export interface IAllComponents
+//   extends ComponentPlayer,
+//     ComponentAlliance,
+//     ComponentRole,
+//     ComponentRole,
+//     ComponentVoteTeam,
+//     ComponentVoteMission,
+//     ComponentSeeAlliance {}
 
 export type AllComponents =
   | ComponentPlayer
