@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 
 import { ROLES } from './game-assemblages';
+import { SocketUser } from '../users/users.socket';
 
 /*
   Needed some hacky stuff here to make the types work together overall.
@@ -36,11 +37,13 @@ export class Component {
 
 // socketId is initially undefined. Game should set this after instantiation.
 export class CPlayer extends Component {
-  socketId: string | undefined;
+  socketId: string;
+  displayUsername: string;
 
-  constructor() {
+  constructor(socket: SocketUser) {
     super('player');
-    this.socketId = undefined;
+    this.socketId = socket.id;
+    this.displayUsername = socket.user.displayUsername;
   }
 }
 
@@ -65,21 +68,21 @@ export class CRole extends Component {
 
 export type VoteTeam = 'approve' | 'reject' | undefined;
 export class CVoteTeam extends Component {
-  voteTeam: VoteTeam;
+  vote: VoteTeam;
 
   constructor() {
     super('voteTeam');
-    this.voteTeam = undefined;
+    this.vote = undefined;
   }
 }
 
 export type VoteMission = 'succeed' | 'fail' | undefined;
 export class CVoteMission extends Component {
-  voteMission: VoteMission;
+  vote: VoteMission;
 
   constructor() {
     super('voteMission');
-    this.voteMission = undefined;
+    this.vote = undefined;
   }
 }
 
@@ -92,7 +95,7 @@ export class CSeeAlliance extends Component {
     // Default see ALL roles.
     // TODO Update this for Oberon later.
     if (visibleRoles === 'all') {
-      this.visibleRoles = Object.keys(ROLES) as ROLES[];
+      this.visibleRoles = Object.values(ROLES) as ROLES[];
     } else {
       this.visibleRoles = visibleRoles;
     }

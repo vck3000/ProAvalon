@@ -8,43 +8,51 @@ import {
   CVoteMission,
 } from './game-components';
 import GameECS from './game-ecs';
+import { SocketUser } from '../users/users.socket';
 
 export enum ROLES {
+  RESISTANCE = 'resistance',
+  SPY = 'spy',
   MERLIN = 'merlin',
   ASSASSIN = 'assassin',
-  PERCIVAL = 'percival',
-  MORGANA = 'morgana',
 }
 
-const Player = (gameECS: GameECS): Entity => {
-  const entity = gameECS.createEntity();
-  entity.addComponent(new CPlayer());
+const Player = (gameECS: GameECS, socket: SocketUser): Entity => {
+  const entity = gameECS.addEntity();
+  entity.addComponent(new CPlayer(socket));
   entity.addComponent(new CVoteTeam());
   entity.addComponent(new CVoteMission());
   return entity;
 };
 
-export const Resistance = (gameECS: GameECS): Entity => {
-  const entity = Player(gameECS);
+const Resistance = (gameECS: GameECS, socket: SocketUser): Entity => {
+  const entity = Player(gameECS, socket);
   entity.addComponent(new CAlliance('resistance'));
   return entity;
 };
 
-export const Spy = (gameECS: GameECS): Entity => {
-  const entity = Player(gameECS);
+const Spy = (gameECS: GameECS, socket: SocketUser): Entity => {
+  const entity = Player(gameECS, socket);
   entity.addComponent(new CAlliance('spy'));
   return entity;
 };
 
-export const Merlin = (gameECS: GameECS): Entity => {
-  const entity = Resistance(gameECS);
+const Merlin = (gameECS: GameECS, socket: SocketUser): Entity => {
+  const entity = Resistance(gameECS, socket);
   entity.addComponent(new CRole(ROLES.MERLIN));
   entity.addComponent(new CSeeAlliance('all'));
   return entity;
 };
 
-export const Assassin = (gameECS: GameECS): Entity => {
-  const entity = Spy(gameECS);
+const Assassin = (gameECS: GameECS, socket: SocketUser): Entity => {
+  const entity = Spy(gameECS, socket);
   entity.addComponent(new CRole(ROLES.ASSASSIN));
   return entity;
+};
+
+export const createRoles = {
+  resistance: Resistance,
+  spy: Spy,
+  merlin: Merlin,
+  assassin: Assassin,
 };

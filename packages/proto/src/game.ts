@@ -88,9 +88,7 @@ export class Proposal {
 export class MissionHistory {
   @IsInt()
   fails!: number;
-
-  @ValidateNested()
-  proposals!: Proposal[];
+  @ValidateNested() proposals!: Proposal[];
 }
 
 // Game Data
@@ -136,4 +134,41 @@ export class GameData extends CreateGameDto {
 
   @ValidateNested({ each: true })
   history!: MissionHistory[];
+}
+
+// Class to wrap game events
+export enum GameEvents {
+  PICK = 'PICK',
+  VOTE_TEAM = 'VOTE_TEAM',
+  VOTE_MISSION = 'VOTE_MISSION',
+}
+
+export class GameEvent {
+  @IsEnum(GameEvents)
+  type!: GameEvents;
+
+  // Data will hold the relevant GameEvent<event> data
+  data!: any;
+}
+
+export class GameEventPick {
+  @IsString({
+    each: true,
+  })
+  team!: string[];
+}
+
+export enum VoteTeamOutcome {
+  approve = 'approve',
+  reject = 'reject',
+}
+
+export class GameEventVoteTeam {
+  @IsEnum(VoteTeamOutcome)
+  vote!: VoteTeamOutcome;
+}
+
+export class GameEventVoteMission {
+  @IsEnum(MissionOutcome)
+  vote!: MissionOutcome;
 }
