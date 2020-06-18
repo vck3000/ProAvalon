@@ -19,12 +19,12 @@ import { ROLES } from './game-assemblages';
 //     ComponentSeeAlliance {}
 
 export type AllComponents =
-  | ComponentPlayer
-  | ComponentAlliance
-  | ComponentRole
-  | ComponentVoteTeam
-  | ComponentVoteMission
-  | ComponentSeeAlliance;
+  | CPlayer
+  | CAlliance
+  | CRole
+  | CVoteTeam
+  | CVoteMission
+  | CSeeAlliance;
 
 export class Component {
   name: string;
@@ -35,7 +35,7 @@ export class Component {
 }
 
 // socketId is initially undefined. Game should set this after instantiation.
-export class ComponentPlayer extends Component {
+export class CPlayer extends Component {
   socketId: string | undefined;
 
   constructor() {
@@ -45,7 +45,7 @@ export class ComponentPlayer extends Component {
 }
 
 type Alliance = 'resistance' | 'spy';
-export class ComponentAlliance extends Component {
+export class CAlliance extends Component {
   alliance: string;
 
   constructor(alliance: Alliance) {
@@ -54,7 +54,7 @@ export class ComponentAlliance extends Component {
   }
 }
 
-export class ComponentRole extends Component {
+export class CRole extends Component {
   role: string;
 
   constructor(role: ROLES) {
@@ -64,7 +64,7 @@ export class ComponentRole extends Component {
 }
 
 export type VoteTeam = 'approve' | 'reject' | undefined;
-export class ComponentVoteTeam extends Component {
+export class CVoteTeam extends Component {
   voteTeam: VoteTeam;
 
   constructor() {
@@ -74,7 +74,7 @@ export class ComponentVoteTeam extends Component {
 }
 
 export type VoteMission = 'succeed' | 'fail' | undefined;
-export class ComponentVoteMission extends Component {
+export class CVoteMission extends Component {
   voteMission: VoteMission;
 
   constructor() {
@@ -83,7 +83,7 @@ export class ComponentVoteMission extends Component {
   }
 }
 
-export class ComponentSeeAlliance extends Component {
+export class CSeeAlliance extends Component {
   visibleRoles: ROLES[];
 
   constructor(visibleRoles: ROLES[] | 'all') {
