@@ -1,5 +1,9 @@
 import GameECS from './game-ecs';
-import { VoteTeam } from './game-components';
+import {
+  VoteTeam,
+  ComponentVoteTeam,
+  ComponentPlayer,
+} from './game-components';
 import { SocketUser } from '../users/users.socket';
 
 const SystemVoteTeamCalc = (game: GameECS) => {
@@ -12,8 +16,8 @@ const SystemVoteTeamCalc = (game: GameECS) => {
   const votes: VoteTeam[] = [];
   for (const entity of entitiesCanVote) {
     // Only push on valid votes
-    if (entity.components.voteTeam.voteTeam) {
-      votes.push(entity.components.voteTeam.voteTeam);
+    if (entity.components.voteTeam) {
+      votes.push((entity.components.voteTeam as ComponentVoteTeam).voteTeam);
     }
   }
 
@@ -46,10 +50,10 @@ export const SystemVoteTeam = (
     if (
       entity.components.voteTeam &&
       entity.components.player &&
-      entity.components.player.socketId === socket.id
+      (entity.components.player as ComponentPlayer).socketId === socket.id
     ) {
       // Apply vote
-      entity.components.voteTeam.voteTeam = vote;
+      (entity.components.voteTeam as ComponentVoteTeam).voteTeam = vote;
 
       entityFound = true;
       break;
