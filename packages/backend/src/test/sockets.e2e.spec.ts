@@ -55,11 +55,13 @@ describe('Auth', () => {
       zrange: jest.fn(),
       del: jest.fn(),
       zrem: jest.fn(),
+      lrange: jest.fn(),
     },
   };
   // The following may need to be in individual tests later on
   redisClientServiceMock.client.get.mockImplementation(() => null);
   redisClientServiceMock.client.zrange.mockImplementation(() => []);
+  redisClientServiceMock.client.lrange.mockImplementation(() => []);
 
   beforeEach(async () => {
     // Set up database
@@ -147,7 +149,7 @@ describe('Auth', () => {
 
   it('should connect if a good token was given', async (done) => {
     const jwtToken = jwtService.sign({ username: 'test' });
-    const socket = await connectToSocketIO(jwtToken);
+    const socket = connectToSocketIO(jwtToken);
 
     socket.on('connect', () => {
       socket.disconnect();

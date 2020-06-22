@@ -52,8 +52,18 @@ export class GamesService {
 
       this.logger.log(`Done creating game ${nextGameNum}.`);
 
-      this.updateLobbyGames();
+      // Cap to 5 games for now
+      const gameIds = await this.redisClientService.client.lrange(
+        'games:open',
+        0,
+        -1,
+      );
 
+      while (gameIds.length > 5) {
+        this.closeGame(parseInt(gameIds.shift() as string, 10));
+      }
+
+      this.updateLobbyGames();
       return nextGameNum;
     } catch (e) {
       this.logger.error(e);
@@ -85,7 +95,8 @@ export class GamesService {
     // }
   }
 
-  async updateLobbyGames() {
+  // If socket is undefined, it means to send to whole lobby
+  async updateLobbyGames(socket?: SocketUser) {
     // Get games and send it out
     const gameIds = await this.redisClientService.client.lrange(
       'games:open',
@@ -113,8 +124,12 @@ export class GamesService {
       lobbyGames,
     );
 
-    this.redisAdapterService.server
-      .to('lobby')
-      .emit(SocketEvents.UPDATE_LOBBY_GAMES, lobbyGamesValidated);
+    if (socket) {
+      socket.emit(SocketEvents.UPDATE_LOBBY_GAMES, lobbyGamesValidated);
+    } else {
+      this.redisAdapterService.server
+        .to('lobby')
+        .emit(SocketEvents.UPDATE_LOBBY_GAMES, lobbyGamesValidated);
+    }
   }
 }
