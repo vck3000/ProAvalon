@@ -2506,8 +2506,7 @@ module.exports = function (io) {
       sendToAllChat(io, data);
 
       const msg = {
-        message:
-          "⚡️ please be kind, we were all new once ⚡️",
+        message: "⚡️ Please be kind, we were all new once ⚡️",
         classStr: "server-text",
         dateCreated: new Date(),
       };
