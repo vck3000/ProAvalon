@@ -2507,7 +2507,7 @@ module.exports = function (io) {
 
       const msg = {
         message:
-          "This is a gentle reminder that toxic language and abuse is not tolerated on ProAvalon. Please report instances of rule violations to a moderator. If you are unhappy with a moderator's decision, please contact ProNub via discord or email to review the case.",
+          "⚡️ please be kind, we were all new once ⚡️",
         classStr: "server-text",
         dateCreated: new Date(),
       };
