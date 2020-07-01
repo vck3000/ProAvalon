@@ -1720,20 +1720,6 @@ var actionsObj = {
       },
     },
 
-    mremovefrozen: {
-      command: "mremovefrozen",
-      help:
-        "/mremovefrozen: Remove all frozen rooms and the corresponding save files in the database.",
-      run(data, senderSocket) {
-        for (let i = 0; i < rooms.length; i++) {
-          if (rooms[i] && rooms[i].frozen === true) {
-            destroyRoom(rooms[i].roomId);
-          }
-        }
-        updateCurrentGamesList();
-      },
-    },
-
     mclose: {
       command: "mclose",
       help:
@@ -2085,105 +2071,6 @@ var actionsObj = {
         }
       },
     },
-
-    miplinkedaccs: {
-      command: "miplinkedaccs",
-      help:
-        "/miplinkedaccs <username> <fullTree>: Finds all accounts that have shared the same IPs the specified user. Put anything in <fullTree> to see full tree.",
-      async run(data, senderSocket) {
-        const { args } = data;
-
-        // Send out data in a readable way to the mod.
-        var dataToReturn = [];
-        var linkedUsernamesWithLevel;
-        var usernamesTree;
-        var newUsernamesTreeLines = [];
-        try {
-          var ret = await IPLinkedAccounts(
-            args[1],
-            args[2] !== undefined ? true : false
-          );
-          linkedUsernamesWithLevel = ret.linkedUsernamesWithLevel;
-          usernamesTree = ret.usernamesTree;
-        } catch (e) {
-          senderSocket.emit("messageCommandReturnStr", {
-            message: e.message,
-            classStr: "server-text",
-            dateCreated: new Date(),
-          });
-          return;
-        }
-
-        if (linkedUsernamesWithLevel.length === 0) {
-          dataToReturn[0] = {
-            message: "There are no users with matching IPs (weird).",
-            classStr: "server-text",
-            dateCreated: new Date(),
-          };
-        } else {
-          dataToReturn[0] = {
-            message: "-------------------------",
-            classStr: "server-text",
-            dateCreated: new Date(),
-          };
-          // Old display:
-          // for (obj of linkedUsernamesWithLevel) {
-          //     dataToReturn.push({ message: `${obj.level} - ${obj.username}`, classStr: 'server-text', dateCreated: new Date() });
-          // }
-
-          lines = usernamesTree.split("\n");
-          // console.log(lines);
-          // Do my special replace white space with forced white space and append
-          for (line of lines) {
-            var replace = true;
-            var newLine = "";
-            for (ch of line) {
-              if (ch == " " && replace) {
-                newLine += "&#160;&#160;";
-              } else if (!ch.match("/^[a-z0-9]+$/i")) {
-                newLine += ch;
-              } else {
-                replace = false;
-                newLine += ch;
-              }
-            }
-            newLine = sanitizeHtml(newLine);
-            dataToReturn.push({
-              message: `${newLine}`,
-              classStr: "server-text",
-              dateCreated: new Date(),
-            });
-            newUsernamesTreeLines.push(newLine);
-          }
-
-          dataToReturn.push({
-            message: "-------------------------",
-            classStr: "server-text",
-            dateCreated: new Date(),
-          });
-        }
-        senderSocket.emit("messageCommandReturnStr", dataToReturn);
-
-        // Create the ModLog
-        const modUser = await User.findOne({
-          usernameLower: senderSocket.request.user.username.toLowerCase(),
-        });
-        ModLog.create({
-          type: "miplinkedaccs",
-          modWhoMade: {
-            id: modUser._id,
-            username: modUser.username,
-            usernameLower: modUser.usernameLower,
-          },
-          data: {
-            target: args[1],
-            newUsernamesTreeLines: newUsernamesTreeLines,
-            fullTree: args[2] !== undefined ? true : false,
-          },
-          dateCreated: new Date(),
-        });
-      },
-    },
   },
 
   adminCommands: {
@@ -2349,6 +2236,119 @@ var actionsObj = {
               });
             }
           });
+      },
+    },
+
+    mremovefrozen: {
+      command: "mremovefrozen",
+      help:
+        "/mremovefrozen: Remove all frozen rooms and the corresponding save files in the database.",
+      run(data, senderSocket) {
+        for (let i = 0; i < rooms.length; i++) {
+          if (rooms[i] && rooms[i].frozen === true) {
+            destroyRoom(rooms[i].roomId);
+          }
+        }
+        updateCurrentGamesList();
+      },
+    },
+
+    miplinkedaccs: {
+      command: "miplinkedaccs",
+      help:
+        "/miplinkedaccs <username> <fullTree>: Finds all accounts that have shared the same IPs the specified user. Put anything in <fullTree> to see full tree.",
+      async run(data, senderSocket) {
+        const { args } = data;
+
+        // Send out data in a readable way to the mod.
+        var dataToReturn = [];
+        var linkedUsernamesWithLevel;
+        var usernamesTree;
+        var newUsernamesTreeLines = [];
+        try {
+          var ret = await IPLinkedAccounts(
+            args[1],
+            args[2] !== undefined ? true : false
+          );
+          linkedUsernamesWithLevel = ret.linkedUsernamesWithLevel;
+          usernamesTree = ret.usernamesTree;
+        } catch (e) {
+          senderSocket.emit("messageCommandReturnStr", {
+            message: e.message,
+            classStr: "server-text",
+            dateCreated: new Date(),
+          });
+          return;
+        }
+
+        if (linkedUsernamesWithLevel.length === 0) {
+          dataToReturn[0] = {
+            message: "There are no users with matching IPs (weird).",
+            classStr: "server-text",
+            dateCreated: new Date(),
+          };
+        } else {
+          dataToReturn[0] = {
+            message: "-------------------------",
+            classStr: "server-text",
+            dateCreated: new Date(),
+          };
+          // Old display:
+          // for (obj of linkedUsernamesWithLevel) {
+          //     dataToReturn.push({ message: `${obj.level} - ${obj.username}`, classStr: 'server-text', dateCreated: new Date() });
+          // }
+
+          lines = usernamesTree.split("\n");
+          // console.log(lines);
+          // Do my special replace white space with forced white space and append
+          for (line of lines) {
+            var replace = true;
+            var newLine = "";
+            for (ch of line) {
+              if (ch == " " && replace) {
+                newLine += "&#160;&#160;";
+              } else if (!ch.match("/^[a-z0-9]+$/i")) {
+                newLine += ch;
+              } else {
+                replace = false;
+                newLine += ch;
+              }
+            }
+            newLine = sanitizeHtml(newLine);
+            dataToReturn.push({
+              message: `${newLine}`,
+              classStr: "server-text",
+              dateCreated: new Date(),
+            });
+            newUsernamesTreeLines.push(newLine);
+          }
+
+          dataToReturn.push({
+            message: "-------------------------",
+            classStr: "server-text",
+            dateCreated: new Date(),
+          });
+        }
+        senderSocket.emit("messageCommandReturnStr", dataToReturn);
+
+        // Create the ModLog
+        const modUser = await User.findOne({
+          usernameLower: senderSocket.request.user.username.toLowerCase(),
+        });
+        ModLog.create({
+          type: "miplinkedaccs",
+          modWhoMade: {
+            id: modUser._id,
+            username: modUser.username,
+            usernameLower: modUser.usernameLower,
+          },
+          data: {
+            target: args[1],
+            newUsernamesTreeLines: newUsernamesTreeLines,
+            fullTree: args[2] !== undefined ? true : false,
+          },
+          dateCreated: new Date(),
+        });
       },
     },
   },
