@@ -5,7 +5,6 @@ const modsArray = [
   "muse",
   "starbird1002",
   "not.me",
-  "bremen",
   "superkushal",
 ];
 
