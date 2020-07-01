@@ -2513,6 +2513,15 @@ module.exports = function (io) {
 
       socket.emit("allChatToClient", msg);
 
+      const msg2 = {
+        message:
+          "We have a new discord server! Join here: https://discord.gg/3mHdKNT",
+        classStr: "server-text",
+        dateCreated: new Date(),
+      };
+
+      socket.emit("allChatToClient", msg2);
+
       updateCurrentPlayersList(io);
       // console.log("update current players list");
       // console.log(getPlayerUsernamesFromAllSockets());
