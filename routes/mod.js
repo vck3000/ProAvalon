@@ -15,9 +15,12 @@ const requiredFields = [
   'descriptionByMod',
 ];
 
-router.post('/ban', upload.none(), async (req, res) => {
+router.post('/ban', isMod, upload.none(), async (req, res) => {
+  console.log('hit');
   // Catch errors so that it's not shown to users.
   try {
+    console.log('hit 2');
+    // Catch errors so that it's not shown to users.
     // Multiple checks:
     // 0: Redundant mod check?
 
@@ -186,7 +189,7 @@ router.get('/', isMod, (req, res) => {
 // 4) Comment and reply removes
 // 5) Avatar request approve/rejects
 
-router.get('/ajax/logData/:pageIndex', (req, res) => {
+router.get('/ajax/logData/:pageIndex', isMod, (req, res) => {
   // get all the mod actions
   let pageIndex;
   if (req.params.pageIndex) {
@@ -216,4 +219,3 @@ router.get('/ajax/logData/:pageIndex', (req, res) => {
 });
 
 module.exports = router;
-
