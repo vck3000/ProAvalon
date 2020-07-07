@@ -2553,14 +2553,6 @@ module.exports = function (io) {
       };
       sendToAllChat(io, data);
 
-      const msg = {
-        message: '⚡️ Please be kind, we were all new once ⚡️',
-        classStr: 'server-text',
-        dateCreated: new Date(),
-      };
-
-      socket.emit('allChatToClient', msg);
-
       const msg2 = {
         message:
           'We have a new discord server! Join here: https://discord.gg/3mHdKNT',
