@@ -1,10 +1,15 @@
-import { Machine, assign } from 'xstate';
+import { Machine } from 'xstate';
+import {
+  PLAYER_JOIN_ACTION,
+  PLAYER_LEAVE_ACTION,
+  PLAYER_SIT_DOWN_ACTION,
+  PLAYER_STAND_UP_ACTION,
+} from './room-machine-actions';
 
 export interface RoomPlayer {
-  id: string;
+  socketId: string;
   username: string;
   displayUsername: string;
-  // socketId: string;
 }
 
 export interface RoomContext {
@@ -15,12 +20,17 @@ export interface RoomContext {
 export interface RoomStateSchema {
   states: {
     waiting: {};
-    inProgress: {};
+    game: {
+      states: {
+        pick: {};
+        vote: {};
+      };
+    };
     finished: {};
   };
 }
 
-export type RoomEvent =
+type BaseEvents =
   | { type: 'PLAYER_JOIN'; player: RoomPlayer }
   | { type: 'PLAYER_LEAVE'; player: RoomPlayer }
   | { type: 'PLAYER_SIT_DOWN'; player: RoomPlayer }
@@ -28,7 +38,11 @@ export type RoomEvent =
   | { type: 'START_GAME' }
   | { type: 'GAME_END' };
 
-export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvent>({
+type GameEvents = { type: 'PICK' } | { type: 'VOTE' };
+
+export type RoomEvents = BaseEvents | GameEvents;
+
+export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>({
   id: 'room',
   initial: 'waiting',
   context: { players: [], spectators: [] },
@@ -36,76 +50,37 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvent>({
     waiting: {
       on: {
         PLAYER_JOIN: {
-          actions: assign<RoomContext, RoomEvent>({
-            spectators: (context, event) => {
-              if (
-                event.type === 'PLAYER_JOIN' &&
-                context.spectators.indexOf(event.player) === -1
-              ) {
-                context.spectators.push(event.player);
-              }
-              return context.spectators;
-            },
-          }),
+          actions: PLAYER_JOIN_ACTION,
         },
         PLAYER_LEAVE: {
-          actions: assign<RoomContext, RoomEvent>((context, event) => {
-            if (event.type === 'PLAYER_LEAVE') {
-              // Remove from players and spectators
-              let index = context.players.indexOf(event.player);
-              context.players.splice(index, 1);
-
-              index = context.spectators.indexOf(event.player);
-              context.spectators.splice(index, 1);
-            }
-            return {
-              ...context,
-              players: context.players,
-              spectators: context.spectators,
-            };
-          }),
+          actions: PLAYER_LEAVE_ACTION,
         },
         PLAYER_SIT_DOWN: {
-          actions: assign<RoomContext, RoomEvent>((context, event) => {
-            if (event.type === 'PLAYER_SIT_DOWN') {
-              // Add to players
-              context.players.push(event.player);
-
-              // Remove from spectator
-              const index = context.spectators.indexOf(event.player);
-              context.spectators.splice(index, 1);
-            }
-            return {
-              ...context,
-              players: context.players,
-              spectators: context.spectators,
-            };
-          }),
+          actions: PLAYER_SIT_DOWN_ACTION,
         },
         PLAYER_STAND_UP: {
-          actions: assign<RoomContext, RoomEvent>((context, event) => {
-            if (event.type === 'PLAYER_STAND_UP') {
-              // Remove from players
-              let index = context.players.indexOf(event.player);
-              context.players.splice(index, 1);
-
-              // Add to spectator if doesn't exist there already
-              index = context.spectators.indexOf(event.player);
-              if (index === -1) {
-                context.spectators.push(event.player);
-              }
-            }
-            return {
-              ...context,
-              players: context.players,
-              spectators: context.spectators,
-            };
-          }),
+          actions: PLAYER_STAND_UP_ACTION,
         },
-        START_GAME: 'inProgress',
+        START_GAME: {
+          target: 'game',
+          cond: (c, _) => c.players.length >= 5,
+        },
       },
     },
-    inProgress: {
+    game: {
+      initial: 'pick',
+      states: {
+        pick: {
+          on: {
+            PICK: 'vote',
+          },
+        },
+        vote: {
+          on: {
+            VOTE: 'pick',
+          },
+        },
+      },
       on: {
         GAME_END: 'finished',
       },
