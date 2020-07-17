@@ -37,20 +37,20 @@ describe('RoomMachine [Base]', () => {
 
     service.send('PLAYER_JOIN', { player });
     expect(service.state.context.players.length).toEqual(0);
-    expect(service.state.context.spectators).toEqual(
-      expect.arrayContaining([player]),
+    expect(service.state.context.spectators[0].state.context.player).toEqual(
+      player,
     );
 
     service.send('PLAYER_SIT_DOWN', { player });
-    expect(service.state.context.players).toEqual(
-      expect.arrayContaining([player]),
+    expect(service.state.context.players[0].state.context.player).toEqual(
+      player,
     );
     expect(service.state.context.spectators.length).toEqual(0);
 
     service.send('PLAYER_STAND_UP', { player });
     expect(service.state.context.players.length).toEqual(0);
-    expect(service.state.context.spectators).toEqual(
-      expect.arrayContaining([player]),
+    expect(service.state.context.spectators[0].state.context.player).toEqual(
+      player,
     );
 
     service.send('PLAYER_LEAVE', { player });

@@ -1,20 +1,24 @@
-import { Machine } from 'xstate';
+import { Machine, Interpreter } from 'xstate';
 import {
   PLAYER_JOIN_ACTION,
   PLAYER_LEAVE_ACTION,
   PLAYER_SIT_DOWN_ACTION,
   PLAYER_STAND_UP_ACTION,
+  PLAYER_SET_INITIAL_CONTEXT_ACTION,
 } from './room-machine-actions';
 
-export interface RoomPlayer {
-  socketId: string;
-  username: string;
-  displayUsername: string;
-}
+import {
+  Player,
+  PlayerContext,
+  PlayerStateSchema,
+  PlayerEvents,
+} from './player-machine';
 
 export interface RoomContext {
-  players: RoomPlayer[];
-  spectators: RoomPlayer[];
+  // players: Player[];
+  // spectators: Player[];
+  players: Interpreter<PlayerContext, PlayerStateSchema, PlayerEvents>[];
+  spectators: Interpreter<PlayerContext, PlayerStateSchema, PlayerEvents>[];
 }
 
 export interface RoomStateSchema {
@@ -31,16 +35,18 @@ export interface RoomStateSchema {
 }
 
 type BaseEvents =
-  | { type: 'PLAYER_JOIN'; player: RoomPlayer }
-  | { type: 'PLAYER_LEAVE'; player: RoomPlayer }
-  | { type: 'PLAYER_SIT_DOWN'; player: RoomPlayer }
-  | { type: 'PLAYER_STAND_UP'; player: RoomPlayer }
+  | { type: 'PLAYER_JOIN'; player: Player }
+  | { type: 'PLAYER_LEAVE'; player: Player }
+  | { type: 'PLAYER_SIT_DOWN'; player: Player }
+  | { type: 'PLAYER_STAND_UP'; player: Player }
   | { type: 'START_GAME' }
   | { type: 'GAME_END' };
 
 type GameEvents = { type: 'PICK' } | { type: 'VOTE' };
 
-export type RoomEvents = BaseEvents | GameEvents;
+type EntityEvents = { type: 'SPECIAL_STATE'; specialState: string };
+
+export type RoomEvents = BaseEvents | GameEvents | EntityEvents;
 
 export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>({
   id: 'room',
@@ -50,7 +56,7 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>({
     waiting: {
       on: {
         PLAYER_JOIN: {
-          actions: PLAYER_JOIN_ACTION,
+          actions: [PLAYER_JOIN_ACTION, PLAYER_SET_INITIAL_CONTEXT_ACTION],
         },
         PLAYER_LEAVE: {
           actions: PLAYER_LEAVE_ACTION,

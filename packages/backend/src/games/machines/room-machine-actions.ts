@@ -1,17 +1,57 @@
-import { assign } from 'xstate';
+import { assign, spawn, Interpreter, send } from 'xstate';
 import { RoomContext, RoomEvents } from './room-machine';
+import {
+  PlayerMachine,
+  PlayerContext,
+  PlayerStateSchema,
+  PlayerEvents,
+} from './player-machine';
+
+//! Do I need to stop the spawned machine services before deleting their reference?
+
+/**
+ * Finds the index of a player given a list of player services and lowercased username.
+ * Returns -1 if username doesn't exist
+ */
+const indexOfPlayer = (
+  playerServices: Interpreter<PlayerContext, PlayerStateSchema, PlayerEvents>[],
+  username: string,
+) => {
+  for (const [i, player] of playerServices.entries()) {
+    if (player.state.context.player.username === username) {
+      return i;
+    }
+  }
+
+  return -1;
+};
 
 export const PLAYER_JOIN_ACTION = assign<RoomContext, RoomEvents>({
   spectators: (context, event) => {
     if (
       event.type === 'PLAYER_JOIN' &&
-      context.spectators.indexOf(event.player) === -1
+      indexOfPlayer(context.spectators, event.player.username) === -1
     ) {
-      return [...context.spectators, event.player];
+      return [...context.spectators, spawn(PlayerMachine, { sync: true })];
     }
     return [...context.spectators];
   },
 });
+
+export const PLAYER_SET_INITIAL_CONTEXT_ACTION = send<RoomContext, RoomEvents>(
+  (_, e) => ({
+    ...e,
+    type: 'SET_CONTEXT',
+  }),
+  {
+    to: (c, e) => {
+      if (e.type === 'PLAYER_JOIN') {
+        return c.spectators[c.spectators.length - 1].id;
+      }
+      return '';
+    },
+  },
+);
 
 export const PLAYER_LEAVE_ACTION = assign<RoomContext, RoomEvents>(
   (context, event) => {
@@ -20,10 +60,10 @@ export const PLAYER_LEAVE_ACTION = assign<RoomContext, RoomEvents>(
 
     if (event.type === 'PLAYER_LEAVE') {
       // Remove from players and spectators
-      let index = context.players.indexOf(event.player);
+      let index = indexOfPlayer(players, event.player.username);
       players.splice(index, 1);
 
-      index = context.spectators.indexOf(event.player);
+      index = indexOfPlayer(spectators, event.player.username);
       spectators.splice(index, 1);
     }
     return {
@@ -40,11 +80,12 @@ export const PLAYER_SIT_DOWN_ACTION = assign<RoomContext, RoomEvents>(
     const players = [...context.players];
 
     if (event.type === 'PLAYER_SIT_DOWN') {
+      const index = indexOfPlayer(spectators, event.player.username);
+
       // Add to players
-      players.push(event.player);
+      players.push(spectators[index]);
 
       // Remove from spectator
-      const index = context.spectators.indexOf(event.player);
       spectators.splice(index, 1);
     }
 
@@ -62,17 +103,14 @@ export const PLAYER_STAND_UP_ACTION = assign<RoomContext, RoomEvents>(
     const spectators = [...context.spectators];
 
     if (event.type === 'PLAYER_STAND_UP') {
-      // Remove from players
-      let index = context.players.indexOf(event.player);
+      // Add to spectator if doesn't exist there already
+      const index = indexOfPlayer(players, event.player.username);
       if (index !== -1) {
-        players.splice(index, 1);
+        spectators.push(players[index]);
       }
 
-      // Add to spectator if doesn't exist there already
-      index = context.spectators.indexOf(event.player);
-      if (index === -1) {
-        spectators.push(event.player);
-      }
+      // Remove from players
+      players.splice(index, 1);
     }
 
     return {
