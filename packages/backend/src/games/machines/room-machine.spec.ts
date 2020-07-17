@@ -98,7 +98,9 @@ describe('RoomMachine [Base]', () => {
     service.send('PLAYER_SIT_DOWN', { player });
 
     service.send('START_GAME');
-    expect(service.state.value).toEqual({ game: 'pick' });
+    expect(service.state.value).toEqual({
+      game: { standard: 'pick', special: 'idle' },
+    });
   });
 
   it('should not allow duplicate users', () => {
@@ -131,18 +133,71 @@ describe('RoomMachine [Game]', () => {
   });
 
   it('should be able to transition between pick and vote', () => {
-    // const { context } = service.state;
-
-    expect(service.state.value).toEqual({ game: 'pick' });
+    expect(service.state.value).toMatchObject({ game: { standard: 'pick' } });
     service.send('PICK');
 
-    expect(service.state.value).toEqual({ game: 'vote' });
+    expect(service.state.value).toMatchObject({
+      game: {
+        standard: 'voteTeam',
+      },
+    });
 
     // Expect no change for PICK event in a VOTE state
     service.send('PICK');
-    expect(service.state.value).toEqual({ game: 'vote' });
+    expect(service.state.value).toMatchObject({
+      game: {
+        standard: 'voteTeam',
+      },
+    });
 
-    service.send('VOTE');
-    expect(service.state.value).toEqual({ game: 'pick' });
+    service.send('VOTE_TEAM');
+    expect(service.state.value).toMatchObject({
+      game: {
+        standard: 'pick',
+      },
+    });
+  });
+
+  it('should not be able to transitioon standard states in special state', () => {
+    // Starting state
+    expect(service.state.value).toEqual({
+      game: { standard: 'pick', special: 'idle' },
+    });
+
+    service.send('SPECIAL_STATE_ENTER');
+
+    // Enter special state
+    expect(service.state.value).toEqual({
+      game: { standard: 'pick', special: 'active' },
+    });
+
+    service.send('PICK');
+
+    // Should not transition in standard states
+    expect(service.state.value).toEqual({
+      game: { standard: 'pick', special: 'active' },
+    });
+
+    service.send('SPECIAL_STATE_LEAVE');
+
+    // Leave special state
+    expect(service.state.value).toEqual({
+      game: { standard: 'pick', special: 'idle' },
+    });
+
+    // Enter voteTeam state
+    service.send('PICK');
+    expect(service.state.value).toEqual({
+      game: { standard: 'voteTeam', special: 'idle' },
+    });
+
+    // Enter special state
+    service.send('SPECIAL_STATE_ENTER');
+    service.send('VOTE_TEAM');
+
+    // Should be unable to transition out of voteTeam
+    expect(service.state.value).toEqual({
+      game: { standard: 'voteTeam', special: 'active' },
+    });
   });
 });

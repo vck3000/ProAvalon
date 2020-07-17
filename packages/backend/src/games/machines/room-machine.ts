@@ -26,8 +26,19 @@ export interface RoomStateSchema {
     waiting: {};
     game: {
       states: {
-        pick: {};
-        vote: {};
+        standard: {
+          states: {
+            pick: {};
+            voteTeam: {};
+            voteMission: {};
+          };
+        };
+        special: {
+          states: {
+            idle: {};
+            active: {};
+          };
+        };
       };
     };
     finished: {};
@@ -42,9 +53,14 @@ type BaseEvents =
   | { type: 'START_GAME' }
   | { type: 'GAME_END' };
 
-type GameEvents = { type: 'PICK' } | { type: 'VOTE' };
+type GameEvents =
+  | { type: 'PICK' }
+  | { type: 'VOTE_TEAM' }
+  | { type: 'VOTE_MISSION' };
 
-type EntityEvents = { type: 'SPECIAL_STATE'; specialState: string };
+type EntityEvents =
+  | { type: 'SPECIAL_STATE_ENTER' }
+  | { type: 'SPECIAL_STATE_LEAVE' };
 
 export type RoomEvents = BaseEvents | GameEvents | EntityEvents;
 
@@ -74,16 +90,51 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>({
       },
     },
     game: {
-      initial: 'pick',
+      id: 'game',
+      type: 'parallel',
       states: {
-        pick: {
-          on: {
-            PICK: 'vote',
+        standard: {
+          initial: 'pick',
+          states: {
+            pick: {
+              on: {
+                PICK: {
+                  target: 'voteTeam',
+                  in: '#room.game.special.idle',
+                },
+              },
+            },
+            voteTeam: {
+              on: {
+                VOTE_TEAM: {
+                  target: 'pick',
+                  in: '#room.game.special.idle',
+                },
+              },
+            },
+            voteMission: {
+              on: {
+                VOTE_MISSION: {
+                  target: 'pick',
+                  in: '#room.game.special.idle',
+                },
+              },
+            },
           },
         },
-        vote: {
-          on: {
-            VOTE: 'pick',
+        special: {
+          initial: 'idle',
+          states: {
+            idle: {
+              on: {
+                SPECIAL_STATE_ENTER: 'active',
+              },
+            },
+            active: {
+              on: {
+                SPECIAL_STATE_LEAVE: 'idle',
+              },
+            },
           },
         },
       },
