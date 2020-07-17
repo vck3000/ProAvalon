@@ -56,12 +56,10 @@ export default class GameECS {
           break;
         default:
           // TODO: log a warning message
-          console.warn('Game event type not recognised');
           break;
       }
     } else {
       // TODO: Make this into a logger warning later
-      console.warn('Bad gameEvent object');
       throw new Error('bad event type');
     }
 

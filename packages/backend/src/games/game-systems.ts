@@ -46,9 +46,9 @@ export class SVoteTeam extends System {
     const numRejects = votes.filter((vote) => vote === 'reject').length;
 
     if (numApproves > numRejects) {
-      console.log('Team was approved');
+      // TODO: Log this
     } else {
-      console.log('Team was rejected');
+      // TODO: Log this
     }
 
     // TODO: Reset everyone's votes back to undefined
@@ -80,9 +80,9 @@ export class SVoteMission extends System {
     const numFails = votes.filter((vote) => vote === 'fail').length;
 
     if (numFails > 0) {
-      console.log(`We have ${numFails} fails!`);
+      // TODO: Log this
     } else {
-      console.log('There were no fails');
+      // TODO: Log this
     }
 
     // TODO: Reset everyone's votes back to undefined
@@ -121,6 +121,5 @@ export const EventVoteTeam = async (
 
   if (!entityFound) {
     // TODO: Make this a logger
-    console.warn('Entity not found when trying to vote for team');
   }
 };
