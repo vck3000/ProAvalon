@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 
 import { ROLES } from './game-assemblages';
-import { SocketUser } from '../users/users.socket';
+import { PlayerInfo } from '../room/room-machine';
 
 /*
   Needed some hacky stuff here to make the types work together overall.
@@ -25,7 +25,8 @@ export type AllComponents =
   | CRole
   | CVoteTeam
   | CVoteMission
-  | CSeeAlliance;
+  | CSeeAlliance
+  | CAssassin;
 
 export class Component {
   name: string;
@@ -39,11 +40,13 @@ export class Component {
 export class CPlayer extends Component {
   socketId: string;
   displayUsername: string;
+  satDown: boolean;
 
-  constructor(socket: SocketUser) {
-    super('player');
-    this.socketId = socket.id;
-    this.displayUsername = socket.user.displayUsername;
+  constructor(playerInfo: PlayerInfo) {
+    super('CPlayer');
+    this.socketId = playerInfo.socketId;
+    this.displayUsername = playerInfo.displayUsername;
+    this.satDown = false;
   }
 }
 
@@ -52,7 +55,7 @@ export class CAlliance extends Component {
   alliance: string;
 
   constructor(alliance: Alliance) {
-    super('alliance');
+    super('Alliance');
     this.alliance = alliance;
   }
 }
@@ -61,7 +64,7 @@ export class CRole extends Component {
   role: string;
 
   constructor(role: ROLES) {
-    super('role');
+    super('CRole');
     this.role = role;
   }
 }
@@ -71,7 +74,7 @@ export class CVoteTeam extends Component {
   vote: VoteTeam;
 
   constructor() {
-    super('voteTeam');
+    super('CVoteTeam');
     this.vote = undefined;
   }
 }
@@ -81,7 +84,7 @@ export class CVoteMission extends Component {
   vote: VoteMission;
 
   constructor() {
-    super('voteMission');
+    super('CVoteMission');
     this.vote = undefined;
   }
 }
@@ -90,7 +93,7 @@ export class CSeeAlliance extends Component {
   visibleRoles: ROLES[];
 
   constructor(visibleRoles: ROLES[] | 'all') {
-    super('seeAlliance');
+    super('CSeeAlliance');
 
     // Default see ALL roles.
     // TODO Update this for Oberon later.
@@ -99,5 +102,11 @@ export class CSeeAlliance extends Component {
     } else {
       this.visibleRoles = visibleRoles;
     }
+  }
+}
+
+export class CAssassin extends Component {
+  constructor() {
+    super('CAssassin');
   }
 }

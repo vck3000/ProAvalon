@@ -1,5 +1,5 @@
 import { Machine, assign, State } from 'xstate';
-import { RoomContext, RoomEvents } from '../room/room-machine';
+import { RoomContext, RoomEvents, Player } from '../room/room-machine';
 import { GameSystem, SpecialEvent } from '../system/types';
 import {
   setTeamVote,
@@ -9,12 +9,6 @@ import {
   runPlayerSystems,
   playerSpecial,
 } from './player-machine-actions';
-
-export interface Player {
-  socketId: string;
-  username: string;
-  displayUsername: string;
-}
 
 type TeamVote = 'approve' | 'reject' | null;
 type MissionVote = 'succeed' | 'fail' | null;
