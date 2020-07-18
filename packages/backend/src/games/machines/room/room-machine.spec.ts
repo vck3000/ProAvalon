@@ -117,14 +117,18 @@ describe('RoomMachine [Base]', () => {
 
 describe('RoomMachine [Game]', () => {
   let service: Interpreter<RoomContext, RoomStateSchema, RoomEvents, any>;
+  let mockPlayers: any[];
 
   beforeEach(() => {
     service = interpret(RoomMachine).start();
 
     const gen = mockPlayerGen();
+    mockPlayers = [];
 
+    // Set up 6 player game and start it
     for (let i = 0; i < 6; i += 1) {
       const player = gen.next().value;
+      mockPlayers.push(player);
       service.send('PLAYER_JOIN', { player });
       service.send('PLAYER_SIT_DOWN', { player });
     }
@@ -134,7 +138,9 @@ describe('RoomMachine [Game]', () => {
 
   it('should be able to transition between pick and vote', () => {
     expect(service.state.value).toMatchObject({ game: { standard: 'pick' } });
-    service.send('PICK');
+    const { leader } = service.state.context.game;
+
+    service.send('PICK', { player: mockPlayers[leader] });
 
     expect(service.state.value).toMatchObject({
       game: {
@@ -143,7 +149,7 @@ describe('RoomMachine [Game]', () => {
     });
 
     // Expect no change for PICK event in a VOTE state
-    service.send('PICK');
+    service.send('PICK', { player: mockPlayers[leader] });
     expect(service.state.value).toMatchObject({
       game: {
         standard: 'voteTeam',
@@ -158,7 +164,47 @@ describe('RoomMachine [Game]', () => {
     });
   });
 
-  it('should not be able to transitioon standard states in special state', () => {
+  it('should only pick if requester is leader', () => {
+    expect(service.state.value).toMatchObject({ game: { standard: 'pick' } });
+
+    const { leader } = service.state.context.game;
+
+    // Send from wrong leader
+    service.send('PICK', {
+      player: mockPlayers[(leader + 1) % mockPlayers.length],
+    });
+    expect(service.state.value).toMatchObject({
+      game: {
+        standard: 'pick',
+      },
+    });
+
+    // Send from correct leader
+    service.send('PICK', { player: mockPlayers[leader] });
+    expect(service.state.value).toMatchObject({
+      game: {
+        standard: 'voteTeam',
+      },
+    });
+
+    // Expect no change for PICK event in a VOTE state
+    service.send('PICK', { player: mockPlayers[leader] });
+    expect(service.state.value).toMatchObject({
+      game: {
+        standard: 'voteTeam',
+      },
+    });
+
+    service.send('VOTE_TEAM');
+    expect(service.state.value).toMatchObject({
+      game: {
+        standard: 'pick',
+      },
+    });
+  });
+
+  it('should not be able to transition standard states in special state', () => {
+    const { leader } = service.state.context.game;
     // Starting state
     expect(service.state.value).toEqual({
       game: { standard: 'pick', special: 'idle' },
@@ -171,7 +217,7 @@ describe('RoomMachine [Game]', () => {
       game: { standard: 'pick', special: 'active' },
     });
 
-    service.send('PICK');
+    service.send('PICK', { player: mockPlayers[leader] });
 
     // Should not transition in standard states
     expect(service.state.value).toEqual({
@@ -186,7 +232,7 @@ describe('RoomMachine [Game]', () => {
     });
 
     // Enter voteTeam state
-    service.send('PICK');
+    service.send('PICK', { player: mockPlayers[leader] });
     expect(service.state.value).toEqual({
       game: { standard: 'voteTeam', special: 'idle' },
     });
@@ -198,6 +244,58 @@ describe('RoomMachine [Game]', () => {
     // Should be unable to transition out of voteTeam
     expect(service.state.value).toEqual({
       game: { standard: 'voteTeam', special: 'active' },
+    });
+  });
+
+  // TODO This needs to be updated later for proper assassination system
+  it.only('should go into a special state correctly', () => {
+    expect(service.state.value).toMatchObject({ game: { standard: 'pick' } });
+
+    // Leader make a pick
+    const { leader } = service.state.context.game;
+
+    service.send('PICK', { player: mockPlayers[leader] });
+
+    // TODO: Fix this later when assassination system is updated
+    // Expect to be in assassin state now
+    expect(service.state.value).toEqual({
+      game: {
+        standard: 'voteTeam',
+        special: 'active',
+      },
+    });
+
+    // Expect not to be able to do standard transition
+    service.send('VOTE_TEAM');
+    expect(service.state.value).toEqual({
+      game: {
+        standard: 'voteTeam',
+        special: 'active',
+      },
+    });
+
+    // Give the assassination move, then expect to be in VoteTeam
+    service.send('SPECIAL', {
+      // Assassin is the last player in our 6 players
+      player: mockPlayers[5],
+      data: { target: 'B' },
+      specialType: 'assassin',
+    });
+
+    expect(service.state.value).toEqual({
+      game: {
+        standard: 'voteTeam',
+        special: 'idle',
+      },
+    });
+
+    // Expect to be able to do standard transition
+    service.send('VOTE_TEAM');
+    expect(service.state.value).toEqual({
+      game: {
+        standard: 'pick',
+        special: 'idle',
+      },
     });
   });
 });
