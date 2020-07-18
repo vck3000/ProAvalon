@@ -1,4 +1,4 @@
-import { Machine, Interpreter } from 'xstate';
+import { Machine } from 'xstate';
 import {
   playerJoin,
   playerLeave,
@@ -9,17 +9,14 @@ import {
   runSystems,
   forwardSpecial,
 } from './room-machine-actions';
-import {
-  Player,
-  PlayerContext,
-  PlayerStateSchema,
-  PlayerEvents,
-} from '../player/player-machine';
+
+import { Entity } from '../ecs/game-entity';
 
 import { isLeaderCond, minPlayers } from './room-machine-guards';
 
-interface RoomSettings {
-  entities: [];
+export interface PlayerInfo {
+  socketId: string;
+  displayUsername: string;
 }
 
 interface GameData {
@@ -27,9 +24,8 @@ interface GameData {
 }
 
 export interface RoomContext {
-  players: Interpreter<PlayerContext, PlayerStateSchema, PlayerEvents>[];
-  spectators: Interpreter<PlayerContext, PlayerStateSchema, PlayerEvents>[];
-  settings: RoomSettings;
+  entities: Entity[];
+  entityCount: number;
   game: GameData;
 }
 
@@ -58,17 +54,17 @@ export interface RoomStateSchema {
 }
 
 type BaseEvents =
-  | { type: 'PLAYER_JOIN'; player: Player }
-  | { type: 'PLAYER_LEAVE'; player: Player }
-  | { type: 'PLAYER_SIT_DOWN'; player: Player }
-  | { type: 'PLAYER_STAND_UP'; player: Player }
-  | { type: 'START_GAME'; player: Player }
+  | { type: 'PLAYER_JOIN'; player: PlayerInfo }
+  | { type: 'PLAYER_LEAVE'; player: PlayerInfo }
+  | { type: 'PLAYER_SIT_DOWN'; player: PlayerInfo }
+  | { type: 'PLAYER_STAND_UP'; player: PlayerInfo }
+  | { type: 'START_GAME'; player: PlayerInfo }
   | { type: 'GAME_END' };
 
 type GameEvents =
-  | { type: 'PICK'; player: Player }
-  | { type: 'VOTE_TEAM'; player: Player }
-  | { type: 'VOTE_MISSION'; player: Player };
+  | { type: 'PICK'; player: PlayerInfo }
+  | { type: 'VOTE_TEAM'; player: PlayerInfo }
+  | { type: 'VOTE_MISSION'; player: PlayerInfo };
 
 type EntityEvents =
   | { type: 'SPECIAL_STATE_ENTER' }
@@ -82,9 +78,8 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
     id: 'room',
     initial: 'waiting',
     context: {
-      players: [],
-      spectators: [],
-      settings: { entities: [] },
+      entities: [],
+      entityCount: 0,
       game: { leader: 0 },
     },
     states: {
