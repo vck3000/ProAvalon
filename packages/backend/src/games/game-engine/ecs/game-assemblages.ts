@@ -42,9 +42,9 @@ const Assassin = (entity: Entity): void => {
   entity.addComponent(new CAssassin());
 };
 
-export const createRoles = {
-  resistance: Resistance,
-  spy: Spy,
-  merlin: Merlin,
-  assassin: Assassin,
+export const addRoles = {
+  Resistance,
+  Spy,
+  Merlin,
+  Assassin,
 };
