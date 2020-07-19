@@ -1,10 +1,10 @@
 import { RoomContext, RoomEvents } from './room-machine';
-import { indexOfPlayer, filterPlayers } from '../util';
+import { indexOfPlayer, filterByComponent } from '../util';
 import { CPlayer } from '../ecs/game-components';
 
 export const isLeaderCond = (c: RoomContext, e: RoomEvents) => {
   if (e.type === 'PICK') {
-    const players = filterPlayers(c.entities);
+    const players = filterByComponent(c.entities, CPlayer.name);
     const index = indexOfPlayer(players, e.player.displayUsername);
 
     return index === c.game.leader;
@@ -13,10 +13,10 @@ export const isLeaderCond = (c: RoomContext, e: RoomEvents) => {
 };
 
 export const minPlayers = (c: RoomContext, _: RoomEvents) => {
-  const players = filterPlayers(c.entities);
+  const players = filterByComponent(c.entities, CPlayer.name);
 
   const satPlayers = players.filter(
-    (player) => (player.components.player as CPlayer).satDown,
+    (player) => (player.components[CPlayer.name] as CPlayer).satDown,
   );
 
   return satPlayers.length >= 5;

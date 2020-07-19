@@ -4,10 +4,11 @@ import {
   playerLeave,
   playerSitDown,
   playerStandUp,
-  playerSetInitialContext,
   startGame,
   runSystems,
-  forwardSpecial,
+  setGameState,
+  addSystem,
+  handleSpecialEvent,
 } from './room-machine-actions';
 
 import { Entity } from '../ecs/game-entity';
@@ -26,7 +27,9 @@ interface GameData {
 export interface RoomContext {
   entities: Entity[];
   entityCount: number;
+  systems: string[];
   game: GameData;
+  gameState: string;
 }
 
 export interface RoomStateSchema {
@@ -69,7 +72,8 @@ type GameEvents =
 type EntityEvents =
   | { type: 'SPECIAL_STATE_ENTER' }
   | { type: 'SPECIAL_STATE_LEAVE' }
-  | { type: 'SPECIAL'; specialType: string; data: any };
+  | { type: 'SPECIAL'; specialType: string; data: any; player: PlayerInfo }
+  | { type: 'ADD_SYSTEM'; systemName: string };
 
 export type RoomEvents = BaseEvents | GameEvents | EntityEvents;
 
@@ -80,13 +84,15 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
     context: {
       entities: [],
       entityCount: 0,
+      systems: [],
       game: { leader: 0 },
+      gameState: 'waiting',
     },
     states: {
       waiting: {
         on: {
           PLAYER_JOIN: {
-            actions: ['playerJoin', 'playerSetInitialContext'],
+            actions: 'playerJoin',
           },
           PLAYER_LEAVE: {
             actions: 'playerLeave',
@@ -113,7 +119,10 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
             id: 'standard',
             states: {
               pick: {
-                // entry: 'runSystems',
+                entry: {
+                  type: 'setGameState',
+                  gameState: 'pick',
+                },
                 on: {
                   PICK: {
                     // External transitions so that runSystems is triggered!
@@ -125,7 +134,10 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
                 },
               },
               voteTeam: {
-                entry: 'runSystems',
+                entry: [
+                  { type: 'setGameState', gameState: 'voteTeam' },
+                  'runSystems',
+                ],
                 on: {
                   VOTE_TEAM: {
                     target: 'pick',
@@ -135,7 +147,10 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
                 },
               },
               voteMission: {
-                // entry: 'runSystems',
+                entry: {
+                  type: 'setGameState',
+                  gameState: 'voteMission',
+                },
                 on: {
                   VOTE_MISSION: {
                     target: 'pick',
@@ -158,7 +173,7 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
                 on: {
                   SPECIAL_STATE_LEAVE: 'idle',
                   SPECIAL: {
-                    actions: 'forwardSpecial',
+                    actions: ['handleSpecialEvent', 'runSystems'],
                   },
                 },
               },
@@ -166,6 +181,10 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
           },
         },
         on: {
+          // TODO Move this somewhere else later
+          ADD_SYSTEM: {
+            actions: 'addSystem',
+          },
           GAME_END: 'finished',
         },
       },
@@ -177,13 +196,14 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
   {
     actions: {
       playerJoin,
-      playerSetInitialContext,
       playerLeave,
       playerSitDown,
       playerStandUp,
       startGame,
       runSystems,
-      forwardSpecial,
+      setGameState,
+      addSystem,
+      handleSpecialEvent,
     },
     guards: {
       isLeaderCond,

@@ -106,7 +106,14 @@ export class CSeeAlliance extends Component {
 }
 
 export class CAssassin extends Component {
+  active: boolean;
+  finished: boolean;
+  target: string | undefined;
+
   constructor() {
     super('CAssassin');
+    this.active = false;
+    this.finished = false;
+    this.target = undefined;
   }
 }
