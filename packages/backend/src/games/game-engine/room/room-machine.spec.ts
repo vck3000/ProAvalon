@@ -7,6 +7,7 @@ import {
 } from './room-machine';
 import { CPlayer } from '../ecs/game-components';
 import { SAssassin } from '../ecs/game-systems';
+import { getAllTeamVotes } from './room-machine-guards';
 
 function* mockPlayerGen() {
   let socketId = 1;
@@ -27,7 +28,6 @@ function* mockPlayerGen() {
 
 describe('RoomMachine [Base]', () => {
   let service: Interpreter<RoomContext, RoomStateSchema, RoomEvents, any>;
-
   beforeEach(() => {
     service = interpret(RoomMachine).start();
   });
@@ -136,32 +136,117 @@ describe('RoomMachine [Game]', () => {
     service.send('START_GAME');
   });
 
-  it('should be able to transition between pick and vote', () => {
+  it('should be able to pick, vote and approve team', () => {
     expect(service.state.value).toMatchObject({ game: { standard: 'pick' } });
     const { leader } = service.state.context.game;
 
-    service.send('PICK', { player: mockPlayers[leader] });
-
+    service.send('PICK', {
+      player: mockPlayers[leader],
+      data: { team: ['C', 'D'] },
+    });
     expect(service.state.value).toMatchObject({
       game: {
         standard: 'voteTeam',
       },
     });
 
-    // Expect no change for PICK event in a VOTE state
-    service.send('PICK', { player: mockPlayers[leader] });
+    // Give 4 approves, and 1 reject (one last vote missing)
+    for (let i = 0; i < 5; i += 1) {
+      if (i < 4) {
+        service.send('VOTE_TEAM', {
+          player: mockPlayers[i],
+          data: {
+            vote: 'approve',
+          },
+        });
+      } else {
+        service.send('VOTE_TEAM', {
+          player: mockPlayers[i],
+          data: {
+            vote: 'reject',
+          },
+        });
+      }
+    }
+
+    // Expect same state as we are waiting for last vote
     expect(service.state.value).toMatchObject({
       game: {
         standard: 'voteTeam',
       },
     });
 
-    service.send('VOTE_TEAM');
+    // Give in the last vote
+    service.send('VOTE_TEAM', {
+      player: mockPlayers[5],
+      data: {
+        vote: 'reject',
+      },
+    });
+
+    // Should be voting on the mission now.
+    expect(service.state.value).toMatchObject({
+      game: {
+        standard: 'voteMission',
+      },
+    });
+
+    // Leader should advance.
+    expect(service.state.context.game.leader).toEqual(
+      (leader + 1) % (mockPlayers.length - 1),
+    );
+
+    // Should reset the votes - can remove this later if needed.
+    expect(getAllTeamVotes(service.state.context)).toEqual(false);
+  });
+
+  it('should be able to pick, vote and reject team', () => {
+    expect(service.state.value).toMatchObject({ game: { standard: 'pick' } });
+    const { leader } = service.state.context.game;
+
+    service.send('PICK', {
+      player: mockPlayers[leader],
+      data: { team: ['C', 'D'] },
+    });
+    expect(service.state.value).toMatchObject({
+      game: {
+        standard: 'voteTeam',
+      },
+    });
+
+    // Give 3 approves, team should be rejected
+    for (let i = 0; i < 6; i += 1) {
+      if (i < 3) {
+        service.send('VOTE_TEAM', {
+          player: mockPlayers[i],
+          data: {
+            vote: 'approve',
+          },
+        });
+      } else {
+        service.send('VOTE_TEAM', {
+          player: mockPlayers[i],
+          data: {
+            vote: 'reject',
+          },
+        });
+      }
+    }
+
+    // Should be voting on the mission now.
     expect(service.state.value).toMatchObject({
       game: {
         standard: 'pick',
       },
     });
+
+    // Leader should advance.
+    expect(service.state.context.game.leader).toEqual(
+      (leader + 1) % (mockPlayers.length - 1),
+    );
+
+    // Should reset the votes - can remove this later if needed.
+    expect(getAllTeamVotes(service.state.context)).toEqual(false);
   });
 
   it('should only pick if requester is leader', () => {
@@ -171,7 +256,8 @@ describe('RoomMachine [Game]', () => {
 
     // Send from wrong leader
     service.send('PICK', {
-      player: mockPlayers[(leader + 1) % mockPlayers.length],
+      player: mockPlayers[(leader + 1) % (mockPlayers.length - 1)],
+      data: { team: ['C', 'D'] },
     });
     expect(service.state.value).toMatchObject({
       game: {
@@ -180,7 +266,10 @@ describe('RoomMachine [Game]', () => {
     });
 
     // Send from correct leader
-    service.send('PICK', { player: mockPlayers[leader] });
+    service.send('PICK', {
+      player: mockPlayers[leader],
+      data: { team: ['C', 'D'] },
+    });
     expect(service.state.value).toMatchObject({
       game: {
         standard: 'voteTeam',
@@ -188,17 +277,13 @@ describe('RoomMachine [Game]', () => {
     });
 
     // Expect no change for PICK event in a VOTE state
-    service.send('PICK', { player: mockPlayers[leader] });
+    service.send('PICK', {
+      player: mockPlayers[leader],
+      data: { team: ['C', 'D'] },
+    });
     expect(service.state.value).toMatchObject({
       game: {
         standard: 'voteTeam',
-      },
-    });
-
-    service.send('VOTE_TEAM');
-    expect(service.state.value).toMatchObject({
-      game: {
-        standard: 'pick',
       },
     });
   });
@@ -217,22 +302,26 @@ describe('RoomMachine [Game]', () => {
       game: { standard: 'pick', special: 'active' },
     });
 
-    service.send('PICK', { player: mockPlayers[leader] });
-
     // Should not transition in standard states
+    service.send('PICK', {
+      player: mockPlayers[leader],
+      data: { team: ['C', 'D'] },
+    });
     expect(service.state.value).toEqual({
       game: { standard: 'pick', special: 'active' },
     });
 
-    service.send('SPECIAL_STATE_LEAVE');
-
     // Leave special state
+    service.send('SPECIAL_STATE_LEAVE');
     expect(service.state.value).toEqual({
       game: { standard: 'pick', special: 'idle' },
     });
 
     // Enter voteTeam state
-    service.send('PICK', { player: mockPlayers[leader] });
+    service.send('PICK', {
+      player: mockPlayers[leader],
+      data: { team: ['C', 'D'] },
+    });
     expect(service.state.value).toEqual({
       game: { standard: 'voteTeam', special: 'idle' },
     });
@@ -255,7 +344,10 @@ describe('RoomMachine [Game]', () => {
     // Leader make a pick
     const { leader } = service.state.context.game;
 
-    service.send('PICK', { player: mockPlayers[leader] });
+    service.send('PICK', {
+      player: mockPlayers[leader],
+      data: { team: ['C', 'D'] },
+    });
 
     // TODO: Fix this later when assassination system is updated
     // Expect to be in assassin state now
@@ -299,15 +391,6 @@ describe('RoomMachine [Game]', () => {
     expect(service.state.value).toEqual({
       game: {
         standard: 'voteTeam',
-        special: 'idle',
-      },
-    });
-
-    // Expect to be able to do standard transition
-    service.send('VOTE_TEAM');
-    expect(service.state.value).toEqual({
-      game: {
-        standard: 'pick',
         special: 'idle',
       },
     });

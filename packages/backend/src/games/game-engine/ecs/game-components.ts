@@ -1,6 +1,7 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable @typescript-eslint/no-empty-interface */
 
+import { VoteTeamOutcome } from '@proavalon/proto/game';
 import { ROLES } from './game-assemblages';
 import { PlayerInfo } from '../room/room-machine';
 
@@ -69,9 +70,8 @@ export class CRole extends Component {
   }
 }
 
-export type VoteTeam = 'approve' | 'reject' | undefined;
 export class CVoteTeam extends Component {
-  vote: VoteTeam;
+  vote: VoteTeamOutcome | undefined;
 
   constructor() {
     super('CVoteTeam');
