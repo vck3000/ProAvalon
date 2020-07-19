@@ -3,135 +3,21 @@
 // import { GameEventVoteTeam } from '@proavalon/proto/game';
 // import { transformAndValidate } from '@proavalon/proto';
 import { send, assign } from 'xstate';
-import {
-  VoteTeam,
-  CVoteTeam,
-  VoteMission,
-  CVoteMission,
-  CAssassin,
-  CPlayer,
-} from './game-components';
+import { CAssassin, CPlayer } from './game-components';
 import { RoomContext, RoomEvents } from '../room/room-machine';
-import { filterByComponent } from '../util';
 import { setGameStateFactory } from '../room/room-machine-actions';
 import { Entity } from './game-entity';
+
+/*
+ * Note: There is no SVoteTeam or SVoteMission as these are coded into
+ * the state machine. Check the machine config, guards and actions.
+ */
 
 export abstract class System {
   priority = 0;
   abstract update(c: RoomContext, e: RoomEvents): any;
   abstract handleEvent(c: RoomContext, e: RoomEvents): any;
 }
-
-export class SVoteTeam implements System {
-  priority = 0;
-
-  update = (c: RoomContext, _: RoomEvents) => {
-    // Get all entities that can vote
-    const entitiesCanVote = filterByComponent(c.entities, CVoteTeam.name);
-
-    // Count votes
-    const votes: VoteTeam[] = [];
-    for (const entity of entitiesCanVote) {
-      // Only push on valid votes
-      if (
-        entity.components.voteTeam &&
-        (entity.components.voteTeam as CVoteTeam).vote
-      ) {
-        votes.push((entity.components.voteTeam as CVoteTeam).vote);
-      }
-    }
-
-    // Check that they all have a vote in
-    if (votes.length !== entitiesCanVote.length) {
-      return;
-    }
-
-    // Get the output of the vote
-    const numApproves = votes.filter((vote) => vote === 'approve').length;
-    const numRejects = votes.filter((vote) => vote === 'reject').length;
-
-    if (numApproves > numRejects) {
-      // TODO: Log this
-    } else {
-      // TODO: Log this
-    }
-
-    // TODO: Reset everyone's votes back to undefined
-  };
-
-  handleEvent = () => undefined;
-}
-
-export class SVoteMission implements System {
-  priority = 0;
-
-  update = (c: RoomContext, _: RoomEvents) => {
-    // Get all entities that can vote
-    const entitiesCanVote = filterByComponent(c.entities, CVoteMission.name);
-
-    // Count votes
-    const votes: VoteMission[] = [];
-    for (const entity of entitiesCanVote) {
-      // Only push on valid votes
-      if (entity.components.voteMission) {
-        votes.push((entity.components.voteMission as CVoteMission).vote);
-      }
-    }
-
-    // Check that they all have a vote in
-    if (votes.length !== entitiesCanVote.length) {
-      return;
-    }
-
-    // Get the output of the vote
-    const numFails = votes.filter((vote) => vote === 'fail').length;
-
-    if (numFails > 0) {
-      // TODO: Log this
-    } else {
-      // TODO: Log this
-    }
-
-    // TODO: Reset everyone's votes back to undefined
-  };
-
-  handleEvent = () => undefined;
-}
-
-// export const EventVoteTeam = async (
-//   game: GameECS,
-//   socket: SocketUser,
-//   dataNotValidated: any,
-// ) => {
-//   const data = await transformAndValidate(
-//     GameEventVoteTeam,
-//     dataNotValidated as GameEventVoteTeam,
-//   );
-//
-//   let entityFound = false;
-//
-//   // locate entity with socketId
-//   for (const entity of game.entities) {
-//     // Entity must be able to vote and have a matching socket id
-//     if (
-//       entity.components.voteTeam &&
-//       entity.components.player &&
-//       (entity.components.player as CPlayer).displayUsername ===
-//         socket.user.displayUsername
-//     ) {
-//       // Apply vote
-//       (entity.components.voteTeam as CVoteTeam).vote = data.vote;
-//
-//       entityFound = true;
-//
-//       break;
-//     }
-//   }
-//
-//   if (!entityFound) {
-//     // TODO: Make this a logger
-//   }
-// };
 
 export class SAssassin implements System {
   priority = 0;
@@ -225,7 +111,5 @@ export class SAssassin implements System {
 }
 
 export const allSystems = {
-  [SVoteTeam.name]: new SVoteTeam(),
-  [SVoteMission.name]: new SVoteMission(),
   [SAssassin.name]: new SAssassin(),
 };
