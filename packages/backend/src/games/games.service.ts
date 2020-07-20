@@ -113,8 +113,6 @@ export class GamesService {
       ),
     );
 
-    this.logger.log(gameStrings);
-
     const lobbyGames: LobbyRoomData[] = [];
     gameStrings.forEach((gameString) => {
       if (gameString) {
@@ -129,5 +127,17 @@ export class GamesService {
         .to('lobby')
         .emit(SocketEvents.UPDATE_LOBBY_GAMES, lobbyGames);
     }
+  }
+
+  async sendRoomDataToUser(socket: SocketUser, id: number) {
+    const gameString = await this.redisClientService.client.get(`game:${id}`);
+
+    if (!gameString) {
+      return;
+    }
+
+    const roomDataToUser = new Game(gameString).getRoomDataToUser();
+
+    socket.emit(SocketEvents.UPDATE_ROOM, roomDataToUser);
   }
 }

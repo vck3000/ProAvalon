@@ -16,7 +16,7 @@ import { CreateRoomDto, JoinGame, LeaveGame } from '@proavalon/proto/room';
 
 import { GamesService } from './games.service';
 import { SocketUser } from '../users/users.socket';
-import RedisAdapterService from '../redis-adapter/redis-adapter.service';
+// import RedisAdapterService from '../redis-adapter/redis-adapter.service';
 import { CommandsService } from '../commands/commands.service';
 
 @WebSocketGateway()
@@ -27,36 +27,35 @@ export class GamesGateway {
 
   constructor(
     private gamesService: GamesService,
-    private redisAdapter: RedisAdapterService,
+    // private redisAdapter: RedisAdapterService,
     private commandsService: CommandsService,
   ) {}
 
-  async getSocketGameId(socket: SocketUser) {
-    const gameRooms = (
-      await this.redisAdapter.clientRooms(socket.id)
-    ).filter((room) => room.includes('game'));
+  getSocketGameId = (socket: SocketUser) => {
+    const gameRooms = Object.keys(socket.rooms).filter((room) =>
+      room.includes('game'),
+    );
 
-    return new Promise((resolve, reject) => {
-      // Get the user's possible game rooms
-      if (gameRooms.length !== 1) {
-        this.logger
-          .warn(`${socket.user.displayUsername} does not have a single joined \
+    // Get the user's possible game rooms
+    if (gameRooms.length !== 1) {
+      this.logger
+        .warn(`${socket.user.displayUsername} does not have a single joined \
             game. They are currently in: ${gameRooms}`);
+      return {
+        room: '-1',
+        gameId: -1,
+      };
+    }
 
-        reject(
-          new Error(
-            `You are joined in ${gameRooms.length} rooms. Something went wrong!`,
-          ),
-        );
-      }
+    // socket.io-redis room name: 'game<id>'
+    const room = gameRooms[0];
+    const gameId = parseInt(room.replace('game:', ''), 10);
 
-      // socket.io-redis room name: 'game<id>'
-      const room = gameRooms[0];
-      const id = parseInt(room.replace('game', ''), 10);
-
-      resolve(id);
-    });
-  }
+    return {
+      room,
+      gameId,
+    };
+  };
 
   @SubscribeMessage(SocketEvents.GAME_CHAT_TO_SERVER)
   async handleGameChat(socket: SocketUser, chatRequest: ChatRequest) {
@@ -67,26 +66,11 @@ export class GamesGateway {
         return undefined;
       }
 
-      // Get the user's possible game rooms
-      const gameRooms = Object.keys(socket.rooms).filter((room) =>
-        room.includes('game'),
-      );
-
-      if (gameRooms.length !== 1) {
-        this.logger
-          .warn(`${socket.user.displayUsername} does not have a single joined \
-        game. They are currently in: ${gameRooms}`);
-
-        return `You are joined in ${gameRooms.length} rooms. Something went wrong!`;
-      }
-
-      // socket.io-redis room name: 'game<id>'
-      const room = gameRooms[0];
-      const id = parseInt(room.replace('game:', ''), 10);
+      const { room, gameId } = this.getSocketGameId(socket);
 
       // Chat message
       this.logger.log(
-        `Game ${id} chat message: ${socket.user.username}: ${chatRequest.text} `,
+        `Game ${gameId} chat message: ${socket.user.username}: ${chatRequest.text} `,
       );
 
       try {
@@ -97,7 +81,7 @@ export class GamesGateway {
           type: ChatResponseType.CHAT,
         });
 
-        this.gamesService.storeChat(id, chatResponse);
+        this.gamesService.storeChat(gameId, chatResponse);
 
         this.server
           .to(room)
@@ -133,13 +117,16 @@ export class GamesGateway {
       // Join the socket io room
       socket.join(`game:${joinGame.id}`);
 
+      // Send the room data to user
+      this.gamesService.sendRoomDataToUser(socket, joinGame.id);
+
       this.logger.log(
         `${socket.user.displayUsername} has joined game ${joinGame.id}.`,
       );
 
       // Send message to users
       try {
-        const chatResponse = await transformAndValidate(ChatResponse, {
+        const joinMessage = await transformAndValidate(ChatResponse, {
           text: `${socket.user.displayUsername} has joined the room.`,
           username: socket.user.displayUsername,
           timestamp: new Date(),
@@ -148,7 +135,7 @@ export class GamesGateway {
 
         this.server
           .to(`game:${joinGame.id}`)
-          .emit(SocketEvents.GAME_CHAT_TO_CLIENT, chatResponse);
+          .emit(SocketEvents.GAME_CHAT_TO_CLIENT, joinMessage);
       } catch (err) {
         this.logger.error('Validation failed. Error: ', err);
       }

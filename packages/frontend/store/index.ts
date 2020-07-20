@@ -12,9 +12,10 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import systemReducer from './system/reducers';
 import { ISystemState } from './system/types';
 import chatReducer, { IChatState } from './chat/reducers';
-import lobby from './lobby/reducer';
+import lobbyReducer from './lobby/reducer';
 import userReducer from './user/reducer';
-import game from './game/reducer';
+import gameReducer from './game/reducer';
+import roomReducer from './room/reducer';
 
 import rootSaga from './sagas';
 
@@ -24,15 +25,17 @@ import rootSaga from './sagas';
 const rootReducer = combineReducers<{
   system: ISystemState;
   chat: IChatState;
-  lobby: ReturnType<typeof lobby>;
+  lobby: ReturnType<typeof lobbyReducer>;
   user: ReturnType<typeof userReducer>;
-  game: ReturnType<typeof game>;
+  game: ReturnType<typeof gameReducer>;
+  room: ReturnType<typeof roomReducer>;
 }>({
   system: systemReducer,
   chat: chatReducer,
-  lobby,
+  lobby: lobbyReducer,
   user: userReducer,
-  game,
+  game: gameReducer,
+  room: roomReducer,
 });
 
 const bindMiddleware = (middleware: Middleware[]): StoreEnhancer => {

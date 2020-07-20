@@ -17,6 +17,7 @@ export const SocketEvents = {
   GAME_CHAT_TO_SERVER: 'GAME_CHAT_TO_SERVER',
 
   UPDATE_LOBBY_GAMES: 'UPDATE_LOBBY_GAMES',
+  UPDATE_ROOM: 'UPDATE_ROOM',
 };
 
 export class ChatRequest {
