@@ -100,6 +100,7 @@ export class GamesService {
 
   // If socket parameter is undefined, send to whole lobby
   async updateLobbyGames(socket?: SocketUser) {
+    this.logger.log('Updating lobby games');
     // Get games and send it out
     const gameIds = await this.redisClientService.client.lrange(
       'games:open',

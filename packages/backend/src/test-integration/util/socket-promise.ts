@@ -21,7 +21,6 @@ export const socketEmit = (
 
     socket.emit(event, data, (ret: any) => {
       if (ret) {
-        socket.removeAllListeners();
         resolve(ret);
       }
     });
@@ -29,13 +28,11 @@ export const socketEmit = (
 
 export const socketOn = (socket: SocketIOClient.Socket, event: string) =>
   new Promise((resolve, reject) => {
-    // Disable previous listeners
-    socket.off(event);
-
     socket.on(event, (ret: any) => {
-      socket.removeAllListeners();
+      socket.off(event);
       resolve(ret);
     });
+
     socket.on('error', (err: any) => {
       reject(err);
     });
@@ -51,7 +48,7 @@ export const socketNotOn = (
   socket.off(event);
 
   socket.on(event, (data: any) => {
-    socket.removeAllListeners();
+    socket.off(event);
     done(`Socket should not have received ${event} event. Err: ${data}`);
   });
 };
