@@ -4,7 +4,6 @@ import { CreateRoomDto, GameMode } from '@proavalon/proto/room';
 import { GamesService } from '../../../games/games.service';
 import { SocketUser } from '../../../users/users.socket';
 import { Command } from '../../commands.types';
-import { emitCommandResponse } from '../../commandResponse';
 
 @Injectable()
 export class CreateRoomService implements Command {
@@ -21,10 +20,6 @@ export class CreateRoomService implements Command {
     };
 
     const data = await transformAndValidate(CreateRoomDto, settings);
-
-    emitCommandResponse(
-      `Created room ${await this.gamesService.createGame(socket, data)}`,
-      socket,
-    );
+    await this.gamesService.createGame(socket, data);
   }
 }

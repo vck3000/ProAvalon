@@ -12,7 +12,7 @@ import {
 } from './game-engine/room/room-machine';
 import { SocketUser } from '../users/users.socket';
 
-const gameLogger = new Logger('Game');
+// const gameLogger = new Logger('Game');
 
 export default class Game {
   private readonly logger: Logger;
@@ -45,9 +45,6 @@ export default class Game {
 
     // Verify the data
     await transformAndValidate(CreateRoomDto, data);
-
-    gameLogger.log('Passed validation');
-    gameLogger.log(id, socket.user.displayUsername);
 
     return newMachine.state;
   }

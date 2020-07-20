@@ -100,7 +100,7 @@ export class GamesGateway {
     const newGameId = await this.gamesService.createGame(socket, data);
 
     const msg = await transformAndValidate(ChatResponse, {
-      text: `${socket.user.displayUsername} has created room ${newGameId}`,
+      text: `${socket.user.displayUsername} has created room ${newGameId}!`,
       username: socket.user.displayUsername,
       timestamp: new Date(),
       type: ChatResponseType.CREATE_GAME,
