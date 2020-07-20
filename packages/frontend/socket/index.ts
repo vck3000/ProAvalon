@@ -12,6 +12,7 @@ import { getBackendUrl } from '../utils/getEnvVars';
 import { SetSocketChatEvents } from './chat';
 import { SetSocketPlayersEvents } from './onlinePlayers';
 import { SetLobbyEvents } from './lobby';
+import { SetRoomEvents } from './room';
 
 class SocketConnection {
   private socket!: SocketIOClient.Socket;
@@ -64,10 +65,11 @@ class SocketConnection {
         this.socket.emit(SocketEvents.USER_RECONNECT, null);
       });
 
-      // TODO These should only be activated in lobby.
+      // TODO These should only be activated in lobby or game room.
       SetSocketPlayersEvents(this.socket);
       SetSocketChatEvents(this.socket);
       SetLobbyEvents(this.socket);
+      SetRoomEvents(this.socket);
 
       this.socket.on('forceDisconnect', () => {
         // Only fire notification if we were in lobby.

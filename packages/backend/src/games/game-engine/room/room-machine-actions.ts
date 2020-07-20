@@ -4,6 +4,25 @@ import { Entity } from '../ecs/game-entity';
 import { CPlayer } from '../ecs/game-components';
 import { indexOfPlayer } from '../util';
 
+export const initialSettings = assign<RoomContext, RoomEvents>((c, e) => {
+  if (e.type === 'INITIAL_SETTINGS') {
+    // Set in the ID and host if ID has not been set yet.
+    // Change in two places: roomDataToUser and lobbyRoomDataToUser.
+    if (c.roomDataToUser.id === -1) {
+      return {
+        ...c,
+        roomDataToUser: { ...c.roomDataToUser, id: e.id, host: e.host },
+        lobbyRoomDataToUser: {
+          ...c.lobbyRoomDataToUser,
+          id: e.id,
+          host: e.host,
+        },
+      };
+    }
+  }
+  return { ...c };
+});
+
 // For use in the state machine
 export const setGameState = assign<RoomContext, RoomEvents>((c, _, meta) => ({
   ...c,

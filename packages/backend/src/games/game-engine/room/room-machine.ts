@@ -8,6 +8,7 @@ import {
 import { RoomData, RoomState, GameMode } from '@proavalon/proto/room';
 import { LobbyRoomData } from '@proavalon/proto/lobby';
 import {
+  initialSettings,
   playerJoin,
   playerLeave,
   playerSitDown,
@@ -80,6 +81,7 @@ export interface RoomStateSchema {
 }
 
 type BaseEvents =
+  | { type: 'INITIAL_SETTINGS'; id: number; host: string }
   | { type: 'PLAYER_JOIN'; player: PlayerInfo }
   | { type: 'PLAYER_LEAVE'; player: PlayerInfo }
   | { type: 'PLAYER_SIT_DOWN'; player: PlayerInfo }
@@ -135,8 +137,13 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
           '/game_room/base-res.png',
           '/game_room/base-res.png',
         ],
-        numSpectators: 1234,
+        numSpectators: 0,
         missionOutcome: [MissionOutcome.fail, MissionOutcome.success],
+      },
+    },
+    on: {
+      INITIAL_SETTINGS: {
+        actions: 'initialSettings',
       },
     },
     states: {
@@ -265,6 +272,7 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
   },
   {
     actions: {
+      initialSettings,
       playerJoin,
       playerLeave,
       playerSitDown,

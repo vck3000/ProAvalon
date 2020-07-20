@@ -38,6 +38,10 @@ export default class Game {
   ): Promise<State<RoomContext, RoomEvents, RoomStateSchema> | null> {
     const newMachine = interpret(RoomMachine).start();
     // TODO Send in the data
+    newMachine.send('INITIAL_SETTINGS', {
+      id,
+      host: socket.user.displayUsername,
+    });
 
     // Verify the data
     await transformAndValidate(CreateRoomDto, data);
