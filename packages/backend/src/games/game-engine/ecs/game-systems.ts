@@ -15,7 +15,9 @@ import { Entity } from './game-entity';
 
 export abstract class System {
   priority = 0;
+  // Return a list of actions to make. Return undefined if not applicable.
   abstract update(c: RoomContext, e: RoomEvents): any;
+  // Return a list of actions to make. Return undefined if not applicable.
   abstract handleEvent(c: RoomContext, e: RoomEvents): any;
 }
 
@@ -45,7 +47,10 @@ export class SAssassin implements System {
 
       if (index !== -1) {
         (entities[index].components.CAssassin as CAssassin).active = true;
-        return [setGameStateFactory('SAssassin'), send('SPECIAL_STATE_ENTER')];
+        return [
+          setGameStateFactory(SAssassin.name),
+          send('SPECIAL_STATE_ENTER'),
+        ];
       }
     }
     return undefined;
@@ -75,7 +80,6 @@ export class SAssassin implements System {
     return -1;
   };
 
-  // Return a list of actions to make. Return undefined if not applicable.
   handleEvent = (c: RoomContext, e: RoomEvents) => {
     if (e.type === 'SPECIAL' && e.specialType === SAssassin.name) {
       const { entities } = c;

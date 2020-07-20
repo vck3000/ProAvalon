@@ -12,7 +12,7 @@ import {
   ChatResponseType,
   ChatRequest,
 } from '@proavalon/proto/lobby';
-import { CreateGameDto, JoinGame, LeaveGame } from '@proavalon/proto/game';
+import { CreateRoomDto, JoinGame, LeaveGame } from '@proavalon/proto/room';
 
 import { GamesService } from './games.service';
 import { SocketUser } from '../users/users.socket';
@@ -110,7 +110,7 @@ export class GamesGateway {
   }
 
   @SubscribeMessage(SocketEvents.CREATE_GAME)
-  async handleCreateGame(socket: SocketUser, data: CreateGameDto) {
+  async handleCreateGame(socket: SocketUser, data: CreateRoomDto) {
     this.logger.log('Received create game request');
 
     const newGameId = await this.gamesService.createGame(socket, data);
