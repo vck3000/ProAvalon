@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable @typescript-eslint/no-empty-interface */
 
-import { VoteTeamOutcome } from '@proavalon/proto/game';
+import { VoteTeamOutcome, GameData, GameState } from '@proavalon/proto/game';
 import { ROLES } from './game-assemblages';
 import { PlayerInfo } from '../room/room-machine';
 
@@ -42,12 +42,22 @@ export class CPlayer extends Component {
   socketId: string;
   displayUsername: string;
   satDown: boolean;
+  gameDataToUser: GameData;
 
   constructor(playerInfo: PlayerInfo) {
     super('CPlayer');
     this.socketId = playerInfo.socketId;
     this.displayUsername = playerInfo.displayUsername;
     this.satDown = false;
+
+    // Some hard coded initial data
+    this.gameDataToUser = {
+      state: GameState.pick,
+      history: {
+        missionOutcome: [],
+        missionHistory: [],
+      },
+    };
   }
 }
 

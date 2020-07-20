@@ -1,20 +1,23 @@
 import React, { ReactElement } from 'react';
-
-export type MissionHistoryType = 'success' | 'fail' | '';
+import { MissionOutcome } from '@proavalon/proto/game';
 
 interface IOwnProps {
-  missionHistory: MissionHistoryType[];
+  missionOutcome?: MissionOutcome[];
 }
 
-const MissionHistory = (props: IOwnProps): ReactElement => {
-  const { missionHistory } = props;
-  while (missionHistory.length < 5) {
-    missionHistory.push('');
+const MissionHistory = ({ missionOutcome }: IOwnProps): ReactElement => {
+  let outcome: string[] = [...(missionOutcome as string[])];
+
+  if (!outcome) {
+    outcome = [];
+  }
+  while (outcome.length < 5) {
+    outcome.push('undefined');
   }
   return (
     <>
       <div className="wrapper">
-        {missionHistory.map((mission, i) => (
+        {outcome.map((mission: string, i: number) => (
           // eslint-disable-next-line react/no-array-index-key
           <div key={i} className={`circle ${mission}`} />
         ))}

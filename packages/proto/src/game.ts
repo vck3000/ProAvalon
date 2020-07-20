@@ -1,74 +1,16 @@
 import {
   IsString,
   IsEnum,
-  IsNumber,
-  IsOptional,
   IsInt,
-  Min,
-  Max,
   ValidateNested,
   IsNotEmptyObject,
 } from 'class-validator';
 import 'reflect-metadata';
 
-export enum GameMode {
-  VANILLA = 'VANILLA',
-  AVALON = 'AVALON',
-}
-export class CreateGameDto {
-  // No need for validators here as it is validated within GameState
-  @IsInt()
-  @Min(0)
-  @Max(10)
-  maxNumPlayers!: number;
-
-  @IsOptional()
-  @IsString()
-  joinPassword!: string | undefined;
-
-  @IsEnum(GameMode)
-  mode!: GameMode;
-}
-
-// Join and leave
-export class JoinGame {
-  @IsNumber()
-  id!: number;
-}
-
-export class LeaveGame {
-  @IsNumber()
-  id!: number;
-}
-
 // Game data
 export enum MissionOutcome {
   success = 'success',
   fail = 'fail',
-}
-
-export class LobbyGame {
-  @IsNumber()
-  id!: number;
-
-  @IsEnum(MissionOutcome, {
-    each: true,
-  })
-  missionHistory!: MissionOutcome[];
-
-  @IsString()
-  host!: string;
-
-  @IsEnum(GameMode)
-  mode!: string;
-
-  @IsInt()
-  spectators!: number;
-
-  @IsString({
-    each: true,
-  })
-  avatarLinks!: string[];
 }
 
 export class Proposal {
@@ -88,52 +30,36 @@ export class Proposal {
 export class MissionHistory {
   @IsInt()
   fails!: number;
-  @ValidateNested() proposals!: Proposal[];
+
+  @ValidateNested()
+  proposals!: Proposal[];
 }
 
-// Game Data
-export enum GameRoomState {
-  WAITING = 'WAITING',
-  IN_PROGRESS = 'IN_PROGRESS',
-  FINISHED = 'FINISHED',
-}
-
-// TODO Update this with the state machine.
-export enum GameState {
-  PICKING = 'PICKING',
-  VOTING_TEAM = 'VOTING_TEAM',
-  VOTING_MISSION = 'VOTING_MISSION',
-}
-
-export class GameData extends CreateGameDto {
-  // Room related state
-  @IsInt()
-  id!: number;
-
-  @IsString()
-  host!: string; // holds a displayUsername
-
-  @IsEnum(GameRoomState)
-  roomState!: GameRoomState;
-
-  @IsString({
+export class GameHistory {
+  @IsEnum(MissionOutcome, {
     each: true,
   })
-  kickedPlayers!: string[]; // holds usernames (lowercased)
-  claimingPlayers!: string[]; // holds usernames (lowercased)
+  missionOutcome!: MissionOutcome[];
 
-  // Game related state
-  playerUsernames!: string[];
+  @IsEnum(MissionHistory, {
+    each: true,
+  })
+  missionHistory!: MissionHistory[];
+}
 
-  roles!: object; // This will hold all the role states
+// TODO Update this with the state machine possible states
+export enum GameState {
+  pick = 'pick',
+  voteTeam = 'voteTeam',
+  voteMission = 'voteMission',
+}
 
+export class GameData {
   @IsEnum(GameState)
   state!: GameState;
 
-  data!: object; // State relevant information
-
   @ValidateNested({ each: true })
-  history!: MissionHistory[];
+  history!: GameHistory;
 }
 
 // Class to wrap game events
@@ -151,7 +77,7 @@ export class GameEvent {
   data!: any;
 }
 
-export class GameEventPick {
+export class PickData {
   @IsString({
     each: true,
   })
@@ -163,12 +89,12 @@ export enum VoteTeamOutcome {
   reject = 'reject',
 }
 
-export class GameEventVoteTeam {
+export class VoteTeamData {
   @IsEnum(VoteTeamOutcome)
   vote!: VoteTeamOutcome;
 }
 
-export class GameEventVoteMission {
+export class VoteMissionData {
   @IsEnum(MissionOutcome)
   vote!: MissionOutcome;
 }

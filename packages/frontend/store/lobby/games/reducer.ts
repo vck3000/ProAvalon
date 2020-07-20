@@ -1,12 +1,12 @@
-import { LobbyGame } from '@proavalon/proto/game';
+import { LobbyRoomData } from '@proavalon/proto/lobby';
 import { SET_LOBBY_GAMES, LobbyGameActionType } from './types';
 
-const initialState: LobbyGame[] = [];
+const initialState: LobbyRoomData[] = [];
 
 const reducer = (
-  state: LobbyGame[] = initialState,
+  state: LobbyRoomData[] = initialState,
   action: LobbyGameActionType,
-): LobbyGame[] => {
+): LobbyRoomData[] => {
   switch (action.type) {
     case SET_LOBBY_GAMES:
       return [...action.payload];

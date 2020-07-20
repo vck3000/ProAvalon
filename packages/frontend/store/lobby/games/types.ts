@@ -1,10 +1,10 @@
-import { LobbyGame } from '@proavalon/proto/game';
+import { LobbyRoomData } from '@proavalon/proto/lobby';
 
 export const SET_LOBBY_GAMES = 'SET_LOBBY_GAMES';
 
 export interface ISetLobbyGamesAction {
   type: typeof SET_LOBBY_GAMES;
-  payload: LobbyGame[];
+  payload: LobbyRoomData[];
 }
 
 export type LobbyGameActionType = ISetLobbyGamesAction;

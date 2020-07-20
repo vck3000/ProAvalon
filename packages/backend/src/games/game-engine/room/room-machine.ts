@@ -1,5 +1,12 @@
 import { Machine } from 'xstate';
-import { GameEventPick, GameEventVoteTeam } from '@proavalon/proto/game';
+import {
+  PickData,
+  VoteTeamData,
+  GameState,
+  MissionOutcome,
+} from '@proavalon/proto/game';
+import { RoomData, RoomState, GameMode } from '@proavalon/proto/room';
+import { LobbyRoomData } from '@proavalon/proto/lobby';
 import {
   playerJoin,
   playerLeave,
@@ -44,18 +51,20 @@ export interface RoomContext {
   systems: string[];
   game: GameData;
   gameState: string;
+  roomDataToUser: RoomData;
+  lobbyRoomDataToUser: LobbyRoomData;
 }
 
 export interface RoomStateSchema {
   states: {
-    waiting: {};
+    [RoomState.waiting]: {};
     game: {
       states: {
         standard: {
           states: {
-            pick: {};
-            voteTeam: {};
-            voteMission: {};
+            [GameState.pick]: {};
+            [GameState.voteTeam]: {};
+            [GameState.voteMission]: {};
           };
         };
         special: {
@@ -79,8 +88,8 @@ type BaseEvents =
   | { type: 'GAME_END' };
 
 type GameEvents =
-  | { type: 'PICK'; player: PlayerInfo; data: GameEventPick }
-  | { type: 'VOTE_TEAM'; player: PlayerInfo; data: GameEventVoteTeam }
+  | { type: 'PICK'; player: PlayerInfo; data: PickData }
+  | { type: 'VOTE_TEAM'; player: PlayerInfo; data: VoteTeamData }
   | { type: 'VOTE_TEAM_APPROVED' }
   | { type: 'VOTE_TEAM_REJECTED' }
   | { type: 'VOTE_TEAM_HAMMER_REJECTED' }
@@ -97,13 +106,38 @@ export type RoomEvents = BaseEvents | GameEvents | EntityEvents;
 export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
   {
     id: 'room',
-    initial: 'waiting',
+    initial: RoomState.waiting,
     context: {
       entities: [],
       entityCount: 0,
       systems: [],
       game: { leader: 0, team: [] },
       gameState: 'waiting',
+      roomDataToUser: {
+        id: -1,
+        state: RoomState.waiting,
+        roles: ['merlin', 'assassin'],
+        host: 'undefined',
+        mode: GameMode.AVALON,
+        kickedPlayers: [],
+        playerEntities: [],
+      },
+      lobbyRoomDataToUser: {
+        mode: GameMode.AVALON,
+        id: -1,
+        host: 'undefined',
+        avatarLinks: [
+          'http://cdn.discordapp.com/attachments/430166478193688597/481009331622510602/pronub-res.png',
+          'http://cdn.discordapp.com/attachments/430166478193688597/481009331622510602/pronub-res.png',
+          '/game_room/base-res.png',
+          '/game_room/base-res.png',
+          '/game_room/base-res.png',
+          '/game_room/base-res.png',
+          '/game_room/base-res.png',
+        ],
+        numSpectators: 1234,
+        missionOutcome: [MissionOutcome.fail, MissionOutcome.success],
+      },
     },
     states: {
       waiting: {
@@ -132,7 +166,7 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
         type: 'parallel',
         states: {
           standard: {
-            initial: 'pick',
+            initial: GameState.pick,
             id: 'standard',
             states: {
               pick: {

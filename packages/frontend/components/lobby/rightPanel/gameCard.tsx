@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import Link from 'next/link';
-import { LobbyGame } from '@proavalon/proto/game';
+import { LobbyRoomData } from '@proavalon/proto/lobby';
 
 import MissionHistory from './missionHistory';
 
@@ -8,32 +8,32 @@ import MissionHistory from './missionHistory';
 // type Status = 'waiting' | 'in progress' | 'finished';
 
 interface IOwnProps {
-  game: LobbyGame;
+  lobbyRoom: LobbyRoomData;
 }
 
-const GameCard = ({ game }: IOwnProps): ReactElement => {
+const GameCard = ({ lobbyRoom }: IOwnProps): ReactElement => {
   return (
-    <Link href="/game/[id]" as={`/game/${game.id}`}>
+    <Link href="/game/[id]" as={`/game/${lobbyRoom.id}`}>
       <div className="game_card">
         <div className="top_half">
-          <strong className="room">ROOM #{game.id}</strong>
-          <MissionHistory missionHistory={game.missionHistory} />
+          <strong className="room">ROOM #{lobbyRoom.id}</strong>
+          <MissionHistory missionOutcome={lobbyRoom.missionOutcome} />
           <p>
             <strong>HOST: </strong>
-            {game.host}
+            {lobbyRoom.host}
           </p>
           <p>
             <strong>MODE: </strong>
-            {game.mode}
+            {lobbyRoom.mode}
           </p>
           <p>
             <strong>SPECTATORS: </strong>
-            {game.spectators}
+            {lobbyRoom.numSpectators}
           </p>
         </div>
         <div className="avatars">
           {/* for keys, probably want player names added to game data */}
-          {game.avatarLinks.map((link) => (
+          {lobbyRoom.avatarLinks.map((link) => (
             <img src={link} alt="avatar" className="avatar" />
           ))}
         </div>

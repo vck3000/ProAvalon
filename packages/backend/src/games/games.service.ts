@@ -1,8 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
-import { transformAndValidate } from '@proavalon/proto';
-import { ChatResponse, SocketEvents } from '@proavalon/proto/lobby';
-import { CreateGameDto, LobbyGame } from '@proavalon/proto/game';
+import {
+  ChatResponse,
+  SocketEvents,
+  LobbyRoomData,
+} from '@proavalon/proto/lobby';
+import { CreateRoomDto } from '@proavalon/proto/room';
 import RedisAdapterService from '../redis-adapter/redis-adapter.service';
 import RedisClientService from '../redis-client/redis-client.service';
 import Game from './game';
@@ -17,7 +20,7 @@ export class GamesService {
     private readonly redisAdapterService: RedisAdapterService,
   ) {}
 
-  async createGame(socket: SocketUser, data: CreateGameDto): Promise<number> {
+  async createGame(socket: SocketUser, data: CreateRoomDto): Promise<number> {
     // Create the game number and open in Redis
     let nextGameNum = -1;
     await this.redisClientService.lockDo(
@@ -95,7 +98,7 @@ export class GamesService {
     // }
   }
 
-  // If socket is undefined, it means to send to whole lobby
+  // If socket parameter is undefined, send to whole lobby
   async updateLobbyGames(socket?: SocketUser) {
     // Get games and send it out
     const gameIds = await this.redisClientService.client.lrange(
@@ -112,24 +115,19 @@ export class GamesService {
 
     this.logger.log(gameStrings);
 
-    const lobbyGames: LobbyGame[] = [];
+    const lobbyGames: LobbyRoomData[] = [];
     gameStrings.forEach((gameString) => {
       if (gameString) {
-        lobbyGames.push(new Game(gameString).getLobbyData());
+        lobbyGames.push(new Game(gameString).getLobbyRoomDataToUser());
       }
     });
 
-    const lobbyGamesValidated = await transformAndValidate(
-      LobbyGame,
-      lobbyGames,
-    );
-
     if (socket) {
-      socket.emit(SocketEvents.UPDATE_LOBBY_GAMES, lobbyGamesValidated);
+      socket.emit(SocketEvents.UPDATE_LOBBY_GAMES, lobbyGames);
     } else {
       this.redisAdapterService.server
         .to('lobby')
-        .emit(SocketEvents.UPDATE_LOBBY_GAMES, lobbyGamesValidated);
+        .emit(SocketEvents.UPDATE_LOBBY_GAMES, lobbyGames);
     }
   }
 }

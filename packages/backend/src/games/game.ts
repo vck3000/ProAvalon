@@ -1,16 +1,15 @@
 import { Logger } from '@nestjs/common';
+import { interpret, Interpreter, State } from 'xstate';
+import { transformAndValidate } from '@proavalon/proto';
+import { CreateRoomDto, RoomData } from '@proavalon/proto/room';
+import { MissionOutcome } from '@proavalon/proto/game';
+import { LobbyRoomData } from '@proavalon/proto/lobby';
 import {
-  transformAndValidate,
-  transformAndValidateSync,
-} from '@proavalon/proto';
-import {
-  CreateGameDto,
-  LobbyGame,
-  MissionOutcome,
-  GameData,
-  GameState,
-  GameRoomState,
-} from '@proavalon/proto/game';
+  RoomContext,
+  RoomStateSchema,
+  RoomEvents,
+  RoomMachine,
+} from './game-engine/room/room-machine';
 import { SocketUser } from '../users/users.socket';
 
 const gameLogger = new Logger('Game');
@@ -18,40 +17,35 @@ const gameLogger = new Logger('Game');
 export default class Game {
   private readonly logger: Logger;
 
-  private data: GameData;
+  private machine: Interpreter<RoomContext, RoomStateSchema, RoomEvents, any>;
 
   constructor(gameString: string) {
     this.logger = new Logger(Game.name);
-    this.data = transformAndValidateSync(
-      GameData,
-      JSON.parse(gameString) as GameData,
+
+    // Restore the machine
+    const previousState = State.create<RoomContext, RoomEvents>(
+      JSON.parse(gameString),
     );
+    const resolvedState = RoomMachine.resolveState(previousState);
+    this.machine = interpret(RoomMachine).start(resolvedState);
   }
 
   // ----------- Static methods -------------
   static async createNewGameState(
     socket: SocketUser,
-    data: CreateGameDto,
+    data: CreateRoomDto,
     id: number,
-  ): Promise<GameData | null> {
-    const settingsJSON: GameData = {
-      ...data,
-      id,
-      host: socket.user.displayUsername,
-      roomState: GameRoomState.WAITING,
-      kickedPlayers: [],
-      claimingPlayers: [],
-      playerUsernames: [],
-      roles: {},
-      state: GameState.PICKING,
-      data: {},
-      history: [],
-    };
+  ): Promise<State<RoomContext, RoomEvents, RoomStateSchema> | null> {
+    const newMachine = interpret(RoomMachine).start();
+    // TODO Send in the data
 
-    const settings = await transformAndValidate(GameData, settingsJSON);
+    // Verify the data
+    await transformAndValidate(CreateRoomDto, data);
+
     gameLogger.log('Passed validation');
-    gameLogger.log(settings);
-    return settings;
+    gameLogger.log(id, socket.user.displayUsername);
+
+    return newMachine.state;
   }
 
   // ----------- Instance methods -------------
@@ -60,28 +54,16 @@ export default class Game {
     // Fetch from redis database
   }
 
+  // TODO
   getMissionHistory(): MissionOutcome[] {
     return [MissionOutcome.success, MissionOutcome.fail];
   }
 
-  getLobbyData(): LobbyGame {
-    const lobbyGame: LobbyGame = {
-      id: this.data.id,
-      host: this.data.host,
-      mode: this.data.mode,
-      missionHistory: this.getMissionHistory(),
-      spectators: 8,
-      avatarLinks: [
-        'https://cdn.discordapp.com/attachments/430166478193688597/481009331622510602/pronub-res.png',
-        '/game_room/base-res.png',
-        '/game_room/base-res.png',
-        '/game_room/base-res.png',
-        '/game_room/base-res.png',
-        '/game_room/base-res.png',
-        '/game_room/base-res.png',
-      ],
-    };
+  getRoomDataToUser(): RoomData {
+    return this.machine.state.context.roomDataToUser;
+  }
 
-    return lobbyGame;
+  getLobbyRoomDataToUser(): LobbyRoomData {
+    return this.machine.state.context.lobbyRoomDataToUser;
   }
 }

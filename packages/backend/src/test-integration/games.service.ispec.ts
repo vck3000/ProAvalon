@@ -26,7 +26,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import Redis from 'ioredis';
 import { transformAndValidateSync } from '@proavalon/proto';
 import { SocketEvents } from '@proavalon/proto/lobby';
-import { CreateGameDto, GameMode } from '@proavalon/proto/game';
+import { CreateRoomDto, GameMode } from '@proavalon/proto/room';
 // import * as util from 'util';
 
 import { AuthController } from '../auth/auth.controller';
@@ -191,13 +191,13 @@ describe('GamesSocket', () => {
     await socketOn(socket2, SocketEvents.AUTHORIZED);
 
     // Create some games concurrently and make sure it is successful.
-    const settings: CreateGameDto = {
+    const settings: CreateRoomDto = {
       mode: GameMode.AVALON,
       joinPassword: undefined,
       maxNumPlayers: 10,
     };
 
-    const data = transformAndValidateSync(CreateGameDto, settings);
+    const data = transformAndValidateSync(CreateRoomDto, settings);
 
     const result1 = socketEmit(socket1, SocketEvents.CREATE_GAME, data);
     const result2 = socketEmit(socket2, SocketEvents.CREATE_GAME, data);
@@ -233,13 +233,13 @@ describe('GamesSocket', () => {
     sockets.forEach((socket) => socket.on('error', done));
 
     // Create a game
-    const settings: CreateGameDto = {
+    const settings: CreateRoomDto = {
       mode: GameMode.AVALON,
       joinPassword: undefined,
       maxNumPlayers: 10,
     };
 
-    const data = transformAndValidateSync(CreateGameDto, settings);
+    const data = transformAndValidateSync(CreateRoomDto, settings);
 
     const gameId = await socketEmit(sockets[0], SocketEvents.CREATE_GAME, data);
 

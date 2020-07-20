@@ -1,6 +1,7 @@
-import { IsDefined, IsString, IsDate, IsEnum } from 'class-validator';
+import { IsDefined, IsString, IsDate, IsEnum, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 import 'reflect-metadata';
+import { MissionOutcome } from './game';
 
 export const SocketEvents = {
   AUTHORIZED: 'AUTHORIZED',
@@ -66,4 +67,28 @@ export class OnlinePlayer {
   @IsDefined()
   @IsEnum(OnlinePlayerRewards, { each: true })
   rewards!: OnlinePlayerRewards[];
+}
+
+export class LobbyRoomData {
+  @IsNumber()
+  id!: number;
+
+  @IsString()
+  host!: string;
+
+  @IsString()
+  mode!: string;
+
+  @IsNumber()
+  numSpectators!: number;
+
+  @IsString({
+    each: true,
+  })
+  avatarLinks!: string[];
+
+  @IsEnum(MissionOutcome, {
+    each: true,
+  })
+  missionOutcome!: MissionOutcome[];
 }
