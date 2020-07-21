@@ -13,6 +13,17 @@ export enum GameMode {
   AVALON = 'AVALON',
 }
 
+export const RoomSocketEvents = {
+  CREATE_ROOM: 'CREATE_ROOM',
+  JOIN_ROOM: 'JOIN_ROOM',
+  LEAVE_ROOM: 'LEAVE_ROOM',
+
+  ROOM_CHAT_TO_CLIENT: 'ROOM_CHAT_TO_CLIENT',
+  ROOM_CHAT_TO_SERVER: 'ROOM_CHAT_TO_SERVER',
+
+  UPDATE_ROOM: 'UPDATE_ROOM',
+};
+
 // Game Data
 export enum RoomState {
   waiting = 'waiting',
@@ -71,23 +82,7 @@ export class CreateRoomDto {
   mode!: GameMode;
 }
 
-export class JoinGame {
-  @IsNumber()
-  id!: number;
-}
-
-// Do we need id here?
-export class LeaveGame {
-  @IsNumber()
-  id!: number;
-}
-
-export class SitDown {
-  @IsNumber()
-  id!: number;
-}
-
-export class StandUp {
+export class GameIdDto {
   @IsNumber()
   id!: number;
 }

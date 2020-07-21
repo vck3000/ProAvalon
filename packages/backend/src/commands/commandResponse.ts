@@ -1,7 +1,7 @@
 import {
   ChatResponse,
   ChatResponseType,
-  SocketEvents,
+  LobbySocketEvents,
 } from '@proavalon/proto/lobby';
 import { SocketUser } from '../users/users.socket';
 
@@ -17,7 +17,7 @@ export const generateCommandResponse = (
 
 export const emitCommandResponse = (text: string, socket: SocketUser) => {
   socket.emit(
-    SocketEvents.ALL_CHAT_TO_CLIENT,
+    LobbySocketEvents.ALL_CHAT_TO_CLIENT,
     generateCommandResponse(text, socket.user.displayUsername),
   );
 };

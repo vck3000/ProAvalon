@@ -12,7 +12,7 @@ import request from 'supertest';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import {
-  SocketEvents,
+  LobbySocketEvents,
   ChatRequest,
   ChatResponse,
 } from '@proavalon/proto/lobby';
@@ -171,16 +171,16 @@ describe('Auth', () => {
     sockets.forEach((socket) => socket.on('error', done));
 
     await Promise.all(allSocketsHandle(sockets, 'connect'));
-    await Promise.all(allSocketsHandle(sockets, SocketEvents.AUTHORIZED));
+    await Promise.all(allSocketsHandle(sockets, LobbySocketEvents.AUTHORIZED));
 
     const msg: ChatRequest = {
       text: 'hello message',
     };
 
-    sockets[0].emit(SocketEvents.ALL_CHAT_TO_SERVER, msg);
+    sockets[0].emit(LobbySocketEvents.ALL_CHAT_TO_SERVER, msg);
 
     const messages = (await Promise.all(
-      allSocketsHandle(sockets, SocketEvents.ALL_CHAT_TO_CLIENT),
+      allSocketsHandle(sockets, LobbySocketEvents.ALL_CHAT_TO_CLIENT),
     )) as ChatResponse[];
 
     messages.forEach((message) => {

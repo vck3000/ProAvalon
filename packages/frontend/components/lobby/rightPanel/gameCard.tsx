@@ -33,8 +33,9 @@ const GameCard = ({ lobbyRoom }: IOwnProps): ReactElement => {
         </div>
         <div className="avatars">
           {/* for keys, probably want player names added to game data */}
-          {lobbyRoom.avatarLinks.map((link) => (
-            <img src={link} alt="avatar" className="avatar" />
+          {lobbyRoom.avatarLinks.map((link, i) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <img key={i} src={link} alt="avatar" className="avatar" />
           ))}
         </div>
         <style jsx>

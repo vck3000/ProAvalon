@@ -3,7 +3,7 @@ import Router from 'next/router';
 import io from 'socket.io-client';
 import Cookie from 'js-cookie';
 import Swal from 'sweetalert2';
-import { SocketEvents } from '@proavalon/proto/lobby';
+import { LobbySocketEvents } from '@proavalon/proto/lobby';
 
 import { store } from '../store/index';
 import { logout } from '../store/user/actions';
@@ -60,9 +60,9 @@ class SocketConnection {
         };
       });
 
-      this.socket.on(SocketEvents.AUTHORIZED, () => {
+      this.socket.on(LobbySocketEvents.AUTHORIZED, () => {
         // Request for stuff here.
-        this.socket.emit(SocketEvents.USER_RECONNECT, null);
+        this.socket.emit(LobbySocketEvents.USER_RECONNECT, null);
       });
 
       // TODO These should only be activated in lobby or game room.

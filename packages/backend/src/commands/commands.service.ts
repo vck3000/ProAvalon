@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
-  SocketEvents,
+  LobbySocketEvents,
   ChatResponseType,
   ChatResponse,
 } from '@proavalon/proto/lobby';
@@ -56,7 +56,7 @@ export class CommandsService {
         username: socket.user.username,
       };
 
-      socket.emit(SocketEvents.ALL_CHAT_TO_CLIENT, res);
+      socket.emit(LobbySocketEvents.ALL_CHAT_TO_CLIENT, res);
     }
   }
 }

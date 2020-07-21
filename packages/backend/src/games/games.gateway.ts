@@ -7,12 +7,16 @@ import { Logger } from '@nestjs/common';
 import { Server } from 'socket.io';
 import { transformAndValidate } from '@proavalon/proto';
 import {
-  SocketEvents,
+  LobbySocketEvents,
   ChatResponse,
   ChatResponseType,
   ChatRequest,
 } from '@proavalon/proto/lobby';
-import { CreateRoomDto, JoinGame, LeaveGame } from '@proavalon/proto/room';
+import {
+  CreateRoomDto,
+  RoomSocketEvents,
+  GameIdDto,
+} from '@proavalon/proto/room';
 
 import { GamesService } from './games.service';
 import { SocketUser } from '../users/users.socket';
@@ -57,7 +61,7 @@ export class GamesGateway {
     };
   };
 
-  @SubscribeMessage(SocketEvents.GAME_CHAT_TO_SERVER)
+  @SubscribeMessage(RoomSocketEvents.ROOM_CHAT_TO_SERVER)
   async handleGameChat(socket: SocketUser, chatRequest: ChatRequest) {
     if (chatRequest.text) {
       // Commands
@@ -85,7 +89,7 @@ export class GamesGateway {
 
         this.server
           .to(room)
-          .emit(SocketEvents.GAME_CHAT_TO_CLIENT, chatResponse);
+          .emit(RoomSocketEvents.ROOM_CHAT_TO_CLIENT, chatResponse);
       } catch (err) {
         this.logger.error('Validation failed. Error: ', err);
       }
@@ -93,7 +97,7 @@ export class GamesGateway {
     return undefined;
   }
 
-  @SubscribeMessage(SocketEvents.CREATE_GAME)
+  @SubscribeMessage(RoomSocketEvents.CREATE_ROOM)
   async handleCreateGame(socket: SocketUser, data: CreateRoomDto) {
     this.logger.log('Received create game request');
 
@@ -106,13 +110,13 @@ export class GamesGateway {
       type: ChatResponseType.CREATE_GAME,
     });
 
-    this.server.to('lobby').emit(SocketEvents.ALL_CHAT_TO_CLIENT, msg);
+    this.server.to('lobby').emit(LobbySocketEvents.ALL_CHAT_TO_CLIENT, msg);
 
     return newGameId;
   }
 
-  @SubscribeMessage(SocketEvents.JOIN_GAME)
-  async handleJoinGame(socket: SocketUser, joinGame: JoinGame) {
+  @SubscribeMessage(RoomSocketEvents.JOIN_ROOM)
+  async handleJoinGame(socket: SocketUser, joinGame: GameIdDto) {
     if (joinGame.id && (await this.gamesService.hasGame(joinGame.id))) {
       // Join the socket io room
       socket.join(`game:${joinGame.id}`);
@@ -135,7 +139,7 @@ export class GamesGateway {
 
         this.server
           .to(`game:${joinGame.id}`)
-          .emit(SocketEvents.GAME_CHAT_TO_CLIENT, joinMessage);
+          .emit(RoomSocketEvents.ROOM_CHAT_TO_CLIENT, joinMessage);
       } catch (err) {
         this.logger.error('Validation failed. Error: ', err);
       }
@@ -144,8 +148,8 @@ export class GamesGateway {
     return `Game ${joinGame.id} not found.`;
   }
 
-  @SubscribeMessage(SocketEvents.LEAVE_GAME)
-  async handleLeaveGame(socket: SocketUser, leaveGame: LeaveGame) {
+  @SubscribeMessage(RoomSocketEvents.LEAVE_ROOM)
+  async handleLeaveGame(socket: SocketUser, leaveGame: GameIdDto) {
     if (leaveGame.id && (await this.gamesService.hasGame(leaveGame.id))) {
       // Leave the socket io room
       socket.leave(`game:${leaveGame.id}`);
@@ -167,7 +171,7 @@ export class GamesGateway {
 
         this.server
           .to(`game:${leaveGame.id}`)
-          .emit(SocketEvents.GAME_CHAT_TO_CLIENT, chatResponse);
+          .emit(RoomSocketEvents.ROOM_CHAT_TO_CLIENT, chatResponse);
 
         // TODO Remove room if no one is left and game has not started.
       } catch (err) {

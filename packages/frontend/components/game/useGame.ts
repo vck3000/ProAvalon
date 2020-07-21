@@ -1,7 +1,7 @@
 import Swal from 'sweetalert2';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { SocketEvents } from '@proavalon/proto/lobby';
+import { RoomSocketEvents } from '@proavalon/proto/room';
 import socket from '../../socket';
 import useAuth from '../../effects/useAuth';
 
@@ -16,7 +16,7 @@ const useGame = (gameID?: string | string[]): void => {
     }
 
     if (user) {
-      socket.emit(SocketEvents.JOIN_GAME, { id: gameID }, (msg: string) => {
+      socket.emit(RoomSocketEvents.JOIN_ROOM, { id: gameID }, (msg: string) => {
         if (msg !== 'OK') {
           Swal.fire({
             heightAuto: false,
@@ -29,7 +29,7 @@ const useGame = (gameID?: string | string[]): void => {
     }
 
     return (): void => {
-      socket.emit(SocketEvents.LEAVE_GAME, { id: gameID });
+      socket.emit(RoomSocketEvents.LEAVE_ROOM, { id: gameID });
     };
   }, [gameID, user, router]);
 };

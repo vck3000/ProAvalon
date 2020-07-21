@@ -3,21 +3,14 @@ import { Type } from 'class-transformer';
 import 'reflect-metadata';
 import { MissionOutcome } from './game';
 
-export const SocketEvents = {
+export const LobbySocketEvents = {
   AUTHORIZED: 'AUTHORIZED',
   ALL_CHAT_TO_CLIENT: 'ALL_CHAT_TO_CLIENT',
   ALL_CHAT_TO_SERVER: 'ALL_CHAT_TO_SERVER',
   ONLINE_PLAYERS: 'ONLINE_PLAYERS',
   USER_RECONNECT: 'USER_RECONNECT',
 
-  CREATE_GAME: 'CREATE_GAME',
-  JOIN_GAME: 'JOIN_GAME',
-  LEAVE_GAME: 'LEAVE_GAME',
-  GAME_CHAT_TO_CLIENT: 'GAME_CHAT_TO_CLIENT',
-  GAME_CHAT_TO_SERVER: 'GAME_CHAT_TO_SERVER',
-
-  UPDATE_LOBBY_GAMES: 'UPDATE_LOBBY_GAMES',
-  UPDATE_ROOM: 'UPDATE_ROOM',
+  UPDATE_LOBBY_ROOMS: 'UPDATE_LOBBY_ROOMS',
 };
 
 export class ChatRequest {

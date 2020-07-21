@@ -9,7 +9,7 @@ import { Server } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { transformAndValidate } from '@proavalon/proto';
 import {
-  SocketEvents,
+  LobbySocketEvents,
   ChatResponse,
   ChatResponseType,
 } from '@proavalon/proto/lobby';
@@ -114,7 +114,7 @@ export class AuthGateway implements OnGatewayConnection {
 
     // Let client know that we have finished our checks and that
     // they can now request data if they need.
-    socket.emit(SocketEvents.AUTHORIZED, null);
+    socket.emit(LobbySocketEvents.AUTHORIZED, null);
 
     // ----------------------------------------------------------
 
@@ -127,7 +127,9 @@ export class AuthGateway implements OnGatewayConnection {
       });
 
       this.allChatService.storeMessage(chatResponse);
-      socket.to('lobby').emit(SocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
+      socket
+        .to('lobby')
+        .emit(LobbySocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
     } catch (err) {
       this.logger.error('Validation failed. Error: ', err);
     }
@@ -161,13 +163,15 @@ export class AuthGateway implements OnGatewayConnection {
 
       this.allChatService.storeMessage(chatResponse);
 
-      socket.to('lobby').emit(SocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
+      socket
+        .to('lobby')
+        .emit(LobbySocketEvents.ALL_CHAT_TO_CLIENT, chatResponse);
     } catch (err) {
       this.logger.error('Validation failed. Error: ', err);
     }
   }
 
-  @SubscribeMessage(SocketEvents.USER_RECONNECT)
+  @SubscribeMessage(LobbySocketEvents.USER_RECONNECT)
   async userReconnect(socket: SocketUser) {
     this.logger.log(`${socket.user.username} has reconnected`);
     // Set a new record of their connection.

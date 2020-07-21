@@ -4,8 +4,9 @@ import { call, put, takeLatest, fork } from 'redux-saga/effects';
 import {
   ChatResponse,
   ChatRequest,
-  SocketEvents,
+  LobbySocketEvents,
 } from '@proavalon/proto/lobby';
+import { RoomSocketEvents } from '@proavalon/proto/room';
 
 import socket from '../../socket';
 
@@ -34,8 +35,8 @@ function* emitMessage({
 
   const event =
     type === 'lobby'
-      ? SocketEvents.ALL_CHAT_TO_SERVER
-      : SocketEvents.GAME_CHAT_TO_SERVER;
+      ? LobbySocketEvents.ALL_CHAT_TO_SERVER
+      : RoomSocketEvents.ROOM_CHAT_TO_SERVER;
 
   yield call(socket.emit, event, msg);
 }

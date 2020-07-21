@@ -3,9 +3,9 @@ import { Server } from 'socket.io';
 import * as redisIoAdapter from 'socket.io-redis';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import {
-  SocketEvents,
   ChatResponseType,
   ChatResponse,
+  LobbySocketEvents,
 } from '@proavalon/proto/lobby';
 import { OnlineSocketsService } from '../auth/online-sockets/online-sockets.service';
 
@@ -44,7 +44,7 @@ class RedisAdapterService {
     };
 
     if (socketId) {
-      this.server.to(socketId).emit(SocketEvents.ALL_CHAT_TO_CLIENT, res);
+      this.server.to(socketId).emit(LobbySocketEvents.ALL_CHAT_TO_CLIENT, res);
       return true;
     }
     return false;

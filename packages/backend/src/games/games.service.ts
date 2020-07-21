@@ -2,10 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import {
   ChatResponse,
-  SocketEvents,
   LobbyRoomData,
+  LobbySocketEvents,
 } from '@proavalon/proto/lobby';
-import { CreateRoomDto } from '@proavalon/proto/room';
+import { CreateRoomDto, RoomSocketEvents } from '@proavalon/proto/room';
 import RedisAdapterService from '../redis-adapter/redis-adapter.service';
 import RedisClientService from '../redis-client/redis-client.service';
 import Game from './game';
@@ -127,11 +127,11 @@ export class GamesService {
     });
 
     if (socket) {
-      socket.emit(SocketEvents.UPDATE_LOBBY_GAMES, lobbyGames);
+      socket.emit(LobbySocketEvents.UPDATE_LOBBY_ROOMS, lobbyGames);
     } else {
       this.redisAdapterService.server
         .to('lobby')
-        .emit(SocketEvents.UPDATE_LOBBY_GAMES, lobbyGames);
+        .emit(LobbySocketEvents.UPDATE_LOBBY_ROOMS, lobbyGames);
     }
   }
 
@@ -144,6 +144,6 @@ export class GamesService {
 
     const roomDataToUser = new Game(gameString).getRoomDataToUser();
 
-    socket.emit(SocketEvents.UPDATE_ROOM, roomDataToUser);
+    socket.emit(RoomSocketEvents.UPDATE_ROOM, roomDataToUser);
   }
 }

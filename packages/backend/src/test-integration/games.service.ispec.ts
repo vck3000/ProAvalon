@@ -26,7 +26,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import Redis from 'ioredis';
 import { transformAndValidateSync } from '@proavalon/proto';
 import {
-  SocketEvents,
+  LobbySocketEvents,
   LobbyRoomData,
   ChatResponse,
 } from '@proavalon/proto/lobby';
@@ -35,6 +35,7 @@ import {
   GameMode,
   RoomData,
   RoomState,
+  RoomSocketEvents,
 } from '@proavalon/proto/room';
 // import * as util from 'util';
 
@@ -199,7 +200,7 @@ describe('GamesSocket', () => {
     sockets.forEach((socket) => socket.on('error', done));
 
     await Promise.all(socketOnAll(sockets, 'connect'));
-    await Promise.all(socketOnAll(sockets, SocketEvents.AUTHORIZED));
+    await Promise.all(socketOnAll(sockets, LobbySocketEvents.AUTHORIZED));
 
     // Create some games concurrently and make sure it is successful.
     const settings: CreateRoomDto = {
@@ -210,8 +211,8 @@ describe('GamesSocket', () => {
 
     const data = transformAndValidateSync(CreateRoomDto, settings);
 
-    const result1 = socketEmit(sockets[0], SocketEvents.CREATE_GAME, data);
-    const result2 = socketEmit(sockets[0], SocketEvents.CREATE_GAME, data);
+    const result1 = socketEmit(sockets[0], RoomSocketEvents.CREATE_ROOM, data);
+    const result2 = socketEmit(sockets[0], RoomSocketEvents.CREATE_ROOM, data);
 
     // Should return the game id of the room, which is either 1 or 2
     // but not both the same.
@@ -236,7 +237,7 @@ describe('GamesSocket', () => {
     sockets.forEach((socket) => socket.on('error', done));
 
     await Promise.all(socketOnAll(sockets, 'connect'));
-    await Promise.all(socketOnAll(sockets, SocketEvents.AUTHORIZED));
+    await Promise.all(socketOnAll(sockets, LobbySocketEvents.AUTHORIZED));
 
     // Create a game
     const settings: CreateRoomDto = {
@@ -247,21 +248,25 @@ describe('GamesSocket', () => {
 
     const data = transformAndValidateSync(CreateRoomDto, settings);
 
-    const gameId = await socketEmit(sockets[0], SocketEvents.CREATE_GAME, data);
+    const gameId = await socketEmit(
+      sockets[0],
+      RoomSocketEvents.CREATE_ROOM,
+      data,
+    );
 
     // Join the game
     expect(
-      await socketEmit(sockets[0], SocketEvents.JOIN_GAME, {
+      await socketEmit(sockets[0], RoomSocketEvents.JOIN_ROOM, {
         id: gameId,
       }),
     ).toEqual('OK');
 
     // Expect a join message from the other user
-    const joinMsg = socketOn(sockets[0], SocketEvents.GAME_CHAT_TO_CLIENT);
+    const joinMsg = socketOn(sockets[0], RoomSocketEvents.ROOM_CHAT_TO_CLIENT);
 
     // Join the game on other user
     expect(
-      await socketEmit(sockets[1], SocketEvents.JOIN_GAME, {
+      await socketEmit(sockets[1], RoomSocketEvents.JOIN_ROOM, {
         id: gameId,
       }),
     ).toEqual('OK');
@@ -275,11 +280,16 @@ describe('GamesSocket', () => {
 
     // Send a message in game room from any player
     // Everyone except sockets[2] (user: zxcv) should receive it
-    socketNotOn(sockets[2], SocketEvents.GAME_CHAT_TO_CLIENT, done);
-    sockets[0].emit(SocketEvents.GAME_CHAT_TO_SERVER, { text: 'hello world!' });
+    socketNotOn(sockets[2], RoomSocketEvents.ROOM_CHAT_TO_CLIENT, done);
+    sockets[0].emit(RoomSocketEvents.ROOM_CHAT_TO_SERVER, {
+      text: 'hello world!',
+    });
 
     const messages = await Promise.all(
-      socketOnAll([sockets[0], sockets[1]], SocketEvents.GAME_CHAT_TO_CLIENT),
+      socketOnAll(
+        [sockets[0], sockets[1]],
+        RoomSocketEvents.ROOM_CHAT_TO_CLIENT,
+      ),
     );
 
     messages.forEach((msg) =>
@@ -290,11 +300,11 @@ describe('GamesSocket', () => {
 
     // Leave the room
     // Person leaving shouldn't receive any messages
-    socketNotOn(sockets[0], SocketEvents.GAME_CHAT_TO_CLIENT, done);
+    socketNotOn(sockets[0], RoomSocketEvents.ROOM_CHAT_TO_CLIENT, done);
     // Person in room should see the leave message
-    const leaveMsg = socketOn(sockets[1], SocketEvents.GAME_CHAT_TO_CLIENT);
+    const leaveMsg = socketOn(sockets[1], RoomSocketEvents.ROOM_CHAT_TO_CLIENT);
 
-    sockets[0].emit(SocketEvents.LEAVE_GAME, { id: gameId });
+    sockets[0].emit(RoomSocketEvents.LEAVE_ROOM, { id: gameId });
 
     expect(await leaveMsg).toEqual(
       expect.objectContaining({
@@ -317,7 +327,7 @@ describe('GamesSocket', () => {
     sockets.forEach((socket) => socket.on('error', done));
 
     await Promise.all(socketOnAll(sockets, 'connect'));
-    await Promise.all(socketOnAll(sockets, SocketEvents.AUTHORIZED));
+    await Promise.all(socketOnAll(sockets, LobbySocketEvents.AUTHORIZED));
 
     // Delay a bit for join messages to pass
     await new Promise((resolve) => {
@@ -338,14 +348,14 @@ describe('GamesSocket', () => {
     {
       // Prepare to catch socket messages
       const promises = [
-        ...socketOnAll(sockets, SocketEvents.UPDATE_LOBBY_GAMES),
-        ...socketOnAll(sockets, SocketEvents.ALL_CHAT_TO_CLIENT),
+        ...socketOnAll(sockets, LobbySocketEvents.UPDATE_LOBBY_ROOMS),
+        ...socketOnAll(sockets, LobbySocketEvents.ALL_CHAT_TO_CLIENT),
       ];
 
       // Create a game
       const gameId = await socketEmit(
         sockets[0],
-        SocketEvents.CREATE_GAME,
+        RoomSocketEvents.CREATE_ROOM,
         data,
       );
       expect(gameId).toEqual(1);
@@ -376,14 +386,14 @@ describe('GamesSocket', () => {
     {
       // Prepare to catch socket messages
       const promises = [
-        ...socketOnAll(sockets, SocketEvents.UPDATE_LOBBY_GAMES),
-        ...socketOnAll(sockets, SocketEvents.ALL_CHAT_TO_CLIENT),
+        ...socketOnAll(sockets, LobbySocketEvents.UPDATE_LOBBY_ROOMS),
+        ...socketOnAll(sockets, LobbySocketEvents.ALL_CHAT_TO_CLIENT),
       ];
 
       // Create a game
       const gameId = await socketEmit(
         sockets[1],
-        SocketEvents.CREATE_GAME,
+        RoomSocketEvents.CREATE_ROOM,
         data,
       );
       expect(gameId).toEqual(2);
@@ -421,7 +431,7 @@ describe('GamesSocket', () => {
     sockets.forEach((socket) => socket.on('error', done));
 
     await Promise.all(socketOnAll(sockets, 'connect'));
-    await Promise.all(socketOnAll(sockets, SocketEvents.AUTHORIZED));
+    await Promise.all(socketOnAll(sockets, LobbySocketEvents.AUTHORIZED));
 
     // Delay a bit for join messages to pass
     await new Promise((resolve) => {
@@ -441,12 +451,16 @@ describe('GamesSocket', () => {
 
     // Prepare to catch socket messages
     const promises = [
-      ...socketOnAll(sockets, SocketEvents.UPDATE_LOBBY_GAMES),
-      ...socketOnAll(sockets, SocketEvents.ALL_CHAT_TO_CLIENT),
+      ...socketOnAll(sockets, LobbySocketEvents.UPDATE_LOBBY_ROOMS),
+      ...socketOnAll(sockets, LobbySocketEvents.ALL_CHAT_TO_CLIENT),
     ];
 
     // Create a game
-    const gameId = await socketEmit(sockets[0], SocketEvents.CREATE_GAME, data);
+    const gameId = await socketEmit(
+      sockets[0],
+      RoomSocketEvents.CREATE_ROOM,
+      data,
+    );
     expect(gameId).toEqual(1);
 
     // TODO Add in expect SocketEvents.UPDATE_ROOM for room creator.
@@ -474,10 +488,10 @@ describe('GamesSocket', () => {
     });
 
     // Join room on other socket
-    const roomDataPromise = socketOn(sockets[1], SocketEvents.UPDATE_ROOM);
+    const roomDataPromise = socketOn(sockets[1], RoomSocketEvents.UPDATE_ROOM);
 
     expect(
-      await socketEmit(sockets[1], SocketEvents.JOIN_GAME, {
+      await socketEmit(sockets[1], RoomSocketEvents.JOIN_ROOM, {
         id: gameId,
       }),
     ).toEqual('OK');

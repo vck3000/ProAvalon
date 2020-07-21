@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { Server } from 'socket.io';
 import { transformAndValidate } from '@proavalon/proto';
-import { SocketEvents, OnlinePlayer } from '@proavalon/proto/lobby';
+import { OnlinePlayer, LobbySocketEvents } from '@proavalon/proto/lobby';
 
 import RedisClientService from '../../redis-client/redis-client.service';
 
@@ -82,7 +82,7 @@ export class OnlinePlayersService implements OnModuleDestroy {
           rewards: [],
         })),
       );
-      server.to('lobby').emit(SocketEvents.ONLINE_PLAYERS, players);
+      server.to('lobby').emit(LobbySocketEvents.ONLINE_PLAYERS, players);
     } catch (err) {
       this.logger.error('Validation failed. Error: ', err);
     }
