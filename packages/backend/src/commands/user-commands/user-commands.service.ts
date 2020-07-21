@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { Commands, CommandsWrapper } from '../commands.types';
 
 import { CreateRoomService } from './commands/create-room.service';
-import RollService from './commands/roll.service';
-import UserInteractionsService from './commands/userInteractions.service';
+import { RollService } from './commands/roll.service';
+import { UserInteractionsService } from './commands/userInteractions.service';
 
 @Injectable()
-class UserCommandsService implements CommandsWrapper {
+export class UserCommandsService implements CommandsWrapper {
   commands: Commands;
 
   constructor(
@@ -21,5 +21,3 @@ class UserCommandsService implements CommandsWrapper {
     };
   }
 }
-
-export default UserCommandsService;

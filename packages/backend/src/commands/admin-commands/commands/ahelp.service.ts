@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { SocketUser } from '../../../users/users.socket';
 import { emitCommandResponse } from '../../commandResponse';
 import { Command, Commands } from '../../commands.types';
-import AdminCommandsService from '../admin-commands.service';
+import { AdminCommandsService } from '../admin-commands.service';
 
 @Injectable()
-class AHelpService implements Command {
+export class AHelpService implements Command {
   command = 'a';
   help = '/a: shows the available admin commands and usage.';
   private adminCommands: Commands;
@@ -22,5 +22,3 @@ class AHelpService implements Command {
     });
   }
 }
-
-export default AHelpService;

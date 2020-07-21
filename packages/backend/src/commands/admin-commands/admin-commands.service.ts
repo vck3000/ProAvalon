@@ -1,21 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { Commands, CommandsWrapper } from '../commands.types';
-import ATestService from './commands/atest.service';
-import AResetRedisService from './commands/areset-redis.service';
+import { ATestService } from './commands/atest.service';
+import { ARedisResetService } from './commands/aredreset.service';
+import { ARedisGamesService } from './commands/aredgames.service';
 
 @Injectable()
-class AdminCommandsService implements CommandsWrapper {
+export class AdminCommandsService implements CommandsWrapper {
   commands: Commands;
 
   constructor(
     private readonly aTestService: ATestService,
-    private readonly aResetRedisService: AResetRedisService,
+    private readonly aRedisResetService: ARedisResetService,
+    private readonly aRedisGamesService: ARedisGamesService,
   ) {
     this.commands = {
       [this.aTestService.command]: this.aTestService,
-      [this.aResetRedisService.command]: this.aResetRedisService,
+      [this.aRedisResetService.command]: this.aRedisResetService,
+      [this.aRedisGamesService.command]: this.aRedisGamesService,
     };
   }
 }
-
-export default AdminCommandsService;

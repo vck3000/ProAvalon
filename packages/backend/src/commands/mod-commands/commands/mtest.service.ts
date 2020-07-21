@@ -16,5 +16,3 @@ export class MTestService implements Command {
     );
   }
 }
-
-export default MTestService;

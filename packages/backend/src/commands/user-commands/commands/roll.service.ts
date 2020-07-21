@@ -35,5 +35,3 @@ export class RollService implements Command {
     }
   }
 }
-
-export default RollService;

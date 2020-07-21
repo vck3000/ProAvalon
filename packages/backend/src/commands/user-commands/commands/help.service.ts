@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { SocketUser } from '../../../users/users.socket';
 import { emitCommandResponse } from '../../commandResponse';
 import { Command, Commands } from '../../commands.types';
-import UserCommandsService from '../user-commands.service';
+import { UserCommandsService } from '../user-commands.service';
 
 @Injectable()
 export class HelpService implements Command {
@@ -22,5 +22,3 @@ export class HelpService implements Command {
     });
   }
 }
-
-export default HelpService;

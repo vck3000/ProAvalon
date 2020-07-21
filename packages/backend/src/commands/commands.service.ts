@@ -7,12 +7,12 @@ import {
 import { SocketUser } from '../users/users.socket';
 import { Commands } from './commands.types';
 
-import UserCommandsService from './user-commands/user-commands.service';
-import UserCommandsHelpService from './user-commands/commands/help.service';
-import ModCommandsService from './mod-commands/mod-commands.service';
-import ModCommandsHelpService from './mod-commands/commands/mhelp.service';
-import AdminCommandsService from './admin-commands/admin-commands.service';
-import AdminCommandsHelpService from './admin-commands/commands/ahelp.service';
+import { UserCommandsService } from './user-commands/user-commands.service';
+import { HelpService } from './user-commands/commands/help.service';
+import { ModCommandsService } from './mod-commands/mod-commands.service';
+import { MHelpService } from './mod-commands/commands/mhelp.service';
+import { AdminCommandsService } from './admin-commands/admin-commands.service';
+import { AHelpService } from './admin-commands/commands/ahelp.service';
 
 @Injectable()
 export class CommandsService {
@@ -20,11 +20,11 @@ export class CommandsService {
 
   constructor(
     private readonly userCommandsService: UserCommandsService,
-    private readonly userCommandsHelpService: UserCommandsHelpService,
+    private readonly userCommandsHelpService: HelpService,
     private readonly modCommandsService: ModCommandsService,
-    private readonly modCommandsHelpService: ModCommandsHelpService,
+    private readonly modCommandsHelpService: MHelpService,
     private readonly adminCommandsService: AdminCommandsService,
-    private readonly adminCommandsHelpService: AdminCommandsHelpService,
+    private readonly adminCommandsHelpService: AHelpService,
   ) {
     this.allCommands = {
       ...this.userCommandsService.commands,

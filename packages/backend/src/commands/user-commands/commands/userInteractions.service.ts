@@ -43,7 +43,7 @@ class Interaction implements Command {
 }
 
 @Injectable()
-class UserInteractionsService implements CommandsWrapper {
+export class UserInteractionsService implements CommandsWrapper {
   commands: Commands;
 
   constructor(private readonly redisAdapterService: RedisAdapterService) {
@@ -57,5 +57,3 @@ class UserInteractionsService implements CommandsWrapper {
     };
   }
 }
-
-export default UserInteractionsService;

@@ -5,10 +5,10 @@ import { Command } from '../../commands.types';
 import RedisClientService from '../../../redis-client/redis-client.service';
 
 @Injectable()
-export class AResetRedisService implements Command {
-  command = 'aresetredis';
+export class ARedisResetService implements Command {
+  command = 'aredreset';
 
-  help = '/aresetredis: Reset the redis database';
+  help = '/aredreset: Reset the redis database';
 
   constructor(private readonly redisClient: RedisClientService) {}
 
@@ -22,5 +22,3 @@ export class AResetRedisService implements Command {
     });
   }
 }
-
-export default AResetRedisService;

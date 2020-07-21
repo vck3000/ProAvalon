@@ -16,5 +16,3 @@ export class ATestService implements Command {
     );
   }
 }
-
-export default ATestService;

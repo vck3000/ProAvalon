@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { SocketUser } from '../../../users/users.socket';
 import { emitCommandResponse } from '../../commandResponse';
 import { Command, Commands } from '../../commands.types';
-import ModCommandsService from '../mod-commands.service';
+import { ModCommandsService } from '../mod-commands.service';
 
 @Injectable()
-class MHelpService implements Command {
+export class MHelpService implements Command {
   command = 'm';
   help = '/m: shows the available mod commands and usage.';
   private modCommands: Commands;
@@ -22,5 +22,3 @@ class MHelpService implements Command {
     });
   }
 }
-
-export default MHelpService;

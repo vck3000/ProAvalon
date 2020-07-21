@@ -74,9 +74,14 @@ export class GamesService {
     }
   }
 
-  closeGame(id: number): boolean {
-    this.redisAdapterService.closeRoom(`game:${id}`);
-    this.redisClientService.client.lrem('games:open', 0, id.toString());
+  async closeGame(id: number): Promise<boolean> {
+    // Check if the room exists:
+    if (!(await this.hasGame(id))) {
+      return false;
+    }
+
+    await this.redisAdapterService.closeRoom(`game:${id}`);
+    await this.redisClientService.client.lrem('games:open', 0, id.toString());
     return true;
   }
 
