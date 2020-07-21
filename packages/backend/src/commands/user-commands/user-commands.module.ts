@@ -5,10 +5,10 @@ import { RollService } from './commands/roll.service';
 import { UserInteractionsService } from './commands/userInteractions.service';
 import { RedisAdapterModule } from '../../redis-adapter/redis-adapter.module';
 import { CreateRoomService } from './commands/create-room.service';
-import { GamesModule } from '../../games/games.module';
+import { RoomsModule } from '../../rooms/rooms.module';
 
 @Module({
-  imports: [RedisAdapterModule, forwardRef(() => GamesModule)],
+  imports: [RedisAdapterModule, forwardRef(() => RoomsModule)],
   providers: [
     UserCommandsService,
     HelpService,

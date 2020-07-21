@@ -14,13 +14,13 @@ import { SocketUser } from '../users/users.socket';
 
 // const gameLogger = new Logger('Game');
 
-export default class Game {
+export default class Room {
   private readonly logger: Logger;
 
   private machine: Interpreter<RoomContext, RoomStateSchema, RoomEvents, any>;
 
   constructor(gameString: string) {
-    this.logger = new Logger(Game.name);
+    this.logger = new Logger(Room.name);
 
     // Restore the machine
     const previousState = State.create<RoomContext, RoomEvents>(

@@ -1,6 +1,6 @@
 import { Module, forwardRef } from '@nestjs/common';
-import { GamesService } from './games.service';
-import { GamesGateway } from './games.gateway';
+import { RoomsService } from './rooms.service';
+import { RoomsGateway } from './rooms.gateway';
 import { RedisAdapterModule } from '../redis-adapter/redis-adapter.module';
 import { RedisClientModule } from '../redis-client/redis-client.module';
 import { CommandsModule } from '../commands/commands.module';
@@ -12,7 +12,7 @@ import { CommandsModule } from '../commands/commands.module';
     forwardRef(() => CommandsModule),
   ],
   controllers: [],
-  providers: [GamesService, GamesGateway],
-  exports: [GamesService],
+  providers: [RoomsService, RoomsGateway],
+  exports: [RoomsService],
 })
-export class GamesModule {}
+export class RoomsModule {}

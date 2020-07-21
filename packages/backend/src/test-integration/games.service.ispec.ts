@@ -47,7 +47,7 @@ import { UsersModule } from '../users/users.module';
 import { AuthModule } from '../auth/auth.module';
 import { AllChatModule } from '../all-chat/all-chat.module';
 import { RedisClientModule } from '../redis-client/redis-client.module';
-import { GamesModule } from '../games/games.module';
+import { RoomsModule } from '../rooms/rooms.module';
 import { RedisSocketIoAdapter } from '../util/redisSocketIoAdapter';
 
 import {
@@ -103,7 +103,7 @@ describe('GamesSocket', () => {
         AuthModule,
         AllChatModule,
         RedisClientModule,
-        GamesModule,
+        RoomsModule,
       ],
       controllers: [AuthController],
       providers: [LocalStrategy, JwtStrategy],

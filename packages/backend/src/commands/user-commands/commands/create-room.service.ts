@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { transformAndValidate } from '@proavalon/proto';
 import { CreateRoomDto, GameMode } from '@proavalon/proto/room';
-import { GamesService } from '../../../games/games.service';
+import { RoomsService } from '../../../rooms/rooms.service';
 import { SocketUser } from '../../../users/users.socket';
 import { Command } from '../../commands.types';
 import { emitCommandResponse } from '../../commandResponse';
@@ -11,7 +11,7 @@ export class CreateRoomService implements Command {
   command = 'create';
   help = "/create: Creates a game and returns the new room's id";
 
-  constructor(private readonly gamesService: GamesService) {}
+  constructor(private readonly gamesService: RoomsService) {}
 
   async run(socket: SocketUser) {
     const settings: CreateRoomDto = {

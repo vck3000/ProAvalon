@@ -17,7 +17,7 @@ import {
 import { UsersService } from '../users/users.service';
 import { AllChatService } from '../all-chat/all-chat.service';
 import { SocketUser } from '../users/users.socket';
-import { GamesService } from '../games/games.service';
+import { RoomsService } from '../rooms/rooms.service';
 
 import RedisAdapterService from '../redis-adapter/redis-adapter.service';
 import { OnlinePlayersService } from './online-players/online-players.service';
@@ -34,7 +34,7 @@ export class AuthGateway implements OnGatewayConnection {
     private onlinePlayersService: OnlinePlayersService,
     private onlineSocketsService: OnlineSocketsService,
     private redisAdapter: RedisAdapterService,
-    private gamesService: GamesService,
+    private gamesService: RoomsService,
   ) {}
 
   private readonly logger = new Logger(AuthGateway.name);

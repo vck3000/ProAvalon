@@ -7,7 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ForumsModule } from './forums/forums.module';
 import { MONGO_URL } from './util/getEnvVars';
-import { GamesModule } from './games/games.module';
+import { RoomsModule } from './rooms/rooms.module';
+import { GamesModule } from './rooms/games.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { GamesModule } from './games/games.module';
     AuthModule,
     UsersModule,
     ForumsModule,
+    RoomsModule,
     GamesModule,
   ],
   controllers: [AppController],

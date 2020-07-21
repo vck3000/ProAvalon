@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { SocketUser } from '../../../users/users.socket';
 import { emitCommandResponse } from '../../commandResponse';
 import { Command } from '../../commands.types';
-import { GamesService } from '../../../games/games.service';
+import { RoomsService } from '../../../rooms/rooms.service';
 
 @Injectable()
 export class MCloseService implements Command {
@@ -10,7 +10,7 @@ export class MCloseService implements Command {
 
   help = '/mclose <gameId> [<gameId> <gameId> ...]: Closes the given games.';
 
-  constructor(private readonly gamesService: GamesService) {}
+  constructor(private readonly gamesService: RoomsService) {}
 
   async run(socket: SocketUser, data: string[]) {
     if (data.length === 0) {

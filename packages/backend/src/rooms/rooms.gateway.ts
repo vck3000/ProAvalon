@@ -18,19 +18,19 @@ import {
   GameIdDto,
 } from '@proavalon/proto/room';
 
-import { GamesService } from './games.service';
+import { RoomsService } from './rooms.service';
 import { SocketUser } from '../users/users.socket';
 // import RedisAdapterService from '../redis-adapter/redis-adapter.service';
 import { CommandsService } from '../commands/commands.service';
 
 @WebSocketGateway()
-export class GamesGateway {
+export class RoomsGateway {
   @WebSocketServer() server!: Server;
 
-  private readonly logger = new Logger(GamesGateway.name);
+  private readonly logger = new Logger(RoomsGateway.name);
 
   constructor(
-    private gamesService: GamesService,
+    private roomsService: RoomsService,
     // private redisAdapter: RedisAdapterService,
     private commandsService: CommandsService,
   ) {}
@@ -85,7 +85,7 @@ export class GamesGateway {
           type: ChatResponseType.CHAT,
         });
 
-        this.gamesService.storeChat(gameId, chatResponse);
+        this.roomsService.storeChat(gameId, chatResponse);
 
         this.server
           .to(room)
@@ -101,7 +101,7 @@ export class GamesGateway {
   async handleCreateGame(socket: SocketUser, data: CreateRoomDto) {
     this.logger.log('Received create game request');
 
-    const newGameId = await this.gamesService.createGame(socket, data);
+    const newGameId = await this.roomsService.createGame(socket, data);
 
     const msg = await transformAndValidate(ChatResponse, {
       text: `${socket.user.displayUsername} has created room ${newGameId}!`,
@@ -117,12 +117,12 @@ export class GamesGateway {
 
   @SubscribeMessage(RoomSocketEvents.JOIN_ROOM)
   async handleJoinGame(socket: SocketUser, joinGame: GameIdDto) {
-    if (joinGame.id && (await this.gamesService.hasGame(joinGame.id))) {
+    if (joinGame.id && (await this.roomsService.hasGame(joinGame.id))) {
       // Join the socket io room
       socket.join(`game:${joinGame.id}`);
 
       // Send the room data to user
-      this.gamesService.sendRoomDataToUser(socket, joinGame.id);
+      this.roomsService.sendRoomDataToUser(socket, joinGame.id);
 
       this.logger.log(
         `${socket.user.displayUsername} has joined game ${joinGame.id}.`,
@@ -150,7 +150,7 @@ export class GamesGateway {
 
   @SubscribeMessage(RoomSocketEvents.LEAVE_ROOM)
   async handleLeaveGame(socket: SocketUser, leaveGame: GameIdDto) {
-    if (leaveGame.id && (await this.gamesService.hasGame(leaveGame.id))) {
+    if (leaveGame.id && (await this.roomsService.hasGame(leaveGame.id))) {
       // Leave the socket io room
       socket.leave(`game:${leaveGame.id}`);
 
@@ -167,7 +167,7 @@ export class GamesGateway {
           type: ChatResponseType.PLAYER_LEAVE_GAME,
         });
 
-        this.gamesService.storeChat(leaveGame.id, chatResponse);
+        this.roomsService.storeChat(leaveGame.id, chatResponse);
 
         this.server
           .to(`game:${leaveGame.id}`)

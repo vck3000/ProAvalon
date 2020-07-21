@@ -8,12 +8,12 @@ import {
 import { CreateRoomDto, RoomSocketEvents } from '@proavalon/proto/room';
 import RedisAdapterService from '../redis-adapter/redis-adapter.service';
 import RedisClientService from '../redis-client/redis-client.service';
-import Game from './game';
+import Room from './room';
 import { SocketUser } from '../users/users.socket';
 
 @Injectable()
-export class GamesService {
-  private readonly logger = new Logger(GamesService.name);
+export class RoomsService {
+  private readonly logger = new Logger(RoomsService.name);
 
   constructor(
     private readonly redisClientService: RedisClientService,
@@ -43,7 +43,7 @@ export class GamesService {
 
     // Create the game state and save in Redis
     try {
-      const newGameState = await Game.createNewGameState(
+      const newGameState = await Room.createNewGameState(
         socket,
         data,
         nextGameNum,
@@ -122,7 +122,7 @@ export class GamesService {
     const lobbyGames: LobbyRoomData[] = [];
     gameStrings.forEach((gameString) => {
       if (gameString) {
-        lobbyGames.push(new Game(gameString).getLobbyRoomDataToUser());
+        lobbyGames.push(new Room(gameString).getLobbyRoomDataToUser());
       }
     });
 
@@ -142,7 +142,7 @@ export class GamesService {
       return;
     }
 
-    const roomDataToUser = new Game(gameString).getRoomDataToUser();
+    const roomDataToUser = new Room(gameString).getRoomDataToUser();
 
     socket.emit(RoomSocketEvents.UPDATE_ROOM, roomDataToUser);
   }
