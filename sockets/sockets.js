@@ -2580,39 +2580,39 @@ module.exports = function (io) {
         socket.request.headers['x-forwarded-for'] ||
         socket.request.connection.remoteAddress;
       const joiningUsername = socket.request.user.username;
-      for (var i = 0; i < allSockets.length; i++) {
-        const clientIpAddress =
-          allSockets[i].request.headers['x-forwarded-for'] ||
-          allSockets[i].request.connection.remoteAddress;
-        const clientUsername = allSockets[i].request.user.username;
-        // console.log(clientUsername);
-        // console.log(clientIpAddress);
-        if (
-          clientIpAddress === joiningIpAddress &&
-          clientUsername !== joiningUsername
-        )
-          matchedIpsUsernames.push(clientUsername);
-      }
-      if (matchedIpsUsernames.length > 0) {
-        sendToAllMods(io, {
-          message: `MOD WARNING! '${socket.request.user.username}' has just logged in with the same IP as: `,
-          classStr: 'server-text',
-        });
-        sendToAllMods(io, {
-          message: '-------------------------',
-          classStr: 'server-text',
-        });
-        for (var i = 0; i < matchedIpsUsernames.length; i++) {
-          sendToAllMods(io, {
-            message: matchedIpsUsernames[i],
-            classStr: 'server-text',
-          });
-        }
-        sendToAllMods(io, {
-          message: '-------------------------',
-          classStr: 'server-text',
-        });
-      }
+      // for (var i = 0; i < allSockets.length; i++) {
+      //   const clientIpAddress =
+      //     allSockets[i].request.headers['x-forwarded-for'] ||
+      //     allSockets[i].request.connection.remoteAddress;
+      //   const clientUsername = allSockets[i].request.user.username;
+      //   // console.log(clientUsername);
+      //   // console.log(clientIpAddress);
+      //   if (
+      //     clientIpAddress === joiningIpAddress &&
+      //     clientUsername !== joiningUsername
+      //   )
+      //     matchedIpsUsernames.push(clientUsername);
+      // }
+      // if (matchedIpsUsernames.length > 0) {
+      //   sendToAllMods(io, {
+      //     message: `MOD WARNING! '${socket.request.user.username}' has just logged in with the same IP as: `,
+      //     classStr: 'server-text',
+      //   });
+      //   sendToAllMods(io, {
+      //     message: '-------------------------',
+      //     classStr: 'server-text',
+      //   });
+      //   for (var i = 0; i < matchedIpsUsernames.length; i++) {
+      //     sendToAllMods(io, {
+      //       message: matchedIpsUsernames[i],
+      //       classStr: 'server-text',
+      //     });
+      //   }
+      //   sendToAllMods(io, {
+      //     message: '-------------------------',
+      //     classStr: 'server-text',
+      //   });
+      // }
     }, 1000);
 
     // when a user disconnects/leaves the whole website
