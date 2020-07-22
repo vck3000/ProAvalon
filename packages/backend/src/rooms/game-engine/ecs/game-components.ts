@@ -1,24 +1,14 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable @typescript-eslint/no-empty-interface */
 
-import { VoteTeamOutcome, GameData, GameState } from '@proavalon/proto/game';
+import {
+  VoteTeamOutcome,
+  GameData,
+  GameState,
+  MissionOutcome,
+} from '@proavalon/proto/game';
 import { ROLES } from './game-assemblages';
-import { PlayerInfo } from '../room/room-machine';
-
-/*
-  Needed some hacky stuff here to make the types work together overall.
-  The Entity.addComponent requires the input argument to be of any component
-  type (union of classes), but when we are accessing individual attributes of the
-  components, we need its individual elements.
-*/
-// export interface IAllComponents
-//   extends ComponentPlayer,
-//     ComponentAlliance,
-//     ComponentRole,
-//     ComponentRole,
-//     ComponentVoteTeam,
-//     ComponentVoteMission,
-//     ComponentSeeAlliance {}
+import { PlayerInfo } from '../room/rooms-machine-types';
 
 export type AllComponents =
   | CPlayer
@@ -37,7 +27,6 @@ export class Component {
   }
 }
 
-// socketId is initially undefined. Game should set this after instantiation.
 export class CPlayer extends Component {
   socketId: string;
   displayUsername: string;
@@ -63,7 +52,7 @@ export class CPlayer extends Component {
 
 type Alliance = 'resistance' | 'spy';
 export class CAlliance extends Component {
-  alliance: string;
+  alliance: Alliance;
 
   constructor(alliance: Alliance) {
     super('Alliance');
@@ -89,9 +78,8 @@ export class CVoteTeam extends Component {
   }
 }
 
-export type VoteMission = 'succeed' | 'fail' | undefined;
 export class CVoteMission extends Component {
-  vote: VoteMission;
+  vote?: MissionOutcome;
 
   constructor() {
     super('CVoteMission');

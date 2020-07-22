@@ -4,7 +4,7 @@
 // import { transformAndValidate } from '@proavalon/proto';
 import { send, assign } from 'xstate';
 import { CAssassin, CPlayer } from './game-components';
-import { RoomContext, RoomEvents } from '../room/room-machine';
+import { RoomContext, RoomEvents } from '../room/rooms-machine-types';
 import { setGameStateFactory } from '../room/room-machine-actions';
 import { Entity } from './game-entity';
 

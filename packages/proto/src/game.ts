@@ -9,6 +9,9 @@ import 'reflect-metadata';
 
 export enum GameSocketEvents {
   UPDATE_GAME = 'UPDATE_GAME',
+  PICK = 'PICK',
+  VOTE_TEAM = 'VOTE_TEAM',
+  VOTE_MISSION = 'VOTE_MISSION',
 }
 
 // Game data
@@ -19,7 +22,7 @@ export enum MissionOutcome {
 
 export class Proposal {
   @IsString()
-  leader!: string;
+  leaderUsername!: string;
 
   @IsString({
     each: true,
@@ -27,8 +30,8 @@ export class Proposal {
   team!: string[];
 
   @IsNotEmptyObject()
-  // Holds <username>: <true(approve)/false(reject)>
-  votes!: Record<string, boolean>;
+  // Holds <username>: <approve/reject>
+  votes!: Record<string, VoteTeamOutcome>;
 }
 
 export class MissionHistory {

@@ -1,34 +1,56 @@
-import { RoomContext, RoomEvents } from './room-machine';
-import { indexOfPlayer, filterByComponent } from '../util';
-import { CPlayer, CVoteTeam } from '../ecs/game-components';
+import { GameSocketEvents } from '@proavalon/proto/game';
+import { RoomContext, RoomEvents } from './rooms-machine-types';
+import {
+  indexOfPlayer,
+  filterByComponent,
+  getPlayers,
+  getCurrentTeamSize,
+} from '../util';
+import { CPlayer, CVoteTeam, CVoteMission } from '../ecs/game-components';
 
-export const isLeaderCond = (c: RoomContext, e: RoomEvents) => {
-  if (e.type === 'PICK') {
+export const pickTeamGuard = (c: RoomContext, e: RoomEvents) => {
+  if (e.type === GameSocketEvents.PICK && e.data && e.data.team) {
+    // Check for team leader
     const index = indexOfPlayer(c.entities, e.player.displayUsername);
+    if (index !== c.gameData.leader) {
+      return false;
+    }
 
-    return index === c.gameData.leader;
+    const teamSize = getCurrentTeamSize(c);
+    // Check for correct team size given
+    if (teamSize !== e.data.team.length) {
+      return false;
+    }
+
+    // Check for good displayUsernames given
+    const players = getPlayers(c.entities);
+    const playerDisplayUsernames = players.map((en) =>
+      (en.components[CPlayer.name] as CPlayer).displayUsername.toLowerCase(),
+    );
+
+    for (const displayUsername of e.data.team) {
+      if (!playerDisplayUsernames.includes(displayUsername.toLowerCase())) {
+        return false;
+      }
+    }
+
+    return true;
   }
   return false;
 };
 
 export const minPlayers = (c: RoomContext, _: RoomEvents) => {
-  const players = filterByComponent(c.entities, CPlayer.name);
-
-  const satPlayers = players.filter(
-    (player) => (player.components[CPlayer.name] as CPlayer).satDown,
+  const players = filterByComponent(c.entities, CPlayer.name).filter(
+    (e) => (e.components[CPlayer.name] as CPlayer).satDown,
   );
 
-  return satPlayers.length >= 5;
+  return players.length >= 5;
 };
 
-// Return false (so that the functions that use it can be predicate)
-// if not all votes are in yet.
 export const getAllTeamVotes = (c: RoomContext) => {
   // Get all entities that can vote
-  const { entities } = c;
+  const entities = [...c.entities];
   const entitiesCanVote = filterByComponent(entities, CVoteTeam.name);
-
-  // console.log(entitiesCanVote);
 
   // Get votes
   const votes = entitiesCanVote
@@ -55,13 +77,42 @@ export const voteTeamRejected = (c: RoomContext, _: RoomEvents) => {
   return votes && votes.numRejects >= votes.numApproves;
 };
 
-// TODO Later add in an extra check that it's the hammer pick.
-export const voteTeamHammerRejected = (_: RoomContext, __: RoomEvents) => false;
-// const rejected = voteTeamRejected(c, _);
-//   return false;
-// };
+// TODO Need to test this
+export const voteTeamHammerRejected = (c: RoomContext, e: RoomEvents) => {
+  const rejected = voteTeamRejected(c, e);
+  const { missionHistory } = c.gameData.gameHistory;
+
+  if (missionHistory.length > 0) {
+    const pickNum = missionHistory[missionHistory.length - 1].proposals.length;
+
+    return rejected && pickNum === 5;
+  }
+  return false;
+};
 
 export const voteTeamApproved = (c: RoomContext, _: RoomEvents) => {
   const votes = getAllTeamVotes(c);
   return votes && !(votes.numRejects >= votes.numApproves);
+};
+
+// --------------------------------
+
+export const allMissionVotesIn = (c: RoomContext, _: RoomEvents) => {
+  // Get all entities that can vote
+  const entities = [...c.entities];
+  const entitiesCanVote = filterByComponent(entities, CVoteMission.name);
+  // Get votes
+  const votes = entitiesCanVote
+    .map((e) => (e.components[CVoteMission.name] as CVoteMission).vote)
+    .filter((vote) => vote);
+
+  return votes.length === getCurrentTeamSize(c);
+};
+
+export const fiveMissionsFinished = (c: RoomContext, e: RoomEvents) => {
+  const gameHistory = { ...c.gameData.gameHistory };
+  const numOfMissions = gameHistory.missionHistory.length;
+
+  // TODO This needs testing
+  return numOfMissions >= 5 && allMissionVotesIn(c, e);
 };

@@ -1,6 +1,6 @@
 import { assign } from 'xstate';
 import { RoomSocketEvents } from '@proavalon/proto/room';
-import { RoomContext, RoomEvents } from './room-machine';
+import { RoomContext, RoomEvents } from './rooms-machine-types';
 import { Entity } from '../ecs/game-entity';
 import { CPlayer } from '../ecs/game-components';
 import { indexOfPlayer } from '../util';

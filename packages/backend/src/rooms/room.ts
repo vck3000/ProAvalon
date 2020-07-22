@@ -10,13 +10,13 @@ import {
 } from '@proavalon/proto/room';
 import { MissionOutcome } from '@proavalon/proto/game';
 import { LobbyRoomData, OnlinePlayer } from '@proavalon/proto/lobby';
+import { RoomMachine } from './game-engine/room/room-machine';
 import {
   RoomContext,
   RoomStateSchema,
   RoomEvents,
-  RoomMachine,
   PlayerInfo,
-} from './game-engine/room/room-machine';
+} from './game-engine/room/rooms-machine-types';
 import { SocketUser } from '../users/users.socket';
 import RedisAdapterService from '../redis-adapter/redis-adapter.service';
 import { filterByComponent } from './game-engine/util';

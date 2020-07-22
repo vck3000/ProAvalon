@@ -1,5 +1,5 @@
 import { Machine } from 'xstate';
-import { PickData, VoteTeamData, GameState } from '@proavalon/proto/game';
+import { GameState } from '@proavalon/proto/game';
 import { RoomState, GameMode, RoomSocketEvents } from '@proavalon/proto/room';
 import {
   initialSettings,
@@ -18,95 +18,34 @@ import {
   pickEvent,
   voteTeamEvent,
   voteTeamFinish,
+  voteMissionEvent,
+  voteMissionFinish,
 } from './room-machine-game-actions';
 
-import { Entity } from '../ecs/game-entity';
-
 import {
-  isLeaderCond,
+  pickTeamGuard,
   minPlayers,
   voteTeamHammerRejected,
   voteTeamRejected,
   voteTeamApproved,
+  fiveMissionsFinished,
+  allMissionVotesIn,
 } from './room-machine-guards';
 
-export interface PlayerInfo {
-  socketId: string;
-  displayUsername: string;
-}
+import {
+  RoomContext,
+  RoomStateSchema,
+  RoomEvents,
+} from './rooms-machine-types';
 
-interface MachineGameData {
-  leader: number;
-  team: string[];
-}
-
-export declare class MachineRoomData {
-  id: number;
-  host: string;
-  mode: GameMode;
-  roles: string[];
-  kickedPlayers: string[];
-  gameBarMsg: string;
-}
-
-export interface RoomContext {
-  entities: Entity[];
-  entityCount: number;
-  systems: string[];
-  gameData: MachineGameData;
-  roomData: MachineRoomData;
-  // TODO make this a literal type
-  gameState: string;
-}
-
-export interface RoomStateSchema {
-  states: {
-    [RoomState.waiting]: {};
-    [RoomState.game]: {
-      states: {
-        standard: {
-          states: {
-            [GameState.pick]: {};
-            [GameState.voteTeam]: {};
-            [GameState.voteMission]: {};
-          };
-        };
-        special: {
-          states: {
-            idle: {};
-            active: {};
-          };
-        };
-      };
-    };
-    [RoomState.finished]: {};
-  };
-}
-
-type BaseEvents =
-  | { type: 'INITIAL_SETTINGS'; id: number; host: string }
-  | { type: RoomSocketEvents.JOIN_ROOM; player: PlayerInfo }
-  | { type: RoomSocketEvents.LEAVE_ROOM; player: PlayerInfo }
-  | { type: RoomSocketEvents.SIT_DOWN; player: PlayerInfo }
-  | { type: RoomSocketEvents.STAND_UP; player: PlayerInfo }
-  | { type: 'START_GAME'; player: PlayerInfo }
-  | { type: 'GAME_END' };
-
-type GameEvents =
-  | { type: 'PICK'; player: PlayerInfo; data: PickData }
-  | { type: 'VOTE_TEAM'; player: PlayerInfo; data: VoteTeamData }
-  | { type: 'VOTE_TEAM_APPROVED' }
-  | { type: 'VOTE_TEAM_REJECTED' }
-  | { type: 'VOTE_TEAM_HAMMER_REJECTED' }
-  | { type: 'VOTE_MISSION'; player: PlayerInfo };
-
-type EntityEvents =
-  | { type: 'SPECIAL_STATE_ENTER' }
-  | { type: 'SPECIAL_STATE_LEAVE' }
-  | { type: 'SPECIAL'; specialType: string; data: any; player: PlayerInfo }
-  | { type: 'ADD_SYSTEM'; systemName: string };
-
-export type RoomEvents = BaseEvents | GameEvents | EntityEvents;
+export const NUM_PLAYERS_ON_MISSION: Record<number, string[]> = {
+  5: ['2', '3', '2', '3', '3'],
+  6: ['2', '3', '4', '3', '4'],
+  7: ['2', '3', '3', '4*', '4'],
+  8: ['3', '4', '4', '5*', '5'],
+  9: ['3', '4', '4', '5*', '5'],
+  10: ['3', '4', '4', '5*', '5'],
+};
 
 export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
   {
@@ -116,7 +55,15 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
       entities: [],
       entityCount: 0,
       systems: [],
-      gameData: { leader: 0, team: [] },
+      gameData: {
+        leader: 0,
+        team: [],
+        gameSize: 0,
+        gameHistory: {
+          missionOutcome: [],
+          missionHistory: [],
+        },
+      },
       gameState: 'waiting',
       roomData: {
         id: -1,
@@ -173,7 +120,7 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
                     target: 'voteTeam',
                     actions: 'pickEvent',
                     internal: false,
-                    cond: 'isLeaderCond',
+                    cond: 'pickTeamGuard',
                     in: '#room.game.special.idle',
                   },
                 },
@@ -214,9 +161,22 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
                   type: 'setGameState',
                   gameState: 'voteMission',
                 },
+                always: [
+                  {
+                    target: '#finished',
+                    cond: 'fiveMissionsFinished',
+                    actions: 'voteMissionFinish',
+                  },
+                  {
+                    target: 'pick',
+                    cond: 'allMissionVotesIn',
+                    actions: 'voteMissionFinish',
+                  },
+                ],
                 on: {
                   VOTE_MISSION: {
-                    target: 'pick',
+                    target: GameState.voteMission,
+                    actions: 'voteMissionEvent',
                     internal: false,
                     in: '#room.game.special.idle',
                   },
@@ -271,13 +231,17 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
       pickEvent,
       voteTeamEvent,
       voteTeamFinish,
+      voteMissionEvent,
+      voteMissionFinish,
     },
     guards: {
-      isLeaderCond,
+      pickTeamGuard,
       minPlayers,
       voteTeamHammerRejected,
       voteTeamRejected,
       voteTeamApproved,
+      fiveMissionsFinished,
+      allMissionVotesIn,
     },
   },
 );
