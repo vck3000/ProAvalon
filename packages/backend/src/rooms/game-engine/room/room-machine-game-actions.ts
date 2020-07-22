@@ -42,8 +42,8 @@ export const startGame = assign<RoomContext, RoomEvents>((c, _) => {
 
   return {
     ...c,
-    game: {
-      ...c.game,
+    gameData: {
+      ...c.gameData,
       leader,
     },
     systems: [], // ['SAssassin'],
@@ -109,7 +109,7 @@ export const pickEvent = assign<RoomContext, RoomEvents>((c, e) => {
   if (e.type === 'PICK') {
     return {
       ...c,
-      game: { ...c.game, team: e.data.team },
+      gameData: { ...c.gameData, team: e.data.team },
     };
   }
 
@@ -156,13 +156,13 @@ export const voteTeamFinish = assign<RoomContext, RoomEvents>((c, _) => {
 
   // Increment the leader
   const numOfPlayers = filterByComponent(entities, CPlayer.name).length;
-  const newLeader = (c.game.leader + 1) % (numOfPlayers - 1);
+  const newLeader = (c.gameData.leader + 1) % (numOfPlayers - 1);
 
   return {
     ...c,
     entities,
-    game: {
-      ...c.game,
+    gameData: {
+      ...c.gameData,
       leader: newLeader,
     },
   };

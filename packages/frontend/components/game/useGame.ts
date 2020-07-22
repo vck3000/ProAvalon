@@ -2,7 +2,7 @@ import Swal from 'sweetalert2';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { RoomSocketEvents } from '@proavalon/proto/room';
-import socket from '../../socket';
+import { socket } from '../../socket';
 import useAuth from '../../effects/useAuth';
 
 const useGame = (gameID?: string | string[]): void => {

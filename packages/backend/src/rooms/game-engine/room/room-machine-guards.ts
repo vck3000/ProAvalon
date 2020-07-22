@@ -6,7 +6,7 @@ export const isLeaderCond = (c: RoomContext, e: RoomEvents) => {
   if (e.type === 'PICK') {
     const index = indexOfPlayer(c.entities, e.player.displayUsername);
 
-    return index === c.game.leader;
+    return index === c.gameData.leader;
   }
   return false;
 };

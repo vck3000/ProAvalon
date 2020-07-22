@@ -122,7 +122,7 @@ export class RoomsService {
     const lobbyGames: LobbyRoomData[] = [];
     gameStrings.forEach((gameString) => {
       if (gameString) {
-        lobbyGames.push(new Room(gameString).getLobbyRoomDataToUser());
+        lobbyGames.push(new Room(gameString).getLobbyRoomData());
       }
     });
 
@@ -142,8 +142,39 @@ export class RoomsService {
       return;
     }
 
-    const roomDataToUser = new Room(gameString).getRoomDataToUser();
+    const room = new Room(gameString);
+    room.sendRoomDataToSocket(socket);
+  }
 
-    socket.emit(RoomSocketEvents.UPDATE_ROOM, roomDataToUser);
+  // Fetch the game, parse it in, then forward the event
+  async roomEvent(
+    socket: SocketUser,
+    gameId: number,
+    event: RoomSocketEvents,
+    data?: any,
+  ) {
+    await this.redisClientService.lockDo(
+      `game:${gameId}`,
+      async (client, multi) => {
+        // Get the string of the game
+        const gameString = await client.get(`game:${gameId}`);
+
+        if (!gameString) {
+          this.logger.warn(
+            `RoomEvent requested game that doesn't exist: ${gameId}`,
+          );
+          return;
+        }
+
+        // Create the room and pass in the event
+        const room = new Room(gameString);
+        room.roomEvent(socket, event, data);
+
+        // Save the game
+        multi.set(`game:${gameId}`, JSON.stringify(room.getState()));
+
+        room.sendRoomDataToAll(this.redisAdapterService);
+      },
+    );
   }
 }

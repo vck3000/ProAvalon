@@ -20,7 +20,6 @@ import {
 
 import { RoomsService } from './rooms.service';
 import { SocketUser } from '../users/users.socket';
-// import RedisAdapterService from '../redis-adapter/redis-adapter.service';
 import { CommandsService } from '../commands/commands.service';
 
 @WebSocketGateway()
@@ -31,33 +30,52 @@ export class RoomsGateway {
 
   constructor(
     private roomsService: RoomsService,
-    // private redisAdapter: RedisAdapterService,
     private commandsService: CommandsService,
   ) {}
 
   getSocketGameId = (socket: SocketUser) => {
+    // Get the user's possible game rooms
     const gameRooms = Object.keys(socket.rooms).filter((room) =>
       room.includes('game'),
     );
 
-    // Get the user's possible game rooms
-    if (gameRooms.length !== 1) {
-      this.logger
-        .warn(`${socket.user.displayUsername} does not have a single joined \
-            game. They are currently in: ${gameRooms}`);
+    // If they have no rooms, check for their last roomId
+    if (gameRooms.length === 0) {
+      if (!socket.lastRoomId) {
+        this.logger.warn(
+          `${socket.user.displayUsername} does not have a single joined game. They are currently in: ${gameRooms}`,
+        );
+        return {
+          roomKey: '-1',
+          gameId: -1,
+        };
+      }
+
       return {
-        room: '-1',
-        gameId: -1,
+        roomKey: `game:${socket.lastRoomId}`,
+        gameId: socket.lastRoomId,
       };
     }
 
-    // socket.io-redis room name: 'game<id>'
-    const room = gameRooms[0];
-    const gameId = parseInt(room.replace('game:', ''), 10);
+    // If they have one joined socket room
+    if (gameRooms.length === 1) {
+      // socket.io-redis room name: 'game:<id>'
+      const roomKey = gameRooms[0];
+      const gameId = parseInt(roomKey.replace('game:', ''), 10);
 
+      return {
+        roomKey,
+        gameId,
+      };
+    }
+
+    // If we reach here then theres not much we can do.
+    this.logger.warn(
+      `${socket.user.displayUsername} does not have a single joined game. They are currently in: ${gameRooms}`,
+    );
     return {
-      room,
-      gameId,
+      roomKey: '-1',
+      gameId: -1,
     };
   };
 
@@ -70,7 +88,7 @@ export class RoomsGateway {
         return undefined;
       }
 
-      const { room, gameId } = this.getSocketGameId(socket);
+      const { roomKey, gameId } = this.getSocketGameId(socket);
 
       // Chat message
       this.logger.log(
@@ -88,7 +106,7 @@ export class RoomsGateway {
         this.roomsService.storeChat(gameId, chatResponse);
 
         this.server
-          .to(room)
+          .to(roomKey)
           .emit(RoomSocketEvents.ROOM_CHAT_TO_CLIENT, chatResponse);
       } catch (err) {
         this.logger.error('Validation failed. Error: ', err);
@@ -121,8 +139,15 @@ export class RoomsGateway {
       // Join the socket io room
       socket.join(`game:${joinGame.id}`);
 
-      // Send the room data to user
-      this.roomsService.sendRoomDataToUser(socket, joinGame.id);
+      // Set last room ID
+      socket.lastRoomId = joinGame.id; // eslint-disable-line
+
+      // Join the user to the game
+      await this.roomsService.roomEvent(
+        socket,
+        joinGame.id,
+        RoomSocketEvents.JOIN_ROOM,
+      );
 
       this.logger.log(
         `${socket.user.displayUsername} has joined game ${joinGame.id}.`,
@@ -149,13 +174,18 @@ export class RoomsGateway {
   }
 
   @SubscribeMessage(RoomSocketEvents.LEAVE_ROOM)
-  async handleLeaveGame(socket: SocketUser, leaveGame: GameIdDto) {
-    if (leaveGame.id && (await this.roomsService.hasGame(leaveGame.id))) {
+  async handleLeaveGame(socket: SocketUser) {
+    const { gameId } = this.getSocketGameId(socket);
+
+    if (gameId !== -1) {
       // Leave the socket io room
-      socket.leave(`game:${leaveGame.id}`);
+      socket.leave(`game:${gameId}`);
+
+      // Leave the game
+      this.roomsService.roomEvent(socket, gameId, RoomSocketEvents.LEAVE_ROOM);
 
       this.logger.log(
-        `${socket.user.displayUsername} has left game ${leaveGame.id}.`,
+        `${socket.user.displayUsername} has left game ${gameId}.`,
       );
 
       // Send message to users
@@ -167,10 +197,10 @@ export class RoomsGateway {
           type: ChatResponseType.PLAYER_LEAVE_GAME,
         });
 
-        this.roomsService.storeChat(leaveGame.id, chatResponse);
+        this.roomsService.storeChat(gameId, chatResponse);
 
         this.server
-          .to(`game:${leaveGame.id}`)
+          .to(`game:${gameId}`)
           .emit(RoomSocketEvents.ROOM_CHAT_TO_CLIENT, chatResponse);
 
         // TODO Remove room if no one is left and game has not started.
@@ -179,6 +209,48 @@ export class RoomsGateway {
       }
       return 'OK';
     }
-    return `Game ${leaveGame.id} not found.`;
+    return `Game ${gameId} not found.`;
+  }
+
+  @SubscribeMessage(RoomSocketEvents.SIT_DOWN)
+  async handleSitDown(socket: SocketUser) {
+    const { gameId } = this.getSocketGameId(socket);
+
+    if (gameId === -1) {
+      return 'You aren\'t in a room';
+    }
+
+    await this.roomsService.roomEvent(
+      socket,
+      gameId,
+      RoomSocketEvents.SIT_DOWN,
+    );
+
+    this.logger.log(
+      `${socket.user.displayUsername} has sat down in room ${gameId}!`,
+    );
+
+    return 'OK';
+  }
+
+  @SubscribeMessage(RoomSocketEvents.STAND_UP)
+  async handleStandUp(socket: SocketUser) {
+    const { gameId } = this.getSocketGameId(socket);
+
+    if (gameId === -1) {
+      return 'You aren\'t in a room';
+    }
+
+    await this.roomsService.roomEvent(
+      socket,
+      gameId,
+      RoomSocketEvents.STAND_UP,
+    );
+
+    this.logger.log(
+      `${socket.user.displayUsername} has stood up in room ${gameId}!`,
+    );
+
+    return 'OK';
   }
 }

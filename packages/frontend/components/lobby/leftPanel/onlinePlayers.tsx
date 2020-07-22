@@ -15,12 +15,12 @@ const OnlinePlayers = (): ReactElement => {
       <ul>
         {players.map((player, i) => (
           <li
-            key={player.username}
+            key={player.displayUsername}
             style={{
               background: i % 2 === 0 ? 'var(--light-alt)' : 'var(--light)',
             }}
           >
-            {player.username}
+            {player.displayUsername}
           </li>
         ))}
       </ul>

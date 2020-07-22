@@ -1,10 +1,7 @@
-import {
-  IOnlinePlayer,
-  ISetOnlinePlayersAction,
-  SET_ONLINE_PLAYERS,
-} from './types';
+import { OnlinePlayer } from '@proavalon/proto/lobby';
+import { ISetOnlinePlayersAction, SET_ONLINE_PLAYERS } from './types';
 
-export type OnlinePlayersState = IOnlinePlayer[];
+export type OnlinePlayersState = OnlinePlayer[];
 
 const initialState: OnlinePlayersState = [];
 

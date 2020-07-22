@@ -7,9 +7,9 @@ import {
 } from 'class-validator';
 import 'reflect-metadata';
 
-export const GameSocketEvents = {
-  UPDATE_GAME: 'UPDATE_GAME',
-};
+export enum GameSocketEvents {
+  UPDATE_GAME = 'UPDATE_GAME',
+}
 
 // Game data
 export enum MissionOutcome {

@@ -8,21 +8,28 @@ import {
   IsEnum,
   ValidateNested,
 } from 'class-validator';
+import { OnlinePlayer } from './lobby';
+
 export enum GameMode {
   VANILLA = 'VANILLA',
   AVALON = 'AVALON',
 }
 
-export const RoomSocketEvents = {
-  CREATE_ROOM: 'CREATE_ROOM',
-  JOIN_ROOM: 'JOIN_ROOM',
-  LEAVE_ROOM: 'LEAVE_ROOM',
+export enum RoomSocketEvents {
+  CREATE_ROOM = 'CREATE_ROOM',
+  START_GAME = 'START_GAME',
 
-  ROOM_CHAT_TO_CLIENT: 'ROOM_CHAT_TO_CLIENT',
-  ROOM_CHAT_TO_SERVER: 'ROOM_CHAT_TO_SERVER',
+  JOIN_ROOM = 'JOIN_ROOM',
+  LEAVE_ROOM = 'LEAVE_ROOM',
 
-  UPDATE_ROOM: 'UPDATE_ROOM',
-};
+  SIT_DOWN = 'SIT_DOWN',
+  STAND_UP = 'STAND_UP',
+
+  ROOM_CHAT_TO_CLIENT = 'ROOM_CHAT_TO_CLIENT',
+  ROOM_CHAT_TO_SERVER = 'ROOM_CHAT_TO_SERVER',
+
+  UPDATE_ROOM = 'UPDATE_ROOM',
+}
 
 // Game Data
 export enum RoomState {
@@ -59,12 +66,18 @@ export class RoomData {
   roles!: string[];
 
   @ValidateNested({ each: true })
-  playerEntities!: PlayerData[];
+  playerData!: PlayerData[];
+
+  @ValidateNested({ each: true })
+  spectatorData!: OnlinePlayer[];
 
   @IsString({
     each: true,
   })
   kickedPlayers!: string[]; // holds usernames (lowercased)
+
+  @IsString()
+  gameBarMsg!: string;
 }
 
 export class CreateRoomDto {

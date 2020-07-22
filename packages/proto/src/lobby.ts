@@ -3,15 +3,15 @@ import { Type } from 'class-transformer';
 import 'reflect-metadata';
 import { MissionOutcome } from './game';
 
-export const LobbySocketEvents = {
-  AUTHORIZED: 'AUTHORIZED',
-  ALL_CHAT_TO_CLIENT: 'ALL_CHAT_TO_CLIENT',
-  ALL_CHAT_TO_SERVER: 'ALL_CHAT_TO_SERVER',
-  ONLINE_PLAYERS: 'ONLINE_PLAYERS',
-  USER_RECONNECT: 'USER_RECONNECT',
+export enum LobbySocketEvents {
+  AUTHORIZED = 'AUTHORIZED',
+  ALL_CHAT_TO_CLIENT = 'ALL_CHAT_TO_CLIENT',
+  ALL_CHAT_TO_SERVER = 'ALL_CHAT_TO_SERVER',
+  ONLINE_PLAYERS = 'ONLINE_PLAYERS',
+  USER_RECONNECT = 'USER_RECONNECT',
 
-  UPDATE_LOBBY_ROOMS: 'UPDATE_LOBBY_ROOMS',
-};
+  UPDATE_LOBBY_ROOMS = 'UPDATE_LOBBY_ROOMS',
+}
 
 export class ChatRequest {
   @IsDefined()
@@ -56,11 +56,10 @@ export enum OnlinePlayerRewards {}
 export class OnlinePlayer {
   @IsString()
   @IsDefined()
-  username!: string;
+  displayUsername!: string;
 
-  @IsDefined()
   @IsEnum(OnlinePlayerRewards, { each: true })
-  rewards!: OnlinePlayerRewards[];
+  rewards?: OnlinePlayerRewards[];
 }
 
 export class LobbyRoomData {

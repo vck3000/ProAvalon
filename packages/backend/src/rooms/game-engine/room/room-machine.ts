@@ -1,12 +1,6 @@
 import { Machine } from 'xstate';
-import {
-  PickData,
-  VoteTeamData,
-  GameState,
-  MissionOutcome,
-} from '@proavalon/proto/game';
-import { RoomData, RoomState, GameMode } from '@proavalon/proto/room';
-import { LobbyRoomData } from '@proavalon/proto/lobby';
+import { PickData, VoteTeamData, GameState } from '@proavalon/proto/game';
+import { RoomState, GameMode, RoomSocketEvents } from '@proavalon/proto/room';
 import {
   initialSettings,
   playerJoin,
@@ -41,25 +35,34 @@ export interface PlayerInfo {
   displayUsername: string;
 }
 
-interface GameData {
+interface MachineGameData {
   leader: number;
   team: string[];
+}
+
+export declare class MachineRoomData {
+  id: number;
+  host: string;
+  mode: GameMode;
+  roles: string[];
+  kickedPlayers: string[];
+  gameBarMsg: string;
 }
 
 export interface RoomContext {
   entities: Entity[];
   entityCount: number;
   systems: string[];
-  game: GameData;
+  gameData: MachineGameData;
+  roomData: MachineRoomData;
+  // TODO make this a literal type
   gameState: string;
-  roomDataToUser: RoomData;
-  lobbyRoomDataToUser: LobbyRoomData;
 }
 
 export interface RoomStateSchema {
   states: {
     [RoomState.waiting]: {};
-    game: {
+    [RoomState.game]: {
       states: {
         standard: {
           states: {
@@ -76,16 +79,16 @@ export interface RoomStateSchema {
         };
       };
     };
-    finished: {};
+    [RoomState.finished]: {};
   };
 }
 
 type BaseEvents =
   | { type: 'INITIAL_SETTINGS'; id: number; host: string }
-  | { type: 'PLAYER_JOIN'; player: PlayerInfo }
-  | { type: 'PLAYER_LEAVE'; player: PlayerInfo }
-  | { type: 'PLAYER_SIT_DOWN'; player: PlayerInfo }
-  | { type: 'PLAYER_STAND_UP'; player: PlayerInfo }
+  | { type: RoomSocketEvents.JOIN_ROOM; player: PlayerInfo }
+  | { type: RoomSocketEvents.LEAVE_ROOM; player: PlayerInfo }
+  | { type: RoomSocketEvents.SIT_DOWN; player: PlayerInfo }
+  | { type: RoomSocketEvents.STAND_UP; player: PlayerInfo }
   | { type: 'START_GAME'; player: PlayerInfo }
   | { type: 'GAME_END' };
 
@@ -113,32 +116,15 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
       entities: [],
       entityCount: 0,
       systems: [],
-      game: { leader: 0, team: [] },
+      gameData: { leader: 0, team: [] },
       gameState: 'waiting',
-      roomDataToUser: {
+      roomData: {
         id: -1,
-        state: RoomState.waiting,
         roles: ['merlin', 'assassin'],
         host: 'undefined',
         mode: GameMode.AVALON,
         kickedPlayers: [],
-        playerEntities: [],
-      },
-      lobbyRoomDataToUser: {
-        mode: GameMode.AVALON,
-        id: -1,
-        host: 'undefined',
-        avatarLinks: [
-          'http://cdn.discordapp.com/attachments/430166478193688597/481009331622510602/pronub-res.png',
-          'http://cdn.discordapp.com/attachments/430166478193688597/481009331622510602/pronub-res.png',
-          '/game_room/base-res.png',
-          '/game_room/base-res.png',
-          '/game_room/base-res.png',
-          '/game_room/base-res.png',
-          '/game_room/base-res.png',
-        ],
-        numSpectators: 0,
-        missionOutcome: [MissionOutcome.fail, MissionOutcome.success],
+        gameBarMsg: 'Avalon: Assassin, Merlin',
       },
     },
     on: {
@@ -149,16 +135,16 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
     states: {
       waiting: {
         on: {
-          PLAYER_JOIN: {
+          [RoomSocketEvents.JOIN_ROOM]: {
             actions: 'playerJoin',
           },
-          PLAYER_LEAVE: {
+          [RoomSocketEvents.LEAVE_ROOM]: {
             actions: 'playerLeave',
           },
-          PLAYER_SIT_DOWN: {
+          [RoomSocketEvents.SIT_DOWN]: {
             actions: 'playerSitDown',
           },
-          PLAYER_STAND_UP: {
+          [RoomSocketEvents.STAND_UP]: {
             actions: 'playerStandUp',
           },
           START_GAME: {

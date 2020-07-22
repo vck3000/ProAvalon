@@ -1,4 +1,5 @@
 import { interpret, Interpreter } from 'xstate';
+import { RoomSocketEvents } from '@proavalon/proto/room';
 import {
   RoomMachine,
   RoomContext,
@@ -38,7 +39,7 @@ describe('RoomMachine [Base]', () => {
 
     expect(service.state.context.entities.length).toEqual(0);
 
-    service.send('PLAYER_JOIN', { player });
+    service.send(RoomSocketEvents.JOIN_ROOM, { player });
     expect(service.state.context.entities[0].components).toHaveProperty(
       CPlayer.name,
     );
@@ -46,17 +47,17 @@ describe('RoomMachine [Base]', () => {
       expect.objectContaining({ ...player, satDown: false }),
     );
 
-    service.send('PLAYER_SIT_DOWN', { player });
+    service.send(RoomSocketEvents.SIT_DOWN, { player });
     expect(service.state.context.entities[0].components[CPlayer.name]).toEqual(
       expect.objectContaining({ ...player, satDown: true }),
     );
 
-    service.send('PLAYER_STAND_UP', { player });
+    service.send(RoomSocketEvents.STAND_UP, { player });
     expect(service.state.context.entities[0].components[CPlayer.name]).toEqual(
       expect.objectContaining({ ...player, satDown: false }),
     );
 
-    service.send('PLAYER_LEAVE', { player });
+    service.send(RoomSocketEvents.LEAVE_ROOM, { player });
     expect(service.state.context.entities.length).toEqual(0);
   });
 
@@ -64,12 +65,12 @@ describe('RoomMachine [Base]', () => {
     const gen = mockPlayerGen();
     const player = gen.next().value;
 
-    service.send('PLAYER_JOIN', { player });
-    service.send('PLAYER_SIT_DOWN', { player });
+    service.send(RoomSocketEvents.JOIN_ROOM, { player });
+    service.send(RoomSocketEvents.SIT_DOWN, { player });
 
     expect(service.state.context.entities.length).toEqual(1);
 
-    service.send('PLAYER_LEAVE', { player });
+    service.send(RoomSocketEvents.LEAVE_ROOM, { player });
     expect(service.state.context.entities.length).toEqual(0);
   });
 
@@ -79,24 +80,24 @@ describe('RoomMachine [Base]', () => {
     // Only add 4 players
     for (let i = 0; i < 4; i += 1) {
       const player = gen.next().value;
-      service.send('PLAYER_JOIN', { player });
-      service.send('PLAYER_SIT_DOWN', { player });
+      service.send(RoomSocketEvents.JOIN_ROOM, { player });
+      service.send(RoomSocketEvents.SIT_DOWN, { player });
     }
 
     // Should not start
-    service.send('START_GAME');
+    service.send(RoomSocketEvents.START_GAME);
     expect(service.state.value).toEqual('waiting');
 
     // Join the 5th player
     const player = gen.next().value;
-    service.send('PLAYER_JOIN', { player });
+    service.send(RoomSocketEvents.JOIN_ROOM, { player });
 
     // Should not start if player hasn't sat down
     service.send('START_GAME');
     expect(service.state.value).toEqual('waiting');
 
     // Should start now
-    service.send('PLAYER_SIT_DOWN', { player });
+    service.send(RoomSocketEvents.SIT_DOWN, { player });
 
     service.send('START_GAME');
     expect(service.state.value).toEqual({
@@ -108,8 +109,8 @@ describe('RoomMachine [Base]', () => {
     const gen = mockPlayerGen();
     const player = gen.next().value;
 
-    service.send('PLAYER_JOIN', { player });
-    service.send('PLAYER_JOIN', { player });
+    service.send(RoomSocketEvents.JOIN_ROOM, { player });
+    service.send(RoomSocketEvents.JOIN_ROOM, { player });
 
     expect(service.state.context.entities.length).toEqual(1);
   });
@@ -129,8 +130,8 @@ describe('RoomMachine [Game]', () => {
     for (let i = 0; i < 6; i += 1) {
       const player = gen.next().value;
       mockPlayers.push(player);
-      service.send('PLAYER_JOIN', { player });
-      service.send('PLAYER_SIT_DOWN', { player });
+      service.send(RoomSocketEvents.JOIN_ROOM, { player });
+      service.send(RoomSocketEvents.SIT_DOWN, { player });
     }
 
     service.send('START_GAME');
@@ -138,7 +139,7 @@ describe('RoomMachine [Game]', () => {
 
   it('should be able to pick, vote and approve team', () => {
     expect(service.state.value).toMatchObject({ game: { standard: 'pick' } });
-    const { leader } = service.state.context.game;
+    const { leader } = service.state.context.gameData;
 
     service.send('PICK', {
       player: mockPlayers[leader],
@@ -192,7 +193,7 @@ describe('RoomMachine [Game]', () => {
     });
 
     // Leader should advance.
-    expect(service.state.context.game.leader).toEqual(
+    expect(service.state.context.gameData.leader).toEqual(
       (leader + 1) % (mockPlayers.length - 1),
     );
 
@@ -202,7 +203,7 @@ describe('RoomMachine [Game]', () => {
 
   it('should be able to pick, vote and reject team', () => {
     expect(service.state.value).toMatchObject({ game: { standard: 'pick' } });
-    const { leader } = service.state.context.game;
+    const { leader } = service.state.context.gameData;
 
     service.send('PICK', {
       player: mockPlayers[leader],
@@ -235,13 +236,11 @@ describe('RoomMachine [Game]', () => {
 
     // Should be voting on the mission now.
     expect(service.state.value).toMatchObject({
-      game: {
-        standard: 'pick',
-      },
+      game: { standard: 'pick' },
     });
 
     // Leader should advance.
-    expect(service.state.context.game.leader).toEqual(
+    expect(service.state.context.gameData.leader).toEqual(
       (leader + 1) % (mockPlayers.length - 1),
     );
 
@@ -252,7 +251,7 @@ describe('RoomMachine [Game]', () => {
   it('should only pick if requester is leader', () => {
     expect(service.state.value).toMatchObject({ game: { standard: 'pick' } });
 
-    const { leader } = service.state.context.game;
+    const { leader } = service.state.context.gameData;
 
     // Send from wrong leader
     service.send('PICK', {
@@ -289,7 +288,7 @@ describe('RoomMachine [Game]', () => {
   });
 
   it('should not be able to transition standard states in special state', () => {
-    const { leader } = service.state.context.game;
+    const { leader } = service.state.context.gameData;
     // Starting state
     expect(service.state.value).toEqual({
       game: { standard: 'pick', special: 'idle' },
@@ -342,7 +341,7 @@ describe('RoomMachine [Game]', () => {
     service.send('ADD_SYSTEM', { systemName: SAssassin.name });
 
     // Leader make a pick
-    const { leader } = service.state.context.game;
+    const { leader } = service.state.context.gameData;
 
     service.send('PICK', {
       player: mockPlayers[leader],

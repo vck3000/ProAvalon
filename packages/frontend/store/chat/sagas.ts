@@ -8,7 +8,7 @@ import {
 } from '@proavalon/proto/lobby';
 import { RoomSocketEvents } from '@proavalon/proto/room';
 
-import socket from '../../socket';
+import { socket } from '../../socket';
 
 import { getBackendUrl } from '../../utils/getEnvVars';
 import { setMessages } from './actions';

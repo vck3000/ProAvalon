@@ -8,7 +8,9 @@ const initialState: RoomData = {
   mode: GameMode.AVALON,
   roles: [],
   kickedPlayers: [],
-  playerEntities: [],
+  playerData: [],
+  spectatorData: [],
+  gameBarMsg: '',
 };
 
 const reducer = (state = initialState, action: RoomActionTypes): RoomData => {

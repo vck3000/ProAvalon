@@ -27,12 +27,12 @@ export default class RedisClientService implements OnModuleDestroy {
    * @param {(client: Redis.Redis, multi: Redis.Pipeline => Promise<void>)} setMulti
    * - A function that applies operations on `multi`. `client` is given for immediate Redis queries.
    * @param {number} [retryLimit] - (Optional) Number of times to retry. Default 3.
-   * @param {number} [retryNum] - (Optional) Specifies retry it is on. Default 0.
+   * @param {number} [retryNum] - (Optional) Specifies the nth retry it is on. Starts at 0.
    */
   async lockDo(
     key: string,
     setMulti: (client: Redis.Redis, multi: Redis.Pipeline) => Promise<void>,
-    retryLimit = 3, // Default starting values
+    retryLimit = 3,
     retryNum = 0,
   ): Promise<boolean> {
     // Create a new client so watch doesn't stop the main client.

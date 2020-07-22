@@ -77,8 +77,8 @@ export class OnlinePlayersService implements OnModuleDestroy {
     try {
       const players = await transformAndValidate(
         OnlinePlayer,
-        onlinePlayers.map((username: string) => ({
-          username,
+        onlinePlayers.map((displayUsername: string) => ({
+          displayUsername,
           rewards: [],
         })),
       );

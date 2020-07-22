@@ -13,6 +13,6 @@ import { CommandsModule } from '../commands/commands.module';
   ],
   controllers: [],
   providers: [RoomsService, RoomsGateway],
-  exports: [RoomsService],
+  exports: [RoomsService, RoomsGateway],
 })
 export class RoomsModule {}

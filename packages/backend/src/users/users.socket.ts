@@ -4,4 +4,5 @@ import { User } from './user.model';
 
 export interface SocketUser extends Socket {
   user: DocumentType<User>;
+  lastRoomId?: number;
 }

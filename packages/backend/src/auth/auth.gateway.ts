@@ -18,6 +18,7 @@ import { UsersService } from '../users/users.service';
 import { AllChatService } from '../all-chat/all-chat.service';
 import { SocketUser } from '../users/users.socket';
 import { RoomsService } from '../rooms/rooms.service';
+import { RoomsGateway } from '../rooms/rooms.gateway';
 
 import RedisAdapterService from '../redis-adapter/redis-adapter.service';
 import { OnlinePlayersService } from './online-players/online-players.service';
@@ -34,7 +35,8 @@ export class AuthGateway implements OnGatewayConnection {
     private onlinePlayersService: OnlinePlayersService,
     private onlineSocketsService: OnlineSocketsService,
     private redisAdapter: RedisAdapterService,
-    private gamesService: RoomsService,
+    private roomsService: RoomsService,
+    private roomsGateway: RoomsGateway,
   ) {}
 
   private readonly logger = new Logger(AuthGateway.name);
@@ -110,7 +112,7 @@ export class AuthGateway implements OnGatewayConnection {
     // Successful authentication
     socket.join('lobby');
     // Send them the lobby games
-    this.gamesService.updateLobbyGames(socket);
+    this.roomsService.updateLobbyGames(socket);
 
     // Let client know that we have finished our checks and that
     // they can now request data if they need.
@@ -141,6 +143,9 @@ export class AuthGateway implements OnGatewayConnection {
       this.logger.log('No socket.user, prematurely returning in disconnect');
       return;
     }
+
+    // Leave the game if they are in one
+    await this.roomsGateway.handleLeaveGame(socket);
 
     // Remove their record on redis - no need to await
     this.onlineSocketsService.deregister(socket.user.username);

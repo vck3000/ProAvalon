@@ -1,4 +1,5 @@
 import { assign } from 'xstate';
+import { RoomSocketEvents } from '@proavalon/proto/room';
 import { RoomContext, RoomEvents } from './room-machine';
 import { Entity } from '../ecs/game-entity';
 import { CPlayer } from '../ecs/game-components';
@@ -8,15 +9,10 @@ export const initialSettings = assign<RoomContext, RoomEvents>((c, e) => {
   if (e.type === 'INITIAL_SETTINGS') {
     // Set in the ID and host if ID has not been set yet.
     // Change in two places: roomDataToUser and lobbyRoomDataToUser.
-    if (c.roomDataToUser.id === -1) {
+    if (c.roomData.id === -1) {
       return {
         ...c,
-        roomDataToUser: { ...c.roomDataToUser, id: e.id, host: e.host },
-        lobbyRoomDataToUser: {
-          ...c.lobbyRoomDataToUser,
-          id: e.id,
-          host: e.host,
-        },
+        roomData: { ...c.roomData, id: e.id, host: e.host },
       };
     }
   }
@@ -36,21 +32,34 @@ export const setGameStateFactory = (gameState: string) =>
   }));
 
 export const playerJoin = assign<RoomContext, RoomEvents>((c, e) => {
-  if (e.type === 'PLAYER_JOIN') {
-    const index = indexOfPlayer(c.entities, e.player.displayUsername);
+  const entities = [...c.entities];
+  let { entityCount } = c;
+
+  if (e.type === RoomSocketEvents.JOIN_ROOM) {
+    const index = indexOfPlayer(entities, e.player.displayUsername);
+
     if (index === -1) {
-      const newPlayer = new Entity(c.entityCount);
+      const newPlayer = new Entity(entityCount);
       newPlayer.addComponent(new CPlayer(e.player));
-      return { ...c, entities: [...c.entities, newPlayer] };
+
+      entityCount += 1;
+
+      entities.push(newPlayer);
+
+      return {
+        ...c,
+        entities,
+        entityCount,
+      };
     }
   }
   return { ...c };
 });
 
 export const playerLeave = assign<RoomContext, RoomEvents>((c, e) => {
-  const { entities } = c;
+  const entities = [...c.entities];
 
-  if (e.type === 'PLAYER_LEAVE') {
+  if (e.type === RoomSocketEvents.LEAVE_ROOM) {
     // Remove from players and spectators
     const index = indexOfPlayer(entities, e.player.displayUsername);
     entities.splice(index, 1);
@@ -62,11 +71,13 @@ export const playerLeave = assign<RoomContext, RoomEvents>((c, e) => {
 });
 
 export const playerSitDown = assign<RoomContext, RoomEvents>((c, e) => {
-  const { entities } = c;
+  const entities = [...c.entities];
 
-  if (e.type === 'PLAYER_SIT_DOWN') {
+  if (e.type === RoomSocketEvents.SIT_DOWN) {
     const index = indexOfPlayer(entities, e.player.displayUsername);
-    (entities[index].components[CPlayer.name] as CPlayer).satDown = true;
+    if (index !== -1) {
+      (entities[index].components[CPlayer.name] as CPlayer).satDown = true;
+    }
   }
 
   return {
@@ -76,9 +87,9 @@ export const playerSitDown = assign<RoomContext, RoomEvents>((c, e) => {
 });
 
 export const playerStandUp = assign<RoomContext, RoomEvents>((c, e) => {
-  const { entities } = c;
+  const entities = [...c.entities];
 
-  if (e.type === 'PLAYER_STAND_UP') {
+  if (e.type === RoomSocketEvents.STAND_UP) {
     const index = indexOfPlayer(entities, e.player.displayUsername);
     (entities[index].components[CPlayer.name] as CPlayer).satDown = false;
   }

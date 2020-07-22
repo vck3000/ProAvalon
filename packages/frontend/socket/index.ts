@@ -4,7 +4,6 @@ import io from 'socket.io-client';
 import Cookie from 'js-cookie';
 import Swal from 'sweetalert2';
 import { LobbySocketEvents } from '@proavalon/proto/lobby';
-
 import { store } from '../store/index';
 import { logout } from '../store/user/actions';
 
@@ -100,11 +99,7 @@ class SocketConnection {
     }
   };
 
-  emit = (
-    event: string,
-    message: any,
-    callback: Function | null = null,
-  ): void => {
+  emit = (event: string, message?: any, callback?: Function): void => {
     if (callback) {
       this.socket.emit(event, message, callback);
     } else {
@@ -135,5 +130,4 @@ class SocketConnection {
 }
 
 // Only have one instance of this running.
-const socket = new SocketConnection();
-export default socket;
+export const socket = new SocketConnection();

@@ -3,7 +3,7 @@ import { call, takeLatest, fork, put } from 'redux-saga/effects';
 import Cookie from 'js-cookie';
 import Swal from 'sweetalert2';
 
-import socket from '../../socket';
+import { socket } from '../../socket';
 
 import {
   LOGIN,

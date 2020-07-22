@@ -1,11 +1,8 @@
-import {
-  SET_ONLINE_PLAYERS,
-  IOnlinePlayer,
-  OnlinePlayersActionTypes,
-} from './types';
+import { OnlinePlayer } from '@proavalon/proto/lobby';
+import { SET_ONLINE_PLAYERS, OnlinePlayersActionTypes } from './types';
 
 export const setOnlinePlayers = (
-  players: IOnlinePlayer[],
+  players: OnlinePlayer[],
 ): OnlinePlayersActionTypes => {
   return {
     type: SET_ONLINE_PLAYERS,
