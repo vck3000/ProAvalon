@@ -5,6 +5,7 @@ import {
   filterByComponent,
   getPlayers,
   getCurrentTeamSize,
+  getNumMissionOutcomes,
 } from '../util';
 import { CPlayer, CVoteTeam, CVoteMission } from '../ecs/game-components';
 
@@ -77,7 +78,6 @@ export const voteTeamRejected = (c: RoomContext, _: RoomEvents) => {
   return votes && votes.numRejects >= votes.numApproves;
 };
 
-// TODO Need to test this
 export const voteTeamHammerRejected = (c: RoomContext, e: RoomEvents) => {
   const rejected = voteTeamRejected(c, e);
   const { missionHistory } = c.gameData.gameHistory;
@@ -109,10 +109,8 @@ export const allMissionVotesIn = (c: RoomContext, _: RoomEvents) => {
   return votes.length === getCurrentTeamSize(c);
 };
 
-export const fiveMissionsFinished = (c: RoomContext, e: RoomEvents) => {
-  const gameHistory = { ...c.gameData.gameHistory };
-  const numOfMissions = gameHistory.missionHistory.length;
-
-  // TODO This needs testing
-  return numOfMissions >= 5 && allMissionVotesIn(c, e);
+// Game over if we have 3 successes or 3 fails
+export const missionsFinished = (c: RoomContext, _: RoomEvents) => {
+  const { numSuccess, numFail } = getNumMissionOutcomes(c);
+  return numSuccess >= 3 || numFail >= 3;
 };

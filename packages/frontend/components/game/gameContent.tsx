@@ -30,6 +30,10 @@ const buttonActions = {
   },
 };
 
+// const buttonText = (roomData: RoomData) => {
+//
+// }
+
 const GameContent = ({ className }: Props): ReactElement => {
   // const [selectedPlayers, setSelectedPlayers] = useState([]);
   const roomData = useSelector((state: RootState) => state.room);
@@ -41,6 +45,7 @@ const GameContent = ({ className }: Props): ReactElement => {
         Game Content!
         <p className="json">{roomDataString}</p>
       </div>
+
       <div className="buttonHolder">
         <GameButton
           text="Join"
@@ -53,6 +58,7 @@ const GameContent = ({ className }: Props): ReactElement => {
           event={buttonActions[roomData.state].red}
         />
       </div>
+
       <div className="gameBar">{roomData.gameBarMsg}</div>
       <style jsx>
         {`

@@ -1,3 +1,4 @@
+import { MissionOutcome } from '@proavalon/proto/game';
 import { Entity } from './ecs/game-entity';
 import { CPlayer } from './ecs/game-components';
 import { RoomContext } from './room/rooms-machine-types';
@@ -52,4 +53,19 @@ export const getCurrentTeamSize = (c: RoomContext) => {
   const teamSize = parseInt(teamSizes[missionNum - 1].replace('*', ''), 10);
 
   return teamSize;
+};
+
+// Total mission outcomes (success or fail), not vote team.
+export const getNumMissionOutcomes = (c: RoomContext) => {
+  const missionOutcome = [...c.gameData.gameHistory.missionOutcome];
+
+  const numSuccess = missionOutcome.filter((m) => m === MissionOutcome.success)
+    .length;
+  const numFail = missionOutcome.filter((m) => m === MissionOutcome.fail)
+    .length;
+
+  return {
+    numSuccess,
+    numFail,
+  };
 };

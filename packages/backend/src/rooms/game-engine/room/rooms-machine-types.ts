@@ -6,6 +6,7 @@ import {
   GameHistory,
   GameSocketEvents,
   VoteMissionData,
+  Alliance,
 } from '@proavalon/proto/game';
 import { Entity } from '../ecs/game-entity';
 
@@ -19,6 +20,7 @@ export interface MachineGameData {
   team: string[];
   gameSize: number;
   gameHistory: GameHistory;
+  winner?: Alliance;
 }
 
 export declare class MachineRoomData {
@@ -50,6 +52,7 @@ export interface RoomStateSchema {
             [GameState.pick]: {};
             [GameState.voteTeam]: {};
             [GameState.voteMission]: {};
+            [GameState.finished]: {};
           };
         };
         special: {
@@ -80,7 +83,8 @@ type GameEvents =
       type: GameSocketEvents.VOTE_MISSION;
       player: PlayerInfo;
       data: VoteMissionData;
-    };
+    }
+  | { type: 'gameFinishDone' };
 
 type EntityEvents =
   | { type: 'SPECIAL_STATE_ENTER' }

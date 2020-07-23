@@ -1,3 +1,4 @@
+import { Alliance } from '@proavalon/proto/game';
 import { Entity } from './game-entity';
 import {
   CSeeAlliance,
@@ -22,12 +23,12 @@ const GamePlayer = (entity: Entity): void => {
 
 const Resistance = (entity: Entity): void => {
   GamePlayer(entity);
-  entity.addComponent(new CAlliance('resistance'));
+  entity.addComponent(new CAlliance(Alliance.resistance));
 };
 
 const Spy = (entity: Entity): void => {
   GamePlayer(entity);
-  entity.addComponent(new CAlliance('spy'));
+  entity.addComponent(new CAlliance(Alliance.spy));
 };
 
 const Merlin = (entity: Entity): void => {

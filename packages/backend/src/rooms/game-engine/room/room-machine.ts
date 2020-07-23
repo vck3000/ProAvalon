@@ -20,6 +20,7 @@ import {
   voteTeamFinish,
   voteMissionEvent,
   voteMissionFinish,
+  finishGameEntry,
 } from './room-machine-game-actions';
 
 import {
@@ -28,7 +29,7 @@ import {
   voteTeamHammerRejected,
   voteTeamRejected,
   voteTeamApproved,
-  fiveMissionsFinished,
+  missionsFinished,
   allMissionVotesIn,
 } from './room-machine-guards';
 
@@ -114,6 +115,12 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
                   type: 'setGameState',
                   gameState: 'pick',
                 },
+                always: [
+                  {
+                    target: 'finished',
+                    cond: 'missionsFinished',
+                  },
+                ],
                 on: {
                   PICK: {
                     // External transitions so that runSystems is triggered!
@@ -163,11 +170,6 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
                 },
                 always: [
                   {
-                    target: '#finished',
-                    cond: 'fiveMissionsFinished',
-                    actions: 'voteMissionFinish',
-                  },
-                  {
                     target: 'pick',
                     cond: 'allMissionVotesIn',
                     actions: 'voteMissionFinish',
@@ -180,6 +182,19 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
                     internal: false,
                     in: '#room.game.special.idle',
                   },
+                },
+              },
+              finished: {
+                entry: [
+                  {
+                    type: 'setGameState',
+                    gameState: 'standard.finished',
+                  },
+                  'runSystems',
+                ],
+                on: {
+                  // runSystems will send this event when there is no system action
+                  gameFinishDone: '#finished',
                 },
               },
             },
@@ -213,6 +228,10 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
       finished: {
         id: 'finished',
         type: 'final',
+        entry: [
+          { type: 'setGameState', gameState: 'finished' },
+          'finishGameEntry',
+        ],
       },
     },
   },
@@ -233,6 +252,7 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
       voteTeamFinish,
       voteMissionEvent,
       voteMissionFinish,
+      finishGameEntry,
     },
     guards: {
       pickTeamGuard,
@@ -240,7 +260,7 @@ export const RoomMachine = Machine<RoomContext, RoomStateSchema, RoomEvents>(
       voteTeamHammerRejected,
       voteTeamRejected,
       voteTeamApproved,
-      fiveMissionsFinished,
+      missionsFinished,
       allMissionVotesIn,
     },
   },

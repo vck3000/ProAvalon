@@ -59,6 +59,7 @@ export enum GameState {
   pick = 'pick',
   voteTeam = 'voteTeam',
   voteMission = 'voteMission',
+  finished = 'finished',
 }
 
 export class GameData {
@@ -104,4 +105,9 @@ export class VoteTeamData {
 export class VoteMissionData {
   @IsEnum(MissionOutcome)
   vote!: MissionOutcome;
+}
+
+export enum Alliance {
+  resistance = 'resistance',
+  spy = 'spy',
 }

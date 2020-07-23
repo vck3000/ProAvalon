@@ -1,16 +1,18 @@
 import { interpret, Interpreter } from 'xstate';
-import { RoomSocketEvents } from '@proavalon/proto/room';
+import { RoomSocketEvents, RoomState } from '@proavalon/proto/room';
 import {
   GameState,
   GameSocketEvents,
   VoteTeamOutcome,
   MissionOutcome,
+  Alliance,
 } from '@proavalon/proto/game';
 import { RoomMachine } from './room-machine';
 import {
   RoomContext,
   RoomStateSchema,
   RoomEvents,
+  PlayerInfo,
 } from './rooms-machine-types';
 import { CPlayer, CVoteTeam, CVoteMission } from '../ecs/game-components';
 import { SAssassin } from '../ecs/game-systems';
@@ -26,7 +28,8 @@ function* mockPlayerGen() {
     yield {
       socketId: socketId.toString(),
       displayUsername,
-    };
+    } as PlayerInfo;
+
     socketId += 1;
     username = String.fromCharCode(username.charCodeAt(0) + 1);
     displayUsername = username.toUpperCase();
@@ -43,11 +46,11 @@ describe('RoomMachine [Base]', () => {
   });
 
   it('should be able to let a user join, sit down, stand up, and leave correctly', () => {
-    const player = gen.next().value;
+    const player = gen.next().value as PlayerInfo;
 
     expect(service.state.context.entities.length).toEqual(0);
 
-    service.send(RoomSocketEvents.JOIN_ROOM, { player });
+    service.send({ type: RoomSocketEvents.JOIN_ROOM, player });
     expect(service.state.context.entities[0].components).toHaveProperty(
       CPlayer.name,
     );
@@ -55,66 +58,68 @@ describe('RoomMachine [Base]', () => {
       expect.objectContaining({ ...player, satDown: false }),
     );
 
-    service.send(RoomSocketEvents.SIT_DOWN, { player });
+    service.send({ type: RoomSocketEvents.SIT_DOWN, player });
     expect(service.state.context.entities[0].components[CPlayer.name]).toEqual(
       expect.objectContaining({ ...player, satDown: true }),
     );
 
-    service.send(RoomSocketEvents.STAND_UP, { player });
+    service.send({ type: RoomSocketEvents.STAND_UP, player });
     expect(service.state.context.entities[0].components[CPlayer.name]).toEqual(
       expect.objectContaining({ ...player, satDown: false }),
     );
 
-    service.send(RoomSocketEvents.LEAVE_ROOM, { player });
+    service.send({ type: RoomSocketEvents.LEAVE_ROOM, player });
     expect(service.state.context.entities.length).toEqual(0);
   });
 
   it('should be able to let a user leave while sat down', () => {
-    const player = gen.next().value;
+    const player = gen.next().value as PlayerInfo;
 
-    service.send(RoomSocketEvents.JOIN_ROOM, { player });
-    service.send(RoomSocketEvents.SIT_DOWN, { player });
+    service.send({ type: RoomSocketEvents.JOIN_ROOM, player });
+    service.send({ type: RoomSocketEvents.SIT_DOWN, player });
 
     expect(service.state.context.entities.length).toEqual(1);
 
-    service.send(RoomSocketEvents.LEAVE_ROOM, { player });
+    service.send({ type: RoomSocketEvents.LEAVE_ROOM, player });
     expect(service.state.context.entities.length).toEqual(0);
   });
 
   it('should only start game if there are at least 5 players sitting down', () => {
     // Only add 4 players
+    const mockPlayers: PlayerInfo[] = [];
     for (let i = 0; i < 4; i += 1) {
-      const player = gen.next().value;
-      service.send(RoomSocketEvents.JOIN_ROOM, { player });
-      service.send(RoomSocketEvents.SIT_DOWN, { player });
+      const player = gen.next().value as PlayerInfo;
+      mockPlayers.push(player);
+      service.send({ type: RoomSocketEvents.JOIN_ROOM, player });
+      service.send({ type: RoomSocketEvents.SIT_DOWN, player });
     }
 
     // Should not start
-    service.send(RoomSocketEvents.START_GAME);
+    service.send({ type: RoomSocketEvents.START_GAME, player: mockPlayers[0] });
     expect(service.state.value).toEqual('waiting');
 
     // Join the 5th player
-    const player = gen.next().value;
-    service.send(RoomSocketEvents.JOIN_ROOM, { player });
+    const player = gen.next().value as PlayerInfo;
+    service.send({ type: RoomSocketEvents.JOIN_ROOM, player });
 
     // Should not start if player hasn't sat down
-    service.send(RoomSocketEvents.START_GAME);
+    service.send({ type: RoomSocketEvents.START_GAME, player: mockPlayers[0] });
     expect(service.state.value).toEqual('waiting');
 
     // Should start now
-    service.send(RoomSocketEvents.SIT_DOWN, { player });
+    service.send({ type: RoomSocketEvents.SIT_DOWN, player });
 
-    service.send(RoomSocketEvents.START_GAME);
+    service.send({ type: RoomSocketEvents.START_GAME, player: mockPlayers[0] });
     expect(service.state.value).toEqual({
       game: { standard: 'pick', special: 'idle' },
     });
   });
 
   it('should not allow duplicate users', () => {
-    const player = gen.next().value;
+    const player = gen.next().value as PlayerInfo;
 
-    service.send(RoomSocketEvents.JOIN_ROOM, { player });
-    service.send(RoomSocketEvents.JOIN_ROOM, { player });
+    service.send({ type: RoomSocketEvents.JOIN_ROOM, player });
+    service.send({ type: RoomSocketEvents.JOIN_ROOM, player });
 
     expect(service.state.context.entities.length).toEqual(1);
   });
@@ -145,7 +150,8 @@ describe('RoomMachine [Game]', () => {
     expect(service.state.value).toMatchObject({ game: { standard: 'pick' } });
     const { leader } = service.state.context.gameData;
 
-    service.send(GameSocketEvents.PICK, {
+    service.send({
+      type: GameSocketEvents.PICK,
       player: mockPlayers[leader],
       data: { team: ['C', 'D'] },
     });
@@ -158,17 +164,19 @@ describe('RoomMachine [Game]', () => {
     // Give 4 approves, and 1 reject (one last vote missing)
     for (let i = 0; i < 5; i += 1) {
       if (i < 4) {
-        service.send(GameSocketEvents.VOTE_TEAM, {
+        service.send({
+          type: GameSocketEvents.VOTE_TEAM,
           player: mockPlayers[i],
           data: {
-            vote: 'approve',
+            vote: VoteTeamOutcome.approve,
           },
         });
       } else {
-        service.send(GameSocketEvents.VOTE_TEAM, {
+        service.send({
+          type: GameSocketEvents.VOTE_TEAM,
           player: mockPlayers[i],
           data: {
-            vote: 'reject',
+            vote: VoteTeamOutcome.reject,
           },
         });
       }
@@ -182,10 +190,11 @@ describe('RoomMachine [Game]', () => {
     });
 
     // Give in the last vote
-    service.send(GameSocketEvents.VOTE_TEAM, {
+    service.send({
+      type: GameSocketEvents.VOTE_TEAM,
       player: mockPlayers[5],
       data: {
-        vote: 'reject',
+        vote: VoteTeamOutcome.reject,
       },
     });
 
@@ -207,7 +216,8 @@ describe('RoomMachine [Game]', () => {
     expect(service.state.value).toMatchObject({ game: { standard: 'pick' } });
     const { leader } = service.state.context.gameData;
 
-    service.send(GameSocketEvents.PICK, {
+    service.send({
+      type: GameSocketEvents.PICK,
       player: mockPlayers[leader],
       data: { team: ['C', 'D'] },
     });
@@ -220,17 +230,19 @@ describe('RoomMachine [Game]', () => {
     // Give 3 approves, team should be rejected
     for (let i = 0; i < 6; i += 1) {
       if (i < 3) {
-        service.send(GameSocketEvents.VOTE_TEAM, {
+        service.send({
+          type: GameSocketEvents.VOTE_TEAM,
           player: mockPlayers[i],
           data: {
-            vote: 'approve',
+            vote: VoteTeamOutcome.approve,
           },
         });
       } else {
-        service.send(GameSocketEvents.VOTE_TEAM, {
+        service.send({
+          type: GameSocketEvents.VOTE_TEAM,
           player: mockPlayers[i],
           data: {
-            vote: 'reject',
+            vote: VoteTeamOutcome.reject,
           },
         });
       }
@@ -243,7 +255,7 @@ describe('RoomMachine [Game]', () => {
 
     // Leader should advance.
     expect(service.state.context.gameData.leader).toEqual(
-      (leader + 1) % (mockPlayers.length - 1),
+      (leader + 1) % mockPlayers.length,
     );
 
     // Should reset the votes - can remove this later if needed.
@@ -256,8 +268,9 @@ describe('RoomMachine [Game]', () => {
     const { leader } = service.state.context.gameData;
 
     // Send from wrong leader
-    service.send(GameSocketEvents.PICK, {
-      player: mockPlayers[(leader + 1) % (mockPlayers.length - 1)],
+    service.send({
+      type: GameSocketEvents.PICK,
+      player: mockPlayers[(leader + 1) % mockPlayers.length],
       data: { team: ['C', 'D'] },
     });
     expect(service.state.value).toMatchObject({
@@ -267,7 +280,8 @@ describe('RoomMachine [Game]', () => {
     });
 
     // Send from correct leader
-    service.send(GameSocketEvents.PICK, {
+    service.send({
+      type: GameSocketEvents.PICK,
       player: mockPlayers[leader],
       data: { team: ['C', 'D'] },
     });
@@ -278,7 +292,8 @@ describe('RoomMachine [Game]', () => {
     });
 
     // Expect no change for PICK event in a VOTE state
-    service.send(GameSocketEvents.PICK, {
+    service.send({
+      type: GameSocketEvents.PICK,
       player: mockPlayers[leader],
       data: { team: ['C', 'D'] },
     });
@@ -296,7 +311,7 @@ describe('RoomMachine [Game]', () => {
       game: { standard: 'pick', special: 'idle' },
     });
 
-    service.send('SPECIAL_STATE_ENTER');
+    service.send({ type: 'SPECIAL_STATE_ENTER' });
 
     // Enter special state
     expect(service.state.value).toEqual({
@@ -304,7 +319,8 @@ describe('RoomMachine [Game]', () => {
     });
 
     // Should not transition in standard states
-    service.send(GameSocketEvents.PICK, {
+    service.send({
+      type: GameSocketEvents.PICK,
       player: mockPlayers[leader],
       data: { team: ['C', 'D'] },
     });
@@ -313,13 +329,14 @@ describe('RoomMachine [Game]', () => {
     });
 
     // Leave special state
-    service.send('SPECIAL_STATE_LEAVE');
+    service.send({ type: 'SPECIAL_STATE_LEAVE' });
     expect(service.state.value).toEqual({
       game: { standard: 'pick', special: 'idle' },
     });
 
     // Enter voteTeam state
-    service.send(GameSocketEvents.PICK, {
+    service.send({
+      type: GameSocketEvents.PICK,
       player: mockPlayers[leader],
       data: { team: ['C', 'D'] },
     });
@@ -328,8 +345,14 @@ describe('RoomMachine [Game]', () => {
     });
 
     // Enter special state
-    service.send('SPECIAL_STATE_ENTER');
-    service.send(GameSocketEvents.VOTE_TEAM);
+    service.send({ type: 'SPECIAL_STATE_ENTER' });
+    service.send({
+      type: GameSocketEvents.VOTE_TEAM,
+      player: mockPlayers[0],
+      data: {
+        vote: VoteTeamOutcome.approve,
+      },
+    });
 
     // Should be unable to transition out of voteTeam
     expect(service.state.value).toEqual({
@@ -344,7 +367,8 @@ describe('RoomMachine [Game]', () => {
     const { leader } = service.state.context.gameData;
 
     // Too few picks
-    service.send(GameSocketEvents.PICK, {
+    service.send({
+      type: GameSocketEvents.PICK,
       player: mockPlayers[leader],
       data: { team: ['C'] },
     });
@@ -354,6 +378,7 @@ describe('RoomMachine [Game]', () => {
     });
 
     // No picks
+    // TODO validate data in machine
     service.send(GameSocketEvents.PICK, {
       player: mockPlayers[leader],
     });
@@ -363,7 +388,8 @@ describe('RoomMachine [Game]', () => {
     });
 
     // Too many picks
-    service.send(GameSocketEvents.PICK, {
+    service.send({
+      type: GameSocketEvents.PICK,
       player: mockPlayers[leader],
       data: { team: ['C', 'D', 'E'] },
     });
@@ -373,7 +399,8 @@ describe('RoomMachine [Game]', () => {
     });
 
     // Bad username, right number of people picked
-    service.send(GameSocketEvents.PICK, {
+    service.send({
+      type: GameSocketEvents.PICK,
       player: mockPlayers[leader],
       data: { team: ['C', 'O'] },
     });
@@ -383,7 +410,8 @@ describe('RoomMachine [Game]', () => {
     });
 
     // Good pick request
-    service.send(GameSocketEvents.PICK, {
+    service.send({
+      type: GameSocketEvents.PICK,
       player: mockPlayers[leader],
       data: { team: ['a', 'B'] },
     });
@@ -399,7 +427,8 @@ describe('RoomMachine [Game]', () => {
     // Leader make a pick
     let { leader } = service.state.context.gameData;
 
-    service.send(GameSocketEvents.PICK, {
+    service.send({
+      type: GameSocketEvents.PICK,
       player: mockPlayers[leader],
       data: { team: ['C', 'D'] },
     });
@@ -420,7 +449,8 @@ describe('RoomMachine [Game]', () => {
 
     // Reject first proposal - only give first 5 votes
     for (let i = 0; i < 2; i += 1) {
-      service.send(GameSocketEvents.VOTE_TEAM, {
+      service.send({
+        type: GameSocketEvents.VOTE_TEAM,
         player: mockPlayers[i],
         data: {
           vote: VoteTeamOutcome.approve,
@@ -429,7 +459,8 @@ describe('RoomMachine [Game]', () => {
     }
 
     for (let i = 2; i < 5; i += 1) {
-      service.send(GameSocketEvents.VOTE_TEAM, {
+      service.send({
+        type: GameSocketEvents.VOTE_TEAM,
         player: mockPlayers[i],
         data: {
           vote: VoteTeamOutcome.reject,
@@ -446,7 +477,8 @@ describe('RoomMachine [Game]', () => {
     expect(Object.keys(missionHistory[0].proposals[0].votes).length).toEqual(0);
 
     // Send in final vote
-    service.send(GameSocketEvents.VOTE_TEAM, {
+    service.send({
+      type: GameSocketEvents.VOTE_TEAM,
       player: mockPlayers[5],
       data: {
         vote: VoteTeamOutcome.reject,
@@ -477,10 +509,11 @@ describe('RoomMachine [Game]', () => {
     }
 
     // Increase the leader
-    leader = (leader + 1) % 5;
+    leader = (leader + 1) % 6;
 
     // Make second pick
-    service.send(GameSocketEvents.PICK, {
+    service.send({
+      type: GameSocketEvents.PICK,
       player: mockPlayers[leader],
       data: { team: ['A', 'B'] },
     });
@@ -501,7 +534,8 @@ describe('RoomMachine [Game]', () => {
 
     // Approve the team
     for (let i = 0; i < 4; i += 1) {
-      service.send(GameSocketEvents.VOTE_TEAM, {
+      service.send({
+        type: GameSocketEvents.VOTE_TEAM,
         player: mockPlayers[i],
         data: {
           vote: VoteTeamOutcome.approve,
@@ -510,7 +544,8 @@ describe('RoomMachine [Game]', () => {
     }
 
     for (let i = 4; i < 6; i += 1) {
-      service.send(GameSocketEvents.VOTE_TEAM, {
+      service.send({
+        type: GameSocketEvents.VOTE_TEAM,
         player: mockPlayers[i],
         data: {
           vote: VoteTeamOutcome.reject,
@@ -543,7 +578,8 @@ describe('RoomMachine [Game]', () => {
     // Leader make a pick
     const { leader } = service.state.context.gameData;
 
-    service.send(GameSocketEvents.PICK, {
+    service.send({
+      type: GameSocketEvents.PICK,
       player: mockPlayers[leader],
       data: { team: ['A', 'B'] },
     });
@@ -554,7 +590,8 @@ describe('RoomMachine [Game]', () => {
 
     // All approve the proposed team
     for (const player of mockPlayers) {
-      service.send(GameSocketEvents.VOTE_TEAM, {
+      service.send({
+        type: GameSocketEvents.VOTE_TEAM,
         player,
         data: {
           vote: VoteTeamOutcome.approve,
@@ -569,7 +606,8 @@ describe('RoomMachine [Game]', () => {
     // Only accept mission votes from players on the team
     // Send out C, D, E, F (not on the team)
     for (let i = 2; i < 6; i += 1) {
-      service.send(GameSocketEvents.VOTE_MISSION, {
+      service.send({
+        type: GameSocketEvents.VOTE_MISSION,
         player: mockPlayers[i],
         data: {
           vote: MissionOutcome.success,
@@ -598,7 +636,8 @@ describe('RoomMachine [Game]', () => {
     // Leader make a pick
     let { leader } = service.state.context.gameData;
 
-    service.send(GameSocketEvents.PICK, {
+    service.send({
+      type: GameSocketEvents.PICK,
       player: mockPlayers[leader],
       data: { team: ['A', 'B'] },
     });
@@ -609,7 +648,8 @@ describe('RoomMachine [Game]', () => {
 
     // All approve the proposed team
     for (const player of mockPlayers) {
-      service.send(GameSocketEvents.VOTE_TEAM, {
+      service.send({
+        type: GameSocketEvents.VOTE_TEAM,
         player,
         data: {
           vote: VoteTeamOutcome.approve,
@@ -627,7 +667,8 @@ describe('RoomMachine [Game]', () => {
     // Test a successful mission for M1
     // Send in votes from players on team
     for (let i = 0; i < 2; i += 1) {
-      service.send(GameSocketEvents.VOTE_MISSION, {
+      service.send({
+        type: GameSocketEvents.VOTE_MISSION,
         player: mockPlayers[i],
         data: {
           vote: MissionOutcome.success,
@@ -636,7 +677,7 @@ describe('RoomMachine [Game]', () => {
     }
 
     // Leader should progress now
-    leader = (leader + 1) % 5;
+    leader = (leader + 1) % 6;
     expect(service.state.context.gameData.leader).toEqual(leader);
 
     expect(service.state.value).toMatchObject({
@@ -648,7 +689,8 @@ describe('RoomMachine [Game]', () => {
     ]);
 
     // Test a failing mission for M2
-    service.send(GameSocketEvents.PICK, {
+    service.send({
+      type: GameSocketEvents.PICK,
       player: mockPlayers[leader],
       data: { team: ['D', 'E', 'F'] },
     });
@@ -659,7 +701,8 @@ describe('RoomMachine [Game]', () => {
 
     // All approve the proposed team
     for (const player of mockPlayers) {
-      service.send(GameSocketEvents.VOTE_TEAM, {
+      service.send({
+        type: GameSocketEvents.VOTE_TEAM,
         player,
         data: {
           vote: VoteTeamOutcome.approve,
@@ -671,19 +714,22 @@ describe('RoomMachine [Game]', () => {
     expect(service.state.context.gameData.leader).toEqual(leader);
 
     // Send in one fail
-    service.send(GameSocketEvents.VOTE_MISSION, {
+    service.send({
+      type: GameSocketEvents.VOTE_MISSION,
       player: mockPlayers[3],
       data: {
         vote: MissionOutcome.fail,
       },
     });
-    service.send(GameSocketEvents.VOTE_MISSION, {
+    service.send({
+      type: GameSocketEvents.VOTE_MISSION,
       player: mockPlayers[4],
       data: {
         vote: MissionOutcome.success,
       },
     });
-    service.send(GameSocketEvents.VOTE_MISSION, {
+    service.send({
+      type: GameSocketEvents.VOTE_MISSION,
       player: mockPlayers[5],
       data: {
         vote: MissionOutcome.success,
@@ -691,7 +737,7 @@ describe('RoomMachine [Game]', () => {
     });
 
     // Leader should progress now
-    leader = (leader + 1) % 5;
+    leader = (leader + 1) % 6;
     expect(service.state.context.gameData.leader).toEqual(leader);
 
     expect(
@@ -718,16 +764,18 @@ describe('RoomMachine [Game]', () => {
     // Reject a team 5 times
     for (let i = 0; i < 5; i += 1) {
       // Send out a pick
-      service.send(GameSocketEvents.PICK, {
+      service.send({
+        type: GameSocketEvents.PICK,
         player: mockPlayers[leader],
         data: { team: ['C', 'D'] },
       });
 
-      leader = (leader + 1) % 5;
+      leader = (leader + 1) % 6;
 
       // Approve half, reject half. Edge case should reject team.
       for (let j = 0; j < 3; j += 1) {
-        service.send(GameSocketEvents.VOTE_TEAM, {
+        service.send({
+          type: GameSocketEvents.VOTE_TEAM,
           player: mockPlayers[j],
           data: {
             vote: VoteTeamOutcome.approve,
@@ -736,7 +784,8 @@ describe('RoomMachine [Game]', () => {
       }
 
       for (let j = 3; j < 6; j += 1) {
-        service.send(GameSocketEvents.VOTE_TEAM, {
+        service.send({
+          type: GameSocketEvents.VOTE_TEAM,
           player: mockPlayers[j],
           data: {
             vote: VoteTeamOutcome.reject,
@@ -744,7 +793,6 @@ describe('RoomMachine [Game]', () => {
         });
       }
     }
-
     // Hammer reject should result in all fails
     expect(
       service.state.context.gameData.gameHistory.missionOutcome.length,
@@ -764,17 +812,184 @@ describe('RoomMachine [Game]', () => {
     expect(
       service.state.context.gameData.gameHistory.missionHistory.length,
     ).toEqual(1);
+
+    // Game should be finished
+    expect(service.state.value).toEqual(RoomState.finished);
+
+    // Spies should win
+    expect(service.state.context.gameData.winner).toEqual(Alliance.spy);
+  });
+
+  it('should finish if resistance wins 3 missions', () => {
+    let { leader } = service.state.context.gameData;
+
+    // Succeed first three missions:
+    for (let i = 0; i < 3; i += 1) {
+      // Start of each mission should be in pick phase
+      expect(service.state.value).toMatchObject({ game: { standard: 'pick' } });
+
+      // Send out a pick
+      // M1 has two players
+      if (i === 0) {
+        service.send({
+          type: GameSocketEvents.PICK,
+          player: mockPlayers[leader],
+          data: { team: ['C', 'D'] },
+        });
+      }
+      // M2 has three players
+      if (i === 1) {
+        service.send({
+          type: GameSocketEvents.PICK,
+          player: mockPlayers[leader],
+          data: { team: ['C', 'D', 'E'] },
+        });
+      }
+      // M3 has three players
+      if (i === 2) {
+        service.send({
+          type: GameSocketEvents.PICK,
+          player: mockPlayers[leader],
+          data: { team: ['C', 'D', 'E', 'F'] },
+        });
+      }
+
+      // Increas leader except on final pick
+      if (i !== 2) {
+        leader = (leader + 1) % 6;
+      }
+
+      // All approve
+      for (let j = 0; j < 6; j += 1) {
+        service.send({
+          type: GameSocketEvents.VOTE_TEAM,
+          player: mockPlayers[j],
+          data: {
+            vote: VoteTeamOutcome.approve,
+          },
+        });
+      }
+
+      // Vote success for those who are on the mission
+      for (let j = 2; j < 4 + i; j += 1) {
+        service.send({
+          type: GameSocketEvents.VOTE_MISSION,
+          player: mockPlayers[j],
+          data: {
+            vote: MissionOutcome.success,
+          },
+        });
+      }
+    }
+
+    expect(
+      service.state.context.gameData.gameHistory.missionOutcome.length,
+    ).toEqual(3);
+
+    // Game should be finished
+    expect(service.state.value).toEqual(RoomState.finished);
+
+    // Resistance should win
+    expect(service.state.context.gameData.winner).toEqual(Alliance.resistance);
+
+    // Team leader should stay on the last picker
+    expect(service.state.context.gameData.leader).toEqual(leader);
+  });
+
+  it('should play until 5 missions', () => {
+    let { leader } = service.state.context.gameData;
+
+    for (let i = 0; i < 5; i += 1) {
+      // Start of each mission should be in pick phase
+      expect(service.state.value).toMatchObject({ game: { standard: 'pick' } });
+
+      // Send out a pick
+      // M1 has two players
+      if (i === 0) {
+        service.send({
+          type: GameSocketEvents.PICK,
+          player: mockPlayers[leader],
+          data: { team: ['C', 'D'] },
+        });
+      }
+      // M2, M4 has three players
+      if (i === 1 || i === 3) {
+        service.send({
+          type: GameSocketEvents.PICK,
+          player: mockPlayers[leader],
+          data: { team: ['C', 'D', 'E'] },
+        });
+      }
+      // M3, M5 has four players
+      if (i === 2 || i === 4) {
+        service.send({
+          type: GameSocketEvents.PICK,
+          player: mockPlayers[leader],
+          data: { team: ['C', 'D', 'E', 'F'] },
+        });
+      }
+
+      // Increase leader except on final pick
+      if (i !== 4) {
+        leader = (leader + 1) % 6;
+      }
+
+      // All approve
+      for (let j = 0; j < 6; j += 1) {
+        service.send({
+          type: GameSocketEvents.VOTE_TEAM,
+          player: mockPlayers[j],
+          data: {
+            vote: VoteTeamOutcome.approve,
+          },
+        });
+      }
+
+      // Succeed, Fail, Succeed, Fail, Succeed
+      const offset = [0, 1, 2, 1, 2]; // extra players voting mission
+      for (let j = 2; j < 4 + offset[i]; j += 1) {
+        let vote;
+
+        if (i % 2 === 0) {
+          vote = MissionOutcome.success;
+        } else {
+          vote = MissionOutcome.fail;
+        }
+
+        service.send({
+          type: GameSocketEvents.VOTE_MISSION,
+          player: mockPlayers[j],
+          data: {
+            vote,
+          },
+        });
+      }
+    }
+
+    expect(
+      service.state.context.gameData.gameHistory.missionOutcome.length,
+    ).toEqual(5);
+
+    // Game should be finished
+    expect(service.state.value).toEqual(RoomState.finished);
+
+    // Resistance should win
+    expect(service.state.context.gameData.winner).toEqual(Alliance.resistance);
+
+    // Team leader should stay on the last picker
+    expect(service.state.context.gameData.leader).toEqual(leader);
   });
 
   // TODO This needs to be updated later for proper assassination system
   it('should go into and out of a special state correctly', () => {
     expect(service.state.value).toMatchObject({ game: { standard: 'pick' } });
-    service.send('ADD_SYSTEM', { systemName: SAssassin.name });
+    service.send({ type: 'ADD_SYSTEM', systemName: SAssassin.name });
 
     // Leader make a pick
     const { leader } = service.state.context.gameData;
 
-    service.send(GameSocketEvents.PICK, {
+    service.send({
+      type: GameSocketEvents.PICK,
       player: mockPlayers[leader],
       data: { team: ['C', 'D'] },
     });
@@ -789,7 +1004,13 @@ describe('RoomMachine [Game]', () => {
     });
 
     // Expect not to be able to do standard transition
-    service.send(GameSocketEvents.VOTE_TEAM);
+    service.send({
+      type: GameSocketEvents.VOTE_TEAM,
+      player: mockPlayers[0],
+      data: {
+        vote: VoteTeamOutcome.approve,
+      },
+    });
     expect(service.state.value).toEqual({
       game: {
         standard: 'voteTeam',
@@ -798,7 +1019,8 @@ describe('RoomMachine [Game]', () => {
     });
 
     // assassinate from the wrong player
-    service.send('SPECIAL', {
+    service.send({
+      type: 'SPECIAL',
       player: mockPlayers[0],
       data: { target: 'B' },
       specialType: SAssassin.name,
@@ -811,7 +1033,8 @@ describe('RoomMachine [Game]', () => {
       },
     });
 
-    service.send('SPECIAL', {
+    service.send({
+      type: 'SPECIAL',
       // assassinate from the right player (assassin)
       player: mockPlayers[5],
       data: { target: 'B' },

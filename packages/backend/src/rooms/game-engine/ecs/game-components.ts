@@ -6,6 +6,7 @@ import {
   GameData,
   GameState,
   MissionOutcome,
+  Alliance,
 } from '@proavalon/proto/game';
 import { ROLES } from './game-assemblages';
 import { PlayerInfo } from '../room/rooms-machine-types';
@@ -50,12 +51,11 @@ export class CPlayer extends Component {
   }
 }
 
-type Alliance = 'resistance' | 'spy';
 export class CAlliance extends Component {
   alliance: Alliance;
 
   constructor(alliance: Alliance) {
-    super('Alliance');
+    super(CAlliance.name);
     this.alliance = alliance;
   }
 }

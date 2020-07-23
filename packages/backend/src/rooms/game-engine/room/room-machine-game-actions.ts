@@ -1,9 +1,10 @@
-import { actions, assign } from 'xstate';
+import { actions, assign, send } from 'xstate';
 import {
   GameHistory,
   VoteTeamOutcome,
   GameSocketEvents,
   MissionOutcome,
+  Alliance,
 } from '@proavalon/proto/game';
 import { RoomContext, RoomEvents } from './rooms-machine-types';
 import { addRoles } from '../ecs/game-assemblages';
@@ -15,10 +16,11 @@ import {
   getPlayers,
   getLastProposalHistory,
   getCurrentTeamSize,
+  getNumMissionOutcomes,
 } from '../util';
 import {
   voteTeamRejected,
-  fiveMissionsFinished,
+  missionsFinished,
   voteTeamHammerRejected,
 } from './room-machine-guards';
 
@@ -83,6 +85,22 @@ export const startGame = assign<RoomContext, RoomEvents>((c, _) => {
   };
 });
 
+export const finishGameEntry = assign<RoomContext, RoomEvents>((c, _) => {
+  const { numSuccess, numFail } = getNumMissionOutcomes(c);
+  const gameData = { ...c.gameData };
+
+  if (numSuccess >= 3) {
+    gameData.winner = Alliance.resistance;
+  } else if (numFail >= 3) {
+    gameData.winner = Alliance.spy;
+  }
+
+  return {
+    ...c,
+    gameData,
+  };
+});
+
 export const runSystems = pure((c: RoomContext, e: RoomEvents) => {
   let actionsToExecute: any[] = [];
   const { systems } = c;
@@ -96,6 +114,11 @@ export const runSystems = pure((c: RoomContext, e: RoomEvents) => {
       // Only allow one system to take action
       break;
     }
+  }
+
+  // Move out of game.standard.finished if there are no actions to execute
+  if (actionsToExecute.length === 0 && c.gameState === 'standard.finished') {
+    actionsToExecute.push(send({ type: 'gameFinishDone' }));
   }
 
   return actionsToExecute;
@@ -193,7 +216,7 @@ export const voteTeamFinish = assign<RoomContext, RoomEvents>((c, e) => {
   } else if (voteTeamRejected(c, e)) {
     // Increment the leader if team was rejected
     // If approved, voteMissionFinish will increment
-    newLeader = (c.gameData.leader + 1) % (entitiesCanVote.length - 1);
+    newLeader = (c.gameData.leader + 1) % entitiesCanVote.length;
   }
 
   // Save the votes
@@ -279,9 +302,7 @@ const getMissionVoteCounts = (c: RoomContext) => {
 export const voteMissionFinish = assign<RoomContext, RoomEvents>((c, e) => {
   const entities = [...c.entities];
   const entitiesCanVote = filterByComponent(entities, CVoteMission.name);
-
   const gameHistory = { ...c.gameData.gameHistory };
-
   const missionVoteCounts = getMissionVoteCounts(c);
 
   // TODO Add in the 8P+ requiring 2 fails for M4.
@@ -295,12 +316,12 @@ export const voteMissionFinish = assign<RoomContext, RoomEvents>((c, e) => {
     gameHistory.missionOutcome.push(MissionOutcome.fail);
   }
   // Mission succeeded
-  else {
+  else if (missionVoteCounts) {
     // Default value for fails is 0, so if success don't need to do anything
     gameHistory.missionOutcome.push(MissionOutcome.success);
   }
 
-  if (!fiveMissionsFinished(c, e)) {
+  if (!missionsFinished(c, e)) {
     // Add on the next VH if the game hasn't finished yet.
     gameHistory.missionHistory.push({
       fails: 0,
@@ -315,9 +336,13 @@ export const voteMissionFinish = assign<RoomContext, RoomEvents>((c, e) => {
     voteComp.vote = undefined;
   }
 
-  // Increment the leader
+  // Increment the leader only if game hasn't finished
   const numOfPlayers = filterByComponent(entities, CPlayer.name).length;
-  const newLeader = (c.gameData.leader + 1) % (numOfPlayers - 1);
+  let newLeader = c.gameData.leader;
+
+  if (!missionsFinished(c, e)) {
+    newLeader = (newLeader + 1) % numOfPlayers;
+  }
 
   return {
     ...c,
