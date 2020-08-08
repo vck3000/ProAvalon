@@ -3,7 +3,6 @@ const modsArray = [
   'pronub',
   'muse',
   'starbird1002',
-  'superkushal',
   'besjbo',
   'hakha3',
 ];
