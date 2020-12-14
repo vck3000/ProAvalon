@@ -51,7 +51,7 @@ If you do not run Windows Pro or Enterprise, you will not be able to install Doc
 
 ```
 > npm install # This will install lerna and the pre-commit hooks.
-> npm install -g lerna # This will install lerna globally
+> npm install -g lerna # (Optional) This will install lerna globally
 > npm run bootstrap # This will install all of the required dependencies in each package
 ```
 
@@ -96,13 +96,17 @@ NOTE: Database data is persisted in `./database_data/`.
 
 ### Docker limitations
 
-When a new npm package is installed in `packages/backend` or `packages/frontend`, the docker images must be rebuilt. Since this is a fairly long process, an alternative solution is to enter the docker container and `npm install` a second time.
+1. When a new npm package is installed in `packages/backend` or `packages/frontend`, the docker images must be rebuilt. Since this is a fairly long process, an alternative solution is to enter the docker container and `npm install` a second time.
 
 ```
 > docker container ls
 > docker exec -it <container_id> /bin/bash
 > ... (`cd` and `npm install --save` package)
 ```
+
+2. Docker-compose runs with sudo permissions by default, so the `packages/frontend/.next/` and `packages/backend/build/` directories are owned by sudo. This means that during the pre-commit hook where it must clean and rebuild the project to ensure it compiles may fail if you do not delete those folders yourself first. I will add a helper script to remove these files some time soon. If you have a suggestion for how to prevent this problem, I'd love to hear it!
+
+3. During the integration tests, the docker-compose containers must be brought down first via `docker-compose down` before running the integration tests so that the integration tests can bring up their own required instances. Renaming the instances should solve this clash and is on the TODO list!
 
 ## Overview
 
@@ -118,7 +122,7 @@ The planned infrastructure is as follows:
 
 The planned dependencies/frameworks are as follows:
 
-- [NodeJS](https://nodejs.org/en/) + [Express](https://expressjs.com/) for backend.
+- [NestJS](https://nestjs.com/) for backend.
 - [Next.js](https://nextjs.org/) + [React](https://reactjs.org/) + [Redux](https://redux.js.org/) for front end.
 - [MongoDB](https://www.mongodb.com/) for main database.
 - [Redis](https://redis.io/) for session and socket management.
