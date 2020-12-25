@@ -53,7 +53,7 @@ const MyApp = ({ Component, pageProps, store }: IProps): ReactElement => {
           :root {
             --background: #eaeae4;
             --text: black;
-            --text-gray: #bab9b6;
+            --text-gray: #7d7c78;
             --text-gray-light: #7c818a;
             --text-red: #8f5543;
             --text-pink: #f27474;

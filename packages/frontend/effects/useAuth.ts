@@ -22,7 +22,7 @@ export default function useAuth(): ReturnType<typeof userSelector> {
     dispatch(
       loginSuccess({
         displayName: username,
-        settings: { theme: 'night', buzzable: true },
+        settings: { theme: 'day', buzzable: true },
       }),
     );
   }, [dispatch, user]);
