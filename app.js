@@ -36,66 +36,77 @@ const staticify = require('staticify')(assetsPath);
 app.use(staticify.middleware);
 app.locals.getVersionedPath = staticify.getVersionedPath;
 
-const port = process.env.PORT || 80;
-const dbLoc = process.env.DATABASEURL || 'mongodb://localhost/TheNewResistanceUsers';
+const port = process.env.PORT || 3000;
+const dbLoc =
+  process.env.DATABASEURL || 'mongodb://localhost/TheNewResistanceUsers';
 console.log(`Using database url: ${dbLoc}`);
 
 mongoose.connect(dbLoc, {
-    retryWrites: false
+  retryWrites: false,
 });
 
 // Create a MongoDB session store
 const MongoDBStore = require('connect-mongodb-session')(session);
 
 const store = new MongoDBStore({
-    uri: dbLoc,
-    collection: 'mySessions',
+  uri: dbLoc,
+  collection: 'mySessions',
 });
 
 // Catch errors
 store.on('error', (err) => {
-    console.log(err);
-    console.log('--------------\nIs your mongoDB server running?\n--------------');
-    assert.ifError(err);
-    assert.ok(false);
+  console.log(err);
+  console.log(
+    '--------------\nIs your mongoDB server running?\n--------------'
+  );
+  assert.ifError(err);
+  assert.ok(false);
 });
 
 process.on('unhandledRejection', (reason, p) => {
-    console.log('Unhandled Rejection at: Promise', p, 'reason:', reason, 'reason.stack:', reason.stack);
-    // application specific logging, throwing an error, or other logic here
+  console.log(
+    'Unhandled Rejection at: Promise',
+    p,
+    'reason:',
+    reason,
+    'reason.stack:',
+    reason.stack
+  );
+  // application specific logging, throwing an error, or other logic here
 });
-
 
 // authentication
 const secretKey = process.env.MY_SECRET_KEY || 'MySecretKey';
-app.use(session({
+app.use(
+  session({
     secret: secretKey,
     resave: false,
     saveUninitialized: false,
     store,
-}));
+  })
+);
 
 app.use(flash());
 
 // res.locals variables
 app.use((req, res, next) => {
-    // headerActive default should be nothing, otherwise specify in routes/index.js
-    res.locals.headerActive = ' ';
-    res.locals.error = req.flash('error');
-    res.locals.success = req.flash('success');
-    next();
+  // headerActive default should be nothing, otherwise specify in routes/index.js
+  res.locals.headerActive = ' ';
+  res.locals.error = req.flash('error');
+  res.locals.success = req.flash('success');
+  next();
 });
 
 // HTTPS REDIRECT
 const platform = process.env.MY_PLATFORM || 'local';
 if (platform === 'online' || platform === 'staging') {
-    app.use((req, res, next) => {
-        if (req.headers['x-forwarded-proto'] !== 'https') {
-            res.redirect(`https://${req.hostname}${req.url}`);
-        } else {
-            next();
-        }
-    });
+  app.use((req, res, next) => {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+      res.redirect(`https://${req.hostname}${req.url}`);
+    } else {
+      next();
+    }
+  });
 }
 
 app.use(passport.initialize());
@@ -110,9 +121,8 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 
-
 // Insert ban checks here.
-// TODO 
+// TODO
 
 app.use(indexRoutes);
 
@@ -132,7 +142,7 @@ app.use('/profile', profileRoutes);
 
 const IP = process.env.IP || '127.0.0.1';
 const server = app.listen(port, () => {
-    console.log(`Server has started on ${IP}:${port}!`);
+  console.log(`Server has started on ${IP}:${port}!`);
 });
 
 //= ====================================
@@ -142,9 +152,11 @@ const io = socket(server);
 
 require('./sockets/sockets')(io);
 
-io.use(passportSocketIo.authorize({
+io.use(
+  passportSocketIo.authorize({
     cookieParser,
     secret: secretKey, // same as in your session settings
     store, // same as sessionStore in app.use(session({...
     passport,
-}));
+  })
+);

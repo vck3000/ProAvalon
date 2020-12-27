@@ -2570,6 +2570,15 @@ module.exports = function (io) {
 
       socket.emit('allChatToClient', msg2);
 
+      const msg3 = {
+        message:
+          'A site rewrite is coming! If you have some coding skills and would like to help out, flip me a dm :)',
+        classStr: 'server-text',
+        dateCreated: new Date(),
+      };
+
+      socket.emit('allChatToClient', msg3);
+
       updateCurrentPlayersList(io);
       // console.log("update current players list");
       // console.log(getPlayerUsernamesFromAllSockets());
