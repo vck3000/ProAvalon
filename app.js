@@ -148,7 +148,10 @@ const server = app.listen(port, () => {
 //= ====================================
 // SOCKETS
 //= ====================================
-const io = socket(server);
+const io = socket(server, {
+  pingTimeout: 30000,
+  pingInterval: 10000,
+});
 
 require('./sockets/sockets')(io);
 
