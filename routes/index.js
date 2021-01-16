@@ -383,7 +383,7 @@ const processRecords = async function (records) {
     
     // Delete the current gamerecord json files.
     try {
-        fs.unlinkSync('assets/gameRecordsData/gameRecordsDataAnon.json');
+        fs.unlinkSync('assets/gameRecordsData/gameRecordsDataAnon_orig.json');
     }
     catch(e) {
         // Don't worry if any of this fails
@@ -396,7 +396,7 @@ const processRecords = async function (records) {
     }
 
     // Create a file stream to write out the data synchronously
-    let anonStream = fs.createWriteStream("assets/gameRecordsData/gameRecordsDataAnon.json", {flags:'a'});
+    let anonStream = fs.createWriteStream("assets/gameRecordsData/gameRecordsDataAnon_orig.json", {flags:'a'});
 
     let numBotGames = 0;
 
@@ -460,9 +460,7 @@ const processRecords = async function (records) {
     const averageGameDurations = [];
     const countForGameSize = [];
     for (var i = 5; i < 11; i++) {
-        averageGameDurations[i] = new Date(0);
-        countForGameSize[i] = 0;
-    }
+        averageGameDurations[i] = new Date(0); countForGameSize[i] = 0; }
 
     for (loopNum = 0; loopNum < numOfRecords/recordsPerLoop; loopNum++) {
         const skipNumber = loopNum * recordsPerLoop;
