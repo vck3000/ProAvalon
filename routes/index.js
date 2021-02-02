@@ -200,8 +200,9 @@ const loginLimiter = process.env.MY_PLATFORM === 'local'
         max: 0, // Disable if we are local
     })
     : rateLimit({
-        windowMs: 5 * 60 * 1000,
-        max: 20,
+        // windowMs: 5 * 60 * 1000,
+        // max: 20,
+        max: 0 // Have to disable this for now. 
     });
 
 // login route
