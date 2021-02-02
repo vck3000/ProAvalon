@@ -97,18 +97,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// HTTPS REDIRECT
-const platform = process.env.MY_PLATFORM || 'local';
-if (platform === 'online' || platform === 'staging') {
-  app.use((req, res, next) => {
-    if (req.headers['x-forwarded-proto'] !== 'https') {
-      res.redirect(`https://${req.hostname}${req.url}`);
-    } else {
-      next();
-    }
-  });
-}
-
 app.use(passport.initialize());
 app.use(passport.session());
 

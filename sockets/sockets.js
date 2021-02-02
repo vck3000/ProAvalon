@@ -2218,6 +2218,14 @@ var actionsObj = {
         });
       },
     },
+
+    mkill: {
+      command: 'mkill',
+      help: '/mkill: Kills the server triggering an immediate restart.',
+      run() {
+        process.exit(0);
+      },
+    }
   },
 
   adminCommands: {
@@ -2253,18 +2261,6 @@ var actionsObj = {
         const { args } = data;
         // do stuff
         return { message: 'admintest has been run.', classStr: 'server-text' };
-      },
-    },
-
-    killS: {
-      command: 'killS',
-      help: '/killS: test kill',
-      run(data) {
-        const { args } = data;
-        // do stuff
-        process.exit(0);
-
-        return { message: 'killS has been run.', classStr: 'server-text' };
       },
     },
 
