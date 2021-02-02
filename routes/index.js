@@ -201,7 +201,7 @@ const loginLimiter = process.env.MY_PLATFORM === 'local'
     })
     : rateLimit({
         windowMs: 5 * 60 * 1000,
-        max: 5,
+        max: 20,
     });
 
 // login route
