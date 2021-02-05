@@ -95,3 +95,5 @@ assets/gameRecordsData/
 !assets/gameRecordsData/gameRecordsDataAnon.json
 !assets/gameRecordsData/fix_json.py
 .vscode/
+
+out/

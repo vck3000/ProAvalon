@@ -59,9 +59,9 @@ let nextRoomId = 1;
 const fs = require('fs');
 
 const gameModeNames = [];
-fs.readdirSync('./gameplay/').filter((file) => {
+fs.readdirSync('./src/gameplay/').filter((file) => {
   if (
-    fs.statSync(`${'./gameplay' + '/'}${file}`).isDirectory() === true &&
+    fs.statSync(`${'./src/gameplay' + '/'}${file}`).isDirectory() === true &&
     file !== 'commonPhases'
   ) {
     gameModeNames.push(file);

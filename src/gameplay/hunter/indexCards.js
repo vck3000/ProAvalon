@@ -11,7 +11,7 @@ function index() {
         require('fs').readdirSync(normalizedPath).forEach((file) => {
             // console.log(file);
 
-            if (file.includes('.js') === true) {
+            if (file.includes('.js') === true && !file.includes('.map')) {
                 name = file.replace('.js', '');
 
                 cardImports[name] = require(`./cards/${file}`);

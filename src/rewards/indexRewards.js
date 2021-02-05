@@ -11,7 +11,7 @@ class index {
             // console.log(file);
 
             // If it is a javascript file, add it
-            if (file.includes('.js') === true) {
+            if (file.includes('.js') === true && !file.includes('.map')) {
                 // Trim .js at the end of the file name
                 const name = file.replace('.js', '');
 

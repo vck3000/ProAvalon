@@ -3,7 +3,7 @@ const sanitizeHtml = require('sanitize-html');
 const rateLimit = require('express-rate-limit');
 
 const { checkForumThreadOwnership, asyncMiddleware } = require('../middleware');
-const getTimeDiffInString = require('../../assets/myLibraries/getTimeDiffInString');
+const getTimeDiffInString = require('../../util/getTimeDiffInString');
 
 const lastIds = require('../../models/lastIds');
 const forumThread = require('../../models/forumThread');

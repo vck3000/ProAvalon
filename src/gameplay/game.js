@@ -17,8 +17,8 @@ const commonPhasesIndex = require('./indexCommonPhases');
 
 // Get all the gamemodes and their roles/cards/phases.
 const gameModeNames = [];
-fs.readdirSync('./gameplay/').filter((file) => {
-    if (fs.statSync(`${'./gameplay' + '/'}${file}`).isDirectory() === true && file !== 'commonPhases') {
+fs.readdirSync('./src/gameplay/').filter((file) => {
+    if (fs.statSync(`${'./src/gameplay' + '/'}${file}`).isDirectory() === true && file !== 'commonPhases') {
         gameModeNames.push(file);
     }
 });

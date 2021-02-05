@@ -26,7 +26,7 @@ const profileRoutes = require('./routes/profile');
 const patreonRoutes = require('./routes/patreon');
 const modRoutes = require('./routes/mod');
 
-const assetsPath = path.join(__dirname, 'assets');
+const assetsPath = path.join(__dirname, '../assets');
 
 const app = express();
 app.use(express.static(assetsPath, { maxAge: 518400000 })); // expires in 7 days.
@@ -105,6 +105,7 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));

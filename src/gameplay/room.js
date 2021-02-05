@@ -4,8 +4,8 @@
 const gameModeNames = [];
 const fs = require('fs');
 
-fs.readdirSync('./gameplay/').filter((file) => {
-    if (fs.statSync(`${'./gameplay' + '/'}${file}`).isDirectory() === true && file !== 'commonPhases') {
+fs.readdirSync('./src/gameplay/').filter((file) => {
+    if (fs.statSync(`${'./src/gameplay' + '/'}${file}`).isDirectory() === true && file !== 'commonPhases') {
         gameModeNames.push(file);
     }
 });

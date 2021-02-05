@@ -2,29 +2,28 @@
 
 function index() {
     // Import all the roles from AVALON
-    this.getPhases = function (thisRoom) {
-        const normalizedPath = require('path').join(__dirname, './phases');
+    this.getRoles = function (thisRoom) {
+        const normalizedPath = require('path').join(__dirname, './roles');
 
-        const phases = {};
+        const roleImports = {};
         const obj = {};
 
         require('fs').readdirSync(normalizedPath).forEach((file) => {
             // console.log(file);
 
             // If it is a javascript file, add it
-            if (file.includes('.js') === true) {
-                // Trim .js at the end of the file name
+            if (file.includes('.js') === true && !file.includes('.map')) {
                 name = file.replace('.js', '');
 
-                phases[name] = require(`./phases/${file}`);
+                roleImports[name] = require(`./roles/${file}`);
             }
         });
 
 
-        for (var name in phases) {
-            if (phases.hasOwnProperty(name)) {
+        for (var name in roleImports) {
+            if (roleImports.hasOwnProperty(name)) {
                 // Initialise it
-                obj[name] = new phases[name](thisRoom);
+                obj[name] = new roleImports[name](thisRoom);
             }
         }
 
