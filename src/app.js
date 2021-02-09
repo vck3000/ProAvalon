@@ -35,7 +35,7 @@ const staticify = require('staticify')(assetsPath);
 
 app.use(staticify.middleware);
 app.locals.getVersionedPath = staticify.getVersionedPath;
-app.set('trust proxy');
+app.set('trust proxy', true);
 
 const port = process.env.PORT || 3000;
 const dbLoc =
