@@ -16,12 +16,12 @@ const GameRecord = require('../models/gameRecord');
 const commonPhasesIndex = require('./indexCommonPhases');
 
 // Get all the gamemodes and their roles/cards/phases.
-const gameModeNames = [];
-fs.readdirSync('./src/gameplay/').filter((file) => {
-    if (fs.statSync(`${'./src/gameplay' + '/'}${file}`).isDirectory() === true && file !== 'commonPhases') {
-        gameModeNames.push(file);
-    }
-});
+const gameModeNames = ['avalon', 'avalonBot'];
+// fs.readdirSync('./src/gameplay/').filter((file) => {
+//     if (fs.statSync(`${'./src/gameplay' + '/'}${file}`).isDirectory() === true && file !== 'commonPhases') {
+//         gameModeNames.push(file);
+//     }
+// });
 // console.log(gameModeNames);
 const gameModeObj = {};
 for (let i = 0; i < gameModeNames.length; i++) {
