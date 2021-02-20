@@ -97,9 +97,8 @@ const registerLimiter = process.env.MY_PLATFORM === 'local'
         max: 0, // Disable if we are local
     })
     : rateLimit({
-        // windowMs: 60 * 60 * 1000, // 60 minutes
-        // max: 10,
-        max: 0, // Disable if we are local
+        windowMs: 60 * 60 * 1000, // 60 minutes
+        max: 10,
     });
 
 // Post of the register route - Create an account
@@ -201,9 +200,8 @@ const loginLimiter = process.env.MY_PLATFORM === 'local'
         max: 0, // Disable if we are local
     })
     : rateLimit({
-        max: 0, // Disable if we are local
-        // windowMs: 5 * 60 * 1000,
-        // max: 20
+        windowMs: 5 * 60 * 1000,
+        max: 10
     });
 
 // login route
