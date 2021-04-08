@@ -6,6 +6,7 @@ const modsArray = [
   'not.me',
   'anders',
   'manuavalon',
+  'maximovic96',
 ];
 
 module.exports = modsArray;
