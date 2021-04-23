@@ -905,9 +905,10 @@ Game.prototype.getGameData = function () {
             data[i].publicData = this.getRoleCardPublicGameData();
             data[i].prohibitedIndexesToPicks = this.getProhibitedIndexesToPick(i);
 
-            data[i].roles = this.playersInGame.map((player) => player.role);
-            // This is hacky but it works, for now...
-            data[i].cards = this.options.filter((option) => option.indexOf('of the') !== -1);
+            // To use with Detry bots
+            // data[i].roles = this.playersInGame.map((player) => player.role);
+            // // This is hacky but it works, for now...
+            // data[i].cards = this.options.filter((option) => option.indexOf('of the') !== -1);
 
 
             // if game is finished, reveal everything including roles
