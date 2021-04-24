@@ -7,18 +7,18 @@ enabledBots.push({
     authorizationKey: undefined,
 });
 
-if (process.env.BOT_DEEPROLE_API_KEY) {
-    enabledBots.push({
-        name: 'DeepRole',
-        urlBase: 'https://deeprole-proavalon.herokuapp.com/deeprole',
-        authorizationKey: process.env.BOT_DEEPROLE_API_KEY,
-    });
-    enabledBots.push({
-        name: 'DebugRole',
-        urlBase: 'https://deeprole-proavalon.herokuapp.com/debug',
-        authorizationKey: process.env.BOT_DEEPROLE_API_KEY,
-    });
-}
+// if (process.env.BOT_DEEPROLE_API_KEY) {
+//     enabledBots.push({
+//         name: 'DeepRole',
+//         urlBase: 'https://deeprole-proavalon.herokuapp.com/deeprole',
+//         authorizationKey: process.env.BOT_DEEPROLE_API_KEY,
+//     });
+//     enabledBots.push({
+//         name: 'DebugRole',
+//         urlBase: 'https://deeprole-proavalon.herokuapp.com/debug',
+//         authorizationKey: process.env.BOT_DEEPROLE_API_KEY,
+//     });
+// }
 
 class SimpleBotSocket {
     constructor(username) {
