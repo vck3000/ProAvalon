@@ -7,6 +7,7 @@ const modsArray = [
   'anders',
   'manuavalon',
   'maximovic96',
+  'd8nitemike',
 ];
 
 module.exports = modsArray;
