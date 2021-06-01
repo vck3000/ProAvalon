@@ -229,8 +229,8 @@ Game.prototype.playerJoinRoom = function (socket, inputPassword) {
             }
         }
 
-        // Checks for frozen games. Don't delete a frozen game until at least 5 players have joined
-        if (this.someCutoffPlayersJoined === 'no' && this.allSockets.length >= 5) {
+        // Checks for frozen games. Don't delete a frozen game until all players have rejoined
+        if (this.someCutoffPlayersJoined === 'no' && this.allSockets.length >= this.playersInGame[i].length) {
             this.frozen = false;
             this.someCutoffPlayersJoined === 'yes';
         }
