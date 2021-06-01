@@ -230,7 +230,7 @@ Game.prototype.playerJoinRoom = function (socket, inputPassword) {
         }
 
         // Checks for frozen games. Don't delete a frozen game until all players have rejoined
-        if (this.someCutoffPlayersJoined === 'no' && this.allSockets.length >= this.playersInGame[i].length) {
+        if (this.someCutoffPlayersJoined === 'no' && this.allSockets.length >= this.playersInGame.length) {
             this.frozen = false;
             this.someCutoffPlayersJoined === 'yes';
         }
