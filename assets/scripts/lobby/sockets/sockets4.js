@@ -465,6 +465,8 @@ socket.on('update-room-spectators', (spectatorUsernames) => {
         }
     }
     oldSpectators = spectatorUsernames;
+
+    $('.spectator-count').text(spectatorUsernames.length);
 });
 
 
