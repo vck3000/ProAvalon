@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm run dev",
     "test": "jest",
-    "build": "tsc && cp -R ./src/views ./out/views",
+    "build": "tsc && cp -R ./src/views ./out",
     "lint": "eslint .",
     "dev": "ts-node-dev --respawn --transpile-only ./src/app.js",
     "prod": "npm run build && node ./out/app.js",
