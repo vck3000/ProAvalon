@@ -2123,19 +2123,37 @@ var actionsObj = {
     miplinkedaccs: {
       command: 'miplinkedaccs',
       help:
-        '/miplinkedaccs <username> <fullTree>: Finds all accounts that have shared the same IPs the specified user. Put anything in <fullTree> to see full tree.',
+      '/miplinkedaccs <username> <num_levels (greater than 1 | defaults to 3)>: Finds all accounts that have shared the same IPs the specified user. Put anything in <fullTree> to see full tree.',
       async run(data, senderSocket) {
         const { args } = data;
 
         // Send out data in a readable way to the mod.
         var dataToReturn = [];
+
+        const username = args[1];
+        let num_levels = parseInt(args[2], 10);
+
+        if (num_levels === NaN || num_levels < 1) {
+          dataToReturn[0] = {
+            message: `${args[2]} is not a valid integer.`,
+            classStr: 'server-text',
+            dateCreated: new Date(),
+          };
+          senderSocket.emit('messageCommandReturnStr', dataToReturn);
+          return;
+        }
+
+        if (num_levels === undefined) {
+          num_levels = 3;
+        }
+
         var linkedUsernamesWithLevel;
         var usernamesTree;
         var newUsernamesTreeLines = [];
         try {
           var ret = await IPLinkedAccounts(
-            args[1],
-            args[2] !== undefined ? true : false
+            username,
+            num_levels
           );
           linkedUsernamesWithLevel = ret.linkedUsernamesWithLevel;
           usernamesTree = ret.usernamesTree;

@@ -1,7 +1,7 @@
 const User = require('../models/user');
 const treeify = require('treeify');
 
-IPLinkedAccounts = async (username, fullTree) => {
+IPLinkedAccounts = async (username, num_levels) => {
     // console.log("Running ip linked accounts code");
 
     var linkedUsernames = [];
@@ -13,8 +13,9 @@ IPLinkedAccounts = async (username, fullTree) => {
     var visitedIPs = [];
     
     // Track down each user account linked to all IPs.
-    // Only need too return usernameLower and IPAddresses from the query
+    // Only need to return usernameLower and IPAddresses from the query
     const user = await User.findOne({'usernameLower': username.toLowerCase()}, 'usernameLower IPAddresses');
+
     if (user) {
         linkedUsernames.push(user.usernameLower);
         linkedUsernamesWithLevel.push({
@@ -38,8 +39,10 @@ IPLinkedAccounts = async (username, fullTree) => {
             if(nextIPObj == null){
                 level++;
                 IPsToVisit.push(null);
-                if(IPsToVisit[0] === null) {
-                    break;// You are encountering two consecutive `nulls` means, you visited all the nodes.
+                if(IPsToVisit[0] === null || level === num_levels + 1) {
+                    // You are encountering two consecutive `nulls` means, you visited all the nodes.
+                    // or break if we've reached our target num levels
+                    break; 
                 } 
                 else {
                     continue;
@@ -53,7 +56,7 @@ IPLinkedAccounts = async (username, fullTree) => {
             visitedIPs.push(nextIP);
             for (u of linkedUsers) {
                 // If this user hasn't been checked yet, add their username to the list and their IPs.
-                if(fullTree || !linkedUsernames.includes(u.usernameLower)) {
+                if(!linkedUsernames.includes(u.usernameLower)) {
                     linkedUsernames.push(u.usernameLower);
                     linkedUsernamesWithLevel.push({
                         username: u.usernameLower, 
