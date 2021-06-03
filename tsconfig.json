@@ -16,7 +16,7 @@
     "outDir": "./out"
   },
   "assets": ["**/src/views"],
-  "include": ["./src/**/*", "jest.config.js"],
+  "include": ["./src/**/*"],
   "exclude": ["node_modules"]
 }
 

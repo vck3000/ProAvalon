@@ -4,7 +4,6 @@
   "description": "TheNewResistance!",
   "main": "app.js",
   "scripts": {
-    "start": "npm run dev",
     "test": "jest",
     "test:watch": "jest --watch",
     "build": "tsc && cp -R ./src/views ./out",
