@@ -2123,7 +2123,7 @@ var actionsObj = {
     miplinkedaccs: {
       command: 'miplinkedaccs',
       help:
-      '/miplinkedaccs <username> <num_levels (greater than 1 | defaults to 3)>: Finds all accounts that have shared the same IPs the specified user. Put anything in <fullTree> to see full tree.',
+      '/miplinkedaccs <username> <num_levels (greater than 1 | defaults to 2)>: Finds all accounts that have shared the same IPs the specified user. Put anything in <fullTree> to see full tree.',
       async run(data, senderSocket) {
         const { args } = data;
 
@@ -2143,8 +2143,8 @@ var actionsObj = {
           return;
         }
 
-        if (num_levels === undefined) {
-          num_levels = 3;
+        if (isNaN(num_levels)) {
+          num_levels = 2;
         }
 
         var linkedUsernamesWithLevel;
