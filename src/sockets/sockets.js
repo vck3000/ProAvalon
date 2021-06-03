@@ -2128,25 +2128,26 @@ var actionsObj = {
       '/miplinkedaccs <username> <num_levels (greater than 1 | defaults to 2)>: Finds all accounts that have shared the same IPs the specified user. Put anything in <fullTree> to see full tree.',
       async run(data, senderSocket) {
         const { args } = data;
+        const username = args[1];
+        let num_levels = args[2];
 
         // Send out data in a readable way to the mod.
         var dataToReturn = [];
 
-        const username = args[1];
-        let num_levels = parseInt(args[2], 10);
+        if (num_levels === undefined) {
+          num_levels = 2;
+        }
 
-        if (num_levels === NaN || num_levels < 1) {
+        num_levels = parseInt(num_levels, 10);
+
+        if (isNaN(num_levels) || num_levels < 1) {
           dataToReturn[0] = {
-            message: `${args[2]} is not a valid integer.`,
+            message: `${args[2]} is not a valid positive integer.`,
             classStr: 'server-text',
             dateCreated: new Date(),
           };
           senderSocket.emit('messageCommandReturnStr', dataToReturn);
           return;
-        }
-
-        if (isNaN(num_levels)) {
-          num_levels = 2;
         }
 
         var linkedUsernamesWithLevel;

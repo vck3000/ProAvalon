@@ -50,6 +50,7 @@ describe('ModCommands', () => {
   beforeEach(() => {
     mockSocket.emit.mockReset();
     // ModLog.create.mockReset();
+    IPLinkedAccounts.mockReset();
   });
 
   // it.only('creates a mod log', () => {
@@ -85,7 +86,7 @@ describe('ModCommands', () => {
     expect(mockSocket.emit.mock.calls[0][1][0]).toEqual(
       expect.objectContaining({
         classStr: 'server-text',
-        message: '-1 is not a valid integer.',
+        message: '-1 is not a valid positive integer.',
       })
     );
   });
@@ -95,6 +96,14 @@ describe('ModCommands', () => {
 
     modCommands.miplinkedaccs.run(data, mockSocket);
 
-    expect(IPLinkedAccounts).toHaveBeenCalledWith('ProNub', 2);
+    expect(mockSocket.emit.mock.calls[0][0]).toEqual('messageCommandReturnStr');
+    expect(mockSocket.emit.mock.calls[0][1][0]).toEqual(
+      expect.objectContaining({
+        classStr: 'server-text',
+        message: 'asdf is not a valid positive integer.',
+      })
+    );
+
+    expect(IPLinkedAccounts).not.toHaveBeenCalled();
   });
 });
