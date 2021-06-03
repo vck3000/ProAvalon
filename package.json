@@ -6,6 +6,7 @@
   "scripts": {
     "start": "npm run dev",
     "test": "jest",
+    "test:watch": "jest --watch",
     "build": "tsc && cp -R ./src/views ./out",
     "lint": "eslint .",
     "dev": "ts-node-dev --respawn --transpile-only ./src/app.js",

@@ -135,43 +135,45 @@ function deleteSaveGameFromDb(room) {
   }
 }
 
-setTimeout(async () => {
-  console.log('Loading save games');
-  let run = true;
-  let i = 0;
-  while (run) {
-    // RECOVERING SAVED GAMES!
-    await new Promise((resolve) => {
-      savedGameObj
-        .find({})
-        .skip(i)
-        .limit(1)
-        .exec((err, foundSaveGameArr) => {
-          const foundSaveGame = foundSaveGameArr[0];
+if (process.env.NODE_ENV !== 'test') {
+  setTimeout(async () => {
+    console.log('Loading save games');
+    let run = true;
+    let i = 0;
+    while (run) {
+      // RECOVERING SAVED GAMES!
+      await new Promise((resolve) => {
+        savedGameObj
+          .find({})
+          .skip(i)
+          .limit(1)
+          .exec((err, foundSaveGameArr) => {
+            const foundSaveGame = foundSaveGameArr[0];
 
-          if (foundSaveGame && foundSaveGame.room) {
-            const storedData = JSON.parse(foundSaveGame.room);
-            console.log('Loaded room ' + storedData.roomId);
+            if (foundSaveGame && foundSaveGame.room) {
+              const storedData = JSON.parse(foundSaveGame.room);
+              console.log('Loaded room ' + storedData.roomId);
 
-            rooms[storedData.roomId] = new gameRoom();
+              rooms[storedData.roomId] = new gameRoom();
 
-            Object.assign(rooms[storedData.roomId], storedData);
+              Object.assign(rooms[storedData.roomId], storedData);
 
-            rooms[storedData.roomId].restartSaved = true;
-            rooms[storedData.roomId].savedGameRecordId = foundSaveGame.id;
-            rooms[storedData.roomId].recoverGame(storedData);
-            rooms[storedData.roomId].callback = socketCallback;
-          } else {
-            console.log('Finishing load save game');
-            run = false;
-          }
-          resolve();
-        });
-    });
+              rooms[storedData.roomId].restartSaved = true;
+              rooms[storedData.roomId].savedGameRecordId = foundSaveGame.id;
+              rooms[storedData.roomId].recoverGame(storedData);
+              rooms[storedData.roomId].callback = socketCallback;
+            } else {
+              console.log('Finishing load save game');
+              run = false;
+            }
+            resolve();
+          });
+      });
 
-    i += 1;
-  }
-}, 1000);
+      i += 1;
+    }
+  }, 1000);
+}
 
 const lastWhisperObj = {};
 var pmmodCooldowns = {};
@@ -2416,13 +2418,15 @@ var actionsObj = {
   },
 };
 
+module.exports.actionsObj = actionsObj;
+
 const { userCommands } = actionsObj;
 const { modCommands } = actionsObj;
 const { adminCommands } = actionsObj;
 
 ioGlobal = {};
 
-module.exports = function (io) {
+module.exports.server = function (io) {
   // SOCKETS for each connection
   ioGlobal = io;
   io.sockets.on('connection', async (socket) => {

@@ -143,7 +143,7 @@ const io = socket(server, {
   pingInterval: 10000,
 });
 
-require('./sockets/sockets')(io);
+require('./sockets/sockets').server(io);
 
 io.use(
   passportSocketIo.authorize({
