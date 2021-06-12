@@ -45,10 +45,10 @@ router.get('/community', (req, res) => {
             } else {
               // Sort allMods backwards
               let sortOrder = ['pam', 'citc', 'tyrrox', 'morningcatt'];
-              for (username of sortOrder) {
+              for (const username of sortOrder) {
                 // Grab the mod data:
                 let modData = undefined;
-                for (user of allMods) {
+                for (const user of allMods) {
                   if (user.usernameLower === username) {
                     modData = user;
                     break;
@@ -99,12 +99,12 @@ router.get('/sitedown', (req, res) => {
 const registerLimiter =
   process.env.MY_PLATFORM === 'local'
     ? rateLimit({
-        max: 0, // Disable if we are local
-      })
+      max: 0, // Disable if we are local
+    })
     : rateLimit({
-        windowMs: 60 * 60 * 1000, // 60 minutes
-        max: 10,
-      });
+      windowMs: 60 * 60 * 1000, // 60 minutes
+      max: 10,
+    });
 
 // Post of the register route - Create an account
 router.post(
@@ -135,7 +135,7 @@ router.post(
 
       const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.captcha}&remoteip=${req.connection.remoteAddress}`;
 
-      body = await request(verifyUrl);
+      const body = await request(verifyUrl);
 
       // body = JSON.parse(body);
 
@@ -211,12 +211,12 @@ router.post(
 const loginLimiter =
   process.env.MY_PLATFORM === 'local'
     ? rateLimit({
-        max: 0, // Disable if we are local
-      })
+      max: 0, // Disable if we are local
+    })
     : rateLimit({
-        windowMs: 5 * 60 * 1000,
-        max: 10,
-      });
+      windowMs: 5 * 60 * 1000,
+      max: 10,
+    });
 
 // login route
 router.post(
@@ -236,7 +236,7 @@ router.get('/loginFail', (req, res) => {
 
 // Special route that needs to exist here as the user may not be logged in yet.
 router.get('/emailVerification/verifyEmailRequest', async (req, res) => {
-  var user = await User.findOne({ emailToken: req.query.token })
+  const user = await User.findOne({ emailToken: req.query.token })
     .populate('notifications')
     .exec();
   if (user) {
@@ -251,7 +251,7 @@ router.get('/emailVerification/verifyEmailRequest', async (req, res) => {
   } else {
     req.flash(
       'error',
-      "The link provided for email verification is invalid or expired. Please log in and press the 'Resend verification email' button."
+      'The link provided for email verification is invalid or expired. Please log in and press the \'Resend verification email\' button.'
     );
     res.redirect('/');
   }
@@ -510,12 +510,12 @@ const processRecords = async function (records) {
   //* *********************************************
   const averageGameDurations = [];
   const countForGameSize = [];
-  for (var i = 5; i < 11; i++) {
+  for (let i = 5; i < 11; i++) {
     averageGameDurations[i] = new Date(0);
     countForGameSize[i] = 0;
   }
 
-  for (loopNum = 0; loopNum < numOfRecords / recordsPerLoop; loopNum++) {
+  for (let loopNum = 0; loopNum < numOfRecords / recordsPerLoop; loopNum++) {
     const skipNumber = loopNum * recordsPerLoop;
 
     records = await gameRecord
@@ -545,7 +545,7 @@ const processRecords = async function (records) {
     //* *********************************************
     // Site traffic stats - one data point per day
     //* *********************************************
-    for (var i = 0; i < records.length; i++) {
+    for (let i = 0; i < records.length; i++) {
       const timeFinish = records[i].timeGameFinished;
       // Round to nearest day
       const dayFinished = new Date(
@@ -566,7 +566,7 @@ const processRecords = async function (records) {
     //* *********************************************
     // Getting the average duration of each game
     //* *********************************************
-    for (var i = 0; i < records.length; i++) {
+    for (let i = 0; i < records.length; i++) {
       var duration = new Date(
         records[i].timeGameFinished.getTime() -
           records[i].timeGameStarted.getTime()
@@ -579,7 +579,7 @@ const processRecords = async function (records) {
     //* *********************************************
     // Getting the win rate of alliances globally
     //* *********************************************
-    for (var i = 0; i < records.length; i++) {
+    for (let i = 0; i < records.length; i++) {
       if (records[i].winningTeam === 'Resistance') {
         resWins++;
       } else if (records[i].winningTeam === 'Spy') {
@@ -590,7 +590,7 @@ const processRecords = async function (records) {
     //* *********************************************
     // Getting the assassination win rate
     //* *********************************************
-    for (var i = 0; i < records.length; i++) {
+    for (let i = 0; i < records.length; i++) {
       const roleShot = records[i].whoAssassinShot;
       if (roleShot) {
         // console.log("a");
@@ -606,7 +606,7 @@ const processRecords = async function (records) {
     //* *********************************************
     // Getting the average duration of each assassination
     //* *********************************************
-    for (var i = 0; i < records.length; i++) {
+    for (let i = 0; i < records.length; i++) {
       if (records[i].timeAssassinationStarted) {
         var duration = new Date(
           records[i].timeGameFinished.getTime() -
@@ -622,7 +622,7 @@ const processRecords = async function (records) {
     //* *********************************************
     // Getting the win rate for each game size
     //* *********************************************
-    for (var i = 0; i < records.length; i++) {
+    for (let i = 0; i < records.length; i++) {
       if (!gameSizeWins[records[i].numberOfPlayers]) {
         gameSizeWins[records[i].numberOfPlayers] = {};
         gameSizeWins[records[i].numberOfPlayers].spy = 0;
@@ -643,7 +643,7 @@ const processRecords = async function (records) {
     //* *********************************************
     // Getting the spy wins breakdown
     //* *********************************************
-    for (var i = 0; i < records.length; i++) {
+    for (let i = 0; i < records.length; i++) {
       if (records[i].winningTeam === 'Spy') {
         if (!spyWinBreakdown[records[i].howTheGameWasWon]) {
           spyWinBreakdown[records[i].howTheGameWasWon] = 0;
@@ -656,7 +656,7 @@ const processRecords = async function (records) {
     //* *********************************************
     // Getting the Lady of the lake wins breakdown
     //* *********************************************
-    for (var i = 0; i < records.length; i++) {
+    for (let i = 0; i < records.length; i++) {
       if (records[i].ladyChain.length > 0) {
         // if the first person who held the card is a res
         if (resRoles.indexOf(records[i].ladyChain[0]) !== -1) {
@@ -684,8 +684,8 @@ const processRecords = async function (records) {
     //* *********************************************
     // Getting the average duration of each game
     //* *********************************************
-    for (var i = 0; i < records.length; i++) {
-      var duration = new Date(
+    for (let i = 0; i < records.length; i++) {
+      const duration = new Date(
         records[i].timeGameFinished.getTime() -
           records[i].timeGameStarted.getTime()
       );
@@ -724,7 +724,7 @@ const processRecords = async function (records) {
   // Sort it
   gamesPlayedDataArray.sort(gameDateCompare);
   // Split it into the two axis
-  for (var i = 0; i < gamesPlayedDataArray.length; i++) {
+  for (let i = 0; i < gamesPlayedDataArray.length; i++) {
     xAxisVars.push(gamesPlayedDataArray[i].date);
     yAxisVars.push(gamesPlayedDataArray[i].value);
     // yAxisVars.push(new Date(gamesPlayedDataArray[i].value)); // This line seems to make server hang..?
@@ -799,7 +799,7 @@ const processRecords = async function (records) {
 
   obj.timeCreated = new Date();
 
-  clientStatsData = obj;
+  const clientStatsData = obj;
 
   console.log('Done processing, now saving.');
 

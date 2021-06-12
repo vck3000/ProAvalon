@@ -17,7 +17,7 @@ function index() {
       if (file.includes('.js') === true && !file.includes('.map')) {
         name = file.replace('.js', '');
 
-        commonPhases[name] = require(`./commonPhases/${file}`);
+        commonPhases[name] = require(`./commonPhases/${file}`).default;
       }
     });
 

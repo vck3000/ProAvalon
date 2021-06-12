@@ -1,8 +1,9 @@
+// @ts-nocheck
 // sockets
 
 import axios from 'axios';
 
-import gameRoom from '../gameplay/gameWrapper';
+import gameRoom from '../gameplay/gameWrapper.js';
 import savedGameObj from '../models/savedGame';
 import myNotification from '../models/notification';
 import createNotificationObj from '../myFunctions/createNotification';
@@ -86,7 +87,7 @@ function saveGameToDb(roomToSave) {
     deepCopyRoom.allSockets = undefined;
     deepCopyRoom.socketsOfPlayers = undefined;
 
-    for (i = 0; i < deepCopyRoom.playersInGame.length; i++) {
+    for (let i = 0; i < deepCopyRoom.playersInGame.length; i++) {
       deepCopyRoom.playersInGame[i].request = {
         user: {},
       };
@@ -559,7 +560,7 @@ var actionsObj = {
         pmmodCooldowns[senderSocket.id] = new Date();
 
         // Create the mod log.
-        mlog = ModLog.create({
+        const mlog = ModLog.create({
           type: 'pmmod',
           modWhoMade: {
             id: modSocket.request.user.id,
@@ -837,7 +838,7 @@ var actionsObj = {
           senderSocket.emit('allChatToClient', dataMessage);
           senderSocket.emit('roomChatToClient', dataMessage);
 
-          modlog =
+          const modlog =
             lastWhisperObj[senderSocket.request.user.username.toLowerCase()]
               .modlog;
           modlog.data.log.push(dataMessage);
@@ -851,6 +852,7 @@ var actionsObj = {
       help: '/guessmerlin <playername>: Solely for fun, submit your guess of who you think is Merlin.',
       run(data, senderSocket) {
         // Check the guesser is at a table
+        let messageToClient;
         if (
           senderSocket.request.user.inRoomId === undefined ||
           rooms[senderSocket.request.user.inRoomId].gameStarted !== true ||
@@ -993,7 +995,7 @@ var actionsObj = {
             classStr: 'server-text',
           };
         }
-        var botName = args[1];
+        let botName = args[1];
         const botAPI = enabledBots.find(
           (bot) => bot.name.toLowerCase() === botName.toLowerCase()
         );
@@ -1018,7 +1020,7 @@ var actionsObj = {
 
         const addedBots = [];
         for (let i = 0; i < numBots; i++) {
-          var botName = `${botAPI.name}#${Math.floor(Math.random() * 100)}`;
+          let botName = `${botAPI.name}#${Math.floor(Math.random() * 100)}`;
 
           // Avoid a username clash!
           const currentUsernames = currentRoom.socketsOfPlayers.map(
@@ -1223,7 +1225,7 @@ var actionsObj = {
           return { message: 'Specify a username.', classStr: 'server-text' };
         }
 
-        ban = await Ban.findOne({
+        const ban = await Ban.findOne({
           'bannedPlayer.usernameLower': args[1].toLowerCase(),
           whenRelease: { $gt: new Date() },
           disabled: false,
@@ -1300,7 +1302,7 @@ var actionsObj = {
           return { message: 'Specify a username.', classStr: 'server-text' };
         }
 
-        ban = await Ban.findOne({
+        const ban = await Ban.findOne({
           'bannedPlayer.usernameLower': args[1].toLowerCase(),
           whenRelease: { $gt: new Date() },
           disabled: false,
@@ -1345,7 +1347,7 @@ var actionsObj = {
         const usernames = [];
         const ips = [];
 
-        for (var i = 0; i < allSockets.length; i++) {
+        for (let i = 0; i < allSockets.length; i++) {
           usernames.push(allSockets[i].request.user.username);
 
           const clientIpAddress =
@@ -1378,7 +1380,7 @@ var actionsObj = {
             dateCreated: new Date(),
           };
 
-          for (var i = 0; i < duplicateIps.length; i++) {
+          for (let i = 0; i < duplicateIps.length; i++) {
             // for each ip, search through the whole users to see who has the ips
 
             for (let j = 0; j < ips.length; j++) {
@@ -1557,7 +1559,7 @@ var actionsObj = {
           senderSocket.emit('allChatToClient', dataMessage);
           senderSocket.emit('roomChatToClient', dataMessage);
 
-          mlog = await ModLog.create({
+          const mlog = await ModLog.create({
             type: 'mwhisper',
             modWhoMade: {
               id: senderSocket.request.user.id,
@@ -1705,7 +1707,7 @@ var actionsObj = {
         while (rooms[nextRoomId]) {
           nextRoomId++;
         }
-        dataObj = {
+        const dataObj = {
           maxNumPlayers: 10,
           newRoomPassword: '',
           gameMode: 'avalonBot',
@@ -1911,7 +1913,7 @@ var actionsObj = {
 
           // If there are 0 number of targets, there are no available players.
           if (numOfTargets === null) {
-            var availablePlayers = null; // null here so that the user can see this. For other operations, set to [].
+            availablePlayers = null; // null here so that the user can see this. For other operations, set to [].
           }
 
           if (availableButtons.length !== 0) {
@@ -1950,7 +1952,7 @@ var actionsObj = {
         // User is trying to force move.
         else {
           // Raise the caps for target usernames
-          targetsCaps = [];
+          const targetsCaps = [];
           for (let i = 0; i < targets.length; i++) {
             const playerIndexFound = getIndexFromUsername(
               thisRoom.playersInGame,
@@ -2156,13 +2158,13 @@ var actionsObj = {
           //     dataToReturn.push({ message: `${obj.level} - ${obj.username}`, classStr: 'server-text', dateCreated: new Date() });
           // }
 
-          lines = usernamesTree.split('\n');
+          const lines = usernamesTree.split('\n');
           // console.log(lines);
           // Do my special replace white space with forced white space and append
-          for (line of lines) {
+          for (const line of lines) {
             var replace = true;
             var newLine = '';
-            for (ch of line) {
+            for (const ch of line) {
               if (ch == ' ' && replace) {
                 newLine += '&#160;&#160;';
               } else if (!ch.match('/^[a-z0-9]+$/i')) {
@@ -2315,60 +2317,6 @@ var actionsObj = {
         });
 
         return { message: 'There is no such player.', classStr: 'server-text' };
-      },
-    },
-    aipban: {
-      command: 'aipban',
-      help: '/aipban <ip>: Ban the IP of the IP given. /munban does not undo this ban. Contact ProNub to remove an IP ban.',
-      run(data, senderSocket) {
-        const { args } = data;
-
-        if (!args[1]) {
-          senderSocket.emit('messageCommandReturnStr', {
-            message: 'Specify an IP',
-            classStr: 'server-text',
-          });
-          return { message: 'Specify a username.', classStr: 'server-text' };
-        }
-
-        User.find({
-          usernameLower: senderSocket.request.user.username.toLowerCase(),
-        })
-          .populate('notifications')
-          .exec((err, foundUser) => {
-            if (err) {
-              console.log(err);
-            } else if (foundUser) {
-              const banIpData = {
-                type: 'ip',
-                bannedIp: args[1],
-                usernamesAssociated: [],
-                modWhoBanned: {
-                  id: foundUser._id,
-                  username: foundUser.username,
-                },
-                whenMade: new Date(),
-              };
-
-              banIp.create(banIpData, (err, newBan) => {
-                if (err) {
-                  console.log(err);
-                } else {
-                  senderSocket.emit('messageCommandReturnStr', {
-                    message: `Successfully banned ip ${args[1]}`,
-                    classStr: 'server-text',
-                  });
-                }
-              });
-            } else {
-              // send error message back
-              senderSocket.emit('messageCommandReturnStr', {
-                message:
-                  "Could not find your user data (your own one, not the person you're trying to ban)",
-                classStr: 'server-text',
-              });
-            }
-          });
       },
     },
 
@@ -2571,7 +2519,7 @@ export const server = function (io: any): void {
       // console.log(getPlayerUsernamesFromAllSockets());
       updateCurrentGamesList(io);
       // message mods if player's ip matches another player
-      matchedIpsUsernames = [];
+      const matchedIpsUsernames = [];
       const joiningIpAddress =
         socket.request.headers['x-forwarded-for'] ||
         socket.request.connection.remoteAddress;
@@ -2650,15 +2598,16 @@ export const server = function (io: any): void {
 };
 
 function socketCallback(action, room) {
+  let data;
   if (action === 'finishGameResWin') {
-    var data = {
+    data = {
       message: `Room ${room.roomId} has finished! The Resistance have won!`,
       classStr: 'all-chat-text-blue',
     };
     sendToAllChat(ioGlobal, data);
   }
   if (action === 'finishGameSpyWin') {
-    var data = {
+    data = {
       message: `Room ${room.roomId} has finished! The Spies have won!`,
       classStr: 'all-chat-text-red',
     };
@@ -2928,7 +2877,7 @@ function destroyRoom(roomId) {
 }
 
 function playerLeaveRoomCheckDestroy(socket) {
-  roomId = socket.request.user.inRoomId;
+  const roomId = socket.request.user.inRoomId;
   if (roomId && rooms[roomId]) {
     // leave the room
     rooms[roomId].playerLeaveRoom(socket);
@@ -3081,7 +3030,7 @@ function disconnect(data) {
   // send out the new updated current player list
   updateCurrentPlayersList();
   // tell all clients that the user has left
-  var data = {
+  data = {
     message: `${this.request.user.username} has left the lobby.`,
     classStr: 'server-text-teal',
   };
@@ -3096,7 +3045,7 @@ function disconnect(data) {
   playerLeaveRoomCheckDestroy(this);
 
   // if they are in a room, say they're leaving the room.
-  var data = {
+  data = {
     message: `${username} has left the room.`,
     classStr: 'server-text-teal',
     dateCreated: new Date(),
@@ -3108,23 +3057,24 @@ function messageCommand(data) {
   // console.log("data0: " + data.command);
   // console.log("mod command exists: " + modCommands[data.command]);
   // console.log("Index of mods" + modsArray.indexOf(socket.request.user.username.toLowerCase()));
+  let dataToSend;
   if (userCommands[data.command]) {
-    var dataToSend = userCommands[data.command].run(data, this, ioGlobal);
+    dataToSend = userCommands[data.command].run(data, this, ioGlobal);
     this.emit('messageCommandReturnStr', dataToSend);
   } else if (
     modCommands[data.command] &&
     modsArray.indexOf(this.request.user.username.toLowerCase()) !== -1
   ) {
-    var dataToSend = modCommands[data.command].run(data, this, ioGlobal);
+    dataToSend = modCommands[data.command].run(data, this, ioGlobal);
     this.emit('messageCommandReturnStr', dataToSend);
   } else if (
     adminCommands[data.command] &&
     adminsArray.indexOf(this.request.user.username.toLowerCase()) !== -1
   ) {
-    var dataToSend = adminCommands[data.command].run(data, this, ioGlobal);
+    dataToSend = adminCommands[data.command].run(data, this, ioGlobal);
     this.emit('messageCommandReturnStr', dataToSend);
   } else {
-    var dataToSend = {
+    dataToSend = {
       message: 'Invalid command.',
       classStr: 'server-text',
       dateCreated: new Date(),
@@ -3175,10 +3125,10 @@ const prohibitedWords = [
 ];
 
 function prohibitedChat(message) {
-  splitted = message.split(' ');
+  const splitted = message.split(' ');
   for (let i = 0; i < splitted.length; i += 1) {
-    word = splitted[i].toLowerCase();
-    index = prohibitedWords.indexOf(word);
+    const word = splitted[i].toLowerCase();
+    const index = prohibitedWords.indexOf(word);
     if (index !== -1) {
       return true;
     }
@@ -3219,29 +3169,6 @@ function allChatFromClient(data) {
   // no classStr since its a player message
 
   sendToAllChat(ioGlobal, data);
-
-  if (this.request.user.username.toLowerCase() === 'pronub') {
-    if (data.message === 'sockets') {
-      const data = {
-        message: `Hi. Number of sockets: ${allSockets.length}`,
-        classStr: 'server-text',
-        dateCreated: new Date(),
-      };
-      this.emit('allChatToClient', data);
-    }
-    // else if (data.message === "snap") {
-    //     heapdump.writeSnapshot((err, filename) => {
-    //         console.log("Heap dump written to", filename);
-    //     });
-    // }
-    else if (data.message === 'gc') {
-      if (global.gc) {
-        console.log('Running GC!');
-        global.gc();
-        console.log('Finished GC!');
-      }
-    }
-  }
 }
 
 function roomChatFromClient(data) {
@@ -3289,8 +3216,8 @@ function newRoom(dataObj) {
     while (rooms[nextRoomId]) {
       nextRoomId++;
     }
-    privateRoom = !(dataObj.newRoomPassword === '');
-    rankedRoom = dataObj.ranked === 'ranked' && !privateRoom;
+    const privateRoom = !(dataObj.newRoomPassword === '');
+    const rankedRoom = dataObj.ranked === 'ranked' && !privateRoom;
     rooms[nextRoomId] = new gameRoom(
       this.request.user.username,
       nextRoomId,

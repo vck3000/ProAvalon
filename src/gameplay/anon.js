@@ -1,4 +1,4 @@
-myObj = {
+const myObj = {
   bots: [
     'Bot1',
     'Bot2',

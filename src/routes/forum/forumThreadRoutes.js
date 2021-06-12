@@ -130,12 +130,12 @@ lastIds.findOne({}).exec(async (err, returnedLastId) => {
 const newForumLimiter =
   process.env.MY_PLATFORM === 'local'
     ? rateLimit({
-        max: 0, // Disable if we are local
-      })
+      max: 0, // Disable if we are local
+    })
     : rateLimit({
-        windowMs: 12 * 60 * 60 * 1000, // 12 hours
-        max: 3,
-      });
+      windowMs: 12 * 60 * 60 * 1000, // 12 hours
+      max: 3,
+    });
 
 /** ******************************************************* */
 // Create a new forumThread

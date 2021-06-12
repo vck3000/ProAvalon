@@ -2,7 +2,7 @@ import express from 'express';
 
 const router = express.Router();
 import url from 'url';
-import patreon from 'patreon';
+import * as patreon from 'patreon';
 import middleware from './middleware';
 import User from '../models/user';
 import PatreonId from '../models/patreonId';
@@ -125,7 +125,7 @@ router.get('/oauth/redirect', (req, res) => {
             // console.log(patreonIdObj);
 
             if (!patreonIdObj) {
-              console.log("Patreon ID doesn't exist in database. Creating...");
+              console.log('Patreon ID doesn\'t exist in database. Creating...');
               await PatreonId.create({
                 name: patreon_full_name,
                 token,
@@ -155,7 +155,7 @@ router.get('/oauth/redirect', (req, res) => {
               patreonIdObj.token = token;
               patreonIdObj.markModified('token');
               await patreonIdObj.save().then((obj) => {
-                console.log("Successfully updated patreonId's token.");
+                console.log('Successfully updated patreonId\'s token.');
               });
 
               if (new Date() < new Date(patreonIdObj.expires)) {

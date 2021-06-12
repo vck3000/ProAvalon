@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "skipDefaultLibCheck": true,
     "sourceMap": true,
     "esModuleInterop": true,
     "allowJs": true,

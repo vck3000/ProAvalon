@@ -1,7 +1,7 @@
 import User from '../models/user';
 import treeify from 'treeify';
 
-IPLinkedAccounts = async (username, num_levels) => {
+let IPLinkedAccounts = async (username, num_levels) => {
   // console.log("Running ip linked accounts code");
 
   var linkedUsernames = [];
@@ -61,7 +61,7 @@ IPLinkedAccounts = async (username, num_levels) => {
         'usernameLower IPAddresses'
       );
       visitedIPs.push(nextIP);
-      for (u of linkedUsers) {
+      for (const u of linkedUsers) {
         // If this user hasn't been checked yet, add their username to the list and their IPs.
         if (!linkedUsernames.includes(u.usernameLower)) {
           linkedUsernames.push(u.usernameLower);

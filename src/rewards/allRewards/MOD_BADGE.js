@@ -1,6 +1,6 @@
 import constants from '../constants';
 
-obj = {
+const obj = {
   adminReq: false,
   modReq: true,
   gamesPlayedReq: 0,

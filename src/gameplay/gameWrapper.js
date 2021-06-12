@@ -69,7 +69,7 @@ GameWrapper.prototype.startGame = function (options) {
 
 GameWrapper.prototype.gameMove = function (socket, data) {
   // Game moves that change these attributes require callbacks.
-  beforeNum = this.missionNum;
+  const beforeNum = this.missionNum;
 
   Game.prototype.gameMove.call(this, socket, data);
 

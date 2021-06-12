@@ -1,6 +1,6 @@
 import constants from '../constants';
 
-obj = {
+const obj = {
   key: constants.TIER1_BADGE,
   adminReq: false,
   modReq: false,

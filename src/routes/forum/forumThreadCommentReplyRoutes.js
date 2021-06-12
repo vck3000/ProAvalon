@@ -5,7 +5,10 @@ import rateLimit from 'express-rate-limit';
 import forumThread from '../../models/forumThread';
 import forumThreadComment from '../../models/forumThreadComment';
 import forumThreadCommentReply from '../../models/forumThreadCommentReply';
-import { checkForumThreadCommentReplyOwnership, asyncMiddleware } from '../middleware';
+import {
+  checkForumThreadCommentReplyOwnership,
+  asyncMiddleware,
+} from '../middleware';
 import createNotificationObj from '../../myFunctions/createNotification';
 import REWARDS from '../../rewards/constants';
 import { userHasReward } from '../../rewards/getRewards';
@@ -37,12 +40,12 @@ const sanitizeHtmlAllowedAttributesForumThread = {
 const newReplyLimiter =
   process.env.MY_PLATFORM === 'local'
     ? rateLimit({
-        max: 0, // Disable if we are local
-      })
+      max: 0, // Disable if we are local
+    })
     : rateLimit({
-        windowMs: 60 * 60 * 1000, // 1 hours
-        max: 10,
-      });
+      windowMs: 60 * 60 * 1000, // 1 hours
+      max: 10,
+    });
 
 /** ******************************************************* */
 // Create a new comment reply route

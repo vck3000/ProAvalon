@@ -3,7 +3,7 @@ import express from 'express';
 const router = express.Router();
 import sanitizeHtml from 'sanitize-html';
 import url from 'url';
-import middleware from './middleware';
+import { isMod, checkProfileOwnership } from './middleware.js';
 import User from '../models/user';
 import PatreonId from '../models/patreonId';
 import avatarRequest from '../models/avatarRequest';
@@ -38,7 +38,7 @@ router.get('/avatargetlinktutorial', (req, res) => {
 });
 
 // Show the mod approving rejecting page
-router.get('/mod/customavatar', middleware.isMod, (req, res) => {
+router.get('/mod/customavatar', isMod, (req, res) => {
   avatarRequest.find({ processed: false }).exec((err, allAvatarRequests) => {
     if (err) {
       console.log(err);
@@ -52,7 +52,7 @@ router.get('/mod/customavatar', middleware.isMod, (req, res) => {
 
 // moderator approve or reject custom avatar requests
 // /profile/mod/ajax/processavatarrequest
-router.post('/mod/ajax/processavatarrequest', middleware.isMod, (req, res) => {
+router.post('/mod/ajax/processavatarrequest', isMod, (req, res) => {
   // console.log('process avatar request');
   // console.log(req.body.decision);
   // console.log(req.body.avatarreqid);
@@ -162,7 +162,7 @@ router.post('/mod/ajax/processavatarrequest', middleware.isMod, (req, res) => {
 // Show the customavatar edit page
 router.get(
   '/:profileUsername/changeavatar',
-  middleware.checkProfileOwnership,
+  checkProfileOwnership,
   (req, res) => {
     User.findOne(
       { usernameLower: req.params.profileUsername.toLowerCase() },
@@ -180,7 +180,7 @@ router.get(
 // Update the customavatar
 router.post(
   '/:profileUsername/changeavatar',
-  middleware.checkProfileOwnership,
+  checkProfileOwnership,
   (req, res) => {
     console.log('Recieved change avatar');
     console.log(`For user ${req.params.profileUsername}`);
@@ -221,7 +221,7 @@ router.post(
 // Show the change password edit page
 router.get(
   '/:profileUsername/changepassword',
-  middleware.checkProfileOwnership,
+  checkProfileOwnership,
   (req, res) => {
     User.findOne(
       { usernameLower: req.params.profileUsername.toLowerCase() },
@@ -239,7 +239,7 @@ router.get(
 // Update the password
 router.post(
   '/:profileUsername/changepassword',
-  middleware.checkProfileOwnership,
+  checkProfileOwnership,
   async (req, res) => {
     console.log(
       `Received a change password request from ${req.params.profileUsername.toLowerCase()}`
@@ -296,107 +296,98 @@ const loginUrl = url.format({
 });
 
 // show the edit page
-router.get(
-  '/:profileUsername/edit',
-  middleware.checkProfileOwnership,
-  (req, res) => {
-    User.findOne(
-      { usernameLower: req.params.profileUsername.toLowerCase() },
-      (err, foundUser) => {
-        if (err) {
-          console.log(err);
-        } else if (foundUser.patreonId) {
-          PatreonId.findOne({ id: foundUser.patreonId })
-            .exec()
-            .then((patreonIdObj) => {
-              res.render('profile/edit', {
-                userData: foundUser,
-                patreonLoginUrl: loginUrl,
-                patreonId: patreonIdObj,
-              });
-            })
-            .catch((err) => {
-              res.render('profile/edit', {
-                userData: foundUser,
-                patreonLoginUrl: loginUrl,
-              });
+router.get('/:profileUsername/edit', checkProfileOwnership, (req, res) => {
+  User.findOne(
+    { usernameLower: req.params.profileUsername.toLowerCase() },
+    (err, foundUser) => {
+      if (err) {
+        console.log(err);
+      } else if (foundUser.patreonId) {
+        PatreonId.findOne({ id: foundUser.patreonId })
+          .exec()
+          .then((patreonIdObj) => {
+            res.render('profile/edit', {
+              userData: foundUser,
+              patreonLoginUrl: loginUrl,
+              patreonId: patreonIdObj,
             });
-        } else {
-          res.render('profile/edit', {
-            userData: foundUser,
-            patreonLoginUrl: loginUrl,
+          })
+          .catch((err) => {
+            res.render('profile/edit', {
+              userData: foundUser,
+              patreonLoginUrl: loginUrl,
+            });
           });
-        }
+      } else {
+        res.render('profile/edit', {
+          userData: foundUser,
+          patreonLoginUrl: loginUrl,
+        });
       }
-    );
-  }
-);
+    }
+  );
+});
 
 // update a biography
-router.post(
-  '/:profileUsername',
-  middleware.checkProfileOwnership,
-  (req, res) => {
-    // console.log("biography update");
-    // console.log(req.body.biography);
-    // console.log(req.body.nationality);
-    // console.log(req.body.nationCode);
-    // console.log(req.body.hideStats);
+router.post('/:profileUsername', checkProfileOwnership, (req, res) => {
+  // console.log("biography update");
+  // console.log(req.body.biography);
+  // console.log(req.body.nationality);
+  // console.log(req.body.nationCode);
+  // console.log(req.body.hideStats);
 
-    if (!req.body.biography) {
-      req.body.biography = '';
-    }
-
-    if (req.body.nationality && req.body.nationCode) {
-      // some browsers are screwing up and sending two nation codes back
-      if (
-        typeof req.body.nationCode === 'array' ||
-        typeof req.body.nationCode === 'object'
-      ) {
-        req.body.nationCode =
-          req.body.nationCode[req.body.nationCode.length - 1];
-      }
-
-      // if the user somehow doesn't input a nation code, default UN
-      if (nationCodesAll.indexOf(req.body.nationCode) === -1) {
-        req.body.nationCode = 'UN';
-      }
-
-      // If the user somehow doesn't input a valid nation, default to UN
-      if (nationalitiesAll.indexOf(req.body.nationality) === -1) {
-        req.body.nationality = 'United Nations';
-      }
-
-      User.find({ usernameLower: req.params.profileUsername.toLowerCase() })
-        .populate('notifications')
-        .exec((err, foundUser) => {
-          foundUser = foundUser[0];
-
-          if (err) {
-            console.log(err);
-          } else {
-            foundUser.biography = sanitizeHtml(req.body.biography, {
-              allowedTags: sanitizeHtml.defaults.allowedTags.concat(
-                sanitizeHtmlAllowedTagsForumThread
-              ),
-              allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
-            });
-
-            foundUser.nationality = sanitizeHtml(req.body.nationality);
-            foundUser.nationCode = sanitizeHtml(
-              req.body.nationCode.toLowerCase()
-            );
-            foundUser.hideStats = req.body.hideStats;
-            foundUser.save();
-
-            res.redirect(`/profile/${foundUser.username}`);
-          }
-        });
-    } else {
-      res.redirect(`/profile/${req.params.profileUsername}`);
-    }
+  if (!req.body.biography) {
+    req.body.biography = '';
   }
-);
+
+  if (req.body.nationality && req.body.nationCode) {
+    // some browsers are screwing up and sending two nation codes back
+    if (
+      typeof req.body.nationCode === 'array' ||
+      typeof req.body.nationCode === 'object'
+    ) {
+      req.body.nationCode = req.body.nationCode[req.body.nationCode.length - 1];
+    }
+
+    // if the user somehow doesn't input a nation code, default UN
+    if (nationCodesAll.indexOf(req.body.nationCode) === -1) {
+      req.body.nationCode = 'UN';
+    }
+
+    // If the user somehow doesn't input a valid nation, default to UN
+    if (nationalitiesAll.indexOf(req.body.nationality) === -1) {
+      req.body.nationality = 'United Nations';
+    }
+
+    User.find({ usernameLower: req.params.profileUsername.toLowerCase() })
+      .populate('notifications')
+      .exec((err, foundUser) => {
+        foundUser = foundUser[0];
+
+        if (err) {
+          console.log(err);
+        } else {
+          foundUser.biography = sanitizeHtml(req.body.biography, {
+            allowedTags: sanitizeHtml.defaults.allowedTags.concat(
+              sanitizeHtmlAllowedTagsForumThread
+            ),
+            allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
+          });
+
+          foundUser.nationality = sanitizeHtml(req.body.nationality);
+          foundUser.nationCode = sanitizeHtml(
+            req.body.nationCode.toLowerCase()
+          );
+          foundUser.hideStats = req.body.hideStats;
+          foundUser.save();
+
+          res.redirect(`/profile/${foundUser.username}`);
+        }
+      });
+  } else {
+    res.redirect(`/profile/${req.params.profileUsername}`);
+  }
+});
 
 // show the profile page
 router.get('/:profileUsername', (req, res) => {
@@ -726,7 +717,7 @@ var nationalitiesAll = [
   'Congo, the Democratic Republic of the',
   'Cook Islands',
   'Costa Rica',
-  "Côte d'Ivoire",
+  'Côte d\'Ivoire',
   'Croatia',
   'Cuba',
   'Curaçao',
@@ -789,11 +780,11 @@ var nationalitiesAll = [
   'Kazakhstan',
   'Kenya',
   'Kiribati',
-  "Korea, Democratic People's Republic of",
+  'Korea, Democratic People\'s Republic of',
   'Korea, Republic of',
   'Kuwait',
   'Kyrgyzstan',
-  "Lao People's Democratic Republic",
+  'Lao People\'s Democratic Republic',
   'Latvia',
   'Lebanon',
   'Lesotho',

@@ -17,15 +17,12 @@ const gameModeObj = {};
 for (let i = 0; i < gameModeNames.length; i++) {
   gameModeObj[gameModeNames[i]] = {};
 
-  gameModeObj[
-    gameModeNames[i]
-  ].Roles = require(`./${gameModeNames[i]}/indexRoles`);
-  gameModeObj[
-    gameModeNames[i]
-  ].Phases = require(`./${gameModeNames[i]}/indexPhases`);
-  gameModeObj[
-    gameModeNames[i]
-  ].Cards = require(`./${gameModeNames[i]}/indexCards`);
+  gameModeObj[gameModeNames[i]].Roles =
+    require(`./${gameModeNames[i]}/indexRoles`).default;
+  gameModeObj[gameModeNames[i]].Phases =
+    require(`./${gameModeNames[i]}/indexPhases`).default;
+  gameModeObj[gameModeNames[i]].Cards =
+    require(`./${gameModeNames[i]}/indexCards`).default;
 }
 
 import commonPhasesIndex from './indexCommonPhases';
@@ -145,13 +142,13 @@ Room.prototype.playerJoinRoom = function (socket, inputPassword) {
 };
 
 Room.prototype.playerSitDown = function (socket) {
-  socketUsername = socket.request.user.username;
+  const socketUsername = socket.request.user.username;
 
   if (
     socketUsername === this.host &&
     this.gameMode.toLowerCase().includes('bot') === true
   ) {
-    data = {
+    const data = {
       message:
         'Type /help to see the commands available to interact with bots!',
       classStr: 'server-text',
@@ -234,7 +231,7 @@ Room.prototype.playerLeaveRoom = function (socket) {
       this.gameMode.toLowerCase().includes('bot') === true &&
       oldHost !== this.host
     ) {
-      data = {
+      const data = {
         message:
           'Type /help to see the commands available to interact with bots!',
         classStr: 'server-text',
@@ -263,7 +260,7 @@ Room.prototype.playerLeaveRoom = function (socket) {
 Room.prototype.kickPlayer = function (username, socket) {
   if (this.host === socket.request.user.username) {
     // Get the socket of the target
-    socketOfTarget = null;
+    let socketOfTarget = null;
     for (let i = 0; i < this.allSockets.length; i++) {
       if (username === this.allSockets[i].request.user.username) {
         socketOfTarget = this.allSockets[i];
@@ -292,9 +289,9 @@ Room.prototype.kickPlayer = function (username, socket) {
 Room.prototype.setClaim = function (socket, data) {
   // data presents whether they want to CLAIM (true) or UNCLAIM (false)
 
-  username = socket.request.user.username;
+  const username = socket.request.user.username;
 
-  index = this.claimingPlayers.indexOf(username);
+  const index = this.claimingPlayers.indexOf(username);
 
   // If they want to claim and also don't exist on the claimingPlayers array
   if (data === true && index === -1) {
@@ -310,7 +307,7 @@ Room.prototype.setClaim = function (socket, data) {
 
 // Note this sends text to ALL players and ALL spectators
 Room.prototype.sendText = function (sockets, incString, stringType) {
-  data = {
+  const data = {
     message: incString,
     classStr: stringType,
     dateCreated: new Date(),
@@ -443,10 +440,10 @@ Room.prototype.updateGameModesInRoom = function (socket, gameMode) {
       this.botSockets !== undefined &&
       this.botSockets.length > 0
     ) {
-      var thisRoom = this;
+      let thisRoom = this;
 
       const botSockets = this.botSockets.slice() || [];
-      botsToRemove = botSockets;
+      const botsToRemove = botSockets;
       botsToRemove.forEach((botSocket) => {
         thisRoom.playerLeaveRoom(botSocket);
 
@@ -472,8 +469,8 @@ Room.prototype.updateGameModesInRoom = function (socket, gameMode) {
 
     if (gameMode.toLowerCase().includes('bot') === true) {
       // Get host socket
-      hostSock = this.socketsOfPlayers[0];
-      data = {
+      const hostSock = this.socketsOfPlayers[0];
+      const data = {
         message:
           'Type /help to see the commands available to interact with bots!',
         classStr: 'server-text',
@@ -483,7 +480,7 @@ Room.prototype.updateGameModesInRoom = function (socket, gameMode) {
     }
 
     this.gameMode = gameMode;
-    var thisRoom = this;
+    let thisRoom = this;
 
     this.specialRoles = new gameModeObj[this.gameMode].Roles().getRoles(this);
     this.specialPhases = new gameModeObj[this.gameMode].Phases().getPhases(
@@ -517,7 +514,7 @@ Room.prototype.sendOutGameModesInRoomToSocket = function (targetSocket) {
 
   const skipRoles = ['Resistance', 'Spy'];
 
-  for (var key in this.specialRoles) {
+  for (let key in this.specialRoles) {
     if (this.specialRoles.hasOwnProperty(key) === true) {
       // Skip Resistance and Spy since they are default roles always enabled.
       if (skipRoles.includes(this.specialRoles[key].role) === true) {

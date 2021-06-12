@@ -1,7 +1,7 @@
 import PatreonId from '../models/patreonId';
 import indexRewards from './indexRewards';
 
-indexRewardsObj = new indexRewards();
+let indexRewardsObj = new indexRewards();
 
 import modsArray from '../modsadmins/mods';
 import adminsArray from '../modsadmins/admins';

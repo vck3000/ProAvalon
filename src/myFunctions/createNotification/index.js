@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import User from '../../models/user';
 import myNotification from '../../models/notification';
 
-createNotifObj = {};
+let createNotifObj = {};
 
 createNotifObj.createNotification = function (
   userIDTarget,
@@ -39,7 +39,7 @@ createNotifObj.createNotification = function (
             madeBy.toLowerCase() !== foundUser.username.toLowerCase() &&
             sameNotifExists === false
           ) {
-            notificationVar = {
+            const notificationVar = {
               text: stringToSay,
               date: new Date(),
               link,

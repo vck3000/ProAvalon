@@ -9,7 +9,7 @@ import modsArray from '../modsadmins/mods';
 import admins from '../modsadmins/admins';
 
 // return a function that wraps an async middleware
-const asyncMiddleware = (fn) => (req, res, next) => {
+export const asyncMiddleware = (fn) => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch((err) => {
     console.log(err);
     req.flash(
@@ -20,7 +20,7 @@ const asyncMiddleware = (fn) => (req, res, next) => {
   });
 };
 
-const isLoggedIn = asyncMiddleware(async (req, res, next) => {
+export const isLoggedIn = asyncMiddleware(async (req, res, next) => {
   // Check if the user is logged in.
   if (!req.isAuthenticated()) {
     req.flash('error', 'Please log in to view this page.');
@@ -67,7 +67,7 @@ const isLoggedIn = asyncMiddleware(async (req, res, next) => {
       res.locals.bansChecked = true;
       // Check bans!!!
       // USER ban
-      ban = await Ban.findOne({
+      const ban = await Ban.findOne({
         'bannedPlayer.id': user._id, // User ID match
         whenRelease: { $gt: new Date() }, // Unexpired ban
         userBan: true, // User ban
@@ -85,7 +85,7 @@ const isLoggedIn = asyncMiddleware(async (req, res, next) => {
       if (clientIpAddress !== null && clientIpAddress !== undefined) {
         console.log('Checking bans');
         // IP ban
-        ban = await Ban.findOne({
+        const ban = await Ban.findOne({
           bannedIPs: clientIpAddress, // IP match
           whenRelease: { $gt: new Date() }, // Unexpired ban
           ipBan: true, // IP ban
@@ -141,8 +141,6 @@ const isLoggedIn = asyncMiddleware(async (req, res, next) => {
     next();
   }
 });
-
-export { asyncMiddleware, isLoggedIn };
 
 const checkOwnership = (name, model, query, isOwner) => [
   isLoggedIn,

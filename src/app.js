@@ -1,5 +1,4 @@
-import _ from './env';
-
+import './env.js';
 import assert from 'assert';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';

@@ -101,7 +101,7 @@ router.get('/lobby', middleware.isLoggedIn, async (req, res) => {
         );
         res.redirect('/');
       } else {
-        currentModActions = [];
+        const currentModActions = [];
         // load up all the modActions that are not released yet and are bans
         await modAction.find(
           { whenRelease: { $gt: new Date() }, type: 'ban' },

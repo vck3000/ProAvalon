@@ -1,18 +1,17 @@
 {
   "name": "proavalon",
   "version": "1.0.0",
-  "type": "module",
   "description": "ProAvalon",
-  "main": "app.ts",
+  "main": "app.js",
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
     "build": "tsc && cp -R ./src/views ./out",
-    "lint": "eslint .",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --fix",
-    "dev": "ts-node-dev --respawn --transpile-only ./src/app.ts",
-    "prod": "npm run build && node ./out/app.ts",
-    "debug": "npm run build && node --inspect ./out/src/app.ts"
+    "dev": "ts-node-dev --respawn --transpile-only ./src/app.js",
+    "prod": "npm run build && node ./out/app.js",
+    "debug": "npm run build && node --inspect ./out/src/app.js"
   },
   "author": "Victor Kuo",
   "license": "ISC",

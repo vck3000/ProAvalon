@@ -98,27 +98,27 @@ router.post('/ban', isMod, upload.none(), async (req, res) => {
     const whenMade = new Date();
     var whenRelease;
     switch (req.body['duration_units']) {
-      case 'hrs':
-        whenRelease = new Date(now.setHours(now.getHours() + durationInt));
-        break;
-      case 'days':
-        whenRelease = new Date(now.setDate(now.getDate() + durationInt));
-        break;
-      case 'months':
-        whenRelease = new Date(now.setMonth(now.getMonth() + durationInt));
-        break;
-      case 'years':
-        whenRelease = new Date(
-          now.setFullYear(now.getFullYear() + durationInt)
-        );
-        break;
-      case 'permaban':
-        whenRelease = new Date(now.setFullYear(now.getFullYear() + 1000));
-        break;
-      default:
-        res.status(400);
-        res.send(`Invalid duration units: '${req.body['duration_units']}'.`);
-        return;
+    case 'hrs':
+      whenRelease = new Date(now.setHours(now.getHours() + durationInt));
+      break;
+    case 'days':
+      whenRelease = new Date(now.setDate(now.getDate() + durationInt));
+      break;
+    case 'months':
+      whenRelease = new Date(now.setMonth(now.getMonth() + durationInt));
+      break;
+    case 'years':
+      whenRelease = new Date(
+        now.setFullYear(now.getFullYear() + durationInt)
+      );
+      break;
+    case 'permaban':
+      whenRelease = new Date(now.setFullYear(now.getFullYear() + 1000));
+      break;
+    default:
+      res.status(400);
+      res.send(`Invalid duration units: '${req.body['duration_units']}'.`);
+      return;
     }
 
     // Create the data object

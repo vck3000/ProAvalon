@@ -15,7 +15,7 @@ class SireOfTheSea {
     this.sireChain = []; // To be stored in the database later.
 
     this.description =
-      "Reveals the card holder's alliance to the person being carded.";
+      'Reveals the card holder\'s alliance to the person being carded.';
   }
 
   initialise() {

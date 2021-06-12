@@ -1,7 +1,10 @@
 import { Router } from 'express';
 const router = new Router();
 import User from '../models/user';
-import { sendEmailVerification, isThrowawayEmail } from '../myFunctions/sendEmailVerification';
+import {
+  sendEmailVerification,
+  isThrowawayEmail,
+} from '../myFunctions/sendEmailVerification';
 import validator from 'validator';
 
 function checkEmailVerifiedAlready(req, res, next) {

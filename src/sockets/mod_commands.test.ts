@@ -29,13 +29,12 @@ jest.mock('../models/user', () => {
   };
 });
 
-const sockets = require('./sockets.js');
+import { actionsObj } from './sockets';
+import IPLinkedAccounts from '../myFunctions/IPLinkedAccounts';
+import ModLog from '../models/modLog';
+import User from '../models/user';
 
-const IPLinkedAccounts = require('../myFunctions/IPLinkedAccounts');
-const ModLog = require('../models/modLog');
-const User = require('../models/user');
-
-const modCommands = sockets.actionsObj.modCommands;
+const modCommands = actionsObj.modCommands;
 
 describe('ModCommands', () => {
   const mockSocket = {
@@ -50,6 +49,8 @@ describe('ModCommands', () => {
   beforeEach(() => {
     mockSocket.emit.mockReset();
     // ModLog.create.mockReset();
+
+    // @ts-ignore
     IPLinkedAccounts.mockReset();
   });
 

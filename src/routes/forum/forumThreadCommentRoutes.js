@@ -4,7 +4,10 @@ import mongoose from 'mongoose';
 import rateLimit from 'express-rate-limit';
 import forumThread from '../../models/forumThread';
 import forumThreadComment from '../../models/forumThreadComment';
-import { asyncMiddleware, checkForumThreadCommentOwnership } from '../middleware';
+import {
+  asyncMiddleware,
+  checkForumThreadCommentOwnership,
+} from '../middleware';
 import { allowedHtmlAttributes, allowedHtmlTags } from './sanitizeRestrictions';
 import createNotificationObj from '../../myFunctions/createNotification';
 import REWARDS from '../../rewards/constants';
@@ -15,12 +18,12 @@ const router = new Router();
 const newCommentLimiter =
   process.env.MY_PLATFORM === 'local'
     ? rateLimit({
-        max: 0, // Disable if we are local
-      })
+      max: 0, // Disable if we are local
+    })
     : rateLimit({
-        windowMs: 60 * 60 * 1000, // 1 hours
-        max: 10,
-      });
+      windowMs: 60 * 60 * 1000, // 1 hours
+      max: 10,
+    });
 
 /** ******************************************************* */
 // Create new comment route

@@ -152,7 +152,7 @@ class APIBotSocket {
         const { capabilities } = response.data;
 
         if (checkBotCapabilities(game, capabilities) === false) {
-          callback(false, "Bot doesn't support this game type.");
+          callback(false, 'Bot doesn\'t support this game type.');
         } else {
           callback(true);
         }

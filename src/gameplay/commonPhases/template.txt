@@ -7,7 +7,7 @@
     - Status message to display
     - Prohibited Indexes to pick (an array)
 */
-var usernamesIndexes = require("../../myFunctions/usernamesIndexes");
+var usernamesIndexes = import("../../myFunctions/usernamesIndexes");
 
 function /* TODO: Name of phase*/(thisRoom_) {
     this.thisRoom = thisRoom_;
