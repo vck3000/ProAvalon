@@ -59,13 +59,13 @@ router.post('/ban', isMod, upload.none(), async (req, res) => {
       req.body['SingleIPBanCheckbox'] === 'on'
     ) {
       res.status(400);
-      res.send(`May not select both IP ban checkboxes.`);
+      res.send('May not select both IP ban checkboxes.');
       return;
     }
 
     if (boxCount < 1) {
       res.status(400);
-      res.send(`Must select at least one type of ban.`);
+      res.send('Must select at least one type of ban.');
       return;
     }
 
@@ -80,7 +80,7 @@ router.post('/ban', isMod, upload.none(), async (req, res) => {
 
     if (!req.user) {
       res.status(400);
-      res.send(`Cannot find who you are.`);
+      res.send('Cannot find who you are.');
       return;
     }
     const modUser = req.user;
@@ -164,12 +164,12 @@ router.post('/ban', isMod, upload.none(), async (req, res) => {
     });
 
     res.status(200);
-    res.send(`The ban was successfully made.`);
+    res.send('The ban was successfully made.');
     return;
   } catch (e) {
     console.log(e);
     res.status(400);
-    res.send(`Something went terribly wrong...`);
+    res.send('Something went terribly wrong...');
   }
 });
 

@@ -215,7 +215,7 @@ var actionsObj = {
 
         if (args.length <= 1) {
           return {
-            message: `You must provide a username.`,
+            message: 'You must provide a username.',
             classStr: 'server-text',
             dateCreated: new Date(),
           };
@@ -236,7 +236,7 @@ var actionsObj = {
 
         if (args.length <= 1) {
           return {
-            message: `You must provide a username.`,
+            message: 'You must provide a username.',
             classStr: 'server-text',
             dateCreated: new Date(),
           };
@@ -257,7 +257,7 @@ var actionsObj = {
 
         if (args.length <= 1) {
           return {
-            message: `You must provide a username.`,
+            message: 'You must provide a username.',
             classStr: 'server-text',
             dateCreated: new Date(),
           };
@@ -278,7 +278,7 @@ var actionsObj = {
 
         if (args.length <= 1) {
           return {
-            message: `You must provide a username.`,
+            message: 'You must provide a username.',
             classStr: 'server-text',
             dateCreated: new Date(),
           };
@@ -299,7 +299,7 @@ var actionsObj = {
 
         if (args.length <= 1) {
           return {
-            message: `You must provide a username.`,
+            message: 'You must provide a username.',
             classStr: 'server-text',
             dateCreated: new Date(),
           };
@@ -320,7 +320,7 @@ var actionsObj = {
 
         if (args.length <= 1) {
           return {
-            message: `You must provide a username.`,
+            message: 'You must provide a username.',
             classStr: 'server-text',
             dateCreated: new Date(),
           };
@@ -1517,7 +1517,7 @@ var actionsObj = {
           senderSocket.request.user.username.toLowerCase()
         ) {
           senderSocket.emit('messageCommandReturnStr', {
-            message: `You cannot whisper yourself...`,
+            message: 'You cannot whisper yourself...',
             classStr: 'server-text',
           });
         }
@@ -2021,7 +2021,7 @@ var actionsObj = {
             ];
           if (!rooms[roomId].gameStarted) {
             return {
-              message: `Game has not started.`,
+              message: 'Game has not started.',
               classStr: 'server-text',
             };
           } else if (!user) {
@@ -2056,7 +2056,7 @@ var actionsObj = {
         if (rooms[roomId]) {
           if (!rooms[roomId].gameStarted) {
             return {
-              message: `Game has not started.`,
+              message: 'Game has not started.',
               classStr: 'server-text',
             };
           }
@@ -2075,7 +2075,7 @@ var actionsObj = {
           });
           return;
         } else {
-          return { message: `You are not in a room.`, classStr: 'server-text' };
+          return { message: 'You are not in a room.', classStr: 'server-text' };
         }
       },
     },
@@ -2090,16 +2090,16 @@ var actionsObj = {
           // if not started or finished, no action
           if (!currentRoom.gameStarted) {
             return {
-              message: `Game has not started.`,
+              message: 'Game has not started.',
               classStr: 'server-text',
             };
           }
           if (currentRoom.phase == 'finished') {
-            return { message: `Game has finished.`, classStr: 'server-text' };
+            return { message: 'Game has finished.', classStr: 'server-text' };
           }
           currentRoom.togglePause(senderSocket.request.user.username);
         } else {
-          return { message: `You are not in a room.`, classStr: 'server-text' };
+          return { message: 'You are not in a room.', classStr: 'server-text' };
         }
       },
     },
@@ -2731,28 +2731,36 @@ var assignRatingBracket = function (socket) {
 
   if (socket.request.user.totalRankedGamesPlayed < provisionalGames) {
     socket.request.user.ratingBracket = 'unranked';
-    socket.request.ratingBadge = `<span class='badge' data-toggle='tooltip' data-placement='right' title='Unranked' style='transform: scale(0.9) translateY(-9%); background-color: #a9a9a9'>?</span>`;
+    socket.request.ratingBadge =
+      "<span class='badge' data-toggle='tooltip' data-placement='right' title='Unranked' style='transform: scale(0.9) translateY(-9%); background-color: #a9a9a9'>?</span>";
   } else if (socketRating < bronzeBase) {
     socket.request.user.ratingBracket = 'iron';
-    socket.request.ratingBadge = `<span class='badge' data-toggle='tooltip' data-placement='right' title='Iron' style='transform: scale(0.9) translateY(-9%); background-color: #303030'>I</span>`;
+    socket.request.ratingBadge =
+      "<span class='badge' data-toggle='tooltip' data-placement='right' title='Iron' style='transform: scale(0.9) translateY(-9%); background-color: #303030'>I</span>";
   } else if (socketRating >= bronzeBase && socketRating < silverBase) {
     socket.request.user.ratingBracket = 'bronze';
-    socket.request.ratingBadge = `<span class='badge' data-toggle='tooltip' data-placement='right' title='Bronze' style='transform: scale(0.9) translateY(-9%); background-color: #cd7f32'>B</span>`;
+    socket.request.ratingBadge =
+      "<span class='badge' data-toggle='tooltip' data-placement='right' title='Bronze' style='transform: scale(0.9) translateY(-9%); background-color: #cd7f32'>B</span>";
   } else if (socketRating >= silverBase && socketRating < goldBase) {
     socket.request.user.ratingBracket = 'silver';
-    socket.request.ratingBadge = `<span class='badge' data-toggle='tooltip' data-placement='right' title='Silver' style='transform: scale(0.9) translateY(-9%); background-color: #c0c0c0'>S</span>`;
+    socket.request.ratingBadge =
+      "<span class='badge' data-toggle='tooltip' data-placement='right' title='Silver' style='transform: scale(0.9) translateY(-9%); background-color: #c0c0c0'>S</span>";
   } else if (socketRating >= goldBase && socketRating < platBase) {
     socket.request.user.ratingBracket = 'gold';
-    socket.request.ratingBadge = `<span class='badge' data-toggle='tooltip' data-placement='right' title='Gold' style='transform: scale(0.9) translateY(-9%); background-color: #ffd700'>G</span>`;
+    socket.request.ratingBadge =
+      "<span class='badge' data-toggle='tooltip' data-placement='right' title='Gold' style='transform: scale(0.9) translateY(-9%); background-color: #ffd700'>G</span>";
   } else if (socketRating >= platBase && socketRating < diamondBase) {
     socket.request.user.ratingBracket = 'platinum';
-    socket.request.ratingBadge = `<span class='badge' data-toggle='tooltip' data-placement='right' title='Platinum' style='transform: scale(0.9) translateY(-9%); background-color: #afeeee'>P</span>`;
+    socket.request.ratingBadge =
+      "<span class='badge' data-toggle='tooltip' data-placement='right' title='Platinum' style='transform: scale(0.9) translateY(-9%); background-color: #afeeee'>P</span>";
   } else if (socketRating >= diamondBase && socketRating < championBase) {
     socket.request.user.ratingBracket = 'diamond';
-    socket.request.ratingBadge = `<span class='badge' data-toggle='tooltip' data-placement='right' title='Diamond' style='transform: scale(0.9) translateY(-9%); background-color: rgb(0, 100, 250)'>D</span>`;
+    socket.request.ratingBadge =
+      "<span class='badge' data-toggle='tooltip' data-placement='right' title='Diamond' style='transform: scale(0.9) translateY(-9%); background-color: rgb(0, 100, 250)'>D</span>";
   } else if (socketRating >= championBase) {
     socket.request.user.ratingBracket = 'champion';
-    socket.request.ratingBadge = `<span class='badge' data-toggle='tooltip' data-placement='right' title='Champion' style='transform: scale(0.9) translateY(-9%); background-color: #9370db'>C</span>`;
+    socket.request.ratingBadge =
+      "<span class='badge' data-toggle='tooltip' data-placement='right' title='Champion' style='transform: scale(0.9) translateY(-9%); background-color: #9370db'>C</span>";
   }
 
   // If the rating bracket changes, update the database entry.
