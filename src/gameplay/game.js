@@ -15,15 +15,12 @@ const gameModeObj = {};
 for (let i = 0; i < gameModeNames.length; i++) {
   gameModeObj[gameModeNames[i]] = {};
 
-  gameModeObj[gameModeNames[i]].Roles = import(
-    `./${gameModeNames[i]}/indexRoles`
-  );
-  gameModeObj[gameModeNames[i]].Phases = import(
-    `./${gameModeNames[i]}/indexPhases`
-  );
-  gameModeObj[gameModeNames[i]].Cards = import(
-    `./${gameModeNames[i]}/indexCards`
-  );
+  gameModeObj[gameModeNames[i]].Roles =
+    require(`./${gameModeNames[i]}/indexRoles`).default;
+  gameModeObj[gameModeNames[i]].Phases =
+    require(`./${gameModeNames[i]}/indexPhases`).default;
+  gameModeObj[gameModeNames[i]].Cards =
+    require(`./${gameModeNames[i]}/indexCards`).default;
 }
 
 /**
@@ -294,7 +291,7 @@ Game.prototype.playerStandUp = function (socket) {
   if (this.gameStarted === true) {
     socket.emit(
       'danger-alert',
-      'The game has started... You shouldn\'t be able to see that stand up button!'
+      "The game has started... You shouldn't be able to see that stand up button!"
     );
     return;
   }
@@ -1044,7 +1041,7 @@ Game.prototype.getGameData = function () {
     return data;
   }
 
-  return 'Game hasn\'t started';
+  return "Game hasn't started";
 };
 
 Game.prototype.getGameDataForSpectators = function () {
