@@ -4,6 +4,8 @@ version: '3.9'
 services:
   mongo:
     image: mongo
+    volumes: 
+      - ./docker-compose-data/mongodb:/data/db
     restart: always
     ports:
       - 27017:27017

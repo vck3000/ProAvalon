@@ -5,3 +5,4 @@ coverage
 out
 temporary
 node_modules
+docker-compose-data
