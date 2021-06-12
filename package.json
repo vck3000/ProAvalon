@@ -1,7 +1,7 @@
 {
-  "name": "thenewresistance",
+  "name": "proavalon",
   "version": "1.0.0",
-  "description": "TheNewResistance!",
+  "description": "ProAvalon",
   "main": "app.js",
   "scripts": {
     "test": "jest",

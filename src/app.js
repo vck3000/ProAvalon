@@ -1,4 +1,3 @@
-/* eslint-disable import/order */
 require('dotenv').config();
 
 const assert = require('assert');
@@ -110,9 +109,6 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
-
-// Insert ban checks here.
-// TODO
 
 app.use(indexRoutes);
 
