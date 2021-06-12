@@ -3,4 +3,3 @@ module.exports = {
   testEnvironment: 'node',
   modulePathIgnorePatterns: ['out', 'assets'],
 };
-

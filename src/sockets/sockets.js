@@ -335,8 +335,7 @@ var actionsObj = {
 
     interactUser: {
       command: 'interactUser',
-      help:
-        '/interactUser <buzz/lick/pat/poke/punch/slap> <playername>: Interact with a player.',
+      help: '/interactUser <buzz/lick/pat/poke/punch/slap> <playername>: Interact with a player.',
       run(data, senderSocket) {
         console.log('interact user', data);
         const { args } = data;
@@ -455,8 +454,7 @@ var actionsObj = {
 
     roll: {
       command: 'roll',
-      help:
-        '/roll <optional number>: Returns a random number between 1 and 10 or 1 and optional number.',
+      help: '/roll <optional number>: Returns a random number between 1 and 10 or 1 and optional number.',
       run(data, senderSocket) {
         const { args } = data;
 
@@ -497,8 +495,7 @@ var actionsObj = {
 
     pmmod: {
       command: 'pmmod',
-      help:
-        '/pmmod <mod_username> <message>: Sends a private message to an online moderator.',
+      help: '/pmmod <mod_username> <message>: Sends a private message to an online moderator.',
       run(data, senderSocket) {
         const { args } = data;
         // We check if they are spamming, i.e. have sent a PM before the timeout is up
@@ -592,8 +589,7 @@ var actionsObj = {
 
     mute: {
       command: 'mute',
-      help:
-        '/mute: Mute a player who is being annoying in chat/buzzing/slapping/licking/poking/tickling you.',
+      help: '/mute: Mute a player who is being annoying in chat/buzzing/slapping/licking/poking/tickling you.',
       run(data, senderSocket) {
         const { args } = data;
 
@@ -747,8 +743,7 @@ var actionsObj = {
 
     navbar: {
       command: 'navbar',
-      help:
-        '/navbar: Hides and unhides the top navbar. Some phone screens may look better with the navbar turned off.',
+      help: '/navbar: Hides and unhides the top navbar. Some phone screens may look better with the navbar turned off.',
       run(data, senderSocket) {
         const { args } = data;
         senderSocket.emit('toggleNavBar');
@@ -861,8 +856,7 @@ var actionsObj = {
     },
     guessmerlin: {
       command: 'guessmerlin',
-      help:
-        '/guessmerlin <playername>: Solely for fun, submit your guess of who you think is Merlin.',
+      help: '/guessmerlin <playername>: Solely for fun, submit your guess of who you think is Merlin.',
       run(data, senderSocket) {
         // Check the guesser is at a table
         if (
@@ -890,8 +884,7 @@ var actionsObj = {
 
     getbots: {
       command: 'getbots',
-      help:
-        '/getbots: Run this in a bot-compatible room. Prints a list of available bots to add, as well as their supported game modes',
+      help: '/getbots: Run this in a bot-compatible room. Prints a list of available bots to add, as well as their supported game modes',
       run(data, senderSocket) {
         // if (senderSocket.request.user.inRoomId === undefined) {
         // 	return {
@@ -958,8 +951,7 @@ var actionsObj = {
 
     addbot: {
       command: 'addbot',
-      help:
-        '/addbot <name> [number]: Run this in a bot-compatible room. Add a bot to the room.',
+      help: '/addbot <name> [number]: Run this in a bot-compatible room. Add a bot to the room.',
       run(data, senderSocket) {
         if (
           senderSocket.request.user.inRoomId === undefined ||
@@ -1073,8 +1065,7 @@ var actionsObj = {
     },
     rembot: {
       command: 'rembot',
-      help:
-        '/rembot (<name>|all): Run this in a bot-compatible room. Removes a bot from the room.',
+      help: '/rembot (<name>|all): Run this in a bot-compatible room. Removes a bot from the room.',
       run(data, senderSocket) {
         if (
           senderSocket.request.user.inRoomId === undefined ||
@@ -1232,8 +1223,7 @@ var actionsObj = {
 
     mgetban: {
       command: 'mgetban',
-      help:
-        '/mgetban <username>: Find the players latest active ban that would be undone by /munban.',
+      help: '/mgetban <username>: Find the players latest active ban that would be undone by /munban.',
       async run(data, senderSocket) {
         const { args } = data;
 
@@ -1452,8 +1442,7 @@ var actionsObj = {
 
     mnotify: {
       command: 'mnotify',
-      help:
-        '/mnotify <player name> <text to leave for player>: Leaves a message for a player that will appear in their notifications. Note your name will be added to the end of the message to them.',
+      help: '/mnotify <player name> <text to leave for player>: Leaves a message for a player that will appear in their notifications. Note your name will be added to the end of the message to them.',
       async run(data, senderSocket) {
         const { args } = data;
         let str = '';
@@ -1519,8 +1508,7 @@ var actionsObj = {
 
     mwhisper: {
       command: 'mwhisper',
-      help:
-        '/mwhisper <player name> <text to send>: Sends a whisper to a player.',
+      help: '/mwhisper <player name> <text to send>: Sends a whisper to a player.',
       async run(data, senderSocket) {
         const { args } = data;
 
@@ -1701,8 +1689,7 @@ var actionsObj = {
 
     mtestgame: {
       command: 'mtestgame',
-      help:
-        '/mtestgame <number>: Add <number> bots to a test game and start it automatically.',
+      help: '/mtestgame <number>: Add <number> bots to a test game and start it automatically.',
       run(data, senderSocket, io) {
         const { args } = data;
 
@@ -1772,8 +1759,7 @@ var actionsObj = {
 
     mclose: {
       command: 'mclose',
-      help:
-        '/mclose <roomId> [<roomId> <roomId> ...]: Close room <roomId>. Also removes the corresponding save files in the database. Can take multiple room IDs.',
+      help: '/mclose <roomId> [<roomId> <roomId> ...]: Close room <roomId>. Also removes the corresponding save files in the database. Can take multiple room IDs.',
       run(data, senderSocket) {
         const { args } = data;
 
@@ -1822,8 +1808,7 @@ var actionsObj = {
     },
     mannounce: {
       command: 'mannounce',
-      help:
-        '/mannounce <message>: Sends a sweet alert to all online players with an included message. It automatically says the username of the mod that executed the command.',
+      help: '/mannounce <message>: Sends a sweet alert to all online players with an included message. It automatically says the username of the mod that executed the command.',
       run(data, senderSocket) {
         const { args } = data;
         if (!args[1]) {
@@ -1850,8 +1835,7 @@ var actionsObj = {
 
     mforcemove: {
       command: 'mforcemove',
-      help:
-        "/mforcemove <username> [button] [target]: Forces a player to make a move. To see what moves are available, enter the target's username. To force the move, input button and/or target.",
+      help: "/mforcemove <username> [button] [target]: Forces a player to make a move. To see what moves are available, enter the target's username. To force the move, input button and/or target.",
       run(data, senderSocket) {
         const { args } = data;
 
@@ -2017,8 +2001,7 @@ var actionsObj = {
 
     mrevealrole: {
       command: 'mrevealrole',
-      help:
-        '/mrevealrole <username>: Reveal the role of a player. You must be present in the room for this to work.',
+      help: '/mrevealrole <username>: Reveal the role of a player. You must be present in the room for this to work.',
       run(data, senderSocket) {
         const { args } = data;
 
@@ -2067,8 +2050,7 @@ var actionsObj = {
 
     mrevealallroles: {
       command: 'mrevealallroles',
-      help:
-        '/mrevealallroles : Reveals the roles of all players in the current room.',
+      help: '/mrevealallroles : Reveals the roles of all players in the current room.',
       run(data, senderSocket) {
         const roomId = senderSocket.request.user.inRoomId;
         if (rooms[roomId]) {
@@ -2124,8 +2106,7 @@ var actionsObj = {
 
     miplinkedaccs: {
       command: 'miplinkedaccs',
-      help:
-      '/miplinkedaccs <username> <num_levels (greater than 1 | defaults to 2)>: Finds all accounts that have shared the same IPs the specified user. Put anything in <fullTree> to see full tree.',
+      help: '/miplinkedaccs <username> <num_levels (greater than 1 | defaults to 2)>: Finds all accounts that have shared the same IPs the specified user. Put anything in <fullTree> to see full tree.',
       async run(data, senderSocket) {
         const { args } = data;
         const username = args[1];
@@ -2154,10 +2135,7 @@ var actionsObj = {
         var usernamesTree;
         var newUsernamesTreeLines = [];
         try {
-          var ret = await IPLinkedAccounts(
-            username,
-            num_levels
-          );
+          var ret = await IPLinkedAccounts(username, num_levels);
           linkedUsernamesWithLevel = ret.linkedUsernamesWithLevel;
           usernamesTree = ret.usernamesTree;
         } catch (e) {
@@ -2246,7 +2224,7 @@ var actionsObj = {
       run() {
         process.exit(0);
       },
-    }
+    },
   },
 
   adminCommands: {
@@ -2349,8 +2327,7 @@ var actionsObj = {
     },
     aipban: {
       command: 'aipban',
-      help:
-        '/aipban <ip>: Ban the IP of the IP given. /munban does not undo this ban. Contact ProNub to remove an IP ban.',
+      help: '/aipban <ip>: Ban the IP of the IP given. /munban does not undo this ban. Contact ProNub to remove an IP ban.',
       run(data, senderSocket) {
         const { args } = data;
 
@@ -2405,8 +2382,7 @@ var actionsObj = {
 
     mremovefrozen: {
       command: 'mremovefrozen',
-      help:
-        '/mremovefrozen: Remove all frozen rooms and the corresponding save files in the database.',
+      help: '/mremovefrozen: Remove all frozen rooms and the corresponding save files in the database.',
       run(data, senderSocket) {
         for (let i = 0; i < rooms.length; i++) {
           if (rooms[i] && rooms[i].frozen === true) {

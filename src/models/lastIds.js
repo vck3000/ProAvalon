@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 // SCHEMA SETUP
 const lastIdsSchema = new mongoose.Schema({
-    number: Number,
+  number: Number,
 });
 
 // compile schema into a model

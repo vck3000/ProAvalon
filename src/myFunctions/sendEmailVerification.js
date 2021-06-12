@@ -1,24 +1,23 @@
 const api_key = process.env.MAILGUN_API_KEY;
 const domain = process.env.PROAVALON_EMAIL_ADDRESS_DOMAIN;
 const server_domain = process.env.SERVER_DOMAIN;
-const mailgun = require('mailgun-js')({apiKey: api_key, domain: domain});
-const uuidv4 = require('uuid/v4')
+const mailgun = require('mailgun-js')({ apiKey: api_key, domain: domain });
+const uuidv4 = require('uuid/v4');
 
 module.exports.sendEmailVerification = (user, email) => {
+  if (user.emailVerified === true) {
+    // Don't send an email if the user is already verified...
+    return;
+  }
+  if (email) {
+    email = email.toLowerCase();
+    user.emailAddress = email;
+    user.markModified('emailAddress');
+  }
 
-    if (user.emailVerified === true) {
-        // Don't send an email if the user is already verified...
-        return;
-    }
-    if (email) {
-        email = email.toLowerCase();
-        user.emailAddress = email;
-        user.markModified("emailAddress");
-    }
+  const token = uuidv4();
 
-    const token = uuidv4();
-
-    const message = `
+  const message = `
     <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -475,30 +474,28 @@ module.exports.sendEmailVerification = (user, email) => {
 </html>
     `;
 
+  const data = {
+    from: 'ProAvalon <' + process.env.PROAVALON_EMAIL_ADDRESS + '>',
+    to: user.emailAddress,
+    subject: 'Welcome! Please verify your email address',
+    html: message,
+  };
 
-    const data = {
-        from: 'ProAvalon <' + process.env.PROAVALON_EMAIL_ADDRESS + '>',
-        to: user.emailAddress,
-        subject: 'Welcome! Please verify your email address',
-        html: message
-    };
+  user.emailToken = token;
+  user.markModified('emailToken');
+  user.save();
 
-    user.emailToken = token;
-    user.markModified("emailToken");
-    user.save();
-    
-    mailgun.messages().send(data, function (error, body) {
-        console.log(body);
-    });
-}
+  mailgun.messages().send(data, function (error, body) {
+    console.log(body);
+  });
+};
 
 const disposableEmails = require('../util/disposableEmails.js');
 
 module.exports.isThrowawayEmail = (email) => {
-    if (disposableEmails.indexOf(email.split('@')[1]) !== -1) {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
+  if (disposableEmails.indexOf(email.split('@')[1]) !== -1) {
+    return true;
+  } else {
+    return false;
+  }
+};

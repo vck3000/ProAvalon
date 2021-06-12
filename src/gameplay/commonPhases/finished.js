@@ -1,14 +1,18 @@
 const usernamesIndexes = require('../../myFunctions/usernamesIndexes');
 
 function Finished(thisRoom_) {
-    this.thisRoom = thisRoom_;
+  this.thisRoom = thisRoom_;
 
-    this.phase = 'finished';
-    this.showGuns = true;
+  this.phase = 'finished';
+  this.showGuns = true;
 }
 
-Finished.prototype.gameMove = function (socket, buttonPressed, selectedPlayers) {
-    // Do nothing, game is finished.
+Finished.prototype.gameMove = function (
+  socket,
+  buttonPressed,
+  selectedPlayers
+) {
+  // Do nothing, game is finished.
 };
 
 // Returns a object with green and red keys.
@@ -17,37 +21,36 @@ Finished.prototype.gameMove = function (socket, buttonPressed, selectedPlayers) 
 //  disabled        - Is the button disabled?
 //  setText         - What text to display in the button
 Finished.prototype.buttonSettings = function (indexOfPlayer) {
-    const obj = {
-        green: {},
-        red: {},
-    };
+  const obj = {
+    green: {},
+    red: {},
+  };
 
-    obj.green.hidden = true;
-    obj.green.disabled = true;
-    obj.green.setText = '';
+  obj.green.hidden = true;
+  obj.green.disabled = true;
+  obj.green.setText = '';
 
-    obj.red.hidden = true;
-    obj.red.disabled = true;
-    obj.red.setText = '';
+  obj.red.hidden = true;
+  obj.red.disabled = true;
+  obj.red.setText = '';
 
-    return obj;
+  return obj;
 };
 
 Finished.prototype.numOfTargets = function (indexOfPlayer) {
-    return null;
+  return null;
 };
 
 Finished.prototype.getStatusMessage = function (indexOfPlayer) {
-    let winner = 'Error, undefined';
-    if (this.thisRoom.winner === 'Resistance') {
-        winner = 'resistance';
-    } else if (this.thisRoom.winner === 'Spy') {
-        winner = 'spies';
-    }
+  let winner = 'Error, undefined';
+  if (this.thisRoom.winner === 'Resistance') {
+    winner = 'resistance';
+  } else if (this.thisRoom.winner === 'Spy') {
+    winner = 'spies';
+  }
 
-    const str = `Game has finished. The ${winner} have won.`;
-    return str;
+  const str = `Game has finished. The ${winner} have won.`;
+  return str;
 };
-
 
 module.exports = Finished;

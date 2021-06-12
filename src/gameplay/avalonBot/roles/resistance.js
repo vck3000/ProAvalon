@@ -1,22 +1,18 @@
-
 class Resistance {
-    constructor(thisRoom) {
-        this.thisRoom = thisRoom;
+  constructor(thisRoom) {
+    this.thisRoom = thisRoom;
 
-        this.role = 'Resistance';
-        this.alliance = 'Resistance';
+    this.role = 'Resistance';
+    this.alliance = 'Resistance';
 
-        this.description = 'A standard Resistance member.';
-    }
+    this.description = 'A standard Resistance member.';
+  }
 
-    see() {
-        return undefined;
-    }
+  see() {
+    return undefined;
+  }
 
-    checkSpecialMove() {
-
-    }
+  checkSpecialMove() {}
 }
-
 
 module.exports = Resistance;

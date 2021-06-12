@@ -2,46 +2,45 @@ const mongoose = require('mongoose');
 
 // SCHEMA SETUP
 const forumThreadSchema = new mongoose.Schema({
-    title: String,
-    oldTitle: String,
-    // price: String,
-    // image: String,
-    description: String,
-    oldDescription: String,
+  title: String,
+  oldTitle: String,
+  // price: String,
+  // image: String,
+  description: String,
+  oldDescription: String,
 
-    disabled: Boolean,
+  disabled: Boolean,
 
-    timeCreated: Date,
+  timeCreated: Date,
 
-    likes: Number,
-    whoLikedId: [],
-    numOfComments: Number,
-    hoursSinceLastEdit: String,
-    timeLastEdit: Date,
-    whoLastEdit: String,
+  likes: Number,
+  whoLikedId: [],
+  numOfComments: Number,
+  hoursSinceLastEdit: String,
+  timeLastEdit: Date,
+  whoLastEdit: String,
 
-    numberId: Number,
+  numberId: Number,
 
-    edited: Boolean,
+  edited: Boolean,
 
-
-    author: {
-        id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
-        },
-        username: String,
+  author: {
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
     },
-    comments: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'ForumThreadComment',
-        },
-    ],
+    username: String,
+  },
+  comments: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'ForumThreadComment',
+    },
+  ],
 
-    category: String,
+  category: String,
 
-    seenUsers: [String],
+  seenUsers: [String],
 });
 // compile schema into a model
 const forumThread = mongoose.model('ForumThread', forumThreadSchema);

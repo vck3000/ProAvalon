@@ -2,21 +2,21 @@ const mongoose = require('mongoose');
 
 // SCHEMA SETUP
 const banIpSchema = new mongoose.Schema({
-    type: String, // ban, mute?
+  type: String, // ban, mute?
 
-    bannedIp: String,
+  bannedIp: String,
 
-    modWhoBanned: {
-        id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
-        },
-        username: String,
+  modWhoBanned: {
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
     },
+    username: String,
+  },
 
-    whenMade: Date,
+  whenMade: Date,
 
-    usernamesAssociated: [String],
+  usernamesAssociated: [String],
 });
 
 // compile schema into a model

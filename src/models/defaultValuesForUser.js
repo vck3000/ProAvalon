@@ -1,41 +1,29 @@
 module.exports = {
-    avatarImgRes: null,
-    avatarImgSpy: null,
+  avatarImgRes: null,
+  avatarImgSpy: null,
 
-    totalTimePlayed: 0,
-    totalGamesPlayed: 0,
+  totalTimePlayed: 0,
+  totalGamesPlayed: 0,
 
-    totalWins: 0,
-    totalResWins: 0,
-    totalLosses: 0,
-    totalResLosses: 0,
+  totalWins: 0,
+  totalResWins: 0,
+  totalLosses: 0,
+  totalResLosses: 0,
 
-    winsLossesGameSizeBreakdown: {},
+  winsLossesGameSizeBreakdown: {},
 
-    nationality: '',
-    timeZone: '',
-    biography: '',
+  nationality: '',
+  timeZone: '',
+  biography: '',
 
-    roleStats: {
-        '5p': {
-            merlin: {
-
-            },
-            percival: {
-
-            },
-            assassin: {
-
-            },
-            morgana: {
-
-            },
-            spy: {
-
-            },
-            resistance: {
-
-            },
-        },
+  roleStats: {
+    '5p': {
+      merlin: {},
+      percival: {},
+      assassin: {},
+      morgana: {},
+      spy: {},
+      resistance: {},
     },
+  },
 };

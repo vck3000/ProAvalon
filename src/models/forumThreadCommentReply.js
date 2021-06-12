@@ -1,30 +1,28 @@
 const mongoose = require('mongoose');
 
 const replySchema = new mongoose.Schema({
-    text: String,
-    oldText: String,
+  text: String,
+  oldText: String,
 
-    disabled: Boolean,
+  disabled: Boolean,
 
-    author: {
-        id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
-        },
-        username: String,
+  author: {
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
     },
+    username: String,
+  },
 
-    timeCreated: Date,
-    timeLastEdit: Date,
-    likes: Number,
-    whoLikedId: [],
-    edited: Boolean,
+  timeCreated: Date,
+  timeLastEdit: Date,
+  likes: Number,
+  whoLikedId: [],
+  edited: Boolean,
 
-    replyingUsername: String,
+  replyingUsername: String,
 
-    seenUsers: [String],
-
-
+  seenUsers: [String],
 });
 
 module.exports = mongoose.model('ForumThreadCommentReply', replySchema);
