@@ -1,16 +1,14 @@
-const express = require('express');
+import express from 'express';
 
 const router = express.Router();
-const passport = require('passport');
-const flash = require('connect-flash');
-const sanitizeHtml = require('sanitize-html');
-const mongoose = require('mongoose');
-const myNotification = require('../models/notification');
-const User = require('../models/user');
-
-const modAction = require('../models/modAction');
-
-const middleware = require('../middleware');
+import passport from 'passport';
+import flash from 'connect-flash';
+import sanitizeHtml from 'sanitize-html';
+import mongoose from 'mongoose';
+import myNotification from '../models/notification';
+import User from '../models/user';
+import modAction from '../models/modAction';
+import middleware from '../middleware';
 
 // Index route
 router.get('/', (req, res) => {
@@ -317,7 +315,7 @@ function sanitiseUsername(req, res, next) {
   next();
 }
 
-module.exports = router;
+export default router;
 
 function usernameContainsBadCharacter(str) {
   if (

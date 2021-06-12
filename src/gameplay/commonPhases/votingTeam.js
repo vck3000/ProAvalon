@@ -1,4 +1,4 @@
-const usernamesIndexes = require('../../myFunctions/usernamesIndexes');
+import usernamesIndexes from '../../myFunctions/usernamesIndexes';
 
 function VotingTeam(thisRoom_) {
   this.thisRoom = thisRoom_;
@@ -240,4 +240,4 @@ function calcVotes(votes) {
   return outcome;
 }
 
-module.exports = VotingTeam;
+export default VotingTeam;

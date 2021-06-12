@@ -15,4 +15,4 @@ class Resistance {
   checkSpecialMove() {}
 }
 
-module.exports = Resistance;
+export default Resistance;

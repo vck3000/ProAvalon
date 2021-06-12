@@ -1,36 +1,36 @@
-require('dotenv').config();
+import _ from './env';
 
-const assert = require('assert');
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const express = require('express');
-const flash = require('connect-flash');
-const methodOverride = require('method-override');
-const LocalStrategy = require('passport-local');
-const mongoose = require('mongoose');
-const passport = require('passport');
-const passportSocketIo = require('passport.socketio');
-const path = require('path');
-const session = require('express-session');
-const socket = require('socket.io');
-
-const User = require('./models/user');
-
-const { isLoggedIn, emailVerified } = require('./routes/middleware');
-const indexRoutes = require('./routes/index');
-const { emailVerificationRoutes } = require('./routes/emailVerification');
-const lobbyRoutes = require('./routes/lobby');
-const forumRoutes = require('./routes/forum');
-const profileRoutes = require('./routes/profile');
-const patreonRoutes = require('./routes/patreon');
-const modRoutes = require('./routes/mod');
+import assert from 'assert';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import express from 'express';
+import flash from 'connect-flash';
+import methodOverride from 'method-override';
+import LocalStrategy from 'passport-local';
+import mongoose from 'mongoose';
+import passport from 'passport';
+import passportSocketIo from 'passport.socketio';
+import path from 'path';
+import session from 'express-session';
+import socket from 'socket.io';
+import { server as socketServer } from './sockets/sockets';
+import User from './models/user';
+import { isLoggedIn, emailVerified } from './routes/middleware';
+import indexRoutes from './routes/index';
+import { emailVerificationRoutes } from './routes/emailVerification';
+import lobbyRoutes from './routes/lobby';
+import forumRoutes from './routes/forum';
+import profileRoutes from './routes/profile';
+import patreonRoutes from './routes/patreon';
+import modRoutes from './routes/mod';
 
 const assetsPath = path.join(__dirname, '../assets');
 
 const app = express();
 app.use(express.static(assetsPath, { maxAge: 518400000 })); // expires in 7 days.
 
-const staticify = require('staticify')(assetsPath);
+import staticifyFactory from 'staticify';
+const staticify = staticifyFactory(assetsPath);
 
 app.use(staticify.middleware);
 app.locals.getVersionedPath = staticify.getVersionedPath;
@@ -46,7 +46,9 @@ mongoose.connect(dbLoc, {
 });
 
 // Create a MongoDB session store
-const MongoDBStore = require('connect-mongodb-session')(session);
+import MongoDBStoreFactory from 'connect-mongodb-session';
+
+const MongoDBStore = MongoDBStoreFactory(session);
 
 const store = new MongoDBStore({
   uri: dbLoc,
@@ -139,7 +141,7 @@ const io = socket(server, {
   pingInterval: 10000,
 });
 
-require('./sockets/sockets').server(io);
+socketServer(io);
 
 io.use(
   passportSocketIo.authorize({

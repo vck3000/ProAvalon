@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const replySchema = new mongoose.Schema({
   text: String,
@@ -25,4 +25,4 @@ const replySchema = new mongoose.Schema({
   seenUsers: [String],
 });
 
-module.exports = mongoose.model('ForumThreadCommentReply', replySchema);
+export default mongoose.model('ForumThreadCommentReply', replySchema);

@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   ADMIN_BADGE: 'ADMIN_BADGE',
   MOD_BADGE: 'MOD_BADGE',
   TIER1_BADGE: 'TIER1_BADGE',

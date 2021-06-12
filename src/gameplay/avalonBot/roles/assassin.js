@@ -1,4 +1,4 @@
-const usernamesIndexes = require('../../../myFunctions/usernamesIndexes');
+import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
 
 class Assassin {
   constructor(thisRoom) {
@@ -101,4 +101,4 @@ class Assassin {
   }
 }
 
-module.exports = Assassin;
+export default Assassin;

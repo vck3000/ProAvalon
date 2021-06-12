@@ -1,4 +1,4 @@
-const usernamesIndexes = require('../myFunctions/usernamesIndexes');
+import usernamesIndexes from '../myFunctions/usernamesIndexes';
 
 function playersReadyNotReady(minPlayers) {
   this.minPlayers = minPlayers;
@@ -187,4 +187,4 @@ function getRolesInStr(options) {
   return str;
 }
 
-module.exports = playersReadyNotReady;
+export default playersReadyNotReady;

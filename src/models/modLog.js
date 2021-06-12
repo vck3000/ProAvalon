@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 // SCHEMA SETUP
 const modLogSchema = new mongoose.Schema({
@@ -19,4 +19,4 @@ const modLogSchema = new mongoose.Schema({
 // compile schema into a model
 const modLog = mongoose.model('ModLog', modLogSchema);
 
-module.exports = modLog;
+export default modLog;

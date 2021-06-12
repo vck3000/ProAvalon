@@ -8,7 +8,7 @@
 - Prohibited Indexes to pick (an array)
 */
 
-const usernamesIndexes = require('../../../myFunctions/usernamesIndexes');
+import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
 
 class Lady {
   constructor(thisRoom) {
@@ -188,4 +188,4 @@ class Lady {
   }
 }
 
-module.exports = Lady;
+export default Lady;

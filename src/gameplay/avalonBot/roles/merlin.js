@@ -48,4 +48,4 @@ class Merlin {
   }
 }
 
-module.exports = Merlin;
+export default Merlin;

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 // SCHEMA SETUP
 const banIpSchema = new mongoose.Schema({
@@ -22,4 +22,4 @@ const banIpSchema = new mongoose.Schema({
 // compile schema into a model
 const banIp = mongoose.model('BanIp', banIpSchema);
 
-module.exports = banIp;
+export default banIp;

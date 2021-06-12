@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const commentSchema = new mongoose.Schema({
   text: String,
@@ -30,4 +30,4 @@ const commentSchema = new mongoose.Schema({
   seenUsers: [String],
 });
 
-module.exports = mongoose.model('ForumThreadComment', commentSchema);
+export default mongoose.model('ForumThreadComment', commentSchema);

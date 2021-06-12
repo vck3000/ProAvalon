@@ -1,10 +1,10 @@
-const { Router } = require('express');
+import { Router } from 'express';
 const router = new Router();
-const { isMod } = require('./middleware');
-const User = require('../models/user');
-const Ban = require('../models/ban');
-const ModLog = require('../models/modLog');
-const multer = require('multer');
+import { isMod } from './middleware';
+import User from '../models/user';
+import Ban from '../models/ban';
+import ModLog from '../models/modLog';
+import multer from 'multer';
 const upload = multer();
 
 const requiredFields = [
@@ -218,4 +218,4 @@ router.get('/ajax/logData/:pageIndex', isMod, (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

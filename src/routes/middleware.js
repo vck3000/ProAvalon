@@ -1,14 +1,12 @@
-const moment = require('moment');
-
-const forumThread = require('../models/forumThread');
-const forumThreadComment = require('../models/forumThreadComment');
-const forumThreadCommentReply = require('../models/forumThreadCommentReply');
-const User = require('../models/user');
-const IPLinkedAccounts = require('../myFunctions/IPLinkedAccounts');
-const Ban = require('../models/ban');
-
-const modsArray = require('../modsadmins/mods');
-const admins = require('../modsadmins/admins');
+import moment from 'moment';
+import forumThread from '../models/forumThread';
+import forumThreadComment from '../models/forumThreadComment';
+import forumThreadCommentReply from '../models/forumThreadCommentReply';
+import User from '../models/user';
+import IPLinkedAccounts from '../myFunctions/IPLinkedAccounts';
+import Ban from '../models/ban';
+import modsArray from '../modsadmins/mods';
+import admins from '../modsadmins/admins';
 
 // return a function that wraps an async middleware
 const asyncMiddleware = (fn) => (req, res, next) => {
@@ -21,8 +19,6 @@ const asyncMiddleware = (fn) => (req, res, next) => {
     res.redirect('back');
   });
 };
-
-exports.asyncMiddleware = asyncMiddleware;
 
 const isLoggedIn = asyncMiddleware(async (req, res, next) => {
   // Check if the user is logged in.
@@ -146,7 +142,7 @@ const isLoggedIn = asyncMiddleware(async (req, res, next) => {
   }
 });
 
-exports.isLoggedIn = isLoggedIn;
+export { asyncMiddleware, isLoggedIn };
 
 const checkOwnership = (name, model, query, isOwner) => [
   isLoggedIn,
@@ -167,7 +163,7 @@ const checkOwnership = (name, model, query, isOwner) => [
   }),
 ];
 
-exports.checkProfileOwnership = checkOwnership(
+export const checkProfileOwnership = checkOwnership(
   'User',
   User,
   (req) => ({
@@ -176,7 +172,7 @@ exports.checkProfileOwnership = checkOwnership(
   (req, user) => user.username && user.username === req.user.username
 );
 
-exports.checkForumThreadOwnership = checkOwnership(
+export const checkForumThreadOwnership = checkOwnership(
   'Thread',
   forumThread,
   (req) => ({
@@ -185,7 +181,7 @@ exports.checkForumThreadOwnership = checkOwnership(
   (req, thread) => thread.author.id && thread.author.id.equals(req.user._id)
 );
 
-exports.checkForumThreadCommentOwnership = checkOwnership(
+export const checkForumThreadCommentOwnership = checkOwnership(
   'Comment',
   forumThreadComment,
   (req) => ({
@@ -194,7 +190,7 @@ exports.checkForumThreadCommentOwnership = checkOwnership(
   (req, comment) => comment.author.id && comment.author.id.equals(req.user._id)
 );
 
-exports.checkForumThreadCommentReplyOwnership = checkOwnership(
+export const checkForumThreadCommentReplyOwnership = checkOwnership(
   'Reply',
   forumThreadCommentReply,
   (req) => ({
@@ -203,7 +199,7 @@ exports.checkForumThreadCommentReplyOwnership = checkOwnership(
   (req, reply) => reply.author.id && reply.author.id.equals(req.user._id)
 );
 
-exports.isMod = (req, res, next) => {
+export const isMod = (req, res, next) => {
   console.log('check');
   if (modsArray.includes(req.user.username.toLowerCase())) {
     next();
@@ -213,7 +209,7 @@ exports.isMod = (req, res, next) => {
   }
 };
 
-exports.isAdmin = (req, res, next) => {
+export const isAdmin = (req, res, next) => {
   if (admins.includes(req.user.username.toLowerCase())) {
     next();
   } else {
@@ -222,7 +218,7 @@ exports.isAdmin = (req, res, next) => {
   }
 };
 
-exports.emailVerified = (req, res, next) => {
+export const emailVerified = (req, res, next) => {
   if (req.user.emailVerified === true || process.env.MY_PLATFORM != 'online') {
     next();
   } else {

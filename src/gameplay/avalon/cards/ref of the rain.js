@@ -86,4 +86,4 @@ class RefOfTheLake {
   }
 }
 
-module.exports = RefOfTheLake;
+export default RefOfTheLake;

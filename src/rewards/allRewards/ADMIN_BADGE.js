@@ -1,4 +1,4 @@
-const constants = require('../constants');
+import constants from '../constants';
 
 obj = {
   adminReq: true,
@@ -7,4 +7,4 @@ obj = {
   donationReq: 0,
 };
 
-module.exports = obj;
+export default obj;

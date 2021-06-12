@@ -23,4 +23,4 @@ class Isolde {
   }
 }
 
-module.exports = Isolde;
+export default Isolde;

@@ -6,7 +6,7 @@
 - Number of targets allowed to be selected
 - Status message to display
 */
-const usernamesIndexes = require('../../../myFunctions/usernamesIndexes');
+import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
 
 class Assassination {
   constructor(thisRoom) {
@@ -349,4 +349,4 @@ class Assassination {
   }
 }
 
-module.exports = Assassination;
+export default Assassination;

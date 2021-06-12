@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 // SCHEMA SETUP
 const lastIdsSchema = new mongoose.Schema({
@@ -8,4 +8,4 @@ const lastIdsSchema = new mongoose.Schema({
 // compile schema into a model
 const lastIds = mongoose.model('lastIds', lastIdsSchema);
 
-module.exports = lastIds;
+export default lastIds;

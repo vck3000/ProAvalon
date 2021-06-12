@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 // SCHEMA SETUP
 const savedGameSchema = new mongoose.Schema({
@@ -7,4 +7,4 @@ const savedGameSchema = new mongoose.Schema({
 // compile schema into a model
 const savedGame = mongoose.model('savedGame', savedGameSchema);
 
-module.exports = savedGame;
+export default savedGame;

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 // SCHEMA SETUP
 const statsCumulativeSchema = new mongoose.Schema({
@@ -10,4 +10,4 @@ const statsCumulative = mongoose.model(
   statsCumulativeSchema
 );
 
-module.exports = statsCumulative;
+export default statsCumulative;

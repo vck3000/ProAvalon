@@ -14,4 +14,4 @@ obj.getUsernameFromIndex = function (usernames, index) {
   return usernames[index].username;
 };
 
-module.exports = obj;
+export default obj;

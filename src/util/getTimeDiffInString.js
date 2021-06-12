@@ -48,4 +48,4 @@ function getTimeDiffInString(inputTime) {
   return timeSince;
 }
 
-module.exports = getTimeDiffInString;
+export default getTimeDiffInString;

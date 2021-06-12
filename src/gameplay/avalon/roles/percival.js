@@ -41,4 +41,4 @@ class Percival {
   }
 }
 
-module.exports = Percival;
+export default Percival;

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 // SCHEMA SETUP
 const ForumBanSchema = new mongoose.Schema({
@@ -46,4 +46,4 @@ const ForumBanSchema = new mongoose.Schema({
 // compile schema into a model
 const ForumBan = mongoose.model('ForumBan', ForumBanSchema);
 
-module.exports = ForumBan;
+export default ForumBan;

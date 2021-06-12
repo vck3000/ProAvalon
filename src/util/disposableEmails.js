@@ -1,4 +1,4 @@
-module.exports = [
+export default [
   '0-180.com',
   '0-420.com',
   '0-900.com',

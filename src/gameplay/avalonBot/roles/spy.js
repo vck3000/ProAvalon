@@ -33,4 +33,4 @@ class Spy {
   checkSpecialMove() {}
 }
 
-module.exports = Spy;
+export default Spy;

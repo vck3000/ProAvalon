@@ -34,4 +34,4 @@ class Morgana {
   checkSpecialMove() {}
 }
 
-module.exports = Morgana;
+export default Morgana;

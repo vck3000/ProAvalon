@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 // SCHEMA SETUP
 const patreonIdSchema = new mongoose.Schema({
@@ -13,4 +13,4 @@ const patreonIdSchema = new mongoose.Schema({
 // compile schema into a model
 const patreonId = mongoose.model('patreonId', patreonIdSchema);
 
-module.exports = patreonId;
+export default patreonId;

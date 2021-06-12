@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 // SCHEMA SETUP
 const banSchema = new mongoose.Schema({
@@ -51,4 +51,4 @@ const banSchema = new mongoose.Schema({
 // compile schema into a model
 const ban = mongoose.model('Ban', banSchema);
 
-module.exports = ban;
+export default ban;

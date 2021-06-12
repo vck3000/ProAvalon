@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const User = require('../../models/user');
-const myNotification = require('../../models/notification');
+import mongoose from 'mongoose';
+import User from '../../models/user';
+import myNotification from '../../models/notification';
 
 createNotifObj = {};
 
@@ -79,4 +79,4 @@ createNotifObj.createNotification = function (
   }
 };
 
-module.exports = createNotifObj;
+export default createNotifObj;

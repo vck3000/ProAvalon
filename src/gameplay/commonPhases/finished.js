@@ -1,4 +1,4 @@
-const usernamesIndexes = require('../../myFunctions/usernamesIndexes');
+import usernamesIndexes from '../../myFunctions/usernamesIndexes';
 
 function Finished(thisRoom_) {
   this.thisRoom = thisRoom_;
@@ -53,4 +53,4 @@ Finished.prototype.getStatusMessage = function (indexOfPlayer) {
   return str;
 };
 
-module.exports = Finished;
+export default Finished;

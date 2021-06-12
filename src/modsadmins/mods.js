@@ -10,4 +10,4 @@ const modsArray = [
   'd8nitemike',
 ];
 
-module.exports = modsArray;
+export default modsArray;

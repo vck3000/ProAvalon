@@ -1,27 +1,16 @@
-const fs = require('fs');
-
 // Load the full build.
-const _ = require('lodash');
+import _ from 'lodash';
 
-const util = require('util');
-const Room = require('./room');
-const PlayersReadyNotReady = require('./playersReadyNotReady');
-
-const usernamesIndexes = require('../myFunctions/usernamesIndexes');
-
-const User = require('../models/user');
-const GameRecord = require('../models/gameRecord');
-
-const commonPhasesIndex = require('./indexCommonPhases');
+import Room from './room';
+import PlayersReadyNotReady from './playersReadyNotReady';
+import usernamesIndexes from '../myFunctions/usernamesIndexes';
+import User from '../models/user';
+import GameRecord from '../models/gameRecord';
+import commonPhasesIndex from './indexCommonPhases';
 
 // Get all the gamemodes and their roles/cards/phases.
 const gameModeNames = ['avalon', 'avalonBot'];
-// fs.readdirSync('./src/gameplay/').filter((file) => {
-//     if (fs.statSync(`${'./src/gameplay' + '/'}${file}`).isDirectory() === true && file !== 'commonPhases') {
-//         gameModeNames.push(file);
-//     }
-// });
-// console.log(gameModeNames);
+
 const gameModeObj = {};
 for (let i = 0; i < gameModeNames.length; i++) {
   gameModeObj[gameModeNames[i]] = {};
@@ -2019,7 +2008,7 @@ Game.prototype.calculateNewProvisionalRating = function (
   return newRating;
 };
 
-module.exports = Game;
+export default Game;
 
 // Helpful functions
 

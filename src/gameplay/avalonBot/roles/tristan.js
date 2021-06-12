@@ -25,4 +25,4 @@ class Tristan {
   }
 }
 
-module.exports = Tristan;
+export default Tristan;

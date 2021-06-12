@@ -34,4 +34,4 @@ class Mordred {
   checkSpecialMove() {}
 }
 
-module.exports = Mordred;
+export default Mordred;

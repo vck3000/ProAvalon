@@ -1,24 +1,18 @@
-const { Router } = require('express');
-const passport = require('passport');
-const sanitizeHtml = require('sanitize-html');
-const mongoose = require('mongoose');
-const fs = require('fs');
-const request = require('request');
-const rateLimit = require('express-rate-limit');
-
-const User = require('../models/user');
-const myNotification = require('../models/notification');
-const gameRecord = require('../models/gameRecord');
-const statsCumulative = require('../models/statsCumulative');
-
-const { isMod } = require('./middleware');
-
-const { validEmail, emailExists } = require('../routes/emailVerification');
-const {
-  sendEmailVerification,
-} = require('../myFunctions/sendEmailVerification');
-
-const modsArray = require('../modsadmins/mods');
+import { Router } from 'express';
+import passport from 'passport';
+import sanitizeHtml from 'sanitize-html';
+import mongoose from 'mongoose';
+import fs from 'fs';
+import request from 'request';
+import rateLimit from 'express-rate-limit';
+import User from '../models/user';
+import myNotification from '../models/notification';
+import gameRecord from '../models/gameRecord';
+import statsCumulative from '../models/statsCumulative';
+import { isMod } from './middleware';
+import { validEmail, emailExists } from '../routes/emailVerification';
+import { sendEmailVerification } from '../myFunctions/sendEmailVerification';
+import modsArray from '../modsadmins/mods';
 
 // Prevent too many requests
 // app.enable("trust proxy"); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
@@ -975,7 +969,7 @@ function sanitiseEmail(req, res, next) {
   next();
 }
 
-module.exports = router;
+export default router;
 
 function usernameContainsBadCharacter(str) {
   // only allow alphanumerical

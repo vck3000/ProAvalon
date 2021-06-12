@@ -82,4 +82,4 @@ class SireOfTheSea {
   }
 }
 
-module.exports = SireOfTheSea;
+export default SireOfTheSea;

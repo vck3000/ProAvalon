@@ -1,4 +1,4 @@
-const constants = require('../constants');
+import constants from '../constants';
 
 obj = {
   key: constants.TIER1_BADGE,
@@ -8,4 +8,4 @@ obj = {
   donationReq: constants.tier1_donation,
 };
 
-module.exports = obj;
+export default obj;

@@ -1,4 +1,4 @@
-const usernamesIndexes = require('../../myFunctions/usernamesIndexes');
+import usernamesIndexes from '../../myFunctions/usernamesIndexes';
 
 function PickingTeam(thisRoom_) {
   this.thisRoom = thisRoom_;
@@ -176,4 +176,4 @@ PickingTeam.prototype.getStatusMessage = function (indexOfPlayer) {
   return 'ERROR: Tell the admin if you see this, code 10.';
 };
 
-module.exports = PickingTeam;
+export default PickingTeam;

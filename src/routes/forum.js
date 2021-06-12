@@ -1,23 +1,20 @@
-const { Router } = require('express');
-const {
-  Types: { ObjectId },
-} = require('mongoose');
-
-const forumThread = require('../models/forumThread');
-const forumThreadComment = require('../models/forumThreadComment');
-const forumThreadCommentReply = require('../models/forumThreadCommentReply');
-const ForumBan = require('../models/forumBan');
-const ModLog = require('../models/modLog');
-const pinnedThread = require('../models/pinnedThread');
-const { isMod, asyncMiddleware } = require('./middleware');
-const getTimeDiffInString = require('../util/getTimeDiffInString');
-const createNotificationObj = require('../myFunctions/createNotification');
-const modsArray = require('../modsadmins/mods');
-const forumThreadRoutes = require('../routes/forum/forumThreadRoutes');
-const forumThreadCommentRoutes = require('../routes/forum/forumThreadCommentRoutes');
-const forumThreadCommentReplyRoutes = require('../routes/forum/forumThreadCommentReplyRoutes');
-const REWARDS = require('../rewards/constants');
-const { userHasReward } = require('../rewards/getRewards');
+import { Router } from 'express';
+import { Types } from 'mongoose';
+import forumThread from '../models/forumThread';
+import forumThreadComment from '../models/forumThreadComment';
+import forumThreadCommentReply from '../models/forumThreadCommentReply';
+import ForumBan from '../models/forumBan';
+import ModLog from '../models/modLog';
+import pinnedThread from '../models/pinnedThread';
+import { isMod, asyncMiddleware } from './middleware';
+import getTimeDiffInString from '../util/getTimeDiffInString';
+import createNotificationObj from '../myFunctions/createNotification';
+import modsArray from '../modsadmins/mods';
+import forumThreadRoutes from '../routes/forum/forumThreadRoutes';
+import forumThreadCommentRoutes from '../routes/forum/forumThreadCommentRoutes';
+import forumThreadCommentReplyRoutes from '../routes/forum/forumThreadCommentReplyRoutes';
+import REWARDS from '../rewards/constants';
+import { userHasReward } from '../rewards/getRewards';
 
 const router = new Router();
 
@@ -358,4 +355,4 @@ router.post(
   })
 );
 
-module.exports = router;
+export default router;

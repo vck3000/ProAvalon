@@ -6,7 +6,7 @@
 - Number of targets allowed to be selected
 - Status message to display
 */
-const usernamesIndexes = require('../../myFunctions/usernamesIndexes');
+import usernamesIndexes from '../../myFunctions/usernamesIndexes';
 
 function Paused(thisRoom_) {
   this.thisRoom = thisRoom_;
@@ -44,4 +44,4 @@ Paused.prototype.getStatusMessage = function (indexOfPlayer) {
   return 'A moderator has paused the game. All actions are prevented.';
 };
 
-module.exports = Paused;
+export default Paused;

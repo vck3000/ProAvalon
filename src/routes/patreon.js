@@ -1,12 +1,12 @@
-const express = require('express');
+import express from 'express';
 
 const router = express.Router();
-const url = require('url');
-const patreon = require('patreon');
-const middleware = require('./middleware');
-const User = require('../models/user');
-const PatreonId = require('../models/patreonId');
-const patreonHelper = require('../myFunctions/patreonHelper');
+import url from 'url';
+import patreon from 'patreon';
+import middleware from './middleware';
+import User from '../models/user';
+import PatreonId from '../models/patreonId';
+import patreonHelper from '../myFunctions/patreonHelper';
 
 const patreonAPI = patreon.patreon;
 const patreonOAuth = patreon.oauth;
@@ -268,4 +268,4 @@ router.get('/oauth/redirect', (req, res) => {
 // </html>`
 // }
 
-module.exports = router;
+export default router;

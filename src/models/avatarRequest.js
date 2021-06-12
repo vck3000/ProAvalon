@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const avatarRequestSchema = new mongoose.Schema({
   forUsername: String,
@@ -18,4 +18,4 @@ const avatarRequestSchema = new mongoose.Schema({
   approved: Boolean,
 });
 
-module.exports = mongoose.model('AvatarRequest', avatarRequestSchema);
+export default mongoose.model('AvatarRequest', avatarRequestSchema);

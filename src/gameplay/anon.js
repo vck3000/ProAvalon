@@ -39,4 +39,4 @@ myObj = {
   ],
 };
 
-module.exports = myObj;
+export default myObj;

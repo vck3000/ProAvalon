@@ -1,19 +1,14 @@
-const { Router } = require('express');
-const sanitizeHtml = require('sanitize-html');
-const mongoose = require('mongoose');
-const rateLimit = require('express-rate-limit');
-
-const forumThread = require('../../models/forumThread');
-const forumThreadComment = require('../../models/forumThreadComment');
-const forumThreadCommentReply = require('../../models/forumThreadCommentReply');
-
-const {
-  checkForumThreadCommentReplyOwnership,
-  asyncMiddleware,
-} = require('../middleware');
-const createNotificationObj = require('../../myFunctions/createNotification');
-const REWARDS = require('../../rewards/constants');
-const { userHasReward } = require('../../rewards/getRewards');
+import { Router } from 'express';
+import sanitizeHtml from 'sanitize-html';
+import mongoose from 'mongoose';
+import rateLimit from 'express-rate-limit';
+import forumThread from '../../models/forumThread';
+import forumThreadComment from '../../models/forumThreadComment';
+import forumThreadCommentReply from '../../models/forumThreadCommentReply';
+import { checkForumThreadCommentReplyOwnership, asyncMiddleware } from '../middleware';
+import createNotificationObj from '../../myFunctions/createNotification';
+import REWARDS from '../../rewards/constants';
+import { userHasReward } from '../../rewards/getRewards';
 
 const router = new Router();
 
@@ -296,4 +291,4 @@ router.delete(
   })
 );
 
-module.exports = router;
+export default router;

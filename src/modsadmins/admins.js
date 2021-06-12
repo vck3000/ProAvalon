@@ -1,4 +1,4 @@
 // all in lower case
 const adminsArray = ['pronub'];
 
-module.exports = adminsArray;
+export default adminsArray;

@@ -1,14 +1,14 @@
-const express = require('express');
+import express from 'express';
 
 const router = express.Router();
-const sanitizeHtml = require('sanitize-html');
-const url = require('url');
-const middleware = require('./middleware');
-const User = require('../models/user');
-const PatreonId = require('../models/patreonId');
-const avatarRequest = require('../models/avatarRequest');
-const ModLog = require('../models/modLog');
-const createNotificationObj = require('../myFunctions/createNotification');
+import sanitizeHtml from 'sanitize-html';
+import url from 'url';
+import middleware from './middleware';
+import User from '../models/user';
+import PatreonId from '../models/patreonId';
+import avatarRequest from '../models/avatarRequest';
+import ModLog from '../models/modLog';
+import createNotificationObj from '../myFunctions/createNotification';
 
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',
@@ -415,7 +415,7 @@ router.get('/:profileUsername', (req, res) => {
   );
 });
 
-module.exports = router;
+export default router;
 
 var nationCodesAll = [
   'UN',

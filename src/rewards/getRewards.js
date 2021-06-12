@@ -1,10 +1,10 @@
-const PatreonId = require('../models/patreonId');
-const indexRewards = require('./indexRewards');
+import PatreonId from '../models/patreonId';
+import indexRewards from './indexRewards';
 
 indexRewardsObj = new indexRewards();
 
-const modsArray = require('../modsadmins/mods');
-const adminsArray = require('../modsadmins/admins');
+import modsArray from '../modsadmins/mods';
+import adminsArray from '../modsadmins/admins';
 
 var allRewards = indexRewardsObj.getAllRewards();
 
@@ -76,8 +76,6 @@ async function userHasReward(user, reward, patreonDetails) {
   return true;
 }
 
-module.exports.userHasReward = userHasReward;
-
 async function getAllRewardsForUser(user) {
   const rewardsSatisfied = [];
 
@@ -109,4 +107,4 @@ async function getAllRewardsForUser(user) {
   return rewardsSatisfied;
 }
 
-module.exports.getAllRewardsForUser = getAllRewardsForUser;
+export { userHasReward, getAllRewardsForUser };

@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 
 const enabledBots = [];
 enabledBots.push({
@@ -276,7 +276,7 @@ class APIBotSocket {
   }
 }
 
-module.exports = {
+export default {
   enabledBots,
   makeBotAPIRequest,
   SimpleBotSocket,

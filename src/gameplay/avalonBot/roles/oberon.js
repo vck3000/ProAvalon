@@ -30,4 +30,4 @@ class Oberon {
   checkSpecialMove() {}
 }
 
-module.exports = Oberon;
+export default Oberon;

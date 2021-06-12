@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 // SCHEMA SETUP
 const forumThreadSchema = new mongoose.Schema({
@@ -45,4 +45,4 @@ const forumThreadSchema = new mongoose.Schema({
 // compile schema into a model
 const forumThread = mongoose.model('ForumThread', forumThreadSchema);
 
-module.exports = forumThread;
+export default forumThread;

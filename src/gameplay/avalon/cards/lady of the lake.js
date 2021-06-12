@@ -77,4 +77,4 @@ class LadyOfTheLake {
   }
 }
 
-module.exports = LadyOfTheLake;
+export default LadyOfTheLake;

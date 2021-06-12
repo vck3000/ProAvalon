@@ -1,10 +1,11 @@
 const api_key = process.env.MAILGUN_API_KEY;
 const domain = process.env.PROAVALON_EMAIL_ADDRESS_DOMAIN;
 const server_domain = process.env.SERVER_DOMAIN;
-const mailgun = require('mailgun-js')({ apiKey: api_key, domain: domain });
-const uuidv4 = require('uuid/v4');
+import mailgunFactory from 'mailgun-js';
+const mailgun = mailgunFactory({ apiKey: api_key, domain: domain });
+import uuidv4 from 'uuid/v4';
 
-module.exports.sendEmailVerification = (user, email) => {
+export const sendEmailVerification = (user, email) => {
   if (user.emailVerified === true) {
     // Don't send an email if the user is already verified...
     return;
@@ -490,9 +491,9 @@ module.exports.sendEmailVerification = (user, email) => {
   });
 };
 
-const disposableEmails = require('../util/disposableEmails.js');
+import disposableEmails from '../util/disposableEmails.js';
 
-module.exports.isThrowawayEmail = (email) => {
+export const isThrowawayEmail = (email) => {
   if (disposableEmails.indexOf(email.split('@')[1]) !== -1) {
     return true;
   } else {

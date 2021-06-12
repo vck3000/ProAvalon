@@ -2,7 +2,7 @@
 
 // Get all the gamemodes and their roles/cards/phases.
 const gameModeNames = [];
-const fs = require('fs');
+import fs from 'fs';
 
 fs.readdirSync('./src/gameplay/').filter((file) => {
   if (
@@ -28,7 +28,7 @@ for (let i = 0; i < gameModeNames.length; i++) {
   ].Cards = require(`./${gameModeNames[i]}/indexCards`);
 }
 
-const commonPhasesIndex = require('./indexCommonPhases');
+import commonPhasesIndex from './indexCommonPhases';
 
 function Room(
   host_,
@@ -579,4 +579,4 @@ function getUsernameFromIndex(usernames, index) {
   return usernames[index].username;
 }
 
-module.exports = Room;
+export default Room;

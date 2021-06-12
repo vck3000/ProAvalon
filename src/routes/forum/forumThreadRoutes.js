@@ -1,18 +1,13 @@
-const { Router } = require('express');
-const sanitizeHtml = require('sanitize-html');
-const rateLimit = require('express-rate-limit');
-
-const { checkForumThreadOwnership, asyncMiddleware } = require('../middleware');
-const getTimeDiffInString = require('../../util/getTimeDiffInString');
-
-const lastIds = require('../../models/lastIds');
-const forumThread = require('../../models/forumThread');
-const {
-  allowedHtmlTags,
-  allowedHtmlAttributes,
-} = require('./sanitizeRestrictions');
-const REWARDS = require('../../rewards/constants');
-const { userHasReward } = require('../../rewards/getRewards');
+import { Router } from 'express';
+import sanitizeHtml from 'sanitize-html';
+import rateLimit from 'express-rate-limit';
+import { checkForumThreadOwnership, asyncMiddleware } from '../middleware';
+import getTimeDiffInString from '../../util/getTimeDiffInString';
+import lastIds from '../../models/lastIds';
+import forumThread from '../../models/forumThread';
+import { allowedHtmlTags, allowedHtmlAttributes } from './sanitizeRestrictions';
+import REWARDS from '../../rewards/constants';
+import { userHasReward } from '../../rewards/getRewards';
 
 // Prevent too many requests
 const router = new Router();
@@ -311,4 +306,4 @@ router.delete(
   })
 );
 
-module.exports = router;
+export default router;

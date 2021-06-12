@@ -1,5 +1,5 @@
-const User = require('../models/user');
-const treeify = require('treeify');
+import User from '../models/user';
+import treeify from 'treeify';
 
 IPLinkedAccounts = async (username, num_levels) => {
   // console.log("Running ip linked accounts code");
@@ -94,4 +94,4 @@ IPLinkedAccounts = async (username, num_levels) => {
   }
 };
 
-module.exports = IPLinkedAccounts;
+export default IPLinkedAccounts;

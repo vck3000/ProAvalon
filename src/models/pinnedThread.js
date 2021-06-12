@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const pinnedThreadSchema = mongoose.Schema({
   forumThread: {
@@ -9,4 +9,4 @@ const pinnedThreadSchema = mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('pinnedThread', pinnedThreadSchema);
+export default mongoose.model('pinnedThread', pinnedThreadSchema);

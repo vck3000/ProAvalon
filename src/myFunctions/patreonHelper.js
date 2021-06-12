@@ -1,4 +1,4 @@
-const patreon = require('patreon');
+import patreon from 'patreon';
 
 const patreonAPI = patreon.patreon;
 
@@ -27,4 +27,4 @@ PatreonHelper.getUserStore = function (token) {
   });
 };
 
-module.exports = PatreonHelper;
+export default PatreonHelper;

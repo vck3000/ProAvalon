@@ -1,12 +1,8 @@
-const { Router } = require('express');
+import { Router } from 'express';
 const router = new Router();
-const User = require('../models/user');
-
-const {
-  sendEmailVerification,
-  isThrowawayEmail,
-} = require('../myFunctions/sendEmailVerification');
-const validator = require('validator');
+import User from '../models/user';
+import { sendEmailVerification, isThrowawayEmail } from '../myFunctions/sendEmailVerification';
+import validator from 'validator';
 
 function checkEmailVerifiedAlready(req, res, next) {
   if (req.user.emailVerified === true) {
@@ -87,6 +83,5 @@ function emailContainsBadCharacter(str) {
   return false;
 }
 
-module.exports.emailVerificationRoutes = router;
-module.exports.validEmail = validEmail;
-module.exports.emailExists = emailExists;
+export const emailVerificationRoutes = router;
+export { validEmail, emailExists };

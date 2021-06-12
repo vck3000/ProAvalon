@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 // SCHEMA SETUP
 const gameRecordSchema = new mongoose.Schema({
@@ -42,4 +42,4 @@ gameRecordSchema.index({ timeGameFinished: 1 });
 // compile schema into a model
 const gameRecord = mongoose.model('gameRecord', gameRecordSchema);
 
-module.exports = gameRecord;
+export default gameRecord;

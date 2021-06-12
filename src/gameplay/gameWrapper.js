@@ -1,6 +1,6 @@
 // This wrapper mainly serves as a way to detect and make callbacks
 // to the socket.js file for updates.
-const Game = require('./game');
+import Game from './game';
 
 function GameWrapper(
   host_,
@@ -167,4 +167,4 @@ GameWrapper.prototype.finishGame = function (toBeWinner) {
   }
 };
 
-module.exports = GameWrapper;
+export default GameWrapper;

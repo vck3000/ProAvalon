@@ -1,38 +1,30 @@
 // sockets
 
-const axios = require('axios');
-const gameRoom = require('../gameplay/gameWrapper');
+import axios from 'axios';
 
-const savedGameObj = require('../models/savedGame');
-
-const myNotification = require('../models/notification');
-const createNotificationObj = require('../myFunctions/createNotification');
-
-const { getAllRewardsForUser } = require('../rewards/getRewards');
-
-const REWARDS = require('../rewards/constants');
-
-const avatarRequest = require('../models/avatarRequest');
-const User = require('../models/user');
-const Ban = require('../models/ban');
-const ModLog = require('../models/modLog');
-
-const IPLinkedAccounts = require('../myFunctions/IPLinkedAccounts');
-
-const JSON = require('circular-json');
-const modsArray = require('../modsadmins/mods');
-const adminsArray = require('../modsadmins/admins');
-
-const moment = require('moment');
-
-const _bot = require('./bot');
+import gameRoom from '../gameplay/gameWrapper';
+import savedGameObj from '../models/savedGame';
+import myNotification from '../models/notification';
+import createNotificationObj from '../myFunctions/createNotification';
+import { getAllRewardsForUser } from '../rewards/getRewards';
+import REWARDS from '../rewards/constants';
+import avatarRequest from '../models/avatarRequest';
+import User from '../models/user';
+import Ban from '../models/ban';
+import ModLog from '../models/modLog';
+import IPLinkedAccounts from '../myFunctions/IPLinkedAccounts';
+import JSON from 'circular-json';
+import modsArray from '../modsadmins/mods';
+import adminsArray from '../modsadmins/admins';
+import moment from 'moment';
+import _bot from './bot';
 
 const { enabledBots } = _bot;
 const { makeBotAPIRequest } = _bot;
 const { SimpleBotSocket } = _bot;
 const { APIBotSocket } = _bot;
 
-const sanitizeHtml = require('sanitize-html');
+import sanitizeHtml from 'sanitize-html';
 
 const dateResetRequired = 1543480412695;
 
@@ -56,7 +48,7 @@ const allChat5Min = [];
 let nextRoomId = 1;
 
 // Get all the possible gameModes
-const fs = require('fs');
+import fs from 'fs';
 
 const gameModeNames = [];
 fs.readdirSync('./src/gameplay/').filter((file) => {
@@ -2395,15 +2387,15 @@ var actionsObj = {
   },
 };
 
-module.exports.actionsObj = actionsObj;
+export { actionsObj };
 
 const { userCommands } = actionsObj;
 const { modCommands } = actionsObj;
 const { adminCommands } = actionsObj;
 
-ioGlobal = {};
+let ioGlobal = {};
 
-module.exports.server = function (io) {
+export const server = function (io: any): void {
   // SOCKETS for each connection
   ioGlobal = io;
   io.sockets.on('connection', async (socket) => {
