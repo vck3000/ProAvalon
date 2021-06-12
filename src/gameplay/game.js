@@ -177,12 +177,13 @@ Object.assign(Game.prototype, PlayersReadyNotReady.prototype);
 
 // RECOVER GAME!
 Game.prototype.recoverGame = function (storedData) {
+  console.log(storedData);
   // Set a few variables back to new state
   this.allSockets = [];
   this.socketsOfPlayers = [];
-  this.frozen = true;
+  this.phase_before_frozen = this.phase;
+  this.phase = 'frozen';
   this.timeFrozenLoaded = new Date();
-  this.someCutoffPlayersJoined = 'no';
 
   // Reload all objects so that their functions are also generated
   // Functions are not stored with JSONified during storage
@@ -236,11 +237,10 @@ Game.prototype.playerJoinRoom = function (socket, inputPassword) {
 
     // Checks for frozen games. Don't delete a frozen game until all players have rejoined
     if (
-      this.someCutoffPlayersJoined === 'no' &&
-      this.allSockets.length >= this.playersInGame.length
+      this.phase === 'frozen' &&
+      this.socketsOfPlayers.length >= this.playersInGame.length
     ) {
-      this.frozen = false;
-      this.someCutoffPlayersJoined === 'yes';
+      this.phase = this.phase_before_frozen;
     }
 
     const resultOfRoomJoin = Room.prototype.playerJoinRoom.call(
@@ -906,7 +906,7 @@ Game.prototype.getRoomPlayers = function () {
       }
 
       roomPlayers[i] = {
-        username: this.playersInGame[i].request.user.username,
+        username: this.playersInGame[i].username,
         avatarImgRes: this.playersInGame[i].request.user.avatarImgRes,
         avatarImgSpy: this.playersInGame[i].request.user.avatarImgSpy,
         avatarHide: this.playersInGame[i].request.user.avatarHide,
@@ -1143,7 +1143,7 @@ Game.prototype.getStatus = function () {
   if (this.finished === true) {
     return 'Finished';
   }
-  if (this.frozen === true) {
+  if (this.phase === 'frozen') {
     return 'Frozen';
   }
   if (this.phase === 'paused') {

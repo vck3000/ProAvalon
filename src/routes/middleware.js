@@ -46,7 +46,7 @@ export const isLoggedIn = asyncMiddleware(async (req, res, next) => {
     const clientIpAddress =
       req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     // const clientIpAddress = req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    console.log(clientIpAddress);
+    // console.log(clientIpAddress);
 
     // Track IPs
     if (

@@ -151,7 +151,6 @@ if (process.env.NODE_ENV !== 'test') {
 
               Object.assign(rooms[storedData.roomId], storedData);
 
-              rooms[storedData.roomId].restartSaved = true;
               rooms[storedData.roomId].savedGameRecordId = foundSaveGame.id;
               rooms[storedData.roomId].recoverGame(storedData);
               rooms[storedData.roomId].callback = socketCallback;
@@ -2325,7 +2324,7 @@ var actionsObj = {
       help: '/mremovefrozen: Remove all frozen rooms and the corresponding save files in the database.',
       run(data, senderSocket) {
         for (let i = 0; i < rooms.length; i++) {
-          if (rooms[i] && rooms[i].frozen === true) {
+          if (rooms[i] && rooms[i].phase === 'frozen') {
             destroyRoom(rooms[i].roomId);
           }
         }
@@ -3138,7 +3137,7 @@ function prohibitedChat(message) {
 }
 
 function allChatFromClient(data) {
-  // console.log(`allchat: ${data.message} by: ${this.request.user.username}`);
+  console.log(`allchat: ${data.message} by: ${this.request.user.username}`);
   // get the username and put it into the data object
 
   const validUsernames = getPlayerUsernamesFromAllSockets();
@@ -3172,7 +3171,7 @@ function allChatFromClient(data) {
 }
 
 function roomChatFromClient(data) {
-  // console.log(`roomchat: ${data.message} by: ${this.request.user.username}`);
+  console.log(`roomchat: ${data.message} by: ${this.request.user.username}`);
   // get the username and put it into the data object
 
   const validUsernames = getPlayerUsernamesFromAllSockets();
