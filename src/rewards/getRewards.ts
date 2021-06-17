@@ -1,4 +1,4 @@
-import PatreonId from '../models/patreonId';
+import getPatreonDetails from './getPatreonDetails';
 import { Rewards, RewardType } from './indexRewards';
 
 import { isMod } from '../modsadmins/mods';
@@ -20,8 +20,6 @@ async function getAllRewardsForUser(user: any): Promise<RewardType[]> {
     }
   }
 
-  // console.log(`${user.username} has the following rewards:`);
-  // console.log(rewardsSatisfied);
   return rewardsSatisfied;
 }
 
@@ -67,22 +65,6 @@ async function userHasReward(
 
   // If we pass all the above, this reward has been satisfied.
   return true;
-}
-
-async function getPatreonDetails(patreonId: string) {
-  let patreonDetails: any;
-
-  await PatreonId.find({ id: patreonId })
-    .exec()
-    .then((obj) => {
-      patreonDetails = obj;
-      // console.log('Gotten patreon details.');
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-
-  return patreonDetails;
 }
 
 export { userHasReward, getAllRewardsForUser };

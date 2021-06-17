@@ -1,80 +1,99 @@
-import { userHasReward } from '../getRewards';
+import { getAllRewardsForUser, userHasReward } from '../getRewards';
 import constants from '../constants';
 
-const patreonDetails = {};
-const user = {
+jest.mock('../getPatreonDetails', () => () => ({
+  declined_since: 0,
+}));
+
+const adminUser = {
   username: 'ProNub',
   totalGamesPlayed: 150,
 };
 
-describe('User has reward', () => {
-  it('correctly determines user has admin badge', async () => {
-    const hasReward = await userHasReward(
-      user,
-      constants.ADMIN_BADGE,
-      patreonDetails
-    );
+const newUser = {
+  username: 'asdf',
+  totalGamesPlayed: 1,
+};
 
-    expect(hasReward).toBe(true);
+const normalUser = {
+  username: 'qwer',
+  totalGamesPlayed: 50,
+};
+
+describe('getAllRewardsForUser()', () => {
+  it('correctly returns all rewards a user has', async () => {
+    const inputOutputs = [
+      [
+        adminUser,
+        [
+          constants.ADMIN_BADGE,
+          constants.CAN_ADD_FORUM,
+          constants.CAN_ALL_CHAT,
+          constants.MOD_BADGE,
+        ],
+      ],
+      [newUser, []],
+      [normalUser, [constants.CAN_ADD_FORUM, constants.CAN_ALL_CHAT]],
+    ];
+
+    for (const [user, exp] of inputOutputs) {
+      const rewards = await getAllRewardsForUser(user);
+
+      expect(rewards).toEqual(exp);
+    }
+  });
+});
+
+describe('userHasReward()', () => {
+  it('correctly determines user has admin badge', async () => {
+    const inputOutputs = [
+      [adminUser, true],
+      [newUser, false],
+    ];
+
+    for (const [user, exp] of inputOutputs) {
+      const hasReward = await userHasReward(user, constants.ADMIN_BADGE);
+
+      expect(hasReward).toBe(exp);
+    }
   });
 
   it('correctly determines user has mod badge', async () => {
-    const hasReward = await userHasReward(
-      user,
-      constants.MOD_BADGE,
-      patreonDetails
-    );
+    const inputOutputs = [
+      [adminUser, true],
+      [newUser, false],
+    ];
 
-    expect(hasReward).toBe(true);
+    for (const [user, exp] of inputOutputs) {
+      const hasReward = await userHasReward(user, constants.MOD_BADGE);
+
+      expect(hasReward).toBe(exp);
+    }
   });
 
   it('correctly determines user can all chat', async () => {
-    const hasReward = await userHasReward(
-      user,
-      constants.CAN_ALL_CHAT,
-      patreonDetails
-    );
+    const inputOutputs = [
+      [adminUser, true],
+      [newUser, false],
+    ];
 
-    expect(hasReward).toBe(true);
-  });
+    for (const [user, exp] of inputOutputs) {
+      const hasReward = await userHasReward(user, constants.CAN_ALL_CHAT);
 
-  it('correctly determines user cannot all chat', async () => {
-    const newUser = {
-      ...user,
-      totalGamesPlayed: 1,
-    };
-
-    const hasReward = await userHasReward(
-      newUser,
-      constants.CAN_ALL_CHAT,
-      patreonDetails
-    );
-
-    expect(hasReward).toBe(false);
+      expect(hasReward).toBe(exp);
+    }
   });
 
   it('correctly determines user can post to forums', async () => {
-    const hasReward = await userHasReward(
-      user,
-      constants.CAN_ADD_FORUM,
-      patreonDetails
-    );
+    const inputOutputs = [
+      [adminUser, true],
+      [newUser, false],
+    ];
 
-    expect(hasReward).toBe(true);
-  });
+    for (const [user, exp] of inputOutputs) {
+      const hasReward = await userHasReward(user, constants.CAN_ADD_FORUM);
 
-  it('correctly determines user cannot post to forums', async () => {
-    const newUser = {
-      ...user,
-      totalGamesPlayed: 1,
-    };
-
-    const hasReward = await userHasReward(
-      newUser,
-      constants.CAN_ADD_FORUM,
-      patreonDetails
-    );
-
-    expect(hasReward).toBe(false);
+      expect(hasReward).toBe(exp);
+    }
   });
 });
