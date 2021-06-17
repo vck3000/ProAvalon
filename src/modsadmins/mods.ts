@@ -1,5 +1,5 @@
 // all in lower case
-const modsArray = [
+export const modsArray = [
   'pronub',
   'starbird1002',
   'besjbo',
@@ -9,8 +9,6 @@ const modsArray = [
   'maximovic96',
   'd8nitemike',
 ];
-
-export default modsArray;
 
 export function isMod(username: string): boolean {
   return modsArray.includes(username.toLowerCase());

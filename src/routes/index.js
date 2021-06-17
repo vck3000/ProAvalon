@@ -9,25 +9,21 @@ import User from '../models/user';
 import myNotification from '../models/notification';
 import gameRecord from '../models/gameRecord';
 import statsCumulative from '../models/statsCumulative';
-import { isMod } from './middleware';
 import { validEmail, emailExists } from '../routes/emailVerification';
 import { sendEmailVerification } from '../myFunctions/sendEmailVerification';
-import modsArray from '../modsadmins/mods';
-
-// Prevent too many requests
-// app.enable("trust proxy"); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
+import { modsArray } from '../modsadmins/mods';
 
 const router = new Router();
 
-// exclude pronub from new mods array
-const newModsArray = modsArray.filter((mod) => mod != 'pronub');
+const filteredModsArray = modsArray.filter((mod) => mod != 'pronub');
+
 // Community route
 router.get('/community', (req, res) => {
   // Get all players with more than 50 games excluding mods
   User.find(
     {
       totalGamesPlayed: { $gt: 99 },
-      usernameLower: { $nin: newModsArray },
+      usernameLower: { $nin: filteredModsArray },
       hideStats: null,
     },
     (err, allUsers) => {
@@ -37,7 +33,7 @@ router.get('/community', (req, res) => {
         // Get mods excluding pronub
         User.find(
           {
-            usernameLower: { $in: newModsArray },
+            usernameLower: { $in: filteredModsArray },
           },
           (err, allMods) => {
             if (err) {
@@ -99,12 +95,12 @@ router.get('/sitedown', (req, res) => {
 const registerLimiter =
   process.env.MY_PLATFORM === 'local'
     ? rateLimit({
-      max: 0, // Disable if we are local
-    })
+        max: 0, // Disable if we are local
+      })
     : rateLimit({
-      windowMs: 60 * 60 * 1000, // 60 minutes
-      max: 10,
-    });
+        windowMs: 60 * 60 * 1000, // 60 minutes
+        max: 10,
+      });
 
 // Post of the register route - Create an account
 router.post(
@@ -211,12 +207,12 @@ router.post(
 const loginLimiter =
   process.env.MY_PLATFORM === 'local'
     ? rateLimit({
-      max: 0, // Disable if we are local
-    })
+        max: 0, // Disable if we are local
+      })
     : rateLimit({
-      windowMs: 5 * 60 * 1000,
-      max: 10,
-    });
+        windowMs: 5 * 60 * 1000,
+        max: 10,
+      });
 
 // login route
 router.post(
@@ -251,7 +247,7 @@ router.get('/emailVerification/verifyEmailRequest', async (req, res) => {
   } else {
     req.flash(
       'error',
-      'The link provided for email verification is invalid or expired. Please log in and press the \'Resend verification email\' button.'
+      "The link provided for email verification is invalid or expired. Please log in and press the 'Resend verification email' button."
     );
     res.redirect('/');
   }

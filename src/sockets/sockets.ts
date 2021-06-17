@@ -14,8 +14,8 @@ import Ban from '../models/ban';
 import ModLog from '../models/modLog';
 import IPLinkedAccounts from '../myFunctions/IPLinkedAccounts';
 import JSON from 'circular-json';
-import modsArray from '../modsadmins/mods';
-import adminsArray from '../modsadmins/admins';
+import { isMod } from '../modsadmins/mods';
+import { isAdmin } from '../modsadmins/admins';
 import _bot from './bot';
 
 // Get all the possible gameModes
@@ -473,7 +473,7 @@ var actionsObj = {
       help: '/mods: Shows a list of online moderators.',
       run() {
         const modUsers = getPlayerUsernamesFromAllSockets().filter((username) =>
-          modsArray.includes(username.toLowerCase())
+          isMod(username)
         );
         const message = `Currently online mods: ${
           modUsers.length > 0 ? modUsers.join(', ') : 'None'
@@ -523,7 +523,7 @@ var actionsObj = {
             message: 'You cannot private message yourself!',
             classStr: 'server-text',
           };
-        if (!modsArray.includes(args[1].toLowerCase()))
+        if (!isMod(args[1]))
           return {
             message: `${args[1]} is not a mod. You may not private message them.`,
             classStr: 'server-text',
@@ -1162,11 +1162,7 @@ var actionsObj = {
       help: '/mban: Open the ban interface',
       run(data, senderSocket) {
         // console.log(senderSocket.request.user.username);
-        if (
-          modsArray.indexOf(
-            senderSocket.request.user.username.toLowerCase()
-          ) !== -1
-        ) {
+        if (isMod(senderSocket.request.user.username)) {
           senderSocket.emit('openModModal');
           return {
             message: 'May your judgement bring peace to all!',
@@ -2389,9 +2385,7 @@ export const server = function (io: any): void {
       socket.isAdminSocket = false;
 
       // if the mods name is inside the array
-      if (
-        modsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1
-      ) {
+      if (isMod(socket.request.user.username)) {
         // promote to mod socket
         socket.isModSocket = true;
 
@@ -2448,9 +2442,7 @@ export const server = function (io: any): void {
       }
 
       // if the admin name is inside the array
-      if (
-        adminsArray.indexOf(socket.request.user.username.toLowerCase()) !== -1
-      ) {
+      if (isAdmin(socket.request.user.username)) {
         // promote to admin socket
         socket.isAdminSocket = true;
 
@@ -2836,7 +2828,7 @@ function sendToAllMods(io, data) {
   data.dateCreated = date;
 
   allSockets.forEach((sock) => {
-    if (modsArray.indexOf(sock.request.user.username.toLowerCase()) !== -1) {
+    if (isMod(sock.request.user.username)) {
       sock.emit('allChatToClient', data);
       sock.emit('roomChatToClient', data);
     }
@@ -3002,20 +2994,16 @@ function disconnect(data) {
 function messageCommand(data) {
   // console.log("data0: " + data.command);
   // console.log("mod command exists: " + modCommands[data.command]);
-  // console.log("Index of mods" + modsArray.indexOf(socket.request.user.username.toLowerCase()));
   let dataToSend;
   if (userCommands[data.command]) {
     dataToSend = userCommands[data.command].run(data, this, ioGlobal);
     this.emit('messageCommandReturnStr', dataToSend);
-  } else if (
-    modCommands[data.command] &&
-    modsArray.indexOf(this.request.user.username.toLowerCase()) !== -1
-  ) {
+  } else if (modCommands[data.command] && isMod(this.request.user.username)) {
     dataToSend = modCommands[data.command].run(data, this, ioGlobal);
     this.emit('messageCommandReturnStr', dataToSend);
   } else if (
     adminCommands[data.command] &&
-    adminsArray.indexOf(this.request.user.username.toLowerCase()) !== -1
+    isAdmin(this.request.user.username)
   ) {
     dataToSend = adminCommands[data.command].run(data, this, ioGlobal);
     this.emit('messageCommandReturnStr', dataToSend);

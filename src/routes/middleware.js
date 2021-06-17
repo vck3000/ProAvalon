@@ -1,11 +1,10 @@
-import moment from 'moment';
 import forumThread from '../models/forumThread';
 import forumThreadComment from '../models/forumThreadComment';
 import forumThreadCommentReply from '../models/forumThreadCommentReply';
 import User from '../models/user';
 import IPLinkedAccounts from '../myFunctions/IPLinkedAccounts';
 import Ban from '../models/ban';
-import modsArray from '../modsadmins/mods';
+import { isMod } from '../modsadmins/mods';
 import admins from '../modsadmins/admins';
 
 // return a function that wraps an async middleware
@@ -36,8 +35,8 @@ export const isLoggedIn = asyncMiddleware(async (req, res, next) => {
   // Pass on some variables for all ejs files to use, mainly header partial view
   res.locals.currentUser = user;
   res.locals.userNotifications = user.notifications;
-  res.locals.mod = modsArray.includes(user.username.toLowerCase());
-  res.locals.isMod = modsArray.includes(user.username.toLowerCase());
+  res.locals.mod = isMod(user.username);
+  res.locals.isMod = isMod(user.username);
 
   if (req.session.banCheckPassed === true) {
     next();
@@ -199,7 +198,7 @@ export const checkForumThreadCommentReplyOwnership = checkOwnership(
 
 export const isMod = (req, res, next) => {
   console.log('check');
-  if (modsArray.includes(req.user.username.toLowerCase())) {
+  if (isMod(req.user.username)) {
     next();
   } else {
     req.flash('error', 'You are not a moderator.');
