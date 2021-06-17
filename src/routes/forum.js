@@ -30,11 +30,7 @@ router.get('/', (req, res) => {
 router.get(
   '/ajax/like/:type/:bigId',
   asyncMiddleware(async (req, res) => {
-    let CAN_POST = await userHasReward(
-      req.user,
-      REWARDS.CAN_ADD_FORUM,
-      undefined
-    );
+    let CAN_POST = await userHasReward(req.user, REWARDS.CAN_ADD_FORUM);
     if (!CAN_POST) {
       res.status(200).send('You need 10 games to like a forum/comment.');
       return;

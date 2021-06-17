@@ -40,12 +40,12 @@ const sanitizeHtmlAllowedAttributesForumThread = {
 const newReplyLimiter =
   process.env.MY_PLATFORM === 'local'
     ? rateLimit({
-      max: 0, // Disable if we are local
-    })
+        max: 0, // Disable if we are local
+      })
     : rateLimit({
-      windowMs: 60 * 60 * 1000, // 1 hours
-      max: 10,
-    });
+        windowMs: 60 * 60 * 1000, // 1 hours
+        max: 10,
+      });
 
 /** ******************************************************* */
 // Create a new comment reply route
@@ -58,11 +58,7 @@ router.post('/:id/:commentId/:replyId', newReplyLimiter, (req, res) => {
 });
 
 async function createCommentReply(req, res) {
-  let CAN_POST = await userHasReward(
-    req.user,
-    REWARDS.CAN_ADD_FORUM,
-    undefined
-  );
+  let CAN_POST = await userHasReward(req.user, REWARDS.CAN_ADD_FORUM);
   if (!CAN_POST) {
     req.flash('error', 'You need 10 games to reply to a comment.');
     res.redirect('back');

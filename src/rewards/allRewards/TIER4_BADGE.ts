@@ -1,11 +1,11 @@
 import constants from '../constants';
+import { RewardData } from '../types';
 
-const obj = {
-  key: constants.TIER2_BADGE,
+const obj: RewardData = {
   adminReq: false,
   modReq: false,
   gamesPlayedReq: 0,
-  donationReq: constants.tier2_donation,
+  donationReq: constants.tier4_donation,
 };
 
 export default obj;

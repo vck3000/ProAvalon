@@ -1,4 +1,4 @@
-export default {
+const constants = {
   ADMIN_BADGE: 'ADMIN_BADGE',
   MOD_BADGE: 'MOD_BADGE',
   TIER1_BADGE: 'TIER1_BADGE',
@@ -17,4 +17,6 @@ export default {
   tier2: 'Lovers',
   tier3: 'Percival',
   tier4: 'Merlin',
-};
+} as const;
+
+export default constants;

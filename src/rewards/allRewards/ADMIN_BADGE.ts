@@ -1,6 +1,6 @@
-import constants from '../constants';
+import { RewardData } from '../types';
 
-const obj = {
+const obj: RewardData = {
   adminReq: true,
   modReq: false,
   gamesPlayedReq: 0,

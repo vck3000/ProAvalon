@@ -4,8 +4,8 @@
   "description": "ProAvalon",
   "main": "app.js",
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watchAll",
+    "test": "jest --maxWorkers=1",
+    "test:watch": "jest --watchAll --maxWorkers=1",
     "build": "tsc && cp -R ./src/views ./out",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --fix",

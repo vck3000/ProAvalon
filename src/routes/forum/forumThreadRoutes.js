@@ -130,12 +130,12 @@ lastIds.findOne({}).exec(async (err, returnedLastId) => {
 const newForumLimiter =
   process.env.MY_PLATFORM === 'local'
     ? rateLimit({
-      max: 0, // Disable if we are local
-    })
+        max: 0, // Disable if we are local
+      })
     : rateLimit({
-      windowMs: 12 * 60 * 60 * 1000, // 12 hours
-      max: 3,
-    });
+        windowMs: 12 * 60 * 60 * 1000, // 12 hours
+        max: 3,
+      });
 
 /** ******************************************************* */
 // Create a new forumThread
@@ -144,11 +144,7 @@ router.post(
   '/',
   newForumLimiter,
   asyncMiddleware(async (req, res) => {
-    let CAN_POST = await userHasReward(
-      req.user,
-      REWARDS.CAN_ADD_FORUM,
-      undefined
-    );
+    let CAN_POST = await userHasReward(req.user, REWARDS.CAN_ADD_FORUM);
     if (!CAN_POST) {
       req.flash('error', 'You need 10 games to create a forum thread.');
       res.redirect('back');
