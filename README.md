@@ -2,24 +2,22 @@
 
 Online platform for The Resistance! [Play the game](https://www.ProAvalon.com).
 
-# DEPRECATED BRANCH
-
-We are actively developing a new re-write of ProAvalon on newPA branch. If you are interested in assisting, please make an issue and I will contact you!
-
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Pre-requisites
 
-- [Node.js](https://nodejs.org/en/) v7.6 or later
+- [Node.js](https://nodejs.org/en/) v12.0.0+
 - [MongoDB](https://www.mongodb.com/)
 - [Git](https://git-scm.com/)
 
 Other useful resources:
 
-- [Visual Studio Code](https://code.visualstudio.com/), a code editor/IDE by Microsoft
-- [ConEmu](https://conemu.github.io/) (Windows program to open multiple cmds (terminals) in one window
+- [Visual Studio Code](https://code.visualstudio.com/), a code editor/IDE by Microsoft.
+- [ConEmu](https://conemu.github.io/) (Windows program to open multiple cmds (terminals) in one window.
+- [Docker](https://www.docker.com/), a useful tool that allows you to skip MongoDB, and other program installations.
+- [nvm](https://github.com/nvm-sh/nvm), a useful tool to manage your local node version.
 
 ### Installing
 
@@ -48,51 +46,20 @@ MY_SECRET_KEY=INSERT_ANYTHING_YOU_WANT_HERE
 DATABASEURL=mongodb://localhost/TheNewResistanceUsers
 ```
 
-3. Create the database in MongoDB:
+Refer to `.env.example` for guidance.
 
-   1. Create the folder `/data/db` (`C:/data/db` on Windows).
-   2. Start the database:
-
-   ```
-   > mongod
-   ```
-
-   3. Open a mongo shell (in a new terminal or command prompt):
-
-   ```
-   > mongo
-   ```
-
-   4. Create the database:
-
-   ```
-   > use TheNewResistanceUsers
-   switched to db TheNewResistanceUsers
-   ```
-
-4. Install Node modules
+3. Install Node modules
 
 ```
 > npm install
 ```
 
-5. Optional: (This will install nodemon globally)
+### Running
+- For local development run `npm run dev`.
+- For local tests run `npm run test`.
+- For local tests in watch mode run `npm run test:watch`.
+- For local tests with coverage report run `npm run test:coverage`.
 
-```
->  npm install -g nodemon
-```
-
-## Running
-
-```
-> node app.js
-```
-
-Or with nodemon (automatically restarts the server when changes are saved):
-
-```
-> nodemon app.js
-```
 
 ## Optional: Create an admin account
 
