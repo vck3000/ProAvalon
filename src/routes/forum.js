@@ -6,7 +6,7 @@ import forumThreadCommentReply from '../models/forumThreadCommentReply';
 import ForumBan from '../models/forumBan';
 import ModLog from '../models/modLog';
 import pinnedThread from '../models/pinnedThread';
-import { isMod, asyncMiddleware } from './middleware';
+import { isModMiddleware, asyncMiddleware } from './middleware';
 import getTimeDiffInString from '../util/getTimeDiffInString';
 import { createNotification } from '../myFunctions/createNotification';
 import { isMod } from '../modsadmins/mods';
@@ -207,7 +207,7 @@ router.get(
 
 router.post(
   '/forumBan',
-  isMod,
+  isModMiddleware,
   asyncMiddleware(async (req) => {
     let replyId, commentId, forumId;
     if (req.body.idOfReply !== '') {
@@ -328,7 +328,7 @@ router.post(
 
 router.post(
   '/pinThread',
-  isMod,
+  isModMiddleware,
   asyncMiddleware(async (req) => {
     let idOfThread = '';
     Object.keys(req.body).forEach((key) => {

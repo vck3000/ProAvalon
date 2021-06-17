@@ -3,7 +3,7 @@ import express from 'express';
 const router = express.Router();
 import sanitizeHtml from 'sanitize-html';
 import url from 'url';
-import { isMod, checkProfileOwnership } from './middleware.js';
+import { isModMiddleware, checkProfileOwnership } from './middleware.js';
 import User from '../models/user';
 import PatreonId from '../models/patreonId';
 import avatarRequest from '../models/avatarRequest';
@@ -38,7 +38,7 @@ router.get('/avatargetlinktutorial', (req, res) => {
 });
 
 // Show the mod approving rejecting page
-router.get('/mod/customavatar', isMod, (req, res) => {
+router.get('/mod/customavatar', isModMiddleware, (req, res) => {
   avatarRequest.find({ processed: false }).exec((err, allAvatarRequests) => {
     if (err) {
       console.log(err);
@@ -52,7 +52,7 @@ router.get('/mod/customavatar', isMod, (req, res) => {
 
 // moderator approve or reject custom avatar requests
 // /profile/mod/ajax/processavatarrequest
-router.post('/mod/ajax/processavatarrequest', isMod, (req, res) => {
+router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
   // console.log('process avatar request');
   // console.log(req.body.decision);
   // console.log(req.body.avatarreqid);

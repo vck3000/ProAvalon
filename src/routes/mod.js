@@ -1,6 +1,6 @@
 import { Router } from 'express';
 const router = new Router();
-import { isMod } from './middleware';
+import { isModMiddleware } from './middleware';
 import User from '../models/user';
 import Ban from '../models/ban';
 import ModLog from '../models/modLog';
@@ -15,7 +15,7 @@ const requiredFields = [
   'descriptionByMod',
 ];
 
-router.post('/ban', isMod, upload.none(), async (req, res) => {
+router.post('/ban', isModMiddleware, upload.none(), async (req, res) => {
   console.log('hit');
   // Catch errors so that it's not shown to users.
   try {
@@ -98,27 +98,27 @@ router.post('/ban', isMod, upload.none(), async (req, res) => {
     const whenMade = new Date();
     var whenRelease;
     switch (req.body['duration_units']) {
-    case 'hrs':
-      whenRelease = new Date(now.setHours(now.getHours() + durationInt));
-      break;
-    case 'days':
-      whenRelease = new Date(now.setDate(now.getDate() + durationInt));
-      break;
-    case 'months':
-      whenRelease = new Date(now.setMonth(now.getMonth() + durationInt));
-      break;
-    case 'years':
-      whenRelease = new Date(
-        now.setFullYear(now.getFullYear() + durationInt)
-      );
-      break;
-    case 'permaban':
-      whenRelease = new Date(now.setFullYear(now.getFullYear() + 1000));
-      break;
-    default:
-      res.status(400);
-      res.send(`Invalid duration units: '${req.body['duration_units']}'.`);
-      return;
+      case 'hrs':
+        whenRelease = new Date(now.setHours(now.getHours() + durationInt));
+        break;
+      case 'days':
+        whenRelease = new Date(now.setDate(now.getDate() + durationInt));
+        break;
+      case 'months':
+        whenRelease = new Date(now.setMonth(now.getMonth() + durationInt));
+        break;
+      case 'years':
+        whenRelease = new Date(
+          now.setFullYear(now.getFullYear() + durationInt)
+        );
+        break;
+      case 'permaban':
+        whenRelease = new Date(now.setFullYear(now.getFullYear() + 1000));
+        break;
+      default:
+        res.status(400);
+        res.send(`Invalid duration units: '${req.body['duration_units']}'.`);
+        return;
     }
 
     // Create the data object
@@ -173,7 +173,7 @@ router.post('/ban', isMod, upload.none(), async (req, res) => {
   }
 });
 
-router.get('/', isMod, (req, res) => {
+router.get('/', isModMiddleware, (req, res) => {
   res.render('mod/mod', {
     currentUser: req.user,
     isMod: true,
@@ -189,7 +189,7 @@ router.get('/', isMod, (req, res) => {
 // 4) Comment and reply removes
 // 5) Avatar request approve/rejects
 
-router.get('/ajax/logData/:pageIndex', isMod, (req, res) => {
+router.get('/ajax/logData/:pageIndex', isModMiddleware, (req, res) => {
   // get all the mod actions
   let pageIndex;
   if (req.params.pageIndex) {
