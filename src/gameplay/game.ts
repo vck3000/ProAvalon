@@ -1863,7 +1863,7 @@ Game.prototype.updateMuteSpectators = function (muteSpectators: boolean) {
 
   this.sendText(
     this.allSockets,
-    `Mute spectators: ${muteSpectators}`,
+    `Mute spectators option set to ${muteSpectators}.`,
     'server-text'
   );
 };
