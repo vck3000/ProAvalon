@@ -9,7 +9,7 @@ import {
   checkForumThreadCommentOwnership,
 } from '../middleware';
 import { allowedHtmlAttributes, allowedHtmlTags } from './sanitizeRestrictions';
-import createNotificationObj from '../../myFunctions/createNotification';
+import { createNotification } from '../../myFunctions/createNotification';
 import REWARDS from '../../rewards/constants';
 import { userHasReward } from '../../rewards/getRewards';
 
@@ -80,12 +80,7 @@ router.post(
       const stringToSay = `${req.user.username} has commented on your post.`;
       const link = `/forum/show/${foundForumThread._id}#${newComment._id}`;
 
-      createNotificationObj.createNotification(
-        userIdTarget,
-        stringToSay,
-        link,
-        req.user.username
-      );
+      createNotification(userIdTarget, stringToSay, link, req.user.username);
     }
 
     // redirect to same forum thread

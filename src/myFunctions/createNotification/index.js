@@ -2,14 +2,7 @@ import mongoose from 'mongoose';
 import User from '../../models/user';
 import myNotification from '../../models/notification';
 
-let createNotifObj = {};
-
-createNotifObj.createNotification = function (
-  userIDTarget,
-  stringToSay,
-  link,
-  madeBy
-) {
+export function createNotification(userIDTarget, stringToSay, link, madeBy) {
   if (userIDTarget && madeBy) {
     User.findById(mongoose.Types.ObjectId(userIDTarget))
       .populate('notifications')
@@ -77,6 +70,4 @@ createNotifObj.createNotification = function (
       `Missing a parameter - userIDTarget: ${userIDTarget}\tmadeBy: ${madeBy}`
     );
   }
-};
-
-export default createNotifObj;
+}

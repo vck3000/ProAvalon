@@ -9,7 +9,7 @@ import {
   checkForumThreadCommentReplyOwnership,
   asyncMiddleware,
 } from '../middleware';
-import createNotificationObj from '../../myFunctions/createNotification';
+import { createNotification } from '../../myFunctions/createNotification';
 import REWARDS from '../../rewards/constants';
 import { userHasReward } from '../../rewards/getRewards';
 
@@ -135,7 +135,7 @@ async function createReply(req, res, commentReplyData, replyingToThisReply) {
   foundForumThreadComment.save();
 
   const notify = (id, type) => {
-    createNotificationObj.createNotification(
+    createNotification(
       mongoose.Types.ObjectId(id),
       `${req.user.username} has replied to your ${type}.`,
       `/forum/show/${foundForum._id}#${newCommentReply._id}`,

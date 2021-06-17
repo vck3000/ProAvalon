@@ -8,7 +8,7 @@ import ModLog from '../models/modLog';
 import pinnedThread from '../models/pinnedThread';
 import { isMod, asyncMiddleware } from './middleware';
 import getTimeDiffInString from '../util/getTimeDiffInString';
-import createNotificationObj from '../myFunctions/createNotification';
+import { createNotification } from '../myFunctions/createNotification';
 import modsArray from '../modsadmins/mods';
 import forumThreadRoutes from '../routes/forum/forumThreadRoutes';
 import forumThreadCommentRoutes from '../routes/forum/forumThreadCommentRoutes';
@@ -84,7 +84,7 @@ router.get(
       var link = `/forum/show/${forumId}#${found._id}`;
 
       // create notif to replying target
-      createNotificationObj.createNotification(
+      createNotification(
         found.author.id,
         `${req.user.username} has liked your ${type}!`,
         link,
@@ -253,7 +253,7 @@ router.post(
 
         ForumBan.create(forumBanData);
 
-        createNotificationObj.createNotification(
+        createNotification(
           foundForumThread.author.id,
           'Your forum titled "' + foundForumThread.title + '" was removed.',
           '#',
@@ -289,7 +289,7 @@ router.post(
     if (found.disabled !== true) {
       // Send the notification
       const link = `/forum/show/${foundForumThread._id}#${found._id}`;
-      createNotificationObj.createNotification(
+      createNotification(
         found.author.id,
         'Your comment/reply was removed.',
         link,

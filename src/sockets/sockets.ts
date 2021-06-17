@@ -5,7 +5,7 @@ import sanitizeHtml from 'sanitize-html';
 
 import gameRoom from '../gameplay/gameWrapper.js';
 import savedGameObj from '../models/savedGame';
-import createNotificationObj from '../myFunctions/createNotification';
+import { createNotification } from '../myFunctions/createNotification';
 import { getAllRewardsForUser } from '../rewards/getRewards';
 import REWARDS from '../rewards/constants';
 import avatarRequest from '../models/avatarRequest';
@@ -1456,7 +1456,7 @@ var actionsObj = {
               const stringToSay = str;
               const link = '#';
 
-              createNotificationObj.createNotification(
+              createNotification(
                 userIdTarget,
                 stringToSay,
                 link,

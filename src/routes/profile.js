@@ -8,7 +8,7 @@ import User from '../models/user';
 import PatreonId from '../models/patreonId';
 import avatarRequest from '../models/avatarRequest';
 import ModLog from '../models/modLog';
-import createNotificationObj from '../myFunctions/createNotification';
+import { createNotification } from '../myFunctions/createNotification';
 
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',
@@ -88,13 +88,7 @@ router.post('/mod/ajax/processavatarrequest', isMod, (req, res) => {
                 str += ` Their comment was: ${foundReq.modComment}`;
               }
 
-              // createNotifObj.createNotification = function(userIDTarget, stringToSay, link){
-              createNotificationObj.createNotification(
-                foundUser._id,
-                str,
-                '#',
-                req.user.username
-              );
+              createNotification(foundUser._id, str, '#', req.user.username);
             }
           });
       } else if (req.body.decision === false || req.body.decision === 'false') {
@@ -114,13 +108,7 @@ router.post('/mod/ajax/processavatarrequest', isMod, (req, res) => {
 
               console.log(`string: ${str}`);
 
-              // createNotifObj.createNotification = function(userIDTarget, stringToSay, link){
-              createNotificationObj.createNotification(
-                foundUser._id,
-                str,
-                '#',
-                req.user.username
-              );
+              createNotification(foundUser._id, str, '#', req.user.username);
             }
           });
       } else {
@@ -717,7 +705,7 @@ var nationalitiesAll = [
   'Congo, the Democratic Republic of the',
   'Cook Islands',
   'Costa Rica',
-  'Côte d\'Ivoire',
+  "Côte d'Ivoire",
   'Croatia',
   'Cuba',
   'Curaçao',
@@ -780,11 +768,11 @@ var nationalitiesAll = [
   'Kazakhstan',
   'Kenya',
   'Kiribati',
-  'Korea, Democratic People\'s Republic of',
+  "Korea, Democratic People's Republic of",
   'Korea, Republic of',
   'Kuwait',
   'Kyrgyzstan',
-  'Lao People\'s Democratic Republic',
+  "Lao People's Democratic Republic",
   'Latvia',
   'Lebanon',
   'Lesotho',
