@@ -1,11 +1,10 @@
 // @ts-nocheck
-// sockets
-
 import axios from 'axios';
+import moment from 'moment';
+import sanitizeHtml from 'sanitize-html';
 
 import gameRoom from '../gameplay/gameWrapper.js';
 import savedGameObj from '../models/savedGame';
-import myNotification from '../models/notification';
 import createNotificationObj from '../myFunctions/createNotification';
 import { getAllRewardsForUser } from '../rewards/getRewards';
 import REWARDS from '../rewards/constants';
@@ -17,15 +16,15 @@ import IPLinkedAccounts from '../myFunctions/IPLinkedAccounts';
 import JSON from 'circular-json';
 import modsArray from '../modsadmins/mods';
 import adminsArray from '../modsadmins/admins';
-import moment from 'moment';
 import _bot from './bot';
+
+// Get all the possible gameModes
+import fs from 'fs';
 
 const { enabledBots } = _bot;
 const { makeBotAPIRequest } = _bot;
 const { SimpleBotSocket } = _bot;
 const { APIBotSocket } = _bot;
-
-import sanitizeHtml from 'sanitize-html';
 
 const dateResetRequired = 1543480412695;
 
@@ -47,9 +46,6 @@ const allChatHistory = [];
 const allChat5Min = [];
 
 let nextRoomId = 1;
-
-// Get all the possible gameModes
-import fs from 'fs';
 
 const gameModeNames = [];
 fs.readdirSync('./src/gameplay/').filter((file) => {
@@ -116,6 +112,7 @@ function saveGameToDb(roomToSave) {
     }
   }
 }
+
 function deleteSaveGameFromDb(room) {
   if (room) {
     savedGameObj.findByIdAndRemove(room.savedGameRecordId, (err) => {
@@ -2587,6 +2584,7 @@ export const server = function (io: any): void {
     socket.on('update-room-max-players', updateRoomMaxPlayers);
     socket.on('update-room-game-mode', updateRoomGameMode);
     socket.on('update-room-ranked', updateRoomRanked);
+    socket.on('update-room-muteSpectators', updateRoomRanked);
 
     //* ***********************
     // game data stuff
@@ -2867,12 +2865,6 @@ function destroyRoom(roomId) {
   rooms[roomId] = undefined;
 
   console.log(`Destroyed room ${roomId}.`);
-  // Ask nicely to garbage collect:
-  // if (global.gc) {
-  //     console.log("Running GC!");
-  //     global.gc();
-  //     console.log("Finished GC!");
-  // }
 }
 
 function playerLeaveRoomCheckDestroy(socket) {
@@ -2935,43 +2927,6 @@ function playerLeaveRoomCheckDestroy(socket) {
   }
 }
 
-function getPlayerDisplayUsernamesFromAllSockets() {
-  const array = [];
-  console.log(allSockets.length);
-  for (let i = 0; i < allSockets.length; i++) {
-    if (allSockets[i] !== undefined) {
-      array[i] = allSockets[i].request.displayUsername
-        ? allSockets[i].request.displayUsername
-        : allSockets[i].request.user.username;
-    } else {
-      array[i] = '<error>';
-    }
-  }
-  array.sort((a, b) => {
-    const textA = a.toUpperCase();
-    const textB = b.toUpperCase();
-    return textA < textB ? -1 : textA > textB ? 1 : 0;
-  });
-  return array;
-}
-
-function getPlayerDisplayUsernamesAndElosFromAllSockets() {
-  // 2D array of usernames and elo pairs, sorted in order of elo rating
-  const array = [];
-  for (let i = 0; i < allSockets.length; i++) {
-    array[i] = [
-      allSockets[i].request.displayUsername
-        ? allSockets[i].request.displayUsername
-        : allSockets[i].request.user.username,
-      Math.round(allSockets[i].request.user.playerRating),
-    ];
-  }
-  array.sort((a, b) => {
-    return a[1] < b[1] ? 1 : a[1] > b[1] ? -1 : 0;
-  });
-  return array;
-}
-
 function getPlayerUsernamesFromAllSockets() {
   const array = [];
   for (let i = 0; i < allSockets.length; i++) {
@@ -2982,14 +2937,6 @@ function getPlayerUsernamesFromAllSockets() {
     const textB = b.toUpperCase();
     return textA < textB ? -1 : textA > textB ? 1 : 0;
   });
-  return array;
-}
-
-function getPlayerIdsFromAllSockets() {
-  const array = [];
-  for (let i = 0; i < allSockets.length; i++) {
-    array[i] = allSockets[i].request.user.id;
-  }
   return array;
 }
 
@@ -3137,7 +3084,7 @@ function prohibitedChat(message) {
 }
 
 function allChatFromClient(data) {
-  console.log(`allchat: ${data.message} by: ${this.request.user.username}`);
+  console.log(`[All Chat] ${this.request.user.username}: ${data.message}`);
   // get the username and put it into the data object
 
   const validUsernames = getPlayerUsernamesFromAllSockets();
@@ -3171,25 +3118,29 @@ function allChatFromClient(data) {
 }
 
 function roomChatFromClient(data) {
-  console.log(`roomchat: ${data.message} by: ${this.request.user.username}`);
+  if (this.request.user.inRoomId) {
+    console.log(
+      `[Room Chat] [Room ${this.request.user.inRoomId}] ${this.request.user.username}: ${data.message}`
+    );
+  }
   // get the username and put it into the data object
-
   const validUsernames = getPlayerUsernamesFromAllSockets();
+
+  data.username = this.request.displayUsername
+    ? this.request.displayUsername
+    : this.request.user.username;
+
+  const senderSocket =
+    allSockets[getIndexFromUsername(allSockets, data.username, true)];
 
   // if the username is not valid, i.e. one that they actually logged in as
   if (validUsernames.indexOf(this.request.user.username) === -1) {
     return;
   }
 
-  data.username = this.request.displayUsername
-    ? this.request.displayUsername
-    : this.request.user.username;
-
   data.message = textLengthFilter(data.message);
   // Apply chat filter
   if (prohibitedChat(data.message)) {
-    const senderSocket =
-      allSockets[getIndexFromUsername(allSockets, data.username, true)];
     const data2 = {
       message: 'You may not send a message that contains a prohibited word.',
       classStr: 'all-chat-text-red',
@@ -3202,10 +3153,18 @@ function roomChatFromClient(data) {
   data.dateCreated = new Date();
 
   if (this.request.user.inRoomId) {
-    // send out that data object to all clients in room
+    const userRoom = rooms[this.request.user.inRoomId];
 
-    sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
-    // ioGlobal.in(data.roomId).emit("roomChatToClient", data);
+    if (userRoom && userRoom.canRoomChat(this.request.user.usernameLower)) {
+      sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
+    } else {
+      const msg = {
+        message: 'The room is muted to spectators.',
+        classStr: 'server-text',
+        dateCreated: new Date(),
+      };
+      senderSocket.emit('roomChatToClient', msg);
+    }
   }
 }
 
@@ -3215,8 +3174,10 @@ function newRoom(dataObj) {
     while (rooms[nextRoomId]) {
       nextRoomId++;
     }
+
     const privateRoom = !(dataObj.newRoomPassword === '');
     const rankedRoom = dataObj.ranked === 'ranked' && !privateRoom;
+
     rooms[nextRoomId] = new gameRoom(
       this.request.user.username,
       nextRoomId,
@@ -3224,6 +3185,7 @@ function newRoom(dataObj) {
       dataObj.maxNumPlayers,
       dataObj.newRoomPassword,
       dataObj.gameMode,
+      dataObj.muteSpectators,
       rankedRoom,
       socketCallback
     );
@@ -3441,6 +3403,15 @@ function updateRoomRanked(rankedType) {
     rooms[this.request.user.inRoomId].updateRanked(this, rankedType);
   }
   updateCurrentGamesList();
+}
+
+function updateRoomRanked(muteSpectators) {
+  if (rooms[this.request.user.inRoomId]) {
+    rooms[this.request.user.inRoomId].updateMuteSpectators(
+      this,
+      muteSpectators
+    );
+  }
 }
 
 function updateRoomMaxPlayers(number) {

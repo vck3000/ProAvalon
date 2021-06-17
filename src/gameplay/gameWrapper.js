@@ -8,6 +8,7 @@ function GameWrapper(
   io_,
   maxNumPlayers_,
   newRoomPassword_,
+  muteSpectators_,
   gameMode_,
   ranked_,
   callback_
@@ -20,6 +21,7 @@ function GameWrapper(
     io_,
     maxNumPlayers_,
     newRoomPassword_,
+    muteSpectators_,
     gameMode_,
     ranked_,
     callback_
@@ -77,6 +79,10 @@ GameWrapper.prototype.gameMove = function (socket, data) {
   if (beforeNum != this.missionNum) {
     this.callback('updateCurrentGamesList');
   }
+};
+
+GameWrapper.prototype.canRoomChat = function (usernameLower) {
+  return Game.prototype.canRoomChat.call(this, usernameLower);
 };
 
 // No need to track phase, a call to finishGame always causes the phase of the game to change to finished.

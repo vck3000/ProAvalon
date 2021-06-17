@@ -11,3 +11,7 @@ const modsArray = [
 ];
 
 export default modsArray;
+
+export function isMod(username: string): boolean {
+  return modsArray.includes(username.toLowerCase());
+}

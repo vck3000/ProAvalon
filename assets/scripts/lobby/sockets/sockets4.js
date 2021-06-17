@@ -698,6 +698,13 @@ $('.rankedSelect').on('change', (e) => {
     socket.emit('update-room-ranked', e.target.value);
 });
 
+$('.muteSpectators').on('change', (e) => {
+    $('.muteSpectators')[0].checked = e.target.checked;
+    $('.muteSpectators')[1].checked = e.target.checked;
+
+    socket.emit('update-room-muteSpectators', e.target.checked);
+});
+
 // Update the new room menu with the gameModes available.
 socket.on('leave-room-requested', () => {
     leaveRoom();

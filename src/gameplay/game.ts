@@ -1,3 +1,4 @@
+// // @ts-nocheck
 // Load the full build.
 import _ from 'lodash';
 
@@ -7,11 +8,12 @@ import usernamesIndexes from '../myFunctions/usernamesIndexes';
 import User from '../models/user';
 import GameRecord from '../models/gameRecord';
 import commonPhasesIndex from './indexCommonPhases';
+import { isMod } from '../modsadmins/mods';
 
 // Get all the gamemodes and their roles/cards/phases.
 const gameModeNames = ['avalon', 'avalonBot'];
 
-const gameModeObj = {};
+const gameModeObj: any = {};
 for (let i = 0; i < gameModeNames.length; i++) {
   gameModeObj[gameModeNames[i]] = {};
 
@@ -39,6 +41,7 @@ function Game(
   maxNumPlayers_,
   newRoomPassword_,
   gameMode_,
+  muteSpectators_,
   ranked_,
   callback_
 ) {
@@ -169,6 +172,8 @@ function Game(
 
   // Room misc variables
   this.chatHistory = []; // Here because chatHistory records after game starts
+
+  this.muteSpectators = muteSpectators_;
 }
 
 // Game object inherits all the functions and stuff from Room
@@ -177,7 +182,6 @@ Object.assign(Game.prototype, PlayersReadyNotReady.prototype);
 
 // RECOVER GAME!
 Game.prototype.recoverGame = function (storedData) {
-  console.log(storedData);
   // Set a few variables back to new state
   this.allSockets = [];
   this.socketsOfPlayers = [];
@@ -1837,6 +1841,31 @@ Game.prototype.togglePause = function (modUsername) {
     this.phase = 'paused';
     this.distributeGameData();
   }
+};
+
+Game.prototype.canRoomChat = function (usernameLower: string) {
+  if (this.gameStarted === false) {
+    return true;
+  }
+
+  if (this.muteSpectators) {
+    const playerUsernamesLower: string[] = this.playersInGame.map(
+      (player: any) => player.username.toLowerCase()
+    );
+
+    return playerUsernamesLower.includes(usernameLower) || isMod(usernameLower);
+  }
+  return true;
+};
+
+Game.prototype.updateMuteSpectators = function (muteSpectators: boolean) {
+  this.muteSpectators = muteSpectators;
+
+  this.sendText(
+    this.allSockets,
+    `Mute spectators: ${muteSpectators}`,
+    'server-text'
+  );
 };
 
 /*
