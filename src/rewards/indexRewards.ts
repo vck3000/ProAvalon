@@ -8,17 +8,6 @@ import TIER2_BADGE from './allRewards/TIER2_BADGE';
 import TIER3_BADGE from './allRewards/TIER3_BADGE';
 import TIER4_BADGE from './allRewards/TIER4_BADGE';
 
-// export class Rewards {
-//   ADMIN_BADGE = ADMIN_BADGE;
-//   CAN_ADD_FORUM = CAN_ADD_FORUM;
-//   CAN_ALL_CHAT = CAN_ALL_CHAT;
-//   MOD_BADGE = MOD_BADGE;
-//   TIER1_BADGE = TIER1_BADGE;
-//   TIER2_BADGE = TIER2_BADGE;
-//   TIER3_BADGE = TIER3_BADGE;
-//   TIER4_BADGE = TIER4_BADGE;
-// }
-
 export const Rewards = {
   ADMIN_BADGE: ADMIN_BADGE,
   CAN_ADD_FORUM: CAN_ADD_FORUM,

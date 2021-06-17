@@ -1,11 +1,11 @@
-import { actionsObj } from './sockets';
-import IPLinkedAccounts from '../myFunctions/IPLinkedAccounts';
+import { actionsObj } from '../sockets';
+import IPLinkedAccounts from '../../myFunctions/IPLinkedAccounts';
 // import ModLog from '../models/modLog';
 // import User from '../models/user';
 
-jest.mock('../myFunctions/IPLinkedAccounts');
-jest.mock('../models/modLog');
-jest.mock('../models/user');
+jest.mock('../../myFunctions/IPLinkedAccounts');
+jest.mock('../../models/modLog');
+jest.mock('../../models/user');
 
 const modCommands = actionsObj.modCommands;
 
