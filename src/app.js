@@ -16,6 +16,7 @@ import { server as socketServer } from './sockets/sockets';
 import User from './models/user';
 import { isLoggedIn, emailVerified } from './routes/middleware';
 import indexRoutes from './routes/index';
+import communityRoutes from './routes/community';
 import { emailVerificationRoutes } from './routes/emailVerification';
 import lobbyRoutes from './routes/lobby';
 import forumRoutes from './routes/forum';
@@ -112,6 +113,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 
 app.use(indexRoutes);
+app.use(communityRoutes);
 
 // Lobby, forum, and profile routes require a logged in user
 app.use(isLoggedIn);

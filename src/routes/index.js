@@ -11,67 +11,8 @@ import gameRecord from '../models/gameRecord';
 import statsCumulative from '../models/statsCumulative';
 import { validEmail, emailExists } from '../routes/emailVerification';
 import { sendEmailVerification } from '../myFunctions/sendEmailVerification';
-import { modsArray } from '../modsadmins/mods';
 
 const router = new Router();
-
-const filteredModsArray = modsArray.filter((mod) => mod != 'pronub');
-
-// Community route
-router.get('/community', (req, res) => {
-  // Get all players with more than 50 games excluding mods
-  User.find(
-    {
-      totalGamesPlayed: { $gt: 99 },
-      usernameLower: { $nin: filteredModsArray },
-      hideStats: null,
-    },
-    (err, allUsers) => {
-      if (err) {
-        console.log(err);
-      } else {
-        // Get mods excluding pronub
-        User.find(
-          {
-            usernameLower: { $in: filteredModsArray },
-          },
-          (err, allMods) => {
-            if (err) {
-              console.log(err);
-            } else {
-              // Sort allMods backwards
-              let sortOrder = ['pam', 'citc', 'tyrrox', 'morningcatt'];
-              for (const username of sortOrder) {
-                // Grab the mod data:
-                let modData = undefined;
-                for (const user of allMods) {
-                  if (user.usernameLower === username) {
-                    modData = user;
-                    break;
-                  }
-                }
-                if (modData !== undefined) {
-                  allMods = [
-                    modData,
-                    ...allMods.filter((user) => user !== modData),
-                  ];
-                }
-              }
-
-              res.render('community', {
-                users: allUsers,
-                mods: allMods,
-                currentUser: req.user,
-                headerActive: 'community',
-              });
-            }
-          }
-        );
-      }
-      // sort by games played
-    }
-  ).sort({ totalGamesPlayed: -1 });
-});
 
 // Index route
 router.get('/', (req, res) => {
