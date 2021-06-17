@@ -1,38 +1,11 @@
-jest.mock('../myFunctions/IPLinkedAccounts', () => {
-  return jest.fn(async () => {
-    return {
-      linkedUsernamesWithLevel: ['pronub', 'asdf'],
-      usernamesTree: 'pronub\nasdf',
-
-      linkedUsernames: ['pronub', 'asdf'],
-      linkedIPs: ['127.0.0.1'],
-      target: 'pronub',
-    };
-  });
-});
-
-jest.mock('../models/modLog', () => {
-  return {
-    create: jest.fn(),
-  };
-});
-
-jest.mock('../models/user', () => {
-  return {
-    findOne: jest.fn(async () => {
-      return {
-        id: '123',
-        username: 'Qwer',
-        usernameLower: 'qwer',
-      };
-    }),
-  };
-});
-
 import { actionsObj } from './sockets';
 import IPLinkedAccounts from '../myFunctions/IPLinkedAccounts';
-import ModLog from '../models/modLog';
-import User from '../models/user';
+// import ModLog from '../models/modLog';
+// import User from '../models/user';
+
+jest.mock('../myFunctions/IPLinkedAccounts');
+jest.mock('../models/modLog');
+jest.mock('../models/user');
 
 const modCommands = actionsObj.modCommands;
 
