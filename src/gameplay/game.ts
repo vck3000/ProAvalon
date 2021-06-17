@@ -1,4 +1,4 @@
-// // @ts-nocheck
+// @ts-nocheck
 // Load the full build.
 import _ from 'lodash';
 
