@@ -24,7 +24,7 @@ setInterval(() => {
     // Extend the div1resize box to be full width
     // if the difference between the widths is close enough to 0, then change width
     if (Math.abs($('#div1Resize').width() - $('#div1Resize').parent().width() * 0.95) > 1) {
-        console.log('Changed width:');
+        // console.log('Changed width:');
         $('#div1Resize').width($('#div1Resize').parent().width());
         draw();
         draw();

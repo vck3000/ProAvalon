@@ -162,8 +162,6 @@ $('#createNewRoomButton').on('click', (data) => {
         ranked: $($('.rankedSelect')[1]).val(),
     };
 
-    console.log(sendObj);
-
     // Update the settings in the in room settings menu.
     $($('.maxNumPlayers')[0]).val(sendObj.maxNumPlayers);
     $($('.gameModeSelect')[0]).val(sendObj.gameMode);
