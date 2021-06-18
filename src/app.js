@@ -1,5 +1,5 @@
 import './env.js';
-import { sendToDiscordAdmins } from './discord/index.ts';
+import { sendToDiscordAdmins } from './discord';
 import assert from 'assert';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
