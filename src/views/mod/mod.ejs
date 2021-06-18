@@ -1,19 +1,5 @@
 <% include ../partials/header %>
 
-<!-- <script type="text/javascript" src="<%-getVersionedPath('/libraries/babel.min.js')%>"></script> -->
-<!-- <script type="text/javascript" src="<%-getVersionedPath('/libraries/react.production.min.js')%>"></script> -->
-<!-- <script type="text/javascript" src="<%-getVersionedPath('/libraries/react-dom.production.min.js')%>"></script> -->
-<!-- <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script> -->
-<!-- <script src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script> -->
-<!-- <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script> -->
-
-<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-<script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
-
-<script type="text/javascript" src="<%-getVersionedPath('/libraries/moment.js')%>"></script>
-<!-- <script type="text/babel" src="<%-getVersionedPath('/components/mod/mod_log/index.tsx')%>"></script> -->
-
 <style>
     .myContainer {
         border-radius: 50px;
@@ -24,7 +10,7 @@
         color: inherit;
         background-color: #eee;
         
-        width:95%;
+        width: 95%;
     }
 
     .alignCenterHoriz{
@@ -88,7 +74,8 @@
             <%- logsReact %>
         </div>
     </div>
-
 </div>
+
+<script type="text/javascript" src="<%-getVersionedPath('/dist_webpack/modLog.bundle.js')%>"></script>
 
 <% include ../partials/footer %>

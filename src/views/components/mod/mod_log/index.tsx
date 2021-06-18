@@ -1,8 +1,8 @@
+// @ts-nocheck
 import React from 'react';
+import moment from 'moment';
 
-declare var moment: any;
-
-function banText(props: any) {
+function banText(props) {
   let data = props.data;
 
   return {
@@ -270,7 +270,7 @@ class ExpandableComponent extends React.Component {
   }
 }
 
-export default class ModLogTable extends React.Component {
+export default class ModLog extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -346,6 +346,3 @@ export default class ModLogTable extends React.Component {
     }
   }
 }
-
-// const domContainer = document.querySelector('#logsDiv');
-// ReactDOM.render(<LogTable />, domContainer);

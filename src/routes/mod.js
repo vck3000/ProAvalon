@@ -8,12 +8,12 @@ import ModLog from '../models/modLog';
 import multer from 'multer';
 const upload = multer();
 
-import ModLogTable from '../views/components/mod/mod_log';
+import ModLogComponent from '../views/components/mod/mod_log';
 
 const router = new Router();
 
 router.get('/', isModMiddleware, (req, res) => {
-  const logsReact = renderToString(<ModLogTable />);
+  const logsReact = renderToString(<ModLogComponent />);
 
   res.render('mod/mod', {
     currentUser: req.user,

@@ -7,7 +7,7 @@
     "jsx": "react",
     "noImplicitAny": true,
     "moduleResolution": "node",
-    "lib": ["es2018"],
+    "lib": ["es2018", "dom"],
     "module": "commonjs",
     "target": "es2018",
     "baseUrl": ".",
