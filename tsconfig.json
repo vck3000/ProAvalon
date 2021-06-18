@@ -4,6 +4,7 @@
     "sourceMap": true,
     "esModuleInterop": true,
     "allowJs": true,
+    "jsx": "react",
     "noImplicitAny": true,
     "moduleResolution": "node",
     "lib": ["es2018"],

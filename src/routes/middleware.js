@@ -197,7 +197,6 @@ export const checkForumThreadCommentReplyOwnership = checkOwnership(
 );
 
 export const isModMiddleware = (req, res, next) => {
-  console.log('check');
   if (isMod(req.user.username)) {
     next();
   } else {
@@ -207,7 +206,7 @@ export const isModMiddleware = (req, res, next) => {
 };
 
 export const isAdmin = (req, res, next) => {
-  if (admins.includes(req.user.username.toLowerCase())) {
+  if (admins.includes(req.user.username)) {
     next();
   } else {
     req.flash('error', 'You are not an admin.');
