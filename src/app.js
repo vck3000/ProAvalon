@@ -1,4 +1,5 @@
 import './env.js';
+import { sendToDiscordAdmins } from './discord/index.ts';
 import assert from 'assert';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
@@ -65,17 +66,23 @@ store.on('error', (err) => {
   assert.ok(false);
 });
 
-process.on('unhandledRejection', (reason, p) => {
-  console.log(
-    'Unhandled Rejection at: Promise',
-    p,
-    'reason:',
-    reason,
-    'reason.stack:',
-    reason.stack
-  );
-  // application specific logging, throwing an error, or other logic here
-});
+process
+  .on('unhandledRejection', (reason, p) => {
+    const msg = `Unhandled Rejection at: Promise ${p}
+      'reason:'
+      ${reason}
+
+      'reason.stack:'
+      ${reason.stack}`;
+
+    console.error(msg);
+    sendToDiscordAdmins(msg);
+  })
+  .on('uncaughtException', (err) => {
+    const msg = `Uncaught exception: ${err.stack}`;
+    console.error(msg);
+    sendToDiscordAdmins(msg);
+  });
 
 // authentication
 const secretKey = process.env.MY_SECRET_KEY || 'MySecretKey';
