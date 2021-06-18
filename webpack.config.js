@@ -7,6 +7,12 @@ module.exports = (env) => {
       modLog: './src/views/components/mod/mod_log/hydrate.tsx',
     },
     devtool: 'inline-source-map',
+    devServer: {
+      contentBase: './assets/dist_webpack',
+      compress: true,
+      publicPath: '/dist_webpack/',
+      port: 3010,
+    },
     module: {
       rules: [
         {

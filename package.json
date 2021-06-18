@@ -6,8 +6,8 @@
   "scripts": {
     "build": "tsc && cp -R ./src/views ./out",
     "dev": "concurrently -k \"npm:dev:tsnd\" \"npm:dev:webpack\"",
-    "dev:tsnd": "ts-node-dev --respawn --transpile-only ./src/app.js",
-    "dev:webpack": "webpack --watch",
+    "dev:tsnd": "ts-node-dev --respawn --ignore-watch \".tsx$\" ./src/app.js",
+    "dev:webpack": "webpack serve",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --fix",
     "start": "node ./out/app.js",
@@ -75,6 +75,7 @@
     "concurrently": "^6.2.0",
     "eslint": "^7.28.0",
     "eslint-config-prettier": "^8.3.0",
+    "http-proxy-middleware": "^0.19.1",
     "jest": "^27.0.3",
     "prettier": "2.3.1",
     "ts-jest": "^27.0.2",
@@ -82,6 +83,7 @@
     "ts-node": "^9.1.1",
     "ts-node-dev": "^1.1.1",
     "webpack": "^5.39.1",
-    "webpack-cli": "^4.7.2"
+    "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^3.11.2"
   }
 }

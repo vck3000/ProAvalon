@@ -339,10 +339,16 @@ export default class ModLog extends React.Component {
               Next page
             </button>
           </span>
-
           {allLogs}
         </span>
       );
     }
   }
 }
+
+if (module.hot) module.hot.accept();
+// if (module.hot) {
+// module.hot.accept('./index.tsx', function () {
+//   console.log('Accepting the updated printMe module!');
+// });
+// }
