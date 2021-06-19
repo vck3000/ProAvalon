@@ -4,10 +4,10 @@
   "description": "ProAvalon",
   "main": "app.js",
   "scripts": {
-    "build": "tsc && cp -R ./src/views ./out",
+    "build": "tsc && webpack --config webpack.prod.js && cp -R ./src/views ./out",
     "dev": "concurrently -k \"npm:dev:tsnd\" \"npm:dev:webpack\"",
     "dev:tsnd": "ts-node-dev --respawn --ignore-watch \".tsx$\" ./src/app.js",
-    "dev:webpack": "webpack serve",
+    "dev:webpack": "rm ./assets/dist_webpack/* && webpack serve --config webpack.dev.js",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --fix",
     "start": "node ./out/app.js",
@@ -86,6 +86,7 @@
     "ts-node-dev": "^1.1.1",
     "webpack": "^5.39.1",
     "webpack-cli": "^4.7.2",
-    "webpack-dev-server": "^3.11.2"
+    "webpack-dev-server": "^3.11.2",
+    "webpack-merge": "^5.8.0"
   }
 }
