@@ -1,11 +1,27 @@
+import React from 'react';
 import { Router } from 'express';
-const router = new Router();
+import { renderToString } from 'react-dom/server';
 import { isModMiddleware } from './middleware';
 import User from '../models/user';
 import Ban from '../models/ban';
 import ModLog from '../models/modLog';
 import multer from 'multer';
 const upload = multer();
+
+import ModLogComponent from '../views/components/mod/mod_log';
+
+const router = new Router();
+
+router.get('/', isModMiddleware, (req, res) => {
+  const logsReact = renderToString(<ModLogComponent />);
+
+  res.render('mod/mod', {
+    currentUser: req.user,
+    isMod: true,
+    headerActive: 'mod',
+    logsReact,
+  });
+});
 
 const requiredFields = [
   'banPlayerUsername',
@@ -173,14 +189,6 @@ router.post('/ban', isModMiddleware, upload.none(), async (req, res) => {
   }
 });
 
-router.get('/', isModMiddleware, (req, res) => {
-  res.render('mod/mod', {
-    currentUser: req.user,
-    isMod: true,
-    headerActive: 'mod',
-  });
-});
-
 // Get the moderation logs to show
 
 // 1) Bans
@@ -197,8 +205,6 @@ router.get('/ajax/logData/:pageIndex', isModMiddleware, (req, res) => {
     if (pageIndex < 0) {
       pageIndex = 0;
     }
-
-    const logs = [];
 
     const NUM_OF_RESULTS_PER_PAGE = 10;
     // Page 0 is the first page.

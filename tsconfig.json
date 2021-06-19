@@ -4,9 +4,10 @@
     "sourceMap": true,
     "esModuleInterop": true,
     "allowJs": true,
+    "jsx": "react",
     "noImplicitAny": true,
     "moduleResolution": "node",
-    "lib": ["es2018"],
+    "lib": ["es2018", "dom"],
     "module": "commonjs",
     "target": "es2018",
     "baseUrl": ".",
@@ -18,5 +19,5 @@
   },
   "assets": ["**/src/views"],
   "include": ["./src/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "assets"]
 }
