@@ -12,6 +12,7 @@ module.exports = (env) => {
       compress: true,
       publicPath: '/dist_webpack/',
       port: 3010,
+      hot: true,
     },
     module: {
       rules: [
