@@ -197,7 +197,6 @@ export const checkForumThreadCommentReplyOwnership = checkOwnership(
 );
 
 export const isModMiddleware = (req, res, next) => {
-  console.log('check');
   if (isMod(req.user.username)) {
     next();
   } else {
