@@ -9,6 +9,7 @@ import User from '../models/user';
 import GameRecord from '../models/gameRecord';
 import commonPhasesIndex from './indexCommonPhases';
 import { isMod } from '../modsadmins/mods';
+import { isTO } from '../modsadmins/tournamentOrganizers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 
 // Get all the gamemodes and their roles/cards/phases.
@@ -517,6 +518,14 @@ Game.prototype.startGame = function (options) {
   str = str.slice(0, str.length - 2);
   str += '.';
   this.sendText(this.allSockets, str, 'gameplay-text');
+
+  if (this.muteSpectators) {
+    this.sendText(
+      this.allSockets,
+      'The game is muted to spectators.',
+      'gameplay-text'
+    );
+  }
 
   // seed the starting data into the VH
   for (let i = 0; i < this.playersInGame.length; i++) {
@@ -1856,7 +1865,11 @@ Game.prototype.canRoomChat = function (usernameLower: string) {
       (player: any) => player.username.toLowerCase()
     );
 
-    return playerUsernamesLower.includes(usernameLower) || isMod(usernameLower);
+    return (
+      playerUsernamesLower.includes(usernameLower) ||
+      isMod(usernameLower) ||
+      isTO(usernameLower)
+    );
   }
   return true;
 };
