@@ -20,6 +20,7 @@
     "axios": "^0.19.0",
     "body-parser": "^1.18.2",
     "circular-json": "^0.5.5",
+    "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
     "connect-mongodb-session": "^2.2.0",
     "cookie-parser": "^1.4.3",

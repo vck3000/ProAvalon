@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import flash from 'connect-flash';
+import compression from 'compression';
 import methodOverride from 'method-override';
 import LocalStrategy from 'passport-local';
 import mongoose from 'mongoose';
@@ -28,6 +29,8 @@ import modRoutes from './routes/mod';
 const assetsPath = path.join(__dirname, '../assets');
 
 const app = express();
+
+app.use(compression());
 app.use(express.static(assetsPath, { maxAge: 518400000 })); // expires in 7 days.
 
 import staticifyFactory from 'staticify';
