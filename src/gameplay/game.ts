@@ -233,7 +233,10 @@ Game.prototype.playerJoinRoom = function (socket, inputPassword) {
   if (this.gameStarted === true) {
     // if the new socket is a player, add them to the sockets of players
     for (let i = 0; i < this.playersInGame.length; i++) {
-      if (this.playersInGame[i].username === socket.request.user.username) {
+      if (
+        this.playersInGame[i].username.toLowerCase() ===
+        socket.request.user.username.toLowerCase()
+      ) {
         this.socketsOfPlayers.splice(i, 0, socket);
         this.playersInGame[i].request = socket.request;
 
