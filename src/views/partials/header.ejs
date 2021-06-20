@@ -124,8 +124,14 @@
 							<li><a href="https://github.com/vck3000/ProAvalon">Github</a></li>
 						</ul>
 					</li>
+
 					<% if(locals.isMod && isMod === true){ %>
-					<li><a href="/mod">Moderation</a></li>
+							<% if(headerActive === "mod"){ %>
+              <li class="active"><a href="/mod">Moderation</a></li>
+							<%} %>
+							<% if(headerActive !== "mod"){ %>
+              <li><a href="/mod">Moderation</a></li>
+							<% } %>
 					<% } %>
 
 
