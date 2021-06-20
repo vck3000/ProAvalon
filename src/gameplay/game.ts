@@ -9,6 +9,7 @@ import User from '../models/user';
 import GameRecord from '../models/gameRecord';
 import commonPhasesIndex from './indexCommonPhases';
 import { isMod } from '../modsadmins/mods';
+import { modOrTOString } from '../modsadmins/modOrTO';
 
 // Get all the gamemodes and their roles/cards/phases.
 const gameModeNames = ['avalon', 'avalonBot'];
@@ -1819,11 +1820,13 @@ Game.prototype.submitMerlinGuess = function (guesserUsername, targetUsername) {
 };
 
 Game.prototype.togglePause = function (modUsername) {
+  const rolePrefix = modOrTOString(modUsername);
+
   // if paused, we unpause
   if (this.phase === 'paused') {
     this.sendText(
       this.allSockets,
-      `Moderator ${modUsername} has unpaused the game.`,
+      `${rolePrefix} ${modUsername} has unpaused the game.`,
       'server-text'
     );
     this.phase = this.phaseBeforePause;
@@ -1833,7 +1836,7 @@ Game.prototype.togglePause = function (modUsername) {
   else {
     this.sendText(
       this.allSockets,
-      `Moderator ${modUsername} has paused the game.`,
+      `${rolePrefix} ${modUsername} has paused the game.`,
       'server-text'
     );
     // store the current phase, change to paused and update.

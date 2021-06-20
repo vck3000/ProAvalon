@@ -1423,11 +1423,6 @@ function extendTabContentToBottomInRoom() {
 }
 
 
-let commands;
-function assignCommands(serverCommands) {
-    commands = serverCommands;
-}
-
 let lastChatBoxCommand = '';
 function checkMessageForCommands(message, chatBox) {
     arrayMessage = message.split(' ');
@@ -1455,6 +1450,22 @@ function checkMessageForCommands(message, chatBox) {
             }
         }
 
+        if (adminCommands) {
+            for (var key in adminCommands) {
+                if (adminCommands.hasOwnProperty(key)) {
+                    // console.log(key + " -> " + commands[key]);
+                    if (messageCommand === adminCommands[key].command) {
+                        // console.log("admin");
+                        // console.log("Command: " + commands[key].command + " called.");
+                        commandCalled = adminCommands[key].command;
+                        validCommandFound = true;
+
+                        break;
+                    }
+                }
+            }
+        }
+
         if (modCommands) {
             for (var key in modCommands) {
                 if (modCommands.hasOwnProperty(key)) {
@@ -1471,16 +1482,13 @@ function checkMessageForCommands(message, chatBox) {
             }
         }
 
-        if (adminCommands) {
-            for (var key in adminCommands) {
-                if (adminCommands.hasOwnProperty(key)) {
+        if (TOCommands) {
+            for (var key in TOCommands) {
+                if (TOCommands.hasOwnProperty(key)) {
                     // console.log(key + " -> " + commands[key]);
-                    if (messageCommand === adminCommands[key].command) {
-                        // console.log("admin");
-                        // console.log("Command: " + commands[key].command + " called.");
-                        commandCalled = adminCommands[key].command;
+                    if (messageCommand === TOCommands[key].command) {
+                        commandCalled = TOCommands[key].command;
                         validCommandFound = true;
-
                         break;
                     }
                 }
