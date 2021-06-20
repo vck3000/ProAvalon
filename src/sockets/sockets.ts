@@ -268,6 +268,46 @@ export const adminCommands = {
     },
   },
 
+  aresetpassword: {
+    command: 'aresetpassword',
+    help: "/aresetpassword <username> <new_password>: set a user's password",
+    async run(data, senderSocket) {
+      const { args } = data;
+
+      if (args.length !== 3) {
+        senderSocket.emit('messageCommandReturnStr', {
+          message: 'Wrong number of inputs.',
+          classStr: 'server-text',
+        });
+
+        return;
+      }
+
+      const username = args[1];
+      const new_password = args[2];
+
+      const user = await User.findOne({
+        usernameLower: username.toLowerCase(),
+      });
+
+      await new Promise((res, rej) => {
+        user.setPassword(new_password, (err) => {
+          if (err) {
+            rej(err);
+          }
+          res();
+        });
+      });
+
+      await user.save();
+
+      senderSocket.emit('messageCommandReturnStr', {
+        message: 'Successfully set the new password.',
+        classStr: 'server-text',
+      });
+    },
+  },
+
   mremovefrozen: {
     command: 'mremovefrozen',
     help: '/mremovefrozen: Remove all frozen rooms and the corresponding save files in the database.',
