@@ -2439,12 +2439,9 @@ export const server = function (io: any): void {
   // SOCKETS for each connection
   ioGlobal = io;
   io.sockets.on('connection', async (socket) => {
-    console.log('Connection requested.');
-    if (socket.request.isAuthenticated()) {
-      // console.log("User is authenticated");
-    } else {
-      // console.log("User is not authenticated");
+    if (!socket.request.isAuthenticated()) {
       socket.emit('alert', 'You are not authenticated.');
+      socket.disconnect(true);
       return;
     }
 
@@ -2459,10 +2456,7 @@ export const server = function (io: any): void {
     socket = assignRatingBracket(socket);
 
     socket.request.displayUsername = socket.request.user.username;
-    // Grab their rewards
     socket.rewards = await getAllRewardsForUser(socket.request.user);
-    console.log('Socket rewards: ');
-    console.log(socket.rewards);
 
     socket = applyApplicableRewards(socket);
 
@@ -2609,6 +2603,19 @@ export const server = function (io: any): void {
       };
 
       socket.emit('allChatToClient', msg3);
+
+      if (socket.request.user.lastLoggedIn.length > 0) {
+        const msg4 = {
+          message: '',
+          classStr: 'server-text',
+          dateCreated: new Date(),
+
+          type: 'lastLoggedIn', // special type to render client side local time
+          lastLoggedInDate: socket.request.user.lastLoggedIn[0],
+        };
+
+        socket.emit('allChatToClient', msg4);
+      }
 
       updateCurrentPlayersList(io);
       // console.log("update current players list");

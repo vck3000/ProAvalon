@@ -6,13 +6,15 @@ socket.on('username', (username) => {
 });
 
 socket.on('allChatToClient', (data) => {
+  if (data.type === 'lastLoggedIn') {
+    const date = new Date(data.lastLoggedInDate);
+    data.message = `You last logged in on ${date.toDateString()} at ${date.toLocaleTimeString()}.`
+  }
   addToAllChat(data);
 });
 
 socket.on('roomChatToClient', (data) => {
   addToRoomChat(data);
-  // console.log("Add to room chat");
-  // console.log(data);
 });
 
 socket.on('joinedGameSuccess', (data) => {
