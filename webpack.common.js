@@ -5,15 +5,7 @@ module.exports = {
   entry: {
     modLog: './src/views/components/mod/mod_log/hydrate.tsx',
   },
-  module: {
-    rules: [
-      {
-        test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: [/node_modules/, /assets/],
-      },
-    ],
-  },
+  module: {},
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
   },
