@@ -3,8 +3,8 @@ import { RewardData } from '../types';
 const obj: RewardData = {
   adminReq: false,
   modReq: false,
-  TOReq: false,
-  gamesPlayedReq: 10,
+  TOReq: true,
+  gamesPlayedReq: 0,
   donationReq: 0,
 };
 

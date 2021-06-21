@@ -27,9 +27,9 @@ describe('getAllRewardsForUser()', () => {
         adminUser,
         [
           constants.ADMIN_BADGE,
+          constants.MOD_BADGE,
           constants.CAN_ADD_FORUM,
           constants.CAN_ALL_CHAT,
-          constants.MOD_BADGE,
         ],
       ],
       [newUser, []],

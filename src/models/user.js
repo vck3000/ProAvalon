@@ -36,6 +36,9 @@ const UserSchema = new mongoose.Schema({
 
   dateJoined: Date,
 
+  // Oldest entries at the front. Latest at the end.
+  lastLoggedIn: [Date],
+
   totalTimePlayed: {
     type: Date,
     default: 0,

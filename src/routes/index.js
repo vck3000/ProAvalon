@@ -161,10 +161,27 @@ router.post(
   loginLimiter,
   sanitiseUsername,
   passport.authenticate('local', {
-    successRedirect: '/lobby',
+    successRedirect: '/loginSuccess',
     failureRedirect: '/loginFail',
   })
 );
+
+router.get('/loginSuccess', async (req, res) => {
+  if (req.user.lastLoggedIn === undefined) {
+    req.user.lastLoggedIn = [new Date()];
+  }
+  req.user.lastLoggedIn.push(new Date());
+
+  // Only keep track of the last logged in and the current login time.
+  while (req.user.lastLoggedIn.length > 2) {
+    req.user.lastLoggedIn.shift();
+  }
+
+  req.user.markModified('lastLoggedIn');
+  await req.user.save();
+
+  res.redirect('/lobby');
+});
 
 router.get('/loginFail', (req, res) => {
   req.flash('error', 'Log in failed! Please try again.');

@@ -9,6 +9,8 @@ import User from '../models/user';
 import GameRecord from '../models/gameRecord';
 import commonPhasesIndex from './indexCommonPhases';
 import { isMod } from '../modsadmins/mods';
+import { isTO } from '../modsadmins/tournamentOrganizers';
+import { modOrTOString } from '../modsadmins/modOrTO';
 
 // Get all the gamemodes and their roles/cards/phases.
 const gameModeNames = ['avalon', 'avalonBot'];
@@ -231,7 +233,10 @@ Game.prototype.playerJoinRoom = function (socket, inputPassword) {
   if (this.gameStarted === true) {
     // if the new socket is a player, add them to the sockets of players
     for (let i = 0; i < this.playersInGame.length; i++) {
-      if (this.playersInGame[i].username === socket.request.user.username) {
+      if (
+        this.playersInGame[i].username.toLowerCase() ===
+        socket.request.user.username.toLowerCase()
+      ) {
         this.socketsOfPlayers.splice(i, 0, socket);
         this.playersInGame[i].request = socket.request;
 
@@ -516,6 +521,14 @@ Game.prototype.startGame = function (options) {
   str = str.slice(0, str.length - 2);
   str += '.';
   this.sendText(this.allSockets, str, 'gameplay-text');
+
+  if (this.muteSpectators) {
+    this.sendText(
+      this.allSockets,
+      'The game is muted to spectators.',
+      'gameplay-text'
+    );
+  }
 
   // seed the starting data into the VH
   for (let i = 0; i < this.playersInGame.length; i++) {
@@ -1819,11 +1832,13 @@ Game.prototype.submitMerlinGuess = function (guesserUsername, targetUsername) {
 };
 
 Game.prototype.togglePause = function (modUsername) {
+  const rolePrefix = modOrTOString(modUsername);
+
   // if paused, we unpause
   if (this.phase === 'paused') {
     this.sendText(
       this.allSockets,
-      `Moderator ${modUsername} has unpaused the game.`,
+      `${rolePrefix} ${modUsername} has unpaused the game.`,
       'server-text'
     );
     this.phase = this.phaseBeforePause;
@@ -1833,7 +1848,7 @@ Game.prototype.togglePause = function (modUsername) {
   else {
     this.sendText(
       this.allSockets,
-      `Moderator ${modUsername} has paused the game.`,
+      `${rolePrefix} ${modUsername} has paused the game.`,
       'server-text'
     );
     // store the current phase, change to paused and update.
@@ -1853,7 +1868,11 @@ Game.prototype.canRoomChat = function (usernameLower: string) {
       (player: any) => player.username.toLowerCase()
     );
 
-    return playerUsernamesLower.includes(usernameLower) || isMod(usernameLower);
+    return (
+      playerUsernamesLower.includes(usernameLower) ||
+      isMod(usernameLower) ||
+      isTO(usernameLower)
+    );
   }
   return true;
 };

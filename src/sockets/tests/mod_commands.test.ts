@@ -1,4 +1,4 @@
-import { actionsObj } from '../sockets';
+import { modCommands } from '../sockets';
 import IPLinkedAccounts from '../../myFunctions/IPLinkedAccounts';
 // import ModLog from '../models/modLog';
 // import User from '../models/user';
@@ -6,8 +6,6 @@ import IPLinkedAccounts from '../../myFunctions/IPLinkedAccounts';
 jest.mock('../../myFunctions/IPLinkedAccounts');
 jest.mock('../../models/modLog');
 jest.mock('../../models/user');
-
-const modCommands = actionsObj.modCommands;
 
 describe('ModCommands', () => {
   const mockSocket = {
