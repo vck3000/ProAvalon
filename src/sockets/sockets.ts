@@ -892,6 +892,7 @@ export const modCommands = {
         dataObj.maxNumPlayers,
         dataObj.newRoomPassword,
         dataObj.gameMode,
+        dataObj.muteSpectators,
         false,
         socketCallback
       );
