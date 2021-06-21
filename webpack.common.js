@@ -1,7 +1,6 @@
 const path = require('path');
 
 module.exports = {
-  mode: 'development',
   entry: {
     modLog: './src/views/components/mod/mod_log/hydrate.tsx',
   },
