@@ -8,12 +8,14 @@ const filteredModsArray = modsArray.filter((mod) => mod != 'pronub');
 
 // Community route
 router.get('/community', async (req, res) => {
+  const getall = req.query.getall !== undefined;
+
   const users = await User.find({
     totalGamesPlayed: { $gt: 99 },
     usernameLower: { $nin: filteredModsArray },
     hideStats: null,
   })
-    .limit(150)
+    .limit(getall ? 10000 : 150)
     .sort({ totalGamesPlayed: -1 });
 
   const mods = await User.find({ usernameLower: { $in: filteredModsArray } });
