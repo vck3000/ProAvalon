@@ -1,6 +1,8 @@
-assets/gameRecordsData/
+.env
+
 assets/dist_webpack/
 
+assets/gameRecordsData/
 !assets/gameRecordsData/gameRecordsDataAnon.json
 !assets/gameRecordsData/fix_json.py
 
@@ -8,9 +10,6 @@ coverage/
 
 docker-compose-data/
 
-.env
-
 node_modules/
-!node_modules/passport-local-mongoose/
 
 out/
