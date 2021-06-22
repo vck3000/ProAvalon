@@ -160,6 +160,7 @@ router.post(
   '/login',
   loginLimiter,
   sanitiseUsername,
+  setCookieDisplayUsername,
   passport.authenticate('local', {
     successRedirect: '/loginSuccess',
     failureRedirect: '/loginFail',
@@ -178,6 +179,12 @@ router.get('/loginSuccess', async (req, res) => {
   }
 
   req.user.markModified('lastLoggedIn');
+
+  if (req.user.username !== req.cookies['displayUsername']) {
+    req.user.username = req.cookies['displayUsername'];
+    req.user.markModified('username');
+  }
+
   await req.user.save();
 
   res.redirect('/lobby');
@@ -909,6 +916,11 @@ function sanitiseUsername(req, res, next) {
     allowedAttributes: [],
   });
 
+  next();
+}
+
+function setCookieDisplayUsername(req, res, next) {
+  res.cookie('displayUsername', req.body.username);
   next();
 }
 

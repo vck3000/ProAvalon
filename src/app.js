@@ -109,6 +109,7 @@ app.use(
 );
 
 app.use(flash());
+app.use(cookieParser());
 
 // res.locals variables
 app.use((req, res, next) => {

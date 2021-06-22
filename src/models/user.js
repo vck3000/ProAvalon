@@ -141,6 +141,8 @@ const UserSchema = new mongoose.Schema({
   lastIPAddress: String,
 });
 
-UserSchema.plugin(passportLocalMongoose);
+UserSchema.plugin(passportLocalMongoose, {
+  usernameCaseInsensitive: true,
+});
 
 export default mongoose.model('User', UserSchema);
