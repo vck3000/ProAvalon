@@ -7,38 +7,24 @@ const router = Router();
 const filteredModsArray = modsArray.filter((mod) => mod != 'pronub');
 
 // Community route
-router.get('/community', (req, res) => {
-  User.find(
-    {
-      totalGamesPlayed: { $gt: 99 },
-      usernameLower: { $nin: filteredModsArray },
-      hideStats: null,
-    },
-    (err, allUsers) => {
-      if (err) {
-        console.log(err);
-      } else {
-        User.find(
-          { usernameLower: { $in: filteredModsArray } },
-          (err, allMods) => {
-            if (err) {
-              console.log(err);
-            } else {
-              res.render('community', {
-                users: allUsers,
-                mods: allMods,
-                // @ts-ignore
-                currentUser: req.user,
-                headerActive: 'community',
-              });
-            }
-          }
-        );
-      }
-    }
-  )
+router.get('/community', async (req, res) => {
+  const users = await User.find({
+    totalGamesPlayed: { $gt: 99 },
+    usernameLower: { $nin: filteredModsArray },
+    hideStats: null,
+  })
     .limit(150)
     .sort({ totalGamesPlayed: -1 });
+
+  const mods = await User.find({ usernameLower: { $in: filteredModsArray } });
+
+  res.render('community', {
+    users,
+    mods,
+    // @ts-ignore
+    currentUser: req.user,
+    headerActive: 'community',
+  });
 });
 
 export default router;
