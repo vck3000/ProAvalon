@@ -9,6 +9,7 @@ These instructions will get you a copy of the project up and running on your loc
 ### Pre-requisites
 
 - [Node.js](https://nodejs.org/en/) v12.0.0+
+- [yarn](https://classic.yarnpkg.com/en/)
 - [MongoDB](https://www.mongodb.com/)
 - [Git](https://git-scm.com/)
 
@@ -51,14 +52,14 @@ Refer to `.env.example` for guidance.
 3. Install Node modules
 
 ```
-> npm install
+> yarn 
 ```
 
 ### Running
-- For local development run `npm run dev`.
-- For local tests run `npm run test`.
-- For local tests in watch mode run `npm run test:watch`.
-- For local tests with coverage report run `npm run test:coverage`.
+- For local development run `yarn dev`.
+- For local tests run `yarn test`.
+- For local tests in watch mode run `yarn test:watch`.
+- For local tests with coverage report run `yarn test:coverage`.
 
 
 ## Optional: Create an admin account
