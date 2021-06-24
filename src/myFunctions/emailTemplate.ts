@@ -1,25 +1,5 @@
-const api_key = process.env.MAILGUN_API_KEY;
-const domain = process.env.PROAVALON_EMAIL_ADDRESS_DOMAIN;
-const server_domain = process.env.SERVER_DOMAIN;
-import mailgunFactory from 'mailgun-js';
-const mailgun = mailgunFactory({ apiKey: api_key, domain: domain });
-import uuidv4 from 'uuid/v4';
-
-export const sendEmailVerification = (user, email) => {
-  if (user.emailVerified === true) {
-    // Don't send an email if the user is already verified...
-    return;
-  }
-  if (email) {
-    email = email.toLowerCase();
-    user.emailAddress = email;
-    user.markModified('emailAddress');
-  }
-
-  const token = uuidv4();
-
-  const message = `
-    <!DOCTYPE html>
+export default `
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta name="viewport" content="width=device-width" />
@@ -444,59 +424,32 @@ export const sendEmailVerification = (user, email) => {
                 <td></td>
                 <td class="container">
                     <div class="content">
-<table class="main">
-  <tr>
-    <td class="wrapper">
-      <table>
-        <tr>
-          <td>
-            <p>Hey!</p></br>
-            <p>Great to see you here! Please confirm your email address by clicking on the link below.
-            Your email address will not be shared with anyone else.</p></br>
-            <p><a href="http://${server_domain}/emailVerification/verifyEmailRequest?token=${token}">http://${server_domain}/emailVerification/verifyEmailRequest?token=${token}</a></p>
-            <p>If you did not sign up for a ProAvalon account please disregard this email.</p>
-            <p>
-              Enjoy!
-              <br/>
-              ProAvalon
-            </p>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-</table>
+                      <table class="main">
+                        <tr>
+                          <td class="wrapper">
+                            <table>
+                              <tr>
+                                <td>
+                                  <p>Hey!</p></br>
+                                  <p>Great to see you here! Please confirm your email address by clicking on the link below.
+                                  Your email address will not be shared with anyone else.</p></br>
+                                  <p><a href="http://<%=server_domain%>/emailVerification/verifyEmailRequest?token=<%=token%>">http://<%=server_domain%>/emailVerification/verifyEmailRequest?token=<%=token%></a></p>
+                                  <p>If you did not sign up for a ProAvalon account please disregard this email.</p>
+                                  <p>
+                                    Enjoy!
+                                    <br/>
+                                    ProAvalon
+                                  </p>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
                     </div>
                 </td>
                 <td></td>
             </tr>
         </table>
     </body>
-</html>
-    `;
-
-  const data = {
-    from: 'ProAvalon <' + process.env.PROAVALON_EMAIL_ADDRESS + '>',
-    to: user.emailAddress,
-    subject: 'Welcome! Please verify your email address',
-    html: message,
-  };
-
-  user.emailToken = token;
-  user.markModified('emailToken');
-  user.save();
-
-  mailgun.messages().send(data, function (error, body) {
-    console.log(body);
-  });
-};
-
-import disposableEmails from '../util/disposableEmails.js';
-
-export const isThrowawayEmail = (email) => {
-  if (disposableEmails.indexOf(email.split('@')[1]) !== -1) {
-    return true;
-  } else {
-    return false;
-  }
-};
+</html>`;
