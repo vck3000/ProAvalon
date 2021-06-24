@@ -142,7 +142,8 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
     rolesInStr = rolesInStr.slice(0, rolesInStr.length - 2);
     rolesInStr += '.';
 
-    rolesInStr += ` muteSpectators: ${this.muteSpectators}.`;
+    rolesInStr += `<br>Ranked: ${this.ranked}`;
+    rolesInStr += `<br>Mute Spectators: ${this.muteSpectators}`;
 
     for (let i = 0; i < this.socketsOfPlayers.length; i++) {
       this.socketsOfPlayers[i].emit('game-starting', rolesInStr, gameMode);
