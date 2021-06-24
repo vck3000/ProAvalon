@@ -1,0 +1,4 @@
+coverage
+temporary
+node_modules
+docker-compose-data
