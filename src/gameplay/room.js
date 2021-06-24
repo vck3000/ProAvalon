@@ -1,28 +1,18 @@
 // room object
 
 // Get all the gamemodes and their roles/cards/phases.
-const gameModeNames = [];
-import fs from 'fs';
-
-fs.readdirSync('./src/gameplay/').filter((file) => {
-  if (
-    fs.statSync(`${'./src/gameplay' + '/'}${file}`).isDirectory() === true &&
-    file !== 'commonPhases'
-  ) {
-    gameModeNames.push(file);
-  }
-});
-// console.log(gameModeNames);
+import { GAME_MODE_NAMES } from './gameModeNames';
 const gameModeObj = {};
-for (let i = 0; i < gameModeNames.length; i++) {
-  gameModeObj[gameModeNames[i]] = {};
 
-  gameModeObj[gameModeNames[i]].Roles =
-    require(`./${gameModeNames[i]}/indexRoles`).default;
-  gameModeObj[gameModeNames[i]].Phases =
-    require(`./${gameModeNames[i]}/indexPhases`).default;
-  gameModeObj[gameModeNames[i]].Cards =
-    require(`./${gameModeNames[i]}/indexCards`).default;
+for (let i = 0; i < GAME_MODE_NAMES.length; i++) {
+  gameModeObj[GAME_MODE_NAMES[i]] = {};
+
+  gameModeObj[GAME_MODE_NAMES[i]].Roles =
+    require(`./${GAME_MODE_NAMES[i]}/indexRoles`).default;
+  gameModeObj[GAME_MODE_NAMES[i]].Phases =
+    require(`./${GAME_MODE_NAMES[i]}/indexPhases`).default;
+  gameModeObj[GAME_MODE_NAMES[i]].Cards =
+    require(`./${GAME_MODE_NAMES[i]}/indexCards`).default;
 }
 
 import commonPhasesIndex from './indexCommonPhases';
@@ -54,7 +44,7 @@ function Room(
   this.joinPassword = newRoomPassword_;
   this.gameMode = gameMode_;
   // Default value of avalon.
-  if (gameModeNames.includes(this.gameMode) === false) {
+  if (GAME_MODE_NAMES.includes(this.gameMode) === false) {
     this.gameMode = 'avalon';
   }
   this.ranked = ranked_;
@@ -431,7 +421,7 @@ Room.prototype.updateRanked = function (socket, rankedType) {
 
 Room.prototype.updateGameModesInRoom = function (socket, gameMode) {
   if (
-    gameModeNames.includes(gameMode) === true &&
+    GAME_MODE_NAMES.includes(gameMode) === true &&
     socket.request.user.username === this.host
   ) {
     // If the new gameMode doesnt include bot, but originally does, then remove the bots that may have been added
@@ -546,7 +536,7 @@ Room.prototype.sendOutGameModesInRoomToSocket = function (targetSocket) {
 
   const obj = {
     // Todo: Send over the roles/cards in the gamemode. Upon changing gamemode, resend.
-    gameModes: gameModeNames,
+    gameModes: GAME_MODE_NAMES,
     roles: {
       roleNames,
       alliances: roleAlliances,

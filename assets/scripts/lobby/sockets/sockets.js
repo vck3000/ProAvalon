@@ -8,7 +8,7 @@ socket.on('username', (username) => {
 socket.on('allChatToClient', (data) => {
   if (data.type === 'lastLoggedIn') {
     const date = new Date(data.lastLoggedInDate);
-    data.message = `You last logged in on ${date.toDateString()} at ${date.toLocaleTimeString()}.`
+    data.message = `You last logged in on ${date.toDateString()} at ${date.toLocaleTimeString()}.`;
   }
   addToAllChat(data);
 });
@@ -604,13 +604,13 @@ socket.on('update-room-info', (data) => {
 });
 
 // Update the new room menu with the gameModes available.
-socket.on('gameModes', (gameModeNames) => {
+socket.on('gameModes', (GAME_MODE_NAMES) => {
   // <option value="avalon">Avalon</option>
   // <option value="hunter">Hunter</option>
 
   let str = '';
 
-  gameModeNames.forEach((name) => {
+  GAME_MODE_NAMES.forEach((name) => {
     str += `<option value='${name}'>${name[0].toUpperCase()}${name.slice(
       1,
       name.length

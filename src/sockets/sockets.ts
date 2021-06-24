@@ -18,10 +18,8 @@ import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import { modOrTOString } from '../modsadmins/modOrTO';
+import { GAME_MODE_NAMES } from '../gameplay/gameModeNames';
 import _bot from './bot';
-
-// Get all the possible gameModes
-import fs from 'fs';
 
 const { enabledBots } = _bot;
 const { makeBotAPIRequest } = _bot;
@@ -48,16 +46,6 @@ const allChatHistory = [];
 const allChat5Min = [];
 
 let nextRoomId = 1;
-
-const gameModeNames = [];
-fs.readdirSync('./src/gameplay/').filter((file) => {
-  if (
-    fs.statSync(`${'./src/gameplay' + '/'}${file}`).isDirectory() === true &&
-    file !== 'commonPhases'
-  ) {
-    gameModeNames.push(file);
-  }
-});
 
 process.on('SIGINT', gracefulShutdown);
 process.on('SIGTERM', gracefulShutdown);
@@ -2560,7 +2548,7 @@ export const server = function (io: any): void {
       });
       socket.emit('checkNewPlayerShowIntro', '');
       // Pass in the gameModes for the new room menu.
-      socket.emit('gameModes', gameModeNames);
+      socket.emit('gameModes', GAME_MODE_NAMES);
 
       User.findOne({ username: socket.request.user.username }).exec(
         (err, foundUser) => {
