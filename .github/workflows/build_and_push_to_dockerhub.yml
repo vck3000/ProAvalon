@@ -1,6 +1,10 @@
 name: Build and Push to DockerHub
 
-on: [release, workflow_dispatch]
+on:
+  push:
+    branches: [master]
+  release:
+  workflow_dispatch:
 
 jobs:
   build_and_push:
