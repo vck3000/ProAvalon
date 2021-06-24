@@ -509,7 +509,16 @@ Game.prototype.startGame = function (options) {
   this.pickNum = 1;
   this.missionHistory = [];
 
-  let str = 'Game started with: ';
+  console.log(this.ranked);
+  let str = '';
+  if (this.ranked === true) {
+    str = 'This game is ranked.';
+  } else {
+    str = 'This game is unranked.';
+  }
+  this.sendText(this.allSockets, str, 'gameplay-text');
+
+  str = 'Game started with: ';
   for (let i = 0; i < this.roleKeysInPlay.length; i++) {
     str += `${this.specialRoles[this.roleKeysInPlay[i]].role}, `;
   }
