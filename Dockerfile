@@ -26,5 +26,6 @@ RUN yarn --frozen-lockfile --non-interactive
 COPY --from=build /app/assets ./assets
 COPY --from=build /app/out ./out
 
-CMD [ "yarn", "start" ]
+RUN mkdir logs
 
+CMD exec yarn start > >(tee -a logs/out.log) 2> >(tee -a logs/err.log >&2)
