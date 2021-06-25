@@ -35,6 +35,7 @@
     "generaterr": "^1.5.0",
     "http-proxy-middleware": "^0.19.1",
     "linkifyjs": "^2.1.7",
+    "log-timestamp": "^0.3.0",
     "mailgun.js": "^3.4.0",
     "method-override": "^3.0.0",
     "moment": "^2.24.0",

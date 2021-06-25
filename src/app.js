@@ -1,4 +1,5 @@
 import './env.js';
+import 'log-timestamp';
 import { sendToDiscordAdmins } from './discord';
 import assert from 'assert';
 import bodyParser from 'body-parser';
