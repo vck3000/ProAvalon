@@ -28,4 +28,4 @@ COPY --from=build /app/out ./out
 
 RUN mkdir logs
 
-CMD exec yarn start > >(tee -a logs/out.log) 2> >(tee -a logs/err.log >&2)
+CMD exec yarn start >> logs/out.log 2>> logs/err.log
