@@ -32,14 +32,9 @@ const requiredFields = [
 ];
 
 router.post('/ban', isModMiddleware, upload.none(), async (req, res) => {
-  console.log('hit');
-  // Catch errors so that it's not shown to users.
   try {
-    console.log('hit 2');
     // Catch errors so that it's not shown to users.
     // Multiple checks:
-    // 0: Redundant mod check?
-
     // 1: All fields are filled in and valid
     for (var s of requiredFields) {
       if (req.body[s] === undefined || req.body[s] === '') {

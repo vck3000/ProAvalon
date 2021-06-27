@@ -2,6 +2,8 @@
 import axios from 'axios';
 import moment from 'moment';
 import sanitizeHtml from 'sanitize-html';
+import { Server as SocketServer, Socket } from 'socket.io';
+import { SocketUser } from './types';
 
 import gameRoom from '../gameplay/gameWrapper.js';
 import savedGameObj from '../models/savedGame';
@@ -19,12 +21,13 @@ import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 import { GAME_MODE_NAMES } from '../gameplay/gameModeNames';
-import _bot from './bot';
 
-const { enabledBots } = _bot;
-const { makeBotAPIRequest } = _bot;
-const { SimpleBotSocket } = _bot;
-const { APIBotSocket } = _bot;
+import {
+  enabledBots,
+  makeBotAPIRequest,
+  SimpleBotSocket,
+  APIBotSocket,
+} from './bot';
 
 const dateResetRequired = 1543480412695;
 
@@ -38,7 +41,7 @@ const updateMessage = `
 Hi all, the rules to section 1d), 1g) and 1h) have been updated. Please see the new rules in the pinned forum thread and familiarise yourself with them.
 `;
 
-const allSockets = [];
+const allSockets: SocketUser[] = [];
 const rooms = [];
 
 // retain only 5 mins.
@@ -158,157 +161,7 @@ const lastWhisperObj = {};
 var pmmodCooldowns = {};
 const PMMOD_TIMEOUT = 3000; // 3 seconds
 
-export const adminCommands = {
-  a: {
-    command: 'a',
-    help: '/a: ...shows mods commands',
-    run(data) {
-      const { args } = data;
-      // do stuff
-      const dataToReturn = [];
-      let i = 0;
-      i++;
-
-      for (const key in adminCommands) {
-        if (adminCommands.hasOwnProperty(key)) {
-          if (!adminCommands[key].modsOnly) {
-            dataToReturn[i] = {
-              message: adminCommands[key].help,
-              classStr: 'server-text',
-            };
-            i++;
-          }
-        }
-      }
-      return dataToReturn;
-    },
-  },
-
-  admintest: {
-    command: 'admintest',
-    help: '/admintest: Testing that only the admin can access this command',
-    run(data) {
-      const { args } = data;
-      // do stuff
-      return { message: 'admintest has been run.', classStr: 'server-text' };
-    },
-  },
-
-  aram: {
-    command: 'aram',
-    help: '/aram: get the ram used',
-    run(data) {
-      const { args } = data;
-
-      const used = process.memoryUsage().heapUsed / 1024 / 1024;
-      // console.log(`The script uses approximately ${Math.round(used * 100) / 100} MB`);
-
-      return {
-        message: `The script uses approximately ${
-          Math.round(used * 100) / 100
-        } MB`,
-        classStr: 'server-text',
-      };
-    },
-  },
-
-  aip: {
-    command: 'aip',
-    help: '/aip <player name>: Get the ip of the player.',
-    async run(data, senderSocket) {
-      const { args } = data;
-
-      if (!args[1]) {
-        // console.log("a");
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'Specify a username',
-          classStr: 'server-text',
-        });
-        return { message: 'Specify a username.', classStr: 'server-text' };
-      }
-
-      const slapSocket = allSockets[getIndexFromUsername(allSockets, args[1])];
-      if (slapSocket) {
-        // console.log("b");
-        const clientIpAddress =
-          slapSocket.request.headers['x-forwarded-for'] ||
-          slapSocket.request.connection.remoteAddress;
-
-        senderSocket.emit('messageCommandReturnStr', {
-          message: clientIpAddress,
-          classStr: 'server-text',
-        });
-
-        return {
-          message: 'slapSocket.request.user.username',
-          classStr: 'server-text',
-        };
-      }
-
-      // console.log("c");
-
-      senderSocket.emit('messageCommandReturnStr', {
-        message: 'No IP found or invalid username',
-        classStr: 'server-text',
-      });
-
-      return { message: 'There is no such player.', classStr: 'server-text' };
-    },
-  },
-
-  aresetpassword: {
-    command: 'aresetpassword',
-    help: "/aresetpassword <username> <new_password>: set a user's password",
-    async run(data, senderSocket) {
-      const { args } = data;
-
-      if (args.length !== 3) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'Wrong number of inputs.',
-          classStr: 'server-text',
-        });
-
-        return;
-      }
-
-      const username = args[1];
-      const new_password = args[2];
-
-      const user = await User.findOne({
-        usernameLower: username.toLowerCase(),
-      });
-
-      await new Promise((res, rej) => {
-        user.setPassword(new_password, (err) => {
-          if (err) {
-            rej(err);
-          }
-          res();
-        });
-      });
-
-      await user.save();
-
-      senderSocket.emit('messageCommandReturnStr', {
-        message: 'Successfully set the new password.',
-        classStr: 'server-text',
-      });
-    },
-  },
-
-  mremovefrozen: {
-    command: 'mremovefrozen',
-    help: '/mremovefrozen: Remove all frozen rooms and the corresponding save files in the database.',
-    run(data, senderSocket) {
-      for (let i = 0; i < rooms.length; i++) {
-        if (rooms[i] && rooms[i].phase === 'frozen') {
-          destroyRoom(rooms[i].roomId);
-        }
-      }
-      updateCurrentGamesList();
-    },
-  },
-};
+import { adminCommands } from '../commands/admin';
 
 export const modCommands = {
   m: {
@@ -2424,10 +2277,10 @@ export const userCommands = {
 
 let ioGlobal = {};
 
-export const server = function (io: any): void {
+export const server = function (io: SocketServer): void {
   // SOCKETS for each connection
   ioGlobal = io;
-  io.sockets.on('connection', async (socket) => {
+  io.sockets.on('connection', async (socket: SocketUser) => {
     if (!socket.request.isAuthenticated()) {
       socket.emit('alert', 'You are not authenticated.');
       socket.disconnect(true);
@@ -2931,6 +2784,13 @@ function sendToRoomChat(io, roomId, data) {
   }
 }
 
+export function sendReplyToCommand(socket: Socket, message: string) {
+  socket.emit('messageCommandReturnStr', {
+    message,
+    classStr: 'server-text',
+  });
+}
+
 function sendToAllMods(io, data) {
   const date = new Date();
   data.dateCreated = date;
@@ -3057,6 +2917,14 @@ function getIndexFromUsername(sockets, username, caseInsensitive) {
     }
   }
   return undefined;
+}
+
+export function getSocketFromUsername(username: string): SocketUser {
+  for (const socket of allSockets) {
+    if (socket.request.user.username.toLowerCase() === username.toLowerCase()) {
+      return socket;
+    }
+  }
 }
 
 function disconnect(data) {

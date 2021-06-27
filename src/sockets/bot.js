@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const enabledBots = [];
+export const enabledBots = [];
 enabledBots.push({
   name: 'SimpleBot',
   urlBase: undefined,
@@ -20,7 +20,7 @@ enabledBots.push({
 //     });
 // }
 
-class SimpleBotSocket {
+export class SimpleBotSocket {
   constructor(username) {
     this.isBotSocket = true;
     this.request = {
@@ -92,7 +92,7 @@ class SimpleBotSocket {
   }
 }
 
-function makeBotAPIRequest(botAPI, method, endpoint, data, timeout) {
+export function makeBotAPIRequest(botAPI, method, endpoint, data, timeout) {
   return axios.request({
     method,
     url: botAPI.urlBase + endpoint,
@@ -122,7 +122,7 @@ function checkBotCapabilities(game, capabilities) {
   });
 }
 
-class APIBotSocket {
+export class APIBotSocket {
   constructor(username, botAPI) {
     this.isBotSocket = true;
     this.request = {
@@ -152,7 +152,7 @@ class APIBotSocket {
         const { capabilities } = response.data;
 
         if (checkBotCapabilities(game, capabilities) === false) {
-          callback(false, 'Bot doesn\'t support this game type.');
+          callback(false, "Bot doesn't support this game type.");
         } else {
           callback(true);
         }
@@ -275,10 +275,3 @@ class APIBotSocket {
     callback(game.phase == 'finished');
   }
 }
-
-export default {
-  enabledBots,
-  makeBotAPIRequest,
-  SimpleBotSocket,
-  APIBotSocket,
-};

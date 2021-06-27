@@ -1,3 +1,4 @@
+// @ts-nocheck
 import './env.js';
 import 'log-timestamp';
 import { sendToDiscordAdmins } from './discord';
@@ -14,7 +15,7 @@ import passport from 'passport';
 import passportSocketIo from 'passport.socketio';
 import path from 'path';
 import session from 'express-session';
-import socket from 'socket.io';
+import socket, { Server as SocketServer } from 'socket.io';
 import createProxyMiddleware from 'http-proxy-middleware';
 
 import { server as socketServer } from './sockets/sockets';
@@ -159,7 +160,7 @@ const server = app.listen(port, () => {
 //= ====================================
 // SOCKETS
 //= ====================================
-const io = socket(server, {
+const io: SocketServer = socket(server, {
   pingTimeout: 30000,
   pingInterval: 10000,
 });
