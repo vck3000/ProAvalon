@@ -114,11 +114,13 @@
         </div>
 
         <div class="row">
+            <% if (!!userData.biography && !!userData.biography.substring(3, userData.biography.length - 4).trim()) { %>
             <div class="col-xs-12">
                 <div class="biography">
                     <%-userData.biography %>
                 </div>
             </div>
+            <% } %>
         </div>
         
 
@@ -204,21 +206,17 @@
 <script>
 
 $("#searchInput").on("keydown", function(e){
-    // console.log(e.keyCode);
-
-    if(e.keyCode === 13){
-        console.log($("#searchInput")[0].value);
-
-        //redirect to the correct path.
-        window.location.replace("" + $("#searchInput")[0].value);
+    const searchStr = $("#searchInput")[0].value;
+    if(e.keyCode === 13 && !!searchStr.trim()){
+        window.location.href = "" + $("#searchInput")[0].value;
     }
 });
 
 $("#searchButton").on("click", function(e){
-    console.log($("#searchInput")[0].value);
-
-    //redirect to the correct path.
-    window.location.replace("" + $("#searchInput")[0].value);
+    const searchStr = $("#searchInput")[0].value;
+    if (!!searchStr.trim()) {
+        window.location.href = "" + $("#searchInput")[0].value;
+    }
 });
         
 </script>
@@ -289,7 +287,7 @@ $("#searchButton").on("click", function(e){
         xmlhttp.onreadystatechange=function(){
             if (xmlhttp.readyState==4 && xmlhttp.status==200){
                 userData=JSON.parse(xmlhttp.responseText);
-              //  console.log(userData);
+                // console.log(userData);
                 if(!userData.hideStats){
                     drawCharts();
                 }

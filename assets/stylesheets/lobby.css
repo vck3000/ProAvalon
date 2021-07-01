@@ -79,7 +79,7 @@ p {
 }
 
 #current-games-table tbody tr td:hover {
-    border: green 2px solid;
+    border: #808080 2px solid;
 }
 
 .row {
