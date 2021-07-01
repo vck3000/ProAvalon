@@ -289,10 +289,11 @@ socket.on('update-current-players-list', (currentPlayers) => {
 });
 
 socket.on('update-current-games-list', (currentGames) => {
-  // console.log(currentGames);
   // remove all the entries inside the table:
   $('#current-games-table tbody tr td').remove();
   $('#current-games-table tbody tr').remove();
+
+  $('.games-count').text(currentGames.filter((game) => game).length);
 
   // append each game to the list
   currentGames.forEach((currentGame) => {

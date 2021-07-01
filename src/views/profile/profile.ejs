@@ -299,7 +299,7 @@ $("#searchButton").on("click", function(e){
         xmlhttp.onreadystatechange=function(){
             if (xmlhttp.readyState==4 && xmlhttp.status==200){
                 userData=JSON.parse(xmlhttp.responseText);
-                console.log(userData);
+                // console.log(userData);
                 if(!userData.hideStats){
                     drawCharts();
                 }
