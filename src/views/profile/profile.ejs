@@ -206,28 +206,16 @@
 <script>
 
 $("#searchInput").on("keydown", function(e){
-    // console.log(e.keyCode);
-
-    searchStr = $("#searchInput")[0].value;
-
+    const searchStr = $("#searchInput")[0].value;
     if(e.keyCode === 13 && !!searchStr.trim()){
-        console.log(searchStr);
-
-        //redirect to the correct path.
-        window.location.replace("" + $("#searchInput")[0].value);
+        window.location.href = "" + $("#searchInput")[0].value;
     }
 });
 
 $("#searchButton").on("click", function(e){
-
-    searchStr = $("#searchInput")[0].value;
-
+    const searchStr = $("#searchInput")[0].value;
     if (!!searchStr.trim()) {
-        
-        console.log($("#searchInput")[0].value);
-
-        //redirect to the correct path.
-        window.location.replace("" + $("#searchInput")[0].value);
+        window.location.href = "" + $("#searchInput")[0].value;
     }
 });
         
