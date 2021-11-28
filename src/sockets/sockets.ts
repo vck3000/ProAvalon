@@ -1347,27 +1347,6 @@ export const userCommands = {
     },
   },
 
-  lick: {
-    command: 'lick',
-    help: '/lick <playername>: Lick a player.',
-    run(data, senderSocket) {
-      const { args } = data;
-
-      if (args.length <= 1) {
-        return {
-          message: 'You must provide a username.',
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        };
-      }
-
-      data.args[2] = data.args[1];
-      data.args[1] = 'lick';
-
-      return userCommands.interactUser.run(data, senderSocket);
-    },
-  },
-
   pat: {
     command: 'pat',
     help: '/pat <playername>: Pat a player.',
@@ -1454,14 +1433,13 @@ export const userCommands = {
 
   interactUser: {
     command: 'interactUser',
-    help: '/interactUser <buzz/lick/pat/poke/punch/slap> <playername>: Interact with a player.',
+    help: '/interactUser <buzz/pat/poke/punch/slap> <playername>: Interact with a player.',
     run(data, senderSocket) {
       console.log('interact user', data);
       const { args } = data;
 
       const possibleInteracts = [
         'buzz',
-        'lick',
         'pat',
         'poke',
         'punch',
@@ -1469,7 +1447,7 @@ export const userCommands = {
       ];
       if (possibleInteracts.indexOf(args[1]) === -1) {
         return {
-          message: `You can only buzz, lick, pat, poke, punch, or slap; not ${args[1]}.`,
+          message: `You can only buzz, pat, poke, punch, or slap; not ${args[1]}.`,
           classStr: 'server-text',
           dateCreated: new Date(),
         };
@@ -1481,8 +1459,6 @@ export const userCommands = {
         let verbPast = '';
         if (args[1] === 'buzz') {
           verbPast = 'buzzed';
-        } else if (args[1] === 'lick') {
-          verbPast = 'licked';
         } else if (args[1] === 'pat') {
           verbPast = 'patted';
         } else if (args[1] === 'poke') {
@@ -1707,7 +1683,7 @@ export const userCommands = {
 
   mute: {
     command: 'mute',
-    help: '/mute: Mute a player who is being annoying in chat/buzzing/slapping/licking/poking/tickling you.',
+    help: '/mute: Mute a player who is being annoying in chat/buzzing/slapping/poking/tickling you.',
     run(data, senderSocket) {
       const { args } = data;
 
