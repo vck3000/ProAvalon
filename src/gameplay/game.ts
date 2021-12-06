@@ -674,7 +674,8 @@ Game.prototype.checkBotMoves = function (pendingBots) {
             numOfTargets === 0 ||
             numOfTargets === null ||
             (move.selectedPlayers &&
-              numOfTargets === move.selectedPlayers.length &&
+              (numOfTargets === move.selectedPlayers.length ||
+                numOfTargets.includes(move.selectedPlayers.length)) &&
               move.selectedPlayers.every(
                 (player) => availablePlayers.indexOf(player) !== -1
               ));
