@@ -594,6 +594,10 @@ Game.prototype.checkBotMoves = function (pendingBots) {
 
   // Players whose moves we're waiting for
   this.interval = setInterval(() => {
+    // hack: check for hammer reject
+    if (thisRoom.howWasWon === 'Hammer rejected.')
+      thisRoom.finished = true;
+
     if (thisRoom.finished === true) {
       clearInterval(thisRoom.interval);
       thisRoom.interval = undefined;

@@ -69,10 +69,8 @@ export class SimpleBotSocket {
       });
     }
 
-if (numOfTargets && typeof numOfTargets === 'object') {
-  console.log(numOfTargets);
-  numOfTargets = numOfTargets[0];
-}
+    if (numOfTargets && numOfTargets.constructor === Array)
+      numOfTargets = numOfTargets[0];
 
     // Progressively remove players until it is the right length
     const selectedPlayers = availablePlayers.slice();
