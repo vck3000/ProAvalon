@@ -24,7 +24,8 @@ function Room(
   maxNumPlayers_,
   newRoomPassword_,
   gameMode_,
-  ranked_
+  ranked_,
+  minPlayerRating_
 ) {
   const thisRoom = this;
 
@@ -50,6 +51,7 @@ function Room(
   this.ranked = ranked_;
   this.gamesRequiredForRanked = 0;
   this.provisionalGamesRequired = 20;
+  this.minPlayerRating = minPlayerRating_;
 
   // Misc. variables
   this.canJoin = true;
@@ -171,6 +173,18 @@ Room.prototype.playerSitDown = function (socket) {
     socket.emit(
       'danger-alert',
       `You do not have the required experience to sit in ranked games. Please play ${this.gamesRequiredForRanked} unranked games first.`
+    );
+    return;
+  }
+  // If the room is ranked with min elo and the player doesn't have enough elo to sit.
+  if (
+    this.ranked &&
+    Number(this.minPlayerRating) &&
+    socket.request.user.playerRating < this.minPlayerRating
+  ) {
+    socket.emit(
+      'danger-alert',
+      `You do not have the required player rating to sit in ranked games.`
     );
     return;
   }

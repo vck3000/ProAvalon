@@ -332,6 +332,9 @@ socket.on('update-current-games-list', (currentGames) => {
         `Spectators: ${currentGame.numOfSpectatorsInside}
                 <br>Game mode: ${currentGame.gameMode}
                 <br> Type: ${currentGame.gameType}
+                ${
+                  currentGame.minPlayerRating ? '<br>Min Player Rating: ' + currentGame.minPlayerRating : ''
+                }
                 <br>Host: ${currentGame.hostUsername}
                 <br>${missionHistoryStr}
                 </td> </tr>`;

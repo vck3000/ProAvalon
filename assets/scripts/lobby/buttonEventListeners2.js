@@ -169,6 +169,8 @@ $('#newRoom').on('click', (data) => {
   $('#newRoomPassword').val('');
   // 10p default
   $('.maxNumPlayers').val('10');
+  // default minimum player rating
+  $('#minPlayerRating').val(0);
 
   // $(".gun").css("visibility", "hidden");
 
@@ -186,6 +188,7 @@ $('#createNewRoomButton').on('click', (data) => {
     gameMode: $($('.gameModeSelect')[1]).val(),
     muteSpectators: $('.muteSpectators')[1].checked,
     ranked: $($('.rankedSelect')[1]).val(),
+    minPlayerRating: $('#minPlayerRating').val(),
   };
 
   // Update the settings in the in room settings menu.
@@ -193,8 +196,10 @@ $('#createNewRoomButton').on('click', (data) => {
   $($('.gameModeSelect')[0]).val(sendObj.gameMode);
   $('.muteSpectators')[0].checked = sendObj.muteSpectators;
   $($('.rankedSelect')[0]).val(sendObj.ranked);
+  $('#minPlayerRating').val(sendObj.minPlayerRating);
 
   if (inRoom === false) {
+    console.log(2, sendObj)
     socket.emit('newRoom', sendObj);
 
     resetAllGameData();

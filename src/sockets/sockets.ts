@@ -723,6 +723,7 @@ export const modCommands = {
         maxNumPlayers: 10,
         newRoomPassword: '',
         gameMode: 'avalonBot',
+        minPlayerRating: 0,
       };
 
       // Create the room
@@ -735,6 +736,7 @@ export const modCommands = {
         dataObj.gameMode,
         dataObj.muteSpectators,
         false,
+        dataObj.minPlayerRating,
         socketCallback
       );
       const privateStr = dataObj.newRoomPassword === '' ? '' : 'private ';
@@ -2708,6 +2710,7 @@ var updateCurrentGamesList = function () {
       gamesList[i].maxNumPlayers = rooms[i].maxNumPlayers;
       gamesList[i].numOfSpectatorsInside =
         rooms[i].allSockets.length - rooms[i].socketsOfPlayers.length;
+      gamesList[i].minPlayerRating = rooms[i].minPlayerRating;
     }
   }
   allSockets.forEach((sock) => {
@@ -3128,6 +3131,7 @@ function newRoom(dataObj) {
       dataObj.gameMode,
       dataObj.muteSpectators,
       rankedRoom,
+      dataObj.minPlayerRating,
       socketCallback
     );
     const privateStr = !privateRoom ? '' : 'private ';

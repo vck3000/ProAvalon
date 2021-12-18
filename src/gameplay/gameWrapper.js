@@ -11,6 +11,7 @@ function GameWrapper(
   muteSpectators_,
   gameMode_,
   ranked_,
+  minPlayerRating_,
   callback_
 ) {
   // Get all the game properties
@@ -24,6 +25,7 @@ function GameWrapper(
     muteSpectators_,
     gameMode_,
     ranked_,
+    minPlayerRating_,
     callback_
   );
 }

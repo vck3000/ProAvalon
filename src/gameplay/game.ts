@@ -45,6 +45,7 @@ function Game(
   gameMode_,
   muteSpectators_,
   ranked_,
+  minPlayerRating_,
   callback_
 ) {
   this.callback = callback_;
@@ -83,7 +84,8 @@ function Game(
     maxNumPlayers_,
     newRoomPassword_,
     gameMode_,
-    ranked_
+    ranked_,
+    minPlayerRating_
   );
   PlayersReadyNotReady.call(this, this.minPlayers);
 
@@ -176,6 +178,8 @@ function Game(
   this.chatHistory = []; // Here because chatHistory records after game starts
 
   this.muteSpectators = muteSpectators_;
+
+  this.minPlayerRating = minPlayerRating_;
 }
 
 // Game object inherits all the functions and stuff from Room
