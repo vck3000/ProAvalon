@@ -322,8 +322,8 @@ router.post('/:profileUsername', checkProfileOwnership, (req, res) => {
   // console.log(req.body.biography);
   // console.log(req.body.nationality);
   // console.log(req.body.nationCode);
-  console.log(req.body.hideStats);
-  console.log(req.body.pronoun);
+  // console.log(req.body.hideStats);
+  // console.log(req.body.pronoun);
 
   if(!["he/him","she/her","they/them"].includes(req.body.pronoun)){
     req.body.pronoun = "N/A"
