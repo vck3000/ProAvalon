@@ -1438,13 +1438,7 @@ export const userCommands = {
       console.log('interact user', data);
       const { args } = data;
 
-      const possibleInteracts = [
-        'buzz',
-        'pat',
-        'poke',
-        'punch',
-        'slap',
-      ];
+      const possibleInteracts = ['buzz', 'pat', 'poke', 'punch', 'slap'];
       if (possibleInteracts.indexOf(args[1]) === -1) {
         return {
           message: `You can only buzz, pat, poke, punch, or slap; not ${args[1]}.`,
@@ -2406,21 +2400,12 @@ export const server = function (io: SocketServer): void {
 
       const msg2 = {
         message:
-          'We have a new discord server! Join here: https://discord.gg/3mHdKNT',
+          'We have a discord server! Join us here: https://discord.gg/3mHdKNT',
         classStr: 'server-text',
         dateCreated: new Date(),
       };
 
       socket.emit('allChatToClient', msg2);
-
-      const msg3 = {
-        message:
-          'A site rewrite is coming! If you have some coding skills and would like to help out, flip me a dm :)',
-        classStr: 'server-text',
-        dateCreated: new Date(),
-      };
-
-      socket.emit('allChatToClient', msg3);
 
       if (socket.request.user.lastLoggedIn.length > 0) {
         const msg4 = {
