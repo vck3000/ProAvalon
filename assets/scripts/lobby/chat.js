@@ -145,10 +145,6 @@ function addToAllChat(data) {
         }
         date = `[${hour}:${min}]`;
 
-        // if(!data[i].dateCreated){
-        //     date = "[" + "]";
-        // }
-
         let filteredMessage = data[i].message
           .replace(/</g, '&lt;')
           .replace(/>/g, '&gt;')
@@ -161,6 +157,12 @@ function addToAllChat(data) {
             },
           },
         });
+
+        //adds abbreviation, also checks if option has been enabled
+        let toFilter = docCookies.getItem(`optionDisplayEnableAbbreivations`)
+        if(toFilter === 'true') {
+          filteredMessage = addAbbreviations(filteredMessage);
+        }
 
         let str = '';
         if (data[i].classStr && data[i].classStr !== '') {
@@ -311,6 +313,12 @@ function addToRoomChat(data) {
           },
         });
 
+        //adds abbreviation, also checks if option has been enabled
+        let toFilter = docCookies.getItem(`optionDisplayEnableAbbreivations`)
+        if(toFilter === 'true') {
+          filteredMessage = addAbbreviations(filteredMessage);
+        }
+        
         let str = '';
 
         // any part of the chat before any quoted parts
