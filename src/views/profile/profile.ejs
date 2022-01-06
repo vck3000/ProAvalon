@@ -92,7 +92,11 @@
                             <% } %> 
 
                                 <span id="profileUsername"><%=userData.username %> </span>
-                            </h2>  
+                            </h2>
+                            
+                            <% if(userData.pronoun != "N/A" ){ %>
+                                <span>(<%=userData.pronoun %>)</span>
+                            <%} %>
                             <p> Date joined: <% if(userData.dateJoined){ %>
                                 <%= userData.dateJoined.toDateString() %> 
                                 <% } else { %> 

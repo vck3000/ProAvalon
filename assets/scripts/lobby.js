@@ -1827,6 +1827,7 @@ const sounds = {
   pat: 'pat.mp3',
   poke: 'poke.mp3',
   punch: 'punch.mp3',
+  hug: 'hug.mp3',
 };
 
 // get all the sound files and prepare them.
