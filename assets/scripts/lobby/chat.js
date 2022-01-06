@@ -162,6 +162,21 @@ function addToAllChat(data) {
           },
         });
 
+      
+      
+      
+
+    
+      let jargonRegex = `\\b(${Object.keys(definitions).join('|')})\\b`;
+      filteredMessage = filteredMessage.split(RegExp(jargonRegex, 'i')).map(s => {
+        if(Object.prototype.hasOwnProperty.call(definitions, s.toLowerCase(),)) {
+             s = `<abbr title = \"${definitions[s]}\">${s}</abbr>` 
+        }
+        return s
+      })
+
+      filteredMessage = filteredMessage.join('')
+
         let str = '';
         if (data[i].classStr && data[i].classStr !== '') {
           str = `<li class='${data[i].classStr}'><span class='date-text'>${date}</span> ${filteredMessage}`;
