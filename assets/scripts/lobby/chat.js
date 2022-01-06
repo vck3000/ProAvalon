@@ -157,8 +157,12 @@ function addToAllChat(data) {
             },
           },
         });
-      
-        filteredMessage = addAbbreviations(filteredMessage);
+
+        //adds abbreviation, also checks if option has been enabled
+        let toFilter = docCookies.getItem(`optionDisplayEnableAbbreivations`)
+        if(toFilter === 'true') {
+          filteredMessage = addAbbreviations(filteredMessage);
+        }
 
         let str = '';
         if (data[i].classStr && data[i].classStr !== '') {
@@ -308,8 +312,12 @@ function addToRoomChat(data) {
             },
           },
         });
-         
-        filteredMessage = addAbbreviations(filteredMessage);
+
+        //adds abbreviation, also checks if option has been enabled
+        let toFilter = docCookies.getItem(`optionDisplayEnableAbbreivations`)
+        if(toFilter === 'true') {
+          filteredMessage = addAbbreviations(filteredMessage);
+        }
         
         let str = '';
 
