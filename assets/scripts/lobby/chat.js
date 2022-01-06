@@ -145,10 +145,6 @@ function addToAllChat(data) {
         }
         date = `[${hour}:${min}]`;
 
-        // if(!data[i].dateCreated){
-        //     date = "[" + "]";
-        // }
-
         let filteredMessage = data[i].message
           .replace(/</g, '&lt;')
           .replace(/>/g, '&gt;')
@@ -161,21 +157,8 @@ function addToAllChat(data) {
             },
           },
         });
-
       
-      
-      
-
-    
-      let jargonRegex = `\\b(${Object.keys(definitions).join('|')})\\b`;
-      filteredMessage = filteredMessage.split(RegExp(jargonRegex, 'i')).map(s => {
-        if(Object.prototype.hasOwnProperty.call(definitions, s.toLowerCase(),)) {
-             s = `<abbr title = \"${definitions[s]}\">${s}</abbr>` 
-        }
-        return s
-      })
-
-      filteredMessage = filteredMessage.join('')
+        filteredMessage = addAbbreviations(filteredMessage);
 
         let str = '';
         if (data[i].classStr && data[i].classStr !== '') {
@@ -325,7 +308,9 @@ function addToRoomChat(data) {
             },
           },
         });
-
+         
+        filteredMessage = addAbbreviations(filteredMessage);
+        
         let str = '';
 
         // any part of the chat before any quoted parts

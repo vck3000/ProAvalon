@@ -1,3 +1,18 @@
+function addAbbreviations(message) {
+    let jargonRegex = `\\b(${Object.keys(definitions).join('|')})\\b`;
+
+    const splitted = message.split(RegExp(jargonRegex, 'i'));
+
+    const abbreviatedSplitted = splitted.map(s => {
+      if(Object.prototype.hasOwnProperty.call(definitions, s.toLowerCase(),)) {
+           s = `<abbr title = \"${definitions[s]}\">${s}</abbr>` 
+      }
+      return s
+    })
+  
+    return abbreviatedSplitted.join('')
+  }
+
 const definitions = {
     'approve': '1. (Of a player) to vote in favor of (a pick). 2. (Of the majority of the players in the game) to approve (a pick), allowing the players on it to vote for the current mission to succeed or fail. 3. A vote by a player in favor of a pick.',
     'app': '1. (Of a player) to vote in favor of (a pick). 2. (Of the majority of the players in the game) to approve (a pick), allowing the players on it to vote for the current mission to succeed or fail. 3. A vote by a player in favor of a pick.',
