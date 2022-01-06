@@ -426,6 +426,63 @@ var userOptions = {
     },
   },
 
+  optionDisplayEnableAbbreivations: {
+    defaultValue: 'true',
+    onLoad() {
+      // check if optionDisplayProposedTeamIcon exists in cookies
+      const isOptionExists = docCookies.hasItem(
+        'optionDisplayEnableAbbreivations'
+      );
+      // if not, set it
+      if (isOptionExists === false) {
+        // save it in cookie
+        docCookies.setItem(
+          'optionDisplayEnableAbbreivations',
+          false,
+          Infinity
+        );
+      }
+
+      const getOption = docCookies.getItem(
+        'optionDisplayEnableAbbreivations'
+      );
+
+      // set check marks
+      if (getOption === false || getOption === 'false') {
+        $('#optionDisplayEnableAbbreivations')[0].checked = false;
+      } else if (getOption === true || getOption === 'true') {
+        $('#optionDisplayEnableAbbreivations')[0].checked = true;
+      } else {
+        docCookies.setItem(
+          'optionDisplayEnableAbbreivations',
+          false,
+          Infinity
+        );
+      }
+    },
+    initialiseEventListener() {
+      $('#optionDisplayEnableAbbreivations')[0].addEventListener(
+        'click',
+        () => {
+          // when they press it...
+          const newCheck = $('#optionDisplayEnableAbbreivations')[0]
+            .checked;
+          // save their option in cookie
+          docCookies.setItem(
+            'optionDisplayEnableAbbreivations',
+            newCheck,
+            Infinity
+          );
+
+          // Need to redraw and rescale
+          draw();
+          draw();
+        }
+      );
+    },
+  },
+
+
   //---------------------------------------------
   // Sound Notifications
   //---------------------------------------------
