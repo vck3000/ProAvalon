@@ -1,6 +1,8 @@
+const SPAM_WINDOW = 5;
+const NUM_MESSAGES = 4;
+
 export class ChatSpamFilter {
   history: { [username: string]: number[] };
-
   seconds: number;
 
   constructor() {
@@ -15,8 +17,8 @@ export class ChatSpamFilter {
     } else {
       const userHistory = this.history[username];
       userHistory.push(this.seconds);
-      if (userHistory.length > 4) {
-        if (userHistory[4] - userHistory[0] < 5) {
+      if (userHistory.length > NUM_MESSAGES) {
+        if (userHistory[SPAM_WINDOW - 1] - userHistory[0] < SPAM_WINDOW) {
           userHistory.shift();
           return false;
         }
