@@ -15,9 +15,12 @@ export class ChatSpamFilter {
     } else {
       const userHistory = this.history[username];
       userHistory.push(this.seconds);
-
-      // Ishan logic
       if (userHistory.length > 4) {
+        if (userHistory[4] - userHistory[0] < 5) {
+          userHistory.shift();
+          return false;
+        }
+        userHistory.shift();
       }
     }
 
@@ -27,5 +30,9 @@ export class ChatSpamFilter {
   // Users of this class must call this every second!
   tick() {
     this.seconds++;
+  }
+
+  getSeconds(): number {
+    return this.seconds;
   }
 }

@@ -3038,27 +3038,6 @@ function prohibitedChat(message) {
 
   return false;
 }
-const allChatSpam = {};
-const roomChatSpam = {};
-
-function chatSpam(user, chatSpamO) {
-  var seconds = new Date().getTime() / 1000;
-  if (user != null) {
-    if (chatSpamO[user] != null) {
-      chatSpamO[user].push(seconds);
-      if (chatSpamO[user].length > 4) {
-        if (chatSpamO[user][4] - chatSpamO[user][0] < 5) {
-          chatSpamO[user].shift();
-          return true;
-        }
-        chatSpamO[user].shift();
-      }
-    } else {
-      chatSpamO[user] = [seconds];
-    }
-  }
-  return false;
-}
 
 function allChatFromClient(data) {
   console.log(`[All Chat] ${this.request.user.username}: ${data.message}`);
@@ -3090,7 +3069,7 @@ function allChatFromClient(data) {
     return;
   }
 
-  if (chatSpam(data.username, allChatSpam)) {
+  if (!chatSpamFilter.chatRequest(data.username)) {
     const senderSocket =
       allSockets[getIndexFromUsername(allSockets, data.username, true)];
     const data3 = {
@@ -3138,7 +3117,7 @@ function roomChatFromClient(data) {
     senderSocket.emit('roomChatToClient', data2);
     return;
   }
-  if (chatSpam(data.username, roomChatSpam)) {
+  if (!chatSpamFilter.chatRequest(data.username)) {
     const senderSocket =
       allSockets[getIndexFromUsername(allSockets, data.username, true)];
     const data3 = {
