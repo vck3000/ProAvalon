@@ -22,6 +22,13 @@ import { isTO } from '../modsadmins/tournamentOrganizers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 import { GAME_MODE_NAMES } from '../gameplay/gameModeNames';
 
+import { ChatSpamFilter } from './chatSpamFilter';
+
+const chatSpamFilter = new ChatSpamFilter();
+setInterval(() => {
+  chatSpamFilter.tick();
+}, 1000);
+
 import {
   enabledBots,
   makeBotAPIRequest,
