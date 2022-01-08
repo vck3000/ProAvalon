@@ -29,6 +29,8 @@ import {
   APIBotSocket,
 } from './bot';
 
+import {Queue} from './queue'
+
 const dateResetRequired = 1543480412695;
 
 const newUpdateNotificationRequired = 1593228152322;
