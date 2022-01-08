@@ -1,5 +1,4 @@
 import Game from '../gameplay/game';
-import { getSocketFromUsername } from './sockets';
 
 type Socket = {
   emit: (message: string) => boolean;
@@ -67,20 +66,3 @@ export class MatchmakingQueue {
   }
 }
 
-export function notifyUsers(usernames: string[]): void {
-  // Get all 6 sockets.
-  const sockets: SocketUser[] = [];
-
-  for (const username of usernames) {
-    sockets.push(getSocketFromUsername(username));
-  }
-
-  // Create the room.
-
-  // Socket.emit to them to join the room.
-  for (const socket of sockets) {
-    socket.emit('joinRoom', { roomId: 1 });
-  }
-
-  // Once 6 sockets all in, start the room.
-}
