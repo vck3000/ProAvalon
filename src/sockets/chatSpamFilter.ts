@@ -19,7 +19,7 @@ export class ChatSpamFilter {
       userHistory.push(this.seconds);
       if (userHistory.length > NUM_MESSAGES) {
         if (userHistory[SPAM_WINDOW - 1] - userHistory[0] < SPAM_WINDOW) {
-          userHistory.shift();
+          userHistory.pop();
           return false;
         }
         userHistory.shift();
