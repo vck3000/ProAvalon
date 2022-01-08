@@ -38,8 +38,6 @@ import {
   APIBotSocket,
 } from './bot';
 
-import {Queue} from './queue'
-
 const dateResetRequired = 1543480412695;
 
 const newUpdateNotificationRequired = 1593228152322;
@@ -173,6 +171,7 @@ var pmmodCooldowns = {};
 const PMMOD_TIMEOUT = 3000; // 3 seconds
 
 import { adminCommands } from '../commands/admin';
+import { MatchmakingQueue } from './matchmakingQueue';
 
 export const modCommands = {
   m: {
