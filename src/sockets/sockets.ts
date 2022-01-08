@@ -25,9 +25,11 @@ import { GAME_MODE_NAMES } from '../gameplay/gameModeNames';
 import { ChatSpamFilter } from './chatSpamFilter';
 
 const chatSpamFilter = new ChatSpamFilter();
-setInterval(() => {
-  chatSpamFilter.tick();
-}, 1000);
+if (process.env.NODE_ENV !== 'test') {
+  setInterval(() => {
+    chatSpamFilter.tick();
+  }, 1000);
+}
 
 import {
   enabledBots,
