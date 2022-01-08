@@ -3140,7 +3140,7 @@ function roomChatFromClient(data) {
 function outputSpamMessage(chat, user) {
   const senderSocket = allSockets[getIndexFromUsername(allSockets, user, true)];
   const data3 = {
-    message: 'Woah chill buddy!! Lets take a breather..yeah?',
+    message: 'You may not send too many messages in a short timespan.',
     classStr: 'all-chat-text-red',
     dateCreated: new Date(),
   };

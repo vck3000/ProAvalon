@@ -34,4 +34,30 @@ describe('Chat Spam Filter', () => {
     expect(chatSpamFilter.chatRequest('LoremUser')).toEqual(true);
     expect(chatSpamFilter.chatRequest('IpsumUser')).toEqual(false);
   });
+
+  it('Disconnecting as an existing chatter from the server results in the user being removed', () => {
+    const chatSpamFilter = new ChatSpamFilter();
+    //Person doesnt exist, since its not an existing chatter
+    expect(chatSpamFilter.disconnectUser('Person1')).toEqual(false);
+
+    chatSpamFilter.chatRequest('Person1');
+
+    expect(chatSpamFilter.disconnectUser('Person1')).toEqual(true);
+    //user doesnt exist anymore
+    expect(chatSpamFilter.disconnectUser('Person1')).toEqual(false);
+  });
+
+  it('Reconnecting the server refreshes the cooldown period', () => {
+    const chatSpamFilter = new ChatSpamFilter();
+
+    for (let i = 0; i < 6; i++) {
+      chatSpamFilter.chatRequest('Person1');
+    }
+
+    expect(chatSpamFilter.chatRequest('Person1')).toEqual(false);
+
+    chatSpamFilter.disconnectUser('Person1');
+
+    expect(chatSpamFilter.chatRequest('Person1')).toEqual(true);
+  });
 });
