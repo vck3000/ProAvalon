@@ -5,7 +5,7 @@ function addAbbreviations(message) {
 
     const abbreviatedSplitted = splitted.map(s => {
       if(Object.prototype.hasOwnProperty.call(definitions, s.toLowerCase(),)) {
-           s = `<abbr title = \"${definitions[s]}\">${s}</abbr>` 
+           s = `<abbr title = \"${definitions[s.toLowerCase()]}\">${s}</abbr>` 
       }
       return s
     })

@@ -22,6 +22,15 @@ import { isTO } from '../modsadmins/tournamentOrganizers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 import { GAME_MODE_NAMES } from '../gameplay/gameModeNames';
 
+import { ChatSpamFilter } from './chatSpamFilter';
+
+const chatSpamFilter = new ChatSpamFilter();
+if (process.env.NODE_ENV !== 'test') {
+  setInterval(() => {
+    chatSpamFilter.tick();
+  }, 1000);
+}
+
 import {
   enabledBots,
   makeBotAPIRequest,
@@ -1453,7 +1462,6 @@ export const userCommands = {
       return userCommands.interactUser.run(data, senderSocket);
     },
   },
-
 
   interactUser: {
     command: 'interactUser',
@@ -2922,12 +2930,14 @@ function disconnect(data) {
   // console.log(allSockets.indexOf(this));
   // console.log(allSockets);
 
+  chatSpamFilter.disconnectUser(this.request.user.username);
+
   // delete allSockets[allSockets.indexOf(this)];
   allSockets.splice(allSockets.indexOf(this), 1);
 
   // console.log(`After: ${allSockets.length}`);
   // console.log(allSockets);
-
+  // chatSpamFilter.removeUser(this.request.user.username);
   // send out the new updated current player list
   updateCurrentPlayersList();
   // tell all clients that the user has left
@@ -3064,7 +3074,11 @@ function allChatFromClient(data) {
     senderSocket.emit('allChatToClient', data2);
     return;
   }
-  // no classStr since its a player message
+
+  if (!chatSpamFilter.chatRequest(data.username)) {
+    outputSpamMessage('allChatToClient', data.username);
+    return;
+  }
 
   sendToAllChat(ioGlobal, data);
 }
@@ -3102,6 +3116,11 @@ function roomChatFromClient(data) {
     return;
   }
 
+  if (!chatSpamFilter.chatRequest(data.username)) {
+    outputSpamMessage('roomChatToClient', data.username);
+    return;
+  }
+
   data.dateCreated = new Date();
 
   if (this.request.user.inRoomId) {
@@ -3118,6 +3137,16 @@ function roomChatFromClient(data) {
       senderSocket.emit('roomChatToClient', msg);
     }
   }
+}
+
+function outputSpamMessage(chat, user) {
+  const senderSocket = allSockets[getIndexFromUsername(allSockets, user, true)];
+  const data3 = {
+    message: 'You may not send too many messages in a short timespan.',
+    classStr: 'all-chat-text-red',
+    dateCreated: new Date(),
+  };
+  senderSocket.emit(chat, data3);
 }
 
 function newRoom(dataObj) {
