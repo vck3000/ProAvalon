@@ -34,11 +34,9 @@ export class ChatSpamFilter {
     this.seconds++;
   }
 
-  disconnectUser(username: string): boolean {
+  disconnectUser(username: string) {
     if (username in this.history) {
       delete this.history[username];
-      return true;
     }
-    return false;
   }
 }
