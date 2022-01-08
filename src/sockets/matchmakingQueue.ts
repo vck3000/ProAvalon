@@ -1,11 +1,11 @@
 import Room from '../gameplay/room';
 
-type Socket = {
+export type Socket = {
   emit: (message: string, data: any) => boolean;
 };
 
-type GetSocketFunc = (username: string) => Socket;
-type CreateRoomFunc = () => Room;
+export type GetSocketFunc = (username: string) => Socket;
+export type CreateRoomFunc = () => Room;
 
 export class MatchmakingQueue {
   unrankedQueue: string[];
@@ -35,11 +35,11 @@ export class MatchmakingQueue {
       }
 
       // Create the room
-      const room = this.createRoomFunc();
+      // const room = this.createRoomFunc();
 
       // Force sockets to join the room.
       for (const socket of sockets) {
-        socket.emit('joinRoom', { roomId: room.roomId });
+        socket.emit('joinRoom', { roomId: 1 /* room.roomId*/ });
       }
 
       this.unrankedQueue = [];
