@@ -1,25 +1,25 @@
-import Game from '../gameplay/game';
+import Room from '../gameplay/room';
 
 type Socket = {
-  emit: (message: string) => boolean;
+  emit: (message: string, data: any) => boolean;
 };
 
 type GetSocketFunc = (username: string) => Socket;
-type CreateGameFunc = () => Game;
+type CreateRoomFunc = () => Room;
 
 export class MatchmakingQueue {
   unrankedQueue: string[];
   rankedQueue: string[];
 
   getSocketFunc: GetSocketFunc;
-  createGameFunc: CreateGameFunc;
+  createRoomFunc: CreateRoomFunc;
 
-  constructor(getSocketFunc: GetSocketFunc, createGameFunc: CreateGameFunc) {
+  constructor(getSocketFunc: GetSocketFunc, createRoomFunc: CreateRoomFunc) {
     this.unrankedQueue = [];
     this.rankedQueue = [];
 
     this.getSocketFunc = getSocketFunc;
-    this.createGameFunc = createGameFunc;
+    this.createRoomFunc = createRoomFunc;
   }
 
   joinUnrankedQueue(username: string): void {
@@ -27,6 +27,7 @@ export class MatchmakingQueue {
 
     if (this.unrankedQueue.length >= 6) {
       const usersMatched = this.unrankedQueue.slice();
+
       // Get all the sockets
       const sockets = [];
       for (const username of usersMatched) {
@@ -34,8 +35,14 @@ export class MatchmakingQueue {
       }
 
       // Create the room
-      const game = this.createGameFunc();
-      game.this.unrankedQueue = [];
+      const room = this.createRoomFunc();
+
+      // Force sockets to join the room.
+      for (const socket of sockets) {
+        socket.emit('joinRoom', { roomId: room.roomId });
+      }
+
+      this.unrankedQueue = [];
     }
   }
 
@@ -65,4 +72,3 @@ export class MatchmakingQueue {
     return this.rankedQueue.length;
   }
 }
-
