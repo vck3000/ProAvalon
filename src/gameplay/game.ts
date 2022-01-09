@@ -594,6 +594,10 @@ Game.prototype.checkBotMoves = function (pendingBots) {
 
   // Players whose moves we're waiting for
   this.interval = setInterval(() => {
+    // hack: check for hammer reject
+    if (thisRoom.howWasWon === 'Hammer rejected.')
+      thisRoom.finished = true;
+
     if (thisRoom.finished === true) {
       clearInterval(thisRoom.interval);
       thisRoom.interval = undefined;
@@ -674,7 +678,8 @@ Game.prototype.checkBotMoves = function (pendingBots) {
             numOfTargets === 0 ||
             numOfTargets === null ||
             (move.selectedPlayers &&
-              numOfTargets === move.selectedPlayers.length &&
+              (numOfTargets === move.selectedPlayers.length ||
+                numOfTargets.includes(move.selectedPlayers.length)) &&
               move.selectedPlayers.every(
                 (player) => availablePlayers.indexOf(player) !== -1
               ));
