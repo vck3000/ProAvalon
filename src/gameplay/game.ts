@@ -10,6 +10,7 @@ import GameRecord from '../models/gameRecord';
 import commonPhasesIndex from './indexCommonPhases';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
+import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 
 // Get all the gamemodes and their roles/cards/phases.
@@ -1886,7 +1887,8 @@ Game.prototype.canRoomChat = function (usernameLower: string) {
     return (
       playerUsernamesLower.includes(usernameLower) ||
       isMod(usernameLower) ||
-      isTO(usernameLower)
+      isTO(usernameLower) ||
+      isDev(usernameLower)
     );
   }
   return true;

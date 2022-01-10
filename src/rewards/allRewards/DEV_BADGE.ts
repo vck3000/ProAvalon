@@ -1,10 +1,10 @@
 import { RewardData } from '../types';
 
 const obj: RewardData = {
-  adminReq: true,
+  adminReq: false,
   modReq: false,
   TOReq: false,
-  devReq: false,
+  devReq: true,
   gamesPlayedReq: 0,
   donationReq: 0,
 };
