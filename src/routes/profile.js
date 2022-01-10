@@ -57,7 +57,7 @@ router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
   // console.log(req.body.decision);
   // console.log(req.body.avatarreqid);
   // console.log(req.body.modcomment);
-
+  
   avatarRequest.findById(req.body.avatarreqid).exec((err, foundReq) => {
     if (err) {
       console.log(err);
@@ -323,7 +323,11 @@ router.post('/:profileUsername', checkProfileOwnership, (req, res) => {
   // console.log(req.body.nationality);
   // console.log(req.body.nationCode);
   // console.log(req.body.hideStats);
+  // console.log(req.body.pronoun);
 
+  if(!["he/him", "she/her", "they/them"].includes(req.body.pronoun)){
+    req.body.pronoun = "N/A"
+  }
   if (!req.body.biography) {
     req.body.biography = '';
   }
@@ -367,6 +371,7 @@ router.post('/:profileUsername', checkProfileOwnership, (req, res) => {
             req.body.nationCode.toLowerCase()
           );
           foundUser.hideStats = req.body.hideStats;
+          foundUser.pronoun = req.body.pronoun;
           foundUser.save();
 
           res.redirect(`/profile/${foundUser.username}`);
