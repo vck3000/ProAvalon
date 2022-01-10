@@ -41,10 +41,11 @@ class ModLog extends React.Component {
       if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
         var logs = JSON.parse(xmlhttp.responseText);
         if (Object.keys(logs).length == 0) {
-          pages -= numIncrement;
+          page -= numIncrement;
           this.setState({ logPage: page });
+        } else {
+          this.setState({ logs: logs });
         }
-        this.setState({ logs: logs });
         // console.log(logs);
       }
     };
