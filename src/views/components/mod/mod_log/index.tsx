@@ -40,7 +40,12 @@ class ModLog extends React.Component {
     xmlhttp.onreadystatechange = () => {
       if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
         var logs = JSON.parse(xmlhttp.responseText);
-        this.setState({ logs: logs });
+        if (Object.keys(logs).length == 0) {
+          page -= numIncrement;
+          this.setState({ logPage: page });
+        } else {
+          this.setState({ logs: logs });
+        }
         // console.log(logs);
       }
     };
@@ -73,6 +78,27 @@ class ModLog extends React.Component {
             </button>
           </span>
           {allLogs}
+          <span className="pageButtonGroup">
+            <button
+              className="btn btn-info logButtons"
+              onClick={() => {
+                this.loadLessLogs();
+                window.scrollTo(0, 0);
+              }}
+            >
+              Prev page
+            </button>
+            <span>Page: {this.state.logPage + 1}</span>
+            <button
+              className="btn btn-info logButtons"
+              onClick={() => {
+                this.loadMoreLogs();
+                window.scrollTo(0, 0);
+              }}
+            >
+              Next page
+            </button>
+          </span>
         </span>
       );
     }
