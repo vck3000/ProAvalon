@@ -4,6 +4,7 @@ const obj: RewardData = {
   adminReq: false,
   modReq: false,
   TOReq: true,
+  devReq: false,
   gamesPlayedReq: 0,
   donationReq: 0,
 };
