@@ -146,9 +146,11 @@ function addToAllChat(data) {
         date = `[${hour}:${min}]`;
 
         let filteredMessage = data[i].message
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/&nbsp;/, '&amp;nbsp;');
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
 
         filteredMessage = linkifyHtml(filteredMessage, {
           validate: {
