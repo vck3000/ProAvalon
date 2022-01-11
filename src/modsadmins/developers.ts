@@ -3,7 +3,7 @@
 export const devsArray = [
   'c0nradd',
   'cin333',
-  'zulf16',
+  'ayad318',
 ];
 
 export function isDev(username: string): boolean {
