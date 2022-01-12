@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 // import ReactDOM from 'react-dom';
 import Modal from 'react-modal';
+import Swal from 'sweetalert2';
+
+declare const currentOnlinePlayers: string[];
 
 const customStyles = {
   content: {
@@ -26,6 +29,7 @@ export function TestModal() {
 
   function openModal() {
     setIsOpen(true);
+    console.log(currentOnlinePlayers);
   }
 
   function afterOpenModal() {
@@ -40,8 +44,6 @@ export function TestModal() {
 
   async function submitForm(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-
-    console.log(e);
     const data = {
       player,
       reason,
@@ -55,6 +57,14 @@ export function TestModal() {
       },
       body: JSON.stringify(data), // body data type must match "Content-Type" header
     });
+
+    console.log(response);
+    response.status;
+    if (response.status === 200) {
+      Swal.fire({ title: 'Success', type: 'success' });
+    } else if (response.status === 400) {
+      Swal.fire({ title: 'Error', type: 'error' });
+    }
   }
 
   return (
@@ -88,10 +98,7 @@ export function TestModal() {
           <select name="player" onChange={(e) => setPlayer(e.target.value)}>
             <option value="">--Please Choose A Player--</option>
             {/* need to load players from database*/}
-            <option value="lorem">Lorem</option>
-            <option value="ipsum">Ipsum</option>
-            <option value="doler">Doler</option>
-            <option value="nortum">Nortum</option>
+            <option value="asdf">asdf</option>
           </select>
           <br />
           <br />

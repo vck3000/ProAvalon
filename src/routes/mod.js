@@ -10,6 +10,7 @@ const upload = multer();
 import Report from '../models/report';
 
 import ModLogComponent from '../views/components/mod/mod_log';
+import ReportLog from '../views/components/mod/reports';
 
 const router = new Router();
 
@@ -220,10 +221,36 @@ router.get('/ajax/logData/:pageIndex', isModMiddleware, (req, res) => {
   }
 });
 
-router.post('/form', (req, res) => {
-  // const reportData = {
+router.post('/form', async (req, res) => {
+  const reportedUser = req.user;
+  const userToReport = await User.findOne({
+    username: req.body.player,
+  });
 
-  // }
+  if (!reportedUser) {
+    res.status(400);
+    res.send('Cannot find who you are.');
+    return;
+  }
+  if (!userToReport) {
+    res.status(400);
+    res.send(`${req.player} was not found.`);
+    return;
+  }
+
+  const reportData = {
+    reason: req.body.reason,
+    reportedPlayer: {
+      username: userToReport.username,
+      id: userToReport._id,
+    },
+    playerWhoReported: {
+      id: reportedUser._id,
+      username: reportedUser.username,
+    },
+    description: req.body.desc,
+    date: new Date(),
+  };
   Report.create(reportData);
   res.status(200);
   res.send('The report was successfully sent, a mod will review it shortly!');
@@ -237,15 +264,14 @@ router.get(
 
     const b = reports.map((report) => ({ reason: report.reason }));
 
-    const a = [];
-    for (const report of reports) {
-      a.push({ reason: report.reason });
-    }
-
-    console.log(b);
-
     res.send(JSON.stringify(b));
   }
 );
 
+router.get('/reports', isModMiddleware, (req, res) => {
+  console.log('hi');
+  const reportsReact = renderToString(<ReportLog />);
+
+  res.render('mod/reports', { reportsReact });
+});
 export default router;
