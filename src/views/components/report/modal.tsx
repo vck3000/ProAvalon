@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 // import ReactDOM from 'react-dom';
 import Modal from 'react-modal';
 
@@ -16,6 +16,10 @@ const customStyles = {
 Modal.setAppElement('#reportDiv');
 
 export function TestModal() {
+  const [player, setPlayer] = useState('');
+  const [reason, setReason] = useState('');
+  const [desc, setDesc] = useState('');
+
   const subtitleRef = React.useRef<HTMLHeadingElement>(null);
 
   const [modalIsOpen, setIsOpen] = React.useState(false);
@@ -34,9 +38,41 @@ export function TestModal() {
     setIsOpen(false);
   }
 
+  async function submitForm(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    console.log(e);
+    const data = {
+      player,
+      reason,
+      desc,
+    };
+    const response = await fetch('/mod/form', {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      headers: {
+        'Content-Type': 'application/json',
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: JSON.stringify(data), // body data type must match "Content-Type" header
+    });
+  }
+
   return (
     <div>
-      <button onClick={openModal}>Open Modal</button>
+      <button
+        onClick={openModal}
+        style={{
+          backgroundColor: '#f44336',
+          color: 'white',
+          border: '0px',
+          padding: '7px',
+          paddingRight: '15px',
+          paddingLeft: '15px',
+          borderRadius: '8px',
+        }}
+      >
+        Report
+      </button>
       <Modal
         isOpen={modalIsOpen}
         onAfterOpen={afterOpenModal}
@@ -44,16 +80,71 @@ export function TestModal() {
         style={customStyles}
         contentLabel="Example Modal"
       >
-        <h2 ref={subtitleRef}>Hello World!</h2>
-        <button onClick={closeModal}>close</button>
-        <div>I am a modal</div>
-        <form>
-          <input />
-          <button>tab navigation</button>
-          <button>stays</button>
-          <button>inside</button>
-          <button>the modal</button>
+        <h2 ref={subtitleRef}>Report</h2>
+        <br />
+        <form onSubmit={submitForm}>
+          <label>Select A Player: </label>
+          <br />
+          <select name="player" onChange={(e) => setPlayer(e.target.value)}>
+            <option value="">--Please Choose A Player--</option>
+            {/* need to load players from database*/}
+            <option value="lorem">Lorem</option>
+            <option value="ipsum">Ipsum</option>
+            <option value="doler">Doler</option>
+            <option value="nortum">Nortum</option>
+          </select>
+          <br />
+          <br />
+          <label>Select A Reason: </label>
+          <br />
+          <select name="reason" onChange={(e) => setReason(e.target.value)}>
+            <option value="">--Please Choose A Reason--</option>
+            <option value="harrassment">Harrassment</option>
+            <option value="ipsum">ipsum</option>
+            <option value="doler">doler</option>
+            <option value="other">Other</option>
+          </select>
+          <br />
+          <br />
+          <label>Any Additional Information: </label>
+          <br />
+          <textarea
+            rows={4}
+            cols={50}
+            name="addInfo"
+            value={desc}
+            onChange={(e) => setDesc(e.target.value)}
+          ></textarea>
+          <br />
+          {/* Onclick feature to store it into database*/}
+          <button
+            style={{
+              backgroundColor: 'green',
+              color: 'white',
+              border: '0px',
+              borderRadius: '8px',
+              padding: '4px',
+              paddingRight: '10px',
+              paddingLeft: '10px',
+            }}
+          >
+            Report
+          </button>
         </form>
+        <button
+          style={{
+            backgroundColor: 'red',
+            color: 'white',
+            border: '0px',
+            borderRadius: '8px',
+            padding: '4px',
+            paddingRight: '10px',
+            paddingLeft: '10px',
+          }}
+          onClick={closeModal}
+        >
+          Close
+        </button>
       </Modal>
     </div>
   );

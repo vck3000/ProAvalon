@@ -7,6 +7,7 @@ import Ban from '../models/ban';
 import ModLog from '../models/modLog';
 import multer from 'multer';
 const upload = multer();
+import Report from '../models/report';
 
 import ModLogComponent from '../views/components/mod/mod_log';
 
@@ -218,5 +219,33 @@ router.get('/ajax/logData/:pageIndex', isModMiddleware, (req, res) => {
       });
   }
 });
+
+router.post('/form', (req, res) => {
+  // const reportData = {
+
+  // }
+  Report.create(reportData);
+  res.status(200);
+  res.send('The report was successfully sent, a mod will review it shortly!');
+  return;
+});
+
+router.get(
+  '/form',
+  /* isModMiddleware, */ async (req, res) => {
+    const reports = await Report.find({ resolved: false }).limit(10);
+
+    const b = reports.map((report) => ({ reason: report.reason }));
+
+    const a = [];
+    for (const report of reports) {
+      a.push({ reason: report.reason });
+    }
+
+    console.log(b);
+
+    res.send(JSON.stringify(b));
+  }
+);
 
 export default router;
