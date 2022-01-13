@@ -10,13 +10,13 @@ describe('Chat Spam Filter', () => {
   it('should allow user to chat again after cooldown has expired', () => {
     const chatSpamFilter = new ChatSpamFilter();
 
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 4; i++) {
       chatSpamFilter.chatRequest('pronub');
     }
 
     expect(chatSpamFilter.chatRequest('pronub')).toEqual(false);
 
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 4; i++) {
       chatSpamFilter.tick();
     }
 
@@ -27,7 +27,7 @@ describe('Chat Spam Filter', () => {
     const chatSpamFilter = new ChatSpamFilter();
 
     chatSpamFilter.chatRequest('LoremUser');
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 4; i++) {
       chatSpamFilter.chatRequest('IpsumUser');
     }
 
@@ -38,7 +38,7 @@ describe('Chat Spam Filter', () => {
   it('Reconnecting the server refreshes the cooldown period', () => {
     const chatSpamFilter = new ChatSpamFilter();
 
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 4; i++) {
       chatSpamFilter.chatRequest('Person1');
     }
 
