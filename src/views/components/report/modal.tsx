@@ -24,12 +24,15 @@ export function TestModal() {
   const [desc, setDesc] = useState('');
 
   const subtitleRef = React.useRef<HTMLHeadingElement>(null);
-
+  const suggestionPlayers: { name: string }[] = [];
   const [modalIsOpen, setIsOpen] = React.useState(false);
 
   function openModal() {
     setIsOpen(true);
-    console.log(currentOnlinePlayers);
+    currentOnlinePlayers.map((user: string) => {
+      var jsonUser = JSON.parse(JSON.stringify(user));
+      suggestionPlayers.push({ name: jsonUser.displayUsername.split(' ')[0] });
+    });
   }
 
   function afterOpenModal() {
@@ -67,19 +70,45 @@ export function TestModal() {
     }
   }
 
+  function escapeRegexCharacters(str: string) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function getSuggestions(value: string) {
+    const escapedValue = escapeRegexCharacters(value.trim());
+
+    if (escapedValue === '') {
+      return [];
+    }
+
+    const regex = new RegExp('^' + escapedValue, 'i');
+
+    return suggestionPlayers.filter((player) => regex.test(player.name));
+  }
+
+  function getSuggestionValue(suggestion: { name: string }) {
+    return suggestion.name;
+  }
+
+  function renderSuggestion(suggestion: { name: string }) {
+    return <span>{suggestion.name}</span>;
+  }
+
   return (
     <div>
       <button
         onClick={openModal}
-        style={{
-          backgroundColor: '#f44336',
-          color: 'white',
-          border: '0px',
-          padding: '7px',
-          paddingRight: '15px',
-          paddingLeft: '15px',
-          borderRadius: '8px',
-        }}
+        style={
+          {
+            // backgroundColor: '#f44336',
+            // color: 'white',
+            // border: '0px',
+            // padding: '7px',
+            // paddingRight: '15px',
+            // paddingLeft: '15px',
+            // borderRadius: '8px',
+          }
+        }
       >
         Report
       </button>
