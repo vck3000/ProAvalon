@@ -4,9 +4,7 @@ import { TestModal } from './modal';
 
 function Report() {
   return (
-    <h1>
       <TestModal />
-    </h1>
   );
 }
 

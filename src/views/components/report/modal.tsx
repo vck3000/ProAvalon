@@ -98,17 +98,17 @@ export function TestModal() {
     <div>
       <button
         onClick={openModal}
-        style={
-          {
-            // backgroundColor: '#f44336',
-            // color: 'white',
-            // border: '0px',
-            // padding: '7px',
-            // paddingRight: '15px',
-            // paddingLeft: '15px',
-            // borderRadius: '8px',
-          }
-        }
+        // style={
+        // {
+        // backgroundColor: '#f44336',
+        // color: 'white',
+        // border: '0px',
+        // padding: '7px',
+        // paddingRight: '15px',
+        // paddingLeft: '15px',
+        // borderRadius: '8px',
+        // }
+        // }
       >
         Report
       </button>

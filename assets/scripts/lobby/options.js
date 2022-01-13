@@ -18,7 +18,7 @@ var userOptions = {
       $('#option_display_font_size_text')[0].value = fontSize;
 
       // make the font size changes
-      $('html *, *:not([data-reactroot]').css('font-size', `${fontSize}px`);
+      $('*:not([react-entrypoint] *').css('font-size', `${fontSize}px`);
     
       draw();
     },
@@ -42,7 +42,7 @@ var userOptions = {
         $('#option_display_font_size_text')[0].value = fontSize;
 
         // make the changes to font size
-        $('html *, *:not([data-reactroot]').css('font-size', `${fontSize}px`);
+        $('*:not([react-entrypoint] *').css('font-size', `${fontSize}px`);
         draw();
 
         // save the data in cookie
