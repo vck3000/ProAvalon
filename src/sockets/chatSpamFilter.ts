@@ -1,5 +1,5 @@
-const SPAM_WINDOW = 5;
-const NUM_MESSAGES = 4;
+const SPAM_WINDOW = 3;
+const NUM_MESSAGES = 3;
 
 export class ChatSpamFilter {
   history: { [username: string]: number[] };
