@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 // import ReactDOM from 'react-dom';
 import Modal from 'react-modal';
 import Swal from 'sweetalert2';
+import { AutoSuggestWrapper } from '../common/autoSuggestWrapper';
 
-declare const currentOnlinePlayers: string[];
+declare const currentOnlinePlayers: { displayUsername: string }[];
 
 const customStyles = {
   content: {
@@ -24,15 +25,22 @@ export function TestModal() {
   const [desc, setDesc] = useState('');
 
   const subtitleRef = React.useRef<HTMLHeadingElement>(null);
-  const suggestionPlayers: { name: string }[] = [];
+
+  const [suggestionPlayers, setSuggestionPlayers] = useState<
+    { name: string }[]
+  >([]);
+
   const [modalIsOpen, setIsOpen] = React.useState(false);
 
   function openModal() {
     setIsOpen(true);
-    currentOnlinePlayers.map((user: string) => {
-      var jsonUser = JSON.parse(JSON.stringify(user));
-      suggestionPlayers.push({ name: jsonUser.displayUsername.split(' ')[0] });
+
+    const suggestions: { name: string }[] = [];
+    currentOnlinePlayers.map((user) => {
+      suggestions.push({ name: user.displayUsername.split(' ')[0] });
     });
+
+    setSuggestionPlayers(suggestions);
   }
 
   function afterOpenModal() {
@@ -70,30 +78,6 @@ export function TestModal() {
     }
   }
 
-  function escapeRegexCharacters(str: string) {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  }
-
-  function getSuggestions(value: string) {
-    const escapedValue = escapeRegexCharacters(value.trim());
-
-    if (escapedValue === '') {
-      return [];
-    }
-
-    const regex = new RegExp('^' + escapedValue, 'i');
-
-    return suggestionPlayers.filter((player) => regex.test(player.name));
-  }
-
-  function getSuggestionValue(suggestion: { name: string }) {
-    return suggestion.name;
-  }
-
-  function renderSuggestion(suggestion: { name: string }) {
-    return <span>{suggestion.name}</span>;
-  }
-
   return (
     <div>
       <button
@@ -124,11 +108,14 @@ export function TestModal() {
         <form onSubmit={submitForm}>
           <label>Select A Player: </label>
           <br />
-          <select name="player" onChange={(e) => setPlayer(e.target.value)}>
-            <option value="">--Please Choose A Player--</option>
-            {/* need to load players from database*/}
-            <option value="asdf">asdf</option>
-          </select>
+
+          <AutoSuggestWrapper data={suggestionPlayers} />
+
+          {/* <select name="player" onChange={(e) => setPlayer(e.target.value)}>*/}
+          {/*   <option value="">--Please Choose A Player--</option>*/}
+          {/*   {/1* need to load players from database*1/}*/}
+          {/*   <option value="asdf">asdf</option>*/}
+          {/* </select>*/}
           <br />
           <br />
           <label>Select A Reason: </label>
