@@ -262,14 +262,18 @@ router.get(
   /* isModMiddleware, */ async (req, res) => {
     const reports = await Report.find({ resolved: false }).limit(10);
 
-    const b = reports.map((report) => ({ reason: report.reason }));
-
-    res.send(JSON.stringify(b));
+    const b = reports.map((report) => ({
+      playerWhoReport: report.playerWhoReported,
+      reportedPlayer: report.reportedPlayer,
+      date: report.date,
+      reason: report.reason,
+      _id: report._id,
+    }));
+    res.send(b);
   }
 );
 
 router.get('/reports', isModMiddleware, (req, res) => {
-  console.log('hi');
   const reportsReact = renderToString(<ReportLog />);
 
   res.render('mod/reports', { reportsReact });

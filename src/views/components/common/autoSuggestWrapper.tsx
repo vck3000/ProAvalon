@@ -10,7 +10,7 @@ import Autosuggest from 'react-autosuggest';
 //   {
 //     name: 'Elm',
 //     year: 2012,
-//   },
+//   }
 // ];
 
 // When suggestion is clicked, Autosuggest needs to populate the input
@@ -25,9 +25,10 @@ const renderSuggestion = (suggestion: HTMLInputElement) => (
 
 type Props = {
   data: { name: string }[];
+  getValue: Function;
 };
 
-export function AutoSuggestWrapper({ data }: Props) {
+export function AutoSuggestWrapper({ data, getValue }: Props) {
   // Autosuggest is a controlled component.
   // This means that you need to provide an input value
   // and an onChange handler that updates this value (see below).
@@ -40,13 +41,11 @@ export function AutoSuggestWrapper({ data }: Props) {
   //   suggestions: [],
   // };
 
-  console.log(data);
-
   // Teach Autosuggest how to calculate suggestions for any given input value.
   const getSuggestions = (value: string) => {
     const inputValue = value.trim().toLowerCase();
     const inputLength = inputValue.length;
-
+    // getValue(value);
     return inputLength === 0
       ? []
       : data.filter(
@@ -68,6 +67,8 @@ export function AutoSuggestWrapper({ data }: Props) {
   // You already implemented this logic above, so just use it.
   const onSuggestionsFetchRequested = ({ value }: { value: string }) => {
     setSuggestions(getSuggestions(value));
+    //doesnt really work when u delete everythging or click on the suggestion
+    getValue(value);
     // this.setState({
     //   suggestions: getSuggestions(value),
     // });
@@ -83,7 +84,7 @@ export function AutoSuggestWrapper({ data }: Props) {
 
   // Autosuggest will pass through all these props to the input.
   const inputProps = {
-    placeholder: 'Type a programming language',
+    placeholder: 'Enter Player Name',
     value,
     onChange,
   };

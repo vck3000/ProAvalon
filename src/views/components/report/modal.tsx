@@ -78,21 +78,23 @@ export function TestModal() {
     }
   }
 
+  function getPlayer(username: string) {
+    setPlayer(username);
+  }
+
   return (
     <div>
       <button
         onClick={openModal}
-        // style={
-        // {
-        // backgroundColor: '#f44336',
-        // color: 'white',
-        // border: '0px',
-        // padding: '7px',
-        // paddingRight: '15px',
-        // paddingLeft: '15px',
-        // borderRadius: '8px',
-        // }
-        // }
+        style={{
+          backgroundColor: '#f44336',
+          color: 'white',
+          border: '0px',
+          padding: '7px',
+          paddingRight: '15px',
+          paddingLeft: '15px',
+          borderRadius: '8px',
+        }}
       >
         Report
       </button>
@@ -109,7 +111,7 @@ export function TestModal() {
           <label>Select A Player: </label>
           <br />
 
-          <AutoSuggestWrapper data={suggestionPlayers} />
+          <AutoSuggestWrapper data={suggestionPlayers} getValue={getPlayer} />
 
           {/* <select name="player" onChange={(e) => setPlayer(e.target.value)}>*/}
           {/*   <option value="">--Please Choose A Player--</option>*/}
@@ -139,7 +141,6 @@ export function TestModal() {
             onChange={(e) => setDesc(e.target.value)}
           ></textarea>
           <br />
-          {/* Onclick feature to store it into database*/}
           <button
             style={{
               backgroundColor: 'green',

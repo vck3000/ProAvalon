@@ -1,21 +1,8 @@
 <% include ../partials/header %>
 
-<style>
-  .myContainer {
-    border-radius: 50px;
-
-    padding-top: 5%;
-    padding-bottom: 5%;
-    margin-bottom: 30px;
-    color: inherit;
-    background-color: #eee;
-
-    width: 95%;
-  }
-</style>
-
-<div class="container myContainer"></div>
-<div react-entrypoint class="panel-body" id="LogReportsDiv"><%-reportsReact%></div>
+<div react-entrypoint class="panel-body" id="LogReportsDiv">
+  <%-reportsReact%>
+</div>
 <br />
 <script
   type="text/javascript"
