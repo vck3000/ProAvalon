@@ -1,98 +1,66 @@
 import React, { useState } from 'react';
 import Autosuggest from 'react-autosuggest';
 
-// Imagine you have a list of languages that you'd like to autosuggest.
-// const languages = [
-//   {
-//     name: 'C',
-//     year: 1972,
-//   },
-//   {
-//     name: 'Elm',
-//     year: 2012,
-//   }
-// ];
+const getSuggestionValue = (suggestion: HTMLInputElement) => {
+  return suggestion.name;
+};
 
-// When suggestion is clicked, Autosuggest needs to populate the input
-// based on the clicked suggestion. Teach Autosuggest how to calculate the
-// input value for every given suggestion.
-const getSuggestionValue = (suggestion: HTMLInputElement) => suggestion.name;
-
-// Use your imagination to render suggestions.
 const renderSuggestion = (suggestion: HTMLInputElement) => (
   <div>{suggestion.name}</div>
 );
 
 type Props = {
-  data: { name: string }[];
-  getValue: Function;
+  allSuggestions: { name: string }[];
+  setValue: (value: string) => void;
 };
 
-export function AutoSuggestWrapper({ data, getValue }: Props) {
-  // Autosuggest is a controlled component.
-  // This means that you need to provide an input value
-  // and an onChange handler that updates this value (see below).
-  // Suggestions also need to be provided to the Autosuggest,
-  // and they are initially empty because the Autosuggest is closed.
-  const [value, setValue] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
-  // this.state = {
-  //   value: '',
-  //   suggestions: [],
-  // };
+export function AutoSuggestWrapper({ allSuggestions, setValue }: Props) {
+  const [visibleSuggestions, setVisibleSuggestions] = useState([]);
+  const [localValue, setLocalValue] = useState('');
 
-  // Teach Autosuggest how to calculate suggestions for any given input value.
-  const getSuggestions = (value: string) => {
-    const inputValue = value.trim().toLowerCase();
-    const inputLength = inputValue.length;
-    // getValue(value);
-    return inputLength === 0
-      ? []
-      : data.filter(
-          (str) => str.name.toLowerCase().slice(0, inputLength) === inputValue
-        );
+  const getSuggestions = (name: string) => {
+    if (name.length === 0) {
+      return [];
+    }
+
+    return allSuggestions.filter(
+      (str) =>
+        str.name.toLowerCase().slice(0, name.length) ===
+        name.trim().toLowerCase()
+    );
   };
 
   const onChange = (
     event: React.FormEvent<HTMLInputElement>,
     { newValue }: { newValue: string }
   ) => {
+    setLocalValue(newValue);
+
+    // Pass data back to parent
     setValue(newValue);
-    // this.setState({
-    //   value: newValue,
-    // });
   };
 
-  // Autosuggest will call this function every time you need to update suggestions.
-  // You already implemented this logic above, so just use it.
   const onSuggestionsFetchRequested = ({ value }: { value: string }) => {
-    setSuggestions(getSuggestions(value));
-    //doesnt really work when u delete everythging or click on the suggestion
-    getValue(value);
-    // this.setState({
-    //   suggestions: getSuggestions(value),
-    // });
+    setVisibleSuggestions(getSuggestions(value));
   };
 
-  // Autosuggest will call this function every time you need to clear suggestions.
   const onSuggestionsClearRequested = () => {
-    setSuggestions([]);
-    // this.setState({
-    //   suggestions: [],
-    // });
+    setVisibleSuggestions([]);
+    setLocalValue('');
+
+    // Pass data back to parent
+    setValue('');
   };
 
-  // Autosuggest will pass through all these props to the input.
   const inputProps = {
     placeholder: 'Enter Player Name',
-    value,
+    value: localValue,
     onChange,
   };
 
-  // Finally, render it!
   return (
     <Autosuggest
-      suggestions={suggestions}
+      suggestions={visibleSuggestions}
       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
       onSuggestionsClearRequested={onSuggestionsClearRequested}
       getSuggestionValue={getSuggestionValue}

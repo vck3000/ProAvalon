@@ -23,14 +23,13 @@ export function TestModal() {
   const [player, setPlayer] = useState('');
   const [reason, setReason] = useState('');
   const [desc, setDesc] = useState('');
-
-  const subtitleRef = React.useRef<HTMLHeadingElement>(null);
-
   const [suggestionPlayers, setSuggestionPlayers] = useState<
     { name: string }[]
   >([]);
 
   const [modalIsOpen, setIsOpen] = React.useState(false);
+
+  const subtitleRef = React.useRef<HTMLHeadingElement>(null);
 
   function openModal() {
     setIsOpen(true);
@@ -55,31 +54,28 @@ export function TestModal() {
 
   async function submitForm(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     const data = {
       player,
       reason,
       desc,
     };
+
     const response = await fetch('/mod/form', {
-      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // 'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: JSON.stringify(data), // body data type must match "Content-Type" header
+      body: JSON.stringify(data),
     });
 
     console.log(response);
-    response.status;
+
     if (response.status === 200) {
       Swal.fire({ title: 'Success', type: 'success' });
     } else if (response.status === 400) {
       Swal.fire({ title: 'Error', type: 'error' });
     }
-  }
-
-  function getPlayer(username: string) {
-    setPlayer(username);
   }
 
   return (
@@ -111,7 +107,10 @@ export function TestModal() {
           <label>Select A Player: </label>
           <br />
 
-          <AutoSuggestWrapper data={suggestionPlayers} getValue={getPlayer} />
+          <AutoSuggestWrapper
+            allSuggestions={suggestionPlayers}
+            setValue={setPlayer}
+          />
 
           {/* <select name="player" onChange={(e) => setPlayer(e.target.value)}>*/}
           {/*   <option value="">--Please Choose A Player--</option>*/}

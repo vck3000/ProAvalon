@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc && webpack --config webpack.prod.js && cp -R ./src/views ./out",
     "dev": "concurrently -k \"npm:dev:tsnd\" \"npm:dev:webpack\"",
-    "dev:tsnd": "ts-node-dev --exit-child --respawn --ignore-watch \".tsx$\" ./src/app.ts",
+    "dev:tsnd": "ts-node-dev --respawn --ignore-watch \".tsx$\" ./src/app.ts",
     "dev:webpack": "rm -f ./assets/dist_webpack/* && webpack serve --config webpack.dev.js",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --fix",
