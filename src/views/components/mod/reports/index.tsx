@@ -4,7 +4,8 @@ import { hot } from 'react-hot-loader/root';
 
 function LogReport() {
   const [logs, setLogs] = useState(null);
-  const [allLogs, setAllLogs] = useState(null);
+  const [unresolvedLogs, setUnresolvedLogs] = useState(null);
+  const [resolvedLogs, setResolvedLogs] = useState(null);
 
   const myStyle = {
     boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)',
@@ -23,6 +24,74 @@ function LogReport() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ modComment, modUser: '', id_key }),
+    });
+  }
+
+  function handleUnresolvedLogs() {
+    return logs.map((log: {}, i: number) => {
+      if (logs[i].resolved == false) {
+        return (
+          <span key={logs[i]._id}>
+            <div style={myStyle} id={logs[i]._id}>
+              <strong>Date</strong>: {logs[i].date} <br />
+              <strong>Reason</strong>: {logs[i].reason}
+              <br />
+              <strong>Player Who Reported</strong>:{' '}
+              {logs[i].playerWhoReport.username}
+              <br />
+              <strong>Reported Player</strong>:{' '}
+              {logs[i].reportedPlayer.username}
+              <br />
+              <strong>Resolved</strong>: {'False'}
+              <br />
+              <br />
+              <button className="btn btn-info">See More</button>
+              <button
+                className="btn btn-success"
+                id={`${logs[i]._id}resolve-button`}
+                style={{ margin: '2px', marginLeft: '50px' }}
+                onClick={() => {
+                  handleResolve(logs[i]._id);
+                }}
+              >
+                Resolve
+              </button>
+            </div>
+            <br />
+            <br />
+          </span>
+        );
+      }
+    });
+  }
+
+  function handleResolvedLogs() {
+    return logs.map((log: {}, i: number) => {
+      if (logs[i].resolved == true) {
+        return (
+          <span key={logs[i]._id}>
+            <div style={myStyle} id={logs[i]._id}>
+              <strong>Date</strong>: {logs[i].date} <br />
+              <strong>Reason</strong>: {logs[i].reason}
+              <br />
+              <strong>Player Who Reported</strong>:{' '}
+              {logs[i].playerWhoReport.username}
+              <br />
+              <strong>Reported Player</strong>:{' '}
+              {logs[i].reportedPlayer.username}
+              <br />
+              <strong>Resolved</strong>: True
+              <br />
+              <strong>Mod Who Resolved</strong> : idk how to do this
+              <br />
+              <strong>Mod Comment</strong>: {logs[i].modComment}
+              <br />
+            </div>
+            <br />
+            <br />
+          </span>
+        );
+      }
     });
   }
 
@@ -55,7 +124,7 @@ function LogReport() {
     }
   }
 
-  async function loadLogs(numIncrement: number, resolved: boolean) {
+  async function loadLogs(numIncrement: number) {
     const response = await fetch('/mod/form', {
       method: 'GET',
       headers: new Headers({
@@ -66,43 +135,11 @@ function LogReport() {
     const reports = await response.json();
     setLogs(reports);
     if (logs) {
-      setAllLogs(
-        logs.map((log: {}, i: number) => {
-          if (logs[i].resolved === resolved) {
-            return (
-              <span key={logs[i]._id}>
-                <div style={myStyle} id={logs[i]._id}>
-                  <strong>Date</strong>: {logs[i].date} <br />
-                  <strong>Reason</strong>: {logs[i].reason}
-                  <br />
-                  <strong>Player Who Reported</strong>:{' '}
-                  {logs[i].playerWhoReport.username}
-                  <br />
-                  <strong>Reported Player</strong>:{' '}
-                  {logs[i].reportedPlayer.username}
-                  <br />
-                  <br />
-                  <button className="btn btn-info">See More</button>
-                  <button
-                    className="btn btn-success"
-                    id={`${logs[i]._id}resolve-button`}
-                    style={{ margin: '2px', marginLeft: '50px' }}
-                    onClick={() => {
-                      handleResolve(logs[i]._id);
-                    }}
-                  >
-                    Resolve
-                  </button>
-                </div>
-                <br />
-                <br />
-              </span>
-            );
-          }
-        })
-      );
+      setResolvedLogs(handleResolvedLogs());
+      setUnresolvedLogs(handleUnresolvedLogs());
     }
   }
+
   //
   return (
     <span>
@@ -112,11 +149,10 @@ function LogReport() {
       <br />
       <br />
       <br />
-      <button onClick={() => loadLogs(0, false)}>Load unresolved logs</button>
-      <button style={{ float: 'right' }} onClick={() => loadLogs(0, false)}>
-        Load resolved logs
-      </button>
-      {allLogs}
+      <button onClick={() => loadLogs(0)}>Load logs</button>
+
+      <div style={{ float: 'left', width: '50%' }}>{unresolvedLogs}</div>
+      <div style={{ float: 'right', width: '50%' }}>{resolvedLogs}</div>
     </span>
   );
 }

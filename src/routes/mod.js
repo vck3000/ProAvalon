@@ -287,17 +287,16 @@ router.post('/reports', async (req, res) => {
   // const modComment = req.body.modComment;
   // const modUser = request.user;
   const id = req.body.id_key;
-  console.log(id);
-  // const report = await Report.findByIdAndUpdate(
-  //   { id },
-  //   { modComment: req.body.modComment, resolved: true },
-  //   function (err, result) {
-  //     if (err) {
-  //       res.send(err);
-  //     } else {
-  //       res.send(result);
-  //     }
-  //   }
-  // );
+  const report = await Report.findByIdAndUpdate(
+    id,
+    { modComment: req.body.modComment, resolved: true },
+    function (err, result) {
+      if (err) {
+        res.send(err);
+      } else {
+        res.send(result);
+      }
+    }
+  );
 });
 export default router;
