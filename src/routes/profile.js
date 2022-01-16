@@ -57,7 +57,7 @@ router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
   // console.log(req.body.decision);
   // console.log(req.body.avatarreqid);
   // console.log(req.body.modcomment);
-  
+
   avatarRequest.findById(req.body.avatarreqid).exec((err, foundReq) => {
     if (err) {
       console.log(err);
@@ -325,9 +325,18 @@ router.post('/:profileUsername', checkProfileOwnership, (req, res) => {
   // console.log(req.body.hideStats);
   // console.log(req.body.pronoun);
 
-  if(!["he/him", "she/her", "they/them"].includes(req.body.pronoun)){
-    req.body.pronoun = "N/A"
+  const allowedPronouns = [
+    'he/him',
+    'he/they',
+    'she/her',
+    'she/they',
+    'they/them',
+  ];
+
+  if (!allowedPronouns.includes(req.body.pronoun)) {
+    req.body.pronoun = 'N/A';
   }
+
   if (!req.body.biography) {
     req.body.biography = '';
   }
