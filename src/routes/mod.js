@@ -260,7 +260,7 @@ router.post('/form', async (req, res) => {
 router.get(
   '/form',
   /* isModMiddleware, */ async (req, res) => {
-    const reports = await Report.find({ resolved: false }).limit(10);
+    const reports = await Report.find({}).limit(10);
 
     const b = reports.map((report) => ({
       playerWhoReport: report.playerWhoReported,
@@ -268,6 +268,9 @@ router.get(
       date: report.date,
       reason: report.reason,
       _id: report._id,
+      resolved: report.resolved,
+      modComment: report.modComment,
+      modWhoResolved: report.modWhoResolved,
     }));
     res.send(b);
   }
@@ -277,5 +280,24 @@ router.get('/reports', isModMiddleware, (req, res) => {
   const reportsReact = renderToString(<ReportLog />);
 
   res.render('mod/reports', { reportsReact });
+});
+
+router.post('/reports', async (req, res) => {
+  // const request = await req.json();
+  // const modComment = req.body.modComment;
+  // const modUser = request.user;
+  const id = req.body.id_key;
+  console.log(id);
+  // const report = await Report.findByIdAndUpdate(
+  //   { id },
+  //   { modComment: req.body.modComment, resolved: true },
+  //   function (err, result) {
+  //     if (err) {
+  //       res.send(err);
+  //     } else {
+  //       res.send(result);
+  //     }
+  //   }
+  // );
 });
 export default router;
