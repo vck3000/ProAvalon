@@ -2569,39 +2569,35 @@ function socketCallback(action, room) {
 var applyApplicableRewards = function (socket) {
   // Admin badge
   if (socket.rewards.includes(REWARDS.ADMIN_BADGE)) {
-    socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Admin' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>A</span>`;
-    // socket.request.displayUsername = "[A] " + socket.request.displayUsername;
+    socket.request.badge = 'A';
   }
   // Moderator badge
   else if (socket.rewards.includes(REWARDS.MOD_BADGE)) {
-    socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Moderator' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>M</span>`;
-    // socket.request.displayUsername = "[M] " + socket.request.displayUsername;
+    socket.request.badge = "M";
   }
   // TO badge
   else if (socket.rewards.includes(REWARDS.TO_BADGE)) {
-    socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Tournament Organizer' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>T</span>`;
-  // socket.request.displayUsername = "[TO] " + socket.request.displayUsername;
+    socket.request.badge = 'T';
   }
   // DEV badge
   else if (socket.rewards.includes(REWARDS.DEV_BADGE)) {
-    socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Developer' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>D</span>`;
-  // socket.request.displayUsername = "[D] " + socket.request.displayUsername;
+    socket.request.badge = 'D';
   }
   // Tier4 badge
   if (socket.rewards.includes(REWARDS.TIER4_BADGE)) {
-    socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Patreon T4' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>T4</span>`;
+    socket.request.badge = "T4";
   }
   // Tier3 badge
   else if (socket.rewards.includes(REWARDS.TIER3_BADGE)) {
-    socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Patreon T3' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>T3</span>`;
+    socket.request.badge = "T3";
   }
   // Tier2 badge
   else if (socket.rewards.includes(REWARDS.TIER2_BADGE)) {
-    socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Patreon T2' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>T2</span>`;
+    socket.request.badge = "T2";
   }
   // Tier1 badge
   else if (socket.rewards.includes(REWARDS.TIER1_BADGE)) {
-    socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Patreon T1' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>T1</span>`;
+    socket.request.badge = "T1";
   }
 
   return socket;
@@ -3084,6 +3080,10 @@ function allChatFromClient(data) {
     return;
   }
 
+  const senderSocket =
+      allSockets[getIndexFromUsername(allSockets, data.username, true)];
+  data.badge = senderSocket.request.badge;
+
   sendToAllChat(ioGlobal, data);
 }
 
@@ -3126,6 +3126,7 @@ function roomChatFromClient(data) {
   }
 
   data.dateCreated = new Date();
+  data.badge = senderSocket.request.badge;
 
   if (this.request.user.inRoomId) {
     const userRoom = rooms[this.request.user.inRoomId];
