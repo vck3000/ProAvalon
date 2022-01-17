@@ -282,10 +282,14 @@ router.get('/reports', isModMiddleware, (req, res) => {
   res.render('mod/reports', { reportsReact });
 });
 
+// Resolve a report
 router.post('/reports', async (req, res) => {
   // const request = await req.json();
   // const modComment = req.body.modComment;
-  // const modUser = request.user;
+  const modUser = request.user;
+
+  // modUser._id;
+
   const id = req.body.id_key;
   const report = await Report.findByIdAndUpdate(
     id,

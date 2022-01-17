@@ -46,10 +46,6 @@ export function AutoSuggestWrapper({ allSuggestions, setValue }: Props) {
 
   const onSuggestionsClearRequested = () => {
     setVisibleSuggestions([]);
-    setLocalValue('');
-
-    // Pass data back to parent
-    setValue('');
   };
 
   const inputProps = {
