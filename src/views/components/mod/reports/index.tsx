@@ -1,48 +1,110 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { hot } from 'react-hot-loader/root';
+import Swal from 'sweetalert2';
 
 import { myStyle } from './css';
-
 
 type Report = {
   date: string;
   modWhoResolved: { id: string; username: string };
+  modComment: string;
   playerWhoReport: { id: string; username: string };
   reason: string;
   reportedPlayer: { id: string; username: string };
   resolved: boolean;
+  _id: string;
 };
 
 function Report() {
   const [unresolvedReports, setUnresolvedReports] = useState<Report[]>([]);
   const [resolvedReports, setResolvedReports] = useState<Report[]>([]);
+  const [currentPageResolved, setCurrentPageResolved] = useState(0);
+  const [currentPageUnresolved, setCurrentPageUnresolved] = useState(0);
 
   useEffect(() => {
     triggerLoadReports();
-  }, []);
+  }, [currentPageResolved, currentPageUnresolved]);
 
   const triggerLoadReports = () => {
-    loadReports(0);
+    loadReports(currentPageUnresolved, currentPageResolved);
     console.log('Triggered reload');
   };
+  const nextPageUnresolved = () => {
+    let tempCurrentPage = currentPageUnresolved + 1;
+    setCurrentPageUnresolved(tempCurrentPage);
+  };
 
-  async function loadReports(numIncrement: number) {
-    const response = await fetch('/mod/form', {
-      method: 'GET',
-      headers: new Headers({
-        'Content-Type': 'text/json',
-      }),
-    });
+  const prevPageUnresolved = () => {
+    if (currentPageUnresolved != 0) {
+      let tempCurrentPage = currentPageUnresolved - 1;
+      setCurrentPageUnresolved(tempCurrentPage);
+    }
+  };
 
-    const reports = await response.json();
+  const nextPageResolved = () => {
+    let tempCurrentPage = currentPageResolved + 1;
+    setCurrentPageResolved(tempCurrentPage);
+  };
 
-    setResolvedReports(reports.filter((r: Report) => r.resolved));
-    setUnresolvedReports(reports.filter((r: Report) => !r.resolved));
+  const prevPageResolved = () => {
+    if (currentPageResolved != 0) {
+      let tempCurrentPage = currentPageResolved - 1;
+      setCurrentPageResolved(tempCurrentPage);
+    }
+  };
+
+  async function loadReports(
+    pageNumberUnresolved: number,
+    pageNumberResolved: number
+  ) {
+    const responseResolved = await fetch(
+      `/mod/form/${pageNumberResolved}?resolved=true`,
+      {
+        method: 'GET',
+        headers: new Headers({
+          'Content-Type': 'text/json',
+        }),
+      }
+    );
+    const responseUnresolved = await fetch(
+      `/mod/form/${pageNumberUnresolved}?resolved=false`,
+      {
+        method: 'GET',
+        headers: new Headers({
+          'Content-Type': 'text/json',
+        }),
+      }
+    );
+
+    const reportsResolved = await responseResolved.json();
+    const reportsUnresolved = await responseUnresolved.json();
+
+    //else need to revert the page number, but that causes a re render (can ignore?), for now just sending an alert to know its end of page
+
+    if (reportsResolved.length != 0) {
+      setResolvedReports(reportsResolved);
+    } else {
+      if (currentPageResolved != 0) {
+        Swal.fire('End of page, go back');
+      }
+    }
+    if (reportsUnresolved.length != 0) {
+      setUnresolvedReports(reportsUnresolved);
+    } else {
+      if (currentPageUnresolved != 0) {
+        Swal.fire('End of page, go back');
+      }
+    }
   }
 
   return (
     <span>
       <h2>Unresolved Reports</h2>
+      <PageButtons
+        currentPage={currentPageUnresolved}
+        nextPage={nextPageUnresolved}
+        prevPage={prevPageUnresolved}
+      />
       <div>
         {unresolvedReports.map((report) => (
           <ReportEntry
@@ -52,8 +114,18 @@ function Report() {
           />
         ))}
       </div>
+      <PageButtons
+        currentPage={currentPageUnresolved}
+        nextPage={nextPageUnresolved}
+        prevPage={prevPageUnresolved}
+      />
 
       <h2>Resolved Reports</h2>
+      <PageButtons
+        currentPage={currentPageResolved}
+        nextPage={nextPageResolved}
+        prevPage={prevPageResolved}
+      />
       <div>
         {resolvedReports.map((report) => (
           <ReportEntry
@@ -63,116 +135,45 @@ function Report() {
           />
         ))}
       </div>
+      <PageButtons
+        currentPage={currentPageResolved}
+        nextPage={nextPageResolved}
+        prevPage={prevPageResolved}
+      />
     </span>
   );
+}
 
-  //async function handleConfirm(modComment: any, id_key: any) {
-  //  //still need to get who?
-  //  const res = await fetch('/mod/reports', {
-  //    method: 'POST',
-  //    headers: { 'Content-Type': 'application/json' },
-  //    body: JSON.stringify({ modComment, modUser: '', id_key }),
-  //  });
-  //}
+type PageButtonProps = {
+  currentPage: number;
+  nextPage: () => void;
+  prevPage: () => void;
+};
 
-  //function handleUnresolvedLogs() {
-  //  return logs.map((log: {}, i: number) => {
-  //    if (logs[i].resolved == false) {
-  //      return (
-  //        <span key={logs[i]._id}>
-  //          <div style={myStyle} id={logs[i]._id}>
-  //            <strong>Date</strong>: {logs[i].date} <br />
-  //            <strong>Reason</strong>: {logs[i].reason}
-  //            <br />
-  //            <strong>Player Who Reported</strong>:{' '}
-  //            {logs[i].playerWhoReport.username}
-  //            <br />
-  //            <strong>Reported Player</strong>:{' '}
-  //            {logs[i].reportedPlayer.username}
-  //            <br />
-  //            <strong>Resolved</strong>: {'False'}
-  //            <br />
-  //            <br />
-  //            <button className="btn btn-info">See More</button>
-  //            <button
-  //              className="btn btn-success"
-  //              id={`${logs[i]._id}resolve-button`}
-  //              style={{ margin: '2px', marginLeft: '50px' }}
-  //              onClick={() => {
-  //                handleResolve(logs[i]._id);
-  //              }}
-  //            >
-  //              Resolve
-  //            </button>
-  //          </div>
-  //          <br />
-  //          <br />
-  //        </span>
-  //      );
-  //    }
-  //  });
-  //}
-
-  //function handleResolvedLogs() {
-  //  return logs.map((log: {}, i: number) => {
-  //    if (logs[i].resolved == true) {
-  //      return (
-  //        <span key={logs[i]._id}>
-  //          <div style={myStyle} id={logs[i]._id}>
-  //            <strong>Date</strong>: {logs[i].date} <br />
-  //            <strong>Reason</strong>: {logs[i].reason}
-  //            <br />
-  //            <strong>Player Who Reported</strong>:{' '}
-  //            {logs[i].playerWhoReport.username}
-  //            <br />
-  //            <strong>Reported Player</strong>:{' '}
-  //            {logs[i].reportedPlayer.username}
-  //            <br />
-  //            <strong>Resolved</strong>: True
-  //            <br />
-  //            <strong>Mod Who Resolved</strong> : idk how to do this
-  //            <br />
-  //            <strong>Mod Comment</strong>: {logs[i].modComment}
-  //            <br />
-  //          </div>
-  //          <br />
-  //          <br />
-  //        </span>
-  //      );
-  //    }
-  //  });
-  //}
-
-  // function handleResolve(id: any) {
-  //   let cardID = document.getElementById(id);
-  //   let resolveButton = document.getElementById(`${id}resolve-button`);
-  //   if (resolveButton.innerHTML === 'Cancel') {
-  //     resolveButton.innerHTML = 'Resolve';
-  //     resolveButton.className = 'btn btn-success';
-  //     let elements = document.getElementsByClassName(`${id}temp-element`);
-  //     let length = elements.length;
-  //     for (let i = length - 1; i >= 0; i--) {
-  //       cardID.removeChild(elements[i]);
-  //       // console.log(elements.length);
-  //     }
-  //   } else {
-  //     resolveButton.innerHTML = 'Cancel';
-  //     resolveButton.className = 'btn btn-danger';
-  //     let modComment = document.createElement('TEXTAREA');
-  //     modComment.className = `${id}temp-element`;
-  //     // modComment.value = 'Enter in a comment';
-  //     let confirm = document.createElement('BUTTON');
-  //     confirm.innerHTML = 'Confirm';
-  //     confirm.addEventListener('click', () => {
-  //       // handleConfirm(modComment.value, id);
-  //     });
-  //     confirm.className = `${id}temp-element btn btn-success`;
-  //     cardID.appendChild(modComment);
-  //     cardID.appendChild(confirm);
-  //   }
-  // }
-
-  //
+function PageButtons({ currentPage, nextPage, prevPage }: PageButtonProps) {
+  return (
+    <span className="pageButtonGroup">
+      <button
+        className="btn btn-info"
+        onClick={() => {
+          prevPage();
+          window.scrollTo(0, 0);
+        }}
+      >
+        Prev page
+      </button>
+      <span>Page: {currentPage}</span>
+      <button
+        className="btn btn-info"
+        onClick={() => {
+          nextPage();
+          window.scrollTo(0, 0);
+        }}
+      >
+        Next page
+      </button>
+    </span>
+  );
 }
 
 type ReportEntryProps = {
@@ -183,29 +184,63 @@ type ReportEntryProps = {
 function ReportEntry({ report, callbackOnResolve }: ReportEntryProps) {
   const textareaRef = useRef(null);
 
-  const resolveReport = async () => {
-    // console.log('HI');
-    // console.log(textareaRef);
-    // console.log(textareaRef.current.value);
-
-    await fetch('', {});
-
-    callbackOnResolve();
-    // Swal.fire('Success! Please refresh the page to see updates.');
+  const resolveReport = async (id: string) => {
+    console.log(textareaRef.current.value);
+    const res = await fetch('/mod/reports', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, modComment: textareaRef.current.value }),
+    });
+    if (res.status == 200) {
+      callbackOnResolve();
+    } else {
+      Swal.fire('Unknown error resolving message');
+    }
   };
 
   return (
-    <div>
-      <p>Reported player: {report.reportedPlayer.username}</p>
-      <p>Date: {report.date}</p>
-
-      {report.resolved ? null : (
-        <div>
-          <textarea ref={textareaRef}></textarea>
-          <button onClick={resolveReport}>Resolve</button>
-        </div>
-      )}
-    </div>
+    <span>
+      <div style={myStyle}>
+        <p>
+          <strong>Reported player</strong>: {report.reportedPlayer.username}
+        </p>
+        <p>
+          <strong>Date</strong>: {report.date}
+        </p>
+        <p>
+          <strong>Player who reported</strong>:{' '}
+          {report.playerWhoReport.username}
+        </p>
+        <p>
+          <strong>Reason</strong>: {report.reason}
+        </p>
+        {report.resolved ? (
+          <div>
+            <p>
+              <strong>Mod who resolved</strong>:{' '}
+              {report.modWhoResolved.username}
+            </p>
+            <p>
+              <strong>Mod Comment</strong>: {report.modComment}
+            </p>
+          </div>
+        ) : (
+          <div>
+            <textarea ref={textareaRef} rows={3} cols={35}></textarea>
+            <br />
+            <button
+              onClick={() => {
+                resolveReport(report._id);
+              }}
+              className="btn btn-success"
+            >
+              Resolve
+            </button>
+          </div>
+        )}
+      </div>
+      <br />
+    </span>
   );
 }
 

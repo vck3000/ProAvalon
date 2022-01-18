@@ -258,10 +258,21 @@ router.post('/form', async (req, res) => {
 });
 
 router.get(
-  '/form',
+  '/form/:pageIndex',
   /* isModMiddleware, */ async (req, res) => {
-    const reports = await Report.find({}).limit(10);
-
+    let pageIndex;
+    if (req.params.pageIndex) {
+      pageIndex = req.params.pageIndex;
+      if (pageIndex < 0) {
+        pageIndex = 0;
+      }
+    }
+    const NUM_OF_RESULTS_PER_PAGE = 10;
+    var resolved = req.query.resolved === 'true';
+    const skipNumber = pageIndex * NUM_OF_RESULTS_PER_PAGE;
+    const reports = await Report.find({ resolved: resolved })
+      .skip(skipNumber)
+      .limit(NUM_OF_RESULTS_PER_PAGE);
     const b = reports.map((report) => ({
       playerWhoReport: report.playerWhoReported,
       reportedPlayer: report.reportedPlayer,
@@ -272,6 +283,7 @@ router.get(
       modComment: report.modComment,
       modWhoResolved: report.modWhoResolved,
     }));
+
     res.send(b);
   }
 );
@@ -286,18 +298,24 @@ router.get('/reports', isModMiddleware, (req, res) => {
 router.post('/reports', async (req, res) => {
   // const request = await req.json();
   // const modComment = req.body.modComment;
-  const modUser = request.user;
+  const modUser = req.user;
 
   // modUser._id;
 
-  const id = req.body.id_key;
+  const id = req.body.id;
   const report = await Report.findByIdAndUpdate(
     id,
-    { modComment: req.body.modComment, resolved: true },
+    {
+      modWhoResolved: { id: modUser.id, username: modUser.username },
+      modComment: req.body.modComment,
+      resolved: true,
+    },
     function (err, result) {
       if (err) {
+        res.status(400);
         res.send(err);
       } else {
+        res.status(200);
         res.send(result);
       }
     }
