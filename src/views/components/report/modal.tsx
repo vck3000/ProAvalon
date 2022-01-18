@@ -62,7 +62,7 @@ export function TestModal() {
       desc,
     };
 
-    const response = await fetch('/mod/form', {
+    const response = await fetch('/mod/report', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

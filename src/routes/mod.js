@@ -10,7 +10,7 @@ const upload = multer();
 import Report from '../models/report';
 
 import ModLogComponent from '../views/components/mod/mod_log';
-import ReportLog from '../views/components/mod/reports';
+import ReportLog from '../views/components/mod/report';
 
 const router = new Router();
 
@@ -193,7 +193,6 @@ router.post('/ban', isModMiddleware, upload.none(), async (req, res) => {
 // 3) Forum removes
 // 4) Comment and reply removes
 // 5) Avatar request approve/rejects
-
 router.get('/ajax/logData/:pageIndex', isModMiddleware, (req, res) => {
   // get all the mod actions
   let pageIndex;
@@ -221,10 +220,18 @@ router.get('/ajax/logData/:pageIndex', isModMiddleware, (req, res) => {
   }
 });
 
-router.post('/form', async (req, res) => {
+// See report page
+router.get('/report', isModMiddleware, (req, res) => {
+  const reportsReact = renderToString(<ReportLog />);
+
+  res.render('mod/report', { reportsReact });
+});
+
+// Create a new report
+router.post('/report', async (req, res) => {
   const reportedUser = req.user;
   const userToReport = await User.findOne({
-    username: req.body.player,
+    usernameLower: req.body.player.toLowerCase(),
   });
 
   if (!reportedUser) {
@@ -232,13 +239,14 @@ router.post('/form', async (req, res) => {
     res.send('Cannot find who you are.');
     return;
   }
+
   if (!userToReport) {
     res.status(400);
-    res.send(`${req.player} was not found.`);
+    res.send(`${req.body.player} was not found.`);
     return;
   }
 
-  const reportData = {
+  Report.create({
     reason: req.body.reason,
     reportedPlayer: {
       username: userToReport.username,
@@ -250,75 +258,59 @@ router.post('/form', async (req, res) => {
     },
     description: req.body.desc,
     date: new Date(),
-  };
-  Report.create(reportData);
+  });
+
   res.status(200);
-  res.send('The report was successfully sent, a mod will review it shortly!');
-  return;
+  res.send('The report was successfully sent, a mod will review it shortly.');
 });
 
-router.get(
-  '/form/:pageIndex',
-  /* isModMiddleware, */ async (req, res) => {
-    let pageIndex;
-    if (req.params.pageIndex) {
-      pageIndex = req.params.pageIndex;
-      if (pageIndex < 0) {
-        pageIndex = 0;
-      }
-    }
-    const NUM_OF_RESULTS_PER_PAGE = 10;
-    var resolved = req.query.resolved === 'true';
-    const skipNumber = pageIndex * NUM_OF_RESULTS_PER_PAGE;
-    const reports = await Report.find({ resolved: resolved })
-      .skip(skipNumber)
-      .limit(NUM_OF_RESULTS_PER_PAGE);
-    const b = reports.map((report) => ({
-      playerWhoReport: report.playerWhoReported,
-      reportedPlayer: report.reportedPlayer,
-      date: report.date,
-      reason: report.reason,
-      _id: report._id,
-      resolved: report.resolved,
-      modComment: report.modComment,
-      modWhoResolved: report.modWhoResolved,
-    }));
+// API Endpoints
+router.get('/report/unresolved', isModMiddleware, async (req, res) => {
+  const reports = await Report.find({ resolved: false });
 
-    res.send(b);
+  res.send(reports);
+});
+
+router.get('/report/resolved/:pageIndex', isModMiddleware, async (req, res) => {
+  if (!req.params.pageIndex) {
+    res.status(400);
+    res.send('Missing pageIndex.');
+    return;
   }
-);
 
-router.get('/reports', isModMiddleware, (req, res) => {
-  const reportsReact = renderToString(<ReportLog />);
+  const pageIndex = req.params.pageIndex;
 
-  res.render('mod/reports', { reportsReact });
+  const NUM_OF_RESULTS_PER_PAGE = 10;
+  const skipNumber = pageIndex * NUM_OF_RESULTS_PER_PAGE;
+
+  const reports = await Report.find({ resolved: true })
+    .skip(skipNumber)
+    .limit(NUM_OF_RESULTS_PER_PAGE);
+
+  res.send(reports);
 });
 
 // Resolve a report
-router.post('/reports', async (req, res) => {
-  // const request = await req.json();
-  // const modComment = req.body.modComment;
+router.post('/report/resolve', async (req, res) => {
   const modUser = req.user;
-
-  // modUser._id;
-
   const id = req.body.id;
-  const report = await Report.findByIdAndUpdate(
+
+  Report.findByIdAndUpdate(
     id,
     {
-      modWhoResolved: { id: modUser.id, username: modUser.username },
+      modWhoResolved: { id: modUser.id, username: modUser.usernameLower },
       modComment: req.body.modComment,
       resolved: true,
     },
-    function (err, result) {
+    (err) => {
       if (err) {
         res.status(400);
         res.send(err);
       } else {
-        res.status(200);
-        res.send(result);
+        res.send('ok');
       }
     }
   );
 });
+
 export default router;
