@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-// import ReactDOM from 'react-dom';
 import Modal from 'react-modal';
 import Swal from 'sweetalert2';
 import { AutoSuggestWrapper } from '../common/autoSuggestWrapper';
 
 declare const currentOnlinePlayers: { displayUsername: string }[];
 
-const customStyles = {
+const modalStyles = {
   content: {
     top: '50%',
     left: '50%',
@@ -17,9 +16,18 @@ const customStyles = {
   },
 };
 
+const buttonBaseStyles = {
+  color: 'white',
+  border: '0px',
+  borderRadius: '8px',
+  padding: '4px',
+  paddingRight: '10px',
+  paddingLeft: '10px',
+};
+
 Modal.setAppElement('#reportDiv');
 
-export function TestModal() {
+export function ReportModal() {
   const [player, setPlayer] = useState('');
   const [reason, setReason] = useState('');
   const [desc, setDesc] = useState('');
@@ -28,12 +36,10 @@ export function TestModal() {
     { name: string }[]
   >([]);
 
-  const [modalIsOpen, setIsOpen] = React.useState(false);
-
-  const subtitleRef = React.useRef<HTMLHeadingElement>(null);
+  const [modalIsOpen, setModalIsOpen] = React.useState(false);
 
   function openModal() {
-    setIsOpen(true);
+    setModalIsOpen(true);
 
     const suggestions: { name: string }[] = [];
     currentOnlinePlayers.map((user) => {
@@ -43,14 +49,8 @@ export function TestModal() {
     setSuggestionPlayers(suggestions);
   }
 
-  function afterOpenModal() {
-    // references are now sync'd and can be accessed.
-    // @ts-ignore
-    subtitleRef.style.color = '#f00';
-  }
-
   function closeModal() {
-    setIsOpen(false);
+    setModalIsOpen(false);
   }
 
   async function submitForm(e: React.FormEvent<HTMLFormElement>) {
@@ -73,9 +73,9 @@ export function TestModal() {
     console.log(response);
 
     if (response.status === 200) {
-      Swal.fire({ title: 'Success', type: 'success' });
-    } else if (response.status === 400) {
-      Swal.fire({ title: 'Error', type: 'error' });
+      Swal.fire({ title: await response.text(), type: 'success' });
+    } else {
+      Swal.fire({ title: await response.text(), type: 'error' });
     }
   }
 
@@ -95,14 +95,14 @@ export function TestModal() {
       >
         Report
       </button>
+
       <Modal
         isOpen={modalIsOpen}
-        onAfterOpen={afterOpenModal}
         onRequestClose={closeModal}
-        style={customStyles}
-        contentLabel="Example Modal"
+        style={modalStyles}
+        contentLabel="Report Modal"
       >
-        <h2 ref={subtitleRef}>Report</h2>
+        <h2>Report</h2>
         <br />
         <form onSubmit={submitForm}>
           <label>Select A Player: </label>
@@ -113,11 +113,6 @@ export function TestModal() {
             setValue={setPlayer}
           />
 
-          {/* <select name="player" onChange={(e) => setPlayer(e.target.value)}>*/}
-          {/*   <option value="">--Please Choose A Player--</option>*/}
-          {/*   {/1* need to load players from database*1/}*/}
-          {/*   <option value="asdf">asdf</option>*/}
-          {/* </select>*/}
           <br />
           <br />
           <label>Select A Reason: </label>
@@ -143,13 +138,8 @@ export function TestModal() {
           <br />
           <button
             style={{
+              ...buttonBaseStyles,
               backgroundColor: 'green',
-              color: 'white',
-              border: '0px',
-              borderRadius: '8px',
-              padding: '4px',
-              paddingRight: '10px',
-              paddingLeft: '10px',
             }}
           >
             Report
@@ -157,13 +147,8 @@ export function TestModal() {
         </form>
         <button
           style={{
+            ...buttonBaseStyles,
             backgroundColor: 'red',
-            color: 'white',
-            border: '0px',
-            borderRadius: '8px',
-            padding: '4px',
-            paddingRight: '10px',
-            paddingLeft: '10px',
           }}
           onClick={closeModal}
         >

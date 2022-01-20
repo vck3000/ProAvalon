@@ -3403,11 +3403,11 @@ function updateRoomMaxPlayers(number) {
   updateCurrentGamesList();
 }
 
-export const GetLastFiveMinsChat = () => {
+export const GetLastFiveMinsAllChat = () => {
   return allChat5Min;
 };
 
-export const GetUsersCurrentRoom = (username: string) => {
+export const GetUserCurrentRoom = (username: string) => {
   return allSockets[getIndexFromUsername(allSockets, username, true)].request
     .user.inRoomId;
 };

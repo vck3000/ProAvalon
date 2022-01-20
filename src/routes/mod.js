@@ -1,23 +1,23 @@
 import React from 'react';
+import multer from 'multer';
 import { Router } from 'express';
 import { renderToString } from 'react-dom/server';
+
 import { isModMiddleware } from './middleware';
 import User from '../models/user';
 import Ban from '../models/ban';
 import ModLog from '../models/modLog';
-import multer from 'multer';
-const upload = multer();
 import Report from '../models/report';
-
 import {
-  GetLastFiveMinsChat,
-  GetUsersCurrentRoom,
+  GetLastFiveMinsAllChat as GetLastFiveMinsAllChat,
+  GetUserCurrentRoom,
   GetRoomChat,
 } from '../sockets/sockets';
 
 import ModLogComponent from '../views/components/mod/mod_log';
 import ReportLog from '../views/components/mod/report';
 
+const upload = multer();
 const router = new Router();
 
 router.get('/', isModMiddleware, (req, res) => {
@@ -235,43 +235,22 @@ router.get('/report', isModMiddleware, (req, res) => {
 
 // Create a new report
 router.post('/report', async (req, res) => {
-  const reportedUser = req.user;
-  const userToReport = await User.findOne({
+  const userWhoReported = req.user;
+  const reportedUser = await User.findOne({
     usernameLower: req.body.player.toLowerCase(),
   });
 
-  if (!reportedUser) {
+  if (!userWhoReported) {
     res.status(400);
-    res.send('Cannot find who you are.');
+    res.send('Something went wrong. Please re-login.');
     return;
   }
 
-  if (!userToReport) {
+  if (!reportedUser) {
     res.status(400);
     res.send(`${req.body.player} was not found.`);
     return;
   }
-
-  const allChat5Mins = GetLastFiveMinsChat();
-  const allChatMessageArray = allChat5Mins
-    .filter((chat) => {
-      if (chat.username) {
-        return true;
-      }
-      return false;
-    })
-    .map((chat) => {
-      if (chat.username) {
-        return `[${new Date(chat.dateCreated).toLocaleString('de')}] ${
-          chat.username.split(' ')[0]
-        }: ${chat.message}`;
-      }
-    });
-
-  const allChatMessageString = allChatMessageArray.join('\n');
-  const roomID = GetUsersCurrentRoom(reportedUser.username);
-  const roomChat = roomID ? GetRoomChat(roomID) : [];
-  console.log('hi', roomChat);
 
   // Sample chat data
   // {
@@ -280,25 +259,33 @@ router.post('/report', async (req, res) => {
   //   username: "ProNub <span class='badge' data-toggle='tooltip' data-placement='right' title='Admin' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>A</span>",
   //   dateCreated: "2022-01-20T05:21:18.814Z"
   // },
+  const extractChatToStr = (messages) =>
+    messages
+      .filter((chat) => chat.username)
+      .map(
+        (chat) =>
+          `[${chat.dateCreated}] ${chat.username.split(' ')[0]}: ${
+            chat.message
+          }`
+      )
+      .join('\n');
 
-  const roomChatMessageArray = roomChat
-    .filter((chat) => chat.username)
-    .map(
-      (chat) =>
-        `[${chat.dateCreated}] ${chat.username.split(' ')[0]}: ${chat.message}`
-    );
+  const allChat5Mins = GetLastFiveMinsAllChat();
+  const allChatMessageString = extractChatToStr(allChat5Mins);
 
-  const roomChatMessageString = roomChatMessageArray.join('\n');
+  const roomID = GetUserCurrentRoom(userWhoReported.username);
+  const roomChat = roomID ? GetRoomChat(roomID) : [];
+  const roomChatMessageString = extractChatToStr(roomChat);
 
   Report.create({
     reason: req.body.reason,
     reportedPlayer: {
-      username: userToReport.username,
-      id: userToReport._id,
+      username: reportedUser.username.toLowerCase(),
+      id: reportedUser._id,
     },
     playerWhoReported: {
-      id: reportedUser._id,
-      username: reportedUser.username,
+      id: userWhoReported._id,
+      username: userWhoReported.username.toLowerCase(),
     },
     description: req.body.desc,
     date: new Date(),
@@ -307,12 +294,13 @@ router.post('/report', async (req, res) => {
   });
 
   res.status(200);
-  res.send('The report was successfully sent, a mod will review it shortly.');
+  res.send('Report created succesfully. A mod will review it shortly.');
 });
 
 // API Endpoints
 router.get('/report/unresolved', isModMiddleware, async (req, res) => {
-  const reports = await Report.find({ resolved: false });
+  // TODO Check this
+  const reports = await Report.find({ resolved: false }).sort({ date: -1 });
 
   res.send(reports);
 });
@@ -330,6 +318,7 @@ router.get('/report/resolved/:pageIndex', isModMiddleware, async (req, res) => {
   const skipNumber = pageIndex * NUM_OF_RESULTS_PER_PAGE;
 
   const reports = await Report.find({ resolved: true })
+    .sort({ date: -1 })
     .skip(skipNumber)
     .limit(NUM_OF_RESULTS_PER_PAGE);
 
@@ -337,14 +326,17 @@ router.get('/report/resolved/:pageIndex', isModMiddleware, async (req, res) => {
 });
 
 // Resolve a report
-router.post('/report/resolve', async (req, res) => {
+router.post('/report/resolve', isModMiddleware, async (req, res) => {
   const modUser = req.user;
   const id = req.body.id;
 
   Report.findByIdAndUpdate(
     id,
     {
-      modWhoResolved: { id: modUser.id, username: modUser.usernameLower },
+      modWhoResolved: {
+        id: modUser.id,
+        username: modUser.usernameLower,
+      },
       modComment: req.body.modComment,
       resolved: true,
     },
@@ -353,7 +345,7 @@ router.post('/report/resolve', async (req, res) => {
         res.status(400);
         res.send(err);
       } else {
-        res.send('ok');
+        res.end();
       }
     }
   );

@@ -40,7 +40,7 @@ function Report() {
     const unresolvedReports = await fetch(`/mod/report/unresolved`).then(
       (res) => res.json()
     );
-    console.log(unresolvedReports[0].roomChat);
+
     setResolvedReports(resolvedReports);
     setUnresolvedReports(unresolvedReports);
   }
@@ -127,22 +127,20 @@ type ReportEntryProps = {
 };
 
 function ReportEntry({ report, callbackOnResolve }: ReportEntryProps) {
-  const textareaRef = useRef(null);
+  const modCommentRef = useRef(null);
 
   const resolveReport = async (id: string) => {
-    console.log(textareaRef.current.value);
-
     const res = await fetch('/mod/report/resolve', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, modComment: textareaRef.current.value }),
+      body: JSON.stringify({ id, modComment: modCommentRef.current.value }),
     });
 
     if (res.status == 200) {
-      Swal.fire('Success!');
+      Swal.fire(await res.text());
       callbackOnResolve();
     } else {
-      Swal.fire(`Unknown error resolving message: ${await res.text()}`);
+      Swal.fire(await res.text());
     }
   };
 
@@ -179,7 +177,7 @@ function ReportEntry({ report, callbackOnResolve }: ReportEntryProps) {
           <p>
             <strong>Resolve comments:</strong>
           </p>
-          <textarea ref={textareaRef} rows={3} cols={35}></textarea>
+          <textarea ref={modCommentRef} rows={3} cols={35}></textarea>
           <br />
           <button
             onClick={() => {
@@ -195,13 +193,6 @@ function ReportEntry({ report, callbackOnResolve }: ReportEntryProps) {
     </div>
   );
 }
-
-// type allChat5MinsProp = {[
-//   {
-//     message: String;
-//     date: Date;
-//   }
-// ]};
 
 function ChatMessage({ chatMessages }: any) {
   return (
