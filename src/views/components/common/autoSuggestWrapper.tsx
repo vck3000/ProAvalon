@@ -10,12 +10,15 @@ const renderSuggestion = (suggestion: HTMLInputElement) => (
 );
 
 type Props = {
-  allSuggestions: { name: string }[];
+  allSuggestions: string[];
   setValue: (value: string) => void;
 };
 
 export function AutoSuggestWrapper({ allSuggestions, setValue }: Props) {
-  const [visibleSuggestions, setVisibleSuggestions] = useState([]);
+  // This {name: string}[] type is required by react-autosuggest
+  const [visibleSuggestions, setVisibleSuggestions] = useState<
+    { name: string }[]
+  >([]);
   const [localValue, setLocalValue] = useState('');
 
   const getSuggestions = (name: string) => {
@@ -23,11 +26,14 @@ export function AutoSuggestWrapper({ allSuggestions, setValue }: Props) {
       return [];
     }
 
-    return allSuggestions.filter(
-      (str) =>
-        str.name.toLowerCase().slice(0, name.length) ===
-        name.trim().toLowerCase()
-    );
+    return allSuggestions
+      .filter(
+        (str) =>
+          str.toLowerCase().slice(0, name.length) === name.trim().toLowerCase()
+      )
+      .map((suggestion) => ({
+        name: suggestion,
+      }));
   };
 
   const onChange = (

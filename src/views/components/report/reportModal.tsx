@@ -32,18 +32,16 @@ export function ReportModal() {
   const [reason, setReason] = useState('');
   const [desc, setDesc] = useState('');
 
-  const [suggestionPlayers, setSuggestionPlayers] = useState<
-    { name: string }[]
-  >([]);
+  const [suggestionPlayers, setSuggestionPlayers] = useState<string[]>([]);
 
   const [modalIsOpen, setModalIsOpen] = React.useState(false);
 
   function openModal() {
     setModalIsOpen(true);
 
-    const suggestions: { name: string }[] = [];
+    const suggestions: string[] = [];
     currentOnlinePlayers.map((user) => {
-      suggestions.push({ name: user.displayUsername.split(' ')[0] });
+      suggestions.push(user.displayUsername.split(' ')[0]);
     });
 
     setSuggestionPlayers(suggestions);
@@ -80,7 +78,7 @@ export function ReportModal() {
   }
 
   return (
-    <div style={{zIndex: 20}}>
+    <div style={{ zIndex: 20 }}>
       <button
         onClick={openModal}
         style={{
