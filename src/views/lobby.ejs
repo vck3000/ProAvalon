@@ -16,7 +16,16 @@
 	<div class="container lobby-container">
 		<div class="row">
 			<div class="col-xs-6 col-sm-9" id="col1">
-				<strong><p id="all-chat-lobby-text">All Chat</p></strong>
+        <div style="position: relative;">
+          <strong>
+            <span id="all-chat-lobby-text">
+              All Chat
+            </span>
+          </strong>
+
+          <div react-entrypoint id="reportDiv" style="float: right; position: absolute; right: 0; transform: translate(0, -100%);"><%-reportsReact%></div>
+        </div>
+
 				<div class="chat-window" id="all-chat-lobby">
 					<ol class="chat-list all-chat-list" id="all-chat-lobby-list">
 
@@ -131,6 +140,7 @@
 						<li class="active" id="room-chat-in-game-tab"><a data-toggle="tab" href="#room-chat-in-game">Game Chat</a></li>
 						<li><a data-toggle="tab" href="#vh">Vote History</a></li>
 						<li><a data-toggle="tab" href="#misc">Misc.</a></li>
+						<div react-entrypoint id="reportDivRoom" style="display: flex; justify-content: right"><%-reportsReact%></div>
 					</ul>
 
 					<div class="tab-content" style=''>
@@ -697,5 +707,6 @@
 	<script type="text/javascript" src="<%-getVersionedPath('/scripts/lobby/helper.js')%>"></script>
 	<script type="text/javascript" src="<%-getVersionedPath('/scripts/lobby/glossary.js')%>"></script>
 
+  <script type="text/javascript" src="<%-getVersionedPath('/dist_webpack/report.bundle.js')%>"></script>
 
 	<% include partials/footer%>
