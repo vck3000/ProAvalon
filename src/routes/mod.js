@@ -9,6 +9,12 @@ import multer from 'multer';
 const upload = multer();
 import Report from '../models/report';
 
+import {
+  GetLastFiveMinsChat,
+  GetUsersCurrentRoom,
+  GetRoomChat,
+} from '../sockets/sockets';
+
 import ModLogComponent from '../views/components/mod/mod_log';
 import ReportLog from '../views/components/mod/report';
 
@@ -246,6 +252,44 @@ router.post('/report', async (req, res) => {
     return;
   }
 
+  const allChat5Mins = GetLastFiveMinsChat();
+  const allChatMessageArray = allChat5Mins
+    .filter((chat) => {
+      if (chat.username) {
+        return true;
+      }
+      return false;
+    })
+    .map((chat) => {
+      if (chat.username) {
+        return `[${new Date(chat.dateCreated).toLocaleString('de')}] ${
+          chat.username.split(' ')[0]
+        }: ${chat.message}`;
+      }
+    });
+
+  const allChatMessageString = allChatMessageArray.join('\n');
+  const roomID = GetUsersCurrentRoom(reportedUser.username);
+  const roomChat = roomID ? GetRoomChat(roomID) : [];
+  console.log('hi', roomChat);
+
+  // Sample chat data
+  // {
+  //   date: 21,
+  //   message: 'asd',
+  //   username: "ProNub <span class='badge' data-toggle='tooltip' data-placement='right' title='Admin' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>A</span>",
+  //   dateCreated: "2022-01-20T05:21:18.814Z"
+  // },
+
+  const roomChatMessageArray = roomChat
+    .filter((chat) => chat.username)
+    .map(
+      (chat) =>
+        `[${chat.dateCreated}] ${chat.username.split(' ')[0]}: ${chat.message}`
+    );
+
+  const roomChatMessageString = roomChatMessageArray.join('\n');
+
   Report.create({
     reason: req.body.reason,
     reportedPlayer: {
@@ -258,6 +302,8 @@ router.post('/report', async (req, res) => {
     },
     description: req.body.desc,
     date: new Date(),
+    allChat5Mins: allChatMessageString,
+    roomChat: roomChatMessageString,
   });
 
   res.status(200);

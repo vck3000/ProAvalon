@@ -14,6 +14,8 @@ type Report = {
   reportedPlayer: { id: string; username: string };
   resolved: boolean;
   _id: string;
+  allChat5Mins: string;
+  roomChat: string;
 };
 
 function Report() {
@@ -38,7 +40,7 @@ function Report() {
     const unresolvedReports = await fetch(`/mod/report/unresolved`).then(
       (res) => res.json()
     );
-
+    console.log(unresolvedReports[0].roomChat);
     setResolvedReports(resolvedReports);
     setUnresolvedReports(unresolvedReports);
   }
@@ -153,7 +155,8 @@ function ReportEntry({ report, callbackOnResolve }: ReportEntryProps) {
         <strong>Date</strong>: {report.date}
       </p>
       <p>
-        <strong>Player who reported</strong>: {report.playerWhoReported.username}
+        <strong>Player who reported</strong>:{' '}
+        {report.playerWhoReported.username}
       </p>
       <p>
         <strong>Reason</strong>: {report.reason}
@@ -188,7 +191,83 @@ function ReportEntry({ report, callbackOnResolve }: ReportEntryProps) {
           </button>
         </div>
       )}
+      <ViewChat allChat5Mins={report.allChat5Mins} roomChat={report.roomChat} />
     </div>
+  );
+}
+
+// type allChat5MinsProp = {[
+//   {
+//     message: String;
+//     date: Date;
+//   }
+// ]};
+
+function ChatMessage({ chatMessages }: any) {
+  return (
+    <div style={{ border: 'solid' }}>
+      {chatMessages.split('\n').map((chat: string) => (
+        <li>{chat}</li>
+      ))}
+    </div>
+  );
+}
+
+type ViewChatProps = {
+  allChat5Mins: string;
+  roomChat: string;
+};
+
+function ViewChat({ allChat5Mins, roomChat }: ViewChatProps) {
+  const [collapsedAll, setCollapsedAll] = useState(true);
+  const [collapsedRoom, setCollapsedRoom] = useState(true);
+  return (
+    <span>
+      <div>
+        {collapsedAll ? (
+          <button
+            onClick={() => {
+              setCollapsedAll(false);
+            }}
+          >
+            View All Chat
+          </button>
+        ) : (
+          <div>
+            <button
+              onClick={() => {
+                setCollapsedAll(true);
+              }}
+            >
+              Close All Chat
+            </button>{' '}
+            <ul>{<ChatMessage chatMessages={allChat5Mins} />}</ul>
+          </div>
+        )}
+      </div>
+      <div>
+        {collapsedRoom ? (
+          <button
+            onClick={() => {
+              setCollapsedRoom(false);
+            }}
+          >
+            View Room Chat
+          </button>
+        ) : (
+          <div>
+            <button
+              onClick={() => {
+                setCollapsedRoom(true);
+              }}
+            >
+              Close Room Chat
+            </button>{' '}
+            <ul>{<ChatMessage chatMessages={roomChat} />}</ul>
+          </div>
+        )}
+      </div>
+    </span>
   );
 }
 

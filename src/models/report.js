@@ -37,6 +37,10 @@ const ReportSchema = new mongoose.Schema({
     },
     username: String,
   },
+
+  allChat5Mins: String,
+
+  roomChat: String,
 });
 
 const Report = mongoose.model('Report', ReportSchema);
