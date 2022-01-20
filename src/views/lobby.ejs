@@ -16,16 +16,15 @@
 	<div class="container lobby-container">
 		<div class="row">
 			<div class="col-xs-6 col-sm-9" id="col1">
-        <strong
-        ><p
-          id="all-chat-lobby-text"
-          style="display: flex; justify-content: left"
-        >
-          All Chat
-        </p></strong
-      >
+        <div style="position: relative;">
+          <strong>
+            <span id="all-chat-lobby-text">
+              All Chat
+            </span>
+          </strong>
 
-      <div react-entrypoint id="reportDiv" style="display: flex; justify-content: right"><%-reportsReact%></div>
+          <div react-entrypoint id="reportDiv" style="float: right; position: absolute; right: 0; transform: translate(0, -100%);"><%-reportsReact%></div>
+        </div>
 
 				<div class="chat-window" id="all-chat-lobby">
 					<ol class="chat-list all-chat-list" id="all-chat-lobby-list">

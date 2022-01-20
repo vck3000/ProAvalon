@@ -71,9 +71,9 @@ export function ReportModal() {
     console.log(response);
 
     if (response.status === 200) {
-      Swal.fire({ title: await response.text(), type: 'success' });
+      Swal.fire({ text: await response.text(), type: 'success' });
     } else {
-      Swal.fire({ title: await response.text(), type: 'error' });
+      Swal.fire({ text: await response.text(), type: 'error' });
     }
   }
 
@@ -85,9 +85,9 @@ export function ReportModal() {
           backgroundColor: '#f44336',
           color: 'white',
           border: '0px',
-          padding: '7px',
-          paddingRight: '15px',
-          paddingLeft: '15px',
+          // padding: '7px',
+          // paddingRight: '15px',
+          // paddingLeft: '15px',
           borderRadius: '8px',
         }}
       >
@@ -134,24 +134,29 @@ export function ReportModal() {
             onChange={(e) => setDesc(e.target.value)}
           ></textarea>
           <br />
-          <button
-            style={{
-              ...buttonBaseStyles,
-              backgroundColor: 'green',
-            }}
-          >
-            Report
-          </button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <button
+              style={{
+                ...buttonBaseStyles,
+                backgroundColor: 'red',
+                marginRight: '20px',
+              }}
+              onClick={closeModal}
+            >
+              Close
+            </button>
+
+            <button
+              type="submit"
+              style={{
+                ...buttonBaseStyles,
+                backgroundColor: 'green',
+              }}
+            >
+              Report
+            </button>
+          </div>
         </form>
-        <button
-          style={{
-            ...buttonBaseStyles,
-            backgroundColor: 'red',
-          }}
-          onClick={closeModal}
-        >
-          Close
-        </button>
       </Modal>
     </div>
   );

@@ -3415,3 +3415,7 @@ export const GetUserCurrentRoom = (username: string) => {
 export const GetRoomChat = (roomId: number) => {
   return rooms[roomId].chatHistory;
 };
+
+export const GetRoom = (roomId: number) => {
+  return rooms[roomId];
+};

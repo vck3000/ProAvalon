@@ -11,6 +11,7 @@ import Report from '../models/report';
 import {
   GetLastFiveMinsAllChat as GetLastFiveMinsAllChat,
   GetUserCurrentRoom,
+  GetRoom,
   GetRoomChat,
 } from '../sockets/sockets';
 
@@ -252,6 +253,7 @@ router.post('/report', async (req, res) => {
     return;
   }
 
+  // Extract All Chat and Room Chat
   // Sample chat data
   // {
   //   date: 21,
@@ -263,21 +265,33 @@ router.post('/report', async (req, res) => {
     messages
       .map((chat) => {
         if (chat.username) {
-          return `[${chat.dateCreated.toISOString()}] ${
+          return `[${new Date(chat.dateCreated).toISOString()}] ${
             chat.username.split(' ')[0]
           }: ${chat.message}`;
         }
 
-        return `[${chat.dateCreated.toISOString()}] ${chat.message}`;
+        return `[${new Date(chat.dateCreated).toISOString()}] ${chat.message}`;
       })
       .join('\n');
 
   const allChat5Mins = GetLastFiveMinsAllChat();
   const allChatMessageString = extractChatToStr(allChat5Mins);
 
-  const roomID = GetUserCurrentRoom(userWhoReported.username);
-  const roomChat = roomID ? GetRoomChat(roomID) : [];
+  const roomId = GetUserCurrentRoom(userWhoReported.username);
+  const roomChat = roomId ? GetRoomChat(roomId) : [];
   const roomChatMessageString = extractChatToStr(roomChat);
+
+  // Collect Role information
+  const roles = roomId
+    ? GetRoom(roomId)
+        .playersInGame.map(
+          (user) => `${user.username}: ${user.role.toUpperCase()}`
+        )
+        .join('\n')
+    : '';
+
+  // Collect Vote History
+  const voteHistory = roomId ? JSON.stringify(GetRoom(roomId).voteHistory) : '';
 
   Report.create({
     reason: req.body.reason,
@@ -293,6 +307,8 @@ router.post('/report', async (req, res) => {
     date: new Date(),
     allChat5Mins: allChatMessageString,
     roomChat: roomChatMessageString,
+    roles,
+    voteHistory,
   });
 
   res.status(200);

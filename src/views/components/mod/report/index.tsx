@@ -3,7 +3,7 @@ import { hot } from 'react-hot-loader/root';
 import Swal from 'sweetalert2';
 import { ExpandableComponent } from '../../common/expandableComponent';
 
-import { myStyle } from './css';
+import { ReportEntryStyle } from './css';
 
 type Report = {
   date: string;
@@ -17,6 +17,8 @@ type Report = {
   _id: string;
   allChat5Mins: string;
   roomChat: string;
+  roles: string;
+  voteHistory: string;
 };
 
 function Report() {
@@ -59,7 +61,7 @@ function Report() {
   );
 
   return (
-    <span>
+    <div>
       <h2>Unresolved Reports</h2>
       <div>
         {unresolvedReports.map((report) => (
@@ -86,7 +88,7 @@ function Report() {
       </div>
 
       {pageButtons()}
-    </span>
+    </div>
   );
 }
 
@@ -146,7 +148,7 @@ function ReportEntry({ report, callbackOnResolve }: ReportEntryProps) {
   };
 
   return (
-    <div style={myStyle}>
+    <div style={ReportEntryStyle}>
       <p>
         <strong>Reported player</strong>: {report.reportedPlayer.username}
       </p>
@@ -192,19 +194,25 @@ function ReportEntry({ report, callbackOnResolve }: ReportEntryProps) {
       )}
       <br />
 
-      <h4>All Chat (5 mins):</h4>
+      <h5>All Chat (5 mins):</h5>
       <ExpandableComponent
         data={report.allChat5Mins.split('\n').map((chat) => (
           <p style={{ marginBottom: 0 }}>{chat}</p>
         ))}
       />
 
-      <h4>Room Chat:</h4>
+      <h5>Room Chat:</h5>
       <ExpandableComponent
         data={report.roomChat.split('\n').map((chat) => (
           <p style={{ marginBottom: 0 }}>{chat}</p>
         ))}
       />
+
+      <h5>Roles:</h5>
+      {report.roles}
+
+      <h5>Vote History:</h5>
+      {report.voteHistory}
     </div>
   );
 }
