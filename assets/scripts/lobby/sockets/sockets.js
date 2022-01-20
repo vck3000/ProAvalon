@@ -257,7 +257,7 @@ socket.on('update-current-players-list', (currentPlayers) => {
   $('#current-players-table tbody tr td').remove();
   $('#current-players-table tbody tr').remove();
 
-  // currentOnlinePlayers = currentPlayers;
+  currentOnlinePlayers = currentPlayers;
   autoCompleteStrs = currentPlayers.map((a) => a.displayUsername);
 
   unrankedPlayers = currentPlayers.filter(

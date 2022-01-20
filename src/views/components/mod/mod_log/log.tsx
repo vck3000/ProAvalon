@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React from 'react';
 import moment from 'moment';
-import { ExpandableComponent } from './expandable_component';
+import { ExpandableComponent } from '../../common/expandableComponent';
 
 export class Log extends React.Component {
   constructor(props) {

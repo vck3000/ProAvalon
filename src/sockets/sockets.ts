@@ -2580,12 +2580,12 @@ var applyApplicableRewards = function (socket) {
   // TO badge
   else if (socket.rewards.includes(REWARDS.TO_BADGE)) {
     socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Tournament Organizer' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>T</span>`;
-  // socket.request.displayUsername = "[TO] " + socket.request.displayUsername;
+    // socket.request.displayUsername = "[TO] " + socket.request.displayUsername;
   }
   // DEV badge
   else if (socket.rewards.includes(REWARDS.DEV_BADGE)) {
     socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Developer' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>D</span>`;
-  // socket.request.displayUsername = "[D] " + socket.request.displayUsername;
+    // socket.request.displayUsername = "[D] " + socket.request.displayUsername;
   }
   // Tier4 badge
   if (socket.rewards.includes(REWARDS.TIER4_BADGE)) {
@@ -3402,3 +3402,20 @@ function updateRoomMaxPlayers(number) {
   }
   updateCurrentGamesList();
 }
+
+export const GetLastFiveMinsAllChat = () => {
+  return allChat5Min;
+};
+
+export const GetUserCurrentRoom = (username: string) => {
+  return allSockets[getIndexFromUsername(allSockets, username, true)].request
+    .user.inRoomId;
+};
+
+export const GetRoomChat = (roomId: number) => {
+  return rooms[roomId].chatHistory;
+};
+
+export const GetRoom = (roomId: number) => {
+  return rooms[roomId];
+};
