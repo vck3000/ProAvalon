@@ -80,7 +80,7 @@ export function ReportModal() {
   }
 
   return (
-    <div>
+    <div style={{zIndex: 20}}>
       <button
         onClick={openModal}
         style={{

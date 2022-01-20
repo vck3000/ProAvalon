@@ -257,17 +257,19 @@ router.post('/report', async (req, res) => {
   //   date: 21,
   //   message: 'asd',
   //   username: "ProNub <span class='badge' data-toggle='tooltip' data-placement='right' title='Admin' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>A</span>",
-  //   dateCreated: "2022-01-20T05:21:18.814Z"
+  //   dateCreated: 2022-01-20T05:21:18.814Z (date object)
   // },
   const extractChatToStr = (messages) =>
     messages
-      .filter((chat) => chat.username)
-      .map(
-        (chat) =>
-          `[${chat.dateCreated}] ${chat.username.split(' ')[0]}: ${
-            chat.message
-          }`
-      )
+      .map((chat) => {
+        if (chat.username) {
+          return `[${chat.dateCreated.toISOString()}] ${
+            chat.username.split(' ')[0]
+          }: ${chat.message}`;
+        }
+
+        return `[${chat.dateCreated.toISOString()}] ${chat.message}`;
+      })
       .join('\n');
 
   const allChat5Mins = GetLastFiveMinsAllChat();
@@ -345,7 +347,7 @@ router.post('/report/resolve', isModMiddleware, async (req, res) => {
         res.status(400);
         res.send(err);
       } else {
-        res.end();
+        res.send('Success!');
       }
     }
   );

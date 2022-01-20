@@ -150,7 +150,7 @@ function ReportEntry({ report, callbackOnResolve }: ReportEntryProps) {
         <strong>Reported player</strong>: {report.reportedPlayer.username}
       </p>
       <p>
-        <strong>Date</strong>: {report.date}
+        <strong>Date</strong>: {new Date(report.date).toString()}
       </p>
       <p>
         <strong>Player who reported</strong>:{' '}
@@ -189,6 +189,7 @@ function ReportEntry({ report, callbackOnResolve }: ReportEntryProps) {
           </button>
         </div>
       )}
+      <br />
       <ViewChat allChat5Mins={report.allChat5Mins} roomChat={report.roomChat} />
     </div>
   );
@@ -236,6 +237,7 @@ function ViewChat({ allChat5Mins, roomChat }: ViewChatProps) {
           </div>
         )}
       </div>
+      <br />
       <div>
         {collapsedRoom ? (
           <button
