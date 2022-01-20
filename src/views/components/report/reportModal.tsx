@@ -116,11 +116,17 @@ export function ReportModal() {
           <label>Select A Reason: </label>
           <br />
           <select name="reason" onChange={(e) => setReason(e.target.value)}>
-            <option value="">--Please Choose A Reason--</option>
-            <option value="harrassment">Harrassment</option>
-            <option value="ipsum">ipsum</option>
-            <option value="doler">doler</option>
-            <option value="other">Other</option>
+            <option value="N/A">--Please Choose A Reason--</option>
+            <option value="Abusive">Abusive</option>
+            <option value="Intentional throwing/griefing">
+              Intentional throwing/griefing
+            </option>
+            <option value="Inactivity (AFK)">Inactivity (AFK)</option>
+            <option value="Spam">Spam</option>
+            <option value="Cheating (multiaccounting or talking outside of game)">
+              Cheating (multiaccounting or talking outside of game)
+            </option>
+            <option value="Other">Other</option>
           </select>
           <br />
           <br />
