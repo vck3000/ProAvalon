@@ -6,7 +6,6 @@ const AVLTree = BinarySearchTree.AVLTree;
 
 // create type Message with elements timestamp, username, and message
 export type Message = {
-  timestamp: Date;
   username: string;
   message: string;
 };
@@ -22,7 +21,7 @@ export class Quote {
 
   // String to Hash converter
   hash = (input: Message): string => {
-    const messageString = `${input.message}${input.username}${input.timestamp}`;
+    const messageString = `${input.username}: ${input.message}`;
     return crypto.createHash('sha256').update(messageString).digest('base64');
   };
 
@@ -52,5 +51,10 @@ export class Quote {
   // 3. Delete the room message
   deleteRoomMessages(room: any) {
     delete this.rooms[room];
+  }
+
+  deconstructRawChat(chat: string): Message[] {
+    // Look up regex
+    return [];
   }
 }
