@@ -1,5 +1,10 @@
 import { RequestHandler } from 'express';
 
+let whitelistedUsernames: string[] = [];
+if (process.env.WHITELISTED_VPN_USERNAMES) {
+  whitelistedUsernames = process.env.WHITELISTED_VPN_USERNAMES.split(',');
+}
+
 export const isVPN = async (ip: string): Promise<boolean> => {
   const response = await fetch(
     `https://whois.as207111.net/api/lookup?ip_address=${ip}`,
@@ -26,6 +31,11 @@ export const isVPN = async (ip: string): Promise<boolean> => {
 
 export const disallowVPNs: RequestHandler = (req, res, next) => {
   if (process.env.MY_PLATFORM === 'local') {
+    next();
+    return;
+  }
+
+  if (whitelistedUsernames.indexOf(req.body.username.toLowerCase()) !== -1) {
     next();
     return;
   }
