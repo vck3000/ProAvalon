@@ -21,12 +21,7 @@ export const isVPN = async (ip: string): Promise<boolean> => {
     );
   }
 
-  if (data.privacy.proxy || data.privacy.hosting) {
-    console.log(`Blocked IP: ${ip}`);
-    return true;
-  }
-
-  return false;
+  return data.privacy.proxy || data.privacy.hosting;
 };
 
 export const disallowVPNs: RequestHandler = (req, res, next) => {
@@ -41,6 +36,8 @@ export const disallowVPNs: RequestHandler = (req, res, next) => {
   isVPN(clientIpAddress)
     .then((vpn) => {
       if (vpn) {
+        console.log(`Blocked ${req.body.username} on ip ${clientIpAddress}`);
+
         // @ts-ignore
         req.flash('error', 'VPNs are not allowed.');
         res.redirect('/');
