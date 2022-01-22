@@ -30,8 +30,12 @@ export const disallowVPNs: RequestHandler = (req, res, next) => {
     return;
   }
 
-  const clientIpAddress = (req.headers['x-forwarded-for'] ||
+  let clientIpAddress = (req.headers['x-forwarded-for'] ||
     req.connection.remoteAddress) as string;
+
+  if (Array.isArray(clientIpAddress)) {
+    clientIpAddress = clientIpAddress[0];
+  }
 
   isVPN(clientIpAddress)
     .then((vpn) => {
