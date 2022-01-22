@@ -51,6 +51,7 @@ router.post(
   registerLimiter,
   sanitiseUsername,
   sanitiseEmail,
+  disallowVPNs,
   async (req, res) => {
     // if we are local, we can skip the captcha
     if (
