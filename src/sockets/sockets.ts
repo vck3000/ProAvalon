@@ -2679,7 +2679,9 @@ var updateCurrentPlayersList = function () {
     );
     playerList[i].ratingBracket = allSockets[i].request.user.ratingBracket;
     playerList[i].ratingBadge = allSockets[i].request.ratingBadge;
+    playerList[i].badge = allSockets[i].request.badge;
   }
+
   playerList.sort((a, b) => {
     return a.playerRating < b.playerRating
       ? 1

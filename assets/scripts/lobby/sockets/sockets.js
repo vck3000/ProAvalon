@@ -271,7 +271,7 @@ socket.on('update-current-players-list', (currentPlayers) => {
   rankedPlayers.forEach((player) => {
     // if the current player exists, add it
     if (player) {
-      str = `<tr> <td>${player.displayUsername}</td> <td align="right">${player.ratingBadge} ${player.playerRating}</td> </tr>`;
+      str = `<tr> <td>${player.displayUsername} ${generateBadgeString(player.badge)}</td> <td align="right">${player.ratingBadge} ${player.playerRating}</td> </tr>`;
       $('#current-players-table tbody').append(str);
     }
   });
@@ -280,7 +280,7 @@ socket.on('update-current-players-list', (currentPlayers) => {
   unrankedPlayers.forEach((player) => {
     // if the current player exists, add it
     if (player) {
-      str = `<tr> <td>${player.displayUsername}</td> <td align="right">${player.ratingBadge} ${player.playerRating}</td> </tr>`;
+      str = `<tr> <td>${player.displayUsername} ${generateBadgeString(player.badge)}</td> <td align="right">${player.ratingBadge} ${player.playerRating}</td> </tr>`;
       $('#current-players-table tbody').append(str);
     }
   });

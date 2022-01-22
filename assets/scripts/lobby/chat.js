@@ -611,6 +611,6 @@ function generateBadgeString(badge) {
 
     badgeStr = `<span class='badge' data-toggle='tooltip' data-placement='right' title='${title}' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>${badge}</span>`
   }
-  
+
   return badgeStr;
 }
