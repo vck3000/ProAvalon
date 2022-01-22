@@ -30,8 +30,6 @@ export const disallowVPNs: RequestHandler = (req, res, next) => {
     return;
   }
 
-  console.log('token', process.env.VPN_DETECTION_TOKEN);
-
   const clientIpAddress = (req.headers['x-forwarded-for'] ||
     req.connection.remoteAddress) as string;
 
