@@ -112,7 +112,6 @@ export function ReportModal() {
           />
 
           <br />
-          <br />
           <label>Select A Reason: </label>
           <br />
           <select name="reason" onChange={(e) => setReason(e.target.value)}>
@@ -130,7 +129,12 @@ export function ReportModal() {
           </select>
           <br />
           <br />
-          <label>Any Additional Information: </label>
+          <label>Description: </label>
+          <br />
+          <p> The more information you provide, the more likely</p>
+          <p>your report will be resolved.</p>
+          <br />
+          <p>Empty reports will be ignored.</p>
           <br />
           <textarea
             rows={4}
