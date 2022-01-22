@@ -12,6 +12,8 @@ import statsCumulative from '../models/statsCumulative';
 import { validEmail, emailExists } from '../routes/emailVerification';
 import { sendEmailVerification } from '../myFunctions/sendEmailVerification';
 
+import { disallowVPNs } from '../util/vpnDetection';
+
 const router = new Router();
 
 // Index route
@@ -161,6 +163,7 @@ router.post(
   loginLimiter,
   sanitiseUsername,
   setCookieDisplayUsername,
+  disallowVPNs,
   passport.authenticate('local', {
     successRedirect: '/loginSuccess',
     failureRedirect: '/loginFail',
