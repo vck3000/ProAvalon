@@ -8,60 +8,101 @@ describe('Quote', () => {
     const message: Message = {
       message: 'Hello!',
       username: 'cin333',
-      timestamp: new Date(),
     };
 
-    // Assertion
+    // Trigger...
+
+    // Assert
     expect(quote.isQuote(message, 'allchat')).toEqual(false);
   });
 
-
   it('should say a message is a quote for a previously seen message.', () => {
-    // Setup
     const quote = new Quote();
 
     const message: Message = {
       message: 'Hello!',
       username: 'cin333',
-      timestamp: new Date(),
     };
 
-    // Trigger
     quote.addMessage(message, 'allchat');
 
-    const message2: Message = {
-      message: 'Hello!',
-      username: 'cin333',
-      timestamp: message.timestamp
-    };
-
-    // Assertion
-    expect(quote.isQuote(message2, 'allchat')).toEqual(true);
-
-    // const message3: Message = {
-    //   message: 'hello!',
-    //   username: 'cin333',
-    //   timestamp: message.timestamp
-    // };
-
-    // // Assertion
-    // expect(quote.isQuote(message3)).toEqual(false);
+    expect(quote.isQuote(message, 'allchat')).toEqual(true);
   });
 
   it('should say a message is not a quote for a previously seen message in a different room.', () => {
-    // Setup
     const quote = new Quote();
 
     const message: Message = {
       message: 'Hello!',
       username: 'cin333',
-      timestamp: new Date(),
     };
 
-    // Trigger
     quote.addMessage(message, 'allchat');
-    
-    // Assertion
+
     expect(quote.isQuote(message, 0)).toEqual(false);
+  });
+
+  it('should refresh room chat upon deletion', () => {
+    const quote = new Quote();
+
+    const message: Message = {
+      message: 'Hello!',
+      username: 'cin333',
+    };
+
+    quote.addMessage(message, 'allchat');
+    expect(quote.isQuote(message, 'allchat')).toEqual(true);
+
+    quote.deleteRoomMessages('allchat');
+    expect(quote.isQuote(message, 'allchat')).toEqual(false);
+  });
+
+  it('should deconstruct multiple messages into separate messages', () => {
+    const quote = new Quote();
+
+    // Setup
+    const data =
+      '[14:11] rio: After 3.1 imo [14:11] thechessone: rio come play [14:11] rio: 3.1 is kinda merlinunt rio: asdf [14:11] rio: yolo   | After 3.1 imo';
+
+    const expectedMessages: Message[] = [
+      {
+        message: 'After 3.1 imo',
+        username: 'rio',
+      },
+      {
+        message: 'rio come play',
+        username: 'thechessone',
+      },
+      {
+        message: '3.1 is kinda merlinunt rio: asdf',
+        username: 'rio',
+      },
+      {
+        message: 'yolo   | After 3.1 imo',
+        username: 'rio',
+      },
+    ];
+
+    // Trigger
+    const output = quote.deconstructRawChat(data);
+
+    // Assert
+    expect(output).toEqual(expectedMessages);
+  });
+  
+  it('should not deconstruct anything on invalid strings', () => {
+    const quote = new Quote();
+
+    const inputs = [
+      '[14:11] rio After 3.1 imo',
+      'rio: asdf',
+      'asdf [14:11] rio: After 3.1 imo',
+      '[111:11] rio: After 3.1 imo',
+    ]
+
+    for(const input of inputs) {
+      console.log("HI WALLE WAS HERE");
+      expect(quote.deconstructRawChat(input)).toEqual([]);
+    }
   });
 });

@@ -55,53 +55,34 @@ export class Quote {
     delete this.rooms[room];
   }
 
-  // 123 asdfljk [123]
-
-  // [xx:xx] <username>: <message>
-
-  // [11:22] ProNub: Hi this is me
-  // [11:22] ProNub: 123
-  // You send this -> ProNub: Hi this is me ProNub: 123
-
+  // Returns [] if chat is not a quote
   deconstructRawChat(chat: string): Message[] {
     // Get the Message
-    var regexString = /\[\d\d\:\d\d\]\s\w*\:/g;
-    console.log(chat);
-    var newRegexString = chat.replace(regexString, "");
-    console.log(newRegexString)
 
-    const regex_message = /\  /g;
-    const foundMessage = newRegexString.replace(regex_message, "|")
-    console.log(foundMessage)
+    // Take out timestamp
+    const splittedChatLines = chat.split(/\[\d\d:\d\d\]\s/)
 
-    const foundMessageSplitted = foundMessage.split("|").map((str) => str.trim());
-
-    console.log(foundMessageSplitted)
-
-    // Get the names 
-    const regex_username = /\]\s*(\w+)\s*:\s*(\w*)/gi;
-    let m;
-    var foundUsers = [];
-
-    while ((m = regex_username.exec(chat)) !== null) {
-      foundUsers.push(m[1]);
-    }
-    console.log(foundUsers);
-
-    // Make sure that len(messages) == len(foundUsers)
-    if (foundMessageSplitted.length !== foundUsers.length) {
+    // First element must be empty string because timestamp must be first.
+    if (splittedChatLines[0] !== '') {
       return [];
     }
 
     const output: Message[] = [];
 
-    let i = 0;
-    while (i < foundMessageSplitted.length) {
-      output.push({"message": foundMessageSplitted[i], "username": foundUsers[i]})
-      i += 1;
+    for (let chatLine of splittedChatLines.slice(1)) {
+      const firstColonIndex = chatLine.indexOf(': ');
+
+      // A message must have a colon between username and message
+      if (firstColonIndex === -1) {
+        return [];
+      }
+
+      const username = chatLine.slice(0, firstColonIndex);
+      const message = chatLine.slice(firstColonIndex + 2).trim();
+      
+      output.push({message, username});
     }
 
     return output;
   }
-
 }
