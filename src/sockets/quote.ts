@@ -1,53 +1,107 @@
 import crypto from 'crypto';
-// @ts-ignore
+// @ts-ignore due to lack of typing library
 import BinarySearchTree from 'binary-search-tree';
+
 const AVLTree = BinarySearchTree.AVLTree;
 
-// AVLTree = require('binary-search-tree').AVLTree
-
-// create type Message with elements timestamp, username, and message
+// create type Message with elements username and message
 export type Message = {
-  timestamp: Date;
   username: string;
   message: string;
 };
 
-// create Quote class 
+// create Quote class
 export class Quote {
-  // pastMessages: Message[]; // actual hash table
-  pastMessages: any; // Binary search tree
+  rooms: { [key: string]: any };
+  userMessages: { [key: string]: any };
 
-  // Initialise the pastMesssages as an empty array 
+  // Initialise the pastMesssages as an empty array
   constructor() {
-    this.pastMessages = new AVLTree();
+    this.rooms = {};
+    this.userMessages = {};
   }
 
   // String to Hash converter
   hash = (input: Message): string => {
-    const messageString = `${input.message}${input.username}${input.timestamp}`;
+    const messageString = `${input.username}: ${input.message}`;
     return crypto.createHash('sha256').update(messageString).digest('base64');
   };
 
   // 1. Add message to the pastMessages array
-  addMessage(message: Message, type: any) {
+  addMessage(message: Message, room: any) {
     const messageHash = this.hash(message);
-    this.pastMessages.insert(messageHash, true);
+
+    // See if room exists:
+    if (!(room in this.rooms)) {
+      this.rooms[room] = new AVLTree();
+    }
+
+    this.rooms[room].insert(messageHash, true);
   }
 
-  // 2. See if the message is a quote  
-  isQuote(message: Message, type: any): boolean {
+  // 2. See if the message is a quote
+  isQuote(message: Message, room: any): boolean {
     const messageHash = this.hash(message);
-    return this.pastMessages.search(messageHash).length > 0;
+
+    if (!(room in this.rooms)) {
+      return false;
+    }
+
+    return this.rooms[room].search(messageHash).length > 0;
   }
 
-  // 3. Delete the room message 
-  deleteRoomMessages(roomId: number) {
-    // if message is a quote from a different room, delete
-
-    // const messageHash = this.hash(message);
-    // if (message.isQuote) {
-      // if roomId
-    // }
-    return this.pastMessages.delete(roomId)
+  // 3. Delete the room message
+  deleteRoomMessages(room: any) {
+    delete this.rooms[room];
   }
+
+  // 123 asdfljk [123]
+
+  // [xx:xx] <username>: <message>
+
+  // [11:22] ProNub: Hi this is me
+  // [11:22] ProNub: 123
+  // You send this -> ProNub: Hi this is me ProNub: 123
+
+  deconstructRawChat(chat: string): Message[] {
+    // Get the Message
+    var regexString = /\[\d\d\:\d\d\]\s\w*\:/g;
+    console.log(chat);
+    var newRegexString = chat.replace(regexString, "");
+    console.log(newRegexString)
+
+    const regex_message = /\  /g;
+    const foundMessage = newRegexString.replace(regex_message, "|")
+    console.log(foundMessage)
+
+    const foundMessageSplitted = foundMessage.split("|").map((str) => str.trim());
+
+    console.log(foundMessageSplitted)
+
+    // Get the names 
+    const regex_username = /\]\s*(\w+)\s*:\s*(\w*)/gi;
+    let m;
+    var foundUsers = [];
+
+    while ((m = regex_username.exec(chat)) !== null) {
+      foundUsers.push(m[1]);
+    }
+    console.log(foundUsers);
+
+    // Make sure that len(messages) == len(foundUsers)
+    if (foundMessageSplitted.length !== foundUsers.length) {
+      return [];
+    }
+
+    const output: Message[] = [];
+
+    let i = 0;
+    while (i < foundMessageSplitted.length) {
+      output.push({"message": foundMessageSplitted[i], "username": foundUsers[i]})
+      i += 1;
+    }
+
+    return output;
+  }
+
 }
