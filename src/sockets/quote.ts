@@ -1,17 +1,10 @@
 import crypto from 'crypto';
 // @ts-ignore due to lack of typing library
 import BinarySearchTree from 'binary-search-tree';
-<<<<<<< HEAD
 
 const AVLTree = BinarySearchTree.AVLTree;
 
 // create type Message with elements username and message
-=======
-
-const AVLTree = BinarySearchTree.AVLTree;
-
-// create type Message with elements timestamp, username, and message
->>>>>>> d29a24c667b1b640e3824d070039ceaeaf03e9e2
 export type Message = {
   username: string;
   message: string;
@@ -20,18 +13,10 @@ export type Message = {
 // create Quote class
 export class Quote {
   rooms: { [key: string]: any };
-<<<<<<< HEAD
-  userMessages: { [key: string]: any };
-=======
->>>>>>> d29a24c667b1b640e3824d070039ceaeaf03e9e2
 
   // Initialise the pastMesssages as an empty array
   constructor() {
     this.rooms = {};
-<<<<<<< HEAD
-    this.userMessages = {};
-=======
->>>>>>> d29a24c667b1b640e3824d070039ceaeaf03e9e2
   }
 
   // String to Hash converter
