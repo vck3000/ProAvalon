@@ -766,31 +766,6 @@ var userOptions = {
     },
   },
 
-  optionNotificationsSoundLick: {
-    defaultValue: 'true',
-    onLoad() {
-      let checked;
-      const savedSetting = docCookies.getItem('optionNotificationsSoundLick');
-      if (savedSetting === 'true') {
-        checked = true;
-      } else if (savedSetting === 'false') {
-        checked = false;
-      }
-      $('#option_notifications_sound_lick')[0].checked = checked;
-    },
-    initialiseEventListener() {
-      $('#option_notifications_sound_lick')[0].addEventListener('click', () => {
-        const { checked } = $('#option_notifications_sound_lick')[0];
-        // save their option in cookie
-        docCookies.setItem(
-          'optionNotificationsSoundLick',
-          checked.toString(),
-          Infinity
-        );
-      });
-    },
-  },
-
   optionNotificationsSoundPat: {
     defaultValue: 'true',
     onLoad() {
