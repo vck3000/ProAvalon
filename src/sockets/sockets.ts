@@ -1808,9 +1808,9 @@ export const userCommands = {
     },
   },
 
-  getmutedplayers: {
-    command: 'getmutedplayers',
-    help: '/getmutedplayers: See who you have muted.',
+  muted: {
+    command: 'muted',
+    help: '/muted: See who you have muted.',
     run(data, senderSocket) {
       const { args } = data;
 
@@ -2573,7 +2573,7 @@ var applyApplicableRewards = function (socket) {
   }
   // Moderator badge
   else if (socket.rewards.includes(REWARDS.MOD_BADGE)) {
-    socket.request.badge = "M";
+    socket.request.badge = 'M';
   }
   // TO badge
   else if (socket.rewards.includes(REWARDS.TO_BADGE)) {
@@ -2585,19 +2585,19 @@ var applyApplicableRewards = function (socket) {
   }
   // Tier4 badge
   if (socket.rewards.includes(REWARDS.TIER4_BADGE)) {
-    socket.request.badge = "T4";
+    socket.request.badge = 'T4';
   }
   // Tier3 badge
   else if (socket.rewards.includes(REWARDS.TIER3_BADGE)) {
-    socket.request.badge = "T3";
+    socket.request.badge = 'T3';
   }
   // Tier2 badge
   else if (socket.rewards.includes(REWARDS.TIER2_BADGE)) {
-    socket.request.badge = "T2";
+    socket.request.badge = 'T2';
   }
   // Tier1 badge
   else if (socket.rewards.includes(REWARDS.TIER1_BADGE)) {
-    socket.request.badge = "T1";
+    socket.request.badge = 'T1';
   }
 
   return socket;
@@ -3083,7 +3083,7 @@ function allChatFromClient(data) {
   }
 
   const senderSocket =
-      allSockets[getIndexFromUsername(allSockets, data.username, true)];
+    allSockets[getIndexFromUsername(allSockets, data.username, true)];
   data.badge = senderSocket.request.badge;
 
   sendToAllChat(ioGlobal, data);
