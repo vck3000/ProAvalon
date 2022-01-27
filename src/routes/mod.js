@@ -1,5 +1,4 @@
 import React from 'react';
-import multer from 'multer';
 import { Router } from 'express';
 import { renderToString } from 'react-dom/server';
 
@@ -18,7 +17,6 @@ import {
 import ModLogComponent from '../views/components/mod/mod_log';
 import ReportLog from '../views/components/mod/report';
 
-const upload = multer();
 const router = new Router();
 
 router.get('/', isModMiddleware, (req, res) => {
