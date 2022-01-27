@@ -38,7 +38,7 @@ const requiredFields = [
   'descriptionByMod',
 ];
 
-router.post('/ban', isModMiddleware, upload.none(), async (req, res) => {
+router.post('/ban', isModMiddleware, async (req, res) => {
   try {
     // Catch errors so that it's not shown to users.
     // Multiple checks:
