@@ -1,23 +1,27 @@
+// @ts-nocheck
 import forumThread from '../models/forumThread';
 import forumThreadComment from '../models/forumThreadComment';
 import forumThreadCommentReply from '../models/forumThreadCommentReply';
 import User from '../models/user';
-import IPLinkedAccounts from '../myFunctions/IPLinkedAccounts';
 import Ban from '../models/ban';
 import { isMod } from '../modsadmins/mods';
-import admins from '../modsadmins/admins';
+import { isAdmin } from '../modsadmins/admins';
+
+import { RequestHandler } from 'express';
 
 // return a function that wraps an async middleware
-export const asyncMiddleware = (fn) => (req, res, next) => {
-  Promise.resolve(fn(req, res, next)).catch((err) => {
-    console.log(err);
-    req.flash(
-      'error',
-      'Something has gone wrong! Please contact a moderator or admin.'
-    );
-    res.redirect('back');
-  });
-};
+export const asyncMiddleware =
+  (fn: RequestHandler): RequestHandler =>
+  (req, res, next) => {
+    Promise.resolve(fn(req, res, next)).catch((err) => {
+      console.log(err);
+      req.flash(
+        'error',
+        'Something has gone wrong! Please contact a moderator or admin.'
+      );
+      res.redirect('back');
+    });
+  };
 
 export const isLoggedIn = asyncMiddleware(async (req, res, next) => {
   // Check if the user is logged in.
@@ -205,8 +209,8 @@ export const isModMiddleware = (req, res, next) => {
   }
 };
 
-export const isAdmin = (req, res, next) => {
-  if (admins.includes(req.user.username)) {
+export const isAdminMiddleware = (req, res, next) => {
+  if (isAdmin(req.user.username)) {
     next();
   } else {
     req.flash('error', 'You are not an admin.');

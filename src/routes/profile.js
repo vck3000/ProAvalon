@@ -3,7 +3,7 @@ import express from 'express';
 const router = express.Router();
 import sanitizeHtml from 'sanitize-html';
 import url from 'url';
-import { isModMiddleware, checkProfileOwnership } from './middleware.js';
+import { isModMiddleware, checkProfileOwnership } from './middleware.ts';
 import User from '../models/user';
 import PatreonId from '../models/patreonId';
 import avatarRequest from '../models/avatarRequest';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Router } from 'express';
 import { Types } from 'mongoose';
 import forumThread from '../models/forumThread';
@@ -16,7 +17,7 @@ import forumThreadCommentReplyRoutes from '../routes/forum/forumThreadCommentRep
 import REWARDS from '../rewards/constants';
 import { userHasReward } from '../rewards/getRewards';
 
-const router = new Router();
+const router = Router();
 
 router.use(forumThreadRoutes);
 router.use(forumThreadCommentRoutes);
@@ -211,13 +212,13 @@ router.post(
   asyncMiddleware(async (req) => {
     let replyId, commentId, forumId;
     if (req.body.idOfReply !== '') {
-      replyId = ObjectId(req.body.idOfReply);
+      replyId = Types.ObjectId(req.body.idOfReply);
     }
     if (req.body.idOfComment !== '') {
-      commentId = ObjectId(req.body.idOfComment);
+      commentId = Types.ObjectId(req.body.idOfComment);
     }
     if (req.body.idOfForum !== '') {
-      forumId = ObjectId(req.body.idOfForum);
+      forumId = Types.ObjectId(req.body.idOfForum);
     }
 
     const forumBanData = {
@@ -336,13 +337,13 @@ router.post(
     });
 
     const pin = await pinnedThread
-      .findOne({ forumThread: { id: ObjectId(idOfThread) } })
+      .findOne({ forumThread: { id: Types.ObjectId(idOfThread) } })
       .exec();
     if (pin !== null) {
       await pinnedThread.findByIdAndRemove(pin._id).exec();
     } else {
       const foundForumThread = await forumThread
-        .findById(ObjectId(idOfThread))
+        .findById(Types.ObjectId(idOfThread))
         .exec();
       if (foundForumThread) {
         pinnedThread.create({ forumThread: { id: foundForumThread.id } });
