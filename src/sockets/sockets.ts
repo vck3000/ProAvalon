@@ -24,13 +24,15 @@ import { modOrTOString } from '../modsadmins/modOrTO';
 import { GAME_MODE_NAMES } from '../gameplay/gameModeNames';
 
 import { ChatSpamFilter } from './chatSpamFilter';
-
 const chatSpamFilter = new ChatSpamFilter();
 if (process.env.NODE_ENV !== 'test') {
   setInterval(() => {
     chatSpamFilter.tick();
   }, 1000);
 }
+
+import { MessageWithDate, Quote } from './quote';
+const quote = new Quote();
 
 import {
   enabledBots,
@@ -2573,7 +2575,7 @@ var applyApplicableRewards = function (socket) {
   }
   // Moderator badge
   else if (socket.rewards.includes(REWARDS.MOD_BADGE)) {
-    socket.request.badge = "M";
+    socket.request.badge = 'M';
   }
   // TO badge
   else if (socket.rewards.includes(REWARDS.TO_BADGE)) {
@@ -2585,19 +2587,19 @@ var applyApplicableRewards = function (socket) {
   }
   // Tier4 badge
   if (socket.rewards.includes(REWARDS.TIER4_BADGE)) {
-    socket.request.badge = "T4";
+    socket.request.badge = 'T4';
   }
   // Tier3 badge
   else if (socket.rewards.includes(REWARDS.TIER3_BADGE)) {
-    socket.request.badge = "T3";
+    socket.request.badge = 'T3';
   }
   // Tier2 badge
   else if (socket.rewards.includes(REWARDS.TIER2_BADGE)) {
-    socket.request.badge = "T2";
+    socket.request.badge = 'T2';
   }
   // Tier1 badge
   else if (socket.rewards.includes(REWARDS.TIER1_BADGE)) {
-    socket.request.badge = "T1";
+    socket.request.badge = 'T1';
   }
 
   return socket;
@@ -2804,6 +2806,8 @@ function destroyRoom(roomId) {
   if (rooms[roomId] === undefined || rooms[roomId] === null) {
     return;
   }
+
+  quote.deleteRoomMessages(roomId);
 
   deleteSaveGameFromDb(rooms[roomId]);
 
@@ -3083,7 +3087,7 @@ function allChatFromClient(data) {
   }
 
   const senderSocket =
-      allSockets[getIndexFromUsername(allSockets, data.username, true)];
+    allSockets[getIndexFromUsername(allSockets, data.username, true)];
   data.badge = senderSocket.request.badge;
 
   sendToAllChat(ioGlobal, data);
@@ -3125,6 +3129,32 @@ function roomChatFromClient(data) {
   if (!chatSpamFilter.chatRequest(data.username)) {
     outputSpamMessage('roomChatToClient', data.username);
     return;
+  }
+
+  // Quotes
+  const possibleQuotes = quote.rawChatToPossibleMessages(data.message);
+
+  if (this.request.user.inRoomId) {
+    const roomId = this.request.user.inRoomId;
+
+    if (possibleQuotes.length > 0) {
+      const validQuotes = possibleQuotes
+        .map((possibleQuote) => quote.augmentIntoQuote(possibleQuote, roomId))
+        .filter((validQuote) => validQuote) as MessageWithDate[];
+
+      if (validQuotes.length > 0) {
+        data.quotes = validQuotes;
+      }
+    } else {
+      quote.addMessage(
+        {
+          username: data.username,
+          message: data.message,
+          date: new Date(),
+        },
+        roomId
+      );
+    }
   }
 
   data.dateCreated = new Date();
