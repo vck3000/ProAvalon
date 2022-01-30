@@ -1065,7 +1065,6 @@ function strOfAvatar(playerData, alliance) {
     selectedAvatar = 'selected-avatar-3';
   }
 
-
   // Set the colour of the button itself
   let colourToHighlightChatButton;
   const indexOfPlayer = getIndexFromUsername(playerData.username);
