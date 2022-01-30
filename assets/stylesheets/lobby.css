@@ -927,3 +927,7 @@ h3 {
 .dark .all-chat-text-red {
     color: #fc4141
 }
+
+.ReactModal__Overlay {
+  z-index: 20
+}

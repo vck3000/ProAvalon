@@ -174,7 +174,7 @@ function addToAllChat(data) {
             "<li class='" + "'><span class='date-text'>"
           }${date}</span> <span class='username-text'>${
             data[i].username
-          } ${generateBadgeString(data[i].badge)}:</span> ${filteredMessage}`;
+          }${generateBadgeString(data[i].badge)}:</span> ${filteredMessage}`;
         }
 
         // if they've muted this player, then just dont show anything. reset str to nothing.
@@ -609,8 +609,8 @@ function generateBadgeString(badge) {
       title = 'Patreon T1';
     }
 
-    badgeStr = `<span class='badge' data-toggle='tooltip' data-placement='right' title='${title}' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>${badge}</span>`
+    badgeStr = ` <span class='badge' data-toggle='tooltip' data-placement='right' title='${title}' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>${badge}</span>`
   }
-  
+
   return badgeStr;
 }

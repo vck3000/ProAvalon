@@ -258,7 +258,7 @@ socket.on('update-current-players-list', (currentPlayers) => {
   $('#current-players-table tbody tr td').remove();
   $('#current-players-table tbody tr').remove();
 
-  // currentOnlinePlayers = currentPlayers;
+  currentOnlinePlayers = currentPlayers;
   autoCompleteStrs = currentPlayers.map((a) => a.displayUsername);
 
   unrankedPlayers = currentPlayers.filter(
@@ -272,7 +272,7 @@ socket.on('update-current-players-list', (currentPlayers) => {
   rankedPlayers.forEach((player) => {
     // if the current player exists, add it
     if (player) {
-      str = `<tr> <td>${player.displayUsername}</td> <td align="right">${player.ratingBadge} ${player.playerRating}</td> </tr>`;
+      str = `<tr> <td>${player.displayUsername} ${generateBadgeString(player.badge)}</td> <td align="right">${player.ratingBadge} ${player.playerRating}</td> </tr>`;
       $('#current-players-table tbody').append(str);
     }
   });
@@ -281,7 +281,7 @@ socket.on('update-current-players-list', (currentPlayers) => {
   unrankedPlayers.forEach((player) => {
     // if the current player exists, add it
     if (player) {
-      str = `<tr> <td>${player.displayUsername}</td> <td align="right">${player.ratingBadge} ${player.playerRating}</td> </tr>`;
+      str = `<tr> <td>${player.displayUsername} ${generateBadgeString(player.badge)}</td> <td align="right">${player.ratingBadge} ${player.playerRating}</td> </tr>`;
       $('#current-players-table tbody').append(str);
     }
   });

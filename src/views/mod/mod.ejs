@@ -35,11 +35,6 @@
         margin-bottom: 15px;
     }
 
-    .collapsed {
-      max-height: 30vh;
-      overflow: hidden;
-    }
-
     .expandButton {
       margin-top: 15px;
     }
@@ -59,6 +54,7 @@
         Useful links:
         <ul>
             <li><a href="/profile/mod/customavatar">Custom Avatar Requests</a></li>
+            <li><a href="/mod/report">Report logs</a></li>
         </ul>
     </div>
 
@@ -70,9 +66,7 @@
         <div class="panel-heading">
             <h3 class="panel-title">Moderation logs:</h3>
         </div>
-        <div class="panel-body" id="logsDiv">
-            <%- logsReact %>
-        </div>
+        <div react-entrypoint class="panel-body" id="logsDiv"><%- logsReact %></div>
     </div>
 </div>
 
