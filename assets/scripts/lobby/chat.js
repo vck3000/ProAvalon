@@ -333,14 +333,14 @@ function addToRoomChat(data) {
 
         if (
           data[i].username &&
-          selectedChat[data[i].username.toLowerCase()] === true &&
-          getIndexFromUsername(usernameOnly) !== undefined
+          selectedChat[data[i].username] === true &&
+          getIndexFromUsername(data[i].username) !== undefined
         ) {
           if (setHighlightColorToYellow === true) {
             highlightChatColour = '#ffff9e';
           } else {
             highlightChatColour = docCookies.getItem(
-              `player${getIndexFromUsername(usernameOnly)}HighlightColour`
+              `player${getIndexFromUsername(data[i].username)}HighlightColour`
             );
           }
           highlightForegroundColorHtml = 'color: #333;';
