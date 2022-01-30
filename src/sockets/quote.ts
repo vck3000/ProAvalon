@@ -5,6 +5,10 @@ import BinarySearchTree from 'binary-search-tree';
 const AVLTree = BinarySearchTree.AVLTree;
 
 // create type Message with elements username and message
+export type MessageWithDate = Message & {
+  date: Date;
+};
+
 export type Message = {
   username: string;
   message: string;
@@ -23,10 +27,10 @@ export class Quote {
   hash(input: Message): string {
     const messageString = `${input.username}: ${input.message}`;
     return crypto.createHash('sha256').update(messageString).digest('base64');
-  };
+  }
 
   // 1. Add message to the pastMessages array
-  addMessage(message: Message, room: any) {
+  addMessage(message: MessageWithDate, room: any) {
     const messageHash = this.hash(message);
 
     // See if room exists:
@@ -34,21 +38,32 @@ export class Quote {
       this.rooms[room] = new AVLTree();
     }
 
-    this.rooms[room].insert(messageHash, true);
+    this.rooms[room].insert(messageHash, message.date);
   }
 
   // 2. See if the message is a quote
-  isQuote(message: Message, room: any): boolean {
+  augmentIntoQuote(message: Message, room: any): MessageWithDate | false {
     const messageHash = this.hash(message);
 
     if (!(room in this.rooms)) {
       return false;
     }
 
-    return this.rooms[room].search(messageHash).length > 0;
+    const quoteDates = this.rooms[room].search(messageHash);
+
+    if (quoteDates.length === 0) {
+      return false;
+    }
+
+    const messageWithDate: MessageWithDate = {
+      username: message.username,
+      message: message.message,
+      date: quoteDates[0],
+    };
+
+    return messageWithDate;
   }
 
-  // 3. Delete the room message
   deleteRoomMessages(room: any) {
     delete this.rooms[room];
   }
@@ -58,7 +73,7 @@ export class Quote {
     // Get the Message
 
     // Take out timestamp
-    const splittedChatLines = chat.split(/\[\d\d:\d\d\]\s/)
+    const splittedChatLines = chat.split(/\[\d\d:\d\d\]\s/);
 
     // First element must be empty string because timestamp must be first.
     if (splittedChatLines[0] !== '') {
@@ -78,8 +93,8 @@ export class Quote {
       // Extract username and removing possible badges. E.g. ProNub A: asdf
       const username = chatLine.slice(0, firstColonIndex).split(' ')[0];
       const message = chatLine.slice(firstColonIndex + 2).trim();
-      
-      output.push({message, username});
+
+      output.push({ message, username });
     }
 
     return output;

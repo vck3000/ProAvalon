@@ -400,7 +400,21 @@ function addToRoomChat(data) {
           }
 
           for (let j = 0; j < goFor; j++) {
-            strQuotes += `<li class='myQuote ${addClass}'>${quotedStrings[j].username}: ${quotedStrings[j].message}</li>`;
+            const date = new Date(quotedStrings[j].date);
+
+            let hour = date.getHours();
+            let min = date.getMinutes();
+
+            if (hour < 10) {
+              hour = `0${hour}`;
+            }
+            
+            if (min < 10) {
+              min = `0${min}`;
+            }
+            const dateFmt = `[${hour}:${min}]`;
+
+            strQuotes += `<li class='myQuote ${addClass}'>${dateFmt} ${quotedStrings[j].username}: ${quotedStrings[j].message}</li>`;
           }
 
           // if they've muted this player, then just dont show anything. reset str to nothing.
