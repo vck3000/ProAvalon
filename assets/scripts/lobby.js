@@ -1060,8 +1060,7 @@ function strOfAvatar(playerData, alliance) {
     // console.log("HI");
   } else if (selectedAvatars[playerData.username] === 2) {
     selectedAvatar = 'selected-avatar-2';
-  }
-  else if (selectedAvatars[playerData.username] === 3) {
+  } else if (selectedAvatars[playerData.username] === 3) {
     selectedAvatar = 'selected-avatar-3';
   }
 
