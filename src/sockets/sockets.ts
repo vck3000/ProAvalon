@@ -3084,20 +3084,6 @@ function allChatFromClient(data) {
     return;
   }
 
-  const possibleQuotes = quote.rawChatToPossibleMessages(data.message);
-  console.log(possibleQuotes);
-
-  if (possibleQuotes.length > 0) {
-    const validQuotes = possibleQuotes.filter((possibleQuote) => quote.isQuote(possibleQuote));
-    if (validQuotes.length > 0) {
-      data.quotes = validQuotes;
-    }
-    console.log(validQuotes);
-  } else {
-    quote.addMessage({username: data.username, message: data.message});
-  }
-
-
   const senderSocket =
       allSockets[getIndexFromUsername(allSockets, data.username, true)];
   data.badge = senderSocket.request.badge;
@@ -3141,6 +3127,20 @@ function roomChatFromClient(data) {
   if (!chatSpamFilter.chatRequest(data.username)) {
     outputSpamMessage('roomChatToClient', data.username);
     return;
+  }
+
+  // Quotes
+  const possibleQuotes = quote.rawChatToPossibleMessages(data.message);
+  console.log(possibleQuotes);
+
+  if (possibleQuotes.length > 0) {
+    const validQuotes = possibleQuotes.filter((possibleQuote) => quote.isQuote(possibleQuote));
+    if (validQuotes.length > 0) {
+      data.quotes = validQuotes;
+    }
+    console.log(validQuotes);
+  } else {
+    quote.addMessage({username: data.username, message: data.message});
   }
 
   data.dateCreated = new Date();

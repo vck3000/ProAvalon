@@ -217,6 +217,7 @@ function unhighlightAllChat() {
 const roomChatHistory = [];
 
 function addToRoomChat(data) {
+  console.log(data);
   // if it is not an array, force it into a array
   if (data) {
     if (data[0] === undefined) {
@@ -325,68 +326,21 @@ function addToRoomChat(data) {
         
         let str = '';
 
-        // any part of the chat before any quoted parts
-        let unquotedMessage = filteredMessage.split('[')[0];
-
-        const rawQuotedString = filteredMessage.slice(unquotedMessage.length);
-        // unquotedMessage = unquotedMessage.trim();
-
-        const quotedStrings = [];
-        const quotesList = rawQuotedString.split('[').slice(1);
-
-        var s = '';
-        while (quotesList.length > 0) {
-          const lastQuote = `[${quotesList.pop()}`;
-          s = lastQuote + s;
-          // console.log('s = ' + s);
-
-          // parse "[hh:mm]", "username" and everything after the ": "
-          var dateStr = s.slice(0, 7);
-          var username = s.slice(8, s.indexOf(': '));
-          var text = s.slice(s.indexOf(': ') + 2);
-          // console.log('dateStr = ' + dateStr);
-          // console.log('username = ' + username);
-          // console.log('text = ' + text);
-
-          // verify all quotes are either a server message or have actually been said
-          if (
-            roomChatHistory.filter(
-              (d) =>
-                (d.classStr !== null &&
-                  s.slice(8).trim() === d.message.trim()) ||
-                (username === d.username && // or was said by that user. only check the one's place of the minutes
-                  dateStr[3] === ':' && // (to ignore timezones, which can be off by hours or even half-hours)
-                  dateStr[5] === d.dateStr[5] &&
-                  d.message.startsWith(text.trim()))
-            ).length > 0
-          ) {
-            quotedStrings.push(s);
-            console.log(`pushed ${s}`);
-            s = '';
-          }
-        }
-
-        // if 's' is still not a verified quote, add it as normal text
-        unquotedMessage += s;
-        quotedStrings.reverse(); // was built backwards
-        // console.log("quoted stuff: " + quotedStrings.join(','));
-        data[i].message = unquotedMessage.trim();
-
-        // Handle the non-quoted parts
         // set the highlight chat if the user has been selected already
         let highlightChatColour = '';
         const setHighlightColorToYellow = $('.setHighlightColorsToYellow')[0]
           .checked;
         let highlightForegroundColorHtml = ';';
 
-        // console.log("true?"  + selectedChat[data[i].username]);
-        let usernameOnly = data[i].username;
-        if (data[i].username) {
-          usernameOnly = data[i].username.split(' ')[0];
-        }
+        // // console.log("true?"  + selectedChat[data[i].username]);
+        // let usernameOnly = data[i].username;
+        // if (data[i].username) {
+        //   usernameOnly = data[i].username.split(' ')[0];
+        // }
 
         if (
-          selectedChat[usernameOnly] === true &&
+          data[i].username &&
+          selectedChat[data[i].username.toLowerCase()] === true &&
           getIndexFromUsername(usernameOnly) !== undefined
         ) {
           if (setHighlightColorToYellow === true) {
@@ -401,14 +355,24 @@ function addToRoomChat(data) {
 
         // if its a server text or special text
         if (data[i].classStr && data[i].classStr !== '') {
-          str = `<li class='${data[i].classStr} ${addClass}'><span class='date-text'>${date}</span> ${unquotedMessage}`;
+          str = `<li class='${data[i].classStr} ${addClass}'><span class='date-text'>${date}</span> ${filteredMessage}`;
         }
         // its a user's chat so put some other stuff on it
         else {
+          let message = filteredMessage;
 
-          str = `<li class='${addClass}'><span style='${highlightForegroundColorHtml}background-color: ${highlightChatColour}' username='${usernameOnly}'><span class='date-text'> ${date}</span> <span class='username-text'>${
-            data[i].username
-          }${generateBadgeString(data[i].badge)}:</span> ${unquotedMessage.trim() || '<i>Quoting:</i>'}</span></li>`;
+          if (data[i].quotes && data[i].quotes.length > 0) {
+            message = '<i>Quoting:</i>';
+          }
+
+          str = `
+          <li class='${addClass}'>
+            <span style='${highlightForegroundColorHtml}background-color: ${highlightChatColour}' username='${data[i].username}'>
+              <span class='date-text'> ${date}</span> 
+              <span class='username-text'>${data[i].username}${generateBadgeString(data[i].badge)}:</span> 
+              ${message}
+            </span>
+          </li>`;
         }
 
         // if they've muted this player, then just dont show anything. reset str to nothing.
@@ -421,14 +385,13 @@ function addToRoomChat(data) {
         scrollDown('room-chat-room2');
 
         // Handle the quoted parts
+        let quotedStrings = [];
+        if (data[i].quotes && data[i].quotes.length > 0) {
+          quotedStrings = data[i].quotes;
+        }
+
         if (quotedStrings.length > 0) {
           let strQuotes = '';
-          // DEPRECATED: No longer need this, since it's being done above in the unquoted part
-          // if (unquotedMessage.length === 0)
-          //    strQuotes = "<li class='" + addClass + "'><span username='" + data[i].username + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> Quoting:</span></li>";
-          // else
-          //    "<li class='" + addClass + "'>Quoting:</li>";
-          // console.log("Strings: ");
 
           let goFor = quotedStrings.length;
           // only 5 lines of quote at a time max.
@@ -437,8 +400,7 @@ function addToRoomChat(data) {
           }
 
           for (let j = 0; j < goFor; j++) {
-            strQuotes += `<li class='myQuote ${addClass}'>${quotedStrings[j]}</li>`;
-            // console.log(strings[j]);
+            strQuotes += `<li class='myQuote ${addClass}'>${quotedStrings[j].username}: ${quotedStrings[j].message}</li>`;
           }
 
           // if they've muted this player, then just dont show anything. reset str to nothing.
