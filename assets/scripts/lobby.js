@@ -181,7 +181,7 @@ function draw() {
 }
 
 let selectedAvatars = {};
-const numOfStatesOfHighlight = 2;
+const numOfStatesOfHighlight = 3;
 const selectedChat = {};
 function activateAvatarButtons() {
   // console.log("activate avatar buttons");
@@ -1061,6 +1061,10 @@ function strOfAvatar(playerData, alliance) {
   } else if (selectedAvatars[playerData.username] === 2) {
     selectedAvatar = 'selected-avatar-2';
   }
+  else if (selectedAvatars[playerData.username] === 3) {
+    selectedAvatar = 'selected-avatar-3';
+  }
+
 
   // Set the colour of the button itself
   let colourToHighlightChatButton;

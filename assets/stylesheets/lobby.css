@@ -400,6 +400,11 @@ p {
     background-color: #d9544f81;
     border-radius: 5px;
 }
+.selected-avatar-3 {
+    background-color: #bebebe;
+    border-radius: 5px;
+}
+
 
 .avatarOptionButtons {
     position: absolute;
