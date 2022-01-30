@@ -10,6 +10,7 @@ socket.on('allChatToClient', (data) => {
     const date = new Date(data.lastLoggedInDate);
     data.message = `You last logged in on ${date.toDateString()} at ${date.toLocaleTimeString()}.`;
   }
+  console.log(data);
   addToAllChat(data);
 });
 

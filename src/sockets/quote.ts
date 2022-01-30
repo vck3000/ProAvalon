@@ -20,7 +20,7 @@ export class Quote {
   }
 
   // String to Hash converter
-  hash = (input: Message): string => {
+  hash(input: Message): string {
     const messageString = `${input.username}: ${input.message}`;
     return crypto.createHash('sha256').update(messageString).digest('base64');
   };
@@ -54,7 +54,7 @@ export class Quote {
   }
 
   // Returns [] if chat is not a quote
-  deconstructRawChat(chat: string): Message[] {
+  rawChatToPossibleMessages(chat: string): Message[] {
     // Get the Message
 
     // Take out timestamp
@@ -75,7 +75,8 @@ export class Quote {
         return [];
       }
 
-      const username = chatLine.slice(0, firstColonIndex);
+      // Extract username and removing possible badges. E.g. ProNub A: asdf
+      const username = chatLine.slice(0, firstColonIndex).split(' ')[0];
       const message = chatLine.slice(firstColonIndex + 2).trim();
       
       output.push({message, username});

@@ -62,7 +62,7 @@ describe('Quote', () => {
 
     // Setup
     const data =
-      '[14:11] rio: After 3.1 imo [14:11] thechessone: rio come play [14:11] rio: 3.1 is kinda merlinunt rio: asdf [14:11] rio: yolo   | After 3.1 imo';
+      '[14:11] rio: After 3.1 imo [14:11] thechessone D: rio come play [14:11] rio: 3.1 is kinda merlinunt rio: asdf [14:11] rio: yolo   | After 3.1 imo';
 
     const expectedMessages: Message[] = [
       {
@@ -84,7 +84,7 @@ describe('Quote', () => {
     ];
 
     // Trigger
-    const output = quote.deconstructRawChat(data);
+    const output = quote.rawChatToPossibleMessages(data);
 
     // Assert
     expect(output).toEqual(expectedMessages);
@@ -102,7 +102,7 @@ describe('Quote', () => {
 
     for(const input of inputs) {
       console.log("HI WALLE WAS HERE");
-      expect(quote.deconstructRawChat(input)).toEqual([]);
+      expect(quote.rawChatToPossibleMessages(input)).toEqual([]);
     }
   });
 });

@@ -24,13 +24,15 @@ import { modOrTOString } from '../modsadmins/modOrTO';
 import { GAME_MODE_NAMES } from '../gameplay/gameModeNames';
 
 import { ChatSpamFilter } from './chatSpamFilter';
-
 const chatSpamFilter = new ChatSpamFilter();
 if (process.env.NODE_ENV !== 'test') {
   setInterval(() => {
     chatSpamFilter.tick();
   }, 1000);
 }
+
+import { Quote } from './quote';
+const quote = new Quote();
 
 import {
   enabledBots,
@@ -3079,6 +3081,20 @@ function allChatFromClient(data) {
     outputSpamMessage('allChatToClient', data.username);
     return;
   }
+
+  const possibleQuotes = quote.rawChatToPossibleMessages(data.message);
+  console.log(possibleQuotes);
+
+  if (possibleQuotes.length > 0) {
+    const validQuotes = possibleQuotes.filter((possibleQuote) => quote.isQuote(possibleQuote));
+    if (validQuotes.length > 0) {
+      data.quotes = validQuotes;
+    }
+    console.log(validQuotes);
+  } else {
+    quote.addMessage({username: data.username, message: data.message});
+  }
+
 
   const senderSocket =
       allSockets[getIndexFromUsername(allSockets, data.username, true)];
