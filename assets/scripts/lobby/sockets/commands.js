@@ -20,9 +20,9 @@ socket.on('modCommands', (commands) => {
       var formElement = document.querySelector('#modactionform');
       var bodyFormData = new FormData(formElement);
 
-      console.log(bodyFormData);
+      const banData = {};
       for (var [key, value] of bodyFormData.entries()) {
-        console.log(key, value);
+        banData[key] = value;
       }
 
       Swal.fire({
@@ -33,9 +33,8 @@ socket.on('modCommands', (commands) => {
           axios({
             method: 'POST',
             url: '/mod/ban',
-            data: bodyFormData,
-
-            config: { headers: { 'Content-Type': 'multipart/form-data' } },
+            data: banData,
+            config: { headers: { 'Content-Type': 'application/json' } },
           })
             .then(function (response) {
               //handle success
