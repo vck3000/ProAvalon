@@ -331,12 +331,6 @@ function addToRoomChat(data) {
           .checked;
         let highlightForegroundColorHtml = ';';
 
-        // // console.log("true?"  + selectedChat[data[i].username]);
-        // let usernameOnly = data[i].username;
-        // if (data[i].username) {
-        //   usernameOnly = data[i].username.split(' ')[0];
-        // }
-
         if (
           data[i].username &&
           selectedChat[data[i].username.toLowerCase()] === true &&
