@@ -401,6 +401,11 @@ p {
     border-radius: 5px;
 }
 
+.selected-avatar-3 {
+    background-color: #b8b8b8;
+    border-radius: 5px;
+}
+
 .avatarOptionButtons {
     position: absolute;
     top: 0px;
