@@ -217,7 +217,6 @@ function unhighlightAllChat() {
 const roomChatHistory = [];
 
 function addToRoomChat(data) {
-  console.log(data);
   // if it is not an array, force it into a array
   if (data) {
     if (data[0] === undefined) {
@@ -408,7 +407,7 @@ function addToRoomChat(data) {
             if (hour < 10) {
               hour = `0${hour}`;
             }
-            
+
             if (min < 10) {
               min = `0${min}`;
             }

@@ -3133,7 +3133,6 @@ function roomChatFromClient(data) {
 
   // Quotes
   const possibleQuotes = quote.rawChatToPossibleMessages(data.message);
-  console.log(possibleQuotes);
 
   if (this.request.user.inRoomId) {
     const roomId = this.request.user.inRoomId;
@@ -3143,14 +3142,9 @@ function roomChatFromClient(data) {
         .map((possibleQuote) => quote.augmentIntoQuote(possibleQuote, roomId))
         .filter((validQuote) => validQuote) as MessageWithDate[];
 
-      console.log('HI');
-      console.log(validQuotes);
-
       if (validQuotes.length > 0) {
         data.quotes = validQuotes;
       }
-
-      console.log(validQuotes);
     } else {
       quote.addMessage(
         {
