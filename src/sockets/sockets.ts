@@ -1810,9 +1810,9 @@ export const userCommands = {
     },
   },
 
-  getmutedplayers: {
-    command: 'getmutedplayers',
-    help: '/getmutedplayers: See who you have muted.',
+  muted: {
+    command: 'muted',
+    help: '/muted: See who you have muted.',
     run(data, senderSocket) {
       const { args } = data;
 
