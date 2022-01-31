@@ -798,6 +798,10 @@ h3 {
     display: none;
 }
 
+.displayNoneReportClass {
+    display: none !important;
+}
+
 #tabs1 {
     padding-left: 0px;
     padding-right: 0px;

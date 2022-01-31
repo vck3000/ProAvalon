@@ -4,3 +4,4 @@ import Report from './index';
 
 hydrate(<Report />, document.getElementById('reportDiv'));
 hydrate(<Report />, document.getElementById('reportDivRoom'));
+hydrate(<Report />, document.getElementById('reportDivRoom2'));
