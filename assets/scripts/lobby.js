@@ -1687,9 +1687,11 @@ function updateTwoTabs(checked) {
     $('#tabs1').addClass('tabs1TwoTabs');
     $('#tabs2').addClass('tabs2TwoTabs');
     $('#tabs2').removeClass('displayNoneClass');
+    $('#reportDivRoom').addClass('displayNoneReportClass')
   } else {
     $('#tabs1').removeClass('col-xs-6');
     $('#tabs2').addClass('displayNoneClass');
+    $('#reportDivRoom').removeClass('displayNoneReportClass')
   }
 }
 
