@@ -27,7 +27,7 @@
     "cookie-parser": "^1.4.3",
     "discord.js": "^12.5.3",
     "dotenv": "^8.1.0",
-    "ejs": "^2.5.7",
+    "ejs": "^3.1.7",
     "express": "^4.16.2",
     "express-rate-limit": "^5.0.0",
     "express-session": "^1.15.6",
