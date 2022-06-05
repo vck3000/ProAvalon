@@ -4,7 +4,7 @@ module.exports = {
   modulePathIgnorePatterns: ['out', 'assets', 'docker-compose-data'],
   globals: {
     'ts-jest': {
-      isolatedModules: true
-    }
+      isolatedModules: true,
+    },
   },
 };

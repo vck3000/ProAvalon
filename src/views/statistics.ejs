@@ -1,465 +1,466 @@
 <%- include('partials/header') %>
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
-
-
-<style>
-    .myContainer {
-        border-radius: 50px;
-
-        padding-top: 5%;
-        padding-bottom: 5%;
-        margin-bottom: 30px;
-        color: inherit;
-        background-color: #eee;
-        
-        width:95%;
-    }
-
-    .dark .myContainer {
-        background-color: #444444;
-        border: 1px solid black;
-    }
-
-    .myTable {
-        border: 1px solid black;
-        /* table-layout: fixed; */
-
-        /* width: 100%; */
-    }
-
-    .myTable tbody tr td{
-        border: 1px solid black;
-    }
-
-    .myTable thead tr td{
-        border: 1px solid black;
-    }
-
-    .table-nonfluid {
-        width: auto !important;
-    }
-
-    #gamesPlayedChart {
-        width: 100%;
-        /*height: 50%;*/
-        border: 1px solid red;
-
-        max-width: 1000px;
-    }
-
-</style>
-
-<div class="container myContainer">
-    <h1><u>Statistics</u></h1>
-
-    <div>
-        <div id="loading">
-            Loading...
-        </div>
-
-        <div id="statsDiv" class="hidden">
-            Note: Stats are updated usually once a week (manual update for now). This set of statistics was created on: <span id="timeCreated"></span>.
-
-            <h4><u>Requesting a copy of anonymised game records:</u></h3>
-            Please contact the admin if you would like a copy of anonymised logs for research purposes. Details are in the about page.
-
-            <h3>Site traffic (Games played per day):</h3>
-            <canvas id="gamesPlayedChart"></canvas>
-
-            <h3>General stats:</h3>
-            <table class="table myTable table-nonfluid">
-                <tbody>
-                    <tr>
-                        <td class="statsCol1">Total games played: </td>
-                        <td class="statsCol2" id="totalgamesplayed"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">Total Resistance wins: </td>
-                        <td class="statsCol2" id="totalreswins"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">Total Spy wins: </td>
-                        <td class="statsCol2" id="totalspywins"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">Average game duration: </td>
-                        <td class="statsCol2" id="averagegameduration"></td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>Game size win rate breakdown:</h3>
-            <table class="table myTable table-nonfluid">
-                <tbody>
-                    <thead>
-                        <tr>
-                            <td>Game size</td>
-                            <td>Resistance</td>
-                            <td>Spy</td>
-                        </tr>
-                    </thead>
-                    <tr>
-                        <td class="statsCol1">5P</td>
-                        <td class="statsCol2" id="5preswin"></td>
-                        <td class="statsCol2" id="5pspywin"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">6P</td>
-                        <td class="statsCol2" id="6preswin"></td>
-                        <td class="statsCol2" id="6pspywin"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">7P</td>
-                        <td class="statsCol2" id="7preswin"></td>
-                        <td class="statsCol2" id="7pspywin"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">8P</td>
-                        <td class="statsCol2" id="8preswin"></td>
-                        <td class="statsCol2" id="8pspywin"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">9P</td>
-                        <td class="statsCol2" id="9preswin"></td>
-                        <td class="statsCol2" id="9pspywin"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">10P</td>
-                        <td class="statsCol2" id="10preswin"></td>
-                        <td class="statsCol2" id="10pspywin"></td>
-                    </tr>
-
-                </tbody>
-            </table>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
 
 
+    <style>
+        .myContainer {
+            border-radius: 50px;
 
-            <h3>Assassinations:</h3>
-            <table class="table myTable table-nonfluid">
-                <tbody>
-                    <tr>
-                        <td class="statsCol1">Merlin shot: </td>
-                        <td class="statsCol2" id="totalMerlinShot"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">Percival shot: </td>
-                        <td class="statsCol2" id="totalPercivalShot"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">Resistance shot: </td>
-                        <td class="statsCol2" id="totalResistanceShot"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">Tristan/Isolde shot: </td>
-                        <td class="statsCol2" id="totalTristanIsoldeShot"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">Oberon shot: </td>
-                        <td class="statsCol2" id="totalOberonShot"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">Total shots: </td>
-                        <td class="statsCol2" id="totalShots"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">Average assassination time: </td>
-                        <td class="statsCol2" id="averageassassinationduration"></td>
-                    </tr>
-                </tbody>
-            </table>
+            padding-top: 5%;
+            padding-bottom: 5%;
+            margin-bottom: 30px;
+            color: inherit;
+            background-color: #eee;
+
+            width: 95%;
+        }
+
+        .dark .myContainer {
+            background-color: #444444;
+            border: 1px solid black;
+        }
+
+        .myTable {
+            border: 1px solid black;
+            /* table-layout: fixed; */
+
+            /* width: 100%; */
+        }
+
+        .myTable tbody tr td {
+            border: 1px solid black;
+        }
+
+        .myTable thead tr td {
+            border: 1px solid black;
+        }
+
+        .table-nonfluid {
+            width: auto !important;
+        }
+
+        #gamesPlayedChart {
+            width: 100%;
+            /*height: 50%;*/
+            border: 1px solid red;
+
+            max-width: 1000px;
+        }
+    </style>
+
+    <div class="container myContainer">
+        <h1><u>Statistics</u></h1>
+
+        <div>
+            <div id="loading">
+                Loading...
+            </div>
+
+            <div id="statsDiv" class="hidden">
+                Note: Stats are updated usually once a week (manual update for now). This set of statistics was created
+                on: <span id="timeCreated"></span>.
+
+                <h4><u>Requesting a copy of anonymised game records:</u></h3>
+                    Please contact the admin if you would like a copy of anonymised logs for research purposes. Details
+                    are in the about page.
+
+                    <h3>Site traffic (Games played per day):</h3>
+                    <canvas id="gamesPlayedChart"></canvas>
+
+                    <h3>General stats:</h3>
+                    <table class="table myTable table-nonfluid">
+                        <tbody>
+                            <tr>
+                                <td class="statsCol1">Total games played: </td>
+                                <td class="statsCol2" id="totalgamesplayed"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">Total Resistance wins: </td>
+                                <td class="statsCol2" id="totalreswins"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">Total Spy wins: </td>
+                                <td class="statsCol2" id="totalspywins"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">Average game duration: </td>
+                                <td class="statsCol2" id="averagegameduration"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Game size win rate breakdown:</h3>
+                    <table class="table myTable table-nonfluid">
+                        <tbody>
+                            <thead>
+                                <tr>
+                                    <td>Game size</td>
+                                    <td>Resistance</td>
+                                    <td>Spy</td>
+                                </tr>
+                            </thead>
+                            <tr>
+                                <td class="statsCol1">5P</td>
+                                <td class="statsCol2" id="5preswin"></td>
+                                <td class="statsCol2" id="5pspywin"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">6P</td>
+                                <td class="statsCol2" id="6preswin"></td>
+                                <td class="statsCol2" id="6pspywin"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">7P</td>
+                                <td class="statsCol2" id="7preswin"></td>
+                                <td class="statsCol2" id="7pspywin"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">8P</td>
+                                <td class="statsCol2" id="8preswin"></td>
+                                <td class="statsCol2" id="8pspywin"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">9P</td>
+                                <td class="statsCol2" id="9preswin"></td>
+                                <td class="statsCol2" id="9pspywin"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">10P</td>
+                                <td class="statsCol2" id="10preswin"></td>
+                                <td class="statsCol2" id="10pspywin"></td>
+                            </tr>
+
+                        </tbody>
+                    </table>
 
 
-            <h3>Spy wins breakdown:</h3>
-            <table class="table myTable table-nonfluid">
-                <tbody>
-                    <tr>
-                        <td class="statsCol1">Failing missions: </td>
-                        <td class="statsCol2" id="spywinfailingmissions"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">Assassinating Merlin: </td>
-                        <td class="statsCol2" id="spywinassassinatingmerlin"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">Hammer reject: </td>
-                        <td class="statsCol2" id="spywinhammerreject"></td>
-                    </tr>
-                </tbody>
-            </table>
+
+                    <h3>Assassinations:</h3>
+                    <table class="table myTable table-nonfluid">
+                        <tbody>
+                            <tr>
+                                <td class="statsCol1">Merlin shot: </td>
+                                <td class="statsCol2" id="totalMerlinShot"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">Percival shot: </td>
+                                <td class="statsCol2" id="totalPercivalShot"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">Resistance shot: </td>
+                                <td class="statsCol2" id="totalResistanceShot"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">Tristan/Isolde shot: </td>
+                                <td class="statsCol2" id="totalTristanIsoldeShot"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">Oberon shot: </td>
+                                <td class="statsCol2" id="totalOberonShot"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">Total shots: </td>
+                                <td class="statsCol2" id="totalShots"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">Average assassination time: </td>
+                                <td class="statsCol2" id="averageassassinationduration"></td>
+                            </tr>
+                        </tbody>
+                    </table>
 
 
-            <h3>Lady starting team win rates</h3>
-            <table class="table myTable table-nonfluid">
-                <tbody>
-                    <thead>
-                        <tr>
-                            <td></td>
-                            <td>Resistance wins</td>
-                            <td>Spy wins</td>
-                        </tr>
-                    </thead>
-                    <tr>
-                        <td class="statsCol1">Lady started with Resistance</td>
-                        <td class="statsCol2" id="resStartResWin"></td>
-                        <td class="statsCol2" id="resStartSpyWin"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">Lady started with Spy</td>
-                        <td class="statsCol2" id="spyStartResWin"></td>
-                        <td class="statsCol2" id="spyStartSpyWin"></td>
-                    </tr>
+                    <h3>Spy wins breakdown:</h3>
+                    <table class="table myTable table-nonfluid">
+                        <tbody>
+                            <tr>
+                                <td class="statsCol1">Failing missions: </td>
+                                <td class="statsCol2" id="spywinfailingmissions"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">Assassinating Merlin: </td>
+                                <td class="statsCol2" id="spywinassassinatingmerlin"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">Hammer reject: </td>
+                                <td class="statsCol2" id="spywinhammerreject"></td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-                </tbody>
-            </table>
 
-            <h3>Game duration by size breakdown:</h3>
-            <table class="table myTable table-nonfluid">
-                <tbody>
-                    <thead>
-                        <tr>
-                            <td>Game size</td>
-                            <td>Average game duration</td>
-                        </tr>
-                    </thead>
-                    <tr>
-                        <td class="statsCol1">5P</td>
-                        <td class="statsCol2" id="5paveragegameduration"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">6P</td>
-                        <td class="statsCol2" id="6paveragegameduration"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">7P</td>
-                        <td class="statsCol2" id="7paveragegameduration"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">8P</td>
-                        <td class="statsCol2" id="8paveragegameduration"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">9P</td>
-                        <td class="statsCol2" id="9paveragegameduration"></td>
-                    </tr>
-                    <tr>
-                        <td class="statsCol1">10P</td>
-                        <td class="statsCol2" id="10paveragegameduration"></td>
-                    </tr>
+                    <h3>Lady starting team win rates</h3>
+                    <table class="table myTable table-nonfluid">
+                        <tbody>
+                            <thead>
+                                <tr>
+                                    <td></td>
+                                    <td>Resistance wins</td>
+                                    <td>Spy wins</td>
+                                </tr>
+                            </thead>
+                            <tr>
+                                <td class="statsCol1">Lady started with Resistance</td>
+                                <td class="statsCol2" id="resStartResWin"></td>
+                                <td class="statsCol2" id="resStartSpyWin"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">Lady started with Spy</td>
+                                <td class="statsCol2" id="spyStartResWin"></td>
+                                <td class="statsCol2" id="spyStartSpyWin"></td>
+                            </tr>
 
-                </tbody>
-            </table>
+                        </tbody>
+                    </table>
+
+                    <h3>Game duration by size breakdown:</h3>
+                    <table class="table myTable table-nonfluid">
+                        <tbody>
+                            <thead>
+                                <tr>
+                                    <td>Game size</td>
+                                    <td>Average game duration</td>
+                                </tr>
+                            </thead>
+                            <tr>
+                                <td class="statsCol1">5P</td>
+                                <td class="statsCol2" id="5paveragegameduration"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">6P</td>
+                                <td class="statsCol2" id="6paveragegameduration"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">7P</td>
+                                <td class="statsCol2" id="7paveragegameduration"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">8P</td>
+                                <td class="statsCol2" id="8paveragegameduration"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">9P</td>
+                                <td class="statsCol2" id="9paveragegameduration"></td>
+                            </tr>
+                            <tr>
+                                <td class="statsCol1">10P</td>
+                                <td class="statsCol2" id="10paveragegameduration"></td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    var gameRecordsData;
-    
-    $( document ).ready(function() {
-        $(function () {
-            $('[data-toggle="tooltip"]').tooltip();
+    <script>
+        var gameRecordsData;
+
+        $(document).ready(function () {
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+
+
+            xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("GET", "/ajax/getStatistics", true);
+
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                    console.log(xmlhttp.responseText)
+                    gameRecordsData = JSON.parse(xmlhttp.responseText);
+                    console.log(gameRecordsData);
+
+                    drawData();
+                }
+            }
+            xmlhttp.send();
         });
 
 
-        xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("GET","/ajax/getStatistics", true);
+        var grd;
+        function drawData() {
+            grd = gameRecordsData;
+            $("#loading").addClass("hidden");
+            $("#statsDiv").removeClass("hidden");
 
-        xmlhttp.onreadystatechange=function(){
-            if (xmlhttp.readyState==4 && xmlhttp.status==200){
-                console.log(xmlhttp.responseText)
-                gameRecordsData=JSON.parse(xmlhttp.responseText);
-                console.log(gameRecordsData);
+            $("#timeCreated")[0].innerText = new Date(grd.timeCreated).toString();
 
-                drawData();
+            //***********************************
+            // Site traffic stats
+            //***********************************
+
+            // Convert millis from epoch to a date object for use in the graph.
+            var gamesPlayedXAxis = [];
+            for (var i = 0; i < grd.siteTrafficGamesPlayedXAxis.length; i++) {
+                gamesPlayedXAxis[i] = moment(grd.siteTrafficGamesPlayedXAxis[i], "x").format("DD MMM YYYY hh:mm a"); //parse string 
             }
+
+            var gamesPlayedStatsConfig = {
+                type: 'line',
+                data: {
+                    labels: gamesPlayedXAxis,
+                    datasets: [{
+                        label: 'Games Played per day',
+                        backgroundColor: "rgba(255, 102, 102, 0.4)",
+                        borderColor: "rgba(255, 102, 102, 1)",
+                        data: grd.siteTrafficGamesPlayedYAxis,
+                        fill: false,
+                        lineTension: 0,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    title: {
+                        display: true,
+                        text: 'Site traffic data'
+                    },
+                    tooltips: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    hover: {
+                        mode: 'nearest',
+                        intersect: true
+                    },
+                    scales: {
+                        xAxes: [{
+                            type: 'time',
+                            time: {
+                                // format: timeFormat,
+                                // round: 'day'
+                                tooltipFormat: 'ddd, ll'
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Date'
+                            }
+                        }],
+                        yAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Games Played'
+                            },
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            };
+
+
+
+
+            var ctx = document.getElementById("gamesPlayedChart");
+            var myChart = new Chart(ctx, gamesPlayedStatsConfig);
+
+
+
+            //***********************************
+            //General stats
+            //***********************************
+            var resWinPercent = Math.round(grd.totalResWins / grd.totalgamesplayed * 100);
+            var spyWinPercent = Math.round(grd.totalSpyWins / grd.totalgamesplayed * 100);
+            $("#totalgamesplayed")[0].innerText = grd.totalgamesplayed + " games";
+            $("#totalreswins")[0].innerText = grd.totalResWins + " games, " + resWinPercent + "%";
+            $("#totalspywins")[0].innerText = grd.totalSpyWins + " games, " + spyWinPercent + "%";
+            $("#averagegameduration")[0].innerText = new Date(grd.averageGameDuration).getUTCMinutes() + " mins " + new Date(grd.averageGameDuration).getUTCSeconds() + " seconds";
+
+
+
+            //***********************************
+            //Game size win rate breakdown stats
+            //***********************************
+            $("#5preswin")[0].innerText = grd.gameSizeWins[5].res + " wins, " + Math.round(grd.gameSizeWins[5].res / (grd.gameSizeWins[5].res + grd.gameSizeWins[5].spy) * 100) + "%";
+            $("#5pspywin")[0].innerText = grd.gameSizeWins[5].spy + " wins, " + Math.round(grd.gameSizeWins[5].spy / (grd.gameSizeWins[5].res + grd.gameSizeWins[5].spy) * 100) + "%";
+
+            $("#6preswin")[0].innerText = grd.gameSizeWins[6].res + " wins, " + Math.round(grd.gameSizeWins[6].res / (grd.gameSizeWins[6].res + grd.gameSizeWins[6].spy) * 100) + "%";
+            $("#6pspywin")[0].innerText = grd.gameSizeWins[6].spy + " wins, " + Math.round(grd.gameSizeWins[6].spy / (grd.gameSizeWins[6].res + grd.gameSizeWins[6].spy) * 100) + "%";
+
+            $("#7preswin")[0].innerText = grd.gameSizeWins[7].res + " wins, " + Math.round(grd.gameSizeWins[7].res / (grd.gameSizeWins[7].res + grd.gameSizeWins[7].spy) * 100) + "%";
+            $("#7pspywin")[0].innerText = grd.gameSizeWins[7].spy + " wins, " + Math.round(grd.gameSizeWins[7].spy / (grd.gameSizeWins[7].res + grd.gameSizeWins[7].spy) * 100) + "%";
+
+            $("#8preswin")[0].innerText = grd.gameSizeWins[8].res + " wins, " + Math.round(grd.gameSizeWins[8].res / (grd.gameSizeWins[8].res + grd.gameSizeWins[8].spy) * 100) + "%";
+            $("#8pspywin")[0].innerText = grd.gameSizeWins[8].spy + " wins, " + Math.round(grd.gameSizeWins[8].spy / (grd.gameSizeWins[8].res + grd.gameSizeWins[8].spy) * 100) + "%";
+
+            $("#9preswin")[0].innerText = grd.gameSizeWins[9].res + " wins, " + Math.round(grd.gameSizeWins[9].res / (grd.gameSizeWins[9].res + grd.gameSizeWins[9].spy) * 100) + "%";
+            $("#9pspywin")[0].innerText = grd.gameSizeWins[9].spy + " wins, " + Math.round(grd.gameSizeWins[9].spy / (grd.gameSizeWins[9].res + grd.gameSizeWins[9].spy) * 100) + "%";
+
+            $("#10preswin")[0].innerText = grd.gameSizeWins[10].res + " wins, " + Math.round(grd.gameSizeWins[10].res / (grd.gameSizeWins[10].res + grd.gameSizeWins[10].spy) * 100) + "%";
+            $("#10pspywin")[0].innerText = grd.gameSizeWins[10].spy + " wins, " + Math.round(grd.gameSizeWins[10].spy / (grd.gameSizeWins[10].res + grd.gameSizeWins[10].spy) * 100) + "%";
+
+
+
+            //***********************************
+            //Assassination stats
+            //***********************************
+            var totalAssassinShots = grd.assassinRolesShot["Merlin"] +
+                grd.assassinRolesShot["Percival"] +
+                grd.assassinRolesShot["Resistance"] +
+                grd.assassinRolesShot["Tristan"] +
+                grd.assassinRolesShot["Isolde"] +
+                grd.assassinRolesShot["Oberon"];
+
+            $("#totalMerlinShot")[0].innerText = grd.assassinRolesShot["Merlin"] + " times, " + Math.round(grd.assassinRolesShot["Merlin"] / totalAssassinShots * 100) + "%";
+            $("#totalPercivalShot")[0].innerText = grd.assassinRolesShot["Percival"] + " times, " + Math.round(grd.assassinRolesShot["Percival"] / totalAssassinShots * 100) + "%";
+            $("#totalResistanceShot")[0].innerText = grd.assassinRolesShot["Resistance"] + " times, " + Math.round(grd.assassinRolesShot["Resistance"] / totalAssassinShots * 100) + "%";
+            $("#totalTristanIsoldeShot")[0].innerText = (grd.assassinRolesShot["Tristan"] + grd.assassinRolesShot["Isolde"]) + " times, " + Math.round((grd.assassinRolesShot["Tristan"] + grd.assassinRolesShot["Isolde"]) / totalAssassinShots * 100) + "%";
+            $("#totalOberonShot")[0].innerText = grd.assassinRolesShot["Oberon"] + " times, " + Math.round(grd.assassinRolesShot["Oberon"] / totalAssassinShots * 100) + "%";
+            $("#totalShots")[0].innerText = totalAssassinShots + " times.";
+
+            $("#averageassassinationduration")[0].innerText = new Date(grd.averageAssassinationDuration).getUTCMinutes() + " mins " + new Date(grd.averageAssassinationDuration).getUTCSeconds() + " seconds";
+
+
+
+
+
+
+            //***********************************
+            //Spy wins breakdown
+            //***********************************
+            $("#spywinfailingmissions")[0].innerText = grd.spyWinBreakdown["Mission fails."] + " times, " + Math.round(grd.spyWinBreakdown["Mission fails."] / grd.totalSpyWins * 100) + "%";
+            $("#spywinassassinatingmerlin")[0].innerText = grd.spyWinBreakdown["Assassinated Merlin correctly."] + " times, " + Math.round(grd.spyWinBreakdown["Assassinated Merlin correctly."] / grd.totalSpyWins * 100) + "%";
+            $("#spywinhammerreject")[0].innerText = grd.spyWinBreakdown["Hammer rejected."] + " times, " + Math.round(grd.spyWinBreakdown["Hammer rejected."] / grd.totalSpyWins * 100) + "%";
+
+
+
+            //***********************************
+            //Lady of the lake wins breakdown
+            //***********************************
+            $("#resStartResWin")[0].innerText = grd.ladyBreakdown["resStart"]["resWin"] + " times, " + Math.round(grd.ladyBreakdown["resStart"]["resWin"] / (grd.ladyBreakdown["resStart"]["resWin"] + grd.ladyBreakdown["resStart"]["spyWin"]) * 100) + "%";
+            $("#resStartSpyWin")[0].innerText = grd.ladyBreakdown["resStart"]["spyWin"] + " times, " + Math.round(grd.ladyBreakdown["resStart"]["spyWin"] / (grd.ladyBreakdown["resStart"]["resWin"] + grd.ladyBreakdown["resStart"]["spyWin"]) * 100) + "%";
+
+            $("#spyStartResWin")[0].innerText = grd.ladyBreakdown["spyStart"]["resWin"] + " times, " + Math.round(grd.ladyBreakdown["spyStart"]["resWin"] / (grd.ladyBreakdown["spyStart"]["resWin"] + grd.ladyBreakdown["spyStart"]["spyWin"]) * 100) + "%";
+            $("#spyStartSpyWin")[0].innerText = grd.ladyBreakdown["spyStart"]["spyWin"] + " times, " + Math.round(grd.ladyBreakdown["spyStart"]["spyWin"] / (grd.ladyBreakdown["spyStart"]["resWin"] + grd.ladyBreakdown["spyStart"]["spyWin"]) * 100) + "%";
+
+
+            //***********************************
+            //Game duration by size breakdown
+            //***********************************
+
+            $("#averagegameduration")[0].innerText = new Date(grd['averageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['5paverageGameDuration']).getUTCSeconds() + " seconds";
+
+
+            $("#5paveragegameduration")[0].innerText = new Date(grd['5paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['5paverageGameDuration']).getUTCSeconds() + " seconds";
+            $("#6paveragegameduration")[0].innerText = new Date(grd['6paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['6paverageGameDuration']).getUTCSeconds() + " seconds";
+            $("#7paveragegameduration")[0].innerText = new Date(grd['7paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['7paverageGameDuration']).getUTCSeconds() + " seconds";
+            $("#8paveragegameduration")[0].innerText = new Date(grd['8paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['8paverageGameDuration']).getUTCSeconds() + " seconds";
+            $("#9paveragegameduration")[0].innerText = new Date(grd['9paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['9paverageGameDuration']).getUTCSeconds() + " seconds";
+            $("#10paveragegameduration")[0].innerText = new Date(grd['10paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['10paverageGameDuration']).getUTCSeconds() + " seconds";
+
+
+            // $("#testDiv")[0].innerText = JSON.stringify(grd);
+
         }
-        xmlhttp.send();
-    });
 
+    </script>
 
-    var grd;
-    function drawData(){
-        grd = gameRecordsData;
-        $("#loading").addClass("hidden");
-        $("#statsDiv").removeClass("hidden");
-
-        $("#timeCreated")[0].innerText = new Date(grd.timeCreated).toString();
-
-        //***********************************
-        // Site traffic stats
-        //***********************************
-
-        // Convert millis from epoch to a date object for use in the graph.
-        var gamesPlayedXAxis = [];
-        for(var i = 0; i < grd.siteTrafficGamesPlayedXAxis.length; i++){
-            gamesPlayedXAxis[i] = moment(grd.siteTrafficGamesPlayedXAxis[i], "x").format("DD MMM YYYY hh:mm a"); //parse string 
-        }
-
-        var gamesPlayedStatsConfig = {
-			type: 'line',
-			data: {
-				labels: gamesPlayedXAxis,
-				datasets: [{
-					label: 'Games Played per day',
-					backgroundColor: "rgba(255, 102, 102, 0.4)",
-					borderColor: "rgba(255, 102, 102, 1)",
-					data: grd.siteTrafficGamesPlayedYAxis,
-                    fill: false,
-                    lineTension: 0,
-                    borderWidth: 2
-				}]
-			},
-			options: {
-                responsive: true,
-                maintainAspectRatio: true,
-				title: {
-					display: true,
-					text: 'Site traffic data'
-				},
-				tooltips: {
-					mode: 'index',
-					intersect: false,
-				},
-				hover: {
-					mode: 'nearest',
-					intersect: true
-				},
-				scales: {
-					xAxes: [{
-						type: 'time',
-						time: {
-							// format: timeFormat,
-							// round: 'day'
-							tooltipFormat: 'ddd, ll'
-						},
-						scaleLabel: {
-							display: true,
-							labelString: 'Date'
-						}
-					}],
-					yAxes: [{
-						scaleLabel: {
-							display: true,
-							labelString: 'Games Played'
-                        },
-                        ticks: {
-                            beginAtZero: true
-                        }
-					}]
-				}
-			}
-		};
-
-
-
-
-        var ctx = document.getElementById("gamesPlayedChart");
-        var myChart = new Chart(ctx, gamesPlayedStatsConfig);
-
-
-        
-        //***********************************
-        //General stats
-        //***********************************
-        var resWinPercent = Math.round(grd.totalResWins/grd.totalgamesplayed*100);
-        var spyWinPercent = Math.round(grd.totalSpyWins/grd.totalgamesplayed*100);
-        $("#totalgamesplayed")[0].innerText = grd.totalgamesplayed + " games";
-        $("#totalreswins")[0].innerText = grd.totalResWins + " games, " + resWinPercent + "%";
-        $("#totalspywins")[0].innerText = grd.totalSpyWins + " games, " + spyWinPercent + "%";
-        $("#averagegameduration")[0].innerText = new Date(grd.averageGameDuration).getUTCMinutes() + " mins " + new Date(grd.averageGameDuration).getUTCSeconds() + " seconds";
-
-
-
-        //***********************************
-        //Game size win rate breakdown stats
-        //***********************************
-        $("#5preswin")[0].innerText = grd.gameSizeWins[5].res + " wins, " + Math.round(grd.gameSizeWins[5].res / (grd.gameSizeWins[5].res + grd.gameSizeWins[5].spy) * 100) + "%";
-        $("#5pspywin")[0].innerText = grd.gameSizeWins[5].spy + " wins, " + Math.round(grd.gameSizeWins[5].spy / (grd.gameSizeWins[5].res + grd.gameSizeWins[5].spy) * 100) + "%";
-
-        $("#6preswin")[0].innerText = grd.gameSizeWins[6].res + " wins, " + Math.round(grd.gameSizeWins[6].res / (grd.gameSizeWins[6].res + grd.gameSizeWins[6].spy) * 100) + "%";
-        $("#6pspywin")[0].innerText = grd.gameSizeWins[6].spy + " wins, " + Math.round(grd.gameSizeWins[6].spy / (grd.gameSizeWins[6].res + grd.gameSizeWins[6].spy) * 100) + "%";
-
-        $("#7preswin")[0].innerText = grd.gameSizeWins[7].res + " wins, " + Math.round(grd.gameSizeWins[7].res / (grd.gameSizeWins[7].res + grd.gameSizeWins[7].spy) * 100) + "%";
-        $("#7pspywin")[0].innerText = grd.gameSizeWins[7].spy + " wins, " + Math.round(grd.gameSizeWins[7].spy / (grd.gameSizeWins[7].res + grd.gameSizeWins[7].spy) * 100) + "%";
-
-        $("#8preswin")[0].innerText = grd.gameSizeWins[8].res + " wins, " + Math.round(grd.gameSizeWins[8].res / (grd.gameSizeWins[8].res + grd.gameSizeWins[8].spy) * 100) + "%";
-        $("#8pspywin")[0].innerText = grd.gameSizeWins[8].spy + " wins, " + Math.round(grd.gameSizeWins[8].spy / (grd.gameSizeWins[8].res + grd.gameSizeWins[8].spy) * 100) + "%";
-
-        $("#9preswin")[0].innerText = grd.gameSizeWins[9].res + " wins, " + Math.round(grd.gameSizeWins[9].res / (grd.gameSizeWins[9].res + grd.gameSizeWins[9].spy) * 100) + "%";
-        $("#9pspywin")[0].innerText = grd.gameSizeWins[9].spy + " wins, " + Math.round(grd.gameSizeWins[9].spy / (grd.gameSizeWins[9].res + grd.gameSizeWins[9].spy) * 100) + "%";
-
-        $("#10preswin")[0].innerText = grd.gameSizeWins[10].res + " wins, " + Math.round(grd.gameSizeWins[10].res / (grd.gameSizeWins[10].res + grd.gameSizeWins[10].spy) * 100) + "%";
-        $("#10pspywin")[0].innerText = grd.gameSizeWins[10].spy + " wins, " + Math.round(grd.gameSizeWins[10].spy / (grd.gameSizeWins[10].res + grd.gameSizeWins[10].spy) * 100) + "%";
-
-
-
-        //***********************************
-        //Assassination stats
-        //***********************************
-        var totalAssassinShots = grd.assassinRolesShot["Merlin"] + 
-                        grd.assassinRolesShot["Percival"] +
-                        grd.assassinRolesShot["Resistance"] + 
-                        grd.assassinRolesShot["Tristan"] + 
-                        grd.assassinRolesShot["Isolde"] + 
-                        grd.assassinRolesShot["Oberon"];
-
-        $("#totalMerlinShot")[0].innerText = grd.assassinRolesShot["Merlin"] + " times, " + Math.round(grd.assassinRolesShot["Merlin"] / totalAssassinShots * 100) + "%";
-        $("#totalPercivalShot")[0].innerText = grd.assassinRolesShot["Percival"] + " times, " + Math.round(grd.assassinRolesShot["Percival"] / totalAssassinShots * 100) + "%";
-        $("#totalResistanceShot")[0].innerText = grd.assassinRolesShot["Resistance"] + " times, " + Math.round(grd.assassinRolesShot["Resistance"] / totalAssassinShots * 100) + "%";
-        $("#totalTristanIsoldeShot")[0].innerText = (grd.assassinRolesShot["Tristan"] + grd.assassinRolesShot["Isolde"]) + " times, " + Math.round((grd.assassinRolesShot["Tristan"] + grd.assassinRolesShot["Isolde"]) / totalAssassinShots * 100) + "%";
-        $("#totalOberonShot")[0].innerText = grd.assassinRolesShot["Oberon"] + " times, " + Math.round(grd.assassinRolesShot["Oberon"] / totalAssassinShots * 100) + "%";
-        $("#totalShots")[0].innerText = totalAssassinShots + " times.";
-        
-        $("#averageassassinationduration")[0].innerText = new Date(grd.averageAssassinationDuration).getUTCMinutes() + " mins " + new Date(grd.averageAssassinationDuration).getUTCSeconds() + " seconds";
-
-
-        
-        
-
-
-        //***********************************
-        //Spy wins breakdown
-        //***********************************
-        $("#spywinfailingmissions")[0].innerText = grd.spyWinBreakdown["Mission fails."] + " times, " + Math.round(grd.spyWinBreakdown["Mission fails."]/grd.totalSpyWins*100) + "%";
-        $("#spywinassassinatingmerlin")[0].innerText = grd.spyWinBreakdown["Assassinated Merlin correctly."] + " times, " + Math.round(grd.spyWinBreakdown["Assassinated Merlin correctly."]/grd.totalSpyWins*100) + "%";
-        $("#spywinhammerreject")[0].innerText = grd.spyWinBreakdown["Hammer rejected."] + " times, " + Math.round(grd.spyWinBreakdown["Hammer rejected."]/grd.totalSpyWins*100) + "%";
-
-
-
-        //***********************************
-        //Lady of the lake wins breakdown
-        //***********************************
-        $("#resStartResWin")[0].innerText = grd.ladyBreakdown["resStart"]["resWin"] + " times, " + Math.round(grd.ladyBreakdown["resStart"]["resWin"] / (grd.ladyBreakdown["resStart"]["resWin"] + grd.ladyBreakdown["resStart"]["spyWin"]) * 100) + "%";
-        $("#resStartSpyWin")[0].innerText = grd.ladyBreakdown["resStart"]["spyWin"] + " times, " + Math.round(grd.ladyBreakdown["resStart"]["spyWin"] / (grd.ladyBreakdown["resStart"]["resWin"] + grd.ladyBreakdown["resStart"]["spyWin"]) * 100) + "%";
-
-        $("#spyStartResWin")[0].innerText = grd.ladyBreakdown["spyStart"]["resWin"] + " times, " + Math.round(grd.ladyBreakdown["spyStart"]["resWin"] / (grd.ladyBreakdown["spyStart"]["resWin"] + grd.ladyBreakdown["spyStart"]["spyWin"]) * 100) + "%";
-        $("#spyStartSpyWin")[0].innerText = grd.ladyBreakdown["spyStart"]["spyWin"] + " times, " + Math.round(grd.ladyBreakdown["spyStart"]["spyWin"] / (grd.ladyBreakdown["spyStart"]["resWin"] + grd.ladyBreakdown["spyStart"]["spyWin"]) * 100) + "%";
-
-
-        //***********************************
-        //Game duration by size breakdown
-        //***********************************
-
-        $("#averagegameduration")[0].innerText = new Date(grd['averageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['5paverageGameDuration']).getUTCSeconds() + " seconds";
-
-
-        $("#5paveragegameduration")[0].innerText = new Date(grd['5paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['5paverageGameDuration']).getUTCSeconds() + " seconds";
-        $("#6paveragegameduration")[0].innerText = new Date(grd['6paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['6paverageGameDuration']).getUTCSeconds() + " seconds";
-        $("#7paveragegameduration")[0].innerText = new Date(grd['7paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['7paverageGameDuration']).getUTCSeconds() + " seconds";
-        $("#8paveragegameduration")[0].innerText = new Date(grd['8paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['8paverageGameDuration']).getUTCSeconds() + " seconds";
-        $("#9paveragegameduration")[0].innerText = new Date(grd['9paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['9paverageGameDuration']).getUTCSeconds() + " seconds";
-        $("#10paveragegameduration")[0].innerText = new Date(grd['10paverageGameDuration']).getUTCMinutes() + " mins " + new Date(grd['10paverageGameDuration']).getUTCSeconds() + " seconds";
-
-
-        // $("#testDiv")[0].innerText = JSON.stringify(grd);
-
-    }
-
-</script>
-
-<%- include('partials/footer') %>
+    <%- include('partials/footer') %>

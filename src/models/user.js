@@ -33,7 +33,7 @@ const UserSchema = new mongoose.Schema({
   avatarHide: Boolean,
 
   hideStats: Boolean,
-  
+
   pronoun: {
     type: String,
     default: null,

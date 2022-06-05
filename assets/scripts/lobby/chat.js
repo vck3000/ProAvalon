@@ -162,7 +162,7 @@ function addToAllChat(data) {
 
         //adds abbreviation, also checks if option has been enabled
         let toFilter = docCookies.getItem(`optionDisplayEnableAbbreivations`)
-        if(toFilter === 'true') {
+        if (toFilter === 'true') {
           filteredMessage = addAbbreviations(filteredMessage);
         }
 
@@ -170,11 +170,9 @@ function addToAllChat(data) {
         if (data[i].classStr && data[i].classStr !== '') {
           str = `<li class='${data[i].classStr}'><span class='date-text'>${date}</span> ${filteredMessage}`;
         } else {
-          str = `${
-            "<li class='" + "'><span class='date-text'>"
-          }${date}</span> <span class='username-text'>${
-            data[i].username
-          }${generateBadgeString(data[i].badge)}:</span> ${filteredMessage}`;
+          str = `${"<li class='" + "'><span class='date-text'>"
+            }${date}</span> <span class='username-text'>${data[i].username
+            }${generateBadgeString(data[i].badge)}:</span> ${filteredMessage}`;
         }
 
         // if they've muted this player, then just dont show anything. reset str to nothing.
@@ -302,11 +300,11 @@ function addToRoomChat(data) {
 
         // prevent XSS injection
         let filteredMessage = data[i].message
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
         // console.log("Filtered message: " + filteredMessage);
 
         filteredMessage = linkifyHtml(filteredMessage, {
@@ -319,10 +317,10 @@ function addToRoomChat(data) {
 
         //adds abbreviation, also checks if option has been enabled
         let toFilter = docCookies.getItem(`optionDisplayEnableAbbreivations`)
-        if(toFilter === 'true') {
+        if (toFilter === 'true') {
           filteredMessage = addAbbreviations(filteredMessage);
         }
-        
+
         let str = '';
 
         // set the highlight chat if the user has been selected already

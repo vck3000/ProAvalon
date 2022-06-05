@@ -4,8 +4,8 @@
 var userOptions = {
   lastSettingsResetDate: {
     defaultValue: new Date().toString(),
-    onLoad() {},
-    initialiseEventListener() {},
+    onLoad() { },
+    initialiseEventListener() { },
   },
 
   optionDisplayFontSize: {
@@ -19,7 +19,7 @@ var userOptions = {
 
       // make the font size changes
       $('*:not([react-entrypoint] *').css('font-size', `${fontSize}px`);
-    
+
       draw();
     },
     initialiseEventListener() {

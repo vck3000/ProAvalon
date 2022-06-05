@@ -350,17 +350,17 @@ function drawMiddleBoxes() {
       if (missionStatus === 'succeeded') {
         document
           .querySelectorAll('.missionBox')
-          [j].classList.add('missionBoxSucceed');
+        [j].classList.add('missionBoxSucceed');
         document
           .querySelectorAll('.missionBox')
-          [j].classList.remove('missionBoxFail');
+        [j].classList.remove('missionBoxFail');
       } else if (missionStatus === 'failed') {
         document
           .querySelectorAll('.missionBox')
-          [j].classList.add('missionBoxFail');
+        [j].classList.add('missionBoxFail');
         document
           .querySelectorAll('.missionBox')
-          [j].classList.remove('missionBoxSucceed');
+        [j].classList.remove('missionBoxSucceed');
       }
 
       // draw in the number of players in each mission
@@ -378,17 +378,17 @@ function drawMiddleBoxes() {
       } else {
         document
           .querySelectorAll('.pickBox')
-          [j].classList.remove('pickBoxFill');
+        [j].classList.remove('pickBoxFill');
       }
     }
   } else {
     for (var j = 0; j < 5; j++) {
       document
         .querySelectorAll('.missionBox')
-        [j].classList.remove('missionBoxFail');
+      [j].classList.remove('missionBoxFail');
       document
         .querySelectorAll('.missionBox')
-        [j].classList.remove('missionBoxSucceed');
+      [j].classList.remove('missionBoxSucceed');
       document.querySelectorAll('.missionBox')[j].innerText = '';
       document.querySelectorAll('.pickBox')[j].classList.remove('pickBoxFill');
     }
@@ -591,22 +591,20 @@ function drawGuns() {
 
         $($('.gun')[i]).animate(
           {
-            top: `${
-              $(
-                $('#mainRoomBox div')[
-                  getIndexFromUsername(gameData.proposedTeam[i])
-                ]
-              ).position().top +
+            top: `${$(
+              $('#mainRoomBox div')[
+              getIndexFromUsername(gameData.proposedTeam[i])
+              ]
+            ).position().top +
               heightOfGun * offsetGunPos.y
-            }px`,
-            left: `${
-              $(
-                $('#mainRoomBox div')[
-                  getIndexFromUsername(gameData.proposedTeam[i])
-                ]
-              ).position().left +
+              }px`,
+            left: `${$(
+              $('#mainRoomBox div')[
+              getIndexFromUsername(gameData.proposedTeam[i])
+              ]
+            ).position().left +
               widOfGun / offsetGunPos.x
-            }px`,
+              }px`,
           },
           500
         );
@@ -642,24 +640,22 @@ function adjustGunPositions() {
       const offsetGunPos = pics[icon].position;
       $($('.gun')[i]).css(
         'top',
-        `${
-          $(
-            $('#mainRoomBox div')[
-              getIndexFromUsername(gameData.proposedTeam[i])
-            ]
-          ).position().top +
-          heightOfGun * offsetGunPos.y
+        `${$(
+          $('#mainRoomBox div')[
+          getIndexFromUsername(gameData.proposedTeam[i])
+          ]
+        ).position().top +
+        heightOfGun * offsetGunPos.y
         }px`
       );
       $($('.gun')[i]).css(
         'left',
-        `${
-          $(
-            $('#mainRoomBox div')[
-              getIndexFromUsername(gameData.proposedTeam[i])
-            ]
-          ).position().left +
-          widOfGun / offsetGunPos.x
+        `${$(
+          $('#mainRoomBox div')[
+          getIndexFromUsername(gameData.proposedTeam[i])
+          ]
+        ).position().left +
+        widOfGun / offsetGunPos.x
         }px`
       );
     }
@@ -997,9 +993,8 @@ function strOfAvatar(playerData, alliance) {
         gameData.see.roles[getIndexFromUsername(playerData.username)]
       ).width + 20;
 
-    role = `<p class='role-p' style='width: ${roleWid}px; margin: auto;'>${
-      gameData.see.roles[getIndexFromUsername(playerData.username)]
-    }</p>`;
+    role = `<p class='role-p' style='width: ${roleWid}px; margin: auto;'>${gameData.see.roles[getIndexFromUsername(playerData.username)]
+      }</p>`;
   } else if (gameStarted === true && gameData !== undefined) {
     // if rendering our own player, give it the role tag
     if (playerData.username === ownUsername) {
@@ -1088,10 +1083,9 @@ function strOfAvatar(playerData, alliance) {
   str += '<span class="cardsContainer"></span>';
 
   str += `<img class='avatarImgInRoom' src='${picLink}'>`;
-  str += `${
-    "<p class='username-p' style='white-space:nowrap; position:relative;'>" +
+  str += `${"<p class='username-p' style='white-space:nowrap; position:relative;'>" +
     ' '
-  }${playerData.username} ${hammerStar} </p>${role}</div>`;
+    }${playerData.username} ${hammerStar} </p>${role}</div>`;
 
   return str;
 }
@@ -1345,9 +1339,8 @@ function drawVoteHistory(data) {
       colour = 'transparent';
     }
 
-    str += `<td style='width: 11em; background-color: ${colour}; color: black;' colspan='' class='missionHeader${
-      i + 1
-    }'>Mission ${i + 1}</td>`;
+    str += `<td style='width: 11em; background-color: ${colour}; color: black;' colspan='' class='missionHeader${i + 1
+      }'>Mission ${i + 1}</td>`;
   }
   str += '</tr>';
 

@@ -1,16 +1,17 @@
-html, body{
+html,
+body {
 
 	height: 100%;
 	min-width: 360px;
 }
 
-.navbar-default{
+.navbar-default {
 
 	border: none;
 }
 
 
-body{
+body {
 	/*height: 500px;*/
 	min-height: 100%;
 	width: 100%;
@@ -19,17 +20,17 @@ body{
 
 }
 
-.navbar-brand{
+.navbar-brand {
 	padding: 0;
 	margin: 0;
 }
 
-.input{
+.input {
 	width: 100%;
 }
 
 
-#brand{
+#brand {
 	height: 50px;
 	margin: 0 0;
 	padding: 0;
@@ -41,7 +42,7 @@ body{
 	margin: 0 auto;
 }*/
 
-#scrollDiv{
+#scrollDiv {
 	/*width: 370px;*/
 	/*max-width: 100%;*/
 	height: 100%;
@@ -54,23 +55,24 @@ body{
 
 }
 
-#loginText{
+#loginText {
 	font-size: 2em;
 	text-align: center;
 }
-#usernameDiv{
+
+#usernameDiv {
 	padding-bottom: 15%;
 }
 
-#form{
+#form {
 
-	position:absolute;
+	position: absolute;
 
-	
+
 	text-align: left;
 
 	/* height: 100%; */
-	
+
 	margin: 0 auto;
 	box-sizing: border-box;
 
@@ -80,10 +82,12 @@ body{
 
 
 }
-#loginHeading{
+
+#loginHeading {
 	text-align: center;
 	font-weight: 700;
 }
-#signUpButton{
+
+#signUpButton {
 	float: right;
 }

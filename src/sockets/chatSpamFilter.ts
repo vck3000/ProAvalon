@@ -18,7 +18,10 @@ export class ChatSpamFilter {
       const userHistory = this.history[username];
       userHistory.push(this.seconds);
       if (userHistory.length > NUM_MESSAGES) {
-        if (userHistory[userHistory.length - 1] - userHistory[0] < SPAM_WINDOW) {
+        if (
+          userHistory[userHistory.length - 1] - userHistory[0] <
+          SPAM_WINDOW
+        ) {
           userHistory.pop();
           return false;
         }
