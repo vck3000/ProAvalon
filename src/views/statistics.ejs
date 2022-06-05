@@ -63,7 +63,10 @@
         </div>
 
         <div id="statsDiv" class="hidden">
-            Note: Stats are updated usually once a week (manual update for now). This set of statistics was created on: <span id="timeCreated"></span>
+            Note: Stats are updated usually once a week (manual update for now). This set of statistics was created on: <span id="timeCreated"></span>.
+
+            <h4><u>Requesting a copy of anonymised game records:</u></h3>
+            Please contact the admin if you would like a copy of anonymised logs for research purposes. Details are in the about page.
 
             <h3>Site traffic (Games played per day):</h3>
             <canvas id="gamesPlayedChart"></canvas>
@@ -250,35 +253,13 @@
 
                 </tbody>
             </table>
-
-            
-
-            <br>
-	    <a class="btn btn-info" href="/gameRecordsData">Download anonymized logs</a>
-            <br>
-            <br>
-            <br>
-            <br>
-
-            <div id="testDiv">
-            
-            </div>
         </div>
-        
     </div>
 </div>
-
-<br>
-<br>
-<br>
-
-
 
 <script>
     var gameRecordsData;
     
-
-
     $( document ).ready(function() {
         $(function () {
             $('[data-toggle="tooltip"]').tooltip();
@@ -310,19 +291,13 @@
         $("#timeCreated")[0].innerText = new Date(grd.timeCreated).toString();
 
         //***********************************
-        //Site traffic stats
+        // Site traffic stats
         //***********************************
 
         // Convert millis from epoch to a date object for use in the graph.
         var gamesPlayedXAxis = [];
         for(var i = 0; i < grd.siteTrafficGamesPlayedXAxis.length; i++){
-            
-            
-
-
-
             gamesPlayedXAxis[i] = moment(grd.siteTrafficGamesPlayedXAxis[i], "x").format("DD MMM YYYY hh:mm a"); //parse string 
-            // console.log(typeof(grd.siteTrafficGamesPlayedXAxis[i]));
         }
 
         var gamesPlayedStatsConfig = {
@@ -487,13 +462,4 @@
 
 </script>
 
-
-
-
-
 <%- include('partials/footer') %>
-
-
-
-
-
