@@ -1,4 +1,4 @@
-<% include ../partials/header %>
+<%- include('../partials/header') %>
 
 <div react-entrypoint class="panel-body" id="LogReportsDiv"><%-reportsReact%></div>
 <script
@@ -6,4 +6,4 @@
   src="<%-getVersionedPath('/dist_webpack/reportLog.bundle.js')%>"
 ></script>
 
-<% include ../partials/footer %>
+<%- include('../partials/footer') %>
