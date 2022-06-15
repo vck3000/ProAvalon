@@ -7,6 +7,7 @@ export const TOsArray = [
   'portujules',
   'raytrout',
   'starkrush',
+  'basicnerd',
 ];
 
 export function isTO(username: string): boolean {
