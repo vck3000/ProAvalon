@@ -134,6 +134,7 @@ const definitions = {
   'vote': '1. Approve or reject. 2. Succeed or fail. 3. An approve or reject. 4. A success or fail.',
   'vh': 'Vote history; The history of all picks, votes, and missions in the game, accessible in the bottom tab on proavalon.com.',
   'vote history': 'The history of all picks, votes, and missions in the game, accessible in the bottom tab on proavalon.com.',
+  'who': 'We reject new players in ProAvalon.',
   '5p': 'A game with 5 players.',
   '6p': 'A game with 6 players.',
   '7p': 'A game with 7 players.',
