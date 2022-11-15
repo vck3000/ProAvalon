@@ -1,3 +1,4 @@
+import { aemailtousername } from './aemailtousername';
 import { aip } from './aip';
 import { aresetpassword } from './aresetpassword';
 
@@ -21,6 +22,7 @@ export const adminCommands = {
     },
   },
 
+  [aemailtousername.command]: aemailtousername,
   [aip.command]: aip,
   [aresetpassword.command]: aresetpassword,
 };
