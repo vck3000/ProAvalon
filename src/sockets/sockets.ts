@@ -1143,7 +1143,7 @@ export const modCommands = {
       var dataToReturn = [];
 
       if (num_levels === undefined) {
-        num_levels = 2;
+        num_levels = 1;
       }
 
       num_levels = parseInt(num_levels, 10);
