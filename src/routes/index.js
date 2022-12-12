@@ -27,7 +27,7 @@ router.get('/', (req, res) => {
 
 // register route
 router.get('/register', (req, res) => {
-  res.render('register', { platform: process.env.MY_PLATFORM });
+  res.render('register', { platform: process.env.ENV });
 });
 
 // sitedown route
@@ -36,7 +36,7 @@ router.get('/sitedown', (req, res) => {
 });
 
 const registerLimiter =
-  process.env.MY_PLATFORM === 'local'
+  process.env.ENV === 'local'
     ? rateLimit({
         max: 0, // Disable if we are local
       })
@@ -54,12 +54,7 @@ router.post(
   disallowVPNs,
   async (req, res) => {
     // if we are local, we can skip the captcha
-    if (
-      process.env.MY_PLATFORM === 'local' ||
-      process.env.MY_PLATFORM === 'staging'
-    ) {
-      // Nothing special
-    } else if (process.env.MY_PLATFORM === 'online') {
+    if (process.env.ENV === 'prod') {
       req.body.captcha = req.body['g-recaptcha-response'];
       if (
         req.body.captcha === undefined ||
@@ -77,9 +72,6 @@ router.post(
 
       const body = await request(verifyUrl);
 
-      // body = JSON.parse(body);
-
-      // If Not Successful
       if (body.success !== undefined && !body.success) {
         req.flash('error', 'Failed captcha verification.');
         res.redirect('register');
@@ -128,14 +120,10 @@ router.post(
           );
           res.redirect('register');
         } else {
-          // successful, get them to log in again
-          // req.flash("success", "Sign up successful. Please log in.");
-          // res.redirect("/");
-
           passport.authenticate('local')(req, res, () => {
             res.redirect('/lobby');
           });
-          if (process.env.MY_PLATFORM === 'online') {
+          if (process.env.ENV === 'prod') {
             sendEmailVerification(user, req.body.emailAddress);
           } else {
             user.emailVerified = true;
@@ -149,7 +137,7 @@ router.post(
 );
 
 const loginLimiter =
-  process.env.MY_PLATFORM === 'local'
+  process.env.ENV === 'local'
     ? rateLimit({
         max: 0, // Disable if we are local
       })
@@ -226,8 +214,6 @@ router.get('/emailVerification/verifyEmailRequest', async (req, res) => {
     res.redirect('/');
   }
 });
-
-// /lobby route is in a separate file.
 
 // logout
 router.get('/logout', (req, res) => {

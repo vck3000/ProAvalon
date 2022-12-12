@@ -44,7 +44,7 @@ app.use(staticify.middleware);
 app.locals.getVersionedPath = staticify.getVersionedPath;
 app.set('trust proxy', true);
 
-if (process.env.MY_PLATFORM === 'local') {
+if (process.env.ENV === 'local') {
   console.log('Routing dist_webpack to localhost:3010.');
   app.use(
     '/dist_webpack',

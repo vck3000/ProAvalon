@@ -2,7 +2,7 @@ import Discord, { TextChannel } from 'discord.js';
 
 const client = new Discord.Client();
 
-if (process.env.MY_PLATFORM === 'online') {
+if (process.env.ENV === 'prod') {
   client.login(process.env.discord_bot_token);
 }
 
@@ -23,7 +23,7 @@ export function sendToDiscordMods(message: string, ping?: boolean) {
 function sendToChannel(message: string, channelId: string) {
   const channel = client.channels.cache.get(channelId) as TextChannel;
 
-  if (process.env.MY_PLATFORM === 'online') {
+  if (process.env.ENV === 'prod') {
     channel.send(message);
   } else {
     console.log(`Discord message: ${message}`);

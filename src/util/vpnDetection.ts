@@ -31,7 +31,7 @@ const isVPN = async (ip: string): Promise<boolean> => {
 };
 
 export const disallowVPNs: RequestHandler = (req, res, next) => {
-  if (process.env.MY_PLATFORM === 'local') {
+  if (process.env.ENV === 'local') {
     next();
     return;
   }

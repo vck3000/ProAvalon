@@ -16,7 +16,7 @@ import { userHasReward } from '../../rewards/getRewards';
 const router = new Router();
 
 const newCommentLimiter =
-  process.env.MY_PLATFORM === 'local'
+  process.env.ENV === 'local'
     ? rateLimit({
         max: 0, // Disable if we are local
       })

@@ -1261,9 +1261,6 @@ Game.prototype.finishGame = function (toBeWinner) {
   this.distributeGameData();
 
   // If there was a bot in the game and this is the online server, do not store into the database.
-  // if (process.env.MY_PLATFORM === "online" && this.botIndexes.length !== 0) {
-  // 	return;
-  // }
 
   // store data into the database:
   const rolesCombined = [];

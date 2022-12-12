@@ -38,7 +38,7 @@ const sanitizeHtmlAllowedAttributesForumThread = {
 };
 
 const newReplyLimiter =
-  process.env.MY_PLATFORM === 'local'
+  process.env.ENV === 'local'
     ? rateLimit({
         max: 0, // Disable if we are local
       })
