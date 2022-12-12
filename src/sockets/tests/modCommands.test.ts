@@ -49,7 +49,7 @@ describe('ModCommands', () => {
     expect(IPLinkedAccounts).toHaveBeenCalledWith('ProNub', 1);
   });
 
-  it('Errors on bad number of levels', () => {
+  it('errors on bad number of levels', () => {
     const data = { args: ['/miplinkedaccs', 'ProNub', '-1'] };
 
     modCommands.miplinkedaccs.run(data, mockSocket);
