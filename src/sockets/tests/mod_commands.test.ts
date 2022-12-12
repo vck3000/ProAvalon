@@ -41,12 +41,12 @@ describe('ModCommands', () => {
     expect(IPLinkedAccounts).toHaveBeenCalledWith('ProNub', 2);
   });
 
-  it('defaults to level of 2', () => {
+  it('defaults to level of 1', () => {
     const data = { args: ['/miplinkedaccs', 'ProNub'] };
 
     modCommands.miplinkedaccs.run(data, mockSocket);
 
-    expect(IPLinkedAccounts).toHaveBeenCalledWith('ProNub', 2);
+    expect(IPLinkedAccounts).toHaveBeenCalledWith('ProNub', 1);
   });
 
   it('Errors on bad number of levels', () => {
