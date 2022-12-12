@@ -19,7 +19,6 @@ import JSON from 'circular-json';
 import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
-import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 import { GAME_MODE_NAMES } from '../gameplay/gameModeNames';
 
@@ -2580,10 +2579,6 @@ var applyApplicableRewards = function (socket) {
   // TO badge
   else if (socket.rewards.includes(REWARDS.TO_BADGE)) {
     socket.request.badge = 'T';
-  }
-  // DEV badge
-  else if (socket.rewards.includes(REWARDS.DEV_BADGE)) {
-    socket.request.badge = 'D';
   }
   // Tier4 badge
   if (socket.rewards.includes(REWARDS.TIER4_BADGE)) {

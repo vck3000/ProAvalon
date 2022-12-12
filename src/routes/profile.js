@@ -51,13 +51,7 @@ router.get('/mod/customavatar', isModMiddleware, (req, res) => {
 });
 
 // moderator approve or reject custom avatar requests
-// /profile/mod/ajax/processavatarrequest
 router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
-  // console.log('process avatar request');
-  // console.log(req.body.decision);
-  // console.log(req.body.avatarreqid);
-  // console.log(req.body.modcomment);
-
   avatarRequest.findById(req.body.avatarreqid).exec((err, foundReq) => {
     if (err) {
       console.log(err);
@@ -78,8 +72,6 @@ router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
             } else {
               foundUser.avatarImgRes = foundReq.resLink;
               foundUser.avatarImgSpy = foundReq.spyLink;
-
-              // console.log(foundUser);
 
               foundUser.save();
 
@@ -141,8 +133,6 @@ router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
       foundReq.save();
     }
   });
-
-  // console.log(mongoose.Types.ObjectId(req.query.idOfNotif));
 
   res.status(200).send('done');
 });

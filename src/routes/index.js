@@ -18,21 +18,17 @@ const router = new Router();
 
 // Index route
 router.get('/', (req, res) => {
-  // TODO Check if this is ok.
+  // Delete the session to force a relogin.
   if (req.session) {
     req.session.destroy();
   }
+
   res.render('index');
 });
 
 // register route
 router.get('/register', (req, res) => {
   res.render('register', { platform: process.env.ENV });
-});
-
-// sitedown route
-router.get('/sitedown', (req, res) => {
-  res.render('sitedown');
 });
 
 const registerLimiter =
@@ -886,11 +882,6 @@ router.get('/ajax/hideAllNotifications', (req, res) => {
     });
   res.status(200).send('done');
 });
-
-function escapeTextUsername(req, res, next) {
-  req.body.username = escapeText(req.body.username);
-  next();
-}
 
 function sanitiseUsername(req, res, next) {
   req.body.username = sanitizeHtml(req.body.username, {
