@@ -5,28 +5,29 @@ if (process.env.WHITELISTED_VPN_USERNAMES) {
   whitelistedUsernames = process.env.WHITELISTED_VPN_USERNAMES.split(',');
 }
 
-export const isVPN = async (ip: string): Promise<boolean> => {
-  const response = await fetch(
-    `https://whois.as207111.net/api/lookup?ip_address=${ip}`,
-    {
-      headers: {
-        Accept: 'application/json',
-        Authorization: `Bearer ${process.env.VPN_DETECTION_TOKEN}`,
-      },
-    }
-  );
+const isVPN = async (ip: string): Promise<boolean> => {
+  return false;
+  // const response = await fetch(
+  //   `https://whois.as207111.net/api/lookup?ip_address=${ip}`,
+  //   {
+  //     headers: {
+  //       Accept: 'application/json',
+  //       Authorization: `Bearer ${process.env.VPN_DETECTION_TOKEN}`,
+  //     },
+  //   }
+  // );
 
-  const data = await response.json();
+  // const data = await response.json();
 
-  if (!data.privacy) {
-    console.log(ip);
-    console.log(data);
-    throw new Error(
-      'VPN Detection lookup response did not contain the expected data.'
-    );
-  }
+  // if (!data.privacy) {
+  //   console.log(ip);
+  //   console.log(data);
+  //   throw new Error(
+  //     'VPN Detection lookup response did not contain the expected data.'
+  //   );
+  // }
 
-  return data.privacy.proxy || data.privacy.hosting;
+  // return data.privacy.proxy || data.privacy.hosting;
 };
 
 export const disallowVPNs: RequestHandler = (req, res, next) => {
@@ -57,6 +58,7 @@ export const disallowVPNs: RequestHandler = (req, res, next) => {
         res.redirect('/');
         return;
       }
+
       next();
     })
     .catch((err) => {

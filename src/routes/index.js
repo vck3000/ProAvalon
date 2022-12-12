@@ -250,17 +250,6 @@ router.get('/rules', (req, res) => {
   res.render('rules', { currentUser: req.user, headerActive: 'rules' });
 });
 
-router.get('/testmodal', (req, res) => {
-  res.render('testmodal', { currentUser: req.user });
-});
-router.get('/testmodal2', (req, res) => {
-  res.render('testmodal2', { currentUser: req.user });
-});
-
-router.get('/testAutoCompleteUsernames', (req, res) => {
-  res.render('testAutoCompleteUsernames', { currentUser: req.user });
-});
-
 router.get('/about', (req, res) => {
   res.render('about', { currentUser: req.user, headerActive: 'about' });
 });
@@ -294,11 +283,9 @@ router.get('/ajax/getStatistics', (req, res) => {
       console.log(err);
       res.status(200).send('Something went wrong');
     } else {
-      //    console.log(record);
       if (record === undefined || record === null) {
         res.status(200).send('Something went wrong');
       } else {
-        // console.log(record);
         res.status(200).send(JSON.parse(record.data));
       }
     }

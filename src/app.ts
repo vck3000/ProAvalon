@@ -158,9 +158,9 @@ const server = app.listen(port, () => {
   console.log(`Server has started on ${IP}:${port}!`);
 });
 
-//= ====================================
+//=====================================
 // SOCKETS
-//= ====================================
+//=====================================
 const io: SocketServer = socket(server, {
   pingTimeout: 30000,
   pingInterval: 10000,
