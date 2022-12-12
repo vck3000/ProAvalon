@@ -63,7 +63,7 @@ describe('ModCommands', () => {
     );
   });
 
-  it('defaults to level 2 if non-int was given as level', () => {
+  it('disallows non-integer depths', () => {
     const data = { args: ['/miplinkedaccs', 'ProNub', 'asdf'] };
 
     modCommands.miplinkedaccs.run(data, mockSocket);
