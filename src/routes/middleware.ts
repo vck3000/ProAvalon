@@ -219,7 +219,7 @@ export const isAdminMiddleware = (req, res, next) => {
 };
 
 export const emailVerified = (req, res, next) => {
-  if (req.user.emailVerified === true || process.env.MY_PLATFORM != 'online') {
+  if (req.user.emailVerified === true || process.env.ENV != 'prod') {
     next();
   } else {
     res.redirect('/emailVerification');

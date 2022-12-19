@@ -1,13 +1,12 @@
 import { sendReplyToCommand } from '../../sockets/sockets';
 import { SocketUser } from '../../sockets/types';
 import User from '../../models/user';
+import { Command } from '../types';
 
-export const aemailtousername = {
+export const aemailtousername: Command = {
   command: 'aemailtousername',
   help: "/aemailtousername <email>: lookup a username from their email",
-  async run(data: { args: string[] }, socket: SocketUser) {
-    const { args } = data;
-
+  run: async (args: string[], socket: SocketUser) => {
     const email = args[1];
 
     if (!email) {

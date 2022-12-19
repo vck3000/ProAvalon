@@ -18,25 +18,21 @@ const router = new Router();
 
 // Index route
 router.get('/', (req, res) => {
-  // TODO Check if this is ok.
+  // Delete the session to force a relogin.
   if (req.session) {
     req.session.destroy();
   }
+
   res.render('index');
 });
 
 // register route
 router.get('/register', (req, res) => {
-  res.render('register', { platform: process.env.MY_PLATFORM });
-});
-
-// sitedown route
-router.get('/sitedown', (req, res) => {
-  res.render('sitedown');
+  res.render('register', { platform: process.env.ENV });
 });
 
 const registerLimiter =
-  process.env.MY_PLATFORM === 'local'
+  process.env.ENV === 'local'
     ? rateLimit({
         max: 0, // Disable if we are local
       })
@@ -54,12 +50,7 @@ router.post(
   disallowVPNs,
   async (req, res) => {
     // if we are local, we can skip the captcha
-    if (
-      process.env.MY_PLATFORM === 'local' ||
-      process.env.MY_PLATFORM === 'staging'
-    ) {
-      // Nothing special
-    } else if (process.env.MY_PLATFORM === 'online') {
+    if (process.env.ENV === 'prod') {
       req.body.captcha = req.body['g-recaptcha-response'];
       if (
         req.body.captcha === undefined ||
@@ -77,9 +68,6 @@ router.post(
 
       const body = await request(verifyUrl);
 
-      // body = JSON.parse(body);
-
-      // If Not Successful
       if (body.success !== undefined && !body.success) {
         req.flash('error', 'Failed captcha verification.');
         res.redirect('register');
@@ -128,14 +116,10 @@ router.post(
           );
           res.redirect('register');
         } else {
-          // successful, get them to log in again
-          // req.flash("success", "Sign up successful. Please log in.");
-          // res.redirect("/");
-
           passport.authenticate('local')(req, res, () => {
             res.redirect('/lobby');
           });
-          if (process.env.MY_PLATFORM === 'online') {
+          if (process.env.ENV === 'prod') {
             sendEmailVerification(user, req.body.emailAddress);
           } else {
             user.emailVerified = true;
@@ -149,7 +133,7 @@ router.post(
 );
 
 const loginLimiter =
-  process.env.MY_PLATFORM === 'local'
+  process.env.ENV === 'local'
     ? rateLimit({
         max: 0, // Disable if we are local
       })
@@ -227,8 +211,6 @@ router.get('/emailVerification/verifyEmailRequest', async (req, res) => {
   }
 });
 
-// /lobby route is in a separate file.
-
 // logout
 router.get('/logout', (req, res) => {
   // doesn't work since we destroy the session right after...
@@ -248,17 +230,6 @@ router.get('/log', (req, res) => {
 
 router.get('/rules', (req, res) => {
   res.render('rules', { currentUser: req.user, headerActive: 'rules' });
-});
-
-router.get('/testmodal', (req, res) => {
-  res.render('testmodal', { currentUser: req.user });
-});
-router.get('/testmodal2', (req, res) => {
-  res.render('testmodal2', { currentUser: req.user });
-});
-
-router.get('/testAutoCompleteUsernames', (req, res) => {
-  res.render('testAutoCompleteUsernames', { currentUser: req.user });
 });
 
 router.get('/about', (req, res) => {
@@ -294,11 +265,9 @@ router.get('/ajax/getStatistics', (req, res) => {
       console.log(err);
       res.status(200).send('Something went wrong');
     } else {
-      //    console.log(record);
       if (record === undefined || record === null) {
         res.status(200).send('Something went wrong');
       } else {
-        // console.log(record);
         res.status(200).send(JSON.parse(record.data));
       }
     }
@@ -913,11 +882,6 @@ router.get('/ajax/hideAllNotifications', (req, res) => {
     });
   res.status(200).send('done');
 });
-
-function escapeTextUsername(req, res, next) {
-  req.body.username = escapeText(req.body.username);
-  next();
-}
 
 function sanitiseUsername(req, res, next) {
   req.body.username = sanitizeHtml(req.body.username, {

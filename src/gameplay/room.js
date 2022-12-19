@@ -554,16 +554,4 @@ Room.prototype.sendOutGameModesInRoomToSocket = function (targetSocket) {
   targetSocket.emit('update-game-modes-in-room', obj);
 };
 
-function getIndexFromUsername(sockets, username) {
-  for (let i = 0; i < sockets.length; i++) {
-    if (username === sockets[i].request.user.username) {
-      return i;
-    }
-  }
-}
-
-function getUsernameFromIndex(usernames, index) {
-  return usernames[index].username;
-}
-
 export default Room;

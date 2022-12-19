@@ -19,11 +19,14 @@ import JSON from 'circular-json';
 import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
-import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 import { GAME_MODE_NAMES } from '../gameplay/gameModeNames';
 
 import { ChatSpamFilter } from './chatSpamFilter';
+import { MessageWithDate, Quote } from './quote';
+import { APIBotSocket, enabledBots, makeBotAPIRequest, SimpleBotSocket } from './bot';
+import { adminCommands } from '../commands/admin';
+
 const chatSpamFilter = new ChatSpamFilter();
 if (process.env.NODE_ENV !== 'test') {
   setInterval(() => {
@@ -31,15 +34,7 @@ if (process.env.NODE_ENV !== 'test') {
   }, 1000);
 }
 
-import { MessageWithDate, Quote } from './quote';
 const quote = new Quote();
-
-import {
-  enabledBots,
-  makeBotAPIRequest,
-  SimpleBotSocket,
-  APIBotSocket,
-} from './bot';
 
 const dateResetRequired = 1543480412695;
 
@@ -66,24 +61,18 @@ process.on('SIGINT', gracefulShutdown);
 process.on('SIGTERM', gracefulShutdown);
 
 function gracefulShutdown() {
-  sendWarning();
+  for (const socket of allSockets) {
+    socket.emit('serverRestartingNow');
+  }
 
   console.log('Graceful shutdown request');
   process.exit();
 }
 
-function sendWarning() {
-  for (const key in allSockets) {
-    if (allSockets.hasOwnProperty(key)) {
-      allSockets[key].emit('serverRestartingNow');
-    }
-  }
-}
-
 function saveGameToDb(roomToSave) {
   if (roomToSave.gameStarted === true && roomToSave.finished !== true) {
     // Take out io stuff since we don't need it.
-    let deepCopyRoom = JSON.parse(JSON.stringify(roomToSave));
+    const deepCopyRoom = JSON.parse(JSON.stringify(roomToSave));
     deepCopyRoom.io = undefined;
     deepCopyRoom.allSockets = undefined;
     deepCopyRoom.socketsOfPlayers = undefined;
@@ -123,8 +112,6 @@ function deleteSaveGameFromDb(room) {
     savedGameObj.findByIdAndRemove(room.savedGameRecordId, (err) => {
       if (err) {
         console.log(err);
-      } else {
-        // console.log("Successfully removed this save game from db");
       }
     });
   }
@@ -136,7 +123,6 @@ if (process.env.NODE_ENV !== 'test') {
     let run = true;
     let i = 0;
     while (run) {
-      // RECOVERING SAVED GAMES!
       await new Promise((resolve) => {
         savedGameObj
           .find({})
@@ -170,10 +156,8 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 const lastWhisperObj = {};
-var pmmodCooldowns = {};
+const pmmodCooldowns = {};
 const PMMOD_TIMEOUT = 3000; // 3 seconds
-
-import { adminCommands } from '../commands/admin';
 
 export const modCommands = {
   m: {
@@ -929,7 +913,7 @@ export const modCommands = {
           availableButtons.push('no');
         }
 
-        var availablePlayers = thisRoom.playersInGame
+        let availablePlayers = thisRoom.playersInGame
           .filter(
             (player, playerIndex) =>
               prohibitedIndexesToPick.indexOf(playerIndex) === -1
@@ -1140,10 +1124,10 @@ export const modCommands = {
       let num_levels = args[2];
 
       // Send out data in a readable way to the mod.
-      var dataToReturn = [];
+      const dataToReturn = [];
 
       if (num_levels === undefined) {
-        num_levels = 2;
+        num_levels = 1;
       }
 
       num_levels = parseInt(num_levels, 10);
@@ -1158,11 +1142,11 @@ export const modCommands = {
         return;
       }
 
-      var linkedUsernamesWithLevel;
-      var usernamesTree;
-      var newUsernamesTreeLines = [];
+      let linkedUsernamesWithLevel;
+      let usernamesTree;
+      const newUsernamesTreeLines = [];
       try {
-        var ret = await IPLinkedAccounts(username, num_levels);
+        const ret = await IPLinkedAccounts(username, num_levels);
         linkedUsernamesWithLevel = ret.linkedUsernamesWithLevel;
         usernamesTree = ret.usernamesTree;
       } catch (e) {
@@ -1195,8 +1179,8 @@ export const modCommands = {
         // console.log(lines);
         // Do my special replace white space with forced white space and append
         for (const line of lines) {
-          var replace = true;
-          var newLine = '';
+          let replace = true;
+          let newLine = '';
           for (const ch of line) {
             if (ch == ' ' && replace) {
               newLine += '&#160;&#160;';
@@ -1663,7 +1647,7 @@ export const userCommands = {
           classStr: 'server-text',
         };
 
-      let str = `${senderSocket.request.user.username}->${
+      const str = `${senderSocket.request.user.username}->${
         modSocket.request.user.username
       } (pmmod): ${args.slice(2).join(' ')}`;
 
@@ -2122,7 +2106,7 @@ export const userCommands = {
           classStr: 'server-text',
         };
       }
-      let botName = args[1];
+      const botName = args[1];
       const botAPI = enabledBots.find(
         (bot) => bot.name.toLowerCase() === botName.toLowerCase()
       );
@@ -2147,7 +2131,7 @@ export const userCommands = {
 
       const addedBots = [];
       for (let i = 0; i < numBots; i++) {
-        let botName = `${botAPI.name}#${Math.floor(Math.random() * 100)}`;
+        const botName = `${botAPI.name}#${Math.floor(Math.random() * 100)}`;
 
         // Avoid a username clash!
         const currentUsernames = currentRoom.socketsOfPlayers.map(
@@ -2242,10 +2226,10 @@ export const userCommands = {
         botName === 'all'
           ? botSockets
           : botSockets.filter(
-              (socket) =>
-                socket.request.user.username.toLowerCase() ===
+            (socket) =>
+              socket.request.user.username.toLowerCase() ===
                 botName.toLowerCase()
-            );
+          );
       if (botsToRemove.length === 0) {
         return {
           message: "Couldn't find any bots with that name to remove.",
@@ -2331,6 +2315,9 @@ export const server = function (io: SocketServer): void {
         // promote to admin socket
         socket.isAdminSocket = true;
 
+        // TODO this shouldn't be sent out as separate commands.
+        // Merge these
+        
         // send the user the list of commands
         socket.emit('adminCommands', adminCommands);
       }
@@ -2581,10 +2568,6 @@ var applyApplicableRewards = function (socket) {
   else if (socket.rewards.includes(REWARDS.TO_BADGE)) {
     socket.request.badge = 'T';
   }
-  // DEV badge
-  else if (socket.rewards.includes(REWARDS.DEV_BADGE)) {
-    socket.request.badge = 'D';
-  }
   // Tier4 badge
   if (socket.rewards.includes(REWARDS.TIER4_BADGE)) {
     socket.request.badge = 'T4';
@@ -2688,8 +2671,8 @@ var updateCurrentPlayersList = function () {
     return a.playerRating < b.playerRating
       ? 1
       : a.playerRating > b.playerRating
-      ? -1
-      : 0;
+        ? -1
+        : 0;
   });
 
   allSockets.forEach((sock) => {
@@ -2971,24 +2954,21 @@ function disconnect(data) {
 }
 
 function messageCommand(data) {
-  // console.log("data0: " + data.command);
-  // console.log("mod command exists: " + modCommands[data.command]);
-  let dataToSend;
+  // Data contains: { command: string, args: string[] };
+  // TODO This really shouldn't have to be done here.
+  // Should consider passing this off to a dispatcher that can
+  // apply the appropriate permission checks.
 
   if (adminCommands[data.command] && isAdmin(this.request.user.username)) {
-    dataToSend = adminCommands[data.command].run(data, this, ioGlobal);
-    this.emit('messageCommandReturnStr', dataToSend);
+    adminCommands[data.command].run(data.args, this, ioGlobal);
   } else if (modCommands[data.command] && isMod(this.request.user.username)) {
-    dataToSend = modCommands[data.command].run(data, this, ioGlobal);
-    this.emit('messageCommandReturnStr', dataToSend);
+    modCommands[data.command].run(data, this, ioGlobal);
   } else if (TOCommands[data.command] && isTO(this.request.user.username)) {
-    dataToSend = TOCommands[data.command].run(data, this, ioGlobal);
-    this.emit('messageCommandReturnStr', dataToSend);
+    TOCommands[data.command].run(data, this, ioGlobal);
   } else if (userCommands[data.command]) {
-    dataToSend = userCommands[data.command].run(data, this, ioGlobal);
-    this.emit('messageCommandReturnStr', dataToSend);
+    userCommands[data.command].run(data, this, ioGlobal);
   } else {
-    dataToSend = {
+    const dataToSend = {
       message: 'Invalid command.',
       classStr: 'server-text',
       dateCreated: new Date(),

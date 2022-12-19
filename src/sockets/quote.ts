@@ -30,7 +30,7 @@ export class Quote {
   }
 
   // 1. Add message to the pastMessages array
-  addMessage(message: MessageWithDate, room: any) {
+  addMessage(message: MessageWithDate, room: any): void {
     const messageHash = this.hash(message);
 
     // See if room exists:
@@ -55,13 +55,11 @@ export class Quote {
       return false;
     }
 
-    const messageWithDate: MessageWithDate = {
+    return {
       username: message.username,
       message: message.message,
       date: quoteDates[0],
     };
-
-    return messageWithDate;
   }
 
   deleteRoomMessages(room: any) {
@@ -82,7 +80,7 @@ export class Quote {
 
     const output: Message[] = [];
 
-    for (let chatLine of splittedChatLines.slice(1)) {
+    for (const chatLine of splittedChatLines.slice(1)) {
       const firstColonIndex = chatLine.indexOf(': ');
 
       // A message must have a colon between username and message

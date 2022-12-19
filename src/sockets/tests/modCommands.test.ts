@@ -41,15 +41,15 @@ describe('ModCommands', () => {
     expect(IPLinkedAccounts).toHaveBeenCalledWith('ProNub', 2);
   });
 
-  it('defaults to level of 2', () => {
+  it('defaults to level of 1', () => {
     const data = { args: ['/miplinkedaccs', 'ProNub'] };
 
     modCommands.miplinkedaccs.run(data, mockSocket);
 
-    expect(IPLinkedAccounts).toHaveBeenCalledWith('ProNub', 2);
+    expect(IPLinkedAccounts).toHaveBeenCalledWith('ProNub', 1);
   });
 
-  it('Errors on bad number of levels', () => {
+  it('errors on bad number of levels', () => {
     const data = { args: ['/miplinkedaccs', 'ProNub', '-1'] };
 
     modCommands.miplinkedaccs.run(data, mockSocket);
@@ -63,7 +63,7 @@ describe('ModCommands', () => {
     );
   });
 
-  it('defaults to level 2 if non-int was given as level', () => {
+  it('disallows non-integer depths', () => {
     const data = { args: ['/miplinkedaccs', 'ProNub', 'asdf'] };
 
     modCommands.miplinkedaccs.run(data, mockSocket);
