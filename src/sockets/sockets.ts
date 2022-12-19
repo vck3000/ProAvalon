@@ -5,6 +5,8 @@ import { Server as SocketServer, Socket } from 'socket.io';
 import { SocketUser } from './types';
 
 import gameRoom from '../gameplay/gameWrapper.js';
+import GameWrapper from '../gameplay/gameWrapper.js';
+
 import savedGameObj from '../models/savedGame';
 import { getAllRewardsForUser } from '../rewards/getRewards';
 import REWARDS from '../rewards/constants';
@@ -48,7 +50,7 @@ Hi all, the rules to section 1d), 1g) and 1h) have been updated. Please see the 
 `;
 
 export const allSockets: SocketUser[] = [];
-const rooms = [];
+const rooms: GameWrapper[] = [];
 
 // retain only 5 mins.
 const allChatHistory = [];
@@ -1965,8 +1967,7 @@ export const server = function (io: SocketServer): void {
         // promote to admin socket
         socket.isAdminSocket = true;
 
-        // TODO this shouldn't be sent out as separate commands.
-        // Merge these
+        // TODO this shouldn't be sent out as separate commands. Merge these.
 
         // send the user the list of commands
         socket.emit('adminCommands', adminCommands);
@@ -2093,48 +2094,7 @@ export const server = function (io: SocketServer): void {
       }
 
       updateCurrentPlayersList(io);
-      // console.log("update current players list");
-      // console.log(getPlayerUsernamesFromAllSockets());
       updateCurrentGamesList(io);
-      // message mods if player's ip matches another player
-      const matchedIpsUsernames = [];
-      const joiningIpAddress =
-        socket.request.headers['x-forwarded-for'] ||
-        socket.request.connection.remoteAddress;
-      const joiningUsername = socket.request.user.username;
-      // for (var i = 0; i < allSockets.length; i++) {
-      //   const clientIpAddress =
-      //     allSockets[i].request.headers['x-forwarded-for'] ||
-      //     allSockets[i].request.connection.remoteAddress;
-      //   const clientUsername = allSockets[i].request.user.username;
-      //   // console.log(clientUsername);
-      //   // console.log(clientIpAddress);
-      //   if (
-      //     clientIpAddress === joiningIpAddress &&
-      //     clientUsername !== joiningUsername
-      //   )
-      //     matchedIpsUsernames.push(clientUsername);
-      // }
-      // if (matchedIpsUsernames.length > 0) {
-      //   sendToAllMods(io, {
-      //     message: `MOD WARNING! '${socket.request.user.username}' has just logged in with the same IP as: `,
-      //     classStr: 'server-text',
-      //   });
-      //   sendToAllMods(io, {
-      //     message: '-------------------------',
-      //     classStr: 'server-text',
-      //   });
-      //   for (var i = 0; i < matchedIpsUsernames.length; i++) {
-      //     sendToAllMods(io, {
-      //       message: matchedIpsUsernames[i],
-      //       classStr: 'server-text',
-      //     });
-      //   }
-      //   sendToAllMods(io, {
-      //     message: '-------------------------',
-      //     classStr: 'server-text',
-      //   });
-      // }
     }, 1000);
 
     // when a user disconnects/leaves the whole website
@@ -2239,7 +2199,7 @@ var applyApplicableRewards = function (socket) {
 };
 
 // Assign players their rating bracket
-var assignRatingBracket = function (socket) {
+const assignRatingBracket = function (socket) {
   const provisionalGames = 20;
   const beforeBracket = socket.request.user.ratingBracket;
   const socketRating = socket.request.user.playerRating;
@@ -2301,7 +2261,7 @@ var assignRatingBracket = function (socket) {
   return socket;
 };
 
-var updateCurrentPlayersList = function () {
+const updateCurrentPlayersList = function () {
   // 2D array of usernames, elo pairs and rating brackets, sorted in order of elo rating
   const playerList = [];
   for (let i = 0; i < allSockets.length; i++) {
@@ -2330,7 +2290,7 @@ var updateCurrentPlayersList = function () {
   });
 };
 
-var updateCurrentGamesList = function () {
+const updateCurrentGamesList = function () {
   // prepare room data to send to players.
   const gamesList = [];
   for (let i = 0; i < rooms.length; i++) {
@@ -2381,9 +2341,9 @@ function textLengthFilter(str) {
   return str;
 }
 
-const fiveMinsInMillis = 1000 * 60 * 5;
-
 function sendToAllChat(io, data) {
+  const fiveMinsInMillis = 1000 * 60 * 5;
+
   const date = new Date();
   data.dateCreated = date;
 
@@ -2423,18 +2383,6 @@ export function sendReplyToCommand(socket: Socket, message: string) {
   });
 }
 
-function sendToAllMods(io, data) {
-  const date = new Date();
-  data.dateCreated = date;
-
-  allSockets.forEach((sock) => {
-    if (isMod(sock.request.user.username)) {
-      sock.emit('allChatToClient', data);
-      sock.emit('roomChatToClient', data);
-    }
-  });
-}
-
 function destroyRoom(roomId) {
   if (rooms[roomId] === undefined || rooms[roomId] === null) {
     return;
@@ -2449,6 +2397,7 @@ function destroyRoom(roomId) {
     clearInterval(rooms[roomId].interval);
     rooms[roomId].interval = undefined;
   }
+
   const thisGame = rooms[roomId];
   rooms[roomId].socketsOfPlayers
     .filter((socket) => socket.isBotSocket)
@@ -2470,22 +2419,10 @@ function playerLeaveRoomCheckDestroy(socket) {
 
     // if the game has started, wait to destroy to prevent lag spikes closing ongoing rooms
     if (toDestroy) {
-      // if (rooms[roomId].gameStarted) {
-      //     // If the timeout already exists, clear it
-      //     if (rooms[roomId].destroyTimeoutObj) {
-      //         clearTimeout(rooms[roomId].destroyTimeoutObj);
-      //     }
-      //     rooms[roomId].destroyTimeoutObj = setTimeout(() => {
-      //         destroyRoom(roomId);
-      //         updateCurrentGamesList();
-      //     }, 30000);
-      // }
-      // else {
       destroyRoom(roomId);
-      // }
     }
 
-    // if room is frozen for more than 1hr then remove.
+    // if room is frozen for more than 5 mins then remove.
     if (
       rooms[roomId] &&
       rooms[roomId].timeFrozenLoaded &&
@@ -2494,7 +2431,6 @@ function playerLeaveRoomCheckDestroy(socket) {
     ) {
       const curr = new Date();
       const timeToKill = 1000 * 60 * 5; // 5 mins
-      // var timeToKill = 1000*10; //10s
       if (
         curr.getTime() - rooms[roomId].timeFrozenLoaded.getTime() >
         timeToKill
@@ -2562,24 +2498,14 @@ export function getSocketFromUsername(username: string): SocketUser {
 }
 
 function disconnect(data) {
-  // debugging
   console.log(`${this.request.user.username} has left the lobby.`);
-  // remove them from all sockets
-  // console.log(`Before: ${allSockets.length}`);
-  // console.log(allSockets.indexOf(this));
-  // console.log(allSockets);
 
   chatSpamFilter.disconnectUser(this.request.user.username);
 
-  // delete allSockets[allSockets.indexOf(this)];
   allSockets.splice(allSockets.indexOf(this), 1);
 
-  // console.log(`After: ${allSockets.length}`);
-  // console.log(allSockets);
-  // chatSpamFilter.removeUser(this.request.user.username);
-  // send out the new updated current player list
   updateCurrentPlayersList();
-  // tell all clients that the user has left
+
   data = {
     message: `${this.request.user.username} has left the lobby.`,
     classStr: 'server-text-teal',
@@ -2841,14 +2767,12 @@ function newRoom(dataObj) {
     );
     const privateStr = !privateRoom ? '' : 'private ';
     const rankedUnrankedStr = rankedRoom ? 'ranked' : 'unranked';
-    // broadcast to all chat
+
     const data = {
       message: `${this.request.user.username} has created ${rankedUnrankedStr} ${privateStr}room ${nextRoomId}.`,
       classStr: 'server-text',
     };
     sendToAllChat(ioGlobal, data);
-
-    // console.log(data.message);
 
     // send to allChat including the host of the game
     // ioGlobal.in("allChat").emit("new-game-created", str);
