@@ -33,11 +33,11 @@ export class ChatSpamFilter {
   }
 
   // Users of this class must call this every second!
-  tick() {
+  tick(): void {
     this.seconds++;
   }
 
-  disconnectUser(username: string) {
+  disconnectUser(username: string): void {
     if (username in this.history) {
       delete this.history[username];
     }
