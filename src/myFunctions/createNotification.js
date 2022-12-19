@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import User from '../../models/user';
-import myNotification from '../../models/notification';
+import User from '../models/user';
+import myNotification from '../models/notification';
 
 export function createNotification(userIDTarget, stringToSay, link, madeBy) {
   if (userIDTarget && madeBy) {
