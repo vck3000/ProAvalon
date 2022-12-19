@@ -193,7 +193,7 @@ export const modCommands = {
     run(data, senderSocket) {
       const { args } = data;
       // do stuff
-      const dataToReturn = [];
+      const dataToSend = [];
       let i = 0;
       i++;
 
@@ -201,7 +201,7 @@ export const modCommands = {
         if (modCommands.hasOwnProperty(key)) {
           if (!modCommands[key].modsOnly) {
             // console.log(key + " -> " + p[key]);
-            dataToReturn[i] = {
+            dataToSend[i] = {
               message: modCommands[key].help,
               classStr: 'server-text',
             };
@@ -213,7 +213,7 @@ export const modCommands = {
           }
         }
       }
-      return dataToReturn;
+      senderSocket.emit('messageCommandReturnStr', dataToSend);
     },
   },
 
@@ -1252,20 +1252,20 @@ export const TOCommands = {
     run(data, senderSocket) {
       const { args } = data;
       // do stuff
-      const dataToReturn = [];
+      const dataToSend = [];
       let i = 0;
       i++;
 
       for (const key in TOCommands) {
         if (TOCommands.hasOwnProperty(key)) {
-          dataToReturn[i] = {
+          dataToSend[i] = {
             message: TOCommands[key].help,
             classStr: 'server-text',
           };
           i++;
         }
       }
-      return dataToReturn;
+      senderSocket.emit('messageCommandReturnStr', dataToSend);
     },
   },
 
@@ -1298,10 +1298,10 @@ export const userCommands = {
   help: {
     command: 'help',
     help: '/help: ...shows help',
-    run(data) {
+    run(data, senderSocket) {
       // do stuff
 
-      const dataToReturn = [];
+      const dataToSend = [];
       let i = 0;
 
       i++;
@@ -1309,7 +1309,7 @@ export const userCommands = {
       for (const key in userCommands) {
         if (userCommands.hasOwnProperty(key)) {
           if (!userCommands[key].modsOnly) {
-            dataToReturn[i] = {
+            dataToSend[i] = {
               message: userCommands[key].help,
               classStr: 'server-text',
               dateCreated: new Date(),
@@ -1318,7 +1318,7 @@ export const userCommands = {
           }
         }
       }
-      return dataToReturn;
+      senderSocket.emit('messageCommandReturnStr', dataToSend);
     },
   },
 
@@ -2317,7 +2317,7 @@ export const server = function (io: SocketServer): void {
 
         // TODO this shouldn't be sent out as separate commands.
         // Merge these
-        
+
         // send the user the list of commands
         socket.emit('adminCommands', adminCommands);
       }
