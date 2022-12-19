@@ -34,46 +34,46 @@ describe('ModCommands', () => {
   // });
 
   it('calls iplinkedaccs', () => {
-    const data = { args: ['/miplinkedaccs', 'ProNub', '2'] };
+    const args = ['/miplinkedaccs', 'ProNub', '2'];
 
-    modCommands.miplinkedaccs.run(data, mockSocket);
+    modCommands.miplinkedaccs.run(args, mockSocket);
 
     expect(IPLinkedAccounts).toHaveBeenCalledWith('ProNub', 2);
   });
 
   it('defaults to level of 1', () => {
-    const data = { args: ['/miplinkedaccs', 'ProNub'] };
+    const args = ['/miplinkedaccs', 'ProNub'];
 
-    modCommands.miplinkedaccs.run(data, mockSocket);
+    modCommands.miplinkedaccs.run(args, mockSocket);
 
     expect(IPLinkedAccounts).toHaveBeenCalledWith('ProNub', 1);
   });
 
   it('errors on bad number of levels', () => {
-    const data = { args: ['/miplinkedaccs', 'ProNub', '-1'] };
+    const args = ['/miplinkedaccs', 'ProNub', '-1'];
 
-    modCommands.miplinkedaccs.run(data, mockSocket);
+    modCommands.miplinkedaccs.run(args, mockSocket);
 
     expect(mockSocket.emit.mock.calls[0][0]).toEqual('messageCommandReturnStr');
     expect(mockSocket.emit.mock.calls[0][1][0]).toEqual(
       expect.objectContaining({
         classStr: 'server-text',
         message: '-1 is not a valid positive integer.',
-      })
+      }),
     );
   });
 
   it('disallows non-integer depths', () => {
-    const data = { args: ['/miplinkedaccs', 'ProNub', 'asdf'] };
+    const args = ['/miplinkedaccs', 'ProNub', 'asdf'];
 
-    modCommands.miplinkedaccs.run(data, mockSocket);
+    modCommands.miplinkedaccs.run(args, mockSocket);
 
     expect(mockSocket.emit.mock.calls[0][0]).toEqual('messageCommandReturnStr');
     expect(mockSocket.emit.mock.calls[0][1][0]).toEqual(
       expect.objectContaining({
         classStr: 'server-text',
         message: 'asdf is not a valid positive integer.',
-      })
+      }),
     );
 
     expect(IPLinkedAccounts).not.toHaveBeenCalled();
