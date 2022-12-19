@@ -6,7 +6,6 @@ import { SocketUser } from './types';
 
 import gameRoom from '../gameplay/gameWrapper.js';
 import savedGameObj from '../models/savedGame';
-import { createNotification } from '../myFunctions/createNotification';
 import { getAllRewardsForUser } from '../rewards/getRewards';
 import REWARDS from '../rewards/constants';
 import avatarRequest from '../models/avatarRequest';
@@ -160,102 +159,6 @@ const pmmodCooldowns = {};
 const PMMOD_TIMEOUT = 3000; // 3 seconds
 
 export let modCommands = {
-  mdc: {
-    command: 'mdc',
-    help: '/mdc <player name>: Disconnect a player.',
-    async run(args, senderSocket) {
-
-      if (!args[1]) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'Specify a username.',
-          classStr: 'server-text',
-        });
-        return;
-      }
-
-      const targetSock =
-        allSockets[getIndexFromUsername(allSockets, args[1], true)];
-      if (targetSock) {
-        targetSock.emit('redirect', '/logout');
-        targetSock.disconnect();
-        senderSocket.emit('messageCommandReturnStr', {
-          message: `Disconnected ${args[1]} successfully.`,
-          classStr: 'server-text',
-        });
-      } else {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'Could not find username',
-          classStr: 'server-text',
-        });
-      }
-    },
-  },
-
-  mnotify: {
-    command: 'mnotify',
-    help: '/mnotify <player name> <text to leave for player>: Leaves a message for a player that will appear in their notifications. Note your name will be added to the end of the message to them.',
-    async run(args, senderSocket) {
-      let str = '';
-      for (let i = 2; i < args.length; i++) {
-        str += args[i];
-        str += ' ';
-      }
-
-      str += `(From: ${senderSocket.request.user.username})`;
-
-      User.findOne({ usernameLower: args[1].toLowerCase() }).exec(
-        (err, foundUser) => {
-          if (err) {
-            console.log(err);
-            senderSocket.emit('messageCommandReturnStr', {
-              message: 'Server error... let me know if you see this.',
-              classStr: 'server-text',
-            });
-          } else if (foundUser) {
-            const userIdTarget = foundUser._id;
-            const stringToSay = str;
-            const link = '#';
-
-            createNotification(
-              userIdTarget,
-              stringToSay,
-              link,
-              senderSocket.request.user.username
-            );
-
-            ModLog.create({
-              type: 'mnotify',
-              modWhoMade: {
-                id: senderSocket.request.user.id,
-                username: senderSocket.request.user.username,
-                usernameLower: senderSocket.request.user.usernameLower,
-              },
-              data: {
-                targetUser: {
-                  id: foundUser._id,
-                  username: foundUser.username,
-                  usernameLower: foundUser.usernameLower,
-                },
-                message: stringToSay,
-              },
-              dateCreated: new Date(),
-            });
-
-            senderSocket.emit('messageCommandReturnStr', {
-              message: `Sent to ${foundUser.username} successfully! Here was your message: ${str}`,
-              classStr: 'server-text',
-            });
-          } else {
-            senderSocket.emit('messageCommandReturnStr', {
-              message: `Could not find ${args[1]}`,
-              classStr: 'server-text',
-            });
-          }
-        }
-      );
-    },
-  },
-
   mwhisper: {
     command: 'mwhisper',
     help: '/mwhisper <player name> <text to send>: Sends a whisper to a player.',
@@ -2631,7 +2534,7 @@ function getPlayerUsernamesFromAllSockets() {
   return array;
 }
 
-function getIndexFromUsername(sockets, username, caseInsensitive) {
+export function getIndexFromUsername(sockets, username, caseInsensitive) {
   username = username.split(' ')[0];
   if (sockets && username) {
     for (let i = 0; i < sockets.length; i++) {
