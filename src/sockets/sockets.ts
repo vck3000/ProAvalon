@@ -48,7 +48,7 @@ const updateMessage = `
 Hi all, the rules to section 1d), 1g) and 1h) have been updated. Please see the new rules in the pinned forum thread and familiarise yourself with them.
 `;
 
-const allSockets: SocketUser[] = [];
+export const allSockets: SocketUser[] = [];
 const rooms = [];
 
 // retain only 5 mins.
@@ -160,69 +160,6 @@ const pmmodCooldowns = {};
 const PMMOD_TIMEOUT = 3000; // 3 seconds
 
 export let modCommands = {
-  mcompareips: {
-    command: 'mcompareips',
-    help: '/mcompareips: Get usernames of players with the same IP.',
-    async run(args, senderSocket) {
-      const usernames = [];
-      const ips = [];
-
-      for (let i = 0; i < allSockets.length; i++) {
-        usernames.push(allSockets[i].request.user.username);
-
-        const clientIpAddress =
-          allSockets[i].request.headers['x-forwarded-for'] ||
-          allSockets[i].request.connection.remoteAddress;
-        ips.push(clientIpAddress);
-      }
-
-      const uniq = ips
-        .map((ip) => ({ count: 1, ip }))
-        .reduce((a, b) => {
-          a[b.ip] = (a[b.ip] || 0) + b.count;
-          return a;
-        }, {});
-
-      const duplicateIps = Object.keys(uniq).filter((a) => uniq[a] > 1);
-
-      const dataToReturn = [];
-
-      if (duplicateIps.length === 0) {
-        dataToReturn[0] = {
-          message: 'There are no users with matching IPs.',
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        };
-      } else {
-        dataToReturn[0] = {
-          message: '-------------------------',
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        };
-
-        for (let i = 0; i < duplicateIps.length; i++) {
-          // for each ip, search through the whole users to see who has the ips
-
-          for (let j = 0; j < ips.length; j++) {
-            if (ips[j] === duplicateIps[i]) {
-              dataToReturn.push({
-                message: usernames[j],
-                classStr: 'server-text',
-                dateCreated: new Date(),
-              });
-            }
-          }
-          dataToReturn.push({
-            message: '-------------------------',
-            classStr: 'server-text',
-            dateCreated: new Date(),
-          });
-        }
-      }
-      senderSocket.emit('messageCommandReturnStr', dataToReturn);
-    },
-  },
-
   mdc: {
     command: 'mdc',
     help: '/mdc <player name>: Disconnect a player.',
