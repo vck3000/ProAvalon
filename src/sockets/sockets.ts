@@ -2959,23 +2959,25 @@ function messageCommand(data) {
   // Should consider passing this off to a dispatcher that can
   // apply the appropriate permission checks.
 
+  let dataToSend = {};
+
   if (adminCommands[data.command] && isAdmin(this.request.user.username)) {
     adminCommands[data.command].run(data.args, this, ioGlobal);
   } else if (modCommands[data.command] && isMod(this.request.user.username)) {
-    modCommands[data.command].run(data, this, ioGlobal);
+    dataToSend = modCommands[data.command].run(data, this, ioGlobal);
   } else if (TOCommands[data.command] && isTO(this.request.user.username)) {
-    TOCommands[data.command].run(data, this, ioGlobal);
+    dataToSend = TOCommands[data.command].run(data, this, ioGlobal);
   } else if (userCommands[data.command]) {
-    userCommands[data.command].run(data, this, ioGlobal);
+    dataToSend = userCommands[data.command].run(data, this, ioGlobal);
   } else {
-    const dataToSend = {
+    dataToSend = {
       message: 'Invalid command.',
       classStr: 'server-text',
       dateCreated: new Date(),
     };
-
-    this.emit('messageCommandReturnStr', dataToSend);
   }
+
+  this.emit('messageCommandReturnStr', dataToSend);
 }
 
 function interactUserPlayed(data) {
