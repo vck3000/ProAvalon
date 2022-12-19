@@ -1,14 +1,11 @@
-import {
-  getSocketFromUsername,
-  sendReplyToCommand,
-} from '../../sockets/sockets';
+import { getSocketFromUsername, sendReplyToCommand } from '../../sockets/sockets';
 import { SocketUser } from '../../sockets/types';
+import { Command } from '../types';
 
-export const aip = {
+export const aip: Command = {
   command: 'aip',
   help: '/aip <player name>: Get the ip of the player.',
-  async run(data: { args: string[] }, socket: SocketUser) {
-    const { args } = data;
+  run: async (args: string[], socket: SocketUser) => {
     const username = args[1];
 
     if (!username) {

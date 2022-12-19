@@ -2315,6 +2315,9 @@ export const server = function (io: SocketServer): void {
         // promote to admin socket
         socket.isAdminSocket = true;
 
+        // TODO this shouldn't be sent out as separate commands.
+        // Merge these
+        
         // send the user the list of commands
         socket.emit('adminCommands', adminCommands);
       }
@@ -2951,24 +2954,21 @@ function disconnect(data) {
 }
 
 function messageCommand(data) {
-  // console.log("data0: " + data.command);
-  // console.log("mod command exists: " + modCommands[data.command]);
-  let dataToSend;
+  // Data contains: { command: string, args: string[] };
+  // TODO This really shouldn't have to be done here.
+  // Should consider passing this off to a dispatcher that can
+  // apply the appropriate permission checks.
 
   if (adminCommands[data.command] && isAdmin(this.request.user.username)) {
-    dataToSend = adminCommands[data.command].run(data, this, ioGlobal);
-    this.emit('messageCommandReturnStr', dataToSend);
+    adminCommands[data.command].run(data.args, this, ioGlobal);
   } else if (modCommands[data.command] && isMod(this.request.user.username)) {
-    dataToSend = modCommands[data.command].run(data, this, ioGlobal);
-    this.emit('messageCommandReturnStr', dataToSend);
+    modCommands[data.command].run(data, this, ioGlobal);
   } else if (TOCommands[data.command] && isTO(this.request.user.username)) {
-    dataToSend = TOCommands[data.command].run(data, this, ioGlobal);
-    this.emit('messageCommandReturnStr', dataToSend);
+    TOCommands[data.command].run(data, this, ioGlobal);
   } else if (userCommands[data.command]) {
-    dataToSend = userCommands[data.command].run(data, this, ioGlobal);
-    this.emit('messageCommandReturnStr', dataToSend);
+    userCommands[data.command].run(data, this, ioGlobal);
   } else {
-    dataToSend = {
+    const dataToSend = {
       message: 'Invalid command.',
       classStr: 'server-text',
       dateCreated: new Date(),

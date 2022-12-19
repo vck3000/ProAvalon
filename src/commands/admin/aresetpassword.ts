@@ -1,12 +1,12 @@
 import { sendReplyToCommand } from '../../sockets/sockets';
 import { SocketUser } from '../../sockets/types';
 import User from '../../models/user';
+import { Command } from '../types';
 
-export const aresetpassword = {
+export const aresetpassword: Command = {
   command: 'aresetpassword',
   help: "/aresetpassword <username> <new_password>: set a user's password",
-  async run(data: { args: string[] }, socket: SocketUser) {
-    const { args } = data;
+  run: async (args: string[], socket: SocketUser) => {
 
     if (args.length !== 3) {
       sendReplyToCommand(socket, 'Wrong number of inputs.');
