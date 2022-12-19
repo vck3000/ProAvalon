@@ -32,5 +32,6 @@ export const m: Command = {
       }
     }
 
-    senderSocket.emit('messageCommandReturnStr', dataToSend);  },
+    senderSocket.emit('messageCommandReturnStr', dataToSend);
+  },
 };

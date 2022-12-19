@@ -1,6 +1,5 @@
 // @ts-nocheck
 import axios from 'axios';
-import moment from 'moment';
 import sanitizeHtml from 'sanitize-html';
 import { Server as SocketServer, Socket } from 'socket.io';
 import { SocketUser } from './types';
@@ -12,7 +11,6 @@ import { getAllRewardsForUser } from '../rewards/getRewards';
 import REWARDS from '../rewards/constants';
 import avatarRequest from '../models/avatarRequest';
 import User from '../models/user';
-import Ban from '../models/ban';
 import ModLog from '../models/modLog';
 import IPLinkedAccounts from '../myFunctions/IPLinkedAccounts';
 import JSON from 'circular-json';
@@ -162,155 +160,10 @@ const pmmodCooldowns = {};
 const PMMOD_TIMEOUT = 3000; // 3 seconds
 
 export let modCommands = {
-  mban: {
-    command: 'mban',
-    help: '/mban: Open the ban interface',
-    run(data, senderSocket) {
-      // console.log(senderSocket.request.user.username);
-      if (isMod(senderSocket.request.user.username)) {
-        senderSocket.emit('openModModal');
-        return {
-          message: 'May your judgement bring peace to all!',
-          classStr: 'server-text',
-        };
-      }
-
-      // add a report to this player.
-      return {
-        message: 'You are not a mod. Why are you trying this...',
-        classStr: 'server-text',
-      };
-    },
-  },
-  mgetban: {
-    command: 'mgetban',
-    help: '/mgetban <username>: Find the players latest active ban that would be undone by /munban.',
-    async run(data, senderSocket) {
-      const { args } = data;
-
-      if (!args[1]) {
-        return { message: 'Specify a username.', classStr: 'server-text' };
-      }
-
-      const ban = await Ban.findOne({
-        'bannedPlayer.usernameLower': args[1].toLowerCase(),
-        whenRelease: { $gt: new Date() },
-        disabled: false,
-      }).sort({ whenMade: 'descending' });
-
-      if (ban) {
-        const dataToReturn = [];
-        dataToReturn[0] = {
-          message: `Ban details for ${ban.bannedPlayer.username}:`,
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        };
-
-        dataToReturn.push({
-          message: `Ban made by: ${ban.modWhoBanned.username}`,
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        });
-        dataToReturn.push({
-          message: `Ban made on: ${moment(ban.whenMade).format('LLL')}.`,
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        });
-        dataToReturn.push({
-          message: `Ban duration: ${ban.durationToBan}`,
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        });
-        dataToReturn.push({
-          message: `Ban to be released on: ${moment(ban.whenRelease).format(
-            'LLL'
-          )}.`,
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        });
-        dataToReturn.push({
-          message: `Mod description: ${ban.descriptionByMod}`,
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        });
-        dataToReturn.push({
-          message: `User ban: ${ban.userBan}`,
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        });
-        dataToReturn.push({
-          message: `IP ban: ${ban.ipBan}`,
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        });
-        dataToReturn.push({
-          message: `Single IP ban: ${ban.singleIPBan}`,
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        });
-
-        senderSocket.emit('messageCommandReturnStr', dataToReturn);
-      } else {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: `Could not find an active ban for ${args[1]}.`,
-          classStr: 'server-text',
-        });
-      }
-    },
-  },
-
-  munban: {
-    command: 'munban',
-    help: '/munban <username>: Removes the latest ban for a username.',
-    async run(data, senderSocket) {
-      const { args } = data;
-
-      if (!args[1]) {
-        return { message: 'Specify a username.', classStr: 'server-text' };
-      }
-
-      const ban = await Ban.findOne({
-        'bannedPlayer.usernameLower': args[1].toLowerCase(),
-        whenRelease: { $gt: new Date() },
-        disabled: false,
-      }).sort({ whenMade: 'descending' });
-
-      if (ban) {
-        ban.disabled = true;
-        ban.markModified('disabled');
-        await ban.save();
-
-        // Create the ModLog
-        const modUser = await User.findOne({
-          usernameLower: senderSocket.request.user.username.toLowerCase(),
-        });
-        ModLog.create({
-          type: 'munban',
-          modWhoMade: {
-            id: modUser._id,
-            username: modUser.username,
-            usernameLower: modUser.usernameLower,
-          },
-          data: ban,
-          dateCreated: new Date(),
-        });
-        senderSocket.emit('messageCommandReturnStr', {
-          message: `Successfully unbanned ${args[1]}'s latest ban. Their record still remains, however.`,
-          classStr: 'server-text',
-        });
-      } else {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: `Could not find a ban for ${args[1]}.`,
-          classStr: 'server-text',
-        });
-      }
-    },
-  },
-
   mcompareips: {
     command: 'mcompareips',
     help: '/mcompareips: Get usernames of players with the same IP.',
-    async run(data, senderSocket) {
+    async run(args, senderSocket) {
       const usernames = [];
       const ips = [];
 
@@ -369,11 +222,11 @@ export let modCommands = {
       senderSocket.emit('messageCommandReturnStr', dataToReturn);
     },
   },
+
   mdc: {
     command: 'mdc',
     help: '/mdc <player name>: Disconnect a player.',
-    async run(data, senderSocket) {
-      const { args } = data;
+    async run(args, senderSocket) {
 
       if (!args[1]) {
         senderSocket.emit('messageCommandReturnStr', {
@@ -404,8 +257,7 @@ export let modCommands = {
   mnotify: {
     command: 'mnotify',
     help: '/mnotify <player name> <text to leave for player>: Leaves a message for a player that will appear in their notifications. Note your name will be added to the end of the message to them.',
-    async run(data, senderSocket) {
-      const { args } = data;
+    async run(args, senderSocket) {
       let str = '';
       for (let i = 2; i < args.length; i++) {
         str += args[i];
@@ -470,8 +322,7 @@ export let modCommands = {
   mwhisper: {
     command: 'mwhisper',
     help: '/mwhisper <player name> <text to send>: Sends a whisper to a player.',
-    async run(data, senderSocket) {
-      const { args } = data;
+    async run(args, senderSocket) {
 
       if (args.length === 1) {
         senderSocket.emit('messageCommandReturnStr', {
@@ -567,8 +418,7 @@ export let modCommands = {
   mremoveavatar: {
     command: 'mremoveavatar',
     help: "/mremoveavatar <player name>: Remove <player name>'s avatar.",
-    async run(data, senderSocket) {
-      const { args } = data;
+    async run(args, senderSocket) {
 
       if (!args[1]) {
         senderSocket.emit('messageCommandReturnStr', {
@@ -605,8 +455,7 @@ export let modCommands = {
   maddbots: {
     command: 'maddbots',
     help: '/maddbots <number>: Add <number> bots to the room.',
-    run(data, senderSocket, roomIdInput) {
-      const { args } = data;
+    run(args, senderSocket, roomIdInput) {
 
       if (!args[1]) {
         senderSocket.emit('messageCommandReturnStr', {
@@ -657,9 +506,7 @@ export let modCommands = {
   mtestgame: {
     command: 'mtestgame',
     help: '/mtestgame <number>: Add <number> bots to a test game and start it automatically.',
-    run(data, senderSocket, io) {
-      const { args } = data;
-
+    run(args, senderSocket, io) {
       if (!args[1]) {
         senderSocket.emit('messageCommandReturnStr', {
           message: 'Specify a number.',
@@ -728,8 +575,7 @@ export let modCommands = {
   mclose: {
     command: 'mclose',
     help: '/mclose <roomId> [<roomId> <roomId> ...]: Close room <roomId>. Also removes the corresponding save files in the database. Can take multiple room IDs.',
-    run(data, senderSocket) {
-      const { args } = data;
+    run(args, senderSocket) {
 
       if (!args[1]) {
         senderSocket.emit('messageCommandReturnStr', {
@@ -774,11 +620,11 @@ export let modCommands = {
       updateCurrentGamesList();
     },
   },
+
   mannounce: {
     command: 'mannounce',
     help: '/mannounce <message>: Sends a sweet alert to all online players with an included message. It automatically says the username of the mod that executed the command.',
-    run(data, senderSocket) {
-      const { args } = data;
+    run(args, senderSocket) {
       if (!args[1]) {
         senderSocket.emit('messageCommandReturnStr', {
           message: 'Please enter a message...',
@@ -804,8 +650,7 @@ export let modCommands = {
   mforcemove: {
     command: 'mforcemove',
     help: "/mforcemove <username> [button] [target]: Forces a player to make a move. To see what moves are available, enter the target's username. To force the move, input button and/or target.",
-    run(data, senderSocket) {
-      const { args } = data;
+    run(args, senderSocket) {
 
       senderSocket.emit('messageCommandReturnStr', {
         message: `You have entered: ${args.join(' ')}`,
@@ -972,8 +817,7 @@ export let modCommands = {
   mrevealrole: {
     command: 'mrevealrole',
     help: '/mrevealrole <username>: Reveal the role of a player. You must be present in the room for this to work.',
-    run(data, senderSocket) {
-      const { args } = data;
+    run(args, senderSocket) {
 
       if (!args[1]) {
         senderSocket.emit('messageCommandReturnStr', {
@@ -1024,7 +868,7 @@ export let modCommands = {
   mrevealallroles: {
     command: 'mrevealallroles',
     help: '/mrevealallroles : Reveals the roles of all players in the current room.',
-    run(data, senderSocket) {
+    run(args, senderSocket) {
       const roomId = senderSocket.request.user.inRoomId;
       if (rooms[roomId]) {
         if (!rooms[roomId].gameStarted) {
@@ -1059,7 +903,7 @@ export let modCommands = {
   mtogglepause: {
     command: 'mtogglepause',
     help: '/mtogglepause: Pauses or unpauses the current room.',
-    run(data, senderSocket) {
+    run(args, senderSocket) {
       const currentRoom = rooms[senderSocket.request.user.inRoomId];
       if (currentRoom) {
         // if unpaused, we pause
@@ -1083,8 +927,7 @@ export let modCommands = {
   miplinkedaccs: {
     command: 'miplinkedaccs',
     help: '/miplinkedaccs <username> <num_levels (greater than 1 | defaults to 2)>: Finds all accounts that have shared the same IPs the specified user. Put anything in <fullTree> to see full tree.',
-    async run(data, senderSocket) {
-      const { args } = data;
+    async run(args, senderSocket) {
       const username = args[1];
       let num_levels = args[2];
 
@@ -2931,7 +2774,7 @@ function messageCommand(data) {
   if (adminCommands[data.command] && isAdmin(this.request.user.username)) {
     adminCommands[data.command].run(data.args, this, ioGlobal);
   } else if (modCommands[data.command] && isMod(this.request.user.username)) {
-    dataToSend = modCommands[data.command].run(data, this, ioGlobal);
+    dataToSend = modCommands[data.command].run(data.args, this, ioGlobal);
   } else if (TOCommands[data.command] && isTO(this.request.user.username)) {
     dataToSend = TOCommands[data.command].run(data, this, ioGlobal);
   } else if (userCommands[data.command]) {
