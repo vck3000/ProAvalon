@@ -1,6 +1,6 @@
-import { sendReplyToCommand } from '../../sockets/sockets';
-import { SocketUser } from '../../sockets/types';
-import User from '../../models/user';
+import { sendReplyToCommand } from '../../sockets';
+import { SocketUser } from '../../types';
+import User from '../../../models/user';
 import { Command } from '../types';
 
 export const aresetpassword: Command = {

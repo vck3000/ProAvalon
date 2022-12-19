@@ -25,7 +25,9 @@ import { GAME_MODE_NAMES } from '../gameplay/gameModeNames';
 import { ChatSpamFilter } from './chatSpamFilter';
 import { MessageWithDate, Quote } from './quote';
 import { APIBotSocket, enabledBots, makeBotAPIRequest, SimpleBotSocket } from './bot';
-import { adminCommands } from '../commands/admin';
+
+import { adminCommands } from './commands/admin';
+import { modCommands as modCommandsImported } from './commands/mod';
 
 const chatSpamFilter = new ChatSpamFilter();
 if (process.env.NODE_ENV !== 'test') {
@@ -159,14 +161,7 @@ const lastWhisperObj = {};
 const pmmodCooldowns = {};
 const PMMOD_TIMEOUT = 3000; // 3 seconds
 
-export const modCommands = {
-  m: {
-    command: 'm',
-    help: '/m: displays /mhelp',
-    run(data, senderSocket) {
-      return modCommands.mhelp.run(data, senderSocket);
-    },
-  },
+export let modCommands = {
   mban: {
     command: 'mban',
     help: '/mban: Open the ban interface',
@@ -187,36 +182,6 @@ export const modCommands = {
       };
     },
   },
-  mhelp: {
-    command: 'mhelp',
-    help: '/mhelp: show commands.',
-    run(data, senderSocket) {
-      const { args } = data;
-      // do stuff
-      const dataToSend = [];
-      let i = 0;
-      i++;
-
-      for (const key in modCommands) {
-        if (modCommands.hasOwnProperty(key)) {
-          if (!modCommands[key].modsOnly) {
-            // console.log(key + " -> " + p[key]);
-            dataToSend[i] = {
-              message: modCommands[key].help,
-              classStr: 'server-text',
-            };
-            // str[i] = userCommands[key].help;
-            i++;
-            // create a break in the chat
-            // data[i] = {message: "-------------------------", classStr: "server-text"};
-            // i++;
-          }
-        }
-      }
-      senderSocket.emit('messageCommandReturnStr', dataToSend);
-    },
-  },
-
   mgetban: {
     command: 'mgetban',
     help: '/mgetban <username>: Find the players latest active ban that would be undone by /munban.',
@@ -1237,6 +1202,8 @@ export const modCommands = {
     },
   },
 };
+
+modCommands = {...modCommands, ...modCommandsImported};
 
 export const TOCommands = {
   t: {
