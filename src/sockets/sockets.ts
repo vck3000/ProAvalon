@@ -731,6 +731,7 @@ export const modCommands = {
         dataObj.gameMode,
         dataObj.muteSpectators,
         false,
+        false,
         socketCallback
       );
       const privateStr = dataObj.newRoomPassword === '' ? '' : 'private ';
@@ -2517,6 +2518,7 @@ export const server = function (io: SocketServer): void {
     socket.on('update-room-game-mode', updateRoomGameMode);
     socket.on('update-room-ranked', updateRoomRanked);
     socket.on('update-room-muteSpectators', updateRoomMuteSpectators);
+    socket.on('update-room-rebal9p', updateRoomRebal9p);
 
     //* ***********************
     // game data stuff
@@ -3187,6 +3189,7 @@ function newRoom(dataObj) {
       dataObj.gameMode,
       dataObj.muteSpectators,
       rankedRoom,
+      dataObj.rebal9p,
       socketCallback
     );
     const privateStr = !privateRoom ? '' : 'private ';
@@ -3408,6 +3411,12 @@ function updateRoomRanked(rankedType) {
 function updateRoomMuteSpectators(muteSpectators) {
   if (rooms[this.request.user.inRoomId]) {
     rooms[this.request.user.inRoomId].updateMuteSpectators(muteSpectators);
+  }
+}
+
+function updateRoomRebal9p(rebal9p) {
+  if (rooms[this.request.user.inRoomId]) {
+    rooms[this.request.user.inRoomId].updateRebal9p(rebal9p);
   }
 }
 
