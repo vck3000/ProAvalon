@@ -21,6 +21,7 @@ export const aresetpassword: Command = {
     });
 
     await new Promise<void>((res, rej) => {
+      // @ts-ignore
       user.setPassword(new_password, (err: any) => {
         if (err) {
           rej(err);
