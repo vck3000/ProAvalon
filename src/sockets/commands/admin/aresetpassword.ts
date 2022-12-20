@@ -1,6 +1,6 @@
-import { sendReplyToCommand } from '../../sockets/sockets';
-import { SocketUser } from '../../sockets/types';
-import User from '../../models/user';
+import { sendReplyToCommand } from '../../sockets';
+import { SocketUser } from '../../types';
+import User from '../../../models/user';
 import { Command } from '../types';
 
 export const aresetpassword: Command = {
@@ -21,6 +21,7 @@ export const aresetpassword: Command = {
     });
 
     await new Promise<void>((res, rej) => {
+      // @ts-ignore
       user.setPassword(new_password, (err: any) => {
         if (err) {
           rej(err);

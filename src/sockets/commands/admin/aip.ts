@@ -1,5 +1,5 @@
-import { getSocketFromUsername, sendReplyToCommand } from '../../sockets/sockets';
-import { SocketUser } from '../../sockets/types';
+import { getSocketFromUsername, sendReplyToCommand } from '../../sockets';
+import { SocketUser } from '../../types';
 import { Command } from '../types';
 
 export const aip: Command = {

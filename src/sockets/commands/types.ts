@@ -1,4 +1,8 @@
-import { SocketUser } from '../sockets/types';
+import { SocketUser } from '../types';
+
+export interface Commands{
+  [Command: string]: Command;
+} 
 
 export interface Command {
   command: string,

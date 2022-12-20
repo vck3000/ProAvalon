@@ -4,7 +4,6 @@ export const TOsArray = [
   'tyrrox',
   'glorious',
   'goofy',
-  'portujules',
   'raytrout',
   'starkrush',
   'basicnerd',
