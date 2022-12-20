@@ -1,4 +1,4 @@
-    # ProAvalon
+# ProAvalon
 
 Online platform for The Resistance! [Play the game](https://www.ProAvalon.com).
 
