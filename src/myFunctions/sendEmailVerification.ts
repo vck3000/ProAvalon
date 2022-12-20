@@ -2,6 +2,8 @@ import ejs from 'ejs';
 import formData from 'form-data';
 import Mailgun from 'mailgun.js';
 import emailTemplate from './emailTemplate';
+import uuid from 'uuid';
+import disposableEmails from '../util/disposableEmails.js';
 
 const api_key = process.env.MAILGUN_API_KEY;
 const domain = process.env.PROAVALON_EMAIL_ADDRESS_DOMAIN;
@@ -11,7 +13,6 @@ const server_domain = process.env.SERVER_DOMAIN;
 const mailgun = new Mailgun(formData);
 const mg = mailgun.client({ username: 'api', key: api_key });
 
-import uuid from 'uuid';
 const uuidv4 = uuid.v4;
 
 export const sendEmailVerification = (user: any, email: string) => {
@@ -43,8 +44,6 @@ export const sendEmailVerification = (user: any, email: string) => {
   mg.messages.create(domain, data);
 };
 
-import disposableEmails from '../util/disposableEmails.js';
-
-export const isThrowawayEmail = (email: string) => {
+export const isThrowawayEmail = (email: string): boolean => {
   return disposableEmails.indexOf(email.split('@')[1]) !== -1;
 };
