@@ -7,10 +7,10 @@ class Galahad {
 
         this.description = 'Learns the role of 1 other resistance member after 2 fails.  Sees himself as a regular resistance member until the 2nd fail.';
         this.orderPriorityInOptions = 40;
-        
+
         this.resRevealUsername = undefined;
 
-    }  
+    }
     see() {
         const roleTag = {};
 
@@ -23,7 +23,7 @@ class Galahad {
             roleTag[this.resRevealUsername].roleTag = 'Resistance';
             console.log(roleTag);
             return roleTag;
-        } 
+        }
 
         else {
             // Don't reveal Galahad role yet.

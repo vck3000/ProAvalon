@@ -92,14 +92,14 @@ p {
 }
 
 span {
-    white-space:nowrap;
+    white-space: nowrap;
 }
 
 .post-unseen {
     /* border-left-color: blue;
     border-left-style: dotted; */
 
-    border-left: 3px solid #4c8fff !important; 
+    border-left: 3px solid #4c8fff !important;
 
 }
 

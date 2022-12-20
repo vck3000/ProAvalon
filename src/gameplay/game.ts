@@ -10,6 +10,7 @@ import GameRecord from '../models/gameRecord';
 import commonPhasesIndex from './indexCommonPhases';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
+import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 
 // Get all the gamemodes and their roles/cards/phases.
@@ -90,49 +91,49 @@ function Game(
   const thisRoom = this;
 
   /*
-		Handle joining:
-			- If game hasn't started, join like usual
-			- If game has started, check if they are a player
-				- If they are player, give them data
-				- If they are not a player, give them spec data
-	*/
+    Handle joining:
+      - If game hasn't started, join like usual
+      - If game has started, check if they are a player
+        - If they are player, give them data
+        - If they are not a player, give them spec data
+  */
 
   /*
-		Phases go like this:
-			Note: Cards run should be run every time phase changes
+    Phases go like this:
+      Note: Cards run should be run every time phase changes
 
-			Always run between phases:
-				- Card
-				- Role specials (e.g. assassination)
+      Always run between phases:
+        - Card
+        - Role specials (e.g. assassination)
 
-			Start from phase 1:
-			1) Player picking.
-			2) Receive interactions for team votes.
-				- If approved, go to phase 3.
-				- If rejected, go to phase 1.
-			3) Receive interactions for mission votes.
-				- If game finished, go to phase 4.
-				- If game not finished, go to phase 1.
-			4) Game finished
+      Start from phase 1:
+      1) Player picking.
+      2) Receive interactions for team votes.
+        - If approved, go to phase 3.
+        - If rejected, go to phase 1.
+      3) Receive interactions for mission votes.
+        - If game finished, go to phase 4.
+        - If game not finished, go to phase 1.
+      4) Game finished
 
 
-			Table:
-				Phase	|	String
-				1			"pickingTeam"
-				2			"votingTeam"
-				3			"votingMission"
-				4			"finished"
+      Table:
+        Phase	|	String
+        1			"pickingTeam"
+        2			"votingTeam"
+        3			"votingMission"
+        4			"finished"
 
-			Misc Phases:
-				Phase	|	String
-							"lady"
-							"assassination"
+      Misc Phases:
+        Phase	|	String
+              "lady"
+              "assassination"
 
-	*/
+  */
 
   /*
-		Receive interactions depending on current state
-	*/
+    Receive interactions depending on current state
+  */
 
   // Game variables
   this.gameStarted = false;
@@ -594,6 +595,11 @@ Game.prototype.checkBotMoves = function (pendingBots) {
 
   // Players whose moves we're waiting for
   this.interval = setInterval(() => {
+    // hack: check for hammer reject
+    if (thisRoom.howWasWon === 'Hammer rejected.') {
+      thisRoom.finished = true;
+    }
+
     if (thisRoom.finished === true) {
       clearInterval(thisRoom.interval);
       thisRoom.interval = undefined;
@@ -674,7 +680,8 @@ Game.prototype.checkBotMoves = function (pendingBots) {
             numOfTargets === 0 ||
             numOfTargets === null ||
             (move.selectedPlayers &&
-              numOfTargets === move.selectedPlayers.length &&
+              (numOfTargets === move.selectedPlayers.length ||
+                numOfTargets.includes(move.selectedPlayers.length)) &&
               move.selectedPlayers.every(
                 (player) => availablePlayers.indexOf(player) !== -1
               ));
@@ -1254,9 +1261,6 @@ Game.prototype.finishGame = function (toBeWinner) {
   this.distributeGameData();
 
   // If there was a bot in the game and this is the online server, do not store into the database.
-  // if (process.env.MY_PLATFORM === "online" && this.botIndexes.length !== 0) {
-  // 	return;
-  // }
 
   // store data into the database:
   const rolesCombined = [];
@@ -1880,7 +1884,8 @@ Game.prototype.canRoomChat = function (usernameLower: string) {
     return (
       playerUsernamesLower.includes(usernameLower) ||
       isMod(usernameLower) ||
-      isTO(usernameLower)
+      isTO(usernameLower) ||
+      isDev(usernameLower)
     );
   }
   return true;

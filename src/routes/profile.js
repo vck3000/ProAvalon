@@ -3,7 +3,7 @@ import express from 'express';
 const router = express.Router();
 import sanitizeHtml from 'sanitize-html';
 import url from 'url';
-import { isModMiddleware, checkProfileOwnership } from './middleware.js';
+import { isModMiddleware, checkProfileOwnership } from './middleware';
 import User from '../models/user';
 import PatreonId from '../models/patreonId';
 import avatarRequest from '../models/avatarRequest';
@@ -51,13 +51,7 @@ router.get('/mod/customavatar', isModMiddleware, (req, res) => {
 });
 
 // moderator approve or reject custom avatar requests
-// /profile/mod/ajax/processavatarrequest
 router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
-  // console.log('process avatar request');
-  // console.log(req.body.decision);
-  // console.log(req.body.avatarreqid);
-  // console.log(req.body.modcomment);
-  
   avatarRequest.findById(req.body.avatarreqid).exec((err, foundReq) => {
     if (err) {
       console.log(err);
@@ -78,8 +72,6 @@ router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
             } else {
               foundUser.avatarImgRes = foundReq.resLink;
               foundUser.avatarImgSpy = foundReq.spyLink;
-
-              // console.log(foundUser);
 
               foundUser.save();
 
@@ -141,8 +133,6 @@ router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
       foundReq.save();
     }
   });
-
-  // console.log(mongoose.Types.ObjectId(req.query.idOfNotif));
 
   res.status(200).send('done');
 });
@@ -325,9 +315,18 @@ router.post('/:profileUsername', checkProfileOwnership, (req, res) => {
   // console.log(req.body.hideStats);
   // console.log(req.body.pronoun);
 
-  if(!["he/him", "she/her", "they/them"].includes(req.body.pronoun)){
-    req.body.pronoun = "N/A"
+  const allowedPronouns = [
+    'he/him',
+    'he/they',
+    'she/her',
+    'she/they',
+    'they/them',
+  ];
+
+  if (!allowedPronouns.includes(req.body.pronoun)) {
+    req.body.pronoun = 'N/A';
   }
+
   if (!req.body.biography) {
     req.body.biography = '';
   }

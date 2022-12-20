@@ -20,7 +20,7 @@ import createProxyMiddleware from 'http-proxy-middleware';
 
 import { server as socketServer } from './sockets/sockets';
 import User from './models/user';
-import { isLoggedIn, emailVerified } from './routes/middleware';
+import { emailVerified, isLoggedIn } from './routes/middleware';
 import indexRoutes from './routes/index';
 import communityRoutes from './routes/community';
 import { emailVerificationRoutes } from './routes/emailVerification';
@@ -29,6 +29,9 @@ import forumRoutes from './routes/forum';
 import profileRoutes from './routes/profile';
 import patreonRoutes from './routes/patreon';
 import modRoutes from './routes/mod';
+import staticifyFactory from 'staticify';
+// Create a MongoDB session store
+import MongoDBStoreFactory from 'connect-mongodb-session';
 
 const assetsPath = path.join(__dirname, '../assets');
 
@@ -37,18 +40,17 @@ const app = express();
 app.use(compression());
 app.use(express.static(assetsPath, { maxAge: 518400000 })); // expires in 7 days.
 
-import staticifyFactory from 'staticify';
 const staticify = staticifyFactory(assetsPath);
 
 app.use(staticify.middleware);
 app.locals.getVersionedPath = staticify.getVersionedPath;
 app.set('trust proxy', true);
 
-if (process.env.MY_PLATFORM === 'local') {
+if (process.env.ENV === 'local') {
   console.log('Routing dist_webpack to localhost:3010.');
   app.use(
     '/dist_webpack',
-    createProxyMiddleware({ target: 'http://localhost:3010' })
+    createProxyMiddleware({ target: 'http://localhost:3010' }),
   );
 }
 
@@ -61,9 +63,6 @@ mongoose.connect(dbLoc, {
   retryWrites: false,
 });
 
-// Create a MongoDB session store
-import MongoDBStoreFactory from 'connect-mongodb-session';
-
 const MongoDBStore = MongoDBStoreFactory(session);
 
 const store = new MongoDBStore({
@@ -75,7 +74,7 @@ const store = new MongoDBStore({
 store.on('error', (err) => {
   console.log(err);
   console.log(
-    '--------------\nIs your mongoDB server running?\n--------------'
+    '--------------\nIs your mongoDB server running?\n--------------',
   );
   assert.ifError(err);
   assert.ok(false);
@@ -107,7 +106,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store,
-  })
+  }),
 );
 
 app.use(flash());
@@ -133,6 +132,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(methodOverride('_method'));
 
 app.use(indexRoutes);
@@ -157,9 +157,6 @@ const server = app.listen(port, () => {
   console.log(`Server has started on ${IP}:${port}!`);
 });
 
-//= ====================================
-// SOCKETS
-//= ====================================
 const io: SocketServer = socket(server, {
   pingTimeout: 30000,
   pingInterval: 10000,
@@ -170,8 +167,8 @@ socketServer(io);
 io.use(
   passportSocketIo.authorize({
     cookieParser,
-    secret: secretKey, // same as in your session settings
-    store, // same as sessionStore in app.use(session({...
+    secret: secretKey,
+    store,
     passport,
-  })
+  }),
 );

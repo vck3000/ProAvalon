@@ -128,7 +128,7 @@ lastIds.findOne({}).exec(async (err, returnedLastId) => {
 });
 
 const newForumLimiter =
-  process.env.MY_PLATFORM === 'local'
+  process.env.ENV === 'local'
     ? rateLimit({
         max: 0, // Disable if we are local
       })

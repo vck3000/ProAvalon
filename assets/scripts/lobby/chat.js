@@ -146,9 +146,11 @@ function addToAllChat(data) {
         date = `[${hour}:${min}]`;
 
         let filteredMessage = data[i].message
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/&nbsp;/, '&amp;nbsp;');
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
 
         filteredMessage = linkifyHtml(filteredMessage, {
           validate: {
@@ -160,7 +162,7 @@ function addToAllChat(data) {
 
         //adds abbreviation, also checks if option has been enabled
         let toFilter = docCookies.getItem(`optionDisplayEnableAbbreivations`)
-        if(toFilter === 'true') {
+        if (toFilter === 'true') {
           filteredMessage = addAbbreviations(filteredMessage);
         }
 
@@ -168,11 +170,9 @@ function addToAllChat(data) {
         if (data[i].classStr && data[i].classStr !== '') {
           str = `<li class='${data[i].classStr}'><span class='date-text'>${date}</span> ${filteredMessage}`;
         } else {
-          str = `${
-            "<li class='" + "'><span class='date-text'>"
-          }${date}</span> <span class='username-text'>${
-            data[i].username
-          }:</span> ${filteredMessage}`;
+          str = `${"<li class='" + "'><span class='date-text'>"
+            }${date}</span> <span class='username-text'>${data[i].username
+            }${generateBadgeString(data[i].badge)}:</span> ${filteredMessage}`;
         }
 
         // if they've muted this player, then just dont show anything. reset str to nothing.
@@ -300,9 +300,11 @@ function addToRoomChat(data) {
 
         // prevent XSS injection
         let filteredMessage = data[i].message
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/&nbsp;/, '&amp;nbsp;');
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
         // console.log("Filtered message: " + filteredMessage);
 
         filteredMessage = linkifyHtml(filteredMessage, {
@@ -315,81 +317,28 @@ function addToRoomChat(data) {
 
         //adds abbreviation, also checks if option has been enabled
         let toFilter = docCookies.getItem(`optionDisplayEnableAbbreivations`)
-        if(toFilter === 'true') {
+        if (toFilter === 'true') {
           filteredMessage = addAbbreviations(filteredMessage);
         }
-        
+
         let str = '';
 
-        // any part of the chat before any quoted parts
-        let unquotedMessage = filteredMessage.split('[')[0];
-
-        const rawQuotedString = filteredMessage.slice(unquotedMessage.length);
-        // unquotedMessage = unquotedMessage.trim();
-
-        const quotedStrings = [];
-        const quotesList = rawQuotedString.split('[').slice(1);
-
-        var s = '';
-        while (quotesList.length > 0) {
-          const lastQuote = `[${quotesList.pop()}`;
-          s = lastQuote + s;
-          // console.log('s = ' + s);
-
-          // parse "[hh:mm]", "username" and everything after the ": "
-          var dateStr = s.slice(0, 7);
-          var username = s.slice(8, s.indexOf(': '));
-          var text = s.slice(s.indexOf(': ') + 2);
-          // console.log('dateStr = ' + dateStr);
-          // console.log('username = ' + username);
-          // console.log('text = ' + text);
-
-          // verify all quotes are either a server message or have actually been said
-          if (
-            roomChatHistory.filter(
-              (d) =>
-                (d.classStr !== null &&
-                  s.slice(8).trim() === d.message.trim()) ||
-                (username === d.username && // or was said by that user. only check the one's place of the minutes
-                  dateStr[3] === ':' && // (to ignore timezones, which can be off by hours or even half-hours)
-                  dateStr[5] === d.dateStr[5] &&
-                  d.message.startsWith(text.trim()))
-            ).length > 0
-          ) {
-            quotedStrings.push(s);
-            console.log(`pushed ${s}`);
-            s = '';
-          }
-        }
-
-        // if 's' is still not a verified quote, add it as normal text
-        unquotedMessage += s;
-        quotedStrings.reverse(); // was built backwards
-        // console.log("quoted stuff: " + quotedStrings.join(','));
-        data[i].message = unquotedMessage.trim();
-
-        // Handle the non-quoted parts
         // set the highlight chat if the user has been selected already
         let highlightChatColour = '';
         const setHighlightColorToYellow = $('.setHighlightColorsToYellow')[0]
           .checked;
         let highlightForegroundColorHtml = ';';
 
-        // console.log("true?"  + selectedChat[data[i].username]);
-        let usernameOnly = data[i].username;
-        if (data[i].username) {
-          usernameOnly = data[i].username.split(' ')[0];
-        }
-
         if (
-          selectedChat[usernameOnly] === true &&
-          getIndexFromUsername(usernameOnly) !== undefined
+          data[i].username &&
+          selectedChat[data[i].username] === true &&
+          getIndexFromUsername(data[i].username) !== undefined
         ) {
           if (setHighlightColorToYellow === true) {
             highlightChatColour = '#ffff9e';
           } else {
             highlightChatColour = docCookies.getItem(
-              `player${getIndexFromUsername(usernameOnly)}HighlightColour`
+              `player${getIndexFromUsername(data[i].username)}HighlightColour`
             );
           }
           highlightForegroundColorHtml = 'color: #333;';
@@ -397,13 +346,24 @@ function addToRoomChat(data) {
 
         // if its a server text or special text
         if (data[i].classStr && data[i].classStr !== '') {
-          str = `<li class='${data[i].classStr} ${addClass}'><span class='date-text'>${date}</span> ${unquotedMessage}`;
+          str = `<li class='${data[i].classStr} ${addClass}'><span class='date-text'>${date}</span> ${filteredMessage}`;
         }
         // its a user's chat so put some other stuff on it
         else {
-          str = `<li class='${addClass}'><span style='${highlightForegroundColorHtml}background-color: ${highlightChatColour}' username='${usernameOnly}'><span class='date-text'> ${date}</span> <span class='username-text'>${
-            data[i].username
-          }:</span> ${unquotedMessage.trim() || '<i>Quoting:</i>'}</span></li>`;
+          let message = filteredMessage;
+
+          if (data[i].quotes && data[i].quotes.length > 0) {
+            message = '<i>Quoting:</i>';
+          }
+
+          str = `
+          <li class='${addClass}'>
+            <span style='${highlightForegroundColorHtml}background-color: ${highlightChatColour}' username='${data[i].username}'>
+              <span class='date-text'> ${date}</span> 
+              <span class='username-text'>${data[i].username}${generateBadgeString(data[i].badge)}:</span> 
+              ${message}
+            </span>
+          </li>`;
         }
 
         // if they've muted this player, then just dont show anything. reset str to nothing.
@@ -416,14 +376,13 @@ function addToRoomChat(data) {
         scrollDown('room-chat-room2');
 
         // Handle the quoted parts
+        let quotedStrings = [];
+        if (data[i].quotes && data[i].quotes.length > 0) {
+          quotedStrings = data[i].quotes;
+        }
+
         if (quotedStrings.length > 0) {
           let strQuotes = '';
-          // DEPRECATED: No longer need this, since it's being done above in the unquoted part
-          // if (unquotedMessage.length === 0)
-          //    strQuotes = "<li class='" + addClass + "'><span username='" + data[i].username + "'><span class='date-text'>" + date + "</span> <span class='username-text'>" + data[i].username + ":</span> Quoting:</span></li>";
-          // else
-          //    "<li class='" + addClass + "'>Quoting:</li>";
-          // console.log("Strings: ");
 
           let goFor = quotedStrings.length;
           // only 5 lines of quote at a time max.
@@ -432,8 +391,21 @@ function addToRoomChat(data) {
           }
 
           for (let j = 0; j < goFor; j++) {
-            strQuotes += `<li class='myQuote ${addClass}'>${quotedStrings[j]}</li>`;
-            // console.log(strings[j]);
+            const date = new Date(quotedStrings[j].date);
+
+            let hour = date.getHours();
+            let min = date.getMinutes();
+
+            if (hour < 10) {
+              hour = `0${hour}`;
+            }
+
+            if (min < 10) {
+              min = `0${min}`;
+            }
+            const dateFmt = `[${hour}:${min}]`;
+
+            strQuotes += `<li class='myQuote ${addClass}'>${dateFmt} ${quotedStrings[j].username}: ${quotedStrings[j].message}</li>`;
           }
 
           // if they've muted this player, then just dont show anything. reset str to nothing.
@@ -572,3 +544,40 @@ $('.setHighlightColorsToYellow').on('change', (e) => {
     });
   }
 });
+
+function generateBadgeString(badge) {
+  let badgeStr = '';
+
+  if (badge !== undefined) {
+    let title = '';
+
+    if (badge === 'A') {
+      title = 'Admin';
+    }
+    else if (badge === 'M') {
+      title = 'Moderator';
+    }
+    else if (badge === 'D') {
+      title = 'Developer';
+    }
+    else if (badge === 'T') {
+      title = 'Tournament Organizer';
+    }
+    else if (badge === 'T4') {
+      title = 'Patreon T4';
+    }
+    else if (badge === 'T3') {
+      title = 'Patreon T3';
+    }
+    else if (badge === 'T2') {
+      title = 'Patreon T2';
+    }
+    else if (badge === 'T1') {
+      title = 'Patreon T1';
+    }
+
+    badgeStr = ` <span class='badge' data-toggle='tooltip' data-placement='right' title='${title}' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>${badge}</span>`
+  }
+
+  return badgeStr;
+}

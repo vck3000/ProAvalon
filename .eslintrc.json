@@ -1,8 +1,7 @@
 {
   "env": {
     "browser": true,
-    "es2021": true,
-    "jest/globals": true
+    "es2021": true
   },
   "extends": [
     "eslint:recommended",
@@ -14,11 +13,22 @@
     "ecmaVersion": 12,
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint"],
+  "plugins": [
+    "@typescript-eslint"
+  ],
   "rules": {
-    "indent": ["error", 2],
-    "linebreak-style": ["error", "unix"],
+    "indent": [
+      "error",
+      2
+    ],
+    "linebreak-style": [
+      "error",
+      "unix"
+    ],
     // "quotes": ["error", "single"],
-    "semi": ["error", "always"]
+    "semi": [
+      "error",
+      "always"
+    ]
   }
 }

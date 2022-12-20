@@ -26,13 +26,12 @@ p {
     box-sizing: border-box;
     border: 2px solid transparent;
 }
-.showYourTurnNotification{
+
+.showYourTurnNotification {
     border: orange solid 2px;
 }
 
-.well-sm {
-    
-}
+.well-sm {}
 
 /* Lobby items */
 
@@ -93,6 +92,7 @@ p {
 #col1 {
     height: 100%;
 }
+
 #col2 {
     overflow: auto;
 }
@@ -110,7 +110,7 @@ p {
     padding: 5px;
 }
 
-.tab-window-full-bottom{
+.tab-window-full-bottom {
     height: -webkit-calc(100% + 29px);
     height: expression(100% + 29px);
     height: -moz-calc(100% + 29px);
@@ -133,7 +133,7 @@ p {
     overflow-x: visible;
 }
 
-.chat-window ol li{
+.chat-window ol li {
     padding-left: 1px;
     margin-bottom: 1px;
 }
@@ -208,25 +208,25 @@ p {
     /*font-style: italic;*/
 }
 
-.server-text-teal{
+.server-text-teal {
     color: teal;
 }
 
-.all-chat-text-red{
+.all-chat-text-red {
     color: #bd362f;
     font-weight: 700;
 }
 
-.all-chat-text-blue{
+.all-chat-text-blue {
     color: #0044cc;
     font-weight: 700;
 }
 
-.spectator-chat{
+.spectator-chat {
     color: rgb(98, 98, 98);
 }
 
-.hidden-spectator-chat{
+.hidden-spectator-chat {
     /* color: rgb(98, 98, 98); */
     display: none;
 }
@@ -326,7 +326,7 @@ p {
 }
 
 .gun {
-    pointer-events:none;
+    pointer-events: none;
 }
 
 .role-p {
@@ -350,7 +350,7 @@ p {
     max-height: 100%;
     top: 0px;
     margin-left: 2px;
-    
+
 }
 
 /* Highlighting/outlining of avatars/chat */
@@ -373,12 +373,12 @@ p {
 }
 
 .highlight-participating-dark {
-    background-color: rgba(255, 255, 0, 0.65)  !important;
+    background-color: rgba(255, 255, 0, 0.65) !important;
     border-radius: 10px;
 }
 
 .highlight-pick-dark {
-    background-color: rgba(255, 255, 0, 0.65)  !important;
+    background-color: rgba(255, 255, 0, 0.65) !important;
     border-radius: 10px;
 }
 
@@ -401,10 +401,15 @@ p {
     border-radius: 5px;
 }
 
+.selected-avatar-3 {
+    background-color: #b8b8b8;
+    border-radius: 5px;
+}
+
 .avatarOptionButtons {
     position: absolute;
     top: 0px;
-    left:15%;
+    left: 15%;
     display: block;
     z-index: 1000;
 }
@@ -622,13 +627,13 @@ h3 {
 }
 
 @media screen and (max-width: 480px) {
-    .nav-tabs li a { 
+    .nav-tabs li a {
         padding-left: 1vw !important;
         padding-right: 1vw !important;
         /* padding-top: 1vh !important; */
         /* padding-bottom: 1vh !important; */
-    } 
- }
+    }
+}
 
 .game-buttons-div {
     /* padding-top: 1vh; */
@@ -672,7 +677,7 @@ h3 {
 .buttonDark {
     background-color: #363636;
     border: 1px solid black;
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);   
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
 }
 
 #div1Resize {
@@ -680,7 +685,7 @@ h3 {
     height: 40%;
     width: 100%;
     max-width: 95%;
-    margin:auto;
+    margin: auto;
 }
 
 .myHr {
@@ -695,18 +700,18 @@ h3 {
     /* border: 1px solid red; */
     /* max-width:1300px; */
     max-width: 95%;
-    
+
     margin: auto;
 }
 
-.myQuote{
+.myQuote {
     color: rgb(107, 107, 107);
     padding-left: 10px;
     border-left: #ccc 3px solid;
 
 }
 
-.date-text{
+.date-text {
     padding: 2px 4px;
     color: #d14;
     background-color: #f7f7f9;
@@ -715,12 +720,12 @@ h3 {
     /* line-height: 20px; */
     font-style: normal;
 
-    font-family: Monaco,Menlo,Consolas,"Courier New",monospace;
+    font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
     /* font-size: 12px !important; */
     font-weight: normal;
 }
 
-.claimIcon{
+.claimIcon {
     position: absolute;
 
     top: 0%;
@@ -731,11 +736,11 @@ h3 {
     max-height: 45px;
     max-width: 45px;
 
-    transform: translateX(-50%) translateY(-50%) rotate(-15deg) ;
+    transform: translateX(-50%) translateY(-50%) rotate(-15deg);
     z-index: -999;
 }
 
-.leaveIcon{
+.leaveIcon {
     position: absolute;
 
     top: 0%;
@@ -754,25 +759,26 @@ h3 {
     /* filter: brightness(60%); */
 
     opacity: 0.3;
-    filter: alpha(opacity=30); /* For IE8 and earlier */
+    filter: alpha(opacity=30);
+    /* For IE8 and earlier */
 }
 
-#claimButton{
+#claimButton {
     position: absolute;
     right: 0%;
 
-    top:5px;
+    top: 5px;
 }
 
 #backButton {
     position: absolute;
     left: 0%;
-    top:5px;
+    top: 5px;
 }
 
 #room-chat-room-bar {
     border-bottom: 1px dashed red;
-    
+
     /* position: absolute; */
     /* bottom: 0%; */
     /* height: 10px; */
@@ -793,10 +799,15 @@ h3 {
     display: none;
 }
 
+.displayNoneReportClass {
+    display: none !important;
+}
+
 #tabs1 {
     padding-left: 0px;
     padding-right: 0px;
 }
+
 #tabs2 {
     padding-left: 0px;
     padding-right: 0px;
@@ -814,13 +825,12 @@ h3 {
     display: inline !important;
 }
 
-.showFaded{
-
-}
+.showFaded {}
 
 .faded {
     opacity: 0.5 !important;
-    filter: alpha(opacity=50); /* For IE8 and earlier */
+    filter: alpha(opacity=50);
+    /* For IE8 and earlier */
     visibility: visible !important;
     /* display:block; */
 }
@@ -847,6 +857,7 @@ h3 {
     transform: translateX(100%);
     /* float: right; */
 }
+
 .cardObject {
     /* position: absolute; */
     display: block;
@@ -921,9 +932,13 @@ h3 {
 }
 
 .dark .all-chat-text-blue {
-     color: #0087d6
- }
+    color: #0087d6
+}
 
 .dark .all-chat-text-red {
     color: #fc4141
+}
+
+.ReactModal__Overlay {
+    z-index: 20
 }

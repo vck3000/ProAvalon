@@ -36,8 +36,8 @@ p {
     margin-bottom: 30px;
     color: inherit;
     background-color: #eee;
-    
-    width:95%;
+
+    width: 95%;
 }
 
 .biography {
@@ -54,7 +54,7 @@ p {
     /* border: 1px solid #ddd; */
     /* border-radius: 4px; */
     padding: 5px;
-    
+
 
     border: 4px solid #fff;
     border-radius: 5px;
@@ -74,9 +74,9 @@ p {
     /* height: auto; */
     transition: .5s ease;
     backface-visibility: hidden;
-  }
-  
-  .middle {
+}
+
+.middle {
     transition: .5s ease;
     opacity: 0;
     position: absolute;
@@ -84,27 +84,28 @@ p {
     left: 50%;
     transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%)
-  }
-  
-  .avatarImgDiv {
-      position: relative;
-  }
-   .avatarImgDiv:hover .avatarImg {
+}
+
+.avatarImgDiv {
+    position: relative;
+}
+
+.avatarImgDiv:hover .avatarImg {
     /* opacity: 0.3; */
-  }
-  
-  .avatarImgDiv:hover .middle {
+}
+
+.avatarImgDiv:hover .middle {
     /* opacity: 1; */
-  } 
+}
 
 
-  .changeAvatarText {
+.changeAvatarText {
     background-color: rgb(245, 245, 245);
     color: rgb(0, 0, 0);
     font-size: 16px;
     padding: 4px 4px;
     text-align: center;
-  }
+}
 
 
 .lobby-table {
@@ -127,7 +128,7 @@ p {
     /* width: 100%; */
 }
 
-.myTable tbody tr td{
+.myTable tbody tr td {
     border: 1px solid black;
 }
 
@@ -159,7 +160,7 @@ p {
 
 
 /* Style the search field */
- .searchBar input[type=text] {
+.searchBar input[type=text] {
     padding: 10px;
     font-size: 17px;
     border: 1px solid grey;
@@ -167,12 +168,12 @@ p {
     width: 80%;
     background: #f1f1f1;
 
-    
-    border-radius: 15px 0px 0px 15px ;
-  } 
-  
-  /* Style the submit button */
-  .searchBar button {
+
+    border-radius: 15px 0px 0px 15px;
+}
+
+/* Style the submit button */
+.searchBar button {
     float: left;
     width: 20%;
     padding: 10px;
@@ -180,29 +181,29 @@ p {
     color: white;
     font-size: 17px;
     border: 1px solid grey;
-    border-left: none; /* Prevent double borders */
+    border-left: none;
+    /* Prevent double borders */
     cursor: pointer;
 
     border-radius: 0px 12px 12px 0px;
-    
-  }
-  
-  .searchBar button:hover {
+
+}
+
+.searchBar button:hover {
     background: #0b7dda;
-  }
-  
-  /* Clear floats */
-  .searchBar::after {
+}
+
+/* Clear floats */
+.searchBar::after {
     content: "";
     clear: both;
     display: table;
-  }
+}
 
-.searchBar{
+.searchBar {
     box-sizing: border-box;
     max-width: 400px;
 
     /* margin-left: 10%; */
     /* width: 80%; */
 }
-

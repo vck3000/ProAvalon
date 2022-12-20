@@ -5,11 +5,11 @@ export default async function getPatreonDetails(patreonId: string) {
 
   await PatreonId.find({ id: patreonId })
     .exec()
-    .then((obj) => {
+    .then((obj: any) => {
       patreonDetails = obj;
       // console.log('Gotten patreon details.');
     })
-    .catch((err) => {
+    .catch((err: any) => {
       console.log(err);
     });
 

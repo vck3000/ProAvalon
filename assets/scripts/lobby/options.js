@@ -4,8 +4,8 @@
 var userOptions = {
   lastSettingsResetDate: {
     defaultValue: new Date().toString(),
-    onLoad() {},
-    initialiseEventListener() {},
+    onLoad() { },
+    initialiseEventListener() { },
   },
 
   optionDisplayFontSize: {
@@ -18,7 +18,8 @@ var userOptions = {
       $('#option_display_font_size_text')[0].value = fontSize;
 
       // make the font size changes
-      $('html *').css('font-size', `${fontSize}px`);
+      $('*:not([react-entrypoint] *').css('font-size', `${fontSize}px`);
+
       draw();
     },
     initialiseEventListener() {
@@ -41,7 +42,7 @@ var userOptions = {
         $('#option_display_font_size_text')[0].value = fontSize;
 
         // make the changes to font size
-        $('html *').css('font-size', `${fontSize}px`);
+        $('*:not([react-entrypoint] *').css('font-size', `${fontSize}px`);
         draw();
 
         // save the data in cookie
@@ -758,31 +759,6 @@ var userOptions = {
         // save their option in cookie
         docCookies.setItem(
           'optionNotificationsSoundBuzz',
-          checked.toString(),
-          Infinity
-        );
-      });
-    },
-  },
-
-  optionNotificationsSoundLick: {
-    defaultValue: 'true',
-    onLoad() {
-      let checked;
-      const savedSetting = docCookies.getItem('optionNotificationsSoundLick');
-      if (savedSetting === 'true') {
-        checked = true;
-      } else if (savedSetting === 'false') {
-        checked = false;
-      }
-      $('#option_notifications_sound_lick')[0].checked = checked;
-    },
-    initialiseEventListener() {
-      $('#option_notifications_sound_lick')[0].addEventListener('click', () => {
-        const { checked } = $('#option_notifications_sound_lick')[0];
-        // save their option in cookie
-        docCookies.setItem(
-          'optionNotificationsSoundLick',
           checked.toString(),
           Infinity
         );

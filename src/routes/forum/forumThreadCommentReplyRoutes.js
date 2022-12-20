@@ -38,7 +38,7 @@ const sanitizeHtmlAllowedAttributesForumThread = {
 };
 
 const newReplyLimiter =
-  process.env.MY_PLATFORM === 'local'
+  process.env.ENV === 'local'
     ? rateLimit({
         max: 0, // Disable if we are local
       })
@@ -47,9 +47,9 @@ const newReplyLimiter =
         max: 10,
       });
 
-/** ******************************************************* */
+/**********************************************************/
 // Create a new comment reply route
-/** ******************************************************* */
+/**********************************************************/
 router.post('/:id/:commentId', newReplyLimiter, (req, res) => {
   createCommentReply(req, res);
 });
@@ -202,9 +202,9 @@ router.get(
   })
 );
 
-/** ******************************************************* */
+/**********************************************************/
 // Update a comment reply route
-/** ******************************************************* */
+/**********************************************************/
 router.put(
   '/:id/:comment_id/:reply_id',
   checkForumThreadCommentReplyOwnership,
@@ -253,9 +253,9 @@ router.put(
   })
 );
 
-/** ******************************************************* */
+/**********************************************************/
 // Destroy a comment reply route
-/** ******************************************************* */
+/**********************************************************/
 router.delete(
   '/deleteCommentReply/:id/:comment_id/:reply_id',
   checkForumThreadCommentReplyOwnership,

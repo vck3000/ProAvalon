@@ -4,10 +4,6 @@ const patreonAPI = patreon.patreon;
 
 const PatreonHelper = {};
 
-PatreonHelper.classFunctionTest = function () {
-  console.log('Class function');
-};
-
 PatreonHelper.getUserStore = function (token) {
   const apiClient = patreonAPI(token);
 
@@ -17,7 +13,6 @@ PatreonHelper.getUserStore = function (token) {
     console.log(
       `Saved user ${store.find('user', id).full_name} to the database`
     );
-    // console.log(`${JSON.stringify(database[id], null, 6)}`)
 
     console.log(
       `Got ID: ${id}, for name: ${store.find('user', id).full_name}.`

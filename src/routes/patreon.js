@@ -125,7 +125,7 @@ router.get('/oauth/redirect', (req, res) => {
             // console.log(patreonIdObj);
 
             if (!patreonIdObj) {
-              console.log('Patreon ID doesn\'t exist in database. Creating...');
+              console.log("Patreon ID doesn't exist in database. Creating...");
               await PatreonId.create({
                 name: patreon_full_name,
                 token,
@@ -155,7 +155,7 @@ router.get('/oauth/redirect', (req, res) => {
               patreonIdObj.token = token;
               patreonIdObj.markModified('token');
               await patreonIdObj.save().then((obj) => {
-                console.log('Successfully updated patreonId\'s token.');
+                console.log("Successfully updated patreonId's token.");
               });
 
               if (new Date() < new Date(patreonIdObj.expires)) {

@@ -46,9 +46,5 @@ export const sendEmailVerification = (user: any, email: string) => {
 import disposableEmails from '../util/disposableEmails.js';
 
 export const isThrowawayEmail = (email: string) => {
-  if (disposableEmails.indexOf(email.split('@')[1]) !== -1) {
-    return true;
-  } else {
-    return false;
-  }
+  return disposableEmails.indexOf(email.split('@')[1]) !== -1;
 };

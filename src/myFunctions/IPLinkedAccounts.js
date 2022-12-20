@@ -4,13 +4,13 @@ import treeify from 'treeify';
 let IPLinkedAccounts = async (username, num_levels) => {
   // console.log("Running ip linked accounts code");
 
-  var linkedUsernames = [];
-  var linkedUsernamesWithLevel = [];
+  let linkedUsernames = [];
+  let linkedUsernamesWithLevel = [];
 
-  var usernamesTree = {};
+  let usernamesTree = {};
 
-  var IPsToVisit = [];
-  var visitedIPs = [];
+  let IPsToVisit = [];
+  let visitedIPs = [];
 
   // Track down each user account linked to all IPs.
   // Only need to return usernameLower and IPAddresses from the query
@@ -26,15 +26,14 @@ let IPLinkedAccounts = async (username, num_levels) => {
       level: 0,
     });
     usernamesTree[user.usernameLower] = {};
-    var thisNode = usernamesTree[user.usernameLower];
+    let thisNode = usernamesTree[user.usernameLower];
 
     IPsToVisit = user.IPAddresses;
     IPsToVisit = IPsToVisit.map((x) => {
       return { ip: x, parent: thisNode };
     });
     IPsToVisit.push(null);
-    // console.log(user);
-    var level = 1;
+    let level = 1;
 
     while (IPsToVisit.length !== 0) {
       const nextIPObj = IPsToVisit.shift();

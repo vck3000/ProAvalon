@@ -1,4 +1,3 @@
-
 /** {
 	border: 1px red solid;
 }*/
@@ -7,9 +6,8 @@
 	padding-top: 30px;
 }
 
-.form-group {
-	
-}
+.form-group {}
+
 .alignLeft {
 	text-align: left;
 }

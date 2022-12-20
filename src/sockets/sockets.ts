@@ -22,12 +22,19 @@ import { isTO } from '../modsadmins/tournamentOrganizers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 import { GAME_MODE_NAMES } from '../gameplay/gameModeNames';
 
-import {
-  enabledBots,
-  makeBotAPIRequest,
-  SimpleBotSocket,
-  APIBotSocket,
-} from './bot';
+import { ChatSpamFilter } from './chatSpamFilter';
+import { MessageWithDate, Quote } from './quote';
+import { APIBotSocket, enabledBots, makeBotAPIRequest, SimpleBotSocket } from './bot';
+import { adminCommands } from '../commands/admin';
+
+const chatSpamFilter = new ChatSpamFilter();
+if (process.env.NODE_ENV !== 'test') {
+  setInterval(() => {
+    chatSpamFilter.tick();
+  }, 1000);
+}
+
+const quote = new Quote();
 
 const dateResetRequired = 1543480412695;
 
@@ -54,24 +61,18 @@ process.on('SIGINT', gracefulShutdown);
 process.on('SIGTERM', gracefulShutdown);
 
 function gracefulShutdown() {
-  sendWarning();
+  for (const socket of allSockets) {
+    socket.emit('serverRestartingNow');
+  }
 
   console.log('Graceful shutdown request');
   process.exit();
 }
 
-function sendWarning() {
-  for (const key in allSockets) {
-    if (allSockets.hasOwnProperty(key)) {
-      allSockets[key].emit('serverRestartingNow');
-    }
-  }
-}
-
 function saveGameToDb(roomToSave) {
   if (roomToSave.gameStarted === true && roomToSave.finished !== true) {
     // Take out io stuff since we don't need it.
-    let deepCopyRoom = JSON.parse(JSON.stringify(roomToSave));
+    const deepCopyRoom = JSON.parse(JSON.stringify(roomToSave));
     deepCopyRoom.io = undefined;
     deepCopyRoom.allSockets = undefined;
     deepCopyRoom.socketsOfPlayers = undefined;
@@ -111,8 +112,6 @@ function deleteSaveGameFromDb(room) {
     savedGameObj.findByIdAndRemove(room.savedGameRecordId, (err) => {
       if (err) {
         console.log(err);
-      } else {
-        // console.log("Successfully removed this save game from db");
       }
     });
   }
@@ -124,7 +123,6 @@ if (process.env.NODE_ENV !== 'test') {
     let run = true;
     let i = 0;
     while (run) {
-      // RECOVERING SAVED GAMES!
       await new Promise((resolve) => {
         savedGameObj
           .find({})
@@ -158,10 +156,8 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 const lastWhisperObj = {};
-var pmmodCooldowns = {};
+const pmmodCooldowns = {};
 const PMMOD_TIMEOUT = 3000; // 3 seconds
-
-import { adminCommands } from '../commands/admin';
 
 export const modCommands = {
   m: {
@@ -197,7 +193,7 @@ export const modCommands = {
     run(data, senderSocket) {
       const { args } = data;
       // do stuff
-      const dataToReturn = [];
+      const dataToSend = [];
       let i = 0;
       i++;
 
@@ -205,7 +201,7 @@ export const modCommands = {
         if (modCommands.hasOwnProperty(key)) {
           if (!modCommands[key].modsOnly) {
             // console.log(key + " -> " + p[key]);
-            dataToReturn[i] = {
+            dataToSend[i] = {
               message: modCommands[key].help,
               classStr: 'server-text',
             };
@@ -217,7 +213,7 @@ export const modCommands = {
           }
         }
       }
-      return dataToReturn;
+      senderSocket.emit('messageCommandReturnStr', dataToSend);
     },
   },
 
@@ -917,7 +913,7 @@ export const modCommands = {
           availableButtons.push('no');
         }
 
-        var availablePlayers = thisRoom.playersInGame
+        let availablePlayers = thisRoom.playersInGame
           .filter(
             (player, playerIndex) =>
               prohibitedIndexesToPick.indexOf(playerIndex) === -1
@@ -1128,10 +1124,10 @@ export const modCommands = {
       let num_levels = args[2];
 
       // Send out data in a readable way to the mod.
-      var dataToReturn = [];
+      const dataToReturn = [];
 
       if (num_levels === undefined) {
-        num_levels = 2;
+        num_levels = 1;
       }
 
       num_levels = parseInt(num_levels, 10);
@@ -1146,11 +1142,11 @@ export const modCommands = {
         return;
       }
 
-      var linkedUsernamesWithLevel;
-      var usernamesTree;
-      var newUsernamesTreeLines = [];
+      let linkedUsernamesWithLevel;
+      let usernamesTree;
+      const newUsernamesTreeLines = [];
       try {
-        var ret = await IPLinkedAccounts(username, num_levels);
+        const ret = await IPLinkedAccounts(username, num_levels);
         linkedUsernamesWithLevel = ret.linkedUsernamesWithLevel;
         usernamesTree = ret.usernamesTree;
       } catch (e) {
@@ -1183,8 +1179,8 @@ export const modCommands = {
         // console.log(lines);
         // Do my special replace white space with forced white space and append
         for (const line of lines) {
-          var replace = true;
-          var newLine = '';
+          let replace = true;
+          let newLine = '';
           for (const ch of line) {
             if (ch == ' ' && replace) {
               newLine += '&#160;&#160;';
@@ -1256,20 +1252,20 @@ export const TOCommands = {
     run(data, senderSocket) {
       const { args } = data;
       // do stuff
-      const dataToReturn = [];
+      const dataToSend = [];
       let i = 0;
       i++;
 
       for (const key in TOCommands) {
         if (TOCommands.hasOwnProperty(key)) {
-          dataToReturn[i] = {
+          dataToSend[i] = {
             message: TOCommands[key].help,
             classStr: 'server-text',
           };
           i++;
         }
       }
-      return dataToReturn;
+      senderSocket.emit('messageCommandReturnStr', dataToSend);
     },
   },
 
@@ -1302,10 +1298,10 @@ export const userCommands = {
   help: {
     command: 'help',
     help: '/help: ...shows help',
-    run(data) {
+    run(data, senderSocket) {
       // do stuff
 
-      const dataToReturn = [];
+      const dataToSend = [];
       let i = 0;
 
       i++;
@@ -1313,7 +1309,7 @@ export const userCommands = {
       for (const key in userCommands) {
         if (userCommands.hasOwnProperty(key)) {
           if (!userCommands[key].modsOnly) {
-            dataToReturn[i] = {
+            dataToSend[i] = {
               message: userCommands[key].help,
               classStr: 'server-text',
               dateCreated: new Date(),
@@ -1322,7 +1318,7 @@ export const userCommands = {
           }
         }
       }
-      return dataToReturn;
+      senderSocket.emit('messageCommandReturnStr', dataToSend);
     },
   },
 
@@ -1451,7 +1447,6 @@ export const userCommands = {
       return userCommands.interactUser.run(data, senderSocket);
     },
   },
-
 
   interactUser: {
     command: 'interactUser',
@@ -1652,7 +1647,7 @@ export const userCommands = {
           classStr: 'server-text',
         };
 
-      let str = `${senderSocket.request.user.username}->${
+      const str = `${senderSocket.request.user.username}->${
         modSocket.request.user.username
       } (pmmod): ${args.slice(2).join(' ')}`;
 
@@ -1799,9 +1794,9 @@ export const userCommands = {
     },
   },
 
-  getmutedplayers: {
-    command: 'getmutedplayers',
-    help: '/getmutedplayers: See who you have muted.',
+  muted: {
+    command: 'muted',
+    help: '/muted: See who you have muted.',
     run(data, senderSocket) {
       const { args } = data;
 
@@ -2111,7 +2106,7 @@ export const userCommands = {
           classStr: 'server-text',
         };
       }
-      let botName = args[1];
+      const botName = args[1];
       const botAPI = enabledBots.find(
         (bot) => bot.name.toLowerCase() === botName.toLowerCase()
       );
@@ -2136,7 +2131,7 @@ export const userCommands = {
 
       const addedBots = [];
       for (let i = 0; i < numBots; i++) {
-        let botName = `${botAPI.name}#${Math.floor(Math.random() * 100)}`;
+        const botName = `${botAPI.name}#${Math.floor(Math.random() * 100)}`;
 
         // Avoid a username clash!
         const currentUsernames = currentRoom.socketsOfPlayers.map(
@@ -2231,10 +2226,10 @@ export const userCommands = {
         botName === 'all'
           ? botSockets
           : botSockets.filter(
-              (socket) =>
-                socket.request.user.username.toLowerCase() ===
+            (socket) =>
+              socket.request.user.username.toLowerCase() ===
                 botName.toLowerCase()
-            );
+          );
       if (botsToRemove.length === 0) {
         return {
           message: "Couldn't find any bots with that name to remove.",
@@ -2319,6 +2314,9 @@ export const server = function (io: SocketServer): void {
       if (isAdmin(socket.request.user.username)) {
         // promote to admin socket
         socket.isAdminSocket = true;
+
+        // TODO this shouldn't be sent out as separate commands.
+        // Merge these
 
         // send the user the list of commands
         socket.emit('adminCommands', adminCommands);
@@ -2560,34 +2558,31 @@ function socketCallback(action, room) {
 var applyApplicableRewards = function (socket) {
   // Admin badge
   if (socket.rewards.includes(REWARDS.ADMIN_BADGE)) {
-    socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Admin' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>A</span>`;
-    // socket.request.displayUsername = "[A] " + socket.request.displayUsername;
+    socket.request.badge = 'A';
   }
   // Moderator badge
   else if (socket.rewards.includes(REWARDS.MOD_BADGE)) {
-    socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Moderator' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>M</span>`;
-    // socket.request.displayUsername = "[M] " + socket.request.displayUsername;
+    socket.request.badge = 'M';
   }
   // TO badge
   else if (socket.rewards.includes(REWARDS.TO_BADGE)) {
-    socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Tournament Organizer' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>T</span>`;
+    socket.request.badge = 'T';
   }
-
   // Tier4 badge
   if (socket.rewards.includes(REWARDS.TIER4_BADGE)) {
-    socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Patreon T4' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>T4</span>`;
+    socket.request.badge = 'T4';
   }
   // Tier3 badge
   else if (socket.rewards.includes(REWARDS.TIER3_BADGE)) {
-    socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Patreon T3' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>T3</span>`;
+    socket.request.badge = 'T3';
   }
   // Tier2 badge
   else if (socket.rewards.includes(REWARDS.TIER2_BADGE)) {
-    socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Patreon T2' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>T2</span>`;
+    socket.request.badge = 'T2';
   }
   // Tier1 badge
   else if (socket.rewards.includes(REWARDS.TIER1_BADGE)) {
-    socket.request.displayUsername = `${socket.request.displayUsername} <span class='badge' data-toggle='tooltip' data-placement='right' title='Patreon T1' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>T1</span>`;
+    socket.request.badge = 'T1';
   }
 
   return socket;
@@ -2669,13 +2664,15 @@ var updateCurrentPlayersList = function () {
     );
     playerList[i].ratingBracket = allSockets[i].request.user.ratingBracket;
     playerList[i].ratingBadge = allSockets[i].request.ratingBadge;
+    playerList[i].badge = allSockets[i].request.badge;
   }
+
   playerList.sort((a, b) => {
     return a.playerRating < b.playerRating
       ? 1
       : a.playerRating > b.playerRating
-      ? -1
-      : 0;
+        ? -1
+        : 0;
   });
 
   allSockets.forEach((sock) => {
@@ -2792,6 +2789,8 @@ function destroyRoom(roomId) {
   if (rooms[roomId] === undefined || rooms[roomId] === null) {
     return;
   }
+
+  quote.deleteRoomMessages(roomId);
 
   deleteSaveGameFromDb(rooms[roomId]);
 
@@ -2920,12 +2919,14 @@ function disconnect(data) {
   // console.log(allSockets.indexOf(this));
   // console.log(allSockets);
 
+  chatSpamFilter.disconnectUser(this.request.user.username);
+
   // delete allSockets[allSockets.indexOf(this)];
   allSockets.splice(allSockets.indexOf(this), 1);
 
   // console.log(`After: ${allSockets.length}`);
   // console.log(allSockets);
-
+  // chatSpamFilter.removeUser(this.request.user.username);
   // send out the new updated current player list
   updateCurrentPlayersList();
   // tell all clients that the user has left
@@ -2953,31 +2954,30 @@ function disconnect(data) {
 }
 
 function messageCommand(data) {
-  // console.log("data0: " + data.command);
-  // console.log("mod command exists: " + modCommands[data.command]);
-  let dataToSend;
+  // Data contains: { command: string, args: string[] };
+  // TODO This really shouldn't have to be done here.
+  // Should consider passing this off to a dispatcher that can
+  // apply the appropriate permission checks.
+
+  let dataToSend = {};
 
   if (adminCommands[data.command] && isAdmin(this.request.user.username)) {
-    dataToSend = adminCommands[data.command].run(data, this, ioGlobal);
-    this.emit('messageCommandReturnStr', dataToSend);
+    adminCommands[data.command].run(data.args, this, ioGlobal);
   } else if (modCommands[data.command] && isMod(this.request.user.username)) {
     dataToSend = modCommands[data.command].run(data, this, ioGlobal);
-    this.emit('messageCommandReturnStr', dataToSend);
   } else if (TOCommands[data.command] && isTO(this.request.user.username)) {
     dataToSend = TOCommands[data.command].run(data, this, ioGlobal);
-    this.emit('messageCommandReturnStr', dataToSend);
   } else if (userCommands[data.command]) {
     dataToSend = userCommands[data.command].run(data, this, ioGlobal);
-    this.emit('messageCommandReturnStr', dataToSend);
   } else {
     dataToSend = {
       message: 'Invalid command.',
       classStr: 'server-text',
       dateCreated: new Date(),
     };
-
-    this.emit('messageCommandReturnStr', dataToSend);
   }
+
+  this.emit('messageCommandReturnStr', dataToSend);
 }
 
 function interactUserPlayed(data) {
@@ -3062,7 +3062,15 @@ function allChatFromClient(data) {
     senderSocket.emit('allChatToClient', data2);
     return;
   }
-  // no classStr since its a player message
+
+  if (!chatSpamFilter.chatRequest(data.username)) {
+    outputSpamMessage('allChatToClient', data.username);
+    return;
+  }
+
+  const senderSocket =
+    allSockets[getIndexFromUsername(allSockets, data.username, true)];
+  data.badge = senderSocket.request.badge;
 
   sendToAllChat(ioGlobal, data);
 }
@@ -3100,7 +3108,39 @@ function roomChatFromClient(data) {
     return;
   }
 
+  if (!chatSpamFilter.chatRequest(data.username)) {
+    outputSpamMessage('roomChatToClient', data.username);
+    return;
+  }
+
+  // Quotes
+  const possibleQuotes = quote.rawChatToPossibleMessages(data.message);
+
+  if (this.request.user.inRoomId) {
+    const roomId = this.request.user.inRoomId;
+
+    if (possibleQuotes.length > 0) {
+      const validQuotes = possibleQuotes
+        .map((possibleQuote) => quote.augmentIntoQuote(possibleQuote, roomId))
+        .filter((validQuote) => validQuote) as MessageWithDate[];
+
+      if (validQuotes.length > 0) {
+        data.quotes = validQuotes;
+      }
+    } else {
+      quote.addMessage(
+        {
+          username: data.username,
+          message: data.message,
+          date: new Date(),
+        },
+        roomId
+      );
+    }
+  }
+
   data.dateCreated = new Date();
+  data.badge = senderSocket.request.badge;
 
   if (this.request.user.inRoomId) {
     const userRoom = rooms[this.request.user.inRoomId];
@@ -3116,6 +3156,16 @@ function roomChatFromClient(data) {
       senderSocket.emit('roomChatToClient', msg);
     }
   }
+}
+
+function outputSpamMessage(chat, user) {
+  const senderSocket = allSockets[getIndexFromUsername(allSockets, user, true)];
+  const data3 = {
+    message: 'You may not send too many messages in a short timespan.',
+    classStr: 'all-chat-text-red',
+    dateCreated: new Date(),
+  };
+  senderSocket.emit(chat, data3);
 }
 
 function newRoom(dataObj) {
@@ -3367,3 +3417,20 @@ function updateRoomMaxPlayers(number) {
   }
   updateCurrentGamesList();
 }
+
+export const GetLastFiveMinsAllChat = () => {
+  return allChat5Min;
+};
+
+export const GetUserCurrentRoom = (username: string) => {
+  return allSockets[getIndexFromUsername(allSockets, username, true)].request
+    .user.inRoomId;
+};
+
+export const GetRoomChat = (roomId: number) => {
+  return rooms[roomId].chatHistory;
+};
+
+export const GetRoom = (roomId: number) => {
+  return rooms[roomId];
+};

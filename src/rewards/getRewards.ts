@@ -4,6 +4,7 @@ import { Rewards, RewardType } from './indexRewards';
 import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
+import { isDev } from '../modsadmins/developers';
 
 async function getAllRewardsForUser(user: any): Promise<RewardType[]> {
   const rewardsSatisfied: RewardType[] = [];
@@ -44,6 +45,10 @@ async function userHasReward(
   }
 
   if (reward.TOReq && !isTO(user.username)) {
+    return false;
+  }
+
+  if (reward.devReq && !isDev(user.username)) {
     return false;
   }
 

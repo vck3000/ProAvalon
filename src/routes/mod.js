@@ -1,14 +1,21 @@
 import React from 'react';
 import { Router } from 'express';
 import { renderToString } from 'react-dom/server';
+
 import { isModMiddleware } from './middleware';
 import User from '../models/user';
 import Ban from '../models/ban';
 import ModLog from '../models/modLog';
-import multer from 'multer';
-const upload = multer();
+import Report from '../models/report';
+import {
+  GetLastFiveMinsAllChat as GetLastFiveMinsAllChat,
+  GetUserCurrentRoom,
+  GetRoom,
+  GetRoomChat,
+} from '../sockets/sockets';
 
 import ModLogComponent from '../views/components/mod/mod_log';
+import ReportLog from '../views/components/mod/report';
 
 const router = new Router();
 
@@ -31,7 +38,7 @@ const requiredFields = [
   'descriptionByMod',
 ];
 
-router.post('/ban', isModMiddleware, upload.none(), async (req, res) => {
+router.post('/ban', isModMiddleware, async (req, res) => {
   try {
     // Catch errors so that it's not shown to users.
     // Multiple checks:
@@ -191,7 +198,6 @@ router.post('/ban', isModMiddleware, upload.none(), async (req, res) => {
 // 3) Forum removes
 // 4) Comment and reply removes
 // 5) Avatar request approve/rejects
-
 router.get('/ajax/logData/:pageIndex', isModMiddleware, (req, res) => {
   // get all the mod actions
   let pageIndex;
@@ -217,6 +223,148 @@ router.get('/ajax/logData/:pageIndex', isModMiddleware, (req, res) => {
         }
       });
   }
+});
+
+// See report page
+router.get('/report', isModMiddleware, (req, res) => {
+  const reportsReact = renderToString(<ReportLog />);
+
+  res.render('mod/report', { reportsReact });
+});
+
+// Create a new report
+router.post('/report', async (req, res) => {
+  const userWhoReported = req.user;
+  const reportedUser = await User.findOne({
+    usernameLower: req.body.player.toLowerCase(),
+  });
+
+  if (!userWhoReported) {
+    res.status(400);
+    res.send('Something went wrong. Please re-login.');
+    return;
+  }
+
+  if (!reportedUser) {
+    res.status(400);
+    res.send(`${req.body.player} was not found.`);
+    return;
+  }
+
+  // Extract All Chat and Room Chat
+  // Sample chat data
+  // {
+  //   date: 21,
+  //   message: 'asd',
+  //   username: "ProNub <span class='badge' data-toggle='tooltip' data-placement='right' title='Admin' style='transform: scale(0.9) translateY(-9%); background-color: rgb(150, 150, 150)'>A</span>",
+  //   dateCreated: 2022-01-20T05:21:18.814Z (date object)
+  // },
+  const extractChatToStr = (messages) =>
+    messages
+      .map((chat) => {
+        if (chat.username) {
+          return `[${new Date(chat.dateCreated).toISOString()}] ${
+            chat.username.split(' ')[0]
+          }: ${chat.message}`;
+        }
+
+        return `[${new Date(chat.dateCreated).toISOString()}] ${chat.message}`;
+      })
+      .join('\n');
+
+  const allChat5Mins = GetLastFiveMinsAllChat();
+  const allChatMessageString = extractChatToStr(allChat5Mins);
+
+  const roomId = GetUserCurrentRoom(userWhoReported.username);
+  const roomChat = roomId ? GetRoomChat(roomId) : [];
+  const roomChatMessageString = extractChatToStr(roomChat);
+
+  // Collect Role information
+  const roles = roomId
+    ? GetRoom(roomId)
+        .playersInGame.map(
+          (user) => `${user.username}: ${user.role.toUpperCase()}`
+        )
+        .join('\n')
+    : '';
+
+  // Collect Vote History
+  const voteHistory = roomId ? JSON.stringify(GetRoom(roomId).voteHistory) : '';
+
+  Report.create({
+    reason: req.body.reason,
+    reportedPlayer: {
+      username: reportedUser.username.toLowerCase(),
+      id: reportedUser._id,
+    },
+    playerWhoReported: {
+      id: userWhoReported._id,
+      username: userWhoReported.username.toLowerCase(),
+    },
+    description: req.body.desc,
+    date: new Date(),
+    allChat5Mins: allChatMessageString,
+    roomChat: roomChatMessageString,
+    roles,
+    voteHistory,
+  });
+
+  res.status(200);
+  res.send('Report created succesfully. A mod will review it shortly.');
+});
+
+// API Endpoints
+router.get('/report/unresolved', isModMiddleware, async (req, res) => {
+  // TODO Check this
+  const reports = await Report.find({ resolved: false }).sort({ date: -1 });
+
+  res.send(reports);
+});
+
+router.get('/report/resolved/:pageIndex', isModMiddleware, async (req, res) => {
+  if (!req.params.pageIndex) {
+    res.status(400);
+    res.send('Missing pageIndex.');
+    return;
+  }
+
+  const pageIndex = req.params.pageIndex;
+
+  const NUM_OF_RESULTS_PER_PAGE = 10;
+  const skipNumber = pageIndex * NUM_OF_RESULTS_PER_PAGE;
+
+  const reports = await Report.find({ resolved: true })
+    .sort({ date: -1 })
+    .skip(skipNumber)
+    .limit(NUM_OF_RESULTS_PER_PAGE);
+
+  res.send(reports);
+});
+
+// Resolve a report
+router.post('/report/resolve', isModMiddleware, async (req, res) => {
+  const modUser = req.user;
+  const id = req.body.id;
+
+  Report.findByIdAndUpdate(
+    id,
+    {
+      modWhoResolved: {
+        id: modUser.id,
+        username: modUser.usernameLower,
+      },
+      modComment: req.body.modComment,
+      resolved: true,
+    },
+    (err) => {
+      if (err) {
+        res.status(400);
+        res.send(err);
+      } else {
+        res.send('Success!');
+      }
+    }
+  );
 });
 
 export default router;
