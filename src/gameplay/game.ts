@@ -1325,6 +1325,10 @@ Game.prototype.finishGame = function (toBeWinner) {
     botUsernames = [];
   }
 
+  if (this.playersInGame.length === 9 && this.rebal9p) {
+    this.gameMode = 'avalonCustom';
+  }
+
   const objectToStore = {
     timeGameStarted: this.startGameTime,
     timeAssassinationStarted: this.startAssassinationTime,
