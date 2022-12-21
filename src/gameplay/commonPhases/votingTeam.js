@@ -10,11 +10,11 @@ function VotingTeam(thisRoom_) {
 VotingTeam.prototype.gameMove = function (
   socket,
   buttonPressed,
-  selectedPlayers
+  selectedPlayers,
 ) {
   // Get the index of the user who is trying to vote
   const i = this.thisRoom.playersYetToVote.indexOf(
-    socket.request.user.username
+    socket.request.user.username,
   );
 
   // Check the data is valid (if it is not a "yes" or a "no")
@@ -28,19 +28,19 @@ VotingTeam.prototype.gameMove = function (
       this.thisRoom.votes[
         usernamesIndexes.getIndexFromUsername(
           this.thisRoom.playersInGame,
-          socket.request.user.username
+          socket.request.user.username,
         )
       ] = 'approve';
     } else if (buttonPressed === 'no') {
       this.thisRoom.votes[
         usernamesIndexes.getIndexFromUsername(
           this.thisRoom.playersInGame,
-          socket.request.user.username
+          socket.request.user.username,
         )
       ] = 'reject';
     } else {
       console.log(
-        'ERROR! this.thisRoom should definitely not happen. Game.js votingTeam.'
+        'ERROR! this.thisRoom should definitely not happen. Game.js votingTeam.',
       );
     }
 
@@ -62,7 +62,7 @@ VotingTeam.prototype.gameMove = function (
           this.thisRoom.pickNum
         } was approved.${getStrApprovedRejectedPlayers(
           this.thisRoom.votes,
-          this.thisRoom.playersInGame
+          this.thisRoom.playersInGame,
         )}`;
         this.thisRoom.sendText(this.thisRoom.allSockets, str, 'gameplay-text');
       }
@@ -76,7 +76,7 @@ VotingTeam.prototype.gameMove = function (
         this.thisRoom.sendText(
           this.thisRoom.allSockets,
           'The hammer was rejected.',
-          'gameplay-text-red'
+          'gameplay-text-red',
         );
 
         this.thisRoom.finishGame('Spy');
@@ -88,7 +88,7 @@ VotingTeam.prototype.gameMove = function (
           this.thisRoom.pickNum
         } was rejected.${getStrApprovedRejectedPlayers(
           this.thisRoom.votes,
-          this.thisRoom.playersInGame
+          this.thisRoom.playersInGame,
         )}`;
         this.thisRoom.sendText(this.thisRoom.allSockets, str, 'gameplay-text');
 
@@ -115,7 +115,7 @@ VotingTeam.prototype.buttonSettings = function (indexOfPlayer) {
   // If user has voted already
   if (
     this.thisRoom.playersYetToVote.indexOf(
-      this.thisRoom.playersInGame[indexOfPlayer].username
+      this.thisRoom.playersInGame[indexOfPlayer].username,
     ) === -1
   ) {
     obj.green.hidden = true;
@@ -162,7 +162,7 @@ VotingTeam.prototype.getStatusMessage = function (indexOfPlayer) {
   if (
     indexOfPlayer !== undefined &&
     this.thisRoom.playersYetToVote.indexOf(
-      this.thisRoom.playersInGame[indexOfPlayer].username
+      this.thisRoom.playersInGame[indexOfPlayer].username,
     ) === -1
   ) {
     var str = '';

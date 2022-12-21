@@ -23,7 +23,12 @@ import { GAME_MODE_NAMES } from '../gameplay/gameModeNames';
 
 import { ChatSpamFilter } from './chatSpamFilter';
 import { MessageWithDate, Quote } from './quote';
-import { APIBotSocket, enabledBots, makeBotAPIRequest, SimpleBotSocket } from './bot';
+import {
+  APIBotSocket,
+  enabledBots,
+  makeBotAPIRequest,
+  SimpleBotSocket,
+} from './bot';
 
 import { adminCommands } from './commands/admin';
 import { modCommands as modCommandsImported } from './commands/mod';
@@ -94,7 +99,7 @@ function saveGameToDb(roomToSave) {
             rooms[rooms.indexOf(roomToSave)].savedGameRecordId = savedGame.id;
             // console.log("Successfully created this save game");
           }
-        }
+        },
       );
     } else {
       savedGameObj.findByIdAndUpdate(
@@ -102,7 +107,7 @@ function saveGameToDb(roomToSave) {
         { room: JSON.stringify(deepCopyRoom) },
         (err, savedGame) => {
           // console.log("Successfully saved this game");
-        }
+        },
       );
     }
   }
@@ -165,7 +170,6 @@ export let modCommands = {
     command: 'mwhisper',
     help: '/mwhisper <player name> <text to send>: Sends a whisper to a player.',
     async run(args, senderSocket) {
-
       if (args.length === 1) {
         senderSocket.emit('messageCommandReturnStr', {
           message: 'Missing username to message.',
@@ -261,7 +265,6 @@ export let modCommands = {
     command: 'mremoveavatar',
     help: "/mremoveavatar <player name>: Remove <player name>'s avatar.",
     async run(args, senderSocket) {
-
       if (!args[1]) {
         senderSocket.emit('messageCommandReturnStr', {
           message: 'Specify a username.',
@@ -298,7 +301,6 @@ export let modCommands = {
     command: 'maddbots',
     help: '/maddbots <number>: Add <number> bots to the room.',
     run(args, senderSocket, roomIdInput) {
-
       if (!args[1]) {
         senderSocket.emit('messageCommandReturnStr', {
           message: 'Specify a number.',
@@ -319,12 +321,12 @@ export let modCommands = {
 
         for (let i = 0; i < args[1]; i++) {
           const botName = `${'SimpleBot' + '#'}${Math.floor(
-            Math.random() * 100
+            Math.random() * 100,
           )}`;
 
           // Avoid a username clash!
           const currentUsernames = rooms[roomId].socketsOfPlayers.map(
-            (sock) => sock.request.user.username
+            (sock) => sock.request.user.username,
           );
           if (currentUsernames.includes(botName)) {
             i--;
@@ -385,7 +387,7 @@ export let modCommands = {
         dataObj.gameMode,
         dataObj.muteSpectators,
         false,
-        socketCallback
+        socketCallback,
       );
       const privateStr = dataObj.newRoomPassword === '' ? '' : 'private ';
       // broadcast to all chat
@@ -418,7 +420,6 @@ export let modCommands = {
     command: 'mclose',
     help: '/mclose <roomId> [<roomId> <roomId> ...]: Close room <roomId>. Also removes the corresponding save files in the database. Can take multiple room IDs.',
     run(args, senderSocket) {
-
       if (!args[1]) {
         senderSocket.emit('messageCommandReturnStr', {
           message: 'Specify a number.',
@@ -493,7 +494,6 @@ export let modCommands = {
     command: 'mforcemove',
     help: "/mforcemove <username> [button] [target]: Forces a player to make a move. To see what moves are available, enter the target's username. To force the move, input button and/or target.",
     run(args, senderSocket) {
-
       senderSocket.emit('messageCommandReturnStr', {
         message: `You have entered: ${args.join(' ')}`,
         classStr: 'server-text',
@@ -532,7 +532,7 @@ export let modCommands = {
       const playerIndex = getIndexFromUsername(
         thisRoom.playersInGame,
         username,
-        true
+        true,
       );
 
       if (playerIndex === undefined) {
@@ -568,7 +568,7 @@ export let modCommands = {
         let availablePlayers = thisRoom.playersInGame
           .filter(
             (player, playerIndex) =>
-              prohibitedIndexesToPick.indexOf(playerIndex) === -1
+              prohibitedIndexesToPick.indexOf(playerIndex) === -1,
           )
           .map((player) => player.request.user.username);
 
@@ -618,7 +618,7 @@ export let modCommands = {
           const playerIndexFound = getIndexFromUsername(
             thisRoom.playersInGame,
             targets[i],
-            true
+            true,
           );
           const playerSimulatedSocket =
             thisRoom.playersInGame[playerIndexFound];
@@ -630,7 +630,7 @@ export let modCommands = {
             return;
           }
           targetsCaps.push(
-            thisRoom.playersInGame[playerIndexFound].request.user.username
+            thisRoom.playersInGame[playerIndexFound].request.user.username,
           );
         }
 
@@ -639,12 +639,12 @@ export let modCommands = {
         thisRoom.sendText(
           thisRoom.allSockets,
           `${rolePrefix} ${senderSocket.request.user.username} has forced a move: `,
-          'server-text'
+          'server-text',
         );
         thisRoom.sendText(
           thisRoom.allSockets,
           `Player: ${username} | Button: ${button} | Targets: ${targetsCaps}.`,
-          'server-text'
+          'server-text',
         );
 
         const targetSimulatedSocket = thisRoom.playersInGame[playerIndex];
@@ -660,7 +660,6 @@ export let modCommands = {
     command: 'mrevealrole',
     help: '/mrevealrole <username>: Reveal the role of a player. You must be present in the room for this to work.',
     run(args, senderSocket) {
-
       if (!args[1]) {
         senderSocket.emit('messageCommandReturnStr', {
           message: 'Specify a username.',
@@ -691,7 +690,7 @@ export let modCommands = {
         rooms[roomId].sendText(
           rooms[roomId].allSockets,
           `${rolePrefix} ${senderSocket.request.user.username} has learned the role of ${user.username}.`,
-          'server-text'
+          'server-text',
         );
 
         return {
@@ -725,7 +724,7 @@ export let modCommands = {
         rooms[roomId].sendText(
           rooms[roomId].allSockets,
           `${rolePrefix} ${senderSocket.request.user.username} has learned all roles.`,
-          'server-text'
+          'server-text',
         );
 
         // reveal role for each user
@@ -888,7 +887,7 @@ export let modCommands = {
   },
 };
 
-modCommands = {...modCommands, ...modCommandsImported};
+modCommands = { ...modCommands, ...modCommandsImported };
 
 export const TOCommands = {
   t: {
@@ -1166,7 +1165,7 @@ export const userCommands = {
           rooms[resquestorSocket.request.user.inRoomId].sendText(
             rooms[resquestorSocket.request.user.inRoomId].allSockets,
             str,
-            'server-text'
+            'server-text',
           );
         }
 
@@ -1243,7 +1242,7 @@ export const userCommands = {
     help: '/mods: Shows a list of online moderators.',
     run() {
       const modUsers = getPlayerUsernamesFromAllSockets().filter((username) =>
-        isMod(username)
+        isMod(username),
       );
       const message = `Currently online mods: ${
         modUsers.length > 0 ? modUsers.join(', ') : 'None'
@@ -1264,7 +1263,7 @@ export const userCommands = {
         if (remaining < PMMOD_TIMEOUT)
           return {
             message: `Please wait ${Math.ceil(
-              (PMMOD_TIMEOUT - remaining) / 1000
+              (PMMOD_TIMEOUT - remaining) / 1000,
             )} seconds before sending another pm!`,
             classStr: 'server-text',
           };
@@ -1368,7 +1367,7 @@ export const userCommands = {
                 }
                 if (
                   userCallingMute.mutedPlayers.indexOf(
-                    foundUserToMute.username
+                    foundUserToMute.username,
                   ) === -1
                 ) {
                   userCallingMute.mutedPlayers.push(foundUserToMute.username);
@@ -1376,7 +1375,7 @@ export const userCommands = {
                   userCallingMute.save();
                   senderSocket.emit(
                     'updateMutedPlayers',
-                    userCallingMute.mutedPlayers
+                    userCallingMute.mutedPlayers,
                   );
                   senderSocket.emit('messageCommandReturnStr', {
                     message: `Muted ${args[1]} successfully.`,
@@ -1435,7 +1434,7 @@ export const userCommands = {
                 });
               }
             }
-          }
+          },
         );
       } else {
         senderSocket.emit('messageCommandReturnStr', {
@@ -1492,7 +1491,7 @@ export const userCommands = {
 
             senderSocket.emit('messageCommandReturnStr', dataToReturn);
           }
-        }
+        },
       );
     },
   },
@@ -1567,7 +1566,7 @@ export const userCommands = {
             allSockets,
             lastWhisperObj[senderSocket.request.user.username.toLowerCase()]
               .username,
-            true
+            true,
           )
         ];
       if (sendToSocket === undefined || sendToSocket === null) {
@@ -1671,7 +1670,7 @@ export const userCommands = {
               info: response.data,
             };
           })
-          .catch((response) => null)
+          .catch((response) => null),
       );
 
       axios.all(botInfoRequests).then((botInfoResponses) => {
@@ -1679,7 +1678,7 @@ export const userCommands = {
           .filter((result) => result != null)
           .map(
             (result) =>
-              `${result.name} - ${JSON.stringify(result.info.capabilities)}`
+              `${result.name} - ${JSON.stringify(result.info.capabilities)}`,
           );
 
         // Hard code this in... (unshift pushes to the start of the array)
@@ -1692,14 +1691,14 @@ export const userCommands = {
           });
         } else {
           const messages = ['The following bots are online:'].concat(
-            botDescriptions
+            botDescriptions,
           );
           senderSocket.emit(
             'messageCommandReturnStr',
             messages.map((message) => ({
               message,
               classStr: 'server-text',
-            }))
+            })),
           );
         }
       });
@@ -1760,7 +1759,7 @@ export const userCommands = {
       }
       const botName = args[1];
       const botAPI = enabledBots.find(
-        (bot) => bot.name.toLowerCase() === botName.toLowerCase()
+        (bot) => bot.name.toLowerCase() === botName.toLowerCase(),
       );
       if (!botAPI && botName !== 'SimpleBot') {
         return {
@@ -1787,7 +1786,7 @@ export const userCommands = {
 
         // Avoid a username clash!
         const currentUsernames = currentRoom.socketsOfPlayers.map(
-          (sock) => sock.request.user.username
+          (sock) => sock.request.user.username,
         );
         if (currentUsernames.includes(botName)) {
           i--;
@@ -1878,10 +1877,10 @@ export const userCommands = {
         botName === 'all'
           ? botSockets
           : botSockets.filter(
-            (socket) =>
-              socket.request.user.username.toLowerCase() ===
-                botName.toLowerCase()
-          );
+              (socket) =>
+                socket.request.user.username.toLowerCase() ===
+                botName.toLowerCase(),
+            );
       if (botsToRemove.length === 0) {
         return {
           message: "Couldn't find any bots with that name to remove.",
@@ -1898,13 +1897,13 @@ export const userCommands = {
         ) {
           currentRoom.botSockets.splice(
             currentRoom.botSockets.indexOf(botSocket),
-            1
+            1,
           );
         }
       });
 
       const removedBots = botsToRemove.map(
-        (botSocket) => botSocket.request.user.username
+        (botSocket) => botSocket.request.user.username,
       );
       sendToRoomChat(ioGlobal, currentRoomId, {
         message: `${
@@ -1949,7 +1948,7 @@ export const server = function (io: SocketServer): void {
     // slight delay while client loads
     setTimeout(() => {
       console.log(
-        `${socket.request.user.username} has connected under socket ID: ${socket.id}`
+        `${socket.request.user.username} has connected under socket ID: ${socket.id}`,
       );
 
       // send the user its ID to store on their side.
@@ -2051,7 +2050,7 @@ export const server = function (io: SocketServer): void {
           if (foundUser.mutedPlayers) {
             socket.emit('updateMutedPlayers', foundUser.mutedPlayers);
           }
-        }
+        },
       );
 
       // automatically join the all chat
@@ -2270,7 +2269,7 @@ const updateCurrentPlayersList = function () {
       ? allSockets[i].request.displayUsername
       : allSockets[i].request.user.username;
     playerList[i].playerRating = Math.floor(
-      allSockets[i].request.user.playerRating
+      allSockets[i].request.user.playerRating,
     );
     playerList[i].ratingBracket = allSockets[i].request.user.ratingBracket;
     playerList[i].ratingBadge = allSockets[i].request.ratingBadge;
@@ -2281,8 +2280,8 @@ const updateCurrentPlayersList = function () {
     return a.playerRating < b.playerRating
       ? 1
       : a.playerRating > b.playerRating
-        ? -1
-        : 0;
+      ? -1
+      : 0;
   });
 
   allSockets.forEach((sock) => {
@@ -2440,13 +2439,13 @@ function playerLeaveRoomCheckDestroy(socket) {
         console.log(
           `Been more than ${
             timeToKill / 1000
-          } seconds, removing this frozen game.`
+          } seconds, removing this frozen game.`,
         );
       } else {
         console.log(
           `Frozen game has only loaded for ${
             (curr.getTime() - rooms[roomId].timeFrozenLoaded.getTime()) / 1000
-          } seconds, Dont remove yet.`
+          } seconds, Dont remove yet.`,
         );
       }
     }
@@ -2654,7 +2653,7 @@ function allChatFromClient(data) {
 function roomChatFromClient(data) {
   if (this.request.user.inRoomId) {
     console.log(
-      `[Room Chat] [Room ${this.request.user.inRoomId}] ${this.request.user.username}: ${data.message}`
+      `[Room Chat] [Room ${this.request.user.inRoomId}] ${this.request.user.username}: ${data.message}`,
     );
   }
   // get the username and put it into the data object
@@ -2710,7 +2709,7 @@ function roomChatFromClient(data) {
           message: data.message,
           date: new Date(),
         },
-        roomId
+        roomId,
       );
     }
   }
@@ -2763,7 +2762,7 @@ function newRoom(dataObj) {
       dataObj.gameMode,
       dataObj.muteSpectators,
       rankedRoom,
-      socketCallback
+      socketCallback,
     );
     const privateStr = !privateRoom ? '' : 'private ';
     const rankedUnrankedStr = rankedRoom ? 'ranked' : 'unranked';
@@ -2827,7 +2826,7 @@ function joinGame(roomId) {
     if (rooms[roomId].getStatus() === 'Waiting') {
       const ToF = rooms[roomId].playerSitDown(this);
       console.log(
-        `${this.request.user.username} has joined room ${roomId}: ${ToF}`
+        `${this.request.user.username} has joined room ${roomId}: ${ToF}`,
       );
     } else {
       // console.log("Game has started, player " + this.request.user.username + " is not allowed to join.");
@@ -2857,7 +2856,7 @@ function leaveRoom() {
 
   if (rooms[this.request.user.inRoomId]) {
     console.log(
-      `${this.request.user.username} is leaving room: ${this.request.user.inRoomId}`
+      `${this.request.user.username} is leaving room: ${this.request.user.inRoomId}`,
     );
     // broadcast to let others know
 
@@ -2911,7 +2910,7 @@ function startGame(data, gameMode) {
   if (gameMode === null || gameMode === undefined) {
     this.emit(
       'danger-alert',
-      'Something went wrong. Cannot detect game mode specified.'
+      'Something went wrong. Cannot detect game mode specified.',
     );
     return;
   }
@@ -2927,7 +2926,7 @@ function startGame(data, gameMode) {
       // console.log("Room doesn't exist or user is not host, cannot start game");
       this.emit(
         'danger-alert',
-        'You are not the host. You cannot start the game.'
+        'You are not the host. You cannot start the game.',
       );
       return;
     }

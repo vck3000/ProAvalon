@@ -7,7 +7,7 @@ const statsCumulativeSchema = new mongoose.Schema({
 // compile schema into a model
 const statsCumulative = mongoose.model(
   'statsCumulative',
-  statsCumulativeSchema
+  statsCumulativeSchema,
 );
 
 export default statsCumulative;

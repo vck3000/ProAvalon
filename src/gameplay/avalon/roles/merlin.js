@@ -12,7 +12,7 @@ class Merlin {
       // The following lines running successfully shows that each role file can access
       // the variables and functions from the game room!
       console.log(
-        `HII from merlin. The number of sockets is: ${this.thisRoom.allSockets.length}`
+        `HII from merlin. The number of sockets is: ${this.thisRoom.allSockets.length}`,
       );
     };
   }

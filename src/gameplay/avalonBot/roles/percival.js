@@ -12,7 +12,7 @@ class Percival {
       // The following lines running successfully shows that each role file can access
       // the variables and functions from the game room!
       console.log(
-        'HII from Percival. I will send messages to players through socket.emit()'
+        'HII from Percival. I will send messages to players through socket.emit()',
       );
       const data = {
         message: 'LOLOL FROM PERCY',

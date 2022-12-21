@@ -16,7 +16,7 @@ let IPLinkedAccounts = async (username, num_levels) => {
   // Only need to return usernameLower and IPAddresses from the query
   const user = await User.findOne(
     { usernameLower: username.toLowerCase() },
-    'usernameLower IPAddresses'
+    'usernameLower IPAddresses',
   );
 
   if (user) {
@@ -57,7 +57,7 @@ let IPLinkedAccounts = async (username, num_levels) => {
 
       const linkedUsers = await User.find(
         { IPAddresses: nextIP },
-        'usernameLower IPAddresses'
+        'usernameLower IPAddresses',
       );
       visitedIPs.push(nextIP);
       for (const u of linkedUsers) {
@@ -74,7 +74,7 @@ let IPLinkedAccounts = async (username, num_levels) => {
             u.IPAddresses.filter((x) => !visitedIPs.includes(x)) // Skip IP's that we have visited already.
               .map((x) => {
                 return { ip: x, parent: thisNode[u.usernameLower] };
-              })
+              }),
           );
         }
       }

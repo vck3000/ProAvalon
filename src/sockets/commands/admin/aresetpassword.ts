@@ -7,7 +7,6 @@ export const aresetpassword: Command = {
   command: 'aresetpassword',
   help: "/aresetpassword <username> <new_password>: set a user's password",
   run: async (args: string[], socket: SocketUser) => {
-
     if (args.length !== 3) {
       sendReplyToCommand(socket, 'Wrong number of inputs.');
       return;

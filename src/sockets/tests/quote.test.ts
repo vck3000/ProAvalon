@@ -31,9 +31,11 @@ describe('Quote', () => {
     const messageWithoutDate: Message = {
       message: 'Hello!',
       username: 'cin333',
-    }
+    };
 
-    expect(quote.augmentIntoQuote(messageWithoutDate, 'allchat')).toEqual(message);
+    expect(quote.augmentIntoQuote(messageWithoutDate, 'allchat')).toEqual(
+      message,
+    );
   });
 
   it('should say a message is not a quote for a previously seen message in a different room.', () => {
@@ -62,13 +64,17 @@ describe('Quote', () => {
     const messageWithoutDate: Message = {
       message: 'Hello!',
       username: 'cin333',
-    }
+    };
 
     quote.addMessage(message, 'allchat');
-    expect(quote.augmentIntoQuote(messageWithoutDate, 'allchat')).toEqual(message);
+    expect(quote.augmentIntoQuote(messageWithoutDate, 'allchat')).toEqual(
+      message,
+    );
 
     quote.deleteRoomMessages('allchat');
-    expect(quote.augmentIntoQuote(messageWithoutDate, 'allchat')).toEqual(false);
+    expect(quote.augmentIntoQuote(messageWithoutDate, 'allchat')).toEqual(
+      false,
+    );
   });
 
   it('should deconstruct multiple messages into separate messages', () => {
@@ -103,7 +109,7 @@ describe('Quote', () => {
     // Assert
     expect(output).toEqual(expectedMessages);
   });
-  
+
   it('should not deconstruct anything on invalid strings', () => {
     const quote = new Quote();
 
@@ -112,9 +118,9 @@ describe('Quote', () => {
       'rio: asdf',
       'asdf [14:11] rio: After 3.1 imo',
       '[111:11] rio: After 3.1 imo',
-    ]
+    ];
 
-    for(const input of inputs) {
+    for (const input of inputs) {
       expect(quote.rawChatToPossibleMessages(input)).toEqual([]);
     }
   });

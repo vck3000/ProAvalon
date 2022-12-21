@@ -11,7 +11,7 @@ function GameWrapper(
   muteSpectators_,
   gameMode_,
   ranked_,
-  callback_
+  callback_,
 ) {
   // Get all the game properties
   Game.call(
@@ -24,7 +24,7 @@ function GameWrapper(
     muteSpectators_,
     gameMode_,
     ranked_,
-    callback_
+    callback_,
   );
 }
 
@@ -99,7 +99,7 @@ GameWrapper.prototype.finishGame = function (toBeWinner) {
     } else {
       // Something went wrong...
       throw new ReferenceError(
-        `${this.winner} was not recognised as a winner.`
+        `${this.winner} was not recognised as a winner.`,
       );
     }
 
@@ -151,7 +151,7 @@ GameWrapper.prototype.finishGame = function (toBeWinner) {
                   `${username} has been demoted to ${
                     newRank.charAt(0).toUpperCase() + newRank.slice(1)
                   }.`,
-                  'all-chat-text-red'
+                  'all-chat-text-red',
                 );
               } else {
                 this.sendText(
@@ -159,7 +159,7 @@ GameWrapper.prototype.finishGame = function (toBeWinner) {
                   `${username} has been promoted to ${
                     newRank.charAt(0).toUpperCase() + newRank.slice(1)
                   }!`,
-                  'all-chat-text-blue'
+                  'all-chat-text-blue',
                 );
               }
               break;

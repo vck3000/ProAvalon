@@ -17,7 +17,7 @@ export const asyncMiddleware =
       console.log(err);
       req.flash(
         'error',
-        'Something has gone wrong! Please contact a moderator or admin.'
+        'Something has gone wrong! Please contact a moderator or admin.',
       );
       res.redirect('back');
     });
@@ -156,7 +156,7 @@ const checkOwnership = (name, model, query, isOwner) => [
       next();
     } else {
       console.log(
-        `${req.user._id} ${req.user.username} has attempted to do something bad`
+        `${req.user._id} ${req.user.username} has attempted to do something bad`,
       );
       req.flash('error', 'You are not the owner!');
       res.redirect('back');
@@ -170,7 +170,7 @@ export const checkProfileOwnership = checkOwnership(
   (req) => ({
     username: req.params.profileUsername.replace(' ', ''),
   }),
-  (req, user) => user.username && user.username === req.user.username
+  (req, user) => user.username && user.username === req.user.username,
 );
 
 export const checkForumThreadOwnership = checkOwnership(
@@ -179,7 +179,7 @@ export const checkForumThreadOwnership = checkOwnership(
   (req) => ({
     _id: req.params.id,
   }),
-  (req, thread) => thread.author.id && thread.author.id.equals(req.user._id)
+  (req, thread) => thread.author.id && thread.author.id.equals(req.user._id),
 );
 
 export const checkForumThreadCommentOwnership = checkOwnership(
@@ -188,7 +188,7 @@ export const checkForumThreadCommentOwnership = checkOwnership(
   (req) => ({
     _id: req.params.comment_id,
   }),
-  (req, comment) => comment.author.id && comment.author.id.equals(req.user._id)
+  (req, comment) => comment.author.id && comment.author.id.equals(req.user._id),
 );
 
 export const checkForumThreadCommentReplyOwnership = checkOwnership(
@@ -197,7 +197,7 @@ export const checkForumThreadCommentReplyOwnership = checkOwnership(
   (req) => ({
     _id: req.params.reply_id,
   }),
-  (req, reply) => reply.author.id && reply.author.id.equals(req.user._id)
+  (req, reply) => reply.author.id && reply.author.id.equals(req.user._id),
 );
 
 export const isModMiddleware = (req, res, next) => {

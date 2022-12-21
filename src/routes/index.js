@@ -86,13 +86,13 @@ router.post(
     if (req.body.username.indexOf(' ') !== -1) {
       req.flash(
         'error',
-        'Sign up failed. Please do not use spaces in your username.'
+        'Sign up failed. Please do not use spaces in your username.',
       );
       res.redirect('register');
     } else if (req.body.username.length > 25) {
       req.flash(
         'error',
-        'Sign up failed. Please do not use more than 25 characters in your username.'
+        'Sign up failed. Please do not use more than 25 characters in your username.',
       );
       res.redirect('register');
     } else if (usernameContainsBadCharacter(req.body.username) === true) {
@@ -112,7 +112,7 @@ router.post(
           console.log(`ERROR: ${err}`);
           req.flash(
             'error',
-            'Sign up failed. Most likely that username is taken.'
+            'Sign up failed. Most likely that username is taken.',
           );
           res.redirect('register');
         } else {
@@ -129,7 +129,7 @@ router.post(
         }
       });
     }
-  }
+  },
 );
 
 const loginLimiter =
@@ -152,7 +152,7 @@ router.post(
   passport.authenticate('local', {
     successRedirect: '/loginSuccess',
     failureRedirect: '/loginFail',
-  })
+  }),
 );
 
 router.get('/loginSuccess', async (req, res) => {
@@ -205,7 +205,7 @@ router.get('/emailVerification/verifyEmailRequest', async (req, res) => {
   } else {
     req.flash(
       'error',
-      "The link provided for email verification is invalid or expired. Please log in and press the 'Resend verification email' button."
+      "The link provided for email verification is invalid or expired. Please log in and press the 'Resend verification email' button.",
     );
     res.redirect('/');
   }
@@ -298,7 +298,7 @@ const anonymizeMapKeys = function (map, idmap) {
       Object.defineProperty(
         anonMap,
         idmap[key],
-        Object.getOwnPropertyDescriptor(anonMap, key)
+        Object.getOwnPropertyDescriptor(anonMap, key),
       );
       delete anonMap[key];
     }
@@ -322,35 +322,35 @@ const anonymizeStats = function (records) {
     anonymizedRecord.spyTeam = anonymizeArray(record.spyTeam, usernamesMap);
     anonymizedRecord.resistanceTeam = anonymizeArray(
       record.resistanceTeam,
-      usernamesMap
+      usernamesMap,
     );
     anonymizedRecord.playerUsernamesOrdered = anonymizeArray(
       record.playerUsernamesOrdered,
-      usernamesMap
+      usernamesMap,
     );
     anonymizedRecord.playerUsernamesOrderedReversed = anonymizeArray(
       record.playerUsernamesOrderedReversed,
-      usernamesMap
+      usernamesMap,
     );
     anonymizedRecord.ladyHistoryUsernames = anonymizeArray(
       record.ladyHistoryUsernames,
-      usernamesMap
+      usernamesMap,
     );
     anonymizedRecord.refHistoryUsernames = anonymizeArray(
       record.refHistoryUsernames,
-      usernamesMap
+      usernamesMap,
     );
     anonymizedRecord.sireHistoryUsernames = anonymizeArray(
       record.sireHistoryUsernames,
-      usernamesMap
+      usernamesMap,
     );
     anonymizedRecord.voteHistory = anonymizeMapKeys(
       record.voteHistory,
-      usernamesMap
+      usernamesMap,
     );
     anonymizedRecord.playerRoles = anonymizeMapKeys(
       record.playerRoles,
-      usernamesMap
+      usernamesMap,
     );
     anonymizedRecords.push(anonymizedRecord);
   }
@@ -385,7 +385,7 @@ const processRecords = async function (records) {
   // Create a file stream to write out the data synchronously
   let anonStream = fs.createWriteStream(
     'assets/gameRecordsData/gameRecordsDataAnon_orig.json',
-    { flags: 'a' }
+    { flags: 'a' },
   );
 
   let numBotGames = 0;
@@ -469,7 +469,7 @@ const processRecords = async function (records) {
     records = records.filter(
       (r) =>
         r.gameMode === undefined ||
-        r.gameMode.toLowerCase().includes('bot') == false
+        r.gameMode.toLowerCase().includes('bot') == false,
     );
 
     // Keep track of number of bot games
@@ -490,7 +490,7 @@ const processRecords = async function (records) {
       const dayFinished = new Date(
         timeFinish.getFullYear(),
         timeFinish.getMonth(),
-        timeFinish.getDate()
+        timeFinish.getDate(),
       );
 
       // Count the number of games played on the same day
@@ -508,10 +508,10 @@ const processRecords = async function (records) {
     for (let i = 0; i < records.length; i++) {
       var duration = new Date(
         records[i].timeGameFinished.getTime() -
-          records[i].timeGameStarted.getTime()
+          records[i].timeGameStarted.getTime(),
       );
       averageGameDuration = new Date(
-        averageGameDuration.getTime() + duration.getTime()
+        averageGameDuration.getTime() + duration.getTime(),
       );
     }
 
@@ -549,10 +549,10 @@ const processRecords = async function (records) {
       if (records[i].timeAssassinationStarted) {
         var duration = new Date(
           records[i].timeGameFinished.getTime() -
-            records[i].timeAssassinationStarted.getTime()
+            records[i].timeAssassinationStarted.getTime(),
         );
         averageAssassinationDuration = new Date(
-          averageAssassinationDuration.getTime() + duration.getTime()
+          averageAssassinationDuration.getTime() + duration.getTime(),
         );
         count++;
       }
@@ -574,7 +574,7 @@ const processRecords = async function (records) {
         gameSizeWins[records[i].numberOfPlayers].res++;
       } else {
         console.log(
-          `error, winning team not recognised: ${records[i].winningTeam}`
+          `error, winning team not recognised: ${records[i].winningTeam}`,
         );
       }
     }
@@ -614,7 +614,7 @@ const processRecords = async function (records) {
           }
         } else {
           console.log(
-            `ERROR no alliance assigned to role: ${records[i].ladyChain[0]}`
+            `ERROR no alliance assigned to role: ${records[i].ladyChain[0]}`,
           );
         }
       }
@@ -626,18 +626,18 @@ const processRecords = async function (records) {
     for (let i = 0; i < records.length; i++) {
       const duration = new Date(
         records[i].timeGameFinished.getTime() -
-          records[i].timeGameStarted.getTime()
+          records[i].timeGameStarted.getTime(),
       );
       averageGameDurations[records[i].numberOfPlayers] = new Date(
         averageGameDurations[records[i].numberOfPlayers].getTime() +
-          duration.getTime()
+          duration.getTime(),
       );
       countForGameSize[records[i].numberOfPlayers]++;
     }
 
     console.log(
       Math.round((loopNum / (numOfRecords / recordsPerLoop)) * 10000) / 100 +
-        '% percent processed.'
+        '% percent processed.',
     );
   }
 
@@ -678,7 +678,7 @@ const processRecords = async function (records) {
   // Getting the average duration of each game
   //* *********************************************
   obj.averageGameDuration = new Date(
-    averageGameDuration.getTime() / obj.totalgamesplayed
+    averageGameDuration.getTime() / obj.totalgamesplayed,
   );
 
   //* *********************************************
@@ -696,7 +696,7 @@ const processRecords = async function (records) {
   // Getting the average duration of each assassination
   //* *********************************************
   obj.averageAssassinationDuration = new Date(
-    averageAssassinationDuration.getTime() / count
+    averageAssassinationDuration.getTime() / count,
   );
 
   //* *********************************************
@@ -718,22 +718,22 @@ const processRecords = async function (records) {
   // Getting the average duration of each game
   //* *********************************************
   obj['5paverageGameDuration'] = new Date(
-    averageGameDurations[5].getTime() / countForGameSize['5']
+    averageGameDurations[5].getTime() / countForGameSize['5'],
   );
   obj['6paverageGameDuration'] = new Date(
-    averageGameDurations[6].getTime() / countForGameSize['6']
+    averageGameDurations[6].getTime() / countForGameSize['6'],
   );
   obj['7paverageGameDuration'] = new Date(
-    averageGameDurations[7].getTime() / countForGameSize['7']
+    averageGameDurations[7].getTime() / countForGameSize['7'],
   );
   obj['8paverageGameDuration'] = new Date(
-    averageGameDurations[8].getTime() / countForGameSize['8']
+    averageGameDurations[8].getTime() / countForGameSize['8'],
   );
   obj['9paverageGameDuration'] = new Date(
-    averageGameDurations[9].getTime() / countForGameSize['9']
+    averageGameDurations[9].getTime() / countForGameSize['9'],
   );
   obj['10paverageGameDuration'] = new Date(
-    averageGameDurations[10].getTime() / countForGameSize['10']
+    averageGameDurations[10].getTime() / countForGameSize['10'],
   );
 
   obj.timeCreated = new Date();
@@ -751,7 +751,7 @@ const processRecords = async function (records) {
         { data: JSON.stringify(clientStatsData) },
         (err) => {
           console.log('Successfully saved new cumulative object');
-        }
+        },
       );
     }
   });
@@ -824,7 +824,7 @@ router.get('/ajax/seenNotification', (req, res) => {
             });
         });
       }
-    }
+    },
   );
 
   res.status(200).send('done');
@@ -850,7 +850,7 @@ router.get('/ajax/hideNotification', (req, res) => {
             await foundUser.save();
           });
       }
-    }
+    },
   );
 
   res.status(200).send('done');

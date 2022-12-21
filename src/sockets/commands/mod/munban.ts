@@ -8,7 +8,10 @@ export const munban: Command = {
   help: '/munban <username>: Removes the latest ban for a username.',
   run: async (args, senderSocket) => {
     if (!args[1]) {
-      senderSocket.emit('messageCommandReturnStr', { message: 'Specify a username.', classStr: 'server-text' });
+      senderSocket.emit('messageCommandReturnStr', {
+        message: 'Specify a username.',
+        classStr: 'server-text',
+      });
     }
 
     const ban = await Ban.findOne({

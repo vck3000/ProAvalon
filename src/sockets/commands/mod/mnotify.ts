@@ -31,12 +31,7 @@ export const mnotify: Command = {
           const stringToSay = str;
           const link = '#';
 
-          createNotification(
-            userIdTarget,
-            stringToSay,
-            link,
-            senderUsername
-          );
+          createNotification(userIdTarget, stringToSay, link, senderUsername);
 
           ModLog.create({
             type: 'mnotify',
@@ -67,7 +62,7 @@ export const mnotify: Command = {
             classStr: 'server-text',
           });
         }
-      }
+      },
     );
   },
 };

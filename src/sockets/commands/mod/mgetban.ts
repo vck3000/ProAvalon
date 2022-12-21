@@ -7,7 +7,10 @@ export const mgetban: Command = {
   help: '/mgetban <username>: Find the players latest active ban that would be undone by /munban.',
   run: async (args, senderSocket) => {
     if (!args[1]) {
-      senderSocket.emit('messageCommandReturnStr', { message: 'Specify a username.', classStr: 'server-text' });
+      senderSocket.emit('messageCommandReturnStr', {
+        message: 'Specify a username.',
+        classStr: 'server-text',
+      });
     }
 
     const ban = await Ban.findOne({

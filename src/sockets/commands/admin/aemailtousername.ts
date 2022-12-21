@@ -5,7 +5,7 @@ import { Command } from '../types';
 
 export const aemailtousername: Command = {
   command: 'aemailtousername',
-  help: "/aemailtousername <email>: lookup a username from their email",
+  help: '/aemailtousername <email>: lookup a username from their email',
   run: async (args: string[], socket: SocketUser) => {
     const email = args[1];
 

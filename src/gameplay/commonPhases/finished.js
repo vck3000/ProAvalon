@@ -10,7 +10,7 @@ function Finished(thisRoom_) {
 Finished.prototype.gameMove = function (
   socket,
   buttonPressed,
-  selectedPlayers
+  selectedPlayers,
 ) {
   // Do nothing, game is finished.
 };

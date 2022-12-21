@@ -55,7 +55,7 @@ class Ref {
     if (found === false) {
       socket.emit(
         'danger-alert',
-        'Error: User does not exist. Tell the admin if you see this.'
+        'Error: User does not exist. Tell the admin if you see this.',
       );
       return;
     }
@@ -65,7 +65,7 @@ class Ref {
     const { refHistory } = this.thisRoom.specialCards[this.card.toLowerCase()];
     const targetIndex = usernamesIndexes.getIndexFromUsername(
       this.thisRoom.playersInGame,
-      selectedPlayers
+      selectedPlayers,
     );
 
     // Get index of socket
@@ -97,20 +97,20 @@ class Ref {
       // emit to the ref holder the person's alliance
       socket.emit(
         'lady-info',
-        /* "Player " + */ `${targetUsername} is a ${alliance}.`
+        /* "Player " + */ `${targetUsername} is a ${alliance}.`,
       );
       // console.log("Player " + target + " is a " + alliance);
 
       // update ref location
       this.thisRoom.specialCards[this.card.toLowerCase()].setHolder(
-        targetIndex
+        targetIndex,
       );
 
       // this.gameplayMessage = (socket.request.user.username + " has carded " + target);
       this.thisRoom.sendText(
         this.thisRoom.allSockets,
         `${socket.request.user.username} has used ${this.card} on ${targetUsername}.`,
-        'gameplay-text'
+        'gameplay-text',
       );
 
       // update phase

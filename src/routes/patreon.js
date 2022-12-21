@@ -141,7 +141,7 @@ router.get('/oauth/redirect', (req, res) => {
                   console.log('Successfully linked up user and Patreon!');
                   req.flash(
                     'success',
-                    'Success! Your account has now been linked! Please re-log in again to see the changes.'
+                    'Success! Your account has now been linked! Please re-log in again to see the changes.',
                   );
                 });
             } else {
@@ -162,7 +162,7 @@ router.get('/oauth/redirect', (req, res) => {
 
                 req.flash(
                   'success',
-                  'This Patreon ID has not expired and is already linked with an account. Its details have been updated however.'
+                  'This Patreon ID has not expired and is already linked with an account. Its details have been updated however.',
                 );
               } else {
                 console.log('Patreon ID is expired. Updating...');
@@ -176,19 +176,19 @@ router.get('/oauth/redirect', (req, res) => {
                     declined_since: patreon_declined_since,
                     expires: addDays(new Date(), 32), // lasts for 32 days before it needs a refresh
                     in_game_username: req.user.username,
-                  }
+                  },
                 ).then((obj) => {
                   console.log('Updated successfully.');
                   req.flash(
                     'success',
-                    'Success! Your account has now been updated! Please log in again to see the changes.'
+                    'Success! Your account has now been updated! Please log in again to see the changes.',
                   );
                 });
               }
             }
           }
           return res.redirect(`/profile/${req.user.username}`);
-        }
+        },
       );
     })
 

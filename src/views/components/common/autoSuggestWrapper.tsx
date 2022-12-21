@@ -29,7 +29,7 @@ export function AutoSuggestWrapper({ allSuggestions, setValue }: Props) {
     return allSuggestions
       .filter(
         (str) =>
-          str.toLowerCase().slice(0, name.length) === name.trim().toLowerCase()
+          str.toLowerCase().slice(0, name.length) === name.trim().toLowerCase(),
       )
       .map((suggestion) => ({
         name: suggestion,
@@ -38,7 +38,7 @@ export function AutoSuggestWrapper({ allSuggestions, setValue }: Props) {
 
   const onChange = (
     event: React.FormEvent<HTMLInputElement>,
-    { newValue }: { newValue: string }
+    { newValue }: { newValue: string },
   ) => {
     setLocalValue(newValue);
 
