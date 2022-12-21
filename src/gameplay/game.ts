@@ -1336,6 +1336,7 @@ Game.prototype.finishGame = function (toBeWinner) {
 
     gameMode: this.gameMode,
     botUsernames,
+    rebal9p: this.rebal9p,
 
     playerUsernamesOrdered: getUsernamesOfPlayersInGame(this),
     playerUsernamesOrderedReversed: gameReverseArray(
