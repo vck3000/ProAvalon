@@ -8,7 +8,7 @@ playersReadyNotReady.prototype.playerReady = function (username) {
   if (this.playersYetToReady.length !== 0) {
     const index = usernamesIndexes.getIndexFromUsername(
       this.playersYetToReady,
-      username
+      username,
     );
 
     if (index !== -1) {
@@ -55,7 +55,7 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
     this.sendText(
       this.allSockets,
       'Please play in a normal game mode if you do not have any bots.',
-      'gameplay-text'
+      'gameplay-text',
     );
     return false;
   }
@@ -67,7 +67,7 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
     this.sendText(
       this.allSockets,
       'You cannot have bots play in normal game modes. Please use a bot game mode.',
-      'gameplay-text'
+      'gameplay-text',
     );
     return false;
   }
@@ -88,7 +88,7 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
       // console.log("Not enough players.");
       this.socketsOfPlayers[0].emit(
         'danger-alert',
-        'Minimum 5 players to start. '
+        'Minimum 5 players to start. ',
       );
       return false;
     }
@@ -126,7 +126,7 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
                 thisGame.sendText(this.allSockets, message, 'server-text');
                 thisGame.playerNotReady(playerSocket.request.user.username);
               }
-            }
+            },
           );
         }
       });

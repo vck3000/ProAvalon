@@ -10,7 +10,7 @@ function VotingMission(thisRoom_) {
 VotingMission.prototype.gameMove = function (
   socket,
   buttonPressed,
-  selectedPlayers
+  selectedPlayers,
 ) {
   var i = this.thisRoom.playersYetToVote.indexOf(socket.request.user.username);
 
@@ -20,7 +20,7 @@ VotingMission.prototype.gameMove = function (
       this.thisRoom.missionVotes[
         usernamesIndexes.getIndexFromUsername(
           this.thisRoom.playersInGame,
-          socket.request.user.username
+          socket.request.user.username,
         )
       ] = 'succeed';
       // console.log("received succeed from " + socket.request.user.username);
@@ -28,7 +28,7 @@ VotingMission.prototype.gameMove = function (
       // If the user is a res, they shouldn't be allowed to fail
       const index = usernamesIndexes.getIndexFromUsername(
         this.thisRoom.playersInGame,
-        socket.request.user.username
+        socket.request.user.username,
       );
       if (
         index !== -1 &&
@@ -36,7 +36,7 @@ VotingMission.prototype.gameMove = function (
       ) {
         socket.emit(
           'danger-alert',
-          'You are resistance! Surely you want to succeed!'
+          'You are resistance! Surely you want to succeed!',
         );
         return;
       }
@@ -44,20 +44,20 @@ VotingMission.prototype.gameMove = function (
       this.thisRoom.missionVotes[
         usernamesIndexes.getIndexFromUsername(
           this.thisRoom.playersInGame,
-          socket.request.user.username
+          socket.request.user.username,
         )
       ] = 'fail';
       // console.log("received fail from " + socket.request.user.username);
     } else {
       console.log(
-        `ERROR! Expected yes or no (success/fail), got: ${buttonPressed}`
+        `ERROR! Expected yes or no (success/fail), got: ${buttonPressed}`,
       );
     }
     // remove the player from players yet to vote
     this.thisRoom.playersYetToVote.splice(i, 1);
   } else {
     console.log(
-      `Player ${socket.request.user.username} has already voted or is not in the game`
+      `Player ${socket.request.user.username} has already voted or is not in the game`,
     );
   }
 
@@ -79,13 +79,13 @@ VotingMission.prototype.gameMove = function (
         this.thisRoom.sendText(
           this.thisRoom.allSockets,
           `Mission ${this.thisRoom.missionNum} succeeded.`,
-          'gameplay-text-blue'
+          'gameplay-text-blue',
         );
       } else {
         this.thisRoom.sendText(
           this.thisRoom.allSockets,
           `Mission ${this.thisRoom.missionNum} succeeded, but with ${numOfVotedFails} fail.`,
-          'gameplay-text-blue'
+          'gameplay-text-blue',
         );
       }
     } else if (outcome === 'failed') {
@@ -93,13 +93,13 @@ VotingMission.prototype.gameMove = function (
         this.thisRoom.sendText(
           this.thisRoom.allSockets,
           `Mission ${this.thisRoom.missionNum} failed with ${numOfVotedFails} fail.`,
-          'gameplay-text-red'
+          'gameplay-text-red',
         );
       } else {
         this.thisRoom.sendText(
           this.thisRoom.allSockets,
           `Mission ${this.thisRoom.missionNum} failed with ${numOfVotedFails} fails.`,
-          'gameplay-text-red'
+          'gameplay-text-red',
         );
       }
     }
@@ -166,7 +166,7 @@ VotingMission.prototype.buttonSettings = function (indexOfPlayer) {
   // If user has voted
   if (
     this.thisRoom.playersYetToVote.indexOf(
-      this.thisRoom.playersInGame[indexOfPlayer].username
+      this.thisRoom.playersInGame[indexOfPlayer].username,
     ) === -1
   ) {
     obj.green.hidden = true;
@@ -213,7 +213,7 @@ VotingMission.prototype.getStatusMessage = function (indexOfPlayer) {
   if (
     indexOfPlayer !== undefined &&
     this.thisRoom.playersYetToVote.indexOf(
-      this.thisRoom.playersInGame[indexOfPlayer].username
+      this.thisRoom.playersInGame[indexOfPlayer].username,
     ) !== -1
   ) {
     var str = '';

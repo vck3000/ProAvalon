@@ -24,7 +24,7 @@ function Room(
   maxNumPlayers_,
   newRoomPassword_,
   gameMode_,
-  ranked_
+  ranked_,
 ) {
   const thisRoom = this;
 
@@ -67,7 +67,7 @@ function Room(
   this.commonPhases = new commonPhasesIndex().getPhases(thisRoom);
   this.specialRoles = new gameModeObj[this.gameMode].Roles().getRoles(thisRoom);
   this.specialPhases = new gameModeObj[this.gameMode].Phases().getPhases(
-    thisRoom
+    thisRoom,
   );
   this.specialCards = new gameModeObj[this.gameMode].Cards().getCards(thisRoom);
 
@@ -124,7 +124,7 @@ Room.prototype.playerJoinRoom = function (socket, inputPassword) {
     this.destroyRoom = false;
     clearTimeout(this.destroyTimeoutObj);
     console.log(
-      `Player joined empty room ${this.roomId}, destruction aborted.`
+      `Player joined empty room ${this.roomId}, destruction aborted.`,
     );
   }
 
@@ -151,7 +151,7 @@ Room.prototype.playerSitDown = function (socket) {
   if (this.kickedPlayers.indexOf(socketUsername.toLowerCase()) !== -1) {
     socket.emit(
       'danger-alert',
-      'The host has kicked you from this room. You cannot join.'
+      'The host has kicked you from this room. You cannot join.',
     );
     return;
   }
@@ -159,7 +159,7 @@ Room.prototype.playerSitDown = function (socket) {
   if (this.socketsOfPlayers.length >= this.maxNumPlayers) {
     socket.emit(
       'danger-alert',
-      'The game has reached the limit for number of players.'
+      'The game has reached the limit for number of players.',
     );
     return;
   }
@@ -170,7 +170,7 @@ Room.prototype.playerSitDown = function (socket) {
   ) {
     socket.emit(
       'danger-alert',
-      `You do not have the required experience to sit in ranked games. Please play ${this.gamesRequiredForRanked} unranked games first.`
+      `You do not have the required experience to sit in ranked games. Please play ${this.gamesRequiredForRanked} unranked games first.`,
     );
     return;
   }
@@ -350,7 +350,7 @@ Room.prototype.getRoomPlayers = function () {
     // If the player's username exists on the list of claiming:
     if (
       this.claimingPlayers.indexOf(
-        this.socketsOfPlayers[i].request.user.username
+        this.socketsOfPlayers[i].request.user.username,
       ) !== -1
     ) {
       isClaiming = true;
@@ -407,7 +407,7 @@ Room.prototype.updateRanked = function (socket, rankedType) {
     this.sendText(
       this.allSockets,
       'This room is private and therefore cannot be ranked.',
-      'server-text'
+      'server-text',
     );
     return;
   }
@@ -445,7 +445,7 @@ Room.prototype.updateGameModesInRoom = function (socket, gameMode) {
         }
       });
       const removedBots = botsToRemove.map(
-        (botSocket) => botSocket.request.user.username
+        (botSocket) => botSocket.request.user.username,
       );
 
       if (removedBots.length > 0) {
@@ -474,7 +474,7 @@ Room.prototype.updateGameModesInRoom = function (socket, gameMode) {
 
     this.specialRoles = new gameModeObj[this.gameMode].Roles().getRoles(this);
     this.specialPhases = new gameModeObj[this.gameMode].Phases().getPhases(
-      this
+      this,
     );
     this.specialCards = new gameModeObj[this.gameMode].Cards().getCards(this);
 
@@ -487,7 +487,7 @@ Room.prototype.updateGameModesInRoom = function (socket, gameMode) {
   } else {
     socket.emit(
       'danger-alert',
-      'Eror happened when changing Game Mode. Let the admin know if you see this.'
+      'Eror happened when changing Game Mode. Let the admin know if you see this.',
     );
   }
 };

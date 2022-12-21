@@ -37,11 +37,11 @@ function Report() {
 
   async function loadReports(pageNum: number) {
     const resolvedReports = await fetch(`/mod/report/resolved/${pageNum}`).then(
-      (res) => res.json()
+      (res) => res.json(),
     );
 
     const unresolvedReports = await fetch(`/mod/report/unresolved`).then(
-      (res) => res.json()
+      (res) => res.json(),
     );
 
     setResolvedReports(resolvedReports);

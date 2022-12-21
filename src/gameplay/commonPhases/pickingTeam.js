@@ -10,7 +10,7 @@ function PickingTeam(thisRoom_) {
 PickingTeam.prototype.gameMove = function (
   socket,
   buttonPressed,
-  selectedPlayers
+  selectedPlayers,
 ) {
   if (buttonPressed !== 'yes') {
     // this.thisRoom.sendText(this.thisRoom.allSockets, `Button pressed was ${buttonPressed}. Let admin know if you see this.`, "gameplay-text");
@@ -18,7 +18,7 @@ PickingTeam.prototype.gameMove = function (
   }
 
   const numOfTargets = this.thisRoom.getClientNumOfTargets(
-    this.thisRoom.teamLeader
+    this.thisRoom.teamLeader,
   );
   // catch wrong number of targets
   if (numOfTargets !== selectedPlayers.length && numOfTargets !== null) {
@@ -29,7 +29,7 @@ PickingTeam.prototype.gameMove = function (
   if (
     usernamesIndexes.getIndexFromUsername(
       this.thisRoom.playersInGame,
-      socket.request.user.username
+      socket.request.user.username,
     ) === this.thisRoom.teamLeader
   ) {
     // Reset votes
@@ -91,7 +91,7 @@ PickingTeam.prototype.gameMove = function (
     this.thisRoom.phase = 'votingTeam';
   } else {
     console.log(
-      `User ${socket.request.user.username} is not the team leader. Cannot pick.`
+      `User ${socket.request.user.username} is not the team leader. Cannot pick.`,
     );
   }
 };

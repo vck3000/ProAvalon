@@ -58,7 +58,7 @@ export class SimpleBotSocket {
     availableButtons,
     availablePlayers,
     numOfTargets,
-    callback
+    callback,
   ) {
     // Simple bots play randomly
     const buttonPressed =
@@ -78,7 +78,7 @@ export class SimpleBotSocket {
     while (selectedPlayers.length > numOfTargets) {
       selectedPlayers.splice(
         Math.floor(Math.random() * selectedPlayers.length),
-        1
+        1,
       );
     }
 
@@ -121,7 +121,7 @@ function checkBotCapabilities(game, capabilities) {
       (option) =>
         ['Assassin', 'Merlin'].indexOf(option) !== -1 ||
         capability.roles.indexOf(option) !== -1 ||
-        capability.cards.indexOf(option) !== -1
+        capability.cards.indexOf(option) !== -1,
     );
   });
 }
@@ -176,7 +176,7 @@ export class APIBotSocket {
   handleGameStart(game, callback) {
     const thisSocket = this;
     const playerIndex = game.playersInGame.findIndex(
-      (player) => player.username == thisSocket.request.user.username
+      (player) => player.username == thisSocket.request.user.username,
     );
     // console.log("Player " + thisSocket.request.user.username + " is at index: " + playerIndex); //Don't worry, the above line works perfectly...!
     const gameData = game.getGameData()[playerIndex];
@@ -184,7 +184,7 @@ export class APIBotSocket {
     const apiData = {
       numPlayers: gameData.playerUsernamesOrderedReversed.length,
       roles: gameData.roles.filter(
-        (role) => role != 'Assassin' && role != 'Merlin'
+        (role) => role != 'Assassin' && role != 'Merlin',
       ), // TODO: Is this needed?
       cards: gameData.cards,
       teamLeader: gameData.teamLeaderReversed,
@@ -221,11 +221,11 @@ export class APIBotSocket {
     availableButtons,
     availablePlayers,
     numOfTargets,
-    callback
+    callback,
   ) {
     const thisSocket = this;
     const playerIndex = game.playersInGame.findIndex(
-      (player) => player.username == thisSocket.request.user.username
+      (player) => player.username == thisSocket.request.user.username,
     );
     const gameData = game.getGameData()[playerIndex];
 
@@ -259,7 +259,7 @@ export class APIBotSocket {
   handleGameOver(game, reason, callback) {
     const thisSocket = this;
     const playerIndex = game.playersInGame.findIndex(
-      (player) => player.username == thisSocket.request.user.username
+      (player) => player.username == thisSocket.request.user.username,
     );
     const gameData = game.getGameData()[playerIndex];
 
@@ -273,7 +273,7 @@ export class APIBotSocket {
       'POST',
       '/v0/session/gameover',
       apiData,
-      1000
+      1000,
     );
 
     callback(game.phase == 'finished');

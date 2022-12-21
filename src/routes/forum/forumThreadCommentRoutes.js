@@ -90,7 +90,7 @@ router.post(
     // new changes yet, except for the one who made the comment
     foundForumThread.seenUsers = [req.user.username.toLowerCase()];
     foundForumThread.save();
-  })
+  }),
 );
 
 /** ******************************************************* */
@@ -112,7 +112,7 @@ router.get(
       comment: foundComment,
       forumThread: { id: req.params.id },
     });
-  })
+  }),
 );
 
 /** ******************************************************* */
@@ -155,7 +155,7 @@ router.put(
     await foundForumThread.save();
 
     res.redirect(`/forum/show/${req.params.id}`);
-  })
+  }),
 );
 
 /** ******************************************************* */
@@ -166,7 +166,7 @@ router.delete(
   checkForumThreadCommentOwnership,
   asyncMiddleware(async (req, res) => {
     const foundComment = await forumThreadComment.findById(
-      req.params.comment_id
+      req.params.comment_id,
     );
     if (foundComment.disabled) {
       req.flash('error', 'Comment has already been deleted.');
@@ -190,7 +190,7 @@ router.delete(
     await foundForumThread.save();
 
     res.redirect(`/forum/${req.params.id}`);
-  })
+  }),
 );
 
 export default router;

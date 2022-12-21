@@ -26,7 +26,7 @@ router.get(
   (req, res) => {
     sendEmailVerification(req.user);
     res.render('simpleText', { contents: 'Verification email resent!' });
-  }
+  },
 );
 
 router.post('/addNewEmail', checkEmailVerifiedAlready, async (req, res) => {
