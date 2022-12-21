@@ -162,8 +162,6 @@ const io: SocketServer = socket(server, {
   pingInterval: 10000,
 });
 
-socketServer(io);
-
 io.use(
   passportSocketIo.authorize({
     cookieParser,
@@ -172,3 +170,5 @@ io.use(
     passport,
   }),
 );
+
+socketServer(io);

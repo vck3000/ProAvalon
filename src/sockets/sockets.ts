@@ -23,12 +23,7 @@ import { GAME_MODE_NAMES } from '../gameplay/gameModeNames';
 
 import { ChatSpamFilter } from './chatSpamFilter';
 import { MessageWithDate, Quote } from './quote';
-import {
-  APIBotSocket,
-  enabledBots,
-  makeBotAPIRequest,
-  SimpleBotSocket,
-} from './bot';
+import { APIBotSocket, enabledBots, makeBotAPIRequest, SimpleBotSocket } from './bot';
 
 import { adminCommands } from './commands/admin';
 import { modCommands as modCommandsImported } from './commands/mod';
@@ -1921,12 +1916,6 @@ export const server = function (io: SocketServer): void {
   // SOCKETS for each connection
   ioGlobal = io;
   io.sockets.on('connection', async (socket: SocketUser) => {
-    if (!socket.request.isAuthenticated()) {
-      socket.emit('alert', 'You are not authenticated.');
-      socket.disconnect(true);
-      return;
-    }
-
     // remove any duplicate sockets
     for (let i = 0; i < allSockets.length; i++) {
       if (allSockets[i].request.user.id === socket.request.user.id) {
