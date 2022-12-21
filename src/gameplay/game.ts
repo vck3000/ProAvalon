@@ -1325,8 +1325,10 @@ Game.prototype.finishGame = function (toBeWinner) {
     botUsernames = [];
   }
 
+  let gameMode = this.gameMode;
+
   if (this.playersInGame.length === 9 && this.rebal9p) {
-    this.gameMode = 'avalonCustom';
+    gameMode = 'avalonCustom';
   }
 
   const objectToStore = {
@@ -1338,7 +1340,7 @@ Game.prototype.finishGame = function (toBeWinner) {
     resistanceTeam: this.resistanceUsernames,
     numberOfPlayers: this.playersInGame.length,
 
-    gameMode: this.gameMode,
+    gameMode,
     botUsernames,
     rebal9p: this.rebal9p,
 
