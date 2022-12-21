@@ -70,7 +70,7 @@ async function createCommentReply(req, res) {
   const commentReplyData = {
     text: sanitizeHtml(req.body.comment.text, {
       allowedTags: sanitizeHtml.defaults.allowedTags.concat(
-        sanitizeHtmlAllowedTagsForumThread
+        sanitizeHtmlAllowedTagsForumThread,
       ),
       allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
     }),
@@ -100,7 +100,7 @@ async function createReply(req, res, commentReplyData, replyingToThisReply) {
   // the creator has already seen it
   commentReplyData.seenUsers = [req.user.username.toLowerCase()];
   const newCommentReply = await forumThreadCommentReply.create(
-    commentReplyData
+    commentReplyData,
   );
   const foundForum = await forumThread
     .findById(mongoose.Types.ObjectId(req.params.id))
@@ -108,7 +108,7 @@ async function createReply(req, res, commentReplyData, replyingToThisReply) {
   if (!foundForum) {
     req.flash(
       'error',
-      'There was an error creating your reply. Please let the admin know.'
+      'There was an error creating your reply. Please let the admin know.',
     );
     res.redirect(`/forum/show/${req.params.id}`);
     return;
@@ -121,7 +121,7 @@ async function createReply(req, res, commentReplyData, replyingToThisReply) {
   if (!foundForumThreadComment) {
     req.flash(
       'error',
-      'There was an error creating your reply. Please let the admin know.'
+      'There was an error creating your reply. Please let the admin know.',
     );
     res.redirect(`/forum/show/${req.params.id}`);
     return;
@@ -139,7 +139,7 @@ async function createReply(req, res, commentReplyData, replyingToThisReply) {
       mongoose.Types.ObjectId(id),
       `${req.user.username} has replied to your ${type}.`,
       `/forum/show/${foundForum._id}#${newCommentReply._id}`,
-      req.user.username
+      req.user.username,
     );
   };
 
@@ -199,7 +199,7 @@ router.get(
         forumThread: { id: req.params.id },
       });
     }
-  })
+  }),
 );
 
 /**********************************************************/
@@ -219,7 +219,7 @@ router.put(
     }
     foundReply.text = sanitizeHtml(req.body.reply.text, {
       allowedTags: sanitizeHtml.defaults.allowedTags.concat(
-        sanitizeHtmlAllowedTagsForumThread
+        sanitizeHtmlAllowedTagsForumThread,
       ),
       allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
     });
@@ -250,7 +250,7 @@ router.put(
 
     // redirect to the forum page
     res.redirect(`/forum/show/${req.params.id}`);
-  })
+  }),
 );
 
 /**********************************************************/
@@ -287,7 +287,7 @@ router.delete(
     foundForumThread.markModified('comments');
     await foundForumThread.save();
     res.redirect(`/forum/${req.params.id}`);
-  })
+  }),
 );
 
 export default router;

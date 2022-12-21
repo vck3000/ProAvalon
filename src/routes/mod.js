@@ -127,7 +127,7 @@ router.post('/ban', isModMiddleware, async (req, res) => {
         break;
       case 'years':
         whenRelease = new Date(
-          now.setFullYear(now.getFullYear() + durationInt)
+          now.setFullYear(now.getFullYear() + durationInt),
         );
         break;
       case 'permaban':
@@ -283,7 +283,7 @@ router.post('/report', async (req, res) => {
   const roles = roomId
     ? GetRoom(roomId)
         .playersInGame.map(
-          (user) => `${user.username}: ${user.role.toUpperCase()}`
+          (user) => `${user.username}: ${user.role.toUpperCase()}`,
         )
         .join('\n')
     : '';
@@ -363,7 +363,7 @@ router.post('/report/resolve', isModMiddleware, async (req, res) => {
       } else {
         res.send('Success!');
       }
-    }
+    },
   );
 });
 

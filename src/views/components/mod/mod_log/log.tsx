@@ -42,11 +42,11 @@ export class Log extends React.Component {
     }
 
     return (
-      <div className='panel panel-info'>
-        <div className='panel-heading'>
-          <h3 className='panel-title'>{logText.title}</h3>
+      <div className="panel panel-info">
+        <div className="panel-heading">
+          <h3 className="panel-title">{logText.title}</h3>
         </div>
-        <div className='panel-body'>
+        <div className="panel-body">
           <p>Date: {moment(this.props.log.dateCreated).format('LLL')}</p>
           <hr></hr>
           <ExpandableComponent data={logText.body} />
@@ -115,20 +115,20 @@ function avatarText(props) {
         <p>Message to mod: {data.msgToMod}.</p>
         <p>Mod comment: {data.modComment}.</p>
 
-        <div className='row'>
-          <div className='col-sm-6'>
-            <div className='panel panel-success'>
-              <div className='panel-heading'>Res img:</div>
-              <div className='panel-body alignCenterHoriz'>
-                <img className='avatarImg' src={data.resLink}></img>
+        <div className="row">
+          <div className="col-sm-6">
+            <div className="panel panel-success">
+              <div className="panel-heading">Res img:</div>
+              <div className="panel-body alignCenterHoriz">
+                <img className="avatarImg" src={data.resLink}></img>
               </div>
             </div>
           </div>
-          <div className='col-sm-6'>
-            <div className='panel panel-danger'>
-              <div className='panel-heading'>Spy img:</div>
-              <div className='panel-body alignCenterHoriz'>
-                <img className='avatarImg' src={data.spyLink}></img>
+          <div className="col-sm-6">
+            <div className="panel panel-danger">
+              <div className="panel-heading">Spy img:</div>
+              <div className="panel-body alignCenterHoriz">
+                <img className="avatarImg" src={data.spyLink}></img>
               </div>
             </div>
           </div>

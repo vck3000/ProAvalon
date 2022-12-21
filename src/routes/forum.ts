@@ -89,7 +89,7 @@ router.get(
         found.author.id,
         `${req.user.username} has liked your ${type}!`,
         link,
-        req.user.username
+        req.user.username,
       );
     }
 
@@ -102,7 +102,7 @@ router.get(
       foundThread.markModified('comments');
     }
     await foundThread.save();
-  })
+  }),
 );
 
 router.get(
@@ -132,8 +132,8 @@ router.get(
           },
           req.params.category === 'my_posts'
             ? { 'author.username': req.user.username }
-            : { category: req.params.category }
-        )
+            : { category: req.params.category },
+        ),
       )
       .sort({ timeLastEdit: 'descending' })
       .skip(skipNumber)
@@ -150,7 +150,7 @@ router.get(
       pageNum: req.params.pageNum,
       activeCategory: req.params.category,
     });
-  })
+  }),
 );
 
 // main page that users land on
@@ -203,7 +203,7 @@ router.get(
       activeCategory: req.params.category,
       mod,
     });
-  })
+  }),
 );
 
 router.post(
@@ -258,7 +258,7 @@ router.post(
           foundForumThread.author.id,
           'Your forum titled "' + foundForumThread.title + '" was removed.',
           '#',
-          req.user.username
+          req.user.username,
         );
 
         // Create the log
@@ -294,7 +294,7 @@ router.post(
         found.author.id,
         'Your comment/reply was removed.',
         link,
-        req.user.username
+        req.user.username,
       );
 
       forumBanData.originalContent = found.text;
@@ -324,7 +324,7 @@ router.post(
         dateCreated: new Date(),
       });
     }
-  })
+  }),
 );
 
 router.post(
@@ -349,7 +349,7 @@ router.post(
         pinnedThread.create({ forumThread: { id: foundForumThread.id } });
       }
     }
-  })
+  }),
 );
 
 export default router;

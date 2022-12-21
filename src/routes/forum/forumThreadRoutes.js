@@ -27,7 +27,7 @@ router.get(
 
     // update the time since string for forumThread
     foundForumThread.timeSinceString = getTimeDiffInString(
-      foundForumThread.timeLastEdit
+      foundForumThread.timeLastEdit,
     );
 
     // update the time since string for each comment
@@ -113,7 +113,7 @@ router.get(
     // there is always at least one change, so just save.
     foundForumThread.markModified('comments');
     foundForumThread.save();
-  })
+  }),
 );
 
 router.get('/new', (req, res) => {
@@ -201,7 +201,7 @@ router.post(
     await forumThread.create(newForumThread);
     // redirect back to campgrounds page
     res.redirect('/forum');
-  })
+  }),
 );
 
 /** ******************************************************* */
@@ -218,7 +218,7 @@ router.get(
     } else {
       res.render('forum/edit', { forumThread: foundForumThread });
     }
-  })
+  }),
 );
 
 /** ******************************************************* */
@@ -271,14 +271,14 @@ router.put(
       {
         allowedTags: sanitizeHtml.defaults.allowedTags.concat(allowedHtmlTags),
         allowedAttributes: allowedHtmlAttributes,
-      }
+      },
     );
 
     foundForumThread.title = sanitizeHtml(req.body.forumThread.title);
     await foundForumThread.save();
 
     res.redirect(`/forum/show/${foundForumThread.id}`);
-  })
+  }),
 );
 
 /** ******************************************************* */
@@ -299,7 +299,7 @@ router.delete(
     foundForumThread.save();
 
     res.redirect('/forum');
-  })
+  }),
 );
 
 export default router;

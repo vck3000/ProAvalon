@@ -105,7 +105,7 @@ router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
           });
       } else {
         console.log(
-          `error, decision isnt anything recognisable...: ${req.body.decision}`
+          `error, decision isnt anything recognisable...: ${req.body.decision}`,
         );
         return;
       }
@@ -150,9 +150,9 @@ router.get(
         } else {
           res.render('profile/changeavatar', { userData: foundUser });
         }
-      }
+      },
     );
-  }
+  },
 );
 
 // Update the customavatar
@@ -188,12 +188,12 @@ router.post(
       } else {
         req.flash(
           'success',
-          'Your submission was received! Please wait for a moderator to process your request.'
+          'Your submission was received! Please wait for a moderator to process your request.',
         );
         res.redirect(`/profile/${req.params.profileUsername}`);
       }
     });
-  }
+  },
 );
 
 // Show the change password edit page
@@ -209,9 +209,9 @@ router.get(
         } else {
           res.render('profile/changepassword', { userData: foundUser });
         }
-      }
+      },
     );
-  }
+  },
 );
 
 // Update the password
@@ -220,7 +220,7 @@ router.post(
   checkProfileOwnership,
   async (req, res) => {
     console.log(
-      `Received a change password request from ${req.params.profileUsername.toLowerCase()}`
+      `Received a change password request from ${req.params.profileUsername.toLowerCase()}`,
     );
 
     const oldPW = req.body.oldPassword;
@@ -239,7 +239,7 @@ router.post(
     } else if (newPW.length < 4) {
       req.flash(
         'error',
-        'Please enter a password that is longer than 3 characters'
+        'Please enter a password that is longer than 3 characters',
       );
       res.redirect(`/profile/${req.params.profileUsername}/changepassword`);
     } else {
@@ -255,7 +255,7 @@ router.post(
         }
       });
     }
-  }
+  },
 );
 
 const CLIENT_ID = process.env.patreon_client_ID;
@@ -302,7 +302,7 @@ router.get('/:profileUsername/edit', checkProfileOwnership, (req, res) => {
           patreonLoginUrl: loginUrl,
         });
       }
-    }
+    },
   );
 });
 
@@ -360,14 +360,14 @@ router.post('/:profileUsername', checkProfileOwnership, (req, res) => {
         } else {
           foundUser.biography = sanitizeHtml(req.body.biography, {
             allowedTags: sanitizeHtml.defaults.allowedTags.concat(
-              sanitizeHtmlAllowedTagsForumThread
+              sanitizeHtmlAllowedTagsForumThread,
             ),
             allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
           });
 
           foundUser.nationality = sanitizeHtml(req.body.nationality);
           foundUser.nationCode = sanitizeHtml(
-            req.body.nationCode.toLowerCase()
+            req.body.nationCode.toLowerCase(),
           );
           foundUser.hideStats = req.body.hideStats;
           foundUser.pronoun = req.body.pronoun;
@@ -394,7 +394,7 @@ router.get('/:profileUsername', (req, res) => {
           personViewingUsername: req.user.username,
         });
       }
-    }
+    },
   );
 });
 

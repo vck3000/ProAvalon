@@ -55,7 +55,7 @@ class Sire {
     if (found === false) {
       socket.emit(
         'danger-alert',
-        'Error: User does not exist. Tell the admin if you see this.'
+        'Error: User does not exist. Tell the admin if you see this.',
       );
       return;
     }
@@ -65,7 +65,7 @@ class Sire {
     const { sireHistory } = this.thisRoom.specialCards[this.card.toLowerCase()];
     const targetIndex = usernamesIndexes.getIndexFromUsername(
       this.thisRoom.playersInGame,
-      selectedPlayers
+      selectedPlayers,
     );
 
     // Get index of socket
@@ -115,7 +115,7 @@ class Sire {
       if (socketOfTarget === undefined) {
         socket.emit(
           'danger-alert',
-          'There was an error finding the target. Let the admin know if you see this.'
+          'There was an error finding the target. Let the admin know if you see this.',
         );
         return;
       }
@@ -124,20 +124,20 @@ class Sire {
       // note that the display is the same as lady's display
       socketOfTarget.emit(
         'lady-info',
-        /* "Player " + */ `${socket.request.user.username} is a ${alliance}.`
+        /* "Player " + */ `${socket.request.user.username} is a ${alliance}.`,
       );
       // console.log("Player " + target + " is a " + alliance);
 
       // update sire location
       this.thisRoom.specialCards[this.card.toLowerCase()].setHolder(
-        targetIndex
+        targetIndex,
       );
 
       // this.gameplayMessage = (socket.request.user.username + " has carded " + target);
       this.thisRoom.sendText(
         this.thisRoom.allSockets,
         `${socket.request.user.username} has used ${this.card} on ${targetUsername}.`,
-        'gameplay-text'
+        'gameplay-text',
       );
 
       // update phase

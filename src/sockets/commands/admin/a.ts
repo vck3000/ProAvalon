@@ -1,6 +1,6 @@
 import { Command } from '../types';
 import { adminCommands } from './index';
-import { SocketUser } from '../../sockets/types';
+import { SocketUser } from '../../types';
 
 export const a: Command = {
   command: 'a',

@@ -20,7 +20,7 @@ class RefOfTheLake {
 
   initialise() {
     this.setHolder(
-      (this.thisRoom.teamLeader + 1) % this.thisRoom.playersInGame.length
+      (this.thisRoom.teamLeader + 1) % this.thisRoom.playersInGame.length,
     );
   }
 

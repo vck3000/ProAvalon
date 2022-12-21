@@ -11,9 +11,7 @@ export const ExpandableComponent: React.FC<Props> = ({ data }) => {
 
   return (
     <div>
-      <div style={styles}>
-        {data}
-      </div>
+      <div style={styles}>{data}</div>
       <button className={'expandButton'} onClick={() => setExpanded(!expanded)}>
         {expanded ? 'Collapse' : 'Expand'}
       </button>

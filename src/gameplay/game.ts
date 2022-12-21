@@ -47,7 +47,7 @@ function Game(
   muteSpectators_,
   ranked_,
   rebal9p_,
-  callback_
+  callback_,
 ) {
   this.callback = callback_;
   //* *******************************
@@ -85,7 +85,7 @@ function Game(
     maxNumPlayers_,
     newRoomPassword_,
     gameMode_,
-    ranked_
+    ranked_,
   );
   PlayersReadyNotReady.call(this, this.minPlayers);
 
@@ -258,7 +258,7 @@ Game.prototype.playerJoinRoom = function (socket, inputPassword) {
     const resultOfRoomJoin = Room.prototype.playerJoinRoom.call(
       this,
       socket,
-      inputPassword
+      inputPassword,
     );
 
     // If the player failed the join, remove their socket.
@@ -285,7 +285,7 @@ Game.prototype.playerSitDown = function (socket) {
   if (this.canJoin === false) {
     socket.emit(
       'danger-alert',
-      'The game is currently trying to start (ready/not ready phase). You can join if someone is not ready, or after 10 seconds has elapsed.'
+      'The game is currently trying to start (ready/not ready phase). You can join if someone is not ready, or after 10 seconds has elapsed.',
     );
     return;
   }
@@ -303,7 +303,7 @@ Game.prototype.playerStandUp = function (socket) {
   if (this.gameStarted === true) {
     socket.emit(
       'danger-alert',
-      "The game has started... You shouldn't be able to see that stand up button!"
+      "The game has started... You shouldn't be able to see that stand up button!",
     );
     return;
   }
@@ -342,7 +342,7 @@ Game.prototype.playerLeaveRoom = function (socket) {
       this.sendText(
         this.allSockets,
         `${username} is not ready.`,
-        'server-text'
+        'server-text',
       );
     }
   }
@@ -420,7 +420,7 @@ Game.prototype.startGame = function (options) {
     this.playersInGame[i].alliance = alliances[rolesAssignment[i]];
 
     this.playerUsernamesInGame.push(
-      this.socketsOfPlayers[i].request.user.username
+      this.socketsOfPlayers[i].request.user.username,
     );
   }
 
@@ -447,7 +447,7 @@ Game.prototype.startGame = function (options) {
         this.spyRoles.push(this.specialRoles[op].role);
       } else {
         console.log(
-          'THIS SHOULD NOT HAPPEN! Invalid role file. Look in game.js file.'
+          'THIS SHOULD NOT HAPPEN! Invalid role file. Look in game.js file.',
         );
       }
       this.roleKeysInPlay.push(op);
@@ -458,7 +458,7 @@ Game.prototype.startGame = function (options) {
       this.cardKeysInPlay.push(op);
     } else {
       console.log(
-        `Warning: Client requested a role that doesn't exist -> ${op}`
+        `Warning: Client requested a role that doesn't exist -> ${op}`,
       );
     }
   }
@@ -544,7 +544,7 @@ Game.prototype.startGame = function (options) {
     this.sendText(
       this.allSockets,
       'The game is muted to spectators.',
-      'gameplay-text'
+      'gameplay-text',
     );
   }
 
@@ -630,7 +630,7 @@ Game.prototype.checkBotMoves = function (pendingBots) {
       }
       const seatIndex = usernamesIndexes.getIndexFromUsername(
         thisRoom.playersInGame,
-        botSocket.request.user.username
+        botSocket.request.user.username,
       );
       const onMissionAndResistance =
         thisRoom.phase == 'votingMission' &&
@@ -655,7 +655,7 @@ Game.prototype.checkBotMoves = function (pendingBots) {
       let availablePlayers = thisRoom.playersInGame
         .filter(
           (player, playerIndex) =>
-            prohibitedIndexesToPick.indexOf(playerIndex) === -1
+            prohibitedIndexesToPick.indexOf(playerIndex) === -1,
         )
         .map((player) => player.request.user.username);
 
@@ -691,14 +691,14 @@ Game.prototype.checkBotMoves = function (pendingBots) {
               (numOfTargets === move.selectedPlayers.length ||
                 numOfTargets.includes(move.selectedPlayers.length)) &&
               move.selectedPlayers.every(
-                (player) => availablePlayers.indexOf(player) !== -1
+                (player) => availablePlayers.indexOf(player) !== -1,
               ));
 
           if (!pressedValidButton || !selectedValidPlayers) {
             const message = `${
               botSocket.request.user.username
             } made an illegal move and has left the game. Move: ${JSON.stringify(
-              move
+              move,
             )}`;
             thisRoom.sendText(thisRoom.allSockets, message, 'server-text-teal');
             thisRoom.playerLeaveRoom(botSocket);
@@ -714,7 +714,7 @@ Game.prototype.checkBotMoves = function (pendingBots) {
           } else {
             thisRoom.gameMove(botSocket, ['yes', move.selectedPlayers]);
           }
-        }
+        },
       );
     });
   }, timeEachLoop);
@@ -748,7 +748,7 @@ Game.prototype.gameMove = function (socket, data) {
     this.commonPhases[this.phase].gameMove(
       socket,
       buttonPressed,
-      selectedPlayers
+      selectedPlayers,
     );
   }
 
@@ -760,7 +760,7 @@ Game.prototype.gameMove = function (socket, data) {
     this.specialPhases[this.phase].gameMove(
       socket,
       buttonPressed,
-      selectedPlayers
+      selectedPlayers,
     );
   }
 
@@ -769,7 +769,7 @@ Game.prototype.gameMove = function (socket, data) {
     this.sendText(
       this.allSockets,
       'ERROR LET ADMIN KNOW IF YOU SEE THIS code 1',
-      'gameplay-text'
+      'gameplay-text',
     );
   }
 
@@ -898,7 +898,7 @@ Game.prototype.getProhibitedIndexesToPick = function (indexOfPlayer) {
     this.commonPhases[this.phase].getProhibitedIndexesToPick
   ) {
     return this.commonPhases[this.phase].getProhibitedIndexesToPick(
-      indexOfPlayer
+      indexOfPlayer,
     );
   }
 
@@ -908,7 +908,7 @@ Game.prototype.getProhibitedIndexesToPick = function (indexOfPlayer) {
     this.specialPhases[this.phase].getProhibitedIndexesToPick
   ) {
     return this.specialPhases[this.phase].getProhibitedIndexesToPick(
-      indexOfPlayer
+      indexOfPlayer,
     );
   }
 
@@ -938,7 +938,7 @@ Game.prototype.getRoomPlayers = function () {
       // If the player's username exists on the list of claiming:
       if (
         this.claimingPlayers.indexOf(
-          this.playersInGame[i].request.user.username
+          this.playersInGame[i].request.user.username,
         ) !== -1
       ) {
         isClaiming = true;
@@ -974,7 +974,7 @@ Game.prototype.distributeGameData = function () {
     for (let i = 0; i < this.playersInGame.length; i++) {
       const index = usernamesIndexes.getIndexFromUsername(
         this.socketsOfPlayers,
-        this.playersInGame[i].request.user.username
+        this.playersInGame[i].request.user.username,
       );
       // need to go through all sockets, but only send to the socket of players in game
       if (this.socketsOfPlayers[index]) {
@@ -1027,7 +1027,7 @@ Game.prototype.getGameData = function () {
       data[i].teamLeader = this.teamLeader;
       data[i].teamLeaderReversed = gameReverseIndex(
         this.teamLeader,
-        this.playersInGame.length
+        this.playersInGame.length,
       );
       data[i].hammer = this.hammer;
 
@@ -1044,13 +1044,13 @@ Game.prototype.getGameData = function () {
       data[i].hammer = this.hammer;
       data[i].hammerReversed = gameReverseIndex(
         this.hammer,
-        this.playersInGame.length
+        this.playersInGame.length,
       );
       data[i].winner = this.winner;
 
       data[i].playerUsernamesOrdered = getUsernamesOfPlayersInGame(this);
       data[i].playerUsernamesOrderedReversed = gameReverseArray(
-        getUsernamesOfPlayersInGame(this)
+        getUsernamesOfPlayersInGame(this),
       );
 
       data[i].gameplayMessage = this.gameplayMessage;
@@ -1106,7 +1106,7 @@ Game.prototype.getGameDataForSpectators = function () {
   data.teamLeader = this.teamLeader;
   data.teamLeaderReversed = gameReverseIndex(
     this.teamLeader,
-    this.playersInGame.length
+    this.playersInGame.length,
   );
   data.hammer = this.hammer;
 
@@ -1123,13 +1123,13 @@ Game.prototype.getGameDataForSpectators = function () {
   data.hammer = this.hammer;
   data.hammerReversed = gameReverseIndex(
     this.hammer,
-    this.playersInGame.length
+    this.playersInGame.length,
   );
   data.winner = this.winner;
 
   data.playerUsernamesOrdered = getUsernamesOfPlayersInGame(this);
   data.playerUsernamesOrderedReversed = gameReverseArray(
-    getUsernamesOfPlayersInGame(this)
+    getUsernamesOfPlayersInGame(this),
   );
 
   data.gameplayMessage = this.gameplayMessage;
@@ -1168,14 +1168,14 @@ Game.prototype.addToChatHistory = function (data) {
     this.sendText(
       null,
       `Sockets of players length is: ${this.socketsOfPlayers.length}`,
-      'server-text'
+      'server-text',
     );
   }
   if (data.message === '-playersingame') {
     this.sendText(
       null,
       `Players in game length is: ${this.playersInGame.length}`,
-      'server-text'
+      'server-text',
     );
   }
 };
@@ -1224,7 +1224,7 @@ Game.prototype.finishGame = function (toBeWinner) {
     this.sendText(
       this.allSockets,
       'The resistance wins!',
-      'gameplay-text-blue'
+      'gameplay-text-blue',
     );
   }
 
@@ -1234,7 +1234,7 @@ Game.prototype.finishGame = function (toBeWinner) {
 
     const incorrectGuessersText = [];
     const usernameOfMerlin = this.playersInGame.find(
-      (player) => player.role === 'Merlin'
+      (player) => player.role === 'Merlin',
     ).username;
     for (const target in guessesByTarget) {
       if (guessesByTarget.hasOwnProperty(target)) {
@@ -1242,13 +1242,13 @@ Game.prototype.finishGame = function (toBeWinner) {
           this.sendText(
             this.allSockets,
             `Correct Merlin guessers were: ${guessesByTarget[target].join(
-              ', '
+              ', ',
             )}`,
-            'server-text'
+            'server-text',
           );
         } else {
           incorrectGuessersText.push(
-            `${guessesByTarget[target].join(', ')} (->${target})`
+            `${guessesByTarget[target].join(', ')} (->${target})`,
           );
         }
       }
@@ -1257,7 +1257,7 @@ Game.prototype.finishGame = function (toBeWinner) {
       this.sendText(
         this.allSockets,
         `Incorrect Merlin guessers were: ${incorrectGuessersText.join('; ')}`,
-        'server-text'
+        'server-text',
       );
     }
   }
@@ -1319,7 +1319,7 @@ Game.prototype.finishGame = function (toBeWinner) {
   let botUsernames;
   if (this.botSockets !== undefined) {
     botUsernames = this.botSockets.map(
-      (botSocket) => botSocket.request.user.username
+      (botSocket) => botSocket.request.user.username,
     );
   } else {
     botUsernames = [];
@@ -1339,7 +1339,7 @@ Game.prototype.finishGame = function (toBeWinner) {
 
     playerUsernamesOrdered: getUsernamesOfPlayersInGame(this),
     playerUsernamesOrderedReversed: gameReverseArray(
-      getUsernamesOfPlayersInGame(this)
+      getUsernamesOfPlayersInGame(this),
     ),
 
     howTheGameWasWon: this.howWasWon,
@@ -1398,7 +1398,7 @@ Game.prototype.finishGame = function (toBeWinner) {
     let provisionalGame = false;
     if (
       this.playersInGame.filter(
-        (soc) => soc.request.user.ratingBracket === 'unranked'
+        (soc) => soc.request.user.ratingBracket === 'unranked',
       ).length > 0
     ) {
       provisionalGame = true;
@@ -1407,7 +1407,7 @@ Game.prototype.finishGame = function (toBeWinner) {
     // calculate team 1v1 elo adjustment
     const teamResChange = this.calculateResistanceRatingChange(
       this.winner,
-      provisionalGame
+      provisionalGame,
     );
     const teamSpyChange = -teamResChange;
 
@@ -1439,7 +1439,7 @@ Game.prototype.finishGame = function (toBeWinner) {
           // If there are multiple provisional players, use all ratings, otherwise just the other players' ratings.
           if (
             this.playersInGame.filter(
-              (soc) => soc.request.user.ratingBracket === 'unranked'
+              (soc) => soc.request.user.ratingBracket === 'unranked',
             ).length > 1
           ) {
             const playerRatings = oldPlayersInfo.map((data) => data.rating);
@@ -1447,19 +1447,19 @@ Game.prototype.finishGame = function (toBeWinner) {
               this.calculateNewProvisionalRating(
                 this.winner,
                 player,
-                playerRatings
+                playerRatings,
               );
           } else {
             const otherPlayerRatings = oldPlayersInfo
               .filter(
-                (data) => !(data.username === player.request.user.username)
+                (data) => !(data.username === player.request.user.username),
               )
               .map((data) => data.rating);
             player.request.user.playerRating =
               this.calculateNewProvisionalRating(
                 this.winner,
                 player,
-                otherPlayerRatings
+                otherPlayerRatings,
               );
           }
           const difference =
@@ -1467,33 +1467,33 @@ Game.prototype.finishGame = function (toBeWinner) {
           this.sendText(
             this.allSockets,
             `${player.request.user.username}: ${Math.floor(
-              rating
+              rating,
             )} -> ${Math.floor(player.request.user.playerRating)} (${
               difference > 0 ? '+' + difference : difference
             })`,
-            'server-text'
+            'server-text',
           );
         } else {
           if (player.alliance === 'Resistance') {
             this.sendText(
               this.allSockets,
               `${player.request.user.username}: ${Math.floor(
-                rating
+                rating,
               )} -> ${Math.floor(rating + indResChange)} (${
                 indResChange > 0 ? '+' + indResChange : indResChange
               })`,
-              'server-text'
+              'server-text',
             );
             player.request.user.playerRating += indResChange;
           } else if (player.alliance === 'Spy') {
             this.sendText(
               this.allSockets,
               `${player.request.user.username}: ${Math.floor(
-                rating
+                rating,
               )} -> ${Math.floor(rating + indSpyChange)} (${
                 indSpyChange > 0 ? '+' + indSpyChange : indSpyChange
               })`,
-              'server-text'
+              'server-text',
             );
             player.request.user.playerRating += indSpyChange;
           }
@@ -1509,7 +1509,7 @@ Game.prototype.finishGame = function (toBeWinner) {
             console.log(err);
           } else if (foundUser) {
             foundUser.totalTimePlayed = new Date(
-              foundUser.totalTimePlayed.getTime() + gameDuration.getTime()
+              foundUser.totalTimePlayed.getTime() + gameDuration.getTime(),
             );
 
             // update individual player statistics
@@ -1577,7 +1577,7 @@ Game.prototype.finishGame = function (toBeWinner) {
                 isNaN(
                   foundUser.winsLossesGameSizeBreakdown[
                     `${playersInGameVar.length}p`
-                  ].losses
+                  ].losses,
                 )
               ) {
                 foundUser.winsLossesGameSizeBreakdown[
@@ -1588,7 +1588,7 @@ Game.prototype.finishGame = function (toBeWinner) {
                 isNaN(
                   foundUser.roleStats[`${playersInGameVar.length}p`][
                     player.role.toLowerCase()
-                  ].wins
+                  ].wins,
                 )
               ) {
                 foundUser.roleStats[`${playersInGameVar.length}p`][
@@ -1610,7 +1610,7 @@ Game.prototype.finishGame = function (toBeWinner) {
                 isNaN(
                   foundUser.winsLossesGameSizeBreakdown[
                     `${playersInGameVar.length}p`
-                  ].losses
+                  ].losses,
                 )
               ) {
                 foundUser.winsLossesGameSizeBreakdown[
@@ -1621,7 +1621,7 @@ Game.prototype.finishGame = function (toBeWinner) {
                 isNaN(
                   foundUser.roleStats[`${playersInGameVar.length}p`][
                     player.role.toLowerCase()
-                  ].losses
+                  ].losses,
                 )
               ) {
                 foundUser.roleStats[`${playersInGameVar.length}p`][
@@ -1698,7 +1698,7 @@ Game.prototype.checkRoleCardSpecialMoves = function (socket, data) {
     if (
       this.specialRoles[this.roleKeysInPlay[i]].checkSpecialMove(
         socket,
-        data
+        data,
       ) === true
     ) {
       foundSomething = true;
@@ -1716,7 +1716,7 @@ Game.prototype.checkRoleCardSpecialMoves = function (socket, data) {
       if (
         this.specialCards[this.cardKeysInPlay[i]].checkSpecialMove(
           socket,
-          data
+          data,
         ) === true
       ) {
         foundSomething = true;
@@ -1823,7 +1823,7 @@ Game.prototype.submitMerlinGuess = function (guesserUsername, targetUsername) {
     return 'User not specified.';
   }
   const targetUsernameCase = this.playerUsernamesInGame.find(
-    (p) => p.toLowerCase() === targetUsername.toLowerCase()
+    (p) => p.toLowerCase() === targetUsername.toLowerCase(),
   );
 
   // Check the guesser isnt guessing himself
@@ -1838,7 +1838,7 @@ Game.prototype.submitMerlinGuess = function (guesserUsername, targetUsername) {
 
   // Check the guesser isnt Merlin/Percy
   const guesserPlayer = this.playersInGame.find(
-    (player) => player.username === guesserUsername
+    (player) => player.username === guesserUsername,
   );
   if (
     guesserPlayer !== undefined &&
@@ -1860,7 +1860,7 @@ Game.prototype.togglePause = function (modUsername) {
     this.sendText(
       this.allSockets,
       `${rolePrefix} ${modUsername} has unpaused the game.`,
-      'server-text'
+      'server-text',
     );
     this.phase = this.phaseBeforePause;
     this.distributeGameData();
@@ -1870,7 +1870,7 @@ Game.prototype.togglePause = function (modUsername) {
     this.sendText(
       this.allSockets,
       `${rolePrefix} ${modUsername} has paused the game.`,
-      'server-text'
+      'server-text',
     );
     // store the current phase, change to paused and update.
     this.phaseBeforePause = this.phase;
@@ -1886,7 +1886,7 @@ Game.prototype.canRoomChat = function (usernameLower: string) {
 
   if (this.muteSpectators) {
     const playerUsernamesLower: string[] = this.playersInGame.map(
-      (player: any) => player.username.toLowerCase()
+      (player: any) => player.username.toLowerCase(),
     );
 
     return (
@@ -1905,7 +1905,7 @@ Game.prototype.updateMuteSpectators = function (muteSpectators: boolean) {
   this.sendText(
     this.allSockets,
     `Mute spectators option set to ${muteSpectators}.`,
-    'server-text'
+    'server-text',
   );
 };
 
@@ -1935,7 +1935,7 @@ Usual formula: R_new = R_old + k(Actual - Expected)
 */
 Game.prototype.calculateResistanceRatingChange = function (
   winningTeam,
-  provisionalGame
+  provisionalGame,
 ) {
   // Constant changes in elo due to unbalanced winrate, winrate changes translated to elo points.
   const playerSizeEloChanges = [62, 56, 71, 116, 18, 80];
@@ -1984,7 +1984,7 @@ Game.prototype.calculateResistanceRatingChange = function (
     this.sendText(
       this.allSockets,
       'Error in elo calculation, no winning team specified.',
-      'server-text'
+      'server-text',
     );
     return;
   }
@@ -1992,7 +1992,7 @@ Game.prototype.calculateResistanceRatingChange = function (
   // If the game is provisional, apply a multiplicative reduction in elo change based on how experienced the players are.
   if (provisionalGame) {
     const provisionalPlayers = this.playersInGame.filter(
-      (soc) => soc.request.user.ratingBracket === 'unranked'
+      (soc) => soc.request.user.ratingBracket === 'unranked',
     );
     let totalProvisionalGames = 0;
     for (let i = 0; i < provisionalPlayers.length; i++) {
@@ -2029,7 +2029,7 @@ Could possibly lead to some people abusing their early rating by only playing wi
 Game.prototype.calculateNewProvisionalRating = function (
   winningTeam,
   playerSocket,
-  playerRatings
+  playerRatings,
 ) {
   // Constant changes in elo due to unbalanced winrate, winrate changes translated to elo points.
   const playerSizeWinrates = [0.57, 0.565, 0.58, 0.63, 0.52, 0.59];

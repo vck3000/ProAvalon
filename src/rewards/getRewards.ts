@@ -15,7 +15,7 @@ async function getAllRewardsForUser(user: any): Promise<RewardType[]> {
     const hasReward = await userHasReward(
       user,
       key as RewardType,
-      patreonDetails
+      patreonDetails,
     );
     if (hasReward === true) {
       rewardsSatisfied.push(key as RewardType);
@@ -28,7 +28,7 @@ async function getAllRewardsForUser(user: any): Promise<RewardType[]> {
 async function userHasReward(
   user: any,
   rewardType: RewardType,
-  patreonDetails?: any
+  patreonDetails?: any,
 ): Promise<boolean> {
   if (!patreonDetails) {
     patreonDetails = await getPatreonDetails(user.patreonId);

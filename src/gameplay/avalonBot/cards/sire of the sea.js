@@ -15,7 +15,7 @@ class SireOfTheSea {
     this.sireChain = []; // To be stored in the database later.
 
     this.description =
-      'Reveals the card holder\'s alliance to the person being carded.';
+      "Reveals the card holder's alliance to the person being carded.";
   }
 
   initialise() {
@@ -26,7 +26,7 @@ class SireOfTheSea {
     }
     this.setHolder(
       (this.thisRoom.teamLeader + 1 + addOne) %
-        this.thisRoom.playersInGame.length
+        this.thisRoom.playersInGame.length,
     );
   }
 

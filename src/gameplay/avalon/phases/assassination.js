@@ -33,7 +33,7 @@ class Assassination {
         // Check that the person making this request is the assassin
         const indexOfRequester = usernamesIndexes.getIndexFromUsername(
           this.thisRoom.playersInGame,
-          socket.request.user.username
+          socket.request.user.username,
         );
         if (this.thisRoom.playersInGame[indexOfRequester].role === this.role) {
           // Just shoot Merlin
@@ -47,7 +47,7 @@ class Assassination {
 
             const indexOfTarget = usernamesIndexes.getIndexFromUsername(
               this.thisRoom.playersInGame,
-              selectedPlayers
+              selectedPlayers,
             );
             // Check the alliance of the target. If they are spy, reject it and ask them to shoot a res.
             // Note: Allowed to shoot Oberon
@@ -57,7 +57,7 @@ class Assassination {
             ) {
               socket.emit(
                 'danger-alert',
-                'You are not allowed to shoot a known spy.'
+                'You are not allowed to shoot a known spy.',
               );
               return;
             }
@@ -83,7 +83,7 @@ class Assassination {
                 this.thisRoom.sendText(
                   this.thisRoom.allSockets,
                   `The assassin has shot ${merlinUsername}! They were correct!`,
-                  'gameplay-text-red'
+                  'gameplay-text-red',
                 );
               } else {
                 this.thisRoom.winner = 'Resistance';
@@ -94,7 +94,7 @@ class Assassination {
                 this.thisRoom.sendText(
                   this.thisRoom.allSockets,
                   `The assassin has shot ${selectedPlayers}! ${selectedPlayers} was not merlin, ${merlinUsername} was!`,
-                  'gameplay-text-blue'
+                  'gameplay-text-blue',
                 );
               }
 
@@ -116,7 +116,7 @@ class Assassination {
               console.log(selectedPlayers);
               socket.emit(
                 'danger-alert',
-                'Bad assassination data. Tell the admin if you see this!'
+                'Bad assassination data. Tell the admin if you see this!',
               );
             }
           }
@@ -125,11 +125,11 @@ class Assassination {
           else if (selectedPlayers.length === 2) {
             const i0 = usernamesIndexes.getIndexFromUsername(
               this.thisRoom.playersInGame,
-              selectedPlayers[0]
+              selectedPlayers[0],
             );
             const i1 = usernamesIndexes.getIndexFromUsername(
               this.thisRoom.playersInGame,
-              selectedPlayers[1]
+              selectedPlayers[1],
             );
             // Check the alliance of the target. If they are spy, reject it and ask them to shoot a res.
             // Note: Allowed to shoot Oberon
@@ -139,7 +139,7 @@ class Assassination {
             ) {
               socket.emit(
                 'danger-alert',
-                'You are not allowed to shoot a known spy.'
+                'You are not allowed to shoot a known spy.',
               );
               return;
             }
@@ -150,7 +150,7 @@ class Assassination {
             ) {
               socket.emit(
                 'danger-alert',
-                'You are not allowed to shoot a known spy.'
+                'You are not allowed to shoot a known spy.',
               );
               return;
             }
@@ -187,7 +187,7 @@ class Assassination {
               this.thisRoom.sendText(
                 this.thisRoom.allSockets,
                 `The assassin has shot ${tristanUsername} and ${isoldeUsername}! They were correct!`,
-                'gameplay-text-red'
+                'gameplay-text-red',
               );
             } else {
               this.thisRoom.winner = 'Resistance';
@@ -198,7 +198,7 @@ class Assassination {
               this.thisRoom.sendText(
                 this.thisRoom.allSockets,
                 `The assassin has shot ${selectedPlayers[0]} and ${selectedPlayers[1]}! ${selectedPlayers[0]} and ${selectedPlayers[1]} were not Tristan and Isolde, ${tristanUsername} and ${isoldeUsername} were!`,
-                'gameplay-text-blue'
+                'gameplay-text-blue',
               );
             }
 

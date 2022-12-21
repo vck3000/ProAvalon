@@ -52,7 +52,7 @@ export function createNotification(userIDTarget, stringToSay, link, madeBy) {
                 if (foundUser.notifications.length > maxNumNotifs) {
                   foundUser.notifications = foundUser.notifications.slice(
                     foundUser.notifications.length - maxNumNotifs,
-                    foundUser.notifications.length
+                    foundUser.notifications.length,
                   );
                 }
 
@@ -67,7 +67,7 @@ export function createNotification(userIDTarget, stringToSay, link, madeBy) {
       });
   } else {
     console.log(
-      `Missing a parameter - userIDTarget: ${userIDTarget}\tmadeBy: ${madeBy}`
+      `Missing a parameter - userIDTarget: ${userIDTarget}\tmadeBy: ${madeBy}`,
     );
   }
 }

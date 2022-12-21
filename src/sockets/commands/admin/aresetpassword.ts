@@ -1,13 +1,12 @@
-import { sendReplyToCommand } from '../../sockets/sockets';
-import { SocketUser } from '../../sockets/types';
-import User from '../../models/user';
+import { sendReplyToCommand } from '../../sockets';
+import { SocketUser } from '../../types';
+import User from '../../../models/user';
 import { Command } from '../types';
 
 export const aresetpassword: Command = {
   command: 'aresetpassword',
   help: "/aresetpassword <username> <new_password>: set a user's password",
   run: async (args: string[], socket: SocketUser) => {
-
     if (args.length !== 3) {
       sendReplyToCommand(socket, 'Wrong number of inputs.');
       return;
@@ -21,6 +20,7 @@ export const aresetpassword: Command = {
     });
 
     await new Promise<void>((res, rej) => {
+      // @ts-ignore
       user.setPassword(new_password, (err: any) => {
         if (err) {
           rej(err);
