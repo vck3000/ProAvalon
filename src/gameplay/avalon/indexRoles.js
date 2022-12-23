@@ -2,34 +2,29 @@
 import fs from 'fs';
 import path from 'path';
 
-function index() {
-  // Import all the roles from AVALON
-  this.getRoles = function (thisRoom) {
-    const normalizedPath = path.join(__dirname, './roles');
+export const getRoles = function (thisRoom) {
+  const normalizedPath = path.join(__dirname, './roles');
 
-    const roleImports = {};
-    const obj = {};
+  const roleImports = {};
+  const obj = {};
 
-    fs.readdirSync(normalizedPath).forEach((file) => {
-      // console.log(file);
+  fs.readdirSync(normalizedPath).forEach((file) => {
+    // console.log(file);
 
-      // If it is a javascript file, add it
-      if (file.includes('.js') === true && !file.includes('.map')) {
-        name = file.replace('.js', '');
+    // If it is a javascript file, add it
+    if (file.includes('.js') === true && !file.includes('.map')) {
+      name = file.replace('.js', '');
 
-        roleImports[name] = require(`./roles/${file}`).default;
-      }
-    });
-
-    for (var name in roleImports) {
-      if (roleImports.hasOwnProperty(name)) {
-        // Initialise it
-        obj[name] = new roleImports[name](thisRoom);
-      }
+      roleImports[name] = require(`./roles/${file}`).default;
     }
+  });
 
-    return obj;
-  };
-}
+  for (var name in roleImports) {
+    if (roleImports.hasOwnProperty(name)) {
+      // Initialise it
+      obj[name] = new roleImports[name](thisRoom);
+    }
+  }
 
-export default index;
+  return obj;
+};

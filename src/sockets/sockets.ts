@@ -19,11 +19,16 @@ import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import { modOrTOString } from '../modsadmins/modOrTO';
-import { GAME_MODE_NAMES } from '../gameplay/gameModeNames';
+import { GAME_MODE_NAMES } from '../gameplay/gameModes';
 
 import { ChatSpamFilter } from './chatSpamFilter';
 import { MessageWithDate, Quote } from './quote';
-import { APIBotSocket, enabledBots, makeBotAPIRequest, SimpleBotSocket } from './bot';
+import {
+  APIBotSocket,
+  enabledBots,
+  makeBotAPIRequest,
+  SimpleBotSocket,
+} from './bot';
 
 import { adminCommands } from './commands/admin';
 import { modCommands as modCommandsImported } from './commands/mod';

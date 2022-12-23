@@ -14,19 +14,7 @@ import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 
 // Get all the gamemodes and their roles/cards/phases.
-import { GAME_MODE_NAMES } from './gameModeNames';
-
-const gameModeObj: any = {};
-for (let i = 0; i < GAME_MODE_NAMES.length; i++) {
-  gameModeObj[GAME_MODE_NAMES[i]] = {};
-
-  gameModeObj[GAME_MODE_NAMES[i]].Roles =
-    require(`./${GAME_MODE_NAMES[i]}/indexRoles`).default;
-  gameModeObj[GAME_MODE_NAMES[i]].Phases =
-    require(`./${GAME_MODE_NAMES[i]}/indexPhases`).default;
-  gameModeObj[GAME_MODE_NAMES[i]].Cards =
-    require(`./${GAME_MODE_NAMES[i]}/indexCards`).default;
-}
+import { gameModeObj } from './gameModes';
 
 /**
  *
