@@ -52,11 +52,9 @@ function Room(
 
   // Phases Cards and Roles to use
   this.commonPhases = new commonPhasesIndex().getPhases(thisRoom);
-  this.specialRoles = new gameModeObj[this.gameMode].Roles().getRoles(thisRoom);
-  this.specialPhases = new gameModeObj[this.gameMode].Phases().getPhases(
-    thisRoom,
-  );
-  this.specialCards = new gameModeObj[this.gameMode].Cards().getCards(thisRoom);
+  this.specialRoles = new gameModeObj[this.gameMode].Roles(thisRoom);
+  this.specialPhases = new gameModeObj[this.gameMode].Phases(thisRoom);
+  this.specialCards = new gameModeObj[this.gameMode].Cards(thisRoom);
 
   // timeout object for game closing
   this.destroyTimeoutObj;
