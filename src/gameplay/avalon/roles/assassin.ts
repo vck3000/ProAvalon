@@ -1,58 +1,56 @@
-import { Role } from '../../types';
+import { Role, See } from '../../types';
+import Game from '../../game';
 
 class Assassin implements Role {
-  static role = 'Assassin';
-  static alliance = 'Resistance';
+  // @ts-ignore
+  room: Game;
+  role = 'Assassin';
+  alliance = 'Spy';
+  specialPhase = 'assassination';
 
-  constructor(thisRoom) {
-    this.thisRoom = thisRoom;
+  description =
+    'If the resistance win 3 missions, the Assassin can shoot one person for Merlin, or two people for Tristan and Isolde. If they are correct, the spies win!';
+  orderPriorityInOptions = 90;
 
-    this.specialPhase = 'assassination';
+  playerShot = '';
+  playerShot2 = '';
 
-    this.role = 'Assassin';
-    this.alliance = 'Spy';
-
-    this.description =
-      'If the resistance win 3 missions, the Assassin can shoot one person for Merlin, or two people for Tristan and Isolde. If they are correct, the spies win!';
-    this.orderPriorityInOptions = 90;
-
-    this.playerShot = '';
-    this.playerShot2 = '';
+  // @ts-ignore
+  constructor(room: Game) {
+    this.room = room;
   }
 
   // Assassin sees all spies except oberon
-  see() {
-    if (this.thisRoom.gameStarted === true) {
-      const obj = {};
+  see(): See {
+    if (this.room.gameStarted === true) {
       const array = [];
 
-      for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
-        if (this.thisRoom.playersInGame[i].alliance === 'Spy') {
-          if (this.thisRoom.playersInGame[i].role === 'Oberon') {
+      for (let i = 0; i < this.room.playersInGame.length; i++) {
+        if (this.room.playersInGame[i].alliance === 'Spy') {
+          if (this.room.playersInGame[i].role === 'Oberon') {
             // don't add oberon
           } else {
             // add the spy
-            array.push(this.thisRoom.playersInGame[i].username);
+            array.push(this.room.playersInGame[i].username);
           }
         }
       }
 
-      obj.spies = array;
-      return obj;
+      return { spies: array };
     }
   }
 
   // Assassination phase
-  checkSpecialMove(socket, buttonPressed, selectedPlayers) {
+  checkSpecialMove() {
     // Check for assassination mode and enter it if it is the right time
     if (this.playerShot === '') {
       // If we have the right conditions, we go into assassination phase
-      if (this.thisRoom.phase === 'finished') {
+      if (this.room.phase === 'finished') {
         // Get the number of successes:
         let numOfSuccesses = 0;
 
-        for (var i = 0; i < this.thisRoom.missionHistory.length; i++) {
-          if (this.thisRoom.missionHistory[i] === 'succeeded') {
+        for (var i = 0; i < this.room.missionHistory.length; i++) {
+          if (this.room.missionHistory[i] === 'succeeded') {
             numOfSuccesses++;
           }
         }
@@ -63,15 +61,15 @@ class Assassin implements Role {
         let tristExists = false;
         let isoExists = false;
 
-        for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
-          if (this.thisRoom.playersInGame[i].role === 'Merlin') {
+        for (var i = 0; i < this.room.playersInGame.length; i++) {
+          if (this.room.playersInGame[i].role === 'Merlin') {
             merlinExists = true;
           }
-          if (this.thisRoom.playersInGame[i].role === 'Tristan') {
+          if (this.room.playersInGame[i].role === 'Tristan') {
             tristExists = true;
           }
 
-          if (this.thisRoom.playersInGame[i].role === 'Isolde') {
+          if (this.room.playersInGame[i].role === 'Isolde') {
             isoExists = true;
           }
         }
@@ -82,8 +80,8 @@ class Assassin implements Role {
             (tristExists === true && isoExists === true))
         ) {
           // Set the assassination phase
-          this.thisRoom.startAssassinationTime = new Date();
-          this.thisRoom.phase = this.specialPhase;
+          this.room.startAssassinationTime = new Date();
+          this.room.phase = this.specialPhase;
           return true;
         }
       }
