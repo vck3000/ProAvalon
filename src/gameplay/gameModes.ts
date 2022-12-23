@@ -11,13 +11,13 @@ export const GAME_MODE_NAMES = [AVALON, AVALON_BOT];
 
 export const gameModeObj = {
   [AVALON]: {
-    Roles: avalonGetRoles,
-    Phases: avalonGetPhases,
-    Cards: avalonGetCards,
+    getRoles: avalonGetRoles,
+    getPhases: avalonGetPhases,
+    getCards: avalonGetCards,
   },
   [AVALON_BOT]: {
-    Roles: avalonBotGetRoles,
-    Phases: avalonBotGetPhases,
-    Cards: avalonBotGetCards,
+    getRoles: avalonBotGetRoles,
+    getPhases: avalonBotGetPhases,
+    getCards: avalonBotGetCards,
   },
 };

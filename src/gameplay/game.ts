@@ -190,9 +190,9 @@ Game.prototype.recoverGame = function (storedData) {
   Game.prototype = Object.assign(Game.prototype, roomFunctions);
   Object.assign(Game.prototype, PlayersReadyNotReady.prototype);
 
-  this.specialRoles = new gameModeObj[this.gameMode].Roles(this);
-  this.specialPhases = new gameModeObj[this.gameMode].Phases(this);
-  this.specialCards = new gameModeObj[this.gameMode].Cards(this);
+  this.specialRoles = new gameModeObj[this.gameMode].getRoles(this);
+  this.specialPhases = new gameModeObj[this.gameMode].getPhases(this);
+  this.specialCards = new gameModeObj[this.gameMode].getCards(this);
 
   // Roles
   // Remove the circular dependency

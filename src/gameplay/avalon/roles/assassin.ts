@@ -1,4 +1,6 @@
-class Assassin {
+import { Role } from '../../types';
+
+class Assassin implements Role {
   static role = 'Assassin';
   static alliance = 'Resistance';
 

@@ -1,6 +1,3 @@
-// room object
-
-// Get all the gamemodes and their roles/cards/phases.
 import { GAME_MODE_NAMES, gameModeObj } from './gameModes';
 import commonPhasesIndex from './indexCommonPhases';
 
@@ -52,12 +49,9 @@ function Room(
 
   // Phases Cards and Roles to use
   this.commonPhases = new commonPhasesIndex().getPhases(thisRoom);
-  this.specialRoles = new gameModeObj[this.gameMode].Roles(thisRoom);
-  this.specialPhases = new gameModeObj[this.gameMode].Phases(thisRoom);
-  this.specialCards = new gameModeObj[this.gameMode].Cards(thisRoom);
-
-  // timeout object for game closing
-  this.destroyTimeoutObj;
+  this.specialRoles = new gameModeObj[this.gameMode].getRoles(thisRoom);
+  this.specialPhases = new gameModeObj[this.gameMode].getPhases(thisRoom);
+  this.specialCards = new gameModeObj[this.gameMode].getCards(thisRoom);
 }
 
 Room.prototype.playerJoinRoom = function (socket, inputPassword) {
