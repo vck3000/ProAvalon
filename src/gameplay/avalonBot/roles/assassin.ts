@@ -4,7 +4,10 @@ import Game from '../../game';
 class Assassin implements Role {
   // @ts-ignore
   room: Game;
-  role = 'Assassin';
+  // TODO pretty ugly...
+  static role = 'Assassin';
+  role = Assassin.role;
+
   alliance = 'Spy';
   specialPhase = 'assassination';
 

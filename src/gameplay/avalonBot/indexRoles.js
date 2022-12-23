@@ -10,18 +10,18 @@ import Spy from './roles/spy';
 import Mordred from './roles/mordred';
 
 const roles = {
-  [Resistance.role]: Resistance,
-  [Spy.role]: Spy,
+  [Resistance.role.toLowerCase()]: Resistance,
+  [Spy.role.toLowerCase()]: Spy,
 
-  [Assassin.role]: Assassin,
-  [Merlin.role]: Merlin,
-  [Percival.role]: Percival,
-  [Morgana.role]: Morgana,
+  [Assassin.role.toLowerCase()]: Assassin,
+  [Merlin.role.toLowerCase()]: Merlin,
+  [Percival.role.toLowerCase()]: Percival,
+  [Morgana.role.toLowerCase()]: Morgana,
 
-  [Oberon.role]: Oberon,
-  [Isolde.role]: Isolde,
-  [Mordred.role]: Mordred,
-  [Tristan.role]: Tristan,
+  [Oberon.role.toLowerCase()]: Oberon,
+  [Isolde.role.toLowerCase()]: Isolde,
+  [Mordred.role.toLowerCase()]: Mordred,
+  [Tristan.role.toLowerCase()]: Tristan,
 };
 
 export const getRoles = function (thisRoom) {
