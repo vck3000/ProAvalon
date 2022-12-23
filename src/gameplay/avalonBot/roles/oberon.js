@@ -1,4 +1,7 @@
 class Oberon {
+  static role = 'Oberon';
+  static alliance = 'Resistance';
+
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 

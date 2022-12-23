@@ -400,7 +400,7 @@ export let modCommands = {
       sendToAllChat(io, messageData);
 
       // Add the bots to the room
-      modCommands.maddbots.run(data, undefined, nextRoomId);
+      modCommands.maddbots.run(args, undefined, nextRoomId);
 
       // Start the game.
       const options = [

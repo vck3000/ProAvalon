@@ -1,4 +1,7 @@
 class Merlin {
+  static role = 'Merlin';
+  static alliance = 'Resistance';
+
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 

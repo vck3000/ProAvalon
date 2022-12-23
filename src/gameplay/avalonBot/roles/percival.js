@@ -1,4 +1,7 @@
 class Percival {
+  static role = 'Percival';
+  static alliance = 'Resistance';
+
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
