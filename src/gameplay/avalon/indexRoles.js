@@ -1,29 +1,38 @@
-// This file helps us load in the roles from the folder
-import fs from 'fs';
-import path from 'path';
+import Assassin from './roles/assassin';
+import Merlin from './roles/merlin';
+import Percival from './roles/percival';
+import Morgana from './roles/morgana';
+import Oberon from './roles/oberon';
+import Isolde from './roles/isolde';
+import Tristan from './roles/tristan';
+import Resistance from './roles/resistance';
+import Spy from './roles/spy';
+import Mordred from './roles/mordred';
+
+const roles = {
+  [Resistance.role]: Resistance,
+  [Spy.role]: Spy,
+
+  [Assassin.role]: Assassin,
+  [Merlin.role]: Merlin,
+  [Percival.role]: Percival,
+  [Morgana.role]: Morgana,
+
+  [Oberon.role]: Oberon,
+  [Isolde.role]: Isolde,
+  [Mordred.role]: Mordred,
+  [Tristan.role]: Tristan,
+};
 
 export const getRoles = function (thisRoom) {
-  const normalizedPath = path.join(__dirname, './roles');
-
-  const roleImports = {};
   const obj = {};
 
-  fs.readdirSync(normalizedPath).forEach((file) => {
-    // console.log(file);
-
-    // If it is a javascript file, add it
-    if (file.includes('.js') === true && !file.includes('.map')) {
-      name = file.replace('.js', '');
-
-      roleImports[name] = require(`./roles/${file}`).default;
-    }
-  });
-
-  for (var name in roleImports) {
-    if (roleImports.hasOwnProperty(name)) {
-      // Initialise it
-      obj[name] = new roleImports[name](thisRoom);
-    }
+  // No good way to map over an object, so we do this iteratively.
+  // Note this implementation leads to a limitation of one role per game.
+  // Not great...!
+  // TODO
+  for (const [roleName, roleClass] of Object.entries(roles)) {
+    obj[roleName] = new roleClass(thisRoom);
   }
 
   return obj;

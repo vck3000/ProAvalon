@@ -1,6 +1,7 @@
-import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
-
 class Assassin {
+  static role = 'Assassin';
+  static alliance = 'Resistance';
+
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
