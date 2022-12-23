@@ -1,4 +1,7 @@
 class Spy {
+  static role = 'Spy';
+  static alliance = 'Spy';
+
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 

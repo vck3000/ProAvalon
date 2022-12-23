@@ -56,6 +56,7 @@ class SireOfTheSea {
 
     if (
       this.thisRoom.missionHistory.length >= 2 &&
+      this.thisRoom.howWasWon !== 'Hammer rejected.' &&
       this.lastMissionUsed !== this.thisRoom.missionNum &&
       numSuccess < 3 &&
       numFail < 3

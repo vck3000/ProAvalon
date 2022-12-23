@@ -14,19 +14,7 @@ import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 
 // Get all the gamemodes and their roles/cards/phases.
-import { GAME_MODE_NAMES } from './gameModeNames';
-
-const gameModeObj: any = {};
-for (let i = 0; i < GAME_MODE_NAMES.length; i++) {
-  gameModeObj[GAME_MODE_NAMES[i]] = {};
-
-  gameModeObj[GAME_MODE_NAMES[i]].Roles =
-    require(`./${GAME_MODE_NAMES[i]}/indexRoles`).default;
-  gameModeObj[GAME_MODE_NAMES[i]].Phases =
-    require(`./${GAME_MODE_NAMES[i]}/indexPhases`).default;
-  gameModeObj[GAME_MODE_NAMES[i]].Cards =
-    require(`./${GAME_MODE_NAMES[i]}/indexCards`).default;
-}
+import { gameModeObj } from './gameModes';
 
 /**
  *
@@ -202,9 +190,9 @@ Game.prototype.recoverGame = function (storedData) {
   Game.prototype = Object.assign(Game.prototype, roomFunctions);
   Object.assign(Game.prototype, PlayersReadyNotReady.prototype);
 
-  this.specialRoles = new gameModeObj[this.gameMode].Roles().getRoles(this);
-  this.specialPhases = new gameModeObj[this.gameMode].Phases().getPhases(this);
-  this.specialCards = new gameModeObj[this.gameMode].Cards().getCards(this);
+  this.specialRoles = new gameModeObj[this.gameMode].getRoles(this);
+  this.specialPhases = new gameModeObj[this.gameMode].getPhases(this);
+  this.specialCards = new gameModeObj[this.gameMode].getCards(this);
 
   // Roles
   // Remove the circular dependency

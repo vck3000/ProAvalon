@@ -1,20 +1,4 @@
-// room object
-
-// Get all the gamemodes and their roles/cards/phases.
-import { GAME_MODE_NAMES } from './gameModeNames';
-const gameModeObj = {};
-
-for (let i = 0; i < GAME_MODE_NAMES.length; i++) {
-  gameModeObj[GAME_MODE_NAMES[i]] = {};
-
-  gameModeObj[GAME_MODE_NAMES[i]].Roles =
-    require(`./${GAME_MODE_NAMES[i]}/indexRoles`).default;
-  gameModeObj[GAME_MODE_NAMES[i]].Phases =
-    require(`./${GAME_MODE_NAMES[i]}/indexPhases`).default;
-  gameModeObj[GAME_MODE_NAMES[i]].Cards =
-    require(`./${GAME_MODE_NAMES[i]}/indexCards`).default;
-}
-
+import { GAME_MODE_NAMES, gameModeObj } from './gameModes';
 import commonPhasesIndex from './indexCommonPhases';
 
 function Room(
@@ -65,14 +49,9 @@ function Room(
 
   // Phases Cards and Roles to use
   this.commonPhases = new commonPhasesIndex().getPhases(thisRoom);
-  this.specialRoles = new gameModeObj[this.gameMode].Roles().getRoles(thisRoom);
-  this.specialPhases = new gameModeObj[this.gameMode].Phases().getPhases(
-    thisRoom,
-  );
-  this.specialCards = new gameModeObj[this.gameMode].Cards().getCards(thisRoom);
-
-  // timeout object for game closing
-  this.destroyTimeoutObj;
+  this.specialRoles = new gameModeObj[this.gameMode].getRoles(thisRoom);
+  this.specialPhases = new gameModeObj[this.gameMode].getPhases(thisRoom);
+  this.specialCards = new gameModeObj[this.gameMode].getCards(thisRoom);
 }
 
 Room.prototype.playerJoinRoom = function (socket, inputPassword) {

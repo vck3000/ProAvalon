@@ -1,35 +1,39 @@
-// This file helps us load in the roles from the folder
-import fs from 'fs';
-import path from 'path';
+import Assassin from './roles/assassin';
+import Merlin from './roles/merlin';
+import Percival from './roles/percival';
+import Morgana from './roles/morgana';
+import Oberon from './roles/oberon';
+import Isolde from './roles/isolde';
+import Tristan from './roles/tristan';
+import Resistance from './roles/resistance';
+import Spy from './roles/spy';
+import Mordred from './roles/mordred';
 
-function index() {
-  // Import all the roles from AVALON
-  this.getRoles = function (thisRoom) {
-    const normalizedPath = path.join(__dirname, './roles');
+const roles = {
+  [Resistance.role.toLowerCase()]: Resistance,
+  [Spy.role.toLowerCase()]: Spy,
 
-    const roleImports = {};
-    const obj = {};
+  [Assassin.role.toLowerCase()]: Assassin,
+  [Merlin.role.toLowerCase()]: Merlin,
+  [Percival.role.toLowerCase()]: Percival,
+  [Morgana.role.toLowerCase()]: Morgana,
 
-    fs.readdirSync(normalizedPath).forEach((file) => {
-      // console.log(file);
+  [Oberon.role.toLowerCase()]: Oberon,
+  [Isolde.role.toLowerCase()]: Isolde,
+  [Mordred.role.toLowerCase()]: Mordred,
+  [Tristan.role.toLowerCase()]: Tristan,
+};
 
-      // If it is a javascript file, add it
-      if (file.includes('.js') === true && !file.includes('.map')) {
-        name = file.replace('.js', '');
+export const getRoles = function (thisRoom) {
+  const obj = {};
 
-        roleImports[name] = require(`./roles/${file}`).default;
-      }
-    });
+  // No good way to map over an object, so we do this iteratively.
+  // Note this implementation leads to a limitation of one role per game.
+  // Not great...!
+  // TODO
+  for (const [roleName, roleClass] of Object.entries(roles)) {
+    obj[roleName] = new roleClass(thisRoom);
+  }
 
-    for (var name in roleImports) {
-      if (roleImports.hasOwnProperty(name)) {
-        // Initialise it
-        obj[name] = new roleImports[name](thisRoom);
-      }
-    }
-
-    return obj;
-  };
-}
-
-export default index;
+  return obj;
+};

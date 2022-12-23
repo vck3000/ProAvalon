@@ -19,7 +19,7 @@ import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import { modOrTOString } from '../modsadmins/modOrTO';
-import { GAME_MODE_NAMES } from '../gameplay/gameModeNames';
+import { GAME_MODE_NAMES } from '../gameplay/gameModes';
 
 import { ChatSpamFilter } from './chatSpamFilter';
 import { MessageWithDate, Quote } from './quote';
@@ -400,7 +400,7 @@ export let modCommands = {
       sendToAllChat(io, messageData);
 
       // Add the bots to the room
-      modCommands.maddbots.run(data, undefined, nextRoomId);
+      modCommands.maddbots.run(args, undefined, nextRoomId);
 
       // Start the game.
       const options = [
@@ -1921,12 +1921,6 @@ export const server = function (io: SocketServer): void {
   // SOCKETS for each connection
   ioGlobal = io;
   io.sockets.on('connection', async (socket: SocketUser) => {
-    if (!socket.request.isAuthenticated()) {
-      socket.emit('alert', 'You are not authenticated.');
-      socket.disconnect(true);
-      return;
-    }
-
     // remove any duplicate sockets
     for (let i = 0; i < allSockets.length; i++) {
       if (allSockets[i].request.user.id === socket.request.user.id) {
