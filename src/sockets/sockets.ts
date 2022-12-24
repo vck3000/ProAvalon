@@ -2966,7 +2966,7 @@ function updateRoomGameMode(gameMode) {
 }
 
 function updateRoomRanked(rankedType) {
-  if (rooms[this.request.user.inRoomId]) {
+  if (rooms[this.request.user.inRoomId] && rooms[this.request.user.inRoomId].getStatus() === 'Game in progress') {
     rooms[this.request.user.inRoomId].updateRanked(this, rankedType);
   }
   updateCurrentGamesList();
