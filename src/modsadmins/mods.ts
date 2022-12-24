@@ -4,7 +4,6 @@ export const modsArray = [
   'starbird1002',
   'besjbo',
   'not.me',
-  'manuavalon',
   'maximovic96',
   'd8nitemike',
 ];
