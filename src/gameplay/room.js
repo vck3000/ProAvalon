@@ -1,4 +1,4 @@
-import { GAME_MODE_NAMES, gameModeObj } from './gameModes';
+import { AVALON, AVALON_BOT, GAME_MODE_NAMES, gameModeObj } from './gameModes';
 import commonPhasesIndex from './indexCommonPhases';
 
 function Room(
@@ -382,6 +382,18 @@ Room.prototype.updateMaxNumPlayers = function (socket, number) {
 };
 
 Room.prototype.updateRanked = function (socket, rankedType) {
+  if (this.gameStarted) {
+    return;
+  }
+
+  if (rankedType !== 'ranked' && rankedType !== 'unranked') {
+    return;
+  }
+
+  if (this.gameMode === AVALON_BOT) {
+    return;
+  }
+
   if (this.joinPassword && rankedType === 'ranked') {
     this.sendText(
       this.allSockets,
@@ -399,6 +411,13 @@ Room.prototype.updateRanked = function (socket, rankedType) {
 };
 
 Room.prototype.updateGameModesInRoom = function (socket, gameMode) {
+  if (this.gameStarted) {
+    return;
+  }
+
+  if (gameMode !== AVALON && gameMode !== AVALON_BOT) {
+    return;
+  }
   if (
     GAME_MODE_NAMES.includes(gameMode) === true &&
     socket.request.user.username === this.host
@@ -451,11 +470,9 @@ Room.prototype.updateGameModesInRoom = function (socket, gameMode) {
     this.gameMode = gameMode;
     let thisRoom = this;
 
-    this.specialRoles = new gameModeObj[this.gameMode].Roles().getRoles(this);
-    this.specialPhases = new gameModeObj[this.gameMode].Phases().getPhases(
-      this,
-    );
-    this.specialCards = new gameModeObj[this.gameMode].Cards().getCards(this);
+    this.specialRoles = new gameModeObj[this.gameMode].getRoles(this);
+    this.specialPhases = new gameModeObj[this.gameMode].getPhases(this);
+    this.specialCards = new gameModeObj[this.gameMode].getCards(this);
 
     // Send the data to all sockets within the room.
     for (let i = 0; i < this.allSockets.length; i++) {
