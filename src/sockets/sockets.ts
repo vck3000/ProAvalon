@@ -2959,14 +2959,14 @@ function gameMove(data) {
 }
 
 function updateRoomGameMode(gameMode) {
-  if (rooms[this.request.user.inRoomId]) {
+  if (rooms[this.request.user.inRoomId] && !rooms[this.request.user.inRoomId].gameStarted) {
     rooms[this.request.user.inRoomId].updateGameModesInRoom(this, gameMode);
   }
   updateCurrentGamesList();
 }
 
 function updateRoomRanked(rankedType) {
-  if (rooms[this.request.user.inRoomId]) {
+  if (rooms[this.request.user.inRoomId] && !rooms[this.request.user.inRoomId].gameStarted) {
     rooms[this.request.user.inRoomId].updateRanked(this, rankedType);
   }
   updateCurrentGamesList();
