@@ -1,4 +1,4 @@
-import { GAME_MODE_NAMES, gameModeObj } from './gameModes';
+import { AVALON, AVALON_BOT, GAME_MODE_NAMES, gameModeObj } from './gameModes';
 import commonPhasesIndex from './indexCommonPhases';
 
 function Room(
@@ -390,7 +390,7 @@ Room.prototype.updateRanked = function (socket, rankedType) {
     return;
   }
 
-  if (this.gameMode === 'avalonBot') {
+  if (this.gameMode === AVALON_BOT) {
     return;
   }
 
@@ -417,7 +417,7 @@ Room.prototype.updateGameModesInRoom = function (socket, gameMode) {
     return;
   }
 
-  if (gameMode !== 'avalon' && gameMode !== 'avalonBot') {
+  if (gameMode !== AVALON && gameMode !== AVALON_BOT) {
     return;
   }
   if (
