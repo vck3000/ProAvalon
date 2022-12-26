@@ -394,8 +394,6 @@ Room.prototype.updateRanked = function (socket, rankedType) {
     return;
   }
 
-  console.log(rankedType);
-
   if (this.joinPassword && rankedType === 'ranked') {
     this.sendText(
       this.allSockets,
