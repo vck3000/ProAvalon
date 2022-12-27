@@ -22,6 +22,8 @@ class Mordred {
         if (this.thisRoom.playersInGame[i].alliance === 'Spy') {
           if (this.thisRoom.playersInGame[i].role === 'Oberon') {
             // don't add oberon
+          } else if (this.thisRoom.playersInGame[i].role === 'Guinevere') {
+            // don't add guinevere
           } else {
             // add the spy
             array.push(this.thisRoom.playersInGame[i].username);
