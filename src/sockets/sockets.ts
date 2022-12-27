@@ -2782,8 +2782,8 @@ function newRoom(dataObj) {
 function joinRoom(roomId, inputPassword) {
   // console.log("inputpassword: " + inputPassword);
 
-  // if the room exists
-  if (rooms[roomId]) {
+  // if the room exists and the player is not currently in a room
+  if (rooms[roomId] && this.request.user.inRoomId === undefined) {
     // join the room
     if (rooms[roomId].playerJoinRoom(this, inputPassword) === true) {
       // sends to players and specs
@@ -2813,7 +2813,7 @@ function joinRoom(roomId, inputPassword) {
 }
 
 function joinGame(roomId) {
-  if (rooms[roomId]) {
+  if (rooms[roomId] && this.request.user.inRoomId === undefined) {
     // if the room has not started yet, throw them into the room
     // console.log("Game status is: " + rooms[roomId].getStatus());
 
