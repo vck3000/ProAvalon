@@ -32,6 +32,7 @@ import {
 
 import { adminCommands } from './commands/admin';
 import { modCommands as modCommandsImported } from './commands/mod';
+import * as util from 'util';
 
 const chatSpamFilter = new ChatSpamFilter();
 if (process.env.NODE_ENV !== 'test') {
@@ -1939,6 +1940,10 @@ export const server = function (io: SocketServer): void {
     // now push their socket in
     allSockets.push(socket);
 
+    socket.onAny((eventName, ...args) => {
+      console.log(`[Client Socket] username=${socket.request.user.username} eventName=${eventName} args=${util.inspect(args)}`);
+    });
+
     // slight delay while client loads
     setTimeout(() => {
       console.log(
@@ -2783,7 +2788,7 @@ function joinRoom(roomId, inputPassword) {
   // console.log("inputpassword: " + inputPassword);
 
   // if the room exists and the player is not currently in a room
-  if (rooms[roomId] && this.request.user.inRoomId === undefined) {
+  if (rooms[roomId] && !this.request.user.inRoomId) {
     // join the room
     if (rooms[roomId].playerJoinRoom(this, inputPassword) === true) {
       // sends to players and specs
@@ -2813,11 +2818,8 @@ function joinRoom(roomId, inputPassword) {
 }
 
 function joinGame(roomId) {
-  if (rooms[roomId] && this.request.user.inRoomId === undefined) {
-    // if the room has not started yet, throw them into the room
-    // console.log("Game status is: " + rooms[roomId].getStatus());
-
-    if (rooms[roomId].getStatus() === 'Waiting' && this.request.user.inRoomId === roomId) {
+  if (rooms[roomId] && this.request.user.inRoomId === roomId) {
+    if (rooms[roomId].getStatus() === 'Waiting') {
       const ToF = rooms[roomId].playerSitDown(this);
       console.log(
         `${this.request.user.username} has joined room ${roomId}: ${ToF}`,
