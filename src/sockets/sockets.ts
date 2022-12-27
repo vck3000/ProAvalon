@@ -2783,7 +2783,7 @@ function joinRoom(roomId, inputPassword) {
   // console.log("inputpassword: " + inputPassword);
 
   // if the room exists and the player is not currently in a room
-  if (rooms[roomId] && this.request.user.inRoomId === undefined) {
+  if (rooms[roomId] && !this.request.user.inRoomId) {
     // join the room
     if (rooms[roomId].playerJoinRoom(this, inputPassword) === true) {
       // sends to players and specs
