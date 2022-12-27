@@ -15,8 +15,8 @@ function Room(
   if (newRoomPassword_ === '') {
     newRoomPassword_ = undefined;
   }
-
-  maxNumPlayers_ = parseInt(maxNumPlayers_);
+    
+  maxNumPlayers_ = parseInt(maxNumPlayers_, 10);
   if (isNaN(maxNumPlayers_)) {
     return;
   }
@@ -377,7 +377,7 @@ Room.prototype.getSocketsOfSpectators = function () {
 };
 
 Room.prototype.updateMaxNumPlayers = function (socket, number) {
-  number = parseInt(number);
+  number = parseInt(number, 10);
   if (isNaN(number)) {
     return;
   }

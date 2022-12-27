@@ -2743,7 +2743,7 @@ function outputSpamMessage(chat, user) {
 }
 
 function newRoom(dataObj) {
-  if (dataObj) {
+  if (dataObj && !this.request.user.inRoomId) {
     // while rooms exist already (in case of a previously saved and retrieved game)
     while (rooms[nextRoomId]) {
       nextRoomId++;
