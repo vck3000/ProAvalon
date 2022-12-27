@@ -15,8 +15,10 @@ function Room(
   if (newRoomPassword_ === '') {
     newRoomPassword_ = undefined;
   }
+    
+  maxNumPlayers_ = parseInt(maxNumPlayers_, 10);
 
-  if (!maxNumPlayers_.isInteger() || maxNumPlayers_ < 5 || maxNumPlayers_ > 10) {
+  if (maxNumPlayers == NaN || maxNumPlayers_ < 5 || maxNumPlayers_ > 10) {
     maxNumPlayers_ = 10;
   }
 
@@ -371,9 +373,10 @@ Room.prototype.getSocketsOfSpectators = function () {
 };
 
 Room.prototype.updateMaxNumPlayers = function (socket, number) {
+  var maxNumPlayers_ = parseInt(number, 10);
   if (
     socket.request.user.username === this.host &&
-    number.IsInteger() &&
+    !(number == NaN) &&
     number >= 5 &&
     number <= 10
   ) {
