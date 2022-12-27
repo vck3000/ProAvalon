@@ -16,7 +16,7 @@ function Room(
     newRoomPassword_ = undefined;
   }
 
-  if (maxNumPlayers_ === '' || maxNumPlayers_ < 5 || maxNumPlayers_ > 10) {
+  if (!maxNumPlayers_.isInteger() || maxNumPlayers_ < 5 || maxNumPlayers_ > 10) {
     maxNumPlayers_ = 10;
   }
 
@@ -373,6 +373,7 @@ Room.prototype.getSocketsOfSpectators = function () {
 Room.prototype.updateMaxNumPlayers = function (socket, number) {
   if (
     socket.request.user.username === this.host &&
+    number.IsInteger() &&
     number >= 5 &&
     number <= 10
   ) {
