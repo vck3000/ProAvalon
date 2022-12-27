@@ -30,6 +30,8 @@ class Merlin {
         if (this.thisRoom.playersInGame[i].alliance === 'Spy') {
           if (this.thisRoom.playersInGame[i].role === 'Mordred') {
             // don't add mordred for Merlin to see
+          }  else if (this.thisRoom.playersInGame[i].role === 'Guinevere') {
+          // don't add Guinevere for Merlin to see
           } else {
             // add the spy
             array.push(this.thisRoom.playersInGame[i].username);
