@@ -2817,7 +2817,7 @@ function joinGame(roomId) {
     // if the room has not started yet, throw them into the room
     // console.log("Game status is: " + rooms[roomId].getStatus());
 
-    if (rooms[roomId].getStatus() === 'Waiting') {
+    if (rooms[roomId].getStatus() === 'Waiting' && this.request.user.inRoomId === roomId) {
       const ToF = rooms[roomId].playerSitDown(this);
       console.log(
         `${this.request.user.username} has joined room ${roomId}: ${ToF}`,
