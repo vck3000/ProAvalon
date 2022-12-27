@@ -2738,7 +2738,7 @@ function outputSpamMessage(chat, user) {
 }
 
 function newRoom(dataObj) {
-  if (dataObj) {
+  if (dataObj && !this.request.user.inRoomId) {
     // while rooms exist already (in case of a previously saved and retrieved game)
     while (rooms[nextRoomId]) {
       nextRoomId++;
@@ -2813,7 +2813,7 @@ function joinRoom(roomId, inputPassword) {
 }
 
 function joinGame(roomId) {
-  if (rooms[roomId] && this.request.user.inRoomId === undefined) {
+  if (rooms[roomId]) {
     // if the room has not started yet, throw them into the room
     // console.log("Game status is: " + rooms[roomId].getStatus());
 
