@@ -15,11 +15,6 @@ function Room(
   if (newRoomPassword_ === '') {
     newRoomPassword_ = undefined;
   }
-    
-  maxNumPlayers_ = parseInt(maxNumPlayers_, 10);
-  if (isNaN(maxNumPlayers_)) {
-    return;
-  }
 
   // Default to 10 if out of range.
   if (maxNumPlayers_ < 5 || maxNumPlayers_ > 10) {

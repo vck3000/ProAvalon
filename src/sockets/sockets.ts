@@ -19,7 +19,7 @@ import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import { modOrTOString } from '../modsadmins/modOrTO';
-import { GAME_MODE_NAMES } from '../gameplay/gameModes';
+import { GAME_MODE_NAMES, isGameMode } from '../gameplay/gameModes';
 
 import { ChatSpamFilter } from './chatSpamFilter';
 import { MessageWithDate, Quote } from './quote';
@@ -1941,7 +1941,13 @@ export const server = function (io: SocketServer): void {
     allSockets.push(socket);
 
     socket.onAny((eventName, ...args) => {
-      console.log(`[Client Socket] username=${socket.request.user.username} eventName=${eventName} args=${util.inspect(args)}`);
+      console.log(
+        `[Client Socket] username=${
+          socket.request.user.username
+        },eventName=${eventName},args=${util.inspect(args, {
+          breakLength: Infinity,
+        })}`,
+      );
     });
 
     // slight delay while client loads
@@ -2744,6 +2750,23 @@ function outputSpamMessage(chat, user) {
 
 function newRoom(dataObj) {
   if (dataObj && !this.request.user.inRoomId) {
+    dataObj.maxNumPlayers = parseInt(dataObj.maxNumPlayers, 10);
+    if (isNaN(dataObj.maxNumPlayers)) {
+      return;
+    }
+
+    if (!isGameMode(dataObj.gameMode)) {
+      return;
+    }
+
+    if (dataObj.ranked !== 'ranked' && dataObj.ranked !== 'unranked') {
+      return;
+    }
+
+    if (dataObj.muteSpectators !== true && dataObj.muteSpectators !== false) {
+      return;
+    }
+
     // while rooms exist already (in case of a previously saved and retrieved game)
     while (rooms[nextRoomId]) {
       nextRoomId++;
@@ -2794,7 +2817,7 @@ function joinRoom(roomId, inputPassword) {
       // sends to players and specs
       rooms[roomId].distributeGameData();
 
-      // set the room id into the this obj
+      // set the room id into this obj
       this.request.user.inRoomId = roomId;
 
       // join the room chat
