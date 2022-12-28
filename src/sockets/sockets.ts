@@ -62,6 +62,16 @@ const rooms: GameWrapper[] = [];
 const allChatHistory = [];
 const allChat5Min = [];
 
+const possibleInteracts = ['buzz', 'pat', 'poke', 'punch', 'slap', 'hug'];
+const possibleInteractsPast = [
+  'buzzed',
+  'patted',
+  'poked',
+  'punched',
+  'slapped',
+  'hugged',
+];
+
 let nextRoomId = 1;
 
 process.on('SIGINT', gracefulShutdown);
@@ -1107,7 +1117,6 @@ export const userCommands = {
       console.log('interact user', data);
       const { args } = data;
 
-      const possibleInteracts = ['buzz', 'pat', 'poke', 'punch', 'slap', 'hug'];
       if (possibleInteracts.indexOf(args[1]) === -1) {
         return {
           message: `You can only buzz, pat, poke, punch, slap, or hug; not ${args[1]}.`,
@@ -1119,20 +1128,8 @@ export const userCommands = {
       const targetSocket =
         allSockets[getIndexFromUsername(allSockets, args[2], true)];
       if (targetSocket) {
-        let verbPast = '';
-        if (args[1] === 'buzz') {
-          verbPast = 'buzzed';
-        } else if (args[1] === 'pat') {
-          verbPast = 'patted';
-        } else if (args[1] === 'poke') {
-          verbPast = 'poked';
-        } else if (args[1] === 'punch') {
-          verbPast = 'punched';
-        } else if (args[1] === 'slap') {
-          verbPast = 'slapped';
-        } else if (args[1] === 'hug') {
-          verbPast = 'hugged';
-        }
+        let verbPast =
+          possibleInteractsPast[possibleInteracts.indexOf(args[1])];
 
         const dataToSend = {
           username: senderSocket.request.user.username,
@@ -2084,6 +2081,13 @@ export const server = function (io: SocketServer): void {
 
       socket.emit('allChatToClient', msg2);
 
+      socket.emit('allChatToClient', {
+        message:
+          'There have been recent attacks on the site. Please disregard any messages relating to Avalon.ist as they are no longer being run by the original team.',
+        classStr: 'server-text',
+        dateCreated: new Date(),
+      });
+
       if (socket.request.user.lastLoggedIn.length > 0) {
         const msg4 = {
           message: '',
@@ -2561,7 +2565,13 @@ function messageCommand(data) {
 }
 
 function interactUserPlayed(data) {
-  // socket.emit("interactUserPlayed", {success: false, interactedBy: data.username, myUsername: ownUsername, verb: data.verb, verbPast: data.verbPast});
+  if (!getIndexFromUsername(allSockets, data.myUsername.toLowerCase(), true)) {
+    return;
+  }
+  if (possibleInteractsPast.indexOf(data.verbPast) === -1) {
+    return;
+  }
+
   const socketWhoInitiatedInteract =
     allSockets[getIndexFromUsername(allSockets, data.interactedBy, true)];
 
