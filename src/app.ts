@@ -17,6 +17,7 @@ import path from 'path';
 import session from 'express-session';
 import socket, { Server as SocketServer } from 'socket.io';
 import createProxyMiddleware from 'http-proxy-middleware';
+import morgan from 'morgan';
 
 import { server as socketServer } from './sockets/sockets';
 import User from './models/user';
@@ -36,7 +37,6 @@ import MongoDBStoreFactory from 'connect-mongodb-session';
 const assetsPath = path.join(__dirname, '../assets');
 
 const app = express();
-
 app.use(compression());
 app.use(express.static(assetsPath, { maxAge: 518400000 })); // expires in 7 days.
 
@@ -47,6 +47,14 @@ app.locals.getVersionedPath = staticify.getVersionedPath;
 
 // Trust upstream IP X-Forwarded-For header from proxy
 app.set('trust proxy', true);
+
+morgan.token('body', (req, res) => JSON.stringify(req.body));
+
+app.use(
+  morgan(
+    '[Morgan] :remote-addr :remote-user :method :url HTTP/:http-version :status :res[content-length] - :body - :response-time ms',
+  ),
+);
 
 if (process.env.ENV === 'local') {
   console.log('Routing dist_webpack to localhost:3010.');
