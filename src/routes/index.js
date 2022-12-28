@@ -9,10 +9,11 @@ import User from '../models/user';
 import myNotification from '../models/notification';
 import gameRecord from '../models/gameRecord';
 import statsCumulative from '../models/statsCumulative';
-import { validEmail, emailExists } from '../routes/emailVerification';
+import { emailExists, validEmail } from '../routes/emailVerification';
 import { sendEmailVerification } from '../myFunctions/sendEmailVerification';
 
 import { disallowVPNs } from '../util/vpnDetection';
+import Settings from '../settings';
 
 const router = new Router();
 
@@ -45,6 +46,7 @@ const registerLimiter =
 router.post(
   '/',
   registerLimiter,
+  disableRegistrationMiddleware,
   sanitiseUsername,
   sanitiseEmail,
   disallowVPNs,
@@ -904,6 +906,19 @@ function sanitiseEmail(req, res, next) {
   });
 
   req.body.emailAddress = req.body.emailAddress.toLowerCase();
+
+  next();
+}
+
+function disableRegistrationMiddleware(req, res, next) {
+  if (Settings.getDisableRegistration()) {
+    req.flash(
+      'error',
+      'Registration is temporarily disabled. Please contact a mod if you would like to create an account.',
+    );
+    res.redirect('register');
+    return;
+  }
 
   next();
 }
