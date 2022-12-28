@@ -5,29 +5,34 @@ if (process.env.WHITELISTED_VPN_USERNAMES) {
   whitelistedUsernames = process.env.WHITELISTED_VPN_USERNAMES.split(',');
 }
 
+const vpnCache: Record<string, boolean> = {};
+
 const isVPN = async (ip: string): Promise<boolean> => {
-  return false;
-  // const response = await fetch(
-  //   `https://whois.as207111.net/api/lookup?ip_address=${ip}`,
-  //   {
-  //     headers: {
-  //       Accept: 'application/json',
-  //       Authorization: `Bearer ${process.env.VPN_DETECTION_TOKEN}`,
-  //     },
-  //   }
-  // );
+  if (vpnCache[ip]) {
+    return vpnCache[ip];
+  }
 
-  // const data = await response.json();
+  console.log(`Checking VPN status of ip: ${ip}`);
 
-  // if (!data.privacy) {
-  //   console.log(ip);
-  //   console.log(data);
-  //   throw new Error(
-  //     'VPN Detection lookup response did not contain the expected data.'
-  //   );
-  // }
+  const response = await fetch(
+    `https://vpnapi.io/api/${ip}?key=${process.env.VPN_DETECTION_TOKEN}`,
+  );
 
-  // return data.privacy.proxy || data.privacy.hosting;
+  const data = await response.json();
+
+  if (!data.security) {
+    console.log(data);
+    throw new Error(
+      'VPN Detection lookup response did not contain the expected data.',
+    );
+  }
+
+  const result: boolean = data.security.vpn;
+
+  vpnCache[ip] = result;
+  console.log(`VPN Cache size: ${Object.keys(vpnCache).length}`);
+
+  return result;
 };
 
 export const disallowVPNs: RequestHandler = (req, res, next) => {
@@ -41,17 +46,10 @@ export const disallowVPNs: RequestHandler = (req, res, next) => {
     return;
   }
 
-  let clientIpAddress = (req.headers['x-forwarded-for'] ||
-    req.connection.remoteAddress) as string;
-
-  if (Array.isArray(clientIpAddress)) {
-    clientIpAddress = clientIpAddress[0];
-  }
-
-  isVPN(clientIpAddress)
+  isVPN(req.ip)
     .then((vpn) => {
       if (vpn) {
-        console.log(`Blocked ${req.body.username} on ip ${clientIpAddress}`);
+        console.log(`Blocked ${req.body.username} on ip ${req.ip}`);
 
         // @ts-ignore
         req.flash('error', 'VPNs are not allowed.');

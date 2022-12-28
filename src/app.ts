@@ -44,6 +44,8 @@ const staticify = staticifyFactory(assetsPath);
 
 app.use(staticify.middleware);
 app.locals.getVersionedPath = staticify.getVersionedPath;
+
+// Trust upstream IP X-Forwarded-For header from proxy
 app.set('trust proxy', true);
 
 if (process.env.ENV === 'local') {
