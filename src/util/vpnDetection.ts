@@ -5,12 +5,15 @@ if (process.env.WHITELISTED_VPN_USERNAMES) {
   whitelistedUsernames = process.env.WHITELISTED_VPN_USERNAMES.split(',');
 }
 
-const vpnCache: Record<string, boolean> = {};
+const vpnCache: Map<string, boolean> = new Map();
 
 const isVPN = async (ip: string): Promise<boolean> => {
-  if (vpnCache[ip]) {
-    return vpnCache[ip];
+  if (vpnCache.has(ip)) {
+    return vpnCache.get(ip);
   }
+
+  // Default it to True in case it fails.
+  vpnCache.set(ip, true);
 
   console.log(`Checking VPN status of ip: ${ip}`);
 
@@ -29,8 +32,9 @@ const isVPN = async (ip: string): Promise<boolean> => {
 
   const result: boolean = data.security.vpn;
 
-  vpnCache[ip] = result;
-  console.log(`VPN Cache size: ${Object.keys(vpnCache).length}`);
+  vpnCache.set(ip, result);
+
+  console.log(`VPN Cache size: ${vpnCache.size}`);
 
   return result;
 };
@@ -60,7 +64,6 @@ export const disallowVPNs: RequestHandler = (req, res, next) => {
       next();
     })
     .catch((err) => {
-      next();
       throw err;
     });
 };
