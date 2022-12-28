@@ -58,7 +58,7 @@ morgan.token('body', (req, res) => {
 
 app.use(
   morgan(
-    '[Morgan] :remote-addr :remote-user :method :url HTTP/:http-version :status :res[content-length] - :body - :response-time ms',
+    '[:date[iso]] [Morgan] :remote-addr :remote-user :method :url HTTP/:http-version :status :res[content-length] - :body - :response-time ms',
   ),
 );
 
