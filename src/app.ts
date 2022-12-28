@@ -48,7 +48,13 @@ app.locals.getVersionedPath = staticify.getVersionedPath;
 // Trust upstream IP X-Forwarded-For header from proxy
 app.set('trust proxy', true);
 
-morgan.token('body', (req, res) => JSON.stringify(req.body));
+morgan.token('body', (req, res) => {
+  if (req.url === '/login') {
+    return JSON.stringify({ username: req.body.username });
+  }
+
+  return JSON.stringify(req.body);
+});
 
 app.use(
   morgan(
