@@ -14,8 +14,8 @@ const isVPN = async (ip: string): Promise<boolean> => {
 
   // Default it to True in case it fails.
   vpnCache.set(ip, true);
-
   console.log(`Checking VPN status of ip: ${ip}`);
+  console.log(`VPN Cache size: ${vpnCache.size}`);
 
   const response = await fetch(
     `https://vpnapi.io/api/${ip}?key=${process.env.VPN_DETECTION_TOKEN}`,
@@ -33,8 +33,6 @@ const isVPN = async (ip: string): Promise<boolean> => {
   const result: boolean = data.security.vpn;
 
   vpnCache.set(ip, result);
-
-  console.log(`VPN Cache size: ${vpnCache.size}`);
 
   return result;
 };

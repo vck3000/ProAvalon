@@ -6,6 +6,7 @@ import { munban } from './munban';
 import { mcompareips } from './mcompareips';
 import { mdc } from './mdc';
 import { mnotify } from './mnotify';
+import { mtoggleregistration } from './mtoggleregistration';
 
 export const modCommands: Commands = {
   [m.command]: m,
@@ -15,4 +16,5 @@ export const modCommands: Commands = {
   [mcompareips.command]: mcompareips,
   [mdc.command]: mdc,
   [mnotify.command]: mnotify,
+  [mtoggleregistration.command]: mtoggleregistration,
 };
