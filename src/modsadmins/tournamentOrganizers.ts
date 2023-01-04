@@ -6,7 +6,6 @@ export const TOsArray = [
   'goofy',
   'raytrout',
   'starkrush',
-  'basicnerd',
   'secretaccount8594',
 ];
 
