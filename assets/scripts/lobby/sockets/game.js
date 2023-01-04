@@ -31,7 +31,7 @@ socket.on('game-starting', (roles, gameMode) => {
       // swal.showLoading()
       timerInterval = setInterval(() => {
         swal.getContent().querySelector('strong').textContent = Math.floor(
-          swal.getTimerLeft() / 1000
+          swal.getTimerLeft() / 1000,
         );
       }, 100);
     },
@@ -39,16 +39,13 @@ socket.on('game-starting', (roles, gameMode) => {
       clearInterval(timerInterval);
     },
   }).then((result) => {
-    // console.log(result)
     if (
       result.dismiss === swal.DismissReason.timer ||
       result.dismiss === swal.DismissReason.cancel
     ) {
-      // console.log('I was closed by the timer')
-      socket.emit('player-not-ready', ownUsername);
+      socket.emit('player-not-ready');
     } else {
-      // console.log('Im ready!')
-      socket.emit('player-ready', ownUsername);
+      socket.emit('player-ready');
     }
   });
 
@@ -61,7 +58,7 @@ socket.on('game-starting', (roles, gameMode) => {
       'Game starting!',
       'Are you ready?',
       'avatars/base-spy.png',
-      'gameStarting'
+      'gameStarting',
     );
   }
 });
@@ -138,7 +135,7 @@ hoverPickBoxHighlightPlayerSetup();
 function hoverMissionBoxHighlightPlayerSetup() {
   $('.missionBox').hover(
     // Upon hover:
-    function () {
+    function() {
       // console.log(this);
       // console.log(this.getAttribute("id"));
       // console.log(this.getAttribute("id").slice(-1));
@@ -150,7 +147,7 @@ function hoverMissionBoxHighlightPlayerSetup() {
       }
       // Grab players to highlight
       const participatingTeamAndLeader = getPlayersOnMissionPickAndLeader(
-        parseInt(missionNum)
+        parseInt(missionNum),
       );
 
       highlightTeamAndOutlineLeader(participatingTeamAndLeader);
@@ -168,18 +165,18 @@ function hoverMissionBoxHighlightPlayerSetup() {
       }
     },
     // Upon unhover:
-    removeTeamHighlightAndLeaderOutline
+    removeTeamHighlightAndLeaderOutline,
   );
 }
 
 function hoverPickBoxHighlightPlayerSetup() {
   $('.pickBox').hover(
     // on hover
-    function () {
+    function() {
       const pickNum = this.getAttribute('id').slice(-1);
       const participatingTeamAndLeader = getPlayersOnMissionPickAndLeader(
         gameData.missionNum - 1,
-        parseInt(pickNum)
+        parseInt(pickNum),
       );
 
       highlightTeamAndOutlineLeader(participatingTeamAndLeader);
@@ -197,7 +194,7 @@ function hoverPickBoxHighlightPlayerSetup() {
       }
     },
     // on unhover
-    removeTeamHighlightAndLeaderOutline
+    removeTeamHighlightAndLeaderOutline,
   );
 }
 
@@ -213,7 +210,7 @@ function highlightTeamAndOutlineLeader(teamAndLeader) {
   teamAndLeader.team.forEach((username) => {
     if (darkThemeBool) {
       $(`[usernameofplayer="${username}"]`).addClass(
-        'highlight-participating-dark'
+        'highlight-participating-dark',
       );
     } else {
       $(`[usernameofplayer="${username}"]`).addClass('highlight-participating');

@@ -72,7 +72,6 @@ playersReadyNotReady.prototype.hostTryStartGame = function (options, gameMode) {
     return false;
   }
 
-  // console.log("HOST TRY START GAME");
   if (this.hostTryStartGameDate) {
     // 11 seconds
     if (new Date() - this.hostTryStartGameDate > 1000 * 11) {
