@@ -2905,8 +2905,13 @@ function leaveRoom() {
   }
 }
 
-function playerReady(username) {
-  if (rooms[this.request.user.inRoomId]) {
+function playerReady() {
+  const username = this.request.user.username;
+
+  if (
+    rooms[this.request.user.inRoomId] &&
+    !rooms[this.request.user.inRoomId].gameStarted
+  ) {
     const data = {
       message: `${username} is ready.`,
       classStr: 'server-text',
@@ -2914,15 +2919,17 @@ function playerReady(username) {
     };
     sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
 
-    if (rooms[this.request.user.inRoomId].playerReady(username) === true) {
-      // game will auto start if the above returned true
-    }
+    rooms[this.request.user.inRoomId].playerReady(username);
   }
 }
 
-function playerNotReady(username) {
-  if (rooms[this.request.user.inRoomId]) {
-    rooms[this.request.user.inRoomId].playerNotReady(username);
+function playerNotReady() {
+  const username = this.request.user.username;
+
+  if (
+    rooms[this.request.user.inRoomId] &&
+    !rooms[this.request.user.inRoomId].gameStarted
+  ) {
     const data = {
       message: `${username} is not ready.`,
       classStr: 'server-text',
@@ -2930,7 +2937,7 @@ function playerNotReady(username) {
     };
     sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
 
-    // ioGlobal.in(this.request.user.inRoomId).emit("player-not-ready", username + " is not ready.");
+    rooms[this.request.user.inRoomId].playerNotReady(username);
   }
 }
 

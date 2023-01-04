@@ -9,8 +9,8 @@
         margin-bottom: 30px;
         color: inherit;
         background-color: #eee;
-        
-        width:95%;
+
+        width: 95%;
     }
 
     .myTable {
@@ -20,11 +20,11 @@
         /* width: 100%; */
     }
 
-    .myTable tbody tr td{
+    .myTable tbody tr td {
         border: 1px solid black;
     }
 
-    .myTable thead tr td{
+    .myTable thead tr td {
         border: 1px solid black;
     }
 
@@ -32,13 +32,12 @@
         width: auto !important;
     }
 
-    .alignCenterHoriz{
+    .alignCenterHoriz {
         text-align: center;
-        background: rgb(200,200,200);
+        background: rgb(200, 200, 200);
     }
 
-
-    .hide-opacity{
+    .hide-opacity {
         opacity: 0;
     }
 
@@ -48,10 +47,7 @@
         -ms-transition: opacity 0.3s ease-in-out;
         -o-transition: opacity 0.3s ease-in-out;
     }
-
-
 </style>
-
 
 <div class="container myContainer">
     <h1><u>Process custom avatars:</u></h1>
@@ -65,7 +61,9 @@
         Avatars:
         <ul>
             <li>Must be easily identifyable as res or spy.</li>
-            <li>Must have at least 20% of the original colour (blue or red) and a minimum of the opposite allegiance's colour (approximation).</li>
+            <li>Must have at least 20% of the original colour (blue or red) and a minimum of the opposite allegiance's
+                colour (approximation).
+            </li>
             <li>Must not be inappropriate.</li>
             <li>Must have similar Res and Spy avatars.</li>
             <li>Must not be similar to any other existing custom avatars (unless the avatar was yours initially).</li>
@@ -74,8 +72,12 @@
             <li>Must have a transparent background (solid white will hurt the eyes of dark theme users!).</li>
             <li>Must resemble the base avatar images.</li>
             <li>Must keep the wordage to a minimum.</li>
-            <li>Must be hosted on Discord or Imgbb. Click <a href="/profile/avatargetlinktutorial">here</a> for a tutorial on how to get a good link.</li>
-            <li>Moderators have the final say, based on their judgment. Feel free to consult them before making your avatars to ensure they will adhere to these guidelines.</li>
+            <li>Must be hosted on Discord or Imgbb. Click <a href="/profile/avatargetlinktutorial">here</a> for a
+                tutorial on how to get a good link.
+            </li>
+            <li>Moderators have the final say, based on their judgment. Feel free to consult them before making your
+                avatars to ensure they will adhere to these guidelines.
+            </li>
 
         </ul>
     </div>
@@ -98,64 +100,64 @@
 
         <% customAvatarRequests.forEach(function(avreq){ %>
 
-        <div class="panel panel-default rootRequest singleReq" reqId="<%=avreq.id%>">
-            <div class="panel-heading"><h2>For user: <%=avreq.forUsername%></h2></div>
-            <div class="panel-body">
+            <div class="panel panel-default rootRequest singleReq" reqId="<%= avreq.id %>">
+                <div class="panel-heading"><h2>For user: <%= avreq.forUsername %></h2></div>
+                <div class="panel-body">
 
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="panel panel-success">
-                            <div class="panel-heading">Res img:</div>
-                            <div class="panel-body alignCenterHoriz">
-                                <img class="avatarImg" src=<%= avreq.resLink %>>
-                                <div class="imgdimensions">Loading</div>
-                                <div class="link"></div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="panel panel-success">
+                                <div class="panel-heading">Res img:</div>
+                                <div class="panel-body alignCenterHoriz">
+                                    <img class="avatarImg" src=<%= avreq.resLink %>>
+                                    <div class="imgdimensions">Loading</div>
+                                    <div class="link"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="panel panel-danger">
+                                <div class="panel-heading">Spy img:</div>
+                                <div class="panel-body alignCenterHoriz">
+                                    <img class="avatarImg" src=<%= avreq.spyLink %>>
+                                    <div class="imgdimensions">Loading</div>
+                                    <div class="link"></div>
+
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="panel panel-danger">
-                            <div class="panel-heading">Spy img:</div>
-                            <div class="panel-body alignCenterHoriz">
-                                <img class="avatarImg" src=<%= avreq.spyLink %>>
-                                <div class="imgdimensions">Loading</div>
-                                <div class="link"></div>
-                                
-                            </div>
+
+
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            Message from requester:
+                        </div>
+                        <div class="panel-body">
+                            <%= avreq.msgToMod %>
                         </div>
                     </div>
-                </div>
 
 
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        Message from requester:
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <label for="comment">Comment: (users will see this in their notifications)</label><br>
+                            <input type="text" name="comment" class="comment" style="width: 100%">
+                        </div>
                     </div>
-                    <div class="panel-body">
-                            <%=avreq.msgToMod%>
+
+
+                    <div class="row" style="width: 100%">
+                        <a type="button" class="btn btn-success approve"
+                           style="position: relative; left: 25%; transform: translateX(-50%);">Approve</a>
+                        <a type="button" class="btn btn-danger reject"
+                           style="position: absolute; left: 73%; transform: translateX(-50%);">Reject</a>
                     </div>
+
+
                 </div>
-
-
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <label for="comment">Comment: (users will see this in their notifications)</label><br>
-                        <input type="text" name="comment" class="comment" style="width: 100%">
-                    </div>
-                </div>
-
-
-
-
-                <div class="row" style="width: 100%">
-                    <a type="button" class="btn btn-success approve" style="position: relative; left: 25%; transform: translateX(-50%);">Approve</a>
-                    <a type="button" class="btn btn-danger reject" style="position: absolute; left: 73%; transform: translateX(-50%);">Reject</a>
-                </div>
-
-
             </div>
-        </div>
 
         <% }); %>
 
@@ -165,125 +167,76 @@
         <div class="well">No requests!</div>
     <% } %>
 
+    <script>
 
-<script>
+      $(document).ready(function() {
+        console.log('ready!');
 
-$( document ).ready(function() {
-    console.log( "ready!" );
+        // <div class="imgdimensions">test x asdf px</div>
 
-    // <div class="imgdimensions">test x asdf px</div>
-    
-    setInterval(function(){
-        var imgdimensions = $(".imgdimensions");
-        var links = $(".link");
+        setInterval(function() {
+          var imgdimensions = $('.imgdimensions');
+          var links = $('.link');
 
-        console.log(imgdimensions);
-        console.log("test");
-    
-        for(var i = 0; i < imgdimensions.length; i++){
+          console.log(imgdimensions);
+          console.log('test');
+
+          for (var i = 0; i < imgdimensions.length; i++) {
             console.log(imgdimensions[i].parentElement.children[0]);
-    
+
             var x = imgdimensions[i].parentElement.children[0].clientWidth;
             var y = imgdimensions[i].parentElement.children[0].clientHeight;
-    
-    
-            imgdimensions[i].innerText = x + "x" + y + " px";
-
-            links[i].innerText = $(imgdimensions[i].parentElement.children[0]).attr("src");
-        }
-    }, 1000);
-    
-
-    // imgdimensions.forEach(function(dim){
-    //     console.log(dim.parent().children(0));
-    // });
 
 
+            imgdimensions[i].innerText = x + 'x' + y + ' px';
 
-    $(".approve").on("click", function(e){
-
-        console.log("app");
-        // console.log(e);
-        // console.log($(e.target).closest(".rootRequest"));
-
-
-        console.log("id: ");
-        console.log($(e.target).closest(".rootRequest").attr("reqid"));
-        var id = $(e.target).closest(".rootRequest").attr("reqid");
-
-        console.log("comment: ");
-        console.log($(e.target).closest(".rootRequest").find(".comment")[0].value);
-        var comment = $(e.target).closest(".rootRequest").find(".comment")[0].value;
+            links[i].innerText = $(imgdimensions[i].parentElement.children[0]).attr('src');
+          }
+        }, 1000);
 
 
-        processAvatarRequest(true, id, comment);
+        $('.approve').on('click', function(e) {
+          var id = $(e.target).closest('.rootRequest').attr('reqid');
+          var comment = $(e.target).closest('.rootRequest').find('.comment')[0].value;
 
-        $(e.target).closest(".rootRequest").addClass("hide-opacity");
+          processAvatarRequest(true, id, comment);
 
-    });
-    
-
-
-    $(".reject").on("click", function(e){
-
-        console.log("rej");
-        // console.log(e);
-        // console.log($(e.target).closest(".rootRequest"));
+          $(e.target).closest('.rootRequest').addClass('hide-opacity');
+        });
 
 
-        console.log("id: ");
-        console.log($(e.target).closest(".rootRequest").attr("reqid"));
-        var id = $(e.target).closest(".rootRequest").attr("reqid");
+        $('.reject').on('click', function(e) {
+          var id = $(e.target).closest('.rootRequest').attr('reqid');
+          var comment = $(e.target).closest('.rootRequest').find('.comment')[0].value;
 
-        console.log("comment: ");
-        console.log($(e.target).closest(".rootRequest").find(".comment")[0].value);
-        var comment = $(e.target).closest(".rootRequest").find(".comment")[0].value;
+          processAvatarRequest(false, id, comment);
 
-
-        processAvatarRequest(false, id, comment);
-
-        $(e.target).closest(".rootRequest").addClass("hide-opacity");
-
-    });
+          $(e.target).closest('.rootRequest').addClass('hide-opacity');
+        });
+      });
 
 
-
-});
-
-
-function processAvatarRequest(decision, avatarreqid, comment){
-
-    $.ajax({
-        url: "/profile/mod/ajax/processavatarrequest",
-        type: "POST",
-        data: {
+      function processAvatarRequest(decision, avatarreqid, comment) {
+        $.ajax({
+          url: '/profile/mod/ajax/processavatarrequest',
+          type: 'POST',
+          data: {
             decision: decision,
             avatarreqid: avatarreqid,
-            modcomment: comment
-        },
-        success: function(){console.log("ajax success");},
-        error: function(err){console.log(err);}
-    });
+            modcomment: comment,
+          },
+          success: function() {
+            console.log('ajax success');
+          },
+          error: function(err) {
+            console.log(err);
+          },
+        });
 
-}
-</script>
-
-
-
+      }
+    </script>
 </div>
 
 <br>
 
-
-
-
-
-
-
-
 <%- include('../partials/footer') %>
-
-
-
-
-
