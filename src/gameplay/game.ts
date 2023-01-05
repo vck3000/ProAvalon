@@ -34,6 +34,7 @@ function Game(
   gameMode_,
   muteSpectators_,
   ranked_,
+  rebal9p_,
   callback_,
 ) {
   this.callback = callback_;
@@ -165,6 +166,7 @@ function Game(
   this.chatHistory = []; // Here because chatHistory records after game starts
 
   this.muteSpectators = muteSpectators_;
+  this.rebal9p = rebal9p_;
 }
 
 // Game object inherits all the functions and stuff from Room
@@ -386,6 +388,12 @@ Game.prototype.startGame = function (options) {
   }
 
   // Now we initialise roles
+  const alliances = this.alliances.concat();
+  if (this.rebal9p) {
+    // Swap last two elements of alliances array
+    [alliances[8], alliances[9]] = [alliances[9], alliances[8]];
+  }
+
   for (let i = 0; i < this.socketsOfPlayers.length; i++) {
     this.playersInGame[i] = {};
     // assign them the sockets but with shuffled.
@@ -397,7 +405,7 @@ Game.prototype.startGame = function (options) {
 
     // set the role to be from the roles array with index of the value
     // of the rolesAssignment which has been shuffled
-    this.playersInGame[i].alliance = this.alliances[rolesAssignment[i]];
+    this.playersInGame[i].alliance = alliances[rolesAssignment[i]];
 
     this.playerUsernamesInGame.push(
       this.socketsOfPlayers[i].request.user.username,
@@ -1305,6 +1313,12 @@ Game.prototype.finishGame = function (toBeWinner) {
     botUsernames = [];
   }
 
+  let gameMode = this.gameMode;
+
+  if (this.playersInGame.length === 9 && this.rebal9p) {
+    gameMode = 'avalonCustom';
+  }
+
   const objectToStore = {
     timeGameStarted: this.startGameTime,
     timeAssassinationStarted: this.startAssassinationTime,
@@ -1314,8 +1328,9 @@ Game.prototype.finishGame = function (toBeWinner) {
     resistanceTeam: this.resistanceUsernames,
     numberOfPlayers: this.playersInGame.length,
 
-    gameMode: this.gameMode,
+    gameMode,
     botUsernames,
+    rebal9p: this.rebal9p,
 
     playerUsernamesOrdered: getUsernamesOfPlayersInGame(this),
     playerUsernamesOrderedReversed: gameReverseArray(
@@ -1886,6 +1901,16 @@ Game.prototype.updateMuteSpectators = function (muteSpectators: boolean) {
     this.allSockets,
     `Mute spectators option set to ${muteSpectators}.`,
     'server-text',
+  );
+};
+
+Game.prototype.updateRebal9p = function (rebal9p: boolean) {
+  this.rebal9p = rebal9p;
+
+  this.sendText(
+    this.allSockets,
+    `Rebalanced 9p option set to ${rebal9p}.`,
+    'server-text'
   );
 };
 
