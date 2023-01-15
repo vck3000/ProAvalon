@@ -32,6 +32,8 @@ import {
 
 import { adminCommands } from './commands/admin';
 import { modCommands as modCommandsImported } from './commands/mod';
+import { lastWhisperObj } from './commands/mod/mwhisper';
+
 import * as util from 'util';
 
 const chatSpamFilter = new ChatSpamFilter();
@@ -45,21 +47,15 @@ const quote = new Quote();
 
 const dateResetRequired = 1543480412695;
 
-const newUpdateNotificationRequired = 1593228152322;
-const updateMessage = `
-
-<h1>Updated rules</h1>
-
-<br>
-
-Hi all, the rules to section 1d), 1g) and 1h) have been updated. Please see the new rules in the pinned forum thread and familiarise yourself with them.
-`;
-
 export const allSockets: SocketUser[] = [];
-const rooms: GameWrapper[] = [];
 
-// retain only 5 mins.
-const allChatHistory = [];
+// TODO: This is bad!!! We should work to make this not needed to be exported.
+export const rooms: GameWrapper[] = [];
+export let nextRoomId = 1;
+export function incrementNextRoomId() {
+  nextRoomId++;
+}
+
 const allChat5Min = [];
 
 const possibleInteracts = ['buzz', 'pat', 'poke', 'punch', 'slap', 'hug'];
@@ -71,8 +67,6 @@ const possibleInteractsPast = [
   'slapped',
   'hugged',
 ];
-
-let nextRoomId = 1;
 
 process.on('SIGINT', gracefulShutdown);
 process.on('SIGTERM', gracefulShutdown);
@@ -172,260 +166,10 @@ if (process.env.NODE_ENV !== 'test') {
   }, 1000);
 }
 
-const lastWhisperObj = {};
 const pmmodCooldowns = {};
 const PMMOD_TIMEOUT = 3000; // 3 seconds
 
 export let modCommands = {
-  mwhisper: {
-    command: 'mwhisper',
-    help: '/mwhisper <player name> <text to send>: Sends a whisper to a player.',
-    async run(args, senderSocket) {
-      if (args.length === 1) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'Missing username to message.',
-          classStr: 'server-text',
-        });
-        return;
-      }
-
-      if (
-        args[1].toLowerCase() ===
-        senderSocket.request.user.username.toLowerCase()
-      ) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'You cannot whisper yourself...',
-          classStr: 'server-text',
-        });
-      }
-
-      const sendToSocket =
-        allSockets[getIndexFromUsername(allSockets, args[1], true)];
-
-      if (!sendToSocket) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: `Could not find ${args[1]}.`,
-          classStr: 'server-text',
-        });
-      } else {
-        let str = `${senderSocket.request.user.username}->${sendToSocket.request.user.username} (whisper): `;
-        for (let i = 2; i < args.length; i++) {
-          str += args[i];
-          str += ' ';
-        }
-
-        const dataMessage = {
-          message: str,
-          dateCreated: new Date(),
-          classStr: 'whisper',
-        };
-
-        // send notification that you can do /r for first whisper message
-        if (!lastWhisperObj[sendToSocket.request.user.username.toLowerCase()]) {
-          sendToSocket.emit('allChatToClient', {
-            message: 'You can do /r <message> to reply.',
-            classStr: 'whisper',
-            dateCreated: new Date(),
-          });
-          sendToSocket.emit('roomChatToClient', {
-            message: 'You can do /r <message> to reply.',
-            classStr: 'whisper',
-            dateCreated: new Date(),
-          });
-        }
-
-        sendToSocket.emit('allChatToClient', dataMessage);
-        sendToSocket.emit('roomChatToClient', dataMessage);
-
-        senderSocket.emit('allChatToClient', dataMessage);
-        senderSocket.emit('roomChatToClient', dataMessage);
-
-        const mlog = await ModLog.create({
-          type: 'mwhisper',
-          modWhoMade: {
-            id: senderSocket.request.user.id,
-            username: senderSocket.request.user.username,
-            usernameLower: senderSocket.request.user.usernameLower,
-          },
-          data: {
-            targetUser: {
-              id: sendToSocket.request.user.id,
-              username: sendToSocket.request.user.username,
-              usernameLower: sendToSocket.request.user.usernameLower,
-            },
-            log: [dataMessage],
-          },
-          dateCreated: new Date(),
-        });
-
-        // set the last whisper person
-        lastWhisperObj[sendToSocket.request.user.username.toLowerCase()] = {
-          username: senderSocket.request.user.username.toLowerCase(),
-          modlog: mlog,
-        };
-
-        lastWhisperObj[senderSocket.request.user.username.toLowerCase()] = {
-          username: sendToSocket.request.user.username.toLowerCase(),
-          modlog: mlog,
-        };
-      }
-    },
-  },
-
-  mremoveavatar: {
-    command: 'mremoveavatar',
-    help: "/mremoveavatar <player name>: Remove <player name>'s avatar.",
-    async run(args, senderSocket) {
-      if (!args[1]) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'Specify a username.',
-          classStr: 'server-text',
-        });
-        return;
-      }
-
-      User.findOne({ usernameLower: args[1].toLowerCase() })
-        .populate('notifications')
-        .exec((err, foundUser) => {
-          if (err) {
-            console.log(err);
-          } else if (foundUser !== undefined) {
-            foundUser.avatarImgRes = null;
-            foundUser.avatarImgSpy = null;
-            foundUser.save();
-
-            senderSocket.emit('messageCommandReturnStr', {
-              message: `Successfully removed ${args[1]}'s avatar.`,
-              classStr: 'server-text',
-            });
-          } else {
-            senderSocket.emit('messageCommandReturnStr', {
-              message: `Could not find ${args[1]}'s avatar. If you think this is a problem, contact admin.`,
-              classStr: 'server-text',
-            });
-          }
-        });
-    },
-  },
-
-  maddbots: {
-    command: 'maddbots',
-    help: '/maddbots <number>: Add <number> bots to the room.',
-    run(args, senderSocket, roomIdInput) {
-      if (!args[1]) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'Specify a number.',
-          classStr: 'server-text',
-        });
-        return;
-      }
-
-      let roomId;
-      if (senderSocket === undefined) {
-        roomId = roomIdInput;
-      } else {
-        roomId = senderSocket.request.user.inRoomId;
-      }
-
-      if (rooms[roomId]) {
-        const dummySockets = [];
-
-        for (let i = 0; i < args[1]; i++) {
-          const botName = `${'SimpleBot' + '#'}${Math.floor(
-            Math.random() * 100,
-          )}`;
-
-          // Avoid a username clash!
-          const currentUsernames = rooms[roomId].socketsOfPlayers.map(
-            (sock) => sock.request.user.username,
-          );
-          if (currentUsernames.includes(botName)) {
-            i--;
-            continue;
-          }
-
-          dummySockets[i] = new SimpleBotSocket(botName);
-          rooms[roomId].playerJoinRoom(dummySockets[i]);
-          rooms[roomId].playerSitDown(dummySockets[i]);
-
-          // Save a copy of the sockets within botSockets
-          if (!rooms[roomId].botSockets) {
-            rooms[roomId].botSockets = [];
-          }
-          rooms[roomId].botSockets.push(dummySockets[i]);
-        }
-      }
-    },
-  },
-
-  mtestgame: {
-    command: 'mtestgame',
-    help: '/mtestgame <number>: Add <number> bots to a test game and start it automatically.',
-    run(args, senderSocket, io) {
-      if (!args[1]) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'Specify a number.',
-          classStr: 'server-text',
-        });
-        return;
-      }
-
-      if (parseInt(args[1]) > 10 || parseInt(args[1]) < 1) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'Specify a number between 1 and 10.',
-          classStr: 'server-text',
-        });
-        return;
-      }
-
-      // Get the next room Id
-      while (rooms[nextRoomId]) {
-        nextRoomId++;
-      }
-      const dataObj = {
-        maxNumPlayers: 10,
-        newRoomPassword: '',
-        gameMode: 'avalonBot',
-      };
-
-      // Create the room
-      rooms[nextRoomId] = new gameRoom(
-        'Bot game',
-        nextRoomId,
-        io,
-        dataObj.maxNumPlayers,
-        dataObj.newRoomPassword,
-        dataObj.gameMode,
-        dataObj.muteSpectators,
-        false,
-        socketCallback,
-      );
-      const privateStr = dataObj.newRoomPassword === '' ? '' : 'private ';
-      // broadcast to all chat
-      const messageData = {
-        message: `${
-          'Bot game' + ' has created '
-        }${privateStr}room ${nextRoomId}.`,
-        classStr: 'server-text',
-      };
-      sendToAllChat(io, messageData);
-
-      // Add the bots to the room
-      modCommands.maddbots.run(args, undefined, nextRoomId);
-
-      // Start the game.
-      const options = [
-        'Merlin',
-        'Assassin',
-        'Percival',
-        'Morgana',
-        'Ref of the Rain',
-        'Sire of the Sea',
-        'Lady of the Lake',
-      ];
-      rooms[nextRoomId].hostTryStartGame(options, 'avalonBot');
-    },
-  },
 
   mclose: {
     command: 'mclose',
@@ -663,56 +407,6 @@ export let modCommands = {
           targetSimulatedSocket.emit = function () {};
         }
         thisRoom.gameMove(targetSimulatedSocket, [button, targetsCaps]);
-      }
-    },
-  },
-
-  mrevealrole: {
-    command: 'mrevealrole',
-    help: '/mrevealrole <username>: Reveal the role of a player. You must be present in the room for this to work.',
-    run(args, senderSocket) {
-      if (!args[1]) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'Specify a username.',
-          classStr: 'server-text',
-        });
-        return;
-      }
-
-      const roomId = senderSocket.request.user.inRoomId;
-      if (rooms[roomId]) {
-        const user =
-          rooms[roomId].playersInGame[
-            getIndexFromUsername(rooms[roomId].playersInGame, args[1], true)
-          ];
-        if (!rooms[roomId].gameStarted) {
-          return {
-            message: 'Game has not started.',
-            classStr: 'server-text',
-          };
-        } else if (!user) {
-          return {
-            message: `Could not find ${args[1]}.`,
-            classStr: 'server-text',
-          };
-        }
-
-        const rolePrefix = modOrTOString(senderSocket.request.user.username);
-        rooms[roomId].sendText(
-          rooms[roomId].allSockets,
-          `${rolePrefix} ${senderSocket.request.user.username} has learned the role of ${user.username}.`,
-          'server-text',
-        );
-
-        return {
-          message: `${user.username}'s role is ${user.role.toUpperCase()}.`,
-          classStr: 'server-text',
-        };
-      } else {
-        return {
-          message: `Could not find ${args[1]}, or you are not in a room.`,
-          classStr: 'server-text',
-        };
       }
     },
   },
@@ -1913,7 +1607,7 @@ export const userCommands = {
   },
 };
 
-let ioGlobal = {};
+export let ioGlobal = {};
 
 export const server = function (io: SocketServer): void {
   // SOCKETS for each connection
@@ -1974,7 +1668,6 @@ export const server = function (io: SocketServer): void {
         socket.emit('adminCommands', adminCommands);
       }
 
-      // if the mods name is inside the array
       if (isMod(socket.request.user.username)) {
         // promote to mod socket
         socket.isModSocket = true;
@@ -2039,10 +1732,6 @@ export const server = function (io: SocketServer): void {
       }
 
       socket.emit('checkSettingsResetDate', dateResetRequired);
-      socket.emit('checkNewUpdate', {
-        date: newUpdateNotificationRequired,
-        msg: updateMessage,
-      });
       socket.emit('checkNewPlayerShowIntro', '');
       // Pass in the gameModes for the new room menu.
       socket.emit('gameModes', GAME_MODE_NAMES);
@@ -2057,33 +1746,22 @@ export const server = function (io: SocketServer): void {
 
       // automatically join the all chat
       socket.join('allChat');
+
       // socket sends to all players
-      const data = {
+      sendToAllChat(io, {
         message: `${socket.request.user.username} has joined the lobby.`,
         classStr: 'server-text-teal',
-      };
-      sendToAllChat(io, data);
+      });
 
-      const msg = {
+      socket.emit('allChatToClient', {
         message: '⚡️ Please be kind, we were all new once ⚡️',
         classStr: 'server-text',
         dateCreated: new Date(),
-      };
-
-      socket.emit('allChatToClient', msg);
-
-      const msg2 = {
-        message:
-          'We have a discord server! Join us here: https://discord.gg/3mHdKNT',
-        classStr: 'server-text',
-        dateCreated: new Date(),
-      };
-
-      socket.emit('allChatToClient', msg2);
+      });
 
       socket.emit('allChatToClient', {
         message:
-          'There have been recent attacks on the site. Please disregard any messages relating to Avalon.ist as they are no longer being run by the original team.',
+          'We have a discord server! Join us here: https://discord.gg/3mHdKNT',
         classStr: 'server-text',
         dateCreated: new Date(),
       });
@@ -2105,12 +1783,11 @@ export const server = function (io: SocketServer): void {
       updateCurrentGamesList(io);
     }, 1000);
 
-    // when a user disconnects/leaves the whole website
     socket.on('disconnect', disconnect);
 
-    //= ======================================
+    //=======================================
     // COMMANDS
-    //= ======================================
+    //=======================================
 
     socket.on('messageCommand', messageCommand);
     socket.on('interactUserPlayed', interactUserPlayed);
@@ -2136,15 +1813,15 @@ export const server = function (io: SocketServer): void {
     socket.on('update-room-ranked', updateRoomRanked);
     socket.on('update-room-muteSpectators', updateRoomMuteSpectators);
 
-    //* ***********************
+    //************************
     // game data stuff
-    //* ***********************
+    //************************
     socket.on('gameMove', gameMove);
     socket.on('setClaim', setClaim);
   });
 };
 
-function socketCallback(action, room) {
+export function socketCallback(action, room) {
   let data;
   if (action === 'finishGameResWin') {
     data = {
@@ -2173,7 +1850,7 @@ function socketCallback(action, room) {
   }
 }
 
-var applyApplicableRewards = function (socket) {
+const applyApplicableRewards = function (socket) {
   // Admin badge
   if (socket.rewards.includes(REWARDS.ADMIN_BADGE)) {
     socket.request.badge = 'A';
@@ -2206,7 +1883,6 @@ var applyApplicableRewards = function (socket) {
   return socket;
 };
 
-// Assign players their rating bracket
 const assignRatingBracket = function (socket) {
   const provisionalGames = 20;
   const beforeBracket = socket.request.user.ratingBracket;
@@ -2349,7 +2025,7 @@ function textLengthFilter(str) {
   return str;
 }
 
-function sendToAllChat(io, data) {
+export function sendToAllChat(io, data) {
   const fiveMinsInMillis = 1000 * 60 * 5;
 
   const date = new Date();
@@ -2358,8 +2034,6 @@ function sendToAllChat(io, data) {
   allSockets.forEach((sock) => {
     sock.emit('allChatToClient', data);
   });
-
-  allChatHistory.push(data);
 
   allChat5Min.push(data);
 
@@ -2778,7 +2452,7 @@ function newRoom(dataObj) {
 
     // while rooms exist already (in case of a previously saved and retrieved game)
     while (rooms[nextRoomId]) {
-      nextRoomId++;
+      incrementNextRoomId();
     }
 
     const privateRoom = !(dataObj.newRoomPassword === '');
@@ -2810,7 +2484,7 @@ function newRoom(dataObj) {
     this.emit('auto-join-room-id', nextRoomId, dataObj.newRoomPassword);
 
     // increment index for next game
-    nextRoomId++;
+    incrementNextRoomId();
 
     updateCurrentGamesList();
   }

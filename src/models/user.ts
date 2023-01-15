@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+// @ts-ignore
 import passportLocalMongoose from 'passport-local-mongoose';
 
 const UserSchema = new mongoose.Schema({
@@ -149,5 +150,10 @@ const UserSchema = new mongoose.Schema({
 UserSchema.plugin(passportLocalMongoose, {
   usernameCaseInsensitive: true,
 });
+
+export interface UserDocument extends mongoose.Document {
+  username: string;
+  usernameLower: string;
+}
 
 export default mongoose.model('User', UserSchema);
