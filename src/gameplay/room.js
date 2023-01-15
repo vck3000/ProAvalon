@@ -45,6 +45,7 @@ class Room {
     // Sockets
     this.allSockets = [];
     this.socketsOfPlayers = [];
+    this.botSockets = [];
 
     // Arrays containing lower cased usernames
     this.kickedPlayers = [];

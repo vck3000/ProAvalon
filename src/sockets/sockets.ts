@@ -48,7 +48,13 @@ const quote = new Quote();
 const dateResetRequired = 1543480412695;
 
 export const allSockets: SocketUser[] = [];
-const rooms: GameWrapper[] = [];
+
+// TODO: This is bad!!! We should work to make this not needed to be exported.
+export const rooms: GameWrapper[] = [];
+export let nextRoomId = 1;
+export function incrementNextRoomId() {
+  nextRoomId++;
+}
 
 const allChat5Min = [];
 
@@ -61,8 +67,6 @@ const possibleInteractsPast = [
   'slapped',
   'hugged',
 ];
-
-let nextRoomId = 1;
 
 process.on('SIGINT', gracefulShutdown);
 process.on('SIGTERM', gracefulShutdown);
@@ -166,74 +170,6 @@ const pmmodCooldowns = {};
 const PMMOD_TIMEOUT = 3000; // 3 seconds
 
 export let modCommands = {
-  mtestgame: {
-    command: 'mtestgame',
-    help: '/mtestgame <number>: Add <number> bots to a test game and start it automatically.',
-    run(args, senderSocket, io) {
-      if (!args[1]) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'Specify a number.',
-          classStr: 'server-text',
-        });
-        return;
-      }
-
-      if (parseInt(args[1]) > 10 || parseInt(args[1]) < 1) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'Specify a number between 1 and 10.',
-          classStr: 'server-text',
-        });
-        return;
-      }
-
-      // Get the next room Id
-      while (rooms[nextRoomId]) {
-        nextRoomId++;
-      }
-      const dataObj = {
-        maxNumPlayers: 10,
-        newRoomPassword: '',
-        gameMode: 'avalonBot',
-      };
-
-      // Create the room
-      rooms[nextRoomId] = new gameRoom(
-        'Bot game',
-        nextRoomId,
-        io,
-        dataObj.maxNumPlayers,
-        dataObj.newRoomPassword,
-        dataObj.gameMode,
-        dataObj.muteSpectators,
-        false,
-        socketCallback,
-      );
-      const privateStr = dataObj.newRoomPassword === '' ? '' : 'private ';
-      // broadcast to all chat
-      const messageData = {
-        message: `${
-          'Bot game' + ' has created '
-        }${privateStr}room ${nextRoomId}.`,
-        classStr: 'server-text',
-      };
-      sendToAllChat(io, messageData);
-
-      // Add the bots to the room
-      modCommands.maddbots.run(args, undefined, nextRoomId);
-
-      // Start the game.
-      const options = [
-        'Merlin',
-        'Assassin',
-        'Percival',
-        'Morgana',
-        'Ref of the Rain',
-        'Sire of the Sea',
-        'Lady of the Lake',
-      ];
-      rooms[nextRoomId].hostTryStartGame(options, 'avalonBot');
-    },
-  },
 
   mclose: {
     command: 'mclose',
@@ -1671,7 +1607,7 @@ export const userCommands = {
   },
 };
 
-let ioGlobal = {};
+export let ioGlobal = {};
 
 export const server = function (io: SocketServer): void {
   // SOCKETS for each connection
@@ -1885,7 +1821,7 @@ export const server = function (io: SocketServer): void {
   });
 };
 
-function socketCallback(action, room) {
+export function socketCallback(action, room) {
   let data;
   if (action === 'finishGameResWin') {
     data = {
@@ -2089,7 +2025,7 @@ function textLengthFilter(str) {
   return str;
 }
 
-function sendToAllChat(io, data) {
+export function sendToAllChat(io, data) {
   const fiveMinsInMillis = 1000 * 60 * 5;
 
   const date = new Date();
@@ -2516,7 +2452,7 @@ function newRoom(dataObj) {
 
     // while rooms exist already (in case of a previously saved and retrieved game)
     while (rooms[nextRoomId]) {
-      nextRoomId++;
+      incrementNextRoomId();
     }
 
     const privateRoom = !(dataObj.newRoomPassword === '');
@@ -2548,7 +2484,7 @@ function newRoom(dataObj) {
     this.emit('auto-join-room-id', nextRoomId, dataObj.newRoomPassword);
 
     // increment index for next game
-    nextRoomId++;
+    incrementNextRoomId();
 
     updateCurrentGamesList();
   }
