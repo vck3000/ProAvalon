@@ -7,6 +7,7 @@ import { mcompareips } from './mcompareips';
 import { mdc } from './mdc';
 import { mnotify } from './mnotify';
 import { mtoggleregistration } from './mtoggleregistration';
+import { mwhisper } from './mwhisper';
 
 export const modCommands: Commands = {
   [m.command]: m,
@@ -17,4 +18,5 @@ export const modCommands: Commands = {
   [mdc.command]: mdc,
   [mnotify.command]: mnotify,
   [mtoggleregistration.command]: mtoggleregistration,
+  [mwhisper.command]: mwhisper,
 };
