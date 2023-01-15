@@ -13,6 +13,7 @@ import avatarRequest from '../models/avatarRequest';
 import User from '../models/user';
 import ModLog from '../models/modLog';
 import JSON from 'circular-json';
+
 import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
@@ -29,11 +30,11 @@ import {
 
 import { adminCommands } from './commands/admin';
 import { modCommands } from './commands/mod';
-import { lastWhisperObj } from './commands/mod/mwhisper';
-
-import * as util from 'util';
 import { mtogglepause } from './commands/mod/mtogglepause';
 import { mrevealallroles } from './commands/mod/mrevealallroles';
+
+import { lastWhisperObj } from './commands/mod/mwhisper';
+import * as util from 'util';
 
 const chatSpamFilter = new ChatSpamFilter();
 if (process.env.NODE_ENV !== 'test') {
@@ -1796,7 +1797,7 @@ function messageCommand(data) {
   if (adminCommands[data.command] && isAdmin(this.request.user.username)) {
     adminCommands[data.command].run(data.args, this, ioGlobal);
   } else if (modCommands[data.command] && isMod(this.request.user.username)) {
-    dataToSend = modCommands[data.command].run(data.args, this, ioGlobal);
+    modCommands[data.command].run(data.args, this, ioGlobal);
   } else if (TOCommands[data.command] && isTO(this.request.user.username)) {
     dataToSend = TOCommands[data.command].run(data, this, ioGlobal);
   } else if (userCommands[data.command]) {
