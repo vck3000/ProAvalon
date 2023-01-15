@@ -171,32 +171,6 @@ const pmmodCooldowns = {};
 const PMMOD_TIMEOUT = 3000; // 3 seconds
 
 export let modCommands = {
-  mannounce: {
-    command: 'mannounce',
-    help: '/mannounce <message>: Sends a sweet alert to all online players with an included message. It automatically says the username of the mod that executed the command.',
-    run(args, senderSocket) {
-      if (!args[1]) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'Please enter a message...',
-          classStr: 'server-text',
-        });
-        return;
-      }
-
-      let str = '';
-      for (let i = 1; i < args.length; i++) {
-        str += args[i];
-        str += ' ';
-      }
-
-      str += `<br><br>From: ${senderSocket.request.user.username}`;
-
-      allSockets.forEach((sock) => {
-        sock.emit('mannounce', str);
-      });
-    },
-  },
-
   mforcemove: {
     command: 'mforcemove',
     help: "/mforcemove <username> [button] [target]: Forces a player to make a move. To see what moves are available, enter the target's username. To force the move, input button and/or target.",

@@ -10,6 +10,7 @@ import { mtoggleregistration } from './mtoggleregistration';
 import { mwhisper } from './mwhisper';
 import { mremoveavatar } from './mremoveavatar';
 import { mclose } from './mclose';
+import { mannounce } from './mannounce';
 
 export const modCommands: Commands = {
   [m.command]: m,
@@ -23,4 +24,5 @@ export const modCommands: Commands = {
   [mwhisper.command]: mwhisper,
   [mremoveavatar.command]: mremoveavatar,
   [mclose.command]: mclose,
+  [mannounce.command]: mannounce,
 };
