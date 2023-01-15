@@ -14,6 +14,8 @@ import { mannounce } from './mannounce';
 import { mkill } from './mkill';
 import { miplinkedaccs } from './miplinkedaccs';
 import { mtogglepause } from './mtogglepause';
+import { mrevealallroles } from './mrevealallroles';
+import { mforcemove } from './mforcemove';
 
 export const modCommands: Commands = {
   [m.command]: m,
@@ -31,4 +33,6 @@ export const modCommands: Commands = {
   [mkill.command]: mkill,
   [miplinkedaccs.command]: miplinkedaccs,
   [mtogglepause.command]: mtogglepause,
+  [mrevealallroles.command]: mrevealallroles,
+  [mforcemove.command]: mforcemove,
 };

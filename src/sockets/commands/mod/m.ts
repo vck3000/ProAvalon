@@ -1,6 +1,5 @@
 import { Command } from '../types';
 import { modCommands } from './index';
-import { modCommands as modCommandsSocket } from '../../sockets';
 
 export const m: Command = {
   command: 'm',
@@ -21,11 +20,11 @@ export const m: Command = {
     }
 
     // TODO remove this when all the stuff is migrated out.
-    for (const key in modCommandsSocket) {
-      if (modCommandsSocket.hasOwnProperty(key)) {
+    for (const key in modCommands) {
+      if (modCommands.hasOwnProperty(key)) {
         dataToSend[i] = {
           // @ts-ignore
-          message: modCommandsSocket[key].help,
+          message: modCommands[key].help,
           classStr: 'server-text',
         };
         i++;
