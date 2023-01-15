@@ -33,6 +33,7 @@ import { modCommands as modCommandsImported } from './commands/mod';
 import { lastWhisperObj } from './commands/mod/mwhisper';
 
 import * as util from 'util';
+import { mtogglepause } from './commands/mod/mtogglepause';
 
 const chatSpamFilter = new ChatSpamFilter();
 if (process.env.NODE_ENV !== 'test') {
@@ -369,30 +370,6 @@ export let modCommands = {
       }
     },
   },
-
-  mtogglepause: {
-    command: 'mtogglepause',
-    help: '/mtogglepause: Pauses or unpauses the current room.',
-    run(args, senderSocket) {
-      const currentRoom = rooms[senderSocket.request.user.inRoomId];
-      if (currentRoom) {
-        // if unpaused, we pause
-        // if not started or finished, no action
-        if (!currentRoom.gameStarted) {
-          return {
-            message: 'Game has not started.',
-            classStr: 'server-text',
-          };
-        }
-        if (currentRoom.phase == 'finished') {
-          return { message: 'Game has finished.', classStr: 'server-text' };
-        }
-        currentRoom.togglePause(senderSocket.request.user.username);
-      } else {
-        return { message: 'You are not in a room.', classStr: 'server-text' };
-      }
-    },
-  },
 };
 
 modCommands = { ...modCommands, ...modCommandsImported };
@@ -443,7 +420,7 @@ export const TOCommands = {
   ttogglepause: {
     command: 'ttogglepause',
     help: '/ttogglepause: Pauses or unpauses the current room.',
-    run: modCommands.mtogglepause.run,
+    run: mtogglepause.run,
   },
 
   twhisper: {
