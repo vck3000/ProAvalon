@@ -45,21 +45,9 @@ const quote = new Quote();
 
 const dateResetRequired = 1543480412695;
 
-const newUpdateNotificationRequired = 1593228152322;
-const updateMessage = `
-
-<h1>Updated rules</h1>
-
-<br>
-
-Hi all, the rules to section 1d), 1g) and 1h) have been updated. Please see the new rules in the pinned forum thread and familiarise yourself with them.
-`;
-
 export const allSockets: SocketUser[] = [];
 const rooms: GameWrapper[] = [];
 
-// retain only 5 mins.
-const allChatHistory = [];
 const allChat5Min = [];
 
 const possibleInteracts = ['buzz', 'pat', 'poke', 'punch', 'slap', 'hug'];
@@ -1974,7 +1962,6 @@ export const server = function (io: SocketServer): void {
         socket.emit('adminCommands', adminCommands);
       }
 
-      // if the mods name is inside the array
       if (isMod(socket.request.user.username)) {
         // promote to mod socket
         socket.isModSocket = true;
@@ -2039,10 +2026,6 @@ export const server = function (io: SocketServer): void {
       }
 
       socket.emit('checkSettingsResetDate', dateResetRequired);
-      socket.emit('checkNewUpdate', {
-        date: newUpdateNotificationRequired,
-        msg: updateMessage,
-      });
       socket.emit('checkNewPlayerShowIntro', '');
       // Pass in the gameModes for the new room menu.
       socket.emit('gameModes', GAME_MODE_NAMES);
@@ -2057,33 +2040,22 @@ export const server = function (io: SocketServer): void {
 
       // automatically join the all chat
       socket.join('allChat');
+
       // socket sends to all players
-      const data = {
+      sendToAllChat(io, {
         message: `${socket.request.user.username} has joined the lobby.`,
         classStr: 'server-text-teal',
-      };
-      sendToAllChat(io, data);
+      });
 
-      const msg = {
+      socket.emit('allChatToClient', {
         message: '⚡️ Please be kind, we were all new once ⚡️',
         classStr: 'server-text',
         dateCreated: new Date(),
-      };
-
-      socket.emit('allChatToClient', msg);
-
-      const msg2 = {
-        message:
-          'We have a discord server! Join us here: https://discord.gg/3mHdKNT',
-        classStr: 'server-text',
-        dateCreated: new Date(),
-      };
-
-      socket.emit('allChatToClient', msg2);
+      });
 
       socket.emit('allChatToClient', {
         message:
-          'There have been recent attacks on the site. Please disregard any messages relating to Avalon.ist as they are no longer being run by the original team.',
+          'We have a discord server! Join us here: https://discord.gg/3mHdKNT',
         classStr: 'server-text',
         dateCreated: new Date(),
       });
@@ -2105,12 +2077,11 @@ export const server = function (io: SocketServer): void {
       updateCurrentGamesList(io);
     }, 1000);
 
-    // when a user disconnects/leaves the whole website
     socket.on('disconnect', disconnect);
 
-    //= ======================================
+    //=======================================
     // COMMANDS
-    //= ======================================
+    //=======================================
 
     socket.on('messageCommand', messageCommand);
     socket.on('interactUserPlayed', interactUserPlayed);
@@ -2136,9 +2107,9 @@ export const server = function (io: SocketServer): void {
     socket.on('update-room-ranked', updateRoomRanked);
     socket.on('update-room-muteSpectators', updateRoomMuteSpectators);
 
-    //* ***********************
+    //************************
     // game data stuff
-    //* ***********************
+    //************************
     socket.on('gameMove', gameMove);
     socket.on('setClaim', setClaim);
   });
@@ -2173,7 +2144,7 @@ function socketCallback(action, room) {
   }
 }
 
-var applyApplicableRewards = function (socket) {
+const applyApplicableRewards = function (socket) {
   // Admin badge
   if (socket.rewards.includes(REWARDS.ADMIN_BADGE)) {
     socket.request.badge = 'A';
@@ -2206,7 +2177,6 @@ var applyApplicableRewards = function (socket) {
   return socket;
 };
 
-// Assign players their rating bracket
 const assignRatingBracket = function (socket) {
   const provisionalGames = 20;
   const beforeBracket = socket.request.user.ratingBracket;
@@ -2358,8 +2328,6 @@ function sendToAllChat(io, data) {
   allSockets.forEach((sock) => {
     sock.emit('allChatToClient', data);
   });
-
-  allChatHistory.push(data);
 
   allChat5Min.push(data);
 

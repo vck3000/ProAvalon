@@ -376,12 +376,6 @@ class Game extends Room {
       );
     }
 
-    // for(let key in this.specialRoles){
-    // 	if(this.specialRoles.hasOwnProperty(key)){
-    // 		console.log("Key: " + key);
-    // 	}
-    // }
-
     // Give roles to the players according to their alliances
     // Get roles:
     this.resRoles = [];
