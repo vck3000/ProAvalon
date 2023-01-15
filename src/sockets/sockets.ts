@@ -1,6 +1,5 @@
 // @ts-nocheck
 import axios from 'axios';
-import sanitizeHtml from 'sanitize-html';
 import { Server as SocketServer, Socket } from 'socket.io';
 import { SocketUser } from './types';
 
@@ -13,7 +12,6 @@ import REWARDS from '../rewards/constants';
 import avatarRequest from '../models/avatarRequest';
 import User from '../models/user';
 import ModLog from '../models/modLog';
-import IPLinkedAccounts from '../myFunctions/IPLinkedAccounts';
 import JSON from 'circular-json';
 import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
@@ -173,7 +171,7 @@ const PMMOD_TIMEOUT = 3000; // 3 seconds
 export let modCommands = {
   mforcemove: {
     command: 'mforcemove',
-    help: '/mforcemove <username> [button] [target]: Forces a player to make a move. To see what moves are available, enter the target\'s username. To force the move, input button and/or target.',
+    help: "/mforcemove <username> [button] [target]: Forces a player to make a move. To see what moves are available, enter the target's username. To force the move, input button and/or target.",
     run(args, senderSocket) {
       senderSocket.emit('messageCommandReturnStr', {
         message: `You have entered: ${args.join(' ')}`,
@@ -330,8 +328,7 @@ export let modCommands = {
 
         const targetSimulatedSocket = thisRoom.playersInGame[playerIndex];
         if (targetSimulatedSocket.emit === undefined) {
-          targetSimulatedSocket.emit = function() {
-          };
+          targetSimulatedSocket.emit = function () {};
         }
         thisRoom.gameMove(targetSimulatedSocket, [button, targetsCaps]);
       }
@@ -396,119 +393,6 @@ export let modCommands = {
       }
     },
   },
-
-  miplinkedaccs: {
-    command: 'miplinkedaccs',
-    help: '/miplinkedaccs <username> <num_levels (greater than 1 | defaults to 2)>: Finds all accounts that have shared the same IPs the specified user. Put anything in <fullTree> to see full tree.',
-    async run(args, senderSocket) {
-      const username = args[1];
-      let num_levels = args[2];
-
-      // Send out data in a readable way to the mod.
-      const dataToReturn = [];
-
-      if (num_levels === undefined) {
-        num_levels = 1;
-      }
-
-      num_levels = parseInt(num_levels, 10);
-
-      if (isNaN(num_levels) || num_levels < 1) {
-        dataToReturn[0] = {
-          message: `${args[2]} is not a valid positive integer.`,
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        };
-        senderSocket.emit('messageCommandReturnStr', dataToReturn);
-        return;
-      }
-
-      let linkedUsernamesWithLevel;
-      let usernamesTree;
-      const newUsernamesTreeLines = [];
-      try {
-        const ret = await IPLinkedAccounts(username, num_levels);
-        linkedUsernamesWithLevel = ret.linkedUsernamesWithLevel;
-        usernamesTree = ret.usernamesTree;
-      } catch (e) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: e.message,
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        });
-        return;
-      }
-
-      if (linkedUsernamesWithLevel.length === 0) {
-        dataToReturn[0] = {
-          message: 'There are no users with matching IPs (weird).',
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        };
-      } else {
-        dataToReturn[0] = {
-          message: '-------------------------',
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        };
-        // Old display:
-        // for (obj of linkedUsernamesWithLevel) {
-        //     dataToReturn.push({ message: `${obj.level} - ${obj.username}`, classStr: 'server-text', dateCreated: new Date() });
-        // }
-
-        const lines = usernamesTree.split('\n');
-        // console.log(lines);
-        // Do my special replace white space with forced white space and append
-        for (const line of lines) {
-          let replace = true;
-          let newLine = '';
-          for (const ch of line) {
-            if (ch == ' ' && replace) {
-              newLine += '&#160;&#160;';
-            } else if (!ch.match('/^[a-z0-9]+$/i')) {
-              newLine += ch;
-            } else {
-              replace = false;
-              newLine += ch;
-            }
-          }
-          newLine = sanitizeHtml(newLine);
-          dataToReturn.push({
-            message: `${newLine}`,
-            classStr: 'server-text',
-            dateCreated: new Date(),
-          });
-          newUsernamesTreeLines.push(newLine);
-        }
-
-        dataToReturn.push({
-          message: '-------------------------',
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        });
-      }
-      senderSocket.emit('messageCommandReturnStr', dataToReturn);
-
-      // Create the ModLog
-      const modUser = await User.findOne({
-        usernameLower: senderSocket.request.user.username.toLowerCase(),
-      });
-      ModLog.create({
-        type: 'miplinkedaccs',
-        modWhoMade: {
-          id: modUser._id,
-          username: modUser.username,
-          usernameLower: modUser.usernameLower,
-        },
-        data: {
-          target: args[1],
-          newUsernamesTreeLines: newUsernamesTreeLines,
-          fullTree: args[2] !== undefined ? true : false,
-        },
-        dateCreated: new Date(),
-      });
-    },
-  },
 };
 
 modCommands = { ...modCommands, ...modCommandsImported };
@@ -546,7 +430,7 @@ export const TOCommands = {
 
   tforcemove: {
     command: 'tforcemove',
-    help: '/tforcemove <username> [button] [target]: Forces a player to make a move. To see what moves are available, enter the target\'s username. To force the move, input button and/or target.',
+    help: "/tforcemove <username> [button] [target]: Forces a player to make a move. To see what moves are available, enter the target's username. To force the move, input button and/or target.",
     run: modCommands.mforcemove.run,
   },
 
@@ -805,7 +689,7 @@ export const userCommands = {
       }
 
       return {
-        message: 'The game hasn\'t started yet. There is no chat to display.',
+        message: "The game hasn't started yet. There is no chat to display.",
         classStr: 'server-text',
       };
     },
@@ -1167,7 +1051,7 @@ export const userCommands = {
       // If the player has not been whispered to yet.
       if (!lastWhisperObj[senderSocket.request.user.username.toLowerCase()]) {
         return {
-          message: 'You haven\'t been whispered to before.',
+          message: "You haven't been whispered to before.",
           classStr: 'server-text',
         };
       }
@@ -1179,7 +1063,7 @@ export const userCommands = {
               .username,
             true,
           )
-          ];
+        ];
       if (sendToSocket === undefined || sendToSocket === null) {
         return;
       }
@@ -1235,7 +1119,7 @@ export const userCommands = {
       } else {
         messageToClient = rooms[
           senderSocket.request.user.inRoomId
-          ].submitMerlinGuess(senderSocket.request.user.username, data.args[1]);
+        ].submitMerlinGuess(senderSocket.request.user.username, data.args[1]);
       }
 
       return { message: messageToClient, classStr: 'server-text noselect' };
@@ -1488,13 +1372,13 @@ export const userCommands = {
         botName === 'all'
           ? botSockets
           : botSockets.filter(
-            (socket) =>
-              socket.request.user.username.toLowerCase() ===
-              botName.toLowerCase(),
-          );
+              (socket) =>
+                socket.request.user.username.toLowerCase() ===
+                botName.toLowerCase(),
+            );
       if (botsToRemove.length === 0) {
         return {
-          message: 'Couldn\'t find any bots with that name to remove.',
+          message: "Couldn't find any bots with that name to remove.",
           classStr: 'server-text',
         };
       }
@@ -1528,7 +1412,7 @@ export const userCommands = {
 
 export let ioGlobal = {};
 
-export const server = function(io: SocketServer): void {
+export const server = function (io: SocketServer): void {
   // SOCKETS for each connection
   ioGlobal = io;
   io.sockets.on('connection', async (socket: SocketUser) => {
@@ -1769,7 +1653,7 @@ export function socketCallback(action, room) {
   }
 }
 
-const applyApplicableRewards = function(socket) {
+const applyApplicableRewards = function (socket) {
   // Admin badge
   if (socket.rewards.includes(REWARDS.ADMIN_BADGE)) {
     socket.request.badge = 'A';
@@ -1802,7 +1686,7 @@ const applyApplicableRewards = function(socket) {
   return socket;
 };
 
-const assignRatingBracket = function(socket) {
+const assignRatingBracket = function (socket) {
   const provisionalGames = 20;
   const beforeBracket = socket.request.user.ratingBracket;
   const socketRating = socket.request.user.playerRating;
@@ -1816,35 +1700,35 @@ const assignRatingBracket = function(socket) {
   if (socket.request.user.totalRankedGamesPlayed < provisionalGames) {
     socket.request.user.ratingBracket = 'unranked';
     socket.request.ratingBadge =
-      '<span class=\'badge\' data-toggle=\'tooltip\' data-placement=\'right\' title=\'Unranked\' style=\'transform: scale(0.9) translateY(-9%); background-color: #a9a9a9\'>?</span>';
+      "<span class='badge' data-toggle='tooltip' data-placement='right' title='Unranked' style='transform: scale(0.9) translateY(-9%); background-color: #a9a9a9'>?</span>";
   } else if (socketRating < bronzeBase) {
     socket.request.user.ratingBracket = 'iron';
     socket.request.ratingBadge =
-      '<span class=\'badge\' data-toggle=\'tooltip\' data-placement=\'right\' title=\'Iron\' style=\'transform: scale(0.9) translateY(-9%); background-color: #303030\'>I</span>';
+      "<span class='badge' data-toggle='tooltip' data-placement='right' title='Iron' style='transform: scale(0.9) translateY(-9%); background-color: #303030'>I</span>";
   } else if (socketRating >= bronzeBase && socketRating < silverBase) {
     socket.request.user.ratingBracket = 'bronze';
     socket.request.ratingBadge =
-      '<span class=\'badge\' data-toggle=\'tooltip\' data-placement=\'right\' title=\'Bronze\' style=\'transform: scale(0.9) translateY(-9%); background-color: #cd7f32\'>B</span>';
+      "<span class='badge' data-toggle='tooltip' data-placement='right' title='Bronze' style='transform: scale(0.9) translateY(-9%); background-color: #cd7f32'>B</span>";
   } else if (socketRating >= silverBase && socketRating < goldBase) {
     socket.request.user.ratingBracket = 'silver';
     socket.request.ratingBadge =
-      '<span class=\'badge\' data-toggle=\'tooltip\' data-placement=\'right\' title=\'Silver\' style=\'transform: scale(0.9) translateY(-9%); background-color: #c0c0c0\'>S</span>';
+      "<span class='badge' data-toggle='tooltip' data-placement='right' title='Silver' style='transform: scale(0.9) translateY(-9%); background-color: #c0c0c0'>S</span>";
   } else if (socketRating >= goldBase && socketRating < platBase) {
     socket.request.user.ratingBracket = 'gold';
     socket.request.ratingBadge =
-      '<span class=\'badge\' data-toggle=\'tooltip\' data-placement=\'right\' title=\'Gold\' style=\'transform: scale(0.9) translateY(-9%); background-color: #ffd700\'>G</span>';
+      "<span class='badge' data-toggle='tooltip' data-placement='right' title='Gold' style='transform: scale(0.9) translateY(-9%); background-color: #ffd700'>G</span>";
   } else if (socketRating >= platBase && socketRating < diamondBase) {
     socket.request.user.ratingBracket = 'platinum';
     socket.request.ratingBadge =
-      '<span class=\'badge\' data-toggle=\'tooltip\' data-placement=\'right\' title=\'Platinum\' style=\'transform: scale(0.9) translateY(-9%); background-color: #afeeee\'>P</span>';
+      "<span class='badge' data-toggle='tooltip' data-placement='right' title='Platinum' style='transform: scale(0.9) translateY(-9%); background-color: #afeeee'>P</span>";
   } else if (socketRating >= diamondBase && socketRating < championBase) {
     socket.request.user.ratingBracket = 'diamond';
     socket.request.ratingBadge =
-      '<span class=\'badge\' data-toggle=\'tooltip\' data-placement=\'right\' title=\'Diamond\' style=\'transform: scale(0.9) translateY(-9%); background-color: rgb(0, 100, 250)\'>D</span>';
+      "<span class='badge' data-toggle='tooltip' data-placement='right' title='Diamond' style='transform: scale(0.9) translateY(-9%); background-color: rgb(0, 100, 250)'>D</span>";
   } else if (socketRating >= championBase) {
     socket.request.user.ratingBracket = 'champion';
     socket.request.ratingBadge =
-      '<span class=\'badge\' data-toggle=\'tooltip\' data-placement=\'right\' title=\'Champion\' style=\'transform: scale(0.9) translateY(-9%); background-color: #9370db\'>C</span>';
+      "<span class='badge' data-toggle='tooltip' data-placement='right' title='Champion' style='transform: scale(0.9) translateY(-9%); background-color: #9370db'>C</span>";
   }
 
   // If the rating bracket changes, update the database entry.
@@ -1864,7 +1748,7 @@ const assignRatingBracket = function(socket) {
   return socket;
 };
 
-const updateCurrentPlayersList = function() {
+const updateCurrentPlayersList = function () {
   // 2D array of usernames, elo pairs and rating brackets, sorted in order of elo rating
   const playerList = [];
   for (let i = 0; i < allSockets.length; i++) {
@@ -1884,8 +1768,8 @@ const updateCurrentPlayersList = function() {
     return a.playerRating < b.playerRating
       ? 1
       : a.playerRating > b.playerRating
-        ? -1
-        : 0;
+      ? -1
+      : 0;
   });
 
   allSockets.forEach((sock) => {
@@ -1893,7 +1777,7 @@ const updateCurrentPlayersList = function() {
   });
 };
 
-export const updateCurrentGamesList = function() {
+export const updateCurrentGamesList = function () {
   // prepare room data to send to players.
   const gamesList = [];
   for (let i = 0; i < rooms.length; i++) {
@@ -2003,8 +1887,7 @@ export function destroyRoom(roomId) {
   rooms[roomId].socketsOfPlayers
     .filter((socket) => socket.isBotSocket)
     .forEach((botSocket) => {
-      botSocket.handleGameOver(thisGame, 'complete', () => {
-      }); // This room is getting destroyed. No need to leave.
+      botSocket.handleGameOver(thisGame, 'complete', () => {}); // This room is getting destroyed. No need to leave.
     });
 
   rooms[roomId] = undefined;

@@ -12,6 +12,7 @@ import { mremoveavatar } from './mremoveavatar';
 import { mclose } from './mclose';
 import { mannounce } from './mannounce';
 import { mkill } from './mkill';
+import { miplinkedaccs } from './miplinkedaccs';
 
 export const modCommands: Commands = {
   [m.command]: m,
@@ -27,4 +28,5 @@ export const modCommands: Commands = {
   [mclose.command]: mclose,
   [mannounce.command]: mannounce,
   [mkill.command]: mkill,
+  [miplinkedaccs.command]: miplinkedaccs,
 };
