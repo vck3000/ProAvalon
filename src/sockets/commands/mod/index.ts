@@ -9,6 +9,13 @@ import { mnotify } from './mnotify';
 import { mtoggleregistration } from './mtoggleregistration';
 import { mwhisper } from './mwhisper';
 import { mremoveavatar } from './mremoveavatar';
+import { mclose } from './mclose';
+import { mannounce } from './mannounce';
+import { mkill } from './mkill';
+import { miplinkedaccs } from './miplinkedaccs';
+import { mtogglepause } from './mtogglepause';
+import { mrevealallroles } from './mrevealallroles';
+import { mforcemove } from './mforcemove';
 
 export const modCommands: Commands = {
   [m.command]: m,
@@ -21,4 +28,11 @@ export const modCommands: Commands = {
   [mtoggleregistration.command]: mtoggleregistration,
   [mwhisper.command]: mwhisper,
   [mremoveavatar.command]: mremoveavatar,
+  [mclose.command]: mclose,
+  [mannounce.command]: mannounce,
+  [mkill.command]: mkill,
+  [miplinkedaccs.command]: miplinkedaccs,
+  [mtogglepause.command]: mtogglepause,
+  [mrevealallroles.command]: mrevealallroles,
+  [mforcemove.command]: mforcemove,
 };

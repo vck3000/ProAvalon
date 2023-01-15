@@ -1,6 +1,5 @@
 // @ts-nocheck
 import axios from 'axios';
-import sanitizeHtml from 'sanitize-html';
 import { Server as SocketServer, Socket } from 'socket.io';
 import { SocketUser } from './types';
 
@@ -13,12 +12,10 @@ import REWARDS from '../rewards/constants';
 import avatarRequest from '../models/avatarRequest';
 import User from '../models/user';
 import ModLog from '../models/modLog';
-import IPLinkedAccounts from '../myFunctions/IPLinkedAccounts';
 import JSON from 'circular-json';
 import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
-import { modOrTOString } from '../modsadmins/modOrTO';
 import { GAME_MODE_NAMES, isGameMode } from '../gameplay/gameModes';
 
 import { ChatSpamFilter } from './chatSpamFilter';
@@ -31,10 +28,12 @@ import {
 } from './bot';
 
 import { adminCommands } from './commands/admin';
-import { modCommands as modCommandsImported } from './commands/mod';
+import { modCommands } from './commands/mod';
 import { lastWhisperObj } from './commands/mod/mwhisper';
 
 import * as util from 'util';
+import { mtogglepause } from './commands/mod/mtogglepause';
+import { mrevealallroles } from './commands/mod/mrevealallroles';
 
 const chatSpamFilter = new ChatSpamFilter();
 if (process.env.NODE_ENV !== 'test') {
@@ -52,6 +51,7 @@ export const allSockets: SocketUser[] = [];
 // TODO: This is bad!!! We should work to make this not needed to be exported.
 export const rooms: GameWrapper[] = [];
 export let nextRoomId = 1;
+
 export function incrementNextRoomId() {
   nextRoomId++;
 }
@@ -169,431 +169,6 @@ if (process.env.NODE_ENV !== 'test') {
 const pmmodCooldowns = {};
 const PMMOD_TIMEOUT = 3000; // 3 seconds
 
-export let modCommands = {
-
-  mclose: {
-    command: 'mclose',
-    help: '/mclose <roomId> [<roomId> <roomId> ...]: Close room <roomId>. Also removes the corresponding save files in the database. Can take multiple room IDs.',
-    run(args, senderSocket) {
-      if (!args[1]) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'Specify a number.',
-          classStr: 'server-text',
-        });
-        return;
-      }
-
-      const roomIdsToClose = args.splice(1);
-      // console.log(roomIdsToClose);
-
-      roomIdsToClose.forEach((idToClose) => {
-        if (rooms[idToClose] !== undefined) {
-          // Disconnect everyone
-          for (let i = 0; i < rooms[idToClose].allSockets.length; i++) {
-            rooms[idToClose].allSockets[i].emit('leave-room-requested');
-          }
-
-          // Stop bots thread if they are playing:
-          if (rooms[idToClose].interval) {
-            clearInterval(rooms[idToClose].interval);
-            rooms[idToClose].interval = undefined;
-          }
-
-          // Forcefully close room
-          if (rooms[idToClose]) {
-            destroyRoom(rooms[idToClose].roomId);
-          }
-          senderSocket.emit('messageCommandReturnStr', {
-            message: `Closed room ${idToClose}.`,
-            classStr: 'server-text',
-          });
-        } else {
-          senderSocket.emit('messageCommandReturnStr', {
-            message: `Could not close room ${idToClose}.`,
-            classStr: 'server-text',
-          });
-        }
-      });
-
-      updateCurrentGamesList();
-    },
-  },
-
-  mannounce: {
-    command: 'mannounce',
-    help: '/mannounce <message>: Sends a sweet alert to all online players with an included message. It automatically says the username of the mod that executed the command.',
-    run(args, senderSocket) {
-      if (!args[1]) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'Please enter a message...',
-          classStr: 'server-text',
-        });
-        return;
-      }
-
-      let str = '';
-      for (let i = 1; i < args.length; i++) {
-        str += args[i];
-        str += ' ';
-      }
-
-      str += `<br><br>From: ${senderSocket.request.user.username}`;
-
-      allSockets.forEach((sock) => {
-        sock.emit('mannounce', str);
-      });
-    },
-  },
-
-  mforcemove: {
-    command: 'mforcemove',
-    help: "/mforcemove <username> [button] [target]: Forces a player to make a move. To see what moves are available, enter the target's username. To force the move, input button and/or target.",
-    run(args, senderSocket) {
-      senderSocket.emit('messageCommandReturnStr', {
-        message: `You have entered: ${args.join(' ')}`,
-        classStr: 'server-text',
-      });
-
-      let username = args[1];
-      const button = args[2];
-      const targets = args.splice(3);
-
-      const thisRoom = rooms[senderSocket.request.user.inRoomId];
-
-      if (thisRoom === undefined) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'Please enter a room to use this command.',
-          classStr: 'server-text',
-        });
-        return;
-      }
-
-      if (thisRoom.gameStarted === false) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'The game has not started.',
-          classStr: 'server-text',
-        });
-        return;
-      }
-
-      if (args.length <= 1) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'Please enter valid arguments.',
-          classStr: 'server-text',
-        });
-        return;
-      }
-
-      const playerIndex = getIndexFromUsername(
-        thisRoom.playersInGame,
-        username,
-        true,
-      );
-
-      if (playerIndex === undefined) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: `Could not find player ${username}.`,
-          classStr: 'server-text',
-        });
-        return;
-      }
-
-      // Update username to be the correct case.
-      username = thisRoom.playersInGame[playerIndex].request.user.username;
-
-      // If we have a username only:
-      if (args.length === 2 || button === '') {
-        const buttons = thisRoom.getClientButtonSettings(playerIndex);
-        const numOfTargets = thisRoom.getClientNumOfTargets(playerIndex);
-        const prohibitedIndexesToPick =
-          thisRoom.getProhibitedIndexesToPick(playerIndex) || [];
-
-        const availableButtons = [];
-        if (buttons.green.hidden !== true) {
-          availableButtons.push('yes');
-        }
-        const onMissionAndResistance =
-          thisRoom.phase == 'votingMission' &&
-          thisRoom.playersInGame[playerIndex].alliance === 'Resistance';
-        // Add a special case so resistance can't fail missions.
-        if (buttons.red.hidden !== true && onMissionAndResistance === false) {
-          availableButtons.push('no');
-        }
-
-        let availablePlayers = thisRoom.playersInGame
-          .filter(
-            (player, playerIndex) =>
-              prohibitedIndexesToPick.indexOf(playerIndex) === -1,
-          )
-          .map((player) => player.request.user.username);
-
-        // If there are 0 number of targets, there are no available players.
-        if (numOfTargets === null) {
-          availablePlayers = null; // null here so that the user can see this. For other operations, set to [].
-        }
-
-        if (availableButtons.length !== 0) {
-          senderSocket.emit('messageCommandReturnStr', {
-            message: '---------------',
-            classStr: 'server-text',
-          });
-          senderSocket.emit('messageCommandReturnStr', {
-            message: `Player ${username} can make the following moves:`,
-            classStr: 'server-text',
-          });
-          senderSocket.emit('messageCommandReturnStr', {
-            message: `Buttons: ${availableButtons}.`,
-            classStr: 'server-text',
-          });
-          senderSocket.emit('messageCommandReturnStr', {
-            message: `Targets: ${availablePlayers}.`,
-            classStr: 'server-text',
-          });
-          senderSocket.emit('messageCommandReturnStr', {
-            message: `Number of targets: ${numOfTargets}.`,
-            classStr: 'server-text',
-          });
-          senderSocket.emit('messageCommandReturnStr', {
-            message: '---------------',
-            classStr: 'server-text',
-          });
-        } else {
-          senderSocket.emit('messageCommandReturnStr', {
-            message: `Player ${username} cannot make any moves.`,
-            classStr: 'server-text',
-          });
-        }
-      }
-
-      // User is trying to force move.
-      else {
-        // Raise the caps for target usernames
-        const targetsCaps = [];
-        for (let i = 0; i < targets.length; i++) {
-          const playerIndexFound = getIndexFromUsername(
-            thisRoom.playersInGame,
-            targets[i],
-            true,
-          );
-          const playerSimulatedSocket =
-            thisRoom.playersInGame[playerIndexFound];
-          if (playerSimulatedSocket === undefined) {
-            senderSocket.emit('messageCommandReturnStr', {
-              message: `Could not find player ${targets[i]}.`,
-              classStr: 'server-text',
-            });
-            return;
-          }
-          targetsCaps.push(
-            thisRoom.playersInGame[playerIndexFound].request.user.username,
-          );
-        }
-
-        const rolePrefix = modOrTOString(senderSocket.request.user.username);
-
-        thisRoom.sendText(
-          thisRoom.allSockets,
-          `${rolePrefix} ${senderSocket.request.user.username} has forced a move: `,
-          'server-text',
-        );
-        thisRoom.sendText(
-          thisRoom.allSockets,
-          `Player: ${username} | Button: ${button} | Targets: ${targetsCaps}.`,
-          'server-text',
-        );
-
-        const targetSimulatedSocket = thisRoom.playersInGame[playerIndex];
-        if (targetSimulatedSocket.emit === undefined) {
-          targetSimulatedSocket.emit = function () {};
-        }
-        thisRoom.gameMove(targetSimulatedSocket, [button, targetsCaps]);
-      }
-    },
-  },
-
-  mrevealallroles: {
-    command: 'mrevealallroles',
-    help: '/mrevealallroles : Reveals the roles of all players in the current room.',
-    run(args, senderSocket) {
-      const roomId = senderSocket.request.user.inRoomId;
-      if (rooms[roomId]) {
-        if (!rooms[roomId].gameStarted) {
-          return {
-            message: 'Game has not started.',
-            classStr: 'server-text',
-          };
-        }
-
-        const rolePrefix = modOrTOString(senderSocket.request.user.username);
-
-        rooms[roomId].sendText(
-          rooms[roomId].allSockets,
-          `${rolePrefix} ${senderSocket.request.user.username} has learned all roles.`,
-          'server-text',
-        );
-
-        // reveal role for each user
-        rooms[roomId].playersInGame.forEach((user) => {
-          senderSocket.emit('messageCommandReturnStr', {
-            message: `${user.username}'s role is ${user.role.toUpperCase()}.`,
-            classStr: 'server-text',
-          });
-        });
-        return;
-      } else {
-        return { message: 'You are not in a room.', classStr: 'server-text' };
-      }
-    },
-  },
-
-  mtogglepause: {
-    command: 'mtogglepause',
-    help: '/mtogglepause: Pauses or unpauses the current room.',
-    run(args, senderSocket) {
-      const currentRoom = rooms[senderSocket.request.user.inRoomId];
-      if (currentRoom) {
-        // if unpaused, we pause
-        // if not started or finished, no action
-        if (!currentRoom.gameStarted) {
-          return {
-            message: 'Game has not started.',
-            classStr: 'server-text',
-          };
-        }
-        if (currentRoom.phase == 'finished') {
-          return { message: 'Game has finished.', classStr: 'server-text' };
-        }
-        currentRoom.togglePause(senderSocket.request.user.username);
-      } else {
-        return { message: 'You are not in a room.', classStr: 'server-text' };
-      }
-    },
-  },
-
-  miplinkedaccs: {
-    command: 'miplinkedaccs',
-    help: '/miplinkedaccs <username> <num_levels (greater than 1 | defaults to 2)>: Finds all accounts that have shared the same IPs the specified user. Put anything in <fullTree> to see full tree.',
-    async run(args, senderSocket) {
-      const username = args[1];
-      let num_levels = args[2];
-
-      // Send out data in a readable way to the mod.
-      const dataToReturn = [];
-
-      if (num_levels === undefined) {
-        num_levels = 1;
-      }
-
-      num_levels = parseInt(num_levels, 10);
-
-      if (isNaN(num_levels) || num_levels < 1) {
-        dataToReturn[0] = {
-          message: `${args[2]} is not a valid positive integer.`,
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        };
-        senderSocket.emit('messageCommandReturnStr', dataToReturn);
-        return;
-      }
-
-      let linkedUsernamesWithLevel;
-      let usernamesTree;
-      const newUsernamesTreeLines = [];
-      try {
-        const ret = await IPLinkedAccounts(username, num_levels);
-        linkedUsernamesWithLevel = ret.linkedUsernamesWithLevel;
-        usernamesTree = ret.usernamesTree;
-      } catch (e) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: e.message,
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        });
-        return;
-      }
-
-      if (linkedUsernamesWithLevel.length === 0) {
-        dataToReturn[0] = {
-          message: 'There are no users with matching IPs (weird).',
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        };
-      } else {
-        dataToReturn[0] = {
-          message: '-------------------------',
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        };
-        // Old display:
-        // for (obj of linkedUsernamesWithLevel) {
-        //     dataToReturn.push({ message: `${obj.level} - ${obj.username}`, classStr: 'server-text', dateCreated: new Date() });
-        // }
-
-        const lines = usernamesTree.split('\n');
-        // console.log(lines);
-        // Do my special replace white space with forced white space and append
-        for (const line of lines) {
-          let replace = true;
-          let newLine = '';
-          for (const ch of line) {
-            if (ch == ' ' && replace) {
-              newLine += '&#160;&#160;';
-            } else if (!ch.match('/^[a-z0-9]+$/i')) {
-              newLine += ch;
-            } else {
-              replace = false;
-              newLine += ch;
-            }
-          }
-          newLine = sanitizeHtml(newLine);
-          dataToReturn.push({
-            message: `${newLine}`,
-            classStr: 'server-text',
-            dateCreated: new Date(),
-          });
-          newUsernamesTreeLines.push(newLine);
-        }
-
-        dataToReturn.push({
-          message: '-------------------------',
-          classStr: 'server-text',
-          dateCreated: new Date(),
-        });
-      }
-      senderSocket.emit('messageCommandReturnStr', dataToReturn);
-
-      // Create the ModLog
-      const modUser = await User.findOne({
-        usernameLower: senderSocket.request.user.username.toLowerCase(),
-      });
-      ModLog.create({
-        type: 'miplinkedaccs',
-        modWhoMade: {
-          id: modUser._id,
-          username: modUser.username,
-          usernameLower: modUser.usernameLower,
-        },
-        data: {
-          target: args[1],
-          newUsernamesTreeLines: newUsernamesTreeLines,
-          fullTree: args[2] !== undefined ? true : false,
-        },
-        dateCreated: new Date(),
-      });
-    },
-  },
-
-  mkill: {
-    command: 'mkill',
-    help: '/mkill: Kills the server triggering an immediate restart.',
-    run() {
-      process.exit(0);
-    },
-  },
-};
-
-modCommands = { ...modCommands, ...modCommandsImported };
-
 export const TOCommands = {
   t: {
     command: 't',
@@ -634,13 +209,13 @@ export const TOCommands = {
   trevealallroles: {
     command: 'trevealallroles',
     help: '/trevealallroles : Reveals the roles of all players in the current room.',
-    run: modCommands.mrevealallroles.run,
+    run: mrevealallroles.run,
   },
 
   ttogglepause: {
     command: 'ttogglepause',
     help: '/ttogglepause: Pauses or unpauses the current room.',
-    run: modCommands.mtogglepause.run,
+    run: mtogglepause.run,
   },
 
   twhisper: {
@@ -1974,7 +1549,7 @@ const updateCurrentPlayersList = function () {
   });
 };
 
-const updateCurrentGamesList = function () {
+export const updateCurrentGamesList = function () {
   // prepare room data to send to players.
   const gamesList = [];
   for (let i = 0; i < rooms.length; i++) {
@@ -2065,7 +1640,7 @@ export function sendReplyToCommand(socket: Socket, message: string) {
   });
 }
 
-function destroyRoom(roomId) {
+export function destroyRoom(roomId) {
   if (rooms[roomId] === undefined || rooms[roomId] === null) {
     return;
   }

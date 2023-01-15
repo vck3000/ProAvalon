@@ -1,7 +1,7 @@
-import { modCommands } from '../sockets';
+// @ts-nocheck
+
 import IPLinkedAccounts from '../../myFunctions/IPLinkedAccounts';
-// import ModLog from '../models/modLog';
-// import User from '../models/user';
+import { miplinkedaccs } from '../commands/mod/miplinkedaccs';
 
 jest.mock('../../myFunctions/IPLinkedAccounts');
 jest.mock('../../models/modLog');
@@ -36,7 +36,7 @@ describe('ModCommands', () => {
   it('calls iplinkedaccs', () => {
     const args = ['/miplinkedaccs', 'ProNub', '2'];
 
-    modCommands.miplinkedaccs.run(args, mockSocket);
+    miplinkedaccs.run(args, mockSocket);
 
     expect(IPLinkedAccounts).toHaveBeenCalledWith('ProNub', 2);
   });
@@ -44,7 +44,7 @@ describe('ModCommands', () => {
   it('defaults to level of 1', () => {
     const args = ['/miplinkedaccs', 'ProNub'];
 
-    modCommands.miplinkedaccs.run(args, mockSocket);
+    miplinkedaccs.run(args, mockSocket);
 
     expect(IPLinkedAccounts).toHaveBeenCalledWith('ProNub', 1);
   });
@@ -52,7 +52,7 @@ describe('ModCommands', () => {
   it('errors on bad number of levels', () => {
     const args = ['/miplinkedaccs', 'ProNub', '-1'];
 
-    modCommands.miplinkedaccs.run(args, mockSocket);
+    miplinkedaccs.run(args, mockSocket);
 
     expect(mockSocket.emit.mock.calls[0][0]).toEqual('messageCommandReturnStr');
     expect(mockSocket.emit.mock.calls[0][1][0]).toEqual(
@@ -66,7 +66,7 @@ describe('ModCommands', () => {
   it('disallows non-integer depths', () => {
     const args = ['/miplinkedaccs', 'ProNub', 'asdf'];
 
-    modCommands.miplinkedaccs.run(args, mockSocket);
+    miplinkedaccs.run(args, mockSocket);
 
     expect(mockSocket.emit.mock.calls[0][0]).toEqual('messageCommandReturnStr');
     expect(mockSocket.emit.mock.calls[0][1][0]).toEqual(
