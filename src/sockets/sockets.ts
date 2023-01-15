@@ -52,6 +52,7 @@ export const allSockets: SocketUser[] = [];
 // TODO: This is bad!!! We should work to make this not needed to be exported.
 export const rooms: GameWrapper[] = [];
 export let nextRoomId = 1;
+
 export function incrementNextRoomId() {
   nextRoomId++;
 }
@@ -170,55 +171,6 @@ const pmmodCooldowns = {};
 const PMMOD_TIMEOUT = 3000; // 3 seconds
 
 export let modCommands = {
-
-  mclose: {
-    command: 'mclose',
-    help: '/mclose <roomId> [<roomId> <roomId> ...]: Close room <roomId>. Also removes the corresponding save files in the database. Can take multiple room IDs.',
-    run(args, senderSocket) {
-      if (!args[1]) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'Specify a number.',
-          classStr: 'server-text',
-        });
-        return;
-      }
-
-      const roomIdsToClose = args.splice(1);
-      // console.log(roomIdsToClose);
-
-      roomIdsToClose.forEach((idToClose) => {
-        if (rooms[idToClose] !== undefined) {
-          // Disconnect everyone
-          for (let i = 0; i < rooms[idToClose].allSockets.length; i++) {
-            rooms[idToClose].allSockets[i].emit('leave-room-requested');
-          }
-
-          // Stop bots thread if they are playing:
-          if (rooms[idToClose].interval) {
-            clearInterval(rooms[idToClose].interval);
-            rooms[idToClose].interval = undefined;
-          }
-
-          // Forcefully close room
-          if (rooms[idToClose]) {
-            destroyRoom(rooms[idToClose].roomId);
-          }
-          senderSocket.emit('messageCommandReturnStr', {
-            message: `Closed room ${idToClose}.`,
-            classStr: 'server-text',
-          });
-        } else {
-          senderSocket.emit('messageCommandReturnStr', {
-            message: `Could not close room ${idToClose}.`,
-            classStr: 'server-text',
-          });
-        }
-      });
-
-      updateCurrentGamesList();
-    },
-  },
-
   mannounce: {
     command: 'mannounce',
     help: '/mannounce <message>: Sends a sweet alert to all online players with an included message. It automatically says the username of the mod that executed the command.',
@@ -1974,7 +1926,7 @@ const updateCurrentPlayersList = function () {
   });
 };
 
-const updateCurrentGamesList = function () {
+export const updateCurrentGamesList = function () {
   // prepare room data to send to players.
   const gamesList = [];
   for (let i = 0; i < rooms.length; i++) {
@@ -2065,7 +2017,7 @@ export function sendReplyToCommand(socket: Socket, message: string) {
   });
 }
 
-function destroyRoom(roomId) {
+export function destroyRoom(roomId) {
   if (rooms[roomId] === undefined || rooms[roomId] === null) {
     return;
   }

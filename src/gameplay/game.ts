@@ -24,6 +24,9 @@ class Game extends Room {
   // TODO This shouldn't be here! Should be in Assassin file.
   startAssassinationTime: Date;
 
+  // Used for bots to callback moves
+  interval: NodeJS.Timeout;
+
   constructor(
     host_,
     roomId_,

@@ -9,6 +9,7 @@ import { mnotify } from './mnotify';
 import { mtoggleregistration } from './mtoggleregistration';
 import { mwhisper } from './mwhisper';
 import { mremoveavatar } from './mremoveavatar';
+import { mclose } from './mclose';
 
 export const modCommands: Commands = {
   [m.command]: m,
@@ -21,4 +22,5 @@ export const modCommands: Commands = {
   [mtoggleregistration.command]: mtoggleregistration,
   [mwhisper.command]: mwhisper,
   [mremoveavatar.command]: mremoveavatar,
+  [mclose.command]: mclose,
 };
