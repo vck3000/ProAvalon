@@ -22,13 +22,13 @@ export const mwhisper: Command = {
     }
 
     if (
-      args[1].toLowerCase() ===
-      senderSocket.request.user.username.toLowerCase()
+      args[1].toLowerCase() === senderSocket.request.user.username.toLowerCase()
     ) {
       senderSocket.emit('messageCommandReturnStr', {
         message: 'You cannot whisper yourself...',
         classStr: 'server-text',
       });
+      return;
     }
 
     const sendToSocket =

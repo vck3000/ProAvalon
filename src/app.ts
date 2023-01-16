@@ -51,6 +51,11 @@ app.set('trust proxy', true);
 morgan.token('body', (req, res) => {
   if (req.url === '/login') {
     return JSON.stringify({ username: req.body.username });
+  } else if (req.url === '/' && req.method === 'POST') {
+    return JSON.stringify({
+      username: req.body.username,
+      emailAddress: req.body.emailAddress,
+    });
   }
 
   return JSON.stringify(req.body);
