@@ -1,12 +1,14 @@
 // all in lower case
 export const modsArray = [
   'pronub',
-  'starbird1002',
   'besjbo',
   'not.me',
   'manuavalon',
   'maximovic96',
   'd8nitemike',
+  'ingenue',
+  'goofy', // jams
+  'sadnixon',
 ];
 
 export function isMod(username: string): boolean {
