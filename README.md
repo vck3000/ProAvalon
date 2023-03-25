@@ -18,7 +18,7 @@ Other useful resources:
 - [Visual Studio Code](https://code.visualstudio.com/), a code editor/IDE by Microsoft.
 - [nvm](https://github.com/nvm-sh/nvm), a useful tool to manage your node versions.
 
-### Installing
+### Installing on a local environment
 
 1. If you intend on contributing, make a fork of ProAvalon.
 
@@ -42,6 +42,28 @@ $ cp .env.example .env
 ```
 $ yarn
 ```
+### Additional requisites for Installation on a Windows device
+
+1. Run Windows Powershell as administrator and type in the following command:
+
+```
+$ wsl --install
+```
+2. Download Ubuntu from Microsoft store or type in the following command:
+
+```
+$ wsl --install -d ubuntu
+```
+
+3. Run ubuntu on your Windows computer. Afterwards, it will ask you to create initial username and password.
+
+4. Run the following command after you registered into Ubuntu
+
+```
+$ sudo apt update
+```
+
+5. start your computer to allow these installs to take effect.
 
 ### Running
 
