@@ -1388,6 +1388,7 @@ export const server = function (io: SocketServer): void {
     socket.on('update-room-game-mode', updateRoomGameMode);
     socket.on('update-room-ranked', updateRoomRanked);
     socket.on('update-room-muteSpectators', updateRoomMuteSpectators);
+    socket.on('update-room-closeVoteHistory', updateRoomCloseVoteHistory); 
 
     //************************
     // game data stuff
@@ -2026,6 +2027,10 @@ function newRoom(dataObj) {
       return;
     }
 
+    if (dataObj.closeVoteHistory !== true && dataObj.closeVoteHistory !== false) {
+      return;
+    }
+
     // while rooms exist already (in case of a previously saved and retrieved game)
     while (rooms[nextRoomId]) {
       incrementNextRoomId();
@@ -2042,6 +2047,7 @@ function newRoom(dataObj) {
       dataObj.newRoomPassword,
       dataObj.gameMode,
       dataObj.muteSpectators,
+      dataObj.closeVoteHistory,
       rankedRoom,
       socketCallback,
     );
@@ -2266,6 +2272,12 @@ function updateRoomRanked(rankedType) {
 function updateRoomMuteSpectators(muteSpectators) {
   if (rooms[this.request.user.inRoomId]) {
     rooms[this.request.user.inRoomId].updateMuteSpectators(muteSpectators);
+  }
+}
+
+function updateRoomCloseVoteHistory(voteHistory) {
+  if (rooms[this.request.user.inRoomId]) {
+    rooms[this.request.user.inRoomId].updateCloseVoteHistory(voteHistory);
   }
 }
 
