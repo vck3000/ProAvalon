@@ -987,7 +987,7 @@ class Game extends Room {
         data[i].numSelectTargets = this.getClientNumOfTargets(i);
 
         data[i].votes = this.publicVotes;
-        if (this.voteHistoryHidden)
+        if (this.closeVoteHistory)
         {
           data[i].voteHistory = {}; 
         }
