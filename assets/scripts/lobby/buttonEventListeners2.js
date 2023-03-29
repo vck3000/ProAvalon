@@ -185,6 +185,7 @@ $('#createNewRoomButton').on('click', (data) => {
     newRoomPassword: $('#newRoomPassword').val(),
     gameMode: $($('.gameModeSelect')[1]).val(),
     muteSpectators: $('.muteSpectators')[1].checked,
+    closeVoteHistory: $('.closeVoteHistory')[1].checked,
     ranked: $($('.rankedSelect')[1]).val(),
   };
 
@@ -192,6 +193,7 @@ $('#createNewRoomButton').on('click', (data) => {
   $($('.maxNumPlayers')[0]).val(sendObj.maxNumPlayers);
   $($('.gameModeSelect')[0]).val(sendObj.gameMode);
   $('.muteSpectators')[0].checked = sendObj.muteSpectators;
+  $('.closeVoteHistory')[0].checked = sendObj.closeVoteHistory;
   $($('.rankedSelect')[0]).val(sendObj.ranked);
 
   if (inRoom === false) {
