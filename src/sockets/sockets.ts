@@ -2015,7 +2015,7 @@ function newRoom(dataObj) {
       return;
     }
 
-    if (!isGameMode(dataObj.gameMode)) {
+    if (!isGameMode(dataObj.gameMode)) { 
       return;
     }
 
