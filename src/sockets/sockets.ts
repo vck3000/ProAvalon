@@ -2027,6 +2027,12 @@ function newRoom(dataObj) {
       return;
     }
 
+    
+    if (dataObj.closeVoteHistory !== true && dataObj.closeVoteHistory !== false) {
+      return;
+    }
+    
+
 
     // while rooms exist already (in case of a previously saved and retrieved game)
     while (rooms[nextRoomId]) {

@@ -1857,6 +1857,9 @@ class Game extends Room {
   }
 
   updateMuteSpectators(muteSpectators: boolean) {
+    console.log(muteSpectators); 
+    console.log('hello'); 
+
     this.muteSpectators = muteSpectators;
 
     this.sendText(
