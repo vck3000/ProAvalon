@@ -4,7 +4,7 @@ import { aip } from './aip';
 import { aresetpassword } from './aresetpassword';
 import { Commands } from '../types';
 import { atestgame } from './atestgame';
-import { acreatetestaccounts } from "./acreatetestaccounts";
+import { acreatetestaccounts } from './acreatetestaccounts';
 
 export const adminCommands: Commands = {
   [a.command]: a,
