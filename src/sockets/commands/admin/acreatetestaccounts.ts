@@ -21,7 +21,7 @@ export const acreatetestaccounts: Command = {
       });
 
       // @ts-ignore
-      User.register(newUser, i.toString(), (err, user) => {
+      User.register(newUser, i.toString() /* password */, (err, user) => {
         user.emailVerified = true;
         user.markModified('emailVerified');
         user.save();
