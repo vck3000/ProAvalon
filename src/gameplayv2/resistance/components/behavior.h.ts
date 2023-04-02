@@ -1,4 +1,4 @@
-//Vote Abstract entity
-export interface Behaviour{
+//Behavior Abstract entity
+export interface Behavior{
     
 }
