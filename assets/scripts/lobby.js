@@ -1360,6 +1360,23 @@ function drawVoteHistory(data) {
 
     // Individual mission voteHistory
     // for every mission
+
+    //console.log(data.voteHistory[keyArray[k]].length); 
+
+    /*
+    if (data.voteHistory[keyArray[k]].length === 0)
+    {
+      return; 
+    }
+    */
+
+    
+    if (data.voteHistory = {})
+    {
+      return; 
+    }
+    
+
     for (var i = 0; i < data.voteHistory[keyArray[k]].length; i++) {
       numOfPicksPerMission[i] = 0;
 

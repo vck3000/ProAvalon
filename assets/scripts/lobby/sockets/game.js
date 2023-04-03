@@ -242,6 +242,17 @@ function getPlayersOnMissionPickAndLeader(missionNum, pickNum = -1) {
   // We need a player key to see vote history to get the number of picks in the mission
   const firstPlayerKey = Object.keys(gameData.voteHistory)[0];
 
+  /*
+  if(gameData.voteHistory[firstPlayerKey].length === 0)
+  {
+    return; 
+  }
+  */
+
+  if (gameData.voteHistory = {})
+  {
+    return; 
+  }
   // The first case prevents us from erroring when we hover over the first pick of a mission before the arrays update
   // The second case prevents us from prematurely highlighting missions that aren't complete.
   if (missionNum >= gameData.voteHistory[firstPlayerKey].length) {
