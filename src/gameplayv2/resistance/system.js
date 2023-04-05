@@ -1,0 +1,1 @@
+const resistance = new Resistance();
