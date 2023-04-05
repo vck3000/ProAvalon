@@ -1,13 +1,12 @@
 import { Component } from './components/RoleComponent';
 
+// a simple tag component
 class Assassin {
-    constructor (isAssassin) {
+    constructor () {
         // this.entityID = entityID
-        this.isAssassin = isAssassin
+        this.isAssassin = true
     }
 }
 
-// function isAssassin (){
-   
-// }
+
 
