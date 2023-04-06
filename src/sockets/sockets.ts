@@ -2278,9 +2278,9 @@ function updateRoomMuteSpectators(muteSpectators) {
   }
 }
 
-function updateRoomCloseVoteHistory(voteHistory) {
+function updateRoomCloseVoteHistory(closeVoteHistory) {
   if (rooms[this.request.user.inRoomId]) {
-    rooms[this.request.user.inRoomId].updateCloseVoteHistory(voteHistory);
+    rooms[this.request.user.inRoomId].updateCloseVoteHistory(closeVoteHistory);
   }
 }
 

@@ -496,6 +496,14 @@ class Game extends Room {
       );
     }
 
+    if (this.closeVoteHistory) {
+      this.sendText(
+        this.allSockets,
+        'The game has closed vote history.',
+        'gameplay-text',
+      );
+    }
+
     // seed the starting data into the VH
     for (let i = 0; i < this.playersInGame.length; i++) {
       this.voteHistory[this.playersInGame[i].request.user.username] = [];
@@ -987,7 +995,10 @@ class Game extends Room {
         data[i].numSelectTargets = this.getClientNumOfTargets(i);
 
         data[i].votes = this.publicVotes;
-        if (this.closeVoteHistory)
+
+        console.log(this.closeVoteHistory, 'cvh'); 
+        
+        if (this.closeVoteHistory === true)
         {
           data[i].voteHistory = {}; 
         }
@@ -996,6 +1007,9 @@ class Game extends Room {
           data[i].voteHistory = this.voteHistory;
 
         }
+
+        console.log(data[i].voteHistory); 
+        
         
         data[i].hammer = this.hammer;
         data[i].hammerReversed = gameReverseIndex(
@@ -1871,6 +1885,8 @@ class Game extends Room {
 
   updateCloseVoteHistory(closeVoteHistory: boolean) {
     this.closeVoteHistory = closeVoteHistory;
+
+    console.log(closeVoteHistory, 'test'); 
 
     this.sendText(
       this.allSockets,

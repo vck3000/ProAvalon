@@ -1322,6 +1322,15 @@ function generatePlayerLocations(numOfPlayers, a, b) {
 
 // Note this function will also draw the card history
 function drawVoteHistory(data) {
+
+  console.log(data); 
+  console.log(data.voteHistory, 'tiger'); 
+    
+    if (data.voteHistory = {})
+    {
+      return; 
+    }
+
   // Vote history:
   const numOfPicksPerMission = [];
   var str = '';
@@ -1371,10 +1380,7 @@ function drawVoteHistory(data) {
     */
 
     
-    if (data.voteHistory = {})
-    {
-      return; 
-    }
+    
     
 
     for (var i = 0; i < data.voteHistory[keyArray[k]].length; i++) {
