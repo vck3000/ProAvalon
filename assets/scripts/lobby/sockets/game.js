@@ -83,7 +83,7 @@ socket.on('spec-game-starting-finished', (data) => {
 
 socket.on('game-data', (data) => {
   // console.log("GAME DATA INC");
-   console.log(data, 'bob');
+  console.log(data, 'bob');
   if (data && roomId === data.roomId) {
     // console.log("game starting!");
 
@@ -135,7 +135,7 @@ hoverPickBoxHighlightPlayerSetup();
 function hoverMissionBoxHighlightPlayerSetup() {
   $('.missionBox').hover(
     // Upon hover:
-    function() {
+    function () {
       // console.log(this);
       // console.log(this.getAttribute("id"));
       // console.log(this.getAttribute("id").slice(-1));
@@ -172,7 +172,7 @@ function hoverMissionBoxHighlightPlayerSetup() {
 function hoverPickBoxHighlightPlayerSetup() {
   $('.pickBox').hover(
     // on hover
-    function() {
+    function () {
       const pickNum = this.getAttribute('id').slice(-1);
       const participatingTeamAndLeader = getPlayersOnMissionPickAndLeader(
         gameData.missionNum - 1,
@@ -239,10 +239,8 @@ function removeTeamHighlightAndLeaderOutline() {
 // Given a mission number and the pick number, returns the people on that mission pick
 // If pickNum is -1, then returns the people on the last pick of that mission
 function getPlayersOnMissionPickAndLeader(missionNum, pickNum = -1) {
-
-  if (gameData.voteHistory = {})
-  {
-    return; 
+  if ((gameData.voteHistory = {})) {
+    return;
   }
   // We need a player key to see vote history to get the number of picks in the mission
   const firstPlayerKey = Object.keys(gameData.voteHistory)[0];
@@ -254,7 +252,6 @@ function getPlayersOnMissionPickAndLeader(missionNum, pickNum = -1) {
   }
   */
 
-  
   // The first case prevents us from erroring when we hover over the first pick of a mission before the arrays update
   // The second case prevents us from prematurely highlighting missions that aren't complete.
   if (missionNum >= gameData.voteHistory[firstPlayerKey].length) {

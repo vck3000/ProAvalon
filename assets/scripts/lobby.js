@@ -24,7 +24,7 @@ setInterval(() => {
   // if the difference between the widths is close enough to 0, then change width
   if (
     Math.abs(
-      $('#div1Resize').width() - $('#div1Resize').parent().width() * 0.95
+      $('#div1Resize').width() - $('#div1Resize').parent().width() * 0.95,
     ) > 1
   ) {
     // console.log('Changed width:');
@@ -41,7 +41,7 @@ setTimeout(() => {
   const viewport = document.querySelector('meta[name=viewport]');
   viewport.setAttribute(
     'content',
-    `height=${viewheight}, width=${viewwidth}, initial-scale=1.0`
+    `height=${viewheight}, width=${viewwidth}, initial-scale=1.0`,
   );
 
   // Extend divs to bottom of page:
@@ -188,7 +188,7 @@ function activateAvatarButtons() {
   // console.log("LOL");
   // if(OPTION THING ADD HERE){
   const highlightButtons = document.querySelectorAll(
-    '#mainRoomBox div #highlightAvatarButton'
+    '#mainRoomBox div #highlightAvatarButton',
   );
   // add the event listeners for button press
 
@@ -222,7 +222,7 @@ function activateAvatarButtons() {
   }
 
   const highlightChatButtons = document.querySelectorAll(
-    '#mainRoomBox div #highlightChatButton'
+    '#mainRoomBox div #highlightChatButton',
   );
   // add the event listeners for button press
   for (var i = 0; i < highlightChatButtons.length; i++) {
@@ -235,7 +235,7 @@ function activateAvatarButtons() {
       const chatItems = $(`.room-chat-list li span[username='${username}']`);
 
       let playerHighlightColour = docCookies.getItem(
-        `player${getIndexFromUsername(username)}HighlightColour`
+        `player${getIndexFromUsername(username)}HighlightColour`,
       );
 
       const setHighlightColorToYellow = $('.setHighlightColorsToYellow')[0]
@@ -350,17 +350,17 @@ function drawMiddleBoxes() {
       if (missionStatus === 'succeeded') {
         document
           .querySelectorAll('.missionBox')
-        [j].classList.add('missionBoxSucceed');
+          [j].classList.add('missionBoxSucceed');
         document
           .querySelectorAll('.missionBox')
-        [j].classList.remove('missionBoxFail');
+          [j].classList.remove('missionBoxFail');
       } else if (missionStatus === 'failed') {
         document
           .querySelectorAll('.missionBox')
-        [j].classList.add('missionBoxFail');
+          [j].classList.add('missionBoxFail');
         document
           .querySelectorAll('.missionBox')
-        [j].classList.remove('missionBoxSucceed');
+          [j].classList.remove('missionBoxSucceed');
       }
 
       // draw in the number of players in each mission
@@ -378,17 +378,17 @@ function drawMiddleBoxes() {
       } else {
         document
           .querySelectorAll('.pickBox')
-        [j].classList.remove('pickBoxFill');
+          [j].classList.remove('pickBoxFill');
       }
     }
   } else {
     for (var j = 0; j < 5; j++) {
       document
         .querySelectorAll('.missionBox')
-      [j].classList.remove('missionBoxFail');
+        [j].classList.remove('missionBoxFail');
       document
         .querySelectorAll('.missionBox')
-      [j].classList.remove('missionBoxSucceed');
+        [j].classList.remove('missionBoxSucceed');
       document.querySelectorAll('.missionBox')[j].innerText = '';
       document.querySelectorAll('.pickBox')[j].classList.remove('pickBoxFill');
     }
@@ -591,22 +591,24 @@ function drawGuns() {
 
         $($('.gun')[i]).animate(
           {
-            top: `${$(
-              $('#mainRoomBox div')[
-              getIndexFromUsername(gameData.proposedTeam[i])
-              ]
-            ).position().top +
+            top: `${
+              $(
+                $('#mainRoomBox div')[
+                  getIndexFromUsername(gameData.proposedTeam[i])
+                ],
+              ).position().top +
               heightOfGun * offsetGunPos.y
-              }px`,
-            left: `${$(
-              $('#mainRoomBox div')[
-              getIndexFromUsername(gameData.proposedTeam[i])
-              ]
-            ).position().left +
+            }px`,
+            left: `${
+              $(
+                $('#mainRoomBox div')[
+                  getIndexFromUsername(gameData.proposedTeam[i])
+                ],
+              ).position().left +
               widOfGun / offsetGunPos.x
-              }px`,
+            }px`,
           },
-          500
+          500,
         );
         $($('.gun')[i]).removeClass('gunBefore');
         $($('.gun')[i]).addClass('gunAfter');
@@ -640,23 +642,25 @@ function adjustGunPositions() {
       const offsetGunPos = pics[icon].position;
       $($('.gun')[i]).css(
         'top',
-        `${$(
-          $('#mainRoomBox div')[
-          getIndexFromUsername(gameData.proposedTeam[i])
-          ]
-        ).position().top +
-        heightOfGun * offsetGunPos.y
-        }px`
+        `${
+          $(
+            $('#mainRoomBox div')[
+              getIndexFromUsername(gameData.proposedTeam[i])
+            ],
+          ).position().top +
+          heightOfGun * offsetGunPos.y
+        }px`,
       );
       $($('.gun')[i]).css(
         'left',
-        `${$(
-          $('#mainRoomBox div')[
-          getIndexFromUsername(gameData.proposedTeam[i])
-          ]
-        ).position().left +
-        widOfGun / offsetGunPos.x
-        }px`
+        `${
+          $(
+            $('#mainRoomBox div')[
+              getIndexFromUsername(gameData.proposedTeam[i])
+            ],
+          ).position().left +
+          widOfGun / offsetGunPos.x
+        }px`,
       );
     }
   }
@@ -921,7 +925,7 @@ function getHighlightedAvatars() {
 function restoreHighlightedAvatars(usernames) {
   usernames.forEach((username) => {
     $($('#mainRoomBox div')[getIndexFromUsername(username)]).addClass(
-      'highlight-avatar'
+      'highlight-avatar',
     );
   });
 }
@@ -990,11 +994,12 @@ function strOfAvatar(playerData, alliance) {
   if (gameStarted === true && gameData.phase === 'finished') {
     var roleWid =
       ctx.measureText(
-        gameData.see.roles[getIndexFromUsername(playerData.username)]
+        gameData.see.roles[getIndexFromUsername(playerData.username)],
       ).width + 20;
 
-    role = `<p class='role-p' style='width: ${roleWid}px; margin: auto;'>${gameData.see.roles[getIndexFromUsername(playerData.username)]
-      }</p>`;
+    role = `<p class='role-p' style='width: ${roleWid}px; margin: auto;'>${
+      gameData.see.roles[getIndexFromUsername(playerData.username)]
+    }</p>`;
   } else if (gameStarted === true && gameData !== undefined) {
     // if rendering our own player, give it the role tag
     if (playerData.username === ownUsername) {
@@ -1083,9 +1088,10 @@ function strOfAvatar(playerData, alliance) {
   str += '<span class="cardsContainer"></span>';
 
   str += `<img class='avatarImgInRoom' src='${picLink}'>`;
-  str += `${"<p class='username-p' style='white-space:nowrap; position:relative;'>" +
+  str += `${
+    "<p class='username-p' style='white-space:nowrap; position:relative;'>" +
     ' '
-    }${playerData.username} ${hammerStar} </p>${role}</div>`;
+  }${playerData.username} ${hammerStar} </p>${role}</div>`;
 
   return str;
 }
@@ -1322,14 +1328,12 @@ function generatePlayerLocations(numOfPlayers, a, b) {
 
 // Note this function will also draw the card history
 function drawVoteHistory(data) {
+  console.log(data);
+  console.log(data.voteHistory, 'tiger');
 
-  console.log(data); 
-  console.log(data.voteHistory, 'tiger'); 
-    
-    if (data.voteHistory = {})
-    {
-      return; 
-    }
+  if ((data.voteHistory = {})) {
+    return;
+  }
 
   // Vote history:
   const numOfPicksPerMission = [];
@@ -1348,8 +1352,9 @@ function drawVoteHistory(data) {
       colour = 'transparent';
     }
 
-    str += `<td style='width: 11em; background-color: ${colour}; color: black;' colspan='' class='missionHeader${i + 1
-      }'>Mission ${i + 1}</td>`;
+    str += `<td style='width: 11em; background-color: ${colour}; color: black;' colspan='' class='missionHeader${
+      i + 1
+    }'>Mission ${i + 1}</td>`;
   }
   str += '</tr>';
 
@@ -1370,7 +1375,7 @@ function drawVoteHistory(data) {
     // Individual mission voteHistory
     // for every mission
 
-    //console.log(data.voteHistory[keyArray[k]].length); 
+    //console.log(data.voteHistory[keyArray[k]].length);
 
     /*
     if (data.voteHistory[keyArray[k]].length === 0)
@@ -1378,10 +1383,6 @@ function drawVoteHistory(data) {
       return; 
     }
     */
-
-    
-    
-    
 
     for (var i = 0; i < data.voteHistory[keyArray[k]].length; i++) {
       numOfPicksPerMission[i] = 0;
@@ -1703,11 +1704,11 @@ function updateTwoTabs(checked) {
     $('#tabs1').addClass('tabs1TwoTabs');
     $('#tabs2').addClass('tabs2TwoTabs');
     $('#tabs2').removeClass('displayNoneClass');
-    $('#reportDivRoom').addClass('displayNoneReportClass')
+    $('#reportDivRoom').addClass('displayNoneReportClass');
   } else {
     $('#tabs1').removeClass('col-xs-6');
     $('#tabs2').addClass('displayNoneClass');
-    $('#reportDivRoom').removeClass('displayNoneReportClass')
+    $('#reportDivRoom').removeClass('displayNoneReportClass');
   }
 }
 
@@ -1748,7 +1749,7 @@ function scaleGameComponents() {
   // Scale the middle boxes
   $('#missionsBox').css(
     'transform',
-    `translateX(-50%) scale(${ratioToReduce})`
+    `translateX(-50%) scale(${ratioToReduce})`,
   );
 
   // Scale the guns/pick icon
@@ -1795,7 +1796,7 @@ function scaleGameComponents() {
   }
   $('.leaderIcon').css(
     'max-height',
-    `${maxHeight * (playerDivHeightRatio - 0.05)}px`
+    `${maxHeight * (playerDivHeightRatio - 0.05)}px`,
   );
   $('.leaderIcon').css('max-width', `${maxWidth * playerDivHeightRatio}px`);
 
@@ -1811,7 +1812,7 @@ function scaleGameComponents() {
   }
   $('.assassinateIcon').css(
     'max-height',
-    `${maxHeight * playerDivHeightRatio}px`
+    `${maxHeight * playerDivHeightRatio}px`,
   );
 
   // Scale the approve reject labels
@@ -1828,11 +1829,11 @@ function scaleGameComponents() {
   // also scale the approve reject buttons
   $('.approveLabel').css(
     'transform',
-    `translateX(-50%) scale(${ratioToReduce})`
+    `translateX(-50%) scale(${ratioToReduce})`,
   );
   $('.rejectLabel').css(
     'transform',
-    `translateX(-50%) scale(${ratioToReduce})`
+    `translateX(-50%) scale(${ratioToReduce})`,
   );
 }
 

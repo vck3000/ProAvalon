@@ -35,7 +35,7 @@ class Game extends Room {
     newRoomPassword_,
     gameMode_,
     muteSpectators_,
-    closeVoteHistory_,
+    disableVoteHistory_,
     ranked_,
     callback_,
   ) {
@@ -133,7 +133,7 @@ class Game extends Room {
     this.missionVotes = [];
 
     this.voteHistory = {};
-    this.closeVoteHistory = closeVoteHistory_; 
+    this.disableVoteHistory = disableVoteHistory_;
 
     // Game misc variables
     this.winner = '';
@@ -496,7 +496,7 @@ class Game extends Room {
       );
     }
 
-    if (this.closeVoteHistory) {
+    if (this.disableVoteHistory) {
       this.sendText(
         this.allSockets,
         'The game has closed vote history.',
@@ -996,21 +996,12 @@ class Game extends Room {
 
         data[i].votes = this.publicVotes;
 
-        console.log(this.closeVoteHistory, 'cvh'); 
-        
-        if (this.closeVoteHistory === true)
-        {
-          data[i].voteHistory = {}; 
-        }
-        else
-        {
-          data[i].voteHistory = this.voteHistory;
+        console.log(this.disableVoteHistory, 'cvh');
 
-        }
+        data[i].voteHistory = this.disableVoteHistory ? {} : this.voteHistory;
 
-        console.log(data[i].voteHistory); 
-        
-        
+        console.log(data[i].voteHistory);
+
         data[i].hammer = this.hammer;
         data[i].hammerReversed = gameReverseIndex(
           this.hammer,
@@ -1871,8 +1862,8 @@ class Game extends Room {
   }
 
   updateMuteSpectators(muteSpectators: boolean) {
-    console.log(muteSpectators); 
-    console.log('hello'); 
+    console.log(muteSpectators);
+    console.log('hello');
 
     this.muteSpectators = muteSpectators;
 
@@ -1883,20 +1874,17 @@ class Game extends Room {
     );
   }
 
-  updateCloseVoteHistory(closeVoteHistory: boolean) {
-    this.closeVoteHistory = closeVoteHistory;
+  updatedisableVoteHistory(disableVoteHistory: boolean) {
+    this.disableVoteHistory = disableVoteHistory;
 
-    console.log(closeVoteHistory, 'test'); 
+    console.log(disableVoteHistory, 'test');
 
     this.sendText(
       this.allSockets,
-      `Close vote history option set to ${closeVoteHistory}.`,
+      `Close vote history option set to ${disableVoteHistory}.`,
       'server-text',
     );
-    
   }
-
-
 
   /*
   ELO RATING CALCULATION:

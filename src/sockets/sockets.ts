@@ -1388,7 +1388,7 @@ export const server = function (io: SocketServer): void {
     socket.on('update-room-game-mode', updateRoomGameMode);
     socket.on('update-room-ranked', updateRoomRanked);
     socket.on('update-room-muteSpectators', updateRoomMuteSpectators);
-    socket.on('update-room-closeVoteHistory', updateRoomCloseVoteHistory); 
+    socket.on('update-room-disableVoteHistory', updateRoomdisableVoteHistory);
 
     //************************
     // game data stuff
@@ -2015,7 +2015,7 @@ function newRoom(dataObj) {
       return;
     }
 
-    if (!isGameMode(dataObj.gameMode)) { 
+    if (!isGameMode(dataObj.gameMode)) {
       return;
     }
 
@@ -2027,12 +2027,12 @@ function newRoom(dataObj) {
       return;
     }
 
-    
-    if (dataObj.closeVoteHistory !== true && dataObj.closeVoteHistory !== false) {
+    if (
+      dataObj.disableVoteHistory !== true &&
+      dataObj.disableVoteHistory !== false
+    ) {
       return;
     }
-    
-
 
     // while rooms exist already (in case of a previously saved and retrieved game)
     while (rooms[nextRoomId]) {
@@ -2050,7 +2050,7 @@ function newRoom(dataObj) {
       dataObj.newRoomPassword,
       dataObj.gameMode,
       dataObj.muteSpectators,
-      dataObj.closeVoteHistory,
+      dataObj.disableVoteHistory,
       rankedRoom,
       socketCallback,
     );
@@ -2278,9 +2278,11 @@ function updateRoomMuteSpectators(muteSpectators) {
   }
 }
 
-function updateRoomCloseVoteHistory(closeVoteHistory) {
+function updateRoomdisableVoteHistory(disableVoteHistory) {
   if (rooms[this.request.user.inRoomId]) {
-    rooms[this.request.user.inRoomId].updateCloseVoteHistory(closeVoteHistory);
+    rooms[this.request.user.inRoomId].updatedisableVoteHistory(
+      disableVoteHistory,
+    );
   }
 }
 

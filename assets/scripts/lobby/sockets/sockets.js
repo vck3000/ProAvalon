@@ -25,7 +25,7 @@ socket.on('disconnect', () => {
   // window.location= "/";
   // alert("You have been disconnected!");
   showDangerAlert(
-    'You have been disconnected! Please refresh the page or click here to reload.'
+    'You have been disconnected! Please refresh the page or click here to reload.',
   );
   socket.disconnect();
 });
@@ -59,7 +59,7 @@ socket.on('checkSettingsResetDate', (serverResetDate) => {
     docCookies.setItem(
       'lastSettingsResetDate',
       new Date().toString(),
-      Infinity
+      Infinity,
     );
   }
 });
@@ -91,7 +91,7 @@ socket.on('checkNewUpdate', (data) => {
     docCookies.setItem(
       'lastUpdateNotificationDate',
       new Date().toString(),
-      Infinity
+      Infinity,
     );
   } else {
     Swal({
@@ -104,7 +104,7 @@ socket.on('checkNewUpdate', (data) => {
     docCookies.setItem(
       'lastUpdateNotificationDate',
       new Date().toString(),
-      Infinity
+      Infinity,
     );
   }
 });
@@ -217,7 +217,7 @@ function resetSettings() {
     docCookies.setItem(
       'lastSettingsResetDate',
       new Date().toString(),
-      Infinity
+      Infinity,
     );
 
     Swal({
@@ -240,7 +240,7 @@ socket.on('gameEnded', (data) => {
       'Game has ended!',
       '',
       'avatars/base-spy.png',
-      'gameEnded'
+      'gameEnded',
     );
   }
 });
@@ -261,17 +261,21 @@ socket.on('update-current-players-list', (currentPlayers) => {
   autoCompleteStrs = currentPlayers.map((a) => a.displayUsername);
 
   unrankedPlayers = currentPlayers.filter(
-    (x) => x.ratingBracket === 'unranked'
+    (x) => x.ratingBracket === 'unranked',
   );
   rankedPlayers = currentPlayers.filter(
-    (x) => !(x.ratingBracket === 'unranked')
+    (x) => !(x.ratingBracket === 'unranked'),
   );
 
   // append each ranked player into the list first.
   rankedPlayers.forEach((player) => {
     // if the current player exists, add it
     if (player) {
-      str = `<tr> <td>${player.displayUsername} ${generateBadgeString(player.badge)}</td> <td align="right">${player.ratingBadge} ${player.playerRating}</td> </tr>`;
+      str = `<tr> <td>${player.displayUsername} ${generateBadgeString(
+        player.badge,
+      )}</td> <td align="right">${player.ratingBadge} ${
+        player.playerRating
+      }</td> </tr>`;
       $('#current-players-table tbody').append(str);
     }
   });
@@ -280,7 +284,11 @@ socket.on('update-current-players-list', (currentPlayers) => {
   unrankedPlayers.forEach((player) => {
     // if the current player exists, add it
     if (player) {
-      str = `<tr> <td>${player.displayUsername} ${generateBadgeString(player.badge)}</td> <td align="right">${player.ratingBadge} ${player.playerRating}</td> </tr>`;
+      str = `<tr> <td>${player.displayUsername} ${generateBadgeString(
+        player.badge,
+      )}</td> <td align="right">${player.ratingBadge} ${
+        player.playerRating
+      }</td> </tr>`;
       $('#current-players-table tbody').append(str);
     }
   });
@@ -342,7 +350,7 @@ socket.on('update-current-games-list', (currentGames) => {
 
       // grab all the td's and then add an event listener
       const allTds = document.querySelectorAll(
-        '#current-games-table tbody tr td'
+        '#current-games-table tbody tr td',
       );
 
       // add the event listener to the last td added.
@@ -449,7 +457,7 @@ socket.on('update-room-players', (data) => {
           roomPlayersData[roomPlayersData.length - 1].username
         } has joined the game!`,
         'avatars/base-res.png',
-        'newPlayerInGame'
+        'newPlayerInGame',
       );
     }
   }
@@ -537,7 +545,7 @@ socket.on('update-room-spectators', (spectatorUsernames) => {
         'New player in room.',
         `${spectatorUsernames[newUsernameIndex]} has joined the room.`,
         'avatars/base-res.png',
-        'newPlayerInRoom'
+        'newPlayerInRoom',
       );
     }
   }
@@ -594,7 +602,7 @@ socket.on('correctRoomPassword', () => {
 socket.on('update-room-info', (data) => {
   // data.maxNumPlayers
   $(
-    '.gameInfoMaxPlayers'
+    '.gameInfoMaxPlayers',
   )[0].innerText = `${roomPlayersData.length}/${data.maxNumPlayers}`;
   // if a game has started
   if (gameData) {
@@ -614,7 +622,7 @@ socket.on('gameModes', (GAME_MODE_NAMES) => {
   GAME_MODE_NAMES.forEach((name) => {
     str += `<option value='${name}'>${name[0].toUpperCase()}${name.slice(
       1,
-      name.length
+      name.length,
     )}</option>`;
   });
 
@@ -783,11 +791,11 @@ $('.muteSpectators').on('change', (e) => {
   socket.emit('update-room-muteSpectators', e.target.checked);
 });
 
-$('.closeVoteHistory').on('change', (e) => {
-  $('.closeVoteHistory')[0].checked = e.target.checked;
-  $('.closeVoteHistory')[1].checked = e.target.checked;
+$('.disableVoteHistory').on('change', (e) => {
+  $('.disableVoteHistory')[0].checked = e.target.checked;
+  $('.disableVoteHistory')[1].checked = e.target.checked;
 
-  socket.emit('update-room-closeVoteHistory', e.target.checked);
+  socket.emit('update-room-disableVoteHistory', e.target.checked);
 });
 
 // Update the new room menu with the gameModes available.
