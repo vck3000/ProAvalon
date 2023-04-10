@@ -35,7 +35,7 @@ const gameRecordSchema = new mongoose.Schema({
   missionHistory: [String],
   numFailsHistory: [Number],
   voteHistory: Object,
-  disableVoteHistory: Object,
+  disableVoteHistory: boolean,
   playerRoles: Object,
 });
 
