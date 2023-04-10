@@ -135,7 +135,7 @@ hoverPickBoxHighlightPlayerSetup();
 function hoverMissionBoxHighlightPlayerSetup() {
   $('.missionBox').hover(
     // Upon hover:
-    function () {
+    function() {
       // console.log(this);
       // console.log(this.getAttribute("id"));
       // console.log(this.getAttribute("id").slice(-1));
@@ -172,7 +172,7 @@ function hoverMissionBoxHighlightPlayerSetup() {
 function hoverPickBoxHighlightPlayerSetup() {
   $('.pickBox').hover(
     // on hover
-    function () {
+    function() {
       const pickNum = this.getAttribute('id').slice(-1);
       const participatingTeamAndLeader = getPlayersOnMissionPickAndLeader(
         gameData.missionNum - 1,

@@ -1881,7 +1881,7 @@ class Game extends Room {
 
     this.sendText(
       this.allSockets,
-      `Close vote history option set to ${disableVoteHistory}.`,
+      `Close Vote History option set to ${disableVoteHistory}.`,
       'server-text',
     );
   }

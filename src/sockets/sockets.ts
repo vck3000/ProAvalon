@@ -2027,10 +2027,7 @@ function newRoom(dataObj) {
       return;
     }
 
-    if (
-      dataObj.disableVoteHistory !== true &&
-      dataObj.disableVoteHistory !== false
-    ) {
+    if (dataObj.disableVoteHistory !== true && dataObj.disableVoteHistory !== false) {
       return;
     }
 
@@ -2280,9 +2277,7 @@ function updateRoomMuteSpectators(muteSpectators) {
 
 function updateRoomdisableVoteHistory(disableVoteHistory) {
   if (rooms[this.request.user.inRoomId]) {
-    rooms[this.request.user.inRoomId].updatedisableVoteHistory(
-      disableVoteHistory,
-    );
+    rooms[this.request.user.inRoomId].updatedisableVoteHistory(disableVoteHistory);
   }
 }
 
