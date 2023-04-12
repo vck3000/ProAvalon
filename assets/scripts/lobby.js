@@ -87,7 +87,6 @@ function draw() {
   // console.log("draw called");
   if (roomPlayersData) {
 
-    console.log(roomPlayersData, 'rpd'); 
     highlightedAvatars = getHighlightedAvatars();
 
     drawAndPositionAvatars();
@@ -1328,8 +1327,6 @@ function generatePlayerLocations(numOfPlayers, a, b) {
 
 // Note this function will also draw the card history
 function drawVoteHistory(data) {
-  console.log(data);
-  console.log(data.voteHistory, 'tiger');
 
   if ((data.voteHistory === {})) {
     return;
@@ -1373,15 +1370,6 @@ function drawVoteHistory(data) {
 
     // Individual mission voteHistory
     // for every mission
-
-    //console.log(data.voteHistory[keyArray[k]].length);
-
-    /*
-    if (data.voteHistory[keyArray[k]].length === 0)
-    {
-      return; 
-    }
-    */
 
     for (var i = 0; i < data.voteHistory[keyArray[k]].length; i++) {
       numOfPicksPerMission[i] = 0;

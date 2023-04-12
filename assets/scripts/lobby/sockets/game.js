@@ -83,7 +83,7 @@ socket.on('spec-game-starting-finished', (data) => {
 
 socket.on('game-data', (data) => {
   // console.log("GAME DATA INC");
-  console.log(data, 'bob');
+
   if (data && roomId === data.roomId) {
     // console.log("game starting!");
 

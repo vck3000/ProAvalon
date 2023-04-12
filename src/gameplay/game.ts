@@ -990,13 +990,10 @@ class Game extends Room {
         data[i].phase = this.phase;
         data[i].proposedTeam = this.proposedTeam;
 
-        data[i].numPlayersOnMission =
-          this.numPlayersOnMission[playerRoles.length - this.minPlayers]; // - 5
+        data[i].numPlayersOnMission = this.numPlayersOnMission[playerRoles.length - this.minPlayers]; // - 5
         data[i].numSelectTargets = this.getClientNumOfTargets(i);
 
         data[i].votes = this.publicVotes;
-
-        console.log(this.disableVoteHistory, 'cvh');
 
         data[i].voteHistory = this.disableVoteHistory ? {} : this.voteHistory;
 
@@ -1311,6 +1308,7 @@ class Game extends Room {
       missionHistory: this.missionHistory,
       numFailsHistory: this.numFailsHistory,
       voteHistory: this.voteHistory,
+      disableVoteHistory: this.disableVoteHistory, 
       playerRoles: playerRolesVar,
 
       ladyChain,
@@ -1862,9 +1860,6 @@ class Game extends Room {
   }
 
   updateMuteSpectators(muteSpectators: boolean) {
-    console.log(muteSpectators);
-    console.log('hello');
-
     this.muteSpectators = muteSpectators;
 
     this.sendText(
@@ -1875,15 +1870,19 @@ class Game extends Room {
   }
 
   updatedisableVoteHistory(disableVoteHistory: boolean) {
-    this.disableVoteHistory = disableVoteHistory;
 
-    console.log(disableVoteHistory, 'test');
+    if (this.gameStarted === false)
+    {
+      this.disableVoteHistory = disableVoteHistory;
 
-    this.sendText(
-      this.allSockets,
-      `Close Vote History option set to ${disableVoteHistory}.`,
-      'server-text',
-    );
+      this.sendText(
+        this.allSockets,
+        `Close Vote History option set to ${disableVoteHistory}.`,
+        'server-text',
+      );
+
+    }
+    
   }
 
   /*
