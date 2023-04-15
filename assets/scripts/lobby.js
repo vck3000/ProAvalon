@@ -592,20 +592,18 @@ function drawGuns() {
 
         $($('.gun')[i]).animate(
           {
-            top: `${
-              $(
-                $('#mainRoomBox div')[
-                  getIndexFromUsername(gameData.proposedTeam[i])
-                ],
+            top: `${$(
+              $('#mainRoomBox div')[
+              getIndexFromUsername(gameData.proposedTeam[i])
+              ]
             ).position().top +
               heightOfGun * offsetGunPos.y
-            }px`,
-          left: `${
-              $(
-                $('#mainRoomBox div')[
-                  getIndexFromUsername(gameData.proposedTeam[i])
-                ],
-              ).position().left +
+            }}px`,
+            left: `${$(
+              $('#mainRoomBox div')[
+              getIndexFromUsername(gameData.proposedTeam[i])
+              ]
+            ).position().left +
               widOfGun / offsetGunPos.x
               }px`,
           },
@@ -643,25 +641,23 @@ function adjustGunPositions() {
       const offsetGunPos = pics[icon].position;
       $($('.gun')[i]).css(
         'top',
-        `${
-          $(
-            $('#mainRoomBox div')[
-              getIndexFromUsername(gameData.proposedTeam[i])
-            ],
-          ).position().top +
-          heightOfGun * offsetGunPos.y
-        }px`,
+        `${$(
+          $('#mainRoomBox div')[
+          getIndexFromUsername(gameData.proposedTeam[i])
+          ]
+        ).position().top +
+        heightOfGun * offsetGunPos.y
+        }px`
       );
       $($('.gun')[i]).css(
         'left',
-        `${
-          $(
-            $('#mainRoomBox div')[
-              getIndexFromUsername(gameData.proposedTeam[i])
-            ],
-          ).position().left +
-          widOfGun / offsetGunPos.x
-        }px`,
+        `${$(
+          $('#mainRoomBox div')[
+          getIndexFromUsername(gameData.proposedTeam[i])
+          ]
+        ).position().left +
+        widOfGun / offsetGunPos.x
+        }px`
       );
     }
   }
@@ -999,7 +995,7 @@ function strOfAvatar(playerData, alliance) {
       ).width + 20;
 
     role = `<p class='role-p' style='width: ${roleWid}px; margin: auto;'>${gameData.see.roles[getIndexFromUsername(playerData.username)]
-    }</p>`;
+      }</p>`;
   } else if (gameStarted === true && gameData !== undefined) {
     // if rendering our own player, give it the role tag
     if (playerData.username === ownUsername) {

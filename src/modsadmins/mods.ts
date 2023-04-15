@@ -3,7 +3,6 @@ export const modsArray = [
   'pronub',
   'besjbo',
   'not.me',
-  'manuavalon',
   'maximovic96',
   'ingenue',
   'goofy', // jams

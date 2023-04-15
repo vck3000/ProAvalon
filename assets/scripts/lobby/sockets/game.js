@@ -239,18 +239,11 @@ function removeTeamHighlightAndLeaderOutline() {
 // Given a mission number and the pick number, returns the people on that mission pick
 // If pickNum is -1, then returns the people on the last pick of that mission
 function getPlayersOnMissionPickAndLeader(missionNum, pickNum = -1) {
-  if ((gameData.voteHistory = {})) {
+  if (gameData.voteHistory = {}) {
     return;
   }
   // We need a player key to see vote history to get the number of picks in the mission
   const firstPlayerKey = Object.keys(gameData.voteHistory)[0];
-
-  /*
-  if(gameData.voteHistory[firstPlayerKey].length === 0)
-  {
-    return; 
-  }
-  */
 
   // The first case prevents us from erroring when we hover over the first pick of a mission before the arrays update
   // The second case prevents us from prematurely highlighting missions that aren't complete.

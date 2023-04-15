@@ -85,9 +85,11 @@ class Game extends Room {
     /*
       Phases go like this:
         Note: Cards run should be run every time phase changes
+
         Always run between phases:
           - Card
           - Role specials (e.g. assassination)
+
         Start from phase 1:
         1) Player picking.
         2) Receive interactions for team votes.
@@ -97,6 +99,8 @@ class Game extends Room {
           - If game finished, go to phase 4.
           - If game not finished, go to phase 1.
         4) Game finished
+
+
         Table:
           Phase	|	String
           1			"pickingTeam"
@@ -1887,7 +1891,9 @@ class Game extends Room {
 
   /*
   ELO RATING CALCULATION:
+
   Usual formula: R_new = R_old + k(Actual - Expected)
+
   1. Use average team rating and pit together in a 1v1 format.
   2. Adjust ratings for Res and Spy winrates (constant adjustment based on site winrates, maybe for that player size).
   2. Using k-value k=38, calculate adjustment amount = k(Actual - Expected)
@@ -1972,14 +1978,17 @@ class Game extends Room {
 
   /*
   PROVISIONAL ELO RATING CALCULATION:
+
   If there is only one provisional player in the game:
   Formula: R_new = (R_old*N_old + sum(otherPlayerRatings)/numOtherPlayers + 200*TeamAdjustment*Result)/(N_old+1)
       where N_old = Number of games played
             Result = 1 for win, 0 for loss
+
   If there is more than one provisional player in the game:
   Formula: R_new = (R_old*N_old + sum(allPlayerRatings)/numPlayers + 200*TeamAdjustment*Result)/(N_old+1)
       where N_old = Number of games played
             Result = 1 for win, 0 for loss
+            
   This rating style takes into account all the ratings of the players in the games that you play with to determine your starting point.
   For the first few games it will result in wild rating changes, but will level out towards the end of the provisional section.
   Could possibly lead to some people abusing their early rating by only playing with strong players and getting lucky, but should level out in the end.
