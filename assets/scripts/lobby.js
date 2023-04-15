@@ -597,7 +597,7 @@ function drawGuns() {
               ]
             ).position().top +
               heightOfGun * offsetGunPos.y
-              }}px`,
+              }px`,
             left: `${$(
               $('#mainRoomBox div')[
               getIndexFromUsername(gameData.proposedTeam[i])
