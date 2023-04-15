@@ -86,7 +86,6 @@ let highlightedAvatars;
 function draw() {
   // console.log("draw called");
   if (roomPlayersData) {
-
     highlightedAvatars = getHighlightedAvatars();
 
     drawAndPositionAvatars();
@@ -598,7 +597,7 @@ function drawGuns() {
               ]
             ).position().top +
               heightOfGun * offsetGunPos.y
-            }}px`,
+              }}px`,
             left: `${$(
               $('#mainRoomBox div')[
               getIndexFromUsername(gameData.proposedTeam[i])
@@ -1086,7 +1085,7 @@ function strOfAvatar(playerData, alliance) {
   str += `<img class='avatarImgInRoom' src='${picLink}'>`;
   str += `${"<p class='username-p' style='white-space:nowrap; position:relative;'>" +
     ' '
-  }${playerData.username} ${hammerStar} </p>${role}</div>`;
+    }${playerData.username} ${hammerStar} </p>${role}</div>`;
 
   return str;
 }
@@ -1366,7 +1365,6 @@ function drawVoteHistory(data) {
 
     // Individual mission voteHistory
     // for every mission
-
     for (var i = 0; i < data.voteHistory[keyArray[k]].length; i++) {
       numOfPicksPerMission[i] = 0;
 

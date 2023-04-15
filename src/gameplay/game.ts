@@ -107,6 +107,7 @@ class Game extends Room {
           2			"votingTeam"
           3			"votingMission"
           4			"finished"
+
         Misc Phases:
           Phase	|	String
                 "lady"
@@ -994,14 +995,13 @@ class Game extends Room {
         data[i].phase = this.phase;
         data[i].proposedTeam = this.proposedTeam;
 
-        data[i].numPlayersOnMission = this.numPlayersOnMission[playerRoles.length - this.minPlayers]; // - 5
+        data[i].numPlayersOnMission =
+          this.numPlayersOnMission[playerRoles.length - this.minPlayers]; // - 5
         data[i].numSelectTargets = this.getClientNumOfTargets(i);
 
         data[i].votes = this.publicVotes;
 
         data[i].voteHistory = this.disableVoteHistory ? {} : this.voteHistory;
-
-        console.log(data[i].voteHistory);
 
         data[i].hammer = this.hammer;
         data[i].hammerReversed = gameReverseIndex(
@@ -1988,7 +1988,7 @@ class Game extends Room {
   Formula: R_new = (R_old*N_old + sum(allPlayerRatings)/numPlayers + 200*TeamAdjustment*Result)/(N_old+1)
       where N_old = Number of games played
             Result = 1 for win, 0 for loss
-            
+
   This rating style takes into account all the ratings of the players in the games that you play with to determine your starting point.
   For the first few games it will result in wild rating changes, but will level out towards the end of the provisional section.
   Could possibly lead to some people abusing their early rating by only playing with strong players and getting lucky, but should level out in the end.

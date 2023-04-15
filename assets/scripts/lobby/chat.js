@@ -287,7 +287,6 @@ function addToRoomChat(data) {
           thisMessageSpectator = true;
         }
 
-
         const muteJoinLeave = $('.mutejoinleave')[0].checked;
         // if they dont exist in players in room, if game is started, and if mute spectators
         let thisMessageJoinLeave = false;
