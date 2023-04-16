@@ -1,7 +1,8 @@
-import { Component } from './components/RoleComponent';
+import { roleComponent } from './components/RoleComponent';
+
 
 // a simple tag component
-class leader {
+class leader extends roleComponent{
     constructor () {
         // this.entityID = entityID
         this.name = "Leader"
