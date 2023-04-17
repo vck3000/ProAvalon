@@ -20,13 +20,23 @@ function getCurrentLeader(playersList){
 
 }
 
-function getNextLeader(playersList) {
+function getNextLeader(playersList, noLeaderlist) {
 
-    const nextLeader = playersList.pop();
+    tempList = noLeaderlist
+    const nextLeader = tempList.pop();
     const currentLeader = getCurrentLeader(playersList)
 
     // switch leader in two players
     currentLeader.removeComponent(leader)
     nextLeader.addComponent(leader)
+
+    // return the players list who didn't play leader
+    if (tempList.length() ! = 0) {
+        return tempList
+    }
+    
+    else {
+        return playersList
+    }
 
   }

@@ -5,7 +5,7 @@ import { action } from './componets/SeeComponent'
 class Assassin extends roleComponent{
     constructor () {
 
-        this.name = "Assassin"
+        super("Assassin")
         this.isAssassin = true
         
         this.test = function () {
