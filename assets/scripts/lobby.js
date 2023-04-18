@@ -1323,7 +1323,7 @@ function generatePlayerLocations(numOfPlayers, a, b) {
 // Note this function will also draw the card history
 function drawVoteHistory(data) {
 
-  if ((data.voteHistory === {})) {
+  if (!data.voteHistory) {
     return;
   }
 

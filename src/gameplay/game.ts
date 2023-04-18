@@ -1873,7 +1873,7 @@ class Game extends Room {
     );
   }
 
-  updatedisableVoteHistory(disableVoteHistory: boolean) {
+  updateDisableVoteHistory(disableVoteHistory: boolean) {
 
     if (this.gameStarted === false)
     {
@@ -1884,9 +1884,7 @@ class Game extends Room {
         `Close Vote History option set to ${disableVoteHistory}.`,
         'server-text',
       );
-
     }
-    
   }
 
   /*
