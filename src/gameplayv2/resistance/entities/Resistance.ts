@@ -1,34 +1,17 @@
-import { AllianceComponent } from  '../components/AllianceComponent';
-import { DescriptionComponent } from '../components/DescriptionComponent';
-import { RoleComponent } from '../components/RoleComponent';
+class Resistance {
+    public static role: string = 'Resistance';
+    public static alliance: string = 'Resistance';
+    public description: string = 'A standard Resistance member.';
 
-Resistance.nextId = 0;
-class Resistance extends Player{
     constructor(){
-        this.id = Resistance.getNextID();
-        this.components = [];
-        this.addComponent(new AllianceComponent("Resistance"));
-        this.addComponent(new RoleComponent("Resistance"));
-        this.addComponent(new DescriptionComponent("A standard Resistance member."));
-    }
 
-    addComponent(component){
-        this.components.push(component);
     }
-
-    addComponents(...components) {
-        components.forEach(component => this.addComponent(component));
+  
+    public see(): undefined {
+      return undefined;
     }
-      
-    removeComponent(component) {
-        delete this.components[component.constructor.name];
+  
+    public checkSpecialMove(): void {
+      // leave empty or remove entirely if not needed
     }
-      
-    getComponent(componentClass) {
-        return this.components[componentClass.name];
-    }
-
-    static getNextID() {
-        return Resistance.nextId++;
-    }
-}
+  }

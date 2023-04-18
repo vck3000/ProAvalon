@@ -33,4 +33,8 @@ export class SeePercivalInfoComponent {
     setEnabled(newEnabled: boolean): void {
         this.isEnabled = newEnabled;
     }
+
+    verifySee(){
+        //TO DO
+    }
 }
