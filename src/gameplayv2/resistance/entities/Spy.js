@@ -1,9 +1,9 @@
-import { alliance } from  '../components/alliance'
+import { alliance } from '../components/alliance'
 import { world } from '../system'
 
 Resistance.nextId = 0;
-class Spy extends Player{
-    constructor(){
+class Spy extends Player {
+    constructor() {
         this.id = Entity.getNextID();
         this.components = [];
         this.addComponent(new AllianceComponent("Spy"));
@@ -11,14 +11,14 @@ class Spy extends Player{
         this.addComponent(new DescriptionComponent("A standard Spy member."));
     }
 
-    addComponent(component){
+    addComponent(component) {
         this.components.push(component);
     }
 
     removeComponent(component) {
         const index = this.components.indexOf(component);
         if (index !== -1) {
-          this.components.splice(index, 1);
+            this.components.splice(index, 1);
         }
     }
 
