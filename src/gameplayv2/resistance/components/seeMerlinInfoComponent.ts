@@ -1,11 +1,14 @@
 import room from 'src/gameplay/Room';
-
+import Entity from 'src/entities/Room';
 
 export class SeeMerlinInfoComponent {
     private merlin: string;
     private role: string;
     private isEnabled: boolean;
     private room: room;
+    private playerList: Entity[] = room.claimingPlayers;
+    private spyList: Entity[] = [];
+
 
     constructor(merlin: string, role: string, isEnabled: boolean, thisRoom: room) {
         this.merlin = merlin;
@@ -41,19 +44,18 @@ export class SeeMerlinInfoComponent {
 
     verifySee(){
         
-        playerList: Entity[] = room.claimingPlayers;
-
-        spyList: Engity[] = [];
+        
+        // obj: Entity[][] = {};
 
         if(room.gamePlayerLeftDuringReady == true) {
 
-            for (let i = 0; i < playerList.length; i++) {
-                if (playerList[i].alliance === 'Spy') {
-                  if (this.thisRoom.playersInGame[i].role === 'Mordred') {
+            for (let i = 0; i < this.playerList.length; i++) {
+                if (this.playerList[i].alliance === 'Spy') {
+                  if (this.playerList[i].role === 'Mordred') {
                     // don't add mordred for Merlin to see
                   } else {
                     // add the spy
-                    array.push(this.thisRoom.playersInGame[i].username);
+                    this.spyList.push(this.playerList[i].username);
                   }
                 }
               }
