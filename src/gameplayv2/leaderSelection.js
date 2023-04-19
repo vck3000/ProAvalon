@@ -5,8 +5,6 @@ const { leader } = require("..//components/leader");
 playersList = []
 nextLeader = getNextLeader(playersList)
 
-// nextLeader.addComponent
-
 // loctate the current player who's leader
 function getCurrentLeader(playersList){
 
@@ -30,7 +28,7 @@ function getNextLeader(playersList, noLeaderlist) {
     currentLeader.removeComponent(leader)
     nextLeader.addComponent(leader)
 
-    // return the players list who didn't play leader
+    // return the players list who haven't play leader yet
     if (tempList.length() ! = 0) {
         return tempList
     }
