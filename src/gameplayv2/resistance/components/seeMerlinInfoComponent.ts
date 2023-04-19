@@ -1,5 +1,5 @@
-import room from 'src/gameplay/Room';
-import Entity from 'src/entities/Room';
+import room from '../src/gameplay/Room';
+import Entity from '../src/entities/Entity';
 
 export class SeeMerlinInfoComponent {
     private merlin: string;
@@ -61,5 +61,7 @@ export class SeeMerlinInfoComponent {
               }
 
         }
+
+        return this.spyList
     }
 }
