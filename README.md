@@ -13,12 +13,12 @@ These instructions will get you a copy of the project up and running on your loc
 - [Git](https://git-scm.com/)
 - [Docker](https://www.docker.com/) - Used to install MongoDB. If you prefer, you may skip Docker and install MongoDB directly.
 
-@@ -18,7 +18,7 @@ Other useful resources:
+Other useful resources:
 
 - [Visual Studio Code](https://code.visualstudio.com/), a code editor/IDE by Microsoft.
 - [nvm](https://github.com/nvm-sh/nvm), a useful tool to manage your node versions.
 
-### Installing
+### Installation
 
 1. If you intend on contributing, make a fork of ProAvalon.
 
@@ -42,6 +42,30 @@ $ cp .env.example .env
 ```
 $ yarn
 ```
+### Additional requisites for Installation on a Windows device
+
+NOTE: Windows is not natively supported for running the codebase. But, we recommend using WSL to run Windows. To use WSL, follow these instructions:
+
+1. Run Windows Powershell as administrator and type in the following command:
+
+```
+$ wsl --install
+```
+2. Download Ubuntu from Microsoft store or type in the following command:
+
+```
+$ wsl --install -d ubuntu
+```
+
+3. Run ubuntu on your Windows computer. Afterwards, it will ask you to create initial username and password.
+
+4. Run the following command after you registered into Ubuntu
+
+```
+$ sudo apt update
+```
+
+5. start your computer to allow these installs to take effect.
 
 ### Running
 
