@@ -1001,7 +1001,7 @@ class Game extends Room {
 
         data[i].votes = this.publicVotes;
 
-        data[i].voteHistory = this.disableVoteHistory ? {} : this.voteHistory;
+        data[i].voteHistory = this.disableVoteHistory ? null : this.voteHistory;
 
         data[i].hammer = this.hammer;
         data[i].hammerReversed = gameReverseIndex(
