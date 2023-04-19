@@ -18,7 +18,7 @@ Other useful resources:
 - [Visual Studio Code](https://code.visualstudio.com/), a code editor/IDE by Microsoft.
 - [nvm](https://github.com/nvm-sh/nvm), a useful tool to manage your node versions.
 
-### Installing on a local environment
+### Installation
 
 1. If you intend on contributing, make a fork of ProAvalon.
 
@@ -43,6 +43,8 @@ $ cp .env.example .env
 $ yarn
 ```
 ### Additional requisites for Installation on a Windows device
+
+NOTE: Windows is not natively supported for running the codebase. But, we recommend using WSL to run Windows. To use WSL, follow these instructions:
 
 1. Run Windows Powershell as administrator and type in the following command:
 
