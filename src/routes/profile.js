@@ -9,7 +9,6 @@ import PatreonId from '../models/patreonId';
 import avatarRequest from '../models/avatarRequest';
 import ModLog from '../models/modLog';
 import { createNotification } from '../myFunctions/createNotification';
-import  seasonNumber  from '../util/seasonNumber';
 
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',
@@ -392,7 +391,6 @@ router.get('/:profileUsername', (req, res) => {
       } else {
         res.render('profile/profile', {
           userData: foundUser,
-          seasonNumber: seasonNumber.getSeasonNumber(),
           personViewingUsername: req.user.username,
         });
       }
