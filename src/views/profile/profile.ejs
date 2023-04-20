@@ -1,536 +1,569 @@
 <%- include('../partials/header') %>
 
-<link rel="stylesheet" type="text/css" href="/stylesheets/profile.css">
-<link rel="stylesheet" type="text/css" href="/libraries/flag-icon/css/flag-icon.min.css">
+  <link rel="stylesheet" type="text/css" href="/stylesheets/profile.css">
+  <link rel="stylesheet" type="text/css" href="/libraries/flag-icon/css/flag-icon.min.css">
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
-
-
-<%
-const sec = 1000;
-const min = sec * 60;
-const hour = min * 60;
-const day = hour * 24;
-const month = day * 30;
-const year = month * 12;
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
 
 
-var getDatesString = function(time) {
-
-    var varTime = time;
-
-    var str = "";
-
-    if (Math.floor(varTime / year) !== 0) {
-        str += Math.floor(varTime / year) + " yrs, ";
-        varTime = varTime - Math.floor(varTime / year) * year;
-    }
-    if (Math.floor(varTime / month) !== 0) {
-        str += Math.floor(varTime / month) + " mths, ";
-        varTime = varTime - Math.floor(varTime / month) * month;
-    }
-    if (Math.floor(varTime / day) !== 0) {
-        str += Math.floor(varTime / day) + " days, ";
-        varTime = varTime - Math.floor(varTime / day) * day;
-    }
-    if (Math.floor(varTime / hour) !== 0) {
-        str += Math.floor(varTime / hour) + " hrs, ";
-        varTime = varTime - Math.floor(varTime / hour) * hour;
-    }
-    if (Math.floor(varTime / min) !== 0) {
-        str += Math.floor(varTime / min) + " mins, ";
-        varTime = varTime - Math.floor(varTime / min) * min;
-    }
-    if (Math.floor(varTime / sec) !== 0) {
-        str += Math.floor(varTime / sec) + " secs. ";
-        varTime = varTime - Math.floor(varTime / sec) * sec;
-    }
-
-    return str;
-}
-%>
+  <% const sec=1000; const min=sec * 60; const hour=min * 60; const day=hour * 24; const month=day * 30; const
+    year=month * 12; var getDatesString=function(time) { var varTime=time; var str="" ; if (Math.floor(varTime / year)
+    !==0) { str +=Math.floor(varTime / year) + " yrs, " ; varTime=varTime - Math.floor(varTime / year) * year; } if
+    (Math.floor(varTime / month) !==0) { str +=Math.floor(varTime / month) + " mths, " ; varTime=varTime -
+    Math.floor(varTime / month) * month; } if (Math.floor(varTime / day) !==0) { str +=Math.floor(varTime / day)
+    + " days, " ; varTime=varTime - Math.floor(varTime / day) * day; } if (Math.floor(varTime / hour) !==0) { str
+    +=Math.floor(varTime / hour) + " hrs, " ; varTime=varTime - Math.floor(varTime / hour) * hour; } if
+    (Math.floor(varTime / min) !==0) { str +=Math.floor(varTime / min) + " mins, " ; varTime=varTime -
+    Math.floor(varTime / min) * min; } if (Math.floor(varTime / sec) !==0) { str +=Math.floor(varTime / sec) + " secs. "
+    ; varTime=varTime - Math.floor(varTime / sec) * sec; } return str; } %>
 
 
-<div class="container myContainer">
-    <div class="row">
+    <div class="container myContainer">
+      <div class="row">
         <div class="searchBar pull-right">
-            <input id="searchInput" type="text" placeholder="Search a username..." name="search">
-            <button id="searchButton"><i class="glyphicon glyphicon-search"></i></button>
+          <input id="searchInput" type="text" placeholder="Search a username..." name="search">
+          <button id="searchButton"><i class="glyphicon glyphicon-search"></i></button>
         </div>
-    </div>
-    <br>
+      </div>
+      <br>
 
-    <% if(userData && userData.username){ %>
+      <% if(userData && userData.username){ %>
         <div class="row">
-            <div class="col-xs-12" id="topRow">
+          <div class="col-xs-12" id="topRow">
 
-                <div class="row">
-                    <div class="col-xs-6 col-md-3 avatarImgDiv">
+            <div class="row">
+              <div class="col-xs-6 col-md-3 avatarImgDiv">
 
-                        <% if(userData.avatarImgRes){ %>
-                            <% if(userData.avatarImgRes.includes("http")){ %>
-                                <img class="avatarImg" src=<%= userData.avatarImgRes %>>
-                            <% } else { %>
-                                <img class="avatarImg" src=<%= "../avatars/" + userData.avatarImgRes %>>
-                            <% } %>
+                <% if(userData.avatarImgRes){ %>
+                  <% if(userData.avatarImgRes.includes("http")){ %>
+                    <img class="avatarImg" src=<%=userData.avatarImgRes %>>
+                    <% } else { %>
+                      <img class="avatarImg" src=<%="../avatars/" + userData.avatarImgRes %>>
+                      <% } %>
                         <% } else{ %>
-                            <img class="avatarImg" src="../avatars/base-res.png  ">
+                          <img class="avatarImg" src="../avatars/base-res.png  ">
+                          <% } %>
+
+              </div>
+              <div class="col-xs-6 col-md-9">
+                <span id="title">
+                  <h2>
+                    <% if(userData.nationality && userData.nationCode){ %>
+                      <span id="flagSpan" class="flag-icon flag-icon-<%= userData.nationCode.toLowerCase() %>"
+                        data-toggle="tooltip" title="<%= userData.nationality %>"></span>
+                      <% } else { %>
+                        <span id="flagSpan" class="flag-icon flag-icon-un" data-toggle="tooltip"
+                          title="United Nations"></span>
                         <% } %>
 
-                    </div>
-                    <div class="col-xs-6 col-md-9">
-                        <span id="title">
-                            <h2>
-                                <% if(userData.nationality && userData.nationCode){ %>
-                                <span id="flagSpan" class="flag-icon flag-icon-<%= userData.nationCode.toLowerCase() %>"
-                                      data-toggle="tooltip" title="<%= userData.nationality %>"></span>
-                                <% } else { %>
-                                    <span id="flagSpan" class="flag-icon flag-icon-un" data-toggle="tooltip"
-                                          title="United Nations"></span>
-                                <% } %>
+                          <span id="profileUsername">
+                            <%= userData.username %>
+                          </span>
+                  </h2>
 
-                                <span id="profileUsername"><%= userData.username %> </span>
-                            </h2>
+                  <% if(userData.pronoun && userData.pronoun !="N/A" ) { %>
+                    <span>(<%= userData.pronoun %>)</span>
+                    <% } %>
+                      <p> Date joined:
+                        <% if(userData.dateJoined){ %>
+                          <%= userData.dateJoined.toDateString() %>
+                            <% } else { %>
+                              N/A
+                              <% } %>
+                      </p>
 
-                            <% if(userData.pronoun && userData.pronoun != "N/A") { %>
-                            <span>(<%= userData.pronoun %>)</span>
-                            <% } %>
-                            <p> Date joined:
-                                <% if(userData.dateJoined){ %>
-                                    <%= userData.dateJoined.toDateString() %>
-                                <% } else { %>
-                                    N/A
-                                <% } %>
-                            </p>
+                      <p>
+                        <% if(userData.username.replace(" ", "") === personViewingUsername.replace(" ", "")) { %>
+                                <a href=" <%=userData.username %>/edit" class="btn btn-default">Edit</a>
+                          <% } %>
 
-                            <p>
-                                <% if(userData.username.replace(" ", "") === personViewingUsername.replace(" ", "")) { %>
-                                <a href="<%= userData.username %>/edit" class="btn btn-default">Edit</a>
-                                <% } %>
+                      </p>
+                </span>
 
-                            </p>
-                        </span>
+              </div>
 
-                    </div>
-
-                </div>
             </div>
+          </div>
         </div>
 
         <div class="row">
-            <% if (!!userData.biography && !!userData.biography.substring(3, userData.biography.length - 4).trim()) { %>
+          <% if (!!userData.biography && !!userData.biography.substring(3, userData.biography.length - 4).trim()) { %>
             <div class="col-xs-12">
-                <div class="biography">
-                    <%- userData.biography %>
-                </div>
+              <div class="biography">
+                <%- userData.biography %>
+              </div>
             </div>
             <% } %>
         </div>
 
 
         <% if(userData.hideStats){ %>
-            <div class="row">
-                <div class="col-sm-12">
-                    <h3 class="text-danger">User has decided to hide their stats.</h3>
-                </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <h3 class="text-danger">User has decided to hide their stats.</h3>
             </div>
-        <% } else { %>
+          </div>
+          <% } else { %>
             <div class="row">
-                <div class="col-xs-12 col-md-4">
-                    <h2><u>Stats:</u></h2>
+              <div class="col-xs-12 col-md-4">
+                <h2><u>Stats:</u></h2>
 
-                    <table class="table myTable">
-                        <tbody>
+                <table class="table myTable">
+                  <tbody>
+                    <tr>
+                      <td class="statsCol1">Total games played:</td>
+                      <td class="statsCol2">
+                        <%= userData.totalGamesPlayed %>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="statsCol1">Total games won:</td>
+                      <td class="statsCol2">
+                        <%= userData.totalWins %>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="statsCol1">Total games lost:</td>
+                      <td class="statsCol2">
+                        <%= userData.totalLosses %>
+                      </td>
+                    </tr>
+                    <% if(userData.totalWins + userData.totalLosses !==0) { %>
+                      <tr>
+                        <td class="statsCol1">Total win rate:</td>
+                        <td class="statsCol2">
+                          <%= Math.floor((userData.totalWins / (userData.totalWins + userData.totalLosses)) * 100) %>%
+                        </td>
+                      </tr>
+                      <% } else { %>
                         <tr>
-                            <td class="statsCol1">Total games played:</td>
-                            <td class="statsCol2"> <%= userData.totalGamesPlayed %> </td>
+                          <td class="statsCol1">Total win rate:</td>
+                          <td class="statsCol2">No games played yet</td>
                         </tr>
-                        <tr>
-                            <td class="statsCol1">Total games won:</td>
-                            <td class="statsCol2"> <%= userData.totalWins %> </td>
-                        </tr>
-                        <tr>
-                            <td class="statsCol1">Total games lost:</td>
-                            <td class="statsCol2"> <%= userData.totalLosses %> </td>
-                        </tr>
-                        <tr>
-                            <td class="statsCol1">Total win rate:</td>
-                            <td class="statsCol2"> <%= Math.floor((userData.totalWins / (userData.totalWins + userData.totalLosses)) * 100) %>
-                                %
-                            </td>
-                        </tr>
-                        <tr>
+                        <% } %>
+                          <tr>
                             <td class="statsCol1">Total time played:</td>
                             <!--<td class="statsCol2"> <%= getDatesString(userData.totalTimePlayed) %> </td>-->
-                            <td class="statsCol2"> <%= Math.floor(userData.totalTimePlayed.getTime() / (1000 * 60 * 60)) %>
+                            <td class="statsCol2">
+                              <%= Math.floor(userData.totalTimePlayed.getTime() / (1000 * 60 * 60)) %>
                                 hrs
                             </td>
-                        </tr>
-                        <tr>
-                            <% if (userData.username === personViewingUsername) { %>
-                                <td class="statsCol1">Rating:</td>
-                                <td class="statsCol2"> <%= Math.floor(userData.playerRating) %> </td>
-                            <% } else { %>
-                                <td class="statsCol1">Rank:</td>
-                                <td class="statsCol2"> <%= userData.ratingBracket.charAt(0).toUpperCase() + userData.ratingBracket.slice(1) %> </td>
+                          </tr>
+                          <tr>
+                            <% if (userData.username===personViewingUsername) { %>
+                              <td class="statsCol1">Rating of Season <%= seasonNumber %>:</td>
+                              <td class="statsCol2">
+                                <%= Math.floor(userData.playerRating) %>
+                              </td>
+                              <% } else { %>
+                                <td class="statsCol1">Rank of Season 7:</td>
+                                <td class="statsCol2">
+                                  <%= userData.ratingBracket.charAt(0).toUpperCase() + userData.ratingBracket.slice(1)
+                                    %>
+                                </td>
+                                <% } %>
+                          </tr>
+                  </tbody>
+                </table>
+
+                  <h2><u>Rank Data:</u></h2>
+                  <table class="table myTable">
+                    <tbody>
+                      <!--TODO: change the Season and Rank data based on the database-->
+                      <tr>
+                        <td class="statsCol1">Season</td>
+                        <% for (let i = 1; i < 5; i++) { %>
+                          <% if(seasonNumber-i > 0) { %>
+                            <td class="statsCol2">Season <%= seasonNumber-i %></td>
+                            <% } else {%>
+                              <td class="statsCol2">N/A</td>
                             <% } %>
-                        </tr>
-                        </tbody>
-                    </table>
+                          <% } %>
+                      </tr>
+                      <tr>
+                        <% if(userData.username===personViewingUsername) { %>
+                          <td class="statsCol1">Rating</td>
+                          <% } else { %>
+                            <td class="statsCol1">Rank</td>
+                            <% } %>
+                              <% for (let i = 1; i < 5; i++) { %>
+                                <% if(seasonNumber-i > 0) { %>
+                                  <% if(userData.username===personViewingUsername) { %>
+                                    <% let rank = 'N/A' %>
+                                    <td class="statsCol2">
+                                      <% for(element of userData.previousRankData) { %>
+                                        <% if(element.seasonNumber === seasonNumber-i) { %>
+                                          <% rank = element.rating%>
+                                            <% } %>
+                                              <% } %>
+                                                <%= rank %>
+                                    </td>
+                                    <% } else { %>
+                                      <% let level = 'N/A' %>
+                                    <td class="statsCol2">
+                                      <% for(element of userData.previousRankData) { %>
+                                        <% if(element.seasonNumber === seasonNumber-i) { %>
+                                          <% level = element.ratingBracket %>
+                                            <% } %>
+                                              <% } %>
+                                                <%= level %>
+                                    </td>
+                                      <% } %>
+                                        <% } else {%>
+                                          <td class="statsCol2">N/A</td>
+                                        <% } %>
+                                      <% } %>
+                      </tr>
+                  </table>
                 </div>
 
                 <div class="col-xs-12 col-md-8">
-                    <canvas id="statsChart">
-                    </canvas>
+                  <canvas id="statsChart">
+                  </canvas>
                 </div>
 
+              </div>
+              <% } %>
+                <% } else { %>
+
+                  <h1><span id="username"></span> was not found!</h1>
+
+                  <script>
+                    var lastBit = window.location.href.substr(window.location.href.lastIndexOf('/') + 1);
+                    console.log(lastBit);
+                    $('#username')[0].innerText = lastBit;
+                  </script>
+
+                  <% } %>
+
             </div>
-        <% } %>
-    <% } else { %>
 
-        <h1><span id="username"></span> was not found!</h1>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
 
-        <script>
-          var lastBit = window.location.href.substr(window.location.href.lastIndexOf('/') + 1);
-          console.log(lastBit);
-          $('#username')[0].innerText = lastBit;
-        </script>
-
-    <% } %>
-
-</div>
-
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-
-
-<script>
-
-  $('#searchInput').on('keydown', function(e) {
-    const searchStr = $('#searchInput')[0].value;
-    if (e.keyCode === 13 && !!searchStr.trim()) {
-      window.location.href = '' + $('#searchInput')[0].value;
-    }
-  });
-
-  $('#searchButton').on('click', function(e) {
-    const searchStr = $('#searchInput')[0].value;
-    if (!!searchStr.trim()) {
-      window.location.href = '' + $('#searchInput')[0].value;
-    }
-  });
-
-</script>
-
-
-<% if(userData && userData.username){ %>
-
-<script>
-  var userData;
-
-
-  $(document).ready(function() {
-
-    // $(".avatarImg").on("hover", function(){
-    //     $(".avatarImg").attr("src", userData.avatarImgSpy);
-    // });
-
-
-    $('.avatarImg').hover(
-      function() {
-        var str = '';
-        if (userData.avatarImgSpy) {
-          if (userData.avatarImgSpy.includes('http')) {
-            str = "<%= userData.avatarImgSpy %>";
-          } else {
-            str = "../avatars/<%= userData.avatarImgSpy %>";
-          }
-        } else {
-          str = '../avatars/base-spy.png';
-        }
-
-        console.log('spy');
-        $('.avatarImg').attr('src', str);
-      },
-
-      function() {
-        var str = '';
-        if (userData.avatarImgRes) {
-          if (userData.avatarImgRes.includes('http')) {
-            str = "<%= userData.avatarImgRes %>";
-          } else {
-            str = "../avatars/<%= userData.avatarImgRes %>";
-          }
-        } else {
-          str = '../avatars/base-res.png';
-        }
-
-        $('.avatarImg').attr('src', str);
-      },
-    );
-
-    $(function() {
-      $('[data-toggle="tooltip"]').tooltip();
-    });
-
-
-    xmlhttp = new XMLHttpRequest();
-    xmlhttp.open('GET', '/ajax/profile/getProfileData/' + $('#profileUsername')[0].innerHTML, true);
-
-    // console.log("/ajax/profile/getProfileData/" + $("#profileUsername")[0].innerHTML);
-
-
-    xmlhttp.onreadystatechange = function() {
-      if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-        userData = JSON.parse(xmlhttp.responseText);
-        // console.log(userData);
-        if (!userData.hideStats) {
-          drawCharts();
-        }
-
-      }
-    };
-    xmlhttp.send();
-  });
-
-
-  function drawCharts() {
-
-    const allianceOfRole = {
-      'Merlin': 'Resistance',
-      'Percival': 'Resistance',
-      'Assassin': 'Spy',
-      'Morgana': 'Spy',
-      'Mordred': 'Spy',
-      'Oberon': 'Spy',
-      'Resistance': 'Resistance',
-      'Spy': 'Spy',
-      'Tristan': 'Resistance',
-      'Isolde': 'Resistance',
-    };
-
-
-    var blue1 = 'rgba(54, 162, 235, 0.3)';
-    var blue2 = 'rgba(54, 162, 235, 0.5)';
-    var blueBorder = 'rgba(54, 162, 235, 1)';
-
-    var red1 = 'rgba(255, 99, 132, 0.3)';
-    var red2 = 'rgba(255, 99, 132, 0.5)';
-    var redBorder = 'rgba(255, 99, 132, 1)';
-
-    var roleStats = userData.roleStats;
-    //collect the total wins and losses of each role and of each game size played
-    var generalRoleStats = {};
-    for (var gameSize in roleStats) {
-      if (roleStats.hasOwnProperty(gameSize)) {
-
-        for (var role in roleStats[gameSize]) {
-          if (roleStats[gameSize].hasOwnProperty(role)) {
-            if (!generalRoleStats[role]) {
-              generalRoleStats[role] = {
-                wins: 0,
-                losses: 0,
-              };
-            }
-            // else{
-            if (!isNaN(roleStats[gameSize][role].wins)) {
-              generalRoleStats[role].wins += roleStats[gameSize][role].wins;
-            }
-            if (!isNaN(roleStats[gameSize][role].losses)) {
-              generalRoleStats[role].losses += roleStats[gameSize][role].losses;
-            }
-
-            if (role === 'assassin') {
-              //   console.log("assassin");
-              //  console.log(generalRoleStats[role].losses);
-              //  console.log(generalRoleStats[role].wins);
-            }
-            // }
-          }
-        }
-      }
-    }
-
-    // console.log(generalRoleStats);
-
-    var spyWins = userData.totalWins - userData.totalResWins;
-    var spyLosses = userData.totalLosses - userData.totalResLosses;
-
-
-    //create array for the chartjs hover stats:
-    //first two entries are overall res and overall spy
-    var generalRoleStatsArray = [
-      {
-        wins: userData.totalResWins,
-        losses: userData.totalResLosses,
-      },
-      {
-        wins: spyWins,
-        losses: spyLosses,
-      },
-    ];
-    i = 2;
-
-    for (var key in generalRoleStats) {
-      if (generalRoleStats.hasOwnProperty(key)) {
-        generalRoleStatsArray[i] = generalRoleStats[key];
-        i++;
-      }
-    }
-
-    //  console.log(generalRoleStatsArray);
-
-
-    var generalLabelsArray = ['Overall Resistance', 'Overall Spy'];
-
-    var generalData = [Math.floor(userData.totalResWins / (userData.totalResWins + userData.totalResLosses) * 100), Math.floor((spyWins) / (spyLosses + spyWins) * 100)];
-    var backgroundColor = [blue1, red1];
-    var borderColor = [blueBorder, redBorder];
-
-    for (var role in generalRoleStats) {
-      if (generalRoleStats.hasOwnProperty(role)) {
-
-        // console.log(role);
-
-        // console.log(generalRoleStats[role].wins);
-
-        if (isNaN(generalRoleStats[role].losses) || generalRoleStats[role].losses === null) {
-          generalRoleStats[role].losses = 0;
-        }
-
-        if (isNaN(generalRoleStats[role].wins) || generalRoleStats[role].wins === null) {
-          generalRoleStats[role].wins = 0;
-        }
-
-
-        var percentWon = Math.floor((generalRoleStats[role].wins / (generalRoleStats[role].wins + generalRoleStats[role].losses)) * 100);
-        generalData.push(percentWon);
-
-        //  console.log("percentWon");
-        //  console.log(percentWon);
-        // console.log(generalRoleStats[role].wins + generalRoleStats[role].losses);
-
-        // console.log(generalData);
-
-
-        //Now capitalise
-        var role = capitalizeFirstLetter(role);
-        generalLabelsArray.push(role);
-        // console.log(generalLabelsArray);
-
-
-        if (allianceOfRole[role] === 'Resistance') {
-          backgroundColor.push(blue1);
-          borderColor.push(blueBorder);
-        } else {
-          borderColor.push(redBorder);
-          backgroundColor.push(red1);
-        }
-      }
-    }
-
-
-    var dataGeneral = {
-      labels: generalLabelsArray,
-      datasets: [{
-        label: 'Winrate',
-        data: generalData,
-        backgroundColor: backgroundColor,
-        borderColor: borderColor,
-        borderWidth: 1,
-      }],
-    };
-    var optionsGeneral = {
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: true,
-
-          },
-        }],
-        xAxes: [{
-          ticks: {
-            suggestedMin: 0,
-            suggestedMax: 100,
-
-            callback: function(value, index, values) {
-              return value + '%';
-            },
-          },
-        }],
-      },
-
-      //give back % and also num of games on hover
-      tooltips: {
-        callbacks: {
-          label: function(tooltipItem, chartData) {
-            // return "lmao";
-            return chartData.labels[tooltipItem.index] + ': ' + chartData.datasets[0].data[tooltipItem.index] + '%' + ' ' + '[' + generalRoleStatsArray[tooltipItem.index].wins + 'W/' + generalRoleStatsArray[tooltipItem.index].losses + 'L]';
-          },
-        },
-      },
-
-
-    };
-
-
-    var dataSample = {
-      labels: ['Resistance', 'Spy', 'Merlin', 'Percival', 'Assassin', 'Morgana'],
-      datasets: [{
-        label: 'Winrate %',
-        data: [54, 67, 45, 70, 45, 30],
-        backgroundColor: [
-          blue1,
-          blue2,
-          red1,
-          red2,
-          'rgba(153, 102, 255, 0.2)',
-          'rgba(255, 159, 64, 0.2)',
-        ],
-        borderColor: [
-          blueBorder,
-          blueBorder,
-          redBorder,
-          redBorder,
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)',
-        ],
-        borderWidth: 1,
-      }],
-    };
-
-    // $("#tempdiv")[0].innerHTML = JSON.stringify(generalRoleStats) ;
-
-    var ctx = document.getElementById('statsChart');
-    var myChart = new Chart(ctx, {
-      type: 'horizontalBar',
-      data: dataGeneral,
-      options: optionsGeneral,
-    });
-  }
-
-
-  function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  }
-
-
-</script>
-<% } %>
-
-
-<div id="tempdiv"></div>
-
-
-<%- include('../partials/footer') %>
-
-
-
-
-
+
+            <script>
+
+              $('#searchInput').on('keydown', function (e) {
+                const searchStr = $('#searchInput')[0].value;
+                if (e.keyCode === 13 && !!searchStr.trim()) {
+                  window.location.href = '' + $('#searchInput')[0].value;
+                }
+              });
+
+              $('#searchButton').on('click', function (e) {
+                const searchStr = $('#searchInput')[0].value;
+                if (!!searchStr.trim()) {
+                  window.location.href = '' + $('#searchInput')[0].value;
+                }
+              });
+
+            </script>
+
+
+            <% if(userData && userData.username){ %>
+
+              <script>
+                var userData;
+
+
+                $(document).ready(function () {
+
+                  // $(".avatarImg").on("hover", function(){
+                  //     $(".avatarImg").attr("src", userData.avatarImgSpy);
+                  // });
+
+
+                  $('.avatarImg').hover(
+                    function () {
+                      var str = '';
+                      if (userData.avatarImgSpy) {
+                        if (userData.avatarImgSpy.includes('http')) {
+                          str = "<%= userData.avatarImgSpy %>";
+                        } else {
+                          str = "../avatars/<%= userData.avatarImgSpy %>";
+                        }
+                      } else {
+                        str = '../avatars/base-spy.png';
+                      }
+
+                      console.log('spy');
+                      $('.avatarImg').attr('src', str);
+                    },
+
+                    function () {
+                      var str = '';
+                      if (userData.avatarImgRes) {
+                        if (userData.avatarImgRes.includes('http')) {
+                          str = "<%= userData.avatarImgRes %>";
+                        } else {
+                          str = "../avatars/<%= userData.avatarImgRes %>";
+                        }
+                      } else {
+                        str = '../avatars/base-res.png';
+                      }
+
+                      $('.avatarImg').attr('src', str);
+                    },
+                  );
+
+                  $(function () {
+                    $('[data-toggle="tooltip"]').tooltip();
+                  });
+
+
+                  xmlhttp = new XMLHttpRequest();
+                  xmlhttp.open('GET', '/ajax/profile/getProfileData/' + $('#profileUsername')[0].innerHTML, true);
+
+                  // console.log("/ajax/profile/getProfileData/" + $("#profileUsername")[0].innerHTML);
+
+
+                  xmlhttp.onreadystatechange = function () {
+                    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                      userData = JSON.parse(xmlhttp.responseText);
+                      // console.log(userData);
+                      if (!userData.hideStats) {
+                        drawCharts();
+                      }
+
+                    }
+                  };
+                  xmlhttp.send();
+                });
+
+
+                function drawCharts() {
+
+                  const allianceOfRole = {
+                    'Merlin': 'Resistance',
+                    'Percival': 'Resistance',
+                    'Assassin': 'Spy',
+                    'Morgana': 'Spy',
+                    'Mordred': 'Spy',
+                    'Oberon': 'Spy',
+                    'Resistance': 'Resistance',
+                    'Spy': 'Spy',
+                    'Tristan': 'Resistance',
+                    'Isolde': 'Resistance',
+                  };
+
+
+                  var blue1 = 'rgba(54, 162, 235, 0.3)';
+                  var blue2 = 'rgba(54, 162, 235, 0.5)';
+                  var blueBorder = 'rgba(54, 162, 235, 1)';
+
+                  var red1 = 'rgba(255, 99, 132, 0.3)';
+                  var red2 = 'rgba(255, 99, 132, 0.5)';
+                  var redBorder = 'rgba(255, 99, 132, 1)';
+
+                  var roleStats = userData.roleStats;
+                  //collect the total wins and losses of each role and of each game size played
+                  var generalRoleStats = {};
+                  for (var gameSize in roleStats) {
+                    if (roleStats.hasOwnProperty(gameSize)) {
+
+                      for (var role in roleStats[gameSize]) {
+                        if (roleStats[gameSize].hasOwnProperty(role)) {
+                          if (!generalRoleStats[role]) {
+                            generalRoleStats[role] = {
+                              wins: 0,
+                              losses: 0,
+                            };
+                          }
+                          // else{
+                          if (!isNaN(roleStats[gameSize][role].wins)) {
+                            generalRoleStats[role].wins += roleStats[gameSize][role].wins;
+                          }
+                          if (!isNaN(roleStats[gameSize][role].losses)) {
+                            generalRoleStats[role].losses += roleStats[gameSize][role].losses;
+                          }
+
+                          if (role === 'assassin') {
+                            //   console.log("assassin");
+                            //  console.log(generalRoleStats[role].losses);
+                            //  console.log(generalRoleStats[role].wins);
+                          }
+                          // }
+                        }
+                      }
+                    }
+                  }
+
+                  // console.log(generalRoleStats);
+
+                  var spyWins = userData.totalWins - userData.totalResWins;
+                  var spyLosses = userData.totalLosses - userData.totalResLosses;
+
+
+                  //create array for the chartjs hover stats:
+                  //first two entries are overall res and overall spy
+                  var generalRoleStatsArray = [
+                    {
+                      wins: userData.totalResWins,
+                      losses: userData.totalResLosses,
+                    },
+                    {
+                      wins: spyWins,
+                      losses: spyLosses,
+                    },
+                  ];
+                  i = 2;
+
+                  for (var key in generalRoleStats) {
+                    if (generalRoleStats.hasOwnProperty(key)) {
+                      generalRoleStatsArray[i] = generalRoleStats[key];
+                      i++;
+                    }
+                  }
+
+                  //  console.log(generalRoleStatsArray);
+
+
+                  var generalLabelsArray = ['Overall Resistance', 'Overall Spy'];
+
+                  var generalData = [Math.floor(userData.totalResWins / (userData.totalResWins + userData.totalResLosses) * 100), Math.floor((spyWins) / (spyLosses + spyWins) * 100)];
+                  var backgroundColor = [blue1, red1];
+                  var borderColor = [blueBorder, redBorder];
+
+                  for (var role in generalRoleStats) {
+                    if (generalRoleStats.hasOwnProperty(role)) {
+
+                      // console.log(role);
+
+                      // console.log(generalRoleStats[role].wins);
+
+                      if (isNaN(generalRoleStats[role].losses) || generalRoleStats[role].losses === null) {
+                        generalRoleStats[role].losses = 0;
+                      }
+
+                      if (isNaN(generalRoleStats[role].wins) || generalRoleStats[role].wins === null) {
+                        generalRoleStats[role].wins = 0;
+                      }
+
+
+                      var percentWon = Math.floor((generalRoleStats[role].wins / (generalRoleStats[role].wins + generalRoleStats[role].losses)) * 100);
+                      generalData.push(percentWon);
+
+                      //  console.log("percentWon");
+                      //  console.log(percentWon);
+                      // console.log(generalRoleStats[role].wins + generalRoleStats[role].losses);
+
+                      // console.log(generalData);
+
+
+                      //Now capitalise
+                      var role = capitalizeFirstLetter(role);
+                      generalLabelsArray.push(role);
+                      // console.log(generalLabelsArray);
+
+
+                      if (allianceOfRole[role] === 'Resistance') {
+                        backgroundColor.push(blue1);
+                        borderColor.push(blueBorder);
+                      } else {
+                        borderColor.push(redBorder);
+                        backgroundColor.push(red1);
+                      }
+                    }
+                  }
+
+
+                  var dataGeneral = {
+                    labels: generalLabelsArray,
+                    datasets: [{
+                      label: 'Winrate',
+                      data: generalData,
+                      backgroundColor: backgroundColor,
+                      borderColor: borderColor,
+                      borderWidth: 1,
+                    }],
+                  };
+                  var optionsGeneral = {
+                    scales: {
+                      yAxes: [{
+                        ticks: {
+                          beginAtZero: true,
+
+                        },
+                      }],
+                      xAxes: [{
+                        ticks: {
+                          suggestedMin: 0,
+                          suggestedMax: 100,
+
+                          callback: function (value, index, values) {
+                            return value + '%';
+                          },
+                        },
+                      }],
+                    },
+
+                    //give back % and also num of games on hover
+                    tooltips: {
+                      callbacks: {
+                        label: function (tooltipItem, chartData) {
+                          // return "lmao";
+                          return chartData.labels[tooltipItem.index] + ': ' + chartData.datasets[0].data[tooltipItem.index] + '%' + ' ' + '[' + generalRoleStatsArray[tooltipItem.index].wins + 'W/' + generalRoleStatsArray[tooltipItem.index].losses + 'L]';
+                        },
+                      },
+                    },
+
+
+                  };
+
+
+                  var dataSample = {
+                    labels: ['Resistance', 'Spy', 'Merlin', 'Percival', 'Assassin', 'Morgana'],
+                    datasets: [{
+                      label: 'Winrate %',
+                      data: [54, 67, 45, 70, 45, 30],
+                      backgroundColor: [
+                        blue1,
+                        blue2,
+                        red1,
+                        red2,
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                      ],
+                      borderColor: [
+                        blueBorder,
+                        blueBorder,
+                        redBorder,
+                        redBorder,
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                      ],
+                      borderWidth: 1,
+                    }],
+                  };
+
+                  // $("#tempdiv")[0].innerHTML = JSON.stringify(generalRoleStats) ;
+
+                  var ctx = document.getElementById('statsChart');
+                  var myChart = new Chart(ctx, {
+                    type: 'horizontalBar',
+                    data: dataGeneral,
+                    options: optionsGeneral,
+                  });
+                }
+
+
+                function capitalizeFirstLetter(string) {
+                  return string.charAt(0).toUpperCase() + string.slice(1);
+                }
+
+
+              </script>
+              <% } %>
+
+
+                <div id="tempdiv"></div>
+
+
+                <%- include('../partials/footer') %>
