@@ -1,36 +1,37 @@
 // @ts-nocheck
-import './env.js';
-import 'log-timestamp';
-import { sendToDiscordAdmins } from './discord';
 import assert from 'assert';
 import bodyParser from 'body-parser';
+import compression from 'compression';
+import flash from 'connect-flash';
 import cookieParser from 'cookie-parser';
 import express from 'express';
-import flash from 'connect-flash';
-import compression from 'compression';
+import session from 'express-session';
+import createProxyMiddleware from 'http-proxy-middleware';
+import 'log-timestamp';
 import methodOverride from 'method-override';
-import LocalStrategy from 'passport-local';
 import mongoose from 'mongoose';
+import morgan from 'morgan';
 import passport from 'passport';
+import LocalStrategy from 'passport-local';
 import passportSocketIo from 'passport.socketio';
 import path from 'path';
-import session from 'express-session';
 import socket, { Server as SocketServer } from 'socket.io';
-import createProxyMiddleware from 'http-proxy-middleware';
-import morgan from 'morgan';
+import { sendToDiscordAdmins } from './discord';
+import './env.js';
 
-import { server as socketServer } from './sockets/sockets';
+import staticifyFactory from 'staticify';
 import User from './models/user';
-import { emailVerified, isLoggedIn } from './routes/middleware';
-import indexRoutes from './routes/index';
 import communityRoutes from './routes/community';
 import { emailVerificationRoutes } from './routes/emailVerification';
-import lobbyRoutes from './routes/lobby';
 import forumRoutes from './routes/forum';
-import profileRoutes from './routes/profile';
-import patreonRoutes from './routes/patreon';
+import indexRoutes from './routes/index';
+import lobbyRoutes from './routes/lobby';
+import matchLobbyRoutes from './routes/matchLobby';
+import { emailVerified, isLoggedIn } from './routes/middleware';
 import modRoutes from './routes/mod';
-import staticifyFactory from 'staticify';
+import patreonRoutes from './routes/patreon';
+import profileRoutes from './routes/profile';
+import { server as socketServer } from './sockets/sockets';
 // Create a MongoDB session store
 import MongoDBStoreFactory from 'connect-mongodb-session';
 
@@ -106,7 +107,6 @@ process
     const msg = `Unhandled Rejection at: Promise ${p}
       'reason:'
       ${reason}
-
       'reason.stack:'
       ${reason.stack}`;
 
@@ -172,6 +172,7 @@ app.use('/patreon', patreonRoutes);
 app.use('/lobby', lobbyRoutes);
 app.use('/forum', forumRoutes);
 app.use('/profile', profileRoutes);
+app.use('/matchLooby', matchLobbyRoutes);
 
 const IP = process.env.IP || '127.0.0.1';
 const server = app.listen(port, () => {
