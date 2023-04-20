@@ -1,18 +1,21 @@
-// @ts-nocheck
+import type { Player, Match } from './types';
+
 class Glicko2 {
-  #epsilon;
-  #tau;
+  #epsilon: number;
+  #tau: number;
 
   constructor() {
     this.#epsilon = 0.000001;
+
+    // system constant tau is set as 0.5
     this.#tau = 0.5;
   }
 
-  #computeG(phi: number) {
+  #computeG(phi: number): number {
     return 1 / Math.sqrt(1 + (3 * phi ** 2) / Math.PI ** 2);
   }
 
-  #computeE(mu: number, mu_j: number, phi_j: number) {
+  #computeE(mu: number, mu_j: number, phi_j: number): number {
     return 1 / (1 + Math.exp(-1 * this.#computeG(phi_j) * (mu - mu_j)));
   }
 
@@ -21,10 +24,9 @@ class Glicko2 {
     phi: number,
     v: number,
     sigma: number,
-  ) {
-    // const epsilon = 0.000001;
+  ): number {
     const a = Math.log(sigma ** 2);
-    const computeF = (x) => {
+    const computeF = (x: number): number => {
       let output = 0;
 
       output +=
@@ -66,17 +68,18 @@ class Glicko2 {
     return Math.E ** (A / 2);
   }
 
-  updateRatings(playerData, matchHistory) {
-    // Update for players who played during the rating period
-    // system constant tau is set as 0.5
-    // const tau = 0.5;
-
+  updateRatings(
+    playerData: Player,
+    matchHistory: Match[],
+  ): {
+    playerRating: number;
+    ratingDeviation: number;
+  } {
     // Step 2: Convert to Glicko-2 scale
     const player = {
-      alliance: playerData.alliance,
-      mu: (playerData.request.user.playerRating - 1500) / 173.7178,
-      phi: playerData.request.user.ratingDeviation / 173.7178,
-      ratingVolatility: playerData.request.user.ratingVolatility,
+      mu: (playerData.playerRating - 1500) / 173.7178,
+      phi: playerData.ratingDeviation / 173.7178,
+      ratingVolatility: playerData.ratingVolatility,
     };
 
     // Check if the player competed during the rating period
@@ -85,7 +88,7 @@ class Glicko2 {
       const newRD = 173.7178 * newPhi;
 
       return {
-        playerRating: playerData.request.user.playerRating,
+        playerRating: playerData.playerRating,
         ratingDeviation: newRD,
       };
     }
@@ -98,7 +101,7 @@ class Glicko2 {
         phi,
         g: this.#computeG(phi),
         E: this.#computeE(player.mu, mu, phi),
-        s: m.winningTeam === player.alliance ? 1 : 0,
+        s: m.winningTeam === m.playerTeam ? 1 : 0,
       };
     });
 
