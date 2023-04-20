@@ -178,6 +178,56 @@ var getDatesString = function(time) {
                         </tr>
                         </tbody>
                     </table>
+                    
+                  <h2><u>Rank Data:</u></h2>
+                  <table class="table myTable">
+                    <tbody>
+                      <!--TODO: change the Season and Rank data based on the database-->
+                      <tr>
+                        <td class="statsCol1">Season</td>
+                        <% for (let i = 1; i < 5; i++) { %>
+                          <% if(seasonNumber-i > 0) { %>
+                            <td class="statsCol2">Season <%= seasonNumber-i %></td>
+                            <% } else {%>
+                              <td class="statsCol2">N/A</td>
+                            <% } %>
+                          <% } %>
+                      </tr>
+                      <tr>
+                        <% if(userData.username===personViewingUsername) { %>
+                          <td class="statsCol1">Rating</td>
+                          <% } else { %>
+                            <td class="statsCol1">Rank</td>
+                            <% } %>
+                              <% for (let i = 1; i < 5; i++) { %>
+                                <% if(seasonNumber-i > 0) { %>
+                                  <% if(userData.username===personViewingUsername) { %>
+                                    <% let rank = 'N/A' %>
+                                    <td class="statsCol2">
+                                      <% for(element of userData.previousRankData) { %>
+                                        <% if(element.seasonNumber === seasonNumber-i) { %>
+                                          <% rank = element.rating%>
+                                            <% } %>
+                                              <% } %>
+                                                <%= rank %>
+                                    </td>
+                                    <% } else { %>
+                                      <% let level = 'N/A' %>
+                                    <td class="statsCol2">
+                                      <% for(element of userData.previousRankData) { %>
+                                        <% if(element.seasonNumber === seasonNumber-i) { %>
+                                          <% level = element.ratingBracket %>
+                                            <% } %>
+                                              <% } %>
+                                                <%= level %>
+                                    </td>
+                                      <% } %>
+                                        <% } else {%>
+                                          <td class="statsCol2">N/A</td>
+                                        <% } %>
+                                      <% } %>
+                      </tr>
+                  </table>
                 </div>
 
                 <div class="col-xs-12 col-md-8">
