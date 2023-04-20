@@ -25,3 +25,20 @@ export interface Role {
 export interface See {
   spies: string[];
 }
+
+type Team = 'Resistance' | 'Spy';
+
+export interface Match {
+  winningTeam: Team;
+  playerTeam: Team;
+  opponentTeamRating: number;
+  opponentTeamRatingDeviation: number;
+}
+
+export interface Player {
+  username: string;
+  userid: number;
+  playerRating: number;
+  ratingDeviation: number;
+  ratingVolatility: number;
+}
