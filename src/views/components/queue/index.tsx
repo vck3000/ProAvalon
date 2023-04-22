@@ -14,6 +14,7 @@ function MatchLoading() {
   const [buttonsDisabled, setButtonsDisabled] = useState(false);
   const [showElement, setShowElement] = useState(false);
   const [count, setCount] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
 
   // Variables for timer
   const minutes = Math.floor(count / 60);
@@ -34,6 +35,7 @@ function MatchLoading() {
   const handleClick = (button: ButtonId) => {
     setClickedButton(button);
     setShowElement(true);
+    setModalOpen(true);
   };
 
   const cancelQueue = () => {
@@ -41,7 +43,8 @@ function MatchLoading() {
     setCount(0);
     setClickedButton(null);
     setButtonsDisabled(false);
-  }
+    setModalOpen(false);
+  };
 
   const btnStyle = (button: ButtonId) => {
     const baseStyle: React.CSSProperties = { backgroundColor: 'transparent' };
@@ -53,7 +56,7 @@ function MatchLoading() {
       baseStyle.cursor = 'not-allowed';
     }
     return baseStyle;
-  }
+  };
 
   const buttonProps = (button: ButtonId) => {
     const props: React.ButtonHTMLAttributes<HTMLButtonElement> = {
@@ -67,7 +70,7 @@ function MatchLoading() {
       props.disabled = true;
     }
     return props;
-  }
+  };
 
   function Loading() {
     return (
@@ -80,22 +83,44 @@ function MatchLoading() {
   }
 
   return (
-    <div>
-      <button
-        {...buttonProps('rankBtn')}
-        className="matchmaking-btn btn btn-default"
-      >
+    <div className="matchmaking-container">
+      <button {...buttonProps('rankBtn')} className="matchmaking-btn">
         Rank Game
       </button>
 
-      <button
-        {...buttonProps('unrankBtn')}
-        className="matchmaking-btn btn btn-default"
-      >
+      <button {...buttonProps('unrankBtn')} className="matchmaking-btn">
         Unranked Game
       </button>
 
       {showElement && <Loading />}
+
+      <Modal
+        isOpen={modalOpen}
+        onRequestClose={() => setModalOpen(false)}
+        contentLabel="Modal"
+        style={{
+          overlay: {
+            backgroundColor: 'rgba(0,0,0,0.5)',
+          },
+          content: {
+            width: '400px',
+            height: '200px',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
+        }}
+      >
+        <div>
+          <h1>Match Found!</h1>
+          <button>Join</button>
+          <button onClick={cancelQueue}>Cancel</button>
+        </div>
+      </Modal>
     </div>
   );
 }
