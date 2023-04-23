@@ -21,6 +21,8 @@ class Game extends Room {
   phase = 'pickingTeam';
   missionHistory = [];
 
+  // Add const gameType = "Ranked"/"Unranked"/"Custom";
+
   // TODO This shouldn't be here! Should be in Assassin file.
   startAssassinationTime: Date;
 
@@ -35,6 +37,7 @@ class Game extends Room {
     newRoomPassword_,
     gameMode_,
     muteSpectators_,
+    // gameType
     ranked_,
     callback_,
   ) {
@@ -45,6 +48,7 @@ class Game extends Room {
       maxNumPlayers_,
       newRoomPassword_,
       gameMode_,
+      // gameType,
       ranked_,
     );
 
@@ -127,6 +131,8 @@ class Game extends Room {
     this.hammer = 0;
     this.missionNum = 0;
     this.pickNum = 0;
+
+    // this.gameType = gameType
 
     this.numFailsHistory = [];
     this.proposedTeam = [];
@@ -1283,7 +1289,7 @@ class Game extends Room {
       spyTeam: this.spyUsernames,
       resistanceTeam: this.resistanceUsernames,
       numberOfPlayers: this.playersInGame.length,
-
+      // gameType: this.gameType,
       gameMode: this.gameMode,
       botUsernames,
 
@@ -1322,6 +1328,9 @@ class Game extends Room {
         console.log('Stored game data successfully.');
       }
     });
+
+    //FR2 - Rating system 1 - record games for rating updates
+    //TODO Record game data in a new Store called "DailyGameData", without any changes to elo or other rating.
 
     // store player data:
     const timeFinished = new Date();
@@ -1366,6 +1375,8 @@ class Game extends Room {
         Math.round((teamResChange / this.resistanceUsernames.length) * 10) / 10;
       const indSpyChange =
         Math.round((teamSpyChange / this.spyUsernames.length) * 10) / 10;
+
+      // // TODO Disable the ratings 
 
       // if we're in a ranked game show the elo adjustments
       if (this.ranked) {
