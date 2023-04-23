@@ -42,6 +42,17 @@ export class Queue {
     }
     return this.queue.slice(0, n);
   }
+  getLength() {
+    return this.queue.length;
+  }
+  deleteFirstNPlayers(n: number) {
+    if (n > this.queue.length) {
+      return;
+    }
+    const removedPlayers = this.queue.slice(0, n);
+    this.queue = this.queue.splice(0, n);
+    return removedPlayers;
+  }
   deleteMatchedPlayers(playerIDs: string[]) {
     this.queue = this.queue.filter(({ id }) => !playerIDs.includes(id));
   }

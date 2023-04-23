@@ -49,3 +49,17 @@ describe('leave the queue', () => {
     expect(result.length).toBe(0);
   });
 });
+
+describe('verify queue length', () => {
+  it('should return length 1 ', () => {
+    queue.join('test1');
+    const length = queue.getLength();
+    expect(length).toBe(1);
+  })
+  it('should return length 2 ', () => {
+    queue.join('test1');
+    queue.join('test2');
+    const length = queue.getLength();
+    expect(length).toBe(1);
+  })
+})

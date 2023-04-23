@@ -54,4 +54,39 @@ router.get('/queue', (req, res) => {
   return res.status(200).send({ result });
 });
 
+// start game for 6 players by removing first N players and returning players to front end
+router.post('/initialiseLobby', (req, res) => {
+  const { numOfPlayers } = req.body;
+  const result = isNaN(numOfPlayers)
+    ? false
+    : unrankedQueue.getLength() >= numOfPlayers;
+  if (result) {
+    
+
+    // remove firstNPlayers
+    const removedPlayers = unrankedQueue.deleteFirstNPlayers(numOfPlayers);
+    return res.status(200).send({ players:removedPlayers, numOfPlayers })
+  } else {
+    // Fail game start
+    return res.status(400).send({ message: 'Not enough players' });
+  }
+});
+
+// once six players have confirmed, create a lobby, adjust settings and start game
+/*
+router.post('/startGame', (req, res) => {
+    // check src/gameplay/game.ts
+    
+    // TODO start game
+      // Check lobby.js
+        const reportsReact = renderToString(<Report />);
+        res.render('lobby', {
+         headerActive: 'lobby',
+         optionsCog: true,
+         reportsReact,
+        });
+      
+})
+*/
+
 export default router;
