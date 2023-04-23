@@ -6,3 +6,4 @@ coverage/
 docker-compose-data/
 node_modules/
 out/
+package-lock.json
