@@ -783,6 +783,13 @@ $('.muteSpectators').on('change', (e) => {
   socket.emit('update-room-muteSpectators', e.target.checked);
 });
 
+$('.disableVoteHistory').on('change', (e) => {
+  $('.disableVoteHistory')[0].checked = e.target.checked;
+  $('.disableVoteHistory')[1].checked = e.target.checked;
+
+  socket.emit('update-room-disableVoteHistory', e.target.checked);
+});
+
 // Update the new room menu with the gameModes available.
 socket.on('leave-room-requested', () => {
   leaveRoom();
