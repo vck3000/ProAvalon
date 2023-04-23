@@ -241,6 +241,7 @@ function getPlayersOnMissionPickAndLeader(missionNum, pickNum = -1) {
   if (!gameData.voteHistory) {
     return;
   }
+
   // We need a player key to see vote history to get the number of picks in the mission
   const firstPlayerKey = Object.keys(gameData.voteHistory)[0];
 

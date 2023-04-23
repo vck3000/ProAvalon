@@ -1388,7 +1388,7 @@ export const server = function (io: SocketServer): void {
     socket.on('update-room-game-mode', updateRoomGameMode);
     socket.on('update-room-ranked', updateRoomRanked);
     socket.on('update-room-muteSpectators', updateRoomMuteSpectators);
-    socket.on('update-room-disableVoteHistory', updateRoomdisableVoteHistory);
+    socket.on('update-room-disableVoteHistory', updateRoomDisableVoteHistory);
 
     //************************
     // game data stuff
@@ -2027,7 +2027,10 @@ function newRoom(dataObj) {
       return;
     }
 
-    if (dataObj.disableVoteHistory !== true && dataObj.disableVoteHistory !== false) {
+    if (
+      dataObj.disableVoteHistory !== true &&
+      dataObj.disableVoteHistory !== false
+    ) {
       return;
     }
 
@@ -2275,9 +2278,11 @@ function updateRoomMuteSpectators(muteSpectators) {
   }
 }
 
-function updateRoomdisableVoteHistory(disableVoteHistory) {
+function updateRoomDisableVoteHistory(disableVoteHistory) {
   if (rooms[this.request.user.inRoomId]) {
-    rooms[this.request.user.inRoomId].updateDisableVoteHistory(disableVoteHistory);
+    rooms[this.request.user.inRoomId].updateDisableVoteHistory(
+      disableVoteHistory,
+    );
   }
 }
 

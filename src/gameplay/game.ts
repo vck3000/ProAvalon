@@ -504,7 +504,7 @@ class Game extends Room {
     if (this.disableVoteHistory) {
       this.sendText(
         this.allSockets,
-        'The game has closed vote history.',
+        'The game has vote history disabled.',
         'gameplay-text',
       );
     }
@@ -1000,9 +1000,7 @@ class Game extends Room {
         data[i].numSelectTargets = this.getClientNumOfTargets(i);
 
         data[i].votes = this.publicVotes;
-
         data[i].voteHistory = this.disableVoteHistory ? null : this.voteHistory;
-
         data[i].hammer = this.hammer;
         data[i].hammerReversed = gameReverseIndex(
           this.hammer,
@@ -1081,7 +1079,7 @@ class Game extends Room {
     data.numSelectTargets = this.getClientNumOfTargets();
 
     data.votes = this.publicVotes;
-    data.voteHistory = this.voteHistory;
+    data.voteHistory = this.disableVoteHistory ? null : this.voteHistory;
     data.hammer = this.hammer;
     data.hammerReversed = gameReverseIndex(
       this.hammer,
@@ -1312,7 +1310,7 @@ class Game extends Room {
       missionHistory: this.missionHistory,
       numFailsHistory: this.numFailsHistory,
       voteHistory: this.voteHistory,
-      disableVoteHistory: this.disableVoteHistory, 
+      disableVoteHistory: this.disableVoteHistory,
       playerRoles: playerRolesVar,
 
       ladyChain,
@@ -1874,14 +1872,12 @@ class Game extends Room {
   }
 
   updateDisableVoteHistory(disableVoteHistory: boolean) {
-
-    if (this.gameStarted === false)
-    {
+    if (this.gameStarted === false) {
       this.disableVoteHistory = disableVoteHistory;
 
       this.sendText(
         this.allSockets,
-        `Close Vote History option set to ${disableVoteHistory}.`,
+        `Disable Vote History option set to ${disableVoteHistory}.`,
         'server-text',
       );
     }
