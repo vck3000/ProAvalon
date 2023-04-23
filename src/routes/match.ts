@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { Queue } from '../match/queue';
+import { MatchMakingQueue } from '../match/queue';
 import User from '../models/user';
 const router = Router();
 
-const unrankedQueue = new Queue();
+const unrankedQueue = new MatchMakingQueue();
 // join ranked queue API
 router.post('/join', async (req, res) => {
   const { username }: { username: string } = req.body;
@@ -11,11 +11,11 @@ router.post('/join', async (req, res) => {
     return res.status(400).send({ message: 'cad request' });
   }
   const usernameLower = username.toLowerCase();
-  const isPlayerExist = await User.find({
+  const isPlayerExist = await User.findOne({
     usernameLower,
   });
 
-  if (isPlayerExist.length == 0) {
+  if (isPlayerExist) {
     return res.status(404).send({ message: 'can not find this player' });
   }
   // check if user is already in the queue

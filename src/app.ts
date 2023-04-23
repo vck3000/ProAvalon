@@ -1,37 +1,36 @@
 // @ts-nocheck
+import './env.js';
+import 'log-timestamp';
+import { sendToDiscordAdmins } from './discord';
 import assert from 'assert';
 import bodyParser from 'body-parser';
-import compression from 'compression';
-import flash from 'connect-flash';
 import cookieParser from 'cookie-parser';
 import express from 'express';
-import session from 'express-session';
-import createProxyMiddleware from 'http-proxy-middleware';
-import 'log-timestamp';
+import flash from 'connect-flash';
+import compression from 'compression';
 import methodOverride from 'method-override';
-import mongoose from 'mongoose';
-import morgan from 'morgan';
-import passport from 'passport';
 import LocalStrategy from 'passport-local';
+import mongoose from 'mongoose';
+import passport from 'passport';
 import passportSocketIo from 'passport.socketio';
 import path from 'path';
+import session from 'express-session';
 import socket, { Server as SocketServer } from 'socket.io';
-import { sendToDiscordAdmins } from './discord';
-import './env.js';
+import createProxyMiddleware from 'http-proxy-middleware';
+import morgan from 'morgan';
 
-import staticifyFactory from 'staticify';
+import { server as socketServer } from './sockets/sockets';
 import User from './models/user';
+import { emailVerified, isLoggedIn } from './routes/middleware';
+import indexRoutes from './routes/index';
 import communityRoutes from './routes/community';
 import { emailVerificationRoutes } from './routes/emailVerification';
-import forumRoutes from './routes/forum';
-import indexRoutes from './routes/index';
 import lobbyRoutes from './routes/lobby';
-import matchRoutes from './routes/match';
-import { emailVerified, isLoggedIn } from './routes/middleware';
-import modRoutes from './routes/mod';
-import patreonRoutes from './routes/patreon';
+import forumRoutes from './routes/forum';
 import profileRoutes from './routes/profile';
-import { server as socketServer } from './sockets/sockets';
+import patreonRoutes from './routes/patreon';
+import modRoutes from './routes/mod';
+import staticifyFactory from 'staticify';
 // Create a MongoDB session store
 import MongoDBStoreFactory from 'connect-mongodb-session';
 
