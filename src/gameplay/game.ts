@@ -5,7 +5,8 @@ import _ from 'lodash';
 import Room from './room';
 import usernamesIndexes from '../myFunctions/usernamesIndexes';
 import User from '../models/user';
-import GameRecord from '../models/gameRecord';
+// import GameRecord from '../models/gameRecord';
+import DailyGameRecord from '../models/dailyGameRecord';
 import commonPhasesIndex from './indexCommonPhases';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
@@ -1321,7 +1322,17 @@ class Game extends Room {
       whoAssassinShot2: this.whoAssassinShot2,
     };
 
-    GameRecord.create(objectToStore, (err) => {
+   /*  GameRecord.create(objectToStore, (err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('Stored game data successfully.');
+      }
+    }); */
+    
+    // Now recording games into dailyGameRecord instead of GameRecord. 
+    // The intended workflow is games -> dailyGameRecord -> (at end of rating preiod) Ratings Calculator -> archive into gameRecord
+    DailyGameRecord.create(objectToStore, (err) => {
       if (err) {
         console.log(err);
       } else {
@@ -1376,10 +1387,10 @@ class Game extends Room {
       const indSpyChange =
         Math.round((teamSpyChange / this.spyUsernames.length) * 10) / 10;
 
-      // // TODO Disable the ratings 
+      // // TODO Disable the ratings since rating will now be caalculated 
 
       // if we're in a ranked game show the elo adjustments
-      if (this.ranked) {
+      /* if (this.ranked) {
         // Get the old player ratings (with usernames) for use in provisional calculations.
         const oldPlayersInfo = this.playersInGame.map((soc) => {
           const data = {};
@@ -1460,7 +1471,7 @@ class Game extends Room {
             }
           }
         });
-      }
+      } */
 
       this.playersInGame.forEach((player) => {
         User.findById(player.userId)
