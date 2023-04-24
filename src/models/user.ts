@@ -81,6 +81,15 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     default: 1500,
   },
+  ratingDeviation: {
+    type: Number,
+    default: 350,
+  },
+  ratingVolatility: {
+    type: Number,
+    default: 0.06,
+  },
+
   ratingBracket: {
     type: String,
     default: 'silver',
