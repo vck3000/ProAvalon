@@ -68,7 +68,7 @@ class Glicko2 {
     return Math.E ** (A / 2);
   }
 
-  updateRatings(
+  updateRatingsByPlayer(
     playerData: Player,
     matchHistory: Match[],
   ): {
