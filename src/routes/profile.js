@@ -12,6 +12,7 @@ import { createNotification } from '../myFunctions/createNotification';
 import seasonNumber from '../models/seasonNumber';
 import RankData from '../models/rankData';
 
+// get the season number
 async function getSeasonNumber() {
   try {
     const returnedSeasonNumber = await seasonNumber.findOne({}).exec();
@@ -401,10 +402,11 @@ router.get('/:profileUsername', (req, res) => {
       if (err) {
         console.log(err);
       } else {
-        //get the currentRanking of user
+        //get the parameters of user that to render the profile page
         const currentRanking = await RankData.findById(foundUser.currentRanking).exec();
         const pastRankings = [];
         const currentSeasonNumber = await getSeasonNumber();
+        //get the past rankings of the user and reverse the order
         for (const element of foundUser.pastRankings) {
           const pastRanking = await RankData.findById(element).exec();
           pastRankings.unshift(pastRanking);

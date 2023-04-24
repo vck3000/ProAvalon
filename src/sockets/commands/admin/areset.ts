@@ -4,18 +4,19 @@ import User from '../../../models/user';
 import RankData from '../../../models/rankData';
 import SeasonNumber from '../../../models/seasonNumber';
 
-
+// Return the sigmoid of the rating value
 function sigmoid(rating: number) {
   return 1 / (1 + Math.exp(-rating));
 }
 
+// calculate the new rating value based on the old rating value
 function mapToRange(rating: number, minValue: number, maxValue: number) {
   const midValue = (minValue + maxValue) / 2;
   const sigmoided = sigmoid((rating - midValue) / 200);
   return Math.floor(minValue + (sigmoided * (maxValue - minValue)));
 }
 
-// define a variable to get the current season number
+// define a function to get the current season number
 async function getSeasonNumber() {
   try {
     const returnedSeasonNumber = await SeasonNumber.findOne({}).exec();
@@ -25,6 +26,7 @@ async function getSeasonNumber() {
   }
 }
 
+// define a function to increment the season number
 function seasonNumberIncrement() {
   SeasonNumber.findOne({}).exec().then(returnedSeasonNumber => {
     returnedSeasonNumber.number++;
@@ -65,6 +67,7 @@ async function resetElosOfUsers(users: User[]) {
   }
 }
 
+// reset the elo of a user
 // @ts-ignore
 async function resetUserElo(user: User, seasonNumber: number) {
 
@@ -86,7 +89,7 @@ async function resetUserElo(user: User, seasonNumber: number) {
 }
 
 
-
+// define a function to reset the elo of all users
 export const areset: Command = {
   command: 'reset',
   help: "/reset all plyers's rank data and start a new season",
