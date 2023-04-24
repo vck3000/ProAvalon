@@ -1,4 +1,4 @@
-import type { User, Match } from './types';
+import type { IUser, Match } from './types';
 
 class Glicko2 {
   #epsilon: number;
@@ -69,7 +69,7 @@ class Glicko2 {
   }
 
   updateRatingsByPlayer(
-    playerData: User,
+    playerData: IUser,
     matchHistory: Match[],
   ): {
     playerRating: number;

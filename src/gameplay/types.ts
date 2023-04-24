@@ -35,7 +35,7 @@ export interface Match {
   opponentTeamRatingDeviation: number;
 }
 
-export interface User {
+export interface IUser {
   username: string;
   playerRating: number;
   ratingDeviation: number;
