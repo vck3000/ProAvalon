@@ -1,15 +1,14 @@
 import Glicko2 from "../glicko2";
-import type { User, Match } from "../types";
+import type { IUser, Match } from "../types";
 
 describe('Glicko-2', () => {
-  let playerOne: User, matches: Match[], glicko2: Glicko2;
+  let playerOne: IUser, matches: Match[], glicko2: Glicko2;
 
   beforeAll(() => {
     glicko2 = new Glicko2();
 
     playerOne = {
       username: 'playerone',
-      userid: 1,
       playerRating: 1500,
       ratingDeviation: 200,
       ratingVolatility: 0.06,

@@ -38,7 +38,7 @@ export interface Match {
 
 export interface IUser {
   username: string;
-  usernameLower: string;
+  usernameLower?: string;
   password?: string;
   emailAddress?: string;
   emailVerified?: boolean;
