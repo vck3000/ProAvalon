@@ -9,7 +9,18 @@ import PatreonId from '../models/patreonId';
 import avatarRequest from '../models/avatarRequest';
 import ModLog from '../models/modLog';
 import { createNotification } from '../myFunctions/createNotification';
-import  seasonNumber  from '../util/seasonNumber';
+import seasonNumber from '../models/seasonNumber';
+import RankData from '../models/rankData';
+
+async function getSeasonNumber() {
+  try {
+    const returnedSeasonNumber = await seasonNumber.findOne({}).exec();
+    return returnedSeasonNumber.number;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',
@@ -386,15 +397,27 @@ router.post('/:profileUsername', checkProfileOwnership, (req, res) => {
 router.get('/:profileUsername', (req, res) => {
   User.findOne(
     { usernameLower: req.params.profileUsername.toLowerCase() },
-    (err, foundUser) => {
+    async (err, foundUser) => {
       if (err) {
         console.log(err);
       } else {
+        //get the currentRanking of user
+        const currentRanking = await RankData.findById(foundUser.currentRanking).exec();
+        const pastRankings = [];
+        const currentSeasonNumber = await getSeasonNumber();
+        for (const element of foundUser.pastRankings) {
+          const pastRanking = await RankData.findById(element).exec();
+          pastRankings.unshift(pastRanking);
+        }
+
         res.render('profile/profile', {
           userData: foundUser,
-          seasonNumber: seasonNumber.getSeasonNumber(),
+          seasonNumber: currentSeasonNumber,
+          currentRanking: currentRanking,
+          pastRankings: pastRankings,
           personViewingUsername: req.user.username,
         });
+
       }
     },
   );

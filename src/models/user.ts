@@ -86,35 +86,6 @@ const UserSchema = new mongoose.Schema({
     default: 'silver',
   },
 
-    
-  //current rd value 
-  rd: {
-    type: Number,
-    default: 350,
-  },
-  // current volatility value
-  volatility:{
-    type: Number,
-    default: 0.06,
-  },
-
-  // previous rating, it should be an array of objects
-  // each object should have a season number and a rating and also a ratingbracket
-  previousRankData: {
-    type: [{
-      seasonNumber: {
-        type: Number
-      },
-      rating: {
-        type: Number
-      },
-      ratingBracket: {
-        type: String
-      }
-    }],
-    default: []
-  },
-
   winsLossesGameSizeBreakdown: {
     type: Object,
     default: {},
@@ -158,6 +129,18 @@ const UserSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'notification',
+    },
+  ],
+
+  currentRanking: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'rankData',
+  },
+
+  pastRankings: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'rankData',
     },
   ],
 
