@@ -37,7 +37,6 @@ export interface Match {
 
 export interface User {
   username: string;
-  userid: number;
   playerRating: number;
   ratingDeviation: number;
   ratingVolatility: number;

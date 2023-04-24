@@ -1,8 +1,9 @@
 import mongoose from 'mongoose';
 // @ts-ignore
 import passportLocalMongoose from 'passport-local-mongoose';
+import type { User } from 'src/gameplay/types';
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema<User>({
   username: {
     type: String,
     required: true,
@@ -165,4 +166,4 @@ export interface UserDocument extends mongoose.Document {
   usernameLower: string;
 }
 
-export default mongoose.model('User', UserSchema);
+export default mongoose.model<User>('User', UserSchema);
