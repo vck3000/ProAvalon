@@ -1,8 +1,8 @@
 import Glicko2 from "../glicko2";
-import type { Player, Match } from "../types";
+import type { User, Match } from "../types";
 
 describe('Glicko-2', () => {
-  let playerOne: Player, matches: Match[], glicko2: Glicko2;
+  let playerOne: User, matches: Match[], glicko2: Glicko2;
 
   beforeAll(() => {
     glicko2 = new Glicko2();
