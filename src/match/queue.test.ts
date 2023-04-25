@@ -1,6 +1,6 @@
-import { Queue } from './queue';
+import { MatchMakingQueue } from './queue';
 
-const queue = new Queue();
+const queue = new MatchMakingQueue();
 describe('get the queue', () => {
   it('should return an empty queue', () => {
     expect(queue.get()).toEqual([]);
@@ -21,8 +21,10 @@ describe('get the queue', () => {
     queue.join('test2');
     queue.join('test3');
     const result = queue.getFirstNItems(2);
+
     const date1 = result[0]?.joinAt;
     const date2 = result[0]?.joinAt;
+
     expect(result.length).toBe(2);
     expect(result).toEqual([
       {
