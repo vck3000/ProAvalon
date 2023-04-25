@@ -1,0 +1,6 @@
+export enum roomCreationTypeEnum {
+    RANKED_QUEUE = "RANKED_QUEUE",
+    UNRANKED_QUEUE = "UNRANKED_QUEUE",
+    CUSTOM_ROOM = "CUSTOM_ROOM",
+    INVALID_ROOM = "INVALID_ROOM"
+}

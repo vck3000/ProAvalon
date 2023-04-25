@@ -5,15 +5,17 @@ import _ from 'lodash';
 import Room from './room';
 import usernamesIndexes from '../myFunctions/usernamesIndexes';
 import User from '../models/user';
-// import GameRecord from '../models/gameRecord';
-import DailyGameRecord from '../models/dailyGameRecord';
+import GameRecord from '../models/gameRecord';
+import GameRatingRecord from '../models/gameRatingRecord';
 import commonPhasesIndex from './indexCommonPhases';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 
+import { roomCreationTypeEnum } from './enums/roomCreationType';
 import { gameModeObj } from './gameModes';
+import { time } from 'console';
 
 class Game extends Room {
   gameStarted = false;
@@ -21,6 +23,7 @@ class Game extends Room {
   playersInGame = [];
   phase = 'pickingTeam';
   missionHistory = [];
+  roomCreationType : roomCreationTypeEnum;
 
   // Add const gameType = "Ranked"/"Unranked"/"Custom";
 
@@ -38,8 +41,8 @@ class Game extends Room {
     newRoomPassword_,
     gameMode_,
     muteSpectators_,
-    // gameType
     ranked_,
+    roomCreationType_, // to track ranked vs unranked vs custom game
     callback_,
   ) {
     super(
@@ -49,11 +52,15 @@ class Game extends Room {
       maxNumPlayers_,
       newRoomPassword_,
       gameMode_,
-      // gameType,
       ranked_,
     );
 
     this.callback = callback_;
+
+    this.roomCreationType = roomCreationType_ === "RANKED_QUEUE" ? roomCreationTypeEnum.RANKED_QUEUE : 
+        roomCreationType_ === "UNRANKED_QUEUE" ? roomCreationTypeEnum.UNRANKED_QUEUE : 
+        roomCreationType_ === "CUSTOM_ROOM" ? roomCreationTypeEnum.CUSTOM_ROOM : 
+        roomCreationTypeEnum.INVALID_ROOM;
 
     this.minPlayers = 5;
     this.alliances = [
@@ -1155,6 +1162,14 @@ class Game extends Room {
   }
 
   finishGame(toBeWinner) {
+    const timeStarted = new Date(this.startGameTime);
+    const timeFinished = new Date();
+    const gameDuration = new Date(timeFinished - timeStarted);
+
+    const playersInGameVar = this.playersInGame;
+    const winnerVar = this.winner;
+
+    const thisGame = this;
     this.phase = 'finished';
 
     if (this.checkRoleCardSpecialMoves() === true) {
@@ -1282,16 +1297,17 @@ class Game extends Room {
       botUsernames = [];
     }
 
+    // This data is for future records only
     const objectToStore = {
       timeGameStarted: this.startGameTime,
       timeAssassinationStarted: this.startAssassinationTime,
-      timeGameFinished: new Date(),
+      timeGameFinished: timeFinished,
       winningTeam: this.winner,
       spyTeam: this.spyUsernames,
       resistanceTeam: this.resistanceUsernames,
       numberOfPlayers: this.playersInGame.length,
-      // gameType: this.gameType,
       gameMode: this.gameMode,
+      roomCreationType: this.roomCreationType,
       botUsernames,
 
       playerUsernamesOrdered: getUsernamesOfPlayersInGame(this),
@@ -1322,17 +1338,7 @@ class Game extends Room {
       whoAssassinShot2: this.whoAssassinShot2,
     };
 
-   /*  GameRecord.create(objectToStore, (err) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('Stored game data successfully.');
-      }
-    }); */
-    
-    // Now recording games into dailyGameRecord instead of GameRecord. 
-    // The intended workflow is games -> dailyGameRecord -> (at end of rating preiod) Ratings Calculator -> archive into gameRecord
-    DailyGameRecord.create(objectToStore, (err) => {
+    GameRecord.create(objectToStore, (err) => {
       if (err) {
         console.log(err);
       } else {
@@ -1340,19 +1346,33 @@ class Game extends Room {
       }
     });
 
-    //FR2 - Rating system 1 - record games for rating updates
-    //TODO Record game data in a new Store called "DailyGameData", without any changes to elo or other rating.
+    //FR2 - Rating system 1 - record games for rating updates   
+    // This data will be used to calculate ratings at end of rating period.
+    // The intended workflow is games -> gameRatingRecord -> (at end of rating preiod) Ratings Calculator
+    const ratingRecordToStore = {
+      timeGameStarted: this.startGameTime,
+      timeGameFinished: timeFinished,
+      winningTeam: this.winner,
+      spyTeam: this.spyUsernames,
+      resistanceTeam: this.resistanceUsernames,
+      numberOfPlayers: this.playersInGame.length,
+      roomCreationType: this.roomCreationType,
+
+      playerUsernamesOrdered: getUsernamesOfPlayersInGame(this),
+      playerUsernamesOrderedReversed: gameReverseArray(
+        getUsernamesOfPlayersInGame(this),
+      ),
+    };
+
+    GameRatingRecord.create(ratingRecordToStore, (err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('Stored game data for ratings calculation successfully.');
+      }
+    });
 
     // store player data:
-    const timeFinished = new Date();
-    const timeStarted = new Date(this.startGameTime);
-
-    const gameDuration = new Date(timeFinished - timeStarted);
-
-    const playersInGameVar = this.playersInGame;
-    const winnerVar = this.winner;
-
-    const thisGame = this;
     this.socketsOfPlayers
       .filter((socket) => socket.isBotSocket)
       .forEach((botSocket) => {
@@ -1374,7 +1394,9 @@ class Game extends Room {
         provisionalGame = true;
       }
 
-      // calculate team 1v1 elo adjustment
+// // TODO Disable the ratings since rating will now be calculated at the end of the rating period
+
+      /* // calculate team 1v1 elo adjustment
       const teamResChange = this.calculateResistanceRatingChange(
         this.winner,
         provisionalGame,
@@ -1385,9 +1407,7 @@ class Game extends Room {
       const indResChange =
         Math.round((teamResChange / this.resistanceUsernames.length) * 10) / 10;
       const indSpyChange =
-        Math.round((teamSpyChange / this.spyUsernames.length) * 10) / 10;
-
-      // // TODO Disable the ratings since rating will now be caalculated 
+        Math.round((teamSpyChange / this.spyUsernames.length) * 10) / 10; */
 
       // if we're in a ranked game show the elo adjustments
       /* if (this.ranked) {
@@ -1503,7 +1523,9 @@ class Game extends Room {
               // if ranked, update player ratings and increase ranked games played
               if (this.ranked) {
                 foundUser.totalRankedGamesPlayed += 1;
-                if (foundUser.ratingBracket === 'unranked') {
+
+                // Disabling since it is not being calculated here
+                /* if (foundUser.ratingBracket === 'unranked') {
                   foundUser.playerRating = player.request.user.playerRating;
                 } else {
                   if (player.alliance === 'Resistance') {
@@ -1511,7 +1533,7 @@ class Game extends Room {
                   } else if (player.alliance === 'Spy') {
                     foundUser.playerRating += indSpyChange;
                   }
-                }
+                } */
               }
 
               // checks that the var exists
@@ -1896,7 +1918,7 @@ class Game extends Room {
   4. If provisional players are in the game, adjust the elo changes based on how close they are to being experienced.
   5. Divide equally between players on each team and adjust ratings. (Done in the finishGame function)
   */
-  calculateResistanceRatingChange(winningTeam, provisionalGame) {
+  /* calculateResistanceRatingChange(winningTeam, provisionalGame) {
     // Constant changes in elo due to unbalanced winrate, winrate changes translated to elo points.
     const playerSizeEloChanges = [62, 56, 71, 116, 18, 80];
     // k value parameter for calculation
@@ -1967,7 +1989,7 @@ class Game extends Room {
         eloChange;
     }
     return eloChange;
-  }
+  } */
 
   /*
   PROVISIONAL ELO RATING CALCULATION:
@@ -1986,7 +2008,7 @@ class Game extends Room {
   For the first few games it will result in wild rating changes, but will level out towards the end of the provisional section.
   Could possibly lead to some people abusing their early rating by only playing with strong players and getting lucky, but should level out in the end.
   */
-  calculateNewProvisionalRating(winningTeam, playerSocket, playerRatings) {
+  /* calculateNewProvisionalRating(winningTeam, playerSocket, playerRatings) {
     // Constant changes in elo due to unbalanced winrate, winrate changes translated to elo points.
     const playerSizeWinrates = [0.57, 0.565, 0.58, 0.63, 0.52, 0.59];
     let Result = playerSocket.alliance === winningTeam ? 1 : -1;
@@ -2036,7 +2058,7 @@ class Game extends Room {
       newRating = R_old - 100;
     }
     return newRating;
-  }
+  } */
 }
 
 export default Game;
