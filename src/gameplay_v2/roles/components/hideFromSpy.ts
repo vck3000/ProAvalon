@@ -1,6 +1,7 @@
 import Component from './component';
 
-export class assassinateC extends Component {
+//Oberon's component
+export class hideFromSpyC extends Component {
   name = 'SeeSpies';
   data = {};
 }
