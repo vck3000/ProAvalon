@@ -49,8 +49,6 @@ export interface IUser {
   totalLosses?: number;
   totalResLosses?: number;
   playerRating?: number;
-  ratingDeviation?: number;
-  ratingVolatility?: number;
   ratingBracket?: string;
   winsLossesGameSizeBreakdown?: Record<string, unknown>;
   nationality?: string;
