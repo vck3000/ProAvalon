@@ -1,6 +1,6 @@
 import Component from './component';
 
-export class VoteC extends Component {
+export class Leader extends Component {
   name = 'leader';
   data = {};
 }
