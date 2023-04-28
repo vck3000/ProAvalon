@@ -6,16 +6,15 @@ import Room from './room';
 import usernamesIndexes from '../myFunctions/usernamesIndexes';
 import User from '../models/user';
 import GameRecord from '../models/gameRecord';
-import GameRatingRecord from '../models/gameRatingRecord';
+import RatingPeriodGameRecord from '../models/RatingPeriodGameRecord';
 import commonPhasesIndex from './indexCommonPhases';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 
-import { roomCreationTypeEnum } from './enums/roomCreationType';
+import { roomCreationTypeEnum, getRoomTypeFromString } from './enums/roomCreationType';
 import { gameModeObj } from './gameModes';
-import { time } from 'console';
 
 class Game extends Room {
   gameStarted = false;
@@ -57,10 +56,7 @@ class Game extends Room {
 
     this.callback = callback_;
 
-    this.roomCreationType = roomCreationType_ === "RANKED_QUEUE" ? roomCreationTypeEnum.RANKED_QUEUE : 
-        roomCreationType_ === "UNRANKED_QUEUE" ? roomCreationTypeEnum.UNRANKED_QUEUE : 
-        roomCreationType_ === "CUSTOM_ROOM" ? roomCreationTypeEnum.CUSTOM_ROOM : 
-        roomCreationTypeEnum.INVALID_ROOM;
+    this.roomCreationType = getRoomTypeFromString(roomCreationType_);
 
     this.minPlayers = 5;
     this.alliances = [
@@ -1348,29 +1344,27 @@ class Game extends Room {
 
     //FR2 - Rating system 1 - record games for rating updates   
     // This data will be used to calculate ratings at end of rating period.
-    // The intended workflow is games -> gameRatingRecord -> (at end of rating preiod) Ratings Calculator
-    const ratingRecordToStore = {
-      timeGameStarted: this.startGameTime,
-      timeGameFinished: timeFinished,
-      winningTeam: this.winner,
-      spyTeam: this.spyUsernames,
-      resistanceTeam: this.resistanceUsernames,
-      numberOfPlayers: this.playersInGame.length,
-      roomCreationType: this.roomCreationType,
+    // The intended workflow is games -> ratingPeriodGameRecord -> (at end of rating preiod) Ratings Calculator
 
-      playerUsernamesOrdered: getUsernamesOfPlayersInGame(this),
-      playerUsernamesOrderedReversed: gameReverseArray(
-        getUsernamesOfPlayersInGame(this),
-      ),
-    };
+    if (this.roomCreationType === roomCreationTypeEnum.RANKED_QUEUE) {
+      const ratingRecordToStore = {
+        timeGameStarted: this.startGameTime,
+        timeGameFinished: timeFinished,
+        winningTeam: this.winner,
+        spyTeam: this.spyUsernames,
+        resistanceTeam: this.resistanceUsernames,
+        numberOfPlayers: this.playersInGame.length,
+        roomCreationType: this.roomCreationType,
+      };
 
-    GameRatingRecord.create(ratingRecordToStore, (err) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('Stored game data for ratings calculation successfully.');
-      }
-    });
+      RatingPeriodGameRecord.create(ratingRecordToStore, (err) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log('Stored game data for ratings calculation successfully.');
+        }
+      });
+    }
 
     // store player data:
     this.socketsOfPlayers
