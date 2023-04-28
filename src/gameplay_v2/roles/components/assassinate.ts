@@ -1,6 +1,8 @@
 import Component from './component';
 
 export class assassinateC extends Component {
-  name = 'SeeSpies';
+  name = 'Assassinate';
+  //player which can do assassination
+  player: string = null;
   data = {};
 }

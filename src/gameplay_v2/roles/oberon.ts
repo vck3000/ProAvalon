@@ -7,5 +7,6 @@ export default class Oberon extends Entity {
   constructor() {
     super(Alliance.Resistance);
     this.description = 'Oberon and Spies do not know each other.';
+    //this.components.push(new hideFromSpiesC());  
   }
 }
