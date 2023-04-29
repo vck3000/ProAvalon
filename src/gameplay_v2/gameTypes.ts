@@ -12,7 +12,13 @@ export enum Role {
   Resistance,
   Spy,
   Merlin,
-  //add more if you wish to
+  Assassin,
+  Isolde,
+  Mordred,
+  Morgana,
+  Oberon,
+  Percival,
+  Tristan,
 }
 
 export enum Round {
@@ -21,4 +27,10 @@ export enum Round {
   Round_3,
   Round_4,
   FinalRound,
+  AnyRound,
+}
+
+export enum FinalState{
+    SPY_WIN,
+    RESISTANCE_WIN,
 }
