@@ -1,5 +1,5 @@
-import type { IUser, Match } from './types';
-
+import type { IUser } from './types';
+import type { IRatingPeriodGameRecord } from '../models/types';
 class Glicko2 {
   #epsilon: number;
   #tau: number;
@@ -70,11 +70,34 @@ class Glicko2 {
 
   updateRatingsByPlayer(
     playerData: IUser,
-    matchHistory: Match[],
+    games: IRatingPeriodGameRecord[], // a list of games that the player has played
   ): {
     playerRating: number;
     ratingDeviation: number;
   } {
+    const gameSummary = games.map(g => {
+      // Calculate the avg ratings and avg RD of the opponents
+      // TODO: change hardcoded value later!!!
+      const opponentRating = 1400;
+      const opponentRatingDeviation = 30;
+
+      if (g.spyTeam.includes(playerData.username)) {
+        // player is in team spy
+        return {
+          opponentRating,
+          opponentRatingDeviation,
+          outcome: g.winningTeam === 'Spy' ? 1 : 0,
+        };
+      } else {
+        // player is in team resistance
+        return {
+          opponentRating,
+          opponentRatingDeviation,
+          outcome: g.winningTeam === 'Resistance' ? 1 : 0,
+        };
+      }
+    });
+
     // Step 2: Convert to Glicko-2 scale
     const player = {
       mu: (playerData.playerRating - 1500) / 173.7178,
@@ -83,7 +106,7 @@ class Glicko2 {
     };
 
     // Check if the player competed during the rating period
-    if (matchHistory.length == 0) {
+    if (games.length == 0) {
       const newPhi = Math.sqrt(player.phi ** 2 + player.ratingVolatility ** 2);
       const newRD = 173.7178 * newPhi;
 
@@ -93,15 +116,15 @@ class Glicko2 {
       };
     }
 
-    const opponents = matchHistory.map((m) => {
-      const mu = (m.opponentTeamRating - 1500) / 173.7178;
-      const phi = m.opponentTeamRatingDeviation / 173.7178;
+    const opponents = gameSummary.map((game) => {
+      const mu = (game.opponentRating - 1500) / 173.7178;
+      const phi = game.opponentRatingDeviation / 173.7178;
       return {
         mu,
         phi,
         g: this.#computeG(phi),
         E: this.#computeE(player.mu, mu, phi),
-        s: m.winningTeam === m.playerTeam ? 1 : 0,
+        s: game.outcome,
       };
     });
 
