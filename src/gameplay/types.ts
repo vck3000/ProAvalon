@@ -27,11 +27,14 @@ export interface See {
   spies: string[];
 }
 
-type Team = 'Resistance' | 'Spy';
+export enum TeamEnum {
+  RESISTANCE = 'Resistance',
+  SPY = 'Spy',
+}
 
 export interface Match {
-  winningTeam: Team;
-  playerTeam: Team;
+  winningTeam: TeamEnum;
+  playerTeam: TeamEnum;
   opponentTeamRating: number;
   opponentTeamRatingDeviation: number;
 }
