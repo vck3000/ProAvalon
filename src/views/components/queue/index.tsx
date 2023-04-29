@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { hot } from 'react-hot-loader/root';
 import Modal from 'react-modal';
 
 declare const currentOnlinePlayers: { displayUsername: string };
 
 Modal.setAppElement('#matchMakingTimer');
-type ButtonId = 'rankBtn' | 'unrankBtn';
 
+<<<<<<< HEAD
 function MatchLoading() {
 
   // All useStates
@@ -120,9 +120,33 @@ function MatchLoading() {
           <button>Join</button>
           <button onClick={cancelQueue}>Cancel</button>
         </div>
+=======
+function MatchMakingModal() {
+  // This is boolean to know whether the user click the matchmaking button
+  const [modalIsClick, setModalIsClick] = useState(false);
+
+  function clickModal() {
+    setModalIsClick(true);
+    console.log("hi");
+  }
+
+  function closeModal() {
+    setModalIsClick(false);
+  }
+
+  return (
+    <div>
+      <button onClick={clickModal} className="matchmaking-btn btn btn-default">
+        Rank Game
+      </button>
+
+      <Modal isOpen={modalIsClick} onRequestClose={closeModal}>
+        <p>Finding Match:</p>
+
+>>>>>>> parent of 982c3886 (Created the countup timer when the users are in queue)
       </Modal>
     </div>
   );
 }
 
-export default hot(MatchLoading);
+export default hot(MatchMakingModal);

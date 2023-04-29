@@ -1,6 +1,6 @@
 import React from "react";
 import { hydrate } from "react-dom";
-import MatchLoading from './index';
+import MatchMakingModal from './index';
 
 
-hydrate(<MatchLoading />, document.getElementById('matchMakingTimer'));
+hydrate(<MatchMakingModal />, document.getElementById('matchMakingTimer'));
