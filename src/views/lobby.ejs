@@ -57,6 +57,14 @@
 
       <a id="newRoom" class="btn btn-default" href="#">New Room</a>
 
+      <div
+        react-entrypoint
+        id="matchMakingTimer"
+        style="display: flex; justify-content: right"
+      >
+        <%-onQueueReact%>
+      </div>
+
       <br />
       <br />
 
@@ -1311,6 +1319,10 @@
 <script
   type="text/javascript"
   src="<%-getVersionedPath('/scripts/lobby/helper.js')%>"
+></script>
+<script
+  type="text/javascript"
+  src="<%- getVersionedPath('/dist_webpack/queue.bundle.js') %>"
 ></script>
 <script
   type="text/javascript"
