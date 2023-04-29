@@ -8,4 +8,5 @@ node_modules/
 out/
 package-lock.json
 .github
-jest.config.json
+jest.config.js
+.DS_Store

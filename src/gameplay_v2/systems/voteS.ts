@@ -1,7 +1,7 @@
 import { SendData, System } from './system';
 import { GameData } from '../gameEngine';
 import { Vote, VoteC } from '../roles/components/vote';
-import { VotingMission } from '../states/baseStates/votingMission';
+import { VotingMission } from '../states/baseStates/VotingMission';
 
 export class VoteS implements System {
   run(gameData: GameData, sendData: SendData): void {

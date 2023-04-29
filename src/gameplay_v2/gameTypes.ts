@@ -21,10 +21,14 @@ export enum Role {
   Tristan,
 }
 
+
 export enum State {
   Discussion,
-  VoteMission,
-  Vote, 
+  VotingMission,
+  VotingTeam,
+  AssassinationPhase,
+  EndGame,
+  SpecialPhase,
 }
 
 export enum Round {
@@ -36,7 +40,7 @@ export enum Round {
   AnyRound,
 }
 
-export enum FinalState{
+export enum EndGame{
     SPY_WIN,
     RESISTANCE_WIN,
 }
