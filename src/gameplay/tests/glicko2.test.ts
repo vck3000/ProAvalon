@@ -1,8 +1,10 @@
 import Glicko2 from "../glicko2";
-import type { IUser, Match } from "../types";
+import type { IUser } from "../types";
+import { TeamEnum } from "../types";
+import { IRatingPeriodGameRecord } from "../../models/types";
 
 describe('Glicko-2', () => {
-  let playerOne: IUser, matches: Match[], glicko2: Glicko2;
+  let playerOne: IUser, games: IRatingPeriodGameRecord[], glicko2: Glicko2;
 
   beforeAll(() => {
     glicko2 = new Glicko2();
@@ -14,35 +16,53 @@ describe('Glicko-2', () => {
       ratingVolatility: 0.06,
     };
 
-    matches = [
+    games = [
       {
+        timeGameStarted: new Date(),
+        timeGameFinished: new Date(),
         winningTeam: 'Resistance',
-        playerTeam: 'Resistance',
-        opponentTeamRating: 1400,
-        opponentTeamRatingDeviation: 30,
+        spyTeam: [],
+        resistanceTeam: [playerOne.username],
+        numberOfPlayers: 6,
+        roomCreationType: '',
+        
+        avgRating: 1400,
+        avgRd: 30,
       },
       {
+        timeGameStarted: new Date(),
+        timeGameFinished: new Date(),
         winningTeam: 'Resistance',
-        playerTeam: 'Spy',
-        opponentTeamRating: 1550,
-        opponentTeamRatingDeviation: 100,
+        spyTeam: [playerOne.username],
+        resistanceTeam: [],
+        numberOfPlayers: 6,
+        roomCreationType: '',
+
+        avgRating: 1550,
+        avgRd: 100,
       },
       {
+        timeGameStarted: new Date(),
+        timeGameFinished: new Date(),
         winningTeam: 'Spy',
-        playerTeam: 'Resistance',
-        opponentTeamRating: 1700,
-        opponentTeamRatingDeviation: 300,
+        spyTeam: [],
+        resistanceTeam: [playerOne.username],
+        numberOfPlayers: 6,
+        roomCreationType: '',
+
+        avgRating: 1700,
+        avgRd: 300,
       },
     ];
   });
 
   it('should use the game data from rating period to calculate new rating correctly', () => {
-    const { playerRating } = glicko2.updateRatingsByPlayer(playerOne, matches);
+    const { playerRating } = glicko2.updateRatingsByPlayer(playerOne, games);
     expect(playerRating).toBeCloseTo(1464.05);
   });
 
   it('should use the game data from rating period to calculate new RD correctly', () => {
-    const { ratingDeviation } = glicko2.updateRatingsByPlayer(playerOne, matches);
+    const { ratingDeviation } = glicko2.updateRatingsByPlayer(playerOne, games);
     expect(ratingDeviation).toBeCloseTo(151.52);
   });
 

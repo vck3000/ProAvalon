@@ -1,5 +1,7 @@
 import type { IUser } from './types';
+import { TeamEnum } from './types';
 import type { IRatingPeriodGameRecord } from '../models/types';
+import User from '../models/user';
 class Glicko2 {
   #epsilon: number;
   #tau: number;
@@ -78,28 +80,29 @@ class Glicko2 {
     const gameSummary = games.map(g => {
       // Calculate the avg ratings and avg RD of the opponents
       // TODO: change hardcoded value later!!!
-      const opponentRating = 1400;
-      const opponentRatingDeviation = 30;
+      // const opponentRating = 1400;
+      // const opponentRatingDeviation = 30;
 
       if (g.spyTeam.includes(playerData.username)) {
-        // player is in team spy
+        // player is in team SPY
         return {
-          opponentRating,
-          opponentRatingDeviation,
-          outcome: g.winningTeam === 'Spy' ? 1 : 0,
+          opponentRating: g.avgRating,
+          opponentRatingDeviation: g.avgRd,
+          outcome: g.winningTeam === TeamEnum.SPY ? 1 : 0,
         };
       } else {
-        // player is in team resistance
+        // player is in team RESISTANCE
         return {
-          opponentRating,
-          opponentRatingDeviation,
-          outcome: g.winningTeam === 'Resistance' ? 1 : 0,
+          opponentRating: g.avgRating,
+          opponentRatingDeviation: g.avgRd,
+          outcome: g.winningTeam === TeamEnum.RESISTANCE ? 1 : 0,
         };
       }
     });
 
     // Step 2: Convert to Glicko-2 scale
     const player = {
+      username: playerData.username,
       mu: (playerData.playerRating - 1500) / 173.7178,
       phi: playerData.ratingDeviation / 173.7178,
       ratingVolatility: playerData.ratingVolatility,
@@ -152,6 +155,7 @@ class Glicko2 {
       player.ratingVolatility,
     );
     // TODO: Save the new volatility to the player
+    // User.updateOne({ username: player.username }, { ratingVolatility: newVolatility });
 
     // Step 6: Update the rating deviation to the new pre-rating period value
     const preRatingPhi = Math.sqrt(player.phi ** 2 + newVolatility ** 2);

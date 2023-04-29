@@ -7,4 +7,8 @@ export interface IRatingPeriodGameRecord {
 
   numberOfPlayers: number,
   roomCreationType: string,
+
+  // For testing only
+  avgRating: number,
+  avgRd: number,
 }
