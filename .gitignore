@@ -6,9 +6,3 @@ coverage/
 docker-compose-data/
 node_modules/
 out/
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
