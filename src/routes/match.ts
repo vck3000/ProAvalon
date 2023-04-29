@@ -82,6 +82,7 @@ router.post('/startGame', (req, res) => {
     
     // TODO start game
       // Check lobby.js
+      return res.status(200).send({ message: 'Game started' });
       
 });
 
