@@ -25,6 +25,7 @@
     "connect-flash": "^0.1.1",
     "connect-mongodb-session": "^2.2.0",
     "cookie-parser": "^1.4.3",
+    "crypto": "^1.0.1",
     "discord.js": "^12.5.3",
     "dotenv": "^8.1.0",
     "ejs": "^3.1.7",
@@ -99,8 +100,5 @@
     "webpack-cli": "^4.7.2",
     "webpack-dev-server": "^3.11.2",
     "webpack-merge": "^5.8.0"
-  },
-  "browser": {
-    "crypto": false
   }
 }
