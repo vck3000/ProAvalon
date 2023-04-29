@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { Queue } from '../match/queue';
+import { MatchMakingQueue } from '../match/queue';
 import User from '../models/user';
 const router = Router();
 
-const unrankedQueue = new Queue();
+const unrankedQueue = new MatchMakingQueue();
 // join ranked queue API
 router.post('/join', async (req, res) => {
   const { username }: { username: string } = req.body;
@@ -11,11 +11,11 @@ router.post('/join', async (req, res) => {
     return res.status(400).send({ message: 'cad request' });
   }
   const usernameLower = username.toLowerCase();
-  const isPlayerExist = await User.find({
+  const isPlayerExist = await User.findOne({
     usernameLower,
   });
 
-  if (isPlayerExist.length == 0) {
+  if (isPlayerExist) {
     return res.status(404).send({ message: 'can not find this player' });
   }
   // check if user is already in the queue
@@ -53,5 +53,40 @@ router.get('/queue', (req, res) => {
     : unrankedQueue.getFirstNItems(quantity);
   return res.status(200).send({ result });
 });
+
+// start game for 6 players by removing first N players and returning players to front end
+router.post('/initialiseLobby', (req, res) => {
+  const { numOfPlayers } = req.body;
+  const result = isNaN(numOfPlayers)
+    ? false
+    : unrankedQueue.getLength() >= numOfPlayers;
+  if (result) {
+    
+
+    // remove firstNPlayers
+    const removedPlayers = unrankedQueue.deleteFirstNPlayers(numOfPlayers);
+    return res.status(200).send({ players:removedPlayers, numOfPlayers })
+  } else {
+    // Fail game start
+    return res.status(400).send({ message: 'Not enough players' });
+  }
+});
+
+// once six players have confirmed, create a lobby, adjust settings and start game
+/*
+router.post('/startGame', (req, res) => {
+    // check src/gameplay/game.ts
+    
+    // TODO start game
+      // Check lobby.js
+        const reportsReact = renderToString(<Report />);
+        res.render('lobby', {
+         headerActive: 'lobby',
+         optionsCog: true,
+         reportsReact,
+        });
+      
+})
+*/
 
 export default router;
