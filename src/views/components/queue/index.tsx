@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { hot } from 'react-hot-loader/root';
 import Modal from 'react-modal';
-import { subscribe, Queue } from '../../../match/queue';
 
 declare const currentOnlinePlayers: { displayUsername: string };
 
@@ -9,8 +8,6 @@ Modal.setAppElement('#matchMakingTimer');
 type ButtonId = 'rankBtn' | 'unrankBtn';
 
 function MatchLoading() {
-  const queue = new Queue();
-  const playerID = currentOnlinePlayers.displayUsername;
 
   // All useStates
   const [clickedButton, setClickedButton] = useState<ButtonId | null>(null);
@@ -39,7 +36,6 @@ function MatchLoading() {
     setClickedButton(button);
     setShowElement(true);
     setModalOpen(true);
-    queue.join(playerID);
   };
 
   const cancelQueue = () => {
@@ -48,7 +44,6 @@ function MatchLoading() {
     setClickedButton(null);
     setButtonsDisabled(false);
     setModalOpen(false);
-    queue.leave(playerID);
   };
 
   const btnStyle = (button: ButtonId) => {
@@ -62,15 +57,6 @@ function MatchLoading() {
     }
     return baseStyle;
   };
-
-  queue.subscribe({
-    onJoin: (playerID: string) => {
-      console.log(`Player ${playerID} joined the queue`);
-    },
-    onLeave: (playerID: string) => {
-      console.log(`Player ${playerID} left the queue`);
-    },
-  });
 
   const buttonProps = (button: ButtonId) => {
     const props: React.ButtonHTMLAttributes<HTMLButtonElement> = {

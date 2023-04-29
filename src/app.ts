@@ -31,6 +31,7 @@ import profileRoutes from './routes/profile';
 import patreonRoutes from './routes/patreon';
 import modRoutes from './routes/mod';
 import staticifyFactory from 'staticify';
+import matchRoutes from './routes/match.js'
 // Create a MongoDB session store
 import MongoDBStoreFactory from 'connect-mongodb-session';
 
