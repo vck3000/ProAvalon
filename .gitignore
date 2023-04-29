@@ -7,3 +7,5 @@ docker-compose-data/
 node_modules/
 out/
 package-lock.json
+.github
+jest.config.json

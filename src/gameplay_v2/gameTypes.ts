@@ -21,6 +21,12 @@ export enum Role {
   Tristan,
 }
 
+export enum State {
+  Discussion,
+  VoteMission,
+  Vote, 
+}
+
 export enum Round {
   StartingRound,
   Round_2,
