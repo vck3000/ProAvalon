@@ -23,24 +23,30 @@ export class LeaderSelectionS implements System {
             noLeaderLists.push(player);
 
         }
+        // if the leader is not set
+        if (currentLeader == null) {
+            playerList[0].entity.components.push(new Leader());
 
-        newLeaderinPlayerList = this.changeLeader(currentLeader, leaderPosition, playerList)
+            return playerList;
+        }
+
+        newLeaderinPlayerList = this.changeLeader(currentLeader, leaderPosition, playerList);
    
 
-        return newLeaderinPlayerList
+        return newLeaderinPlayerList;
 
     }
 
     // swith leader to the next player    
     changeLeader(username: string, leaderPosition:number, playerList: Player[]): Player[] {
-        let theNextLeaderPosition = 0
-        let leaderComponentPosition = 0
+        let theNextLeaderPosition = 0;
+        let leaderComponentPosition = 0;
         // remove current leader component
         for (const component of playerList[leaderPosition].entity.components) {
             if (component.name == "leader" ){
-                playerList[leaderPosition].entity.components.splice(leaderComponentPosition, 1)
+                playerList[leaderPosition].entity.components.splice(leaderComponentPosition, 1);
             }
-            leaderComponentPosition++
+            leaderComponentPosition++;
 
             // console.log(playerList[leaderPosition].entity.components)
         }
@@ -49,17 +55,16 @@ export class LeaderSelectionS implements System {
             theNextLeaderPosition = leaderPosition + 1
 
             // add leader component
-            playerList[theNextLeaderPosition].entity.components.push(new Leader())
-
-            
+            playerList[theNextLeaderPosition].entity.components.push(new Leader());
+           
         }
 
         else if (leaderPosition = playerList.length -1) {
             // add leader component to the first player, initialize the sequence
-            playerList[0].entity.components.push(new Leader())
+            playerList[0].entity.components.push(new Leader());
         }
-         
-        return playerList
+        console.log(playerList);
+        return playerList;
       }
 
 
