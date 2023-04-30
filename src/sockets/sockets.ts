@@ -49,6 +49,14 @@ const dateResetRequired = 1543480412695;
 
 export const allSockets: SocketUser[] = [];
 
+let count = 0;
+setInterval(() => {
+  for (const socket of allSockets) {
+    socket.emit('counterTest', count);
+  }
+  count++;
+}, 3000);
+
 // TODO: This is bad!!! We should work to make this not needed to be exported.
 export const rooms: GameWrapper[] = [];
 export let nextRoomId = 1;

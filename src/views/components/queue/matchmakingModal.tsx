@@ -1,19 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { hot } from 'react-hot-loader/root';
 import Modal from 'react-modal';
-import axios from 'axios';
+import { Socket } from 'socket.io';
 
 Modal.setAppElement('#matchMakingTimer');
 type ButtonId = 'rankBtn' | 'unrankBtn';
 
 // Connect with match.tsx
 
-
-
 export function MatchMakingModal() {
   //@ts-ignore
   const gameDataReact = gameData;
-  console.log(gameDataReact)
+  console.log(gameDataReact);
 
   // All useStates
   const [clickedButton, setClickedButton] = useState<ButtonId | null>(null);
@@ -21,6 +19,15 @@ export function MatchMakingModal() {
   const [showElement, setShowElement] = useState(false);
   const [count, setCount] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
+  const [counterFromServer, setCounterFromServer] = useState(0);
+
+  // Obtaining a nice clean, typed reference to the global socket object.
+  // @ts-ignore
+  const socket_: Socket = socket;
+
+  socket_.on('counterTest', (count: number) => {
+    setCounterFromServer(count);
+  });
 
   // Variables for timer
   const minutes = Math.floor(count / 60);
@@ -90,13 +97,18 @@ export function MatchMakingModal() {
 
   return (
     <div className="matchmaking-container">
-      <button {...buttonProps('rankBtn')} className="matchmaking-btn btn btn-default">
+      <button
+        {...buttonProps('rankBtn')}
+        className="matchmaking-btn btn btn-default"
+      >
         Rank Game
       </button>
 
       <button {...buttonProps('unrankBtn')} className="matchmaking-btn">
         Unranked Game
       </button>
+
+      <p>{counterFromServer}</p>
 
       {showElement && <Loading />}
 
