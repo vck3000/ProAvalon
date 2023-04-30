@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import eloConstants from '../elo/constants/eloConstants';
 
 // SCHEMA SETUP
 const rankDataSchema = new mongoose.Schema({
@@ -6,20 +7,20 @@ const rankDataSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    seasonNumber:{
+    seasonNumber: {
         type: Number,
     },
     playerRating: {
         type: Number,
-        default: 1500,
+        default: eloConstants.defaultRating,
     },
     rd: {
         type: Number,
-        default: 350,
+        default: eloConstants.defaultRD,
     },
     volatility: {
         type: Number,
-        default: 0.06,
+        default: eloConstants.defaultVol,
     },
 
 });

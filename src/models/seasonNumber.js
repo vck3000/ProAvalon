@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
 
 // SCHEMA SETUP
-const seaonNumberSchema = new mongoose.Schema({
+const seasonNumberSchema = new mongoose.Schema({
   number: Number,
 });
 
 // compile schema into a model
-const seaonNumber = mongoose.model('seaonNumber', seaonNumberSchema);
+const seasonNumber = mongoose.model('seasonNumber', seasonNumberSchema);
 
-export default seaonNumber;
+export default seasonNumber;

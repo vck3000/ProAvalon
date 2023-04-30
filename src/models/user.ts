@@ -134,13 +134,15 @@ const UserSchema = new mongoose.Schema({
 
   currentRanking: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'rankData',
+    ref: 'rank',
+    default: null,
   },
 
   pastRankings: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'rankData',
+      ref: 'rank',
+      default: null,
     },
   ],
 

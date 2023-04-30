@@ -1,8 +1,36 @@
 import { Command } from '../types';
 import { SocketUser } from '../../types';
 import User from '../../../models/user';
-import RankData from '../../../models/rankData';
+import RankData from '../../../models/rank';
 import SeasonNumber from '../../../models/seasonNumber';
+import eloConstants from '../../../elo/constants/eloConstants';
+import getSeasonNumber from '../../../elo/utils/getSeasonNumber';
+// define a function to reset the elo of all users
+export const aresetelo: Command = {
+  command: 'resetelo',
+  help: "/reset all players's rank data and start a new season",
+  run: async (args: string[], socket: SocketUser) => {
+    try {
+      const users = await User.find({});
+      resetElosOfUsers(users);
+      seasonNumberIncrement();
+    }
+    catch (err) {
+      console.error(err);
+      socket.emit('messageCommandReturnStr', {
+        message: 'Something went wrong when resetting the data',
+        classStr: 'server-text',
+      });
+      return;
+    }
+
+    // return message to client
+    socket.emit('messageCommandReturnStr', {
+      message: 'All players rank data has been reset.',
+      classStr: 'server-text',
+    });
+  },
+};
 
 // Return the sigmoid of the rating value
 function sigmoid(rating: number) {
@@ -16,15 +44,6 @@ function mapToRange(rating: number, minValue: number, maxValue: number) {
   return Math.floor(minValue + (sigmoided * (maxValue - minValue)));
 }
 
-// define a function to get the current season number
-async function getSeasonNumber() {
-  try {
-    const returnedSeasonNumber = await SeasonNumber.findOne({}).exec();
-    return returnedSeasonNumber.number;
-  } catch (err) {
-    console.error(err);
-  }
-}
 
 // define a function to increment the season number
 function seasonNumberIncrement() {
@@ -74,11 +93,10 @@ async function resetUserElo(user: User, seasonNumber: number) {
   user.pastRankings.push(user.currentRanking);
   user.markModified('pastRankings');
 
-  const oldRankData = await RankData.findById(user.currentRanking).exec();
   const newDefaultRankData = new RankData({
     username: user.username,
     seasonNumber: seasonNumber + 1,
-    playerRating: mapToRange(oldRankData.playerRating, 1300, 1700),
+    playerRating: eloConstants.defaultRating,
   });
 
   await newDefaultRankData.save();
@@ -88,30 +106,3 @@ async function resetUserElo(user: User, seasonNumber: number) {
   await user.save();
 }
 
-
-// define a function to reset the elo of all users
-export const areset: Command = {
-  command: 'reset',
-  help: "/reset all plyers's rank data and start a new season",
-  run: async (args: string[], socket: SocketUser) => {
-    try {
-      const users = await User.find({});
-      resetElosOfUsers(users);
-      seasonNumberIncrement();
-    }
-    catch (err) {
-      console.error(err);
-      socket.emit('messageCommandReturnStr', {
-        message: 'Something went wrong when resetting the data',
-        classStr: 'server-text',
-      });
-      return;
-    }
-
-    // return message to client
-    socket.emit('messageCommandReturnStr', {
-      message: 'All players rank data has been reset.',
-      classStr: 'server-text',
-    });
-  },
-};

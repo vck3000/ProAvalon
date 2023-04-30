@@ -185,14 +185,11 @@ var getDatesString = function(time) {
                       <!--TODO: change the Season and Rank data based on the database-->
                       <tr>
                         <td class="statsCol1">Season</td>
-                        <% if(pastRankings.length > 0) { %>
                           <% for (let i = 0; i < 5; i++) { %>
-                            <td class="statsCol2">Season <%= pastRankings[i].seasonNumber %></td>
-                          <% } %>
-                            <% } else {%>
-                              <% for (let i = 0; i < 5; i++) { %>
-                                <td class="statsCol2">Season <%= seasonNumber - i -1 %></td>
-                              <% } %>
+                            <% if ( (seasonNumber -i) >1) { %>
+                            <td class="statsCol2">Season <%= seasonNumber -i -1 %></td>
+                            <% } else { %>
+                            <td class="statsCol2">N/A</td>
                             <% } %>
                           <% } %>
                       </tr>
@@ -204,27 +201,24 @@ var getDatesString = function(time) {
                           <% } else { %>
                             <td class="statsCol1">Rank</td>
                             <% } %>
-                            <% if(pastRankings.length > 0) { %> 
                               <% if(userData.username===personViewingUsername) { %>
                                     <% for (let i = 0; i < 5; i++) { %>
-                                      <% if(pastRankings.length - i >= 0) { %>
+                                      <% if(pastRankings.length - i >= 0 && pastRankings[i]) { %>
                                       <td class="statsCol2"><%= pastRankings[i].playerRating %></td>
-                                      <% } else {%>
+                                      <% } else if ((seasonNumber -i) <=1){%>
                                         <td class="statsCol2">N/A</td>
-                                      <% } %>
+                                      <% } else {%>
+                                        <td class="statsCol2">Unranked</td>
+                                    <% } %>
                                     <% } %>
                                   <% } else {%>
                                       <% for (let i = 0; i < 5; i++) { %>
                                         <% if(pastRankings.length - i >= 0) {%>
-                                        <td class="statsCol2"><%= pastRankings[i].playerRating %></td>
+                                        <td class="statsCol2"><%= ratingBracket %></td>
                                         <% } else {%>
-                                          <td class="statsCol2">N/A</td>
+                                          <td class="statsCol2">Unranked</td>
                                         <% } %>
                                       <% } %>
-                                  <% } %>
-                                <% } else { %>
-                                  <% for (let i = 0; i < 5; i++) { %>
-                                    <td class="statsCol2">N/A</td>
                                   <% } %>
                       </tr>
                   </table>

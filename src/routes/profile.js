@@ -9,20 +9,9 @@ import PatreonId from '../models/patreonId';
 import avatarRequest from '../models/avatarRequest';
 import ModLog from '../models/modLog';
 import { createNotification } from '../myFunctions/createNotification';
-import seasonNumber from '../models/seasonNumber';
-import RankData from '../models/rankData';
-
-// get the season number
-async function getSeasonNumber() {
-  try {
-    const returnedSeasonNumber = await seasonNumber.findOne({}).exec();
-    return returnedSeasonNumber.number;
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-
+import Rank from '../models/rank';
+import matchBracket from '../elo/utils/matchBracket';
+import getSeasonNumber from '../elo/utils/getSeasonNumber';
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',
   'iframe',
@@ -403,12 +392,12 @@ router.get('/:profileUsername', (req, res) => {
         console.log(err);
       } else {
         //get the parameters of user that to render the profile page
-        const currentRanking = await RankData.findById(foundUser.currentRanking).exec();
+        const currentRanking = await Rank.findById(foundUser.currentRanking).exec();
         const pastRankings = [];
         const currentSeasonNumber = await getSeasonNumber();
         //get the past rankings of the user and reverse the order
         for (const element of foundUser.pastRankings) {
-          const pastRanking = await RankData.findById(element).exec();
+          const pastRanking = await Rank.findById(element).exec();
           pastRankings.unshift(pastRanking);
         }
 
@@ -417,6 +406,7 @@ router.get('/:profileUsername', (req, res) => {
           seasonNumber: currentSeasonNumber,
           currentRanking: currentRanking,
           pastRankings: pastRankings,
+          ratingBracket: matchBracket(foundUser.rating,foundUser.totalRankedGamesPlayed),
           personViewingUsername: req.user.username,
         });
 

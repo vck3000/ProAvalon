@@ -11,16 +11,15 @@ import gameRecord from '../models/gameRecord';
 import statsCumulative from '../models/statsCumulative';
 import { emailExists, validEmail } from '../routes/emailVerification';
 import { sendEmailVerification } from '../myFunctions/sendEmailVerification';
-import RankData from '../models/rankData';
 import { disallowVPNs } from '../util/vpnDetection';
 import Settings from '../settings';
-import seaonNumber from '../models/seasonNumber';
+import seasonNumber from '../models/seasonNumber';
 const router = new Router();
 
 
-seaonNumber.findOne({}).exec().then(async (returnedSeaonNumber) => {
-  if (!returnedSeaonNumber) {
-    await seaonNumber.create({ number: 1 });
+seasonNumber.findOne({}).exec().then(async (returnedSeasonNumber) => {
+  if (!returnedSeasonNumber) {
+    await seasonNumber.create({ number: 1 });
   }
 });
 
@@ -90,8 +89,6 @@ router.post(
       usernameLower: req.body.username.toLowerCase(),
       dateJoined: new Date(),
       emailAddress: req.body.emailAddress,
-      currentRanking: null,
-      pastRankings: [],
     });
 
     if (req.body.username.indexOf(' ') !== -1) {
@@ -118,7 +115,7 @@ router.post(
       req.flash('error', 'This email address is already in use.');
       res.redirect('register');
     } else {
-      User.register(newUser, req.body.password, async (err, user) => {
+      User.register(newUser, req.body.password, (err, user) => {
         if (err) {
           console.log(`ERROR: ${err}`);
           req.flash(
@@ -135,18 +132,7 @@ router.post(
           } else {
             user.emailVerified = true;
             user.markModified('emailVerified');
-
-            const returnedSeaonNumber = await seaonNumber.findOne({}).exec();
-
-            const defaultRankData = new RankData(
-              {
-                username: req.body.username,
-                seasonNumber: returnedSeaonNumber.number,
-              }
-            );
-            await defaultRankData.save();
-            user.currentRanking = defaultRankData._id;
-            await user.save();
+            user.save();
           }
         }
       });

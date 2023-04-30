@@ -11,7 +11,7 @@ import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
-
+import Rank from '../models/rank';
 import { gameModeObj } from './gameModes';
 
 class Game extends Room {
@@ -2140,3 +2140,12 @@ let reverseMapFromMap = function (map, f) {
     return acc;
   }, {});
 };
+
+
+//After player finished a ranked game, assigning a default rank to the player
+function assignDefaultRank(user:User){
+  const rankData = new Rank();
+  await rankData.save();
+  user.currentRanking = rankData._id;
+  await user.save();
+}
