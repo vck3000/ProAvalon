@@ -26,6 +26,5 @@ export class assassinationS implements System {
         //if so, then execute assassination phase where assassin selects the merlin
         //if correct, end the game as SPY_WIN
         //if not, then end the game with RESISTANCE_WIN
-
     }
 }

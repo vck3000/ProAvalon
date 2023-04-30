@@ -1,12 +1,12 @@
-import Component from './components/component';
-import { Alliance } from '../gameTypes';
+import { Round } from '../gameTypes';
+import Component from '../roles/components/component';
 
-export default class Entity {
-  alliance: Alliance;
+export default class CardEntity {
   components: Component[];
+  round: Round;
 
-  constructor(alliance: Alliance) {
-    this.alliance = alliance;
+  constructor(round: Round) {
+    this.round = round;
     this.components = [];
   }
 
