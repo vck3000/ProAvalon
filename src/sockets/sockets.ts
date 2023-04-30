@@ -2165,7 +2165,7 @@ function checkForUnrankedConfirmation() {
 function joinUnrankedQueue(dataObj) {
   // add player to queue
   if (dataObj.numPlayers === 6) {
-    queue.push({
+    unrankedQueue6Players.push({
       id: this.request.user.username.toLowerCase(),
       user: this.request.user,
       timeJoinedAt: new Date(),
