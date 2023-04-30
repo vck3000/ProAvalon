@@ -1378,6 +1378,13 @@ export const server = function (io: SocketServer): void {
     socket.on('join-game', joinGame);
     socket.on('standUpFromGame', standUpFromGame);
 
+    // for platyer to join the unranked queue
+    socket.on('join-unranked-queue', joinUnrankedQueue);
+    // for player to leave the unranked queue
+    socket.on('leave-unranked-queue', leaveUnrankedQueue);
+    // for player the unranked queue game to start
+    socket.on('initiate-unranked-game', initiateUnrankedGame);
+
     // when a player leaves a room
     socket.on('leave-room', leaveRoom);
     socket.on('player-ready', playerReady);
@@ -2126,6 +2133,26 @@ function standUpFromGame() {
       // console.log("Game has started, player " + this.request.user.username + " is not allowed to stand up.");
     }
   }
+}
+
+function joinUnrankedQueue() {
+  // add player to queue
+  // if number of players in queue < 6, return null
+  // if number of players in queue >= 6, ask for confirmation to join game
+}
+
+function leaveUnrankedQueue() {
+  // remove player from queue
+}
+
+function initiateUnrankedGame() {
+  // if a player rejects or times out, add other players to queue
+  // if all players accept, start game
+  // to start game, do the following:
+  // call newRoom
+  // call joinRoom for each player
+  // call joinGame for each player
+  // call startGame
 }
 
 function leaveRoom() {
