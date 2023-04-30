@@ -6,7 +6,6 @@ import { Vote, VoteC } from './roles/components/vote';
 import { System } from './systems/system';
 import { VoteS } from './systems/voteS';
 import { GameMoveData } from './gameTypes';
-import { Leader } from './roles/components/leader';
 import { LeaderSelectionS } from './systems/leaderSelectionS';
 
 export class GameData {
@@ -16,8 +15,7 @@ export class GameData {
 
 export class GameEngine {
   data: GameData;
-  // adding leader selection system
-  systems: System[] = [new VoteS(), new LeaderSelectionS()];
+  systems: System[] = [new VoteS(), new LeaderSelectionS];
 
   constructor() {
     this.data = {
@@ -53,24 +51,7 @@ export class GameEngine {
     this.runAllSystems();
   }
 
-  //=======================test==================================
-
-  // gameMove2(username: string, gameMoveData: GameMoveData): void {
-  //   // Injecting the user leader
-  //   if (gameMoveData.type === 'leaderSelection') {
-  //     const leader: Leader = gameMoveData.data;
-
-  //     const player = this.data.players.filter(
-  //       (player) => player.username === username,
-  //     )[0];
-
-      
-  //   }
-
-  //   this.runAllSystems();
-  // }
-
-  //==========================================================
+  
 
   runAllSystems(): void {
     for (const system of this.systems) {
