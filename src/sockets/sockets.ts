@@ -512,8 +512,9 @@ export const userCommands = {
       const modUsers = getPlayerUsernamesFromAllSockets().filter((username) =>
         isMod(username),
       );
-      const message = `Currently online mods: ${modUsers.length > 0 ? modUsers.join(', ') : 'None'
-        }.`;
+      const message = `Currently online mods: ${
+        modUsers.length > 0 ? modUsers.join(', ') : 'None'
+      }.`;
       return { message, classStr: 'server-text' };
     },
   },
@@ -565,8 +566,9 @@ export const userCommands = {
           classStr: 'server-text',
         };
 
-      const str = `${senderSocket.request.user.username}->${modSocket.request.user.username
-        } (pmmod): ${args.slice(2).join(' ')}`;
+      const str = `${senderSocket.request.user.username}->${
+        modSocket.request.user.username
+      } (pmmod): ${args.slice(2).join(' ')}`;
 
       const dataMessage = {
         message: str,
@@ -828,12 +830,12 @@ export const userCommands = {
       }
       const sendToSocket =
         allSockets[
-        getIndexFromUsername(
-          allSockets,
-          lastWhisperObj[senderSocket.request.user.username.toLowerCase()]
-            .username,
-          true,
-        )
+          getIndexFromUsername(
+            allSockets,
+            lastWhisperObj[senderSocket.request.user.username.toLowerCase()]
+              .username,
+            true,
+          )
         ];
       if (sendToSocket === undefined || sendToSocket === null) {
         return;
@@ -1077,8 +1079,9 @@ export const userCommands = {
 
       if (addedBots.length > 0) {
         sendToRoomChat(ioGlobal, currentRoomId, {
-          message: `${senderSocket.request.user.username
-            } added bots to this room: ${addedBots.join(', ')}`,
+          message: `${
+            senderSocket.request.user.username
+          } added bots to this room: ${addedBots.join(', ')}`,
           classStr: 'server-text-teal',
         });
       }
@@ -1171,8 +1174,9 @@ export const userCommands = {
         (botSocket) => botSocket.request.user.username,
       );
       sendToRoomChat(ioGlobal, currentRoomId, {
-        message: `${senderSocket.request.user.username
-          } removed bots from this room: ${removedBots.join(', ')}`,
+        message: `${
+          senderSocket.request.user.username
+        } removed bots from this room: ${removedBots.join(', ')}`,
         classStr: 'server-text-teal',
       });
     },
@@ -1205,7 +1209,8 @@ export const server = function (io: SocketServer): void {
 
     socket.onAny((eventName, ...args) => {
       console.log(
-        `[Client Socket] username=${socket.request.user.username
+        `[Client Socket] username=${
+          socket.request.user.username
         },eventName=${eventName},args=${util.inspect(args, {
           breakLength: Infinity,
         })}`,
@@ -1373,7 +1378,7 @@ export const server = function (io: SocketServer): void {
     socket.on('join-game', joinGame);
     socket.on('standUpFromGame', standUpFromGame);
 
-    // for platyer to join the unranked queue
+    // for player to join the unranked queue
     socket.on('join-unranked-queue', joinUnrankedQueue);
     // for player to leave the unranked queue
     socket.on('leave-unranked-queue', leaveUnrankedQueue);
@@ -1698,7 +1703,8 @@ function playerLeaveRoomCheckDestroy(socket) {
         destroyRoom(roomId);
 
         console.log(
-          `Been more than ${timeToKill / 1000
+          `Been more than ${
+            timeToKill / 1000
           } seconds, removing this frozen game.`,
         );
       } else {
@@ -2400,7 +2406,7 @@ function playerNotReady() {
   }
 }
 
-function startGame(data, ) {
+function startGame(data, gameMode) {
   // start the game
   if (gameMode === null || gameMode === undefined) {
     this.emit(
