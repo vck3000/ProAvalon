@@ -35,6 +35,7 @@ import { mrevealallroles } from './commands/mod/mrevealallroles';
 
 import { lastWhisperObj } from './commands/mod/mwhisper';
 import * as util from 'util';
+import { request } from 'http';
 
 const chatSpamFilter = new ChatSpamFilter();
 if (process.env.NODE_ENV !== 'test') {
@@ -512,9 +513,8 @@ export const userCommands = {
       const modUsers = getPlayerUsernamesFromAllSockets().filter((username) =>
         isMod(username),
       );
-      const message = `Currently online mods: ${
-        modUsers.length > 0 ? modUsers.join(', ') : 'None'
-      }.`;
+      const message = `Currently online mods: ${modUsers.length > 0 ? modUsers.join(', ') : 'None'
+        }.`;
       return { message, classStr: 'server-text' };
     },
   },
@@ -566,9 +566,8 @@ export const userCommands = {
           classStr: 'server-text',
         };
 
-      const str = `${senderSocket.request.user.username}->${
-        modSocket.request.user.username
-      } (pmmod): ${args.slice(2).join(' ')}`;
+      const str = `${senderSocket.request.user.username}->${modSocket.request.user.username
+        } (pmmod): ${args.slice(2).join(' ')}`;
 
       const dataMessage = {
         message: str,
@@ -830,12 +829,12 @@ export const userCommands = {
       }
       const sendToSocket =
         allSockets[
-          getIndexFromUsername(
-            allSockets,
-            lastWhisperObj[senderSocket.request.user.username.toLowerCase()]
-              .username,
-            true,
-          )
+        getIndexFromUsername(
+          allSockets,
+          lastWhisperObj[senderSocket.request.user.username.toLowerCase()]
+            .username,
+          true,
+        )
         ];
       if (sendToSocket === undefined || sendToSocket === null) {
         return;
@@ -1079,9 +1078,8 @@ export const userCommands = {
 
       if (addedBots.length > 0) {
         sendToRoomChat(ioGlobal, currentRoomId, {
-          message: `${
-            senderSocket.request.user.username
-          } added bots to this room: ${addedBots.join(', ')}`,
+          message: `${senderSocket.request.user.username
+            } added bots to this room: ${addedBots.join(', ')}`,
           classStr: 'server-text-teal',
         });
       }
@@ -1145,10 +1143,10 @@ export const userCommands = {
         botName === 'all'
           ? botSockets
           : botSockets.filter(
-              (socket) =>
-                socket.request.user.username.toLowerCase() ===
-                botName.toLowerCase(),
-            );
+            (socket) =>
+              socket.request.user.username.toLowerCase() ===
+              botName.toLowerCase(),
+          );
       if (botsToRemove.length === 0) {
         return {
           message: "Couldn't find any bots with that name to remove.",
@@ -1174,9 +1172,8 @@ export const userCommands = {
         (botSocket) => botSocket.request.user.username,
       );
       sendToRoomChat(ioGlobal, currentRoomId, {
-        message: `${
-          senderSocket.request.user.username
-        } removed bots from this room: ${removedBots.join(', ')}`,
+        message: `${senderSocket.request.user.username
+          } removed bots from this room: ${removedBots.join(', ')}`,
         classStr: 'server-text-teal',
       });
     },
@@ -1209,8 +1206,7 @@ export const server = function (io: SocketServer): void {
 
     socket.onAny((eventName, ...args) => {
       console.log(
-        `[Client Socket] username=${
-          socket.request.user.username
+        `[Client Socket] username=${socket.request.user.username
         },eventName=${eventName},args=${util.inspect(args, {
           breakLength: Infinity,
         })}`,
@@ -1548,8 +1544,8 @@ const updateCurrentPlayersList = function () {
     return a.playerRating < b.playerRating
       ? 1
       : a.playerRating > b.playerRating
-      ? -1
-      : 0;
+        ? -1
+        : 0;
   });
 
   allSockets.forEach((sock) => {
@@ -1667,7 +1663,7 @@ export function destroyRoom(roomId) {
   rooms[roomId].socketsOfPlayers
     .filter((socket) => socket.isBotSocket)
     .forEach((botSocket) => {
-      botSocket.handleGameOver(thisGame, 'complete', () => {}); // This room is getting destroyed. No need to leave.
+      botSocket.handleGameOver(thisGame, 'complete', () => { }); // This room is getting destroyed. No need to leave.
     });
 
   rooms[roomId] = undefined;
@@ -1703,14 +1699,12 @@ function playerLeaveRoomCheckDestroy(socket) {
         destroyRoom(roomId);
 
         console.log(
-          `Been more than ${
-            timeToKill / 1000
+          `Been more than ${timeToKill / 1000
           } seconds, removing this frozen game.`,
         );
       } else {
         console.log(
-          `Frozen game has only loaded for ${
-            (curr.getTime() - rooms[roomId].timeFrozenLoaded.getTime()) / 1000
+          `Frozen game has only loaded for ${(curr.getTime() - rooms[roomId].timeFrozenLoaded.getTime()) / 1000
           } seconds, Dont remove yet.`,
         );
       }
@@ -2135,14 +2129,48 @@ function standUpFromGame() {
   }
 }
 
-function joinUnrankedQueue() {
+type MatchMakingQueueItem = {
+  id: string;
+  user: Object;
+  timeJoinedAt: Date;
+};
+
+const unrankedQueue6Players: MatchMakingQueueItem[] = [];
+const prospectivePlayersFor6UQ: MatchMakingQueueItem[] = [];
+
+function joinUnrankedQueue(dataObj) {
   // add player to queue
-  // if number of players in queue < 6, return null
-  // if number of players in queue >= 6, ask for confirmation to join game
+  if (dataObj.numPlayers === 6) {
+    queue.push({
+      id: this.request.user.username.toLowerCase(),
+      user: this.request.user,
+      timeJoinedAt: new Date(),
+    });
+    // if number of players in queue < 6, return null
+    if (unrankedQueue6Players.length >= 6) {
+      prospectivePlayersFor6UQ = unrankedQueue6Players.splice(0, 6);
+      prospectivePlayersFor6UQ.forEach(prospectivePlayer => {
+        // emit to each player asking for confirmation
+        const playerSocket: SocketUser = getSocketFromUsername(prospectivePlayer.username.toLowerCase());
+        playerSocket.emit('confirm-ready-to-play');
+      });
+    }
+  } else {
+    // if number of players in queue >= 6, ask for confirmation to join game
+    this.emit('invalid-player-count');
+    return;
+  }
 }
 
 function leaveUnrankedQueue() {
   // remove player from queue
+  const userName = this.request.user.username.toLowerCase();
+  const indexToRemove: number = unrankedQueue6Players.find(player => player.id === userName);
+  if (indexToRemove !== -1) {
+    unrankedQueue6Players.splice(indexToRemove, -1);
+  } else {
+    this.emit('invalid-removal-attempt');
+  }
 }
 
 function initiateUnrankedGame() {
