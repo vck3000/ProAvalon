@@ -1910,7 +1910,7 @@ class Game extends Room {
   4. If provisional players are in the game, adjust the elo changes based on how close they are to being experienced.
   5. Divide equally between players on each team and adjust ratings. (Done in the finishGame function)
   */
-  /* calculateResistanceRatingChange(winningTeam, provisionalGame) {
+  calculateResistanceRatingChange(winningTeam, provisionalGame) {
     // Constant changes in elo due to unbalanced winrate, winrate changes translated to elo points.
     const playerSizeEloChanges = [62, 56, 71, 116, 18, 80];
     // k value parameter for calculation
@@ -1981,7 +1981,7 @@ class Game extends Room {
         eloChange;
     }
     return eloChange;
-  } */
+  } 
 
   /*
   PROVISIONAL ELO RATING CALCULATION:
@@ -2000,7 +2000,7 @@ class Game extends Room {
   For the first few games it will result in wild rating changes, but will level out towards the end of the provisional section.
   Could possibly lead to some people abusing their early rating by only playing with strong players and getting lucky, but should level out in the end.
   */
-  /* calculateNewProvisionalRating(winningTeam, playerSocket, playerRatings) {
+  calculateNewProvisionalRating(winningTeam, playerSocket, playerRatings) {
     // Constant changes in elo due to unbalanced winrate, winrate changes translated to elo points.
     const playerSizeWinrates = [0.57, 0.565, 0.58, 0.63, 0.52, 0.59];
     let Result = playerSocket.alliance === winningTeam ? 1 : -1;
@@ -2050,7 +2050,7 @@ class Game extends Room {
       newRating = R_old - 100;
     }
     return newRating;
-  } */
+  }
 }
 
 export default Game;
