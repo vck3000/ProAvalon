@@ -1,6 +1,4 @@
 import { GameData } from '../gameEngine';
-import { SeeSpiesC } from '../roles/components/seeSpies';
-import { SeeSpiesState } from '../states/baseStates/seeSpiesState';
 import { SendData, System } from './system';
 
 export class SeeSpiesS implements System {
@@ -16,10 +14,6 @@ export class SeeSpiesS implements System {
             }
         }
 
-        // const currentSeeSpieC: SeeSpiesC = {
-        //     name: 'current spies list',
-        //     data: {spiesLists}
-        // }
 
         return spiesLists
 
