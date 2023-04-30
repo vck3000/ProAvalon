@@ -41,6 +41,7 @@
     "moment": "^2.29.4",
     "mongoose": "^6.8.1",
     "morgan": "^1.10.0",
+    "node-schedule": "^2.1.1",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^6.1.0",

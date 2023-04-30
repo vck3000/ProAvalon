@@ -18,6 +18,7 @@ import session from 'express-session';
 import socket, { Server as SocketServer } from 'socket.io';
 import createProxyMiddleware from 'http-proxy-middleware';
 import morgan from 'morgan';
+import schedule from 'node-schedule';
 
 import { server as socketServer } from './sockets/sockets';
 import User from './models/user';
@@ -176,6 +177,9 @@ app.use('/profile', profileRoutes);
 const IP = process.env.IP || '127.0.0.1';
 const server = app.listen(port, () => {
   console.log(`Server has started on ${IP}:${port}!`);
+  const glickoUpdateSchedule = schedule.scheduleJob('0 0 * * *', () => {
+    console.log('Running scheduled work ');
+  });
 });
 
 const io: SocketServer = socket(server, {
