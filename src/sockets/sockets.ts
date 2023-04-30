@@ -35,7 +35,6 @@ import { mrevealallroles } from './commands/mod/mrevealallroles';
 
 import { lastWhisperObj } from './commands/mod/mwhisper';
 import * as util from 'util';
-import { request } from 'http';
 
 const chatSpamFilter = new ChatSpamFilter();
 if (process.env.NODE_ENV !== 'test') {
