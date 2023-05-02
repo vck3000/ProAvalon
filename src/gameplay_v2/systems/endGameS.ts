@@ -1,0 +1,1 @@
+//A check for the game where its either the spy or resistance that win
