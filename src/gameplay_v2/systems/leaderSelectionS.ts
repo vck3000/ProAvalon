@@ -9,7 +9,7 @@ export class LeaderSelectionS implements System {
         const noLeaderLists:Player[] = [];
         const playerList:Player[] = gameData.players;
         let newLeaderinPlayerList:Player[] = [];
-        let currentLeader:string;
+        let currentLeader:string = "";
         let leaderPosition = 0;
 
         for (const player of playerList) {
@@ -24,7 +24,7 @@ export class LeaderSelectionS implements System {
 
         }
         // if the leader is not set
-        if (currentLeader == null) {
+        if (currentLeader == "") {
             playerList[0].entity.components.push(new Leader());
 
             return playerList;
