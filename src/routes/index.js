@@ -13,15 +13,7 @@ import { emailExists, validEmail } from '../routes/emailVerification';
 import { sendEmailVerification } from '../myFunctions/sendEmailVerification';
 import { disallowVPNs } from '../util/vpnDetection';
 import Settings from '../settings';
-import seasonNumber from '../models/seasonNumber';
 const router = new Router();
-
-
-seasonNumber.findOne({}).exec().then(async (returnedSeasonNumber) => {
-  if (!returnedSeasonNumber) {
-    await seasonNumber.create({ number: 1 });
-  }
-});
 
 // Index route
 router.get('/', (req, res) => {

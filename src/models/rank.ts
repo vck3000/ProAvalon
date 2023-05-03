@@ -2,9 +2,10 @@ import mongoose from 'mongoose';
 import eloConstants from '../elo/constants/eloConstants';
 
 // SCHEMA SETUP
-const rankDataSchema = new mongoose.Schema({
-    username: {
-        type: String,
+const rankSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
         required: true,
     },
     seasonNumber: {
@@ -12,19 +13,19 @@ const rankDataSchema = new mongoose.Schema({
     },
     playerRating: {
         type: Number,
-        default: eloConstants.defaultRating,
+        default: eloConstants.DEFAULTRATING,
     },
     rd: {
         type: Number,
-        default: eloConstants.defaultRD,
+        default: eloConstants.DEFAULTRD,
     },
     volatility: {
         type: Number,
-        default: eloConstants.defaultVol,
+        default: eloConstants.DEFAULTVOL,
     },
 
 });
 // compile schema into a model
-const rankData = mongoose.model('rankData', rankDataSchema);
+const rank = mongoose.model('rank', rankSchema);
 
-export default rankData;
+export default rank;

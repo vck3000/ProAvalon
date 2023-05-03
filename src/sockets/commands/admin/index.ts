@@ -5,7 +5,7 @@ import { aresetpassword } from './aresetpassword';
 import { Commands } from '../types';
 import { atestgame } from './atestgame';
 import { acreatetestaccounts } from './acreatetestaccounts';
-import { aresetelo } from './aresetelo';
+import { astartnewrankseason } from './astartnewrankseason';
 
 export const adminCommands: Commands = {
   [a.command]: a,
@@ -14,5 +14,5 @@ export const adminCommands: Commands = {
   [aresetpassword.command]: aresetpassword,
   [atestgame.command]: atestgame,
   [acreatetestaccounts.command]: acreatetestaccounts,
-  [aresetelo.command]: aresetelo,
+  [astartnewrankseason.command]: astartnewrankseason,
 };

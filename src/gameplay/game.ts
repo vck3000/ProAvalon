@@ -13,6 +13,7 @@ import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 import Rank from '../models/rank';
 import { gameModeObj } from './gameModes';
+import getSeasonNumber from '../elo/utils/getSeasonNumber';
 
 class Game extends Room {
   gameStarted = false;
@@ -379,6 +380,19 @@ class Game extends Room {
       );
     }
 
+
+    // If the player doesn't have a ranking, assign the default ranking
+    this.playersInGame.forEach(async (player) => {
+      let user = await User.findById(player.userId);
+      if (user) {
+        const seasonNumber = await getSeasonNumber();
+        console.log("Assigning default ranking to user " + user.name + " for season " + seasonNumber);
+        assignDefaultRankToUser(user, seasonNumber);
+      } else {
+        throw new Error('No user found with id: ' + player.userId);
+      }
+    });
+
     // Give roles to the players according to their alliances
     // Get roles:
     this.resRoles = [];
@@ -650,11 +664,10 @@ class Game extends Room {
                 ));
 
             if (!pressedValidButton || !selectedValidPlayers) {
-              const message = `${
-                botSocket.request.user.username
-              } made an illegal move and has left the game. Move: ${JSON.stringify(
-                move,
-              )}`;
+              const message = `${botSocket.request.user.username
+                } made an illegal move and has left the game. Move: ${JSON.stringify(
+                  move,
+                )}`;
               thisRoom.sendText(
                 thisRoom.allSockets,
                 message,
@@ -1160,6 +1173,10 @@ class Game extends Room {
       return;
     }
 
+
+    // If the player doesn't have a ranking, assign the default ranking
+
+
     for (let i = 0; i < this.allSockets.length; i++) {
       this.allSockets[i].emit('gameEnded');
     }
@@ -1418,8 +1435,7 @@ class Game extends Room {
               this.allSockets,
               `${player.request.user.username}: ${Math.floor(
                 rating,
-              )} -> ${Math.floor(player.request.user.playerRating)} (${
-                difference > 0 ? '+' + difference : difference
+              )} -> ${Math.floor(player.request.user.playerRating)} (${difference > 0 ? '+' + difference : difference
               })`,
               'server-text',
             );
@@ -1429,8 +1445,7 @@ class Game extends Room {
                 this.allSockets,
                 `${player.request.user.username}: ${Math.floor(
                   rating,
-                )} -> ${Math.floor(rating + indResChange)} (${
-                  indResChange > 0 ? '+' + indResChange : indResChange
+                )} -> ${Math.floor(rating + indResChange)} (${indResChange > 0 ? '+' + indResChange : indResChange
                 })`,
                 'server-text',
               );
@@ -1440,8 +1455,7 @@ class Game extends Room {
                 this.allSockets,
                 `${player.request.user.username}: ${Math.floor(
                   rating,
-                )} -> ${Math.floor(rating + indSpyChange)} (${
-                  indSpyChange > 0 ? '+' + indSpyChange : indSpyChange
+                )} -> ${Math.floor(rating + indSpyChange)} (${indSpyChange > 0 ? '+' + indSpyChange : indSpyChange
                 })`,
                 'server-text',
               );
@@ -1495,7 +1509,7 @@ class Game extends Room {
               // checks that the var exists
               if (
                 !foundUser.winsLossesGameSizeBreakdown[
-                  `${playersInGameVar.length}p`
+                `${playersInGameVar.length}p`
                 ]
               ) {
                 foundUser.winsLossesGameSizeBreakdown[
@@ -1510,7 +1524,7 @@ class Game extends Room {
               }
               if (
                 !foundUser.roleStats[`${playersInGameVar.length}p`][
-                  player.role.toLowerCase()
+                player.role.toLowerCase()
                 ]
               ) {
                 foundUser.roleStats[`${playersInGameVar.length}p`][
@@ -1713,7 +1727,7 @@ class Game extends Room {
     for (let i = 0; i < this.playersInGame.length; i++) {
       if (
         this.voteHistory[this.playersInGame[i].request.user.username][
-          this.missionNum - 1
+        this.missionNum - 1
         ] === undefined
       ) {
         this.voteHistory[this.playersInGame[i].request.user.username][
@@ -1722,7 +1736,7 @@ class Game extends Room {
       }
       if (
         this.voteHistory[this.playersInGame[i].request.user.username][
-          this.missionNum - 1
+        this.missionNum - 1
         ][this.pickNum - 1] === undefined
       ) {
         this.voteHistory[this.playersInGame[i].request.user.username][
@@ -1940,7 +1954,7 @@ class Game extends Room {
       eloChange =
         ((totalProvisionalGames +
           (this.playersInGame.length - provisionalPlayers.length) *
-            this.provisionalGamesRequired) /
+          this.provisionalGamesRequired) /
           (this.provisionalGamesRequired * this.playersInGame.length)) *
         eloChange;
     }
@@ -2143,9 +2157,24 @@ let reverseMapFromMap = function (map, f) {
 
 
 //After player finished a ranked game, assigning a default rank to the player
-function assignDefaultRank(user:User){
-  const rankData = new Rank();
-  await rankData.save();
-  user.currentRanking = rankData._id;
-  await user.save();
+async function assignDefaultRankToUser(user: User, seasonNumber: number) {
+  if (user) {
+    if (typeof seasonNumber === 'number') {
+      const rankData = new Rank({
+        userId: user._id,
+        seasonNumber: seasonNumber,
+      });
+      await rankData.save();
+      console.log(`Rank data for ${user.username} saved, rankedId: ${rankData._id}`);
+      user.currentRanking = rankData._id;
+      await user.save();
+      console.log(`Rank data for ${user.username} assigned, currentRanking: ${user.currentRanking}`);
+    }
+    else {
+      console.log(`Season number is not a number, seasonNumber: ${seasonNumber}`);
+
+    }
+  } else {
+    console.log(`User is not defined`);
+  }
 }

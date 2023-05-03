@@ -3,11 +3,11 @@ import { SocketUser } from '../../types';
 import User from '../../../models/user';
 import RankData from '../../../models/rank';
 import SeasonNumber from '../../../models/seasonNumber';
-import eloConstants from '../../../elo/constants/eloConstants';
 import getSeasonNumber from '../../../elo/utils/getSeasonNumber';
+
 // define a function to reset the elo of all users
-export const aresetelo: Command = {
-  command: 'resetelo',
+export const astartnewrankseason: Command = {
+  command: 'startnewrankseason',
   help: "/reset all players's rank data and start a new season",
   run: async (args: string[], socket: SocketUser) => {
     try {
@@ -46,13 +46,16 @@ function mapToRange(rating: number, minValue: number, maxValue: number) {
 
 
 // define a function to increment the season number
-function seasonNumberIncrement() {
-  SeasonNumber.findOne({}).exec().then(returnedSeasonNumber => {
-    returnedSeasonNumber.number++;
-    returnedSeasonNumber.save();
-  }).catch(err => {
+async function seasonNumberIncrement() {
+  try {
+    let returnedSeasonNumber = await SeasonNumber.findOneAndUpdate(
+      {}, 
+      { $inc: { number: 1 } }, 
+      { new: true });
+    console.log(returnedSeasonNumber);
+  } catch (err) {
     console.error(err);
-  });
+  }
 }
 // Transaction
 // @ts-ignore
@@ -93,14 +96,17 @@ async function resetUserElo(user: User, seasonNumber: number) {
   user.pastRankings.push(user.currentRanking);
   user.markModified('pastRankings');
 
-  const newDefaultRankData = new RankData({
-    username: user.username,
-    seasonNumber: seasonNumber + 1,
-    playerRating: eloConstants.defaultRating,
-  });
+  // const newDefaultRankData = new RankData({
+  //   userId: user._id,
+  //   seasonNumber: seasonNumber + 1,
+  // });
 
-  await newDefaultRankData.save();
-  user.currentRanking = newDefaultRankData._id;
+  // await newDefaultRankData.save();
+  // user.currentRanking = newDefaultRankData._id;
+
+  // I think if I implement assign a default rank data after player finished their first game function right
+  // I can remove the above code
+  user.currentRanking = null;
   user.markModified('currentRanking');
 
   await user.save();

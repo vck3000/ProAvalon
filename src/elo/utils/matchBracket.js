@@ -1,27 +1,21 @@
-function matchBracket(rating, totalRankedGamesPlayed) {
-    const provisionalGames = 20;
-    const bronzeBase = 1300;
-    const silverBase = 1400;
-    const goldBase = 1550;
-    const platBase = 1700;
-    const diamondBase = 1800;
-    const championBase = 1900;
+import eloConstants from "../constants/eloConstants";
 
-    if (totalRankedGamesPlayed < provisionalGames) {
+function matchBracket(rating, totalRankedGamesPlayed) {
+    if (totalRankedGamesPlayed < eloConstants.PROVISIONGAMES) {
         return 'Unranked';
-    } else if (rating < bronzeBase) {
+    } else if (rating < eloConstants.BRONZEBASE) {
         return 'Iron';
-    } else if (rating >= bronzeBase && rating < silverBase) {
+    } else if (rating >= eloConstants.BRONZEBASE && rating < eloConstants.SILVERBASE) {
         return 'Bronze';
-    } else if (rating >= silverBase && rating < goldBase) {
+    } else if (rating >= eloConstants.SILVERBASE && rating < eloConstants.GOLDBASE) {
         return 'Silver';
-    } else if (rating >= goldBase && rating < platBase) {
+    } else if (rating >= eloConstants.GOLDBASE && rating < eloConstants.PLATINUMBASE) {
         return 'Gold';
-    } else if (rating >= platBase && rating < diamondBase) {
+    } else if (rating >= eloConstants.PLATINUMBASE && rating < eloConstants.DIAMONDBASE) {
         return 'Platinum';
-    } else if (rating >= diamondBase && rating < championBase) {
+    } else if (rating >= eloConstants.DIAMONDBASE && rating < eloConstants.CHAMPIONBASE) {
         return 'Diamond';
-    } else if (rating >= championBase) {
+    } else {
         return 'Champion';
     }
 }
