@@ -32,13 +32,6 @@ export enum TeamEnum {
   SPY = 'Spy',
 }
 
-export interface Match {
-  winningTeam: TeamEnum;
-  playerTeam: TeamEnum;
-  opponentTeamRating: number;
-  opponentTeamRatingDeviation: number;
-}
-
 export interface IUser {
   username: string;
   usernameLower?: string;
@@ -61,8 +54,6 @@ export interface IUser {
   totalLosses?: number;
   totalResLosses?: number;
   playerRating?: number;
-  ratingDeviation?: number;
-  ratingVolatility?: number;
   ratingBracket?: string;
   winsLossesGameSizeBreakdown?: Record<string, unknown>;
   nationality?: string;
