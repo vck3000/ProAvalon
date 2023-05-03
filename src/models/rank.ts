@@ -2,9 +2,10 @@ import mongoose from 'mongoose';
 import eloConstants from '../elo/constants/eloConstants';
 
 // SCHEMA SETUP
-const rankDataSchema = new mongoose.Schema({
-    username: {
-        type: String,
+const rankSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
         required: true,
     },
     seasonNumber: {
@@ -25,6 +26,6 @@ const rankDataSchema = new mongoose.Schema({
 
 });
 // compile schema into a model
-const rankData = mongoose.model('rankData', rankDataSchema);
+const rank = mongoose.model('rank', rankSchema);
 
-export default rankData;
+export default rank;
