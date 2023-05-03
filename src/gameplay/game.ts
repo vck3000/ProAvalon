@@ -380,19 +380,6 @@ class Game extends Room {
       );
     }
 
-
-    // If the player doesn't have a ranking, assign the default ranking
-    this.playersInGame.forEach(async (player) => {
-      let user = await User.findById(player.userId);
-      if (user) {
-        const seasonNumber = await getSeasonNumber();
-        console.log("Assigning default ranking to user " + user.name + " for season " + seasonNumber);
-        assignDefaultRankToUser(user, seasonNumber);
-      } else {
-        throw new Error('No user found with id: ' + player.userId);
-      }
-    });
-
     // Give roles to the players according to their alliances
     // Get roles:
     this.resRoles = [];
@@ -1173,9 +1160,17 @@ class Game extends Room {
       return;
     }
 
-
     // If the player doesn't have a ranking, assign the default ranking
-
+    this.playersInGame.forEach(async (player) => {
+      let user = await User.findById(player.userId);
+      if (user) {
+        const seasonNumber = await getSeasonNumber();
+        console.log("Assigning default ranking to user " + user.name + " for season " + seasonNumber);
+        assignDefaultRankToUser(user, seasonNumber);
+      } else {
+        throw new Error('No user found with id: ' + player.userId);
+      }
+    });
 
     for (let i = 0; i < this.allSockets.length; i++) {
       this.allSockets[i].emit('gameEnded');
