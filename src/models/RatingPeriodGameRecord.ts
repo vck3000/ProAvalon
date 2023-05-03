@@ -4,8 +4,8 @@ import type { IRatingPeriodGameRecord } from './types';
 const ratingPeriodGameRecordSchema = new mongoose.Schema<IRatingPeriodGameRecord>({
   timeGameFinished: Date,
   winningTeam: String,
-  spyTeam: [String],
-  resistanceTeam: [String],
+  spyTeam: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+  resistanceTeam: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
   roomCreationType: String,
 });
 
