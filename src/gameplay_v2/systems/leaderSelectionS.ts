@@ -63,7 +63,7 @@ export class LeaderSelectionS implements System {
             // add leader component to the first player, initialize the sequence
             playerList[0].entity.components.push(new Leader());
         }
-        console.log(playerList);
+        // console.log(playerList);
         return playerList;
       }
 
