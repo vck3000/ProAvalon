@@ -133,6 +133,20 @@ const UserSchema = new mongoose.Schema<IUser>({
     },
   ],
 
+  currentRanking: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'rank',
+    default: null,
+  },
+
+  pastRankings: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'rank',
+      default: null,
+    },
+  ],
+
   modAction: [
     {
       type: mongoose.Schema.Types.ObjectId,
