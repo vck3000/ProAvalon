@@ -2,6 +2,10 @@ import type { IUser } from './types';
 import { TeamEnum } from './types';
 import type { IRatingPeriodGameRecord } from '../models/types';
 import User from '../models/user';
+import RatingPeriodGameRecord from '../models/RatingPeriodGameRecord';
+import mongoose from 'mongoose';
+import { ObjectId } from 'mongoose';
+
 class Glicko2 {
   #epsilon: number;
   #tau: number;
@@ -68,6 +72,17 @@ class Glicko2 {
     }
 
     return Math.E ** (A / 2);
+  }
+
+  async #getGamesByUser(userId: ObjectId) {
+    const games = await RatingPeriodGameRecord.find({
+      $or: [
+        { spyTeam: userId },
+        { resistanceTeam: userId }
+      ]
+    });
+
+    return games;
   }
 
   updateRatingsByPlayer(
