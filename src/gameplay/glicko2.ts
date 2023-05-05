@@ -127,7 +127,7 @@ class Glicko2 {
     }));
   }
 
-  async updateRatingsByUser(user: IUser): Promise<void> {
+  async #updateRatingsByUser(user: IUser): Promise<void> {
     const userId = (await User.findOne({ username: user.username }))
       ._id;
     const gameSummary = await this.#summariseGames(userId);
@@ -228,7 +228,7 @@ class Glicko2 {
   async updateAllUsers(): Promise<void> {
     const users = await User.find({});
     for (const user of users) {
-      await this.updateRatingsByUser(user);
+      await this.#updateRatingsByUser(user);
     }
     // TODO: handle season change. Confirm if this is correct.
     this.#CURRENT_SEASON += 1;
