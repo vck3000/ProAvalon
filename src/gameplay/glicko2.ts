@@ -89,7 +89,7 @@ class Glicko2 {
   }
 
   async #summariseGames(
-    playerId: Types.ObjectId,
+    userId: Types.ObjectId,
   ) : Promise<{
     opponentRating: number,
     opponentRatingDeviation: number,
@@ -97,13 +97,13 @@ class Glicko2 {
   }[]> {
     // Find games the player has played. Either Spy team or Resistance team.
     const games: IRatingPeriodGameRecord[] = await RatingPeriodGameRecord.find({
-      $or: [{ spyTeam: playerId }, { resistanceTeam: playerId }],
+      $or: [{ spyTeam: userId }, { resistanceTeam: userId }],
     });
 
     return Promise.all(games.map(async g => {
       // Calculate the avg ratings and avg RD of the opponents
 
-      if (g.spyTeam.includes(playerId)) {
+      if (g.spyTeam.includes(userId)) {
         // player is in team SPY
         const resistanceTeam = [...g.resistanceTeam];
         const { ratingAvg, rdAvg } = await this.#computeTeamAvg(resistanceTeam);
@@ -127,21 +127,21 @@ class Glicko2 {
     }));
   }
 
-  async updateRatingsByPlayer(playerData: IUser): Promise<void> {
-    const playerId = (await User.findOne({ username: playerData.username }))
+  async updateRatingsByUser(user: IUser): Promise<void> {
+    const userId = (await User.findOne({ username: user.username }))
       ._id;
-    const gameSummary = await this.#summariseGames(playerId);
-    const playerRankData = await Rank.findOne({
-      userId: playerId,
+    const gameSummary = await this.#summariseGames(userId);
+    const userRankData = await Rank.findOne({
+      userId: userId,
       seasonNumber: this.#CURRENT_SEASON - 1,
     });
 
     // Step 2: Convert to Glicko-2 scale
     const player = {
-      username: playerData.username,
-      mu: (playerData.playerRating - 1500) / 173.7178,
-      phi: playerRankData.rd / 173.7178,
-      ratingVolatility: playerRankData.volatility,
+      username: user.username,
+      mu: (user.playerRating - 1500) / 173.7178,
+      phi: userRankData.rd / 173.7178,
+      ratingVolatility: userRankData.volatility,
     };
 
     // Check if the player competed during the rating period
@@ -152,11 +152,11 @@ class Glicko2 {
       const newRD = 173.7178 * newPhi;
 
       await Rank.create({
-        userId: playerId,
+        userId: userId,
         seasonNumber: this.#CURRENT_SEASON,
-        playerRating: playerRankData.playerRating,
+        playerRating: userRankData.playerRating,
         rd: newRD,
-        volatility: playerRankData.playerRating,
+        volatility: userRankData.playerRating,
       });
 
       return;
@@ -217,12 +217,21 @@ class Glicko2 {
 
     // Save the new rankings to database
     await Rank.create({
-      userId: playerId,
+      userId: userId,
       seasonNumber: this.#CURRENT_SEASON,
       playerRating: newRating,
       rd: newRD,
       volatility: newVolatility,
     });
+  }
+
+  async updateAllUsers(): Promise<void> {
+    const users = await User.find({});
+    for (const user of users) {
+      await this.updateRatingsByUser(user);
+    }
+    // TODO: handle season change. Confirm if this is correct.
+    this.#CURRENT_SEASON += 1;
   }
 }
 
