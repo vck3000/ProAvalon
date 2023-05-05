@@ -3,19 +3,13 @@ import { TeamEnum } from './types';
 import type { IRatingPeriodGameRecord } from '../models/types';
 import User from '../models/user';
 import RatingPeriodGameRecord from '../models/RatingPeriodGameRecord';
-import mongoose from 'mongoose';
-import { ObjectId } from 'mongoose';
+import Rank from '../models/rank';
+import { Types } from 'mongoose';
 
 class Glicko2 {
-  #epsilon: number;
-  #tau: number;
-
-  constructor() {
-    this.#epsilon = 0.000001;
-
-    // system constant tau is set as 0.5
-    this.#tau = 0.5;
-  }
+  #epsilon = 0.000001;
+  #tau = 0.5;
+  #CURRENT_SEASON = 1;
 
   #computeG(phi: number): number {
     return 1 / Math.sqrt(1 + (3 * phi ** 2) / Math.PI ** 2);
@@ -74,31 +68,22 @@ class Glicko2 {
     return Math.E ** (A / 2);
   }
 
-  async #getGamesByUser(userId: ObjectId) {
+  async #summariseGames(playerId: Types.ObjectId) {
+    // Find games the player has played. Either Spy team or Resistance team.
     const games = await RatingPeriodGameRecord.find({
       $or: [
-        { spyTeam: userId },
-        { resistanceTeam: userId }
+        { spyTeam: playerId },
+        { resistanceTeam: playerId }
       ]
     });
 
-    return games;
-  }
-
-  updateRatingsByPlayer(
-    playerData: IUser,
-    games: IRatingPeriodGameRecord[], // a list of games that the player has played
-  ): {
-    playerRating: number;
-    ratingDeviation: number;
-  } {
-    const gameSummary = games.map(g => {
+    return games.map(g => {
       // Calculate the avg ratings and avg RD of the opponents
       // TODO: change hardcoded value later!!!
       // const opponentRating = 1400;
       // const opponentRatingDeviation = 30;
 
-      if (g.spyTeam.includes(playerData.username)) {
+      if (g.spyTeam.includes(playerId)) {
         // player is in team SPY
         return {
           opponentRating: g.avgRating,
@@ -114,17 +99,25 @@ class Glicko2 {
         };
       }
     });
+  }
+
+  async updateRatingsByPlayer(
+    playerData: IUser,
+  ) {
+    const playerId = (await User.findOne({ username: playerData.username }))._id;
+    const gameSummary = await this.#summariseGames(playerId);
+    const playerRankData = await Rank.findOne({ userId: playerId, seasonNumber: this.#CURRENT_SEASON });
 
     // Step 2: Convert to Glicko-2 scale
     const player = {
       username: playerData.username,
       mu: (playerData.playerRating - 1500) / 173.7178,
-      phi: playerData.ratingDeviation / 173.7178,
-      ratingVolatility: playerData.ratingVolatility,
+      phi: playerRankData.rd / 173.7178,
+      ratingVolatility: playerRankData.volatility,
     };
 
     // Check if the player competed during the rating period
-    if (games.length == 0) {
+    if (gameSummary.length == 0) {
       const newPhi = Math.sqrt(player.phi ** 2 + player.ratingVolatility ** 2);
       const newRD = 173.7178 * newPhi;
 
