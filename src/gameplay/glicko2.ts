@@ -1,6 +1,6 @@
 import type { IUser } from './types';
 import type { IRatingPeriodGameRecord } from '../models/types';
-import { TeamEnum } from './types';
+import { TeamEnum, OutcomeEnum } from './types';
 import User from '../models/user';
 import RatingPeriodGameRecord from '../models/RatingPeriodGameRecord';
 import Rank from '../models/rank';
@@ -93,7 +93,7 @@ class Glicko2 {
   ) : Promise<{
     opponentRating: number,
     opponentRatingDeviation: number,
-    outcome: number
+    outcome: OutcomeEnum
   }[]> {
     // Find games the player has played. Either Spy team or Resistance team.
     const games: IRatingPeriodGameRecord[] = await RatingPeriodGameRecord.find({
@@ -111,7 +111,7 @@ class Glicko2 {
         return {
           opponentRating: ratingAvg,
           opponentRatingDeviation: rdAvg,
-          outcome: g.winningTeam === TeamEnum.SPY ? 1 : 0,
+          outcome: g.winningTeam === TeamEnum.SPY ? OutcomeEnum.WIN : OutcomeEnum.LOSE,
         };
       } else {
         // player is in team RESISTANCE
@@ -121,7 +121,7 @@ class Glicko2 {
         return {
           opponentRating: ratingAvg,
           opponentRatingDeviation: rdAvg,
-          outcome: g.winningTeam === TeamEnum.RESISTANCE ? 1 : 0,
+          outcome: g.winningTeam === TeamEnum.RESISTANCE ? OutcomeEnum.WIN : OutcomeEnum.LOSE,
         };
       }
     }));

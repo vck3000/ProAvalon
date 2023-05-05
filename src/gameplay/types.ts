@@ -32,6 +32,11 @@ export enum TeamEnum {
   SPY = 'Spy',
 }
 
+export enum OutcomeEnum {
+  WIN = 1,
+  LOSE = 0,
+}
+
 export interface IUser {
   username: string;
   usernameLower?: string;
