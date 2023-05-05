@@ -1,6 +1,6 @@
 import type { IUser } from './types';
-import { TeamEnum } from './types';
 import type { IRatingPeriodGameRecord } from '../models/types';
+import { TeamEnum } from './types';
 import User from '../models/user';
 import RatingPeriodGameRecord from '../models/RatingPeriodGameRecord';
 import Rank from '../models/rank';
@@ -68,45 +68,73 @@ class Glicko2 {
     return Math.E ** (A / 2);
   }
 
-  async #summariseGames(playerId: Types.ObjectId) {
+  async #computeTeamAvg(team: Types.ObjectId[]): Promise<{
+    ratingAvg: number;
+    rdAvg: number;
+  }> {
+    let ratingSum = 0;
+    let rdSum = 0;
+    for (const playerId of team) {
+      const { playerRating, rd } = await Rank.findOne({
+        userId: playerId,
+        seasonNumber: this.#CURRENT_SEASON - 1,
+      });
+      ratingSum += playerRating;
+      rdSum += rd;
+    }
+    return {
+      ratingAvg: ratingSum / team.length,
+      rdAvg: rdSum / team.length,
+    };
+  }
+
+  async #summariseGames(
+    playerId: Types.ObjectId,
+  ) : Promise<{
+    opponentRating: number,
+    opponentRatingDeviation: number,
+    outcome: number
+  }[]> {
     // Find games the player has played. Either Spy team or Resistance team.
-    const games = await RatingPeriodGameRecord.find({
-      $or: [
-        { spyTeam: playerId },
-        { resistanceTeam: playerId }
-      ]
+    const games: IRatingPeriodGameRecord[] = await RatingPeriodGameRecord.find({
+      $or: [{ spyTeam: playerId }, { resistanceTeam: playerId }],
     });
 
-    return games.map(g => {
+    return Promise.all(games.map(async g => {
       // Calculate the avg ratings and avg RD of the opponents
-      // TODO: change hardcoded value later!!!
-      // const opponentRating = 1400;
-      // const opponentRatingDeviation = 30;
 
       if (g.spyTeam.includes(playerId)) {
         // player is in team SPY
+        const resistanceTeam = [...g.resistanceTeam];
+        const { ratingAvg, rdAvg } = await this.#computeTeamAvg(resistanceTeam);
+
         return {
-          opponentRating: g.avgRating,
-          opponentRatingDeviation: g.avgRd,
+          opponentRating: ratingAvg,
+          opponentRatingDeviation: rdAvg,
           outcome: g.winningTeam === TeamEnum.SPY ? 1 : 0,
         };
       } else {
         // player is in team RESISTANCE
+        const spyTeam = [...g.spyTeam];
+        const { ratingAvg, rdAvg } = await this.#computeTeamAvg(spyTeam);
+
         return {
-          opponentRating: g.avgRating,
-          opponentRatingDeviation: g.avgRd,
+          opponentRating: ratingAvg,
+          opponentRatingDeviation: rdAvg,
           outcome: g.winningTeam === TeamEnum.RESISTANCE ? 1 : 0,
         };
       }
-    });
+    }));
   }
 
-  async updateRatingsByPlayer(
-    playerData: IUser,
-  ) {
-    const playerId = (await User.findOne({ username: playerData.username }))._id;
+  async updateRatingsByPlayer(playerData: IUser): Promise<void> {
+    const playerId = (await User.findOne({ username: playerData.username }))
+      ._id;
     const gameSummary = await this.#summariseGames(playerId);
-    const playerRankData = await Rank.findOne({ userId: playerId, seasonNumber: this.#CURRENT_SEASON });
+    const playerRankData = await Rank.findOne({
+      userId: playerId,
+      seasonNumber: this.#CURRENT_SEASON - 1,
+    });
 
     // Step 2: Convert to Glicko-2 scale
     const player = {
@@ -117,14 +145,21 @@ class Glicko2 {
     };
 
     // Check if the player competed during the rating period
+    // If the player does not compete during the rating period
+    // Rating and Volatility remain the same, but the RD increases
     if (gameSummary.length == 0) {
       const newPhi = Math.sqrt(player.phi ** 2 + player.ratingVolatility ** 2);
       const newRD = 173.7178 * newPhi;
 
-      return {
-        playerRating: playerData.playerRating,
-        ratingDeviation: newRD,
-      };
+      await Rank.create({
+        userId: playerId,
+        seasonNumber: this.#CURRENT_SEASON,
+        playerRating: playerRankData.playerRating,
+        rd: newRD,
+        volatility: playerRankData.playerRating,
+      });
+
+      return;
     }
 
     const opponents = gameSummary.map((game) => {
@@ -162,8 +197,6 @@ class Glicko2 {
       v,
       player.ratingVolatility,
     );
-    // TODO: Save the new volatility to the player
-    // User.updateOne({ username: player.username }, { ratingVolatility: newVolatility });
 
     // Step 6: Update the rating deviation to the new pre-rating period value
     const preRatingPhi = Math.sqrt(player.phi ** 2 + newVolatility ** 2);
@@ -182,10 +215,14 @@ class Glicko2 {
     const newRating = 173.7178 * newMu + 1500;
     const newRD = 173.7178 * newPhi;
 
-    return {
+    // Save the new rankings to database
+    await Rank.create({
+      userId: playerId,
+      seasonNumber: this.#CURRENT_SEASON,
       playerRating: newRating,
-      ratingDeviation: newRD,
-    };
+      rd: newRD,
+      volatility: newVolatility,
+    });
   }
 }
 
