@@ -14,3 +14,11 @@ export interface IRatingPeriodGameRecord {
   avgRating: number,
   avgRd: number,
 }
+
+export interface IRank {
+  userId: Types.ObjectId,
+  seasonNumber?: number,
+  playerRating?: number,
+  rd?: number,
+  volatility?: number,
+}
