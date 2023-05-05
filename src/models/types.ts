@@ -1,9 +1,11 @@
+import { Types } from "mongoose";
+
 export interface IRatingPeriodGameRecord {
   timeGameStarted: Date,
   timeGameFinished: Date,
   winningTeam: string,
-  spyTeam: string[],
-  resistanceTeam: string[],
+  spyTeam: Types.ObjectId[],
+  resistanceTeam: Types.ObjectId[],
 
   numberOfPlayers: number,
   roomCreationType: string,
