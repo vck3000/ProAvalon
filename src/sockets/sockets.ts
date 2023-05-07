@@ -2141,6 +2141,157 @@ function standUpFromGame() {
   }
 }
 
+function leaveRoom() {
+  // console.log("In room id");
+  // console.log(this.request.user.inRoomId);
+
+  if (rooms[this.request.user.inRoomId]) {
+    console.log(
+      `${this.request.user.username} is leaving room: ${this.request.user.inRoomId}`,
+    );
+    // broadcast to let others know
+
+    const data = {
+      message: `${this.request.user.username} has left the room.`,
+      classStr: 'server-text-teal',
+      dateCreated: new Date(),
+    };
+    sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
+
+    // leave the room chat
+    this.leave(this.request.user.inRoomId);
+
+    playerLeaveRoomCheckDestroy(this);
+
+    updateCurrentGamesList();
+  }
+}
+
+function playerReady() {
+  const username = this.request.user.username;
+
+  if (
+    rooms[this.request.user.inRoomId] &&
+    !rooms[this.request.user.inRoomId].gameStarted
+  ) {
+    const data = {
+      message: `${username} is ready.`,
+      classStr: 'server-text',
+      dateCreated: new Date(),
+    };
+    sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
+
+    rooms[this.request.user.inRoomId].playerReady(username);
+  }
+}
+
+function playerNotReady() {
+  const username = this.request.user.username;
+
+  if (
+    rooms[this.request.user.inRoomId] &&
+    !rooms[this.request.user.inRoomId].gameStarted
+  ) {
+    const data = {
+      message: `${username} is not ready.`,
+      classStr: 'server-text',
+      dateCreated: new Date(),
+    };
+    sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
+
+    rooms[this.request.user.inRoomId].playerNotReady(username);
+  }
+}
+
+function startGame(data, gameMode) {
+  // start the game
+  if (gameMode === null || gameMode === undefined) {
+    this.emit(
+      'danger-alert',
+      'Something went wrong. Cannot detect game mode specified.',
+    );
+    return;
+  }
+
+  if (rooms[this.request.user.inRoomId]) {
+    if (
+      this.request.user.inRoomId &&
+      this.request.user.username === rooms[this.request.user.inRoomId].host
+    ) {
+      rooms[this.request.user.inRoomId].hostTryStartGame(data, gameMode);
+      // this.emit("update-room-players", rooms[roomId].getPlayers());
+    } else {
+      // console.log("Room doesn't exist or user is not host, cannot start game");
+      this.emit(
+        'danger-alert',
+        'You are not the host. You cannot start the game.',
+      );
+      return;
+    }
+  }
+}
+
+function kickPlayer(username) {
+  console.log(`received kick player request: ${username}`);
+  if (rooms[this.request.user.inRoomId]) {
+    rooms[this.request.user.inRoomId].kickPlayer(username, this);
+  }
+}
+
+function setClaim(data) {
+  if (rooms[this.request.user.inRoomId]) {
+    rooms[this.request.user.inRoomId].setClaim(this, data);
+  }
+}
+
+function gameMove(data) {
+  // console.log(data);
+  if (rooms[this.request.user.inRoomId]) {
+    rooms[this.request.user.inRoomId].gameMove(this, data);
+    if (rooms[this.request.user.inRoomId]) {
+      if (rooms[this.request.user.inRoomId].finished === true) {
+        deleteSaveGameFromDb(rooms[this.request.user.inRoomId]);
+      } else {
+        if (rooms[this.request.user.inRoomId].requireSave === true) {
+          rooms[this.request.user.inRoomId].requireSave = false;
+          saveGameToDb(rooms[this.request.user.inRoomId]);
+          console.log(`Saving game ${this.request.user.inRoomId}`);
+        }
+      }
+    }
+  }
+}
+
+function updateRoomGameMode(gameMode) {
+  if (rooms[this.request.user.inRoomId]) {
+    rooms[this.request.user.inRoomId].updateGameModesInRoom(this, gameMode);
+  }
+  updateCurrentGamesList();
+}
+
+function updateRoomRanked(rankedType) {
+  if (rooms[this.request.user.inRoomId]) {
+    rooms[this.request.user.inRoomId].updateRanked(this, rankedType);
+  }
+  updateCurrentGamesList();
+}
+
+function updateRoomMuteSpectators(muteSpectators) {
+  if (rooms[this.request.user.inRoomId]) {
+    rooms[this.request.user.inRoomId].updateMuteSpectators(muteSpectators);
+  }
+}
+
+function updateRoomMaxPlayers(number) {
+  if (rooms[this.request.user.inRoomId]) {
+    rooms[this.request.user.inRoomId].updateMaxNumPlayers(this, number);
+  }
+  updateCurrentGamesList();
+}
+
+// Functions to manage ranked and unranked queue
+
+// Unranked queue
 type MatchMakingQueueItem = {
   id: string;
   user: Object;
@@ -2164,6 +2315,8 @@ function checkForUnrankedConfirmation() {
 // Add player to queue, and start match if six players in queue
 function joinUnrankedQueue(dataObj) {
   // add player to queue
+
+  // First if checks if player is joining the six-player game or not
   if (dataObj.numPlayers === 6) {
     unrankedQueue6Players.push({
       id: this.request.user.username.toLowerCase(),
@@ -2171,6 +2324,7 @@ function joinUnrankedQueue(dataObj) {
       timeJoinedAt: new Date(),
     });
     // if number of players in queue < 6, return null
+    // Second if checks if there are enough players for a six-player game
     if (unrankedQueue6Players.length >= 6) {
       checkForUnrankedConfirmation();
     } else {
@@ -2342,154 +2496,6 @@ function initiateUnrankedGame(dataObj) {
     startUnrankedGame();
   }
   return;
-}
-
-function leaveRoom() {
-  // console.log("In room id");
-  // console.log(this.request.user.inRoomId);
-
-  if (rooms[this.request.user.inRoomId]) {
-    console.log(
-      `${this.request.user.username} is leaving room: ${this.request.user.inRoomId}`,
-    );
-    // broadcast to let others know
-
-    const data = {
-      message: `${this.request.user.username} has left the room.`,
-      classStr: 'server-text-teal',
-      dateCreated: new Date(),
-    };
-    sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
-
-    // leave the room chat
-    this.leave(this.request.user.inRoomId);
-
-    playerLeaveRoomCheckDestroy(this);
-
-    updateCurrentGamesList();
-  }
-}
-
-function playerReady() {
-  const username = this.request.user.username;
-
-  if (
-    rooms[this.request.user.inRoomId] &&
-    !rooms[this.request.user.inRoomId].gameStarted
-  ) {
-    const data = {
-      message: `${username} is ready.`,
-      classStr: 'server-text',
-      dateCreated: new Date(),
-    };
-    sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
-
-    rooms[this.request.user.inRoomId].playerReady(username);
-  }
-}
-
-function playerNotReady() {
-  const username = this.request.user.username;
-
-  if (
-    rooms[this.request.user.inRoomId] &&
-    !rooms[this.request.user.inRoomId].gameStarted
-  ) {
-    const data = {
-      message: `${username} is not ready.`,
-      classStr: 'server-text',
-      dateCreated: new Date(),
-    };
-    sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
-
-    rooms[this.request.user.inRoomId].playerNotReady(username);
-  }
-}
-
-function startGame(data, gameMode) {
-  // start the game
-  if (gameMode === null || gameMode === undefined) {
-    this.emit(
-      'danger-alert',
-      'Something went wrong. Cannot detect game mode specified.',
-    );
-    return;
-  }
-
-  if (rooms[this.request.user.inRoomId]) {
-    if (
-      this.request.user.inRoomId &&
-      this.request.user.username === rooms[this.request.user.inRoomId].host
-    ) {
-      rooms[this.request.user.inRoomId].hostTryStartGame(data, gameMode);
-      // this.emit("update-room-players", rooms[roomId].getPlayers());
-    } else {
-      // console.log("Room doesn't exist or user is not host, cannot start game");
-      this.emit(
-        'danger-alert',
-        'You are not the host. You cannot start the game.',
-      );
-      return;
-    }
-  }
-}
-
-function kickPlayer(username) {
-  console.log(`received kick player request: ${username}`);
-  if (rooms[this.request.user.inRoomId]) {
-    rooms[this.request.user.inRoomId].kickPlayer(username, this);
-  }
-}
-
-function setClaim(data) {
-  if (rooms[this.request.user.inRoomId]) {
-    rooms[this.request.user.inRoomId].setClaim(this, data);
-  }
-}
-
-function gameMove(data) {
-  // console.log(data);
-  if (rooms[this.request.user.inRoomId]) {
-    rooms[this.request.user.inRoomId].gameMove(this, data);
-    if (rooms[this.request.user.inRoomId]) {
-      if (rooms[this.request.user.inRoomId].finished === true) {
-        deleteSaveGameFromDb(rooms[this.request.user.inRoomId]);
-      } else {
-        if (rooms[this.request.user.inRoomId].requireSave === true) {
-          rooms[this.request.user.inRoomId].requireSave = false;
-          saveGameToDb(rooms[this.request.user.inRoomId]);
-          console.log(`Saving game ${this.request.user.inRoomId}`);
-        }
-      }
-    }
-  }
-}
-
-function updateRoomGameMode(gameMode) {
-  if (rooms[this.request.user.inRoomId]) {
-    rooms[this.request.user.inRoomId].updateGameModesInRoom(this, gameMode);
-  }
-  updateCurrentGamesList();
-}
-
-function updateRoomRanked(rankedType) {
-  if (rooms[this.request.user.inRoomId]) {
-    rooms[this.request.user.inRoomId].updateRanked(this, rankedType);
-  }
-  updateCurrentGamesList();
-}
-
-function updateRoomMuteSpectators(muteSpectators) {
-  if (rooms[this.request.user.inRoomId]) {
-    rooms[this.request.user.inRoomId].updateMuteSpectators(muteSpectators);
-  }
-}
-
-function updateRoomMaxPlayers(number) {
-  if (rooms[this.request.user.inRoomId]) {
-    rooms[this.request.user.inRoomId].updateMaxNumPlayers(this, number);
-  }
-  updateCurrentGamesList();
 }
 
 export const GetLastFiveMinsAllChat = () => {
