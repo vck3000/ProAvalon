@@ -5,29 +5,9 @@ import { VotingMission } from '../states/baseStates/VotingMission';
 
 export class VoteS implements System {
   run(gameData: GameData, sendData: SendData): void {
-    // See if we have all the votes
-    const playersComponents = [];
-    for (const player of gameData.players) {
-      playersComponents.push(player.entity.components);
-    }
-    
-    //counts the number of players
-    let numberOfPlayers = 0;
-    for(const playerComponents of playersComponents){
-      if(playerComponents != null){
-        numberOfPlayers++;
-      }
-    }
-
-    //pushes all vote components into the array
-    const voteComponents: VoteC[] = [];
-    for (const playerComponents of playersComponents) {
-      for (const component of playerComponents) {
-        if (component.name === 'Vote') {
-          voteComponents.push(component);
-        }
-      }
-    }
+    const voteComponents = gameData.players.map((player) =>
+      player.entity.getComponent(VoteC.nameC),
+    );
 
     //counts all of the number of votes that aren't null
     let numberOfVotesIn = 0;
@@ -44,14 +24,14 @@ export class VoteS implements System {
 
     //checks if majority approves
     let numberOfVotesApprove = 0;
-    for(const voteC of voteComponents){
-      if(voteC.data.vote === Vote.Approve){
+    for (const voteC of voteComponents) {
+      if (voteC.data.vote === Vote.Approve) {
         numberOfVotesApprove++;
       }
     }
 
     //checks if majority approves the mission
-    if(numberOfVotesApprove > (numberOfPlayers / 2)){
+    if (numberOfVotesApprove > voteComponents.length / 2) {
       //changes to another state of the game
       gameData.state = new VotingMission();
     }

@@ -1,6 +1,6 @@
 import Component from './component';
 
 export class SeeTristanIsoldeC extends Component {
-  name = 'SeeTristanIsoldeC';
+  nameC = 'SeeTristanIsoldeC';
   data = {};
 }

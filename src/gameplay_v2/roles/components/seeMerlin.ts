@@ -1,6 +1,6 @@
 import Component from './component';
 
 export class SeeMerlinC extends Component {
-  name = 'SeeMerlinC';
+  nameC = 'SeeMerlinC';
   data = {};
 }

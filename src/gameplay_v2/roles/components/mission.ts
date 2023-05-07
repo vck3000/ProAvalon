@@ -1,7 +1,7 @@
 import Component from './component';
 
 export class MissionC extends Component {
-  name = 'Mission';
+  nameC = 'Mission';
   data: MissionData = { mission: Mission.Null };
 }
 
@@ -16,6 +16,6 @@ export enum Mission {
 }
 
 export enum MissionEndResult {
-    Success,
-    Failure,
+  Success,
+  Failure,
 }

@@ -9,7 +9,6 @@ export const states = {
   [VotingMission.state]: VotingMission,
   [AssassinationPhase.state]: AssassinationPhase,
   [SpecialPhase.state]: SpecialPhase,
->>>>>>> master
 };
 
 export interface IState {

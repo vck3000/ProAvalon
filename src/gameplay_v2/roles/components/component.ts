@@ -1,4 +1,5 @@
 export default class Component {
-  name: string;
+  static nameC: string;
+  nameC: string;
   data: any;
 }
