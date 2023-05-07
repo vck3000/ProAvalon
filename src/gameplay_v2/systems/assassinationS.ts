@@ -1,19 +1,33 @@
 import { GameData } from '../gameEngine';
 import { SendData, System } from './system';
+import { Player } from '../player';
 
 // As the other components not finished yet , I will start with pesodo code
 export class assassinationS implements System {
     run(gameData: GameData, sendData: SendData): void {
-        const playersComponents = [];
+
+
+        // Get all player information as a list from 
+        // GameData which is input of the functions:
+        const playerList: Player[] = gameData.players;
+
+        // get how many missions already completed:
+        //To Be Done as voteMissionS not completed yet
+
         //check if there are 3 missions that are won by Resistance
 
         // if greater than 3 mission or equal to 3 mission successful, 
         // then spy win, execute this phase.
         //if(mission > 3 || mission === 3){
         //assassination select merlin:
-        const resistanceList = [];
-        for (const player in GameData.players) {
-            //if  player is resistance add them to spyList
+        const merlinName = '';
+
+        for (const player of playerList) {
+            if (
+                player.entity.alliance === 'Merlin',
+                ) {
+                merlinName = player.username;
+            }
         }
         // THen show assassination all resistance,
         // If assassination choose the correct one, then :
