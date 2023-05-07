@@ -2355,7 +2355,6 @@ function newUnrankedRoom(): number {
   while (rooms[nextRoomId]) {
     incrementNextRoomId();
   }
-  const rankedRoom = CSSFontFeatureValuesRule;
 
   rooms[nextRoomId] = new gameRoom(
     readyPlayersFor6UQ[0].user.username, // host
@@ -2365,7 +2364,7 @@ function newUnrankedRoom(): number {
     '', // password
     'AVALON', // gameMode
     true,
-    rankedRoom,
+    false,
     socketCallback,
   );
 
