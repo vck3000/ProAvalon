@@ -9,10 +9,6 @@ type ButtonId = 'rankBtn' | 'unrankBtn';
 // Connect with match.tsx
 
 export function MatchMakingModal() {
-  //@ts-ignore
-  const gameDataReact = gameData;
-  console.log(gameDataReact);
-
   // All useStates
   const [clickedButton, setClickedButton] = useState<ButtonId | null>(null);
   const [buttonsDisabled, setButtonsDisabled] = useState(false);
@@ -24,10 +20,6 @@ export function MatchMakingModal() {
   // Obtaining a nice clean, typed reference to the global socket object.
   // @ts-ignore
   const socket_: Socket = socket;
-
-  socket_.on('counterTest', (count: number) => {
-    setCounterFromServer(count);
-  });
 
   // Variables for timer
   const minutes = Math.floor(count / 60);
@@ -46,17 +38,42 @@ export function MatchMakingModal() {
 
   // Handlers
   const handleClick = (button: ButtonId) => {
+    const playerObj = {
+      numPlayers: 6,
+    };
+
     setClickedButton(button);
     setShowElement(true);
-    setModalOpen(true);
+
+    if (button === 'unrankBtn') {
+      socket_.emit('join-unranked-queue', playerObj);
+      socket_.on('confirm-ready-to-play', function () {
+        setModalOpen(true);
+        setShowElement(false);
+        setClickedButton(null);
+        setCount(0);
+      });
+    }
+  };
+
+  const leaveQueue = () => {
+    socket_.emit('leave-unranked-queue');
+    socket_.on('leave-queue', function () {
+      setShowElement(false);
+      setCount(0);
+      setClickedButton(null);
+      setButtonsDisabled(false);
+    });
   };
 
   const cancelQueue = () => {
-    setShowElement(false);
-    setCount(0);
-    setClickedButton(null);
-    setButtonsDisabled(false);
-    setModalOpen(false);
+    socket_.emit('initiate-unranked-game', {playerReady: false});
+    socket_.on('declined-to-play', function (data) {
+      console.log(data);
+      setModalOpen(false);
+      alert(data.decliningPlayer);
+      console.log(this.request);
+    })
   };
 
   const btnStyle = (button: ButtonId) => {
@@ -90,7 +107,7 @@ export function MatchMakingModal() {
       <div>
         <p>You are in Queue:</p>
         <h1>{formattedTime}</h1>
-        <button onClick={cancelQueue}>Cancel</button>
+        <button onClick={leaveQueue}>Leave Queue</button>
       </div>
     );
   }

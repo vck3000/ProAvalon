@@ -2323,9 +2323,9 @@ type MatchMakingQueueItem = {
   timeJoinedAt: Date;
 };
 
-const unrankedQueue6Players: MatchMakingQueueItem[] = [];
-const prospectivePlayersFor6UQ: MatchMakingQueueItem[] = [];
-const readyPlayersFor6UQ: MatchMakingQueueItem[] = [];
+let unrankedQueue6Players: MatchMakingQueueItem[] = [];
+let prospectivePlayersFor6UQ: MatchMakingQueueItem[] = [];
+let readyPlayersFor6UQ: MatchMakingQueueItem[] = [];
 
 // Ask each player to confirm they are ready to join
 function checkForUnrankedConfirmation() {
@@ -2348,9 +2348,10 @@ function joinUnrankedQueue(dataObj) {
       user: this.request.user,
       timeJoinedAt: new Date(),
     });
+    console.log(unrankedQueue6Players.length);
     // if number of players in queue < 6, return null
     // Second if checks if there are enough players for a six-player game
-    if (unrankedQueue6Players.length >= 6) {
+    if (unrankedQueue6Players.length >= 1) {
       checkForUnrankedConfirmation();
     } else {
       return;
@@ -2369,6 +2370,8 @@ function leaveUnrankedQueue() {
   const indexToRemove: number = unrankedQueue6Players.findIndex(player => player.id === userName);
   if (indexToRemove !== -1) {
     unrankedQueue6Players.splice(indexToRemove, 1);
+    console.log(unrankedQueue6Players.length);
+    this.emit('leave-queue')
   } else {
     this.emit('invalid-removal-attempt');
   }
@@ -2499,7 +2502,7 @@ function initiateUnrankedGame(dataObj) {
       // emit to each player informing that the player has cancelled.
       const playerSocket: SocketUser = getSocketFromUsername(prospectivePlayer.user.username.toLowerCase());
       playerSocket.emit('declined-to-play', {
-        gameStatus: declined,
+        gameStatus: "declined",
         decliningPlayer: this.request.user.username,
       });
     })
