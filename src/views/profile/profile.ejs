@@ -186,8 +186,8 @@ var getDatesString = function(time) {
                       <tr>
                         <td class="statsCol1">Season</td>
                           <% for (let i = 0; i < 5; i++) { %>
-                            <% if ( (seasonNumber -i) >1) { %>
-                            <td class="statsCol2">Season <%= seasonNumber -i -1 %></td>
+                            <% if ( (seasonNumber -i) > 0) { %>
+                            <td class="statsCol2">Season <%= seasonNumber -i%></td>
                             <% } else { %>
                             <td class="statsCol2">N/A</td>
                             <% } %>
@@ -202,21 +202,31 @@ var getDatesString = function(time) {
                             <td class="statsCol1">Rank</td>
                             <% } %>
                               <% if(userData.username===personViewingUsername) { %>
-                                    <% for (let i = 0; i < 5; i++) { %>
-                                      <% if(pastRankings.length - i >= 0 && pastRankings[i]) { %>
-                                      <td class="statsCol2"><%= pastRankings[i].playerRating %></td>
-                                      <% } else if ((seasonNumber -i) <=1){%>
-                                        <td class="statsCol2">N/A</td>
-                                      <% } else {%>
+                                <% if (currentRanking === null) {%>
+                                  <td class="statsCol2">Unranked</td>
+                                <% } else {%>
+                                <td class="statsCol2"><%= currentRanking.playerRating %></td>
+                                <% } %>
+                                    <% for (let i = 0; i < 4; i++) { %>
+                                      <% if(pastRankings[i] === null){ %>
                                         <td class="statsCol2">Unranked</td>
-                                    <% } %>
-                                    <% } %>
+                                      <% }else if(seasonNumber - i > 0) {%>
+                                      <td class="statsCol2"><%= pastRankings[i].playerRating %></td>
+                                    <% } else {%>
+                                      <td class="statsCol2">N/A</td>
+                                  <% } %>
+                                <% } %>
                                   <% } else {%>
-                                      <% for (let i = 0; i < 5; i++) { %>
+                                    <% if (currentRanking === null) {%>
+                                      <td class="statsCol2">Unranked</td>
+                                    <% } else {%>
+                                    <td class="statsCol2"><%= currentRanking.playerRating %></td>
+                                    <% } %>
+                                      <% for (let i = 0; i < 4; i++) { %>
                                         <% if(pastRankings.length - i >= 0) {%>
-                                        <td class="statsCol2"><%= ratingBracket %></td>
+                                        <td class="statsCol2"><%= matchBracket(pastRankings[i].playerRating,userData.totalRankedGamesPlayed) %></td>
                                         <% } else {%>
-                                          <td class="statsCol2">Unranked</td>
+                                          <td cl  ass="statsCol2">Unranked</td>
                                         <% } %>
                                       <% } %>
                                   <% } %>

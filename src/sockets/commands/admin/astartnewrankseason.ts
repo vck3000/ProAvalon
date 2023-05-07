@@ -13,8 +13,8 @@ export const astartnewrankseason: Command = {
   run: async (args: string[], socket: SocketUser) => {
     try {
       const users = await User.find({});
-      resetElosOfUsers(users);
-      incrementSeasonNumber();
+      await resetElosOfUsers(users);
+      await incrementSeasonNumber();
     } catch (err) {
       console.error(err);
       socket.emit('messageCommandReturnStr', {
@@ -46,7 +46,7 @@ function mapToRange(rating: number, minValue: number, maxValue: number) {
 
 // Transaction
 // @ts-ignore
-export async function resetElosOfUsers(users: User[]) {
+async function resetElosOfUsers(users: User[]) {
   const maxRetries = 5;
   // get the current season number
   const seasonNumber = await getSeasonNumber();
@@ -87,19 +87,7 @@ export async function resetElosOfUsers(users: User[]) {
 async function resetUserElo(user: User, seasonNumber: number) {
   user.pastRankings.push(user.currentRanking);
   user.markModified('pastRankings');
-
-  // const newDefaultRankData = new RankData({
-  //   userId: user._id,
-  //   seasonNumber: seasonNumber + 1,
-  // });
-
-  // await newDefaultRankData.save();
-  // user.currentRanking = newDefaultRankData._id;
-
-  // I think if I implement assign a default rank data after player finished their first game function right
-  // I can remove the above code
   user.currentRanking = null;
   user.markModified('currentRanking');
-
   await user.save();
 }
