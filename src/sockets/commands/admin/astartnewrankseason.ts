@@ -1,9 +1,10 @@
 import { Command } from '../types';
 import { SocketUser } from '../../types';
 import User from '../../../models/user';
-import RankData from '../../../models/rank';
-import SeasonNumber from '../../../models/seasonNumber';
-import getSeasonNumber from '../../../elo/utils/getSeasonNumber';
+import {
+  getSeasonNumber,
+  incrementSeasonNumber,
+} from '../../../modelsHelper/seasonNumber';
 
 // define a function to reset the elo of all users
 export const astartnewrankseason: Command = {
@@ -13,9 +14,8 @@ export const astartnewrankseason: Command = {
     try {
       const users = await User.find({});
       resetElosOfUsers(users);
-      seasonNumberIncrement();
-    }
-    catch (err) {
+      incrementSeasonNumber();
+    } catch (err) {
       console.error(err);
       socket.emit('messageCommandReturnStr', {
         message: 'Something went wrong when resetting the data',
@@ -41,25 +41,12 @@ function sigmoid(rating: number) {
 function mapToRange(rating: number, minValue: number, maxValue: number) {
   const midValue = (minValue + maxValue) / 2;
   const sigmoided = sigmoid((rating - midValue) / 200);
-  return Math.floor(minValue + (sigmoided * (maxValue - minValue)));
+  return Math.floor(minValue + sigmoided * (maxValue - minValue));
 }
 
-
-// define a function to increment the season number
-async function seasonNumberIncrement() {
-  try {
-    let returnedSeasonNumber = await SeasonNumber.findOneAndUpdate(
-      {}, 
-      { $inc: { number: 1 } }, 
-      { new: true });
-    console.log(returnedSeasonNumber);
-  } catch (err) {
-    console.error(err);
-  }
-}
 // Transaction
 // @ts-ignore
-async function resetElosOfUsers(users: User[]) {
+export async function resetElosOfUsers(users: User[]) {
   const maxRetries = 5;
   // get the current season number
   const seasonNumber = await getSeasonNumber();
@@ -68,11 +55,17 @@ async function resetElosOfUsers(users: User[]) {
     try {
       await resetUserElo(user, seasonNumber);
     } catch (error) {
-      throw new Error(`Failed to reset ELO for user (${user._id}:${user.username}): ${error.message}`);
+      throw new Error(
+        `Failed to reset ELO for user (${user._id}:${user.username}): ${error.message}`,
+      );
     }
   }
 
-  async function retryOperation(operation: Function, args: any[], maxRetries: number): Promise<void> {
+  async function retryOperation(
+    operation: Function,
+    args: any[],
+    maxRetries: number,
+  ): Promise<void> {
     for (let i = 0; i < maxRetries; i++) {
       try {
         await operation(...args);
@@ -92,7 +85,6 @@ async function resetElosOfUsers(users: User[]) {
 // reset the elo of a user
 // @ts-ignore
 async function resetUserElo(user: User, seasonNumber: number) {
-
   user.pastRankings.push(user.currentRanking);
   user.markModified('pastRankings');
 
@@ -111,4 +103,3 @@ async function resetUserElo(user: User, seasonNumber: number) {
 
   await user.save();
 }
-

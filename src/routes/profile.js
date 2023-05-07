@@ -1,9 +1,7 @@
 import express from 'express';
-
-const router = express.Router();
 import sanitizeHtml from 'sanitize-html';
 import url from 'url';
-import { isModMiddleware, checkProfileOwnership } from './middleware';
+import { checkProfileOwnership, isModMiddleware } from './middleware';
 import User from '../models/user';
 import PatreonId from '../models/patreonId';
 import avatarRequest from '../models/avatarRequest';
@@ -11,7 +9,9 @@ import ModLog from '../models/modLog';
 import { createNotification } from '../myFunctions/createNotification';
 import Rank from '../models/rank';
 import matchBracket from '../elo/utils/matchBracket';
-import getSeasonNumber from '../elo/utils/getSeasonNumber';
+import getSeasonNumber from '../modelsHelper/seasonNumber';
+
+const router = express.Router();
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',
   'iframe',
@@ -392,7 +392,9 @@ router.get('/:profileUsername', (req, res) => {
         console.log(err);
       } else {
         //get the parameters of user that to render the profile page
-        const currentRanking = await Rank.findById(foundUser.currentRanking).exec();
+        const currentRanking = await Rank.findById(
+          foundUser.currentRanking,
+        ).exec();
         const pastRankings = [];
         const currentSeasonNumber = await getSeasonNumber();
         //get the past rankings of the user and reverse the order
@@ -406,10 +408,12 @@ router.get('/:profileUsername', (req, res) => {
           seasonNumber: currentSeasonNumber,
           currentRanking: currentRanking,
           pastRankings: pastRankings,
-          ratingBracket: matchBracket(foundUser.rating,foundUser.totalRankedGamesPlayed),
+          ratingBracket: matchBracket(
+            foundUser.rating,
+            foundUser.totalRankedGamesPlayed,
+          ),
           personViewingUsername: req.user.username,
         });
-
       }
     },
   );
