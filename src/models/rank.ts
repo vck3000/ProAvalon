@@ -11,6 +11,9 @@ const rankSchema = new mongoose.Schema({
     seasonNumber: {
         type: Number,
     },
+    offset:{
+        type: Number,
+    },
     playerRating: {
         type: Number,
         default: eloConstants.DEFAULTRATING,
