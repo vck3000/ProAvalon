@@ -5,7 +5,8 @@ module.exports = {
     modLog: './src/views/components/mod/mod_log/hydrate.tsx',
     report: './src/views/components/report/hydrate.tsx',
     reportLog: './src/views/components/mod/report/hydrate.tsx',
-    Timer: './src/views/components/Timer/hydrate.tsx',
+    queue: './src/views/components/queue/hydrate.tsx',
+    timer: './src/views/components/timer/hydrate.tsx',
   },
   module: {},
   resolve: {

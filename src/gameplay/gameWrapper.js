@@ -10,9 +10,11 @@ class GameWrapper extends Game {
     maxNumPlayers_,
     newRoomPassword_,
     muteSpectators_,
+    disableVoteHistory_,
     gameMode_,
     ranked_,
     callback_,
+    timeRemaining,
   ) {
     // Get all the game properties
     super(
@@ -22,9 +24,11 @@ class GameWrapper extends Game {
       maxNumPlayers_,
       newRoomPassword_,
       muteSpectators_,
+      disableVoteHistory_,
       gameMode_,
       ranked_,
       callback_,
+      timeRemaining,
     );
   }
 
