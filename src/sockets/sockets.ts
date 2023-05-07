@@ -2298,9 +2298,9 @@ type MatchMakingQueueItem = {
   timeJoinedAt: Date;
 };
 
-const unrankedQueue6Players: MatchMakingQueueItem[] = [];
-const prospectivePlayersFor6UQ: MatchMakingQueueItem[] = [];
-const readyPlayersFor6UQ: MatchMakingQueueItem[] = [];
+let unrankedQueue6Players: MatchMakingQueueItem[] = [];
+let prospectivePlayersFor6UQ: MatchMakingQueueItem[] = [];
+let readyPlayersFor6UQ: MatchMakingQueueItem[] = [];
 
 // Ask each player to confirm they are ready to join
 function checkForUnrankedConfirmation() {
@@ -2317,7 +2317,9 @@ function joinUnrankedQueue(dataObj) {
   // add player to queue
 
   // First if checks if player is joining the six-player game or not
-  if (dataObj.numPlayers === 6) {
+  if (dataObj.numPlayers === 6 && 
+    !unrankedQueue6Players.some(player => player.id === userName.toLowerCase())
+    ) {
     unrankedQueue6Players.push({
       id: this.request.user.username.toLowerCase(),
       user: this.request.user,
