@@ -102,7 +102,6 @@ class Glicko2 {
 
     return Promise.all(games.map(async g => {
       // Calculate the avg ratings and avg RD of the opponents
-
       if (g.spyTeam.includes(userId)) {
         // player is in team SPY
         const resistanceTeam = [...g.resistanceTeam];
@@ -127,9 +126,8 @@ class Glicko2 {
     }));
   }
 
-  async #updateRatingsByUser(user: IUser): Promise<void> {
-    const userId = (await User.findOne({ username: user.username }))
-      ._id;
+  async updateRatingsByUser(userId: Types.ObjectId): Promise<void> {
+    const user = await User.findOne({ _id: userId });
     const gameSummary = await this.#summariseGames(userId);
     const userRankData = await Rank.findOne({
       userId: userId,
@@ -156,7 +154,7 @@ class Glicko2 {
         seasonNumber: this.#CURRENT_SEASON,
         playerRating: userRankData.playerRating,
         rd: newRD,
-        volatility: userRankData.playerRating,
+        volatility: userRankData.volatility,
       });
 
       return;
@@ -228,7 +226,7 @@ class Glicko2 {
   async updateAllUsers(): Promise<void> {
     const users = await User.find({});
     for (const user of users) {
-      await this.#updateRatingsByUser(user);
+      await this.updateRatingsByUser(user._id);
     }
     // TODO: handle season change. Confirm if this is correct.
     this.#CURRENT_SEASON += 1;
