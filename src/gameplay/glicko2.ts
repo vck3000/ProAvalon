@@ -228,8 +228,6 @@ class Glicko2 {
     for (const user of users) {
       await this.updateRatingsByUser(user._id);
     }
-    // TODO: handle season change. Confirm if this is correct.
-    this.#CURRENT_SEASON += 1;
   }
 }
 
