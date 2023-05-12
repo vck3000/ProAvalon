@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 // @ts-ignore
 import passportLocalMongoose from 'passport-local-mongoose';
-import type { IUser } from '../gameplay/types';
+import type { IUser } from './types';
 
 const UserSchema = new mongoose.Schema<IUser>({
   username: {
