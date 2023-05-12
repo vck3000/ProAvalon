@@ -1,4 +1,3 @@
-import type { IUser } from './types';
 import type { IRatingPeriodGameRecord } from '../models/types';
 import { TeamEnum, OutcomeEnum } from './types';
 import User from '../models/user';
@@ -9,7 +8,6 @@ import { Types } from 'mongoose';
 class Glicko2 {
   #epsilon = 0.000001;
   #tau = 0.5;
-  #CURRENT_SEASON = 1;
 
   #computeG(phi: number): number {
     return 1 / Math.sqrt(1 + (3 * phi ** 2) / Math.PI ** 2);
@@ -74,10 +72,10 @@ class Glicko2 {
   }> {
     let ratingSum = 0;
     let rdSum = 0;
-    for (const playerId of team) {
+    for (const userId of team) {
+      const user = await User.findOne({ _id: userId });
       const { playerRating, rd } = await Rank.findOne({
-        userId: playerId,
-        seasonNumber: this.#CURRENT_SEASON - 1,
+        _id: user.currentRanking,
       });
       ratingSum += playerRating;
       rdSum += rd;
@@ -130,10 +128,11 @@ class Glicko2 {
     const user = await User.findOne({ _id: userId });
     const gameSummary = await this.#summariseGames(userId);
     const userRankData = await Rank.findOne({
-      userId: userId,
-      seasonNumber: this.#CURRENT_SEASON - 1,
-    });
+      _id: user.currentRanking,
+    }); 
+    // TODO: handle the case when user has not previous ranks
 
+    
     // Step 2: Convert to Glicko-2 scale
     const player = {
       username: user.username,
@@ -149,12 +148,11 @@ class Glicko2 {
       const newPhi = Math.sqrt(player.phi ** 2 + player.ratingVolatility ** 2);
       const newRD = 173.7178 * newPhi;
 
-      await Rank.create({
-        userId: userId,
-        seasonNumber: this.#CURRENT_SEASON,
-        playerRating: userRankData.playerRating,
+      // update the rank
+      await Rank.updateOne({
+        _id: user.currentRanking,
+      }, {
         rd: newRD,
-        volatility: userRankData.volatility,
       });
 
       return;
@@ -214,9 +212,9 @@ class Glicko2 {
     const newRD = 173.7178 * newPhi;
 
     // Save the new rankings to database
-    await Rank.create({
-      userId: userId,
-      seasonNumber: this.#CURRENT_SEASON,
+    await Rank.updateOne({
+      _id: user.currentRanking,
+    }, {
       playerRating: newRating,
       rd: newRD,
       volatility: newVolatility,
