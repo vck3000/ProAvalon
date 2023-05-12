@@ -1176,18 +1176,18 @@ $(document).ready(() => {
   // On first run, update the colours
 
   for (let i = 0; i < 10; i++) {
-    if (!docCookies.hasItem(`player${i}HighlightColour`)) {
-      docCookies.setItem(
+    if (!localStorage.getItem(`player${i}HighlightColour`)) {
+      localStorage.setItem(
         `player${i}HighlightColour`,
         defaultColours[i],
         Infinity
       );
     }
     $(`#player${i}HighlightColour`)[0].jscolor.fromString(
-      docCookies.getItem(`player${i}HighlightColour`)
+      localStorage.getItem(`player${i}HighlightColour`)
     );
     $(`#player${i}HighlightColour2`)[0].jscolor.fromString(
-      docCookies.getItem(`player${i}HighlightColour`)
+      localStorage.getItem(`player${i}HighlightColour`)
     );
   }
 });
@@ -1198,7 +1198,7 @@ function update(picker) {
   // console.log(picker.playerColourID);
   // console.log(picker.col);
 
-  docCookies.setItem(
+  localStorage.setItem(
     `player${picker.playerColourID}HighlightColour`,
     picker.col,
     Infinity
@@ -1206,10 +1206,10 @@ function update(picker) {
 
   for (let i = 0; i < 10; i++) {
     $(`#player${i}HighlightColour`)[0].jscolor.fromString(
-      docCookies.getItem(`player${i}HighlightColour`)
+      localStorage.getItem(`player${i}HighlightColour`)
     );
     $(`#player${i}HighlightColour2`)[0].jscolor.fromString(
-      docCookies.getItem(`player${i}HighlightColour`)
+      localStorage.getItem(`player${i}HighlightColour`)
     );
   }
 
@@ -1222,7 +1222,7 @@ function update(picker) {
   // only need to change colour if the user has selected that player's chat.
   if (selectedChat[username] === true) {
     const chatItems = $(`.room-chat-list li span[username='${username}']`);
-    const playerHighlightColour = docCookies.getItem(
+    const playerHighlightColour = localStorage.getItem(
       `player${getIndexFromUsername(username)}HighlightColour`
     );
 

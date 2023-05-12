@@ -254,6 +254,15 @@ export const userCommands = {
     },
   },
 
+  setchatcolor: {
+    command: 'setchatcolor',
+    help: '/setchatcolor <playernumber> <hexcolor>: Set the color for this playernumber ',
+    run(data, senderSocket) {
+
+    }
+
+  },
+
   buzz: {
     command: 'buzz',
     help: '/buzz <playername>: Buzz a player.',

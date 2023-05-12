@@ -234,9 +234,22 @@ function activateAvatarButtons() {
         this.parentElement.parentElement.getAttribute('usernameofplayer');
       const chatItems = $(`.room-chat-list li span[username='${username}']`);
 
+      /*
       let playerHighlightColour = docCookies.getItem(
         `player${getIndexFromUsername(username)}HighlightColour`
       );
+      */
+      
+      
+
+      console.log(username); 
+      
+      let playerHighlightColour = localStorage.getItem(
+        `player${getIndexFromUsername(username)}HighlightColour`
+      );
+      
+
+      console.log(playerHighlightColour); 
 
       const setHighlightColorToYellow = $('.setHighlightColorsToYellow')[0]
         .checked;
@@ -1547,15 +1560,29 @@ function extendTabContentToBottomInRoom() {
 
 let lastChatBoxCommand = '';
 function checkMessageForCommands(message, chatBox) {
+
+  console.log(message, 'message'); 
+  
   arrayMessage = message.split(' ');
+
   // console.log("arr message: " + arrayMessage);
 
   if (message[0] === '/') {
+
+    console.log(message[1], 'message1'); 
+    console.log(message[2], 'message2'); 
     // console.log("COMMAND INPUT DETECTED");
     let validCommandFound = false;
 
     // need to change this to only up to the first space
     messageCommand = arrayMessage[0].slice(1, arrayMessage[0].length);
+    console.log(messageCommand, 'messageCommand'); 
+
+    if (messageCommand === 'setchatcolor')
+    {
+      localStorage.setItem(arrayMessage[1]+'HighlightColour', arrayMessage[2]); 
+      console.log(arrayMessage[1]); 
+    }
 
     let commandCalled = '';
 
