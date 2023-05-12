@@ -1,9 +1,10 @@
 import type { IRatingPeriodGameRecord } from '../models/types';
-import { TeamEnum, OutcomeEnum } from './types';
+import { OutcomeEnum, TeamEnum } from './types';
 import User from '../models/user';
 import RatingPeriodGameRecord from '../models/RatingPeriodGameRecord';
 import Rank from '../models/rank';
 import { Types } from 'mongoose';
+import { MongoInterface } from '../db/mongodb';
 
 class Glicko2 {
   #epsilon = 0.000001;
@@ -86,53 +87,66 @@ class Glicko2 {
     };
   }
 
-  async #summariseGames(
-    userId: Types.ObjectId,
-  ) : Promise<{
-    opponentRating: number,
-    opponentRatingDeviation: number,
-    outcome: OutcomeEnum
-  }[]> {
+  async #summariseGames(userId: Types.ObjectId): Promise<
+    {
+      opponentRating: number;
+      opponentRatingDeviation: number;
+      outcome: OutcomeEnum;
+    }[]
+  > {
     // Find games the player has played. Either Spy team or Resistance team.
     const games: IRatingPeriodGameRecord[] = await RatingPeriodGameRecord.find({
       $or: [{ spyTeam: userId }, { resistanceTeam: userId }],
     });
 
-    return Promise.all(games.map(async g => {
-      // Calculate the avg ratings and avg RD of the opponents
-      if (g.spyTeam.includes(userId)) {
-        // player is in team SPY
-        const resistanceTeam = [...g.resistanceTeam];
-        const { ratingAvg, rdAvg } = await this.#computeTeamAvg(resistanceTeam);
+    return Promise.all(
+      games.map(async (g) => {
+        // Calculate the avg ratings and avg RD of the opponents
+        if (g.spyTeam.includes(userId)) {
+          // player is in team SPY
+          const resistanceTeam = [...g.resistanceTeam];
+          const { ratingAvg, rdAvg } = await this.#computeTeamAvg(
+            resistanceTeam,
+          );
 
-        return {
-          opponentRating: ratingAvg,
-          opponentRatingDeviation: rdAvg,
-          outcome: g.winningTeam === TeamEnum.SPY ? OutcomeEnum.WIN : OutcomeEnum.LOSE,
-        };
-      } else {
-        // player is in team RESISTANCE
-        const spyTeam = [...g.spyTeam];
-        const { ratingAvg, rdAvg } = await this.#computeTeamAvg(spyTeam);
+          return {
+            opponentRating: ratingAvg,
+            opponentRatingDeviation: rdAvg,
+            outcome:
+              g.winningTeam === TeamEnum.SPY
+                ? OutcomeEnum.WIN
+                : OutcomeEnum.LOSE,
+          };
+        } else {
+          // player is in team RESISTANCE
+          const spyTeam = [...g.spyTeam];
+          const { ratingAvg, rdAvg } = await this.#computeTeamAvg(spyTeam);
 
-        return {
-          opponentRating: ratingAvg,
-          opponentRatingDeviation: rdAvg,
-          outcome: g.winningTeam === TeamEnum.RESISTANCE ? OutcomeEnum.WIN : OutcomeEnum.LOSE,
-        };
-      }
-    }));
+          return {
+            opponentRating: ratingAvg,
+            opponentRatingDeviation: rdAvg,
+            outcome:
+              g.winningTeam === TeamEnum.RESISTANCE
+                ? OutcomeEnum.WIN
+                : OutcomeEnum.LOSE,
+          };
+        }
+      }),
+    );
   }
 
   async updateRatingsByUser(userId: Types.ObjectId): Promise<void> {
-    const user = await User.findOne({ _id: userId });
+    // const user = await User.findOne({ _id: userId });
+    const user = await MongoInterface.GetUserByUsername('qwer');
+
+    console.log('hi', user);
+
     const gameSummary = await this.#summariseGames(userId);
     const userRankData = await Rank.findOne({
       _id: user.currentRanking,
-    }); 
+    });
     // TODO: handle the case when user has not previous ranks
 
-    
     // Step 2: Convert to Glicko-2 scale
     const player = {
       username: user.username,
@@ -149,11 +163,14 @@ class Glicko2 {
       const newRD = 173.7178 * newPhi;
 
       // update the rank
-      await Rank.updateOne({
-        _id: user.currentRanking,
-      }, {
-        rd: newRD,
-      });
+      await Rank.updateOne(
+        {
+          _id: user.currentRanking,
+        },
+        {
+          rd: newRD,
+        },
+      );
 
       return;
     }
@@ -212,13 +229,16 @@ class Glicko2 {
     const newRD = 173.7178 * newPhi;
 
     // Save the new rankings to database
-    await Rank.updateOne({
-      _id: user.currentRanking,
-    }, {
-      playerRating: newRating,
-      rd: newRD,
-      volatility: newVolatility,
-    });
+    await Rank.updateOne(
+      {
+        _id: user.currentRanking,
+      },
+      {
+        playerRating: newRating,
+        rd: newRD,
+        volatility: newVolatility,
+      },
+    );
   }
 
   async updateAllUsers(): Promise<void> {
