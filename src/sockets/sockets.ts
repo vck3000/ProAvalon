@@ -2334,7 +2334,9 @@ function joinUnrankedQueue(dataObj) {
     }
   } else {
     // if number of players in queue >= 6, ask for confirmation to join game
-    this.emit('invalid-player-count');
+    if (dataObj.numPlayers !== 6) {
+      this.emit('invalid-player-count');
+    }
     return;
   }
 }
