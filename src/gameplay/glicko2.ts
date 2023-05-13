@@ -1,24 +1,21 @@
-import type { IRatingPeriodGameRecord } from '../models/types';
+import type { IRank } from '../models/types';
 import { OutcomeEnum, TeamEnum } from './types';
-import User from '../models/user';
-import RatingPeriodGameRecord from '../models/RatingPeriodGameRecord';
-import Rank from '../models/rank';
 import { Types } from 'mongoose';
-import { MongoInterface } from '../db/mongodb';
+import Mongo from '../db/Mongo';
 
 class Glicko2 {
-  #epsilon = 0.000001;
-  #tau = 0.5;
+  private static epsilon = 0.000001;
+  private static tau = 0.5;
 
-  #computeG(phi: number): number {
+  private static computeG(phi: number): number {
     return 1 / Math.sqrt(1 + (3 * phi ** 2) / Math.PI ** 2);
   }
 
-  #computeE(mu: number, mu_j: number, phi_j: number): number {
-    return 1 / (1 + Math.exp(-1 * this.#computeG(phi_j) * (mu - mu_j)));
+  private static computeE(mu: number, mu_j: number, phi_j: number): number {
+    return 1 / (1 + Math.exp(-1 * this.computeG(phi_j) * (mu - mu_j)));
   }
 
-  #computeNewVolatility(
+  private static computeNewVolatility(
     delta: number,
     phi: number,
     v: number,
@@ -31,7 +28,7 @@ class Glicko2 {
       output +=
         (Math.E ** x * (delta ** 2 - phi ** 2 - v - Math.E ** x)) /
         (2 * (phi ** 2 + v + Math.E ** x) ** 2);
-      output -= (x - a) / this.#tau ** 2;
+      output -= (x - a) / this.tau ** 2;
       return output;
     };
 
@@ -41,16 +38,16 @@ class Glicko2 {
       B = Math.log(delta ** 2 - phi ** 2 - v);
     } else {
       let k = 1;
-      while (computeF(a - k * this.#tau) < 0) {
+      while (computeF(a - k * this.tau) < 0) {
         k += 1;
       }
-      B = a - k * this.#tau;
+      B = a - k * this.tau;
     }
 
     let f_A = computeF(A);
     let f_B = computeF(B);
 
-    while (Math.abs(B - A) > this.#epsilon) {
+    while (Math.abs(B - A) > this.epsilon) {
       const C = A + ((A - B) * f_A) / (f_B - f_A);
       const f_C = computeF(C);
       if (f_C * f_B <= 0) {
@@ -67,17 +64,14 @@ class Glicko2 {
     return Math.E ** (A / 2);
   }
 
-  async #computeTeamAvg(team: Types.ObjectId[]): Promise<{
+  private static async computeTeamAvg(team: Types.ObjectId[]): Promise<{
     ratingAvg: number;
     rdAvg: number;
   }> {
     let ratingSum = 0;
     let rdSum = 0;
     for (const userId of team) {
-      const user = await User.findOne({ _id: userId });
-      const { playerRating, rd } = await Rank.findOne({
-        _id: user.currentRanking,
-      });
+      const { playerRating, rd } = await Mongo.getRankByUserId(userId.toString());
       ratingSum += playerRating;
       rdSum += rd;
     }
@@ -87,7 +81,7 @@ class Glicko2 {
     };
   }
 
-  async #summariseGames(userId: Types.ObjectId): Promise<
+  private static async summariseGames(userId: string): Promise<
     {
       opponentRating: number;
       opponentRatingDeviation: number;
@@ -95,17 +89,16 @@ class Glicko2 {
     }[]
   > {
     // Find games the player has played. Either Spy team or Resistance team.
-    const games: IRatingPeriodGameRecord[] = await RatingPeriodGameRecord.find({
-      $or: [{ spyTeam: userId }, { resistanceTeam: userId }],
-    });
+    const games = await Mongo.getGamesByUserId(userId);
 
     return Promise.all(
       games.map(async (g) => {
         // Calculate the avg ratings and avg RD of the opponents
-        if (g.spyTeam.includes(userId)) {
+        const userObjectId = new Types.ObjectId(userId);
+        if (g.spyTeam.includes(userObjectId)) {
           // player is in team SPY
           const resistanceTeam = [...g.resistanceTeam];
-          const { ratingAvg, rdAvg } = await this.#computeTeamAvg(
+          const { ratingAvg, rdAvg } = await this.computeTeamAvg(
             resistanceTeam,
           );
 
@@ -120,7 +113,7 @@ class Glicko2 {
         } else {
           // player is in team RESISTANCE
           const spyTeam = [...g.spyTeam];
-          const { ratingAvg, rdAvg } = await this.#computeTeamAvg(spyTeam);
+          const { ratingAvg, rdAvg } = await this.computeTeamAvg(spyTeam);
 
           return {
             opponentRating: ratingAvg,
@@ -135,22 +128,17 @@ class Glicko2 {
     );
   }
 
-  async updateRatingsByUser(userId: Types.ObjectId): Promise<void> {
-    // const user = await User.findOne({ _id: userId });
-    const user = await MongoInterface.GetUserByUsername('qwer');
-
-    console.log('hi', user);
-
-    const gameSummary = await this.#summariseGames(userId);
-    const userRankData = await Rank.findOne({
-      _id: user.currentRanking,
-    });
-    // TODO: handle the case when user has not previous ranks
+  static async computeRankRatingsByUserId(userId: string): Promise<IRank> {
+    const user = await Mongo.getUserByUserId(userId);
+    const gameSummary = await this.summariseGames(userId);
+    const userRankData = await Mongo.getRankByUserId(userId);
+    
+    // TODO: handle the case when user has no previous ranks
 
     // Step 2: Convert to Glicko-2 scale
     const player = {
       username: user.username,
-      mu: (user.playerRating - 1500) / 173.7178,
+      mu: (userRankData.playerRating - 1500) / 173.7178,
       phi: userRankData.rd / 173.7178,
       ratingVolatility: userRankData.volatility,
     };
@@ -162,17 +150,10 @@ class Glicko2 {
       const newPhi = Math.sqrt(player.phi ** 2 + player.ratingVolatility ** 2);
       const newRD = 173.7178 * newPhi;
 
-      // update the rank
-      await Rank.updateOne(
-        {
-          _id: user.currentRanking,
-        },
-        {
-          rd: newRD,
-        },
-      );
-
-      return;
+      return {
+        ...userRankData,
+        rd: newRD,
+      };
     }
 
     const opponents = gameSummary.map((game) => {
@@ -181,8 +162,8 @@ class Glicko2 {
       return {
         mu,
         phi,
-        g: this.#computeG(phi),
-        E: this.#computeE(player.mu, mu, phi),
+        g: this.computeG(phi),
+        E: this.computeE(player.mu, mu, phi),
         s: game.outcome,
       };
     });
@@ -204,7 +185,7 @@ class Glicko2 {
     delta *= v;
 
     // Step 5: Determine the new value of the volatility
-    const newVolatility = this.#computeNewVolatility(
+    const newVolatility = this.computeNewVolatility(
       delta,
       player.phi,
       v,
@@ -228,24 +209,12 @@ class Glicko2 {
     const newRating = 173.7178 * newMu + 1500;
     const newRD = 173.7178 * newPhi;
 
-    // Save the new rankings to database
-    await Rank.updateOne(
-      {
-        _id: user.currentRanking,
-      },
-      {
-        playerRating: newRating,
-        rd: newRD,
-        volatility: newVolatility,
-      },
-    );
-  }
-
-  async updateAllUsers(): Promise<void> {
-    const users = await User.find({});
-    for (const user of users) {
-      await this.updateRatingsByUser(user._id);
-    }
+    return {
+      ...userRankData,
+      playerRating: newRating,
+      rd: newRD,
+      volatility: newVolatility,
+    };
   }
 }
 
