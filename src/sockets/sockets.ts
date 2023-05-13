@@ -2351,7 +2351,7 @@ function joinUnrankedQueue(dataObj) {
     console.log(unrankedQueue6Players.length);
     // if number of players in queue < 6, return null
     // Second if checks if there are enough players for a six-player game
-    if (unrankedQueue6Players.length >= 1) {
+    if (unrankedQueue6Players.length >= 2) {
       checkForUnrankedConfirmation();
     } else {
       return;
@@ -2498,6 +2498,7 @@ function initiateUnrankedGame(dataObj) {
     readyPlayersFor6UQ.push(selectedProspectivePlayer);
   } else if (!dataObj.playerReady) {
     // if a player rejects or times out, add other players to queue
+    console.log(prospectivePlayersFor6UQ);
     prospectivePlayersFor6UQ.forEach(prospectivePlayer => {
       // emit to each player informing that the player has cancelled.
       const playerSocket: SocketUser = getSocketFromUsername(prospectivePlayer.user.username.toLowerCase());

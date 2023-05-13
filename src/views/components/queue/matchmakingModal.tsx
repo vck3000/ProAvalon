@@ -15,7 +15,7 @@ export function MatchMakingModal() {
   const [showElement, setShowElement] = useState(false);
   const [count, setCount] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
-  const [counterFromServer, setCounterFromServer] = useState(0);
+  const [second, setSecond] = useState(60);
 
   // Obtaining a nice clean, typed reference to the global socket object.
   // @ts-ignore
@@ -30,14 +30,42 @@ export function MatchMakingModal() {
 
   // To create a countup timer
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCount((count) => count + 1);
-    }, 1000);
-    return () => clearInterval(interval);
+    socket_.on('confirm-ready-to-play', function () {
+      setModalOpen(true);
+      setShowElement(false);
+      setClickedButton(null);
+      setCount(0);
+    });
+    socket_.on('leave-queue', function () {
+      setShowElement(false);
+      setClickedButton(null);
+      setButtonsDisabled(false);
+    });
+    socket_.on('declined-to-play', function (data) {
+      setModalOpen(false);
+      alert(data.decliningPlayer + ' has leave the queue');
+      console.log(this.request);
+    });
   }, []);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (second > 0) {
+        setSecond(second - 1);
+      }
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [second])
 
   // Handlers
   const handleClick = (button: ButtonId) => {
+    setCount(0);
+    setSecond(60);
+    setInterval(() => {
+      setCount((count) => count + 1);
+    }, 1000);
+    // return () => clearInterval(interval);
     const playerObj = {
       numPlayers: 6,
     };
@@ -47,34 +75,33 @@ export function MatchMakingModal() {
 
     if (button === 'unrankBtn') {
       socket_.emit('join-unranked-queue', playerObj);
-      socket_.on('confirm-ready-to-play', function () {
-        setModalOpen(true);
-        setShowElement(false);
-        setClickedButton(null);
-        setCount(0);
-      });
     }
   };
 
   const leaveQueue = () => {
     socket_.emit('leave-unranked-queue');
-    socket_.on('leave-queue', function () {
-      setShowElement(false);
-      setCount(0);
-      setClickedButton(null);
-      setButtonsDisabled(false);
-    });
+    setCount(0);
   };
 
   const cancelQueue = () => {
-    socket_.emit('initiate-unranked-game', {playerReady: false});
-    socket_.on('declined-to-play', function (data) {
-      console.log(data);
-      setModalOpen(false);
-      alert(data.decliningPlayer);
-      console.log(this.request);
-    })
+    socket_.emit('initiate-unranked-game', { playerReady: false });
   };
+
+  // const displayCountDownTimer = () => {
+  //   const intervalId = setInterval(() => {
+  //     console.log("In timer!");
+  //     if (second > 0) {
+  //       // const oldSecond = second;
+  //       setSecond(second - 1);
+  //       console.log(second);
+  //     } else {
+  //       clearInterval(intervalId);
+  //       socket_.emit('initiate-unranked-game', { playerReady: false });
+  //       setModalOpen(true);
+  //     }
+  //   }, 1000);
+  //   return `${second}`;
+  // }
 
   const btnStyle = (button: ButtonId) => {
     const baseStyle: React.CSSProperties = { backgroundColor: 'transparent' };
@@ -121,11 +148,9 @@ export function MatchMakingModal() {
         Rank Game
       </button>
 
-      <button {...buttonProps('unrankBtn')} className="matchmaking-btn">
+      <button {...buttonProps('unrankBtn')} className="matchmaking-btn btn btn-default">
         Unranked Game
       </button>
-
-      <p>{counterFromServer}</p>
 
       {showElement && <Loading />}
 
@@ -152,6 +177,7 @@ export function MatchMakingModal() {
       >
         <div>
           <h1>Match Found!</h1>
+          <h2>{second}</h2>
           <button>Join</button>
           <button onClick={cancelQueue}>Cancel</button>
         </div>
