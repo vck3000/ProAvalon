@@ -2471,13 +2471,14 @@ function initiateUnrankedGame(dataObj) {
   if (dataObj.playerReady && selectedProspectivePlayer !== -1) {
     readyPlayersFor6UQ.push(selectedProspectivePlayer);
   } else if (!dataObj.playerReady) {
+    const decliningPlayer = this.request.user.username;
     // if a player rejects or times out, add other players to queue
     prospectivePlayersFor6UQ.forEach(prospectivePlayer => {
       // emit to each player informing that the player has cancelled.
       const playerSocket: SocketUser = getSocketFromUsername(prospectivePlayer.user.username.toLowerCase());
       playerSocket.emit('declined-to-play', {
-        gameStatus: declined,
-        decliningPlayer: this.request.user.username,
+        gameStatus: "declined",
+        decliningPlayer,
       });
     })
     prospectivePlayersFor6UQ.splice(selectedProspectivePlayer, 1);
