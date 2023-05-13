@@ -10,8 +10,8 @@ export default class Tristan extends Entity {
   constructor() {
     super(Alliance.Resistance);
     this.description = 'Tristan and Isolde both see each other.';
-    this.components.push(new SeeTristanIsoldeC());  
-    this.components.push(new VoteC());
+    this.addComponent(new SeeTristanIsoldeC());  
+    this.addComponent(new VoteC());
     this.entityMap.set(Alliance.Resistance, this.description);
   }
 }

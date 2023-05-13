@@ -10,8 +10,8 @@ export default class Assassin extends Entity {
   constructor() {
     super(Alliance.Spy);
     this.description = 'If the resistance win 3 missions, the Assassin can shoot one person for Merlin, or two people for Tristan and Isolde. If they are correct, the spies win!';
-    this.components.push(new assassinateC());  
-    this.components.push(new VoteC());
+    this.addComponent(new assassinateC());  
+    this.addComponent(new VoteC());
     this.entityMap.set(Alliance.Spy, this.description);
   }
 }

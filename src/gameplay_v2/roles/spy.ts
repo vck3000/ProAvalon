@@ -10,8 +10,8 @@ export default class Spy extends Entity{
     constructor(alliance: Alliance){
         super(Alliance.Spy);
         this.description = 'A standard spy member';
-        this.components.push(new SeeSpiesC());  
-        this.components.push(new VoteC());
+        this.addComponent(new SeeSpiesC());  
+        this.addComponent(new VoteC());
         this.entityMap.set(Alliance.Spy, this.description);
     }
 }

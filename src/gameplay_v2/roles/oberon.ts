@@ -9,7 +9,7 @@ export default class Oberon extends Entity {
   constructor() {
     super(Alliance.Spy);
     this.description = 'Oberon and Spies do not know each other.';
-    this.components.push(new VoteC());
+    this.addComponent(new VoteC());
     this.entityMap.set(Alliance.Spy, this.description);
   }
 }

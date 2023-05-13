@@ -12,8 +12,8 @@ export default class Percival extends Entity {
   constructor() {
     super(Alliance.Resistance);
     this.description = 'Knows the identity of Merlin and Morgana.';
-    this.components.push(new SeePercivalC());
-    this.components.push(new VoteC());
+    this.addComponent(new SeePercivalC());
+    this.addComponent(new VoteC());
     this.entityMap.set(Alliance.Resistance, this.description);
   }
 }

@@ -9,7 +9,7 @@ export default class Resistance extends Entity{
     constructor(){
         super(Alliance.Resistance);
         this.description = 'A standard Resistance member.';
-        this.components.push(new VoteC());
+        this.addComponent(new VoteC());
         this.entityMap.set(Alliance.Resistance, this.description);
     }
 
