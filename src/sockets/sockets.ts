@@ -2536,7 +2536,9 @@ function joinRankedQueue(dataObj) {
   // add player to queue
 
   // First if checks if player is joining the six-player game or not
-  if (dataObj.numPlayers === 6) {
+  if (dataObj.numPlayers === 6 && 
+    !rankedQueue6Players.some(player => player.id === this.request.user.userName.toLowerCase())
+    ) {
     rankedQueue6Players.push({
       id: this.request.user.username.toLowerCase(),
       user: this.request.user,
@@ -2553,7 +2555,9 @@ function joinRankedQueue(dataObj) {
     }
   } else {
     // if number of players in queue >= 6, ask for confirmation to join game
-    this.emit('invalid-player-count');
+    if (dataObj.numPlayers !== 6) {
+      this.emit('invalid-player-count');
+    }
     return;
   }
 }
