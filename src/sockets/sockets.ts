@@ -2309,10 +2309,9 @@ type MatchMakingQueueItem = {
   playerRating: Number = 1500,
 };
 
-// Unranked queue
-const unrankedQueue6Players: MatchMakingQueueItem[] = [];
-const prospectivePlayersFor6UQ: MatchMakingQueueItem[] = [];
-const readyPlayersFor6UQ: MatchMakingQueueItem[] = [];
+let unrankedQueue6Players: MatchMakingQueueItem[] = [];
+let prospectivePlayersFor6UQ: MatchMakingQueueItem[] = [];
+let readyPlayersFor6UQ: MatchMakingQueueItem[] = [];
 
 // Ask each player to confirm they are ready to join
 function checkForUnrankedConfirmation() {
@@ -2329,7 +2328,9 @@ function joinUnrankedQueue(dataObj) {
   // add player to queue
 
   // First if checks if player is joining the six-player game or not
-  if (dataObj.numPlayers === 6) {
+  if (dataObj.numPlayers === 6 && 
+    !unrankedQueue6Players.some(player => player.id === this.request.user.userName.toLowerCase())
+    ) {
     unrankedQueue6Players.push({
       id: this.request.user.username.toLowerCase(),
       user: this.request.user,
@@ -2344,7 +2345,9 @@ function joinUnrankedQueue(dataObj) {
     }
   } else {
     // if number of players in queue >= 6, ask for confirmation to join game
-    this.emit('invalid-player-count');
+    if (dataObj.numPlayers !== 6) {
+      this.emit('invalid-player-count');
+    }
     return;
   }
 }
@@ -2481,13 +2484,14 @@ function initiateUnrankedGame(dataObj) {
   if (dataObj.playerReady && selectedProspectivePlayer !== -1) {
     readyPlayersFor6UQ.push(selectedProspectivePlayer);
   } else if (!dataObj.playerReady) {
+    const decliningPlayer = this.request.user.username;
     // if a player rejects or times out, add other players to queue
     prospectivePlayersFor6UQ.forEach(prospectivePlayer => {
       // emit to each player informing that the player has cancelled.
       const playerSocket: SocketUser = getSocketFromUsername(prospectivePlayer.user.username.toLowerCase());
       playerSocket.emit('declined-to-play', {
-        gameStatus: declined,
-        decliningPlayer: this.request.user.username,
+        gameStatus: "declined",
+        decliningPlayer,
       });
     })
     prospectivePlayersFor6UQ.splice(selectedProspectivePlayer, 1);
