@@ -1,5 +1,8 @@
-import { GameData } from '../gameEngine';
+
 import { SendData, System } from './system';
+import { GameData } from '../gameEngine';
+import { Mission, MissionC } from '../roles/components/mission';
+import { Alliance, Role } from '../gameTypes';
 import { Player } from '../player';
 
 // As the other components not finished yet , I will start with pesodo code
@@ -20,12 +23,16 @@ export class assassinationS implements System {
         // then spy win, execute this phase.
         //if(mission > 3 || mission === 3){
         //assassination select merlin:
+
+        // Format is string, which store the user name of the merlin
         const merlinName = '';
 
         for (const player of playerList) {
             if (
-                player.entity.alliance === 'Merlin',
+                player.alliance === Alliance.Merlin,
                 ) {
+
+
                 merlinName = player.username;
             }
         }

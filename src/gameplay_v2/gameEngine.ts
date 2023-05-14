@@ -5,7 +5,10 @@ import Merlin from './roles/merlin';
 import { Vote, VoteC } from './roles/components/vote';
 import { System } from './systems/system';
 import { VoteS } from './systems/voteS';
-import { GameMoveData } from './gameTypes';
+
+// 14/5 added by mengchen:  when adding player to contructor as paramter of Player changes,
+// Input here also need to change, so we need to add Role and Alliance here
+import { GameMoveData, Role, Alliance } from './gameTypes';
 
 export class GameData {
   players: Player[];
@@ -17,13 +20,15 @@ export class GameEngine {
   systems: System[] = [new VoteS()];
 
   constructor() {
+
+    // Note here the data input has been changed as player.ts changed correspondly.
     this.data = {
       players: [
-        new Player('1', new Merlin()),
-        new Player('2', new Merlin()),
-        new Player('3', new Merlin()),
-        new Player('4', new Merlin()),
-        new Player('5', new Merlin()),
+        new Player('1', Alliance.Resistance, Role.Merlin),
+        new Player('2', Alliance.Spy, Role.Spy),
+        new Player('3', Alliance.Spy, Role.Assassin),
+        new Player('4', Alliance.Resistance, Role.Resistance),
+        new Player('5', Alliance.Resistance, Role.Resistance),
       ],
       state: VotingTeam,
     };
@@ -52,7 +57,7 @@ export class GameEngine {
 
   runAllSystems(): void {
     for (const system of this.systems) {
-      system.run(this.data, () => {});
+      system.run(this.data, () => { });
     }
   }
 }
