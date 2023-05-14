@@ -21,7 +21,7 @@ export class GameEngine {
 
   constructor() {
 
-    // Note here the data input has been changed as player.ts changed correspondly.
+    // Note here the data input has been changed as player.ts changed correspondingly.
     this.data = {
       players: [
         new Player('1', Alliance.Resistance, Role.Merlin),

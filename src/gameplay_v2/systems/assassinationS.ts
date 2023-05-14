@@ -4,8 +4,9 @@ import { GameData } from '../gameEngine';
 import { Mission, MissionC } from '../roles/components/mission';
 import { Alliance, Role } from '../gameTypes';
 import { Player } from '../player';
+import { EndGame } from '../states/baseStates/endGame';
 
-// As the other components not finished yet , I will start with pesodo code
+// As the other components not finished yet , I will start with pesodo code only this part
 export class assassinationS implements System {
     run(gameData: GameData, sendData: SendData): void {
 
@@ -15,14 +16,59 @@ export class assassinationS implements System {
         const playerList: Player[] = gameData.players;
 
         // get how many missions already completed:
-        //To Be Done as voteMissionS not completed yet
+
+
+        // The missions are not sure, but I can made one code that almost correct,
+        // After mission code really complete we only need to make 
+        // slightly change to it.
+
+
+        // If mission code complete, it should store in gameData from the constructor.
+
+        // const missionList: missions[] = gameData.mission;
 
         //check if there are 3 missions that are won by Resistance
 
         // if greater than 3 mission or equal to 3 mission successful, 
         // then spy win, execute this phase.
-        //if(mission > 3 || mission === 3){
-        //assassination select merlin:
+
+
+        // This variable is used to count mission that already done and win;
+
+        // let missionWinCount = 0;
+        // let missionCount = 0
+
+        // Check how many mission are win, 
+        // And add them to missionCount variable;
+
+        // for (const mission of missions){
+        // if (mission.win == 'true'){
+
+        // number of mission that win count plus one
+        //missionWinCount += 1;
+        //}
+
+        // all mission count plus one
+        // missionCount += 1;
+        // }
+
+
+
+        // If mission number is less than three, break the code as assassination stage have not start yet.
+        // If the total number of mission count is 5 which is all mission compelete, also trigger this assassination stage
+
+        //if(missionWinCount < 3 && missionCount !== 5){
+        //break
+        //}
+
+
+        // If spy already win, directly break the code
+        // if(gameData.state === SPY_WIN){
+        //break
+        //}
+
+
+
 
         // Format is string, which store the user name of the merlin
         let merlinName = '';
@@ -130,11 +176,17 @@ export class assassinationS implements System {
 
         // THen show assassination all resistance,
         // If assassination choose the correct one, then :
-        if (assassination choose correct:) {
+
+
+        // This code are comment because End Game stage not complete yet, after he complete, uncomment it directly.
+        if (spyWin) {
             //End the game, spy win
+
+            // gameData.state = new EndGame(Spy);
         }
-            else {
+        else {
             // res win
+            // gameData.state = new EndGame(Resistance);
         }
         //if so, then execute assassination phase where assassin selects the merlin
         //if correct, end the game as SPY_WIN
