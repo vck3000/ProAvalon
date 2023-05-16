@@ -47,6 +47,8 @@ const quote = new Quote();
 
 const dateResetRequired = 1543480412695;
 
+const default_timer = 25;
+
 export const allSockets: SocketUser[] = [];
 
 // TODO: This is bad!!! We should work to make this not needed to be exported.
@@ -56,6 +58,14 @@ export let nextRoomId = 1;
 export function incrementNextRoomId() {
   nextRoomId++;
 }
+
+let count = default_timer;
+setInterval(() => {
+  for (const socket of allSockets) {
+    socket.emit('RoomTimer',count);
+  }
+  count--;
+},1000);
 
 const allChat5Min = [];
 
@@ -1388,6 +1398,7 @@ export const server = function (io: SocketServer): void {
     socket.on('update-room-game-mode', updateRoomGameMode);
     socket.on('update-room-ranked', updateRoomRanked);
     socket.on('update-room-muteSpectators', updateRoomMuteSpectators);
+    socket.on('update-room-disableVoteHistory', updateRoomDisableVoteHistory);
 
     //************************
     // game data stuff
@@ -1639,6 +1650,20 @@ export function sendReplyToCommand(socket: Socket, message: string) {
     message,
     classStr: 'server-text',
   });
+}
+
+function StartTimer(nextRoomId,playerSocket) {
+  if (room[nextRoomId].timer > 0) {
+    setInterval(() => {
+      playerSocket.emit('RoomTimer', room[nextRoomId].timer);
+      room[nextRoomId].timer--;
+    }, 1000);
+  } else {
+    clearInterval(room[nextRoomId].timer);
+    // TODO
+    // destory the room
+    // void the game
+  }
 }
 
 export function destroyRoom(roomId) {
@@ -2026,6 +2051,13 @@ function newRoom(dataObj) {
       return;
     }
 
+    if (
+      dataObj.disableVoteHistory !== true &&
+      dataObj.disableVoteHistory !== false
+    ) {
+      return;
+    }
+
     // while rooms exist already (in case of a previously saved and retrieved game)
     while (rooms[nextRoomId]) {
       incrementNextRoomId();
@@ -2042,6 +2074,7 @@ function newRoom(dataObj) {
       dataObj.newRoomPassword,
       dataObj.gameMode,
       dataObj.muteSpectators,
+      dataObj.disableVoteHistory,
       rankedRoom,
       socketCallback,
     );
@@ -2266,6 +2299,14 @@ function updateRoomRanked(rankedType) {
 function updateRoomMuteSpectators(muteSpectators) {
   if (rooms[this.request.user.inRoomId]) {
     rooms[this.request.user.inRoomId].updateMuteSpectators(muteSpectators);
+  }
+}
+
+function updateRoomDisableVoteHistory(disableVoteHistory) {
+  if (rooms[this.request.user.inRoomId]) {
+    rooms[this.request.user.inRoomId].updateDisableVoteHistory(
+      disableVoteHistory,
+    );
   }
 }
 
