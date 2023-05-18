@@ -64,14 +64,14 @@ class Glicko2 {
     return Math.E ** (A / 2);
   }
 
-  private static async computeTeamAvg(team: Types.ObjectId[]): Promise<{
+  private static async computeTeamAvg(team: string[]): Promise<{
     ratingAvg: number;
     rdAvg: number;
   }> {
     let ratingSum = 0;
     let rdSum = 0;
     for (const userId of team) {
-      const { playerRating, rd } = await Mongo.getRankByUserId(userId.toString());
+      const { playerRating, rd } = await Mongo.getRankByUserId(userId);
       ratingSum += playerRating;
       rdSum += rd;
     }
@@ -94,8 +94,7 @@ class Glicko2 {
     return Promise.all(
       games.map(async (g) => {
         // Calculate the avg ratings and avg RD of the opponents
-        const userObjectId = new Types.ObjectId(userId);
-        if (g.spyTeam.includes(userObjectId)) {
+        if (g.spyTeam.includes(userId)) {
           // player is in team SPY
           const resistanceTeam = [...g.resistanceTeam];
           const { ratingAvg, rdAvg } = await this.computeTeamAvg(

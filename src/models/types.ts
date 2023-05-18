@@ -4,8 +4,8 @@ import User from './user';
 export interface IRatingPeriodGameRecord {
   timeGameFinished: Date,
   winningTeam: string,
-  spyTeam: Types.ObjectId[],
-  resistanceTeam: Types.ObjectId[],
+  spyTeam: string[],
+  resistanceTeam: string[],
   roomCreationType: string,
 }
 
