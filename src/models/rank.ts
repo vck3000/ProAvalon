@@ -22,7 +22,7 @@ const rankSchema = new mongoose.Schema<IRank>({
   },
   volatility: {
     type: Number,
-    default: eloConstants.DEFAULTVOL,
+    default: eloConstants.DEFAULT_VOL,
   },
 });
 
