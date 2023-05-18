@@ -1,6 +1,6 @@
 import Glicko2 from '../glicko2';
 import { Types } from 'mongoose';
-import Mongo from '../../db/Mongo';
+import Mongo from '../../db/mongo';
 
 describe('Glicko-2 Unit Test', () => {
   beforeEach(() => {
@@ -26,16 +26,24 @@ describe('Glicko-2 Unit Test', () => {
       volatility: 0.06,
     };
 
-    const getUserByUserIdSpy = jest.spyOn(Mongo, 'getUserByUserId').mockResolvedValueOnce(mockUser);
+    const getUserByUserIdSpy = jest
+      .spyOn(Mongo, 'getUserByUserId')
+      .mockResolvedValueOnce(mockUser);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const summariseGamesSpy = jest.spyOn(Glicko2 as any, 'summariseGames').mockResolvedValueOnce([
-      { opponentRating: 1400, opponentRatingDeviation: 30, outcome: 1 },
-      { opponentRating: 1550, opponentRatingDeviation: 100, outcome: 0 },
-      { opponentRating: 1700, opponentRatingDeviation: 300, outcome: 0 }
-    ]);
-    const getRankByUserIdSpy = jest.spyOn(Mongo, 'getRankByUserId').mockResolvedValueOnce(mockRank);
+    const summariseGamesSpy = jest
+      .spyOn(Glicko2 as any, 'summariseGames')
+      .mockResolvedValueOnce([
+        { opponentRating: 1400, opponentRatingDeviation: 30, outcome: 1 },
+        { opponentRating: 1550, opponentRatingDeviation: 100, outcome: 0 },
+        { opponentRating: 1700, opponentRatingDeviation: 300, outcome: 0 },
+      ]);
+    const getRankByUserIdSpy = jest
+      .spyOn(Mongo, 'getRankByUserId')
+      .mockResolvedValueOnce(mockRank);
 
-    const updatedRank = await Glicko2.computeRankRatingsByUserId(mockUser._id.toString());
+    const updatedRank = await Glicko2.computeRankRatingsByUserId(
+      mockUser._id.toString(),
+    );
     expect(getUserByUserIdSpy).toHaveBeenCalledWith(mockUser._id.toString());
     expect(summariseGamesSpy).toHaveBeenCalledWith(mockUser._id.toString());
     expect(getRankByUserIdSpy).toHaveBeenCalledWith(mockUser._id.toString());
@@ -64,16 +72,24 @@ describe('Glicko-2 Unit Test', () => {
       volatility: 0.06,
     };
 
-    const getUserByUserIdSpy = jest.spyOn(Mongo, 'getUserByUserId').mockResolvedValueOnce(mockUser);
+    const getUserByUserIdSpy = jest
+      .spyOn(Mongo, 'getUserByUserId')
+      .mockResolvedValueOnce(mockUser);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const summariseGamesSpy = jest.spyOn(Glicko2 as any, 'summariseGames').mockResolvedValueOnce([]);
-    const getRankByUserIdSpy = jest.spyOn(Mongo, 'getRankByUserId').mockResolvedValueOnce(mockRank);
+    const summariseGamesSpy = jest
+      .spyOn(Glicko2 as any, 'summariseGames')
+      .mockResolvedValueOnce([]);
+    const getRankByUserIdSpy = jest
+      .spyOn(Mongo, 'getRankByUserId')
+      .mockResolvedValueOnce(mockRank);
 
-    const updatedRank = await Glicko2.computeRankRatingsByUserId(mockUser._id.toString());
+    const updatedRank = await Glicko2.computeRankRatingsByUserId(
+      mockUser._id.toString(),
+    );
     expect(getUserByUserIdSpy).toHaveBeenCalledWith(mockUser._id.toString());
     expect(summariseGamesSpy).toHaveBeenCalledWith(mockUser._id.toString());
     expect(getRankByUserIdSpy).toHaveBeenCalledWith(mockUser._id.toString());
-    
+
     expect(updatedRank.playerRating).toBe(mockRank.playerRating);
     expect(updatedRank.rd).toBeGreaterThan(mockRank.rd);
     expect(updatedRank.volatility).toBe(mockRank.volatility);

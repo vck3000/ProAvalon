@@ -1,7 +1,6 @@
 import type { IRank } from '../models/types';
 import { OutcomeEnum, TeamEnum } from './types';
-import { Types } from 'mongoose';
-import Mongo from '../db/Mongo';
+import Mongo from '../db/mongo';
 
 class Glicko2 {
   private static epsilon = 0.000001;
@@ -89,7 +88,7 @@ class Glicko2 {
     }[]
   > {
     // Find games the player has played. Either Spy team or Resistance team.
-    const games = await Mongo.getGamesByUserId(userId);
+    const games = await Mongo.getGamesByUsername(userId);
 
     return Promise.all(
       games.map(async (g) => {
@@ -131,7 +130,7 @@ class Glicko2 {
     const user = await Mongo.getUserByUserId(userId);
     const gameSummary = await this.summariseGames(userId);
     const userRankData = await Mongo.getRankByUserId(userId);
-    
+
     // TODO: handle the case when user has no previous ranks
 
     // Step 2: Convert to Glicko-2 scale

@@ -55,7 +55,10 @@ class Game extends Room {
 
     this.callback = callback_;
 
-    this.roomCreationType = getRoomTypeFromString(roomCreationType_);
+    this.roomCreationType =
+      roomCreationType_ === undefined
+        ? roomCreationTypeEnum.CUSTOM_ROOM
+        : getRoomTypeFromString(roomCreationType_);
 
     this.minPlayers = 5;
     this.alliances = [
@@ -1366,8 +1369,10 @@ class Game extends Room {
       const ratingRecordToStore = {
         timeGameFinished: timeFinished,
         winningTeam: this.winner,
-        spyTeam: this.spyUsernames,
-        resistanceTeam: this.resistanceUsernames,
+        spyTeam: this.spyUsernames.map((str) => str.toLowerCase()),
+        resistanceTeam: this.resistanceUsernames.map((str) =>
+          str.toLowerCase(),
+        ),
         roomCreationType: this.roomCreationType,
       };
 
