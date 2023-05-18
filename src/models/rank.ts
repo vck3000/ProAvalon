@@ -14,18 +14,18 @@ const rankSchema = new mongoose.Schema<IRank>({
   },
   playerRating: {
     type: Number,
-    default: eloConstants.DEFAULTRATING,
+    default: eloConstants.DEFAULT_RATING,
   },
   rd: {
     type: Number,
-    default: eloConstants.DEFAULTRD,
+    default: eloConstants.DEFAULT_RD,
   },
   volatility: {
     type: Number,
     default: eloConstants.DEFAULTVOL,
   },
 });
-// compile schema into a model
+
 const rank = mongoose.model<IRank>('rank', rankSchema);
 
 export default rank;

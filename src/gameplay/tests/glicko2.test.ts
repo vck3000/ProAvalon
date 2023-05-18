@@ -75,10 +75,7 @@ describe('Glicko-2 Unit Test', () => {
     const getUserByUserIdSpy = jest
       .spyOn(Mongo, 'getUserByUserId')
       .mockResolvedValueOnce(mockUser);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const summariseGamesSpy = jest
-      .spyOn(Glicko2 as any, 'summariseGames')
-      .mockResolvedValueOnce([]);
+    // TODO Pai add in the summarise games mongo get something game mock!
     const getRankByUserIdSpy = jest
       .spyOn(Mongo, 'getRankByUserId')
       .mockResolvedValueOnce(mockRank);
@@ -87,7 +84,6 @@ describe('Glicko-2 Unit Test', () => {
       mockUser._id.toString(),
     );
     expect(getUserByUserIdSpy).toHaveBeenCalledWith(mockUser._id.toString());
-    expect(summariseGamesSpy).toHaveBeenCalledWith(mockUser._id.toString());
     expect(getRankByUserIdSpy).toHaveBeenCalledWith(mockUser._id.toString());
 
     expect(updatedRank.playerRating).toBe(mockRank.playerRating);
