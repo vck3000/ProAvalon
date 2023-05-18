@@ -13,7 +13,7 @@ import { isTO } from '../modsadmins/tournamentOrganizers';
 import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 
-import { roomCreationTypeEnum, getRoomTypeFromString } from './roomTypes';
+import { getRoomTypeFromString, roomCreationTypeEnum } from './roomTypes';
 import { gameModeObj } from './gameModes';
 
 class Game extends Room {
@@ -22,7 +22,7 @@ class Game extends Room {
   playersInGame = [];
   phase = 'pickingTeam';
   missionHistory = [];
-  roomCreationType : roomCreationTypeEnum;
+  roomCreationType: roomCreationTypeEnum;
 
   // TODO This shouldn't be here! Should be in Assassin file.
   startAssassinationTime: Date;
@@ -38,6 +38,7 @@ class Game extends Room {
     newRoomPassword_,
     gameMode_,
     muteSpectators_,
+    disableVoteHistory_,
     ranked_,
     roomCreationType_, // to track ranked vs unranked vs custom game
     callback_,
@@ -143,6 +144,7 @@ class Game extends Room {
     this.missionVotes = [];
 
     this.voteHistory = {};
+    this.disableVoteHistory = disableVoteHistory_;
 
     // Game misc variables
     this.winner = '';
@@ -501,6 +503,14 @@ class Game extends Room {
       this.sendText(
         this.allSockets,
         'The game is muted to spectators.',
+        'gameplay-text',
+      );
+    }
+
+    if (this.disableVoteHistory) {
+      this.sendText(
+        this.allSockets,
+        'The game has vote history disabled.',
         'gameplay-text',
       );
     }
@@ -996,7 +1006,7 @@ class Game extends Room {
         data[i].numSelectTargets = this.getClientNumOfTargets(i);
 
         data[i].votes = this.publicVotes;
-        data[i].voteHistory = this.voteHistory;
+        data[i].voteHistory = this.disableVoteHistory ? null : this.voteHistory;
         data[i].hammer = this.hammer;
         data[i].hammerReversed = gameReverseIndex(
           this.hammer,
@@ -1075,7 +1085,7 @@ class Game extends Room {
     data.numSelectTargets = this.getClientNumOfTargets();
 
     data.votes = this.publicVotes;
-    data.voteHistory = this.voteHistory;
+    data.voteHistory = this.disableVoteHistory ? null : this.voteHistory;
     data.hammer = this.hammer;
     data.hammerReversed = gameReverseIndex(
       this.hammer,
@@ -1315,6 +1325,7 @@ class Game extends Room {
       missionHistory: this.missionHistory,
       numFailsHistory: this.numFailsHistory,
       voteHistory: this.voteHistory,
+      disableVoteHistory: this.disableVoteHistory,
       playerRoles: playerRolesVar,
 
       ladyChain,
@@ -1338,33 +1349,35 @@ class Game extends Room {
       }
     });
 
-    //FR2 - Rating system 1 - record games for rating updates   
+    //FR2 - Rating system 1 - record games for rating updates
     // This data will be used to calculate ratings at end of rating period.
     // The intended workflow is games -> ratingPeriodGameRecord -> (at end of rating preiod) Ratings Calculator
-    assert.equal(this.spyUsernames.length + this.resistanceUsernames.length, this.playersInGame.length, 
-      'Number of players should be number of resistance players + number of spy players'
-    );
-    if (this.roomCreationType === roomCreationTypeEnum.RANKED_QUEUE) {
+
+    if (
+      this.spyUsernames.length + this.resistanceUsernames.length !=
+      this.playersInGame.length
+    ) {
+      throw Error(
+        "Spy + Resistance player nums don't add up to playersInGame length.",
+      );
+    }
+
+    if (this.ranked) {
       const ratingRecordToStore = {
-        // timeGameStarted: this.startGameTime, // Removed 
-        timeGameFinished: timeFinished, // For logging only
+        timeGameFinished: timeFinished,
         winningTeam: this.winner,
         spyTeam: this.spyUsernames,
         resistanceTeam: this.resistanceUsernames,
-        // numberOfPlayers: this.playersInGame.length, // Assert above
         roomCreationType: this.roomCreationType,
       };
 
       RatingPeriodGameRecord.create(ratingRecordToStore, (err) => {
         if (err) {
-          console.log(err);
-        } else {
-          console.log('Stored game data for ratings calculation successfully.');
+          throw err;
         }
       });
     }
 
-    // store player data:
     this.socketsOfPlayers
       .filter((socket) => socket.isBotSocket)
       .forEach((botSocket) => {
@@ -1385,8 +1398,6 @@ class Game extends Room {
       ) {
         provisionalGame = true;
       }
-
-// TODO Disable the ratings since rating will now be calculated at the end of the rating period
 
       // calculate team 1v1 elo adjustment
       const teamResChange = this.calculateResistanceRatingChange(
@@ -1516,7 +1527,6 @@ class Game extends Room {
               if (this.ranked) {
                 foundUser.totalRankedGamesPlayed += 1;
 
-                // TODO Disable it when elo is no longer being calculated here
                 if (foundUser.ratingBracket === 'unranked') {
                   foundUser.playerRating = player.request.user.playerRating;
                 } else {
@@ -1525,7 +1535,7 @@ class Game extends Room {
                   } else if (player.alliance === 'Spy') {
                     foundUser.playerRating += indSpyChange;
                   }
-                } 
+                }
               }
 
               // checks that the var exists
@@ -1896,6 +1906,18 @@ class Game extends Room {
     );
   }
 
+  updateDisableVoteHistory(disableVoteHistory: boolean) {
+    if (this.gameStarted === false) {
+      this.disableVoteHistory = disableVoteHistory;
+
+      this.sendText(
+        this.allSockets,
+        `Disable Vote History option set to ${disableVoteHistory}.`,
+        'server-text',
+      );
+    }
+  }
+
   /*
   ELO RATING CALCULATION:
 
@@ -1981,7 +2003,7 @@ class Game extends Room {
         eloChange;
     }
     return eloChange;
-  } 
+  }
 
   /*
   PROVISIONAL ELO RATING CALCULATION:

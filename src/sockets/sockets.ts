@@ -35,6 +35,7 @@ import { mrevealallroles } from './commands/mod/mrevealallroles';
 
 import { lastWhisperObj } from './commands/mod/mwhisper';
 import * as util from 'util';
+import { roomCreationTypeEnum } from '../gameplay/roomTypes';
 
 const chatSpamFilter = new ChatSpamFilter();
 if (process.env.NODE_ENV !== 'test') {
@@ -1388,6 +1389,7 @@ export const server = function (io: SocketServer): void {
     socket.on('update-room-game-mode', updateRoomGameMode);
     socket.on('update-room-ranked', updateRoomRanked);
     socket.on('update-room-muteSpectators', updateRoomMuteSpectators);
+    socket.on('update-room-disableVoteHistory', updateRoomDisableVoteHistory);
 
     //************************
     // game data stuff
@@ -2026,6 +2028,13 @@ function newRoom(dataObj) {
       return;
     }
 
+    if (
+      dataObj.disableVoteHistory !== true &&
+      dataObj.disableVoteHistory !== false
+    ) {
+      return;
+    }
+
     // while rooms exist already (in case of a previously saved and retrieved game)
     while (rooms[nextRoomId]) {
       incrementNextRoomId();
@@ -2042,7 +2051,9 @@ function newRoom(dataObj) {
       dataObj.newRoomPassword,
       dataObj.gameMode,
       dataObj.muteSpectators,
+      dataObj.disableVoteHistory,
       rankedRoom,
+      roomCreationTypeEnum.CUSTOM_ROOM,
       socketCallback,
     );
     const privateStr = !privateRoom ? '' : 'private ';
@@ -2266,6 +2277,14 @@ function updateRoomRanked(rankedType) {
 function updateRoomMuteSpectators(muteSpectators) {
   if (rooms[this.request.user.inRoomId]) {
     rooms[this.request.user.inRoomId].updateMuteSpectators(muteSpectators);
+  }
+}
+
+function updateRoomDisableVoteHistory(disableVoteHistory) {
+  if (rooms[this.request.user.inRoomId]) {
+    rooms[this.request.user.inRoomId].updateDisableVoteHistory(
+      disableVoteHistory,
+    );
   }
 }
 

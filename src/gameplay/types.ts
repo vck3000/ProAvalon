@@ -1,5 +1,4 @@
 import Game from './game';
-import mongoose, { Types, Schema } from 'mongoose';
 
 export interface RoleConstructor {
   // @ts-ignore
