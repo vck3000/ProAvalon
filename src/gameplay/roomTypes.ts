@@ -1,15 +1,20 @@
 export enum roomCreationTypeEnum {
-  RANKED_QUEUE = "RANKED_QUEUE",
-  UNRANKED_QUEUE = "UNRANKED_QUEUE",
-  CUSTOM_ROOM = "CUSTOM_ROOM"
+  RANKED_QUEUE = 'RANKED_QUEUE',
+  UNRANKED_QUEUE = 'UNRANKED_QUEUE',
+  CUSTOM_ROOM = 'CUSTOM_ROOM',
 }
 
-export function getRoomTypeFromString(typeString: string): roomCreationTypeEnum {
-  const roomCreationType = roomCreationTypeEnum[typeString as keyof typeof roomCreationTypeEnum];
-  let roomTypes = '';
-  Object.values(roomCreationTypeEnum).forEach(roomType => roomTypes+=`${roomType}\n`);
-  if (!roomCreationType) {
-    throw new Error(`Invalid room creation type! Got ${typeString}, expected RoomCreationTypeEnum. Valid values are:\n${roomTypes}`);
+export function getRoomTypeFromString(
+  typeString: string,
+): roomCreationTypeEnum {
+  switch (typeString) {
+    case roomCreationTypeEnum.RANKED_QUEUE:
+      return roomCreationTypeEnum.RANKED_QUEUE;
+    case roomCreationTypeEnum.UNRANKED_QUEUE:
+      return roomCreationTypeEnum.UNRANKED_QUEUE;
+    case roomCreationTypeEnum.CUSTOM_ROOM:
+      return roomCreationTypeEnum.CUSTOM_ROOM;
+    default:
+      throw Error(`Invalid roomCreationType string. Got ${typeString}`);
   }
-  return roomCreationType;
 }

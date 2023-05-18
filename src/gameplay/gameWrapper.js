@@ -12,6 +12,7 @@ class GameWrapper extends Game {
     muteSpectators_,
     gameMode_,
     ranked_,
+    roomCreationType_,
     callback_,
   ) {
     // Get all the game properties
@@ -24,6 +25,7 @@ class GameWrapper extends Game {
       muteSpectators_,
       gameMode_,
       ranked_,
+      roomCreationType_,
       callback_,
     );
   }

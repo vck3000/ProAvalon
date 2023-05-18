@@ -35,6 +35,7 @@ import { mrevealallroles } from './commands/mod/mrevealallroles';
 
 import { lastWhisperObj } from './commands/mod/mwhisper';
 import * as util from 'util';
+import { roomCreationTypeEnum } from '../gameplay/roomTypes';
 
 const chatSpamFilter = new ChatSpamFilter();
 if (process.env.NODE_ENV !== 'test') {
@@ -2043,6 +2044,7 @@ function newRoom(dataObj) {
       dataObj.gameMode,
       dataObj.muteSpectators,
       rankedRoom,
+      roomCreationTypeEnum.CUSTOM_ROOM,
       socketCallback,
     );
     const privateStr = !privateRoom ? '' : 'private ';

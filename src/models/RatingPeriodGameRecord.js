@@ -8,7 +8,9 @@ const ratingPeriodGameRecordSchema = new mongoose.Schema({
   roomCreationType: String,
 });
 
-// compile schema into a model
-const ratingPeriodGameRecord = mongoose.model('ratingPeriodGameRecord', ratingPeriodGameRecordSchema);
+const ratingPeriodGameRecord = mongoose.model(
+  'ratingPeriodGameRecord',
+  ratingPeriodGameRecordSchema,
+);
 
 export default ratingPeriodGameRecord;
