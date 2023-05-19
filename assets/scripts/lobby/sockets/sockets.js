@@ -570,6 +570,19 @@ socket.on('joinPassword', (roomId) => {
   })();
 });
 
+socket.on('timerUpdate', (timer) => {
+  const minutes = Math.floor(timer / 60).toString().padStart(2, '0');
+  const seconds = (timer % 60).toString().padStart(2, '0');
+  document.getElementById('timerDisplay').textContent = `Time remaining: ${minutes}:${seconds}`;
+});
+
+socket.on('timerFinished', () => {
+  document.getElementById('timerDisplay').textContent = 'Timer Finished!';
+});
+
+const duration = document.getElementById('timer-duration').value;
+socket.emit('SetTimer',,duration)
+
 socket.on('changeView', (targetLocation) => {
   changeView();
 });
@@ -781,6 +794,13 @@ $('.muteSpectators').on('change', (e) => {
   $('.muteSpectators')[1].checked = e.target.checked;
 
   socket.emit('update-room-muteSpectators', e.target.checked);
+});
+
+$('.disableVoteHistory').on('change', (e) => {
+  $('.disableVoteHistory')[0].checked = e.target.checked;
+  $('.disableVoteHistory')[1].checked = e.target.checked;
+
+  socket.emit('update-room-disableVoteHistory', e.target.checked);
 });
 
 // Update the new room menu with the gameModes available.

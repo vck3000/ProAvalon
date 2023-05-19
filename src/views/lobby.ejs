@@ -57,6 +57,14 @@
 
       <a id="newRoom" class="btn btn-default" href="#">New Room</a>
 
+      <div
+        react-entrypoint
+        id="matchMakingTimer"
+        style="display: flex; justify-content: right"
+      >
+        <%-onQueueReact%>
+      </div>
+
       <br />
       <br />
 
@@ -95,6 +103,9 @@
       <div id="mainRoomBox" class="">
         <p></p>
       </div>
+
+      <div id="timerDisplay"></div>
+
       <div id="missionsBox" class="invisible">
         <div class="row">
           <div class="missionBox" id="missionBox0"></div>
@@ -970,6 +981,9 @@
 
         <label>Mute spectators for table:</label>
         <input type="checkbox" name="muteSpectators" class="muteSpectators" />
+        <br />
+        <label>Close Vote History:</label>
+        <input type="checkbox" name="disableVoteHistory" class="disableVoteHistory"/>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">
@@ -1210,6 +1224,9 @@
 
         <label>Mute spectators for table:</label>
         <input type="checkbox" name="muteSpectators" class="muteSpectators" />
+        <br/>
+        <label>Close Vote History:</label>
+        <input type="checkbox" name="disableVoteHistory" class="disableVoteHistory" />
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-dismiss="modal">
@@ -1305,6 +1322,10 @@
 <script
   type="text/javascript"
   src="<%-getVersionedPath('/scripts/lobby/helper.js')%>"
+></script>
+<script
+  type="text/javascript"
+  src="<%- getVersionedPath('/dist_webpack/queue.bundle.js') %>"
 ></script>
 <script
   type="text/javascript"

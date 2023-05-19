@@ -49,6 +49,14 @@ const dateResetRequired = 1543480412695;
 
 export const allSockets: SocketUser[] = [];
 
+let count = 0;
+setInterval(() => {
+  for (const socket of allSockets) {
+    socket.emit('counterTest', count);
+  }
+  count++;
+}, 3000);
+
 // TODO: This is bad!!! We should work to make this not needed to be exported.
 export const rooms: GameWrapper[] = [];
 export let nextRoomId = 1;
@@ -1145,10 +1153,10 @@ export const userCommands = {
         botName === 'all'
           ? botSockets
           : botSockets.filter(
-              (socket) =>
-                socket.request.user.username.toLowerCase() ===
-                botName.toLowerCase(),
-            );
+            (socket) =>
+              socket.request.user.username.toLowerCase() ===
+              botName.toLowerCase(),
+          );
       if (botsToRemove.length === 0) {
         return {
           message: "Couldn't find any bots with that name to remove.",
@@ -1378,6 +1386,13 @@ export const server = function (io: SocketServer): void {
     socket.on('join-game', joinGame);
     socket.on('standUpFromGame', standUpFromGame);
 
+    // for player to join the unranked queue
+    socket.on('join-unranked-queue', joinUnrankedQueue);
+    // for player to leave the unranked queue
+    socket.on('leave-unranked-queue', leaveUnrankedQueue);
+    // for player the unranked queue game to start
+    socket.on('initiate-unranked-game', initiateUnrankedGame);
+
     // when a player leaves a room
     socket.on('leave-room', leaveRoom);
     socket.on('player-ready', playerReady);
@@ -1388,6 +1403,7 @@ export const server = function (io: SocketServer): void {
     socket.on('update-room-game-mode', updateRoomGameMode);
     socket.on('update-room-ranked', updateRoomRanked);
     socket.on('update-room-muteSpectators', updateRoomMuteSpectators);
+    socket.on('update-room-disableVoteHistory', updateRoomDisableVoteHistory);
 
     //************************
     // game data stuff
@@ -1541,8 +1557,8 @@ const updateCurrentPlayersList = function () {
     return a.playerRating < b.playerRating
       ? 1
       : a.playerRating > b.playerRating
-      ? -1
-      : 0;
+        ? -1
+        : 0;
   });
 
   allSockets.forEach((sock) => {
@@ -1646,6 +1662,8 @@ export function destroyRoom(roomId) {
     return;
   }
 
+  EndTimer(roomId,ioGlobal);
+
   quote.deleteRoomMessages(roomId);
 
   deleteSaveGameFromDb(rooms[roomId]);
@@ -1660,7 +1678,7 @@ export function destroyRoom(roomId) {
   rooms[roomId].socketsOfPlayers
     .filter((socket) => socket.isBotSocket)
     .forEach((botSocket) => {
-      botSocket.handleGameOver(thisGame, 'complete', () => {}); // This room is getting destroyed. No need to leave.
+      botSocket.handleGameOver(thisGame, 'complete', () => { }); // This room is getting destroyed. No need to leave.
     });
 
   rooms[roomId] = undefined;
@@ -1702,8 +1720,7 @@ function playerLeaveRoomCheckDestroy(socket) {
         );
       } else {
         console.log(
-          `Frozen game has only loaded for ${
-            (curr.getTime() - rooms[roomId].timeFrozenLoaded.getTime()) / 1000
+          `Frozen game has only loaded for ${(curr.getTime() - rooms[roomId].timeFrozenLoaded.getTime()) / 1000
           } seconds, Dont remove yet.`,
         );
       }
@@ -2026,6 +2043,13 @@ function newRoom(dataObj) {
       return;
     }
 
+    if (
+      dataObj.disableVoteHistory !== true &&
+      dataObj.disableVoteHistory !== false
+    ) {
+      return;
+    }
+
     // while rooms exist already (in case of a previously saved and retrieved game)
     while (rooms[nextRoomId]) {
       incrementNextRoomId();
@@ -2042,6 +2066,7 @@ function newRoom(dataObj) {
       dataObj.newRoomPassword,
       dataObj.gameMode,
       dataObj.muteSpectators,
+      dataObj.disableVoteHistory,
       rankedRoom,
       socketCallback,
     );
@@ -2058,6 +2083,7 @@ function newRoom(dataObj) {
     // ioGlobal.in("allChat").emit("new-game-created", str);
     // send back room id to host so they can auto connect
     this.emit('auto-join-room-id', nextRoomId, dataObj.newRoomPassword);
+    startTimer(nextRoomId,ioGlobal);
 
     // increment index for next game
     incrementNextRoomId();
@@ -2078,6 +2104,13 @@ function joinRoom(roomId, inputPassword) {
 
       // set the room id into this obj
       this.request.user.inRoomId = roomId;
+
+      // remove player from the unranked queue
+      const userName = this.request.user.username.toLowerCase();
+      const indexToRemove: number = unrankedQueue6Players.findIndex(player => player.id === userName);
+      if (indexToRemove !== -1) {
+        unrankedQueue6Players.splice(indexToRemove, 1);
+      }
 
       // join the room chat
       this.join(roomId);
@@ -2269,11 +2302,281 @@ function updateRoomMuteSpectators(muteSpectators) {
   }
 }
 
+function updateRoomDisableVoteHistory(disableVoteHistory) {
+  if (rooms[this.request.user.inRoomId]) {
+    rooms[this.request.user.inRoomId].updateDisableVoteHistory(
+      disableVoteHistory,
+    );
+  }
+}
+
 function updateRoomMaxPlayers(number) {
   if (rooms[this.request.user.inRoomId]) {
     rooms[this.request.user.inRoomId].updateMaxNumPlayers(this, number);
   }
   updateCurrentGamesList();
+}
+
+// Functions to manage ranked and unranked queue
+
+// Unranked queue
+type MatchMakingQueueItem = {
+  id: string;
+  user: Object;
+  timeJoinedAt: Date;
+};
+
+// For unrank and rank game
+function startTimer(RoomID,io) {
+  const room = rooms[RoomID];
+  if (room.timer <= 0) {
+    //TODO task 
+    console.log("test");
+    return;
+  }
+
+  const timerInterval = setInterval(() => {
+    room.timer--;
+    io.to(RoomID).emit('timerUpdate', room.timer);
+
+    if (room.timer <= 0) {
+      clearInterval(timerInterval);
+      io.to(RoomID).emit('timerFinished');
+    }
+  }, 1000);
+}
+
+// for self-define
+function SetTimer(RoonID,io,duration) {
+  const room = rooms[RoomID];
+  room.timer = duration;
+
+  if (room.timer <= 0) {
+    //TODO void the game
+    //FR13 - task 2
+    console.log("test");
+    return;
+  }
+
+  const timerInterval = setInterval(() => {
+    room.timer--;
+    io.to(RoomID).emit('timerUpdate', room.timer);
+
+    if (room.timer <= 0) {
+      clearInterval(timerInterval);
+      io.to(RoomID).emit('timerFinished');
+    }
+  }, 1000);
+}
+
+// End the timer when game finsih
+function EndTimer(RoonID,io) {
+  const room = rooms[RoomID];
+  clearInterval(room.timer);
+  io.to(RoomID).emit('timerFinished');
+}
+
+let unrankedQueue6Players: MatchMakingQueueItem[] = [];
+let prospectivePlayersFor6UQ: MatchMakingQueueItem[] = [];
+let readyPlayersFor6UQ: MatchMakingQueueItem[] = [];
+
+// Ask each player to confirm they are ready to join
+function checkForUnrankedConfirmation() {
+  prospectivePlayersFor6UQ = unrankedQueue6Players.splice(0, 6);
+  prospectivePlayersFor6UQ.forEach(prospectivePlayer => {
+    // emit to each player asking for confirmation
+    const playerSocket: SocketUser = getSocketFromUsername(prospectivePlayer.user.username.toLowerCase());
+    playerSocket.emit('confirm-ready-to-play');
+  });
+}
+
+// Add player to queue, and start match if six players in queue
+function joinUnrankedQueue(dataObj) {
+  // add player to queue
+
+  // First if checks if player is joining the six-player game or not
+  if (dataObj.numPlayers === 6) {
+    unrankedQueue6Players.push({
+      id: this.request.user.username.toLowerCase(),
+      user: this.request.user,
+      timeJoinedAt: new Date(),
+    });
+    console.log(unrankedQueue6Players.length);
+    // if number of players in queue < 6, return null
+    // Second if checks if there are enough players for a six-player game
+    if (unrankedQueue6Players.length >= 2) {
+      checkForUnrankedConfirmation();
+    } else {
+      return;
+    }
+  } else {
+    // if number of players in queue >= 6, ask for confirmation to join game
+    this.emit('invalid-player-count');
+    return;
+  }
+}
+
+// remove player from queue
+function leaveUnrankedQueue() {
+  // remove player from queue
+  const userName = this.request.user.username.toLowerCase();
+  const indexToRemove: number = unrankedQueue6Players.findIndex(player => player.id === userName);
+  if (indexToRemove !== -1) {
+    unrankedQueue6Players.splice(indexToRemove, 1);
+    console.log(unrankedQueue6Players.length);
+    this.emit('leave-queue')
+  } else {
+    this.emit('invalid-removal-attempt');
+  }
+}
+
+// Create a new room for the unranked game
+function newUnrankedRoom(): number {
+  // get latest unused room ID
+  while (rooms[nextRoomId]) {
+    incrementNextRoomId();
+  }
+
+  rooms[nextRoomId] = new gameRoom(
+    readyPlayersFor6UQ[0].user.username, // host
+    nextRoomId,
+    ioGlobal,
+    6, // maxNumOfPlayers
+    '', // password
+    'AVALON', // gameMode
+    true,
+    false,
+    socketCallback,
+  );
+
+  setTimeout(() => {
+    const data = {
+      message: `${readyPlayersFor6UQ[0].user.username} has created unranked room ${nextRoomId}.`,
+      classStr: 'server-text',
+    };
+    sendToAllChat(ioGlobal, data);
+  }, 1000)
+
+  // increment index for next game
+  incrementNextRoomId();
+  updateCurrentGamesList();
+
+  return nextRoomId;
+}
+
+// add players to the unranked room
+function joinUnrankedRoomAndSitDown(roomId: number, playerSocket: SocketUser) {
+  // if the room exists
+  if (rooms[roomId]) {
+    // join the room
+    if (rooms[roomId].playerJoinRoom(playerSocket, '') === true) {
+      // sends to players and specs
+      rooms[roomId].distributeGameData();
+
+      // set the room id into this obj
+      playerSocket.request.user.inRoomId = roomId;
+
+      // join the room chat
+      playerSocket.join(roomId);
+
+      // emit to say to others that someone has joined
+      const data = {
+        message: `${playerSocket.request.user.username} has joined the room.`,
+        classStr: 'server-text-teal',
+        dateCreated: new Date(),
+      };
+      sendToRoomChat(ioGlobal, roomId, data);
+
+      updateCurrentGamesList();
+
+      // Sit players down immediately
+      if (rooms[roomId].getStatus() === 'Waiting') {
+        const ToF = rooms[roomId].playerSitDown(playerSocket);
+        console.log(
+          `${playerSocket.request.user.username} has joined room ${roomId}: ${ToF}`,
+        );
+      }
+    }
+  }
+}
+
+function getHostToBeginUnrankedGame(playerSocket: SocketUser) {
+  let gameStarted = false;
+  // start the game
+  if (rooms[playerSocket.request.user.inRoomId]) {
+    if (
+      playerSocket.request.user.inRoomId &&
+      playerSocket.request.user.username === rooms[playerSocket.request.user.inRoomId].host
+    ) {
+      rooms[playerSocket.request.user.inRoomId].hostTryStartGame([ "Assassin", "Merlin", "Percival", "Morgana" ], 'AVALON');
+      gameStarted = true;
+      // this.emit("update-room-players", rooms[roomId].getPlayers());
+    } else {
+      // console.log("Room doesn't exist or user is not host, cannot start game");
+      // playerSocket.emit(
+      //   'danger-alert',
+      //   'You are not the host. You cannot start the game.',
+      // );
+      return;
+    }
+  }
+  return gameStarted;
+}
+
+// to start game, do the following:
+function startUnrankedGame() {
+  // check if game has begun
+  let gameStarted = false;
+  // create new room
+  const newRoomID: number = newUnrankedRoom();
+
+  readyPlayersFor6UQ.forEach((player, index) => {
+    const playerSocket: SocketUser = getSocketFromUsername(player.user.username.toLowerCase());
+    console.log(playerSocket.request.user.username);
+    joinUnrankedRoomAndSitDown(newRoomID, playerSocket);
+    // joinUnrankedGame(newRoomID, playerSocket);
+    if (!gameStarted) {
+      gameStarted = getHostToBeginUnrankedGame(playerSocket);
+    }
+    // playerSocket.emit('begin-unranked-game', { roomID: newRoomID, host: readyPlayersFor6UQ[0].user.username });
+  });
+}
+
+function initiateUnrankedGame(dataObj) {
+  // if a player accepts, add them to the list of ready players
+  const selectedProspectivePlayer = prospectivePlayersFor6UQ.findIndex(
+    player => player.id === this.request.user.username.toLowerCase()
+  )
+  if (dataObj.playerReady && selectedProspectivePlayer !== -1) {
+    readyPlayersFor6UQ.push(selectedProspectivePlayer);
+  } else if (!dataObj.playerReady) {
+    // if a player rejects or times out, add other players to queue
+    console.log(prospectivePlayersFor6UQ);
+    prospectivePlayersFor6UQ.forEach(prospectivePlayer => {
+      // emit to each player informing that the player has cancelled.
+      const playerSocket: SocketUser = getSocketFromUsername(prospectivePlayer.user.username.toLowerCase());
+      playerSocket.emit('declined-to-play', {
+        gameStatus: "declined",
+        decliningPlayer: this.request.user.username,
+      });
+    })
+    prospectivePlayersFor6UQ.splice(selectedProspectivePlayer, 1);
+    unrankedQueue6Players = [...unrankedQueue6Players, ...prospectivePlayersFor6UQ];
+    prospectivePlayersFor6UQ = [];
+    readyPlayersFor6UQ = [];
+    unrankedQueue6Players.sort((a, b) => a.timeJoinedAt - b.timeJoinedAt);
+    if (unrankedQueue6Players.length >= 6) {
+      checkForUnrankedConfirmation();
+    }
+  } else {
+    return;
+  }
+
+  // if all players accept, start game
+  if (readyPlayersFor6UQ.length === 6) {
+    startUnrankedGame();
+  }
+  return;
 }
 
 export const GetLastFiveMinsAllChat = () => {
