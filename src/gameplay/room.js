@@ -37,6 +37,7 @@ class Room {
     this.ranked = ranked_;
     this.gamesRequiredForRanked = 0;
     this.provisionalGamesRequired = 20;
+    this.timer = 25 * 60;
 
     // Misc. variables
     this.canJoin = true;
