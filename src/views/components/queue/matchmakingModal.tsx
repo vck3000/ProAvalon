@@ -16,6 +16,7 @@ export function MatchMakingModal() {
   const [count, setCount] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const [second, setSecond] = useState(60);
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
 
   // Obtaining a nice clean, typed reference to the global socket object.
   // @ts-ignore
@@ -62,10 +63,11 @@ export function MatchMakingModal() {
   const handleClick = (button: ButtonId) => {
     setCount(0);
     setSecond(60);
-    const intervalId = setInterval(() => {
+    const newIntervalId = setInterval(() => {
       setCount((count) => count + 1);
     }, 1000);
-    // return () => clearInterval(interval);
+    setIntervalId(newIntervalId);
+    console.log(newIntervalId);
     const playerObj = {
       numPlayers: 6,
     };
@@ -82,6 +84,11 @@ export function MatchMakingModal() {
 
   const leaveQueue = () => {
     socket_.emit('leave-unranked-queue');
+    console.log(intervalId);
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
+    setIntervalId(null);
     setCount(0);
   };
 
