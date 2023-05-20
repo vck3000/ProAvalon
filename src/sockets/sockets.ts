@@ -2342,7 +2342,9 @@ function joinUnrankedQueue(dataObj) {
   // add player to queue
 
   // First if checks if player is joining the six-player game or not
-  if (dataObj.numPlayers === 6) {
+  if (dataObj.numPlayers === 6 && 
+    !unrankedQueue6Players.some(player => player.id === this.request.user.username.toLowerCase())
+    ) {
     unrankedQueue6Players.push({
       id: this.request.user.username.toLowerCase(),
       user: this.request.user,
@@ -2352,13 +2354,17 @@ function joinUnrankedQueue(dataObj) {
     // if number of players in queue < 6, return null
     // Second if checks if there are enough players for a six-player game
     if (unrankedQueue6Players.length >= 2) {
+      console.log("Checking for:");
+      console.log(unrankedQueue6Players);
       checkForUnrankedConfirmation();
     } else {
       return;
     }
   } else {
     // if number of players in queue >= 6, ask for confirmation to join game
-    this.emit('invalid-player-count');
+    if (dataObj.numPlayers !== 6) {
+      this.emit('invalid-player-count');
+    }
     return;
   }
 }
@@ -2497,6 +2503,7 @@ function initiateUnrankedGame(dataObj) {
   if (dataObj.playerReady && selectedProspectivePlayer !== -1) {
     readyPlayersFor6UQ.push(selectedProspectivePlayer);
   } else if (!dataObj.playerReady) {
+    const decliningPlayer = this.request.user.username;
     // if a player rejects or times out, add other players to queue
     console.log(prospectivePlayersFor6UQ);
     prospectivePlayersFor6UQ.forEach(prospectivePlayer => {
@@ -2504,7 +2511,7 @@ function initiateUnrankedGame(dataObj) {
       const playerSocket: SocketUser = getSocketFromUsername(prospectivePlayer.user.username.toLowerCase());
       playerSocket.emit('declined-to-play', {
         gameStatus: "declined",
-        decliningPlayer: this.request.user.username,
+        decliningPlayer,
       });
     })
     prospectivePlayersFor6UQ.splice(selectedProspectivePlayer, 1);

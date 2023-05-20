@@ -20,6 +20,7 @@ export function MatchMakingModal() {
   // Obtaining a nice clean, typed reference to the global socket object.
   // @ts-ignore
   const socket_: Socket = socket;
+  // let intervalId: any;
 
   // Variables for timer
   const minutes = Math.floor(count / 60);
@@ -54,7 +55,6 @@ export function MatchMakingModal() {
         setSecond(second - 1);
       }
     }, 1000);
-
     return () => clearInterval(intervalId);
   }, [second])
 
@@ -62,7 +62,7 @@ export function MatchMakingModal() {
   const handleClick = (button: ButtonId) => {
     setCount(0);
     setSecond(60);
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       setCount((count) => count + 1);
     }, 1000);
     // return () => clearInterval(interval);
@@ -76,6 +76,8 @@ export function MatchMakingModal() {
     if (button === 'unrankBtn') {
       socket_.emit('join-unranked-queue', playerObj);
     }
+
+    return () => clearInterval(intervalId);
   };
 
   const leaveQueue = () => {
@@ -83,25 +85,10 @@ export function MatchMakingModal() {
     setCount(0);
   };
 
+
   const cancelQueue = () => {
     socket_.emit('initiate-unranked-game', { playerReady: false });
   };
-
-  // const displayCountDownTimer = () => {
-  //   const intervalId = setInterval(() => {
-  //     console.log("In timer!");
-  //     if (second > 0) {
-  //       // const oldSecond = second;
-  //       setSecond(second - 1);
-  //       console.log(second);
-  //     } else {
-  //       clearInterval(intervalId);
-  //       socket_.emit('initiate-unranked-game', { playerReady: false });
-  //       setModalOpen(true);
-  //     }
-  //   }, 1000);
-  //   return `${second}`;
-  // }
 
   const btnStyle = (button: ButtonId) => {
     const baseStyle: React.CSSProperties = { backgroundColor: 'transparent' };
