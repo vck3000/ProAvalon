@@ -25,20 +25,41 @@ export default class Mongo {
     return user;
   }
 
-  static getGamesByUsername(
+  static async getGamesByUsername(
     username: string,
   ): Promise<IRatingPeriodGameRecord[]> {
-    username = username.toLowerCase();
+    const usernameLower = username.toLowerCase();
 
     return RatingPeriodGameRecord.find({
-      $or: [{ spyTeam: username }, { resistanceTeam: username }],
+      $or: [{ spyTeam: usernameLower }, { resistanceTeam: usernameLower }],
     }).exec();
   }
 
   static async getRankByUserId(userId: string): Promise<IRank> {
     const user = await this.getUserByUserId(userId);
-    return Rank.findOne({
+    const rank = Rank.findOne({
       _id: user.currentRanking,
     }).exec();
+
+    if (!rank) {
+      throw Error(`Could not find rank for user id: ${userId}`);
+    }
+
+    return rank;
+  }
+
+  static async getRankByUsername(username: string): Promise<IRank> {
+    const usernameLower = username.toLowerCase();
+
+    const user = await this.getUserByUsername(usernameLower);
+    const rank = Rank.findOne({
+      _id: user.currentRanking,
+    }).exec();
+
+    if (!rank) {
+      throw Error(`Could not find rank for username: ${usernameLower}`);
+    }
+
+    return rank;
   }
 }

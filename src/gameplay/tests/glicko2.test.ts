@@ -1,6 +1,7 @@
 import Glicko2 from '../glicko2';
 import { Types } from 'mongoose';
 import Mongo from '../../db/mongo';
+import { TeamEnum } from '../types';
 
 describe('Glicko-2 Unit Test', () => {
   beforeEach(() => {
@@ -8,45 +9,120 @@ describe('Glicko-2 Unit Test', () => {
   });
 
   it('calculates correct ratings for an active player', async () => {
-    const userObjectId = new Types.ObjectId('64562e343eb03ca9ac251655');
-    const userRankObjectId = new Types.ObjectId('645dd08f1ccd75103d836fc3');
+    const user1ObjectId = new Types.ObjectId();
+    const userRankObjectId = new Types.ObjectId();
 
     const mockUser = {
-      _id: userObjectId,
-      username: 'mockuser',
+      _id: user1ObjectId,
+      username: 'user1',
       currentRanking: userRankObjectId,
     };
 
-    const mockRank = {
+    const mockUser1Rank = {
       _id: userRankObjectId,
-      userId: userObjectId,
+      userId: user1ObjectId,
       seasonNumber: 0,
       playerRating: 1500,
       rd: 200,
       volatility: 0.06,
     };
 
-    const getUserByUserIdSpy = jest
+    const mockGames = [
+      {
+        timeGameFinished: new Date(),
+        winningTeam: TeamEnum.SPY,
+        spyTeam: ['user1', 'user2'],
+        resistanceTeam: ['user3', 'user4', 'user5', 'user7'],
+        roomCreationType: '',
+      },
+      {
+        timeGameFinished: new Date(),
+        winningTeam: TeamEnum.SPY,
+        spyTeam: ['user2', 'user4'],
+        resistanceTeam: ['user1', 'user3', 'user5', 'user6', 'user7'],
+        roomCreationType: '',
+      },
+      {
+        timeGameFinished: new Date(),
+        winningTeam: TeamEnum.RESISTANCE,
+        spyTeam: ['user1', 'user2'],
+        resistanceTeam: ['user3', 'user4', 'user5', 'user6'],
+        roomCreationType: '',
+      },
+    ];
+
+
+    jest
       .spyOn(Mongo, 'getUserByUserId')
       .mockResolvedValueOnce(mockUser);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const summariseGamesSpy = jest
-      .spyOn(Glicko2 as any, 'summariseGames')
-      .mockResolvedValueOnce([
-        { opponentRating: 1400, opponentRatingDeviation: 30, outcome: 1 },
-        { opponentRating: 1550, opponentRatingDeviation: 100, outcome: 0 },
-        { opponentRating: 1700, opponentRatingDeviation: 300, outcome: 0 },
-      ]);
-    const getRankByUserIdSpy = jest
+
+    jest
+      .spyOn(Mongo, 'getGamesByUsername')
+      .mockResolvedValueOnce(mockGames);
+
+    jest
       .spyOn(Mongo, 'getRankByUserId')
-      .mockResolvedValueOnce(mockRank);
+      .mockResolvedValueOnce(mockUser1Rank);
+
+    jest
+      .spyOn(Mongo, 'getRankByUsername')
+      .mockImplementation((username) => {
+        switch(username) {
+          case 'user1':
+            return Promise.resolve({
+              userId: user1ObjectId,
+              playerRating: 1500,
+              rd: 200,
+              volatility: 0.06,
+            });
+          case 'user2':
+            return Promise.resolve({
+              userId: new Types.ObjectId(),
+              playerRating: 1700,
+              rd: 170,
+              volatility: 0.06,
+            });
+          case 'user3':
+            return Promise.resolve({
+              userId: new Types.ObjectId(),
+              playerRating: 1400,
+              rd: 30,
+              volatility: 0.06,
+            });
+          case 'user4':
+            return Promise.resolve({
+              userId: new Types.ObjectId(),
+              playerRating: 1400,
+              rd: 30,
+              volatility: 0.06,
+            });
+          case 'user5':
+            return Promise.resolve({
+              userId: new Types.ObjectId(),
+              playerRating: 1400,
+              rd: 30,
+              volatility: 0.06,
+            });
+          case 'user6':
+            return Promise.resolve({
+              userId: new Types.ObjectId(),
+              playerRating: 2600,
+              rd: 1110,
+              volatility: 0.06,
+            });
+          case 'user7':
+            return Promise.resolve({
+              userId: new Types.ObjectId(),
+              playerRating: 1400,
+              rd: 30,
+              volatility: 0.06,
+            }); 
+        }
+      });
 
     const updatedRank = await Glicko2.computeRankRatingsByUserId(
       mockUser._id.toString(),
     );
-    expect(getUserByUserIdSpy).toHaveBeenCalledWith(mockUser._id.toString());
-    expect(summariseGamesSpy).toHaveBeenCalledWith(mockUser._id.toString());
-    expect(getRankByUserIdSpy).toHaveBeenCalledWith(mockUser._id.toString());
 
     expect(updatedRank.playerRating).toBeCloseTo(1464.05);
     expect(updatedRank.rd).toBeCloseTo(151.52);
@@ -54,12 +130,12 @@ describe('Glicko-2 Unit Test', () => {
   });
 
   it('calculates correct ratings for an inactive player', async () => {
-    const userObjectId = new Types.ObjectId('64587b6e8a1ea4182899427c');
-    const userRankObjectId = new Types.ObjectId('645dd0c6eb4e7baa741db97f');
+    const userObjectId = new Types.ObjectId();
+    const userRankObjectId = new Types.ObjectId();
 
     const mockUser = {
       _id: userObjectId,
-      username: 'mockuser',
+      username: 'inactiveUser',
       currentRanking: userRankObjectId,
     };
 
@@ -72,19 +148,21 @@ describe('Glicko-2 Unit Test', () => {
       volatility: 0.06,
     };
 
-    const getUserByUserIdSpy = jest
+    jest
       .spyOn(Mongo, 'getUserByUserId')
       .mockResolvedValueOnce(mockUser);
-    // TODO Pai add in the summarise games mongo get something game mock!
-    const getRankByUserIdSpy = jest
+
+    jest
+      .spyOn(Mongo, 'getGamesByUsername')
+      .mockResolvedValueOnce([]);
+
+    jest
       .spyOn(Mongo, 'getRankByUserId')
       .mockResolvedValueOnce(mockRank);
 
     const updatedRank = await Glicko2.computeRankRatingsByUserId(
       mockUser._id.toString(),
     );
-    expect(getUserByUserIdSpy).toHaveBeenCalledWith(mockUser._id.toString());
-    expect(getRankByUserIdSpy).toHaveBeenCalledWith(mockUser._id.toString());
 
     expect(updatedRank.playerRating).toBe(mockRank.playerRating);
     expect(updatedRank.rd).toBeGreaterThan(mockRank.rd);

@@ -6,129 +6,9 @@ class Glicko2 {
   private static epsilon = 0.000001;
   private static tau = 0.5;
 
-  private static computeG(phi: number): number {
-    return 1 / Math.sqrt(1 + (3 * phi ** 2) / Math.PI ** 2);
-  }
-
-  private static computeE(mu: number, mu_j: number, phi_j: number): number {
-    return 1 / (1 + Math.exp(-1 * this.computeG(phi_j) * (mu - mu_j)));
-  }
-
-  private static computeNewVolatility(
-    delta: number,
-    phi: number,
-    v: number,
-    sigma: number,
-  ): number {
-    const a = Math.log(sigma ** 2);
-    const computeF = (x: number): number => {
-      let output = 0;
-
-      output +=
-        (Math.E ** x * (delta ** 2 - phi ** 2 - v - Math.E ** x)) /
-        (2 * (phi ** 2 + v + Math.E ** x) ** 2);
-      output -= (x - a) / this.tau ** 2;
-      return output;
-    };
-
-    let A = a;
-    let B = 0;
-    if (delta ** 2 > phi ** 2 + v) {
-      B = Math.log(delta ** 2 - phi ** 2 - v);
-    } else {
-      let k = 1;
-      while (computeF(a - k * this.tau) < 0) {
-        k += 1;
-      }
-      B = a - k * this.tau;
-    }
-
-    let f_A = computeF(A);
-    let f_B = computeF(B);
-
-    while (Math.abs(B - A) > this.epsilon) {
-      const C = A + ((A - B) * f_A) / (f_B - f_A);
-      const f_C = computeF(C);
-      if (f_C * f_B <= 0) {
-        A = B;
-        f_A = f_B;
-      } else {
-        f_A /= 2;
-      }
-
-      B = C;
-      f_B = f_C;
-    }
-
-    return Math.E ** (A / 2);
-  }
-
-  private static async computeTeamAvg(team: string[]): Promise<{
-    ratingAvg: number;
-    rdAvg: number;
-  }> {
-    let ratingSum = 0;
-    let rdSum = 0;
-    for (const userId of team) {
-      const { playerRating, rd } = await Mongo.getRankByUserId(userId);
-      ratingSum += playerRating;
-      rdSum += rd;
-    }
-    return {
-      ratingAvg: ratingSum / team.length,
-      rdAvg: rdSum / team.length,
-    };
-  }
-
-  private static async summariseGames(userId: string): Promise<
-    {
-      opponentRating: number;
-      opponentRatingDeviation: number;
-      outcome: OutcomeEnum;
-    }[]
-  > {
-    // Find games the player has played. Either Spy team or Resistance team.
-    const games = await Mongo.getGamesByUsername(userId);
-
-    return Promise.all(
-      games.map(async (g) => {
-        // Calculate the avg ratings and avg RD of the opponents
-        if (g.spyTeam.includes(userId)) {
-          // player is in team SPY
-          const resistanceTeam = [...g.resistanceTeam];
-          const { ratingAvg, rdAvg } = await this.computeTeamAvg(
-            resistanceTeam,
-          );
-
-          return {
-            opponentRating: ratingAvg,
-            opponentRatingDeviation: rdAvg,
-            outcome:
-              g.winningTeam === TeamEnum.SPY
-                ? OutcomeEnum.WIN
-                : OutcomeEnum.LOSE,
-          };
-        } else {
-          // player is in team RESISTANCE
-          const spyTeam = [...g.spyTeam];
-          const { ratingAvg, rdAvg } = await this.computeTeamAvg(spyTeam);
-
-          return {
-            opponentRating: ratingAvg,
-            opponentRatingDeviation: rdAvg,
-            outcome:
-              g.winningTeam === TeamEnum.RESISTANCE
-                ? OutcomeEnum.WIN
-                : OutcomeEnum.LOSE,
-          };
-        }
-      }),
-    );
-  }
-
   static async computeRankRatingsByUserId(userId: string): Promise<IRank> {
     const user = await Mongo.getUserByUserId(userId);
-    const gameSummary = await this.summariseGames(userId);
+    const gameSummary = await this.summariseGamesByUsername(user.username);
     const userRankData = await Mongo.getRankByUserId(userId);
 
     // TODO: handle the case when user has no previous ranks
@@ -213,6 +93,130 @@ class Glicko2 {
       rd: newRD,
       volatility: newVolatility,
     };
+  }
+
+  private static computeG(phi: number): number {
+    return 1 / Math.sqrt(1 + (3 * phi ** 2) / Math.PI ** 2);
+  }
+
+  private static computeE(mu: number, mu_j: number, phi_j: number): number {
+    return 1 / (1 + Math.exp(-1 * this.computeG(phi_j) * (mu - mu_j)));
+  }
+
+  private static computeNewVolatility(
+    delta: number,
+    phi: number,
+    v: number,
+    sigma: number,
+  ): number {
+    const a = Math.log(sigma ** 2);
+    const computeF = (x: number): number => {
+      let output = 0;
+
+      output +=
+        (Math.E ** x * (delta ** 2 - phi ** 2 - v - Math.E ** x)) /
+        (2 * (phi ** 2 + v + Math.E ** x) ** 2);
+      output -= (x - a) / this.tau ** 2;
+      return output;
+    };
+
+    let A = a;
+    let B = 0;
+    if (delta ** 2 > phi ** 2 + v) {
+      B = Math.log(delta ** 2 - phi ** 2 - v);
+    } else {
+      let k = 1;
+      while (computeF(a - k * this.tau) < 0) {
+        k += 1;
+      }
+      B = a - k * this.tau;
+    }
+
+    let f_A = computeF(A);
+    let f_B = computeF(B);
+
+    while (Math.abs(B - A) > this.epsilon) {
+      const C = A + ((A - B) * f_A) / (f_B - f_A);
+      const f_C = computeF(C);
+      if (f_C * f_B <= 0) {
+        A = B;
+        f_A = f_B;
+      } else {
+        f_A /= 2;
+      }
+
+      B = C;
+      f_B = f_C;
+    }
+
+    return Math.E ** (A / 2);
+  }
+
+  private static async computeTeamAvg(team: string[]): Promise<{
+    ratingAvg: number;
+    rdAvg: number;
+  }> {
+    let ratingSum = 0;
+    let rdSum = 0;
+
+    for (const username of team) {
+      const { playerRating, rd } = await Mongo.getRankByUsername(username);
+      ratingSum += playerRating;
+      rdSum += rd;
+    }
+
+    return {
+      ratingAvg: ratingSum / team.length,
+      rdAvg: rdSum / team.length,
+    };
+  }
+
+  private static async summariseGamesByUsername(username: string): Promise<
+    {
+      opponentRating: number;
+      opponentRatingDeviation: number;
+      outcome: OutcomeEnum;
+    }[]
+  > {
+    const usernameLower = username.toLowerCase();
+    // Find games the player has played. Either Spy team or Resistance team.
+    const games = await Mongo.getGamesByUsername(usernameLower);
+
+    return Promise.all(
+      games.map(async (g) => {
+        // Calculate the avg ratings and avg RD of the opponents
+        if (g.spyTeam.includes(usernameLower)) {
+          // player is in team SPY
+          const resistanceTeam = [...g.resistanceTeam];
+          const { ratingAvg, rdAvg } = await this.computeTeamAvg(
+            resistanceTeam,
+          );
+
+          return {
+            opponentRating: ratingAvg,
+            opponentRatingDeviation: rdAvg,
+            outcome:
+              g.winningTeam === TeamEnum.SPY
+                ? OutcomeEnum.WIN
+                : OutcomeEnum.LOSE,
+          };
+        } else {
+          // player is in team RESISTANCE
+          const spyTeam = [...g.spyTeam];
+          const { ratingAvg, rdAvg } = await this.computeTeamAvg(
+            spyTeam
+          );
+          return {
+            opponentRating: ratingAvg,
+            opponentRatingDeviation: rdAvg,
+            outcome:
+              g.winningTeam === TeamEnum.RESISTANCE
+                ? OutcomeEnum.WIN
+                : OutcomeEnum.LOSE,
+          };
+        }
+      }),
+    );
   }
 }
 
