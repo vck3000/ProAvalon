@@ -11,20 +11,21 @@ const rankSchema = new mongoose.Schema({
     seasonNumber: {
         type: Number,
     },
-    offset:{
+    leavePenalty:{
         type: Number,
+        default: 0,
     },
     playerRating: {
         type: Number,
-        default: eloConstants.DEFAULTRATING,
+        default: eloConstants.DEFAULT_RATING,
     },
     rd: {
         type: Number,
-        default: eloConstants.DEFAULTRD,
+        default: eloConstants.DEFAULT_RD,
     },
     volatility: {
         type: Number,
-        default: eloConstants.DEFAULTVOL,
+        default: eloConstants.DEFAULT_VOL,
     },
 
 });

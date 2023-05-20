@@ -1,10 +1,10 @@
-import { Command } from '../types';
-import { SocketUser } from '../../types';
 import User from '../../../models/user';
 import {
   getSeasonNumber,
   incrementSeasonNumber,
 } from '../../../modelsHelper/seasonNumber';
+import { SocketUser } from '../../types';
+import { Command } from '../types';
 
 // define a function to reset the elo of all users
 export const astartnewrankseason: Command = {
