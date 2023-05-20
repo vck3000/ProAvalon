@@ -36,6 +36,7 @@ class Game extends Room {
     newRoomPassword_,
     gameMode_,
     muteSpectators_,
+    disableVoteHistory_,
     ranked_,
     callback_,
   ) {
@@ -138,6 +139,7 @@ class Game extends Room {
     this.missionVotes = [];
 
     this.voteHistory = {};
+    this.disableVoteHistory = disableVoteHistory_;
 
     // Game misc variables
     this.winner = '';
@@ -496,6 +498,14 @@ class Game extends Room {
       this.sendText(
         this.allSockets,
         'The game is muted to spectators.',
+        'gameplay-text',
+      );
+    }
+
+    if (this.disableVoteHistory) {
+      this.sendText(
+        this.allSockets,
+        'The game has vote history disabled.',
         'gameplay-text',
       );
     }
@@ -991,7 +1001,7 @@ class Game extends Room {
         data[i].numSelectTargets = this.getClientNumOfTargets(i);
 
         data[i].votes = this.publicVotes;
-        data[i].voteHistory = this.voteHistory;
+        data[i].voteHistory = this.disableVoteHistory ? null : this.voteHistory;
         data[i].hammer = this.hammer;
         data[i].hammerReversed = gameReverseIndex(
           this.hammer,
@@ -1070,7 +1080,7 @@ class Game extends Room {
     data.numSelectTargets = this.getClientNumOfTargets();
 
     data.votes = this.publicVotes;
-    data.voteHistory = this.voteHistory;
+    data.voteHistory = this.disableVoteHistory ? null : this.voteHistory;
     data.hammer = this.hammer;
     data.hammerReversed = gameReverseIndex(
       this.hammer,
@@ -1318,6 +1328,7 @@ class Game extends Room {
       missionHistory: this.missionHistory,
       numFailsHistory: this.numFailsHistory,
       voteHistory: this.voteHistory,
+      disableVoteHistory: this.disableVoteHistory,
       playerRoles: playerRolesVar,
 
       ladyChain,
@@ -1876,6 +1887,18 @@ class Game extends Room {
       `Mute spectators option set to ${muteSpectators}.`,
       'server-text',
     );
+  }
+
+  updateDisableVoteHistory(disableVoteHistory: boolean) {
+    if (this.gameStarted === false) {
+      this.disableVoteHistory = disableVoteHistory;
+
+      this.sendText(
+        this.allSockets,
+        `Disable Vote History option set to ${disableVoteHistory}.`,
+        'server-text',
+      );
+    }
   }
 
   /*
