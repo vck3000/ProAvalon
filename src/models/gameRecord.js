@@ -16,6 +16,7 @@ const gameRecordSchema = new mongoose.Schema({
   playerUsernamesOrderedReversed: [String],
 
   numberOfPlayers: Number,
+  roomCreationType: String,
   howTheGameWasWon: String,
   whoAssassinShot: String,
   whoAssassinShot2: String,
@@ -35,6 +36,7 @@ const gameRecordSchema = new mongoose.Schema({
   missionHistory: [String],
   numFailsHistory: [Number],
   voteHistory: Object,
+  disableVoteHistory: Boolean,
   playerRoles: Object,
 });
 

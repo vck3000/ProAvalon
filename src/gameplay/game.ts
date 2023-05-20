@@ -6,12 +6,14 @@ import Room from './room';
 import usernamesIndexes from '../myFunctions/usernamesIndexes';
 import User from '../models/user';
 import GameRecord from '../models/gameRecord';
+import RatingPeriodGameRecord from '../models/RatingPeriodGameRecord';
 import commonPhasesIndex from './indexCommonPhases';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 
+import { getRoomTypeFromString, roomCreationTypeEnum } from './roomTypes';
 import { gameModeObj } from './gameModes';
 
 class Game extends Room {
@@ -20,6 +22,7 @@ class Game extends Room {
   playersInGame = [];
   phase = 'pickingTeam';
   missionHistory = [];
+  roomCreationType: roomCreationTypeEnum;
 
   // TODO This shouldn't be here! Should be in Assassin file.
   startAssassinationTime: Date;
@@ -35,7 +38,9 @@ class Game extends Room {
     newRoomPassword_,
     gameMode_,
     muteSpectators_,
+    disableVoteHistory_,
     ranked_,
+    roomCreationType_, // to track ranked vs unranked vs custom game
     callback_,
   ) {
     super(
@@ -49,6 +54,8 @@ class Game extends Room {
     );
 
     this.callback = callback_;
+
+    this.roomCreationType = getRoomTypeFromString(roomCreationType_);
 
     this.minPlayers = 5;
     this.alliances = [
@@ -137,6 +144,7 @@ class Game extends Room {
     this.missionVotes = [];
 
     this.voteHistory = {};
+    this.disableVoteHistory = disableVoteHistory_;
 
     // Game misc variables
     this.winner = '';
@@ -495,6 +503,14 @@ class Game extends Room {
       this.sendText(
         this.allSockets,
         'The game is muted to spectators.',
+        'gameplay-text',
+      );
+    }
+
+    if (this.disableVoteHistory) {
+      this.sendText(
+        this.allSockets,
+        'The game has vote history disabled.',
         'gameplay-text',
       );
     }
@@ -990,7 +1006,7 @@ class Game extends Room {
         data[i].numSelectTargets = this.getClientNumOfTargets(i);
 
         data[i].votes = this.publicVotes;
-        data[i].voteHistory = this.voteHistory;
+        data[i].voteHistory = this.disableVoteHistory ? null : this.voteHistory;
         data[i].hammer = this.hammer;
         data[i].hammerReversed = gameReverseIndex(
           this.hammer,
@@ -1069,7 +1085,7 @@ class Game extends Room {
     data.numSelectTargets = this.getClientNumOfTargets();
 
     data.votes = this.publicVotes;
-    data.voteHistory = this.voteHistory;
+    data.voteHistory = this.disableVoteHistory ? null : this.voteHistory;
     data.hammer = this.hammer;
     data.hammerReversed = gameReverseIndex(
       this.hammer,
@@ -1148,6 +1164,14 @@ class Game extends Room {
   }
 
   finishGame(toBeWinner) {
+    const timeStarted = new Date(this.startGameTime);
+    const timeFinished = new Date();
+    const gameDuration = new Date(timeFinished - timeStarted);
+
+    const playersInGameVar = this.playersInGame;
+    const winnerVar = this.winner;
+
+    const thisGame = this;
     this.phase = 'finished';
 
     if (this.checkRoleCardSpecialMoves() === true) {
@@ -1275,16 +1299,17 @@ class Game extends Room {
       botUsernames = [];
     }
 
+    // This data is for future records only
     const objectToStore = {
       timeGameStarted: this.startGameTime,
       timeAssassinationStarted: this.startAssassinationTime,
-      timeGameFinished: new Date(),
+      timeGameFinished: timeFinished,
       winningTeam: this.winner,
       spyTeam: this.spyUsernames,
       resistanceTeam: this.resistanceUsernames,
       numberOfPlayers: this.playersInGame.length,
-
       gameMode: this.gameMode,
+      roomCreationType: this.roomCreationType,
       botUsernames,
 
       playerUsernamesOrdered: getUsernamesOfPlayersInGame(this),
@@ -1300,6 +1325,7 @@ class Game extends Room {
       missionHistory: this.missionHistory,
       numFailsHistory: this.numFailsHistory,
       voteHistory: this.voteHistory,
+      disableVoteHistory: this.disableVoteHistory,
       playerRoles: playerRolesVar,
 
       ladyChain,
@@ -1323,16 +1349,35 @@ class Game extends Room {
       }
     });
 
-    // store player data:
-    const timeFinished = new Date();
-    const timeStarted = new Date(this.startGameTime);
+    //FR2 - Rating system 1 - record games for rating updates
+    // This data will be used to calculate ratings at end of rating period.
+    // The intended workflow is games -> ratingPeriodGameRecord -> (at end of rating preiod) Ratings Calculator
 
-    const gameDuration = new Date(timeFinished - timeStarted);
+    if (
+      this.spyUsernames.length + this.resistanceUsernames.length !=
+      this.playersInGame.length
+    ) {
+      throw Error(
+        "Spy + Resistance player nums don't add up to playersInGame length.",
+      );
+    }
 
-    const playersInGameVar = this.playersInGame;
-    const winnerVar = this.winner;
+    if (this.ranked) {
+      const ratingRecordToStore = {
+        timeGameFinished: timeFinished,
+        winningTeam: this.winner,
+        spyTeam: this.spyUsernames,
+        resistanceTeam: this.resistanceUsernames,
+        roomCreationType: this.roomCreationType,
+      };
 
-    const thisGame = this;
+      RatingPeriodGameRecord.create(ratingRecordToStore, (err) => {
+        if (err) {
+          throw err;
+        }
+      });
+    }
+
     this.socketsOfPlayers
       .filter((socket) => socket.isBotSocket)
       .forEach((botSocket) => {
@@ -1481,6 +1526,7 @@ class Game extends Room {
               // if ranked, update player ratings and increase ranked games played
               if (this.ranked) {
                 foundUser.totalRankedGamesPlayed += 1;
+
                 if (foundUser.ratingBracket === 'unranked') {
                   foundUser.playerRating = player.request.user.playerRating;
                 } else {
@@ -1858,6 +1904,18 @@ class Game extends Room {
       `Mute spectators option set to ${muteSpectators}.`,
       'server-text',
     );
+  }
+
+  updateDisableVoteHistory(disableVoteHistory: boolean) {
+    if (this.gameStarted === false) {
+      this.disableVoteHistory = disableVoteHistory;
+
+      this.sendText(
+        this.allSockets,
+        `Disable Vote History option set to ${disableVoteHistory}.`,
+        'server-text',
+      );
+    }
   }
 
   /*
