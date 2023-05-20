@@ -2459,6 +2459,8 @@ function newUnrankedRoom(): number {
     sendToAllChat(ioGlobal, data);
   }, 1000)
 
+  startTimer(nextRoomId,ioGlobal);
+
   // increment index for next game
   incrementNextRoomId();
   updateCurrentGamesList();
