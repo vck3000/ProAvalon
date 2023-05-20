@@ -2343,7 +2343,7 @@ function joinUnrankedQueue(dataObj) {
 
   // First if checks if player is joining the six-player game or not
   if (dataObj.numPlayers === 6 && 
-    !unrankedQueue6Players.some(player => player.id === this.request.user.username.toLowerCase())
+    !unrankedQueue6Players.some(player => player.id === this.request.user.userName.toLowerCase())
     ) {
     unrankedQueue6Players.push({
       id: this.request.user.username.toLowerCase(),
