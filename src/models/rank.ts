@@ -11,6 +11,9 @@ const rankSchema = new mongoose.Schema({
     seasonNumber: {
         type: Number,
     },
+    leaveCount: {
+        type: Number,
+    },
     leavePenalty:{
         type: Number,
         default: 0,

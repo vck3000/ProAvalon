@@ -2,18 +2,19 @@
 // Load the full build.
 import _ from 'lodash';
 
-import Room from './room';
-import usernamesIndexes from '../myFunctions/usernamesIndexes';
-import User from '../models/user';
+import eloConstants from 'src/elo/constants/eloConstants';
 import GameRecord from '../models/gameRecord';
-import commonPhasesIndex from './indexCommonPhases';
-import { isMod } from '../modsadmins/mods';
-import { isTO } from '../modsadmins/tournamentOrganizers';
+import Rank from '../models/rank';
+import User from '../models/user';
+import getSeasonNumber from '../modelsHelper/seasonNumber';
 import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
-import Rank from '../models/rank';
+import { isMod } from '../modsadmins/mods';
+import { isTO } from '../modsadmins/tournamentOrganizers';
+import usernamesIndexes from '../myFunctions/usernamesIndexes';
 import { gameModeObj } from './gameModes';
-import getSeasonNumber from '../modelsHelper/seasonNumber';
+import commonPhasesIndex from './indexCommonPhases';
+import Room from './room';
 
 class Game extends Room {
   gameStarted = false;
@@ -2056,6 +2057,14 @@ class Game extends Room {
     }
     return newRating;
   }
+
+  voidGame() {
+    for (let i = 0; i < this.allSockets.length; i++) {
+      this.allSockets[i].emit('gameEnded');
+      this.sendText(this.allSockets, 'Game voided.', 'gameplay-text-blue');
+    }
+
+  }
 }
 
 export default Game;
@@ -2185,24 +2194,56 @@ let reverseMapFromMap = function (map, f) {
 //After player finished a ranked game, assigning a default rank to the player
 async function assignDefaultRankToUser(user: User, seasonNumber: number) {
   if (user) {
-    if (typeof seasonNumber === 'number') {
-      const rankData = new Rank({
-        userId: user._id,
-        seasonNumber: seasonNumber,
-      });
-      await rankData.save();
-      console.log(
-        `Rank data for ${user.username} saved, rankedId: ${rankData._id}`,
-      );
-      user.currentRanking = rankData._id;
-      await user.save();
-      console.log(
-        `Rank data for ${user.username} assigned, currentRanking: ${user.currentRanking}`,
-      );
+    if (user.currentRanking === null) {
+      if (typeof seasonNumber === 'number') {
+        const rankData = new Rank({
+          userId: user._id,
+          seasonNumber: seasonNumber,
+        });
+        await rankData.save();
+        console.log(
+          `Rank data for ${user.username} saved, rankedId: ${rankData._id}`,
+        );
+        user.currentRanking = rankData._id;
+        await user.save();
+        console.log(
+          `Rank data for ${user.username} assigned, currentRanking: ${user.currentRanking}`,
+        );
+      } else {
+        console.log(
+          `Season number is not a number, seasonNumber: ${seasonNumber}`,
+        );
+      }
     } else {
-      console.log(
-        `Season number is not a number, seasonNumber: ${seasonNumber}`,
-      );
+      console.log(`User already has a rank`);
+    }
+  } else {
+    console.log(`User is not defined`);
+  }
+}
+
+async function redistributeScores(score: number, users: User[]) {
+  //redistruibute the scores to the rest of the players
+  const compensation = score / (users.length);
+  for (const user of users) {
+    if (!user.currentRanking) {
+      await assignDefaultRankToUser(user, seasonNumber);
+    }
+    const rankData = await Rank.findById(user.currentRanking);
+    rankData.leavePenalty += compensation;
+    await rankData.save();
+  }
+}
+
+function leavePenalty(user: User, score: number) {
+  if (user) {
+    if (typeof score === 'number') {
+      const rankData = Rank.findById(user.currentRanking);
+      rankData.leaveCount += 1;
+      rankData.leavePenalty -= (eloConstants.LEAVE_PENALTY * rankData.leaveCount);
+      rankData.save();
+    } else {
+      console.log(`Score is not a number, score: ${score}`);
     }
   } else {
     console.log(`User is not defined`);
