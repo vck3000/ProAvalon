@@ -85,6 +85,11 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: 'silver',
   },
+  playerBanLength: {
+    type: Number,
+    // default 5 mins.
+    default: 5 * 60,
+  },
 
   winsLossesGameSizeBreakdown: {
     type: Object,

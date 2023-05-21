@@ -1105,6 +1105,17 @@ class Game extends Room {
     return data;
   }
 
+  ExtendBanLength(userId) {
+    let user = await User.findById(player.userId);
+    if (user) {
+      user.playerBanLength = user.playerBanLength * 2;
+      console.log(
+        `Current Ban length for ${user.username} is ${user.playerBanLength}`,
+      );
+      await user.save();
+    }
+  }
+
   // Misc game room functions
   addToChatHistory(data) {
     if (this.gameStarted === true) {
