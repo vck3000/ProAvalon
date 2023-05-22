@@ -1,4 +1,4 @@
-import SeasonNumber from '../models/seasonNumber';
+import SeasonNumber from '../../models/seasonNumber';
 
 export async function getSeasonNumber(): Promise<number> {
   const seasonNum = await SeasonNumber.findOne({});
