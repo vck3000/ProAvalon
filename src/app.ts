@@ -34,6 +34,7 @@ import modRoutes from './routes/mod';
 import staticifyFactory from 'staticify';
 // Create a MongoDB session store
 import MongoDBStoreFactory from 'connect-mongodb-session';
+import Glicko2 from './gameplay/glicko2.js';
 
 const assetsPath = path.join(__dirname, '../assets');
 
@@ -177,8 +178,9 @@ app.use('/profile', profileRoutes);
 const IP = process.env.IP || '127.0.0.1';
 const server = app.listen(port, () => {
   console.log(`Server has started on ${IP}:${port}!`);
-  const glickoUpdateSchedule = schedule.scheduleJob('0 0 * * *', () => {
+  const glickoUpdateSchedule = schedule.scheduleJob('0 0 * * *', async () => {
     console.log('Running scheduled work ');
+    // await Glicko2.updateAllUsersRatings();
   });
 });
 

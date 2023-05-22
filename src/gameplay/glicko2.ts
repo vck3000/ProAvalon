@@ -95,6 +95,14 @@ class Glicko2 {
     };
   }
 
+  static async updateAllUsersRatings(): Promise<void> {
+    const users = await Mongo.getAllUsers();
+    for (const user of users) {
+      const updatedRank = await this.computeRankRatingsByUserId(user._id.toString());
+      await Mongo.updateRankRatings(user._id.toString(), updatedRank);
+    }
+  }
+
   private static computeG(phi: number): number {
     return 1 / Math.sqrt(1 + (3 * phi ** 2) / Math.PI ** 2);
   }

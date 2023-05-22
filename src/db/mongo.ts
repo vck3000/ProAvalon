@@ -6,6 +6,10 @@ import type { IRatingPeriodGameRecord } from '../models/types';
 import { IRank, IUser } from '../models/types';
 
 export default class Mongo {
+  static getAllUsers(): Promise<IUser[]> {
+    return User.find({}).exec();
+  }
+
   static getUserByUsername(username: string): Promise<IUser> {
     const user = User.findOne({ usernameLower: username.toLowerCase() }).exec();
     if (!user) {
@@ -61,5 +65,17 @@ export default class Mongo {
     }
 
     return rank;
+  }
+
+  static async updateRankRatings(userId: string, updatedRank: IRank): Promise<void> {
+    const { playerRating, rd, volatility } = updatedRank;
+
+    await Rank.updateOne({
+      userId
+    }, {
+      playerRating,
+      rd,
+      volatility,
+    });
   }
 }

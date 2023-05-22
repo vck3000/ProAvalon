@@ -18,6 +18,7 @@ export interface IRank {
 }
 
 export interface IUser {
+  _id: Types.ObjectId;
   username: string;
   usernameLower?: string;
   password?: string;
