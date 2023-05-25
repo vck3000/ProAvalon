@@ -1,6 +1,10 @@
 //= ======================================================================
 // COOKIE SETUP!!!!!! Simple cookies for user options to persist
 //= ======================================================================
+
+import LocalStorage from "../LocalStorage";
+
+
 var userOptions = {
   lastSettingsResetDate: {
     defaultValue: new Date().toString(),
@@ -1172,22 +1176,34 @@ const defaultColours = [
 ];
 
 // When document has loaded, reinit the jscolor
+
 $(document).ready(() => {
+  var localStorage1 = new LocalStorage(); 
+  
   // On first run, update the colours
 
   for (let i = 0; i < 10; i++) {
-    if (!localStorage.getItem(`player${i}HighlightColour`)) {
+    //if (!localStorage.getItem(`player${i}HighlightColour`)) {
+      if (!localStorage1.getPlayerHighlightColour(i)) {
+      
+
+      localStorage1.storePlayerHighlightColour(i,
+      defaultColours[i]
+      ); 
+      /*
       localStorage.setItem(
         `player${i}HighlightColour`,
         defaultColours[i],
         Infinity
       );
+      */
     }
     $(`#player${i}HighlightColour`)[0].jscolor.fromString(
-      localStorage.getItem(`player${i}HighlightColour`)
+      //localStorage.getItem(`player${i}HighlightColour`)
+      localStorage1.getPlayerHighlightColour(i)
     );
     $(`#player${i}HighlightColour2`)[0].jscolor.fromString(
-      localStorage.getItem(`player${i}HighlightColour`)
+      localStorage1.getPlayerHighlightColour(i)
     );
   }
 });
@@ -1198,18 +1214,24 @@ function update(picker) {
   // console.log(picker.playerColourID);
   // console.log(picker.col);
 
+  localStorage1.storePlayerHighlightColour(i,
+    defaultColours[i]);
+  /*
   localStorage.setItem(
     `player${picker.playerColourID}HighlightColour`,
     picker.col,
     Infinity
   );
+  */
 
   for (let i = 0; i < 10; i++) {
     $(`#player${i}HighlightColour`)[0].jscolor.fromString(
-      localStorage.getItem(`player${i}HighlightColour`)
+      //localStorage.getItem(`player${i}HighlightColour`)
+      localStorage1.getPlayerHighlightColour(i)
     );
     $(`#player${i}HighlightColour2`)[0].jscolor.fromString(
-      localStorage.getItem(`player${i}HighlightColour`)
+      //localStorage.getItem(`player${i}HighlightColour`)
+      localStorage1.getPlayerHighlightColour(i)
     );
   }
 
@@ -1222,7 +1244,7 @@ function update(picker) {
   // only need to change colour if the user has selected that player's chat.
   if (selectedChat[username] === true) {
     const chatItems = $(`.room-chat-list li span[username='${username}']`);
-    const playerHighlightColour = localStorage.getItem(
+    const playerHighlightColour = localStorage1.getItem(
       `player${getIndexFromUsername(username)}HighlightColour`
     );
 
