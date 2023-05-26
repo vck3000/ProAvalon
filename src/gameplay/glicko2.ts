@@ -9,7 +9,7 @@ class Glicko2 {
   static async computeRankRatingsByUserId(userId: string): Promise<IRank> {
     const user = await Mongo.getUserByUserId(userId);
     const gameSummary = await this.summariseGamesByUsername(user.username);
-    const userRankData = await Mongo.getRankByUserId(userId);
+    const userRankData = await Mongo.getUserRankByUserId(userId);
 
     // TODO: handle the case when user has no previous ranks
 
@@ -24,7 +24,7 @@ class Glicko2 {
     // Check if the player competed during the rating period
     // If the player does not compete during the rating period
     // Rating and Volatility remain the same, but the RD increases
-    if (gameSummary.length == 0) {
+    if (!gameSummary.length) {
       const newPhi = Math.sqrt(player.phi ** 2 + player.ratingVolatility ** 2);
       const newRD = 173.7178 * newPhi;
 
@@ -96,11 +96,7 @@ class Glicko2 {
   }
 
   static async updateAllUsersRatings(): Promise<void> {
-    const users = await Mongo.getAllUsers();
-    for (const user of users) {
-      const updatedRank = await this.computeRankRatingsByUserId(user._id.toString());
-      await Mongo.updateRankRatings(user._id.toString(), updatedRank);
-    }
+    await Mongo.updateAllUsersRankByFn(this.computeRankRatingsByUserId);
   }
 
   private static computeG(phi: number): number {
@@ -168,7 +164,7 @@ class Glicko2 {
     let rdSum = 0;
 
     for (const username of team) {
-      const { playerRating, rd } = await Mongo.getRankByUsername(username);
+      const { playerRating, rd } = await Mongo.getUserRankByUsername(username);
       ratingSum += playerRating;
       rdSum += rd;
     }

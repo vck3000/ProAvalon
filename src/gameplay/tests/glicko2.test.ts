@@ -61,11 +61,11 @@ describe('Glicko-2 Unit Test', () => {
       .mockResolvedValueOnce(mockGames);
 
     jest
-      .spyOn(Mongo, 'getRankByUserId')
+      .spyOn(Mongo, 'getUserRankByUserId')
       .mockResolvedValueOnce(mockUser1Rank);
 
     jest
-      .spyOn(Mongo, 'getRankByUsername')
+      .spyOn(Mongo, 'getUserRankByUsername')
       .mockImplementation((username) => {
         switch(username) {
           case 'user1':
@@ -157,7 +157,7 @@ describe('Glicko-2 Unit Test', () => {
       .mockResolvedValueOnce([]);
 
     jest
-      .spyOn(Mongo, 'getRankByUserId')
+      .spyOn(Mongo, 'getUserRankByUserId')
       .mockResolvedValueOnce(mockRank);
 
     const updatedRank = await Glicko2.computeRankRatingsByUserId(

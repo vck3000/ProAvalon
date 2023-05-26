@@ -178,10 +178,6 @@ app.use('/profile', profileRoutes);
 const IP = process.env.IP || '127.0.0.1';
 const server = app.listen(port, () => {
   console.log(`Server has started on ${IP}:${port}!`);
-  const glickoUpdateSchedule = schedule.scheduleJob('0 0 * * *', async () => {
-    console.log('Running scheduled work ');
-    // await Glicko2.updateAllUsersRatings();
-  });
 });
 
 const io: SocketServer = socket(server, {
@@ -199,3 +195,8 @@ io.use(
 );
 
 socketServer(io);
+
+const glickoUpdateSchedule = schedule.scheduleJob('0 0 * * *', async () => {
+  console.log('Running scheduled work ');
+  // await Glicko2.updateAllUsersRatings();
+});

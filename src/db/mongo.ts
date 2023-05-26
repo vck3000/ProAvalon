@@ -10,6 +10,16 @@ export default class Mongo {
     return User.find({}).exec();
   }
 
+  static async updateAllUsersRankByFn(updateFn: (userId: string) => Promise<IRank>): Promise<void> {
+    User
+      .find({})
+      .cursor()
+      .eachAsync(async (user: IUser) => {
+        const updatedRank = await updateFn(user._id.toString());
+        await this.updateRankRatings(user._id.toString(), updatedRank);
+      });
+  }
+
   static getUserByUsername(username: string): Promise<IUser> {
     const user = User.findOne({ usernameLower: username.toLowerCase() }).exec();
     if (!user) {
@@ -29,7 +39,7 @@ export default class Mongo {
     return user;
   }
 
-  static async getGamesByUsername(
+  static getGamesByUsername(
     username: string,
   ): Promise<IRatingPeriodGameRecord[]> {
     const usernameLower = username.toLowerCase();
@@ -39,7 +49,7 @@ export default class Mongo {
     }).exec();
   }
 
-  static async getRankByUserId(userId: string): Promise<IRank> {
+  static async getUserRankByUserId(userId: string): Promise<IRank> {
     const user = await this.getUserByUserId(userId);
     const rank = Rank.findOne({
       _id: user.currentRanking,
@@ -52,7 +62,7 @@ export default class Mongo {
     return rank;
   }
 
-  static async getRankByUsername(username: string): Promise<IRank> {
+  static async getUserRankByUsername(username: string): Promise<IRank> {
     const usernameLower = username.toLowerCase();
 
     const user = await this.getUserByUsername(usernameLower);
