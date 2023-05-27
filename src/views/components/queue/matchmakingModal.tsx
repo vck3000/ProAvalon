@@ -18,6 +18,8 @@ export function MatchMakingModal() {
   const [second, setSecond] = useState(60);
   const [confirmJoinGame, setConfirmJoinGame] = useState(false);
   const [intervalId, setIntervalId] = useState<any | null>(null);
+  const [intervalId2, setIntervalId2] = useState<any | null>(null);
+  const [startCountdown, setStartCountdown] = useState(false);
 
   // @ts-ignore
   const socket_: Socket = socket;
@@ -32,6 +34,7 @@ export function MatchMakingModal() {
   // To create a countup timer
   useEffect(() => {
     socket_.on('confirm-ready-to-play', function () {
+      setStartCountdown(true); // Start the countdown timer
       setModalOpen(true);
       setShowElement(false);
       setClickedButton(null);
@@ -48,25 +51,39 @@ export function MatchMakingModal() {
       }
       alert(data.decliningPlayer + ' has left the queue');
     });
+    socket_.on('game-has-begun', function () {
+      setModalOpen(false);
+      setStartCountdown(false);
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+      setIntervalId(null);
+    })
   }, []);
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      if (second > 0) {
-        setSecond(second - 1);
-      } else if (second === 0) {
-        socket_.emit('initiate-unranked-game', { playerReady: false });
-        setSecond(60);
-      }
-    }, 1000);
-    // console.log(intervalId)
-    return () => clearInterval(intervalId);
-  }, [second]);
-
+    let newIntervalId: any;
+  
+    if (startCountdown && second > 0) {
+      newIntervalId = setInterval(() => {
+        setSecond((prevSecond) => prevSecond - 1);
+      }, 1000);
+    } else if (second === 0) {
+      socket_.emit('initiate-unranked-game', { playerReady: false });
+      setStartCountdown(false);
+    }
+  
+    setIntervalId(newIntervalId);
+  
+    return () => {
+      clearInterval(newIntervalId);
+    };
+  }, [startCountdown, second]);
+  
   // Handlers
   const handleClick = (button: ButtonId) => {
     setSecond(60);
-    console.log(intervalId);
+    setConfirmJoinGame(false);
     clearInterval(intervalId);
     const newIntervalId = setInterval(() => {
       setCount((count) => count + 1);
@@ -76,10 +93,10 @@ export function MatchMakingModal() {
     const playerObj = {
       numPlayers: 6,
     };
-
+  
     setClickedButton(button);
     setShowElement(true);
-
+  
     if (button === 'unrankBtn') {
       socket_.emit('join-unranked-queue', playerObj);
     }
@@ -92,16 +109,19 @@ export function MatchMakingModal() {
     }
     setIntervalId(null);
     setCount(0);
+    setShowElement(false);
   };
 
   const joinGame = () => {
     socket_.emit('initiate-unranked-game', { playerReady: true });
     setConfirmJoinGame(true);
-    setSecond(60);
-    // setModalOpen(false);
+    clearInterval(intervalId2);
+    clearInterval(null);
+    setStartCountdown(false);
   };
 
   const cancelQueue = () => {
+    setStartCountdown(false);
     socket_.emit('initiate-unranked-game', { playerReady: false });
   };
 

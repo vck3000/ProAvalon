@@ -2363,7 +2363,9 @@ function joinUnrankedQueue(dataObj) {
       user: this.request.user,
       timeJoinedAt: new Date(),
     });
-    console.log(unrankedQueue6Players.length);
+    // console.log(unrankedQueue6Players.length);
+    console.log("List of players:");
+    console.log(unrankedQueue6Players.map(player => player.id));
     // if number of players in queue < 6, return null
     // Second if checks if there are enough players for a six-player game
     if (unrankedQueue6Players.length >= 6) {
@@ -2397,7 +2399,7 @@ function leaveUnrankedQueue() {
 }
 
 // Create a new room for the unranked game
-function newUnrankedRoom(): number {
+function newUnrankedRoom(host: String): number {
   // get latest unused room ID
   while (rooms[nextRoomId]) {
     incrementNextRoomId();
@@ -2406,7 +2408,7 @@ function newUnrankedRoom(): number {
   const roomId = nextRoomId;
 
   rooms[roomId] = new gameRoom(
-    readyPlayersFor6UQ[0].user.username, // host
+    host, // host
     roomId,
     ioGlobal,
     6, // maxNumOfPlayers
@@ -2420,7 +2422,7 @@ function newUnrankedRoom(): number {
 
   setTimeout(() => {
     const data = {
-      message: `${readyPlayersFor6UQ[0].user.username} has created unranked room ${roomId}.`,
+      message: `${rooms[roomId].host} has created unranked room ${roomId}.`,
       classStr: 'server-text',
     };
     sendToAllChat(ioGlobal, data);
@@ -2429,6 +2431,13 @@ function newUnrankedRoom(): number {
   // increment index for next game
   incrementNextRoomId();
   updateCurrentGamesList();
+  
+  readyPlayersFor6UQ.forEach((player) => {
+    const playerSocket: SocketUser = getSocketFromUsername(
+      player.user.username.toLowerCase(),
+    );
+    playerSocket.emit('game-has-begun');
+  })
 
   return roomId;
 }
@@ -2528,10 +2537,17 @@ function startUnrankedGame() {
   // check if game has begun
   // let gameStarted = false;
   // create new room
-  const newRoomID: number = newUnrankedRoom();
-  console.log('New room id: ' + newRoomID);
+  const host = readyPlayersFor6UQ[0].user.username;
+  const newRoomID: number = newUnrankedRoom(host);
+  console.log('New room id: ' + newRoomID + ' with host: ' + host);
+  const tempQueue = [...readyPlayersFor6UQ];
+  readyPlayersFor6UQ = [];
+  console.log("Cleared readyPlayers queue.");
+  console.log(unrankedQueue6Players);
+  console.log(prospectivePlayersFor6UQ);
+  console.log(readyPlayersFor6UQ);
 
-  readyPlayersFor6UQ.forEach((player, index) => {
+  tempQueue.forEach((player, index) => {
     const playerSocket: SocketUser = getSocketFromUsername(
       player.user.username.toLowerCase(),
     );
@@ -2539,14 +2555,12 @@ function startUnrankedGame() {
     joinUnrankedRoomAndSitDown(newRoomID, playerSocket);
     playerSocket.join(newRoomID);
     // joinUnrankedGame(newRoomID, playerSocket);
-    // playerSocket.emit('begin-unranked-game', { roomID: newRoomID, host: readyPlayersFor6UQ[0].user.username });
+    // playerSocket.emit('begin-unranked-game', { roomID: newRoomID, host: tempQueue[0].user.username });
   });
   // if (!gameStarted) {
-  for (const i = 0; i < 6; i++) {
-    gameStarted = getHostToBeginUnrankedGame(
-      getSocketFromUsername(readyPlayersFor6UQ[i].user.username.toLowerCase()),
-    );
-  }
+  gameStarted = getHostToBeginUnrankedGame(
+    getSocketFromUsername(host)
+  );
   // }
 }
 
@@ -2593,6 +2607,7 @@ function initiateUnrankedGame(dataObj) {
   // if all players accept, start game
   if (readyPlayersFor6UQ.length === 6) {
     console.log('ready to start game');
+    prospectivePlayersFor6UQ = [];
     startUnrankedGame();
   }
   return;
