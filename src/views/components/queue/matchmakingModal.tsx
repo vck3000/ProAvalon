@@ -17,7 +17,7 @@ export function MatchMakingModal() {
   const [modalOpen, setModalOpen] = useState(false);
   const [second, setSecond] = useState(60);
   const [confirmJoinGame, setConfirmJoinGame] = useState(false);
-  const [intervalId, setIntervalId] = useState<any | null>(null);
+  const [intervalId, setIntervalId] = useState<any | null>(1);
   const [intervalId2, setIntervalId2] = useState<any | null>(null);
   const [startCountdown, setStartCountdown] = useState(false);
 
@@ -54,16 +54,12 @@ export function MatchMakingModal() {
     socket_.on('game-has-begun', function () {
       setModalOpen(false);
       setStartCountdown(false);
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-      setIntervalId(null);
     })
   }, []);
 
   useEffect(() => {
     let newIntervalId: any;
-  
+
     if (startCountdown && second > 0) {
       newIntervalId = setInterval(() => {
         setSecond((prevSecond) => prevSecond - 1);
@@ -73,7 +69,7 @@ export function MatchMakingModal() {
       setStartCountdown(false);
     }
   
-    setIntervalId(newIntervalId);
+    setIntervalId2(newIntervalId);
   
     return () => {
       clearInterval(newIntervalId);
@@ -104,7 +100,8 @@ export function MatchMakingModal() {
 
   const leaveQueue = () => {
     socket_.emit('leave-unranked-queue');
-    if (intervalId) {
+    console.log(intervalId);
+    if (intervalId !== null) {
       clearInterval(intervalId);
     }
     setIntervalId(null);
@@ -116,8 +113,15 @@ export function MatchMakingModal() {
     socket_.emit('initiate-unranked-game', { playerReady: true });
     setConfirmJoinGame(true);
     clearInterval(intervalId2);
-    clearInterval(null);
     setStartCountdown(false);
+    console.log("the id is " + intervalId);
+    if (intervalId) {
+      console.log("closing id is " + intervalId);
+      clearInterval(intervalId);
+      setCount(0);
+    }
+    setIntervalId(null);
+    console.log(intervalId);
   };
 
   const cancelQueue = () => {
