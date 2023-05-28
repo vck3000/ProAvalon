@@ -1,40 +1,39 @@
 // @ts-nocheck
 import axios from 'axios';
-import { Server as SocketServer, Socket } from 'socket.io';
+import { Socket, Server as SocketServer } from 'socket.io';
 import { SocketUser } from './types';
 
-import gameRoom from '../gameplay/gameWrapper.js';
-import GameWrapper from '../gameplay/gameWrapper.js';
+import { default as GameWrapper, default as gameRoom } from '../gameplay/gameWrapper.js';
 
-import savedGameObj from '../models/savedGame';
-import { getAllRewardsForUser } from '../rewards/getRewards';
-import REWARDS from '../rewards/constants';
-import avatarRequest from '../models/avatarRequest';
-import User from '../models/user';
-import ModLog from '../models/modLog';
 import JSON from 'circular-json';
+import avatarRequest from '../models/avatarRequest';
+import ModLog from '../models/modLog';
+import savedGameObj from '../models/savedGame';
+import User from '../models/user';
+import REWARDS from '../rewards/constants';
+import { getAllRewardsForUser } from '../rewards/getRewards';
 
+import { GAME_MODE_NAMES, isGameMode } from '../gameplay/gameModes';
 import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
-import { GAME_MODE_NAMES, isGameMode } from '../gameplay/gameModes';
 
-import { ChatSpamFilter } from './chatSpamFilter';
-import { MessageWithDate, Quote } from './quote';
 import {
   APIBotSocket,
+  SimpleBotSocket,
   enabledBots,
   makeBotAPIRequest,
-  SimpleBotSocket,
 } from './bot';
+import { ChatSpamFilter } from './chatSpamFilter';
+import { MessageWithDate, Quote } from './quote';
 
 import { adminCommands } from './commands/admin';
 import { modCommands } from './commands/mod';
-import { mtogglepause } from './commands/mod/mtogglepause';
 import { mrevealallroles } from './commands/mod/mrevealallroles';
+import { mtogglepause } from './commands/mod/mtogglepause';
 
-import { lastWhisperObj } from './commands/mod/mwhisper';
 import * as util from 'util';
+import { lastWhisperObj } from './commands/mod/mwhisper';
 
 const chatSpamFilter = new ChatSpamFilter();
 if (process.env.NODE_ENV !== 'test') {
@@ -1389,7 +1388,7 @@ export const server = function (io: SocketServer): void {
     socket.on('update-room-ranked', updateRoomRanked);
     socket.on('update-room-muteSpectators', updateRoomMuteSpectators);
     socket.on('update-room-disableVoteHistory', updateRoomDisableVoteHistory);
-
+    socket.on('voidedGame', voidedGame);
     //************************
     // game data stuff
     //************************
@@ -2258,6 +2257,11 @@ function gameMove(data) {
   }
 }
 
+function voidedGame(){
+  if (rooms[this.request.user.inRoomId]) {
+    rooms[this.request.user.inRoomId].voidedGame();
+  }
+}
 function updateRoomGameMode(gameMode) {
   if (rooms[this.request.user.inRoomId]) {
     rooms[this.request.user.inRoomId].updateGameModesInRoom(this, gameMode);

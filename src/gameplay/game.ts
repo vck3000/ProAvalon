@@ -2,11 +2,11 @@
 // Load the full build.
 import _ from 'lodash';
 
-import eloConstants from 'src/elo/constants/eloConstants';
+import eloConstants from '../elo/constants/eloConstants';
 import GameRecord from '../models/gameRecord';
 import Rank from '../models/rank';
 import User from '../models/user';
-import getSeasonNumber from '../modelsHelper/seasonNumber';
+import { getSeasonNumber } from '../modelsHelper/seasonNumber';
 import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 import { isMod } from '../modsadmins/mods';
@@ -741,7 +741,6 @@ class Game extends Room {
 
     // RUN SPECIAL ROLE AND CARD CHECKS
     this.checkRoleCardSpecialMoves(socket, buttonPressed, selectedPlayers);
-
     this.distributeGameData();
   }
 
@@ -1860,6 +1859,15 @@ class Game extends Room {
     }
   }
 
+  voidedGame(){
+    this.sendText(
+        this.allSockets,
+        `Someone fails to complete the operation within the specified time, Game is voided.`,
+        'server-text',
+      );
+    this.phase = 'voided';
+    this.distributeGameData();
+  }
   canRoomChat(usernameLower: string) {
     if (this.gameStarted === false) {
       return true;
@@ -2222,7 +2230,14 @@ async function assignDefaultRankToUser(user: User, seasonNumber: number) {
   }
 }
 
-async function redistributeScores(score: number, users: User[]) {
+/**
+ * Redistributes the scores to the rest of the players.
+ * 
+ * @param score The score to redistribute.
+ * @param users The array of users.
+ */
+
+async function redistributeScores(score: number, users: User[]) : Promise<void>{
   //redistruibute the scores to the rest of the players
   const compensation = score / (users.length);
   for (const user of users) {
@@ -2235,17 +2250,54 @@ async function redistributeScores(score: number, users: User[]) {
   }
 }
 
-function leavePenalty(user: User, score: number) {
+/**
+ * Gives the user a leave penalty.
+ * 
+ * @param user The user to give the leave penalty to.
+ * @param score The score to redistribute.
+ */
+
+function leavePenalty(user: User, score: number): boolean{
   if (user) {
     if (typeof score === 'number') {
       const rankData = Rank.findById(user.currentRanking);
       rankData.leaveCount += 1;
       rankData.leavePenalty -= (eloConstants.LEAVE_PENALTY * rankData.leaveCount);
       rankData.save();
+      return true;
     } else {
       console.log(`Score is not a number, score: ${score}`);
+      return false;
     }
   } else {
     console.log(`User is not defined`);
+  }
+}
+
+function getInactivityTeamLeaderInPickTeamPhase(this:Game) : string | null {
+  if(this.proposedTeam.length === 0) {
+    return this.playersInGame[this.teamLeader].request.user.username;
+  }
+  return null;
+}
+
+function getInactivityPlayerInVotePhase(this:Game) : string[] | null {
+  if(this.playersYetToVote.length !== 0) {
+    let players = [];
+    for (player of this.playersYetToVote) {
+      players.push(player.request.user.username);
+    }
+    return players;
+  }
+  return null;
+}
+
+function getInactivityPlayerInAssassinatePhase(this:Game) : string | null {
+  if(this.phase ==='assassination' && !this.specialRoles.assassin.playerShot) {
+    for(player of this.playersInGame) {
+      if(player.role === 'Assassin') {
+        return player.request.user.username;
+      }
+    }
   }
 }
