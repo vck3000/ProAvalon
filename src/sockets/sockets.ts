@@ -17,7 +17,7 @@ import JSON from 'circular-json';
 import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
-import { GAME_MODE_NAMES, isGameMode } from '../gameplay/gameModes';
+import { AVALON, GAME_MODE_NAMES, isGameMode } from '../gameplay/gameModes';
 
 import { ChatSpamFilter } from './chatSpamFilter';
 import { MessageWithDate, Quote } from './quote';
@@ -2081,12 +2081,16 @@ function newRoom(dataObj) {
     // send to allChat including the host of the game
     // ioGlobal.in("allChat").emit("new-game-created", str);
     // send back room id to host so they can auto connect
-    this.emit('auto-join-room-id', nextRoomId, dataObj.newRoomPassword);
+    if (dataObj.skipAutoJoinRoomId === undefined) {
+      this.emit('auto-join-room-id', nextRoomId, dataObj.newRoomPassword);
+    }
 
     // increment index for next game
     incrementNextRoomId();
 
     updateCurrentGamesList();
+
+    return nextRoomId - 1;
   }
 }
 
@@ -2102,15 +2106,6 @@ function joinRoom(roomId, inputPassword) {
 
       // set the room id into this obj
       this.request.user.inRoomId = roomId;
-
-      // remove player from the unranked queue
-      const userName = this.request.user.username.toLowerCase();
-      const indexToRemove: number = unrankedQueue6Players.findIndex(
-        (player) => player.id === userName,
-      );
-      if (indexToRemove !== -1) {
-        unrankedQueue6Players.splice(indexToRemove, 1);
-      }
 
       // join the room chat
       this.join(roomId);
@@ -2364,8 +2359,8 @@ function joinUnrankedQueue(dataObj) {
       timeJoinedAt: new Date(),
     });
     // console.log(unrankedQueue6Players.length);
-    console.log("List of players:");
-    console.log(unrankedQueue6Players.map(player => player.id));
+    console.log('List of players:');
+    console.log(unrankedQueue6Players.map((player) => player.id));
     // if number of players in queue < 6, return null
     // Second if checks if there are enough players for a six-player game
     if (unrankedQueue6Players.length >= 6) {
@@ -2399,137 +2394,54 @@ function leaveUnrankedQueue() {
 }
 
 // Create a new room for the unranked game
-function newUnrankedRoom(host: String): number {
-  // get latest unused room ID
-  while (rooms[nextRoomId]) {
-    incrementNextRoomId();
-  }
-  // console.log(nextRoomId);
-  const roomId = nextRoomId;
+function newUnrankedRoom(socket: SocketUser): number {
+  const boundNewRoom = newRoom.bind(socket);
+  const dataObject = {
+    maxNumPlayers: 10,
+    newRoomPassword: '',
+    gameMode: AVALON,
+    muteSpectators: false,
+    disableVoteHistory: false,
+    ranked: 'unranked',
+  };
+  const nextRoomId = boundNewRoom(dataObject);
 
-  rooms[roomId] = new gameRoom(
-    host, // host
-    roomId,
-    ioGlobal,
-    6, // maxNumOfPlayers
-    '', // password
-    true,
-    false,
-    'AVALON', // gameMode
-    false,
-    socketCallback,
-  );
-
-  setTimeout(() => {
-    const data = {
-      message: `${rooms[roomId].host} has created unranked room ${roomId}.`,
-      classStr: 'server-text',
-    };
-    sendToAllChat(ioGlobal, data);
-  }, 1000);
-
-  // increment index for next game
-  incrementNextRoomId();
-  updateCurrentGamesList();
-  
   readyPlayersFor6UQ.forEach((player) => {
     const playerSocket: SocketUser = getSocketFromUsername(
       player.user.username.toLowerCase(),
     );
     playerSocket.emit('game-has-begun');
-  })
+  });
 
-  return roomId;
+  return nextRoomId;
 }
 
 // add players to the unranked room
 function joinUnrankedRoomAndSitDown(roomId: number, playerSocket: SocketUser) {
-  // if the room exists
-  if (rooms[roomId]) {
-    // join the room
-    if (rooms[roomId].playerJoinRoom(playerSocket, '') === true) {
-      // sends to players and specs
-      console.log(
-        'Room ' + roomId + ' exists for ' + playerSocket.request.user.username,
-      );
-      rooms[roomId].distributeGameData();
-
-      // set the room id into this obj
-      playerSocket.request.user.inRoomId = roomId;
-
-      playerSocket.emit('auto-join-room-id', roomId, '');
-
-      // join the room chat
-      playerSocket.join(roomId);
-
-      console.log(
-        playerSocket.request.user.inRoomId +
-          ' ' +
-          playerSocket.request.user.username,
-      );
-      // return;
-
-      // emit to say to others that someone has joined
-      const data = {
-        message: `${playerSocket.request.user.username} has joined the room.`,
-        classStr: 'server-text-teal',
-        dateCreated: new Date(),
-      };
-      sendToRoomChat(ioGlobal, roomId, data);
-
-      updateCurrentGamesList();
-
-      // Sit players down immediately
-      console.log(rooms[roomId].getStatus());
-
-      // if (rooms[roomId].getStatus() === 'Waiting') {
-      //   console.log("Testing");
-      //   const ToF = rooms[roomId].playerSitDown(playerSocket);
-      //   console.log(
-      //     `${playerSocket.request.user.username} has joined room ${roomId}: ${ToF}`,
-      //   );
-      // }
-      playerSocket.emit('join-game', roomId);
-      playerSocket.emit('player-ready');
-    } else {
-      console.log('Failed to join: ' + playerSocket.request.user.username);
-    }
-  } else {
-    console.log(
-      'Room ' +
-        roomId +
-        ' does not exist for ' +
-        playerSocket.request.user.username,
-    );
+  if (!rooms[roomId]) {
+    return;
   }
+  const boundJoinRoom = joinRoom.bind(playerSocket);
+  boundJoinRoom(roomId, '');
+
+  // Immediately force them to sit down.
+  playerSocket.emit('change-view', roomId);
+  rooms[roomId].playerSitDown(playerSocket);
+  setTimeout(() => {
+    rooms[roomId].distributeGameData();
+  }, 500);
+
+  // TODO Remove from queue for Fakhruddin
 }
 
-function getHostToBeginUnrankedGame(playerSocket: SocketUser) {
-  console.log(playerSocket.request.user.inRoomId);
-  let gameStarted = false;
-  // start the game
-  if (rooms[playerSocket.request.user.inRoomId]) {
-    if (
-      playerSocket.request.user.inRoomId &&
-      playerSocket.request.user.username ===
-        rooms[playerSocket.request.user.inRoomId].host
-    ) {
-      rooms[playerSocket.request.user.inRoomId].hostTryStartGame(
-        ['Assassin', 'Merlin', 'Percival', 'Morgana'],
-        'AVALON',
-      );
-      gameStarted = true;
-      // this.emit("update-room-players", rooms[roomId].getPlayers());
-    } else {
-      // console.log("Room doesn't exist or user is not host, cannot start game");
-      // playerSocket.emit(
-      //   'danger-alert',
-      //   'You are not the host. You cannot start the game.',
-      // );
-      return;
-    }
+function getHostToBeginUnrankedGame(roomId: number) {
+  const gameRoom = rooms[roomId];
+  if (!gameRoom) {
+    return;
   }
-  return gameStarted;
+
+  gameRoom.canJoin = false;
+  gameRoom.startGame(['Assassin', 'Merlin', 'Percival', 'Morgana']);
 }
 
 // to start game, do the following:
@@ -2537,31 +2449,32 @@ function startUnrankedGame() {
   // check if game has begun
   // let gameStarted = false;
   // create new room
-  const host = readyPlayersFor6UQ[0].user.username;
-  const newRoomID: number = newUnrankedRoom(host);
-  console.log('New room id: ' + newRoomID + ' with host: ' + host);
+  const socket = getSocketFromUsername(readyPlayersFor6UQ[0].user.username);
+  const nextRoomId = newUnrankedRoom(socket);
+  console.log(
+    'New room id: ' +
+      nextRoomId +
+      ' with host: ' +
+      readyPlayersFor6UQ[0].user.username,
+  );
+
   const tempQueue = [...readyPlayersFor6UQ];
   readyPlayersFor6UQ = [];
-  console.log("Cleared readyPlayers queue.");
+
+  console.log('Cleared readyPlayers queue.');
   console.log(unrankedQueue6Players);
   console.log(prospectivePlayersFor6UQ);
   console.log(readyPlayersFor6UQ);
 
-  tempQueue.forEach((player, index) => {
+  tempQueue.forEach((player) => {
     const playerSocket: SocketUser = getSocketFromUsername(
       player.user.username.toLowerCase(),
     );
     console.log('Asking player to join: ' + playerSocket.request.user.username);
-    joinUnrankedRoomAndSitDown(newRoomID, playerSocket);
-    playerSocket.join(newRoomID);
-    // joinUnrankedGame(newRoomID, playerSocket);
-    // playerSocket.emit('begin-unranked-game', { roomID: newRoomID, host: tempQueue[0].user.username });
+    joinUnrankedRoomAndSitDown(nextRoomId, playerSocket);
   });
-  // if (!gameStarted) {
-  gameStarted = getHostToBeginUnrankedGame(
-    getSocketFromUsername(host)
-  );
-  // }
+
+  getHostToBeginUnrankedGame(nextRoomId);
 }
 
 function initiateUnrankedGame(dataObj) {
