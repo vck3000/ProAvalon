@@ -5,10 +5,10 @@ import Merlin from './roles/merlin';
 import { Vote, VoteC } from './roles/components/vote';
 import { System } from './systems/system';
 import { VoteS } from './systems/voteS';
-
 // 14/5 added by mengchen:  when adding player to contructor as paramter of Player changes,
 // Input here also need to change, so we need to add Role and Alliance here
 import { GameMoveData, Role, Alliance } from './gameTypes';
+import { LeaderSelectionS } from './systems/leaderSelectionS';
 
 export class GameData {
   players: Player[];
@@ -17,7 +17,7 @@ export class GameData {
 
 export class GameEngine {
   data: GameData;
-  systems: System[] = [new VoteS()];
+  systems: System[] = [new VoteS(), new LeaderSelectionS];
 
   constructor() {
 
@@ -54,6 +54,8 @@ export class GameEngine {
 
     this.runAllSystems();
   }
+
+  
 
   runAllSystems(): void {
     for (const system of this.systems) {
