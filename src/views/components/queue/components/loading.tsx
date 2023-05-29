@@ -1,4 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import {
+  inQueueContainer,
+  matchMakingHeading,
+  timer,
+  loadingIcon,
+  loadingContainer,
+  btnRed,
+} from '../styles/styles';
 
 interface LoadingProps {
   leaveQueue: () => void;
@@ -39,9 +47,22 @@ const Loading: React.FC<LoadingProps> = ({ leaveQueue }) => {
   }, [count, leaveQueue, reset]);
 
   return (
-    <div>
-      <p>Queue Time: {formattedTime}</p>
-      <button onClick={leaveQueue}>Leave Queue</button>
+    <div style={inQueueContainer}>
+      <p style={matchMakingHeading}>You are in Queue</p>
+      <div style={loadingContainer}>
+        <div style={loadingIcon}></div>
+        <div style={timer}>{formattedTime}</div>
+      </div>
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+          }
+
+        `}
+      </style>
+      <button style={btnRed} onClick={leaveQueue}>Leave Queue</button>
     </div>
   );
 };

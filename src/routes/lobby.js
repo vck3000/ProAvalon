@@ -9,14 +9,13 @@ const router = new Router();
 
 router.get('/', (req, res) => {
   const reportsReact = renderToString(<Report />);
-  const onQueueReact = renderToString(<inQueue />);
-  console.log(onQueueReact);
+  const inQueueReact = renderToString(<inQueue />);
 
   res.render('lobby', {
     headerActive: 'lobby',
     optionsCog: true,
     reportsReact,
-    onQueueReact,
+    inQueueReact,
   });
 });
 

@@ -3,8 +3,9 @@ import { hot } from 'react-hot-loader/root';
 import Modal from 'react-modal';
 import { Socket } from 'socket.io';
 import ModalContent from './components/modalContent';
-import buttonProps from './components/buttonProps';
+import buttonProps from './styles/buttonProps';
 import Loading from './components/loading';
+import { btnContainer, modalStyles } from './styles/styles';
 
 Modal.setAppElement('#matchMakingTimer');
 type ButtonId = 'rankBtn' | 'unrankBtn';
@@ -44,7 +45,6 @@ export function MatchMakingModal() {
     });
   }, []);
 
-
   useEffect(() => {
     if (clickedButton === 'unrankBtn') {
       socket_.emit('join-unranked-queue', {
@@ -76,30 +76,32 @@ export function MatchMakingModal() {
 
   return (
     <div className="matchmaking-container">
-      <button
-        {...buttonProps({
-          button: 'rankBtn',
-          clickedButton,
-          buttonsDisabled,
-          handleClick,
-        })}
-        className="matchmaking-btn btn btn-default"
-      >
-        Rank Game
-      </button>
+      <div style={btnContainer}>
+        <button
+          {...buttonProps({
+            button: 'rankBtn',
+            clickedButton,
+            buttonsDisabled,
+            handleClick,
+          })}
+          className="btn btn-default"
+        >
+          Rank Game
+        </button>
 
-      <button
-        {...buttonProps({
-          button: 'unrankBtn',
-          clickedButton,
-          buttonsDisabled,
-          handleClick,
-        })}
-        id="unrankButton"
-        className="matchmaking-btn btn btn-default"
-      >
-        Unranked Game
-      </button>
+        <button
+          {...buttonProps({
+            button: 'unrankBtn',
+            clickedButton,
+            buttonsDisabled,
+            handleClick,
+          })}
+          id="unrankButton"
+          className="btn btn-default"
+        >
+          Unranked Game
+        </button>
+      </div>
 
       {showElement && <Loading leaveQueue={leaveQueue} />}
 
@@ -107,6 +109,7 @@ export function MatchMakingModal() {
         isOpen={modalOpen}
         onRequestClose={cancelQueue}
         contentLabel="Modal"
+        style={modalStyles}
       >
         <ModalContent
           confirmJoinGame={confirmJoinGame}
