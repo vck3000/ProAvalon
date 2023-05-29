@@ -2403,6 +2403,7 @@ function newUnrankedRoom(socket: SocketUser): number {
     muteSpectators: false,
     disableVoteHistory: false,
     ranked: 'unranked',
+    skipAutoJoinRoomId: true,
   };
   const nextRoomId = boundNewRoom(dataObject);
 
