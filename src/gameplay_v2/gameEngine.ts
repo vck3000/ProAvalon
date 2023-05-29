@@ -6,6 +6,7 @@ import { Vote, VoteC } from './roles/components/vote';
 import { System } from './systems/system';
 import { VoteS } from './systems/voteS';
 import { GameMoveData } from './gameTypes';
+import { LeaderSelectionS } from './systems/leaderSelectionS';
 
 export class GameData {
   players: Player[];
@@ -14,7 +15,7 @@ export class GameData {
 
 export class GameEngine {
   data: GameData;
-  systems: System[] = [new VoteS()];
+  systems: System[] = [new VoteS(), new LeaderSelectionS];
 
   constructor() {
     this.data = {
@@ -49,6 +50,8 @@ export class GameEngine {
 
     this.runAllSystems();
   }
+
+  
 
   runAllSystems(): void {
     for (const system of this.systems) {
