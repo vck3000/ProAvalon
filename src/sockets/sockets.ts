@@ -2363,7 +2363,7 @@ function joinUnrankedQueue(dataObj) {
     console.log(unrankedQueue6Players.map((player) => player.id));
     // if number of players in queue < 6, return null
     // Second if checks if there are enough players for a six-player game
-    if (unrankedQueue6Players.length >= 1) {
+    if (unrankedQueue6Players.length >= 6) {
       checkForUnrankedConfirmation();
     } else {
       return;
@@ -2511,7 +2511,7 @@ function initiateUnrankedGame(dataObj) {
     prospectivePlayersFor6UQ = [];
     readyPlayersFor6UQ = [];
     unrankedQueue6Players.sort((a, b) => a.timeJoinedAt - b.timeJoinedAt);
-    if (unrankedQueue6Players.length >= 1) {
+    if (unrankedQueue6Players.length >= 6) {
       checkForUnrankedConfirmation();
     }
   } else {
