@@ -104,7 +104,6 @@ const timerContainer: React.CSSProperties = {
 
 const timerBar: React.CSSProperties = {
   height: '100%',
-  backgroundColor: '#87ceeb',
   transition: 'width 1s linear',
   transformOrigin: 'top right',
 };

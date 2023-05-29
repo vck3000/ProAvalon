@@ -33,18 +33,11 @@ const useQueueInterval = (initialCount: number, interval: number) => {
 };
 
 const Loading: React.FC<LoadingProps> = ({ leaveQueue }) => {
-  const { count, reset } = useQueueInterval(0, 1000);
+  const { count } = useQueueInterval(0, 1000);
 
   const formattedTime = `${Math.floor(count / 60)
     .toString()
     .padStart(2, '0')}:${(count % 60).toString().padStart(2, '0')}`;
-
-  useEffect(() => {
-    if (count === 60) {
-      leaveQueue();
-      reset();
-    }
-  }, [count, leaveQueue, reset]);
 
   return (
     <div style={inQueueContainer}>
@@ -59,10 +52,11 @@ const Loading: React.FC<LoadingProps> = ({ leaveQueue }) => {
             0% { transform: translate(-50%, -50%) rotate(0deg); }
             100% { transform: translate(-50%, -50%) rotate(360deg); }
           }
-
         `}
       </style>
-      <button style={btnRed} onClick={leaveQueue}>Leave Queue</button>
+      <button style={btnRed} onClick={leaveQueue}>
+        Leave Queue
+      </button>
     </div>
   );
 };
