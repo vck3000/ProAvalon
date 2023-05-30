@@ -83,7 +83,6 @@ socket.on('spec-game-starting-finished', (data) => {
 
 socket.on('game-data', (data) => {
   // console.log("GAME DATA INC");
-  // console.log(data);
   if (data && roomId === data.roomId) {
     // console.log("game starting!");
 
@@ -119,6 +118,15 @@ socket.on('game-data', (data) => {
 
     drawVoteHistory(gameData);
     draw();
+  }
+});
+
+socket.on('UpdateTimer', (timer) => {
+  console.log(timer);
+  if (timer > 0) {
+    const minutes = Math.floor(timer / 60).toString().padStart(2, '0');
+    const seconds = (timer % 60).toString().padStart(2, '0');
+    document.getElementById('timerDisplay').textContent = `Time remaining: ${minutes}:${seconds}`;
   }
 });
 
@@ -239,6 +247,10 @@ function removeTeamHighlightAndLeaderOutline() {
 // Given a mission number and the pick number, returns the people on that mission pick
 // If pickNum is -1, then returns the people on the last pick of that mission
 function getPlayersOnMissionPickAndLeader(missionNum, pickNum = -1) {
+  if (!gameData.voteHistory) {
+    return;
+  }
+
   // We need a player key to see vote history to get the number of picks in the mission
   const firstPlayerKey = Object.keys(gameData.voteHistory)[0];
 
