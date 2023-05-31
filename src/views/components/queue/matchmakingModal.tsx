@@ -76,12 +76,20 @@ export function MatchMakingModal() {
   };
 
   const joinGame = () => {
-    socket_.emit('ready-unranked-game', { playerReady: true });
+    if (clickedButton === 'unrankBtn') {
+      socket_.emit('ready-unranked-game', { playerReady: true });
+    } else if (clickedButton === 'rankBtn') {
+      socket_.emit('ready-ranked-game', { playerReady: true });
+    }
     setConfirmJoinGame(true);
   };
 
   const cancelQueue = () => {
-    socket_.emit('ready-unranked-game', { playerReady: false });
+    if (clickedButton === 'unrankBtn') {
+      socket_.emit('leave-unranked-queue', { playerReady: false });
+    } else if (clickedButton === 'rankBtn') {
+      socket_.emit('leave-ranked-queue', { playerReady: false });
+    }
   };
 
   return (

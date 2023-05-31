@@ -35,6 +35,8 @@ import { mrevealallroles } from './commands/mod/mrevealallroles';
 
 import { lastWhisperObj } from './commands/mod/mwhisper';
 import * as util from 'util';
+import { MatchMakingQueueItem } from '../match/MatchMakingQueueItem';
+import { matchMakePlayers } from '../match/matchMakingFunction';
 
 const chatSpamFilter = new ChatSpamFilter();
 if (process.env.NODE_ENV !== 'test') {
@@ -2325,12 +2327,6 @@ function updateRoomMaxPlayers(number) {
 
 // Functions to manage ranked and unranked queue
 
-type MatchMakingQueueItem = {
-  username: string;
-  timeJoinedAt: Date;
-  playerRating: Number;
-};
-
 let unrankedQueue6Players: MatchMakingQueueItem[] = [];
 let prospectivePlayersFor6UQ: MatchMakingQueueItem[] = [];
 let readyPlayersFor6UQ: MatchMakingQueueItem[] = [];
@@ -2381,7 +2377,7 @@ function joinUnrankedQueue(dataObj) {
   ) {
     unrankedQueue6Players.push({
       username: this.request.user.username.toLowerCase(),
-      timeJoinedAt: new Date(),
+      timeJoinedAt: Date.now(),
     });
     // console.log(unrankedQueue6Players.length);
     console.log('List of players:');
@@ -2544,18 +2540,23 @@ function readyUnrankedGame(dataObj) {
 }
 
 // Ranked queue
-const rankedQueue6Players: MatchMakingQueueItem[] = [];
-const prospectivePlayersFor6RQ: MatchMakingQueueItem[] = [];
-const readyPlayersFor6RQ: MatchMakingQueueItem[] = [];
+let rankedQueue6Players: MatchMakingQueueItem[] = [];
+let prospectivePlayersFor6RQ: MatchMakingQueueItem[] = [];
+let readyPlayersFor6RQ: MatchMakingQueueItem[] = [];
 let timeout2: any;
 
 // Ask each player to confirm they are ready to join
-function checkForRankedConfirmation(queue: MatchMakingQueueItem[]) {
-  const matchedResult = matchMakePlayers(queue);
+function checkForRankedConfirmation() {
+  const matchedResult = matchMakePlayers(rankedQueue6Players);
+  const matchedName = matchedResult.map((player) => player.username)
+  rankedQueue6Players = rankedQueue6Players.filter(
+    (player) => !matchedName.includes(player.username)
+  );
+  
   prospectivePlayersFor6RQ.push(...matchedResult);
   prospectivePlayersFor6RQ.forEach(prospectivePlayer => {
     // emit to each player asking for confirmation
-    const playerSocket: SocketUser = getSocketFromUsername(prospectivePlayer.user.username.toLowerCase());
+    const playerSocket: SocketUser = getSocketFromUsername(prospectivePlayer.username.toLowerCase());
     playerSocket.emit('confirm-ready-to-play');
   });
 
@@ -2591,7 +2592,7 @@ function joinRankedQueue(dataObj) {
   ) {
     rankedQueue6Players.push({
       username: this.request.user.username.toLowerCase(),
-      timeJoinedAt: new Date(),
+      timeJoinedAt: Date.now(),
       playerRating: this.request.user.playerRating, // Currently using the elo, change to Chen's implementation later
     });
     rankedQueue6Players.sort((a, b) => a.playerRating - b.playerRating);
@@ -2600,8 +2601,17 @@ function joinRankedQueue(dataObj) {
     console.log(rankedQueue6Players.map((player) => player.username));
     // if number of players in queue < 6, return null
     // Second if checks if there are enough players for a six-player game
+    let interval;
     if (rankedQueue6Players.length >= 6) {
       checkForRankedConfirmation();
+      interval = setInterval(() => {
+        console.log(rankedQueue6Players.length >= 6);
+        if (rankedQueue6Players.length >= 6) {
+          checkForRankedConfirmation();
+        } else {
+          clearInterval(interval);
+        }
+      }, 10000);
     } else {
       return;
     }
@@ -2617,6 +2627,7 @@ function leaveRankedQueue() {
   const indexToRemove: number = rankedQueue6Players.findIndex(player => player.username === userName);
   if (indexToRemove !== -1) {
     rankedQueue6Players.splice(indexToRemove, 1);
+    this.emit('leave-queue');
   } else {
     this.emit('invalid-removal-attempt');
   }
@@ -2642,7 +2653,8 @@ function readyRankedGame(dataObj) {
         prospectivePlayer.username.toLowerCase(),
       );
       playerSocket.emit('declined-to-play', {
-        decliningPlayer
+        decliningPlayer,
+        username: prospectivePlayer.username,
       });
     });
     if (rankedQueue6Players.length >= 6) {
