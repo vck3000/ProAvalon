@@ -2512,7 +2512,8 @@ function readyUnrankedGame(dataObj) {
         prospectivePlayer.username.toLowerCase(),
       );
       playerSocket.emit('declined-to-play', {
-        decliningPlayer
+        decliningPlayer,
+        username: prospectivePlayer.username,
       });
     });
     prospectivePlayersFor6UQ.splice(selectedProspectivePlayer, 1);
@@ -2549,18 +2550,14 @@ const readyPlayersFor6RQ: MatchMakingQueueItem[] = [];
 let timeout2: any;
 
 // Ask each player to confirm they are ready to join
-function checkForRankedConfirmation() {
-
-  // Implement Ming's algorithm to match players based on rank - matchMakePlayers
-
-  // prospectivePlayersFor6RQ = matchMakePlayers(rankedQueue6Players);
-  // prospectivePlayersFor6RQ.forEach(prospectivePlayer => {
-  //   // emit to each player asking for confirmation
-  //   const playerSocket: SocketUser = getSocketFromUsername(prospectivePlayer.user.username.toLowerCase());
-  //   playerSocket.emit('confirm-ready-to-play');
-  // });
-
-
+function checkForRankedConfirmation(queue: MatchMakingQueueItem[]) {
+  const matchedResult = matchMakePlayers(queue);
+  prospectivePlayersFor6RQ.push(...matchedResult);
+  prospectivePlayersFor6RQ.forEach(prospectivePlayer => {
+    // emit to each player asking for confirmation
+    const playerSocket: SocketUser = getSocketFromUsername(prospectivePlayer.user.username.toLowerCase());
+    playerSocket.emit('confirm-ready-to-play');
+  });
 
   // setTimeout for 120 seconds; if readyPlayers.length != 6, terminate
   timeout2 = setTimeout(() => {
