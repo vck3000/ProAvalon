@@ -1,5 +1,5 @@
 import type { IRank } from '../models/types';
-import { OutcomeEnum, TeamEnum } from './types';
+import { Outcome, Team } from './types';
 import Mongo from '../db/mongo';
 
 class Glicko2 {
@@ -179,12 +179,12 @@ class Glicko2 {
     {
       opponentRating: number;
       opponentRatingDeviation: number;
-      outcome: OutcomeEnum;
+      outcome: Outcome;
     }[]
   > {
     const usernameLower = username.toLowerCase();
     // Find games the player has played. Either Spy team or Resistance team.
-    const games = await Mongo.getGamesByUsername(usernameLower);
+    const games = await Mongo.getRatingPeriodGamesByUsername(usernameLower);
 
     return Promise.all(
       games.map(async (g) => {
@@ -200,9 +200,9 @@ class Glicko2 {
             opponentRating: ratingAvg,
             opponentRatingDeviation: rdAvg,
             outcome:
-              g.winningTeam === TeamEnum.SPY
-                ? OutcomeEnum.WIN
-                : OutcomeEnum.LOSE,
+              g.winningTeam === Team.SPY
+                ? Outcome.WIN
+                : Outcome.LOSE,
           };
         } else {
           // player is in team RESISTANCE
@@ -214,9 +214,9 @@ class Glicko2 {
             opponentRating: ratingAvg,
             opponentRatingDeviation: rdAvg,
             outcome:
-              g.winningTeam === TeamEnum.RESISTANCE
-                ? OutcomeEnum.WIN
-                : OutcomeEnum.LOSE,
+              g.winningTeam === Team.RESISTANCE
+                ? Outcome.WIN
+                : Outcome.LOSE,
           };
         }
       }),

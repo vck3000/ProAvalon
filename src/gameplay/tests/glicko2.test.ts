@@ -1,7 +1,7 @@
 import Glicko2 from '../glicko2';
 import { Types } from 'mongoose';
 import Mongo from '../../db/mongo';
-import { TeamEnum } from '../types';
+import { Team } from '../types';
 
 describe('Glicko-2 Unit Test', () => {
   beforeEach(() => {
@@ -30,21 +30,21 @@ describe('Glicko-2 Unit Test', () => {
     const mockGames = [
       {
         timeGameFinished: new Date(),
-        winningTeam: TeamEnum.SPY,
+        winningTeam: Team.SPY,
         spyTeam: ['user1', 'user2'],
         resistanceTeam: ['user3', 'user4', 'user5', 'user7'],
         roomCreationType: '',
       },
       {
         timeGameFinished: new Date(),
-        winningTeam: TeamEnum.SPY,
+        winningTeam: Team.SPY,
         spyTeam: ['user2', 'user4'],
         resistanceTeam: ['user1', 'user3', 'user5', 'user6', 'user7'],
         roomCreationType: '',
       },
       {
         timeGameFinished: new Date(),
-        winningTeam: TeamEnum.RESISTANCE,
+        winningTeam: Team.RESISTANCE,
         spyTeam: ['user1', 'user2'],
         resistanceTeam: ['user3', 'user4', 'user5', 'user6'],
         roomCreationType: '',
@@ -57,7 +57,7 @@ describe('Glicko-2 Unit Test', () => {
       .mockResolvedValueOnce(mockUser);
 
     jest
-      .spyOn(Mongo, 'getGamesByUsername')
+      .spyOn(Mongo, 'getRatingPeriodGamesByUsername')
       .mockResolvedValueOnce(mockGames);
 
     jest
@@ -153,7 +153,7 @@ describe('Glicko-2 Unit Test', () => {
       .mockResolvedValueOnce(mockUser);
 
     jest
-      .spyOn(Mongo, 'getGamesByUsername')
+      .spyOn(Mongo, 'getRatingPeriodGamesByUsername')
       .mockResolvedValueOnce([]);
 
     jest

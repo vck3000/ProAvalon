@@ -26,12 +26,12 @@ export interface See {
   spies: string[];
 }
 
-export enum TeamEnum {
+export enum Team {
   RESISTANCE = 'Resistance',
   SPY = 'Spy',
 }
 
-export enum OutcomeEnum {
+export enum Outcome {
   WIN = 1,
   LOSE = 0,
 }

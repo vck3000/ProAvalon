@@ -20,8 +20,8 @@ export default class Mongo {
       });
   }
 
-  static getUserByUsername(username: string): Promise<IUser> {
-    const user = User.findOne({ usernameLower: username.toLowerCase() }).exec();
+  static async getUserByUsername(username: string): Promise<IUser> {
+    const user = await User.findOne({ usernameLower: username.toLowerCase() }).exec();
     if (!user) {
       throw Error(`Could not find user: ${username}`);
     }
@@ -29,8 +29,8 @@ export default class Mongo {
     return user;
   }
 
-  static getUserByUserId(userId: string): Promise<IUser> {
-    const user = User.findOne({ _id: new Types.ObjectId(userId) }).exec();
+  static async getUserByUserId(userId: string): Promise<IUser> {
+    const user = await User.findOne({ _id: new Types.ObjectId(userId) }).exec();
 
     if (!user) {
       throw Error(`Could not find user id: ${userId}`);
@@ -39,7 +39,7 @@ export default class Mongo {
     return user;
   }
 
-  static getGamesByUsername(
+  static getRatingPeriodGamesByUsername(
     username: string,
   ): Promise<IRatingPeriodGameRecord[]> {
     const usernameLower = username.toLowerCase();
@@ -51,9 +51,9 @@ export default class Mongo {
 
   static async getUserRankByUserId(userId: string): Promise<IRank> {
     const user = await this.getUserByUserId(userId);
-    const rank = Rank.findOne({
+    const rank = await Rank.findOne({
       _id: user.currentRanking,
-    }).exec();
+    });
 
     if (!rank) {
       throw Error(`Could not find rank for user id: ${userId}`);
@@ -66,9 +66,9 @@ export default class Mongo {
     const usernameLower = username.toLowerCase();
 
     const user = await this.getUserByUsername(usernameLower);
-    const rank = Rank.findOne({
+    const rank = await Rank.findOne({
       _id: user.currentRanking,
-    }).exec();
+    });
 
     if (!rank) {
       throw Error(`Could not find rank for username: ${usernameLower}`);
