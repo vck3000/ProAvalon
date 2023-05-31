@@ -402,6 +402,13 @@ socket.on('auto-join-room-id', (roomId_, newRoomPassword) => {
   changeView();
 });
 
+socket.on('change-view', (roomId_) => {
+  isSpectator = false;
+  roomId = roomId_;
+  // change the view to the room instead of lobby
+  changeView();
+});
+
 socket.on('update-status-message', (data) => {
   if (data) {
     $('#status').textContent = data;
@@ -411,7 +418,7 @@ socket.on('update-status-message', (data) => {
 socket.on('update-room-players', (data) => {
   // if an extra person joins the game, play the chime
 
-  // console.log("update room players");
+  console.log("update room players ", data);
 
   // showDangerAlert("Test");
   oldData = roomPlayersData;
@@ -781,6 +788,13 @@ $('.muteSpectators').on('change', (e) => {
   $('.muteSpectators')[1].checked = e.target.checked;
 
   socket.emit('update-room-muteSpectators', e.target.checked);
+});
+
+$('.disableVoteHistory').on('change', (e) => {
+  $('.disableVoteHistory')[0].checked = e.target.checked;
+  $('.disableVoteHistory')[1].checked = e.target.checked;
+
+  socket.emit('update-room-disableVoteHistory', e.target.checked);
 });
 
 // Update the new room menu with the gameModes available.
