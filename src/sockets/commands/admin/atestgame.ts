@@ -2,7 +2,15 @@ import { Command } from '../types';
 import gameRoom from '../../../gameplay/gameWrapper';
 import { SocketUser } from '../../types';
 import { SimpleBotSocket } from '../../bot';
-import { incrementNextRoomId, ioGlobal, nextRoomId, rooms, sendToAllChat, socketCallback } from '../../sockets';
+import {
+  incrementNextRoomId,
+  ioGlobal,
+  nextRoomId,
+  rooms,
+  sendToAllChat,
+  socketCallback,
+} from '../../sockets';
+import { roomCreationTypeEnum } from '../../../gameplay/roomTypes';
 
 function addBots(args: string[], senderSocket: SocketUser, roomId: number) {
   if (!args[1]) {
@@ -19,9 +27,7 @@ function addBots(args: string[], senderSocket: SocketUser, roomId: number) {
     const dummySockets = [];
 
     for (let i = 0; i < numBots; i++) {
-      const botName = `${'SimpleBot' + '#'}${Math.floor(
-        Math.random() * 100,
-      )}`;
+      const botName = `${'SimpleBot' + '#'}${Math.floor(Math.random() * 100)}`;
 
       // Avoid a username clash!
       const currentUsernames = rooms[roomId].socketsOfPlayers.map(
@@ -33,7 +39,7 @@ function addBots(args: string[], senderSocket: SocketUser, roomId: number) {
       }
 
       dummySockets[i] = new SimpleBotSocket(botName);
-      rooms[roomId].playerJoinRoom(dummySockets[i], "");
+      rooms[roomId].playerJoinRoom(dummySockets[i], '');
       rooms[roomId].playerSitDown(dummySockets[i]);
 
       rooms[roomId].botSockets.push(dummySockets[i]);
@@ -83,6 +89,7 @@ export const atestgame: Command = {
       dataObj.gameMode,
       dataObj.muteSpectators,
       false,
+      roomCreationTypeEnum.CUSTOM_ROOM,
       socketCallback,
     );
     const privateStr = dataObj.newRoomPassword === '' ? '' : 'private ';
@@ -110,5 +117,4 @@ export const atestgame: Command = {
     ];
     rooms[nextRoomId].hostTryStartGame(options, 'avalonBot');
   },
-
 };
