@@ -36,7 +36,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
       }, 1000);
     } else if (second === 0) {
       // Logic for initiating unranked game
-      socket_.emit('initiate-unranked-game', { playerReady: false });
+      socket_.emit('ready-unranked-game', { playerReady: false });
       setStartCountdown(false);
     }
 

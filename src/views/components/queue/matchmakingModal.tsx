@@ -33,12 +33,9 @@ export function MatchMakingModal() {
       setClickedButton(null);
       setButtonsDisabled(false);
     });
-    socket_.on('declined-to-play', function (data) {
+    socket_.on('declined-to-play', function () {
       setModalOpen(false);
-      if (data.decliningPlayer !== data.username) {
-        document.getElementById('unrankButton').click();
-      }
-      alert(data.decliningPlayer + ' has left the queue');
+      alert('Someone has left the queue');
     });
     socket_.on('game-has-begun', function () {
       setModalOpen(false);
@@ -66,12 +63,12 @@ export function MatchMakingModal() {
   };
 
   const joinGame = () => {
-    socket_.emit('initiate-unranked-game', { playerReady: true });
+    socket_.emit('ready-unranked-game', { playerReady: true });
     setConfirmJoinGame(true);
   };
 
   const cancelQueue = () => {
-    socket_.emit('initiate-unranked-game', { playerReady: false });
+    socket_.emit('ready-unranked-game', { playerReady: false });
   };
 
   return (
