@@ -22,8 +22,6 @@ export const variance = (values: number[], waitingTime: number[]) => {
 };
 
 export function matchMakePlayers(queue: MatchMakingQueueItem[]) {
-  console.log('start matching...');
-
 //   const queue = rankedQueue.get();
   if (queue.length < 6) {
     return [];
@@ -57,14 +55,16 @@ export function matchMakePlayers(queue: MatchMakingQueueItem[]) {
     // matched.forEach((player) => {
     //   rankedQueue.leave(player.id);
     // });
-    // printQueue(rankedQueue.get());
+    printQueue(matched);
     return matched;
   }
 }
 
 // export const debouncedMatch = debounce(matchMakePlayers, 3000);
 
-
+function printQueue(queue: MatchMakingQueueItem[]) {
+  console.log(queue.map(({ username, playerRating }) => ({ username, playerRating })));
+}
 // this part is done by socket API
 
 // when someone join the queue

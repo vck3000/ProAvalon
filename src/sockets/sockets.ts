@@ -21,6 +21,7 @@ import { AVALON, GAME_MODE_NAMES, isGameMode } from '../gameplay/gameModes';
 
 import { ChatSpamFilter } from './chatSpamFilter';
 import { MessageWithDate, Quote } from './quote';
+import debounce from 'lodash.debounce';
 import {
   APIBotSocket,
   enabledBots,
@@ -2544,21 +2545,32 @@ let rankedQueue6Players: MatchMakingQueueItem[] = [];
 let prospectivePlayersFor6RQ: MatchMakingQueueItem[] = [];
 let readyPlayersFor6RQ: MatchMakingQueueItem[] = [];
 let timeout2: any;
+let isMatching = false
 
+setInterval(() => {
+  if (!isMatching && rankedQueue6Players.length >= 6) {
+    debouncedMatch();
+  }
+}, 3000);
+
+const debouncedMatch = () => debounce(checkForRankedConfirmation(),3000)
 // Ask each player to confirm they are ready to join
 function checkForRankedConfirmation() {
+  console.log("start matching..")
   const matchedResult = matchMakePlayers(rankedQueue6Players);
-  const matchedName = matchedResult.map((player) => player.username)
-  rankedQueue6Players = rankedQueue6Players.filter(
-    (player) => !matchedName.includes(player.username)
-  );
-  
-  prospectivePlayersFor6RQ.push(...matchedResult);
-  prospectivePlayersFor6RQ.forEach(prospectivePlayer => {
-    // emit to each player asking for confirmation
-    const playerSocket: SocketUser = getSocketFromUsername(prospectivePlayer.username.toLowerCase());
-    playerSocket.emit('confirm-ready-to-play');
-  });
+  if(matchedResult){
+    isMatching = false
+    const matchedName = matchedResult.map((player) => player.username)
+    rankedQueue6Players = rankedQueue6Players.filter(
+      (player) => !matchedName.includes(player.username)
+    );
+    prospectivePlayersFor6RQ.push(...matchedResult);
+    prospectivePlayersFor6RQ.forEach(prospectivePlayer => {
+      // emit to each player asking for confirmation
+      const playerSocket: SocketUser = getSocketFromUsername(prospectivePlayer.username.toLowerCase());
+      playerSocket.emit('confirm-ready-to-play');
+    });
+  }
 
   // setTimeout for 120 seconds; if readyPlayers.length != 6, terminate
   timeout2 = setTimeout(() => {
@@ -2601,17 +2613,9 @@ function joinRankedQueue(dataObj) {
     console.log(rankedQueue6Players.map((player) => player.username));
     // if number of players in queue < 6, return null
     // Second if checks if there are enough players for a six-player game
-    let interval;
     if (rankedQueue6Players.length >= 6) {
+      isMatching = true
       checkForRankedConfirmation();
-      interval = setInterval(() => {
-        console.log(rankedQueue6Players.length >= 6);
-        if (rankedQueue6Players.length >= 6) {
-          checkForRankedConfirmation();
-        } else {
-          clearInterval(interval);
-        }
-      }, 10000);
     } else {
       return;
     }
