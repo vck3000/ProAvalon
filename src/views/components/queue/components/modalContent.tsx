@@ -59,6 +59,11 @@ const ModalContent: React.FC<ModalContentProps> = ({
     backgroundColor = '#ff0000'; // Red color
   }
 
+  const handleJoinGame = () => {
+    setStartCountdown(false); // Stop the countdown timer
+    joinGame(); // Call the original joinGame function
+  };
+
   return (
     <div style={modalElement}>
       <h1 style={centerElement}>Match Found!</h1>
@@ -72,7 +77,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
         </div>
       )}
       <div style={centerElement}>
-        <button style={btnGreen} onClick={joinGame}>
+        <button style={btnGreen} onClick={handleJoinGame}>
           Join
         </button>
         <button style={btnRed} onClick={cancelQueue}>
