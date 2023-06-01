@@ -34,7 +34,7 @@ import modRoutes from './routes/mod';
 import staticifyFactory from 'staticify';
 // Create a MongoDB session store
 import MongoDBStoreFactory from 'connect-mongodb-session';
-import Glicko2 from './gameplay/glicko2.js';
+import Glicko2 from './gameplay/glicko2';
 
 const assetsPath = path.join(__dirname, '../assets');
 
@@ -196,7 +196,7 @@ io.use(
 
 socketServer(io);
 
-const glickoUpdateSchedule = schedule.scheduleJob('0 0 * * *', async () => {
+const glickoUpdateSchedule = schedule.scheduleJob('0 0 * * *', () => {
   console.log('Running scheduled work ');
-  // await Glicko2.updateAllUsersRatings();
+  Glicko2.updateAllUsersRatings();
 });

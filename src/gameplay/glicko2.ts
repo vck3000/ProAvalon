@@ -8,8 +8,14 @@ class Glicko2 {
 
   static async computeRankRatingsByUserId(userId: string): Promise<IRank> {
     const user = await Mongo.getUserByUserId(userId);
-    const gameSummary = await this.summariseGamesByUsername(user.username);
+    const gameSummary = await Glicko2.summariseGamesByUsername(user.username);
     const userRankData = await Mongo.getUserRankByUserId(userId);
+    console.log(`Update Glicko-2 ratings for user ${user.username}`);
+    console.log(
+      'CURRENT rating: ', userRankData.playerRating, 
+      'rd: ', userRankData.rd,
+      'volatility: ', userRankData.volatility
+    );
 
     // TODO: handle the case when user has no previous ranks
 
@@ -28,6 +34,12 @@ class Glicko2 {
       const newPhi = Math.sqrt(player.phi ** 2 + player.ratingVolatility ** 2);
       const newRD = 173.7178 * newPhi;
 
+      console.log(
+        'UPDATED rating: ', userRankData.playerRating, 
+        'rd: ', newRD,
+        'volatility: ', userRankData.volatility
+      );
+
       return {
         ...userRankData,
         rd: newRD,
@@ -40,8 +52,8 @@ class Glicko2 {
       return {
         mu,
         phi,
-        g: this.computeG(phi),
-        E: this.computeE(player.mu, mu, phi),
+        g: Glicko2.computeG(phi),
+        E: Glicko2.computeE(player.mu, mu, phi),
         s: game.outcome,
       };
     });
@@ -63,7 +75,7 @@ class Glicko2 {
     delta *= v;
 
     // Step 5: Determine the new value of the volatility
-    const newVolatility = this.computeNewVolatility(
+    const newVolatility = Glicko2.computeNewVolatility(
       delta,
       player.phi,
       v,
@@ -87,6 +99,12 @@ class Glicko2 {
     const newRating = 173.7178 * newMu + 1500;
     const newRD = 173.7178 * newPhi;
 
+    console.log(
+      'UPDATED rating: ', newRating, 
+      'rd: ', newRD,
+      'volatility: ', newVolatility
+    );
+
     return {
       ...userRankData,
       playerRating: newRating,
@@ -96,7 +114,8 @@ class Glicko2 {
   }
 
   static async updateAllUsersRatings(): Promise<void> {
-    await Mongo.updateAllUsersRankByFn(this.computeRankRatingsByUserId);
+    console.log('update all users ratings')
+    await Mongo.updateAllUsersRankByFn(Glicko2.computeRankRatingsByUserId);
   }
 
   private static computeG(phi: number): number {
@@ -104,7 +123,7 @@ class Glicko2 {
   }
 
   private static computeE(mu: number, mu_j: number, phi_j: number): number {
-    return 1 / (1 + Math.exp(-1 * this.computeG(phi_j) * (mu - mu_j)));
+    return 1 / (1 + Math.exp(-1 * Glicko2.computeG(phi_j) * (mu - mu_j)));
   }
 
   private static computeNewVolatility(
@@ -120,7 +139,7 @@ class Glicko2 {
       output +=
         (Math.E ** x * (delta ** 2 - phi ** 2 - v - Math.E ** x)) /
         (2 * (phi ** 2 + v + Math.E ** x) ** 2);
-      output -= (x - a) / this.tau ** 2;
+      output -= (x - a) / Glicko2.tau ** 2;
       return output;
     };
 
@@ -130,16 +149,16 @@ class Glicko2 {
       B = Math.log(delta ** 2 - phi ** 2 - v);
     } else {
       let k = 1;
-      while (computeF(a - k * this.tau) < 0) {
+      while (computeF(a - k * Glicko2.tau) < 0) {
         k += 1;
       }
-      B = a - k * this.tau;
+      B = a - k * Glicko2.tau;
     }
 
     let f_A = computeF(A);
     let f_B = computeF(B);
 
-    while (Math.abs(B - A) > this.epsilon) {
+    while (Math.abs(B - A) > Glicko2.epsilon) {
       const C = A + ((A - B) * f_A) / (f_B - f_A);
       const f_C = computeF(C);
       if (f_C * f_B <= 0) {
@@ -182,6 +201,7 @@ class Glicko2 {
       outcome: Outcome;
     }[]
   > {
+    console.log('summarise games for user', username);
     const usernameLower = username.toLowerCase();
     // Find games the player has played. Either Spy team or Resistance team.
     const games = await Mongo.getRatingPeriodGamesByUsername(usernameLower);
@@ -192,7 +212,7 @@ class Glicko2 {
         if (g.spyTeam.includes(usernameLower)) {
           // player is in team SPY
           const resistanceTeam = [...g.resistanceTeam];
-          const { ratingAvg, rdAvg } = await this.computeTeamAvg(
+          const { ratingAvg, rdAvg } = await Glicko2.computeTeamAvg(
             resistanceTeam,
           );
 
@@ -207,7 +227,7 @@ class Glicko2 {
         } else {
           // player is in team RESISTANCE
           const spyTeam = [...g.spyTeam];
-          const { ratingAvg, rdAvg } = await this.computeTeamAvg(
+          const { ratingAvg, rdAvg } = await Glicko2.computeTeamAvg(
             spyTeam
           );
           return {
