@@ -2,19 +2,19 @@
 // Load the full build.
 import _ from 'lodash';
 
-import Room from './room';
-import usernamesIndexes from '../myFunctions/usernamesIndexes';
-import User from '../models/user';
-import GameRecord from '../models/gameRecord';
 import RatingPeriodGameRecord from '../models/RatingPeriodGameRecord';
-import commonPhasesIndex from './indexCommonPhases';
-import { isMod } from '../modsadmins/mods';
-import { isTO } from '../modsadmins/tournamentOrganizers';
+import GameRecord from '../models/gameRecord';
+import User from '../models/user';
 import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
+import { isMod } from '../modsadmins/mods';
+import { isTO } from '../modsadmins/tournamentOrganizers';
+import usernamesIndexes from '../myFunctions/usernamesIndexes';
+import commonPhasesIndex from './indexCommonPhases';
+import Room from './room';
 
-import { getRoomTypeFromString, roomCreationTypeEnum } from './roomTypes';
 import { gameModeObj } from './gameModes';
+import { getRoomTypeFromString, roomCreationTypeEnum } from './roomTypes';
 
 class Game extends Room {
   gameStarted = false;
@@ -698,9 +698,9 @@ class Game extends Room {
     }, timeEachLoop);
   }
 
-  StartTimer(timer){
+  StartTimer(timer) {
     let remainingTimer = timer;
-
+    
     const PhaseTimer = setInterval(() => {
       remainingTimer -= 1;
       // console.log(remainingTimer);
@@ -713,24 +713,31 @@ class Game extends Room {
         // need to go through all sockets, but only send to the socket of players in game
         if (this.socketsOfPlayers[index]) {
           this.socketsOfPlayers[index].emit('UpdateTimer', remainingTimer);
-          console.log("Sent to player: " + this.playersInGame[i].request.user.username + remainingTimer);
+          // console.log("Sent to player: " + this.playersInGame[i].request.user.username + remainingTimer);
         }
       }
 
-      if (remainingTimer<=0 && check) {
+      // let players = getInactivePlayers(this);
+      let players = getAllInactivePlayers(this);
+      console.log('Inactive Players: ' + players);
+      // if (remainingTimer<=0 && check) {
+      //   clearInterval(PhaseTimer);
+      //   // TODO
+      //   // put void game in handleTimerExptiration()
+      //   // handleTimerExptiration();
+      // }
+      if (remainingTimer <= 0 && players.length > 0) {
+        this.voidedGame();
         clearInterval(PhaseTimer);
-        // TODO
-        // put void game in handleTimerExptiration()
-        // handleTimerExptiration();
       }
     }, 1000);
 
     return PhaseTimer;
   }
 
-  EndTimer(){
-    if(this.PhaseIntervelIDlist.length > 0){
-      for (const PIntervelID of this.PhaseIntervelIDlist){
+  EndTimer() {
+    if (this.PhaseIntervelIDlist.length > 0) {
+      for (const PIntervelID of this.PhaseIntervelIDlist) {
         clearInterval(PIntervelID);
       }
       this.PhaseIntervelIDlist = [];
@@ -745,7 +752,7 @@ class Game extends Room {
 
     let buttonPressed = data[0];
     let selectedPlayers = data[1];
-    
+
     this.EndTimer();
     this.PhaseIntervelIDlist.push(this.StartTimer(this.timer));
 
@@ -1853,7 +1860,6 @@ class Game extends Room {
         this.missionNum - 1
       ][this.pickNum - 1] += `VH${this.votes[i]}`;
     }
-
   }
 
   submitMerlinGuess(guesserUsername, targetUsername) {
@@ -1893,7 +1899,7 @@ class Game extends Room {
     // Accept the guess
     this.merlinguesses[guesserUsername] = targetUsernameCase;
 
-    console.log("finish pick");
+    console.log('finish pick');
 
     return `You have guessed that ${targetUsernameCase} is Merlin. Good luck!`;
   }
@@ -1923,6 +1929,16 @@ class Game extends Room {
       this.phase = 'paused';
       this.distributeGameData();
     }
+  }
+
+  voidedGame() {
+    this.sendText(
+      this.allSockets,
+      `Someone fails to complete the operation within the specified time, Game is voided.`,
+      'server-text',
+    );
+    this.phase = 'voided';
+    this.distributeGameData();
   }
 
   canRoomChat(usernameLower: string) {
@@ -2247,3 +2263,25 @@ let reverseMapFromMap = function (map, f) {
     return acc;
   }, {});
 };
+
+function getAllInactivePlayers(thisRoom:Game): string[]{
+  let players = [];
+  if(thisRoom.phase === 'picking team'){
+    if (thisRoom.proposedTeam.length === 0) {
+      players.push(thisRoom.playersInGame[thisRoom.teamLeader].request.user.username);
+    }
+  };
+  if((thisRoom.phase === 'votingMission' || thisRoom.phase === 'votingTeam')&&thisRoom.playersYetToVote.length !== 0){
+    for (const player of thisRoom.playersYetToVote) {
+      players.push(player);
+    }
+  };
+  if(thisRoom.phase === 'assassination' && !thisRoom.specialRoles.assassin.playerShot){
+    for (const player of thisRoom.playersInGame) {
+      if (player.role === 'Assassin') {
+        players.push(player.request.user.username);
+      }
+    }
+  };
+  return players;
+}

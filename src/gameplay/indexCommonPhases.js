@@ -14,8 +14,8 @@ function index() {
       // console.log(file);
 
       // If it is a javascript file, add it
-      if (file.includes('.js') === true && !file.includes('.map')) {
-        name = file.replace('.js', '');
+      if ((file.includes('.js') === true || file.includes('.ts'))&& !file.includes('.map')) {
+        name = file.replace(/\.(js|ts)$/, '');
 
         commonPhases[name] = require(`./commonPhases/${file}`).default;
       }
