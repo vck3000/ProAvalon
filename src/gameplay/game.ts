@@ -2,20 +2,21 @@
 // Load the full build.
 import _ from 'lodash';
 
+import { eloConstants } from '../elo/constants/eloConstants';
 import RatingPeriodGameRecord from '../models/RatingPeriodGameRecord';
 import GameRecord from '../models/gameRecord';
+import Rank from '../models/rank';
 import User from '../models/user';
+import { getSeasonNumber } from '../modelsHelper/seasonNumber';
 import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import usernamesIndexes from '../myFunctions/usernamesIndexes';
+import { gameModeObj } from './gameModes';
 import commonPhasesIndex from './indexCommonPhases';
 import Room from './room';
-
-import { gameModeObj } from './gameModes';
 import { getRoomTypeFromString, roomCreationTypeEnum } from './roomTypes';
-
 class Game extends Room {
   gameStarted = false;
   finished = false;
@@ -134,7 +135,7 @@ class Game extends Room {
     this.hammer = 0;
     this.missionNum = 0;
     this.pickNum = 0;
-    this.timer = 300;
+    this.timer = 30;
     this.tcheck = 1;
     this.PhaseIntervelIDlist = [];
 
@@ -333,7 +334,7 @@ class Game extends Room {
   }
 
   // start game
-  startGame(options) {
+  async startGame(options) {
     if (
       this.socketsOfPlayers.length < 5 ||
       this.socketsOfPlayers.length > 10 ||
@@ -388,6 +389,19 @@ class Game extends Room {
       this.playerUsernamesInGame.push(
         this.socketsOfPlayers[i].request.user.username,
       );
+    }
+
+    // If the player doesn't have a ranking, assign the default ranking
+    if (this.ranked) {
+      const seasonNumber = await getSeasonNumber();
+      this.playersInGame.forEach(async (player) => {
+        let user = await User.findById(player.userId);
+        if (user) {
+          await assignDefaultRankToUser(user, seasonNumber);
+        } else {
+          throw new Error('No user found with id: ' + player.userId);
+        }
+      });
     }
 
     // Give roles to the players according to their alliances
@@ -717,17 +731,17 @@ class Game extends Room {
         }
       }
 
-      // let players = getInactivePlayers(this);
-      let players = getAllInactivePlayers(this);
-      console.log('Inactive Players: ' + players);
-      // if (remainingTimer<=0 && check) {
-      //   clearInterval(PhaseTimer);
-      //   // TODO
-      //   // put void game in handleTimerExptiration()
-      //   // handleTimerExptiration();
-      // }
-      if (remainingTimer <= 0 && players.length > 0) {
+      let leavePlayers = getAllInactivePlayers(this);
+      console.log('Inactive Players: ' + leavePlayers);
+      if (remainingTimer <= 0 && leavePlayers.length > 0) {
+        let otherPlayers = [];
+        for(const player of this.playersInGame){
+          if(!leavePlayers.includes(player.request.user.username)){
+            otherPlayers.push(player.request.user.username);
+          }
+        }
         this.voidedGame();
+        punishingPlayers(leavePlayers, otherPlayers);
         clearInterval(PhaseTimer);
       }
     }, 1000);
@@ -2284,4 +2298,78 @@ function getAllInactivePlayers(thisRoom:Game): string[]{
     }
   };
   return players;
+}
+
+
+async function redistributeScores(score: number, users: User[]) : Promise<void>{
+    //redistruibute the scores to the rest of the players
+    const compensation = score / (users.length);
+    for (const user of users) {
+      if (!user.currentRanking) {
+        await assignDefaultRankToUser(user, seasonNumber);
+      }
+      const rankData = await Rank.findById(user.currentRanking);
+      rankData.leavePenalty += compensation;
+      await rankData.save();
+    }
+  }
+  
+  async function leavePenalty(users: User[]): Promise<number>{
+    for(const user of users){
+        const rankData = await Rank.findById(user.currentRanking);
+        rankData.leavePenalty -= (eloConstants.LEAVE_PENALTY);
+        await rankData.save();
+      }
+    return eloConstants.LEAVE_PENALTY*users.length;
+  }
+  
+  async function punishingPlayers(  leavePlayers: string[],  otherPlayers: string[],): void {
+    let leaves = [];
+    for (const leavePlayer of leavePlayers) {
+      const leaveUser = await User.findOne({
+        username: leavePlayer.toLowerCase(),
+      });
+      leaves.push(leaveUser);
+    }
+    const redistributeScore = await leavePenalty(leaves);
+    console.log(`Redistribute score: ${redistributeScore}`)
+    const players = [];
+    for (const otherPlayer of otherPlayers) {
+      const otherUser = await User.findOne({
+        username: otherPlayer.toLowerCase(),
+      });
+      players.push(otherUser);
+    }
+    await redistributeScores(redistributeScore, players);
+  }
+
+  //After player finished a ranked game, assigning a default rank to the player
+async function assignDefaultRankToUser(user: User, seasonNumber: number) {
+  if (user) {
+    if (user.currentRanking === null) {
+      if (typeof seasonNumber === 'number') {
+        const rankData = new Rank({
+          userId: user._id,
+          seasonNumber: seasonNumber,
+        });
+        await rankData.save();
+        console.log(
+          `Rank data for ${user.username} saved, rankedId: ${rankData._id}`,
+        );
+        user.currentRanking = rankData._id;
+        await user.save();
+        console.log(
+          `Rank data for ${user.username} assigned, currentRanking: ${user.currentRanking}`,
+        );
+      } else {
+        console.log(
+          `Season number is not a number, seasonNumber: ${seasonNumber}`,
+        );
+      }
+    } else {
+      console.log(`User already has a rank`);
+    }
+  } else {
+    console.log(`User is not defined`);
+  }
 }

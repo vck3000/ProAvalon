@@ -123,7 +123,7 @@ socket.on('game-data', (data) => {
 
 socket.on('UpdateTimer', (timer) => {
   console.log(timer);
-  if (timer > 0) {
+  if (timer >= 0) {
     const minutes = Math.floor(timer / 60).toString().padStart(2, '0');
     const seconds = (timer % 60).toString().padStart(2, '0');
     document.getElementById('timerDisplay').textContent = `Time remaining: ${minutes}:${seconds}`;

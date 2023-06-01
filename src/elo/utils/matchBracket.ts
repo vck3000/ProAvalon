@@ -1,19 +1,19 @@
-import eloConstants from "../constants/eloConstants";
+import { eloConstants, rankBracket } from "../constants/eloConstants";
 
 function matchBracket(rating:number, totalRankedGamesPlayed:number) {
     if (totalRankedGamesPlayed < eloConstants.PROVISION_GAMES) {
         return 'Unranked';
-    } else if (rating < eloConstants.BRONZE_BASE) {
+    } else if (rating < rankBracket.BRONZE_BASE) {
         return 'Iron';
-    } else if (rating < eloConstants.SILVER_BASE) {
+    } else if (rating < rankBracket.SILVER_BASE) {
         return 'Bronze';
-    } else if (rating < eloConstants.GOLD_BASE) {
+    } else if (rating < rankBracket.GOLD_BASE) {
         return 'Silver';
-    } else if (rating < eloConstants.PLATINUM_BASE) {
+    } else if (rating < rankBracket.PLATINUM_BASE) {
         return 'Gold';
-    } else if (rating < eloConstants.DIAMOND_BASE) {
+    } else if (rating < rankBracket.DIAMOND_BASE) {
         return 'Platinum';
-    } else if (rating < eloConstants.CHAMPION_BASE) {
+    } else if (rating < rankBracket.CHAMPION_BASE) {
         return 'Diamond';
     } else {
         return 'Champion';
