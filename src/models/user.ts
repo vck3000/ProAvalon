@@ -1,9 +1,8 @@
 import mongoose from 'mongoose';
 // @ts-ignore
 import passportLocalMongoose from 'passport-local-mongoose';
-import type { IUser } from '../gameplay/types';
 
-const UserSchema = new mongoose.Schema<IUser>({
+const UserSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
@@ -133,6 +132,20 @@ const UserSchema = new mongoose.Schema<IUser>({
     },
   ],
 
+  currentRanking: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'rank',
+    default: null,
+  },
+
+  pastRankings: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'rank',
+      default: null,
+    },
+  ],
+
   modAction: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -157,4 +170,4 @@ export interface UserDocument extends mongoose.Document {
   usernameLower: string;
 }
 
-export default mongoose.model<IUser>('User', UserSchema);
+export default mongoose.model('User', UserSchema);
