@@ -2266,7 +2266,7 @@ let reverseMapFromMap = function (map, f) {
 
 function getAllInactivePlayers(thisRoom:Game): string[]{
   let players = [];
-  if(thisRoom.phase === 'picking team'){
+  if(thisRoom.phase === 'pickingTeam'){
     if (thisRoom.proposedTeam.length === 0) {
       players.push(thisRoom.playersInGame[thisRoom.teamLeader].request.user.username);
     }
