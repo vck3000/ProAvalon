@@ -20,6 +20,7 @@ const ButtonProps = ({
   if (clickedButton === button) {
     style.backgroundColor = 'yellow';
   }
+  
   if (buttonsDisabled) {
     style.backgroundColor = 'transparent';
     style.cursor = 'not-allowed';

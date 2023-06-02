@@ -76,7 +76,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
           ></div>
         </div>
       )}
-      {confirmJoinGame && (
+      {!confirmJoinGame && (
         <div style={centerElement}>
           <button style={btnGreen} onClick={handleJoinGame}>
             Join
