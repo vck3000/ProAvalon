@@ -2333,30 +2333,6 @@ let prospectivePlayersFor6UQ: MatchMakingQueueItem[] = [];
 let readyPlayersFor6UQ: MatchMakingQueueItem[] = [];
 let timeout: any;
 
-// Ask each player to confirm they are ready to join
-function checkForUnrankedConfirmation() {
-  prospectivePlayersFor6UQ = unrankedQueue6Players.splice(0, 6);
-  console.log('List of players:');
-  console.log(prospectivePlayersFor6UQ.map((player) => player.username));
-  prospectivePlayersFor6UQ.forEach((prospectivePlayer) => {
-    // emit to each player asking for confirmation
-    const playerSocket: SocketUser = getSocketFromUsername(
-      prospectivePlayer.username.toLowerCase(),
-    );
-    playerSocket.emit('confirm-ready-to-play');
-  });
-
-  // setTimeout for 120 seconds; if readyPlayers.length != 6, terminate
-  timeout = setTimeout(() => {
-    if (prospectivePlayersFor6UQ.length > 0) {
-      unrankedQueue6Players.push(...readyPlayersFor6UQ);
-      readyPlayersFor6UQ = [];
-      prospectivePlayersFor6UQ = [];
-    }
-  }, 120000)
-
-}
-
 // Add player to queue, and start match if six players in queue
 function joinUnrankedQueue(dataObj) {
   // add player to queue
@@ -2395,6 +2371,30 @@ function joinUnrankedQueue(dataObj) {
   }
 }
 
+// Ask each player to confirm they are ready to join
+function checkForUnrankedConfirmation() {
+  prospectivePlayersFor6UQ = unrankedQueue6Players.splice(0, 6);
+  console.log('List of players:');
+  console.log(prospectivePlayersFor6UQ.map((player) => player.username));
+  prospectivePlayersFor6UQ.forEach((prospectivePlayer) => {
+    // emit to each player asking for confirmation
+    const playerSocket: SocketUser = getSocketFromUsername(
+      prospectivePlayer.username.toLowerCase(),
+    );
+    playerSocket.emit('confirm-ready-to-play');
+  });
+
+  // setTimeout for 120 seconds; if readyPlayers.length != 6, terminate
+  timeout = setTimeout(() => {
+    if (prospectivePlayersFor6UQ.length > 0) {
+      unrankedQueue6Players.push(...readyPlayersFor6UQ);
+      readyPlayersFor6UQ = [];
+      prospectivePlayersFor6UQ = [];
+    }
+  }, 120000)
+
+}
+
 // remove player from queue
 function leaveUnrankedQueue() {
   // remove player from queue
@@ -2411,54 +2411,55 @@ function leaveUnrankedQueue() {
   }
 }
 
-// Create a new room for the unranked game
-function newQueueRoom(socket: SocketUser, inGameQueue: MatchMakingQueueItem[], ranked: String): number {
-  const boundNewRoom = newRoom.bind(socket);
-  const dataObject = {
-    maxNumPlayers: 10,
-    newRoomPassword: '',
-    gameMode: AVALON,
-    muteSpectators: false,
-    disableVoteHistory: false,
-    ranked: ranked,
-    skipAutoJoinRoomId: true,
-  };
-  const nextRoomId = boundNewRoom(dataObject);
-
-  inGameQueue.forEach((player) => {
-    const playerSocket: SocketUser = getSocketFromUsername(
-      player.username.toLowerCase(),
+function readyUnrankedGame(dataObj) {
+  // if a player accepts, add them to the list of ready players
+  const selectedProspectivePlayer = prospectivePlayersFor6UQ.findIndex(
+    (player) => player.username === this.request.user.username.toLowerCase(),
+  );
+  if (!dataObj.playerReady) {
+    const decliningPlayer = this.request.user.username;
+    // if a player rejects or times out, add other players to queue
+    prospectivePlayersFor6UQ.forEach((prospectivePlayer) => {
+      // emit to each player informing that the player has cancelled.
+      const playerSocket: SocketUser = getSocketFromUsername(
+        prospectivePlayer.username.toLowerCase(),
+      );
+      playerSocket.emit('declined-to-play', {
+        decliningPlayer,
+        username: prospectivePlayer.username,
+      });
+    });
+    prospectivePlayersFor6UQ.splice(selectedProspectivePlayer, 1);
+    unrankedQueue6Players = [
+      ...unrankedQueue6Players,
+      ...prospectivePlayersFor6UQ,
+      ...readyPlayersFor6UQ
+    ];
+    prospectivePlayersFor6UQ = [];
+    readyPlayersFor6UQ = [];
+    unrankedQueue6Players.sort((a, b) => a.timeJoinedAt - b.timeJoinedAt);
+    if (unrankedQueue6Players.length >= 6) {
+      checkForUnrankedConfirmation();
+    }
+  } else if (selectedProspectivePlayer === -1) {
+    return;
+  } else if (dataObj.playerReady && selectedProspectivePlayer !== -1) {
+    readyPlayersFor6UQ.push(
+      prospectivePlayersFor6UQ.splice(selectedProspectivePlayer, 1)[0],
     );
-    playerSocket.emit('game-has-begun');
-  });
-
-  return nextRoomId;
-}
-
-// add players to the unranked room
-function joinQueueRoomAndSitDown(roomId: number, playerSocket: SocketUser) {
-  if (!rooms[roomId]) {
-    return;
-  }
-  const boundJoinRoom = joinRoom.bind(playerSocket);
-  boundJoinRoom(roomId, '');
-
-  // Immediately force them to sit down.
-  playerSocket.emit('change-view', roomId);
-  rooms[roomId].playerSitDown(playerSocket);
-  setTimeout(() => {
-    rooms[roomId].distributeGameData();
-  }, 500);
-}
-
-function getHostToBeginQueueGame(roomId: number) {
-  const gameRoom = rooms[roomId];
-  if (!gameRoom) {
-    return;
+    console.log(readyPlayersFor6UQ.length);
+    console.log(readyPlayersFor6UQ);
   }
 
-  gameRoom.canJoin = false;
-  gameRoom.startGame(['Assassin', 'Merlin', 'Percival', 'Morgana']);
+  // if all players accept, start game
+  if (readyPlayersFor6UQ.length === 6) {
+    console.log('ready to start game');
+    startQueueGame([...readyPlayersFor6UQ], 'unranked');
+    readyPlayersFor6UQ = [];
+    prospectivePlayersFor6UQ = [];
+    clearTimeout(timeout);
+  }
+  return;
 }
 
 // to start game, do the following:
@@ -2489,55 +2490,54 @@ function startQueueGame(inGameQueue: MatchMakingQueueItem[], ranked: String) {
   getHostToBeginQueueGame(nextRoomId);
 }
 
-function readyUnrankedGame(dataObj) {
-  // if a player accepts, add them to the list of ready players
-  const selectedProspectivePlayer = prospectivePlayersFor6UQ.findIndex(
-    (player) => player.username === this.request.user.username.toLowerCase(),
-  );
-  if (dataObj.playerReady && selectedProspectivePlayer !== -1) {
-    readyPlayersFor6UQ.push(
-      prospectivePlayersFor6UQ.splice(selectedProspectivePlayer, 1)[0],
+// Create a new room for the game
+function newQueueRoom(socket: SocketUser, inGameQueue: MatchMakingQueueItem[], ranked: String): number {
+  const boundNewRoom = newRoom.bind(socket);
+  const dataObject = {
+    maxNumPlayers: 10,
+    newRoomPassword: '',
+    gameMode: AVALON,
+    muteSpectators: false,
+    disableVoteHistory: false,
+    ranked: ranked,
+    skipAutoJoinRoomId: true,
+  };
+  const nextRoomId = boundNewRoom(dataObject);
+
+  inGameQueue.forEach((player) => {
+    const playerSocket: SocketUser = getSocketFromUsername(
+      player.username.toLowerCase(),
     );
-    console.log(readyPlayersFor6UQ.length);
-    console.log(readyPlayersFor6UQ);
-  } else if (!dataObj.playerReady) {
-    const decliningPlayer = this.request.user.username;
-    // if a player rejects or times out, add other players to queue
-    prospectivePlayersFor6UQ.forEach((prospectivePlayer) => {
-      // emit to each player informing that the player has cancelled.
-      const playerSocket: SocketUser = getSocketFromUsername(
-        prospectivePlayer.username.toLowerCase(),
-      );
-      playerSocket.emit('declined-to-play', {
-        decliningPlayer,
-        username: prospectivePlayer.username,
-      });
-    });
-    prospectivePlayersFor6UQ.splice(selectedProspectivePlayer, 1);
-    unrankedQueue6Players = [
-      ...unrankedQueue6Players,
-      ...prospectivePlayersFor6UQ,
-      ...readyPlayersFor6UQ
-    ];
-    prospectivePlayersFor6UQ = [];
-    readyPlayersFor6UQ = [];
-    unrankedQueue6Players.sort((a, b) => a.timeJoinedAt - b.timeJoinedAt);
-    if (unrankedQueue6Players.length >= 6) {
-      checkForUnrankedConfirmation();
-    }
-  } else {
+    playerSocket.emit('game-has-begun');
+  });
+
+  return nextRoomId;
+}
+
+// add players to the room
+function joinQueueRoomAndSitDown(roomId: number, playerSocket: SocketUser) {
+  if (!rooms[roomId]) {
+    return;
+  }
+  const boundJoinRoom = joinRoom.bind(playerSocket);
+  boundJoinRoom(roomId, '');
+
+  // Immediately force them to sit down.
+  playerSocket.emit('change-view', roomId);
+  rooms[roomId].playerSitDown(playerSocket);
+  setTimeout(() => {
+    rooms[roomId].distributeGameData();
+  }, 500);
+}
+
+function getHostToBeginQueueGame(roomId: number) {
+  const gameRoom = rooms[roomId];
+  if (!gameRoom) {
     return;
   }
 
-  // if all players accept, start game
-  if (readyPlayersFor6UQ.length === 6) {
-    console.log('ready to start game');
-    startQueueGame([...readyPlayersFor6UQ], 'unranked');
-    readyPlayersFor6UQ = [];
-    prospectivePlayersFor6UQ = [];
-    clearTimeout(timeout);
-  }
-  return;
+  gameRoom.canJoin = false;
+  gameRoom.startGame(['Assassin', 'Merlin', 'Percival', 'Morgana']);
 }
 
 // Ranked queue
@@ -2545,42 +2545,7 @@ let rankedQueue6Players: MatchMakingQueueItem[] = [];
 let prospectivePlayersFor6RQ: MatchMakingQueueItem[] = [];
 let readyPlayersFor6RQ: MatchMakingQueueItem[] = [];
 let timeout2: any;
-let isMatching = false
-
-setInterval(() => {
-  if (!isMatching && rankedQueue6Players.length >= 6) {
-    debouncedMatch();
-  }
-}, 3000);
-
-const debouncedMatch = () => debounce(checkForRankedConfirmation(),3000)
-// Ask each player to confirm they are ready to join
-function checkForRankedConfirmation() {
-  console.log("start matching..")
-  const matchedResult = matchMakePlayers(rankedQueue6Players);
-  if(matchedResult){
-    isMatching = false
-    const matchedName = matchedResult.map((player) => player.username)
-    rankedQueue6Players = rankedQueue6Players.filter(
-      (player) => !matchedName.includes(player.username)
-    );
-    prospectivePlayersFor6RQ.push(...matchedResult);
-    prospectivePlayersFor6RQ.forEach(prospectivePlayer => {
-      // emit to each player asking for confirmation
-      const playerSocket: SocketUser = getSocketFromUsername(prospectivePlayer.username.toLowerCase());
-      playerSocket.emit('confirm-ready-to-play');
-    });
-  }
-
-  // setTimeout for 120 seconds; if readyPlayers.length != 6, terminate
-  timeout2 = setTimeout(() => {
-    if (prospectivePlayersFor6UQ.length > 0) {
-      unrankedQueue6Players.push(...readyPlayersFor6UQ);
-      readyPlayersFor6UQ = [];
-      prospectivePlayersFor6UQ = [];
-    }
-  }, 120000)
-}
+let isMatching = false;
 
 // Add player to queue, and start match if six players in queue
 function joinRankedQueue(dataObj) {
@@ -2608,7 +2573,7 @@ function joinRankedQueue(dataObj) {
       playerRating: this.request.user.playerRating, // Currently using the elo, change to Chen's implementation later
     });
     rankedQueue6Players.sort((a, b) => a.playerRating - b.playerRating);
-    // console.log(unrankedQueue6Players.length);
+    // console.log(rankedQueue6Players.length);
     console.log('List of players:');
     console.log(rankedQueue6Players.map((player) => player.username));
     // if number of players in queue < 6, return null
@@ -2622,6 +2587,42 @@ function joinRankedQueue(dataObj) {
   } else {
     return;
   }
+}
+
+setInterval(() => {
+  if (!isMatching && rankedQueue6Players.length >= 6) {
+    debouncedMatch();
+  }
+}, 3000);
+
+const debouncedMatch = () => debounce(checkForRankedConfirmation(), 3000)
+
+// Ask each player to confirm they are ready to join
+function checkForRankedConfirmation() {
+  console.log("start matching..")
+  const matchedResult = matchMakePlayers(rankedQueue6Players);
+  if (matchedResult) {
+    isMatching = false
+    const matchedName = matchedResult.map((player) => player.username)
+    rankedQueue6Players = rankedQueue6Players.filter(
+      (player) => !matchedName.includes(player.username)
+    );
+    prospectivePlayersFor6RQ.push(...matchedResult);
+    prospectivePlayersFor6RQ.forEach(prospectivePlayer => {
+      // emit to each player asking for confirmation
+      const playerSocket: SocketUser = getSocketFromUsername(prospectivePlayer.username.toLowerCase());
+      playerSocket.emit('confirm-ready-to-play');
+    });
+  }
+
+  // setTimeout for 120 seconds; if readyPlayers.length != 6, terminate
+  timeout2 = setTimeout(() => {
+    if (prospectivePlayersFor6RQ.length > 0) {
+      rankedQueue6Players.push(...readyPlayersFor6RQ);
+      readyPlayersFor6RQ = [];
+      prospectivePlayersFor6RQ = [];
+    }
+  }, 120000)
 }
 
 // remove player from queue
@@ -2642,13 +2643,8 @@ function readyRankedGame(dataObj) {
   const selectedProspectivePlayer = prospectivePlayersFor6RQ.findIndex(
     player => player.username === this.request.user.username.toLowerCase()
   )
-  if (dataObj.playerReady && selectedProspectivePlayer !== -1) {
-    readyPlayersFor6RQ.push(
-      prospectivePlayersFor6RQ.splice(selectedProspectivePlayer, 1)[0],
-    );
-    console.log(readyPlayersFor6RQ.length);
-    console.log(readyPlayersFor6RQ);
-  } else if (!dataObj.playerReady) {
+
+  if (!dataObj.playerReady) {
     const decliningPlayer = this.request.user.username;
     // if a player rejects or times out, add other players to queue
     prospectivePlayersFor6RQ.forEach((prospectivePlayer) => {
@@ -2665,7 +2661,7 @@ function readyRankedGame(dataObj) {
       checkForRankedConfirmation();
     }
     prospectivePlayersFor6RQ.splice(selectedProspectivePlayer, 1);
-    unrankedQueue6Players = [
+    rankedQueue6Players = [
       ...rankedQueue6Players,
       ...prospectivePlayersFor6RQ,
       ...readyPlayersFor6RQ
@@ -2676,8 +2672,14 @@ function readyRankedGame(dataObj) {
     if (rankedQueue6Players.length >= 6) {
       checkForRankedConfirmation();
     }
-  } else {
+  } else if (selectedProspectivePlayer === -1) {
     return;
+  } else if (dataObj.playerReady && selectedProspectivePlayer !== -1) {
+    readyPlayersFor6RQ.push(
+      prospectivePlayersFor6RQ.splice(selectedProspectivePlayer, 1)[0],
+    );
+    console.log(readyPlayersFor6RQ.length);
+    console.log(readyPlayersFor6RQ);
   }
 
   // if all players accept, start game
@@ -2687,12 +2689,6 @@ function readyRankedGame(dataObj) {
     readyPlayersFor6RQ = [];
     prospectivePlayersFor6RQ = [];
     clearTimeout(timeout2);
-  }
-  return;
-
-  // if all players accept, start game
-  if (readyPlayersFor6RQ.length === 6) {
-    startQueueGame([...rankedQueue6Players], 'ranked');
   }
   return;
 }
