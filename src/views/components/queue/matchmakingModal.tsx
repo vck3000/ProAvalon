@@ -33,15 +33,16 @@ export function MatchMakingModal() {
       setButtonsDisabled(false);
     });
     socket_.on('declined-to-play', function (data) {
-      setModalOpen(false);
-      alert('Someone has left the queue');
       if (data.decliningPlayer !== data.username) {
         setShowElement(true);
+        alert('Someone has left the queue');
       } else {
         setClickedButton(null);
+        alert('You have left the queue');
       }
+      setModalOpen(false);
+      setConfirmJoinGame(false);
     });
-    
     socket_.on('game-has-begun', function () {
       setModalOpen(false);
       setClickedButton(null);
@@ -86,7 +87,6 @@ export function MatchMakingModal() {
   };
 
   const cancelQueue = () => {
-    console.log(clickedButton);
     if (clickedButton === 'unrankBtn') {
       socket_.emit('ready-unranked-game', { playerReady: false });
     } else if (clickedButton === 'rankBtn') {
@@ -125,7 +125,7 @@ export function MatchMakingModal() {
       </div>
 
       {showElement && <Loading leaveQueue={leaveQueue} />}
-
+          
       <Modal
         isOpen={modalOpen}
         onRequestClose={cancelQueue}

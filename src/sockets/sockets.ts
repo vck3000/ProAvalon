@@ -2419,7 +2419,7 @@ function readyUnrankedGame(dataObj) {
   if (!dataObj.playerReady) {
     const decliningPlayer = this.request.user.username;
     // if a player rejects or times out, add other players to queue
-    prospectivePlayersFor6UQ.forEach((prospectivePlayer) => {
+    [...prospectivePlayersFor6UQ, ...readyPlayersFor6UQ].forEach((prospectivePlayer) => {
       // emit to each player informing that the player has cancelled.
       const playerSocket: SocketUser = getSocketFromUsername(
         prospectivePlayer.username.toLowerCase(),
@@ -2647,7 +2647,7 @@ function readyRankedGame(dataObj) {
   if (!dataObj.playerReady) {
     const decliningPlayer = this.request.user.username;
     // if a player rejects or times out, add other players to queue
-    prospectivePlayersFor6RQ.forEach((prospectivePlayer) => {
+    [...prospectivePlayersFor6RQ, ...readyPlayersFor6RQ].forEach((prospectivePlayer) => {
       // emit to each player informing that the player has cancelled.
       const playerSocket: SocketUser = getSocketFromUsername(
         prospectivePlayer.username.toLowerCase(),
@@ -2657,9 +2657,6 @@ function readyRankedGame(dataObj) {
         username: prospectivePlayer.username,
       });
     });
-    if (rankedQueue6Players.length >= 6) {
-      checkForRankedConfirmation();
-    }
     prospectivePlayersFor6RQ.splice(selectedProspectivePlayer, 1);
     rankedQueue6Players = [
       ...rankedQueue6Players,
@@ -2668,6 +2665,9 @@ function readyRankedGame(dataObj) {
     ];
     prospectivePlayersFor6RQ = [];
     readyPlayersFor6RQ = [];
+    if (rankedQueue6Players.length >= 6) {
+      checkForRankedConfirmation();
+    }
     rankedQueue6Players.sort((a, b) => a.playerRating - b.playerRating);
     if (rankedQueue6Players.length >= 6) {
       checkForRankedConfirmation();
