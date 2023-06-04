@@ -11,6 +11,7 @@ export interface IRatingPeriodGameRecord {
 
 export interface IRank {
   userId: Types.ObjectId,
+  username: string,
   seasonNumber?: number,
   playerRating?: number,
   rd?: number,

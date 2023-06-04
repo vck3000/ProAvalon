@@ -9,6 +9,11 @@ const rankSchema = new mongoose.Schema<IRank>({
     ref: 'user',
     required: true,
   },
+  username: {
+    type: String,
+    ref: 'user',
+    required: true,
+  },
   seasonNumber: {
     type: Number,
   },

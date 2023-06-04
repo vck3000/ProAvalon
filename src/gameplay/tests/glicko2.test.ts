@@ -21,6 +21,7 @@ describe('Glicko-2 Unit Test', () => {
     const mockUser1Rank = {
       _id: userRankObjectId,
       userId: user1ObjectId,
+      username: 'user1',
       seasonNumber: 0,
       playerRating: 1500,
       rd: 200,
@@ -71,6 +72,7 @@ describe('Glicko-2 Unit Test', () => {
           case 'user1':
             return Promise.resolve({
               userId: user1ObjectId,
+              username: 'user1',
               playerRating: 1500,
               rd: 200,
               volatility: 0.06,
@@ -78,6 +80,7 @@ describe('Glicko-2 Unit Test', () => {
           case 'user2':
             return Promise.resolve({
               userId: new Types.ObjectId(),
+              username: 'user2',
               playerRating: 1700,
               rd: 170,
               volatility: 0.06,
@@ -85,6 +88,7 @@ describe('Glicko-2 Unit Test', () => {
           case 'user3':
             return Promise.resolve({
               userId: new Types.ObjectId(),
+              username: 'user3',
               playerRating: 1400,
               rd: 30,
               volatility: 0.06,
@@ -92,6 +96,7 @@ describe('Glicko-2 Unit Test', () => {
           case 'user4':
             return Promise.resolve({
               userId: new Types.ObjectId(),
+              username: 'user4',
               playerRating: 1400,
               rd: 30,
               volatility: 0.06,
@@ -99,6 +104,7 @@ describe('Glicko-2 Unit Test', () => {
           case 'user5':
             return Promise.resolve({
               userId: new Types.ObjectId(),
+              username: 'user5',
               playerRating: 1400,
               rd: 30,
               volatility: 0.06,
@@ -106,6 +112,7 @@ describe('Glicko-2 Unit Test', () => {
           case 'user6':
             return Promise.resolve({
               userId: new Types.ObjectId(),
+              username: 'user6',
               playerRating: 2600,
               rd: 1110,
               volatility: 0.06,
@@ -113,6 +120,7 @@ describe('Glicko-2 Unit Test', () => {
           case 'user7':
             return Promise.resolve({
               userId: new Types.ObjectId(),
+              username: 'user7',
               playerRating: 1400,
               rd: 30,
               volatility: 0.06,
@@ -142,6 +150,7 @@ describe('Glicko-2 Unit Test', () => {
     const mockRank = {
       _id: userRankObjectId,
       userId: userObjectId,
+      username: 'inactiveUser',
       seasonNumber: 0,
       playerRating: 1500,
       rd: 200,
