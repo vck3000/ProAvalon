@@ -6,10 +6,6 @@ import type { IRatingPeriodGameRecord } from '../models/types';
 import { IRank, IUser } from '../models/types';
 
 export default class Mongo {
-  static getAllUsers(): Promise<IUser[]> {
-    return User.find({}).exec();
-  }
-
   static async updateAllUsersRankByFn(updateFn: (userId: string) => Promise<IRank>): Promise<void> {
     User
       .find({})
