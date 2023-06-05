@@ -114,8 +114,9 @@ class Glicko2 {
   }
 
   static async updateAllUsersRatings(): Promise<void> {
-    console.log('update all users ratings')
+    console.log('update all users ratings');
     await Mongo.updateAllUsersRankByFn(Glicko2.computeRankRatingsByUserId);
+    await Mongo.clearRatingPeriodGameRecords();
   }
 
   private static computeG(phi: number): number {

@@ -7,13 +7,21 @@ import { IRank, IUser } from '../models/types';
 
 export default class Mongo {
   static async updateAllUsersRankByFn(updateFn: (userId: string) => Promise<IRank>): Promise<void> {
-    User
-      .find({})
-      .cursor()
-      .eachAsync(async (user: IUser) => {
-        const updatedRank = await updateFn(user._id.toString());
-        await this.updateRankRatings(user._id.toString(), updatedRank);
-      });
+    const cursor = User.find({ currentRanking: { $ne: null } }).cursor();
+    const promises = [];
+
+    let doc = await cursor.next();
+
+    while (doc != null) {
+        promises.push((async (user: IUser) => {
+            const updatedRank = await updateFn(user._id.toString());
+            await this.updateRankRatings(user._id.toString(), updatedRank);
+        })(doc));
+
+        doc = await cursor.next();
+    }
+
+    await Promise.all(promises);
   }
 
   static async getUserByUsername(username: string): Promise<IUser> {
@@ -83,5 +91,14 @@ export default class Mongo {
       rd,
       volatility,
     });
+  }
+
+  static async clearRatingPeriodGameRecords(): Promise<void> {
+    try {
+      await RatingPeriodGameRecord.deleteMany({});
+      console.log('All documents in RatingPeriodGameRecord have been deleted');
+    } catch (error) {
+      console.error('An error occurred while deleting documents:', error);
+    }
   }
 }
