@@ -96,7 +96,7 @@ class Glicko2 {
     newMu += player.mu;
 
     // Step 8: Convert back to Glicko scale
-    const newRating = 173.7178 * newMu + 1500;
+    const newRating = Math.max(173.7178 * newMu + 1500, 0);
     const newRD = 173.7178 * newPhi;
 
     console.log(
