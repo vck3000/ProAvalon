@@ -2,7 +2,6 @@
 // Load the full build.
 import _ from 'lodash';
 
-import { eloConstants } from '../elo/constants/eloConstants';
 import RatingPeriodGameRecord from '../models/RatingPeriodGameRecord';
 import GameRecord from '../models/gameRecord';
 import Rank from '../models/rank';
@@ -15,8 +14,10 @@ import { isTO } from '../modsadmins/tournamentOrganizers';
 import usernamesIndexes from '../myFunctions/usernamesIndexes';
 import { gameModeObj } from './gameModes';
 import commonPhasesIndex from './indexCommonPhases';
+import leaveGameDetection from './leaveGameDetection';
 import Room from './room';
 import { getRoomTypeFromString, roomCreationTypeEnum } from './roomTypes';
+
 class Game extends Room {
   gameStarted = false;
   finished = false;
@@ -135,7 +136,7 @@ class Game extends Room {
     this.hammer = 0;
     this.missionNum = 0;
     this.pickNum = 0;
-    this.timer = 30;
+    this.timer = 5;
     this.tcheck = 1;
     this.PhaseIntervelIDlist = [];
 
@@ -389,19 +390,6 @@ class Game extends Room {
       this.playerUsernamesInGame.push(
         this.socketsOfPlayers[i].request.user.username,
       );
-    }
-
-    // If the player doesn't have a ranking, assign the default ranking
-    if (this.ranked) {
-      const seasonNumber = await getSeasonNumber();
-      this.playersInGame.forEach(async (player) => {
-        let user = await User.findById(player.userId);
-        if (user) {
-          await assignDefaultRankToUser(user, seasonNumber);
-        } else {
-          throw new Error('No user found with id: ' + player.userId);
-        }
-      });
     }
 
     // Give roles to the players according to their alliances
@@ -683,11 +671,10 @@ class Game extends Room {
                 ));
 
             if (!pressedValidButton || !selectedValidPlayers) {
-              const message = `${
-                botSocket.request.user.username
-              } made an illegal move and has left the game. Move: ${JSON.stringify(
-                move,
-              )}`;
+              const message = `${botSocket.request.user.username
+                } made an illegal move and has left the game. Move: ${JSON.stringify(
+                  move,
+                )}`;
               thisRoom.sendText(
                 thisRoom.allSockets,
                 message,
@@ -714,7 +701,7 @@ class Game extends Room {
 
   StartTimer(timer) {
     let remainingTimer = timer;
-    
+
     const PhaseTimer = setInterval(() => {
       remainingTimer -= 1;
       // console.log(remainingTimer);
@@ -734,14 +721,13 @@ class Game extends Room {
       let leavePlayers = getAllInactivePlayers(this);
       console.log('Inactive Players: ' + leavePlayers);
       if (remainingTimer <= 0 && leavePlayers.length > 0) {
-        let otherPlayers = [];
-        for(const player of this.playersInGame){
-          if(!leavePlayers.includes(player.request.user.username)){
-            otherPlayers.push(player.request.user.username);
+        let nonLeavePlayers = [];
+        for (const player of this.playersInGame) {
+          if (!leavePlayers.includes(player.request.user.username)) {
+            nonLeavePlayers.push(player.request.user.username);
           }
         }
-        this.voidedGame();
-        punishingPlayers(leavePlayers, otherPlayers);
+        this.voidedGame(this.roomId, leavePlayers, nonLeavePlayers);
         clearInterval(PhaseTimer);
       }
     }, 1000);
@@ -1227,7 +1213,7 @@ class Game extends Room {
     return 'Waiting';
   }
 
-  finishGame(toBeWinner) {
+  async finishGame(toBeWinner) {
     const timeStarted = new Date(this.startGameTime);
     const timeFinished = new Date();
     const gameDuration = new Date(timeFinished - timeStarted);
@@ -1242,6 +1228,18 @@ class Game extends Room {
       return;
     }
 
+    // If the player doesn't have a ranking, assign the default ranking
+    if (this.ranked) {
+      const seasonNumber = await getSeasonNumber();
+      this.playersInGame.forEach(async (player) => {
+        let user = await User.findById(player.userId);
+        if (user) {
+          await assignDefaultRankToUser(user, seasonNumber);
+        } else {
+          throw new Error('No user found with id: ' + player.userId);
+        }
+      });
+    }
     // If after the special card/role check the phase is
     // not finished now, then don't run the rest of the code below
     if (this.phase !== 'finished') {
@@ -1529,8 +1527,7 @@ class Game extends Room {
               this.allSockets,
               `${player.request.user.username}: ${Math.floor(
                 rating,
-              )} -> ${Math.floor(player.request.user.playerRating)} (${
-                difference > 0 ? '+' + difference : difference
+              )} -> ${Math.floor(player.request.user.playerRating)} (${difference > 0 ? '+' + difference : difference
               })`,
               'server-text',
             );
@@ -1540,8 +1537,7 @@ class Game extends Room {
                 this.allSockets,
                 `${player.request.user.username}: ${Math.floor(
                   rating,
-                )} -> ${Math.floor(rating + indResChange)} (${
-                  indResChange > 0 ? '+' + indResChange : indResChange
+                )} -> ${Math.floor(rating + indResChange)} (${indResChange > 0 ? '+' + indResChange : indResChange
                 })`,
                 'server-text',
               );
@@ -1551,8 +1547,7 @@ class Game extends Room {
                 this.allSockets,
                 `${player.request.user.username}: ${Math.floor(
                   rating,
-                )} -> ${Math.floor(rating + indSpyChange)} (${
-                  indSpyChange > 0 ? '+' + indSpyChange : indSpyChange
+                )} -> ${Math.floor(rating + indSpyChange)} (${indSpyChange > 0 ? '+' + indSpyChange : indSpyChange
                 })`,
                 'server-text',
               );
@@ -1607,7 +1602,7 @@ class Game extends Room {
               // checks that the var exists
               if (
                 !foundUser.winsLossesGameSizeBreakdown[
-                  `${playersInGameVar.length}p`
+                `${playersInGameVar.length}p`
                 ]
               ) {
                 foundUser.winsLossesGameSizeBreakdown[
@@ -1622,7 +1617,7 @@ class Game extends Room {
               }
               if (
                 !foundUser.roleStats[`${playersInGameVar.length}p`][
-                  player.role.toLowerCase()
+                player.role.toLowerCase()
                 ]
               ) {
                 foundUser.roleStats[`${playersInGameVar.length}p`][
@@ -1825,7 +1820,7 @@ class Game extends Room {
     for (let i = 0; i < this.playersInGame.length; i++) {
       if (
         this.voteHistory[this.playersInGame[i].request.user.username][
-          this.missionNum - 1
+        this.missionNum - 1
         ] === undefined
       ) {
         this.voteHistory[this.playersInGame[i].request.user.username][
@@ -1834,7 +1829,7 @@ class Game extends Room {
       }
       if (
         this.voteHistory[this.playersInGame[i].request.user.username][
-          this.missionNum - 1
+        this.missionNum - 1
         ][this.pickNum - 1] === undefined
       ) {
         this.voteHistory[this.playersInGame[i].request.user.username][
@@ -1945,7 +1940,28 @@ class Game extends Room {
     }
   }
 
-  voidedGame() {
+  async voidedGame(roomId, leavePlayers, nonLeavePlayers) {
+    // If the player doesn't have a ranking, assign the default ranking
+    if (this.ranked) {
+      const seasonNumber = await getSeasonNumber();
+      this.playersInGame.forEach(async (player) => {
+        if (!player.username.includes("SimpleBot")) {
+          let user = await User.findById(player.userId);
+          if (user) {
+            await assignDefaultRankToUser(user, seasonNumber);
+          } else {
+            throw new Error('No user found with id: ' + player.userId);
+          }
+        }
+      });
+    }
+
+    const leaveDetection = new leaveGameDetection(
+      roomId,
+      leavePlayers,
+      nonLeavePlayers,
+    );
+    await leaveDetection.punishingPlayers();
     this.sendText(
       this.allSockets,
       `Someone fails to complete the operation within the specified time, Game is voided.`,
@@ -2077,7 +2093,7 @@ class Game extends Room {
       eloChange =
         ((totalProvisionalGames +
           (this.playersInGame.length - provisionalPlayers.length) *
-            this.provisionalGamesRequired) /
+          this.provisionalGamesRequired) /
           (this.provisionalGamesRequired * this.playersInGame.length)) *
         eloChange;
     }
@@ -2278,72 +2294,36 @@ let reverseMapFromMap = function (map, f) {
   }, {});
 };
 
-function getAllInactivePlayers(thisRoom:Game): string[]{
+function getAllInactivePlayers(thisRoom: Game): string[] {
   let players = [];
-  if(thisRoom.phase === 'pickingTeam'){
+  if (thisRoom.phase === 'pickingTeam') {
     if (thisRoom.proposedTeam.length === 0) {
-      players.push(thisRoom.playersInGame[thisRoom.teamLeader].request.user.username);
+      players.push(
+        thisRoom.playersInGame[thisRoom.teamLeader].request.user.username,
+      );
     }
-  };
-  if((thisRoom.phase === 'votingMission' || thisRoom.phase === 'votingTeam')&&thisRoom.playersYetToVote.length !== 0){
+  }
+  if (
+    (thisRoom.phase === 'votingMission' || thisRoom.phase === 'votingTeam') &&
+    thisRoom.playersYetToVote.length !== 0
+  ) {
     for (const player of thisRoom.playersYetToVote) {
       players.push(player);
     }
-  };
-  if(thisRoom.phase === 'assassination' && !thisRoom.specialRoles.assassin.playerShot){
+  }
+  if (
+    thisRoom.phase === 'assassination' &&
+    !thisRoom.specialRoles.assassin.playerShot
+  ) {
     for (const player of thisRoom.playersInGame) {
       if (player.role === 'Assassin') {
         players.push(player.request.user.username);
       }
     }
-  };
+  }
   return players;
 }
-
-
-async function redistributeScores(score: number, users: User[]) : Promise<void>{
-    //redistruibute the scores to the rest of the players
-    const compensation = score / (users.length);
-    for (const user of users) {
-      if (!user.currentRanking) {
-        await assignDefaultRankToUser(user, seasonNumber);
-      }
-      const rankData = await Rank.findById(user.currentRanking);
-      rankData.leavePenalty += compensation;
-      await rankData.save();
-    }
-  }
-  
-  async function leavePenalty(users: User[]): Promise<number>{
-    for(const user of users){
-        const rankData = await Rank.findById(user.currentRanking);
-        rankData.leavePenalty -= (eloConstants.LEAVE_PENALTY);
-        await rankData.save();
-      }
-    return eloConstants.LEAVE_PENALTY*users.length;
-  }
-  
-  async function punishingPlayers(  leavePlayers: string[],  otherPlayers: string[],): void {
-    let leaves = [];
-    for (const leavePlayer of leavePlayers) {
-      const leaveUser = await User.findOne({
-        username: leavePlayer.toLowerCase(),
-      });
-      leaves.push(leaveUser);
-    }
-    const redistributeScore = await leavePenalty(leaves);
-    console.log(`Redistribute score: ${redistributeScore}`)
-    const players = [];
-    for (const otherPlayer of otherPlayers) {
-      const otherUser = await User.findOne({
-        username: otherPlayer.toLowerCase(),
-      });
-      players.push(otherUser);
-    }
-    await redistributeScores(redistributeScore, players);
-  }
-
-  //After player finished a ranked game, assigning a default rank to the player
+//After player finished a ranked game, assigning a default rank to the player
 async function assignDefaultRankToUser(user: User, seasonNumber: number) {
   if (user) {
     if (user.currentRanking === null) {
