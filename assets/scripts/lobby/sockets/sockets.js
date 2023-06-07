@@ -745,6 +745,13 @@ $('.maxNumPlayers').on('change', (e) => {
   socket.emit('update-room-max-players', e.target.value);
 });
 
+$('.GameTimer').on('change', (e) => {
+  console.log("Change");
+  console.log(e.target.value);
+
+  socket.emit('update-room-timer', e.target.value);
+});
+
 $('.gameModeSelect').on('change', (e) => {
   // console.log("Change");
   // console.log(e.target.value);

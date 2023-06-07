@@ -1385,6 +1385,7 @@ export const server = function (io: SocketServer): void {
     socket.on('player-not-ready', playerNotReady);
     socket.on('startGame', startGame);
     socket.on('kickPlayer', kickPlayer);
+    socket.on('update-room-timer',updateInGameTimer);
     socket.on('update-room-max-players', updateRoomMaxPlayers);
     socket.on('update-room-game-mode', updateRoomGameMode);
     socket.on('update-room-ranked', updateRoomRanked);
@@ -2272,6 +2273,12 @@ function updateRoomRanked(rankedType) {
     rooms[this.request.user.inRoomId].updateRanked(this, rankedType);
   }
   updateCurrentGamesList();
+}
+
+function updateInGameTimer(number) {
+  if (rooms[this.request.user.inRoomId]) {
+    rooms[this.request.user.inRoomId].updateTimer(this, number);
+  }
 }
 
 function updateRoomMuteSpectators(muteSpectators) {

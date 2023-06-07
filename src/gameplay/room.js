@@ -23,6 +23,10 @@ class Room {
       maxNumPlayers_ = 10;
     }
 
+    //timer
+    //Default 5 min
+    this.timer = 300;
+
     // Object input variables
     this.host = host_;
     this.roomId = roomId_;
@@ -378,6 +382,30 @@ class Room {
     return socketsOfSpecs;
   }
 
+  updateTimer(socket, timer) {
+
+    if (socket.request.user.username === this.host) {
+      if (timer >= 60) {
+        this.timer = timer;
+
+        this.sendText(
+          this.allSockets,
+          `Game timer option set to ${timer}.`,
+          'server-text',
+        );
+
+      } else {
+        console.log("Too short for game timer");
+
+        this.sendText(
+          this.allSockets,
+          `Too short for game timer`,
+          'server-text',
+        );
+      }
+    }
+  }
+
   updateMaxNumPlayers(socket, number) {
     number = parseInt(number, 10);
     if (isNaN(number)) {
@@ -393,6 +421,8 @@ class Room {
       this.updateRoomPlayers();
     }
   }
+
+
 
   updateRanked(socket, rankedType) {
     if (this.gameStarted) {

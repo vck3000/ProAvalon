@@ -131,13 +131,14 @@ class Game extends Room {
 
     this.roleKeysInPlay = [];
     this.cardKeysInPlay = [];
+    
+    this.io = io_;
 
     this.teamLeader = 0;
     this.hammer = 0;
     this.missionNum = 0;
     this.pickNum = 0;
-    this.timer = 5;
-    this.tcheck = 1;
+    this.timer = 300;
     this.PhaseIntervelIDlist = [];
 
     this.numFailsHistory = [];
@@ -700,23 +701,16 @@ class Game extends Room {
   }
 
   StartTimer(timer) {
-    let remainingTimer = timer;
+    let endTime = Date.now() + Number(timer);
+    let remainingTimer = endTime - Date.now();
+    this.io.in(this.roomId).emit('UpdateTimer', remainingTimer);
+
+    console.log(Date.now());
+    console.log(endTime);
+    console.log(timer);
 
     const PhaseTimer = setInterval(() => {
       remainingTimer -= 1;
-      // console.log(remainingTimer);
-
-      for (let i = 0; i < this.playersInGame.length; i++) {
-        const index = usernamesIndexes.getIndexFromUsername(
-          this.socketsOfPlayers,
-          this.playersInGame[i].request.user.username,
-        );
-        // need to go through all sockets, but only send to the socket of players in game
-        if (this.socketsOfPlayers[index]) {
-          this.socketsOfPlayers[index].emit('UpdateTimer', remainingTimer);
-          // console.log("Sent to player: " + this.playersInGame[i].request.user.username + remainingTimer);
-        }
-      }
 
       let leavePlayers = getAllInactivePlayers(this);
       console.log('Inactive Players: ' + leavePlayers);
@@ -736,8 +730,9 @@ class Game extends Room {
   }
 
   EndTimer() {
-    if (this.PhaseIntervelIDlist.length > 0) {
-      for (const PIntervelID of this.PhaseIntervelIDlist) {
+    if(this.PhaseIntervelIDlist.length > 0){
+      for (const PIntervelID of this.PhaseIntervelIDlist){
+        this.io.in(this.roomId).emit('TimerEnded');
         clearInterval(PIntervelID);
       }
       this.PhaseIntervelIDlist = [];

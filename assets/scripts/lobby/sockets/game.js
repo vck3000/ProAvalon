@@ -121,14 +121,45 @@ socket.on('game-data', (data) => {
   }
 });
 
+
+let timeInterval
+let countdown = 0;
+
 socket.on('UpdateTimer', (timer) => {
-  console.log(timer);
   if (timer >= 0) {
-    const minutes = Math.floor(timer / 60).toString().padStart(2, '0');
-    const seconds = (timer % 60).toString().padStart(2, '0');
-    document.getElementById('timerDisplay').textContent = `Time remaining: ${minutes}:${seconds}`;
+    countdown = timer
+    if (timeInterval){
+      endTimer();
+    }
+    startTimer()
   }
 });
+
+socket.on('TimerEnded',() => {
+  endTimer();
+})
+
+function startTimer() {
+  timeInterval = setInterval(() => {
+    countdown --;
+    const minutes = Math.floor(countdown / 60).toString().padStart(2, '0');
+    const seconds = (countdown % 60).toString().padStart(2, '0');
+    console.log(countdown);
+    document.getElementById('timerDisplay').textContent = `Time remaining: ${minutes}:${seconds}`;
+
+    if(countdown <= 0) {
+      clearInterval(timerInterval);
+    }
+  }, 1000);
+
+  return timeInterval;
+}
+
+function endTimer() {
+  clearInterval(timerInterval);
+  countdown = 0;
+  document.getElementById('timerDisplay').textContent = `Time remaining: ${minutes}:${seconds}`;
+}
 
 socket.on('lady-info', (message) => {
   const str = `${message} (this message is only shown to you)`;
