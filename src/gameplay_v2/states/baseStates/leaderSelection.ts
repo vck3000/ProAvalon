@@ -1,6 +1,6 @@
-import { IState } from '../state';
+// import { IState } from '../state';
 
-export class VotingMission implements IState {
-  static state = 'LeaderSelection';
-  state = 'LeaderSelection';
-}
+// export class LeaderSelection implements IState {
+//   static state = 'LeaderSelection';
+//   // state = 'LeaderSelection';
+// }

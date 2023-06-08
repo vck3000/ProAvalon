@@ -1,6 +1,6 @@
-import { IState } from '../state';
+// import { IState } from '../state';
 
-export class SeeSpiesState implements IState {
-  static state = 'SeeSpies';
-  state = 'SeeSpies';
-}
+// export class SeeSpiesState implements IState {
+//   static state = 'SeeSpies';
+//   state = 'SeeSpies';
+// }

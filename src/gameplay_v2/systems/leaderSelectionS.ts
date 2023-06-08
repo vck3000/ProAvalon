@@ -4,25 +4,36 @@ import { Leader } from '../roles/components/leader';
 import { Player } from '../player';
 
 export class LeaderSelectionS implements System {
-  run(gameData: GameData, sendData: SendData): Player[] {
-    const noLeaderLists: Player[] = [];
-    const playerList: Player[] = gameData.players;
-    let newLeaderinPlayerList: Player[] = [];
-    let currentLeader: string;
-    let leaderPosition = 0;
+    run(gameData: GameData, sendData: SendData): Player[] {
+        
+        const noLeaderLists:Player[] = [];
+        const playerList:Player[] = gameData.players;
+        let newLeaderinPlayerList:Player[] = [];
+        let currentLeader:string = "";
+        let leaderPosition = 0;
 
-    for (const player of playerList) {
-      // find the current leader
-      if (
-        player.entity.components.find(
-          (component) => component.name === 'leader',
-        )
-      ) {
-        currentLeader = player.username;
-        break;
-      }
-      leaderPosition++;
-      noLeaderLists.push(player);
+        for (const player of playerList) {
+            
+            // find the current leader
+            if (player.entity.components.find((component) => component.name === "leader") ) {
+                currentLeader = player.username;
+                break;
+            }
+            leaderPosition++;
+            noLeaderLists.push(player);
+
+        }
+        // if the leader is not set
+        if (currentLeader == "") {
+            playerList[0].entity.components.push(new Leader());
+
+            return playerList;
+        }
+
+        newLeaderinPlayerList = this.changeLeader(currentLeader, leaderPosition, playerList);
+   
+
+        return newLeaderinPlayerList;
     }
     // if the leader is not set
     if (currentLeader == null) {
@@ -30,7 +41,7 @@ export class LeaderSelectionS implements System {
 
       return playerList;
     }
-
+  
     newLeaderinPlayerList = this.changeLeader(
       currentLeader,
       leaderPosition,
@@ -55,6 +66,12 @@ export class LeaderSelectionS implements System {
           leaderComponentPosition,
           1,
         );
+        else if (leaderPosition = playerList.length -1) {
+            // add leader component to the first player, initialize the sequence
+            playerList[0].entity.components.push(new Leader());
+        }
+        // console.log(playerList);
+        return playerList;
       }
       leaderComponentPosition++;
 
