@@ -85,7 +85,7 @@ export class LeaderSelectionS implements System {
       playerList[theNextLeaderPosition].entity.components.push(new Leader());
     } else if ((leaderPosition = playerList.length - 1)) {
       // add leader component to the first player, initialize the sequence
-      playerList[0].entity.components.push(new Leader());
+      playerList[0].entity.addComponent(new Leader());
     }
     console.log(playerList);
     return playerList;

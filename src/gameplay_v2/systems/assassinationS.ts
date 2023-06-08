@@ -1,4 +1,3 @@
-
 import { SendData, System } from './system';
 import { GameData } from '../gameEngine';
 import { Mission, MissionC } from '../roles/components/mission';
