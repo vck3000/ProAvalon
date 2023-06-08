@@ -1,6 +1,6 @@
 import Component from './component';
 
 export class SeePercivalC extends Component {
-  name = 'SeePercivalC';
+  nameC = 'SeePercivalC';
   data = {};
 }

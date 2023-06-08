@@ -17,7 +17,7 @@ export class GameData {
 
 export class GameEngine {
   data: GameData;
-  systems: System[] = [new VoteS(), new LeaderSelectionS];
+  systems: System[] = [new VoteS() /*, new LeaderSelectionS()*/];
 
   constructor() {
 
@@ -43,19 +43,13 @@ export class GameEngine {
         (player) => player.username === username,
       )[0];
 
-      const voteComponents: VoteC[] = player.entity.components.filter(
-        (component) => component.name === 'Vote',
-      );
+      const voteComponent: VoteC = player.entity.getComponent(VoteC.nameC);
 
-      for (const vComponent of voteComponents) {
-        vComponent.data.vote = vote;
-      }
+      voteComponent.data.vote = vote;
     }
 
     this.runAllSystems();
   }
-
-  
 
   runAllSystems(): void {
     for (const system of this.systems) {

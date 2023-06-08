@@ -3,26 +3,22 @@ import { Alliance } from '../gameTypes';
 
 export default class Entity {
   alliance: Alliance;
-  components: Component[];
+  private readonly components: Record<string, Component>;
 
   constructor(alliance: Alliance) {
     this.alliance = alliance;
-    this.components = [];
+    this.components = {};
   }
 
-  public addComponent(component: any): void {
-    this.components.push(component);
+  public getComponent(component: string): Component {
+    return this.components[component];
   }
 
-  // This is commented as it is not necessarily needed for now
-  // public addComponents(...components: any[]): void {
-  //   components.forEach((component) => this.addComponent(component));
-  // }
-  
-  public removeComponent(component: any): void {
-    const componentIndex = this.components.findIndex((c) => c.constructor.name === component.constructor.name);
-    if (componentIndex !== -1) {
-        this.components.splice(componentIndex, 1);
-    }
+  public addComponent(component: Component): void {
+    this.components[component.nameC] = component;
+  }
+
+  public removeComponent(component: Component): void {
+    delete this.components[component.nameC];
   }
 }

@@ -34,31 +34,38 @@ export class LeaderSelectionS implements System {
    
 
         return newLeaderinPlayerList;
-
     }
+    // if the leader is not set
+    if (currentLeader == null) {
+      playerList[0].entity.components.push(new Leader());
 
-    // swith leader to the next player    
-    changeLeader(username: string, leaderPosition:number, playerList: Player[]): Player[] {
-        let theNextLeaderPosition = 0;
-        let leaderComponentPosition = 0;
-        // remove current leader component
-        for (const component of playerList[leaderPosition].entity.components) {
-            if (component.name == "leader" ){
-                playerList[leaderPosition].entity.components.splice(leaderComponentPosition, 1);
-            }
-            leaderComponentPosition++;
+      return playerList;
+    }
+  
+    newLeaderinPlayerList = this.changeLeader(
+      currentLeader,
+      leaderPosition,
+      playerList,
+    );
 
-            // console.log(playerList[leaderPosition].entity.components)
-        }
-        
-        if (leaderPosition < playerList.length-1) {
-            theNextLeaderPosition = leaderPosition + 1
+    return newLeaderinPlayerList;
+  }
 
-            // add leader component
-            playerList[theNextLeaderPosition].entity.components.push(new Leader());
-           
-        }
-
+  // swith leader to the next player
+  changeLeader(
+    username: string,
+    leaderPosition: number,
+    playerList: Player[],
+  ): Player[] {
+    let theNextLeaderPosition = 0;
+    let leaderComponentPosition = 0;
+    // remove current leader component
+    for (const component of playerList[leaderPosition].entity.components) {
+      if (component.nameC == 'leader') {
+        playerList[leaderPosition].entity.components.splice(
+          leaderComponentPosition,
+          1,
+        );
         else if (leaderPosition = playerList.length -1) {
             // add leader component to the first player, initialize the sequence
             playerList[0].entity.components.push(new Leader());
@@ -66,11 +73,21 @@ export class LeaderSelectionS implements System {
         // console.log(playerList);
         return playerList;
       }
+      leaderComponentPosition++;
 
+      // console.log(playerList[leaderPosition].entity.components)
+    }
 
-    
+    if (leaderPosition < playerList.length - 1) {
+      theNextLeaderPosition = leaderPosition + 1;
 
-
-    
+      // add leader component
+      playerList[theNextLeaderPosition].entity.components.push(new Leader());
+    } else if ((leaderPosition = playerList.length - 1)) {
+      // add leader component to the first player, initialize the sequence
+      playerList[0].entity.components.push(new Leader());
+    }
+    console.log(playerList);
+    return playerList;
+  }
 }
-

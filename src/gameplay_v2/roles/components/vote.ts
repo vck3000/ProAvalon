@@ -1,7 +1,11 @@
 import Component from './component';
 
+const name = 'Vote';
+
 export class VoteC extends Component {
-  name = 'Vote';
+  static nameC = name;
+  nameC = name;
+
   data: VoteData = { vote: Vote.Null };
 }
 
