@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import eloConstants from '../elo/constants/eloConstants';
+import { eloConstants } from '../elo/constants/eloConstants';
 import { IRank } from './types';
 
 // SCHEMA SETUP
