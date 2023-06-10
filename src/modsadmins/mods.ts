@@ -2,7 +2,6 @@
 export const modsArray = [
   'pronub',
   'besjbo',
-  'not.me',
   'maximovic96',
   'ingenue',
   'goofy', // jams
