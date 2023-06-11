@@ -78,6 +78,7 @@ VotingTeam.prototype.gameMove = function (
           'The hammer was rejected.',
           'gameplay-text-red',
         );
+        this.thisRoom.winner = 'Spy';
 
         this.thisRoom.finishGame('Spy');
       } else if (outcome === 'no') {

@@ -1169,7 +1169,10 @@ class Game extends Room {
     const gameDuration = new Date(timeFinished - timeStarted);
 
     const playersInGameVar = this.playersInGame;
+
     const winnerVar = this.winner;
+    if (winnerVar != 'Resistance' && winnerVar != 'Spy')
+      throw new Error('Winner var is not Resistance or Spy');
 
     const thisGame = this;
     this.phase = 'finished';

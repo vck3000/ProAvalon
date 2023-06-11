@@ -15,6 +15,7 @@ export function getRoomTypeFromString(
     case roomCreationTypeEnum.CUSTOM_ROOM:
       return roomCreationTypeEnum.CUSTOM_ROOM;
     default:
-      throw Error(`Invalid roomCreationType string. Got ${typeString}`);
+      console.warn(`Invalid roomCreationType string. Got ${typeString}`);
+      return roomCreationTypeEnum.CUSTOM_ROOM;
   }
 }

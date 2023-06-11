@@ -2250,7 +2250,7 @@ function gameMove(data) {
       if (rooms[this.request.user.inRoomId].finished === true) {
         deleteSaveGameFromDb(rooms[this.request.user.inRoomId]);
       } else {
-        if (rooms[this.request.user.inRoomId].requireSave === true) {
+        if (rooms[this.request.user.inRoomId].requireSave) {
           rooms[this.request.user.inRoomId].requireSave = false;
           saveGameToDb(rooms[this.request.user.inRoomId]);
           console.log(`Saving game ${this.request.user.inRoomId}`);
