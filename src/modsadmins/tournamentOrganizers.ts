@@ -2,12 +2,14 @@
 // TO = Tournament Organizer
 export const TOsArray = [
   // Manu's TOs
+  'manuavalon',
   'tyrrox',
   'glorious',
   'goofy',
   'raytrout',
   'starkrush',
   'secretaccount8594',
+  'not.me',
 
   // Ref-rain's TOs
   'ref-rain',
