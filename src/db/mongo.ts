@@ -6,91 +6,149 @@ import type { IRatingPeriodGameRecord } from '../models/types';
 import { IRank, IUser } from '../models/types';
 
 export default class Mongo {
-  static async updateAllUsersRankByFn(updateFn: (userId: string) => Promise<IRank>): Promise<void> {
-    const cursor = User.find({ currentRanking: { $ne: null } }).cursor();
-    const promises = [];
+  static async updateAllUsersRankByFn(
+    updateFn: (userId: string) => Promise<IRank>,
+  ): Promise<void> {
+    try {
+      const cursor = User.find({ currentRanking: { $ne: null } }).cursor();
+      const promises = [];
 
-    let doc = await cursor.next();
+      let doc = await cursor.next();
 
-    while (doc != null) {
-        promises.push((async (user: IUser) => {
-            const updatedRank = await updateFn(user._id.toString());
-            await this.updateRankRatings(user._id.toString(), updatedRank);
-        })(doc));
+      while (doc != null) {
+        promises.push(
+          (async (user: IUser) => {
+            try {
+              const updatedRank = await updateFn(user._id.toString());
+              await this.updateRankRatings(user._id.toString(), updatedRank);
+            } catch (error) {
+              console.error(
+                `Error while updating rank for user ${user._id}:`,
+                error,
+              );
+              throw error;
+            }
+          })(doc),
+        );
 
         doc = await cursor.next();
-    }
+      }
 
-    await Promise.all(promises);
+      await Promise.all(promises);
+    } catch (error) {
+      console.error('An error occurred while updating user ranks:', error);
+      throw error;
+    }
   }
 
   static async getUserByUsername(username: string): Promise<IUser> {
-    const user = await User.findOne({ usernameLower: username.toLowerCase() }).exec();
-    if (!user) {
-      throw Error(`Could not find user: ${username}`);
+    try {
+      const user = await User.findOne({
+        usernameLower: username.toLowerCase(),
+      });
+      if (!user) {
+        throw new Error(`Could not find user: ${username}`);
+      }
+  
+      return user;
+    } catch (error) {
+      console.error('An error occurred while fetching the user:', error);
+      throw error;
     }
-
-    return user;
   }
 
   static async getUserByUserId(userId: string): Promise<IUser> {
-    const user = await User.findOne({ _id: new Types.ObjectId(userId) }).exec();
-
-    if (!user) {
-      throw Error(`Could not find user id: ${userId}`);
+    try {
+      const user = await User.findOne({ _id: new Types.ObjectId(userId) });
+  
+      if (!user) {
+        throw Error(`Could not find user id: ${userId}`);
+      }
+  
+      return user;
+    } catch (error) {
+      console.error(`An error occurred while fetching user ${userId}:`, error);
+      throw error;
     }
-
-    return user;
   }
 
-  static getRatingPeriodGamesByUsername(
+  static async getRatingPeriodGamesByUsername(
     username: string,
   ): Promise<IRatingPeriodGameRecord[]> {
-    const usernameLower = username.toLowerCase();
+    try {
+      const usernameLower = username.toLowerCase();
 
-    return RatingPeriodGameRecord.find({
-      $or: [{ spyTeam: usernameLower }, { resistanceTeam: usernameLower }],
-    }).exec();
+      return await RatingPeriodGameRecord.find({
+        $or: [{ spyTeam: usernameLower }, { resistanceTeam: usernameLower }],
+      });
+    } catch (error) {
+      console.error(
+        'An error occurred while fetching rating period game records:',
+        error,
+      );
+      throw error;
+    }
   }
 
   static async getUserRankByUserId(userId: string): Promise<IRank> {
-    const user = await this.getUserByUserId(userId);
-    const rank = await Rank.findOne({
-      _id: user.currentRanking,
-    });
-
-    if (!rank) {
-      throw Error(`Could not find rank for user id: ${userId}`);
+    try {
+      const user = await this.getUserByUserId(userId);
+      const rank = await Rank.findOne({
+        _id: user.currentRanking,
+      });
+  
+      if (!rank) {
+        throw new Error(`Could not find rank for user id: ${userId}`);
+      }
+  
+      return rank;
+    } catch (error) {
+      console.error('An error occurred while fetching the rank:', error);
+      throw error;
     }
-
-    return rank;
   }
 
   static async getUserRankByUsername(username: string): Promise<IRank> {
-    const usernameLower = username.toLowerCase();
-
-    const user = await this.getUserByUsername(usernameLower);
-    const rank = await Rank.findOne({
-      _id: user.currentRanking,
-    });
-
-    if (!rank) {
-      throw Error(`Could not find rank for username: ${usernameLower}`);
+    try {
+      const usernameLower = username.toLowerCase();
+  
+      const user = await this.getUserByUsername(usernameLower);
+      const rank = await Rank.findOne({
+        _id: user.currentRanking,
+      });
+  
+      if (!rank) {
+        throw new Error(`Could not find rank for username: ${usernameLower}`);
+      }
+  
+      return rank;
+    } catch (error) {
+      console.error('An error occurred while fetching the rank:', error);
+      throw error;
     }
-
-    return rank;
   }
 
-  static async updateRankRatings(userId: string, updatedRank: IRank): Promise<void> {
-    const { playerRating, rd, volatility } = updatedRank;
+  static async updateRankRatings(
+    userId: string,
+    updatedRank: IRank,
+  ): Promise<void> {
+    try {
+      const { playerRating, rd, volatility } = updatedRank;
 
-    await Rank.updateOne({
-      userId
-    }, {
-      playerRating,
-      rd,
-      volatility,
-    });
+      await Rank.updateOne(
+        {
+          userId,
+        },
+        {
+          playerRating,
+          rd,
+          volatility,
+        },
+      );
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 
   static async clearRatingPeriodGameRecords(): Promise<void> {
@@ -99,6 +157,7 @@ export default class Mongo {
       console.log('All documents in RatingPeriodGameRecord have been deleted');
     } catch (error) {
       console.error('An error occurred while deleting documents:', error);
+      throw error;
     }
   }
 }
