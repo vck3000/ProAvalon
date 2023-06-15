@@ -2,17 +2,23 @@
 // Load the full build.
 import _ from 'lodash';
 
-import Room from './room';
-import usernamesIndexes from '../myFunctions/usernamesIndexes';
-import User from '../models/user';
+import RatingPeriodGameRecord from '../models/RatingPeriodGameRecord';
 import GameRecord from '../models/gameRecord';
-import commonPhasesIndex from './indexCommonPhases';
-import { isMod } from '../modsadmins/mods';
-import { isTO } from '../modsadmins/tournamentOrganizers';
+import Rank from '../models/rank';
+import User from '../models/user';
+import Ban from '../models/ban';
+import ModLog from '../models/modLog';
+import { getSeasonNumber } from '../modelsHelper/seasonNumber';
 import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
-
+import { isMod } from '../modsadmins/mods';
+import { isTO } from '../modsadmins/tournamentOrganizers';
+import usernamesIndexes from '../myFunctions/usernamesIndexes';
 import { gameModeObj } from './gameModes';
+import commonPhasesIndex from './indexCommonPhases';
+import leaveGameDetection from './leaveGameDetection';
+import Room from './room';
+import { getRoomTypeFromString, roomCreationTypeEnum } from './roomTypes';
 
 class Game extends Room {
   gameStarted = false;
@@ -20,6 +26,7 @@ class Game extends Room {
   playersInGame = [];
   phase = 'pickingTeam';
   missionHistory = [];
+  roomCreationType: roomCreationTypeEnum;
 
   // TODO This shouldn't be here! Should be in Assassin file.
   startAssassinationTime: Date;
@@ -35,7 +42,9 @@ class Game extends Room {
     newRoomPassword_,
     gameMode_,
     muteSpectators_,
+    disableVoteHistory_,
     ranked_,
+    roomCreationType_, // to track ranked vs unranked vs custom game
     callback_,
   ) {
     super(
@@ -49,6 +58,8 @@ class Game extends Room {
     );
 
     this.callback = callback_;
+
+    this.roomCreationType = getRoomTypeFromString(roomCreationType_);
 
     this.minPlayers = 5;
     this.alliances = [
@@ -84,11 +95,9 @@ class Game extends Room {
     /*
       Phases go like this:
         Note: Cards run should be run every time phase changes
-
         Always run between phases:
           - Card
           - Role specials (e.g. assassination)
-
         Start from phase 1:
         1) Player picking.
         2) Receive interactions for team votes.
@@ -98,15 +107,12 @@ class Game extends Room {
           - If game finished, go to phase 4.
           - If game not finished, go to phase 1.
         4) Game finished
-
-
         Table:
           Phase	|	String
           1			"pickingTeam"
           2			"votingTeam"
           3			"votingMission"
           4			"finished"
-
         Misc Phases:
           Phase	|	String
                 "lady"
@@ -122,11 +128,15 @@ class Game extends Room {
 
     this.roleKeysInPlay = [];
     this.cardKeysInPlay = [];
+    
+    this.io = io_;
 
     this.teamLeader = 0;
     this.hammer = 0;
     this.missionNum = 0;
     this.pickNum = 0;
+    this.timer = 300;
+    this.PhaseIntervelIDlist = [];
 
     this.numFailsHistory = [];
     this.proposedTeam = [];
@@ -137,6 +147,7 @@ class Game extends Room {
     this.missionVotes = [];
 
     this.voteHistory = {};
+    this.disableVoteHistory = disableVoteHistory_;
 
     // Game misc variables
     this.winner = '';
@@ -322,7 +333,7 @@ class Game extends Room {
   }
 
   // start game
-  startGame(options) {
+  async startGame(options) {
     if (
       this.socketsOfPlayers.length < 5 ||
       this.socketsOfPlayers.length > 10 ||
@@ -499,6 +510,14 @@ class Game extends Room {
       );
     }
 
+    if (this.disableVoteHistory) {
+      this.sendText(
+        this.allSockets,
+        'The game has vote history disabled.',
+        'gameplay-text',
+      );
+    }
+
     // seed the starting data into the VH
     for (let i = 0; i < this.playersInGame.length; i++) {
       this.voteHistory[this.playersInGame[i].request.user.username] = [];
@@ -650,11 +669,10 @@ class Game extends Room {
                 ));
 
             if (!pressedValidButton || !selectedValidPlayers) {
-              const message = `${
-                botSocket.request.user.username
-              } made an illegal move and has left the game. Move: ${JSON.stringify(
-                move,
-              )}`;
+              const message = `${botSocket.request.user.username
+                } made an illegal move and has left the game. Move: ${JSON.stringify(
+                  move,
+                )}`;
               thisRoom.sendText(
                 thisRoom.allSockets,
                 message,
@@ -679,6 +697,45 @@ class Game extends Room {
     }, timeEachLoop);
   }
 
+  StartTimer(timer) {
+    let endTime = Date.now() + Number(timer);
+    let remainingTimer = endTime - Date.now();
+    this.io.in(this.roomId).emit('UpdateTimer', remainingTimer);
+
+    const PhaseTimer = setInterval(() => {
+      remainingTimer -= 1;
+
+      let leavePlayers = getAllInactivePlayers(this);
+      console.log('Inactive Players: ' + leavePlayers);
+      if (remainingTimer <= 0 && leavePlayers.length > 0) {
+        let nonLeavePlayers = [];
+        for (const player of this.playersInGame) {
+          if (!leavePlayers.includes(player.request.user.username)) {
+            nonLeavePlayers.push(player.request.user.username);
+          }
+        }
+        for (const leavePlayer of leavePlayers){
+            BanPlayer(leavePlayer);
+            ExtendBanLength(leavePlayer);
+        }
+        this.voidedGame(this.roomId, leavePlayers, nonLeavePlayers);
+        clearInterval(PhaseTimer);
+      }
+    }, 1000);
+
+    return PhaseTimer;
+  }
+
+  EndTimer() {
+    if(this.PhaseIntervelIDlist.length > 0){
+      for (const PIntervelID of this.PhaseIntervelIDlist){
+        this.io.in(this.roomId).emit('TimerEnded');
+        clearInterval(PIntervelID);
+      }
+      this.PhaseIntervelIDlist = [];
+    }
+  }
+
   // TODO In the future gameMove should receive both buttonPressed and selectedPlayers
   gameMove(socket, data) {
     if (data.length !== 2) {
@@ -688,12 +745,13 @@ class Game extends Room {
     let buttonPressed = data[0];
     let selectedPlayers = data[1];
 
-    // console.log(buttonPressed, selectedPlayers);
+    this.EndTimer();
+    this.PhaseIntervelIDlist.push(this.StartTimer(this.timer));
 
+    // console.log(buttonPressed, selectedPlayers);
     if (selectedPlayers === undefined || selectedPlayers === null) {
       selectedPlayers = [];
     }
-
     // Common phases
     if (
       this.commonPhases.hasOwnProperty(this.phase) === true &&
@@ -990,7 +1048,7 @@ class Game extends Room {
         data[i].numSelectTargets = this.getClientNumOfTargets(i);
 
         data[i].votes = this.publicVotes;
-        data[i].voteHistory = this.voteHistory;
+        data[i].voteHistory = this.disableVoteHistory ? null : this.voteHistory;
         data[i].hammer = this.hammer;
         data[i].hammerReversed = gameReverseIndex(
           this.hammer,
@@ -1035,6 +1093,40 @@ class Game extends Room {
     return "Game hasn't started";
   }
 
+  ExtendBanLength(leavePlayer) {
+    let user = await User.findOne({
+        usernameLower: leavePlayer.toLowerCase(),
+      });
+    if (user) {
+      user.playerBanLength = user.playerBanLength * 2;
+      console.log(
+        `Current Ban length for ${user.username} is ${user.playerBanLength}`,
+      );
+      await user.save();
+    }
+  }
+
+  ResetBanLength(leavePlayer) {
+    let user = await User.findOne({
+        usernameLower: leavePlayer.toLowerCase(),
+      });
+    if (user) {
+      if (user.playerBanLength > 300) {
+        user.playerBanLength -= 5 * 60;
+      } 
+
+      if (user.playerBanLength < 300) {
+        user.playerBanLength = 300;
+      }
+
+      console.log(
+        `Current Ban length for ${user.username} is ${user.playerBanLength}`,
+      );
+
+      await user.save();
+    }
+  }
+
   getGameDataForSpectators() {
     // return false;
     const playerRoles = this.playersInGame;
@@ -1069,7 +1161,7 @@ class Game extends Room {
     data.numSelectTargets = this.getClientNumOfTargets();
 
     data.votes = this.publicVotes;
-    data.voteHistory = this.voteHistory;
+    data.voteHistory = this.disableVoteHistory ? null : this.voteHistory;
     data.hammer = this.hammer;
     data.hammerReversed = gameReverseIndex(
       this.hammer,
@@ -1103,37 +1195,6 @@ class Game extends Room {
     }
 
     return data;
-  }
-
-  ExtendBanLength(userId) {
-    let user = await User.findById(player.userId);
-    if (user) {
-      user.playerBanLength = user.playerBanLength * 2;
-      console.log(
-        `Current Ban length for ${user.username} is ${user.playerBanLength}`,
-      );
-      await user.save();
-    }
-  }
-
-  ResetBanLength(userId) {
-    let user = await User.findById(player.userId);
-    if (user) {
-      if (user.playerBanLength > 300) {
-        user.playerBanLength -= 5 * 60;
-      } 
-    
-
-      if (user.playerBanLength < 300) {
-        user.playerBanLength = 300;
-      }
-
-      console.log(
-        `Current Ban length for ${user.username} is ${user.playerBanLength}`,
-      );
-
-      await user.save();
-    }
   }
 
   // Misc game room functions
@@ -1178,13 +1239,33 @@ class Game extends Room {
     return 'Waiting';
   }
 
-  finishGame(toBeWinner) {
+  async finishGame(toBeWinner) {
+    const timeStarted = new Date(this.startGameTime);
+    const timeFinished = new Date();
+    const gameDuration = new Date(timeFinished - timeStarted);
+
+    const playersInGameVar = this.playersInGame;
+    const winnerVar = this.winner;
+
+    const thisGame = this;
     this.phase = 'finished';
 
     if (this.checkRoleCardSpecialMoves() === true) {
       return;
     }
 
+    // If the player doesn't have a ranking, assign the default ranking
+    if (this.ranked) {
+      const seasonNumber = await getSeasonNumber();
+      this.playersInGame.forEach(async (player) => {
+        let user = await User.findById(player.userId);
+        if (user) {
+          await assignDefaultRankToUser(user, seasonNumber);
+        } else {
+          throw new Error('No user found with id: ' + player.userId);
+        }
+      });
+    }
     // If after the special card/role check the phase is
     // not finished now, then don't run the rest of the code below
     if (this.phase !== 'finished') {
@@ -1241,6 +1322,12 @@ class Game extends Room {
           'server-text',
         );
       }
+    }
+    //Clear time intervel
+    this.EndTimer();
+    //reset banlength
+    for (const player of this.playersInGame) {
+        ResetBanLength(player.request.user.username);
     }
 
     // Reset votes
@@ -1306,16 +1393,17 @@ class Game extends Room {
       botUsernames = [];
     }
 
+    // This data is for future records only
     const objectToStore = {
       timeGameStarted: this.startGameTime,
       timeAssassinationStarted: this.startAssassinationTime,
-      timeGameFinished: new Date(),
+      timeGameFinished: timeFinished,
       winningTeam: this.winner,
       spyTeam: this.spyUsernames,
       resistanceTeam: this.resistanceUsernames,
       numberOfPlayers: this.playersInGame.length,
-
       gameMode: this.gameMode,
+      roomCreationType: this.roomCreationType,
       botUsernames,
 
       playerUsernamesOrdered: getUsernamesOfPlayersInGame(this),
@@ -1331,6 +1419,7 @@ class Game extends Room {
       missionHistory: this.missionHistory,
       numFailsHistory: this.numFailsHistory,
       voteHistory: this.voteHistory,
+      disableVoteHistory: this.disableVoteHistory,
       playerRoles: playerRolesVar,
 
       ladyChain,
@@ -1354,16 +1443,35 @@ class Game extends Room {
       }
     });
 
-    // store player data:
-    const timeFinished = new Date();
-    const timeStarted = new Date(this.startGameTime);
+    //FR2 - Rating system 1 - record games for rating updates
+    // This data will be used to calculate ratings at end of rating period.
+    // The intended workflow is games -> ratingPeriodGameRecord -> (at end of rating preiod) Ratings Calculator
 
-    const gameDuration = new Date(timeFinished - timeStarted);
+    if (
+      this.spyUsernames.length + this.resistanceUsernames.length !=
+      this.playersInGame.length
+    ) {
+      throw Error(
+        "Spy + Resistance player nums don't add up to playersInGame length.",
+      );
+    }
 
-    const playersInGameVar = this.playersInGame;
-    const winnerVar = this.winner;
+    if (this.ranked) {
+      const ratingRecordToStore = {
+        timeGameFinished: timeFinished,
+        winningTeam: this.winner,
+        spyTeam: this.spyUsernames,
+        resistanceTeam: this.resistanceUsernames,
+        roomCreationType: this.roomCreationType,
+      };
 
-    const thisGame = this;
+      RatingPeriodGameRecord.create(ratingRecordToStore, (err) => {
+        if (err) {
+          throw err;
+        }
+      });
+    }
+
     this.socketsOfPlayers
       .filter((socket) => socket.isBotSocket)
       .forEach((botSocket) => {
@@ -1449,8 +1557,7 @@ class Game extends Room {
               this.allSockets,
               `${player.request.user.username}: ${Math.floor(
                 rating,
-              )} -> ${Math.floor(player.request.user.playerRating)} (${
-                difference > 0 ? '+' + difference : difference
+              )} -> ${Math.floor(player.request.user.playerRating)} (${difference > 0 ? '+' + difference : difference
               })`,
               'server-text',
             );
@@ -1460,8 +1567,7 @@ class Game extends Room {
                 this.allSockets,
                 `${player.request.user.username}: ${Math.floor(
                   rating,
-                )} -> ${Math.floor(rating + indResChange)} (${
-                  indResChange > 0 ? '+' + indResChange : indResChange
+                )} -> ${Math.floor(rating + indResChange)} (${indResChange > 0 ? '+' + indResChange : indResChange
                 })`,
                 'server-text',
               );
@@ -1471,8 +1577,7 @@ class Game extends Room {
                 this.allSockets,
                 `${player.request.user.username}: ${Math.floor(
                   rating,
-                )} -> ${Math.floor(rating + indSpyChange)} (${
-                  indSpyChange > 0 ? '+' + indSpyChange : indSpyChange
+                )} -> ${Math.floor(rating + indSpyChange)} (${indSpyChange > 0 ? '+' + indSpyChange : indSpyChange
                 })`,
                 'server-text',
               );
@@ -1512,6 +1617,7 @@ class Game extends Room {
               // if ranked, update player ratings and increase ranked games played
               if (this.ranked) {
                 foundUser.totalRankedGamesPlayed += 1;
+
                 if (foundUser.ratingBracket === 'unranked') {
                   foundUser.playerRating = player.request.user.playerRating;
                 } else {
@@ -1526,7 +1632,7 @@ class Game extends Room {
               // checks that the var exists
               if (
                 !foundUser.winsLossesGameSizeBreakdown[
-                  `${playersInGameVar.length}p`
+                `${playersInGameVar.length}p`
                 ]
               ) {
                 foundUser.winsLossesGameSizeBreakdown[
@@ -1541,7 +1647,7 @@ class Game extends Room {
               }
               if (
                 !foundUser.roleStats[`${playersInGameVar.length}p`][
-                  player.role.toLowerCase()
+                player.role.toLowerCase()
                 ]
               ) {
                 foundUser.roleStats[`${playersInGameVar.length}p`][
@@ -1744,7 +1850,7 @@ class Game extends Room {
     for (let i = 0; i < this.playersInGame.length; i++) {
       if (
         this.voteHistory[this.playersInGame[i].request.user.username][
-          this.missionNum - 1
+        this.missionNum - 1
         ] === undefined
       ) {
         this.voteHistory[this.playersInGame[i].request.user.username][
@@ -1753,7 +1859,7 @@ class Game extends Room {
       }
       if (
         this.voteHistory[this.playersInGame[i].request.user.username][
-          this.missionNum - 1
+        this.missionNum - 1
         ][this.pickNum - 1] === undefined
       ) {
         this.voteHistory[this.playersInGame[i].request.user.username][
@@ -1831,6 +1937,9 @@ class Game extends Room {
 
     // Accept the guess
     this.merlinguesses[guesserUsername] = targetUsernameCase;
+
+    console.log('finish pick');
+
     return `You have guessed that ${targetUsernameCase} is Merlin. Good luck!`;
   }
 
@@ -1859,6 +1968,37 @@ class Game extends Room {
       this.phase = 'paused';
       this.distributeGameData();
     }
+  }
+
+  async voidedGame(roomId, leavePlayers, nonLeavePlayers) {
+    // If the player doesn't have a ranking, assign the default ranking
+    if (this.ranked) {
+      const seasonNumber = await getSeasonNumber();
+      this.playersInGame.forEach(async (player) => {
+        if (!player.username.includes("SimpleBot")) {
+          let user = await User.findById(player.userId);
+          if (user) {
+            await assignDefaultRankToUser(user, seasonNumber);
+          } else {
+            throw new Error('No user found with id: ' + player.userId);
+          }
+        }
+      });
+    }
+
+    const leaveDetection = new leaveGameDetection(
+      roomId,
+      leavePlayers,
+      nonLeavePlayers,
+    );
+    await leaveDetection.punishingPlayers();
+    this.sendText(
+      this.allSockets,
+      `Someone fails to complete the operation within the specified time, Game is voided.`,
+      'server-text',
+    );
+    this.phase = 'voided';
+    this.distributeGameData();
   }
 
   canRoomChat(usernameLower: string) {
@@ -1891,11 +2031,21 @@ class Game extends Room {
     );
   }
 
+  updateDisableVoteHistory(disableVoteHistory: boolean) {
+    if (this.gameStarted === false) {
+      this.disableVoteHistory = disableVoteHistory;
+
+      this.sendText(
+        this.allSockets,
+        `Disable Vote History option set to ${disableVoteHistory}.`,
+        'server-text',
+      );
+    }
+  }
+
   /*
   ELO RATING CALCULATION:
-
   Usual formula: R_new = R_old + k(Actual - Expected)
-
   1. Use average team rating and pit together in a 1v1 format.
   2. Adjust ratings for Res and Spy winrates (constant adjustment based on site winrates, maybe for that player size).
   2. Using k-value k=38, calculate adjustment amount = k(Actual - Expected)
@@ -1971,7 +2121,7 @@ class Game extends Room {
       eloChange =
         ((totalProvisionalGames +
           (this.playersInGame.length - provisionalPlayers.length) *
-            this.provisionalGamesRequired) /
+          this.provisionalGamesRequired) /
           (this.provisionalGamesRequired * this.playersInGame.length)) *
         eloChange;
     }
@@ -1980,17 +2130,14 @@ class Game extends Room {
 
   /*
   PROVISIONAL ELO RATING CALCULATION:
-
   If there is only one provisional player in the game:
   Formula: R_new = (R_old*N_old + sum(otherPlayerRatings)/numOtherPlayers + 200*TeamAdjustment*Result)/(N_old+1)
       where N_old = Number of games played
             Result = 1 for win, 0 for loss
-
   If there is more than one provisional player in the game:
   Formula: R_new = (R_old*N_old + sum(allPlayerRatings)/numPlayers + 200*TeamAdjustment*Result)/(N_old+1)
       where N_old = Number of games played
             Result = 1 for win, 0 for loss
-
   This rating style takes into account all the ratings of the players in the games that you play with to determine your starting point.
   For the first few games it will result in wild rating changes, but will level out towards the end of the provisional section.
   Could possibly lead to some people abusing their early rating by only playing with strong players and getting lucky, but should level out in the end.
@@ -2171,3 +2318,114 @@ let reverseMapFromMap = function (map, f) {
     return acc;
   }, {});
 };
+
+async function BanPlayer(leavePlayer){
+    const banUser = await User.findOne({
+        usernameLower: leavePlayer.toLowerCase(),
+      });
+
+      const durationInt = banUser.playerBanLength;
+  
+      var ipsToBan;
+      ipsToBan = banUser.IPAddresses;
+  
+      const now = new Date();
+      const whenMade = new Date();
+      var whenRelease;
+      
+      whenRelease = new Date(now.setHours(now.getHours() + durationInt));
+  
+      const banData = {
+        ipBan:true,
+        singleIPBan:false,
+        userBan:false,
+        bannedPlayer: {
+          id: banUser._id,
+          username: banUser.username,
+          usernameLower: banUser.usernameLower,
+        },
+        bannedIPs: ipsToBan,
+        modWhoBanned: {
+          id: "00000",
+          username: "autoban",
+          usernameLower: "autoban",
+        },
+        whenMade: whenMade,
+        durationToBan: `${durationInt} hours`,
+        whenRelease: whenRelease,
+        descriptionByMod: "",
+        reason: "Leave detection",
+      };
+  
+      await Ban.create(banData);
+  
+      await ModLog.create({
+        type: 'ban',
+        modWhoMade: {
+            id: "00000",
+            username: "autoban",
+            usernameLower: "autoban",
+        },
+        data: banData,
+        dateCreated: new Date(),
+      });
+}
+function getAllInactivePlayers(thisRoom: Game): string[] {
+  let players = [];
+  if (thisRoom.phase === 'pickingTeam') {
+    if (thisRoom.proposedTeam.length === 0) {
+      players.push(
+        thisRoom.playersInGame[thisRoom.teamLeader].request.user.username,
+      );
+    }
+  }
+  if (
+    (thisRoom.phase === 'votingMission' || thisRoom.phase === 'votingTeam') &&
+    thisRoom.playersYetToVote.length !== 0
+  ) {
+    for (const player of thisRoom.playersYetToVote) {
+      players.push(player);
+    }
+  }
+  if (
+    thisRoom.phase === 'assassination' &&
+    !thisRoom.specialRoles.assassin.playerShot
+  ) {
+    for (const player of thisRoom.playersInGame) {
+      if (player.role === 'Assassin') {
+        players.push(player.request.user.username);
+      }
+    }
+  }
+  return players;
+}
+//After player finished a ranked game, assigning a default rank to the player
+async function assignDefaultRankToUser(user: User, seasonNumber: number) {
+  if (user) {
+    if (user.currentRanking === null) {
+      if (typeof seasonNumber === 'number') {
+        const rankData = new Rank({
+          userId: user._id,
+          seasonNumber: seasonNumber,
+        });
+        await rankData.save();
+        console.log(
+          `Rank data for ${user.username} saved, rankedId: ${rankData._id}`,
+        );
+        user.currentRanking = rankData._id;
+        await user.save();
+        console.log(
+          `Rank data for ${user.username} assigned, currentRanking: ${user.currentRanking}`,
+        );
+      } else {
+        console.log(
+          `Season number is not a number, seasonNumber: ${seasonNumber}`,
+        );
+      }
+    } else {
+      console.log(`User already has a rank`);
+    }
+  } else {
+    console.log(`User is not defined`);
+  }
+}
