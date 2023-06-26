@@ -2120,15 +2120,15 @@ export function joinRoom(roomId, inputPassword) {
       this.request.user.inRoomId = roomId;
 
       // remove player from the unranked or unranked queue
-      const userName = this.request.user.username.toLowerCase();
-      let indexToRemove: number = unrankedQueue6Players.findIndex(player => player.id === userName);
-      if (indexToRemove !== -1) {
-        unrankedQueue6Players.splice(indexToRemove, 1);
-      }
-      indexToRemove = rankedQueue6Players.findIndex(player => player.id === userName);
-      if (indexToRemove !== -1) {
-        rankedQueue6Players.splice(indexToRemove, 1);
-      }
+      // const userName = this.request.user.username.toLowerCase();
+      // let indexToRemove: number = unrankedQueue6Players.findIndex(player => player.id === userName);
+      // if (indexToRemove !== -1) {
+      //   unrankedQueue6Players.splice(indexToRemove, 1);
+      // }
+      // indexToRemove = rankedQueue6Players.findIndex(player => player.id === userName);
+      // if (indexToRemove !== -1) {
+      //   rankedQueue6Players.splice(indexToRemove, 1);
+      // }
 
       // join the room chat
       this.join(roomId);

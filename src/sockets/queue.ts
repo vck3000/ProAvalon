@@ -3,6 +3,7 @@ import { SocketUser } from './types';
 
 import { AVALON } from '../gameplay/gameModes';
 
+// @ts-ignore
 import debounce from 'lodash.debounce';
 
 import { MatchMakingQueueItem } from '../match/MatchMakingQueueItem';
@@ -147,6 +148,9 @@ function readyUnrankedGame(dataObj: { playerReady: any; }) {
     startQueueGame([...readyPlayersFor6UQ], 'unranked');
     readyPlayersFor6UQ = [];
     prospectivePlayersFor6UQ = [];
+    console.log("UQ:");
+    console.log(prospectivePlayersFor6UQ);
+    console.log(readyPlayersFor6UQ);
     clearTimeout(timeout);
   }
   return;
@@ -159,6 +163,12 @@ function startQueueGame(inGameQueue: MatchMakingQueueItem[], ranked: String) {
   // create new room
   console.log("List of inGameQueue");
   console.log(inGameQueue);
+  console.log("UQ:");
+  console.log(prospectivePlayersFor6UQ);
+  console.log(readyPlayersFor6UQ);
+  console.log("RQ:");
+  console.log(prospectivePlayersFor6RQ);
+  console.log(readyPlayersFor6RQ);
   const socket = getSocketFromUsername(inGameQueue[0].username);
   const nextRoomId = newQueueRoom(socket, inGameQueue, ranked);
   console.log(
@@ -207,6 +217,7 @@ function newQueueRoom(socket: SocketUser, inGameQueue: MatchMakingQueueItem[], r
 // add players to the room
 function joinQueueRoomAndSitDown(roomId: number, playerSocket: SocketUser) {
   if (!rooms[roomId]) {
+    console.log("Room does not exist!");
     return;
   }
   const boundJoinRoom = joinRoom.bind(playerSocket);
@@ -278,6 +289,7 @@ setInterval(() => {
   }
 }, 3000);
 
+// @ts-ignore
 const debouncedMatch = () => debounce(checkForRankedConfirmation(), 3000)
 
 // Ask each player to confirm they are ready to join
@@ -371,6 +383,9 @@ function readyRankedGame(dataObj: { playerReady: any; }) {
     startQueueGame([...readyPlayersFor6RQ], 'ranked');
     readyPlayersFor6RQ = [];
     prospectivePlayersFor6RQ = [];
+    console.log("RQ:");
+    console.log(prospectivePlayersFor6RQ);
+    console.log(readyPlayersFor6RQ);
     clearTimeout(timeout2);
   }
   return;
