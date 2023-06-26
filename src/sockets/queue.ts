@@ -52,7 +52,7 @@ function joinUnrankedQueue(dataObj: { numPlayers: number; }) {
     console.log(unrankedQueue6Players.map((player) => player.username));
     // if number of players in queue < 6, return null
     // Second if checks if there are enough players for a six-player game
-    if (unrankedQueue6Players.length >= 6) {
+    if (unrankedQueue6Players.length >= 6 && prospectivePlayersFor6UQ.length == 0 && readyPlayersFor6UQ.length == 0) {
       checkForUnrankedConfirmation();
     } else {
       return;
@@ -81,6 +81,9 @@ function checkForUnrankedConfirmation() {
       unrankedQueue6Players.push(...readyPlayersFor6UQ);
       readyPlayersFor6UQ = [];
       prospectivePlayersFor6UQ = [];
+    }
+    if (unrankedQueue6Players.length >= 6 && prospectivePlayersFor6UQ.length == 0 && readyPlayersFor6UQ.length == 0) {
+      checkForUnrankedConfirmation();
     }
   }, 120000)
 
@@ -129,7 +132,7 @@ function readyUnrankedGame(dataObj: { playerReady: any; }) {
     prospectivePlayersFor6UQ = [];
     readyPlayersFor6UQ = [];
     unrankedQueue6Players.sort((a, b) => a.timeJoinedAt - b.timeJoinedAt);
-    if (unrankedQueue6Players.length >= 6) {
+    if (unrankedQueue6Players.length >= 6 && prospectivePlayersFor6UQ.length == 0 && readyPlayersFor6UQ.length == 0) {
       checkForUnrankedConfirmation();
     }
   } else if (selectedProspectivePlayer === -1) {
@@ -152,6 +155,9 @@ function readyUnrankedGame(dataObj: { playerReady: any; }) {
     console.log(prospectivePlayersFor6UQ);
     console.log(readyPlayersFor6UQ);
     clearTimeout(timeout);
+    if (unrankedQueue6Players.length >= 6 && prospectivePlayersFor6UQ.length == 0 && readyPlayersFor6UQ.length == 0) {
+      checkForUnrankedConfirmation();
+    }
   }
   return;
 }
@@ -272,7 +278,7 @@ function joinRankedQueue(dataObj: { numPlayers: number; }) {
     console.log(rankedQueue6Players.map((player) => player.username));
     // if number of players in queue < 6, return null
     // Second if checks if there are enough players for a six-player game
-    if (rankedQueue6Players.length >= 6) {
+    if (rankedQueue6Players.length >= 6 && prospectivePlayersFor6RQ.length == 0 && readyPlayersFor6RQ.length == 0) {
       isMatching = true
       checkForRankedConfirmation();
     } else {
@@ -316,6 +322,10 @@ function checkForRankedConfirmation() {
       rankedQueue6Players.push(...readyPlayersFor6RQ);
       readyPlayersFor6RQ = [];
       prospectivePlayersFor6RQ = [];
+    if (rankedQueue6Players.length >= 6 && prospectivePlayersFor6RQ.length == 0 && readyPlayersFor6RQ.length == 0) {
+      isMatching = true
+      checkForRankedConfirmation();
+    }
     }
   }, 120000)
 }
@@ -359,12 +369,14 @@ function readyRankedGame(dataObj: { playerReady: any; }) {
       ...readyPlayersFor6RQ
     ];
     prospectivePlayersFor6RQ = [];
-    readyPlayersFor6RQ = [];
-    if (rankedQueue6Players.length >= 6) {
+    readyPlayersFor6RQ = [];   
+    if (rankedQueue6Players.length >= 6 && prospectivePlayersFor6RQ.length == 0 && readyPlayersFor6RQ.length == 0) {
+      isMatching = true
       checkForRankedConfirmation();
     }
-    rankedQueue6Players.sort((a, b) => a.playerRating - b.playerRating);
-    if (rankedQueue6Players.length >= 6) {
+    rankedQueue6Players.sort((a, b) => a.playerRating - b.playerRating);    
+    if (rankedQueue6Players.length >= 6 && prospectivePlayersFor6RQ.length == 0 && readyPlayersFor6RQ.length == 0) {
+      isMatching = true
       checkForRankedConfirmation();
     }
   } else if (selectedProspectivePlayer === -1) {
@@ -387,6 +399,10 @@ function readyRankedGame(dataObj: { playerReady: any; }) {
     console.log(prospectivePlayersFor6RQ);
     console.log(readyPlayersFor6RQ);
     clearTimeout(timeout2);
+    if (rankedQueue6Players.length >= 6 && prospectivePlayersFor6RQ.length == 0 && readyPlayersFor6RQ.length == 0) {
+      isMatching = true
+      checkForRankedConfirmation();
+    }
   }
   return;
 }
