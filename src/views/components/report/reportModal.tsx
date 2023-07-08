@@ -102,6 +102,8 @@ export function ReportModal() {
       >
         <h2>Report</h2>
         <br />
+        <h5><b>This report form is only for data collection purposes.</b><br/>
+          Please make a ticket through the official discord server to make a report.</h5>
         <form onSubmit={submitForm}>
           <label>Select A Player: </label>
           <br />
