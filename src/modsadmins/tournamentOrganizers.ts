@@ -8,7 +8,6 @@ export const TOsArray = [
   'goofy',
   'starkrush',
   'secretaccount8594',
-  'not.me',
   'pat',
 
   // Ref-rain's TOs
