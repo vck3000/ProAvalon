@@ -14,6 +14,7 @@ export const TOsArray = [
   'ref-rain',
   'wolfbloodwitch',
   'altwoa',
+  'bremen',
 ];
 
 export function isTO(username: string): boolean {
