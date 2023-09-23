@@ -5,12 +5,14 @@ import { aresetpassword } from './aresetpassword';
 import { Commands } from '../types';
 import { atestgame } from './atestgame';
 import { acreatetestaccounts } from './acreatetestaccounts';
+import { aresetcoachaccounts } from './aresetcoachaccounts';
 
 export const adminCommands: Commands = {
   [a.command]: a,
+  [acreatetestaccounts.command]: acreatetestaccounts,
   [aemailtousername.command]: aemailtousername,
   [aip.command]: aip,
+  [aresetcoachaccounts.command]: aresetcoachaccounts,
   [aresetpassword.command]: aresetpassword,
   [atestgame.command]: atestgame,
-  [acreatetestaccounts.command]: acreatetestaccounts,
 };
