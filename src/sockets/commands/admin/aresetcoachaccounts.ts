@@ -6,7 +6,7 @@ import crypto from 'crypto';
 
 export const aresetcoachaccounts: Command = {
   command: 'aresetcoachaccounts',
-  help: '/aresetcoachaccounts: Deletes and recreates coach accounts: coach1, coach2, ..., coach10. Passwords are the username.',
+  help: '/aresetcoachaccounts: Deletes and recreates coach accounts: coach1, coach2, ..., coach10.',
   run: async (args: string[], socket: SocketUser) => {
     const deletedMsgs = [];
     const createdMsgs = [];
