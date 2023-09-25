@@ -7,12 +7,12 @@ export const aemailtousername: Command = {
   command: 'aemailtousername',
   help: '/aemailtousername <email>: lookup a username from their email',
   run: async (args: string[], socket: SocketUser) => {
-    const email = args[1];
-
-    if (!email) {
-      sendReplyToCommand(socket, 'Specify an email address');
+    if (args.length < 2) {
+      sendReplyToCommand(socket, 'Specify an email address.');
       return;
     }
+
+    const email = args[1];
 
     const user = await User.findOne({
       emailAddress: email.toLowerCase(),

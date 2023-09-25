@@ -82,7 +82,7 @@ router.post(
       username: req.body.username,
       usernameLower: req.body.username.toLowerCase(),
       dateJoined: new Date(),
-      emailAddress: req.body.emailAddress,
+      emailAddress: req.body.emailAddress.toLowerCase(),
     });
 
     if (req.body.username.indexOf(' ') !== -1) {

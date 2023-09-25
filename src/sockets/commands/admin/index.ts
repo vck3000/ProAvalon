@@ -6,6 +6,7 @@ import { Commands } from '../types';
 import { atestgame } from './atestgame';
 import { acreatetestaccounts } from './acreatetestaccounts';
 import { aresetcoachaccounts } from './aresetcoachaccounts';
+import { ausernametoemail } from './ausernametoemail';
 
 export const adminCommands: Commands = {
   [a.command]: a,
@@ -15,4 +16,5 @@ export const adminCommands: Commands = {
   [aresetcoachaccounts.command]: aresetcoachaccounts,
   [aresetpassword.command]: aresetpassword,
   [atestgame.command]: atestgame,
+  [ausernametoemail.command]: ausernametoemail,
 };
