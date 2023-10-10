@@ -1,12 +1,6 @@
 // all in lower case
 // TO = Tournament Organizer
-export const TOsArray = [
-  'glorious',
-  'wolfbloodwitch',
-  'altwoa',
-  'bremen',
-  'pat',
-];
+export const TOsArray = [];
 
 export function isTO(username: string): boolean {
   return TOsArray.includes(username.toLowerCase());
