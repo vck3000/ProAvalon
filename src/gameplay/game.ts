@@ -1900,7 +1900,7 @@ class Game extends Room {
   }
 
   updateMuteSpectators(muteSpectators: boolean) {
-    if (this.gameStarted == false) {
+    if (this.gameStarted === false) {
       this.muteSpectators = muteSpectators;
 
       this.sendText(
