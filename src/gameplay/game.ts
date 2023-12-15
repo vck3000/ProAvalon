@@ -1900,13 +1900,15 @@ class Game extends Room {
   }
 
   updateMuteSpectators(muteSpectators: boolean) {
-    this.muteSpectators = muteSpectators;
+    if (this.gameStarted === false) {
+      this.muteSpectators = muteSpectators;
 
-    this.sendText(
-      this.allSockets,
-      `Mute spectators option set to ${muteSpectators}.`,
-      'server-text',
-    );
+      this.sendText(
+          this.allSockets,
+          `Mute spectators option set to ${muteSpectators}.`,
+          'server-text',
+      );
+    }
   }
 
   updateDisableVoteHistory(disableVoteHistory: boolean) {
