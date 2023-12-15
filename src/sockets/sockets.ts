@@ -36,6 +36,7 @@ import { mrevealallroles } from './commands/mod/mrevealallroles';
 import { lastWhisperObj } from './commands/mod/mwhisper';
 import * as util from 'util';
 import { roomCreationTypeEnum } from '../gameplay/roomTypes';
+import { MatchFoundCallback, Matchmaking } from './matchmaking';
 
 const chatSpamFilter = new ChatSpamFilter();
 if (process.env.NODE_ENV !== 'test') {
@@ -43,6 +44,14 @@ if (process.env.NODE_ENV !== 'test') {
     chatSpamFilter.tick();
   }, 1000);
 }
+
+const matchFoundCallback: MatchFoundCallback = function (users) {
+  // Create a game room and store the room number in X
+  // Get the 6 player sockets
+  // Send a message to every one of them to tell them to join game room X
+  // Start the game
+};
+const matchMakingQueue6P = new Matchmaking(matchFoundCallback);
 
 const quote = new Quote();
 
@@ -1379,6 +1388,9 @@ export const server = function (io: SocketServer): void {
     socket.on('join-game', joinGame);
     socket.on('standUpFromGame', standUpFromGame);
 
+    // Matchmaking messages
+    socket.on('join-matchmaking-queue', joinMatchmakingQueue);
+
     // when a player leaves a room
     socket.on('leave-room', leaveRoom);
     socket.on('player-ready', playerReady);
@@ -1761,6 +1773,7 @@ function disconnect(data) {
   console.log(`${this.request.user.username} has left the lobby.`);
 
   chatSpamFilter.disconnectUser(this.request.user.username);
+  matchMakingQueue6P.removeUser(this.request.user.username);
 
   allSockets.splice(allSockets.indexOf(this), 1);
 
@@ -2137,6 +2150,11 @@ function standUpFromGame() {
       // console.log("Game has started, player " + this.request.user.username + " is not allowed to stand up.");
     }
   }
+}
+
+function joinMatchmakingQueue() {
+  matchMakingQueue6P.addUserToQueue(this.request.user.username);
+  // Maybe you'll want to send a message back to the user.
 }
 
 function leaveRoom() {
