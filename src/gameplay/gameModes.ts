@@ -7,7 +7,7 @@ import { getCards as avalonBotGetCards } from './avalonBot/indexCards';
 
 export const AVALON = 'avalon';
 export const AVALON_BOT = 'avalonBot';
-export const GAME_MODE_NAMES = [AVALON, AVALON_BOT];
+export const GAME_MODE_NAMES = [AVALON /*, AVALON_BOT*/];
 
 export const isGameMode = (gameMode: string) => {
   return GAME_MODE_NAMES.indexOf(gameMode) !== -1;
