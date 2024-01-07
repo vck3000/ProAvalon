@@ -297,6 +297,8 @@ class Room {
     if (this.gameStarted && this.gameStarted === true) {
       this.addToChatHistory(data);
     }
+
+    console.log(`[Room Chat] [Room ${this.roomId}] ${incString}`);
   }
 
   updateRoomPlayers() {
@@ -678,7 +680,7 @@ class Room {
           if (playerSocket.isBotSocket) {
             playerSocket.handleReadyNotReady(
               thisGame,
-              function (botReady, reason) {
+              function(botReady, reason) {
                 if (botReady) {
                   thisGame.playerReady(playerSocket.request.user.username);
                 } else {

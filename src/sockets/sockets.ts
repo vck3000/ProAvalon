@@ -1362,24 +1362,14 @@ export const server = function (io: SocketServer): void {
 
     socket.on('disconnect', disconnect);
 
-    //=======================================
-    // COMMANDS
-    //=======================================
-
     socket.on('messageCommand', messageCommand);
     socket.on('interactUserPlayed', interactUserPlayed);
-    // when a user tries to send a message to all chat
     socket.on('allChatFromClient', allChatFromClient);
-    // when a user tries to send a message to room
     socket.on('roomChatFromClient', roomChatFromClient);
-    // when a new room is created
     socket.on('newRoom', newRoom);
-    // when a player joins a room
     socket.on('join-room', joinRoom);
     socket.on('join-game', joinGame);
     socket.on('standUpFromGame', standUpFromGame);
-
-    // when a player leaves a room
     socket.on('leave-room', leaveRoom);
     socket.on('player-ready', playerReady);
     socket.on('player-not-ready', playerNotReady);
@@ -1391,9 +1381,6 @@ export const server = function (io: SocketServer): void {
     socket.on('update-room-muteSpectators', updateRoomMuteSpectators);
     socket.on('update-room-disableVoteHistory', updateRoomDisableVoteHistory);
 
-    //************************
-    // game data stuff
-    //************************
     socket.on('gameMove', gameMove);
     socket.on('setClaim', setClaim);
   });
@@ -2243,9 +2230,9 @@ function setClaim(data) {
 }
 
 function gameMove(data) {
-  // console.log(data);
   if (rooms[this.request.user.inRoomId]) {
     rooms[this.request.user.inRoomId].gameMove(this, data);
+
     if (rooms[this.request.user.inRoomId]) {
       if (rooms[this.request.user.inRoomId].finished === true) {
         deleteSaveGameFromDb(rooms[this.request.user.inRoomId]);
