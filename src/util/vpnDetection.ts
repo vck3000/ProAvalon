@@ -8,6 +8,9 @@ if (process.env.WHITELISTED_VPN_USERNAMES) {
 const vpnCache: Map<string, boolean> = new Map();
 
 const isVPN = async (ip: string): Promise<boolean> => {
+  // Temporarily disable VPN checking
+  return false;
+
   if (vpnCache.has(ip)) {
     return vpnCache.get(ip);
   }
