@@ -39,8 +39,23 @@ VotingMission.prototype.gameMove = function (
           'You are resistance! Surely you want to succeed!',
         );
         return;
+      } else if (buttonPressed === 'no') {
+      // If the user is Guinevere, they shouldn't be allowed to fail
+      const index = usernamesIndexes.getIndexFromUsername(
+        this.thisRoom.playersInGame,
+        socket.request.user.username,
+      );
+      if (
+        index !== -1 &&
+        this.thisRoom.playersInGame[index].role === 'Guinevere'
+      ) {
+        socket.emit(
+          'danger-alert',
+          'You are Guinevere! You cannot fail the mission yourself!',
+        );
+        return;
       }
-
+     
       this.thisRoom.missionVotes[
         usernamesIndexes.getIndexFromUsername(
           this.thisRoom.playersInGame,

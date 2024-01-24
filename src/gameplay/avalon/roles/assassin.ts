@@ -29,9 +29,11 @@ class Assassin implements Role {
       const array = [];
 
       for (let i = 0; i < this.room.playersInGame.length; i++) {
-        if (this.room.playersInGame[i].alliance === 'Spy') {
-          if (this.room.playersInGame[i].role === 'Oberon') {
+        if (this.thisRoom.playersInGame[i].alliance === 'Spy') {
+          if (this.thisRoom.playersInGame[i].role === 'Oberon') {
             // don't add oberon
+          } else if (this.thisRoom.playersInGame[i].role === 'Guinevere') {
+            // don't add guinevere
           } else {
             // add the spy
             array.push(this.room.playersInGame[i].username);
