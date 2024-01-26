@@ -12,4 +12,9 @@ class Settings {
   }
 }
 
-export default new Settings();
+const settingsSingleton = new Settings();
+if (process.env.ENV != 'prod') {
+  settingsSingleton.toggleDisableRegistration();
+}
+
+export default settingsSingleton;
