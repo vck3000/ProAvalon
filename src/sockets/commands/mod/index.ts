@@ -7,6 +7,7 @@ import { mcompareips } from './mcompareips';
 import { mdc } from './mdc';
 import { mnotify } from './mnotify';
 import { mtoggleregistration } from './mtoggleregistration';
+import { mtempenableregistration } from './mtempenableregistration';
 import { mwhisper } from './mwhisper';
 import { mremoveavatar } from './mremoveavatar';
 import { mclose } from './mclose';
@@ -26,6 +27,7 @@ export const modCommands: Commands = {
   [mdc.command]: mdc,
   [mnotify.command]: mnotify,
   [mtoggleregistration.command]: mtoggleregistration,
+  [mtempenableregistration.command]: mtempenableregistration,
   [mwhisper.command]: mwhisper,
   [mremoveavatar.command]: mremoveavatar,
   [mclose.command]: mclose,

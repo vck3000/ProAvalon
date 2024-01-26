@@ -914,9 +914,9 @@ function disableRegistrationMiddleware(req, res, next) {
   if (Settings.getDisableRegistration()) {
     req.flash(
       'error',
-      'Registration is temporarily disabled. Please contact a mod if you would like to create an account.',
+      'Registration is temporarily disabled. Please contact a moderator via discord if you would like to create an account.',
     );
-    res.redirect('register');
+    res.redirect('/');
     return;
   }
 
