@@ -36,6 +36,16 @@ import MongoDBStoreFactory from 'connect-mongodb-session';
 
 const assetsPath = path.join(__dirname, '../assets');
 
+// Die if env var isn't given in
+if (
+  process.env.ENV !== 'local' &&
+  process.env.ENV !== 'staging' &&
+  process.env.ENV !== 'prod'
+) {
+  console.error('Bad environment variable given.');
+  process.exit(1);
+}
+
 const app = express();
 app.use(compression());
 app.use(express.static(assetsPath, { maxAge: 518400000 })); // expires in 7 days.
