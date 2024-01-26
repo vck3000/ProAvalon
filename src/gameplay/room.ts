@@ -2,9 +2,14 @@
 import { AVALON, AVALON_BOT, GAME_MODE_NAMES, gameModeObj } from './gameModes';
 import commonPhasesIndex from './indexCommonPhases';
 import usernamesIndexes from '../myFunctions/usernamesIndexes';
+import { SocketUser } from '../sockets/types';
 
 class Room {
   host: string;
+  roomId: number;
+  allSockets: SocketUser[];
+  socketsOfPlayers: SocketUser[];
+  botSockets: Socket[];
 
   constructor(
     host_: string,

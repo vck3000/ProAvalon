@@ -32,6 +32,8 @@ class Game extends Room {
   // Used for bots to callback moves
   interval: NodeJS.Timeout;
 
+  botSockets: any;
+
   constructor(
     host_,
     roomId_,
