@@ -16,6 +16,8 @@ import { modOrTOString } from '../modsadmins/modOrTO';
 import { getRoomTypeFromString, roomCreationTypeEnum } from './roomTypes';
 import { gameModeObj } from './gameModes';
 
+export const WAITING = 'Waiting';
+
 class Game extends Room {
   gameStarted = false;
   finished = false;
@@ -1160,7 +1162,7 @@ class Game extends Room {
       return 'Game in progress';
     }
 
-    return 'Waiting';
+    return WAITING;
   }
 
   finishGame(toBeWinner) {
@@ -1904,9 +1906,9 @@ class Game extends Room {
       this.muteSpectators = muteSpectators;
 
       this.sendText(
-          this.allSockets,
-          `Mute spectators option set to ${muteSpectators}.`,
-          'server-text',
+        this.allSockets,
+        `Mute spectators option set to ${muteSpectators}.`,
+        'server-text',
       );
     }
   }

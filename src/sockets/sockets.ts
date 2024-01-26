@@ -19,7 +19,7 @@ import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import { GAME_MODE_NAMES, isGameMode } from '../gameplay/gameModes';
 
-import { ChatSpamFilter } from './chatSpamFilter';
+import { ChatSpamFilter } from './filters/chatSpamFilter';
 import { MessageWithDate, Quote } from './quote';
 import {
   APIBotSocket,
@@ -36,8 +36,11 @@ import { mrevealallroles } from './commands/mod/mrevealallroles';
 import { lastWhisperObj } from './commands/mod/mwhisper';
 import * as util from 'util';
 import { roomCreationTypeEnum } from '../gameplay/roomTypes';
+import { CreateRoomFilter } from './filters/createRoomFilter';
 
 const chatSpamFilter = new ChatSpamFilter();
+const createRoomFilter = new CreateRoomFilter();
+
 if (process.env.NODE_ENV !== 'test') {
   setInterval(() => {
     chatSpamFilter.tick();
@@ -1998,6 +2001,12 @@ function outputSpamMessage(chat, user) {
 
 function newRoom(dataObj) {
   if (dataObj && !this.request.user.inRoomId) {
+    const username = this.request.user.usernameLower;
+
+    if (!createRoomFilter.createRoomRequest(username, rooms)) {
+      return;
+    }
+
     dataObj.maxNumPlayers = parseInt(dataObj.maxNumPlayers, 10);
     if (isNaN(dataObj.maxNumPlayers)) {
       return;

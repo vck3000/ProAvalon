@@ -1,16 +1,19 @@
+// @ts-nocheck
 import { AVALON, AVALON_BOT, GAME_MODE_NAMES, gameModeObj } from './gameModes';
 import commonPhasesIndex from './indexCommonPhases';
 import usernamesIndexes from '../myFunctions/usernamesIndexes';
 
 class Room {
+  host: string;
+
   constructor(
-    host_,
-    roomId_,
+    host_: string,
+    roomId_: number,
     io_,
-    maxNumPlayers_,
-    newRoomPassword_,
-    gameMode_,
-    ranked_,
+    maxNumPlayers_: number,
+    newRoomPassword_: string,
+    gameMode_: string,
+    ranked_: bool,
   ) {
     const thisRoom = this;
 
@@ -680,7 +683,7 @@ class Room {
           if (playerSocket.isBotSocket) {
             playerSocket.handleReadyNotReady(
               thisGame,
-              function(botReady, reason) {
+              function (botReady, reason) {
                 if (botReady) {
                   thisGame.playerReady(playerSocket.request.user.username);
                 } else {
