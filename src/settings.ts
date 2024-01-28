@@ -1,7 +1,7 @@
 // Global settings that can be controlled through commands
 
 class Settings {
-  private disableRegistration = true;
+  private disableRegistration = false;
 
   getDisableRegistration(): boolean {
     return this.disableRegistration;
