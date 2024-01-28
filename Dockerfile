@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # DEVELOPMENT BUILD
-from node:18.14.2 as build
+from node:18.19.0 as build
 ENV NODE_ENV=development
 WORKDIR /app
 
@@ -15,7 +15,7 @@ COPY ./src ./src
 RUN yarn build
 
 # PRODUCTION BUILD
-from node:18.14.2-alpine3.11 as production
+from node:18.19.0-alpine3.18 as production
 ENV NODE_ENV=production
 WORKDIR /app
 
