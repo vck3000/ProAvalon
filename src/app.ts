@@ -117,6 +117,9 @@ process
       'reason:'
       ${reason}
 
+      'reason.details:'
+      ${reason.details}
+
       'reason.stack:'
       ${reason.stack}`;
 
