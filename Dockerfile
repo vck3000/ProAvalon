@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # DEVELOPMENT BUILD
-from node:16.3.0 as build
+from node:18.14.2 as build
 ENV NODE_ENV=development
 WORKDIR /app
 
