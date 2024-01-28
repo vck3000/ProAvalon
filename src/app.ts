@@ -33,6 +33,7 @@ import modRoutes from './routes/mod';
 import staticifyFactory from 'staticify';
 // Create a MongoDB session store
 import MongoDBStoreFactory from 'connect-mongodb-session';
+import { SESSIONS_COLLECTION_NAME } from './constants';
 
 const assetsPath = path.join(__dirname, '../assets');
 
@@ -86,8 +87,7 @@ if (process.env.ENV === 'local') {
 }
 
 const port = process.env.PORT || 3000;
-const dbLoc =
-  process.env.DATABASEURL || 'mongodb://localhost/TheNewResistanceUsers';
+const dbLoc = process.env.DATABASEURL;
 console.log(`Using database url: ${dbLoc}`);
 
 mongoose.connect(dbLoc, {
@@ -98,7 +98,7 @@ const MongoDBStore = MongoDBStoreFactory(session);
 
 const store = new MongoDBStore({
   uri: dbLoc,
-  collection: 'mySessions',
+  collection: SESSIONS_COLLECTION_NAME,
 });
 
 // Catch errors

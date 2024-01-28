@@ -19,11 +19,6 @@ const router = new Router();
 
 // Index route
 router.get('/', (req, res) => {
-  // Delete the session to force a relogin.
-  if (req.session) {
-    req.session.destroy();
-  }
-
   res.render('index');
 });
 
@@ -358,10 +353,6 @@ const anonymizeStats = function (records) {
   }
   return anonymizedRecords;
 };
-
-router.get('/gameRecordsData', (req, res) => {
-  res.download('assets/gameRecordsData/gameRecordsDataAnon.json');
-});
 
 const hardUpdateStatsFunction = function () {
   console.log('Starting hard update stats...');

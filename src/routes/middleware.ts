@@ -42,14 +42,18 @@ export const isLoggedIn = asyncMiddleware(async (req, res, next) => {
   res.locals.mod = isMod(user.username);
   res.locals.isMod = isMod(user.username);
 
+  // Tag the session document in MongoDb with their username
+  // to be able to look it up later when invalidating sessions.
+  if (!req.session.usernameLower) {
+    req.session.usernameLower = user.usernameLower;
+    await req.session.save();
+  }
+
   if (req.session.banCheckPassed === true) {
     next();
   } else {
-    console.log('CHECKING BANS');
     const clientIpAddress =
       req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    // const clientIpAddress = req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    // console.log(clientIpAddress);
 
     // Track IPs
     if (
@@ -62,14 +66,13 @@ export const isLoggedIn = asyncMiddleware(async (req, res, next) => {
 
       user.lastIPAddress = clientIpAddress;
       user.markModified('lastIPAddress');
-      user.save();
+      await user.save();
     }
 
     // Don't check over multiple times. Once is enough per person per request.
     if (!res.locals.bansChecked) {
       res.locals.bansChecked = true;
-      // Check bans!!!
-      // USER ban
+      // Check bans
       const ban = await Ban.findOne({
         'bannedPlayer.id': user._id, // User ID match
         whenRelease: { $gt: new Date() }, // Unexpired ban
@@ -86,7 +89,6 @@ export const isLoggedIn = asyncMiddleware(async (req, res, next) => {
       }
 
       if (clientIpAddress !== null && clientIpAddress !== undefined) {
-        console.log('Checking bans');
         // IP ban
         const ban = await Ban.findOne({
           bannedIPs: clientIpAddress, // IP match

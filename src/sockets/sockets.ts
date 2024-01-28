@@ -2300,6 +2300,17 @@ export const GetUserCurrentRoom = (username: string) => {
     .user.inRoomId;
 };
 
+export const DisconnectUserSocket = (username: string): bool => {
+  const index = getIndexFromUsername(allSockets, username, true);
+  if (!index) {
+    return false;
+  }
+
+  const targetSocket = allSockets[index];
+  targetSocket.disconnect(true);
+  return true;
+};
+
 export const GetRoomChat = (roomId: number) => {
   return rooms[roomId].chatHistory;
 };

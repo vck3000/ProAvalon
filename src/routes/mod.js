@@ -8,14 +8,17 @@ import Ban from '../models/ban';
 import ModLog from '../models/modLog';
 import Report from '../models/report';
 import {
+  DisconnectUserSocket,
   GetLastFiveMinsAllChat as GetLastFiveMinsAllChat,
-  GetUserCurrentRoom,
   GetRoom,
   GetRoomChat,
+  GetUserCurrentRoom,
 } from '../sockets/sockets';
 
 import ModLogComponent from '../views/components/mod/mod_log';
 import ReportLog from '../views/components/mod/report';
+import { MongoClient } from 'mongodb';
+import { SESSIONS_COLLECTION_NAME } from '../constants';
 
 const router = new Router();
 
@@ -87,12 +90,13 @@ router.post('/ban', isModMiddleware, async (req, res) => {
       return;
     }
 
+    const banPlayerUsername = req.body['banPlayerUsername'];
     const banUser = await User.findOne({
-      usernameLower: req.body['banPlayerUsername'].toLowerCase(),
+      usernameLower: banPlayerUsername.toLowerCase(),
     });
     if (!banUser) {
       res.status(400);
-      res.send(`${req.body['banPlayerUsername']} was not found.`);
+      res.send(`${banPlayerUsername} was not found.`);
       return;
     }
 
@@ -181,8 +185,24 @@ router.post('/ban', isModMiddleware, async (req, res) => {
       dateCreated: new Date(),
     });
 
+    // Delete all the sessions associated with this username
+    const dbResult = await MongoClient.connect(process.env.DATABASEURL);
+    const mySessions = dbResult.db().collection(SESSIONS_COLLECTION_NAME);
+    const deleteResult = await mySessions.deleteMany({
+      'session.usernameLower': banPlayerUsername.toLowerCase(),
+    });
+
+    const disconnectedSocket = DisconnectUserSocket(
+      banPlayerUsername.toLowerCase(),
+    );
+    const disconnectedMessage = disconnectedSocket
+      ? 'and disconnected their socket.'
+      : "but couldn't find a logged in socket to disconnect.";
+
     res.status(200);
-    res.send('The ban was successfully made.');
+    res.send(
+      `The ban was successfully made. Deleted ${deleteResult.deletedCount} sessions ${disconnectedMessage}`,
+    );
     return;
   } catch (e) {
     console.log(e);
