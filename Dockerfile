@@ -15,7 +15,7 @@ COPY ./src ./src
 RUN yarn build
 
 # PRODUCTION BUILD
-from node:16.3.0-alpine3.11 as production
+from node:18.14.2-alpine3.11 as production
 ENV NODE_ENV=production
 WORKDIR /app
 
