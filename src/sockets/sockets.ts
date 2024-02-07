@@ -133,43 +133,39 @@ function deleteSaveGameFromDb(room) {
   }
 }
 
-if (process.env.NODE_ENV !== 'test') {
-  setTimeout(async () => {
-    console.log('Loading save games');
-    let run = true;
-    let i = 0;
-    while (run) {
-      await new Promise((resolve) => {
-        savedGameObj
-          .find({})
-          .skip(i)
-          .limit(1)
-          .exec((err, foundSaveGameArr) => {
-            const foundSaveGame = foundSaveGameArr[0];
+setTimeout(async () => {
+  let run = true;
+  let i = 0;
+  while (run) {
+    await new Promise((resolve) => {
+      savedGameObj
+        .find({})
+        .skip(i)
+        .limit(1)
+        .exec((err, foundSaveGameArr) => {
+          const foundSaveGame = foundSaveGameArr[0];
 
-            if (foundSaveGame && foundSaveGame.room) {
-              const storedData = JSON.parse(foundSaveGame.room);
-              console.log('Loaded room ' + storedData.roomId);
+          if (foundSaveGame && foundSaveGame.room) {
+            const storedData = JSON.parse(foundSaveGame.room);
+            console.log('Loaded room ' + storedData.roomId);
 
-              rooms[storedData.roomId] = new gameRoom();
+            rooms[storedData.roomId] = new gameRoom();
 
-              Object.assign(rooms[storedData.roomId], storedData);
+            Object.assign(rooms[storedData.roomId], storedData);
 
-              rooms[storedData.roomId].savedGameRecordId = foundSaveGame.id;
-              rooms[storedData.roomId].recoverGame(storedData);
-              rooms[storedData.roomId].callback = socketCallback;
-            } else {
-              console.log('Finishing load save game');
-              run = false;
-            }
-            resolve();
-          });
-      });
+            rooms[storedData.roomId].savedGameRecordId = foundSaveGame.id;
+            rooms[storedData.roomId].recoverGame(storedData);
+            rooms[storedData.roomId].callback = socketCallback;
+          } else {
+            run = false;
+          }
+          resolve();
+        });
+    });
 
-      i += 1;
-    }
-  }, 1000);
-}
+    i += 1;
+  }
+}, 1000);
 
 const pmmodCooldowns = {};
 const PMMOD_TIMEOUT = 3000; // 3 seconds
@@ -1223,10 +1219,6 @@ export const server = function (io: SocketServer): void {
 
     // slight delay while client loads
     setTimeout(() => {
-      console.log(
-        `${socket.request.user.username} has connected under socket ID: ${socket.id}`,
-      );
-
       // send the user its ID to store on their side.
       socket.emit('username', socket.request.user.username);
       // send the user the list of commands
@@ -1603,7 +1595,9 @@ export function sendToAllChat(io, data) {
     sock.emit('allChatToClient', data);
   });
 
-  console.log(`[All Chat] ${data.message}`);
+  console.log(
+    `[All Chat] ${data.username ? `${data.username}: ` : ''}${data.message}`,
+  );
 
   allChat5Min.push(data);
 
@@ -1868,9 +1862,6 @@ function prohibitedChat(message) {
 }
 
 function allChatFromClient(data) {
-  console.log(`[All Chat] ${this.request.user.username}: ${data.message}`);
-  // get the username and put it into the data object
-
   const validUsernames = getPlayerUsernamesFromAllSockets();
 
   // if the username is not valid, i.e. one that they actually logged in as
@@ -2112,12 +2103,7 @@ function joinRoom(roomId, inputPassword) {
 function joinGame(roomId) {
   if (rooms[roomId] && this.request.user.inRoomId === roomId) {
     if (rooms[roomId].getStatus() === 'Waiting') {
-      const ToF = rooms[roomId].playerSitDown(this);
-      console.log(
-        `${this.request.user.username} has joined room ${roomId}: ${ToF}`,
-      );
-    } else {
-      // console.log("Game has started, player " + this.request.user.username + " is not allowed to join.");
+      rooms[roomId].playerSitDown(this);
     }
   }
 }
