@@ -359,20 +359,17 @@
         $('#biography').summernote();
         // $('.commentReply').summernote();
 
-
         $('#hideStats').prop('checked', '<%=userData.hideStats%>');
 
-        
-        var nationCode = '<%=userData.nationCode%>.toUpperCase()';
+        var nationCode = '<%=userData.nationCode.toUpperCase()%>';
         var nationality = '<%=userData.nationality%>';
 
         if(nationCode && nationality && nationCode !== '' && nationality !== ''){
-            console.log(      $("option:contains('" + nationality + "')")         );
-            $("option:contains('" + nationality + "')").attr("selected", "selected");
+            $(`option[value='${nationCode}']`).attr("selected", "selected");
             updateFlag();
         }
         else{
-            $("option:contains('United Nations')").attr("selected", "selected");
+          $(`option[value='UN']`).attr("selected", "selected");
             updateFlag();
         }
     });
@@ -383,7 +380,6 @@
         // console.log($("#selectNation").find(":selected").val());
         
         updateFlag();
-
     });
 
     function updateFlag(){
