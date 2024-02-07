@@ -1603,6 +1603,8 @@ export function sendToAllChat(io, data) {
     sock.emit('allChatToClient', data);
   });
 
+  console.log(`[All Chat] ${data.message}`);
+
   allChat5Min.push(data);
 
   let i = 0;
@@ -1621,6 +1623,7 @@ export function sendToAllChat(io, data) {
 
 function sendToRoomChat(io, roomId, data) {
   io.in(roomId).emit('roomChatToClient', data);
+  console.log(`[Room Chat] [Room ${roomId}] ${data.message}`);
   if (rooms[roomId]) {
     rooms[roomId].addToChatHistory(data);
   }

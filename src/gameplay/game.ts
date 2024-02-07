@@ -1130,24 +1130,6 @@ class Game extends Room {
     if (this.gameStarted === true) {
       this.chatHistory.push(data);
     }
-
-    if (data.message === '-teamleader') {
-      this.sendText(null, `Team leader is: ${this.teamLeader}`, 'server-text');
-    }
-    if (data.message === '-socketsofplayers') {
-      this.sendText(
-        null,
-        `Sockets of players length is: ${this.socketsOfPlayers.length}`,
-        'server-text',
-      );
-    }
-    if (data.message === '-playersingame') {
-      this.sendText(
-        null,
-        `Players in game length is: ${this.playersInGame.length}`,
-        'server-text',
-      );
-    }
   }
 
   getStatus() {
