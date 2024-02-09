@@ -13,6 +13,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
 
+  # When logging onto the webpage, username is `admin` and password is `pass`.
   mongo-express:
     image: mongo-express
     depends_on:
