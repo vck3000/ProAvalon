@@ -57,7 +57,7 @@ class LadyOfTheLake {
       numSuccess < 3 &&
       numFail < 3
     ) {
-      this.thisRoom.phase = Phase.lady;
+      this.thisRoom.changePhase(Phase.lady);
       this.lastMissionUsed = this.thisRoom.missionNum;
 
       return true;

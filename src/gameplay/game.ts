@@ -161,7 +161,7 @@ class Game extends Room {
     _.merge(this.specialCards, storedData.specialCards);
 
     this.phaseBeforeFrozen = this.phase;
-    this.phase = Phase.frozen;
+    this.changePhase(Phase.frozen);
   }
 
   playerJoinRoom(socket, inputPassword) {
@@ -184,7 +184,7 @@ class Game extends Room {
         this.phase === 'frozen' &&
         this.socketsOfPlayers.length >= this.playersInGame.length
       ) {
-        this.phase = this.phaseBeforeFrozen;
+        this.changePhase(this.phaseBeforeFrozen);
       }
 
       const resultOfRoomJoin = Room.prototype.playerJoinRoom.call(
@@ -714,6 +714,10 @@ class Game extends Room {
     this.distributeGameData();
   }
 
+  changePhase(phase: Phase) {
+    this.phase = phase;
+  }
+
   toShowGuns() {
     // Common phases
     if (
@@ -1122,7 +1126,7 @@ class Game extends Room {
       throw new Error('Winner var is not Resistance or Spy');
 
     const thisGame = this;
-    this.phase = Phase.finished;
+    this.changePhase(Phase.finished);
 
     if (this.checkRoleCardSpecialMoves() === true) {
       return;
@@ -1809,7 +1813,7 @@ class Game extends Room {
         `${rolePrefix} ${modUsername} has unpaused the game.`,
         'server-text',
       );
-      this.phase = this.phaseBeforePause;
+      this.changePhase(this.phaseBeforePause);
       this.distributeGameData();
     }
     // if unpaused, we pause
@@ -1821,7 +1825,7 @@ class Game extends Room {
       );
       // store the current phase, change to paused and update.
       this.phaseBeforePause = this.phase;
-      this.phase = Phase.paused;
+      this.changePhase(Phase.paused);
       this.distributeGameData();
     }
   }

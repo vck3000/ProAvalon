@@ -89,7 +89,7 @@ PickingTeam.prototype.gameMove = function (
 
     this.thisRoom.VHUpdateTeamPick();
 
-    this.thisRoom.phase = Phase.votingTeam;
+    this.thisRoom.changePhase(Phase.votingTeam);
   } else {
     console.log(
       `User ${socket.request.user.username} is not the team leader. Cannot pick.`,

@@ -63,7 +63,7 @@ class SireOfTheSea {
       numSuccess < 3 &&
       numFail < 3
     ) {
-      this.thisRoom.phase = Phase.sire;
+      this.thisRoom.changePhase(Phase.sire);
       this.lastMissionUsed = this.thisRoom.missionNum;
 
       return true;

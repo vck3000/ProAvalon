@@ -115,7 +115,7 @@ class Lady {
       );
 
       // update phase
-      this.thisRoom.phase = Phase.pickingTeam;
+      this.thisRoom.changePhase(Phase.pickingTeam);
     }
     // The requester is not the lady holder. Ignore the request.
     else {

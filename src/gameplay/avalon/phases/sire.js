@@ -142,7 +142,7 @@ class Sire {
       );
 
       // update phase
-      this.thisRoom.phase = Phase.pickingTeam;
+      this.thisRoom.changePhase(Phase.pickingTeam);
     }
     // The requester is not the sire holder. Ignore the request.
     else {
