@@ -1,8 +1,10 @@
+import Phase from '../phases/phases';
+
 class SireOfTheSea {
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
-    this.specialPhase = 'sire';
+    this.specialPhase = Phase.sire;
 
     this.card = 'Sire of the Sea';
 
@@ -61,7 +63,7 @@ class SireOfTheSea {
       numSuccess < 3 &&
       numFail < 3
     ) {
-      this.thisRoom.phase = 'sire';
+      this.thisRoom.phase = Phase.sire;
       this.lastMissionUsed = this.thisRoom.missionNum;
 
       return true;

@@ -6,11 +6,12 @@
 - Number of targets allowed to be selected
 - Status message to display
 */
+import Phase from '../avalon/phases/phases';
 
 function Frozen(thisRoom_) {
   this.thisRoom = thisRoom_;
 
-  this.phase = 'frozen';
+  this.phase = Phase.frozen;
   this.showGuns = true;
 }
 

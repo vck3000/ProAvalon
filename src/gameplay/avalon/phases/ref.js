@@ -9,12 +9,13 @@
 */
 
 import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
+import Phase from '../phases/phases';
 
 class Ref {
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
-    this.phase = 'ref';
+    this.phase = Phase.ref;
     this.showGuns = false;
 
     this.card = 'Ref of the Rain';
@@ -114,7 +115,7 @@ class Ref {
       );
 
       // update phase
-      this.thisRoom.phase = 'pickingTeam';
+      this.thisRoom.phase = Phase.pickingTeam;
     }
     // The requester is not the ref holder. Ignore the request.
     else {

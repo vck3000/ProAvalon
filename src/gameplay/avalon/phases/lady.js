@@ -9,12 +9,13 @@
 */
 
 import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
+import Phase from './phases';
 
 class Lady {
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
-    this.phase = 'lady';
+    this.phase = Phase.lady;
     this.showGuns = false;
 
     this.card = 'Lady of the Lake';
@@ -114,7 +115,7 @@ class Lady {
       );
 
       // update phase
-      this.thisRoom.phase = 'pickingTeam';
+      this.thisRoom.phase = Phase.pickingTeam;
     }
     // The requester is not the lady holder. Ignore the request.
     else {

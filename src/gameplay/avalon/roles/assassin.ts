@@ -1,5 +1,6 @@
 import { Role, See } from '../../types';
 import Game from '../../game';
+import Phase from '../phases/phases';
 
 class Assassin implements Role {
   // @ts-ignore
@@ -9,7 +10,7 @@ class Assassin implements Role {
   role = Assassin.role;
 
   alliance = 'Spy';
-  specialPhase = 'assassination';
+  specialPhase = Phase.assassination;
 
   description =
     'If the resistance win 3 missions, the Assassin can shoot one person for Merlin, or two people for Tristan and Isolde. If they are correct, the spies win!';

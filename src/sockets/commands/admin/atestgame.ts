@@ -51,6 +51,12 @@ export const atestgame: Command = {
   command: 'atestgame',
   help: '/atestgame <number>: Add <number> bots to a test game and start it automatically.',
   run: async (args: string[], socket: SocketUser) => {
+    socket.emit('messageCommandReturnStr', {
+      message: 'Bots are disabled.',
+      classStr: 'server-text',
+    });
+    return;
+
     if (!args[1]) {
       socket.emit('messageCommandReturnStr', {
         message: 'Specify a number.',

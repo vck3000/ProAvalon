@@ -9,12 +9,13 @@
 */
 
 import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
+import Phase from './phases';
 
 class Sire {
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
-    this.phase = 'sire';
+    this.phase = Phase.sire;
     this.showGuns = false;
 
     this.card = 'Sire of the Sea';
@@ -141,7 +142,7 @@ class Sire {
       );
 
       // update phase
-      this.thisRoom.phase = 'pickingTeam';
+      this.thisRoom.phase = Phase.pickingTeam;
     }
     // The requester is not the sire holder. Ignore the request.
     else {

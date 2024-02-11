@@ -1,9 +1,10 @@
 import usernamesIndexes from '../../myFunctions/usernamesIndexes';
+import Phase from '../avalon/phases/phases';
 
 function VotingTeam(thisRoom_) {
   this.thisRoom = thisRoom_;
 
-  this.phase = 'votingTeam';
+  this.phase = Phase.votingTeam;
   this.showGuns = true;
 }
 
@@ -55,7 +56,7 @@ VotingTeam.prototype.gameMove = function (
       const outcome = calcVotes(this.thisRoom.votes);
 
       if (outcome === 'yes') {
-        this.thisRoom.phase = 'votingMission';
+        this.thisRoom.phase = Phase.votingMission;
         this.thisRoom.playersYetToVote = this.thisRoom.proposedTeam.slice();
 
         var str = `Mission ${this.thisRoom.missionNum}.${
@@ -83,7 +84,7 @@ VotingTeam.prototype.gameMove = function (
         this.thisRoom.finishGame('Spy');
       } else if (outcome === 'no') {
         this.thisRoom.proposedTeam = [];
-        this.thisRoom.phase = 'pickingTeam';
+        this.thisRoom.phase = Phase.pickingTeam;
 
         var str = `Mission ${this.thisRoom.missionNum}.${
           this.thisRoom.pickNum

@@ -1,9 +1,10 @@
 import usernamesIndexes from '../../myFunctions/usernamesIndexes';
+import Phase from '../avalon/phases/phases';
 
 function PickingTeam(thisRoom_) {
   this.thisRoom = thisRoom_;
 
-  this.phase = 'pickingTeam';
+  this.phase = Phase.pickingTeam;
   this.showGuns = false;
 }
 
@@ -88,7 +89,7 @@ PickingTeam.prototype.gameMove = function (
 
     this.thisRoom.VHUpdateTeamPick();
 
-    this.thisRoom.phase = 'votingTeam';
+    this.thisRoom.phase = Phase.votingTeam;
   } else {
     console.log(
       `User ${socket.request.user.username} is not the team leader. Cannot pick.`,

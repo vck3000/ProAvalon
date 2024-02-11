@@ -1,8 +1,10 @@
+import Phase from '../phases/phases';
+
 class RefOfTheLake {
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
-    this.specialPhase = 'ref';
+    this.specialPhase = Phase.ref;
 
     this.card = 'Ref of the Rain';
 
@@ -64,7 +66,7 @@ class RefOfTheLake {
       numSuccess < 3 &&
       numFail < 3
     ) {
-      this.thisRoom.phase = 'ref';
+      this.thisRoom.phase = Phase.ref;
       this.lastMissionUsed = this.thisRoom.missionNum;
 
       return true;

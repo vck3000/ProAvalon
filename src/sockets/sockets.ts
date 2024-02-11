@@ -910,17 +910,12 @@ export const userCommands = {
     command: 'getbots',
     help: '/getbots: Run this in a bot-compatible room. Prints a list of available bots to add, as well as their supported game modes',
     run(data, senderSocket) {
-      // if (senderSocket.request.user.inRoomId === undefined) {
-      // 	return {
-      // 		message: "You must be in a bot-capable room to run this command!",
-      // 		classStr: "server-text"
-      // 	};
-      // } else if (rooms[senderSocket.request.user.inRoomId].gameMode !== 'avalonBot') {
-      // 	return {
-      // 		message: "This room is not bot capable. Please join a bot-capable room.",
-      // 		classStr: "server-text"
-      // 	}
-      // }
+      senderSocket.emit('messageCommandReturnStr', {
+        message: 'Bots have been disabled.',
+        classStr: 'server-text',
+      });
+
+      return;
 
       senderSocket.emit('messageCommandReturnStr', {
         message: 'Fetching bots...',
@@ -977,6 +972,13 @@ export const userCommands = {
     command: 'addbot',
     help: '/addbot <name> [number]: Run this in a bot-compatible room. Add a bot to the room.',
     run(data, senderSocket) {
+      senderSocket.emit('messageCommandReturnStr', {
+        message: 'Bots have been disabled.',
+        classStr: 'server-text',
+      });
+
+      return;
+
       if (
         senderSocket.request.user.inRoomId === undefined ||
         rooms[senderSocket.request.user.inRoomId] === undefined
