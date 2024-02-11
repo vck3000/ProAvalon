@@ -1,9 +1,10 @@
 import usernamesIndexes from '../../myFunctions/usernamesIndexes';
+import Phase from '../avalon/phases/phases';
 
 function VotingMission(thisRoom_) {
   this.thisRoom = thisRoom_;
 
-  this.phase = 'votingMission';
+  this.phase = Phase.votingMission;
   this.showGuns = true;
 }
 
@@ -146,7 +147,7 @@ VotingMission.prototype.gameMove = function (
           1 +
           this.thisRoom.playersInGame.length) %
         this.thisRoom.playersInGame.length;
-      this.thisRoom.phase = 'pickingTeam';
+      this.thisRoom.phase = Phase.pickingTeam;
     }
     this.thisRoom.requireSave = true;
   }

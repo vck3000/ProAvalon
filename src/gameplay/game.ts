@@ -1,5 +1,4 @@
 // @ts-nocheck
-// Load the full build.
 import _ from 'lodash';
 
 import Room from './room';
@@ -17,12 +16,14 @@ import { getRoomTypeFromString, roomCreationTypeEnum } from './roomTypes';
 import { gameModeObj } from './gameModes';
 
 export const WAITING = 'Waiting';
+const MIN_PLAYERS = 5;
 
 class Game extends Room {
   gameStarted = false;
   finished = false;
   playersInGame = [];
-  phase = 'pickingTeam';
+  phase: Phase = Phase.pickingTeam;
+  phaseBeforeFrozen: Phase = this.phase;
   missionHistory = [];
   roomCreationType: roomCreationTypeEnum;
 
@@ -61,7 +62,6 @@ class Game extends Room {
 
     this.roomCreationType = getRoomTypeFromString(roomCreationType_);
 
-    this.minPlayers = 5;
     this.alliances = [
       'Resistance',
       'Resistance',
@@ -83,46 +83,6 @@ class Game extends Room {
       ['3', '4', '4', '5*', '5'],
       ['3', '4', '4', '5*', '5'],
     ];
-
-    /*
-      Handle joining:
-        - If game hasn't started, join like usual
-        - If game has started, check if they are a player
-          - If they are player, give them data
-          - If they are not a player, give them spec data
-    */
-
-    /*
-      Phases go like this:
-        Note: Cards run should be run every time phase changes
-
-        Always run between phases:
-          - Card
-          - Role specials (e.g. assassination)
-
-        Start from phase 1:
-        1) Player picking.
-        2) Receive interactions for team votes.
-          - If approved, go to phase 3.
-          - If rejected, go to phase 1.
-        3) Receive interactions for mission votes.
-          - If game finished, go to phase 4.
-          - If game not finished, go to phase 1.
-        4) Game finished
-
-
-        Table:
-          Phase	|	String
-          1			"pickingTeam"
-          2			"votingTeam"
-          3			"votingMission"
-          4			"finished"
-
-        Misc Phases:
-          Phase	|	String
-                "lady"
-                "assassination"
-    */
 
     this.phaseBeforePause = '';
 
@@ -199,8 +159,8 @@ class Game extends Room {
     // Merge in the objects
     _.merge(this.specialCards, storedData.specialCards);
 
-    this.phase_before_frozen = this.phase;
-    this.phase = 'frozen';
+    this.phaseBeforeFrozen = this.phase;
+    this.phase = Phase.frozen;
   }
 
   playerJoinRoom(socket, inputPassword) {
@@ -223,7 +183,7 @@ class Game extends Room {
         this.phase === 'frozen' &&
         this.socketsOfPlayers.length >= this.playersInGame.length
       ) {
-        this.phase = this.phase_before_frozen;
+        this.phase = this.phaseBeforeFrozen;
       }
 
       const resultOfRoomJoin = Room.prototype.playerJoinRoom.call(
@@ -1006,7 +966,7 @@ class Game extends Room {
         data[i].proposedTeam = this.proposedTeam;
 
         data[i].numPlayersOnMission =
-          this.numPlayersOnMission[playerRoles.length - this.minPlayers]; // - 5
+          this.numPlayersOnMission[playerRoles.length - MIN_PLAYERS]; // - 5
         data[i].numSelectTargets = this.getClientNumOfTargets(i);
 
         data[i].votes = this.publicVotes;
@@ -1085,7 +1045,7 @@ class Game extends Room {
     data.proposedTeam = this.proposedTeam;
 
     data.numPlayersOnMission =
-      this.numPlayersOnMission[playerRoles.length - this.minPlayers]; // - 5
+      this.numPlayersOnMission[playerRoles.length - MIN_PLAYERS]; // - 5
     data.numSelectTargets = this.getClientNumOfTargets();
 
     data.votes = this.publicVotes;
@@ -1161,7 +1121,7 @@ class Game extends Room {
       throw new Error('Winner var is not Resistance or Spy');
 
     const thisGame = this;
-    this.phase = 'finished';
+    this.phase = Phase.finished;
 
     if (this.checkRoleCardSpecialMoves() === true) {
       return;
@@ -1860,7 +1820,7 @@ class Game extends Room {
       );
       // store the current phase, change to paused and update.
       this.phaseBeforePause = this.phase;
-      this.phase = 'paused';
+      this.phase = Phase.paused;
       this.distributeGameData();
     }
   }

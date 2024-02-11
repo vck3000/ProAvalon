@@ -6,12 +6,12 @@
 - Number of targets allowed to be selected
 - Status message to display
 */
-import usernamesIndexes from '../../myFunctions/usernamesIndexes';
+import Phase from '../avalon/phases/phases';
 
 function Paused(thisRoom_) {
   this.thisRoom = thisRoom_;
 
-  this.phase = 'paused';
+  this.phase = Phase.paused;
   this.showGuns = true;
 }
 

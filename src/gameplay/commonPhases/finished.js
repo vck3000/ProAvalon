@@ -1,9 +1,9 @@
-import usernamesIndexes from '../../myFunctions/usernamesIndexes';
+import Phase from '../avalon/phases/phases';
 
 function Finished(thisRoom_) {
   this.thisRoom = thisRoom_;
 
-  this.phase = 'finished';
+  this.phase = Phase.finished;
   this.showGuns = true;
 }
 

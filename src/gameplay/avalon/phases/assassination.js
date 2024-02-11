@@ -7,6 +7,7 @@
 - Status message to display
 */
 import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
+import Phase from '../phases/phases';
 
 class Assassination {
   constructor(thisRoom) {
@@ -15,7 +16,7 @@ class Assassination {
     // The role that is the owner of this phase
     this.role = 'Assassin';
 
-    this.phase = 'assassination';
+    this.phase = Phase.assassination;
     this.showGuns = true;
 
     this.finishedShot = false;
