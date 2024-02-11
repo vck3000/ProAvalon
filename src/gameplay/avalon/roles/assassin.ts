@@ -3,7 +3,6 @@ import Game from '../../game';
 import Phase from '../phases/phases';
 
 class Assassin implements Role {
-  // @ts-ignore
   room: Game;
   // TODO pretty ugly...
   static role = 'Assassin';
@@ -19,7 +18,6 @@ class Assassin implements Role {
   playerShot = '';
   playerShot2 = '';
 
-  // @ts-ignore
   constructor(room: Game) {
     this.room = room;
   }
@@ -53,7 +51,7 @@ class Assassin implements Role {
         // Get the number of successes:
         let numOfSuccesses = 0;
 
-        for (var i = 0; i < this.room.missionHistory.length; i++) {
+        for (let i = 0; i < this.room.missionHistory.length; i++) {
           if (this.room.missionHistory[i] === 'succeeded') {
             numOfSuccesses++;
           }
@@ -65,7 +63,7 @@ class Assassin implements Role {
         let tristExists = false;
         let isoExists = false;
 
-        for (var i = 0; i < this.room.playersInGame.length; i++) {
+        for (let i = 0; i < this.room.playersInGame.length; i++) {
           if (this.room.playersInGame[i].role === 'Merlin') {
             merlinExists = true;
           }

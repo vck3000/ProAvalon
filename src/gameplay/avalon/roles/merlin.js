@@ -10,14 +10,6 @@ class Merlin {
 
     this.description = 'Knows the identity of the spies.';
     this.orderPriorityInOptions = 100;
-
-    this.test = function () {
-      // The following lines running successfully shows that each role file can access
-      // the variables and functions from the game room!
-      console.log(
-        `HII from merlin. The number of sockets is: ${this.thisRoom.allSockets.length}`,
-      );
-    };
   }
 
   see() {
