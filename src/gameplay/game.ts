@@ -17,7 +17,7 @@ import { gameModeObj } from './gameModes';
 import Phase from './avalon/phases/phases';
 
 export const WAITING = 'Waiting';
-const MIN_PLAYERS = 5;
+export const MIN_PLAYERS = 5;
 
 class Game extends Room {
   gameStarted = false;

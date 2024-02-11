@@ -143,6 +143,10 @@ setTimeout(async () => {
         .skip(i)
         .limit(1)
         .exec((err, foundSaveGameArr) => {
+          if (!foundSaveGameArr || foundSaveGameArr.length === 0) {
+            run = false;
+            return;
+          }
           const foundSaveGame = foundSaveGameArr[0];
 
           if (foundSaveGame && foundSaveGame.room) {

@@ -3,6 +3,7 @@ import { AVALON, AVALON_BOT, GAME_MODE_NAMES, gameModeObj } from './gameModes';
 import commonPhasesIndex from './indexCommonPhases';
 import usernamesIndexes from '../myFunctions/usernamesIndexes';
 import { SocketUser } from '../sockets/types';
+import { MIN_PLAYERS } from './game';
 
 class Room {
   host: string;
@@ -656,7 +657,7 @@ class Room {
 
     if (this.canJoin === true) {
       // check before starting
-      if (this.socketsOfPlayers.length < this.minPlayers) {
+      if (this.socketsOfPlayers.length < MIN_PLAYERS) {
         // NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
         // console.log("Not enough players.");
         this.socketsOfPlayers[0].emit(
