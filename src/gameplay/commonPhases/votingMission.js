@@ -147,7 +147,7 @@ VotingMission.prototype.gameMove = function (
           1 +
           this.thisRoom.playersInGame.length) %
         this.thisRoom.playersInGame.length;
-      this.thisRoom.phase = Phase.pickingTeam;
+      this.thisRoom.changePhase(Phase.pickingTeam);
     }
     this.thisRoom.requireSave = true;
   }

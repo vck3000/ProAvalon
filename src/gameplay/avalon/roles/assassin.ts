@@ -85,7 +85,7 @@ class Assassin implements Role {
         ) {
           // Set the assassination phase
           this.room.startAssassinationTime = new Date();
-          this.room.phase = this.specialPhase;
+          this.room.changePhase(this.specialPhase);
           return true;
         }
       }

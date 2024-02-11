@@ -1,5 +1,6 @@
 import usernamesIndexes from '../../myFunctions/usernamesIndexes';
 import Phase from '../avalon/phases/phases';
+import { MIN_PLAYERS } from '../game';
 
 function PickingTeam(thisRoom_) {
   this.thisRoom = thisRoom_;
@@ -39,7 +40,7 @@ PickingTeam.prototype.gameMove = function (
 
     let num =
       this.thisRoom.numPlayersOnMission[
-        this.thisRoom.playersInGame.length - this.thisRoom.minPlayers
+        this.thisRoom.playersInGame.length - MIN_PLAYERS
       ][this.thisRoom.missionNum - 1];
     // console.log("Num player for this.thisRoom mission : " + num);
 
@@ -89,7 +90,7 @@ PickingTeam.prototype.gameMove = function (
 
     this.thisRoom.VHUpdateTeamPick();
 
-    this.thisRoom.phase = Phase.votingTeam;
+    this.thisRoom.changePhase(Phase.votingTeam);
   } else {
     console.log(
       `User ${socket.request.user.username} is not the team leader. Cannot pick.`,
@@ -135,7 +136,7 @@ PickingTeam.prototype.buttonSettings = function (indexOfPlayer) {
 PickingTeam.prototype.numOfTargets = function (indexOfPlayer) {
   let num =
     this.thisRoom.numPlayersOnMission[
-      this.thisRoom.playersInGame.length - this.thisRoom.minPlayers
+      this.thisRoom.playersInGame.length - MIN_PLAYERS
     ][this.thisRoom.missionNum - 1];
   // console.log("Num player for this.thisRoom mission : " + num);
 
@@ -161,7 +162,7 @@ PickingTeam.prototype.getStatusMessage = function (indexOfPlayer) {
   ) {
     const num =
       this.thisRoom.numPlayersOnMission[
-        this.thisRoom.playersInGame.length - this.thisRoom.minPlayers
+        this.thisRoom.playersInGame.length - MIN_PLAYERS
       ][this.thisRoom.missionNum - 1];
 
     return `Your turn to pick a team. Pick ${num} players.`;

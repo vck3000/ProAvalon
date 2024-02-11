@@ -66,7 +66,7 @@ class RefOfTheLake {
       numSuccess < 3 &&
       numFail < 3
     ) {
-      this.thisRoom.phase = Phase.ref;
+      this.thisRoom.changePhase(Phase.ref);
       this.lastMissionUsed = this.thisRoom.missionNum;
 
       return true;
