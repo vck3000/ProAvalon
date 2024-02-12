@@ -9,13 +9,15 @@
 */
 
 import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
-import Phase from './phases';
+import Phase from '../../phases';
 
 class Lady {
+  static phase = Phase.lady;
+  phase = Phase.lady;
+
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
-    this.phase = Phase.lady;
     this.showGuns = false;
 
     this.card = 'Lady of the Lake';

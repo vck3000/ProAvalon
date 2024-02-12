@@ -9,13 +9,15 @@
 */
 
 import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
-import Phase from './phases';
+import Phase from '../../phases';
 
 class Sire {
+  static phase = Phase.sire;
+  phase = Phase.sire;
+
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
-    this.phase = Phase.sire;
     this.showGuns = false;
 
     this.card = 'Sire of the Sea';

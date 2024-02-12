@@ -7,16 +7,18 @@
 - Status message to display
 */
 import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
-import Phase from '../phases/phases';
+import Phase from '../../phases';
 
 class Assassination {
+  static phase = 'Assassination';
+  phase = Phase.assassination;
+
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
     // The role that is the owner of this phase
     this.role = 'Assassin';
 
-    this.phase = Phase.assassination;
     this.showGuns = true;
 
     this.finishedShot = false;

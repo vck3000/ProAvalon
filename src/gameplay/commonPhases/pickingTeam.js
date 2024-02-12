@@ -1,5 +1,5 @@
 import usernamesIndexes from '../../myFunctions/usernamesIndexes';
-import Phase from '../avalon/phases/phases';
+import Phase from '../phases';
 import { MIN_PLAYERS } from '../game';
 
 function PickingTeam(thisRoom_) {

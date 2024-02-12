@@ -1,4 +1,4 @@
-import Phase from '../avalon/phases/phases';
+import Phase from '../phases';
 
 function Finished(thisRoom_) {
   this.thisRoom = thisRoom_;

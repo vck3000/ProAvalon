@@ -1,30 +1,24 @@
-// This file helps us load in the roles from the folder
-import fs from 'fs';
-import path from 'path';
+import Assassination from './phases/assassination';
+import Lady from './phases/lady';
+import Ref from './phases/ref';
+import Sire from './phases/sire';
+
+const phases = {
+  [Assassination.phase.toLowerCase()]: Assassination,
+  [Lady.phase.toLowerCase()]: Lady,
+  [Ref.phase.toLowerCase()]: Ref,
+  [Sire.phase.toLowerCase()]: Sire,
+};
 
 export const getPhases = function (thisRoom) {
-  const normalizedPath = path.join(__dirname, './phases');
-
-  const phases = {};
   const obj = {};
 
-  fs.readdirSync(normalizedPath).forEach((file) => {
-    // console.log(file);
-
-    // If it is a javascript file, add it
-    if (file.includes('.js') === true && !file.includes('.map')) {
-      // Trim .js at the end of the file name
-      name = file.replace('.js', '');
-
-      phases[name] = require(`./phases/${file}`).default;
-    }
-  });
-
-  for (var name in phases) {
-    if (phases.hasOwnProperty(name)) {
-      // Initialise it
-      obj[name] = new phases[name](thisRoom);
-    }
+  // No good way to map over an object, so we do this iteratively.
+  // Note this implementation leads to a limitation of one role per game.
+  // Not great...!
+  // TODO
+  for (const [phaseName, phaseClass] of Object.entries(phases)) {
+    obj[phaseName] = new phaseClass(thisRoom);
   }
 
   return obj;

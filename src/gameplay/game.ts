@@ -14,7 +14,7 @@ import { modOrTOString } from '../modsadmins/modOrTO';
 
 import { getRoomTypeFromString, roomCreationTypeEnum } from './roomTypes';
 import { gameModeObj } from './gameModes';
-import Phase from './avalon/phases/phases';
+import Phase from './phases';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;

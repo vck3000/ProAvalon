@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "ProAvalon",
   "scripts": {
-    "build": "tsc && webpack --config webpack.prod.js && cp -R ./src/views ./out",
+    "build": "rm -rf out; tsc && webpack --config webpack.prod.js && cp -R ./src/views ./out",
     "dev": "concurrently -k \"npm:dev:tsnd\" \"npm:dev:webpack\"",
     "dev:tsnd": "ts-node-dev --respawn --inspect --ignore-watch \".tsx$\" ./src/app.ts",
     "dev:webpack": "rm -f ./assets/dist_webpack/* && webpack serve --config webpack.dev.js",
