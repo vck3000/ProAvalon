@@ -29,7 +29,7 @@ const gamePhases = [
   Phase.sire,
 ];
 
-export function isGamePhase(phase: Phase) {
+export function isGamePhase(phase: Phase): boolean {
   return gamePhases.includes(phase);
 }
 
@@ -53,7 +53,6 @@ export interface IPhase {
     selectedPlayers: string[],
   ): void;
 
-  // TODO create the return struct type
   buttonSettings(indexOfPlayer: number): ButtonSettings;
 
   numOfTargets(indexOfPlayer: number): number | number[];
