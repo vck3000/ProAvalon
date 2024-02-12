@@ -6,7 +6,7 @@
 - Number of targets allowed to be selected
 - Status message to display
 */
-import Phase from '../phases';
+import { Phase } from '../phases';
 
 function Frozen(thisRoom_) {
   this.thisRoom = thisRoom_;

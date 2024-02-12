@@ -9,7 +9,7 @@
 */
 
 import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
-import Phase from '../../phases';
+import { Phase } from '../../phases';
 
 class Lady {
   static phase = Phase.lady;

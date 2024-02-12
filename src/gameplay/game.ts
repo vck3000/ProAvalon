@@ -14,7 +14,7 @@ import { modOrTOString } from '../modsadmins/modOrTO';
 
 import { getRoomTypeFromString, roomCreationTypeEnum } from './roomTypes';
 import { gameModeObj } from './gameModes';
-import Phase from './phases';
+import { isGamePhase, Phase } from './phases';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;
@@ -35,6 +35,8 @@ class Game extends Room {
   interval: NodeJS.Timeout;
 
   botSockets: any;
+  getTimeFunc: () => Date;
+  dateTimerExpires: Date = new Date(0);
 
   constructor(
     host_,
@@ -48,6 +50,7 @@ class Game extends Room {
     ranked_,
     roomCreationType_, // to track ranked vs unranked vs custom game
     callback_,
+    getTimeFunc_,
   ) {
     super(
       host_,
@@ -60,6 +63,7 @@ class Game extends Room {
     );
 
     this.callback = callback_;
+    this.getTimeFunc = getTimeFunc_;
 
     this.roomCreationType = getRoomTypeFromString(roomCreationType_);
 
@@ -716,6 +720,30 @@ class Game extends Room {
 
   changePhase(phase: Phase) {
     this.phase = phase;
+
+    const threeMinutes = new Date(0, 0, 0, 0, 3, 0);
+    const oneSecond = new Date(0, 0, 0, 0, 0, 1);
+
+    this.dateTimerExpires = this.getTimeFunc() + threeMinutes;
+
+    setTimeout(() => {
+      // Ignore the callback if this isn't a game phase
+      if (!isGamePhase(this.phase)) {
+        return;
+      }
+
+      // Ignore if dateTimerExpires isn't set
+      if (this.dateTimerExpires === new Date(0)) {
+        return;
+      }
+
+      // Ignore if date timer expires is still ahead of now
+      if (this.dateTimerExpires > this.getTimeFunc()) {
+        return;
+      }
+
+      // User has timed out.
+    }, threeMinutes + oneSecond);
   }
 
   toShowGuns() {

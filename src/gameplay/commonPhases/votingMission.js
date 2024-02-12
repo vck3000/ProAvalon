@@ -1,5 +1,5 @@
 import usernamesIndexes from '../../myFunctions/usernamesIndexes';
-import Phase from '../phases';
+import { Phase } from '../phases';
 
 function VotingMission(thisRoom_) {
   this.thisRoom = thisRoom_;

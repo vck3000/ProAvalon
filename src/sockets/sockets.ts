@@ -2051,6 +2051,7 @@ function newRoom(dataObj) {
       rankedRoom,
       roomCreationTypeEnum.CUSTOM_ROOM,
       socketCallback,
+      () => new Date(),
     );
     const privateStr = !privateRoom ? '' : 'private ';
     const rankedUnrankedStr = rankedRoom ? 'ranked' : 'unranked';

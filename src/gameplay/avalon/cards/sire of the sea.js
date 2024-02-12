@@ -1,4 +1,4 @@
-import Phase from '../../phases';
+import { Phase } from '../../phases';
 
 class SireOfTheSea {
   constructor(thisRoom) {

@@ -15,6 +15,7 @@ class GameWrapper extends Game {
     ranked_,
     roomCreationType_,
     callback_,
+    getTimeFunc_,
   ) {
     // Get all the game properties
     super(
@@ -29,6 +30,7 @@ class GameWrapper extends Game {
       ranked_,
       roomCreationType_,
       callback_,
+      getTimeFunc_,
     );
   }
 
