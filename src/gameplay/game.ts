@@ -720,6 +720,8 @@ class Game extends Room {
   changePhase(phase: Phase) {
     this.phase = phase;
 
+    return;
+
     // Set up the timer.
     this.dateTimerExpires = this.getTimeFunc() + this.timerDuration;
 
