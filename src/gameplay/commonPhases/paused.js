@@ -8,40 +8,44 @@
 */
 import { Phase } from '../phases';
 
-function Paused(thisRoom_) {
-  this.thisRoom = thisRoom_;
+class Paused {
+  static phase = Phase.paused;
 
-  this.phase = Phase.paused;
-  this.showGuns = true;
-}
+  phase = Phase.paused;
+  showGuns = true;
 
-Paused.prototype.gameMove = function (socket, buttonPressed, selectedPlayers) {
-  // Game is paused, no actions.
-};
+  constructor(thisRoom_) {
+    this.thisRoom = thisRoom_;
+  }
 
-Paused.prototype.buttonSettings = function (indexOfPlayer) {
-  const obj = {
-    green: {},
-    red: {},
+  gameMove = function (socket, buttonPressed, selectedPlayers) {
+    // Game is paused, no actions.
   };
 
-  obj.green.hidden = true;
-  obj.green.disabled = true;
-  obj.green.setText = '';
+  buttonSettings = function (indexOfPlayer) {
+    const obj = {
+      green: {},
+      red: {},
+    };
 
-  obj.red.hidden = true;
-  obj.red.disabled = true;
-  obj.red.setText = '';
+    obj.green.hidden = true;
+    obj.green.disabled = true;
+    obj.green.setText = '';
 
-  return obj;
-};
+    obj.red.hidden = true;
+    obj.red.disabled = true;
+    obj.red.setText = '';
 
-Paused.prototype.numOfTargets = function (indexOfPlayer) {
-  return null;
-};
+    return obj;
+  };
 
-Paused.prototype.getStatusMessage = function (indexOfPlayer) {
-  return 'A moderator has paused the game. All actions are prevented.';
-};
+  numOfTargets = function (indexOfPlayer) {
+    return null;
+  };
+
+  getStatusMessage = function (indexOfPlayer) {
+    return 'A moderator has paused the game. All actions are prevented.';
+  };
+}
 
 export default Paused;
