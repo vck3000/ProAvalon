@@ -24,16 +24,16 @@ const THREE_MINUTES = new Date(0, 0, 0, 0, 3, 0);
 const ONE_SECOND = new Date(0, 0, 0, 0, 0, 1);
 
 const ALLIANCES = [
-  'Resistance',
-  'Resistance',
-  'Resistance',
-  'Spy',
-  'Spy',
-  'Resistance',
-  'Spy',
-  'Resistance',
-  'Resistance',
-  'Spy',
+  Alliance.Resistance,
+  Alliance.Resistance,
+  Alliance.Resistance,
+  Alliance.Spy,
+  Alliance.Spy,
+  Alliance.Resistance,
+  Alliance.Spy,
+  Alliance.Resistance,
+  Alliance.Resistance,
+  Alliance.Spy,
 ];
 
 export const NUM_PLAYERS_ON_MISSION = [
@@ -392,10 +392,10 @@ class Game extends Room {
     const spyPlayers = [];
 
     for (let i = 0; i < this.playersInGame.length; i++) {
-      if (this.playersInGame[i].alliance === 'Resistance') {
+      if (this.playersInGame[i].alliance === Alliance.Resistance) {
         resPlayers.push(i);
         this.resistanceUsernames.push(this.playersInGame[i].username);
-      } else if (this.playersInGame[i].alliance === 'Spy') {
+      } else if (this.playersInGame[i].alliance === Alliance.Spy) {
         spyPlayers.push(i);
         this.spyUsernames.push(this.playersInGame[i].username);
       }
@@ -569,7 +569,7 @@ class Game extends Room {
         );
         const onMissionAndResistance =
           thisRoom.phase == 'votingMission' &&
-          thisRoom.playersInGame[seatIndex].alliance === 'Resistance';
+          thisRoom.playersInGame[seatIndex].alliance === Alliance.Resistance;
         // Add a special case so resistance bots can't fail missions.
         if (buttons.red.hidden !== true && onMissionAndResistance === false) {
           availableButtons.push('no');
@@ -1244,9 +1244,9 @@ class Game extends Room {
     this.finished = true;
     this.winner = toBeWinner;
 
-    if (this.winner === 'Spy') {
+    if (this.winner === Alliance.Spy) {
       this.sendText(this.allSockets, 'The spies win!', 'gameplay-text-red');
-    } else if (this.winner === 'Resistance') {
+    } else if (this.winner === Alliance.Resistance) {
       this.sendText(
         this.allSockets,
         'The resistance wins!',
@@ -1521,7 +1521,7 @@ class Game extends Room {
               'server-text',
             );
           } else {
-            if (player.alliance === 'Resistance') {
+            if (player.alliance === Alliance.Resistance) {
               this.sendText(
                 this.allSockets,
                 `${player.request.user.username}: ${Math.floor(
@@ -1532,7 +1532,7 @@ class Game extends Room {
                 'server-text',
               );
               player.request.user.playerRating += indResChange;
-            } else if (player.alliance === 'Spy') {
+            } else if (player.alliance === Alliance.Spy) {
               this.sendText(
                 this.allSockets,
                 `${player.request.user.username}: ${Math.floor(
@@ -1564,13 +1564,13 @@ class Game extends Room {
 
               if (winnerVar === player.alliance) {
                 foundUser.totalWins += 1;
-                if (winnerVar === 'Resistance') {
+                if (winnerVar === Alliance.Resistance) {
                   foundUser.totalResWins += 1;
                 }
               } else {
                 // loss
                 foundUser.totalLosses += 1;
-                if (winnerVar === 'Spy') {
+                if (winnerVar === Alliance.Spy) {
                   foundUser.totalResLosses += 1;
                 }
               }
@@ -1582,9 +1582,9 @@ class Game extends Room {
                 if (foundUser.ratingBracket === 'unranked') {
                   foundUser.playerRating = player.request.user.playerRating;
                 } else {
-                  if (player.alliance === 'Resistance') {
+                  if (player.alliance === Alliance.Resistance) {
                     foundUser.playerRating += indResChange;
-                  } else if (player.alliance === 'Spy') {
+                  } else if (player.alliance === Alliance.Spy) {
                     foundUser.playerRating += indSpyChange;
                   }
                 }
@@ -1993,10 +1993,10 @@ class Game extends Room {
     const k = 42;
     // Calculate ratings for each team by averaging elo of players
     const resTeamEloRatings = this.playersInGame
-      .filter((soc) => soc.alliance === 'Resistance')
+      .filter((soc) => soc.alliance === Alliance.Resistance)
       .map((soc) => soc.request.user.playerRating);
     const spyTeamEloRatings = this.playersInGame
-      .filter((soc) => soc.alliance === 'Spy')
+      .filter((soc) => soc.alliance === Alliance.Spy)
       .map((soc) => soc.request.user.playerRating);
 
     let total = 0;
@@ -2019,12 +2019,12 @@ class Game extends Room {
 
     // Calculate elo change, adjusting for player size, difference is 1- or just -
     let eloChange = 0;
-    if (winningTeam === 'Resistance') {
+    if (winningTeam === Alliance.Resistance) {
       eloChange =
         k *
         (1 - 1 / (1 + Math.pow(10, -(resElo - spyElo) / 500))) *
         (this.playersInGame.length / 5); //smoothed from 400 to 500 division
-    } else if (winningTeam === 'Spy') {
+    } else if (winningTeam === Alliance.Spy) {
       eloChange =
         k *
         (-1 / (1 + Math.pow(10, -(resElo - spyElo) / 500))) *
@@ -2092,7 +2092,7 @@ class Game extends Room {
     const resReduction =
       this.spyUsernames.length / this.resistanceUsernames.length;
     const sizeWinrate = playerSizeWinrates[this.playersInGame.length - 5];
-    if (playerSocket.alliance === 'Resistance') {
+    if (playerSocket.alliance === Alliance.Resistance) {
       if (winningTeam === playerSocket.alliance) {
         teamAdj = (sizeWinrate / (1 - sizeWinrate)) * resReduction;
       } else {
@@ -2175,7 +2175,7 @@ function getAllSpies(thisRoom) {
   if (thisRoom.gameStarted === true) {
     const array = [];
     for (let i = 0; i < thisRoom.playersInGame.length; i++) {
-      if (thisRoom.playersInGame[i].alliance === 'Spy') {
+      if (thisRoom.playersInGame[i].alliance === Alliance.Spy) {
         array.push(thisRoom.playersInGame[i].username);
       }
     }

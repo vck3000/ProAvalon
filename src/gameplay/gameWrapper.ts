@@ -77,9 +77,9 @@ class GameWrapper extends Game {
     // If the game actually finished, then run callbacks.
     if (this.finished === true) {
       // Callbacks for announcing winner in all chat.
-      if (this.winner === 'Spy') {
+      if (this.winner === Alliance.Spy) {
         this.callback('finishGameSpyWin', this);
-      } else if (this.winner === 'Resistance') {
+      } else if (this.winner === Alliance.Resistance) {
         this.callback('finishGameResWin', this);
       } else {
         // Something went wrong...

@@ -8,7 +8,7 @@ class Assassin implements Role {
   static role = 'Assassin';
   role = Assassin.role;
 
-  alliance = 'Spy';
+  alliance = Alliance.Spy;
   specialPhase = Phase.assassination;
 
   description =
@@ -28,7 +28,7 @@ class Assassin implements Role {
       const array = [];
 
       for (let i = 0; i < this.room.playersInGame.length; i++) {
-        if (this.room.playersInGame[i].alliance === 'Spy') {
+        if (this.room.playersInGame[i].alliance === Alliance.Spy) {
           if (this.room.playersInGame[i].role === 'Oberon') {
             // don't add oberon
           } else {

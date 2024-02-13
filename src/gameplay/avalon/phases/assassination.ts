@@ -1,6 +1,7 @@
 import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
 import { ButtonSettings, IPhase, Phase } from '../../phases';
 import { SocketUser } from '../../../sockets/types';
+import { Alliance } from '../../types';
 
 class Assassination implements IPhase {
   showGuns = true;
@@ -55,7 +56,8 @@ class Assassination implements IPhase {
             // Check the alliance of the target. If they are spy, reject it and ask them to shoot a res.
             // Note: Allowed to shoot Oberon
             if (
-              this.thisRoom.playersInGame[indexOfTarget].alliance === 'Spy' &&
+              this.thisRoom.playersInGame[indexOfTarget].alliance ===
+                Alliance.Spy &&
               this.thisRoom.playersInGame[indexOfTarget].role !== 'Oberon'
             ) {
               socket.emit(
@@ -80,7 +82,7 @@ class Assassination implements IPhase {
               if (
                 this.thisRoom.playersInGame[indexOfTarget].role === 'Merlin'
               ) {
-                this.thisRoom.winner = 'Spy';
+                this.thisRoom.winner = Alliance.Spy;
                 this.thisRoom.howWasWon = 'Assassinated Merlin correctly.';
 
                 this.thisRoom.sendText(
@@ -89,7 +91,7 @@ class Assassination implements IPhase {
                   'gameplay-text-red',
                 );
               } else {
-                this.thisRoom.winner = 'Resistance';
+                this.thisRoom.winner = Alliance.Resistance;
                 this.thisRoom.howWasWon =
                   'Mission successes and assassin shot wrong.';
 
@@ -137,7 +139,7 @@ class Assassination implements IPhase {
             // Check the alliance of the target. If they are spy, reject it and ask them to shoot a res.
             // Note: Allowed to shoot Oberon
             if (
-              this.thisRoom.playersInGame[i0].alliance === 'Spy' &&
+              this.thisRoom.playersInGame[i0].alliance === Alliance.Spy &&
               this.thisRoom.playersInGame[i0].role !== 'Oberon'
             ) {
               socket.emit(
@@ -148,7 +150,7 @@ class Assassination implements IPhase {
             }
 
             if (
-              this.thisRoom.playersInGame[i1].alliance === 'Spy' &&
+              this.thisRoom.playersInGame[i1].alliance === Alliance.Spy &&
               this.thisRoom.playersInGame[i1].role !== 'Oberon'
             ) {
               socket.emit(
@@ -183,7 +185,7 @@ class Assassination implements IPhase {
               (this.thisRoom.playersInGame[i1].role === 'Tristan' &&
                 this.thisRoom.playersInGame[i0].role === 'Isolde')
             ) {
-              this.thisRoom.winner = 'Spy';
+              this.thisRoom.winner = Alliance.Spy;
               this.thisRoom.howWasWon =
                 'Assassinated Tristan and Isolde correctly.';
 
@@ -193,7 +195,7 @@ class Assassination implements IPhase {
                 'gameplay-text-red',
               );
             } else {
-              this.thisRoom.winner = 'Resistance';
+              this.thisRoom.winner = Alliance.Resistance;
               this.thisRoom.howWasWon =
                 'Mission successes and assassin shot wrong.';
 
@@ -344,7 +346,7 @@ class Assassination implements IPhase {
 
     for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
       if (
-        this.thisRoom.playersInGame[i].alliance === 'Spy' &&
+        this.thisRoom.playersInGame[i].alliance === Alliance.Spy &&
         this.thisRoom.playersInGame[i].role !== 'Oberon'
       ) {
         spyIndexes.push(i);
