@@ -1,4 +1,4 @@
-import { Role, See } from '../../types';
+import { Alliance, Role, See } from '../../types';
 import Game from '../../game';
 import { Phase } from '../../phases';
 
