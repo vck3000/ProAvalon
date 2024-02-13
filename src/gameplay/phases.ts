@@ -18,6 +18,8 @@ export enum Phase {
   frozen = 'frozen',
 }
 
+// This is needed to tell if we need to timer it.
+// TODO: We should think of a better way instead of having to maintain this list.
 const gamePhases = [
   Phase.pickingTeam,
   Phase.votingTeam,
