@@ -1,6 +1,11 @@
 import Game from './game';
 import { Types } from 'mongoose';
 
+export enum Alliance {
+  Resistance = 'Resistance',
+  Spy = 'Spy',
+}
+
 export interface RoleConstructor {
   // @ts-ignore
   new (room: Game): Role;

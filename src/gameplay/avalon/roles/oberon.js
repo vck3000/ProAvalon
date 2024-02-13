@@ -1,12 +1,14 @@
+import { Alliance } from '../../types';
+
 class Oberon {
   static role = 'Oberon';
-  static alliance = 'Resistance';
+  static alliance = Alliance.Resistance;
 
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
     this.role = 'Oberon';
-    this.alliance = 'Spy';
+    this.alliance = Alliance.Spy;
 
     this.description = 'Oberon and Spies do not know each other.';
     this.orderPriorityInOptions = 50;

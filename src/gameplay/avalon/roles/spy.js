@@ -1,12 +1,13 @@
+import { Alliance } from '../../types';
+
 class Spy {
   static role = 'Spy';
-  static alliance = 'Spy';
+  role = 'Spy';
+
+  static alliance = Alliance.Spy;
 
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
-
-    this.role = 'Spy';
-    this.alliance = 'Spy';
 
     this.description = 'A standard Spy member.';
   }
@@ -18,7 +19,7 @@ class Spy {
       const array = [];
 
       for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
-        if (this.thisRoom.playersInGame[i].alliance === 'Spy') {
+        if (this.thisRoom.playersInGame[i].alliance === Alliance.Spy) {
           if (this.thisRoom.playersInGame[i].role === 'Oberon') {
             // don't add oberon
           } else {

@@ -1,49 +1,80 @@
 // @ts-nocheck
-import { AVALON, AVALON_BOT, GAME_MODE_NAMES, gameModeObj } from './gameModes';
-import commonPhasesIndex from './indexCommonPhases';
+import { GAME_MODE_NAMES, GameMode, gameModeObj } from './gameModes';
+import { getPhases as getCommonPhases } from './indexCommonPhases';
 import usernamesIndexes from '../myFunctions/usernamesIndexes';
 import { SocketUser } from '../sockets/types';
 import { MIN_PLAYERS } from './game';
 
+export class RoomConfig {
+  host: string;
+  roomId: number;
+  io: any;
+  maxNumPlayers: number;
+  newRoomPassword: string;
+  gameMode: GameMode;
+  ranked: boolean;
+
+  constructor(
+    host: string,
+    roomId: number,
+    io: any,
+    maxNumPlayers: number,
+    newRoomPassword: string,
+    gameMode: GameMode,
+    ranked: boolean,
+  ) {
+    this.host = host;
+    this.roomId = roomId;
+    this.io = io;
+    this.maxNumPlayers = this.boundMaxNumPlayers(maxNumPlayers);
+    this.newRoomPassword = this.processNewRoomPassword(newRoomPassword);
+    this.gameMode = gameMode;
+    this.ranked = ranked;
+  }
+
+  boundMaxNumPlayers(num: number) {
+    // Default to 10 if out of range.
+    if (num < 5 || num > 10) {
+      return 10;
+    }
+
+    return num;
+  }
+
+  processNewRoomPassword(str: string) {
+    if (str === '') {
+      return undefined;
+    }
+
+    return str;
+  }
+}
+
 class Room {
   host: string;
   roomId: number;
+  io: any;
+  maxNumPlayers: number;
+  joinPassword: string;
+  gameMode: GameMode;
+  ranked: boolean;
+
   allSockets: SocketUser[];
   socketsOfPlayers: SocketUser[];
   botSockets: Socket[];
 
-  constructor(
-    host_: string,
-    roomId_: number,
-    io_,
-    maxNumPlayers_: number,
-    newRoomPassword_: string,
-    gameMode_: string,
-    ranked_: bool,
-  ) {
+  constructor(roomConfig: RoomConfig) {
     const thisRoom = this;
 
-    if (newRoomPassword_ === '') {
-      newRoomPassword_ = undefined;
-    }
+    // Expand config
+    this.host = roomConfig.host;
+    this.roomId = roomConfig.roomId;
+    this.io = roomConfig.io;
+    this.maxNumPlayers = roomConfig.maxNumPlayers;
+    this.joinPassword = roomConfig.newRoomPassword;
+    this.gameMode = roomConfig.gameMode;
+    this.ranked = roomConfig.ranked;
 
-    // Default to 10 if out of range.
-    if (maxNumPlayers_ < 5 || maxNumPlayers_ > 10) {
-      maxNumPlayers_ = 10;
-    }
-
-    // Object input variables
-    this.host = host_;
-    this.roomId = roomId_;
-    this.io = io_;
-    this.maxNumPlayers = maxNumPlayers_;
-    this.joinPassword = newRoomPassword_;
-    this.gameMode = gameMode_;
-    // Default value of avalon.
-    if (GAME_MODE_NAMES.includes(this.gameMode) === false) {
-      this.gameMode = 'avalon';
-    }
-    this.ranked = ranked_;
     this.gamesRequiredForRanked = 0;
     this.provisionalGamesRequired = 20;
 
@@ -61,7 +92,7 @@ class Room {
     this.claimingPlayers = [];
 
     // Phases Cards and Roles to use
-    this.commonPhases = new commonPhasesIndex().getPhases(thisRoom);
+    this.commonPhases = getCommonPhases(thisRoom);
     this.specialRoles = new gameModeObj[this.gameMode].getRoles(thisRoom);
     this.specialPhases = new gameModeObj[this.gameMode].getPhases(thisRoom);
     this.specialCards = new gameModeObj[this.gameMode].getCards(thisRoom);
@@ -414,7 +445,7 @@ class Room {
       return;
     }
 
-    if (this.gameMode === AVALON_BOT) {
+    if (this.gameMode === GameMode.AVALON_BOT) {
       return;
     }
 
@@ -434,14 +465,11 @@ class Room {
     this.sendText(this.allSockets, rankedChangeMsg, 'server-text');
   }
 
-  updateGameModesInRoom(socket, gameMode) {
+  updateGameModesInRoom(socket, gameMode: GameMode) {
     if (this.gameStarted) {
       return;
     }
 
-    if (gameMode !== AVALON && gameMode !== AVALON_BOT) {
-      return;
-    }
     if (
       GAME_MODE_NAMES.includes(gameMode) === true &&
       socket.request.user.username === this.host

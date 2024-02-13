@@ -4,10 +4,10 @@ import Ref from './phases/ref';
 import Sire from './phases/sire';
 
 const phases = {
-  [Assassination.phase.toLowerCase()]: Assassination,
-  [Lady.phase.toLowerCase()]: Lady,
-  [Ref.phase.toLowerCase()]: Ref,
-  [Sire.phase.toLowerCase()]: Sire,
+  [Assassination.phase]: Assassination,
+  [Lady.phase]: Lady,
+  [Ref.phase]: Ref,
+  [Sire.phase]: Sire,
 };
 
 export const getPhases = function (thisRoom) {

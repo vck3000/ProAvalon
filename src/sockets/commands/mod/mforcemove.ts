@@ -1,6 +1,7 @@
 import { Command } from '../types';
 import { modOrTOString } from '../../../modsadmins/modOrTO';
 import { getIndexFromUsername, rooms } from '../../sockets';
+import { Alliance } from '../../../gameplay/types';
 
 export const mforcemove: Command = {
   command: 'mforcemove',
@@ -71,7 +72,7 @@ export const mforcemove: Command = {
       }
       const onMissionAndResistance =
         thisRoom.phase == 'votingMission' &&
-        thisRoom.playersInGame[playerIndex].alliance === 'Resistance';
+        thisRoom.playersInGame[playerIndex].alliance === Alliance.Resistance;
       // Add a special case so resistance can't fail missions.
       if (buttons.red.hidden !== true && onMissionAndResistance === false) {
         availableButtons.push('no');

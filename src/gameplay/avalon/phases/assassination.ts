@@ -1,30 +1,27 @@
-/* Each phase must have:
-- Name
-- Whether to show guns or not
-- GameMove to perform operations
-- Buttons that are visible and what text they have
-- Number of targets allowed to be selected
-- Status message to display
-*/
 import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
-import Phase from '../../phases';
+import { ButtonSettings, IPhase, Phase } from '../../phases';
+import { SocketUser } from '../../../sockets/types';
+import { Alliance } from '../../types';
 
-class Assassination {
-  static phase = 'Assassination';
+class Assassination implements IPhase {
+  showGuns = true;
+
+  static phase = Phase.assassination;
   phase = Phase.assassination;
+  private thisRoom: any;
+  // The role that is the owner of this phase
+  private role = 'Assassin';
+  finishedShot = false;
 
-  constructor(thisRoom) {
+  constructor(thisRoom: any) {
     this.thisRoom = thisRoom;
-
-    // The role that is the owner of this phase
-    this.role = 'Assassin';
-
-    this.showGuns = true;
-
-    this.finishedShot = false;
   }
 
-  gameMove(socket, buttonPressed, selectedPlayers) {
+  gameMove(
+    socket: SocketUser,
+    buttonPressed: string,
+    selectedPlayers: string[],
+  ): void {
     if (buttonPressed !== 'yes') {
       // this.thisRoom.sendText(this.thisRoom.allSockets, `Button pressed was ${buttonPressed}. Let admin know if you see this.`, "gameplay-text");
       return;
@@ -43,8 +40,12 @@ class Assassination {
           if (selectedPlayers.length === 1) {
             if (
               typeof selectedPlayers === 'object' ||
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               typeof selectedPlayers === 'array'
             ) {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               selectedPlayers = selectedPlayers[0];
             }
 
@@ -55,7 +56,8 @@ class Assassination {
             // Check the alliance of the target. If they are spy, reject it and ask them to shoot a res.
             // Note: Allowed to shoot Oberon
             if (
-              this.thisRoom.playersInGame[indexOfTarget].alliance === 'Spy' &&
+              this.thisRoom.playersInGame[indexOfTarget].alliance ===
+                Alliance.Spy &&
               this.thisRoom.playersInGame[indexOfTarget].role !== 'Oberon'
             ) {
               socket.emit(
@@ -67,7 +69,7 @@ class Assassination {
 
             // Get merlin's username
             let merlinUsername;
-            for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
+            for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
               if (this.thisRoom.playersInGame[i].role === 'Merlin') {
                 merlinUsername = this.thisRoom.playersInGame[i].username;
               }
@@ -80,7 +82,7 @@ class Assassination {
               if (
                 this.thisRoom.playersInGame[indexOfTarget].role === 'Merlin'
               ) {
-                this.thisRoom.winner = 'Spy';
+                this.thisRoom.winner = Alliance.Spy;
                 this.thisRoom.howWasWon = 'Assassinated Merlin correctly.';
 
                 this.thisRoom.sendText(
@@ -89,7 +91,7 @@ class Assassination {
                   'gameplay-text-red',
                 );
               } else {
-                this.thisRoom.winner = 'Resistance';
+                this.thisRoom.winner = Alliance.Resistance;
                 this.thisRoom.howWasWon =
                   'Mission successes and assassin shot wrong.';
 
@@ -104,7 +106,7 @@ class Assassination {
               this.finishedShot = true;
 
               // For gameRecord - get the role that was shot
-              for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
+              for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
                 if (
                   this.thisRoom.playersInGame[i].username === selectedPlayers
                 ) {
@@ -137,7 +139,7 @@ class Assassination {
             // Check the alliance of the target. If they are spy, reject it and ask them to shoot a res.
             // Note: Allowed to shoot Oberon
             if (
-              this.thisRoom.playersInGame[i0].alliance === 'Spy' &&
+              this.thisRoom.playersInGame[i0].alliance === Alliance.Spy &&
               this.thisRoom.playersInGame[i0].role !== 'Oberon'
             ) {
               socket.emit(
@@ -148,7 +150,7 @@ class Assassination {
             }
 
             if (
-              this.thisRoom.playersInGame[i1].alliance === 'Spy' &&
+              this.thisRoom.playersInGame[i1].alliance === Alliance.Spy &&
               this.thisRoom.playersInGame[i1].role !== 'Oberon'
             ) {
               socket.emit(
@@ -162,7 +164,7 @@ class Assassination {
             // Get isolde's username
             let tristanUsername = '';
             let isoldeUsername = '';
-            for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
+            for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
               if (this.thisRoom.playersInGame[i].role === 'Tristan') {
                 tristanUsername = this.thisRoom.playersInGame[i].username;
               }
@@ -183,7 +185,7 @@ class Assassination {
               (this.thisRoom.playersInGame[i1].role === 'Tristan' &&
                 this.thisRoom.playersInGame[i0].role === 'Isolde')
             ) {
-              this.thisRoom.winner = 'Spy';
+              this.thisRoom.winner = Alliance.Spy;
               this.thisRoom.howWasWon =
                 'Assassinated Tristan and Isolde correctly.';
 
@@ -193,7 +195,7 @@ class Assassination {
                 'gameplay-text-red',
               );
             } else {
-              this.thisRoom.winner = 'Resistance';
+              this.thisRoom.winner = Alliance.Resistance;
               this.thisRoom.howWasWon =
                 'Mission successes and assassin shot wrong.';
 
@@ -209,7 +211,7 @@ class Assassination {
 
             // console.log("playersInGame");
             // For gameRecord - get the role that was shot
-            for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
+            for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
               // console.log(this.thisRoom.playersInGame[i].username + " is " + this.thisRoom.playersInGame[i].role);
               // console.log("data0: " + data[0]);
               // console.log("data1: " + data[1]);
@@ -236,12 +238,7 @@ class Assassination {
     }
   }
 
-  // Returns a object with green and red keys.
-  // Green and Red must both have the following properties:
-  //  hidden          - Is the button hidden?
-  //  disabled        - Is the button disabled?
-  //  setText         - What text to display in the button
-  buttonSettings(indexOfPlayer) {
+  buttonSettings(indexOfPlayer: number): ButtonSettings {
     // Get the index of the assassin
     let indexOfAssassin = -1;
     for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
@@ -251,34 +248,37 @@ class Assassination {
       }
     }
 
-    const obj = {
-      green: {},
-      red: {},
-    };
-
     if (indexOfPlayer === indexOfAssassin) {
-      obj.green.hidden = false;
-      obj.green.disabled = true;
-      obj.green.setText = 'Shoot';
-
-      obj.red.hidden = true;
-      obj.red.disabled = true;
-      obj.red.setText = '';
+      return {
+        green: {
+          hidden: false,
+          disabled: true,
+          setText: 'Shoot',
+        },
+        red: {
+          hidden: true,
+          disabled: true,
+          setText: '',
+        },
+      };
     }
+
     // If it is any other player who isn't special role
-    else {
-      obj.green.hidden = true;
-      obj.green.disabled = true;
-      obj.green.setText = '';
-
-      obj.red.hidden = true;
-      obj.red.disabled = true;
-      obj.red.setText = '';
-    }
-    return obj;
+    return {
+      green: {
+        hidden: true,
+        disabled: true,
+        setText: '',
+      },
+      red: {
+        hidden: true,
+        disabled: true,
+        setText: '',
+      },
+    };
   }
 
-  numOfTargets(indexOfPlayer) {
+  numOfTargets(indexOfPlayer: number): number | number[] {
     if (indexOfPlayer !== undefined && indexOfPlayer !== null) {
       // If assassin, one player to select (assassinate)
       if (this.thisRoom.playersInGame[indexOfPlayer].role === this.role) {
@@ -317,7 +317,7 @@ class Assassination {
     }
   }
 
-  getStatusMessage(indexOfPlayer) {
+  getStatusMessage(indexOfPlayer: number): string {
     // Get the index of the assassin
     let indexOfAssassin = -1;
     for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
@@ -336,12 +336,12 @@ class Assassination {
     return `Waiting for ${usernameOfAssassin} to assassinate.`;
   }
 
-  getProhibitedIndexesToPick(indexOfPlayer) {
+  getProhibitedIndexesToPick(indexOfPlayer: number): number[] {
     const spyIndexes = [];
 
     for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
       if (
-        this.thisRoom.playersInGame[i].alliance === 'Spy' &&
+        this.thisRoom.playersInGame[i].alliance === Alliance.Spy &&
         this.thisRoom.playersInGame[i].role !== 'Oberon'
       ) {
         spyIndexes.push(i);

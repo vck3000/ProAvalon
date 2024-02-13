@@ -1,35 +1,29 @@
-// This file helps us load in the roles from the folder
-import fs from 'fs';
-import path from 'path';
+import Finished from './commonPhases/finished';
+import Frozen from './commonPhases/frozen';
+import Paused from './commonPhases/paused';
+import PickingTeam from './commonPhases/pickingTeam';
+import VotingMission from './commonPhases/votingMission';
+import VotingTeam from './commonPhases/votingTeam';
 
-function index() {
-  // Import all the roles from AVALON
-  this.getPhases = function (thisRoom) {
-    const normalizedPath = path.join(__dirname, './commonPhases');
+const phases = {
+  [Finished.phase]: Finished,
+  [Frozen.phase]: Frozen,
+  [Paused.phase]: Paused,
+  [PickingTeam.phase]: PickingTeam,
+  [VotingMission.phase]: VotingMission,
+  [VotingTeam.phase]: VotingTeam,
+};
 
-    const commonPhases = {};
-    const obj = {};
+export const getPhases = function (thisRoom) {
+  const obj = {};
 
-    fs.readdirSync(normalizedPath).forEach((file) => {
-      // console.log(file);
+  // No good way to map over an object, so we do this iteratively.
+  // Note this implementation leads to a limitation of one role per game.
+  // Not great...!
+  // TODO
+  for (const [phaseName, phaseClass] of Object.entries(phases)) {
+    obj[phaseName] = new phaseClass(thisRoom);
+  }
 
-      // If it is a javascript file, add it
-      if (file.includes('.js') === true && !file.includes('.map')) {
-        name = file.replace('.js', '');
-
-        commonPhases[name] = require(`./commonPhases/${file}`).default;
-      }
-    });
-
-    for (var name in commonPhases) {
-      if (commonPhases.hasOwnProperty(name)) {
-        // Initialise it
-        obj[name] = new commonPhases[name](thisRoom);
-      }
-    }
-
-    return obj;
-  };
-}
-
-export default index;
+  return obj;
+};

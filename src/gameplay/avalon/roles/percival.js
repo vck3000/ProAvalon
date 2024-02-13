@@ -1,29 +1,17 @@
+import { Alliance } from '../../types';
+
 class Percival {
   static role = 'Percival';
-  static alliance = 'Resistance';
+  static alliance = Alliance.Resistance;
 
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
     this.role = 'Percival';
-    this.alliance = 'Resistance';
+    this.alliance = Alliance.Resistance;
 
     this.description = 'Knows the identity of Merlin and Morgana.';
     this.orderPriorityInOptions = 80;
-
-    this.test = function () {
-      // The following lines running successfully shows that each role file can access
-      // the variables and functions from the game room!
-      console.log(
-        'HII from Percival. I will send messages to players through socket.emit()',
-      );
-      const data = {
-        message: 'LOLOL FROM PERCY',
-        classStr: 'server-text',
-      };
-
-      this.thisRoom.io.in(this.thisRoom.roomId).emit('roomChatToClient', data);
-    };
   }
 
   // Percival sees Merlin and Morgana

@@ -1,12 +1,14 @@
+import { Alliance } from '../../types';
+
 class Tristan {
   static role = 'Tristan';
-  static alliance = 'Resistance';
+  static alliance = Alliance.Resistance;
 
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
     this.role = 'Tristan';
-    this.alliance = 'Resistance';
+    this.alliance = Alliance.Resistance;
 
     this.description = 'Tristan and Isolde both see each other.';
     this.orderPriorityInOptions = 50;

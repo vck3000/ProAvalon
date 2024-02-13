@@ -14,6 +14,7 @@ import { sendEmailVerification } from '../myFunctions/sendEmailVerification';
 
 import { disallowVPNs } from '../util/vpnDetection';
 import Settings from '../settings';
+import { Alliance } from '../gameplay/types';
 
 const router = new Router();
 
@@ -512,9 +513,9 @@ const processRecords = async function (records) {
     // Getting the win rate of alliances globally
     //* *********************************************
     for (let i = 0; i < records.length; i++) {
-      if (records[i].winningTeam === 'Resistance') {
+      if (records[i].winningTeam === Alliance.Resistance) {
         resWins++;
-      } else if (records[i].winningTeam === 'Spy') {
+      } else if (records[i].winningTeam === Alliance.Spy) {
         spyWins++;
       }
     }
@@ -561,9 +562,9 @@ const processRecords = async function (records) {
         gameSizeWins[records[i].numberOfPlayers].res = 0;
       }
 
-      if (records[i].winningTeam === 'Spy') {
+      if (records[i].winningTeam === Alliance.Spy) {
         gameSizeWins[records[i].numberOfPlayers].spy++;
-      } else if (records[i].winningTeam === 'Resistance') {
+      } else if (records[i].winningTeam === Alliance.Resistance) {
         gameSizeWins[records[i].numberOfPlayers].res++;
       } else {
         console.log(
@@ -576,7 +577,7 @@ const processRecords = async function (records) {
     // Getting the spy wins breakdown
     //* *********************************************
     for (let i = 0; i < records.length; i++) {
-      if (records[i].winningTeam === 'Spy') {
+      if (records[i].winningTeam === Alliance.Spy) {
         if (!spyWinBreakdown[records[i].howTheGameWasWon]) {
           spyWinBreakdown[records[i].howTheGameWasWon] = 0;
         }
@@ -592,17 +593,17 @@ const processRecords = async function (records) {
       if (records[i].ladyChain.length > 0) {
         // if the first person who held the card is a res
         if (resRoles.indexOf(records[i].ladyChain[0]) !== -1) {
-          if (records[i].winningTeam === 'Resistance') {
+          if (records[i].winningTeam === Alliance.Resistance) {
             ladyBreakdown.resStart.resWin++;
-          } else if (records[i].winningTeam === 'Spy') {
+          } else if (records[i].winningTeam === Alliance.Spy) {
             ladyBreakdown.resStart.spyWin++;
           }
         }
         // if the first person who held the card is a spy
         else if (spyRoles.indexOf(records[i].ladyChain[0]) !== -1) {
-          if (records[i].winningTeam === 'Resistance') {
+          if (records[i].winningTeam === Alliance.Resistance) {
             ladyBreakdown.spyStart.resWin++;
-          } else if (records[i].winningTeam === 'Spy') {
+          } else if (records[i].winningTeam === Alliance.Spy) {
             ladyBreakdown.spyStart.spyWin++;
           }
         } else {

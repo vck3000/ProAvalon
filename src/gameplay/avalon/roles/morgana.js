@@ -1,12 +1,14 @@
+import { Alliance } from '../../types';
+
 class Morgana {
   static role = 'Morgana';
-  static alliance = 'Resistance';
+  static alliance = Alliance.Resistance;
 
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
     this.role = 'Morgana';
-    this.alliance = 'Spy';
+    this.alliance = Alliance.Spy;
 
     this.description = 'A spy who looks like Merlin to Percival.';
     this.orderPriorityInOptions = 70;
@@ -19,7 +21,7 @@ class Morgana {
       const array = [];
 
       for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
-        if (this.thisRoom.playersInGame[i].alliance === 'Spy') {
+        if (this.thisRoom.playersInGame[i].alliance === Alliance.Spy) {
           if (this.thisRoom.playersInGame[i].role === 'Oberon') {
             // don't add oberon
           } else {

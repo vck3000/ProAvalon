@@ -1,15 +1,5 @@
-/* Each phase should have:
-- Name
-- Whether to show guns or not
-- GameMove to perform operations
-- Buttons that are visible and what text they have
-- Number of targets allowed to be selected
-- Status message to display
-- Prohibited Indexes to pick (an array)
-*/
-
 import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
-import Phase from '../../phases';
+import { Phase } from '../../phases';
 
 class Lady {
   static phase = Phase.lady;
