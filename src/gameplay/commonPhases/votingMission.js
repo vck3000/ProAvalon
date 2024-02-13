@@ -156,11 +156,6 @@ class VotingMission {
     }
   }
 
-  // Returns a object with green and red keys.
-  // Green and Red must both have the following properties:
-  //  hidden          - Is the button hidden?
-  //  disabled        - Is the button disabled?
-  //  setText         - What text to display in the button
   buttonSettings(indexOfPlayer) {
     const obj = {
       green: {},
