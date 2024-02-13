@@ -1,4 +1,7 @@
 import Finished from './commonPhases/finished';
+import Lady from './avalon/phases/lady';
+import Ref from './avalon/phases/ref';
+import Sire from './avalon/phases/sire';
 
 const phases = {
   [Finished.phase.toLowerCase()]: Finished,
