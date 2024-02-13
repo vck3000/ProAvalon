@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { Command } from '../types';
 import gameRoom from '../../../gameplay/gameWrapper';
 import { SocketUser } from '../../types';
@@ -10,7 +12,7 @@ import {
   sendToAllChat,
   socketCallback,
 } from '../../sockets';
-import { roomCreationTypeEnum } from '../../../gameplay/roomTypes';
+import { RoomCreationType } from '../../../gameplay/roomTypes';
 
 function addBots(args: string[], senderSocket: SocketUser, roomId: number) {
   if (!args[1]) {
@@ -95,7 +97,7 @@ export const atestgame: Command = {
       dataObj.gameMode,
       dataObj.muteSpectators,
       false,
-      roomCreationTypeEnum.CUSTOM_ROOM,
+      RoomCreationType.CUSTOM_ROOM,
       socketCallback,
     );
     const privateStr = dataObj.newRoomPassword === '' ? '' : 'private ';

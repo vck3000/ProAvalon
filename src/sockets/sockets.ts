@@ -3,8 +3,7 @@ import axios from 'axios';
 import { Server as SocketServer, Socket } from 'socket.io';
 import { SocketUser } from './types';
 
-import gameRoom from '../gameplay/gameWrapper.js';
-import GameWrapper from '../gameplay/gameWrapper.js';
+import GameWrapper from '../gameplay/gameWrapper';
 
 import savedGameObj from '../models/savedGame';
 import { getAllRewardsForUser } from '../rewards/getRewards';
@@ -17,7 +16,12 @@ import JSON from 'circular-json';
 import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
-import { GAME_MODE_NAMES, isGameMode } from '../gameplay/gameModes';
+import {
+  GAME_MODE_NAMES,
+  GameMode,
+  isGameMode,
+  strToGameMode,
+} from '../gameplay/gameModes';
 
 import { ChatSpamFilter } from './filters/chatSpamFilter';
 import { MessageWithDate, Quote } from './quote';
@@ -35,8 +39,10 @@ import { mrevealallroles } from './commands/mod/mrevealallroles';
 
 import { lastWhisperObj } from './commands/mod/mwhisper';
 import * as util from 'util';
-import { roomCreationTypeEnum } from '../gameplay/roomTypes';
+import { RoomCreationType } from '../gameplay/roomTypes';
 import { CreateRoomFilter } from './filters/createRoomFilter';
+import { GameConfig } from '../gameplay/game';
+import { RoomConfig } from '../gameplay/room';
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
@@ -153,7 +159,7 @@ setTimeout(async () => {
             const storedData = JSON.parse(foundSaveGame.room);
             console.log('Loaded room ' + storedData.roomId);
 
-            rooms[storedData.roomId] = new gameRoom();
+            rooms[storedData.roomId] = new GameWrapper();
 
             Object.assign(rooms[storedData.roomId], storedData);
 
@@ -2036,23 +2042,28 @@ function newRoom(dataObj) {
       incrementNextRoomId();
     }
 
-    const privateRoom = !(dataObj.newRoomPassword === '');
+    const privateRoom = dataObj.newRoomPassword !== '';
     const rankedRoom = dataObj.ranked === 'ranked' && !privateRoom;
 
-    rooms[nextRoomId] = new gameRoom(
+    const roomConfig = new RoomConfig(
       this.request.user.username,
       nextRoomId,
       ioGlobal,
       dataObj.maxNumPlayers,
       dataObj.newRoomPassword,
-      dataObj.gameMode,
+      strToGameMode(dataObj.gameMode),
+      rankedRoom,
+    );
+    const gameConfig = new GameConfig(
+      roomConfig,
       dataObj.muteSpectators,
       dataObj.disableVoteHistory,
-      rankedRoom,
-      roomCreationTypeEnum.CUSTOM_ROOM,
-      socketCallback,
+      RoomCreationType.CUSTOM_ROOM,
       () => new Date(),
     );
+
+    rooms[nextRoomId] = new GameWrapper(gameConfig, socketCallback);
+
     const privateStr = !privateRoom ? '' : 'private ';
     const rankedUnrankedStr = rankedRoom ? 'ranked' : 'unranked';
 
@@ -2252,7 +2263,7 @@ function gameMove(data) {
   }
 }
 
-function updateRoomGameMode(gameMode) {
+function updateRoomGameMode(gameMode: GameMode) {
   if (rooms[this.request.user.inRoomId]) {
     rooms[this.request.user.inRoomId].updateGameModesInRoom(this, gameMode);
   }

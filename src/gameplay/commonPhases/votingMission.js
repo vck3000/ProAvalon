@@ -1,5 +1,6 @@
 import usernamesIndexes from '../../myFunctions/usernamesIndexes';
 import { Phase } from '../phases';
+import { Alliance } from '../types';
 
 function VotingMission(thisRoom_) {
   this.thisRoom = thisRoom_;
@@ -33,7 +34,7 @@ VotingMission.prototype.gameMove = function (
       );
       if (
         index !== -1 &&
-        this.thisRoom.playersInGame[index].alliance === 'Resistance'
+        this.thisRoom.playersInGame[index].alliance === Alliance.Resistance
       ) {
         socket.emit(
           'danger-alert',
@@ -123,13 +124,13 @@ VotingMission.prototype.gameMove = function (
 
     // game over if more than 3 fails or successes
     if (numOfFails >= 3) {
-      this.thisRoom.winner = 'Spy';
+      this.thisRoom.winner = Alliance.Spy;
       this.thisRoom.howWasWon = 'Mission fails.';
-      this.thisRoom.finishGame('Spy');
+      this.thisRoom.finishGame(Alliance.Spy);
     } else if (numOfSucceeds >= 3) {
-      this.thisRoom.winner = 'Resistance';
+      this.thisRoom.winner = Alliance.Resistance;
       this.thisRoom.howWasWon = 'Mission successes';
-      this.thisRoom.finishGame('Resistance');
+      this.thisRoom.finishGame(Alliance.Resistance);
     }
     // If the game goes on
     else {

@@ -1,5 +1,6 @@
 import usernamesIndexes from '../../myFunctions/usernamesIndexes';
 import { Phase } from '../phases';
+import { Alliance } from '../types';
 
 function VotingTeam(thisRoom_) {
   this.thisRoom = thisRoom_;
@@ -79,9 +80,9 @@ VotingTeam.prototype.gameMove = function (
           'The hammer was rejected.',
           'gameplay-text-red',
         );
-        this.thisRoom.winner = 'Spy';
+        this.thisRoom.winner = Alliance.Spy;
 
-        this.thisRoom.finishGame('Spy');
+        this.thisRoom.finishGame(Alliance.Spy);
       } else if (outcome === 'no') {
         this.thisRoom.proposedTeam = [];
         this.thisRoom.changePhase(Phase.pickingTeam);

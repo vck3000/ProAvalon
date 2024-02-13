@@ -1,13 +1,17 @@
 import Finished from './commonPhases/finished';
-import Lady from './avalon/phases/lady';
-import Ref from './avalon/phases/ref';
-import Sire from './avalon/phases/sire';
+import Frozen from './commonPhases/frozen';
+import Paused from './commonPhases/paused';
+import PickingTeam from './commonPhases/pickingTeam';
+import VotingMission from './commonPhases/votingMission';
+import VotingTeam from './commonPhases/votingTeam';
 
 const phases = {
   [Finished.phase.toLowerCase()]: Finished,
-  [Lady.phase.toLowerCase()]: Lady,
-  [Ref.phase.toLowerCase()]: Ref,
-  [Sire.phase.toLowerCase()]: Sire,
+  [Frozen.phase.toLowerCase()]: Frozen,
+  [Paused.phase.toLowerCase()]: Paused,
+  [PickingTeam.phase.toLowerCase()]: PickingTeam,
+  [VotingMission.phase.toLowerCase()]: VotingMission,
+  [VotingTeam.phase.toLowerCase()]: VotingTeam,
 };
 
 export const getPhases = function (thisRoom) {

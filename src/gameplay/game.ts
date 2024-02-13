@@ -1,7 +1,7 @@
 // @ts-nocheck
 import _ from 'lodash';
 
-import Room from './room';
+import Room, { RoomConfig } from './room';
 import usernamesIndexes from '../myFunctions/usernamesIndexes';
 import User from '../models/user';
 import GameRecord from '../models/gameRecord';
@@ -12,12 +12,60 @@ import { isTO } from '../modsadmins/tournamentOrganizers';
 import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 
-import { getRoomTypeFromString, roomCreationTypeEnum } from './roomTypes';
+import { RoomCreationType } from './roomTypes';
 import { gameModeObj } from './gameModes';
-import { isGamePhase, Phase } from './phases';
+import { ButtonSettings, isGamePhase, Phase } from './phases';
+import { Alliance } from './types';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;
+
+const THREE_MINUTES = new Date(0, 0, 0, 0, 3, 0);
+const ONE_SECOND = new Date(0, 0, 0, 0, 0, 1);
+
+const ALLIANCES = [
+  'Resistance',
+  'Resistance',
+  'Resistance',
+  'Spy',
+  'Spy',
+  'Resistance',
+  'Spy',
+  'Resistance',
+  'Resistance',
+  'Spy',
+];
+
+const NUM_PLAYERS_ON_MISSION = [
+  ['2', '3', '2', '3', '3'],
+  ['2', '3', '4', '3', '4'],
+  ['2', '3', '3', '4*', '4'],
+  ['3', '4', '4', '5*', '5'],
+  ['3', '4', '4', '5*', '5'],
+  ['3', '4', '4', '5*', '5'],
+];
+
+export class GameConfig {
+  roomConfig: RoomConfig;
+  muteSpectators = false;
+  disableVoteHistory = false;
+  roomCreationType: RoomCreationType;
+  getTimeFunc: () => Date;
+
+  constructor(
+    roomConfig: RoomConfig,
+    muteSpectators: boolean,
+    disableVoteHistory: boolean,
+    roomCreationType: RoomCreationType,
+    getTimeFunc: () => Date,
+  ) {
+    this.roomConfig = roomConfig;
+    this.muteSpectators = muteSpectators;
+    this.disableVoteHistory = disableVoteHistory;
+    this.roomCreationType = roomCreationType;
+    this.getTimeFunc = getTimeFunc;
+  }
+}
 
 class Game extends Room {
   gameStarted = false;
@@ -26,7 +74,14 @@ class Game extends Room {
   phase: Phase = Phase.pickingTeam;
   phaseBeforeFrozen: Phase = this.phase;
   missionHistory = [];
-  roomCreationType: roomCreationTypeEnum;
+  teamLeader = 0;
+  hammer = 0;
+  missionNum = 0;
+  pickNum = 0;
+  roomCreationType: RoomCreationType;
+
+  // Game misc variables
+  winner: Alliance = '';
 
   // TODO This shouldn't be here! Should be in Assassin file.
   startAssassinationTime: Date;
@@ -36,61 +91,19 @@ class Game extends Room {
 
   botSockets: any;
   getTimeFunc: () => Date;
-  dateTimerExpires: Date = new Date(0);
+  timerDuration: Date = THREE_MINUTES; // Config. Never changed after construction.
+  dateTimerExpires: Date = new Date(0); // Is updated after each changePhase.
 
-  constructor(
-    host_,
-    roomId_,
-    io_,
-    maxNumPlayers_,
-    newRoomPassword_,
-    gameMode_,
-    muteSpectators_,
-    disableVoteHistory_,
-    ranked_,
-    roomCreationType_, // to track ranked vs unranked vs custom game
-    callback_,
-    getTimeFunc_,
-  ) {
-    super(
-      host_,
-      roomId_,
-      io_,
-      maxNumPlayers_,
-      newRoomPassword_,
-      gameMode_,
-      ranked_,
-    );
+  constructor(gameConfig: GameConfig) {
+    super(gameConfig.roomConfig);
 
-    this.callback = callback_;
-    this.getTimeFunc = getTimeFunc_;
-
-    this.roomCreationType = getRoomTypeFromString(roomCreationType_);
-
-    this.alliances = [
-      'Resistance',
-      'Resistance',
-      'Resistance',
-      'Spy',
-      'Spy',
-      'Resistance',
-      'Spy',
-      'Resistance',
-      'Resistance',
-      'Spy',
-    ];
-
-    this.numPlayersOnMission = [
-      ['2', '3', '2', '3', '3'],
-      ['2', '3', '4', '3', '4'],
-      ['2', '3', '3', '4*', '4'],
-      ['3', '4', '4', '5*', '5'],
-      ['3', '4', '4', '5*', '5'],
-      ['3', '4', '4', '5*', '5'],
-    ];
+    // Expand config
+    this.muteSpectators = gameConfig.muteSpectators;
+    this.disableVoteHistory = gameConfig.disableVoteHistory;
+    this.roomCreationType = gameConfig.roomCreationType;
+    this.getTimeFunc = gameConfig.getTimeFunc;
 
     this.phaseBeforePause = '';
-
     this.playerUsernamesInGame = [];
 
     this.resistanceUsernames = [];
@@ -99,33 +112,19 @@ class Game extends Room {
     this.roleKeysInPlay = [];
     this.cardKeysInPlay = [];
 
-    this.teamLeader = 0;
-    this.hammer = 0;
-    this.missionNum = 0;
-    this.pickNum = 0;
-
     this.numFailsHistory = [];
     this.proposedTeam = [];
     this.lastProposedTeam = [];
     this.votes = [];
+
     // Only show all the votes when they've all come in, not one at a time
     this.publicVotes = [];
     this.missionVotes = [];
 
     this.voteHistory = {};
-    this.disableVoteHistory = disableVoteHistory_;
-
-    // Game misc variables
-    this.winner = '';
-    this.options = undefined;
-
-    // Room variables
-    this.destroyRoom = false;
 
     // Room misc variables
     this.chatHistory = []; // Here because chatHistory records after game starts
-
-    this.muteSpectators = muteSpectators_;
   }
 
   // RECOVER GAME!
@@ -349,7 +348,7 @@ class Game extends Room {
 
       // set the role to be from the roles array with index of the value
       // of the rolesAssignment which has been shuffled
-      this.playersInGame[i].alliance = this.alliances[rolesAssignment[i]];
+      this.playersInGame[i].alliance = ALLIANCES[rolesAssignment[i]];
 
       this.playerUsernamesInGame.push(
         this.socketsOfPlayers[i].request.user.username,
@@ -367,9 +366,9 @@ class Game extends Room {
       // If a role file exists for this
       if (this.specialRoles.hasOwnProperty(op)) {
         // If it is a res:
-        if (this.specialRoles[op].alliance === 'Resistance') {
+        if (this.specialRoles[op].alliance === Alliance.Resistance) {
           this.resRoles.push(this.specialRoles[op].role);
-        } else if (this.specialRoles[op].alliance === 'Spy') {
+        } else if (this.specialRoles[op].alliance === Alliance.Spy) {
           this.spyRoles.push(this.specialRoles[op].role);
         } else {
           console.log(
@@ -721,10 +720,8 @@ class Game extends Room {
   changePhase(phase: Phase) {
     this.phase = phase;
 
-    const threeMinutes = new Date(0, 0, 0, 0, 3, 0);
-    const oneSecond = new Date(0, 0, 0, 0, 0, 1);
-
-    this.dateTimerExpires = this.getTimeFunc() + threeMinutes;
+    // Set up the timer.
+    this.dateTimerExpires = this.getTimeFunc() + this.timerDuration;
 
     setTimeout(() => {
       // Ignore the callback if this isn't a game phase
@@ -743,7 +740,80 @@ class Game extends Room {
       }
 
       // User has timed out.
-    }, threeMinutes + oneSecond);
+      // Get the current phase
+      let phaseObject;
+      if (this.commonPhases.hasOwnProperty(this.phase) === true) {
+        phaseObject = this.commonPhases[this.phase];
+      } else if (this.specialPhases.hasOwnProperty(this.phase) === true) {
+        phaseObject = this.commonPhases[this.phase];
+      }
+
+      // Iterate over each user to figure out who hasn't acted.
+      for (let i = 0; i < this.playersInGame.length; i++) {
+        const buttonSettings: ButtonSettings = phaseObject.buttonSettings(i);
+        const numOfTargets: number | number[] = phaseObject.numOfTargets(i);
+        const prohibitedIndexesToPick: number[] =
+          phaseObject.getProhibitedIndexesToPick(i);
+
+        const buttonsAvailable: string[] = [];
+        if (
+          buttonSettings.red.hidden === false &&
+          buttonSettings.red.disabled === false
+        ) {
+          buttonsAvailable.push('red');
+        }
+
+        if (
+          buttonSettings.green.hidden === false &&
+          buttonSettings.green.disabled === false
+        ) {
+          buttonsAvailable.push('green');
+        }
+
+        // If either button is available to press, they've timed out.
+        const timedOut = buttonsAvailable.length !== 0;
+
+        if (timedOut) {
+          // Select a random option for them.
+          // TODO check that this is inclusive/exclusive correctly.
+          const randomButton =
+            buttonsAvailable[getRandomInt(0, buttonsAvailable.length)];
+
+          // Need to identify any targets to select too.
+          const targets: string[] = [];
+
+          const filteredPlayerUsernames = [];
+          for (let i = 0; i < this.playersInGame.length; i++) {
+            if (!prohibitedIndexesToPick.includes(i)) {
+              filteredPlayerUsernames.push(
+                this.playersInGame[i].request.user.username.toLowerCase(),
+              );
+            }
+          }
+
+          while (numOfTargets > targets.length) {
+            const randomNum = getRandomInt(0, filteredPlayerUsernames.length);
+            targets.push(filteredPlayerUsernames[randomNum]);
+            filteredPlayerUsernames.slice(randomNum, -1);
+          }
+
+          // Notify everyone
+          thisRoom.sendText(
+            thisRoom.allSockets,
+            `${this.playersInGame[i].request.user.username} has timed out. Forcing a random move.`,
+            'server-text',
+          );
+          thisRoom.sendText(
+            thisRoom.allSockets,
+            `Player: ${this.playersInGame[i].request.user.username} | Button: ${randomButton} | Targets: ${targets}.`,
+            'server-text',
+          );
+
+          // Act on the randomised action.
+          this.gameMove(this.playersInGame[i], [randomButton, targets]);
+        }
+      }
+    }, this.timerDuration + ONE_SECOND);
   }
 
   toShowGuns() {
@@ -999,7 +1069,7 @@ class Game extends Room {
         data[i].proposedTeam = this.proposedTeam;
 
         data[i].numPlayersOnMission =
-          this.numPlayersOnMission[playerRoles.length - MIN_PLAYERS]; // - 5
+          NUM_PLAYERS_ON_MISSION[playerRoles.length - MIN_PLAYERS]; // - 5
         data[i].numSelectTargets = this.getClientNumOfTargets(i);
 
         data[i].votes = this.publicVotes;
@@ -1026,11 +1096,6 @@ class Game extends Room {
 
         data[i].publicData = this.getRoleCardPublicGameData();
         data[i].prohibitedIndexesToPicks = this.getProhibitedIndexesToPick(i);
-
-        // To use with Detry bots
-        // data[i].roles = this.playersInGame.map((player) => player.role);
-        // // This is hacky but it works, for now...
-        // data[i].cards = this.options.filter((option) => option.indexOf('of the') !== -1);
 
         // if game is finished, reveal everything including roles
         if (this.phase === 'finished') {
@@ -1078,7 +1143,7 @@ class Game extends Room {
     data.proposedTeam = this.proposedTeam;
 
     data.numPlayersOnMission =
-      this.numPlayersOnMission[playerRoles.length - MIN_PLAYERS]; // - 5
+      NUM_PLAYERS_ON_MISSION[playerRoles.length - MIN_PLAYERS]; // - 5
     data.numSelectTargets = this.getClientNumOfTargets();
 
     data.votes = this.publicVotes;
@@ -1142,7 +1207,7 @@ class Game extends Room {
     return WAITING;
   }
 
-  finishGame(toBeWinner) {
+  finishGame(toBeWinner: Alliance) {
     const timeStarted = new Date(this.startGameTime);
     const timeFinished = new Date();
     const gameDuration = new Date(timeFinished - timeStarted);
@@ -1150,7 +1215,7 @@ class Game extends Room {
     const playersInGameVar = this.playersInGame;
 
     const winnerVar = this.winner;
-    if (winnerVar != 'Resistance' && winnerVar != 'Spy')
+    if (winnerVar !== Alliance.Resistance && winnerVar !== Alliance.Spy)
       throw new Error('Winner var is not Resistance or Spy');
 
     const thisGame = this;
