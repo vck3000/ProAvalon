@@ -1,6 +1,6 @@
 import usernamesIndexes from '../../myFunctions/usernamesIndexes';
 import { Phase } from '../phases';
-import { MIN_PLAYERS } from '../game';
+import { MIN_PLAYERS, NUM_PLAYERS_ON_MISSION } from '../game';
 
 class PickingTeam {
   static phase = Phase.pickingTeam;
@@ -11,7 +11,7 @@ class PickingTeam {
     this.thisRoom = thisRoom_;
   }
 
-  gameMove = function (socket, buttonPressed, selectedPlayers) {
+  gameMove(socket, buttonPressed, selectedPlayers) {
     if (buttonPressed !== 'yes') {
       // this.thisRoom.sendText(this.thisRoom.allSockets, `Button pressed was ${buttonPressed}. Let admin know if you see this.`, "gameplay-text");
       return;
@@ -37,7 +37,7 @@ class PickingTeam {
       this.thisRoom.publicVotes = [];
 
       let num =
-        this.thisRoom.numPlayersOnMission[
+        NUM_PLAYERS_ON_MISSION[
           this.thisRoom.playersInGame.length - MIN_PLAYERS
         ][this.thisRoom.missionNum - 1];
       // console.log("Num player for this.thisRoom mission : " + num);
@@ -50,7 +50,7 @@ class PickingTeam {
       }
 
       // Check that the data is valid (i.e. includes only usernames of players)
-      for (var i = 0; i < num; i++) {
+      for (let i = 0; i < num; i++) {
         // If the data doesn't have the right number of users
         // Or has an empty element
         if (!selectedPlayers[i]) {
@@ -74,7 +74,7 @@ class PickingTeam {
       // Send out the gameplay text
       //--------------------------------------
       let str = '';
-      for (var i = 0; i < selectedPlayers.length; i++) {
+      for (let i = 0; i < selectedPlayers.length; i++) {
         str += `${selectedPlayers[i]}, `;
       }
 
@@ -94,14 +94,14 @@ class PickingTeam {
         `User ${socket.request.user.username} is not the team leader. Cannot pick.`,
       );
     }
-  };
+  }
 
   // Returns a object with green and red keys.
   // Green and Red must both have the following properties:
   //  hidden          - Is the button hidden?
   //  disabled        - Is the button disabled?
   //  setText         - What text to display in the button
-  buttonSettings = function (indexOfPlayer) {
+  buttonSettings(indexOfPlayer) {
     const obj = {
       green: {},
       red: {},
@@ -129,13 +129,13 @@ class PickingTeam {
     }
 
     return obj;
-  };
+  }
 
-  numOfTargets = function (indexOfPlayer) {
+  numOfTargets(indexOfPlayer) {
     let num =
-      this.thisRoom.numPlayersOnMission[
-        this.thisRoom.playersInGame.length - MIN_PLAYERS
-      ][this.thisRoom.missionNum - 1];
+      NUM_PLAYERS_ON_MISSION[this.thisRoom.playersInGame.length - MIN_PLAYERS][
+        this.thisRoom.missionNum - 1
+      ];
     // console.log("Num player for this.thisRoom mission : " + num);
 
     // If we are not the team leader
@@ -151,15 +151,15 @@ class PickingTeam {
     }
 
     return num;
-  };
+  }
 
-  getStatusMessage = function (indexOfPlayer) {
+  getStatusMessage(indexOfPlayer) {
     if (
       indexOfPlayer !== undefined &&
       indexOfPlayer === this.thisRoom.teamLeader
     ) {
       const num =
-        this.thisRoom.numPlayersOnMission[
+        NUM_PLAYERS_ON_MISSION[
           this.thisRoom.playersInGame.length - MIN_PLAYERS
         ][this.thisRoom.missionNum - 1];
 
@@ -174,7 +174,7 @@ class PickingTeam {
     }
 
     return 'ERROR: Tell the admin if you see this, code 10.';
-  };
+  }
 }
 
 export default PickingTeam;

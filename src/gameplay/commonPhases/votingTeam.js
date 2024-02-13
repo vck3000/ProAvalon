@@ -52,15 +52,15 @@ class VotingTeam {
         this.thisRoom.publicVotes = this.thisRoom.votes;
         this.thisRoom.VHUpdateTeamVotes();
 
-        const outcome = calcVotes(this.thisRoom.votes);
+        const outcome = this.calcVotes(this.thisRoom.votes);
 
         if (outcome === 'yes') {
           this.thisRoom.changePhase(Phase.votingMission);
           this.thisRoom.playersYetToVote = this.thisRoom.proposedTeam.slice();
 
-          var str = `Mission ${this.thisRoom.missionNum}.${
+          let str = `Mission ${this.thisRoom.missionNum}.${
             this.thisRoom.pickNum
-          } was approved.${getStrApprovedRejectedPlayers(
+          } was approved.${this.getStrApprovedRejectedPlayers(
             this.thisRoom.votes,
             this.thisRoom.playersInGame,
           )}`;
@@ -89,9 +89,9 @@ class VotingTeam {
           this.thisRoom.proposedTeam = [];
           this.thisRoom.changePhase(Phase.pickingTeam);
 
-          var str = `Mission ${this.thisRoom.missionNum}.${
+          let str = `Mission ${this.thisRoom.missionNum}.${
             this.thisRoom.pickNum
-          } was rejected.${getStrApprovedRejectedPlayers(
+          } was rejected.${this.getStrApprovedRejectedPlayers(
             this.thisRoom.votes,
             this.thisRoom.playersInGame,
           )}`;
@@ -149,16 +149,16 @@ class VotingTeam {
     return obj;
   };
 
-  numOfTargets = function (indexOfPlayer) {
+  numOfTargets(indexOfPlayer) {
     return null;
-  };
+  }
 
-  getStatusMessage = function (indexOfPlayer) {
+  getStatusMessage(indexOfPlayer) {
     // If we are spectator
     if (indexOfPlayer === -1) {
-      var str = '';
+      let str = '';
       str += 'Waiting for votes: ';
-      for (var i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
+      for (let i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
         str = `${str + this.thisRoom.playersYetToVote[i]}, `;
       }
       // Remove last , and replace with .
@@ -174,9 +174,9 @@ class VotingTeam {
         this.thisRoom.playersInGame[indexOfPlayer].username,
       ) === -1
     ) {
-      var str = '';
+      let str = '';
       str += 'Waiting for votes: ';
-      for (var i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
+      for (let i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
         str = `${str + this.thisRoom.playersYetToVote[i]}, `;
       }
       // Remove last , and replace with .
@@ -187,12 +187,12 @@ class VotingTeam {
     }
     // User has not voted yet or user is a spectator
 
-    var str = '';
+    let str = '';
     str += `${
       this.thisRoom.playersInGame[this.thisRoom.teamLeader].username
     } has picked: `;
 
-    for (var i = 0; i < this.thisRoom.proposedTeam.length; i++) {
+    for (let i = 0; i < this.thisRoom.proposedTeam.length; i++) {
       str += `${this.thisRoom.proposedTeam[i]}, `;
     }
     // Remove last , and replace with .
@@ -200,9 +200,7 @@ class VotingTeam {
     str += '.';
 
     return str;
-  };
-
-  function;
+  }
 
   getStrApprovedRejectedPlayers(votes, playersInGame) {
     let approvedUsernames = '';
@@ -222,13 +220,11 @@ class VotingTeam {
       }
     }
     // Disabled approve rejected people.
-    // var str = "<p>Approved: " + approvedUsernames + "</p> <p>Rejected: " + rejectedUsernames + "</p>"
+    // let str = "<p>Approved: " + approvedUsernames + "</p> <p>Rejected: " + rejectedUsernames + "</p>"
     const str = '';
 
     return str;
   }
-
-  function;
 
   calcVotes(votes) {
     const numOfPlayers = votes.length;

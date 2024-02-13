@@ -6,12 +6,12 @@ import VotingMission from './commonPhases/votingMission';
 import VotingTeam from './commonPhases/votingTeam';
 
 const phases = {
-  [Finished.phase.toLowerCase()]: Finished,
-  [Frozen.phase.toLowerCase()]: Frozen,
-  [Paused.phase.toLowerCase()]: Paused,
-  [PickingTeam.phase.toLowerCase()]: PickingTeam,
-  [VotingMission.phase.toLowerCase()]: VotingMission,
-  [VotingTeam.phase.toLowerCase()]: VotingTeam,
+  [Finished.phase]: Finished,
+  [Frozen.phase]: Frozen,
+  [Paused.phase]: Paused,
+  [PickingTeam.phase]: PickingTeam,
+  [VotingMission.phase]: VotingMission,
+  [VotingTeam.phase]: VotingTeam,
 };
 
 export const getPhases = function (thisRoom) {

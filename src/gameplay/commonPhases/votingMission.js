@@ -11,8 +11,8 @@ class VotingMission {
     this.thisRoom = thisRoom_;
   }
 
-  gameMove = function (socket, buttonPressed, selectedPlayers) {
-    var i = this.thisRoom.playersYetToVote.indexOf(
+  gameMove(socket, buttonPressed, selectedPlayers) {
+    let i = this.thisRoom.playersYetToVote.indexOf(
       socket.request.user.username,
     );
 
@@ -74,7 +74,7 @@ class VotingMission {
         console.log(`ERROR! Outcome was: ${outcome}`);
       }
 
-      const numOfVotedFails = countFails(this.thisRoom.missionVotes);
+      const numOfVotedFails = this.countFails(this.thisRoom.missionVotes);
       this.thisRoom.numFailsHistory.push(numOfVotedFails);
 
       // for the gameplay message
@@ -116,7 +116,7 @@ class VotingMission {
       // count number of succeeds and fails
       let numOfSucceeds = 0;
       let numOfFails = 0;
-      for (var i = 0; i < this.thisRoom.missionHistory.length; i++) {
+      for (let i = 0; i < this.thisRoom.missionHistory.length; i++) {
         if (this.thisRoom.missionHistory[i] === 'succeeded') {
           numOfSucceeds++;
         } else if (this.thisRoom.missionHistory[i] === 'failed') {
@@ -154,14 +154,14 @@ class VotingMission {
       }
       this.thisRoom.requireSave = true;
     }
-  };
+  }
 
   // Returns a object with green and red keys.
   // Green and Red must both have the following properties:
   //  hidden          - Is the button hidden?
   //  disabled        - Is the button disabled?
   //  setText         - What text to display in the button
-  buttonSettings = function (indexOfPlayer) {
+  buttonSettings(indexOfPlayer) {
     const obj = {
       green: {},
       red: {},
@@ -193,18 +193,18 @@ class VotingMission {
     }
 
     return obj;
-  };
+  }
 
-  numOfTargets = function (indexOfPlayer) {
+  numOfTargets(indexOfPlayer) {
     return null;
-  };
+  }
 
-  getStatusMessage = function (indexOfPlayer) {
+  getStatusMessage(indexOfPlayer) {
     // If we are spectator
     if (indexOfPlayer === -1) {
-      var str = '';
+      let str = '';
       str += 'Waiting for mission votes: ';
-      for (var i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
+      for (let i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
         str = `${str + this.thisRoom.playersYetToVote[i]}, `;
       }
       // Remove last , and replace with .
@@ -220,12 +220,12 @@ class VotingMission {
         this.thisRoom.playersInGame[indexOfPlayer].username,
       ) !== -1
     ) {
-      var str = '';
+      let str = '';
       str += `${
         this.thisRoom.playersInGame[this.thisRoom.teamLeader].username
       } has picked: `;
 
-      for (var i = 0; i < this.thisRoom.proposedTeam.length; i++) {
+      for (let i = 0; i < this.thisRoom.proposedTeam.length; i++) {
         str += `${this.thisRoom.proposedTeam[i]}, `;
       }
       // Remove last , and replace with .
@@ -235,9 +235,9 @@ class VotingMission {
       return str;
     }
 
-    var str = '';
+    let str = '';
     str += 'Waiting for mission votes: ';
-    for (var i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
+    for (let i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
       str = `${str + this.thisRoom.playersYetToVote[i]}, `;
     }
     // Remove last , and replace with .
@@ -245,9 +245,7 @@ class VotingMission {
     str += '.';
 
     return str;
-  };
-
-  function;
+  }
 
   countFails(votes) {
     let numOfVotedFails = 0;

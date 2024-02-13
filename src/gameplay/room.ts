@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { GAME_MODE_NAMES, GameMode, gameModeObj } from './gameModes';
-import commonPhasesIndex from './indexCommonPhases';
+import { getPhases as getCommonPhases } from './indexCommonPhases';
 import usernamesIndexes from '../myFunctions/usernamesIndexes';
 import { SocketUser } from '../sockets/types';
 import { MIN_PLAYERS } from './game';
@@ -92,7 +92,7 @@ class Room {
     this.claimingPlayers = [];
 
     // Phases Cards and Roles to use
-    this.commonPhases = new commonPhasesIndex.getPhases(thisRoom);
+    this.commonPhases = getCommonPhases(thisRoom);
     this.specialRoles = new gameModeObj[this.gameMode].getRoles(thisRoom);
     this.specialPhases = new gameModeObj[this.gameMode].getPhases(thisRoom);
     this.specialCards = new gameModeObj[this.gameMode].getCards(thisRoom);

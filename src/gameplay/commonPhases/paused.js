@@ -18,11 +18,11 @@ class Paused {
     this.thisRoom = thisRoom_;
   }
 
-  gameMove = function (socket, buttonPressed, selectedPlayers) {
+  gameMove(socket, buttonPressed, selectedPlayers) {
     // Game is paused, no actions.
-  };
+  }
 
-  buttonSettings = function (indexOfPlayer) {
+  buttonSettings(indexOfPlayer) {
     const obj = {
       green: {},
       red: {},
@@ -37,15 +37,15 @@ class Paused {
     obj.red.setText = '';
 
     return obj;
-  };
+  }
 
-  numOfTargets = function (indexOfPlayer) {
+  numOfTargets(indexOfPlayer) {
     return null;
-  };
+  }
 
-  getStatusMessage = function (indexOfPlayer) {
+  getStatusMessage(indexOfPlayer) {
     return 'A moderator has paused the game. All actions are prevented.';
-  };
+  }
 }
 
 export default Paused;

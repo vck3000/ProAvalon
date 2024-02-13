@@ -36,7 +36,7 @@ const ALLIANCES = [
   'Spy',
 ];
 
-const NUM_PLAYERS_ON_MISSION = [
+export const NUM_PLAYERS_ON_MISSION = [
   ['2', '3', '2', '3', '3'],
   ['2', '3', '4', '3', '4'],
   ['2', '3', '3', '4*', '4'],
@@ -736,6 +736,11 @@ class Game extends Room {
 
       // Ignore if date timer expires is still ahead of now
       if (this.dateTimerExpires > this.getTimeFunc()) {
+        return;
+      }
+
+      // Ignore if game is over
+      if (this.finished) {
         return;
       }
 
