@@ -16,7 +16,7 @@ import { RoomCreationType } from './roomTypes';
 import { gameModeObj } from './gameModes';
 import { Phase } from './phases';
 import { Alliance } from './types';
-import { GameTimer } from './gameTimer';
+import { GameTimer, Timeouts } from './gameTimer';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;
@@ -131,12 +131,18 @@ class Game extends Room {
     this.gameTimer = new GameTimer(this, gameConfig.getTimeFunc);
   }
 
-  destructor() {
+  destructor(): void {
     this.gameTimer.destructor();
   }
 
+  configureTimeouts(timeouts: Timeouts): void {
+    if (this.gameStarted === false) {
+      this.gameTimer.configureTimeouts(timeouts);
+    }
+  }
+
   // RECOVER GAME!
-  recoverGame(storedData) {
+  recoverGame(storedData): void {
     // Set a few variables back to new state
     this.allSockets = [];
     this.socketsOfPlayers = [];
@@ -151,6 +157,7 @@ class Game extends Room {
     this.specialCards = new gameModeObj[this.gameMode].getCards(this);
 
     this.gameTimer = new GameTimer(this, () => new Date());
+    this.gameTimer.configureTimeouts(storedData.timeoutSettings);
 
     // Roles
     // Remove the circular dependency

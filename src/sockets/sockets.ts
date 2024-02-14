@@ -1647,7 +1647,10 @@ export function sendToAllChat(io, data) {
 
 function sendToRoomChat(io, roomId, data) {
   io.in(roomId).emit('roomChatToClient', data);
-  console.log(`[Room Chat] [Room ${roomId}] ${data.message}`);
+  // Already logged upstream in roomChatFromClient.
+  if (!data.username) {
+    console.log(`[Room Chat] [Room ${roomId}] ${data.message}`);
+  }
   if (rooms[roomId]) {
     rooms[roomId].addToChatHistory(data);
   }
@@ -2223,7 +2226,15 @@ function playerNotReady() {
   }
 }
 
-function startGame(data, gameMode) {
+function startGame(data) {
+  if (!data) {
+    return;
+  }
+
+  const options = data.options;
+  const gameMode = data.gameMode;
+  const timeoutsStr = data.timeouts;
+
   // start the game
   if (gameMode === null || gameMode === undefined) {
     this.emit(
@@ -2233,15 +2244,32 @@ function startGame(data, gameMode) {
     return;
   }
 
+  const processTimeout = (timeoutStr: string) => {
+    let timeout = parseInt(timeoutStr, 10);
+    if (timeout < 0) {
+      timeout = 0;
+    }
+
+    return timeout;
+  };
+
+  const timeouts = {
+    default: processTimeout(timeoutsStr.default),
+    assassination: processTimeout(timeoutsStr.assassination),
+  };
+
   if (rooms[this.request.user.inRoomId]) {
     if (
       this.request.user.inRoomId &&
       this.request.user.username === rooms[this.request.user.inRoomId].host
     ) {
-      rooms[this.request.user.inRoomId].hostTryStartGame(data, gameMode);
-      // this.emit("update-room-players", rooms[roomId].getPlayers());
+      rooms[this.request.user.inRoomId].configureTimeouts(timeouts);
+      rooms[this.request.user.inRoomId].hostTryStartGame(
+        options,
+        gameMode,
+        timeouts,
+      );
     } else {
-      // console.log("Room doesn't exist or user is not host, cannot start game");
       this.emit(
         'danger-alert',
         'You are not the host. You cannot start the game.',
