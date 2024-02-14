@@ -1682,6 +1682,7 @@ export function destroyRoom(roomId) {
       botSocket.handleGameOver(thisGame, 'complete', () => {}); // This room is getting destroyed. No need to leave.
     });
 
+  rooms[roomId].destructor();
   rooms[roomId] = undefined;
 
   console.log(`Destroyed room ${roomId}.`);
@@ -2280,7 +2281,7 @@ export function postGameMoveChecks(room: Game) {
     if (room.requireSave) {
       room.requireSave = false;
       saveGameToDb(room);
-      console.log(`Saving game ${this.request.user.inRoomId}`);
+      console.log(`Saving game ${room.roomId}`);
     }
   }
 }
