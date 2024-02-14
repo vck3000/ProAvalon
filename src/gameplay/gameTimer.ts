@@ -1,45 +1,69 @@
-import { ButtonSettings, isGamePhase } from './phases';
+import { ButtonSettings, isGamePhase, Phase } from './phases';
 import Game, { getRandomInt } from './game';
 import { postGameMoveChecks } from '../sockets/sockets';
 
 // All in milliseconds
+const TEN_MILLISECONDS = 10;
 const ONE_SECOND = 1000;
-const ONE_MINUTE = 60 * ONE_SECOND;
 
-const TWENTY_SECONDS = 20 * ONE_SECOND;
-const TWO_SECONDS = 2 * ONE_SECOND;
-const THREE_MINUTES = 3 * ONE_MINUTE;
+export interface Timeouts {
+  // All in milliseconds
+  default: number;
+  assassination: number;
+}
 
 export class GameTimer {
   getTimeFunc: () => Date;
   dateTimerExpires: Date = new Date(0); // Is updated after each changePhase.
-  timerDuration: number = TWO_SECONDS; // Config. Never changed after construction.
   game: Game;
 
-  timeouts: Set<ReturnType<typeof setTimeout>> = new Set();
+  setTimeoutIds: Set<ReturnType<typeof setTimeout>> = new Set();
+  private timeoutSettings: Timeouts = {
+    default: 0,
+    assassination: 0,
+  };
+
+  private playersVotedPause: Set<string> = new Set();
 
   constructor(game: Game, getTimeFunc: () => Date) {
     this.game = game;
     this.getTimeFunc = getTimeFunc;
   }
 
-  destructor() {
+  destructor(): void {
     this.clearTimers();
+  }
+
+  configureTimeouts(timeouts: Timeouts): void {
+    this.timeoutSettings = timeouts;
+  }
+
+  votePauseTimeout(username: string, votesNeeded: number): number {
+    this.playersVotedPause.add(username.toLowerCase());
+    if (this.playersVotedPause.size >= votesNeeded) {
+      this.clearTimers();
+    }
+
+    return this.playersVotedPause.size;
+  }
+
+  voteUnpauseTimeout(): Date {
+    // Any single unpause vote can overrule vote pause.
+    this.playersVotedPause.clear();
+    return this.resetTimer();
   }
 
   private clearTimers() {
     this.dateTimerExpires = new Date(0);
 
-    for (const timeoutId of this.timeouts) {
+    for (const timeoutId of this.setTimeoutIds) {
       clearTimeout(timeoutId);
     }
-    this.timeouts.clear();
+    this.setTimeoutIds.clear();
   }
 
   // Returns the new date for timer expiry
   resetTimer(): Date {
-    return;
-
     // Clear existing timers
     this.clearTimers();
 
@@ -53,16 +77,32 @@ export class GameTimer {
       return this.dateTimerExpires;
     }
 
+    // Kinda sad to have direct knowledge of the phase here
+    // but not much we can do. We don't want the timeout settings
+    // in game.ts
+    let timerDuration =
+      this.game.phase === Phase.assassination
+        ? this.timeoutSettings.assassination
+        : this.timeoutSettings.default;
+
+    // Timeout not enabled
+    if (timerDuration === 0) {
+      return;
+    }
+
+    // Add one more second to give the illusion that X seconds is X seconds.
+    timerDuration += ONE_SECOND;
+
     this.dateTimerExpires = new Date(
-      this.getTimeFunc().getTime() + this.timerDuration,
+      this.getTimeFunc().getTime() + timerDuration,
     );
 
     const timeoutId = setTimeout(() => {
       this.callback();
-      this.timeouts.delete(timeoutId);
-    }, this.timerDuration + ONE_SECOND);
+      this.setTimeoutIds.delete(timeoutId);
+    }, timerDuration + TEN_MILLISECONDS);
 
-    this.timeouts.add(timeoutId);
+    this.setTimeoutIds.add(timeoutId);
 
     return this.dateTimerExpires;
   }
@@ -149,10 +189,17 @@ export class GameTimer {
             socket.request.user.username.toLowerCase() ===
             this.game.playersInGame[i].request.user.username.toLowerCase(),
         );
+        let socket: any;
+        // Fallback to playersInGame if user is disconnected but have to simulate emit().
         if (socketsOfPlayer.length !== 1) {
-          return;
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          this.game.playersInGame[i].emit = function () {};
+          socket = this.game.playersInGame[i];
+        } else {
+          socket = socketsOfPlayer[0];
         }
-        this.game.gameMove(socketsOfPlayer[0], [randomButton, targets]);
+
+        this.game.gameMove(socket, [randomButton, targets]);
 
         // Don't continue iterating if phase has changed, otherwise we get funny behavior in between phases
         // where someone's next move will be auto made.

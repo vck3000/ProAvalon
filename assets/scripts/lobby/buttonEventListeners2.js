@@ -64,7 +64,17 @@ function greenButtonFunction() {
     if (isSpectator === true) {
       socket.emit('join-game', roomId);
     } else if (gameStarted === false) {
-      socket.emit('startGame', getOptions(), $($('.gameModeSelect')[1]).val());
+      const startGameData = {
+        options: getOptions(),
+        gameMode: $($('.gameModeSelect')[1]).val(),
+        timeouts: {
+          // + '000' hack to get seconds into milliseconds
+          default: $('#startGameOptionsDefaultPhaseTimeout').val() + '000',
+          assassination: $('#startGameOptionsAssassinationPhaseTimeout').val() + '000',
+        }
+      };
+
+      socket.emit('startGame', startGameData);
     } else if (
       gameData.phase === 'votingTeam' ||
       gameData.phase === 'votingMission'

@@ -4,6 +4,7 @@ import { getPhases as getCommonPhases } from './indexCommonPhases';
 import usernamesIndexes from '../myFunctions/usernamesIndexes';
 import { SocketUser } from '../sockets/types';
 import { MIN_PLAYERS } from './game';
+import { Timeouts } from './gameTimer';
 
 export class RoomConfig {
   host: string;
@@ -649,7 +650,7 @@ class Room {
     }
   }
 
-  hostTryStartGame(options, gameMode) {
+  hostTryStartGame(options, gameMode, timeouts: Timeouts) {
     // Must have at least one bot in the game to play a "bot" gameMode
     if (
       gameMode.toLowerCase().includes('bot') === true &&
@@ -746,6 +747,10 @@ class Room {
 
       rolesInStr += `<br>Ranked: ${this.ranked}`;
       rolesInStr += `<br>Mute Spectators: ${this.muteSpectators}`;
+      rolesInStr += `<br>Default timeout: ${timeouts.default / 1000}s`;
+      rolesInStr += `<br>Assassination timeout: ${
+        timeouts.assassination / 1000
+      }s`;
 
       for (let i = 0; i < this.socketsOfPlayers.length; i++) {
         this.socketsOfPlayers[i].emit('game-starting', rolesInStr, gameMode);

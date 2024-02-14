@@ -16,7 +16,8 @@ import { RoomCreationType } from './roomTypes';
 import { gameModeObj } from './gameModes';
 import { Phase } from './phases';
 import { Alliance } from './types';
-import { GameTimer } from './gameTimer';
+import { GameTimer, Timeouts } from './gameTimer';
+import { SocketUser } from '../sockets/types';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;
@@ -131,12 +132,18 @@ class Game extends Room {
     this.gameTimer = new GameTimer(this, gameConfig.getTimeFunc);
   }
 
-  destructor() {
+  destructor(): void {
     this.gameTimer.destructor();
   }
 
+  configureTimeouts(timeouts: Timeouts): void {
+    if (this.gameStarted === false) {
+      this.gameTimer.configureTimeouts(timeouts);
+    }
+  }
+
   // RECOVER GAME!
-  recoverGame(storedData) {
+  recoverGame(storedData): void {
     // Set a few variables back to new state
     this.allSockets = [];
     this.socketsOfPlayers = [];
@@ -151,6 +158,7 @@ class Game extends Room {
     this.specialCards = new gameModeObj[this.gameMode].getCards(this);
 
     this.gameTimer = new GameTimer(this, () => new Date());
+    this.gameTimer.configureTimeouts(storedData.timeoutSettings);
 
     // Roles
     // Remove the circular dependency
@@ -1843,6 +1851,72 @@ class Game extends Room {
       this.changePhase(Phase.paused);
       this.distributeGameData();
     }
+  }
+
+  votePauseTimeout(socket: SocketUser): void {
+    // Verify they are in the game.
+    if (!this.usernameIsPlayer(socket.request.user.username)) {
+      socket.emit('messageCommandReturnStr', {
+        message: 'You are not a player in this game.',
+        classStr: 'server-text',
+      });
+      return;
+    }
+
+    const numResPlayers = this.playersInGame.filter(
+      (player) => player.alliance === Alliance.Resistance,
+    ).length;
+    const votesNeeded = numResPlayers + 1;
+    const numVoted = this.gameTimer.votePauseTimeout(
+      socket.request.user.username,
+      votesNeeded,
+    );
+    this.dateTimerExpires = new Date(0);
+
+    const s = numVoted > 1 ? 's have' : ' has';
+
+    this.sendText(
+      this.allSockets,
+      `${numVoted} player${s} voted to pause the timeout. ${votesNeeded} votes needed.`,
+      'server-text',
+    );
+
+    if (numVoted >= votesNeeded) {
+      this.sendText(this.allSockets, `Timeout has been paused.`, 'server-text');
+    }
+
+    // To update the timer data on clients side
+    this.distributeGameData();
+  }
+
+  voteUnpauseTimeout(socket: SocketUser): void {
+    // Verify they are in the game.
+    if (!this.usernameIsPlayer(socket.request.user.username)) {
+      socket.emit('messageCommandReturnStr', {
+        message: 'You are not a player in this game.',
+        classStr: 'server-text',
+      });
+      return;
+    }
+
+    this.sendText(
+      this.allSockets,
+      `A player has unpaused the timeout.`,
+      'server-text',
+    );
+
+    this.dateTimerExpires = this.gameTimer.voteUnpauseTimeout();
+
+    // To update the timer data on clients side
+    this.distributeGameData();
+  }
+
+  private usernameIsPlayer(username: string) {
+    return (
+      this.playersInGame.filter(
+        (player) => player.username.toLowerCase() === username.toLowerCase(),
+      ).length === 1
+    );
   }
 
   canRoomChat(usernameLower: string) {
