@@ -24,7 +24,6 @@ const gamePhases = [
   Phase.pickingTeam,
   Phase.votingTeam,
   Phase.votingMission,
-  Phase.finished,
   Phase.assassination,
   Phase.lady,
   Phase.ref,

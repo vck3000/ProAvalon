@@ -41,7 +41,7 @@ import { lastWhisperObj } from './commands/mod/mwhisper';
 import * as util from 'util';
 import { RoomCreationType } from '../gameplay/roomTypes';
 import { CreateRoomFilter } from './filters/createRoomFilter';
-import { GameConfig } from '../gameplay/game';
+import Game, { GameConfig } from '../gameplay/game';
 import { RoomConfig } from '../gameplay/room';
 
 const chatSpamFilter = new ChatSpamFilter();
@@ -91,7 +91,7 @@ function gracefulShutdown() {
   process.exit();
 }
 
-function saveGameToDb(roomToSave) {
+export function saveGameToDb(roomToSave) {
   if (roomToSave.gameStarted === true && roomToSave.finished !== true) {
     // Take out io stuff since we don't need it.
     const deepCopyRoom = JSON.parse(JSON.stringify(roomToSave));
@@ -2266,17 +2266,21 @@ function setClaim(data) {
 function gameMove(data) {
   if (rooms[this.request.user.inRoomId]) {
     rooms[this.request.user.inRoomId].gameMove(this, data);
+  }
 
-    if (rooms[this.request.user.inRoomId]) {
-      if (rooms[this.request.user.inRoomId].finished === true) {
-        deleteSaveGameFromDb(rooms[this.request.user.inRoomId]);
-      } else {
-        if (rooms[this.request.user.inRoomId].requireSave) {
-          rooms[this.request.user.inRoomId].requireSave = false;
-          saveGameToDb(rooms[this.request.user.inRoomId]);
-          console.log(`Saving game ${this.request.user.inRoomId}`);
-        }
-      }
+  if (rooms[this.request.user.inRoomId]) {
+    postGameMoveChecks(rooms[this.request.user.inRoomId]);
+  }
+}
+
+export function postGameMoveChecks(room: Game) {
+  if (room.finished === true) {
+    deleteSaveGameFromDb(room);
+  } else {
+    if (room.requireSave) {
+      room.requireSave = false;
+      saveGameToDb(room);
+      console.log(`Saving game ${this.request.user.inRoomId}`);
     }
   }
 }

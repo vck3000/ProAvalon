@@ -184,6 +184,10 @@ class VotingMission implements IPhase {
       };
     }
     // User has not voted yet
+    // Resistance can't fail
+    const redHidden =
+      this.thisRoom.playersInGame[indexOfPlayer].alliance ===
+      Alliance.Resistance;
 
     return {
       green: {
@@ -192,8 +196,8 @@ class VotingMission implements IPhase {
         setText: 'SUCCEED',
       },
       red: {
-        hidden: false,
-        disabled: false,
+        hidden: redHidden,
+        disabled: redHidden,
         setText: 'FAIL',
       },
     };

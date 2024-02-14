@@ -25,8 +25,6 @@ function sendToChannel(message: string, channelId: string): void {
 
   if (process.env.ENV === 'prod') {
     channel.send(message);
-  } else {
-    console.log(`Discord message: ${message}`);
   }
 }
 

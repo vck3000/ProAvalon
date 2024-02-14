@@ -1,17 +1,19 @@
 import { ButtonSettings, isGamePhase } from './phases';
 import Game, { getRandomInt } from './game';
+import { postGameMoveChecks } from '../sockets/sockets';
 
 // All in milliseconds
 const ONE_SECOND = 1000;
 const ONE_MINUTE = 60 * ONE_SECOND;
 
 const TWENTY_SECONDS = 20 * ONE_SECOND;
+const TWO_SECONDS = 2 * ONE_SECOND;
 const THREE_MINUTES = 3 * ONE_MINUTE;
 
 export class GameTimer {
   getTimeFunc: () => Date;
   dateTimerExpires: Date = new Date(0); // Is updated after each changePhase.
-  timerDuration: number = TWENTY_SECONDS; // Config. Never changed after construction.
+  timerDuration: number = TWO_SECONDS; // Config. Never changed after construction.
   game: Game;
 
   timeouts: Set<ReturnType<typeof setTimeout>> = new Set();
@@ -36,6 +38,8 @@ export class GameTimer {
 
   // Returns the new date for timer expiry
   resetTimer(): Date {
+    return;
+
     // Clear existing timers
     this.clearTimers();
 
@@ -84,7 +88,7 @@ export class GameTimer {
       // eslint-disable-next-line no-prototype-builtins
       this.game.specialPhases.hasOwnProperty(this.game.phase) === true
     ) {
-      phaseObject = this.game.commonPhases[this.game.phase];
+      phaseObject = this.game.specialPhases[this.game.phase];
     }
 
     // Iterate over each user to figure out who hasn't acted.
@@ -95,17 +99,11 @@ export class GameTimer {
         phaseObject.getProhibitedIndexesToPick(i);
 
       const buttonsAvailable: string[] = [];
-      if (
-        buttonSettings.red.hidden === false &&
-        buttonSettings.red.disabled === false
-      ) {
+      if (buttonSettings.red.hidden === false) {
         buttonsAvailable.push('no');
       }
 
-      if (
-        buttonSettings.green.hidden === false &&
-        buttonSettings.green.disabled === false
-      ) {
+      if (buttonSettings.green.hidden === false) {
         buttonsAvailable.push('yes');
       }
 
@@ -114,7 +112,6 @@ export class GameTimer {
 
       if (timedOut) {
         // Select a random option for them.
-        // TODO check that this is inclusive/exclusive correctly.
         const randomButton =
           buttonsAvailable[getRandomInt(0, buttonsAvailable.length)];
 
@@ -125,7 +122,7 @@ export class GameTimer {
         for (let i = 0; i < this.game.playersInGame.length; i++) {
           if (!prohibitedIndexesToPick.includes(i)) {
             filteredPlayerUsernames.push(
-              this.game.playersInGame[i].request.user.username.toLowerCase(),
+              this.game.playersInGame[i].request.user.username,
             );
           }
         }
@@ -133,7 +130,7 @@ export class GameTimer {
         while (numOfTargets > targets.length) {
           const randomNum = getRandomInt(0, filteredPlayerUsernames.length);
           targets.push(filteredPlayerUsernames[randomNum]);
-          filteredPlayerUsernames.slice(randomNum, -1);
+          filteredPlayerUsernames.splice(randomNum, 1);
         }
 
         // Notify everyone
@@ -142,15 +139,29 @@ export class GameTimer {
           `${this.game.playersInGame[i].request.user.username} has timed out. Forcing a random move.`,
           'server-text',
         );
-        this.game.sendText(
-          this.game.allSockets,
+        console.log(
           `Player: ${this.game.playersInGame[i].request.user.username} | Button: ${randomButton} | Targets: ${targets}.`,
-          'server-text',
         );
 
         // Act on the randomised action.
-        this.game.gameMove(this.game.playersInGame[i], [randomButton, targets]);
+        const socketsOfPlayer = this.game.socketsOfPlayers.filter(
+          (socket) =>
+            socket.request.user.username.toLowerCase() ===
+            this.game.playersInGame[i].request.user.username.toLowerCase(),
+        );
+        if (socketsOfPlayer.length !== 1) {
+          return;
+        }
+        this.game.gameMove(socketsOfPlayer[0], [randomButton, targets]);
+
+        // Don't continue iterating if phase has changed, otherwise we get funny behavior in between phases
+        // where someone's next move will be auto made.
+        if (phaseObject.phase !== this.game.phase) {
+          break;
+        }
       }
     }
+
+    postGameMoveChecks(this.game);
   }
 }

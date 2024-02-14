@@ -80,6 +80,7 @@ class Game extends Room {
 
   // Game misc variables
   winner: Alliance = '';
+  requireSave = false;
 
   // TODO This shouldn't be here! Should be in Assassin file.
   startAssassinationTime: Date;
@@ -1018,12 +1019,12 @@ class Game extends Room {
         data[i].dateTimerExpires = this.dateTimerExpires;
 
         // if game is finished, reveal everything including roles
-        if (this.phase === 'finished') {
+        if (this.phase === Phase.finished) {
           data[i].see = {};
           data[i].see.spies = getAllSpies(this);
           data[i].see.roles = getRevealedRoles(this);
           data[i].proposedTeam = this.lastProposedTeam;
-        } else if (this.phase === 'assassination') {
+        } else if (this.phase === Phase.assassination) {
           data[i].proposedTeam = this.lastProposedTeam;
         }
       }
