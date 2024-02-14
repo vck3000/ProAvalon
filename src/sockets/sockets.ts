@@ -159,7 +159,25 @@ setTimeout(async () => {
             const storedData = JSON.parse(foundSaveGame.room);
             console.log('Loaded room ' + storedData.roomId);
 
-            rooms[storedData.roomId] = new GameWrapper();
+            // Empty configs
+            const roomConfig = new RoomConfig(
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              storedData.gameMode,
+              undefined,
+            );
+            const gameConfig = new GameConfig(
+              roomConfig,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+            );
+
+            rooms[storedData.roomId] = new GameWrapper(gameConfig, null);
 
             Object.assign(rooms[storedData.roomId], storedData);
 

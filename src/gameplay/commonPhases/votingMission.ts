@@ -1,18 +1,24 @@
 import usernamesIndexes from '../../myFunctions/usernamesIndexes';
-import { Phase } from '../phases';
+import { ButtonSettings, IPhase, Phase } from '../phases';
 import { Alliance } from '../types';
+import { SocketUser } from '../../sockets/types';
 
-class VotingMission {
+class VotingMission implements IPhase {
   static phase = Phase.votingMission;
   phase = Phase.votingMission;
   showGuns = true;
+  private thisRoom: any;
 
-  constructor(thisRoom_) {
+  constructor(thisRoom_: any) {
     this.thisRoom = thisRoom_;
   }
 
-  gameMove(socket, buttonPressed, selectedPlayers) {
-    let i = this.thisRoom.playersYetToVote.indexOf(
+  gameMove(
+    socket: SocketUser,
+    buttonPressed: string,
+    selectedPlayers: string[],
+  ): void {
+    const i = this.thisRoom.playersYetToVote.indexOf(
       socket.request.user.username,
     );
 
@@ -108,6 +114,7 @@ class VotingMission {
         }
       }
 
+      // TODO move these arrays out of Game and into this class.
       // if we get all the votes in, then do this.thisRoom
       this.thisRoom.lastProposedTeam = this.thisRoom.proposedTeam;
       this.thisRoom.proposedTeam = [];
@@ -156,45 +163,47 @@ class VotingMission {
     }
   }
 
-  buttonSettings(indexOfPlayer) {
-    const obj = {
-      green: {},
-      red: {},
-    };
-
+  buttonSettings(indexOfPlayer: number): ButtonSettings {
     // If user has voted
     if (
       this.thisRoom.playersYetToVote.indexOf(
         this.thisRoom.playersInGame[indexOfPlayer].username,
       ) === -1
     ) {
-      obj.green.hidden = true;
-      obj.green.disabled = true;
-      obj.green.setText = '';
-
-      obj.red.hidden = true;
-      obj.red.disabled = true;
-      obj.red.setText = '';
+      return {
+        green: {
+          hidden: true,
+          disabled: true,
+          setText: '',
+        },
+        red: {
+          hidden: true,
+          disabled: true,
+          setText: '',
+        },
+      };
     }
     // User has not voted yet
-    else {
-      obj.green.hidden = false;
-      obj.green.disabled = false;
-      obj.green.setText = 'SUCCEED';
 
-      obj.red.hidden = false;
-      obj.red.disabled = false;
-      obj.red.setText = 'FAIL';
-    }
-
-    return obj;
+    return {
+      green: {
+        hidden: false,
+        disabled: false,
+        setText: 'SUCCEED',
+      },
+      red: {
+        hidden: false,
+        disabled: false,
+        setText: 'FAIL',
+      },
+    };
   }
 
-  numOfTargets(indexOfPlayer) {
+  numOfTargets(indexOfPlayer: number): number {
     return null;
   }
 
-  getStatusMessage(indexOfPlayer) {
+  getStatusMessage(indexOfPlayer: number): string {
     // If we are spectator
     if (indexOfPlayer === -1) {
       let str = '';
@@ -242,7 +251,7 @@ class VotingMission {
     return str;
   }
 
-  countFails(votes) {
+  private countFails(votes: string[]) {
     let numOfVotedFails = 0;
     for (let i = 0; i < votes.length; i++) {
       if (votes[i] === 'fail') {
@@ -250,6 +259,10 @@ class VotingMission {
       }
     }
     return numOfVotedFails;
+  }
+
+  getProhibitedIndexesToPick(indexOfPlayer: number): number[] {
+    return [];
   }
 }
 

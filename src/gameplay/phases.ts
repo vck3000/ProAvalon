@@ -37,6 +37,11 @@ export function isGamePhase(phase: Phase): boolean {
 
 interface OneButtonSettings {
   hidden: boolean;
+  // This currently decides whether the button is initially disabled, but is overridden in the client side e.g.
+  // when enough avatars are selected. However, I believe this shouldn't be necessary if used in combination with
+  // maxNumPlayers which is also defined in each Phase.
+  // TODO remove this disabled field.
+  // Can't think of a case where something is hidden but not disabled.
   disabled: boolean;
   setText: string;
 }
