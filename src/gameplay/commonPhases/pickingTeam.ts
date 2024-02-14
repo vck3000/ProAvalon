@@ -31,6 +31,15 @@ class PickingTeam implements IPhase {
       return;
     }
 
+    // Prohibit duplicate selected players
+    const set: Set<string> = new Set();
+    for (const player of selectedPlayers) {
+      set.add(player);
+    }
+    if (set.size !== selectedPlayers.length) {
+      return;
+    }
+
     // If the person requesting is the host
     if (
       usernamesIndexes.getIndexFromUsername(
