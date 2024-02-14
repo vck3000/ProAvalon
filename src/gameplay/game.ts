@@ -1866,19 +1866,22 @@ class Game extends Room {
     const numResPlayers = this.playersInGame.filter(
       (player) => player.alliance === Alliance.Resistance,
     ).length;
+    const votesNeeded = numResPlayers + 1;
     const numVoted = this.gameTimer.votePauseTimeout(
       socket.request.user.username,
-      numResPlayers + 1,
+      votesNeeded,
     );
     this.dateTimerExpires = new Date(0);
 
+    const s = numVoted > 1 ? 's have' : ' has';
+
     this.sendText(
       this.allSockets,
-      `${numVoted} players have voted to pause the timeout.`,
+      `${numVoted} player${s} voted to pause the timeout. ${votesNeeded} votes needed.`,
       'server-text',
     );
 
-    if (numVoted >= numResPlayers + 1) {
+    if (numVoted >= votesNeeded) {
       this.sendText(this.allSockets, `Timeout has been paused.`, 'server-text');
     }
 
