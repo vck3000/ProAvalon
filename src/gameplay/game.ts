@@ -1871,7 +1871,6 @@ class Game extends Room {
       socket.request.user.username,
       votesNeeded,
     );
-    this.dateTimerExpires = new Date(0);
 
     const s = numVoted > 1 ? 's have' : ' has';
 
@@ -1883,6 +1882,7 @@ class Game extends Room {
 
     if (numVoted >= votesNeeded) {
       this.sendText(this.allSockets, `Timeout has been paused.`, 'server-text');
+      this.dateTimerExpires = new Date(0);
     }
 
     // To update the timer data on clients side
