@@ -32,6 +32,9 @@ setInterval(() => {
     draw();
     draw();
   }
+}, 1000);
+
+setInterval(() => {
 
   const setGameTimer = (string) => {
     $('.gameTimer')[0].innerText = string;
@@ -68,7 +71,7 @@ setInterval(() => {
   else {
     setGameTimer(emptyTime);
   }
-}, 1000);
+}, 100);
 
 // Prevents the window height from changing when android keyboard is pulled up.
 setTimeout(() => {

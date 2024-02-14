@@ -1211,6 +1211,38 @@ export const userCommands = {
       });
     },
   },
+
+  votePauseTimeout: {
+    command: 'votePauseTimeout',
+    help: '/votePauseTimeout: Vote to pause timeout. Requires number_of_resistance + 1 votes.',
+    run(data, senderSocket) {
+      if (!senderSocket.request.user.inRoomId) {
+        senderSocket.emit('messageCommandReturnStr', {
+          message: 'You must be in a room to use /votePauseTimeout.',
+          classStr: 'server-text',
+        });
+      }
+
+      rooms[senderSocket.request.user.inRoomId].votePauseTimeout(senderSocket);
+    },
+  },
+
+  voteUnpauseTimeout: {
+    command: 'voteUnpauseTimeout',
+    help: '/voteUnpauseTimeout: Vote to unpause timeout. Requires 1 vote.',
+    run(data, senderSocket) {
+      if (!senderSocket.request.user.inRoomId) {
+        senderSocket.emit('messageCommandReturnStr', {
+          message: 'You must be in a room to use /votePauseTimeout.',
+          classStr: 'server-text',
+        });
+      }
+
+      rooms[senderSocket.request.user.inRoomId].voteUnpauseTimeout(
+        senderSocket,
+      );
+    },
+  },
 };
 
 export let ioGlobal = {};

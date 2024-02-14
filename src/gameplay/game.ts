@@ -17,6 +17,7 @@ import { gameModeObj } from './gameModes';
 import { Phase } from './phases';
 import { Alliance } from './types';
 import { GameTimer, Timeouts } from './gameTimer';
+import { SocketUser } from '../sockets/types';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;
@@ -1850,6 +1851,69 @@ class Game extends Room {
       this.changePhase(Phase.paused);
       this.distributeGameData();
     }
+  }
+
+  votePauseTimeout(socket: SocketUser): void {
+    // Verify they are in the game.
+    if (!this.usernameIsPlayer(socket.request.user.username)) {
+      socket.emit('messageCommandReturnStr', {
+        message: 'You are not a player in this game.',
+        classStr: 'server-text',
+      });
+      return;
+    }
+
+    const numResPlayers = this.playersInGame.filter(
+      (player) => player.alliance === Alliance.Resistance,
+    ).length;
+    const numVoted = this.gameTimer.votePauseTimeout(
+      socket.request.user.username,
+      numResPlayers + 1,
+    );
+    this.dateTimerExpires = new Date(0);
+
+    this.sendText(
+      this.allSockets,
+      `${numVoted} players have voted to pause the timeout.`,
+      'server-text',
+    );
+
+    if (numVoted >= numResPlayers + 1) {
+      this.sendText(this.allSockets, `Timeout has been paused.`, 'server-text');
+    }
+
+    // To update the timer data on clients side
+    this.distributeGameData();
+  }
+
+  voteUnpauseTimeout(socket: SocketUser): void {
+    // Verify they are in the game.
+    if (!this.usernameIsPlayer(socket.request.user.username)) {
+      socket.emit('messageCommandReturnStr', {
+        message: 'You are not a player in this game.',
+        classStr: 'server-text',
+      });
+      return;
+    }
+
+    this.sendText(
+      this.allSockets,
+      `A player has unpaused the timeout.`,
+      'server-text',
+    );
+
+    this.dateTimerExpires = this.gameTimer.voteUnpauseTimeout();
+
+    // To update the timer data on clients side
+    this.distributeGameData();
+  }
+
+  private usernameIsPlayer(username: string) {
+    return (
+      this.playersInGame.filter(
+        (player) => player.username.toLowerCase() === username.toLowerCase(),
+      ).length === 1
+    );
   }
 
   canRoomChat(usernameLower: string) {

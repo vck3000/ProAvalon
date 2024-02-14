@@ -23,17 +23,34 @@ export class GameTimer {
     assassination: 0,
   };
 
+  private playersVotedPause: Set<string> = new Set();
+
   constructor(game: Game, getTimeFunc: () => Date) {
     this.game = game;
     this.getTimeFunc = getTimeFunc;
   }
 
-  destructor() {
+  destructor(): void {
     this.clearTimers();
   }
 
-  configureTimeouts(timeouts: Timeouts) {
+  configureTimeouts(timeouts: Timeouts): void {
     this.timeoutSettings = timeouts;
+  }
+
+  votePauseTimeout(username: string, votesNeeded: number): number {
+    this.playersVotedPause.add(username.toLowerCase());
+    if (this.playersVotedPause.size >= votesNeeded) {
+      this.clearTimers();
+    }
+
+    return this.playersVotedPause.size;
+  }
+
+  voteUnpauseTimeout(): Date {
+    // Any single unpause vote can overrule vote pause.
+    this.playersVotedPause.clear();
+    return this.resetTimer();
   }
 
   private clearTimers() {
