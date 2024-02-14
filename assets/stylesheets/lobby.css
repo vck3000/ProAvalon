@@ -889,17 +889,15 @@ h3 {
     bottom: 0%;
     right: 0%;
 
-    /* top: 50%;
-    left: 50%; */
-
-    /* border: 1px solid gray; */
-    /* background-color: rgb(231, 231, 231); */
-
-    /* padding: 3px; */
-
-    /* border-radius: 10px; */
-
     transform: translate(-10%, -20%);
+}
+
+.gameTimer {
+    position: absolute;
+    bottom: 0%;
+    left: 0%;
+
+    transform: translate(10%, -20%);
 }
 
 .roleCardDescription {

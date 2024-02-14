@@ -6,7 +6,7 @@ import usernamesIndexes from '../myFunctions/usernamesIndexes';
 import User from '../models/user';
 import GameRecord from '../models/gameRecord';
 import RatingPeriodGameRecord from '../models/RatingPeriodGameRecord';
-import commonPhasesIndex from './indexCommonPhases';
+import { getPhases as getCommonPhases } from './indexCommonPhases';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import { isDev } from '../modsadmins/developers';
@@ -14,14 +14,12 @@ import { modOrTOString } from '../modsadmins/modOrTO';
 
 import { RoomCreationType } from './roomTypes';
 import { gameModeObj } from './gameModes';
-import { ButtonSettings, isGamePhase, Phase } from './phases';
+import { Phase } from './phases';
 import { Alliance } from './types';
+import { GameTimer } from './gameTimer';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;
-
-const THREE_MINUTES = new Date(0, 0, 0, 0, 3, 0);
-const ONE_SECOND = new Date(0, 0, 0, 0, 0, 1);
 
 const ALLIANCES = [
   Alliance.Resistance,
@@ -82,6 +80,7 @@ class Game extends Room {
 
   // Game misc variables
   winner: Alliance = '';
+  requireSave = false;
 
   // TODO This shouldn't be here! Should be in Assassin file.
   startAssassinationTime: Date;
@@ -90,9 +89,13 @@ class Game extends Room {
   interval: NodeJS.Timeout;
 
   botSockets: any;
-  getTimeFunc: () => Date;
-  timerDuration: Date = THREE_MINUTES; // Config. Never changed after construction.
-  dateTimerExpires: Date = new Date(0); // Is updated after each changePhase.
+
+  // Helpers
+  commonPhases: any;
+  specialPhases: any;
+
+  gameTimer: GameTimer;
+  dateTimerExpires: Date;
 
   constructor(gameConfig: GameConfig) {
     super(gameConfig.roomConfig);
@@ -125,6 +128,11 @@ class Game extends Room {
 
     // Room misc variables
     this.chatHistory = []; // Here because chatHistory records after game starts
+    this.gameTimer = new GameTimer(this, gameConfig.getTimeFunc);
+  }
+
+  destructor() {
+    this.gameTimer.destructor();
   }
 
   // RECOVER GAME!
@@ -136,15 +144,18 @@ class Game extends Room {
 
     // Reload all objects so that their functions are also generated
     // Functions are not stored with JSONified during storage
-    this.commonPhases = new commonPhasesIndex().getPhases(this);
+    this.commonPhases = getCommonPhases(this);
 
     this.specialRoles = new gameModeObj[this.gameMode].getRoles(this);
     this.specialPhases = new gameModeObj[this.gameMode].getPhases(this);
     this.specialCards = new gameModeObj[this.gameMode].getCards(this);
 
+    this.gameTimer = new GameTimer(this, () => new Date());
+
     // Roles
     // Remove the circular dependency
-    for (let key in storedData.specialRoles) {
+    for (const key in storedData.specialRoles) {
+      // eslint-disable-next-line no-prototype-builtins
       if (storedData.specialRoles.hasOwnProperty(key)) {
         delete storedData.specialRoles[key].thisRoom;
       }
@@ -154,7 +165,8 @@ class Game extends Room {
 
     // Cards
     // Remove the circular dependency
-    for (let key in storedData.specialCards) {
+    for (const key in storedData.specialCards) {
+      // eslint-disable-next-line no-prototype-builtins
       if (storedData.specialCards.hasOwnProperty(key)) {
         delete storedData.specialCards[key].thisRoom;
       }
@@ -663,7 +675,6 @@ class Game extends Room {
     }, timeEachLoop);
   }
 
-  // TODO In the future gameMove should receive both buttonPressed and selectedPlayers
   gameMove(socket, data) {
     if (data.length !== 2) {
       return;
@@ -720,112 +731,13 @@ class Game extends Room {
   changePhase(phase: Phase) {
     this.phase = phase;
 
-    return;
-
-    // Set up the timer.
-    this.dateTimerExpires = this.getTimeFunc() + this.timerDuration;
-
-    setTimeout(() => {
-      // Ignore the callback if this isn't a game phase
-      if (!isGamePhase(this.phase)) {
-        return;
-      }
-
-      // Ignore if dateTimerExpires isn't set
-      if (this.dateTimerExpires === new Date(0)) {
-        return;
-      }
-
-      // Ignore if date timer expires is still ahead of now
-      if (this.dateTimerExpires > this.getTimeFunc()) {
-        return;
-      }
-
-      // Ignore if game is over
-      if (this.finished) {
-        return;
-      }
-
-      // User has timed out.
-      // Get the current phase
-      let phaseObject;
-      if (this.commonPhases.hasOwnProperty(this.phase) === true) {
-        phaseObject = this.commonPhases[this.phase];
-      } else if (this.specialPhases.hasOwnProperty(this.phase) === true) {
-        phaseObject = this.commonPhases[this.phase];
-      }
-
-      // Iterate over each user to figure out who hasn't acted.
-      for (let i = 0; i < this.playersInGame.length; i++) {
-        const buttonSettings: ButtonSettings = phaseObject.buttonSettings(i);
-        const numOfTargets: number | number[] = phaseObject.numOfTargets(i);
-        const prohibitedIndexesToPick: number[] =
-          phaseObject.getProhibitedIndexesToPick(i);
-
-        const buttonsAvailable: string[] = [];
-        if (
-          buttonSettings.red.hidden === false &&
-          buttonSettings.red.disabled === false
-        ) {
-          buttonsAvailable.push('red');
-        }
-
-        if (
-          buttonSettings.green.hidden === false &&
-          buttonSettings.green.disabled === false
-        ) {
-          buttonsAvailable.push('green');
-        }
-
-        // If either button is available to press, they've timed out.
-        const timedOut = buttonsAvailable.length !== 0;
-
-        if (timedOut) {
-          // Select a random option for them.
-          // TODO check that this is inclusive/exclusive correctly.
-          const randomButton =
-            buttonsAvailable[getRandomInt(0, buttonsAvailable.length)];
-
-          // Need to identify any targets to select too.
-          const targets: string[] = [];
-
-          const filteredPlayerUsernames = [];
-          for (let i = 0; i < this.playersInGame.length; i++) {
-            if (!prohibitedIndexesToPick.includes(i)) {
-              filteredPlayerUsernames.push(
-                this.playersInGame[i].request.user.username.toLowerCase(),
-              );
-            }
-          }
-
-          while (numOfTargets > targets.length) {
-            const randomNum = getRandomInt(0, filteredPlayerUsernames.length);
-            targets.push(filteredPlayerUsernames[randomNum]);
-            filteredPlayerUsernames.slice(randomNum, -1);
-          }
-
-          // Notify everyone
-          thisRoom.sendText(
-            thisRoom.allSockets,
-            `${this.playersInGame[i].request.user.username} has timed out. Forcing a random move.`,
-            'server-text',
-          );
-          thisRoom.sendText(
-            thisRoom.allSockets,
-            `Player: ${this.playersInGame[i].request.user.username} | Button: ${randomButton} | Targets: ${targets}.`,
-            'server-text',
-          );
-
-          // Act on the randomised action.
-          this.gameMove(this.playersInGame[i], [randomButton, targets]);
-        }
-      }
-    }, this.timerDuration + ONE_SECOND);
+    this.dateTimerExpires = this.gameTimer.resetTimer();
   }
 
   toShowGuns() {
     // Common phases
     if (
+      // eslint-disable-next-line no-prototype-builtins
       this.commonPhases.hasOwnProperty(this.phase) === true &&
       this.commonPhases[this.phase].showGuns
     ) {
@@ -834,6 +746,7 @@ class Game extends Room {
 
     // Special phases
     if (
+      // eslint-disable-next-line no-prototype-builtins
       this.specialPhases.hasOwnProperty(this.phase) === true &&
       this.specialPhases[this.phase].showGuns
     ) {
@@ -1103,14 +1016,15 @@ class Game extends Room {
 
         data[i].publicData = this.getRoleCardPublicGameData();
         data[i].prohibitedIndexesToPicks = this.getProhibitedIndexesToPick(i);
+        data[i].dateTimerExpires = this.dateTimerExpires;
 
         // if game is finished, reveal everything including roles
-        if (this.phase === 'finished') {
+        if (this.phase === Phase.finished) {
           data[i].see = {};
           data[i].see.spies = getAllSpies(this);
           data[i].see.roles = getRevealedRoles(this);
           data[i].proposedTeam = this.lastProposedTeam;
-        } else if (this.phase === 'assassination') {
+        } else if (this.phase === Phase.assassination) {
           data[i].proposedTeam = this.lastProposedTeam;
         }
       }
@@ -1174,6 +1088,7 @@ class Game extends Room {
 
     data.roomId = this.roomId;
     data.toShowGuns = this.toShowGuns();
+    data.dateTimerExpires = this.dateTimerExpires;
 
     data.publicData = this.getRoleCardPublicGameData();
 
@@ -2135,7 +2050,7 @@ export default Game;
 
 // Helpful functions
 
-function getRandomInt(min, max) {
+export function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min)) + min; // The maximum is exclusive and the minimum is inclusive

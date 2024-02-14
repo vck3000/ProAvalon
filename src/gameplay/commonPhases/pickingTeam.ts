@@ -1,17 +1,23 @@
 import usernamesIndexes from '../../myFunctions/usernamesIndexes';
-import { Phase } from '../phases';
+import { ButtonSettings, IPhase, Phase } from '../phases';
 import { MIN_PLAYERS, NUM_PLAYERS_ON_MISSION } from '../game';
+import { SocketUser } from '../../sockets/types';
 
-class PickingTeam {
+class PickingTeam implements IPhase {
   static phase = Phase.pickingTeam;
   phase = Phase.pickingTeam;
   showGuns = false;
+  private thisRoom: any;
 
-  constructor(thisRoom_) {
+  constructor(thisRoom_: any) {
     this.thisRoom = thisRoom_;
   }
 
-  gameMove(socket, buttonPressed, selectedPlayers) {
+  gameMove(
+    socket: SocketUser,
+    buttonPressed: string,
+    selectedPlayers: string[],
+  ): void {
     if (buttonPressed !== 'yes') {
       // this.thisRoom.sendText(this.thisRoom.allSockets, `Button pressed was ${buttonPressed}. Let admin know if you see this.`, "gameplay-text");
       return;
@@ -36,17 +42,18 @@ class PickingTeam {
       this.thisRoom.votes = [];
       this.thisRoom.publicVotes = [];
 
-      let num =
+      const numStr =
         NUM_PLAYERS_ON_MISSION[
           this.thisRoom.playersInGame.length - MIN_PLAYERS
         ][this.thisRoom.missionNum - 1];
       // console.log("Num player for this.thisRoom mission : " + num);
 
       // In case the mission num is 4*, make it 4.
-      if (num.length > 1) {
-        num = parseInt(num[0]);
+      let num: number;
+      if (numStr.length > 1) {
+        num = parseInt(numStr[0]);
       } else {
-        num = parseInt(num);
+        num = parseInt(numStr);
       }
 
       // Check that the data is valid (i.e. includes only usernames of players)
@@ -96,59 +103,62 @@ class PickingTeam {
     }
   }
 
-  buttonSettings(indexOfPlayer) {
-    const obj = {
-      green: {},
-      red: {},
-    };
-
+  buttonSettings(indexOfPlayer: number): ButtonSettings {
     // If it is the host
     if (indexOfPlayer === this.thisRoom.teamLeader) {
-      obj.green.hidden = false;
-      obj.green.disabled = true;
-      obj.green.setText = 'Pick';
-
-      obj.red.hidden = true;
-      obj.red.disabled = true;
-      obj.red.setText = '';
+      return {
+        green: {
+          hidden: false,
+          disabled: true,
+          setText: 'Pick',
+        },
+        red: {
+          hidden: true,
+          disabled: true,
+          setText: '',
+        },
+      };
     }
+
     // If it is any other player who isn't host
-    else {
-      obj.green.hidden = true;
-      obj.green.disabled = true;
-      obj.green.setText = '';
-
-      obj.red.hidden = true;
-      obj.red.disabled = true;
-      obj.red.setText = '';
-    }
-
-    return obj;
+    return {
+      green: {
+        hidden: true,
+        disabled: true,
+        setText: '',
+      },
+      red: {
+        hidden: true,
+        disabled: true,
+        setText: '',
+      },
+    };
   }
 
-  numOfTargets(indexOfPlayer) {
-    let num =
+  numOfTargets(indexOfPlayer: number): number {
+    const numStr =
       NUM_PLAYERS_ON_MISSION[this.thisRoom.playersInGame.length - MIN_PLAYERS][
         this.thisRoom.missionNum - 1
       ];
-    // console.log("Num player for this.thisRoom mission : " + num);
 
     // If we are not the team leader
     if (indexOfPlayer !== this.thisRoom.teamLeader) {
       return null;
     }
 
+    let num: number;
+
     // In case the mission num is 4*, make it 4.
-    if (num.length > 1) {
-      num = parseInt(num[0]);
+    if (numStr.length > 1) {
+      num = parseInt(numStr[0]);
     } else {
-      num = parseInt(num);
+      num = parseInt(numStr);
     }
 
     return num;
   }
 
-  getStatusMessage(indexOfPlayer) {
+  getStatusMessage(indexOfPlayer: number): string {
     if (
       indexOfPlayer !== undefined &&
       indexOfPlayer === this.thisRoom.teamLeader
@@ -169,6 +179,10 @@ class PickingTeam {
     }
 
     return 'ERROR: Tell the admin if you see this, code 10.';
+  }
+
+  getProhibitedIndexesToPick(indexOfPlayer: number): number[] {
+    return [];
   }
 }
 

@@ -32,6 +32,42 @@ setInterval(() => {
     draw();
     draw();
   }
+
+  const setGameTimer = (string) => {
+    $('.gameTimer')[0].innerText = string;
+  }
+
+  const emptyTime = '--:--';
+
+  if (gameData && gameData.dateTimerExpires) {
+    const dateTimerExpires = new Date(gameData.dateTimerExpires)
+
+    if (dateTimerExpires.getTime() === new Date(0).getTime()) {
+      setGameTimer(emptyTime);
+    }
+    else {
+      const currentTime = new Date();
+      const timeDiff = new Date(dateTimerExpires - currentTime);
+      if (timeDiff < 0) {
+        setGameTimer('00:00');
+      }
+      else {
+        const padZero = (str) => {
+          if (str.length === 1) {
+            str = '0' + str;
+          }
+          return str;
+        }
+        let mins = padZero(timeDiff.getMinutes().toString());
+        let secs = padZero(timeDiff.getSeconds().toString());
+
+        setGameTimer( mins+ ':' + secs);
+      }
+    }
+  }
+  else {
+    setGameTimer(emptyTime);
+  }
 }, 1000);
 
 // Prevents the window height from changing when android keyboard is pulled up.

@@ -1,17 +1,23 @@
 import usernamesIndexes from '../../myFunctions/usernamesIndexes';
-import { Phase } from '../phases';
+import { ButtonSettings, IPhase, Phase } from '../phases';
 import { Alliance } from '../types';
+import { SocketUser } from '../../sockets/types';
 
-class VotingTeam {
+class VotingTeam implements IPhase {
   static phase = Phase.votingTeam;
   phase = Phase.votingTeam;
   showGuns = true;
+  private thisRoom: any;
 
-  constructor(thisRoom_) {
+  constructor(thisRoom_: any) {
     this.thisRoom = thisRoom_;
   }
 
-  gameMove = function (socket, buttonPressed, selectedPlayers) {
+  gameMove(
+    socket: SocketUser,
+    buttonPressed: string,
+    selectedPlayers: string[],
+  ): void {
     // Get the index of the user who is trying to vote
     const i = this.thisRoom.playersYetToVote.indexOf(
       socket.request.user.username,
@@ -58,7 +64,7 @@ class VotingTeam {
           this.thisRoom.changePhase(Phase.votingMission);
           this.thisRoom.playersYetToVote = this.thisRoom.proposedTeam.slice();
 
-          let str = `Mission ${this.thisRoom.missionNum}.${
+          const str = `Mission ${this.thisRoom.missionNum}.${
             this.thisRoom.pickNum
           } was approved.${this.getStrApprovedRejectedPlayers(
             this.thisRoom.votes,
@@ -89,7 +95,7 @@ class VotingTeam {
           this.thisRoom.proposedTeam = [];
           this.thisRoom.changePhase(Phase.pickingTeam);
 
-          let str = `Mission ${this.thisRoom.missionNum}.${
+          const str = `Mission ${this.thisRoom.missionNum}.${
             this.thisRoom.pickNum
           } was rejected.${this.getStrApprovedRejectedPlayers(
             this.thisRoom.votes,
@@ -108,47 +114,49 @@ class VotingTeam {
 
       this.thisRoom.distributeGameData();
     }
-  };
+  }
 
-  buttonSettings = function (indexOfPlayer) {
-    const obj = {
-      green: {},
-      red: {},
-    };
-
+  buttonSettings(indexOfPlayer: number): ButtonSettings {
     // If user has voted already
     if (
       this.thisRoom.playersYetToVote.indexOf(
         this.thisRoom.playersInGame[indexOfPlayer].username,
       ) === -1
     ) {
-      obj.green.hidden = true;
-      obj.green.disabled = true;
-      obj.green.setText = '';
-
-      obj.red.hidden = true;
-      obj.red.disabled = true;
-      obj.red.setText = '';
+      return {
+        green: {
+          hidden: true,
+          disabled: true,
+          setText: '',
+        },
+        red: {
+          hidden: true,
+          disabled: true,
+          setText: '',
+        },
+      };
     }
+
     // User has not voted yet
-    else {
-      obj.green.hidden = false;
-      obj.green.disabled = false;
-      obj.green.setText = 'Approve';
+    return {
+      green: {
+        hidden: false,
+        disabled: false,
+        setText: 'Approve',
+      },
+      red: {
+        hidden: false,
+        disabled: false,
+        setText: 'Reject',
+      },
+    };
+  }
 
-      obj.red.hidden = false;
-      obj.red.disabled = false;
-      obj.red.setText = 'Reject';
-    }
-
-    return obj;
-  };
-
-  numOfTargets(indexOfPlayer) {
+  numOfTargets(indexOfPlayer: number): number {
     return null;
   }
 
-  getStatusMessage(indexOfPlayer) {
+  getStatusMessage(indexOfPlayer: number): string {
     // If we are spectator
     if (indexOfPlayer === -1) {
       let str = '';
@@ -197,7 +205,8 @@ class VotingTeam {
     return str;
   }
 
-  getStrApprovedRejectedPlayers(votes, playersInGame) {
+  // TODO fix up the playersInGame: any
+  private getStrApprovedRejectedPlayers(votes: string[], playersInGame: any[]) {
     let approvedUsernames = '';
     let rejectedUsernames = '';
 
@@ -221,7 +230,7 @@ class VotingTeam {
     return str;
   }
 
-  calcVotes(votes) {
+  private calcVotes(votes: string[]) {
     const numOfPlayers = votes.length;
     let countApp = 0;
     let countRej = 0;
@@ -246,6 +255,10 @@ class VotingTeam {
     }
 
     return outcome;
+  }
+
+  getProhibitedIndexesToPick(indexOfPlayer: number): number[] {
+    return [];
   }
 }
 
