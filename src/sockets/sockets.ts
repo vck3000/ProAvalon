@@ -1,4 +1,4 @@
-// @ts-nocheck
+// // @ts-nocheck
 import axios from 'axios';
 import { Server as SocketServer, Socket } from 'socket.io';
 import { SocketUser } from './types';
@@ -43,9 +43,13 @@ import { RoomCreationType } from '../gameplay/roomTypes';
 import { CreateRoomFilter } from './filters/createRoomFilter';
 import Game, { GameConfig } from '../gameplay/game';
 import { RoomConfig } from '../gameplay/room';
+import { MatchmakingQueue } from './matchmakingQueue';
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
+
+// Only used for rank games at the moment
+const matchmakingQueue = new MatchmakingQueue(matchFound);
 
 if (process.env.NODE_ENV !== 'test') {
   setInterval(() => {
@@ -63,11 +67,11 @@ export const allSockets: SocketUser[] = [];
 export const rooms: GameWrapper[] = [];
 export let nextRoomId = 1;
 
-export function incrementNextRoomId() {
+export function incrementNextRoomId(): void {
   nextRoomId++;
 }
 
-const allChat5Min = [];
+const allChat5Min: any[] = [];
 
 const possibleInteracts = ['buzz', 'pat', 'poke', 'punch', 'slap', 'hug'];
 const possibleInteractsPast = [
@@ -1432,6 +1436,8 @@ export const server = function (io: SocketServer): void {
     socket.on('player-not-ready', playerNotReady);
     socket.on('startGame', startGame);
     socket.on('kickPlayer', kickPlayer);
+    socket.on('join-queue', joinQueue);
+    socket.on('leave-queue', leaveQueue);
     socket.on('update-room-max-players', updateRoomMaxPlayers);
     socket.on('update-room-game-mode', updateRoomGameMode);
     socket.on('update-room-ranked', updateRoomRanked);
@@ -2311,11 +2317,25 @@ function startGame(data) {
   }
 }
 
-function kickPlayer(username) {
+function kickPlayer(username: string): void {
   console.log(`received kick player request: ${username}`);
   if (rooms[this.request.user.inRoomId]) {
     rooms[this.request.user.inRoomId].kickPlayer(username, this);
   }
+}
+
+function joinQueue() {
+  const username = this.request.user.username.toLowerCase();
+  matchmakingQueue.addUser(username);
+}
+
+function leaveQueue() {
+  const username = this.request.user.username.toLowerCase();
+  matchmakingQueue.removeUser(username);
+}
+
+function matchFound(usernames: string[]): void {
+  //
 }
 
 function setClaim(data) {
