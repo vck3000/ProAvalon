@@ -1,11 +1,11 @@
 // @ts-nocheck
 
-import IPLinkedAccounts from '../../myFunctions/IPLinkedAccounts';
-import { miplinkedaccs } from '../commands/mod/miplinkedaccs';
+import IPLinkedAccounts from '../../../../myFunctions/IPLinkedAccounts';
+import { miplinkedaccs } from '../miplinkedaccs';
 
-jest.mock('../../myFunctions/IPLinkedAccounts');
-jest.mock('../../models/modLog');
-jest.mock('../../models/user');
+jest.mock('../../../../myFunctions/IPLinkedAccounts');
+jest.mock('../../../../models/modLog');
+jest.mock('../../../../models/user');
 
 describe('ModCommands', () => {
   const mockSocket = {
