@@ -1,4 +1,4 @@
-// // @ts-nocheck
+// @ts-nocheck
 import axios from 'axios';
 import { Server as SocketServer, Socket } from 'socket.io';
 import { SocketUser } from './types';
