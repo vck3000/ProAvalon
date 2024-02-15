@@ -48,9 +48,14 @@ export class GameTimer {
   }
 
   voteUnpauseTimeout(): Date {
-    // Any single unpause vote can overrule vote pause.
-    this.playersVotedPause.clear();
-    return this.resetTimer();
+    // Don't reset timer if it's not paused
+    if (this.dateTimerExpires.getTime() === 0) {
+      // Any single unpause vote can overrule vote pause.
+      this.playersVotedPause.clear();
+      return this.resetTimer();
+    }
+
+    return this.dateTimerExpires;
   }
 
   private clearTimers() {
