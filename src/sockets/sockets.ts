@@ -2566,6 +2566,11 @@ function matchFound(usernames: string[]): void {
       rooms[nextRoomId] = new GameWrapper(gameConfig, socketCallback);
       const room = rooms[nextRoomId];
 
+      room.configureTimeouts({
+        default: 3 * 60,
+        assassination: 15 * 60,
+      });
+
       for (const username of approvedUsernames) {
         room.playerJoinRoom(getSocketFromUsername(username));
         room.playerSitDown(getSocketFromUsername(username));
