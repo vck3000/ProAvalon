@@ -9,6 +9,8 @@ const gameRecordSchema = new mongoose.Schema({
   spyTeam: [String],
   resistanceTeam: [String],
 
+  ranked: Boolean,
+
   gameMode: String,
   botUsernames: [String],
 

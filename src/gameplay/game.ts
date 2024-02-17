@@ -1284,6 +1284,7 @@ class Game extends Room {
       winningTeam: this.winner,
       spyTeam: this.spyUsernames,
       resistanceTeam: this.resistanceUsernames,
+      ranked: this.ranked,
       numberOfPlayers: this.playersInGame.length,
       gameMode: this.gameMode,
       roomCreationType: this.roomCreationType,

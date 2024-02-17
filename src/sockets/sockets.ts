@@ -2148,7 +2148,6 @@ function newRoom(dataObj) {
 
     // increment index for next game
     incrementNextRoomId();
-
     updateCurrentGamesList();
   }
 }
@@ -2420,6 +2419,50 @@ function matchFound(usernames: string[]): void {
       }
 
       // We have a match! Create the room.
+      // while rooms exist already (in case of a previously saved and retrieved game)
+      while (rooms[nextRoomId]) {
+        incrementNextRoomId();
+      }
+
+      const roomConfig = new RoomConfig(
+        acceptedUsernames[0],
+        nextRoomId,
+        ioGlobal,
+        10,
+        undefined,
+        GameMode.AVALON,
+        true,
+      );
+      const gameConfig = new GameConfig(
+        roomConfig,
+        false,
+        false,
+        RoomCreationType.QUEUE,
+        () => new Date(),
+      );
+
+      rooms[nextRoomId] = new GameWrapper(gameConfig, socketCallback);
+      const room = rooms[nextRoomId];
+
+      for (const username of acceptedUsernames) {
+        room.playerJoinRoom(getSocketFromUsername(username));
+        room.playerSitDown(getSocketFromUsername(username));
+      }
+
+      room.startGame(['Merlin', 'Percival', 'Assassin', 'Morgana']);
+
+      for (const username of acceptedUsernames) {
+        getSocketFromUsername(username).emit('auto-join-room-id', nextRoomId);
+      }
+
+      const data = {
+        message: `Server created ranked room ${nextRoomId}.`,
+        classStr: 'server-text',
+      };
+      sendToAllChat(ioGlobal, data);
+
+      incrementNextRoomId();
+      updateCurrentGamesList();
     },
   );
 }
