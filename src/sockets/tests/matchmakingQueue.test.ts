@@ -56,10 +56,7 @@ describe('MatchmakingQueue', () => {
       matchmakingQueue.addUser(i.toString());
     }
 
-    expect(matchmakingQueue.removeUser('1')).toEqual({
-      success: true,
-      numPlayersInQueue: 4,
-    });
+    expect(matchmakingQueue.removeUser('1')).toEqual(true);
     matchmakingQueue.addUser('6');
 
     expect(matchFoundCallback).not.toHaveBeenCalled();
@@ -70,20 +67,11 @@ describe('MatchmakingQueue', () => {
   });
 
   it('removeUser returns correctly', () => {
-    expect(matchmakingQueue.removeUser('1')).toEqual({
-      success: false,
-      numPlayersInQueue: 0,
-    });
+    expect(matchmakingQueue.removeUser('1')).toEqual(false);
 
     matchmakingQueue.addUser('1');
-    expect(matchmakingQueue.removeUser('1')).toEqual({
-      success: true,
-      numPlayersInQueue: 0,
-    });
+    expect(matchmakingQueue.removeUser('1')).toEqual(true);
 
-    expect(matchmakingQueue.removeUser('1')).toEqual({
-      success: false,
-      numPlayersInQueue: 0,
-    });
+    expect(matchmakingQueue.removeUser('1')).toEqual(false);
   });
 });

@@ -2384,7 +2384,9 @@ function matchFound(usernames: string[]): void {
     sockets,
     'Match found!',
     (success: boolean): void => {
-      console.log(success);
+      if (!success) {
+        // Throw users back into queue.
+      }
     },
   );
 }

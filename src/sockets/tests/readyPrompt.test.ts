@@ -15,7 +15,7 @@ describe('ReadyPrompt', () => {
   beforeEach(() => {
     // Set up test sockets
     testSockets = [];
-    for (let i = 0; i < 6; i++) {
+    for (let i = 1; i <= 6; i++) {
       testSockets.push({
         request: {
           user: {
@@ -57,7 +57,41 @@ describe('ReadyPrompt', () => {
       readyPrompt.clientReply(socket.request.user.username, clientReply);
     }
 
-    expect(callback).toHaveBeenCalledWith(true);
+    expect(callback).toHaveBeenCalledWith(
+      true,
+      ['1', '2', '3', '4', '5', '6'],
+      [],
+    );
+  });
+
+  it('Callsback successfully only once when some people reject', () => {
+    readyPrompt.createReadyPrompt(testSockets, 'Match found!', callback);
+
+    const clientData: ReadyPromptRequestToClient =
+      testSockets[0].emit.mock.calls[0][1];
+    const clientReply: ReadyPromptReplyFromClient = {
+      promptId: clientData.promptId,
+      accept: true,
+    };
+
+    for (let i = 0; i < testSockets.length; i++) {
+      clientReply.accept = i % 2 === 0; // Make every second socket reject
+      readyPrompt.clientReply(
+        testSockets[i].request.user.username,
+        clientReply,
+      );
+    }
+
+    expect(callback).toHaveBeenCalledWith(
+      false,
+      ['1', '3', '5'],
+      ['2', '4', '6'],
+    );
+    expect(callback.mock.calls.length).toEqual(1);
+
+    // Timing out doesn't result in another call.
+    jest.runAllTimers();
+    expect(callback.mock.calls.length).toEqual(1);
   });
 
   it('Times out', () => {
@@ -78,6 +112,10 @@ describe('ReadyPrompt', () => {
 
     expect(callback).not.toHaveBeenCalled();
     jest.runAllTimers();
-    expect(callback).toHaveBeenCalledWith(false);
+    expect(callback).toHaveBeenCalledWith(
+      false,
+      ['1', '2', '3', '4', '5'],
+      ['6'],
+    );
   });
 });

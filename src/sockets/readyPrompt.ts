@@ -11,7 +11,11 @@ export interface ReadyPromptRequestToClient {
   text: string;
 }
 
-export type ReadyPromptResultCallback = (success: boolean) => void;
+export type ReadyPromptResultCallback = (
+  success: boolean,
+  acceptedUsernames: string[],
+  rejectedUsernames: string[],
+) => void;
 
 export class ReadyPrompt {
   // 10 seconds in milliseconds
@@ -45,7 +49,7 @@ export class ReadyPrompt {
     this.prompts.set(currentPromptId, singleReadyPrompt);
 
     setTimeout(() => {
-      singleReadyPrompt.destructor();
+      singleReadyPrompt.timedOut();
       this.prompts.delete(currentPromptId);
     }, this.timeout);
 
@@ -65,38 +69,54 @@ export class ReadyPrompt {
 }
 
 class SingleReadyPrompt {
-  private usernames: Set<string> = new Set();
+  private pendingUsernames: Set<string> = new Set();
+  private acceptedUsernames: Set<string> = new Set();
+  private rejectedUsernames: Set<string> = new Set();
   private readonly callback: ReadyPromptResultCallback;
 
   private done = false;
 
   constructor(usernames: Set<string>, callback: ReadyPromptResultCallback) {
-    this.usernames = usernames;
+    this.pendingUsernames = usernames;
     this.callback = callback;
   }
 
-  destructor() {
-    // Timed out
-    if (!this.done) {
-      this.callback(false);
+  timedOut() {
+    if (this.done) {
+      return;
     }
+
+    for (const username of this.pendingUsernames) {
+      this.rejectedUsernames.add(username);
+    }
+    this.pendingUsernames.clear();
+    this.callTheCallback();
   }
 
   clientReply(username: string, accept: boolean): void {
-    if (!accept) {
-      this.done = true;
-      this.callback(false);
+    const existed = this.pendingUsernames.delete(username);
+    if (!existed) {
       return;
     }
 
     if (accept) {
-      this.usernames.delete(username);
+      this.acceptedUsernames.add(username);
+    } else {
+      this.rejectedUsernames.add(username);
     }
 
-    if (this.usernames.size === 0) {
+    if (this.pendingUsernames.size === 0) {
       this.done = true;
-      this.callback(true);
+      this.callTheCallback();
       return;
     }
+  }
+
+  private callTheCallback() {
+    this.callback(
+      this.rejectedUsernames.size === 0,
+      Array.from(this.acceptedUsernames),
+      Array.from(this.rejectedUsernames),
+    );
   }
 }
