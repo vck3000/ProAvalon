@@ -11,7 +11,7 @@ describe('MatchmakingQueue', () => {
 
   it('Matches 6 people in queue', () => {
     for (let i = 1; i <= 5; i++) {
-      expect(matchmakingQueue.addUser(i.toString())).toEqual(i);
+      expect(matchmakingQueue.addUser(i.toString())).toEqual(true);
     }
 
     expect(matchFoundCallback).not.toHaveBeenCalled();

@@ -2333,37 +2333,42 @@ function kickPlayer(username: string): void {
 }
 
 function joinQueue() {
-  const username = this.request.user.username.toLowerCase();
-  matchmakingQueue.addUser(username);
+  const username = this.request.user.username;
+  const result = matchmakingQueue.addUser(username);
 
-  this.emit('allChatToClient', {
-    message: 'You have been added to the queue.',
-    classStr: 'server-text',
-  });
-
-  const numPlayersInQueue = matchmakingQueue.getNumInQueue();
-  allSockets.forEach((sock) => {
-    sock.emit('numPlayersInQueue', {
-      numPlayersInQueue,
+  if (result) {
+    this.emit('allChatToClient', {
+      message: 'You have been added to the queue.',
+      classStr: 'server-text',
     });
-  });
+
+    sendNumPlayersInQueueToEveryone();
+  } else {
+    this.emit('allChatToClient', {
+      message: 'You have already joined the queue.',
+      classStr: 'server-text',
+    });
+  }
 }
 
 function leaveQueue(): void {
-  const username = this.request.user.username.toLowerCase();
+  const username = this.request.user.username;
   const result = matchmakingQueue.removeUser(username);
 
   this.emit('allChatToClient', {
-    message: result.success
+    message: result
       ? 'You have been removed from the queue.'
       : 'You are not in the queue.',
     classStr: 'server-text',
   });
 
-  const numPlayersInQueue = matchmakingQueue.getNumInQueue();
+  sendNumPlayersInQueueToEveryone();
+}
+
+function sendNumPlayersInQueueToEveryone() {
   allSockets.forEach((sock) => {
     sock.emit('numPlayersInQueue', {
-      numPlayersInQueue: numPlayersInQueue,
+      numPlayersInQueue: matchmakingQueue.getNumInQueue(),
     });
   });
 }
@@ -2383,10 +2388,38 @@ function matchFound(usernames: string[]): void {
   readyPrompt.createReadyPrompt(
     sockets,
     'Match found!',
-    (success: boolean): void => {
+    (
+      success: boolean,
+      acceptedUsernames: string[],
+      rejectedUsernames: string[],
+    ): void => {
       if (!success) {
-        // Throw users back into queue.
+        // Throw approved users back into queue.
+        for (const username of acceptedUsernames) {
+          matchmakingQueue.addUser(username);
+
+          const socket = getSocketFromUsername(username);
+          socket.emit('allChatToClient', {
+            message:
+              "A player didn't accept the match. You have been re-added to the queue.",
+            classStr: 'server-text',
+          });
+        }
+
+        for (const username of rejectedUsernames) {
+          const socket = getSocketFromUsername(username);
+          socket.emit('allChatToClient', {
+            message:
+              'You did not accept the match. You have been removed from the queue.',
+            classStr: 'server-text',
+          });
+        }
+
+        sendNumPlayersInQueueToEveryone();
+        return;
       }
+
+      // We have a match! Create the room.
     },
   );
 }

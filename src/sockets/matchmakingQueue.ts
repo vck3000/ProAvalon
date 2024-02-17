@@ -1,4 +1,4 @@
-const NUM_PLAYERS_PER_GAME = 2;
+const NUM_PLAYERS_PER_GAME = 6;
 
 export class MatchmakingQueue {
   private queue: string[] = [];
@@ -9,15 +9,15 @@ export class MatchmakingQueue {
     this.matchFoundCallback = matchFoundCallback;
   }
 
-  // Returns number of ppl in the queue
-  addUser(username: string): number {
-    if (!this.queue.includes(username)) {
-      this.queue.push(username);
+  addUser(username: string): boolean {
+    if (this.queue.includes(username)) {
+      return false;
     }
 
+    this.queue.push(username);
     this.checkQueue();
 
-    return this.queue.length;
+    return true;
   }
 
   // Returns whether username was removed
