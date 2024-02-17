@@ -11,7 +11,7 @@ describe('MatchmakingQueue', () => {
 
   it('Matches 6 people in queue', () => {
     for (let i = 1; i <= 5; i++) {
-      matchmakingQueue.addUser(i.toString());
+      expect(matchmakingQueue.addUser(i.toString())).toEqual(i);
     }
 
     expect(matchFoundCallback).not.toHaveBeenCalled();
@@ -56,7 +56,10 @@ describe('MatchmakingQueue', () => {
       matchmakingQueue.addUser(i.toString());
     }
 
-    expect(matchmakingQueue.removeUser('1')).toEqual(true);
+    expect(matchmakingQueue.removeUser('1')).toEqual({
+      success: true,
+      numPlayersInQueue: 4,
+    });
     matchmakingQueue.addUser('6');
 
     expect(matchFoundCallback).not.toHaveBeenCalled();
@@ -67,11 +70,20 @@ describe('MatchmakingQueue', () => {
   });
 
   it('removeUser returns correctly', () => {
-    expect(matchmakingQueue.removeUser('1')).toEqual(false);
+    expect(matchmakingQueue.removeUser('1')).toEqual({
+      success: false,
+      numPlayersInQueue: 0,
+    });
 
     matchmakingQueue.addUser('1');
-    expect(matchmakingQueue.removeUser('1')).toEqual(true);
+    expect(matchmakingQueue.removeUser('1')).toEqual({
+      success: true,
+      numPlayersInQueue: 0,
+    });
 
-    expect(matchmakingQueue.removeUser('1')).toEqual(false);
+    expect(matchmakingQueue.removeUser('1')).toEqual({
+      success: false,
+      numPlayersInQueue: 0,
+    });
   });
 });

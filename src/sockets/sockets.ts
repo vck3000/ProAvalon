@@ -44,12 +44,13 @@ import { CreateRoomFilter } from './filters/createRoomFilter';
 import Game, { GameConfig } from '../gameplay/game';
 import { RoomConfig } from '../gameplay/room';
 import { MatchmakingQueue } from './matchmakingQueue';
+import { ReadyPrompt, ReadyPromptReplyFromClient } from './readyPrompt';
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
-
 // Only used for rank games at the moment
 const matchmakingQueue = new MatchmakingQueue(matchFound);
+const readyPrompt = new ReadyPrompt();
 
 if (process.env.NODE_ENV !== 'test') {
   setInterval(() => {
@@ -1419,6 +1420,10 @@ export const server = function (io: SocketServer): void {
 
       updateCurrentPlayersList(io);
       updateCurrentGamesList(io);
+
+      socket.emit('numPlayersInQueue', {
+        numPlayersInQueue: matchmakingQueue.getNumInQueue(),
+      });
     }, 1000);
 
     socket.on('disconnect', disconnect);
@@ -1438,6 +1443,7 @@ export const server = function (io: SocketServer): void {
     socket.on('kickPlayer', kickPlayer);
     socket.on('join-queue', joinQueue);
     socket.on('leave-queue', leaveQueue);
+    socket.on('ready-prompt-reply', readyPromptHandler);
     socket.on('update-room-max-players', updateRoomMaxPlayers);
     socket.on('update-room-game-mode', updateRoomGameMode);
     socket.on('update-room-ranked', updateRoomRanked);
@@ -1814,6 +1820,8 @@ export function getSocketFromUsername(username: string): SocketUser {
       return socket;
     }
   }
+
+  throw new Error(`Couldn't find socket for player ${username}.`);
 }
 
 function disconnect(data) {
@@ -2327,15 +2335,58 @@ function kickPlayer(username: string): void {
 function joinQueue() {
   const username = this.request.user.username.toLowerCase();
   matchmakingQueue.addUser(username);
+
+  this.emit('allChatToClient', {
+    message: 'You have been added to the queue.',
+    classStr: 'server-text',
+  });
+
+  const numPlayersInQueue = matchmakingQueue.getNumInQueue();
+  allSockets.forEach((sock) => {
+    sock.emit('numPlayersInQueue', {
+      numPlayersInQueue,
+    });
+  });
 }
 
-function leaveQueue() {
+function leaveQueue(): void {
   const username = this.request.user.username.toLowerCase();
-  matchmakingQueue.removeUser(username);
+  const result = matchmakingQueue.removeUser(username);
+
+  this.emit('allChatToClient', {
+    message: result.success
+      ? 'You have been removed from the queue.'
+      : 'You are not in the queue.',
+    classStr: 'server-text',
+  });
+
+  const numPlayersInQueue = matchmakingQueue.getNumInQueue();
+  allSockets.forEach((sock) => {
+    sock.emit('numPlayersInQueue', {
+      numPlayersInQueue: numPlayersInQueue,
+    });
+  });
+}
+
+function readyPromptHandler(reply: ReadyPromptReplyFromClient): void {
+  const username = this.request.user.username;
+
+  readyPrompt.clientReply(username, reply);
 }
 
 function matchFound(usernames: string[]): void {
-  //
+  const sockets = [];
+  for (const username of usernames) {
+    sockets.push(getSocketFromUsername(username));
+  }
+
+  readyPrompt.createReadyPrompt(
+    sockets,
+    'Match found!',
+    (success: boolean): void => {
+      console.log(success);
+    },
+  );
 }
 
 function setClaim(data) {

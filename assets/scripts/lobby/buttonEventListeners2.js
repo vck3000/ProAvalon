@@ -213,3 +213,11 @@ $('#createNewRoomButton').on('click', (data) => {
     inRoom = true;
   }
 });
+
+$('#joinQueueButton').on('click', () => {
+  socket.emit('join-queue');
+});
+
+$('#leaveQueueButton').on('click', () => {
+  socket.emit('leave-queue');
+});

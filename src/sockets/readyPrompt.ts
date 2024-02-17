@@ -8,6 +8,7 @@ export interface ReadyPromptReplyFromClient {
 export interface ReadyPromptRequestToClient {
   promptId: number;
   timeout: number;
+  text: string;
 }
 
 export type ReadyPromptResultCallback = (success: boolean) => void;
@@ -21,6 +22,7 @@ export class ReadyPrompt {
 
   createReadyPrompt(
     sockets: SocketUser[],
+    text: string,
     callback: ReadyPromptResultCallback,
   ): void {
     const usernamesSet: Set<string> = new Set();
@@ -30,6 +32,7 @@ export class ReadyPrompt {
       const data: ReadyPromptRequestToClient = {
         promptId: this.nextPromptId,
         timeout: this.timeout,
+        text,
       };
       socket.emit('ready-prompt-to-client', data);
 
@@ -81,6 +84,7 @@ class SingleReadyPrompt {
 
   clientReply(username: string, accept: boolean): void {
     if (!accept) {
+      this.done = true;
       this.callback(false);
       return;
     }

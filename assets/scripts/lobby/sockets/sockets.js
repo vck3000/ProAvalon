@@ -798,3 +798,14 @@ socket.on('leave-room-requested', () => {
 socket.on('redirect', (dest) => {
   window.location.href = dest;
 });
+
+socket.on('numPlayersInQueue', (data) => {
+  $('#numPlayersInQueue')[0].innerText = data.numPlayersInQueue;
+});
+
+socket.on('ready-prompt-to-client', (data) => {
+  const promptId = data.promptId;
+  const timeout = data.timeout;
+
+  console.log(promptId, timeout);
+});

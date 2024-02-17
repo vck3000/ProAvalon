@@ -2,7 +2,6 @@
 // GAME SOCKET ROUTES
 //= =====================================
 socket.on('game-starting', (roles, gameMode) => {
-  const secondsLeft = 10;
   let timerInterval;
 
   let gameModeCap;

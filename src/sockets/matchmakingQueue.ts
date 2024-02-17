@@ -1,3 +1,5 @@
+const NUM_PLAYERS_PER_GAME = 2;
+
 export class MatchmakingQueue {
   private queue: string[] = [];
 
@@ -7,12 +9,15 @@ export class MatchmakingQueue {
     this.matchFoundCallback = matchFoundCallback;
   }
 
-  addUser(username: string): void {
+  // Returns number of ppl in the queue
+  addUser(username: string): number {
     if (!this.queue.includes(username)) {
       this.queue.push(username);
     }
 
     this.checkQueue();
+
+    return this.queue.length;
   }
 
   // Returns whether username was removed
@@ -26,8 +31,12 @@ export class MatchmakingQueue {
     return false;
   }
 
+  getNumInQueue(): number {
+    return this.queue.length;
+  }
+
   private checkQueue(): void {
-    if (this.queue.length >= 6) {
+    if (this.queue.length >= NUM_PLAYERS_PER_GAME) {
       console.log(`[MatchmakingQueue] Match found: ${this.queue}`);
       this.matchFoundCallback(this.queue);
       this.queue = [];

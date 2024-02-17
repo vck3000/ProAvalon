@@ -60,6 +60,14 @@
       <br />
       <br />
 
+      <a id="joinQueueButton" class="btn btn-default" href="#">Join Queue</a>
+      <a id="leaveQueueButton" class="btn btn-default" href="#">Leave Queue</a>
+
+      <p><span id="numPlayersInQueue">0</span> player(s) in queue</p>
+
+      <br />
+      <br />
+
       <table
         id="current-games-table"
         class="table table-bordered table-striped lobby-table"
@@ -1325,6 +1333,13 @@
 <script
   type="text/javascript"
   src="<%-getVersionedPath('/dist_webpack/report.bundle.js')%>"
+></script>
+
+<div react-entrypoint id="ReadyPromptDiv"><%-readyPromptReact%></div>
+
+<script
+  type="text/javascript"
+  src="<%-getVersionedPath('/dist_webpack/readyPrompt.bundle.js')%>"
 ></script>
 
 <%- include('partials/footer') %>
