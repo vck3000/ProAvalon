@@ -1316,7 +1316,7 @@ export const userCommands = {
 
   removeBlacklist: {
     command: 'removeBlacklist',
-    help: '/removeBlacklist <username>: Removes a user to your blacklist.',
+    help: '/removeBlacklist <username>: Removes a user from your blacklist.',
     run(data, senderSocket) {
       const { args } = data;
       if (args.length < 2) {
