@@ -27,7 +27,7 @@ export function ReadyPrompt() {
           Swal.hideLoading();
           const timer = Swal.getPopup().querySelector('span');
           timerInterval = setInterval(() => {
-            timer.textContent = `${Math.ceil(
+            timer.textContent = `${Math.floor(
               Swal.getTimerLeft() / 1000,
             )}s remaining...`;
           }, 100);

@@ -43,7 +43,7 @@ import { RoomCreationType } from '../gameplay/roomTypes';
 import { CreateRoomFilter } from './filters/createRoomFilter';
 import Game, { GameConfig } from '../gameplay/game';
 import { RoomConfig } from '../gameplay/room';
-import { MatchmakingQueue } from './matchmakingQueue';
+import { MatchmakingQueue, QueueEntry } from './matchmakingQueue';
 import { ReadyPrompt, ReadyPromptReplyFromClient } from './readyPrompt';
 import { JoinQueueFilter } from './filters/joinQueueFilter';
 
@@ -2436,6 +2436,7 @@ function kickPlayer(username: string): void {
 
 function joinQueue() {
   const username = this.request.user.username;
+  const blacklistUsernames = this.request.user.matchmakingBlacklist;
 
   if (!joinQueueFilter.joinQueueRequest(username)) {
     this.emit('allChatToClient', {
@@ -2446,7 +2447,9 @@ function joinQueue() {
     return;
   }
 
-  const result = matchmakingQueue.addUser(username);
+  const result = matchmakingQueue.addUser(
+    new QueueEntry(username, blacklistUsernames),
+  );
   if (result) {
     this.emit('allChatToClient', {
       message: 'You have been added to the queue.',
@@ -2501,13 +2504,18 @@ function matchFound(usernames: string[]): void {
     'Match found!',
     (
       success: boolean,
-      acceptedUsernames: string[],
+      approvedUsernames: string[],
       rejectedUsernames: string[],
     ): void => {
       if (!success) {
         // Throw approved users back into queue.
-        for (const username of acceptedUsernames) {
-          matchmakingQueue.addUser(username);
+        for (const username of approvedUsernames) {
+          matchmakingQueue.addUser(
+            new QueueEntry(
+              username,
+              getSocketFromUsername(username).request.user.matchmakingBlacklist,
+            ),
+          );
 
           const socket = getSocketFromUsername(username);
           socket.emit('allChatToClient', {
@@ -2539,7 +2547,7 @@ function matchFound(usernames: string[]): void {
       }
 
       const roomConfig = new RoomConfig(
-        acceptedUsernames[0],
+        approvedUsernames[0],
         nextRoomId,
         ioGlobal,
         10,
@@ -2558,7 +2566,7 @@ function matchFound(usernames: string[]): void {
       rooms[nextRoomId] = new GameWrapper(gameConfig, socketCallback);
       const room = rooms[nextRoomId];
 
-      for (const username of acceptedUsernames) {
+      for (const username of approvedUsernames) {
         room.playerJoinRoom(getSocketFromUsername(username));
         room.playerSitDown(getSocketFromUsername(username));
       }
@@ -2567,11 +2575,11 @@ function matchFound(usernames: string[]): void {
 
       // Need to push them out so that the game treats them as just joining to
       // send data, etc.
-      for (const username of acceptedUsernames) {
+      for (const username of approvedUsernames) {
         room.playerLeaveRoom(getSocketFromUsername(username));
       }
 
-      for (const username of acceptedUsernames) {
+      for (const username of approvedUsernames) {
         // 'match-found-join-room'
         getSocketFromUsername(username).emit('match-found-join-room', {
           roomId: nextRoomId,
@@ -2579,7 +2587,7 @@ function matchFound(usernames: string[]): void {
       }
 
       const data = {
-        message: `Server created ranked room ${nextRoomId}.`,
+        message: `Server has created ranked room ${nextRoomId}.`,
         classStr: 'server-text',
       };
       sendToAllChat(ioGlobal, data);
