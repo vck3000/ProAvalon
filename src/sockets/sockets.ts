@@ -1250,6 +1250,104 @@ export const userCommands = {
       );
     },
   },
+
+  getBlacklist: {
+    command: 'getBlacklist',
+    help: '/getBlacklist: Shows your current blacklist for matchmaking. Will not match you into these players.',
+    run(data, senderSocket) {
+      senderSocket.emit('messageCommandReturnStr', {
+        message: 'Your blacklist:',
+        classStr: 'server-text',
+      });
+
+      const dataToSend = [];
+      for (const username of senderSocket.request.user.matchmakingBlacklist) {
+        dataToSend.push({
+          message: username,
+          classStr: 'server-text',
+        });
+      }
+
+      senderSocket.emit('messageCommandReturnStr', dataToSend);
+    },
+  },
+
+  addBlacklist: {
+    command: 'addBlacklist',
+    help: '/addBlacklist <username>: Adds a user to your blacklist. Maximum of 50 users.',
+    run(data, senderSocket) {
+      const { args } = data;
+      if (args.length < 2) {
+        return {
+          message: 'Please specify a username.',
+          classStr: 'server-text',
+        };
+      }
+
+      const usernameToBlacklist = args[1].toLowerCase();
+
+      if (senderSocket.request.user.matchmakingBlacklist.length > 50) {
+        return {
+          message: 'You have too many users. Please remove some.',
+          classStr: 'server-text',
+        };
+      }
+
+      if (
+        senderSocket.request.user.matchmakingBlacklist.includes(
+          usernameToBlacklist,
+        )
+      ) {
+        return {
+          message: `You already have ${usernameToBlacklist} on your blacklist.`,
+          classStr: 'server-text',
+        };
+      }
+
+      senderSocket.request.user.matchmakingBlacklist.push(usernameToBlacklist);
+      senderSocket.request.user.markModified('matchmakingBlacklist');
+      senderSocket.request.user.save();
+      return {
+        message: `Added ${usernameToBlacklist} to your blacklist.`,
+        classStr: 'server-text',
+      };
+    },
+  },
+
+  removeBlacklist: {
+    command: 'removeBlacklist',
+    help: '/removeBlacklist <username>: Removes a user to your blacklist.',
+    run(data, senderSocket) {
+      const { args } = data;
+      if (args.length < 2) {
+        return {
+          message: 'Please specify a username.',
+          classStr: 'server-text',
+        };
+      }
+
+      const usernameToBlacklist = args[1].toLowerCase();
+
+      const index =
+        senderSocket.request.user.matchmakingBlacklist.indexOf(
+          usernameToBlacklist,
+        );
+      if (index === -1) {
+        return {
+          message: `${usernameToBlacklist} was not on your blacklist.`,
+          classStr: 'server-text',
+        };
+      }
+      senderSocket.request.user.matchmakingBlacklist.splice(index, 1);
+      senderSocket.request.user.markModified('matchmakingBlacklist');
+      senderSocket.request.user.save();
+
+      return {
+        message: `Removed ${usernameToBlacklist} from your blacklist.`,
+        classStr: 'server-text',
+      };
+    },
+  },
 };
 
 export let ioGlobal = {};
