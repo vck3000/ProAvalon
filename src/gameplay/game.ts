@@ -256,10 +256,6 @@ class Game extends Room {
     }
     // If the game has started
     if (this.gameStarted === true) {
-      socket.emit(
-        'danger-alert',
-        "The game has started... You shouldn't be able to see that stand up button!",
-      );
       return;
     }
 

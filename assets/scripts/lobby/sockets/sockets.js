@@ -389,16 +389,27 @@ socket.on('update-current-games-list', (currentGames) => {
 });
 
 socket.on('auto-join-room-id', (roomId_, newRoomPassword) => {
-  // console.log("newRoomPassword: " + newRoomPassword);
-  // console.log("auto join room");
-  // received a request from server to auto join
-  // likely we were the one who created the room
-  // so we auto join into it
+  // Received a request from server to auto join and sit down.
+  // This is called when we create a room.
   socket.emit('join-room', roomId_, newRoomPassword);
   socket.emit('join-game', roomId_);
   isSpectator = false;
   roomId = roomId_;
-  // chang ethe view to the room instead of lobby
+  // change the view to the room instead of lobby
+  changeView();
+});
+
+socket.on('match-found-join-room', (data) => {
+  if (roomId !== undefined) {
+    leaveRoom();
+  }
+
+  resetAllGameData();
+  socket.emit('join-room', data.roomId);
+
+  roomId = data.roomId;
+  isSpectator = false;
+
   changeView();
 });
 
@@ -801,11 +812,4 @@ socket.on('redirect', (dest) => {
 
 socket.on('numPlayersInQueue', (data) => {
   $('#numPlayersInQueue')[0].innerText = data.numPlayersInQueue;
-});
-
-socket.on('ready-prompt-to-client', (data) => {
-  const promptId = data.promptId;
-  const timeout = data.timeout;
-
-  console.log(promptId, timeout);
 });

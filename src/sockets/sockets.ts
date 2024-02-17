@@ -45,11 +45,13 @@ import Game, { GameConfig } from '../gameplay/game';
 import { RoomConfig } from '../gameplay/room';
 import { MatchmakingQueue } from './matchmakingQueue';
 import { ReadyPrompt, ReadyPromptReplyFromClient } from './readyPrompt';
+import { JoinQueueFilter } from './filters/joinQueueFilter';
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
-// Only used for rank games at the moment
+// Only used for ranked games at the moment
 const matchmakingQueue = new MatchmakingQueue(matchFound);
+const joinQueueFilter = new JoinQueueFilter(() => new Date());
 const readyPrompt = new ReadyPrompt();
 
 if (process.env.NODE_ENV !== 'test') {
@@ -1846,6 +1848,9 @@ function disconnect(data) {
 
   playerLeaveRoomCheckDestroy(this);
 
+  matchmakingQueue.removeUser(username);
+  sendNumPlayersInQueueToEveryone();
+
   // if they are in a room, say they're leaving the room.
   data = {
     message: `${username} has left the room.`,
@@ -2333,8 +2338,17 @@ function kickPlayer(username: string): void {
 
 function joinQueue() {
   const username = this.request.user.username;
-  const result = matchmakingQueue.addUser(username);
 
+  if (!joinQueueFilter.joinQueueRequest(username)) {
+    this.emit('allChatToClient', {
+      message:
+        'You have rejected too many found matches. Please try again later.',
+      classStr: 'server-text',
+    });
+    return;
+  }
+
+  const result = matchmakingQueue.addUser(username);
   if (result) {
     this.emit('allChatToClient', {
       message: 'You have been added to the queue.',
@@ -2406,6 +2420,8 @@ function matchFound(usernames: string[]): void {
         }
 
         for (const username of rejectedUsernames) {
+          joinQueueFilter.registerReject(username);
+
           const socket = getSocketFromUsername(username);
           socket.emit('allChatToClient', {
             message:
@@ -2451,8 +2467,17 @@ function matchFound(usernames: string[]): void {
 
       room.startGame(['Merlin', 'Percival', 'Assassin', 'Morgana']);
 
+      // Need to push them out so that the game treats them as just joining to
+      // send data, etc.
       for (const username of acceptedUsernames) {
-        getSocketFromUsername(username).emit('auto-join-room-id', nextRoomId);
+        room.playerLeaveRoom(getSocketFromUsername(username));
+      }
+
+      for (const username of acceptedUsernames) {
+        // 'match-found-join-room'
+        getSocketFromUsername(username).emit('match-found-join-room', {
+          roomId: nextRoomId,
+        });
       }
 
       const data = {
