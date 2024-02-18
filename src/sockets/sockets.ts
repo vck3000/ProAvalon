@@ -483,26 +483,6 @@ export const userCommands = {
     },
   },
 
-  roomchat: {
-    command: 'roomchat',
-    help: '/roomchat: Get a copy of the chat for the current game.',
-    run(data, senderSocket) {
-      const { args } = data;
-      // code
-      if (
-        rooms[senderSocket.request.user.inRoomId] &&
-        rooms[senderSocket.request.user.inRoomId].gameStarted === true
-      ) {
-        return rooms[senderSocket.request.user.inRoomId].chatHistory;
-      }
-
-      return {
-        message: "The game hasn't started yet. There is no chat to display.",
-        classStr: 'server-text',
-      };
-    },
-  },
-
   allchat: {
     command: 'allchat',
     help: '/allchat: Get a copy of the last 5 minutes of allchat.',
@@ -2280,8 +2260,8 @@ function joinRoom(roomId, inputPassword) {
       sendToRoomChat(ioGlobal, roomId, data);
 
       updateCurrentGamesList();
-    } else {
-      // no need to do anything?
+
+      this.emit('roomChatToClient', rooms[roomId].chatHistory);
     }
   } else {
     // console.log("Game doesn't exist!");
@@ -2567,8 +2547,8 @@ function matchFound(usernames: string[]): void {
       const room = rooms[nextRoomId];
 
       room.configureTimeouts({
-        default: 3 * 60,
-        assassination: 15 * 60,
+        default: 3 * 60 * 1000,
+        assassination: 15 * 60 * 1000,
       });
 
       for (const username of approvedUsernames) {

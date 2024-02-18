@@ -360,10 +360,6 @@ socket.on('update-current-games-list', (currentGames) => {
         isSpectator = true;
         // change to the game room view
         changeView();
-
-        setTimeout(() => {
-          checkMessageForCommands('/roomchat', 'roomChat');
-        }, 500);
       });
     }
   });

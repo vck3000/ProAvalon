@@ -483,6 +483,17 @@ class Game extends Room {
     str += '.';
     this.sendText(this.allSockets, str, 'gameplay-text');
 
+    const timeouts = this.gameTimer.getTimeouts();
+    if (timeouts.assassination || timeouts.default) {
+      this.sendText(
+        this.allSockets,
+        `Timeouts: Default = ${timeouts.default / 1000}s Assassination = ${
+          timeouts.assassination / 1000
+        }s`,
+        'gameplay-text',
+      );
+    }
+
     if (this.muteSpectators) {
       this.sendText(
         this.allSockets,
