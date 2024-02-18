@@ -43,9 +43,16 @@ import { RoomCreationType } from '../gameplay/roomTypes';
 import { CreateRoomFilter } from './filters/createRoomFilter';
 import Game, { GameConfig } from '../gameplay/game';
 import { RoomConfig } from '../gameplay/room';
+import { MatchmakingQueue, QueueEntry } from './matchmakingQueue';
+import { ReadyPrompt, ReadyPromptReplyFromClient } from './readyPrompt';
+import { JoinQueueFilter } from './filters/joinQueueFilter';
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
+// Only used for ranked games at the moment
+const matchmakingQueue = new MatchmakingQueue(matchFound);
+const joinQueueFilter = new JoinQueueFilter(() => new Date());
+const readyPrompt = new ReadyPrompt();
 
 if (process.env.NODE_ENV !== 'test') {
   setInterval(() => {
@@ -63,11 +70,11 @@ export const allSockets: SocketUser[] = [];
 export const rooms: GameWrapper[] = [];
 export let nextRoomId = 1;
 
-export function incrementNextRoomId() {
+export function incrementNextRoomId(): void {
   nextRoomId++;
 }
 
-const allChat5Min = [];
+const allChat5Min: any[] = [];
 
 const possibleInteracts = ['buzz', 'pat', 'poke', 'punch', 'slap', 'hug'];
 const possibleInteractsPast = [
@@ -473,26 +480,6 @@ export const userCommands = {
           classStr: 'server-text',
         };
       }
-    },
-  },
-
-  roomchat: {
-    command: 'roomchat',
-    help: '/roomchat: Get a copy of the chat for the current game.',
-    run(data, senderSocket) {
-      const { args } = data;
-      // code
-      if (
-        rooms[senderSocket.request.user.inRoomId] &&
-        rooms[senderSocket.request.user.inRoomId].gameStarted === true
-      ) {
-        return rooms[senderSocket.request.user.inRoomId].chatHistory;
-      }
-
-      return {
-        message: "The game hasn't started yet. There is no chat to display.",
-        classStr: 'server-text',
-      };
     },
   },
 
@@ -1243,6 +1230,104 @@ export const userCommands = {
       );
     },
   },
+
+  getblacklist: {
+    command: 'getblacklist',
+    help: '/getblacklist: Shows your current blacklist for matchmaking. Will not match you into these players.',
+    run(data, senderSocket) {
+      senderSocket.emit('messageCommandReturnStr', {
+        message: 'Your blacklist:',
+        classStr: 'server-text',
+      });
+
+      const dataToSend = [];
+      for (const username of senderSocket.request.user.matchmakingBlacklist) {
+        dataToSend.push({
+          message: username,
+          classStr: 'server-text',
+        });
+      }
+
+      senderSocket.emit('messageCommandReturnStr', dataToSend);
+    },
+  },
+
+  addblacklist: {
+    command: 'addblacklist',
+    help: '/addblacklist <username>: Adds a user to your blacklist. Maximum of 50 users.',
+    run(data, senderSocket) {
+      const { args } = data;
+      if (args.length < 2) {
+        return {
+          message: 'Please specify a username.',
+          classStr: 'server-text',
+        };
+      }
+
+      const usernameToBlacklist = args[1].toLowerCase();
+
+      if (senderSocket.request.user.matchmakingBlacklist.length > 50) {
+        return {
+          message: 'You have too many users. Please remove some.',
+          classStr: 'server-text',
+        };
+      }
+
+      if (
+        senderSocket.request.user.matchmakingBlacklist.includes(
+          usernameToBlacklist,
+        )
+      ) {
+        return {
+          message: `You already have ${usernameToBlacklist} on your blacklist.`,
+          classStr: 'server-text',
+        };
+      }
+
+      senderSocket.request.user.matchmakingBlacklist.push(usernameToBlacklist);
+      senderSocket.request.user.markModified('matchmakingBlacklist');
+      senderSocket.request.user.save();
+      return {
+        message: `Added ${usernameToBlacklist} to your blacklist.`,
+        classStr: 'server-text',
+      };
+    },
+  },
+
+  removeblacklist: {
+    command: 'removeblacklist',
+    help: '/removeblacklist <username>: Removes a user from your blacklist.',
+    run(data, senderSocket) {
+      const { args } = data;
+      if (args.length < 2) {
+        return {
+          message: 'Please specify a username.',
+          classStr: 'server-text',
+        };
+      }
+
+      const usernameToBlacklist = args[1].toLowerCase();
+
+      const index =
+        senderSocket.request.user.matchmakingBlacklist.indexOf(
+          usernameToBlacklist,
+        );
+      if (index === -1) {
+        return {
+          message: `${usernameToBlacklist} was not on your blacklist.`,
+          classStr: 'server-text',
+        };
+      }
+      senderSocket.request.user.matchmakingBlacklist.splice(index, 1);
+      senderSocket.request.user.markModified('matchmakingBlacklist');
+      senderSocket.request.user.save();
+
+      return {
+        message: `Removed ${usernameToBlacklist} from your blacklist.`,
+        classStr: 'server-text',
+      };
+    },
+  },
 };
 
 export let ioGlobal = {};
@@ -1415,6 +1500,10 @@ export const server = function (io: SocketServer): void {
 
       updateCurrentPlayersList(io);
       updateCurrentGamesList(io);
+
+      socket.emit('numPlayersInQueue', {
+        numPlayersInQueue: matchmakingQueue.getNumInQueue(),
+      });
     }, 1000);
 
     socket.on('disconnect', disconnect);
@@ -1432,6 +1521,9 @@ export const server = function (io: SocketServer): void {
     socket.on('player-not-ready', playerNotReady);
     socket.on('startGame', startGame);
     socket.on('kickPlayer', kickPlayer);
+    socket.on('join-queue', joinQueue);
+    socket.on('leave-queue', leaveQueue);
+    socket.on('ready-prompt-reply', readyPromptHandler);
     socket.on('update-room-max-players', updateRoomMaxPlayers);
     socket.on('update-room-game-mode', updateRoomGameMode);
     socket.on('update-room-ranked', updateRoomRanked);
@@ -1808,6 +1900,8 @@ export function getSocketFromUsername(username: string): SocketUser {
       return socket;
     }
   }
+
+  throw new Error(`Couldn't find socket for player ${username}.`);
 }
 
 function disconnect(data) {
@@ -1831,6 +1925,9 @@ function disconnect(data) {
   const { username, inRoomId } = this.request.user;
 
   playerLeaveRoomCheckDestroy(this);
+
+  matchmakingQueue.removeUser(username);
+  sendNumPlayersInQueueToEveryone();
 
   // if they are in a room, say they're leaving the room.
   data = {
@@ -2134,7 +2231,6 @@ function newRoom(dataObj) {
 
     // increment index for next game
     incrementNextRoomId();
-
     updateCurrentGamesList();
   }
 }
@@ -2164,8 +2260,9 @@ function joinRoom(roomId, inputPassword) {
       sendToRoomChat(ioGlobal, roomId, data);
 
       updateCurrentGamesList();
-    } else {
-      // no need to do anything?
+
+      // Send room chat to client
+      this.emit('roomChatToClient', rooms[roomId].chatHistory);
     }
   } else {
     // console.log("Game doesn't exist!");
@@ -2311,11 +2408,179 @@ function startGame(data) {
   }
 }
 
-function kickPlayer(username) {
+function kickPlayer(username: string): void {
   console.log(`received kick player request: ${username}`);
   if (rooms[this.request.user.inRoomId]) {
     rooms[this.request.user.inRoomId].kickPlayer(username, this);
   }
+}
+
+function joinQueue() {
+  const username = this.request.user.username;
+  const blacklistUsernames = this.request.user.matchmakingBlacklist;
+
+  if (!joinQueueFilter.joinQueueRequest(username)) {
+    this.emit('allChatToClient', {
+      message:
+        'You have rejected too many found matches. Please try again later.',
+      classStr: 'server-text',
+    });
+    return;
+  }
+
+  const result = matchmakingQueue.addUser(
+    new QueueEntry(username, blacklistUsernames),
+  );
+  if (result) {
+    this.emit('allChatToClient', {
+      message: 'You have been added to the queue.',
+      classStr: 'server-text',
+    });
+
+    sendNumPlayersInQueueToEveryone();
+  } else {
+    this.emit('allChatToClient', {
+      message: 'You have already joined the queue.',
+      classStr: 'server-text',
+    });
+  }
+}
+
+function leaveQueue(): void {
+  const username = this.request.user.username;
+  const result = matchmakingQueue.removeUser(username);
+
+  this.emit('allChatToClient', {
+    message: result
+      ? 'You have been removed from the queue.'
+      : 'You are not in the queue.',
+    classStr: 'server-text',
+  });
+
+  sendNumPlayersInQueueToEveryone();
+}
+
+function sendNumPlayersInQueueToEveryone() {
+  allSockets.forEach((sock) => {
+    sock.emit('numPlayersInQueue', {
+      numPlayersInQueue: matchmakingQueue.getNumInQueue(),
+    });
+  });
+}
+
+function readyPromptHandler(reply: ReadyPromptReplyFromClient): void {
+  const username = this.request.user.username;
+
+  readyPrompt.clientReply(username, reply);
+}
+
+function matchFound(usernames: string[]): void {
+  const sockets = [];
+  for (const username of usernames) {
+    sockets.push(getSocketFromUsername(username));
+  }
+
+  readyPrompt.createReadyPrompt(
+    sockets,
+    'Match found!',
+    (
+      success: boolean,
+      approvedUsernames: string[],
+      rejectedUsernames: string[],
+    ): void => {
+      if (!success) {
+        // Throw approved users back into queue.
+        for (const username of approvedUsernames) {
+          matchmakingQueue.addUser(
+            new QueueEntry(
+              username,
+              getSocketFromUsername(username).request.user.matchmakingBlacklist,
+            ),
+          );
+
+          const socket = getSocketFromUsername(username);
+          socket.emit('allChatToClient', {
+            message:
+              "A player didn't accept the match. You have been re-added to the queue.",
+            classStr: 'server-text',
+          });
+        }
+
+        for (const username of rejectedUsernames) {
+          joinQueueFilter.registerReject(username);
+
+          const socket = getSocketFromUsername(username);
+          socket.emit('allChatToClient', {
+            message:
+              'You did not accept the match. You have been removed from the queue.',
+            classStr: 'server-text',
+          });
+        }
+
+        sendNumPlayersInQueueToEveryone();
+        return;
+      }
+
+      // We have a match! Create the room.
+      // while rooms exist already (in case of a previously saved and retrieved game)
+      while (rooms[nextRoomId]) {
+        incrementNextRoomId();
+      }
+
+      const roomConfig = new RoomConfig(
+        approvedUsernames[0],
+        nextRoomId,
+        ioGlobal,
+        10,
+        undefined,
+        GameMode.AVALON,
+        true,
+      );
+      const gameConfig = new GameConfig(
+        roomConfig,
+        false,
+        false,
+        RoomCreationType.QUEUE,
+        () => new Date(),
+      );
+
+      rooms[nextRoomId] = new GameWrapper(gameConfig, socketCallback);
+      const room = rooms[nextRoomId];
+
+      room.configureTimeouts({
+        default: 3 * 60 * 1000,
+        assassination: 15 * 60 * 1000,
+      });
+
+      for (const username of approvedUsernames) {
+        room.playerJoinRoom(getSocketFromUsername(username));
+        room.playerSitDown(getSocketFromUsername(username));
+      }
+
+      room.startGame(['Merlin', 'Percival', 'Assassin', 'Morgana']);
+
+      // Need to push them out so that the game treats them as just joining to
+      // send data, etc.
+      for (const username of approvedUsernames) {
+        room.playerLeaveRoom(getSocketFromUsername(username));
+      }
+
+      for (const username of approvedUsernames) {
+        getSocketFromUsername(username).emit('match-found-join-room', {
+          roomId: nextRoomId,
+        });
+      }
+
+      const data = {
+        message: `Server has created ranked room ${nextRoomId}.`,
+        classStr: 'server-text',
+      };
+      sendToAllChat(ioGlobal, data);
+
+      incrementNextRoomId();
+      updateCurrentGamesList();
+    },
+  );
 }
 
 function setClaim(data) {

@@ -256,10 +256,6 @@ class Game extends Room {
     }
     // If the game has started
     if (this.gameStarted === true) {
-      socket.emit(
-        'danger-alert',
-        "The game has started... You shouldn't be able to see that stand up button!",
-      );
       return;
     }
 
@@ -486,6 +482,17 @@ class Game extends Room {
     str = str.slice(0, str.length - 2);
     str += '.';
     this.sendText(this.allSockets, str, 'gameplay-text');
+
+    const timeouts = this.gameTimer.getTimeouts();
+    if (timeouts.assassination || timeouts.default) {
+      this.sendText(
+        this.allSockets,
+        `Timeouts: Default = ${timeouts.default / 1000}s Assassination = ${
+          timeouts.assassination / 1000
+        }s`,
+        'gameplay-text',
+      );
+    }
 
     if (this.muteSpectators) {
       this.sendText(
@@ -1284,6 +1291,7 @@ class Game extends Room {
       winningTeam: this.winner,
       spyTeam: this.spyUsernames,
       resistanceTeam: this.resistanceUsernames,
+      ranked: this.ranked,
       numberOfPlayers: this.playersInGame.length,
       gameMode: this.gameMode,
       roomCreationType: this.roomCreationType,

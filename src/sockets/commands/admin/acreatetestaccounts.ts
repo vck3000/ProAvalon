@@ -5,14 +5,14 @@ import { Command } from '../types';
 
 export const acreatetestaccounts: Command = {
   command: 'acreatetestaccounts',
-  help: '/acreatetestaccounts: Creates test accounts: 1, 2, 3, 4, 5. Passwords are the username.',
+  help: '/acreatetestaccounts: Creates test accounts: 1, 2, 3, 4, 5, 6. Passwords are the username.',
   run: async (args: string[], socket: SocketUser) => {
     if (process.env.ENV === 'prod') {
       sendReplyToCommand(socket, 'Cannot create test accounts in prod.');
       return;
     }
 
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 6; i++) {
       const newUser = new User({
         username: i.toString(),
         usernameLower: i.toString(),

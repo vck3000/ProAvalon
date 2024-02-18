@@ -38,6 +38,10 @@ export class GameTimer {
     this.timeoutSettings = timeouts;
   }
 
+  getTimeouts(): Timeouts {
+    return this.timeoutSettings;
+  }
+
   votePauseTimeout(username: string, votesNeeded: number): number {
     this.playersVotedPause.add(username.toLowerCase());
     if (this.playersVotedPause.size >= votesNeeded) {

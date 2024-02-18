@@ -67,4 +67,5 @@ export interface IUser {
   patreonId?: string;
   IPAddresses?: string[];
   lastIPAddress?: string;
+  matchmakingBlacklist?: string[];
 }
