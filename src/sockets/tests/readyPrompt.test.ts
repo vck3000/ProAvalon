@@ -10,7 +10,7 @@ jest.useFakeTimers();
 describe('ReadyPrompt', () => {
   let readyPrompt: ReadyPrompt;
   let testSockets: any[] = [];
-  const callback = jest.fn();
+  let callback = jest.fn();
 
   beforeEach(() => {
     // Set up test sockets
@@ -27,7 +27,7 @@ describe('ReadyPrompt', () => {
     }
 
     readyPrompt = new ReadyPrompt();
-    callback.mockClear();
+    callback = jest.fn();
   });
 
   it('Sends out prompt on create', () => {
