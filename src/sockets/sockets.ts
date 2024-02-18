@@ -2261,6 +2261,7 @@ function joinRoom(roomId, inputPassword) {
 
       updateCurrentGamesList();
 
+      // Send room chat to client
       this.emit('roomChatToClient', rooms[roomId].chatHistory);
     }
   } else {
@@ -2565,7 +2566,6 @@ function matchFound(usernames: string[]): void {
       }
 
       for (const username of approvedUsernames) {
-        // 'match-found-join-room'
         getSocketFromUsername(username).emit('match-found-join-room', {
           roomId: nextRoomId,
         });
