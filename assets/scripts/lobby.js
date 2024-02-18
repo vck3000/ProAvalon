@@ -1895,6 +1895,7 @@ function playSound(soundToPlay) {
   soundFiles[soundToPlay].volume =
     $('#option_notifications_sound_volume')[0].value / 100;
   soundFiles[soundToPlay].play();
+  return true;
 }
 
 function displayNotification(title, body, icon, tag) {

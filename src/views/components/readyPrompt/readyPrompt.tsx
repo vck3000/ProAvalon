@@ -9,9 +9,13 @@ export function ReadyPrompt() {
   useEffect(() => {
     // @ts-ignore
     const socket: Socket = socket_;
+    // @ts-ignore
+    const playSound_: (sound: string) => boolean = playSound;
 
     let timerInterval: ReturnType<typeof setInterval>;
     socket.on('ready-prompt-to-client', (data: ReadyPromptRequestToClient) => {
+      playSound_('buzz');
+
       Swal.fire({
         title: data.text,
         html: '<span></span>',
