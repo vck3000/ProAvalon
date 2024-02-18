@@ -1231,9 +1231,9 @@ export const userCommands = {
     },
   },
 
-  getBlacklist: {
-    command: 'getBlacklist',
-    help: '/getBlacklist: Shows your current blacklist for matchmaking. Will not match you into these players.',
+  getblacklist: {
+    command: 'getblacklist',
+    help: '/getblacklist: Shows your current blacklist for matchmaking. Will not match you into these players.',
     run(data, senderSocket) {
       senderSocket.emit('messageCommandReturnStr', {
         message: 'Your blacklist:',
@@ -1252,9 +1252,9 @@ export const userCommands = {
     },
   },
 
-  addBlacklist: {
-    command: 'addBlacklist',
-    help: '/addBlacklist <username>: Adds a user to your blacklist. Maximum of 50 users.',
+  addblacklist: {
+    command: 'addblacklist',
+    help: '/addblacklist <username>: Adds a user to your blacklist. Maximum of 50 users.',
     run(data, senderSocket) {
       const { args } = data;
       if (args.length < 2) {
@@ -1294,9 +1294,9 @@ export const userCommands = {
     },
   },
 
-  removeBlacklist: {
-    command: 'removeBlacklist',
-    help: '/removeBlacklist <username>: Removes a user from your blacklist.',
+  removeblacklist: {
+    command: 'removeblacklist',
+    help: '/removeblacklist <username>: Removes a user from your blacklist.',
     run(data, senderSocket) {
       const { args } = data;
       if (args.length < 2) {
