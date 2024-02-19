@@ -14,7 +14,7 @@ export function ReadyPrompt() {
 
     let timerInterval: ReturnType<typeof setInterval>;
     socket.on('ready-prompt-to-client', (data: ReadyPromptRequestToClient) => {
-      playSound_('buzz');
+      playSound_('game-start-ready');
 
       Swal.fire({
         title: data.title,
