@@ -9,7 +9,6 @@ const api_key = process.env.MAILGUN_API_KEY;
 const domain = process.env.PROAVALON_EMAIL_ADDRESS_DOMAIN;
 const server_domain = process.env.SERVER_DOMAIN;
 
-// @ts-ignore
 const mailgun = new Mailgun(formData);
 const mg = mailgun.client({ username: 'api', key: api_key });
 

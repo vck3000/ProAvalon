@@ -1,5 +1,4 @@
 // @ts-nocheck
-import axios from 'axios';
 import { Server as SocketServer, Socket } from 'socket.io';
 import { SocketUser } from './types';
 
@@ -25,12 +24,6 @@ import {
 
 import { ChatSpamFilter } from './filters/chatSpamFilter';
 import { MessageWithDate, Quote } from './quote';
-import {
-  APIBotSocket,
-  enabledBots,
-  makeBotAPIRequest,
-  SimpleBotSocket,
-} from './bot';
 
 import { adminCommands } from './commands/admin';
 import { modCommands } from './commands/mod';
@@ -174,6 +167,7 @@ setTimeout(async () => {
               undefined,
               undefined,
               storedData.gameMode,
+              undefined,
               undefined,
             );
             const gameConfig = new GameConfig(
@@ -466,7 +460,6 @@ export const userCommands = {
         if (interactedInGame === true) {
           const str = `${senderSocket.request.user.username} has ${verbPast} ${targetSocket.request.user.username}. (In game)`;
           rooms[resquestorSocket.request.user.inRoomId].sendText(
-            rooms[resquestorSocket.request.user.inRoomId].allSockets,
             str,
             'server-text',
           );
@@ -920,285 +913,6 @@ export const userCommands = {
       return userCommands.guessmerlin.run(data, senderSocket);
     },
   },
-
-  getbots: {
-    command: 'getbots',
-    help: '/getbots: Run this in a bot-compatible room. Prints a list of available bots to add, as well as their supported game modes',
-    run(data, senderSocket) {
-      senderSocket.emit('messageCommandReturnStr', {
-        message: 'Bots have been disabled.',
-        classStr: 'server-text',
-      });
-
-      return;
-
-      senderSocket.emit('messageCommandReturnStr', {
-        message: 'Fetching bots...',
-        classStr: 'server-text',
-      });
-
-      const botInfoRequests = enabledBots.map((botAPI) =>
-        makeBotAPIRequest(botAPI, 'GET', '/v0/info', {}, 2000)
-          .then((response) => {
-            if (response.status !== 200) {
-              return null;
-            }
-            return {
-              name: botAPI.name,
-              info: response.data,
-            };
-          })
-          .catch((response) => null),
-      );
-
-      axios.all(botInfoRequests).then((botInfoResponses) => {
-        const botDescriptions = botInfoResponses
-          .filter((result) => result != null)
-          .map(
-            (result) =>
-              `${result.name} - ${JSON.stringify(result.info.capabilities)}`,
-          );
-
-        // Hard code this in... (unshift pushes to the start of the array)
-        botDescriptions.unshift('SimpleBot - Random playing bot...');
-
-        if (botDescriptions.length === 0) {
-          senderSocket.emit('messageCommandReturnStr', {
-            message: 'No bots are currently available.',
-            classStr: 'server-text',
-          });
-        } else {
-          const messages = ['The following bots are online:'].concat(
-            botDescriptions,
-          );
-          senderSocket.emit(
-            'messageCommandReturnStr',
-            messages.map((message) => ({
-              message,
-              classStr: 'server-text',
-            })),
-          );
-        }
-      });
-    },
-  },
-
-  addbot: {
-    command: 'addbot',
-    help: '/addbot <name> [number]: Run this in a bot-compatible room. Add a bot to the room.',
-    run(data, senderSocket) {
-      senderSocket.emit('messageCommandReturnStr', {
-        message: 'Bots have been disabled.',
-        classStr: 'server-text',
-      });
-
-      return;
-
-      if (
-        senderSocket.request.user.inRoomId === undefined ||
-        rooms[senderSocket.request.user.inRoomId] === undefined
-      ) {
-        return {
-          message: 'You must be in a bot-capable room to run this command!',
-          classStr: 'server-text',
-        };
-      }
-      if (
-        rooms[senderSocket.request.user.inRoomId].gameMode
-          .toLowerCase()
-          .includes('bot') === false
-      ) {
-        return {
-          message:
-            'This room is not bot capable. Please join a bot-capable room.',
-          classStr: 'server-text',
-        };
-      }
-      if (
-        rooms[senderSocket.request.user.inRoomId].host !==
-        senderSocket.request.user.username
-      ) {
-        return {
-          message: 'You are not the host.',
-          classStr: 'server-text',
-        };
-      }
-
-      const currentRoomId = senderSocket.request.user.inRoomId;
-      const currentRoom = rooms[currentRoomId];
-
-      if (currentRoom.gameStarted === true || currentRoom.canJoin === false) {
-        return {
-          message: 'No bots can join this room at this time.',
-          classStr: 'server-text',
-        };
-      }
-
-      const { args } = data;
-
-      if (!args[1]) {
-        return {
-          message: 'Specify a bot. Use /getbots to see online bots.',
-          classStr: 'server-text',
-        };
-      }
-      const botName = args[1];
-      const botAPI = enabledBots.find(
-        (bot) => bot.name.toLowerCase() === botName.toLowerCase(),
-      );
-      if (!botAPI && botName !== 'SimpleBot') {
-        return {
-          message: `Couldn't find a bot called ${botName}.`,
-          classStr: 'server-text',
-        };
-      }
-
-      const numBots = +args[2] || 1;
-
-      if (
-        currentRoom.socketsOfPlayers.length + numBots >
-        currentRoom.maxNumPlayers
-      ) {
-        return {
-          message: `Adding ${numBots} bot(s) would make this room too full.`,
-          classStr: 'server-text',
-        };
-      }
-
-      const addedBots = [];
-      for (let i = 0; i < numBots; i++) {
-        const botName = `${botAPI.name}#${Math.floor(Math.random() * 100)}`;
-
-        // Avoid a username clash!
-        const currentUsernames = currentRoom.socketsOfPlayers.map(
-          (sock) => sock.request.user.username,
-        );
-        if (currentUsernames.includes(botName)) {
-          i--;
-          continue;
-        }
-
-        var dummySocket;
-        if (botAPI.name == 'SimpleBot') {
-          dummySocket = new SimpleBotSocket(botName);
-        } else {
-          dummySocket = new APIBotSocket(botName, botAPI);
-        }
-
-        currentRoom.playerJoinRoom(dummySocket);
-        currentRoom.playerSitDown(dummySocket);
-        if (!currentRoom.botSockets) {
-          currentRoom.botSockets = [];
-        }
-        currentRoom.botSockets.push(dummySocket);
-        addedBots.push(botName);
-      }
-
-      if (addedBots.length > 0) {
-        sendToRoomChat(ioGlobal, currentRoomId, {
-          message: `${
-            senderSocket.request.user.username
-          } added bots to this room: ${addedBots.join(', ')}`,
-          classStr: 'server-text-teal',
-        });
-      }
-    },
-  },
-  rembot: {
-    command: 'rembot',
-    help: '/rembot (<name>|all): Run this in a bot-compatible room. Removes a bot from the room.',
-    run(data, senderSocket) {
-      if (
-        senderSocket.request.user.inRoomId === undefined ||
-        rooms[senderSocket.request.user.inRoomId] === undefined
-      ) {
-        return {
-          message: 'You must be in a bot-capable room to run this command!',
-          classStr: 'server-text',
-        };
-      }
-      if (
-        rooms[senderSocket.request.user.inRoomId].gameMode
-          .toLowerCase()
-          .includes('bot') === false
-      ) {
-        return {
-          message:
-            'This room is not bot capable. Please join a bot-capable room.',
-          classStr: 'server-text',
-        };
-      }
-      if (
-        rooms[senderSocket.request.user.inRoomId].host !==
-        senderSocket.request.user.username
-      ) {
-        return {
-          message: 'You are not the host.',
-          classStr: 'server-text',
-        };
-      }
-
-      const currentRoomId = senderSocket.request.user.inRoomId;
-      const currentRoom = rooms[currentRoomId];
-      const { args } = data;
-
-      if (currentRoom.gameStarted === true || currentRoom.canJoin === false) {
-        return {
-          message: 'No bots can be removed from this room at this time.',
-          classStr: 'server-text',
-        };
-      }
-
-      if (!args[1]) {
-        return {
-          message:
-            'Specify a bot to remove, or use "/rembot all" to remove all bots.',
-          classStr: 'server-text',
-        };
-      }
-      const botName = args[1];
-      const botSockets = currentRoom.botSockets.slice() || [];
-      const botsToRemove =
-        botName === 'all'
-          ? botSockets
-          : botSockets.filter(
-              (socket) =>
-                socket.request.user.username.toLowerCase() ===
-                botName.toLowerCase(),
-            );
-      if (botsToRemove.length === 0) {
-        return {
-          message: "Couldn't find any bots with that name to remove.",
-          classStr: 'server-text',
-        };
-      }
-
-      botsToRemove.forEach((botSocket) => {
-        currentRoom.playerLeaveRoom(botSocket);
-
-        if (
-          currentRoom.botSockets &&
-          currentRoom.botSockets.indexOf(botSocket) !== -1
-        ) {
-          currentRoom.botSockets.splice(
-            currentRoom.botSockets.indexOf(botSocket),
-            1,
-          );
-        }
-      });
-
-      const removedBots = botsToRemove.map(
-        (botSocket) => botSocket.request.user.username,
-      );
-      sendToRoomChat(ioGlobal, currentRoomId, {
-        message: `${
-          senderSocket.request.user.username
-        } removed bots from this room: ${removedBots.join(', ')}`,
-        classStr: 'server-text-teal',
-      });
-    },
-  },
-
   votePauseTimeout: {
     command: 'votePauseTimeout',
     help: '/votePauseTimeout: Vote to pause timeout. Requires number_of_resistance + 1 votes.',
@@ -1517,8 +1231,6 @@ export const server = function (io: SocketServer): void {
     socket.on('join-game', joinGame);
     socket.on('standUpFromGame', standUpFromGame);
     socket.on('leave-room', leaveRoom);
-    socket.on('player-ready', playerReady);
-    socket.on('player-not-ready', playerNotReady);
     socket.on('startGame', startGame);
     socket.on('kickPlayer', kickPlayer);
     socket.on('join-queue', joinQueue);
@@ -2204,6 +1916,7 @@ function newRoom(dataObj) {
       dataObj.newRoomPassword,
       strToGameMode(dataObj.gameMode),
       rankedRoom,
+      readyPrompt,
     );
     const gameConfig = new GameConfig(
       roomConfig,
@@ -2319,42 +2032,6 @@ function leaveRoom() {
   }
 }
 
-function playerReady() {
-  const username = this.request.user.username;
-
-  if (
-    rooms[this.request.user.inRoomId] &&
-    !rooms[this.request.user.inRoomId].gameStarted
-  ) {
-    const data = {
-      message: `${username} is ready.`,
-      classStr: 'server-text',
-      dateCreated: new Date(),
-    };
-    sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
-
-    rooms[this.request.user.inRoomId].playerReady(username);
-  }
-}
-
-function playerNotReady() {
-  const username = this.request.user.username;
-
-  if (
-    rooms[this.request.user.inRoomId] &&
-    !rooms[this.request.user.inRoomId].gameStarted
-  ) {
-    const data = {
-      message: `${username} is not ready.`,
-      classStr: 'server-text',
-      dateCreated: new Date(),
-    };
-    sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
-
-    rooms[this.request.user.inRoomId].playerNotReady(username);
-  }
-}
-
 function startGame(data) {
   if (!data) {
     return;
@@ -2387,24 +2064,16 @@ function startGame(data) {
     assassination: processTimeout(timeoutsStr.assassination),
   };
 
-  if (rooms[this.request.user.inRoomId]) {
-    if (
-      this.request.user.inRoomId &&
-      this.request.user.username === rooms[this.request.user.inRoomId].host
-    ) {
-      rooms[this.request.user.inRoomId].configureTimeouts(timeouts);
-      rooms[this.request.user.inRoomId].hostTryStartGame(
-        options,
-        gameMode,
-        timeouts,
-      );
-    } else {
-      this.emit(
-        'danger-alert',
-        'You are not the host. You cannot start the game.',
-      );
-      return;
-    }
+  if (
+    rooms[this.request.user.inRoomId] &&
+    rooms[this.request.user.inRoomId].host === this.request.user.username
+  ) {
+    rooms[this.request.user.inRoomId].configureTimeouts(timeouts);
+    rooms[this.request.user.inRoomId].hostTryStartGame(
+      options,
+      gameMode,
+      timeouts,
+    );
   }
 }
 
@@ -2483,6 +2152,7 @@ function matchFound(usernames: string[]): void {
   readyPrompt.createReadyPrompt(
     sockets,
     'Match found!',
+    '',
     (
       success: boolean,
       approvedUsernames: string[],
@@ -2535,6 +2205,7 @@ function matchFound(usernames: string[]): void {
         undefined,
         GameMode.AVALON,
         true,
+        readyPrompt,
       );
       const gameConfig = new GameConfig(
         roomConfig,

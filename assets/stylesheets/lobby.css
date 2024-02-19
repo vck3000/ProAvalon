@@ -202,10 +202,7 @@ p {
 /* TEXT */
 
 .server-text {
-    /*color: #2378ff;*/
-    /*color: #ff6b6b;*/
     color: #7c7c7c;
-    /*font-style: italic;*/
 }
 
 .server-text-teal {
@@ -232,7 +229,6 @@ p {
 }
 
 .gameplay-text {
-    /* color: rgb(255, 0, 0); */
     color: gray;
     font-style: italic;
 }
@@ -262,7 +258,7 @@ p {
     font-weight: bold;
 }
 
-/*GAME-ROOM AREA*/
+/* GAME-ROOM AREA */
 
 .room-container {
     height: 100%;
@@ -592,7 +588,7 @@ well {
     background-color: #e5e5e5;
 }
 
-/*This is for the special text like lady, so users cannot select to copy paste*/
+/* This is for the special text like lady, so users cannot select to copy paste */
 
 .noselect {
     -webkit-touch-callout: none;

@@ -1,10 +1,10 @@
 // @ts-nocheck
 import { GAME_MODE_NAMES, GameMode, gameModeObj } from './gameModes';
 import { getPhases as getCommonPhases } from './indexCommonPhases';
-import usernamesIndexes from '../myFunctions/usernamesIndexes';
 import { SocketUser } from '../sockets/types';
 import { MIN_PLAYERS } from './game';
 import { Timeouts } from './gameTimer';
+import { ReadyPrompt } from '../sockets/readyPrompt';
 
 export class RoomConfig {
   host: string;
@@ -14,6 +14,7 @@ export class RoomConfig {
   newRoomPassword: string;
   gameMode: GameMode;
   ranked: boolean;
+  readyPrompt: ReadyPrompt;
 
   constructor(
     host: string,
@@ -23,6 +24,7 @@ export class RoomConfig {
     newRoomPassword: string,
     gameMode: GameMode,
     ranked: boolean,
+    readyPrompt: ReadyPrompt,
   ) {
     this.host = host;
     this.roomId = roomId;
@@ -31,6 +33,7 @@ export class RoomConfig {
     this.newRoomPassword = this.processNewRoomPassword(newRoomPassword);
     this.gameMode = gameMode;
     this.ranked = ranked;
+    this.readyPrompt = readyPrompt;
   }
 
   boundMaxNumPlayers(num: number) {
@@ -64,6 +67,9 @@ class Room {
   socketsOfPlayers: SocketUser[];
   botSockets: Socket[];
 
+  lockJoin = false;
+  readyPrompt: ReadyPrompt;
+
   constructor(roomConfig: RoomConfig) {
     const thisRoom = this;
 
@@ -75,13 +81,10 @@ class Room {
     this.joinPassword = roomConfig.newRoomPassword;
     this.gameMode = roomConfig.gameMode;
     this.ranked = roomConfig.ranked;
+    this.readyPrompt = roomConfig.readyPrompt;
 
     this.gamesRequiredForRanked = 0;
     this.provisionalGamesRequired = 20;
-
-    // Misc. variables
-    this.canJoin = true;
-    this.gamePlayerLeftDuringReady = false;
 
     // Sockets
     this.allSockets = [];
@@ -158,6 +161,10 @@ class Room {
   }
 
   playerSitDown(socket) {
+    if (this.lockJoin) {
+      return;
+    }
+
     const socketUsername = socket.request.user.username;
 
     if (
@@ -212,6 +219,10 @@ class Room {
   }
 
   playerStandUp(socket) {
+    if (this.lockJoin) {
+      return;
+    }
+
     // Grab their index
     const index = this.socketsOfPlayers.indexOf(socket);
     // If they are on the list of sockets of players,
@@ -222,11 +233,6 @@ class Room {
   }
 
   playerLeaveRoom(socket) {
-    // When a player leaves during ready, not ready phase
-    if (this.socketsOfPlayers.indexOf(socket) !== -1) {
-      this.gamePlayerLeftDuringReady = true;
-    }
-
     // In case they were sitting down, remove them
     this.playerStandUp(socket);
 
@@ -296,7 +302,7 @@ class Room {
       // Add to kickedPlayers array
       this.kickedPlayers.push(username.toLowerCase());
       const kickMsg = `Player ${username} has been kicked by ${this.host}.`;
-      this.sendText(this.socketsOfPlayers, kickMsg, 'server-text');
+      this.sendText(kickMsg, 'server-text');
       // console.log(kickMsg);
       this.updateRoomPlayers();
     }
@@ -322,7 +328,7 @@ class Room {
   }
 
   // Note this sends text to ALL players and ALL spectators
-  sendText(sockets, incString, stringType) {
+  sendText(incString, stringType) {
     const data = {
       message: incString,
       classStr: stringType,
@@ -452,7 +458,6 @@ class Room {
 
     if (this.joinPassword && rankedType === 'ranked') {
       this.sendText(
-        this.allSockets,
         'This room is private and therefore cannot be ranked.',
         'server-text',
       );
@@ -463,7 +468,7 @@ class Room {
       this.ranked = rankedType === 'ranked';
     }
     const rankedChangeMsg = `This room is now ${rankedType}.`;
-    this.sendText(this.allSockets, rankedChangeMsg, 'server-text');
+    this.sendText(rankedChangeMsg, 'server-text');
   }
 
   updateGameModesInRoom(socket, gameMode: GameMode) {
@@ -507,7 +512,7 @@ class Room {
             socket.request.user.username
           } removed bots from this room: ${removedBots.join(', ')}`;
           const classStr = 'server-text-teal';
-          this.sendText(this.socketsOfPlayers, message, classStr);
+          this.sendText(message, classStr);
         }
       }
 
@@ -606,162 +611,75 @@ class Room {
     targetSocket.emit('update-game-modes-in-room', obj);
   }
 
-  // ReadyNotReady
+  hostTryStartGame(options, gameMode, timeouts: Timeouts) {
+    if (this.gameStarted === true) {
+      return false;
+    }
 
-  playerReady(username) {
-    if (this.playersYetToReady.length !== 0) {
-      const index = usernamesIndexes.getIndexFromUsername(
-        this.playersYetToReady,
-        username,
+    if (this.socketsOfPlayers.length < MIN_PLAYERS) {
+      this.socketsOfPlayers[0].emit(
+        'danger-alert',
+        'Minimum 5 players to start. ',
       );
+      return false;
+    }
 
-      if (index !== -1) {
-        this.playersYetToReady.splice(index, 1);
-        if (this.playersYetToReady.length === 0 && this.canJoin === false) {
-          // say to spectators that the ready/notready phase is over
-          const socketsOfSpecs = this.getSocketsOfSpectators();
-          socketsOfSpecs.forEach((sock) => {
+    // Can't start game if joining is locked as well.
+    // Will unlock when existing readyPrompt times out or is rejected.
+    if (this.lockJoin) {
+      return;
+    }
+
+    this.lockJoin = true;
+
+    this.options = options;
+    this.gameMode = gameMode;
+
+    let rolesInStr = '';
+    options.forEach((element) => {
+      rolesInStr += `${element}, `;
+    });
+    // remove the last , and replace with .
+    rolesInStr = rolesInStr.slice(0, rolesInStr.length - 2);
+    rolesInStr += '.';
+
+    rolesInStr += `<br>Ranked: ${this.ranked}`;
+    rolesInStr += `<br>Mute Spectators: ${this.muteSpectators}`;
+    rolesInStr += `<br>Default timeout: ${timeouts.default / 1000}s`;
+    rolesInStr += `<br>Assassination timeout: ${
+      timeouts.assassination / 1000
+    }s`;
+
+    this.sendText('The game is starting!', 'gameplay-text');
+
+    this.getSocketsOfSpectators().forEach((sock) => {
+      sock.emit('spec-game-starting', null);
+    });
+
+    this.readyPrompt.createReadyPrompt(
+      this.socketsOfPlayers,
+      'Game starting!',
+      rolesInStr,
+      (
+        success: boolean,
+        acceptedUsernames: string[],
+        rejectedUsernames: string[],
+      ): void => {
+        if (success) {
+          this.startGame(this.options);
+        } else {
+          this.getSocketsOfSpectators().forEach((sock) => {
             sock.emit('spec-game-starting-finished', null);
           });
 
-          if (this.startGame(this.options) === true) {
-            return true;
+          for (const rejectedUsername of rejectedUsernames) {
+            this.sendText(`${rejectedUsername} is not ready.`, 'server-text');
           }
 
-          return false;
+          this.lockJoin = false;
         }
-
-        return false;
-      }
-    }
-  }
-
-  playerNotReady(username) {
-    if (this.playersYetToReady.length !== 0) {
-      this.playersYetToReady = [];
-      this.canJoin = true;
-
-      const socketsOfSpecs = this.getSocketsOfSpectators();
-      socketsOfSpecs.forEach((sock) => {
-        sock.emit('spec-game-starting-finished', null);
-      });
-
-      return username;
-    }
-  }
-
-  hostTryStartGame(options, gameMode, timeouts: Timeouts) {
-    // Must have at least one bot in the game to play a "bot" gameMode
-    if (
-      gameMode.toLowerCase().includes('bot') === true &&
-      (this.botSockets === undefined || this.botSockets.length === 0)
-    ) {
-      this.sendText(
-        this.allSockets,
-        'Please play in a normal game mode if you do not have any bots.',
-        'gameplay-text',
-      );
-      return false;
-    }
-    if (
-      gameMode.toLowerCase().includes('bot') === false &&
-      this.botSockets !== undefined &&
-      this.botSockets.length !== 0
-    ) {
-      this.sendText(
-        this.allSockets,
-        'You cannot have bots play in normal game modes. Please use a bot game mode.',
-        'gameplay-text',
-      );
-      return false;
-    }
-
-    if (this.hostTryStartGameDate) {
-      // 11 seconds
-      if (new Date() - this.hostTryStartGameDate > 1000 * 11) {
-        this.canJoin = true;
-        this.playersYetToReady = [];
-      }
-    }
-
-    if (this.canJoin === true) {
-      // check before starting
-      if (this.socketsOfPlayers.length < MIN_PLAYERS) {
-        // NEED AT LEAST FIVE PLAYERS, SHOW ERROR MESSAGE BACK
-        // console.log("Not enough players.");
-        this.socketsOfPlayers[0].emit(
-          'danger-alert',
-          'Minimum 5 players to start. ',
-        );
-        return false;
-      }
-      if (this.gameStarted === true) {
-        // console.log("Game already started!");
-        return false;
-      }
-
-      this.hostTryStartGameDate = new Date();
-
-      // makes it so that others cannot join the room anymore
-      this.canJoin = false;
-
-      // .slice to clone
-      this.playersYetToReady = this.socketsOfPlayers.slice();
-
-      this.options = options;
-
-      // If there are bots, check if they are ready.
-      // This step has to be done on the next event loop cycle to ensure the code below it runs.
-      const thisGame = this;
-      setImmediate(() => {
-        thisGame.socketsOfPlayers.forEach((playerSocket) => {
-          if (playerSocket.isBotSocket) {
-            playerSocket.handleReadyNotReady(
-              thisGame,
-              function (botReady, reason) {
-                if (botReady) {
-                  thisGame.playerReady(playerSocket.request.user.username);
-                } else {
-                  let message = `${playerSocket.request.user.username} is not ready.`;
-                  if (reason) {
-                    message += ` Reason: ${reason}`;
-                  }
-                  thisGame.sendText(this.allSockets, message, 'server-text');
-                  thisGame.playerNotReady(playerSocket.request.user.username);
-                }
-              },
-            );
-          }
-        });
-      });
-
-      this.gamePlayerLeftDuringReady = false;
-
-      let rolesInStr = '';
-      options.forEach((element) => {
-        rolesInStr += `${element}, `;
-      });
-      // remove the last , and replace with .
-      rolesInStr = rolesInStr.slice(0, rolesInStr.length - 2);
-      rolesInStr += '.';
-
-      rolesInStr += `<br>Ranked: ${this.ranked}`;
-      rolesInStr += `<br>Mute Spectators: ${this.muteSpectators}`;
-      rolesInStr += `<br>Default timeout: ${timeouts.default / 1000}s`;
-      rolesInStr += `<br>Assassination timeout: ${
-        timeouts.assassination / 1000
-      }s`;
-
-      for (let i = 0; i < this.socketsOfPlayers.length; i++) {
-        this.socketsOfPlayers[i].emit('game-starting', rolesInStr, gameMode);
-      }
-
-      const socketsOfSpecs = this.getSocketsOfSpectators();
-      socketsOfSpecs.forEach((sock) => {
-        sock.emit('spec-game-starting', null);
-      });
-      this.sendText(this.allSockets, 'The game is starting!', 'gameplay-text');
-    }
+      },
+    );
   }
 }
 

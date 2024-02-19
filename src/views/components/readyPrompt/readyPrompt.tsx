@@ -14,11 +14,11 @@ export function ReadyPrompt() {
 
     let timerInterval: ReturnType<typeof setInterval>;
     socket.on('ready-prompt-to-client', (data: ReadyPromptRequestToClient) => {
-      playSound_('buzz');
+      playSound_('game-start-ready');
 
       Swal.fire({
-        title: data.text,
-        html: '<span></span>',
+        title: data.title,
+        html: `${data.text}${data.text ? '<br><br>' : ''}<span></span>`,
         icon: 'info',
         showConfirmButton: true,
         confirmButtonText: 'Accept',

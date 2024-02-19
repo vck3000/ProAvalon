@@ -1,82 +1,11 @@
 //= =====================================
 // GAME SOCKET ROUTES
 //= =====================================
-socket.on('game-starting', (roles, gameMode) => {
-  let timerInterval;
-
-  let gameModeCap;
-  if (gameMode) {
-    gameModeCap =
-      gameMode[0].toUpperCase() + gameMode.slice(1, gameMode.length);
-  } else {
-    gameModeCap = '';
-  }
-
-  Swal({
-    title: `${gameModeCap} game is starting!`,
-    html: `<strong></strong> seconds left. <br><br>Roles are: ${roles}`,
-    type: 'info',
-    confirmButtonText: 'Ready',
-    showConfirmButton: true,
-    showCancelButton: true,
-    cancelButtonText: 'Not ready',
-    allowOutsideClick: false,
-    allowEnterKey: false,
-    reverseButtons: true,
-
-    timer: 11000,
-
-    onOpen: () => {
-      // swal.showLoading()
-      timerInterval = setInterval(() => {
-        swal.getContent().querySelector('strong').textContent = Math.floor(
-          swal.getTimerLeft() / 1000,
-        );
-      }, 100);
-    },
-    onClose: () => {
-      clearInterval(timerInterval);
-    },
-  }).then((result) => {
-    if (
-      result.dismiss === swal.DismissReason.timer ||
-      result.dismiss === swal.DismissReason.cancel
-    ) {
-      socket.emit('player-not-ready');
-    } else {
-      socket.emit('player-ready');
-    }
-  });
-
-  if ($('#option_notifications_sound_game_starting')[0].checked === true) {
-    playSound('game-start-ready');
-  }
-
-  if ($('#option_notifications_desktop_game_starting')[0].checked === true) {
-    displayNotification(
-      'Game starting!',
-      'Are you ready?',
-      'avatars/base-spy.png',
-      'gameStarting',
-    );
-  }
-});
-
-socket.on('spec-game-starting', (data) => {
-  Swal({
-    title: 'A game is starting!',
-    text: 'You cannot join the game unless someone is not ready.',
-    type: 'info',
-    allowEnterKey: false,
-    timer: 11000,
-  });
-
-  // document.querySelector("#green-button").classList.contains("hidden")
-
+socket.on('spec-game-starting', () => {
   $('#green-button').addClass('hidden');
 });
 
-socket.on('spec-game-starting-finished', (data) => {
+socket.on('spec-game-starting-finished', () => {
   $('#green-button').removeClass('hidden');
 });
 

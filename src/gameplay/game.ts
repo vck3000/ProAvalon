@@ -242,24 +242,11 @@ class Game extends Room {
       socket.emit('danger-alert', 'Game has already started.');
       return;
     }
-    // If the ready/not ready phase is ongoing
-    if (this.canJoin === false) {
-      socket.emit(
-        'danger-alert',
-        'The game is currently trying to start (ready/not ready phase). You can join if someone is not ready, or after 10 seconds has elapsed.',
-      );
-      return;
-    }
 
     Room.prototype.playerSitDown.call(this, socket);
   }
 
   playerStandUp(socket) {
-    // If the ready/not ready phase is ongoing
-    if (this.canJoin === false) {
-      // socket.emit("danger-alert", "The game is currently trying to start (ready/not ready phase). You cannot stand up now.");
-      return;
-    }
     // If the game has started
     if (this.gameStarted === true) {
       return;
@@ -284,29 +271,10 @@ class Game extends Room {
       }
 
       this.distributeGameData();
-    } else {
-      // If we are in player ready not ready phase, then make them not ready and then perform
-      // the usual leave room procedures.
-      let index = this.socketsOfPlayers.indexOf(socket);
-      if (
-        index !== -1 &&
-        this.playersYetToReady !== undefined &&
-        this.playersYetToReady.length !== undefined &&
-        this.playersYetToReady.length !== 0
-      ) {
-        this.playerNotReady();
-        const { username } = socket.request.user;
-        this.sendText(
-          this.allSockets,
-          `${username} is not ready.`,
-          'server-text',
-        );
-      }
     }
 
     // If one person left in the room, the host would change
     // after the game started. So this will fix it
-
     let origHost;
     if (this.gameStarted === true) {
       origHost = this.host;
@@ -474,7 +442,7 @@ class Game extends Room {
     } else {
       str = 'This game is unranked.';
     }
-    this.sendText(this.allSockets, str, 'gameplay-text');
+    this.sendText(str, 'gameplay-text');
 
     str = 'Game started with: ';
     for (let i = 0; i < this.roleKeysInPlay.length; i++) {
@@ -487,12 +455,11 @@ class Game extends Room {
     // remove the last , and replace with .
     str = str.slice(0, str.length - 2);
     str += '.';
-    this.sendText(this.allSockets, str, 'gameplay-text');
+    this.sendText(str, 'gameplay-text');
 
     const timeouts = this.gameTimer.getTimeouts();
     if (timeouts.assassination || timeouts.default) {
       this.sendText(
-        this.allSockets,
         `Timeouts: Default = ${timeouts.default / 1000}s Assassination = ${
           timeouts.assassination / 1000
         }s`,
@@ -501,19 +468,11 @@ class Game extends Room {
     }
 
     if (this.muteSpectators) {
-      this.sendText(
-        this.allSockets,
-        'The game is muted to spectators.',
-        'gameplay-text',
-      );
+      this.sendText('The game is muted to spectators.', 'gameplay-text');
     }
 
     if (this.disableVoteHistory) {
-      this.sendText(
-        this.allSockets,
-        'The game has vote history disabled.',
-        'gameplay-text',
-      );
+      this.sendText('The game has vote history disabled.', 'gameplay-text');
     }
 
     // seed the starting data into the VH
@@ -549,7 +508,7 @@ class Game extends Room {
             if (reason) {
               message += ` Reason: ${reason}`;
             }
-            thisGame.sendText(thisGame.allSockets, message, 'server-text-teal');
+            thisGame.sendText(message, 'server-text-teal');
             thisGame.playerLeaveRoom(botSocket);
           }
         });
@@ -644,11 +603,7 @@ class Game extends Room {
               if (reason) {
                 message += ` Reason: ${reason}`;
               }
-              thisRoom.sendText(
-                thisRoom.allSockets,
-                message,
-                'server-text-teal',
-              );
+              thisRoom.sendText(message, 'server-text-teal');
               thisRoom.playerLeaveRoom(botSocket);
               return;
             }
@@ -672,11 +627,7 @@ class Game extends Room {
               } made an illegal move and has left the game. Move: ${JSON.stringify(
                 move,
               )}`;
-              thisRoom.sendText(
-                thisRoom.allSockets,
-                message,
-                'server-text-teal',
-              );
+              thisRoom.sendText(message, 'server-text-teal');
               thisRoom.playerLeaveRoom(botSocket);
               return;
             }
@@ -737,7 +688,6 @@ class Game extends Room {
     // THIS SHOULDN'T HAPPEN!! We always require a gameMove function to change phases
     else {
       this.sendText(
-        this.allSockets,
         'ERROR LET ADMIN KNOW IF YOU SEE THIS code 1',
         'gameplay-text',
       );
@@ -1183,13 +1133,9 @@ class Game extends Room {
     this.winner = toBeWinner;
 
     if (this.winner === Alliance.Spy) {
-      this.sendText(this.allSockets, 'The spies win!', 'gameplay-text-red');
+      this.sendText('The spies win!', 'gameplay-text-red');
     } else if (this.winner === Alliance.Resistance) {
-      this.sendText(
-        this.allSockets,
-        'The resistance wins!',
-        'gameplay-text-blue',
-      );
+      this.sendText('The resistance wins!', 'gameplay-text-blue');
     }
 
     // Post results of Merlin guesses
@@ -1204,7 +1150,6 @@ class Game extends Room {
         if (guessesByTarget.hasOwnProperty(target)) {
           if (target === usernameOfMerlin) {
             this.sendText(
-              this.allSockets,
               `Correct Merlin guessers were: ${guessesByTarget[target].join(
                 ', ',
               )}`,
@@ -1219,7 +1164,6 @@ class Game extends Room {
       }
       if (incorrectGuessersText.length > 0) {
         this.sendText(
-          this.allSockets,
           `Incorrect Merlin guessers were: ${incorrectGuessersText.join('; ')}`,
           'server-text',
         );
@@ -1414,7 +1358,7 @@ class Game extends Room {
         });
 
         // Broadcast elo adjustments in chat first, if broadcasted in the updating process, its slow
-        this.sendText(this.allSockets, 'Rating Adjustments:', 'server-text');
+        this.sendText('Rating Adjustments:', 'server-text');
         this.playersInGame.forEach((player) => {
           const rating = player.request.user.playerRating;
           // If player is provisional, different adjustment.
@@ -1451,7 +1395,6 @@ class Game extends Room {
             const difference =
               Math.round((player.request.user.playerRating - rating) * 10) / 10;
             this.sendText(
-              this.allSockets,
               `${player.request.user.username}: ${Math.floor(
                 rating,
               )} -> ${Math.floor(player.request.user.playerRating)} (${
@@ -1462,7 +1405,6 @@ class Game extends Room {
           } else {
             if (player.alliance === Alliance.Resistance) {
               this.sendText(
-                this.allSockets,
                 `${player.request.user.username}: ${Math.floor(
                   rating,
                 )} -> ${Math.floor(rating + indResChange)} (${
@@ -1473,7 +1415,6 @@ class Game extends Room {
               player.request.user.playerRating += indResChange;
             } else if (player.alliance === Alliance.Spy) {
               this.sendText(
-                this.allSockets,
                 `${player.request.user.username}: ${Math.floor(
                   rating,
                 )} -> ${Math.floor(rating + indSpyChange)} (${
@@ -1846,7 +1787,6 @@ class Game extends Room {
     // if paused, we unpause
     if (this.phase === 'paused') {
       this.sendText(
-        this.allSockets,
         `${rolePrefix} ${modUsername} has unpaused the game.`,
         'server-text',
       );
@@ -1856,7 +1796,6 @@ class Game extends Room {
     // if unpaused, we pause
     else {
       this.sendText(
-        this.allSockets,
         `${rolePrefix} ${modUsername} has paused the game.`,
         'server-text',
       );
@@ -1889,13 +1828,12 @@ class Game extends Room {
     const s = numVoted > 1 ? 's have' : ' has';
 
     this.sendText(
-      this.allSockets,
       `${numVoted} player${s} voted to pause the timeout. ${votesNeeded} votes needed.`,
       'server-text',
     );
 
     if (numVoted >= votesNeeded) {
-      this.sendText(this.allSockets, `Timeout has been paused.`, 'server-text');
+      this.sendText(`Timeout has been paused.`, 'server-text');
       this.dateTimerExpires = new Date(0);
     }
 
@@ -1913,11 +1851,7 @@ class Game extends Room {
       return;
     }
 
-    this.sendText(
-      this.allSockets,
-      `A player has unpaused the timeout.`,
-      'server-text',
-    );
+    this.sendText(`A player has unpaused the timeout.`, 'server-text');
 
     this.dateTimerExpires = this.gameTimer.voteUnpauseTimeout();
 
@@ -1958,7 +1892,6 @@ class Game extends Room {
       this.muteSpectators = muteSpectators;
 
       this.sendText(
-        this.allSockets,
         `Mute spectators option set to ${muteSpectators}.`,
         'server-text',
       );
@@ -1970,7 +1903,6 @@ class Game extends Room {
       this.disableVoteHistory = disableVoteHistory;
 
       this.sendText(
-        this.allSockets,
         `Disable Vote History option set to ${disableVoteHistory}.`,
         'server-text',
       );
@@ -2037,7 +1969,6 @@ class Game extends Room {
     } else {
       // winning team should always be defined
       this.sendText(
-        this.allSockets,
         'Error in elo calculation, no winning team specified.',
         'server-text',
       );

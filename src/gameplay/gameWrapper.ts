@@ -134,7 +134,6 @@ class GameWrapper extends Game {
                   (oldRank === 'bronze' && newRank === 'iron')
                 ) {
                   this.sendText(
-                    this.allSockets,
                     `${username} has been demoted to ${
                       newRank.charAt(0).toUpperCase() + newRank.slice(1)
                     }.`,
@@ -142,7 +141,6 @@ class GameWrapper extends Game {
                   );
                 } else {
                   this.sendText(
-                    this.allSockets,
                     `${username} has been promoted to ${
                       newRank.charAt(0).toUpperCase() + newRank.slice(1)
                     }!`,

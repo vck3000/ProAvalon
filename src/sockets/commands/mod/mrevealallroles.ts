@@ -27,7 +27,6 @@ export const mrevealallroles: Command = {
     const rolePrefix = modOrTOString(senderSocket.request.user.username);
 
     rooms[roomId].sendText(
-      rooms[roomId].allSockets,
       `${rolePrefix} ${senderSocket.request.user.username} has learned all roles.`,
       'server-text',
     );

@@ -10,8 +10,4 @@ obj.getIndexFromUsername = function (sockets, username) {
   return -1;
 };
 
-obj.getUsernameFromIndex = function (usernames, index) {
-  return usernames[index].username;
-};
-
 export default obj;

@@ -87,13 +87,11 @@ class VotingMission implements IPhase {
       if (outcome === 'succeeded') {
         if (numOfVotedFails === 0) {
           this.thisRoom.sendText(
-            this.thisRoom.allSockets,
             `Mission ${this.thisRoom.missionNum} succeeded.`,
             'gameplay-text-blue',
           );
         } else {
           this.thisRoom.sendText(
-            this.thisRoom.allSockets,
             `Mission ${this.thisRoom.missionNum} succeeded, but with ${numOfVotedFails} fail.`,
             'gameplay-text-blue',
           );
@@ -101,13 +99,11 @@ class VotingMission implements IPhase {
       } else if (outcome === 'failed') {
         if (numOfVotedFails === 1) {
           this.thisRoom.sendText(
-            this.thisRoom.allSockets,
             `Mission ${this.thisRoom.missionNum} failed with ${numOfVotedFails} fail.`,
             'gameplay-text-red',
           );
         } else {
           this.thisRoom.sendText(
-            this.thisRoom.allSockets,
             `Mission ${this.thisRoom.missionNum} failed with ${numOfVotedFails} fails.`,
             'gameplay-text-red',
           );
