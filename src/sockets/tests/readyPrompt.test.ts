@@ -41,7 +41,8 @@ describe('ReadyPrompt', () => {
       expect(socket.emit).toHaveBeenCalledWith('ready-prompt-to-client', {
         promptId: 0,
         timeout: 10000,
-        text: 'Match found!',
+        title: 'Match found!',
+        text: 'text',
       });
     }
   });
