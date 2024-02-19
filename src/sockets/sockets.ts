@@ -2064,7 +2064,10 @@ function startGame(data) {
     assassination: processTimeout(timeoutsStr.assassination),
   };
 
-  if (rooms[this.request.user.inRoomId]) {
+  if (
+    rooms[this.request.user.inRoomId] &&
+    rooms[this.request.user.inRoomId].host === this.request.user.username
+  ) {
     rooms[this.request.user.inRoomId].configureTimeouts(timeouts);
     rooms[this.request.user.inRoomId].hostTryStartGame(
       options,
