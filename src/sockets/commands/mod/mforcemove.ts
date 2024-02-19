@@ -149,12 +149,10 @@ export const mforcemove: Command = {
       const rolePrefix = modOrTOString(senderSocket.request.user.username);
 
       thisRoom.sendText(
-        thisRoom.allSockets,
         `${rolePrefix} ${senderSocket.request.user.username} has forced a move: `,
         'server-text',
       );
       thisRoom.sendText(
-        thisRoom.allSockets,
         `Player: ${username} | Button: ${button} | Targets: ${targetsCaps}.`,
         'server-text',
       );

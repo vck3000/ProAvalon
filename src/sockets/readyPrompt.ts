@@ -8,6 +8,7 @@ export interface ReadyPromptReplyFromClient {
 export interface ReadyPromptRequestToClient {
   promptId: number;
   timeout: number;
+  title: string;
   text: string;
 }
 
@@ -26,6 +27,7 @@ export class ReadyPrompt {
 
   createReadyPrompt(
     sockets: SocketUser[],
+    title: string,
     text: string,
     callback: ReadyPromptResultCallback,
   ): void {
@@ -36,6 +38,7 @@ export class ReadyPrompt {
       const data: ReadyPromptRequestToClient = {
         promptId: this.nextPromptId,
         timeout: this.timeout,
+        title,
         text,
       };
       socket.emit('ready-prompt-to-client', data);

@@ -31,7 +31,12 @@ describe('ReadyPrompt', () => {
   });
 
   it('Sends out prompt on create', () => {
-    readyPrompt.createReadyPrompt(testSockets, 'Match found!', callback);
+    readyPrompt.createReadyPrompt(
+      testSockets,
+      'Match found!',
+      'text',
+      callback,
+    );
     for (const socket of testSockets) {
       expect(socket.emit).toHaveBeenCalledWith('ready-prompt-to-client', {
         promptId: 0,
@@ -42,7 +47,12 @@ describe('ReadyPrompt', () => {
   });
 
   it('Callsback successfully when everyone accepts', () => {
-    readyPrompt.createReadyPrompt(testSockets, 'Match found!', callback);
+    readyPrompt.createReadyPrompt(
+      testSockets,
+      'Match found!',
+      'text',
+      callback,
+    );
 
     const clientData: ReadyPromptRequestToClient =
       testSockets[0].emit.mock.calls[0][1];
@@ -65,7 +75,12 @@ describe('ReadyPrompt', () => {
   });
 
   it('Callsback successfully only once when some people reject', () => {
-    readyPrompt.createReadyPrompt(testSockets, 'Match found!', callback);
+    readyPrompt.createReadyPrompt(
+      testSockets,
+      'Match found!',
+      'text',
+      callback,
+    );
 
     const clientData: ReadyPromptRequestToClient =
       testSockets[0].emit.mock.calls[0][1];
@@ -95,7 +110,12 @@ describe('ReadyPrompt', () => {
   });
 
   it('Times out', () => {
-    readyPrompt.createReadyPrompt(testSockets, 'Match found!', callback);
+    readyPrompt.createReadyPrompt(
+      testSockets,
+      'Match found!',
+      'text',
+      callback,
+    );
 
     const clientData: ReadyPromptRequestToClient =
       testSockets[0].emit.mock.calls[0][1];

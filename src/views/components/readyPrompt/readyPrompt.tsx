@@ -17,8 +17,8 @@ export function ReadyPrompt() {
       playSound_('buzz');
 
       Swal.fire({
-        title: data.text,
-        html: '<span></span>',
+        title: data.title,
+        html: `${data.text}${data.text ? '<br><br>' : ''}<span></span>`,
         icon: 'info',
         showConfirmButton: true,
         confirmButtonText: 'Accept',

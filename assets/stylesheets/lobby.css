@@ -592,7 +592,7 @@ well {
     background-color: #e5e5e5;
 }
 
-/*This is for the special text like lady, so users cannot select to copy paste*/
+/* This is for the special text like lady, so users cannot select to copy paste */
 
 .noselect {
     -webkit-touch-callout: none;

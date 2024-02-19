@@ -86,7 +86,6 @@ class Assassination implements IPhase {
                 this.thisRoom.howWasWon = 'Assassinated Merlin correctly.';
 
                 this.thisRoom.sendText(
-                  this.thisRoom.allSockets,
                   `The assassin has shot ${merlinUsername}! They were correct!`,
                   'gameplay-text-red',
                 );
@@ -95,9 +94,7 @@ class Assassination implements IPhase {
                 this.thisRoom.howWasWon =
                   'Mission successes and assassin shot wrong.';
 
-                // console.log("THIS WAS RUN ONCE");
                 this.thisRoom.sendText(
-                  this.thisRoom.allSockets,
                   `The assassin has shot ${selectedPlayers}! ${selectedPlayers} was not merlin, ${merlinUsername} was!`,
                   'gameplay-text-blue',
                 );
@@ -190,7 +187,6 @@ class Assassination implements IPhase {
                 'Assassinated Tristan and Isolde correctly.';
 
               this.thisRoom.sendText(
-                this.thisRoom.allSockets,
                 `The assassin has shot ${tristanUsername} and ${isoldeUsername}! They were correct!`,
                 'gameplay-text-red',
               );
@@ -201,7 +197,6 @@ class Assassination implements IPhase {
 
               // console.log("THIS WAS RUN ONCE");
               this.thisRoom.sendText(
-                this.thisRoom.allSockets,
                 `The assassin has shot ${selectedPlayers[0]} and ${selectedPlayers[1]}! ${selectedPlayers[0]} and ${selectedPlayers[1]} were not Tristan and Isolde, ${tristanUsername} and ${isoldeUsername} were!`,
                 'gameplay-text-blue',
               );

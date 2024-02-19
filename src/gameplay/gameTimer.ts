@@ -184,7 +184,6 @@ export class GameTimer {
 
         // Notify everyone
         this.game.sendText(
-          this.game.allSockets,
           `${this.game.playersInGame[i].request.user.username} has timed out. Forcing a random move.`,
           'server-text',
         );

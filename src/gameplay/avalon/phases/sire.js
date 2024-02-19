@@ -128,7 +128,6 @@ class Sire {
 
       // this.gameplayMessage = (socket.request.user.username + " has carded " + target);
       this.thisRoom.sendText(
-        this.thisRoom.allSockets,
         `${socket.request.user.username} has used ${this.card} on ${targetUsername}.`,
         'gameplay-text',
       );

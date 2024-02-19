@@ -100,7 +100,7 @@ class PickingTeam implements IPhase {
       str2 = str2.slice(0, str2.length - 2);
       str2 += '.';
 
-      this.thisRoom.sendText(this.thisRoom.allSockets, str2, 'gameplay-text');
+      this.thisRoom.sendText(str2, 'gameplay-text');
 
       this.thisRoom.VHUpdateTeamPick();
 

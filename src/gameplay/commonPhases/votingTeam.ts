@@ -70,11 +70,7 @@ class VotingTeam implements IPhase {
             this.thisRoom.votes,
             this.thisRoom.playersInGame,
           )}`;
-          this.thisRoom.sendText(
-            this.thisRoom.allSockets,
-            str,
-            'gameplay-text',
-          );
+          this.thisRoom.sendText(str, 'gameplay-text');
         }
         // Hammer reject
         else if (outcome === 'no' && this.thisRoom.pickNum >= 5) {
@@ -84,7 +80,6 @@ class VotingTeam implements IPhase {
 
           this.thisRoom.howWasWon = 'Hammer rejected.';
           this.thisRoom.sendText(
-            this.thisRoom.allSockets,
             'The hammer was rejected.',
             'gameplay-text-red',
           );
@@ -101,11 +96,7 @@ class VotingTeam implements IPhase {
             this.thisRoom.votes,
             this.thisRoom.playersInGame,
           )}`;
-          this.thisRoom.sendText(
-            this.thisRoom.allSockets,
-            str,
-            'gameplay-text',
-          );
+          this.thisRoom.sendText(str, 'gameplay-text');
 
           this.thisRoom.incrementTeamLeader();
         }

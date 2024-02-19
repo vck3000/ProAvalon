@@ -168,6 +168,7 @@ setTimeout(async () => {
               undefined,
               storedData.gameMode,
               undefined,
+              undefined,
             );
             const gameConfig = new GameConfig(
               roomConfig,
@@ -459,7 +460,6 @@ export const userCommands = {
         if (interactedInGame === true) {
           const str = `${senderSocket.request.user.username} has ${verbPast} ${targetSocket.request.user.username}. (In game)`;
           rooms[resquestorSocket.request.user.inRoomId].sendText(
-            rooms[resquestorSocket.request.user.inRoomId].allSockets,
             str,
             'server-text',
           );
@@ -1916,6 +1916,7 @@ function newRoom(dataObj) {
       dataObj.newRoomPassword,
       strToGameMode(dataObj.gameMode),
       rankedRoom,
+      readyPrompt,
     );
     const gameConfig = new GameConfig(
       roomConfig,
@@ -2148,6 +2149,7 @@ function matchFound(usernames: string[]): void {
   readyPrompt.createReadyPrompt(
     sockets,
     'Match found!',
+    '',
     (
       success: boolean,
       approvedUsernames: string[],
@@ -2200,6 +2202,7 @@ function matchFound(usernames: string[]): void {
         undefined,
         GameMode.AVALON,
         true,
+        readyPrompt,
       );
       const gameConfig = new GameConfig(
         roomConfig,
