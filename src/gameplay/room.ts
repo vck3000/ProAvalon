@@ -73,8 +73,6 @@ class Room {
   readyPrompt: ReadyPrompt;
 
   constructor(roomConfig: RoomConfig) {
-    const thisRoom = this;
-
     // Expand config
     this.host = roomConfig.host;
     this.roomId = roomConfig.roomId;
@@ -488,21 +486,13 @@ class Room {
         this.botSockets !== undefined &&
         this.botSockets.length > 0
       ) {
-        let thisRoom = this;
-
         const botSockets = this.botSockets.slice() || [];
         const botsToRemove = botSockets;
         botsToRemove.forEach((botSocket) => {
-          thisRoom.playerLeaveRoom(botSocket);
+          this.playerLeaveRoom(botSocket);
 
-          if (
-            thisRoom.botSockets &&
-            thisRoom.botSockets.indexOf(botSocket) !== -1
-          ) {
-            thisRoom.botSockets.splice(
-              thisRoom.botSockets.indexOf(botSocket),
-              1,
-            );
+          if (this.botSockets && this.botSockets.indexOf(botSocket) !== -1) {
+            this.botSockets.splice(this.botSockets.indexOf(botSocket), 1);
           }
         });
         const removedBots = botsToRemove.map(
@@ -531,7 +521,6 @@ class Room {
       }
 
       this.gameMode = gameMode;
-      let thisRoom = this;
 
       this.specialRoles = this.initialiseGameDependencies(avalonRoles);
       this.specialPhases = this.initialiseGameDependencies(avalonPhases);
