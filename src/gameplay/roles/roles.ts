@@ -1,13 +1,13 @@
-import Assassin from './roles/assassin';
-import Merlin from './roles/merlin';
-import Percival from './roles/percival';
-import Morgana from './roles/morgana';
-import Oberon from './roles/oberon';
-import Isolde from './roles/isolde';
-import Tristan from './roles/tristan';
-import Resistance from './roles/resistance';
-import Spy from './roles/spy';
-import Mordred from './roles/mordred';
+import Assassin from './avalon/assassin';
+import Merlin from './avalon/merlin';
+import Percival from './avalon/percival';
+import Morgana from './avalon/morgana';
+import Oberon from './avalon/oberon';
+import Isolde from './avalon/isolde';
+import Tristan from './avalon/tristan';
+import Resistance from './avalon/resistance';
+import Spy from './avalon/spy';
+import Mordred from './avalon/mordred';
 
 export const avalonRoles = {
   [Resistance.role.toLowerCase()]: Resistance,

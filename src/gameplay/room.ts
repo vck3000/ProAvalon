@@ -1,12 +1,12 @@
 // @ts-nocheck
-import { GAME_MODE_NAMES, GameMode, gameModeObj } from './gameModes';
+import { GAME_MODE_NAMES, GameMode } from './gameModes';
 import { SocketUser } from '../sockets/types';
 import { MIN_PLAYERS } from './game';
 import { Timeouts } from './gameTimer';
 import { ReadyPrompt } from '../sockets/readyPrompt';
 import { IPhase } from './phases/types';
-import { avalonRoles } from './avalon/indexRoles';
-import { avalonCards } from './avalon/indexCards';
+import { avalonRoles } from './roles/roles';
+import { avalonCards } from './cards/cards';
 import { avalonPhases, commonPhases } from './phases/phases';
 
 export class RoomConfig {
@@ -535,9 +535,7 @@ class Room {
       let thisRoom = this;
 
       this.specialRoles = this.initialiseGameDependencies(avalonRoles);
-      this.specialPhases = this.initialiseGameDependencies(
-        gameModeObj[this.gameMode].phases,
-      );
+      this.specialPhases = this.initialiseGameDependencies(avalonPhases);
       this.specialCards = this.initialiseGameDependencies(avalonCards);
 
       // Send the data to all sockets within the room.

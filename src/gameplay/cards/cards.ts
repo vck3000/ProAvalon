@@ -1,4 +1,4 @@
-import LadyOfTheLake from './cards/ladyOfTheLake';
+import LadyOfTheLake from './avalon/ladyOfTheLake';
 
 export const avalonCards = {
   [LadyOfTheLake.card]: LadyOfTheLake,

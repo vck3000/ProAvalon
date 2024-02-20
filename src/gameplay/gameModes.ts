@@ -1,7 +1,3 @@
-import { getRoles as avalonGetRoles } from './avalon/indexRoles';
-import { avalonPhases } from './phases/types';
-import { getCards as avalonGetCards } from './avalon/indexCards';
-
 export enum GameMode {
   AVALON = 'avalon',
   AVALON_BOT = 'avalonBot',
@@ -26,12 +22,4 @@ export function strToGameMode(gameMode: string): GameMode {
 // TODO remove this
 export const isGameMode = (gameMode: string) => {
   return GAME_MODE_NAMES.indexOf(strToGameMode(gameMode)) !== -1;
-};
-
-export const gameModeObj = {
-  [GameMode.AVALON]: {
-    getRoles: avalonGetRoles,
-    phases: avalonPhases,
-    getCards: avalonGetCards,
-  },
 };

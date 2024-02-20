@@ -6,20 +6,19 @@ import usernamesIndexes from '../myFunctions/usernamesIndexes';
 import User from '../models/user';
 import GameRecord from '../models/gameRecord';
 import RatingPeriodGameRecord from '../models/RatingPeriodGameRecord';
-import { commonPhases } from './indexCommonPhases';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 
 import { RoomCreationType } from './roomTypes';
-import { gameModeObj } from './gameModes';
 import { Phase } from './phases/types';
 import { Alliance } from './types';
 import { GameTimer, Timeouts } from './gameTimer';
 import { SocketUser } from '../sockets/types';
-import { avalonRoles } from './avalon/indexRoles';
-import { avalonCards } from './avalon/indexCards';
+import { avalonRoles } from './roles/roles';
+import { avalonCards } from './cards/cards';
+import { avalonPhases, commonPhases } from './phases/phases';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;
@@ -95,7 +94,9 @@ class Game extends Room {
 
   // Helpers
   commonPhases: any;
+  specialRoles: any;
   specialPhases: any;
+  specialCards: any;
 
   gameTimer: GameTimer;
   dateTimerExpires: Date;
@@ -156,9 +157,7 @@ class Game extends Room {
     this.commonPhases = this.initialiseGameDependencies(commonPhases);
 
     this.specialRoles = this.initialiseGameDependencies(avalonRoles);
-    this.specialPhases = this.initialiseGameDependencies(
-      gameModeObj[this.gameMode].phases,
-    );
+    this.specialPhases = this.initialiseGameDependencies(avalonPhases);
     this.specialCards = this.initialiseGameDependencies(avalonCards);
 
     this.gameTimer = new GameTimer(this, () => new Date());
@@ -292,7 +291,7 @@ class Game extends Room {
   }
 
   // start game
-  startGame(options) {
+  startGame(options: string[]) {
     if (
       this.socketsOfPlayers.length < 5 ||
       this.socketsOfPlayers.length > 10 ||
