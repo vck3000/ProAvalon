@@ -55,7 +55,7 @@ class Ref {
 
     const indexOfCardHolder =
       this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
-    const { refHistory } = this.thisRoom.specialCards[this.card];
+    const { refHistoryUsernames } = this.thisRoom.specialCards[this.card];
     const targetIndex = usernamesIndexes.getIndexFromUsername(
       this.thisRoom.playersInGame,
       selectedPlayers,
@@ -79,7 +79,7 @@ class Ref {
     // If the requester is the ref holder, do the ref stuff
     if (indexOfCardHolder === indexOfSocket) {
       // Check if we can card that person
-      if (refHistory.includes(selectedPlayers) === true) {
+      if (refHistoryUsernames.includes(selectedPlayers) === true) {
         socket.emit('danger-alert', 'You cannot card that person.');
         return;
       }

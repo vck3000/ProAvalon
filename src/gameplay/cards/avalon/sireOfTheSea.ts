@@ -1,27 +1,30 @@
 import { Phase } from '../../phases/types';
-import { Card } from '../types';
+import { Card, ICard } from '../types';
+import { SocketUser } from '../../../sockets/types';
 
-class SireOfTheSea {
-  constructor(thisRoom) {
+class SireOfTheSea implements ICard {
+  private thisRoom: any;
+
+  static card = Card.sireOfTheSea;
+  card = Card.sireOfTheSea;
+
+  lastMissionUsed = 0;
+  indexOfPlayerHolding = 0;
+
+  sireHistory: number[] = []; // To be stored in the database later.
+  sireHistoryUsernames: string[] = [];
+
+  // TODO replace with role[]
+  sireChain: string[] = []; // To be stored in the database later.
+
+  description =
+    "Reveals the card holder's alliance to the person being carded.";
+
+  constructor(thisRoom: any) {
     this.thisRoom = thisRoom;
-
-    this.specialPhase = Phase.sire;
-
-    this.card = Card.sireOfTheSea;
-
-    this.indexOfPlayerHolding;
-    this.lastMissionUsed = 0;
-
-    this.sireHistory = []; // To be stored in the database later.
-    this.sireHistoryUsernames = [];
-
-    this.sireChain = []; // To be stored in the database later.
-
-    this.description =
-      "Reveals the card holder's alliance to the person being carded.";
   }
 
-  initialise() {
+  initialise(): void {
     // If lady of the sea is in the game, give the card to the next person.
     let addOne = 0;
     if (this.thisRoom.options.includes('Lady of the Lake')) {
@@ -33,14 +36,18 @@ class SireOfTheSea {
     );
   }
 
-  setHolder(index) {
+  setHolder(index: number): void {
     this.indexOfPlayerHolding = index;
     this.sireHistory.push(index);
     this.sireHistoryUsernames.push(this.thisRoom.playersInGame[index].username);
     this.sireChain.push(this.thisRoom.playersInGame[index].role);
   }
 
-  checkSpecialMove(socket, buttonPressed, selectedPlayers) {
+  checkSpecialMove(
+    socket: SocketUser,
+    buttonPressed: 'yes' | 'no',
+    selectedPlayers: string[],
+  ): boolean {
     // Only use sire of the sea after m2, when the success/fail is revealed, but before the next mission starts.
     // Only once per mission.
 
@@ -73,7 +80,7 @@ class SireOfTheSea {
     return false;
   }
 
-  getPublicGameData() {
+  getPublicGameData(): any {
     /* TODO: (Can delete this function. Not absolutely necessary)
         Public data to show the user(s) e.g. who holds the sire of the sea */
     return {

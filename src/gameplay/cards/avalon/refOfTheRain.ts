@@ -1,40 +1,46 @@
 import { Phase } from '../../phases/types';
-import { Card } from '../types';
+import { Card, ICard } from '../types';
+import { SocketUser } from '../../../sockets/types';
 
-class RefOfTheLake {
-  constructor(thisRoom) {
+class RefOfTheRain implements ICard {
+  private thisRoom: any;
+  static card = Card.refOfTheRain;
+  card = Card.refOfTheRain;
+
+  lastMissionUsed = 0;
+  indexOfPlayerHolding = 0;
+
+  refHistory: number[] = []; // To be stored in the database later.
+  refHistoryUsernames: string[] = [];
+
+  // TODO change to role[]
+  refChain: string[] = []; // To be stored in the database later.
+
+  description =
+    'Reveals the alliance of the person being carded to the card holder. The card is used after the previous mission fails.';
+
+  constructor(thisRoom: any) {
     this.thisRoom = thisRoom;
-
-    this.specialPhase = Phase.ref;
-
-    this.card = Card.refOfTheRain;
-
-    this.indexOfPlayerHolding;
-    this.lastMissionUsed = 0;
-
-    this.refHistory = []; // To be stored in the database later.
-    this.refHistoryUsernames = [];
-
-    this.refChain = []; // To be stored in the database later.
-
-    this.description =
-      'Reveals the alliance of the person being carded to the card holder. The card is used after the previous mission fails.';
   }
 
-  initialise() {
+  initialise(): void {
     this.setHolder(
       (this.thisRoom.teamLeader + 1) % this.thisRoom.playersInGame.length,
     );
   }
 
-  setHolder(index) {
+  setHolder(index: number): void {
     this.indexOfPlayerHolding = index;
     this.refHistory.push(index);
     this.refHistoryUsernames.push(this.thisRoom.playersInGame[index].username);
     this.refChain.push(this.thisRoom.playersInGame[index].role);
   }
 
-  checkSpecialMove(socket, buttonPressed, selectedPlayers) {
+  checkSpecialMove(
+    socket: SocketUser,
+    buttonPressed: 'yes' | 'no',
+    selectedPlayers: string[],
+  ): boolean {
     // Only use ref of the rain after m2, when the success/fail is revealed, but before the next mission starts.
     // Only once per mission.
 
@@ -76,7 +82,7 @@ class RefOfTheLake {
     return false;
   }
 
-  getPublicGameData() {
+  getPublicGameData(): any {
     /* TODO: (Can delete this function. Not absolutely necessary)
         Public data to show the user(s) e.g. who holds the ref of the rain */
     return {
@@ -89,4 +95,4 @@ class RefOfTheLake {
   }
 }
 
-export default RefOfTheLake;
+export default RefOfTheRain;

@@ -39,7 +39,7 @@ class LadyOfTheLake implements ICard {
     socket: SocketUser,
     buttonPressed: 'yes' | 'no',
     selectedPlayers: string[],
-  ) {
+  ): boolean {
     // Only use lady of the lake after m2, when the success/fail is revealed, but before the next mission starts.
     // Only once per mission.
 
