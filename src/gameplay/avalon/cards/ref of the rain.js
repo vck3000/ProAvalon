@@ -1,4 +1,4 @@
-import { Phase } from '../../phases';
+import { Phase } from '../../phases/types';
 
 class RefOfTheLake {
   constructor(thisRoom) {

@@ -1,12 +1,12 @@
-import Game, { GameConfig } from '../../game';
-import { RoomConfig } from '../../room';
-import { GameMode } from '../../gameModes';
-import { ReadyPrompt } from '../../../sockets/readyPrompt';
-import { RoomCreationType } from '../../roomTypes';
-import { Phase } from '../../phases';
-import { Alliance } from '../../types';
+import Game, { GameConfig } from '../game';
+import { RoomConfig } from '../room';
+import { GameMode } from '../gameModes';
+import { ReadyPrompt } from '../../sockets/readyPrompt';
+import { RoomCreationType } from '../roomTypes';
+import { Phase } from '../phases/types';
+import { Alliance } from '../types';
 
-jest.mock('../../gameWrapper');
+jest.mock('../gameWrapper');
 
 describe('Game Engine', () => {
   let game: Game;

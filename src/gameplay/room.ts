@@ -1,11 +1,13 @@
 // @ts-nocheck
 import { GAME_MODE_NAMES, GameMode, gameModeObj } from './gameModes';
-import { commonPhases } from './indexCommonPhases';
 import { SocketUser } from '../sockets/types';
 import { MIN_PLAYERS } from './game';
 import { Timeouts } from './gameTimer';
 import { ReadyPrompt } from '../sockets/readyPrompt';
-import { IPhase } from './phases';
+import { IPhase } from './phases/types';
+import { avalonRoles } from './avalon/indexRoles';
+import { avalonCards } from './avalon/indexCards';
+import { avalonPhases, commonPhases } from './phases/phases';
 
 export class RoomConfig {
   host: string;
@@ -98,11 +100,9 @@ class Room {
 
     // Phases Cards and Roles to use
     this.commonPhases = this.initialiseGameDependencies(commonPhases);
-    this.specialRoles = new gameModeObj[this.gameMode].getRoles(thisRoom);
-    this.specialPhases = this.initialiseGameDependencies(
-      gameModeObj[this.gameMode].phases,
-    );
-    this.specialCards = new gameModeObj[this.gameMode].getCards(thisRoom);
+    this.specialRoles = this.initialiseGameDependencies(avalonRoles);
+    this.specialPhases = this.initialiseGameDependencies(avalonPhases);
+    this.specialCards = this.initialiseGameDependencies(avalonCards);
   }
 
   playerJoinRoom(socket, inputPassword) {
@@ -534,11 +534,11 @@ class Room {
       this.gameMode = gameMode;
       let thisRoom = this;
 
-      this.specialRoles = new gameModeObj[this.gameMode].getRoles(this);
+      this.specialRoles = this.initialiseGameDependencies(avalonRoles);
       this.specialPhases = this.initialiseGameDependencies(
         gameModeObj[this.gameMode].phases,
       );
-      this.specialCards = new gameModeObj[this.gameMode].getCards(this);
+      this.specialCards = this.initialiseGameDependencies(avalonCards);
 
       // Send the data to all sockets within the room.
       for (let i = 0; i < this.allSockets.length; i++) {

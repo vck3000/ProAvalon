@@ -1,5 +1,5 @@
 import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
-import { Phase } from '../../phases';
+import { Phase } from '../types';
 
 class Ref {
   static phase = Phase.ref;

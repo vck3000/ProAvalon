@@ -1,6 +1,6 @@
-import { ButtonSettings, IPhase, Phase } from '../phases';
-import { SocketUser } from '../../sockets/types';
-import { Alliance } from '../types';
+import { ButtonSettings, IPhase, Phase } from '../types';
+import { SocketUser } from '../../../sockets/types';
+import { Alliance } from '../../types';
 
 class Finished implements IPhase {
   static phase = Phase.finished;

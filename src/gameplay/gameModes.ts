@@ -1,5 +1,5 @@
 import { getRoles as avalonGetRoles } from './avalon/indexRoles';
-import { avalonPhases } from './avalon/indexPhases';
+import { avalonPhases } from './phases/types';
 import { getCards as avalonGetCards } from './avalon/indexCards';
 
 export enum GameMode {

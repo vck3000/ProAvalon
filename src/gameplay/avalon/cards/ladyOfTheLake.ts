@@ -1,7 +1,12 @@
-import { Phase } from '../../phases';
+import { Phase } from '../../phases/types';
 
 class LadyOfTheLake {
-  constructor(thisRoom) {
+  private thisRoom: any;
+
+  static card = 'asdf';
+  specialPhase = Phase.lady;
+
+  constructor(thisRoom: any) {
     this.thisRoom = thisRoom;
 
     this.specialPhase = Phase.lady;

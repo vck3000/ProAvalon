@@ -14,10 +14,12 @@ import { modOrTOString } from '../modsadmins/modOrTO';
 
 import { RoomCreationType } from './roomTypes';
 import { gameModeObj } from './gameModes';
-import { Phase } from './phases';
+import { Phase } from './phases/types';
 import { Alliance } from './types';
 import { GameTimer, Timeouts } from './gameTimer';
 import { SocketUser } from '../sockets/types';
+import { avalonRoles } from './avalon/indexRoles';
+import { avalonCards } from './avalon/indexCards';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;
@@ -153,11 +155,11 @@ class Game extends Room {
     // Functions are not stored with JSONified during storage
     this.commonPhases = this.initialiseGameDependencies(commonPhases);
 
-    this.specialRoles = new gameModeObj[this.gameMode].getRoles(this);
+    this.specialRoles = this.initialiseGameDependencies(avalonRoles);
     this.specialPhases = this.initialiseGameDependencies(
       gameModeObj[this.gameMode].phases,
     );
-    this.specialCards = new gameModeObj[this.gameMode].getCards(this);
+    this.specialCards = this.initialiseGameDependencies(avalonCards);
 
     this.gameTimer = new GameTimer(this, () => new Date());
     this.gameTimer.configureTimeouts(storedData.timeoutSettings);
