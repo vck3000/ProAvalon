@@ -10,16 +10,16 @@ import Spy from './avalon/spy';
 import Mordred from './avalon/mordred';
 
 export const avalonRoles = {
-  [Resistance.role.toLowerCase()]: Resistance,
-  [Spy.role.toLowerCase()]: Spy,
+  [Resistance.role]: Resistance,
+  [Spy.role]: Spy,
 
-  [Assassin.role.toLowerCase()]: Assassin,
-  [Merlin.role.toLowerCase()]: Merlin,
-  [Percival.role.toLowerCase()]: Percival,
-  [Morgana.role.toLowerCase()]: Morgana,
+  [Assassin.role]: Assassin,
+  [Merlin.role]: Merlin,
+  [Percival.role]: Percival,
+  [Morgana.role]: Morgana,
 
-  [Oberon.role.toLowerCase()]: Oberon,
-  [Isolde.role.toLowerCase()]: Isolde,
-  [Mordred.role.toLowerCase()]: Mordred,
-  [Tristan.role.toLowerCase()]: Tristan,
+  [Oberon.role]: Oberon,
+  [Isolde.role]: Isolde,
+  [Mordred.role]: Mordred,
+  [Tristan.role]: Tristan,
 };

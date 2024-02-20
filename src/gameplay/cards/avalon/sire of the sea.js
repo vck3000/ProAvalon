@@ -1,4 +1,5 @@
 import { Phase } from '../../phases/types';
+import { Card } from '../types';
 
 class SireOfTheSea {
   constructor(thisRoom) {
@@ -6,7 +7,7 @@ class SireOfTheSea {
 
     this.specialPhase = Phase.sire;
 
-    this.card = 'Sire of the Sea';
+    this.card = Card.sireOfTheSea;
 
     this.indexOfPlayerHolding;
     this.lastMissionUsed = 0;

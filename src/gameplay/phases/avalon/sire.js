@@ -54,8 +54,8 @@ class Sire {
     }
 
     const indexOfCardHolder =
-      this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
-    const { sireHistory } = this.thisRoom.specialCards[this.card.toLowerCase()];
+      this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
+    const { sireHistory } = this.thisRoom.specialCards[this.card];
     const targetIndex = usernamesIndexes.getIndexFromUsername(
       this.thisRoom.playersInGame,
       selectedPlayers,
@@ -122,9 +122,7 @@ class Sire {
       // console.log("Player " + target + " is a " + alliance);
 
       // update sire location
-      this.thisRoom.specialCards[this.card.toLowerCase()].setHolder(
-        targetIndex,
-      );
+      this.thisRoom.specialCards[this.card].setHolder(targetIndex);
 
       // this.gameplayMessage = (socket.request.user.username + " has carded " + target);
       this.thisRoom.sendText(
@@ -144,7 +142,7 @@ class Sire {
   buttonSettings(indexOfPlayer) {
     // Get the index of the sire
     const indexOfCardHolder =
-      this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
+      this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
 
     const obj = {
       green: {},
@@ -175,7 +173,7 @@ class Sire {
 
   numOfTargets(indexOfPlayer) {
     const indexOfCardHolder =
-      this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
+      this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
 
     if (indexOfPlayer !== undefined && indexOfPlayer !== null) {
       // If indexOfPlayer is the sire holder, one player to select
@@ -188,7 +186,7 @@ class Sire {
 
   getStatusMessage(indexOfPlayer) {
     const indexOfCardHolder =
-      this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
+      this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
 
     if (indexOfPlayer === indexOfCardHolder) {
       return 'Choose a player to use the Sire of the Sea on.';
@@ -201,7 +199,7 @@ class Sire {
   }
 
   getProhibitedIndexesToPick(indexOfPlayer) {
-    const { sireHistory } = this.thisRoom.specialCards[this.card.toLowerCase()];
+    const { sireHistory } = this.thisRoom.specialCards[this.card];
 
     return sireHistory;
   }

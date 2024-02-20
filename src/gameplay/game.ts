@@ -19,6 +19,7 @@ import { SocketUser } from '../sockets/types';
 import { avalonRoles } from './roles/roles';
 import { avalonCards } from './cards/cards';
 import { avalonPhases, commonPhases } from './phases/phases';
+import { Card } from './cards/types';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;
@@ -354,7 +355,7 @@ class Game extends Room {
     this.spyRoles = [];
 
     for (let i = 0; i < options.length; i++) {
-      const op = options[i].toLowerCase();
+      const op = options[i];
       // console.log(op);
       // If a role file exists for this
       if (this.specialRoles.hasOwnProperty(op)) {
@@ -375,7 +376,7 @@ class Game extends Room {
       else if (this.specialCards.hasOwnProperty(op)) {
         this.cardKeysInPlay.push(op);
       } else {
-        console.log(
+        throw new Error(
           `Warning: Client requested a role that doesn't exist -> ${op}`,
         );
       }
@@ -423,8 +424,8 @@ class Game extends Room {
     // The following data do not change as the game goes on.
     for (let i = 0; i < this.playersInGame.length; i++) {
       // Lowercase the role to give the file name
-      const roleLower = this.playersInGame[i].role.toLowerCase();
-      this.playersInGame[i].see = this.specialRoles[roleLower].see();
+      const role = this.playersInGame[i].role;
+      this.playersInGame[i].see = this.specialRoles[role].see();
     }
 
     // set game start parameters
@@ -1204,10 +1205,10 @@ class Game extends Room {
 
     let ladyChain;
     let ladyHistoryUsernames;
-    if (this.specialCards && this.specialCards['lady of the lake']) {
-      ladyChain = this.specialCards['lady of the lake'].ladyChain;
+    if (this.specialCards && this.specialCards[Card.ladyOfTheLake]) {
+      ladyChain = this.specialCards[Card.ladyOfTheLake].ladyChain;
       ladyHistoryUsernames =
-        this.specialCards['lady of the lake'].ladyHistoryUsernames;
+        this.specialCards[Card.ladyOfTheLake].ladyHistoryUsernames;
     }
 
     let refChain;

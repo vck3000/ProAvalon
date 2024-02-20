@@ -54,8 +54,8 @@ class Ref {
     }
 
     const indexOfCardHolder =
-      this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
-    const { refHistory } = this.thisRoom.specialCards[this.card.toLowerCase()];
+      this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
+    const { refHistory } = this.thisRoom.specialCards[this.card];
     const targetIndex = usernamesIndexes.getIndexFromUsername(
       this.thisRoom.playersInGame,
       selectedPlayers,
@@ -95,9 +95,7 @@ class Ref {
       // console.log("Player " + target + " is a " + alliance);
 
       // update ref location
-      this.thisRoom.specialCards[this.card.toLowerCase()].setHolder(
-        targetIndex,
-      );
+      this.thisRoom.specialCards[this.card].setHolder(targetIndex);
 
       // this.gameplayMessage = (socket.request.user.username + " has carded " + target);
       this.thisRoom.sendText(
@@ -117,7 +115,7 @@ class Ref {
   buttonSettings(indexOfPlayer) {
     // Get the index of the ref
     const indexOfCardHolder =
-      this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
+      this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
 
     const obj = {
       green: {},
@@ -148,7 +146,7 @@ class Ref {
 
   numOfTargets(indexOfPlayer) {
     const indexOfCardHolder =
-      this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
+      this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
 
     if (indexOfPlayer !== undefined && indexOfPlayer !== null) {
       // If indexOfPlayer is the ref holder, one player to select
@@ -161,7 +159,7 @@ class Ref {
 
   getStatusMessage(indexOfPlayer) {
     const indexOfCardHolder =
-      this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
+      this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
 
     if (indexOfPlayer === indexOfCardHolder) {
       return 'Choose a player to use the Ref of the Rain on.';
@@ -174,7 +172,7 @@ class Ref {
   }
 
   getProhibitedIndexesToPick(indexOfPlayer) {
-    const { refHistory } = this.thisRoom.specialCards[this.card.toLowerCase()];
+    const { refHistory } = this.thisRoom.specialCards[this.card];
 
     return refHistory;
   }

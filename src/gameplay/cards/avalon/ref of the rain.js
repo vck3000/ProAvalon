@@ -1,4 +1,5 @@
 import { Phase } from '../../phases/types';
+import { Card } from '../types';
 
 class RefOfTheLake {
   constructor(thisRoom) {
@@ -6,7 +7,7 @@ class RefOfTheLake {
 
     this.specialPhase = Phase.ref;
 
-    this.card = 'Ref of the Rain';
+    this.card = Card.refOfTheRain;
 
     this.indexOfPlayerHolding;
     this.lastMissionUsed = 0;

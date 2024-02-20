@@ -4,7 +4,6 @@ import { SocketUser } from '../sockets/types';
 import { MIN_PLAYERS } from './game';
 import { Timeouts } from './gameTimer';
 import { ReadyPrompt } from '../sockets/readyPrompt';
-import { IPhase } from './phases/types';
 import { avalonRoles } from './roles/roles';
 import { avalonCards } from './cards/cards';
 import { avalonPhases, commonPhases } from './phases/phases';
@@ -686,9 +685,10 @@ class Room {
   }
 
   initialiseGameDependencies = (
-    obj: Record<string, { new (a: Room): IPhase }>,
+    // TODO replace any with a room initialisable interface
+    obj: Record<string, { new (a: Room): any }>,
   ) => {
-    const initialisedGameDependencies: Record<string, IPhase> = {};
+    const initialisedGameDependencies: Record<string, any> = {};
     for (const key in obj) {
       initialisedGameDependencies[key] = new obj[key](this);
     }

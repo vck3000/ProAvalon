@@ -1,5 +1,6 @@
 import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
 import { Phase } from '../types';
+import { Card } from '../../cards/types';
 
 class Lady {
   static phase = Phase.lady;
@@ -10,7 +11,7 @@ class Lady {
 
     this.showGuns = false;
 
-    this.card = 'Lady of the Lake';
+    this.card = Card.ladyOfTheLake;
   }
 
   gameMove(socket, buttonPressed, selectedPlayers) {
@@ -54,8 +55,8 @@ class Lady {
     }
 
     const indexOfCardHolder =
-      this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
-    const { ladyHistory } = this.thisRoom.specialCards[this.card.toLowerCase()];
+      this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
+    const { ladyHistoryUsernames } = this.thisRoom.specialCards[this.card];
     const targetIndex = usernamesIndexes.getIndexFromUsername(
       this.thisRoom.playersInGame,
       selectedPlayers,
@@ -79,7 +80,7 @@ class Lady {
     // If the requester is the lady holder, do the lady stuff
     if (indexOfCardHolder === indexOfSocket) {
       // Check if we can card that person
-      if (ladyHistory.includes(selectedPlayers) === true) {
+      if (ladyHistoryUsernames.includes(selectedPlayers) === true) {
         socket.emit('danger-alert', 'You cannot card that person.');
         return;
       }
@@ -95,9 +96,7 @@ class Lady {
       // console.log("Player " + target + " is a " + alliance);
 
       // update lady location
-      this.thisRoom.specialCards[this.card.toLowerCase()].setHolder(
-        targetIndex,
-      );
+      this.thisRoom.specialCards[this.card].setHolder(targetIndex);
 
       // this.gameplayMessage = (socket.request.user.username + " has carded " + target);
       this.thisRoom.sendText(
@@ -117,7 +116,7 @@ class Lady {
   buttonSettings(indexOfPlayer) {
     // Get the index of the lady
     const indexOfCardHolder =
-      this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
+      this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
 
     const obj = {
       green: {},
@@ -148,7 +147,7 @@ class Lady {
 
   numOfTargets(indexOfPlayer) {
     const indexOfCardHolder =
-      this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
+      this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
 
     if (indexOfPlayer !== undefined && indexOfPlayer !== null) {
       // If indexOfPlayer is the lady holder, one player to select
@@ -161,7 +160,7 @@ class Lady {
 
   getStatusMessage(indexOfPlayer) {
     const indexOfCardHolder =
-      this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
+      this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
 
     if (indexOfPlayer === indexOfCardHolder) {
       return 'Choose a player to use the Lady of the Lake on.';
@@ -174,7 +173,7 @@ class Lady {
   }
 
   getProhibitedIndexesToPick(indexOfPlayer) {
-    const { ladyHistory } = this.thisRoom.specialCards[this.card.toLowerCase()];
+    const { ladyHistory } = this.thisRoom.specialCards[this.card];
 
     return ladyHistory;
   }
