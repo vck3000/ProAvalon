@@ -51,6 +51,7 @@ export interface ButtonSettings {
 }
 
 export interface IPhase {
+  phase: Phase;
   showGuns: boolean;
 
   gameMove(

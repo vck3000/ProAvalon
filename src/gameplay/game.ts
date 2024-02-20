@@ -1621,7 +1621,6 @@ class Game extends Room {
     let foundSomething = false;
 
     for (let i = 0; i < this.roleKeysInPlay.length; i++) {
-      // If the function doesn't exist, return null
       if (!this.specialRoles[this.roleKeysInPlay[i]].checkSpecialMove) {
         continue;
       }

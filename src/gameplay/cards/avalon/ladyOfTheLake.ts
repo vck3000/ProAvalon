@@ -1,8 +1,8 @@
 import { Phase } from '../../phases/types';
-import { Card } from '../types';
+import { Card, ICard } from '../types';
 import { SocketUser } from '../../../sockets/types';
 
-class LadyOfTheLake {
+class LadyOfTheLake implements ICard {
   private thisRoom: any;
 
   static card = Card.ladyOfTheLake;
@@ -23,13 +23,13 @@ class LadyOfTheLake {
     this.thisRoom = thisRoom;
   }
 
-  initialise() {
+  initialise(): void {
     this.setHolder(
       (this.thisRoom.teamLeader + 1) % this.thisRoom.playersInGame.length,
     );
   }
 
-  setHolder(index: number) {
+  setHolder(index: number): void {
     this.indexOfPlayerHolding = index;
     this.ladyHistoryUsernames.push(this.thisRoom.playersInGame[index].username);
     this.ladyChain.push(this.thisRoom.playersInGame[index].role);
@@ -72,7 +72,7 @@ class LadyOfTheLake {
     return false;
   }
 
-  getPublicGameData() {
+  getPublicGameData(): any {
     /* TODO: (Can delete this function. Not absolutely necessary)
         Public data to show the user(s) e.g. who holds the lady of the lake */
     return {
