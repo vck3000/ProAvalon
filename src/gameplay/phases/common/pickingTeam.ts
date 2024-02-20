@@ -51,19 +51,11 @@ class PickingTeam implements IPhase {
       this.thisRoom.votes = [];
       this.thisRoom.publicVotes = [];
 
-      const numStr =
+      const num =
         NUM_PLAYERS_ON_MISSION[
           this.thisRoom.playersInGame.length - MIN_PLAYERS
         ][this.thisRoom.missionNum - 1];
       // console.log("Num player for this.thisRoom mission : " + num);
-
-      // In case the mission num is 4*, make it 4.
-      let num: number;
-      if (numStr.length > 1) {
-        num = parseInt(numStr[0]);
-      } else {
-        num = parseInt(numStr);
-      }
 
       // Check that the data is valid (i.e. includes only usernames of players)
       for (let i = 0; i < num; i++) {
@@ -145,7 +137,7 @@ class PickingTeam implements IPhase {
   }
 
   numOfTargets(indexOfPlayer: number): number {
-    const numStr =
+    const num =
       NUM_PLAYERS_ON_MISSION[this.thisRoom.playersInGame.length - MIN_PLAYERS][
         this.thisRoom.missionNum - 1
       ];
@@ -153,15 +145,6 @@ class PickingTeam implements IPhase {
     // If we are not the team leader
     if (indexOfPlayer !== this.thisRoom.teamLeader) {
       return null;
-    }
-
-    let num: number;
-
-    // In case the mission num is 4*, make it 4.
-    if (numStr.length > 1) {
-      num = parseInt(numStr[0]);
-    } else {
-      num = parseInt(numStr);
     }
 
     return num;

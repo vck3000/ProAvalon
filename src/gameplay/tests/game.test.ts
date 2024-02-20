@@ -113,10 +113,7 @@ describe('Game Engine', () => {
     // Picking team
     expect(game.phase).toEqual(Phase.pickingTeam);
 
-    const numOfPlayers = parseInt(
-      NUM_PLAYERS_ON_MISSION[1][game.missionNum - 1],
-      10,
-    );
+    const numOfPlayers = NUM_PLAYERS_ON_MISSION[1][game.missionNum - 1];
     const usernamesToPick = [];
 
     // Need to add a spy to fail if not success
