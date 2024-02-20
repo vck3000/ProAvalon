@@ -6,7 +6,7 @@ import usernamesIndexes from '../myFunctions/usernamesIndexes';
 import User from '../models/user';
 import GameRecord from '../models/gameRecord';
 import RatingPeriodGameRecord from '../models/RatingPeriodGameRecord';
-import { getPhases as getCommonPhases } from './indexCommonPhases';
+import { commonPhases } from './indexCommonPhases';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import { isDev } from '../modsadmins/developers';
@@ -151,10 +151,12 @@ class Game extends Room {
 
     // Reload all objects so that their functions are also generated
     // Functions are not stored with JSONified during storage
-    this.commonPhases = getCommonPhases(this);
+    this.commonPhases = this.initialiseGameDependencies(commonPhases);
 
     this.specialRoles = new gameModeObj[this.gameMode].getRoles(this);
-    this.specialPhases = new gameModeObj[this.gameMode].getPhases(this);
+    this.specialPhases = this.initialiseGameDependencies(
+      gameModeObj[this.gameMode].phases,
+    );
     this.specialCards = new gameModeObj[this.gameMode].getCards(this);
 
     this.gameTimer = new GameTimer(this, () => new Date());
