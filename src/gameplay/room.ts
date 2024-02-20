@@ -1,10 +1,11 @@
 // @ts-nocheck
 import { GAME_MODE_NAMES, GameMode, gameModeObj } from './gameModes';
-import { getPhases as getCommonPhases } from './indexCommonPhases';
+import { commonPhases } from './indexCommonPhases';
 import { SocketUser } from '../sockets/types';
 import { MIN_PLAYERS } from './game';
 import { Timeouts } from './gameTimer';
 import { ReadyPrompt } from '../sockets/readyPrompt';
+import { IPhase } from './phases';
 
 export class RoomConfig {
   host: string;
@@ -96,9 +97,11 @@ class Room {
     this.claimingPlayers = [];
 
     // Phases Cards and Roles to use
-    this.commonPhases = getCommonPhases(thisRoom);
+    this.commonPhases = this.initialiseGameDependencies(commonPhases);
     this.specialRoles = new gameModeObj[this.gameMode].getRoles(thisRoom);
-    this.specialPhases = new gameModeObj[this.gameMode].getPhases(thisRoom);
+    this.specialPhases = this.initialiseGameDependencies(
+      gameModeObj[this.gameMode].phases,
+    );
     this.specialCards = new gameModeObj[this.gameMode].getCards(thisRoom);
   }
 
@@ -532,7 +535,9 @@ class Room {
       let thisRoom = this;
 
       this.specialRoles = new gameModeObj[this.gameMode].getRoles(this);
-      this.specialPhases = new gameModeObj[this.gameMode].getPhases(this);
+      this.specialPhases = this.initialiseGameDependencies(
+        gameModeObj[this.gameMode].phases,
+      );
       this.specialCards = new gameModeObj[this.gameMode].getCards(this);
 
       // Send the data to all sockets within the room.
@@ -681,6 +686,17 @@ class Room {
       },
     );
   }
+
+  initialiseGameDependencies = (
+    obj: Record<string, { new (a: Room): IPhase }>,
+  ) => {
+    const initialisedGameDependencies: Record<string, IPhase> = {};
+    for (const key in obj) {
+      initialisedGameDependencies[key] = new obj[key](this);
+    }
+
+    return initialisedGameDependencies;
+  };
 }
 
 export default Room;

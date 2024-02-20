@@ -1,5 +1,5 @@
 import { getRoles as avalonGetRoles } from './avalon/indexRoles';
-import { getPhases as avalonGetPhases } from './avalon/indexPhases';
+import { avalonPhases } from './avalon/indexPhases';
 import { getCards as avalonGetCards } from './avalon/indexCards';
 
 export enum GameMode {
@@ -31,7 +31,7 @@ export const isGameMode = (gameMode: string) => {
 export const gameModeObj = {
   [GameMode.AVALON]: {
     getRoles: avalonGetRoles,
-    getPhases: avalonGetPhases,
+    phases: avalonPhases,
     getCards: avalonGetCards,
   },
 };
