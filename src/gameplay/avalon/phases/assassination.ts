@@ -67,18 +67,18 @@ class Assassination implements IPhase {
               return;
             }
 
-            // Get merlin's username
-            let merlinUsername;
-            for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
-              if (this.thisRoom.playersInGame[i].role === 'Merlin') {
-                merlinUsername = this.thisRoom.playersInGame[i].username;
-              }
-            }
-
             // set the player shot in the assassin role object
             this.thisRoom.specialRoles.assassin.playerShot = selectedPlayers;
 
             if (indexOfTarget !== -1) {
+              // Get merlin's username
+              let merlinUsername;
+              for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
+                if (this.thisRoom.playersInGame[i].role === 'Merlin') {
+                  merlinUsername = this.thisRoom.playersInGame[i].username;
+                }
+              }
+
               if (
                 this.thisRoom.playersInGame[indexOfTarget].role === 'Merlin'
               ) {
