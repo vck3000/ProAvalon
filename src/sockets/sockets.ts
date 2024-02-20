@@ -139,63 +139,64 @@ function deleteSaveGameFromDb(room) {
   }
 }
 
-setTimeout(async () => {
-  let run = true;
-  let i = 0;
-  while (run) {
-    await new Promise((resolve) => {
-      savedGameObj
-        .find({})
-        .skip(i)
-        .limit(1)
-        .exec((err, foundSaveGameArr) => {
-          if (!foundSaveGameArr || foundSaveGameArr.length === 0) {
-            run = false;
-            return;
-          }
-          const foundSaveGame = foundSaveGameArr[0];
+if (process.env.NODE_ENV !== 'test') {
+  setTimeout(async () => {
+    let run = true;
+    let i = 0;
+    while (run) {
+      await new Promise((resolve) => {
+        savedGameObj
+          .find({})
+          .skip(i)
+          .limit(1)
+          .exec((err, foundSaveGameArr) => {
+            if (!foundSaveGameArr || foundSaveGameArr.length === 0) {
+              run = false;
+              return;
+            }
+            const foundSaveGame = foundSaveGameArr[0];
 
-          if (foundSaveGame && foundSaveGame.room) {
-            const storedData = JSON.parse(foundSaveGame.room);
-            console.log('Loaded room ' + storedData.roomId);
+            if (foundSaveGame && foundSaveGame.room) {
+              const storedData = JSON.parse(foundSaveGame.room);
+              console.log('Loaded room ' + storedData.roomId);
 
-            // Empty configs
-            const roomConfig = new RoomConfig(
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              storedData.gameMode,
-              undefined,
-              undefined,
-            );
-            const gameConfig = new GameConfig(
-              roomConfig,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-            );
+              // Empty configs
+              const roomConfig = new RoomConfig(
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                storedData.gameMode,
+                undefined,
+                undefined,
+              );
+              const gameConfig = new GameConfig(
+                roomConfig,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+              );
 
-            rooms[storedData.roomId] = new GameWrapper(gameConfig, null);
+              rooms[storedData.roomId] = new GameWrapper(gameConfig, null);
 
-            Object.assign(rooms[storedData.roomId], storedData);
+              Object.assign(rooms[storedData.roomId], storedData);
 
-            rooms[storedData.roomId].savedGameRecordId = foundSaveGame.id;
-            rooms[storedData.roomId].recoverGame(storedData);
-            rooms[storedData.roomId].callback = socketCallback;
-          } else {
-            run = false;
-          }
-          resolve();
-        });
-    });
+              rooms[storedData.roomId].savedGameRecordId = foundSaveGame.id;
+              rooms[storedData.roomId].recoverGame(storedData);
+              rooms[storedData.roomId].callback = socketCallback;
+            } else {
+              run = false;
+            }
+            resolve();
+          });
+      });
 
-    i += 1;
-  }
-}, 1000);
-
+      i += 1;
+    }
+  }, 1000);
+}
 const pmmodCooldowns = {};
 const PMMOD_TIMEOUT = 3000; // 3 seconds
 
