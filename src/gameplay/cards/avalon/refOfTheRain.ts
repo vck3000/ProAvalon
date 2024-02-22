@@ -4,13 +4,14 @@ import { SocketUser } from '../../../sockets/types';
 
 class RefOfTheRain implements ICard {
   private thisRoom: any;
+
   static card = Card.refOfTheRain;
   card = Card.refOfTheRain;
 
   lastMissionUsed = 0;
   indexOfPlayerHolding = 0;
 
-  refHistory: number[] = []; // To be stored in the database later.
+  refHistory: number[] = []; // Indexes of players
   refHistoryUsernames: string[] = [];
 
   // TODO change to role[]

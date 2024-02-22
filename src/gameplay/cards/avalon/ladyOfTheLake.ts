@@ -10,6 +10,7 @@ class LadyOfTheLake implements ICard {
 
   lastMissionUsed = 0;
   indexOfPlayerHolding = 0;
+  ladyHistory: number[] = []; // Indexes of players
   ladyHistoryUsernames: string[] = [];
 
   // List of roles that were carded
@@ -31,6 +32,7 @@ class LadyOfTheLake implements ICard {
 
   setHolder(index: number): void {
     this.indexOfPlayerHolding = index;
+    this.ladyHistory.push(index);
     this.ladyHistoryUsernames.push(this.thisRoom.playersInGame[index].username);
     this.ladyChain.push(this.thisRoom.playersInGame[index].role);
   }

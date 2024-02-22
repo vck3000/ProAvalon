@@ -11,7 +11,7 @@ class SireOfTheSea implements ICard {
   lastMissionUsed = 0;
   indexOfPlayerHolding = 0;
 
-  sireHistory: number[] = []; // To be stored in the database later.
+  sireHistory: number[] = []; // Indexes of players
   sireHistoryUsernames: string[] = [];
 
   // TODO replace with role[]
