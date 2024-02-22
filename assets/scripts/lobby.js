@@ -2,12 +2,6 @@ const socket = io();
 // Duplicate so react can find it and name it nicely.
 const socket_ = socket;
 
-// socket.on('reconnect_attempt', () => {
-//     socket.io.opts.transports = [, 'websocket'];
-//   });
-
-// console.log("started");
-
 // grab our username from the username assigned by server in EJS file.
 const ownUsername = $('#originalUsername')[0].innerText;
 
