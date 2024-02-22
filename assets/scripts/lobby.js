@@ -360,8 +360,6 @@ function assassinationSetup(phase) {
 }
 
 function enableSelectAvatars(prohibitedIndexesToPicks) {
-  // var numPlayersOnMission = gameData.numPlayersOnMission[gameData.missionNum - 1];
-
   const divs = document.querySelectorAll('#mainRoomBox div');
   // add the event listeners for button press
   for (let i = 0; i < divs.length; i++) {
@@ -385,41 +383,52 @@ function drawMiddleBoxes() {
   // draw missions and numPick
   // j<5 because there are only 5 missions/picks each game
   if (gameData) {
-    for (var j = 0; j < 5; j++) {
+    for (let i = 0; i < 5; i++) {
       // missions
-      const missionStatus = gameData.missionHistory[j];
+      const missionStatus = gameData.missionHistory[i];
       if (missionStatus === 'succeeded') {
         document
           .querySelectorAll('.missionBox')
-        [j].classList.add('missionBoxSucceed');
+        [i].classList.add('missionBoxSucceed');
         document
           .querySelectorAll('.missionBox')
-        [j].classList.remove('missionBoxFail');
+        [i].classList.remove('missionBoxFail');
       } else if (missionStatus === 'failed') {
         document
           .querySelectorAll('.missionBox')
-        [j].classList.add('missionBoxFail');
+        [i].classList.add('missionBoxFail');
         document
           .querySelectorAll('.missionBox')
-        [j].classList.remove('missionBoxSucceed');
+        [i].classList.remove('missionBoxSucceed');
       }
 
       // draw in the number of players in each mission
-      const numPlayersOnMission = gameData.numPlayersOnMission[j];
-      if (numPlayersOnMission) {
-        document.querySelectorAll('.missionBox')[
-          j
-        ].innerHTML = `<p>${numPlayersOnMission}</p>`;
+      const numPlayersOnMission = gameData.numPlayersOnMission[i];
+      if (numPlayersOnMission)
+      {
+        const numPlayersInGame = gameData.playerUsernamesOrdered.length;
+
+        let numToInsert = '';
+        if (numPlayersInGame >= 7 && i === 3) {
+          numToInsert = numPlayersOnMission.toString() + '*';
+        } else {
+          numToInsert = numPlayersOnMission.toString();
+        }
+
+        document.querySelectorAll('.missionBox')[i].innerHTML = `<p>${numToInsert}</p>`;
+      }
+      else {
+        document.querySelectorAll('.missionBox')[i].innerHTML = `<p></p>`;
       }
 
       // picks boxes
       const { pickNum } = gameData;
-      if (j < pickNum) {
-        document.querySelectorAll('.pickBox')[j].classList.add('pickBoxFill');
+      if (i < pickNum) {
+        document.querySelectorAll('.pickBox')[i].classList.add('pickBoxFill');
       } else {
         document
           .querySelectorAll('.pickBox')
-        [j].classList.remove('pickBoxFill');
+        [i].classList.remove('pickBoxFill');
       }
     }
   } else {
@@ -1517,7 +1526,6 @@ function resetAllGameData() {
   seeData = undefined;
   gameData = undefined;
   gameStarted = false;
-  numPlayersOnMission = [];
   inRoom = false;
   // note do not reset our own username.
   isSpectator = false;

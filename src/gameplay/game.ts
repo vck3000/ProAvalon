@@ -6,18 +6,20 @@ import usernamesIndexes from '../myFunctions/usernamesIndexes';
 import User from '../models/user';
 import GameRecord from '../models/gameRecord';
 import RatingPeriodGameRecord from '../models/RatingPeriodGameRecord';
-import { commonPhases } from './indexCommonPhases';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 
 import { RoomCreationType } from './roomTypes';
-import { gameModeObj } from './gameModes';
-import { Phase } from './phases';
+import { Phase } from './phases/types';
 import { Alliance } from './types';
 import { GameTimer, Timeouts } from './gameTimer';
 import { SocketUser } from '../sockets/types';
+import { avalonRoles } from './roles/roles';
+import { avalonCards } from './cards/cards';
+import { avalonPhases, commonPhases } from './phases/phases';
+import { Card } from './cards/types';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;
@@ -36,12 +38,12 @@ const ALLIANCES = [
 ];
 
 export const NUM_PLAYERS_ON_MISSION = [
-  ['2', '3', '2', '3', '3'],
-  ['2', '3', '4', '3', '4'],
-  ['2', '3', '3', '4*', '4'],
-  ['3', '4', '4', '5*', '5'],
-  ['3', '4', '4', '5*', '5'],
-  ['3', '4', '4', '5*', '5'],
+  [2, 3, 2, 3, 3],
+  [2, 3, 4, 3, 4],
+  [2, 3, 3, 4, 4],
+  [3, 4, 4, 5, 5],
+  [3, 4, 4, 5, 5],
+  [3, 4, 4, 5, 5],
 ];
 
 export class GameConfig {
@@ -93,7 +95,9 @@ class Game extends Room {
 
   // Helpers
   commonPhases: any;
+  specialRoles: any;
   specialPhases: any;
+  specialCards: any;
 
   gameTimer: GameTimer;
   dateTimerExpires: Date;
@@ -153,11 +157,9 @@ class Game extends Room {
     // Functions are not stored with JSONified during storage
     this.commonPhases = this.initialiseGameDependencies(commonPhases);
 
-    this.specialRoles = new gameModeObj[this.gameMode].getRoles(this);
-    this.specialPhases = this.initialiseGameDependencies(
-      gameModeObj[this.gameMode].phases,
-    );
-    this.specialCards = new gameModeObj[this.gameMode].getCards(this);
+    this.specialRoles = this.initialiseGameDependencies(avalonRoles);
+    this.specialPhases = this.initialiseGameDependencies(avalonPhases);
+    this.specialCards = this.initialiseGameDependencies(avalonCards);
 
     this.gameTimer = new GameTimer(this, () => new Date());
     this.gameTimer.configureTimeouts(storedData.timeoutSettings);
@@ -290,7 +292,7 @@ class Game extends Room {
   }
 
   // start game
-  startGame(options) {
+  startGame(options: string[]) {
     if (
       this.socketsOfPlayers.length < 5 ||
       this.socketsOfPlayers.length > 10 ||
@@ -353,7 +355,7 @@ class Game extends Room {
     this.spyRoles = [];
 
     for (let i = 0; i < options.length; i++) {
-      const op = options[i].toLowerCase();
+      const op = options[i];
       // console.log(op);
       // If a role file exists for this
       if (this.specialRoles.hasOwnProperty(op)) {
@@ -374,7 +376,7 @@ class Game extends Room {
       else if (this.specialCards.hasOwnProperty(op)) {
         this.cardKeysInPlay.push(op);
       } else {
-        console.log(
+        throw new Error(
           `Warning: Client requested a role that doesn't exist -> ${op}`,
         );
       }
@@ -422,8 +424,8 @@ class Game extends Room {
     // The following data do not change as the game goes on.
     for (let i = 0; i < this.playersInGame.length; i++) {
       // Lowercase the role to give the file name
-      const roleLower = this.playersInGame[i].role.toLowerCase();
-      this.playersInGame[i].see = this.specialRoles[roleLower].see();
+      const role = this.playersInGame[i].role;
+      this.playersInGame[i].see = this.specialRoles[role].see();
     }
 
     // set game start parameters
@@ -1203,10 +1205,10 @@ class Game extends Room {
 
     let ladyChain;
     let ladyHistoryUsernames;
-    if (this.specialCards && this.specialCards['lady of the lake']) {
-      ladyChain = this.specialCards['lady of the lake'].ladyChain;
+    if (this.specialCards && this.specialCards[Card.ladyOfTheLake]) {
+      ladyChain = this.specialCards[Card.ladyOfTheLake].ladyChain;
       ladyHistoryUsernames =
-        this.specialCards['lady of the lake'].ladyHistoryUsernames;
+        this.specialCards[Card.ladyOfTheLake].ladyHistoryUsernames;
     }
 
     let refChain;
@@ -1620,7 +1622,6 @@ class Game extends Room {
     let foundSomething = false;
 
     for (let i = 0; i < this.roleKeysInPlay.length; i++) {
-      // If the function doesn't exist, return null
       if (!this.specialRoles[this.roleKeysInPlay[i]].checkSpecialMove) {
         continue;
       }

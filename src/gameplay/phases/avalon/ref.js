@@ -1,16 +1,16 @@
 import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
-import { Phase } from '../../phases';
+import { Phase } from '../types';
 
-class Lady {
-  static phase = Phase.lady;
-  phase = Phase.lady;
+class Ref {
+  static phase = Phase.ref;
+  phase = Phase.ref;
 
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
     this.showGuns = false;
 
-    this.card = 'Lady of the Lake';
+    this.card = 'Ref of the Rain';
   }
 
   gameMove(socket, buttonPressed, selectedPlayers) {
@@ -54,8 +54,8 @@ class Lady {
     }
 
     const indexOfCardHolder =
-      this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
-    const { ladyHistory } = this.thisRoom.specialCards[this.card.toLowerCase()];
+      this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
+    const { refHistoryUsernames } = this.thisRoom.specialCards[this.card];
     const targetIndex = usernamesIndexes.getIndexFromUsername(
       this.thisRoom.playersInGame,
       selectedPlayers,
@@ -76,10 +76,10 @@ class Lady {
     // console.log("Index of socket: ");
     // console.log(indexOfSocket);
 
-    // If the requester is the lady holder, do the lady stuff
+    // If the requester is the ref holder, do the ref stuff
     if (indexOfCardHolder === indexOfSocket) {
       // Check if we can card that person
-      if (ladyHistory.includes(selectedPlayers) === true) {
+      if (refHistoryUsernames.includes(selectedPlayers) === true) {
         socket.emit('danger-alert', 'You cannot card that person.');
         return;
       }
@@ -87,17 +87,15 @@ class Lady {
       // grab the target's alliance
       const { alliance } = this.thisRoom.playersInGame[targetIndex];
 
-      // emit to the lady holder the person's alliance
+      // emit to the ref holder the person's alliance
       socket.emit(
         'lady-info',
         /* "Player " + */ `${targetUsername} is a ${alliance}.`,
       );
       // console.log("Player " + target + " is a " + alliance);
 
-      // update lady location
-      this.thisRoom.specialCards[this.card.toLowerCase()].setHolder(
-        targetIndex,
-      );
+      // update ref location
+      this.thisRoom.specialCards[this.card].setHolder(targetIndex);
 
       // this.gameplayMessage = (socket.request.user.username + " has carded " + target);
       this.thisRoom.sendText(
@@ -108,16 +106,16 @@ class Lady {
       // update phase
       this.thisRoom.changePhase(Phase.pickingTeam);
     }
-    // The requester is not the lady holder. Ignore the request.
+    // The requester is not the ref holder. Ignore the request.
     else {
       socket.emit('danger-alert', 'You do not hold the card.');
     }
   }
 
   buttonSettings(indexOfPlayer) {
-    // Get the index of the lady
+    // Get the index of the ref
     const indexOfCardHolder =
-      this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
+      this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
 
     const obj = {
       green: {},
@@ -148,10 +146,10 @@ class Lady {
 
   numOfTargets(indexOfPlayer) {
     const indexOfCardHolder =
-      this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
+      this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
 
     if (indexOfPlayer !== undefined && indexOfPlayer !== null) {
-      // If indexOfPlayer is the lady holder, one player to select
+      // If indexOfPlayer is the ref holder, one player to select
       if (indexOfPlayer === indexOfCardHolder) {
         return 1;
       }
@@ -161,23 +159,23 @@ class Lady {
 
   getStatusMessage(indexOfPlayer) {
     const indexOfCardHolder =
-      this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
+      this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
 
     if (indexOfPlayer === indexOfCardHolder) {
-      return 'Choose a player to use the Lady of the Lake on.';
+      return 'Choose a player to use the Ref of the Rain on.';
     }
     // If it is any other player who isn't special role
 
     const usernameOfCardHolder =
       this.thisRoom.playersInGame[indexOfCardHolder].username;
-    return `Waiting for ${usernameOfCardHolder} to use the Lady of the Lake on someone.`;
+    return `Waiting for ${usernameOfCardHolder} to use the Ref of the Rain on someone.`;
   }
 
   getProhibitedIndexesToPick(indexOfPlayer) {
-    const { ladyHistory } = this.thisRoom.specialCards[this.card.toLowerCase()];
+    const { refHistory } = this.thisRoom.specialCards[this.card];
 
-    return ladyHistory;
+    return refHistory;
   }
 }
 
-export default Lady;
+export default Ref;

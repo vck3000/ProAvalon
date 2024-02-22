@@ -1,4 +1,4 @@
-import { ButtonSettings, isGamePhase, Phase } from './phases';
+import { ButtonSettings, isGamePhase, Phase } from './phases/types';
 import Game, { getRandomInt } from './game';
 import { postGameMoveChecks } from '../sockets/sockets';
 

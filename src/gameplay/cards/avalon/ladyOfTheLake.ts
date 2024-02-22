@@ -1,39 +1,47 @@
-import { Phase } from '../../phases';
+import { Phase } from '../../phases/types';
+import { Card, ICard } from '../types';
+import { SocketUser } from '../../../sockets/types';
 
-class LadyOfTheLake {
-  constructor(thisRoom) {
+class LadyOfTheLake implements ICard {
+  private thisRoom: any;
+
+  static card = Card.ladyOfTheLake;
+  card = Card.ladyOfTheLake;
+
+  lastMissionUsed = 0;
+  indexOfPlayerHolding = 0;
+  ladyHistory: number[] = []; // Indexes of players
+  ladyHistoryUsernames: string[] = [];
+
+  // List of roles that were carded
+  // Should be named differently but database already has it named this.
+  ladyChain: string[] = [];
+
+  description =
+    'Reveals the alliance of the person being carded to the card holder. The card is used after each Mission after Mission 2.';
+
+  constructor(thisRoom: any) {
     this.thisRoom = thisRoom;
-
-    this.specialPhase = Phase.lady;
-
-    this.card = 'Lady of the Lake';
-
-    this.indexOfPlayerHolding;
-    this.lastMissionUsed = 0;
-
-    this.ladyHistory = []; // To be stored in the database later.
-    this.ladyHistoryUsernames = [];
-
-    this.ladyChain = []; // To be stored in the database later.
-
-    this.description =
-      'Reveals the alliance of the person being carded to the card holder. The card is used after each Mission after Mission 2.';
   }
 
-  initialise() {
+  initialise(): void {
     this.setHolder(
       (this.thisRoom.teamLeader + 1) % this.thisRoom.playersInGame.length,
     );
   }
 
-  setHolder(index) {
+  setHolder(index: number): void {
     this.indexOfPlayerHolding = index;
     this.ladyHistory.push(index);
     this.ladyHistoryUsernames.push(this.thisRoom.playersInGame[index].username);
     this.ladyChain.push(this.thisRoom.playersInGame[index].role);
   }
 
-  checkSpecialMove(socket, buttonPressed, selectedPlayers) {
+  checkSpecialMove(
+    socket: SocketUser,
+    buttonPressed: 'yes' | 'no',
+    selectedPlayers: string[],
+  ): boolean {
     // Only use lady of the lake after m2, when the success/fail is revealed, but before the next mission starts.
     // Only once per mission.
 
@@ -66,7 +74,7 @@ class LadyOfTheLake {
     return false;
   }
 
-  getPublicGameData() {
+  getPublicGameData(): any {
     /* TODO: (Can delete this function. Not absolutely necessary)
         Public data to show the user(s) e.g. who holds the lady of the lake */
     return {
