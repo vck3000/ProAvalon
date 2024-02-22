@@ -412,14 +412,7 @@ socket.on('update-current-games-list', (currentGames) => {
         // console.log("RESET GAME DATA ON JOIN ROOM");
         resetAllGameData();
 
-        // console.log(currentGame.roomId);
-        socket.emit('join-room', currentGame.roomId);
-        // change the view to the room instead of lobby
-        roomId = currentGame.roomId;
-        // set the spectator to true
-        isSpectator = true;
-        // change to the game room view
-        changeView();
+        joinRoom(currentGame.roomId);
       });
     }
   });
