@@ -158,6 +158,16 @@ function leaveRoom() {
   resetAllGameData();
 }
 
+function joinRoom(roomId_) {
+  socket.emit('join-room', roomId_);
+  // change the view to the room instead of lobby
+  roomId = roomId_;
+  // set the spectator to true
+  isSpectator = true;
+  // change to the game room view
+  changeView();
+}
+
 document.querySelector('#claimButton').addEventListener('click', () => {
   // INCOMPLETE
   // disallow innertext change to "unclaim" when spectators

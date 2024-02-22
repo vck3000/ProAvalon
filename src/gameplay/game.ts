@@ -201,12 +201,12 @@ class Game extends Room {
         ) {
           this.socketsOfPlayers.splice(i, 0, socket);
 
-          const prevUsername = this.playersInGame[i].request.user.username;
+          const prevUsername = this.playersInGame[i].username;
           this.playersInGame[i].request = socket.request;
           // To fix a bug where a user would change the case of their username, someone would vote,
           // and then vote history reading would die because it's keyed by the case sensitive username.
           // Should fix this properly by extracting out VH stuff to a separate class in the future.
-          this.playersInGame[i].request.user.username = prevUsername;
+          this.playersInGame[i].username = prevUsername;
 
           break;
         }

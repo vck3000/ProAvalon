@@ -21,13 +21,73 @@ socket.on('joinedGameSuccess', (data) => {
   isSpectator = false;
 });
 
-socket.on('disconnect', () => {
-  // window.location= "/";
-  // alert("You have been disconnected!");
+let intervalId = 0;
+let attemptNumber = 0;
+const MAX_NUM_TRIES = 5;
+
+function stopReconnectInterval() {
+  if (intervalId) {
+    console.log('Stopping reconnect interval');
+    clearInterval(intervalId);
+    intervalId = 0;
+    attemptNumber = 1;
+  }
+}
+
+var firstTimeConnected = true;
+socket.on('connect', () => {
+  console.log('Connected');
+  hideDangerAlert();
+  stopReconnectInterval();
+
+  if (roomId !== undefined) {
+    const roomIdCopy = roomId;
+    leaveRoom();
+    joinRoom(roomIdCopy);
+  }
+
+  if (!firstTimeConnected) {
+    Swal.fire({
+      text: 'Reconnected!',
+      toast: true,
+      type: 'success',
+      position: 'top',
+      timer: 3000,
+      showConfirmButton: false,
+    });
+  }
+  firstTimeConnected = false;
+});
+
+function attemptReconnect() {
+  console.log("Attempt reconnect");
+  if (attemptNumber >= MAX_NUM_TRIES) {
+    stopReconnectInterval();
+    showDangerAlert(`Failed to reconnect...`);
+    return;
+  }
+  socket.connect();
+  attemptNumber++;
+
   showDangerAlert(
-    'You have been disconnected! Please refresh the page or click here to reload.'
+    `You have disconnected. Attempting to reconnect... (${attemptNumber}/${MAX_NUM_TRIES})`
   );
-  socket.disconnect();
+}
+
+socket.on('disconnect', () => {
+  const chats = $('.chat-list');
+  for (const chat of chats) {
+    chat.innerHTML = '';
+  }
+
+  attemptReconnect();
+
+  if (!intervalId) {
+    intervalId = setInterval(() => {
+      console.log("INTERVAL");
+      attemptReconnect();
+    }, 5000);
+  }
 });
 
 let mutedPlayers = [];

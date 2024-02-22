@@ -212,8 +212,6 @@ function unhighlightAllChat() {
   });
 }
 
-const roomChatHistory = [];
-
 function addToRoomChat(data) {
   // if it is not an array, force it into a array
   if (data) {
@@ -433,7 +431,6 @@ function addToRoomChat(data) {
             );
           }
         }
-        roomChatHistory.push(data[i]);
       }
     }
   }
