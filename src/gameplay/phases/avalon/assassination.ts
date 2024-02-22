@@ -1,7 +1,8 @@
 import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
-import { ButtonSettings, IPhase, Phase } from '../../phases';
+import { ButtonSettings, IPhase, Phase } from '../types';
 import { SocketUser } from '../../../sockets/types';
 import { Alliance } from '../../types';
+import Assassin from '../../roles/avalon/assassin';
 
 class Assassination implements IPhase {
   showGuns = true;
@@ -67,18 +68,19 @@ class Assassination implements IPhase {
               return;
             }
 
-            // Get merlin's username
-            let merlinUsername;
-            for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
-              if (this.thisRoom.playersInGame[i].role === 'Merlin') {
-                merlinUsername = this.thisRoom.playersInGame[i].username;
-              }
-            }
-
             // set the player shot in the assassin role object
-            this.thisRoom.specialRoles.assassin.playerShot = selectedPlayers;
+            this.thisRoom.specialRoles[Assassin.role].playerShot =
+              selectedPlayers;
 
             if (indexOfTarget !== -1) {
+              // Get merlin's username
+              let merlinUsername;
+              for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
+                if (this.thisRoom.playersInGame[i].role === 'Merlin') {
+                  merlinUsername = this.thisRoom.playersInGame[i].username;
+                }
+              }
+
               if (
                 this.thisRoom.playersInGame[indexOfTarget].role === 'Merlin'
               ) {

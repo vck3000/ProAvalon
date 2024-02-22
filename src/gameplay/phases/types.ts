@@ -1,4 +1,4 @@
-import { SocketUser } from '../sockets/types';
+import { SocketUser } from '../../sockets/types';
 
 export enum Phase {
   // Core phases
@@ -51,6 +51,7 @@ export interface ButtonSettings {
 }
 
 export interface IPhase {
+  phase: Phase;
   showGuns: boolean;
 
   gameMove(

@@ -1,16 +1,16 @@
 import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
-import { Phase } from '../../phases';
+import { Phase } from '../types';
 
-class Ref {
-  static phase = Phase.ref;
-  phase = Phase.ref;
+class Sire {
+  static phase = Phase.sire;
+  phase = Phase.sire;
 
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
     this.showGuns = false;
 
-    this.card = 'Ref of the Rain';
+    this.card = 'Sire of the Sea';
   }
 
   gameMove(socket, buttonPressed, selectedPlayers) {
@@ -54,8 +54,8 @@ class Ref {
     }
 
     const indexOfCardHolder =
-      this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
-    const { refHistory } = this.thisRoom.specialCards[this.card.toLowerCase()];
+      this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
+    const { sireHistory } = this.thisRoom.specialCards[this.card];
     const targetIndex = usernamesIndexes.getIndexFromUsername(
       this.thisRoom.playersInGame,
       selectedPlayers,
@@ -76,28 +76,53 @@ class Ref {
     // console.log("Index of socket: ");
     // console.log(indexOfSocket);
 
-    // If the requester is the ref holder, do the ref stuff
+    // If the requester is the sire holder, do the sire stuff
     if (indexOfCardHolder === indexOfSocket) {
       // Check if we can card that person
-      if (refHistory.includes(selectedPlayers) === true) {
+      if (sireHistory.includes(selectedPlayers) === true) {
         socket.emit('danger-alert', 'You cannot card that person.');
         return;
       }
 
-      // grab the target's alliance
-      const { alliance } = this.thisRoom.playersInGame[targetIndex];
+      // grab the carders's alliance
+      let alliance;
+      for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
+        if (
+          this.thisRoom.playersInGame[i].username ===
+          socket.request.user.username
+        ) {
+          alliance = this.thisRoom.playersInGame[i].alliance;
+        }
+      }
 
-      // emit to the ref holder the person's alliance
-      socket.emit(
+      let socketOfTarget;
+      for (var i = 0; i < this.thisRoom.socketsOfPlayers.length; i++) {
+        if (
+          this.thisRoom.socketsOfPlayers[i].request.user.username ===
+          targetUsername
+        ) {
+          socketOfTarget = this.thisRoom.socketsOfPlayers[i];
+          break;
+        }
+      }
+      if (socketOfTarget === undefined) {
+        socket.emit(
+          'danger-alert',
+          'There was an error finding the target. Let the admin know if you see this.',
+        );
+        return;
+      }
+
+      // emit to the sire holder the person's alliance
+      // note that the display is the same as lady's display
+      socketOfTarget.emit(
         'lady-info',
-        /* "Player " + */ `${targetUsername} is a ${alliance}.`,
+        /* "Player " + */ `${socket.request.user.username} is a ${alliance}.`,
       );
       // console.log("Player " + target + " is a " + alliance);
 
-      // update ref location
-      this.thisRoom.specialCards[this.card.toLowerCase()].setHolder(
-        targetIndex,
-      );
+      // update sire location
+      this.thisRoom.specialCards[this.card].setHolder(targetIndex);
 
       // this.gameplayMessage = (socket.request.user.username + " has carded " + target);
       this.thisRoom.sendText(
@@ -108,16 +133,16 @@ class Ref {
       // update phase
       this.thisRoom.changePhase(Phase.pickingTeam);
     }
-    // The requester is not the ref holder. Ignore the request.
+    // The requester is not the sire holder. Ignore the request.
     else {
       socket.emit('danger-alert', 'You do not hold the card.');
     }
   }
 
   buttonSettings(indexOfPlayer) {
-    // Get the index of the ref
+    // Get the index of the sire
     const indexOfCardHolder =
-      this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
+      this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
 
     const obj = {
       green: {},
@@ -148,10 +173,10 @@ class Ref {
 
   numOfTargets(indexOfPlayer) {
     const indexOfCardHolder =
-      this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
+      this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
 
     if (indexOfPlayer !== undefined && indexOfPlayer !== null) {
-      // If indexOfPlayer is the ref holder, one player to select
+      // If indexOfPlayer is the sire holder, one player to select
       if (indexOfPlayer === indexOfCardHolder) {
         return 1;
       }
@@ -161,23 +186,23 @@ class Ref {
 
   getStatusMessage(indexOfPlayer) {
     const indexOfCardHolder =
-      this.thisRoom.specialCards[this.card.toLowerCase()].indexOfPlayerHolding;
+      this.thisRoom.specialCards[this.card].indexOfPlayerHolding;
 
     if (indexOfPlayer === indexOfCardHolder) {
-      return 'Choose a player to use the Ref of the Rain on.';
+      return 'Choose a player to use the Sire of the Sea on.';
     }
     // If it is any other player who isn't special role
 
     const usernameOfCardHolder =
       this.thisRoom.playersInGame[indexOfCardHolder].username;
-    return `Waiting for ${usernameOfCardHolder} to use the Ref of the Rain on someone.`;
+    return `Waiting for ${usernameOfCardHolder} to use the Sire of the Sea on someone.`;
   }
 
   getProhibitedIndexesToPick(indexOfPlayer) {
-    const { refHistory } = this.thisRoom.specialCards[this.card.toLowerCase()];
+    const { sireHistory } = this.thisRoom.specialCards[this.card];
 
-    return refHistory;
+    return sireHistory;
   }
 }
 
-export default Ref;
+export default Sire;

@@ -1,6 +1,6 @@
 import { Alliance, Role, See } from '../../types';
 import Game from '../../game';
-import { Phase } from '../../phases';
+import { Phase } from '../../phases/types';
 
 class Assassin implements Role {
   room: Game;

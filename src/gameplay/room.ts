@@ -1,11 +1,12 @@
 // @ts-nocheck
-import { GAME_MODE_NAMES, GameMode, gameModeObj } from './gameModes';
-import { commonPhases } from './indexCommonPhases';
+import { GAME_MODE_NAMES, GameMode } from './gameModes';
 import { SocketUser } from '../sockets/types';
 import { MIN_PLAYERS } from './game';
 import { Timeouts } from './gameTimer';
 import { ReadyPrompt } from '../sockets/readyPrompt';
-import { IPhase } from './phases';
+import { avalonRoles } from './roles/roles';
+import { avalonCards } from './cards/cards';
+import { avalonPhases, commonPhases } from './phases/phases';
 
 export class RoomConfig {
   host: string;
@@ -72,8 +73,6 @@ class Room {
   readyPrompt: ReadyPrompt;
 
   constructor(roomConfig: RoomConfig) {
-    const thisRoom = this;
-
     // Expand config
     this.host = roomConfig.host;
     this.roomId = roomConfig.roomId;
@@ -98,11 +97,9 @@ class Room {
 
     // Phases Cards and Roles to use
     this.commonPhases = this.initialiseGameDependencies(commonPhases);
-    this.specialRoles = new gameModeObj[this.gameMode].getRoles(thisRoom);
-    this.specialPhases = this.initialiseGameDependencies(
-      gameModeObj[this.gameMode].phases,
-    );
-    this.specialCards = new gameModeObj[this.gameMode].getCards(thisRoom);
+    this.specialRoles = this.initialiseGameDependencies(avalonRoles);
+    this.specialPhases = this.initialiseGameDependencies(avalonPhases);
+    this.specialCards = this.initialiseGameDependencies(avalonCards);
   }
 
   playerJoinRoom(socket, inputPassword) {
@@ -489,21 +486,13 @@ class Room {
         this.botSockets !== undefined &&
         this.botSockets.length > 0
       ) {
-        let thisRoom = this;
-
         const botSockets = this.botSockets.slice() || [];
         const botsToRemove = botSockets;
         botsToRemove.forEach((botSocket) => {
-          thisRoom.playerLeaveRoom(botSocket);
+          this.playerLeaveRoom(botSocket);
 
-          if (
-            thisRoom.botSockets &&
-            thisRoom.botSockets.indexOf(botSocket) !== -1
-          ) {
-            thisRoom.botSockets.splice(
-              thisRoom.botSockets.indexOf(botSocket),
-              1,
-            );
+          if (this.botSockets && this.botSockets.indexOf(botSocket) !== -1) {
+            this.botSockets.splice(this.botSockets.indexOf(botSocket), 1);
           }
         });
         const removedBots = botsToRemove.map(
@@ -532,13 +521,10 @@ class Room {
       }
 
       this.gameMode = gameMode;
-      let thisRoom = this;
 
-      this.specialRoles = new gameModeObj[this.gameMode].getRoles(this);
-      this.specialPhases = this.initialiseGameDependencies(
-        gameModeObj[this.gameMode].phases,
-      );
-      this.specialCards = new gameModeObj[this.gameMode].getCards(this);
+      this.specialRoles = this.initialiseGameDependencies(avalonRoles);
+      this.specialPhases = this.initialiseGameDependencies(avalonPhases);
+      this.specialCards = this.initialiseGameDependencies(avalonCards);
 
       // Send the data to all sockets within the room.
       for (let i = 0; i < this.allSockets.length; i++) {
@@ -688,9 +674,10 @@ class Room {
   }
 
   initialiseGameDependencies = (
-    obj: Record<string, { new (a: Room): IPhase }>,
+    // TODO replace any with a room initialisable interface
+    obj: Record<string, { new (a: Room): any }>,
   ) => {
-    const initialisedGameDependencies: Record<string, IPhase> = {};
+    const initialisedGameDependencies: Record<string, any> = {};
     for (const key in obj) {
       initialisedGameDependencies[key] = new obj[key](this);
     }
