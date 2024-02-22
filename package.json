@@ -17,7 +17,7 @@
   "author": "Victor Kuo",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.21.2",
+    "axios": "^0.28.0",
     "binary-search-tree": "0.2.6",
     "body-parser": "^1.18.2",
     "circular-json": "^0.5.5",
