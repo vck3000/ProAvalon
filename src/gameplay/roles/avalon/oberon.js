@@ -1,4 +1,5 @@
 import { Alliance } from '../../types';
+import { Role } from '../types';
 
 class Oberon {
   static role = Role.oberon;
