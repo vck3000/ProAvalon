@@ -1,4 +1,5 @@
 import { Alliance } from '../../types';
+import { Role } from '../types';
 
 class Percival {
   static role = 'Percival';
@@ -20,7 +21,7 @@ class Percival {
 
     for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
       if (
-        this.thisRoom.playersInGame[i].role === 'Merlin' ||
+        this.thisRoom.playersInGame[i].role === Role.merlin ||
         this.thisRoom.playersInGame[i].role === 'Morgana'
       ) {
         roleTag[this.thisRoom.playersInGame[i].username] = {};

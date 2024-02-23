@@ -6,6 +6,7 @@ import { RoomCreationType } from '../roomTypes';
 import { Phase } from '../phases/types';
 import { Alliance } from '../types';
 import { Card } from '../cards/types';
+import { Role } from '../roles/types';
 
 jest.mock('../gameWrapper');
 
@@ -223,7 +224,7 @@ describe('Game Engine', () => {
 
   describe('6P Avalon game', () => {
     beforeEach(() => {
-      startGame(6, ['Merlin', 'Percival', 'Assassin', 'Morgana']);
+      startGame(6, [Role.merlin, 'Percival', 'Assassin', 'Morgana']);
     });
 
     it('Assassin shoots Percival', () => {
@@ -248,7 +249,7 @@ describe('Game Engine', () => {
 
       // Shoot percival to give res the win
       const assassinSocket = getSocketOfRole('Assassin');
-      const percyUsername = getUsernameOfRole('Merlin');
+      const percyUsername = getUsernameOfRole(Role.merlin);
       game.gameMove(assassinSocket, ['yes', [percyUsername]]);
 
       // Game over
@@ -262,7 +263,7 @@ describe('Game Engine', () => {
 
     beforeEach(() => {
       startGame(6, [
-        'Merlin',
+        Role.merlin,
         'Percival',
         'Assassin',
         'Morgana',
@@ -329,7 +330,7 @@ describe('Game Engine', () => {
 
       // Shoot percival to give res the win
       const assassinSocket = getSocketOfRole('Assassin');
-      const percyUsername = getUsernameOfRole('Merlin');
+      const percyUsername = getUsernameOfRole(Role.merlin);
       game.gameMove(assassinSocket, ['yes', [percyUsername]]);
 
       // Game over

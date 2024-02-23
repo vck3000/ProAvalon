@@ -3,6 +3,7 @@ import { ButtonSettings, IPhase, Phase } from '../types';
 import { SocketUser } from '../../../sockets/types';
 import { Alliance } from '../../types';
 import Assassin from '../../roles/avalon/assassin';
+import { Role } from '../../roles/types';
 
 class Assassination implements IPhase {
   showGuns = true;
@@ -76,13 +77,13 @@ class Assassination implements IPhase {
               // Get merlin's username
               let merlinUsername;
               for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
-                if (this.thisRoom.playersInGame[i].role === 'Merlin') {
+                if (this.thisRoom.playersInGame[i].role === Role.merlin) {
                   merlinUsername = this.thisRoom.playersInGame[i].username;
                 }
               }
 
               if (
-                this.thisRoom.playersInGame[indexOfTarget].role === 'Merlin'
+                this.thisRoom.playersInGame[indexOfTarget].role === Role.merlin
               ) {
                 this.thisRoom.winner = Alliance.Spy;
                 this.thisRoom.howWasWon = 'Assassinated Merlin correctly.';
@@ -286,7 +287,7 @@ class Assassination implements IPhase {
         let isoExists = false;
 
         for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
-          if (this.thisRoom.playersInGame[i].role === 'Merlin') {
+          if (this.thisRoom.playersInGame[i].role === Role.merlin) {
             merlinExists = true;
           }
 

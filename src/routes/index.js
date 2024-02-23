@@ -435,7 +435,7 @@ const processRecords = async function (records) {
 
   // IMPORTANT, MUST KEEP THESE ROLES UP TO DATE!
   // SHOULD MAKE AN EXTERNAL FILE OF THESE ALLIANCES
-  const resRoles = ['Merlin', 'Percival', 'Resistance', 'Isolde', 'Tristan'];
+  const resRoles = [Role.merlin, 'Percival', 'Resistance', 'Isolde', 'Tristan'];
   const spyRoles = ['Assassin', 'Morgana', 'Spy', 'Mordred', 'Oberon'];
 
   //* *********************************************

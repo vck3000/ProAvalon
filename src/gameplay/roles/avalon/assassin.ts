@@ -1,12 +1,13 @@
-import { Alliance, Role, See } from '../../types';
+import { Alliance, See } from '../../types';
 import Game from '../../game';
 import { Phase } from '../../phases/types';
+import { IRole, Role } from '../types';
 
-class Assassin implements Role {
+class Assassin implements IRole {
   room: Game;
   // TODO pretty ugly...
-  static role = 'Assassin';
-  role = Assassin.role;
+  static role = Role.assassin;
+  role = Role.assassin;
 
   alliance = Alliance.Spy;
   specialPhase = Phase.assassination;
@@ -64,7 +65,7 @@ class Assassin implements Role {
         let isoExists = false;
 
         for (let i = 0; i < this.room.playersInGame.length; i++) {
-          if (this.room.playersInGame[i].role === 'Merlin') {
+          if (this.room.playersInGame[i].role === Role.merlin) {
             merlinExists = true;
           }
           if (this.room.playersInGame[i].role === 'Tristan') {
