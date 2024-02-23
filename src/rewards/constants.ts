@@ -1,3 +1,5 @@
+import { Role } from '../gameplay/roles/types';
+
 const constants = {
   ADMIN_BADGE: 'ADMIN_BADGE',
   MOD_BADGE: 'MOD_BADGE',
@@ -17,8 +19,8 @@ const constants = {
 
   tier1: 'VT',
   tier2: 'Lovers',
-  tier3: 'Percival',
-  tier4: 'Merlin',
+  tier3: Role.percival,
+  tier4: Role.merlin,
 } as const;
 
 export default constants;

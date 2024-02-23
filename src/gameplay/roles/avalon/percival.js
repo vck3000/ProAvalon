@@ -1,13 +1,13 @@
 import { Alliance } from '../../types';
+import { Role } from '../types';
 
 class Percival {
-  static role = 'Percival';
-  static alliance = Alliance.Resistance;
+  static role = Role.percival;
 
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
-    this.role = 'Percival';
+    this.role = Role.percival;
     this.alliance = Alliance.Resistance;
 
     this.description = 'Knows the identity of Merlin and Morgana.';
@@ -20,8 +20,8 @@ class Percival {
 
     for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
       if (
-        this.thisRoom.playersInGame[i].role === 'Merlin' ||
-        this.thisRoom.playersInGame[i].role === 'Morgana'
+        this.thisRoom.playersInGame[i].role === Role.merlin ||
+        this.thisRoom.playersInGame[i].role === Role.morgana
       ) {
         roleTag[this.thisRoom.playersInGame[i].username] = {};
         roleTag[this.thisRoom.playersInGame[i].username].roleTag = 'Merlin?';

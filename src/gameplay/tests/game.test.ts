@@ -6,6 +6,7 @@ import { RoomCreationType } from '../roomTypes';
 import { Phase } from '../phases/types';
 import { Alliance } from '../types';
 import { Card } from '../cards/types';
+import { Role } from '../roles/types';
 
 jest.mock('../gameWrapper');
 
@@ -223,7 +224,7 @@ describe('Game Engine', () => {
 
   describe('6P Avalon game', () => {
     beforeEach(() => {
-      startGame(6, ['Merlin', 'Percival', 'Assassin', 'Morgana']);
+      startGame(6, [Role.merlin, Role.percival, Role.assassin, Role.morgana]);
     });
 
     it('Assassin shoots Percival', () => {
@@ -232,8 +233,8 @@ describe('Game Engine', () => {
       expect(game.phase).toEqual(Phase.assassination);
 
       // Shoot percival to give res the win
-      const assassinSocket = getSocketOfRole('Assassin');
-      const percyUsername = getUsernameOfRole('Percival');
+      const assassinSocket = getSocketOfRole(Role.assassin);
+      const percyUsername = getUsernameOfRole(Role.percival);
       game.gameMove(assassinSocket, ['yes', [percyUsername]]);
 
       // Game over
@@ -247,8 +248,8 @@ describe('Game Engine', () => {
       expect(game.phase).toEqual(Phase.assassination);
 
       // Shoot percival to give res the win
-      const assassinSocket = getSocketOfRole('Assassin');
-      const percyUsername = getUsernameOfRole('Merlin');
+      const assassinSocket = getSocketOfRole(Role.assassin);
+      const percyUsername = getUsernameOfRole(Role.merlin);
       game.gameMove(assassinSocket, ['yes', [percyUsername]]);
 
       // Game over
@@ -262,10 +263,10 @@ describe('Game Engine', () => {
 
     beforeEach(() => {
       startGame(6, [
-        'Merlin',
-        'Percival',
-        'Assassin',
-        'Morgana',
+        Role.merlin,
+        Role.percival,
+        Role.assassin,
+        Role.morgana,
         Card.ladyOfTheLake,
       ]);
 
@@ -328,8 +329,8 @@ describe('Game Engine', () => {
       playMission(true);
 
       // Shoot percival to give res the win
-      const assassinSocket = getSocketOfRole('Assassin');
-      const percyUsername = getUsernameOfRole('Merlin');
+      const assassinSocket = getSocketOfRole(Role.assassin);
+      const percyUsername = getUsernameOfRole(Role.merlin);
       game.gameMove(assassinSocket, ['yes', [percyUsername]]);
 
       // Game over

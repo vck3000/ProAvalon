@@ -20,6 +20,7 @@ import { avalonRoles } from './roles/roles';
 import { avalonCards } from './cards/cards';
 import { avalonPhases, commonPhases } from './phases/phases';
 import { Card } from './cards/types';
+import { Role } from './roles/types';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;
@@ -1143,12 +1144,12 @@ class Game extends Room {
     }
 
     // Post results of Merlin guesses
-    if (this.resRoles.indexOf('Merlin') !== -1) {
+    if (this.resRoles.indexOf(Role.merlin) !== -1) {
       const guessesByTarget = reverseMapFromMap(this.merlinguesses);
 
       const incorrectGuessersText = [];
       const usernameOfMerlin = this.playersInGame.find(
-        (player) => player.role === 'Merlin',
+        (player) => player.role === Role.merlin,
       ).username;
       for (const target in guessesByTarget) {
         if (guessesByTarget.hasOwnProperty(target)) {
@@ -1747,7 +1748,7 @@ class Game extends Room {
 
   submitMerlinGuess(guesserUsername, targetUsername) {
     // Check Merlin is in play
-    if (this.resRoles.indexOf('Merlin') === -1) {
+    if (this.resRoles.indexOf(Role.merlin) === -1) {
       return 'This game does not include Merlin.';
     }
 
@@ -1774,7 +1775,7 @@ class Game extends Room {
     );
     if (
       guesserPlayer !== undefined &&
-      ['Merlin', 'Percival', 'Assassin'].indexOf(guesserPlayer.role) !== -1
+      [Role.merlin, Role.percival, Role.assassin].indexOf(guesserPlayer.role) !== -1
     ) {
       return `${guesserPlayer.role} cannot submit a guess.`;
     }

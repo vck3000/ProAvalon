@@ -1,12 +1,14 @@
-import { Alliance, Role, See } from '../../types';
+import { Alliance, See } from '../../types';
 import Game from '../../game';
 import { Phase } from '../../phases/types';
+import { IRole, Role } from '../types';
 
-class Assassin implements Role {
+class Assassin implements IRole {
   room: Game;
+
   // TODO pretty ugly...
-  static role = 'Assassin';
-  role = Assassin.role;
+  static role = Role.assassin;
+  role = Role.assassin;
 
   alliance = Alliance.Spy;
   specialPhase = Phase.assassination;
@@ -29,7 +31,7 @@ class Assassin implements Role {
 
       for (let i = 0; i < this.room.playersInGame.length; i++) {
         if (this.room.playersInGame[i].alliance === Alliance.Spy) {
-          if (this.room.playersInGame[i].role === 'Oberon') {
+          if (this.room.playersInGame[i].role === Role.oberon) {
             // don't add oberon
           } else {
             // add the spy
@@ -64,14 +66,14 @@ class Assassin implements Role {
         let isoExists = false;
 
         for (let i = 0; i < this.room.playersInGame.length; i++) {
-          if (this.room.playersInGame[i].role === 'Merlin') {
+          if (this.room.playersInGame[i].role === Role.merlin) {
             merlinExists = true;
           }
-          if (this.room.playersInGame[i].role === 'Tristan') {
+          if (this.room.playersInGame[i].role === Role.tristan) {
             tristExists = true;
           }
 
-          if (this.room.playersInGame[i].role === 'Isolde') {
+          if (this.room.playersInGame[i].role === Role.isolde) {
             isoExists = true;
           }
         }

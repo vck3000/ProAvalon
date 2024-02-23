@@ -1,10 +1,11 @@
 import { Alliance } from '../../types';
+import { Role } from '../types';
 
 class Spy {
-  static role = 'Spy';
-  role = 'Spy';
+  static role = Role.spy;
+  role = Role.spy;
 
-  static alliance = Alliance.Spy;
+  alliance = Alliance.Spy;
 
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
@@ -20,7 +21,7 @@ class Spy {
 
       for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
         if (this.thisRoom.playersInGame[i].alliance === Alliance.Spy) {
-          if (this.thisRoom.playersInGame[i].role === 'Oberon') {
+          if (this.thisRoom.playersInGame[i].role === Role.oberon) {
             // don't add oberon
           } else {
             // add the spy

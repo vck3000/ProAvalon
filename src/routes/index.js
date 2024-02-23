@@ -15,6 +15,7 @@ import { sendEmailVerification } from '../myFunctions/sendEmailVerification';
 import { disallowVPNs } from '../util/vpnDetection';
 import Settings from '../settings';
 import { Alliance } from '../gameplay/types';
+import { Role } from '../gameplay/roles/types';
 
 const router = new Router();
 
@@ -435,8 +436,8 @@ const processRecords = async function (records) {
 
   // IMPORTANT, MUST KEEP THESE ROLES UP TO DATE!
   // SHOULD MAKE AN EXTERNAL FILE OF THESE ALLIANCES
-  const resRoles = ['Merlin', 'Percival', 'Resistance', 'Isolde', 'Tristan'];
-  const spyRoles = ['Assassin', 'Morgana', 'Spy', 'Mordred', 'Oberon'];
+  const resRoles = [Role.merlin, Role.percival, Role.resistance, Role.isolde, Role.tristan];
+  const spyRoles = [Role.assassin, Role.morgana, Role.spy, Role.mordred, Role.oberon];
 
   //* *********************************************
   // Getting the average duration of each game

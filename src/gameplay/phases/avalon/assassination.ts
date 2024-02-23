@@ -3,6 +3,7 @@ import { ButtonSettings, IPhase, Phase } from '../types';
 import { SocketUser } from '../../../sockets/types';
 import { Alliance } from '../../types';
 import Assassin from '../../roles/avalon/assassin';
+import { Role } from '../../roles/types';
 
 class Assassination implements IPhase {
   showGuns = true;
@@ -11,7 +12,7 @@ class Assassination implements IPhase {
   phase = Phase.assassination;
   private thisRoom: any;
   // The role that is the owner of this phase
-  private role = 'Assassin';
+  private role = Role.assassin;
   finishedShot = false;
 
   constructor(thisRoom: any) {
@@ -59,7 +60,7 @@ class Assassination implements IPhase {
             if (
               this.thisRoom.playersInGame[indexOfTarget].alliance ===
                 Alliance.Spy &&
-              this.thisRoom.playersInGame[indexOfTarget].role !== 'Oberon'
+              this.thisRoom.playersInGame[indexOfTarget].role !== Role.oberon
             ) {
               socket.emit(
                 'danger-alert',
@@ -76,13 +77,13 @@ class Assassination implements IPhase {
               // Get merlin's username
               let merlinUsername;
               for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
-                if (this.thisRoom.playersInGame[i].role === 'Merlin') {
+                if (this.thisRoom.playersInGame[i].role === Role.merlin) {
                   merlinUsername = this.thisRoom.playersInGame[i].username;
                 }
               }
 
               if (
-                this.thisRoom.playersInGame[indexOfTarget].role === 'Merlin'
+                this.thisRoom.playersInGame[indexOfTarget].role === Role.merlin
               ) {
                 this.thisRoom.winner = Alliance.Spy;
                 this.thisRoom.howWasWon = 'Assassinated Merlin correctly.';
@@ -139,7 +140,7 @@ class Assassination implements IPhase {
             // Note: Allowed to shoot Oberon
             if (
               this.thisRoom.playersInGame[i0].alliance === Alliance.Spy &&
-              this.thisRoom.playersInGame[i0].role !== 'Oberon'
+              this.thisRoom.playersInGame[i0].role !== Role.oberon
             ) {
               socket.emit(
                 'danger-alert',
@@ -150,7 +151,7 @@ class Assassination implements IPhase {
 
             if (
               this.thisRoom.playersInGame[i1].alliance === Alliance.Spy &&
-              this.thisRoom.playersInGame[i1].role !== 'Oberon'
+              this.thisRoom.playersInGame[i1].role !== Role.oberon
             ) {
               socket.emit(
                 'danger-alert',
@@ -164,10 +165,10 @@ class Assassination implements IPhase {
             let tristanUsername = '';
             let isoldeUsername = '';
             for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
-              if (this.thisRoom.playersInGame[i].role === 'Tristan') {
+              if (this.thisRoom.playersInGame[i].role === Role.tristan) {
                 tristanUsername = this.thisRoom.playersInGame[i].username;
               }
-              if (this.thisRoom.playersInGame[i].role === 'Isolde') {
+              if (this.thisRoom.playersInGame[i].role === Role.isolde) {
                 isoldeUsername = this.thisRoom.playersInGame[i].username;
               }
             }
@@ -179,10 +180,10 @@ class Assassination implements IPhase {
 
             const correctComboShot = false;
             if (
-              (this.thisRoom.playersInGame[i0].role === 'Tristan' &&
-                this.thisRoom.playersInGame[i1].role === 'Isolde') ||
-              (this.thisRoom.playersInGame[i1].role === 'Tristan' &&
-                this.thisRoom.playersInGame[i0].role === 'Isolde')
+              (this.thisRoom.playersInGame[i0].role === Role.tristan &&
+                this.thisRoom.playersInGame[i1].role === Role.isolde) ||
+              (this.thisRoom.playersInGame[i1].role === Role.tristan &&
+                this.thisRoom.playersInGame[i0].role === Role.isolde)
             ) {
               this.thisRoom.winner = Alliance.Spy;
               this.thisRoom.howWasWon =
@@ -286,15 +287,15 @@ class Assassination implements IPhase {
         let isoExists = false;
 
         for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
-          if (this.thisRoom.playersInGame[i].role === 'Merlin') {
+          if (this.thisRoom.playersInGame[i].role === Role.merlin) {
             merlinExists = true;
           }
 
-          if (this.thisRoom.playersInGame[i].role === 'Tristan') {
+          if (this.thisRoom.playersInGame[i].role === Role.tristan) {
             tristExists = true;
           }
 
-          if (this.thisRoom.playersInGame[i].role === 'Isolde') {
+          if (this.thisRoom.playersInGame[i].role === Role.isolde) {
             isoExists = true;
           }
         }
@@ -339,7 +340,7 @@ class Assassination implements IPhase {
     for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
       if (
         this.thisRoom.playersInGame[i].alliance === Alliance.Spy &&
-        this.thisRoom.playersInGame[i].role !== 'Oberon'
+        this.thisRoom.playersInGame[i].role !== Role.oberon
       ) {
         spyIndexes.push(i);
       }

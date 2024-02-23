@@ -1,13 +1,13 @@
 import { Alliance } from '../../types';
+import { Role } from '../types';
 
 class Merlin {
-  static role = 'Merlin';
-  static alliance = Alliance.Resistance;
+  static role = Role.merlin;
+  role = Role.merlin;
 
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
-    this.role = 'Merlin';
     this.alliance = Alliance.Resistance;
 
     this.description = 'Knows the identity of the spies.';
@@ -22,7 +22,7 @@ class Merlin {
 
       for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
         if (this.thisRoom.playersInGame[i].alliance === Alliance.Spy) {
-          if (this.thisRoom.playersInGame[i].role === 'Mordred') {
+          if (this.thisRoom.playersInGame[i].role === Role.mordred) {
             // don't add mordred for Merlin to see
           } else {
             // add the spy

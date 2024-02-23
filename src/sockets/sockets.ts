@@ -84,7 +84,7 @@ process.on('SIGTERM', gracefulShutdown);
 
 function gracefulShutdown() {
   for (const socket of allSockets) {
-    socket.emit('serverRestartingNow');
+    socket.emit('server-restarting');
   }
 
   console.log('Graceful shutdown request');
@@ -2230,7 +2230,7 @@ function matchFound(usernames: string[]): void {
         room.playerSitDown(getSocketFromUsername(username));
       }
 
-      room.startGame(['Merlin', 'Percival', 'Assassin', 'Morgana']);
+      room.startGame([Role.merlin, Role.percival, Role.assassin, Role.morgana]);
 
       // Need to push them out so that the game treats them as just joining to
       // send data, etc.

@@ -7,6 +7,7 @@ import { ReadyPrompt } from '../sockets/readyPrompt';
 import { avalonRoles } from './roles/roles';
 import { avalonCards } from './cards/cards';
 import { avalonPhases, commonPhases } from './phases/phases';
+import { Role } from './roles/types';
 
 export class RoomConfig {
   host: string;
@@ -535,7 +536,7 @@ class Room {
     } else {
       socket.emit(
         'danger-alert',
-        'Eror happened when changing Game Mode. Let the admin know if you see this.',
+        'Error happened when changing Game Mode. Let the admin know if you see this.',
       );
     }
   }
@@ -550,7 +551,7 @@ class Room {
     const cardDescriptions = [];
     const cardPriorities = [];
 
-    const skipRoles = ['Resistance', 'Spy'];
+    const skipRoles = [Role.resistance, Role.spy];
 
     for (let key in this.specialRoles) {
       if (this.specialRoles.hasOwnProperty(key) === true) {
