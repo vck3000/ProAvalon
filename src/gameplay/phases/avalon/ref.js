@@ -2,8 +2,8 @@ import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
 import { Phase } from '../types';
 
 class Ref {
-  static phase = Phase.ref;
-  phase = Phase.ref;
+  static phase = Phase.Ref;
+  phase = Phase.Ref;
 
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
@@ -104,7 +104,7 @@ class Ref {
       );
 
       // update phase
-      this.thisRoom.changePhase(Phase.pickingTeam);
+      this.thisRoom.changePhase(Phase.PickingTeam);
     }
     // The requester is not the ref holder. Ignore the request.
     else {

@@ -71,7 +71,7 @@ class SireOfTheSea implements ICard {
       numSuccess < 3 &&
       numFail < 3
     ) {
-      this.thisRoom.changePhase(Phase.sire);
+      this.thisRoom.changePhase(Phase.Sire);
       this.lastMissionUsed = this.thisRoom.missionNum;
 
       return true;

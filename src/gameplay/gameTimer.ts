@@ -90,7 +90,7 @@ export class GameTimer {
     // but not much we can do. We don't want the timeout settings
     // in game.ts
     let timerDuration =
-      this.game.phase === Phase.assassination
+      this.game.phase === Phase.Assassination
         ? this.timeoutSettings.assassination
         : this.timeoutSettings.default;
 

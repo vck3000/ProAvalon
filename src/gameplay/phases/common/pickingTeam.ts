@@ -4,8 +4,8 @@ import { MIN_PLAYERS, NUM_PLAYERS_ON_MISSION } from '../../game';
 import { SocketUser } from '../../../sockets/types';
 
 class PickingTeam implements IPhase {
-  static phase = Phase.pickingTeam;
-  phase = Phase.pickingTeam;
+  static phase = Phase.PickingTeam;
+  phase = Phase.PickingTeam;
   showGuns = false;
   private thisRoom: any;
 
@@ -96,7 +96,7 @@ class PickingTeam implements IPhase {
 
       this.thisRoom.VHUpdateTeamPick();
 
-      this.thisRoom.changePhase(Phase.votingTeam);
+      this.thisRoom.changePhase(Phase.VotingTeam);
     } else {
       console.log(
         `User ${socket.request.user.username} is not the team leader. Cannot pick.`,

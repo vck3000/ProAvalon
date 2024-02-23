@@ -65,7 +65,7 @@ class LadyOfTheLake implements ICard {
       numSuccess < 3 &&
       numFail < 3
     ) {
-      this.thisRoom.changePhase(Phase.lady);
+      this.thisRoom.changePhase(Phase.Lady);
       this.lastMissionUsed = this.thisRoom.missionNum;
 
       return true;

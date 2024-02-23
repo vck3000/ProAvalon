@@ -71,7 +71,7 @@ export const mforcemove: Command = {
         availableButtons.push('yes');
       }
       const onMissionAndResistance =
-        thisRoom.phase == 'votingMission' &&
+        thisRoom.phase == 'VotingMission' &&
         thisRoom.playersInGame[playerIndex].alliance === Alliance.Resistance;
       // Add a special case so resistance can't fail missions.
       if (buttons.red.hidden !== true && onMissionAndResistance === false) {
