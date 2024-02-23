@@ -30,7 +30,7 @@ function stopReconnectInterval() {
     console.log('Stopping reconnect interval');
     clearInterval(intervalId);
     intervalId = 0;
-    attemptNumber = 1;
+    attemptNumber = 0;
   }
 }
 
@@ -60,14 +60,15 @@ socket.on('connect', () => {
 });
 
 function attemptReconnect() {
-  console.log("Attempt reconnect");
+  attemptNumber++;
+  console.log("Attempt reconnect", attemptNumber);
+
   if (attemptNumber >= MAX_NUM_TRIES) {
     stopReconnectInterval();
     showDangerAlert(`Failed to reconnect...`);
     return;
   }
   socket.connect();
-  attemptNumber++;
 
   showDangerAlert(
     `You have disconnected. Attempting to reconnect... (${attemptNumber}/${MAX_NUM_TRIES})`
@@ -75,12 +76,18 @@ function attemptReconnect() {
 }
 
 let autoReconnect = true;
+let serverRestarting = false;
 
 socket.on('dont-reconnect', () => {
   autoReconnect = false;
 });
 
 socket.on('disconnect', () => {
+  if (serverRestarting) {
+    showDangerAlert(`You have been disconnected. Please refresh the page.`);
+    return;
+  }
+
   if (!autoReconnect) {
     showDangerAlert(
       `You have logged on another device and have been disconnected.`
@@ -95,7 +102,6 @@ socket.on('disconnect', () => {
 
     if (!intervalId) {
       intervalId = setInterval(() => {
-        console.log("INTERVAL");
         attemptReconnect();
       }, 5000);
     }
@@ -234,14 +240,14 @@ socket.on('serverRestartWarning', () => {
   });
 });
 
-socket.on('serverRestartingNow', () => {
+socket.on('server-restarting', () => {
+  autoReconnect = false;
+  serverRestarting = true;
   Swal({
-    title: 'Server restarting now',
-    text: 'The server is restarting now either due to an update, or for its daily restart.',
-    type: 'warning',
+    title: 'Server restarting',
+    html: 'The server is restarting for an update.<br>Sit tight!',
+    type: 'info',
     allowEnterKey: false,
-  }).then(() => {
-    // location.reload();
   });
 });
 

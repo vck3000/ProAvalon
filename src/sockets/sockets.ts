@@ -84,7 +84,7 @@ process.on('SIGTERM', gracefulShutdown);
 
 function gracefulShutdown() {
   for (const socket of allSockets) {
-    socket.emit('serverRestartingNow');
+    socket.emit('server-restarting');
   }
 
   console.log('Graceful shutdown request');
