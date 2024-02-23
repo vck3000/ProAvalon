@@ -5,8 +5,8 @@ import { SocketUser } from '../../../sockets/types';
 class SireOfTheSea implements ICard {
   private thisRoom: any;
 
-  static card = Card.sireOfTheSea;
-  card = Card.sireOfTheSea;
+  static card = Card.SireOfTheSea;
+  card = Card.SireOfTheSea;
 
   lastMissionUsed = 0;
   indexOfPlayerHolding = 0;

@@ -1206,10 +1206,10 @@ class Game extends Room {
 
     let ladyChain;
     let ladyHistoryUsernames;
-    if (this.specialCards && this.specialCards[Card.ladyOfTheLake]) {
-      ladyChain = this.specialCards[Card.ladyOfTheLake].ladyChain;
+    if (this.specialCards && this.specialCards[Card.LadyOfTheLake]) {
+      ladyChain = this.specialCards[Card.LadyOfTheLake].ladyChain;
       ladyHistoryUsernames =
-        this.specialCards[Card.ladyOfTheLake].ladyHistoryUsernames;
+        this.specialCards[Card.LadyOfTheLake].ladyHistoryUsernames;
     }
 
     let refChain;

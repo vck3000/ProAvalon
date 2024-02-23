@@ -11,7 +11,7 @@ class Lady {
 
     this.showGuns = false;
 
-    this.card = Card.ladyOfTheLake;
+    this.card = Card.LadyOfTheLake;
   }
 
   gameMove(socket, buttonPressed, selectedPlayers) {

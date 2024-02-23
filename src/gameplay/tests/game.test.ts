@@ -267,7 +267,7 @@ describe('Game Engine', () => {
         Role.percival,
         Role.assassin,
         Role.morgana,
-        Card.ladyOfTheLake,
+        Card.LadyOfTheLake,
       ]);
 
       cardedPeople = new Set();
@@ -275,7 +275,7 @@ describe('Game Engine', () => {
 
     const cardSomeone = (cardHolder = false) => {
       const indexHolder =
-        game.specialCards[Card.ladyOfTheLake].indexOfPlayerHolding;
+        game.specialCards[Card.LadyOfTheLake].indexOfPlayerHolding;
       const usernameHolder =
         game.playersInGame[indexHolder].request.user.username;
       cardedPeople.add(usernameHolder);
@@ -298,7 +298,7 @@ describe('Game Engine', () => {
       // Sanity check that lady is now at the intended target
       {
         const indexHolder =
-          game.specialCards[Card.ladyOfTheLake].indexOfPlayerHolding;
+          game.specialCards[Card.LadyOfTheLake].indexOfPlayerHolding;
         const usernameHolder =
           game.playersInGame[indexHolder].request.user.username;
 
