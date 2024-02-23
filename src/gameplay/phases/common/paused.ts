@@ -2,9 +2,9 @@ import { ButtonSettings, IPhase, Phase } from '../types';
 import { SocketUser } from '../../../sockets/types';
 
 class Paused implements IPhase {
-  static phase = Phase.paused;
+  static phase = Phase.Paused;
 
-  phase = Phase.paused;
+  phase = Phase.Paused;
   showGuns = true;
   private thisRoom: any;
 

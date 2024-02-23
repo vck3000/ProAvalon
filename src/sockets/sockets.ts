@@ -895,7 +895,7 @@ export const userCommands = {
       if (
         senderSocket.request.user.inRoomId === undefined ||
         rooms[senderSocket.request.user.inRoomId].gameStarted !== true ||
-        rooms[senderSocket.request.user.inRoomId].phase === 'finished'
+        rooms[senderSocket.request.user.inRoomId].phase === 'Finished'
       ) {
         messageToClient = 'You must be at a running table to guess Merlin.';
       } else {

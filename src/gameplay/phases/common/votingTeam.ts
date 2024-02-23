@@ -4,8 +4,8 @@ import { Alliance } from '../../types';
 import { SocketUser } from '../../../sockets/types';
 
 class VotingTeam implements IPhase {
-  static phase = Phase.votingTeam;
-  phase = Phase.votingTeam;
+  static phase = Phase.VotingTeam;
+  phase = Phase.VotingTeam;
   showGuns = true;
   private thisRoom: any;
 
@@ -61,7 +61,7 @@ class VotingTeam implements IPhase {
         const outcome = this.calcVotes(this.thisRoom.votes);
 
         if (outcome === 'yes') {
-          this.thisRoom.changePhase(Phase.votingMission);
+          this.thisRoom.changePhase(Phase.VotingMission);
           this.thisRoom.playersYetToVote = this.thisRoom.proposedTeam.slice();
 
           const str = `Mission ${this.thisRoom.missionNum}.${
@@ -88,7 +88,7 @@ class VotingTeam implements IPhase {
           this.thisRoom.finishGame(Alliance.Spy);
         } else if (outcome === 'no') {
           this.thisRoom.proposedTeam = [];
-          this.thisRoom.changePhase(Phase.pickingTeam);
+          this.thisRoom.changePhase(Phase.PickingTeam);
 
           const str = `Mission ${this.thisRoom.missionNum}.${
             this.thisRoom.pickNum

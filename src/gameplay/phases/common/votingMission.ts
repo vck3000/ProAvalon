@@ -4,8 +4,8 @@ import { Alliance } from '../../types';
 import { SocketUser } from '../../../sockets/types';
 
 class VotingMission implements IPhase {
-  static phase = Phase.votingMission;
-  phase = Phase.votingMission;
+  static phase = Phase.VotingMission;
+  phase = Phase.VotingMission;
   showGuns = true;
   private thisRoom: any;
 
@@ -153,7 +153,7 @@ class VotingMission implements IPhase {
             1 +
             this.thisRoom.playersInGame.length) %
           this.thisRoom.playersInGame.length;
-        this.thisRoom.changePhase(Phase.pickingTeam);
+        this.thisRoom.changePhase(Phase.PickingTeam);
       }
       this.thisRoom.requireSave = true;
     }

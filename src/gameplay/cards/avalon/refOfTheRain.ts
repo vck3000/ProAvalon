@@ -74,7 +74,7 @@ class RefOfTheRain implements ICard {
       numSuccess < 3 &&
       numFail < 3
     ) {
-      this.thisRoom.changePhase(Phase.ref);
+      this.thisRoom.changePhase(Phase.Ref);
       this.lastMissionUsed = this.thisRoom.missionNum;
 
       return true;

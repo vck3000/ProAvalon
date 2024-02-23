@@ -2,32 +2,32 @@ import { SocketUser } from '../../sockets/types';
 
 export enum Phase {
   // Core phases
-  pickingTeam = 'pickingTeam',
-  votingTeam = 'votingTeam',
-  votingMission = 'votingMission',
-  finished = 'finished',
+  PickingTeam = 'PickingTeam',
+  VotingTeam = 'VotingTeam',
+  VotingMission = 'VotingMission',
+  Finished = 'Finished',
 
   // Extra roles/cards
-  assassination = 'assassination',
-  lady = 'lady',
-  ref = 'ref',
-  sire = 'sire',
+  Assassination = 'Assassination',
+  Lady = 'Lady',
+  Ref = 'Ref',
+  Sire = 'Sire',
 
   // Misc
-  paused = 'paused',
-  frozen = 'frozen',
+  Paused = 'Paused',
+  Frozen = 'Frozen',
 }
 
 // This is needed to tell if we need to timer it.
 // TODO: We should think of a better way instead of having to maintain this list.
 const gamePhases = [
-  Phase.pickingTeam,
-  Phase.votingTeam,
-  Phase.votingMission,
-  Phase.assassination,
-  Phase.lady,
-  Phase.ref,
-  Phase.sire,
+  Phase.PickingTeam,
+  Phase.VotingTeam,
+  Phase.VotingMission,
+  Phase.Assassination,
+  Phase.Lady,
+  Phase.Ref,
+  Phase.Sire,
 ];
 
 export function isGamePhase(phase: Phase): boolean {

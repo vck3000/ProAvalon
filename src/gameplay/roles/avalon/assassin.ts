@@ -11,7 +11,7 @@ class Assassin implements IRole {
   role = Role.assassin;
 
   alliance = Alliance.Spy;
-  specialPhase = Phase.assassination;
+  specialPhase = Phase.Assassination;
 
   description =
     'If the resistance win 3 missions, the Assassin can shoot one person for Merlin, or two people for Tristan and Isolde. If they are correct, the spies win!';
@@ -49,7 +49,7 @@ class Assassin implements IRole {
     // Check for assassination mode and enter it if it is the right time
     if (this.playerShot === '') {
       // If we have the right conditions, we go into assassination phase
-      if (this.room.phase === 'finished') {
+      if (this.room.phase === 'Finished') {
         // Get the number of successes:
         let numOfSuccesses = 0;
 

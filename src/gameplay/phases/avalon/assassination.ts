@@ -8,8 +8,8 @@ import { Role } from '../../roles/types';
 class Assassination implements IPhase {
   showGuns = true;
 
-  static phase = Phase.assassination;
-  phase = Phase.assassination;
+  static phase = Phase.Assassination;
+  phase = Phase.Assassination;
   private thisRoom: any;
   // The role that is the owner of this phase
   private role = Role.assassin;
