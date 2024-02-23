@@ -118,7 +118,7 @@ export const atestgame: Command = {
       Role.merlin,
       Role.assassin,
       Role.percival,
-      'Morgana',
+      Role.morgana,
       'Ref of the Rain',
       'Sire of the Sea',
       'Lady of the Lake',

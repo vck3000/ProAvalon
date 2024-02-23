@@ -7,7 +7,7 @@ class Morgana {
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
-    this.role = 'Morgana';
+    this.role = Role.morgana;
     this.alliance = Alliance.Spy;
 
     this.description = 'A spy who looks like Merlin to Percival.';

@@ -436,7 +436,7 @@ const processRecords = async function (records) {
   // IMPORTANT, MUST KEEP THESE ROLES UP TO DATE!
   // SHOULD MAKE AN EXTERNAL FILE OF THESE ALLIANCES
   const resRoles = [Role.merlin, Role.percival, 'Resistance', 'Isolde', 'Tristan'];
-  const spyRoles = [Role.assassin, 'Morgana', 'Spy', 'Mordred', 'Oberon'];
+  const spyRoles = [Role.assassin, Role.morgana, 'Spy', 'Mordred', 'Oberon'];
 
   //* *********************************************
   // Getting the average duration of each game

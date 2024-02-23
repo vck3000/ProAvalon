@@ -224,7 +224,7 @@ describe('Game Engine', () => {
 
   describe('6P Avalon game', () => {
     beforeEach(() => {
-      startGame(6, [Role.merlin, Role.percival, Role.assassin, 'Morgana']);
+      startGame(6, [Role.merlin, Role.percival, Role.assassin, Role.morgana]);
     });
 
     it('Assassin shoots Percival', () => {
@@ -266,7 +266,7 @@ describe('Game Engine', () => {
         Role.merlin,
         Role.percival,
         Role.assassin,
-        'Morgana',
+        Role.morgana,
         Card.ladyOfTheLake,
       ]);
 

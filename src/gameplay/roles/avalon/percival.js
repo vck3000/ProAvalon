@@ -21,7 +21,7 @@ class Percival {
     for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
       if (
         this.thisRoom.playersInGame[i].role === Role.merlin ||
-        this.thisRoom.playersInGame[i].role === 'Morgana'
+        this.thisRoom.playersInGame[i].role === Role.morgana
       ) {
         roleTag[this.thisRoom.playersInGame[i].username] = {};
         roleTag[this.thisRoom.playersInGame[i].username].roleTag = 'Merlin?';
