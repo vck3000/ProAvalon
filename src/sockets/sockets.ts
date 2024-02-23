@@ -1054,6 +1054,7 @@ export const server = function (io: SocketServer): void {
     // remove any duplicate sockets
     for (let i = 0; i < allSockets.length; i++) {
       if (allSockets[i].request.user.id === socket.request.user.id) {
+        allSockets[i].emit('dont-reconnect');
         allSockets[i].disconnect(true);
       }
     }

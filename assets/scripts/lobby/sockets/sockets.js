@@ -74,19 +74,31 @@ function attemptReconnect() {
   );
 }
 
+let autoReconnect = true;
+
+socket.on('dont-reconnect', () => {
+  autoReconnect = false;
+});
+
 socket.on('disconnect', () => {
-  const chats = $('.chat-list');
-  for (const chat of chats) {
-    chat.innerHTML = '';
-  }
+  if (!autoReconnect) {
+    showDangerAlert(
+      `You have logged on another device and have been disconnected.`
+    );
+  } else {
+    const chats = $('.chat-list');
+    for (const chat of chats) {
+      chat.innerHTML = '';
+    }
 
-  attemptReconnect();
+    attemptReconnect();
 
-  if (!intervalId) {
-    intervalId = setInterval(() => {
-      console.log("INTERVAL");
-      attemptReconnect();
-    }, 5000);
+    if (!intervalId) {
+      intervalId = setInterval(() => {
+        console.log("INTERVAL");
+        attemptReconnect();
+      }, 5000);
+    }
   }
 });
 
@@ -589,7 +601,7 @@ socket.on('update-room-spectators', (spectatorUsernames) => {
 
     if (
       $('#option_notifications_desktop_players_joining_room')[0].checked ===
-        true &&
+      true &&
       oldSpectators.length < spectatorUsernames.length &&
       spectatorUsernames.indexOf(ownUsername) === -1
     ) {
@@ -608,7 +620,7 @@ socket.on('update-room-spectators', (spectatorUsernames) => {
 
 socket.on('joinPassword', (roomId) => {
   (async function getEmail() {
-    const { value: inputPassword } = await swal({
+    const {value: inputPassword} = await swal({
       title: 'Type in the room password',
       type: 'info',
       input: 'text',
