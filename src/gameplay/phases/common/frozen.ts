@@ -2,8 +2,8 @@ import { ButtonSettings, IPhase, Phase } from '../types';
 import { SocketUser } from '../../../sockets/types';
 
 class Frozen implements IPhase {
-  static phase = Phase.frozen;
-  phase = Phase.frozen;
+  static phase = Phase.Frozen;
+  phase = Phase.Frozen;
   showGuns = true;
   private thisRoom: any;
 

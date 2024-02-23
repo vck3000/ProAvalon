@@ -3,15 +3,15 @@ import { Phase } from '../types';
 import { Card } from '../../cards/types';
 
 class Lady {
-  static phase = Phase.lady;
-  phase = Phase.lady;
+  static phase = Phase.Lady;
+  phase = Phase.Lady;
 
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
     this.showGuns = false;
 
-    this.card = Card.ladyOfTheLake;
+    this.card = Card.LadyOfTheLake;
   }
 
   gameMove(socket, buttonPressed, selectedPlayers) {
@@ -105,7 +105,7 @@ class Lady {
       );
 
       // update phase
-      this.thisRoom.changePhase(Phase.pickingTeam);
+      this.thisRoom.changePhase(Phase.PickingTeam);
     }
     // The requester is not the lady holder. Ignore the request.
     else {

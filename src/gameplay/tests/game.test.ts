@@ -112,7 +112,7 @@ describe('Game Engine', () => {
     const spyUsernames = getUsernamesOfAlliance(Alliance.Spy);
 
     // Picking team
-    expect(game.phase).toEqual(Phase.pickingTeam);
+    expect(game.phase).toEqual(Phase.PickingTeam);
 
     const numOfPlayers = NUM_PLAYERS_ON_MISSION[1][game.missionNum - 1];
     const usernamesToPick = [];
@@ -131,14 +131,14 @@ describe('Game Engine', () => {
     game.gameMove(getSocketOfNextTeamPicker(), ['yes', usernamesToPick]);
 
     // Voting team
-    expect(game.phase).toEqual(Phase.votingTeam);
+    expect(game.phase).toEqual(Phase.VotingTeam);
     for (const socket of testSockets) {
       // Everyone approves
       game.gameMove(socket, ['yes', []]);
     }
 
     // Voting mission
-    expect(game.phase).toEqual(Phase.votingMission);
+    expect(game.phase).toEqual(Phase.VotingMission);
     for (const username of usernamesToPick) {
       const socket = getSocketOfUsername(username);
 
@@ -148,13 +148,13 @@ describe('Game Engine', () => {
   };
 
   const playGameToResWin = () => {
-    expect(game.phase).toEqual(Phase.pickingTeam);
+    expect(game.phase).toEqual(Phase.PickingTeam);
     expect(game.missionNum).toEqual(1);
     expect(game.pickNum).toEqual(1);
 
     // 1.1
     game.gameMove(getSocketOfNextTeamPicker(), ['yes', ['0', '1']]);
-    expect(game.phase).toEqual(Phase.votingTeam);
+    expect(game.phase).toEqual(Phase.VotingTeam);
     expect(game.missionNum).toEqual(1);
     expect(game.pickNum).toEqual(1);
 
@@ -162,7 +162,7 @@ describe('Game Engine', () => {
     for (let i = 0; i < game.playersInGame.length; i++) {
       game.gameMove(testSockets[i], ['no', []]);
     }
-    expect(game.phase).toEqual(Phase.pickingTeam);
+    expect(game.phase).toEqual(Phase.PickingTeam);
     expect(game.missionNum).toEqual(1);
     expect(game.pickNum).toEqual(2);
 
@@ -190,7 +190,7 @@ describe('Game Engine', () => {
       playGameToResWin();
 
       // Game over
-      expect(game.phase).toEqual(Phase.finished);
+      expect(game.phase).toEqual(Phase.Finished);
       expect(game.winner).toEqual(Alliance.Resistance);
     });
 
@@ -199,61 +199,61 @@ describe('Game Engine', () => {
       playMission(false);
       playMission(false);
 
-      expect(game.phase).toEqual(Phase.finished);
+      expect(game.phase).toEqual(Phase.Finished);
       expect(game.winner).toEqual(Alliance.Spy);
     });
 
     it('Spy wins via hammer reject', () => {
       for (let i = 0; i < 5; i++) {
-        expect(game.phase).toEqual(Phase.pickingTeam);
+        expect(game.phase).toEqual(Phase.PickingTeam);
         expect(game.missionNum).toEqual(1);
         expect(game.pickNum).toEqual(i + 1);
 
         game.gameMove(getSocketOfNextTeamPicker(), ['yes', ['1', '2']]);
-        expect(game.phase).toEqual(Phase.votingTeam);
+        expect(game.phase).toEqual(Phase.VotingTeam);
 
         for (const socket of testSockets) {
           game.gameMove(socket, ['no', []]);
         }
       }
 
-      expect(game.phase).toEqual(Phase.finished);
+      expect(game.phase).toEqual(Phase.Finished);
       expect(game.winner).toEqual(Alliance.Spy);
     });
   });
 
   describe('6P Avalon game', () => {
     beforeEach(() => {
-      startGame(6, [Role.merlin, Role.percival, Role.assassin, Role.morgana]);
+      startGame(6, [Role.Merlin, Role.Percival, Role.Assassin, Role.Morgana]);
     });
 
     it('Assassin shoots Percival', () => {
       playGameToResWin();
 
-      expect(game.phase).toEqual(Phase.assassination);
+      expect(game.phase).toEqual(Phase.Assassination);
 
       // Shoot percival to give res the win
-      const assassinSocket = getSocketOfRole(Role.assassin);
-      const percyUsername = getUsernameOfRole(Role.percival);
+      const assassinSocket = getSocketOfRole(Role.Assassin);
+      const percyUsername = getUsernameOfRole(Role.Percival);
       game.gameMove(assassinSocket, ['yes', [percyUsername]]);
 
       // Game over
-      expect(game.phase).toEqual(Phase.finished);
+      expect(game.phase).toEqual(Phase.Finished);
       expect(game.winner).toEqual(Alliance.Resistance);
     });
 
     it('Assassin shoots Merlin', () => {
       playGameToResWin();
 
-      expect(game.phase).toEqual(Phase.assassination);
+      expect(game.phase).toEqual(Phase.Assassination);
 
       // Shoot percival to give res the win
-      const assassinSocket = getSocketOfRole(Role.assassin);
-      const percyUsername = getUsernameOfRole(Role.merlin);
+      const assassinSocket = getSocketOfRole(Role.Assassin);
+      const percyUsername = getUsernameOfRole(Role.Merlin);
       game.gameMove(assassinSocket, ['yes', [percyUsername]]);
 
       // Game over
-      expect(game.phase).toEqual(Phase.finished);
+      expect(game.phase).toEqual(Phase.Finished);
       expect(game.winner).toEqual(Alliance.Spy);
     });
   });
@@ -263,11 +263,11 @@ describe('Game Engine', () => {
 
     beforeEach(() => {
       startGame(6, [
-        Role.merlin,
-        Role.percival,
-        Role.assassin,
-        Role.morgana,
-        Card.ladyOfTheLake,
+        Role.Merlin,
+        Role.Percival,
+        Role.Assassin,
+        Role.Morgana,
+        Card.LadyOfTheLake,
       ]);
 
       cardedPeople = new Set();
@@ -275,7 +275,7 @@ describe('Game Engine', () => {
 
     const cardSomeone = (cardHolder = false) => {
       const indexHolder =
-        game.specialCards[Card.ladyOfTheLake].indexOfPlayerHolding;
+        game.specialCards[Card.LadyOfTheLake].indexOfPlayerHolding;
       const usernameHolder =
         game.playersInGame[indexHolder].request.user.username;
       cardedPeople.add(usernameHolder);
@@ -298,7 +298,7 @@ describe('Game Engine', () => {
       // Sanity check that lady is now at the intended target
       {
         const indexHolder =
-          game.specialCards[Card.ladyOfTheLake].indexOfPlayerHolding;
+          game.specialCards[Card.LadyOfTheLake].indexOfPlayerHolding;
         const usernameHolder =
           game.playersInGame[indexHolder].request.user.username;
 
@@ -310,31 +310,31 @@ describe('Game Engine', () => {
       playMission(true);
       playMission(true);
 
-      expect(game.phase).toEqual(Phase.lady);
+      expect(game.phase).toEqual(Phase.Lady);
 
       // Can't card yourself
       cardSomeone(true);
-      expect(game.phase).toEqual(Phase.lady);
+      expect(game.phase).toEqual(Phase.Lady);
 
       // Card someone else
       cardSomeone();
-      expect(game.phase).toEqual(Phase.pickingTeam);
+      expect(game.phase).toEqual(Phase.PickingTeam);
 
       playMission(false);
-      expect(game.phase).toEqual(Phase.lady);
+      expect(game.phase).toEqual(Phase.Lady);
 
       cardSomeone();
-      expect(game.phase).toEqual(Phase.pickingTeam);
+      expect(game.phase).toEqual(Phase.PickingTeam);
 
       playMission(true);
 
       // Shoot percival to give res the win
-      const assassinSocket = getSocketOfRole(Role.assassin);
-      const percyUsername = getUsernameOfRole(Role.merlin);
+      const assassinSocket = getSocketOfRole(Role.Assassin);
+      const percyUsername = getUsernameOfRole(Role.Merlin);
       game.gameMove(assassinSocket, ['yes', [percyUsername]]);
 
       // Game over
-      expect(game.phase).toEqual(Phase.finished);
+      expect(game.phase).toEqual(Phase.Finished);
       expect(game.winner).toEqual(Alliance.Spy);
     });
   });

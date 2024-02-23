@@ -5,8 +5,8 @@ import { SocketUser } from '../../../sockets/types';
 class LadyOfTheLake implements ICard {
   private thisRoom: any;
 
-  static card = Card.ladyOfTheLake;
-  card = Card.ladyOfTheLake;
+  static card = Card.LadyOfTheLake;
+  card = Card.LadyOfTheLake;
 
   lastMissionUsed = 0;
   indexOfPlayerHolding = 0;
@@ -65,7 +65,7 @@ class LadyOfTheLake implements ICard {
       numSuccess < 3 &&
       numFail < 3
     ) {
-      this.thisRoom.changePhase(Phase.lady);
+      this.thisRoom.changePhase(Phase.Lady);
       this.lastMissionUsed = this.thisRoom.missionNum;
 
       return true;

@@ -13,6 +13,8 @@ import {
   socketCallback,
 } from '../../sockets';
 import { RoomCreationType } from '../../../gameplay/roomTypes';
+import { Role } from '../../../gameplay/roles/types';
+import { Card } from '../../../gameplay/cards/types';
 
 function addBots(args: string[], senderSocket: SocketUser, roomId: number) {
   if (!args[1]) {
@@ -115,13 +117,13 @@ export const atestgame: Command = {
 
     // Start the game.
     const options = [
-      Role.merlin,
-      Role.assassin,
-      Role.percival,
-      Role.morgana,
-      'Ref of the Rain',
-      'Sire of the Sea',
-      'Lady of the Lake',
+      Role.Merlin,
+      Role.Assassin,
+      Role.Percival,
+      Role.Morgana,
+      Card.RefOfTheRain,
+      Card.SireOfTheSea,
+      Card.LadyOfTheLake,
     ];
     rooms[nextRoomId].hostTryStartGame(options, 'avalonBot');
   },

@@ -19,8 +19,8 @@ const constants = {
 
   tier1: 'VT',
   tier2: 'Lovers',
-  tier3: Role.percival,
-  tier4: Role.merlin,
+  tier3: Role.Percival,
+  tier4: Role.Merlin,
 } as const;
 
 export default constants;

@@ -39,6 +39,7 @@ import { RoomConfig } from '../gameplay/room';
 import { MatchmakingQueue, QueueEntry } from './matchmakingQueue';
 import { ReadyPrompt, ReadyPromptReplyFromClient } from './readyPrompt';
 import { JoinQueueFilter } from './filters/joinQueueFilter';
+import { Role } from '../gameplay/roles/types';
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
@@ -895,7 +896,7 @@ export const userCommands = {
       if (
         senderSocket.request.user.inRoomId === undefined ||
         rooms[senderSocket.request.user.inRoomId].gameStarted !== true ||
-        rooms[senderSocket.request.user.inRoomId].phase === 'finished'
+        rooms[senderSocket.request.user.inRoomId].phase === 'Finished'
       ) {
         messageToClient = 'You must be at a running table to guess Merlin.';
       } else {
@@ -2230,7 +2231,7 @@ function matchFound(usernames: string[]): void {
         room.playerSitDown(getSocketFromUsername(username));
       }
 
-      room.startGame([Role.merlin, Role.percival, Role.assassin, Role.morgana]);
+      room.startGame([Role.Merlin, Role.Percival, Role.Assassin, Role.Morgana]);
 
       // Need to push them out so that the game treats them as just joining to
       // send data, etc.

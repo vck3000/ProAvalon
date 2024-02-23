@@ -73,7 +73,7 @@ class Game extends Room {
   gameStarted = false;
   finished = false;
   playersInGame = [];
-  phase: Phase = Phase.pickingTeam;
+  phase: Phase = Phase.PickingTeam;
   phaseBeforeFrozen: Phase = this.phase;
   missionHistory = [];
   teamLeader = 0;
@@ -189,7 +189,7 @@ class Game extends Room {
     _.merge(this.specialCards, storedData.specialCards);
 
     this.phaseBeforeFrozen = this.phase;
-    this.changePhase(Phase.frozen);
+    this.changePhase(Phase.Frozen);
   }
 
   playerJoinRoom(socket, inputPassword) {
@@ -215,7 +215,7 @@ class Game extends Room {
 
       // Checks for frozen games. Don't delete a frozen game until all players have rejoined
       if (
-        this.phase === 'frozen' &&
+        this.phase === 'Frozen' &&
         this.socketsOfPlayers.length >= this.playersInGame.length
       ) {
         this.changePhase(this.phaseBeforeFrozen);
@@ -565,7 +565,7 @@ class Game extends Room {
           botSocket.request.user.username,
         );
         const onMissionAndResistance =
-          thisRoom.phase == 'votingMission' &&
+          thisRoom.phase == 'VotingMission' &&
           thisRoom.playersInGame[seatIndex].alliance === Alliance.Resistance;
         // Add a special case so resistance bots can't fail missions.
         if (buttons.red.hidden !== true && onMissionAndResistance === false) {
@@ -995,12 +995,12 @@ class Game extends Room {
         data[i].dateTimerExpires = this.dateTimerExpires;
 
         // if game is finished, reveal everything including roles
-        if (this.phase === Phase.finished) {
+        if (this.phase === Phase.Finished) {
           data[i].see = {};
           data[i].see.spies = getAllSpies(this);
           data[i].see.roles = getRevealedRoles(this);
           data[i].proposedTeam = this.lastProposedTeam;
-        } else if (this.phase === Phase.assassination) {
+        } else if (this.phase === Phase.Assassination) {
           data[i].proposedTeam = this.lastProposedTeam;
         }
       }
@@ -1069,12 +1069,12 @@ class Game extends Room {
     data.publicData = this.getRoleCardPublicGameData();
 
     // if game is finished, reveal everything including roles
-    if (this.phase === 'finished') {
+    if (this.phase === 'Finished') {
       data.see = {};
       data.see.spies = getAllSpies(this);
       data.see.roles = getRevealedRoles(this);
       data.proposedTeam = this.lastProposedTeam;
-    } else if (this.phase === 'assassination') {
+    } else if (this.phase === 'Assassination') {
       data.proposedTeam = this.lastProposedTeam;
     }
 
@@ -1092,10 +1092,10 @@ class Game extends Room {
     if (this.finished === true) {
       return 'Finished';
     }
-    if (this.phase === 'frozen') {
+    if (this.phase === 'Frozen') {
       return 'Frozen';
     }
-    if (this.phase === 'paused') {
+    if (this.phase === 'Paused') {
       return 'Paused';
     }
     if (this.gameStarted === true) {
@@ -1117,7 +1117,7 @@ class Game extends Room {
       throw new Error('Winner var is not Resistance or Spy');
 
     const thisGame = this;
-    this.changePhase(Phase.finished);
+    this.changePhase(Phase.Finished);
 
     if (this.checkRoleCardSpecialMoves() === true) {
       return;
@@ -1125,7 +1125,7 @@ class Game extends Room {
 
     // If after the special card/role check the phase is
     // not finished now, then don't run the rest of the code below
-    if (this.phase !== 'finished') {
+    if (this.phase !== 'Finished') {
       return;
     }
 
@@ -1144,12 +1144,12 @@ class Game extends Room {
     }
 
     // Post results of Merlin guesses
-    if (this.resRoles.indexOf(Role.merlin) !== -1) {
+    if (this.resRoles.indexOf(Role.Merlin) !== -1) {
       const guessesByTarget = reverseMapFromMap(this.merlinguesses);
 
       const incorrectGuessersText = [];
       const usernameOfMerlin = this.playersInGame.find(
-        (player) => player.role === Role.merlin,
+        (player) => player.role === Role.Merlin,
       ).username;
       for (const target in guessesByTarget) {
         if (guessesByTarget.hasOwnProperty(target)) {
@@ -1206,10 +1206,10 @@ class Game extends Room {
 
     let ladyChain;
     let ladyHistoryUsernames;
-    if (this.specialCards && this.specialCards[Card.ladyOfTheLake]) {
-      ladyChain = this.specialCards[Card.ladyOfTheLake].ladyChain;
+    if (this.specialCards && this.specialCards[Card.LadyOfTheLake]) {
+      ladyChain = this.specialCards[Card.LadyOfTheLake].ladyChain;
       ladyHistoryUsernames =
-        this.specialCards[Card.ladyOfTheLake].ladyHistoryUsernames;
+        this.specialCards[Card.LadyOfTheLake].ladyHistoryUsernames;
     }
 
     let refChain;
@@ -1748,7 +1748,7 @@ class Game extends Room {
 
   submitMerlinGuess(guesserUsername, targetUsername) {
     // Check Merlin is in play
-    if (this.resRoles.indexOf(Role.merlin) === -1) {
+    if (this.resRoles.indexOf(Role.Merlin) === -1) {
       return 'This game does not include Merlin.';
     }
 
@@ -1775,7 +1775,7 @@ class Game extends Room {
     );
     if (
       guesserPlayer !== undefined &&
-      [Role.merlin, Role.percival, Role.assassin].indexOf(guesserPlayer.role) !== -1
+      [Role.Merlin, Role.Percival, Role.Assassin].indexOf(guesserPlayer.role) !== -1
     ) {
       return `${guesserPlayer.role} cannot submit a guess.`;
     }
@@ -1789,7 +1789,7 @@ class Game extends Room {
     const rolePrefix = modOrTOString(modUsername);
 
     // if paused, we unpause
-    if (this.phase === 'paused') {
+    if (this.phase === 'Paused') {
       this.sendText(
         `${rolePrefix} ${modUsername} has unpaused the game.`,
         'server-text',
@@ -1805,7 +1805,7 @@ class Game extends Room {
       );
       // store the current phase, change to paused and update.
       this.phaseBeforePause = this.phase;
-      this.changePhase(Phase.paused);
+      this.changePhase(Phase.Paused);
       this.distributeGameData();
     }
   }

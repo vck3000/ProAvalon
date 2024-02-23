@@ -2,8 +2,8 @@ import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
 import { Phase } from '../types';
 
 class Sire {
-  static phase = Phase.sire;
-  phase = Phase.sire;
+  static phase = Phase.Sire;
+  phase = Phase.Sire;
 
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
@@ -131,7 +131,7 @@ class Sire {
       );
 
       // update phase
-      this.thisRoom.changePhase(Phase.pickingTeam);
+      this.thisRoom.changePhase(Phase.PickingTeam);
     }
     // The requester is not the sire holder. Ignore the request.
     else {

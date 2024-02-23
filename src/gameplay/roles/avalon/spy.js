@@ -2,8 +2,8 @@ import { Alliance } from '../../types';
 import { Role } from '../types';
 
 class Spy {
-  static role = Role.spy;
-  role = Role.spy;
+  static role = Role.Spy;
+  role = Role.Spy;
 
   alliance = Alliance.Spy;
 
@@ -21,7 +21,7 @@ class Spy {
 
       for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
         if (this.thisRoom.playersInGame[i].alliance === Alliance.Spy) {
-          if (this.thisRoom.playersInGame[i].role === Role.oberon) {
+          if (this.thisRoom.playersInGame[i].role === Role.Oberon) {
             // don't add oberon
           } else {
             // add the spy

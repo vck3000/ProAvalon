@@ -5,8 +5,8 @@ import { SocketUser } from '../../../sockets/types';
 class RefOfTheRain implements ICard {
   private thisRoom: any;
 
-  static card = Card.refOfTheRain;
-  card = Card.refOfTheRain;
+  static card = Card.RefOfTheRain;
+  card = Card.RefOfTheRain;
 
   lastMissionUsed = 0;
   indexOfPlayerHolding = 0;
@@ -74,7 +74,7 @@ class RefOfTheRain implements ICard {
       numSuccess < 3 &&
       numFail < 3
     ) {
-      this.thisRoom.changePhase(Phase.ref);
+      this.thisRoom.changePhase(Phase.Ref);
       this.lastMissionUsed = this.thisRoom.missionNum;
 
       return true;

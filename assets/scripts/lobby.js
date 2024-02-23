@@ -326,7 +326,7 @@ function drawVotes(votes) {
 }
 
 function assassinationSetup(phase) {
-  if (phase === 'assassination') {
+  if (phase === 'Assassination') {
     const divs = document.querySelectorAll('#mainRoomBox div');
     // add the event listeners for button press
 

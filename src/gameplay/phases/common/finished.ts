@@ -3,8 +3,8 @@ import { SocketUser } from '../../../sockets/types';
 import { Alliance } from '../../types';
 
 class Finished implements IPhase {
-  static phase = Phase.finished;
-  phase = Phase.finished;
+  static phase = Phase.Finished;
+  phase = Phase.Finished;
   showGuns = true;
   private thisRoom: any;
 

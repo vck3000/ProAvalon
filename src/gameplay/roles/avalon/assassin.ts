@@ -7,11 +7,11 @@ class Assassin implements IRole {
   room: Game;
 
   // TODO pretty ugly...
-  static role = Role.assassin;
-  role = Role.assassin;
+  static role = Role.Assassin;
+  role = Role.Assassin;
 
   alliance = Alliance.Spy;
-  specialPhase = Phase.assassination;
+  specialPhase = Phase.Assassination;
 
   description =
     'If the resistance win 3 missions, the Assassin can shoot one person for Merlin, or two people for Tristan and Isolde. If they are correct, the spies win!';
@@ -31,7 +31,7 @@ class Assassin implements IRole {
 
       for (let i = 0; i < this.room.playersInGame.length; i++) {
         if (this.room.playersInGame[i].alliance === Alliance.Spy) {
-          if (this.room.playersInGame[i].role === Role.oberon) {
+          if (this.room.playersInGame[i].role === Role.Oberon) {
             // don't add oberon
           } else {
             // add the spy
@@ -49,7 +49,7 @@ class Assassin implements IRole {
     // Check for assassination mode and enter it if it is the right time
     if (this.playerShot === '') {
       // If we have the right conditions, we go into assassination phase
-      if (this.room.phase === 'finished') {
+      if (this.room.phase === 'Finished') {
         // Get the number of successes:
         let numOfSuccesses = 0;
 
@@ -66,14 +66,14 @@ class Assassin implements IRole {
         let isoExists = false;
 
         for (let i = 0; i < this.room.playersInGame.length; i++) {
-          if (this.room.playersInGame[i].role === Role.merlin) {
+          if (this.room.playersInGame[i].role === Role.Merlin) {
             merlinExists = true;
           }
-          if (this.room.playersInGame[i].role === Role.tristan) {
+          if (this.room.playersInGame[i].role === Role.Tristan) {
             tristExists = true;
           }
 
-          if (this.room.playersInGame[i].role === Role.isolde) {
+          if (this.room.playersInGame[i].role === Role.Isolde) {
             isoExists = true;
           }
         }

@@ -23,7 +23,7 @@ export const mtogglepause: Command = {
       return;
     }
 
-    if (currentRoom.phase == 'finished') {
+    if (currentRoom.phase == 'Finished') {
       senderSocket.emit('messageCommandReturnStr', {
         message: 'Game has finished.',
         classStr: 'server-text',
