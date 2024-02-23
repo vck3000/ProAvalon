@@ -116,7 +116,7 @@ export const atestgame: Command = {
     // Start the game.
     const options = [
       Role.merlin,
-      'Assassin',
+      Role.assassin,
       'Percival',
       'Morgana',
       'Ref of the Rain',

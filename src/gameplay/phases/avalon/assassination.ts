@@ -12,7 +12,7 @@ class Assassination implements IPhase {
   phase = Phase.assassination;
   private thisRoom: any;
   // The role that is the owner of this phase
-  private role = 'Assassin';
+  private role = Role.assassin;
   finishedShot = false;
 
   constructor(thisRoom: any) {

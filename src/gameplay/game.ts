@@ -1775,7 +1775,7 @@ class Game extends Room {
     );
     if (
       guesserPlayer !== undefined &&
-      [Role.merlin, 'Percival', 'Assassin'].indexOf(guesserPlayer.role) !== -1
+      [Role.merlin, 'Percival', Role.assassin].indexOf(guesserPlayer.role) !== -1
     ) {
       return `${guesserPlayer.role} cannot submit a guess.`;
     }

@@ -119,7 +119,7 @@ function checkBotCapabilities(game, capabilities) {
 
     return game.options.every(
       (option) =>
-        ['Assassin', Role.merlin].indexOf(option) !== -1 ||
+        [Role.assassin, Role.merlin].indexOf(option) !== -1 ||
         capability.roles.indexOf(option) !== -1 ||
         capability.cards.indexOf(option) !== -1,
     );
@@ -184,7 +184,7 @@ export class APIBotSocket {
     const apiData = {
       numPlayers: gameData.playerUsernamesOrderedReversed.length,
       roles: gameData.roles.filter(
-        (role) => role != 'Assassin' && role != Role.merlin,
+        (role) => role != Role.assassin && role != Role.merlin,
       ), // TODO: Is this needed?
       cards: gameData.cards,
       teamLeader: gameData.teamLeaderReversed,

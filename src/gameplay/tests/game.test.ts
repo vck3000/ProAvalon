@@ -224,7 +224,7 @@ describe('Game Engine', () => {
 
   describe('6P Avalon game', () => {
     beforeEach(() => {
-      startGame(6, [Role.merlin, 'Percival', 'Assassin', 'Morgana']);
+      startGame(6, [Role.merlin, 'Percival', Role.assassin, 'Morgana']);
     });
 
     it('Assassin shoots Percival', () => {
@@ -233,7 +233,7 @@ describe('Game Engine', () => {
       expect(game.phase).toEqual(Phase.assassination);
 
       // Shoot percival to give res the win
-      const assassinSocket = getSocketOfRole('Assassin');
+      const assassinSocket = getSocketOfRole(Role.assassin);
       const percyUsername = getUsernameOfRole('Percival');
       game.gameMove(assassinSocket, ['yes', [percyUsername]]);
 
@@ -248,7 +248,7 @@ describe('Game Engine', () => {
       expect(game.phase).toEqual(Phase.assassination);
 
       // Shoot percival to give res the win
-      const assassinSocket = getSocketOfRole('Assassin');
+      const assassinSocket = getSocketOfRole(Role.assassin);
       const percyUsername = getUsernameOfRole(Role.merlin);
       game.gameMove(assassinSocket, ['yes', [percyUsername]]);
 
@@ -265,7 +265,7 @@ describe('Game Engine', () => {
       startGame(6, [
         Role.merlin,
         'Percival',
-        'Assassin',
+        Role.assassin,
         'Morgana',
         Card.ladyOfTheLake,
       ]);
@@ -329,7 +329,7 @@ describe('Game Engine', () => {
       playMission(true);
 
       // Shoot percival to give res the win
-      const assassinSocket = getSocketOfRole('Assassin');
+      const assassinSocket = getSocketOfRole(Role.assassin);
       const percyUsername = getUsernameOfRole(Role.merlin);
       game.gameMove(assassinSocket, ['yes', [percyUsername]]);
 
