@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Phase } from '../gameplay/phases/types';
 
 export const enabledBots = [];
 enabledBots.push({
@@ -276,7 +277,7 @@ export class APIBotSocket {
       1000,
     );
 
-    callback(game.phase == 'finished');
+    callback(game.phase === Phase.Finished);
   }
 }
 

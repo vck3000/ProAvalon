@@ -1,5 +1,6 @@
 import { Command } from '../types';
 import { rooms } from '../../sockets';
+import { Phase } from '../../../gameplay/phases/types';
 
 export const mtogglepause: Command = {
   command: 'mtogglepause',
@@ -23,7 +24,7 @@ export const mtogglepause: Command = {
       return;
     }
 
-    if (currentRoom.phase == 'Finished') {
+    if (currentRoom.phase == Phase.Finished) {
       senderSocket.emit('messageCommandReturnStr', {
         message: 'Game has finished.',
         classStr: 'server-text',

@@ -49,7 +49,7 @@ class Assassin implements IRole {
     // Check for assassination mode and enter it if it is the right time
     if (this.playerShot === '') {
       // If we have the right conditions, we go into assassination phase
-      if (this.room.phase === 'Finished') {
+      if (this.room.phase === Phase.Finished) {
         // Get the number of successes:
         let numOfSuccesses = 0;
 

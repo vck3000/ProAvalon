@@ -40,6 +40,7 @@ import { MatchmakingQueue, QueueEntry } from './matchmakingQueue';
 import { ReadyPrompt, ReadyPromptReplyFromClient } from './readyPrompt';
 import { JoinQueueFilter } from './filters/joinQueueFilter';
 import { Role } from '../gameplay/roles/types';
+import { Phase } from '../gameplay/phases/types';
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
@@ -896,7 +897,7 @@ export const userCommands = {
       if (
         senderSocket.request.user.inRoomId === undefined ||
         rooms[senderSocket.request.user.inRoomId].gameStarted !== true ||
-        rooms[senderSocket.request.user.inRoomId].phase === 'Finished'
+        rooms[senderSocket.request.user.inRoomId].phase === Phase.Finished
       ) {
         messageToClient = 'You must be at a running table to guess Merlin.';
       } else {

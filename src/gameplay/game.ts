@@ -565,7 +565,7 @@ class Game extends Room {
           botSocket.request.user.username,
         );
         const onMissionAndResistance =
-          thisRoom.phase == 'VotingMission' &&
+          thisRoom.phase == Phase.VotingMission &&
           thisRoom.playersInGame[seatIndex].alliance === Alliance.Resistance;
         // Add a special case so resistance bots can't fail missions.
         if (buttons.red.hidden !== true && onMissionAndResistance === false) {
@@ -1069,12 +1069,12 @@ class Game extends Room {
     data.publicData = this.getRoleCardPublicGameData();
 
     // if game is finished, reveal everything including roles
-    if (this.phase === 'Finished') {
+    if (this.phase === Phase.Finished) {
       data.see = {};
       data.see.spies = getAllSpies(this);
       data.see.roles = getRevealedRoles(this);
       data.proposedTeam = this.lastProposedTeam;
-    } else if (this.phase === 'Assassination') {
+    } else if (this.phase === Phase.Assassination) {
       data.proposedTeam = this.lastProposedTeam;
     }
 
@@ -1090,7 +1090,7 @@ class Game extends Room {
 
   getStatus() {
     if (this.finished === true) {
-      return 'Finished';
+      return Phase.Finished;
     }
     if (this.phase === 'Frozen') {
       return 'Frozen';
@@ -1125,7 +1125,7 @@ class Game extends Room {
 
     // If after the special card/role check the phase is
     // not finished now, then don't run the rest of the code below
-    if (this.phase !== 'Finished') {
+    if (this.phase !== Phase.Finished) {
       return;
     }
 
@@ -1775,7 +1775,9 @@ class Game extends Room {
     );
     if (
       guesserPlayer !== undefined &&
-      [Role.Merlin, Role.Percival, Role.Assassin].indexOf(guesserPlayer.role) !== -1
+      [Role.Merlin, Role.Percival, Role.Assassin].indexOf(
+        guesserPlayer.role,
+      ) !== -1
     ) {
       return `${guesserPlayer.role} cannot submit a guess.`;
     }
@@ -2126,7 +2128,7 @@ function getAllSpies(thisRoom) {
 }
 
 function getRevealedRoles(thisRoom) {
-  if (thisRoom.gameStarted === true && thisRoom.phase === 'finished') {
+  if (thisRoom.gameStarted === true && thisRoom.phase === Phase.Finished) {
     const array = [];
     for (let i = 0; i < thisRoom.playersInGame.length; i++) {
       array.push(thisRoom.playersInGame[i].role);

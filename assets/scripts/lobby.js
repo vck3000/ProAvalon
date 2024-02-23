@@ -325,34 +325,6 @@ function drawVotes(votes) {
   }
 }
 
-function assassinationSetup(phase) {
-  if (phase === 'Assassination') {
-    const divs = document.querySelectorAll('#mainRoomBox div');
-    // add the event listeners for button press
-
-    let spies;
-    if (gameData && gameData.see) {
-      spies = gameData.see.spies;
-    }
-
-    for (let i = 0; i < divs.length; i++) {
-      // if the player is not a "seeable" spy, then make them selectable
-      // console.log("spies: ");
-      // console.log(spies);
-      // console.log("Username of player: " + divs[i].getAttribute("usernameofplayer"));
-      if (spies.indexOf(divs[i].getAttribute('usernameofplayer')) === -1) {
-        divs[i].addEventListener('click', function () {
-          // console.log("avatar pressed");
-          // toggle the highlight class
-          this.classList.toggle('highlight-avatar');
-          // change the pick team button to enabled/disabled
-          enableDisableButtons();
-        });
-      }
-    }
-  }
-}
-
 function enableSelectAvatars(prohibitedIndexesToPicks) {
   const divs = document.querySelectorAll('#mainRoomBox div');
   // add the event listeners for button press
@@ -1031,7 +1003,7 @@ function strOfAvatar(playerData, alliance) {
   ctx.font = `${$('#option_display_font_size_text').val()}px sans-serif`;
 
   // can improve this code here
-  if (gameStarted === true && gameData.phase === 'finished') {
+  if (gameStarted === true && gameData.phase === 'Finished') {
     var roleWid =
       ctx.measureText(
         gameData.see.roles[getIndexFromUsername(playerData.username)]
