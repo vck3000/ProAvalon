@@ -5,8 +5,6 @@ class Merlin {
   static role = Role.merlin;
   role = Role.merlin;
 
-  static alliance = Alliance.Resistance;
-
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 

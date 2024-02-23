@@ -2,13 +2,12 @@ import { Alliance } from '../../types';
 import { Role } from '../types';
 
 class Percival {
-  static role = 'Percival';
-  static alliance = Alliance.Resistance;
+  static role = Role.percival;
 
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
-    this.role = 'Percival';
+    this.role = Role.percival;
     this.alliance = Alliance.Resistance;
 
     this.description = 'Knows the identity of Merlin and Morgana.';

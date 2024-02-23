@@ -117,7 +117,7 @@ export const atestgame: Command = {
     const options = [
       Role.merlin,
       Role.assassin,
-      'Percival',
+      Role.percival,
       'Morgana',
       'Ref of the Rain',
       'Sire of the Sea',

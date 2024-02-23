@@ -19,7 +19,7 @@ const constants = {
 
   tier1: 'VT',
   tier2: 'Lovers',
-  tier3: 'Percival',
+  tier3: Role.percival,
   tier4: Role.merlin,
 } as const;
 
