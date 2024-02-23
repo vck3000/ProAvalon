@@ -1,12 +1,12 @@
 import { Alliance } from '../../types';
 
 class Oberon {
-  static role = 'Oberon';
+  static role = Role.oberon;
 
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
-    this.role = 'Oberon';
+    this.role = Role.oberon;
     this.alliance = Alliance.Spy;
 
     this.description = 'Oberon and Spies do not know each other.';
@@ -20,7 +20,7 @@ class Oberon {
       const array = [];
 
       for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
-        if (this.thisRoom.playersInGame[i].role === 'Oberon') {
+        if (this.thisRoom.playersInGame[i].role === Role.oberon) {
           array.push(this.thisRoom.playersInGame[i].username);
           break;
         }

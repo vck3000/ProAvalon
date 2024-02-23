@@ -5,6 +5,7 @@ import { IRole, Role } from '../types';
 
 class Assassin implements IRole {
   room: Game;
+
   // TODO pretty ugly...
   static role = Role.assassin;
   role = Role.assassin;
@@ -30,7 +31,7 @@ class Assassin implements IRole {
 
       for (let i = 0; i < this.room.playersInGame.length; i++) {
         if (this.room.playersInGame[i].alliance === Alliance.Spy) {
-          if (this.room.playersInGame[i].role === 'Oberon') {
+          if (this.room.playersInGame[i].role === Role.oberon) {
             // don't add oberon
           } else {
             // add the spy
@@ -68,11 +69,11 @@ class Assassin implements IRole {
           if (this.room.playersInGame[i].role === Role.merlin) {
             merlinExists = true;
           }
-          if (this.room.playersInGame[i].role === 'Tristan') {
+          if (this.room.playersInGame[i].role === Role.tristan) {
             tristExists = true;
           }
 
-          if (this.room.playersInGame[i].role === 'Isolde') {
+          if (this.room.playersInGame[i].role === Role.isolde) {
             isoExists = true;
           }
         }

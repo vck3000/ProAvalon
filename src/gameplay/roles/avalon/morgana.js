@@ -22,7 +22,7 @@ class Morgana {
 
       for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
         if (this.thisRoom.playersInGame[i].alliance === Alliance.Spy) {
-          if (this.thisRoom.playersInGame[i].role === 'Oberon') {
+          if (this.thisRoom.playersInGame[i].role === Role.oberon) {
             // don't add oberon
           } else {
             // add the spy

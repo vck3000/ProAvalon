@@ -1,12 +1,12 @@
 import { Alliance } from '../../types';
 
 class Resistance {
-  static role = 'Resistance';
+  static role = Role.resistance;
 
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
-    this.role = 'Resistance';
+    this.role = Role.resistance;
     this.alliance = Alliance.Resistance;
 
     this.description = 'A standard Resistance member.';
