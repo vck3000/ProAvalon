@@ -1,4 +1,5 @@
 function redButtonFunction() {
+  console.log('red');
   // if the button isn't disabled
   if (
     document.querySelector('#red-button').classList.contains('disabled') ===
@@ -46,8 +47,8 @@ function redButtonFunction() {
         $('#kickModalContent')[0].innerHTML = str;
       }
     } else if (
-      gameData.phase === 'votingTeam' ||
-      gameData.phase === 'votingMission'
+      gameData.phase === 'VotingTeam' ||
+      gameData.phase === 'VotingMission'
     ) {
       socket.emit('gameMove', ['no', []]);
     }
@@ -76,8 +77,8 @@ function greenButtonFunction() {
 
       socket.emit('startGame', startGameData);
     } else if (
-      gameData.phase === 'votingTeam' ||
-      gameData.phase === 'votingMission'
+      gameData.phase === 'VotingTeam' ||
+      gameData.phase === 'VotingMission'
     ) {
       socket.emit('gameMove', ['yes', []]);
     } else {
