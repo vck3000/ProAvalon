@@ -1,9 +1,9 @@
 import { SocketUser } from '../../sockets/types';
 
 export enum Card {
-  ladyOfTheLake = 'Lady of the Lake',
-  refOfTheRain = 'Ref of the Rain',
-  sireOfTheSea = 'Sire of the Sea',
+  LadyOfTheLake = 'Lady of the Lake',
+  RefOfTheRain = 'Ref of the Rain',
+  SireOfTheSea = 'Sire of the Sea',
 }
 
 export interface ICard {

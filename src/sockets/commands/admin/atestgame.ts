@@ -121,9 +121,9 @@ export const atestgame: Command = {
       Role.Assassin,
       Role.Percival,
       Role.Morgana,
-      Card.refOfTheRain,
-      Card.sireOfTheSea,
-      Card.ladyOfTheLake,
+      Card.RefOfTheRain,
+      Card.SireOfTheSea,
+      Card.LadyOfTheLake,
     ];
     rooms[nextRoomId].hostTryStartGame(options, 'avalonBot');
   },

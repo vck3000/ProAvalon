@@ -5,8 +5,8 @@ import { SocketUser } from '../../../sockets/types';
 class RefOfTheRain implements ICard {
   private thisRoom: any;
 
-  static card = Card.refOfTheRain;
-  card = Card.refOfTheRain;
+  static card = Card.RefOfTheRain;
+  card = Card.RefOfTheRain;
 
   lastMissionUsed = 0;
   indexOfPlayerHolding = 0;

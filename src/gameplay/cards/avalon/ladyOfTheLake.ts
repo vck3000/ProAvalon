@@ -5,8 +5,8 @@ import { SocketUser } from '../../../sockets/types';
 class LadyOfTheLake implements ICard {
   private thisRoom: any;
 
-  static card = Card.ladyOfTheLake;
-  card = Card.ladyOfTheLake;
+  static card = Card.LadyOfTheLake;
+  card = Card.LadyOfTheLake;
 
   lastMissionUsed = 0;
   indexOfPlayerHolding = 0;
