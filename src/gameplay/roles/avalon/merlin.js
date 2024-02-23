@@ -2,8 +2,8 @@ import { Alliance } from '../../types';
 import { Role } from '../types';
 
 class Merlin {
-  static role = Role.merlin;
-  role = Role.merlin;
+  static role = Role.Merlin;
+  role = Role.Merlin;
 
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
@@ -22,7 +22,7 @@ class Merlin {
 
       for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
         if (this.thisRoom.playersInGame[i].alliance === Alliance.Spy) {
-          if (this.thisRoom.playersInGame[i].role === Role.mordred) {
+          if (this.thisRoom.playersInGame[i].role === Role.Mordred) {
             // don't add mordred for Merlin to see
           } else {
             // add the spy

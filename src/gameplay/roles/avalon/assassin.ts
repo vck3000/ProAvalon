@@ -7,8 +7,8 @@ class Assassin implements IRole {
   room: Game;
 
   // TODO pretty ugly...
-  static role = Role.assassin;
-  role = Role.assassin;
+  static role = Role.Assassin;
+  role = Role.Assassin;
 
   alliance = Alliance.Spy;
   specialPhase = Phase.Assassination;
@@ -31,7 +31,7 @@ class Assassin implements IRole {
 
       for (let i = 0; i < this.room.playersInGame.length; i++) {
         if (this.room.playersInGame[i].alliance === Alliance.Spy) {
-          if (this.room.playersInGame[i].role === Role.oberon) {
+          if (this.room.playersInGame[i].role === Role.Oberon) {
             // don't add oberon
           } else {
             // add the spy
@@ -66,14 +66,14 @@ class Assassin implements IRole {
         let isoExists = false;
 
         for (let i = 0; i < this.room.playersInGame.length; i++) {
-          if (this.room.playersInGame[i].role === Role.merlin) {
+          if (this.room.playersInGame[i].role === Role.Merlin) {
             merlinExists = true;
           }
-          if (this.room.playersInGame[i].role === Role.tristan) {
+          if (this.room.playersInGame[i].role === Role.Tristan) {
             tristExists = true;
           }
 
-          if (this.room.playersInGame[i].role === Role.isolde) {
+          if (this.room.playersInGame[i].role === Role.Isolde) {
             isoExists = true;
           }
         }

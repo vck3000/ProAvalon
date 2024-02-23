@@ -551,7 +551,7 @@ class Room {
     const cardDescriptions = [];
     const cardPriorities = [];
 
-    const skipRoles = [Role.resistance, Role.spy];
+    const skipRoles = [Role.Resistance, Role.Spy];
 
     for (let key in this.specialRoles) {
       if (this.specialRoles.hasOwnProperty(key) === true) {

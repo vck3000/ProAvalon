@@ -1144,12 +1144,12 @@ class Game extends Room {
     }
 
     // Post results of Merlin guesses
-    if (this.resRoles.indexOf(Role.merlin) !== -1) {
+    if (this.resRoles.indexOf(Role.Merlin) !== -1) {
       const guessesByTarget = reverseMapFromMap(this.merlinguesses);
 
       const incorrectGuessersText = [];
       const usernameOfMerlin = this.playersInGame.find(
-        (player) => player.role === Role.merlin,
+        (player) => player.role === Role.Merlin,
       ).username;
       for (const target in guessesByTarget) {
         if (guessesByTarget.hasOwnProperty(target)) {
@@ -1748,7 +1748,7 @@ class Game extends Room {
 
   submitMerlinGuess(guesserUsername, targetUsername) {
     // Check Merlin is in play
-    if (this.resRoles.indexOf(Role.merlin) === -1) {
+    if (this.resRoles.indexOf(Role.Merlin) === -1) {
       return 'This game does not include Merlin.';
     }
 
@@ -1775,7 +1775,7 @@ class Game extends Room {
     );
     if (
       guesserPlayer !== undefined &&
-      [Role.merlin, Role.percival, Role.assassin].indexOf(guesserPlayer.role) !== -1
+      [Role.Merlin, Role.Percival, Role.Assassin].indexOf(guesserPlayer.role) !== -1
     ) {
       return `${guesserPlayer.role} cannot submit a guess.`;
     }

@@ -224,7 +224,7 @@ describe('Game Engine', () => {
 
   describe('6P Avalon game', () => {
     beforeEach(() => {
-      startGame(6, [Role.merlin, Role.percival, Role.assassin, Role.morgana]);
+      startGame(6, [Role.Merlin, Role.Percival, Role.Assassin, Role.Morgana]);
     });
 
     it('Assassin shoots Percival', () => {
@@ -233,8 +233,8 @@ describe('Game Engine', () => {
       expect(game.phase).toEqual(Phase.Assassination);
 
       // Shoot percival to give res the win
-      const assassinSocket = getSocketOfRole(Role.assassin);
-      const percyUsername = getUsernameOfRole(Role.percival);
+      const assassinSocket = getSocketOfRole(Role.Assassin);
+      const percyUsername = getUsernameOfRole(Role.Percival);
       game.gameMove(assassinSocket, ['yes', [percyUsername]]);
 
       // Game over
@@ -248,8 +248,8 @@ describe('Game Engine', () => {
       expect(game.phase).toEqual(Phase.Assassination);
 
       // Shoot percival to give res the win
-      const assassinSocket = getSocketOfRole(Role.assassin);
-      const percyUsername = getUsernameOfRole(Role.merlin);
+      const assassinSocket = getSocketOfRole(Role.Assassin);
+      const percyUsername = getUsernameOfRole(Role.Merlin);
       game.gameMove(assassinSocket, ['yes', [percyUsername]]);
 
       // Game over
@@ -263,10 +263,10 @@ describe('Game Engine', () => {
 
     beforeEach(() => {
       startGame(6, [
-        Role.merlin,
-        Role.percival,
-        Role.assassin,
-        Role.morgana,
+        Role.Merlin,
+        Role.Percival,
+        Role.Assassin,
+        Role.Morgana,
         Card.LadyOfTheLake,
       ]);
 
@@ -329,8 +329,8 @@ describe('Game Engine', () => {
       playMission(true);
 
       // Shoot percival to give res the win
-      const assassinSocket = getSocketOfRole(Role.assassin);
-      const percyUsername = getUsernameOfRole(Role.merlin);
+      const assassinSocket = getSocketOfRole(Role.Assassin);
+      const percyUsername = getUsernameOfRole(Role.Merlin);
       game.gameMove(assassinSocket, ['yes', [percyUsername]]);
 
       // Game over
