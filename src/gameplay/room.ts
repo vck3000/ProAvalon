@@ -8,6 +8,7 @@ import { avalonRoles } from './roles/roles';
 import { avalonCards } from './cards/cards';
 import { avalonPhases, commonPhases } from './phases/phases';
 import { Role } from './roles/types';
+import { Phase } from './phases/types';
 
 export class RoomConfig {
   host: string;
@@ -267,7 +268,7 @@ class Room {
     }
 
     // Destroy room if there's no one in it anymore
-    if (this.allSockets.length === 0 && this.phase !== 'frozen') {
+    if (this.allSockets.length === 0 && this.phase !== Phase.Frozen) {
       console.log(`Room: ${this.roomId} is empty, attempting to destroy...`);
       this.destroyRoom = true;
     }

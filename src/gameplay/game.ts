@@ -215,7 +215,7 @@ class Game extends Room {
 
       // Checks for frozen games. Don't delete a frozen game until all players have rejoined
       if (
-        this.phase === 'Frozen' &&
+        this.phase === Phase.Frozen &&
         this.socketsOfPlayers.length >= this.playersInGame.length
       ) {
         this.changePhase(this.phaseBeforeFrozen);
@@ -1092,10 +1092,10 @@ class Game extends Room {
     if (this.finished === true) {
       return Phase.Finished;
     }
-    if (this.phase === 'Frozen') {
+    if (this.phase === Phase.Frozen) {
       return 'Frozen';
     }
-    if (this.phase === 'Paused') {
+    if (this.phase === Phase.Paused) {
       return 'Paused';
     }
     if (this.gameStarted === true) {
@@ -1791,7 +1791,7 @@ class Game extends Room {
     const rolePrefix = modOrTOString(modUsername);
 
     // if paused, we unpause
-    if (this.phase === 'Paused') {
+    if (this.phase === Phase.Paused) {
       this.sendText(
         `${rolePrefix} ${modUsername} has unpaused the game.`,
         'server-text',
