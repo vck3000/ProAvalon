@@ -2,19 +2,19 @@ import Game from '../game';
 import { See } from '../types';
 
 export enum Role {
-  resistance = 'Resistance',
-  spy = 'Spy',
+  Resistance = 'Resistance',
+  Spy = 'Spy',
 
-  merlin = 'Merlin',
-  assassin = 'Assassin',
-  percival = 'Percival',
-  morgana = 'Morgana',
+  Merlin = 'Merlin',
+  Assassin = 'Assassin',
+  Percival = 'Percival',
+  Morgana = 'Morgana',
 
-  mordred = 'Mordred',
-  oberon = 'Oberon',
+  Mordred = 'Mordred',
+  Oberon = 'Oberon',
 
-  tristan = 'Tristan',
-  isolde = 'Isolde',
+  Tristan = 'Tristan',
+  Isolde = 'Isolde',
 }
 
 export interface IRole {

@@ -2,12 +2,12 @@ import { Alliance } from '../../types';
 import { Role } from '../types';
 
 class Mordred {
-  static role = Role.mordred;
+  static role = Role.Mordred;
 
   constructor(thisRoom) {
     this.thisRoom = thisRoom;
 
-    this.role = Role.mordred;
+    this.role = Role.Mordred;
     this.alliance = Alliance.Spy;
 
     this.description = 'A spy who is invisible to Merlin.';
@@ -22,7 +22,7 @@ class Mordred {
 
       for (let i = 0; i < this.thisRoom.playersInGame.length; i++) {
         if (this.thisRoom.playersInGame[i].alliance === Alliance.Spy) {
-          if (this.thisRoom.playersInGame[i].role === Role.oberon) {
+          if (this.thisRoom.playersInGame[i].role === Role.Oberon) {
             // don't add oberon
           } else {
             // add the spy

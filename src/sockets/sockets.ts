@@ -2230,7 +2230,7 @@ function matchFound(usernames: string[]): void {
         room.playerSitDown(getSocketFromUsername(username));
       }
 
-      room.startGame([Role.merlin, Role.percival, Role.assassin, Role.morgana]);
+      room.startGame([Role.Merlin, Role.Percival, Role.Assassin, Role.Morgana]);
 
       // Need to push them out so that the game treats them as just joining to
       // send data, etc.
