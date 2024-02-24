@@ -174,8 +174,9 @@ class Assassination implements IPhase {
             }
 
             // set the player shot in the assassin role object
-            this.thisRoom.specialRoles.assassin.playerShot = selectedPlayers[0];
-            this.thisRoom.specialRoles.assassin.playerShot2 =
+            this.thisRoom.specialRoles[Assassin.role].playerShot =
+              selectedPlayers[0];
+            this.thisRoom.specialRoles[Assassin.role].playerShot2 =
               selectedPlayers[1];
 
             const correctComboShot = false;
