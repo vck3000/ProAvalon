@@ -243,6 +243,8 @@ socket.on('serverRestartWarning', () => {
 socket.on('server-restarting', () => {
   autoReconnect = false;
   serverRestarting = true;
+  socket.disconnect();
+  socket.destroy();
   Swal({
     title: 'Server restarting',
     html: 'The server is restarting for an update.<br>Sit tight!',
