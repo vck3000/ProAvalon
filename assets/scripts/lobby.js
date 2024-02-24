@@ -31,12 +31,21 @@ setInterval(() => {
 }, 1000);
 
 setInterval(() => {
+  const emptyTime = '--:--';
 
   const setGameTimer = (string) => {
-    $('.gameTimer')[0].innerText = string;
-  }
+    const gameTimer = $('.gameTimer')[0];
+    gameTimer.innerText = string;
 
-  const emptyTime = '--:--';
+    if (string !== emptyTime) {
+      const secs = parseInt(string.slice(-2), 10);
+      if (secs < 30) {
+        gameTimer.style.backgroundColor = 'rgba(255,0,0,0.8)';
+      } else {
+        gameTimer.style.backgroundColor = '';
+      }
+    }
+  }
 
   if (gameData && gameData.dateTimerExpires) {
     const dateTimerExpires = new Date(gameData.dateTimerExpires)
