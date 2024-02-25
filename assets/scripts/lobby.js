@@ -38,8 +38,9 @@ setInterval(() => {
     gameTimer.innerText = string;
 
     if (string !== emptyTime) {
+      const mins = parseInt(string.slice(0, 2), 10);
       const secs = parseInt(string.slice(-2), 10);
-      if (secs < 30) {
+      if (mins === 0 && secs < 30) {
         gameTimer.style.backgroundColor = 'rgba(255,0,0,0.8)';
       } else {
         gameTimer.style.backgroundColor = '';
