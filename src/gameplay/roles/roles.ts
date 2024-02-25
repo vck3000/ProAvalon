@@ -8,9 +8,11 @@ import Tristan from './avalon/tristan';
 import Resistance from './avalon/resistance';
 import Spy from './avalon/spy';
 import Mordred from './avalon/mordred';
-import { Role } from './types';
+import { IRole, Role } from './types';
+import { Alliance } from '../types';
 
-export const avalonRoles = {
+type Class<I, Args extends any[] = any[]> = new (...args: Args) => I;
+export const avalonRoles: Record<string, Class<IRole>> = {
   [Resistance.role]: Resistance,
   [Spy.role]: Spy,
 
@@ -30,3 +32,18 @@ export const rolesThatCantGuessMerlin = [
   Role.Percival,
   Role.Assassin,
 ];
+
+export const rolesToAlliances = Object.entries(avalonRoles).reduce<
+  Record<string, string>
+>((accumulator, [roleStr, role]) => {
+  accumulator[roleStr] = new role(undefined).alliance;
+  return accumulator;
+}, {});
+
+export const resRoles = Object.values(avalonRoles)
+  .filter((role) => new role(undefined).alliance === Alliance.Resistance)
+  .map((role) => new role(undefined).role);
+
+export const spyRoles = Object.values(avalonRoles)
+  .filter((role) => new role(undefined).alliance === Alliance.Spy)
+  .map((role) => new role(undefined).role);

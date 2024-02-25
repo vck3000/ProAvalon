@@ -225,23 +225,15 @@ var getDatesString = function(time) {
       window.location.href = '' + $('#searchInput')[0].value;
     }
   });
-
 </script>
-
 
 <% if(userData && userData.username){ %>
 
 <script>
   var userData;
-
+  var roleAlliances;
 
   $(document).ready(function() {
-
-    // $(".avatarImg").on("hover", function(){
-    //     $(".avatarImg").attr("src", userData.avatarImgSpy);
-    // });
-
-
     $('.avatarImg').hover(
       function() {
         var str = '';
@@ -278,43 +270,24 @@ var getDatesString = function(time) {
       $('[data-toggle="tooltip"]').tooltip();
     });
 
-
     xmlhttp = new XMLHttpRequest();
     xmlhttp.open('GET', '/ajax/profile/getProfileData/' + $('#profileUsername')[0].innerHTML, true);
 
-    // console.log("/ajax/profile/getProfileData/" + $("#profileUsername")[0].innerHTML);
-
-
     xmlhttp.onreadystatechange = function() {
       if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-        userData = JSON.parse(xmlhttp.responseText);
-        // console.log(userData);
+        let response = JSON.parse(xmlhttp.responseText);
+        userData = response.userData;
+        roleAlliances = response.roleAlliances;
+
         if (!userData.hideStats) {
           drawCharts();
         }
-
       }
     };
     xmlhttp.send();
   });
 
-
   function drawCharts() {
-
-    const allianceOfRole = {
-      'Merlin': 'Resistance',
-      'Percival': 'Resistance',
-      'Assassin': 'Spy',
-      'Morgana': 'Spy',
-      'Mordred': 'Spy',
-      'Oberon': 'Spy',
-      'Resistance': 'Resistance',
-      'Spy': 'Spy',
-      'Tristan': 'Resistance',
-      'Isolde': 'Resistance',
-    };
-
-
     var blue1 = 'rgba(54, 162, 235, 0.3)';
     var blue2 = 'rgba(54, 162, 235, 0.5)';
     var blueBorder = 'rgba(54, 162, 235, 1)';
@@ -417,7 +390,7 @@ var getDatesString = function(time) {
         // console.log(generalLabelsArray);
 
 
-        if (allianceOfRole[role] === 'Resistance') {
+        if (roleAlliances[role] === 'Resistance') {
           backgroundColor.push(blue1);
           borderColor.push(blueBorder);
         } else {

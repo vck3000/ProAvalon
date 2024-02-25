@@ -15,7 +15,7 @@ import { sendEmailVerification } from '../myFunctions/sendEmailVerification';
 import { disallowVPNs } from '../util/vpnDetection';
 import Settings from '../settings';
 import { Alliance } from '../gameplay/types';
-import { Role } from '../gameplay/roles/types';
+import { resRoles, rolesToAlliances, spyRoles } from '../gameplay/roles/roles';
 
 const router = new Router();
 
@@ -434,11 +434,6 @@ const processRecords = async function (records) {
     spyStart: { resWin: 0, spyWin: 0 },
   };
 
-  // IMPORTANT, MUST KEEP THESE ROLES UP TO DATE!
-  // SHOULD MAKE AN EXTERNAL FILE OF THESE ALLIANCES
-  const resRoles = [Role.Merlin, Role.Percival, Role.Resistance, Role.Isolde, Role.Tristan];
-  const spyRoles = [Role.Assassin, Role.Morgana, Role.Spy, Role.Mordred, Role.Oberon];
-
   //* *********************************************
   // Getting the average duration of each game
   //* *********************************************
@@ -788,7 +783,9 @@ router.get('/ajax/profile/getProfileData/:profileUsername', (req, res) => {
         sendUserData.totalResLosses = foundUser.totalResLosses;
       }
 
-      res.status(200).send(sendUserData);
+      res
+        .status(200)
+        .send({ userData: sendUserData, roleAlliances: rolesToAlliances });
     }
   });
   // console.log("Received AJAX request");
