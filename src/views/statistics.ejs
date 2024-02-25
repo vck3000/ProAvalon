@@ -266,7 +266,6 @@
                 $('[data-toggle="tooltip"]').tooltip();
             });
 
-
             xmlhttp = new XMLHttpRequest();
             xmlhttp.open("GET", "/ajax/getStatistics", true);
 
@@ -402,12 +401,9 @@
             //***********************************
             //Assassination stats
             //***********************************
-            var totalAssassinShots = grd.assassinRolesShot["Merlin"] +
-                grd.assassinRolesShot["Percival"] +
-                grd.assassinRolesShot["Resistance"] +
-                grd.assassinRolesShot["Tristan"] +
-                grd.assassinRolesShot["Isolde"] +
-                grd.assassinRolesShot["Oberon"];
+            var totalAssassinShots = Object.values(grd.assassinRolesShot).reduce((acc, shots) => {
+              return acc + shots;
+            }, 0);
 
             $("#totalMerlinShot")[0].innerText = grd.assassinRolesShot["Merlin"] + " times, " + Math.round(grd.assassinRolesShot["Merlin"] / totalAssassinShots * 100) + "%";
             $("#totalPercivalShot")[0].innerText = grd.assassinRolesShot["Percival"] + " times, " + Math.round(grd.assassinRolesShot["Percival"] / totalAssassinShots * 100) + "%";
@@ -417,10 +413,6 @@
             $("#totalShots")[0].innerText = totalAssassinShots + " times.";
 
             $("#averageassassinationduration")[0].innerText = new Date(grd.averageAssassinationDuration).getUTCMinutes() + " mins " + new Date(grd.averageAssassinationDuration).getUTCSeconds() + " seconds";
-
-
-
-
 
 
             //***********************************
