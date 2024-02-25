@@ -934,7 +934,7 @@ class Game extends Room {
         data[i] = {
           alliance: playerRoles[i].alliance,
           role: playerRoles[i].role,
-          see: playerRoles[i].see,
+          see: this.specialRoles[playerRoles[i].role].see(),
           username: playerRoles[i].username,
           socketId: playerRoles[i].socketId,
         };
