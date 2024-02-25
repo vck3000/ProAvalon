@@ -16,7 +16,7 @@ import { Phase } from './phases/types';
 import { Alliance } from './types';
 import { GameTimer, Timeouts } from './gameTimer';
 import { SocketUser } from '../sockets/types';
-import { avalonRoles } from './roles/roles';
+import { avalonRoles, rolesThatCantGuessMerlin } from './roles/roles';
 import { avalonCards } from './cards/cards';
 import { avalonPhases, commonPhases } from './phases/phases';
 import { Card } from './cards/types';
@@ -1488,6 +1488,7 @@ class Game extends Room {
                   losses: 0,
                 };
               }
+
               if (!foundUser.roleStats[`${playersInGameVar.length}p`]) {
                 foundUser.roleStats[`${playersInGameVar.length}p`] = {};
               }
@@ -1775,9 +1776,7 @@ class Game extends Room {
     );
     if (
       guesserPlayer !== undefined &&
-      [Role.Merlin, Role.Percival, Role.Assassin].indexOf(
-        guesserPlayer.role,
-      ) !== -1
+      rolesThatCantGuessMerlin.indexOf(guesserPlayer.role) !== -1
     ) {
       return `${guesserPlayer.role} cannot submit a guess.`;
     }
