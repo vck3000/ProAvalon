@@ -209,7 +209,6 @@ var getDatesString = function(time) {
 <br>
 <br>
 
-
 <script>
 
   $('#searchInput').on('keydown', function(e) {
@@ -322,11 +321,8 @@ var getDatesString = function(time) {
       }
     }
 
-    // console.log(generalRoleStats);
-
     var spyWins = userData.totalWins - userData.totalResWins;
     var spyLosses = userData.totalLosses - userData.totalResLosses;
-
 
     //create array for the chartjs hover stats:
     //first two entries are overall res and overall spy
@@ -349,9 +345,6 @@ var getDatesString = function(time) {
       }
     }
 
-    //  console.log(generalRoleStatsArray);
-
-
     var generalLabelsArray = ['Overall Resistance', 'Overall Spy'];
 
     var generalData = [Math.floor(userData.totalResWins / (userData.totalResWins + userData.totalResLosses) * 100), Math.floor((spyWins) / (spyLosses + spyWins) * 100)];
@@ -360,11 +353,6 @@ var getDatesString = function(time) {
 
     for (var role in generalRoleStats) {
       if (generalRoleStats.hasOwnProperty(role)) {
-
-        // console.log(role);
-
-        // console.log(generalRoleStats[role].wins);
-
         if (isNaN(generalRoleStats[role].losses) || generalRoleStats[role].losses === null) {
           generalRoleStats[role].losses = 0;
         }
@@ -373,22 +361,12 @@ var getDatesString = function(time) {
           generalRoleStats[role].wins = 0;
         }
 
-
         var percentWon = Math.floor((generalRoleStats[role].wins / (generalRoleStats[role].wins + generalRoleStats[role].losses)) * 100);
         generalData.push(percentWon);
-
-        //  console.log("percentWon");
-        //  console.log(percentWon);
-        // console.log(generalRoleStats[role].wins + generalRoleStats[role].losses);
-
-        // console.log(generalData);
-
 
         //Now capitalise
         var role = capitalizeFirstLetter(role);
         generalLabelsArray.push(role);
-        // console.log(generalLabelsArray);
-
 
         if (roleAlliances[role] === 'Resistance') {
           backgroundColor.push(blue1);
@@ -440,37 +418,7 @@ var getDatesString = function(time) {
           },
         },
       },
-
-
     };
-
-
-    var dataSample = {
-      labels: ['Resistance', 'Spy', 'Merlin', 'Percival', 'Assassin', 'Morgana'],
-      datasets: [{
-        label: 'Winrate %',
-        data: [54, 67, 45, 70, 45, 30],
-        backgroundColor: [
-          blue1,
-          blue2,
-          red1,
-          red2,
-          'rgba(153, 102, 255, 0.2)',
-          'rgba(255, 159, 64, 0.2)',
-        ],
-        borderColor: [
-          blueBorder,
-          blueBorder,
-          redBorder,
-          redBorder,
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)',
-        ],
-        borderWidth: 1,
-      }],
-    };
-
-    // $("#tempdiv")[0].innerHTML = JSON.stringify(generalRoleStats) ;
 
     var ctx = document.getElementById('statsChart');
     var myChart = new Chart(ctx, {
@@ -480,22 +428,13 @@ var getDatesString = function(time) {
     });
   }
 
-
   function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-
 </script>
 <% } %>
 
-
 <div id="tempdiv"></div>
 
-
 <%- include('../partials/footer') %>
-
-
-
-
-
