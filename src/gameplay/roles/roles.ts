@@ -8,6 +8,7 @@ import Tristan from './avalon/tristan';
 import Resistance from './avalon/resistance';
 import Spy from './avalon/spy';
 import Mordred from './avalon/mordred';
+import { Role } from './types';
 
 export const avalonRoles = {
   [Resistance.role]: Resistance,
@@ -23,3 +24,9 @@ export const avalonRoles = {
   [Mordred.role]: Mordred,
   [Tristan.role]: Tristan,
 };
+
+export const rolesThatCantGuessMerlin = [
+  Role.Merlin,
+  Role.Percival,
+  Role.Assassin,
+];

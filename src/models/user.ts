@@ -114,16 +114,7 @@ const UserSchema = new mongoose.Schema<IUser>({
   // only has one Number attached to it
   roleStats: {
     type: Object,
-    default: {
-      '5p': {
-        merlin: {},
-        percival: {},
-        assassin: {},
-        morgana: {},
-        spy: {},
-        resistance: {},
-      },
-    },
+    default: {},
   },
 
   notifications: [
