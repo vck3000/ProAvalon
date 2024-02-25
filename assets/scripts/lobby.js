@@ -1026,17 +1026,13 @@ function strOfAvatar(playerData, alliance) {
     if (playerData.username === ownUsername) {
       var roleWid = ctx.measureText(gameData.role).width + 20;
       role = `<p class='role-p' style='width: ${roleWid}px; margin: auto;'>${gameData.role}</p>`;
-    } else if (gameData.see && gameData.see) {
-      for (const key in gameData.see) {
-        if (gameData.see.hasOwnProperty(key)) {
-          const { roleTag } = gameData.see[key];
-          const username = key;
-          // console.log(username + " has role tag: " + roleTag);
+    } else if (gameData.see && gameData.see.roleTags) {
+      for (const username in gameData.see.roleTags) {
+        const roleTag = gameData.see.roleTags[username];
 
-          if (playerData.username === username) {
-            var roleWid = ctx.measureText(roleTag).width + 20;
-            role = `<p class='role-p' style='width: ${roleWid}px; margin: auto;'>${roleTag}</p>`;
-          }
+        if (playerData.username === username) {
+          var roleWid = ctx.measureText(roleTag).width + 20;
+          role = `<p class='role-p' style='width: ${roleWid}px; margin: auto;'>${roleTag}</p>`;
         }
       }
     }

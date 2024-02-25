@@ -18,8 +18,8 @@ export enum Role {
 }
 
 export interface IRole {
-  room: Game;
-  specialPhase: string;
+  room: Game; // TODO this should probs be removed and a constructor interface added
+  specialPhase: string; // TODO see if we really need this.
   role: string;
   alliance: string;
   description: string;
@@ -29,6 +29,6 @@ export interface IRole {
 
   checkSpecialMove(): void;
 
-  // TODO
+  // TODO do we need this?
   getPublicGameData(): any;
 }

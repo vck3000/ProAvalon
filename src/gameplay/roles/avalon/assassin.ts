@@ -6,7 +6,6 @@ import { IRole, Role } from '../types';
 class Assassin implements IRole {
   room: Game;
 
-  // TODO pretty ugly...
   static role = Role.Assassin;
   role = Role.Assassin;
 
@@ -40,7 +39,7 @@ class Assassin implements IRole {
         }
       }
 
-      return { spies: array };
+      return { spies: array, roleTags: {} };
     }
   }
 

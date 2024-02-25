@@ -13,6 +13,7 @@ export interface RoleConstructor {
 
 export interface See {
   spies: string[];
+  roleTags: Record<string, string>; // Username, tag
 }
 
 export interface IUser {
