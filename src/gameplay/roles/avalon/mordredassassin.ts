@@ -13,8 +13,7 @@ class MordredAssassin extends Assassin {
   alliance = Alliance.Spy;
   specialPhase = Phase.Assassination;
 
-  description =
-    'If the resistance win 3 missions, the MordredAssassin can shoot one person for Merlin, or two people for Tristan and Isolde. If they are correct, the spies win!';
+  description = 'Combination of Assassin and Mordred roles.';
   orderPriorityInOptions = 90;
 
   constructor(room: Game) {
