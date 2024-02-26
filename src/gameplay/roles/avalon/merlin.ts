@@ -29,11 +29,10 @@ class Merlin implements IRole {
             this.room.playersInGame[i].role === Role.Mordred ||
             this.room.playersInGame[i].role === Role.MordredAssassin
           ) {
-            // don't add mordred for Merlin to see
-          } else {
-            // add the spy
-            spies.push(this.room.playersInGame[i].username);
+            continue;
           }
+
+          spies.push(this.room.playersInGame[i].username);
         }
       }
 

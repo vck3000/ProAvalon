@@ -36,7 +36,7 @@ class Assassination implements IPhase {
           this.room.playersInGame,
           socket.request.user.username,
         );
-        if (this.playerIndexIsAssassin(indexOfRequester)) {
+        if (this.room.playersInGame[indexOfRequester].role === this.role) {
           // Just shoot Merlin
           if (selectedPlayers.length === 1) {
             if (
@@ -226,7 +226,7 @@ class Assassination implements IPhase {
     // Get the index of the assassin
     let indexOfAssassin = -1;
     for (let i = 0; i < this.room.playersInGame.length; i++) {
-      if (this.playerIndexIsAssassin(i)) {
+      if (this.room.playersInGame[i].role === this.role) {
         indexOfAssassin = i;
         break;
       }
@@ -265,7 +265,7 @@ class Assassination implements IPhase {
   numOfTargets(indexOfPlayer: number): number | number[] {
     if (indexOfPlayer !== undefined && indexOfPlayer !== null) {
       // If assassin, one player to select (assassinate)
-      if (this.playerIndexIsAssassin(indexOfPlayer)) {
+      if (this.room.playersInGame[indexOfPlayer].role === this.role) {
         // Check if Merlin exists.
         let merlinExists = false;
         // Check if iso tristan are both in the game.
@@ -305,7 +305,7 @@ class Assassination implements IPhase {
     // Get the index of the assassin
     let indexOfAssassin = -1;
     for (let i = 0; i < this.room.playersInGame.length; i++) {
-      if (this.playerIndexIsAssassin(i)) {
+      if (this.room.playersInGame[i].role === this.role) {
         indexOfAssassin = i;
       }
     }
@@ -333,14 +333,6 @@ class Assassination implements IPhase {
     }
 
     return spyIndexes;
-  }
-
-  private playerIndexIsAssassin(index: number): boolean {
-    return (
-      this.room.playersInGame[index].role === this.role ||
-      // Absolutely terrible, but easiest for now. Need ECS to fix this, or make this a delegate/override function.
-      this.room.playersInGame[index].role === Role.MordredAssassin
-    );
   }
 }
 
