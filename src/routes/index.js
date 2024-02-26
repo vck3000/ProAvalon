@@ -147,7 +147,8 @@ router.post(
   loginLimiter,
   sanitiseUsername,
   setCookieDisplayUsername,
-  disallowVPNs,
+  // Ignore disallowing VPNs for login routes due to overuse of the service.
+  // disallowVPNs,
   passport.authenticate('local', {
     successRedirect: '/loginSuccess',
     failureRedirect: '/loginFail',

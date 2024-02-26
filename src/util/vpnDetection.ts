@@ -45,9 +45,6 @@ type IP = string;
 const vpnCache: Map<IP, VpnEntry> = new Map();
 
 const isVPN = async (ip: string): Promise<boolean> => {
-  // Temporarily disable VPN checking
-  return false;
-
   if (vpnCache.has(ip)) {
     // Clear the cache entry if it's timed out.
     if (vpnCache.get(ip).isTimedOut(new Date())) {
