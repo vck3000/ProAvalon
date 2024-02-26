@@ -292,6 +292,24 @@ class Game extends Room {
     }
   }
 
+  static checkOptions(options: string[]): {
+    success: boolean;
+    errMessage: string;
+  } {
+    if (
+      options.includes(Role.Assassin) &&
+      options.includes(Role.MordredAssassin)
+    ) {
+      return {
+        success: false,
+        errMessage:
+          'Cannot start a game with both Assassin and MordredAssassin',
+      };
+    }
+
+    return { success: true, errMessage: '' };
+  }
+
   // start game
   startGame(options: string[]) {
     if (

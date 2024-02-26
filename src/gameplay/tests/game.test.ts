@@ -180,7 +180,7 @@ describe('Game Engine', () => {
     playMission(true);
   };
 
-  describe('6P vanilla games', () => {
+  describe('6P Vanilla game', () => {
     beforeEach(() => {
       // Vanilla game - no roles
       startGame(6, []);
@@ -249,6 +249,47 @@ describe('Game Engine', () => {
 
       // Shoot percival to give res the win
       const assassinSocket = getSocketOfRole(Role.Assassin);
+      const percyUsername = getUsernameOfRole(Role.Merlin);
+      game.gameMove(assassinSocket, ['yes', [percyUsername]]);
+
+      // Game over
+      expect(game.phase).toEqual(Phase.Finished);
+      expect(game.winner).toEqual(Alliance.Spy);
+    });
+  });
+
+  describe('MordredAssassin', () => {
+    beforeEach(() => {
+      startGame(6, [
+        Role.Merlin,
+        Role.Percival,
+        Role.MordredAssassin,
+        Role.Morgana,
+      ]);
+    });
+
+    it('MordredAssassin shoots Percival', () => {
+      playGameToResWin();
+
+      expect(game.phase).toEqual(Phase.Assassination);
+
+      // Shoot percival to give res the win
+      const assassinSocket = getSocketOfRole(Role.MordredAssassin);
+      const percyUsername = getUsernameOfRole(Role.Percival);
+      game.gameMove(assassinSocket, ['yes', [percyUsername]]);
+
+      // Game over
+      expect(game.phase).toEqual(Phase.Finished);
+      expect(game.winner).toEqual(Alliance.Resistance);
+    });
+
+    it('MordredAssassin shoots Merlin', () => {
+      playGameToResWin();
+
+      expect(game.phase).toEqual(Phase.Assassination);
+
+      // Shoot percival to give res the win
+      const assassinSocket = getSocketOfRole(Role.MordredAssassin);
       const percyUsername = getUsernameOfRole(Role.Merlin);
       game.gameMove(assassinSocket, ['yes', [percyUsername]]);
 
@@ -336,6 +377,33 @@ describe('Game Engine', () => {
       // Game over
       expect(game.phase).toEqual(Phase.Finished);
       expect(game.winner).toEqual(Alliance.Spy);
+    });
+  });
+
+  describe('Check Options', () => {
+    it('Allows fab 4', () => {
+      const checkOptions = Game.checkOptions([
+        Role.Merlin,
+        Role.Assassin,
+        Role.Percival,
+        Role.Morgana,
+      ]);
+      expect(checkOptions).toEqual({
+        success: true,
+        errMessage: '',
+      });
+    });
+
+    it('Disallows both Assassin and MordredAssassin', () => {
+      const checkOptions = Game.checkOptions([
+        Role.Assassin,
+        Role.MordredAssassin,
+      ]);
+      expect(checkOptions).toEqual({
+        success: false,
+        errMessage:
+          'Cannot start a game with both Assassin and MordredAssassin',
+      });
     });
   });
 });

@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { GAME_MODE_NAMES, GameMode } from './gameModes';
 import { SocketUser } from '../sockets/types';
-import { MIN_PLAYERS } from './game';
+import Game, { MIN_PLAYERS } from './game';
 import { Timeouts } from './gameTimer';
 import { ReadyPrompt } from '../sockets/readyPrompt';
 import { avalonRoles } from './roles/roles';
@@ -604,7 +604,7 @@ class Room {
     targetSocket.emit('update-game-modes-in-room', obj);
   }
 
-  hostTryStartGame(options, gameMode, timeouts: Timeouts) {
+  hostTryStartGame(options: string[], gameMode: string, timeouts: Timeouts) {
     if (this.gameStarted === true) {
       return false;
     }
@@ -614,6 +614,12 @@ class Room {
         'danger-alert',
         'Minimum 5 players to start. ',
       );
+      return false;
+    }
+
+    const checkOptions = Game.checkOptions(options);
+    if (!checkOptions.success) {
+      this.socketsOfPlayers[0].emit('danger-alert', checkOptions.errMessage);
       return false;
     }
 

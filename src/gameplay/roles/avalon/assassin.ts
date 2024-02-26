@@ -2,6 +2,7 @@ import { Alliance, See } from '../../types';
 import Game from '../../game';
 import { Phase } from '../../phases/types';
 import { IRole, Role } from '../types';
+import Assassination from '../../phases/avalon/assassination';
 
 class Assassin implements IRole {
   room: Game;
@@ -84,6 +85,7 @@ class Assassin implements IRole {
         ) {
           // Set the assassination phase
           this.room.startAssassinationTime = new Date();
+          this.room.specialPhases[Assassination.phase].role = this.role;
           this.room.changePhase(this.specialPhase);
           return true;
         }

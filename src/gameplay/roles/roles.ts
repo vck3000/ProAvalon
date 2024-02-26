@@ -8,6 +8,7 @@ import Tristan from './avalon/tristan';
 import Resistance from './avalon/resistance';
 import Spy from './avalon/spy';
 import Mordred from './avalon/mordred';
+import MordredAssassin from './avalon/mordredassassin';
 import { IRole, Role } from './types';
 import { Alliance } from '../types';
 
@@ -21,10 +22,13 @@ export const avalonRoles: Record<string, Class<IRole>> = {
   [Percival.role]: Percival,
   [Morgana.role]: Morgana,
 
-  [Oberon.role]: Oberon,
-  [Isolde.role]: Isolde,
   [Mordred.role]: Mordred,
+  [Oberon.role]: Oberon,
+
+  [Isolde.role]: Isolde,
   [Tristan.role]: Tristan,
+
+  [MordredAssassin.role]: MordredAssassin,
 };
 
 export const rolesThatCantGuessMerlin = [
