@@ -17,6 +17,7 @@ export enum Role {
   Isolde = 'Isolde',
 
   MordredAssassin = 'MordredAssassin',
+  Hitberon = 'Hitberon',
 }
 
 export interface IRole {

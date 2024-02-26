@@ -1,3 +1,6 @@
+import { IRole, Role } from './types';
+import { Alliance } from '../types';
+
 import Assassin from './avalon/assassin';
 import Merlin from './avalon/merlin';
 import Percival from './avalon/percival';
@@ -9,8 +12,7 @@ import Resistance from './avalon/resistance';
 import Spy from './avalon/spy';
 import Mordred from './avalon/mordred';
 import MordredAssassin from './avalon/mordredassassin';
-import { IRole, Role } from './types';
-import { Alliance } from '../types';
+import Hitberon from './avalon/hitberon';
 
 type Class<I, Args extends any[] = any[]> = new (...args: Args) => I;
 export const avalonRoles: Record<string, Class<IRole>> = {
@@ -29,6 +31,7 @@ export const avalonRoles: Record<string, Class<IRole>> = {
   [Tristan.role]: Tristan,
 
   [MordredAssassin.role]: MordredAssassin,
+  [Hitberon.role]: Hitberon,
 };
 
 export const rolesThatCantGuessMerlin = [
