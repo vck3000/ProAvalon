@@ -2,6 +2,7 @@ import { Alliance, See } from '../../types';
 import Game from '../../game';
 import { Phase } from '../../phases/types';
 import { IRole, Role } from '../types';
+import Assassination from '../../phases/avalon/assassination';
 
 class Assassin implements IRole {
   room: Game;
@@ -84,6 +85,8 @@ class Assassin implements IRole {
         ) {
           // Set the assassination phase
           this.room.startAssassinationTime = new Date();
+          // Override the role. Our this.role can be overridden by child inheritors.
+          this.room.specialPhases[Assassination.phase].role = this.role;
           this.room.changePhase(this.specialPhase);
           return true;
         }
