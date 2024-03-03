@@ -315,8 +315,9 @@ class Assassination implements IPhase {
     }
     // If it is any other player who isn't special role
 
-    const usernameOfAssassin =
-      this.room.playersInGame[indexOfAssassin].username;
+    const usernameOfAssassin = this.room.anonymizer.anon(
+      this.room.playersInGame[indexOfAssassin].username,
+    );
     return `Waiting for ${usernameOfAssassin} to assassinate.`;
   }
 

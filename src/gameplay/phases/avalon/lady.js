@@ -65,7 +65,6 @@ class Lady {
     // Get index of socket
     let indexOfSocket;
     for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
-      // console.log("Comparing: " + this.thisRoom.playersInGame[i].username + " with " + socket.request.user.username);
       if (
         this.thisRoom.playersInGame[i].username === socket.request.user.username
       ) {
@@ -91,7 +90,9 @@ class Lady {
       // emit to the lady holder the person's alliance
       socket.emit(
         'lady-info',
-        /* "Player " + */ `${targetUsername} is a ${alliance}.`,
+        /* "Player " + */ `${this.thisRoom.anonymizer.anon(
+          targetUsername,
+        )} is a ${alliance}.`,
       );
       // console.log("Player " + target + " is a " + alliance);
 
@@ -100,7 +101,11 @@ class Lady {
 
       // this.gameplayMessage = (socket.request.user.username + " has carded " + target);
       this.thisRoom.sendText(
-        `${socket.request.user.username} has used ${this.card} on ${targetUsername}.`,
+        `${this.thisRoom.anonymizer.anon(
+          socket.request.user.username,
+        )} has used ${this.card} on ${this.thisRoom.anonymizer.anon(
+          targetUsername,
+        )}.`,
         'gameplay-text',
       );
 
@@ -167,8 +172,9 @@ class Lady {
     }
     // If it is any other player who isn't special role
 
-    const usernameOfCardHolder =
-      this.thisRoom.playersInGame[indexOfCardHolder].username;
+    const usernameOfCardHolder = this.thisRoom.anonymizer.anon(
+      this.thisRoom.playersInGame[indexOfCardHolder].username,
+    );
     return `Waiting for ${usernameOfCardHolder} to use the Lady of the Lake on someone.`;
   }
 
