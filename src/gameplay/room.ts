@@ -386,33 +386,24 @@ class Room {
   getRoomPlayers() {
     const roomPlayers = [];
 
-    // this.playersInGame is our in memory safe representation of a player.
-    // After game started, we need to still send over these details.
-    const useArray = this.gameStarted
-      ? this.playersInGame
-      : this.socketsOfPlayers;
-
-    for (let i = 0; i < useArray.length; i++) {
+    for (let i = 0; i < this.socketsOfPlayers.length; i++) {
       let isClaiming;
       // If the player's username exists on the list of claiming:
       if (
-        this.claimingPlayers.indexOf(useArray[i].request.user.username) !== -1
+        this.claimingPlayers.indexOf(
+          this.socketsOfPlayers[i].request.user.username,
+        ) !== -1
       ) {
         isClaiming = true;
       } else {
         isClaiming = false;
       }
 
-      // For me tomorrow. I don't know how I was doing this previously.
-      // Was I never removing off of socketsOfPlayers??
-      // How come recovered games keeps all the socketsOfPlayers? Makes no sense atm.
-      // Dunno how I broke it either.
-      const username = useArray[i].request.user.username;
       roomPlayers[i] = {
-        username: this.anonymizer.anon(username),
-        avatarImgRes: useArray[i].request.user.avatarImgRes,
-        avatarImgSpy: useArray[i].request.user.avatarImgSpy,
-        avatarHide: useArray[i].request.user.avatarHide,
+        username: this.socketsOfPlayers[i].request.user.username,
+        avatarImgRes: this.socketsOfPlayers[i].request.user.avatarImgRes,
+        avatarImgSpy: this.socketsOfPlayers[i].request.user.avatarImgSpy,
+        avatarHide: this.socketsOfPlayers[i].request.user.avatarHide,
         claim: isClaiming,
       };
 

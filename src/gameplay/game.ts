@@ -888,6 +888,42 @@ class Game extends Room {
     this.pickNum++;
   }
 
+  getRoomPlayers() {
+    if (this.gameStarted === true) {
+      const roomPlayers = [];
+
+      for (let i = 0; i < this.playersInGame.length; i++) {
+        let isClaiming;
+        // If the player's username exists on the list of claiming:
+        if (
+          this.claimingPlayers.indexOf(
+            this.playersInGame[i].request.user.username,
+          ) !== -1
+        ) {
+          isClaiming = true;
+        } else {
+          isClaiming = false;
+        }
+
+        roomPlayers[i] = {
+          username: this.playersInGame[i].username,
+          avatarImgRes: this.playersInGame[i].request.user.avatarImgRes,
+          avatarImgSpy: this.playersInGame[i].request.user.avatarImgSpy,
+          avatarHide: this.playersInGame[i].request.user.avatarHide,
+          claim: isClaiming,
+        };
+
+        // give the host the teamLeader star
+        if (roomPlayers[i].username === this.host) {
+          roomPlayers[i].teamLeader = true;
+        }
+      }
+      return roomPlayers;
+    }
+
+    return Room.prototype.getRoomPlayers.call(this);
+  }
+
   distributeGameData() {
     // distribute roles to each player
     this.updateRoomPlayers();
