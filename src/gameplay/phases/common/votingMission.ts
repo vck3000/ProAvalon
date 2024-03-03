@@ -225,12 +225,14 @@ class VotingMission implements IPhase {
       ) !== -1
     ) {
       let str = '';
-      str += `${
-        this.thisRoom.playersInGame[this.thisRoom.teamLeader].username
-      } has picked: `;
+      str += `${this.thisRoom.anonymizer.anon(
+        this.thisRoom.playersInGame[this.thisRoom.teamLeader].username,
+      )} has picked: `;
 
       for (let i = 0; i < this.thisRoom.proposedTeam.length; i++) {
-        str += `${this.thisRoom.proposedTeam[i]}, `;
+        str += `${this.thisRoom.anonymizer.anon(
+          this.thisRoom.proposedTeam[i],
+        )}, `;
       }
       // Remove last , and replace with .
       str = str.slice(0, str.length - 2);

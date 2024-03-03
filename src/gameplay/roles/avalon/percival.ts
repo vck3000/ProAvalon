@@ -27,7 +27,9 @@ class Percival implements IRole {
         this.room.playersInGame[i].role === Role.Merlin ||
         this.room.playersInGame[i].role === Role.Morgana
       ) {
-        roleTags[this.room.playersInGame[i].username] = 'Merlin?';
+        roleTags[
+          this.room.anonymizer.anon(this.room.playersInGame[i].username)
+        ] = 'Merlin?';
       }
     }
 

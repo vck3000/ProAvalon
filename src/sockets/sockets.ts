@@ -1487,10 +1487,12 @@ export function sendToAllChat(io, data) {
 
 function sendToRoomChat(io, roomId, data) {
   io.in(roomId).emit('roomChatToClient', data);
+
   // Already logged upstream in roomChatFromClient.
   if (!data.username) {
     console.log(`[Room Chat] [Room ${roomId}] ${data.message}`);
   }
+
   if (rooms[roomId]) {
     rooms[roomId].addToChatHistory(data);
   }
@@ -1780,17 +1782,21 @@ function allChatFromClient(data) {
 }
 
 function roomChatFromClient(data) {
-  if (this.request.user.inRoomId) {
-    console.log(
-      `[Room Chat] [Room ${this.request.user.inRoomId}] ${this.request.user.username}: ${data.message}`,
-    );
+  if (!this.request.user.inRoomId) {
+    return;
   }
+
+  const roomId = this.request.user.inRoomId;
+
+  const usernameToLog = rooms[roomId].anonymizer.usernameAnonReveal(
+    this.request.user.username,
+  );
+  console.log(`[Room Chat] [Room ${roomId}] ${usernameToLog}: ${data.message}`);
+
   // get the username and put it into the data object
   const validUsernames = getPlayerUsernamesFromAllSockets();
 
-  data.username = this.request.displayUsername
-    ? this.request.displayUsername
-    : this.request.user.username;
+  data.username = this.request.user.username;
 
   const senderSocket =
     allSockets[getIndexFromUsername(allSockets, data.username, true)];
@@ -1816,6 +1822,10 @@ function roomChatFromClient(data) {
     outputSpamMessage('roomChatToClient', data.username);
     return;
   }
+
+  // We've done checking and using data.username.
+  // Apply anonymizer now.
+  data.username = rooms[roomId].anonymizer.anon(data.username);
 
   // Quotes
   const possibleQuotes = quote.rawChatToPossibleMessages(data.message);

@@ -1,9 +1,6 @@
 //= =====================================
 // SOCKET ROUTES
 //= =====================================
-socket.on('username', (username) => {
-  // ownUsername = username;
-});
 
 socket.on('allChatToClient', (data) => {
   if (data.type === 'lastLoggedIn') {

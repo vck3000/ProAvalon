@@ -35,7 +35,9 @@ class Assassin implements IRole {
             // don't add oberon
           } else {
             // add the spy
-            array.push(this.room.playersInGame[i].username);
+            array.push(
+              this.room.anonymizer.anon(this.room.playersInGame[i].username),
+            );
           }
         }
       }

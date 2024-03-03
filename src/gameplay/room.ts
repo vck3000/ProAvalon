@@ -9,6 +9,7 @@ import { avalonCards } from './cards/cards';
 import { avalonPhases, commonPhases } from './phases/phases';
 import { Role } from './roles/types';
 import { Phase } from './phases/types';
+import { Anonymizer } from './anonymizer';
 
 export class RoomConfig {
   host: string;
@@ -73,6 +74,8 @@ class Room {
 
   lockJoin = false;
   readyPrompt: ReadyPrompt;
+
+  anonymizer: Anonymizer = new Anonymizer();
 
   constructor(roomConfig: RoomConfig) {
     // Expand config
@@ -383,24 +386,33 @@ class Room {
   getRoomPlayers() {
     const roomPlayers = [];
 
-    for (let i = 0; i < this.socketsOfPlayers.length; i++) {
-      var isClaiming;
+    // this.playersInGame is our in memory safe representation of a player.
+    // After game started, we need to still send over these details.
+    const useArray = this.gameStarted
+      ? this.playersInGame
+      : this.socketsOfPlayers;
+
+    for (let i = 0; i < useArray.length; i++) {
+      let isClaiming;
       // If the player's username exists on the list of claiming:
       if (
-        this.claimingPlayers.indexOf(
-          this.socketsOfPlayers[i].request.user.username,
-        ) !== -1
+        this.claimingPlayers.indexOf(useArray[i].request.user.username) !== -1
       ) {
         isClaiming = true;
       } else {
         isClaiming = false;
       }
 
+      // For me tomorrow. I don't know how I was doing this previously.
+      // Was I never removing off of socketsOfPlayers??
+      // How come recovered games keeps all the socketsOfPlayers? Makes no sense atm.
+      // Dunno how I broke it either.
+      const username = useArray[i].request.user.username;
       roomPlayers[i] = {
-        username: this.socketsOfPlayers[i].request.user.username,
-        avatarImgRes: this.socketsOfPlayers[i].request.user.avatarImgRes,
-        avatarImgSpy: this.socketsOfPlayers[i].request.user.avatarImgSpy,
-        avatarHide: this.socketsOfPlayers[i].request.user.avatarHide,
+        username: this.anonymizer.anon(username),
+        avatarImgRes: useArray[i].request.user.avatarImgRes,
+        avatarImgSpy: useArray[i].request.user.avatarImgSpy,
+        avatarHide: useArray[i].request.user.avatarHide,
         claim: isClaiming,
       };
 

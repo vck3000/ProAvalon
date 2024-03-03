@@ -64,7 +64,6 @@ class Sire {
     // Get index of socket
     let indexOfSocket;
     for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
-      // console.log("Comparing: " + this.thisRoom.playersInGame[i].username + " with " + socket.request.user.username);
       if (
         this.thisRoom.playersInGame[i].username === socket.request.user.username
       ) {
@@ -84,7 +83,7 @@ class Sire {
         return;
       }
 
-      // grab the carders's alliance
+      // grab the carder's alliance
       let alliance;
       for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
         if (
@@ -193,8 +192,9 @@ class Sire {
     }
     // If it is any other player who isn't special role
 
-    const usernameOfCardHolder =
-      this.thisRoom.playersInGame[indexOfCardHolder].username;
+    const usernameOfCardHolder = this.thisRoom.anonymizer.anon(
+      this.thisRoom.playersInGame[indexOfCardHolder].username,
+    );
     return `Waiting for ${usernameOfCardHolder} to use the Sire of the Sea on someone.`;
   }
 
