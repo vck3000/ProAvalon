@@ -957,9 +957,15 @@ class Game extends Room {
 
         roomPlayers[i] = {
           username: this.anonymizer.anon(this.playersInGame[i].username),
-          avatarImgRes: this.playersInGame[i].request.user.avatarImgRes,
-          avatarImgSpy: this.playersInGame[i].request.user.avatarImgSpy,
-          avatarHide: this.playersInGame[i].request.user.avatarHide,
+          avatarImgRes: this.anonymousMode
+            ? null
+            : this.playersInGame[i].request.user.avatarImgRes,
+          avatarImgSpy: this.anonymousMode
+            ? null
+            : this.playersInGame[i].request.user.avatarImgSpy,
+          avatarHide: this.anonymousMode
+            ? null
+            : this.playersInGame[i].request.user.avatarHide,
           claim: isClaiming,
         };
 
