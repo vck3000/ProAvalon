@@ -5,6 +5,7 @@ export interface RecoverEntry {
   name: RecoverableComponent;
   data: string;
 }
+
 export enum RecoverableComponent {
   Anonymizer = 'Anonymizer',
   a = 'a',

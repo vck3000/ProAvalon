@@ -68,6 +68,7 @@ describe('Game Engine', () => {
   const anon = (username: string): string => {
     return game.anonymizer.anon(username);
   };
+
   const deAnon = (anon: string): string => {
     return game.anonymizer.deAnon(anon);
   };
