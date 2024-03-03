@@ -189,6 +189,7 @@ if (process.env.NODE_ENV !== 'test') {
 
               rooms[storedData.roomId].savedGameRecordId = foundSaveGame.id;
               rooms[storedData.roomId].recoverGame(storedData);
+              rooms[storedData.roomId].timeFrozenLoaded = new Date();
               rooms[storedData.roomId].callback = socketCallback;
             } else {
               run = false;
