@@ -95,7 +95,9 @@ socket.on('disconnect', () => {
       chat.innerHTML = '';
     }
 
-    attemptReconnect();
+    setTimeout(() => {
+      attemptReconnect();
+    }, 500);
 
     if (!intervalId) {
       intervalId = setInterval(() => {

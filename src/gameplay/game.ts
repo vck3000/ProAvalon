@@ -114,6 +114,9 @@ class Game extends Room {
 
   proposedTeam: string[] = [];
 
+  anonymizer: Anonymizer = new Anonymizer();
+  anonymousMode = false;
+
   recoverableComponents: IRecoverable[] = [];
 
   constructor(gameConfig: GameConfig) {
@@ -159,6 +162,12 @@ class Game extends Room {
   configureTimeouts(timeouts: Timeouts): void {
     if (this.gameStarted === false) {
       this.gameTimer.configureTimeouts(timeouts);
+    }
+  }
+
+  configureAnonymousMode(anonymousMode: boolean): void {
+    if (this.gameStarted === false) {
+      this.anonymousMode = anonymousMode;
     }
   }
 
@@ -414,7 +423,7 @@ class Game extends Room {
       );
     }
 
-    this.anonymizer.initialise(this.playerUsernamesInGame, true);
+    this.anonymizer.initialise(this.playerUsernamesInGame, this.anonymousMode);
 
     // Give roles to the players according to their alliances
     // Get roles:
@@ -544,6 +553,10 @@ class Game extends Room {
 
     if (this.disableVoteHistory) {
       this.sendText('The game has vote history disabled.', 'gameplay-text');
+    }
+
+    if (this.anonymousMode) {
+      this.sendText('The game is running in anonymous mode.', 'gameplay-text');
     }
 
     // seed the starting data into the VH
@@ -1335,6 +1348,7 @@ class Game extends Room {
       numberOfPlayers: this.playersInGame.length,
       gameMode: this.gameMode,
       roomCreationType: this.roomCreationType,
+      anonymousMode: this.anonymousMode,
       botUsernames,
 
       playerUsernamesOrdered: getUsernamesOfPlayersInGame(this),

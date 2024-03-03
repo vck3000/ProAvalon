@@ -9,7 +9,6 @@ import { avalonCards } from './cards/cards';
 import { avalonPhases, commonPhases } from './phases/phases';
 import { Role } from './roles/types';
 import { Phase } from './phases/types';
-import { Anonymizer } from './anonymizer';
 
 export class RoomConfig {
   host: string;
@@ -74,8 +73,6 @@ class Room {
 
   lockJoin = false;
   readyPrompt: ReadyPrompt;
-
-  anonymizer: Anonymizer = new Anonymizer();
 
   constructor(roomConfig: RoomConfig) {
     // Expand config
@@ -607,7 +604,12 @@ class Room {
     targetSocket.emit('update-game-modes-in-room', obj);
   }
 
-  hostTryStartGame(options: string[], gameMode: string, timeouts: Timeouts) {
+  hostTryStartGame(
+    options: string[],
+    gameMode: string,
+    timeouts: Timeouts,
+    anonymousMode: boolean,
+  ) {
     if (this.gameStarted === true) {
       return false;
     }
@@ -651,6 +653,7 @@ class Room {
     rolesInStr += `<br>Assassination timeout: ${
       timeouts.assassination / 1000
     }s`;
+    rolesInStr += `<br>Anonymous mode: ${anonymousMode}`;
 
     this.sendText('The game is starting!', 'gameplay-text');
 
