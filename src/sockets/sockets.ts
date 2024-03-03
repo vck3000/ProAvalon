@@ -1992,17 +1992,7 @@ function joinRoom(roomId, inputPassword) {
       this.join(roomId);
 
       // emit to say to others that someone has joined
-      let username: string;
-      if (
-        rooms[this.request.user.inRoomId] &&
-        rooms[this.request.user.inRoomId].gameStarted
-      ) {
-        username = rooms[this.request.user.inRoomId].anonymizer.anon(
-          this.request.user.username,
-        );
-      } else {
-        username = this.request.user.username;
-      }
+      const username = getUsernameForAnon(this.request.user);
 
       const data = {
         message: `${username} has joined the room.`,
@@ -2055,18 +2045,7 @@ function leaveRoom() {
     );
     // broadcast to let others know
 
-    let username: string;
-    if (
-      rooms[this.request.user.inRoomId] &&
-      rooms[this.request.user.inRoomId].gameStarted
-    ) {
-      username = rooms[this.request.user.inRoomId].anonymizer.anon(
-        this.request.user.username,
-      );
-    } else {
-      username = this.request.user.username;
-    }
-
+    const username = getUsernameForAnon(this.request.user);
     const data = {
       message: `${username} has left the room.`,
       classStr: 'server-text-teal',
@@ -2398,3 +2377,17 @@ export const GetRoomChat = (roomId: number) => {
 export const GetRoom = (roomId: number) => {
   return rooms[roomId];
 };
+
+function getUsernameForAnon(requestUser): string {
+  let username: string;
+
+  if (rooms[requestUser.inRoomId] && rooms[requestUser.inRoomId].gameStarted) {
+    username = rooms[requestUser.inRoomId].anonymizer.anon(
+      requestUser.username,
+    );
+  } else {
+    username = requestUser.username;
+  }
+
+  return username;
+}

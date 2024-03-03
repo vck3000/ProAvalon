@@ -48,12 +48,12 @@ export class Anonymizer implements IRecoverable {
   }
 
   anon(username: string): string {
-    if (!this.initialised || !this.anonymize) {
+    if (
+      !this.initialised ||
+      !this.anonymize ||
+      !this.usernamesToAnonMap.has(username)
+    ) {
       return username;
-    }
-
-    if (!this.usernamesToAnonMap.has(username)) {
-      throw new Error(`Could not find username to map to anon: ${username}`);
     }
 
     if (this.gameFinished) {
@@ -68,7 +68,11 @@ export class Anonymizer implements IRecoverable {
   }
 
   usernameAnonReveal(username: string): string {
-    if (!this.initialised || !this.anonymize) {
+    if (
+      !this.initialised ||
+      !this.anonymize ||
+      !this.usernamesToAnonMap.has(username)
+    ) {
       return username;
     }
 
@@ -81,12 +85,12 @@ export class Anonymizer implements IRecoverable {
 
   // De-anonymize
   deAnon(anon: string): string {
-    if (!this.initialised || !this.anonymize) {
+    if (
+      !this.initialised ||
+      !this.anonymize ||
+      !this.anonToUsernamesMap.has(anon)
+    ) {
       return anon;
-    }
-
-    if (!this.anonToUsernamesMap.has(anon)) {
-      throw new Error(`Could not find anon to map to username: ${anon}`);
     }
 
     return this.anonToUsernamesMap.get(anon);
