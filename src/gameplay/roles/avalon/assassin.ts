@@ -101,8 +101,10 @@ class Assassin implements IRole {
   getPublicGameData() {
     if (this.playerShot !== '') {
       return {
-        assassinShotUsername: this.playerShot,
-        assassinShotUsername2: this.playerShot2,
+        assassinShotUsername: this.room.anonymizer.anon(this.playerShot),
+        assassinShotUsername2: this.playerShot2
+          ? this.room.anonymizer.anon(this.playerShot2)
+          : '',
       };
     }
 

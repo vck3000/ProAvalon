@@ -89,7 +89,9 @@ class Ref {
       // emit to the ref holder the person's alliance
       socket.emit(
         'lady-info',
-        /* "Player " + */ `${targetUsername} is a ${alliance}.`,
+        /* "Player " + */ `${this.thisRoom.anonymizer.anon(
+          targetUsername,
+        )} is a ${alliance}.`,
       );
       // console.log("Player " + target + " is a " + alliance);
 
@@ -98,7 +100,11 @@ class Ref {
 
       // this.gameplayMessage = (socket.request.user.username + " has carded " + target);
       this.thisRoom.sendText(
-        `${socket.request.user.username} has used ${this.card} on ${targetUsername}.`,
+        `${this.thisRoom.anonymizer.anon(
+          socket.request.user.username,
+        )} has used ${this.card} on ${this.thisRoom.anonymizer.anon(
+          targetUsername,
+        )}.`,
         'gameplay-text',
       );
 

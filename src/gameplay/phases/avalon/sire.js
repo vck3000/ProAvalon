@@ -116,7 +116,9 @@ class Sire {
       // note that the display is the same as lady's display
       socketOfTarget.emit(
         'lady-info',
-        /* "Player " + */ `${socket.request.user.username} is a ${alliance}.`,
+        /* "Player " + */ `${this.thisRoom.anonymizer.anon(
+          socket.request.user.username,
+        )} is a ${alliance}.`,
       );
       // console.log("Player " + target + " is a " + alliance);
 
@@ -125,7 +127,11 @@ class Sire {
 
       // this.gameplayMessage = (socket.request.user.username + " has carded " + target);
       this.thisRoom.sendText(
-        `${socket.request.user.username} has used ${this.card} on ${targetUsername}.`,
+        `${this.thisRoom.anonymizer.anon(
+          socket.request.user.username,
+        )} has used ${this.card} on ${this.thisRoom.anonymizer.anon(
+          targetUsername,
+        )}.`,
         'gameplay-text',
       );
 
