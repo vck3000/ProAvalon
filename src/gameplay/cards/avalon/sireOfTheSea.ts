@@ -86,7 +86,7 @@ class SireOfTheSea implements ICard {
     return {
       sire: {
         index: this.indexOfPlayerHolding,
-        history: this.sireHistoryUsernames,
+        history: this.thisRoom.anonymizer.anonMany(this.sireHistoryUsernames),
         name: this.card,
       },
     };

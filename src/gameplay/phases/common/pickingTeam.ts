@@ -83,10 +83,12 @@ class PickingTeam implements IPhase {
       //--------------------------------------
       let str = '';
       for (let i = 0; i < selectedPlayers.length; i++) {
-        str += `${selectedPlayers[i]}, `;
+        str += `${this.thisRoom.anonymizer.anon(selectedPlayers[i])}, `;
       }
 
-      let str2 = `${socket.request.user.username} has picked: ${str}`;
+      let str2 = `${this.thisRoom.anonymizer.anon(
+        socket.request.user.username,
+      )} has picked: ${str}`;
 
       // remove the last , and replace with .
       str2 = str2.slice(0, str2.length - 2);
@@ -165,9 +167,9 @@ class PickingTeam implements IPhase {
 
     // console.log(this.thisRoom.teamLeader);
     if (this.thisRoom.playersInGame[this.thisRoom.teamLeader]) {
-      return `Waiting for ${
-        this.thisRoom.playersInGame[this.thisRoom.teamLeader].username
-      } to pick a team.`;
+      return `Waiting for ${this.thisRoom.anonymizer.anon(
+        this.thisRoom.playersInGame[this.thisRoom.teamLeader].username,
+      )} to pick a team.`;
     }
 
     return 'ERROR: Tell the admin if you see this, code 10.';
