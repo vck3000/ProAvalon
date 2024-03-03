@@ -1,6 +1,22 @@
 import Game from './game';
 import { Types } from 'mongoose';
 
+export interface RecoverEntry {
+  name: RecoverableComponent;
+  data: string;
+}
+export enum RecoverableComponent {
+  Anonymizer = 'Anonymizer',
+  a = 'a',
+}
+
+export interface IRecoverable {
+  name: RecoverableComponent;
+  serialise(): string;
+
+  recover(data: string): void;
+}
+
 export enum Alliance {
   Resistance = 'Resistance',
   Spy = 'Spy',

@@ -209,7 +209,9 @@ class VotingMission implements IPhase {
       let str = '';
       str += 'Waiting for mission votes: ';
       for (let i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
-        str = `${str + this.thisRoom.playersYetToVote[i]}, `;
+        str = `${
+          str + this.thisRoom.anonymizer.anon(this.thisRoom.playersYetToVote[i])
+        }, `;
       }
       // Remove last , and replace with .
       str = str.slice(0, str.length - 2);
@@ -244,7 +246,9 @@ class VotingMission implements IPhase {
     let str = '';
     str += 'Waiting for mission votes: ';
     for (let i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
-      str = `${str + this.thisRoom.playersYetToVote[i]}, `;
+      str = `${
+        str + this.thisRoom.anonymizer.anon(this.thisRoom.playersYetToVote[i])
+      }, `;
     }
     // Remove last , and replace with .
     str = str.slice(0, str.length - 2);

@@ -93,7 +93,7 @@ function gracefulShutdown() {
   process.exit();
 }
 
-export function saveGameToDb(roomToSave) {
+export function saveGameToDb(roomToSave: GameWrapper) {
   if (roomToSave.gameStarted === true && roomToSave.finished !== true) {
     // Take out io stuff since we don't need it.
     const deepCopyRoom = JSON.parse(JSON.stringify(roomToSave));
@@ -106,6 +106,8 @@ export function saveGameToDb(roomToSave) {
         user: {},
       };
     }
+
+    deepCopyRoom.recoverableComponents = roomToSave.serialise();
 
     if (roomToSave.savedGameRecordId === undefined) {
       savedGameObj.create(

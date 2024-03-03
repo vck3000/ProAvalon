@@ -1,6 +1,23 @@
 import shuffleArray from '../util/shuffleArray';
+import { IRecoverable, RecoverableComponent } from './types';
 
-export class Anonymizer {
+const ANON_NAMES = [
+  'Bulbasaur',
+  'Charmander',
+  'Squirtle',
+  'Treeko',
+  'Torchic',
+  'Mudkip',
+  'Turtwig',
+  'Chimchar',
+  'Piplup',
+  'MewTwo',
+];
+
+export class Anonymizer implements IRecoverable {
+  // IRecoverable
+  name = RecoverableComponent.Anonymizer;
+
   private initialised = false;
 
   private usernamesToAnonMap: Map<string, string> = new Map();
@@ -8,27 +25,15 @@ export class Anonymizer {
 
   private anonymize = false;
   private gameFinished = false;
-  private anonNames = [
-    'Bulbasaur',
-    'Charmander',
-    'Squirtle',
-    'Treeko',
-    'Torchic',
-    'Mudkip',
-    'Turtwig',
-    'Chimchar',
-    'Piplup',
-    'MewTwo',
-  ];
 
   initialise(usernames: string[], anonymize: boolean) {
     this.anonymize = anonymize;
-    shuffleArray(this.anonNames);
+    shuffleArray(ANON_NAMES);
 
     for (let i = 0; i < usernames.length; i++) {
       if (anonymize) {
-        this.usernamesToAnonMap.set(usernames[i], this.anonNames[i]);
-        this.anonToUsernamesMap.set(this.anonNames[i], usernames[i]);
+        this.usernamesToAnonMap.set(usernames[i], ANON_NAMES[i]);
+        this.anonToUsernamesMap.set(ANON_NAMES[i], usernames[i]);
       } else {
         this.usernamesToAnonMap.set(usernames[i], usernames[i]);
         this.anonToUsernamesMap.set(usernames[i], usernames[i]);
@@ -89,5 +94,19 @@ export class Anonymizer {
 
   deAnonMany(anons: string[]): string[] {
     return anons.map((anons) => this.deAnon(anons));
+  }
+
+  serialise(): string {
+    return JSON.stringify({
+      usernameToAnon: Array.from(this.usernamesToAnonMap.entries()),
+    });
+  }
+
+  recover(dataStr: string): void {
+    const data = JSON.parse(dataStr);
+    for (const [username, anon] of data['usernameToAnon']) {
+      this.usernamesToAnonMap.set(username, anon);
+      this.anonToUsernamesMap.set(anon, username);
+    }
   }
 }

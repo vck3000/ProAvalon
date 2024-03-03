@@ -13,7 +13,12 @@ import { modOrTOString } from '../modsadmins/modOrTO';
 
 import { RoomCreationType } from './roomTypes';
 import { Phase } from './phases/types';
-import { Alliance } from './types';
+import {
+  Alliance,
+  IRecoverable,
+  RecoverableComponent,
+  RecoverEntry,
+} from './types';
 import { GameTimer, Timeouts } from './gameTimer';
 import { SocketUser } from '../sockets/types';
 import { avalonRoles, rolesThatCantGuessMerlin } from './roles/roles';
@@ -109,6 +114,8 @@ class Game extends Room {
 
   proposedTeam: string[] = [];
 
+  recoverableComponents: IRecoverable[] = [];
+
   constructor(gameConfig: GameConfig) {
     super(gameConfig.roomConfig);
 
@@ -141,6 +148,8 @@ class Game extends Room {
     // Room misc variables
     this.chatHistory = []; // Here because chatHistory records after game starts
     this.gameTimer = new GameTimer(this, gameConfig.getTimeFunc);
+
+    this.setupRecoverableComponents();
   }
 
   destructor(): void {
@@ -151,6 +160,11 @@ class Game extends Room {
     if (this.gameStarted === false) {
       this.gameTimer.configureTimeouts(timeouts);
     }
+  }
+
+  setupRecoverableComponents(): void {
+    this.recoverableComponents = [];
+    this.recoverableComponents.push(this.anonymizer);
   }
 
   // RECOVER GAME!
@@ -170,9 +184,6 @@ class Game extends Room {
 
     this.gameTimer = new GameTimer(this, () => new Date());
     this.gameTimer.configureTimeouts(storedData.timeoutSettings);
-
-    this.anonymizer = new Anonymizer();
-    _.merge(this.anonymizer, storedData.anonymizer);
 
     // Roles
     // Remove the circular dependency
@@ -199,6 +210,32 @@ class Game extends Room {
 
     this.phaseBeforeFrozen = this.phase;
     this.changePhase(Phase.Frozen);
+
+    // Special Recoverable components
+    const recoverableComponents: RecoverEntry[] = JSON.parse(
+      storedData.recoverableComponents,
+    );
+
+    for (const { name, data } of recoverableComponents) {
+      switch (name) {
+        case RecoverableComponent.Anonymizer:
+          this.anonymizer = new Anonymizer();
+          _.merge(this.anonymizer, storedData.anonymizer);
+          this.anonymizer.recover(data);
+      }
+    }
+
+    this.setupRecoverableComponents();
+  }
+
+  serialise(): string {
+    const data: RecoverEntry[] = [];
+
+    for (const recoverable of this.recoverableComponents) {
+      data.push({ name: recoverable.name, data: recoverable.serialise() });
+    }
+
+    return JSON.stringify(data);
   }
 
   playerJoinRoom(socket, inputPassword) {
@@ -906,7 +943,7 @@ class Game extends Room {
         }
 
         roomPlayers[i] = {
-          username: this.playersInGame[i].username,
+          username: this.anonymizer.anon(this.playersInGame[i].username),
           avatarImgRes: this.playersInGame[i].request.user.avatarImgRes,
           avatarImgSpy: this.playersInGame[i].request.user.avatarImgSpy,
           avatarHide: this.playersInGame[i].request.user.avatarHide,
@@ -933,7 +970,7 @@ class Game extends Room {
       for (let i = 0; i < this.playersInGame.length; i++) {
         const index = usernamesIndexes.getIndexFromUsername(
           this.socketsOfPlayers,
-          this.playersInGame[i].request.user.username,
+          this.playersInGame[i].username,
         );
         // need to go through all sockets, but only send to the socket of players in game
         if (this.socketsOfPlayers[index]) {
@@ -2194,7 +2231,7 @@ function getUsernamesOfPlayersInGame(thisRoom) {
   if (thisRoom.gameStarted === true) {
     const array = [];
     for (let i = 0; i < thisRoom.playersInGame.length; i++) {
-      array.push(thisRoom.playersInGame[i].request.user.username);
+      array.push(thisRoom.playersInGame[i].username);
     }
     return array;
   }
