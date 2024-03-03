@@ -741,7 +741,7 @@ function drawClaimingPlayers(claimingPlayers) {
         // $(".claimIcon")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
       }
 
-      if (roomPlayersData[i].username === gameData ? gameData.username : ownUsername) {
+      if (roomPlayersData[i].username === ownUsername) {
         $(buttons.claim)[0].innerText = 'Unclaim';
       }
     }
@@ -757,6 +757,17 @@ function drawExitedPlayers(playersStillInRoom) {
   for (var i = 0; i < arrayOfUsernames.length; i++) {
     // if(roomPlayersData[i].claim && roomPlayersData[i].claim === true){
     if (playersStillInRoom.indexOf(arrayOfUsernames[i]) === -1) {
+      // var j = playersStillInRoom.indexOf(arrayOfUsernames[i]);
+
+      // if ($("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])]) {
+      //     var str = $("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])].innerHTML;
+      //     str = str + "<span><img src='pictures/leave.png' class='leaveIcon'></span>";
+      //     //update the str in the div
+      //     $("#mainRoomBox div")[getIndexFromUsername(arrayOfUsernames[i])].innerHTML = str;
+
+      //     // $(".claimIcon")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
+      // }
+
       if ($('.avatarImgInRoom')[getIndexFromUsername(arrayOfUsernames[i])]) {
         $('.avatarImgInRoom')[
           getIndexFromUsername(arrayOfUsernames[i])
@@ -810,11 +821,10 @@ function enableDisableButtons() {
 
   document.querySelector(buttons.claim).classList.add('disabled');
 
-  const ourUsername = gameData ? gameData.username : ownUsername;
   // are we a player sitting down?
   let isPlayer = false;
   for (var i = 0; i < roomPlayersData.length; i++) {
-    if (roomPlayersData[i].username === ourUsername) {
+    if (roomPlayersData[i].username === ownUsername) {
       // if we are a player sitting down, then yes, we are a player
       isPlayer = true;
       break;
@@ -824,7 +834,7 @@ function enableDisableButtons() {
 
   // determine if we are spectator or not
   for (var i = 0; i < roomPlayersData.length; i++) {
-    if (roomPlayersData[i].username === ourUsername) {
+    if (roomPlayersData[i].username === ownUsername) {
       isSpectator = false;
       break;
     }
@@ -1013,7 +1023,7 @@ function strOfAvatar(playerData, alliance) {
       }</p>`;
   } else if (gameStarted === true && gameData !== undefined) {
     // if rendering our own player, give it the role tag
-    if (playerData.username === gameData.username) {
+    if (playerData.username === ownUsername) {
       var roleWid = ctx.measureText(gameData.role).width + 20;
       role = `<p class='role-p' style='width: ${roleWid}px; margin: auto;'>${gameData.role}</p>`;
     } else if (gameData.see && gameData.see.roleTags) {

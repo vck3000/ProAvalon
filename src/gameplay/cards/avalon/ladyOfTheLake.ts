@@ -80,7 +80,7 @@ class LadyOfTheLake implements ICard {
     return {
       lady: {
         index: this.indexOfPlayerHolding,
-        history: this.thisRoom.anonymizer.anonMany(this.ladyHistoryUsernames),
+        history: this.ladyHistoryUsernames,
         name: this.card,
       },
     };

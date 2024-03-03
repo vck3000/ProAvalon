@@ -29,9 +29,7 @@ class Spy implements IRole {
           // don't add oberon
         } else {
           // add the spy
-          spies.push(
-            this.room.anonymizer.anon(this.room.playersInGame[i].username),
-          );
+          spies.push(this.room.playersInGame[i].username);
         }
       }
     }

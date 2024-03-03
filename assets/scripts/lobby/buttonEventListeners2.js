@@ -72,8 +72,7 @@ function greenButtonFunction() {
           // + '000' hack to get seconds into milliseconds
           default: $('#startGameOptionsDefaultPhaseTimeout').val() + '000',
           assassination: $('#startGameOptionsAssassinationPhaseTimeout').val() + '000',
-        },
-        anonymousMode: $('#startGameOptionsAnonymousMode')[0].checked,
+        }
       };
 
       socket.emit('startGame', startGameData);

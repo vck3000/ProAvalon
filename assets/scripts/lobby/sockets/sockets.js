@@ -1,6 +1,9 @@
 //= =====================================
 // SOCKET ROUTES
 //= =====================================
+socket.on('username', (username) => {
+  // ownUsername = username;
+});
 
 socket.on('allChatToClient', (data) => {
   if (data.type === 'lastLoggedIn') {
@@ -95,9 +98,7 @@ socket.on('disconnect', () => {
       chat.innerHTML = '';
     }
 
-    setTimeout(() => {
-      attemptReconnect();
-    }, 500);
+    attemptReconnect();
 
     if (!intervalId) {
       intervalId = setInterval(() => {

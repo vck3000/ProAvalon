@@ -35,9 +35,7 @@ class Assassin implements IRole {
             // don't add oberon
           } else {
             // add the spy
-            array.push(
-              this.room.anonymizer.anon(this.room.playersInGame[i].username),
-            );
+            array.push(this.room.playersInGame[i].username);
           }
         }
       }
@@ -101,10 +99,8 @@ class Assassin implements IRole {
   getPublicGameData() {
     if (this.playerShot !== '') {
       return {
-        assassinShotUsername: this.room.anonymizer.anon(this.playerShot),
-        assassinShotUsername2: this.playerShot2
-          ? this.room.anonymizer.anon(this.playerShot2)
-          : '',
+        assassinShotUsername: this.playerShot,
+        assassinShotUsername2: this.playerShot2,
       };
     }
 

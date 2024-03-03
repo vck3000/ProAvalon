@@ -65,17 +65,9 @@ describe('Game Engine', () => {
     expect(game.gameStarted).toEqual(true);
   };
 
-  const anon = (username: string): string => {
-    return game.anonymizer.anon(username);
-  };
-
-  const deAnon = (anon: string): string => {
-    return game.anonymizer.deAnon(anon);
-  };
-
   const getSocketOfUsername = (username: string) => {
     for (const socket of testSockets) {
-      if (socket.request.user.username === deAnon(username)) {
+      if (socket.request.user.username === username) {
         return socket;
       }
     }
@@ -84,7 +76,7 @@ describe('Game Engine', () => {
 
   const getSocketOfNextTeamPicker = (): any => {
     const index = game.teamLeader;
-    const username = anon(game.playersInGame[index].request.user.username);
+    const username = game.playersInGame[index].request.user.username;
 
     return getSocketOfUsername(username);
   };
@@ -92,7 +84,7 @@ describe('Game Engine', () => {
   const getUsernameOfRole = (role: string) => {
     for (const player of game.playersInGame) {
       if (player.role === role) {
-        return anon(player.request.user.username);
+        return player.request.user.username;
       }
     }
     throw new Error(`Could not find role ${role}`);
@@ -102,7 +94,7 @@ describe('Game Engine', () => {
     const list = [];
     for (const player of game.playersInGame) {
       if (player.alliance === alliance) {
-        list.push(anon(player.request.user.username));
+        list.push(player.request.user.username);
       }
     }
     return list;
@@ -161,7 +153,7 @@ describe('Game Engine', () => {
     expect(game.pickNum).toEqual(1);
 
     // 1.1
-    game.gameMove(getSocketOfNextTeamPicker(), ['yes', [anon('0'), anon('1')]]);
+    game.gameMove(getSocketOfNextTeamPicker(), ['yes', ['0', '1']]);
     expect(game.phase).toEqual(Phase.VotingTeam);
     expect(game.missionNum).toEqual(1);
     expect(game.pickNum).toEqual(1);
@@ -217,10 +209,7 @@ describe('Game Engine', () => {
         expect(game.missionNum).toEqual(1);
         expect(game.pickNum).toEqual(i + 1);
 
-        game.gameMove(getSocketOfNextTeamPicker(), [
-          'yes',
-          [anon('1'), anon('2')],
-        ]);
+        game.gameMove(getSocketOfNextTeamPicker(), ['yes', ['1', '2']]);
         expect(game.phase).toEqual(Phase.VotingTeam);
 
         for (const socket of testSockets) {
@@ -328,9 +317,8 @@ describe('Game Engine', () => {
     const cardSomeone = (cardHolder = false) => {
       const indexHolder =
         game.specialCards[Card.LadyOfTheLake].indexOfPlayerHolding;
-      const usernameHolder = anon(
-        game.playersInGame[indexHolder].request.user.username,
-      );
+      const usernameHolder =
+        game.playersInGame[indexHolder].request.user.username;
       cardedPeople.add(usernameHolder);
 
       const socketHolder = getSocketOfUsername(usernameHolder);
@@ -340,7 +328,7 @@ describe('Game Engine', () => {
         username = usernameHolder;
       } else {
         const validUsernames = game.playersInGame
-          .map((player) => anon(player.request.user.username))
+          .map((player) => player.request.user.username)
           .filter((username) => !cardedPeople.has(username));
 
         username = validUsernames[0];
@@ -352,9 +340,8 @@ describe('Game Engine', () => {
       {
         const indexHolder =
           game.specialCards[Card.LadyOfTheLake].indexOfPlayerHolding;
-        const usernameHolder = anon(
-          game.playersInGame[indexHolder].request.user.username,
-        );
+        const usernameHolder =
+          game.playersInGame[indexHolder].request.user.username;
 
         expect(usernameHolder).toEqual(username);
       }

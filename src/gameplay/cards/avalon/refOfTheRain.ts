@@ -89,7 +89,7 @@ class RefOfTheRain implements ICard {
     return {
       ref: {
         index: this.indexOfPlayerHolding,
-        history: this.thisRoom.anonymizer.anonMany(this.refHistoryUsernames),
+        history: this.refHistoryUsernames,
         name: this.card,
       },
     };

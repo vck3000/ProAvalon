@@ -153,9 +153,7 @@ class VotingTeam implements IPhase {
       let str = '';
       str += 'Waiting for votes: ';
       for (let i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
-        str = `${
-          str + this.thisRoom.anonymizer.anon(this.thisRoom.playersYetToVote[i])
-        }, `;
+        str = `${str + this.thisRoom.playersYetToVote[i]}, `;
       }
       // Remove last , and replace with .
       str = str.slice(0, str.length - 2);
@@ -173,9 +171,7 @@ class VotingTeam implements IPhase {
       let str = '';
       str += 'Waiting for votes: ';
       for (let i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
-        str = `${
-          str + this.thisRoom.anonymizer.anon(this.thisRoom.playersYetToVote[i])
-        }, `;
+        str = `${str + this.thisRoom.playersYetToVote[i]}, `;
       }
       // Remove last , and replace with .
       str = str.slice(0, str.length - 2);
@@ -185,16 +181,13 @@ class VotingTeam implements IPhase {
     }
     // User has not voted yet or user is a spectator
 
-    const teamLeaderUsername =
-      this.thisRoom.playersInGame[this.thisRoom.teamLeader].username;
-
     let str = '';
-    str += `${this.thisRoom.anonymizer.anon(teamLeaderUsername)} has picked: `;
+    str += `${
+      this.thisRoom.playersInGame[this.thisRoom.teamLeader].username
+    } has picked: `;
 
     for (let i = 0; i < this.thisRoom.proposedTeam.length; i++) {
-      str += `${this.thisRoom.anonymizer.anon(
-        this.thisRoom.proposedTeam[i],
-      )}, `;
+      str += `${this.thisRoom.proposedTeam[i]}, `;
     }
     // Remove last , and replace with .
     str = str.slice(0, str.length - 2);
@@ -203,6 +196,7 @@ class VotingTeam implements IPhase {
     return str;
   }
 
+  // TODO fix up the playersInGame: any
   private getStrApprovedRejectedPlayers(votes: string[], playersInGame: any[]) {
     let approvedUsernames = '';
     let rejectedUsernames = '';
@@ -210,13 +204,11 @@ class VotingTeam implements IPhase {
     for (let i = 0; i < votes.length; i++) {
       if (votes[i] === 'approve') {
         approvedUsernames = `${
-          approvedUsernames +
-          this.thisRoom.anonymizer.anon(playersInGame[i].username)
+          approvedUsernames + playersInGame[i].username
         }, `;
       } else if (votes[i] === 'reject') {
         rejectedUsernames = `${
-          rejectedUsernames +
-          this.thisRoom.anonymizer.anon(playersInGame[i].username)
+          rejectedUsernames + playersInGame[i].username
         }, `;
       } else {
         console.log(`ERROR! Unknown vote: ${votes[i]}`);

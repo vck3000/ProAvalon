@@ -22,9 +22,7 @@ class Tristan implements IRole {
 
     for (let i = 0; i < this.room.playersInGame.length; i++) {
       if (this.room.playersInGame[i].role === Role.Isolde) {
-        roleTags[
-          this.room.anonymizer.anon(this.room.playersInGame[i].username)
-        ] = Role.Isolde;
+        roleTags[this.room.playersInGame[i].username] = Role.Isolde;
       }
     }
 

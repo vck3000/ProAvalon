@@ -93,7 +93,7 @@ function gracefulShutdown() {
   process.exit();
 }
 
-export function saveGameToDb(roomToSave: GameWrapper) {
+export function saveGameToDb(roomToSave) {
   if (roomToSave.gameStarted === true && roomToSave.finished !== true) {
     // Take out io stuff since we don't need it.
     const deepCopyRoom = JSON.parse(JSON.stringify(roomToSave));
@@ -106,8 +106,6 @@ export function saveGameToDb(roomToSave: GameWrapper) {
         user: {},
       };
     }
-
-    deepCopyRoom.recoverableComponents = roomToSave.serialise();
 
     if (roomToSave.savedGameRecordId === undefined) {
       savedGameObj.create(
@@ -189,7 +187,6 @@ if (process.env.NODE_ENV !== 'test') {
 
               rooms[storedData.roomId].savedGameRecordId = foundSaveGame.id;
               rooms[storedData.roomId].recoverGame(storedData);
-              rooms[storedData.roomId].timeFrozenLoaded = new Date();
               rooms[storedData.roomId].callback = socketCallback;
             } else {
               run = false;
@@ -1490,12 +1487,10 @@ export function sendToAllChat(io, data) {
 
 function sendToRoomChat(io, roomId, data) {
   io.in(roomId).emit('roomChatToClient', data);
-
   // Already logged upstream in roomChatFromClient.
   if (!data.username) {
     console.log(`[Room Chat] [Room ${roomId}] ${data.message}`);
   }
-
   if (rooms[roomId]) {
     rooms[roomId].addToChatHistory(data);
   }
@@ -1640,30 +1635,23 @@ function disconnect(data) {
   };
   sendToAllChat(ioGlobal, data);
 
-  // Note, by default when this disconnects, it leaves from all socket rooms.
-  const inRoomId = this.request.user.inRoomId;
+  // Note, by default when this disconnects, it leaves from all rooms.
+  // If user disconnected from within a room, the leave room function will send a message to other players in room.
+
+  const { username, inRoomId } = this.request.user;
 
   playerLeaveRoomCheckDestroy(this);
 
-  matchmakingQueue.removeUser(this.request.user.username);
+  matchmakingQueue.removeUser(username);
   sendNumPlayersInQueueToEveryone();
 
   // if they are in a room, say they're leaving the room.
-  if (inRoomId) {
-    let username: string;
-    if (rooms[inRoomId] && rooms[inRoomId].gameStarted) {
-      username = rooms[inRoomId].anonymizer.anon(this.request.user.username);
-    } else {
-      username = this.request.user.username;
-    }
-
-    data = {
-      message: `${username} has left the room.`,
-      classStr: 'server-text-teal',
-      dateCreated: new Date(),
-    };
-    sendToRoomChat(ioGlobal, inRoomId, data);
-  }
+  data = {
+    message: `${username} has left the room.`,
+    classStr: 'server-text-teal',
+    dateCreated: new Date(),
+  };
+  sendToRoomChat(ioGlobal, inRoomId, data);
 }
 
 function messageCommand(data) {
@@ -1792,27 +1780,23 @@ function allChatFromClient(data) {
 }
 
 function roomChatFromClient(data) {
-  if (!this.request.user.inRoomId) {
-    return;
+  if (this.request.user.inRoomId) {
+    console.log(
+      `[Room Chat] [Room ${this.request.user.inRoomId}] ${this.request.user.username}: ${data.message}`,
+    );
   }
-
-  const roomId = this.request.user.inRoomId;
-
-  const usernameToLog = rooms[roomId].anonymizer.usernameAnonReveal(
-    this.request.user.username,
-  );
-  console.log(`[Room Chat] [Room ${roomId}] ${usernameToLog}: ${data.message}`);
-
   // get the username and put it into the data object
   const validUsernames = getPlayerUsernamesFromAllSockets();
 
-  const username = this.request.user.username;
+  data.username = this.request.displayUsername
+    ? this.request.displayUsername
+    : this.request.user.username;
 
   const senderSocket =
-    allSockets[getIndexFromUsername(allSockets, username, true)];
+    allSockets[getIndexFromUsername(allSockets, data.username, true)];
 
   // if the username is not valid, i.e. one that they actually logged in as
-  if (validUsernames.indexOf(username) === -1) {
+  if (validUsernames.indexOf(this.request.user.username) === -1) {
     return;
   }
 
@@ -1828,23 +1812,13 @@ function roomChatFromClient(data) {
     return;
   }
 
-  if (!chatSpamFilter.chatRequest(username)) {
-    outputSpamMessage('roomChatToClient', username);
+  if (!chatSpamFilter.chatRequest(data.username)) {
+    outputSpamMessage('roomChatToClient', data.username);
     return;
   }
 
-  const messageObj = {
-    message: data.message,
-    username: rooms[roomId].anonymizer.anon(username),
-    badge:
-      rooms[roomId].anonymizer.anon(username) === username
-        ? senderSocket.request.badge
-        : undefined,
-    dateCreated: new Date(),
-  };
-
   // Quotes
-  const possibleQuotes = quote.rawChatToPossibleMessages(messageObj.message);
+  const possibleQuotes = quote.rawChatToPossibleMessages(data.message);
 
   if (this.request.user.inRoomId) {
     const roomId = this.request.user.inRoomId;
@@ -1855,13 +1829,13 @@ function roomChatFromClient(data) {
         .filter((validQuote) => validQuote) as MessageWithDate[];
 
       if (validQuotes.length > 0) {
-        messageObj.quotes = validQuotes;
+        data.quotes = validQuotes;
       }
     } else {
       quote.addMessage(
         {
-          username: messageObj.username,
-          message: messageObj.message,
+          username: data.username,
+          message: data.message,
           date: new Date(),
         },
         roomId,
@@ -1869,11 +1843,14 @@ function roomChatFromClient(data) {
     }
   }
 
+  data.dateCreated = new Date();
+  data.badge = senderSocket.request.badge;
+
   if (this.request.user.inRoomId) {
     const userRoom = rooms[this.request.user.inRoomId];
 
     if (userRoom && userRoom.canRoomChat(this.request.user.usernameLower)) {
-      sendToRoomChat(ioGlobal, this.request.user.inRoomId, messageObj);
+      sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
     } else {
       const msg = {
         message: 'The room is muted to spectators.',
@@ -1992,20 +1969,8 @@ function joinRoom(roomId, inputPassword) {
       this.join(roomId);
 
       // emit to say to others that someone has joined
-      let username: string;
-      if (
-        rooms[this.request.user.inRoomId] &&
-        rooms[this.request.user.inRoomId].gameStarted
-      ) {
-        username = rooms[this.request.user.inRoomId].anonymizer.anon(
-          this.request.user.username,
-        );
-      } else {
-        username = this.request.user.username;
-      }
-
       const data = {
-        message: `${username} has joined the room.`,
+        message: `${this.request.user.username} has joined the room.`,
         classStr: 'server-text-teal',
         dateCreated: new Date(),
       };
@@ -2055,20 +2020,8 @@ function leaveRoom() {
     );
     // broadcast to let others know
 
-    let username: string;
-    if (
-      rooms[this.request.user.inRoomId] &&
-      rooms[this.request.user.inRoomId].gameStarted
-    ) {
-      username = rooms[this.request.user.inRoomId].anonymizer.anon(
-        this.request.user.username,
-      );
-    } else {
-      username = this.request.user.username;
-    }
-
     const data = {
-      message: `${username} has left the room.`,
+      message: `${this.request.user.username} has left the room.`,
       classStr: 'server-text-teal',
       dateCreated: new Date(),
     };
@@ -2090,7 +2043,6 @@ function startGame(data) {
 
   const options = data.options;
   const gameMode = data.gameMode;
-  const anonymousMode = data.anonymousMode;
   const timeoutsStr = data.timeouts;
 
   // start the game
@@ -2121,12 +2073,10 @@ function startGame(data) {
     rooms[this.request.user.inRoomId].host === this.request.user.username
   ) {
     rooms[this.request.user.inRoomId].configureTimeouts(timeouts);
-    rooms[this.request.user.inRoomId].configureAnonymousMode(anonymousMode);
     rooms[this.request.user.inRoomId].hostTryStartGame(
       options,
       gameMode,
       timeouts,
-      anonymousMode,
     );
   }
 }
