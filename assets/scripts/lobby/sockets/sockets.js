@@ -367,6 +367,11 @@ socket.on('update-current-players-list', (currentPlayers) => {
   $('.player-count').text(currentPlayers.length);
 });
 
+// Defines the order in which the game statuses will be sorted. If there is a new game status that is not
+// in the object, it will default to the last position.
+const gameStatusOrder = { 'Waiting': 0, 'Game in progress': 1, 'Paused': 2, 'Frozen': 3, 'Finished': 4 };
+const defaultGameOrder = Object.keys(gameStatusOrder).length;
+
 socket.on('update-current-games-list', (currentGames) => {
   // remove all the entries inside the table:
   $('#current-games-table tbody tr td').remove();
@@ -374,10 +379,13 @@ socket.on('update-current-games-list', (currentGames) => {
 
   $('.games-count').text(currentGames.filter((game) => game).length);
 
-  // append each game to the list
-  currentGames.forEach((currentGame) => {
-    // if the current game exists, add it
-    if (currentGame) {
+  currentGames
+    // filter games that exist
+    .filter(currentGame => currentGame)
+    // sort the games by status so that games in progress show first and games that have finished show last.
+    .sort((a, b) => (gameStatusOrder[a.status] ?? defaultGameOrder) - (gameStatusOrder[b.status] ?? defaultGameOrder))
+    // append each game to the list
+    .forEach((currentGame) => {
       let lockStr = '';
       if (currentGame.passwordLocked === true) {
         lockStr = " <span class='glyphicon glyphicon-lock'></span>";
@@ -433,8 +441,7 @@ socket.on('update-current-games-list', (currentGames) => {
 
         joinRoom(currentGame.roomId);
       });
-    }
-  });
+    });
 
   // remove the ugly remaining border when no games are there to display
   if (
@@ -524,8 +531,7 @@ socket.on('update-room-players', (data) => {
     ) {
       displayNotification(
         `New player in game!  [${roomPlayersData.length}p]`,
-        `${
-          roomPlayersData[roomPlayersData.length - 1].username
+        `${roomPlayersData[roomPlayersData.length - 1].username
         } has joined the game!`,
         'avatars/base-res.png',
         'newPlayerInGame'
@@ -627,7 +633,7 @@ socket.on('update-room-spectators', (spectatorUsernames) => {
 
 socket.on('joinPassword', (roomId) => {
   (async function getEmail() {
-    const {value: inputPassword} = await swal({
+    const { value: inputPassword } = await swal({
       title: 'Type in the room password',
       type: 'info',
       input: 'text',
