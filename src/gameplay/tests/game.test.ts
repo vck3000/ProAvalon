@@ -10,6 +10,8 @@ import { Role } from '../roles/types';
 
 jest.mock('../gameWrapper');
 jest.mock('../../models/gameRecord');
+jest.mock('../../models/user');
+jest.mock('../../models/RatingPeriodGameRecord');
 
 describe('Game Engine', () => {
   let game: Game;
