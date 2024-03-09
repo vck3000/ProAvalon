@@ -9,6 +9,7 @@ import { Card } from '../cards/types';
 import { Role } from '../roles/types';
 
 jest.mock('../gameWrapper');
+jest.mock('../../models/gameRecord');
 
 describe('Game Engine', () => {
   let game: Game;
