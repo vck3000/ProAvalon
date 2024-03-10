@@ -2101,6 +2101,13 @@ function joinQueue() {
     return;
   }
 
+  if (process.env.ENV !== 'local') {
+    if (this.request.user.totalGamesPlayed < 3) {
+      this.emit('danger-alert', 'You require 3 games to join the ranked queue.');
+      return;
+    }
+  }
+
   const result = matchmakingQueue.addUser(
     new QueueEntry(username, blacklistUsernames),
   );
