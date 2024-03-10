@@ -2172,7 +2172,7 @@ function matchFound(usernames: string[]): void {
       if (!success) {
         // Throw approved users back into queue.
         for (const username of approvedUsernames) {
-          matchmakingQueue.addUser(
+          matchmakingQueue.addUserToFront(
             new QueueEntry(
               username,
               getSocketFromUsername(username).request.user.matchmakingBlacklist,
