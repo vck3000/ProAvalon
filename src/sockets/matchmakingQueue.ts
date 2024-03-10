@@ -32,6 +32,19 @@ export class MatchmakingQueue {
     return true;
   }
 
+  // Should only be used when re-adding users who had a match found rejected, so they
+  // retain queue priority
+  addUserToFront(queueEntry: QueueEntry): boolean {
+    if (this.getQueueUsernames().includes(queueEntry.username)) {
+      return false;
+    }
+
+    this.queue.unshift(queueEntry);
+    this.checkQueue();
+
+    return true;
+  }
+
   // Returns whether username was removed
   removeUser(username: string): boolean {
     const index = this.getQueueUsernames().indexOf(username.toLowerCase());
