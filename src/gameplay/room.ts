@@ -9,7 +9,7 @@ import { avalonCards } from './cards/cards';
 import { avalonPhases, commonPhases } from './phases/phases';
 import { Role } from './roles/types';
 import { Phase } from './phases/types';
-import {timeConverterToMinSec} from "../util/timeConverterToMinSec";
+import {millisToStr} from "../util/time";
 
 export class RoomConfig {
   host: string;
@@ -645,8 +645,8 @@ class Room {
 
     rolesInStr += `<br>Ranked: ${this.ranked}`;
     rolesInStr += `<br>Mute Spectators: ${this.muteSpectators}`;
-    rolesInStr += `<br>Default timeout: ${timeConverterToMinSec(timeouts.default)}`;
-    rolesInStr += `<br>Assassination timeout: ${timeConverterToMinSec(timeouts.assassination)}`;
+    rolesInStr += `<br>Default timeout: ${millisToStr(timeouts.default)}`;
+    rolesInStr += `<br>Assassination timeout: ${millisToStr(timeouts.assassination)}`;
 
     this.sendText('The game is starting!', 'gameplay-text');
 
