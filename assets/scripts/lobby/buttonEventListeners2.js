@@ -69,9 +69,8 @@ function greenButtonFunction() {
         options: getOptions(),
         gameMode: $($('.gameModeSelect')[1]).val(),
         timeouts: {
-          // + '000' hack to get seconds into milliseconds
-          default: $('#startGameOptionsDefaultPhaseTimeout').val() + '000',
-          assassination: $('#startGameOptionsAssassinationPhaseTimeout').val() + '000',
+          default: ((parseInt($('#startGameOptionsDefaultPhaseTimeoutMin').val()) * 60 + parseInt($('#startGameOptionsDefaultPhaseTimeoutSec').val())) * 1000).toString(),
+          assassination: ((parseInt($('#startGameOptionsAssassinationPhaseTimeoutMin').val()) * 60 + parseInt($('#startGameOptionsAssassinationPhaseTimeoutSec').val())) * 1000).toString()
         }
       };
 

@@ -21,6 +21,7 @@ import { avalonCards } from './cards/cards';
 import { avalonPhases, commonPhases } from './phases/phases';
 import { Card } from './cards/types';
 import { Role } from './roles/types';
+import { millisToStr } from '../util/time';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;
@@ -483,9 +484,9 @@ class Game extends Room {
     const timeouts = this.gameTimer.getTimeouts();
     if (timeouts.assassination || timeouts.default) {
       this.sendText(
-        `Timeouts: Default = ${timeouts.default / 1000}s Assassination = ${
-          timeouts.assassination / 1000
-        }s`,
+        `Timeouts: Default = ${millisToStr(
+          timeouts.default,
+        )}, Assassination = ${millisToStr(timeouts.assassination)}`,
         'gameplay-text',
       );
     }
