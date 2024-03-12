@@ -140,6 +140,20 @@ describe('MatchmakingQueue', () => {
       const expectUsernames = ['pronub', 'qwer', '1', '2', '3', '4'];
       expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
     });
+
+    it('ReAdd users', () => {
+      matchmakingQueue.reAddUsersToQueue([
+        new QueueEntry('pronub', []),
+        new QueueEntry('1', []),
+        new QueueEntry('2', []),
+        new QueueEntry('3', []),
+        new QueueEntry('4', []),
+        new QueueEntry('5', []),
+      ]);
+
+      const expectUsernames = ['pronub', '1', '2', '3', '4', '5'];
+      expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
+    });
   });
 
   describe('GetCombinations', () => {
