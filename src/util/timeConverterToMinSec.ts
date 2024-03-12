@@ -1,5 +1,4 @@
-export function timeConverterToMinSec(time: string) : string {
-    let milliseconds: number = parseInt(time);
+export function timeConverterToMinSec(milliseconds: number) : string {
 
     let minutes: number = Math.floor(milliseconds/ (1000 * 60) );
     let seconds: number = Math.floor((milliseconds / 1000) % 60);
