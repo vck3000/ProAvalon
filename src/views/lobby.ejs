@@ -932,7 +932,7 @@
         <h4>Select the roles/items you would like in the game.</h4>
         <h6>Default roles have been pre-selected.</h6>
 
-        <label>Game mode:</label>
+        <label>Game Mode:</label>
         <select class="gameModeSelect" name="gameMode">
           <!-- The usual values look like the below. This part is inserted dynamically in lobby.js -->
           <!-- <option value="avalon">Avalon</option> -->
@@ -949,9 +949,11 @@
           </select>
         </div>
 
-        <label>Default timeout (sec): <input type="text" id="startGameOptionsDefaultPhaseTimeout" style="width: 3em;" value="0"></label>
+        <label>Default Timeout: min: <input type="text" id="startGameOptionsDefaultPhaseTimeoutMin" style="width: 3em;" value="0" min="0" max="99"></label>
+        <label>sec: <input type="text" id="startGameOptionsDefaultPhaseTimeoutSec" style="width: 3em;" value="0" min="0" max="60"></label>
         <br>
-        <label>Assassination timeout (sec): <input type="text" id="startGameOptionsAssassinationPhaseTimeout" style="width: 3em;" value="0"></label>
+        <label>Assassination Timeout: min:  <input type="number" id="startGameOptionsAssassinationPhaseTimeoutMin" style="width: 3em;" value="0" min="0" max="99"></label>
+        <label>sec:  <input type="text" id="startGameOptionsAssassinationPhaseTimeoutSec" style="width: 3em;" value="0" min="0" max="60"></label>
 
         <div class="row">
           <div
