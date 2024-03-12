@@ -2056,7 +2056,7 @@ function startGame(data) {
 
   const processTimeout = (timeoutStr: string) => {
     let timeout = parseInt(timeoutStr, 10);
-    if (timeout < 0) {
+    if (isNaN(timeout) || timeout < 0) {
       timeout = 0;
     }
 
