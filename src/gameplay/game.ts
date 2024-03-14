@@ -922,7 +922,7 @@ class Game extends Room {
       for (let i = 0; i < this.playersInGame.length; i++) {
         const index = usernamesIndexes.getIndexFromUsername(
           this.socketsOfPlayers,
-          this.playersInGame[i].request.user.username,
+          this.playersInGame[i].username,
         );
         // need to go through all sockets, but only send to the socket of players in game
         if (this.socketsOfPlayers[index]) {

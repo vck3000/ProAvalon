@@ -2056,7 +2056,7 @@ function startGame(data) {
 
   const processTimeout = (timeoutStr: string) => {
     let timeout = parseInt(timeoutStr, 10);
-    if (timeout < 0) {
+    if (isNaN(timeout) || timeout < 0) {
       timeout = 0;
     }
 
@@ -2103,7 +2103,10 @@ function joinQueue() {
 
   if (process.env.ENV !== 'local') {
     if (this.request.user.totalGamesPlayed < 3) {
-      this.emit('danger-alert', 'You require 3 games to join the ranked queue.');
+      this.emit(
+        'danger-alert',
+        'You require 3 games to join the ranked queue.',
+      );
       return;
     }
   }
@@ -2171,14 +2174,19 @@ function matchFound(usernames: string[]): void {
     ): void => {
       if (!success) {
         // Throw approved users back into queue.
-        for (const username of approvedUsernames) {
-          matchmakingQueue.addUserToFront(
-            new QueueEntry(
-              username,
-              getSocketFromUsername(username).request.user.matchmakingBlacklist,
-            ),
-          );
+        matchmakingQueue.reAddUsersToQueue(
+          approvedUsernames.map(
+            (username) =>
+              new QueueEntry(
+                username,
+                getSocketFromUsername(
+                  username,
+                ).request.user.matchmakingBlacklist,
+              ),
+          ),
+        );
 
+        for (const username of approvedUsernames) {
           const socket = getSocketFromUsername(username);
           socket.emit('allChatToClient', {
             message:
