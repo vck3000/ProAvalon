@@ -2115,6 +2115,8 @@ function joinQueue() {
     new QueueEntry(username, blacklistUsernames),
   );
   if (result) {
+    this.emit('joinedQueue');
+
     this.emit('allChatToClient', {
       message: 'You have been added to the queue.',
       classStr: 'server-text',
@@ -2132,6 +2134,10 @@ function joinQueue() {
 function leaveQueue(): void {
   const username = this.request.user.username;
   const result = matchmakingQueue.removeUser(username);
+
+  if (result) {
+    this.emit('leftQueue');
+  }
 
   this.emit('allChatToClient', {
     message: result
