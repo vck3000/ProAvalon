@@ -1099,8 +1099,6 @@ export const server = function (io: SocketServer): void {
 
     socket.request.displayUsername = socket.request.user.username;
 
-    socket = applyApplicableRewards(socket);
-
     socket.onAny((eventName, ...args) => {
       console.log(
         `[Client Socket] username=${
@@ -1251,6 +1249,7 @@ export const server = function (io: SocketServer): void {
     }, 1000);
 
     socket.rewards = await getAllRewardsForUser(socket.request.user);
+    socket = applyApplicableRewards(socket);
   });
 };
 
