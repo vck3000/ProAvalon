@@ -385,7 +385,7 @@ class Room {
     const roomPlayers = [];
 
     for (let i = 0; i < this.socketsOfPlayers.length; i++) {
-      var isClaiming;
+      let isClaiming;
       // If the player's username exists on the list of claiming:
       if (
         this.claimingPlayers.indexOf(
@@ -605,7 +605,12 @@ class Room {
     targetSocket.emit('update-game-modes-in-room', obj);
   }
 
-  hostTryStartGame(options: string[], gameMode: string, timeouts: Timeouts) {
+  hostTryStartGame(
+    options: string[],
+    gameMode: string,
+    timeouts: Timeouts,
+    anonymousMode: boolean,
+  ) {
     if (this.gameStarted === true) {
       return false;
     }
@@ -649,6 +654,7 @@ class Room {
     rolesInStr += `<br>Assassination timeout: ${millisToStr(
       timeouts.assassination,
     )}`;
+    rolesInStr += `<br>Anonymous mode: ${anonymousMode}`;
 
     this.sendText('The game is starting!', 'gameplay-text');
 

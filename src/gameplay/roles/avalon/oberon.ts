@@ -25,7 +25,9 @@ class Oberon implements IRole {
 
       for (let i = 0; i < this.room.playersInGame.length; i++) {
         if (this.room.playersInGame[i].role === Role.Oberon) {
-          spies.push(this.room.playersInGame[i].username);
+          spies.push(
+            this.room.anonymizer.anon(this.room.playersInGame[i].username),
+          );
           break;
         }
       }

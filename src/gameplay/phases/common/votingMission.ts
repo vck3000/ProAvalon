@@ -209,7 +209,9 @@ class VotingMission implements IPhase {
       let str = '';
       str += 'Waiting for mission votes: ';
       for (let i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
-        str = `${str + this.thisRoom.playersYetToVote[i]}, `;
+        str = `${
+          str + this.thisRoom.anonymizer.anon(this.thisRoom.playersYetToVote[i])
+        }, `;
       }
       // Remove last , and replace with .
       str = str.slice(0, str.length - 2);
@@ -225,12 +227,14 @@ class VotingMission implements IPhase {
       ) !== -1
     ) {
       let str = '';
-      str += `${
-        this.thisRoom.playersInGame[this.thisRoom.teamLeader].username
-      } has picked: `;
+      str += `${this.thisRoom.anonymizer.anon(
+        this.thisRoom.playersInGame[this.thisRoom.teamLeader].username,
+      )} has picked: `;
 
       for (let i = 0; i < this.thisRoom.proposedTeam.length; i++) {
-        str += `${this.thisRoom.proposedTeam[i]}, `;
+        str += `${this.thisRoom.anonymizer.anon(
+          this.thisRoom.proposedTeam[i],
+        )}, `;
       }
       // Remove last , and replace with .
       str = str.slice(0, str.length - 2);
@@ -242,7 +246,9 @@ class VotingMission implements IPhase {
     let str = '';
     str += 'Waiting for mission votes: ';
     for (let i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
-      str = `${str + this.thisRoom.playersYetToVote[i]}, `;
+      str = `${
+        str + this.thisRoom.anonymizer.anon(this.thisRoom.playersYetToVote[i])
+      }, `;
     }
     // Remove last , and replace with .
     str = str.slice(0, str.length - 2);

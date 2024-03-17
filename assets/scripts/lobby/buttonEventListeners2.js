@@ -71,7 +71,8 @@ function greenButtonFunction() {
         timeouts: {
           default: ((parseInt($('#startGameOptionsDefaultPhaseTimeoutMin').val()) * 60 + parseInt($('#startGameOptionsDefaultPhaseTimeoutSec').val())) * 1000).toString(),
           assassination: ((parseInt($('#startGameOptionsAssassinationPhaseTimeoutMin').val()) * 60 + parseInt($('#startGameOptionsAssassinationPhaseTimeoutSec').val())) * 1000).toString()
-        }
+        },
+        anonymousMode: $('#startGameOptionsAnonymousMode')[0].checked,
       };
 
       socket.emit('startGame', startGameData);

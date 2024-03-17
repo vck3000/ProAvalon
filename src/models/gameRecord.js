@@ -12,6 +12,8 @@ const gameRecordSchema = new mongoose.Schema({
   ranked: Boolean,
 
   gameMode: String,
+  anonymousMode: Boolean,
+
   botUsernames: [String],
 
   playerUsernamesOrdered: [String],
