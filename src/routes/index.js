@@ -219,11 +219,11 @@ router.get('/logout', (req, res) => {
   });
 });
 
-router.get('/log', (req, res) => {
-  res.render('log', {
+router.get('/changelog', (req, res) => {
+  res.render('changelog', {
     currentUser: req.user,
-    headerActive: 'log',
-    path: 'log',
+    headerActive: 'changelog',
+    path: 'changelog',
   });
 });
 
