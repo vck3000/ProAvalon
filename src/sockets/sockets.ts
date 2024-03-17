@@ -59,7 +59,7 @@ const quote = new Quote();
 
 const dateResetRequired = 1543480412695;
 
-export const allSockets: SocketUser[] = [];
+export let allSockets: SocketUser[] = [];
 
 // TODO: This is bad!!! We should work to make this not needed to be exported.
 export const rooms: GameWrapper[] = [];
@@ -1047,19 +1047,52 @@ export const userCommands = {
   },
 };
 
+function removeAllUserSockets(username: string) {
+  for (const socket of allSockets) {
+    if (socket.request.user.username.toLowerCase() === username.toLowerCase()) {
+      socket.emit('dont-reconnect');
+      socket.disconnect(true);
+    }
+  }
+
+  allSockets = allSockets.filter(
+    (socket) =>
+      socket.request.user.username.toLowerCase() !== username.toLowerCase(),
+  );
+}
+
 export let ioGlobal = {};
 
 export const server = function (io: SocketServer): void {
   // SOCKETS for each connection
   ioGlobal = io;
   io.sockets.on('connection', async (socket: SocketUser) => {
-    // remove any duplicate sockets
-    for (let i = 0; i < allSockets.length; i++) {
-      if (allSockets[i].request.user.id === socket.request.user.id) {
-        allSockets[i].emit('dont-reconnect');
-        allSockets[i].disconnect(true);
-      }
-    }
+    removeAllUserSockets(socket.request.user.username);
+
+    allSockets.push(socket);
+    socket.on('disconnect', disconnect);
+    socket.on('messageCommand', messageCommand);
+    socket.on('interactUserPlayed', interactUserPlayed);
+    socket.on('allChatFromClient', allChatFromClient);
+    socket.on('roomChatFromClient', roomChatFromClient);
+    socket.on('newRoom', newRoom);
+    socket.on('join-room', joinRoom);
+    socket.on('join-game', joinGame);
+    socket.on('standUpFromGame', standUpFromGame);
+    socket.on('leave-room', leaveRoom);
+    socket.on('startGame', startGame);
+    socket.on('kickPlayer', kickPlayer);
+    socket.on('join-queue', joinQueue);
+    socket.on('leave-queue', leaveQueue);
+    socket.on('ready-prompt-reply', readyPromptHandler);
+    socket.on('update-room-max-players', updateRoomMaxPlayers);
+    socket.on('update-room-game-mode', updateRoomGameMode);
+    socket.on('update-room-ranked', updateRoomRanked);
+    socket.on('update-room-muteSpectators', updateRoomMuteSpectators);
+    socket.on('update-room-disableVoteHistory', updateRoomDisableVoteHistory);
+
+    socket.on('gameMove', gameMove);
+    socket.on('setClaim', setClaim);
 
     // Assign the socket their rating bracket
     socket = assignRatingBracket(socket);
@@ -1068,9 +1101,6 @@ export const server = function (io: SocketServer): void {
     socket.rewards = await getAllRewardsForUser(socket.request.user);
 
     socket = applyApplicableRewards(socket);
-
-    // now push their socket in
-    allSockets.push(socket);
 
     socket.onAny((eventName, ...args) => {
       console.log(
@@ -1094,7 +1124,6 @@ export const server = function (io: SocketServer): void {
       socket.isModSocket = false;
       socket.isTOSocket = false;
 
-      // if the admin name is inside the array
       if (isAdmin(socket.request.user.username)) {
         // promote to admin socket
         socket.isAdminSocket = true;
@@ -1123,8 +1152,6 @@ export const server = function (io: SocketServer): void {
             if (err) {
               console.log(err);
             } else {
-              socket.emit('', modCommands);
-
               setTimeout(() => {
                 if (allAvatarRequests.length !== 0) {
                   if (allAvatarRequests.length === 1) {
@@ -1223,31 +1250,6 @@ export const server = function (io: SocketServer): void {
         numPlayersInQueue: matchmakingQueue.getNumInQueue(),
       });
     }, 1000);
-
-    socket.on('disconnect', disconnect);
-
-    socket.on('messageCommand', messageCommand);
-    socket.on('interactUserPlayed', interactUserPlayed);
-    socket.on('allChatFromClient', allChatFromClient);
-    socket.on('roomChatFromClient', roomChatFromClient);
-    socket.on('newRoom', newRoom);
-    socket.on('join-room', joinRoom);
-    socket.on('join-game', joinGame);
-    socket.on('standUpFromGame', standUpFromGame);
-    socket.on('leave-room', leaveRoom);
-    socket.on('startGame', startGame);
-    socket.on('kickPlayer', kickPlayer);
-    socket.on('join-queue', joinQueue);
-    socket.on('leave-queue', leaveQueue);
-    socket.on('ready-prompt-reply', readyPromptHandler);
-    socket.on('update-room-max-players', updateRoomMaxPlayers);
-    socket.on('update-room-game-mode', updateRoomGameMode);
-    socket.on('update-room-ranked', updateRoomRanked);
-    socket.on('update-room-muteSpectators', updateRoomMuteSpectators);
-    socket.on('update-room-disableVoteHistory', updateRoomDisableVoteHistory);
-
-    socket.on('gameMove', gameMove);
-    socket.on('setClaim', setClaim);
   });
 };
 
@@ -1625,7 +1627,7 @@ function disconnect(data) {
 
   chatSpamFilter.disconnectUser(this.request.user.username);
 
-  allSockets.splice(allSockets.indexOf(this), 1);
+  removeAllUserSockets(this.request.user.username);
 
   updateCurrentPlayersList();
 
