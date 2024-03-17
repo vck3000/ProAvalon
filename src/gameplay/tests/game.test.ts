@@ -64,6 +64,7 @@ describe('Game Engine', () => {
       game.playerSitDown(testSockets[i]);
     }
 
+    game.configureAnonymousMode(true);
     game.startGame(options);
     expect(game.gameStarted).toEqual(true);
   };
