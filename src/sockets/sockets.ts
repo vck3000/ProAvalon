@@ -1070,6 +1070,7 @@ export const server = function (io: SocketServer): void {
     removeAllUserSockets(socket.request.user.username);
 
     allSockets.push(socket);
+
     socket.on('disconnect', disconnect);
     socket.on('messageCommand', messageCommand);
     socket.on('interactUserPlayed', interactUserPlayed);
@@ -1090,7 +1091,6 @@ export const server = function (io: SocketServer): void {
     socket.on('update-room-ranked', updateRoomRanked);
     socket.on('update-room-muteSpectators', updateRoomMuteSpectators);
     socket.on('update-room-disableVoteHistory', updateRoomDisableVoteHistory);
-
     socket.on('gameMove', gameMove);
     socket.on('setClaim', setClaim);
 
@@ -1098,7 +1098,6 @@ export const server = function (io: SocketServer): void {
     socket = assignRatingBracket(socket);
 
     socket.request.displayUsername = socket.request.user.username;
-    socket.rewards = await getAllRewardsForUser(socket.request.user);
 
     socket = applyApplicableRewards(socket);
 
@@ -1250,6 +1249,8 @@ export const server = function (io: SocketServer): void {
         numPlayersInQueue: matchmakingQueue.getNumInQueue(),
       });
     }, 1000);
+
+    socket.rewards = await getAllRewardsForUser(socket.request.user);
   });
 };
 
