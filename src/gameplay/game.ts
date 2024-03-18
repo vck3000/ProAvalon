@@ -1175,9 +1175,9 @@ class Game extends Room {
       data.see = {};
       data.see.spies = getAllSpies(this);
       data.see.roles = getRevealedRoles(this);
-      data.proposedTeam = this.lastProposedTeam;
+      data.proposedTeam = this.anonymizer.anonMany(this.lastProposedTeam);
     } else if (this.phase === Phase.Assassination) {
-      data.proposedTeam = this.lastProposedTeam;
+      data.proposedTeam = this.anonymizer.anonMany(this.lastProposedTeam);
     }
 
     return data;

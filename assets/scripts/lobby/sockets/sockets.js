@@ -423,8 +423,6 @@ socket.on('update-current-games-list', (currentGames) => {
                 <br>${missionHistoryStr}
                 </td> </tr>`;
 
-      console.log(currentGame.gameMode);
-
       $('#current-games-table tbody').append(str);
 
       // grab all the td's and then add an event listener
