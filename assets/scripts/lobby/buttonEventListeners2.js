@@ -225,9 +225,5 @@ $('#createNewRoomButton').on('click', (data) => {
 });
 
 $('#queueButton').on('click', () => {
-  if ($('#queueButton').text() === 'Join Queue') {
-    socket.emit('join-queue');
-  } else if ($('#queueButton').text() === 'Leave Queue') {
-    socket.emit('leave-queue');
-  }
+  socket.emit('queue-request');
 });
