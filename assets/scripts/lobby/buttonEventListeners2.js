@@ -224,10 +224,10 @@ $('#createNewRoomButton').on('click', (data) => {
   }
 });
 
-$('#QueueButton').on('click', () => {
-  if ($('#QueueButton').text() === 'Join Queue') {
+$('#queueButton').on('click', () => {
+  if ($('#queueButton').text() === 'Join Queue') {
     socket.emit('join-queue');
-  } else if ($('#QueueButton').text() === 'Leave Queue') {
+  } else if ($('#queueButton').text() === 'Leave Queue') {
     socket.emit('leave-queue');
   }
 });
