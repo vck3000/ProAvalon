@@ -951,6 +951,21 @@ export const userCommands = {
     },
   },
 
+  voteVoidGame: {
+    command: 'voteVoidGame',
+    help: '/voteVoidGame: Vote to void a game. Requires number_of_resistance + 1 votes.',
+    run(data, senderSocket) {
+      if (!senderSocket.request.user.inRoomId) {
+        senderSocket.emit('messageCommandReturnStr', {
+          message: 'You must be in a room to use /voteVoidGame.',
+          classStr: 'server-text',
+        });
+      }
+
+      rooms[senderSocket.request.user.inRoomId].voteVoidGame(senderSocket);
+    },
+  },
+
   getblacklist: {
     command: 'getblacklist',
     help: '/getblacklist: Shows your current blacklist for matchmaking. Will not match you into these players.',

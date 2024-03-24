@@ -20,6 +20,7 @@ import {
   RecoverEntry,
 } from './types';
 import { GameTimer, Timeouts } from './gameTimer';
+import { VoidGame } from './voidGame';
 import { SocketUser } from '../sockets/types';
 import { avalonRoles, rolesThatCantGuessMerlin } from './roles/roles';
 import { avalonCards } from './cards/cards';
@@ -111,6 +112,8 @@ class Game extends Room {
   gameTimer: GameTimer;
   dateTimerExpires: Date;
 
+  voidGame: VoidGame;
+
   playersYetToVote: string[] = [];
 
   proposedTeam: string[] = [];
@@ -152,6 +155,7 @@ class Game extends Room {
     // Room misc variables
     this.chatHistory = []; // Here because chatHistory records after game starts
     this.gameTimer = new GameTimer(this, gameConfig.getTimeFunc);
+    this.voidGame = new VoidGame(this);
 
     this.setupRecoverableComponents();
   }
@@ -1986,6 +1990,40 @@ class Game extends Room {
         (player) => player.username.toLowerCase() === username.toLowerCase(),
       ).length === 1
     );
+  }
+
+  voteVoidGame(socket: SocketUser): void {
+    // Verify they are in the game.
+    if (!this.usernameIsPlayer(socket.request.user.username)) {
+      socket.emit('messageCommandReturnStr', {
+        message: 'You are not a player in this game.',
+        classStr: 'server-text',
+      });
+      return;
+    }
+
+    const numResPlayers = this.playersInGame.filter(
+      (player) => player.alliance === Alliance.Resistance,
+    ).length;
+    const votesNeeded = numResPlayers + 1;
+    const numVoted = this.voidGame.voteVoidGame(
+      socket.request.user.username,
+      votesNeeded,
+    );
+
+    const s = numVoted > 1 ? 's have' : ' has';
+
+    this.sendText(
+      `${numVoted} player${s} voted to void the game. ${votesNeeded} votes needed.`,
+      'server-text',
+    );
+
+    if (numVoted >= votesNeeded) {
+      this.sendText(`Game has been voided.`, 'server-text');
+    }
+
+    // To update the timer data on clients side
+    this.distributeGameData();
   }
 
   canRoomChat(usernameLower: string) {
