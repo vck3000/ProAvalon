@@ -16,6 +16,7 @@ export enum Phase {
   // Misc
   Paused = 'Paused',
   Frozen = 'Frozen',
+  Voided = 'Voided',
 }
 
 // This is needed to tell if we need to timer it.
