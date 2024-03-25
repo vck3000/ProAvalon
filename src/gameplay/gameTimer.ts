@@ -184,11 +184,15 @@ export class GameTimer {
 
         // Notify everyone
         this.game.sendText(
-          `${this.game.playersInGame[i].request.user.username} has timed out. Forcing a random move.`,
+          `${this.game.anonymizer.anon(
+            this.game.playersInGame[i].request.user.username,
+          )} has timed out. Forcing a random move.`,
           'server-text',
         );
         console.log(
-          `Player: ${this.game.playersInGame[i].request.user.username} | Button: ${randomButton} | Targets: ${targets}.`,
+          `Player: ${this.game.anonymizer.usernameAnonReveal(
+            this.game.playersInGame[i].request.user.username,
+          )} | Button: ${randomButton} | Targets: ${targets}.`,
         );
 
         // Act on the randomised action.
