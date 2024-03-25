@@ -559,7 +559,7 @@ class Game extends Room {
     if (this.anonymousMode) {
       this.sendText('The game is running in anonymous mode.', 'gameplay-text');
 
-      if (this.roomCreationType === 'CUSTOM_ROOM') {
+      if (this.roomCreationType === RoomCreationType.CUSTOM_ROOM) {
         str = 'Current players in game: ';
         for (let i = 0; i < this.socketsOfPlayers.length; i++) {
           str += `${this.socketsOfPlayers[i].request.user.username}, `;
