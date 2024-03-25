@@ -1204,6 +1204,9 @@ class Game extends Room {
     if (this.phase === Phase.Paused) {
       return 'Paused';
     }
+    if (this.phase === Phase.Voided) {
+      return 'Voided';
+    }
     if (this.gameStarted === true) {
       return 'Game in progress';
     }
@@ -2019,6 +2022,7 @@ class Game extends Room {
     );
 
     if (numVoted >= votesNeeded) {
+      this.changePhase(Phase.Voided);
       this.sendText(`Game has been voided.`, 'server-text');
     }
 
