@@ -20,6 +20,7 @@ import {
   RecoverEntry,
 } from './types';
 import { GameTimer, Timeouts } from './gameTimer';
+import { VoidGameTracker } from './voidGameTracker';
 import { SocketUser } from '../sockets/types';
 import { avalonRoles, rolesThatCantGuessMerlin } from './roles/roles';
 import { avalonCards } from './cards/cards';
@@ -111,6 +112,8 @@ class Game extends Room {
   gameTimer: GameTimer;
   dateTimerExpires: Date;
 
+  voidGameTracker: VoidGameTracker;
+
   playersYetToVote: string[] = [];
 
   proposedTeam: string[] = [];
@@ -152,6 +155,7 @@ class Game extends Room {
     // Room misc variables
     this.chatHistory = []; // Here because chatHistory records after game starts
     this.gameTimer = new GameTimer(this, gameConfig.getTimeFunc);
+    this.voidGameTracker = new VoidGameTracker(this);
 
     this.setupRecoverableComponents();
   }
@@ -1212,6 +1216,9 @@ class Game extends Room {
     if (this.phase === Phase.Paused) {
       return 'Paused';
     }
+    if (this.phase === Phase.Voided) {
+      return 'Voided';
+    }
     if (this.gameStarted === true) {
       return 'Game in progress';
     }
@@ -1998,6 +2005,25 @@ class Game extends Room {
         (player) => player.username.toLowerCase() === username.toLowerCase(),
       ).length === 1
     );
+  }
+
+  voteVoidGame(socket: SocketUser): void {
+    // Verify they are in the game.
+    if (!this.usernameIsPlayer(socket.request.user.username)) {
+      socket.emit('messageCommandReturnStr', {
+        message: 'You are not a player in this game.',
+        classStr: 'server-text',
+      });
+      return;
+    }
+
+    if (this.voidGameTracker.playerVoted(socket.request.user.username)) {
+      this.changePhase(Phase.Voided);
+      this.sendText(`Game has been voided.`, 'server-text');
+    }
+
+    // To update the timer data on clients side
+    this.distributeGameData();
   }
 
   canRoomChat(usernameLower: string) {

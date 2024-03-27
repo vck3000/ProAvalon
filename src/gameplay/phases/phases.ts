@@ -1,6 +1,7 @@
 import Finished from './common/finished';
 import Frozen from './common/frozen';
 import Paused from './common/paused';
+import Voided from './common/voided';
 import PickingTeam from './common/pickingTeam';
 import VotingMission from './common/votingMission';
 import VotingTeam from './common/votingTeam';
@@ -14,6 +15,7 @@ export const commonPhases = {
   [Finished.phase]: Finished,
   [Frozen.phase]: Frozen,
   [Paused.phase]: Paused,
+  [Voided.phase]: Voided,
   [PickingTeam.phase]: PickingTeam,
   [VotingMission.phase]: VotingMission,
   [VotingTeam.phase]: VotingTeam,

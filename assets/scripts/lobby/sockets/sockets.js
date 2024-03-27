@@ -369,7 +369,7 @@ socket.on('update-current-players-list', (currentPlayers) => {
 
 // Defines the order in which the game statuses will be sorted. If there is a new game status that is not
 // in the object, it will default to the last position.
-const gameStatusOrder = { 'Waiting': 0, 'Game in progress': 1, 'Paused': 2, 'Frozen': 3, 'Finished': 4 };
+const gameStatusOrder = { 'Waiting': 0, 'Game in progress': 1, 'Paused': 2, 'Frozen': 3, 'Finished': 4 , 'Voided': 5};
 const defaultGameOrder = Object.keys(gameStatusOrder).length;
 
 socket.on('update-current-games-list', (currentGames) => {
