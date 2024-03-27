@@ -2,9 +2,7 @@ import Game from './game';
 import { Alliance } from './types';
 
 export class VoidGameTracker {
-  game: Game;
-  votesNeeded: number = 0;
-
+  private game: Game;
   private playersVoted: Set<string> = new Set();
 
   constructor(game: Game) {
@@ -14,21 +12,25 @@ export class VoidGameTracker {
   // Adds player to playersVoted set
   // Returns true if numPlayersVoted > votesNeeded
   playerVoted(username: string): boolean {
+    if (!this.game.gameStarted) {
+      return false;
+    }
+
     const numResPlayers = this.game.playersInGame.filter(
       (player) => player.alliance === Alliance.Resistance,
     ).length;
 
-    this.votesNeeded = numResPlayers + 1;
+    const votesNeeded = numResPlayers + 1;
 
     this.playersVoted.add(username.toLowerCase());
 
     const s = this.playersVoted.size > 1 ? 's have' : ' has';
 
     this.game.sendText(
-      `${this.playersVoted.size} player${s} voted to void the game. ${this.votesNeeded} votes needed.`,
+      `${this.playersVoted.size} player${s} voted to void the game. ${votesNeeded} votes needed.`,
       'server-text',
     );
 
-    return this.playersVoted.size >= this.votesNeeded;
+    return this.playersVoted.size >= votesNeeded;
   }
 }

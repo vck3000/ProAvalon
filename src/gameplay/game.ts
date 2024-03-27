@@ -155,7 +155,7 @@ class Game extends Room {
     // Room misc variables
     this.chatHistory = []; // Here because chatHistory records after game starts
     this.gameTimer = new GameTimer(this, gameConfig.getTimeFunc);
-    this.voidGame = new VoidGameTracker(this);
+    this.voidGameTracker = new VoidGameTracker(this);
 
     this.setupRecoverableComponents();
   }
@@ -2017,7 +2017,6 @@ class Game extends Room {
       return;
     }
 
-    // Adds playerVoted to the tracker. If votes > votes needed, change to Void phase
     if (this.voidGameTracker.playerVoted(socket.request.user.username)) {
       this.changePhase(Phase.Voided);
       this.sendText(`Game has been voided.`, 'server-text');
