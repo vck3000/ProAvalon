@@ -890,9 +890,11 @@ socket.on('numPlayersInQueue', (data) => {
 });
 
 socket.on('queueReply', (data) => {
-  if (data.joined) {
+  if (data.join) {
+    joined = true;
     $('#queueButton').text('Leave Queue');
   } else {
+    joined = false;
     $('#queueButton').text('Join Queue');
   }
 })

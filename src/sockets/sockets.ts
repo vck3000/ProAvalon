@@ -2090,67 +2090,73 @@ function kickPlayer(username: string): void {
   }
 }
 
-function queueRequest(): void {
+function queueRequest(data): void {
+  if (!data.join) {
+    joinQueue.call(this);
+  } else {
+    leaveQueue.call(this);
+  }
+}
+
+function joinQueue() {
   const username = this.request.user.username;
+  const blacklistUsernames = this.request.user.matchmakingBlacklist;
 
-  if (this.data.joined) {
-    const result = matchmakingQueue.removeUser(username);
+  if (!joinQueueFilter.joinQueueRequest(username)) {
+    this.emit('allChatToClient', {
+      message:
+        'You have rejected too many found matches. Please try again later.',
+      classStr: 'server-text',
+    });
+    return;
+  }
 
-    if (result) {
-      this.data.joined = false;
-      this.emit('queueReply', this.data);
+  if (process.env.ENV !== 'local') {
+    if (this.request.user.totalGamesPlayed < 3) {
+      this.emit(
+        'danger-alert',
+        'You require 3 games to join the ranked queue.',
+      );
+      return;
     }
+  }
+
+  const result = matchmakingQueue.addUser(
+    new QueueEntry(username, blacklistUsernames),
+  );
+  if (result) {
+    this.emit('queueReply', { join: true });
 
     this.emit('allChatToClient', {
-      message: result
-        ? 'You have been removed from the queue.'
-        : 'You are not in the queue.',
+      message: 'You have been added to the queue.',
       classStr: 'server-text',
     });
 
     sendNumPlayersInQueueToEveryone();
   } else {
-    const blacklistUsernames = this.request.user.matchmakingBlacklist;
-
-    if (!joinQueueFilter.joinQueueRequest(username)) {
-      this.emit('allChatToClient', {
-        message:
-          'You have rejected too many found matches. Please try again later.',
-        classStr: 'server-text',
-      });
-      return;
-    }
-
-    if (process.env.ENV !== 'local') {
-      if (this.request.user.totalGamesPlayed < 3) {
-        this.emit(
-          'danger-alert',
-          'You require 3 games to join the ranked queue.',
-        );
-        return;
-      }
-    }
-
-    const result = matchmakingQueue.addUser(
-      new QueueEntry(username, blacklistUsernames),
-    );
-    if (result) {
-      this.data.joined = true;
-      this.emit('queueReply', this.data);
-
-      this.emit('allChatToClient', {
-        message: 'You have been added to the queue.',
-        classStr: 'server-text',
-      });
-
-      sendNumPlayersInQueueToEveryone();
-    } else {
-      this.emit('allChatToClient', {
-        message: 'You have already joined the queue.',
-        classStr: 'server-text',
-      });
-    }
+    this.emit('allChatToClient', {
+      message: 'You have already joined the queue.',
+      classStr: 'server-text',
+    });
   }
+}
+
+function leaveQueue(joined: boolean): void {
+  const username = this.request.user.username;
+  const result = matchmakingQueue.removeUser(username);
+
+  this.emit('allChatToClient', {
+    message: result
+      ? 'You have been removed from the queue.'
+      : 'You are not in the queue.',
+    classStr: 'server-text',
+  });
+
+  if (result) {
+    this.emit('queueReply', { join: false });
+  }
+
+  sendNumPlayersInQueueToEveryone();
 }
 
 function sendNumPlayersInQueueToEveryone() {
