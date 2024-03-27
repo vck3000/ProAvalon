@@ -2005,23 +2005,16 @@ class Game extends Room {
       return;
     }
 
-    const numResPlayers = this.playersInGame.filter(
-      (player) => player.alliance === Alliance.Resistance,
-    ).length;
-    const votesNeeded = numResPlayers + 1;
-    const numVoted = this.voidGame.voteVoidGame(
-      socket.request.user.username,
-      votesNeeded,
-    );
+    this.voidGame.playerVoted(socket.request.user.username);
 
-    const s = numVoted > 1 ? 's have' : ' has';
+    const s = this.voidGame.getNumVoted() > 1 ? 's have' : ' has';
 
     this.sendText(
-      `${numVoted} player${s} voted to void the game. ${votesNeeded} votes needed.`,
+      `${this.voidGame.getNumVoted()} player${s} voted to void the game. ${this.voidGame.getVotesNeeded()} votes needed.`,
       'server-text',
     );
 
-    if (numVoted >= votesNeeded) {
+    if (this.voidGame.enoughVotes()) {
       this.changePhase(Phase.Voided);
       this.sendText(`Game has been voided.`, 'server-text');
     }
