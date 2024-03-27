@@ -5,7 +5,7 @@ const ANON_NAMES = [
   'Bulbasaur',
   'Charmander',
   'Squirtle',
-  'Treeko',
+  'Treecko',
   'Torchic',
   'Mudkip',
   'Turtwig',
