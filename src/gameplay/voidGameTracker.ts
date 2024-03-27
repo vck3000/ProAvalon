@@ -9,8 +9,7 @@ export class VoidGameTracker {
     this.game = game;
   }
 
-  // Adds player to playersVoted set
-  // Returns true if numPlayersVoted > votesNeeded
+  // Returns true if the game should now be voided
   playerVoted(username: string): boolean {
     if (!this.game.gameStarted) {
       return false;
