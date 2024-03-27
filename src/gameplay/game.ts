@@ -20,7 +20,7 @@ import {
   RecoverEntry,
 } from './types';
 import { GameTimer, Timeouts } from './gameTimer';
-import { VoidGame } from './voidGame';
+import { VoidGameTracker } from './voidGameTracker';
 import { SocketUser } from '../sockets/types';
 import { avalonRoles, rolesThatCantGuessMerlin } from './roles/roles';
 import { avalonCards } from './cards/cards';
@@ -112,7 +112,7 @@ class Game extends Room {
   gameTimer: GameTimer;
   dateTimerExpires: Date;
 
-  voidGame: VoidGame;
+  voidGameTracker: VoidGameTracker;
 
   playersYetToVote: string[] = [];
 
@@ -155,7 +155,7 @@ class Game extends Room {
     // Room misc variables
     this.chatHistory = []; // Here because chatHistory records after game starts
     this.gameTimer = new GameTimer(this, gameConfig.getTimeFunc);
-    this.voidGame = new VoidGame(this);
+    this.voidGame = new VoidGameTracker(this);
 
     this.setupRecoverableComponents();
   }
@@ -2017,16 +2017,8 @@ class Game extends Room {
       return;
     }
 
-    this.voidGame.playerVoted(socket.request.user.username);
-
-    const s = this.voidGame.getNumVoted() > 1 ? 's have' : ' has';
-
-    this.sendText(
-      `${this.voidGame.getNumVoted()} player${s} voted to void the game. ${this.voidGame.getVotesNeeded()} votes needed.`,
-      'server-text',
-    );
-
-    if (this.voidGame.enoughVotes()) {
+    // Adds playerVoted to the tracker. If votes > votes needed, change to Void phase
+    if (this.voidGameTracker.playerVoted(socket.request.user.username)) {
       this.changePhase(Phase.Voided);
       this.sendText(`Game has been voided.`, 'server-text');
     }
