@@ -955,7 +955,7 @@ export const userCommands = {
 
   voidgame: {
     command: 'voidgame',
-    help: '/voidgame: Vote to void a game. Requires number_of_resistance + 1 votes.',
+    help: '/voidgame: Vote to void a game. Requires number_of_resistance + 1 votes. You cannot take back your void game vote.',
     run(data, senderSocket) {
       if (!senderSocket.request.user.inRoomId) {
         senderSocket.emit('messageCommandReturnStr', {
