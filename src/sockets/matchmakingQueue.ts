@@ -88,45 +88,55 @@ export class MatchmakingQueue {
       return;
     }
 
+    for (
+      let gameSize = MAX_PLAYERS_PER_GAME;
+      gameSize >= MIN_PLAYERS_PER_GAME;
+      gameSize--
+    ) {
+      if (this.checkValidCombinations(gameSize)) {
+        return;
+      }
+    }
+  }
+
+  private checkValidCombinations(gameSize: number): boolean {
     // Don't match if a user blacklist collides.
     // Do a brute force search.
-    for (let i = MAX_PLAYERS_PER_GAME; i >= MIN_PLAYERS_PER_GAME; i--) {
-      const combinations = MatchmakingQueue.getCombinations(this.queue, i);
+    const combinations = MatchmakingQueue.getCombinations(this.queue, gameSize);
 
-      for (const combination of combinations) {
-        const combinationUsernames = combination.map((entry) => entry.username);
-        let combinationFailed = false;
+    for (const combination of combinations) {
+      const combinationUsernames = combination.map((entry) => entry.username);
+      let combinationFailed = false;
 
-        // For each player entry in the queue, check each player's blacklist.
-        for (const entry of combination) {
-          const blacklistUsernames = entry.blacklistUsernames;
-          for (const blacklistUsername of blacklistUsernames) {
-            if (combinationUsernames.includes(blacklistUsername)) {
-              combinationFailed = true;
-              break;
-            }
-          }
-
-          if (combinationFailed) {
+      // For each player entry in the queue, check each player's blacklist.
+      for (const entry of combination) {
+        const blacklistUsernames = entry.blacklistUsernames;
+        for (const blacklistUsername of blacklistUsernames) {
+          if (combinationUsernames.includes(blacklistUsername)) {
+            combinationFailed = true;
             break;
           }
         }
 
-        if (!combinationFailed) {
-          console.log(
-            `[MatchmakingQueue] Match found: ${combinationUsernames}`,
-          );
-          this.matchFoundCallback(combinationUsernames);
-
-          // Take out just the matched people from the queue.
-          for (const username of combinationUsernames) {
-            this.removeUser(username);
-          }
-
-          return;
+        if (combinationFailed) {
+          break;
         }
       }
+
+      if (!combinationFailed) {
+        console.log(`[MatchmakingQueue] Match found: ${combinationUsernames}`);
+        this.matchFoundCallback(combinationUsernames);
+
+        // Take out just the matched people from the queue.
+        for (const username of combinationUsernames) {
+          this.removeUser(username);
+        }
+
+        return true;
+      }
     }
+
+    return false;
   }
 
   private getQueueUsernames(): string[] {
