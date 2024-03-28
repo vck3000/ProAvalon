@@ -885,3 +885,8 @@ socket.on('redirect', (dest) => {
 socket.on('numPlayersInQueue', (data) => {
   $('#numPlayersInQueue')[0].innerText = data.numPlayersInQueue;
 });
+
+socket.on('queueReply', (data) => {
+  joined = data.joined;
+  $('#queueButton').text(joined ? 'Leave Queue' : 'Join Queue');
+})

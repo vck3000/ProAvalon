@@ -1104,8 +1104,7 @@ export const server = function (io: SocketServer): void {
     socket.on('leave-room', leaveRoom);
     socket.on('startGame', startGame);
     socket.on('kickPlayer', kickPlayer);
-    socket.on('join-queue', joinQueue);
-    socket.on('leave-queue', leaveQueue);
+    socket.on('queue-request', queueRequest);
     socket.on('ready-prompt-reply', readyPromptHandler);
     socket.on('update-room-max-players', updateRoomMaxPlayers);
     socket.on('update-room-game-mode', updateRoomGameMode);
@@ -2137,7 +2136,20 @@ function kickPlayer(username: string): void {
   }
 }
 
-function joinQueue() {
+function queueRequest(data): void {
+  let joined;
+
+  if (data.join) {
+    joined = joinQueue.call(this);
+  } else {
+    joined = leaveQueue.call(this);
+  }
+
+  this.emit('queueReply', { joined: joined });
+}
+
+// Returns whether they're joined or not.
+function joinQueue(): boolean {
   const username = this.request.user.username;
   const blacklistUsernames = this.request.user.matchmakingBlacklist;
 
@@ -2147,7 +2159,7 @@ function joinQueue() {
         'You have rejected too many found matches. Please try again later.',
       classStr: 'server-text',
     });
-    return;
+    return false;
   }
 
   if (process.env.ENV !== 'local') {
@@ -2156,7 +2168,7 @@ function joinQueue() {
         'danger-alert',
         'You require 3 games to join the ranked queue.',
       );
-      return;
+      return false;
     }
   }
 
@@ -2176,9 +2188,12 @@ function joinQueue() {
       classStr: 'server-text',
     });
   }
+
+  return true;
 }
 
-function leaveQueue(): void {
+// Returns whether they're joined or not.
+function leaveQueue(): boolean {
   const username = this.request.user.username;
   const result = matchmakingQueue.removeUser(username);
 
@@ -2190,6 +2205,8 @@ function leaveQueue(): void {
   });
 
   sendNumPlayersInQueueToEveryone();
+
+  return false;
 }
 
 function sendNumPlayersInQueueToEveryone() {
