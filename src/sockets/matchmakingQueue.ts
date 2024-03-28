@@ -1,4 +1,8 @@
-const NUM_PLAYERS_PER_GAME = 6;
+const MIN_PLAYERS_PER_GAME = 6;
+const MAX_PLAYERS_PER_GAME = 8;
+
+// All in milliseconds
+const TEN_SECONDS = 10000;
 
 export class QueueEntry {
   username: string;
@@ -14,11 +18,21 @@ export class QueueEntry {
 
 export class MatchmakingQueue {
   private queue: QueueEntry[] = [];
+  private queueCheckTimer: NodeJS.Timeout | null = null;
 
   private readonly matchFoundCallback: (usernames: string[]) => void;
 
   constructor(matchFoundCallback: (usernames: string[]) => void) {
     this.matchFoundCallback = matchFoundCallback;
+  }
+
+  private startQueueCheckTimer() {
+    if (this.queueCheckTimer !== null) {
+      clearTimeout(this.queueCheckTimer);
+    }
+    this.queueCheckTimer = setTimeout(() => {
+      this.checkQueue();
+    }, TEN_SECONDS);
   }
 
   addUser(queueEntry: QueueEntry): boolean {
@@ -27,7 +41,7 @@ export class MatchmakingQueue {
     }
 
     this.queue.push(queueEntry);
-    this.checkQueue();
+    this.startQueueCheckTimer();
 
     return true;
   }
@@ -65,46 +79,47 @@ export class MatchmakingQueue {
   }
 
   private checkQueue(): void {
-    if (this.queue.length < NUM_PLAYERS_PER_GAME) {
+    if (this.queue.length < MIN_PLAYERS_PER_GAME) {
       return;
     }
 
     // Don't match if a user blacklist collides.
     // Do a brute force search.
-    const combinations = MatchmakingQueue.getCombinations(
-      this.queue,
-      NUM_PLAYERS_PER_GAME,
-    );
+    for (let i = MAX_PLAYERS_PER_GAME; i >= MIN_PLAYERS_PER_GAME; i--) {
+      const combinations = MatchmakingQueue.getCombinations(this.queue, i);
 
-    for (const combination of combinations) {
-      const combinationUsernames = combination.map((entry) => entry.username);
-      let combinationFailed = false;
+      for (const combination of combinations) {
+        const combinationUsernames = combination.map((entry) => entry.username);
+        let combinationFailed = false;
 
-      // For each player entry in the queue, check each player's blacklist.
-      for (const entry of combination) {
-        const blacklistUsernames = entry.blacklistUsernames;
-        for (const blacklistUsername of blacklistUsernames) {
-          if (combinationUsernames.includes(blacklistUsername)) {
-            combinationFailed = true;
+        // For each player entry in the queue, check each player's blacklist.
+        for (const entry of combination) {
+          const blacklistUsernames = entry.blacklistUsernames;
+          for (const blacklistUsername of blacklistUsernames) {
+            if (combinationUsernames.includes(blacklistUsername)) {
+              combinationFailed = true;
+              break;
+            }
+          }
+
+          if (combinationFailed) {
             break;
           }
         }
 
-        if (combinationFailed) {
-          break;
+        if (!combinationFailed) {
+          console.log(
+            `[MatchmakingQueue] Match found: ${combinationUsernames}`,
+          );
+          this.matchFoundCallback(combinationUsernames);
+
+          // Take out just the matched people from the queue.
+          for (const username of combinationUsernames) {
+            this.removeUser(username);
+          }
+
+          return;
         }
-      }
-
-      if (!combinationFailed) {
-        console.log(`[MatchmakingQueue] Match found: ${combinationUsernames}`);
-        this.matchFoundCallback(combinationUsernames);
-
-        // Take out just the matched people from the queue.
-        for (const username of combinationUsernames) {
-          this.removeUser(username);
-        }
-
-        return;
       }
     }
   }
