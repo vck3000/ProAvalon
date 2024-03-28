@@ -2306,6 +2306,8 @@ function matchFound(usernames: string[]): void {
             Card.LadyOfTheLake,
           ]);
           break;
+        default:
+          throw new Error('Unexpected number of approved usernames.');
       }
 
       // Need to push them out so that the game treats them as just joining to
