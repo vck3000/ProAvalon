@@ -137,13 +137,19 @@ function addToAllChat(data) {
         }
         let hour = d.getHours();
         let min = d.getMinutes();
+        let sec = d.getSeconds();
+
         if (hour < 10) {
           hour = `0${hour}`;
         }
         if (min < 10) {
           min = `0${min}`;
         }
-        date = `[${hour}:${min}]`;
+        if (sec < 10) {
+          sec = `0${sec}`;
+        }
+
+        date = $('#optionDisplayEnableHourMinSec')[0].checked ? `[${hour}:${min}:${sec}]` : `[${hour}:${min}]`;
 
         let filteredMessage = data[i].message
           .replace(/&/g, "&amp;")
@@ -248,13 +254,18 @@ function addToRoomChat(data) {
         }
         let hour = d.getHours();
         let min = d.getMinutes();
+        let sec = d.getSeconds();
         if (hour < 10) {
           hour = `0${hour}`;
         }
         if (min < 10) {
           min = `0${min}`;
         }
-        date = `[${hour}:${min}]`;
+        if (sec < 10) {
+          sec = `0${sec}`;
+        }
+
+        date = $('#optionDisplayEnableHourMinSec')[0].checked ? `[${hour}:${min}:${sec}]` : `[${hour}:${min}]`;
         data[i].dateStr = date;
 
         // if(!data[i].dateCreated){
