@@ -1,4 +1,5 @@
 import { MatchmakingQueue, QueueEntry } from '../matchmakingQueue';
+const MM_JOIN_WINDOW = 10000;
 
 // Need to fake timers as we want to assert the queue waits for new users
 jest.useFakeTimers();
@@ -28,7 +29,7 @@ describe('MatchmakingQueue', () => {
 
     matchmakingQueue.addUser(getDefaultQueueEntry('6'));
 
-    jest.advanceTimersByTime(10000);
+    jest.advanceTimersByTime(MM_JOIN_WINDOW);
 
     const expectUsernames = ['1', '2', '3', '4', '5', '6'];
     expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
@@ -53,7 +54,7 @@ describe('MatchmakingQueue', () => {
     expect(matchFoundCallback).not.toHaveBeenCalled();
 
     matchmakingQueue.addUser(getDefaultQueueEntry('6'));
-    jest.advanceTimersByTime(10000);
+    jest.advanceTimersByTime(MM_JOIN_WINDOW);
 
     const expectUsernames = ['1', '2', '3', '4', '5', '6'];
     expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
@@ -86,7 +87,7 @@ describe('MatchmakingQueue', () => {
 
     matchmakingQueue.addUser(getDefaultQueueEntry('1'));
 
-    jest.advanceTimersByTime(10000);
+    jest.advanceTimersByTime(MM_JOIN_WINDOW);
 
     const expectUsernames = ['2', '3', '4', '5', '6', '1'];
     expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
@@ -109,13 +110,13 @@ describe('MatchmakingQueue', () => {
 
       // 6th user doesn't like player 3 and 12.
       matchmakingQueue.addUser(new QueueEntry('6', ['3', '12']));
-      jest.advanceTimersByTime(10000);
+      jest.advanceTimersByTime(MM_JOIN_WINDOW);
 
       expect(matchFoundCallback).not.toHaveBeenCalled();
 
       // 7th user can match.
       matchmakingQueue.addUser(getDefaultQueueEntry('7'));
-      jest.advanceTimersByTime(10000);
+      jest.advanceTimersByTime(MM_JOIN_WINDOW);
 
       const expectUsernames = ['1', '2', '3', '4', '5', '7'];
       expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
@@ -131,7 +132,7 @@ describe('MatchmakingQueue', () => {
       // Player 13 comes in. Gets matched.
       matchmakingQueue.addUser(getDefaultQueueEntry('13'));
 
-      jest.advanceTimersByTime(10000);
+      jest.advanceTimersByTime(MM_JOIN_WINDOW);
 
       {
         const expectUsernames = ['6', '8', '9', '10', '11', '13'];
@@ -152,7 +153,7 @@ describe('MatchmakingQueue', () => {
       matchmakingQueue.addUser(getDefaultQueueEntry('3'));
       matchmakingQueue.addUser(getDefaultQueueEntry('4'));
 
-      jest.advanceTimersByTime(10000);
+      jest.advanceTimersByTime(MM_JOIN_WINDOW);
       const expectUsernames = ['pronub', 'qwer', '1', '2', '3', '4'];
       expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
     });
@@ -243,7 +244,7 @@ describe('MatchmakingQueue', () => {
       matchmakingQueue.addUser(getDefaultQueueEntry('7'));
       expect(matchFoundCallback).not.toHaveBeenCalled();
 
-      jest.advanceTimersByTime(10000);
+      jest.advanceTimersByTime(MM_JOIN_WINDOW);
 
       const expectUsernames = ['1', '2', '3', '4', '5', '6', '7'];
       expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);

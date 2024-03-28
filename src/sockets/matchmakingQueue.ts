@@ -88,18 +88,19 @@ export class MatchmakingQueue {
       return;
     }
 
+    // Prioritise larger game sizes first
     for (
       let gameSize = MAX_PLAYERS_PER_GAME;
       gameSize >= MIN_PLAYERS_PER_GAME;
       gameSize--
     ) {
-      if (this.checkValidCombinations(gameSize)) {
+      if (this.tryMatchGameSize(gameSize)) {
         return;
       }
     }
   }
 
-  private checkValidCombinations(gameSize: number): boolean {
+  private tryMatchGameSize(gameSize: number): boolean {
     // Don't match if a user blacklist collides.
     // Do a brute force search.
     const combinations = MatchmakingQueue.getCombinations(this.queue, gameSize);
