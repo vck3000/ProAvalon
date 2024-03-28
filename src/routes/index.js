@@ -197,7 +197,7 @@ router.get('/emailVerification/verifyEmailRequest', async (req, res) => {
     user.emailToken = undefined;
     user.markModified('emailVerified');
     user.markModified('emailToken');
-    user.save();
+    await user.save();
 
     req.flash('success', 'Email verified! Thank you!');
     res.redirect('/');
@@ -219,11 +219,11 @@ router.get('/logout', (req, res) => {
   });
 });
 
-router.get('/log', (req, res) => {
-  res.render('log', {
+router.get('/changelog', (req, res) => {
+  res.render('changelog', {
     currentUser: req.user,
-    headerActive: 'log',
-    path: 'log',
+    headerActive: 'changelog',
+    path: 'changelog',
   });
 });
 

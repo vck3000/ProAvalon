@@ -32,7 +32,9 @@ class Merlin implements IRole {
             continue;
           }
 
-          spies.push(this.room.playersInGame[i].username);
+          spies.push(
+            this.room.anonymizer.anon(this.room.playersInGame[i].username),
+          );
         }
       }
 

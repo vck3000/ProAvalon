@@ -1,4 +1,4 @@
-import { millisToStr } from './time';
+import { millisToStr } from '../time';
 
 describe('TimeConverter', () => {
   it('Converts time correctly', () => {

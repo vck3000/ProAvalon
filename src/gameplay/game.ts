@@ -13,8 +13,14 @@ import { modOrTOString } from '../modsadmins/modOrTO';
 
 import { RoomCreationType } from './roomTypes';
 import { Phase } from './phases/types';
-import { Alliance } from './types';
+import {
+  Alliance,
+  IRecoverable,
+  RecoverableComponent,
+  RecoverEntry,
+} from './types';
 import { GameTimer, Timeouts } from './gameTimer';
+import { VoidGameTracker } from './voidGameTracker';
 import { SocketUser } from '../sockets/types';
 import { avalonRoles, rolesThatCantGuessMerlin } from './roles/roles';
 import { avalonCards } from './cards/cards';
@@ -22,6 +28,8 @@ import { avalonPhases, commonPhases } from './phases/phases';
 import { Card } from './cards/types';
 import { Role } from './roles/types';
 import { millisToStr } from '../util/time';
+import shuffleArray from '../util/shuffleArray';
+import { Anonymizer } from './anonymizer';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;
@@ -104,6 +112,17 @@ class Game extends Room {
   gameTimer: GameTimer;
   dateTimerExpires: Date;
 
+  voidGameTracker: VoidGameTracker;
+
+  playersYetToVote: string[] = [];
+
+  proposedTeam: string[] = [];
+
+  anonymizer: Anonymizer = new Anonymizer();
+  anonymousMode = false;
+
+  recoverableComponents: IRecoverable[] = [];
+
   constructor(gameConfig: GameConfig) {
     super(gameConfig.roomConfig);
 
@@ -136,6 +155,9 @@ class Game extends Room {
     // Room misc variables
     this.chatHistory = []; // Here because chatHistory records after game starts
     this.gameTimer = new GameTimer(this, gameConfig.getTimeFunc);
+    this.voidGameTracker = new VoidGameTracker(this);
+
+    this.setupRecoverableComponents();
   }
 
   destructor(): void {
@@ -146,6 +168,17 @@ class Game extends Room {
     if (this.gameStarted === false) {
       this.gameTimer.configureTimeouts(timeouts);
     }
+  }
+
+  configureAnonymousMode(anonymousMode: boolean): void {
+    if (this.gameStarted === false) {
+      this.anonymousMode = anonymousMode;
+    }
+  }
+
+  setupRecoverableComponents(): void {
+    this.recoverableComponents = [];
+    this.recoverableComponents.push(this.anonymizer);
   }
 
   // RECOVER GAME!
@@ -191,6 +224,32 @@ class Game extends Room {
 
     this.phaseBeforeFrozen = this.phase;
     this.changePhase(Phase.Frozen);
+
+    // Special Recoverable components
+    const recoverableComponents: RecoverEntry[] = JSON.parse(
+      storedData.recoverableComponents,
+    );
+
+    for (const { name, data } of recoverableComponents) {
+      switch (name) {
+        case RecoverableComponent.Anonymizer:
+          this.anonymizer = new Anonymizer();
+          _.merge(this.anonymizer, storedData.anonymizer);
+          this.anonymizer.recover(data);
+      }
+    }
+
+    this.setupRecoverableComponents();
+  }
+
+  serialise(): string {
+    const data: RecoverEntry[] = [];
+
+    for (const recoverable of this.recoverableComponents) {
+      data.push({ name: recoverable.name, data: recoverable.serialise() });
+    }
+
+    return JSON.stringify(data);
   }
 
   playerJoinRoom(socket, inputPassword) {
@@ -337,7 +396,7 @@ class Game extends Room {
     for (let i = 0; i < this.socketsOfPlayers.length; i++) {
       shuffledPlayerAssignments[i] = i;
     }
-    shuffledPlayerAssignments = shuffle(shuffledPlayerAssignments);
+    shuffledPlayerAssignments = shuffleArray(shuffledPlayerAssignments);
 
     const tempSockets = [];
     // create temp sockets
@@ -368,6 +427,8 @@ class Game extends Room {
         this.socketsOfPlayers[i].request.user.username,
       );
     }
+
+    this.anonymizer.initialise(this.playerUsernamesInGame, this.anonymousMode);
 
     // Give roles to the players according to their alliances
     // Get roles:
@@ -497,6 +558,22 @@ class Game extends Room {
 
     if (this.disableVoteHistory) {
       this.sendText('The game has vote history disabled.', 'gameplay-text');
+    }
+
+    if (this.anonymousMode) {
+      this.sendText('The game is running in anonymous mode.', 'gameplay-text');
+
+      if (this.roomCreationType === RoomCreationType.CUSTOM_ROOM) {
+        str = 'Current players in game: ';
+        for (let i = 0; i < this.socketsOfPlayers.length; i++) {
+          str += `${this.socketsOfPlayers[i].request.user.username}, `;
+        }
+
+        // remove the last , and replace with .
+        str = str.slice(0, str.length - 2);
+        str += '.';
+        this.sendText(str, 'gameplay-text');
+      }
     }
 
     // seed the starting data into the VH
@@ -676,14 +753,15 @@ class Game extends Room {
       return;
     }
 
-    let buttonPressed = data[0];
+    const buttonPressed = data[0];
     let selectedPlayers = data[1];
-
-    // console.log(buttonPressed, selectedPlayers);
 
     if (selectedPlayers === undefined || selectedPlayers === null) {
       selectedPlayers = [];
     }
+    selectedPlayers = this.anonymizer.deAnonMany(selectedPlayers);
+
+    // console.log(buttonPressed, selectedPlayers);
 
     // Common phases
     if (
@@ -895,10 +973,16 @@ class Game extends Room {
         }
 
         roomPlayers[i] = {
-          username: this.playersInGame[i].username,
-          avatarImgRes: this.playersInGame[i].request.user.avatarImgRes,
-          avatarImgSpy: this.playersInGame[i].request.user.avatarImgSpy,
-          avatarHide: this.playersInGame[i].request.user.avatarHide,
+          username: this.anonymizer.anon(this.playersInGame[i].username),
+          avatarImgRes: this.anonymousMode
+            ? null
+            : this.playersInGame[i].request.user.avatarImgRes,
+          avatarImgSpy: this.anonymousMode
+            ? null
+            : this.playersInGame[i].request.user.avatarImgSpy,
+          avatarHide: this.anonymousMode
+            ? null
+            : this.playersInGame[i].request.user.avatarHide,
           claim: isClaiming,
         };
 
@@ -954,8 +1038,7 @@ class Game extends Room {
           alliance: playerRoles[i].alliance,
           role: playerRoles[i].role,
           see: this.specialRoles[playerRoles[i].role].see(),
-          username: playerRoles[i].username,
-          socketId: playerRoles[i].socketId,
+          username: this.anonymizer.anon(playerRoles[i].username),
         };
 
         // Some roles such as Galahad require modifying display role.
@@ -979,16 +1062,20 @@ class Game extends Room {
         );
         data[i].hammer = this.hammer;
 
-        data[i].playersYetToVote = this.playersYetToVote;
+        data[i].playersYetToVote = this.anonymizer.anonMany(
+          this.playersYetToVote,
+        );
         data[i].phase = this.phase;
-        data[i].proposedTeam = this.proposedTeam;
+        data[i].proposedTeam = this.anonymizer.anonMany(this.proposedTeam);
 
         data[i].numPlayersOnMission =
           NUM_PLAYERS_ON_MISSION[playerRoles.length - MIN_PLAYERS]; // - 5
         data[i].numSelectTargets = this.getClientNumOfTargets(i);
 
         data[i].votes = this.publicVotes;
-        data[i].voteHistory = this.disableVoteHistory ? null : this.voteHistory;
+        data[i].voteHistory = this.disableVoteHistory
+          ? null
+          : this.anonVoteHistory();
         data[i].hammer = this.hammer;
         data[i].hammerReversed = gameReverseIndex(
           this.hammer,
@@ -996,15 +1083,19 @@ class Game extends Room {
         );
         data[i].winner = this.winner;
 
-        data[i].playerUsernamesOrdered = getUsernamesOfPlayersInGame(this);
-        data[i].playerUsernamesOrderedReversed = gameReverseArray(
+        data[i].playerUsernamesOrdered = this.anonymizer.anonMany(
           getUsernamesOfPlayersInGame(this),
+        );
+        data[i].playerUsernamesOrderedReversed = gameReverseArray(
+          this.anonymizer.anonMany(getUsernamesOfPlayersInGame(this)),
         );
 
         data[i].gameplayMessage = this.gameplayMessage;
 
         data[i].spectator = false;
-        data[i].gamePlayersInRoom = getUsernamesOfPlayersInRoom(this);
+        data[i].gamePlayersInRoom = this.anonymizer.anonMany(
+          getUsernamesOfPlayersInRoom(this),
+        );
 
         data[i].roomId = this.roomId;
         data[i].toShowGuns = this.toShowGuns();
@@ -1018,9 +1109,13 @@ class Game extends Room {
           data[i].see = {};
           data[i].see.spies = getAllSpies(this);
           data[i].see.roles = getRevealedRoles(this);
-          data[i].proposedTeam = this.lastProposedTeam;
+          data[i].proposedTeam = this.anonymizer.anonMany(
+            this.lastProposedTeam,
+          );
         } else if (this.phase === Phase.Assassination) {
-          data[i].proposedTeam = this.lastProposedTeam;
+          data[i].proposedTeam = this.anonymizer.anonMany(
+            this.lastProposedTeam,
+          );
         }
       }
       return data;
@@ -1054,16 +1149,16 @@ class Game extends Room {
     );
     data.hammer = this.hammer;
 
-    data.playersYetToVote = this.playersYetToVote;
+    data.playersYetToVote = this.anonymizer.anonMany(this.playersYetToVote);
     data.phase = this.phase;
-    data.proposedTeam = this.proposedTeam;
+    data.proposedTeam = this.anonymizer.anonMany(this.proposedTeam);
 
     data.numPlayersOnMission =
       NUM_PLAYERS_ON_MISSION[playerRoles.length - MIN_PLAYERS]; // - 5
     data.numSelectTargets = this.getClientNumOfTargets();
 
     data.votes = this.publicVotes;
-    data.voteHistory = this.disableVoteHistory ? null : this.voteHistory;
+    data.voteHistory = this.disableVoteHistory ? null : this.anonVoteHistory();
     data.hammer = this.hammer;
     data.hammerReversed = gameReverseIndex(
       this.hammer,
@@ -1071,15 +1166,19 @@ class Game extends Room {
     );
     data.winner = this.winner;
 
-    data.playerUsernamesOrdered = getUsernamesOfPlayersInGame(this);
-    data.playerUsernamesOrderedReversed = gameReverseArray(
+    data.playerUsernamesOrdered = this.anonymizer.anonMany(
       getUsernamesOfPlayersInGame(this),
+    );
+    data.playerUsernamesOrderedReversed = gameReverseArray(
+      this.anonymizer.anonMany(getUsernamesOfPlayersInGame(this)),
     );
 
     data.gameplayMessage = this.gameplayMessage;
 
     data.spectator = true;
-    data.gamePlayersInRoom = getUsernamesOfPlayersInRoom(this);
+    data.gamePlayersInRoom = this.anonymizer.anonMany(
+      getUsernamesOfPlayersInRoom(this),
+    );
 
     data.roomId = this.roomId;
     data.toShowGuns = this.toShowGuns();
@@ -1092,9 +1191,9 @@ class Game extends Room {
       data.see = {};
       data.see.spies = getAllSpies(this);
       data.see.roles = getRevealedRoles(this);
-      data.proposedTeam = this.lastProposedTeam;
+      data.proposedTeam = this.anonymizer.anonMany(this.lastProposedTeam);
     } else if (this.phase === Phase.Assassination) {
-      data.proposedTeam = this.lastProposedTeam;
+      data.proposedTeam = this.anonymizer.anonMany(this.lastProposedTeam);
     }
 
     return data;
@@ -1116,6 +1215,9 @@ class Game extends Room {
     }
     if (this.phase === Phase.Paused) {
       return 'Paused';
+    }
+    if (this.phase === Phase.Voided) {
+      return 'Voided';
     }
     if (this.gameStarted === true) {
       return 'Game in progress';
@@ -1148,11 +1250,14 @@ class Game extends Room {
       return;
     }
 
+    // From this point on, no more game moves can be made. Game is finished.
+    // Clean up from here.
     for (let i = 0; i < this.allSockets.length; i++) {
       this.allSockets[i].emit('gameEnded');
     }
 
-    // game clean up
+    this.anonymizer.setGameFinished();
+
     this.finished = true;
     this.winner = toBeWinner;
 
@@ -1269,6 +1374,7 @@ class Game extends Room {
       numberOfPlayers: this.playersInGame.length,
       gameMode: this.gameMode,
       roomCreationType: this.roomCreationType,
+      anonymousMode: this.anonymousMode,
       botUsernames,
 
       playerUsernamesOrdered: getUsernamesOfPlayersInGame(this),
@@ -1768,6 +1874,14 @@ class Game extends Room {
     }
   }
 
+  anonVoteHistory() {
+    const newObj = {};
+    for (const username in this.voteHistory) {
+      newObj[this.anonymizer.anon(username)] = this.voteHistory[username];
+    }
+    return newObj;
+  }
+
   submitMerlinGuess(guesserUsername, targetUsername) {
     // Check Merlin is in play
     if (this.resRoles.indexOf(Role.Merlin) === -1) {
@@ -1891,6 +2005,25 @@ class Game extends Room {
         (player) => player.username.toLowerCase() === username.toLowerCase(),
       ).length === 1
     );
+  }
+
+  voteVoidGame(socket: SocketUser): void {
+    // Verify they are in the game.
+    if (!this.usernameIsPlayer(socket.request.user.username)) {
+      socket.emit('messageCommandReturnStr', {
+        message: 'You are not a player in this game.',
+        classStr: 'server-text',
+      });
+      return;
+    }
+
+    if (this.voidGameTracker.playerVoted(socket.request.user.username)) {
+      this.changePhase(Phase.Voided);
+      this.sendText(`Game has been voided.`, 'server-text');
+    }
+
+    // To update the timer data on clients side
+    this.distributeGameData();
   }
 
   canRoomChat(usernameLower: string) {
@@ -2101,23 +2234,6 @@ export function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min; // The maximum is exclusive and the minimum is inclusive
 }
 
-function shuffle(array) {
-  let currentIndex = array.length;
-  let temporaryValue;
-  let randomIndex;
-  // While there remain elements to shuffle...
-  while (currentIndex !== 0) {
-    // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
-    // And swap it with the current element.
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
-  }
-  return array;
-}
-
 function generateAssignmentOrders(num) {
   let rolesAssignment = [];
 
@@ -2127,7 +2243,7 @@ function generateAssignmentOrders(num) {
   }
 
   // shuffle
-  rolesAssignment = shuffle(rolesAssignment);
+  rolesAssignment = shuffleArray(rolesAssignment);
   // console.log(rolesAssignment);
 
   return rolesAssignment;
@@ -2138,7 +2254,9 @@ function getAllSpies(thisRoom) {
     const array = [];
     for (let i = 0; i < thisRoom.playersInGame.length; i++) {
       if (thisRoom.playersInGame[i].alliance === Alliance.Spy) {
-        array.push(thisRoom.playersInGame[i].username);
+        array.push(
+          thisRoom.anonymizer.anon(thisRoom.playersInGame[i].username),
+        );
       }
     }
     return array;
@@ -2174,7 +2292,7 @@ function getUsernamesOfPlayersInGame(thisRoom) {
   if (thisRoom.gameStarted === true) {
     const array = [];
     for (let i = 0; i < thisRoom.playersInGame.length; i++) {
-      array.push(thisRoom.playersInGame[i].request.user.username);
+      array.push(thisRoom.playersInGame[i].username);
     }
     return array;
   }

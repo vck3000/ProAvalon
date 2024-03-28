@@ -1,9 +1,6 @@
 //= =====================================
 // SOCKET ROUTES
 //= =====================================
-socket.on('username', (username) => {
-  // ownUsername = username;
-});
 
 socket.on('allChatToClient', (data) => {
   if (data.type === 'lastLoggedIn') {
@@ -98,7 +95,9 @@ socket.on('disconnect', () => {
       chat.innerHTML = '';
     }
 
-    attemptReconnect();
+    setTimeout(() => {
+      attemptReconnect();
+    }, 500);
 
     if (!intervalId) {
       intervalId = setInterval(() => {
@@ -370,7 +369,7 @@ socket.on('update-current-players-list', (currentPlayers) => {
 
 // Defines the order in which the game statuses will be sorted. If there is a new game status that is not
 // in the object, it will default to the last position.
-const gameStatusOrder = { 'Waiting': 0, 'Game in progress': 1, 'Paused': 2, 'Frozen': 3, 'Finished': 4 };
+const gameStatusOrder = { 'Waiting': 0, 'Game in progress': 1, 'Paused': 2, 'Frozen': 3, 'Finished': 4 , 'Voided': 5};
 const defaultGameOrder = Object.keys(gameStatusOrder).length;
 
 socket.on('update-current-games-list', (currentGames) => {
@@ -423,8 +422,6 @@ socket.on('update-current-games-list', (currentGames) => {
                 <br>Host: ${currentGame.hostUsername}
                 <br>${missionHistoryStr}
                 </td> </tr>`;
-
-      console.log(currentGame.gameMode);
 
       $('#current-games-table tbody').append(str);
 
