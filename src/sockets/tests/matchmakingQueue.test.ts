@@ -1,4 +1,5 @@
 import { MatchmakingQueue, QueueEntry } from '../matchmakingQueue';
+
 const MM_JOIN_WINDOW = 10000;
 
 // Need to fake timers as we want to assert the queue waits for new users
@@ -32,6 +33,31 @@ describe('MatchmakingQueue', () => {
     jest.advanceTimersByTime(MM_JOIN_WINDOW);
 
     const expectUsernames = ['1', '2', '3', '4', '5', '6'];
+    expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
+    expect(matchmakingQueue.getNumInQueue()).toEqual(0);
+  });
+
+  it('Matches 7 people in queue with join window', () => {
+    for (let i = 1; i <= 5; i++) {
+      expect(
+        matchmakingQueue.addUser(getDefaultQueueEntry(i.toString())),
+      ).toEqual(true);
+      expect(matchmakingQueue.getNumInQueue()).toEqual(i);
+
+      jest.advanceTimersByTime(MM_JOIN_WINDOW * 0.75);
+    }
+
+    expect(matchFoundCallback).not.toHaveBeenCalled();
+
+    matchmakingQueue.addUser(getDefaultQueueEntry('6'));
+
+    jest.advanceTimersByTime(MM_JOIN_WINDOW * 0.75);
+
+    expect(matchFoundCallback).not.toHaveBeenCalled();
+    matchmakingQueue.addUser(getDefaultQueueEntry('7'));
+    jest.advanceTimersByTime(MM_JOIN_WINDOW);
+
+    const expectUsernames = ['1', '2', '3', '4', '5', '6', '7'];
     expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
     expect(matchmakingQueue.getNumInQueue()).toEqual(0);
   });

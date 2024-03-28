@@ -1,8 +1,8 @@
 const MIN_PLAYERS_PER_GAME = 6;
 const MAX_PLAYERS_PER_GAME = 8;
 
-// All in milliseconds
-const MM_JOIN_WINDOW = 10000;
+// In milliseconds
+const MM_JOIN_TIME_WINDOW = 10000;
 
 export class QueueEntry {
   username: string;
@@ -26,15 +26,6 @@ export class MatchmakingQueue {
     this.matchFoundCallback = matchFoundCallback;
   }
 
-  private startQueueCheckTimer() {
-    if (this.queueCheckTimer !== null) {
-      clearTimeout(this.queueCheckTimer);
-    }
-    this.queueCheckTimer = setTimeout(() => {
-      this.checkQueue();
-    }, MM_JOIN_WINDOW);
-  }
-
   addUser(queueEntry: QueueEntry): boolean {
     if (this.getQueueUsernames().includes(queueEntry.username)) {
       return false;
@@ -49,6 +40,33 @@ export class MatchmakingQueue {
     }
 
     return true;
+  }
+
+  private checkQueue(): void {
+    if (this.queue.length < MIN_PLAYERS_PER_GAME) {
+      return;
+    }
+
+    // Prioritise larger game sizes first
+    for (
+      let gameSize = MAX_PLAYERS_PER_GAME;
+      gameSize >= MIN_PLAYERS_PER_GAME;
+      gameSize--
+    ) {
+      if (this.tryMatchGameSize(gameSize)) {
+        return;
+      }
+    }
+  }
+
+  private startQueueCheckTimer() {
+    if (this.queueCheckTimer !== null) {
+      clearTimeout(this.queueCheckTimer);
+    }
+
+    this.queueCheckTimer = setTimeout(() => {
+      this.checkQueue();
+    }, MM_JOIN_TIME_WINDOW);
   }
 
   // Should only be used when re-adding users who had a match found rejected, so they
@@ -81,23 +99,6 @@ export class MatchmakingQueue {
 
   getNumInQueue(): number {
     return this.queue.length;
-  }
-
-  private checkQueue(): void {
-    if (this.queue.length < MIN_PLAYERS_PER_GAME) {
-      return;
-    }
-
-    // Prioritise larger game sizes first
-    for (
-      let gameSize = MAX_PLAYERS_PER_GAME;
-      gameSize >= MIN_PLAYERS_PER_GAME;
-      gameSize--
-    ) {
-      if (this.tryMatchGameSize(gameSize)) {
-        return;
-      }
-    }
   }
 
   private tryMatchGameSize(gameSize: number): boolean {
@@ -144,6 +145,7 @@ export class MatchmakingQueue {
     return this.queue.map((entry) => entry.username);
   }
 
+  // Adapted from https://stackoverflow.com/a/42531964
   static getCombinations<T>(array: T[], length: number): T[][] {
     return new Array(1 << array.length)
       .fill(null)
