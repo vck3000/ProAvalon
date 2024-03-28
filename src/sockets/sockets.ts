@@ -2137,7 +2137,8 @@ function kickPlayer(username: string): void {
 }
 
 function queueRequest(data): void {
-  let joined = false;
+  let joined;
+
   if (data.join) {
     joined = joinQueue.call(this);
   } else {
