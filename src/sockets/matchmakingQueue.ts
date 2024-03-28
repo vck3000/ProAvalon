@@ -2,7 +2,7 @@ const MIN_PLAYERS_PER_GAME = 6;
 const MAX_PLAYERS_PER_GAME = 8;
 
 // All in milliseconds
-const TEN_SECONDS = 10000;
+const MM_JOIN_WINDOW = 10000;
 
 export class QueueEntry {
   username: string;
@@ -32,7 +32,7 @@ export class MatchmakingQueue {
     }
     this.queueCheckTimer = setTimeout(() => {
       this.checkQueue();
-    }, TEN_SECONDS);
+    }, MM_JOIN_WINDOW);
   }
 
   addUser(queueEntry: QueueEntry): boolean {
@@ -44,7 +44,9 @@ export class MatchmakingQueue {
 
     if (this.queue.length >= MAX_PLAYERS_PER_GAME) {
       this.checkQueue();
-    } else this.startQueueCheckTimer();
+    } else {
+      this.startQueueCheckTimer();
+    }
 
     return true;
   }
