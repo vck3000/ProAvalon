@@ -1,5 +1,8 @@
 import { MatchmakingQueue, QueueEntry } from '../matchmakingQueue';
 
+// Need to fake timers as we want to assert the queue waits for new users
+jest.useFakeTimers();
+
 describe('MatchmakingQueue', () => {
   let matchmakingQueue: MatchmakingQueue;
   const matchFoundCallback = jest.fn();
@@ -24,11 +27,12 @@ describe('MatchmakingQueue', () => {
     expect(matchFoundCallback).not.toHaveBeenCalled();
 
     matchmakingQueue.addUser(getDefaultQueueEntry('6'));
-    setTimeout(() => {
-      const expectUsernames = ['1', '2', '3', '4', '5', '6'];
-      expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
-      expect(matchmakingQueue.getNumInQueue()).toEqual(0);
-    }, 10000);
+
+    jest.advanceTimersByTime(10000);
+
+    const expectUsernames = ['1', '2', '3', '4', '5', '6'];
+    expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
+    expect(matchmakingQueue.getNumInQueue()).toEqual(0);
   });
 
   it('Adds and removes a player username case insensitive', () => {
@@ -49,27 +53,25 @@ describe('MatchmakingQueue', () => {
     expect(matchFoundCallback).not.toHaveBeenCalled();
 
     matchmakingQueue.addUser(getDefaultQueueEntry('6'));
-    setTimeout(() => {
-      const expectUsernames = ['1', '2', '3', '4', '5', '6'];
-      expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
-    }, 10000);
+    jest.advanceTimersByTime(10000);
+
+    const expectUsernames = ['1', '2', '3', '4', '5', '6'];
+    expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
   });
 
   it('Matches multiple times fine', () => {
-    for (let i = 1; i <= 12; i++) {
+    for (let i = 1; i <= 16; i++) {
       matchmakingQueue.addUser(getDefaultQueueEntry(i.toString()));
     }
 
-    setTimeout(() => {
-      {
-        const expectUsernames = ['1', '2', '3', '4', '5', '6'];
-        expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
-      }
-      {
-        const expectUsernames = ['7', '8', '9', '10', '11', '12'];
-        expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
-      }
-    }, 10000);
+    {
+      const expectUsernames = ['1', '2', '3', '4', '5', '6', '7', '8'];
+      expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
+    }
+    {
+      const expectUsernames = ['9', '10', '11', '12', '13', '14', '15', '16'];
+      expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
+    }
   });
 
   it('Can remove users', () => {
@@ -84,10 +86,10 @@ describe('MatchmakingQueue', () => {
 
     matchmakingQueue.addUser(getDefaultQueueEntry('1'));
 
-    setTimeout(() => {
-      const expectUsernames = ['2', '3', '4', '5', '6', '1'];
-      expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
-    }, 10000);
+    jest.advanceTimersByTime(10000);
+
+    const expectUsernames = ['2', '3', '4', '5', '6', '1'];
+    expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
   });
 
   it('removeUser returns correctly', () => {
@@ -107,18 +109,16 @@ describe('MatchmakingQueue', () => {
 
       // 6th user doesn't like player 3 and 12.
       matchmakingQueue.addUser(new QueueEntry('6', ['3', '12']));
-      setTimeout(() => {
-        expect(matchFoundCallback).not.toHaveBeenCalled();
-      }, 10000);
+      jest.advanceTimersByTime(10000);
+
+      expect(matchFoundCallback).not.toHaveBeenCalled();
 
       // 7th user can match.
       matchmakingQueue.addUser(getDefaultQueueEntry('7'));
-      setTimeout(() => {
-        {
-          const expectUsernames = ['1', '2', '3', '4', '5', '7'];
-          expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
-        }
-      }, 10000);
+      jest.advanceTimersByTime(10000);
+
+      const expectUsernames = ['1', '2', '3', '4', '5', '7'];
+      expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
 
       // Add players 8 to 11 (4 players, so now 5 in queue)
       for (let i = 8; i < 8 + 4; i++) {
@@ -131,15 +131,15 @@ describe('MatchmakingQueue', () => {
       // Player 13 comes in. Gets matched.
       matchmakingQueue.addUser(getDefaultQueueEntry('13'));
 
-      setTimeout(() => {
-        {
-          const expectUsernames = ['6', '8', '9', '10', '11', '13'];
-          expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
-        }
+      jest.advanceTimersByTime(10000);
 
-        // One player left in (player 12)
-        expect(matchmakingQueue.getNumInQueue()).toEqual(1);
-      }, 10000);
+      {
+        const expectUsernames = ['6', '8', '9', '10', '11', '13'];
+        expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
+      }
+
+      // One player left in (player 12)
+      expect(matchmakingQueue.getNumInQueue()).toEqual(1);
     });
 
     it('Ignores casing', () => {
@@ -152,10 +152,9 @@ describe('MatchmakingQueue', () => {
       matchmakingQueue.addUser(getDefaultQueueEntry('3'));
       matchmakingQueue.addUser(getDefaultQueueEntry('4'));
 
-      setTimeout(() => {
-        const expectUsernames = ['pronub', 'qwer', '1', '2', '3', '4'];
-        expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
-      }, 10000);
+      jest.advanceTimersByTime(10000);
+      const expectUsernames = ['pronub', 'qwer', '1', '2', '3', '4'];
+      expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
     });
 
     it('ReAdd users', () => {
@@ -244,10 +243,10 @@ describe('MatchmakingQueue', () => {
       matchmakingQueue.addUser(getDefaultQueueEntry('7'));
       expect(matchFoundCallback).not.toHaveBeenCalled();
 
-      setTimeout(() => {
-        const expectUsernames = ['1', '2', '3', '4', '5', '6', '7'];
-        expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
-      }, 10000);
+      jest.advanceTimersByTime(10000);
+
+      const expectUsernames = ['1', '2', '3', '4', '5', '6', '7'];
+      expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
     });
 
     it('Will not delay finding a match when 8ppl are in queue', () => {
