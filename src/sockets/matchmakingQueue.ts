@@ -41,7 +41,10 @@ export class MatchmakingQueue {
     }
 
     this.queue.push(queueEntry);
-    this.startQueueCheckTimer();
+
+    if (this.queue.length >= MAX_PLAYERS_PER_GAME) {
+      this.checkQueue();
+    } else this.startQueueCheckTimer();
 
     return true;
   }
