@@ -41,6 +41,7 @@ import { ReadyPrompt, ReadyPromptReplyFromClient } from './readyPrompt';
 import { JoinQueueFilter } from './filters/joinQueueFilter';
 import { Role } from '../gameplay/roles/types';
 import { Phase } from '../gameplay/phases/types';
+import { Card } from '../gameplay/cards/types';
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
@@ -2278,7 +2279,34 @@ function matchFound(usernames: string[]): void {
         room.playerSitDown(getSocketFromUsername(username));
       }
 
-      room.startGame([Role.Merlin, Role.Percival, Role.Assassin, Role.Morgana]);
+      switch (approvedUsernames.length) {
+        case 6:
+          room.startGame([
+            Role.Merlin,
+            Role.Percival,
+            Role.Assassin,
+            Role.Morgana,
+          ]);
+          break;
+        case 7:
+          room.startGame([
+            Role.Merlin,
+            Role.Percival,
+            Role.Assassin,
+            Role.Morgana,
+            Role.Hitberon,
+          ]);
+          break;
+        case 8:
+          room.startGame([
+            Role.Merlin,
+            Role.Percival,
+            Role.Assassin,
+            Role.Morgana,
+            Card.LadyOfTheLake,
+          ]);
+          break;
+      }
 
       // Need to push them out so that the game treats them as just joining to
       // send data, etc.
