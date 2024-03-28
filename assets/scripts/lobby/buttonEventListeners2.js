@@ -227,5 +227,5 @@ $('#createNewRoomButton').on('click', (data) => {
 let joined = false;
 
 $('#queueButton').on('click', () => {
-  socket.emit('queue-request', { join : joined });
+  socket.emit('queue-request', { join : !joined });
 });

@@ -1069,9 +1069,6 @@ export const server = function (io: SocketServer): void {
 
     socket = applyApplicableRewards(socket);
 
-    // Initialise matchmaking queue joined to false
-    socket.data.joined = false;
-
     // now push their socket in
     allSockets.push(socket);
 
@@ -2091,14 +2088,18 @@ function kickPlayer(username: string): void {
 }
 
 function queueRequest(data): void {
-  if (!data.join) {
-    joinQueue.call(this);
+  let joined = false;
+  if (data.join) {
+    joined = joinQueue.call(this);
   } else {
-    leaveQueue.call(this);
+    joined = leaveQueue.call(this);
   }
+
+  this.emit('queueReply', { joined: joined });
 }
 
-function joinQueue() {
+// Returns whether they're joined or not.
+function joinQueue(): boolean {
   const username = this.request.user.username;
   const blacklistUsernames = this.request.user.matchmakingBlacklist;
 
@@ -2108,7 +2109,7 @@ function joinQueue() {
         'You have rejected too many found matches. Please try again later.',
       classStr: 'server-text',
     });
-    return;
+    return false;
   }
 
   if (process.env.ENV !== 'local') {
@@ -2117,7 +2118,7 @@ function joinQueue() {
         'danger-alert',
         'You require 3 games to join the ranked queue.',
       );
-      return;
+      return false;
     }
   }
 
@@ -2125,8 +2126,6 @@ function joinQueue() {
     new QueueEntry(username, blacklistUsernames),
   );
   if (result) {
-    this.emit('queueReply', { join: true });
-
     this.emit('allChatToClient', {
       message: 'You have been added to the queue.',
       classStr: 'server-text',
@@ -2139,9 +2138,12 @@ function joinQueue() {
       classStr: 'server-text',
     });
   }
+
+  return true;
 }
 
-function leaveQueue(joined: boolean): void {
+// Returns whether they're joined or not.
+function leaveQueue(): boolean {
   const username = this.request.user.username;
   const result = matchmakingQueue.removeUser(username);
 
@@ -2152,11 +2154,9 @@ function leaveQueue(joined: boolean): void {
     classStr: 'server-text',
   });
 
-  if (result) {
-    this.emit('queueReply', { join: false });
-  }
-
   sendNumPlayersInQueueToEveryone();
+
+  return false;
 }
 
 function sendNumPlayersInQueueToEveryone() {
