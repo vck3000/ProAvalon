@@ -233,4 +233,30 @@ describe('MatchmakingQueue', () => {
       expect(combinations).toEqual(expected);
     });
   });
+
+  describe('DynamicMatchmaking', () => {
+    it('Can wait 10 seconds before finding match', () => {
+      for (let i = 1; i <= 6; i++) {
+        matchmakingQueue.addUser(getDefaultQueueEntry(i.toString()));
+      }
+
+      expect(matchFoundCallback).not.toHaveBeenCalled();
+      matchmakingQueue.addUser(getDefaultQueueEntry('7'));
+      expect(matchFoundCallback).not.toHaveBeenCalled();
+
+      setTimeout(() => {
+        const expectUsernames = ['1', '2', '3', '4', '5', '6', '7'];
+        expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
+      }, 10000);
+    });
+
+    it('Will not delay finding a match when 8ppl are in queue', () => {
+      for (let i = 1; i <= 8; i++) {
+        matchmakingQueue.addUser(getDefaultQueueEntry(i.toString()));
+      }
+
+      const expectUsernames = ['1', '2', '3', '4', '5', '6', '7', '8'];
+      expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
+    });
+  });
 });
