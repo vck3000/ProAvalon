@@ -961,7 +961,7 @@ class Game extends Room {
 
       for (let i = 0; i < this.playersInGame.length; i++) {
         const isClaiming = this.claimingPlayers.has(
-          this.socketsOfPlayers[i].request.user.username,
+          this.playersInGame[i].request.user.username,
         );
 
         roomPlayers[i] = {
