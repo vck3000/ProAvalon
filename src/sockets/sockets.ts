@@ -41,6 +41,7 @@ import { ReadyPrompt, ReadyPromptReplyFromClient } from './readyPrompt';
 import { JoinQueueFilter } from './filters/joinQueueFilter';
 import { Role } from '../gameplay/roles/types';
 import { Phase } from '../gameplay/phases/types';
+import { Card } from '../gameplay/cards/types';
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
@@ -919,35 +920,53 @@ export const userCommands = {
       return userCommands.guessmerlin.run(data, senderSocket);
     },
   },
-  votePauseTimeout: {
-    command: 'votePauseTimeout',
-    help: '/votePauseTimeout: Vote to pause timeout. Requires number_of_resistance + 1 votes.',
+  pausetimer: {
+    command: 'pausetimer',
+    help: '/pausetimer: Vote to pause timeout. Requires number_of_resistance + 1 votes.',
     run(data, senderSocket) {
       if (!senderSocket.request.user.inRoomId) {
         senderSocket.emit('messageCommandReturnStr', {
           message: 'You must be in a room to use /votePauseTimeout.',
           classStr: 'server-text',
         });
+        return;
       }
 
       rooms[senderSocket.request.user.inRoomId].votePauseTimeout(senderSocket);
     },
   },
 
-  voteUnpauseTimeout: {
-    command: 'voteUnpauseTimeout',
-    help: '/voteUnpauseTimeout: Vote to unpause timeout. Requires 1 vote.',
+  unpausetimer: {
+    command: 'unpausetimer',
+    help: '/unpausetimer: Vote to unpause timeout. Requires 1 vote.',
     run(data, senderSocket) {
       if (!senderSocket.request.user.inRoomId) {
         senderSocket.emit('messageCommandReturnStr', {
           message: 'You must be in a room to use /votePauseTimeout.',
           classStr: 'server-text',
         });
+        return;
       }
 
       rooms[senderSocket.request.user.inRoomId].voteUnpauseTimeout(
         senderSocket,
       );
+    },
+  },
+
+  voidgame: {
+    command: 'voidgame',
+    help: '/voidgame: Vote to void a game. Requires number_of_resistance + 1 votes. You cannot take back your void game vote.',
+    run(data, senderSocket) {
+      if (!senderSocket.request.user.inRoomId) {
+        senderSocket.emit('messageCommandReturnStr', {
+          message: 'You must be in a room to use /voteVoidGame.',
+          classStr: 'server-text',
+        });
+        return;
+      }
+
+      rooms[senderSocket.request.user.inRoomId].voteVoidGame(senderSocket);
     },
   },
 
@@ -1086,8 +1105,7 @@ export const server = function (io: SocketServer): void {
     socket.on('leave-room', leaveRoom);
     socket.on('startGame', startGame);
     socket.on('kickPlayer', kickPlayer);
-    socket.on('join-queue', joinQueue);
-    socket.on('leave-queue', leaveQueue);
+    socket.on('queue-request', queueRequest);
     socket.on('ready-prompt-reply', readyPromptHandler);
     socket.on('update-room-max-players', updateRoomMaxPlayers);
     socket.on('update-room-game-mode', updateRoomGameMode);
@@ -2119,7 +2137,20 @@ function kickPlayer(username: string): void {
   }
 }
 
-function joinQueue() {
+function queueRequest(data): void {
+  let joined;
+
+  if (data.join) {
+    joined = joinQueue.call(this);
+  } else {
+    joined = leaveQueue.call(this);
+  }
+
+  this.emit('queueReply', { joined: joined });
+}
+
+// Returns whether they're joined or not.
+function joinQueue(): boolean {
   const username = this.request.user.username;
   const blacklistUsernames = this.request.user.matchmakingBlacklist;
 
@@ -2129,7 +2160,7 @@ function joinQueue() {
         'You have rejected too many found matches. Please try again later.',
       classStr: 'server-text',
     });
-    return;
+    return false;
   }
 
   if (process.env.ENV !== 'local') {
@@ -2138,7 +2169,7 @@ function joinQueue() {
         'danger-alert',
         'You require 3 games to join the ranked queue.',
       );
-      return;
+      return false;
     }
   }
 
@@ -2158,9 +2189,12 @@ function joinQueue() {
       classStr: 'server-text',
     });
   }
+
+  return true;
 }
 
-function leaveQueue(): void {
+// Returns whether they're joined or not.
+function leaveQueue(): boolean {
   const username = this.request.user.username;
   const result = matchmakingQueue.removeUser(username);
 
@@ -2172,6 +2206,8 @@ function leaveQueue(): void {
   });
 
   sendNumPlayersInQueueToEveryone();
+
+  return false;
 }
 
 function sendNumPlayersInQueueToEveryone() {
@@ -2204,6 +2240,25 @@ function matchFound(usernames: string[]): void {
       rejectedUsernames: string[],
     ): void => {
       if (!success) {
+        for (const username of rejectedUsernames) {
+          joinQueueFilter.registerReject(username);
+        }
+
+        // Take out usernames that have disconnected.
+        const removeDisconnectedUsers = (usernames: string[]) => {
+          return usernames.filter((username) => {
+            try {
+              getSocketFromUsername(username);
+              return true;
+            } catch (e) {
+              return false;
+            }
+          });
+        };
+
+        approvedUsernames = removeDisconnectedUsers(approvedUsernames);
+        rejectedUsernames = removeDisconnectedUsers(rejectedUsernames);
+
         // Throw approved users back into queue.
         matchmakingQueue.reAddUsersToQueue(
           approvedUsernames.map(
@@ -2227,8 +2282,6 @@ function matchFound(usernames: string[]): void {
         }
 
         for (const username of rejectedUsernames) {
-          joinQueueFilter.registerReject(username);
-
           const socket = getSocketFromUsername(username);
           socket.emit('allChatToClient', {
             message:
@@ -2278,7 +2331,36 @@ function matchFound(usernames: string[]): void {
         room.playerSitDown(getSocketFromUsername(username));
       }
 
-      room.startGame([Role.Merlin, Role.Percival, Role.Assassin, Role.Morgana]);
+      switch (approvedUsernames.length) {
+        case 6:
+          room.startGame([
+            Role.Merlin,
+            Role.Percival,
+            Role.Assassin,
+            Role.Morgana,
+          ]);
+          break;
+        case 7:
+          room.startGame([
+            Role.Merlin,
+            Role.Percival,
+            Role.Assassin,
+            Role.Morgana,
+            Role.Hitberon,
+          ]);
+          break;
+        case 8:
+          room.startGame([
+            Role.Merlin,
+            Role.Percival,
+            Role.Assassin,
+            Role.Morgana,
+            Card.LadyOfTheLake,
+          ]);
+          break;
+        default:
+          throw new Error('Unexpected number of approved usernames.');
+      }
 
       // Need to push them out so that the game treats them as just joining to
       // send data, etc.

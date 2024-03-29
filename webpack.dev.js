@@ -14,10 +14,15 @@ module.exports = merge(common, {
   },
   devtool: 'inline-source-map',
   devServer: {
-    contentBase: './assets/dist_webpack',
+    static: {
+      publicPath: './assets/dist_webpack',
+    },
     compress: true,
-    publicPath: '/dist_webpack/',
     port: 3010,
     hot: true,
+    devMiddleware: {
+      writeToDisk: true,
+      publicPath: '/dist_webpack/',
+    },
   },
 });
