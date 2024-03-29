@@ -2163,7 +2163,7 @@ function joinQueue(): boolean {
     return false;
   }
 
-  if (process.env.ENV === 'local') {
+  if (process.env.ENV !== 'local') {
     if (this.request.user.totalGamesPlayed < 3) {
       this.emit('allChatToClient', {
         message: 'You require 3 games to join the ranked queue.',
