@@ -524,6 +524,9 @@ var userOptions = {
             // when they press it...
             const newCheck = $('#optionDisplayEnableHourMinSec')[0]
                 .checked;
+
+            $('.date-text-sec').css('display', newCheck ? '' : 'none');
+
             // save their option in cookie
             docCookies.setItem(
                 'optionDisplayEnableHourMinSec',

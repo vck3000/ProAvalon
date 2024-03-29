@@ -149,7 +149,7 @@ function addToAllChat(data) {
           sec = `0${sec}`;
         }
 
-        date = $('#optionDisplayEnableHourMinSec')[0].checked ? `[${hour}:${min}:${sec}]` : `[${hour}:${min}]`;
+        date = `${hour}:${min}`;
 
         let filteredMessage = data[i].message
           .replace(/&/g, "&amp;")
@@ -174,10 +174,10 @@ function addToAllChat(data) {
 
         let str = '';
         if (data[i].classStr && data[i].classStr !== '') {
-          str = `<li class='${data[i].classStr}'><span class='date-text'>${date}</span> ${filteredMessage}`;
+          str = `<li class='${data[i].classStr}'><span class='date-text'>[${date}<span class='date-text-sec'>:${sec}</span>]</span></span> ${filteredMessage}`;
         } else {
           str = `${"<li class='" + "'><span class='date-text'>"
-            }${date}</span> <span class='username-text'>${data[i].username
+            }[${date}<span class='date-text-sec'>:${sec}</span>]</span> <span class='username-text'>${data[i].username
             }${generateBadgeString(data[i].badge)}:</span> ${filteredMessage}`;
         }
 
@@ -265,7 +265,7 @@ function addToRoomChat(data) {
           sec = `0${sec}`;
         }
 
-        date = $('#optionDisplayEnableHourMinSec')[0].checked ? `[${hour}:${min}:${sec}]` : `[${hour}:${min}]`;
+        date = `${hour}:${min}`;
         data[i].dateStr = date;
 
         // if(!data[i].dateCreated){
@@ -355,7 +355,7 @@ function addToRoomChat(data) {
 
         // if its a server text or special text
         if (data[i].classStr && data[i].classStr !== '') {
-          str = `<li class='${data[i].classStr} ${addClass}'><span class='date-text'>${date}</span> ${filteredMessage}`;
+          str = `<li class='${data[i].classStr} ${addClass}'><span class='date-text'>[${date}<span class='date-text-sec'>:${sec}</span>]</span> ${filteredMessage}`;
         }
         // its a user's chat so put some other stuff on it
         else {
@@ -368,7 +368,7 @@ function addToRoomChat(data) {
           str = `
           <li class='${addClass}'>
             <span style='${highlightForegroundColorHtml}background-color: ${highlightChatColour}' username='${data[i].username}'>
-              <span class='date-text'> ${date}</span> 
+              <span class='date-text'>[${date}<span class='date-text-sec'>:${sec}</span>]</span>
               <span class='username-text'>${data[i].username}${generateBadgeString(data[i].badge)}:</span> 
               ${message}
             </span>
