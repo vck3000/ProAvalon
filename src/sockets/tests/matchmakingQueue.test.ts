@@ -258,5 +258,16 @@ describe('MatchmakingQueue', () => {
 
       expect(combinations).toEqual(expected);
     });
+
+    it('Ask for more combinations than the length of given array', () => {
+      const combinations = MatchmakingQueue.getCombinations(
+        ['1', '2', '3', '4', '5', '6'],
+        8,
+      );
+
+      const expected: string[] = [];
+
+      expect(combinations).toEqual(expected);
+    });
   });
 });
