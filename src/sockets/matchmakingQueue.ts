@@ -126,7 +126,9 @@ export class MatchmakingQueue {
       }
 
       if (!combinationFailed) {
-        console.log(`[MatchmakingQueue] Match found: ${combinationUsernames}`);
+        console.log(
+          `[MatchmakingQueue] Match found: num=${combinationUsernames.length} usernames=[${combinationUsernames}]`,
+        );
         this.matchFoundCallback(combinationUsernames);
 
         // Take out just the matched people from the queue.
