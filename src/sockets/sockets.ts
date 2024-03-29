@@ -2165,10 +2165,12 @@ function joinQueue(): boolean {
 
   if (process.env.ENV !== 'local') {
     if (this.request.user.totalGamesPlayed < 3) {
-      this.emit(
-        'danger-alert',
-        'You require 3 games to join the ranked queue.',
-      );
+      this.emit('allChatToClient', {
+        message:
+          'You require 3 games to join the ranked queue. We have a discord server! ' +
+          'Join us here: https://discord.gg/3mHdKNT. Then send a message in the #looking-for-game channel ^.^',
+        classStr: 'server-text',
+      });
       return false;
     }
   }
