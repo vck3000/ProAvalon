@@ -430,7 +430,7 @@ var userOptions = {
   optionDisplayEnableAbbreivations: {
     defaultValue: 'true',
     onLoad() {
-      // check if optionDisplayProposedTeamIcon exists in cookies
+      // check if optionDisplayEnableAbbreivations exists in cookies
       const isOptionExists = docCookies.hasItem(
         'optionDisplayEnableAbbreivations'
       );
@@ -479,6 +479,58 @@ var userOptions = {
           draw();
           draw();
         }
+      );
+    },
+  },
+
+  optionDisplayEnableHourMinSec: {
+    defaultValue: 'false',
+    onLoad() {
+      // check if optionDisplayEnableHourMinSec exists in cookies
+      const isOptionExists = docCookies.hasItem(
+          'optionDisplayEnableHourMinSec'
+      );
+      // if not, set it
+      if (isOptionExists === false) {
+        // save it in cookie
+        docCookies.setItem(
+            'optionDisplayEnableHourMinSec',
+            false,
+            Infinity
+        );
+      }
+
+      const getOption = docCookies.getItem(
+          'optionDisplayEnableHourMinSec'
+      );
+
+      // set check marks
+      if (getOption === false || getOption === 'false') {
+        $('#optionDisplayEnableHourMinSec')[0].checked = false;
+      } else if (getOption === true || getOption === 'true') {
+        $('#optionDisplayEnableHourMinSec')[0].checked = true;
+      } else {
+        docCookies.setItem(
+            'optionDisplayEnableHourMinSec',
+            false,
+            Infinity
+        );
+      }
+    },
+    initialiseEventListener() {
+      $('#optionDisplayEnableHourMinSec')[0].addEventListener(
+          'click',
+          () => {
+            // when they press it...
+            const newCheck = $('#optionDisplayEnableHourMinSec')[0]
+                .checked;
+            // save their option in cookie
+            docCookies.setItem(
+                'optionDisplayEnableHourMinSec',
+                newCheck,
+                Infinity
+            );
+          }
       );
     },
   },
