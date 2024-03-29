@@ -2171,7 +2171,7 @@ function joinQueue(): boolean {
       });
       this.emit('allChatToClient', {
         message:
-          'Check out our Discord! Message the #looking-for-game channel and ping @games ^.^',
+          'Please join the Discord server and ping @Games in the #looking-for-game channel.',
         classStr: 'server-text',
       });
       return false;
