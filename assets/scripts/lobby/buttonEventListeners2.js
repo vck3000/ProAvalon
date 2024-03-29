@@ -225,10 +225,8 @@ $('#createNewRoomButton').on('click', (data) => {
   }
 });
 
-$('#joinQueueButton').on('click', () => {
-  socket.emit('join-queue');
-});
+let joined = false;
 
-$('#leaveQueueButton').on('click', () => {
-  socket.emit('leave-queue');
+$('#queueButton').on('click', () => {
+  socket.emit('queue-request', { join : !joined });
 });
