@@ -2205,6 +2205,25 @@ function matchFound(usernames: string[]): void {
       rejectedUsernames: string[],
     ): void => {
       if (!success) {
+        for (const username of rejectedUsernames) {
+          joinQueueFilter.registerReject(username);
+        }
+
+        // Take out usernames that have disconnected.
+        const removeDisconnectedUsers = (usernames: string[]) => {
+          return usernames.filter((username) => {
+            try {
+              getSocketFromUsername(username);
+              return true;
+            } catch (e) {
+              return false;
+            }
+          });
+        };
+
+        approvedUsernames = removeDisconnectedUsers(approvedUsernames);
+        rejectedUsernames = removeDisconnectedUsers(rejectedUsernames);
+
         // Throw approved users back into queue.
         matchmakingQueue.reAddUsersToQueue(
           approvedUsernames.map(
@@ -2228,8 +2247,6 @@ function matchFound(usernames: string[]): void {
         }
 
         for (const username of rejectedUsernames) {
-          joinQueueFilter.registerReject(username);
-
           const socket = getSocketFromUsername(username);
           socket.emit('allChatToClient', {
             message:
