@@ -920,35 +920,53 @@ export const userCommands = {
       return userCommands.guessmerlin.run(data, senderSocket);
     },
   },
-  votePauseTimeout: {
-    command: 'votePauseTimeout',
-    help: '/votePauseTimeout: Vote to pause timeout. Requires number_of_resistance + 1 votes.',
+  pausetimer: {
+    command: 'pausetimer',
+    help: '/pausetimer: Vote to pause timeout. Requires number_of_resistance + 1 votes.',
     run(data, senderSocket) {
       if (!senderSocket.request.user.inRoomId) {
         senderSocket.emit('messageCommandReturnStr', {
           message: 'You must be in a room to use /votePauseTimeout.',
           classStr: 'server-text',
         });
+        return;
       }
 
       rooms[senderSocket.request.user.inRoomId].votePauseTimeout(senderSocket);
     },
   },
 
-  voteUnpauseTimeout: {
-    command: 'voteUnpauseTimeout',
-    help: '/voteUnpauseTimeout: Vote to unpause timeout. Requires 1 vote.',
+  unpausetimer: {
+    command: 'unpausetimer',
+    help: '/unpausetimer: Vote to unpause timeout. Requires 1 vote.',
     run(data, senderSocket) {
       if (!senderSocket.request.user.inRoomId) {
         senderSocket.emit('messageCommandReturnStr', {
           message: 'You must be in a room to use /votePauseTimeout.',
           classStr: 'server-text',
         });
+        return;
       }
 
       rooms[senderSocket.request.user.inRoomId].voteUnpauseTimeout(
         senderSocket,
       );
+    },
+  },
+
+  voidgame: {
+    command: 'voidgame',
+    help: '/voidgame: Vote to void a game. Requires number_of_resistance + 1 votes. You cannot take back your void game vote.',
+    run(data, senderSocket) {
+      if (!senderSocket.request.user.inRoomId) {
+        senderSocket.emit('messageCommandReturnStr', {
+          message: 'You must be in a room to use /voteVoidGame.',
+          classStr: 'server-text',
+        });
+        return;
+      }
+
+      rooms[senderSocket.request.user.inRoomId].voteVoidGame(senderSocket);
     },
   },
 
