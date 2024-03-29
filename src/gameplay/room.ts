@@ -72,6 +72,8 @@ class Room {
   socketsOfPlayers: SocketUser[];
   botSockets: Socket[];
 
+  claimingPlayers: Set<string> = new Set();
+
   lockJoin = false;
   readyPrompt: ReadyPrompt;
 
@@ -96,7 +98,6 @@ class Room {
 
     // Arrays containing lower cased usernames
     this.kickedPlayers = [];
-    this.claimingPlayers = [];
 
     // Phases Cards and Roles to use
     this.commonPhases = this.initialiseGameDependencies(commonPhases);
@@ -316,15 +317,10 @@ class Room {
 
     const username = socket.request.user.username;
 
-    const index = this.claimingPlayers.indexOf(username);
-
-    // If they want to claim and also don't exist on the claimingPlayers array
-    if (data === true && index === -1) {
-      this.claimingPlayers.push(username);
-    }
-    // If they want to unclaim and also do exist on the claimingPlayers array
-    else if (data === false) {
-      this.claimingPlayers.splice(index, 1);
+    if (data) {
+      this.claimingPlayers.add(username);
+    } else {
+      this.claimingPlayers.delete(username);
     }
 
     this.updateRoomPlayers();
@@ -385,17 +381,9 @@ class Room {
     const roomPlayers = [];
 
     for (let i = 0; i < this.socketsOfPlayers.length; i++) {
-      let isClaiming;
-      // If the player's username exists on the list of claiming:
-      if (
-        this.claimingPlayers.indexOf(
-          this.socketsOfPlayers[i].request.user.username,
-        ) !== -1
-      ) {
-        isClaiming = true;
-      } else {
-        isClaiming = false;
-      }
+      const isClaiming = this.claimingPlayers.has(
+        this.socketsOfPlayers[i].request.user.username,
+      );
 
       roomPlayers[i] = {
         username: this.socketsOfPlayers[i].request.user.username,

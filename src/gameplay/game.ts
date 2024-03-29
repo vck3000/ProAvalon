@@ -960,17 +960,9 @@ class Game extends Room {
       const roomPlayers = [];
 
       for (let i = 0; i < this.playersInGame.length; i++) {
-        let isClaiming;
-        // If the player's username exists on the list of claiming:
-        if (
-          this.claimingPlayers.indexOf(
-            this.playersInGame[i].request.user.username,
-          ) !== -1
-        ) {
-          isClaiming = true;
-        } else {
-          isClaiming = false;
-        }
+        const isClaiming = this.claimingPlayers.has(
+          this.socketsOfPlayers[i].request.user.username,
+        );
 
         roomPlayers[i] = {
           username: this.anonymizer.anon(this.playersInGame[i].username),

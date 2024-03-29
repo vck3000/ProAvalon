@@ -718,6 +718,7 @@ function drawTeamLeader() {
 
 function drawClaimingPlayers(claimingPlayers) {
   $(buttons.claim)[0].innerText = 'Claim';
+
   // Initially when someone creates a room, enable claim button
   if (isSpectator === false) {
     $(buttons.claim).removeClass('disabled');
@@ -741,7 +742,7 @@ function drawClaimingPlayers(claimingPlayers) {
         // $(".claimIcon")[0].style.top = $("#mainRoomBox div")[playerIndex].style.width;
       }
 
-      if (roomPlayersData[i].username === gameData ? gameData.username : ownUsername) {
+      if (roomPlayersData[i].username === (gameData ? gameData.username : ownUsername)) {
         $(buttons.claim)[0].innerText = 'Unclaim';
       }
     }
