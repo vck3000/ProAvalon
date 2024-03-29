@@ -56,7 +56,7 @@ export class GameTimer {
     if (this.dateTimerExpires.getTime() === 0) {
       // Any single unpause vote can overrule vote pause.
       this.playersVotedPause.clear();
-      return this.resetTimer();
+      return this.restartTimer();
     }
 
     return this.dateTimerExpires;
@@ -72,7 +72,7 @@ export class GameTimer {
   }
 
   // Returns the new date for timer expiry
-  resetTimer(): Date {
+  restartTimer(): Date {
     // Clear existing timers
     this.clearTimers();
 

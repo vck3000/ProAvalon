@@ -41,6 +41,7 @@ import { ReadyPrompt, ReadyPromptReplyFromClient } from './readyPrompt';
 import { JoinQueueFilter } from './filters/joinQueueFilter';
 import { Role } from '../gameplay/roles/types';
 import { Phase } from '../gameplay/phases/types';
+import { Card } from '../gameplay/cards/types';
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
@@ -2239,6 +2240,25 @@ function matchFound(usernames: string[]): void {
       rejectedUsernames: string[],
     ): void => {
       if (!success) {
+        for (const username of rejectedUsernames) {
+          joinQueueFilter.registerReject(username);
+        }
+
+        // Take out usernames that have disconnected.
+        const removeDisconnectedUsers = (usernames: string[]) => {
+          return usernames.filter((username) => {
+            try {
+              getSocketFromUsername(username);
+              return true;
+            } catch (e) {
+              return false;
+            }
+          });
+        };
+
+        approvedUsernames = removeDisconnectedUsers(approvedUsernames);
+        rejectedUsernames = removeDisconnectedUsers(rejectedUsernames);
+
         // Throw approved users back into queue.
         matchmakingQueue.reAddUsersToQueue(
           approvedUsernames.map(
@@ -2262,8 +2282,6 @@ function matchFound(usernames: string[]): void {
         }
 
         for (const username of rejectedUsernames) {
-          joinQueueFilter.registerReject(username);
-
           const socket = getSocketFromUsername(username);
           socket.emit('allChatToClient', {
             message:
@@ -2313,7 +2331,36 @@ function matchFound(usernames: string[]): void {
         room.playerSitDown(getSocketFromUsername(username));
       }
 
-      room.startGame([Role.Merlin, Role.Percival, Role.Assassin, Role.Morgana]);
+      switch (approvedUsernames.length) {
+        case 6:
+          room.startGame([
+            Role.Merlin,
+            Role.Percival,
+            Role.Assassin,
+            Role.Morgana,
+          ]);
+          break;
+        case 7:
+          room.startGame([
+            Role.Merlin,
+            Role.Percival,
+            Role.Assassin,
+            Role.Morgana,
+            Role.Hitberon,
+          ]);
+          break;
+        case 8:
+          room.startGame([
+            Role.Merlin,
+            Role.Percival,
+            Role.Assassin,
+            Role.Morgana,
+            Card.LadyOfTheLake,
+          ]);
+          break;
+        default:
+          throw new Error('Unexpected number of approved usernames.');
+      }
 
       // Need to push them out so that the game treats them as just joining to
       // send data, etc.

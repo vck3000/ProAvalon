@@ -804,7 +804,7 @@ class Game extends Room {
   changePhase(phase: Phase) {
     this.phase = phase;
 
-    this.dateTimerExpires = this.gameTimer.resetTimer();
+    this.dateTimerExpires = this.gameTimer.restartTimer();
   }
 
   toShowGuns() {
