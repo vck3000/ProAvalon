@@ -926,7 +926,7 @@ export const userCommands = {
     run(data, senderSocket) {
       if (!senderSocket.request.user.inRoomId) {
         senderSocket.emit('messageCommandReturnStr', {
-          message: 'You must be in a room to use /votePauseTimeout.',
+          message: 'You must be in a room to use /pausetimer.',
           classStr: 'server-text',
         });
         return;
@@ -942,7 +942,7 @@ export const userCommands = {
     run(data, senderSocket) {
       if (!senderSocket.request.user.inRoomId) {
         senderSocket.emit('messageCommandReturnStr', {
-          message: 'You must be in a room to use /votePauseTimeout.',
+          message: 'You must be in a room to use /unpausetimer.',
           classStr: 'server-text',
         });
         return;
