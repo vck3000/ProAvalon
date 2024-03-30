@@ -172,7 +172,7 @@ function addToAllChat(data) {
           filteredMessage = addAbbreviations(filteredMessage);
         }
 
-        let showSeconds = docCookies.getItem(`optionDisplayEnableHourMinSec`);
+        let showSeconds = docCookies.getItem(`optionDisplayEnableTimeStampSeconds`);
         const secondsStyle = showSeconds === 'true' ? 'display:inline;' : 'display:none;';
 
         let str = '';
@@ -356,7 +356,7 @@ function addToRoomChat(data) {
           highlightForegroundColorHtml = 'color: #333;';
         }
 
-        let showSeconds = docCookies.getItem(`optionDisplayEnableHourMinSec`);
+        let showSeconds = docCookies.getItem(`optionDisplayEnableTimeStampSeconds`);
         const secondsStyle = showSeconds === 'true' ? 'display:inline;' : 'display:none;';
 
         // if its a server text or special text

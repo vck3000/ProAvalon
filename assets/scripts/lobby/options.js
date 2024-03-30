@@ -483,53 +483,53 @@ var userOptions = {
     },
   },
 
-  optionDisplayEnableHourMinSec: {
+  optionDisplayEnableTimeStampSeconds: {
     defaultValue: 'false',
     onLoad() {
-      // check if optionDisplayEnableHourMinSec exists in cookies
+      // check if optionDisplayEnableTimeStampSeconds exists in cookies
       const isOptionExists = docCookies.hasItem(
-          'optionDisplayEnableHourMinSec'
+          'optionDisplayEnableTimeStampSeconds'
       );
       // if not, set it
       if (isOptionExists === false) {
         // save it in cookie
         docCookies.setItem(
-            'optionDisplayEnableHourMinSec',
+            'optionDisplayEnableTimeStampSeconds',
             false,
             Infinity
         );
       }
 
       const getOption = docCookies.getItem(
-          'optionDisplayEnableHourMinSec'
+          'optionDisplayEnableTimeStampSeconds'
       );
 
       // set check marks
       if (getOption === false || getOption === 'false') {
-        $('#optionDisplayEnableHourMinSec')[0].checked = false;
+        $('#optionDisplayEnableTimeStampSeconds')[0].checked = false;
       } else if (getOption === true || getOption === 'true') {
-        $('#optionDisplayEnableHourMinSec')[0].checked = true;
+        $('#optionDisplayEnableTimeStampSeconds')[0].checked = true;
       } else {
         docCookies.setItem(
-            'optionDisplayEnableHourMinSec',
+            'optionDisplayEnableTimeStampSeconds',
             false,
             Infinity
         );
       }
     },
     initialiseEventListener() {
-      $('#optionDisplayEnableHourMinSec')[0].addEventListener(
+      $('#optionDisplayEnableTimeStampSeconds')[0].addEventListener(
           'click',
           () => {
             // when they press it...
-            const newCheck = $('#optionDisplayEnableHourMinSec')[0]
+            const newCheck = $('#optionDisplayEnableTimeStampSeconds')[0]
                 .checked;
 
             $('.date-text-sec').css('display', newCheck ? '' : 'none');
 
             // save their option in cookie
             docCookies.setItem(
-                'optionDisplayEnableHourMinSec',
+                'optionDisplayEnableTimeStampSeconds',
                 newCheck,
                 Infinity
             );
