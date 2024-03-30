@@ -55,7 +55,7 @@ export class GameTimer {
     const s = this.playersVotedPause.size > 1 ? 's have' : ' has';
 
     this.game.sendText(
-      `${this.playersVotedPause.size} player${s} voted to pause the timeout. ${votesNeeded} votes needed.`,
+      `${this.playersVotedPause.size} player${s} voted to pause the timeout. ${votesNeeded} votes needed. Note leaving the room automatically adds a vote.`,
       'server-text',
     );
 
