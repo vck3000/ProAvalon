@@ -172,12 +172,15 @@ function addToAllChat(data) {
           filteredMessage = addAbbreviations(filteredMessage);
         }
 
+        let showSeconds = docCookies.getItem(`optionDisplayEnableHourMinSec`);
+        const secondsStyle = showSeconds === 'true' ? 'display:inline;' : 'display:none;';
+
         let str = '';
         if (data[i].classStr && data[i].classStr !== '') {
-          str = `<li class='${data[i].classStr}'><span class='date-text'>[${date}<span class='date-text-sec'>:${sec}</span>]</span></span> ${filteredMessage}`;
+          str = `<li class='${data[i].classStr}'><span class='date-text'>[${date}<span class='date-text-sec' style="${secondsStyle}">:${sec}</span>]</span></span> ${filteredMessage}`;
         } else {
           str = `${"<li class='" + "'><span class='date-text'>"
-            }[${date}<span class='date-text-sec'>:${sec}</span>]</span> <span class='username-text'>${data[i].username
+            }[${date}<span class='date-text-sec' style="${secondsStyle}">:${sec}</span>]</span> <span class='username-text'>${data[i].username
             }${generateBadgeString(data[i].badge)}:</span> ${filteredMessage}`;
         }
 
@@ -353,9 +356,12 @@ function addToRoomChat(data) {
           highlightForegroundColorHtml = 'color: #333;';
         }
 
+        let showSeconds = docCookies.getItem(`optionDisplayEnableHourMinSec`);
+        const secondsStyle = showSeconds === 'true' ? 'display:inline;' : 'display:none;';
+
         // if its a server text or special text
         if (data[i].classStr && data[i].classStr !== '') {
-          str = `<li class='${data[i].classStr} ${addClass}'><span class='date-text'>[${date}<span class='date-text-sec'>:${sec}</span>]</span> ${filteredMessage}`;
+          str = `<li class='${data[i].classStr} ${addClass}'><span class='date-text'>[${date}<span class='date-text-sec' style="${secondsStyle}">:${sec}</span>]</span> ${filteredMessage}`;
         }
         // its a user's chat so put some other stuff on it
         else {
@@ -368,7 +374,7 @@ function addToRoomChat(data) {
           str = `
           <li class='${addClass}'>
             <span style='${highlightForegroundColorHtml}background-color: ${highlightChatColour}' username='${data[i].username}'>
-              <span class='date-text'>[${date}<span class='date-text-sec'>:${sec}</span>]</span>
+              <span class='date-text'>[${date}<span class='date-text-sec' style="${secondsStyle}">:${sec}</span>]</span>
               <span class='username-text'>${data[i].username}${generateBadgeString(data[i].badge)}:</span> 
               ${message}
             </span>
