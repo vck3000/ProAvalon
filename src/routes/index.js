@@ -247,6 +247,10 @@ router.get('/statistics', (req, res) => {
   res.render('statistics', { currentUser: req.user, headerActive: 'stats' });
 });
 
+router.get('/forgotPassword', (req, res) => {
+  res.render('forgotPassword', { currentUser: req.user });
+});
+
 function gameDateCompare(a, b) {
   if (a.date < b.date) {
     return -1;
