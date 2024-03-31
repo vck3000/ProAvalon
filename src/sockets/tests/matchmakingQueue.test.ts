@@ -37,29 +37,22 @@ describe('MatchmakingQueue', () => {
     expect(matchmakingQueue.getNumInQueue()).toEqual(0);
   });
 
-  it('Matches 7 people in queue with join window', () => {
+  it('Matches 7 people in queue', () => {
     for (let i = 1; i <= 5; i++) {
       expect(
         matchmakingQueue.addUser(getDefaultQueueEntry(i.toString())),
       ).toEqual(true);
       expect(matchmakingQueue.getNumInQueue()).toEqual(i);
-
-      jest.advanceTimersByTime(MM_JOIN_WINDOW * 0.75);
     }
 
     expect(matchFoundCallback).not.toHaveBeenCalled();
 
     matchmakingQueue.addUser(getDefaultQueueEntry('6'));
-
-    jest.advanceTimersByTime(MM_JOIN_WINDOW * 0.75);
-
-    expect(matchFoundCallback).not.toHaveBeenCalled();
     matchmakingQueue.addUser(getDefaultQueueEntry('7'));
-    jest.advanceTimersByTime(MM_JOIN_WINDOW);
 
-    const expectUsernames = ['1', '2', '3', '4', '5', '6', '7'];
+    const expectUsernames = ['1', '2', '3', '4', '5', '6'];
     expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
-    expect(matchmakingQueue.getNumInQueue()).toEqual(0);
+    expect(matchmakingQueue.getNumInQueue()).toEqual(1);
   });
 
   it('Adds and removes a player username case insensitive', () => {
@@ -87,16 +80,16 @@ describe('MatchmakingQueue', () => {
   });
 
   it('Matches multiple times fine', () => {
-    for (let i = 1; i <= 16; i++) {
+    for (let i = 1; i <= 12; i++) {
       matchmakingQueue.addUser(getDefaultQueueEntry(i.toString()));
     }
 
     {
-      const expectUsernames = ['1', '2', '3', '4', '5', '6', '7', '8'];
+      const expectUsernames = ['1', '2', '3', '4', '5', '6'];
       expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
     }
     {
-      const expectUsernames = ['9', '10', '11', '12', '13', '14', '15', '16'];
+      const expectUsernames = ['7', '8', '9', '10', '11', '12'];
       expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
     }
   });
