@@ -23,10 +23,8 @@ export class VoidGameTracker {
 
     this.playersVoted.add(username.toLowerCase());
 
-    const s = this.playersVoted.size > 1 ? 's have' : ' has';
-
     this.game.sendText(
-      `${this.playersVoted.size} player${s} voted to void the game. ${votesNeeded} votes needed.`,
+      `${this.playersVoted.size} / ${votesNeeded} players have voted to void the game.`,
       'server-text',
     );
 
