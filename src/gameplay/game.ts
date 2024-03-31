@@ -199,6 +199,8 @@ class Game extends Room {
     this.gameTimer = new GameTimer(this, () => new Date());
     this.gameTimer.configureTimeouts(storedData.timeoutSettings);
 
+    this.claimingPlayers = new Set();
+
     // Roles
     // Remove the circular dependency
     for (const key in storedData.specialRoles) {
@@ -1957,10 +1959,8 @@ class Game extends Room {
       votesNeeded,
     );
 
-    const s = numVoted > 1 ? 's have' : ' has';
-
     this.sendText(
-      `${numVoted} player${s} voted to pause the timeout. ${votesNeeded} votes needed.`,
+      `${numVoted} / ${votesNeeded} players have voted to pause the timeout.`,
       'server-text',
     );
 

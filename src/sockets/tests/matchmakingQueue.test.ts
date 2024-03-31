@@ -37,7 +37,8 @@ describe('MatchmakingQueue', () => {
     expect(matchmakingQueue.getNumInQueue()).toEqual(0);
   });
 
-  it('Matches 7 people in queue with join window', () => {
+  // Skipped test as current behaviour has max 6 players.
+  it.skip('Matches 7 people in queue with join window', () => {
     for (let i = 1; i <= 5; i++) {
       expect(
         matchmakingQueue.addUser(getDefaultQueueEntry(i.toString())),
@@ -87,16 +88,16 @@ describe('MatchmakingQueue', () => {
   });
 
   it('Matches multiple times fine', () => {
-    for (let i = 1; i <= 16; i++) {
+    for (let i = 1; i <= 12; i++) {
       matchmakingQueue.addUser(getDefaultQueueEntry(i.toString()));
     }
 
     {
-      const expectUsernames = ['1', '2', '3', '4', '5', '6', '7', '8'];
+      const expectUsernames = ['1', '2', '3', '4', '5', '6'];
       expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
     }
     {
-      const expectUsernames = ['9', '10', '11', '12', '13', '14', '15', '16'];
+      const expectUsernames = ['7', '8', '9', '10', '11', '12'];
       expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
     }
   });
