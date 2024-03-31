@@ -1948,6 +1948,14 @@ class Game extends Room {
       return;
     }
 
+    if (this.finished) {
+      socket.emit('messageCommandReturnStr', {
+        message: 'The game has finished. You cannot pause the timer',
+        classStr: 'server-text',
+      });
+      return;
+    }
+
     if (
       this.gameTimer.votePauseTimeout(socket.request.user.username, disconnect)
     ) {
