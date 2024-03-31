@@ -25,7 +25,4 @@ module.exports = merge(common, {
       publicPath: '/dist_webpack/',
     },
   },
-  optimization: {
-    runtimeChunk: 'single',
-  },
 });

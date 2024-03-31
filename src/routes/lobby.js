@@ -16,7 +16,6 @@ router.get('/', (req, res) => {
     optionsCog: true,
     reportsReact,
     readyPromptReact,
-    dev: process.env.ENV === 'local',
   });
 });
 

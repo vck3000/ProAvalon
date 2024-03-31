@@ -30,7 +30,6 @@ router.get('/', isModMiddleware, (req, res) => {
     isMod: true,
     headerActive: 'mod',
     logsReact,
-    dev: process.env.ENV === 'local',
   });
 });
 
@@ -252,7 +251,6 @@ router.get('/report', isModMiddleware, (req, res) => {
 
   res.render('mod/report', {
     reportsReact,
-    dev: process.env.ENV === 'local',
   });
 });
 
