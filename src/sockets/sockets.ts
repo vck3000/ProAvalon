@@ -926,13 +926,16 @@ export const userCommands = {
     run(data, senderSocket) {
       if (!senderSocket.request.user.inRoomId) {
         senderSocket.emit('messageCommandReturnStr', {
-          message: 'You must be in a room to use /votePauseTimeout.',
+          message: 'You must be in a room to use /pausetimer.',
           classStr: 'server-text',
         });
         return;
       }
 
-      rooms[senderSocket.request.user.inRoomId].votePauseTimeout(senderSocket);
+      rooms[senderSocket.request.user.inRoomId].votePauseTimeout(
+        senderSocket,
+        false,
+      );
     },
   },
 
@@ -942,7 +945,7 @@ export const userCommands = {
     run(data, senderSocket) {
       if (!senderSocket.request.user.inRoomId) {
         senderSocket.emit('messageCommandReturnStr', {
-          message: 'You must be in a room to use /votePauseTimeout.',
+          message: 'You must be in a room to use /unpausetimer.',
           classStr: 'server-text',
         });
         return;
@@ -960,7 +963,7 @@ export const userCommands = {
     run(data, senderSocket) {
       if (!senderSocket.request.user.inRoomId) {
         senderSocket.emit('messageCommandReturnStr', {
-          message: 'You must be in a room to use /voteVoidGame.',
+          message: 'You must be in a room to use /voidgame.',
           classStr: 'server-text',
         });
         return;
@@ -1663,6 +1666,11 @@ function disconnect(data) {
   // Note, by default when this disconnects, it leaves from all socket rooms.
   const inRoomId = this.request.user.inRoomId;
 
+  // Add a vote to the pause timer
+  if (inRoomId) {
+    rooms[inRoomId].votePauseTimeout(this, true);
+  }
+
   playerLeaveRoomCheckDestroy(this);
 
   matchmakingQueue.removeUser(this.request.user.username);
@@ -2072,6 +2080,9 @@ function leaveRoom() {
       dateCreated: new Date(),
     };
     sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
+
+    // Add a vote to the pause timer
+    rooms[this.request.user.inRoomId].votePauseTimeout(this, true);
 
     // leave the room chat
     this.leave(this.request.user.inRoomId);
