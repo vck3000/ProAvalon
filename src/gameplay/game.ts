@@ -1965,10 +1965,8 @@ class Game extends Room {
       votesNeeded,
     );
 
-    const s = numVoted > 1 ? 's have' : ' has';
-
     this.sendText(
-      `${numVoted} player${s} voted to pause the timeout. ${votesNeeded} votes needed.`,
+      `${numVoted} / ${votesNeeded} players have voted to pause the timeout.`,
       'server-text',
     );
 
