@@ -43,7 +43,7 @@ export class GameTimer {
     return this.timeoutSettings;
   }
 
-  votePauseTimeout(username: string, disconnect: boolean): boolean {
+  votePauseTimeout(username: string, leaveTriggered: boolean): boolean {
     const numResPlayers = this.game.playersInGame.filter(
       (player) => player.alliance === Alliance.Resistance,
     ).length;
@@ -52,7 +52,7 @@ export class GameTimer {
 
     this.playersVotedPause.add(username.toLowerCase());
 
-    if (disconnect) {
+    if (leaveTriggered) {
       this.game.sendText(
         `${username} has automatically voted to pause the timeout.`,
         'server-text',
