@@ -1938,7 +1938,7 @@ class Game extends Room {
     }
   }
 
-  votePauseTimeout(socket: SocketUser): void {
+  votePauseTimeout(socket: SocketUser, disconnect: boolean): void {
     // Verify they are in the game.
     if (!this.usernameIsPlayer(socket.request.user.username)) {
       socket.emit('messageCommandReturnStr', {
@@ -1948,7 +1948,9 @@ class Game extends Room {
       return;
     }
 
-    if (this.gameTimer.votePauseTimeout(socket.request.user.username)) {
+    if (
+      this.gameTimer.votePauseTimeout(socket.request.user.username, disconnect)
+    ) {
       this.sendText(`Timeout has been paused.`, 'server-text');
       this.dateTimerExpires = new Date(0);
     }

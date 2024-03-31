@@ -932,7 +932,10 @@ export const userCommands = {
         return;
       }
 
-      rooms[senderSocket.request.user.inRoomId].votePauseTimeout(senderSocket);
+      rooms[senderSocket.request.user.inRoomId].votePauseTimeout(
+        senderSocket,
+        false,
+      );
     },
   },
 
@@ -1683,10 +1686,10 @@ function disconnect(data) {
       dateCreated: new Date(),
     };
     sendToRoomChat(ioGlobal, inRoomId, data);
-
-    // Add a vote to the pause timer
-    rooms[this.request.user.inRoomId].votePauseTimeout(this);
   }
+
+  // Add a vote to the pause timer
+  rooms[inRoomId].votePauseTimeout(this, true);
 }
 
 function messageCommand(data) {
@@ -2077,7 +2080,7 @@ function leaveRoom() {
     sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
 
     // Add a vote to the pause timer
-    rooms[this.request.user.inRoomId].votePauseTimeout(this);
+    rooms[this.request.user.inRoomId].votePauseTimeout(this, true);
 
     // leave the room chat
     this.leave(this.request.user.inRoomId);

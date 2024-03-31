@@ -43,7 +43,7 @@ export class GameTimer {
     return this.timeoutSettings;
   }
 
-  votePauseTimeout(username: string): boolean {
+  votePauseTimeout(username: string, disconnect: boolean): boolean {
     const numResPlayers = this.game.playersInGame.filter(
       (player) => player.alliance === Alliance.Resistance,
     ).length;
@@ -51,6 +51,13 @@ export class GameTimer {
     const votesNeeded = numResPlayers + 1;
 
     this.playersVotedPause.add(username.toLowerCase());
+
+    if (disconnect) {
+      this.game.sendText(
+        `${username} has voted to pause the timeout.`,
+        'server-text',
+      );
+    }
 
     this.game.sendText(
       `${this.playersVotedPause.size} / ${votesNeeded} players have voted to pause the timeout.`,
