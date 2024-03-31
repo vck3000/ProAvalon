@@ -1334,16 +1334,11 @@
   src="<%-getVersionedPath('/scripts/lobby/glossary.js')%>"
 ></script>
 
-<script
-  type="text/javascript"
-  src="<%-getVersionedPath('/dist_webpack/report.bundle.js')%>"
-></script>
+<script type="text/javascript" src="<%-getVersionedPath('/dist_webpack/runtime.bundle.js')%>"></script>
+<script type="text/javascript" src="<%-getVersionedPath('/dist_webpack/report.bundle.js')%>"></script>
 
 <div react-entrypoint id="ReadyPromptDiv"><%-readyPromptReact%></div>
 
-<script
-  type="text/javascript"
-  src="<%-getVersionedPath('/dist_webpack/readyPrompt.bundle.js')%>"
-></script>
+<script type="text/javascript" src="<%-getVersionedPath('/dist_webpack/readyPrompt.bundle.js')%>"></script>
 
 <%- include('partials/footer') %>

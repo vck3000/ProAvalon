@@ -249,7 +249,9 @@ router.get('/ajax/logData/:pageIndex', isModMiddleware, (req, res) => {
 router.get('/report', isModMiddleware, (req, res) => {
   const reportsReact = renderToString(<ReportLog />);
 
-  res.render('mod/report', { reportsReact });
+  res.render('mod/report', {
+    reportsReact,
+  });
 });
 
 // Create a new report

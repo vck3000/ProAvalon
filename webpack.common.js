@@ -16,4 +16,7 @@ module.exports = {
     path: path.resolve(__dirname, 'assets/dist_webpack'),
     clean: true,
   },
+  optimization: {
+    runtimeChunk: 'single',
+  },
 };

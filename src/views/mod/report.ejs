@@ -1,9 +1,8 @@
 <%- include('../partials/header') %>
 
 <div react-entrypoint class="panel-body" id="LogReportsDiv"><%-reportsReact%></div>
-<script
-  type="text/javascript"
-  src="<%-getVersionedPath('/dist_webpack/reportLog.bundle.js')%>"
-></script>
+
+<script type="text/javascript" src="<%-getVersionedPath('/dist_webpack/runtime.bundle.js')%>"></script>
+<script type="text/javascript" src="<%-getVersionedPath('/dist_webpack/reportLog.bundle.js')%>"></script>
 
 <%- include('../partials/footer') %>
