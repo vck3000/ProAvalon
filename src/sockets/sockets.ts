@@ -2171,10 +2171,15 @@ function joinQueue(): boolean {
 
   if (process.env.ENV !== 'local') {
     if (this.request.user.totalGamesPlayed < 3) {
-      this.emit(
-        'danger-alert',
-        'You require 3 games to join the ranked queue.',
-      );
+      this.emit('allChatToClient', {
+        message: 'You require 3 games to join the ranked queue.',
+        classStr: 'server-text',
+      });
+      this.emit('allChatToClient', {
+        message:
+          'Please join the Discord server and ping @Games in the #looking-for-game channel.',
+        classStr: 'server-text',
+      });
       return false;
     }
   }
