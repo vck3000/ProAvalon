@@ -1948,9 +1948,17 @@ class Game extends Room {
       return;
     }
 
+    if (!this.gameStarted) {
+      socket.emit('messageCommandReturnStr', {
+        message: 'The game has not started. You cannot pause the timer.',
+        classStr: 'server-text',
+      });
+      return;
+    }
+
     if (this.finished) {
       socket.emit('messageCommandReturnStr', {
-        message: 'The game has finished. You cannot pause the timer',
+        message: 'The game has finished. You cannot pause the timer.',
         classStr: 'server-text',
       });
       return;
@@ -1977,6 +1985,22 @@ class Game extends Room {
       return;
     }
 
+    if (!this.gameStarted) {
+      socket.emit('messageCommandReturnStr', {
+        message: 'The game has not started. You cannot unpause the timer.',
+        classStr: 'server-text',
+      });
+      return;
+    }
+
+    if (this.finished) {
+      socket.emit('messageCommandReturnStr', {
+        message: 'The game has finished. You cannot unpause the timer.',
+        classStr: 'server-text',
+      });
+      return;
+    }
+
     this.sendText(`A player has unpaused the timeout.`, 'server-text');
 
     this.dateTimerExpires = this.gameTimer.voteUnpauseTimeout();
@@ -1998,6 +2022,22 @@ class Game extends Room {
     if (!this.usernameIsPlayer(socket.request.user.username)) {
       socket.emit('messageCommandReturnStr', {
         message: 'You are not a player in this game.',
+        classStr: 'server-text',
+      });
+      return;
+    }
+
+    if (!this.gameStarted) {
+      socket.emit('messageCommandReturnStr', {
+        message: 'The game has not started. You cannot void the game.',
+        classStr: 'server-text',
+      });
+      return;
+    }
+
+    if (this.finished) {
+      socket.emit('messageCommandReturnStr', {
+        message: 'The game has finished. You cannot void the game.',
         classStr: 'server-text',
       });
       return;

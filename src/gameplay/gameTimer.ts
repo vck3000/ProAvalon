@@ -54,7 +54,7 @@ export class GameTimer {
 
     if (disconnect) {
       this.game.sendText(
-        `${username} has voted to pause the timeout.`,
+        `${username} has automatically voted to pause the timeout.`,
         'server-text',
       );
     }

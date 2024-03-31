@@ -963,7 +963,7 @@ export const userCommands = {
     run(data, senderSocket) {
       if (!senderSocket.request.user.inRoomId) {
         senderSocket.emit('messageCommandReturnStr', {
-          message: 'You must be in a room to use /voteVoidGame.',
+          message: 'You must be in a room to use /voidgame.',
           classStr: 'server-text',
         });
         return;
