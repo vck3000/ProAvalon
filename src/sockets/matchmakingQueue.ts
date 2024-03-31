@@ -1,5 +1,5 @@
 const MIN_PLAYERS_PER_GAME = 6;
-const MAX_PLAYERS_PER_GAME = 8;
+const MAX_PLAYERS_PER_GAME = 6;
 
 // In milliseconds
 const MM_JOIN_TIME_WINDOW = 10000;

@@ -137,13 +137,19 @@ function addToAllChat(data) {
         }
         let hour = d.getHours();
         let min = d.getMinutes();
+        let sec = d.getSeconds();
+
         if (hour < 10) {
           hour = `0${hour}`;
         }
         if (min < 10) {
           min = `0${min}`;
         }
-        date = `[${hour}:${min}]`;
+        if (sec < 10) {
+          sec = `0${sec}`;
+        }
+
+        date = `${hour}:${min}`;
 
         let filteredMessage = data[i].message
           .replace(/&/g, "&amp;")
@@ -166,12 +172,15 @@ function addToAllChat(data) {
           filteredMessage = addAbbreviations(filteredMessage);
         }
 
+        let showSeconds = docCookies.getItem(`optionDisplayEnableTimeStampSeconds`);
+        const secondsStyle = showSeconds === 'true' ? 'display:inline;' : 'display:none;';
+
         let str = '';
         if (data[i].classStr && data[i].classStr !== '') {
-          str = `<li class='${data[i].classStr}'><span class='date-text'>${date}</span> ${filteredMessage}`;
+          str = `<li class='${data[i].classStr}'><span class='date-text'>[${date}<span class='date-text-sec' style="${secondsStyle}">:${sec}</span>]</span></span> ${filteredMessage}`;
         } else {
           str = `${"<li class='" + "'><span class='date-text'>"
-            }${date}</span> <span class='username-text'>${data[i].username
+            }[${date}<span class='date-text-sec' style="${secondsStyle}">:${sec}</span>]</span> <span class='username-text'>${data[i].username
             }${generateBadgeString(data[i].badge)}:</span> ${filteredMessage}`;
         }
 
@@ -248,13 +257,18 @@ function addToRoomChat(data) {
         }
         let hour = d.getHours();
         let min = d.getMinutes();
+        let sec = d.getSeconds();
         if (hour < 10) {
           hour = `0${hour}`;
         }
         if (min < 10) {
           min = `0${min}`;
         }
-        date = `[${hour}:${min}]`;
+        if (sec < 10) {
+          sec = `0${sec}`;
+        }
+
+        date = `${hour}:${min}`;
         data[i].dateStr = date;
 
         // if(!data[i].dateCreated){
@@ -342,9 +356,12 @@ function addToRoomChat(data) {
           highlightForegroundColorHtml = 'color: #333;';
         }
 
+        let showSeconds = docCookies.getItem(`optionDisplayEnableTimeStampSeconds`);
+        const secondsStyle = showSeconds === 'true' ? 'display:inline;' : 'display:none;';
+
         // if its a server text or special text
         if (data[i].classStr && data[i].classStr !== '') {
-          str = `<li class='${data[i].classStr} ${addClass}'><span class='date-text'>${date}</span> ${filteredMessage}`;
+          str = `<li class='${data[i].classStr} ${addClass}'><span class='date-text'>[${date}<span class='date-text-sec' style="${secondsStyle}">:${sec}</span>]</span> ${filteredMessage}`;
         }
         // its a user's chat so put some other stuff on it
         else {
@@ -357,7 +374,7 @@ function addToRoomChat(data) {
           str = `
           <li class='${addClass}'>
             <span style='${highlightForegroundColorHtml}background-color: ${highlightChatColour}' username='${data[i].username}'>
-              <span class='date-text'> ${date}</span> 
+              <span class='date-text'>[${date}<span class='date-text-sec' style="${secondsStyle}">:${sec}</span>]</span>
               <span class='username-text'>${data[i].username}${generateBadgeString(data[i].badge)}:</span> 
               ${message}
             </span>
