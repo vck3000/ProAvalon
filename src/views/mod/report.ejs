@@ -6,4 +6,11 @@
   src="<%-getVersionedPath('/dist_webpack/reportLog.bundle.js')%>"
 ></script>
 
+<% if (dev) { %>
+<script
+        type="text/javascript"
+        src="<%-getVersionedPath('/dist_webpack/runtime.bundle.js')%>"
+></script>
+<% } %>
+
 <%- include('../partials/footer') %>

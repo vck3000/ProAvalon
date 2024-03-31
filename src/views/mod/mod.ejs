@@ -71,5 +71,11 @@
 </div>
 
 <script type="text/javascript" src="<%-getVersionedPath('/dist_webpack/modLog.bundle.js')%>"></script>
+<% if (dev) { %>
+<script
+        type="text/javascript"
+        src="<%-getVersionedPath('/dist_webpack/runtime.bundle.js')%>"
+></script>
+<% } %>
 
 <%- include('../partials/footer') %>

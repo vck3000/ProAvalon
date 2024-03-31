@@ -30,6 +30,7 @@ router.get('/', isModMiddleware, (req, res) => {
     isMod: true,
     headerActive: 'mod',
     logsReact,
+    dev: process.env.ENV === 'local',
   });
 });
 
@@ -249,7 +250,10 @@ router.get('/ajax/logData/:pageIndex', isModMiddleware, (req, res) => {
 router.get('/report', isModMiddleware, (req, res) => {
   const reportsReact = renderToString(<ReportLog />);
 
-  res.render('mod/report', { reportsReact });
+  res.render('mod/report', {
+    reportsReact,
+    dev: process.env.ENV === 'local',
+  });
 });
 
 // Create a new report
