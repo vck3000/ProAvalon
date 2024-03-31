@@ -926,13 +926,16 @@ export const userCommands = {
     run(data, senderSocket) {
       if (!senderSocket.request.user.inRoomId) {
         senderSocket.emit('messageCommandReturnStr', {
-          message: 'You must be in a room to use /votePauseTimeout.',
+          message: 'You must be in a room to use /pausetimer.',
           classStr: 'server-text',
         });
         return;
       }
 
-      rooms[senderSocket.request.user.inRoomId].votePauseTimeout(senderSocket);
+      rooms[senderSocket.request.user.inRoomId].votePauseTimeout(
+        senderSocket,
+        false,
+      );
     },
   },
 
@@ -942,7 +945,7 @@ export const userCommands = {
     run(data, senderSocket) {
       if (!senderSocket.request.user.inRoomId) {
         senderSocket.emit('messageCommandReturnStr', {
-          message: 'You must be in a room to use /votePauseTimeout.',
+          message: 'You must be in a room to use /unpausetimer.',
           classStr: 'server-text',
         });
         return;
@@ -960,7 +963,7 @@ export const userCommands = {
     run(data, senderSocket) {
       if (!senderSocket.request.user.inRoomId) {
         senderSocket.emit('messageCommandReturnStr', {
-          message: 'You must be in a room to use /voteVoidGame.',
+          message: 'You must be in a room to use /voidgame.',
           classStr: 'server-text',
         });
         return;
@@ -1684,6 +1687,9 @@ function disconnect(data) {
     };
     sendToRoomChat(ioGlobal, inRoomId, data);
   }
+
+  // Add a vote to the pause timer
+  rooms[inRoomId].votePauseTimeout(this, true);
 }
 
 function messageCommand(data) {
@@ -2072,6 +2078,9 @@ function leaveRoom() {
       dateCreated: new Date(),
     };
     sendToRoomChat(ioGlobal, this.request.user.inRoomId, data);
+
+    // Add a vote to the pause timer
+    rooms[this.request.user.inRoomId].votePauseTimeout(this, true);
 
     // leave the room chat
     this.leave(this.request.user.inRoomId);

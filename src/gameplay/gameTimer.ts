@@ -1,6 +1,7 @@
 import { ButtonSettings, isGamePhase, Phase } from './phases/types';
 import Game, { getRandomInt } from './game';
 import { postGameMoveChecks } from '../sockets/sockets';
+import { Alliance } from './types';
 
 // All in milliseconds
 const TEN_MILLISECONDS = 10;
@@ -42,13 +43,32 @@ export class GameTimer {
     return this.timeoutSettings;
   }
 
-  votePauseTimeout(username: string, votesNeeded: number): number {
+  votePauseTimeout(username: string, leaveTriggered: boolean): boolean {
+    const numResPlayers = this.game.playersInGame.filter(
+      (player) => player.alliance === Alliance.Resistance,
+    ).length;
+
+    const votesNeeded = numResPlayers + 1;
+
     this.playersVotedPause.add(username.toLowerCase());
+
+    if (leaveTriggered) {
+      this.game.sendText(
+        `${username} has automatically voted to pause the timeout.`,
+        'server-text',
+      );
+    }
+
+    this.game.sendText(
+      `${this.playersVotedPause.size} / ${votesNeeded} players have voted to pause the timeout.`,
+      'server-text',
+    );
+
     if (this.playersVotedPause.size >= votesNeeded) {
       this.clearTimers();
     }
 
-    return this.playersVotedPause.size;
+    return this.playersVotedPause.size >= votesNeeded;
   }
 
   voteUnpauseTimeout(): Date {
