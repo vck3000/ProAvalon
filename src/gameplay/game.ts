@@ -199,6 +199,8 @@ class Game extends Room {
     this.gameTimer = new GameTimer(this, () => new Date());
     this.gameTimer.configureTimeouts(storedData.timeoutSettings);
 
+    this.voidGameTracker = new VoidGameTracker(this);
+
     this.claimingPlayers = new Set();
 
     // Roles
