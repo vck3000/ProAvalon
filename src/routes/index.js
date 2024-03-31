@@ -251,6 +251,10 @@ router.get('/forgotPassword', (req, res) => {
   res.render('forgotPassword', { currentUser: req.user });
 });
 
+router.post('/forgotPassword', (req, res) => {
+  console.log(req.body);
+});
+
 function gameDateCompare(a, b) {
   if (a.date < b.date) {
     return -1;
