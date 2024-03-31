@@ -52,8 +52,6 @@ export class GameTimer {
 
     this.playersVotedPause.add(username.toLowerCase());
 
-    const s = this.playersVotedPause.size > 1 ? 's have' : ' has';
-
     this.game.sendText(
       `${this.playersVotedPause.size} / ${votesNeeded} players have voted to pause the timeout.`,
       'server-text',
