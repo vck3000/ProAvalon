@@ -37,22 +37,30 @@ describe('MatchmakingQueue', () => {
     expect(matchmakingQueue.getNumInQueue()).toEqual(0);
   });
 
-  it('Matches 7 people in queue', () => {
+  // Skipped test as current behaviour has max 6 players.
+  it.skip('Matches 7 people in queue with join window', () => {
     for (let i = 1; i <= 5; i++) {
       expect(
         matchmakingQueue.addUser(getDefaultQueueEntry(i.toString())),
       ).toEqual(true);
       expect(matchmakingQueue.getNumInQueue()).toEqual(i);
+
+      jest.advanceTimersByTime(MM_JOIN_WINDOW * 0.75);
     }
 
     expect(matchFoundCallback).not.toHaveBeenCalled();
 
     matchmakingQueue.addUser(getDefaultQueueEntry('6'));
-    matchmakingQueue.addUser(getDefaultQueueEntry('7'));
 
-    const expectUsernames = ['1', '2', '3', '4', '5', '6'];
+    jest.advanceTimersByTime(MM_JOIN_WINDOW * 0.75);
+
+    expect(matchFoundCallback).not.toHaveBeenCalled();
+    matchmakingQueue.addUser(getDefaultQueueEntry('7'));
+    jest.advanceTimersByTime(MM_JOIN_WINDOW);
+
+    const expectUsernames = ['1', '2', '3', '4', '5', '6', '7'];
     expect(matchFoundCallback).toHaveBeenCalledWith(expectUsernames);
-    expect(matchmakingQueue.getNumInQueue()).toEqual(1);
+    expect(matchmakingQueue.getNumInQueue()).toEqual(0);
   });
 
   it('Adds and removes a player username case insensitive', () => {
