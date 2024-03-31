@@ -1945,10 +1945,12 @@ class Game extends Room {
   votePauseTimeout(socket: SocketUser, leaveTriggered: boolean): void {
     // Verify they are in the game.
     if (!this.usernameIsPlayer(socket.request.user.username)) {
-      socket.emit('messageCommandReturnStr', {
-        message: 'You are not a player in this game.',
-        classStr: 'server-text',
-      });
+      if (!leaveTriggered) {
+        socket.emit('messageCommandReturnStr', {
+          message: 'You are not a player in this game.',
+          classStr: 'server-text',
+        });
+      }
       return;
     }
 
