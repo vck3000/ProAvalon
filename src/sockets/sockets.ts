@@ -1667,7 +1667,9 @@ function disconnect(data) {
   const inRoomId = this.request.user.inRoomId;
 
   // Add a vote to the pause timer
-  rooms[inRoomId].votePauseTimeout(this, true);
+  if (inRoomId) {
+    rooms[inRoomId].votePauseTimeout(this, true);
+  }
 
   playerLeaveRoomCheckDestroy(this);
 
