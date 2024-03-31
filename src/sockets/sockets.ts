@@ -1666,6 +1666,9 @@ function disconnect(data) {
   // Note, by default when this disconnects, it leaves from all socket rooms.
   const inRoomId = this.request.user.inRoomId;
 
+  // Add a vote to the pause timer
+  rooms[inRoomId].votePauseTimeout(this, true);
+
   playerLeaveRoomCheckDestroy(this);
 
   matchmakingQueue.removeUser(this.request.user.username);
@@ -1687,9 +1690,6 @@ function disconnect(data) {
     };
     sendToRoomChat(ioGlobal, inRoomId, data);
   }
-
-  // Add a vote to the pause timer
-  rooms[inRoomId].votePauseTimeout(this, true);
 }
 
 function messageCommand(data) {
