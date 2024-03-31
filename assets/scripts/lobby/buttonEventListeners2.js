@@ -230,3 +230,30 @@ let joined = false;
 $('#queueButton').on('click', () => {
   socket.emit('queue-request', { join : !joined });
 });
+
+$('#startGameOptionsDefaultPhaseTimeoutMin').on('change', () => {
+  handleTimeoutInput('#startGameOptionsDefaultPhaseTimeoutMin');
+});
+
+$('#startGameOptionsDefaultPhaseTimeoutSec').on('change', () => {
+  handleTimeoutInput('#startGameOptionsDefaultPhaseTimeoutSec');
+});
+
+$('#startGameOptionsAssassinationPhaseTimeoutMin').on('change', () => {
+  handleTimeoutInput('#startGameOptionsAssassinationPhaseTimeoutMin');
+});
+
+$('#startGameOptionsAssassinationPhaseTimeoutSec').on('change', () => {
+  handleTimeoutInput('#startGameOptionsAssassinationPhaseTimeoutSec');
+});
+
+function handleTimeoutInput(inputId) {
+  let input = $(inputId)[0];
+  let val = parseInt(input.value, 10);
+
+  if (val <= 0 || isNaN(val) || val.toString() !== input.value) {
+    input.value = 0;
+  } else if (val > 60) {
+    input.value = 60;
+  }
+}
