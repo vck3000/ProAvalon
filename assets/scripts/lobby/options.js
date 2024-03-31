@@ -430,7 +430,7 @@ var userOptions = {
   optionDisplayEnableAbbreivations: {
     defaultValue: 'true',
     onLoad() {
-      // check if optionDisplayProposedTeamIcon exists in cookies
+      // check if optionDisplayEnableAbbreivations exists in cookies
       const isOptionExists = docCookies.hasItem(
         'optionDisplayEnableAbbreivations'
       );
@@ -479,6 +479,61 @@ var userOptions = {
           draw();
           draw();
         }
+      );
+    },
+  },
+
+  optionDisplayEnableTimeStampSeconds: {
+    defaultValue: 'false',
+    onLoad() {
+      // check if optionDisplayEnableTimeStampSeconds exists in cookies
+      const isOptionExists = docCookies.hasItem(
+          'optionDisplayEnableTimeStampSeconds'
+      );
+      // if not, set it
+      if (isOptionExists === false) {
+        // save it in cookie
+        docCookies.setItem(
+            'optionDisplayEnableTimeStampSeconds',
+            false,
+            Infinity
+        );
+      }
+
+      const getOption = docCookies.getItem(
+          'optionDisplayEnableTimeStampSeconds'
+      );
+
+      // set check marks
+      if (getOption === false || getOption === 'false') {
+        $('#optionDisplayEnableTimeStampSeconds')[0].checked = false;
+      } else if (getOption === true || getOption === 'true') {
+        $('#optionDisplayEnableTimeStampSeconds')[0].checked = true;
+      } else {
+        docCookies.setItem(
+            'optionDisplayEnableTimeStampSeconds',
+            false,
+            Infinity
+        );
+      }
+    },
+    initialiseEventListener() {
+      $('#optionDisplayEnableTimeStampSeconds')[0].addEventListener(
+          'click',
+          () => {
+            // when they press it...
+            const newCheck = $('#optionDisplayEnableTimeStampSeconds')[0]
+                .checked;
+
+            $('.date-text-sec').css('display', newCheck ? '' : 'none');
+
+            // save their option in cookie
+            docCookies.setItem(
+                'optionDisplayEnableTimeStampSeconds',
+                newCheck,
+                Infinity
+            );
+          }
       );
     },
   },
