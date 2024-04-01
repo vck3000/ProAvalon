@@ -17,6 +17,7 @@ import Settings from '../settings';
 import { Alliance } from '../gameplay/types';
 import { resRoles, rolesToAlliances, spyRoles } from '../gameplay/roles/roles';
 import { sendResetPassword } from '../myFunctions/sendResetPassword';
+import uuid from 'uuid';
 
 const router = new Router();
 
@@ -267,7 +268,9 @@ router.post('/resetPassword', async (req, res) => {
         'A link to reset your password has been sent to your email.',
       );
       res.redirect('/resetPassword');
-      console.log(`${user.username} has requested to reset their password.`);
+      console.log(
+        `User: ${user.username} Email: ${user.emailAddress} has requested to reset their password.`,
+      );
     } else {
       req.flash(
         'error',
@@ -290,14 +293,26 @@ router.get('/resetPassword/verifyResetPassword', async (req, res) => {
     const user = await User.findOne({ emailToken: req.query.token });
 
     if (user) {
-      const tempPass = req.query.token.substring(0, 12);
-
       user.emailToken = undefined;
       user.markModified('emailToken');
+
+      // Set new temporary password
+      const uuidv4 = uuid.v4;
+      const newPassword = uuidv4().substring(0, 12);
+
+      await new Promise((resolve, reject) => {
+        user.setPassword(newPassword, (err) => {
+          if (err) {
+            reject(err);
+          }
+          resolve();
+        });
+      });
+
       await user.save();
 
       req.flash('success', 'Your password has been reset! Thank you!');
-      res.render('resetPasswordSuccess', { tempPass });
+      res.render('resetPasswordSuccess', { newPassword });
       return;
     }
   }

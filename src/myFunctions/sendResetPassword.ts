@@ -16,17 +16,6 @@ const uuidv4 = uuid.v4;
 export const sendResetPassword = async (user: any, email: string) => {
   const token = uuidv4();
   const dateExpired = new Date();
-  const newPassword = token.substring(0, 12);
-
-  await new Promise<void>((res, rej) => {
-    // @ts-ignore
-    user.setPassword(newPassword, (err: any) => {
-      if (err) {
-        rej(err);
-      }
-      res();
-    });
-  });
 
   // const message = ejs.render(emailTemplateResetPassword, { server_domain, token });
 
