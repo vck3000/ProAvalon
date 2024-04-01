@@ -16,6 +16,7 @@ import { disallowVPNs } from '../util/vpnDetection';
 import Settings from '../settings';
 import { Alliance } from '../gameplay/types';
 import { resRoles, rolesToAlliances, spyRoles } from '../gameplay/roles/roles';
+import { sendResetPassword } from '../myFunctions/sendResetPassword';
 
 const router = new Router();
 
@@ -260,6 +261,7 @@ router.post('/forgotPassword', async (req, res) => {
     });
 
     if (user) {
+      sendResetPassword(user, email);
       req.flash(
         'success',
         'A link to reset your password has been sent to your email.',
