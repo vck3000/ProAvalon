@@ -4,6 +4,8 @@ import formData from 'form-data';
 import ejs from 'ejs';
 import emailTemplateResetPassword from './emailTemplateResetPassword';
 
+const TOKEN_TIMEOUT = 60 * 60 * 1000; // 1 hour
+
 // const api_key = process.env.MAILGUN_API_KEY;
 // const domain = process.env.PROAVALON_EMAIL_ADDRESS_DOMAIN;
 // const server_domain = process.env.SERVER_DOMAIN;
@@ -15,7 +17,11 @@ const uuidv4 = uuid.v4;
 
 export const sendResetPassword = async (user: any, email: string) => {
   const token = uuidv4();
-  const dateExpired = new Date();
+  const currentDate = new Date();
+  let tokenDateExpired = new Date();
+
+  // Set tokenDateExpired to be 1 hour later
+  tokenDateExpired.setTime(currentDate.getTime() + TOKEN_TIMEOUT);
 
   // const message = ejs.render(emailTemplateResetPassword, { server_domain, token });
 
@@ -26,11 +32,8 @@ export const sendResetPassword = async (user: any, email: string) => {
   //   html: message,
   // };
 
-  // Set dateExpired to be 1 hour later
-  dateExpired.setHours(dateExpired.getHours() + 1);
-
   user.emailToken = token;
-  user.emailTokenExpiry = dateExpired;
+  user.emailTokenExpiry = tokenDateExpired;
   user.markModified('emailToken');
   user.markModified('emailTokenExpiry');
   user.save();

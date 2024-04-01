@@ -292,7 +292,11 @@ router.get('/resetPassword/verifyResetPassword', async (req, res) => {
   if (req.query.token && req.query.token.trim() !== '') {
     const user = await User.findOne({ emailToken: req.query.token });
 
-    if (user) {
+    if (
+      user &&
+      user.emailTokenExpiry &&
+      new Date().getTime() < user.emailTokenExpiry.getTime()
+    ) {
       user.emailToken = undefined;
       user.markModified('emailToken');
 
