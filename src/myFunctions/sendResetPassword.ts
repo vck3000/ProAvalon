@@ -13,9 +13,20 @@ import emailTemplateResetPassword from './emailTemplateResetPassword';
 
 const uuidv4 = uuid.v4;
 
-export const sendResetPassword = (user: any, email: string) => {
+export const sendResetPassword = async (user: any, email: string) => {
   const token = uuidv4();
   const dateExpired = new Date();
+  const newPassword = token.substring(0, 12);
+
+  await new Promise<void>((res, rej) => {
+    // @ts-ignore
+    user.setPassword(newPassword, (err: any) => {
+      if (err) {
+        rej(err);
+      }
+      res();
+    });
+  });
 
   // const message = ejs.render(emailTemplateResetPassword, { server_domain, token });
 
@@ -30,7 +41,8 @@ export const sendResetPassword = (user: any, email: string) => {
   dateExpired.setHours(dateExpired.getHours() + 1);
 
   user.emailToken = token;
-  user.tokenExpiry = dateExpired;
+  user.emailTokenExpiry = dateExpired;
   user.markModified('emailToken');
+  user.markModified('emailTokenExpiry');
   user.save();
 };

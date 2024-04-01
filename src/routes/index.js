@@ -290,12 +290,15 @@ router.get('/resetPassword/verifyResetPassword', async (req, res) => {
     const user = await User.findOne({ emailToken: req.query.token });
 
     if (user) {
+      const tempPass = req.query.token.substring(0, 12);
+
       user.emailToken = undefined;
       user.markModified('emailToken');
       await user.save();
 
       req.flash('success', 'Your password has been reset! Thank you!');
-      res.render('resetPasswordSuccess');
+      res.render('resetPasswordSuccess', { tempPass });
+      return;
     }
   }
   req.flash(
