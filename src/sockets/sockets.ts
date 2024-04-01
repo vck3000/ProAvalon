@@ -2116,6 +2116,10 @@ function startGame(data) {
       timeout = 0;
     }
 
+    if (timeout > 60 * 60 * 1000) {
+      timeout = 60 * 60 * 1000;
+    }
+
     return timeout;
   };
 
