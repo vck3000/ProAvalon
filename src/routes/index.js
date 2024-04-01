@@ -249,7 +249,7 @@ router.get('/statistics', (req, res) => {
 });
 
 router.get('/resetPassword', (req, res) => {
-  res.render('resetPassword', { currentUser: req.user });
+  res.render('resetPassword');
 });
 
 router.post('/resetPassword', async (req, res) => {
@@ -295,7 +295,7 @@ router.get('/resetPassword/verifyResetPassword', async (req, res) => {
       await user.save();
 
       req.flash('success', 'Your password has been reset! Thank you!');
-      res.render('resetPasswordSuccess', { currentUser: user });
+      res.render('resetPasswordSuccess');
     }
   }
   req.flash(
