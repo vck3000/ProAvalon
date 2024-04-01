@@ -1666,16 +1666,6 @@ function disconnect(data) {
   // Note, by default when this disconnects, it leaves from all socket rooms.
   const inRoomId = this.request.user.inRoomId;
 
-  // Add a vote to the pause timer
-  if (inRoomId) {
-    rooms[inRoomId].votePauseTimeout(this, true);
-  }
-
-  playerLeaveRoomCheckDestroy(this);
-
-  matchmakingQueue.removeUser(this.request.user.username);
-  sendNumPlayersInQueueToEveryone();
-
   // if they are in a room, say they're leaving the room.
   if (inRoomId) {
     let username: string;
@@ -1691,7 +1681,15 @@ function disconnect(data) {
       dateCreated: new Date(),
     };
     sendToRoomChat(ioGlobal, inRoomId, data);
+
+    // Add a vote to the pause timer
+    rooms[inRoomId].votePauseTimeout(this, true);
   }
+
+  playerLeaveRoomCheckDestroy(this);
+
+  matchmakingQueue.removeUser(this.request.user.username);
+  sendNumPlayersInQueueToEveryone();
 }
 
 function messageCommand(data) {
@@ -2116,6 +2114,10 @@ function startGame(data) {
     let timeout = parseInt(timeoutStr, 10);
     if (isNaN(timeout) || timeout < 0) {
       timeout = 0;
+    }
+
+    if (timeout > 60 * 60 * 1000) {
+      timeout = 60 * 60 * 1000;
     }
 
     return timeout;
