@@ -138,7 +138,7 @@ export class GameTimer {
     return this.dateTimerExpires;
   }
 
-  isTimerSet() {
+  isTimerActive() {
     return this.dateTimerExpires.getTime() !== new Date(0).getTime();
   }
 
