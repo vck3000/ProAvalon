@@ -1974,6 +1974,16 @@ class Game extends Room {
       return;
     }
 
+    if (this.gameTimer.dateTimerExpires.getTime() === new Date(0).getTime()) {
+      if (!leaveTriggered) {
+        socket.emit('messageCommandReturnStr', {
+          message: 'There is no active timer currently.',
+          classStr: 'server-text',
+        });
+        return;
+      } else return;
+    }
+
     if (
       this.gameTimer.votePauseTimeout(
         socket.request.user.username,
