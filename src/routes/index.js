@@ -253,7 +253,7 @@ router.get('/resetPassword', (req, res) => {
   res.render('resetPassword');
 });
 
-router.post('/resetPassword', async (req, res) => {
+router.post('/resetPassword', registerLimiter, async (req, res) => {
   try {
     const email = req.body.emailAddress;
     const user = await User.findOne({
