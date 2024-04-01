@@ -286,22 +286,19 @@ router.post('/resetPassword', async (req, res) => {
 });
 
 router.get('/resetPassword/verifyResetPassword', async (req, res) => {
-  const user = await User.findOne({ emailToken: req.query.token })
-    .populate('notifications')
-    .exec();
+  const user = await User.findOne({ emailToken: req.query.token });
+
   if (user) {
-    user.emailVerified = true;
     user.emailToken = undefined;
-    user.markModified('emailVerified');
     user.markModified('emailToken');
     await user.save();
 
-    req.flash('success', 'Email verified! Thank you!');
-    res.redirect('/');
+    req.flash('success', 'Your password has been reset! Thank you!');
+    res.render('resetPasswordSuccess', { currentUser: user });
   } else {
     req.flash(
       'error',
-      "The link provided for email verification is invalid or expired. Please log in and press the 'Resend verification email' button.",
+      'The link provided to reset your password is invalid or expired.',
     );
     res.redirect('/');
   }
