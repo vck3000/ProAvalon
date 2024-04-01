@@ -1962,6 +1962,10 @@ class Game extends Room {
       return;
     }
 
+    if (this.phase === Phase.Assassination && leaveTriggered) {
+      return;
+    }
+
     if (this.finished) {
       socket.emit('messageCommandReturnStr', {
         message: 'The game has finished. You cannot pause the timer.',

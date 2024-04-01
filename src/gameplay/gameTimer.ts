@@ -54,7 +54,9 @@ export class GameTimer {
 
     if (leaveTriggered) {
       this.game.sendText(
-        `${username} has automatically voted to pause the timeout.`,
+        `${this.game.anonymizer.anon(
+          username,
+        )} has automatically voted to pause the timeout.`,
         'server-text',
       );
     }
