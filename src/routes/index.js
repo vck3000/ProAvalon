@@ -251,15 +251,34 @@ router.get('/forgotPassword', (req, res) => {
   res.render('forgotPassword', { currentUser: req.user });
 });
 
-router.post('/forgotPassword', (req, res) => {
+router.post('/forgotPassword', async (req, res) => {
   try {
     const email = req.body.emailAddress;
-    console.log(email);
+    const user = await User.findOne({
+      emailAddress: email,
+      emailVerified: true,
+    });
+
+    if (user) {
+      req.flash(
+        'success',
+        'A link to reset your password has been sent to your email.',
+      );
+      res.redirect('/forgotPassword');
+      console.log(`${user.username} has requested to reset their password.`);
+    } else {
+      req.flash(
+        'error',
+        'Email does not exist. Please enter a registered email address.',
+      );
+      res.redirect('/forgotPassword');
+      console.log(`Email not found: ${email}`);
+    }
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({
       success: false,
-      message: 'An error occurred while checking email in the database.',
+      message: 'An error occurred while checking the email in the database.',
     });
   }
 });
