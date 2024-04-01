@@ -138,6 +138,10 @@ export class GameTimer {
     return this.dateTimerExpires;
   }
 
+  isTimerSet() {
+    return this.dateTimerExpires.getTime() !== new Date(0).getTime();
+  }
+
   private callback() {
     // Ignore if dateTimerExpires isn't set
     if (this.dateTimerExpires === new Date(0)) {

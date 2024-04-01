@@ -1974,14 +1974,16 @@ class Game extends Room {
       return;
     }
 
-    if (this.gameTimer.dateTimerExpires.getTime() === new Date(0).getTime()) {
+    if (!this.gameTimer.isTimerSet()) {
       if (!leaveTriggered) {
         socket.emit('messageCommandReturnStr', {
           message: 'There is no active timer currently.',
           classStr: 'server-text',
         });
         return;
-      } else return;
+      } else {
+        return;
+      }
     }
 
     if (
@@ -2024,7 +2026,7 @@ class Game extends Room {
       return;
     }
 
-    if (this.gameTimer.dateTimerExpires.getTime() === new Date(0).getTime()) {
+    if (!this.gameTimer.isTimerSet()) {
       socket.emit('messageCommandReturnStr', {
         message: 'There is no active timer currently.',
         classStr: 'server-text',
