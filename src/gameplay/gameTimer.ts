@@ -54,7 +54,9 @@ export class GameTimer {
 
     if (leaveTriggered) {
       this.game.sendText(
-        `${username} has automatically voted to pause the timeout.`,
+        `${this.game.anonymizer.anon(
+          username,
+        )} has automatically voted to pause the timeout.`,
         'server-text',
       );
     }
@@ -134,6 +136,10 @@ export class GameTimer {
     this.setTimeoutIds.add(timeoutId);
 
     return this.dateTimerExpires;
+  }
+
+  isTimerActive() {
+    return this.dateTimerExpires.getTime() !== new Date(0).getTime();
   }
 
   private callback() {
