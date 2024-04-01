@@ -248,11 +248,11 @@ router.get('/statistics', (req, res) => {
   res.render('statistics', { currentUser: req.user, headerActive: 'stats' });
 });
 
-router.get('/forgotPassword', (req, res) => {
-  res.render('forgotPassword', { currentUser: req.user });
+router.get('/resetPassword', (req, res) => {
+  res.render('resetPassword', { currentUser: req.user });
 });
 
-router.post('/forgotPassword', async (req, res) => {
+router.post('/resetPassword', async (req, res) => {
   try {
     const email = req.body.emailAddress;
     const user = await User.findOne({
@@ -266,14 +266,14 @@ router.post('/forgotPassword', async (req, res) => {
         'success',
         'A link to reset your password has been sent to your email.',
       );
-      res.redirect('/forgotPassword');
+      res.redirect('/resetPassword');
       console.log(`${user.username} has requested to reset their password.`);
     } else {
       req.flash(
         'error',
         'Email does not exist. Please enter a registered email address.',
       );
-      res.redirect('/forgotPassword');
+      res.redirect('/resetPassword');
       console.log(`Email not found: ${email}`);
     }
   } catch (error) {
@@ -282,6 +282,28 @@ router.post('/forgotPassword', async (req, res) => {
       success: false,
       message: 'An error occurred while checking the email in the database.',
     });
+  }
+});
+
+router.get('/resetPassword/verifyResetPassword', async (req, res) => {
+  const user = await User.findOne({ emailToken: req.query.token })
+    .populate('notifications')
+    .exec();
+  if (user) {
+    user.emailVerified = true;
+    user.emailToken = undefined;
+    user.markModified('emailVerified');
+    user.markModified('emailToken');
+    await user.save();
+
+    req.flash('success', 'Email verified! Thank you!');
+    res.redirect('/');
+  } else {
+    req.flash(
+      'error',
+      "The link provided for email verification is invalid or expired. Please log in and press the 'Resend verification email' button.",
+    );
+    res.redirect('/');
   }
 });
 
