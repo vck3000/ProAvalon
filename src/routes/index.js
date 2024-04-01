@@ -286,22 +286,23 @@ router.post('/resetPassword', async (req, res) => {
 });
 
 router.get('/resetPassword/verifyResetPassword', async (req, res) => {
-  const user = await User.findOne({ emailToken: req.query.token });
+  if (req.query.token && req.query.token.trim() !== '') {
+    const user = await User.findOne({ emailToken: req.query.token });
 
-  if (user) {
-    user.emailToken = undefined;
-    user.markModified('emailToken');
-    await user.save();
+    if (user) {
+      user.emailToken = undefined;
+      user.markModified('emailToken');
+      await user.save();
 
-    req.flash('success', 'Your password has been reset! Thank you!');
-    res.render('resetPasswordSuccess', { currentUser: user });
-  } else {
-    req.flash(
-      'error',
-      'The link provided to reset your password is invalid or expired.',
-    );
-    res.redirect('/');
+      req.flash('success', 'Your password has been reset! Thank you!');
+      res.render('resetPasswordSuccess', { currentUser: user });
+    }
   }
+  req.flash(
+    'error',
+    'The link provided to reset your password is invalid or expired.',
+  );
+  res.redirect('/');
 });
 
 function gameDateCompare(a, b) {
