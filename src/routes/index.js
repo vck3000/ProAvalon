@@ -252,7 +252,16 @@ router.get('/forgotPassword', (req, res) => {
 });
 
 router.post('/forgotPassword', (req, res) => {
-  console.log(req.body);
+  try {
+    const email = req.body.emailAddress;
+    console.log(email);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while checking email in the database.',
+    });
+  }
 });
 
 function gameDateCompare(a, b) {
