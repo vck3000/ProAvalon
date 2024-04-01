@@ -2024,6 +2024,14 @@ class Game extends Room {
       return;
     }
 
+    if (this.gameTimer.dateTimerExpires.getTime() === new Date(0).getTime()) {
+      socket.emit('messageCommandReturnStr', {
+        message: 'There is no active timer currently.',
+        classStr: 'server-text',
+      });
+      return;
+    }
+
     this.sendText(`A player has unpaused the timeout.`, 'server-text');
 
     this.dateTimerExpires = this.gameTimer.voteUnpauseTimeout();
