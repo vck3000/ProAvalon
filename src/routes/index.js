@@ -254,6 +254,29 @@ router.get('/resetPassword', (req, res) => {
 });
 
 router.post('/resetPassword', registerLimiter, async (req, res) => {
+  // Captcha authetication
+  req.body.captcha = req.body['g-recaptcha-response'];
+  if (
+    req.body.captcha === undefined ||
+    req.body.captcha === '' ||
+    req.body.captcha === null
+  ) {
+    req.flash('error', 'The captcha failed or was not inputted.');
+    res.redirect('/resetPassword');
+    return;
+  }
+
+  const secretKey = process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
+
+  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.captcha}&remoteip=${req.connection.remoteAddress}`;
+  const body = await request(verifyUrl);
+
+  if (body.success !== undefined && !body.success) {
+    req.flash('error', 'Failed captcha verification.');
+    res.redirect('/');
+    return;
+  }
+
   try {
     const email = req.body.emailAddress;
     const user = await User.findOne({
