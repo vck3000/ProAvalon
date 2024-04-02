@@ -1962,11 +1962,26 @@ class Game extends Room {
       return;
     }
 
+    if (this.phase === Phase.Assassination && leaveTriggered) {
+      return;
+    }
+
     if (this.finished) {
       socket.emit('messageCommandReturnStr', {
         message: 'The game has finished. You cannot pause the timer.',
         classStr: 'server-text',
       });
+      return;
+    }
+
+    if (!this.gameTimer.isTimerActive()) {
+      if (!leaveTriggered) {
+        socket.emit('messageCommandReturnStr', {
+          message: 'There is no active timer currently.',
+          classStr: 'server-text',
+        });
+      }
+
       return;
     }
 
@@ -2005,6 +2020,14 @@ class Game extends Room {
     if (this.finished) {
       socket.emit('messageCommandReturnStr', {
         message: 'The game has finished. You cannot unpause the timer.',
+        classStr: 'server-text',
+      });
+      return;
+    }
+
+    if (!this.gameTimer.isTimerActive()) {
+      socket.emit('messageCommandReturnStr', {
+        message: 'There is no active timer currently.',
         classStr: 'server-text',
       });
       return;

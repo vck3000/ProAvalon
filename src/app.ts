@@ -67,6 +67,11 @@ morgan.token('body', (req, res) => {
       username: req.body.username,
       emailAddress: req.body.emailAddress,
     });
+  } else if (
+    new RegExp('.*/changepassword').test(req.url) &&
+    req.method === 'POST'
+  ) {
+    return '';
   }
 
   return JSON.stringify(req.body);
