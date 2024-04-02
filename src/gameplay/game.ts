@@ -1955,11 +1955,13 @@ class Game extends Room {
     }
 
     if (!this.gameStarted) {
-      socket.emit('messageCommandReturnStr', {
-        message: 'The game has not started. You cannot pause the timer.',
-        classStr: 'server-text',
-      });
-      return;
+      if (!leaveTriggered) {
+        socket.emit('messageCommandReturnStr', {
+          message: 'The game has not started. You cannot pause the timer.',
+          classStr: 'server-text',
+        });
+        return;
+      }
     }
 
     if (this.phase === Phase.Assassination && leaveTriggered) {
@@ -1967,11 +1969,13 @@ class Game extends Room {
     }
 
     if (this.finished) {
-      socket.emit('messageCommandReturnStr', {
-        message: 'The game has finished. You cannot pause the timer.',
-        classStr: 'server-text',
-      });
-      return;
+      if (!leaveTriggered) {
+        socket.emit('messageCommandReturnStr', {
+          message: 'The game has finished. You cannot pause the timer.',
+          classStr: 'server-text',
+        });
+        return;
+      }
     }
 
     if (!this.gameTimer.isTimerActive()) {
@@ -1981,7 +1985,6 @@ class Game extends Room {
           classStr: 'server-text',
         });
       }
-
       return;
     }
 
