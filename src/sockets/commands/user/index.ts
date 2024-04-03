@@ -4,6 +4,7 @@ import { roll } from './roll';
 import { navbar } from './navbar';
 import { pausetimer } from './pausetimer';
 import { unpausetimer } from './unpausetimer';
+import { voidgame } from './voidgame';
 
 export const userCommands: Commands = {
   [help.command]: help,
@@ -11,4 +12,5 @@ export const userCommands: Commands = {
   [pausetimer.command]: pausetimer,
   [roll.command]: roll,
   [unpausetimer.command]: unpausetimer,
+  [voidgame.command]: voidgame,
 };

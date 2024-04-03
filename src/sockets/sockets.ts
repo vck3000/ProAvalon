@@ -775,6 +775,7 @@ export const userCommandsOLD = {
         });
     },
   },
+
   avatarhide: {
     command: 'avatarhide',
     help: '/avatarhide: Hide your custom avatar.',
@@ -796,6 +797,7 @@ export const userCommandsOLD = {
         });
     },
   },
+
   r: {
     command: 'r',
     help: '/r: Reply to a mod who just messaged you.',
@@ -858,6 +860,7 @@ export const userCommandsOLD = {
       }
     },
   },
+
   guessmerlin: {
     command: 'guessmerlin',
     help: '/guessmerlin <playername>: Solely for fun, submit your guess of who you think is Merlin.',
@@ -879,27 +882,12 @@ export const userCommandsOLD = {
       return { message: messageToClient, classStr: 'server-text noselect' };
     },
   },
+
   gm: {
     command: 'gm',
     help: '/gm <playername>: Shortcut for /guessmerlin',
     run(data, senderSocket) {
       return userCommands.guessmerlin.run(data, senderSocket);
-    },
-  },
-
-  voidgame: {
-    command: 'voidgame',
-    help: '/voidgame: Vote to void a game. Requires number_of_resistance + 1 votes. You cannot take back your void game vote.',
-    run(data, senderSocket) {
-      if (!senderSocket.request.user.inRoomId) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'You must be in a room to use /voidgame.',
-          classStr: 'server-text',
-        });
-        return;
-      }
-
-      rooms[senderSocket.request.user.inRoomId].voteVoidGame(senderSocket);
     },
   },
 
