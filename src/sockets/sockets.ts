@@ -28,6 +28,7 @@ import { MessageWithDate, Quote } from './quote';
 import { adminCommands } from './commands/admin';
 import { modCommands } from './commands/mod';
 import { userCommands } from './commands/user';
+import { TOCommands } from './commands/tournamentOrganisers';
 import { mtogglepause } from './commands/mod/mtogglepause';
 import { mrevealallroles } from './commands/mod/mrevealallroles';
 
@@ -750,15 +751,6 @@ export const userCommandsOLD = {
           }
         },
       );
-    },
-  },
-
-  navbar: {
-    command: 'navbar',
-    help: '/navbar: Hides and unhides the top navbar. Some phone screens may look better with the navbar turned off.',
-    run(data, senderSocket) {
-      const { args } = data;
-      senderSocket.emit('toggleNavBar');
     },
   },
 
