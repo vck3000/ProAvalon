@@ -12,10 +12,11 @@ const uuidv4 = uuid.v4;
 export const sendResetPassword = async (user: any, email: string) => {
   const token = uuidv4();
   const currentDate = new Date();
-  let tokenDateExpired = new Date();
 
   // Set tokenDateExpired to be 1 hour later
-  tokenDateExpired.setTime(currentDate.getTime() + TOKEN_TIMEOUT);
+  let tokenDateExpired = new Date().setTime(
+    currentDate.getTime() + TOKEN_TIMEOUT,
+  );
 
   user.emailToken = token;
   user.emailTokenExpiry = tokenDateExpired;
