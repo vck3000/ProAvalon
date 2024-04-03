@@ -886,24 +886,6 @@ export const userCommandsOLD = {
       return userCommands.guessmerlin.run(data, senderSocket);
     },
   },
-  pausetimer: {
-    command: 'pausetimer',
-    help: '/pausetimer: Vote to pause timeout. Requires number_of_resistance + 1 votes.',
-    run(data, senderSocket) {
-      if (!senderSocket.request.user.inRoomId) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'You must be in a room to use /pausetimer.',
-          classStr: 'server-text',
-        });
-        return;
-      }
-
-      rooms[senderSocket.request.user.inRoomId].votePauseTimeout(
-        senderSocket,
-        false,
-      );
-    },
-  },
 
   unpausetimer: {
     command: 'unpausetimer',
