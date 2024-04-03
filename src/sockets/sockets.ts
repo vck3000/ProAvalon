@@ -887,24 +887,6 @@ export const userCommandsOLD = {
     },
   },
 
-  unpausetimer: {
-    command: 'unpausetimer',
-    help: '/unpausetimer: Vote to unpause timeout. Requires 1 vote.',
-    run(data, senderSocket) {
-      if (!senderSocket.request.user.inRoomId) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'You must be in a room to use /unpausetimer.',
-          classStr: 'server-text',
-        });
-        return;
-      }
-
-      rooms[senderSocket.request.user.inRoomId].voteUnpauseTimeout(
-        senderSocket,
-      );
-    },
-  },
-
   voidgame: {
     command: 'voidgame',
     help: '/voidgame: Vote to void a game. Requires number_of_resistance + 1 votes. You cannot take back your void game vote.',
