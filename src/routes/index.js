@@ -333,8 +333,7 @@ router.get('/resetPassword/verifyResetPassword', async (req, res) => {
       user.markModified('emailToken');
 
       // Set new temporary password
-      const uuidv4 = uuid.v4;
-      const newPassword = uuidv4().substring(0, 12);
+      const newPassword = uuid.v4().substring(0, 12);
 
       await new Promise((resolve, reject) => {
         user.setPassword(newPassword, (err) => {
