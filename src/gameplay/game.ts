@@ -30,6 +30,7 @@ import { Role } from './roles/types';
 import { millisToStr } from '../util/time';
 import shuffleArray from '../util/shuffleArray';
 import { Anonymizer } from './anonymizer';
+import { sendReplyToCommand } from '../sockets/sockets';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;
@@ -1946,22 +1947,19 @@ class Game extends Room {
     // Verify they are in the game.
     if (!this.usernameIsPlayer(socket.request.user.username)) {
       if (!leaveTriggered) {
-        socket.emit('messageCommandReturnStr', {
-          message: 'You are not a player in this game.',
-          classStr: 'server-text',
-        });
+        sendReplyToCommand(socket, 'You are not a player in this game.');
       }
       return;
     }
 
     if (!this.gameStarted) {
       if (!leaveTriggered) {
-        socket.emit('messageCommandReturnStr', {
-          message: 'The game has not started. You cannot pause the timer.',
-          classStr: 'server-text',
-        });
-        return;
+        sendReplyToCommand(
+          socket,
+          'The game has not started. You cannot pause the timer.',
+        );
       }
+      return;
     }
 
     if (this.phase === Phase.Assassination && leaveTriggered) {
@@ -1970,20 +1968,17 @@ class Game extends Room {
 
     if (this.finished) {
       if (!leaveTriggered) {
-        socket.emit('messageCommandReturnStr', {
-          message: 'The game has finished. You cannot pause the timer.',
-          classStr: 'server-text',
-        });
-        return;
+        sendReplyToCommand(
+          socket,
+          'The game has finished. You cannot pause the timer.',
+        );
       }
+      return;
     }
 
     if (!this.gameTimer.isTimerActive()) {
       if (!leaveTriggered) {
-        socket.emit('messageCommandReturnStr', {
-          message: 'There is no active timer currently.',
-          classStr: 'server-text',
-        });
+        sendReplyToCommand(socket, 'There is no active timer currently.');
       }
       return;
     }
@@ -2005,34 +2000,28 @@ class Game extends Room {
   voteUnpauseTimeout(socket: SocketUser): void {
     // Verify they are in the game.
     if (!this.usernameIsPlayer(socket.request.user.username)) {
-      socket.emit('messageCommandReturnStr', {
-        message: 'You are not a player in this game.',
-        classStr: 'server-text',
-      });
+      sendReplyToCommand(socket, 'You are not a player in this game.');
       return;
     }
 
     if (!this.gameStarted) {
-      socket.emit('messageCommandReturnStr', {
-        message: 'The game has not started. You cannot unpause the timer.',
-        classStr: 'server-text',
-      });
+      sendReplyToCommand(
+        socket,
+        'The game has not started. You cannot unpause the timer.',
+      );
       return;
     }
 
     if (this.finished) {
-      socket.emit('messageCommandReturnStr', {
-        message: 'The game has finished. You cannot unpause the timer.',
-        classStr: 'server-text',
-      });
+      sendReplyToCommand(
+        socket,
+        'The game has finished. You cannot unpause the timer.',
+      );
       return;
     }
 
     if (!this.gameTimer.isTimerActive()) {
-      socket.emit('messageCommandReturnStr', {
-        message: 'There is no active timer currently.',
-        classStr: 'server-text',
-      });
+      sendReplyToCommand(socket, 'There is no active timer currently.');
       return;
     }
 
