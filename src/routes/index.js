@@ -241,10 +241,6 @@ router.get('/security', (req, res) => {
   res.render('security', { currentUser: req.user });
 });
 
-router.get('/troubleshooting', (req, res) => {
-  res.render('troubleshooting', { currentUser: req.user });
-});
-
 router.get('/statistics', (req, res) => {
   res.render('statistics', { currentUser: req.user, headerActive: 'stats' });
 });
