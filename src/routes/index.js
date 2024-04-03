@@ -303,7 +303,7 @@ router.post('/resetPassword', registerLimiter, async (req, res) => {
         'success',
         'A link to reset your password has been sent to your email.',
       );
-      res.redirect('/resetPassword');
+      res.redirect('/');
       console.log(
         `User: ${user.username} Email: ${user.emailAddress} has requested to reset their password.`,
       );
@@ -351,7 +351,7 @@ router.get('/resetPassword/verifyResetPassword', async (req, res) => {
 
       await user.save();
 
-      req.flash('success', 'Your password has been reset! Thank you!');
+      req.flash('success', 'Your password has been reset!');
       res.render('resetPasswordSuccess', { newPassword });
       return;
     }

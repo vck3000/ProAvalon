@@ -431,9 +431,9 @@ export default `
                               <tr>
                                 <td>
                                   <p>Hey!</p></br>
-                                  <p>You have recently requested to reset your password. To complete this process, please click the following link. Note that the link will expire after 1 hour.</p></br>
+                                  <p>You have recently requested to reset your password. To complete this process, please click on the following link. The link will expire in 1 hour.</p></br>
                                   <p><a href="http://<%=server_domain%>/resetPassword/verifyResetPassword?token=<%=token%>">http://<%=server_domain%>/resetPassword/verifyResetPassword?token=<%=token%></a></p>
-                                  <p>If this was not you, please let us know immediately.</p>
+                                  <p>If this was not you, you may disregard this email.</p>
                                   <p>
                                     Thank you!
                                     <br/>
