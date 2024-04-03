@@ -27,6 +27,7 @@ import { MessageWithDate, Quote } from './quote';
 
 import { adminCommands } from './commands/admin';
 import { modCommands } from './commands/mod';
+import { userCommands } from './commands/user';
 import { mtogglepause } from './commands/mod/mtogglepause';
 import { mrevealallroles } from './commands/mod/mrevealallroles';
 
@@ -206,7 +207,7 @@ if (process.env.NODE_ENV !== 'test') {
 const pmmodCooldowns = {};
 const PMMOD_TIMEOUT = 3000; // 3 seconds
 
-export const TOCommands = {
+export const TOCommandsOLD = {
   t: {
     command: 't',
     help: '/t: displays /thelp',
@@ -262,7 +263,7 @@ export const TOCommands = {
   },
 };
 
-export const userCommands = {
+export const userCommandsOLD = {
   help: {
     command: 'help',
     help: '/help: ...shows help',
@@ -490,33 +491,6 @@ export const userCommands = {
       // code
       const { args } = data;
       return allChat5Min;
-    },
-  },
-
-  roll: {
-    command: 'roll',
-    help: '/roll <optional number>: Returns a random number between 1 and 10 or 1 and optional number.',
-    run(data, senderSocket) {
-      const { args } = data;
-
-      // code
-      if (args[1]) {
-        if (isNaN(args[1]) === false) {
-          return {
-            message: (Math.floor(Math.random() * args[1]) + 1).toString(),
-            classStr: 'server-text',
-          };
-        }
-
-        return {
-          message: 'That is not a valid number!',
-          classStr: 'server-text',
-        };
-      }
-      return {
-        message: (Math.floor(Math.random() * 10) + 1).toString(),
-        classStr: 'server-text',
-      };
     },
   },
 
@@ -1705,9 +1679,9 @@ function messageCommand(data) {
   } else if (modCommands[data.command] && isMod(this.request.user.username)) {
     modCommands[data.command].run(data.args, this, ioGlobal);
   } else if (TOCommands[data.command] && isTO(this.request.user.username)) {
-    dataToSend = TOCommands[data.command].run(data, this, ioGlobal);
+    dataToSend = TOCommands[data.command].run(data.args, this, ioGlobal);
   } else if (userCommands[data.command]) {
-    dataToSend = userCommands[data.command].run(data, this, ioGlobal);
+    dataToSend = userCommands[data.command].run(data.args, this, ioGlobal);
   } else {
     dataToSend = {
       message: 'Invalid command.',
