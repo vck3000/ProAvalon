@@ -1,3 +1,3 @@
 import { Commands } from '../types';
 
-export const TOCommands: Commands = {};
+export const TOCommandsImported: Commands = {};

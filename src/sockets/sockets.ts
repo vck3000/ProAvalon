@@ -43,6 +43,7 @@ import { JoinQueueFilter } from './filters/joinQueueFilter';
 import { Role } from '../gameplay/roles/types';
 import { Phase } from '../gameplay/phases/types';
 import { Card } from '../gameplay/cards/types';
+import { TOCommandsImported } from './commands/tournamentOrganisers';
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
@@ -207,19 +208,18 @@ if (process.env.NODE_ENV !== 'test') {
 const pmmodCooldowns = {};
 const PMMOD_TIMEOUT = 3000; // 3 seconds
 
-export const TOCommands = {
+export const TOCommandsOLD = {
   t: {
     command: 't',
     help: '/t: displays /thelp',
-    run(data, senderSocket) {
-      return TOCommands.thelp.run(data, senderSocket);
+    run(args: string[], senderSocket) {
+      return TOCommands.thelp.run(args, senderSocket);
     },
   },
   thelp: {
     command: 'thelp',
     help: '/thelp: show commands.',
-    run(data, senderSocket) {
-      const { args } = data;
+    run(args: string[], senderSocket) {
       // do stuff
       const dataToSend = [];
       let i = 0;
@@ -938,6 +938,7 @@ export const userCommandsOLD = {
 };
 
 export const userCommands = { ...userCommandsImported, ...userCommandsOLD };
+export const TOCommands = { ...TOCommandsOLD, ...TOCommandsImported };
 
 function removeAllUserSockets(username: string) {
   for (const socket of allSockets) {
