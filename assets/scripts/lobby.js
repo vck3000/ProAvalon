@@ -57,6 +57,7 @@ setInterval(() => {
     else {
       const currentTime = new Date();
       const timeDiff = new Date(dateTimerExpires - currentTime);
+
       if (timeDiff < 0) {
         setGameTimer('00:00');
       }
@@ -67,8 +68,8 @@ setInterval(() => {
           }
           return str;
         }
-        let mins = padZero(timeDiff.getMinutes().toString());
-        let secs = padZero(timeDiff.getSeconds().toString());
+        let mins = padZero(timeDiff.getUTCMinutes().toString());
+        let secs = padZero(timeDiff.getUTCSeconds().toString());
 
         setGameTimer( mins+ ':' + secs);
       }
