@@ -431,12 +431,11 @@ export default `
                               <tr>
                                 <td>
                                   <p>Hey!</p></br>
-                                  <p>Great to see you here! Please confirm your email address by clicking on the link below.
-                                  Your email address will not be shared with anyone else.</p></br>
-                                  <p><a href="http://<%=server_domain%>/emailVerification/verifyEmailRequest?token=<%=token%>">http://<%=server_domain%>/emailVerification/verifyEmailRequest?token=<%=token%></a></p>
-                                  <p>If you did not sign up for a ProAvalon account please disregard this email.</p>
+                                  <p>You have recently requested to reset your password. To complete this process, please click on the following link. The link will expire in 1 hour.</p></br>
+                                  <p><a href="http://<%=serverDomain%>/resetPassword/verifyResetPassword?token=<%=token%>">http://<%=serverDomain%>/resetPassword/verifyResetPassword?token=<%=token%></a></p>
+                                  <p>If this was not you, you may disregard this email.</p>
                                   <p>
-                                    Enjoy!
+                                    Thank you!
                                     <br/>
                                     ProAvalon
                                   </p>
