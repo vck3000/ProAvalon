@@ -12,9 +12,7 @@ export const sendResetPassword = async (user: any, email: string) => {
   const currentDate = new Date();
 
   // Set tokenDateExpired to be 1 hour later
-  let tokenDateExpired = new Date().setTime(
-    currentDate.getTime() + TOKEN_TIMEOUT,
-  );
+  let tokenDateExpired = new Date(currentDate.getTime() + TOKEN_TIMEOUT);
 
   user.emailToken = token;
   user.emailTokenExpiry = tokenDateExpired;

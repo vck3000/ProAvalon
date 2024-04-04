@@ -286,37 +286,29 @@ router.post('/resetPassword', registerLimiter, async (req, res) => {
     return;
   }
 
-  try {
-    const email = req.body.emailAddress;
-    const user = await User.findOne({
-      emailAddress: email,
-      emailVerified: true,
-    });
+  const email = req.body.emailAddress;
+  const user = await User.findOne({
+    emailAddress: email,
+    emailVerified: true,
+  });
 
-    if (user) {
-      sendResetPassword(user, email);
-      req.flash(
-        'success',
-        'A link to reset your password has been sent to your email.',
-      );
-      res.redirect('/');
-      console.log(
-        `User: ${user.username} Email: ${user.emailAddress} has requested to reset their password.`,
-      );
-    } else {
-      req.flash(
-        'error',
-        'Email does not exist. Please enter a registered email address.',
-      );
-      res.redirect('/resetPassword');
-      console.log(`Email not found: ${email}`);
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'An error occurred while checking the email in the database.',
-    });
+  if (!user) {
+    req.flash(
+      'error',
+      'Email does not exist. Please enter a registered email address.',
+    );
+    res.redirect('/resetPassword');
+    console.log(`Email not found: ${email}`);
+  } else {
+    sendResetPassword(user, email);
+    req.flash(
+      'success',
+      'A link to reset your password has been sent to your email.',
+    );
+    res.redirect('/');
+    console.log(
+      `User: ${user.username} Email: ${user.emailAddress} has requested to reset their password.`,
+    );
   }
 });
 
@@ -351,6 +343,7 @@ router.get('/resetPassword/verifyResetPassword', async (req, res) => {
       return;
     }
   }
+
   req.flash(
     'error',
     'The link provided to reset your password is invalid or expired.',
