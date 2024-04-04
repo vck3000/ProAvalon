@@ -10,13 +10,13 @@ const mg = mailgun.client({ username: 'api', key: api_key });
 export const sendEmail = (
   recipientEmail: string,
   subject: string,
-  message: string,
+  messageHtml: string,
 ) => {
   const data = {
     from: 'ProAvalon <' + process.env.PROAVALON_EMAIL_ADDRESS + '>',
     to: recipientEmail,
     subject: subject,
-    html: message,
+    html: messageHtml,
   };
 
   mg.messages.create(domain, data);

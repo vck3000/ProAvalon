@@ -5,12 +5,10 @@ import { sendEmail } from './sendEmail';
 
 const TOKEN_TIMEOUT = 60 * 60 * 1000; // 1 hour
 
-const server_domain = process.env.SERVER_DOMAIN;
-
-const uuidv4 = uuid.v4;
+const serverDomain = process.env.SERVER_DOMAIN;
 
 export const sendResetPassword = async (user: any, email: string) => {
-  const token = uuidv4();
+  const token = uuid.v4();
   const currentDate = new Date();
 
   // Set tokenDateExpired to be 1 hour later
@@ -25,7 +23,7 @@ export const sendResetPassword = async (user: any, email: string) => {
   user.save();
 
   const message = ejs.render(emailTemplateResetPassword, {
-    server_domain,
+    serverDomain,
     token,
   });
   const subject = 'ProAvalon Reset Password Request.';

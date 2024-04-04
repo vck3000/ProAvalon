@@ -4,7 +4,7 @@ import uuid from 'uuid';
 import disposableEmails from '../util/disposableEmails.js';
 import { sendEmail } from './sendEmail';
 
-const server_domain = process.env.SERVER_DOMAIN;
+const serverDomain = process.env.SERVER_DOMAIN;
 
 const uuidv4 = uuid.v4;
 
@@ -26,7 +26,7 @@ export const sendEmailVerification = (user: any, email: string) => {
   user.save();
 
   const message = ejs.render(emailTemplateEmailVerification, {
-    server_domain,
+    serverDomain,
     token,
   });
   const subject = 'Welcome! Please verify your email address.';
