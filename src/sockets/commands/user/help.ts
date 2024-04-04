@@ -1,6 +1,6 @@
 import { Command } from '../types';
 import { SocketUser } from '../../types';
-import { userCommands } from './index';
+import { userCommands } from '../../sockets';
 
 export const help: Command = {
   command: 'help',
@@ -10,12 +10,23 @@ export const help: Command = {
 
     for (const key in userCommands) {
       if (userCommands.hasOwnProperty(key)) {
+        const commandKey = key as keyof typeof userCommands;
         dataToSend.push({
-          message: userCommands[key].help,
+          message: userCommands[commandKey].help,
           classStr: 'server-text',
         });
       }
     }
+
+    // TODO: Change above back to this after refactoring complete. Note change import too
+    // for (const key in userCommands) {
+    //   if (userCommands.hasOwnProperty(key)) {
+    //     dataToSend.push({
+    //       message: userCommands[key].help,
+    //       classStr: 'server-text',
+    //     });
+    //   }
+    // }
 
     socket.emit('messageCommandReturnStr', dataToSend);
   },

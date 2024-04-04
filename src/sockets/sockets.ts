@@ -27,8 +27,7 @@ import { MessageWithDate, Quote } from './quote';
 
 import { adminCommands } from './commands/admin';
 import { modCommands } from './commands/mod';
-import { userCommands } from './commands/user';
-import { TOCommands } from './commands/tournamentOrganisers';
+import { userCommandsImported } from './commands/user';
 import { mtogglepause } from './commands/mod/mtogglepause';
 import { mrevealallroles } from './commands/mod/mrevealallroles';
 
@@ -208,7 +207,7 @@ if (process.env.NODE_ENV !== 'test') {
 const pmmodCooldowns = {};
 const PMMOD_TIMEOUT = 3000; // 3 seconds
 
-export const TOCommandsOLD = {
+export const TOCommands = {
   t: {
     command: 't',
     help: '/t: displays /thelp',
@@ -265,39 +264,10 @@ export const TOCommandsOLD = {
 };
 
 export const userCommandsOLD = {
-  help: {
-    command: 'help',
-    help: '/help: ...shows help',
-    run(data, senderSocket) {
-      // do stuff
-
-      const dataToSend = [];
-      let i = 0;
-
-      i++;
-
-      for (const key in userCommands) {
-        if (userCommands.hasOwnProperty(key)) {
-          if (!userCommands[key].modsOnly) {
-            dataToSend[i] = {
-              message: userCommands[key].help,
-              classStr: 'server-text',
-              dateCreated: new Date(),
-            };
-            i++;
-          }
-        }
-      }
-      senderSocket.emit('messageCommandReturnStr', dataToSend);
-    },
-  },
-
   buzz: {
     command: 'buzz',
     help: '/buzz <playername>: Buzz a player.',
-    run(data, senderSocket) {
-      const { args } = data;
-
+    run(args: string[], senderSocket) {
       if (args.length <= 1) {
         return {
           message: 'You must provide a username.',
@@ -306,19 +276,17 @@ export const userCommandsOLD = {
         };
       }
 
-      data.args[2] = data.args[1];
-      data.args[1] = 'buzz';
+      args[2] = args[1];
+      args[1] = 'buzz';
 
-      return userCommands.interactUser.run(data, senderSocket);
+      return userCommands.interactUser.run(args, senderSocket);
     },
   },
 
   pat: {
     command: 'pat',
     help: '/pat <playername>: Pat a player.',
-    run(data, senderSocket) {
-      const { args } = data;
-
+    run(args: string[], senderSocket) {
       if (args.length <= 1) {
         return {
           message: 'You must provide a username.',
@@ -327,19 +295,17 @@ export const userCommandsOLD = {
         };
       }
 
-      data.args[2] = data.args[1];
-      data.args[1] = 'pat';
+      args[2] = args[1];
+      args[1] = 'pat';
 
-      return userCommands.interactUser.run(data, senderSocket);
+      return userCommands.interactUser.run(args, senderSocket);
     },
   },
 
   poke: {
     command: 'poke',
     help: '/poke <playername>: Poke a player.',
-    run(data, senderSocket) {
-      const { args } = data;
-
+    run(args: string[], senderSocket) {
       if (args.length <= 1) {
         return {
           message: 'You must provide a username.',
@@ -348,19 +314,17 @@ export const userCommandsOLD = {
         };
       }
 
-      data.args[2] = data.args[1];
-      data.args[1] = 'poke';
+      args[2] = args[1];
+      args[1] = 'poke';
 
-      return userCommands.interactUser.run(data, senderSocket);
+      return userCommands.interactUser.run(args, senderSocket);
     },
   },
 
   punch: {
     command: 'punch',
     help: '/punch <playername>: Punch a player.',
-    run(data, senderSocket) {
-      const { args } = data;
-
+    run(args: string[], senderSocket) {
       if (args.length <= 1) {
         return {
           message: 'You must provide a username.',
@@ -369,19 +333,17 @@ export const userCommandsOLD = {
         };
       }
 
-      data.args[2] = data.args[1];
-      data.args[1] = 'punch';
+      args[2] = args[1];
+      args[1] = 'punch';
 
-      return userCommands.interactUser.run(data, senderSocket);
+      return userCommands.interactUser.run(args, senderSocket);
     },
   },
 
   slap: {
     command: 'slap',
     help: '/slap <playername>: Slap a player for fun.',
-    run(data, senderSocket) {
-      const { args } = data;
-
+    run(args: string[], senderSocket) {
       if (args.length <= 1) {
         return {
           message: 'You must provide a username.',
@@ -390,19 +352,17 @@ export const userCommandsOLD = {
         };
       }
 
-      data.args[2] = data.args[1];
-      data.args[1] = 'slap';
+      args[2] = args[1];
+      args[1] = 'slap';
 
-      return userCommands.interactUser.run(data, senderSocket);
+      return userCommands.interactUser.run(args, senderSocket);
     },
   },
 
   hug: {
     command: 'hug',
     help: '/hug <playername>: Hug a player.',
-    run(data, senderSocket) {
-      const { args } = data;
-
+    run(args: string[], senderSocket) {
       if (args.length <= 1) {
         return {
           message: 'You must provide a username.',
@@ -411,19 +371,18 @@ export const userCommandsOLD = {
         };
       }
 
-      data.args[2] = data.args[1];
-      data.args[1] = 'hug';
+      args[2] = args[1];
+      args[1] = 'hug';
 
-      return userCommands.interactUser.run(data, senderSocket);
+      return userCommands.interactUser.run(args, senderSocket);
     },
   },
 
   interactUser: {
     command: 'interactUser',
     help: '/interactUser <buzz/pat/poke/punch/slap/hug> <playername>: Interact with a player.',
-    run(data, senderSocket) {
-      console.log('interact user', data);
-      const { args } = data;
+    run(args: string[], senderSocket) {
+      console.log('interact user', args);
 
       if (possibleInteracts.indexOf(args[1]) === -1) {
         return {
@@ -488,9 +447,8 @@ export const userCommandsOLD = {
   allchat: {
     command: 'allchat',
     help: '/allchat: Get a copy of the last 5 minutes of allchat.',
-    run(data, senderSocket) {
+    run(args: string[], senderSocket) {
       // code
-      const { args } = data;
       return allChat5Min;
     },
   },
@@ -512,8 +470,7 @@ export const userCommandsOLD = {
   pmmod: {
     command: 'pmmod',
     help: '/pmmod <mod_username> <message>: Sends a private message to an online moderator.',
-    run(data, senderSocket) {
-      const { args } = data;
+    run(args: string[], senderSocket) {
       // We check if they are spamming, i.e. have sent a PM before the timeout is up
       const lastPmTime = pmmodCooldowns[senderSocket.id];
       if (lastPmTime) {
@@ -606,9 +563,7 @@ export const userCommandsOLD = {
   mute: {
     command: 'mute',
     help: '/mute: Mute a player who is being annoying in chat/buzzing/slapping/poking/tickling/hugging you.',
-    run(data, senderSocket) {
-      const { args } = data;
-
+    run(args: string[], senderSocket) {
       if (args[1]) {
         User.findOne({ username: args[1] }).exec((err, foundUserToMute) => {
           if (err) {
@@ -661,9 +616,7 @@ export const userCommandsOLD = {
   unmute: {
     command: 'unmute',
     help: '/unmute: Unmute a player.',
-    run(data, senderSocket) {
-      const { args } = data;
-
+    run(args: string[], senderSocket) {
       if (args[1]) {
         User.findOne({ username: senderSocket.request.user.username }).exec(
           (err, foundUser) => {
@@ -706,9 +659,7 @@ export const userCommandsOLD = {
   muted: {
     command: 'muted',
     help: '/muted: See who you have muted.',
-    run(data, senderSocket) {
-      const { args } = data;
-
+    run(args: string[], senderSocket) {
       if (args[1] === senderSocket.request.user.username) {
         senderSocket.emit('messageCommandReturnStr', {
           message: 'Why would you mute yourself...?',
@@ -757,7 +708,7 @@ export const userCommandsOLD = {
   avatarshow: {
     command: 'avatarshow',
     help: '/avatarshow: Show your custom avatar!',
-    run(data, senderSocket) {
+    run(args: string[], senderSocket) {
       User.findOne({
         usernameLower: senderSocket.request.user.username.toLowerCase(),
       })
@@ -779,7 +730,7 @@ export const userCommandsOLD = {
   avatarhide: {
     command: 'avatarhide',
     help: '/avatarhide: Hide your custom avatar.',
-    run(data, senderSocket) {
+    run(args: string[], senderSocket) {
       User.findOne({
         usernameLower: senderSocket.request.user.username.toLowerCase(),
       })
@@ -801,9 +752,7 @@ export const userCommandsOLD = {
   r: {
     command: 'r',
     help: '/r: Reply to a mod who just messaged you.',
-    run(data, senderSocket) {
-      const { args } = data;
-
+    run(args: string[], senderSocket) {
       // If the player has not been whispered to yet.
       if (!lastWhisperObj[senderSocket.request.user.username.toLowerCase()]) {
         return {
@@ -864,7 +813,7 @@ export const userCommandsOLD = {
   guessmerlin: {
     command: 'guessmerlin',
     help: '/guessmerlin <playername>: Solely for fun, submit your guess of who you think is Merlin.',
-    run(data, senderSocket) {
+    run(args: string[], senderSocket) {
       // Check the guesser is at a table
       let messageToClient;
       if (
@@ -886,15 +835,15 @@ export const userCommandsOLD = {
   gm: {
     command: 'gm',
     help: '/gm <playername>: Shortcut for /guessmerlin',
-    run(data, senderSocket) {
-      return userCommands.guessmerlin.run(data, senderSocket);
+    run(args: string[], senderSocket) {
+      return userCommands.guessmerlin.run(args, senderSocket);
     },
   },
 
   getblacklist: {
     command: 'getblacklist',
     help: '/getblacklist: Shows your current blacklist for matchmaking. Will not match you into these players.',
-    run(data, senderSocket) {
+    run(args: string[], senderSocket) {
       senderSocket.emit('messageCommandReturnStr', {
         message: 'Your blacklist:',
         classStr: 'server-text',
@@ -915,8 +864,7 @@ export const userCommandsOLD = {
   addblacklist: {
     command: 'addblacklist',
     help: '/addblacklist <username>: Adds a user to your blacklist. Maximum of 50 users.',
-    run(data, senderSocket) {
-      const { args } = data;
+    run(args: string[], senderSocket) {
       if (args.length < 2) {
         return {
           message: 'Please specify a username.',
@@ -957,8 +905,7 @@ export const userCommandsOLD = {
   removeblacklist: {
     command: 'removeblacklist',
     help: '/removeblacklist <username>: Removes a user from your blacklist.',
-    run(data, senderSocket) {
-      const { args } = data;
+    run(args: string[], senderSocket) {
       if (args.length < 2) {
         return {
           message: 'Please specify a username.',
@@ -989,6 +936,8 @@ export const userCommandsOLD = {
     },
   },
 };
+
+export const userCommands = { ...userCommandsImported, ...userCommandsOLD };
 
 function removeAllUserSockets(username: string) {
   for (const socket of allSockets) {

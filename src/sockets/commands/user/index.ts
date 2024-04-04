@@ -6,7 +6,7 @@ import { pausetimer } from './pausetimer';
 import { unpausetimer } from './unpausetimer';
 import { voidgame } from './voidgame';
 
-export const userCommands: Commands = {
+export const userCommandsImported: Commands = {
   [help.command]: help,
   [navbar.command]: navbar,
   [pausetimer.command]: pausetimer,
