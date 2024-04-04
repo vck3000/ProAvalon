@@ -16,6 +16,8 @@ import { disallowVPNs } from '../util/vpnDetection';
 import Settings from '../settings';
 import { Alliance } from '../gameplay/types';
 import { resRoles, rolesToAlliances, spyRoles } from '../gameplay/roles/roles';
+import { sendResetPassword } from '../myFunctions/sendResetPassword';
+import uuid from 'uuid';
 
 const router = new Router();
 
@@ -239,12 +241,114 @@ router.get('/security', (req, res) => {
   res.render('security', { currentUser: req.user });
 });
 
-router.get('/troubleshooting', (req, res) => {
-  res.render('troubleshooting', { currentUser: req.user });
-});
-
 router.get('/statistics', (req, res) => {
   res.render('statistics', { currentUser: req.user, headerActive: 'stats' });
+});
+
+router.get('/resetPassword', (req, res) => {
+  res.render('resetPassword', { platform: process.env.ENV });
+});
+
+router.post('/resetPassword', registerLimiter, async (req, res) => {
+  // if we are local, we can skip the captcha
+  if (process.env.ENV === 'prod') {
+    req.body.captcha = req.body['g-recaptcha-response'];
+    if (
+      req.body.captcha === undefined ||
+      req.body.captcha === '' ||
+      req.body.captcha === null
+    ) {
+      req.flash('error', 'The captcha failed or was not inputted.');
+      res.redirect('/resetPassword');
+      return;
+    }
+
+    const secretKey = process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
+
+    const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.captcha}&remoteip=${req.connection.remoteAddress}`;
+    const body = await request(verifyUrl);
+
+    if (body.success !== undefined && !body.success) {
+      req.flash('error', 'Failed captcha verification.');
+      res.redirect('/resetPassword');
+      return;
+    }
+  }
+
+  const secretKey = process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
+
+  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.captcha}&remoteip=${req.connection.remoteAddress}`;
+  const body = await request(verifyUrl);
+
+  if (body.success !== undefined && !body.success) {
+    req.flash('error', 'Failed captcha verification.');
+    res.redirect('/');
+    return;
+  }
+
+  const email = req.body.emailAddress;
+  const user = await User.findOne({
+    emailAddress: email,
+    emailVerified: true,
+  });
+
+  if (!user) {
+    req.flash(
+      'error',
+      'Email does not exist. Please enter a registered email address.',
+    );
+    res.redirect('/resetPassword');
+    console.log(`Email not found: ${email}`);
+  } else {
+    sendResetPassword(user, email);
+    req.flash(
+      'success',
+      'A link to reset your password has been sent to your email.',
+    );
+    res.redirect('/');
+    console.log(
+      `User: ${user.username} Email: ${user.emailAddress} has requested to reset their password.`,
+    );
+  }
+});
+
+router.get('/resetPassword/verifyResetPassword', async (req, res) => {
+  if (req.query.token && req.query.token.trim() !== '') {
+    const user = await User.findOne({ emailToken: req.query.token });
+
+    if (
+      user &&
+      user.emailTokenExpiry &&
+      new Date().getTime() < user.emailTokenExpiry.getTime()
+    ) {
+      user.emailToken = undefined;
+      user.markModified('emailToken');
+
+      // Set new temporary password
+      const newPassword = uuid.v4().substring(0, 12);
+
+      await new Promise((resolve, reject) => {
+        user.setPassword(newPassword, (err) => {
+          if (err) {
+            reject(err);
+          }
+          resolve();
+        });
+      });
+
+      await user.save();
+
+      req.flash('success', 'Your password has been reset!');
+      res.render('resetPasswordSuccess', { newPassword });
+      return;
+    }
+  }
+
+  req.flash(
+    'error',
+    'The link provided to reset your password is invalid or expired.',
+  );
+  res.redirect('/');
 });
 
 function gameDateCompare(a, b) {
