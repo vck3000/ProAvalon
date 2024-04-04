@@ -60,24 +60,41 @@ const isVPN = async (ip: string): Promise<boolean> => {
   console.log(`Checking VPN status of ip: ${ip}`);
   console.log(`VPN Cache size: ${vpnCache.size}`);
 
-  const response = await fetch(
+  // First test if vpn detected
+  const vpnResponse1 = await fetch(
     `https://vpnapi.io/api/${ip}?key=${process.env.VPN_DETECTION_TOKEN}`,
   );
 
-  const data = await response.json();
+  const data1 = await vpnResponse1.json();
 
-  if (!data.security) {
-    console.log(data);
+  if (!data1.security) {
+    console.log(data1);
     throw new Error(
       'VPN Detection lookup response did not contain the expected data.',
     );
   }
 
-  const result: boolean = data.security.vpn;
+  const result1: boolean = data1.security.vpn;
 
-  vpnCache.get(ip).setIsVpn(result);
+  // Second test if vpn detected
+  const vpnResponse2 = await fetch(
+    `https://check.getipintel.net/check.php?ip=${ip}&contact=admin@proavalon.com&flags=m`,
+  );
 
-  return result;
+  const data2 = await vpnResponse2.json();
+  const result2: boolean = data2 === 1;
+
+  if (data2 < 0) {
+    console.log(data2);
+    throw new Error('VPN Detection lookup failed');
+  }
+
+  // Must pass both vpn checks
+  const overallResult = result1 || result2;
+
+  vpnCache.get(ip).setIsVpn(overallResult);
+
+  return overallResult;
 };
 
 export const disallowVPNs: RequestHandler = (req, res, next) => {
