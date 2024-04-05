@@ -60,41 +60,51 @@ const isVPN = async (ip: string): Promise<boolean> => {
   console.log(`Checking VPN status of ip: ${ip}`);
   console.log(`VPN Cache size: ${vpnCache.size}`);
 
-  // First test if vpn detected
-  const vpnResponse1 = await fetch(
+  // Must pass both vpn checks
+  const result = (await isVpnCheck1(ip)) || (await isVpnCheck2(ip));
+
+  vpnCache.get(ip).setIsVpn(result);
+
+  return result;
+};
+
+const isVpnCheck1 = async (ip: string): Promise<boolean> => {
+  const vpnResponse = await fetch(
     `https://vpnapi.io/api/${ip}?key=${process.env.VPN_DETECTION_TOKEN}`,
   );
 
-  const data1 = await vpnResponse1.json();
+  const data = await vpnResponse.json();
 
-  if (!data1.security) {
-    console.log(data1);
+  if (!data.security) {
+    console.log(data);
     throw new Error(
-      'VPN Detection lookup response did not contain the expected data.',
+      'VPN Detection lookup response did not contain the expected data at vpnapi.io.',
     );
   }
 
-  const result1: boolean = data1.security.vpn;
+  console.log(`VPN Detection via vpnapi.io result: ${data.security.vpn}`);
 
-  // Second test if vpn detected
-  const vpnResponse2 = await fetch(
-    `https://check.getipintel.net/check.php?ip=${ip}&contact=admin@proavalon.com&flags=m`,
+  return data.security.vpn;
+};
+
+const isVpnCheck2 = async (ip: string): Promise<boolean> => {
+  const vpnResponse = await fetch(
+    `https://check.getipintel.net/check.php?ip=${ip}&contact=${process.env.PROAVALON_EMAIL_ADDRESS}&flags=m`,
   );
 
-  const data2 = await vpnResponse2.json();
-  const result2: boolean = data2 === 1;
+  const data = await vpnResponse.json();
+  const result: boolean = data >= 0.99 && data <= 1;
 
-  if (data2 < 0) {
-    console.log(data2);
-    throw new Error('VPN Detection lookup failed');
+  if (data < 0 || data > 1) {
+    console.log(data);
+    throw new Error(
+      'VPN Detection lookup response did not contain the expected data at check.getipintel.net.',
+    );
   }
 
-  // Must pass both vpn checks
-  const overallResult = result1 || result2;
+  console.log(`VPN Detection via check.getipintel.net result: ${result}`);
 
-  vpnCache.get(ip).setIsVpn(overallResult);
-
-  return overallResult;
+  return result;
 };
 
 export const disallowVPNs: RequestHandler = (req, res, next) => {
