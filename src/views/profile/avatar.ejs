@@ -1,0 +1,88 @@
+<%- include('../partials/header') %>
+
+<link rel="stylesheet" type="text/css" href="../stylesheets/profile.css">
+
+<style>
+    .myContainer {
+        border-radius: 50px;
+
+        padding-top: 2.5%;
+        padding-bottom: 2.5%;
+        margin-bottom: 30px;
+        color: inherit;
+        background-color: #eee;
+
+        width:95%;
+    }
+
+    .myTable {
+        border: 1px solid black;
+        /* table-layout: fixed; */
+
+        /* width: 100%; */
+    }
+
+    .myTable tbody tr td{
+        border: 1px solid black;
+    }
+
+    .myTable thead tr td{
+        border: 1px solid black;
+    }
+
+    .table-nonfluid {
+        width: auto !important;
+    }
+
+    .alignCenterHoriz{
+        text-align: center;
+        background: rgb(200,200,200);
+    }
+
+</style>
+
+
+<div class="container myContainer">
+    <h1><u>Avatar Home</u></h1>
+    <br>
+
+    <h3>Current Avatar:</h3>
+
+    <div>
+        <% if(userData.avatarImgRes){ %>
+            <% if(userData.avatarImgRes.includes("http")){ %>
+                <img class="avatarImg" src=<%= userData.avatarImgRes %>>
+            <% } else { %>
+                <img class="avatarImg" src=<%= "../avatars/" + userData.avatarImgRes %>>
+            <% } %>
+        <% } else{ %>
+            <img class="avatarImg" src="../../avatars/base-res.png  ">
+        <% } %>
+    </div>
+
+    <hr style="border-color: lightgrey; border-style: solid; margin: 2em">
+
+    <h3>Approved Avatars: </h3>
+
+    <div>
+        <% if(userData.avatarImgRes){ %>
+            <% if(userData.avatarImgRes.includes("http")){ %>
+                <img class="avatarImg" src=<%= userData.avatarImgRes %>>
+            <% } else { %>
+                <img class="avatarImg" src=<%= "../avatars/" + userData.avatarImgRes %>>
+            <% } %>
+        <% } else{ %>
+            <img class="avatarImg" src="../../avatars/base-res.png  ">
+        <% } %>
+        <p>This will be a scrollable? Table view?</p>
+    </div>
+
+    <br>
+
+    <a class="btn btn-info">Change avatar</a>
+
+    <a class="btn btn-info" href="/profile/<%=userData.username%>/changeavatar">Submit a custom Avatar</a>
+
+</div>
+
+<%- include('../partials/footer') %>

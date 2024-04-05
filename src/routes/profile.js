@@ -137,6 +137,19 @@ router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
   res.status(200).send('done');
 });
 
+router.get('/:profileUsername/avatar', checkProfileOwnership, (req, res) => {
+  User.findOne(
+    { usernameLower: req.params.profileUsername.toLowerCase() },
+    (err, foundUser) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.render('profile/avatar', { userData: foundUser });
+      }
+    },
+  );
+});
+
 // Show the customavatar edit page
 router.get(
   '/:profileUsername/changeavatar',
