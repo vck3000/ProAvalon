@@ -382,8 +382,6 @@ export const userCommandsOLD = {
     command: 'interactUser',
     help: '/interactUser <buzz/pat/poke/punch/slap/hug> <playername>: Interact with a player.',
     run(args: string[], senderSocket) {
-      console.log('interact user', args);
-
       if (possibleInteracts.indexOf(args[1]) === -1) {
         return {
           message: `You can only buzz, pat, poke, punch, slap, or hug; not ${args[1]}.`,

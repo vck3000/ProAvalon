@@ -9,8 +9,8 @@ import { voidgame } from './voidgame';
 export const userCommandsImported: Commands = {
   [help.command]: help,
   [navbar.command]: navbar,
-  [pausetimer.command]: pausetimer,
   [roll.command]: roll,
   [unpausetimer.command]: unpausetimer,
+  [pausetimer.command]: pausetimer,
   [voidgame.command]: voidgame,
 };
