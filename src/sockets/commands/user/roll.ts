@@ -11,7 +11,11 @@ export const roll: Command = {
       return;
     }
 
-    if (args[1]) {
+    // Default value
+    let maxNum = 10;
+
+    // They didn't give a value in
+    if (args.length === 2) {
       const optionalNumber = parseInt(args[1]);
 
       if (isNaN(optionalNumber) || optionalNumber.toString() !== args[1]) {
@@ -19,13 +23,12 @@ export const roll: Command = {
         return;
       }
 
-      sendReplyToCommand(
-        socket,
-        (Math.floor(Math.random() * parseInt(args[1])) + 1).toString(),
-      );
-      return;
+      maxNum = optionalNumber;
     }
 
-    sendReplyToCommand(socket, (Math.floor(Math.random() * 10) + 1).toString());
+    sendReplyToCommand(
+      socket,
+      (Math.floor(Math.random() * maxNum) + 1).toString(),
+    );
   },
 };
