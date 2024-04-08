@@ -823,7 +823,7 @@ export const userCommandsOLD = {
       } else {
         messageToClient = rooms[
           senderSocket.request.user.inRoomId
-        ].submitMerlinGuess(senderSocket.request.user.username, data.args[1]);
+        ].submitMerlinGuess(senderSocket.request.user.username, args[1]);
       }
 
       return { message: messageToClient, classStr: 'server-text noselect' };
