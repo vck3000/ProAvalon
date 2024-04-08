@@ -7,7 +7,7 @@ export const getblacklist: Command = {
   command: 'getblacklist',
   help: '/getblacklist: Shows your current blacklist for matchmaking. Will not match you into these players.',
   run: async (args: string[], socket: SocketUser) => {
-    const user = socket.request.user as IUser;
+    const user = socket.request.user;
 
     if (user.matchmakingBlacklist.length === 0) {
       sendReplyToCommand(socket, 'Your blacklist is currently empty.');

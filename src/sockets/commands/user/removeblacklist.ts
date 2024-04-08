@@ -13,7 +13,7 @@ export const removeblacklist: Command = {
     }
 
     const usernameToBlacklist = args[1].toLowerCase();
-    const user = socket.request.user as IUser;
+    const user = socket.request.user;
 
     const index = user.matchmakingBlacklist.indexOf(usernameToBlacklist);
     if (index === -1) {
