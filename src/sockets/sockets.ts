@@ -442,15 +442,6 @@ export const userCommandsOLD = {
     },
   },
 
-  allchat: {
-    command: 'allchat',
-    help: '/allchat: Get a copy of the last 5 minutes of allchat.',
-    run(args: string[], senderSocket) {
-      // code
-      return allChat5Min;
-    },
-  },
-
   mods: {
     command: 'mods',
     help: '/mods: Shows a list of online moderators.',

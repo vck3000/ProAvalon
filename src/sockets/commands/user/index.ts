@@ -8,9 +8,11 @@ import { voidgame } from './voidgame';
 import { addblacklist } from './addblacklist';
 import { removeblacklist } from './removeblacklist';
 import { getblacklist } from './getblacklist';
+import { allchat } from './allchat';
 
 export const userCommandsImported: Commands = {
   [help.command]: help,
+  [allchat.command]: allchat,
   [navbar.command]: navbar,
   [roll.command]: roll,
   [unpausetimer.command]: unpausetimer,
