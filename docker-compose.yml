@@ -33,7 +33,7 @@ services:
       - ./docker-compose-data/minio:/data
     environment:
       MINIO_ROOT_USER: admin
-      MINIO_ROOT_PASSWORD: pass
-    #      MINIO_ACCESS_KEY: YOUR_ACCESS_KEY
-    #      MINIO_SECRET_KEY: YOUR_SECRET_KEY
+      MINIO_ROOT_PASSWORD: password
+#      MINIO_ACCESS_KEY: YOUR_ACCESS_KEY
+#      MINIO_SECRET_KEY: YOUR_SECRET_KEY
     command: server /data --console-address ":9001"

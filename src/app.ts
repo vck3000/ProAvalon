@@ -89,6 +89,22 @@ if (process.env.ENV === 'local') {
     '/dist_webpack',
     createProxyMiddleware({ target: 'http://localhost:3010' }),
   );
+
+  // const minioClient = new Minio.Client({
+  //   endPoint: 'localhost',
+  //   port: 9000,
+  //   useSSL: false,
+  //   accessKey: 'admin', // Your MinIO access key
+  //   secretKey: 'password', // Your MinIO secret key
+  // });
+  //
+  // minioClient.listBuckets(function (err, buckets) {
+  //   if (err) {
+  //     console.error('Error listing buckets:', err);
+  //   } else {
+  //     console.log('Buckets:', buckets);
+  //   }
+  // });
 }
 
 const port = process.env.PORT || 3000;
