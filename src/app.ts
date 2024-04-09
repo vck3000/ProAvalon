@@ -34,6 +34,12 @@ import staticifyFactory from 'staticify';
 // Create a MongoDB session store
 import MongoDBStoreFactory from 'connect-mongodb-session';
 import { SESSIONS_COLLECTION_NAME } from './constants';
+import { fromEnv } from '@aws-sdk/credential-providers';
+import {
+  S3Client,
+  ListObjectsCommand,
+  GetObjectCommand,
+} from '@aws-sdk/client-s3';
 
 const assetsPath = path.join(__dirname, '../assets');
 
@@ -83,6 +89,12 @@ app.use(
   ),
 );
 
+const client = new S3Client({
+  region: 'asdf',
+  endpoint: 'http://127.0.0.1:9000',
+  credentials: fromEnv(),
+});
+
 if (process.env.ENV === 'local') {
   console.log('Routing dist_webpack to localhost:3010.');
   app.use(
@@ -90,21 +102,18 @@ if (process.env.ENV === 'local') {
     createProxyMiddleware({ target: 'http://localhost:3010' }),
   );
 
-  // const minioClient = new Minio.Client({
-  //   endPoint: 'localhost',
-  //   port: 9000,
-  //   useSSL: false,
-  //   accessKey: 'admin', // Your MinIO access key
-  //   secretKey: 'password', // Your MinIO secret key
-  // });
-  //
-  // minioClient.listBuckets(function (err, buckets) {
-  //   if (err) {
-  //     console.error('Error listing buckets:', err);
-  //   } else {
-  //     console.log('Buckets:', buckets);
-  //   }
-  // });
+  app.get('/avatars_s3/:filename', async (req, res, next) => {
+    console.log(req.params);
+    const filename = req.params.filename;
+
+    const getObjectCommand = new GetObjectCommand({
+      Bucket: 'proavalon',
+      Key: 'approved_avatars/base-spy.png',
+    });
+
+    const response = await client.send(getObjectCommand);
+    response.Body.pipe(res);
+  });
 }
 
 const port = process.env.PORT || 3000;
@@ -227,3 +236,22 @@ io.use(
 );
 
 socketServer(io);
+
+const a = async () => {
+  console.log('a');
+  console.log('1');
+
+  console.log('2');
+
+  const command = new ListObjectsCommand({
+    Bucket: 'proavalon',
+    Prefix: 'approved_avatars',
+  });
+  console.log('3');
+
+  const data = await client.send(command);
+  console.log('4');
+  console.log(data);
+};
+
+a();

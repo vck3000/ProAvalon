@@ -17,6 +17,8 @@
   "author": "Victor Kuo",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.550.0",
+    "@aws-sdk/credential-providers": "^3.549.0",
     "axios": "^0.21.2",
     "binary-search-tree": "0.2.6",
     "body-parser": "^1.18.2",
