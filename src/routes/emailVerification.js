@@ -1,11 +1,12 @@
 import { Router } from 'express';
-const router = new Router();
 import User from '../models/user';
 import {
-  sendEmailVerification,
   isThrowawayEmail,
+  sendEmailVerification,
 } from '../myFunctions/sendEmailVerification';
 import validator from 'validator';
+
+const router = new Router();
 
 function checkEmailVerifiedAlready(req, res, next) {
   if (req.user.emailVerified === true) {
@@ -24,7 +25,7 @@ router.get(
   '/resendEmailVerification',
   checkEmailVerifiedAlready,
   (req, res) => {
-    sendEmailVerification(req.user);
+    sendEmailVerification(req.user, req.user.emailAddress);
     res.render('simpleText', { contents: 'Verification email resent!' });
   },
 );

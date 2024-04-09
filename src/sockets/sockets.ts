@@ -442,15 +442,6 @@ export const userCommandsOLD = {
     },
   },
 
-  allchat: {
-    command: 'allchat',
-    help: '/allchat: Get a copy of the last 5 minutes of allchat.',
-    run(args: string[], senderSocket) {
-      // code
-      return allChat5Min;
-    },
-  },
-
   mods: {
     command: 'mods',
     help: '/mods: Shows a list of online moderators.',
@@ -823,7 +814,7 @@ export const userCommandsOLD = {
       } else {
         messageToClient = rooms[
           senderSocket.request.user.inRoomId
-        ].submitMerlinGuess(senderSocket.request.user.username, data.args[1]);
+        ].submitMerlinGuess(senderSocket.request.user.username, args[1]);
       }
 
       return { message: messageToClient, classStr: 'server-text noselect' };
@@ -835,102 +826,6 @@ export const userCommandsOLD = {
     help: '/gm <playername>: Shortcut for /guessmerlin',
     run(args: string[], senderSocket) {
       return userCommands.guessmerlin.run(args, senderSocket);
-    },
-  },
-
-  getblacklist: {
-    command: 'getblacklist',
-    help: '/getblacklist: Shows your current blacklist for matchmaking. Will not match you into these players.',
-    run(args: string[], senderSocket) {
-      senderSocket.emit('messageCommandReturnStr', {
-        message: 'Your blacklist:',
-        classStr: 'server-text',
-      });
-
-      const dataToSend = [];
-      for (const username of senderSocket.request.user.matchmakingBlacklist) {
-        dataToSend.push({
-          message: username,
-          classStr: 'server-text',
-        });
-      }
-
-      senderSocket.emit('messageCommandReturnStr', dataToSend);
-    },
-  },
-
-  addblacklist: {
-    command: 'addblacklist',
-    help: '/addblacklist <username>: Adds a user to your blacklist. Maximum of 50 users.',
-    run(args: string[], senderSocket) {
-      if (args.length < 2) {
-        return {
-          message: 'Please specify a username.',
-          classStr: 'server-text',
-        };
-      }
-
-      const usernameToBlacklist = args[1].toLowerCase();
-
-      if (senderSocket.request.user.matchmakingBlacklist.length > 50) {
-        return {
-          message: 'You have too many users. Please remove some.',
-          classStr: 'server-text',
-        };
-      }
-
-      if (
-        senderSocket.request.user.matchmakingBlacklist.includes(
-          usernameToBlacklist,
-        )
-      ) {
-        return {
-          message: `You already have ${usernameToBlacklist} on your blacklist.`,
-          classStr: 'server-text',
-        };
-      }
-
-      senderSocket.request.user.matchmakingBlacklist.push(usernameToBlacklist);
-      senderSocket.request.user.markModified('matchmakingBlacklist');
-      senderSocket.request.user.save();
-      return {
-        message: `Added ${usernameToBlacklist} to your blacklist.`,
-        classStr: 'server-text',
-      };
-    },
-  },
-
-  removeblacklist: {
-    command: 'removeblacklist',
-    help: '/removeblacklist <username>: Removes a user from your blacklist.',
-    run(args: string[], senderSocket) {
-      if (args.length < 2) {
-        return {
-          message: 'Please specify a username.',
-          classStr: 'server-text',
-        };
-      }
-
-      const usernameToBlacklist = args[1].toLowerCase();
-
-      const index =
-        senderSocket.request.user.matchmakingBlacklist.indexOf(
-          usernameToBlacklist,
-        );
-      if (index === -1) {
-        return {
-          message: `${usernameToBlacklist} was not on your blacklist.`,
-          classStr: 'server-text',
-        };
-      }
-      senderSocket.request.user.matchmakingBlacklist.splice(index, 1);
-      senderSocket.request.user.markModified('matchmakingBlacklist');
-      senderSocket.request.user.save();
-
-      return {
-        message: `Removed ${usernameToBlacklist} from your blacklist.`,
-        classStr: 'server-text',
-      };
     },
   },
 };
