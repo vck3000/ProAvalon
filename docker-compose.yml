@@ -25,14 +25,15 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://root:password@mongo:27017/
 
   minio:
-    image: quay.io/minio/minio
-    container_name: minio
-    environment:
-      - MINIO_ROOT_USER=admin
-      - MINIO_ROOT_PASSWORD=pass
-    volumes:
-      - minio_data:/data
+    image: minio/minio
     ports:
       - 9000:9000
       - 9001:9001
+    volumes:
+      - ./docker-compose-data/minio:/data
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: pass
+    #      MINIO_ACCESS_KEY: YOUR_ACCESS_KEY
+    #      MINIO_SECRET_KEY: YOUR_SECRET_KEY
     command: server /data --console-address ":9001"
