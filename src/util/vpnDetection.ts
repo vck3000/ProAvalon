@@ -61,14 +61,17 @@ const isVPN = async (ip: string): Promise<boolean> => {
   console.log(`VPN Cache size: ${vpnCache.size}`);
 
   // Must pass both vpn checks
-  const result = (await isVpnCheck1(ip)) || (await isVpnCheck2(ip));
+  const VPNCheck1 = await isVPNCheck1(ip);
+  const VPNCheck2 = await isVPNCheck2(ip);
+
+  const result = VPNCheck1 || VPNCheck2;
 
   vpnCache.get(ip).setIsVpn(result);
 
   return result;
 };
 
-const isVpnCheck1 = async (ip: string): Promise<boolean> => {
+const isVPNCheck1 = async (ip: string): Promise<boolean> => {
   const vpnResponse = await fetch(
     `https://vpnapi.io/api/${ip}?key=${process.env.VPN_DETECTION_TOKEN}`,
   );
@@ -87,7 +90,7 @@ const isVpnCheck1 = async (ip: string): Promise<boolean> => {
   return data.security.vpn;
 };
 
-const isVpnCheck2 = async (ip: string): Promise<boolean> => {
+const isVPNCheck2 = async (ip: string): Promise<boolean> => {
   const vpnResponse = await fetch(
     `https://check.getipintel.net/check.php?ip=${ip}&contact=${process.env.PROAVALON_EMAIL_ADDRESS}&flags=m`,
   );
