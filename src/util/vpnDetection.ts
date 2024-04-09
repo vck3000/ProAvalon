@@ -61,8 +61,11 @@ const isVPN = async (ip: string): Promise<boolean> => {
   console.log(`VPN Cache size: ${vpnCache.size}`);
 
   // Must pass both vpn checks
-  const VPNCheck1 = await isVPNCheck1(ip);
-  const VPNCheck2 = await isVPNCheck2(ip);
+  const VPNCheck1 = await isVpnCheck1(ip);
+  console.log(`VPN Detection via vpnapi.io result: ${VPNCheck1}`);
+
+  const VPNCheck2 = await isVpnCheck2(ip);
+  console.log(`VPN Detection via check.getipintel.net result: ${VPNCheck2}`);
 
   const result = VPNCheck1 || VPNCheck2;
 
@@ -71,7 +74,7 @@ const isVPN = async (ip: string): Promise<boolean> => {
   return result;
 };
 
-const isVPNCheck1 = async (ip: string): Promise<boolean> => {
+const isVpnCheck1 = async (ip: string): Promise<boolean> => {
   const vpnResponse = await fetch(
     `https://vpnapi.io/api/${ip}?key=${process.env.VPN_DETECTION_TOKEN}`,
   );
@@ -85,12 +88,10 @@ const isVPNCheck1 = async (ip: string): Promise<boolean> => {
     );
   }
 
-  console.log(`VPN Detection via vpnapi.io result: ${data.security.vpn}`);
-
   return data.security.vpn;
 };
 
-const isVPNCheck2 = async (ip: string): Promise<boolean> => {
+const isVpnCheck2 = async (ip: string): Promise<boolean> => {
   const vpnResponse = await fetch(
     `https://check.getipintel.net/check.php?ip=${ip}&contact=${process.env.PROAVALON_EMAIL_ADDRESS}&flags=m`,
   );
@@ -104,8 +105,6 @@ const isVPNCheck2 = async (ip: string): Promise<boolean> => {
       'VPN Detection lookup response did not contain the expected data at check.getipintel.net.',
     );
   }
-
-  console.log(`VPN Detection via check.getipintel.net result: ${result}`);
 
   return result;
 };
