@@ -89,9 +89,15 @@ app.use(
   ),
 );
 
+// const client = new S3Client({
+//   region: 'asdf',
+//   endpoint: 'http://127.0.0.1:9000',
+//   credentials: fromEnv(),
+// });
+
 const client = new S3Client({
-  region: 'asdf',
-  endpoint: 'http://127.0.0.1:9000',
+  region: 'us-east-005',
+  endpoint: 'https://s3.us-east-005.backblazeb2.com',
   credentials: fromEnv(),
 });
 
@@ -243,10 +249,15 @@ const a = async () => {
 
   console.log('2');
 
+  // const command = new ListObjectsCommand({
+  //   Bucket: 'proavalon',
+  //   Prefix: 'approved_avatars',
+  // });
+
   const command = new ListObjectsCommand({
-    Bucket: 'proavalon',
-    Prefix: 'approved_avatars',
+    Bucket: 'proavalon-staging',
   });
+
   console.log('3');
 
   const data = await client.send(command);
