@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io';
 import User, { UserDocument } from '../models/user';
+import { IUser } from '../gameplay/types';
 
 interface SocketUserAdditions {
   inRoomId?: number;
@@ -7,6 +8,6 @@ interface SocketUserAdditions {
 
 export type SocketUser = Socket & {
   request: {
-    user: typeof User & UserDocument & SocketUserAdditions;
+    user: typeof User & UserDocument & SocketUserAdditions & IUser;
   };
 };
