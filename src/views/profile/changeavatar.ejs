@@ -98,37 +98,31 @@
         <div class="col-md-6">
             <div class="panel panel-success">
                 <div class="panel-heading">Res img:</div>
-                <div class="panel-body alignCenterHoriz">
-                    <img class="avatarImg resImg">
-                    <div class="imgdimensions">Loading</div>
+                <div class="panel-body alignCenterHoriz preview" id="resAvatarPreview">
+                    <p>No files currently selected for upload</p>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="panel panel-danger">
                 <div class="panel-heading">Spy img:</div>
-                <div class="panel-body alignCenterHoriz">
-                    <img class="avatarImg spyImg">
-                    <div class="imgdimensions">Loading</div>
-                    
+                <div class="panel-body alignCenterHoriz" id="spyAvatarPreview">
+                    <p>No files currently selected for upload</p>
                 </div>
             </div>
         </div>
     </div>
 
-
     <form action="/profile/<%=userData.username%>/changeavatar" method="post">
         <div class="form-group">
-            <label for="reslink">Resistance avatar image link</label>
-            <input name="reslink" type="url" class="form-control" id="reslink" placeholder="Resistance image link">
+            <label for="resAvatarFile">Resistance avatar image</label>
+            <input type="file" id="resAvatarFile" class="avatarFile" accept="image/png, .png">
         </div>
 
         <div class="form-group">
-            <label for="spylink">Spy avatar image link</label>
-            <input name="spylink" type="url" class="form-control" id="spylink" placeholder="Spy image link">
+            <label for="spyAvatarFile">Spy avatar image</label>
+            <input type="file" id="spyAvatarFile" class="avatarFile" accept="image/png, .png">
         </div>
-
-        <a id="load" class="btn btn-info">Load to see if they are good links!</a>
 
         <br>
         <br>
@@ -153,41 +147,60 @@
 
 <script>
 
-$( document ).ready(function() {
-    $("#load").on("click", function(e){
-        // $("#reslink")[0].value;
-        // $("#spylink")[0].value;
+$(document).ready(() => {
+    $("#resAvatarFile").on("change", (e) => {
+        updateAvatarDisplay(e.target.files[0], "#resAvatarPreview");
+    });
 
-        $(".resImg").attr("src", $("#reslink")[0].value);
-        $(".spyImg").attr("src", $("#spylink")[0].value);
-
-        var imgdimensions = $(".imgdimensions");
-
-        setInterval(function(){
-            for(var i = 0; i < imgdimensions.length; i++){
-                console.log(imgdimensions[i].parentElement.children[0]);
-        
-                var x = imgdimensions[i].parentElement.children[0].clientWidth;
-                var y = imgdimensions[i].parentElement.children[0].clientHeight;
-        
-        
-                imgdimensions[i].innerText = x + "x" + y + " px";
-            }
-        }, 1000);
-        
-
+    $("#spyAvatarFile").on("change", (e) => {
+        updateAvatarDisplay(e.target.files[0], "#spyAvatarPreview");
     });
 });
 
 
+function updateAvatarDisplay(file, previewID) {
+    const preview = document.querySelector(previewID);;
+
+    while (preview.firstChild) {
+        preview.removeChild(preview.firstChild);
+    }
+
+    const para = document.createElement("p");
+
+    if (!file) {
+        para.textContent = "No files currently selected for upload";
+        preview.appendChild(para);
+    } else if (file.type !== "image/png") {
+        para.textContent = "Selected file is not a PNG image";
+        preview.appendChild(para);
+    } else {
+        const image = document.createElement("img");
+
+        image.src = URL.createObjectURL(file);
+        image.alt = file.name;
+
+        preview.appendChild(image);
+
+        image.onload = () => {
+            para.textContent = `Image dimensions: ${image.width}x${image.height}`;
+            preview.appendChild(para);
+
+            const validation = document.createElement("p");
+
+            if (image.width > 1024 || image.height > 1024) {
+                validation.textContent = "Invalid: Image should be 1024x1024 or smaller";
+            } else if (image.width !== image.height) {
+                validation.textContent = "Invalid: Image should be a square";
+            }
+
+            image.width = 128;
+            image.height = 128;
+
+            preview.appendChild(validation);
+        };
+    }
+}
+
 </script>
 
-
-
-
 <%- include('../partials/footer') %>
-
-
-
-
-

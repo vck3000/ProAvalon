@@ -89,37 +89,12 @@ app.use(
   ),
 );
 
-// const client = new S3Client({
-//   region: 'asdf',
-//   endpoint: 'http://127.0.0.1:9000',
-//   credentials: fromEnv(),
-// });
-
-const client = new S3Client({
-  region: 'us-east-005',
-  endpoint: 'https://s3.us-east-005.backblazeb2.com',
-  credentials: fromEnv(),
-});
-
 if (process.env.ENV === 'local') {
   console.log('Routing dist_webpack to localhost:3010.');
   app.use(
     '/dist_webpack',
     createProxyMiddleware({ target: 'http://localhost:3010' }),
   );
-
-  app.get('/avatars_s3/:filename', async (req, res, next) => {
-    console.log(req.params);
-    const filename = req.params.filename;
-
-    const getObjectCommand = new GetObjectCommand({
-      Bucket: 'proavalon',
-      Key: 'approved_avatars/base-spy.png',
-    });
-
-    const response = await client.send(getObjectCommand);
-    response.Body.pipe(res);
-  });
 }
 
 const port = process.env.PORT || 3000;
@@ -243,25 +218,44 @@ io.use(
 
 socketServer(io);
 
+const client = new S3Client({
+  region: 'asdf',
+  endpoint: 'http://127.0.0.1:9000',
+  credentials: fromEnv(),
+});
+
+// const client = new S3Client({
+//   region: 'us-east-005',
+//   endpoint: 'https://s3.us-east-005.backblazeb2.com',
+//   credentials: fromEnv(),
+// });
+
+if (process.env.ENV === 'local') {
+  app.get('/avatars_s3/*', async (req, res, next) => {
+    const filename = req.params[0];
+    console.log(filename);
+
+    const getObjectCommand = new GetObjectCommand({
+      Bucket: 'proavalon',
+      Key: filename,
+    });
+
+    const response = await client.send(getObjectCommand);
+    response.Body.pipe(res);
+  });
+}
+
 const a = async () => {
-  console.log('a');
-  console.log('1');
-
-  console.log('2');
-
-  // const command = new ListObjectsCommand({
-  //   Bucket: 'proavalon',
-  //   Prefix: 'approved_avatars',
-  // });
-
   const command = new ListObjectsCommand({
-    Bucket: 'proavalon-staging',
+    Bucket: 'proavalon',
+    Prefix: 'approved_avatars',
   });
 
-  console.log('3');
+  // const command = new ListObjectsCommand({
+  //   Bucket: 'proavalon-staging',
+  // });
 
   const data = await client.send(command);
-  console.log('4');
   console.log(data);
 };
 
