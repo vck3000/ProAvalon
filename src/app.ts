@@ -230,6 +230,20 @@ const s3Client = new S3Client({
 //   credentials: fromEnv(),
 // });
 
+// const upload = multer({
+//   storage: multerS3({
+//     s3: s3Client,
+//     bucket: 'proavalon',
+//     metadata: function (req, file, cb) {
+//       cb(null, { fieldName: file.fieldname });
+//     },
+//     acl: 'public-read',
+//     key: function (req, file, cb) {
+//       cb(null, Date.now().toString());
+//     },
+//   }),
+// });
+
 if (process.env.ENV === 'local') {
   app.get('/avatars_s3/*', async (req, res, next) => {
     const filename = req.params[0];
@@ -243,6 +257,24 @@ if (process.env.ENV === 'local') {
     const response = await s3Client.send(getObjectCommand);
     response.Body.pipe(res);
   });
+
+  // app.post(
+  //   '/avatarss',
+  //   upload.fields([
+  //     { name: 'resAvatarFile', maxCount: 1 },
+  //     { name: 'spyAvatarFile', maxCount: 1 },
+  //   ]),
+  //   (req, res) => {
+  //     console.log('Received change avatar');
+  //     console.log(`For user ${req.params.profileUsername}`);
+  //     console.log(req.params);
+  //     console.log(req.body);
+  //     console.log(`Res file:`, req.files['resAvatarFile']);
+  //     console.log(`Spy file:`, req.files['spyAvatarFile']);
+  //     console.log(`Message to mod: ${req.body.msgToMod}`);
+  //     res.send('File uploaded successfully');
+  //   },
+  // );
 }
 
 const a = async () => {

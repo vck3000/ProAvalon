@@ -160,7 +160,7 @@ $(document).ready(() => {
 
         const totalGamesPlayed = "<%= userData.totalGamesPlayed %>";
 
-        if (totalGamesPlayed < 100) {
+        if (totalGamesPlayed < 10) {
             alert("You must play at least 100 games before you can submit a custom avatar.");
             return;
         }
@@ -172,7 +172,7 @@ $(document).ready(() => {
         const spyValid = await updateAvatarDisplay(spyAvatarFile, "#spyAvatarPreview");
 
         if (resValid && spyValid) {
-            this.submit();
+            $("#customAvatarSubmissionForm").submit();
         } else {
             alert("Please upload a valid custom Res and Spy avatar.");
         }
