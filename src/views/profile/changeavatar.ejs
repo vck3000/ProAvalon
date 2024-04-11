@@ -172,7 +172,7 @@ $(document).ready(() => {
         const spyValid = await updateAvatarDisplay(spyAvatarFile, "#spyAvatarPreview");
 
         if (resValid && spyValid) {
-            $("#customAvatarSubmissionForm").submit();
+            document.getElementById("customAvatarSubmissionForm").submit();
         } else {
             alert("Please upload a valid custom Res and Spy avatar.");
         }
