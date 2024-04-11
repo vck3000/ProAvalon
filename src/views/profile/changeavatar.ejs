@@ -113,7 +113,7 @@
         </div>
     </div>
 
-    <form action="/profile/<%=userData.username%>/changeavatar" method="post">
+    <form action="/profile/<%=userData.username%>/changeavatar" method="post" id="customAvatarSubmissionForm">
         <div class="form-group">
             <label for="resAvatarFile">Resistance avatar image</label>
             <input type="file" id="resAvatarFile" class="avatarFile" accept="image/png, .png">
@@ -133,7 +133,6 @@
         </div>
 
         <br>
-
 
         <button type="submit" class="btn btn-success">Submit</button>
     </form>
@@ -155,11 +154,35 @@ $(document).ready(() => {
     $("#spyAvatarFile").on("change", (e) => {
         updateAvatarDisplay(e.target.files[0], "#spyAvatarPreview");
     });
+
+    $("#customAvatarSubmissionForm").on("submit", async (e) => {
+        e.preventDefault();
+
+        const totalGamesPlayed = "<%= userData.totalGamesPlayed %>";
+
+        if (totalGamesPlayed < 100) {
+            alert("You must play at least 100 games before you can submit a custom avatar.");
+            return;
+        }
+
+        const resAvatarFile = $("#resAvatarFile")[0].files[0];
+        const spyAvatarFile = $("#spyAvatarFile")[0].files[0];
+
+        const resValid = await updateAvatarDisplay(resAvatarFile, "#resAvatarPreview");
+        const spyValid = await updateAvatarDisplay(spyAvatarFile, "#spyAvatarPreview");
+
+        if (resValid && spyValid) {
+            this.submit();
+        } else {
+            alert("Please upload a valid custom Res and Spy avatar.");
+        }
+    })
 });
 
 
-function updateAvatarDisplay(file, previewID) {
-    const preview = document.querySelector(previewID);;
+async function updateAvatarDisplay(file, previewID) {
+    const preview = document.querySelector(previewID);
+    let valid = false;
 
     while (preview.firstChild) {
         preview.removeChild(preview.firstChild);
@@ -181,24 +204,31 @@ function updateAvatarDisplay(file, previewID) {
 
         preview.appendChild(image);
 
-        image.onload = () => {
-            para.textContent = `Image dimensions: ${image.width}x${image.height}`;
-            preview.appendChild(para);
+        await new Promise((resolve) => {
+            image.onload = () => {
+                para.textContent = `Image dimensions: ${image.width}x${image.height}`;
+                preview.appendChild(para);
 
-            const validation = document.createElement("p");
+                const validation = document.createElement("p");
 
-            if (image.width > 1024 || image.height > 1024) {
-                validation.textContent = "Invalid: Image should be 1024x1024 or smaller";
-            } else if (image.width !== image.height) {
-                validation.textContent = "Invalid: Image should be a square";
-            }
+                if (image.width > 1024 || image.height > 1024) {
+                    validation.textContent = "Invalid: Image should be 1024x1024 or smaller";
+                } else if (image.width !== image.height) {
+                    validation.textContent = "Invalid: Image should be a square";
+                } else {
+                    valid = true;
+                }
 
-            image.width = 128;
-            image.height = 128;
+                image.width = 128;
+                image.height = 128;
 
-            preview.appendChild(validation);
-        };
+                preview.appendChild(validation);
+                resolve();
+            };
+        });
     }
+
+    return valid;
 }
 
 </script>

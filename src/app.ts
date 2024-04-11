@@ -218,13 +218,13 @@ io.use(
 
 socketServer(io);
 
-const client = new S3Client({
+const s3Client = new S3Client({
   region: 'asdf',
   endpoint: 'http://127.0.0.1:9000',
   credentials: fromEnv(),
 });
 
-// const client = new S3Client({
+// const s3Client = new S3Client({
 //   region: 'us-east-005',
 //   endpoint: 'https://s3.us-east-005.backblazeb2.com',
 //   credentials: fromEnv(),
@@ -240,7 +240,7 @@ if (process.env.ENV === 'local') {
       Key: filename,
     });
 
-    const response = await client.send(getObjectCommand);
+    const response = await s3Client.send(getObjectCommand);
     response.Body.pipe(res);
   });
 }
@@ -255,7 +255,7 @@ const a = async () => {
   //   Bucket: 'proavalon-staging',
   // });
 
-  const data = await client.send(command);
+  const data = await s3Client.send(command);
   console.log(data);
 };
 
