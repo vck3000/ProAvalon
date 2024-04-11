@@ -60,22 +60,49 @@ const isVPN = async (ip: string): Promise<boolean> => {
   console.log(`Checking VPN status of ip: ${ip}`);
   console.log(`VPN Cache size: ${vpnCache.size}`);
 
-  const response = await fetch(
+  // Must pass both vpn checks
+  const result = (await isVpnCheck1(ip)) || (await isVpnCheck2(ip));
+
+  vpnCache.get(ip).setIsVpn(result);
+
+  return result;
+};
+
+const isVpnCheck1 = async (ip: string): Promise<boolean> => {
+  const vpnResponse = await fetch(
     `https://vpnapi.io/api/${ip}?key=${process.env.VPN_DETECTION_TOKEN}`,
   );
 
-  const data = await response.json();
+  const data = await vpnResponse.json();
 
   if (!data.security) {
     console.log(data);
     throw new Error(
-      'VPN Detection lookup response did not contain the expected data.',
+      'VPN Detection lookup response did not contain the expected data at vpnapi.io.',
     );
   }
 
-  const result: boolean = data.security.vpn;
+  console.log(`VPN Detection via vpnapi.io result: ${data.security.vpn}`);
 
-  vpnCache.get(ip).setIsVpn(result);
+  return data.security.vpn;
+};
+
+const isVpnCheck2 = async (ip: string): Promise<boolean> => {
+  const vpnResponse = await fetch(
+    `https://check.getipintel.net/check.php?ip=${ip}&contact=${process.env.PROAVALON_EMAIL_ADDRESS}&flags=m`,
+  );
+
+  const data = await vpnResponse.json();
+  const result: boolean = data >= 0.99 && data <= 1;
+
+  if (data < 0 || data > 1) {
+    console.log(data);
+    throw new Error(
+      'VPN Detection lookup response did not contain the expected data at check.getipintel.net.',
+    );
+  }
+
+  console.log(`VPN Detection via check.getipintel.net result: ${result}`);
 
   return result;
 };

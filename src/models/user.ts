@@ -23,6 +23,7 @@ const UserSchema = new mongoose.Schema<IUser>({
   },
   // I've decided it is ok to not have these email tokens expire.
   emailToken: String,
+  emailTokenExpiry: Date,
 
   avatarImgRes: {
     type: String,
