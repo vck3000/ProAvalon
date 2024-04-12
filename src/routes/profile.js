@@ -231,9 +231,12 @@ router.post(
       );
     }
 
-    console.log('Received change avatar request');
-    console.log(`For user ${req.params.profileUsername}`);
-    console.log(`Message to mod: ${req.body.msgToMod}`);
+    const msgToMod = req.body.msgToMod ? req.body.msgToMod : 'None provided.';
+
+    console.log(
+      `Received change avatar request for user: ${req.params.profileUsername}`,
+    );
+    console.log(`Message to mod: ${msgToMod}`);
 
     // Upload valid avatar requests to s3 bucket
     const avatarLinks = await uploadAvatarRequest(

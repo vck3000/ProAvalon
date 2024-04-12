@@ -116,6 +116,8 @@ export async function uploadAvatarRequest(
 }
 
 export async function listObjectKeysFromS3(prefix: string) {
+  // Note ListObjects command only returns up to 1000 objects
+  // Need to update code if this exceeds
   const command = new ListObjectsV2Command({
     Bucket: 'proavalon',
     Prefix: prefix,
