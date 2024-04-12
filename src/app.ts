@@ -34,13 +34,13 @@ import staticifyFactory from 'staticify';
 // Create a MongoDB session store
 import MongoDBStoreFactory from 'connect-mongodb-session';
 import { SESSIONS_COLLECTION_NAME } from './constants';
-import { fromEnv } from '@aws-sdk/credential-providers';
+import { GetObjectCommand } from '@aws-sdk/client-s3';
 import {
-  GetObjectCommand,
-  HeadObjectCommand,
-  PutObjectCommand,
-  S3Client,
-} from '@aws-sdk/client-s3';
+  getFileFromS3,
+  listObjectKeysFromS3,
+  listObjectsFromS3,
+  uploadFileToS3,
+} from './s3';
 
 const assetsPath = path.join(__dirname, '../assets');
 
@@ -219,89 +219,24 @@ io.use(
 
 socketServer(io);
 
-const s3Client = new S3Client({
-  region: 'asdf',
-  endpoint: 'http://127.0.0.1:9000',
-  credentials: fromEnv(),
-});
-
-// const s3Client = new S3Client({
-//   region: 'us-east-005',
-//   endpoint: 'https://s3.us-east-005.backblazeb2.com',
-//   credentials: fromEnv(),
-// });
-
 if (process.env.ENV === 'local') {
   app.get('/avatars_s3/*', async (req, res, next) => {
     const filename = req.params[0];
     console.log(filename);
 
-    const getObjectCommand = new GetObjectCommand({
-      Bucket: 'proavalon',
-      Key: filename,
-    });
-
-    const response = await s3Client.send(getObjectCommand);
+    const response = await getFileFromS3(filename);
     response.Body.pipe(res);
   });
 
-  app.get('/avatarUpload/*', async (req, res, next) => {
+  app.get('/aupload/*', async (req, res, next) => {
     const filepath = req.params[0];
-    await uploadFile(filepath, 'Hello world! And version 2');
+    await uploadFileToS3(filepath, 'Hello world! And version 2');
+    res.sendStatus(200);
+  });
+
+  app.get('/akey/*', async (req, res, next) => {
+    const key = req.params[0];
+    await listObjectKeysFromS3('approved_avatars', key);
     res.sendStatus(200);
   });
 }
-const uploadFile = async (filepath, fileContent) => {
-  try {
-    const headCommand = new HeadObjectCommand({
-      Bucket: 'proavalon',
-      Key: filepath,
-    });
-    await s3Client.send(headCommand);
-    filepath = generateNewFilepath(filepath);
-  } catch (error) {}
-
-  const command = new PutObjectCommand({
-    Bucket: 'proavalon',
-    Key: filepath,
-    Body: fileContent,
-  });
-
-  const response = await s3Client.send(command);
-  console.log('File uploaded successfully:', response);
-  return response;
-};
-
-function generateNewFilepath(filepath) {
-  // TODO: Consider the test.txt_0 vs test_0.txt
-  // Also perhaps consider adding a property to the user for their number of custom avatars to increment
-  // Match a trailing _ followed by digits
-  const regex = /_(\d+)$/;
-
-  // Check if the filepath ends with an underscore followed by digits
-  const match = filepath.match(regex);
-
-  if (match) {
-    const num = parseInt(match[1]);
-    return filepath.replace(regex, `_${num + 1}`);
-  } else {
-    // If no match, append _0 to the filepath
-    return `${filepath}_0`;
-  }
-}
-
-// const a = async () => {
-//   const command = new ListObjectsCommand({
-//     Bucket: 'proavalon',
-//     Prefix: 'approved_avatars',
-//   });
-//
-//   // const command = new ListObjectsCommand({
-//   //   Bucket: 'proavalon-staging',
-//   // });
-//
-//   const data = await s3Client.send(command);
-//   console.log(data);
-// };
-//
-// a();
