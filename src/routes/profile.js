@@ -10,6 +10,7 @@ import avatarRequest from '../models/avatarRequest';
 import ModLog from '../models/modLog';
 import { createNotification } from '../myFunctions/createNotification';
 import multer from 'multer';
+import imageSize from 'image-size';
 
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',
@@ -167,12 +168,39 @@ router.post(
   '/:profileUsername/changeavatar',
   checkProfileOwnership,
   upload,
-  (req, res) => {
-    console.log('Recieved change avatar');
+  async (req, res) => {
+    // TODO: Move the below console logs to after the server side validation checks?
+    console.log('Received change avatar request');
     console.log(`For user ${req.params.profileUsername}`);
     // console.log(`Res link: ${req.body.reslink}`);
     // console.log(`Spy link: ${req.body.spylink}`);
     console.log(`Message to mod: ${req.body.msgToMod}`);
+
+    const user = await User.findOne({ username: req.params.profileUsername });
+
+    // TODO: how should i handle this?
+    if (!user) {
+      console.log('User not found');
+    }
+
+    // Checks if custom avatar request is valid
+    if (user.totalGamesPlayed < 100) {
+      req.flash(
+        'error',
+        'You must play at least 100 games to submit a custom avatar request.',
+      );
+      return res.redirect(
+        `/profile/${req.params.profileUsername}/changeavatar`,
+      );
+    }
+
+    // TODO: should i check existence of req.files['avatarRes'][0] as well?
+    if (!req.files['avatarRes'] || !req.files['avatarSpy']) {
+      req.flash('error', 'You must submit a Res and Spy avatar.');
+      return res.redirect(
+        `/profile/${req.params.profileUsername}/changeavatar`,
+      );
+    }
 
     const avatarRes = req.files['avatarRes'][0];
     const avatarSpy = req.files['avatarSpy'][0];
@@ -181,8 +209,37 @@ router.post(
       avatarRes.mimetype !== 'image/png' ||
       avatarSpy.mimetype !== 'image/png'
     ) {
-      req.flash('error', 'You must submit only png files');
+      req.flash('error', 'You must submit only png files.');
+      return res.redirect(
+        `/profile/${req.params.profileUsername}/changeavatar`,
+      );
     }
+
+    const dimRes = imageSize(avatarRes.buffer);
+    const dimSpy = imageSize(avatarSpy.buffer);
+
+    if (
+      dimRes.width > 1024 ||
+      dimRes.height > 1024 ||
+      dimSpy.width > 1024 ||
+      dimSpy.height > 1024
+    ) {
+      req.flash('error', 'Avatar dimensions must be 1024x1024 or smaller.');
+      return res.redirect(
+        `/profile/${req.params.profileUsername}/changeavatar`,
+      );
+    }
+
+    if (dimRes.width !== dimRes.height || dimSpy.width !== dimSpy.height) {
+      req.flash('error', 'Avatar dimensions must be a square.');
+      return res.redirect(
+        `/profile/${req.params.profileUsername}/changeavatar`,
+      );
+    }
+
+    // Upload valid avatar requests to s3 bucket
+
+    console.log('IT PASSED!');
 
     // sometimes https links dont show up correctly
     // req.body.reslink.replace("https", "http");
