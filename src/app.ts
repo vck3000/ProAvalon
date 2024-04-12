@@ -38,7 +38,7 @@ import { GetObjectCommand } from '@aws-sdk/client-s3';
 import {
   getFileFromS3,
   listObjectKeysFromS3,
-  listObjectsFromS3,
+  uploadAvatarRequest,
   uploadFileToS3,
 } from './s3';
 
@@ -237,6 +237,12 @@ if (process.env.ENV === 'local') {
   app.get('/akey/*', async (req, res, next) => {
     const key = req.params[0];
     await listObjectKeysFromS3('approved_avatars', key);
+    res.sendStatus(200);
+  });
+
+  app.get('/acustom/*', async (req, res, next) => {
+    const username = req.params[0];
+    await uploadAvatarRequest(username);
     res.sendStatus(200);
   });
 }

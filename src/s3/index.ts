@@ -38,8 +38,13 @@ export async function uploadFileToS3(filepath: string, fileContent: any) {
       Bucket: 'proavalon',
       Key: filepath,
     });
+
     await client.send(headCommand);
-    filepath = generateNewFilepath(filepath);
+    console.log(
+      `Failed to upload to s3. Object with key '${filepath}' already exists in the bucket.`,
+    );
+    // TODO: Should I throw an error here? If so how?
+    return;
   } catch (error) {}
 
   const command = new PutObjectCommand({
@@ -48,43 +53,44 @@ export async function uploadFileToS3(filepath: string, fileContent: any) {
     Body: fileContent,
   });
 
+  console.log(
+    `Successfully uploaded file. Bucket: proavalon, File: ${filepath}`,
+  );
+
   return await client.send(command);
 }
 
-export async function listObjectKeysFromS3(
-  prefix: string,
-  keyContains: string,
-) {
+export async function uploadAvatarRequest(username: string) {
+  const prefix = `avatars/${username.toLowerCase()}/`;
+  const existingObjects = await listObjectKeysFromS3(prefix);
+
+  // Find unique ID for filepath generation
+  let currCounter = 0;
+
+  existingObjects.Contents.forEach((object) => {
+    const key = object.Key;
+    // Match leading integer following the last occurrence of /
+    const match = key.match(/\/(\d+)_/);
+
+    if (match) {
+      const counter = parseInt(match[1], 10);
+      if (counter > currCounter) {
+        currCounter = counter;
+      }
+    }
+  });
+
+  const filePath = `${prefix}${currCounter + 1}_res.txt`;
+  const fileContent = 'Heloooo.';
+
+  await uploadFileToS3(filePath, fileContent);
+}
+
+export async function listObjectKeysFromS3(prefix: string) {
   const command = new ListObjectsV2Command({
     Bucket: 'proavalon',
     Prefix: prefix,
   });
 
-  const data = await client.send(command);
-
-  data.Contents.forEach((object) => {
-    const formattedKey = object.Key.substring(object.Key.lastIndexOf('/') + 1);
-
-    if (formattedKey.includes(keyContains)) {
-      console.log(object.Key);
-    }
-  });
-}
-
-function generateNewFilepath(filepath: string) {
-  // TODO: Consider the test.txt_0 vs test_0.txt
-  // Also perhaps consider adding a property to the user for their number of custom avatars to increment
-  // Match a trailing _ followed by digits
-  const regex = /_(\d+)$/;
-
-  // Check if the filepath ends with an underscore followed by digits
-  const match = filepath.match(regex);
-
-  if (match) {
-    const num = parseInt(match[1]);
-    return filepath.replace(regex, `_${num + 1}`);
-  } else {
-    // If no match, append _0 to the filepath
-    return `${filepath}_0`;
-  }
+  return await client.send(command);
 }

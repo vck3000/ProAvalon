@@ -184,7 +184,7 @@ router.post(
     }
 
     // Checks if custom avatar request is valid
-    if (user.totalGamesPlayed < 100) {
+    if (user.totalGamesPlayed < 10) {
       req.flash(
         'error',
         'You must play at least 100 games to submit a custom avatar request.',
