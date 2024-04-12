@@ -239,10 +239,4 @@ if (process.env.ENV === 'local') {
     await listObjectKeysFromS3('approved_avatars', key);
     res.sendStatus(200);
   });
-
-  app.get('/acustom/*', async (req, res, next) => {
-    const username = req.params[0];
-    await uploadAvatarRequest(username);
-    res.sendStatus(200);
-  });
 }

@@ -170,13 +170,6 @@ router.post(
   checkProfileOwnership,
   upload,
   async (req, res) => {
-    // TODO: Move the below console logs to after the server side validation checks?
-    // console.log('Received change avatar request');
-    // console.log(`For user ${req.params.profileUsername}`);
-    // // console.log(`Res link: ${req.body.reslink}`);
-    // // console.log(`Spy link: ${req.body.spylink}`);
-    // console.log(`Message to mod: ${req.body.msgToMod}`);
-
     const user = await User.findOne({ username: req.params.profileUsername });
 
     // TODO: how should i handle this?
@@ -238,33 +231,26 @@ router.post(
       );
     }
 
+    console.log('Received change avatar request');
+    console.log(`For user ${req.params.profileUsername}`);
+    console.log(`Message to mod: ${req.body.msgToMod}`);
+
     // Upload valid avatar requests to s3 bucket
-
-    console.log('IT PASSED!');
-
     const avatarLinks = await uploadAvatarRequest(
       req.params.profileUsername,
       avatarRes.buffer,
       avatarSpy.buffer,
     );
 
-    // sometimes https links dont show up correctly
-    // req.body.reslink.replace("https", "http");
-    // req.body.spylink.replace("https", "http");
+    console.log(`Res link: ${avatarLinks[0]}`);
+    console.log(`Spy link: ${avatarLinks[1]}`);
 
     const avatarRequestData = {
       forUsername: req.params.profileUsername.toLowerCase(),
-
-      // TODO: Do i need the sanitize???
-      // resLink: sanitizeHtml(req.body.reslink),
-      // spyLink: sanitizeHtml(req.body.spylink),
-
       resLink: avatarLinks[0],
       spyLink: avatarLinks[1],
       msgToMod: sanitizeHtml(req.body.msgToMod),
-
       dateRequested: new Date(),
-
       processed: false,
     };
 
@@ -279,12 +265,6 @@ router.post(
         res.redirect(`/profile/${req.params.profileUsername}`);
       }
     });
-
-    console.log('Received change avatar request');
-    console.log(`For user ${req.params.profileUsername}`);
-    console.log(`Res link: ${avatarLinks[0]}`);
-    console.log(`Spy link: ${avatarLinks[1]}`);
-    console.log(`Message to mod: ${req.body.msgToMod}`);
   },
 );
 

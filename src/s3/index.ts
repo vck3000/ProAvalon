@@ -69,6 +69,9 @@ export async function uploadFileToS3(
   } catch (error) {}
 }
 
+// Uploads avatar requests to s3. Presumes validation checks have been completed
+// Returns accessible links for res and spy avatars
+// TODO-kev check File type
 export async function uploadAvatarRequest(
   username: string,
   resAvatar: File,
