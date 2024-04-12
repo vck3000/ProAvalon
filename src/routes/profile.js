@@ -11,6 +11,7 @@ import ModLog from '../models/modLog';
 import { createNotification } from '../myFunctions/createNotification';
 import multer from 'multer';
 import imageSize from 'image-size';
+import { uploadAvatarRequest } from '../s3';
 
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',
@@ -240,6 +241,12 @@ router.post(
     // Upload valid avatar requests to s3 bucket
 
     console.log('IT PASSED!');
+
+    await uploadAvatarRequest(
+      req.params.profileUsername,
+      avatarRes.buffer,
+      avatarSpy.buffer,
+    );
 
     // sometimes https links dont show up correctly
     // req.body.reslink.replace("https", "http");

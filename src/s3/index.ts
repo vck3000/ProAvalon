@@ -64,30 +64,34 @@ export async function uploadFileToS3(filepath: string, fileContent: any) {
   } catch (error) {}
 }
 
-export async function uploadAvatarRequest(username: string) {
+export async function uploadAvatarRequest(
+  username: string,
+  resAvatar: File,
+  spyAvatar: File,
+) {
   const prefix = `avatars/${username.toLowerCase()}/`;
   const existingObjects = await listObjectKeysFromS3(prefix);
 
   // Find unique ID for filepath generation
   let currCounter = 0;
 
-  existingObjects.Contents.forEach((object) => {
-    const key = object.Key;
-    // Match leading integer following the last occurrence of /
-    const match = key.match(/\/(\d+)_/);
+  if (existingObjects.KeyCount !== 0) {
+    existingObjects.Contents.forEach((object) => {
+      const key = object.Key;
+      // Match leading integer following the last occurrence of /
+      const match = key.match(/\/(\d+)_/);
 
-    if (match) {
-      const counter = parseInt(match[1], 10);
-      if (counter > currCounter) {
-        currCounter = counter;
+      if (match) {
+        const counter = parseInt(match[1], 10);
+        if (counter > currCounter) {
+          currCounter = counter;
+        }
       }
-    }
-  });
+    });
+  }
 
-  const filePath = `${prefix}${currCounter + 1}_res.txt`;
-  const fileContent = 'Heloooo.';
-
-  await uploadFileToS3(filePath, fileContent);
+  await uploadFileToS3(`${prefix}${currCounter + 1}_res.png`, resAvatar);
+  await uploadFileToS3(`${prefix}${currCounter + 1}_spy.png`, spyAvatar);
 }
 
 export async function listObjectKeysFromS3(prefix: string) {
