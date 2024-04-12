@@ -230,7 +230,7 @@ if (process.env.ENV === 'local') {
 
   app.get('/aupload/*', async (req, res, next) => {
     const filepath = req.params[0];
-    await uploadFileToS3(filepath, 'Hello world! And version 2');
+    await uploadFileToS3(filepath, 'Hello world! And version 2', 'text/plain');
     res.sendStatus(200);
   });
 

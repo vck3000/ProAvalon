@@ -171,11 +171,11 @@ router.post(
   upload,
   async (req, res) => {
     // TODO: Move the below console logs to after the server side validation checks?
-    console.log('Received change avatar request');
-    console.log(`For user ${req.params.profileUsername}`);
-    // console.log(`Res link: ${req.body.reslink}`);
-    // console.log(`Spy link: ${req.body.spylink}`);
-    console.log(`Message to mod: ${req.body.msgToMod}`);
+    // console.log('Received change avatar request');
+    // console.log(`For user ${req.params.profileUsername}`);
+    // // console.log(`Res link: ${req.body.reslink}`);
+    // // console.log(`Spy link: ${req.body.spylink}`);
+    // console.log(`Message to mod: ${req.body.msgToMod}`);
 
     const user = await User.findOne({ username: req.params.profileUsername });
 
@@ -242,7 +242,7 @@ router.post(
 
     console.log('IT PASSED!');
 
-    await uploadAvatarRequest(
+    const avatarLinks = await uploadAvatarRequest(
       req.params.profileUsername,
       avatarRes.buffer,
       avatarSpy.buffer,
@@ -255,8 +255,12 @@ router.post(
     const avatarRequestData = {
       forUsername: req.params.profileUsername.toLowerCase(),
 
-      resLink: sanitizeHtml(req.body.reslink),
-      spyLink: sanitizeHtml(req.body.spylink),
+      // TODO: Do i need the sanitize???
+      // resLink: sanitizeHtml(req.body.reslink),
+      // spyLink: sanitizeHtml(req.body.spylink),
+
+      resLink: avatarLinks[0],
+      spyLink: avatarLinks[1],
       msgToMod: sanitizeHtml(req.body.msgToMod),
 
       dateRequested: new Date(),
@@ -275,6 +279,12 @@ router.post(
         res.redirect(`/profile/${req.params.profileUsername}`);
       }
     });
+
+    console.log('Received change avatar request');
+    console.log(`For user ${req.params.profileUsername}`);
+    console.log(`Res link: ${avatarLinks[0]}`);
+    console.log(`Spy link: ${avatarLinks[1]}`);
+    console.log(`Message to mod: ${req.body.msgToMod}`);
   },
 );
 

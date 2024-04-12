@@ -32,7 +32,11 @@ export async function getFileFromS3(filename: string) {
   return await client.send(command);
 }
 
-export async function uploadFileToS3(filepath: string, fileContent: any) {
+export async function uploadFileToS3(
+  filepath: string,
+  fileContent: any,
+  contentType: string,
+) {
   try {
     const headCommand = new HeadObjectCommand({
       Bucket: 'proavalon',
@@ -52,6 +56,7 @@ export async function uploadFileToS3(filepath: string, fileContent: any) {
       Bucket: 'proavalon',
       Key: filepath,
       Body: fileContent,
+      ContentType: contentType,
     });
 
     const response = await client.send(command);
@@ -90,8 +95,19 @@ export async function uploadAvatarRequest(
     });
   }
 
-  await uploadFileToS3(`${prefix}${currCounter + 1}_res.png`, resAvatar);
-  await uploadFileToS3(`${prefix}${currCounter + 1}_spy.png`, spyAvatar);
+  const resKey = `${prefix}${currCounter + 1}_res.png`;
+  const spyKey = `${prefix}${currCounter + 1}_spy.png`;
+
+  await uploadFileToS3(resKey, resAvatar, 'image/png');
+  await uploadFileToS3(spyKey, spyAvatar, 'image/png');
+
+  // TODO: Edit the below based on prod
+  const endpoint = 'localhost:3000/avatars_s3/';
+
+  const resUrl = `${endpoint}${resKey}`;
+  const spyUrl = `${endpoint}${spyKey}`;
+
+  return [resUrl, spyUrl];
 }
 
 export async function listObjectKeysFromS3(prefix: string) {
