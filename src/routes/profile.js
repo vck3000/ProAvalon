@@ -9,6 +9,7 @@ import PatreonId from '../models/patreonId';
 import avatarRequest from '../models/avatarRequest';
 import ModLog from '../models/modLog';
 import { createNotification } from '../myFunctions/createNotification';
+import multer from 'multer';
 
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',
@@ -155,16 +156,33 @@ router.get(
   },
 );
 
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage }).fields([
+  { name: 'avatarRes', maxCount: 1 },
+  { name: 'avatarSpy', maxCount: 1 },
+]);
+
 // Update the customavatar
 router.post(
   '/:profileUsername/changeavatar',
   checkProfileOwnership,
+  upload,
   (req, res) => {
     console.log('Recieved change avatar');
     console.log(`For user ${req.params.profileUsername}`);
-    console.log(`Res link: ${req.body.reslink}`);
-    console.log(`Spy link: ${req.body.spylink}`);
+    // console.log(`Res link: ${req.body.reslink}`);
+    // console.log(`Spy link: ${req.body.spylink}`);
     console.log(`Message to mod: ${req.body.msgToMod}`);
+
+    const avatarRes = req.files['avatarRes'][0];
+    const avatarSpy = req.files['avatarSpy'][0];
+
+    if (
+      avatarRes.mimetype !== 'image/png' ||
+      avatarSpy.mimetype !== 'image/png'
+    ) {
+      req.flash('error', 'You must submit only png files');
+    }
 
     // sometimes https links dont show up correctly
     // req.body.reslink.replace("https", "http");

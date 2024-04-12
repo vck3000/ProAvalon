@@ -113,15 +113,15 @@
         </div>
     </div>
 
-    <form action="/profile/<%=userData.username%>/changeavatar" method="post" id="customAvatarSubmissionForm">
+    <form action="/profile/<%=userData.username%>/changeavatar" method="post" id="customAvatarSubmissionForm" enctype="multipart/form-data">
         <div class="form-group">
             <label for="resAvatarFile">Resistance avatar image</label>
-            <input type="file" id="resAvatarFile" class="avatarFile" accept="image/png, .png">
+            <input type="file" id="resAvatarFile" class="avatarFile" accept="image/png, .png" name="avatarRes">
         </div>
 
         <div class="form-group">
             <label for="spyAvatarFile">Spy avatar image</label>
-            <input type="file" id="spyAvatarFile" class="avatarFile" accept="image/png, .png">
+            <input type="file" id="spyAvatarFile" class="avatarFile" accept="image/png, .png" name="avatarSpy">
         </div>
 
         <br>
