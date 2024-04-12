@@ -6,6 +6,7 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
+import user from '../models/user';
 
 let client: S3Client;
 
@@ -77,7 +78,8 @@ export async function uploadAvatarRequest(
   resAvatar: File,
   spyAvatar: File,
 ) {
-  const prefix = `avatars/${username.toLowerCase()}/`;
+  const usernameLower = username.toLowerCase();
+  const prefix = `pending_avatars/${usernameLower}/`;
   const existingObjects = await listObjectKeysFromS3(prefix);
 
   // Find unique ID for filepath generation
@@ -87,10 +89,10 @@ export async function uploadAvatarRequest(
     existingObjects.Contents.forEach((object) => {
       const key = object.Key;
       // Match leading integer following the last occurrence of /
-      const match = key.match(/\/(\d+)_/);
+      const match = key.match(/\/([^/]+)_(spy|res)_(\d+)\.png$/);
 
       if (match) {
-        const counter = parseInt(match[1], 10);
+        const counter = parseInt(match[3], 10);
         if (counter > currCounter) {
           currCounter = counter;
         }
@@ -98,8 +100,8 @@ export async function uploadAvatarRequest(
     });
   }
 
-  const resKey = `${prefix}${currCounter + 1}_res.png`;
-  const spyKey = `${prefix}${currCounter + 1}_spy.png`;
+  const resKey = `${prefix}${usernameLower}_res_${currCounter + 1}.png`;
+  const spyKey = `${prefix}${usernameLower}_spy_${currCounter + 1}.png`;
 
   await uploadFileToS3(resKey, resAvatar, 'image/png');
   await uploadFileToS3(spyKey, spyAvatar, 'image/png');
