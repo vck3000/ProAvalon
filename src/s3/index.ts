@@ -47,17 +47,21 @@ export async function uploadFileToS3(filepath: string, fileContent: any) {
     return;
   } catch (error) {}
 
-  const command = new PutObjectCommand({
-    Bucket: 'proavalon',
-    Key: filepath,
-    Body: fileContent,
-  });
+  try {
+    const command = new PutObjectCommand({
+      Bucket: 'proavalon',
+      Key: filepath,
+      Body: fileContent,
+    });
 
-  console.log(
-    `Successfully uploaded file. Bucket: proavalon, File: ${filepath}`,
-  );
+    const response = await client.send(command);
 
-  return await client.send(command);
+    console.log(
+      `Successfully uploaded file to s3. Bucket: proavalon, Filepath: ${filepath}`,
+    );
+
+    return response;
+  } catch (error) {}
 }
 
 export async function uploadAvatarRequest(username: string) {
