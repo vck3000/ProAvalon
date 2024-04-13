@@ -7,6 +7,7 @@ export const modsArray = [
   'goofy', // jams
   'sadnixon',
   'fossa',
+  '1',
 ];
 
 export function isMod(username: string): boolean {

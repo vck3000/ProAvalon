@@ -172,28 +172,17 @@
       $(document).ready(function() {
         console.log('ready!');
 
-        // <div class="imgdimensions">test x asdf px</div>
-
-        setInterval(function() {
-          var imgdimensions = $('.imgdimensions');
-          var links = $('.link');
-
-          console.log(imgdimensions);
-          console.log('test');
-
-          for (var i = 0; i < imgdimensions.length; i++) {
-            console.log(imgdimensions[i].parentElement.children[0]);
-
-            var x = imgdimensions[i].parentElement.children[0].clientWidth;
-            var y = imgdimensions[i].parentElement.children[0].clientHeight;
-
-
-            imgdimensions[i].innerText = x + 'x' + y + ' px';
-
-            links[i].innerText = $(imgdimensions[i].parentElement.children[0]).attr('src');
-          }
-        }, 1000);
-
+        $('.avatarImg').each(function (index, element) {
+           let img = new Image();
+            img.src = $(element).attr('src');
+           img.onload = () => {
+               const width = img.width;
+               const height = img.height;
+               $(element).siblings('.imgdimensions').text(width + 'x' + height + ' px');
+               $(element).siblings('.link').text(img.src);
+               $(element).replaceWith(img);
+           }
+        });
 
         $('.approve').on('click', function(e) {
           var id = $(e.target).closest('.rootRequest').attr('reqid');

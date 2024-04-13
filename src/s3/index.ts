@@ -107,7 +107,8 @@ export async function uploadAvatarRequest(
   await uploadFileToS3(spyKey, spyAvatar, 'image/png');
 
   // TODO: Edit the below based on prod
-  const endpoint = 'localhost:3000/avatars_s3/';
+  // Note removed 'localhost:3000' due to errors in rendering img
+  const endpoint = '/avatars_s3/';
 
   const resUrl = `${endpoint}${resKey}`;
   const spyUrl = `${endpoint}${spyKey}`;

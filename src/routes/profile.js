@@ -231,7 +231,9 @@ router.post(
       );
     }
 
-    const msgToMod = req.body.msgToMod ? req.body.msgToMod : 'None provided.';
+    const msgToMod = req.body.msgToMod
+      ? sanitizeHtml(req.body.msgToMod)
+      : 'None provided.';
 
     console.log(
       `Received change avatar request for user: ${req.params.profileUsername}`,
@@ -252,7 +254,7 @@ router.post(
       forUsername: req.params.profileUsername.toLowerCase(),
       resLink: avatarLinks[0],
       spyLink: avatarLinks[1],
-      msgToMod: sanitizeHtml(req.body.msgToMod),
+      msgToMod: msgToMod,
       dateRequested: new Date(),
       processed: false,
     };
