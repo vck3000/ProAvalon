@@ -36,10 +36,13 @@ import MongoDBStoreFactory from 'connect-mongodb-session';
 import { SESSIONS_COLLECTION_NAME } from './constants';
 import { GetObjectCommand } from '@aws-sdk/client-s3';
 import {
-  getFileFromS3,
-  listObjectKeysFromS3,
-  uploadAvatarRequest,
-  uploadFileToS3,
+  approveAvatarRefactorFilePath,
+  s3GetFile,
+  s3ListObjectKeys,
+  s3s3ObjectExists,
+  rejectAvatarRefactorFilePath,
+  s3UploadFile,
+  s3ObjectExists,
 } from './s3';
 
 const assetsPath = path.join(__dirname, '../assets');
@@ -222,21 +225,42 @@ socketServer(io);
 if (process.env.ENV === 'local') {
   app.get('/avatars_s3/*', async (req, res, next) => {
     const filename = req.params[0];
-    console.log(filename);
+    const response = await s3GetFile(filename);
 
-    const response = await getFileFromS3(filename);
-    response.Body.pipe(res);
+    if (response) {
+      response.Body.pipe(res);
+    } else {
+      console.log(`File does not exist at: ${filename}.`);
+    }
   });
 
   app.get('/aupload/*', async (req, res, next) => {
     const filepath = req.params[0];
-    await uploadFileToS3(filepath, 'Hello world! And version 2', 'text/plain');
+    await s3UploadFile(filepath, 'Hello world! And version 2', 'text/plain');
     res.sendStatus(200);
   });
 
   app.get('/akey/*', async (req, res, next) => {
     const key = req.params[0];
-    await listObjectKeysFromS3('approved_avatars', key);
+    await s3ListObjectKeys('approved_avatars', key);
+    res.sendStatus(200);
+  });
+
+  app.get('/areject/*', async (req, res, next) => {
+    const filepath = req.params[0];
+    await rejectAvatarRefactorFilePath(filepath);
+    res.sendStatus(200);
+  });
+
+  app.get('/aapprove/*', async (req, res, next) => {
+    const filepath = req.params[0];
+    await approveAvatarRefactorFilePath(filepath);
+    res.sendStatus(200);
+  });
+
+  app.get('/aexists/*', async (req, res, next) => {
+    const filepath = req.params[0];
+    console.log(await s3ObjectExists(filepath));
     res.sendStatus(200);
   });
 }
