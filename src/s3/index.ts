@@ -54,22 +54,25 @@ export async function s3GetFile(key: string) {
   }
 }
 
-export async function s3ListObjectKeys(prefix: string) {
+export async function s3ListObjectKeys(...prefixes: string[]) {
   // Note ListObjects command only returns up to 1000 objects
   // Need to update code if this exceeds
   // TODO-kev: Wrap in a try catch?
-  const command = new ListObjectsV2Command({
-    Bucket: BUCKET_NAME,
-    Prefix: prefix,
-  });
-
   let keys: string[] = [];
-  const s3Objects = await client.send(command);
 
-  if (s3Objects.KeyCount !== 0) {
-    s3Objects.Contents.forEach((object) => {
-      keys.push(object.Key);
+  for (const prefix of prefixes) {
+    const command = new ListObjectsV2Command({
+      Bucket: BUCKET_NAME,
+      Prefix: prefix,
     });
+
+    const s3Objects = await client.send(command);
+
+    if (s3Objects.KeyCount !== 0) {
+      s3Objects.Contents.forEach((object) => {
+        keys.push(object.Key);
+      });
+    }
   }
 
   return keys;
@@ -133,7 +136,7 @@ export async function s3RefactorObjectFilepath(oldKey: string, newKey: string) {
     return false;
   }
 
-  if (!(await s3ObjectExists(newKey))) {
+  if (await s3ObjectExists(newKey)) {
     // TODO-kev: Should I throw an error here? If so how?
     console.error(
       `Failed to refactor s3 file. Destination object with key '${newKey}' already exists.`,
@@ -154,7 +157,7 @@ export async function s3RefactorObjectFilepath(oldKey: string, newKey: string) {
   }
 
   console.log(
-    `Successfully refactored filepath in s3 from: ${oldKey} to: ${newKey}`,
+    `Successfully refactored filepath in s3 from: ${BUCKET_NAME}/${oldKey} to: ${BUCKET_NAME}/${newKey}`,
   );
   return true;
 }
@@ -165,6 +168,7 @@ export async function s3RefactorObjectFilepath(oldKey: string, newKey: string) {
 
 // Uploads avatar requests to s3. Presumes validation checks have been completed
 // Returns accessible links for res and spy avatars
+// Note to add a new prefix for all files to be checked
 // TODO-kev check File type
 export async function uploadAvatarRequest(
   username: string,
@@ -172,8 +176,9 @@ export async function uploadAvatarRequest(
   spyAvatar: File,
 ) {
   const usernameLower = username.toLowerCase();
-  const prefix = `pending_avatars/${usernameLower}/`;
-  const existingObjectKeys = await s3ListObjectKeys(prefix);
+  const prefix1 = `pending_avatars/${usernameLower}/`;
+  const prefix2 = `approved_avatars/${usernameLower}/`;
+  const existingObjectKeys = await s3ListObjectKeys(prefix1, prefix2);
 
   // Find unique ID for filepath generation
   // TODO-kev: Extract below into another function
@@ -191,8 +196,8 @@ export async function uploadAvatarRequest(
     }
   });
 
-  const resKey = `${prefix}${usernameLower}_res_${currCounter + 1}.png`;
-  const spyKey = `${prefix}${usernameLower}_spy_${currCounter + 1}.png`;
+  const resKey = `${prefix1}${usernameLower}_res_${currCounter + 1}.png`;
+  const spyKey = `${prefix1}${usernameLower}_spy_${currCounter + 1}.png`;
 
   await s3UploadFile(resKey, resAvatar, 'image/png');
   await s3UploadFile(spyKey, spyAvatar, 'image/png');

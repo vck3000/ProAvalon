@@ -11,7 +11,11 @@ import ModLog from '../models/modLog';
 import { createNotification } from '../myFunctions/createNotification';
 import multer from 'multer';
 import imageSize from 'image-size';
-import { uploadAvatarRequest } from '../s3';
+import {
+  approveAvatarRefactorFilePath,
+  rejectAvatarRefactorFilePath,
+  uploadAvatarRequest,
+} from '../s3';
 
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',
@@ -55,7 +59,7 @@ router.get('/mod/customavatar', isModMiddleware, (req, res) => {
 
 // moderator approve or reject custom avatar requests
 router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
-  avatarRequest.findById(req.body.avatarreqid).exec((err, foundReq) => {
+  avatarRequest.findById(req.body.avatarreqid).exec(async (err, foundReq) => {
     if (err) {
       console.log(err);
     } else if (foundReq) {
@@ -66,6 +70,24 @@ router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
 
       if (req.body.decision === true || req.body.decision === 'true') {
         console.log(`search lower user: ${foundReq.forUsername.toLowerCase()}`);
+
+        const updateLink = async (link) => {
+          const index = link.indexOf('pending_avatars');
+          const endpoint = link.substring(0, index);
+          const key = link.substring(index);
+
+          const updatedKey = await approveAvatarRefactorFilePath(key);
+
+          return `${endpoint}${updatedKey}`;
+        };
+
+        foundReq.resLink = await updateLink(foundReq.resLink);
+        foundReq.spyLink = await updateLink(foundReq.spyLink);
+
+        foundReq.markModified('resLink');
+        foundReq.markModified('spyLink');
+
+        await foundReq.save();
 
         User.findOne({ usernameLower: foundReq.forUsername.toLowerCase() })
           .populate('notifications')
@@ -88,6 +110,18 @@ router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
           });
       } else if (req.body.decision === false || req.body.decision === 'false') {
         console.log(`search lower user: ${foundReq.forUsername.toLowerCase()}`);
+
+        const pattern = /pending_avatars\/.*$/;
+
+        await rejectAvatarRefactorFilePath(foundReq.resLink.match(pattern)[0]);
+        await rejectAvatarRefactorFilePath(foundReq.spyLink.match(pattern)[0]);
+
+        foundReq.resLink = 'deleted';
+        foundReq.spyLink = 'deleted';
+
+        foundReq.markModified('resLink');
+        foundReq.markModified('spyLink');
+        await foundReq.save();
 
         User.findOne({ usernameLower: foundReq.forUsername.toLowerCase() })
           .populate('notifications')

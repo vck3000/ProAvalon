@@ -69,11 +69,7 @@ var getDatesString = function(time) {
                     <div class="col-xs-6 col-md-3 avatarImgDiv">
 
                         <% if(userData.avatarImgRes){ %>
-                            <% if(userData.avatarImgRes.includes("http") || userData.avatarImgRes.includes("avatars_s3")){ %>
-                                <img class="avatarImg" src=<%= userData.avatarImgRes %>>
-                            <% } else { %>
-                                <img class="avatarImg" src=<%= "../avatars/" + userData.avatarImgRes %>>
-                            <% } %>
+                            <img class="avatarImg" src=<%= userData.avatarImgRes %>>
                         <% } else{ %>
                             <img class="avatarImg" src="../avatars/base-res.png  ">
                         <% } %>
@@ -252,11 +248,7 @@ var getDatesString = function(time) {
       function() {
         var str = '';
         if (userData.avatarImgRes) {
-          if (userData.avatarImgRes.includes('http') || userData.avatarImgRes.includes("avatars_s3")) {
             str = "<%= userData.avatarImgRes %>";
-          } else {
-            str = "../avatars/<%= userData.avatarImgRes %>";
-          }
         } else {
           str = '../avatars/base-res.png';
         }
