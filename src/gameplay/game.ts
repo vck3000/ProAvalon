@@ -18,6 +18,7 @@ import {
   IRecoverable,
   RecoverableComponent,
   RecoverEntry,
+  RoomPlayer,
 } from './types';
 import { GameTimer, Timeouts } from './gameTimer';
 import { VoidGameTracker } from './voidGameTracker';
@@ -960,7 +961,7 @@ class Game extends Room {
     this.pickNum++;
   }
 
-  getRoomPlayers() {
+  getRoomPlayers(): RoomPlayer[] {
     if (this.gameStarted === true) {
       const roomPlayers = [];
 
@@ -971,6 +972,11 @@ class Game extends Room {
 
         roomPlayers[i] = {
           username: this.anonymizer.anon(this.playersInGame[i].username),
+          anonUsername: this.anonymizer.anon(
+            this.playersInGame[i].username,
+            false,
+          ),
+
           avatarImgRes: this.anonymousMode
             ? null
             : this.playersInGame[i].request.user.avatarImgRes,
