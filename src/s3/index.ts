@@ -9,6 +9,7 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import user from '../models/user';
+const BUCKET_NAME = 'proavalon';
 
 let client: S3Client;
 
@@ -26,22 +27,10 @@ if (process.env.ENV === 'local') {
   });
 }
 
-export async function s3GetFile(filename: string) {
-  try {
-    const command = new GetObjectCommand({
-      Bucket: 'proavalon',
-      Key: filename,
-    });
-    return await client.send(command);
-  } catch (error) {
-    return null;
-  }
-}
-
 export async function s3ObjectExists(key: string) {
   try {
     const headCommand = new HeadObjectCommand({
-      Bucket: 'proavalon',
+      Bucket: BUCKET_NAME,
       Key: key,
     });
 
@@ -52,36 +41,15 @@ export async function s3ObjectExists(key: string) {
   }
 }
 
-export async function s3UploadFile(
-  filepath: string,
-  fileContent: any,
-  contentType: string,
-) {
-  if (!(await s3ObjectExists(filepath))) {
-    // TODO-kev: Should I throw an error here? If so how?
-    console.log(
-      `Failed to upload to s3. Object with key '${filepath}' already exists.`,
-    );
-    return null;
-  }
-
+export async function s3GetFile(key: string) {
   try {
-    const command = new PutObjectCommand({
-      Bucket: 'proavalon',
-      Key: filepath,
-      Body: fileContent,
-      ContentType: contentType,
+    const command = new GetObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
     });
-
-    const response = await client.send(command);
-
-    console.log(
-      `Successfully uploaded file to s3. Bucket: proavalon, Filepath: ${filepath}`,
-    );
-
-    return filepath;
+    return await client.send(command);
   } catch (error) {
-    console.error(`Error uploading file ${filepath} to S3:`, error);
+    console.log(`Error retrieving file from s3: ${BUCKET_NAME}/${key}`);
     return null;
   }
 }
@@ -91,50 +59,102 @@ export async function s3ListObjectKeys(prefix: string) {
   // Need to update code if this exceeds
   // TODO-kev: Wrap in a try catch?
   const command = new ListObjectsV2Command({
-    Bucket: 'proavalon',
+    Bucket: BUCKET_NAME,
     Prefix: prefix,
   });
 
-  return await client.send(command);
+  let keys: string[] = [];
+  const s3Objects = await client.send(command);
+
+  if (s3Objects.KeyCount !== 0) {
+    s3Objects.Contents.forEach((object) => {
+      keys.push(object.Key);
+    });
+  }
+
+  return keys;
 }
 
-export async function s3RefactorObjectFilepath(
-  oldFilepath: string,
-  newFilepath: string,
+export async function s3UploadFile(
+  key: string,
+  fileContent: any,
+  contentType: string,
 ) {
-  if (!(await s3ObjectExists(oldFilepath))) {
+  if (await s3ObjectExists(key)) {
     // TODO-kev: Should I throw an error here? If so how?
-    console.error(
-      `Failed to refactor s3 file. Object with key '${oldFilepath}' does not exist.`,
+    console.log(`Failed to upload to s3. File already exists: '${key}'.`);
+    return false;
+  }
+
+  try {
+    const command = new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
+      Body: fileContent,
+      ContentType: contentType,
+    });
+
+    await client.send(command);
+
+    console.log(`Successfully uploaded file to s3: ${key}`);
+    return true;
+  } catch (error) {
+    console.error(`Error uploading file to S3: ${key}`, error);
+    return false;
+  }
+}
+
+export async function s3DeleteObject(key: string) {
+  if (!(await s3ObjectExists(key))) {
+    // TODO-kev: Throw an error here?
+    console.log(
+      `Failed to delete. s3 file does not exist: ${BUCKET_NAME}/${key}.`,
     );
     return false;
   }
 
-  if (!(await s3ObjectExists(newFilepath))) {
+  const deleteCommand = new DeleteObjectCommand({
+    Bucket: BUCKET_NAME,
+    Key: key,
+  });
+
+  await client.send(deleteCommand);
+  console.log(`Successfully deleted s3 file: ${BUCKET_NAME}/${key}.`);
+
+  return true;
+}
+
+export async function s3RefactorObjectFilepath(oldKey: string, newKey: string) {
+  if (!(await s3ObjectExists(oldKey))) {
     // TODO-kev: Should I throw an error here? If so how?
     console.error(
-      `Failed to refactor s3 file. Destination object with key '${newFilepath}' already exists.`,
+      `Failed to refactor s3 file. Object with key '${oldKey}' does not exist.`,
+    );
+    return false;
+  }
+
+  if (!(await s3ObjectExists(newKey))) {
+    // TODO-kev: Should I throw an error here? If so how?
+    console.error(
+      `Failed to refactor s3 file. Destination object with key '${newKey}' already exists.`,
     );
     return false;
   }
 
   const copyCommand = new CopyObjectCommand({
-    Bucket: 'proavalon',
-    CopySource: `proavalon/${oldFilepath}`,
-    Key: newFilepath,
+    Bucket: BUCKET_NAME,
+    CopySource: `${BUCKET_NAME}/${oldKey}`,
+    Key: newKey,
   });
 
   await client.send(copyCommand);
 
-  const deleteCommand = new DeleteObjectCommand({
-    Bucket: 'proavalon',
-    Key: oldFilepath,
-  });
-
-  await client.send(deleteCommand);
+  if (!(await s3DeleteObject(oldKey))) {
+    return false;
+  }
 
   console.log(
-    `Successfully refactored filepath in s3 from: ${oldFilepath} to: ${newFilepath}`,
+    `Successfully refactored filepath in s3 from: ${oldKey} to: ${newKey}`,
   );
   return true;
 }
@@ -153,26 +173,23 @@ export async function uploadAvatarRequest(
 ) {
   const usernameLower = username.toLowerCase();
   const prefix = `pending_avatars/${usernameLower}/`;
-  const existingObjects = await s3ListObjectKeys(prefix);
+  const existingObjectKeys = await s3ListObjectKeys(prefix);
 
   // Find unique ID for filepath generation
   // TODO-kev: Extract below into another function
   let currCounter = 0;
 
-  if (existingObjects.KeyCount !== 0) {
-    existingObjects.Contents.forEach((object) => {
-      const key = object.Key;
-      // Match leading integer following the last occurrence of /
-      const match = key.match(/\/([^/]+)_(spy|res)_(\d+)\.png$/);
+  existingObjectKeys.forEach((key) => {
+    // Match leading integer following the last occurrence of /
+    const match = key.match(/\/([^/]+)_(spy|res)_(\d+)\.png$/);
 
-      if (match) {
-        const counter = parseInt(match[3], 10);
-        if (counter > currCounter) {
-          currCounter = counter;
-        }
+    if (match) {
+      const counter = parseInt(match[3], 10);
+      if (counter > currCounter) {
+        currCounter = counter;
       }
-    });
-  }
+    }
+  });
 
   const resKey = `${prefix}${usernameLower}_res_${currCounter + 1}.png`;
   const spyKey = `${prefix}${usernameLower}_spy_${currCounter + 1}.png`;
@@ -190,14 +207,12 @@ export async function uploadAvatarRequest(
   return [resUrl, spyUrl];
 }
 
-export async function rejectAvatarRefactorFilePath(filepath: string) {
-  const newFilepath = filepath.replace('pending_avatars', 'rejected_avatars');
-  await s3RefactorObjectFilepath(filepath, newFilepath);
-  return newFilepath;
+export async function rejectAvatarRefactorFilePath(key: string) {
+  await s3DeleteObject(key);
 }
 
-export async function approveAvatarRefactorFilePath(filepath: string) {
-  const newFilepath = filepath.replace('pending_avatars', 'approved_avatars');
-  await s3RefactorObjectFilepath(filepath, newFilepath);
-  return newFilepath;
+export async function approveAvatarRefactorFilePath(key: string) {
+  const newKey = key.replace('pending_avatars', 'approved_avatars');
+  await s3RefactorObjectFilepath(key, newKey);
+  return newKey;
 }

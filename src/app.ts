@@ -43,6 +43,7 @@ import {
   rejectAvatarRefactorFilePath,
   s3UploadFile,
   s3ObjectExists,
+  s3DeleteObject,
 } from './s3';
 
 const assetsPath = path.join(__dirname, '../assets');
@@ -242,7 +243,14 @@ if (process.env.ENV === 'local') {
 
   app.get('/akey/*', async (req, res, next) => {
     const key = req.params[0];
-    await s3ListObjectKeys('approved_avatars', key);
+    console.log(await s3ListObjectKeys(key));
+    res.sendStatus(200);
+  });
+
+  app.get('/adelete/*', async (req, res, next) => {
+    const filepath = req.params[0];
+    console.log(filepath);
+    await s3DeleteObject(filepath);
     res.sendStatus(200);
   });
 
