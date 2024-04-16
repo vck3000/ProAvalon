@@ -25,23 +25,23 @@ let endpoint: string;
 let bucket: string;
 
 if (process.env.ENV === 'local') {
+  endpoint = Endpoints.LOCAL;
+  bucket = Bucket.LOCAL;
+
   client = new S3Client({
     region: 'asdf',
     endpoint: 'http://127.0.0.1:9000',
     credentials: fromEnv(),
   });
-
-  endpoint = Endpoints.LOCAL;
-  bucket = Bucket.LOCAL;
 } else if (process.env.ENV == 'staging') {
+  endpoint = Endpoints.STAGING;
+  bucket = Bucket.STAGING;
+
   client = new S3Client({
     region: 'us-east-005',
     endpoint: 'https://s3.us-east-005.backblazeb2.com',
     credentials: fromEnv(),
   });
-
-  endpoint = Endpoints.STAGING;
-  bucket = Bucket.STAGING;
 }
 
 export async function s3ObjectExists(key: string) {

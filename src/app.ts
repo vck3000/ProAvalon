@@ -224,6 +224,12 @@ io.use(
 socketServer(io);
 
 if (process.env.ENV === 'local') {
+  app.get('/aexists/*', async (req, res, next) => {
+    const filepath = req.params[0];
+    console.log(await s3ObjectExists(filepath));
+    res.sendStatus(200);
+  });
+
   app.get('/avatars_s3/*', async (req, res, next) => {
     const filename = req.params[0];
     const response = await s3GetFile(filename);
@@ -263,12 +269,6 @@ if (process.env.ENV === 'local') {
   app.get('/aapprove/*', async (req, res, next) => {
     const filepath = req.params[0];
     await approveAvatarRefactorFilePath(filepath);
-    res.sendStatus(200);
-  });
-
-  app.get('/aexists/*', async (req, res, next) => {
-    const filepath = req.params[0];
-    console.log(await s3ObjectExists(filepath));
     res.sendStatus(200);
   });
 }
