@@ -42,22 +42,21 @@ export async function s3ObjectExists(key: string) {
 }
 
 export async function s3GetFile(key: string) {
-  try {
-    const command = new GetObjectCommand({
-      Bucket: BUCKET_NAME,
-      Key: key,
-    });
-    return await client.send(command);
-  } catch (error) {
-    console.log(`Error retrieving file from s3: ${BUCKET_NAME}/${key}`);
+  if (!(await s3ObjectExists(key))) {
     return null;
   }
+
+  const command = new GetObjectCommand({
+    Bucket: BUCKET_NAME,
+    Key: key,
+  });
+
+  return await client.send(command);
 }
 
 export async function s3ListObjectKeys(...prefixes: string[]) {
   // Note ListObjects command only returns up to 1000 objects
   // Need to update code if this exceeds
-  // TODO-kev: Wrap in a try catch?
   let keys: string[] = [];
 
   for (const prefix of prefixes) {
@@ -84,36 +83,26 @@ export async function s3UploadFile(
   contentType: string,
 ) {
   if (await s3ObjectExists(key)) {
-    // TODO-kev: Should I throw an error here? If so how?
-    console.log(`Failed to upload to s3. File already exists: '${key}'.`);
-    return false;
+    throw new Error(`Failed to upload to s3. File already exists: '${key}'.`);
   }
 
-  try {
-    const command = new PutObjectCommand({
-      Bucket: BUCKET_NAME,
-      Key: key,
-      Body: fileContent,
-      ContentType: contentType,
-    });
+  const command = new PutObjectCommand({
+    Bucket: BUCKET_NAME,
+    Key: key,
+    Body: fileContent,
+    ContentType: contentType,
+  });
 
-    await client.send(command);
+  await client.send(command);
 
-    console.log(`Successfully uploaded file to s3: ${key}`);
-    return true;
-  } catch (error) {
-    console.error(`Error uploading file to S3: ${key}`, error);
-    return false;
-  }
+  console.log(`Successfully uploaded file to s3: ${key}`);
 }
 
 export async function s3DeleteObject(key: string) {
   if (!(await s3ObjectExists(key))) {
-    // TODO-kev: Throw an error here?
-    console.log(
+    throw new Error(
       `Failed to delete. s3 file does not exist: ${BUCKET_NAME}/${key}.`,
     );
-    return false;
   }
 
   const deleteCommand = new DeleteObjectCommand({
@@ -123,25 +112,19 @@ export async function s3DeleteObject(key: string) {
 
   await client.send(deleteCommand);
   console.log(`Successfully deleted s3 file: ${BUCKET_NAME}/${key}.`);
-
-  return true;
 }
 
 export async function s3RefactorObjectFilepath(oldKey: string, newKey: string) {
   if (!(await s3ObjectExists(oldKey))) {
-    // TODO-kev: Should I throw an error here? If so how?
-    console.error(
+    throw new Error(
       `Failed to refactor s3 file. Object with key '${oldKey}' does not exist.`,
     );
-    return false;
   }
 
   if (await s3ObjectExists(newKey)) {
-    // TODO-kev: Should I throw an error here? If so how?
-    console.error(
+    throw new Error(
       `Failed to refactor s3 file. Destination object with key '${newKey}' already exists.`,
     );
-    return false;
   }
 
   const copyCommand = new CopyObjectCommand({
@@ -151,15 +134,11 @@ export async function s3RefactorObjectFilepath(oldKey: string, newKey: string) {
   });
 
   await client.send(copyCommand);
-
-  if (!(await s3DeleteObject(oldKey))) {
-    return false;
-  }
+  await s3DeleteObject(oldKey);
 
   console.log(
     `Successfully refactored filepath in s3 from: ${BUCKET_NAME}/${oldKey} to: ${BUCKET_NAME}/${newKey}`,
   );
-  return true;
 }
 
 // =====================================================
