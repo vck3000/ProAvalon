@@ -9,9 +9,20 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import user from '../models/user';
-const BUCKET_NAME = 'proavalon';
+
+enum Endpoints {
+  LOCAL = 'http://localhost:9000/proavalon/',
+  STAGING = 'https://s3-staging.proavalon.com/file/proavalon-staging/',
+}
+
+enum Bucket {
+  LOCAL = 'proavalon',
+  STAGING = 'proavalon-staging',
+}
 
 let client: S3Client;
+let endpoint: string;
+let bucket: string;
 
 if (process.env.ENV === 'local') {
   client = new S3Client({
@@ -19,18 +30,24 @@ if (process.env.ENV === 'local') {
     endpoint: 'http://127.0.0.1:9000',
     credentials: fromEnv(),
   });
+
+  endpoint = Endpoints.LOCAL;
+  bucket = Bucket.LOCAL;
 } else if (process.env.ENV == 'staging') {
   client = new S3Client({
     region: 'us-east-005',
     endpoint: 'https://s3.us-east-005.backblazeb2.com',
     credentials: fromEnv(),
   });
+
+  endpoint = Endpoints.STAGING;
+  bucket = Bucket.STAGING;
 }
 
 export async function s3ObjectExists(key: string) {
   try {
     const headCommand = new HeadObjectCommand({
-      Bucket: BUCKET_NAME,
+      Bucket: bucket,
       Key: key,
     });
 
@@ -47,7 +64,7 @@ export async function s3GetFile(key: string) {
   }
 
   const command = new GetObjectCommand({
-    Bucket: BUCKET_NAME,
+    Bucket: bucket,
     Key: key,
   });
 
@@ -61,7 +78,7 @@ export async function s3ListObjectKeys(...prefixes: string[]) {
 
   for (const prefix of prefixes) {
     const command = new ListObjectsV2Command({
-      Bucket: BUCKET_NAME,
+      Bucket: bucket,
       Prefix: prefix,
     });
 
@@ -87,7 +104,7 @@ export async function s3UploadFile(
   }
 
   const command = new PutObjectCommand({
-    Bucket: BUCKET_NAME,
+    Bucket: bucket,
     Key: key,
     Body: fileContent,
     ContentType: contentType,
@@ -101,17 +118,17 @@ export async function s3UploadFile(
 export async function s3DeleteObject(key: string) {
   if (!(await s3ObjectExists(key))) {
     throw new Error(
-      `Failed to delete. s3 file does not exist: ${BUCKET_NAME}/${key}.`,
+      `Failed to delete. s3 file does not exist: ${bucket}/${key}.`,
     );
   }
 
   const deleteCommand = new DeleteObjectCommand({
-    Bucket: BUCKET_NAME,
+    Bucket: bucket,
     Key: key,
   });
 
   await client.send(deleteCommand);
-  console.log(`Successfully deleted s3 file: ${BUCKET_NAME}/${key}.`);
+  console.log(`Successfully deleted s3 file: ${bucket}/${key}.`);
 }
 
 export async function s3RefactorObjectFilepath(oldKey: string, newKey: string) {
@@ -128,8 +145,8 @@ export async function s3RefactorObjectFilepath(oldKey: string, newKey: string) {
   }
 
   const copyCommand = new CopyObjectCommand({
-    Bucket: BUCKET_NAME,
-    CopySource: `${BUCKET_NAME}/${oldKey}`,
+    Bucket: bucket,
+    CopySource: `${bucket}/${oldKey}`,
     Key: newKey,
   });
 
@@ -137,7 +154,7 @@ export async function s3RefactorObjectFilepath(oldKey: string, newKey: string) {
   await s3DeleteObject(oldKey);
 
   console.log(
-    `Successfully refactored filepath in s3 from: ${BUCKET_NAME}/${oldKey} to: ${BUCKET_NAME}/${newKey}`,
+    `Successfully refactored filepath in s3 from: ${bucket}/${oldKey} to: ${bucket}/${newKey}`,
   );
 }
 
@@ -180,10 +197,6 @@ export async function uploadAvatarRequest(
 
   await s3UploadFile(resKey, resAvatar, 'image/png');
   await s3UploadFile(spyKey, spyAvatar, 'image/png');
-
-  // TODO-kev: Edit the below based on prod
-  // Note removed 'localhost:3000' due to errors in rendering img
-  const endpoint = '/avatars_s3/';
 
   const resUrl = `${endpoint}${resKey}`;
   const spyUrl = `${endpoint}${spyKey}`;
