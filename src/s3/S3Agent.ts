@@ -8,7 +8,7 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-import user from '../models/user';
+import { Buffer } from 'buffer';
 
 enum Endpoints {
   LOCAL = 'http://localhost:9000/proavalon/',
@@ -168,8 +168,8 @@ export class S3Agent {
   // TODO-kev check File type
   public async uploadAvatarRequest(
     username: string,
-    resAvatar: File,
-    spyAvatar: File,
+    resAvatar: Buffer,
+    spyAvatar: Buffer,
   ) {
     const usernameLower = username.toLowerCase();
     const prefix1 = `pending_avatars/${usernameLower}/`;
