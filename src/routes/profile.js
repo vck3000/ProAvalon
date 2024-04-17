@@ -54,9 +54,9 @@ router.get('/mod/customavatar', isModMiddleware, (req, res) => {
 
 // moderator approve or reject custom avatar requests
 router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
-  avatarRequest.findById(req.body.avatarreqid).exec(async (err, foundReq) => {
-    const s3 = req.s3;
+  const s3 = req.s3;
 
+  avatarRequest.findById(req.body.avatarreqid).exec(async (err, foundReq) => {
     if (err) {
       console.log(err);
     } else if (foundReq) {
@@ -206,7 +206,7 @@ router.post(
   upload,
   async (req, res) => {
     const MAX_AVATAR_REQUESTS = 2;
-    const MIN_GAMES_REQUIRED = 0;
+    const MIN_GAMES_REQUIRED = 100;
     const VALID_DIMENSIONS = [128, 1024];
 
     const s3 = req.s3;

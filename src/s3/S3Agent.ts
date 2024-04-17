@@ -174,26 +174,16 @@ export class S3Agent {
     const usernameLower = username.toLowerCase();
     const prefix1 = `pending_avatars/${usernameLower}/`;
     const prefix2 = `approved_avatars/${usernameLower}/`;
-    const existingObjectKeys = await this.listObjectKeys(prefix1, prefix2);
 
     // Find unique ID for filepath generation
-    // TODO-kev: Extract below into another function
-    let currCounter = 0;
+    const existingObjectKeys = await this.listObjectKeys(prefix1, prefix2);
+    const counter = this.getKeyCounter(existingObjectKeys);
 
-    existingObjectKeys.forEach((key) => {
-      // Match leading integer following the last occurrence of /
-      const match = key.match(/\/([^/]+)_(spy|res)_(\d+)\.png$/);
+    const resFileName = `${usernameLower}_res_${counter + 1}.png`;
+    const spyFileName = `${usernameLower}_spy_${counter + 1}.png`;
 
-      if (match) {
-        const counter = parseInt(match[3], 10);
-        if (counter > currCounter) {
-          currCounter = counter;
-        }
-      }
-    });
-
-    const resKey = `${prefix1}${usernameLower}_res_${currCounter + 1}.png`;
-    const spyKey = `${prefix1}${usernameLower}_spy_${currCounter + 1}.png`;
+    const resKey = `${prefix1}${resFileName}`;
+    const spyKey = `${prefix1}${spyFileName}`;
 
     await this.uploadFile(resKey, resAvatar, 'image/png');
     await this.uploadFile(spyKey, spyAvatar, 'image/png');
@@ -202,6 +192,24 @@ export class S3Agent {
     const spyUrl = `${this.endpoint}${spyKey}`;
 
     return [resUrl, spyUrl];
+  }
+
+  private getKeyCounter(listOfKeys: string[]) {
+    let counter = 0;
+
+    listOfKeys.forEach((key) => {
+      // Match leading integer following the last occurrence of /
+      const match = key.match(/\/([^/]+)_(spy|res)_(\d+)\.png$/);
+
+      if (match) {
+        const count = parseInt(match[3], 10);
+        if (count > counter) {
+          counter = count;
+        }
+      }
+    });
+
+    return counter;
   }
 
   public async rejectAvatarRefactorFilePath(key: string) {
