@@ -11,11 +11,6 @@ import ModLog from '../models/modLog';
 import { createNotification } from '../myFunctions/createNotification';
 import multer from 'multer';
 import imageSize from 'image-size';
-import {
-  approveAvatarRefactorFilePath,
-  rejectAvatarRefactorFilePath,
-  uploadAvatarRequest,
-} from '../s3';
 
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',
@@ -60,6 +55,8 @@ router.get('/mod/customavatar', isModMiddleware, (req, res) => {
 // moderator approve or reject custom avatar requests
 router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
   avatarRequest.findById(req.body.avatarreqid).exec(async (err, foundReq) => {
+    const s3 = req.s3;
+
     if (err) {
       console.log(err);
     } else if (foundReq) {
@@ -76,7 +73,7 @@ router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
           const endpoint = link.substring(0, index);
           const key = link.substring(index);
 
-          const updatedKey = await approveAvatarRefactorFilePath(key);
+          const updatedKey = await s3.approveAvatarRefactorFilePath(key);
 
           return `${endpoint}${updatedKey}`;
         };
@@ -113,8 +110,12 @@ router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
 
         const pattern = /pending_avatars\/.*$/;
 
-        await rejectAvatarRefactorFilePath(foundReq.resLink.match(pattern)[0]);
-        await rejectAvatarRefactorFilePath(foundReq.spyLink.match(pattern)[0]);
+        await s3.rejectAvatarRefactorFilePath(
+          foundReq.resLink.match(pattern)[0],
+        );
+        await s3.rejectAvatarRefactorFilePath(
+          foundReq.spyLink.match(pattern)[0],
+        );
 
         foundReq.resLink = 'deleted';
         foundReq.spyLink = 'deleted';
@@ -208,6 +209,7 @@ router.post(
     const MIN_GAMES_REQUIRED = 0;
     const VALID_DIMENSIONS = [128, 1024];
 
+    const s3 = req.s3;
     const user = await User.findOne({ username: req.params.profileUsername });
 
     // TODO: how should i handle this?
@@ -228,7 +230,10 @@ router.post(
 
     let totalAvatarRequests = await avatarRequest.aggregate([
       {
-        $match: { forUsername: user.username.toLowerCase() },
+        $match: {
+          forUsername: user.username.toLowerCase(),
+          processed: false,
+        },
       },
       {
         $count: 'total',
@@ -306,7 +311,7 @@ router.post(
     console.log(`Message to mod: ${msgToMod}`);
 
     // Upload valid avatar requests to s3 bucket
-    const avatarLinks = await uploadAvatarRequest(
+    const avatarLinks = await s3.uploadAvatarRequest(
       req.params.profileUsername,
       avatarRes.buffer,
       avatarSpy.buffer,

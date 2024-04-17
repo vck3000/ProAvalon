@@ -34,17 +34,7 @@ import staticifyFactory from 'staticify';
 // Create a MongoDB session store
 import MongoDBStoreFactory from 'connect-mongodb-session';
 import { SESSIONS_COLLECTION_NAME } from './constants';
-import { GetObjectCommand } from '@aws-sdk/client-s3';
-import {
-  approveAvatarRefactorFilePath,
-  s3GetFile,
-  s3ListObjectKeys,
-  s3s3ObjectExists,
-  rejectAvatarRefactorFilePath,
-  s3UploadFile,
-  s3ObjectExists,
-  s3DeleteObject,
-} from './s3';
+import { S3Agent } from './s3/S3Agent';
 
 const assetsPath = path.join(__dirname, '../assets');
 
@@ -115,6 +105,13 @@ const MongoDBStore = MongoDBStoreFactory(session);
 const store = new MongoDBStore({
   uri: dbLoc,
   collection: SESSIONS_COLLECTION_NAME,
+});
+
+// TODO-kev: Check this one. Temp workaround
+const s3 = new S3Agent();
+app.use((req, res, next) => {
+  req.s3 = s3;
+  next();
 });
 
 // Catch errors
@@ -224,16 +221,17 @@ io.use(
 socketServer(io);
 
 // TODO-kev: Remove these before merging to master
+
 if (process.env.ENV === 'local') {
   app.get('/aexists/*', async (req, res, next) => {
     const filepath = req.params[0];
-    console.log(await s3ObjectExists(filepath));
+    console.log(await s3.objectExists(filepath));
     res.sendStatus(200);
   });
 
   app.get('/avatars_s3/*', async (req, res, next) => {
     const filename = req.params[0];
-    const response = await s3GetFile(filename);
+    const response = await s3.getFile(filename);
 
     if (response) {
       response.Body.pipe(res);
@@ -244,32 +242,32 @@ if (process.env.ENV === 'local') {
 
   app.get('/aupload/*', async (req, res, next) => {
     const filepath = req.params[0];
-    await s3UploadFile(filepath, 'Hello world! And version 2', 'text/plain');
+    await s3.uploadFile(filepath, 'Hello world! And version 2', 'text/plain');
     res.sendStatus(200);
   });
 
   app.get('/akey/*', async (req, res, next) => {
     const key = req.params[0];
-    console.log(await s3ListObjectKeys(key));
+    console.log(await s3.listObjectKeys(key));
     res.sendStatus(200);
   });
 
   app.get('/adelete/*', async (req, res, next) => {
     const filepath = req.params[0];
     console.log(filepath);
-    await s3DeleteObject(filepath);
+    await s3.deleteObject(filepath);
     res.sendStatus(200);
   });
 
   app.get('/areject/*', async (req, res, next) => {
     const filepath = req.params[0];
-    await rejectAvatarRefactorFilePath(filepath);
+    await s3.rejectAvatarRefactorFilePath(filepath);
     res.sendStatus(200);
   });
 
   app.get('/aapprove/*', async (req, res, next) => {
     const filepath = req.params[0];
-    await approveAvatarRefactorFilePath(filepath);
+    await s3.approveAvatarRefactorFilePath(filepath);
     res.sendStatus(200);
   });
 }
