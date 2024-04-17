@@ -36,7 +36,7 @@ import * as util from 'util';
 import { RoomCreationType } from '../gameplay/roomTypes';
 import { CreateRoomFilter } from './filters/createRoomFilter';
 import Game, { GameConfig } from '../gameplay/game';
-import { RoomConfig } from '../gameplay/room';
+import room, { RoomConfig } from '../gameplay/room';
 import { MatchmakingQueue, QueueEntry } from './matchmakingQueue';
 import { ReadyPrompt, ReadyPromptReplyFromClient } from './readyPrompt';
 import { JoinQueueFilter } from './filters/joinQueueFilter';
@@ -711,6 +711,12 @@ export const userCommandsOLD = {
             classStr: 'server-text',
           };
 
+          senderSocket.request.user.avatarHide = false;
+
+          if (senderSocket.request.user.inRoomId) {
+            rooms[senderSocket.request.user.inRoomId].distributeGameData();
+          }
+
           senderSocket.emit('messageCommandReturnStr', dataToReturn);
         });
     },
@@ -727,6 +733,12 @@ export const userCommandsOLD = {
         .exec((err, foundUser) => {
           foundUser.avatarHide = true;
           foundUser.save();
+
+          senderSocket.request.user.avatarHide = true;
+
+          if (senderSocket.request.user.inRoomId) {
+            rooms[senderSocket.request.user.inRoomId].distributeGameData();
+          }
 
           const dataToReturn = {
             message: 'Successfully hidden.',
