@@ -11,7 +11,7 @@ These instructions will get you a copy of the project up and running on your loc
 - [Node.js](https://nodejs.org/en/) v12.0.0+
 - [Yarn](https://yarnpkg.com/)
 - [Git](https://git-scm.com/)
-- [Docker](https://www.docker.com/) - Used to install MongoDB. If you prefer, you may skip Docker and install MongoDB directly.
+- [Docker](https://www.docker.com/) - Used to install MongoDB and MinIO.
 
 Other useful resources:
 
@@ -45,8 +45,13 @@ $ yarn
 
 ### Running
 
-1. Start the database with: `docker-compose up`. Ensure Docker is running.
+1. Start the database and MinIO client with: `docker-compose up`. Ensure Docker is running.
 2. Start the server with: `yarn dev`.
+
+### Setting up MinIO
+
+1. Access MinIO via localhost:9001
+2. Create an access key and paste its details into `.env`
 
 ### Stopping
 
