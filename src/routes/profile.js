@@ -204,6 +204,10 @@ router.post(
   checkProfileOwnership,
   upload,
   async (req, res) => {
+    const MAX_AVATAR_REQUESTS = 2;
+    const MIN_GAMES_REQUIRED = 0;
+    const VALID_DIMENSIONS = [128, 1024];
+
     const user = await User.findOne({ username: req.params.profileUsername });
 
     // TODO: how should i handle this?
@@ -212,10 +216,32 @@ router.post(
     }
 
     // Checks if custom avatar request is valid
-    if (user.totalGamesPlayed < 10) {
+    if (user.totalGamesPlayed < MIN_GAMES_REQUIRED) {
       req.flash(
         'error',
-        'You must play at least 100 games to submit a custom avatar request.',
+        `You must play at least 100 games to submit a custom avatar request. You have played ${user.totalGamesPlayed} games.`,
+      );
+      return res.redirect(
+        `/profile/${req.params.profileUsername}/changeavatar`,
+      );
+    }
+
+    let totalAvatarRequests = await avatarRequest.aggregate([
+      {
+        $match: { forUsername: user.username.toLowerCase() },
+      },
+      {
+        $count: 'total',
+      },
+    ]);
+
+    totalAvatarRequests =
+      totalAvatarRequests.length === 0 ? 0 : totalAvatarRequests[0].total;
+
+    if (totalAvatarRequests >= MAX_AVATAR_REQUESTS) {
+      req.flash(
+        'error',
+        `You cannot submit more than ${MAX_AVATAR_REQUESTS} custom avatar requests.`,
       );
       return res.redirect(
         `/profile/${req.params.profileUsername}/changeavatar`,
@@ -247,19 +273,24 @@ router.post(
     const dimSpy = imageSize(avatarSpy.buffer);
 
     if (
-      dimRes.width > 1024 ||
-      dimRes.height > 1024 ||
-      dimSpy.width > 1024 ||
-      dimSpy.height > 1024
+      !VALID_DIMENSIONS.includes(dimRes.width) ||
+      !VALID_DIMENSIONS.includes(dimRes.height) ||
+      !VALID_DIMENSIONS.includes(dimSpy.width) ||
+      !VALID_DIMENSIONS.includes(dimSpy.height)
     ) {
-      req.flash('error', 'Avatar dimensions must be 1024x1024 or smaller.');
-      return res.redirect(
-        `/profile/${req.params.profileUsername}/changeavatar`,
-      );
-    }
+      let validDimStr = '';
 
-    if (dimRes.width !== dimRes.height || dimSpy.width !== dimSpy.height) {
-      req.flash('error', 'Avatar dimensions must be a square.');
+      VALID_DIMENSIONS.forEach((dimension, index) => {
+        validDimStr += `${dimension}x${dimension}`;
+        if (index !== VALID_DIMENSIONS.length - 1) {
+          validDimStr += ' or ';
+        }
+      });
+
+      req.flash(
+        'error',
+        `Avatar dimensions must be ${validDimStr}. Your dimensions are: Res: ${dimRes.width}x${dimRes.height}, Spy: ${dimSpy.width}x${dimSpy.height}.`,
+      );
       return res.redirect(
         `/profile/${req.params.profileUsername}/changeavatar`,
       );

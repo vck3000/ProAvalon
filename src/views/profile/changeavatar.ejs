@@ -147,6 +147,8 @@
 <script>
 
 $(document).ready(() => {
+    const MIN_GAMES_REQUIRED = 100;
+
     $("#resAvatarFile").on("change", (e) => {
         updateAvatarDisplay(e.target.files[0], "#resAvatarPreview");
     });
@@ -160,7 +162,7 @@ $(document).ready(() => {
 
         const totalGamesPlayed = "<%= userData.totalGamesPlayed %>";
 
-        if (totalGamesPlayed < 10) {
+        if (totalGamesPlayed < MIN_GAMES_REQUIRED) {
             alert("You must play at least 100 games before you can submit a custom avatar.");
             return;
         }
@@ -181,6 +183,7 @@ $(document).ready(() => {
 
 
 async function updateAvatarDisplay(file, previewID) {
+    const VALID_DIMENSIONS = [128, 1024];
     const preview = document.querySelector(previewID);
     let valid = false;
 
@@ -211,10 +214,17 @@ async function updateAvatarDisplay(file, previewID) {
 
                 const validation = document.createElement("p");
 
-                if (image.width > 1024 || image.height > 1024) {
-                    validation.textContent = "Invalid: Image should be 1024x1024 or smaller";
-                } else if (image.width !== image.height) {
-                    validation.textContent = "Invalid: Image should be a square";
+                if (!VALID_DIMENSIONS.includes(image.width) || !VALID_DIMENSIONS.includes(image.height)) {
+                    let validDimStr = '';
+
+                    VALID_DIMENSIONS.forEach((dimension, index) => {
+                        validDimStr += `${dimension}x${dimension}`;
+                        if (index !== VALID_DIMENSIONS.length - 1) {
+                            validDimStr += " or ";
+                        }
+                    });
+
+                    validation.textContent = `Invalid: Image should be either ${validDimStr}.`;
                 } else {
                     valid = true;
                 }

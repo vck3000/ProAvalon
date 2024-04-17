@@ -223,6 +223,7 @@ io.use(
 
 socketServer(io);
 
+// TODO-kev: Remove these before merging to master
 if (process.env.ENV === 'local') {
   app.get('/aexists/*', async (req, res, next) => {
     const filepath = req.params[0];
