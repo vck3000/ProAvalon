@@ -34,7 +34,7 @@ import staticifyFactory from 'staticify';
 // Create a MongoDB session store
 import MongoDBStoreFactory from 'connect-mongodb-session';
 import { SESSIONS_COLLECTION_NAME } from './constants';
-import { S3Agent } from './s3/S3Agent';
+import { s3 } from './s3/S3Agent';
 
 const assetsPath = path.join(__dirname, '../assets');
 
@@ -105,13 +105,6 @@ const MongoDBStore = MongoDBStoreFactory(session);
 const store = new MongoDBStore({
   uri: dbLoc,
   collection: SESSIONS_COLLECTION_NAME,
-});
-
-// TODO-kev: Check this one. Temp workaround
-const s3 = new S3Agent();
-app.use((req, res, next) => {
-  req.s3 = s3;
-  next();
 });
 
 // Catch errors

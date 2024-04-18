@@ -20,7 +20,6 @@ enum Bucket {
   STAGING = 'proavalon-staging',
 }
 
-// TODO-kev: What to name this class?
 export class S3Agent {
   private client: S3Client;
   private endpoint: string;
@@ -222,3 +221,6 @@ export class S3Agent {
     return newKey;
   }
 }
+
+// TODO-kev: Easy way to rename to s3Agent based on usages?
+export const s3 = new S3Agent();

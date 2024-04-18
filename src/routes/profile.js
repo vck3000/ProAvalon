@@ -11,6 +11,7 @@ import ModLog from '../models/modLog';
 import { createNotification } from '../myFunctions/createNotification';
 import multer from 'multer';
 import imageSize from 'image-size';
+import { s3 } from '../s3/S3Agent';
 
 const MAX_ACTIVE_AVATAR_REQUESTS = 2;
 const MIN_GAMES_REQUIRED = 100;
@@ -59,8 +60,6 @@ router.get('/mod/customavatar', isModMiddleware, (req, res) => {
 
 // moderator approve or reject custom avatar requests
 router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
-  const s3 = req.s3;
-
   avatarRequest.findById(req.body.avatarreqid).exec(async (err, foundReq) => {
     if (err) {
       console.log(err);
@@ -122,6 +121,9 @@ router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
 
         await s3.rejectAvatarRequest(foundReq.resLink.match(pattern)[0]);
         await s3.rejectAvatarRequest(foundReq.spyLink.match(pattern)[0]);
+
+        foundReq.resLink = null;
+        foundReq.spyLink = null;
 
         User.findOne({ usernameLower: foundReq.forUsername.toLowerCase() })
           .populate('notifications')
@@ -240,7 +242,6 @@ router.post(
       );
     }
 
-    const s3 = req.s3;
     const user = await User.findOne({ username: req.params.profileUsername });
 
     if (!user) {
