@@ -197,7 +197,7 @@ async function updateAvatarDisplay(file, previewId) {
         para.textContent = "No files currently selected for upload";
         preview.appendChild(para);
     } else if (file.type !== "image/png") {
-        para.textContent = "Selected file is not a PNG image";
+        para.textContent = "Invalid: Selected file is not a PNG image";
         preview.appendChild(para);
     } else {
         const image = document.createElement("img");

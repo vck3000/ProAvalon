@@ -199,14 +199,6 @@ router.get(
 );
 
 const storage = multer.memoryStorage();
-// const upload = multer({
-//   storage: storage,
-//   limits: { fileSize: MAX_FILESIZE },
-// }).fields([
-//   { name: 'avatarRes', maxCount: 1 },
-//   { name: 'avatarSpy', maxCount: 1 }, // Whitelist, other files will not be accepted
-// ]);
-
 const upload = function (req, res, next) {
   multer({
     storage: storage,
@@ -235,101 +227,14 @@ router.post(
   checkProfileOwnership,
   upload,
   async (req, res) => {
-    if (req.fileSizeLimitExceeded) {
-      req.flash('error', 'File size exceeds the limit.');
-      return res.redirect(
-        `/profile/${req.params.profileUsername}/changeavatar`,
-      );
-    }
+    const result = await validateUploadAvatarRequest(
+      req.params.profileUsername,
+      req.files,
+    );
 
-    const user = await User.findOne({ username: req.params.profileUsername });
-
-    if (!user) {
-      throw new Error(`User not found: ${req.params.profileUsername}`);
-    }
-
-    // Checks if custom avatar request is valid
-    if (user.totalGamesPlayed < MIN_GAMES_REQUIRED) {
-      req.flash(
-        'error',
-        `You must play at least 100 games to submit a custom avatar request. You have played ${user.totalGamesPlayed} games.`,
-      );
-      return res.redirect(
-        `/profile/${req.params.profileUsername}/changeavatar`,
-      );
-    }
-
-    let totalAvatarRequests = await avatarRequest.aggregate([
-      {
-        $match: {
-          forUsername: user.username.toLowerCase(),
-          processed: false,
-        },
-      },
-      {
-        $count: 'total',
-      },
-    ]);
-
-    totalAvatarRequests =
-      totalAvatarRequests.length === 0 ? 0 : totalAvatarRequests[0].total;
-
-    if (totalAvatarRequests >= MAX_ACTIVE_AVATAR_REQUESTS) {
-      req.flash(
-        'error',
-        `You cannot submit more than ${MAX_ACTIVE_AVATAR_REQUESTS} custom avatar requests.`,
-      );
-      return res.redirect(
-        `/profile/${req.params.profileUsername}/changeavatar`,
-      );
-    }
-
-    // TODO: should i check existence of req.files['avatarRes'][0] as well?
-    if (!req.files['avatarRes'] || !req.files['avatarSpy']) {
-      req.flash('error', 'You must submit a Res and Spy avatar.');
-      return res.redirect(
-        `/profile/${req.params.profileUsername}/changeavatar`,
-      );
-    }
-
-    const avatarRes = req.files['avatarRes'][0];
-    const avatarSpy = req.files['avatarSpy'][0];
-
-    if (
-      avatarRes.mimetype !== 'image/png' ||
-      avatarSpy.mimetype !== 'image/png'
-    ) {
-      req.flash('error', 'You may only submit png files.');
-      return res.redirect(
-        `/profile/${req.params.profileUsername}/changeavatar`,
-      );
-    }
-
-    const dimRes = imageSize(avatarRes.buffer);
-    const dimSpy = imageSize(avatarSpy.buffer);
-
-    if (
-      !VALID_DIMENSIONS.includes(dimRes.width) ||
-      !VALID_DIMENSIONS.includes(dimRes.height) ||
-      !VALID_DIMENSIONS.includes(dimSpy.width) ||
-      !VALID_DIMENSIONS.includes(dimSpy.height)
-    ) {
-      let validDimStr = '';
-
-      VALID_DIMENSIONS.forEach((dimension, index) => {
-        validDimStr += `${dimension}x${dimension}px`;
-        if (index !== VALID_DIMENSIONS.length - 1) {
-          validDimStr += ' or ';
-        }
-      });
-
-      req.flash(
-        'error',
-        `Avatar dimensions must be ${validDimStr}. Your dimensions are: Res: ${dimRes.width}x${dimRes.height}px, Spy: ${dimSpy.width}x${dimSpy.height}px.`,
-      );
-      return res.redirect(
-        `/profile/${req.params.profileUsername}/changeavatar`,
-      );
+    if (!result.valid) {
+      req.flash('error', `${result.errMsg}`);
+      return res.redirect(`/profile/${req.params.profileUsername}`);
     }
 
     const msgToMod = req.body.msgToMod
@@ -337,6 +242,9 @@ router.post(
       : 'No message provided.';
 
     // Upload valid avatar requests to s3 bucket
+    const avatarRes = req.files['avatarRes'][0];
+    const avatarSpy = req.files['avatarSpy'][0];
+
     const avatarLinks = await s3.uploadAvatarRequest(
       req.params.profileUsername,
       avatarRes.buffer,
@@ -369,6 +277,92 @@ router.post(
     );
   },
 );
+
+async function validateUploadAvatarRequest(username, files) {
+  let result = { valid: false, errMsg: '' };
+  const user = await User.findOne({ username: username });
+
+  if (!user) {
+    throw new Error(`User not found: ${username}`);
+  }
+
+  // Check: Min game count satisfied
+  if (user.totalGamesPlayed < MIN_GAMES_REQUIRED) {
+    result.errMsg = `You must play at least 100 games to submit a custom avatar request. You have played ${user.totalGamesPlayed} games.`;
+    return result;
+  }
+
+  // Check: Does not exceed max avatar requests
+  let totalAvatarRequests = await avatarRequest.aggregate([
+    {
+      $match: {
+        forUsername: user.username.toLowerCase(),
+        processed: false,
+      },
+    },
+    {
+      $count: 'total',
+    },
+  ]);
+
+  totalAvatarRequests =
+    totalAvatarRequests.length === 0 ? 0 : totalAvatarRequests[0].total;
+
+  if (totalAvatarRequests >= MAX_ACTIVE_AVATAR_REQUESTS) {
+    result.errMsg = `You cannot submit more than ${MAX_ACTIVE_AVATAR_REQUESTS} custom avatar requests.`;
+    return result;
+  }
+
+  // Check: Both a singular res and spy avatar were submitted
+  if (
+    !files['avatarRes'] ||
+    !files['avatarSpy'] ||
+    !files['avatarRes'][0] ||
+    !files['avatarSpy'][0]
+  ) {
+    result.errMsg = `You must submit both a Res and Spy avatar.`;
+    return result;
+  }
+
+  // Check: Files are of type png
+  const avatarRes = files['avatarRes'][0];
+  const avatarSpy = files['avatarSpy'][0];
+
+  if (
+    avatarRes.mimetype !== 'image/png' ||
+    avatarSpy.mimetype !== 'image/png'
+  ) {
+    result.errMsg = `You may only submit png files.`;
+    return result;
+  }
+
+  // Check: File dimensions are valid
+  const dimRes = imageSize(avatarRes.buffer);
+  const dimSpy = imageSize(avatarSpy.buffer);
+
+  if (
+    !VALID_DIMENSIONS.includes(dimRes.width) ||
+    !VALID_DIMENSIONS.includes(dimRes.height) ||
+    !VALID_DIMENSIONS.includes(dimSpy.width) ||
+    !VALID_DIMENSIONS.includes(dimSpy.height)
+  ) {
+    let validDimStr = '';
+
+    VALID_DIMENSIONS.forEach((dimension, index) => {
+      validDimStr += `${dimension}x${dimension}px`;
+      if (index !== VALID_DIMENSIONS.length - 1) {
+        validDimStr += ' or ';
+      }
+    });
+
+    result.errMsg = `Avatar dimensions must be ${validDimStr}. Your dimensions are: Res: ${dimRes.width}x${dimRes.height}px, Spy: ${dimSpy.width}x${dimSpy.height}px.`;
+    return result;
+  }
+
+  // Passed all checks
+  result.valid = true;
+  return result;
+}
 
 // Show the change password edit page
 router.get(
