@@ -15,6 +15,7 @@ import imageSize from 'image-size';
 const MAX_ACTIVE_AVATAR_REQUESTS = 2;
 const MIN_GAMES_REQUIRED = 100;
 const VALID_DIMENSIONS = [128, 1024];
+const MAX_FILESIZE = 1048576; // 1MB
 
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',
@@ -187,10 +188,35 @@ router.get(
 );
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage }).fields([
-  { name: 'avatarRes', maxCount: 1 },
-  { name: 'avatarSpy', maxCount: 1 }, // Whitelist, other files will not be accepted
-]);
+// const upload = multer({
+//   storage: storage,
+//   limits: { fileSize: MAX_FILESIZE },
+// }).fields([
+//   { name: 'avatarRes', maxCount: 1 },
+//   { name: 'avatarSpy', maxCount: 1 }, // Whitelist, other files will not be accepted
+// ]);
+
+const upload = function (req, res, next) {
+  multer({
+    storage: storage,
+    limits: { fileSize: MAX_FILESIZE },
+  }).fields([
+    { name: 'avatarRes', maxCount: 1 },
+    { name: 'avatarSpy', maxCount: 1 }, // Whitelist, other files will not be accepted
+  ])(req, res, function (err) {
+    // TODO-kev: Check below if it is handling it correctly
+    if (err instanceof multer.MulterError && err.message === 'File too large') {
+      // TODO-kev: Function for 1MB? Enum object?
+      req.flash('error', 'File size exceeds the limit: 1MB.');
+      return res.redirect(
+        `/profile/${req.params.profileUsername}/changeavatar`,
+      );
+    } else if (err) {
+      console.log(err);
+    }
+    next();
+  });
+};
 
 // Update the customavatar
 router.post(
@@ -198,6 +224,13 @@ router.post(
   checkProfileOwnership,
   upload,
   async (req, res) => {
+    if (req.fileSizeLimitExceeded) {
+      req.flash('error', 'File size exceeds the limit.');
+      return res.redirect(
+        `/profile/${req.params.profileUsername}/changeavatar`,
+      );
+    }
+
     const s3 = req.s3;
     const user = await User.findOne({ username: req.params.profileUsername });
 
