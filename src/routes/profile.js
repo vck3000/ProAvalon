@@ -111,6 +111,15 @@ router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
       } else if (req.body.decision === false || req.body.decision === 'false') {
         const pattern = /pending_avatars\/.*$/;
 
+        if (
+          !foundReq.resLink.match(pattern) ||
+          !foundReq.resLink.match(pattern)
+        ) {
+          throw new Error(
+            `Invalid link provided: resLink: ${foundReq.resLink} spyLink: ${foundReq.spyLink}`,
+          );
+        }
+
         await s3.rejectAvatarRequest(foundReq.resLink.match(pattern)[0]);
         await s3.rejectAvatarRequest(foundReq.spyLink.match(pattern)[0]);
 
@@ -234,9 +243,8 @@ router.post(
     const s3 = req.s3;
     const user = await User.findOne({ username: req.params.profileUsername });
 
-    // TODO: how should i handle this?
     if (!user) {
-      console.log('User not found');
+      throw new Error(`User not found: ${req.params.profileUsername}`);
     }
 
     // Checks if custom avatar request is valid
