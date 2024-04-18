@@ -207,32 +207,35 @@ async function updateAvatarDisplay(file, previewId) {
 
         preview.appendChild(image);
 
-        image.onload = () => {
-            para.textContent = `Image dimensions: ${image.width}x${image.height}px`;
-            preview.appendChild(para);
+        await new Promise((resolve) => {
+            image.onload = () => {
+                para.textContent = `Image dimensions: ${image.width}x${image.height}px`;
+                preview.appendChild(para);
 
-            const validation = document.createElement("p");
+                const validation = document.createElement("p");
 
-            if (!VALID_DIMENSIONS.includes(image.width) || !VALID_DIMENSIONS.includes(image.height)) {
-                let validDimStr = '';
+                if (!VALID_DIMENSIONS.includes(image.width) || !VALID_DIMENSIONS.includes(image.height)) {
+                    let validDimStr = '';
 
-                VALID_DIMENSIONS.forEach((dimension, index) => {
-                    validDimStr += `${dimension}x${dimension}px`;
-                    if (index !== VALID_DIMENSIONS.length - 1) {
+                    VALID_DIMENSIONS.forEach((dimension, index) => {
+                        validDimStr += `${dimension}x${dimension}px`;
+                        if (index !== VALID_DIMENSIONS.length - 1) {
                         validDimStr += " or ";
-                    }
-                });
+                        }
+                    });
 
-                validation.textContent = `Invalid: Image should be either ${validDimStr}.`;
-            } else {
-                valid = true;
-            }
+                    validation.textContent = `Invalid: Image should be either ${validDimStr}.`;
+                } else {
+                    valid = true;
+                }
 
-            image.width = 128;
-            image.height = 128;
+                image.width = 128;
+                image.height = 128;
 
-            preview.appendChild(validation);
-        };
+                preview.appendChild(validation);
+                resolve();
+            };
+        });
     }
 
     return valid;

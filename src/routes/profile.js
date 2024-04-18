@@ -113,13 +113,6 @@ router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
         await s3.rejectAvatarRequest(foundReq.resLink.match(pattern)[0]);
         await s3.rejectAvatarRequest(foundReq.spyLink.match(pattern)[0]);
 
-        foundReq.resLink = 'deleted';
-        foundReq.spyLink = 'deleted';
-
-        foundReq.markModified('resLink');
-        foundReq.markModified('spyLink');
-        await foundReq.save();
-
         User.findOne({ usernameLower: foundReq.forUsername.toLowerCase() })
           .populate('notifications')
           .exec((err, foundUser) => {
@@ -164,7 +157,11 @@ router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
         dateCreated: new Date(),
       });
 
-      foundReq.save();
+      await foundReq.save();
+
+      if (req.body.decision === false || req.body.decision === 'false') {
+        await foundReq.remove();
+      }
     }
   });
 
