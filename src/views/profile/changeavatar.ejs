@@ -1,3 +1,5 @@
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 <%- include('../partials/header') %>
 
 <link rel="stylesheet" type="text/css" href="../stylesheets/profile.css">
@@ -129,7 +131,7 @@
         
         <div class="form-group">
             <label for="msgToMod">Message to the moderators: (Optional)</label>
-            <input name="msgToMod" class="form-control" id="msgToMod" placeholder="Message">
+            <input type="text" name="msgToMod" class="form-control" id="msgToMod" placeholder="Message">
         </div>
 
         <br>
@@ -160,10 +162,15 @@ $(document).ready(() => {
     $("#customAvatarSubmissionForm").on("submit", async (e) => {
         e.preventDefault();
 
+        // Client side checks
         const totalGamesPlayed = "<%= userData.totalGamesPlayed %>";
 
         if (totalGamesPlayed < MIN_GAMES_REQUIRED) {
-            alert("You must play at least 100 games before you can submit a custom avatar.");
+            let s = parseInt(totalGamesPlayed) === 1 ? "" : "s";
+            Swal.fire({
+                title: `You must play at least 100 games before you can submit a custom avatar. You have currently played ${totalGamesPlayed} game${s}.`,
+                type: "error"
+            });
             return;
         }
 
@@ -173,11 +180,49 @@ $(document).ready(() => {
         const resValid = await updateAvatarDisplay(resAvatarFile, "#resAvatarPreview");
         const spyValid = await updateAvatarDisplay(spyAvatarFile, "#spyAvatarPreview");
 
-        if (resValid && spyValid) {
-            document.getElementById("customAvatarSubmissionForm").submit();
-        } else {
-            alert("Please upload a valid custom Res and Spy avatar.");
+        if (!resValid || !spyValid) {
+            Swal.fire({
+                title: "Please upload a valid custom Res and Spy avatar.",
+                type: "error"
+            });
+            return;
         }
+
+        // Server side
+        const formElement = document.querySelector('#customAvatarSubmissionForm');
+        const bodyFormData = new FormData(formElement);
+
+        Swal.fire({
+            title: 'Sending your request...',
+            onOpen: () => {
+                Swal.showLoading();
+
+                axios({
+                    method: 'POST',
+                    url: '/profile/<%=userData.username%>/changeavatar',
+                    data: bodyFormData,
+                })
+                    .then(function (response) {
+                        //handle success
+                        // Clear the form for next input.
+                        // TODO-kev: Should we remove the image previews or leave as is? Necessary to reset?
+                        $('#customAvatarSubmissionForm')[0].reset();
+
+                        Swal.close();
+                        Swal.fire({
+                            title: response.data,
+                            type: 'success',
+                        });
+                    })
+                    .catch(function (err) {
+                        Swal.close();
+                        Swal.fire({
+                            title: err.response.data,
+                            type: 'error',
+                        });
+                    });
+            },
+        })
     })
 });
 

@@ -233,8 +233,8 @@ router.post(
     );
 
     if (!result.valid) {
-      req.flash('error', `${result.errMsg}`);
-      return res.redirect(`/profile/${req.params.profileUsername}`);
+      res.status(400).send(result.errMsg);
+      return;
     }
 
     const msgToMod = req.body.msgToMod
@@ -261,20 +261,24 @@ router.post(
     };
 
     avatarRequest.create(avatarRequestData, (err, createdRequest) => {
+      // TODO-kev: What happens here with the error? Send an error response?
       if (err) {
         console.log(err);
       } else {
-        req.flash(
-          'success',
-          'Your submission was received! Please wait for a moderator to process your request.',
-        );
-        res.redirect(`/profile/${req.params.profileUsername}`);
+        res
+          .status(200)
+          .send(
+            'Your submission was received! Please wait for a moderator to process your request.',
+          );
       }
     });
 
     console.log(
       `Received change avatar request for user: ${req.params.profileUsername} msgToMod: ${msgToMod} resLink: ${avatarLinks[0]} spyLink: ${avatarLinks[1]}`,
     );
+
+    // TODO-kev: Why does webstorm say return is unnecessary but we need it to not set additional headers?
+    return;
   },
 );
 
