@@ -1361,7 +1361,7 @@ function playerLeaveRoomCheckDestroy(socket) {
       }
     }
 
-    socket.request.user.inRoomId = undefined;
+    socket.request.user.inRoomId = null;
 
     updateCurrentGamesList();
   }
@@ -1849,6 +1849,9 @@ function leaveRoom() {
     playerLeaveRoomCheckDestroy(this);
 
     updateCurrentGamesList();
+  } else {
+    this.leave(this.request.user.inRoomId);
+    this.request.user.inRoomId = null;
   }
 }
 

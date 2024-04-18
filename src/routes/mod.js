@@ -350,7 +350,7 @@ router.get('/report/resolved/:pageIndex', isModMiddleware, async (req, res) => {
     return;
   }
 
-  const pageIndex = req.params.pageIndex;
+  const pageIndex = req.params.pageIndex < 0 ? 0 : req.params.pageIndex;
 
   const NUM_OF_RESULTS_PER_PAGE = 10;
   const skipNumber = pageIndex * NUM_OF_RESULTS_PER_PAGE;
