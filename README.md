@@ -51,7 +51,7 @@ $ yarn
 ### Setting up MinIO
 
 1. Access MinIO via localhost:9001
-2. Create an access key and paste its details into `.env`
+2. Create an access key and paste the key id into `AWS_ACCESS_KEY_ID` and access key into `AWS_SECRET_ACCESS_KEY` in the `.env` file.
 
 ### Stopping
 
