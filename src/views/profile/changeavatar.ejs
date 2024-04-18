@@ -98,7 +98,7 @@
         <div class="col-md-6">
             <div class="panel panel-success">
                 <div class="panel-heading">Res img:</div>
-                <div class="panel-body alignCenterHoriz preview" id="resAvatarPreview">
+                <div class="panel-body alignCenterHoriz" id="resAvatarPreview">
                     <p>No files currently selected for upload</p>
                 </div>
             </div>
@@ -182,9 +182,9 @@ $(document).ready(() => {
 });
 
 
-async function updateAvatarDisplay(file, previewID) {
+async function updateAvatarDisplay(file, previewId) {
     const VALID_DIMENSIONS = [128, 1024];
-    const preview = document.querySelector(previewID);
+    const preview = document.querySelector(previewId);
     let valid = false;
 
     while (preview.firstChild) {
@@ -207,35 +207,32 @@ async function updateAvatarDisplay(file, previewID) {
 
         preview.appendChild(image);
 
-        await new Promise((resolve) => {
-            image.onload = () => {
-                para.textContent = `Image dimensions: ${image.width}x${image.height}`;
-                preview.appendChild(para);
+        image.onload = () => {
+            para.textContent = `Image dimensions: ${image.width}x${image.height}px`;
+            preview.appendChild(para);
 
-                const validation = document.createElement("p");
+            const validation = document.createElement("p");
 
-                if (!VALID_DIMENSIONS.includes(image.width) || !VALID_DIMENSIONS.includes(image.height)) {
-                    let validDimStr = '';
+            if (!VALID_DIMENSIONS.includes(image.width) || !VALID_DIMENSIONS.includes(image.height)) {
+                let validDimStr = '';
 
-                    VALID_DIMENSIONS.forEach((dimension, index) => {
-                        validDimStr += `${dimension}x${dimension}`;
-                        if (index !== VALID_DIMENSIONS.length - 1) {
-                            validDimStr += " or ";
-                        }
-                    });
+                VALID_DIMENSIONS.forEach((dimension, index) => {
+                    validDimStr += `${dimension}x${dimension}px`;
+                    if (index !== VALID_DIMENSIONS.length - 1) {
+                        validDimStr += " or ";
+                    }
+                });
 
-                    validation.textContent = `Invalid: Image should be either ${validDimStr}.`;
-                } else {
-                    valid = true;
-                }
+                validation.textContent = `Invalid: Image should be either ${validDimStr}.`;
+            } else {
+                valid = true;
+            }
 
-                image.width = 128;
-                image.height = 128;
+            image.width = 128;
+            image.height = 128;
 
-                preview.appendChild(validation);
-                resolve();
-            };
-        });
+            preview.appendChild(validation);
+        };
     }
 
     return valid;

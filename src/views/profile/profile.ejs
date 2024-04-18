@@ -233,11 +233,7 @@ var getDatesString = function(time) {
       function() {
         var str = '';
         if (userData.avatarImgSpy) {
-          if (userData.avatarImgSpy.includes('http') || userData.avatarImgSpy.includes("avatars_s3")) {
-            str = "<%= userData.avatarImgSpy %>";
-          } else {
-            str = "../avatars/<%= userData.avatarImgSpy %>";
-          }
+          str = "<%= userData.avatarImgSpy %>";
         } else {
           str = '../avatars/base-spy.png';
         }

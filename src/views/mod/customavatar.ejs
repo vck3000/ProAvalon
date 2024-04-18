@@ -174,11 +174,9 @@
 
         $('.avatarImg').each(function (index, element) {
            let img = new Image();
-            img.src = $(element).attr('src');
+           img.src = $(element).attr('src');
            img.onload = () => {
-               const width = img.width;
-               const height = img.height;
-               $(element).siblings('.imgdimensions').text(width + 'x' + height + ' px');
+               $(element).siblings('.imgdimensions').text(img.width + 'x' + img.height + ' px');
                $(element).siblings('.link').text(img.src);
                $(element).replaceWith(img);
            }

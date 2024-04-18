@@ -212,7 +212,7 @@ export class S3Agent {
     return counter;
   }
 
-  public async rejectAvatarRefactorFilePath(key: string) {
+  public async rejectAvatarRequest(key: string) {
     await this.deleteObject(key);
   }
 

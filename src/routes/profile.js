@@ -12,6 +12,10 @@ import { createNotification } from '../myFunctions/createNotification';
 import multer from 'multer';
 import imageSize from 'image-size';
 
+const MAX_ACTIVE_AVATAR_REQUESTS = 2;
+const MIN_GAMES_REQUIRED = 100;
+const VALID_DIMENSIONS = [128, 1024];
+
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',
   'iframe',
@@ -66,8 +70,6 @@ router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
       foundReq.modWhoProcessed = req.user.username;
 
       if (req.body.decision === true || req.body.decision === 'true') {
-        console.log(`search lower user: ${foundReq.forUsername.toLowerCase()}`);
-
         const updateLink = async (link) => {
           const index = link.indexOf('pending_avatars');
           const endpoint = link.substring(0, index);
@@ -106,16 +108,10 @@ router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
             }
           });
       } else if (req.body.decision === false || req.body.decision === 'false') {
-        console.log(`search lower user: ${foundReq.forUsername.toLowerCase()}`);
-
         const pattern = /pending_avatars\/.*$/;
 
-        await s3.rejectAvatarRefactorFilePath(
-          foundReq.resLink.match(pattern)[0],
-        );
-        await s3.rejectAvatarRefactorFilePath(
-          foundReq.spyLink.match(pattern)[0],
-        );
+        await s3.rejectAvatarRequest(foundReq.resLink.match(pattern)[0]);
+        await s3.rejectAvatarRequest(foundReq.spyLink.match(pattern)[0]);
 
         foundReq.resLink = 'deleted';
         foundReq.spyLink = 'deleted';
@@ -196,7 +192,7 @@ router.get(
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }).fields([
   { name: 'avatarRes', maxCount: 1 },
-  { name: 'avatarSpy', maxCount: 1 },
+  { name: 'avatarSpy', maxCount: 1 }, // Whitelist, other files will not be accepted
 ]);
 
 // Update the customavatar
@@ -205,10 +201,6 @@ router.post(
   checkProfileOwnership,
   upload,
   async (req, res) => {
-    const MAX_AVATAR_REQUESTS = 2;
-    const MIN_GAMES_REQUIRED = 100;
-    const VALID_DIMENSIONS = [128, 1024];
-
     const s3 = req.s3;
     const user = await User.findOne({ username: req.params.profileUsername });
 
@@ -243,10 +235,10 @@ router.post(
     totalAvatarRequests =
       totalAvatarRequests.length === 0 ? 0 : totalAvatarRequests[0].total;
 
-    if (totalAvatarRequests >= MAX_AVATAR_REQUESTS) {
+    if (totalAvatarRequests >= MAX_ACTIVE_AVATAR_REQUESTS) {
       req.flash(
         'error',
-        `You cannot submit more than ${MAX_AVATAR_REQUESTS} custom avatar requests.`,
+        `You cannot submit more than ${MAX_ACTIVE_AVATAR_REQUESTS} custom avatar requests.`,
       );
       return res.redirect(
         `/profile/${req.params.profileUsername}/changeavatar`,
@@ -268,7 +260,7 @@ router.post(
       avatarRes.mimetype !== 'image/png' ||
       avatarSpy.mimetype !== 'image/png'
     ) {
-      req.flash('error', 'You must submit only png files.');
+      req.flash('error', 'You may only submit png files.');
       return res.redirect(
         `/profile/${req.params.profileUsername}/changeavatar`,
       );
@@ -286,7 +278,7 @@ router.post(
       let validDimStr = '';
 
       VALID_DIMENSIONS.forEach((dimension, index) => {
-        validDimStr += `${dimension}x${dimension}`;
+        validDimStr += `${dimension}x${dimension}px`;
         if (index !== VALID_DIMENSIONS.length - 1) {
           validDimStr += ' or ';
         }
@@ -294,7 +286,7 @@ router.post(
 
       req.flash(
         'error',
-        `Avatar dimensions must be ${validDimStr}. Your dimensions are: Res: ${dimRes.width}x${dimRes.height}, Spy: ${dimSpy.width}x${dimSpy.height}.`,
+        `Avatar dimensions must be ${validDimStr}. Your dimensions are: Res: ${dimRes.width}x${dimRes.height}px, Spy: ${dimSpy.width}x${dimSpy.height}px.`,
       );
       return res.redirect(
         `/profile/${req.params.profileUsername}/changeavatar`,
@@ -303,12 +295,7 @@ router.post(
 
     const msgToMod = req.body.msgToMod
       ? sanitizeHtml(req.body.msgToMod)
-      : 'None provided.';
-
-    console.log(
-      `Received change avatar request for user: ${req.params.profileUsername}`,
-    );
-    console.log(`Message to mod: ${msgToMod}`);
+      : 'No message provided.';
 
     // Upload valid avatar requests to s3 bucket
     const avatarLinks = await s3.uploadAvatarRequest(
@@ -316,9 +303,6 @@ router.post(
       avatarRes.buffer,
       avatarSpy.buffer,
     );
-
-    console.log(`Res link: ${avatarLinks[0]}`);
-    console.log(`Spy link: ${avatarLinks[1]}`);
 
     const avatarRequestData = {
       forUsername: req.params.profileUsername.toLowerCase(),
@@ -340,6 +324,10 @@ router.post(
         res.redirect(`/profile/${req.params.profileUsername}`);
       }
     });
+
+    console.log(
+      `Received change avatar request for user: ${req.params.profileUsername} msgToMod: ${msgToMod} resLink: ${avatarLinks[0]} spyLink: ${avatarLinks[1]}`,
+    );
   },
 );
 
