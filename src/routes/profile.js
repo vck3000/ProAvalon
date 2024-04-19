@@ -283,28 +283,30 @@ async function validateUploadAvatarRequest(username, files) {
   }
 
   // Check: Does not exceed max active avatar requests
-  let totalActiveAvatarRequests = await avatarRequest.aggregate([
-    {
-      $match: {
-        forUsername: user.username.toLowerCase(),
-        processed: false,
+  {
+    let totalActiveAvatarRequests = await avatarRequest.aggregate([
+      {
+        $match: {
+          forUsername: user.username.toLowerCase(),
+          processed: false,
+        },
       },
-    },
-    {
-      $count: 'total',
-    },
-  ]);
+      {
+        $count: 'total',
+      },
+    ]);
 
-  totalActiveAvatarRequests =
-    totalActiveAvatarRequests.length === 0
-      ? 0
-      : totalActiveAvatarRequests[0].total;
+    totalActiveAvatarRequests =
+      totalActiveAvatarRequests.length === 0
+        ? 0
+        : totalActiveAvatarRequests[0].total;
 
-  if (totalActiveAvatarRequests >= MAX_ACTIVE_AVATAR_REQUESTS) {
-    return {
-      valid: false,
-      errMsg: `You cannot submit more than ${MAX_ACTIVE_AVATAR_REQUESTS} active custom avatar requests.`,
-    };
+    if (totalActiveAvatarRequests >= MAX_ACTIVE_AVATAR_REQUESTS) {
+      return {
+        valid: false,
+        errMsg: `You cannot submit more than ${MAX_ACTIVE_AVATAR_REQUESTS} active custom avatar requests.`,
+      };
+    }
   }
 
   // Check: Both a singular res and spy avatar were submitted
