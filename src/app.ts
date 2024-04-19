@@ -222,17 +222,6 @@ if (process.env.ENV === 'local') {
     res.sendStatus(200);
   });
 
-  app.get('/avatars_s3/*', async (req, res, next) => {
-    const filename = req.params[0];
-    const response = await s3.getFile(filename);
-
-    if (response) {
-      response.Body.pipe(res);
-    } else {
-      console.log(`File does not exist at: ${filename}.`);
-    }
-  });
-
   app.get('/aupload/*', async (req, res, next) => {
     const filepath = req.params[0];
     await s3.uploadFile(filepath, 'Hello world! And version 2', 'text/plain');

@@ -20,7 +20,7 @@ enum Bucket {
   STAGING = 'proavalon-staging',
 }
 
-export class S3Agent {
+class S3Agent {
   private client: S3Client;
   private endpoint: string;
   private bucket: string;
@@ -61,20 +61,7 @@ export class S3Agent {
     }
   }
 
-  public async getFile(key: string) {
-    if (!(await this.objectExists(key))) {
-      return null;
-    }
-
-    const command = new GetObjectCommand({
-      Bucket: this.bucket,
-      Key: key,
-    });
-
-    return await this.client.send(command);
-  }
-
-  public async listObjectKeys(...prefixes: string[]) {
+  private async listObjectKeys(...prefixes: string[]) {
     // Note ListObjects command only returns up to 1000 objects
     // Need to update code if this exceeds
     let keys: string[] = [];
@@ -165,7 +152,7 @@ export class S3Agent {
   // Returns accessible links for res and spy avatars
   // Note to add a new prefix for all files to be checked
   // TODO-kev check File type
-  public async uploadAvatarRequest(
+  public async uploadAvatarRequestImages(
     username: string,
     resAvatar: Buffer,
     spyAvatar: Buffer,

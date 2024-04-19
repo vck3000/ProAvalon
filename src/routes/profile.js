@@ -112,7 +112,7 @@ router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
 
         if (
           !foundReq.resLink.match(pattern) ||
-          !foundReq.resLink.match(pattern)
+          !foundReq.spyLink.match(pattern)
         ) {
           throw new Error(
             `Invalid link provided: resLink: ${foundReq.resLink} spyLink: ${foundReq.spyLink}`,
@@ -204,8 +204,9 @@ const upload = function (req, res, next) {
     storage: storage,
     limits: { fileSize: MAX_FILESIZE },
   }).fields([
+    // This is a whitelist, other files will not be accepted
     { name: 'avatarRes', maxCount: 1 },
-    { name: 'avatarSpy', maxCount: 1 }, // Whitelist, other files will not be accepted
+    { name: 'avatarSpy', maxCount: 1 },
   ])(req, res, function (err) {
     // TODO-kev: Check below if it is handling it correctly
     if (err instanceof multer.MulterError && err.message === 'File too large') {
@@ -245,7 +246,7 @@ router.post(
     const avatarRes = req.files['avatarRes'][0];
     const avatarSpy = req.files['avatarSpy'][0];
 
-    const avatarLinks = await s3.uploadAvatarRequest(
+    const avatarLinks = await s3.uploadAvatarRequestImages(
       req.params.profileUsername,
       avatarRes.buffer,
       avatarSpy.buffer,
@@ -274,7 +275,7 @@ router.post(
     });
 
     console.log(
-      `Received change avatar request for user: ${req.params.profileUsername} msgToMod: ${msgToMod} resLink: ${avatarLinks[0]} spyLink: ${avatarLinks[1]}`,
+      `Received change avatar request: user="${req.params.profileUsername}" msgToMod="${msgToMod}" resLink=${avatarLinks[0]} spyLink=${avatarLinks[1]}`,
     );
 
     // TODO-kev: Why does webstorm say return is unnecessary but we need it to not set additional headers?
@@ -296,8 +297,8 @@ async function validateUploadAvatarRequest(username, files) {
     return result;
   }
 
-  // Check: Does not exceed max avatar requests
-  let totalAvatarRequests = await avatarRequest.aggregate([
+  // Check: Does not exceed max active avatar requests
+  let totalActiveAvatarRequests = await avatarRequest.aggregate([
     {
       $match: {
         forUsername: user.username.toLowerCase(),
@@ -309,11 +310,13 @@ async function validateUploadAvatarRequest(username, files) {
     },
   ]);
 
-  totalAvatarRequests =
-    totalAvatarRequests.length === 0 ? 0 : totalAvatarRequests[0].total;
+  totalActiveAvatarRequests =
+    totalActiveAvatarRequests.length === 0
+      ? 0
+      : totalActiveAvatarRequests[0].total;
 
-  if (totalAvatarRequests >= MAX_ACTIVE_AVATAR_REQUESTS) {
-    result.errMsg = `You cannot submit more than ${MAX_ACTIVE_AVATAR_REQUESTS} custom avatar requests.`;
+  if (totalActiveAvatarRequests >= MAX_ACTIVE_AVATAR_REQUESTS) {
+    result.errMsg = `You cannot submit more than ${MAX_ACTIVE_AVATAR_REQUESTS} active custom avatar requests.`;
     return result;
   }
 
@@ -321,17 +324,17 @@ async function validateUploadAvatarRequest(username, files) {
   if (
     !files['avatarRes'] ||
     !files['avatarSpy'] ||
-    !files['avatarRes'][0] ||
-    !files['avatarSpy'][0]
+    files['avatarRes'].length !== 1 ||
+    files['avatarSpy'].length !== 1
   ) {
     result.errMsg = `You must submit both a Res and Spy avatar.`;
     return result;
   }
 
-  // Check: Files are of type png
   const avatarRes = files['avatarRes'][0];
   const avatarSpy = files['avatarSpy'][0];
 
+  // Check: Files are of type png
   if (
     avatarRes.mimetype !== 'image/png' ||
     avatarSpy.mimetype !== 'image/png'
