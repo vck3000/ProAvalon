@@ -7,11 +7,10 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-import { Buffer } from 'buffer';
 
 // TODO-kev: ts complaining if set as variable: 'local' | 'staging' | 'prod'
-function getEndpoint(variable: string): string {
-  switch (variable) {
+function getEndpoint(env: string): string {
+  switch (env) {
     case 'local':
       return 'http://localhost:9000/proavalon/';
     case 'staging':
@@ -22,8 +21,8 @@ function getEndpoint(variable: string): string {
 }
 
 // TODO-kev: ts complaining if set as variable: 'local' | 'staging' | 'prod'
-function getBucket(variable: string): string {
-  switch (variable) {
+function getBucket(env: string): string {
+  switch (env) {
     case 'local':
       return 'proavalon';
     case 'staging':
@@ -38,17 +37,17 @@ export class S3Controller {
   private endpoint: string;
   private bucket: string;
 
-  constructor(env: string) {
-    this.endpoint = getEndpoint(env);
-    this.bucket = getBucket(env);
+  constructor() {
+    this.endpoint = getEndpoint(process.env.ENV);
+    this.bucket = getBucket(process.env.ENV);
 
-    if (env === 'local') {
+    if (process.env.ENV === 'local') {
       this.client = new S3Client({
         region: 'asdf',
         endpoint: 'http://127.0.0.1:9000',
         credentials: fromEnv(),
       });
-    } else if (env == 'staging') {
+    } else if (process.env.ENV == 'staging') {
       this.client = new S3Client({
         region: 'us-east-005',
         endpoint: 'https://s3.us-east-005.backblazeb2.com',

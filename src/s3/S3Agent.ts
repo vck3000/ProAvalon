@@ -10,7 +10,7 @@ class S3Agent {
   private s3Controller: S3Controller;
 
   constructor() {
-    this.s3Controller = new S3Controller(process.env.ENV);
+    this.s3Controller = new S3Controller();
   }
 
   // =====================================================
@@ -96,7 +96,6 @@ class S3Agent {
     }
 
     const key = link.match(pattern)[0];
-    console.log(key);
 
     await this.s3Controller.deleteObject(key);
   }
