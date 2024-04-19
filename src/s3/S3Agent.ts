@@ -198,14 +198,26 @@ class S3Agent {
     return counter;
   }
 
-  public async rejectAvatarRequest(key: string) {
+  public async rejectAvatarRequest(link: string) {
+    const pattern = /pending_avatars\/.*$/;
+    if (!link.match(pattern)) {
+      throw new Error(`Invalid link provided: ${link}`);
+    }
+
+    const key = link.match(pattern)[0];
+
     await this.deleteObject(key);
   }
 
-  public async approveAvatarRefactorFilePath(key: string) {
+  public async approveAvatarRefactorFilePath(link: string) {
+    // TODO-kev: Consider usernames pending_avatars
+    const index = link.indexOf('pending_avatars');
+    const endpoint = link.substring(0, index);
+    const key = link.substring(index);
     const newKey = key.replace('pending_avatars', 'approved_avatars');
+
     await this.refactorObjectFilepath(key, newKey);
-    return newKey;
+    return `${endpoint}${newKey}`;
   }
 }
 

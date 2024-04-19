@@ -59,126 +59,105 @@ router.get('/mod/customavatar', isModMiddleware, (req, res) => {
 });
 
 // moderator approve or reject custom avatar requests
-router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
-  avatarRequest.findById(req.body.avatarreqid).exec(async (err, foundReq) => {
-    if (err) {
-      console.log(err);
-    } else if (foundReq) {
-      foundReq.processed = true;
-      foundReq.modComment = req.body.modcomment;
-      foundReq.approved = req.body.decision;
-      foundReq.modWhoProcessed = req.user.username;
+router.post(
+  '/mod/ajax/processavatarrequest',
+  isModMiddleware,
+  async (req, res) => {
+    const avatarReq = await avatarRequest.findById(req.body.avatarreqid);
+    const userRequestingAvatar = await User.findOne({
+      usernameLower: avatarReq.forUsername.toLowerCase(),
+    });
 
-      if (req.body.decision === true || req.body.decision === 'true') {
-        const updateLink = async (link) => {
-          const index = link.indexOf('pending_avatars');
-          const endpoint = link.substring(0, index);
-          const key = link.substring(index);
+    const modWhoProcessed = req.user;
 
-          const updatedKey = await s3.approveAvatarRefactorFilePath(key);
+    if (req.body.decision === true || req.body.decision === 'true') {
+      avatarReq.resLink = await s3.approveAvatarRefactorFilePath(
+        avatarReq.resLink,
+      );
+      avatarReq.spyLink = await s3.approveAvatarRefactorFilePath(
+        avatarReq.spyLink,
+      );
+      avatarReq.markModified('resLink');
+      avatarReq.markModified('spyLink');
 
-          return `${endpoint}${updatedKey}`;
-        };
+      await avatarReq.save();
 
-        foundReq.resLink = await updateLink(foundReq.resLink);
-        foundReq.spyLink = await updateLink(foundReq.spyLink);
+      userRequestingAvatar.avatarImgRes = avatarReq.resLink;
+      userRequestingAvatar.avatarImgSpy = avatarReq.spyLink;
+      userRequestingAvatar.markModified('avatarImgRes');
+      userRequestingAvatar.markModified('avatarImgSpy');
 
-        foundReq.markModified('resLink');
-        foundReq.markModified('spyLink');
+      await userRequestingAvatar.save();
 
-        await foundReq.save();
+      // TODO-kev: Fundamental flaw in createNotification. Passing non unique link #
+      let str = `Your avatar request was approved by ${avatarReq.modWhoProcessed.username}! Their comment was: ${avatarReq.modComment}`;
+      createNotification(
+        userRequestingAvatar._id,
+        str,
+        '#',
+        modWhoProcessed.username,
+      );
+    } else if (req.body.decision === false || req.body.decision === 'false') {
+      await s3.rejectAvatarRequest(avatarReq.resLink);
+      await s3.rejectAvatarRequest(avatarReq.spyLink);
 
-        User.findOne({ usernameLower: foundReq.forUsername.toLowerCase() })
-          .populate('notifications')
-          .exec((err, foundUser) => {
-            if (err) {
-              console.log(err);
-            } else {
-              foundUser.avatarImgRes = foundReq.resLink;
-              foundUser.avatarImgSpy = foundReq.spyLink;
+      avatarReq.resLink = null;
+      avatarReq.spyLink = null;
+      avatarReq.markModified('resLink');
+      avatarReq.markModified('spyLink');
 
-              foundUser.save();
-
-              let str = `Your avatar request was approved by ${foundReq.modWhoProcessed}!`;
-              if (foundReq.modComment) {
-                str += ` Their comment was: ${foundReq.modComment}`;
-              }
-
-              createNotification(foundUser._id, str, '#', req.user.username);
-            }
-          });
-      } else if (req.body.decision === false || req.body.decision === 'false') {
-        const pattern = /pending_avatars\/.*$/;
-
-        if (
-          !foundReq.resLink.match(pattern) ||
-          !foundReq.spyLink.match(pattern)
-        ) {
-          throw new Error(
-            `Invalid link provided: resLink: ${foundReq.resLink} spyLink: ${foundReq.spyLink}`,
-          );
-        }
-
-        await s3.rejectAvatarRequest(foundReq.resLink.match(pattern)[0]);
-        await s3.rejectAvatarRequest(foundReq.spyLink.match(pattern)[0]);
-
-        foundReq.resLink = null;
-        foundReq.spyLink = null;
-
-        User.findOne({ usernameLower: foundReq.forUsername.toLowerCase() })
-          .populate('notifications')
-          .exec((err, foundUser) => {
-            if (err) {
-              console.log(err);
-            } else {
-              let str = `Your avatar request was rejected by ${foundReq.modWhoProcessed}.`;
-
-              if (foundReq.modComment) {
-                str += ` Their comment was: ${foundReq.modComment}`;
-              }
-
-              console.log(`string: ${str}`);
-
-              createNotification(foundUser._id, str, '#', req.user.username);
-            }
-          });
-      } else {
-        console.log(
-          `error, decision isnt anything recognisable...: ${req.body.decision}`,
-        );
-        return;
-      }
-
-      const modUser = req.user;
-      // Create mod log - Doesn't need to be async
-      ModLog.create({
-        type: 'avatar',
-        modWhoMade: {
-          id: modUser._id,
-          username: modUser.username,
-          usernameLower: modUser.usernameLower,
-        },
-        data: {
-          modComment: req.body.modcomment,
-          approved: req.body.decision,
-          username: foundReq.forUsername,
-          msgToMod: foundReq.msgToMod,
-          resLink: foundReq.resLink,
-          spyLink: foundReq.spyLink,
-        },
-        dateCreated: new Date(),
-      });
-
-      await foundReq.save();
-
-      if (req.body.decision === false || req.body.decision === 'false') {
-        await foundReq.remove();
-      }
+      let str = `Your avatar request was rejected by ${avatarReq.modWhoProcessed.username}. Their comment was: ${avatarReq.modComment}`;
+      createNotification(
+        userRequestingAvatar._id,
+        str,
+        '#',
+        modWhoProcessed.username,
+      );
+    } else {
+      // TODO-kev: Change the error?
+      console.log(
+        `error, decision isnt anything recognisable...: ${req.body.decision}`,
+      );
+      return;
     }
-  });
 
-  res.status(200).send('done');
-});
+    // Create mod log - Doesn't need to be async
+    ModLog.create({
+      type: 'avatar',
+      modWhoMade: {
+        id: modWhoProcessed._id,
+        username: modWhoProcessed.username,
+        usernameLower: modWhoProcessed.usernameLower,
+      },
+      data: {
+        modComment: req.body.modcomment,
+        approved: req.body.decision,
+        username: avatarReq.forUsername,
+        msgToMod: avatarReq.msgToMod,
+        resLink: avatarReq.resLink,
+        spyLink: avatarReq.spyLink,
+      },
+      dateCreated: new Date(),
+    });
+
+    if (req.body.decision === false || req.body.decision === 'false') {
+      await avatarReq.remove();
+    } else {
+      avatarReq.processed = true;
+      avatarReq.modComment = req.body.modcomment;
+      avatarReq.approved = req.body.decision;
+      avatarReq.modWhoProcessed = modWhoProcessed.username;
+      avatarReq.markModified('processed');
+      avatarReq.markModified('modComment');
+      avatarReq.markModified('approved');
+      avatarReq.markModified('modWhoProcessed');
+
+      await avatarReq.save();
+    }
+
+    res.status(200).send('done');
+  },
+);
 
 // Show the customavatar edit page
 router.get(
