@@ -17,6 +17,7 @@ const MAX_ACTIVE_AVATAR_REQUESTS = 2;
 const MIN_GAMES_REQUIRED = 100;
 const VALID_DIMENSIONS = [128, 1024];
 const MAX_FILESIZE = 1048576; // 1MB
+const MAX_FILESIZE_STR = '1MB';
 
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',
@@ -190,7 +191,7 @@ const upload = function (req, res, next) {
     // TODO-kev: Check below if it is handling it correctly
     if (err instanceof multer.MulterError && err.message === 'File too large') {
       // TODO-kev: Function for 1MB? Enum object?
-      req.flash('error', 'File size exceeds the limit: 1MB.');
+      req.flash('error', `File size exceeds the limit: ${MAX_FILESIZE_STR}.`);
       return res.redirect(
         `/profile/${req.params.profileUsername}/changeavatar`,
       );
