@@ -171,7 +171,10 @@ router.get(
         if (err) {
           console.log(err);
         } else {
-          res.render('profile/changeavatar', { userData: foundUser });
+          res.render('profile/changeavatar', {
+            userData: foundUser,
+            maxFileSizeStr: MAX_FILESIZE_STR,
+          });
         }
       },
     );
@@ -188,14 +191,18 @@ const upload = function (req, res, next) {
     { name: 'avatarRes', maxCount: 1 },
     { name: 'avatarSpy', maxCount: 1 },
   ])(req, res, function (err) {
-    // TODO-kev: Check below if it is handling it correctly
-    if (err instanceof multer.MulterError && err.message === 'File too large') {
-      // TODO-kev: Function for 1MB? Enum object?
-      req.flash('error', `File size exceeds the limit: ${MAX_FILESIZE_STR}.`);
-      return res.redirect(
-        `/profile/${req.params.profileUsername}/changeavatar`,
-      );
+    if (err instanceof multer.MulterError) {
+      if (err.message === 'File too large') {
+        res
+          .status(400)
+          .send(`File size exceeds the limit: ${MAX_FILESIZE_STR}.`);
+        return;
+      } else {
+        res.status(400).send(`Error: ${err.message}.`);
+        return;
+      }
     } else if (err) {
+      // TODO-kev: Check below if it is handling it correctly
       console.log(err);
     }
     next();
@@ -241,25 +248,17 @@ router.post(
       processed: false,
     };
 
-    avatarRequest.create(avatarRequestData, (err, createdRequest) => {
-      // TODO-kev: What happens here with the error? Send an error response?
-      if (err) {
-        console.log(err);
-      } else {
-        res
-          .status(200)
-          .send(
-            'Your submission was received! Please wait for a moderator to process your request.',
-          );
-      }
-    });
+    await avatarRequest.create(avatarRequestData);
+
+    res
+      .status(200)
+      .send(
+        'Your submission was received! Please wait for a moderator to process your request.',
+      );
 
     console.log(
       `Received change avatar request: user="${req.params.profileUsername}" msgToMod="${msgToMod}" resLink=${avatarLinks[0]} spyLink=${avatarLinks[1]}`,
     );
-
-    // TODO-kev: Why does webstorm say return is unnecessary but we need it to not set additional headers?
-    return;
   },
 );
 
