@@ -56,13 +56,12 @@
             <li>Must not be inappropriate.</li>
             <li>Must have similar Res and Spy avatars.</li>
             <li>Must not be similar to any other existing custom avatars (unless the avatar was yours initially).</li>
-            <li>Must be either 128x128px or 1028x1028px in size.</li>
-            <li>Must be maximum <%= maxFileSizeStr %> in size.</li>
+            <li>Must be <%= VALID_DIMENSIONS_STR %> in size.</li>
+            <li>Must be maximum <%= MAX_FILESIZE_STR %> in size.</li>
             <li>Must be a png file.</li>
             <li>Must have a transparent background (solid white will hurt the eyes of dark theme users!).</li>
             <li>Must resemble the base avatar images.</li>
             <li>Must keep the wordage to a minimum.</li>
-            <li>Must be hosted on Discord or Imgbb. Click <a href="/profile/avatargetlinktutorial">here</a> for a tutorial on how to get a good link.</li>
             <li>Moderators have the final say, based on their judgment. Feel free to consult them before making your avatars to ensure they will adhere to these guidelines.</li>
 
         </ul>
@@ -229,7 +228,6 @@ $(document).ready(() => {
 
 
 async function updateAvatarDisplay(file, previewId) {
-    const VALID_DIMENSIONS = [128, 1024];
     const preview = document.querySelector(previewId);
     let valid = false;
 
@@ -259,18 +257,10 @@ async function updateAvatarDisplay(file, previewId) {
                 preview.appendChild(para);
 
                 const validation = document.createElement("p");
+                const validDim = "<%= JSON.stringify(VALID_DIMENSIONS) %>";
 
-                if (!VALID_DIMENSIONS.includes(image.width) || !VALID_DIMENSIONS.includes(image.height)) {
-                    let validDimStr = '';
-
-                    VALID_DIMENSIONS.forEach((dimension, index) => {
-                        validDimStr += `${dimension}x${dimension}px`;
-                        if (index !== VALID_DIMENSIONS.length - 1) {
-                        validDimStr += " or ";
-                        }
-                    });
-
-                    validation.textContent = `Invalid: Image should be either ${validDimStr}.`;
+                if (!validDim.includes(image.width) || !validDim.includes(image.height)) {
+                    validation.textContent = `Invalid: Image should be either <%= VALID_DIMENSIONS_STR %>.`;
                 } else {
                     valid = true;
                 }
