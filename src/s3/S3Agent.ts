@@ -10,14 +10,28 @@ import {
 } from '@aws-sdk/client-s3';
 import { Buffer } from 'buffer';
 
-enum Endpoints {
-  LOCAL = 'http://localhost:9000/proavalon/',
-  STAGING = 'https://s3-staging.proavalon.com/file/proavalon-staging/',
+// TODO-kev: ts complaining if set as variable: 'local' | 'staging' | 'prod'
+function getEndpoint(variable: string): string {
+  switch (variable) {
+    case 'local':
+      return 'http://localhost:9000/proavalon/';
+    case 'staging':
+      return 'https://s3-staging.proavalon.com/file/proavalon-staging/';
+    case 'prod':
+      return 'TO BE ADDED';
+  }
 }
 
-enum Bucket {
-  LOCAL = 'proavalon',
-  STAGING = 'proavalon-staging',
+// TODO-kev: ts complaining if set as variable: 'local' | 'staging' | 'prod'
+function getBucket(variable: string): string {
+  switch (variable) {
+    case 'local':
+      return 'proavalon';
+    case 'staging':
+      return 'proavalon-staging';
+    case 'prod':
+      return 'TO BE ADDED';
+  }
 }
 
 class S3Agent {
@@ -26,19 +40,16 @@ class S3Agent {
   private bucket: string;
 
   constructor() {
-    if (process.env.ENV === 'local') {
-      this.endpoint = Endpoints.LOCAL;
-      this.bucket = Bucket.LOCAL;
+    this.endpoint = getEndpoint(process.env.ENV);
+    this.bucket = getBucket(process.env.ENV);
 
+    if (process.env.ENV === 'local') {
       this.client = new S3Client({
         region: 'asdf',
         endpoint: 'http://127.0.0.1:9000',
         credentials: fromEnv(),
       });
     } else if (process.env.ENV == 'staging') {
-      this.endpoint = Endpoints.STAGING;
-      this.bucket = Bucket.STAGING;
-
       this.client = new S3Client({
         region: 'us-east-005',
         endpoint: 'https://s3.us-east-005.backblazeb2.com',
@@ -56,12 +67,20 @@ class S3Agent {
 
       await this.client.send(headCommand);
       return true;
-    } catch (error) {
-      return false;
+    } catch (e) {
+      if (
+        e.name === 'NotFound' &&
+        e.$metadata &&
+        e.$metadata.httpStatusCode === 404
+      ) {
+        return false;
+      } else {
+        throw e;
+      }
     }
   }
 
-  private async listObjectKeys(...prefixes: string[]) {
+  private async listObjectKeys(prefixes: string[]) {
     // Note ListObjects command only returns up to 1000 objects
     // Need to update code if this exceeds
     let keys: string[] = [];
@@ -103,7 +122,7 @@ class S3Agent {
 
   public async deleteObject(key: string) {
     if (!(await this.objectExists(key))) {
-      throw new Error(
+      console.log(
         `Failed to delete. s3 file does not exist: ${this.bucket}/${key}.`,
       );
     }
@@ -162,8 +181,8 @@ class S3Agent {
     const prefix2 = `approved_avatars/${usernameLower}/`;
 
     // Find unique ID for filepath generation
-    const existingObjectKeys = await this.listObjectKeys(prefix1, prefix2);
-    const counter = this.getKeyCounter(existingObjectKeys);
+    const existingObjectKeys = await this.listObjectKeys([prefix1, prefix2]);
+    const counter = this.getCurrentKeyCounter(existingObjectKeys);
 
     const resFileName = `${usernameLower}_res_${counter + 1}.png`;
     const spyFileName = `${usernameLower}_spy_${counter + 1}.png`;
@@ -171,24 +190,43 @@ class S3Agent {
     const resKey = `${prefix1}${resFileName}`;
     const spyKey = `${prefix1}${spyFileName}`;
 
-    await this.uploadFile(resKey, resAvatar, 'image/png');
-    await this.uploadFile(spyKey, spyAvatar, 'image/png');
+    const succeededFiles = [];
 
-    const resUrl = `${this.endpoint}${resKey}`;
-    const spyUrl = `${this.endpoint}${spyKey}`;
+    try {
+      await this.uploadFile(resKey, resAvatar, 'image/png');
+      succeededFiles.push(resKey);
 
-    return [resUrl, spyUrl];
+      await this.uploadFile(spyKey, spyAvatar, 'image/png');
+      succeededFiles.push(spyKey);
+    } catch (e) {
+      for (const succeededFile of succeededFiles) {
+        await this.deleteObject(succeededFile);
+      }
+
+      throw e;
+    }
+
+    const resLink = `${this.endpoint}${resKey}`;
+    const spyLink = `${this.endpoint}${spyKey}`;
+
+    return { resLink, spyLink };
   }
 
-  private getKeyCounter(listOfKeys: string[]) {
+  private getCurrentKeyCounter(listOfKeys: string[]) {
     let counter = 0;
 
     listOfKeys.forEach((key) => {
-      // Match leading integer following the last occurrence of /
-      const match = key.match(/\/([^/]+)_(spy|res)_(\d+)\.png$/);
+      // Match format /<username>_<res|spy>_<id>.png
+      // const match = key.match(/\/([^/]+)_(spy|res)_(\d+)\.png$/);
+
+      // TODO-kev: Thoughts on this one?
+      // Match format <pending_avatars|approved_avatars>/<username>/<username>_<res|spy>_<id>.png
+      const match = key.match(
+        /^(pending_avatars|approved_avatars)\/([^/]+)\/\2_(res|spy)_(\d+)\.png$/,
+      );
 
       if (match) {
-        const count = parseInt(match[3], 10);
+        const count = parseInt(match[4], 10);
         if (count > counter) {
           counter = count;
         }

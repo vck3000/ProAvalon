@@ -241,8 +241,8 @@ router.post(
 
     const avatarRequestData = {
       forUsername: req.params.profileUsername.toLowerCase(),
-      resLink: avatarLinks[0],
-      spyLink: avatarLinks[1],
+      resLink: avatarLinks.resLink,
+      spyLink: avatarLinks.spyLink,
       msgToMod: msgToMod,
       dateRequested: new Date(),
       processed: false,
@@ -257,7 +257,7 @@ router.post(
       );
 
     console.log(
-      `Received change avatar request: user="${req.params.profileUsername}" msgToMod="${msgToMod}" resLink=${avatarLinks[0]} spyLink=${avatarLinks[1]}`,
+      `Received change avatar request: user="${req.params.profileUsername}" msgToMod="${msgToMod}" resLink=${avatarLinks.resLink} spyLink=${avatarLinks.spyLink}`,
     );
   },
 );
