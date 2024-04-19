@@ -94,7 +94,7 @@ router.post(
       await userRequestingAvatar.save();
 
       // TODO-kev: Fundamental flaw in createNotification. Passing non unique link #
-      let str = `Your avatar request was approved by ${avatarReq.modWhoProcessed.username}! Their comment was: ${avatarReq.modComment}`;
+      let str = `Your avatar request was approved by ${modWhoProcessed.username}! Their comment was: ${avatarReq.modComment}`;
       createNotification(
         userRequestingAvatar._id,
         str,
@@ -110,7 +110,7 @@ router.post(
       avatarReq.markModified('resLink');
       avatarReq.markModified('spyLink');
 
-      let str = `Your avatar request was rejected by ${avatarReq.modWhoProcessed.username}. Their comment was: ${avatarReq.modComment}`;
+      let str = `Your avatar request was rejected by ${modWhoProcessed.username}. Their comment was: ${avatarReq.modComment}`;
       createNotification(
         userRequestingAvatar._id,
         str,
