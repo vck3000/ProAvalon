@@ -263,7 +263,6 @@ router.post(
 );
 
 async function validateUploadAvatarRequest(username, files) {
-  let result = { valid: false, errMsg: '' };
   const user = await User.findOne({ username: username });
 
   if (!user) {
@@ -272,8 +271,10 @@ async function validateUploadAvatarRequest(username, files) {
 
   // Check: Min game count satisfied
   if (user.totalGamesPlayed < MIN_GAMES_REQUIRED) {
-    result.errMsg = `You must play at least 100 games to submit a custom avatar request. You have played ${user.totalGamesPlayed} games.`;
-    return result;
+    return {
+      valid: false,
+      errMsg: `You must play at least 100 games to submit a custom avatar request. You have played ${user.totalGamesPlayed} games.`,
+    };
   }
 
   // Check: Does not exceed max active avatar requests
@@ -295,8 +296,10 @@ async function validateUploadAvatarRequest(username, files) {
       : totalActiveAvatarRequests[0].total;
 
   if (totalActiveAvatarRequests >= MAX_ACTIVE_AVATAR_REQUESTS) {
-    result.errMsg = `You cannot submit more than ${MAX_ACTIVE_AVATAR_REQUESTS} active custom avatar requests.`;
-    return result;
+    return {
+      valid: false,
+      errMsg: `You cannot submit more than ${MAX_ACTIVE_AVATAR_REQUESTS} active custom avatar requests.`,
+    };
   }
 
   // Check: Both a singular res and spy avatar were submitted
@@ -306,8 +309,10 @@ async function validateUploadAvatarRequest(username, files) {
     files['avatarRes'].length !== 1 ||
     files['avatarSpy'].length !== 1
   ) {
-    result.errMsg = `You must submit both a Res and Spy avatar.`;
-    return result;
+    return {
+      valid: false,
+      errMsg: `You must submit both a Res and Spy avatar.`,
+    };
   }
 
   const avatarRes = files['avatarRes'][0];
@@ -318,8 +323,10 @@ async function validateUploadAvatarRequest(username, files) {
     avatarRes.mimetype !== 'image/png' ||
     avatarSpy.mimetype !== 'image/png'
   ) {
-    result.errMsg = `You may only submit png files.`;
-    return result;
+    return {
+      valid: false,
+      errMsg: `You may only submit png files.`,
+    };
   }
 
   // Check: File dimensions are valid
@@ -341,13 +348,17 @@ async function validateUploadAvatarRequest(username, files) {
       }
     });
 
-    result.errMsg = `Avatar dimensions must be ${validDimStr}. Your dimensions are: Res: ${dimRes.width}x${dimRes.height}px, Spy: ${dimSpy.width}x${dimSpy.height}px.`;
-    return result;
+    return {
+      valid: false,
+      errMsg: `Avatar dimensions must be ${validDimStr}. Your dimensions are: Res: ${dimRes.width}x${dimRes.height}px, Spy: ${dimSpy.width}x${dimSpy.height}px.`,
+    };
   }
 
   // Passed all checks
-  result.valid = true;
-  return result;
+  return {
+    valid: true,
+    errMsg: ``,
+  };
 }
 
 // Show the change password edit page
