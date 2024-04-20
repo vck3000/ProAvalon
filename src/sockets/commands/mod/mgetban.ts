@@ -11,6 +11,7 @@ export const mgetban: Command = {
         message: 'Specify a username.',
         classStr: 'server-text',
       });
+      return;
     }
 
     const ban = await Ban.findOne({
