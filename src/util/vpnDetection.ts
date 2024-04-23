@@ -61,13 +61,13 @@ const isVPN = async (ip: string): Promise<boolean> => {
   console.log(`VPN Cache size: ${vpnCache.size}`);
 
   // Must pass both vpn checks
-  const VPNCheck1 = await isVpnCheck1(ip);
-  console.log(`VPN Detection via vpnapi.io result: ${VPNCheck1}`);
+  const VpnCheck1 = await isVpnCheck1(ip);
+  const VpnCheck2 = await isVpnCheck2(ip);
+  console.log(
+    `VPN Detection Result: vpnapi.io=${VpnCheck1} check.getipintel.net=${VpnCheck2}`,
+  );
 
-  const VPNCheck2 = await isVpnCheck2(ip);
-  console.log(`VPN Detection via check.getipintel.net result: ${VPNCheck2}`);
-
-  const result = VPNCheck1 || VPNCheck2;
+  const result = VpnCheck1 || VpnCheck2;
 
   vpnCache.get(ip).setIsVpn(result);
 
