@@ -1,3 +1,4 @@
+// @ts-nocheck
 import express from 'express';
 
 const router = express.Router();
@@ -55,8 +56,8 @@ router.get('/mod/customavatar', isModMiddleware, (req, res) => {
     } else {
       res.render('mod/customavatar', {
         customAvatarRequests: allAvatarRequests,
-        MAX_FILESIZE_STR: MAX_FILESIZE_STR,
-        VALID_DIMENSIONS_STR: VALID_DIMENSIONS_STR,
+        MAX_FILESIZE_STR,
+        VALID_DIMENSIONS_STR,
       });
     }
   });
@@ -67,50 +68,45 @@ router.post(
   '/mod/ajax/processavatarrequest',
   isModMiddleware,
   async (req, res) => {
+    if (req.body.decision !== 'true' && req.body.decision !== 'false') {
+      throw new Error(
+        `Unrecognisable mod decision to process custom avatar request: ${req.body.decision}`,
+      );
+    }
+
     const avatarReq = await avatarRequest.findById(req.body.avatarreqid);
     const userRequestingAvatar = await User.findOne({
       usernameLower: avatarReq.forUsername.toLowerCase(),
     });
 
     const modWhoProcessed = req.user;
+    const decision = req.body.decision === 'true';
+    const modComment = req.body.modcomment
+      ? sanitizeHtml(req.body.modcomment)
+      : 'No message provided';
 
-    if (req.body.decision === true || req.body.decision === 'true') {
-      avatarReq.resLink = await s3.approveAvatarRefactorFilePath(
-        avatarReq.resLink,
-      );
-      avatarReq.spyLink = await s3.approveAvatarRefactorFilePath(
-        avatarReq.spyLink,
-      );
-      avatarReq.markModified('resLink');
-      avatarReq.markModified('spyLink');
+    if (decision) {
+      const approvedAvatarLinks = await s3.approveAvatarRequest({
+        resLink: avatarReq.resLink,
+        spyLink: avatarReq.spyLink,
+      });
+
+      avatarReq.resLink = approvedAvatarLinks.resLink;
+      avatarReq.spyLink = approvedAvatarLinks.spyLink;
+      avatarReq.processed = true;
+      avatarReq.modComment = modComment;
+      avatarReq.approved = decision;
+      avatarReq.modWhoProcessed = modWhoProcessed.username;
 
       await avatarReq.save();
 
       userRequestingAvatar.avatarImgRes = avatarReq.resLink;
       userRequestingAvatar.avatarImgSpy = avatarReq.spyLink;
-      userRequestingAvatar.markModified('avatarImgRes');
-      userRequestingAvatar.markModified('avatarImgSpy');
 
       await userRequestingAvatar.save();
 
       // TODO-kev: Fundamental flaw in createNotification. Passing non unique link #
-      let str = `Your avatar request was approved by ${modWhoProcessed.username}! Their comment was: ${avatarReq.modComment}`;
-      createNotification(
-        userRequestingAvatar._id,
-        str,
-        '#',
-        modWhoProcessed.username,
-      );
-    } else if (req.body.decision === false || req.body.decision === 'false') {
-      await s3.rejectAvatarRequest(avatarReq.resLink);
-      await s3.rejectAvatarRequest(avatarReq.spyLink);
-
-      avatarReq.resLink = null;
-      avatarReq.spyLink = null;
-      avatarReq.markModified('resLink');
-      avatarReq.markModified('spyLink');
-
-      let str = `Your avatar request was rejected by ${modWhoProcessed.username}. Their comment was: ${avatarReq.modComment}`;
+      let str = `Your avatar request was approved by ${modWhoProcessed.username}! Their comment was: "${modComment}"`;
       createNotification(
         userRequestingAvatar._id,
         str,
@@ -118,11 +114,18 @@ router.post(
         modWhoProcessed.username,
       );
     } else {
-      // TODO-kev: Change the error?
-      console.log(
-        `error, decision isnt anything recognisable...: ${req.body.decision}`,
+      await s3.rejectAvatarRequest({
+        resLink: avatarReq.resLink,
+        spyLink: avatarReq.spyLink,
+      });
+
+      let str = `Your avatar request was rejected by ${modWhoProcessed.username}. Their comment was: "${modComment}"`;
+      createNotification(
+        userRequestingAvatar._id,
+        str,
+        '#',
+        modWhoProcessed.username,
       );
-      return;
     }
 
     // Create mod log - Doesn't need to be async
@@ -134,29 +137,26 @@ router.post(
         usernameLower: modWhoProcessed.usernameLower,
       },
       data: {
-        modComment: req.body.modcomment,
-        approved: req.body.decision,
+        modComment: modComment,
+        approved: decision,
         username: avatarReq.forUsername,
         msgToMod: avatarReq.msgToMod,
-        resLink: avatarReq.resLink,
-        spyLink: avatarReq.spyLink,
+        resLink: decision ? avatarReq.resLink : null,
+        spyLink: decision ? avatarReq.spyLink : null,
       },
       dateCreated: new Date(),
     });
 
-    if (req.body.decision === false || req.body.decision === 'false') {
-      await avatarReq.remove();
+    if (decision) {
+      console.log(
+        `Custom avatar request approved: forUser="${avatarReq.forUsername}" byMod="${modWhoProcessed.username}" modComment="${modComment}" resLink="${avatarReq.resLink}" spyLink="${avatarReq.spyLink}"`,
+      );
     } else {
-      avatarReq.processed = true;
-      avatarReq.modComment = req.body.modcomment;
-      avatarReq.approved = req.body.decision;
-      avatarReq.modWhoProcessed = modWhoProcessed.username;
-      avatarReq.markModified('processed');
-      avatarReq.markModified('modComment');
-      avatarReq.markModified('approved');
-      avatarReq.markModified('modWhoProcessed');
-
-      await avatarReq.save();
+      console.log(
+        `Custom avatar request rejected: forUser="${avatarReq.forUsername}" byMod="${modWhoProcessed.username}" modComment="${modComment}"`,
+      );
+      // TODO-kev: Thoughts on keeping the avatar request for metric counts?
+      await avatarReq.remove();
     }
 
     res.status(200).send('done');
@@ -175,10 +175,11 @@ router.get(
           console.log(err);
         } else {
           res.render('profile/changeavatar', {
-            userData: foundUser,
-            MAX_FILESIZE_STR: MAX_FILESIZE_STR,
-            VALID_DIMENSIONS: VALID_DIMENSIONS,
-            VALID_DIMENSIONS_STR: VALID_DIMENSIONS_STR,
+            username: foundUser.username,
+            totalGamesPlayed: foundUser.totalGamesPlayed,
+            MAX_FILESIZE_STR,
+            VALID_DIMENSIONS,
+            VALID_DIMENSIONS_STR,
           });
         }
       },
@@ -187,30 +188,34 @@ router.get(
 );
 
 const storage = multer.memoryStorage();
+const multerMiddleware = multer({
+  storage: storage,
+  limits: { fileSize: MAX_FILESIZE },
+}).fields([
+  // This is a whitelist, other files will not be accepted
+  { name: 'avatarRes', maxCount: 1 },
+  { name: 'avatarSpy', maxCount: 1 },
+]);
+
 const upload = function (req, res, next) {
-  multer({
-    storage: storage,
-    limits: { fileSize: MAX_FILESIZE },
-  }).fields([
-    // This is a whitelist, other files will not be accepted
-    { name: 'avatarRes', maxCount: 1 },
-    { name: 'avatarSpy', maxCount: 1 },
-  ])(req, res, function (err) {
-    if (err instanceof multer.MulterError) {
-      if (err.message === 'File too large') {
-        res
-          .status(400)
-          .send(`File size exceeds the limit: ${MAX_FILESIZE_STR}.`);
-        return;
-      } else {
-        res.status(400).send(`Error: ${err.message}.`);
-        return;
-      }
-    } else if (err) {
-      // TODO-kev: Check below if it is handling it correctly
-      console.log(err);
+  multerMiddleware(req, res, function (err) {
+    if (!err) {
+      return next();
     }
-    next();
+
+    console.log('test');
+
+    if (!(err instanceof multer.MulterError)) {
+      res.status(500).send();
+      throw new Error(err);
+    }
+
+    let message = err.message;
+    if (message === 'File too large') {
+      message = `File size exceeds the limit: ${MAX_FILESIZE_STR}.`;
+    }
+
+    res.status(400).send(message);
   });
 };
 
@@ -232,7 +237,7 @@ router.post(
 
     const msgToMod = req.body.msgToMod
       ? sanitizeHtml(req.body.msgToMod)
-      : 'No message provided.';
+      : 'No message provided';
 
     // Upload valid avatar requests to s3 bucket
     const avatarRes = req.files['avatarRes'][0];
@@ -267,7 +272,10 @@ router.post(
   },
 );
 
-async function validateUploadAvatarRequest(username, files) {
+async function validateUploadAvatarRequest(
+  username: string,
+  files,
+): Promise<{ valid: boolean; errMsg: string }> {
   const user = await User.findOne({ username: username });
 
   if (!user) {
@@ -284,7 +292,7 @@ async function validateUploadAvatarRequest(username, files) {
 
   // Check: Does not exceed max active avatar requests
   {
-    let totalActiveAvatarRequests = await avatarRequest.aggregate([
+    const totalActiveAvatarRequestsQuery = await avatarRequest.aggregate([
       {
         $match: {
           forUsername: user.username.toLowerCase(),
@@ -296,10 +304,10 @@ async function validateUploadAvatarRequest(username, files) {
       },
     ]);
 
-    totalActiveAvatarRequests =
-      totalActiveAvatarRequests.length === 0
+    const totalActiveAvatarRequests =
+      totalActiveAvatarRequestsQuery.length === 0
         ? 0
-        : totalActiveAvatarRequests[0].total;
+        : totalActiveAvatarRequestsQuery[0].total;
 
     if (totalActiveAvatarRequests >= MAX_ACTIVE_AVATAR_REQUESTS) {
       return {
@@ -318,7 +326,7 @@ async function validateUploadAvatarRequest(username, files) {
   ) {
     return {
       valid: false,
-      errMsg: `You must submit both a Res and Spy avatar.`,
+      errMsg: `You must submit both a Resistance and Spy avatar.`,
     };
   }
 
@@ -370,7 +378,9 @@ router.get(
         if (err) {
           console.log(err);
         } else {
-          res.render('profile/changepassword', { userData: foundUser });
+          res.render('profile/changepassword', {
+            username: foundUser.username,
+          });
         }
       },
     );

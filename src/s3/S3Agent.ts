@@ -6,6 +6,11 @@ enum FolderName {
   PENDING = 'pending_avatars',
 }
 
+interface S3AvatarLinks {
+  resLink: string;
+  spyLink: string;
+}
+
 class S3Agent {
   private s3Controller: S3Controller;
 
@@ -24,7 +29,7 @@ class S3Agent {
     username: string,
     resAvatar: Buffer,
     spyAvatar: Buffer,
-  ) {
+  ): Promise<S3AvatarLinks> {
     const usernameLower = username.toLowerCase();
     const prefix1 = `${FolderName.PENDING}/${usernameLower}/`;
     const prefix2 = `${FolderName.APPROVE}/${usernameLower}/`;
@@ -58,10 +63,10 @@ class S3Agent {
       throw e;
     }
 
-    const resLink = `${this.s3Controller.getEndpoint()}${resKey}`;
-    const spyLink = `${this.s3Controller.getEndpoint()}${spyKey}`;
-
-    return { resLink, spyLink };
+    return {
+      resLink: `${this.s3Controller.getPublicFileLinkPrefix()}${resKey}`,
+      spyLink: `${this.s3Controller.getPublicFileLinkPrefix()}${spyKey}`,
+    };
   }
 
   private getCurrentKeyCounter(listOfKeys: string[]) {
@@ -89,29 +94,58 @@ class S3Agent {
     return counter;
   }
 
-  public async rejectAvatarRequest(link: string) {
-    const pattern = new RegExp(`${FolderName.PENDING}\/.*$`);
-    if (!link.match(pattern)) {
-      throw new Error(`Invalid link provided: ${link}`);
+  public async rejectAvatarRequest(s3AvatarLinks: S3AvatarLinks) {
+    if (!this.isValidPendingAvatarRequest(s3AvatarLinks)) {
+      throw new Error(
+        `Invalid links provided: resLink="${s3AvatarLinks.resLink}" spyLink="${s3AvatarLinks.spyLink}"`,
+      );
     }
 
-    const key = link.match(pattern)[0];
+    const resLinkSplit = this.s3Controller.splitLink(s3AvatarLinks.resLink);
+    const spyLinkSplit = this.s3Controller.splitLink(s3AvatarLinks.spyLink);
 
-    await this.s3Controller.deleteObject(key);
+    await this.s3Controller.deleteObject(resLinkSplit.key);
+    await this.s3Controller.deleteObject(spyLinkSplit.key);
   }
 
-  public async approveAvatarRefactorFilePath(link: string) {
-    // TODO-kev: Consider usernames pending_avatars
-    const index = link.indexOf(FolderName.PENDING);
-    const endpoint = link.substring(0, index);
-    const key = link.substring(index);
-    const newKey = key.replace(
+  public async approveAvatarRequest(s3AvatarLinks: S3AvatarLinks) {
+    if (!this.isValidPendingAvatarRequest(s3AvatarLinks)) {
+      throw new Error(
+        `Invalid links provided: resLink="${s3AvatarLinks.resLink}" spyLink="${s3AvatarLinks.spyLink}"`,
+      );
+    }
+
+    const resLinkSplit = this.s3Controller.splitLink(s3AvatarLinks.resLink);
+    const spyLinkSplit = this.s3Controller.splitLink(s3AvatarLinks.spyLink);
+
+    const resNewKey = resLinkSplit.key.replace(
       `${FolderName.PENDING}`,
       `${FolderName.APPROVE}`,
     );
 
-    await this.s3Controller.refactorObjectFilepath(key, newKey);
-    return `${endpoint}${newKey}`;
+    const spyNewKey = spyLinkSplit.key.replace(
+      `${FolderName.PENDING}`,
+      `${FolderName.APPROVE}`,
+    );
+
+    await this.s3Controller.refactorObjectFilepath(resLinkSplit.key, resNewKey);
+    await this.s3Controller.refactorObjectFilepath(spyLinkSplit.key, spyNewKey);
+
+    const approvedS3AvatarLinks: S3AvatarLinks = {
+      resLink: `${resLinkSplit.publicFileLinkPrefix}${resNewKey}`,
+      spyLink: `${spyLinkSplit.publicFileLinkPrefix}${spyNewKey}`,
+    };
+
+    return approvedS3AvatarLinks;
+  }
+
+  private isValidPendingAvatarRequest(s3AvatarLinks: S3AvatarLinks) {
+    return (
+      this.s3Controller.isValidLink(s3AvatarLinks.resLink, [
+        FolderName.PENDING,
+      ]) &&
+      this.s3Controller.isValidLink(s3AvatarLinks.spyLink, [FolderName.PENDING])
+    );
   }
 }
 

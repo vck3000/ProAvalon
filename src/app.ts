@@ -249,7 +249,7 @@ if (process.env.ENV === 'local') {
 
   app.get('/aapprove/*', async (req, res, next) => {
     const filepath = req.params[0];
-    await s3.approveAvatarRefactorFilePath(filepath);
+    await s3.approveAvatarRequest(filepath);
     res.sendStatus(200);
   });
 }

@@ -47,51 +47,9 @@
 <div class="container myContainer">
     <h1><u>Request an avatar!</u></h1>
 
-    <h3>Rules for avatars:</h3>
-    <div>
-        Avatars:
-        <ul>
-            <li>Must be easily identifyable as res or spy.</li>
-            <li>Must have at least 20% of the original colour (blue or red) and a minimum of the opposite allegiance's colour (approximation).</li>
-            <li>Must not be inappropriate.</li>
-            <li>Must have similar Res and Spy avatars.</li>
-            <li>Must not be similar to any other existing custom avatars (unless the avatar was yours initially).</li>
-            <li>Must be <%= VALID_DIMENSIONS_STR %> in size.</li>
-            <li>Must be maximum <%= MAX_FILESIZE_STR %> in size.</li>
-            <li>Must be a png file.</li>
-            <li>Must have a transparent background (solid white will hurt the eyes of dark theme users!).</li>
-            <li>Must resemble the base avatar images.</li>
-            <li>Must keep the wordage to a minimum.</li>
-            <li>Moderators have the final say, based on their judgment. Feel free to consult them before making your avatars to ensure they will adhere to these guidelines.</li>
-
-        </ul>
-    </div>
-
-    <h3>Who can request a custom avatar:</h3>
-    <div>
-        Players:
-        <ul>
-            <li>Must have played at least 100 games (with the exception of old regular players).</li>
-            <li>Must be an active player of the public Resistance community.</li>
-            <li>Will not be allowed multiple avatars over a number of alternate accounts (open to discussion).</li>
-        </ul>
-    </div>
-    <div>
-    <br>
-        <h4>You can access the base images here: </h4>
-        <a style="padding-left: 10px;" href="https://www.proavalon.com/avatars/base-res.png">Resistance image</a>
-        <br>
-        <a style="padding-left: 10px;" href="https://www.proavalon.com/avatars/base-spy.png">Spy image</a>
-    </div>
-    <br>
-
-    These requirements may or may not change in the future.
-
-    <br>
-    <br>
+    <%- include('../partials/customAvatarRules', MAX_FILESIZE_STR, VALID_DIMENSIONS_STR) %>
 
     <h4><u>If you think your avatar meets these requirements, please fill in the form below:</u></h4>
-
 
     <br>
     <br>
@@ -115,7 +73,7 @@
         </div>
     </div>
 
-    <form action="/profile/<%=userData.username%>/changeavatar" method="post" id="customAvatarSubmissionForm" enctype="multipart/form-data">
+    <form action="/profile/<%=username%>/changeavatar" method="post" id="customAvatarSubmissionForm" enctype="multipart/form-data">
         <div class="form-group">
             <label for="resAvatarFile">Resistance avatar image</label>
             <input type="file" id="resAvatarFile" class="avatarFile" accept="image/png, .png" name="avatarRes">
@@ -163,7 +121,7 @@ $(document).ready(() => {
         e.preventDefault();
 
         // Client side checks
-        const totalGamesPlayed = "<%= userData.totalGamesPlayed %>";
+        const totalGamesPlayed = "<%= totalGamesPlayed %>";
 
         if (totalGamesPlayed < MIN_GAMES_REQUIRED) {
             let s = parseInt(totalGamesPlayed) === 1 ? "" : "s";
@@ -199,7 +157,7 @@ $(document).ready(() => {
 
                 axios({
                     method: 'POST',
-                    url: '/profile/<%=userData.username%>/changeavatar',
+                    url: '/profile/<%=username%>/changeavatar',
                     data: bodyFormData,
                 })
                     .then(function (response) {

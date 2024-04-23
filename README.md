@@ -52,7 +52,8 @@ $ yarn
 
 1. Access MinIO via localhost:9001
 2. Create an access key and paste the key id into `AWS_ACCESS_KEY_ID` and access key into `AWS_SECRET_ACCESS_KEY` in the `.env` file.
-3. Create a Bucket `proavalon` in MinIO. After creation, set its Access Policy to Public.
+3. Create a Bucket named `proavalon` in MinIO.
+4. Set its Access Policy to Public.
 
 ### Stopping
 

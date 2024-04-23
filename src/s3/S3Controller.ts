@@ -9,12 +9,12 @@ import {
 } from '@aws-sdk/client-s3';
 
 // TODO-kev: ts complaining if set as variable: 'local' | 'staging' | 'prod'
-function getEndpoint(env: string): string {
+function getPublicFileLinkPrefix(env: string): string {
   switch (env) {
     case 'local':
       return 'http://localhost:9000/proavalon/';
     case 'staging':
-      return 'https://s3-staging.proavalon.com/file/proavalon-staging/';
+      return 'https://s3-staging.proavalon.com/';
     case 'prod':
       return 'TO BE ADDED';
   }
@@ -34,11 +34,11 @@ function getBucket(env: string): string {
 
 export class S3Controller {
   private client: S3Client;
-  private endpoint: string;
+  private publicFileLinkPrefix: string;
   private bucket: string;
 
   constructor() {
-    this.endpoint = getEndpoint(process.env.ENV);
+    this.publicFileLinkPrefix = getPublicFileLinkPrefix(process.env.ENV);
     this.bucket = getBucket(process.env.ENV);
 
     if (process.env.ENV === 'local') {
@@ -49,8 +49,8 @@ export class S3Controller {
       });
     } else if (process.env.ENV == 'staging') {
       this.client = new S3Client({
-        region: 'us-east-005',
-        endpoint: 'https://s3.us-east-005.backblazeb2.com',
+        region: 'auto',
+        endpoint: 'asdf',
         credentials: fromEnv(),
       });
     }
@@ -119,19 +119,13 @@ export class S3Controller {
   }
 
   public async deleteObject(key: string) {
-    if (!(await this.objectExists(key))) {
-      console.log(
-        `Failed to delete. s3 file does not exist: ${this.bucket}/${key}.`,
-      );
-    }
-
     const deleteCommand = new DeleteObjectCommand({
       Bucket: this.bucket,
       Key: key,
     });
 
     await this.client.send(deleteCommand);
-    console.log(`Successfully deleted s3 file: ${this.bucket}/${key}.`);
+    console.log(`Successfully deleted s3 file: key="${this.bucket}/${key}."`);
   }
 
   public async refactorObjectFilepath(oldKey: string, newKey: string) {
@@ -161,7 +155,28 @@ export class S3Controller {
     );
   }
 
-  public getEndpoint() {
-    return this.endpoint;
+  public getPublicFileLinkPrefix() {
+    return this.publicFileLinkPrefix;
+  }
+
+  public splitLink(link: string) {
+    if (!link.includes(this.publicFileLinkPrefix)) {
+      return null;
+    }
+
+    const key = link.split(this.publicFileLinkPrefix)[1];
+
+    return {
+      publicFileLinkPrefix: this.publicFileLinkPrefix,
+      key: key,
+    };
+  }
+
+  public isValidLink(link: string, requiredStrings: string[]) {
+    // TODO-kev: Keep as regex or use this hack?
+    return (
+      link.includes(this.publicFileLinkPrefix) &&
+      requiredStrings.every((string) => link.includes(string))
+    );
   }
 }
