@@ -150,5 +150,4 @@ class S3Agent {
   }
 }
 
-// TODO-kev: Easy way to rename to s3Agent based on usages?
 export const s3Agent = new S3Agent();

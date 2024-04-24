@@ -10,6 +10,8 @@ export const modsArray = [
   '1',
 ];
 
+// TODO-kev: Remove
+
 export function isMod(username: string): boolean {
   return modsArray.includes(username.toLowerCase());
 }

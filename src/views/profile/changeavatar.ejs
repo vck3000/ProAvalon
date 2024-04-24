@@ -163,8 +163,10 @@ $(document).ready(() => {
                     .then(function (response) {
                         //handle success
                         // Clear the form for next input.
-                        // TODO-kev: Should we remove the image previews or leave as is? Necessary to reset?
                         $('#customAvatarSubmissionForm')[0].reset();
+
+                        // Reset image previews
+                        resetAvatarPreviews();
 
                         Swal.close();
                         Swal.fire({
@@ -184,15 +186,26 @@ $(document).ready(() => {
     })
 });
 
+function resetAvatarPreviews() {
+    const resPreview = document.querySelector('#resAvatarPreview')
+    const spyPreview = document.querySelector('#spyAvatarPreview')
+
+    const previews = [resPreview, spyPreview];
+
+    previews.forEach(preview => {
+        const para = document.createElement("p");
+        para.textContent = "No files currently selected for upload";
+
+        preview.replaceChildren();
+        preview.appendChild(para);
+    })
+}
 
 async function updateAvatarDisplay(file, previewId) {
     const preview = document.querySelector(previewId);
+    preview.replaceChildren();
+
     let valid = false;
-
-    while (preview.firstChild) {
-        preview.removeChild(preview.firstChild);
-    }
-
     const para = document.createElement("p");
 
     if (!file) {
