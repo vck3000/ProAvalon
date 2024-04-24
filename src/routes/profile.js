@@ -9,6 +9,7 @@ import PatreonId from '../models/patreonId';
 import avatarRequest from '../models/avatarRequest';
 import ModLog from '../models/modLog';
 import { createNotification } from '../myFunctions/createNotification';
+import AvatarRequest from '../models/avatarRequest';
 
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',
@@ -137,18 +138,62 @@ router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
   res.status(200).send('done');
 });
 
-router.get('/:profileUsername/avatar', checkProfileOwnership, (req, res) => {
-  User.findOne(
-    { usernameLower: req.params.profileUsername.toLowerCase() },
-    (err, foundUser) => {
-      if (err) {
-        console.log(err);
-      } else {
-        res.render('profile/avatar', { userData: foundUser });
-      }
-    },
-  );
-});
+router.get(
+  '/:profileUsername/avatar',
+  checkProfileOwnership,
+  async (req, res) => {
+    const user = await User.findOne({
+      usernameLower: req.params.profileUsername.toLowerCase(),
+    });
+
+    const approvedAvatarSetsQuery = await AvatarRequest.find({
+      forUsername: user.usernameLower,
+    });
+
+    let approvedAvatarSets = [];
+
+    approvedAvatarSetsQuery.forEach((avatarSet) => {
+      const approvedAvatarSet = {
+        resLink: avatarSet.resLink,
+        spyLink: avatarSet.spyLink,
+      };
+      approvedAvatarSets.push(approvedAvatarSet);
+    });
+
+    res.render('profile/avatar', {
+      username: user.username,
+      avatarImgRes: user.avatarImgRes,
+      avatarImgSpy: user.avatarImgSpy,
+      approvedAvatarSets,
+    });
+  },
+);
+
+// Change avatar
+router.post(
+  '/:profileUsername/avatar/changeavatar',
+  checkProfileOwnership,
+  async (req, res) => {
+    const user = await User.findOne({
+      usernameLower: req.params.profileUsername.toLowerCase(),
+    });
+
+    if (
+      user.avatarImgRes === req.body.resLink ||
+      user.avatarImgSpy === req.body.spyLink
+    ) {
+      res.status(400).send('You are already using this avatar.');
+      return;
+    }
+
+    user.avatarImgRes = req.body.resLink;
+    user.avatarImgSpy = req.body.spyLink;
+
+    await user.save();
+
+    res.status(200).send('Successfully changed avatar.');
+  },
+);
 
 // Show the customavatar edit page
 router.get(

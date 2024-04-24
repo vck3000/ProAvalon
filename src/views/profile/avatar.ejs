@@ -1,3 +1,5 @@
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 <%- include('../partials/header') %>
 
 <link rel="stylesheet" type="text/css" href="../stylesheets/profile.css">
@@ -39,6 +41,17 @@
         background: rgb(200,200,200);
     }
 
+    .avatarSet{
+        padding: 2em;
+    }
+
+    .scrollable-window {
+        width: 400px;
+        height: 400px;
+        overflow: auto;
+        padding: 10px;
+    }
+
 </style>
 
 
@@ -48,41 +61,119 @@
 
     <h3>Current Avatar:</h3>
 
-    <div>
-        <% if(userData.avatarImgRes){ %>
-            <% if(userData.avatarImgRes.includes("http")){ %>
-                <img class="avatarImg" src=<%= userData.avatarImgRes %>>
-            <% } else { %>
-                <img class="avatarImg" src=<%= "../avatars/" + userData.avatarImgRes %>>
-            <% } %>
-        <% } else{ %>
-            <img class="avatarImg" src="../../avatars/base-res.png  ">
-        <% } %>
+    <div class="avatarSet" id="currentAvatarSetDiv">
     </div>
+
+    <a class="btn btn-info" style="margin-left: 2em">Reset to default avatar</a>
 
     <hr style="border-color: lightgrey; border-style: solid; margin: 2em">
 
     <h3>Approved Avatars: </h3>
 
-    <div>
-        <% if(userData.avatarImgRes){ %>
-            <% if(userData.avatarImgRes.includes("http")){ %>
-                <img class="avatarImg" src=<%= userData.avatarImgRes %>>
-            <% } else { %>
-                <img class="avatarImg" src=<%= "../avatars/" + userData.avatarImgRes %>>
-            <% } %>
-        <% } else{ %>
-            <img class="avatarImg" src="../../avatars/base-res.png  ">
-        <% } %>
-        <p>This will be a scrollable? Table view?</p>
+    <div id="approvedAvatars" class="scrollable-window">
     </div>
 
     <br>
 
-    <a class="btn btn-info">Change avatar</a>
+    <a class="btn btn-info" id="changeAvatarBtn">Change avatar</a>
 
-    <a class="btn btn-info" href="/profile/<%=userData.username%>/changeavatar">Submit a custom Avatar</a>
+    <a class="btn btn-info" href="/profile/<%=username%>/changeavatar">Submit a custom Avatar</a>
 
 </div>
+
+
+<script>
+
+    $( document ).ready(function() {
+        const currentAvatarDiv = document.querySelector("#currentAvatarSetDiv");
+        let resImg = document.createElement('img');
+        let spyImg = document.createElement('img');
+
+        resImg.src = '<%= avatarImgRes ? avatarImgRes : "../../avatars/base-res.png" %>';
+        spyImg.src = '<%= avatarImgSpy ? avatarImgSpy : "../../avatars/base-spy.png" %>';
+
+        currentAvatarDiv.appendChild(resImg);
+        currentAvatarDiv.appendChild(spyImg);
+
+
+        const approvedAvatarDiv = document.querySelector("#approvedAvatars");
+        const approvedAvatarSets = <%- JSON.stringify(approvedAvatarSets) %>;
+
+        approvedAvatarSets.forEach((avatarSet, index) => {
+            let avatarSetDiv = document.createElement('div');
+            avatarSetDiv.classList.add('avatarSet');
+
+            let resImg = document.createElement('img');
+            let spyImg = document.createElement('img');
+            let radio  = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = 'avatarSet';
+            radio.value = index;
+            radio.style.marginRight = '2em';
+
+            resImg.src = avatarSet.resLink;
+            spyImg.src = avatarSet.spyLink;
+
+            avatarSetDiv.appendChild(radio);
+            avatarSetDiv.appendChild(resImg);
+            avatarSetDiv.appendChild(spyImg);
+
+            approvedAvatarDiv.appendChild(avatarSetDiv)
+        })
+
+        $("#changeAvatarBtn").on('click', () => {
+            const selectedRadio = document.querySelector('input[name="avatarSet"]:checked');
+
+            if (!selectedRadio) {
+                Swal.fire({
+                    title: 'No avatar selected.',
+                    type: 'error'
+                })
+                return;
+            }
+
+            if (selectedRadio) {
+                const index = selectedRadio.value;
+                avatarSet = approvedAvatarSets[index]
+
+                Swal.fire({
+                    title: 'Sending your request...',
+                    onOpen: () => {
+                        Swal.showLoading();
+                        axios({
+                            method: 'POST',
+                            url: '/profile/<%= username %>/avatar/changeavatar',
+                            data: {
+                                resLink: avatarSet.resLink,
+                                spyLink: avatarSet.spyLink,
+                            },
+                        }).then(function (response) {
+                            //handle success
+                            Swal.close();
+                            Swal.fire({
+                                title: response.data,
+                                type: 'success',
+                                onClose: () => {
+                                    location.reload();
+                                }
+                            });
+                        }).catch(function (err) {
+                            console.log(err)
+                            Swal.close();
+                            Swal.fire({
+                                title: err.response.data,
+                                type: 'error',
+                            });
+                        });
+                    },
+                })
+
+            }
+
+        })
+
+    });
+
+</script>
 
 <%- include('../partials/footer') %>
