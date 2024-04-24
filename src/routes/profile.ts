@@ -68,7 +68,7 @@ router.post(
   '/mod/ajax/processavatarrequest',
   isModMiddleware,
   async (req, res) => {
-    if (req.body.decision !== 'true' && req.body.decision !== 'false') {
+    if (typeof req.body.decision !== 'boolean') {
       throw new Error(
         `Unrecognisable mod decision to process custom avatar request: ${req.body.decision}`,
       );
@@ -80,7 +80,7 @@ router.post(
     });
 
     const modWhoProcessed = req.user;
-    const decision = req.body.decision === 'true';
+    const decision = req.body.decision;
     const modComment = req.body.modcomment
       ? sanitizeHtml(req.body.modcomment)
       : 'No message provided';
@@ -159,7 +159,9 @@ router.post(
       await avatarReq.remove();
     }
 
-    res.status(200).send('done');
+    const result = decision ? 'approved' : 'rejected';
+
+    res.status(200).send(`The custom avatar request has been ${result}.`);
   },
 );
 

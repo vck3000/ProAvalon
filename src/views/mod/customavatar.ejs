@@ -1,3 +1,5 @@
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 <%- include('../partials/header') %>
 
 <style>
@@ -133,7 +135,6 @@
     <% } %>
 
     <script>
-
       $(document).ready(function() {
         console.log('ready!');
 
@@ -169,22 +170,39 @@
 
 
       function processAvatarRequest(decision, avatarreqid, comment) {
-        $.ajax({
-          url: '/profile/mod/ajax/processavatarrequest',
-          type: 'POST',
-          data: {
-            decision: decision,
-            avatarreqid: avatarreqid,
-            modcomment: comment,
-          },
-          success: function() {
-            console.log('ajax success');
-          },
-          error: function(err) {
-            console.log(err);
-          },
-        });
+          Swal.fire({
+              title: 'Sending your request...',
+              onOpen: () => {
+                  Swal.showLoading();
+                  axios({
+                      method: 'POST',
+                      url: '/profile/mod/ajax/processavatarrequest',
+                      data: {
+                          decision: decision,
+                          avatarreqid: avatarreqid,
+                          modcomment: comment,
+                      },
+                  })
+                      .then(function (response) {
+                          //handle success
+                          console.log('ajax success');
 
+                          Swal.close();
+                          Swal.fire({
+                              title: response.data,
+                              type: 'success',
+                          });
+                      })
+                      .catch(function (err) {
+                          console.log(err)
+                          Swal.close();
+                          Swal.fire({
+                              title: err.response.data,
+                              type: 'error',
+                          });
+                      });
+              },
+          })
       }
     </script>
 </div>
