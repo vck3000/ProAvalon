@@ -8,6 +8,7 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 
+// TODO-kev: Create instance or keep as is?
 export class S3Controller {
   private client: S3Client;
   private publicFileLinkPrefix: string;
@@ -24,7 +25,7 @@ export class S3Controller {
     });
   }
 
-  public async objectExists(key: string) {
+  private async objectExists(key: string) {
     try {
       const headCommand = new HeadObjectCommand({
         Bucket: this.bucket,
@@ -80,50 +81,57 @@ export class S3Controller {
     await this.client.send(command);
 
     console.log(`Successfully uploaded file to s3: ${key}`);
+
+    return `${this.publicFileLinkPrefix}${key}`;
   }
 
-  public async deleteObject(key: string) {
-    const deleteCommand = new DeleteObjectCommand({
-      Bucket: this.bucket,
-      Key: key,
-    });
+  public async deleteObject(link: string) {
+    const splitLink = this.splitLink(link);
 
-    await this.client.send(deleteCommand);
-    console.log(`Successfully deleted s3 file: key="${this.bucket}/${key}."`);
-  }
-
-  public async moveFile(oldKey: string, newKey: string) {
-    if (!(await this.objectExists(oldKey))) {
+    if (!splitLink) {
       throw new Error(
-        `Failed to move s3 file. Object with key '${oldKey}' does not exist.`,
+        `Could not delete s3 file. Invalid link provided: ${link}"`,
       );
     }
 
-    if (await this.objectExists(newKey)) {
+    const deleteCommand = new DeleteObjectCommand({
+      Bucket: this.bucket,
+      Key: splitLink.key,
+    });
+
+    await this.client.send(deleteCommand);
+    console.log(`Successfully deleted s3 file: ${link}`);
+  }
+
+  public async moveFile(oldLink: string, newLink: string) {
+    const splitOldLink = this.splitLink(oldLink);
+    const splitNewLink = this.splitLink(newLink);
+
+    if (!(await this.objectExists(splitOldLink.key))) {
       throw new Error(
-        `Failed to move s3 file. Destination object with key '${newKey}' already exists.`,
+        `Failed to move s3 file. File does not exist: ${oldLink}.`,
+      );
+    }
+
+    if (await this.objectExists(splitNewLink.key)) {
+      throw new Error(
+        `Failed to move s3 file. Destination link already exists: '${newLink}'`,
       );
     }
 
     const copyCommand = new CopyObjectCommand({
       Bucket: this.bucket,
-      CopySource: `${this.bucket}/${oldKey}`,
-      Key: newKey,
+      CopySource: `${this.bucket}/${splitOldLink.key}`,
+      Key: splitNewLink.key,
     });
 
     await this.client.send(copyCommand);
-    await this.deleteObject(oldKey);
+    await this.deleteObject(oldLink);
 
-    console.log(
-      `Successfully refactored filepath in s3 from: ${this.bucket}/${oldKey} to: ${this.bucket}/${newKey}`,
-    );
+    console.log(`Successfully moved s3 file from: ${oldLink} to: ${newLink}`);
   }
 
-  public getPublicFileLinkPrefix() {
-    return this.publicFileLinkPrefix;
-  }
-
-  public splitLink(link: string) {
+  private splitLink(link: string) {
     if (!link.includes(this.publicFileLinkPrefix)) {
       return null;
     }
@@ -136,11 +144,13 @@ export class S3Controller {
     };
   }
 
-  public isValidLink(link: string, requiredStrings: string[]) {
-    // TODO-kev: Keep as regex or use this hack?
-    return (
-      link.includes(this.publicFileLinkPrefix) &&
-      requiredStrings.every((string) => link.includes(string))
-    );
+  public isValidLink(link: string, subsequentString: string) {
+    // Match format: <publicFileLinkPrefix><subsequentString>
+    const patternString = `^${this.publicFileLinkPrefix}${subsequentString}.*`;
+    const pattern = new RegExp(patternString);
+    const match = link.match(pattern);
+
+    // TODO-kev: or change to !!match?
+    return Boolean(match);
   }
 }

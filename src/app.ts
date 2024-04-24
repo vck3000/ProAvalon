@@ -34,7 +34,7 @@ import staticifyFactory from 'staticify';
 // Create a MongoDB session store
 import MongoDBStoreFactory from 'connect-mongodb-session';
 import { SESSIONS_COLLECTION_NAME } from './constants';
-import { s3 } from './s3/S3Agent';
+import { s3Agent } from './s3/S3Agent';
 
 const assetsPath = path.join(__dirname, '../assets');
 
@@ -218,38 +218,42 @@ socketServer(io);
 if (process.env.ENV === 'local') {
   app.get('/aexists/*', async (req, res, next) => {
     const filepath = req.params[0];
-    console.log(await s3.objectExists(filepath));
+    console.log(await s3Agent.objectExists(filepath));
     res.sendStatus(200);
   });
 
   app.get('/aupload/*', async (req, res, next) => {
     const filepath = req.params[0];
-    await s3.uploadFile(filepath, 'Hello world! And version 2', 'text/plain');
+    await s3Agent.uploadFile(
+      filepath,
+      'Hello world! And version 2',
+      'text/plain',
+    );
     res.sendStatus(200);
   });
 
   app.get('/akey/*', async (req, res, next) => {
     const key = req.params[0];
-    console.log(await s3.listObjectKeys(key));
+    console.log(await s3Agent.listObjectKeys(key));
     res.sendStatus(200);
   });
 
   app.get('/adelete/*', async (req, res, next) => {
     const filepath = req.params[0];
     console.log(filepath);
-    await s3.deleteObject(filepath);
+    await s3Agent.deleteObject(filepath);
     res.sendStatus(200);
   });
 
   app.get('/areject/*', async (req, res, next) => {
     const filepath = req.params[0];
-    await s3.rejectAvatarRequest(filepath);
+    await s3Agent.rejectAvatarRequest(filepath);
     res.sendStatus(200);
   });
 
   app.get('/aapprove/*', async (req, res, next) => {
     const filepath = req.params[0];
-    await s3.approveAvatarRequest(filepath);
+    await s3Agent.approveAvatarRequest(filepath);
     res.sendStatus(200);
   });
 }

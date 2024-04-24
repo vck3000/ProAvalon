@@ -12,7 +12,7 @@ import ModLog from '../models/modLog';
 import { createNotification } from '../myFunctions/createNotification';
 import multer from 'multer';
 import imageSize from 'image-size';
-import { s3 } from '../s3/S3Agent';
+import { s3Agent } from '../s3/S3Agent';
 
 const MAX_ACTIVE_AVATAR_REQUESTS = 2;
 const MIN_GAMES_REQUIRED = 100;
@@ -86,7 +86,7 @@ router.post(
       : 'No message provided';
 
     if (decision) {
-      const approvedAvatarLinks = await s3.approveAvatarRequest({
+      const approvedAvatarLinks = await s3Agent.approveAvatarRequest({
         resLink: avatarReq.resLink,
         spyLink: avatarReq.spyLink,
       });
@@ -114,7 +114,7 @@ router.post(
         modWhoProcessed.username,
       );
     } else {
-      await s3.rejectAvatarRequest({
+      await s3Agent.rejectAvatarRequest({
         resLink: avatarReq.resLink,
         spyLink: avatarReq.spyLink,
       });
@@ -242,7 +242,7 @@ router.post(
     const avatarRes = req.files['avatarRes'][0];
     const avatarSpy = req.files['avatarSpy'][0];
 
-    const avatarLinks = await s3.uploadAvatarRequestImages(
+    const avatarLinks = await s3Agent.uploadAvatarRequestImages(
       req.params.profileUsername,
       avatarRes.buffer,
       avatarSpy.buffer,

@@ -6,6 +6,8 @@ enum FolderName {
   PENDING = 'pending_avatars',
 }
 
+const SUPPORTED_EXTENSIONS = ['.png'];
+
 interface S3AvatarLinks {
   resLink: string;
   spyLink: string;
@@ -47,44 +49,51 @@ class S3Agent {
     const resKey = `${prefix1}${resFileName}`;
     const spyKey = `${prefix1}${spyFileName}`;
 
-    const succeededFiles = [];
+    const succeededFileLinks = [];
+    let resLink: string;
+    let spyLink: string;
 
     try {
-      await this.s3Controller.uploadFile(resKey, resAvatar, 'image/png');
-      succeededFiles.push(resKey);
+      resLink = await this.s3Controller.uploadFile(
+        resKey,
+        resAvatar,
+        'image/png',
+      );
+      succeededFileLinks.push(resLink);
 
-      await this.s3Controller.uploadFile(spyKey, spyAvatar, 'image/png');
-      succeededFiles.push(spyKey);
+      spyLink = await this.s3Controller.uploadFile(
+        spyKey,
+        spyAvatar,
+        'image/png',
+      );
+      succeededFileLinks.push(spyLink);
     } catch (e) {
-      for (const succeededFile of succeededFiles) {
-        await this.s3Controller.deleteObject(succeededFile);
+      for (const succeededFileLink of succeededFileLinks) {
+        await this.s3Controller.deleteObject(succeededFileLink);
       }
 
       throw e;
     }
 
     return {
-      resLink: `${this.s3Controller.getPublicFileLinkPrefix()}${resKey}`,
-      spyLink: `${this.s3Controller.getPublicFileLinkPrefix()}${spyKey}`,
+      resLink,
+      spyLink,
     };
   }
 
   private getCurrentKeyCounter(listOfKeys: string[]) {
     let counter = 0;
 
-    listOfKeys.forEach((key) => {
-      // Match format /<username>_<res|spy>_<id>.png
-      // const match = key.match(/\/([^/]+)_(spy|res)_(\d+)\.png$/);
+    // Match format: Last occurrence /<username>_<res|spy>_<counter><file_extension>
+    const pattern = new RegExp(
+      `([^/]+)_(res|spy)_(\\d+)(${SUPPORTED_EXTENSIONS.join('|')})$`,
+    );
 
-      // TODO-kev: Thoughts on this one?
-      // Match format <pending_avatars|approved_avatars>/<username>/<username>_<res|spy>_<id>.png
-      const pattern = new RegExp(
-        `^(${FolderName.PENDING}|${FolderName.APPROVED})\\/([^/]+)\\/\\2_(res|spy)_(\\d+)\\.png$`,
-      );
+    listOfKeys.forEach((key) => {
       const match = key.match(pattern);
 
       if (match) {
-        const count = parseInt(match[4], 10);
+        const count = parseInt(match[3], 10);
         if (count > counter) {
           counter = count;
         }
@@ -101,11 +110,8 @@ class S3Agent {
       );
     }
 
-    const resLinkSplit = this.s3Controller.splitLink(s3AvatarLinks.resLink);
-    const spyLinkSplit = this.s3Controller.splitLink(s3AvatarLinks.spyLink);
-
-    await this.s3Controller.deleteObject(resLinkSplit.key);
-    await this.s3Controller.deleteObject(spyLinkSplit.key);
+    await this.s3Controller.deleteObject(s3AvatarLinks.resLink);
+    await this.s3Controller.deleteObject(s3AvatarLinks.spyLink);
   }
 
   public async approveAvatarRequest(s3AvatarLinks: S3AvatarLinks) {
@@ -115,39 +121,34 @@ class S3Agent {
       );
     }
 
-    const resLinkSplit = this.s3Controller.splitLink(s3AvatarLinks.resLink);
-    const spyLinkSplit = this.s3Controller.splitLink(s3AvatarLinks.spyLink);
-
-    const resNewKey = resLinkSplit.key.replace(
+    const resNewLink = s3AvatarLinks.resLink.replace(
+      `${FolderName.PENDING}`,
+      `${FolderName.APPROVED}`,
+    );
+    const spyNewLink = s3AvatarLinks.spyLink.replace(
       `${FolderName.PENDING}`,
       `${FolderName.APPROVED}`,
     );
 
-    const spyNewKey = spyLinkSplit.key.replace(
-      `${FolderName.PENDING}`,
-      `${FolderName.APPROVED}`,
-    );
+    await this.s3Controller.moveFile(s3AvatarLinks.resLink, resNewLink);
+    await this.s3Controller.moveFile(s3AvatarLinks.spyLink, spyNewLink);
 
-    await this.s3Controller.moveFile(resLinkSplit.key, resNewKey);
-    await this.s3Controller.moveFile(spyLinkSplit.key, spyNewKey);
-
-    const approvedS3AvatarLinks: S3AvatarLinks = {
-      resLink: `${resLinkSplit.publicFileLinkPrefix}${resNewKey}`,
-      spyLink: `${spyLinkSplit.publicFileLinkPrefix}${spyNewKey}`,
+    return {
+      resLink: resNewLink,
+      spyLink: spyNewLink,
     };
-
-    return approvedS3AvatarLinks;
   }
 
   private isValidPendingAvatarRequest(s3AvatarLinks: S3AvatarLinks) {
     return (
-      this.s3Controller.isValidLink(s3AvatarLinks.resLink, [
+      this.s3Controller.isValidLink(
+        s3AvatarLinks.resLink,
         FolderName.PENDING,
-      ]) &&
-      this.s3Controller.isValidLink(s3AvatarLinks.spyLink, [FolderName.PENDING])
+      ) &&
+      this.s3Controller.isValidLink(s3AvatarLinks.spyLink, FolderName.PENDING)
     );
   }
 }
 
 // TODO-kev: Easy way to rename to s3Agent based on usages?
-export const s3 = new S3Agent();
+export const s3Agent = new S3Agent();
