@@ -48,6 +48,7 @@ export class S3Controller {
         credentials: fromEnv(),
       });
     } else if (process.env.ENV == 'staging') {
+      // TODO-kev: Update the below
       this.client = new S3Client({
         region: 'auto',
         endpoint: 'asdf',
@@ -66,11 +67,7 @@ export class S3Controller {
       await this.client.send(headCommand);
       return true;
     } catch (e) {
-      if (
-        e.name === 'NotFound' &&
-        e.$metadata &&
-        e.$metadata.httpStatusCode === 404
-      ) {
+      if (e.$metadata.httpStatusCode === 404) {
         return false;
       } else {
         throw e;
@@ -128,16 +125,16 @@ export class S3Controller {
     console.log(`Successfully deleted s3 file: key="${this.bucket}/${key}."`);
   }
 
-  public async refactorObjectFilepath(oldKey: string, newKey: string) {
+  public async moveFile(oldKey: string, newKey: string) {
     if (!(await this.objectExists(oldKey))) {
       throw new Error(
-        `Failed to refactor s3 file. Object with key '${oldKey}' does not exist.`,
+        `Failed to move s3 file. Object with key '${oldKey}' does not exist.`,
       );
     }
 
     if (await this.objectExists(newKey)) {
       throw new Error(
-        `Failed to refactor s3 file. Destination object with key '${newKey}' already exists.`,
+        `Failed to move s3 file. Destination object with key '${newKey}' already exists.`,
       );
     }
 

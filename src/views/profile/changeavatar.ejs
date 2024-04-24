@@ -157,7 +157,7 @@ $(document).ready(() => {
 
                 axios({
                     method: 'POST',
-                    url: '/profile/<%=username%>/changeavatar',
+                    url: '/profile/<%= username %>/changeavatar',
                     data: bodyFormData,
                 })
                     .then(function (response) {
@@ -217,7 +217,7 @@ async function updateAvatarDisplay(file, previewId) {
                 const validation = document.createElement("p");
                 const validDim = "<%= JSON.stringify(VALID_DIMENSIONS) %>";
 
-                if (!validDim.includes(image.width) || !validDim.includes(image.height)) {
+                if (!validDim.includes(image.width) || !validDim.includes(image.height) || image.width !== image.height) {
                     validation.textContent = `Invalid: Image should be either <%= VALID_DIMENSIONS_STR %>.`;
                 } else {
                     valid = true;

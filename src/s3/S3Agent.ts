@@ -2,7 +2,7 @@ import { Buffer } from 'buffer';
 import { S3Controller } from './S3Controller';
 
 enum FolderName {
-  APPROVE = 'approved_avatars',
+  APPROVED = 'approved_avatars',
   PENDING = 'pending_avatars',
 }
 
@@ -32,7 +32,7 @@ class S3Agent {
   ): Promise<S3AvatarLinks> {
     const usernameLower = username.toLowerCase();
     const prefix1 = `${FolderName.PENDING}/${usernameLower}/`;
-    const prefix2 = `${FolderName.APPROVE}/${usernameLower}/`;
+    const prefix2 = `${FolderName.APPROVED}/${usernameLower}/`;
 
     // Find unique ID for filepath generation
     const existingObjectKeys = await this.s3Controller.listObjectKeys([
@@ -79,7 +79,7 @@ class S3Agent {
       // TODO-kev: Thoughts on this one?
       // Match format <pending_avatars|approved_avatars>/<username>/<username>_<res|spy>_<id>.png
       const pattern = new RegExp(
-        `^(${FolderName.PENDING}|${FolderName.APPROVE})\\/([^/]+)\\/\\2_(res|spy)_(\\d+)\\.png$`,
+        `^(${FolderName.PENDING}|${FolderName.APPROVED})\\/([^/]+)\\/\\2_(res|spy)_(\\d+)\\.png$`,
       );
       const match = key.match(pattern);
 
@@ -120,16 +120,16 @@ class S3Agent {
 
     const resNewKey = resLinkSplit.key.replace(
       `${FolderName.PENDING}`,
-      `${FolderName.APPROVE}`,
+      `${FolderName.APPROVED}`,
     );
 
     const spyNewKey = spyLinkSplit.key.replace(
       `${FolderName.PENDING}`,
-      `${FolderName.APPROVE}`,
+      `${FolderName.APPROVED}`,
     );
 
-    await this.s3Controller.refactorObjectFilepath(resLinkSplit.key, resNewKey);
-    await this.s3Controller.refactorObjectFilepath(spyLinkSplit.key, spyNewKey);
+    await this.s3Controller.moveFile(resLinkSplit.key, resNewKey);
+    await this.s3Controller.moveFile(spyLinkSplit.key, spyNewKey);
 
     const approvedS3AvatarLinks: S3AvatarLinks = {
       resLink: `${resLinkSplit.publicFileLinkPrefix}${resNewKey}`,

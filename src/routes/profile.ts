@@ -155,7 +155,7 @@ router.post(
       console.log(
         `Custom avatar request rejected: forUser="${avatarReq.forUsername}" byMod="${modWhoProcessed.username}" modComment="${modComment}"`,
       );
-      // TODO-kev: Thoughts on keeping the avatar request for metric counts?
+
       await avatarReq.remove();
     }
 
@@ -200,10 +200,9 @@ const multerMiddleware = multer({
 const upload = function (req, res, next) {
   multerMiddleware(req, res, function (err) {
     if (!err) {
-      return next();
+      next();
+      return;
     }
-
-    console.log('test');
 
     if (!(err instanceof multer.MulterError)) {
       res.status(500).send();
@@ -352,7 +351,9 @@ async function validateUploadAvatarRequest(
     !VALID_DIMENSIONS.includes(dimRes.width) ||
     !VALID_DIMENSIONS.includes(dimRes.height) ||
     !VALID_DIMENSIONS.includes(dimSpy.width) ||
-    !VALID_DIMENSIONS.includes(dimSpy.height)
+    !VALID_DIMENSIONS.includes(dimSpy.height) ||
+    dimRes.width !== dimRes.height ||
+    dimSpy.width !== dimSpy.height
   ) {
     return {
       valid: false,
