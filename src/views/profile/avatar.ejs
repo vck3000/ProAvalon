@@ -64,7 +64,7 @@
     <div class="avatarSet" id="currentAvatarSetDiv">
     </div>
 
-    <a class="btn btn-info" style="margin-left: 2em">Reset to default avatar</a>
+    <a class="btn btn-info" id="avatarResetButton" style="margin-left: 2em">Reset to default avatar</a>
 
     <hr style="border-color: lightgrey; border-style: solid; margin: 2em">
 
@@ -170,6 +170,40 @@
 
             }
 
+        })
+
+        $("#avatarResetButton").on('click', () => {
+            Swal.fire({
+                title: 'Sending your request...',
+                onOpen: () => {
+                    Swal.showLoading();
+                    axios({
+                        method: 'POST',
+                        url: '/profile/<%= username %>/avatar/changeavatar',
+                        data: {
+                            resLink: null,
+                            spyLink: null,
+                        },
+                    }).then(function (response) {
+                        //handle success
+                        Swal.close();
+                        Swal.fire({
+                            title: response.data,
+                            type: 'success',
+                            onClose: () => {
+                                location.reload();
+                            }
+                        });
+                    }).catch(function (err) {
+                        console.log(err)
+                        Swal.close();
+                        Swal.fire({
+                            title: err.response.data,
+                            type: 'error',
+                        });
+                    });
+                },
+            })
         })
 
     });
