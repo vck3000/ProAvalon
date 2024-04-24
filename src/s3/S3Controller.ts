@@ -66,6 +66,8 @@ export class S3Controller {
     return keys;
   }
 
+  // TODO-kev: Get the StreamingBlobPayloadInputTypes to work
+  // public async uploadFile(key: string, fileContent: StreamingBlobPayloadInputTypes,, contentType: string) {
   public async uploadFile(key: string, fileContent: any, contentType: string) {
     if (await this.objectExists(key)) {
       throw new Error(`Failed to upload to s3. File already exists: '${key}'.`);
