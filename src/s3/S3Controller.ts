@@ -8,53 +8,20 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 
-// TODO-kev: ts complaining if set as variable: 'local' | 'staging' | 'prod'
-function getPublicFileLinkPrefix(env: string): string {
-  switch (env) {
-    case 'local':
-      return 'http://localhost:9000/proavalon/';
-    case 'staging':
-      return 'https://s3-staging.proavalon.com/';
-    case 'prod':
-      return 'TO BE ADDED';
-  }
-}
-
-// TODO-kev: ts complaining if set as variable: 'local' | 'staging' | 'prod'
-function getBucket(env: string): string {
-  switch (env) {
-    case 'local':
-      return 'proavalon';
-    case 'staging':
-      return 'proavalon-staging';
-    case 'prod':
-      return 'TO BE ADDED';
-  }
-}
-
 export class S3Controller {
   private client: S3Client;
   private publicFileLinkPrefix: string;
   private bucket: string;
 
   constructor() {
-    this.publicFileLinkPrefix = getPublicFileLinkPrefix(process.env.ENV);
-    this.bucket = getBucket(process.env.ENV);
+    this.publicFileLinkPrefix = process.env.S3_PUBLIC_FILE_LINK_PREFIX;
+    this.bucket = process.env.S3_BUCKET_NAME;
 
-    if (process.env.ENV === 'local') {
-      this.client = new S3Client({
-        region: 'asdf',
-        endpoint: 'http://127.0.0.1:9000',
-        credentials: fromEnv(),
-      });
-    } else if (process.env.ENV == 'staging') {
-      // TODO-kev: Update the below
-      this.client = new S3Client({
-        region: 'auto',
-        endpoint: 'asdf',
-        credentials: fromEnv(),
-      });
-    }
+    this.client = new S3Client({
+      region: process.env.S3_REGION,
+      endpoint: process.env.S3_ENDPOINT,
+      credentials: fromEnv(),
+    });
   }
 
   public async objectExists(key: string) {
