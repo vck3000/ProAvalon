@@ -65,9 +65,7 @@ export default class S3Controller {
     return keys;
   }
 
-  // TODO-kev: Get the StreamingBlobPayloadInputTypes to work
-  // public async uploadFile(key: string, fileContent: StreamingBlobPayloadInputTypes,, contentType: string) {
-  public async uploadFile(key: string, fileContent: any, contentType: string) {
+  public async uploadFile(key: string, fileContent: Buffer, contentType: string) {
     if (await this.objectExists(key)) {
       throw new Error(`Failed to upload to s3. File already exists: '${key}'.`);
     }
@@ -86,7 +84,7 @@ export default class S3Controller {
     return `${this.publicFileLinkPrefix}${key}`;
   }
 
-  public async deleteObject(link: string) {
+  public async deleteFile(link: string) {
     const splitLink = this.splitLink(link);
 
     if (!splitLink) {
@@ -127,7 +125,7 @@ export default class S3Controller {
     });
 
     await this.client.send(copyCommand);
-    await this.deleteObject(oldLink);
+    await this.deleteFile(oldLink);
 
     console.log(`Successfully moved s3 file from: ${oldLink} to: ${newLink}`);
   }

@@ -32,27 +32,27 @@ export class S3Agent {
     spyAvatar: Buffer,
   ): Promise<S3AvatarLinks> {
     const usernameLower = username.toLowerCase();
-    const prefix1 = `${FolderName.PENDING}/${usernameLower}/`;
-    const prefix2 = `${FolderName.APPROVED}/${usernameLower}/`;
+    const pendingPrefixWithUsername = `${FolderName.PENDING}/${usernameLower}/`;
 
     // Find unique ID for filepath generation
     const existingObjectKeys = await this.s3Controller.listObjectKeys([
-      prefix1,
-      prefix2,
+      pendingPrefixWithUsername,
+      `${FolderName.APPROVED}/${usernameLower}/`,
     ]);
     const counter = this.getCurrentKeyCounter(existingObjectKeys);
 
     const resFileName = `${usernameLower}_res_${counter + 1}.png`;
     const spyFileName = `${usernameLower}_spy_${counter + 1}.png`;
 
-    const resKey = `${prefix1}${resFileName}`;
-    const spyKey = `${prefix1}${spyFileName}`;
+    const resKey = `${pendingPrefixWithUsername}${resFileName}`;
+    const spyKey = `${pendingPrefixWithUsername}${spyFileName}`;
 
     const succeededFileLinks = [];
     let resLink: string;
     let spyLink: string;
 
     try {
+      // TODO-kev add a unit test to check that the return link must contain the resKey
       resLink = await this.s3Controller.uploadFile(
         resKey,
         resAvatar,
@@ -68,7 +68,7 @@ export class S3Agent {
       succeededFileLinks.push(spyLink);
     } catch (e) {
       for (const succeededFileLink of succeededFileLinks) {
-        await this.s3Controller.deleteObject(succeededFileLink);
+        await this.s3Controller.deleteFile(succeededFileLink);
       }
 
       throw e;
@@ -99,8 +99,8 @@ export class S3Agent {
       );
     }
 
-    await this.s3Controller.deleteObject(s3AvatarLinks.resLink);
-    await this.s3Controller.deleteObject(s3AvatarLinks.spyLink);
+    await this.s3Controller.deleteFile(s3AvatarLinks.resLink);
+    await this.s3Controller.deleteFile(s3AvatarLinks.spyLink);
   }
 
   public async approveAvatarRequest(s3AvatarLinks: S3AvatarLinks) {
@@ -119,8 +119,21 @@ export class S3Agent {
       FolderName.APPROVED,
     );
 
-    await this.s3Controller.moveFile(s3AvatarLinks.resLink, newResLink);
-    await this.s3Controller.moveFile(s3AvatarLinks.spyLink, newSpyLink);
+    let firstOnePassed = false;
+
+    try {
+      await this.s3Controller.moveFile(s3AvatarLinks.resLink, newResLink);
+      firstOnePassed = true;
+
+      await this.s3Controller.moveFile(s3AvatarLinks.spyLink, newSpyLink);
+    } catch (e) {
+      // If the first one passed but the second one failed, move the first one back.
+      if (firstOnePassed) {
+        await this.s3Controller.moveFile(newResLink, s3AvatarLinks.resLink);
+      }
+
+      throw e;
+    }
 
     return {
       resLink: newResLink,
