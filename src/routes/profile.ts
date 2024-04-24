@@ -1,10 +1,8 @@
 // @ts-nocheck
 import express from 'express';
-
-const router = express.Router();
 import sanitizeHtml from 'sanitize-html';
 import url from 'url';
-import { isModMiddleware, checkProfileOwnership } from './middleware';
+import { checkProfileOwnership, isModMiddleware } from './middleware';
 import User from '../models/user';
 import PatreonId from '../models/patreonId';
 import avatarRequest from '../models/avatarRequest';
@@ -12,7 +10,11 @@ import ModLog from '../models/modLog';
 import { createNotification } from '../myFunctions/createNotification';
 import multer from 'multer';
 import imageSize from 'image-size';
-import { s3Agent } from '../s3/S3Agent';
+import { S3Agent } from '../s3/S3Agent';
+
+const s3Agent = S3Agent();
+
+const router = express.Router();
 
 const MAX_ACTIVE_AVATAR_REQUESTS = 2;
 const MIN_GAMES_REQUIRED = 100;
@@ -199,8 +201,13 @@ const multerMiddleware = multer({
   { name: 'avatarSpy', maxCount: 1 },
 ]);
 
-const upload = function (req, res, next) {
-  multerMiddleware(req, res, function (err) {
+type MulterFiles = {
+  'avatarRes': Express.Multer.File[],
+  'avatarSpy': Express.Multer.File[],
+};
+
+const upload = function(req, res, next) {
+  multerMiddleware(req, res, function(err) {
     if (!err) {
       next();
       return;
@@ -226,9 +233,11 @@ router.post(
   checkProfileOwnership,
   upload,
   async (req, res) => {
+    const files: MulterFiles = req.files;
+
     const result = await validateUploadAvatarRequest(
       req.params.profileUsername,
-      req.files,
+      files,
     );
 
     if (!result.valid) {
@@ -241,8 +250,8 @@ router.post(
       : 'No message provided';
 
     // Upload valid avatar requests to s3 bucket
-    const avatarRes = req.files['avatarRes'][0];
-    const avatarSpy = req.files['avatarSpy'][0];
+    const avatarRes = files['avatarRes'][0];
+    const avatarSpy = files['avatarSpy'][0];
 
     const avatarLinks = await s3Agent.uploadAvatarRequestImages(
       req.params.profileUsername,
@@ -275,10 +284,13 @@ router.post(
 
 async function validateUploadAvatarRequest(
   username: string,
-  files,
+  files: MulterFiles,
 ): Promise<{ valid: boolean; errMsg: string }> {
-  const user = await User.findOne({ username: username });
+  if (username.includes('_')) {
+    throw new Error(`Username ${username} includes an underscore! Bad! Avatar set up doesn't support this.`);
+  }
 
+  const user = await User.findOne({ username: username });
   if (!user) {
     throw new Error(`User not found: ${username}`);
   }

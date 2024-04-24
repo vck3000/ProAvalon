@@ -1,19 +1,18 @@
-import { Buffer } from 'buffer';
-import { S3Controller } from './S3Controller';
+import S3Controller from './S3Controller';
 
 enum FolderName {
   APPROVED = 'approved_avatars',
   PENDING = 'pending_avatars',
 }
 
-const SUPPORTED_EXTENSIONS = ['.png'];
+const SUPPORTED_EXTENSIONS = ['png'];
 
 interface S3AvatarLinks {
   resLink: string;
   spyLink: string;
 }
 
-class S3Agent {
+export class S3Agent {
   private s3Controller: S3Controller;
 
   constructor() {
@@ -82,25 +81,15 @@ class S3Agent {
   }
 
   private getCurrentKeyCounter(listOfKeys: string[]) {
-    let counter = 0;
-
     // Match format: Last occurrence /<username>_<res|spy>_<counter><file_extension>
     const pattern = new RegExp(
-      `([^/]+)_(res|spy)_(\\d+)(${SUPPORTED_EXTENSIONS.join('|')})$`,
+      `([^/]+)_(res|spy)_(\\d+)\\.(${SUPPORTED_EXTENSIONS.join('|')})$`,
     );
 
-    listOfKeys.forEach((key) => {
+    return Math.max(...listOfKeys.map((key) => {
       const match = key.match(pattern);
-
-      if (match) {
-        const count = parseInt(match[3], 10);
-        if (count > counter) {
-          counter = count;
-        }
-      }
-    });
-
-    return counter;
+      return match ? parseInt(match[3], 10) : 0;
+    }));
   }
 
   public async rejectAvatarRequest(s3AvatarLinks: S3AvatarLinks) {
@@ -121,33 +110,28 @@ class S3Agent {
       );
     }
 
-    const resNewLink = s3AvatarLinks.resLink.replace(
-      `${FolderName.PENDING}`,
-      `${FolderName.APPROVED}`,
+    const newResLink = s3AvatarLinks.resLink.replace(
+      FolderName.PENDING,
+      FolderName.APPROVED,
     );
-    const spyNewLink = s3AvatarLinks.spyLink.replace(
-      `${FolderName.PENDING}`,
-      `${FolderName.APPROVED}`,
+    const newSpyLink = s3AvatarLinks.spyLink.replace(
+      FolderName.PENDING,
+      FolderName.APPROVED,
     );
 
-    await this.s3Controller.moveFile(s3AvatarLinks.resLink, resNewLink);
-    await this.s3Controller.moveFile(s3AvatarLinks.spyLink, spyNewLink);
+    await this.s3Controller.moveFile(s3AvatarLinks.resLink, newResLink);
+    await this.s3Controller.moveFile(s3AvatarLinks.spyLink, newSpyLink);
 
     return {
-      resLink: resNewLink,
-      spyLink: spyNewLink,
+      resLink: newResLink,
+      spyLink: newSpyLink,
     };
   }
 
   private isValidPendingAvatarRequest(s3AvatarLinks: S3AvatarLinks) {
     return (
-      this.s3Controller.isValidLink(
-        s3AvatarLinks.resLink,
-        FolderName.PENDING,
-      ) &&
+      this.s3Controller.isValidLink(s3AvatarLinks.resLink, FolderName.PENDING) &&
       this.s3Controller.isValidLink(s3AvatarLinks.spyLink, FolderName.PENDING)
     );
   }
 }
-
-export const s3Agent = new S3Agent();

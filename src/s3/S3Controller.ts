@@ -8,8 +8,7 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 
-// TODO-kev: Create instance or keep as is?
-export class S3Controller {
+export default class S3Controller {
   private client: S3Client;
   private publicFileLinkPrefix: string;
   private bucket: string;
