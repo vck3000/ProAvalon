@@ -12,7 +12,7 @@ import multer from 'multer';
 import imageSize from 'image-size';
 import { S3Agent } from '../s3/S3Agent';
 
-const s3Agent = S3Agent();
+const s3Agent = new S3Agent();
 
 const router = express.Router();
 
