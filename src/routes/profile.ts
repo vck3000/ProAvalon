@@ -72,7 +72,9 @@ router.post(
   async (req, res) => {
     if (typeof req.body.decision !== 'boolean') {
       throw new Error(
-        `Unrecognisable mod decision to process custom avatar request: ${req.body.decision}`,
+        `Unrecognisable mod decision to process custom avatar request: decision="${
+          req.body.decision
+        }" type=${typeof req.body.decision}`,
       );
     }
 
@@ -202,12 +204,12 @@ const multerMiddleware = multer({
 ]);
 
 type MulterFiles = {
-  'avatarRes': Express.Multer.File[],
-  'avatarSpy': Express.Multer.File[],
+  avatarRes: Express.Multer.File[];
+  avatarSpy: Express.Multer.File[];
 };
 
-const upload = function(req, res, next) {
-  multerMiddleware(req, res, function(err) {
+const upload = function (req, res, next) {
+  multerMiddleware(req, res, function (err) {
     if (!err) {
       next();
       return;
@@ -287,7 +289,9 @@ async function validateUploadAvatarRequest(
   files: MulterFiles,
 ): Promise<{ valid: boolean; errMsg: string }> {
   if (username.includes('_')) {
-    throw new Error(`Username ${username} includes an underscore! Bad! Avatar set up doesn't support this.`);
+    throw new Error(
+      `Username ${username} includes an underscore! Bad! Avatar set up doesn't support this.`,
+    );
   }
 
   const user = await User.findOne({ username: username });

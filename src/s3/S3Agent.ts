@@ -81,15 +81,21 @@ export class S3Agent {
   }
 
   private getCurrentKeyCounter(listOfKeys: string[]) {
+    if (listOfKeys.length === 0) {
+      return 0;
+    }
+
     // Match format: Last occurrence /<username>_<res|spy>_<counter><file_extension>
     const pattern = new RegExp(
       `([^/]+)_(res|spy)_(\\d+)\\.(${SUPPORTED_EXTENSIONS.join('|')})$`,
     );
 
-    return Math.max(...listOfKeys.map((key) => {
-      const match = key.match(pattern);
-      return match ? parseInt(match[3], 10) : 0;
-    }));
+    return Math.max(
+      ...listOfKeys.map((key) => {
+        const match = key.match(pattern);
+        return match ? parseInt(match[3], 10) : 0;
+      }),
+    );
   }
 
   public async rejectAvatarRequest(s3AvatarLinks: S3AvatarLinks) {
@@ -143,7 +149,10 @@ export class S3Agent {
 
   private isValidPendingAvatarRequest(s3AvatarLinks: S3AvatarLinks) {
     return (
-      this.s3Controller.isValidLink(s3AvatarLinks.resLink, FolderName.PENDING) &&
+      this.s3Controller.isValidLink(
+        s3AvatarLinks.resLink,
+        FolderName.PENDING,
+      ) &&
       this.s3Controller.isValidLink(s3AvatarLinks.spyLink, FolderName.PENDING)
     );
   }

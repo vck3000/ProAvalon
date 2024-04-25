@@ -36,7 +36,7 @@ import * as util from 'util';
 import { RoomCreationType } from '../gameplay/roomTypes';
 import { CreateRoomFilter } from './filters/createRoomFilter';
 import Game, { GameConfig } from '../gameplay/game';
-import room, { RoomConfig } from '../gameplay/room';
+import { RoomConfig } from '../gameplay/room';
 import { MatchmakingQueue, QueueEntry } from './matchmakingQueue';
 import { ReadyPrompt, ReadyPromptReplyFromClient } from './readyPrompt';
 import { JoinQueueFilter } from './filters/joinQueueFilter';
