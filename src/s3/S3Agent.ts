@@ -149,11 +149,8 @@ export class S3Agent {
 
   private isValidPendingAvatarRequest(s3AvatarLinks: S3AvatarLinks) {
     return (
-      this.s3Controller.isValidLink(
-        s3AvatarLinks.resLink,
-        FolderName.PENDING,
-      ) &&
-      this.s3Controller.isValidLink(s3AvatarLinks.spyLink, FolderName.PENDING)
+      s3AvatarLinks.resLink.includes(FolderName.PENDING) &&
+      s3AvatarLinks.spyLink.includes(FolderName.PENDING)
     );
   }
 }

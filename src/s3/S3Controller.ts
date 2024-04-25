@@ -65,7 +65,11 @@ export default class S3Controller {
     return keys;
   }
 
-  public async uploadFile(key: string, fileContent: Buffer, contentType: string) {
+  public async uploadFile(
+    key: string,
+    fileContent: Buffer,
+    contentType: string,
+  ) {
     if (await this.objectExists(key)) {
       throw new Error(`Failed to upload to s3. File already exists: '${key}'.`);
     }
@@ -85,9 +89,9 @@ export default class S3Controller {
   }
 
   public async deleteFile(link: string) {
-    const splitLink = this.splitLink(link);
+    const linkDetails = this.parseLink(link);
 
-    if (!splitLink) {
+    if (!linkDetails) {
       throw new Error(
         `Could not delete s3 file. Invalid link provided: ${link}"`,
       );
@@ -95,7 +99,7 @@ export default class S3Controller {
 
     const deleteCommand = new DeleteObjectCommand({
       Bucket: this.bucket,
-      Key: splitLink.key,
+      Key: linkDetails.key,
     });
 
     await this.client.send(deleteCommand);
@@ -103,16 +107,16 @@ export default class S3Controller {
   }
 
   public async moveFile(oldLink: string, newLink: string) {
-    const splitOldLink = this.splitLink(oldLink);
-    const splitNewLink = this.splitLink(newLink);
+    const oldLinkDetails = this.parseLink(oldLink);
+    const newLinkDetails = this.parseLink(newLink);
 
-    if (!(await this.objectExists(splitOldLink.key))) {
+    if (!(await this.objectExists(oldLinkDetails.key))) {
       throw new Error(
         `Failed to move s3 file. File does not exist: ${oldLink}.`,
       );
     }
 
-    if (await this.objectExists(splitNewLink.key)) {
+    if (await this.objectExists(newLinkDetails.key)) {
       throw new Error(
         `Failed to move s3 file. Destination link already exists: '${newLink}'`,
       );
@@ -120,8 +124,8 @@ export default class S3Controller {
 
     const copyCommand = new CopyObjectCommand({
       Bucket: this.bucket,
-      CopySource: `${this.bucket}/${splitOldLink.key}`,
-      Key: splitNewLink.key,
+      CopySource: `${this.bucket}/${oldLinkDetails.key}`,
+      Key: newLinkDetails.key,
     });
 
     await this.client.send(copyCommand);
@@ -130,8 +134,8 @@ export default class S3Controller {
     console.log(`Successfully moved s3 file from: ${oldLink} to: ${newLink}`);
   }
 
-  private splitLink(link: string) {
-    if (!link.includes(this.publicFileLinkPrefix)) {
+  private parseLink(link: string) {
+    if (!this.isValidLink(link)) {
       return null;
     }
 
@@ -143,13 +147,7 @@ export default class S3Controller {
     };
   }
 
-  public isValidLink(link: string, subsequentString: string) {
-    // Match format: <publicFileLinkPrefix><subsequentString>
-    const patternString = `^${this.publicFileLinkPrefix}${subsequentString}.*`;
-    const pattern = new RegExp(patternString);
-    const match = link.match(pattern);
-
-    // TODO-kev: or change to !!match?
-    return Boolean(match);
+  private isValidLink(link: string) {
+    return link.startsWith(this.publicFileLinkPrefix);
   }
 }
