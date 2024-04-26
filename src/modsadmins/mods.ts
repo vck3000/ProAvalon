@@ -7,7 +7,6 @@ export const modsArray = [
   'goofy', // jams
   'sadnixon',
   'fossa',
-  '1',
 ];
 
 // TODO-kev: Remove
