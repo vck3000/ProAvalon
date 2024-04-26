@@ -87,7 +87,7 @@ router.post(
     const decision = req.body.decision;
     const modComment = req.body.modcomment
       ? sanitizeHtml(req.body.modcomment)
-      : 'No message provided';
+      : 'No message provided.';
 
     if (decision) {
       const approvedAvatarLinks = await s3Agent.approveAvatarRequest({
@@ -248,7 +248,7 @@ router.post(
 
     const msgToMod = req.body.msgToMod
       ? sanitizeHtml(req.body.msgToMod)
-      : 'No message provided';
+      : 'No message provided.';
 
     // Upload valid avatar requests to s3 bucket
     const avatarRes = files['avatarRes'][0];
