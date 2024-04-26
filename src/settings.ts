@@ -15,6 +15,10 @@ class Settings {
   }
 
   checkValidSettings() {
+    if (process.env.NODE_ENV === 'test') {
+      return true;
+    }
+
     const validEnv = ['local', 'staging', 'prod'];
 
     if (!validEnv.includes(process.env.ENV)) {
