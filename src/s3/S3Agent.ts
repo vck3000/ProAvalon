@@ -52,7 +52,6 @@ export class S3Agent {
     let spyLink: string;
 
     try {
-      // TODO-kev add a unit test to check that the return link must contain the resKey
       resLink = await this.s3Controller.uploadFile(
         resKey,
         resAvatar,

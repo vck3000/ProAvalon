@@ -109,7 +109,6 @@ router.post(
 
       await userRequestingAvatar.save();
 
-      // TODO-kev: Fundamental flaw in createNotification. Passing non unique link #
       let str = `Your avatar request was approved by ${modWhoProcessed.username}! Their comment was: "${modComment}"`;
       createNotification(
         userRequestingAvatar._id,
