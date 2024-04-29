@@ -175,6 +175,14 @@ router.get('/loginSuccess', async (req, res) => {
   req.user.markModified('lastLoggedIn');
 
   if (req.user.username !== req.cookies['displayUsername']) {
+    if (req.cookies['displayUsername'].toLowerCase() !== req.user.usernameLower)
+    {
+      req.flash('error', 'Log in failed! Please try again.');
+      res.redirect('/');
+
+      throw new Error("Client requested new display name does not match their lowercase username.");
+    }
+
     req.user.username = req.cookies['displayUsername'];
     req.user.markModified('username');
   }
