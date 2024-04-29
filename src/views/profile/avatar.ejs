@@ -51,12 +51,19 @@
     }
 
     .scrollableWindow {
-        width: 400px;
+        width: 330px;
         height: 400px;
         overflow: auto;
         padding: 10px;
         background: #e5e5e5;
         border-radius: 30px;
+        position: relative;
+    }
+
+    .warningBanner {
+        position: absolute;
+        top: 0px;
+        left: 0px;
     }
 
     .alignCenter {
@@ -82,11 +89,15 @@
     <div class="avatarSet" id="currentAvatarSetDiv">
     </div>
 
-    <a class="btn btn-info" id="avatarResetButton" style="margin-left: 2em">Reset to default avatar</a>
+    <a class="btn btn-info" id="avatarResetButton">Reset to default avatar</a>
+    <a class="btn btn-info" href="/profile/<%=username%>/changeavatar">Submit a custom Avatar</a>
 
     <hr style="border-color: lightgrey; border-style: solid; margin: 2em">
 
     <h3>Approved Avatar Sets: </h3>
+    <h4>This feature is available to current Patreon supporters.</h4>
+    <h4>To link your Patreon account or if you would like to support the development of the site please click the "Link to Patreon" button below:</h4>
+    <br>
 
     <div id="approvedAvatars" class="scrollableWindow alignCenter">
         <p>You currently do not have any approved avatar sets.</p>
@@ -95,8 +106,7 @@
     <br>
 
     <a class="btn btn-info" id="changeAvatarBtn">Change avatar</a>
-
-    <a class="btn btn-info" href="/profile/<%=username%>/changeavatar">Submit a custom Avatar</a>
+    <a class="btn btn-info" href="http://www.google.com">Link to Patreon</a>
 
 </div>
 
@@ -140,7 +150,6 @@
             radio.type = 'radio';
             radio.name = 'avatarSet';
             radio.value = index;
-            radio.style.marginRight = '2em';
 
             resImg.src = avatarSet.resLink;
             spyImg.src = avatarSet.spyLink;
@@ -155,8 +164,27 @@
             approvedAvatarDiv.appendChild(avatarSetDiv)
         })
 
+        // TODO-kev: Need to edit when patreon fixed
+        let currentPatreon = true;
+        if (!currentPatreon) {
+            let bigX = document.createElement('img');
+            bigX.src = "../../pictures/big-X.png"
+            bigX.classList.add("warningBanner");
+            approvedAvatarDiv.appendChild(bigX)
+        }
+
         $("#changeAvatarBtn").on('click', () => {
             const selectedRadio = document.querySelector('input[name="avatarSet"]:checked');
+
+            // TODO-kev: Need to edit when patreon fixed
+            let currentPatreon = true;
+            if (!currentPatreon) {
+                Swal.fire({
+                    title: 'You need to be a Patreon Supporter to enable this feature.',
+                    type: 'error'
+                })
+                return;
+            }
 
             if (!selectedRadio) {
                 Swal.fire({
