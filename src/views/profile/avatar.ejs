@@ -79,7 +79,6 @@
 
 </style>
 
-
 <div class="container myContainer">
     <h1><u>Avatar Home</u></h1>
     <br>
@@ -89,7 +88,6 @@
     <div class="avatarSet" id="currentAvatarSetDiv">
     </div>
 
-    <a class="btn btn-info" id="avatarResetButton">Reset to default avatar</a>
     <a class="btn btn-info" href="/profile/<%=username%>/changeavatar">Submit a custom Avatar</a>
 
     <hr style="border-color: lightgrey; border-style: solid; margin: 2em">
@@ -109,7 +107,6 @@
     <a class="btn btn-info" href="http://www.google.com">Link to Patreon</a>
 
 </div>
-
 
 <script>
 
@@ -233,41 +230,6 @@
             }
 
         })
-
-        $("#avatarResetButton").on('click', () => {
-            Swal.fire({
-                title: 'Sending your request...',
-                onOpen: () => {
-                    Swal.showLoading();
-                    axios({
-                        method: 'POST',
-                        url: '/profile/<%= username %>/avatar/changeavatar',
-                        data: {
-                            resLink: null,
-                            spyLink: null,
-                        },
-                    }).then(function (response) {
-                        //handle success
-                        Swal.close();
-                        Swal.fire({
-                            title: response.data,
-                            type: 'success',
-                            onClose: () => {
-                                location.reload();
-                            }
-                        });
-                    }).catch(function (err) {
-                        console.log(err)
-                        Swal.close();
-                        Swal.fire({
-                            title: err.response.data,
-                            type: 'error',
-                        });
-                    });
-                },
-            })
-        })
-
     });
 
 </script>
