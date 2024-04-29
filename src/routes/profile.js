@@ -9,6 +9,7 @@ import PatreonId from '../models/patreonId';
 import avatarRequest from '../models/avatarRequest';
 import ModLog from '../models/modLog';
 import { createNotification } from '../myFunctions/createNotification';
+import { PatreonAgent } from '../rewards/patreonAgent';
 
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',
@@ -275,6 +276,8 @@ const loginUrl = url.format({
 
 // show the edit page
 router.get('/:profileUsername/edit', checkProfileOwnership, (req, res) => {
+  const patreonAgent = new PatreonAgent();
+
   User.findOne(
     { usernameLower: req.params.profileUsername.toLowerCase() },
     (err, foundUser) => {
@@ -286,20 +289,20 @@ router.get('/:profileUsername/edit', checkProfileOwnership, (req, res) => {
           .then((patreonIdObj) => {
             res.render('profile/edit', {
               userData: foundUser,
-              patreonLoginUrl: loginUrl,
+              patreonLoginUrl: patreonAgent.loginUrl,
               patreonId: patreonIdObj,
             });
           })
           .catch((err) => {
             res.render('profile/edit', {
               userData: foundUser,
-              patreonLoginUrl: loginUrl,
+              patreonLoginUrl: patreonAgent.loginUrl,
             });
           });
       } else {
         res.render('profile/edit', {
           userData: foundUser,
-          patreonLoginUrl: loginUrl,
+          patreonLoginUrl: patreonAgent.loginUrl,
         });
       }
     },

@@ -1,6 +1,7 @@
 import express from 'express';
 import * as patreon from 'patreon';
 import PatreonId from '../models/patreonId';
+import { PatreonAgent } from '../rewards/patreonAgent';
 
 const router = express.Router();
 
@@ -69,14 +70,18 @@ function getPledges(access_token, callback) {
 //     // <a href="https://www.patreon.com/bePatron?u=15685660" data-patreon-widget-type="become-patron-button">Become a Patron!</a><script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
 // });
 
-router.get('/oauth/redirect', (req, res) => {
+router.get('/oauth/redirect', async (req, res) => {
   const { code } = req.query;
   let token;
   console.log('HIHI');
-  if (!req.user) {
-    req.flash('error', 'Please sign in to link your patreon account.');
-    res.redirect('/');
-  }
+
+  const patreonAgent = new PatreonAgent();
+
+  const tokens = await patreonAgent.getTokens(code);
+
+  await patreonAgent.getUser(tokens.access_token);
+
+  return res.redirect(`/profile/${req.user.username}`);
 
   return patreonOAuthClient
     .getTokens(code, patreon_redirectURL)
