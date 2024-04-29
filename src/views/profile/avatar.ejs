@@ -57,13 +57,6 @@
         padding: 10px;
         background: #e5e5e5;
         border-radius: 30px;
-        position: relative;
-    }
-
-    .warningBanner {
-        position: absolute;
-        top: 0px;
-        left: 0px;
     }
 
     .alignCenter {
@@ -162,14 +155,6 @@
 
             approvedAvatarDiv.appendChild(avatarSetDiv)
         })
-
-        // TODO-kev: Need to edit when patreon fixed
-        if (<%= !currentPatreon %>) {
-            let bigX = document.createElement('img');
-            bigX.src = "../../pictures/big-X.png"
-            bigX.classList.add("warningBanner");
-            approvedAvatarDiv.appendChild(bigX)
-        }
 
         $("#changeAvatarBtn").on('click', () => {
             const selectedRadio = document.querySelector('input[name="avatarSet"]:checked');
