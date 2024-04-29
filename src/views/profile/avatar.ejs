@@ -92,19 +92,20 @@
 
     <hr style="border-color: lightgrey; border-style: solid; margin: 2em">
 
-    <h3>Approved Avatar Sets: </h3>
-    <h4>This feature is available to current Patreon supporters.</h4>
-    <h4>To link your Patreon account or if you would like to support the development of the site please click the "Link to Patreon" button below:</h4>
+    <h3>Approved Avatar Sets*: </h3>
+    <h4>You can change between your approved avatars here.</h4>
     <br>
 
     <div id="approvedAvatars" class="scrollableWindow alignCenter">
         <p>You currently do not have any approved avatar sets.</p>
     </div>
-
     <br>
 
     <a class="btn btn-info" id="changeAvatarBtn">Change avatar</a>
     <a class="btn btn-info" href="http://www.google.com">Link to Patreon</a>
+
+    <h4>*This feature is available to current Patreon supporters.</h4>
+    <h4>To link your Patreon account or if you would like to support the development of the site please click the "Link to Patreon" button above:</h4>
 
 </div>
 
@@ -162,7 +163,7 @@
         })
 
         // TODO-kev: Need to edit when patreon fixed
-        let currentPatreon = true;
+        let currentPatreon = false;
         if (!currentPatreon) {
             let bigX = document.createElement('img');
             bigX.src = "../../pictures/big-X.png"
@@ -174,7 +175,7 @@
             const selectedRadio = document.querySelector('input[name="avatarSet"]:checked');
 
             // TODO-kev: Need to edit when patreon fixed
-            let currentPatreon = true;
+            let currentPatreon = false;
             if (!currentPatreon) {
                 Swal.fire({
                     title: 'You need to be a Patreon Supporter to enable this feature.',
