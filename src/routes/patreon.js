@@ -71,13 +71,11 @@ function getPledges(access_token, callback) {
 // });
 
 router.get('/oauth/redirect', async (req, res) => {
-  const { code } = req.query;
-  let token;
   console.log('HIHI');
-
+  const { code } = req.query;
   const patreonAgent = new PatreonAgent();
 
-  await patreonAgent.getUserDetails(code);
+  await patreonAgent.registerPatreon(code);
 
   return res.redirect(`/profile/${req.user.username}`);
 
