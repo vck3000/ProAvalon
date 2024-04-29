@@ -72,11 +72,6 @@ function getPledges(access_token, callback) {
 router.get('/oauth/redirect', (req, res) => {
   const { code } = req.query;
   let token;
-  console.log('HIHI');
-  if (!req.user) {
-    req.flash('error', 'Please sign in to link your patreon account.');
-    res.redirect('/');
-  }
 
   return patreonOAuthClient
     .getTokens(code, patreon_redirectURL)
@@ -89,6 +84,28 @@ router.get('/oauth/redirect', (req, res) => {
       const { id } = rawJson.data;
       database[id] = { ...rawJson.data, token };
 
+      const patreonId = rawJson.data.id;
+      const patreon_full_name = rawJson.data.attributes.full_name;
+
+      const patreonQuery = await PatreonId.findOne({ id: patreonId });
+
+      if (patreonQuery) {
+        // Update?
+      } else {
+        // Create
+        await PatreonId.create({
+          name: patreon_full_name,
+          token,
+          id: patreonId,
+          amount_cents: null,
+          declined_since: null,
+          expires: null,
+          in_game_username: req.user.username, // Chance this will go wrong
+        });
+
+        console.log(`Successfully linked up user and Patreon!`);
+      }
+
       // console.log(rawJson.data.attributes.full_name)
       // console.log(rawJson.data.id)
       // console.log(JSON.stringify(rawJson))
@@ -97,20 +114,20 @@ router.get('/oauth/redirect', (req, res) => {
       //     console.log(rawJson.included[0].attributes.declined_since)
       // }
 
-      const patreon_full_name = rawJson.data.attributes.full_name;
-      const patreon_id = rawJson.data.id;
-      const patreon_amount_cents = rawJson.included
-        ? rawJson.included[0].attributes.amount_cents
-        : undefined;
-      const patreon_declined_since = rawJson.included
-        ? rawJson.included[0].attributes.declined_since
-        : undefined;
+      // const patreon_full_name = rawJson.data.attributes.full_name;
+      // const patreon_id = rawJson.data.id;
+      // const patreon_amount_cents = rawJson.included
+      //   ? rawJson.included[0].attributes.amount_cents
+      //   : undefined;
+      // const patreon_declined_since = rawJson.included
+      //   ? rawJson.included[0].attributes.declined_since
+      //   : undefined;
 
-      function addDays(date, days) {
-        const result = new Date(date);
-        result.setDate(result.getDate() + days);
-        return result;
-      }
+      // function addDays(date, days) {
+      //   const result = new Date(date);
+      //   result.setDate(result.getDate() + days);
+      //   return result;
+      // }
 
       return PatreonId.findOne({ id: patreon_id }).exec(
         async (err, patreonIdObj) => {
