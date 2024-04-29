@@ -1037,6 +1037,20 @@ export const server = function (io: SocketServer): void {
         socket.emit('allChatToClient', msg4);
       }
 
+      // TODO-kev: Update the date
+      if (
+        socket.request.user.avatarImgRes &&
+        !socket.request.user.avatarImgRes.includes('proavalon.com') &&
+        socket.request.user.avatarImgSpy &&
+        !socket.request.user.avatarImgSpy.includes('proavalon.com')
+      ) {
+        socket.emit('allChatToClient', {
+          message:
+            'IMPORTANT: We are currently updating our custom avatar system. Please reupload your custom avatar. Any avatars not uploaded by XX date may be lost in the future. Thank you.',
+          classStr: 'server-text',
+        });
+      }
+
       updateCurrentPlayersList(io);
       updateCurrentGamesList(io);
 
