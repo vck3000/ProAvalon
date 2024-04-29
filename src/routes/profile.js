@@ -160,11 +160,18 @@ router.get(
       approvedAvatarSets.push(approvedAvatarSet);
     });
 
+    const patreonQuery = await PatreonId.findOne({
+      in_game_username: user.usernameLower,
+    });
+
+    const currentPatreon = Boolean(patreonQuery);
+
     res.render('profile/avatar', {
       username: user.username,
       avatarImgRes: user.avatarImgRes,
       avatarImgSpy: user.avatarImgSpy,
       approvedAvatarSets,
+      currentPatreon,
     });
   },
 );

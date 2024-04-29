@@ -84,6 +84,7 @@
     <br>
 
     <h3>Current Avatar Set:</h3>
+    <h4>This is your current avatar. You may submit a custom avatar request by clicking the button below.</h4>
 
     <div class="avatarSet" id="currentAvatarSetDiv">
     </div>
@@ -93,7 +94,7 @@
     <hr style="border-color: lightgrey; border-style: solid; margin: 2em">
 
     <h3>Approved Avatar Sets*: </h3>
-    <h4>You can change between your approved avatars here.</h4>
+    <h4>Here are all your approved avatar sets. You can change between them here.</h4>
     <br>
 
     <div id="approvedAvatars" class="scrollableWindow alignCenter">
@@ -163,8 +164,7 @@
         })
 
         // TODO-kev: Need to edit when patreon fixed
-        let currentPatreon = false;
-        if (!currentPatreon) {
+        if (<%= !currentPatreon %>) {
             let bigX = document.createElement('img');
             bigX.src = "../../pictures/big-X.png"
             bigX.classList.add("warningBanner");
@@ -175,8 +175,7 @@
             const selectedRadio = document.querySelector('input[name="avatarSet"]:checked');
 
             // TODO-kev: Need to edit when patreon fixed
-            let currentPatreon = false;
-            if (!currentPatreon) {
+            if (<%= !currentPatreon %>) {
                 Swal.fire({
                     title: 'You need to be a Patreon Supporter to enable this feature.',
                     type: 'error'
