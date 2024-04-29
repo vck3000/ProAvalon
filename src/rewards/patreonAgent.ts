@@ -14,7 +14,7 @@ export class PatreonAgent {
     },
   });
 
-  public async getTokens(code: string) {
+  private async getTokens(code: string) {
     const getTokensUrl = url.format({
       protocol: 'https',
       host: 'patreon.com',
@@ -42,12 +42,14 @@ export class PatreonAgent {
     return response.data;
   }
 
-  public async getUser(accessToken: string) {
+  public async getUserDetails(code: string) {
+    const tokens = await this.getTokens(code);
+
     const getUserUrl = 'https://www.patreon.com/api/oauth2/api/current_user';
 
     const response = await axios.get(getUserUrl, {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${tokens.access_token}`,
       },
     });
 

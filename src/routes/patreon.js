@@ -77,9 +77,7 @@ router.get('/oauth/redirect', async (req, res) => {
 
   const patreonAgent = new PatreonAgent();
 
-  const tokens = await patreonAgent.getTokens(code);
-
-  await patreonAgent.getUser(tokens.access_token);
+  await patreonAgent.getUserDetails(code);
 
   return res.redirect(`/profile/${req.user.username}`);
 
