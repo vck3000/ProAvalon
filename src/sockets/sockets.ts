@@ -15,12 +15,7 @@ import JSON from 'circular-json';
 import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
-import {
-  GAME_MODE_NAMES,
-  GameMode,
-  isGameMode,
-  strToGameMode,
-} from '../gameplay/gameModes';
+import { GAME_MODE_NAMES, GameMode, isGameMode, strToGameMode } from '../gameplay/gameModes';
 
 import { ChatSpamFilter } from './filters/chatSpamFilter';
 import { MessageWithDate, Quote } from './quote';
@@ -1037,16 +1032,14 @@ export const server = function (io: SocketServer): void {
         socket.emit('allChatToClient', msg4);
       }
 
-      // TODO-kev: Update the date
       if (
         socket.request.user.avatarImgRes &&
-        !socket.request.user.avatarImgRes.includes('proavalon.com') &&
+        !socket.request.user.avatarImgRes.includes('proavalon.com') ||
         socket.request.user.avatarImgSpy &&
         !socket.request.user.avatarImgSpy.includes('proavalon.com')
       ) {
         socket.emit('allChatToClient', {
-          message:
-            'IMPORTANT: We are currently updating our custom avatar system. Please reupload your custom avatar. Any avatars not uploaded by XX date may be lost in the future. Thank you.',
+          message: 'Notification: Your avatar link is outdated. Please re-upload your custom avatar by the 19th of May 2024.',
           classStr: 'server-text',
         });
       }
