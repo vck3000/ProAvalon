@@ -41,40 +41,46 @@ const registerLimiter =
         max: 10,
       });
 
+async function captchaMiddleware(req, res, next) {
+  if (process.env.ENV !== 'local') {
+    next();
+  }
+
+  req.body.captcha = req.body['g-recaptcha-response'];
+  if (
+    req.body.captcha === undefined ||
+    req.body.captcha === '' ||
+    req.body.captcha === null
+  ) {
+    req.flash('error', 'The captcha failed or was not inputted.');
+    res.redirect('register');
+    return;
+  }
+
+  const secretKey = process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
+
+  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.captcha}&remoteip=${req.connection.remoteAddress}`;
+  const body = await request(verifyUrl);
+
+  if (body.success !== undefined && !body.success) {
+    req.flash('error', 'Failed captcha verification.');
+    res.redirect('register');
+    return;
+  }
+
+  next();
+}
+
 // Post of the register route - Create an account
 router.post(
   '/',
   registerLimiter,
   disableRegistrationMiddleware,
+  captchaMiddleware,
   sanitiseUsername,
   sanitiseEmail,
   disallowVPNs,
   async (req, res) => {
-    // if we are local, we can skip the captcha
-    if (process.env.ENV === 'prod') {
-      req.body.captcha = req.body['g-recaptcha-response'];
-      if (
-        req.body.captcha === undefined ||
-        req.body.captcha === '' ||
-        req.body.captcha === null
-      ) {
-        req.flash('error', 'The captcha failed or was not inputted.');
-        res.redirect('register');
-        return;
-      }
-
-      const secretKey = process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
-
-      const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.captcha}&remoteip=${req.connection.remoteAddress}`;
-      const body = await request(verifyUrl);
-
-      if (body.success !== undefined && !body.success) {
-        req.flash('error', 'Failed captcha verification.');
-        res.redirect('register');
-        return;
-      }
-    }
-
     // duplicate code as below
     const newUser = new User({
       username: req.body.username,
@@ -249,68 +255,37 @@ router.get('/resetPassword', (req, res) => {
   res.render('resetPassword', { platform: process.env.ENV });
 });
 
-router.post('/resetPassword', registerLimiter, async (req, res) => {
-  // if we are local, we can skip the captcha
-  if (process.env.ENV === 'prod') {
-    req.body.captcha = req.body['g-recaptcha-response'];
-    if (
-      req.body.captcha === undefined ||
-      req.body.captcha === '' ||
-      req.body.captcha === null
-    ) {
-      req.flash('error', 'The captcha failed or was not inputted.');
+router.post(
+  '/resetPassword',
+  registerLimiter,
+  captchaMiddleware,
+  async (req, res) => {
+    const email = req.body.emailAddress;
+    const user = await User.findOne({
+      emailAddress: email,
+      emailVerified: true,
+    });
+
+    if (!user) {
+      req.flash(
+        'error',
+        'Email does not exist. Please enter a registered email address.',
+      );
       res.redirect('/resetPassword');
-      return;
+      console.log(`Email not found: ${email}`);
+    } else {
+      sendResetPassword(user, email);
+      req.flash(
+        'success',
+        'A link to reset your password has been sent to your email.',
+      );
+      res.redirect('/');
+      console.log(
+        `User: ${user.username} Email: ${user.emailAddress} has requested to reset their password.`,
+      );
     }
-
-    const secretKey = process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
-
-    const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.captcha}&remoteip=${req.connection.remoteAddress}`;
-    const body = await request(verifyUrl);
-
-    if (body.success !== undefined && !body.success) {
-      req.flash('error', 'Failed captcha verification.');
-      res.redirect('/resetPassword');
-      return;
-    }
-  }
-
-  const secretKey = process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
-
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.captcha}&remoteip=${req.connection.remoteAddress}`;
-  const body = await request(verifyUrl);
-
-  if (body.success !== undefined && !body.success) {
-    req.flash('error', 'Failed captcha verification.');
-    res.redirect('/');
-    return;
-  }
-
-  const email = req.body.emailAddress;
-  const user = await User.findOne({
-    emailAddress: email,
-    emailVerified: true,
-  });
-
-  if (!user) {
-    req.flash(
-      'error',
-      'Email does not exist. Please enter a registered email address.',
-    );
-    res.redirect('/resetPassword');
-    console.log(`Email not found: ${email}`);
-  } else {
-    sendResetPassword(user, email);
-    req.flash(
-      'success',
-      'A link to reset your password has been sent to your email.',
-    );
-    res.redirect('/');
-    console.log(
-      `User: ${user.username} Email: ${user.emailAddress} has requested to reset their password.`,
-    );
-  }
-});
+  },
+);
 
 router.get('/resetPassword/verifyResetPassword', async (req, res) => {
   if (req.query.token && req.query.token.trim() !== '') {
