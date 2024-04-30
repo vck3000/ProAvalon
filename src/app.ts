@@ -1,5 +1,6 @@
 // @ts-nocheck
 import './env.js';
+import './config';
 import 'log-timestamp';
 import { sendToDiscordAdmins } from './discord';
 import assert from 'assert';
@@ -34,7 +35,6 @@ import staticifyFactory from 'staticify';
 // Create a MongoDB session store
 import MongoDBStoreFactory from 'connect-mongodb-session';
 import { SESSIONS_COLLECTION_NAME } from './constants';
-import { s3Agent } from './s3/S3Agent';
 
 const assetsPath = path.join(__dirname, '../assets');
 
