@@ -20,20 +20,15 @@ describe('S3Agent', () => {
     const mockResAvatar = Buffer.from('resAvatar');
     const mockSpyAvatar = Buffer.from('SpyAvatar');
 
-    // @ts-ignore
-    mockS3Controller.listObjectKeys.mockReturnValueOnce([
+    mockS3Controller.listObjectKeys.mockResolvedValueOnce([
       'userexample_res_1.png',
-      'userexample_res_5.png',
-      'userexample_spy_5.png',
+      'userexample_spy_1.png',
     ]);
-
-    mockS3Controller.uploadFile.mockReturnValueOnce(
-      // @ts-ignore
-      'publicFileLinkPrefix.com/userexample_res_6.png',
+    mockS3Controller.uploadFile.mockResolvedValueOnce(
+      'publicFileLinkPrefix.com/userexample_res_2.png',
     );
-    mockS3Controller.uploadFile.mockReturnValueOnce(
-      // @ts-ignore
-      'publicFileLinkPrefix.com/userexample_spy_6.png',
+    mockS3Controller.uploadFile.mockResolvedValueOnce(
+      'publicFileLinkPrefix.com/userexample_spy_2.png',
     );
 
     const result = await s3Agent.uploadAvatarRequestImages(
@@ -42,37 +37,30 @@ describe('S3Agent', () => {
       mockSpyAvatar,
     );
 
+    expect(result).toStrictEqual({
+      resLink: 'publicFileLinkPrefix.com/userexample_res_2.png',
+      spyLink: 'publicFileLinkPrefix.com/userexample_spy_2.png',
+    });
     expect(mockS3Controller.uploadFile).toHaveBeenCalledWith(
-      'pending_avatars/userexample/userexample_res_6.png',
+      'pending_avatars/userexample/userexample_res_2.png',
       mockResAvatar,
       'image/png',
     );
-
     expect(mockS3Controller.uploadFile).toHaveBeenCalledWith(
-      'pending_avatars/userexample/userexample_spy_6.png',
+      'pending_avatars/userexample/userexample_spy_2.png',
       mockSpyAvatar,
       'image/png',
     );
-
-    expect(result).toStrictEqual({
-      resLink: 'publicFileLinkPrefix.com/userexample_res_6.png',
-      spyLink: 'publicFileLinkPrefix.com/userexample_spy_6.png',
-    });
   });
 
   it('deletes first uploaded avatar if second upload fails', async () => {
     const mockResAvatar = Buffer.from('resAvatar');
     const mockSpyAvatar = Buffer.from('SpyAvatar');
 
-    // @ts-ignore
-    mockS3Controller.listObjectKeys.mockReturnValueOnce([]);
-
-    mockS3Controller.uploadFile.mockReturnValueOnce(
-      // @ts-ignore
+    mockS3Controller.listObjectKeys.mockResolvedValueOnce([]);
+    mockS3Controller.uploadFile.mockResolvedValueOnce(
       'publicFileLinkPrefix.com/userexample_res_1.png',
     );
-
-    // @ts-ignore
     mockS3Controller.uploadFile.mockRejectedValueOnce(
       new Error('Upload failed'),
     );
@@ -83,6 +71,8 @@ describe('S3Agent', () => {
       .catch(() => {
         errorCaught = true;
       });
+
+    expect(errorCaught).toEqual(true);
 
     expect(mockS3Controller.uploadFile).toHaveBeenCalledWith(
       'pending_avatars/userexample/userexample_res_1.png',
@@ -99,8 +89,6 @@ describe('S3Agent', () => {
     expect(mockS3Controller.deleteFile).toHaveBeenCalledWith(
       'publicFileLinkPrefix.com/userexample_res_1.png',
     );
-
-    expect(errorCaught).toEqual(true);
   });
 
   it('approves avatars', async () => {
@@ -130,8 +118,8 @@ describe('S3Agent', () => {
         errorCaught = true;
       });
 
-    expect(mockS3Controller.moveFile).not.toHaveBeenCalled();
     expect(errorCaught).toEqual(true);
+    expect(mockS3Controller.moveFile).not.toHaveBeenCalled();
   });
 
   it('Reverts overall avatar approval if one fails', async () => {
@@ -150,6 +138,7 @@ describe('S3Agent', () => {
         errorCaught = true;
       });
 
+    expect(errorCaught).toEqual(true);
     expect(mockS3Controller.moveFile).toHaveBeenCalledWith(
       'pending_avatars/userexample_res_1.png',
       'approved_avatars/userexample_res_1.png',
@@ -158,12 +147,12 @@ describe('S3Agent', () => {
       'pending_avatars/userexample_spy_1.png',
       'approved_avatars/userexample_spy_1.png',
     );
+
+    // Move it back from approved to pending due to failed spy avatar move.
     expect(mockS3Controller.moveFile).toHaveBeenCalledWith(
       'approved_avatars/userexample_res_1.png',
       'pending_avatars/userexample_res_1.png',
     );
-
-    expect(errorCaught).toEqual(true);
   });
 
   it('rejects avatars', async () => {
@@ -175,7 +164,6 @@ describe('S3Agent', () => {
     expect(mockS3Controller.deleteFile).toHaveBeenCalledWith(
       'pending_avatars/userexample_res_1.png',
     );
-
     expect(mockS3Controller.deleteFile).toHaveBeenCalledWith(
       'pending_avatars/userexample_spy_1.png',
     );
@@ -185,14 +173,14 @@ describe('S3Agent', () => {
     let errorCaught = false;
     await s3Agent
       .rejectAvatarRequest({
-        resLink: 'asdf/userexample_res_1.png',
-        spyLink: 'asdf/userexample_spy_1.png',
+        resLink: 'approved_avatars/userexample_res_1.png',
+        spyLink: 'approved_avatars/userexample_spy_1.png',
       })
       .catch(() => {
         errorCaught = true;
       });
 
-    expect(mockS3Controller.deleteFile).not.toHaveBeenCalled();
     expect(errorCaught).toEqual(true);
+    expect(mockS3Controller.deleteFile).not.toHaveBeenCalled();
   });
 });
