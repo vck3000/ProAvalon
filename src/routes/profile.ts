@@ -163,7 +163,6 @@ router.post(
     }
 
     const result = decision ? 'approved' : 'rejected';
-
     res.status(200).send(`The custom avatar request has been ${result}.`);
   },
 );
