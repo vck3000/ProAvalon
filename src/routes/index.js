@@ -3,7 +3,6 @@ import passport from 'passport';
 import sanitizeHtml from 'sanitize-html';
 import mongoose from 'mongoose';
 import fs from 'fs';
-import request from 'request';
 import rateLimit from 'express-rate-limit';
 import User from '../models/user';
 import myNotification from '../models/notification';
@@ -18,6 +17,7 @@ import { Alliance } from '../gameplay/types';
 import { resRoles, rolesToAlliances, spyRoles } from '../gameplay/roles/roles';
 import { sendResetPassword } from '../myFunctions/sendResetPassword';
 import uuid from 'uuid';
+import { captchaMiddleware } from '../util/captcha';
 
 const router = new Router();
 
@@ -40,36 +40,6 @@ const registerLimiter =
         windowMs: 60 * 60 * 1000, // 60 minutes
         max: 10,
       });
-
-async function captchaMiddleware(req, res, next) {
-  if (process.env.ENV !== 'local') {
-    next();
-  }
-
-  req.body.captcha = req.body['g-recaptcha-response'];
-  if (
-    req.body.captcha === undefined ||
-    req.body.captcha === '' ||
-    req.body.captcha === null
-  ) {
-    req.flash('error', 'The captcha failed or was not inputted.');
-    res.redirect('register');
-    return;
-  }
-
-  const secretKey = process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
-
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.captcha}&remoteip=${req.connection.remoteAddress}`;
-  const body = await request(verifyUrl);
-
-  if (body.success !== undefined && !body.success) {
-    req.flash('error', 'Failed captcha verification.');
-    res.redirect('register');
-    return;
-  }
-
-  next();
-}
 
 // Post of the register route - Create an account
 router.post(
@@ -181,12 +151,15 @@ router.get('/loginSuccess', async (req, res) => {
   req.user.markModified('lastLoggedIn');
 
   if (req.user.username !== req.cookies['displayUsername']) {
-    if (req.cookies['displayUsername'].toLowerCase() !== req.user.usernameLower)
-    {
+    if (
+      req.cookies['displayUsername'].toLowerCase() !== req.user.usernameLower
+    ) {
       req.flash('error', 'Log in failed! Please try again.');
       res.redirect('/');
 
-      throw new Error("Client requested new display name does not match their lowercase username.");
+      throw new Error(
+        'Client requested new display name does not match their lowercase username.',
+      );
     }
 
     req.user.username = req.cookies['displayUsername'];
