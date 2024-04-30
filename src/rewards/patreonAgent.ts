@@ -3,15 +3,19 @@ import axios from 'axios';
 import PatreonId from '../models/patreonId';
 
 export class PatreonAgent {
+  private clientId = process.env.patreon_client_ID;
+  private redirectUri = process.env.patreon_redirectURL;
+
   public loginUrl = url.format({
     protocol: 'https',
     host: 'patreon.com',
     pathname: '/oauth2/authorize',
     query: {
       response_type: 'code',
-      client_id: process.env.patreon_client_ID,
-      redirect_uri: process.env.patreon_redirectURL,
+      client_id: this.clientId,
+      redirect_uri: this.redirectUri,
       state: 'chill', // TODO-kev: Is this needed?
+      scope: 'identity campaigns.members',
     },
   });
 
@@ -29,9 +33,10 @@ export class PatreonAgent {
 
   public async getUserDetails(code: string) {
     const tokens = await this.getTokens(code);
-    const getUserUrl = 'https://www.patreon.com/api/oauth2/api/current_user';
+    const getUserDetailsUrl =
+      'https://www.patreon.com/api/oauth2/v2/identity?include=memberships&fields%5Buser%5D=full_name&fields%5Bmember%5D=patron_status,will_pay_amount_cents,campaign_lifetime_support_cents';
 
-    const response = await axios.get(getUserUrl, {
+    const response = await axios.get(getUserDetailsUrl, {
       headers: {
         Authorization: `Bearer ${tokens.access_token}`,
       },
