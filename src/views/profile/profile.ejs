@@ -69,11 +69,7 @@ var getDatesString = function(time) {
                     <div class="col-xs-6 col-md-3 avatarImgDiv">
 
                         <% if(userData.avatarImgRes){ %>
-                            <% if(userData.avatarImgRes.includes("http")){ %>
-                                <img class="avatarImg" src=<%= userData.avatarImgRes %>>
-                            <% } else { %>
-                                <img class="avatarImg" src=<%= "../avatars/" + userData.avatarImgRes %>>
-                            <% } %>
+                            <img class="avatarImg" src=<%= userData.avatarImgRes %>>
                         <% } else{ %>
                             <img class="avatarImg" src="../avatars/base-res.png  ">
                         <% } %>
@@ -237,11 +233,7 @@ var getDatesString = function(time) {
       function() {
         var str = '';
         if (userData.avatarImgSpy) {
-          if (userData.avatarImgSpy.includes('http')) {
-            str = "<%= userData.avatarImgSpy %>";
-          } else {
-            str = "../avatars/<%= userData.avatarImgSpy %>";
-          }
+          str = "<%= userData.avatarImgSpy %>";
         } else {
           str = '../avatars/base-spy.png';
         }
@@ -252,11 +244,7 @@ var getDatesString = function(time) {
       function() {
         var str = '';
         if (userData.avatarImgRes) {
-          if (userData.avatarImgRes.includes('http')) {
             str = "<%= userData.avatarImgRes %>";
-          } else {
-            str = "../avatars/<%= userData.avatarImgRes %>";
-          }
         } else {
           str = '../avatars/base-res.png';
         }
