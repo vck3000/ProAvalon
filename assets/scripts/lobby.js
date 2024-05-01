@@ -972,12 +972,7 @@ function strOfAvatar(playerData, alliance) {
       $('#option_display_original_avatars')[0].checked === false &&
       (!playerData.avatarHide || playerData.avatarHide === false)
     ) {
-      if (playerData.avatarImgRes.includes('http')) {
-        picLink = playerData.avatarImgRes;
-      } else {
-        // stored locally, need to add the path to it
-        picLink = `avatars/${playerData.avatarImgRes}`;
-      }
+      picLink = playerData.avatarImgRes
     } else {
       picLink = pics.baseRes.path; // 'avatars/base-res.png';
     }
@@ -986,12 +981,7 @@ function strOfAvatar(playerData, alliance) {
     $('#option_display_original_avatars')[0].checked === false &&
     (!playerData.avatarHide || playerData.avatarHide === false)
   ) {
-    if (playerData.avatarImgSpy.includes('http')) {
-      picLink = playerData.avatarImgSpy;
-    } else {
-      // stored locally, need to add the path to it
-      picLink = `avatars/${playerData.avatarImgSpy}`;
-    }
+    picLink = playerData.avatarImgSpy;
   } else {
     picLink = 'avatars/base-spy.png';
   }

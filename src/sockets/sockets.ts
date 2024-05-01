@@ -15,12 +15,7 @@ import JSON from 'circular-json';
 import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
-import {
-  GAME_MODE_NAMES,
-  GameMode,
-  isGameMode,
-  strToGameMode,
-} from '../gameplay/gameModes';
+import { GAME_MODE_NAMES, GameMode, isGameMode, strToGameMode } from '../gameplay/gameModes';
 
 import { ChatSpamFilter } from './filters/chatSpamFilter';
 import { MessageWithDate, Quote } from './quote';
@@ -711,6 +706,12 @@ export const userCommandsOLD = {
             classStr: 'server-text',
           };
 
+          senderSocket.request.user.avatarHide = false;
+
+          if (senderSocket.request.user.inRoomId) {
+            rooms[senderSocket.request.user.inRoomId].distributeGameData();
+          }
+
           senderSocket.emit('messageCommandReturnStr', dataToReturn);
         });
     },
@@ -727,6 +728,12 @@ export const userCommandsOLD = {
         .exec((err, foundUser) => {
           foundUser.avatarHide = true;
           foundUser.save();
+
+          senderSocket.request.user.avatarHide = true;
+
+          if (senderSocket.request.user.inRoomId) {
+            rooms[senderSocket.request.user.inRoomId].distributeGameData();
+          }
 
           const dataToReturn = {
             message: 'Successfully hidden.',
@@ -1023,6 +1030,18 @@ export const server = function (io: SocketServer): void {
         };
 
         socket.emit('allChatToClient', msg4);
+      }
+
+      if (
+        socket.request.user.avatarImgRes &&
+        !socket.request.user.avatarImgRes.includes('proavalon.com') ||
+        socket.request.user.avatarImgSpy &&
+        !socket.request.user.avatarImgSpy.includes('proavalon.com')
+      ) {
+        socket.emit('allChatToClient', {
+          message: 'Notification: Your avatar link is outdated. Please re-upload your custom avatar by the 19th of May 2024.',
+          classStr: 'server-text',
+        });
       }
 
       updateCurrentPlayersList(io);

@@ -1,14 +1,27 @@
+// @ts-nocheck
 import express from 'express';
-
-const router = express.Router();
 import sanitizeHtml from 'sanitize-html';
 import url from 'url';
-import { isModMiddleware, checkProfileOwnership } from './middleware';
+import { checkProfileOwnership, isModMiddleware } from './middleware';
 import User from '../models/user';
 import PatreonId from '../models/patreonId';
 import avatarRequest from '../models/avatarRequest';
 import ModLog from '../models/modLog';
 import { createNotification } from '../myFunctions/createNotification';
+import multer from 'multer';
+import imageSize from 'image-size';
+import { S3Agent } from '../s3/S3Agent';
+
+const s3Agent = new S3Agent();
+
+const router = express.Router();
+
+const MAX_ACTIVE_AVATAR_REQUESTS = 2;
+const MIN_GAMES_REQUIRED = 100;
+const VALID_DIMENSIONS = [128, 1024];
+const VALID_DIMENSIONS_STR = '128x128px or 1024x1024px';
+const MAX_FILESIZE = 1048576; // 1MB
+const MAX_FILESIZE_STR = '1MB';
 import { PatreonAgent } from '../rewards/patreonAgent';
 
 const sanitizeHtmlAllowedTagsForumThread = [
@@ -46,97 +59,114 @@ router.get('/mod/customavatar', isModMiddleware, (req, res) => {
     } else {
       res.render('mod/customavatar', {
         customAvatarRequests: allAvatarRequests,
+        MAX_FILESIZE_STR,
+        VALID_DIMENSIONS_STR,
       });
     }
   });
 });
 
 // moderator approve or reject custom avatar requests
-router.post('/mod/ajax/processavatarrequest', isModMiddleware, (req, res) => {
-  avatarRequest.findById(req.body.avatarreqid).exec((err, foundReq) => {
-    if (err) {
-      console.log(err);
-    } else if (foundReq) {
-      foundReq.processed = true;
-      foundReq.modComment = req.body.modcomment;
-      foundReq.approved = req.body.decision;
-      foundReq.modWhoProcessed = req.user.username;
+router.post(
+  '/mod/ajax/processavatarrequest',
+  isModMiddleware,
+  async (req, res) => {
+    if (typeof req.body.decision !== 'boolean') {
+      throw new Error(
+        `Unrecognisable mod decision to process custom avatar request: decision="${
+          req.body.decision
+        }" type=${typeof req.body.decision}`,
+      );
+    }
 
-      if (req.body.decision === true || req.body.decision === 'true') {
-        console.log(`search lower user: ${foundReq.forUsername.toLowerCase()}`);
+    const avatarReq = await avatarRequest.findById(req.body.avatarreqid);
+    const userRequestingAvatar = await User.findOne({
+      usernameLower: avatarReq.forUsername.toLowerCase(),
+    });
 
-        User.findOne({ usernameLower: foundReq.forUsername.toLowerCase() })
-          .populate('notifications')
-          .exec((err, foundUser) => {
-            if (err) {
-              console.log(err);
-            } else {
-              foundUser.avatarImgRes = foundReq.resLink;
-              foundUser.avatarImgSpy = foundReq.spyLink;
+    const modWhoProcessed = req.user;
+    const decision = req.body.decision;
+    const modComment = req.body.modcomment
+      ? sanitizeHtml(req.body.modcomment)
+      : 'No message provided.';
 
-              foundUser.save();
-
-              let str = `Your avatar request was approved by ${foundReq.modWhoProcessed}!`;
-              if (foundReq.modComment) {
-                str += ` Their comment was: ${foundReq.modComment}`;
-              }
-
-              createNotification(foundUser._id, str, '#', req.user.username);
-            }
-          });
-      } else if (req.body.decision === false || req.body.decision === 'false') {
-        console.log(`search lower user: ${foundReq.forUsername.toLowerCase()}`);
-
-        User.findOne({ usernameLower: foundReq.forUsername.toLowerCase() })
-          .populate('notifications')
-          .exec((err, foundUser) => {
-            if (err) {
-              console.log(err);
-            } else {
-              let str = `Your avatar request was rejected by ${foundReq.modWhoProcessed}.`;
-
-              if (foundReq.modComment) {
-                str += ` Their comment was: ${foundReq.modComment}`;
-              }
-
-              console.log(`string: ${str}`);
-
-              createNotification(foundUser._id, str, '#', req.user.username);
-            }
-          });
-      } else {
-        console.log(
-          `error, decision isnt anything recognisable...: ${req.body.decision}`,
-        );
-        return;
-      }
-
-      const modUser = req.user;
-      // Create mod log - Doesn't need to be async
-      ModLog.create({
-        type: 'avatar',
-        modWhoMade: {
-          id: modUser._id,
-          username: modUser.username,
-          usernameLower: modUser.usernameLower,
-        },
-        data: {
-          modComment: req.body.modcomment,
-          approved: req.body.decision,
-          username: foundReq.forUsername,
-          msgToMod: foundReq.msgToMod,
-          resLink: foundReq.resLink,
-          spyLink: foundReq.spyLink,
-        },
-        dateCreated: new Date(),
+    if (decision) {
+      const approvedAvatarLinks = await s3Agent.approveAvatarRequest({
+        resLink: avatarReq.resLink,
+        spyLink: avatarReq.spyLink,
       });
 
-      foundReq.save();
-    }
-  });
+      avatarReq.resLink = approvedAvatarLinks.resLink;
+      avatarReq.spyLink = approvedAvatarLinks.spyLink;
+      avatarReq.processed = true;
+      avatarReq.modComment = modComment;
+      avatarReq.approved = decision;
+      avatarReq.modWhoProcessed = modWhoProcessed.username;
 
-  res.status(200).send('done');
-});
+      await avatarReq.save();
+
+      userRequestingAvatar.avatarImgRes = avatarReq.resLink;
+      userRequestingAvatar.avatarImgSpy = avatarReq.spyLink;
+
+      await userRequestingAvatar.save();
+
+      let str = `Your avatar request was approved by ${modWhoProcessed.username}! Their comment was: "${modComment}"`;
+      createNotification(
+        userRequestingAvatar._id,
+        str,
+        '#',
+        modWhoProcessed.username,
+      );
+    } else {
+      await s3Agent.rejectAvatarRequest({
+        resLink: avatarReq.resLink,
+        spyLink: avatarReq.spyLink,
+      });
+
+      let str = `Your avatar request was rejected by ${modWhoProcessed.username}. Their comment was: "${modComment}"`;
+      createNotification(
+        userRequestingAvatar._id,
+        str,
+        '#',
+        modWhoProcessed.username,
+      );
+    }
+
+    // Create mod log - Doesn't need to be async
+    ModLog.create({
+      type: 'avatar',
+      modWhoMade: {
+        id: modWhoProcessed._id,
+        username: modWhoProcessed.username,
+        usernameLower: modWhoProcessed.usernameLower,
+      },
+      data: {
+        modComment: modComment,
+        approved: decision,
+        username: avatarReq.forUsername,
+        msgToMod: avatarReq.msgToMod,
+        resLink: decision ? avatarReq.resLink : null,
+        spyLink: decision ? avatarReq.spyLink : null,
+      },
+      dateCreated: new Date(),
+    });
+
+    if (decision) {
+      console.log(
+        `Custom avatar request approved: forUser="${avatarReq.forUsername}" byMod="${modWhoProcessed.username}" modComment="${modComment}" resLink="${avatarReq.resLink}" spyLink="${avatarReq.spyLink}"`,
+      );
+    } else {
+      console.log(
+        `Custom avatar request rejected: forUser="${avatarReq.forUsername}" byMod="${modWhoProcessed.username}" modComment="${modComment}"`,
+      );
+
+      await avatarReq.remove();
+    }
+
+    const result = decision ? 'approved' : 'rejected';
+    res.status(200).send(`The custom avatar request has been ${result}.`);
+  },
+);
 
 // Show the customavatar edit page
 router.get(
@@ -149,53 +179,211 @@ router.get(
         if (err) {
           console.log(err);
         } else {
-          res.render('profile/changeavatar', { userData: foundUser });
+          res.render('profile/changeavatar', {
+            username: foundUser.username,
+            totalGamesPlayed: foundUser.totalGamesPlayed,
+            MAX_FILESIZE_STR,
+            VALID_DIMENSIONS,
+            VALID_DIMENSIONS_STR,
+          });
         }
       },
     );
   },
 );
 
+const storage = multer.memoryStorage();
+const multerMiddleware = multer({
+  storage: storage,
+  limits: { fileSize: MAX_FILESIZE },
+}).fields([
+  // This is a whitelist, other files will not be accepted
+  { name: 'avatarRes', maxCount: 1 },
+  { name: 'avatarSpy', maxCount: 1 },
+]);
+
+type MulterFiles = {
+  avatarRes: Express.Multer.File[];
+  avatarSpy: Express.Multer.File[];
+};
+
+const upload = function (req, res, next) {
+  multerMiddleware(req, res, function (err) {
+    if (!err) {
+      next();
+      return;
+    }
+
+    if (!(err instanceof multer.MulterError)) {
+      res.status(500).send();
+      throw new Error(err);
+    }
+
+    let message = err.message;
+    if (message === 'File too large') {
+      message = `File size exceeds the limit: ${MAX_FILESIZE_STR}.`;
+    }
+
+    res.status(400).send(message);
+  });
+};
+
 // Update the customavatar
 router.post(
   '/:profileUsername/changeavatar',
   checkProfileOwnership,
-  (req, res) => {
-    console.log('Recieved change avatar');
-    console.log(`For user ${req.params.profileUsername}`);
-    console.log(`Res link: ${req.body.reslink}`);
-    console.log(`Spy link: ${req.body.spylink}`);
-    console.log(`Message to mod: ${req.body.msgToMod}`);
+  upload,
+  async (req, res) => {
+    const files: MulterFiles = req.files;
 
-    // sometimes https links dont show up correctly
-    // req.body.reslink.replace("https", "http");
-    // req.body.spylink.replace("https", "http");
+    const result = await validateUploadAvatarRequest(
+      req.params.profileUsername,
+      files,
+    );
+
+    if (!result.valid) {
+      res.status(400).send(result.errMsg);
+      return;
+    }
+
+    const msgToMod = req.body.msgToMod
+      ? sanitizeHtml(req.body.msgToMod)
+      : 'No message provided.';
+
+    // Upload valid avatar requests to s3 bucket
+    const avatarRes = files['avatarRes'][0];
+    const avatarSpy = files['avatarSpy'][0];
+
+    const avatarLinks = await s3Agent.uploadAvatarRequestImages(
+      req.params.profileUsername,
+      avatarRes.buffer,
+      avatarSpy.buffer,
+    );
 
     const avatarRequestData = {
       forUsername: req.params.profileUsername.toLowerCase(),
-
-      resLink: sanitizeHtml(req.body.reslink),
-      spyLink: sanitizeHtml(req.body.spylink),
-      msgToMod: sanitizeHtml(req.body.msgToMod),
-
+      resLink: avatarLinks.resLink,
+      spyLink: avatarLinks.spyLink,
+      msgToMod: msgToMod,
       dateRequested: new Date(),
-
       processed: false,
     };
 
-    avatarRequest.create(avatarRequestData, (err, createdRequest) => {
-      if (err) {
-        console.log(err);
-      } else {
-        req.flash(
-          'success',
-          'Your submission was received! Please wait for a moderator to process your request.',
-        );
-        res.redirect(`/profile/${req.params.profileUsername}`);
-      }
-    });
+    await avatarRequest.create(avatarRequestData);
+
+    res
+      .status(200)
+      .send(
+        'Your submission was received! Please wait for a moderator to process your request.',
+      );
+
+    console.log(
+      `Received change avatar request: user="${req.params.profileUsername}" msgToMod="${msgToMod}" resLink=${avatarLinks.resLink} spyLink=${avatarLinks.spyLink}`,
+    );
   },
 );
+
+async function validateUploadAvatarRequest(
+  username: string,
+  files: MulterFiles,
+): Promise<{ valid: boolean; errMsg: string }> {
+  if (username.includes('_')) {
+    throw new Error(
+      `Username ${username} includes an underscore! Bad! Avatar set up doesn't support this.`,
+    );
+  }
+
+  const user = await User.findOne({ username: username });
+  if (!user) {
+    throw new Error(`User not found: ${username}`);
+  }
+
+  // Check: Min game count satisfied
+  if (user.totalGamesPlayed < MIN_GAMES_REQUIRED) {
+    return {
+      valid: false,
+      errMsg: `You must play at least 100 games to submit a custom avatar request. You have played ${user.totalGamesPlayed} games.`,
+    };
+  }
+
+  // Check: Does not exceed max active avatar requests
+  {
+    const totalActiveAvatarRequestsQuery = await avatarRequest.aggregate([
+      {
+        $match: {
+          forUsername: user.username.toLowerCase(),
+          processed: false,
+        },
+      },
+      {
+        $count: 'total',
+      },
+    ]);
+
+    const totalActiveAvatarRequests =
+      totalActiveAvatarRequestsQuery.length === 0
+        ? 0
+        : totalActiveAvatarRequestsQuery[0].total;
+
+    if (totalActiveAvatarRequests >= MAX_ACTIVE_AVATAR_REQUESTS) {
+      return {
+        valid: false,
+        errMsg: `You cannot submit more than ${MAX_ACTIVE_AVATAR_REQUESTS} active custom avatar requests.`,
+      };
+    }
+  }
+
+  // Check: Both a singular res and spy avatar were submitted
+  if (
+    !files['avatarRes'] ||
+    !files['avatarSpy'] ||
+    files['avatarRes'].length !== 1 ||
+    files['avatarSpy'].length !== 1
+  ) {
+    return {
+      valid: false,
+      errMsg: `You must submit both a Resistance and Spy avatar.`,
+    };
+  }
+
+  const avatarRes = files['avatarRes'][0];
+  const avatarSpy = files['avatarSpy'][0];
+
+  // Check: Files are of type png
+  if (
+    avatarRes.mimetype !== 'image/png' ||
+    avatarSpy.mimetype !== 'image/png'
+  ) {
+    return {
+      valid: false,
+      errMsg: `You may only submit png files.`,
+    };
+  }
+
+  // Check: File dimensions are valid
+  const dimRes = imageSize(avatarRes.buffer);
+  const dimSpy = imageSize(avatarSpy.buffer);
+
+  if (
+    !VALID_DIMENSIONS.includes(dimRes.width) ||
+    !VALID_DIMENSIONS.includes(dimRes.height) ||
+    !VALID_DIMENSIONS.includes(dimSpy.width) ||
+    !VALID_DIMENSIONS.includes(dimSpy.height) ||
+    dimRes.width !== dimRes.height ||
+    dimSpy.width !== dimSpy.height
+  ) {
+    return {
+      valid: false,
+      errMsg: `Avatar dimensions must be ${VALID_DIMENSIONS_STR}. Your dimensions are: Res: ${dimRes.width}x${dimRes.height}px, Spy: ${dimSpy.width}x${dimSpy.height}px.`,
+    };
+  }
+
+  // Passed all checks
+  return {
+    valid: true,
+    errMsg: ``,
+  };
+}
 
 // Show the change password edit page
 router.get(
@@ -208,7 +396,9 @@ router.get(
         if (err) {
           console.log(err);
         } else {
-          res.render('profile/changepassword', { userData: foundUser });
+          res.render('profile/changepassword', {
+            username: foundUser.username,
+          });
         }
       },
     );

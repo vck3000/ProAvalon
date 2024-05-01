@@ -1,5 +1,6 @@
 // @ts-nocheck
 import './env.js';
+import './config';
 import 'log-timestamp';
 import { sendToDiscordAdmins } from './discord';
 import assert from 'assert';
