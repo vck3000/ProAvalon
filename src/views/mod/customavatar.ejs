@@ -47,6 +47,12 @@
         -ms-transition: opacity 0.3s ease-in-out;
         -o-transition: opacity 0.3s ease-in-out;
     }
+
+    .avatarImg {
+        width: 128px;
+        height: 128px;
+    }
+
 </style>
 
 <div class="container myContainer">
@@ -137,6 +143,7 @@
         $('.avatarImg').each(function (index, element) {
            let img = new Image();
            img.src = $(element).attr('src');
+           img.classList.add('avatarImg')
            img.onload = () => {
                $(element).siblings('.imgdimensions').text(img.width + 'x' + img.height + ' px');
                $(element).siblings('.link').text(img.src);
