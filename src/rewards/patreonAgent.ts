@@ -1,6 +1,13 @@
 import url from 'url';
 import axios from 'axios';
+import patreonId from '../models/patreonId';
 import PatreonId from '../models/patreonId';
+import user from '../models/user';
+
+interface PatreonDetails {
+  isActivePatreon: boolean;
+  amountCents: number;
+}
 
 export class PatreonAgent {
   private clientId = process.env.patreon_client_ID;
@@ -20,8 +27,15 @@ export class PatreonAgent {
     },
   });
 
-  public async registerPatreon(code: string) {
-    const userDetails = await this.getUserDetails(code);
+  public async registerPatreon(
+    usernameLower: string,
+    code: string,
+  ): Promise<PatreonDetails> {
+    // This path is hit whenever user clicks link to Patreon button
+
+    const userDetails = await this.getUserDetails(usernameLower, code);
+
+    return { isActivePatreon: false, amountCents: 0 };
 
     // Check if you can find the PatreonId
     // If you cant find it then create one
@@ -29,6 +43,24 @@ export class PatreonAgent {
     // If you can find it then check if it has expired
     // if not expired then update the details
     // If expired then update
+  }
+
+  private async getExistingActivePatreonDetails(
+    usernameLower: string,
+  ): Promise<PatreonDetails> {
+    // This function is to check for features in general on load
+
+    const patreonQuery = await patreonId.findOne({
+      in_game_username: usernameLower,
+    });
+
+    if (!patreonQuery) {
+      return null;
+    }
+
+    const isActivePatreon = patreonQuery.pledgeExpiryDate > new Date();
+
+    return { isActivePatreon, amountCents: patreonQuery.amountCents };
   }
 
   // public async getCreatorCampaign() {
@@ -74,55 +106,91 @@ export class PatreonAgent {
   //   return response.data;
   // }
 
-  public async getUserDetails(code: string) {
+  public async getUserDetails(usernameLower: string, code: string) {
+    // TODO-kev: Need to move this. Its required temporarily to not create separate Patreon entries for same user
+    const existingPat = await this.getExistingActivePatreonDetails(
+      usernameLower,
+    );
+    if (existingPat) {
+      console.log(existingPat);
+      return;
+    }
+
     const tokens = await this.getTokens(code);
-    // TODO-kev: Do we want their email instead of url and even name?
     const url =
-      'https://www.patreon.com/api/oauth2/v2/identity?include=memberships,memberships.currently_entitled_tiers&fields%5Buser%5D=full_name&fields%5Bmember%5D=lifetime_support_cents,patron_status,campaign_lifetime_support_cents&fields%5Btier%5D=title';
+      'https://www.patreon.com/api/oauth2/v2/identity?include=memberships,memberships.currently_entitled_tiers&fields%5Bmember%5D=last_charge_status,next_charge_date,pledge_relationship_start&fields%5Btier%5D=amount_cents';
     const headers = {
       Authorization: `Bearer ${tokens.access_token}`,
     };
 
     const response = await axios.get(url, { headers });
 
-    const patreonId = response.data.data.id;
-    const fullName = response.data.data.attributes.full_name;
+    const patreonUserId = response.data.data.id;
     const userAccessToken = tokens.access_token;
-    const userAccessTokenExpiry = tokens.expires_in;
-    let currentTier = '';
-    let patreonStatus = null;
-    let patreonTotalCents = 0;
+    const userRefreshToken = tokens.refresh_token;
+    const userAccessTokenExpiry = new Date(
+      Date.now() + tokens.expires_in * 1000,
+    );
+
+    let amountCents: number = -1;
+    let lastChargeStatus: string = 'test';
+    let nextChargeDate: Date = new Date();
+    let pledgeRelationshipStart: Date = new Date();
 
     if (response.data.included) {
       if (
         response.data.included.length >= 1 &&
         response.data.included.length <= 2
       ) {
+        // THEY ARE A MEMBER
         const patreonMemberDetails = response.data.included[0].attributes;
         const patreonTierDetails = response.data.included[1].attributes;
 
-        patreonStatus = patreonMemberDetails.patron_status;
-        patreonTotalCents =
-          patreonMemberDetails.campaign_lifetime_support_cents;
-        currentTier = patreonTierDetails.title;
+        lastChargeStatus = patreonMemberDetails.last_charge_status;
+        nextChargeDate = patreonMemberDetails.next_charge_date;
+        pledgeRelationshipStart =
+          patreonMemberDetails.pledge_relationship_start;
+        amountCents = patreonTierDetails.amount_cents;
+
+        await PatreonId.create({
+          userId: patreonUserId,
+          inGameUsernameLower: usernameLower,
+          userAccessToken,
+          userRefreshToken,
+          userAccessTokenExpiry,
+          amountCents,
+          // TODO-kev: Check this is accurate
+          pledgeExpiryDate: nextChargeDate,
+        });
       } else if (response.data.included.length > 2) {
         // TODO-kev: Will need to test this. What happens if a user upgrades their plan?
         throw new Error(
-          `Unexpected number of Patreon memberships received. name="${fullName}" memberships="${response.data.included}"`,
+          `Unexpected number of Patreon memberships received. name="" memberships="${response.data.included}"`,
         );
       }
+    } else {
+      await PatreonId.create({
+        userId: patreonUserId,
+        inGameUsernameLower: usernameLower,
+        userAccessToken,
+        userRefreshToken,
+        userAccessTokenExpiry,
+        amountCents: 0,
+        // TODO-kev: Check this is accurate
+        pledgeExpiryDate: null,
+      });
     }
 
     // TODO-kev: Design decision on when a patron is considered a valid patron? When they paid etc
 
     console.log('====================');
-    console.log(`patreonId: ${patreonId}`);
-    console.log(`fullName: ${fullName}`);
+    console.log(`patreonUserId: ${patreonUserId}`);
     console.log(`userAccessToken: ${userAccessToken}`);
+    console.log(`lastChargeStatus: ${lastChargeStatus}`);
     console.log(`userAccessTokenExpiry: ${userAccessTokenExpiry}`);
-    console.log(`currentTier: ${currentTier}`);
-    console.log(`patreonStatus: ${patreonStatus}`);
-    console.log(`patreonTotalCents: ${patreonTotalCents}`);
+    console.log(`nextChargeDate: ${nextChargeDate}`);
+    console.log(`pledgeRelationshipStart: ${pledgeRelationshipStart}`);
+    console.log(`amountCents: ${amountCents}`);
     console.log('====================');
 
     return response.data;
