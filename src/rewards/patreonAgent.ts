@@ -42,24 +42,15 @@ class PatreonAgent {
     code: string,
   ): Promise<PatreonDetails> {
     // Grab user tokens
-    const tokens = await this.getTokens(code);
+    const tokens = await this.patreonController.getTokens(code);
 
     // Grab member details with token
-    const url = new URL('https://www.patreon.com/api/oauth2/v2/identity');
-    const params = new URLSearchParams({
-      include: 'memberships',
-      'fields[member]':
-        'last_charge_status,next_charge_date,last_charge_date,currently_entitled_amount_cents',
-    });
-    const headers = {
-      Authorization: `Bearer ${tokens.access_token}`,
-    };
-    url.search = params.toString();
-
-    const response = await axios.get(url.href, { headers });
+    const patronDetails = await this.patreonController.getPatronDetails(
+      tokens.access_token,
+    );
 
     // Update based on member details received
-    const patreonUserId = response.data.data.id;
+    const patreonUserId = patronDetails.patreonUserId;
     const userAccessToken = tokens.access_token;
     const userRefreshToken = tokens.refresh_token;
     const userAccessTokenExpiry = new Date(
@@ -75,24 +66,18 @@ class PatreonAgent {
       );
     }
 
-    if (response.data.included) {
+    if (patronDetails.patreonMemberDetails) {
       // THEY ARE A MEMBER
-
-      if (response.data.included.length !== 1) {
-        // TODO-kev: Will need to test this. What happens if a user upgrades their plan? Member multiple?
-        // Only one membership allowed. Unexpected behaviour if more than one membership
-        throw new Error(
-          `Unexpected number of Patreon memberships received. user=${usernameLower} memberships="${response.data.included}."`,
-        );
-      }
-
-      const patreonMemberDetails = response.data.included[0].attributes;
-
       // Extract all data
-      const lastChargeStatus = patreonMemberDetails.last_charge_status;
-      const nextChargeDate = patreonMemberDetails.next_charge_date;
-      const amountCents = patreonMemberDetails.currently_entitled_amount_cents;
-      const lastChargeDate = new Date(patreonMemberDetails.last_charge_date);
+      const lastChargeStatus =
+        patronDetails.patreonMemberDetails.last_charge_status;
+      const nextChargeDate =
+        patronDetails.patreonMemberDetails.next_charge_date;
+      const amountCents =
+        patronDetails.patreonMemberDetails.currently_entitled_amount_cents;
+      const lastChargeDate = new Date(
+        patronDetails.patreonMemberDetails.last_charge_date,
+      );
 
       // Check payment received
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -176,31 +161,6 @@ class PatreonAgent {
 
   private hasNotExpired(expiryDate: Date) {
     return expiryDate > new Date();
-  }
-
-  private async getTokens(code: string) {
-    const getTokensUrl = new URL('https://www.patreon.com/api/oauth2/token');
-    const params = new URLSearchParams({
-      code: code,
-      grant_type: 'authorization_code',
-      client_id: this.clientId,
-      client_secret: this.clientSecret,
-      redirect_uri: this.redirectUri,
-    });
-    getTokensUrl.search = params.toString();
-
-    const response = await axios.post(getTokensUrl.href);
-
-    // respose.data format:
-    // {
-    //   "access_token": <single use token>,
-    //   "refresh_token": <single use token>,
-    //   "expires_in": <token lifetime duration>,
-    //   "scope": <token scopes>,
-    //   "token_type": "Bearer"
-    // }
-
-    return response.data;
   }
 
   private async getExistingPatreon(usernameLower: string) {
