@@ -1,8 +1,6 @@
 import url from 'url';
 import axios from 'axios';
 import patreonId from '../models/patreonId';
-import PatreonId from '../models/patreonId';
-import user from '../models/user';
 
 interface PatreonDetails {
   isActivePatreon: boolean;
@@ -12,7 +10,6 @@ interface PatreonDetails {
 export class PatreonAgent {
   private clientId = process.env.patreon_client_ID;
   private redirectUri = process.env.patreon_redirectURL;
-  private patreonCreatorToken = process.env.patreon_creator_access_token;
 
   public loginUrl = url.format({
     protocol: 'https',
@@ -33,57 +30,30 @@ export class PatreonAgent {
     code: string,
   ): Promise<PatreonDetails> {
     // Check if existing Patreon
-    // TODO-kev: Need to move this. Its required temporarily to not create separate Patreon entries for same user. Also note the user token will change
-    const existingPat = await this.getExistingActivePatreonDetails(
+    const existingPatreonDetails = await this.getExistingPatreonDetails(
       usernameLower,
     );
-    // if (existingPat && existingPat.isActivePatreon) {
-    //   // If existing Patreon, and is still active then exit
-    //   console.log(existingPat);
-    //   return existingPat;
-    // }
-
-    // Consider need to update if isnotactivepatreon
+    if (existingPatreonDetails && existingPatreonDetails.isActivePatreon) {
+      // If existing Patreon, and is still active then exit
+      console.log(
+        `Active patreon already exists locally: user=${usernameLower}, active=${existingPatreonDetails.isActivePatreon}, amountCents=${existingPatreonDetails.amountCents}`,
+      );
+      return existingPatreonDetails;
+    }
 
     await this.updateUserPatreon(usernameLower, code);
 
     return { isActivePatreon: false, amountCents: 0 };
   }
 
-  private async getExistingActivePatreonDetails(
-    usernameLower: string,
-  ): Promise<PatreonDetails> {
-    // This function is to check for features in general on load
-
-    const patreonQuery = await patreonId.findOne({
-      in_game_username: usernameLower,
-    });
-
-    if (!patreonQuery) {
-      return null;
-    }
-
-    const isActivePatreon = patreonQuery.pledgeExpiryDate > new Date();
-
-    return { isActivePatreon, amountCents: patreonQuery.amountCents };
-  }
-
-  private async getExistingPatreon(usernameLower: string) {
-    const existingPatreon = await patreonId.findOne({
-      inGameUsernameLower: usernameLower,
-    });
-
-    return existingPatreon ? existingPatreon : null;
-  }
-
   public async updateUserPatreon(usernameLower: string, code: string) {
+    // Grab user tokens
     const tokens = await this.getTokens(code);
     const url =
       'https://www.patreon.com/api/oauth2/v2/identity?include=memberships&fields%5Bmember%5D=last_charge_status,next_charge_date,last_charge_date,currently_entitled_amount_cents';
     const headers = {
       Authorization: `Bearer ${tokens.access_token}`,
     };
-
     const response = await axios.get(url, { headers });
 
     const patreonUserId = response.data.data.id;
@@ -96,7 +66,9 @@ export class PatreonAgent {
     const existingPatreon = await this.getExistingPatreon(usernameLower);
 
     if (existingPatreon && existingPatreon.userId !== patreonUserId) {
-      throw new Error('Attempted to upload duplicate Patreon error');
+      throw new Error(
+        'Attempted to upload a second Patreon for the same user.',
+      );
     }
 
     if (response.data.included) {
@@ -104,12 +76,12 @@ export class PatreonAgent {
 
       if (response.data.included.length !== 1) {
         // TODO-kev: Will need to test this. What happens if a user upgrades their plan? Member multiple?
+        // Only one membership allowed. Unexpected behaviour if more than one membership
         throw new Error(
-          `Unexpected number of Patreon memberships received. name="" memberships="${response.data.included}"`,
+          `Unexpected number of Patreon memberships received. user=${usernameLower} memberships="${response.data.included}."`,
         );
       }
 
-      // Only one membership
       const patreonMemberDetails = response.data.included[0].attributes;
 
       // Extract all data
@@ -118,20 +90,14 @@ export class PatreonAgent {
       const amountCents = patreonMemberDetails.currently_entitled_amount_cents;
       const lastChargeDate = new Date(patreonMemberDetails.last_charge_date);
 
-      console.log('====================');
-      console.log(`lastChargeStatus: ${lastChargeStatus}`);
-      console.log(`nextChargeDate: ${nextChargeDate}`);
-      console.log(`amountCents: ${amountCents}`);
-      console.log(`lastChargeDate: ${lastChargeDate}`);
-      console.log('====================');
-
+      // Check payment received
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-
       const hasPaid =
         lastChargeStatus &&
         lastChargeStatus === 'Paid' &&
         lastChargeDate &&
         lastChargeDate > thirtyDaysAgo;
+      const pledgeExpiryDate = hasPaid ? nextChargeDate : null;
 
       const patreonUpdateDetails = {
         userId: patreonUserId,
@@ -141,7 +107,7 @@ export class PatreonAgent {
         userAccessTokenExpiry,
         amountCents,
         // TODO-kev: Check this is accurate
-        pledgeExpiryDate: hasPaid ? nextChargeDate : null,
+        pledgeExpiryDate: pledgeExpiryDate,
       };
 
       if (existingPatreon) {
@@ -151,20 +117,33 @@ export class PatreonAgent {
           },
           patreonUpdateDetails,
         );
+
+        console.log(
+          `Updated existing Patreon: userId=${patreonUserId} inGameUsername=${usernameLower} amountCents=${amountCents} pledgeExpiryDate=${pledgeExpiryDate}`,
+        );
       } else {
-        await PatreonId.create(patreonUpdateDetails);
+        await patreonId.create(patreonUpdateDetails);
+        console.log(
+          `Created new Patreon: userId=${patreonUserId} inGameUsername=${usernameLower} amountCents=${amountCents} pledgeExpiryDate=${pledgeExpiryDate}`,
+        );
       }
     } else {
+      // They are not a current member to the Patreon page
+
+      // Update the tokens if they have an exisiting patreon account
       if (existingPatreon) {
         existingPatreon.userAccessToken = userAccessToken;
         existingPatreon.userRefreshToken = userRefreshToken;
         existingPatreon.userAccessTokenExpiry = userAccessTokenExpiry;
 
         await existingPatreon.save();
+        console.log(
+          `Updated existing Patreon. Not a member: userId=${patreonUserId} inGameUsername=${usernameLower}`,
+        );
       }
 
       if (!existingPatreon) {
-        await PatreonId.create({
+        await patreonId.create({
           userId: patreonUserId,
           inGameUsernameLower: usernameLower,
           userAccessToken,
@@ -173,14 +152,12 @@ export class PatreonAgent {
           amountCents: 0,
           pledgeExpiryDate: null,
         });
+        // TODO-kev: Can potentially remove this one
+        console.log(
+          `Created new Patreon. Not a member: userId=${patreonUserId} inGameUsername=${usernameLower}`,
+        );
       }
     }
-
-    console.log('====================');
-    console.log(`patreonUserId: ${patreonUserId}`);
-    console.log(`userAccessToken: ${userAccessToken}`);
-    console.log(`userAccessTokenExpiry: ${userAccessTokenExpiry}`);
-    console.log('====================');
   }
 
   private async getTokens(code: string) {
@@ -209,5 +186,29 @@ export class PatreonAgent {
     // }
 
     return response.data;
+  }
+
+  private async getExistingPatreon(usernameLower: string) {
+    const existingPatreon = await patreonId.findOne({
+      inGameUsernameLower: usernameLower,
+    });
+
+    return existingPatreon ? existingPatreon : null;
+  }
+
+  private async getExistingPatreonDetails(
+    usernameLower: string,
+  ): Promise<PatreonDetails> {
+    // This function is to check for features in general on load
+
+    const existingPatreon = await this.getExistingPatreon(usernameLower);
+
+    if (!existingPatreon) {
+      return null;
+    }
+
+    const isActivePatreon = existingPatreon.pledgeExpiryDate > new Date();
+
+    return { isActivePatreon, amountCents: existingPatreon.amountCents };
   }
 }
