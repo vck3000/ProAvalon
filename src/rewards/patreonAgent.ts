@@ -66,6 +66,20 @@ class PatreonAgent {
       );
     }
 
+    // Do not let one patreon for more than one user
+    const patreonAccountInUse = await patreonId.findOne({
+      userId: patreonUserId,
+    });
+
+    if (
+      patreonAccountInUse &&
+      patreonAccountInUse.inGameUsernameLower !== usernameLower
+    ) {
+      throw new Error(
+        'Attempted to upload a used Patreon for more than one user.',
+      );
+    }
+
     if (patronDetails.patreonMemberDetails) {
       // THEY ARE A MEMBER
       // Extract all data

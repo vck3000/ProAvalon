@@ -68,7 +68,7 @@ export class PatreonController {
     }
 
     return {
-      patreonUserId: response.data.id,
+      patreonUserId: response.data.data.id,
       patreonMemberDetails: response.data.included
         ? response.data.included[0].attributes
         : null,
