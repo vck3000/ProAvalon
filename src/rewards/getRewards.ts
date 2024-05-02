@@ -1,22 +1,41 @@
-import getPatreonDetails from './getPatreonDetails';
-import { Rewards, RewardType } from './indexRewards';
+import { AllRewards, PatreonRewards, RewardType } from './indexRewards';
 
 import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import { isDev } from '../modsadmins/developers';
+import { patreonAgent } from './patreonAgent';
+
+export async function getAllPatreonRewardsForUser(usernameLower: string) {
+  const rewardsSatisfied: RewardType[] = [];
+
+  const patreonDetails = await patreonAgent.getExistingPatreonDetails(
+    usernameLower,
+  );
+
+  if (!patreonDetails || !patreonDetails.isActivePatreon) {
+    return null;
+  }
+
+  for (const key in PatreonRewards) {
+    const reward = AllRewards[key as RewardType];
+    if (reward.donationReq <= patreonDetails.amountCents) {
+      rewardsSatisfied.push(key as RewardType);
+    }
+  }
+
+  return rewardsSatisfied;
+}
 
 async function getAllRewardsForUser(user: any): Promise<RewardType[]> {
   const rewardsSatisfied: RewardType[] = [];
+  const patreonRewards = await getAllPatreonRewardsForUser(
+    user.username.toLowercase(),
+  );
+  rewardsSatisfied.concat(patreonRewards);
 
-  const patreonDetails = await getPatreonDetails(user.patreonId);
-
-  for (const key in Rewards) {
-    const hasReward = await userHasReward(
-      user,
-      key as RewardType,
-      patreonDetails,
-    );
+  for (const key in AllRewards) {
+    const hasReward = await userHasReward(user, key as RewardType);
     if (hasReward === true) {
       rewardsSatisfied.push(key as RewardType);
     }
@@ -28,13 +47,8 @@ async function getAllRewardsForUser(user: any): Promise<RewardType[]> {
 async function userHasReward(
   user: any,
   rewardType: RewardType,
-  patreonDetails?: any,
 ): Promise<boolean> {
-  if (!patreonDetails) {
-    patreonDetails = await getPatreonDetails(user.patreonId);
-  }
-
-  const reward = Rewards[rewardType];
+  const reward = AllRewards[rewardType];
 
   if (reward.adminReq && !isAdmin(user.username)) {
     return false;
@@ -54,22 +68,6 @@ async function userHasReward(
 
   // Check for games played
   if (user.totalGamesPlayed < reward.gamesPlayedReq) {
-    return false;
-  }
-
-  // Check for patreon donations
-  if (
-    reward.donationReq !== 0 &&
-    // Payment has been declined
-    (patreonDetails.declined_since !== null ||
-      // Payment is not high enough
-      patreonDetails.amount_cents < reward.donationReq ||
-      // Username linked is not the current user
-      patreonDetails.in_game_username.toLowerCase() !==
-        user.username.toLowerCase() ||
-      // Passed the 32 day valid period
-      new Date() > new Date(patreonDetails.expires))
-  ) {
     return false;
   }
 

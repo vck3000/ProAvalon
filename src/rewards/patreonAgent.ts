@@ -220,7 +220,7 @@ class PatreonAgent {
     return existingPatreon ? existingPatreon : null;
   }
 
-  private async getExistingPatreonDetails(
+  public async getExistingPatreonDetails(
     usernameLower: string,
   ): Promise<PatreonDetails> {
     // This function is to check for features in general on load
