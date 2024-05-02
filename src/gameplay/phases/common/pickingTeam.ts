@@ -2,7 +2,7 @@ import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
 import { ButtonSettings, IPhase, Phase } from '../types';
 import { MIN_PLAYERS, NUM_PLAYERS_ON_MISSION } from '../../game';
 import { SocketUser } from '../../../sockets/types';
-
+import { GameMode } from '../../gameModes';
 class PickingTeam implements IPhase {
   static phase = Phase.PickingTeam;
   phase = Phase.PickingTeam;
@@ -58,12 +58,14 @@ class PickingTeam implements IPhase {
       // console.log("Num player for this.thisRoom mission : " + num);
 
       // Check that the data is valid (i.e. includes only usernames of players)
+      /*
       for (let i = 0; i < num; i++) {
         // If the data doesn't have the right number of users
         // Or has an empty element
         if (!selectedPlayers[i]) {
           return;
         }
+        
         if (
           this.thisRoom.playerUsernamesInGame.includes(selectedPlayers[i]) ===
           false
@@ -71,6 +73,7 @@ class PickingTeam implements IPhase {
           return;
         }
       }
+      */// ignoring this check for now
 
       // Continue if it passes the above check
       this.thisRoom.proposedTeam = selectedPlayers;
@@ -138,11 +141,39 @@ class PickingTeam implements IPhase {
     };
   }
 
+  
   numOfTargets(indexOfPlayer: number): number {
-    const num =
+    let num =
       NUM_PLAYERS_ON_MISSION[this.thisRoom.playersInGame.length - MIN_PLAYERS][
         this.thisRoom.missionNum - 1
       ];
+      
+    if(this.thisRoom.gameMode===GameMode.SINAD)
+      {
+          
+          if (this.thisRoom.missionHistory[0] === 'succeeded'
+            &&
+            this.thisRoom.missionHistory[1] === 'succeeded'
+            &&
+            this.thisRoom.missionHistory[2]
+           
+          )//failed
+          {  
+            this.thisRoom.sendText(
+              'The mission sizes of m4 and m5 have swapped!',
+              'gameplay-text',
+            );
+            if(!this.thisRoom.missionHistory[3])
+            {
+              num=4;
+            }
+            else if (!this.thisRoom.missionHistory[4])
+              {
+                num =3;
+              }
+          }
+      }
+    
 
     // If we are not the team leader
     if (indexOfPlayer !== this.thisRoom.teamLeader) {
