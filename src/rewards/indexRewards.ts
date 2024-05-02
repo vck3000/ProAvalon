@@ -29,6 +29,11 @@ export const OtherRewards = {
   CAN_ALL_CHAT: CAN_ALL_CHAT,
 };
 
+export const AllRewardsExceptPatreon = {
+  ...UserBadgeRewards,
+  ...OtherRewards,
+};
+
 export const AllRewards = {
   ...UserBadgeRewards,
   ...PatreonRewards,

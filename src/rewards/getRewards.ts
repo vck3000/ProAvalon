@@ -1,4 +1,9 @@
-import { AllRewards, PatreonRewards, RewardType } from './indexRewards';
+import {
+  AllRewards,
+  AllRewardsExceptPatreon,
+  PatreonRewards,
+  RewardType,
+} from './indexRewards';
 
 import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
@@ -27,15 +32,23 @@ export async function getAllPatreonRewardsForUser(usernameLower: string) {
   return rewardsSatisfied;
 }
 
-async function getAllRewardsForUser(user: any): Promise<RewardType[]> {
+async function getAllRewardsForUser(
+  usernameLower: string,
+  totalGamesPlayed: number,
+): Promise<RewardType[]> {
   const rewardsSatisfied: RewardType[] = [];
-  const patreonRewards = await getAllPatreonRewardsForUser(
-    user.username.toLowercase(),
-  );
-  rewardsSatisfied.concat(patreonRewards);
+  const patreonRewards = await getAllPatreonRewardsForUser(usernameLower);
 
-  for (const key in AllRewards) {
-    const hasReward = await userHasReward(user, key as RewardType);
+  patreonRewards.forEach((reward) => {
+    rewardsSatisfied.push(reward);
+  });
+
+  for (const key in AllRewardsExceptPatreon) {
+    const hasReward = await userHasReward(
+      usernameLower,
+      totalGamesPlayed,
+      key as RewardType,
+    );
     if (hasReward === true) {
       rewardsSatisfied.push(key as RewardType);
     }
@@ -45,29 +58,30 @@ async function getAllRewardsForUser(user: any): Promise<RewardType[]> {
 }
 
 async function userHasReward(
-  user: any,
+  usernameLower: string,
+  totalGamesPlayed: number,
   rewardType: RewardType,
 ): Promise<boolean> {
   const reward = AllRewards[rewardType];
 
-  if (reward.adminReq && !isAdmin(user.username)) {
+  if (reward.adminReq && !isAdmin(usernameLower)) {
     return false;
   }
 
-  if (reward.modReq && !isMod(user.username)) {
+  if (reward.modReq && !isMod(usernameLower)) {
     return false;
   }
 
-  if (reward.TOReq && !isTO(user.username)) {
+  if (reward.TOReq && !isTO(usernameLower)) {
     return false;
   }
 
-  if (reward.devReq && !isDev(user.username)) {
+  if (reward.devReq && !isDev(usernameLower)) {
     return false;
   }
 
   // Check for games played
-  if (user.totalGamesPlayed < reward.gamesPlayedReq) {
+  if (totalGamesPlayed < reward.gamesPlayedReq) {
     return false;
   }
 
