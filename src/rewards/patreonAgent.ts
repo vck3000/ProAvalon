@@ -27,22 +27,27 @@ export class PatreonAgent {
     },
   });
 
+  // This path is hit whenever user clicks link to Patreon button
   public async registerPatreon(
     usernameLower: string,
     code: string,
   ): Promise<PatreonDetails> {
-    // This path is hit whenever user clicks link to Patreon button
+    // Check if existing Patreon
+    // TODO-kev: Need to move this. Its required temporarily to not create separate Patreon entries for same user. Also note the user token will change
+    const existingPat = await this.getExistingActivePatreonDetails(
+      usernameLower,
+    );
+    // if (existingPat && existingPat.isActivePatreon) {
+    //   // If existing Patreon, and is still active then exit
+    //   console.log(existingPat);
+    //   return existingPat;
+    // }
 
-    const userDetails = await this.getUserDetails(usernameLower, code);
+    // Consider need to update if isnotactivepatreon
+
+    await this.updateUserPatreon(usernameLower, code);
 
     return { isActivePatreon: false, amountCents: 0 };
-
-    // Check if you can find the PatreonId
-    // If you cant find it then create one
-    // Then link it with the user
-    // If you can find it then check if it has expired
-    // if not expired then update the details
-    // If expired then update
   }
 
   private async getExistingActivePatreonDetails(
@@ -63,62 +68,18 @@ export class PatreonAgent {
     return { isActivePatreon, amountCents: patreonQuery.amountCents };
   }
 
-  // public async getCreatorCampaign() {
-  //   // const tokens = await this.getTokens(code);
-  //   const url =
-  //     'https://www.patreon.com/api/oauth2/v2/campaigns?fields%5Bmember%5D=full_name,patron_status,will_pay_amount_cents&fields%5Btier%5D=description,title,patron_count';
-  //   // console.log(tokens.access_token);
-  //   const headers = {
-  //     Authorization: `Bearer ${this.patreonCreatorToken}`,
-  //   };
-  //
-  //   const response = await axios.get(url, { headers });
-  //
-  //   console.log(response.data);
-  //   return response.data;
-  // }
-  //
-  // public async getCampaignMembers() {
-  //   // Still have to test if opened from ProNub account. None of the members or campaign info show
-  //
-  //   const url = `https://www.patreon.com/api/oauth2/v2/campaigns/${process.env.patreon_campaign}/members?include=currently_entitled_tiers`;
-  //   const headers = {
-  //     Authorization: `Bearer ${this.patreonCreatorToken}`,
-  //   };
-  //
-  //   const response = await axios.get(url, { headers });
-  //
-  //   console.log(response.data);
-  //   return response.data;
-  // }
-  //
-  // public async memberById() {
-  //   // Still have to test if opened from ProNub account. None of the members or campaign info show
-  //
-  //   const url = `https://www.patreon.com/api/oauth2/v2/members/126667873`;
-  //   const headers = {
-  //     Authorization: `Bearer ${this.patreonCreatorToken}`,
-  //   };
-  //
-  //   const response = await axios.get(url, { headers });
-  //
-  //   console.log(response.data);
-  //   return response.data;
-  // }
+  private async getExistingPatreon(usernameLower: string) {
+    const existingPatreon = await patreonId.findOne({
+      inGameUsernameLower: usernameLower,
+    });
 
-  public async getUserDetails(usernameLower: string, code: string) {
-    // TODO-kev: Need to move this. Its required temporarily to not create separate Patreon entries for same user
-    const existingPat = await this.getExistingActivePatreonDetails(
-      usernameLower,
-    );
-    if (existingPat) {
-      console.log(existingPat);
-      return;
-    }
+    return existingPatreon ? existingPatreon : null;
+  }
 
+  public async updateUserPatreon(usernameLower: string, code: string) {
     const tokens = await this.getTokens(code);
     const url =
-      'https://www.patreon.com/api/oauth2/v2/identity?include=memberships,memberships.currently_entitled_tiers&fields%5Bmember%5D=last_charge_status,next_charge_date,pledge_relationship_start&fields%5Btier%5D=amount_cents';
+      'https://www.patreon.com/api/oauth2/v2/identity?include=memberships&fields%5Bmember%5D=last_charge_status,next_charge_date,last_charge_date,currently_entitled_amount_cents';
     const headers = {
       Authorization: `Bearer ${tokens.access_token}`,
     };
@@ -132,68 +93,94 @@ export class PatreonAgent {
       Date.now() + tokens.expires_in * 1000,
     );
 
-    let amountCents: number = -1;
-    let lastChargeStatus: string = 'test';
-    let nextChargeDate: Date = new Date();
-    let pledgeRelationshipStart: Date = new Date();
+    const existingPatreon = await this.getExistingPatreon(usernameLower);
+
+    if (existingPatreon && existingPatreon.userId !== patreonUserId) {
+      throw new Error('Attempted to upload duplicate Patreon error');
+    }
 
     if (response.data.included) {
-      if (
-        response.data.included.length >= 1 &&
-        response.data.included.length <= 2
-      ) {
-        // THEY ARE A MEMBER
-        const patreonMemberDetails = response.data.included[0].attributes;
-        const patreonTierDetails = response.data.included[1].attributes;
+      // THEY ARE A MEMBER
 
-        lastChargeStatus = patreonMemberDetails.last_charge_status;
-        nextChargeDate = patreonMemberDetails.next_charge_date;
-        pledgeRelationshipStart =
-          patreonMemberDetails.pledge_relationship_start;
-        amountCents = patreonTierDetails.amount_cents;
+      if (response.data.included.length !== 1) {
+        // TODO-kev: Will need to test this. What happens if a user upgrades their plan? Member multiple?
+        throw new Error(
+          `Unexpected number of Patreon memberships received. name="" memberships="${response.data.included}"`,
+        );
+      }
 
+      // Only one membership
+      const patreonMemberDetails = response.data.included[0].attributes;
+
+      // Extract all data
+      const lastChargeStatus = patreonMemberDetails.last_charge_status;
+      const nextChargeDate = patreonMemberDetails.next_charge_date;
+      const amountCents = patreonMemberDetails.currently_entitled_amount_cents;
+      const lastChargeDate = new Date(patreonMemberDetails.last_charge_date);
+
+      console.log('====================');
+      console.log(`lastChargeStatus: ${lastChargeStatus}`);
+      console.log(`nextChargeDate: ${nextChargeDate}`);
+      console.log(`amountCents: ${amountCents}`);
+      console.log(`lastChargeDate: ${lastChargeDate}`);
+      console.log('====================');
+
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+      const hasPaid =
+        lastChargeStatus &&
+        lastChargeStatus === 'Paid' &&
+        lastChargeDate &&
+        lastChargeDate > thirtyDaysAgo;
+
+      const patreonUpdateDetails = {
+        userId: patreonUserId,
+        inGameUsernameLower: usernameLower,
+        userAccessToken,
+        userRefreshToken,
+        userAccessTokenExpiry,
+        amountCents,
+        // TODO-kev: Check this is accurate
+        pledgeExpiryDate: hasPaid ? nextChargeDate : null,
+      };
+
+      if (existingPatreon) {
+        await patreonId.findOneAndUpdate(
+          {
+            inGameUsernameLower: usernameLower,
+          },
+          patreonUpdateDetails,
+        );
+      } else {
+        await PatreonId.create(patreonUpdateDetails);
+      }
+    } else {
+      if (existingPatreon) {
+        existingPatreon.userAccessToken = userAccessToken;
+        existingPatreon.userRefreshToken = userRefreshToken;
+        existingPatreon.userAccessTokenExpiry = userAccessTokenExpiry;
+
+        await existingPatreon.save();
+      }
+
+      if (!existingPatreon) {
         await PatreonId.create({
           userId: patreonUserId,
           inGameUsernameLower: usernameLower,
           userAccessToken,
           userRefreshToken,
           userAccessTokenExpiry,
-          amountCents,
-          // TODO-kev: Check this is accurate
-          pledgeExpiryDate: nextChargeDate,
+          amountCents: 0,
+          pledgeExpiryDate: null,
         });
-      } else if (response.data.included.length > 2) {
-        // TODO-kev: Will need to test this. What happens if a user upgrades their plan?
-        throw new Error(
-          `Unexpected number of Patreon memberships received. name="" memberships="${response.data.included}"`,
-        );
       }
-    } else {
-      await PatreonId.create({
-        userId: patreonUserId,
-        inGameUsernameLower: usernameLower,
-        userAccessToken,
-        userRefreshToken,
-        userAccessTokenExpiry,
-        amountCents: 0,
-        // TODO-kev: Check this is accurate
-        pledgeExpiryDate: null,
-      });
     }
-
-    // TODO-kev: Design decision on when a patron is considered a valid patron? When they paid etc
 
     console.log('====================');
     console.log(`patreonUserId: ${patreonUserId}`);
     console.log(`userAccessToken: ${userAccessToken}`);
-    console.log(`lastChargeStatus: ${lastChargeStatus}`);
     console.log(`userAccessTokenExpiry: ${userAccessTokenExpiry}`);
-    console.log(`nextChargeDate: ${nextChargeDate}`);
-    console.log(`pledgeRelationshipStart: ${pledgeRelationshipStart}`);
-    console.log(`amountCents: ${amountCents}`);
     console.log('====================');
-
-    return response.data;
   }
 
   private async getTokens(code: string) {
