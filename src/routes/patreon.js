@@ -18,6 +18,12 @@ router.get('/oauth/redirect', async (req, res) => {
   );
   console.log('End: Link done...');
 
+  if (!patreonDetails.isActivePatreon) {
+    req.flash('error', 'You are not a paid member of our Patreon.');
+  } else {
+    req.flash('success', 'Your Patreon has now been linked successfully!');
+  }
+
   return res.redirect(`/profile/${req.user.username}`);
 });
 
