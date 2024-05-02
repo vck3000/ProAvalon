@@ -39,9 +39,11 @@ async function getAllRewardsForUser(
   const rewardsSatisfied: RewardType[] = [];
   const patreonRewards = await getAllPatreonRewardsForUser(usernameLower);
 
-  patreonRewards.forEach((reward) => {
-    rewardsSatisfied.push(reward);
-  });
+  if (patreonRewards) {
+    patreonRewards.forEach((reward) => {
+      rewardsSatisfied.push(reward);
+    });
+  }
 
   for (const key in AllRewardsExceptPatreon) {
     const hasReward = await userHasReward(

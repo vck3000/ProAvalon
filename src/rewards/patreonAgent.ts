@@ -1,5 +1,6 @@
 import axios from 'axios';
 import patreonId from '../models/patreonId';
+import { PatreonController } from './patreonController';
 
 interface PatreonDetails {
   isActivePatreon: boolean;
@@ -10,20 +11,10 @@ class PatreonAgent {
   private clientId = process.env.patreon_client_ID;
   private clientSecret = process.env.patreon_client_secret;
   private redirectUri = process.env.patreon_redirectURL;
-  public loginUrl: string;
+  private patreonController = new PatreonController();
 
-  constructor() {
-    const url = new URL('https://www.patreon.com/oauth2/authorize');
-    const params = new URLSearchParams({
-      response_type: 'code',
-      client_id: this.clientId,
-      redirect_uri: this.redirectUri,
-      state: 'chill', // TODO-kev: Is this needed?
-      scope: 'identity',
-    });
-    url.search = params.toString();
-
-    this.loginUrl = url.href;
+  public getPatreonAuthorizationUrl() {
+    return this.patreonController.loginUrl;
   }
 
   // This path is hit whenever user clicks link to Patreon button

@@ -477,20 +477,20 @@ router.get('/:profileUsername/edit', checkProfileOwnership, (req, res) => {
           .then((patreonIdObj) => {
             res.render('profile/edit', {
               userData: foundUser,
-              patreonLoginUrl: patreonAgent.loginUrl,
+              patreonLoginUrl: patreonAgent.getPatreonAuthorizationUrl(),
               patreonId: patreonIdObj,
             });
           })
           .catch((err) => {
             res.render('profile/edit', {
               userData: foundUser,
-              patreonLoginUrl: patreonAgent.loginUrl,
+              patreonLoginUrl: patreonAgent.getPatreonAuthorizationUrl(),
             });
           });
       } else {
         res.render('profile/edit', {
           userData: foundUser,
-          patreonLoginUrl: patreonAgent.loginUrl,
+          patreonLoginUrl: patreonAgent.getPatreonAuthorizationUrl(),
         });
       }
     },
