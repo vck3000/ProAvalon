@@ -172,7 +172,7 @@ export class PatreonAgent {
   }
 
   private hasNotExpired(expiryDate: Date) {
-    return new Date() > expiryDate;
+    return expiryDate > new Date();
   }
 
   private async getTokens(code: string) {
