@@ -22,7 +22,7 @@ const VALID_DIMENSIONS = [128, 1024];
 const VALID_DIMENSIONS_STR = '128x128px or 1024x1024px';
 const MAX_FILESIZE = 1048576; // 1MB
 const MAX_FILESIZE_STR = '1MB';
-import { PatreonAgent } from '../rewards/patreonAgent';
+import { patreonAgent } from '../rewards/patreonAgent';
 
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',
@@ -466,8 +466,6 @@ const loginUrl = url.format({
 
 // show the edit page
 router.get('/:profileUsername/edit', checkProfileOwnership, (req, res) => {
-  const patreonAgent = new PatreonAgent();
-
   User.findOne(
     { usernameLower: req.params.profileUsername.toLowerCase() },
     (err, foundUser) => {

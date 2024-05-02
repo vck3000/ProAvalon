@@ -1,4 +1,3 @@
-import url from 'url';
 import axios from 'axios';
 import patreonId from '../models/patreonId';
 
@@ -11,19 +10,21 @@ class PatreonAgent {
   private clientId = process.env.patreon_client_ID;
   private clientSecret = process.env.patreon_client_secret;
   private redirectUri = process.env.patreon_redirectURL;
+  public loginUrl: string;
 
-  public loginUrl = url.format({
-    protocol: 'https',
-    host: 'patreon.com',
-    pathname: '/oauth2/authorize',
-    query: {
+  constructor() {
+    const url = new URL('https://www.patreon.com/oauth2/authorize');
+    const params = new URLSearchParams({
       response_type: 'code',
       client_id: this.clientId,
       redirect_uri: this.redirectUri,
       state: 'chill', // TODO-kev: Is this needed?
       scope: 'identity',
-    },
-  });
+    });
+    url.search = params.toString();
+
+    this.loginUrl = url.href;
+  }
 
   // This path is hit whenever user clicks link to Patreon button
   public async registerPatreon(
@@ -51,13 +52,22 @@ class PatreonAgent {
   ): Promise<PatreonDetails> {
     // Grab user tokens
     const tokens = await this.getTokens(code);
-    const url =
-      'https://www.patreon.com/api/oauth2/v2/identity?include=memberships&fields%5Bmember%5D=last_charge_status,next_charge_date,last_charge_date,currently_entitled_amount_cents';
+
+    // Grab member details with token
+    const url = new URL('https://www.patreon.com/api/oauth2/v2/identity');
+    const params = new URLSearchParams({
+      include: 'memberships',
+      'fields[member]':
+        'last_charge_status,next_charge_date,last_charge_date,currently_entitled_amount_cents',
+    });
     const headers = {
       Authorization: `Bearer ${tokens.access_token}`,
     };
-    const response = await axios.get(url, { headers });
+    url.search = params.toString();
 
+    const response = await axios.get(url.href, { headers });
+
+    // Update based on member details received
     const patreonUserId = response.data.data.id;
     const userAccessToken = tokens.access_token;
     const userRefreshToken = tokens.refresh_token;
@@ -65,6 +75,7 @@ class PatreonAgent {
       Date.now() + tokens.expires_in * 1000,
     );
 
+    // Do not let more than one patreon for same user
     const existingPatreon = await this.getExistingPatreon(usernameLower);
 
     if (existingPatreon && existingPatreon.userId !== patreonUserId) {
@@ -177,20 +188,17 @@ class PatreonAgent {
   }
 
   private async getTokens(code: string) {
-    const getTokensUrl = url.format({
-      protocol: 'https',
-      host: 'patreon.com',
-      pathname: '/api/oauth2/token',
-      query: {
-        code: code,
-        grant_type: 'authorization_code',
-        client_id: this.clientId,
-        client_secret: this.clientSecret,
-        redirect_uri: this.redirectUri,
-      },
+    const getTokensUrl = new URL('https://www.patreon.com/api/oauth2/token');
+    const params = new URLSearchParams({
+      code: code,
+      grant_type: 'authorization_code',
+      client_id: this.clientId,
+      client_secret: this.clientSecret,
+      redirect_uri: this.redirectUri,
     });
+    getTokensUrl.search = params.toString();
 
-    const response = await axios.post(getTokensUrl);
+    const response = await axios.post(getTokensUrl.href);
 
     // respose.data format:
     // {
