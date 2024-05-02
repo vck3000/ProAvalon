@@ -8,7 +8,15 @@ router.get('/oauth/redirect', async (req, res) => {
   const { code } = req.query;
   const patreonAgent = new PatreonAgent();
 
-  await patreonAgent.registerPatreon(req.user.username.toLowerCase(), code);
+  const patreonDetails = await patreonAgent.registerPatreon(
+    req.user.username.toLowerCase(),
+    code,
+  );
+
+  console.log(
+    `Overall result: active=${patreonDetails.isActivePatreon} amountCents=${patreonDetails.amountCents}`,
+  );
+  console.log('End: Link done...');
 
   return res.redirect(`/profile/${req.user.username}`);
 });

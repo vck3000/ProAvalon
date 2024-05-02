@@ -41,12 +41,13 @@ export class PatreonAgent {
       return existingPatreonDetails;
     }
 
-    await this.updateUserPatreon(usernameLower, code);
-
-    return { isActivePatreon: false, amountCents: 0 };
+    return await this.updateUserPatreon(usernameLower, code);
   }
 
-  public async updateUserPatreon(usernameLower: string, code: string) {
+  public async updateUserPatreon(
+    usernameLower: string,
+    code: string,
+  ): Promise<PatreonDetails> {
     // Grab user tokens
     const tokens = await this.getTokens(code);
     const url =
@@ -121,11 +122,19 @@ export class PatreonAgent {
         console.log(
           `Updated existing Patreon: userId=${patreonUserId} inGameUsername=${usernameLower} amountCents=${amountCents} pledgeExpiryDate=${pledgeExpiryDate}`,
         );
+        return {
+          isActivePatreon: !this.hasExpired(pledgeExpiryDate),
+          amountCents: amountCents,
+        };
       } else {
         await patreonId.create(patreonUpdateDetails);
         console.log(
           `Created new Patreon: userId=${patreonUserId} inGameUsername=${usernameLower} amountCents=${amountCents} pledgeExpiryDate=${pledgeExpiryDate}`,
         );
+        return {
+          isActivePatreon: !this.hasExpired(pledgeExpiryDate),
+          amountCents: amountCents,
+        };
       }
     } else {
       // They are not a current member to the Patreon page
@@ -140,6 +149,7 @@ export class PatreonAgent {
         console.log(
           `Updated existing Patreon. Not a member: userId=${patreonUserId} inGameUsername=${usernameLower}`,
         );
+        return { isActivePatreon: false, amountCents: 0 };
       }
 
       if (!existingPatreon) {
@@ -156,8 +166,13 @@ export class PatreonAgent {
         console.log(
           `Created new Patreon. Not a member: userId=${patreonUserId} inGameUsername=${usernameLower}`,
         );
+        return { isActivePatreon: false, amountCents: 0 };
       }
     }
+  }
+
+  private hasExpired(expiryDate: Date) {
+    return expiryDate > new Date();
   }
 
   private async getTokens(code: string) {
