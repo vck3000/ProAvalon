@@ -7,8 +7,9 @@ interface PatreonDetails {
   amountCents: number;
 }
 
-export class PatreonAgent {
+class PatreonAgent {
   private clientId = process.env.patreon_client_ID;
+  private clientSecret = process.env.patreon_client_secret;
   private redirectUri = process.env.patreon_redirectURL;
 
   public loginUrl = url.format({
@@ -183,9 +184,9 @@ export class PatreonAgent {
       query: {
         code: code,
         grant_type: 'authorization_code',
-        client_id: process.env.patreon_client_ID,
-        client_secret: process.env.patreon_client_secret,
-        redirect_uri: process.env.patreon_redirectURL,
+        client_id: this.clientId,
+        client_secret: this.clientSecret,
+        redirect_uri: this.redirectUri,
       },
     });
 
@@ -229,3 +230,5 @@ export class PatreonAgent {
     return { isActivePatreon, amountCents: existingPatreon.amountCents };
   }
 }
+
+export const patreonAgent = new PatreonAgent();
