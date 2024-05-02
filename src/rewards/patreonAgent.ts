@@ -123,7 +123,7 @@ export class PatreonAgent {
           `Updated existing Patreon: userId=${patreonUserId} inGameUsername=${usernameLower} amountCents=${amountCents} pledgeExpiryDate=${pledgeExpiryDate}`,
         );
         return {
-          isActivePatreon: !this.hasExpired(pledgeExpiryDate),
+          isActivePatreon: this.hasNotExpired(pledgeExpiryDate),
           amountCents: amountCents,
         };
       } else {
@@ -132,7 +132,7 @@ export class PatreonAgent {
           `Created new Patreon: userId=${patreonUserId} inGameUsername=${usernameLower} amountCents=${amountCents} pledgeExpiryDate=${pledgeExpiryDate}`,
         );
         return {
-          isActivePatreon: !this.hasExpired(pledgeExpiryDate),
+          isActivePatreon: !this.hasNotExpired(pledgeExpiryDate),
           amountCents: amountCents,
         };
       }
@@ -171,8 +171,8 @@ export class PatreonAgent {
     }
   }
 
-  private hasExpired(expiryDate: Date) {
-    return expiryDate > new Date();
+  private hasNotExpired(expiryDate: Date) {
+    return new Date() > expiryDate;
   }
 
   private async getTokens(code: string) {
@@ -222,7 +222,9 @@ export class PatreonAgent {
       return null;
     }
 
-    const isActivePatreon = existingPatreon.pledgeExpiryDate > new Date();
+    const isActivePatreon = this.hasNotExpired(
+      existingPatreon.pledgeExpiryDate,
+    );
 
     return { isActivePatreon, amountCents: existingPatreon.amountCents };
   }
