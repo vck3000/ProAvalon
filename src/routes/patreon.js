@@ -23,7 +23,7 @@ router.get('/oauth/redirect', async (req, res) => {
     req.flash('success', 'Your Patreon has now been linked successfully!');
   }
 
-  return res.redirect(`/profile/${req.user.username}`);
+  return res.redirect(`/profile/${req.user.username}/edit`);
 });
 
 export default router;

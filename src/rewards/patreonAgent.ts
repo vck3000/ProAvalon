@@ -8,13 +8,28 @@ interface PatreonDetails {
 }
 
 class PatreonAgent {
-  private clientId = process.env.patreon_client_ID;
-  private clientSecret = process.env.patreon_client_secret;
-  private redirectUri = process.env.patreon_redirectURL;
   private patreonController = new PatreonController();
 
   public getPatreonAuthorizationUrl() {
     return this.patreonController.loginUrl;
+  }
+
+  public async getExistingPatreonDetails(
+    usernameLower: string,
+  ): Promise<PatreonDetails> {
+    // This function is to check for features in general on load
+
+    const existingPatreon = await this.getExistingPatreon(usernameLower);
+
+    if (!existingPatreon) {
+      return null;
+    }
+
+    const isActivePatreon = this.hasNotExpired(
+      existingPatreon.pledgeExpiryDate,
+    );
+
+    return { isActivePatreon, amountCents: existingPatreon.amountCents };
   }
 
   // This path is hit whenever user clicks link to Patreon button
@@ -37,7 +52,7 @@ class PatreonAgent {
     return await this.updateUserPatreon(usernameLower, code);
   }
 
-  public async updateUserPatreon(
+  private async updateUserPatreon(
     usernameLower: string,
     code: string,
   ): Promise<PatreonDetails> {
@@ -59,7 +74,6 @@ class PatreonAgent {
 
     // Do not let more than one patreon for same user
     const existingPatreon = await this.getExistingPatreon(usernameLower);
-
     if (existingPatreon && existingPatreon.userId !== patreonUserId) {
       throw new Error(
         'Attempted to upload a second Patreon for the same user.',
@@ -70,7 +84,6 @@ class PatreonAgent {
     const patreonAccountInUse = await patreonId.findOne({
       userId: patreonUserId,
     });
-
     if (
       patreonAccountInUse &&
       patreonAccountInUse.inGameUsernameLower !== usernameLower
@@ -183,24 +196,6 @@ class PatreonAgent {
     });
 
     return existingPatreon ? existingPatreon : null;
-  }
-
-  public async getExistingPatreonDetails(
-    usernameLower: string,
-  ): Promise<PatreonDetails> {
-    // This function is to check for features in general on load
-
-    const existingPatreon = await this.getExistingPatreon(usernameLower);
-
-    if (!existingPatreon) {
-      return null;
-    }
-
-    const isActivePatreon = this.hasNotExpired(
-      existingPatreon.pledgeExpiryDate,
-    );
-
-    return { isActivePatreon, amountCents: existingPatreon.amountCents };
   }
 }
 
