@@ -1,19 +1,27 @@
-import S3Controller from '../S3Controller';
-import { S3Agent } from '../S3Agent';
+import { IS3Controller, S3Agent } from '../S3Agent';
 
-jest.mock('../S3Controller');
-const mockS3ControllerClass = jest.mocked(S3Controller);
+class MockS3Controller implements IS3Controller {
+  listObjectKeys = jest.fn();
+  uploadFile = jest.fn();
+  deleteFile = jest.fn();
+  moveFile = jest.fn();
+
+  clear() {
+    this.listObjectKeys.mockClear();
+    this.uploadFile.mockClear();
+    this.deleteFile.mockClear();
+    this.moveFile.mockClear();
+  }
+}
 
 describe('S3Agent', () => {
   let s3Agent: S3Agent;
-  let mockS3Controller: jest.Mocked<S3Controller>;
+  const mockS3Controller = new MockS3Controller();
 
   beforeEach(() => {
-    mockS3ControllerClass.mockClear();
+    mockS3Controller.clear();
 
-    s3Agent = new S3Agent();
-    mockS3Controller = mockS3ControllerClass.mock
-      .instances[0] as jest.Mocked<S3Controller>;
+    s3Agent = new S3Agent(mockS3Controller);
   });
 
   it('uploads avatars', async () => {
@@ -123,7 +131,7 @@ describe('S3Agent', () => {
   });
 
   it('Reverts overall avatar approval if one fails', async () => {
-    mockS3Controller.moveFile.mockResolvedValueOnce();
+    mockS3Controller.moveFile.mockResolvedValueOnce(undefined);
     mockS3Controller.moveFile.mockRejectedValueOnce(
       new Error('Move File failed'),
     );

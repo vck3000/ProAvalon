@@ -11,8 +11,10 @@ import { createNotification } from '../myFunctions/createNotification';
 import multer from 'multer';
 import imageSize from 'image-size';
 import { S3Agent } from '../s3/S3Agent';
+import S3Controller from '../s3/S3Controller';
 
-const s3Agent = new S3Agent();
+const s3Controller = new S3Controller();
+const s3Agent = new S3Agent(s3Controller);
 
 const router = express.Router();
 

@@ -1,5 +1,3 @@
-import S3Controller from './S3Controller';
-
 enum FolderName {
   APPROVED = 'approved_avatars',
   PENDING = 'pending_avatars',
@@ -12,11 +10,22 @@ interface S3AvatarLinks {
   spyLink: string;
 }
 
-export class S3Agent {
-  private s3Controller: S3Controller;
+export interface IS3Controller {
+  listObjectKeys(prefixes: string[]): any;
+  uploadFile(
+    key: string,
+    fileContent: Buffer,
+    contentType: string,
+  ): any;
+  deleteFile(link: string): any;
+  moveFile(oldLink: string, newLink: string): any;
+}
 
-  constructor() {
-    this.s3Controller = new S3Controller();
+export class S3Agent {
+  private s3Controller: IS3Controller;
+
+  constructor(controller: IS3Controller) {
+    this.s3Controller = controller;
   }
 
   // =====================================================

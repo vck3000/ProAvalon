@@ -7,8 +7,9 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
+import { IS3Controller } from './s3Agent';
 
-export default class S3Controller {
+export default class S3Controller implements IS3Controller{
   private client: S3Client;
   private publicFileLinkPrefix: string;
   private bucket: string;
@@ -45,7 +46,7 @@ export default class S3Controller {
   public async listObjectKeys(prefixes: string[]) {
     // Note ListObjects command only returns up to 1000 objects
     // Need to update code if this exceeds
-    let keys: string[] = [];
+    const keys: string[] = [];
 
     for (const prefix of prefixes) {
       const command = new ListObjectsV2Command({
