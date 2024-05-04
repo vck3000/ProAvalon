@@ -7,7 +7,7 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-import { IS3Controller } from './s3Agent';
+import { IS3Controller } from './S3Agent';
 
 export default class S3Controller implements IS3Controller{
   private client: S3Client;
