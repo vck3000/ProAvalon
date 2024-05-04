@@ -63,7 +63,6 @@ const isVPN = async (ip: string, totalDailyCalls: number): Promise<boolean> => {
   console.log(`Checking VPN status of ip: ${ip}`);
   console.log(`VPN Cache size: ${vpnCache.size}`);
 
-  // Must pass both vpn checks
   let VpnCheck1;
   let VpnCheck2;
 
@@ -78,12 +77,14 @@ const isVPN = async (ip: string, totalDailyCalls: number): Promise<boolean> => {
   const msg = 'Max daily calls reached';
 
   console.log(
+    `VPN Detection Result: vpnapi.io=${VpnCheck1} check.getipintel.net=temporarily disabled`,
     `VPN Detection Result: vpnapi.io="${
       VpnCheck1 ? VpnCheck1 : msg
     }" check.getipintel.net="${VpnCheck2 ? VpnCheck2 : msg}"`,
   );
 
-  const result = VpnCheck1 || VpnCheck2;
+  // const result = VpnCheck1 || VpnCheck2;
+  const result = VpnCheck1;
 
   vpnCache.get(ip).setIsVpn(result);
 
