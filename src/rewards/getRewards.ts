@@ -10,6 +10,8 @@ import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import { isDev } from '../modsadmins/developers';
 import { patreonAgent } from './patreonAgent';
+import User from '../models/user';
+import { IUser } from '../gameplay/types';
 
 export async function getAllPatreonRewardsForUser(usernameLower: string) {
   const rewardsSatisfied: RewardType[] = [];
@@ -32,12 +34,11 @@ export async function getAllPatreonRewardsForUser(usernameLower: string) {
   return rewardsSatisfied;
 }
 
-async function getAllRewardsForUser(
-  usernameLower: string,
-  totalGamesPlayed: number,
-): Promise<RewardType[]> {
+async function getAllRewardsForUser(user: IUser): Promise<RewardType[]> {
   const rewardsSatisfied: RewardType[] = [];
-  const patreonRewards = await getAllPatreonRewardsForUser(usernameLower);
+  const patreonRewards = await getAllPatreonRewardsForUser(
+    user.username.toLowerCase(),
+  );
 
   if (patreonRewards) {
     patreonRewards.forEach((reward) => {
@@ -47,8 +48,8 @@ async function getAllRewardsForUser(
 
   for (const key in AllRewardsExceptPatreon) {
     const hasReward = await userHasReward(
-      usernameLower,
-      totalGamesPlayed,
+      user.username.toLowerCase(),
+      user.totalGamesPlayed,
       key as RewardType,
     );
     if (hasReward === true) {

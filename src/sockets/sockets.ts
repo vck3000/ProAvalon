@@ -1058,10 +1058,7 @@ export const server = function (io: SocketServer): void {
       });
     }, 1000);
 
-    socket.rewards = await getAllRewardsForUser(
-      socket.request.user.username.toLowerCase(),
-      socket.request.user.totalGamesPlayed,
-    );
+    socket.rewards = await getAllRewardsForUser(socket.request.user);
     socket = applyApplicableRewards(socket);
   });
 };
