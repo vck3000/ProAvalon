@@ -7,7 +7,7 @@ router.get('/oauth/redirect', async (req, res) => {
   console.log('Start: Link to Patreon...');
   const { code } = req.query;
 
-  const patreonDetails = await patreonAgent.registerPatreon(
+  const patreonDetails = await patreonAgent.linkUserToPatreon(
     // @ts-ignore
     req.user.username.toLowerCase(),
     code as string,

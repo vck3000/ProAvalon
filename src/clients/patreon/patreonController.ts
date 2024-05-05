@@ -1,5 +1,11 @@
 import axios from 'axios';
 
+interface PatreonUserTokens {
+  userAccessToken: string;
+  userRefreshToken: string;
+  userAccessTokenExpiry: Date;
+}
+
 export class PatreonController {
   private clientId = process.env.patreon_client_ID;
   private clientSecret = process.env.patreon_client_secret;
@@ -20,7 +26,7 @@ export class PatreonController {
     this.loginUrl = url.href;
   }
 
-  public async getTokens(code: string) {
+  public async getTokens(code: string): Promise<PatreonUserTokens> {
     const getTokensUrl = new URL('https://www.patreon.com/api/oauth2/token');
     const params = new URLSearchParams({
       code: code,
@@ -33,16 +39,13 @@ export class PatreonController {
 
     const response = await axios.post(getTokensUrl.href);
 
-    // Result of respose.data:
-    // {
-    //   "access_token": <single use token>,
-    //   "refresh_token": <single use token>,
-    //   "expires_in": <token lifetime duration>,
-    //   "scope": <token scopes>,
-    //   "token_type": "Bearer"
-    // }
-
-    return response.data;
+    return {
+      userAccessToken: response.data.access_token,
+      userRefreshToken: response.data.refresh_token,
+      userAccessTokenExpiry: new Date(
+        Date.now() + response.data.expires_in * 1000,
+      ),
+    };
   }
 
   public async getPatronDetails(accessToken: string) {

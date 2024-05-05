@@ -33,54 +33,33 @@ class PatreonAgent {
   }
 
   // This path is hit whenever user clicks link to Patreon button
-  public async registerPatreon(
-    usernameLower: string,
-    code: string,
-  ): Promise<PatreonDetails> {
-    // Check if existing Patreon
-    const existingPatreonDetails = await this.getExistingPatreonDetails(
-      usernameLower,
-    );
-    if (existingPatreonDetails && existingPatreonDetails.isActivePatreon) {
-      // If existing Patreon, and is still active then exit
-      console.log(
-        `Active patreon already exists locally: user=${usernameLower}, active=${existingPatreonDetails.isActivePatreon}, amountCents=${existingPatreonDetails.amountCents}`,
-      );
-      return existingPatreonDetails;
-    }
-
-    return await this.updateUserPatreon(usernameLower, code);
-  }
-
-  private async updateUserPatreon(
+  public async linkUserToPatreon(
     usernameLower: string,
     code: string,
   ): Promise<PatreonDetails> {
     // Grab user tokens
     const tokens = await this.patreonController.getTokens(code);
 
-    // Grab member details with token
+    // Grab member details from Patreon with token
     const patronDetails = await this.patreonController.getPatronDetails(
-      tokens.access_token,
+      tokens.userAccessToken,
     );
 
-    // Update based on member details received
+    // Create variables based on member details received
     const patreonUserId = patronDetails.patreonUserId;
-    const userAccessToken = tokens.access_token;
-    const userRefreshToken = tokens.refresh_token;
-    const userAccessTokenExpiry = new Date(
-      Date.now() + tokens.expires_in * 1000,
-    );
-
-    // Do not let more than one patreon for same user
+    const userAccessToken = tokens.userRefreshToken;
+    const userRefreshToken = tokens.userRefreshToken;
+    const userAccessTokenExpiry = tokens.userAccessTokenExpiry;
     const existingPatreon = await this.getExistingPatreon(usernameLower);
+
+    // Do not let more than one patreon be used for same user
     if (existingPatreon && existingPatreon.patreonUserId !== patreonUserId) {
       throw new Error(
         'Attempted to upload a second Patreon for the same user.',
       );
     }
 
-    // Do not let one patreon for more than one user
+    // Do not let one patreon be used for more than one user
     const patreonAccountInUse = await patreonId.findOne({
       patreonUserId: patreonUserId,
     });
