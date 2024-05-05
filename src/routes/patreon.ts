@@ -1,5 +1,5 @@
 import express from 'express';
-import { patreonAgent } from '../rewards/patreonAgent';
+import { patreonAgent } from '../clients/patreon/patreonAgent';
 
 const router = express.Router();
 
@@ -8,8 +8,9 @@ router.get('/oauth/redirect', async (req, res) => {
   const { code } = req.query;
 
   const patreonDetails = await patreonAgent.registerPatreon(
+    // @ts-ignore
     req.user.username.toLowerCase(),
-    code,
+    code as string,
   );
 
   console.log(
@@ -18,11 +19,14 @@ router.get('/oauth/redirect', async (req, res) => {
   console.log('End: Link done...');
 
   if (!patreonDetails.isActivePatreon) {
+    // @ts-ignore
     req.flash('error', 'You are not a paid member of our Patreon.');
   } else {
+    // @ts-ignore
     req.flash('success', 'Your Patreon has now been linked successfully!');
   }
 
+  // @ts-ignore
   return res.redirect(`/profile/${req.user.username}/edit`);
 });
 

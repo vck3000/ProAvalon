@@ -1,5 +1,5 @@
 import axios from 'axios';
-import patreonId from '../models/patreonId';
+import patreonId from '../../models/patreonId';
 import { PatreonController } from './patreonController';
 
 interface PatreonDetails {

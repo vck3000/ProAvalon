@@ -10,7 +10,7 @@ import ModLog from '../models/modLog';
 import { createNotification } from '../myFunctions/createNotification';
 import multer from 'multer';
 import imageSize from 'image-size';
-import { S3Agent } from '../s3/S3Agent';
+import { S3Agent } from '../clients/s3/S3Agent';
 
 const s3Agent = new S3Agent();
 
@@ -22,7 +22,7 @@ const VALID_DIMENSIONS = [128, 1024];
 const VALID_DIMENSIONS_STR = '128x128px or 1024x1024px';
 const MAX_FILESIZE = 1048576; // 1MB
 const MAX_FILESIZE_STR = '1MB';
-import { patreonAgent } from '../rewards/patreonAgent';
+import { patreonAgent } from '../clients/patreon/patreonAgent';
 
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',

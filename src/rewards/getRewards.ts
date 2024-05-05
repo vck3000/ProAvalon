@@ -9,7 +9,7 @@ import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import { isDev } from '../modsadmins/developers';
-import { patreonAgent } from './patreonAgent';
+import { patreonAgent } from '../clients/patreon/patreonAgent';
 import User from '../models/user';
 import { IUser } from '../gameplay/types';
 
