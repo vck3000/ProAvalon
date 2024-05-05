@@ -474,7 +474,7 @@ router.get('/:profileUsername/edit', checkProfileOwnership, (req, res) => {
     patreonLoginUrl.split('?')[1],
   );
   req.session.patreonAuthState = patreonLoginUrlParams.get('state');
-  req.session.patreonOriginalUrl = req.originalUrl;
+  req.session.patreonOriginalUrl = req.baseUrl + req.path;
 
   User.findOne(
     { usernameLower: req.params.profileUsername.toLowerCase() },

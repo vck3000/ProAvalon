@@ -372,6 +372,24 @@
           $(`option[value='UN']`).attr("selected", "selected");
             updateFlag();
         }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const success = urlParams.get('success');
+        const error = urlParams.get('error');
+
+        if (success) {
+            Swal.fire({
+                type: 'success',
+                title: success,
+            });
+        }
+
+        if (error) {
+            Swal.fire({
+                type: 'error',
+                title: error,
+            });
+        }
     });
 
     $("#selectNation").on("change", function(e){
