@@ -10,9 +10,12 @@ import ModLog from '../models/modLog';
 import { createNotification } from '../myFunctions/createNotification';
 import multer from 'multer';
 import imageSize from 'image-size';
+import S3Controller from '../clients/s3/S3Controller';
 import { S3Agent } from '../clients/s3/S3Agent';
+import { patreonAgent } from '../clients/patreon/patreonAgent';
 
-const s3Agent = new S3Agent();
+const s3Controller = new S3Controller();
+const s3Agent = new S3Agent(s3Controller);
 
 const router = express.Router();
 
@@ -22,7 +25,6 @@ const VALID_DIMENSIONS = [128, 1024];
 const VALID_DIMENSIONS_STR = '128x128px or 1024x1024px';
 const MAX_FILESIZE = 1048576; // 1MB
 const MAX_FILESIZE_STR = '1MB';
-import { patreonAgent } from '../clients/patreon/patreonAgent';
 
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',

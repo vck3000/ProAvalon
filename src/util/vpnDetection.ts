@@ -62,12 +62,18 @@ const isVPN = async (ip: string): Promise<boolean> => {
 
   // Must pass both vpn checks
   const VpnCheck1 = await isVpnCheck1(ip);
-  const VpnCheck2 = await isVpnCheck2(ip);
+
+  // TODO-kev: Temporarily commenting out until a limiter is added in
+  // const VpnCheck2 = await isVpnCheck2(ip);
+  // console.log(
+  //   `VPN Detection Result: vpnapi.io=${VpnCheck1} check.getipintel.net=${VpnCheck2}`,
+  // );
   console.log(
-    `VPN Detection Result: vpnapi.io=${VpnCheck1} check.getipintel.net=${VpnCheck2}`,
+    `VPN Detection Result: vpnapi.io=${VpnCheck1} check.getipintel.net=temporarily disabled`,
   );
 
-  const result = VpnCheck1 || VpnCheck2;
+  // const result = VpnCheck1 || VpnCheck2;
+  const result = VpnCheck1;
 
   vpnCache.get(ip).setIsVpn(result);
 
