@@ -2,13 +2,13 @@ import mongoose from 'mongoose';
 
 // SCHEMA SETUP
 const patreonIdSchema = new mongoose.Schema({
-  userId: String,
-  inGameUsernameLower: String,
+  patreonUserId: String,
+  proavalonUsernameLower: String,
   userAccessToken: String,
-  userRefreshToken: String,
   userAccessTokenExpiry: Date,
+  userRefreshToken: String,
   amountCents: Number,
-  pledgeExpiryDate: Date,
+  currentPledgeExpiryDate: Date,
 });
 // compile schema into a model
 const patreonId = mongoose.model('patreonId', patreonIdSchema);
