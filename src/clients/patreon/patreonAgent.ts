@@ -11,7 +11,7 @@ class PatreonAgent {
   private patreonController = new PatreonController();
 
   public getPatreonAuthorizationUrl() {
-    return this.patreonController.loginUrl;
+    return this.patreonController.getLoginUrl();
   }
 
   public async getExistingPatreonDetails(

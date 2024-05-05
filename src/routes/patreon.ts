@@ -4,8 +4,27 @@ import { patreonAgent } from '../clients/patreon/patreonAgent';
 const router = express.Router();
 
 router.get('/oauth/redirect', async (req, res) => {
+  // TODO-kev: Consider what happens if someone clicks deny
+
   console.log('Start: Link to Patreon...');
-  const { code } = req.query;
+  const { code, state } = req.query;
+
+  // @ts-ignore
+  console.log(`Matching state = ${req.session.patreonAuthState}`);
+  // @ts-ignore
+  console.log(`Original url = ${req.session.patreonOriginalUrl}`);
+
+  // @ts-ignore
+  if (state !== req.session.patreonAuthState) {
+    // TODO-kev: Figure a way to handle this. Redirect? Swal?
+    throw new Error('State parameter mismatch');
+  }
+
+  // @ts-ignore
+  // TODO-kev: Look into what happens if not deleted
+  delete req.session.patreonAuthState;
+  // @ts-ignore
+  delete req.session.patreonOriginalUrl;
 
   const patreonDetails = await patreonAgent.linkUserToPatreon(
     // @ts-ignore

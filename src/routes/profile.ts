@@ -468,6 +468,14 @@ const loginUrl = url.format({
 
 // show the edit page
 router.get('/:profileUsername/edit', checkProfileOwnership, (req, res) => {
+  // TODO-kev: Find a better way to do the below
+  const patreonLoginUrl = patreonAgent.getPatreonAuthorizationUrl();
+  const patreonLoginUrlParams = new URLSearchParams(
+    patreonLoginUrl.split('?')[1],
+  );
+  req.session.patreonAuthState = patreonLoginUrlParams.get('state');
+  req.session.patreonOriginalUrl = req.originalUrl;
+
   User.findOne(
     { usernameLower: req.params.profileUsername.toLowerCase() },
     (err, foundUser) => {
@@ -479,20 +487,20 @@ router.get('/:profileUsername/edit', checkProfileOwnership, (req, res) => {
           .then((patreonIdObj) => {
             res.render('profile/edit', {
               userData: foundUser,
-              patreonLoginUrl: patreonAgent.getPatreonAuthorizationUrl(),
+              patreonLoginUrl,
               patreonId: patreonIdObj,
             });
           })
           .catch((err) => {
             res.render('profile/edit', {
               userData: foundUser,
-              patreonLoginUrl: patreonAgent.getPatreonAuthorizationUrl(),
+              patreonLoginUrl,
             });
           });
       } else {
         res.render('profile/edit', {
           userData: foundUser,
-          patreonLoginUrl: patreonAgent.getPatreonAuthorizationUrl(),
+          patreonLoginUrl,
         });
       }
     },

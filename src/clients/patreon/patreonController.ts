@@ -10,21 +10,6 @@ export class PatreonController {
   private clientId = process.env.patreon_client_ID;
   private clientSecret = process.env.patreon_client_secret;
   private redirectUri = process.env.patreon_redirectURL;
-  public loginUrl: string;
-
-  constructor() {
-    const url = new URL('https://www.patreon.com/oauth2/authorize');
-    const params = new URLSearchParams({
-      response_type: 'code',
-      client_id: this.clientId,
-      redirect_uri: this.redirectUri,
-      state: 'chill', // TODO-kev: Is this needed?
-      scope: 'identity',
-    });
-    url.search = params.toString();
-
-    this.loginUrl = url.href;
-  }
 
   public async getTokens(code: string): Promise<PatreonUserTokens> {
     const getTokensUrl = new URL('https://www.patreon.com/api/oauth2/token');
@@ -76,5 +61,28 @@ export class PatreonController {
         ? response.data.included[0].attributes
         : null,
     };
+  }
+
+  public getLoginUrl() {
+    const loginUrl = new URL('https://www.patreon.com/oauth2/authorize');
+    const params = new URLSearchParams({
+      response_type: 'code',
+      client_id: this.clientId,
+      redirect_uri: this.redirectUri,
+      state: this.generateRandomState(), // TODO-kev: Is this correct?
+      scope: 'identity',
+    });
+
+    loginUrl.search = params.toString();
+
+    return loginUrl.href;
+  }
+
+  private generateRandomState() {
+    // Generate a random 22-length string comprised of 0-9 a-z
+    const randomString =
+      Math.random().toString(36).substring(2, 13) +
+      Math.random().toString(36).substring(2, 13);
+    return encodeURIComponent(randomString);
   }
 }
