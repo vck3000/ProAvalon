@@ -25,7 +25,7 @@ class PatreonAgent {
       return null;
     }
 
-    const isActivePatreon = this.hasNotExpired(
+    const isActivePatreon = !this.hasExpired(
       existingPatreon.currentPledgeExpiryDate,
     );
 
@@ -45,15 +45,14 @@ class PatreonAgent {
       tokens.userAccessToken,
     );
 
-    // Create variables based on member details received
-    const patreonUserId = patronDetails.patreonUserId;
-    const userAccessToken = tokens.userRefreshToken;
-    const userRefreshToken = tokens.userRefreshToken;
-    const userAccessTokenExpiry = tokens.userAccessTokenExpiry;
+    // Grab Patreon document from MongoDB
     const existingPatreon = await this.getExistingPatreon(usernameLower);
 
     // Do not let more than one patreon be used for same user
-    if (existingPatreon && existingPatreon.patreonUserId !== patreonUserId) {
+    if (
+      existingPatreon &&
+      existingPatreon.patreonUserId !== patronDetails.patreonUserId
+    ) {
       throw new Error(
         'Attempted to upload a second Patreon for the same user.',
       );
@@ -61,7 +60,7 @@ class PatreonAgent {
 
     // Do not let one patreon be used for more than one user
     const patreonAccountInUse = await patreonId.findOne({
-      patreonUserId: patreonUserId,
+      patreonUserId: patronDetails.patreonUserId,
     });
     if (
       patreonAccountInUse &&
@@ -72,92 +71,97 @@ class PatreonAgent {
       );
     }
 
+    let result: PatreonDetails;
+
     if (patronDetails.patreonMemberDetails) {
-      // THEY ARE A MEMBER
-      // Extract all data
-      const lastChargeStatus =
-        patronDetails.patreonMemberDetails.last_charge_status;
-      const nextChargeDate =
-        patronDetails.patreonMemberDetails.next_charge_date;
-      const amountCents =
-        patronDetails.patreonMemberDetails.currently_entitled_amount_cents;
-      const lastChargeDate = new Date(
-        patronDetails.patreonMemberDetails.last_charge_date,
+      // They are a current member
+      result = await this.updateCurrentPatreonMember(
+        existingPatreon,
+        patronDetails,
+        usernameLower,
+        tokens,
       );
-
-      // Check payment received
-      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-      const hasPaid =
-        lastChargeStatus &&
-        lastChargeStatus === 'Paid' &&
-        lastChargeDate &&
-        lastChargeDate > thirtyDaysAgo;
-      const currentPledgeExpiryDate = hasPaid ? nextChargeDate : null;
-
-      const patreonUpdateDetails = {
-        patreonUserId: patreonUserId,
-        proavalonUsernameLower: usernameLower,
-        userAccessToken,
-        userRefreshToken,
-        userAccessTokenExpiry,
-        amountCents,
-        // TODO-kev: Check this is accurate
-        currentPledgeExpiryDate: currentPledgeExpiryDate,
-      };
-
-      if (existingPatreon) {
-        await patreonId.findOneAndUpdate(
-          {
-            proavalonUsernameLower: usernameLower,
-          },
-          patreonUpdateDetails,
-        );
-
-        console.log(
-          `Updated existing Patreon: patreonUserId=${patreonUserId} inGameUsername=${usernameLower} amountCents=${amountCents} currentPledgeExpiryDate=${currentPledgeExpiryDate}`,
-        );
-        return {
-          isActivePatreon: this.hasNotExpired(currentPledgeExpiryDate),
-          amountCents: amountCents,
-        };
-      } else {
-        await patreonId.create(patreonUpdateDetails);
-        console.log(
-          `Created new Patreon: patreonUserId=${patreonUserId} inGameUsername=${usernameLower} amountCents=${amountCents} currentPledgeExpiryDate=${currentPledgeExpiryDate}`,
-        );
-        return {
-          isActivePatreon: !this.hasNotExpired(currentPledgeExpiryDate),
-          amountCents: amountCents,
-        };
-      }
     } else {
       // They are not a current member to the Patreon page
-      return await this.updateCurrentNonPatreonMember(
+      result = await this.updateCurrentNonPatreonMember(
         existingPatreon,
         tokens,
         usernameLower,
-        patreonUserId,
+        patronDetails.patreonUserId,
       );
     }
+
+    console.log(
+      `Successfully linked Patreon account: proavalonUsernameLower="${usernameLower}" patreonUserId="${patronDetails.patreonUserId}" isActivePatreon="${result.isActivePatreon}" amountCents="${result.amountCents}"`,
+    );
+
+    return result;
   }
 
-  private async updateCurrentPatreonMember() {}
+  private async updateCurrentPatreonMember(
+    existingPatreon: any,
+    patronDetails: any,
+    usernameLower: string,
+    tokens: PatreonUserTokens,
+  ): Promise<PatreonDetails> {
+    const amountCents =
+      patronDetails.patreonMemberDetails.currently_entitled_amount_cents;
+    const lastChargeDate = new Date(
+      patronDetails.patreonMemberDetails.last_charge_date,
+    );
+
+    // Check payment received
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const hasPaid =
+      patronDetails.patreonMemberDetails.last_charge_status &&
+      patronDetails.patreonMemberDetails.last_charge_status === 'Paid' &&
+      lastChargeDate &&
+      lastChargeDate > thirtyDaysAgo;
+    const currentPledgeExpiryDate = hasPaid
+      ? patronDetails.patreonMemberDetails.next_charge_date
+      : null;
+
+    const patreonUpdateDetails = {
+      patreonUserId: patronDetails.patreonUserId,
+      proavalonUsernameLower: usernameLower,
+      userAccessToken: tokens.userAccessToken,
+      userRefreshToken: tokens.userRefreshToken,
+      userAccessTokenExpiry: tokens.userAccessTokenExpiry,
+      amountCents,
+      // TODO-kev: Check this is accurate
+      currentPledgeExpiryDate: currentPledgeExpiryDate,
+    };
+
+    if (existingPatreon) {
+      await patreonId.findOneAndUpdate(
+        {
+          proavalonUsernameLower: usernameLower,
+        },
+        patreonUpdateDetails,
+      );
+    } else {
+      await patreonId.create(patreonUpdateDetails);
+    }
+
+    return {
+      isActivePatreon: !this.hasExpired(currentPledgeExpiryDate),
+      amountCents,
+    };
+  }
 
   private async updateCurrentNonPatreonMember(
     existingPatreon: any,
     tokens: PatreonUserTokens,
     usernameLower: string,
     patreonUserId: number,
-  ) {
+  ): Promise<PatreonDetails> {
     if (existingPatreon) {
       existingPatreon.userAccessToken = tokens.userAccessToken;
       existingPatreon.userRefreshToken = tokens.userRefreshToken;
       existingPatreon.userAccessTokenExpiry = tokens.userAccessTokenExpiry;
 
       await existingPatreon.save();
-      console.log(
-        `Updated existing Patreon. Not a member: patreonUserId=${patreonUserId} inGameUsername=${usernameLower}`,
-      );
+
       return { isActivePatreon: false, amountCents: 0 };
     }
 
@@ -172,14 +176,11 @@ class PatreonAgent {
       currentPledgeExpiryDate: null,
     });
 
-    console.log(
-      `Created new Patreon. Not a member: patreonUserId=${patreonUserId} inGameUsername=${usernameLower}`,
-    );
     return { isActivePatreon: false, amountCents: 0 };
   }
 
-  private hasNotExpired(expiryDate: Date) {
-    return expiryDate > new Date();
+  private hasExpired(expiryDate: Date) {
+    return expiryDate < new Date();
   }
 
   private async getExistingPatreon(usernameLower: string) {

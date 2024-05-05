@@ -13,9 +13,6 @@ router.get('/oauth/redirect', async (req, res) => {
     code as string,
   );
 
-  console.log(
-    `Overall result: active=${patreonDetails.isActivePatreon} amountCents=${patreonDetails.amountCents}`,
-  );
   console.log('End: Link done...');
 
   if (!patreonDetails.isActivePatreon) {
