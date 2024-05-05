@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-interface PatreonUserTokens {
+export interface PatreonUserTokens {
   userAccessToken: string;
   userRefreshToken: string;
   userAccessTokenExpiry: Date;

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import patreonId from '../../models/patreonId';
-import { PatreonController } from './patreonController';
+import { PatreonController, PatreonUserTokens } from './patreonController';
 
 interface PatreonDetails {
   isActivePatreon: boolean;
@@ -132,37 +132,50 @@ class PatreonAgent {
       }
     } else {
       // They are not a current member to the Patreon page
-
-      // Update the tokens if they have an exisiting patreon account
-      if (existingPatreon) {
-        existingPatreon.userAccessToken = userAccessToken;
-        existingPatreon.userRefreshToken = userRefreshToken;
-        existingPatreon.userAccessTokenExpiry = userAccessTokenExpiry;
-
-        await existingPatreon.save();
-        console.log(
-          `Updated existing Patreon. Not a member: patreonUserId=${patreonUserId} inGameUsername=${usernameLower}`,
-        );
-        return { isActivePatreon: false, amountCents: 0 };
-      }
-
-      if (!existingPatreon) {
-        await patreonId.create({
-          patreonUserId: patreonUserId,
-          proavalonUsernameLower: usernameLower,
-          userAccessToken,
-          userRefreshToken,
-          userAccessTokenExpiry,
-          amountCents: 0,
-          currentPledgeExpiryDate: null,
-        });
-        // TODO-kev: Can potentially remove this one
-        console.log(
-          `Created new Patreon. Not a member: patreonUserId=${patreonUserId} inGameUsername=${usernameLower}`,
-        );
-        return { isActivePatreon: false, amountCents: 0 };
-      }
+      return await this.updateCurrentNonPatreonMember(
+        existingPatreon,
+        tokens,
+        usernameLower,
+        patreonUserId,
+      );
     }
+  }
+
+  private async updateCurrentPatreonMember() {}
+
+  private async updateCurrentNonPatreonMember(
+    existingPatreon: any,
+    tokens: PatreonUserTokens,
+    usernameLower: string,
+    patreonUserId: number,
+  ) {
+    if (existingPatreon) {
+      existingPatreon.userAccessToken = tokens.userAccessToken;
+      existingPatreon.userRefreshToken = tokens.userRefreshToken;
+      existingPatreon.userAccessTokenExpiry = tokens.userAccessTokenExpiry;
+
+      await existingPatreon.save();
+      console.log(
+        `Updated existing Patreon. Not a member: patreonUserId=${patreonUserId} inGameUsername=${usernameLower}`,
+      );
+      return { isActivePatreon: false, amountCents: 0 };
+    }
+
+    // TODO-kev: Can potentially remove this one so as to not store non member data
+    await patreonId.create({
+      patreonUserId: patreonUserId,
+      proavalonUsernameLower: usernameLower,
+      userAccessToken: tokens.userAccessToken,
+      userRefreshToken: tokens.userRefreshToken,
+      userAccessTokenExpiry: tokens.userAccessTokenExpiry,
+      amountCents: 0,
+      currentPledgeExpiryDate: null,
+    });
+
+    console.log(
+      `Created new Patreon. Not a member: patreonUserId=${patreonUserId} inGameUsername=${usernameLower}`,
+    );
+    return { isActivePatreon: false, amountCents: 0 };
   }
 
   private hasNotExpired(expiryDate: Date) {
