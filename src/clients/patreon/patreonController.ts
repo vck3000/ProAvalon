@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { PATREON_URLS } from './constants';
 
 export interface PatreonUserTokens {
   userAccessToken: string;
@@ -12,7 +13,7 @@ export class PatreonController {
   private redirectUri = process.env.patreon_redirectURL;
 
   public async getTokens(code: string): Promise<PatreonUserTokens> {
-    const getTokensUrl = new URL('https://www.patreon.com/api/oauth2/token');
+    const getTokensUrl = new URL(PATREON_URLS.GET_TOKENS);
     const params = new URLSearchParams({
       code: code,
       grant_type: 'authorization_code',
@@ -34,7 +35,7 @@ export class PatreonController {
   }
 
   public async getPatronDetails(accessToken: string) {
-    const url = new URL('https://www.patreon.com/api/oauth2/v2/identity');
+    const url = new URL(PATREON_URLS.GET_PATRON_DETAILS);
     const params = new URLSearchParams({
       include: 'memberships',
       'fields[member]':
@@ -64,7 +65,7 @@ export class PatreonController {
   }
 
   public getLoginUrl() {
-    const loginUrl = new URL('https://www.patreon.com/oauth2/authorize');
+    const loginUrl = new URL(PATREON_URLS.AUTHORIZATION_LINK);
     const params = new URLSearchParams({
       response_type: 'code',
       client_id: this.clientId,
