@@ -8,8 +8,19 @@ interface PatreonDetails {
   amountCents: number;
 }
 
-class PatreonAgent {
-  private patreonController = new PatreonController();
+export interface IPatreonController {
+  getTokens(code: string): Promise<PatreonUserTokens>;
+  // TODO-kev: Change the any type
+  getPatronDetails(accessToken: string): any;
+  getLoginUrl(): string;
+}
+
+export class PatreonAgent {
+  private patreonController: IPatreonController;
+
+  constructor(controller: IPatreonController) {
+    this.patreonController = controller;
+  }
 
   public getPatreonAuthorizationUrl() {
     return this.patreonController.getLoginUrl();
@@ -220,4 +231,5 @@ class PatreonAgent {
   }
 }
 
-export const patreonAgent = new PatreonAgent();
+// TODO-kev: Should we keep a singleton use-case here?
+export const patreonAgent = new PatreonAgent(new PatreonController());

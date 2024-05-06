@@ -1,4 +1,5 @@
 import { PATREON_URLS } from './constants';
+import { IPatreonController } from './patreonAgent';
 
 export interface PatreonUserTokens {
   userAccessToken: string;
@@ -6,7 +7,7 @@ export interface PatreonUserTokens {
   userAccessTokenExpiry: Date;
 }
 
-export class PatreonController {
+export class PatreonController implements IPatreonController {
   private clientId = process.env.patreon_client_ID;
   private clientSecret = process.env.patreon_client_secret;
   private redirectUri = process.env.patreon_redirectURL;
