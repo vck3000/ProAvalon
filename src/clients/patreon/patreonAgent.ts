@@ -152,8 +152,8 @@ class PatreonAgent {
     }
 
     return {
-      patreonUserId: existingPatreon.patreonUserId,
-      patreonUsersName: existingPatreon.patreonUsersName,
+      patreonUserId: patronDetails.patreonUserId,
+      patreonUsersName: patronDetails.patreonUsersName,
       isActivePatreon: !this.hasExpired(currentPledgeExpiryDate),
       amountCents,
     };
