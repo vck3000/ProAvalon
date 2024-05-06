@@ -467,45 +467,36 @@ const loginUrl = url.format({
 });
 
 // show the edit page
-router.get('/:profileUsername/edit', checkProfileOwnership, (req, res) => {
-  // TODO-kev: Find a better way to do the below
-  const patreonLoginUrl = patreonAgent.getPatreonAuthorizationUrl();
-  const patreonLoginUrlParams = new URLSearchParams(
-    patreonLoginUrl.split('?')[1],
-  );
-  req.session.patreonAuthState = patreonLoginUrlParams.get('state');
-  req.session.patreonOriginalUrl = req.baseUrl + req.path;
+router.get(
+  '/:profileUsername/edit',
+  checkProfileOwnership,
+  async (req, res) => {
+    // TODO-kev: Find a better way to do the below
+    const patreonLoginUrl = patreonAgent.getPatreonAuthorizationUrl();
+    const patreonLoginUrlParams = new URLSearchParams(
+      patreonLoginUrl.split('?')[1],
+    );
 
-  User.findOne(
-    { usernameLower: req.params.profileUsername.toLowerCase() },
-    (err, foundUser) => {
-      if (err) {
-        console.log(err);
-      } else if (foundUser.patreonId) {
-        PatreonId.findOne({ id: foundUser.patreonId })
-          .exec()
-          .then((patreonIdObj) => {
-            res.render('profile/edit', {
-              userData: foundUser,
-              patreonLoginUrl,
-              patreonId: patreonIdObj,
-            });
-          })
-          .catch((err) => {
-            res.render('profile/edit', {
-              userData: foundUser,
-              patreonLoginUrl,
-            });
-          });
-      } else {
-        res.render('profile/edit', {
-          userData: foundUser,
-          patreonLoginUrl,
-        });
-      }
-    },
-  );
-});
+    // Store state variables temporarily in session for redirect purposes
+    req.session.patreonAuthState = patreonLoginUrlParams.get('state');
+    req.session.patreonOriginalUrl = req.baseUrl + req.path;
+
+    const patronDetails = await patreonAgent.getExistingPatreonDetails(
+      req.params.profileUsername.toLowerCase(),
+    );
+
+    // TODO-kev: See if can extract only data required
+    const userData = await User.findOne({
+      usernameLower: req.params.profileUsername.toLowerCase(),
+    });
+
+    return res.render('profile/edit', {
+      userData,
+      patreonLoginUrl,
+      patronDetails,
+    });
+  },
+);
 
 // update a biography
 router.post('/:profileUsername', checkProfileOwnership, (req, res) => {
