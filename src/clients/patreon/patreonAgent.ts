@@ -200,6 +200,14 @@ class PatreonAgent {
     };
   }
 
+  public async unlinkPatreon(usernameLower: string) {
+    const deletedPatreon = await patreonId.findOneAndDelete({
+      proavalonUsernameLower: usernameLower,
+    });
+
+    return Boolean(deletedPatreon);
+  }
+
   private hasExpired(expiryDate: Date) {
     return expiryDate < new Date();
   }

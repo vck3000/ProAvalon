@@ -1,6 +1,4 @@
-
 <%- include('../partials/header') %>
-
 
 <link rel="stylesheet" type="text/css" href="/stylesheets/profile.css">
 <link rel="stylesheet" type="text/css" href="/libraries/flag-icon/css/flag-icon.min.css">
@@ -16,11 +14,6 @@
     }
 
 </style>
-
-
-
-
-
 
 <div class="container myContainer">
     <h1>Change your settings here: </h1>
@@ -51,7 +44,7 @@
     <a class="btn btn-warning" href=<%=patreonLoginUrl%>>Link to Patreon</a>
     <% if (patronDetails) { %>
         <!--TODO-kev: Update below button-->
-    <a class="btn btn-danger">Unlink Patreon Account</a>
+    <a id="unlinkPatreonButton" class="btn btn-danger">Unlink Patreon Account</a>
     <% } %>
 
     <form action="/profile/<%=userData.username%>" method="POST">
@@ -381,19 +374,23 @@
         const error = urlParams.get('error');
 
         if (success) {
-            Swal.fire({
-                type: 'success',
-                title: success,
-            });
+            showMessageAndReload(success, 'success');
         }
 
         if (error) {
-            Swal.fire({
-                type: 'error',
-                title: error,
-            });
+            showMessageAndReload(error, 'error');
         }
     });
+
+    function showMessageAndReload(message, type) {
+        Swal.fire({
+            type: type,
+            title: message,
+        }).then(() => {
+            // Refresh the page without the query params
+            window.location.href = window.location.pathname;
+        });
+    }
 
     $("#selectNation").on("change", function(e){
         // console.log($("#selectNation").find(":selected")[0]);
@@ -414,7 +411,48 @@
         $("#flagSpan").addClass("flag-icon-" + countryCode.toLowerCase());
     }
 
-</script>
+    $('#unlinkPatreonButton').on('click', async () => {
+        const confirmed = await Swal.fire({
+            title: 'This is permanent. Are you sure?',
+            type: 'warning',
+            showCancelButton: true,
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, unlink Patreon'
+        });
 
+        if (confirmed.value) {
+            Swal.fire({
+                title: 'Sending your request...',
+                onOpen: () => {
+                    Swal.showLoading();
+
+                    axios({
+                        method: 'POST',
+                        url: '/patreon/unlink',
+                    })
+                        .then(function (response) {
+                            //handle success
+                            Swal.close();
+
+                            Swal.fire({
+                                title: response.data,
+                                type: 'success',
+                            })
+                        })
+                        .catch(function (err) {
+                            Swal.close();
+                            Swal.fire({
+                                title: err.response.data,
+                                type: 'error',
+                            });
+                        });
+                },
+            })
+        }
+
+
+    });
+
+</script>
 
 <%- include('../partials/footer') %>

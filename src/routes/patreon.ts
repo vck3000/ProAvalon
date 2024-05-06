@@ -59,4 +59,23 @@ router.get('/oauth/redirect', async (req, res) => {
   }
 });
 
+router.post('/unlink', async (req, res) => {
+  try {
+    // @ts-ignore
+    const result = await patreonAgent.unlinkPatreon(req.user.usernameLower);
+
+    if (result) {
+      return res.status(200).send('Successfully unlinked Patreon account');
+    } else {
+      return res.status(400).send('Could not find Patreon account to unlink.');
+    }
+  } catch (e) {
+    // TODO-kev: Does this go to the err.log file?
+    console.error(e);
+    return res
+      .status(500)
+      .send('Something went wrong. Please contact an admin if you see this.');
+  }
+});
+
 export default router;
