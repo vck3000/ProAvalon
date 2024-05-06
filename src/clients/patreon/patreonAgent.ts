@@ -3,6 +3,8 @@ import patreonId from '../../models/patreonId';
 import { PatreonController, PatreonUserTokens } from './patreonController';
 
 interface PatreonDetails {
+  patreonUserId: string;
+  patreonUsersName: string;
   isActivePatreon: boolean;
   amountCents: number;
 }
@@ -29,7 +31,12 @@ class PatreonAgent {
       existingPatreon.currentPledgeExpiryDate,
     );
 
-    return { isActivePatreon, amountCents: existingPatreon.amountCents };
+    return {
+      patreonUserId: existingPatreon.patreonUserId,
+      patreonUsersName: existingPatreon.patreonUsersName,
+      isActivePatreon,
+      amountCents: existingPatreon.amountCents,
+    };
   }
 
   // This path is hit whenever user clicks link to Patreon button
@@ -145,6 +152,8 @@ class PatreonAgent {
     }
 
     return {
+      patreonUserId: existingPatreon.patreonUserId,
+      patreonUsersName: existingPatreon.patreonUsersName,
       isActivePatreon: !this.hasExpired(currentPledgeExpiryDate),
       amountCents,
     };
@@ -163,7 +172,12 @@ class PatreonAgent {
 
       await existingPatreon.save();
 
-      return { isActivePatreon: false, amountCents: 0 };
+      return {
+        patreonUserId: existingPatreon.patreonUserId,
+        patreonUsersName: existingPatreon.patreonUsersName,
+        isActivePatreon: false,
+        amountCents: 0,
+      };
     }
 
     // TODO-kev: Can potentially remove this one so as to not store non member data
@@ -178,7 +192,12 @@ class PatreonAgent {
       currentPledgeExpiryDate: null,
     });
 
-    return { isActivePatreon: false, amountCents: 0 };
+    return {
+      patreonUserId: existingPatreon.patreonUserId,
+      patreonUsersName: existingPatreon.patreonUsersName,
+      isActivePatreon: false,
+      amountCents: 0,
+    };
   }
 
   private hasExpired(expiryDate: Date) {

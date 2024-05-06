@@ -38,10 +38,10 @@
     <% if (patronDetails) { %>
         <!--TODO-kev: Consider what other details to include-->
         <ul>
-            <li>PatreonId:</li>
-            <li>Name:</li>
+            <li>PatreonId: <%= patronDetails.patreonUserId %></li>
+            <li>Name: <%= patronDetails.patreonUsersName %></li>
             <li>Pledge (cents): <%= patronDetails.amountCents %></li>
-            <li>Status: <%= patronDetails.isActivePatreon %></li>
+            <li>Status: <%= patronDetails.isActivePatreon ? 'Active' : 'Inactive' %></li>
         </ul>
     <% } else { %>
         <p>There is no Patreon account linked or you are currently not an active Patreon supporter</p>
