@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { PATREON_URLS } from './constants';
 
 export interface PatreonUserTokens {
@@ -23,14 +22,13 @@ export class PatreonController {
     });
     getTokensUrl.search = params.toString();
 
-    const response = await axios.post(getTokensUrl.href);
+    const response = await fetch(getTokensUrl.href, { method: 'POST' });
+    const data = await response.json();
 
     return {
-      userAccessToken: response.data.access_token,
-      userRefreshToken: response.data.refresh_token,
-      userAccessTokenExpiry: new Date(
-        Date.now() + response.data.expires_in * 1000,
-      ),
+      userAccessToken: data.access_token,
+      userRefreshToken: data.refresh_token,
+      userAccessTokenExpiry: new Date(Date.now() + data.expires_in * 1000),
     };
   }
 
@@ -47,22 +45,21 @@ export class PatreonController {
     };
     url.search = params.toString();
 
-    const response = await axios.get(url.href, { headers });
+    const response = await fetch(url.href, { headers });
+    const data = await response.json();
 
-    if (response.data.included && response.data.included.length !== 1) {
+    if (data.included && data.included.length !== 1) {
       // TODO-kev: Will need to test this. What happens if a user upgrades their plan? Member multiple?
       // Only one membership allowed. Unexpected behaviour if more than one membership
       throw new Error(
-        `Unexpected number of Patreon memberships received: patreonUserId=${response.data.data.id} memberships="${response.data.included}."`,
+        `Unexpected number of Patreon memberships received: patreonUserId=${data.data.id} memberships="${data.included}."`,
       );
     }
 
     return {
-      patreonUserId: response.data.data.id,
-      patreonUsersName: response.data.data.attributes.full_name,
-      patreonMemberDetails: response.data.included
-        ? response.data.included[0].attributes
-        : null,
+      patreonUserId: data.data.id,
+      patreonUsersName: data.data.attributes.full_name,
+      patreonMemberDetails: data.included ? data.included[0].attributes : null,
     };
   }
 

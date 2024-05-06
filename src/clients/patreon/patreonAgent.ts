@@ -99,7 +99,7 @@ class PatreonAgent {
     }
 
     console.log(
-      `Successfully linked Patreon account: proavalonUsernameLower="${usernameLower}" patreonUserId="${patronDetails.patreonUserId}" isActivePatreon="${result.isActivePatreon}" amountCents="${result.amountCents}"`,
+      `Successfully linked Patreon account: proavalonUsernameLower="${usernameLower}" patreonUserId="${patronDetails.patreonUserId}" patreonName="${patronDetails.patreonUsersName}" isActivePatreon="${result.isActivePatreon}" amountCents="${result.amountCents}"`,
     );
 
     return result;
