@@ -108,7 +108,7 @@ function avatarText(props) {
   let data = props.data;
   return {
     title: `${props.modWhoMade.username} has ${
-      data.approved === 'true' ? 'APPROVED' : 'REJECTED'
+      data.approved ? 'APPROVED' : 'REJECTED'
     } ${data.username}'s avatar.`,
     body: (
       <span>
