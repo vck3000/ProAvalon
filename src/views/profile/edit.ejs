@@ -437,6 +437,8 @@
                             Swal.fire({
                                 title: response.data,
                                 type: 'success',
+                            }).then(() => {
+                                window.location.reload();
                             })
                         })
                         .catch(function (err) {
