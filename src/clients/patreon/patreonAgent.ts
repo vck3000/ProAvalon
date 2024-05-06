@@ -1,4 +1,3 @@
-import axios from 'axios';
 import patreonId from '../../models/patreonId';
 import { PatreonController, PatreonUserTokens } from './patreonController';
 
@@ -16,7 +15,7 @@ class PatreonAgent {
     return this.patreonController.getLoginUrl();
   }
 
-  public async getExistingPatreonDetails(
+  public async getExistingPatronDetails(
     usernameLower: string,
   ): Promise<PatreonDetails> {
     // This function is to check for features in general on load

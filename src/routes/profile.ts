@@ -481,7 +481,7 @@ router.get(
     req.session.patreonAuthState = patreonLoginUrlParams.get('state');
     req.session.patreonOriginalUrl = req.baseUrl + req.path;
 
-    const patronDetails = await patreonAgent.getExistingPatreonDetails(
+    const patronDetails = await patreonAgent.getExistingPatronDetails(
       req.params.profileUsername.toLowerCase(),
     );
 

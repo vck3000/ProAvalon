@@ -16,17 +16,17 @@ import { IUser } from '../gameplay/types';
 export async function getAllPatreonRewardsForUser(usernameLower: string) {
   const rewardsSatisfied: RewardType[] = [];
 
-  const patreonDetails = await patreonAgent.getExistingPatreonDetails(
+  const patronDetails = await patreonAgent.getExistingPatronDetails(
     usernameLower,
   );
 
-  if (!patreonDetails || !patreonDetails.isActivePatreon) {
+  if (!patronDetails || !patronDetails.isActivePatreon) {
     return null;
   }
 
   for (const key in PatreonRewards) {
     const reward = AllRewards[key as RewardType];
-    if (reward.donationReq <= patreonDetails.amountCents) {
+    if (reward.donationReq <= patronDetails.amountCents) {
       rewardsSatisfied.push(key as RewardType);
     }
   }
