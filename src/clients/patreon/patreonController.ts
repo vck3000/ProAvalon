@@ -38,6 +38,7 @@ export class PatreonController {
     const url = new URL(PATREON_URLS.GET_PATRON_DETAILS);
     const params = new URLSearchParams({
       include: 'memberships',
+      'fields[user]': 'full_name',
       'fields[member]':
         'last_charge_status,next_charge_date,last_charge_date,currently_entitled_amount_cents',
     });
@@ -58,6 +59,7 @@ export class PatreonController {
 
     return {
       patreonUserId: response.data.data.id,
+      patreonUsersName: response.data.data.attributes.full_name,
       patreonMemberDetails: response.data.included
         ? response.data.included[0].attributes
         : null,

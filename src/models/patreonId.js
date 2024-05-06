@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 // SCHEMA SETUP
 const patreonIdSchema = new mongoose.Schema({
   patreonUserId: String,
+  patreonUsersName: String,
   proavalonUsernameLower: String,
   userAccessToken: String,
   userAccessTokenExpiry: Date,

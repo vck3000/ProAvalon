@@ -123,6 +123,7 @@ class PatreonAgent {
 
     const patreonUpdateDetails = {
       patreonUserId: patronDetails.patreonUserId,
+      patreonUsersName: patronDetails.patreonUsersName,
       proavalonUsernameLower: usernameLower,
       userAccessToken: tokens.userAccessToken,
       userRefreshToken: tokens.userRefreshToken,
@@ -168,6 +169,7 @@ class PatreonAgent {
     // TODO-kev: Can potentially remove this one so as to not store non member data
     await patreonId.create({
       patreonUserId: patreonUserId,
+      patreonUsersName: 'NULL - To be removed',
       proavalonUsernameLower: usernameLower,
       userAccessToken: tokens.userAccessToken,
       userRefreshToken: tokens.userRefreshToken,
