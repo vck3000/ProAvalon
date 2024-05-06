@@ -36,16 +36,18 @@
             <li>Pledge (cents): <%= patronDetails.amountCents %></li>
             <li>Status: <%= patronDetails.isActivePatreon ? 'Active' : 'Inactive' %></li>
         </ul>
+
+        <br>
+        <a id="unlinkPatreonButton" class="btn btn-warning">Unlink Patreon Account</a>
+
     <% } else { %>
         <p>There is no Patreon account linked or you are currently not an active Patreon supporter</p>
+
+        <br>
+        <a class="btn btn-warning" href=<%=patreonLoginUrl%>>Link to Patreon</a>
     <% } %>
 
     <br>
-    <a class="btn btn-warning" href=<%=patreonLoginUrl%>>Link to Patreon</a>
-    <% if (patronDetails) { %>
-        <!--TODO-kev: Update below button-->
-    <a id="unlinkPatreonButton" class="btn btn-danger">Unlink Patreon Account</a>
-    <% } %>
 
     <form action="/profile/<%=userData.username%>" method="POST">
 
