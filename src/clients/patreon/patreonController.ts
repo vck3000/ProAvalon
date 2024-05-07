@@ -1,11 +1,9 @@
 import { PATREON_URLS } from './constants';
-import { IPatreonController, PatronFullDetails } from './patreonAgent';
-
-export interface PatreonUserTokens {
-  userAccessToken: string;
-  userRefreshToken: string;
-  userAccessTokenExpiry: Date;
-}
+import {
+  IPatreonController,
+  PatreonUserTokens,
+  PatronFullDetails,
+} from './patreonAgent';
 
 export class PatreonController implements IPatreonController {
   private clientId = process.env.patreon_client_ID;

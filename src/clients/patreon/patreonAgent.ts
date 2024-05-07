@@ -1,11 +1,16 @@
 import patreonRecord from '../../models/patreonRecord';
-import { PatreonController, PatreonUserTokens } from './patreonController';
-import user from '../../models/user';
+import { PatreonController } from './patreonController';
 
 interface PatronPublicDetails {
   patreonUserId: string;
   isActivePatron: boolean;
   amountCents: number;
+}
+
+export interface PatreonUserTokens {
+  userAccessToken: string;
+  userRefreshToken: string;
+  userAccessTokenExpiry: Date;
 }
 
 export interface PatronFullDetails {
@@ -56,7 +61,7 @@ export class PatreonAgent {
     };
   }
 
-  // This path is hit whenever user clicks link to Patreon button
+  // This path is hit after a user has been redirected back from Patreon.
   public async linkUserToPatreon(
     usernameLower: string,
     code: string,
@@ -75,7 +80,9 @@ export class PatreonAgent {
     const existingPatreonRecordForUser =
       await this.getPatreonRecordFromUsername(usernameLower);
 
-    // Do not let more than one patreon be used for same user
+    // Do not let more than one patreon account be linked to the same user.
+    // This path is not expected to be hit as GUI should enforce a user to not be able to
+    // link another patreon account whilst they're still linked to another one.
     if (
       existingPatreonRecordForUser &&
       existingPatreonRecordForUser.patreonUserId !==
