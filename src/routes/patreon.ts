@@ -25,13 +25,13 @@ router.get('/oauth/redirect', async (req, res) => {
   }
 
   try {
-    const patreonDetails = await patreonAgent.linkUserToPatreon(
+    const patronDetails = await patreonAgent.linkUserToPatreon(
       // @ts-ignore
       req.user.username.toLowerCase(),
       code as string,
     );
 
-    if (patreonDetails.isActivePatreon) {
+    if (patronDetails.isActivePatron) {
       const msg = 'Your Patreon has now been linked successfully!';
       return res.redirect(
         // @ts-ignore

@@ -20,7 +20,7 @@ export async function getAllPatreonRewardsForUser(usernameLower: string) {
     usernameLower,
   );
 
-  if (!patronDetails || !patronDetails.isActivePatreon) {
+  if (!patronDetails || !patronDetails.isActivePatron) {
     return null;
   }
 
