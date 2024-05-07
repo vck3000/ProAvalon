@@ -49,11 +49,7 @@ async function getAllRewardsForUser(user: IUser): Promise<RewardType[]> {
   }
 
   for (const key in AllRewardsExceptPatreon) {
-    const hasReward = await userHasReward(
-      user.username.toLowerCase(),
-      user.totalGamesPlayed,
-      key as RewardType,
-    );
+    const hasReward = await userHasReward(user, key as RewardType);
     if (hasReward === true) {
       rewardsSatisfied.push(key as RewardType);
     }
@@ -63,30 +59,29 @@ async function getAllRewardsForUser(user: IUser): Promise<RewardType[]> {
 }
 
 async function userHasReward(
-  usernameLower: string,
-  totalGamesPlayed: number,
+  user: IUser,
   rewardType: RewardType,
 ): Promise<boolean> {
   const reward = AllRewards[rewardType];
 
-  if (reward.adminReq && !isAdmin(usernameLower)) {
+  if (reward.adminReq && !isAdmin(user.usernameLower)) {
     return false;
   }
 
-  if (reward.modReq && !isMod(usernameLower)) {
+  if (reward.modReq && !isMod(user.usernameLower)) {
     return false;
   }
 
-  if (reward.TOReq && !isTO(usernameLower)) {
+  if (reward.TOReq && !isTO(user.usernameLower)) {
     return false;
   }
 
-  if (reward.devReq && !isDev(usernameLower)) {
+  if (reward.devReq && !isDev(user.usernameLower)) {
     return false;
   }
 
   // Check for games played
-  if (totalGamesPlayed < reward.gamesPlayedReq) {
+  if (user.totalGamesPlayed < reward.gamesPlayedReq) {
     return false;
   }
 
