@@ -3,7 +3,6 @@ import { PatreonController, PatreonUserTokens } from './patreonController';
 
 interface PatronDetails {
   patreonUserId: string;
-  patreonUsersName: string;
   isActivePatron: boolean;
   amountCents: number;
 }
@@ -42,7 +41,6 @@ export class PatreonAgent {
 
     return {
       patreonUserId: patronRecord.patreonUserId,
-      patreonUsersName: patronRecord.patreonUsersName,
       isActivePatron: isActivePatron,
       amountCents: patronRecord.amountCents,
     };
@@ -108,7 +106,7 @@ export class PatreonAgent {
     }
 
     console.log(
-      `Successfully linked Patreon account: proavalonUsernameLower="${usernameLower}" patreonUserId="${patronDetails.patreonUserId}" patreonName="${patronDetails.patreonUsersName}" isActivePatreon="${result.isActivePatron}" amountCents="${result.amountCents}"`,
+      `Successfully linked Patreon account: proavalonUsernameLower="${usernameLower}" patreonUserId="${patronDetails.patreonUserId}" isActivePatreon="${result.isActivePatron}" amountCents="${result.amountCents}"`,
     );
 
     return result;
@@ -139,7 +137,6 @@ export class PatreonAgent {
 
     const patreonUpdateDetails = {
       patreonUserId: patronDetails.patreonUserId,
-      patreonUsersName: patronDetails.patreonUsersName,
       proavalonUsernameLower: usernameLower,
       userAccessToken: tokens.userAccessToken,
       userRefreshToken: tokens.userRefreshToken,
@@ -162,7 +159,6 @@ export class PatreonAgent {
 
     return {
       patreonUserId: patronDetails.patreonUserId,
-      patreonUsersName: patronDetails.patreonUsersName,
       isActivePatron: !this.hasExpired(currentPledgeExpiryDate),
       amountCents,
     };
@@ -183,7 +179,6 @@ export class PatreonAgent {
 
       return {
         patreonUserId: existingPatreon.patreonUserId,
-        patreonUsersName: existingPatreon.patreonUsersName,
         isActivePatron: false,
         amountCents: 0,
       };
@@ -192,7 +187,6 @@ export class PatreonAgent {
     // TODO-kev: Can potentially remove this one so as to not store non member data
     await patreonRecord.create({
       patreonUserId: patreonUserId,
-      patreonUsersName: 'NULL - To be removed',
       proavalonUsernameLower: usernameLower,
       userAccessToken: tokens.userAccessToken,
       userRefreshToken: tokens.userRefreshToken,
@@ -202,8 +196,7 @@ export class PatreonAgent {
     });
 
     return {
-      patreonUserId: existingPatreon.patreonUsersName,
-      patreonUsersName: existingPatreon.patreonUsersName,
+      patreonUserId: existingPatreon.patreonUserId,
       isActivePatron: false,
       amountCents: 0,
     };
