@@ -479,7 +479,7 @@ router.get(
 
     // Store state variables temporarily in session for redirect purposes
     req.session.patreonAuthState = patreonLoginUrlParams.get('state');
-    req.session.patreonOriginalUrl = req.baseUrl + req.path;
+    req.session.postPatreonRedirectUrl = req.baseUrl + req.path;
 
     const patronDetails = await patreonAgent.getExistingPatronDetails(
       req.params.profileUsername.toLowerCase(),

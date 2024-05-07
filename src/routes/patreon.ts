@@ -11,7 +11,7 @@ router.get('/oauth/redirect', async (req, res) => {
   if (!code) {
     return res.redirect(
       // @ts-ignore
-      `${req.session.patreonOriginalUrl}?error=You have denied access`,
+      `${req.session.postPatreonRedirectUrl}?error=You have denied access`,
     );
   }
 
@@ -20,7 +20,7 @@ router.get('/oauth/redirect', async (req, res) => {
     // TODO-kev: Figure a way to handle this. Redirect? Swal?
     return res.status(400).redirect(
       // @ts-ignore
-      `${req.session.patreonOriginalUrl}`,
+      `${req.session.postPatreonRedirectUrl}`,
     );
   }
 
@@ -35,25 +35,26 @@ router.get('/oauth/redirect', async (req, res) => {
       const msg = 'Your Patreon has now been linked successfully!';
       return res.redirect(
         // @ts-ignore
-        `${req.session.patreonOriginalUrl}?success=${msg}`,
+        `${req.session.postPatreonRedirectUrl}?success=${msg}`,
       );
     } else {
       const msg = 'You are not a paid member of our Patreon.';
       return res.redirect(
         // @ts-ignore
-        `${req.session.patreonOriginalUrl}?error=${msg}`,
+        `${req.session.postPatreonRedirectUrl}?error=${msg}`,
       );
     }
   } catch (e) {
     return res.redirect(
       // @ts-ignore
-      `${req.session.patreonOriginalUrl}?error=${e}`,
+      `${req.session.postPatreonRedirectUrl}?error=${e}`,
     );
   } finally {
+    // TODO-kev: Move these into the try catch block
     // @ts-ignore
     delete req.session.patreonAuthState;
     // @ts-ignore
-    delete req.session.patreonOriginalUrl;
+    delete req.session.postPatreonRedirectUrl;
 
     console.log('End: Link done...');
   }
