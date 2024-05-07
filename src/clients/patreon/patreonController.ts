@@ -1,5 +1,5 @@
 import { PATREON_URLS } from './constants';
-import { IPatreonController } from './patreonAgent';
+import { IPatreonController, PatronFullDetails } from './patreonAgent';
 
 export interface PatreonUserTokens {
   userAccessToken: string;
@@ -35,7 +35,9 @@ export class PatreonController implements IPatreonController {
     };
   }
 
-  public async getPatronDetails(patronAccessToken: string) {
+  public async getPatronFullDetails(
+    patronAccessToken: string,
+  ): Promise<PatronFullDetails> {
     const url = new URL(PATREON_URLS.GET_PATRON_DETAILS);
     const params = new URLSearchParams({
       include: 'memberships',
@@ -48,8 +50,8 @@ export class PatreonController implements IPatreonController {
     url.search = params.toString();
 
     const response = await fetch(url.href, { headers });
-    const data = await response.json();
 
+    const data = await response.json();
     if (data.included && data.included.length !== 1) {
       // TODO-kev: Will need to test this. What happens if a user upgrades their plan? Member multiple?
       // Only one membership allowed. Unexpected behaviour if more than one membership
@@ -60,7 +62,19 @@ export class PatreonController implements IPatreonController {
 
     return {
       patreonUserId: data.data.id,
-      patreonMemberDetails: data.included ? data.included[0].attributes : null,
+      patronMemberDetails: data.included
+        ? {
+            lastChargeStatus: data.included[0].attributes.last_charge_status,
+            lastChargeDate: new Date(
+              data.included[0].attributes.last_charge_date,
+            ),
+            nextChargeDate: new Date(
+              data.included[0].attributes.next_charge_date,
+            ),
+            currentlyEntitledAmountCents:
+              data.included[0].attributes.currently_entitled_amount_cents,
+          }
+        : null,
     };
   }
 

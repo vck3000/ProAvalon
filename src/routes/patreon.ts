@@ -32,13 +32,13 @@ router.get('/oauth/redirect', async (req, res) => {
     );
 
     if (patronDetails.isActivePatron) {
-      const msg = 'Your Patreon has now been linked successfully!';
+      const msg = 'Your Patreon account has been linked successfully!';
       return res.redirect(
         // @ts-ignore
         `${req.session.postPatreonRedirectUrl}?success=${msg}`,
       );
     } else {
-      const msg = 'You are not a paid member of our Patreon.';
+      const msg = 'You are not a paid member on Patreon.';
       return res.redirect(
         // @ts-ignore
         `${req.session.postPatreonRedirectUrl}?error=${msg}`,

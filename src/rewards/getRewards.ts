@@ -13,7 +13,9 @@ import { patreonAgent } from '../clients/patreon/patreonAgent';
 import User from '../models/user';
 import { IUser } from '../gameplay/types';
 
-export async function getAllPatreonRewardsForUser(usernameLower: string) {
+export async function getAllPatreonRewardsForUser(
+  usernameLower: string,
+): Promise<RewardType[]> {
   const rewardsSatisfied: RewardType[] = [];
 
   const patronDetails = await patreonAgent.getExistingPatronDetails(

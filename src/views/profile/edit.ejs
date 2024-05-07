@@ -31,7 +31,7 @@
     <% if (patronDetails) { %>
         <!--TODO-kev: Consider what other details to include-->
         <ul>
-            <li>PatreonId: <%= patronDetails.patreonUserId %></li>
+            <li>Patreon User ID: <%= patronDetails.patreonUserId %></li>
             <li>Pledge (cents): <%= patronDetails.amountCents %></li>
             <li>Status: <%= patronDetails.isActivePatreon ? 'Active' : 'Inactive' %></li>
         </ul>
@@ -414,7 +414,7 @@
 
     $('#unlinkPatreonButton').on('click', async () => {
         const confirmed = await Swal.fire({
-            title: 'This is permanent. Are you sure?',
+            title: 'You are about to unlink your Patreon account. Are you sure?',
             type: 'warning',
             showCancelButton: true,
             cancelButtonColor: '#d33',
