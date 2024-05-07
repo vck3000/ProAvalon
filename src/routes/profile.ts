@@ -4,7 +4,7 @@ import sanitizeHtml from 'sanitize-html';
 import url from 'url';
 import { checkProfileOwnership, isModMiddleware } from './middleware';
 import User from '../models/user';
-import PatreonId from '../models/patreonId';
+import PatreonId from '../models/patreonRecord';
 import avatarRequest from '../models/avatarRequest';
 import ModLog from '../models/modLog';
 import { createNotification } from '../myFunctions/createNotification';

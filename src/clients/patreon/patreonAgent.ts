@@ -1,4 +1,4 @@
-import patreonId from '../../models/patreonId';
+import patreonRecord from '../../models/patreonRecord';
 import { PatreonController, PatreonUserTokens } from './patreonController';
 
 interface PatreonDetails {
@@ -75,7 +75,7 @@ export class PatreonAgent {
     }
 
     // Do not let one patreon be used for more than one user
-    const patreonAccountInUse = await patreonId.findOne({
+    const patreonAccountInUse = await patreonRecord.findOne({
       patreonUserId: patronDetails.patreonUserId,
     });
     if (
@@ -89,6 +89,8 @@ export class PatreonAgent {
 
     let result: PatreonDetails;
 
+    console.log('Here');
+
     if (patronDetails.patreonMemberDetails) {
       // They are a current member
       result = await this.updateCurrentPatreonMember(
@@ -99,6 +101,7 @@ export class PatreonAgent {
       );
     } else {
       // They are not a current member to the Patreon page
+      console.log('Here 2');
       result = await this.updateCurrentNonPatreonMember(
         existingPatreon,
         tokens,
@@ -150,14 +153,14 @@ export class PatreonAgent {
     };
 
     if (existingPatreon) {
-      await patreonId.findOneAndUpdate(
+      await patreonRecord.findOneAndUpdate(
         {
           proavalonUsernameLower: usernameLower,
         },
         patreonUpdateDetails,
       );
     } else {
-      await patreonId.create(patreonUpdateDetails);
+      await patreonRecord.create(patreonUpdateDetails);
     }
 
     return {
@@ -172,7 +175,7 @@ export class PatreonAgent {
     existingPatreon: any,
     tokens: PatreonUserTokens,
     usernameLower: string,
-    patreonUserId: number,
+    patreonUserId: string,
   ): Promise<PatreonDetails> {
     if (existingPatreon) {
       existingPatreon.userAccessToken = tokens.userAccessToken;
@@ -190,7 +193,7 @@ export class PatreonAgent {
     }
 
     // TODO-kev: Can potentially remove this one so as to not store non member data
-    await patreonId.create({
+    await patreonRecord.create({
       patreonUserId: patreonUserId,
       patreonUsersName: 'NULL - To be removed',
       proavalonUsernameLower: usernameLower,
@@ -202,7 +205,7 @@ export class PatreonAgent {
     });
 
     return {
-      patreonUserId: existingPatreon.patreonUserId,
+      patreonUserId: existingPatreon.patreonUsersName,
       patreonUsersName: existingPatreon.patreonUsersName,
       isActivePatreon: false,
       amountCents: 0,
@@ -210,7 +213,7 @@ export class PatreonAgent {
   }
 
   public async unlinkPatreon(usernameLower: string) {
-    const deletedPatreon = await patreonId.findOneAndDelete({
+    const deletedPatreon = await patreonRecord.findOneAndDelete({
       proavalonUsernameLower: usernameLower,
     });
 
@@ -222,7 +225,7 @@ export class PatreonAgent {
   }
 
   private async getExistingPatreon(usernameLower: string) {
-    const existingPatreon = await patreonId.findOne({
+    const existingPatreon = await patreonRecord.findOne({
       proavalonUsernameLower: usernameLower,
     });
 

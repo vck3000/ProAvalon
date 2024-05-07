@@ -134,7 +134,7 @@ const UserSchema = new mongoose.Schema<IUser>({
 
   mutedPlayers: [String],
 
-  patreonId: String,
+  patreonRecord: String,
 
   IPAddresses: [String],
   lastIPAddress: String,
