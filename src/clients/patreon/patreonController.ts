@@ -42,7 +42,7 @@ export class PatreonController implements IPatreonController {
     const params = new URLSearchParams({
       include: 'memberships',
       'fields[member]':
-        'last_charge_status,next_charge_date,last_charge_date,currently_entitled_amount_cents',
+        'last_charge_date,last_charge_status,next_charge_date,currently_entitled_amount_cents',
     });
     const headers = {
       Authorization: `Bearer ${patronAccessToken}`,
@@ -64,10 +64,10 @@ export class PatreonController implements IPatreonController {
       patreonUserId: data.data.id,
       patronMemberDetails: data.included
         ? {
-            lastChargeStatus: data.included[0].attributes.last_charge_status,
             lastChargeDate: new Date(
               data.included[0].attributes.last_charge_date,
             ),
+            lastChargeStatus: data.included[0].attributes.last_charge_status,
             nextChargeDate: new Date(
               data.included[0].attributes.next_charge_date,
             ),
