@@ -4,6 +4,7 @@ import {
   PatreonUserTokens,
   PatronFullDetails,
 } from './patreonAgent';
+import uuid from 'uuid';
 
 export class PatreonController implements IPatreonController {
   private clientId = process.env.patreon_client_ID;
@@ -82,7 +83,7 @@ export class PatreonController implements IPatreonController {
       response_type: 'code',
       client_id: this.clientId,
       redirect_uri: this.redirectUri,
-      state: this.generateRandomState(), // TODO-kev: Is this correct?
+      state: this.generateRandomState(),
       scope: 'identity',
     });
 
@@ -92,10 +93,7 @@ export class PatreonController implements IPatreonController {
   }
 
   private generateRandomState() {
-    // Generate a random 22-length string comprised of 0-9 a-z
-    const randomString =
-      Math.random().toString(36).substring(2, 13) +
-      Math.random().toString(36).substring(2, 13);
-    return encodeURIComponent(randomString);
+    const state = uuid.v4();
+    return encodeURIComponent(encodeURIComponent(state));
   }
 }
