@@ -7,8 +7,8 @@ import {
 const router = express.Router();
 
 router.get('/oauth/redirect', async (req, res) => {
-  console.log('Start: Link to Patreon...');
-  const { code, state } = req.query;
+  const code = req.query.code.toString();
+  const state = req.query.state.toString();
 
   // TODO-kev: Consider what happens if someone clicks deny. Rework error msg
   if (!code) {
@@ -41,7 +41,7 @@ router.get('/oauth/redirect', async (req, res) => {
     patronDetails = await patreonAgent.linkUserToPatreon(
       // @ts-ignore
       req.user.username.toLowerCase(),
-      code as string,
+      code,
     );
   } catch (e) {
     if (e.name === 'MultipleUsersForPatreonError') {
