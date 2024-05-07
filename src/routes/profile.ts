@@ -12,7 +12,8 @@ import multer from 'multer';
 import imageSize from 'image-size';
 import S3Controller from '../clients/s3/S3Controller';
 import { S3Agent } from '../clients/s3/S3Agent';
-import { patreonAgent } from '../clients/patreon/patreonAgent';
+import { PatreonAgent, patreonAgent } from '../clients/patreon/patreonAgent';
+import { PatreonController } from '../clients/patreon/patreonController';
 
 const s3Controller = new S3Controller();
 const s3Agent = new S3Agent(s3Controller);
@@ -471,6 +472,8 @@ router.get(
   '/:profileUsername/edit',
   checkProfileOwnership,
   async (req, res) => {
+    const patreonAgent = new PatreonAgent(new PatreonController());
+
     const patronDetails = await patreonAgent.getExistingPatronDetails(
       req.params.profileUsername.toLowerCase(),
     );

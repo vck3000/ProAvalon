@@ -1,10 +1,12 @@
 import express from 'express';
 import {
-  patreonAgent,
+  PatreonAgent,
   PatronPublicDetails,
 } from '../clients/patreon/patreonAgent';
+import { PatreonController } from '../clients/patreon/patreonController';
 
 const router = express.Router();
+const patreonAgent = new PatreonAgent(new PatreonController());
 
 router.get('/oauth/redirect', async (req, res) => {
   const code = req.query.code.toString();

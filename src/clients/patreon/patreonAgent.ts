@@ -230,6 +230,3 @@ export class PatreonAgent {
     return patronRecord ? patronRecord : null;
   }
 }
-
-// TODO-kev: Should we keep a singleton use-case here?
-export const patreonAgent = new PatreonAgent(new PatreonController());

@@ -9,14 +9,16 @@ import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import { isDev } from '../modsadmins/developers';
-import { patreonAgent } from '../clients/patreon/patreonAgent';
-import User from '../models/user';
+import { PatreonAgent } from '../clients/patreon/patreonAgent';
 import { IUser } from '../gameplay/types';
+import { PatreonController } from '../clients/patreon/patreonController';
 
 export async function getAllPatreonRewardsForUser(
   usernameLower: string,
 ): Promise<RewardType[]> {
   const rewardsSatisfied: RewardType[] = [];
+
+  const patreonAgent = new PatreonAgent(new PatreonController());
 
   const patronDetails = await patreonAgent.getExistingPatronDetails(
     usernameLower,
