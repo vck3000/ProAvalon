@@ -9,10 +9,10 @@ interface PatreonDetails {
 }
 
 export interface IPatreonController {
-  getTokens(code: string): Promise<PatreonUserTokens>;
+  getPatreonUserTokens(code: string): Promise<PatreonUserTokens>;
   // TODO-kev: Change the any type
-  getPatronDetails(accessToken: string): any;
-  getLoginUrl(): string;
+  getPatronDetails(patronAccessToken: string): any;
+  getPatreonAuthorizationUrl(): string;
 }
 
 export class PatreonAgent {
@@ -23,7 +23,7 @@ export class PatreonAgent {
   }
 
   public getPatreonAuthorizationUrl() {
-    return this.patreonController.getLoginUrl();
+    return this.patreonController.getPatreonAuthorizationUrl();
   }
 
   public async getExistingPatronDetails(
@@ -32,7 +32,6 @@ export class PatreonAgent {
     // This function is to check for features in general on load
 
     const existingPatreon = await this.getExistingPatreon(usernameLower);
-
     if (!existingPatreon) {
       return null;
     }
@@ -55,7 +54,7 @@ export class PatreonAgent {
     code: string,
   ): Promise<PatreonDetails> {
     // Grab user tokens
-    const tokens = await this.patreonController.getTokens(code);
+    const tokens = await this.patreonController.getPatreonUserTokens(code);
 
     // Grab member details from Patreon with token
     const patronDetails = await this.patreonController.getPatronDetails(

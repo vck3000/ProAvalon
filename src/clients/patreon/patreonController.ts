@@ -12,8 +12,8 @@ export class PatreonController implements IPatreonController {
   private clientSecret = process.env.patreon_client_secret;
   private redirectUri = process.env.patreon_redirectURL;
 
-  public async getTokens(code: string): Promise<PatreonUserTokens> {
-    const getTokensUrl = new URL(PATREON_URLS.GET_TOKENS);
+  public async getPatreonUserTokens(code: string): Promise<PatreonUserTokens> {
+    const getPatreonUserTokensUrl = new URL(PATREON_URLS.GET_TOKENS);
     const params = new URLSearchParams({
       code: code,
       grant_type: 'authorization_code',
@@ -21,9 +21,11 @@ export class PatreonController implements IPatreonController {
       client_secret: this.clientSecret,
       redirect_uri: this.redirectUri,
     });
-    getTokensUrl.search = params.toString();
+    getPatreonUserTokensUrl.search = params.toString();
 
-    const response = await fetch(getTokensUrl.href, { method: 'POST' });
+    const response = await fetch(getPatreonUserTokensUrl.href, {
+      method: 'POST',
+    });
     const data = await response.json();
 
     return {
@@ -33,7 +35,7 @@ export class PatreonController implements IPatreonController {
     };
   }
 
-  public async getPatronDetails(accessToken: string) {
+  public async getPatronDetails(patronAccessToken: string) {
     const url = new URL(PATREON_URLS.GET_PATRON_DETAILS);
     const params = new URLSearchParams({
       include: 'memberships',
@@ -42,7 +44,7 @@ export class PatreonController implements IPatreonController {
         'last_charge_status,next_charge_date,last_charge_date,currently_entitled_amount_cents',
     });
     const headers = {
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${patronAccessToken}`,
     };
     url.search = params.toString();
 
@@ -64,7 +66,7 @@ export class PatreonController implements IPatreonController {
     };
   }
 
-  public getLoginUrl() {
+  public getPatreonAuthorizationUrl() {
     const loginUrl = new URL(PATREON_URLS.AUTHORIZATION_LINK);
     const params = new URLSearchParams({
       response_type: 'code',
