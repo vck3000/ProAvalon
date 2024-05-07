@@ -43,7 +43,7 @@
         <p>There is no Patreon account linked or you are currently not an active Patreon supporter</p>
 
         <br>
-        <a class="btn btn-warning" href=<%=patreonLoginUrl%>>Link to Patreon</a>
+        <a id="linkPatreonButton" class="btn btn-warning">Link to Patreon</a>
     <% } %>
 
     <br>
@@ -411,6 +411,20 @@
         $("#flagSpan").addClass("flag-icon");
         $("#flagSpan").addClass("flag-icon-" + countryCode.toLowerCase());
     }
+
+    $('#linkPatreonButton').on('click', async () => {
+        const postPatreonRedirectUrl = window.location.origin + window.location.pathname ;
+
+        const response = await axios({
+            method: 'GET',
+            url: '/patreon/link',
+            params: {
+                postPatreonRedirectUrl
+            }
+        })
+
+        window.location.href = response.data;
+    })
 
     $('#unlinkPatreonButton').on('click', async () => {
         const confirmed = await Swal.fire({

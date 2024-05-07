@@ -471,16 +471,6 @@ router.get(
   '/:profileUsername/edit',
   checkProfileOwnership,
   async (req, res) => {
-    // TODO-kev: Find a better way to do the below
-    const patreonLoginUrl = patreonAgent.getPatreonAuthorizationUrl();
-    const patreonLoginUrlParams = new URLSearchParams(
-      patreonLoginUrl.split('?')[1],
-    );
-
-    // Store state variables temporarily in session for redirect purposes
-    req.session.patreonAuthState = patreonLoginUrlParams.get('state');
-    req.session.postPatreonRedirectUrl = req.baseUrl + req.path;
-
     const patronDetails = await patreonAgent.getExistingPatronDetails(
       req.params.profileUsername.toLowerCase(),
     );
@@ -492,7 +482,6 @@ router.get(
 
     return res.render('profile/edit', {
       userData,
-      patreonLoginUrl,
       patronDetails,
     });
   },

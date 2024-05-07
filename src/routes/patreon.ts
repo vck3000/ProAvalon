@@ -76,6 +76,20 @@ router.get('/oauth/redirect', async (req, res) => {
   }
 });
 
+router.get('/link', async (req, res) => {
+  const patreonLoginUrl = patreonAgent.getPatreonAuthorizationUrl();
+  const patreonLoginUrlParams = new URLSearchParams(
+    patreonLoginUrl.split('?')[1],
+  );
+
+  // @ts-ignore
+  req.session.patreonAuthState = patreonLoginUrlParams.get('state');
+  // @ts-ignore
+  req.session.postPatreonRedirectUrl = req.query.postPatreonRedirectUrl;
+
+  res.send(patreonLoginUrl);
+});
+
 router.post('/unlink', async (req, res) => {
   const unlinkSuccess = await patreonAgent.unlinkPatreon(
     // @ts-ignore
