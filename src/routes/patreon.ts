@@ -1,5 +1,8 @@
 import express from 'express';
-import { patreonAgent } from '../clients/patreon/patreonAgent';
+import {
+  patreonAgent,
+  PatronPublicDetails,
+} from '../clients/patreon/patreonAgent';
 
 const router = express.Router();
 
@@ -17,65 +20,72 @@ router.get('/oauth/redirect', async (req, res) => {
 
   // @ts-ignore
   if (state !== req.session.patreonAuthState) {
-    // TODO-kev: Figure a way to handle this. Redirect? Swal?
-    return res.status(400).redirect(
+    // TODO-kev: Figure a way to handle this. Redirect to homepage? Swal? Should not be based on redirectUrl
+    console.error('CSRF detected.');
+    return res.status(403).redirect(
       // @ts-ignore
       `${req.session.postPatreonRedirectUrl}`,
     );
   }
 
+  // @ts-ignore
+  const postPatreonRedirectUrl = req.session.postPatreonRedirectUrl;
+  // @ts-ignore
+  delete req.session.patreonAuthState;
+  // @ts-ignore
+  delete req.session.postPatreonRedirectUrl;
+
+  let patronDetails: PatronPublicDetails;
+
   try {
-    const patronDetails = await patreonAgent.linkUserToPatreon(
+    patronDetails = await patreonAgent.linkUserToPatreon(
       // @ts-ignore
       req.user.username.toLowerCase(),
       code as string,
     );
-
-    if (patronDetails.isActivePatron) {
-      const msg = 'Your Patreon account has been linked successfully!';
+  } catch (e) {
+    if (e.name === 'MultipleUsersForPatreonError') {
       return res.redirect(
         // @ts-ignore
-        `${req.session.postPatreonRedirectUrl}?success=${msg}`,
-      );
-    } else {
-      const msg = 'You are not a paid member on Patreon.';
-      return res.redirect(
-        // @ts-ignore
-        `${req.session.postPatreonRedirectUrl}?error=${msg}`,
+        `${postPatreonRedirectUrl}?error=This Patreon account is already linked to another user.`,
       );
     }
-  } catch (e) {
+
+    if (e.name === 'MultiplePatreonsForUserError') {
+      return res.redirect(
+        // @ts-ignore
+        `${postPatreonRedirectUrl}?error=You already have a linked Patreon account.`,
+      );
+    }
+
+    throw e;
+  }
+
+  if (patronDetails.isActivePatron) {
+    const msg = 'Your Patreon account has been linked successfully!';
     return res.redirect(
       // @ts-ignore
-      `${req.session.postPatreonRedirectUrl}?error=${e}`,
+      `${postPatreonRedirectUrl}?success=${msg}`,
     );
-  } finally {
-    // TODO-kev: Move these into the try catch block
-    // @ts-ignore
-    delete req.session.patreonAuthState;
-    // @ts-ignore
-    delete req.session.postPatreonRedirectUrl;
-
-    console.log('End: Link done...');
+  } else {
+    const msg = 'You are not a paid member on Patreon.';
+    return res.redirect(
+      // @ts-ignore
+      `${postPatreonRedirectUrl}?error=${msg}`,
+    );
   }
 });
 
 router.post('/unlink', async (req, res) => {
-  try {
+  const unlinkSuccess = await patreonAgent.unlinkPatreon(
     // @ts-ignore
-    const result = await patreonAgent.unlinkPatreon(req.user.usernameLower);
+    req.user.usernameLower,
+  );
 
-    if (result) {
-      return res.status(200).send('Successfully unlinked Patreon account');
-    } else {
-      return res.status(400).send('Could not find Patreon account to unlink.');
-    }
-  } catch (e) {
-    // TODO-kev: Does this go to the err.log file?
-    console.error(e);
-    return res
-      .status(500)
-      .send('Something went wrong. Please contact an admin if you see this.');
+  if (unlinkSuccess) {
+    return res.status(200).send('Successfully unlinked Patreon account');
+  } else {
+    return res.status(400).send('Could not find Patreon account to unlink.');
   }
 });
 

@@ -1,7 +1,7 @@
 import patreonRecord from '../../models/patreonRecord';
 import { PatreonController } from './patreonController';
 
-interface PatronPublicDetails {
+export interface PatronPublicDetails {
   patreonUserId: string;
   isActivePatron: boolean;
   amountCents: number;
@@ -27,6 +27,18 @@ export interface IPatreonController {
   getPatreonUserTokens(code: string): Promise<PatreonUserTokens>;
   getPatronFullDetails(patronAccessToken: string): Promise<PatronFullDetails>;
   getPatreonAuthorizationUrl(): string;
+}
+
+// Error when attempt to link multiple Patreon accounts for one user
+class MultiplePatreonsForUserError extends Error {
+  name = 'MultiplePatreonsForUserError';
+  message = 'Attempted to link multiple Patreon accounts to a single user.';
+}
+
+// Error when attempt to link a Patreon account to multiple users
+class MultipleUsersForPatreonError extends Error {
+  name = 'MultipleUsersForPatreonError';
+  message = 'Attempted to link a Patreon to multiple users.';
 }
 
 export class PatreonAgent {
@@ -88,9 +100,7 @@ export class PatreonAgent {
       existingPatreonRecordForUser.patreonUserId !==
         patronFullDetails.patreonUserId
     ) {
-      throw new Error(
-        'Attempted to upload a second Patreon for the same user.',
-      );
+      throw new MultiplePatreonsForUserError();
     }
 
     // Do not let one patreon be used for more than one user
@@ -102,9 +112,7 @@ export class PatreonAgent {
       existingPatreonRecordForOtherUsers.proavalonUsernameLower !==
         usernameLower
     ) {
-      throw new Error(
-        'Attempted to upload a used Patreon for more than one user.',
-      );
+      throw new MultipleUsersForPatreonError();
     }
 
     if (patronFullDetails.patronMemberDetails) {
