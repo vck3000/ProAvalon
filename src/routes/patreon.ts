@@ -33,16 +33,6 @@ router.get('/oauth/redirect', async (req, res) => {
   const code = req.query.code.toString();
 
   // @ts-ignore
-  if (state !== req.session.patreonAuthState) {
-    // TODO-kev: Figure a way to handle this. Redirect to homepage? Swal? Should not be based on redirectUrl
-    console.error('CSRF detected.');
-    return res.status(403).redirect(
-      // @ts-ignore
-      `${req.session.postPatreonRedirectUrl}`,
-    );
-  }
-
-  // @ts-ignore
   const postPatreonRedirectUrl = req.session.postPatreonRedirectUrl;
   // @ts-ignore
   delete req.session.patreonAuthState;

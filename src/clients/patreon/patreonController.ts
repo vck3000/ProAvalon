@@ -12,7 +12,7 @@ export class PatreonController implements IPatreonController {
   private redirectUri = process.env.patreon_redirectURL;
 
   public async getPatreonUserTokens(code: string): Promise<PatreonUserTokens> {
-    const getPatreonUserTokensUrl = new URL(PATREON_URLS.GET_TOKENS);
+    const getPatreonUserTokensUrl = PATREON_URLS.GET_TOKENS;
     const params = new URLSearchParams({
       code: code,
       grant_type: 'authorization_code',
@@ -37,7 +37,7 @@ export class PatreonController implements IPatreonController {
   public async getPatronFullDetails(
     patronAccessToken: string,
   ): Promise<PatronFullDetails> {
-    const url = new URL(PATREON_URLS.GET_PATRON_DETAILS);
+    const url = PATREON_URLS.GET_PATRON_DETAILS;
     const params = new URLSearchParams({
       include: 'memberships',
       'fields[member]':
@@ -78,7 +78,7 @@ export class PatreonController implements IPatreonController {
   }
 
   public getPatreonAuthorizationUrl() {
-    const loginUrl = new URL(PATREON_URLS.AUTHORIZATION_LINK);
+    const loginUrl = PATREON_URLS.AUTHORIZATION_LINK;
     const params = new URLSearchParams({
       response_type: 'code',
       client_id: this.clientId,
