@@ -1,5 +1,5 @@
 import React from 'react';
 import { hydrate } from 'react-dom';
-import MatchmakingButton from './index';
+import Matchmaking from './index';
 
-hydrate(<MatchmakingButton />, document.getElementById('ReadyPromptDiv'));
+hydrate(<Matchmaking />, document.getElementById('matchmakingDiv'));
