@@ -1045,8 +1045,8 @@ export const server = function (io: SocketServer): void {
       ) {
         socket.emit('allChatToClient', {
           message:
-            'Notification: Your avatar link is outdated. Please re-upload your custom avatar by the 19th of May 2024.',
-          classStr: 'server-text',
+            'IMPORTANT: Your avatar link is outdated. Please re-upload your custom avatar by the 19th of May 2024.',
+          classStr: 'all-chat-text-red',
         });
       }
 
