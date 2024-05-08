@@ -9,16 +9,28 @@ const router = express.Router();
 const patreonAgent = new PatreonAgent(new PatreonController());
 
 router.get('/oauth/redirect', async (req, res) => {
-  const code = req.query.code.toString();
-  const state = req.query.state.toString();
-
-  // TODO-kev: Consider what happens if someone clicks deny. Rework error msg
-  if (!code) {
-    return res.redirect(
+  if (
+    !req.query.state ||
+    // @ts-ignore
+    req.query.state.toString() !== req.session.patreonAuthState
+  ) {
+    // TODO-kev: Figure a way to handle this. Redirect to homepage? Swal? Should not be based on redirectUrl
+    console.error('CSRF detected.');
+    return res.status(403).redirect(
       // @ts-ignore
-      `${req.session.postPatreonRedirectUrl}?error=You have denied access`,
+      `${req.session.postPatreonRedirectUrl}`,
     );
   }
+
+  if (!req.query.code) {
+    // If a user does not grant access to their Patreon account on redirect
+    return res.redirect(
+      // @ts-ignore
+      `${req.session.postPatreonRedirectUrl}?error=We were unable to retrieve details to link a Patreon account.`,
+    );
+  }
+
+  const code = req.query.code.toString();
 
   // @ts-ignore
   if (state !== req.session.patreonAuthState) {
