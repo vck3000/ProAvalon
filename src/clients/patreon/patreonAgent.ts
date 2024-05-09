@@ -154,6 +154,9 @@ export class PatreonAgent {
       patronFullDetails.patronMemberDetails.lastChargeStatus === 'Paid' &&
       patronFullDetails.patronMemberDetails.lastChargeDate &&
       patronFullDetails.patronMemberDetails.lastChargeDate > thirtyDaysAgo;
+
+    // Due to limited testing capabilities with Patreon API return results, update below
+    // if currentPledgeExpiryDate is an inaccurate measure for when a patron has paid until
     const currentPledgeExpiryDate = hasPaid
       ? patronFullDetails.patronMemberDetails.nextChargeDate
       : null;
@@ -169,7 +172,6 @@ export class PatreonAgent {
     };
 
     if (existingPatreon) {
-      // Due to limited testing capabilities with Patreon API return results:
       // If currentPledgeExpiryDate is earlier than previously set expiry, then do not change
       if (
         existingPatreon.currentPledgeExpiryDate >
@@ -186,6 +188,7 @@ export class PatreonAgent {
         patreonRecordUpdateDetails,
       );
     } else if (hasPaid) {
+      // Create new patreonRecord only if hasPaid. Else do not create
       await patreonRecord.create(patreonRecordUpdateDetails);
     }
 
