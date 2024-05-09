@@ -1,4 +1,3 @@
-import { PATREON_URLS } from './constants';
 import {
   IPatreonController,
   PatreonUserTokens,
@@ -6,13 +5,19 @@ import {
 } from './patreonAgent';
 import uuid from 'uuid';
 
+const PATREON_URLS = {
+  AUTHORIZATION_LINK: 'https://www.patreon.com/oauth2/authorize',
+  GET_TOKENS: 'https://www.patreon.com/api/oauth2/token',
+  GET_PATRON_DETAILS: 'https://www.patreon.com/api/oauth2/v2/identity',
+};
+
 export class PatreonController implements IPatreonController {
   private clientId = process.env.patreon_client_ID;
   private clientSecret = process.env.patreon_client_secret;
   private redirectUri = process.env.patreon_redirectURL;
 
   public async getPatreonUserTokens(code: string): Promise<PatreonUserTokens> {
-    const getPatreonUserTokensUrl = PATREON_URLS.GET_TOKENS;
+    const getPatreonUserTokensUrl = new URL(PATREON_URLS.GET_TOKENS);
     const params = new URLSearchParams({
       code: code,
       grant_type: 'authorization_code',
@@ -37,7 +42,7 @@ export class PatreonController implements IPatreonController {
   public async getPatronFullDetails(
     patronAccessToken: string,
   ): Promise<PatronFullDetails> {
-    const url = PATREON_URLS.GET_PATRON_DETAILS;
+    const url = new URL(PATREON_URLS.GET_PATRON_DETAILS);
     const params = new URLSearchParams({
       include: 'memberships',
       'fields[member]':
@@ -70,15 +75,15 @@ export class PatreonController implements IPatreonController {
             nextChargeDate: new Date(
               data.included[0].attributes.next_charge_date,
             ),
-            currentlyEntitledAmountCents:
+            amountCents:
               data.included[0].attributes.currently_entitled_amount_cents,
           }
         : null,
     };
   }
 
-  public getPatreonAuthorizationUrl() {
-    const loginUrl = PATREON_URLS.AUTHORIZATION_LINK;
+  public getLoginUrl() {
+    const loginUrl = new URL(PATREON_URLS.AUTHORIZATION_LINK);
     const params = new URLSearchParams({
       response_type: 'code',
       client_id: this.clientId,

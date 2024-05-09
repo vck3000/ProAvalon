@@ -1,9 +1,9 @@
 import patreonRecord from '../../models/patreonRecord';
 import { PatreonController } from './patreonController';
 
-export interface PatronPublicDetails {
+export interface PatronDetails {
   patreonUserId: string;
-  isActivePatron: boolean;
+  isPledgeActive: boolean;
   amountCents: number;
 }
 
@@ -19,23 +19,21 @@ export interface PatronFullDetails {
     lastChargeDate: Date;
     lastChargeStatus: string;
     nextChargeDate: Date;
-    currentlyEntitledAmountCents: number;
+    amountCents: number;
   };
 }
 
 export interface IPatreonController {
   getPatreonUserTokens(code: string): Promise<PatreonUserTokens>;
   getPatronFullDetails(patronAccessToken: string): Promise<PatronFullDetails>;
-  getPatreonAuthorizationUrl(): string;
+  getLoginUrl(): string;
 }
 
-// Error when attempt to link multiple Patreon accounts for one user
 class MultiplePatreonsForUserError extends Error {
   name = 'MultiplePatreonsForUserError';
   message = 'Attempted to link multiple Patreon accounts to a single user.';
 }
 
-// Error when attempt to link a Patreon account to multiple users
 class MultipleUsersForPatreonError extends Error {
   name = 'MultipleUsersForPatreonError';
   message = 'Attempted to link a Patreon to multiple users.';
@@ -48,13 +46,13 @@ export class PatreonAgent {
     this.patreonController = controller;
   }
 
-  public getPatreonAuthorizationUrl() {
-    return this.patreonController.getPatreonAuthorizationUrl();
+  public getLoginUrl() {
+    return this.patreonController.getLoginUrl();
   }
 
   public async getExistingPatronDetails(
     usernameLower: string,
-  ): Promise<PatronPublicDetails> {
+  ): Promise<PatronDetails> {
     // This function is to check for features in general on load
 
     const patronRecord = await this.getPatreonRecordFromUsername(usernameLower);
@@ -62,13 +60,13 @@ export class PatreonAgent {
       return null;
     }
 
-    const isActivePatron = !this.hasExpired(
+    const isPledgeActive = !this.hasExpired(
       patronRecord.currentPledgeExpiryDate,
     );
 
     return {
       patreonUserId: patronRecord.patreonUserId,
-      isActivePatron: isActivePatron,
+      isPledgeActive,
       amountCents: patronRecord.amountCents,
     };
   }
@@ -77,7 +75,7 @@ export class PatreonAgent {
   public async linkUserToPatreon(
     usernameLower: string,
     code: string,
-  ): Promise<PatronPublicDetails> {
+  ): Promise<PatronDetails> {
     // Grab user tokens
     const patreonUserTokens = await this.patreonController.getPatreonUserTokens(
       code,
@@ -104,13 +102,12 @@ export class PatreonAgent {
     }
 
     // Do not let one patreon be used for more than one user
-    const existingPatreonRecordForOtherUsers =
+    const existingPatreonRecordForOtherUser =
       await this.getPatreonRecordFromPatreonId(patronFullDetails.patreonUserId);
 
     if (
-      existingPatreonRecordForOtherUsers &&
-      existingPatreonRecordForOtherUsers.proavalonUsernameLower !==
-        usernameLower
+      existingPatreonRecordForOtherUser &&
+      existingPatreonRecordForOtherUser.proavalonUsernameLower !== usernameLower
     ) {
       throw new MultipleUsersForPatreonError();
     }
@@ -125,7 +122,7 @@ export class PatreonAgent {
       );
 
       console.log(
-        `Successfully linked Patreon account: proavalonUsernameLower="${usernameLower}" patreonUserId="${patronFullDetails.patreonUserId}" isActivePatreon="${result.isActivePatron}" amountCents="${result.amountCents}"`,
+        `Successfully linked Patreon account: proavalonUsernameLower="${usernameLower}" patreonUserId="${patronFullDetails.patreonUserId}" isPledgeActive="${result.isPledgeActive}" amountCents="${result.amountCents}"`,
       );
 
       return result;
@@ -139,7 +136,7 @@ export class PatreonAgent {
 
       return {
         patreonUserId: patronFullDetails.patreonUserId,
-        isActivePatron: false,
+        isPledgeActive: false,
         amountCents: 0,
       };
     }
@@ -150,7 +147,7 @@ export class PatreonAgent {
     patronFullDetails: PatronFullDetails,
     usernameLower: string,
     patreonUserTokens: PatreonUserTokens,
-  ): Promise<PatronPublicDetails> {
+  ): Promise<PatronDetails> {
     // Check payment received to update currentPledgeExpiryDate
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const hasPaid =
@@ -168,8 +165,7 @@ export class PatreonAgent {
       userAccessToken: patreonUserTokens.userAccessToken,
       userRefreshToken: patreonUserTokens.userRefreshToken,
       userAccessTokenExpiry: patreonUserTokens.userAccessTokenExpiry,
-      amountCents:
-        patronFullDetails.patronMemberDetails.currentlyEntitledAmountCents,
+      amountCents: patronFullDetails.patronMemberDetails.amountCents,
       currentPledgeExpiryDate: currentPledgeExpiryDate,
     };
 
@@ -196,9 +192,8 @@ export class PatreonAgent {
 
     return {
       patreonUserId: patronFullDetails.patreonUserId,
-      isActivePatron: !this.hasExpired(currentPledgeExpiryDate),
-      amountCents:
-        patronFullDetails.patronMemberDetails.currentlyEntitledAmountCents,
+      isPledgeActive: !this.hasExpired(currentPledgeExpiryDate),
+      amountCents: patronFullDetails.patronMemberDetails.amountCents,
     };
   }
 
@@ -224,7 +219,7 @@ export class PatreonAgent {
 
   private async getPatreonRecordFromPatreonId(patreonUserId: string) {
     const patronRecord = await patreonRecord.findOne({
-      patreonUserId: patreonUserId,
+      patreonUserId,
     });
 
     return patronRecord ? patronRecord : null;

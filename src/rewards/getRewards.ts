@@ -24,7 +24,7 @@ export async function getAllPatreonRewardsForUser(
     usernameLower,
   );
 
-  if (!patronDetails || !patronDetails.isActivePatron) {
+  if (!patronDetails || !patronDetails.isPledgeActive) {
     return null;
   }
 

@@ -1,8 +1,5 @@
 import express from 'express';
-import {
-  PatreonAgent,
-  PatronPublicDetails,
-} from '../clients/patreon/patreonAgent';
+import { PatreonAgent, PatronDetails } from '../clients/patreon/patreonAgent';
 import { PatreonController } from '../clients/patreon/patreonController';
 
 const router = express.Router();
@@ -39,7 +36,7 @@ router.get('/oauth/redirect', async (req, res) => {
   // @ts-ignore
   delete req.session.postPatreonRedirectUrl;
 
-  let patronDetails: PatronPublicDetails;
+  let patronDetails: PatronDetails;
 
   try {
     patronDetails = await patreonAgent.linkUserToPatreon(
@@ -65,7 +62,7 @@ router.get('/oauth/redirect', async (req, res) => {
     throw e;
   }
 
-  if (patronDetails.isActivePatron) {
+  if (patronDetails.isPledgeActive) {
     const msg = 'Your Patreon account has been linked successfully!';
     return res.redirect(
       // @ts-ignore
@@ -81,7 +78,7 @@ router.get('/oauth/redirect', async (req, res) => {
 });
 
 router.get('/link', async (req, res) => {
-  const patreonLoginUrl = patreonAgent.getPatreonAuthorizationUrl();
+  const patreonLoginUrl = patreonAgent.getLoginUrl();
   const patreonLoginUrlParams = new URLSearchParams(
     patreonLoginUrl.split('?')[1],
   );
