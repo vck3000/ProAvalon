@@ -64,20 +64,22 @@ export class PatreonController implements IPatreonController {
       );
     }
 
+    const memberData = data.included?.[0]?.attributes;
+
     return {
       patreonUserId: data.data.id,
-      patronMemberDetails: data.included
-        ? {
-            lastChargeDate: new Date(
-              data.included[0].attributes.last_charge_date,
-            ),
-            lastChargeStatus: data.included[0].attributes.last_charge_status,
-            nextChargeDate: new Date(
-              data.included[0].attributes.next_charge_date,
-            ),
-            amountCents:
-              data.included[0].attributes.currently_entitled_amount_cents,
-          }
+      isMember: Boolean(memberData),
+      lastChargeDate: Boolean(memberData)
+        ? new Date(memberData.last_charge_date)
+        : null,
+      lastChargeStatus: Boolean(memberData)
+        ? memberData.last_charge_status
+        : null,
+      nextChargeDate: Boolean(memberData)
+        ? new Date(memberData.next_charge_date)
+        : null,
+      amountCents: Boolean(memberData)
+        ? memberData.currently_entitled_amount_cents
         : null,
     };
   }
