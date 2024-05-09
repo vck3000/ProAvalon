@@ -54,6 +54,8 @@ router.get('/avatargetlinktutorial', (req, res) => {
 
 // Show the mod approving rejecting page
 router.get('/mod/customavatar', isModMiddleware, (req, res) => {
+  const avatarsForUser = req.query.avatarsforuser;
+
   avatarRequest.find({ processed: false }).exec((err, allAvatarRequests) => {
     if (err) {
       console.log(err);

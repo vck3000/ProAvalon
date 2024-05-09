@@ -53,10 +53,44 @@
         height: 128px;
     }
 
+    .scrollableWindow {
+        width: 330px;
+        height: 400px;
+        overflow: auto;
+        padding: 10px;
+        background: #e5e5e5;
+        border-radius: 30px;
+    }
+
+    #approvedAvatarsForUser p {
+        text-align: center;
+        font-size: 23px;
+    }
+
+    .alignCenter {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
 </style>
 
 <div class="container myContainer">
-    <h1><u>Process custom avatars:</u></h1>
+    <h1><u>Approved Avatars for a User:</u></h1>
+    <br>
+    <div id="approvedAvatarsForUser" class="scrollableWindow alignCenter">
+        <p>Here you can see the approved avatars for a user once you input their username below.</p>
+    </div>
+    <br>
+
+    <div style="display:flex; align-items: center; width: 333px;">
+        <input type="text" name="username" class="form-control" id="getUserAvatarsInput" placeholder="Enter username" style="margin-right: 10px;">
+        <button class="btn btn-warning" id="getUserAvatarsButton">Get Avatars</button>
+    </div>
+
+    <br>
+
+    <h1><u>Process Custom Avatars:</u></h1>
     Hi mods! Thanks for taking your time on helping the site with these custom avatars :).
 
     <br>
@@ -168,6 +202,11 @@
           processAvatarRequest(false, id, comment);
 
           $(e.target).closest('.rootRequest').addClass('hide-opacity');
+        });
+
+        $('#getUserAvatarsButton').on('click', () => {
+            const input = $('#getUserAvatarsInput').val();
+            window.location.href = `?avatarsforuser=${input}`;
         });
       });
 
