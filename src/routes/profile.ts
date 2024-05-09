@@ -10,7 +10,7 @@ import ModLog from '../models/modLog';
 import { createNotification } from '../myFunctions/createNotification';
 import multer from 'multer';
 import imageSize from 'image-size';
-import { S3Agent } from '../s3/S3Agent';
+import { AvatarSet, S3Agent } from '../s3/S3Agent';
 import S3Controller from '../s3/S3Controller';
 
 const s3Controller = new S3Controller();
@@ -53,19 +53,23 @@ router.get('/avatargetlinktutorial', (req, res) => {
 });
 
 // Show the mod approving rejecting page
-router.get('/mod/customavatar', isModMiddleware, (req, res) => {
-  const avatarsForUser = req.query.avatarsforuser;
+router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
+  const customAvatarRequests = await avatarRequest.find({ processed: false });
+  const username = req.query.avatarsforuser as string;
+  let approvedAvatarSets: AvatarSet[];
 
-  avatarRequest.find({ processed: false }).exec((err, allAvatarRequests) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.render('mod/customavatar', {
-        customAvatarRequests: allAvatarRequests,
-        MAX_FILESIZE_STR,
-        VALID_DIMENSIONS_STR,
-      });
-    }
+  if (username) {
+    const s3Agent = new S3Agent(new S3Controller());
+    approvedAvatarSets = await s3Agent.getApprovedAvatarSetsForUser(
+      username.toLowerCase(),
+    );
+  }
+
+  res.render('mod/customavatar', {
+    customAvatarRequests,
+    MAX_FILESIZE_STR,
+    VALID_DIMENSIONS_STR,
+    approvedAvatarSets,
   });
 });
 

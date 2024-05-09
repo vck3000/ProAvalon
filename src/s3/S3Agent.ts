@@ -1,3 +1,5 @@
+import AvatarRequest from '../models/avatarRequest';
+
 enum FolderName {
   APPROVED = 'approved_avatars',
   PENDING = 'pending_avatars',
@@ -12,13 +14,14 @@ interface S3AvatarLinks {
 
 export interface IS3Controller {
   listObjectKeys(prefixes: string[]): any;
-  uploadFile(
-    key: string,
-    fileContent: Buffer,
-    contentType: string,
-  ): any;
+  uploadFile(key: string, fileContent: Buffer, contentType: string): any;
   deleteFile(link: string): any;
   moveFile(oldLink: string, newLink: string): any;
+}
+
+export interface AvatarSet {
+  resLink: string;
+  spyLink: string;
 }
 
 export class S3Agent {
@@ -160,5 +163,26 @@ export class S3Agent {
       s3AvatarLinks.resLink.includes(FolderName.PENDING) &&
       s3AvatarLinks.spyLink.includes(FolderName.PENDING)
     );
+  }
+
+  public async getApprovedAvatarSetsForUser(
+    usernameLower: string,
+  ): Promise<AvatarSet[]> {
+    const approvedAvatarSetsQuery = await AvatarRequest.find({
+      forUsername: usernameLower,
+      approved: true,
+    });
+
+    let approvedAvatarSets: AvatarSet[] = [];
+
+    approvedAvatarSetsQuery.forEach((avatarRequest) => {
+      const approvedAvatarSet: AvatarSet = {
+        resLink: avatarRequest.resLink,
+        spyLink: avatarRequest.spyLink,
+      };
+      approvedAvatarSets.push(approvedAvatarSet);
+    });
+
+    return approvedAvatarSets;
   }
 }
