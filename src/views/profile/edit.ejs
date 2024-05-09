@@ -412,13 +412,13 @@
     }
 
     $('#linkPatreonButton').on('click', async () => {
-        const postPatreonRedirectUrl = window.location.origin + window.location.pathname ;
+        const currentUrl = window.location.href ;
 
         const response = await axios({
             method: 'GET',
             url: '/patreon/link',
             params: {
-                postPatreonRedirectUrl
+                currentUrl
             }
         })
 

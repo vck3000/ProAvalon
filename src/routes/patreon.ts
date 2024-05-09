@@ -81,15 +81,14 @@ router.get('/oauth/redirect', async (req, res) => {
 });
 
 router.get('/link', async (req, res) => {
-  const patreonLoginUrl = patreonAgent.getLoginUrl();
-  const patreonLoginUrlParams = new URLSearchParams(
-    patreonLoginUrl.split('?')[1],
-  );
+  const patreonLoginUrl = new URL(patreonAgent.getLoginUrl());
+  const redirectUrl = new URL(req.query.currentUrl as string);
 
   // @ts-ignore
-  req.session.patreonAuthState = patreonLoginUrlParams.get('state');
+  req.session.patreonAuthState = patreonLoginUrl.searchParams.get('state');
   // @ts-ignore
-  req.session.postPatreonRedirectUrl = req.query.postPatreonRedirectUrl;
+  req.session.postPatreonRedirectUrl =
+    redirectUrl.origin + redirectUrl.pathname;
   // @ts-ignore
   await req.session.save();
 
