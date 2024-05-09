@@ -1,30 +1,35 @@
 import express from 'express';
-import { PatreonAgent, PatronDetails } from '../clients/patreon/patreonAgent';
+import {
+  MultiplePatreonsForUserError,
+  MultipleUsersForPatreonError,
+  PatreonAgent,
+  PatronDetails,
+} from '../clients/patreon/patreonAgent';
 import { PatreonController } from '../clients/patreon/patreonController';
 
 const router = express.Router();
 const patreonAgent = new PatreonAgent(new PatreonController());
 
 router.get('/oauth/redirect', async (req, res) => {
+  if (!req.query.code) {
+    // If a user does not grant access to their Patreon account on redirect
+    return res.redirect(
+      // @ts-ignore
+      `${req.session.postPatreonRedirectUrl}?error=We were unable to retrieve your Patreon details.`,
+    );
+  }
+
   if (
     !req.query.state ||
     // @ts-ignore
     req.query.state.toString() !== req.session.patreonAuthState
   ) {
-    // TODO-kev: Figure a way to handle this. Redirect to homepage? Swal? Should not be based on redirectUrl
-    console.error('CSRF detected.');
-    return res.status(403).redirect(
-      // @ts-ignore
-      `${req.session.postPatreonRedirectUrl}`,
+    // @ts-ignore
+    req.flash(
+      'error',
+      'Something went wrong. Please contact an admin if you see this.',
     );
-  }
-
-  if (!req.query.code) {
-    // If a user does not grant access to their Patreon account on redirect
-    return res.redirect(
-      // @ts-ignore
-      `${req.session.postPatreonRedirectUrl}?error=We were unable to retrieve details to link a Patreon account.`,
-    );
+    return res.status(403).redirect(`/`);
   }
 
   const code = req.query.code.toString();
@@ -35,6 +40,8 @@ router.get('/oauth/redirect', async (req, res) => {
   delete req.session.patreonAuthState;
   // @ts-ignore
   delete req.session.postPatreonRedirectUrl;
+  // @ts-ignore
+  await req.session.save();
 
   let patronDetails: PatronDetails;
 
@@ -45,14 +52,14 @@ router.get('/oauth/redirect', async (req, res) => {
       code,
     );
   } catch (e) {
-    if (e.name === 'MultipleUsersForPatreonError') {
+    if (e instanceof MultipleUsersForPatreonError) {
       return res.redirect(
         // @ts-ignore
         `${postPatreonRedirectUrl}?error=This Patreon account is already linked to another user.`,
       );
     }
 
-    if (e.name === 'MultiplePatreonsForUserError') {
+    if (e instanceof MultiplePatreonsForUserError) {
       return res.redirect(
         // @ts-ignore
         `${postPatreonRedirectUrl}?error=You already have a linked Patreon account.`,
@@ -63,16 +70,12 @@ router.get('/oauth/redirect', async (req, res) => {
   }
 
   if (patronDetails.isPledgeActive) {
-    const msg = 'Your Patreon account has been linked successfully!';
     return res.redirect(
-      // @ts-ignore
-      `${postPatreonRedirectUrl}?success=${msg}`,
+      `${postPatreonRedirectUrl}?success=Your Patreon account has been linked successfully!`,
     );
   } else {
-    const msg = 'You are not a paid member on Patreon.';
     return res.redirect(
-      // @ts-ignore
-      `${postPatreonRedirectUrl}?error=${msg}`,
+      `${postPatreonRedirectUrl}?error=You are not a paid member on Patreon.`,
     );
   }
 });
@@ -87,6 +90,8 @@ router.get('/link', async (req, res) => {
   req.session.patreonAuthState = patreonLoginUrlParams.get('state');
   // @ts-ignore
   req.session.postPatreonRedirectUrl = req.query.postPatreonRedirectUrl;
+  // @ts-ignore
+  await req.session.save();
 
   res.send(patreonLoginUrl);
 });

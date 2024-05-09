@@ -29,12 +29,12 @@ export interface IPatreonController {
   getLoginUrl(): string;
 }
 
-class MultiplePatreonsForUserError extends Error {
+export class MultiplePatreonsForUserError extends Error {
   name = 'MultiplePatreonsForUserError';
   message = 'Attempted to link multiple Patreon accounts to a single user.';
 }
 
-class MultipleUsersForPatreonError extends Error {
+export class MultipleUsersForPatreonError extends Error {
   name = 'MultipleUsersForPatreonError';
   message = 'Attempted to link a Patreon to multiple users.';
 }

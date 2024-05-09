@@ -98,7 +98,7 @@ export class PatreonController implements IPatreonController {
   }
 
   private generateRandomState() {
-    const state = uuid.v4();
-    return encodeURIComponent(encodeURIComponent(state));
+    // Replace all occurrences of - with empty string
+    return uuid.v4().replace(/-/g, '');
   }
 }

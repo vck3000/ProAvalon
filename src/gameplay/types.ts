@@ -66,7 +66,6 @@ export interface IUser {
   notifications?: Types.ObjectId;
   modAction?: Types.ObjectId;
   mutedPlayers?: string[];
-  patreonRecord?: string;
   IPAddresses?: string[];
   lastIPAddress?: string;
   matchmakingBlacklist?: string[];
