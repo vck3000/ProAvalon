@@ -1,11 +1,4 @@
 import patreonRecord from '../../models/patreonRecord';
-import { PatreonController } from './patreonController';
-
-export interface PatronDetails {
-  patreonUserId: string;
-  isPledgeActive: boolean;
-  amountCents: number;
-}
 
 export interface PatreonUserTokens {
   userAccessToken: string;
@@ -37,6 +30,12 @@ export class MultiplePatreonsForUserError extends Error {
 export class MultipleUsersForPatreonError extends Error {
   name = 'MultipleUsersForPatreonError';
   message = 'Attempted to link a Patreon to multiple users.';
+}
+
+export interface PatronDetails {
+  patreonUserId: string;
+  isPledgeActive: boolean;
+  amountCents: number;
 }
 
 export class PatreonAgent {
