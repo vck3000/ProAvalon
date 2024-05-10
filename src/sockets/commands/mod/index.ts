@@ -19,6 +19,7 @@ import { mrevealallroles } from './mrevealallroles';
 import { mforcemove } from './mforcemove';
 import { msetresavatar } from './msetresavatar';
 import { msetspyavatar } from './msetspyavatar';
+import { msetavatarlibrary } from './msetavatarlibrary';
 
 export const modCommands: Commands = {
   [m.command]: m,
@@ -34,6 +35,7 @@ export const modCommands: Commands = {
   [msetresavatar.command]: msetresavatar,
   [msetspyavatar.command]: msetspyavatar,
   [mremoveavatar.command]: mremoveavatar,
+  [msetavatarlibrary.command]: msetavatarlibrary,
   [mclose.command]: mclose,
   [mannounce.command]: mannounce,
   [mkill.command]: mkill,

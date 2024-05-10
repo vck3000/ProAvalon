@@ -11,12 +11,8 @@ interface S3AvatarLinks {
 }
 
 export interface IS3Controller {
-  listObjectKeys(prefixes: string[]): any;
-  uploadFile(
-    key: string,
-    fileContent: Buffer,
-    contentType: string,
-  ): any;
+  listObjectKeys(prefixes: string[]): Promise<string[]>;
+  uploadFile(key: string, fileContent: Buffer, contentType: string): any;
   deleteFile(link: string): any;
   moveFile(oldLink: string, newLink: string): any;
 }
@@ -160,5 +156,26 @@ export class S3Agent {
       s3AvatarLinks.resLink.includes(FolderName.PENDING) &&
       s3AvatarLinks.spyLink.includes(FolderName.PENDING)
     );
+  }
+
+  public async getApprovedAvatarIdsForUser(usernameLower: string) {
+    // Assumes each res avatar has a corresponding spy avatar with same id
+    const existingResObjectKeys = await this.s3Controller.listObjectKeys([
+      `${FolderName.APPROVED}/${usernameLower}/${usernameLower}_res_`,
+    ]);
+
+    const ids: number[] = [];
+
+    // Match format: Number of digits following _res_
+    const pattern = /_res_(\d+)/;
+
+    existingResObjectKeys.forEach((key) => {
+      const match = key.match(pattern);
+      if (match) {
+        ids.push(Number(match[1]));
+      }
+    });
+
+    return ids.sort((a, b) => a - b);
   }
 }
