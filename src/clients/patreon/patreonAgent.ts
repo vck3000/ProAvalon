@@ -54,6 +54,23 @@ export class PatreonAgent {
       return null;
     }
 
+    if (this.hasExpired(patronRecord.currentPledgeExpiryDate)) {
+      // Check with Patreon if user has renewed
+      // TODO-kev: Check if refreshToken can be used
+      const token = patronRecord.userAccessToken;
+
+      const patronFullDetails =
+        await this.patreonController.getPatronFullDetails(token);
+
+      if (patronFullDetails.isPaidPatron) {
+        patronRecord.amountCents = patronFullDetails.amountCents;
+        patronRecord.currentPledgeExpiryDate =
+          patronFullDetails.currentPledgeExpiryDate;
+
+        await patronRecord.save();
+      }
+    }
+
     const isPledgeActive = !this.hasExpired(
       patronRecord.currentPledgeExpiryDate,
     );
