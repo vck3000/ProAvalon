@@ -6,7 +6,7 @@ export interface PatreonUserTokens {
   userAccessTokenExpiry: Date;
 }
 
-export interface PatronFullDetails {
+export interface PaidPatronFullDetails {
   patreonUserId: string;
   isMember: Boolean;
   // Below 4 attributes will be null if isMember is false
@@ -18,7 +18,9 @@ export interface PatronFullDetails {
 
 export interface IPatreonController {
   getPatreonUserTokens(code: string): Promise<PatreonUserTokens>;
-  getPatronFullDetails(patronAccessToken: string): Promise<PatronFullDetails>;
+  getPaidPatronFullDetails(
+    patronAccessToken: string,
+  ): Promise<PaidPatronFullDetails>;
   getLoginUrl(): string;
 }
 
@@ -79,9 +81,10 @@ export class PatreonAgent {
     );
 
     // Grab member details from Patreon with token
-    const patronFullDetails = await this.patreonController.getPatronFullDetails(
-      patreonUserTokens.userAccessToken,
-    );
+    const patronFullDetails =
+      await this.patreonController.getPaidPatronFullDetails(
+        patreonUserTokens.userAccessToken,
+      );
 
     // Grab Patreon document from MongoDB
     const existingPatreonRecordForUser =
@@ -139,7 +142,7 @@ export class PatreonAgent {
 
   private async updateCurrentPatreonMember(
     existingPatreon: any,
-    patronFullDetails: PatronFullDetails,
+    patronFullDetails: PaidPatronFullDetails,
     usernameLower: string,
     patreonUserTokens: PatreonUserTokens,
   ): Promise<PatronDetails> {

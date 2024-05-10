@@ -1,7 +1,7 @@
 import {
   IPatreonController,
   PatreonUserTokens,
-  PatronFullDetails,
+  PaidPatronFullDetails,
 } from './patreonAgent';
 import uuid from 'uuid';
 
@@ -39,9 +39,9 @@ export class PatreonController implements IPatreonController {
     };
   }
 
-  public async getPatronFullDetails(
+  public async getPaidPatronFullDetails(
     patronAccessToken: string,
-  ): Promise<PatronFullDetails> {
+  ): Promise<PaidPatronFullDetails> {
     const url = new URL(PATREON_URLS.GET_PATRON_DETAILS);
     const params = new URLSearchParams({
       include: 'memberships',
