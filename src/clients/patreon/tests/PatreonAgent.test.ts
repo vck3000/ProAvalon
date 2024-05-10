@@ -255,57 +255,55 @@ describe('PatreonAgent', () => {
     });
   });
 
-  it('Gets user Patreon details from local database', async () => {
+  describe('Gets user Patreon details from local database', () => {
     const mockActivePatreonRecord = {
       patreonUserId: '123456789',
       proavalonUsernameLower: 'usernamelow',
       userAccessToken: 'String',
-      userAccessTokenExpiry: new Date(),
+      userAccessTokenExpiry: new Date().getTime() + 24 * 60 * 60 * 1000, // 1 day after
       userRefreshToken: 'String',
       amountCents: 300,
       currentPledgeExpiryDate: new Date().getTime() + 24 * 60 * 60 * 1000, // 1 day after
     };
-
     const mockExpiredPatreonRecord = {
       patreonUserId: '123456789',
       proavalonUsernameLower: 'usernamelow',
       userAccessToken: 'String',
-      userAccessTokenExpiry: new Date(),
+      userAccessTokenExpiry: new Date().getTime() + 24 * 60 * 60 * 1000, // 1 day after,
       userRefreshToken: 'String',
       amountCents: 300,
       currentPledgeExpiryDate: new Date().getTime() - 24 * 60 * 60 * 1000, // 1 day before
     };
 
-    const mockGetPatreonRecordFromUsername = jest.spyOn(
-      patreonAgent as any,
-      'getPatreonRecordFromUsername',
-    );
+    let mockGetPatreonRecordFromUsername: any;
 
-    mockGetPatreonRecordFromUsername.mockResolvedValueOnce(null);
+    beforeEach(() => {
+      mockPatreonController.clear();
+      patreonAgent = new PatreonAgent(mockPatreonController);
 
-    const result1 = await patreonAgent.getExistingPatronDetails('usernameLow');
-    expect(result1).toEqual(null);
-
-    mockGetPatreonRecordFromUsername.mockResolvedValueOnce(
-      mockExpiredPatreonRecord,
-    );
-
-    const result2 = await patreonAgent.getExistingPatronDetails('usernameLow');
-    expect(result2).toStrictEqual({
-      patreonUserId: '123456789',
-      isPledgeActive: false,
-      amountCents: 300,
+      mockGetPatreonRecordFromUsername = jest.spyOn(
+        patreonAgent as any,
+        'getPatreonRecordFromUsername',
+      );
     });
 
-    mockGetPatreonRecordFromUsername.mockResolvedValueOnce(
-      mockActivePatreonRecord,
-    );
+    it('Returns null if no PatreonRecord in database', async () => {
+      mockGetPatreonRecordFromUsername.mockResolvedValueOnce(null);
+      const result = await patreonAgent.getExistingPatronDetails('usernameLow');
+      expect(result).toEqual(null);
+    });
 
-    const result3 = await patreonAgent.getExistingPatronDetails('usernameLow');
-    expect(result3).toStrictEqual({
-      patreonUserId: '123456789',
-      isPledgeActive: true,
-      amountCents: 300,
+    it('Gets active Patreon details from local database', async () => {
+      mockGetPatreonRecordFromUsername.mockResolvedValueOnce(
+        mockActivePatreonRecord,
+      );
+
+      const result = await patreonAgent.getExistingPatronDetails('usernameLow');
+      expect(result).toStrictEqual({
+        patreonUserId: '123456789',
+        isPledgeActive: true,
+        amountCents: 300,
+      });
     });
   });
 });
