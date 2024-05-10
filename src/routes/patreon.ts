@@ -24,6 +24,7 @@ router.get('/oauth/redirect', async (req, res) => {
     // @ts-ignore
     req.query.state.toString() !== req.session.patreonAuthState
   ) {
+    console.log('Invalid state provided during Patreon redirect.');
     // @ts-ignore
     req.flash(
       'error',
