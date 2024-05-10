@@ -478,7 +478,6 @@ router.get(
       req.params.profileUsername.toLowerCase(),
     );
 
-    // TODO-kev: See if can extract only data required
     const userData = await User.findOne({
       usernameLower: req.params.profileUsername.toLowerCase(),
     });

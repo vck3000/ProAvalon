@@ -62,8 +62,8 @@ export class PatreonController implements IPatreonController {
     }
 
     if (data.included && data.included.length !== 1) {
-      // TODO-kev: Will need to test this. What happens if a user upgrades their plan? Member multiple?
-      // Only one membership allowed. Unexpected behaviour if more than one membership
+      // Below assumes only one Patreon campaign is active and updating membership tier
+      // will not create multiple memberships. Unexpected behaviour if more than one membership
       throw new Error(
         `Unexpected number of Patreon memberships received: patreonUserId=${data.data.id} memberships="${data.included}."`,
       );
