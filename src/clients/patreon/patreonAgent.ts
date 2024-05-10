@@ -23,12 +23,10 @@ export interface IPatreonController {
 }
 
 export class MultiplePatreonsForUserError extends Error {
-  name = 'MultiplePatreonsForUserError';
   message = 'Attempted to link multiple Patreon accounts to a single user.';
 }
 
 export class MultipleUsersForPatreonError extends Error {
-  name = 'MultipleUsersForPatreonError';
   message = 'Attempted to link a Patreon to multiple users.';
 }
 
@@ -153,8 +151,8 @@ export class PatreonAgent {
       patronFullDetails.lastChargeDate &&
       patronFullDetails.lastChargeDate > thirtyDaysAgo;
 
-    // Due to limited testing capabilities with Patreon API return results, update below
-    // if currentPledgeExpiryDate is an inaccurate measure for when a patron has paid until
+    // The below code assumes that the nextChargeDate is how long their pledge is valid for.
+    // It is difficult to know, even through testing, how Patreon's API really behaves.
     const currentPledgeExpiryDate = hasPaid
       ? patronFullDetails.nextChargeDate
       : null;
@@ -170,7 +168,6 @@ export class PatreonAgent {
     };
 
     if (existingPatreon) {
-      // If currentPledgeExpiryDate is earlier than previously set expiry, then do not change
       if (
         existingPatreon.currentPledgeExpiryDate >
         patreonRecordUpdateDetails.currentPledgeExpiryDate

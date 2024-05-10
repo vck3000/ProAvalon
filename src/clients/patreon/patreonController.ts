@@ -100,7 +100,6 @@ export class PatreonController implements IPatreonController {
   }
 
   private generateRandomState() {
-    // Replace all occurrences of - with empty string
     return uuid.v4().replace(/-/g, '');
   }
 }
