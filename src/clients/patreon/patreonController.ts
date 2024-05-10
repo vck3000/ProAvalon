@@ -1,7 +1,7 @@
 import {
   IPatreonController,
   PatreonUserTokens,
-  PaidPatronDetails,
+  PatronFullDetails,
 } from './patreonAgent';
 import uuid from 'uuid';
 
@@ -39,9 +39,9 @@ export class PatreonController implements IPatreonController {
     };
   }
 
-  public async getPaidPatronDetails(
+  public async getPatronFullDetails(
     patronAccessToken: string,
-  ): Promise<PaidPatronDetails> {
+  ): Promise<PatronFullDetails> {
     const url = new URL(PATREON_URLS.GET_PATRON_DETAILS);
     const params = new URLSearchParams({
       include: 'memberships',
@@ -78,18 +78,13 @@ export class PatreonController implements IPatreonController {
       memberData.last_charge_status === 'Paid' &&
       lastChargeDate > thirtyDaysAgo;
 
-    if (!hasPaid) {
-      return null;
-    }
-
-    // The below code assumes that the nextChargeDate is how long their pledge is valid for.
-    // It is difficult to know, even through testing, how Patreon's API really behaves.
-    const currentPledgeExpiryDate = memberData.next_charge_date;
-
     return {
       patreonUserId: data.data.id,
+      isPaidPatron: hasPaid,
       amountCents: memberData.currently_entitled_amount_cents,
-      currentPledgeExpiryDate,
+      // The below code assumes that the nextChargeDate is how long their pledge is valid for.
+      // It is difficult to know, even through testing, how Patreon's API really behaves.
+      currentPledgeExpiryDate: memberData.next_charge_date,
     };
   }
 
