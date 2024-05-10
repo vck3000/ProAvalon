@@ -9,6 +9,7 @@ import {
 
 class MockPatreonController implements IPatreonController {
   getPatreonUserTokens = jest.fn();
+  refreshPatreonUserTokens = jest.fn();
   getPatronFullDetails = jest.fn();
   getLoginUrl = jest.fn();
 
