@@ -39,6 +39,30 @@ export class PatreonController implements IPatreonController {
     };
   }
 
+  public async refreshPatreonUserTokens(
+    refreshToken: string,
+  ): Promise<PatreonUserTokens> {
+    const refreshPatreonUserTokensUrl = new URL(PATREON_URLS.GET_TOKENS);
+    const params = new URLSearchParams({
+      grant_type: 'refresh_token',
+      client_id: this.clientId,
+      client_secret: this.clientSecret,
+      refresh_token: refreshToken,
+    });
+    refreshPatreonUserTokensUrl.search = params.toString();
+
+    const response = await fetch(refreshPatreonUserTokensUrl.href, {
+      method: 'POST',
+    });
+    const data = await response.json();
+
+    return {
+      userAccessToken: data.access_token,
+      userRefreshToken: data.refresh_token,
+      userAccessTokenExpiry: new Date(Date.now() + data.expires_in * 1000),
+    };
+  }
+
   public async getPatronFullDetails(
     patronAccessToken: string,
   ): Promise<PatronFullDetails> {

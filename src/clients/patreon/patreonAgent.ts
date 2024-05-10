@@ -15,6 +15,7 @@ export interface PatronFullDetails {
 
 export interface IPatreonController {
   getPatreonUserTokens(code: string): Promise<PatreonUserTokens>;
+  refreshPatreonUserTokens(refreshToken: string): Promise<PatreonUserTokens>;
   getPatronFullDetails(patronAccessToken: string): Promise<PatronFullDetails>;
   getLoginUrl(): string;
 }
@@ -56,11 +57,21 @@ export class PatreonAgent {
 
     if (this.hasExpired(patronRecord.currentPledgeExpiryDate)) {
       // Check with Patreon if user has renewed
-      // TODO-kev: Check if refreshToken can be used
-      const token = patronRecord.userAccessToken;
+      if (this.hasExpired(patronRecord.userAccessTokenExpiry)) {
+        // Get updated tokens if token expired
+        const tokens = await this.patreonController.refreshPatreonUserTokens(
+          patronRecord.userRefreshToken,
+        );
+
+        patronRecord.userAccessToken = tokens.userAccessToken;
+        patronRecord.userAccessTokenExpiry = tokens.userAccessTokenExpiry;
+        patronRecord.userRefreshToken = tokens.userRefreshToken;
+      }
 
       const patronFullDetails =
-        await this.patreonController.getPatronFullDetails(token);
+        await this.patreonController.getPatronFullDetails(
+          patronRecord.userAccessToken,
+        );
 
       if (patronFullDetails.isPaidPatron) {
         patronRecord.amountCents = patronFullDetails.amountCents;
@@ -68,18 +79,23 @@ export class PatreonAgent {
           patronFullDetails.currentPledgeExpiryDate;
 
         await patronRecord.save();
+
+        return {
+          patreonUserId: patronRecord.patreonUserId,
+          isPledgeActive: true,
+          amountCents: patronRecord.amountCents,
+        };
+      } else {
+        // Delete record if not paid
+        await patronRecord.deleteOne();
+
+        return {
+          patreonUserId: patronFullDetails.patreonUserId,
+          isPledgeActive: false,
+          amountCents: 0,
+        };
       }
     }
-
-    const isPledgeActive = !this.hasExpired(
-      patronRecord.currentPledgeExpiryDate,
-    );
-
-    return {
-      patreonUserId: patronRecord.patreonUserId,
-      isPledgeActive,
-      amountCents: patronRecord.amountCents,
-    };
   }
 
   // This path is hit after a user has been redirected back from Patreon.
