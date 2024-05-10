@@ -253,4 +253,58 @@ describe('PatreonAgent', () => {
       expect(mockUnlinkPatreon).toHaveBeenCalledWith('usernamelow');
     });
   });
+
+  it('Gets user Patreon details from local database', async () => {
+    const mockActivePatreonRecord = {
+      patreonUserId: '123456789',
+      proavalonUsernameLower: 'usernamelow',
+      userAccessToken: 'String',
+      userAccessTokenExpiry: new Date(),
+      userRefreshToken: 'String',
+      amountCents: 300,
+      currentPledgeExpiryDate: new Date().getTime() + 24 * 60 * 60 * 1000, // 1 day after
+    };
+
+    const mockExpiredPatreonRecord = {
+      patreonUserId: '123456789',
+      proavalonUsernameLower: 'usernamelow',
+      userAccessToken: 'String',
+      userAccessTokenExpiry: new Date(),
+      userRefreshToken: 'String',
+      amountCents: 300,
+      currentPledgeExpiryDate: new Date().getTime() - 24 * 60 * 60 * 1000, // 1 day before
+    };
+
+    const mockGetPatreonRecordFromUsername = jest.spyOn(
+      patreonAgent as any,
+      'getPatreonRecordFromUsername',
+    );
+
+    mockGetPatreonRecordFromUsername.mockResolvedValueOnce(null);
+
+    const result1 = await patreonAgent.getExistingPatronDetails('usernameLow');
+    expect(result1).toEqual(null);
+
+    mockGetPatreonRecordFromUsername.mockResolvedValueOnce(
+      mockExpiredPatreonRecord,
+    );
+
+    const result2 = await patreonAgent.getExistingPatronDetails('usernameLow');
+    expect(result2).toStrictEqual({
+      patreonUserId: '123456789',
+      isPledgeActive: false,
+      amountCents: 300,
+    });
+
+    mockGetPatreonRecordFromUsername.mockResolvedValueOnce(
+      mockActivePatreonRecord,
+    );
+
+    const result3 = await patreonAgent.getExistingPatronDetails('usernameLow');
+    expect(result3).toStrictEqual({
+      patreonUserId: '123456789',
+      isPledgeActive: true,
+      amountCents: 300,
+    });
+  });
 });
