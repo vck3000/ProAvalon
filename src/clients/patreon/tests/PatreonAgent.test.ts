@@ -7,6 +7,9 @@ import {
   PatronFullDetails,
 } from '../patreonAgent';
 
+const EXPIRED_DATE = new Date(new Date().getTime() - 60 * 60 * 1000); // 1 hour prior
+const NOT_EXPIRED_DATE = new Date(new Date().getTime() + 60 * 60 * 1000); // 1 hour after
+
 class MockPatreonController implements IPatreonController {
   getPatreonUserTokens = jest.fn();
   refreshPatreonUserTokens = jest.fn();
@@ -34,14 +37,14 @@ describe('PatreonAgent', () => {
     const patreonUserTokens: PatreonUserTokens = {
       userAccessToken: 'accessAbc',
       userRefreshToken: 'refreshDef',
-      userAccessTokenExpiry: new Date('2024-05-31'),
+      userAccessTokenExpiry: NOT_EXPIRED_DATE,
     };
 
     const paidPatronFullDetails: PatronFullDetails = {
       patreonUserId: '123456789',
       isPaidPatron: true,
       amountCents: 100,
-      currentPledgeExpiryDate: new Date('2024-06-15'),
+      currentPledgeExpiryDate: NOT_EXPIRED_DATE,
     };
 
     const unpaidPatronFullDetails: PatronFullDetails = {
@@ -55,10 +58,10 @@ describe('PatreonAgent', () => {
       patreonUserId: '123456789',
       proavalonUsernameLower: 'usernamelow',
       userAccessToken: 'String',
-      userAccessTokenExpiry: new Date(),
+      userAccessTokenExpiry: NOT_EXPIRED_DATE,
       userRefreshToken: 'String',
       amountCents: 300,
-      currentPledgeExpiryDate: new Date(),
+      currentPledgeExpiryDate: NOT_EXPIRED_DATE,
     };
 
     let mockGetPatreonRecordFromUsername: any;
@@ -149,10 +152,10 @@ describe('PatreonAgent', () => {
         patreonUserId: '987654321',
         proavalonUsernameLower: 'usernamelow',
         userAccessToken: 'String',
-        userAccessTokenExpiry: new Date(),
+        userAccessTokenExpiry: NOT_EXPIRED_DATE,
         userRefreshToken: 'String',
         amountCents: 0,
-        currentPledgeExpiryDate: new Date(),
+        currentPledgeExpiryDate: NOT_EXPIRED_DATE,
       });
 
       await expect(
@@ -183,11 +186,11 @@ describe('PatreonAgent', () => {
       mockGetPatreonRecordFromPatreonId.mockResolvedValueOnce({
         patreonUserId: '123456789',
         proavalonUsernameLower: 'anotherUsername',
-        userAccessToken: 'String',
-        userAccessTokenExpiry: new Date(),
-        userRefreshToken: 'String',
+        userAccessToken: 'accessABC',
+        userAccessTokenExpiry: NOT_EXPIRED_DATE,
+        userRefreshToken: 'refreshABC',
         amountCents: 0,
-        currentPledgeExpiryDate: new Date(),
+        currentPledgeExpiryDate: NOT_EXPIRED_DATE,
       });
 
       await expect(
@@ -282,11 +285,11 @@ describe('PatreonAgent', () => {
       mockGetPatreonRecordFromUsername.mockResolvedValueOnce({
         patreonUserId: '123456789',
         proavalonUsernameLower: 'usernamelow',
-        userAccessToken: 'String',
-        userAccessTokenExpiry: new Date().getTime() + 24 * 60 * 60 * 1000, // 1 day after
-        userRefreshToken: 'String',
+        userAccessToken: 'accessABC',
+        userAccessTokenExpiry: NOT_EXPIRED_DATE,
+        userRefreshToken: 'refreshABC',
         amountCents: 300,
-        currentPledgeExpiryDate: new Date().getTime() + 24 * 60 * 60 * 1000, // 1 day after
+        currentPledgeExpiryDate: NOT_EXPIRED_DATE,
       });
 
       const result = await patreonAgent.getExistingPatronDetails('usernamelow');
@@ -306,10 +309,10 @@ describe('PatreonAgent', () => {
         patreonUserId: '123456789',
         proavalonUsernameLower: 'usernamelow',
         userAccessToken: 'oldAccessToken',
-        userAccessTokenExpiry: new Date().getTime() - 60 * 60 * 1000, // Expired
+        userAccessTokenExpiry: EXPIRED_DATE,
         userRefreshToken: 'oldRefreshToken',
         amountCents: 300,
-        currentPledgeExpiryDate: new Date().getTime() - 60 * 60 * 1000, // Expired
+        currentPledgeExpiryDate: EXPIRED_DATE,
         save: jest.fn(),
         deleteOne: jest.fn(),
       };
@@ -318,13 +321,13 @@ describe('PatreonAgent', () => {
       mockPatreonController.refreshPatreonUserTokens.mockResolvedValueOnce({
         userAccessToken: 'newAccessToken',
         userRefreshToken: 'newRefreshToken',
-        userAccessTokenExpiry: new Date().getTime() + 60 * 60 * 1000, // Not expired
+        userAccessTokenExpiry: NOT_EXPIRED_DATE,
       });
       mockPatreonController.getPatronFullDetails.mockResolvedValueOnce({
         patreonUserId: '123456789',
         isPaidPatron: true,
         amountCents: 400,
-        currentPledgeExpiryDate: new Date().getTime() + 60 * 60 * 1000, // Not expired
+        currentPledgeExpiryDate: NOT_EXPIRED_DATE,
       });
 
       const result = await patreonAgent.getExistingPatronDetails('usernamelow');
@@ -351,10 +354,10 @@ describe('PatreonAgent', () => {
         patreonUserId: '123456789',
         proavalonUsernameLower: 'usernamelow',
         userAccessToken: 'oldAccessToken',
-        userAccessTokenExpiry: new Date().getTime() - 60 * 60 * 1000, // Expired
+        userAccessTokenExpiry: EXPIRED_DATE,
         userRefreshToken: 'oldRefreshToken',
         amountCents: 300,
-        currentPledgeExpiryDate: new Date().getTime() - 60 * 60 * 1000, // Expired
+        currentPledgeExpiryDate: EXPIRED_DATE,
         save: jest.fn(),
         deleteOne: jest.fn(),
       };
@@ -363,7 +366,7 @@ describe('PatreonAgent', () => {
       mockPatreonController.refreshPatreonUserTokens.mockResolvedValueOnce({
         userAccessToken: 'newAccessToken',
         userRefreshToken: 'newRefreshToken',
-        userAccessTokenExpiry: new Date().getTime() + 60 * 60 * 1000, // Not expired
+        userAccessTokenExpiry: NOT_EXPIRED_DATE,
       });
       mockPatreonController.getPatronFullDetails.mockResolvedValueOnce({
         patreonUserId: '123456789',
