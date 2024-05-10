@@ -43,6 +43,7 @@ describe('PatreonAgent', () => {
     let mockGetPatreonRecordFromUsername: any;
     let mockGetPatreonRecordFromPatreonId: any;
     let mockUpdateCurrentPatreonMember: any;
+    let mockUnlinkPatreon: any;
 
     beforeEach(() => {
       mockPatreonController.clear();
@@ -62,6 +63,8 @@ describe('PatreonAgent', () => {
         patreonAgent as any,
         'updateCurrentPatreonMember',
       );
+
+      mockUnlinkPatreon = jest.spyOn(patreonAgent, 'unlinkPatreon');
     });
 
     it('links a paid patreon account to a user', async () => {
@@ -122,7 +125,7 @@ describe('PatreonAgent', () => {
         paidPatronDetails,
       );
       mockGetPatreonRecordFromUsername.mockResolvedValueOnce({
-        patreonUserId: '123456798',
+        patreonUserId: '123456789',
         proavalonUsernameLower: 'usernameLow',
         userAccessToken: 'String',
         userAccessTokenExpiry: new Date(),
@@ -157,7 +160,7 @@ describe('PatreonAgent', () => {
       );
       mockGetPatreonRecordFromUsername.mockResolvedValueOnce(null);
       mockGetPatreonRecordFromPatreonId.mockResolvedValueOnce({
-        patreonUserId: '123456798',
+        patreonUserId: '123456789',
         proavalonUsernameLower: 'anotherUsername',
         userAccessToken: 'String',
         userAccessTokenExpiry: new Date(),
@@ -185,6 +188,52 @@ describe('PatreonAgent', () => {
       expect(mockGetPatreonRecordFromPatreonId).toHaveBeenCalledWith(
         '123456789',
       );
+    });
+
+    it('Unlinks an unpaid patreon account from a user', async () => {
+      mockPatreonController.getPatreonUserTokens.mockResolvedValueOnce(
+        patreonUserTokens,
+      );
+      mockPatreonController.getPaidPatronDetails.mockResolvedValueOnce(null);
+      mockGetPatreonRecordFromUsername.mockResolvedValueOnce({
+        patreonUserId: '123456789',
+        proavalonUsernameLower: 'usernameLow',
+        userAccessToken: 'String',
+        userAccessTokenExpiry: new Date(),
+        userRefreshToken: 'String',
+        amountCents: 300,
+        currentPledgeExpiryDate: new Date(),
+      });
+      mockGetPatreonRecordFromPatreonId.mockResolvedValueOnce(null);
+
+      const result = await patreonAgent.linkUserToPatreon(
+        'usernameLow',
+        'codeAbc',
+      );
+
+      expect(result).toStrictEqual({
+        patreonUserId: '123456789',
+        isPledgeActive: false,
+        amountCents: 0,
+      });
+
+      expect(mockPatreonController.getPatreonUserTokens).toHaveBeenCalledWith(
+        'codeAbc',
+      );
+
+      expect(mockPatreonController.getPaidPatronDetails).toHaveBeenCalledWith(
+        'accessAbc',
+      );
+
+      expect(mockGetPatreonRecordFromUsername).toHaveBeenCalledWith(
+        'usernameLow',
+      );
+
+      expect(mockGetPatreonRecordFromPatreonId).toHaveBeenCalledWith(
+        '123456789',
+      );
+
+      expect(mockUnlinkPatreon).toHaveBeenCalledWith('usernameLow');
     });
   });
 });
