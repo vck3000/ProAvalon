@@ -380,6 +380,15 @@
         if (error) {
             showMessageAndReload(error, 'error');
         }
+
+        const patronDetails = '<%= patronDetails %>';
+
+        if (patronDetails && !patronDetails.isPledgeActive) {
+            Swal.fire({
+                type: 'warning',
+                title: 'Your Patreon subscription has ended. We are grateful for your support and look forward to your next renewal.'
+            })
+        }
     });
 
     function showMessageAndReload(message, type) {

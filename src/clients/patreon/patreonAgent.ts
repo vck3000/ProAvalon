@@ -79,12 +79,6 @@ export class PatreonAgent {
           patronFullDetails.currentPledgeExpiryDate;
 
         await patronRecord.save();
-
-        return {
-          patreonUserId: patronRecord.patreonUserId,
-          isPledgeActive: true,
-          amountCents: patronRecord.amountCents,
-        };
       } else {
         // Delete record if not paid
         await patronRecord.deleteOne();
@@ -96,6 +90,12 @@ export class PatreonAgent {
         };
       }
     }
+
+    return {
+      patreonUserId: patronRecord.patreonUserId,
+      isPledgeActive: true,
+      amountCents: patronRecord.amountCents,
+    };
   }
 
   // This path is hit after a user has been redirected back from Patreon.
