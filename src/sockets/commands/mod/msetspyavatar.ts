@@ -3,26 +3,23 @@ import { sendReplyToCommand } from '../../sockets';
 import { SocketUser } from '../../types';
 import User from '../../../models/user';
 
-export const msetresavatar: Command = {
-  command: 'msetresavatar',
-  help: "/msetresavatar <player name> <avatar resLink>: Set <player name>'s resistance avatar.",
+export const msetspyavatar: Command = {
+  command: 'msetspyavatar',
+  help: "/msetspyavatar <player name> <avatar spyLink>: Set <player name>'s spy avatar.",
   async run(args: string[], senderSocket: SocketUser) {
     if (args.length !== 3) {
-      sendReplyToCommand(senderSocket, 'Please specify <username> <resLink>.');
+      sendReplyToCommand(senderSocket, 'Please specify <username> <spyLink>.');
       return;
     }
 
     const usernameLower = args[1].toLowerCase();
-    const resLink = args[2];
+    const spyLink = args[2];
 
     if (
-      !resLink.startsWith('https://s3.proavalon.com') &&
-      !resLink.includes('res')
+      !spyLink.startsWith('https://s3.proavalon.com') &&
+      !spyLink.includes('spy')
     ) {
-      sendReplyToCommand(
-        senderSocket,
-        `Invalid resistance avatar link provided`,
-      );
+      sendReplyToCommand(senderSocket, `Invalid spy avatar link provided`);
       return;
     }
 
@@ -36,12 +33,12 @@ export const msetresavatar: Command = {
       return;
     }
 
-    user.avatarImgRes = resLink;
+    user.avatarImgSpy = spyLink;
     await user.save();
 
     sendReplyToCommand(
       senderSocket,
-      `Successfully changed resistance avatar for user: ${usernameLower}.`,
+      `Successfully changed spy avatar for user: ${usernameLower}.`,
     );
     return;
   },

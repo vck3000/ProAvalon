@@ -18,6 +18,7 @@ import { mtogglepause } from './mtogglepause';
 import { mrevealallroles } from './mrevealallroles';
 import { mforcemove } from './mforcemove';
 import { msetresavatar } from './msetresavatar';
+import { msetspyavatar } from './msetspyavatar';
 
 export const modCommands: Commands = {
   [m.command]: m,
@@ -31,6 +32,7 @@ export const modCommands: Commands = {
   [mtempenableregistration.command]: mtempenableregistration,
   [mwhisper.command]: mwhisper,
   [msetresavatar.command]: msetresavatar,
+  [msetspyavatar.command]: msetspyavatar,
   [mremoveavatar.command]: mremoveavatar,
   [mclose.command]: mclose,
   [mannounce.command]: mannounce,
