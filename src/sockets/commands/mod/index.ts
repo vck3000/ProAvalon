@@ -17,6 +17,7 @@ import { miplinkedaccs } from './miplinkedaccs';
 import { mtogglepause } from './mtogglepause';
 import { mrevealallroles } from './mrevealallroles';
 import { mforcemove } from './mforcemove';
+import { msetresavatar } from './msetresavatar';
 
 export const modCommands: Commands = {
   [m.command]: m,
@@ -29,6 +30,7 @@ export const modCommands: Commands = {
   [mtoggleregistration.command]: mtoggleregistration,
   [mtempenableregistration.command]: mtempenableregistration,
   [mwhisper.command]: mwhisper,
+  [msetresavatar.command]: msetresavatar,
   [mremoveavatar.command]: mremoveavatar,
   [mclose.command]: mclose,
   [mannounce.command]: mannounce,
