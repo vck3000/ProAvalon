@@ -39,7 +39,7 @@ export class PatreonController implements IPatreonController {
     };
   }
 
-  public async getPaidPatronFullDetails(
+  public async getPaidPatronDetails(
     patronAccessToken: string,
   ): Promise<PaidPatronDetails> {
     const url = new URL(PATREON_URLS.GET_PATRON_DETAILS);

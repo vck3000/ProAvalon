@@ -14,9 +14,7 @@ export interface PaidPatronDetails {
 
 export interface IPatreonController {
   getPatreonUserTokens(code: string): Promise<PatreonUserTokens>;
-  getPaidPatronFullDetails(
-    patronAccessToken: string,
-  ): Promise<PaidPatronDetails>;
+  getPaidPatronDetails(patronAccessToken: string): Promise<PaidPatronDetails>;
   getLoginUrl(): string;
 }
 
@@ -77,10 +75,9 @@ export class PatreonAgent {
     );
 
     // Grab member details from Patreon with token
-    const paidPatronFullDetails =
-      await this.patreonController.getPaidPatronFullDetails(
-        patreonUserTokens.userAccessToken,
-      );
+    const paidPatronDetails = await this.patreonController.getPaidPatronDetails(
+      patreonUserTokens.userAccessToken,
+    );
 
     // Grab Patreon document from MongoDB
     const existingPatreonRecordForUser =
@@ -92,16 +89,14 @@ export class PatreonAgent {
     if (
       existingPatreonRecordForUser &&
       existingPatreonRecordForUser.patreonUserId !==
-        paidPatronFullDetails.patreonUserId
+        paidPatronDetails.patreonUserId
     ) {
       throw new MultiplePatreonsForUserError();
     }
 
     // Do not let one patreon be used for more than one user
     const existingPatreonRecordForOtherUser =
-      await this.getPatreonRecordFromPatreonId(
-        paidPatronFullDetails.patreonUserId,
-      );
+      await this.getPatreonRecordFromPatreonId(paidPatronDetails.patreonUserId);
 
     if (
       existingPatreonRecordForOtherUser &&
@@ -110,16 +105,16 @@ export class PatreonAgent {
       throw new MultipleUsersForPatreonError();
     }
 
-    if (paidPatronFullDetails) {
+    if (paidPatronDetails) {
       const result = await this.updateCurrentPatreonMember(
         existingPatreonRecordForUser,
-        paidPatronFullDetails,
+        paidPatronDetails,
         usernameLower,
         patreonUserTokens,
       );
 
       console.log(
-        `Successfully linked Patreon account: proavalonUsernameLower="${usernameLower}" patreonUserId="${paidPatronFullDetails.patreonUserId}" isPledgeActive="${result.isPledgeActive}" amountCents="${result.amountCents}"`,
+        `Successfully linked Patreon account: proavalonUsernameLower="${usernameLower}" patreonUserId="${paidPatronDetails.patreonUserId}" isPledgeActive="${result.isPledgeActive}" amountCents="${result.amountCents}"`,
       );
 
       return result;
@@ -131,7 +126,7 @@ export class PatreonAgent {
       }
 
       return {
-        patreonUserId: paidPatronFullDetails.patreonUserId,
+        patreonUserId: paidPatronDetails.patreonUserId,
         isPledgeActive: false,
         amountCents: 0,
       };
@@ -140,18 +135,18 @@ export class PatreonAgent {
 
   private async updateCurrentPatreonMember(
     existingPatreonRecord: any,
-    paidPatronFullDetails: PaidPatronDetails,
+    paidPatronDetails: PaidPatronDetails,
     usernameLower: string,
     patreonUserTokens: PatreonUserTokens,
   ): Promise<PatronDetails> {
     const patreonRecordUpdateDetails = {
-      patreonUserId: paidPatronFullDetails.patreonUserId,
+      patreonUserId: paidPatronDetails.patreonUserId,
       proavalonUsernameLower: usernameLower,
       userAccessToken: patreonUserTokens.userAccessToken,
       userRefreshToken: patreonUserTokens.userRefreshToken,
       userAccessTokenExpiry: patreonUserTokens.userAccessTokenExpiry,
-      amountCents: paidPatronFullDetails.amountCents,
-      currentPledgeExpiryDate: paidPatronFullDetails.currentPledgeExpiryDate,
+      amountCents: paidPatronDetails.amountCents,
+      currentPledgeExpiryDate: paidPatronDetails.currentPledgeExpiryDate,
     };
 
     if (existingPatreonRecord) {
@@ -174,11 +169,11 @@ export class PatreonAgent {
     }
 
     return {
-      patreonUserId: paidPatronFullDetails.patreonUserId,
+      patreonUserId: paidPatronDetails.patreonUserId,
       isPledgeActive: !this.hasExpired(
-        paidPatronFullDetails.currentPledgeExpiryDate,
+        paidPatronDetails.currentPledgeExpiryDate,
       ),
-      amountCents: paidPatronFullDetails.amountCents,
+      amountCents: paidPatronDetails.amountCents,
     };
   }
 
