@@ -6,21 +6,17 @@ export interface PatreonUserTokens {
   userAccessTokenExpiry: Date;
 }
 
-export interface PaidPatronFullDetails {
+export interface PaidPatronDetails {
   patreonUserId: string;
-  isMember: Boolean;
-  // Below 4 attributes will be null if isMember is false
-  lastChargeDate: Date;
-  lastChargeStatus: string;
-  nextChargeDate: Date;
   amountCents: number;
+  currentPledgeExpiryDate: Date;
 }
 
 export interface IPatreonController {
   getPatreonUserTokens(code: string): Promise<PatreonUserTokens>;
   getPaidPatronFullDetails(
     patronAccessToken: string,
-  ): Promise<PaidPatronFullDetails>;
+  ): Promise<PaidPatronDetails>;
   getLoginUrl(): string;
 }
 
@@ -81,7 +77,7 @@ export class PatreonAgent {
     );
 
     // Grab member details from Patreon with token
-    const patronFullDetails =
+    const paidPatronFullDetails =
       await this.patreonController.getPaidPatronFullDetails(
         patreonUserTokens.userAccessToken,
       );
@@ -96,14 +92,16 @@ export class PatreonAgent {
     if (
       existingPatreonRecordForUser &&
       existingPatreonRecordForUser.patreonUserId !==
-        patronFullDetails.patreonUserId
+        paidPatronFullDetails.patreonUserId
     ) {
       throw new MultiplePatreonsForUserError();
     }
 
     // Do not let one patreon be used for more than one user
     const existingPatreonRecordForOtherUser =
-      await this.getPatreonRecordFromPatreonId(patronFullDetails.patreonUserId);
+      await this.getPatreonRecordFromPatreonId(
+        paidPatronFullDetails.patreonUserId,
+      );
 
     if (
       existingPatreonRecordForOtherUser &&
@@ -112,16 +110,16 @@ export class PatreonAgent {
       throw new MultipleUsersForPatreonError();
     }
 
-    if (patronFullDetails.isMember) {
+    if (paidPatronFullDetails) {
       const result = await this.updateCurrentPatreonMember(
         existingPatreonRecordForUser,
-        patronFullDetails,
+        paidPatronFullDetails,
         usernameLower,
         patreonUserTokens,
       );
 
       console.log(
-        `Successfully linked Patreon account: proavalonUsernameLower="${usernameLower}" patreonUserId="${patronFullDetails.patreonUserId}" isPledgeActive="${result.isPledgeActive}" amountCents="${result.amountCents}"`,
+        `Successfully linked Patreon account: proavalonUsernameLower="${usernameLower}" patreonUserId="${paidPatronFullDetails.patreonUserId}" isPledgeActive="${result.isPledgeActive}" amountCents="${result.amountCents}"`,
       );
 
       return result;
@@ -133,7 +131,7 @@ export class PatreonAgent {
       }
 
       return {
-        patreonUserId: patronFullDetails.patreonUserId,
+        patreonUserId: paidPatronFullDetails.patreonUserId,
         isPledgeActive: false,
         amountCents: 0,
       };
@@ -141,42 +139,28 @@ export class PatreonAgent {
   }
 
   private async updateCurrentPatreonMember(
-    existingPatreon: any,
-    patronFullDetails: PaidPatronFullDetails,
+    existingPatreonRecord: any,
+    paidPatronFullDetails: PaidPatronDetails,
     usernameLower: string,
     patreonUserTokens: PatreonUserTokens,
   ): Promise<PatronDetails> {
-    // Check payment received to update currentPledgeExpiryDate
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const hasPaid =
-      patronFullDetails.lastChargeStatus &&
-      patronFullDetails.lastChargeStatus === 'Paid' &&
-      patronFullDetails.lastChargeDate &&
-      patronFullDetails.lastChargeDate > thirtyDaysAgo;
-
-    // The below code assumes that the nextChargeDate is how long their pledge is valid for.
-    // It is difficult to know, even through testing, how Patreon's API really behaves.
-    const currentPledgeExpiryDate = hasPaid
-      ? patronFullDetails.nextChargeDate
-      : null;
-
     const patreonRecordUpdateDetails = {
-      patreonUserId: patronFullDetails.patreonUserId,
+      patreonUserId: paidPatronFullDetails.patreonUserId,
       proavalonUsernameLower: usernameLower,
       userAccessToken: patreonUserTokens.userAccessToken,
       userRefreshToken: patreonUserTokens.userRefreshToken,
       userAccessTokenExpiry: patreonUserTokens.userAccessTokenExpiry,
-      amountCents: patronFullDetails.amountCents,
-      currentPledgeExpiryDate: currentPledgeExpiryDate,
+      amountCents: paidPatronFullDetails.amountCents,
+      currentPledgeExpiryDate: paidPatronFullDetails.currentPledgeExpiryDate,
     };
 
-    if (existingPatreon) {
+    if (existingPatreonRecord) {
       if (
-        existingPatreon.currentPledgeExpiryDate >
+        existingPatreonRecord.currentPledgeExpiryDate >
         patreonRecordUpdateDetails.currentPledgeExpiryDate
       ) {
         patreonRecordUpdateDetails.currentPledgeExpiryDate =
-          existingPatreon.currentPledgeExpiryDate;
+          existingPatreonRecord.currentPledgeExpiryDate;
       }
 
       await patreonRecord.findOneAndUpdate(
@@ -185,15 +169,16 @@ export class PatreonAgent {
         },
         patreonRecordUpdateDetails,
       );
-    } else if (hasPaid) {
-      // Create new patreonRecord only if hasPaid. Else do not create
+    } else {
       await patreonRecord.create(patreonRecordUpdateDetails);
     }
 
     return {
-      patreonUserId: patronFullDetails.patreonUserId,
-      isPledgeActive: !this.hasExpired(currentPledgeExpiryDate),
-      amountCents: patronFullDetails.amountCents,
+      patreonUserId: paidPatronFullDetails.patreonUserId,
+      isPledgeActive: !this.hasExpired(
+        paidPatronFullDetails.currentPledgeExpiryDate,
+      ),
+      amountCents: paidPatronFullDetails.amountCents,
     };
   }
 

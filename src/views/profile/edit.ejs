@@ -31,7 +31,7 @@
     <% if (patronDetails) { %>
         <ul>
             <li>Patreon User ID: <%= patronDetails.patreonUserId %></li>
-            <li>Status: <%= patronDetails.isActivePatron ? 'Active' : 'Inactive' %></li>
+            <li>Status: <%= patronDetails.isPledgeActive ? 'Active' : 'Inactive' %></li>
             <li>Pledge (cents): <%= patronDetails.amountCents %></li>
         </ul>
 

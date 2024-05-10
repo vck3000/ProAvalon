@@ -1,7 +1,7 @@
 import {
   IPatreonController,
   PatreonUserTokens,
-  PaidPatronFullDetails,
+  PaidPatronDetails,
 } from './patreonAgent';
 import uuid from 'uuid';
 
@@ -41,7 +41,7 @@ export class PatreonController implements IPatreonController {
 
   public async getPaidPatronFullDetails(
     patronAccessToken: string,
-  ): Promise<PaidPatronFullDetails> {
+  ): Promise<PaidPatronDetails> {
     const url = new URL(PATREON_URLS.GET_PATRON_DETAILS);
     const params = new URLSearchParams({
       include: 'memberships',
@@ -56,6 +56,11 @@ export class PatreonController implements IPatreonController {
     const response = await fetch(url.href, { headers });
 
     const data = await response.json();
+    if (!data.included) {
+      // They are not a member on Patreon
+      return null;
+    }
+
     if (data.included && data.included.length !== 1) {
       // TODO-kev: Will need to test this. What happens if a user upgrades their plan? Member multiple?
       // Only one membership allowed. Unexpected behaviour if more than one membership
@@ -64,23 +69,27 @@ export class PatreonController implements IPatreonController {
       );
     }
 
-    const memberData = data.included?.[0]?.attributes;
+    const memberData = data.included[0].attributes;
+    const lastChargeDate = new Date(memberData.last_charge_date);
+
+    // Check payment received to update currentPledgeExpiryDate
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const hasPaid =
+      memberData.last_charge_status === 'Paid' &&
+      lastChargeDate > thirtyDaysAgo;
+
+    if (!hasPaid) {
+      return null;
+    }
+
+    // The below code assumes that the nextChargeDate is how long their pledge is valid for.
+    // It is difficult to know, even through testing, how Patreon's API really behaves.
+    const currentPledgeExpiryDate = memberData.next_charge_date;
 
     return {
       patreonUserId: data.data.id,
-      isMember: Boolean(memberData),
-      lastChargeDate: Boolean(memberData)
-        ? new Date(memberData.last_charge_date)
-        : null,
-      lastChargeStatus: Boolean(memberData)
-        ? memberData.last_charge_status
-        : null,
-      nextChargeDate: Boolean(memberData)
-        ? new Date(memberData.next_charge_date)
-        : null,
-      amountCents: Boolean(memberData)
-        ? memberData.currently_entitled_amount_cents
-        : null,
+      amountCents: memberData.currently_entitled_amount_cents,
+      currentPledgeExpiryDate,
     };
   }
 
