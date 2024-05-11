@@ -198,8 +198,10 @@ $('#newRoom').on('click', (data) => {
 });
 
 $('#createNewRoomButton').on('click', (data) => {
-  // console.log( $($(".maxNumPlayers")[1]).val() );
-  // console.log( $("#newRoomPassword").val() );
+  // Disable button until game mode is dynamically loaded
+  if (!$($('.gameModeSelect')[1]).val()) {
+    return;
+  }
 
   const sendObj = {
     maxNumPlayers: $($('.maxNumPlayers')[1]).val(),
