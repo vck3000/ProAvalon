@@ -86,8 +86,9 @@ export class PatreonController implements IPatreonController {
     }
 
     if (data.included && data.included.length !== 1) {
-      // Below assumes only one Patreon campaign is active and updating membership tier
-      // will not create multiple memberships. Unexpected behaviour if more than one membership
+      // The below code assumes that the Patreon account of the server only has one active
+      // campaign. It also assumes that the Patreon API will always, at most, send back one
+      // membership/pledge per user, even if users change their pledge.
       throw new Error(
         `Unexpected number of Patreon memberships received: patreonUserId=${data.data.id} memberships="${data.included}."`,
       );

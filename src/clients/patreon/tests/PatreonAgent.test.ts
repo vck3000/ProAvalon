@@ -20,6 +20,7 @@ class MockPatreonController implements IPatreonController {
     this.getPatreonUserTokens.mockClear();
     this.getPatronFullDetails.mockClear();
     this.getLoginUrl.mockClear();
+    this.refreshPatreonUserTokens.mockClear();
   }
 }
 
@@ -36,7 +37,7 @@ describe('PatreonAgent', () => {
   describe('Links user to Patreon', () => {
     const patreonUserTokens: PatreonUserTokens = {
       userAccessToken: 'accessAbc',
-      userRefreshToken: 'refreshDef',
+      userRefreshToken: 'refresh456',
       userAccessTokenExpiry: NOT_EXPIRED_DATE,
     };
 
