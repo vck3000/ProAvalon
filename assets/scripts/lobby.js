@@ -278,7 +278,9 @@ function activateAvatarButtons() {
 
       const username =
         this.parentElement.parentElement.getAttribute('usernameofplayer');
-      const chatItems = $(`.room-chat-list li span[username='${username}']`);
+      const anonUsername =
+        this.parentElement.parentElement.getAttribute('anonusernameofplayer');
+      const chatItems = $(`.room-chat-list li span[username='${username}']${anonUsername ? `, .room-chat-list li span[username='${anonUsername}']` : ''}`);
 
       let playerHighlightColour = docCookies.getItem(
         `player${getIndexFromUsername(username)}HighlightColour`
@@ -1073,7 +1075,7 @@ function strOfAvatar(playerData, alliance) {
     colourToHighlightChatButton = '';
   }
 
-  let str = `<div usernameofplayer='${playerData.username}' class='playerDiv ${selectedAvatar}''>`;
+  let str = `<div usernameofplayer='${playerData.username}' ${playerData.anonUsername ? `anonusernameofplayer=${playerData.anonUsername}` : ''} class='playerDiv ${selectedAvatar}''>`;
 
   str += "<span class='avatarOptionButtons'>";
   str +=
