@@ -9,7 +9,7 @@ import { mnotify } from './mnotify';
 import { mtoggleregistration } from './mtoggleregistration';
 import { mtempenableregistration } from './mtempenableregistration';
 import { mwhisper } from './mwhisper';
-import { mremoveavatar } from './mremoveavatar';
+import { mremoveavatars } from './mremoveavatars';
 import { mclose } from './mclose';
 import { mannounce } from './mannounce';
 import { mkill } from './mkill';
@@ -17,9 +17,8 @@ import { miplinkedaccs } from './miplinkedaccs';
 import { mtogglepause } from './mtogglepause';
 import { mrevealallroles } from './mrevealallroles';
 import { mforcemove } from './mforcemove';
-import { msetresavatar } from './msetresavatar';
-import { msetspyavatar } from './msetspyavatar';
 import { msetavatarlibrary } from './msetavatarlibrary';
+import { msetavatars } from './msetavatars';
 
 export const modCommands: Commands = {
   [m.command]: m,
@@ -32,9 +31,8 @@ export const modCommands: Commands = {
   [mtoggleregistration.command]: mtoggleregistration,
   [mtempenableregistration.command]: mtempenableregistration,
   [mwhisper.command]: mwhisper,
-  [msetresavatar.command]: msetresavatar,
-  [msetspyavatar.command]: msetspyavatar,
-  [mremoveavatar.command]: mremoveavatar,
+  [msetavatars.command]: msetavatars,
+  [mremoveavatars.command]: mremoveavatars,
   [msetavatarlibrary.command]: msetavatarlibrary,
   [mclose.command]: mclose,
   [mannounce.command]: mannounce,
