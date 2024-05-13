@@ -111,7 +111,7 @@ class VotingMission implements IPhase {
         }
       }
 
-      this.checkForSuperset(); //adjusts SINAD.
+      this.checkForSinad(); //if m1m2 passed and m3!=m2+1, then swap mission sizes for m4&m5.
       // TODO move these arrays out of Game and into this class.
       // if we get all the votes in, then do this.thisRoom
       this.thisRoom.lastProposedTeam = this.thisRoom.proposedTeam;
@@ -272,7 +272,7 @@ class VotingMission implements IPhase {
   getProhibitedIndexesToPick(indexOfPlayer: number): number[] {
     return [];
   }
-  checkForSuperset():void {
+  checkForSinad():void {
     if(
     this.thisRoom.gameMode===GameMode.SINAD //replace with whatever flag
     && this.thisRoom.playersInGame.length === 6
@@ -288,8 +288,8 @@ class VotingMission implements IPhase {
           continue
         else
         {
-          this.thisRoom.isMissionSuperset = false;
-          this.thisRoom.sinadMissionSwitch = true;
+          this.thisRoom.isMissionSuperset = false; // i.e. m3 is NOT a superset of m2.
+          this.thisRoom.sinadMissionSwitch = true; // so activate mission switcheroo
           return;
         }
       }
