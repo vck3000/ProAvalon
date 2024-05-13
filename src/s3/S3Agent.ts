@@ -164,18 +164,14 @@ export class S3Agent {
       `${FolderName.APPROVED}/${usernameLower}/${usernameLower}_res_`,
     ]);
 
-    const ids: number[] = [];
+    const approvedAvatarIds: number[] = existingResObjectKeys
+      .map((key) => {
+        // Match format: Number of digits following _res_
+        const match = key.match(/_res_(\d+)/);
+        return match ? Number(match[1]) : NaN;
+      })
+      .filter((approvedAvatarId) => !isNaN(approvedAvatarId));
 
-    // Match format: Number of digits following _res_
-    const pattern = /_res_(\d+)/;
-
-    existingResObjectKeys.forEach((key) => {
-      const match = key.match(pattern);
-      if (match) {
-        ids.push(Number(match[1]));
-      }
-    });
-
-    return ids.sort((a, b) => a - b);
+    return approvedAvatarIds.sort((a, b) => a - b);
   }
 }

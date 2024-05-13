@@ -62,7 +62,7 @@ export const msetavatarlibrary: Command = {
       return;
     }
 
-    user.approvedAvatarIds = proposedAvatarLibrary;
+    user.avatarLibrary = proposedAvatarLibrary;
     user.markModified('approvedAvatarIds');
     await user.save();
 
