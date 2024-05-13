@@ -54,49 +54,49 @@ export class PatreonAgent {
   public async findOrUpdateExistingPatronDetails(
     usernameLower: string,
   ): Promise<PatronDetails | null> {
-    const patronRecord = await this.getPatreonRecordFromUsername(usernameLower);
-    if (!patronRecord) {
+    const patreonRecord = await this.getPatreonRecordFromUsername(
+      usernameLower,
+    );
+    if (!patreonRecord) {
       return null;
     }
 
-    if (!this.hasExpired(patronRecord.currentPledgeExpiryDate)) {
+    if (!this.hasExpired(patreonRecord.currentPledgeExpiryDate)) {
       return {
-        patreonUserId: patronRecord.patreonUserId,
+        patreonUserId: patreonRecord.patreonUserId,
         isPledgeActive: true,
-        amountCents: patronRecord.amountCents,
+        amountCents: patreonRecord.amountCents,
       };
     } else {
       // Check with Patreon if user has renewed
-      if (this.hasExpired(patronRecord.userAccessTokenExpiry)) {
+      if (this.hasExpired(patreonRecord.userAccessTokenExpiry)) {
         // Get updated tokens if token expired
-        const tokens = await this.patreonController.refreshPatreonUserTokens(
-          patronRecord.userRefreshToken,
-        );
-
-        patronRecord.userAccessToken = tokens.userAccessToken;
-        patronRecord.userAccessTokenExpiry = tokens.userAccessTokenExpiry;
-        patronRecord.userRefreshToken = tokens.userRefreshToken;
+        const patreonUserTokens =
+          await this.patreonController.refreshPatreonUserTokens(
+            patreonRecord.userRefreshToken,
+          );
+        await this.updateUserTokens(patreonRecord, patreonUserTokens);
       }
 
       const paidPatronFullDetails =
         await this.patreonController.getPaidPatronFullDetails(
-          patronRecord.userAccessToken,
+          patreonRecord.userAccessToken,
         );
 
       if (paidPatronFullDetails) {
-        patronRecord.amountCents = paidPatronFullDetails.amountCents;
-        patronRecord.currentPledgeExpiryDate =
+        patreonRecord.amountCents = paidPatronFullDetails.amountCents;
+        patreonRecord.currentPledgeExpiryDate =
           paidPatronFullDetails.currentPledgeExpiryDate;
 
-        await patronRecord.save();
+        await patreonRecord.save();
         return {
-          patreonUserId: patronRecord.patreonUserId,
+          patreonUserId: patreonRecord.patreonUserId,
           isPledgeActive: true,
           amountCents: paidPatronFullDetails.amountCents,
         };
       } else {
         // Delete record if not paid
-        await patronRecord.deleteOne();
+        await patreonRecord.deleteOne();
 
         // isPledgeActive is set to false for previously active accounts that have now expired
         return {
@@ -237,5 +237,16 @@ export class PatreonAgent {
     });
 
     return patronRecord ? patronRecord : null;
+  }
+
+  private async updateUserTokens(
+    patreonRecord: any,
+    tokens: PatreonUserTokens,
+  ) {
+    patreonRecord.userAccessToken = tokens.userAccessToken;
+    patreonRecord.userAccessTokenExpiry = tokens.userAccessTokenExpiry;
+    patreonRecord.userRefreshToken = tokens.userRefreshToken;
+
+    await patreonRecord.save();
   }
 }
