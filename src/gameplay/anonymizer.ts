@@ -47,7 +47,7 @@ export class Anonymizer implements IRecoverable {
     this.gameFinished = true;
   }
 
-  anon(username: string): string {
+  anon(username: string, revealIfFinished = true): string {
     if (
       !this.initialised ||
       !this.anonymize ||
@@ -56,7 +56,7 @@ export class Anonymizer implements IRecoverable {
       return username;
     }
 
-    if (this.gameFinished) {
+    if (this.gameFinished && revealIfFinished) {
       return this.usernameAnonReveal(username);
     }
 
