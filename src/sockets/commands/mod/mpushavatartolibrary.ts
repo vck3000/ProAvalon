@@ -7,7 +7,7 @@ import S3Controller from '../../../s3/S3Controller';
 
 export const mpushavatartolibrary: Command = {
   command: 'mpushavatartolibrary',
-  help: "/mpushavatartolibrary <player name> <avatar id>: Add an approved avatar ID to a user's avatar library. It will remove the oldest avatar if the max limit has been exceeded.",
+  help: "/mpushavatartolibrary <player name> <avatar id>: Add an approved avatar ID to a user's avatar library. It will remove the oldest avatar if the max avatar library size has been exceeded.",
   async run(args: string[], senderSocket: SocketUser) {
     if (args.length !== 3) {
       sendReplyToCommand(
