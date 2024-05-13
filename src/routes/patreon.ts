@@ -2,6 +2,7 @@ import express from 'express';
 import {
   MultiplePatreonsForUserError,
   MultipleUsersForPatreonError,
+  NotPaidPatronError,
   PatreonAgent,
   PatronDetails,
 } from '../clients/patreon/patreonAgent';
@@ -53,6 +54,13 @@ router.get('/oauth/redirect', async (req, res) => {
       code,
     );
   } catch (e) {
+    if (e instanceof NotPaidPatronError) {
+      return res.redirect(
+        // @ts-ignore
+        `${postPatreonRedirectUrl}?error=You are not a paid member on Patreon.`,
+      );
+    }
+
     if (e instanceof MultipleUsersForPatreonError) {
       return res.redirect(
         // @ts-ignore
@@ -70,15 +78,9 @@ router.get('/oauth/redirect', async (req, res) => {
     throw e;
   }
 
-  if (patronDetails.isPledgeActive) {
-    return res.redirect(
-      `${postPatreonRedirectUrl}?success=Your Patreon account has been linked successfully!`,
-    );
-  } else {
-    return res.redirect(
-      `${postPatreonRedirectUrl}?error=You are not a paid member on Patreon.`,
-    );
-  }
+  return res.redirect(
+    `${postPatreonRedirectUrl}?success=Your Patreon account has been linked successfully!`,
+  );
 });
 
 router.get('/link', async (req, res) => {

@@ -1,7 +1,7 @@
 import {
   IPatreonController,
   PatreonUserTokens,
-  PatronFullDetails,
+  PaidPatronFullDetails,
 } from './patreonAgent';
 import uuid from 'uuid';
 
@@ -63,9 +63,9 @@ export class PatreonController implements IPatreonController {
     };
   }
 
-  public async getPatronFullDetails(
+  public async getPaidPatronFullDetails(
     patronAccessToken: string,
-  ): Promise<PatronFullDetails> {
+  ): Promise<PaidPatronFullDetails> {
     const url = new URL(PATREON_URLS.GET_PATRON_DETAILS);
     const params = new URLSearchParams({
       include: 'memberships',
@@ -85,7 +85,7 @@ export class PatreonController implements IPatreonController {
       return null;
     }
 
-    if (data.included && data.included.length !== 1) {
+    if (data.included.length !== 1) {
       // The below code assumes that the Patreon account of the server only has one active
       // campaign. It also assumes that the Patreon API will always, at most, send back one
       // membership/pledge per user, even if users change their pledge.
@@ -103,14 +103,15 @@ export class PatreonController implements IPatreonController {
       memberData.last_charge_status === 'Paid' &&
       lastChargeDate > thirtyDaysAgo;
 
-    return {
-      patreonUserId: data.data.id,
-      isPaidPatron: hasPaid,
-      amountCents: memberData.currently_entitled_amount_cents,
-      // The below code assumes that the nextChargeDate is how long their pledge is valid for.
-      // It is difficult to know, even through testing, how Patreon's API really behaves.
-      currentPledgeExpiryDate: memberData.next_charge_date,
-    };
+    return hasPaid
+      ? {
+          patreonUserId: data.data.id,
+          amountCents: memberData.currently_entitled_amount_cents,
+          // The below code assumes that the nextChargeDate is how long their pledge is valid for.
+          // It is difficult to know, even through testing, how Patreon's API really behaves.
+          currentPledgeExpiryDate: memberData.next_charge_date,
+        }
+      : null;
   }
 
   public getLoginUrl() {

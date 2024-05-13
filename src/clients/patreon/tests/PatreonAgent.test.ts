@@ -4,7 +4,7 @@ import {
   MultipleUsersForPatreonError,
   PatreonAgent,
   PatreonUserTokens,
-  PatronFullDetails,
+  PaidPatronFullDetails,
 } from '../patreonAgent';
 
 const EXPIRED_DATE = new Date(new Date().getTime() - 60 * 60 * 1000); // 1 hour prior
@@ -13,12 +13,12 @@ const NOT_EXPIRED_DATE = new Date(new Date().getTime() + 60 * 60 * 1000); // 1 h
 class MockPatreonController implements IPatreonController {
   getPatreonUserTokens = jest.fn();
   refreshPatreonUserTokens = jest.fn();
-  getPatronFullDetails = jest.fn();
+  getPaidPatronFullDetails = jest.fn();
   getLoginUrl = jest.fn();
 
   clear() {
     this.getPatreonUserTokens.mockClear();
-    this.getPatronFullDetails.mockClear();
+    this.getPaidPatronFullDetails.mockClear();
     this.getLoginUrl.mockClear();
     this.refreshPatreonUserTokens.mockClear();
   }
@@ -41,14 +41,14 @@ describe('PatreonAgent', () => {
       userAccessTokenExpiry: NOT_EXPIRED_DATE,
     };
 
-    const paidPatronFullDetails: PatronFullDetails = {
+    const paidPatronFullDetails: PaidPatronFullDetails = {
       patreonUserId: '123456789',
       isPaidPatron: true,
       amountCents: 100,
       currentPledgeExpiryDate: NOT_EXPIRED_DATE,
     };
 
-    const unpaidPatronFullDetails: PatronFullDetails = {
+    const unpaidPatronFullDetails: PaidPatronFullDetails = {
       patreonUserId: '123456789',
       isPaidPatron: false,
       amountCents: null,
@@ -96,7 +96,7 @@ describe('PatreonAgent', () => {
       mockPatreonController.getPatreonUserTokens.mockResolvedValueOnce(
         patreonUserTokens,
       );
-      mockPatreonController.getPatronFullDetails.mockResolvedValueOnce(
+      mockPatreonController.getPaidPatronFullDetails.mockResolvedValueOnce(
         paidPatronFullDetails,
       );
       mockGetPatreonRecordFromUsername.mockResolvedValueOnce(null);
@@ -122,9 +122,9 @@ describe('PatreonAgent', () => {
         'codeAbc',
       );
 
-      expect(mockPatreonController.getPatronFullDetails).toHaveBeenCalledWith(
-        'accessAbc',
-      );
+      expect(
+        mockPatreonController.getPaidPatronFullDetails,
+      ).toHaveBeenCalledWith('accessAbc');
 
       expect(mockGetPatreonRecordFromUsername).toHaveBeenCalledWith(
         'usernamelow',
@@ -146,7 +146,7 @@ describe('PatreonAgent', () => {
       mockPatreonController.getPatreonUserTokens.mockResolvedValueOnce(
         patreonUserTokens,
       );
-      mockPatreonController.getPatronFullDetails.mockResolvedValueOnce(
+      mockPatreonController.getPaidPatronFullDetails.mockResolvedValueOnce(
         paidPatronFullDetails,
       );
       mockGetPatreonRecordFromUsername.mockResolvedValueOnce({
@@ -167,9 +167,9 @@ describe('PatreonAgent', () => {
         'codeAbc',
       );
 
-      expect(mockPatreonController.getPatronFullDetails).toHaveBeenCalledWith(
-        'accessAbc',
-      );
+      expect(
+        mockPatreonController.getPaidPatronFullDetails,
+      ).toHaveBeenCalledWith('accessAbc');
 
       expect(mockGetPatreonRecordFromUsername).toHaveBeenCalledWith(
         'usernamelow',
@@ -180,7 +180,7 @@ describe('PatreonAgent', () => {
       mockPatreonController.getPatreonUserTokens.mockResolvedValueOnce(
         patreonUserTokens,
       );
-      mockPatreonController.getPatronFullDetails.mockResolvedValueOnce(
+      mockPatreonController.getPaidPatronFullDetails.mockResolvedValueOnce(
         paidPatronFullDetails,
       );
       mockGetPatreonRecordFromUsername.mockResolvedValueOnce(null);
@@ -202,9 +202,9 @@ describe('PatreonAgent', () => {
         'codeAbc',
       );
 
-      expect(mockPatreonController.getPatronFullDetails).toHaveBeenCalledWith(
-        'accessAbc',
-      );
+      expect(
+        mockPatreonController.getPaidPatronFullDetails,
+      ).toHaveBeenCalledWith('accessAbc');
 
       expect(mockGetPatreonRecordFromUsername).toHaveBeenCalledWith(
         'usernamelow',
@@ -219,7 +219,7 @@ describe('PatreonAgent', () => {
       mockPatreonController.getPatreonUserTokens.mockResolvedValueOnce(
         patreonUserTokens,
       );
-      mockPatreonController.getPatronFullDetails.mockResolvedValueOnce(
+      mockPatreonController.getPaidPatronFullDetails.mockResolvedValueOnce(
         unpaidPatronFullDetails,
       );
       mockGetPatreonRecordFromUsername.mockResolvedValueOnce(mockPatreonRecord);
@@ -243,9 +243,9 @@ describe('PatreonAgent', () => {
         'codeAbc',
       );
 
-      expect(mockPatreonController.getPatronFullDetails).toHaveBeenCalledWith(
-        'accessAbc',
-      );
+      expect(
+        mockPatreonController.getPaidPatronFullDetails,
+      ).toHaveBeenCalledWith('accessAbc');
 
       expect(mockGetPatreonRecordFromUsername).toHaveBeenCalledWith(
         'usernamelow',
@@ -328,7 +328,7 @@ describe('PatreonAgent', () => {
         userRefreshToken: 'newRefreshToken',
         userAccessTokenExpiry: NOT_EXPIRED_DATE,
       });
-      mockPatreonController.getPatronFullDetails.mockResolvedValueOnce({
+      mockPatreonController.getPaidPatronFullDetails.mockResolvedValueOnce({
         patreonUserId: '123456789',
         isPaidPatron: true,
         amountCents: 400,
@@ -350,9 +350,9 @@ describe('PatreonAgent', () => {
       expect(
         mockPatreonController.refreshPatreonUserTokens,
       ).toHaveBeenCalledWith('oldRefreshToken');
-      expect(mockPatreonController.getPatronFullDetails).toHaveBeenCalledWith(
-        'newAccessToken',
-      );
+      expect(
+        mockPatreonController.getPaidPatronFullDetails,
+      ).toHaveBeenCalledWith('newAccessToken');
       expect(mockPatronRecord.save).toHaveBeenCalled();
     });
 
@@ -375,7 +375,7 @@ describe('PatreonAgent', () => {
         userRefreshToken: 'newRefreshToken',
         userAccessTokenExpiry: NOT_EXPIRED_DATE,
       });
-      mockPatreonController.getPatronFullDetails.mockResolvedValueOnce({
+      mockPatreonController.getPaidPatronFullDetails.mockResolvedValueOnce({
         patreonUserId: '123456789',
         isPaidPatron: false,
         amountCents: 0,
@@ -397,9 +397,9 @@ describe('PatreonAgent', () => {
       expect(
         mockPatreonController.refreshPatreonUserTokens,
       ).toHaveBeenCalledWith('oldRefreshToken');
-      expect(mockPatreonController.getPatronFullDetails).toHaveBeenCalledWith(
-        'newAccessToken',
-      );
+      expect(
+        mockPatreonController.getPaidPatronFullDetails,
+      ).toHaveBeenCalledWith('newAccessToken');
       expect(mockPatronRecord.deleteOne).toHaveBeenCalled();
     });
   });
