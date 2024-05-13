@@ -6,6 +6,7 @@ let socket: Socket = undefined;
 export function MatchmakingButton() {
   const [joined, setJoined] = useState(false);
   const [queueButtonText, setQueueButtonText] = useState('Join Queue');
+  const [numPlayersInQueue, setNumPlayersInQueue] = useState(0);
 
   useEffect(() => {
     // @ts-ignore
@@ -14,6 +15,10 @@ export function MatchmakingButton() {
     socket.on('queueReply', (data: { joined: boolean }) => {
       setJoined(data.joined);
       setQueueButtonText(data.joined ? 'Leave Queue' : 'Join Queue');
+    });
+
+    socket.on('numPlayersInQueue', (data) => {
+      setNumPlayersInQueue(data.numPlayersInQueue);
     });
   }, []);
 
@@ -31,6 +36,10 @@ export function MatchmakingButton() {
       >
         {queueButtonText}
       </a>
+      <p>
+        <span id="numPlayersInQueue">{numPlayersInQueue}</span> player(s) in
+        queue
+      </p>
     </div>
   );
 }
