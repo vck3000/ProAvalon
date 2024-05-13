@@ -2,6 +2,7 @@ import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
 import { ButtonSettings, IPhase, Phase } from '../types';
 import { Alliance } from '../../types';
 import { SocketUser } from '../../../sockets/types';
+import { GameMode } from '../../gameModes';
 
 class VotingMission implements IPhase {
   static phase = Phase.VotingMission;
@@ -110,6 +111,7 @@ class VotingMission implements IPhase {
         }
       }
 
+      this.checkForSuperset(); //adjusts SINAD.
       // TODO move these arrays out of Game and into this class.
       // if we get all the votes in, then do this.thisRoom
       this.thisRoom.lastProposedTeam = this.thisRoom.proposedTeam;
@@ -270,6 +272,32 @@ class VotingMission implements IPhase {
   getProhibitedIndexesToPick(indexOfPlayer: number): number[] {
     return [];
   }
+  checkForSuperset():void {
+    if(
+    this.thisRoom.gameMode===GameMode.SINAD //replace with whatever flag
+    && this.thisRoom.playersInGame.length === 6
+    && this.thisRoom.missionHistory[0] === 'succeeded'
+    && this.thisRoom.missionHistory[1] === 'succeeded'
+    && this.thisRoom.missionHistory[2] //m3 either success or fail
+    && !this.thisRoom.missionHistory[3] //m1 m2 both passed, m3 has just happened and m4 hasn't "happened"
+    )
+    {
+      for(let i = 0; i < this.thisRoom.lastProposedTeam.length; i++)
+      {
+        if(this.thisRoom.proposedTeam.includes(this.thisRoom.lastProposedTeam[i]))
+          continue
+        else
+        {
+          this.thisRoom.isMissionSuperset = false;
+          this.thisRoom.sinadMissionSwitch = true;
+          return;
+        }
+      }
+    }
+      this.thisRoom.isMissionSuperset = true;
+      return;
+  }
+
 }
 
 export default VotingMission;

@@ -8,11 +8,12 @@ class PickingTeam implements IPhase {
   phase = Phase.PickingTeam;
   showGuns = false;
   private thisRoom: any;
-
+  //numberOfPlayersToBePicked: number;
   constructor(thisRoom_: any) {
     this.thisRoom = thisRoom_;
   }
 
+  
   gameMove(
     socket: SocketUser,
     buttonPressed: string,
@@ -22,7 +23,19 @@ class PickingTeam implements IPhase {
       // this.thisRoom.sendText(this.thisRoom.allSockets, `Button pressed was ${buttonPressed}. Let admin know if you see this.`, "gameplay-text");
       return;
     }
-
+    if(
+      this.thisRoom.missionNum === 4
+      && this.thisRoom.pickNum === 1 // at m4.1
+      && this.thisRoom.sinadMissionSwitch
+    )
+   {
+    this.thisRoom.sendText(
+      'The mission sizes of Mission 4 and Mission 5 have swapped! Mission 4 will now require four members; mission 5 will require three.',
+      'gameplay-text',
+    );
+   // console.log('Mission superset value:')
+    //console.log(this.thisRoom.isMissionSuperset);
+  }
     const numOfTargets = this.thisRoom.getClientNumOfTargets(
       this.thisRoom.teamLeader,
     );
@@ -51,14 +64,13 @@ class PickingTeam implements IPhase {
       this.thisRoom.votes = [];
       this.thisRoom.publicVotes = [];
 
-      const num =
-        NUM_PLAYERS_ON_MISSION[
-          this.thisRoom.playersInGame.length - MIN_PLAYERS
-        ][this.thisRoom.missionNum - 1];
+      const num = this.getNumberOfPlayersToBePickedAfterAdjustingForSinadMode()
+
+        
       // console.log("Num player for this.thisRoom mission : " + num);
 
       // Check that the data is valid (i.e. includes only usernames of players)
-      /*
+      
       for (let i = 0; i < num; i++) {
         // If the data doesn't have the right number of users
         // Or has an empty element
@@ -73,7 +85,7 @@ class PickingTeam implements IPhase {
           return;
         }
       }
-      */// ignoring this check for now
+      // ignoring this check for now (not anymore! this comment is useless now)
 
       // Continue if it passes the above check
       this.thisRoom.proposedTeam = selectedPlayers;
@@ -143,36 +155,9 @@ class PickingTeam implements IPhase {
 
   
   numOfTargets(indexOfPlayer: number): number {
-    let num =
-      NUM_PLAYERS_ON_MISSION[this.thisRoom.playersInGame.length - MIN_PLAYERS][
-        this.thisRoom.missionNum - 1
-      ];
+    const num = this.getNumberOfPlayersToBePickedAfterAdjustingForSinadMode()
       
-    if(this.thisRoom.gameMode===GameMode.SINAD)
-      {
-          
-          if (this.thisRoom.missionHistory[0] === 'succeeded'
-            &&
-            this.thisRoom.missionHistory[1] === 'succeeded'
-            &&
-            this.thisRoom.missionHistory[2]
-           
-          )//failed
-          {  
-            this.thisRoom.sendText(
-              'The mission sizes of m4 and m5 have swapped!',
-              'gameplay-text',
-            );
-            if(!this.thisRoom.missionHistory[3])
-            {
-              num=4;
-            }
-            else if (!this.thisRoom.missionHistory[4])
-              {
-                num =3;
-              }
-          }
-      }
+    
     
 
     // If we are not the team leader
@@ -188,10 +173,8 @@ class PickingTeam implements IPhase {
       indexOfPlayer !== undefined &&
       indexOfPlayer === this.thisRoom.teamLeader
     ) {
-      const num =
-        NUM_PLAYERS_ON_MISSION[
-          this.thisRoom.playersInGame.length - MIN_PLAYERS
-        ][this.thisRoom.missionNum - 1];
+      const num = this.getNumberOfPlayersToBePickedAfterAdjustingForSinadMode()
+
 
       return `Your turn to pick a team. Pick ${num} players.`;
     }
@@ -209,6 +192,26 @@ class PickingTeam implements IPhase {
   getProhibitedIndexesToPick(indexOfPlayer: number): number[] {
     return [];
   }
+  //Adjust the numberOfPlayers to be picked on a team if we're in SINAD mode.
+getNumberOfPlayersToBePickedAfterAdjustingForSinadMode(){
+  if(this.thisRoom.sinadMissionSwitch)
+    {
+          
+          if(!this.thisRoom.missionHistory[3]) //if m4 is going on
+          {
+            return 4;
+          }
+          else if (!this.thisRoom.missionHistory[4]) //if m5 is going on
+            {
+              return 3;
+            }
+        
+    }
+  else return NUM_PLAYERS_ON_MISSION[
+      this.thisRoom.playersInGame.length - MIN_PLAYERS
+    ][this.thisRoom.missionNum - 1];
+  }
 }
+
 
 export default PickingTeam;
