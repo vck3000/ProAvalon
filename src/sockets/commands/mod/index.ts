@@ -17,7 +17,7 @@ import { miplinkedaccs } from './miplinkedaccs';
 import { mtogglepause } from './mtogglepause';
 import { mrevealallroles } from './mrevealallroles';
 import { mforcemove } from './mforcemove';
-import { msetavatarlibrary } from './msetavatarlibrary';
+import { mpushavatartolibrary } from './mpushavatartolibrary';
 import { msetavatars } from './msetavatars';
 
 export const modCommands: Commands = {
@@ -33,7 +33,7 @@ export const modCommands: Commands = {
   [mwhisper.command]: mwhisper,
   [msetavatars.command]: msetavatars,
   [mremoveavatars.command]: mremoveavatars,
-  [msetavatarlibrary.command]: msetavatarlibrary,
+  [mpushavatartolibrary.command]: mpushavatartolibrary,
   [mclose.command]: mclose,
   [mannounce.command]: mannounce,
   [mkill.command]: mkill,
