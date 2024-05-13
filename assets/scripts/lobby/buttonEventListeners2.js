@@ -224,6 +224,8 @@ $('#createNewRoomButton').on('click', (data) => {
     resetAllGameData();
     inRoom = true;
   }
+
+  $('#newRoomModal').modal('hide');
 });
 
 let joined = false;
