@@ -1,3 +1,6 @@
+import User from '../models/user';
+import { IUser } from '../gameplay/types';
+
 enum FolderName {
   APPROVED = 'approved_avatars',
   PENDING = 'pending_avatars',
@@ -172,5 +175,35 @@ export class S3Agent {
       })
       .filter((approvedAvatarId) => !isNaN(approvedAvatarId))
       .sort((a, b) => a - b);
+  }
+
+  public async updateUsersAvatarLibrary(usernameLower: string) {
+    const placeholderMaxValue = 0;
+
+    const user = await User.findOne({ usernameLower });
+    // TODO-kev: Check their Patreon status. See if eligible for library. Also update rest of below function
+
+    const approvedAvatarIds = await this.getApprovedAvatarIdsForUser(
+      usernameLower,
+    );
+
+    if (user.avatarLibrary.length <= placeholderMaxValue) {
+      if (approvedAvatarIds.length <= placeholderMaxValue) {
+        user.avatarLibrary.push(...approvedAvatarIds);
+      } else {
+        for (let i = 0; i < placeholderMaxValue; i++) {
+          user.avatarLibrary.push(
+            approvedAvatarIds[
+              approvedAvatarIds.length - placeholderMaxValue + i
+            ],
+          );
+        }
+      }
+    } else {
+      user.avatarLibrary.splice(0, placeholderMaxValue);
+    }
+
+    user.markModified('avatarLibrary');
+    await user.save();
   }
 }
