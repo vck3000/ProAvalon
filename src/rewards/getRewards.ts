@@ -20,7 +20,7 @@ export async function getAllPatreonRewardsForUser(
 
   const patreonAgent = new PatreonAgent(new PatreonController());
 
-  const patronDetails = await patreonAgent.getExistingPatronDetails(
+  const patronDetails = await patreonAgent.findOrUpdateExistingPatronDetails(
     usernameLower,
   );
 

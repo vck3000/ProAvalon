@@ -274,7 +274,9 @@ describe('PatreonAgent', () => {
 
     it('Returns null if no PatreonRecord in database', async () => {
       mockGetPatreonRecordFromUsername.mockResolvedValueOnce(null);
-      const result = await patreonAgent.getExistingPatronDetails('usernamelow');
+      const result = await patreonAgent.findOrUpdateExistingPatronDetails(
+        'usernamelow',
+      );
 
       expect(result).toEqual(null);
       expect(mockGetPatreonRecordFromUsername).toHaveBeenCalledWith(
@@ -293,7 +295,9 @@ describe('PatreonAgent', () => {
         currentPledgeExpiryDate: NOT_EXPIRED_DATE,
       });
 
-      const result = await patreonAgent.getExistingPatronDetails('usernamelow');
+      const result = await patreonAgent.findOrUpdateExistingPatronDetails(
+        'usernamelow',
+      );
       expect(result).toStrictEqual({
         patreonUserId: '123456789',
         isPledgeActive: true,
@@ -331,7 +335,9 @@ describe('PatreonAgent', () => {
         currentPledgeExpiryDate: NOT_EXPIRED_DATE,
       });
 
-      const result = await patreonAgent.getExistingPatronDetails('usernamelow');
+      const result = await patreonAgent.findOrUpdateExistingPatronDetails(
+        'usernamelow',
+      );
       expect(result).toStrictEqual({
         patreonUserId: '123456789',
         isPledgeActive: true,
@@ -376,7 +382,9 @@ describe('PatreonAgent', () => {
         currentPledgeExpiryDate: null,
       });
 
-      const result = await patreonAgent.getExistingPatronDetails('usernamelow');
+      const result = await patreonAgent.findOrUpdateExistingPatronDetails(
+        'usernamelow',
+      );
       expect(result).toStrictEqual({
         patreonUserId: '123456789',
         isPledgeActive: false,

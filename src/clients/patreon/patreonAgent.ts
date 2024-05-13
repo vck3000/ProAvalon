@@ -45,7 +45,7 @@ export class PatreonAgent {
     return this.patreonController.getLoginUrl();
   }
 
-  public async getExistingPatronDetails(
+  public async findOrUpdateExistingPatronDetails(
     usernameLower: string,
   ): Promise<PatronDetails> {
     // This function is to check for features in general on load
