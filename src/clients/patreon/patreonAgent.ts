@@ -96,11 +96,12 @@ export class PatreonAgent {
         };
       } else {
         // Delete record if not paid
+        const patreonUserId = patreonRecord.patreonUserId;
         await patreonRecord.deleteOne();
 
         // isPledgeActive is set to false for previously active accounts that have now expired
         return {
-          patreonUserId: paidPatronFullDetails.patreonUserId,
+          patreonUserId,
           isPledgeActive: false,
           amountCents: 0,
         };
