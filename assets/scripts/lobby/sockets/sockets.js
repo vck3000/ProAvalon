@@ -687,6 +687,7 @@ socket.on('update-room-info', (data) => {
   }
 });
 
+let gameModesLoaded = false;
 // Update the new room menu with the gameModes available.
 socket.on('gameModes', (GAME_MODE_NAMES) => {
   // <option value="avalon">Avalon</option>
@@ -703,6 +704,8 @@ socket.on('gameModes', (GAME_MODE_NAMES) => {
 
   $('.gameModeSelect')[0].innerHTML = str;
   $('.gameModeSelect')[1].innerHTML = str;
+
+  gameModesLoaded = true;
 });
 
 // Update the role and card settings inside the room (cog).

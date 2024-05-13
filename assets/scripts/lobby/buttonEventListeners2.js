@@ -197,12 +197,8 @@ $('#newRoom').on('click', (data) => {
   $('.gun').addClass('gunBefore');
 });
 
-let gameModeLoaded = false;
-
 $('#createNewRoomButton').on('click', (data) => {
-  // Disable button until game mode is dynamically loaded
-  gameModeLoaded = Boolean($($('.gameModeSelect')[1]).val());
-  if (!gameModeLoaded) {
+  if (!gameModesLoaded) {
     return;
   }
 
