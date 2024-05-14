@@ -4,14 +4,15 @@ import sanitizeHtml from 'sanitize-html';
 import url from 'url';
 import { checkProfileOwnership, isModMiddleware } from './middleware';
 import User from '../models/user';
-import PatreonId from '../models/patreonId';
 import avatarRequest from '../models/avatarRequest';
 import ModLog from '../models/modLog';
 import { createNotification } from '../myFunctions/createNotification';
 import multer from 'multer';
 import imageSize from 'image-size';
-import { S3Agent } from '../s3/S3Agent';
-import S3Controller from '../s3/S3Controller';
+import S3Controller from '../clients/s3/S3Controller';
+import { S3Agent } from '../clients/s3/S3Agent';
+import { PatreonAgent } from '../clients/patreon/patreonAgent';
+import { PatreonController } from '../clients/patreon/patreonController';
 
 const s3Controller = new S3Controller();
 const s3Agent = new S3Agent(s3Controller);
@@ -466,37 +467,26 @@ const loginUrl = url.format({
 });
 
 // show the edit page
-router.get('/:profileUsername/edit', checkProfileOwnership, (req, res) => {
-  User.findOne(
-    { usernameLower: req.params.profileUsername.toLowerCase() },
-    (err, foundUser) => {
-      if (err) {
-        console.log(err);
-      } else if (foundUser.patreonId) {
-        PatreonId.findOne({ id: foundUser.patreonId })
-          .exec()
-          .then((patreonIdObj) => {
-            res.render('profile/edit', {
-              userData: foundUser,
-              patreonLoginUrl: loginUrl,
-              patreonId: patreonIdObj,
-            });
-          })
-          .catch((err) => {
-            res.render('profile/edit', {
-              userData: foundUser,
-              patreonLoginUrl: loginUrl,
-            });
-          });
-      } else {
-        res.render('profile/edit', {
-          userData: foundUser,
-          patreonLoginUrl: loginUrl,
-        });
-      }
-    },
-  );
-});
+router.get(
+  '/:profileUsername/edit',
+  checkProfileOwnership,
+  async (req, res) => {
+    const patreonAgent = new PatreonAgent(new PatreonController());
+
+    const patronDetails = await patreonAgent.findOrUpdateExistingPatronDetails(
+      req.params.profileUsername.toLowerCase(),
+    );
+
+    const userData = await User.findOne({
+      usernameLower: req.params.profileUsername.toLowerCase(),
+    });
+
+    return res.render('profile/edit', {
+      userData,
+      patronDetails,
+    });
+  },
+);
 
 // update a biography
 router.post('/:profileUsername', checkProfileOwnership, (req, res) => {

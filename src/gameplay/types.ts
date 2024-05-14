@@ -64,9 +64,9 @@ export interface IUser {
   biography?: string;
   roleStats?: Record<string, unknown>;
   notifications?: Types.ObjectId;
+  expiredPatreonNotification?: boolean;
   modAction?: Types.ObjectId;
   mutedPlayers?: string[];
-  patreonId?: string;
   IPAddresses?: string[];
   lastIPAddress?: string;
   matchmakingBlacklist?: string[];
