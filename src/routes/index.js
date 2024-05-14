@@ -170,11 +170,7 @@ router.get('/loginSuccess', async (req, res) => {
 
   await req.user.save();
 
-  res.redirect(
-    `/lobby${
-      req.user.expiredPatreonNotification ? '?patreonExpired=true' : ''
-    }`,
-  );
+  res.redirect('/lobby');
 });
 
 router.get('/loginFail', (req, res) => {

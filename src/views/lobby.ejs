@@ -1261,13 +1261,10 @@
 
 <script>
   $(document).ready(function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('patreonExpired')) {
+    if ('<%= patreonExpired %>' === 'true') {
       Swal.fire({
         type: 'warning',
         title: 'Your Patreon subscription has ended. Thank you for your support.'
-      }).then(() => {
-        window.location.href = window.location.pathname;
       })
     }
   });
