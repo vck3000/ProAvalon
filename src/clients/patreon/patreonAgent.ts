@@ -71,11 +71,7 @@ export class PatreonAgent {
       // Check with Patreon if user has renewed
       if (this.hasExpired(patreonRecord.userAccessTokenExpiry)) {
         // Get updated tokens if token expired
-        const patreonUserTokens =
-          await this.patreonController.refreshPatreonUserTokens(
-            patreonRecord.userRefreshToken,
-          );
-        await this.updateUserTokens(patreonRecord, patreonUserTokens);
+        await this.refreshPatreonUserTokens(patreonRecord);
       }
 
       const paidPatronFullDetails =
@@ -99,7 +95,6 @@ export class PatreonAgent {
         const patreonUserId = patreonRecord.patreonUserId;
         await patreonRecord.deleteOne();
 
-        // isPledgeActive is set to false for previously active accounts that have now expired
         return {
           patreonUserId,
           isPledgeActive: false,
@@ -244,6 +239,18 @@ export class PatreonAgent {
     patreonRecord: any,
     tokens: PatreonUserTokens,
   ) {
+    patreonRecord.userAccessToken = tokens.userAccessToken;
+    patreonRecord.userAccessTokenExpiry = tokens.userAccessTokenExpiry;
+    patreonRecord.userRefreshToken = tokens.userRefreshToken;
+
+    await patreonRecord.save();
+  }
+
+  private async refreshPatreonUserTokens(patreonRecord: any) {
+    const tokens = await this.patreonController.refreshPatreonUserTokens(
+      patreonRecord.userRefreshToken,
+    );
+
     patreonRecord.userAccessToken = tokens.userAccessToken;
     patreonRecord.userAccessTokenExpiry = tokens.userAccessTokenExpiry;
     patreonRecord.userRefreshToken = tokens.userRefreshToken;

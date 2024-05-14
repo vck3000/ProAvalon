@@ -7,6 +7,8 @@ interface DatabaseAdapter {
 
 export class MongoUserAdapter implements DatabaseAdapter {
   async getUser(username: string): Promise<IUser> {
-    return await User.findOne({ usernameLower: username.toLowerCase() }) as IUser;
+    return (await User.findOne({
+      usernameLower: username.toLowerCase(),
+    })) as IUser;
   }
 }
