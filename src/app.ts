@@ -2,7 +2,7 @@
 import './env.js';
 import './config';
 import 'log-timestamp';
-import { sendToDiscordAdmins } from './discord';
+import { sendToDiscordAdmins } from './clients/discord';
 import assert from 'assert';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';

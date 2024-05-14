@@ -18,6 +18,8 @@ import { resRoles, rolesToAlliances, spyRoles } from '../gameplay/roles/roles';
 import { sendResetPassword } from '../myFunctions/sendResetPassword';
 import uuid from 'uuid';
 import { captchaMiddleware } from '../util/captcha';
+import { PatreonAgent } from '../clients/patreon/patreonAgent';
+import { PatreonController } from '../clients/patreon/patreonController';
 
 const router = new Router();
 

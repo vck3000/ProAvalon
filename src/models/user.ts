@@ -126,6 +126,8 @@ const UserSchema = new mongoose.Schema<IUser>({
     },
   ],
 
+  expiredPatreonNotification: Boolean,
+
   modAction: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -134,8 +136,6 @@ const UserSchema = new mongoose.Schema<IUser>({
   ],
 
   mutedPlayers: [String],
-
-  patreonId: String,
 
   IPAddresses: [String],
   lastIPAddress: String,
