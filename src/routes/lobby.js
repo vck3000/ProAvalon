@@ -4,7 +4,7 @@ import { renderToString } from 'react-dom/server';
 
 import Report from '../views/components/report';
 import ReadyPrompt from '../views/components/readyPrompt';
-import Matchmaking from '../views/components/matchmaking';
+import Matchmaking from '../views/components/matchmakingUi';
 
 const router = new Router();
 

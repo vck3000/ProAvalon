@@ -3,7 +3,7 @@ import { Socket } from 'socket.io';
 
 let socket: Socket = undefined;
 
-export function MatchmakingButton() {
+export function MatchmakingUi() {
   const [joined, setJoined] = useState(false);
   const [queueButtonText, setQueueButtonText] = useState('Join Queue');
   const [numPlayersInQueue, setNumPlayersInQueue] = useState(0);

@@ -1,9 +1,9 @@
 import React from 'react';
 import { hot } from 'react-hot-loader/root';
-import { MatchmakingButton } from './matchmakingButton';
+import { MatchmakingUi } from './matchmakingUi';
 
 function Matchmaking() {
-  return <MatchmakingButton />;
+  return <MatchmakingUi />;
 }
 
 export default hot(Matchmaking);
