@@ -23,4 +23,20 @@ const constants = {
   tier4: Role.Merlin,
 } as const;
 
+export function getNumAvatarsForPatreonTier(cents: number): number {
+  if (cents === 0) {
+    return 1;
+  } else if (cents <= constants.tier1_donation) {
+    return 2;
+  } else if (cents <= constants.tier2_donation) {
+    return 3;
+  } else if (cents <= constants.tier3_donation) {
+    return 5;
+  } else if (cents <= constants.tier4_donation) {
+    return 10;
+  } else {
+    return 10;
+  }
+}
+
 export default constants;

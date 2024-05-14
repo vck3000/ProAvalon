@@ -1,6 +1,5 @@
 import getPatreonDetails from './getPatreonDetails';
 import { Rewards, RewardType } from './indexRewards';
-
 import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
