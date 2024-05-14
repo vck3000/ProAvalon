@@ -10,10 +10,7 @@ export const mpushavatartolibrary: Command = {
   help: "/mpushavatartolibrary <player name> <avatar id>: Add an approved avatar ID to a user's avatar library. It will remove the oldest avatar if the max avatar library size has been exceeded.",
   async run(args: string[], senderSocket: SocketUser) {
     if (args.length !== 3) {
-      sendReplyToCommand(
-        senderSocket,
-        'Please specify <username> <avatar id>. Example: /mpushavatartolibrary asdf 1',
-      );
+      sendReplyToCommand(senderSocket, 'Please specify <username> <avatar id>');
       return;
     }
 
@@ -44,10 +41,11 @@ export const mpushavatartolibrary: Command = {
 
     user.avatarLibrary.push(toBeAddedAvatarId);
     // TODO-kev: Add a check for max library size here. If greater than max, remove oldest approved avatar
-    // Ideally will not be a cyclic nature. Consider mreplaceavatar
-    // if (user.avatarLibrary.length > MAX) {
-    //   user.avatarLibrary.shift();
-    // }
+    // Temporarily set to 10
+    const MAX_SIZE = 10;
+    if (user.avatarLibrary.length > MAX_SIZE) {
+      user.avatarLibrary.shift();
+    }
     user.markModified('avatarLibrary');
     await user.save();
 
