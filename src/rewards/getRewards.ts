@@ -12,6 +12,7 @@ import { isDev } from '../modsadmins/developers';
 import { PatreonAgent } from '../clients/patreon/patreonAgent';
 import { IUser } from '../gameplay/types';
 import { PatreonController } from '../clients/patreon/patreonController';
+import constants from './constants';
 
 export async function getAllPatreonRewardsForUser(
   usernameLower: string,
@@ -38,7 +39,7 @@ export async function getAllPatreonRewardsForUser(
   return rewardsSatisfied;
 }
 
-async function getAllRewardsForUser(user: IUser): Promise<RewardType[]> {
+export async function getAllRewardsForUser(user: IUser): Promise<RewardType[]> {
   const rewardsSatisfied: RewardType[] = [];
   const patreonRewards = await getAllPatreonRewardsForUser(
     user.username.toLowerCase(),
@@ -60,7 +61,7 @@ async function getAllRewardsForUser(user: IUser): Promise<RewardType[]> {
   return rewardsSatisfied;
 }
 
-async function userHasReward(
+export async function userHasReward(
   user: IUser,
   rewardType: RewardType,
 ): Promise<boolean> {
@@ -91,4 +92,18 @@ async function userHasReward(
   return true;
 }
 
-export { userHasReward, getAllRewardsForUser };
+export function getNumAvatarsForPatreonTier(cents: number): number {
+  if (cents === 0) {
+    return 1;
+  } else if (cents <= constants.tier1_donation) {
+    return 2;
+  } else if (cents <= constants.tier2_donation) {
+    return 3;
+  } else if (cents <= constants.tier3_donation) {
+    return 5;
+  } else if (cents <= constants.tier4_donation) {
+    return 10;
+  } else {
+    return 10;
+  }
+}

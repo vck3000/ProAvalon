@@ -1,5 +1,4 @@
-import User from '../models/user';
-import { IUser } from '../gameplay/types';
+import User from '../../models/user';
 
 enum FolderName {
   APPROVED = 'approved_avatars',
