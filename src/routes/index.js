@@ -170,18 +170,7 @@ router.get('/loginSuccess', async (req, res) => {
 
   await req.user.save();
 
-  // TODO-kev: Consider alternative areas to put check
-  // Update Patreon status
-  const patreonAgent = new PatreonAgent(new PatreonController());
-  const patronDetails = await patreonAgent.findOrUpdateExistingPatronDetails(
-    req.user.usernameLower,
-  );
-
-  if (patronDetails && !patronDetails.isPledgeActive) {
-    res.redirect('/lobby?patreonExpired=true');
-  } else {
-    res.redirect('/lobby');
-  }
+  res.redirect('/lobby');
 });
 
 router.get('/loginFail', (req, res) => {

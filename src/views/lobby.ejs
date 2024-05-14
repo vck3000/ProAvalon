@@ -1259,21 +1259,6 @@
   </div>
 </div>
 
-<script>
-  $(document).ready(function() {
-    const urlParams = new URLSearchParams(window.location.search);
-
-    if (urlParams.get('patreonExpired')) {
-      Swal.fire({
-        type: 'warning',
-        title: 'Your Patreon subscription has ended. Thank you for your support.'
-      }).then(() => {
-        window.location.href = window.location.pathname;
-      })
-    }
-  });
-</script>
-
 <script
   src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js"
   integrity="sha384-FzT3vTVGXqf7wRfy8k4BiyzvbNfeYjK+frTVqZeNDFl8woCbF0CYG6g2fMEFFo/i"

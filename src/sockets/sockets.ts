@@ -991,13 +991,6 @@ export const server = function (io: SocketServer): void {
         socket.emit('TOCommands', TOCommands);
       }
 
-      // TODO-kev: Should the below be here or outside the timeout function
-      // Update Patreon status
-      const patreonAgent = new PatreonAgent(new PatreonController());
-      patreonAgent.findOrUpdateExistingPatronDetails(
-        socket.request.user.usernameLower,
-      );
-
       socket.emit('checkSettingsResetDate', dateResetRequired);
       socket.emit('checkNewPlayerShowIntro', '');
       // Pass in the gameModes for the new room menu.
