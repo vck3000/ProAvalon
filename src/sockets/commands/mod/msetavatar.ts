@@ -3,9 +3,9 @@ import { sendReplyToCommand } from '../../sockets';
 import { SocketUser } from '../../types';
 import User from '../../../models/user';
 
-export const msetavatars: Command = {
-  command: 'msetavatars',
-  help: "/msetavatars <player name> <avatar resLink> <avatar spyLink>: Set a <player name>'s resistance and spy avatars.",
+export const msetavatar: Command = {
+  command: 'msetavatar',
+  help: "/msetavatar <player name> <avatar resLink> <avatar spyLink>: Set a <player name>'s resistance and spy avatars.",
   async run(args: string[], senderSocket: SocketUser) {
     if (args.length !== 4) {
       sendReplyToCommand(

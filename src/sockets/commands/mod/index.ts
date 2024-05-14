@@ -9,7 +9,7 @@ import { mnotify } from './mnotify';
 import { mtoggleregistration } from './mtoggleregistration';
 import { mtempenableregistration } from './mtempenableregistration';
 import { mwhisper } from './mwhisper';
-import { mremoveavatars } from './mremoveavatars';
+import { mremoveavatar } from './mremoveavatar';
 import { mclose } from './mclose';
 import { mannounce } from './mannounce';
 import { mkill } from './mkill';
@@ -18,7 +18,7 @@ import { mtogglepause } from './mtogglepause';
 import { mrevealallroles } from './mrevealallroles';
 import { mforcemove } from './mforcemove';
 import { mpushavatartolibrary } from './mpushavatartolibrary';
-import { msetavatars } from './msetavatars';
+import { msetavatar } from './msetavatar';
 
 export const modCommands: Commands = {
   [m.command]: m,
@@ -31,8 +31,8 @@ export const modCommands: Commands = {
   [mtoggleregistration.command]: mtoggleregistration,
   [mtempenableregistration.command]: mtempenableregistration,
   [mwhisper.command]: mwhisper,
-  [msetavatars.command]: msetavatars,
-  [mremoveavatars.command]: mremoveavatars,
+  [msetavatar.command]: msetavatar,
+  [mremoveavatar.command]: mremoveavatar,
   [mpushavatartolibrary.command]: mpushavatartolibrary,
   [mclose.command]: mclose,
   [mannounce.command]: mannounce,

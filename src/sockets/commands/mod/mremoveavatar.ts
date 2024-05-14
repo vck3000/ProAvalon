@@ -1,9 +1,9 @@
 import { Command } from '../types';
 import User from '../../../models/user';
 
-export const mremoveavatars: Command = {
-  command: 'mremoveavatars',
-  help: "/mremoveavatars <player name>: Remove <player name>'s avatars.",
+export const mremoveavatar: Command = {
+  command: 'mremoveavatar',
+  help: "/mremoveavatar <player name>: Remove <player name>'s avatars.",
   async run(args, senderSocket) {
     if (!args[1]) {
       senderSocket.emit('messageCommandReturnStr', {
