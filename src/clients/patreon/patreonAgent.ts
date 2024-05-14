@@ -1,4 +1,5 @@
 import patreonRecord from '../../models/patreonRecord';
+import User from '../../models/user';
 
 export interface PatreonUserTokens {
   userAccessToken: string;
@@ -94,6 +95,10 @@ export class PatreonAgent {
         // Delete record if not paid
         const patreonUserId = patreonRecord.patreonUserId;
         await patreonRecord.deleteOne();
+
+        const user = await User.findOne({ usernameLower });
+        user.expiredPatreonNotification = true;
+        await user.save();
 
         return {
           patreonUserId,

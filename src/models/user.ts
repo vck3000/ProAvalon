@@ -125,6 +125,8 @@ const UserSchema = new mongoose.Schema<IUser>({
     },
   ],
 
+  expiredPatreonNotification: Boolean,
+
   modAction: [
     {
       type: mongoose.Schema.Types.ObjectId,

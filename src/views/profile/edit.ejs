@@ -375,19 +375,16 @@
 
         if (success) {
             showMessageAndReload(success, 'success');
-        }
-
-        if (error) {
+        } else if (error) {
             showMessageAndReload(error, 'error');
-        }
-
-        const patronDetails = '<%= patronDetails %>';
-
-        if (patronDetails && !patronDetails.isPledgeActive) {
-            Swal.fire({
-                type: 'warning',
-                title: 'Your Patreon subscription has ended. Thank you for your support.'
-            })
+        } else {
+            const expired = '<%= patronDetails && !patronDetails.isPledgeActive %>';
+            if (expired === 'true') {
+                Swal.fire({
+                    type: 'warning',
+                    title: 'Your Patreon subscription has ended. Thank you for your support.'
+                });
+            }
         }
     });
 

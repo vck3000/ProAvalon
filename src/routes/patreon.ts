@@ -56,21 +56,18 @@ router.get('/oauth/redirect', async (req, res) => {
   } catch (e) {
     if (e instanceof NotPaidPatronError) {
       return res.redirect(
-        // @ts-ignore
         `${postPatreonRedirectUrl}?error=You are not a paid member on Patreon.`,
       );
     }
 
     if (e instanceof MultipleUsersForPatreonError) {
       return res.redirect(
-        // @ts-ignore
         `${postPatreonRedirectUrl}?error=This Patreon account is already linked to another user.`,
       );
     }
 
     if (e instanceof MultiplePatreonsForUserError) {
       return res.redirect(
-        // @ts-ignore
         `${postPatreonRedirectUrl}?error=You already have a linked Patreon account.`,
       );
     }

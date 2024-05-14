@@ -4,7 +4,6 @@ import sanitizeHtml from 'sanitize-html';
 import url from 'url';
 import { checkProfileOwnership, isModMiddleware } from './middleware';
 import User from '../models/user';
-import PatreonId from '../models/patreonRecord';
 import avatarRequest from '../models/avatarRequest';
 import ModLog from '../models/modLog';
 import { createNotification } from '../myFunctions/createNotification';
@@ -12,7 +11,7 @@ import multer from 'multer';
 import imageSize from 'image-size';
 import S3Controller from '../clients/s3/S3Controller';
 import { S3Agent } from '../clients/s3/S3Agent';
-import { PatreonAgent, patreonAgent } from '../clients/patreon/patreonAgent';
+import { PatreonAgent } from '../clients/patreon/patreonAgent';
 import { PatreonController } from '../clients/patreon/patreonController';
 
 const s3Controller = new S3Controller();
