@@ -2,8 +2,8 @@ import { Command } from '../types';
 import { sendReplyToCommand } from '../../sockets';
 import { SocketUser } from '../../types';
 import User from '../../../models/user';
-import { S3Agent } from '../../../s3/S3Agent';
-import S3Controller from '../../../s3/S3Controller';
+import { S3Agent } from '../../../clients/s3/S3Agent';
+import S3Controller from '../../../clients/s3/S3Controller';
 
 export const mpushavatartolibrary: Command = {
   command: 'mpushavatartolibrary',
