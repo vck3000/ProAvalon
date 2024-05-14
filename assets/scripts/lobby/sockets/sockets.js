@@ -318,7 +318,7 @@ socket.on('gameEnded', (data) => {
     displayNotification(
       'Game has ended!',
       '',
-      'avatars/base-spy.png',
+      'avatars/base-spy-128x128.png',
       'gameEnded'
     );
   }
@@ -531,7 +531,7 @@ socket.on('update-room-players', (data) => {
         `New player in game!  [${roomPlayersData.length}p]`,
         `${roomPlayersData[roomPlayersData.length - 1].username
         } has joined the game!`,
-        'avatars/base-res.png',
+        'avatars/base-res-128x128.png',
         'newPlayerInGame'
       );
     }
@@ -619,7 +619,7 @@ socket.on('update-room-spectators', (spectatorUsernames) => {
       displayNotification(
         'New player in room.',
         `${spectatorUsernames[newUsernameIndex]} has joined the room.`,
-        'avatars/base-res.png',
+        'avatars/base-res-128x128.png',
         'newPlayerInRoom'
       );
     }
