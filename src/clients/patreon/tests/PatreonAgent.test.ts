@@ -322,6 +322,11 @@ describe('PatreonAgent', () => {
         'refreshPatreonUserTokens',
       );
 
+      const mockSetExpiredPatreonNotification = jest.spyOn(
+        patreonAgent as any,
+        'setExpiredPatreonNotification',
+      );
+
       const mockPatreonRecord = {
         patreonUserId: '123456789',
         proavalonUsernameLower: 'usernamelower',
@@ -347,6 +352,7 @@ describe('PatreonAgent', () => {
       mockPatreonController.getPaidPatronFullDetails.mockResolvedValueOnce(
         null,
       );
+      mockSetExpiredPatreonNotification.mockResolvedValueOnce(null);
 
       const result = await patreonAgent.findOrUpdateExistingPatronDetails(
         'usernamelower',
@@ -374,6 +380,10 @@ describe('PatreonAgent', () => {
       ).toHaveBeenCalledWith('newAccessToken');
 
       expect(mockPatreonRecord.deleteOne).toHaveBeenCalled();
+
+      expect(mockSetExpiredPatreonNotification).toHaveBeenCalledWith(
+        'usernamelower',
+      );
     });
   });
 });

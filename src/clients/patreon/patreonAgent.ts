@@ -95,10 +95,7 @@ export class PatreonAgent {
         // Delete record if not paid
         const patreonUserId = patreonRecord.patreonUserId;
         await patreonRecord.deleteOne();
-
-        const user = await User.findOne({ usernameLower });
-        user.expiredPatreonNotification = true;
-        await user.save();
+        await this.setExpiredPatreonNotification(usernameLower);
 
         return {
           patreonUserId,
@@ -261,5 +258,11 @@ export class PatreonAgent {
     patreonRecord.userRefreshToken = tokens.userRefreshToken;
 
     await patreonRecord.save();
+  }
+
+  private async setExpiredPatreonNotification(usernameLower: string) {
+    const user = await User.findOne({ usernameLower });
+    user.expiredPatreonNotification = true;
+    await user.save();
   }
 }
