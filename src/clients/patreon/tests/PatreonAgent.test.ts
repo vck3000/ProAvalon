@@ -7,7 +7,6 @@ import {
   PaidPatronFullDetails,
   NotPaidPatronError,
 } from '../patreonAgent';
-import mock = jest.mock;
 
 const EXPIRED_DATE = new Date(new Date().getTime() - 60 * 60 * 1000); // 1 hour prior
 const NOT_EXPIRED_DATE = new Date(new Date().getTime() + 60 * 60 * 1000); // 1 hour after
@@ -38,7 +37,7 @@ describe('PatreonAgent', () => {
 
   describe('Links user to Patreon', () => {
     const patreonUserTokens: PatreonUserTokens = {
-      userAccessToken: 'accessAbc',
+      userAccessToken: 'access123',
       userRefreshToken: 'refresh456',
       userAccessTokenExpiry: NOT_EXPIRED_DATE,
     };
@@ -89,8 +88,8 @@ describe('PatreonAgent', () => {
       });
 
       const result = await patreonAgent.linkUserToPatreon(
-        'usernamelow',
-        'codeAbc',
+        'usernamelower',
+        'access123',
       );
 
       expect(result).toStrictEqual({
@@ -100,15 +99,15 @@ describe('PatreonAgent', () => {
       });
 
       expect(mockPatreonController.getPatreonUserTokens).toHaveBeenCalledWith(
-        'codeAbc',
+        'access123',
       );
 
       expect(
         mockPatreonController.getPaidPatronFullDetails,
-      ).toHaveBeenCalledWith('accessAbc');
+      ).toHaveBeenCalledWith('access123');
 
       expect(mockGetPatreonRecordFromUsername).toHaveBeenCalledWith(
-        'usernamelow',
+        'usernamelower',
       );
 
       expect(mockGetPatreonRecordFromPatreonId).toHaveBeenCalledWith(
@@ -118,7 +117,7 @@ describe('PatreonAgent', () => {
       expect(mockUpdateCurrentPaidPatreonMember).toHaveBeenCalledWith(
         null,
         paidPatronFullDetails,
-        'usernamelow',
+        'usernamelower',
         patreonUserTokens,
       );
     });
@@ -132,16 +131,18 @@ describe('PatreonAgent', () => {
       );
 
       await expect(
-        patreonAgent.linkUserToPatreon('usernamelow', 'codeAbc'),
+        patreonAgent.linkUserToPatreon('usernamelower', 'access123'),
       ).rejects.toThrowError(NotPaidPatronError);
 
       expect(mockPatreonController.getPatreonUserTokens).toHaveBeenCalledWith(
-        'codeAbc',
+        'access123',
       );
 
       expect(
         mockPatreonController.getPaidPatronFullDetails,
-      ).toHaveBeenCalledWith('accessAbc');
+      ).toHaveBeenCalledWith('access123');
+
+      expect(mockUpdateCurrentPaidPatreonMember).not.toHaveBeenCalled();
     });
 
     it('Does not allow multiple Patreon accounts to be linked to a user', async () => {
@@ -153,28 +154,28 @@ describe('PatreonAgent', () => {
       );
       mockGetPatreonRecordFromUsername.mockResolvedValueOnce({
         patreonUserId: '987654321',
-        proavalonUsernameLower: 'usernamelow',
-        userAccessToken: 'String',
+        proavalonUsernameLower: 'usernamelower',
+        userAccessToken: 'access123',
         userAccessTokenExpiry: NOT_EXPIRED_DATE,
-        userRefreshToken: 'String',
+        userRefreshToken: 'refresh123',
         amountCents: 0,
         currentPledgeExpiryDate: NOT_EXPIRED_DATE,
       });
 
       await expect(
-        patreonAgent.linkUserToPatreon('usernamelow', 'codeAbc'),
+        patreonAgent.linkUserToPatreon('usernamelower', 'access123'),
       ).rejects.toThrowError(MultiplePatreonsForUserError);
 
       expect(mockPatreonController.getPatreonUserTokens).toHaveBeenCalledWith(
-        'codeAbc',
+        'access123',
       );
 
       expect(
         mockPatreonController.getPaidPatronFullDetails,
-      ).toHaveBeenCalledWith('accessAbc');
+      ).toHaveBeenCalledWith('access123');
 
       expect(mockGetPatreonRecordFromUsername).toHaveBeenCalledWith(
-        'usernamelow',
+        'usernamelower',
       );
     });
 
@@ -189,27 +190,27 @@ describe('PatreonAgent', () => {
       mockGetPatreonRecordFromPatreonId.mockResolvedValueOnce({
         patreonUserId: '123456789',
         proavalonUsernameLower: 'anotherUsername',
-        userAccessToken: 'accessABC',
+        userAccessToken: 'accessOther',
         userAccessTokenExpiry: NOT_EXPIRED_DATE,
-        userRefreshToken: 'refreshABC',
+        userRefreshToken: 'refreshOther',
         amountCents: 0,
         currentPledgeExpiryDate: NOT_EXPIRED_DATE,
       });
 
       await expect(
-        patreonAgent.linkUserToPatreon('usernamelow', 'codeAbc'),
+        patreonAgent.linkUserToPatreon('usernamelower', 'access123'),
       ).rejects.toThrowError(MultipleUsersForPatreonError);
 
       expect(mockPatreonController.getPatreonUserTokens).toHaveBeenCalledWith(
-        'codeAbc',
+        'access123',
       );
 
       expect(
         mockPatreonController.getPaidPatronFullDetails,
-      ).toHaveBeenCalledWith('accessAbc');
+      ).toHaveBeenCalledWith('access123');
 
       expect(mockGetPatreonRecordFromUsername).toHaveBeenCalledWith(
-        'usernamelow',
+        'usernamelower',
       );
 
       expect(mockGetPatreonRecordFromPatreonId).toHaveBeenCalledWith(
@@ -234,28 +235,28 @@ describe('PatreonAgent', () => {
     it('Returns null if no Patreon Record in database', async () => {
       mockGetPatreonRecordFromUsername.mockResolvedValueOnce(null);
       const result = await patreonAgent.findOrUpdateExistingPatronDetails(
-        'usernamelow',
+        'usernamelower',
       );
 
       expect(result).toEqual(null);
       expect(mockGetPatreonRecordFromUsername).toHaveBeenCalledWith(
-        'usernamelow',
+        'usernamelower',
       );
     });
 
     it('Gets active Patreon details from local database', async () => {
       mockGetPatreonRecordFromUsername.mockResolvedValueOnce({
         patreonUserId: '123456789',
-        proavalonUsernameLower: 'usernamelow',
-        userAccessToken: 'accessABC',
+        proavalonUsernameLower: 'usernamelower',
+        userAccessToken: 'access123',
         userAccessTokenExpiry: NOT_EXPIRED_DATE,
-        userRefreshToken: 'refreshABC',
+        userRefreshToken: 'refresh123',
         amountCents: 300,
         currentPledgeExpiryDate: NOT_EXPIRED_DATE,
       });
 
       const result = await patreonAgent.findOrUpdateExistingPatronDetails(
-        'usernamelow',
+        'usernamelower',
       );
       expect(result).toStrictEqual({
         patreonUserId: '123456789',
@@ -264,14 +265,14 @@ describe('PatreonAgent', () => {
       });
 
       expect(mockGetPatreonRecordFromUsername).toHaveBeenCalledWith(
-        'usernamelow',
+        'usernamelower',
       );
     });
 
     it('Retrieves an expired Patreon details and updates it if paid', async () => {
       const mockPatronRecord = {
         patreonUserId: '123456789',
-        proavalonUsernameLower: 'usernamelow',
+        proavalonUsernameLower: 'usernamelower',
         userAccessToken: 'oldAccessToken',
         userAccessTokenExpiry: EXPIRED_DATE,
         userRefreshToken: 'oldRefreshToken',
@@ -295,7 +296,7 @@ describe('PatreonAgent', () => {
       });
 
       const result = await patreonAgent.findOrUpdateExistingPatronDetails(
-        'usernamelow',
+        'usernamelower',
       );
       expect(result).toStrictEqual({
         patreonUserId: '123456789',
@@ -304,7 +305,7 @@ describe('PatreonAgent', () => {
       });
 
       expect(mockGetPatreonRecordFromUsername).toHaveBeenCalledWith(
-        'usernamelow',
+        'usernamelower',
       );
       expect(
         mockPatreonController.refreshPatreonUserTokens,
@@ -316,14 +317,14 @@ describe('PatreonAgent', () => {
     });
 
     it('Retrieves an expired Patreon details and deletes it if no longer paid', async () => {
-      const mockUpdateUserTokens = jest.spyOn(
+      const mockRefreshPatreonUserTokens = jest.spyOn(
         patreonAgent as any,
-        'updateUserTokens',
+        'refreshPatreonUserTokens',
       );
 
       const mockPatreonRecord = {
         patreonUserId: '123456789',
-        proavalonUsernameLower: 'usernamelow',
+        proavalonUsernameLower: 'usernamelower',
         userAccessToken: 'oldAccessToken',
         userAccessTokenExpiry: EXPIRED_DATE,
         userRefreshToken: 'oldRefreshToken',
@@ -348,7 +349,7 @@ describe('PatreonAgent', () => {
       );
 
       const result = await patreonAgent.findOrUpdateExistingPatronDetails(
-        'usernamelow',
+        'usernamelower',
       );
       expect(result).toStrictEqual({
         patreonUserId: '123456789',
@@ -357,16 +358,15 @@ describe('PatreonAgent', () => {
       });
 
       expect(mockGetPatreonRecordFromUsername).toHaveBeenCalledWith(
-        'usernamelow',
+        'usernamelower',
       );
 
       expect(
         mockPatreonController.refreshPatreonUserTokens,
       ).toHaveBeenCalledWith('oldRefreshToken');
 
-      expect(mockUpdateUserTokens).toHaveBeenCalledWith(
+      expect(mockRefreshPatreonUserTokens).toHaveBeenCalledWith(
         mockPatreonRecord,
-        mockNewUserTokens,
       );
 
       expect(
