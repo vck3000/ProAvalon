@@ -51,6 +51,14 @@ var getDatesString = function(time) {
 }
 %>
 
+<style>
+    .avatarImg {
+        width: 128px;
+        height: 128px;
+    }
+</style>
+
+
 
 <div class="container myContainer">
     <div class="row">
@@ -71,7 +79,7 @@ var getDatesString = function(time) {
                         <% if(userData.avatarImgRes){ %>
                             <img class="avatarImg" src=<%= userData.avatarImgRes %>>
                         <% } else{ %>
-                            <img class="avatarImg" src="../avatars/base-res.png  ">
+                            <img class="avatarImg" src="../avatars/base-res.svg">
                         <% } %>
 
                     </div>
@@ -235,7 +243,7 @@ var getDatesString = function(time) {
         if (userData.avatarImgSpy) {
           str = "<%= userData.avatarImgSpy %>";
         } else {
-          str = '../avatars/base-spy.png';
+          str = '../avatars/base-spy.svg';
         }
 
         $('.avatarImg').attr('src', str);
@@ -246,7 +254,7 @@ var getDatesString = function(time) {
         if (userData.avatarImgRes) {
             str = "<%= userData.avatarImgRes %>";
         } else {
-          str = '../avatars/base-res.png';
+          str = '../avatars/base-res.svg';
         }
 
         $('.avatarImg').attr('src', str);
