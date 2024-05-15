@@ -976,7 +976,7 @@ function strOfAvatar(playerData, alliance) {
     ) {
       picLink = playerData.avatarImgRes
     } else {
-      picLink = 'avatars/base-res-1024x1024.svg';
+      picLink = 'avatars/base-res.svg';
     }
   } else if (
     playerData.avatarImgSpy &&
@@ -985,7 +985,7 @@ function strOfAvatar(playerData, alliance) {
   ) {
     picLink = playerData.avatarImgSpy;
   } else {
-    picLink = 'avatars/base-spy-1024x1024.svg';
+    picLink = 'avatars/base-spy.svg';
   }
 
   // add in the role of the player, and the percy info
