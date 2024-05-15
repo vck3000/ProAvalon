@@ -1,4 +1,5 @@
 import User from '../../models/user';
+import { getAvatarLibrarySizeForUser } from '../../rewards/getRewards';
 
 enum FolderName {
   APPROVED = 'approved_avatars',
@@ -177,29 +178,29 @@ export class S3Agent {
   }
 
   public async updateUsersAvatarLibrary(usernameLower: string) {
-    const placeholderMaxValue = 0;
+    // TODO-kev: Decide if a user should press a button to call this or have it automatically called on page load
+    // Also consider if this function should be in this file or getRewards.ts
 
     const user = await User.findOne({ usernameLower });
-    // TODO-kev: Check their Patreon status. See if eligible for library. Also update rest of below function
-
+    const librarySize = await getAvatarLibrarySizeForUser(usernameLower);
     const approvedAvatarIds = await this.getApprovedAvatarIdsForUser(
       usernameLower,
     );
+    const approvedAvatarIdsNotInLibrary = approvedAvatarIds.filter(
+      (id) => !user.avatarLibrary.includes(id),
+    );
 
-    if (user.avatarLibrary.length <= placeholderMaxValue) {
-      if (approvedAvatarIds.length <= placeholderMaxValue) {
-        user.avatarLibrary.push(...approvedAvatarIds);
-      } else {
-        for (let i = 0; i < placeholderMaxValue; i++) {
-          user.avatarLibrary.push(
-            approvedAvatarIds[
-              approvedAvatarIds.length - placeholderMaxValue + i
-            ],
-          );
-        }
-      }
+    if (user.avatarLibrary.length <= librarySize) {
+      // Add approved avatars until librarySize is reached OR all approvedAvatarIds are added
+      const numAvatarsToAdd = Math.min(
+        approvedAvatarIdsNotInLibrary.length,
+        librarySize - user.avatarLibrary.length,
+      );
+
+      user.avatarLibrary.push(...approvedAvatarIds.slice(-numAvatarsToAdd));
     } else {
-      user.avatarLibrary.splice(0, placeholderMaxValue);
+      // Remove oldest avatars
+      user.avatarLibrary.splice(0, librarySize);
     }
 
     user.markModified('avatarLibrary');
