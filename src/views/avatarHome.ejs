@@ -1,0 +1,185 @@
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<%- include('../partials/header') %>
+
+<style>
+    .myContainer {
+        border-radius: 50px;
+        padding-top: 2.5%;
+        padding-bottom: 2.5%;
+        margin-bottom: 30px;
+        color: inherit;
+        background-color: #eee;
+        width:95%;
+    }
+    .myTable {
+        border: 1px solid black;
+        /* table-layout: fixed; */
+        /* width: 100%; */
+    }
+    .myTable tbody tr td{
+        border: 1px solid black;
+    }
+    .myTable thead tr td{
+        border: 1px solid black;
+    }
+    .table-nonfluid {
+        width: auto !important;
+    }
+    .alignCenterHoriz{
+        text-align: center;
+        background: rgb(200,200,200);
+    }
+    .avatarSet {
+        padding-top: 2em;
+        padding-bottom: 2em;
+    }
+    .avatarImg {
+        width: 128px;
+        height: 128px;
+        margin-left: 10px;
+    }
+    .scrollableWindow {
+        width: 330px;
+        height: 400px;
+        overflow: auto;
+        padding: 10px;
+        background: #e5e5e5;
+        border-radius: 30px;
+    }
+    .alignCenter {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    #approvedAvatars p {
+        text-align: center;
+        font-size: 23px;
+    }
+</style>
+
+<div class="container myContainer">
+    <h1><u>Avatar Home</u></h1>
+    <br>
+
+    <h3>Current Avatar Set:</h3>
+    <h4>This is your current avatar. You may submit a custom avatar request by clicking the button below.</h4>
+
+    <div class="avatarSet" id="currentAvatarSetDiv">
+    </div>
+
+    <a class="btn btn-info" href="/profile/<%=username%>/changeavatar">Submit a custom Avatar</a>
+
+    <hr style="border-color: lightgrey; border-style: solid; margin: 2em">
+
+    <h3>Approved Avatar Sets*: </h3>
+    <h4>Here are all your approved avatar sets. You can change between them here.</h4>
+    <br>
+
+    <div id="approvedAvatars" class="scrollableWindow alignCenter">
+        <p>You currently do not have any approved avatar sets.</p>
+    </div>
+    <br>
+
+    <a class="btn btn-info" id="changeAvatarBtn">Change avatar</a>
+    <a class="btn btn-info" href="http://www.google.com">Link to Patreon</a>
+
+    <h4>*This feature is available to current Patreon supporters.</h4>
+    <h4>To link your Patreon account or if you would like to support the development of the site please click the "Link to Patreon" button above:</h4>
+
+</div>
+
+<script>
+    $( document ).ready(function() {
+        const currentAvatarDiv = document.querySelector("#currentAvatarSetDiv");
+        let resImg = document.createElement('img');
+        let spyImg = document.createElement('img');
+        resImg.src = '<%= avatarImgRes ? avatarImgRes : "../../avatars/base-res.png" %>';
+        spyImg.src = '<%= avatarImgSpy ? avatarImgSpy : "../../avatars/base-spy.png" %>';
+        resImg.classList.add('avatarImg');
+        spyImg.classList.add('avatarImg');
+        currentAvatarDiv.appendChild(resImg);
+        currentAvatarDiv.appendChild(spyImg);
+        const approvedAvatarDiv = document.querySelector("#approvedAvatars");
+        const approvedAvatarSets = <%- JSON.stringify(approvedAvatarSets) %>;
+        if (approvedAvatarSets.length > 1) {
+            while (approvedAvatarDiv.firstChild) {
+                approvedAvatarDiv.removeChild(approvedAvatarDiv.firstChild);
+            }
+            approvedAvatarDiv.classList.remove('alignCenter');
+        }
+        approvedAvatarSets.forEach((avatarSet, index) => {
+            let avatarSetDiv = document.createElement('div');
+            avatarSetDiv.classList.add('avatarSet');
+            let resImg = document.createElement('img');
+            let spyImg = document.createElement('img');
+            let radio  = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = 'avatarSet';
+            radio.value = index;
+            resImg.src = avatarSet.resLink;
+            spyImg.src = avatarSet.spyLink;
+            resImg.classList.add('avatarImg');
+            spyImg.classList.add('avatarImg');
+            avatarSetDiv.appendChild(radio);
+            avatarSetDiv.appendChild(resImg);
+            avatarSetDiv.appendChild(spyImg);
+            approvedAvatarDiv.appendChild(avatarSetDiv)
+        })
+        $("#changeAvatarBtn").on('click', () => {
+            const selectedRadio = document.querySelector('input[name="avatarSet"]:checked');
+            // TODO-kev: Need to edit when patreon fixed
+            if (<%= !currentPatreon %>) {
+                Swal.fire({
+                    title: 'You need to be a Patreon Supporter to enable this feature.',
+                    type: 'error'
+                })
+                return;
+            }
+            if (!selectedRadio) {
+                Swal.fire({
+                    title: 'No avatar selected.',
+                    type: 'error'
+                })
+                return;
+            }
+            if (selectedRadio) {
+                const index = selectedRadio.value;
+                avatarSet = approvedAvatarSets[index]
+                Swal.fire({
+                    title: 'Sending your request...',
+                    onOpen: () => {
+                        Swal.showLoading();
+                        axios({
+                            method: 'POST',
+                            url: '/profile/<%= username %>/avatar/changeavatar',
+                            data: {
+                                resLink: avatarSet.resLink,
+                                spyLink: avatarSet.spyLink,
+                            },
+                        }).then(function (response) {
+                            //handle success
+                            Swal.close();
+                            Swal.fire({
+                                title: response.data,
+                                type: 'success',
+                                onClose: () => {
+                                    location.reload();
+                                }
+                            });
+                        }).catch(function (err) {
+                            console.log(err)
+                            Swal.close();
+                            Swal.fire({
+                                title: err.response.data,
+                                type: 'error',
+                            });
+                        });
+                    },
+                })
+            }
+        })
+    });
+</script>
+
+<%- include('../partials/footer') %>
