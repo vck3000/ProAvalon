@@ -2,6 +2,7 @@ const path = require('path');
 
 module.exports = {
   entry: {
+    avatarHome: './src/views/components/avatar/hydrate.tsx',
     modLog: './src/views/components/mod/mod_log/hydrate.tsx',
     matchmakingUi: './src/views/components/matchmakingUi/hydrate.tsx',
     readyPrompt: './src/views/components/readyPrompt/hydrate.tsx',

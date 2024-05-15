@@ -59,6 +59,8 @@
 </style>
 
 <div class="container myContainer">
+    <div react-entrypoint id="avatarHomeDiv"><%- avatarHomeReact %></div>
+
     <h1><u>Avatar Home</u></h1>
     <br>
 
@@ -180,5 +182,7 @@
         })
     });
 </script>
+
+<script type="text/javascript" src="<%-getVersionedPath('/dist_webpack/avatarHome.bundle.js')%>"></script>
 
 <%- include('../partials/footer') %>
