@@ -214,6 +214,10 @@ export class PatreonAgent {
       proavalonUsernameLower: usernameLower,
     });
 
+    console.log(
+      `Successfully unlinked Patreon account: proavalonUsernameLower="${usernameLower}" patreonUserId="${deletedPatreon.patreonUserId}"`,
+    );
+
     return Boolean(deletedPatreon);
   }
 
