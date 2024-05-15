@@ -13,6 +13,7 @@ import S3Controller from '../clients/s3/S3Controller';
 import { S3Agent } from '../clients/s3/S3Agent';
 import { PatreonAgent } from '../clients/patreon/patreonAgent';
 import { PatreonController } from '../clients/patreon/patreonController';
+import AvatarRequest from '../models/avatarRequest';
 
 const s3Controller = new S3Controller();
 const s3Agent = new S3Agent(s3Controller);
@@ -167,6 +168,44 @@ router.post(
 
     const result = decision ? 'approved' : 'rejected';
     res.status(200).send(`The custom avatar request has been ${result}.`);
+  },
+);
+
+router.get(
+  '/:profileUsername/avatarhome',
+  checkProfileOwnership,
+  async (req, res) => {
+    const user = await User.findOne({
+      usernameLower: req.params.profileUsername.toLowerCase(),
+    });
+
+    const approvedAvatarSetsQuery = await AvatarRequest.find({
+      forUsername: user.usernameLower,
+    });
+
+    let approvedAvatarSets = [];
+
+    approvedAvatarSetsQuery.forEach((avatarSet) => {
+      const approvedAvatarSet = {
+        resLink: avatarSet.resLink,
+        spyLink: avatarSet.spyLink,
+      };
+      approvedAvatarSets.push(approvedAvatarSet);
+    });
+
+    // const patreonQuery = await PatreonId.findOne({
+    //   in_game_username: user.usernameLower,
+    // });
+
+    const currentPatreon = true;
+
+    res.render('profile/avatarhome', {
+      username: user.username,
+      avatarImgRes: user.avatarImgRes,
+      avatarImgSpy: user.avatarImgSpy,
+      approvedAvatarSets,
+      currentPatreon,
+    });
   },
 );
 
