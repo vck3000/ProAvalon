@@ -154,7 +154,7 @@ socket.on('interactUser', (data) => {
         displayNotification(
           `${username} has buzzed you!`,
           '',
-          'avatars/base-spy.png',
+          'avatars/base-spy-128x128.png',
           'buzz'
         );
       }

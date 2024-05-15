@@ -108,19 +108,23 @@ function avatarText(props) {
   let data = props.data;
   return {
     title: `${props.modWhoMade.username} has ${
-      data.approved === 'true' ? 'APPROVED' : 'REJECTED'
+      data.approved ? 'APPROVED' : 'REJECTED'
     } ${data.username}'s avatar.`,
     body: (
       <span>
-        <p>Message to mod: {data.msgToMod}.</p>
-        <p>Mod comment: {data.modComment}.</p>
+        <p>Message to mod: {data.msgToMod}</p>
+        <p>Mod comment: {data.modComment}</p>
 
         <div className="row">
           <div className="col-sm-6">
             <div className="panel panel-success">
               <div className="panel-heading">Res img:</div>
               <div className="panel-body alignCenterHoriz">
-                <img className="avatarImg" src={data.resLink}></img>
+                <img
+                  className="avatarImg"
+                  src={data.resLink}
+                  style={{ width: '128px', height: '128px' }}
+                ></img>
               </div>
             </div>
           </div>
@@ -128,7 +132,11 @@ function avatarText(props) {
             <div className="panel panel-danger">
               <div className="panel-heading">Spy img:</div>
               <div className="panel-body alignCenterHoriz">
-                <img className="avatarImg" src={data.spyLink}></img>
+                <img
+                  className="avatarImg"
+                  src={data.spyLink}
+                  style={{ width: '128px', height: '128px' }}
+                ></img>
               </div>
             </div>
           </div>

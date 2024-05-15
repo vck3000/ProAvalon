@@ -44,6 +44,8 @@ import { Role } from '../gameplay/roles/types';
 import { Phase } from '../gameplay/phases/types';
 import { Card } from '../gameplay/cards/types';
 import { TOCommandsImported } from './commands/tournamentOrganisers';
+import { PatreonAgent } from '../clients/patreon/patreonAgent';
+import { PatreonController } from '../clients/patreon/patreonController';
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
@@ -711,6 +713,12 @@ export const userCommandsOLD = {
             classStr: 'server-text',
           };
 
+          senderSocket.request.user.avatarHide = false;
+
+          if (senderSocket.request.user.inRoomId) {
+            rooms[senderSocket.request.user.inRoomId].distributeGameData();
+          }
+
           senderSocket.emit('messageCommandReturnStr', dataToReturn);
         });
     },
@@ -727,6 +735,12 @@ export const userCommandsOLD = {
         .exec((err, foundUser) => {
           foundUser.avatarHide = true;
           foundUser.save();
+
+          senderSocket.request.user.avatarHide = true;
+
+          if (senderSocket.request.user.inRoomId) {
+            rooms[senderSocket.request.user.inRoomId].distributeGameData();
+          }
 
           const dataToReturn = {
             message: 'Successfully hidden.',
@@ -1023,6 +1037,19 @@ export const server = function (io: SocketServer): void {
         };
 
         socket.emit('allChatToClient', msg4);
+      }
+
+      if (
+        (socket.request.user.avatarImgRes &&
+          !socket.request.user.avatarImgRes.includes('proavalon.com')) ||
+        (socket.request.user.avatarImgSpy &&
+          !socket.request.user.avatarImgSpy.includes('proavalon.com'))
+      ) {
+        socket.emit('allChatToClient', {
+          message:
+            'IMPORTANT: Your avatar link is outdated. Please re-upload your custom avatar by the 19th of May 2024.',
+          classStr: 'all-chat-text-red',
+        });
       }
 
       updateCurrentPlayersList(io);

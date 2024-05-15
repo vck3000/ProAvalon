@@ -134,6 +134,6 @@ const pics = {
 
   // base res
   baseRes: {
-    path: 'avatars/base-res.png',
+    path: 'avatars/base-res-128x128.png',
   },
 };

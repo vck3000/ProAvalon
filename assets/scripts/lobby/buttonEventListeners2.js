@@ -198,8 +198,9 @@ $('#newRoom').on('click', (data) => {
 });
 
 $('#createNewRoomButton').on('click', (data) => {
-  // console.log( $($(".maxNumPlayers")[1]).val() );
-  // console.log( $("#newRoomPassword").val() );
+  if (!gameModesLoaded) {
+    return;
+  }
 
   const sendObj = {
     maxNumPlayers: $($('.maxNumPlayers')[1]).val(),
@@ -223,12 +224,8 @@ $('#createNewRoomButton').on('click', (data) => {
     resetAllGameData();
     inRoom = true;
   }
-});
 
-let joined = false;
-
-$('#queueButton').on('click', () => {
-  socket.emit('queue-request', { join : !joined });
+  $('#newRoomModal').modal('hide');
 });
 
 $('#startGameOptionsDefaultPhaseTimeoutMin').on('change', () => {

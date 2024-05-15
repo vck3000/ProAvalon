@@ -59,6 +59,24 @@ describe('Anonymizer', () => {
     }
   });
 
+  it('Returns the unrevealed username after game end if requested', () => {
+    // We also send the unrevealed username to the frontend after the game ends so that anonymized chat highlighting still works
+    anonymizer.initialise(baseUsernames, true);
+    const anonymizedUsernames = anonymizer.anonMany(baseUsernames);
+
+    anonymizer.setGameFinished();
+
+    const postGameFinishAnonymizedUsernames = baseUsernames.map((username) => {
+      return anonymizer.anon(username, false);
+    });
+
+    for (let i = 0; i < baseUsernames.length; i++) {
+      expect(postGameFinishAnonymizedUsernames[i]).toEqual(
+        anonymizedUsernames[i],
+      );
+    }
+  });
+
   it('Can recover', () => {
     anonymizer.initialise(baseUsernames, true);
     const anonymizedUsernames = anonymizer.anonMany(baseUsernames);
