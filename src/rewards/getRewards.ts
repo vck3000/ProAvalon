@@ -14,11 +14,9 @@ import { IUser } from '../gameplay/types';
 import { PatreonController } from '../clients/patreon/patreonController';
 import constants from './constants';
 
-export async function getAllPatreonRewardsForUser(
+export async function getPatreonRewardTierForUser(
   usernameLower: string,
-): Promise<RewardType[]> {
-  const rewardsSatisfied: RewardType[] = [];
-
+): Promise<RewardType> {
   const patreonAgent = new PatreonAgent(new PatreonController());
 
   const patronDetails = await patreonAgent.findOrUpdateExistingPatronDetails(
@@ -29,26 +27,31 @@ export async function getAllPatreonRewardsForUser(
     return null;
   }
 
+  let highestTierReward: RewardType = null;
+  let highestDonationAmount = 0;
+
   for (const key in PatreonRewards) {
     const reward = AllRewards[key as RewardType];
-    if (reward.donationReq <= patronDetails.amountCents) {
-      rewardsSatisfied.push(key as RewardType);
+    if (
+      reward.donationReq <= patronDetails.amountCents &&
+      reward.donationReq > highestDonationAmount
+    ) {
+      highestTierReward = key as RewardType;
+      highestDonationAmount = reward.donationReq;
     }
   }
 
-  return rewardsSatisfied;
+  return highestTierReward ? highestTierReward : null;
 }
 
 export async function getAllRewardsForUser(user: IUser): Promise<RewardType[]> {
   const rewardsSatisfied: RewardType[] = [];
-  const patreonRewards = await getAllPatreonRewardsForUser(
+  const patreonReward = await getPatreonRewardTierForUser(
     user.username.toLowerCase(),
   );
 
-  if (patreonRewards) {
-    patreonRewards.forEach((reward) => {
-      rewardsSatisfied.push(reward);
-    });
+  if (patreonReward) {
+    rewardsSatisfied.push(patreonReward);
   }
 
   for (const key in AllRewardsExceptPatreon) {
@@ -92,18 +95,20 @@ export async function userHasReward(
   return true;
 }
 
-export function getNumAvatarsForPatreonTier(cents: number): number {
-  if (cents === 0) {
+export async function getAvatarLibrarySizeForUser(
+  usernameLower: string,
+): Promise<number> {
+  const patreonReward = await getPatreonRewardTierForUser(usernameLower);
+
+  if (!patreonReward) {
     return 1;
-  } else if (cents <= constants.tier1_donation) {
+  } else if (patreonReward === 'TIER1_BADGE') {
     return 2;
-  } else if (cents <= constants.tier2_donation) {
+  } else if (patreonReward === 'TIER2_BADGE') {
     return 3;
-  } else if (cents <= constants.tier3_donation) {
+  } else if (patreonReward === 'TIER3_BADGE') {
     return 5;
-  } else if (cents <= constants.tier4_donation) {
-    return 10;
-  } else {
+  } else if (patreonReward === 'TIER4_BADGE') {
     return 10;
   }
 }
