@@ -4,6 +4,7 @@ import { SocketUser } from '../../types';
 import User from '../../../models/user';
 import { S3Agent } from '../../../clients/s3/S3Agent';
 import S3Controller from '../../../clients/s3/S3Controller';
+import { getAvatarLibrarySizeForUser } from '../../../rewards/getRewards';
 
 export const mpushavatartolibrary: Command = {
   command: 'mpushavatartolibrary',
@@ -39,11 +40,18 @@ export const mpushavatartolibrary: Command = {
       return;
     }
 
+    if (user.avatarLibrary.includes(toBeAddedAvatarId)) {
+      sendReplyToCommand(
+        senderSocket,
+        `Avatar ID already exists in users library: [${user.avatarLibrary}]`,
+      );
+      return;
+    }
+
+    const librarySize = await getAvatarLibrarySizeForUser(usernameLower);
     user.avatarLibrary.push(toBeAddedAvatarId);
-    // TODO-kev: Add a check for max library size here. If greater than max, remove oldest approved avatar
-    // Temporarily set to 10
-    const MAX_SIZE = 10;
-    if (user.avatarLibrary.length > MAX_SIZE) {
+
+    if (user.avatarLibrary.length > librarySize) {
       user.avatarLibrary.shift();
     }
     user.markModified('avatarLibrary');
@@ -51,7 +59,7 @@ export const mpushavatartolibrary: Command = {
 
     sendReplyToCommand(
       senderSocket,
-      `Successfully updated ${usernameLower}'s avatar library: ${user.avatarLibrary}`,
+      `Successfully updated ${usernameLower}'s avatar library: [${user.avatarLibrary}]`,
     );
     return;
   },
