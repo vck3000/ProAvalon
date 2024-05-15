@@ -10,6 +10,7 @@ import { avalonPhases, commonPhases } from './phases/phases';
 import { Role } from './roles/types';
 import { Phase } from './phases/types';
 import { millisToStr } from '../util/time';
+import { RoomPlayer } from './types';
 
 export class RoomConfig {
   host: string;
@@ -377,7 +378,7 @@ class Room {
     }
   }
 
-  getRoomPlayers() {
+  getRoomPlayers(): RoomPlayer[] {
     const roomPlayers = [];
 
     for (let i = 0; i < this.socketsOfPlayers.length; i++) {

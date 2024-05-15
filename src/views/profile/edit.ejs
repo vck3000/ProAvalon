@@ -1,6 +1,4 @@
-
 <%- include('../partials/header') %>
-
 
 <link rel="stylesheet" type="text/css" href="/stylesheets/profile.css">
 <link rel="stylesheet" type="text/css" href="/libraries/flag-icon/css/flag-icon.min.css">
@@ -17,11 +15,6 @@
 
 </style>
 
-
-
-
-
-
 <div class="container myContainer">
     <h1>Change your settings here: </h1>
 
@@ -33,23 +26,26 @@
     <a class="btn btn-danger" href="/profile/<%=userData.username%>/changepassword">Change password</a>
 
     <br>
-    <br>
 
-    <a class="btn btn-warning" href=<%=patreonLoginUrl%>>Link to Patreon</a>
-    <% if (userData.patreonId && patreonId) { %>
-        <p>Linked Patreon Data:</p>
+    <h3>Linked Patreon Details</h3>
+    <% if (patronDetails) { %>
         <ul>
-            <li>PatreonId: <%=patreonId.id%></li>
-            <li>Name: <%=patreonId.name%></li>
-            <li>Tied to account: <%=patreonId.in_game_username%></li>
-            <% if (patreonId.amount_cents) { %>
-                <li>Pledge (cents): <%=patreonId.amount_cents%></li>
-            <% } else { %>
-                <li>Pledge (cents): Null</li>
-            <% } %>
-            <li>Expires: <%=patreonId.expires%></li>
+            <li>Patreon User ID: <%= patronDetails.patreonUserId %></li>
+            <li>Status: <%= patronDetails.isPledgeActive ? 'Active' : 'Inactive' %></li>
+            <li>Pledge (cents): <%= patronDetails.amountCents %></li>
         </ul>
+
+        <br>
+        <a id="unlinkPatreonButton" class="btn btn-warning">Unlink Patreon Account</a>
+
+    <% } else { %>
+        <p>There is no Patreon account linked or you are currently not an active Patreon supporter</p>
+
+        <br>
+        <a id="linkPatreonButton" class="btn btn-warning">Link to Patreon</a>
     <% } %>
+
+    <br>
 
     <form action="/profile/<%=userData.username%>" method="POST">
 
@@ -372,7 +368,35 @@
           $(`option[value='UN']`).attr("selected", "selected");
             updateFlag();
         }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const success = urlParams.get('success');
+        const error = urlParams.get('error');
+
+        if (success) {
+            showMessageAndReload(success, 'success');
+        } else if (error) {
+            showMessageAndReload(error, 'error');
+        } else {
+            const expired = '<%= patronDetails && !patronDetails.isPledgeActive %>';
+            if (expired === 'true') {
+                Swal.fire({
+                    type: 'warning',
+                    title: 'Your Patreon subscription has ended. Thank you for your support.'
+                });
+            }
+        }
     });
+
+    function showMessageAndReload(message, type) {
+        Swal.fire({
+            type: type,
+            title: message,
+        }).then(() => {
+            // Refresh the page without the query params
+            window.location.href = window.location.pathname;
+        });
+    }
 
     $("#selectNation").on("change", function(e){
         // console.log($("#selectNation").find(":selected")[0]);
@@ -393,7 +417,64 @@
         $("#flagSpan").addClass("flag-icon-" + countryCode.toLowerCase());
     }
 
-</script>
+    $('#linkPatreonButton').on('click', async () => {
+        const currentUrl = window.location.href ;
 
+        const response = await axios({
+            method: 'GET',
+            url: '/patreon/link',
+            params: {
+                currentUrl
+            }
+        })
+
+        window.location.href = response.data;
+    });
+
+    $('#unlinkPatreonButton').on('click', async () => {
+        const confirmed = await Swal.fire({
+            title: 'You are about to unlink your Patreon account. Are you sure?',
+            type: 'warning',
+            showCancelButton: true,
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, unlink Patreon'
+        });
+
+        if (confirmed.value) {
+            Swal.fire({
+                title: 'Sending your request...',
+                onOpen: () => {
+                    Swal.showLoading();
+
+                    axios({
+                        method: 'POST',
+                        url: '/patreon/unlink',
+                    })
+                        .then(function (response) {
+                            //handle success
+                            Swal.close();
+
+                            Swal.fire({
+                                title: response.data,
+                                type: 'success',
+                            }).then(() => {
+                                window.location.reload();
+                            })
+                        })
+                        .catch(function (err) {
+                            Swal.close();
+                            Swal.fire({
+                                title: err.response.data,
+                                type: 'error',
+                            });
+                        });
+                },
+            })
+        }
+
+
+    });
+
+</script>
 
 <%- include('../partials/footer') %>

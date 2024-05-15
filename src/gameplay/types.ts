@@ -24,7 +24,7 @@ export enum Alliance {
 }
 
 export interface RoleConstructor {
-  // @ts-ignore
+  // @ts-expect-error Cannot find name 'Role'.
   new (room: Game): Role;
 }
 
@@ -64,10 +64,19 @@ export interface IUser {
   biography?: string;
   roleStats?: Record<string, unknown>;
   notifications?: Types.ObjectId;
+  expiredPatreonNotification?: boolean;
   modAction?: Types.ObjectId;
   mutedPlayers?: string[];
-  patreonId?: string;
   IPAddresses?: string[];
   lastIPAddress?: string;
   matchmakingBlacklist?: string[];
 }
+
+export type RoomPlayer = {
+  username: string;
+  anonUsername?: string;
+  avatarImgRes: string;
+  avatarImgSpy: string;
+  avatarHide: boolean;
+  claim: boolean;
+};

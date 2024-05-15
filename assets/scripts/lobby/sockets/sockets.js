@@ -318,7 +318,7 @@ socket.on('gameEnded', (data) => {
     displayNotification(
       'Game has ended!',
       '',
-      'avatars/base-spy.png',
+      'avatars/base-spy-128x128.png',
       'gameEnded'
     );
   }
@@ -531,7 +531,7 @@ socket.on('update-room-players', (data) => {
         `New player in game!  [${roomPlayersData.length}p]`,
         `${roomPlayersData[roomPlayersData.length - 1].username
         } has joined the game!`,
-        'avatars/base-res.png',
+        'avatars/base-res-128x128.png',
         'newPlayerInGame'
       );
     }
@@ -619,7 +619,7 @@ socket.on('update-room-spectators', (spectatorUsernames) => {
       displayNotification(
         'New player in room.',
         `${spectatorUsernames[newUsernameIndex]} has joined the room.`,
-        'avatars/base-res.png',
+        'avatars/base-res-128x128.png',
         'newPlayerInRoom'
       );
     }
@@ -687,6 +687,7 @@ socket.on('update-room-info', (data) => {
   }
 });
 
+let gameModesLoaded = false;
 // Update the new room menu with the gameModes available.
 socket.on('gameModes', (GAME_MODE_NAMES) => {
   // <option value="avalon">Avalon</option>
@@ -703,6 +704,8 @@ socket.on('gameModes', (GAME_MODE_NAMES) => {
 
   $('.gameModeSelect')[0].innerHTML = str;
   $('.gameModeSelect')[1].innerHTML = str;
+
+  gameModesLoaded = true;
 });
 
 // Update the role and card settings inside the room (cog).
@@ -881,12 +884,3 @@ socket.on('leave-room-requested', () => {
 socket.on('redirect', (dest) => {
   window.location.href = dest;
 });
-
-socket.on('numPlayersInQueue', (data) => {
-  $('#numPlayersInQueue')[0].innerText = data.numPlayersInQueue;
-});
-
-socket.on('queueReply', (data) => {
-  joined = data.joined;
-  $('#queueButton').text(joined ? 'Leave Queue' : 'Join Queue');
-})
