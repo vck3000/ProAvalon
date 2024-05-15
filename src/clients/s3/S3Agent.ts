@@ -183,6 +183,11 @@ export class S3Agent {
 
     const user = await User.findOne({ usernameLower });
     const librarySize = await getAvatarLibrarySizeForUser(usernameLower);
+
+    if (user.avatarLibrary.length === librarySize) {
+      return;
+    }
+
     const approvedAvatarIds = await this.getApprovedAvatarIdsForUser(
       usernameLower,
     );
