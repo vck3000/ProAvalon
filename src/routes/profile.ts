@@ -183,7 +183,6 @@ router.get(
         } else {
           res.render('profile/changeavatar', {
             username: foundUser.username,
-            totalGamesPlayed: foundUser.totalGamesPlayed,
             MAX_FILESIZE_STR,
             VALID_DIMENSIONS,
             VALID_DIMENSIONS_STR,
