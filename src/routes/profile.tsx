@@ -16,6 +16,7 @@ import { PatreonController } from '../clients/patreon/patreonController';
 import AvatarRequest from '../models/avatarRequest';
 import { renderToString } from 'react-dom/server';
 import AvatarHome from '../views/components/avatar';
+import React from 'react';
 
 const s3Controller = new S3Controller();
 const s3Agent = new S3Agent(s3Controller);
@@ -200,7 +201,6 @@ router.get(
     // });
 
     const currentPatreon = true;
-
     const avatarHomeReact = renderToString(<AvatarHome />);
 
     res.render('profile/avatarhome', {
