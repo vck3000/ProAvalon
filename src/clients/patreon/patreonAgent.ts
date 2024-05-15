@@ -241,17 +241,6 @@ export class PatreonAgent {
     return patronRecord ? patronRecord : null;
   }
 
-  private async updateUserTokens(
-    patreonRecord: any,
-    tokens: PatreonUserTokens,
-  ) {
-    patreonRecord.userAccessToken = tokens.userAccessToken;
-    patreonRecord.userAccessTokenExpiry = tokens.userAccessTokenExpiry;
-    patreonRecord.userRefreshToken = tokens.userRefreshToken;
-
-    await patreonRecord.save();
-  }
-
   private async refreshPatreonUserTokens(patreonRecord: any) {
     const tokens = await this.patreonController.refreshPatreonUserTokens(
       patreonRecord.userRefreshToken,
