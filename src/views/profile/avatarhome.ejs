@@ -67,7 +67,7 @@
     <h3>Current Avatar Set:</h3>
     <h4>This is your current avatar. You may submit a custom avatar request by clicking the button below.</h4>
 
-    <div class="avatarSet" id="currentAvatarSetDiv">
+    <div class="avatarSet" id="currentAvatarSetDivOld">
     </div>
 
     <a class="btn btn-info" href="/profile/<%=username%>/changeavatar">Submit a custom Avatar</a>
@@ -92,7 +92,7 @@
 
 <script>
     $( document ).ready(function() {
-        const currentAvatarDiv = document.querySelector("#currentAvatarSetDiv");
+        const currentAvatarDiv = document.querySelector("#currentAvatarSetDivOld");
         let resImg = document.createElement('img');
         let spyImg = document.createElement('img');
         resImg.src = '<%= avatarImgRes ? avatarImgRes : "../../avatars/base-res.png" %>';
