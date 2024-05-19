@@ -13,6 +13,7 @@ import S3Controller from '../clients/s3/S3Controller';
 import { S3Agent } from '../clients/s3/S3Agent';
 import { PatreonAgent } from '../clients/patreon/patreonAgent';
 import { PatreonController } from '../clients/patreon/patreonController';
+import { getPatreonRewardTierForUser } from '../rewards/getRewards';
 
 const s3Controller = new S3Controller();
 const s3Agent = new S3Agent(s3Controller);
@@ -183,7 +184,6 @@ router.get(
         } else {
           res.render('profile/changeavatar', {
             username: foundUser.username,
-            totalGamesPlayed: foundUser.totalGamesPlayed,
             MAX_FILESIZE_STR,
             VALID_DIMENSIONS,
             VALID_DIMENSIONS_STR,
@@ -295,17 +295,9 @@ async function validateUploadAvatarRequest(
     );
   }
 
-  const user = await User.findOne({ username: username });
+  const user = await User.findOne({ usernameLower: username.toLowerCase() });
   if (!user) {
     throw new Error(`User not found: ${username}`);
-  }
-
-  // Check: Min game count satisfied
-  if (user.totalGamesPlayed < MIN_GAMES_REQUIRED) {
-    return {
-      valid: false,
-      errMsg: `You must play at least 100 games to submit a custom avatar request. You have played ${user.totalGamesPlayed} games.`,
-    };
   }
 
   // Check: Does not exceed max active avatar requests
@@ -377,6 +369,18 @@ async function validateUploadAvatarRequest(
     return {
       valid: false,
       errMsg: `Avatar dimensions must be ${VALID_DIMENSIONS_STR}. Your dimensions are: Res: ${dimRes.width}x${dimRes.height}px, Spy: ${dimSpy.width}x${dimSpy.height}px.`,
+    };
+  }
+
+  const patreonRewards = await getPatreonRewardTierForUser(
+    username.toLowerCase(),
+  );
+
+  // Check: Min game count satisfied. If user is a paid Patron, they can bypass this check
+  if (!patreonRewards && user.totalGamesPlayed < MIN_GAMES_REQUIRED) {
+    return {
+      valid: false,
+      errMsg: `You must play at least 100 games to submit a custom avatar request. You have played ${user.totalGamesPlayed} games.`,
     };
   }
 

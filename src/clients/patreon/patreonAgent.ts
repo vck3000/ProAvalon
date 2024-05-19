@@ -214,6 +214,10 @@ export class PatreonAgent {
       proavalonUsernameLower: usernameLower,
     });
 
+    console.log(
+      `Successfully unlinked Patreon account: proavalonUsernameLower="${usernameLower}" patreonUserId="${deletedPatreon.patreonUserId}"`,
+    );
+
     return Boolean(deletedPatreon);
   }
 
@@ -235,17 +239,6 @@ export class PatreonAgent {
     });
 
     return patronRecord ? patronRecord : null;
-  }
-
-  private async updateUserTokens(
-    patreonRecord: any,
-    tokens: PatreonUserTokens,
-  ) {
-    patreonRecord.userAccessToken = tokens.userAccessToken;
-    patreonRecord.userAccessTokenExpiry = tokens.userAccessTokenExpiry;
-    patreonRecord.userRefreshToken = tokens.userRefreshToken;
-
-    await patreonRecord.save();
   }
 
   private async refreshPatreonUserTokens(patreonRecord: any) {
