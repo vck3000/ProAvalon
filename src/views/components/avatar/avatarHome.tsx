@@ -9,7 +9,7 @@ export function AvatarHomeUi() {
   );
 
   useEffect(() => {
-    const fetchUserAvatar = async () => {
+    const fetchUserAvatarInfo = async () => {
       const data = await fetch('/profile/1/avatar/avatarinfo');
       const result = await data.json();
 
@@ -18,7 +18,7 @@ export function AvatarHomeUi() {
       setCurrentSpyImgLink(result.spyLink);
     };
 
-    fetchUserAvatar().catch(console.error);
+    fetchUserAvatarInfo().catch(console.error);
   }, []);
 
   return (
@@ -48,6 +48,36 @@ export function AvatarHomeUi() {
       <a className="btn btn-info" href="/profile/1/customavatar">
         Submit a custom Avatar
       </a>
+      <hr
+        style={{
+          borderColor: 'lightgrey',
+          borderStyle: 'solid',
+          margin: '2em',
+        }}
+      />
+      <h3>Approved Avatar Sets*: </h3>
+      <h4>
+        Here are all your approved avatar sets. You can change between them
+        here.
+      </h4>
+      <br />
+
+      <div id="approvedAvatars" className="scrollableWindow alignCenter">
+        <p>You currently do not have any approved avatar sets.</p>
+      </div>
+      <br />
+
+      <a className="btn btn-info" id="changeAvatarBtn">
+        Change avatar
+      </a>
+
+      <h4>*This feature is available to current Patreon supporters.</h4>
+      <h4>
+        To link your Patreon account or if you would like to support the
+        development of the site please do so from your profile page{' '}
+        {/*TODO-kev: Edit the hardcoded link down below*/}
+        <a href="/profile/1/edit">here</a>.
+      </h4>
     </div>
   );
 }
