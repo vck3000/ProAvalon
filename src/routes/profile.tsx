@@ -13,6 +13,7 @@ import S3Controller from '../clients/s3/S3Controller';
 import { S3Agent } from '../clients/s3/S3Agent';
 import { PatreonAgent } from '../clients/patreon/patreonAgent';
 import { PatreonController } from '../clients/patreon/patreonController';
+import { getPatreonRewardTierForUser } from '../rewards/getRewards';
 import AvatarRequest from '../models/avatarRequest';
 import { renderToString } from 'react-dom/server';
 import AvatarHome from '../views/components/avatar';
@@ -271,7 +272,6 @@ router.get(
         } else {
           res.render('profile/changeavatar', {
             username: foundUser.username,
-            totalGamesPlayed: foundUser.totalGamesPlayed,
             MAX_FILESIZE_STR,
             VALID_DIMENSIONS,
             VALID_DIMENSIONS_STR,
@@ -383,7 +383,7 @@ async function validateUploadAvatarRequest(
     );
   }
 
-  const user = await User.findOne({ username: username });
+  const user = await User.findOne({ usernameLower: username.toLowerCase() });
   if (!user) {
     throw new Error(`User not found: ${username}`);
   }

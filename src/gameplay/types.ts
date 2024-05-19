@@ -43,6 +43,7 @@ export interface IUser {
   emailTokenExpiry?: Date;
   avatarImgRes?: string | null;
   avatarImgSpy?: string | null;
+  avatarLibrary?: Number[];
   avatarHide?: boolean;
   hideStats?: boolean;
   pronoun?: string | null;

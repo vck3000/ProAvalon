@@ -33,6 +33,7 @@ const UserSchema = new mongoose.Schema<IUser>({
     type: String,
     default: null,
   },
+  avatarLibrary: [Number],
   avatarHide: Boolean,
 
   hideStats: Boolean,

@@ -119,17 +119,6 @@ $(document).ready(() => {
         e.preventDefault();
 
         // Client side checks
-        const totalGamesPlayed = "<%= totalGamesPlayed %>";
-
-        if (totalGamesPlayed < MIN_GAMES_REQUIRED) {
-            let s = parseInt(totalGamesPlayed) === 1 ? "" : "s";
-            Swal.fire({
-                title: `You must play at least 100 games before you can submit a custom avatar. You have currently played ${totalGamesPlayed} game${s}.`,
-                type: "error"
-            });
-            return;
-        }
-
         const resAvatarFile = $("#resAvatarFile")[0].files[0];
         const spyAvatarFile = $("#spyAvatarFile")[0].files[0];
 
