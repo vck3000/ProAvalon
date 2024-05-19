@@ -102,13 +102,13 @@ export async function getAvatarLibrarySizeForUser(
 
   if (!patreonReward) {
     return 1;
-  } else if (patreonReward === 'TIER1_BADGE') {
+  } else if (patreonReward === constants.TIER1_BADGE) {
     return 2;
-  } else if (patreonReward === 'TIER2_BADGE') {
+  } else if (patreonReward === constants.TIER2_BADGE) {
     return 3;
-  } else if (patreonReward === 'TIER3_BADGE') {
+  } else if (patreonReward === constants.TIER3_BADGE) {
     return 5;
-  } else if (patreonReward === 'TIER4_BADGE') {
+  } else if (patreonReward === constants.TIER4_BADGE) {
     return 10;
   }
 }
