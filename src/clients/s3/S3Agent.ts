@@ -176,39 +176,4 @@ export class S3Agent {
       .filter((approvedAvatarId) => !isNaN(approvedAvatarId))
       .sort((a, b) => a - b);
   }
-
-  public async updateUsersAvatarLibrary(usernameLower: string) {
-    // TODO-kev: Decide if a user should press a button to call this or have it automatically called on page load
-    // Also consider if this function should be in this file or getRewards.ts
-
-    const user = await User.findOne({ usernameLower });
-    const librarySize = await getAvatarLibrarySizeForUser(usernameLower);
-
-    if (user.avatarLibrary.length === librarySize) {
-      return;
-    }
-
-    const approvedAvatarIds = await this.getApprovedAvatarIdsForUser(
-      usernameLower,
-    );
-    const approvedAvatarIdsNotInLibrary = approvedAvatarIds.filter(
-      (id) => !user.avatarLibrary.includes(id),
-    );
-
-    if (user.avatarLibrary.length <= librarySize) {
-      // Add approved avatars until librarySize is reached OR all approvedAvatarIds are added
-      const numAvatarsToAdd = Math.min(
-        approvedAvatarIdsNotInLibrary.length,
-        librarySize - user.avatarLibrary.length,
-      );
-
-      user.avatarLibrary.push(...approvedAvatarIds.slice(-numAvatarsToAdd));
-    } else {
-      // Remove oldest avatars
-      user.avatarLibrary.splice(0, librarySize);
-    }
-
-    user.markModified('avatarLibrary');
-    await user.save();
-  }
 }
