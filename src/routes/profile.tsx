@@ -388,14 +388,6 @@ async function validateUploadAvatarRequest(
     throw new Error(`User not found: ${username}`);
   }
 
-  // Check: Min game count satisfied
-  if (user.totalGamesPlayed < MIN_GAMES_REQUIRED) {
-    return {
-      valid: false,
-      errMsg: `You must play at least 100 games to submit a custom avatar request. You have played ${user.totalGamesPlayed} games.`,
-    };
-  }
-
   // Check: Does not exceed max active avatar requests
   {
     const totalActiveAvatarRequestsQuery = await avatarRequest.aggregate([
@@ -465,6 +457,18 @@ async function validateUploadAvatarRequest(
     return {
       valid: false,
       errMsg: `Avatar dimensions must be ${VALID_DIMENSIONS_STR}. Your dimensions are: Res: ${dimRes.width}x${dimRes.height}px, Spy: ${dimSpy.width}x${dimSpy.height}px.`,
+    };
+  }
+
+  const patreonRewards = await getPatreonRewardTierForUser(
+    username.toLowerCase(),
+  );
+
+  // Check: Min game count satisfied. If user is a paid Patron, they can bypass this check
+  if (!patreonRewards && user.totalGamesPlayed < MIN_GAMES_REQUIRED) {
+    return {
+      valid: false,
+      errMsg: `You must play at least 100 games to submit a custom avatar request. You have played ${user.totalGamesPlayed} games.`,
     };
   }
 
