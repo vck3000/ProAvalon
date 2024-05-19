@@ -216,17 +216,21 @@ router.get(
   },
 );
 
+// Get a users avatar library links
 router.get(
   '/:profileUsername/avatar/avatarinfo',
   checkProfileOwnership,
   async (req, res) => {
     const user = await User.findOne({
-      usernameLower: req.params.profileUsername.toLowerCase(),
+      usernameLower: req.user.usernameLower,
     });
 
     const result = {
-      resLink: user.avatarImgRes,
-      spyLink: user.avatarImgSpy,
+      currentResLink: user.avatarImgRes,
+      currentSpyLink: user.avatarImgSpy,
+      avatarLibrary: await s3Agent.getUsersAvatarLibraryLinks(
+        user.usernameLower,
+      ),
     };
 
     res.send(result);

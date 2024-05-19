@@ -201,7 +201,6 @@ export class S3Agent {
           `${FolderName.APPROVED}/${usernameLower}/${usernameLower}_spy_${id}.png`,
         ),
       };
-      console.log(avatarSet);
       avatarLibrary.push(avatarSet);
     });
 

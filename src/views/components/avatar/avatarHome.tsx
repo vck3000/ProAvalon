@@ -7,15 +7,18 @@ export function AvatarHomeUi() {
   const [currentSpyImgLink, setCurrentSpyImgLink] = useState(
     '../../avatars/base-spy.svg',
   );
+  const [avatarLibrary, setAvatarLibrary] = useState([]);
 
   useEffect(() => {
+    // TODO-kev: Figure out why this runs 8 times
     const fetchUserAvatarInfo = async () => {
       const data = await fetch('/profile/1/avatar/avatarinfo');
       const result = await data.json();
 
       // TODO-kev: Remove the loading for this?
-      setCurrentResImgLink(result.resLink);
-      setCurrentSpyImgLink(result.spyLink);
+      setCurrentResImgLink(result.currentResLink);
+      setCurrentSpyImgLink(result.currentSpyLink);
+      setAvatarLibrary(result.avatarLibrary);
     };
 
     fetchUserAvatarInfo().catch(console.error);
@@ -63,7 +66,24 @@ export function AvatarHomeUi() {
       <br />
 
       <div id="approvedAvatars" className="scrollableWindow alignCenter">
-        <p>You currently do not have any approved avatar sets.</p>
+        {avatarLibrary.length === 0 ? (
+          <p>You currently do not have any approved avatar sets.</p>
+        ) : (
+          avatarLibrary.map((avatarSet, index) => (
+            <div key={index} className="avatarSet">
+              <img
+                src={avatarSet.resLink}
+                alt={`Avatar ${avatarSet.id} Res`}
+                className="avatarImg"
+              />
+              <img
+                src={avatarSet.spyLink}
+                alt={`Avatar ${avatarSet.id} Spy`}
+                className="avatarImg"
+              />
+            </div>
+          ))
+        )}
       </div>
       <br />
 
