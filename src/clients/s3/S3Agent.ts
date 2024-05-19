@@ -13,11 +13,19 @@ interface S3AvatarLinks {
   spyLink: string;
 }
 
+// TODO-kev: Consider merging this with above
+interface ApprovedAvatarSet {
+  id: number;
+  resLink: string;
+  spyLink: string;
+}
+
 export interface IS3Controller {
   listObjectKeys(prefixes: string[]): Promise<string[]>;
   uploadFile(key: string, fileContent: Buffer, contentType: string): any;
   deleteFile(link: string): any;
   moveFile(oldLink: string, newLink: string): any;
+  getLinkFromKey(key: string): string;
 }
 
 export class S3Agent {
@@ -175,5 +183,28 @@ export class S3Agent {
       })
       .filter((approvedAvatarId) => !isNaN(approvedAvatarId))
       .sort((a, b) => a - b);
+  }
+
+  public async getUsersAvatarLibraryLinks(
+    usernameLower: string,
+  ): Promise<ApprovedAvatarSet[]> {
+    const user = await User.findOne({ usernameLower });
+    let avatarLibrary: ApprovedAvatarSet[] = [];
+
+    user.avatarLibrary.forEach((id) => {
+      const avatarSet: ApprovedAvatarSet = {
+        id: id.valueOf(),
+        resLink: this.s3Controller.getLinkFromKey(
+          `${FolderName.APPROVED}/${usernameLower}/${usernameLower}_res_${id}.png`,
+        ),
+        spyLink: this.s3Controller.getLinkFromKey(
+          `${FolderName.APPROVED}/${usernameLower}/${usernameLower}_spy_${id}.png`,
+        ),
+      };
+      console.log(avatarSet);
+      avatarLibrary.push(avatarSet);
+    });
+
+    return avatarLibrary;
   }
 }
