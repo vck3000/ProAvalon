@@ -13,7 +13,7 @@ import S3Controller from '../clients/s3/S3Controller';
 import { S3Agent } from '../clients/s3/S3Agent';
 import { PatreonAgent } from '../clients/patreon/patreonAgent';
 import { PatreonController } from '../clients/patreon/patreonController';
-import { getAllPatreonRewardsForUser } from '../rewards/getRewards';
+import { getPatreonRewardTierForUser } from '../rewards/getRewards';
 
 const s3Controller = new S3Controller();
 const s3Agent = new S3Agent(s3Controller);
@@ -372,19 +372,12 @@ async function validateUploadAvatarRequest(
     };
   }
 
-  // Check: If user is a paid Patron, they can bypass further checks below:
-  const patreonRewards = await getAllPatreonRewardsForUser(
+  const patreonRewards = await getPatreonRewardTierForUser(
     username.toLowerCase(),
   );
-  if (patreonRewards.length > 0) {
-    return {
-      valid: true,
-      errMsg: ``,
-    };
-  }
 
-  // Check: Min game count satisfied
-  if (user.totalGamesPlayed < MIN_GAMES_REQUIRED) {
+  // Check: Min game count satisfied. If user is a paid Patron, they can bypass this check
+  if (!patreonRewards && user.totalGamesPlayed < MIN_GAMES_REQUIRED) {
     return {
       valid: false,
       errMsg: `You must play at least 100 games to submit a custom avatar request. You have played ${user.totalGamesPlayed} games.`,
