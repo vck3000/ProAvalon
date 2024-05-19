@@ -130,7 +130,7 @@ describe('S3Agent', () => {
     expect(mockS3Controller.moveFile).not.toHaveBeenCalled();
   });
 
-  it('Reverts overall avatar approval if one fails', async () => {
+  it('reverts overall avatar approval if one fails', async () => {
     mockS3Controller.moveFile.mockResolvedValueOnce(undefined);
     mockS3Controller.moveFile.mockRejectedValueOnce(
       new Error('Move File failed'),
@@ -190,5 +190,34 @@ describe('S3Agent', () => {
 
     expect(errorCaught).toEqual(true);
     expect(mockS3Controller.deleteFile).not.toHaveBeenCalled();
+  });
+
+  it('gets the approved avatar IDs for a user in ascending order', async () => {
+    mockS3Controller.listObjectKeys.mockResolvedValueOnce([
+      'approved_avatars/usernamelower/usernamelower_res_1.png',
+      'approved_avatars/usernamelower/usernamelower_res_11.png',
+      'approved_avatars/usernamelower/usernamelower_res_2.png',
+      'approved_avatars/usernamelower/usernamelower_res_3.png',
+    ]);
+
+    const result1 = await s3Agent.getApprovedAvatarIdsForUser('usernamelower');
+
+    expect(result1).toEqual([1, 2, 3, 11]);
+
+    expect(mockS3Controller.listObjectKeys).toHaveBeenCalledWith([
+      `approved_avatars/usernamelower/usernamelower_res_`,
+    ]);
+  });
+
+  it('returns an empty array for users with no approved avatars', async () => {
+    mockS3Controller.listObjectKeys.mockResolvedValueOnce([]);
+
+    const result1 = await s3Agent.getApprovedAvatarIdsForUser('usernamelower');
+
+    expect(result1).toEqual([]);
+
+    expect(mockS3Controller.listObjectKeys).toHaveBeenCalledWith([
+      `approved_avatars/usernamelower/usernamelower_res_`,
+    ]);
   });
 });
