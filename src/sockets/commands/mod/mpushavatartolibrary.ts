@@ -8,7 +8,7 @@ import { getAvatarLibrarySizeForUser } from '../../../rewards/getRewards';
 
 export const mpushavatartolibrary: Command = {
   command: 'mpushavatartolibrary',
-  help: "/mpushavatartolibrary <player name> <avatar id>: Add an approved avatar ID to a user's avatar library. It will remove the oldest avatar if the max avatar library size has been exceeded.",
+  help: "/mpushavatartolibrary <player name> <avatar id>: Add an approved avatar ID to a user's avatar library. It will remove the oldest avatar in their library if the max avatar library size has been exceeded.",
   async run(args: string[], senderSocket: SocketUser) {
     if (args.length !== 3) {
       sendReplyToCommand(senderSocket, 'Please specify <username> <avatar id>');
@@ -43,7 +43,7 @@ export const mpushavatartolibrary: Command = {
     if (user.avatarLibrary.includes(toBeAddedAvatarId)) {
       sendReplyToCommand(
         senderSocket,
-        `Avatar ID already exists in users library: [${user.avatarLibrary}]`,
+        `Avatar ID already exists in user's library: [${user.avatarLibrary}]`,
       );
       return;
     }

@@ -41,7 +41,7 @@ export async function getPatreonRewardTierForUser(
     }
   }
 
-  return highestTierReward ? highestTierReward : null;
+  return highestTierReward;
 }
 
 export async function getAllRewardsForUser(user: IUser): Promise<RewardType[]> {
