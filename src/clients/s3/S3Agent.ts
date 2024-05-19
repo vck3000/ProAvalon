@@ -1,3 +1,6 @@
+import User from '../../models/user';
+import { getAvatarLibrarySizeForUser } from '../../rewards/getRewards';
+
 enum FolderName {
   APPROVED = 'approved_avatars',
   PENDING = 'pending_avatars',
@@ -11,12 +14,8 @@ interface S3AvatarLinks {
 }
 
 export interface IS3Controller {
-  listObjectKeys(prefixes: string[]): any;
-  uploadFile(
-    key: string,
-    fileContent: Buffer,
-    contentType: string,
-  ): any;
+  listObjectKeys(prefixes: string[]): Promise<string[]>;
+  uploadFile(key: string, fileContent: Buffer, contentType: string): any;
   deleteFile(link: string): any;
   moveFile(oldLink: string, newLink: string): any;
 }
@@ -160,5 +159,21 @@ export class S3Agent {
       s3AvatarLinks.resLink.includes(FolderName.PENDING) &&
       s3AvatarLinks.spyLink.includes(FolderName.PENDING)
     );
+  }
+
+  public async getApprovedAvatarIdsForUser(usernameLower: string) {
+    // Assumes each res avatar has a corresponding spy avatar with same id
+    const existingResObjectKeys = await this.s3Controller.listObjectKeys([
+      `${FolderName.APPROVED}/${usernameLower}/${usernameLower}_res_`,
+    ]);
+
+    return existingResObjectKeys
+      .map((key) => {
+        // Match format: Number of digits following _res_
+        const match = key.match(/_res_(\d+)/);
+        return match ? Number(match[1]) : NaN;
+      })
+      .filter((approvedAvatarId) => !isNaN(approvedAvatarId))
+      .sort((a, b) => a - b);
   }
 }
