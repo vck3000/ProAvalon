@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export function AvatarHomeUi() {
   const [currentResImgLink, setCurrentResImgLink] = useState(
@@ -7,6 +7,19 @@ export function AvatarHomeUi() {
   const [currentSpyImgLink, setCurrentSpyImgLink] = useState(
     '../../avatars/base-spy.svg',
   );
+
+  useEffect(() => {
+    const fetchUserAvatar = async () => {
+      const data = await fetch('/profile/1/avatar/avatarinfo');
+      const result = await data.json();
+
+      // TODO-kev: Remove the loading for this?
+      setCurrentResImgLink(result.resLink);
+      setCurrentSpyImgLink(result.spyLink);
+    };
+
+    fetchUserAvatar().catch(console.error);
+  }, []);
 
   return (
     <div>

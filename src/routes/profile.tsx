@@ -215,6 +215,23 @@ router.get(
   },
 );
 
+router.get(
+  '/:profileUsername/avatar/avatarinfo',
+  checkProfileOwnership,
+  async (req, res) => {
+    const user = await User.findOne({
+      usernameLower: req.params.profileUsername.toLowerCase(),
+    });
+
+    const result = {
+      resLink: user.avatarImgRes,
+      spyLink: user.avatarImgSpy,
+    };
+
+    res.send(result);
+  },
+);
+
 // Change a users current avatar
 router.post(
   '/:profileUsername/avatar/changeavatar',
