@@ -174,6 +174,7 @@ router.post(
   },
 );
 
+// Show the user's avatar homepage
 router.get(
   '/:profileUsername/avatarhome',
   checkProfileOwnership,
@@ -214,7 +215,7 @@ router.get(
   },
 );
 
-// Change avatar
+// Change a users current avatar
 router.post(
   '/:profileUsername/avatar/changeavatar',
   checkProfileOwnership,
@@ -240,9 +241,9 @@ router.post(
   },
 );
 
-// Show the customavatar edit page
+// Show the custom avatar submission page
 router.get(
-  '/:profileUsername/changeavatar',
+  '/:profileUsername/customavatar',
   checkProfileOwnership,
   (req, res) => {
     User.findOne(
@@ -300,9 +301,9 @@ const upload = function (req, res, next) {
   });
 };
 
-// Update the customavatar
+// Submit a custom avatar request
 router.post(
-  '/:profileUsername/changeavatar',
+  '/:profileUsername/customavatar',
   checkProfileOwnership,
   upload,
   async (req, res) => {

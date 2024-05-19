@@ -31,7 +31,10 @@ export function AvatarHomeUi() {
           src={currentSpyImgLink}
         ></img>
       </div>
-      <p>hesesello</p>
+      {/*TODO-kev: Edit the below hardcoded username*/}
+      <a className="btn btn-info" href="/profile/1/customavatar">
+        Submit a custom Avatar
+      </a>
     </div>
   );
 }

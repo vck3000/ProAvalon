@@ -155,7 +155,7 @@ $(document).ready(() => {
 
                 axios({
                     method: 'POST',
-                    url: '/profile/<%= username %>/changeavatar',
+                    url: '/profile/<%= username %>/customavatar',
                     data: bodyFormData,
                 })
                     .then(function (response) {
