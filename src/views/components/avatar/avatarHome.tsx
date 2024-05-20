@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import avatar from './index';
 
 export function AvatarHomeUi() {
   const [currentResImgLink, setCurrentResImgLink] = useState(
@@ -8,25 +9,46 @@ export function AvatarHomeUi() {
     '../../avatars/base-spy.svg',
   );
   const [avatarLibrary, setAvatarLibrary] = useState([]);
-  const [selectedAvatarId, setSelectedAvatarId] = useState(null);
+  const [selectedAvatarResLink, setSelectedAvatarResLink] = useState(null);
+  const [selectedAvatarSpyLink, setSelectedAvatarSpyLink] = useState(null);
 
   useEffect(() => {
     // TODO-kev: Figure out why this runs 8 times
     const fetchUserAvatarInfo = async () => {
+      // TODO-kev: Remove hardcoded username
       const data = await fetch('/profile/1/avatar/avatarinfo');
       const result = await data.json();
 
       // TODO-kev: Remove the loading for this?
-      setCurrentResImgLink(result.currentResLink);
-      setCurrentSpyImgLink(result.currentSpyLink);
+      if (result.currentResLink) {
+        setCurrentResImgLink(result.currentResLink);
+      }
+      if (result.currentSpyLink) {
+        setCurrentSpyImgLink(result.currentSpyLink);
+      }
+
       setAvatarLibrary(result.avatarLibrary);
     };
 
     fetchUserAvatarInfo().catch(console.error);
   }, []);
 
-  const changeAvatarRequest = () => {
-    console.log(selectedAvatarId);
+  const changeAvatarRequest = async () => {
+    const response = await fetch('/profile/1/avatar/changeavatar', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        resLink: selectedAvatarResLink,
+        spyLink: selectedAvatarSpyLink,
+      }),
+    });
+  };
+
+  const handleChangeAvatarRadio = (resLink: string, spyLink: string) => {
+    setSelectedAvatarResLink(resLink);
+    setSelectedAvatarSpyLink(spyLink);
   };
 
   return (
@@ -80,7 +102,9 @@ export function AvatarHomeUi() {
                 type="radio"
                 name="avatarLibrarySet"
                 value={avatarSet.id}
-                onChange={() => setSelectedAvatarId(avatarSet.id)}
+                onChange={() =>
+                  handleChangeAvatarRadio(avatarSet.resLink, avatarSet.spyLink)
+                }
               />
               <img
                 src={avatarSet.resLink}

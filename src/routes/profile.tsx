@@ -243,6 +243,33 @@ router.post(
   checkProfileOwnership,
   async (req, res) => {
     const user = await User.findOne({
+      usernameLower: req.user.usernameLower,
+    });
+
+    if (
+      user.avatarImgRes === req.body.resLink ||
+      user.avatarImgSpy === req.body.spyLink
+    ) {
+      res.status(400).send('You are already using this avatar.');
+      return;
+    }
+
+    user.avatarImgRes = req.body.resLink;
+    user.avatarImgSpy = req.body.spyLink;
+
+    await user.save();
+
+    res.status(200).send('Successfully changed avatar.');
+  },
+);
+
+// TODO-kev: Delete below before final merge. Old route for testing purposes
+// Change a users current avatar
+router.post(
+  '/:profileUsername/avatar/changeavatarold',
+  checkProfileOwnership,
+  async (req, res) => {
+    const user = await User.findOne({
       usernameLower: req.params.profileUsername.toLowerCase(),
     });
 

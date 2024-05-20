@@ -99,8 +99,8 @@
         const currentAvatarDiv = document.querySelector("#currentAvatarSetDivOld");
         let resImg = document.createElement('img');
         let spyImg = document.createElement('img');
-        resImg.src = '<%= avatarImgRes ? avatarImgRes : "../../avatars/base-res.png" %>';
-        spyImg.src = '<%= avatarImgSpy ? avatarImgSpy : "../../avatars/base-spy.png" %>';
+        resImg.src = '<%= avatarImgRes ? avatarImgRes : "../../avatars/base-res.svg" %>';
+        spyImg.src = '<%= avatarImgSpy ? avatarImgSpy : "../../avatars/base-spy.svg" %>';
         resImg.classList.add('avatarImg');
         spyImg.classList.add('avatarImg');
         currentAvatarDiv.appendChild(resImg);
@@ -157,7 +157,7 @@
                         Swal.showLoading();
                         axios({
                             method: 'POST',
-                            url: '/profile/<%= username %>/avatar/changeavatar',
+                            url: '/profile/<%= username %>/avatar/changeavatarold',
                             data: {
                                 resLink: avatarSet.resLink,
                                 spyLink: avatarSet.spyLink,
