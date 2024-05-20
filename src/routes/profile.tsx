@@ -18,6 +18,7 @@ import AvatarRequest from '../models/avatarRequest';
 import { renderToString } from 'react-dom/server';
 import AvatarHome from '../views/components/avatar';
 import React from 'react';
+import { isMod } from '../modsadmins/mods';
 
 const s3Controller = new S3Controller();
 const s3Agent = new S3Agent(s3Controller);
@@ -244,7 +245,7 @@ router.post(
     const patronDetails = patreonAgent.findOrUpdateExistingPatronDetails(
       req.user.usernameLower,
     );
-    if (!patronDetails.isPledgeActive) {
+    if (!isMod(req.user.username) && !patronDetails.isPledgeActive) {
       return res
         .status(403)
         .send('You need to be a Patreon Supporter to enable this feature.');

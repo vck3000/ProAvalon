@@ -98,6 +98,10 @@ export async function userHasReward(
 export async function getAvatarLibrarySizeForUser(
   usernameLower: string,
 ): Promise<number> {
+  if (isMod(usernameLower)) {
+    return 10;
+  }
+
   const patreonReward = await getPatreonRewardTierForUser(usernameLower);
 
   if (!patreonReward) {
