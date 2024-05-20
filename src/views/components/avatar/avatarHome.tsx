@@ -145,13 +145,14 @@ export function AvatarHomeUi() {
         sets here.
       </h4>
       <br />
+
       <Carousel responsive={responsive}>
         <div>Item 1</div>
         <div>Item 2</div>
         <div>Item 3</div>
         <div>Item 4</div>
       </Carousel>
-      ;
+
       <div id="approvedAvatars" className="scrollableWindow">
         {avatarLibrary.length === 0 ? (
           <p>Your avatar library is currently empty.</p>

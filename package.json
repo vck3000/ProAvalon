@@ -67,6 +67,9 @@
     "uuid": "^3.3.3",
     "validator": "^13.7.0"
   },
+  "resolutions": {
+    "@types/react": "^17.0.2"
+  },
   "nodemonConfig": {
     "ignore": [
       "assets/gameRecordsData/*"
