@@ -22,6 +22,8 @@ import React from 'react';
 const s3Controller = new S3Controller();
 const s3Agent = new S3Agent(s3Controller);
 
+const patreonAgent = new PatreonAgent(new PatreonController());
+
 const router = express.Router();
 
 const MAX_ACTIVE_AVATAR_REQUESTS = 2;
@@ -244,16 +246,31 @@ router.post(
   async (req, res) => {
     // TODO-kev: Consider making sure the avatar is in their library?
 
+    const patronDetails = patreonAgent.findOrUpdateExistingPatronDetails(
+      req.user.usernameLower,
+    );
+
+    if (!patronDetails.isPledgeActive) {
+      return res
+        .status(403)
+        .send('You need to be a Patreon Supporter to enable this feature.');
+    }
+
     const user = await User.findOne({
       usernameLower: req.user.usernameLower,
     });
+
+    if (!user.avatarLibrary.includes(req.body.avatarId)) {
+      return res
+        .status(400)
+        .send('Unable to use an avatar that is not in your avatar library.');
+    }
 
     if (
       user.avatarImgRes === req.body.resLink ||
       user.avatarImgSpy === req.body.spyLink
     ) {
-      res.status(400).send('You are already using this avatar.');
-      return;
+      return res.status(400).send('You are already using this avatar.');
     }
 
     user.avatarImgRes = req.body.resLink;

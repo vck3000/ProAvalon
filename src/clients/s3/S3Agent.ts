@@ -15,7 +15,7 @@ interface S3AvatarLinks {
 
 // TODO-kev: Consider merging this with above
 interface ApprovedAvatarSet {
-  id: number;
+  avatarSetId: number;
   resLink: string;
   spyLink: string;
 }
@@ -195,7 +195,7 @@ export class S3Agent {
 
     user.avatarLibrary.forEach((id) => {
       const avatarSet: ApprovedAvatarSet = {
-        id: id.valueOf(),
+        avatarSetId: id.valueOf(),
         resLink: this.s3Controller.getLinkFromKey(
           `${FolderName.APPROVED}/${usernameLower}/${usernameLower}_res_${id}.png`,
         ),
@@ -210,9 +210,7 @@ export class S3Agent {
   }
 
   private async updateUsersAvatarLibrary(usernameLower: string) {
-    // TODO-kev: Decide if a user should press a button to call this or have it automatically called on page load
-    // Also consider if this function should be in this file or getRewards.ts
-
+    // TODO-kev: Consider if this function should be in this file or getRewards.ts
     const user = await User.findOne({ usernameLower });
     const librarySize = await getAvatarLibrarySizeForUser(usernameLower);
 

@@ -9,6 +9,7 @@ export function AvatarHomeUi() {
     '../../avatars/base-spy.svg',
   );
   const [avatarLibrary, setAvatarLibrary] = useState([]);
+  const [selectedAvatarId, setSelectedAvatarId] = useState(null);
   const [selectedAvatarResLink, setSelectedAvatarResLink] = useState(null);
   const [selectedAvatarSpyLink, setSelectedAvatarSpyLink] = useState(null);
 
@@ -45,6 +46,7 @@ export function AvatarHomeUi() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
+            avatarId: selectedAvatarId,
             resLink: selectedAvatarResLink,
             spyLink: selectedAvatarSpyLink,
           }),
@@ -63,7 +65,12 @@ export function AvatarHomeUi() {
     });
   };
 
-  const handleChangeAvatarRadio = (resLink: string, spyLink: string) => {
+  const handleChangeAvatarRadio = (
+    avatarSetId: number,
+    resLink: string,
+    spyLink: string,
+  ) => {
+    setSelectedAvatarId(avatarSetId);
     setSelectedAvatarResLink(resLink);
     setSelectedAvatarSpyLink(spyLink);
   };
@@ -114,23 +121,27 @@ export function AvatarHomeUi() {
           <p>You currently do not have any approved avatar sets.</p>
         ) : (
           avatarLibrary.map((avatarSet) => (
-            <div key={avatarSet.id} className="avatarSet">
+            <div key={avatarSet.avatarSetId} className="avatarSet">
               <input
                 type="radio"
                 name="avatarLibrarySet"
-                value={avatarSet.id}
+                value={avatarSet.avatarSetId}
                 onChange={() =>
-                  handleChangeAvatarRadio(avatarSet.resLink, avatarSet.spyLink)
+                  handleChangeAvatarRadio(
+                    avatarSet.avatarSetId,
+                    avatarSet.resLink,
+                    avatarSet.spyLink,
+                  )
                 }
               />
               <img
                 src={avatarSet.resLink}
-                alt={`Resistance avatar ${avatarSet.id}`}
+                alt={`Resistance avatar ${avatarSet.avatarSetId}`}
                 className="avatarImg"
               />
               <img
                 src={avatarSet.spyLink}
-                alt={`Spy avatar ${avatarSet.id}`}
+                alt={`Spy avatar ${avatarSet.avatarSetId}`}
                 className="avatarImg"
               />
             </div>
