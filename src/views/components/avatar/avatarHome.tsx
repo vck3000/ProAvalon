@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import avatar from './index';
+import Swal from 'sweetalert2';
 
 export function AvatarHomeUi() {
   const [currentResImgLink, setCurrentResImgLink] = useState(
@@ -33,16 +33,32 @@ export function AvatarHomeUi() {
     fetchUserAvatarInfo().catch(console.error);
   }, []);
 
-  const changeAvatarRequest = async () => {
-    const response = await fetch('/profile/1/avatar/changeavatar', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+  const changeAvatarRequest = () => {
+    Swal.fire({
+      title: 'Sending request',
+      didOpen: async () => {
+        Swal.showLoading();
+        const response = await fetch('/profile/1/avatar/changeavatar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            resLink: selectedAvatarResLink,
+            spyLink: selectedAvatarSpyLink,
+          }),
+        });
+
+        if (response.status === 200) {
+          Swal.close();
+          setCurrentResImgLink(selectedAvatarResLink);
+          setCurrentSpyImgLink(selectedAvatarSpyLink);
+          Swal.fire({ title: await response.text(), icon: 'success' });
+        } else {
+          Swal.close();
+          Swal.fire({ title: await response.text(), icon: 'error' });
+        }
       },
-      body: JSON.stringify({
-        resLink: selectedAvatarResLink,
-        spyLink: selectedAvatarSpyLink,
-      }),
     });
   };
 
