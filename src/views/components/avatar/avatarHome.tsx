@@ -116,7 +116,7 @@ export function AvatarHomeUi() {
       </h4>
       <br />
 
-      <div id="approvedAvatars" className="scrollableWindow alignCenter">
+      <div id="approvedAvatars" className="scrollableWindow">
         {avatarLibrary.length === 0 ? (
           <p>Your avatar library is currently empty.</p>
         ) : (
@@ -150,6 +150,10 @@ export function AvatarHomeUi() {
       </div>
       <br />
 
+      <h4>
+        Currently selected avatar:{' '}
+        {selectedAvatarId ? selectedAvatarId : 'None selected'}
+      </h4>
       <a
         className="btn btn-info"
         id="changeAvatarBtn"

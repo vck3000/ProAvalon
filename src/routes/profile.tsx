@@ -242,9 +242,10 @@ router.post(
   '/:profileUsername/avatar/changeavatar',
   checkProfileOwnership,
   async (req, res) => {
-    const patronDetails = patreonAgent.findOrUpdateExistingPatronDetails(
+    const patronDetails = await patreonAgent.findOrUpdateExistingPatronDetails(
       req.user.usernameLower,
     );
+
     if (!isMod(req.user.username) && !patronDetails.isPledgeActive) {
       return res
         .status(403)
