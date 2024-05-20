@@ -241,12 +241,9 @@ router.post(
   '/:profileUsername/avatar/changeavatar',
   checkProfileOwnership,
   async (req, res) => {
-    // TODO-kev: Consider making sure the avatar is in their library?
-
     const patronDetails = patreonAgent.findOrUpdateExistingPatronDetails(
       req.user.usernameLower,
     );
-
     if (!patronDetails.isPledgeActive) {
       return res
         .status(403)
@@ -262,7 +259,6 @@ router.post(
         .status(400)
         .send('Unable to use an avatar that is not in your avatar library.');
     }
-
     if (
       user.avatarImgRes === req.body.resLink ||
       user.avatarImgSpy === req.body.spyLink
@@ -272,7 +268,6 @@ router.post(
 
     user.avatarImgRes = req.body.resLink;
     user.avatarImgSpy = req.body.spyLink;
-
     await user.save();
 
     res.status(200).send('Successfully changed avatar.');
