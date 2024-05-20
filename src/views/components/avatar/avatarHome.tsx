@@ -8,6 +8,7 @@ export function AvatarHomeUi() {
     '../../avatars/base-spy.svg',
   );
   const [avatarLibrary, setAvatarLibrary] = useState([]);
+  const [selectedAvatarId, setSelectedAvatarId] = useState(null);
 
   useEffect(() => {
     // TODO-kev: Figure out why this runs 8 times
@@ -23,6 +24,10 @@ export function AvatarHomeUi() {
 
     fetchUserAvatarInfo().catch(console.error);
   }, []);
+
+  const changeAvatarRequest = () => {
+    console.log(selectedAvatarId);
+  };
 
   return (
     <div>
@@ -69,16 +74,22 @@ export function AvatarHomeUi() {
         {avatarLibrary.length === 0 ? (
           <p>You currently do not have any approved avatar sets.</p>
         ) : (
-          avatarLibrary.map((avatarSet, index) => (
-            <div key={index} className="avatarSet">
+          avatarLibrary.map((avatarSet) => (
+            <div key={avatarSet.id} className="avatarSet">
+              <input
+                type="radio"
+                name="avatarLibrarySet"
+                value={avatarSet.id}
+                onChange={() => setSelectedAvatarId(avatarSet.id)}
+              />
               <img
                 src={avatarSet.resLink}
-                alt={`Avatar ${avatarSet.id} Res`}
+                alt={`Resistance avatar ${avatarSet.id}`}
                 className="avatarImg"
               />
               <img
                 src={avatarSet.spyLink}
-                alt={`Avatar ${avatarSet.id} Spy`}
+                alt={`Spy avatar ${avatarSet.id}`}
                 className="avatarImg"
               />
             </div>
@@ -87,7 +98,11 @@ export function AvatarHomeUi() {
       </div>
       <br />
 
-      <a className="btn btn-info" id="changeAvatarBtn">
+      <a
+        className="btn btn-info"
+        id="changeAvatarBtn"
+        onClick={() => changeAvatarRequest()}
+      >
         Change avatar
       </a>
 
