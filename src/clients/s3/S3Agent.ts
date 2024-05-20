@@ -188,10 +188,10 @@ export class S3Agent {
   public async getUsersAvatarLibraryLinks(
     usernameLower: string,
   ): Promise<ApprovedAvatarSet[]> {
-    // TODO-kev: Consider updating below function to return user avatar library
     await this.updateUsersAvatarLibrary(usernameLower);
+
+    let avatarLibraryLinks: ApprovedAvatarSet[] = [];
     const user = await User.findOne({ usernameLower });
-    let avatarLibrary: ApprovedAvatarSet[] = [];
 
     user.avatarLibrary.forEach((id) => {
       const avatarSet: ApprovedAvatarSet = {
@@ -203,13 +203,13 @@ export class S3Agent {
           `${FolderName.APPROVED}/${usernameLower}/${usernameLower}_spy_${id}.png`,
         ),
       };
-      avatarLibrary.push(avatarSet);
+      avatarLibraryLinks.push(avatarSet);
     });
 
-    return avatarLibrary;
+    return avatarLibraryLinks;
   }
 
-  public async updateUsersAvatarLibrary(usernameLower: string) {
+  private async updateUsersAvatarLibrary(usernameLower: string) {
     // TODO-kev: Decide if a user should press a button to call this or have it automatically called on page load
     // Also consider if this function should be in this file or getRewards.ts
 
