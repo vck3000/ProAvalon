@@ -159,7 +159,7 @@ export function AvatarHomeUi() {
       <br />
 
       <h4>
-        Currently selected avatar:{' '}
+        Selected avatar ID:{' '}
         {selectedAvatarId ? selectedAvatarId : 'None selected'}
       </h4>
       <a
