@@ -36,6 +36,14 @@ export function AvatarHomeUi() {
   }, []);
 
   const changeAvatarRequest = () => {
+    if (!selectedAvatarId) {
+      Swal.fire({
+        title: 'No avatar selected.',
+        icon: 'error',
+      });
+      return;
+    }
+
     Swal.fire({
       title: 'Sending request',
       didOpen: async () => {

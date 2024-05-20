@@ -232,7 +232,9 @@ export class S3Agent {
         librarySize - user.avatarLibrary.length,
       );
 
-      user.avatarLibrary.push(...approvedAvatarIds.slice(-numAvatarsToAdd));
+      user.avatarLibrary.push(
+        ...approvedAvatarIdsNotInLibrary.slice(-numAvatarsToAdd),
+      );
     } else {
       // Remove oldest avatars
       user.avatarLibrary.splice(0, user.avatarLibrary.length - librarySize);
