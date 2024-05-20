@@ -227,18 +227,17 @@ export class S3Agent {
       (id) => !user.avatarLibrary.includes(id),
     );
 
-    if (user.avatarLibrary.length <= librarySize) {
+    if (user.avatarLibrary.length < librarySize) {
       // Add approved avatars until librarySize is reached OR all approvedAvatarIds are added
       const numAvatarsToAdd = Math.min(
         approvedAvatarIdsNotInLibrary.length,
         librarySize - user.avatarLibrary.length,
       );
 
-      // TODO-kev: Check what does slice(-0) do
       user.avatarLibrary.push(...approvedAvatarIds.slice(-numAvatarsToAdd));
     } else {
       // Remove oldest avatars
-      user.avatarLibrary.splice(0, librarySize);
+      user.avatarLibrary.splice(0, user.avatarLibrary.length - librarySize);
     }
 
     user.markModified('avatarLibrary');
