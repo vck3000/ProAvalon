@@ -186,6 +186,7 @@ router.get(
       usernameLower: req.params.profileUsername.toLowerCase(),
     });
 
+    // TODO-kev: Remove below once library is fully updated. Remains for testing purposes
     const approvedAvatarSetsQuery = await AvatarRequest.find({
       forUsername: user.usernameLower,
     });
@@ -199,10 +200,6 @@ router.get(
       };
       approvedAvatarSets.push(approvedAvatarSet);
     });
-
-    // const patreonQuery = await PatreonId.findOne({
-    //   in_game_username: user.usernameLower,
-    // });
 
     const currentPatreon = true;
     const avatarHomeReact = renderToString(<AvatarHome />);

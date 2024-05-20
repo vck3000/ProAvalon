@@ -101,7 +101,7 @@ export async function getAvatarLibrarySizeForUser(
   const patreonReward = await getPatreonRewardTierForUser(usernameLower);
 
   if (!patreonReward) {
-    return 1;
+    return 0;
   } else if (patreonReward === constants.TIER1_BADGE) {
     return 2;
   } else if (patreonReward === constants.TIER2_BADGE) {

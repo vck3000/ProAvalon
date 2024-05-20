@@ -109,16 +109,16 @@ export function AvatarHomeUi() {
           margin: '2em',
         }}
       />
-      <h3>Approved Avatar Sets*: </h3>
+      <h3>Avatar Library*: </h3>
       <h4>
-        Here are all your approved avatar sets. You can change between them
-        here.
+        Here are all your approved avatar sets. You can change between avatar
+        sets here.
       </h4>
       <br />
 
       <div id="approvedAvatars" className="scrollableWindow alignCenter">
         {avatarLibrary.length === 0 ? (
-          <p>You currently do not have any approved avatar sets.</p>
+          <p>Your avatar library is currently empty.</p>
         ) : (
           avatarLibrary.map((avatarSet) => (
             <div key={avatarSet.avatarSetId} className="avatarSet">
