@@ -233,7 +233,7 @@ router.get(
       ),
     };
 
-    res.send(result);
+    res.status(200).send(result);
   },
 );
 
@@ -242,6 +242,8 @@ router.post(
   '/:profileUsername/avatar/changeavatar',
   checkProfileOwnership,
   async (req, res) => {
+    // TODO-kev: Consider making sure the avatar is in their library?
+
     const user = await User.findOne({
       usernameLower: req.user.usernameLower,
     });

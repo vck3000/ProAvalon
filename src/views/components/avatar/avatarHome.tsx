@@ -14,23 +14,24 @@ export function AvatarHomeUi() {
 
   useEffect(() => {
     // TODO-kev: Figure out why this runs 8 times
-    const fetchUserAvatarInfo = async () => {
+    async function fetchUserAvatarInfo() {
       // TODO-kev: Remove hardcoded username
-      const data = await fetch('/profile/1/avatar/avatarinfo');
-      const result = await data.json();
+      const response = await fetch('/profile/1/avatar/avatarinfo');
+      const data = await response.json();
 
       // TODO-kev: Remove the loading for this?
-      if (result.currentResLink) {
-        setCurrentResImgLink(result.currentResLink);
+      if (data.currentResLink) {
+        setCurrentResImgLink(data.currentResLink);
       }
-      if (result.currentSpyLink) {
-        setCurrentSpyImgLink(result.currentSpyLink);
+      if (data.currentSpyLink) {
+        setCurrentSpyImgLink(data.currentSpyLink);
       }
 
-      setAvatarLibrary(result.avatarLibrary);
-    };
+      setAvatarLibrary(data.avatarLibrary);
+    }
 
-    fetchUserAvatarInfo().catch(console.error);
+    // TODO-kev: What to add for .then() or .catch()? valid json issue
+    fetchUserAvatarInfo();
   }, []);
 
   const changeAvatarRequest = () => {
