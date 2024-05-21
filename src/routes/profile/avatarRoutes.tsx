@@ -29,27 +29,6 @@ router.get('/', (req, res) => {
   res.render('profile/avatarhome', { avatarHomeReact });
 });
 
-// Get a users avatar library links
-router.get('/getallavatars', async (req, res) => {
-  // TODO-kev: Put this function here or when the homepage is first rendered?
-  await getAndUpdatePatreonRewardTierForUser(req.user.usernameLower);
-
-  const user = await User.findOne({
-    usernameLower: req.user.usernameLower,
-  });
-
-  const result = {
-    currentResLink: user.avatarImgRes,
-    currentSpyLink: user.avatarImgSpy,
-    avatarLibrary: await s3Agent.getUsersAvatarLibraryLinks(
-      user.usernameLower,
-      user.avatarLibrary as number[],
-    ),
-  };
-
-  res.status(200).send(result);
-});
-
 // Change a users current avatar
 router.post('/changeavatar', async (req, res) => {
   const patronDetails = await patreonAgent.findOrUpdateExistingPatronDetails(
@@ -83,6 +62,27 @@ router.post('/changeavatar', async (req, res) => {
   await user.save();
 
   res.status(200).send('Successfully changed avatar.');
+});
+
+// Get a users avatar library links
+router.get('/getallavatars', async (req, res) => {
+  // TODO-kev: Put this function here or when the homepage is first rendered?
+  await getAndUpdatePatreonRewardTierForUser(req.user.usernameLower);
+
+  const user = await User.findOne({
+    usernameLower: req.user.usernameLower,
+  });
+
+  const result = {
+    currentResLink: user.avatarImgRes,
+    currentSpyLink: user.avatarImgSpy,
+    avatarLibrary: await s3Agent.getUsersAvatarLibraryLinks(
+      user.usernameLower,
+      user.avatarLibrary as number[],
+    ),
+  };
+
+  res.status(200).send(result);
 });
 
 export default router;

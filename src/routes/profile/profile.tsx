@@ -187,7 +187,7 @@ router.get(
         if (err) {
           console.log(err);
         } else {
-          res.render('profile/changeavatar', {
+          res.render('profile/customavatarsubmission', {
             username: foundUser.username,
             MAX_FILESIZE_STR,
             VALID_DIMENSIONS,
