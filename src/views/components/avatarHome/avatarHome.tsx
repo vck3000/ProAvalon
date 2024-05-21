@@ -195,45 +195,6 @@ export function AvatarHome() {
         {selectedAvatarId ? selectedAvatarId : 'None selected'}
       </h4>
       <br />
-      <div id="approvedAvatars" className="scrollableWindow">
-        {avatarLibrary.length === 0 ? (
-          <p className={'alignCenter'}>
-            Your avatar library is currently empty.
-          </p>
-        ) : (
-          avatarLibrary.map((avatarSet) => (
-            <div key={avatarSet.avatarSetId} className="avatarSet">
-              <input
-                type="radio"
-                name="avatarLibrarySet"
-                value={avatarSet.avatarSetId}
-                onChange={() =>
-                  handleChangeAvatarRadio(
-                    avatarSet.avatarSetId,
-                    avatarSet.resLink,
-                    avatarSet.spyLink,
-                  )
-                }
-              />
-              <img
-                src={avatarSet.resLink}
-                alt={`Resistance avatar ${avatarSet.avatarSetId}`}
-                className="avatarImg"
-              />
-              <img
-                src={avatarSet.spyLink}
-                alt={`Spy avatar ${avatarSet.avatarSetId}`}
-                className="avatarImg"
-              />
-            </div>
-          ))
-        )}
-      </div>
-      <br />
-      <h4>
-        Selected avatar ID:{' '}
-        {selectedAvatarId ? selectedAvatarId : 'None selected'}
-      </h4>
       <a
         className="btn btn-info"
         id="changeAvatarBtn"
