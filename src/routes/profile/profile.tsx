@@ -1,31 +1,22 @@
 // @ts-nocheck
 import express from 'express';
+import imageSize from 'image-size';
+import multer from 'multer';
 import sanitizeHtml from 'sanitize-html';
 import url from 'url';
-import { checkProfileOwnership, isModMiddleware } from './middleware';
-import User from '../models/user';
-import avatarRequest from '../models/avatarRequest';
-import ModLog from '../models/modLog';
-import { createNotification } from '../myFunctions/createNotification';
-import multer from 'multer';
-import imageSize from 'image-size';
-import S3Controller from '../clients/s3/S3Controller';
-import { S3Agent } from '../clients/s3/S3Agent';
-import { PatreonAgent } from '../clients/patreon/patreonAgent';
-import { PatreonController } from '../clients/patreon/patreonController';
-import { getAndUpdatePatreonRewardTierForUser } from '../rewards/getRewards';
-import AvatarRequest from '../models/avatarRequest';
-import { renderToString } from 'react-dom/server';
-import AvatarHome from '../views/components/avatarHome';
-import React from 'react';
-import { isMod } from '../modsadmins/mods';
 
-const s3Controller = new S3Controller();
-const s3Agent = new S3Agent(s3Controller);
+import avatarRoutes from './avatarRoutes';
+import { checkProfileOwnership, isModMiddleware } from '../middleware';
+import User from '../../models/user';
+import avatarRequest from '../../models/avatarRequest';
+import ModLog from '../../models/modLog';
 
-const patreonAgent = new PatreonAgent(new PatreonController());
-
-const router = express.Router();
+import S3Controller from '../../clients/s3/S3Controller';
+import { S3Agent } from '../../clients/s3/S3Agent';
+import { PatreonAgent } from '../../clients/patreon/patreonAgent';
+import { PatreonController } from '../../clients/patreon/patreonController';
+import { createNotification } from '../../myFunctions/createNotification';
+import { getAndUpdatePatreonRewardTierForUser } from '../../rewards/getRewards';
 
 const MAX_ACTIVE_AVATAR_REQUESTS = 2;
 const MIN_GAMES_REQUIRED = 100;
@@ -55,6 +46,13 @@ const sanitizeHtmlAllowedAttributesForumThread = {
   span: ['style'],
   b: ['style'],
 };
+
+const router = express.Router();
+// TODO-kev: investigate error below
+router.use('/avatar', avatarRoutes);
+
+const s3Agent = new S3Agent(new S3Controller());
+const patreonAgent = new PatreonAgent(new PatreonController());
 
 // Show the mod approving rejecting page
 router.get('/avatargetlinktutorial', (req, res) => {
@@ -175,80 +173,6 @@ router.post(
 
     const result = decision ? 'approved' : 'rejected';
     res.status(200).send(`The custom avatar request has been ${result}.`);
-  },
-);
-
-// Show the user's avatar homepage
-router.get(
-  '/:profileUsername/avatarhome',
-  checkProfileOwnership,
-  async (req, res) => {
-    const avatarHomeReact = renderToString(<AvatarHome />);
-    res.render('profile/avatarhome', { avatarHomeReact });
-  },
-);
-
-// Get a users avatar library links
-router.get(
-  '/:profileUsername/avatar/getallavatars',
-  checkProfileOwnership,
-  async (req, res) => {
-    // TODO-kev: Put this function here or when the homepage is first rendered?
-    await getAndUpdatePatreonRewardTierForUser(req.user.usernameLower);
-
-    const user = await User.findOne({
-      usernameLower: req.user.usernameLower,
-    });
-
-    const result = {
-      currentResLink: user.avatarImgRes,
-      currentSpyLink: user.avatarImgSpy,
-      avatarLibrary: await s3Agent.getUsersAvatarLibraryLinks(
-        user.usernameLower,
-        user.avatarLibrary,
-      ),
-    };
-
-    res.status(200).send(result);
-  },
-);
-
-// Change a users current avatar
-router.post(
-  '/:profileUsername/avatar/changeavatar',
-  checkProfileOwnership,
-  async (req, res) => {
-    const patronDetails = await patreonAgent.findOrUpdateExistingPatronDetails(
-      req.user.usernameLower,
-    );
-
-    if (!isMod(req.user.username) && !patronDetails.isPledgeActive) {
-      return res
-        .status(403)
-        .send('You need to be a Patreon Supporter to enable this feature.');
-    }
-
-    const user = await User.findOne({
-      usernameLower: req.user.usernameLower,
-    });
-
-    if (!user.avatarLibrary.includes(req.body.avatarId)) {
-      return res
-        .status(400)
-        .send('Unable to use an avatar that is not in your avatar library.');
-    }
-    if (
-      user.avatarImgRes === req.body.resLink ||
-      user.avatarImgSpy === req.body.spyLink
-    ) {
-      return res.status(400).send('You are already using this avatar.');
-    }
-
-    user.avatarImgRes = req.body.resLink;
-    user.avatarImgSpy = req.body.spyLink;
-    await user.save();
-
-    res.status(200).send('Successfully changed avatar.');
   },
 );
 
@@ -536,28 +460,11 @@ router.post(
   },
 );
 
-const CLIENT_ID = process.env.patreon_client_ID;
-const redirectURL = process.env.patreon_redirectURL;
-
-const loginUrl = url.format({
-  protocol: 'https',
-  host: 'patreon.com',
-  pathname: '/oauth2/authorize',
-  query: {
-    response_type: 'code',
-    client_id: CLIENT_ID,
-    redirect_uri: redirectURL,
-    state: 'chill',
-  },
-});
-
 // show the edit page
 router.get(
   '/:profileUsername/edit',
   checkProfileOwnership,
   async (req, res) => {
-    const patreonAgent = new PatreonAgent(new PatreonController());
-
     const patronDetails = await patreonAgent.findOrUpdateExistingPatronDetails(
       req.params.profileUsername.toLowerCase(),
     );

@@ -21,8 +21,7 @@ export function AvatarHome() {
   useEffect(() => {
     // TODO-kev: Figure out why this runs 8 times
     async function fetchUserAvatarInfo() {
-      // TODO-kev: Remove hardcoded username
-      const response = await fetch('/profile/1/avatar/getallavatars');
+      const response = await fetch('/profile/avatar/getallavatars');
       const data = await response.json();
 
       // TODO-kev: Remove the loading for this?
@@ -52,7 +51,7 @@ export function AvatarHome() {
       title: 'Sending request',
       didOpen: async () => {
         Swal.showLoading();
-        const response = await fetch('/profile/1/avatar/changeavatar', {
+        const response = await fetch('/profile/avatar/changeavatar', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
