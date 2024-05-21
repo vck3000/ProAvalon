@@ -172,6 +172,7 @@ export function AvatarHome() {
               className="avatarSet"
               onClick={() => handleClickOnAvatarInLibrary(avatarSet)}
             >
+              <h3 className="avatarTitle">Avatar {avatarSet.avatarSetId}</h3>
               <img
                 src={avatarSet.resLink}
                 alt={`Resistance avatar ${avatarSet.avatarSetId}`}
