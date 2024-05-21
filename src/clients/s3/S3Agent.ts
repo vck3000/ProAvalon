@@ -1,6 +1,3 @@
-import User from '../../models/user';
-import { getAvatarLibrarySizeForUser } from '../../rewards/getRewards';
-
 enum FolderName {
   APPROVED = 'approved_avatars',
   PENDING = 'pending_avatars',
@@ -14,7 +11,7 @@ interface S3AvatarLinks {
 }
 
 // TODO-kev: Consider merging this with above
-interface ApprovedAvatarSet {
+export interface ApprovedAvatarSet {
   avatarSetId: number;
   resLink: string;
   spyLink: string;
@@ -22,10 +19,14 @@ interface ApprovedAvatarSet {
 
 export interface IS3Controller {
   listObjectKeys(prefixes: string[]): Promise<string[]>;
-  uploadFile(key: string, fileContent: Buffer, contentType: string): any;
-  deleteFile(link: string): any;
-  moveFile(oldLink: string, newLink: string): any;
-  getLinkFromKey(key: string): string;
+  uploadFile(
+    key: string,
+    fileContent: Buffer,
+    contentType: string,
+  ): Promise<string>;
+  deleteFile(link: string): void;
+  moveFile(oldLink: string, newLink: string): void;
+  transformKeyToLink(key: string): string;
 }
 
 export class S3Agent {
@@ -185,62 +186,26 @@ export class S3Agent {
       .sort((a, b) => a - b);
   }
 
+  // Assumes the avatarLibrary is updated accurately
   public async getUsersAvatarLibraryLinks(
     usernameLower: string,
+    avatarLibrary: number[],
   ): Promise<ApprovedAvatarSet[]> {
-    await this.updateUsersAvatarLibrary(usernameLower);
-
     let avatarLibraryLinks: ApprovedAvatarSet[] = [];
-    const user = await User.findOne({ usernameLower });
 
-    user.avatarLibrary.forEach((id) => {
+    avatarLibrary.forEach((avatarId) => {
       const avatarSet: ApprovedAvatarSet = {
-        avatarSetId: id.valueOf(),
-        resLink: this.s3Controller.getLinkFromKey(
-          `${FolderName.APPROVED}/${usernameLower}/${usernameLower}_res_${id}.png`,
+        avatarSetId: avatarId,
+        resLink: this.s3Controller.transformKeyToLink(
+          `${FolderName.APPROVED}/${usernameLower}/${usernameLower}_res_${avatarId}.png`,
         ),
-        spyLink: this.s3Controller.getLinkFromKey(
-          `${FolderName.APPROVED}/${usernameLower}/${usernameLower}_spy_${id}.png`,
+        spyLink: this.s3Controller.transformKeyToLink(
+          `${FolderName.APPROVED}/${usernameLower}/${usernameLower}_spy_${avatarId}.png`,
         ),
       };
       avatarLibraryLinks.push(avatarSet);
     });
 
     return avatarLibraryLinks;
-  }
-
-  private async updateUsersAvatarLibrary(usernameLower: string) {
-    // TODO-kev: Consider if this function should be in this file or getRewards.ts
-    const user = await User.findOne({ usernameLower });
-    const librarySize = await getAvatarLibrarySizeForUser(usernameLower);
-
-    if (user.avatarLibrary.length === librarySize) {
-      return;
-    }
-
-    const approvedAvatarIds = await this.getApprovedAvatarIdsForUser(
-      usernameLower,
-    );
-    const approvedAvatarIdsNotInLibrary = approvedAvatarIds.filter(
-      (id) => !user.avatarLibrary.includes(id),
-    );
-
-    if (user.avatarLibrary.length < librarySize) {
-      // Add approved avatars until librarySize is reached OR all approvedAvatarIds are added
-      const numAvatarsToAdd = Math.min(
-        approvedAvatarIdsNotInLibrary.length,
-        librarySize - user.avatarLibrary.length,
-      );
-
-      user.avatarLibrary.push(
-        ...approvedAvatarIdsNotInLibrary.slice(-numAvatarsToAdd),
-      );
-    } else {
-      // Remove oldest avatars
-      user.avatarLibrary.splice(0, user.avatarLibrary.length - librarySize);
-    }
-
-    user.markModified('avatarLibrary');
-    await user.save();
   }
 }

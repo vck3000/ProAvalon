@@ -1,45 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import Carousel from 'react-multi-carousel';
-import 'react-multi-carousel/lib/styles.css';
+import { ApprovedAvatarSet } from '../../../clients/s3/S3Agent';
 
-const responsive = {
-  superLargeDesktop: {
-    // the naming can be any, depends on you.
-    breakpoint: { max: 4000, min: 3000 },
-    items: 5,
-  },
-  desktop: {
-    breakpoint: { max: 3000, min: 1024 },
-    items: 3,
-  },
-  tablet: {
-    breakpoint: { max: 1024, min: 464 },
-    items: 2,
-  },
-  mobile: {
-    breakpoint: { max: 464, min: 0 },
-    items: 1,
-  },
-};
-
-export function AvatarHomeUi() {
+export function AvatarHome() {
   const [currentResImgLink, setCurrentResImgLink] = useState(
-    '../../avatars/base-res.svg',
+    '/avatars/base-res.svg',
   );
   const [currentSpyImgLink, setCurrentSpyImgLink] = useState(
-    '../../avatars/base-spy.svg',
+    '/avatars/base-spy.svg',
   );
-  const [avatarLibrary, setAvatarLibrary] = useState([]);
-  const [selectedAvatarId, setSelectedAvatarId] = useState(null);
-  const [selectedAvatarResLink, setSelectedAvatarResLink] = useState(null);
-  const [selectedAvatarSpyLink, setSelectedAvatarSpyLink] = useState(null);
+  const [avatarLibrary, setAvatarLibrary] = useState<ApprovedAvatarSet[]>([]);
+  const [selectedAvatarId, setSelectedAvatarId] = useState<number | null>(null);
+  const [selectedAvatarResLink, setSelectedAvatarResLink] = useState<
+    string | null
+  >(null);
+  const [selectedAvatarSpyLink, setSelectedAvatarSpyLink] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
-    // TODO-kev: Figure out why this runs 8 times
     async function fetchUserAvatarInfo() {
-      // TODO-kev: Remove hardcoded username
-      const response = await fetch('/profile/1/avatar/avatarinfo');
+      const response = await fetch('/profile/avatar/getallavatars');
       const data = await response.json();
 
       // TODO-kev: Remove the loading for this?
@@ -53,8 +34,7 @@ export function AvatarHomeUi() {
       setAvatarLibrary(data.avatarLibrary);
     }
 
-    // TODO-kev: What to add for .then() or .catch()? valid json issue
-    fetchUserAvatarInfo();
+    void fetchUserAvatarInfo();
   }, []);
 
   const changeAvatarRequest = () => {
@@ -70,7 +50,7 @@ export function AvatarHomeUi() {
       title: 'Sending request',
       didOpen: async () => {
         Swal.showLoading();
-        const response = await fetch('/profile/1/avatar/changeavatar', {
+        const response = await fetch('/profile/avatar/changeavatar', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -83,9 +63,9 @@ export function AvatarHomeUi() {
         });
 
         if (response.status === 200) {
-          Swal.close();
           setCurrentResImgLink(selectedAvatarResLink);
           setCurrentSpyImgLink(selectedAvatarSpyLink);
+          Swal.close();
           Swal.fire({ title: await response.text(), icon: 'success' });
         } else {
           Swal.close();
@@ -128,8 +108,7 @@ export function AvatarHomeUi() {
           src={currentSpyImgLink}
         ></img>
       </div>
-      {/*TODO-kev: Edit the below hardcoded username*/}
-      <a className="btn btn-info" href="/profile/1/customavatar">
+      <a className="btn btn-info" href="/profile/customavatar/redirect">
         Submit a custom Avatar
       </a>
       <hr
@@ -146,16 +125,11 @@ export function AvatarHomeUi() {
       </h4>
       <br />
 
-      <Carousel responsive={responsive}>
-        <div>Item 1</div>
-        <div>Item 2</div>
-        <div>Item 3</div>
-        <div>Item 4</div>
-      </Carousel>
-
       <div id="approvedAvatars" className="scrollableWindow">
         {avatarLibrary.length === 0 ? (
-          <p>Your avatar library is currently empty.</p>
+          <p className={'alignCenter'}>
+            Your avatar library is currently empty.
+          </p>
         ) : (
           avatarLibrary.map((avatarSet) => (
             <div key={avatarSet.avatarSetId} className="avatarSet">
@@ -186,6 +160,7 @@ export function AvatarHomeUi() {
         )}
       </div>
       <br />
+
       <h4>
         Selected avatar ID:{' '}
         {selectedAvatarId ? selectedAvatarId : 'None selected'}
@@ -197,12 +172,12 @@ export function AvatarHomeUi() {
       >
         Change avatar
       </a>
+
       <h4>*This feature is available to current Patreon supporters.</h4>
       <h4>
         To link your Patreon account or if you would like to support the
         development of the site please do so from your profile page{' '}
-        {/*TODO-kev: Edit the hardcoded link down below*/}
-        <a href="/profile/1/edit">here</a>.
+        <a href="/profile/edit/redirect">here</a>.
       </h4>
     </div>
   );

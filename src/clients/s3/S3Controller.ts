@@ -152,7 +152,7 @@ export default class S3Controller implements IS3Controller {
     return link.startsWith(this.publicFileLinkPrefix);
   }
 
-  public getLinkFromKey(key: string) {
+  public transformKeyToLink(key: string) {
     return `${this.publicFileLinkPrefix}${key}`;
   }
 }

@@ -5,7 +5,7 @@ class MockS3Controller implements IS3Controller {
   uploadFile = jest.fn();
   deleteFile = jest.fn();
   moveFile = jest.fn();
-  getLinkFromKey = jest.fn();
+  transformKeyToLink = jest.fn();
 
   clear() {
     this.listObjectKeys.mockClear();

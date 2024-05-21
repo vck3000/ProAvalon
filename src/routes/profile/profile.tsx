@@ -1,31 +1,21 @@
 // @ts-nocheck
 import express from 'express';
-import sanitizeHtml from 'sanitize-html';
-import url from 'url';
-import { checkProfileOwnership, isModMiddleware } from './middleware';
-import User from '../models/user';
-import avatarRequest from '../models/avatarRequest';
-import ModLog from '../models/modLog';
-import { createNotification } from '../myFunctions/createNotification';
-import multer from 'multer';
 import imageSize from 'image-size';
-import S3Controller from '../clients/s3/S3Controller';
-import { S3Agent } from '../clients/s3/S3Agent';
-import { PatreonAgent } from '../clients/patreon/patreonAgent';
-import { PatreonController } from '../clients/patreon/patreonController';
-import { getPatreonRewardTierForUser } from '../rewards/getRewards';
-import AvatarRequest from '../models/avatarRequest';
-import { renderToString } from 'react-dom/server';
-import AvatarHome from '../views/components/avatar';
-import React from 'react';
-import { isMod } from '../modsadmins/mods';
+import multer from 'multer';
+import sanitizeHtml from 'sanitize-html';
 
-const s3Controller = new S3Controller();
-const s3Agent = new S3Agent(s3Controller);
+import avatarRoutes from './avatarRoutes';
+import { checkProfileOwnership, isModMiddleware } from '../middleware';
+import User from '../../models/user';
+import avatarRequest from '../../models/avatarRequest';
+import ModLog from '../../models/modLog';
 
-const patreonAgent = new PatreonAgent(new PatreonController());
-
-const router = express.Router();
+import S3Controller from '../../clients/s3/S3Controller';
+import { S3Agent } from '../../clients/s3/S3Agent';
+import { PatreonAgent } from '../../clients/patreon/patreonAgent';
+import { PatreonController } from '../../clients/patreon/patreonController';
+import { createNotification } from '../../myFunctions/createNotification';
+import { getAndUpdatePatreonRewardTierForUser } from '../../rewards/getRewards';
 
 const MAX_ACTIVE_AVATAR_REQUESTS = 2;
 const MIN_GAMES_REQUIRED = 100;
@@ -55,6 +45,13 @@ const sanitizeHtmlAllowedAttributesForumThread = {
   span: ['style'],
   b: ['style'],
 };
+
+const router = express.Router();
+// TODO-kev: investigate error below
+router.use('/avatar', avatarRoutes);
+
+const s3Agent = new S3Agent(new S3Controller());
+const patreonAgent = new PatreonAgent(new PatreonController());
 
 // Show the mod approving rejecting page
 router.get('/avatargetlinktutorial', (req, res) => {
@@ -178,153 +175,24 @@ router.post(
   },
 );
 
-// Show the user's avatar homepage
-router.get(
-  '/:profileUsername/avatarhome',
-  checkProfileOwnership,
-  async (req, res) => {
-    const user = await User.findOne({
-      usernameLower: req.params.profileUsername.toLowerCase(),
-    });
-
-    // TODO-kev: Remove below once library is fully updated. Remains for testing purposes
-    const approvedAvatarSetsQuery = await AvatarRequest.find({
-      forUsername: user.usernameLower,
-    });
-
-    let approvedAvatarSets = [];
-
-    approvedAvatarSetsQuery.forEach((avatarSet) => {
-      const approvedAvatarSet = {
-        resLink: avatarSet.resLink,
-        spyLink: avatarSet.spyLink,
-      };
-      approvedAvatarSets.push(approvedAvatarSet);
-    });
-
-    const currentPatreon = true;
-    const avatarHomeReact = renderToString(<AvatarHome />);
-
-    res.render('profile/avatarhome', {
-      username: user.username,
-      avatarImgRes: user.avatarImgRes,
-      avatarImgSpy: user.avatarImgSpy,
-      approvedAvatarSets,
-      currentPatreon,
-      avatarHomeReact,
-    });
-  },
-);
-
-// Get a users avatar library links
-router.get(
-  '/:profileUsername/avatar/avatarinfo',
-  checkProfileOwnership,
-  async (req, res) => {
-    const user = await User.findOne({
-      usernameLower: req.user.usernameLower,
-    });
-
-    const result = {
-      currentResLink: user.avatarImgRes,
-      currentSpyLink: user.avatarImgSpy,
-      avatarLibrary: await s3Agent.getUsersAvatarLibraryLinks(
-        user.usernameLower,
-      ),
-    };
-
-    res.status(200).send(result);
-  },
-);
-
-// Change a users current avatar
-router.post(
-  '/:profileUsername/avatar/changeavatar',
-  checkProfileOwnership,
-  async (req, res) => {
-    const patronDetails = await patreonAgent.findOrUpdateExistingPatronDetails(
-      req.user.usernameLower,
-    );
-
-    if (!isMod(req.user.username) && !patronDetails.isPledgeActive) {
-      return res
-        .status(403)
-        .send('You need to be a Patreon Supporter to enable this feature.');
-    }
-
-    const user = await User.findOne({
-      usernameLower: req.user.usernameLower,
-    });
-
-    if (!user.avatarLibrary.includes(req.body.avatarId)) {
-      return res
-        .status(400)
-        .send('Unable to use an avatar that is not in your avatar library.');
-    }
-    if (
-      user.avatarImgRes === req.body.resLink ||
-      user.avatarImgSpy === req.body.spyLink
-    ) {
-      return res.status(400).send('You are already using this avatar.');
-    }
-
-    user.avatarImgRes = req.body.resLink;
-    user.avatarImgSpy = req.body.spyLink;
-    await user.save();
-
-    res.status(200).send('Successfully changed avatar.');
-  },
-);
-
-// TODO-kev: Delete below before final merge. Old route for testing purposes
-// Change a users current avatar
-router.post(
-  '/:profileUsername/avatar/changeavatarold',
-  checkProfileOwnership,
-  async (req, res) => {
-    const user = await User.findOne({
-      usernameLower: req.params.profileUsername.toLowerCase(),
-    });
-
-    if (
-      user.avatarImgRes === req.body.resLink ||
-      user.avatarImgSpy === req.body.spyLink
-    ) {
-      res.status(400).send('You are already using this avatar.');
-      return;
-    }
-
-    user.avatarImgRes = req.body.resLink;
-    user.avatarImgSpy = req.body.spyLink;
-
-    await user.save();
-
-    res.status(200).send('Successfully changed avatar.');
-  },
-);
-
 // Show the custom avatar submission page
 router.get(
   '/:profileUsername/customavatar',
   checkProfileOwnership,
   (req, res) => {
-    User.findOne(
-      { usernameLower: req.params.profileUsername.toLowerCase() },
-      (err, foundUser) => {
-        if (err) {
-          console.log(err);
-        } else {
-          res.render('profile/changeavatar', {
-            username: foundUser.username,
-            MAX_FILESIZE_STR,
-            VALID_DIMENSIONS,
-            VALID_DIMENSIONS_STR,
-          });
-        }
-      },
-    );
+    res.render('profile/customavatar', {
+      username: req.user.username,
+      MAX_FILESIZE_STR,
+      VALID_DIMENSIONS,
+      VALID_DIMENSIONS_STR,
+    });
   },
 );
+
+// Temporary redirect to the custom avatar submission page. Used where the profileUsername is not easily obtained
+router.get('/customavatar/redirect', async (req, res) => {
+  return res.redirect(`/profile/${req.user.username}/customavatar`);
+});
 
 const storage = multer.memoryStorage();
 const multerMiddleware = multer({
@@ -504,7 +372,7 @@ async function validateUploadAvatarRequest(
     };
   }
 
-  const patreonRewards = await getPatreonRewardTierForUser(
+  const patreonRewards = await getAndUpdatePatreonRewardTierForUser(
     username.toLowerCase(),
   );
 
@@ -587,28 +455,11 @@ router.post(
   },
 );
 
-const CLIENT_ID = process.env.patreon_client_ID;
-const redirectURL = process.env.patreon_redirectURL;
-
-const loginUrl = url.format({
-  protocol: 'https',
-  host: 'patreon.com',
-  pathname: '/oauth2/authorize',
-  query: {
-    response_type: 'code',
-    client_id: CLIENT_ID,
-    redirect_uri: redirectURL,
-    state: 'chill',
-  },
-});
-
 // show the edit page
 router.get(
   '/:profileUsername/edit',
   checkProfileOwnership,
   async (req, res) => {
-    const patreonAgent = new PatreonAgent(new PatreonController());
-
     const patronDetails = await patreonAgent.findOrUpdateExistingPatronDetails(
       req.params.profileUsername.toLowerCase(),
     );
@@ -623,6 +474,11 @@ router.get(
     });
   },
 );
+
+// Temporary redirect to the profile edit page. Used where the profileUsername is not easily obtained
+router.get('/edit/redirect', async (req, res) => {
+  return res.redirect(`/profile/${req.user.username}/edit`);
+});
 
 // update a biography
 router.post('/:profileUsername', checkProfileOwnership, (req, res) => {
