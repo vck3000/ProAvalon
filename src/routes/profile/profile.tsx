@@ -3,7 +3,6 @@ import express from 'express';
 import imageSize from 'image-size';
 import multer from 'multer';
 import sanitizeHtml from 'sanitize-html';
-import url from 'url';
 
 import avatarRoutes from './avatarRoutes';
 import { checkProfileOwnership, isModMiddleware } from '../middleware';
@@ -187,7 +186,7 @@ router.get(
         if (err) {
           console.log(err);
         } else {
-          res.render('profile/customavatarsubmission', {
+          res.render('profile/customavatar', {
             username: foundUser.username,
             MAX_FILESIZE_STR,
             VALID_DIMENSIONS,
@@ -198,6 +197,11 @@ router.get(
     );
   },
 );
+
+// Temporary redirect to the custom avatar submission page. Used where the profileUsername is not easily obtained
+router.get('/customavatar/redirect', async (req, res) => {
+  return res.redirect(`/profile/${req.user.username}/customavatar`);
+});
 
 const storage = multer.memoryStorage();
 const multerMiddleware = multer({
@@ -482,8 +486,7 @@ router.get(
 
 // Temporary redirect to the profile edit page. Used where the profileUsername is not easily obtained
 router.get('/edit/redirect', async (req, res) => {
-  const username = req.user.username;
-  return res.redirect(`/profile/${username}/edit`);
+  return res.redirect(`/profile/${req.user.username}/edit`);
 });
 
 // update a biography
