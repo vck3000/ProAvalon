@@ -13,7 +13,7 @@ import S3Controller from '../clients/s3/S3Controller';
 import { S3Agent } from '../clients/s3/S3Agent';
 import { PatreonAgent } from '../clients/patreon/patreonAgent';
 import { PatreonController } from '../clients/patreon/patreonController';
-import { getPatreonRewardTierForUser } from '../rewards/getRewards';
+import { getAndUpdatePatreonRewardTierForUser } from '../rewards/getRewards';
 import AvatarRequest from '../models/avatarRequest';
 import { renderToString } from 'react-dom/server';
 import AvatarHome from '../views/components/avatarHome';
@@ -184,8 +184,6 @@ router.get(
   checkProfileOwnership,
   async (req, res) => {
     const avatarHomeReact = renderToString(<AvatarHome />);
-    await s3Agent.updateUsersAvatarLibrary(req.user.usernameLower);
-
     res.render('profile/avatarhome', { avatarHomeReact });
   },
 );
@@ -195,6 +193,9 @@ router.get(
   '/:profileUsername/avatar/getallavatars',
   checkProfileOwnership,
   async (req, res) => {
+    // TODO-kev: Put this function here or when the homepage is first rendered?
+    await getAndUpdatePatreonRewardTierForUser(req.user.usernameLower);
+
     const user = await User.findOne({
       usernameLower: req.user.usernameLower,
     });
@@ -452,7 +453,7 @@ async function validateUploadAvatarRequest(
     };
   }
 
-  const patreonRewards = await getPatreonRewardTierForUser(
+  const patreonRewards = await getAndUpdatePatreonRewardTierForUser(
     username.toLowerCase(),
   );
 

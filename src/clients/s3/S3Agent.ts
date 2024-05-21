@@ -1,6 +1,3 @@
-import User from '../../models/user';
-import { getAvatarLibrarySizeForUser } from '../../rewards/getRewards';
-
 enum FolderName {
   APPROVED = 'approved_avatars',
   PENDING = 'pending_avatars',
@@ -206,40 +203,5 @@ export class S3Agent {
     });
 
     return avatarLibraryLinks;
-  }
-
-  public async updateUsersAvatarLibrary(usernameLower: string) {
-    // TODO-kev: Consider if this function should be in this file or getRewards.ts
-    const user = await User.findOne({ usernameLower });
-    const librarySize = await getAvatarLibrarySizeForUser(usernameLower);
-
-    if (user.avatarLibrary.length === librarySize) {
-      return;
-    }
-
-    const approvedAvatarIds = await this.getApprovedAvatarIdsForUser(
-      usernameLower,
-    );
-    const approvedAvatarIdsNotInLibrary = approvedAvatarIds.filter(
-      (id) => !user.avatarLibrary.includes(id),
-    );
-
-    if (user.avatarLibrary.length < librarySize) {
-      // Add approved avatars until librarySize is reached OR all approvedAvatarIds are added
-      const numAvatarsToAdd = Math.min(
-        approvedAvatarIdsNotInLibrary.length,
-        librarySize - user.avatarLibrary.length,
-      );
-
-      user.avatarLibrary.push(
-        ...approvedAvatarIdsNotInLibrary.slice(-numAvatarsToAdd),
-      );
-    } else {
-      // Remove oldest avatars
-      user.avatarLibrary.splice(0, user.avatarLibrary.length - librarySize);
-    }
-
-    user.markModified('avatarLibrary');
-    await user.save();
   }
 }

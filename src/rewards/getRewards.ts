@@ -13,12 +13,16 @@ import { PatreonAgent } from '../clients/patreon/patreonAgent';
 import { IUser } from '../gameplay/types';
 import { PatreonController } from '../clients/patreon/patreonController';
 import constants from './constants';
+import User from '../models/user';
+import { S3Agent } from '../clients/s3/S3Agent';
+import S3Controller from '../clients/s3/S3Controller';
 
-export async function getPatreonRewardTierForUser(
+const s3Agent = new S3Agent(new S3Controller());
+const patreonAgent = new PatreonAgent(new PatreonController());
+
+export async function getAndUpdatePatreonRewardTierForUser(
   usernameLower: string,
 ): Promise<RewardType> {
-  const patreonAgent = new PatreonAgent(new PatreonController());
-
   const patronDetails = await patreonAgent.findOrUpdateExistingPatronDetails(
     usernameLower,
   );
@@ -41,12 +45,14 @@ export async function getPatreonRewardTierForUser(
     }
   }
 
+  await updateUsersAvatarLibrary(usernameLower, highestTierReward);
+
   return highestTierReward;
 }
 
 export async function getAllRewardsForUser(user: IUser): Promise<RewardType[]> {
   const rewardsSatisfied: RewardType[] = [];
-  const patreonReward = await getPatreonRewardTierForUser(
+  const patreonReward = await getAndUpdatePatreonRewardTierForUser(
     user.username.toLowerCase(),
   );
 
@@ -95,14 +101,14 @@ export async function userHasReward(
   return true;
 }
 
-export async function getAvatarLibrarySizeForUser(
+// TODO-kev: update mod command that uses this
+function getAvatarLibrarySizeForUser(
   usernameLower: string,
-): Promise<number> {
+  patreonReward: any,
+): number {
   if (isMod(usernameLower)) {
-    return 10;
+    return 5;
   }
-
-  const patreonReward = await getPatreonRewardTierForUser(usernameLower);
 
   if (!patreonReward) {
     return 0;
@@ -115,4 +121,41 @@ export async function getAvatarLibrarySizeForUser(
   } else if (patreonReward === constants.TIER4_BADGE) {
     return 10;
   }
+}
+
+async function updateUsersAvatarLibrary(
+  usernameLower: string,
+  patreonReward: any,
+) {
+  const user = await User.findOne({ usernameLower });
+  const librarySize = getAvatarLibrarySizeForUser(usernameLower, patreonReward);
+
+  if (user.avatarLibrary.length === librarySize) {
+    return;
+  }
+
+  const approvedAvatarIds = await s3Agent.getApprovedAvatarIdsForUser(
+    usernameLower,
+  );
+  const approvedAvatarIdsNotInLibrary = approvedAvatarIds.filter(
+    (id) => !user.avatarLibrary.includes(id),
+  );
+
+  if (user.avatarLibrary.length < librarySize) {
+    // Add approved avatars until librarySize is reached OR all approvedAvatarIds are added
+    const numAvatarsToAdd = Math.min(
+      approvedAvatarIdsNotInLibrary.length,
+      librarySize - user.avatarLibrary.length,
+    );
+
+    user.avatarLibrary.push(
+      ...approvedAvatarIdsNotInLibrary.slice(-numAvatarsToAdd),
+    );
+  } else {
+    // Remove oldest avatars
+    user.avatarLibrary.splice(0, user.avatarLibrary.length - librarySize);
+  }
+
+  user.markModified('avatarLibrary');
+  await user.save();
 }
