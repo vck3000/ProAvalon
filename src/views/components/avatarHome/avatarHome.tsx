@@ -108,6 +108,12 @@ export function AvatarHome() {
     setSelectedAvatarSpyLink(spyLink);
   };
 
+  const handleClickOnAvatarInLibrary = (avatarSet: ApprovedAvatarSet) => {
+    setSelectedAvatarId(avatarSet.avatarSetId);
+    setSelectedAvatarResLink(avatarSet.resLink);
+    setSelectedAvatarSpyLink(avatarSet.spyLink);
+  };
+
   return (
     <div>
       <h1>
@@ -151,6 +157,9 @@ export function AvatarHome() {
         responsive={responsive}
         infinite={true}
         containerClass="carousel-container"
+        showDots={true}
+        keyBoardControl={true}
+        centerMode={true}
       >
         {avatarLibrary.length === 0 ? (
           <p className={'alignCenter'}>
@@ -158,19 +167,11 @@ export function AvatarHome() {
           </p>
         ) : (
           avatarLibrary.map((avatarSet) => (
-            <div key={avatarSet.avatarSetId} className="avatarSet">
-              <input
-                type="radio"
-                name="avatarLibrarySet"
-                value={avatarSet.avatarSetId}
-                onChange={() =>
-                  handleChangeAvatarRadio(
-                    avatarSet.avatarSetId,
-                    avatarSet.resLink,
-                    avatarSet.spyLink,
-                  )
-                }
-              />
+            <div
+              key={avatarSet.avatarSetId}
+              className="avatarSet"
+              onClick={() => handleClickOnAvatarInLibrary(avatarSet)}
+            >
               <img
                 src={avatarSet.resLink}
                 alt={`Resistance avatar ${avatarSet.avatarSetId}`}
@@ -187,6 +188,12 @@ export function AvatarHome() {
           ))
         )}
       </Carousel>
+      <br />
+      <h4>
+        Selected avatar ID:{' '}
+        {selectedAvatarId ? selectedAvatarId : 'None selected'}
+      </h4>
+      <br />
       <div id="approvedAvatars" className="scrollableWindow">
         {avatarLibrary.length === 0 ? (
           <p className={'alignCenter'}>
