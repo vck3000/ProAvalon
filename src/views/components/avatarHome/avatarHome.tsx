@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { ApprovedAvatarSet } from '../../../clients/s3/S3Agent';
 import Carousel from 'react-multi-carousel';
-// import 'react-multi-carousel/lib/styles.css';
 
 const responsive = {
   superLargeDesktop: {
@@ -42,6 +41,8 @@ export function AvatarHome() {
 
   useEffect(() => {
     async function fetchUserAvatarInfo() {
+      require('react-multi-carousel/lib/styles.css');
+
       const response = await fetch('/profile/avatar/getallavatars');
       const data = await response.json();
 
@@ -152,7 +153,6 @@ export function AvatarHome() {
         <div>Item 3</div>
         <div>Item 4</div>
       </Carousel>
-      ;
       <div id="approvedAvatars" className="scrollableWindow">
         {avatarLibrary.length === 0 ? (
           <p className={'alignCenter'}>
