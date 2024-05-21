@@ -4,11 +4,6 @@ import Swal from 'sweetalert2';
 import { ApprovedAvatarSet } from '../../../clients/s3/S3Agent';
 
 const responsive = {
-  superLargeDesktop: {
-    // the naming can be any, depends on you.
-    breakpoint: { max: 4000, min: 3000 },
-    items: 5,
-  },
   desktop: {
     breakpoint: { max: 3000, min: 1024 },
     items: 3,
@@ -159,6 +154,8 @@ export function AvatarHome() {
         containerClass="carousel-container"
         showDots={true}
         keyBoardControl={true}
+        focusOnSelect={true}
+        removeArrowOnDeviceType={['mobile']}
         centerMode={true}
       >
         {avatarLibrary.length === 0 ? (
