@@ -204,6 +204,7 @@ router.get(
       currentSpyLink: user.avatarImgSpy,
       avatarLibrary: await s3Agent.getUsersAvatarLibraryLinks(
         user.usernameLower,
+        user.avatarLibrary,
       ),
     };
 

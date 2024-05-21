@@ -185,22 +185,21 @@ export class S3Agent {
       .sort((a, b) => a - b);
   }
 
+  // Assumes the avatarLibrary is updated accurately
   public async getUsersAvatarLibraryLinks(
     usernameLower: string,
+    avatarLibrary: number[],
   ): Promise<ApprovedAvatarSet[]> {
-    await this.updateUsersAvatarLibrary(usernameLower);
-
     let avatarLibraryLinks: ApprovedAvatarSet[] = [];
-    const user = await User.findOne({ usernameLower });
 
-    user.avatarLibrary.forEach((id) => {
+    avatarLibrary.forEach((avatarId) => {
       const avatarSet: ApprovedAvatarSet = {
-        avatarSetId: id.valueOf(),
+        avatarSetId: avatarId,
         resLink: this.s3Controller.getLinkFromKey(
-          `${FolderName.APPROVED}/${usernameLower}/${usernameLower}_res_${id}.png`,
+          `${FolderName.APPROVED}/${usernameLower}/${usernameLower}_res_${avatarId}.png`,
         ),
         spyLink: this.s3Controller.getLinkFromKey(
-          `${FolderName.APPROVED}/${usernameLower}/${usernameLower}_spy_${id}.png`,
+          `${FolderName.APPROVED}/${usernameLower}/${usernameLower}_spy_${avatarId}.png`,
         ),
       };
       avatarLibraryLinks.push(avatarSet);
