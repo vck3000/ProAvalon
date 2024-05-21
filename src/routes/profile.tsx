@@ -16,7 +16,7 @@ import { PatreonController } from '../clients/patreon/patreonController';
 import { getPatreonRewardTierForUser } from '../rewards/getRewards';
 import AvatarRequest from '../models/avatarRequest';
 import { renderToString } from 'react-dom/server';
-import AvatarHome from '../views/components/avatar';
+import AvatarHome from '../views/components/avatarHome';
 import React from 'react';
 import { isMod } from '../modsadmins/mods';
 

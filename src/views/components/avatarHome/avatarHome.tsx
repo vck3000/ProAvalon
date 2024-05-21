@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { ApprovedAvatarSet } from '../../../clients/s3/S3Agent';
 
-export function AvatarHomeUi() {
+export function AvatarHome() {
   const [currentResImgLink, setCurrentResImgLink] = useState(
     '/avatars/base-res.svg',
   );
@@ -65,9 +65,9 @@ export function AvatarHomeUi() {
         });
 
         if (response.status === 200) {
-          Swal.close();
           setCurrentResImgLink(selectedAvatarResLink);
           setCurrentSpyImgLink(selectedAvatarSpyLink);
+          Swal.close();
           Swal.fire({ title: await response.text(), icon: 'success' });
         } else {
           Swal.close();
