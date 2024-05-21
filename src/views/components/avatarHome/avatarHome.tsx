@@ -1,6 +1,27 @@
 import React, { useEffect, useState } from 'react';
+import Carousel from 'react-multi-carousel';
 import Swal from 'sweetalert2';
 import { ApprovedAvatarSet } from '../../../clients/s3/S3Agent';
+
+const responsive = {
+  superLargeDesktop: {
+    // the naming can be any, depends on you.
+    breakpoint: { max: 4000, min: 3000 },
+    items: 5,
+  },
+  desktop: {
+    breakpoint: { max: 3000, min: 1024 },
+    items: 3,
+  },
+  tablet: {
+    breakpoint: { max: 1024, min: 464 },
+    items: 2,
+  },
+  mobile: {
+    breakpoint: { max: 464, min: 0 },
+    items: 1,
+  },
+};
 
 export function AvatarHome() {
   const [currentResImgLink, setCurrentResImgLink] = useState(
@@ -19,6 +40,8 @@ export function AvatarHome() {
   >(null);
 
   useEffect(() => {
+    require('react-multi-carousel/lib/styles.css');
+
     async function fetchUserAvatarInfo() {
       const response = await fetch('/profile/avatar/getallavatars');
       const data = await response.json();
@@ -124,7 +147,12 @@ export function AvatarHome() {
         sets here.
       </h4>
       <br />
-
+      <Carousel responsive={responsive}>
+        <div>Item 1</div>
+        <div>Item 2</div>
+        <div>Item 3</div>
+        <div>Item 4eses</div>
+      </Carousel>
       <div id="approvedAvatars" className="scrollableWindow">
         {avatarLibrary.length === 0 ? (
           <p className={'alignCenter'}>
@@ -160,7 +188,6 @@ export function AvatarHome() {
         )}
       </div>
       <br />
-
       <h4>
         Selected avatar ID:{' '}
         {selectedAvatarId ? selectedAvatarId : 'None selected'}
@@ -172,7 +199,6 @@ export function AvatarHome() {
       >
         Change avatar
       </a>
-
       <h4>*This feature is available to current Patreon supporters.</h4>
       <h4>
         To link your Patreon account or if you would like to support the
