@@ -187,6 +187,8 @@ router.get(
       usernameLower: req.params.profileUsername.toLowerCase(),
     });
 
+    await s3Agent.updateUsersAvatarLibrary(req.user.usernameLower);
+
     // TODO-kev: Remove below once library is fully updated. Remains for testing purposes
     const approvedAvatarSetsQuery = await AvatarRequest.find({
       forUsername: user.usernameLower,
@@ -218,7 +220,7 @@ router.get(
 
 // Get a users avatar library links
 router.get(
-  '/:profileUsername/avatar/avatarinfo',
+  '/:profileUsername/avatar/getallavatars',
   checkProfileOwnership,
   async (req, res) => {
     const user = await User.findOne({

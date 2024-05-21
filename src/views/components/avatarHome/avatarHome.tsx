@@ -22,7 +22,7 @@ export function AvatarHome() {
     // TODO-kev: Figure out why this runs 8 times
     async function fetchUserAvatarInfo() {
       // TODO-kev: Remove hardcoded username
-      const response = await fetch('/profile/1/avatar/avatarinfo');
+      const response = await fetch('/profile/1/avatar/getallavatars');
       const data = await response.json();
 
       // TODO-kev: Remove the loading for this?

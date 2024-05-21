@@ -209,7 +209,7 @@ export class S3Agent {
     return avatarLibraryLinks;
   }
 
-  private async updateUsersAvatarLibrary(usernameLower: string) {
+  public async updateUsersAvatarLibrary(usernameLower: string) {
     // TODO-kev: Consider if this function should be in this file or getRewards.ts
     const user = await User.findOne({ usernameLower });
     const librarySize = await getAvatarLibrarySizeForUser(usernameLower);
