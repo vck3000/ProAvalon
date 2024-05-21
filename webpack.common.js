@@ -9,7 +9,14 @@ module.exports = {
     report: './src/views/components/report/hydrate.tsx',
     reportLog: './src/views/components/mod/report/hydrate.tsx',
   },
-  module: {},
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+      },
+    ],
+  },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
   },

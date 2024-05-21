@@ -10,10 +10,6 @@ module.exports = merge(common, {
         use: 'ts-loader',
         exclude: [/node_modules/, /assets/],
       },
-      {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
-      },
     ],
   },
   devtool: 'inline-source-map',
