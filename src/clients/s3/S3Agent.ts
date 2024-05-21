@@ -14,7 +14,7 @@ interface S3AvatarLinks {
 }
 
 // TODO-kev: Consider merging this with above
-interface ApprovedAvatarSet {
+export interface ApprovedAvatarSet {
   avatarSetId: number;
   resLink: string;
   spyLink: string;

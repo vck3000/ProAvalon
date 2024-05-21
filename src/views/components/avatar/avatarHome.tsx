@@ -1,17 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
+import { ApprovedAvatarSet } from '../../../clients/s3/S3Agent';
 
 export function AvatarHomeUi() {
   const [currentResImgLink, setCurrentResImgLink] = useState(
-    '../../avatars/base-res.svg',
+    '/avatars/base-res.svg',
   );
   const [currentSpyImgLink, setCurrentSpyImgLink] = useState(
-    '../../avatars/base-spy.svg',
+    '/avatars/base-spy.svg',
   );
-  const [avatarLibrary, setAvatarLibrary] = useState([]);
-  const [selectedAvatarId, setSelectedAvatarId] = useState(null);
-  const [selectedAvatarResLink, setSelectedAvatarResLink] = useState(null);
-  const [selectedAvatarSpyLink, setSelectedAvatarSpyLink] = useState(null);
+  const [avatarLibrary, setAvatarLibrary] = useState<ApprovedAvatarSet[]>([]);
+  const [selectedAvatarId, setSelectedAvatarId] = useState<number | null>(null);
+  const [selectedAvatarResLink, setSelectedAvatarResLink] = useState<
+    string | null
+  >(null);
+  const [selectedAvatarSpyLink, setSelectedAvatarSpyLink] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     // TODO-kev: Figure out why this runs 8 times
@@ -31,8 +36,7 @@ export function AvatarHomeUi() {
       setAvatarLibrary(data.avatarLibrary);
     }
 
-    // TODO-kev: What to add for .then() or .catch()? valid json issue
-    fetchUserAvatarInfo();
+    void fetchUserAvatarInfo();
   }, []);
 
   const changeAvatarRequest = () => {
