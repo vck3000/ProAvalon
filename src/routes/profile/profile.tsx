@@ -180,21 +180,12 @@ router.get(
   '/:profileUsername/customavatar',
   checkProfileOwnership,
   (req, res) => {
-    User.findOne(
-      { usernameLower: req.params.profileUsername.toLowerCase() },
-      (err, foundUser) => {
-        if (err) {
-          console.log(err);
-        } else {
-          res.render('profile/customavatar', {
-            username: foundUser.username,
-            MAX_FILESIZE_STR,
-            VALID_DIMENSIONS,
-            VALID_DIMENSIONS_STR,
-          });
-        }
-      },
-    );
+    res.render('profile/customavatar', {
+      username: req.user.username,
+      MAX_FILESIZE_STR,
+      VALID_DIMENSIONS,
+      VALID_DIMENSIONS_STR,
+    });
   },
 );
 

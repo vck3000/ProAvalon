@@ -19,7 +19,6 @@ export function AvatarHome() {
   >(null);
 
   useEffect(() => {
-    // TODO-kev: Figure out why this runs 8 times
     async function fetchUserAvatarInfo() {
       const response = await fetch('/profile/avatar/getallavatars');
       const data = await response.json();
@@ -109,8 +108,7 @@ export function AvatarHome() {
           src={currentSpyImgLink}
         ></img>
       </div>
-      {/*TODO-kev: Edit the below hardcoded username*/}
-      <a className="btn btn-info" href="/profile/1/customavatar">
+      <a className="btn btn-info" href="/profile/customavatar/redirect">
         Submit a custom Avatar
       </a>
       <hr
