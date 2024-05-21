@@ -19,10 +19,14 @@ export interface ApprovedAvatarSet {
 
 export interface IS3Controller {
   listObjectKeys(prefixes: string[]): Promise<string[]>;
-  uploadFile(key: string, fileContent: Buffer, contentType: string): any;
-  deleteFile(link: string): any;
-  moveFile(oldLink: string, newLink: string): any;
-  getLinkFromKey(key: string): string;
+  uploadFile(
+    key: string,
+    fileContent: Buffer,
+    contentType: string,
+  ): Promise<string>;
+  deleteFile(link: string): void;
+  moveFile(oldLink: string, newLink: string): void;
+  transformKeyToLink(key: string): string;
 }
 
 export class S3Agent {
@@ -192,10 +196,10 @@ export class S3Agent {
     avatarLibrary.forEach((avatarId) => {
       const avatarSet: ApprovedAvatarSet = {
         avatarSetId: avatarId,
-        resLink: this.s3Controller.getLinkFromKey(
+        resLink: this.s3Controller.transformKeyToLink(
           `${FolderName.APPROVED}/${usernameLower}/${usernameLower}_res_${avatarId}.png`,
         ),
-        spyLink: this.s3Controller.getLinkFromKey(
+        spyLink: this.s3Controller.transformKeyToLink(
           `${FolderName.APPROVED}/${usernameLower}/${usernameLower}_spy_${avatarId}.png`,
         ),
       };
