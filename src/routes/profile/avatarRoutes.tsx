@@ -27,8 +27,6 @@ const router = new Router();
 router.get('/', (req, res) => {
   const avatarHomeReact = renderToString(<AvatarHome />);
   res.render('profile/avatarhome', { avatarHomeReact });
-
-  console.log('HERE');
 });
 
 // Get a users avatar library links

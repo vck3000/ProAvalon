@@ -480,6 +480,12 @@ router.get(
   },
 );
 
+// Temporary redirect to the profile edit page. Used where the profileUsername is not easily obtained
+router.get('/edit/redirect', async (req, res) => {
+  const username = req.user.username;
+  return res.redirect(`/profile/${username}/edit`);
+});
+
 // update a biography
 router.post('/:profileUsername', checkProfileOwnership, (req, res) => {
   // console.log("biography update");

@@ -179,8 +179,7 @@ export function AvatarHome() {
       <h4>
         To link your Patreon account or if you would like to support the
         development of the site please do so from your profile page{' '}
-        {/*TODO-kev: Edit the hardcoded link down below*/}
-        <a href="/profile/1/edit">here</a>.
+        <a href="/profile/edit/redirect">here</a>.
       </h4>
     </div>
   );
