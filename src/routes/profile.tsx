@@ -183,38 +183,10 @@ router.get(
   '/:profileUsername/avatarhome',
   checkProfileOwnership,
   async (req, res) => {
-    const user = await User.findOne({
-      usernameLower: req.params.profileUsername.toLowerCase(),
-    });
-
+    const avatarHomeReact = renderToString(<AvatarHome />);
     await s3Agent.updateUsersAvatarLibrary(req.user.usernameLower);
 
-    // TODO-kev: Remove below once library is fully updated. Remains for testing purposes
-    const approvedAvatarSetsQuery = await AvatarRequest.find({
-      forUsername: user.usernameLower,
-    });
-
-    let approvedAvatarSets = [];
-
-    approvedAvatarSetsQuery.forEach((avatarSet) => {
-      const approvedAvatarSet = {
-        resLink: avatarSet.resLink,
-        spyLink: avatarSet.spyLink,
-      };
-      approvedAvatarSets.push(approvedAvatarSet);
-    });
-
-    const currentPatreon = true;
-    const avatarHomeReact = renderToString(<AvatarHome />);
-
-    res.render('profile/avatarhome', {
-      username: user.username,
-      avatarImgRes: user.avatarImgRes,
-      avatarImgSpy: user.avatarImgSpy,
-      approvedAvatarSets,
-      currentPatreon,
-      avatarHomeReact,
-    });
+    res.render('profile/avatarhome', { avatarHomeReact });
   },
 );
 
@@ -272,33 +244,6 @@ router.post(
 
     user.avatarImgRes = req.body.resLink;
     user.avatarImgSpy = req.body.spyLink;
-    await user.save();
-
-    res.status(200).send('Successfully changed avatar.');
-  },
-);
-
-// TODO-kev: Delete below before final merge. Old route for testing purposes
-// Change a users current avatar
-router.post(
-  '/:profileUsername/avatar/changeavatarold',
-  checkProfileOwnership,
-  async (req, res) => {
-    const user = await User.findOne({
-      usernameLower: req.params.profileUsername.toLowerCase(),
-    });
-
-    if (
-      user.avatarImgRes === req.body.resLink ||
-      user.avatarImgSpy === req.body.spyLink
-    ) {
-      res.status(400).send('You are already using this avatar.');
-      return;
-    }
-
-    user.avatarImgRes = req.body.resLink;
-    user.avatarImgSpy = req.body.spyLink;
-
     await user.save();
 
     res.status(200).send('Successfully changed avatar.');

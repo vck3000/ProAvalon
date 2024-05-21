@@ -130,7 +130,9 @@ export function AvatarHome() {
 
       <div id="approvedAvatars" className="scrollableWindow">
         {avatarLibrary.length === 0 ? (
-          <p>Your avatar library is currently empty.</p>
+          <p className={'alignCenter'}>
+            Your avatar library is currently empty.
+          </p>
         ) : (
           avatarLibrary.map((avatarSet) => (
             <div key={avatarSet.avatarSetId} className="avatarSet">
