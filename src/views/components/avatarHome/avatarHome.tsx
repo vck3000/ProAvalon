@@ -3,7 +3,7 @@ import Carousel from 'react-multi-carousel';
 import Swal from 'sweetalert2';
 import { S3AvatarSet } from '../../../clients/s3/S3Agent';
 import { AllAvatarsRouteReturnType } from '../../../routes/profile/avatarRoutes';
-import './styles.css';
+// import './styles.css';
 
 const responsive = {
   desktop: {
@@ -39,6 +39,7 @@ export function AvatarHome() {
 
   useEffect(() => {
     require('react-multi-carousel/lib/styles.css');
+    require('./styles.css');
 
     async function fetchUserAvatarInfo() {
       const response = await fetch('/profile/avatar/getallavatars');
