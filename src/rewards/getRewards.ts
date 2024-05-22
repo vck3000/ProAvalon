@@ -20,6 +20,7 @@ import S3Controller from '../clients/s3/S3Controller';
 const s3Agent = new S3Agent(new S3Controller());
 const patreonAgent = new PatreonAgent(new PatreonController());
 
+// Returns Patreon Tier for User. Will update the users avatar library based on tier
 export async function getAndUpdatePatreonRewardTierForUser(
   usernameLower: string,
 ): Promise<RewardType> {

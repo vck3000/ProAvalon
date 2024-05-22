@@ -17,10 +17,10 @@ import { isMod } from '../../modsadmins/mods';
 const s3Agent = new S3Agent(new S3Controller());
 const patreonAgent = new PatreonAgent(new PatreonController());
 
+// TODO-kev: Consider moving this out of profile routes in general
 const router = new Router();
 
-// TODO-kev: Add something similar to checkProfileOwnership
-// TODO-kev: Consider moving this out of profile routes in general
+// TODO-kev: Add something similar to checkProfileOwnership? Do i even need this?
 
 // TODO-kev: Should i keep this here? Or move back to profile
 // Show the user's avatar homepage
@@ -66,7 +66,7 @@ router.post('/changeavatar', async (req, res) => {
 
 // Get a users avatar library links
 router.get('/getallavatars', async (req, res) => {
-  // TODO-kev: Put this function here or when the homepage is first rendered?
+  // TODO-kev: Put this function here or when the avatar homepage is first rendered?
   await getAndUpdatePatreonRewardTierForUser(req.user.usernameLower);
 
   const user = await User.findOne({
