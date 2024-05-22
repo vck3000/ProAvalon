@@ -46,6 +46,7 @@ describe('S3Agent', () => {
     );
 
     expect(result).toStrictEqual({
+      avatarSetId: 2,
       resLink: 'publicFileLinkPrefix.com/userexample_res_2.png',
       spyLink: 'publicFileLinkPrefix.com/userexample_spy_2.png',
     });
@@ -101,6 +102,7 @@ describe('S3Agent', () => {
 
   it('approves avatars', async () => {
     await s3Agent.approveAvatarRequest({
+      avatarSetId: 1,
       resLink: 'pending_avatars/userexample_res_1.png',
       spyLink: 'pending_avatars/userexample_spy_1.png',
     });
@@ -119,6 +121,7 @@ describe('S3Agent', () => {
     let errorCaught = false;
     await s3Agent
       .approveAvatarRequest({
+        avatarSetId: 1,
         resLink: 'asdf/userexample_res_1.png',
         spyLink: 'asdf/userexample_spy_1.png',
       })
@@ -139,6 +142,7 @@ describe('S3Agent', () => {
     let errorCaught = false;
     await s3Agent
       .approveAvatarRequest({
+        avatarSetId: 1,
         resLink: 'pending_avatars/userexample_res_1.png',
         spyLink: 'pending_avatars/userexample_spy_1.png',
       })
@@ -165,6 +169,7 @@ describe('S3Agent', () => {
 
   it('rejects avatars', async () => {
     await s3Agent.rejectAvatarRequest({
+      avatarSetId: 1,
       resLink: 'pending_avatars/userexample_res_1.png',
       spyLink: 'pending_avatars/userexample_spy_1.png',
     });
@@ -181,6 +186,7 @@ describe('S3Agent', () => {
     let errorCaught = false;
     await s3Agent
       .rejectAvatarRequest({
+        avatarSetId: 1,
         resLink: 'approved_avatars/userexample_res_1.png',
         spyLink: 'approved_avatars/userexample_spy_1.png',
       })
