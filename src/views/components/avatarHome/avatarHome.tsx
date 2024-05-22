@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Carousel from 'react-multi-carousel';
 import Swal from 'sweetalert2';
-import { ApprovedAvatarSet } from '../../../clients/s3/S3Agent';
+import { S3AvatarSet } from '../../../clients/s3/S3Agent';
 import { AllAvatarsRouteReturnType } from '../../../routes/profile/avatarRoutes';
 import './styles.css';
 
@@ -27,7 +27,7 @@ export function AvatarHome() {
   const [currentSpyImgLink, setCurrentSpyImgLink] = useState(
     '/avatars/base-spy.svg',
   );
-  const [avatarLibrary, setAvatarLibrary] = useState<ApprovedAvatarSet[]>([]);
+  const [avatarLibrary, setAvatarLibrary] = useState<S3AvatarSet[]>([]);
   const [selectedAvatarId, setSelectedAvatarId] = useState<number | null>(null);
   const [selectedAvatarResLink, setSelectedAvatarResLink] = useState<
     string | null
@@ -107,7 +107,7 @@ export function AvatarHome() {
     setSelectedAvatarSpyLink(spyLink);
   };
 
-  const handleClickOnAvatarInLibrary = (avatarSet: ApprovedAvatarSet) => {
+  const handleClickOnAvatarInLibrary = (avatarSet: S3AvatarSet) => {
     setSelectedAvatarId(avatarSet.avatarSetId);
     setSelectedAvatarResLink(avatarSet.resLink);
     setSelectedAvatarSpyLink(avatarSet.spyLink);

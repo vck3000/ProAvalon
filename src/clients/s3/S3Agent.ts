@@ -5,14 +5,7 @@ enum FolderName {
 
 const SUPPORTED_EXTENSIONS = ['png'];
 
-interface S3AvatarSet {
-  avatarSetId: number;
-  resLink: string;
-  spyLink: string;
-}
-
-// TODO-kev: Consider merging this with above
-export interface ApprovedAvatarSet {
+export interface S3AvatarSet {
   avatarSetId: number;
   resLink: string;
   spyLink: string;
@@ -195,11 +188,11 @@ export class S3Agent {
   public async getUsersAvatarLibraryLinks(
     usernameLower: string,
     avatarLibrary: number[],
-  ): Promise<ApprovedAvatarSet[]> {
-    let avatarLibraryLinks: ApprovedAvatarSet[] = [];
+  ): Promise<S3AvatarSet[]> {
+    let avatarLibraryLinks: S3AvatarSet[] = [];
 
     avatarLibrary.forEach((avatarId) => {
-      const avatarSet: ApprovedAvatarSet = {
+      const avatarSet: S3AvatarSet = {
         avatarSetId: avatarId,
         resLink: this.s3Controller.transformKeyToLink(
           `${FolderName.APPROVED}/${usernameLower}/${usernameLower}_res_${avatarId}.png`,

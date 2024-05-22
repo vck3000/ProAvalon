@@ -6,7 +6,7 @@ import { renderToString } from 'react-dom/server';
 import User from '../../models/user';
 import AvatarHome from '../../views/components/avatarHome';
 
-import { ApprovedAvatarSet, S3Agent } from '../../clients/s3/S3Agent';
+import { S3AvatarSet, S3Agent } from '../../clients/s3/S3Agent';
 import S3Controller from '../../clients/s3/S3Controller';
 import { PatreonAgent } from '../../clients/patreon/patreonAgent';
 import { PatreonController } from '../../clients/patreon/patreonController';
@@ -17,7 +17,7 @@ import { isMod } from '../../modsadmins/mods';
 export type AllAvatarsRouteReturnType = {
   currentResLink: string;
   currentSpyLink: string;
-  avatarLibrary: ApprovedAvatarSet[];
+  avatarLibrary: S3AvatarSet[];
 };
 
 const s3Agent = new S3Agent(new S3Controller());
