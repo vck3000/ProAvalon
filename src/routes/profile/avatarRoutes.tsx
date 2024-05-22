@@ -6,13 +6,19 @@ import { renderToString } from 'react-dom/server';
 import User from '../../models/user';
 import AvatarHome from '../../views/components/avatarHome';
 
-import { S3Agent } from '../../clients/s3/S3Agent';
+import { ApprovedAvatarSet, S3Agent } from '../../clients/s3/S3Agent';
 import S3Controller from '../../clients/s3/S3Controller';
 import { PatreonAgent } from '../../clients/patreon/patreonAgent';
 import { PatreonController } from '../../clients/patreon/patreonController';
 
 import { getAndUpdatePatreonRewardTierForUser } from '../../rewards/getRewards';
 import { isMod } from '../../modsadmins/mods';
+
+export type AllAvatarsRouteReturnType = {
+  currentResLink: string;
+  currentSpyLink: string;
+  avatarLibrary: ApprovedAvatarSet[];
+};
 
 const s3Agent = new S3Agent(new S3Controller());
 const patreonAgent = new PatreonAgent(new PatreonController());
@@ -73,7 +79,7 @@ router.get('/getallavatars', async (req, res) => {
     usernameLower: req.user.usernameLower,
   });
 
-  const result = {
+  const result: AllAvatarsRouteReturnType = {
     currentResLink: user.avatarImgRes,
     currentSpyLink: user.avatarImgSpy,
     avatarLibrary: await s3Agent.getUsersAvatarLibraryLinks(

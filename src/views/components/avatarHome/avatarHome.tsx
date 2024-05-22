@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Carousel from 'react-multi-carousel';
 import Swal from 'sweetalert2';
 import { ApprovedAvatarSet } from '../../../clients/s3/S3Agent';
+import { AllAvatarsRouteReturnType } from '../../../routes/profile/avatarRoutes';
 
 const responsive = {
   desktop: {
@@ -40,7 +41,7 @@ export function AvatarHome() {
 
     async function fetchUserAvatarInfo() {
       const response = await fetch('/profile/avatar/getallavatars');
-      const data = await response.json();
+      const data: AllAvatarsRouteReturnType = await response.json();
 
       if (data.currentResLink) {
         setCurrentResImgLink(data.currentResLink);
