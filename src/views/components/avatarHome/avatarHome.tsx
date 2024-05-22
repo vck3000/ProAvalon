@@ -33,6 +33,7 @@ export function AvatarHome() {
   const [selectedAvatarSpyLink, setSelectedAvatarSpyLink] = useState<
     string | null
   >(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     require('react-multi-carousel/lib/styles.css');
@@ -41,7 +42,6 @@ export function AvatarHome() {
       const response = await fetch('/profile/avatar/getallavatars');
       const data = await response.json();
 
-      // TODO-kev: Remove the loading for this?
       if (data.currentResLink) {
         setCurrentResImgLink(data.currentResLink);
       }
@@ -50,8 +50,10 @@ export function AvatarHome() {
       }
 
       setAvatarLibrary(data.avatarLibrary);
+      setIsLoading(false);
     }
 
+    setIsLoading(true);
     void fetchUserAvatarInfo();
   }, []);
 
@@ -108,6 +110,21 @@ export function AvatarHome() {
     setSelectedAvatarResLink(avatarSet.resLink);
     setSelectedAvatarSpyLink(avatarSet.spyLink);
   };
+
+  if (isLoading) {
+    return (
+      <div className="loading-container">
+        <iframe
+          src="https://giphy.com/embed/swhRkVYLJDrCE"
+          width="480"
+          height="270"
+          frameBorder="0"
+          className="giphy-embed"
+          allowFullScreen
+        ></iframe>
+      </div>
+    );
+  }
 
   return (
     <div>

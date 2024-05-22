@@ -101,7 +101,6 @@ export async function userHasReward(
   return true;
 }
 
-// TODO-kev: update mod command that uses this
 function getAvatarLibrarySizeForUser(
   usernameLower: string,
   patreonReward: any,
