@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from 'react';
+import { S3AvatarSet } from '../../../clients/s3/S3Agent';
 
 export function AvatarLibrary() {
+  const [usernameToSearchAvatar, setUsernameToSearchAvatar] = useState<
+    string | null
+  >(null);
+  const [avatarLibrary, setAvatarLibrary] = useState<S3AvatarSet[] | null>(
+    null,
+  );
+
+  const handleGetAvatars = () => {
+    // TODO-kev: Add in the route
+    console.log(usernameToSearchAvatar);
+  };
+
   return (
     <div>
       <h1>
@@ -23,13 +36,16 @@ export function AvatarLibrary() {
           id="getUserAvatarsInput"
           placeholder="Enter username"
           style={{ marginRight: '10px' }}
+          onChange={(e) => setUsernameToSearchAvatar(e.target.value)}
         />
-        <button className="btn btn-warning" id="getUserAvatarsButton">
+        <button
+          className="btn btn-warning"
+          id="getUserAvatarsButton"
+          onClick={handleGetAvatars}
+        >
           Get Avatars
         </button>
       </div>
-
-      <br />
     </div>
   );
 }
