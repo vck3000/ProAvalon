@@ -82,7 +82,7 @@ router.get('/getallavatars', async (req, res) => {
   const result: AllAvatarsRouteReturnType = {
     currentResLink: user.avatarImgRes,
     currentSpyLink: user.avatarImgSpy,
-    avatarLibrary: await s3Agent.getUsersAvatarLibraryLinks(
+    avatarLibrary: s3Agent.getUsersAvatarLibraryLinks(
       user.usernameLower,
       user.avatarLibrary as number[],
     ),

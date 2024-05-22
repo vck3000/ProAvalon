@@ -11,6 +11,11 @@ export interface S3AvatarSet {
   spyLink: string;
 }
 
+export interface AllApprovedAvatars {
+  avatarLibrary: S3AvatarSet[];
+  approvedAvatarsNotInLibrary: S3AvatarSet[];
+}
+
 export interface IS3Controller {
   listObjectKeys(prefixes: string[]): Promise<string[]>;
   uploadFile(
@@ -185,10 +190,10 @@ export class S3Agent {
   }
 
   // Assumes the avatarLibrary is updated accurately
-  public async getUsersAvatarLibraryLinks(
+  public getUsersAvatarLibraryLinks(
     usernameLower: string,
     avatarLibrary: number[],
-  ): Promise<S3AvatarSet[]> {
+  ): S3AvatarSet[] {
     let avatarLibraryLinks: S3AvatarSet[] = [];
 
     avatarLibrary.forEach((avatarId) => {
@@ -205,5 +210,28 @@ export class S3Agent {
     });
 
     return avatarLibraryLinks;
+  }
+
+  public async getAllApprovedAvatarsForUser(
+    usernameLower: string,
+    userAvatarLibrary: number[],
+  ): Promise<AllApprovedAvatars> {
+    const approvedAvatarIds = await this.getApprovedAvatarIdsForUser(
+      usernameLower,
+    );
+    const approvedAvatarIdsNotInLibrary = approvedAvatarIds.filter(
+      (avatarId) => !userAvatarLibrary.includes(avatarId),
+    );
+
+    return {
+      avatarLibrary: this.getUsersAvatarLibraryLinks(
+        usernameLower,
+        userAvatarLibrary,
+      ),
+      approvedAvatarsNotInLibrary: this.getUsersAvatarLibraryLinks(
+        usernameLower,
+        approvedAvatarIdsNotInLibrary,
+      ),
+    };
   }
 }

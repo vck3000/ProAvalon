@@ -14,7 +14,7 @@ import ModLog from '../../models/modLog';
 import AvatarLibrary from '../../views/components/avatarLibrary';
 
 import S3Controller from '../../clients/s3/S3Controller';
-import { S3Agent, S3AvatarSet } from '../../clients/s3/S3Agent';
+import { AllApprovedAvatars, S3Agent } from '../../clients/s3/S3Agent';
 import { PatreonAgent } from '../../clients/patreon/patreonAgent';
 import { PatreonController } from '../../clients/patreon/patreonController';
 import { createNotification } from '../../myFunctions/createNotification';
@@ -74,7 +74,8 @@ router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
   });
 });
 
-router.get('/mod/avatarlibrary', isModMiddleware, async (req, res) => {
+// Get all the approved avatars for a user. Only available to mods
+router.get('/mod/approvedavatars', isModMiddleware, async (req, res) => {
   const username = req.query.username as string;
   const user = await User.findOne({ usernameLower: username.toLowerCase() });
 
@@ -82,9 +83,9 @@ router.get('/mod/avatarlibrary', isModMiddleware, async (req, res) => {
     return res.status(400).send(`User does not exist: ${username}.`);
   }
 
-  const result: S3AvatarSet[] = await s3Agent.getUsersAvatarLibraryLinks(
+  const result: AllApprovedAvatars = await s3Agent.getAllApprovedAvatarsForUser(
     user.usernameLower,
-    user.avatarLibrary as number[],
+    user.avatarLibrary,
   );
 
   return res.status(200).send(result);

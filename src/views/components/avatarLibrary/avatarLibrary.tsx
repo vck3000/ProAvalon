@@ -20,12 +20,13 @@ export function AvatarLibrary() {
     }
 
     const response = await fetch(
-      `/profile/mod/avatarlibrary?username=${usernameToSearchAvatar}`,
+      `/profile/mod/approvedavatars?username=${usernameToSearchAvatar}`,
     );
 
     if (response.status === 200) {
       const data: S3AvatarSet[] = await response.json();
       setAvatarLibrary(data);
+      console.log(data);
     } else {
       Swal.fire({ title: await response.text(), icon: 'error' });
     }
