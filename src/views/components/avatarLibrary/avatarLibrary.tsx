@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { S3AvatarSet } from '../../../clients/s3/S3Agent';
+import Swal from 'sweetalert2';
 
 export function AvatarLibrary() {
   const [usernameToSearchAvatar, setUsernameToSearchAvatar] = useState<
@@ -9,9 +10,21 @@ export function AvatarLibrary() {
     null,
   );
 
-  const handleGetAvatars = () => {
-    // TODO-kev: Add in the route
-    console.log(usernameToSearchAvatar);
+  const handleGetAvatars = async () => {
+    if (!usernameToSearchAvatar) {
+      Swal.fire({
+        title: 'Please enter a username.',
+        icon: 'warning',
+      });
+      return;
+    }
+
+    const response = await fetch(
+      `/profile/mod/avatarlibrary?username=${usernameToSearchAvatar}`,
+    );
+    const data: S3AvatarSet[] = await response.json();
+
+    console.log(data);
   };
 
   return (

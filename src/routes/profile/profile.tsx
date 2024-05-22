@@ -14,7 +14,7 @@ import ModLog from '../../models/modLog';
 import AvatarLibrary from '../../views/components/avatarLibrary';
 
 import S3Controller from '../../clients/s3/S3Controller';
-import { S3Agent } from '../../clients/s3/S3Agent';
+import { S3Agent, S3AvatarSet } from '../../clients/s3/S3Agent';
 import { PatreonAgent } from '../../clients/patreon/patreonAgent';
 import { PatreonController } from '../../clients/patreon/patreonController';
 import { createNotification } from '../../myFunctions/createNotification';
@@ -72,6 +72,22 @@ router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
     VALID_DIMENSIONS_STR,
     avatarLibraryReact,
   });
+});
+
+router.get('/mod/avatarlibrary', isModMiddleware, async (req, res) => {
+  const username = req.query.username as string;
+  const user = await User.findOne({ usernameLower: username.toLowerCase() });
+
+  if (!user) {
+    return res.status(400).send(`User does not exist: ${username}.`);
+  }
+
+  const result: S3AvatarSet[] = await s3Agent.getUsersAvatarLibraryLinks(
+    user.usernameLower,
+    user.avatarLibrary as number[],
+  );
+
+  return res.status(200).send(result);
 });
 
 // moderator approve or reject custom avatar requests
