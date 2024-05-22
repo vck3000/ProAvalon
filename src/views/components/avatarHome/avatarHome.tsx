@@ -3,6 +3,7 @@ import Carousel from 'react-multi-carousel';
 import Swal from 'sweetalert2';
 import { ApprovedAvatarSet } from '../../../clients/s3/S3Agent';
 import { AllAvatarsRouteReturnType } from '../../../routes/profile/avatarRoutes';
+import './styles.css';
 
 const responsive = {
   desktop: {
@@ -172,7 +173,6 @@ export function AvatarHome() {
         containerClass="carousel-container"
         showDots={true}
         keyBoardControl={true}
-        focusOnSelect={true}
         removeArrowOnDeviceType={['mobile']}
         centerMode={true}
       >
