@@ -22,9 +22,13 @@ export function AvatarLibrary() {
     const response = await fetch(
       `/profile/mod/avatarlibrary?username=${usernameToSearchAvatar}`,
     );
-    const data: S3AvatarSet[] = await response.json();
 
-    console.log(data);
+    if (response.status === 200) {
+      const data: S3AvatarSet[] = await response.json();
+      setAvatarLibrary(data);
+    } else {
+      Swal.fire({ title: await response.text(), icon: 'error' });
+    }
   };
 
   return (
@@ -34,12 +38,8 @@ export function AvatarLibrary() {
       </h1>
       <br />
       <div id="approvedAvatarsForUser" className="scrollableWindow alignCenter">
-        <p>
-          Here you can see the approved avatars for a user once you input their
-          username below.
-        </p>
+        <p>Here you can see all the approved avatars for a user.</p>
       </div>
-      <br />
 
       <div style={{ display: 'flex', alignItems: 'center', width: '333px' }}>
         <input
