@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { S3AvatarSet } from '../../../clients/s3/S3Agent';
 import Swal from 'sweetalert2';
 import Carousel from 'react-multi-carousel';
-import { AllUserAvatars } from '../../../routes/profile/profile';
+import { AllUserAvatars } from '../../../routes/profile';
 
 const BASE_RES_AVATAR = '/avatars/base-res.svg';
 const BASE_SPY_AVATAR = '/avatars/base-spy.svg';
@@ -36,9 +36,25 @@ export function AvatarLibrary() {
   >(null);
   const [targetUserOtherApprovedAvatars, setTargetUserOtherApprovedAvatars] =
     useState<S3AvatarSet[] | null>(null);
+  const [selectedAvatarLibraryId, setSelectedAvatarLibraryId] = useState<
+    number | null
+  >(null);
+  const [selectedOtherAvatarId, setSelectedOtherAvatarId] = useState<
+    number | null
+  >(null);
+  const [lastSelectedAvatarId, setLastSelectedAvatarId] = useState<
+    number | null
+  >(null);
+  const [lastSelectedAvatarResLink, setLastSelectedAvatarResLink] = useState<
+    string | null
+  >(null);
+  const [lastSelectedAvatarSpyLink, setLastSelectedAvatarSpyLink] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     require('react-multi-carousel/lib/styles.css');
+    require('./styles.css');
   }, []);
 
   const handleGetAvatars = async () => {
@@ -69,6 +85,26 @@ export function AvatarLibrary() {
       Swal.fire({ title: await response.text(), icon: 'error' });
     }
   };
+
+  function handleSetAvatar() {
+    return;
+  }
+
+  const handleClickOnAvatarInLibrary = (avatarSet: S3AvatarSet) => {
+    selectAvatar(avatarSet);
+    setSelectedAvatarLibraryId(avatarSet.avatarSetId);
+  };
+
+  const handleClickOnOtherAvatar = (avatarSet: S3AvatarSet) => {
+    selectAvatar(avatarSet);
+    setSelectedOtherAvatarId(avatarSet.avatarSetId);
+  };
+
+  function selectAvatar(avatarSet: S3AvatarSet) {
+    setLastSelectedAvatarId(avatarSet.avatarSetId);
+    setLastSelectedAvatarResLink(avatarSet.resLink);
+    setLastSelectedAvatarSpyLink(avatarSet.spyLink);
+  }
 
   return (
     <div>
@@ -143,7 +179,15 @@ export function AvatarLibrary() {
                 centerMode={true}
               >
                 {targetUserAvatarLibrary.map((avatarSet) => (
-                  <div key={avatarSet.avatarSetId} className="avatarSet">
+                  <div
+                    key={avatarSet.avatarSetId}
+                    className={`avatarSet ${
+                      selectedAvatarLibraryId === avatarSet.avatarSetId
+                        ? 'selected'
+                        : ''
+                    }`}
+                    onClick={() => handleClickOnAvatarInLibrary(avatarSet)}
+                  >
                     <h3 className="avatarTitle">
                       Avatar {avatarSet.avatarSetId}
                     </h3>
@@ -180,7 +224,15 @@ export function AvatarLibrary() {
                 centerMode={true}
               >
                 {targetUserOtherApprovedAvatars.map((avatarSet) => (
-                  <div key={avatarSet.avatarSetId} className="avatarSet">
+                  <div
+                    key={avatarSet.avatarSetId}
+                    className={`avatarSet ${
+                      selectedOtherAvatarId === avatarSet.avatarSetId
+                        ? 'selected'
+                        : ''
+                    }`}
+                    onClick={() => handleClickOnOtherAvatar(avatarSet)}
+                  >
                     <h3 className="avatarTitle">
                       Avatar {avatarSet.avatarSetId}
                     </h3>
@@ -201,13 +253,32 @@ export function AvatarLibrary() {
               </Carousel>
             </div>
           ) : null}
+
+          {lastSelectedAvatarId ? (
+            <div>
+              <p>
+                Set Avatar {lastSelectedAvatarId} as {targetUsername}'s current
+                avatar
+              </p>
+              <button className="btn btn-warning" onClick={handleGetAvatars}>
+                Set Avatar
+              </button>
+            </div>
+          ) : null}
+
+          {selectedAvatarLibraryId && selectedOtherAvatarId ? (
+            <div>
+              <p>
+                Swap Avatar {selectedAvatarLibraryId} with Avatar{' '}
+                {selectedOtherAvatarId}
+              </p>
+              <button className="btn btn-warning" onClick={handleGetAvatars}>
+                Swap
+              </button>
+            </div>
+          ) : null}
         </div>
       ) : null}
-
-      <br />
-
-      {/*TODO-kev: Consider adding a clear button to clear input*/}
-      <p>Add in a way to swap between avatars here</p>
     </div>
   );
 }

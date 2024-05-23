@@ -1,0 +1,33 @@
+.avatarImg {
+    width: 128px;
+    height: 128px;
+    margin-left: 10px;
+    display: inline-block;
+}
+
+.avatarSet {
+    padding-top: 2em;
+    padding-bottom: 2em;
+    border-radius: 20px;
+}
+
+.react-multi-carousel-item div:hover {
+    border-radius: 20px;
+    transform: scale(1.05);
+    background-color: #e0e0e0;
+}
+
+.react-multi-carousel-item .avatarSet {
+    margin: 1em;
+    cursor: pointer;
+    display: block;
+    text-align: center;
+}
+
+.react-multi-carousel-item .avatarImg {
+    margin: 10px;
+}
+
+.selected {
+    background: #e0e0e0;
+}
