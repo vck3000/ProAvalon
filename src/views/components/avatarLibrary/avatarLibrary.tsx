@@ -4,6 +4,9 @@ import Swal from 'sweetalert2';
 import Carousel from 'react-multi-carousel';
 import { AllUserAvatars } from '../../../routes/profile/profile';
 
+const BASE_RES_AVATAR = '/avatars/base-res.svg';
+const BASE_SPY_AVATAR = '/avatars/base-spy.svg';
+
 const responsive = {
   desktop: {
     breakpoint: { max: 3000, min: 1024 },
@@ -54,8 +57,12 @@ export function AvatarLibrary() {
     if (response.status === 200) {
       const data: AllUserAvatars = await response.json();
       setTargetUsername(inputUsername);
-      setTargetUserResAvatar(data.currentResLink);
-      setTargetUserSpyAvatar(data.currentSpyLink);
+      setTargetUserResAvatar(
+        data.currentResLink ? data.currentResLink : BASE_RES_AVATAR,
+      );
+      setTargetUserSpyAvatar(
+        data.currentSpyLink ? data.currentSpyLink : BASE_SPY_AVATAR,
+      );
       setTargetUserAvatarLibrary(data.avatarLibrary);
       setTargetUserOtherApprovedAvatars(data.approvedAvatarsNotInLibrary);
     } else {
@@ -90,6 +97,18 @@ export function AvatarLibrary() {
         >
           Get Avatars
         </button>
+
+        {targetUsername ? (
+          // TODO-kev: find a way to fix button squishing to the left
+          <button
+            className="btn btn-danger"
+            id="getUserAvatarsButton"
+            style={{ marginLeft: '5px' }}
+            onClick={() => setTargetUsername(null)}
+          >
+            Clear
+          </button>
+        ) : null}
       </div>
 
       {targetUsername ? (
