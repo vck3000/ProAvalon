@@ -3,7 +3,6 @@ import Carousel from 'react-multi-carousel';
 import Swal from 'sweetalert2';
 import { S3AvatarSet } from '../../../clients/s3/S3Agent';
 import { AllAvatarsRouteReturnType } from '../../../routes/profile/avatarRoutes';
-import './styles.css';
 
 const responsive = {
   desktop: {
@@ -38,6 +37,7 @@ export function AvatarHome() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    require('./styles.css');
     require('react-multi-carousel/lib/styles.css');
 
     async function fetchUserAvatarInfo() {
@@ -184,7 +184,9 @@ export function AvatarHome() {
           avatarLibrary.map((avatarSet) => (
             <div
               key={avatarSet.avatarSetId}
-              className="avatarSet"
+              className={`avatarSet ${
+                selectedAvatarId === avatarSet.avatarSetId ? 'selected' : ''
+              }`}
               onClick={() => handleClickOnAvatarInLibrary(avatarSet)}
             >
               <h3 className="avatarTitle">Avatar {avatarSet.avatarSetId}</h3>
