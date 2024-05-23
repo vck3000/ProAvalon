@@ -35,7 +35,7 @@ router.get('/', (req, res) => {
   res.render('profile/avatarhome', { avatarHomeReact });
 });
 
-// Change a users current avatar
+// For a user to change their own current avatar
 router.post('/changeavatar', async (req, res) => {
   const patronDetails = await patreonAgent.findOrUpdateExistingPatronDetails(
     req.user.usernameLower,
@@ -70,8 +70,8 @@ router.post('/changeavatar', async (req, res) => {
   res.status(200).send('Successfully changed avatar.');
 });
 
-// Get a users avatar library links
-router.get('/getallavatars', async (req, res) => {
+// Get a user's avatar library links
+router.get('/getalluseravatars', async (req, res) => {
   // TODO-kev: Put this function here or when the avatar homepage is first rendered?
   await getAndUpdatePatreonRewardTierForUser(req.user.usernameLower);
 

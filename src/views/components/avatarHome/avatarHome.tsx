@@ -41,7 +41,7 @@ export function AvatarHome() {
     require('react-multi-carousel/lib/styles.css');
 
     async function fetchUserAvatarInfo() {
-      const response = await fetch('/profile/avatar/getallavatars');
+      const response = await fetch('/profile/avatar/getalluseravatars');
       const data: AllAvatarsRouteReturnType = await response.json();
 
       if (data.currentResLink) {
@@ -169,7 +169,6 @@ export function AvatarHome() {
       <br />
       <Carousel
         responsive={responsive}
-        infinite={true}
         containerClass="carousel-container"
         showDots={true}
         keyBoardControl={true}
