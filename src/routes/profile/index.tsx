@@ -48,7 +48,7 @@ const sanitizeHtmlAllowedAttributesForumThread = {
 
 const router = express.Router();
 // TODO-kev: investigate error below
-router.use('/avatar', avatarRoutes);
+router.use('/:profileUsername/avatar', avatarRoutes);
 
 const s3Agent = new S3Agent(new S3Controller());
 const patreonAgent = new PatreonAgent(new PatreonController());
