@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { AllApprovedAvatars, S3AvatarSet } from '../../../clients/s3/S3Agent';
+import { S3AvatarSet } from '../../../clients/s3/S3Agent';
 import Swal from 'sweetalert2';
 import Carousel from 'react-multi-carousel';
-import { AllAvatarsRouteReturnType } from '../../../routes/profile/avatarRoutes';
+import { AllUserAvatars } from '../../../routes/profile/profile';
 
 const responsive = {
   desktop: {
     breakpoint: { max: 3000, min: 1024 },
-    items: 3,
+    items: 2,
   },
   tablet: {
     breakpoint: { max: 1024, min: 464 },
@@ -20,21 +20,26 @@ const responsive = {
 };
 
 export function AvatarLibrary() {
-  const [usernameToSearchAvatar, setUsernameToSearchAvatar] = useState<
-    string | null
-  >(null);
-  const [approvedAvatarsNotInLibrary, setApprovedAvatarsNotInLibrary] =
-    useState<S3AvatarSet[] | null>(null);
-  const [avatarLibrary, setAvatarLibrary] = useState<S3AvatarSet[] | null>(
+  const [inputUsername, setInputUsername] = useState<string | null>(null);
+  const [targetUsername, setTargetUsername] = useState<string | null>(null);
+  const [targetUserResAvatar, setTargetUserResAvatar] = useState<string | null>(
     null,
   );
+  const [targetUserSpyAvatar, setTargetUserSpyAvatar] = useState<string | null>(
+    null,
+  );
+  const [targetUserAvatarLibrary, setTargetUserAvatarLibrary] = useState<
+    S3AvatarSet[] | null
+  >(null);
+  const [targetUserOtherApprovedAvatars, setTargetUserOtherApprovedAvatars] =
+    useState<S3AvatarSet[] | null>(null);
 
   useEffect(() => {
     require('react-multi-carousel/lib/styles.css');
   }, []);
 
   const handleGetAvatars = async () => {
-    if (!usernameToSearchAvatar) {
+    if (!inputUsername) {
       Swal.fire({
         title: 'Please enter a username.',
         icon: 'warning',
@@ -43,13 +48,16 @@ export function AvatarLibrary() {
     }
 
     const response = await fetch(
-      `/profile/mod/approvedavatars?username=${usernameToSearchAvatar}`,
+      `/profile/mod/approvedavatars?username=${inputUsername}`,
     );
 
     if (response.status === 200) {
-      const data: AllApprovedAvatars = await response.json();
-      setAvatarLibrary(data.avatarLibrary);
-      setApprovedAvatarsNotInLibrary(data.approvedAvatarsNotInLibrary);
+      const data: AllUserAvatars = await response.json();
+      setTargetUsername(inputUsername);
+      setTargetUserResAvatar(data.currentResLink);
+      setTargetUserSpyAvatar(data.currentSpyLink);
+      setTargetUserAvatarLibrary(data.avatarLibrary);
+      setTargetUserOtherApprovedAvatars(data.approvedAvatarsNotInLibrary);
     } else {
       Swal.fire({ title: await response.text(), icon: 'error' });
     }
@@ -58,7 +66,7 @@ export function AvatarLibrary() {
   return (
     <div>
       <h1>
-        <u>Approved Avatars for a User:</u>
+        <u>User's Avatars:</u>
       </h1>
       <br />
       <div id="approvedAvatarsForUser" className="scrollableWindow alignCenter">
@@ -73,7 +81,7 @@ export function AvatarLibrary() {
           id="getUserAvatarsInput"
           placeholder="Enter username"
           style={{ marginRight: '10px' }}
-          onChange={(e) => setUsernameToSearchAvatar(e.target.value)}
+          onChange={(e) => setInputUsername(e.target.value)}
         />
         <button
           className="btn btn-warning"
@@ -83,6 +91,27 @@ export function AvatarLibrary() {
           Get Avatars
         </button>
       </div>
+
+      {targetUsername ? (
+        <div>
+          <h3>
+            <u>{targetUsername}'s current avatar:</u>
+          </h3>
+          <br />
+          <div className="avatarSet" id="currentAvatarSetDiv">
+            <img
+              alt="Current Resistance Avatar"
+              className="avatarImg"
+              src={targetUserResAvatar}
+            />
+            <img
+              alt="Current Spy Avatar"
+              className="avatarImg"
+              src={targetUserSpyAvatar}
+            />
+          </div>
+        </div>
+      ) : null}
 
       <h3>
         <u>User 1's avatar library:</u>
@@ -95,12 +124,12 @@ export function AvatarLibrary() {
         removeArrowOnDeviceType={['mobile']}
         centerMode={true}
       >
-        {!avatarLibrary || avatarLibrary.length === 0 ? (
+        {!targetUserAvatarLibrary || targetUserAvatarLibrary.length === 0 ? (
           <p className={'alignCenter'}>
             Your avatar library is currently empty.
           </p>
         ) : (
-          avatarLibrary.map((avatarSet) => (
+          targetUserAvatarLibrary.map((avatarSet) => (
             <div key={avatarSet.avatarSetId} className="avatarSet">
               <h3 className="avatarTitle">Avatar {avatarSet.avatarSetId}</h3>
               <img
@@ -131,13 +160,13 @@ export function AvatarLibrary() {
         removeArrowOnDeviceType={['mobile']}
         centerMode={true}
       >
-        {!approvedAvatarsNotInLibrary ||
-        approvedAvatarsNotInLibrary.length === 0 ? (
+        {!targetUserOtherApprovedAvatars ||
+        targetUserOtherApprovedAvatars.length === 0 ? (
           <p className={'alignCenter'}>
             Your avatar library is currently empty.
           </p>
         ) : (
-          approvedAvatarsNotInLibrary.map((avatarSet) => (
+          targetUserOtherApprovedAvatars.map((avatarSet) => (
             <div key={avatarSet.avatarSetId} className="avatarSet">
               <h3 className="avatarTitle">Avatar {avatarSet.avatarSetId}</h3>
               <img

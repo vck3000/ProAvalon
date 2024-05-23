@@ -74,6 +74,11 @@ router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
   });
 });
 
+export interface AllUserAvatars extends AllApprovedAvatars {
+  currentResLink: string | null;
+  currentSpyLink: string | null;
+}
+
 // Get all the approved avatars for a user. Only available to mods
 router.get('/mod/approvedavatars', isModMiddleware, async (req, res) => {
   const username = req.query.username as string;
@@ -83,10 +88,19 @@ router.get('/mod/approvedavatars', isModMiddleware, async (req, res) => {
     return res.status(400).send(`User does not exist: ${username}.`);
   }
 
-  const result: AllApprovedAvatars = await s3Agent.getAllApprovedAvatarsForUser(
-    user.usernameLower,
-    user.avatarLibrary,
-  );
+  const userApprovedAvatars: AllApprovedAvatars =
+    await s3Agent.getAllApprovedAvatarsForUser(
+      user.usernameLower,
+      user.avatarLibrary,
+    );
+
+  const result: AllUserAvatars = {
+    currentResLink: user.avatarImgRes,
+    currentSpyLink: user.avatarImgSpy,
+    avatarLibrary: userApprovedAvatars.avatarLibrary,
+    approvedAvatarsNotInLibrary:
+      userApprovedAvatars.approvedAvatarsNotInLibrary,
+  };
 
   return res.status(200).send(result);
 });
