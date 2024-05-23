@@ -223,11 +223,12 @@ export class S3Agent {
     );
 
     return {
-      avatarLibrary: userAvatarLibrary
-        ? this.getAvatarSetsFromIds(usernameLower, userAvatarLibrary)
-        : null,
+      avatarLibrary:
+        userAvatarLibrary && userAvatarLibrary.length !== 0
+          ? this.getAvatarSetsFromIds(usernameLower, userAvatarLibrary)
+          : null,
       approvedAvatarsNotInLibrary:
-        approvedAvatarIdsNotInLibrary.length === 0
+        approvedAvatarIdsNotInLibrary.length !== 0
           ? this.getAvatarSetsFromIds(
               usernameLower,
               approvedAvatarIdsNotInLibrary,

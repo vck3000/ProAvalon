@@ -99,7 +99,6 @@ export function AvatarLibrary() {
         </button>
 
         {targetUsername ? (
-          // TODO-kev: find a way to fix button squishing to the left
           <button
             className="btn btn-danger"
             id="getUserAvatarsButton"
@@ -133,7 +132,7 @@ export function AvatarLibrary() {
           {targetUserAvatarLibrary ? (
             <div>
               <h3>
-                <u>User 1's avatar library:</u>
+                <u>{targetUsername}'s avatar library:</u>
               </h3>
               <Carousel
                 responsive={responsive}
@@ -169,7 +168,7 @@ export function AvatarLibrary() {
           {targetUserOtherApprovedAvatars ? (
             <div>
               <h3>
-                <u>User 1's approved avatars not in their library:</u>
+                <u>{targetUsername}'s other approved avatars:</u>
               </h3>
 
               <Carousel
