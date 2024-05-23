@@ -189,14 +189,13 @@ export class S3Agent {
       .sort((a, b) => a - b);
   }
 
-  // Assumes the avatarLibrary is updated accurately
-  public getUsersAvatarLibraryLinks(
+  public getAvatarSetsFromIds(
     usernameLower: string,
-    avatarLibrary: number[],
+    avatarIds: number[],
   ): S3AvatarSet[] {
     let avatarLibraryLinks: S3AvatarSet[] = [];
 
-    avatarLibrary.forEach((avatarId) => {
+    avatarIds.forEach((avatarId) => {
       const avatarSet: S3AvatarSet = {
         avatarSetId: avatarId,
         resLink: this.s3Controller.transformKeyToLink(
@@ -224,14 +223,16 @@ export class S3Agent {
     );
 
     return {
-      avatarLibrary: this.getUsersAvatarLibraryLinks(
-        usernameLower,
-        userAvatarLibrary,
-      ),
-      approvedAvatarsNotInLibrary: this.getUsersAvatarLibraryLinks(
-        usernameLower,
-        approvedAvatarIdsNotInLibrary,
-      ),
+      avatarLibrary: userAvatarLibrary
+        ? this.getAvatarSetsFromIds(usernameLower, userAvatarLibrary)
+        : null,
+      approvedAvatarsNotInLibrary:
+        approvedAvatarIdsNotInLibrary.length === 0
+          ? this.getAvatarSetsFromIds(
+              usernameLower,
+              approvedAvatarIdsNotInLibrary,
+            )
+          : null,
     };
   }
 }

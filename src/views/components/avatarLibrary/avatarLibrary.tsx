@@ -129,83 +129,84 @@ export function AvatarLibrary() {
               src={targetUserSpyAvatar}
             />
           </div>
+
+          {targetUserAvatarLibrary ? (
+            <div>
+              <h3>
+                <u>User 1's avatar library:</u>
+              </h3>
+              <Carousel
+                responsive={responsive}
+                containerClass="carousel-container"
+                showDots={true}
+                keyBoardControl={true}
+                removeArrowOnDeviceType={['mobile']}
+                centerMode={true}
+              >
+                {targetUserAvatarLibrary.map((avatarSet) => (
+                  <div key={avatarSet.avatarSetId} className="avatarSet">
+                    <h3 className="avatarTitle">
+                      Avatar {avatarSet.avatarSetId}
+                    </h3>
+                    <img
+                      src={avatarSet.resLink}
+                      alt={`Resistance avatar ${avatarSet.avatarSetId}`}
+                      className="avatarImg"
+                      draggable={false}
+                    />
+                    <img
+                      src={avatarSet.spyLink}
+                      alt={`Spy avatar ${avatarSet.avatarSetId}`}
+                      className="avatarImg"
+                      draggable={false}
+                    />
+                  </div>
+                ))}
+              </Carousel>
+            </div>
+          ) : null}
+
+          {targetUserOtherApprovedAvatars ? (
+            <div>
+              <h3>
+                <u>User 1's approved avatars not in their library:</u>
+              </h3>
+
+              <Carousel
+                responsive={responsive}
+                containerClass="carousel-container"
+                showDots={true}
+                keyBoardControl={true}
+                removeArrowOnDeviceType={['mobile']}
+                centerMode={true}
+              >
+                {targetUserOtherApprovedAvatars.map((avatarSet) => (
+                  <div key={avatarSet.avatarSetId} className="avatarSet">
+                    <h3 className="avatarTitle">
+                      Avatar {avatarSet.avatarSetId}
+                    </h3>
+                    <img
+                      src={avatarSet.resLink}
+                      alt={`Resistance avatar ${avatarSet.avatarSetId}`}
+                      className="avatarImg"
+                      draggable={false}
+                    />
+                    <img
+                      src={avatarSet.spyLink}
+                      alt={`Spy avatar ${avatarSet.avatarSetId}`}
+                      className="avatarImg"
+                      draggable={false}
+                    />
+                  </div>
+                ))}
+              </Carousel>
+            </div>
+          ) : null}
         </div>
       ) : null}
 
-      <h3>
-        <u>User 1's avatar library:</u>
-      </h3>
-      <Carousel
-        responsive={responsive}
-        containerClass="carousel-container"
-        showDots={true}
-        keyBoardControl={true}
-        removeArrowOnDeviceType={['mobile']}
-        centerMode={true}
-      >
-        {!targetUserAvatarLibrary || targetUserAvatarLibrary.length === 0 ? (
-          <p className={'alignCenter'}>
-            Your avatar library is currently empty.
-          </p>
-        ) : (
-          targetUserAvatarLibrary.map((avatarSet) => (
-            <div key={avatarSet.avatarSetId} className="avatarSet">
-              <h3 className="avatarTitle">Avatar {avatarSet.avatarSetId}</h3>
-              <img
-                src={avatarSet.resLink}
-                alt={`Resistance avatar ${avatarSet.avatarSetId}`}
-                className="avatarImg"
-                draggable={false}
-              />
-              <img
-                src={avatarSet.spyLink}
-                alt={`Spy avatar ${avatarSet.avatarSetId}`}
-                className="avatarImg"
-                draggable={false}
-              />
-            </div>
-          ))
-        )}
-      </Carousel>
-
-      <h3>
-        <u>User 1's approved avatars not in their library:</u>
-      </h3>
-      <Carousel
-        responsive={responsive}
-        containerClass="carousel-container"
-        showDots={true}
-        keyBoardControl={true}
-        removeArrowOnDeviceType={['mobile']}
-        centerMode={true}
-      >
-        {!targetUserOtherApprovedAvatars ||
-        targetUserOtherApprovedAvatars.length === 0 ? (
-          <p className={'alignCenter'}>
-            Your avatar library is currently empty.
-          </p>
-        ) : (
-          targetUserOtherApprovedAvatars.map((avatarSet) => (
-            <div key={avatarSet.avatarSetId} className="avatarSet">
-              <h3 className="avatarTitle">Avatar {avatarSet.avatarSetId}</h3>
-              <img
-                src={avatarSet.resLink}
-                alt={`Resistance avatar ${avatarSet.avatarSetId}`}
-                className="avatarImg"
-                draggable={false}
-              />
-              <img
-                src={avatarSet.spyLink}
-                alt={`Spy avatar ${avatarSet.avatarSetId}`}
-                className="avatarImg"
-                draggable={false}
-              />
-            </div>
-          ))
-        )}
-      </Carousel>
-
       <br />
+
       {/*TODO-kev: Consider adding a clear button to clear input*/}
       <p>Add in a way to swap between avatars here</p>
     </div>
