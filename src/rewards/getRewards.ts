@@ -24,6 +24,15 @@ const patreonAgent = new PatreonAgent(new PatreonController());
 export async function getAndUpdatePatreonRewardTierForUser(
   usernameLower: string,
 ): Promise<RewardType> {
+  const patreonTier = await getPatreonRewardTierForUser(usernameLower);
+  await updateUsersAvatarLibrary(usernameLower, patreonTier);
+
+  return patreonTier;
+}
+
+async function getPatreonRewardTierForUser(
+  usernameLower: string,
+): Promise<RewardType> {
   const patronDetails = await patreonAgent.findOrUpdateExistingPatronDetails(
     usernameLower,
   );
@@ -45,8 +54,6 @@ export async function getAndUpdatePatreonRewardTierForUser(
       highestDonationAmount = reward.donationReq;
     }
   }
-
-  await updateUsersAvatarLibrary(usernameLower, highestTierReward);
 
   return highestTierReward;
 }
@@ -102,25 +109,31 @@ export async function userHasReward(
   return true;
 }
 
-function getAvatarLibrarySizeForUser(
+export async function getAvatarLibrarySizeForUser(
   usernameLower: string,
-  patreonReward: any,
-): number {
-  if (isMod(usernameLower)) {
-    return 5;
-  }
+  patreonReward?: RewardType,
+): Promise<number> {
+  let librarySize = 0;
 
   if (!patreonReward) {
-    return 0;
-  } else if (patreonReward === constants.TIER1_BADGE) {
-    return 2;
-  } else if (patreonReward === constants.TIER2_BADGE) {
-    return 3;
-  } else if (patreonReward === constants.TIER3_BADGE) {
-    return 5;
-  } else if (patreonReward === constants.TIER4_BADGE) {
-    return 10;
+    patreonReward = await getPatreonRewardTierForUser(usernameLower);
   }
+
+  if (patreonReward === constants.TIER1_BADGE) {
+    librarySize = 2;
+  } else if (patreonReward === constants.TIER2_BADGE) {
+    librarySize = 3;
+  } else if (patreonReward === constants.TIER3_BADGE) {
+    librarySize = 5;
+  } else if (patreonReward === constants.TIER4_BADGE) {
+    librarySize = 10;
+  }
+
+  if (isMod(usernameLower)) {
+    librarySize = Math.max(librarySize, 5);
+  }
+
+  return librarySize;
 }
 
 async function updateUsersAvatarLibrary(
@@ -128,7 +141,10 @@ async function updateUsersAvatarLibrary(
   patreonReward: any,
 ) {
   const user = await User.findOne({ usernameLower });
-  const librarySize = getAvatarLibrarySizeForUser(usernameLower, patreonReward);
+  const librarySize = await getAvatarLibrarySizeForUser(
+    usernameLower,
+    patreonReward,
+  );
 
   if (user.avatarLibrary.length === librarySize) {
     return;

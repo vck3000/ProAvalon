@@ -28,7 +28,7 @@ import communityRoutes from './routes/community';
 import { emailVerificationRoutes } from './routes/emailVerification';
 import lobbyRoutes from './routes/lobby';
 import forumRoutes from './routes/forum';
-import profileRoutes from './routes/profile/profile';
+import profileRoutes from './routes/profile';
 import patreonRoutes from './routes/patreon';
 import modRoutes from './routes/mod';
 import staticifyFactory from 'staticify';

@@ -20,6 +20,13 @@ const responsive = {
   },
 };
 
+type AvatarHomeRoutes = {
+  getalluseravatars: string;
+  changeavatar: string;
+  customavatar: string;
+  edit: string;
+};
+
 export function AvatarHome() {
   const [currentResImgLink, setCurrentResImgLink] = useState(
     '/avatars/base-res.svg',
@@ -36,13 +43,34 @@ export function AvatarHome() {
     string | null
   >(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [routes, setRoutes] = useState<AvatarHomeRoutes | null>(null);
 
   useEffect(() => {
     require('react-multi-carousel/lib/styles.css');
     require('./styles.css');
 
+    // Extract username from route of form '/profile/:profileusername/avatar'
+    const match = window.location.pathname.match(/\/profile\/([^\/]+)\/avatar/);
+    const extractedUsername = match ? match[1] : '';
+
+    const newRoutes: AvatarHomeRoutes = {
+      getalluseravatars: `/profile/${extractedUsername}/avatar/getalluseravatars`,
+      changeavatar: `/profile/${extractedUsername}/avatar/changeavatar`,
+      customavatar: `/profile/${extractedUsername}/customavatar`,
+      edit: `/profile/${extractedUsername}/edit`,
+    };
+
+    setRoutes(newRoutes);
+  }, []);
+
+  useEffect(() => {
+    setIsLoading(true);
+    if (routes) {
+      void fetchUserAvatarInfo();
+    }
+
     async function fetchUserAvatarInfo() {
-      const response = await fetch('/profile/avatar/getallavatars');
+      const response = await fetch(routes.getalluseravatars);
       const data: AllAvatarsRouteReturnType = await response.json();
 
       if (data.currentResLink) {
@@ -55,10 +83,7 @@ export function AvatarHome() {
       setAvatarLibrary(data.avatarLibrary);
       setIsLoading(false);
     }
-
-    setIsLoading(true);
-    void fetchUserAvatarInfo();
-  }, []);
+  }, [routes]);
 
   const changeAvatarRequest = () => {
     if (!selectedAvatarId) {
@@ -73,7 +98,7 @@ export function AvatarHome() {
       title: 'Sending request',
       didOpen: async () => {
         Swal.showLoading();
-        const response = await fetch('/profile/avatar/changeavatar', {
+        const response = await fetch(routes.changeavatar, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -96,16 +121,6 @@ export function AvatarHome() {
         }
       },
     });
-  };
-
-  const handleChangeAvatarRadio = (
-    avatarSetId: number,
-    resLink: string,
-    spyLink: string,
-  ) => {
-    setSelectedAvatarId(avatarSetId);
-    setSelectedAvatarResLink(resLink);
-    setSelectedAvatarSpyLink(spyLink);
   };
 
   const handleClickOnAvatarInLibrary = (avatarSet: S3AvatarSet) => {
@@ -152,7 +167,7 @@ export function AvatarHome() {
           src={currentSpyImgLink}
         ></img>
       </div>
-      <a className="btn btn-info" href="/profile/customavatar/redirect">
+      <a className="btn btn-info" href={routes.customavatar}>
         Submit a custom Avatar
       </a>
       <hr
@@ -170,7 +185,6 @@ export function AvatarHome() {
       <br />
       <Carousel
         responsive={responsive}
-        infinite={true}
         containerClass="carousel-container"
         showDots={true}
         keyBoardControl={true}
@@ -185,7 +199,9 @@ export function AvatarHome() {
           avatarLibrary.map((avatarSet) => (
             <div
               key={avatarSet.avatarSetId}
-              className="avatarSet"
+              className={`avatarSet ${
+                selectedAvatarId === avatarSet.avatarSetId ? 'selected' : ''
+              }`}
               onClick={() => handleClickOnAvatarInLibrary(avatarSet)}
             >
               <h3 className="avatarTitle">Avatar {avatarSet.avatarSetId}</h3>
@@ -222,7 +238,7 @@ export function AvatarHome() {
       <h4>
         To link your Patreon account or if you would like to support the
         development of the site please do so from your profile page{' '}
-        <a href="/profile/edit/redirect">here</a>.
+        <a href={routes.edit}>here</a>.
       </h4>
     </div>
   );

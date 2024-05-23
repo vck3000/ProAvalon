@@ -15,6 +15,7 @@
 .avatarSet {
     padding-top: 2em;
     padding-bottom: 2em;
+    border-radius: 20px;
 }
 
 .alignCenter {
@@ -28,12 +29,13 @@
 }
 
 .react-multi-carousel-item div:hover {
+    border-radius: 20px;
     transform: scale(1.05);
     background-color: #e0e0e0;
 }
 
 .react-multi-carousel-item .avatarSet {
-    padding: 2em;
+    margin: 1em;
     cursor: pointer;
     display: block;
     text-align: center;
@@ -46,4 +48,8 @@
 .giphy-embed {
     max-width: 100%;
     pointer-events: none;
+}
+
+.selected {
+    background: #e0e0e0;
 }

@@ -4,6 +4,7 @@ import { SocketUser } from '../../types';
 import User from '../../../models/user';
 import { S3Agent } from '../../../clients/s3/S3Agent';
 import S3Controller from '../../../clients/s3/S3Controller';
+import { getAvatarLibrarySizeForUser } from '../../../rewards/getRewards';
 
 export const mpushavatartolibrary: Command = {
   command: 'mpushavatartolibrary',
@@ -47,10 +48,13 @@ export const mpushavatartolibrary: Command = {
       return;
     }
 
-    // TODO-kev: Note the below has been changed to allow unlimited pushes. Idea is when a users patreon
-    // is refreshed next, the library will be adjusted accordingly. See if this is a good idea
+    const librarySize = await getAvatarLibrarySizeForUser(usernameLower);
     user.avatarLibrary.push(toBeAddedAvatarId);
     user.markModified('avatarLibrary');
+
+    if (user.avatarLibrary.length > librarySize) {
+      user.avatarLibrary.shift();
+    }
     await user.save();
 
     sendReplyToCommand(

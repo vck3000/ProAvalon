@@ -23,8 +23,8 @@ export interface IS3Controller {
     fileContent: Buffer,
     contentType: string,
   ): Promise<string>;
-  deleteFile(link: string): void;
-  moveFile(oldLink: string, newLink: string): void;
+  deleteFile(link: string): Promise<void>;
+  moveFile(oldLink: string, newLink: string): Promise<void>;
   transformKeyToLink(key: string): string;
 }
 
