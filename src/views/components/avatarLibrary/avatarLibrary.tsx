@@ -24,6 +24,7 @@ const responsive = {
 
 export function AvatarLibrary() {
   const [inputUsername, setInputUsername] = useState<string | null>(null);
+
   const [targetUsername, setTargetUsername] = useState<string | null>(null);
   const [targetUserResAvatar, setTargetUserResAvatar] = useState<string | null>(
     null,
@@ -36,6 +37,7 @@ export function AvatarLibrary() {
   >(null);
   const [targetUserOtherApprovedAvatars, setTargetUserOtherApprovedAvatars] =
     useState<S3AvatarSet[] | null>(null);
+
   const [selectedAvatarLibraryId, setSelectedAvatarLibraryId] = useState<
     number | null
   >(null);
@@ -117,7 +119,32 @@ export function AvatarLibrary() {
   };
 
   const handleSwapAvatar = () => {
-    return;
+    Swal.fire({
+      title: 'Sending request',
+      didOpen: async () => {
+        Swal.showLoading();
+        const response = await fetch('/profile/mod/updateuseravatarlibrary', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: targetUsername,
+            toBeAddedAvatarId: selectedOtherAvatarId,
+            toBeRemovedAvatarId: selectedAvatarLibraryId,
+          }),
+        });
+
+        if (response.status === 200) {
+          await handleGetAvatars();
+          Swal.close();
+          Swal.fire({ title: await response.text(), icon: 'success' });
+        } else {
+          Swal.close();
+          Swal.fire({ title: await response.text(), icon: 'error' });
+        }
+      },
+    });
   };
 
   const handleClickOnAvatarInLibrary = (avatarSet: S3AvatarSet) => {
@@ -284,29 +311,38 @@ export function AvatarLibrary() {
             </div>
           ) : null}
 
-          {lastSelectedAvatarId ? (
-            <div>
-              <p>
-                Set Avatar {lastSelectedAvatarId} as {targetUsername}'s current
-                avatar
-              </p>
-              <button className="btn btn-info" onClick={handleSetAvatar}>
-                Set Avatar
-              </button>
-            </div>
-          ) : null}
-
-          {selectedAvatarLibraryId && selectedOtherAvatarId ? (
-            <div>
-              <p>
-                Swap Avatar {selectedAvatarLibraryId} with Avatar{' '}
-                {selectedOtherAvatarId}
-              </p>
-              <button className="btn btn-info" onClick={handleSwapAvatar}>
-                Swap
-              </button>
-            </div>
-          ) : null}
+          <table>
+            <tbody>
+              <tr>
+                <td>
+                  <button className="btn btn-info" onClick={handleSetAvatar}>
+                    Update Avatar
+                  </button>
+                </td>
+                <td>
+                  <h4>
+                    {lastSelectedAvatarId
+                      ? `Set Avatar ${lastSelectedAvatarId} as ${targetUsername}'s current avatar`
+                      : `Select an avatar above to set as ${targetUsername}s current avatar`}
+                  </h4>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <button className="btn btn-info" onClick={handleSwapAvatar}>
+                    Update Library
+                  </button>
+                </td>
+                <td>
+                  <h4>
+                    {selectedOtherAvatarId && selectedAvatarLibraryId
+                      ? `Add Avatar ${selectedOtherAvatarId} and remove Avatar ${selectedAvatarLibraryId} from ${targetUsername}'s avatar library`
+                      : `Select an avatar from ${targetUsername}'s avatar library and their other approved avatars to update their library.`}
+                  </h4>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       ) : null}
     </div>

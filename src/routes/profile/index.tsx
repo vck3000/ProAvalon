@@ -105,6 +105,7 @@ router.get('/mod/approvedavatars', isModMiddleware, async (req, res) => {
   return res.status(200).send(result);
 });
 
+// Moderator set a user's current avatar
 router.post('/mod/setavatar', isModMiddleware, async (req, res) => {
   if (!req.body.username || !req.body.resLink || !req.body.spyLink) {
     return res.status(400).send('Something went wrong.');
@@ -119,6 +120,57 @@ router.post('/mod/setavatar', isModMiddleware, async (req, res) => {
     .status(200)
     .send(`Successfully set ${req.body.username}'s avatar.`);
 });
+
+// Moderator update a user's avatarLibrary
+router.post(
+  '/mod/updateuseravatarlibrary',
+  isModMiddleware,
+  async (req, res) => {
+    console.log(req.body);
+    if (
+      !req.body.username ||
+      !req.body.toBeAddedAvatarId ||
+      !req.body.toBeRemovedAvatarId
+    ) {
+      return res.status(400).send('Something went wrong.');
+    }
+
+    const user = await User.findOne({ usernameLower: req.body.username });
+
+    if (user.avatarLibrary.includes(req.body.toBeAddedAvatarId)) {
+      return res
+        .status(400)
+        .send(
+          `Avatar ${req.body.toBeAddedAvatarId} already exists in ${req.body.username}'s avatar library.`,
+        );
+    }
+
+    if (
+      !(
+        await s3Agent.getApprovedAvatarIdsForUser(
+          req.body.username.toLowerCase(),
+        )
+      ).includes(req.body.toBeAddedAvatarId)
+    ) {
+      return res
+        .status(400)
+        .send(`Avatar ${req.body.toBeAddedAvatarId} does not exist.`);
+    }
+
+    const index = user.avatarLibrary.indexOf(req.body.toBeRemovedAvatarId);
+    user.avatarLibrary.splice(index, 1);
+    user.avatarLibrary.push(req.body.toBeAddedAvatarId);
+
+    user.markModified('avatarLibrary');
+    await user.save();
+
+    return res
+      .status(200)
+      .send(
+        `Successfully updated ${req.body.username}'s avatar library. Added Avatar ${req.body.toBeAddedAvatarId} and removed Avatar ${req.body.toBeRemovedAvatarId}.`,
+      );
+  },
+);
 
 // moderator approve or reject custom avatar requests
 router.post(
