@@ -170,6 +170,8 @@ export function AvatarLibrary() {
     setLastSelectedAvatarId(null);
     setLastSelectedAvatarResLink(null);
     setLastSelectedAvatarSpyLink(null);
+
+    setInputUsername('');
   };
 
   const selectAvatar = (avatarSet: S3AvatarSet) => {
@@ -196,7 +198,13 @@ export function AvatarLibrary() {
           id="getUserAvatarsInput"
           placeholder="Enter username"
           style={{ marginRight: '10px' }}
+          value={inputUsername}
           onChange={(e) => setInputUsername(e.target.value)}
+          onKeyDown={async (e) => {
+            if (e.key === 'Enter') {
+              await handleGetAvatars();
+            }
+          }}
         />
         <button
           className="btn btn-warning"
