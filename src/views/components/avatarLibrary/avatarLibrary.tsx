@@ -346,7 +346,7 @@ export function AvatarLibrary() {
                       onClick={handleSetAvatar}
                       disabled={!lastSelectedAvatarId}
                     >
-                      Update Avatar
+                      Set Avatar
                     </button>
                   </td>
                   <td>
