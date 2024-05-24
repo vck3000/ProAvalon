@@ -105,6 +105,21 @@ router.get('/mod/approvedavatars', isModMiddleware, async (req, res) => {
   return res.status(200).send(result);
 });
 
+router.post('/mod/setavatar', isModMiddleware, async (req, res) => {
+  if (!req.body.username || !req.body.resLink || !req.body.spyLink) {
+    return res.status(400).send('Something went wrong.');
+  }
+
+  const user = await User.findOne({ usernameLower: req.body.username });
+  user.avatarImgRes = req.body.resLink;
+  user.avatarImgSpy = req.body.spyLink;
+  await user.save();
+
+  return res
+    .status(200)
+    .send(`Successfully set ${req.body.username}'s avatar.`);
+});
+
 // moderator approve or reject custom avatar requests
 router.post(
   '/mod/ajax/processavatarrequest',

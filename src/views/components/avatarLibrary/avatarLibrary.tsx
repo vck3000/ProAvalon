@@ -86,9 +86,39 @@ export function AvatarLibrary() {
     }
   };
 
-  function handleSetAvatar() {
+  const handleSetAvatar = () => {
+    Swal.fire({
+      title: 'Sending request',
+      didOpen: async () => {
+        Swal.showLoading();
+        const response = await fetch('/profile/mod/setavatar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: targetUsername,
+            resLink: lastSelectedAvatarResLink,
+            spyLink: lastSelectedAvatarSpyLink,
+          }),
+        });
+
+        if (response.status === 200) {
+          setTargetUserResAvatar(lastSelectedAvatarResLink);
+          setTargetUserSpyAvatar(lastSelectedAvatarSpyLink);
+          Swal.close();
+          Swal.fire({ title: await response.text(), icon: 'success' });
+        } else {
+          Swal.close();
+          Swal.fire({ title: await response.text(), icon: 'error' });
+        }
+      },
+    });
+  };
+
+  const handleSwapAvatar = () => {
     return;
-  }
+  };
 
   const handleClickOnAvatarInLibrary = (avatarSet: S3AvatarSet) => {
     selectAvatar(avatarSet);
@@ -100,11 +130,11 @@ export function AvatarLibrary() {
     setSelectedOtherAvatarId(avatarSet.avatarSetId);
   };
 
-  function selectAvatar(avatarSet: S3AvatarSet) {
+  const selectAvatar = (avatarSet: S3AvatarSet) => {
     setLastSelectedAvatarId(avatarSet.avatarSetId);
     setLastSelectedAvatarResLink(avatarSet.resLink);
     setLastSelectedAvatarSpyLink(avatarSet.spyLink);
-  }
+  };
 
   return (
     <div>
@@ -260,7 +290,7 @@ export function AvatarLibrary() {
                 Set Avatar {lastSelectedAvatarId} as {targetUsername}'s current
                 avatar
               </p>
-              <button className="btn btn-warning" onClick={handleGetAvatars}>
+              <button className="btn btn-info" onClick={handleSetAvatar}>
                 Set Avatar
               </button>
             </div>
@@ -272,7 +302,7 @@ export function AvatarLibrary() {
                 Swap Avatar {selectedAvatarLibraryId} with Avatar{' '}
                 {selectedOtherAvatarId}
               </p>
-              <button className="btn btn-warning" onClick={handleGetAvatars}>
+              <button className="btn btn-info" onClick={handleSwapAvatar}>
                 Swap
               </button>
             </div>
