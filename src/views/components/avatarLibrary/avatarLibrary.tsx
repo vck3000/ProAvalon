@@ -157,6 +157,21 @@ export function AvatarLibrary() {
     setSelectedOtherAvatarId(avatarSet.avatarSetId);
   };
 
+  const handleClearUser = () => {
+    // TODO-kev: Consider a better way to do this?
+    setTargetUsername(null);
+    setTargetUserResAvatar(null);
+    setTargetUserSpyAvatar(null);
+    setTargetUserAvatarLibrary(null);
+    setTargetUserOtherApprovedAvatars(null);
+
+    setSelectedAvatarLibraryId(null);
+    setSelectedOtherAvatarId(null);
+    setLastSelectedAvatarId(null);
+    setLastSelectedAvatarResLink(null);
+    setLastSelectedAvatarSpyLink(null);
+  };
+
   const selectAvatar = (avatarSet: S3AvatarSet) => {
     setLastSelectedAvatarId(avatarSet.avatarSetId);
     setLastSelectedAvatarResLink(avatarSet.resLink);
@@ -196,7 +211,7 @@ export function AvatarLibrary() {
             className="btn btn-danger"
             id="getUserAvatarsButton"
             style={{ marginLeft: '5px' }}
-            onClick={() => setTargetUsername(null)}
+            onClick={handleClearUser}
           >
             Clear
           </button>
