@@ -338,11 +338,19 @@ export function AvatarLibrary() {
                     </button>
                   </td>
                   <td>
-                    <h4>
-                      {lastSelectedAvatarSet
-                        ? `Set Avatar ${lastSelectedAvatarSet.avatarSetId} as ${targetUsername}'s current avatar`
-                        : `Select an avatar above to set as ${targetUsername}s current avatar`}
-                    </h4>
+                    {lastSelectedAvatarSet ? (
+                      <h4>
+                        Set{' '}
+                        <strong>
+                          Avatar {lastSelectedAvatarSet.avatarSetId}
+                        </strong>{' '}
+                        as the current avatar
+                      </h4>
+                    ) : (
+                      <h4>
+                        Select an avatar above to set as the current avatar
+                      </h4>
+                    )}
                   </td>
                 </tr>
                 {targetUserAvatarLibrary && targetUserOtherApprovedAvatars ? (
@@ -364,9 +372,24 @@ export function AvatarLibrary() {
                     </td>
                     <td>
                       <h4>
-                        {selectedOtherAvatarSet && selectedAvatarLibrarySet
-                          ? `Add Avatar ${selectedOtherAvatarSet.avatarSetId} and remove Avatar ${selectedAvatarLibrarySet.avatarSetId} from ${targetUsername}'s avatar library`
-                          : `Select an avatar from ${targetUsername}'s avatar library and their other approved avatars to update their library.`}
+                        {selectedOtherAvatarSet && selectedAvatarLibrarySet ? (
+                          <h4>
+                            Add{' '}
+                            <strong>
+                              Avatar {selectedOtherAvatarSet.avatarSetId}
+                            </strong>{' '}
+                            and remove{' '}
+                            <strong>
+                              Avatar {selectedAvatarLibrarySet.avatarSetId}
+                            </strong>{' '}
+                            from the avatar library
+                          </h4>
+                        ) : (
+                          <h4>
+                            Select an avatar from the avatar library and the
+                            other approved avatars.
+                          </h4>
+                        )}
                       </h4>
                     </td>
                   </tr>
