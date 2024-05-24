@@ -38,21 +38,12 @@ export function AvatarLibrary() {
   const [targetUserOtherApprovedAvatars, setTargetUserOtherApprovedAvatars] =
     useState<S3AvatarSet[] | null>(null);
 
-  const [selectedAvatarLibraryId, setSelectedAvatarLibraryId] = useState<
-    number | null
-  >(null);
-  const [selectedOtherAvatarId, setSelectedOtherAvatarId] = useState<
-    number | null
-  >(null);
-  const [lastSelectedAvatarId, setLastSelectedAvatarId] = useState<
-    number | null
-  >(null);
-  const [lastSelectedAvatarResLink, setLastSelectedAvatarResLink] = useState<
-    string | null
-  >(null);
-  const [lastSelectedAvatarSpyLink, setLastSelectedAvatarSpyLink] = useState<
-    string | null
-  >(null);
+  const [selectedAvatarLibrarySet, setSelectedAvatarLibrarySet] =
+    useState<S3AvatarSet | null>(null);
+  const [selectedOtherAvatarSet, setSelectedOtherAvatarSet] =
+    useState<S3AvatarSet | null>(null);
+  const [lastSelectedAvatarSet, setLastSelectedAvatarSet] =
+    useState<S3AvatarSet | null>(null);
 
   useEffect(() => {
     require('react-multi-carousel/lib/styles.css');
@@ -100,14 +91,14 @@ export function AvatarLibrary() {
           },
           body: JSON.stringify({
             username: targetUsername,
-            resLink: lastSelectedAvatarResLink,
-            spyLink: lastSelectedAvatarSpyLink,
+            resLink: lastSelectedAvatarSet.resLink,
+            spyLink: lastSelectedAvatarSet.spyLink,
           }),
         });
 
         if (response.status === 200) {
-          setTargetUserResAvatar(lastSelectedAvatarResLink);
-          setTargetUserSpyAvatar(lastSelectedAvatarSpyLink);
+          setTargetUserResAvatar(lastSelectedAvatarSet.resLink);
+          setTargetUserSpyAvatar(lastSelectedAvatarSet.spyLink);
           Swal.close();
           Swal.fire({ title: await response.text(), icon: 'success' });
         } else {
@@ -130,8 +121,8 @@ export function AvatarLibrary() {
           },
           body: JSON.stringify({
             username: targetUsername,
-            toBeAddedAvatarId: selectedOtherAvatarId,
-            toBeRemovedAvatarId: selectedAvatarLibraryId,
+            toBeAddedAvatarId: selectedOtherAvatarSet.avatarSetId,
+            toBeRemovedAvatarId: selectedAvatarLibrarySet.avatarSetId,
           }),
         });
 
@@ -148,36 +139,27 @@ export function AvatarLibrary() {
   };
 
   const handleClickOnAvatarInLibrary = (avatarSet: S3AvatarSet) => {
-    selectAvatar(avatarSet);
-    setSelectedAvatarLibraryId(avatarSet.avatarSetId);
+    setLastSelectedAvatarSet(avatarSet);
+    setSelectedAvatarLibrarySet(avatarSet);
   };
 
   const handleClickOnOtherAvatar = (avatarSet: S3AvatarSet) => {
-    selectAvatar(avatarSet);
-    setSelectedOtherAvatarId(avatarSet.avatarSetId);
+    setLastSelectedAvatarSet(avatarSet);
+    setSelectedOtherAvatarSet(avatarSet);
   };
 
   const handleClearUser = () => {
     // TODO-kev: Consider a better way to do this?
+    setInputUsername(null);
     setTargetUsername(null);
     setTargetUserResAvatar(null);
     setTargetUserSpyAvatar(null);
     setTargetUserAvatarLibrary(null);
     setTargetUserOtherApprovedAvatars(null);
 
-    setSelectedAvatarLibraryId(null);
-    setSelectedOtherAvatarId(null);
-    setLastSelectedAvatarId(null);
-    setLastSelectedAvatarResLink(null);
-    setLastSelectedAvatarSpyLink(null);
-
-    setInputUsername('');
-  };
-
-  const selectAvatar = (avatarSet: S3AvatarSet) => {
-    setLastSelectedAvatarId(avatarSet.avatarSetId);
-    setLastSelectedAvatarResLink(avatarSet.resLink);
-    setLastSelectedAvatarSpyLink(avatarSet.spyLink);
+    setSelectedAvatarLibrarySet(null);
+    setSelectedOtherAvatarSet(null);
+    setLastSelectedAvatarSet(null);
   };
 
   return (
@@ -262,9 +244,7 @@ export function AvatarLibrary() {
                   <div
                     key={avatarSet.avatarSetId}
                     className={`avatarSet ${
-                      selectedAvatarLibraryId === avatarSet.avatarSetId
-                        ? 'selected'
-                        : ''
+                      selectedAvatarLibrarySet === avatarSet ? 'selected' : ''
                     }`}
                     onClick={() => handleClickOnAvatarInLibrary(avatarSet)}
                   >
@@ -307,9 +287,7 @@ export function AvatarLibrary() {
                   <div
                     key={avatarSet.avatarSetId}
                     className={`avatarSet ${
-                      selectedOtherAvatarId === avatarSet.avatarSetId
-                        ? 'selected'
-                        : ''
+                      selectedOtherAvatarSet === avatarSet ? 'selected' : ''
                     }`}
                     onClick={() => handleClickOnOtherAvatar(avatarSet)}
                   >
@@ -341,18 +319,18 @@ export function AvatarLibrary() {
                   <td>
                     <button
                       className={`btn ${
-                        lastSelectedAvatarId ? 'btn-success' : 'btn-danger'
+                        lastSelectedAvatarSet ? 'btn-success' : 'btn-danger'
                       }`}
                       onClick={handleSetAvatar}
-                      disabled={!lastSelectedAvatarId}
+                      disabled={!lastSelectedAvatarSet}
                     >
                       Set Avatar
                     </button>
                   </td>
                   <td>
                     <h4>
-                      {lastSelectedAvatarId
-                        ? `Set Avatar ${lastSelectedAvatarId} as ${targetUsername}'s current avatar`
+                      {lastSelectedAvatarSet
+                        ? `Set Avatar ${lastSelectedAvatarSet.avatarSetId} as ${targetUsername}'s current avatar`
                         : `Select an avatar above to set as ${targetUsername}s current avatar`}
                     </h4>
                   </td>
@@ -362,13 +340,13 @@ export function AvatarLibrary() {
                     <td>
                       <button
                         className={`btn ${
-                          selectedOtherAvatarId && selectedAvatarLibraryId
+                          selectedOtherAvatarSet && selectedAvatarLibrarySet
                             ? 'btn-success'
                             : 'btn-danger'
                         }`}
                         onClick={handleSwapAvatar}
                         disabled={
-                          !selectedOtherAvatarId || !selectedAvatarLibraryId
+                          !selectedOtherAvatarSet || !selectedAvatarLibrarySet
                         }
                       >
                         Update Library
@@ -376,8 +354,8 @@ export function AvatarLibrary() {
                     </td>
                     <td>
                       <h4>
-                        {selectedOtherAvatarId && selectedAvatarLibraryId
-                          ? `Add Avatar ${selectedOtherAvatarId} and remove Avatar ${selectedAvatarLibraryId} from ${targetUsername}'s avatar library`
+                        {selectedOtherAvatarSet && selectedAvatarLibrarySet
+                          ? `Add Avatar ${selectedOtherAvatarSet.avatarSetId} and remove Avatar ${selectedAvatarLibrarySet.avatarSetId} from ${targetUsername}'s avatar library`
                           : `Select an avatar from ${targetUsername}'s avatar library and their other approved avatars to update their library.`}
                       </h4>
                     </td>
