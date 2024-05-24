@@ -139,13 +139,23 @@ export function AvatarLibrary() {
   };
 
   const handleClickOnAvatarInLibrary = (avatarSet: S3AvatarSet) => {
-    setLastSelectedAvatarSet(avatarSet);
-    setSelectedAvatarLibrarySet(avatarSet);
+    if (selectedAvatarLibrarySet !== avatarSet) {
+      setSelectedAvatarLibrarySet(avatarSet);
+      setLastSelectedAvatarSet(avatarSet);
+    } else {
+      setSelectedAvatarLibrarySet(null);
+      setLastSelectedAvatarSet(selectedOtherAvatarSet || null);
+    }
   };
 
   const handleClickOnOtherAvatar = (avatarSet: S3AvatarSet) => {
-    setLastSelectedAvatarSet(avatarSet);
-    setSelectedOtherAvatarSet(avatarSet);
+    if (selectedOtherAvatarSet !== avatarSet) {
+      setSelectedOtherAvatarSet(avatarSet);
+      setLastSelectedAvatarSet(avatarSet);
+    } else {
+      setSelectedOtherAvatarSet(null);
+      setLastSelectedAvatarSet(selectedAvatarLibrarySet || null);
+    }
   };
 
   const handleClearUser = () => {
