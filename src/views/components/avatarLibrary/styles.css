@@ -31,3 +31,7 @@
 .selected {
     background: #e0e0e0;
 }
+
+td {
+    padding: 3px
+}

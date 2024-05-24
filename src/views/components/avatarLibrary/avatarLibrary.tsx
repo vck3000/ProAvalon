@@ -330,7 +330,13 @@ export function AvatarLibrary() {
             <tbody>
               <tr>
                 <td>
-                  <button className="btn btn-info" onClick={handleSetAvatar}>
+                  <button
+                    className={`btn ${
+                      lastSelectedAvatarId ? 'btn-success' : 'btn-danger'
+                    }`}
+                    onClick={handleSetAvatar}
+                    disabled={!lastSelectedAvatarId}
+                  >
                     Update Avatar
                   </button>
                 </td>
@@ -344,7 +350,17 @@ export function AvatarLibrary() {
               </tr>
               <tr>
                 <td>
-                  <button className="btn btn-info" onClick={handleSwapAvatar}>
+                  <button
+                    className={`btn ${
+                      selectedOtherAvatarId && selectedAvatarLibraryId
+                        ? 'btn-success'
+                        : 'btn-danger'
+                    }`}
+                    onClick={handleSwapAvatar}
+                    disabled={
+                      !selectedOtherAvatarId || !selectedAvatarLibraryId
+                    }
+                  >
                     Update Library
                   </button>
                 </td>
