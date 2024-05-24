@@ -326,54 +326,58 @@ export function AvatarLibrary() {
             </div>
           ) : null}
 
-          <table>
-            <tbody>
-              <tr>
-                <td>
-                  <button
-                    className={`btn ${
-                      lastSelectedAvatarId ? 'btn-success' : 'btn-danger'
-                    }`}
-                    onClick={handleSetAvatar}
-                    disabled={!lastSelectedAvatarId}
-                  >
-                    Update Avatar
-                  </button>
-                </td>
-                <td>
-                  <h4>
-                    {lastSelectedAvatarId
-                      ? `Set Avatar ${lastSelectedAvatarId} as ${targetUsername}'s current avatar`
-                      : `Select an avatar above to set as ${targetUsername}s current avatar`}
-                  </h4>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <button
-                    className={`btn ${
-                      selectedOtherAvatarId && selectedAvatarLibraryId
-                        ? 'btn-success'
-                        : 'btn-danger'
-                    }`}
-                    onClick={handleSwapAvatar}
-                    disabled={
-                      !selectedOtherAvatarId || !selectedAvatarLibraryId
-                    }
-                  >
-                    Update Library
-                  </button>
-                </td>
-                <td>
-                  <h4>
-                    {selectedOtherAvatarId && selectedAvatarLibraryId
-                      ? `Add Avatar ${selectedOtherAvatarId} and remove Avatar ${selectedAvatarLibraryId} from ${targetUsername}'s avatar library`
-                      : `Select an avatar from ${targetUsername}'s avatar library and their other approved avatars to update their library.`}
-                  </h4>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          {targetUserAvatarLibrary || targetUserOtherApprovedAvatars ? (
+            <table>
+              <tbody>
+                <tr>
+                  <td>
+                    <button
+                      className={`btn ${
+                        lastSelectedAvatarId ? 'btn-success' : 'btn-danger'
+                      }`}
+                      onClick={handleSetAvatar}
+                      disabled={!lastSelectedAvatarId}
+                    >
+                      Update Avatar
+                    </button>
+                  </td>
+                  <td>
+                    <h4>
+                      {lastSelectedAvatarId
+                        ? `Set Avatar ${lastSelectedAvatarId} as ${targetUsername}'s current avatar`
+                        : `Select an avatar above to set as ${targetUsername}s current avatar`}
+                    </h4>
+                  </td>
+                </tr>
+                {targetUserAvatarLibrary && targetUserOtherApprovedAvatars ? (
+                  <tr>
+                    <td>
+                      <button
+                        className={`btn ${
+                          selectedOtherAvatarId && selectedAvatarLibraryId
+                            ? 'btn-success'
+                            : 'btn-danger'
+                        }`}
+                        onClick={handleSwapAvatar}
+                        disabled={
+                          !selectedOtherAvatarId || !selectedAvatarLibraryId
+                        }
+                      >
+                        Update Library
+                      </button>
+                    </td>
+                    <td>
+                      <h4>
+                        {selectedOtherAvatarId && selectedAvatarLibraryId
+                          ? `Add Avatar ${selectedOtherAvatarId} and remove Avatar ${selectedAvatarLibraryId} from ${targetUsername}'s avatar library`
+                          : `Select an avatar from ${targetUsername}'s avatar library and their other approved avatars to update their library.`}
+                      </h4>
+                    </td>
+                  </tr>
+                ) : null}
+              </tbody>
+            </table>
+          ) : null}
         </div>
       ) : null}
     </div>
