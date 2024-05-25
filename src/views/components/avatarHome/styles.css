@@ -29,9 +29,12 @@
     max-width: 1100px;
 }
 
-.react-multi-carousel-item div:hover {
+.react-multi-carousel-item .avatarSet:hover {
     border-radius: 20px;
     transform: scale(1.05);
+}
+
+.react-multi-carousel-item .avatarSet:hover:not(.selected) {
     background-color: #e0e0e0;
 }
 

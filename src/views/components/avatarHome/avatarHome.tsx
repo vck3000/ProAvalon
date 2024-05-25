@@ -160,7 +160,7 @@ export function AvatarHome() {
         ></img>
       </div>
       <a className="btn btn-info" href={routes.customavatar}>
-        Submit a custom Avatar
+        Submit a custom avatar
       </a>
       <hr
         style={{
@@ -181,7 +181,6 @@ export function AvatarHome() {
         showDots={true}
         keyBoardControl={true}
         removeArrowOnDeviceType={['mobile']}
-        focusOnSelect={true}
       >
         {avatarLibrary.length === 0 ? (
           <p className={'alignCenter'}>
