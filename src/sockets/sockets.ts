@@ -2048,7 +2048,12 @@ function matchFound(usernames: string[]): void {
       approvedUsernames: string[],
       rejectedUsernames: string[],
     ): void => {
-      if (!success) {
+      if (success) {
+        for (const username of approvedUsernames) {
+          const socket = getSocketFromUsername(username);
+          socket.emit('queueReply', { joined: false });
+        }
+      } else {
         for (const username of rejectedUsernames) {
           joinQueueFilter.registerReject(username);
         }
@@ -2092,6 +2097,7 @@ function matchFound(usernames: string[]): void {
 
         for (const username of rejectedUsernames) {
           const socket = getSocketFromUsername(username);
+          socket.emit('queueReply', { joined: false });
           socket.emit('allChatToClient', {
             message:
               'You did not accept the match. You have been removed from the queue.',

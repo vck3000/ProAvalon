@@ -5,7 +5,6 @@ let socket: Socket = undefined;
 
 export function MatchmakingUi() {
   const [joined, setJoined] = useState(false);
-  const [queueButtonText, setQueueButtonText] = useState('Join Queue');
   const [numPlayersInQueue, setNumPlayersInQueue] = useState(0);
 
   useEffect(() => {
@@ -14,7 +13,6 @@ export function MatchmakingUi() {
 
     socket.on('queueReply', (data: { joined: boolean }) => {
       setJoined(data.joined);
-      setQueueButtonText(data.joined ? 'Leave Queue' : 'Join Queue');
     });
 
     socket.on('numPlayersInQueue', (data) => {
@@ -34,7 +32,7 @@ export function MatchmakingUi() {
         href="#"
         onClick={joinQueue}
       >
-        {queueButtonText}
+        {joined ? 'Leave Queue' : 'Join Queue'}
       </a>
       <p>
         <span id="numPlayersInQueue">{numPlayersInQueue}</span> player(s) in
