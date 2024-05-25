@@ -34,13 +34,8 @@ export function AvatarHome() {
     '/avatars/base-spy.svg',
   );
   const [avatarLibrary, setAvatarLibrary] = useState<S3AvatarSet[]>([]);
-  const [selectedAvatarId, setSelectedAvatarId] = useState<number | null>(null);
-  const [selectedAvatarResLink, setSelectedAvatarResLink] = useState<
-    string | null
-  >(null);
-  const [selectedAvatarSpyLink, setSelectedAvatarSpyLink] = useState<
-    string | null
-  >(null);
+  const [selectedAvatarSet, setSelectedAvatarSet] =
+    useState<S3AvatarSet | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [routes, setRoutes] = useState<AvatarHomeRoutes | null>(null);
 
@@ -85,7 +80,7 @@ export function AvatarHome() {
   }, [routes]);
 
   const changeAvatarRequest = () => {
-    if (!selectedAvatarId) {
+    if (!selectedAvatarSet) {
       Swal.fire({
         title: 'No avatar selected.',
         icon: 'error',
@@ -102,16 +97,12 @@ export function AvatarHome() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            avatarId: selectedAvatarId,
-            resLink: selectedAvatarResLink,
-            spyLink: selectedAvatarSpyLink,
-          }),
+          body: JSON.stringify(selectedAvatarSet),
         });
 
         if (response.status === 200) {
-          setCurrentResImgLink(selectedAvatarResLink);
-          setCurrentSpyImgLink(selectedAvatarSpyLink);
+          setCurrentResImgLink(selectedAvatarSet.resLink);
+          setCurrentSpyImgLink(selectedAvatarSet.spyLink);
           Swal.close();
           Swal.fire({ title: await response.text(), icon: 'success' });
         } else {
@@ -123,9 +114,7 @@ export function AvatarHome() {
   };
 
   const handleClickOnAvatarInLibrary = (avatarSet: S3AvatarSet) => {
-    setSelectedAvatarId(avatarSet.avatarSetId);
-    setSelectedAvatarResLink(avatarSet.resLink);
-    setSelectedAvatarSpyLink(avatarSet.spyLink);
+    setSelectedAvatarSet(avatarSet);
   };
 
   if (isLoading) {
@@ -199,7 +188,7 @@ export function AvatarHome() {
             <div
               key={avatarSet.avatarSetId}
               className={`avatarSet ${
-                selectedAvatarId === avatarSet.avatarSetId ? 'selected' : ''
+                selectedAvatarSet === avatarSet ? 'selected' : ''
               }`}
               onClick={() => handleClickOnAvatarInLibrary(avatarSet)}
             >
@@ -223,7 +212,7 @@ export function AvatarHome() {
       <br />
       <h4>
         Selected avatar ID:{' '}
-        {selectedAvatarId ? selectedAvatarId : 'None selected'}
+        {selectedAvatarSet ? selectedAvatarSet.avatarSetId : 'None selected'}
       </h4>
       <br />
       <a
