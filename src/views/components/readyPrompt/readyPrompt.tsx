@@ -29,20 +29,14 @@ export function ReadyPrompt() {
         timer: data.timeout,
         didOpen: () => {
           Swal.hideLoading();
+          Swal.getConfirmButton().blur();
+
           const timer = Swal.getPopup().querySelector('span');
           timerInterval = setInterval(() => {
             timer.textContent = `${Math.floor(
               Swal.getTimerLeft() / 1000,
             )}s remaining...`;
           }, 100);
-
-          // Prevent enter/space from accepting matches
-          const popup = Swal.getPopup();
-          popup.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-              event.preventDefault();
-            }
-          });
         },
         willClose: () => {
           clearInterval(timerInterval);
