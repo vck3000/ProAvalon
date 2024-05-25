@@ -50,5 +50,11 @@
 }
 
 .selected {
-    background: #e0e0e0;
+    background: #bbdefb;
+}
+
+.align-horizontal {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }

@@ -37,7 +37,7 @@ router.get('/', (req, res) => {
 
 // For a user to change their own current avatar
 router.post('/changeavatar', async (req, res) => {
-  if (!req.body.avatarSetId || req.body.resLink || req.body.spyLink) {
+  if (!req.body.avatarSetId || !req.body.resLink || !req.body.spyLink) {
     return res.status(400).send('Something went wrong.');
   }
 

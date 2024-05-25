@@ -118,7 +118,7 @@ export function AvatarHome() {
   };
 
   const handleClickOnAvatarInLibrary = (avatarSet: S3AvatarSet) => {
-    setSelectedAvatarSet(avatarSet);
+    setSelectedAvatarSet(selectedAvatarSet === avatarSet ? null : avatarSet);
   };
 
   if (isLoading) {
@@ -214,18 +214,21 @@ export function AvatarHome() {
         )}
       </Carousel>
       <br />
-      <h4>
-        Selected avatar ID:{' '}
-        {selectedAvatarSet ? selectedAvatarSet.avatarSetId : 'None selected'}
-      </h4>
-      <br />
-      <a
-        className="btn btn-info"
-        id="changeAvatarBtn"
-        onClick={() => changeAvatarRequest()}
-      >
-        Change avatar
-      </a>
+      <div className={'align-horizontal'}>
+        <button
+          className="btn btn-info"
+          id="changeAvatarBtn"
+          onClick={() => changeAvatarRequest()}
+          disabled={!Boolean(selectedAvatarSet)}
+        >
+          Change avatar
+        </button>
+        <h4>
+          Selected avatar ID:{' '}
+          {selectedAvatarSet ? selectedAvatarSet.avatarSetId : 'None selected'}
+        </h4>
+      </div>
+
       <h4>*This feature is available to current Patreon supporters.</h4>
       <h4>
         To link your Patreon account or if you would like to support the
