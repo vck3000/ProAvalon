@@ -5,13 +5,17 @@ import { S3AvatarSet } from '../../../clients/s3/S3Agent';
 import { AllAvatarsRouteReturnType } from '../../../routes/profile/avatarRoutes';
 
 const responsive = {
-  desktop: {
-    breakpoint: { max: 3000, min: 1024 },
+  avatar3: {
+    breakpoint: { max: 3000, min: 1098 },
     items: 3,
   },
-  tablet: {
-    breakpoint: { max: 1024, min: 464 },
+  avatar2: {
+    breakpoint: { max: 1098, min: 732 },
     items: 2,
+  },
+  avatar1: {
+    breakpoint: { max: 732, min: 464 },
+    items: 1,
   },
   mobile: {
     breakpoint: { max: 464, min: 0 },
@@ -177,7 +181,7 @@ export function AvatarHome() {
         showDots={true}
         keyBoardControl={true}
         removeArrowOnDeviceType={['mobile']}
-        centerMode={true}
+        focusOnSelect={true}
       >
         {avatarLibrary.length === 0 ? (
           <p className={'alignCenter'}>
