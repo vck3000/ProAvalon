@@ -21,7 +21,18 @@ class Percival implements IRole {
   // Percival sees Merlin and Morgana
   see(): See {
     const roleTags: Record<string, string> = {};
+    let indexOfMorgana=-1, merlinText="Merlin";
 
+    for (let i = 0; i < this.room.playersInGame.length; i++) {
+        if(this.room.playersInGame[i].role === Role.Morgana)
+          indexOfMorgana = i; //found Morgana.
+          break;
+    }
+
+    //i.e. if Morgana exists in-game then change Percy's text to "Merlin?"
+    if(indexOfMorgana+1) { 
+        merlinText = "Merlin?";
+    }
     for (let i = 0; i < this.room.playersInGame.length; i++) {
       if (
         this.room.playersInGame[i].role === Role.Merlin ||
@@ -29,7 +40,7 @@ class Percival implements IRole {
       ) {
         roleTags[
           this.room.anonymizer.anon(this.room.playersInGame[i].username)
-        ] = 'Merlin?';
+        ] = merlinText;
       }
     }
 
