@@ -11,7 +11,7 @@ export function MatchmakingUi() {
     // @ts-ignore
     socket = socket_;
 
-    socket.on('queueReply', (data: { joined: boolean }) => {
+    socket.on('queueStatus', (data: { joined: boolean }) => {
       setJoined(data.joined);
     });
 
