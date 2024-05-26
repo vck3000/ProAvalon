@@ -37,6 +37,10 @@ router.get('/', (req, res) => {
 
 // For a user to change their own current avatar
 router.post('/changeavatar', async (req, res) => {
+  if (!req.body.avatarSetId || !req.body.resLink || !req.body.spyLink) {
+    return res.status(400).send('Something went wrong.');
+  }
+
   const patronDetails = await patreonAgent.findOrUpdateExistingPatronDetails(
     req.user.usernameLower,
   );
@@ -51,7 +55,7 @@ router.post('/changeavatar', async (req, res) => {
     usernameLower: req.user.usernameLower,
   });
 
-  if (!user.avatarLibrary.includes(req.body.avatarId)) {
+  if (!user.avatarLibrary.includes(req.body.avatarSetId)) {
     return res
       .status(400)
       .send('Unable to use an avatar that is not in your avatar library.');

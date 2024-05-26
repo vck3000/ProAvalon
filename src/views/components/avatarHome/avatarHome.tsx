@@ -6,13 +6,17 @@ import { AllAvatarsRouteReturnType } from '../../../routes/profile/avatarRoutes'
 // import './styles.css';
 
 const responsive = {
-  desktop: {
-    breakpoint: { max: 3000, min: 1024 },
+  avatar3: {
+    breakpoint: { max: 3000, min: 1098 },
     items: 3,
   },
-  tablet: {
-    breakpoint: { max: 1024, min: 464 },
+  avatar2: {
+    breakpoint: { max: 1098, min: 732 },
     items: 2,
+  },
+  avatar1: {
+    breakpoint: { max: 732, min: 464 },
+    items: 1,
   },
   mobile: {
     breakpoint: { max: 464, min: 0 },
@@ -35,13 +39,8 @@ export function AvatarHome() {
     '/avatars/base-spy.svg',
   );
   const [avatarLibrary, setAvatarLibrary] = useState<S3AvatarSet[]>([]);
-  const [selectedAvatarId, setSelectedAvatarId] = useState<number | null>(null);
-  const [selectedAvatarResLink, setSelectedAvatarResLink] = useState<
-    string | null
-  >(null);
-  const [selectedAvatarSpyLink, setSelectedAvatarSpyLink] = useState<
-    string | null
-  >(null);
+  const [selectedAvatarSet, setSelectedAvatarSet] =
+    useState<S3AvatarSet | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [routes, setRoutes] = useState<AvatarHomeRoutes | null>(null);
 
@@ -86,7 +85,7 @@ export function AvatarHome() {
   }, [routes]);
 
   const changeAvatarRequest = () => {
-    if (!selectedAvatarId) {
+    if (!selectedAvatarSet) {
       Swal.fire({
         title: 'No avatar selected.',
         icon: 'error',
@@ -103,16 +102,12 @@ export function AvatarHome() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            avatarId: selectedAvatarId,
-            resLink: selectedAvatarResLink,
-            spyLink: selectedAvatarSpyLink,
-          }),
+          body: JSON.stringify(selectedAvatarSet),
         });
 
         if (response.status === 200) {
-          setCurrentResImgLink(selectedAvatarResLink);
-          setCurrentSpyImgLink(selectedAvatarSpyLink);
+          setCurrentResImgLink(selectedAvatarSet.resLink);
+          setCurrentSpyImgLink(selectedAvatarSet.spyLink);
           Swal.close();
           Swal.fire({ title: await response.text(), icon: 'success' });
         } else {
@@ -124,9 +119,7 @@ export function AvatarHome() {
   };
 
   const handleClickOnAvatarInLibrary = (avatarSet: S3AvatarSet) => {
-    setSelectedAvatarId(avatarSet.avatarSetId);
-    setSelectedAvatarResLink(avatarSet.resLink);
-    setSelectedAvatarSpyLink(avatarSet.spyLink);
+    setSelectedAvatarSet(selectedAvatarSet === avatarSet ? null : avatarSet);
   };
 
   if (isLoading) {
@@ -168,7 +161,7 @@ export function AvatarHome() {
         ></img>
       </div>
       <a className="btn btn-info" href={routes.customavatar}>
-        Submit a custom Avatar
+        Submit a custom avatar
       </a>
       <hr
         style={{
@@ -189,7 +182,6 @@ export function AvatarHome() {
         showDots={true}
         keyBoardControl={true}
         removeArrowOnDeviceType={['mobile']}
-        centerMode={true}
       >
         {avatarLibrary.length === 0 ? (
           <p className={'alignCenter'}>
@@ -200,7 +192,7 @@ export function AvatarHome() {
             <div
               key={avatarSet.avatarSetId}
               className={`avatarSet ${
-                selectedAvatarId === avatarSet.avatarSetId ? 'selected' : ''
+                selectedAvatarSet === avatarSet ? 'selected' : ''
               }`}
               onClick={() => handleClickOnAvatarInLibrary(avatarSet)}
             >
@@ -222,18 +214,21 @@ export function AvatarHome() {
         )}
       </Carousel>
       <br />
-      <h4>
-        Selected avatar ID:{' '}
-        {selectedAvatarId ? selectedAvatarId : 'None selected'}
-      </h4>
-      <br />
-      <a
-        className="btn btn-info"
-        id="changeAvatarBtn"
-        onClick={() => changeAvatarRequest()}
-      >
-        Change avatar
-      </a>
+      <div className={'align-horizontal'}>
+        <button
+          className="btn btn-info"
+          id="changeAvatarBtn"
+          onClick={() => changeAvatarRequest()}
+          disabled={!Boolean(selectedAvatarSet)}
+        >
+          Change avatar
+        </button>
+        <h4>
+          Selected avatar ID:{' '}
+          {selectedAvatarSet ? selectedAvatarSet.avatarSetId : 'None selected'}
+        </h4>
+      </div>
+
       <h4>*This feature is available to current Patreon supporters.</h4>
       <h4>
         To link your Patreon account or if you would like to support the
