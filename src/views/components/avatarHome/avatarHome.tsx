@@ -23,14 +23,17 @@ const responsive = {
   },
 };
 
-type AvatarHomeRoutes = {
-  getalluseravatars: string;
-  changeavatar: string;
-  customavatar: string;
-  edit: string;
+const GetLinks = {
+  getalluseravatars: (username: string) =>
+    `/profile/${username}/avatar/getalluseravatars`,
+  changeavatar: (username: string) =>
+    `/profile/${username}/avatar/changeavatar`,
+  customavatar: (username: string) => `/profile/${username}/customavatar`,
+  edit: (username: string) => `/profile/${username}/edit`,
 };
 
 export function AvatarHome() {
+  const [username, setUsername] = useState<string>(null);
   const [currentResImgLink, setCurrentResImgLink] = useState(
     '/avatars/base-res.svg',
   );
@@ -41,7 +44,6 @@ export function AvatarHome() {
   const [selectedAvatarSet, setSelectedAvatarSet] =
     useState<S3AvatarSet | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [routes, setRoutes] = useState<AvatarHomeRoutes | null>(null);
 
   useEffect(() => {
     require('./styles.css');
@@ -50,25 +52,18 @@ export function AvatarHome() {
     // Extract username from route of form '/profile/:profileusername/avatar'
     const match = window.location.pathname.match(/\/profile\/([^\/]+)\/avatar/);
     const extractedUsername = match ? match[1] : '';
-
-    const newRoutes: AvatarHomeRoutes = {
-      getalluseravatars: `/profile/${extractedUsername}/avatar/getalluseravatars`,
-      changeavatar: `/profile/${extractedUsername}/avatar/changeavatar`,
-      customavatar: `/profile/${extractedUsername}/customavatar`,
-      edit: `/profile/${extractedUsername}/edit`,
-    };
-
-    setRoutes(newRoutes);
+    setUsername(extractedUsername);
   }, []);
 
   useEffect(() => {
     setIsLoading(true);
-    if (routes) {
+
+    if (username) {
       void fetchUserAvatarInfo();
     }
 
     async function fetchUserAvatarInfo() {
-      const response = await fetch(routes.getalluseravatars);
+      const response = await fetch(GetLinks.getalluseravatars(username));
       const data: AllAvatarsRouteReturnType = await response.json();
 
       if (data.currentResLink) {
@@ -81,7 +76,7 @@ export function AvatarHome() {
       setAvatarLibrary(data.avatarLibrary);
       setIsLoading(false);
     }
-  }, [routes]);
+  }, [username]);
 
   const changeAvatarRequest = () => {
     if (!selectedAvatarSet) {
@@ -96,7 +91,7 @@ export function AvatarHome() {
       title: 'Sending request',
       didOpen: async () => {
         Swal.showLoading();
-        const response = await fetch(routes.changeavatar, {
+        const response = await fetch(GetLinks.changeavatar(username), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -159,7 +154,7 @@ export function AvatarHome() {
           src={currentSpyImgLink}
         ></img>
       </div>
-      <a className="btn btn-info" href={routes.customavatar}>
+      <a className="btn btn-info" href={GetLinks.customavatar(username)}>
         Submit a custom avatar
       </a>
       <hr
@@ -232,7 +227,7 @@ export function AvatarHome() {
       <h4>
         To link your Patreon account or if you would like to support the
         development of the site please do so from your profile page{' '}
-        <a href={routes.edit}>here</a>.
+        <a href={GetLinks.edit(username)}>here</a>.
       </h4>
     </div>
   );
