@@ -33,12 +33,12 @@ const GetLinks = {
 };
 
 export function AvatarHome() {
-  const [username, setUsername] = useState<string>(null);
-  const [currentResImgLink, setCurrentResImgLink] = useState(
-    '/avatars/base-res.svg',
+  const [username, setUsername] = useState<string | null>(null);
+  const [currentResImgLink, setCurrentResImgLink] = useState<string | null>(
+    null,
   );
-  const [currentSpyImgLink, setCurrentSpyImgLink] = useState(
-    '/avatars/base-spy.svg',
+  const [currentSpyImgLink, setCurrentSpyImgLink] = useState<string | null>(
+    null,
   );
   const [avatarLibrary, setAvatarLibrary] = useState<S3AvatarSet[]>([]);
   const [selectedAvatarSet, setSelectedAvatarSet] =
@@ -67,15 +67,13 @@ export function AvatarHome() {
       const response = await fetch(GetLinks.getalluseravatars(username));
       const data: AllAvatarsRouteReturnType = await response.json();
 
-      if (data.currentResLink) {
-        setCurrentResImgLink(data.currentResLink);
-      }
-      if (data.currentSpyLink) {
-        setCurrentSpyImgLink(data.currentSpyLink);
-      }
-      if (data.avatarLibrary) {
-        setAvatarLibrary(data.avatarLibrary);
-      }
+      setCurrentResImgLink(
+        data.currentResLink ? data.currentResLink : '/avatars/base-res.svg',
+      );
+      setCurrentSpyImgLink(
+        data.currentSpyLink ? data.currentSpyLink : '/avatars/base-spy.svg',
+      );
+      setAvatarLibrary(data.avatarLibrary ? data.avatarLibrary : null);
 
       setIsLoading(false);
     }
