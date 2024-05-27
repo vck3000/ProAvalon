@@ -113,6 +113,9 @@ export async function getAvatarLibrarySizeForUser(
   usernameLower: string,
   patreonReward?: RewardType,
 ): Promise<number> {
+  // Temporary minLibrarySize for feature launch. To be disabled DD/MM/YYYY
+  const tempMinLibrarySize = 2;
+
   const modLibrarySize = () => {
     return isMod(usernameLower) ? 5 : 0;
   };
@@ -135,7 +138,11 @@ export async function getAvatarLibrarySizeForUser(
     }
   };
 
-  return Math.max(await patreonLibrarySize(), modLibrarySize());
+  return Math.max(
+    await patreonLibrarySize(),
+    modLibrarySize(),
+    tempMinLibrarySize,
+  );
 }
 
 async function updateUsersAvatarLibrary(
