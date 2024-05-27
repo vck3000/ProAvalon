@@ -13,9 +13,9 @@ import { PatreonAgent } from '../clients/patreon/patreonAgent';
 import { IUser } from '../gameplay/types';
 import { PatreonController } from '../clients/patreon/patreonController';
 import constants from './constants';
-import User from '../models/user';
 import { S3Agent } from '../clients/s3/S3Agent';
 import S3Controller from '../clients/s3/S3Controller';
+import userAdapter from '../databaseAdapters/user';
 
 const s3Agent = new S3Agent(new S3Controller());
 const patreonAgent = new PatreonAgent(new PatreonController());
@@ -142,7 +142,7 @@ async function updateUsersAvatarLibrary(
   usernameLower: string,
   patreonReward: any,
 ) {
-  const user = await User.findOne({ usernameLower });
+  const user = await userAdapter.getUser(usernameLower);
   const librarySize = await getAvatarLibrarySizeForUser(
     usernameLower,
     patreonReward,

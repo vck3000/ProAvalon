@@ -73,6 +73,7 @@ export interface IUser {
   matchmakingBlacklist?: string[];
 
   save: () => Promise<void>;
+  markModified: (path: string) => void;
 }
 
 export type RoomPlayer = {
