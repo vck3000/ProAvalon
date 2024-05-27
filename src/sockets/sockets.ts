@@ -1950,7 +1950,7 @@ function queueRequest(data): void {
     joined = leaveQueue.call(this);
   }
 
-  this.emit('queueReply', { joined: joined });
+  this.emit('queueStatus', { joined: joined });
 }
 
 // Returns whether they're joined or not.
@@ -2092,6 +2092,7 @@ function matchFound(usernames: string[]): void {
 
         for (const username of rejectedUsernames) {
           const socket = getSocketFromUsername(username);
+          socket.emit('queueStatus', { joined: false });
           socket.emit('allChatToClient', {
             message:
               'You did not accept the match. You have been removed from the queue.',
@@ -2175,12 +2176,13 @@ function matchFound(usernames: string[]): void {
       // send data, etc.
       for (const username of approvedUsernames) {
         room.playerLeaveRoom(getSocketFromUsername(username));
-      }
 
-      for (const username of approvedUsernames) {
-        getSocketFromUsername(username).emit('match-found-join-room', {
+        const socket = getSocketFromUsername(username);
+
+        socket.emit('match-found-join-room', {
           roomId: nextRoomId,
         });
+        socket.emit('queueStatus', { joined: false });
       }
 
       const data = {
