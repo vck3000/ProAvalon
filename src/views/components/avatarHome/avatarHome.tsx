@@ -217,11 +217,22 @@ export function AvatarHome() {
 
       <h4>
         <strong style={{ color: '#1976D2' }}>
-          Until the DD/MM/YYYY, all users will be given a minimum avatar library
-          size of 2!
+          For a limited time until the DD/MM/YYYY, all users will be given a
+          minimum avatar library size of 2!
         </strong>
       </h4>
-      <h4>*This feature is available to current Patreon supporters.</h4>
+      <h4>
+        *This feature is available to current Patreon supporters. The size of
+        your Avatar Library is determined by your Patreon tier:
+      </h4>
+      <h4>
+        <ul>
+          <li>Tier 1: 2 Avatars</li>
+          <li>Tier 2: 3 Avatars</li>
+          <li>Tier 3: 5 Avatars</li>
+          <li>Tier 4: 10 Avatars</li>
+        </ul>
+      </h4>
       <h4>
         To link your Patreon account or if you would like to support the
         development of the site please do so from your profile page{' '}
