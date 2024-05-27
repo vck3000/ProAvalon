@@ -47,11 +47,6 @@
     width: 336px;
 }
 
-.giphy-embed {
-    max-width: 100%;
-    pointer-events: none;
-}
-
 .selected {
     background: #bbdefb;
 }

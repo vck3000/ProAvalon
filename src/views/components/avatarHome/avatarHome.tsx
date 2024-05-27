@@ -46,6 +46,7 @@ export function AvatarHome() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    require('../../styles.css');
     require('./styles.css');
     require('react-multi-carousel/lib/styles.css');
 
@@ -121,14 +122,7 @@ export function AvatarHome() {
   if (isLoading) {
     return (
       <div className="loading-container">
-        <iframe
-          src="https://giphy.com/embed/swhRkVYLJDrCE"
-          width="480"
-          height="270"
-          frameBorder="0"
-          className="giphy-embed"
-          allowFullScreen
-        ></iframe>
+        <div className="loader"></div>
       </div>
     );
   }
