@@ -217,6 +217,12 @@ export function AvatarHome() {
         </h4>
       </div>
 
+      <h4>
+        <strong style={{ color: '#1976D2' }}>
+          Until the DD/MM/YYYY, all users will be given a minimum avatar library
+          size of 2!
+        </strong>
+      </h4>
       <h4>*This feature is available to current Patreon supporters.</h4>
       <h4>
         To link your Patreon account or if you would like to support the
