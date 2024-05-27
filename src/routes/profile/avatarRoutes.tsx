@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import express from 'express';
 import { renderToString } from 'react-dom/server';
@@ -14,6 +13,7 @@ import { PatreonController } from '../../clients/patreon/patreonController';
 
 import { getAndUpdatePatreonRewardTierForUser } from '../../rewards/getRewards';
 import { isMod } from '../../modsadmins/mods';
+import { EnrichedRequest } from '../types';
 
 export type AllAvatarsRouteReturnType = {
   currentResLink: string;
@@ -35,7 +35,7 @@ router.get('/', (req, res) => {
 });
 
 // For a user to change their own current avatar
-router.post('/changeavatar', async (req, res) => {
+router.post('/changeavatar', async (req: EnrichedRequest, res) => {
   if (!req.body.avatarSetId || !req.body.resLink || !req.body.spyLink) {
     return res.status(400).send('Something went wrong.');
   }
@@ -74,7 +74,7 @@ router.post('/changeavatar', async (req, res) => {
 });
 
 // Get a user's avatar library links
-router.get('/getalluseravatars', async (req, res) => {
+router.get('/getalluseravatars', async (req: EnrichedRequest, res) => {
   // TODO-kev: Put this function here or when the avatar homepage is first rendered?
   await getAndUpdatePatreonRewardTierForUser(req.user.usernameLower);
 
