@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Carousel from 'react-multi-carousel';
 import Swal from 'sweetalert2';
+
 import { S3AvatarSet } from '../../../clients/s3/S3Agent';
 import { AllAvatarsRouteReturnType } from '../../../routes/profile/avatarRoutes';
+import { BaseAvatarLinks } from '../constants';
 
 const responsive = {
   avatar3: {
@@ -66,10 +68,10 @@ export function AvatarHome() {
       const data: AllAvatarsRouteReturnType = await response.json();
 
       setCurrentResImgLink(
-        data.currentResLink ? data.currentResLink : '/avatars/base-res.svg',
+        data.currentResLink ? data.currentResLink : BaseAvatarLinks.baseRes,
       );
       setCurrentSpyImgLink(
-        data.currentSpyLink ? data.currentSpyLink : '/avatars/base-spy.svg',
+        data.currentSpyLink ? data.currentSpyLink : BaseAvatarLinks.baseSpy,
       );
       setAvatarLibrary(data.avatarLibrary ? data.avatarLibrary : null);
 
@@ -118,7 +120,7 @@ export function AvatarHome() {
   if (isLoading) {
     return (
       <div className="loading-container">
-        <div className="loader"></div>
+        <div className="spinning-loader"></div>
       </div>
     );
   }
