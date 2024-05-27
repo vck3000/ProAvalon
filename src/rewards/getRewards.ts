@@ -113,27 +113,29 @@ export async function getAvatarLibrarySizeForUser(
   usernameLower: string,
   patreonReward?: RewardType,
 ): Promise<number> {
-  let librarySize = 0;
+  const modLibrarySize = () => {
+    return isMod(usernameLower) ? 5 : 0;
+  };
 
-  if (!patreonReward) {
-    patreonReward = await getPatreonRewardTierForUser(usernameLower);
-  }
+  const patreonLibrarySize = async () => {
+    if (!patreonReward) {
+      patreonReward = await getPatreonRewardTierForUser(usernameLower);
+    }
 
-  if (patreonReward === constants.TIER1_BADGE) {
-    librarySize = 2;
-  } else if (patreonReward === constants.TIER2_BADGE) {
-    librarySize = 3;
-  } else if (patreonReward === constants.TIER3_BADGE) {
-    librarySize = 5;
-  } else if (patreonReward === constants.TIER4_BADGE) {
-    librarySize = 10;
-  }
+    if (patreonReward === constants.TIER1_BADGE) {
+      return 2;
+    } else if (patreonReward === constants.TIER2_BADGE) {
+      return 3;
+    } else if (patreonReward === constants.TIER3_BADGE) {
+      return 5;
+    } else if (patreonReward === constants.TIER4_BADGE) {
+      return 10;
+    } else {
+      return 0;
+    }
+  };
 
-  if (isMod(usernameLower)) {
-    librarySize = Math.max(librarySize, 5);
-  }
-
-  return librarySize;
+  return Math.max(await patreonLibrarySize(), modLibrarySize());
 }
 
 async function updateUsersAvatarLibrary(
