@@ -6,6 +6,7 @@ import { renderToString } from 'react-dom/server';
 import User from '../../models/user';
 import AvatarHome from '../../views/components/avatarHome';
 
+import userAdapter from '../../databaseAdapters/user';
 import { S3AvatarSet, S3Agent } from '../../clients/s3/S3Agent';
 import S3Controller from '../../clients/s3/S3Controller';
 import { PatreonAgent } from '../../clients/patreon/patreonAgent';
@@ -79,17 +80,17 @@ router.get('/getalluseravatars', async (req, res) => {
   // TODO-kev: Put this function here or when the avatar homepage is first rendered?
   await getAndUpdatePatreonRewardTierForUser(req.user.usernameLower);
 
-  const user = await User.findOne({
-    usernameLower: req.user.usernameLower,
-  });
+  const user = userAdapter.getUser(req.user.usernameLower);
 
   const result: AllAvatarsRouteReturnType = {
     currentResLink: user.avatarImgRes,
     currentSpyLink: user.avatarImgSpy,
-    avatarLibrary: await s3Agent.getUsersAvatarLibraryLinks(
-      user.usernameLower,
-      user.avatarLibrary as number[],
-    ),
+    avatarLibrary: user.avatarLibrary
+      ? await s3Agent.getUsersAvatarLibraryLinks(
+          user.usernameLower,
+          user.avatarLibrary,
+        )
+      : null,
   };
 
   res.status(200).send(result);

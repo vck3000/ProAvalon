@@ -12,3 +12,6 @@ export class MongoUserAdapter implements DatabaseAdapter {
     })) as IUser;
   }
 }
+
+const userAdapter = new MongoUserAdapter();
+export default userAdapter;

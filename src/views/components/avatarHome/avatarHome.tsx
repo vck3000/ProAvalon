@@ -72,8 +72,10 @@ export function AvatarHome() {
       if (data.currentSpyLink) {
         setCurrentSpyImgLink(data.currentSpyLink);
       }
+      if (data.avatarLibrary) {
+        setAvatarLibrary(data.avatarLibrary);
+      }
 
-      setAvatarLibrary(data.avatarLibrary);
       setIsLoading(false);
     }
   }, [username]);
