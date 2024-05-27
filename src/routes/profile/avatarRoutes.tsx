@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import { Router } from 'express';
 import { renderToString } from 'react-dom/server';
@@ -80,7 +79,7 @@ router.get('/getalluseravatars', async (req, res) => {
   // TODO-kev: Put this function here or when the avatar homepage is first rendered?
   await getAndUpdatePatreonRewardTierForUser(req.user.usernameLower);
 
-  const user = userAdapter.getUser(req.user.usernameLower);
+  const user = await userAdapter.getUser(req.user.usernameLower);
 
   const result: AllAvatarsRouteReturnType = {
     currentResLink: user.avatarImgRes,
