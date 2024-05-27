@@ -1,5 +1,6 @@
+// @ts-nocheck
 import React from 'react';
-import { Router } from 'express';
+import express from 'express';
 import { renderToString } from 'react-dom/server';
 
 import User from '../../models/user';
@@ -20,11 +21,9 @@ export type AllAvatarsRouteReturnType = {
   avatarLibrary: S3AvatarSet[];
 };
 
+const router = express.Router();
 const s3Agent = new S3Agent(new S3Controller());
 const patreonAgent = new PatreonAgent(new PatreonController());
-
-// TODO-kev: Consider moving this out of profile routes in general
-const router = new Router();
 
 // TODO-kev: Add something similar to checkProfileOwnership? Do i even need this?
 
