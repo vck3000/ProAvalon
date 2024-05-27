@@ -23,7 +23,7 @@ const responsive = {
   },
 };
 
-const GetLinks = {
+const getLinks = {
   getalluseravatars: (username: string) =>
     `/profile/${username}/avatar/getalluseravatars`,
   changeavatar: (username: string) =>
@@ -50,21 +50,19 @@ export function AvatarHome() {
     require('./styles.css');
     require('react-multi-carousel/lib/styles.css');
 
+    setIsLoading(true);
+
     // Extract username from route of form '/profile/:profileusername/avatar'
     const match = window.location.pathname.match(/\/profile\/([^\/]+)\/avatar/);
     const extractedUsername = match ? match[1] : '';
     setUsername(extractedUsername);
-  }, []);
 
-  useEffect(() => {
-    setIsLoading(true);
-
-    if (username) {
-      void fetchUserAvatarInfo();
-    }
+    void fetchUserAvatarInfo();
 
     async function fetchUserAvatarInfo() {
-      const response = await fetch(GetLinks.getalluseravatars(username));
+      const response = await fetch(
+        getLinks.getalluseravatars(extractedUsername),
+      );
       const data: AllAvatarsRouteReturnType = await response.json();
 
       setCurrentResImgLink(
@@ -77,7 +75,7 @@ export function AvatarHome() {
 
       setIsLoading(false);
     }
-  }, [username]);
+  }, []);
 
   const changeAvatarRequest = () => {
     if (!selectedAvatarSet) {
@@ -92,7 +90,7 @@ export function AvatarHome() {
       title: 'Sending request',
       didOpen: async () => {
         Swal.showLoading();
-        const response = await fetch(GetLinks.changeavatar(username), {
+        const response = await fetch(getLinks.changeavatar(username), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -148,7 +146,7 @@ export function AvatarHome() {
           src={currentSpyImgLink}
         ></img>
       </div>
-      <a className="btn btn-info" href={GetLinks.customavatar(username)}>
+      <a className="btn btn-info" href={getLinks.customavatar(username)}>
         Submit a custom avatar
       </a>
       <hr
@@ -227,7 +225,7 @@ export function AvatarHome() {
       <h4>
         To link your Patreon account or if you would like to support the
         development of the site please do so from your profile page{' '}
-        <a href={GetLinks.edit(username)}>here</a>.
+        <a href={getLinks.edit(username)}>here</a>.
       </h4>
     </div>
   );
