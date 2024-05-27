@@ -26,7 +26,6 @@ const router = express.Router();
 const s3Agent = new S3Agent(new S3Controller());
 const patreonAgent = new PatreonAgent(new PatreonController());
 
-// TODO-kev: Should i keep this here? Or move back to profile
 // Show the user's avatar homepage
 router.get(
   '/:profileUsername/avatar',
@@ -85,7 +84,6 @@ router.get(
   '/:profileUsername/avatar/getalluseravatars',
   checkProfileOwnership,
   async (req: EnrichedRequest, res: Response) => {
-    // TODO-kev: Put this function here or when the avatar homepage is first rendered?
     await getAndUpdatePatreonRewardTierForUser(req.user.usernameLower);
 
     const user = await userAdapter.getUser(req.user.usernameLower);
