@@ -13,9 +13,9 @@ import { PatreonAgent } from '../clients/patreon/patreonAgent';
 import { IUser } from '../gameplay/types';
 import { PatreonController } from '../clients/patreon/patreonController';
 import constants from './constants';
-import User from '../models/user';
 import { S3Agent } from '../clients/s3/S3Agent';
 import S3Controller from '../clients/s3/S3Controller';
+import userAdapter from '../databaseAdapters/user';
 
 const s3Agent = new S3Agent(new S3Controller());
 const patreonAgent = new PatreonAgent(new PatreonController());
@@ -113,34 +113,43 @@ export async function getAvatarLibrarySizeForUser(
   usernameLower: string,
   patreonReward?: RewardType,
 ): Promise<number> {
-  let librarySize = 0;
+  // Temporary minLibrarySize for feature launch. To be disabled DD/MM/YYYY
+  const tempMinLibrarySize = 2;
 
-  if (!patreonReward) {
-    patreonReward = await getPatreonRewardTierForUser(usernameLower);
-  }
+  const modLibrarySize = () => {
+    return isMod(usernameLower) ? 5 : 0;
+  };
 
-  if (patreonReward === constants.TIER1_BADGE) {
-    librarySize = 2;
-  } else if (patreonReward === constants.TIER2_BADGE) {
-    librarySize = 3;
-  } else if (patreonReward === constants.TIER3_BADGE) {
-    librarySize = 5;
-  } else if (patreonReward === constants.TIER4_BADGE) {
-    librarySize = 10;
-  }
+  const patreonLibrarySize = async () => {
+    if (!patreonReward) {
+      patreonReward = await getPatreonRewardTierForUser(usernameLower);
+    }
 
-  if (isMod(usernameLower)) {
-    librarySize = Math.max(librarySize, 5);
-  }
+    if (patreonReward === constants.TIER1_BADGE) {
+      return 2;
+    } else if (patreonReward === constants.TIER2_BADGE) {
+      return 3;
+    } else if (patreonReward === constants.TIER3_BADGE) {
+      return 5;
+    } else if (patreonReward === constants.TIER4_BADGE) {
+      return 10;
+    } else {
+      return 0;
+    }
+  };
 
-  return librarySize;
+  return Math.max(
+    await patreonLibrarySize(),
+    modLibrarySize(),
+    tempMinLibrarySize,
+  );
 }
 
 async function updateUsersAvatarLibrary(
   usernameLower: string,
   patreonReward: any,
 ) {
-  const user = await User.findOne({ usernameLower });
+  const user = await userAdapter.getUser(usernameLower);
   const librarySize = await getAvatarLibrarySizeForUser(
     usernameLower,
     patreonReward,

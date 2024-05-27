@@ -29,6 +29,8 @@ export function ReadyPrompt() {
         timer: data.timeout,
         didOpen: () => {
           Swal.hideLoading();
+          Swal.getConfirmButton().blur();
+
           const timer = Swal.getPopup().querySelector('span');
           timerInterval = setInterval(() => {
             timer.textContent = `${Math.floor(

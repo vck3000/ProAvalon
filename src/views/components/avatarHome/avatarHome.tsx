@@ -3,7 +3,6 @@ import Carousel from 'react-multi-carousel';
 import Swal from 'sweetalert2';
 import { S3AvatarSet } from '../../../clients/s3/S3Agent';
 import { AllAvatarsRouteReturnType } from '../../../routes/profile/avatarRoutes';
-// import './styles.css';
 
 const responsive = {
   avatar3: {
@@ -24,65 +23,61 @@ const responsive = {
   },
 };
 
-type AvatarHomeRoutes = {
-  getalluseravatars: string;
-  changeavatar: string;
-  customavatar: string;
-  edit: string;
+const GetLinks = {
+  getalluseravatars: (username: string) =>
+    `/profile/${username}/avatar/getalluseravatars`,
+  changeavatar: (username: string) =>
+    `/profile/${username}/avatar/changeavatar`,
+  customavatar: (username: string) => `/profile/${username}/customavatar`,
+  edit: (username: string) => `/profile/${username}/edit`,
 };
 
 export function AvatarHome() {
-  const [currentResImgLink, setCurrentResImgLink] = useState(
-    '/avatars/base-res.svg',
+  const [username, setUsername] = useState<string | null>(null);
+  const [currentResImgLink, setCurrentResImgLink] = useState<string | null>(
+    null,
   );
-  const [currentSpyImgLink, setCurrentSpyImgLink] = useState(
-    '/avatars/base-spy.svg',
+  const [currentSpyImgLink, setCurrentSpyImgLink] = useState<string | null>(
+    null,
   );
   const [avatarLibrary, setAvatarLibrary] = useState<S3AvatarSet[]>([]);
   const [selectedAvatarSet, setSelectedAvatarSet] =
     useState<S3AvatarSet | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [routes, setRoutes] = useState<AvatarHomeRoutes | null>(null);
 
   useEffect(() => {
-    require('react-multi-carousel/lib/styles.css');
+    require('../../styles.css');
     require('./styles.css');
+    require('react-multi-carousel/lib/styles.css');
 
     // Extract username from route of form '/profile/:profileusername/avatar'
     const match = window.location.pathname.match(/\/profile\/([^\/]+)\/avatar/);
     const extractedUsername = match ? match[1] : '';
-
-    const newRoutes: AvatarHomeRoutes = {
-      getalluseravatars: `/profile/${extractedUsername}/avatar/getalluseravatars`,
-      changeavatar: `/profile/${extractedUsername}/avatar/changeavatar`,
-      customavatar: `/profile/${extractedUsername}/customavatar`,
-      edit: `/profile/${extractedUsername}/edit`,
-    };
-
-    setRoutes(newRoutes);
+    setUsername(extractedUsername);
   }, []);
 
   useEffect(() => {
     setIsLoading(true);
-    if (routes) {
+
+    if (username) {
       void fetchUserAvatarInfo();
     }
 
     async function fetchUserAvatarInfo() {
-      const response = await fetch(routes.getalluseravatars);
+      const response = await fetch(GetLinks.getalluseravatars(username));
       const data: AllAvatarsRouteReturnType = await response.json();
 
-      if (data.currentResLink) {
-        setCurrentResImgLink(data.currentResLink);
-      }
-      if (data.currentSpyLink) {
-        setCurrentSpyImgLink(data.currentSpyLink);
-      }
+      setCurrentResImgLink(
+        data.currentResLink ? data.currentResLink : '/avatars/base-res.svg',
+      );
+      setCurrentSpyImgLink(
+        data.currentSpyLink ? data.currentSpyLink : '/avatars/base-spy.svg',
+      );
+      setAvatarLibrary(data.avatarLibrary ? data.avatarLibrary : null);
 
-      setAvatarLibrary(data.avatarLibrary);
       setIsLoading(false);
     }
-  }, [routes]);
+  }, [username]);
 
   const changeAvatarRequest = () => {
     if (!selectedAvatarSet) {
@@ -97,7 +92,7 @@ export function AvatarHome() {
       title: 'Sending request',
       didOpen: async () => {
         Swal.showLoading();
-        const response = await fetch(routes.changeavatar, {
+        const response = await fetch(GetLinks.changeavatar(username), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -125,14 +120,7 @@ export function AvatarHome() {
   if (isLoading) {
     return (
       <div className="loading-container">
-        <iframe
-          src="https://giphy.com/embed/swhRkVYLJDrCE"
-          width="480"
-          height="270"
-          frameBorder="0"
-          className="giphy-embed"
-          allowFullScreen
-        ></iframe>
+        <div className="loader"></div>
       </div>
     );
   }
@@ -160,7 +148,7 @@ export function AvatarHome() {
           src={currentSpyImgLink}
         ></img>
       </div>
-      <a className="btn btn-info" href={routes.customavatar}>
+      <a className="btn btn-info" href={GetLinks.customavatar(username)}>
         Submit a custom avatar
       </a>
       <hr
@@ -229,11 +217,17 @@ export function AvatarHome() {
         </h4>
       </div>
 
+      <h4>
+        <strong style={{ color: '#1976D2' }}>
+          Until the DD/MM/YYYY, all users will be given a minimum avatar library
+          size of 2!
+        </strong>
+      </h4>
       <h4>*This feature is available to current Patreon supporters.</h4>
       <h4>
         To link your Patreon account or if you would like to support the
         development of the site please do so from your profile page{' '}
-        <a href={routes.edit}>here</a>.
+        <a href={GetLinks.edit(username)}>here</a>.
       </h4>
     </div>
   );

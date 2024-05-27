@@ -43,7 +43,7 @@ export interface IUser {
   emailTokenExpiry?: Date;
   avatarImgRes?: string | null;
   avatarImgSpy?: string | null;
-  avatarLibrary?: Number[];
+  avatarLibrary?: number[];
   avatarHide?: boolean;
   hideStats?: boolean;
   pronoun?: string | null;
@@ -71,6 +71,9 @@ export interface IUser {
   IPAddresses?: string[];
   lastIPAddress?: string;
   matchmakingBlacklist?: string[];
+
+  save: () => Promise<void>;
+  markModified: (path: string) => void;
 }
 
 export type RoomPlayer = {
