@@ -185,10 +185,10 @@ export class S3Agent {
   }
 
   // Assumes the avatarLibrary is updated accurately
-  public async getUsersAvatarLibraryLinks(
+  public getUsersAvatarLibraryLinks(
     usernameLower: string,
     avatarLibrary: number[],
-  ): Promise<S3AvatarSet[]> {
+  ): S3AvatarSet[] {
     let avatarLibraryLinks: S3AvatarSet[] = [];
 
     avatarLibrary.forEach((avatarId) => {
