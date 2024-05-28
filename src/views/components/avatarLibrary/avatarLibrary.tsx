@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { S3AvatarSet } from '../../../clients/s3/S3Agent';
-import Swal from 'sweetalert2';
 import Carousel from 'react-multi-carousel';
-import { AllUserAvatars } from '../../../routes/profile';
+import Swal from 'sweetalert2';
 
-const BASE_RES_AVATAR = '/avatars/base-res.svg';
-const BASE_SPY_AVATAR = '/avatars/base-spy.svg';
+import { S3AvatarSet } from '../../../clients/s3/S3Agent';
+import { AllUserAvatars } from '../../../routes/profile';
+import { BaseAvatarLinks } from '../constants';
 
 const responsive = {
   desktop: {
@@ -67,10 +66,10 @@ export function AvatarLibrary() {
       const data: AllUserAvatars = await response.json();
       setTargetUsername(inputUsername);
       setTargetUserResAvatar(
-        data.currentResLink ? data.currentResLink : BASE_RES_AVATAR,
+        data.currentResLink ? data.currentResLink : BaseAvatarLinks.baseRes,
       );
       setTargetUserSpyAvatar(
-        data.currentSpyLink ? data.currentSpyLink : BASE_SPY_AVATAR,
+        data.currentSpyLink ? data.currentSpyLink : BaseAvatarLinks.baseSpy,
       );
       setTargetUserAvatarLibrary(data.allApprovedAvatars.avatarLibrary);
       setTargetUserOtherApprovedAvatars(
