@@ -21,6 +21,13 @@ const responsive = {
   },
 };
 
+const getLinks = {
+  approvedAvatars: (username: string) =>
+    `/profile/mod/approvedavatars?username=${username}`,
+  setAvatar: '/profile/mod/setavatar',
+  updateUserAvatarLibrary: '/profile/mod/updateuseravatarlibrary',
+};
+
 export function AvatarLookup() {
   const [inputUsername, setInputUsername] = useState<string | null>(null);
 
@@ -58,9 +65,7 @@ export function AvatarLookup() {
       return;
     }
 
-    const response = await fetch(
-      `/profile/mod/approvedavatars?username=${inputUsername}`,
-    );
+    const response = await fetch(getLinks.approvedAvatars(inputUsername));
 
     if (response.status === 200) {
       const data: AllUserAvatars = await response.json();
@@ -85,7 +90,7 @@ export function AvatarLookup() {
       title: 'Sending request',
       didOpen: async () => {
         Swal.showLoading();
-        const response = await fetch('/profile/mod/setavatar', {
+        const response = await fetch(getLinks.setAvatar, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -115,7 +120,7 @@ export function AvatarLookup() {
       title: 'Sending request',
       didOpen: async () => {
         Swal.showLoading();
-        const response = await fetch('/profile/mod/updateuseravatarlibrary', {
+        const response = await fetch(getLinks.updateUserAvatarLibrary, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
