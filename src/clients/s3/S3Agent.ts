@@ -244,22 +244,7 @@ export class S3Agent {
     };
   }
 
-  public async setUserAvatars(
-    username: string,
-    resLink: string,
-    spyLink: string,
-  ) {
-    if (
-      !this.isValidLink(resLink, 'res') ||
-      !this.isValidLink(spyLink, 'spy')
-    ) {
-      throw new InvalidLinkError();
-    }
-
-    await userAdapter.updateAvatar(username, resLink, spyLink);
-  }
-
-  private isValidLink(link: string, type: string) {
+  public isValidLink(link: string, type: string) {
     return this.s3Controller.isValidLink(link) && link.includes(type);
   }
 }

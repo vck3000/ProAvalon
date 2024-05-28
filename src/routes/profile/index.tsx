@@ -13,7 +13,7 @@ import avatarRequest from '../../models/avatarRequest';
 import ModLog from '../../models/modLog';
 import AvatarLookup from '../../views/components/avatarLookup';
 
-import { UserNotFoundError } from '../../databaseAdapters/user';
+import userAdapter, { UserNotFoundError } from '../../databaseAdapters/user';
 import S3Controller from '../../clients/s3/S3Controller';
 import {
   AllApprovedAvatars,
@@ -117,17 +117,8 @@ router.post('/mod/setavatar', isModMiddleware, async (req, res) => {
     return res.status(400).send('Bad input.');
   }
 
-  if (
-    (!req.body.resLink.startsWith(process.env.S3_PUBLIC_FILE_LINK_PREFIX) &&
-      !req.body.resLink.includes('res')) ||
-    (!req.body.spyLink.startsWith(process.env.S3_PUBLIC_FILE_LINK_PREFIX) &&
-      !req.body.spyLink.includes('spy'))
-  ) {
-    return res.status(400).send(`Invalid avatar links provided`);
-  }
-
   try {
-    await s3Agent.setUserAvatars(
+    await userAdapter.updateAvatar(
       req.body.username,
       req.body.resLink,
       req.body.spyLink,

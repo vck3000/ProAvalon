@@ -1,5 +1,7 @@
 import User from '../models/user';
 import { IUser } from '../gameplay/types';
+import { InvalidLinkError, S3Agent } from '../clients/s3/S3Agent';
+import S3Controller from '../clients/s3/S3Controller';
 
 export class UserNotFoundError extends Error {
   constructor(username: string) {
@@ -12,6 +14,8 @@ interface DatabaseAdapter {
   updateAvatar(username: string, resLink: string, spyLink: string): void;
 }
 
+const s3Agent = new S3Agent(new S3Controller());
+
 class MongoUserAdapter implements DatabaseAdapter {
   async getUser(username: string): Promise<IUser> {
     return (await User.findOne({
@@ -21,9 +25,15 @@ class MongoUserAdapter implements DatabaseAdapter {
 
   async updateAvatar(username: string, resLink: string, spyLink: string) {
     const user = await this.getUser(username);
-
     if (!user) {
       throw new UserNotFoundError(username);
+    }
+
+    if (
+      !s3Agent.isValidLink(resLink, 'res') ||
+      !s3Agent.isValidLink(spyLink, 'spy')
+    ) {
+      throw new InvalidLinkError();
     }
 
     user.avatarImgRes = resLink;
