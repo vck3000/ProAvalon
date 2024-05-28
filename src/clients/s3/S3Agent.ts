@@ -244,7 +244,11 @@ export class S3Agent {
     };
   }
 
-  public async setAvatar(username: string, resLink: string, spyLink: string) {
+  public async setUserAvatars(
+    username: string,
+    resLink: string,
+    spyLink: string,
+  ) {
     if (
       !this.isValidLink(resLink, 'res') ||
       !this.isValidLink(spyLink, 'spy')

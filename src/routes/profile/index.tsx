@@ -127,7 +127,7 @@ router.post('/mod/setavatar', isModMiddleware, async (req, res) => {
   }
 
   try {
-    await s3Agent.setAvatar(
+    await s3Agent.setUserAvatars(
       req.body.username,
       req.body.resLink,
       req.body.spyLink,

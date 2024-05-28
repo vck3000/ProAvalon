@@ -29,7 +29,7 @@ const getLinks = {
 };
 
 export function AvatarLookup() {
-  const [inputUsername, setInputUsername] = useState<string | null>(null);
+  const [inputUsername, setInputUsername] = useState<string>('');
 
   const [targetUsername, setTargetUsername] = useState<string | null>(null);
   const [targetUserResAvatar, setTargetUserResAvatar] = useState<string | null>(
@@ -377,26 +377,24 @@ export function AvatarLookup() {
                       </button>
                     </td>
                     <td>
-                      <h4>
-                        {selectedOtherAvatarSet && selectedAvatarLibrarySet ? (
-                          <h4>
-                            Add{' '}
-                            <strong>
-                              Avatar {selectedOtherAvatarSet.avatarSetId}
-                            </strong>{' '}
-                            and remove{' '}
-                            <strong>
-                              Avatar {selectedAvatarLibrarySet.avatarSetId}
-                            </strong>{' '}
-                            from the avatar library
-                          </h4>
-                        ) : (
-                          <h4>
-                            Select an avatar from the avatar library and the
-                            other approved avatars.
-                          </h4>
-                        )}
-                      </h4>
+                      {selectedOtherAvatarSet && selectedAvatarLibrarySet ? (
+                        <h4>
+                          Add{' '}
+                          <strong>
+                            Avatar {selectedOtherAvatarSet.avatarSetId}
+                          </strong>{' '}
+                          and remove{' '}
+                          <strong>
+                            Avatar {selectedAvatarLibrarySet.avatarSetId}
+                          </strong>{' '}
+                          from the avatar library
+                        </h4>
+                      ) : (
+                        <h4>
+                          Select an avatar from the avatar library and the other
+                          approved avatars.
+                        </h4>
+                      )}
                     </td>
                   </tr>
                 ) : null}
