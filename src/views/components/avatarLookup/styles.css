@@ -11,6 +11,11 @@
     border-radius: 20px;
 }
 
+/*Below is the carousel container*/
+.react-multi-carousel-list {
+    max-width: 1100px;
+}
+
 .react-multi-carousel-item .avatarSet:hover {
     border-radius: 20px;
     transform: scale(1.05);
@@ -21,14 +26,12 @@
 }
 
 .react-multi-carousel-item .avatarSet {
-    margin: 1em;
+    margin: 15px;
     cursor: pointer;
     display: block;
     text-align: center;
-}
-
-.react-multi-carousel-item .avatarImg {
-    margin: 10px;
+    /*Avatar imgs total width = 296px. Add extra 40px to background highlight*/
+    width: 336px;
 }
 
 .selected {
@@ -38,4 +41,30 @@
 .button-label {
     display: inline-block;
     padding: 6px 12px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(336px, 1fr));
+    gap: 20px;
+}
+
+.grid-container .avatarSet:hover {
+    border-radius: 20px;
+    transform: scale(1.05);
+}
+
+.grid-container .avatarSet:hover:not(.selected) {
+    background-color: #e0e0e0;
+}
+
+.grid-container .avatarSet {
+    margin: 15px;
+    cursor: pointer;
+    display: block;
+    text-align: center;
+}
+
+.grid-item .avatarImg {
+    margin: 10px;
 }
