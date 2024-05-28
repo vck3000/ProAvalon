@@ -13,13 +13,8 @@ import avatarRequest from '../../models/avatarRequest';
 import ModLog from '../../models/modLog';
 import AvatarLookup from '../../views/components/avatarLookup';
 
-import userAdapter, { UserNotFoundError } from '../../databaseAdapters/user';
 import S3Controller from '../../clients/s3/S3Controller';
-import {
-  AllApprovedAvatars,
-  InvalidLinkError,
-  S3Agent,
-} from '../../clients/s3/S3Agent';
+import { AllApprovedAvatars, S3Agent } from '../../clients/s3/S3Agent';
 import { PatreonAgent } from '../../clients/patreon/patreonAgent';
 import { PatreonController } from '../../clients/patreon/patreonController';
 import { createNotification } from '../../myFunctions/createNotification';
@@ -109,29 +104,6 @@ router.get('/mod/approvedavatars', isModMiddleware, async (req, res) => {
   };
 
   return res.status(200).send(result);
-});
-
-// Moderator set a user's current avatar
-router.post('/mod/setavatar', isModMiddleware, async (req, res) => {
-  if (!req.body.username || !req.body.resLink || !req.body.spyLink) {
-    return res.status(400).send('Bad input.');
-  }
-
-  try {
-    await userAdapter.updateAvatar(
-      req.body.username,
-      req.body.resLink,
-      req.body.spyLink,
-    );
-
-    return res
-      .status(200)
-      .send(`Successfully set ${req.body.username}'s avatar.`);
-  } catch (e) {
-    e instanceof UserNotFoundError || e instanceof InvalidLinkError
-      ? res.status(400).send(e.message)
-      : res.status(500).send(e.message);
-  }
 });
 
 // Moderator update a user's avatarLibrary

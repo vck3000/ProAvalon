@@ -24,7 +24,6 @@ const responsive = {
 const getLinks = {
   approvedAvatars: (username: string) =>
     `/profile/mod/approvedavatars?username=${username}`,
-  setAvatar: '/profile/mod/setavatar',
   updateUserAvatarLibrary: '/profile/mod/updateuseravatarlibrary',
 };
 
@@ -83,36 +82,6 @@ export function AvatarLookup() {
     } else {
       Swal.fire({ title: await response.text(), icon: 'error' });
     }
-  };
-
-  const handleSetAvatar = () => {
-    Swal.fire({
-      title: 'Sending request',
-      didOpen: async () => {
-        Swal.showLoading();
-        const response = await fetch(getLinks.setAvatar, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: targetUsername,
-            resLink: 'lastSelectedAvatarSet.resLink',
-            spyLink: lastSelectedAvatarSet.spyLink,
-          }),
-        });
-
-        if (response.status === 200) {
-          setTargetUserResAvatar(lastSelectedAvatarSet.resLink);
-          setTargetUserSpyAvatar(lastSelectedAvatarSet.spyLink);
-          Swal.close();
-          Swal.fire({ title: await response.text(), icon: 'success' });
-        } else {
-          Swal.close();
-          Swal.fire({ title: await response.text(), icon: 'error' });
-        }
-      },
-    });
   };
 
   const handleSwapAvatar = () => {
@@ -325,81 +294,33 @@ export function AvatarLookup() {
                   </div>
                 ))}
               </Carousel>
-            </div>
-          ) : null}
 
-          {targetUserAvatarLibrary || targetUserOtherApprovedAvatars ? (
-            <table>
-              <tbody>
-                <tr>
-                  <td>
-                    <button
-                      className={`btn ${
-                        lastSelectedAvatarSet ? 'btn-success' : 'btn-danger'
-                      }`}
-                      onClick={handleSetAvatar}
-                      disabled={!lastSelectedAvatarSet}
-                    >
-                      Set Avatar
-                    </button>
-                  </td>
-                  <td>
-                    {lastSelectedAvatarSet ? (
-                      <h4>
-                        Set{' '}
-                        <strong>
-                          Avatar {lastSelectedAvatarSet.avatarSetId}
-                        </strong>{' '}
-                        as the current avatar
-                      </h4>
-                    ) : (
-                      <h4>
-                        Select an avatar above to set as the current avatar
-                      </h4>
-                    )}
-                  </td>
-                </tr>
-                {targetUserAvatarLibrary && targetUserOtherApprovedAvatars ? (
-                  <tr>
-                    <td>
-                      <button
-                        className={`btn ${
-                          selectedOtherAvatarSet && selectedAvatarLibrarySet
-                            ? 'btn-success'
-                            : 'btn-danger'
-                        }`}
-                        onClick={handleSwapAvatar}
-                        disabled={
-                          !selectedOtherAvatarSet || !selectedAvatarLibrarySet
-                        }
-                      >
-                        Update Library
-                      </button>
-                    </td>
-                    <td>
-                      {selectedOtherAvatarSet && selectedAvatarLibrarySet ? (
-                        <h4>
-                          Add{' '}
-                          <strong>
-                            Avatar {selectedOtherAvatarSet.avatarSetId}
-                          </strong>{' '}
-                          and remove{' '}
-                          <strong>
-                            Avatar {selectedAvatarLibrarySet.avatarSetId}
-                          </strong>{' '}
-                          from the avatar library
-                        </h4>
-                      ) : (
-                        <h4>
-                          Select an avatar from the avatar library and the other
-                          approved avatars.
-                        </h4>
-                      )}
-                    </td>
-                  </tr>
-                ) : null}
-              </tbody>
-            </table>
+              <button
+                className={`btn ${
+                  selectedOtherAvatarSet && selectedAvatarLibrarySet
+                    ? 'btn-success'
+                    : 'btn-danger'
+                }`}
+                onClick={handleSwapAvatar}
+                disabled={!selectedOtherAvatarSet || !selectedAvatarLibrarySet}
+              >
+                Update Library
+              </button>
+              {selectedOtherAvatarSet && selectedAvatarLibrarySet ? (
+                <h4 className="button-label">
+                  Add{' '}
+                  <strong>Avatar {selectedOtherAvatarSet.avatarSetId}</strong>{' '}
+                  and remove{' '}
+                  <strong>Avatar {selectedAvatarLibrarySet.avatarSetId}</strong>{' '}
+                  from the avatar library
+                </h4>
+              ) : (
+                <h4 className="button-label">
+                  Select an avatar from the avatar library and the other
+                  approved avatars.
+                </h4>
+              )}
+            </div>
           ) : null}
         </div>
       ) : null}
