@@ -72,6 +72,7 @@ export interface IUser {
   lastIPAddress?: string;
   matchmakingBlacklist?: string[];
 
+  // Mongoose methods
   save: () => Promise<void>;
   markModified: (path: string) => void;
 }

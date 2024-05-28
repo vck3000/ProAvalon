@@ -20,6 +20,8 @@ import userAdapter from '../databaseAdapters/user';
 const s3Agent = new S3Agent(new S3Controller());
 const patreonAgent = new PatreonAgent(new PatreonController());
 
+const TEMP_MIN_LIBRARY_SIZE = 2;
+
 // Returns Patreon Tier for User. Will update the users avatar library based on tier
 export async function getAndUpdatePatreonRewardTierForUser(
   usernameLower: string,
@@ -113,9 +115,6 @@ export async function getAvatarLibrarySizeForUser(
   usernameLower: string,
   patreonReward?: RewardType,
 ): Promise<number> {
-  // Temporary minLibrarySize for feature launch. To be disabled DD/MM/YYYY
-  const tempMinLibrarySize = 2;
-
   const modLibrarySize = () => {
     return isMod(usernameLower) ? 5 : 0;
   };
@@ -134,14 +133,15 @@ export async function getAvatarLibrarySizeForUser(
     } else if (patreonReward === constants.TIER4_BADGE) {
       return 10;
     } else {
-      return 0;
+      return 1;
     }
   };
 
+  // TODO-kev: Temporary minLibrarySize for feature launch. To be disabled DD/MM/YYYY
   return Math.max(
     await patreonLibrarySize(),
     modLibrarySize(),
-    tempMinLibrarySize,
+    TEMP_MIN_LIBRARY_SIZE,
   );
 }
 

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Carousel from 'react-multi-carousel';
 import Swal from 'sweetalert2';
+
 import { S3AvatarSet } from '../../../clients/s3/S3Agent';
 import { AllAvatarsRouteReturnType } from '../../../routes/profile/avatarRoutes';
+import { BaseAvatarLinks } from '../constants';
 
 const responsive = {
   avatar3: {
@@ -23,7 +25,7 @@ const responsive = {
   },
 };
 
-const GetLinks = {
+const getLinks = {
   getalluseravatars: (username: string) =>
     `/profile/${username}/avatar/getalluseravatars`,
   changeavatar: (username: string) =>
@@ -50,34 +52,32 @@ export function AvatarHome() {
     require('./styles.css');
     require('react-multi-carousel/lib/styles.css');
 
+    setIsLoading(true);
+
     // Extract username from route of form '/profile/:profileusername/avatar'
     const match = window.location.pathname.match(/\/profile\/([^\/]+)\/avatar/);
     const extractedUsername = match ? match[1] : '';
     setUsername(extractedUsername);
-  }, []);
 
-  useEffect(() => {
-    setIsLoading(true);
-
-    if (username) {
-      void fetchUserAvatarInfo();
-    }
+    void fetchUserAvatarInfo();
 
     async function fetchUserAvatarInfo() {
-      const response = await fetch(GetLinks.getalluseravatars(username));
+      const response = await fetch(
+        getLinks.getalluseravatars(extractedUsername),
+      );
       const data: AllAvatarsRouteReturnType = await response.json();
 
       setCurrentResImgLink(
-        data.currentResLink ? data.currentResLink : '/avatars/base-res.svg',
+        data.currentResLink ? data.currentResLink : BaseAvatarLinks.baseRes,
       );
       setCurrentSpyImgLink(
-        data.currentSpyLink ? data.currentSpyLink : '/avatars/base-spy.svg',
+        data.currentSpyLink ? data.currentSpyLink : BaseAvatarLinks.baseSpy,
       );
       setAvatarLibrary(data.avatarLibrary ? data.avatarLibrary : null);
 
       setIsLoading(false);
     }
-  }, [username]);
+  }, []);
 
   const changeAvatarRequest = () => {
     if (!selectedAvatarSet) {
@@ -92,7 +92,7 @@ export function AvatarHome() {
       title: 'Sending request',
       didOpen: async () => {
         Swal.showLoading();
-        const response = await fetch(GetLinks.changeavatar(username), {
+        const response = await fetch(getLinks.changeavatar(username), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -120,7 +120,7 @@ export function AvatarHome() {
   if (isLoading) {
     return (
       <div className="loading-container">
-        <div className="loader"></div>
+        <div className="spinning-loader"></div>
       </div>
     );
   }
@@ -148,7 +148,7 @@ export function AvatarHome() {
           src={currentSpyImgLink}
         ></img>
       </div>
-      <a className="btn btn-info" href={GetLinks.customavatar(username)}>
+      <a className="btn btn-info" href={getLinks.customavatar(username)}>
         Submit a custom avatar
       </a>
       <hr
@@ -219,15 +219,26 @@ export function AvatarHome() {
 
       <h4>
         <strong style={{ color: '#1976D2' }}>
-          Until the DD/MM/YYYY, all users will be given a minimum avatar library
-          size of 2!
+          For a limited time until the DD/MM/YYYY, all users will be given a
+          minimum avatar library size of 2!
         </strong>
       </h4>
-      <h4>*This feature is available to current Patreon supporters.</h4>
+      <h4>
+        *This feature is available to current Patreon supporters. The size of
+        your Avatar Library is determined by your Patreon tier:
+      </h4>
+      <h4>
+        <ul>
+          <li>Tier 1: 2 Avatars</li>
+          <li>Tier 2: 3 Avatars</li>
+          <li>Tier 3: 5 Avatars</li>
+          <li>Tier 4: 10 Avatars</li>
+        </ul>
+      </h4>
       <h4>
         To link your Patreon account or if you would like to support the
         development of the site please do so from your profile page{' '}
-        <a href={GetLinks.edit(username)}>here</a>.
+        <a href={getLinks.edit(username)}>here</a>.
       </h4>
     </div>
   );
