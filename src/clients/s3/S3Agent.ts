@@ -1,3 +1,5 @@
+import userAdapter from '../../databaseAdapters/user';
+
 enum FolderName {
   APPROVED = 'approved_avatars',
   PENDING = 'pending_avatars',
@@ -26,6 +28,11 @@ export interface IS3Controller {
   deleteFile(link: string): Promise<void>;
   moveFile(oldLink: string, newLink: string): Promise<void>;
   transformKeyToLink(key: string): string;
+  isValidLink(link: string): boolean;
+}
+
+export class InvalidLinkError extends Error {
+  message = `Invalid link provided`;
 }
 
 export class S3Agent {
@@ -235,5 +242,20 @@ export class S3Agent {
             )
           : null,
     };
+  }
+
+  public async setAvatar(username: string, resLink: string, spyLink: string) {
+    if (
+      !this.isValidLink(resLink, 'res') ||
+      !this.isValidLink(spyLink, 'spy')
+    ) {
+      throw new InvalidLinkError();
+    }
+
+    await userAdapter.updateAvatar(username, resLink, spyLink);
+  }
+
+  private isValidLink(link: string, type: string) {
+    return this.s3Controller.isValidLink(link) && link.includes(type);
   }
 }

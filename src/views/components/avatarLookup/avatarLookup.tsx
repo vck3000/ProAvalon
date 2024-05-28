@@ -97,7 +97,7 @@ export function AvatarLookup() {
           },
           body: JSON.stringify({
             username: targetUsername,
-            resLink: lastSelectedAvatarSet.resLink,
+            resLink: 'lastSelectedAvatarSet.resLink',
             spyLink: lastSelectedAvatarSet.spyLink,
           }),
         });

@@ -13,8 +13,13 @@ import avatarRequest from '../../models/avatarRequest';
 import ModLog from '../../models/modLog';
 import AvatarLookup from '../../views/components/avatarLookup';
 
+import { UserNotFoundError } from '../../databaseAdapters/user';
 import S3Controller from '../../clients/s3/S3Controller';
-import { AllApprovedAvatars, S3Agent } from '../../clients/s3/S3Agent';
+import {
+  AllApprovedAvatars,
+  InvalidLinkError,
+  S3Agent,
+} from '../../clients/s3/S3Agent';
 import { PatreonAgent } from '../../clients/patreon/patreonAgent';
 import { PatreonController } from '../../clients/patreon/patreonController';
 import { createNotification } from '../../myFunctions/createNotification';
@@ -121,23 +126,21 @@ router.post('/mod/setavatar', isModMiddleware, async (req, res) => {
     return res.status(400).send(`Invalid avatar links provided`);
   }
 
-  const user = await User.findOne({
-    usernameLower: req.body.username.toLowerCase(),
-  });
+  try {
+    await s3Agent.setAvatar(
+      req.body.username,
+      req.body.resLink,
+      req.body.spyLink,
+    );
 
-  if (!user) {
     return res
-      .status(400)
-      .send(`Invalid username. Could not find: ${req.body.username}`);
+      .status(200)
+      .send(`Successfully set ${req.body.username}'s avatar.`);
+  } catch (e) {
+    e instanceof UserNotFoundError || e instanceof InvalidLinkError
+      ? res.status(400).send(e.message)
+      : res.status(500).send(e.message);
   }
-
-  user.avatarImgRes = req.body.resLink;
-  user.avatarImgSpy = req.body.spyLink;
-  await user.save();
-
-  return res
-    .status(200)
-    .send(`Successfully set ${req.body.username}'s avatar.`);
 });
 
 // Moderator update a user's avatarLibrary
