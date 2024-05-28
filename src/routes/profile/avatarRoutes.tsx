@@ -42,7 +42,7 @@ router.post(
   checkProfileOwnership,
   async (req: EnrichedRequest, res: Response) => {
     if (!req.body.avatarSetId || !req.body.resLink || !req.body.spyLink) {
-      return res.status(400).send('Something went wrong.');
+      return res.status(400).send('Bad input.');
     }
 
     const patronDetails = await patreonAgent.findOrUpdateExistingPatronDetails(
