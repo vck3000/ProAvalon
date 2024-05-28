@@ -109,7 +109,7 @@ router.get('/mod/approvedavatars', isModMiddleware, async (req, res) => {
 // Moderator set a user's current avatar
 router.post('/mod/setavatar', isModMiddleware, async (req, res) => {
   if (!req.body.username || !req.body.resLink || !req.body.spyLink) {
-    return res.status(400).send('Something went wrong.');
+    return res.status(400).send('Bad input.');
   }
 
   const user = await User.findOne({ usernameLower: req.body.username });
@@ -133,7 +133,7 @@ router.post(
       !req.body.toBeAddedAvatarId ||
       !req.body.toBeRemovedAvatarId
     ) {
-      return res.status(400).send('Something went wrong.');
+      return res.status(400).send('Bad input.');
     }
 
     const user = await User.findOne({ usernameLower: req.body.username });
