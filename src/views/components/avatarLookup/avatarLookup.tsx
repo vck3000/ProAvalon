@@ -47,8 +47,6 @@ export function AvatarLookup() {
     useState<S3AvatarSet | null>(null);
   const [selectedOtherAvatarSet, setSelectedOtherAvatarSet] =
     useState<S3AvatarSet | null>(null);
-  const [lastSelectedAvatarSet, setLastSelectedAvatarSet] =
-    useState<S3AvatarSet | null>(null);
 
   useEffect(() => {
     require('react-multi-carousel/lib/styles.css');
@@ -114,23 +112,15 @@ export function AvatarLookup() {
   };
 
   const handleClickOnAvatarInLibrary = (avatarSet: S3AvatarSet) => {
-    if (selectedAvatarLibrarySet !== avatarSet) {
-      setSelectedAvatarLibrarySet(avatarSet);
-      setLastSelectedAvatarSet(avatarSet);
-    } else {
-      setSelectedAvatarLibrarySet(null);
-      setLastSelectedAvatarSet(selectedOtherAvatarSet || null);
-    }
+    selectedAvatarLibrarySet === avatarSet
+      ? setSelectedAvatarLibrarySet(null)
+      : setSelectedAvatarLibrarySet(avatarSet);
   };
 
   const handleClickOnOtherAvatar = (avatarSet: S3AvatarSet) => {
-    if (selectedOtherAvatarSet !== avatarSet) {
-      setSelectedOtherAvatarSet(avatarSet);
-      setLastSelectedAvatarSet(avatarSet);
-    } else {
-      setSelectedOtherAvatarSet(null);
-      setLastSelectedAvatarSet(selectedAvatarLibrarySet || null);
-    }
+    selectedOtherAvatarSet === avatarSet
+      ? setSelectedOtherAvatarSet(null)
+      : setSelectedOtherAvatarSet(avatarSet);
   };
 
   const handleClearUser = () => {
@@ -144,7 +134,6 @@ export function AvatarLookup() {
 
     setSelectedAvatarLibrarySet(null);
     setSelectedOtherAvatarSet(null);
-    setLastSelectedAvatarSet(null);
   };
 
   return (
@@ -296,15 +285,11 @@ export function AvatarLookup() {
               </Carousel>
 
               <button
-                className={`btn ${
-                  selectedOtherAvatarSet && selectedAvatarLibrarySet
-                    ? 'btn-success'
-                    : 'btn-danger'
-                }`}
+                className={'btn btn-info'}
                 onClick={handleSwapAvatar}
                 disabled={!selectedOtherAvatarSet || !selectedAvatarLibrarySet}
               >
-                Update Library
+                Swap Avatars
               </button>
               {selectedOtherAvatarSet && selectedAvatarLibrarySet ? (
                 <h4 className="button-label">
