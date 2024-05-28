@@ -7,13 +7,17 @@ import { AllUserAvatars } from '../../../routes/profile';
 import { BaseAvatarLinks } from '../constants';
 
 const responsive = {
-  desktop: {
-    breakpoint: { max: 3000, min: 1024 },
+  avatar3: {
+    breakpoint: { max: 3000, min: 1098 },
+    items: 3,
+  },
+  avatar2: {
+    breakpoint: { max: 1098, min: 732 },
     items: 2,
   },
-  tablet: {
-    breakpoint: { max: 1024, min: 464 },
-    items: 2,
+  avatar1: {
+    breakpoint: { max: 732, min: 464 },
+    items: 1,
   },
   mobile: {
     breakpoint: { max: 464, min: 0 },
@@ -139,7 +143,6 @@ export function AvatarLookup() {
   return (
     <div>
       {/*Below is a temporary grid view, to be removed before merge*/}
-
       {targetUserOtherApprovedAvatars ? (
         <div>
           <h3>
@@ -247,7 +250,6 @@ export function AvatarLookup() {
                 showDots={true}
                 keyBoardControl={true}
                 removeArrowOnDeviceType={['mobile']}
-                centerMode={true}
               >
                 {targetUserAvatarLibrary.map((avatarSet) => (
                   <div
@@ -290,7 +292,6 @@ export function AvatarLookup() {
                 showDots={true}
                 keyBoardControl={true}
                 removeArrowOnDeviceType={['mobile']}
-                centerMode={true}
               >
                 {targetUserOtherApprovedAvatars.map((avatarSet) => (
                   <div
