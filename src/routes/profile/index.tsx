@@ -76,9 +76,10 @@ router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
   });
 });
 
-export interface AllUserAvatars extends AllApprovedAvatars {
+export interface AllUserAvatars {
   currentResLink: string | null;
   currentSpyLink: string | null;
+  allApprovedAvatars: AllApprovedAvatars;
 }
 
 // Get all the approved avatars for a user. Only available to mods
@@ -99,9 +100,7 @@ router.get('/mod/approvedavatars', isModMiddleware, async (req, res) => {
   const result: AllUserAvatars = {
     currentResLink: user.avatarImgRes,
     currentSpyLink: user.avatarImgSpy,
-    avatarLibrary: userApprovedAvatars.avatarLibrary,
-    approvedAvatarsNotInLibrary:
-      userApprovedAvatars.approvedAvatarsNotInLibrary,
+    allApprovedAvatars: userApprovedAvatars,
   };
 
   return res.status(200).send(result);

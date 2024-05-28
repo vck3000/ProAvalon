@@ -72,8 +72,10 @@ export function AvatarLibrary() {
       setTargetUserSpyAvatar(
         data.currentSpyLink ? data.currentSpyLink : BASE_SPY_AVATAR,
       );
-      setTargetUserAvatarLibrary(data.avatarLibrary);
-      setTargetUserOtherApprovedAvatars(data.approvedAvatarsNotInLibrary);
+      setTargetUserAvatarLibrary(data.allApprovedAvatars.avatarLibrary);
+      setTargetUserOtherApprovedAvatars(
+        data.allApprovedAvatars.approvedAvatarsNotInLibrary,
+      );
     } else {
       Swal.fire({ title: await response.text(), icon: 'error' });
     }

@@ -92,10 +92,7 @@ router.get(
       currentResLink: user.avatarImgRes,
       currentSpyLink: user.avatarImgSpy,
       avatarLibrary: user.avatarLibrary
-        ? s3Agent.getUsersAvatarLibraryLinks(
-            user.usernameLower,
-            user.avatarLibrary,
-          )
+        ? s3Agent.getAvatarSetsFromIds(user.usernameLower, user.avatarLibrary)
         : null,
     };
 
