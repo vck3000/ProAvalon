@@ -21,7 +21,7 @@ const responsive = {
   },
 };
 
-export function AvatarLibrary() {
+export function AvatarLookup() {
   const [inputUsername, setInputUsername] = useState<string | null>(null);
 
   const [targetUsername, setTargetUsername] = useState<string | null>(null);

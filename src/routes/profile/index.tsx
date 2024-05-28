@@ -11,7 +11,7 @@ import { checkProfileOwnership, isModMiddleware } from '../middleware';
 import User from '../../models/user';
 import avatarRequest from '../../models/avatarRequest';
 import ModLog from '../../models/modLog';
-import AvatarLibrary from '../../views/components/avatarLibrary';
+import AvatarLookup from '../../views/components/avatarLookup';
 
 import S3Controller from '../../clients/s3/S3Controller';
 import { AllApprovedAvatars, S3Agent } from '../../clients/s3/S3Agent';
@@ -66,13 +66,13 @@ router.get('/avatargetlinktutorial', (req, res) => {
 // Show the mod approving rejecting page
 router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
   const customAvatarRequests = await avatarRequest.find({ processed: false });
-  const avatarLibraryReact = renderToString(<AvatarLibrary />);
+  const avatarLookupReact = renderToString(<AvatarLookup />);
 
   res.render('mod/customavatar', {
     customAvatarRequests,
     MAX_FILESIZE_STR,
     VALID_DIMENSIONS_STR,
-    avatarLibraryReact,
+    avatarLookupReact,
   });
 });
 
