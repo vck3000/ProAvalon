@@ -334,7 +334,7 @@ async function validateUploadAvatarRequest(
   if (user.avatarLibrary && user.avatarLibrary.length >= librarySize) {
     return {
       valid: false,
-      errMsg: `You have exceeded your maximum number of avatars: ${librarySize}.`,
+      errMsg: `You have exceeded your maximum number of avatars: ${librarySize}. Please support our Patreon to increase this limit.`,
     };
   }
 
