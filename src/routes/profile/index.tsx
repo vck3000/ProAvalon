@@ -15,7 +15,10 @@ import { S3Agent } from '../../clients/s3/S3Agent';
 import { PatreonAgent } from '../../clients/patreon/patreonAgent';
 import { PatreonController } from '../../clients/patreon/patreonController';
 import { createNotification } from '../../myFunctions/createNotification';
-import { getAndUpdatePatreonRewardTierForUser } from '../../rewards/getRewards';
+import {
+  getAndUpdatePatreonRewardTierForUser,
+  getAvatarLibrarySizeForUser,
+} from '../../rewards/getRewards';
 
 const MAX_ACTIVE_AVATAR_REQUESTS = 2;
 const MIN_GAMES_REQUIRED = 100;
@@ -326,13 +329,22 @@ async function validateUploadAvatarRequest(
     }
   }
 
-  // Check: Both a singular res and spy avatar were submitted
+  // Check: Does not exceed avatar library size
+  const librarySize = await getAvatarLibrarySizeForUser(user.usernameLower);
+  if (user.avatarLibrary && user.avatarLibrary.length >= librarySize) {
+    return {
+      valid: false,
+      errMsg: `You have exceeded your maximum number of avatars: ${librarySize}.`,
+    };
+  }
+
   if (
     !files['avatarRes'] ||
     !files['avatarSpy'] ||
     files['avatarRes'].length !== 1 ||
     files['avatarSpy'].length !== 1
   ) {
+    // Check: Both a singular res and spy avatar were submitted
     return {
       valid: false,
       errMsg: `You must submit both a Resistance and Spy avatar.`,
