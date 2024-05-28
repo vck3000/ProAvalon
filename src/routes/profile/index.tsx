@@ -112,7 +112,25 @@ router.post('/mod/setavatar', isModMiddleware, async (req, res) => {
     return res.status(400).send('Bad input.');
   }
 
-  const user = await User.findOne({ usernameLower: req.body.username });
+  if (
+    (!req.body.resLink.startsWith(process.env.S3_PUBLIC_FILE_LINK_PREFIX) &&
+      !req.body.resLink.includes('res')) ||
+    (!req.body.spyLink.startsWith(process.env.S3_PUBLIC_FILE_LINK_PREFIX) &&
+      !req.body.spyLink.includes('spy'))
+  ) {
+    return res.status(400).send(`Invalid avatar links provided`);
+  }
+
+  const user = await User.findOne({
+    usernameLower: req.body.username.toLowerCase(),
+  });
+
+  if (!user) {
+    return res
+      .status(400)
+      .send(`Invalid username. Could not find: ${req.body.username}`);
+  }
+
   user.avatarImgRes = req.body.resLink;
   user.avatarImgSpy = req.body.spyLink;
   await user.save();
