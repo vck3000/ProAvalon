@@ -35,3 +35,13 @@ services:
       MINIO_ROOT_USER: admin
       MINIO_ROOT_PASSWORD: password
     command: server /data --console-address ":9001"
+
+  victoria-metrics:
+    image: victoriametrics/victoria-metrics:latest # TODO-kev: See if can specify a specific version
+    ports:
+      - 8428:8428
+    volumes:
+      - ./docker-compose-data/victoria-metrics:/data
+    restart: always
+    command:
+      - '--storageDataPath=/data'
