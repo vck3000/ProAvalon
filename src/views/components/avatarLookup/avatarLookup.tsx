@@ -109,7 +109,7 @@ export function AvatarLookup() {
 
   const handleClearUser = () => {
     // TODO-kev: Consider a better way to do this?
-    setInputUsername(null);
+    setInputUsername('');
     setTargetUsername(null);
     setTargetUserResAvatar(null);
     setTargetUserSpyAvatar(null);
