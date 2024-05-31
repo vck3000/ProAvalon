@@ -49,12 +49,13 @@ export const mpushavatartolibrary: Command = {
     }
 
     const librarySize = await getAvatarLibrarySizeForUser(usernameLower);
-    user.avatarLibrary.push(toBeAddedAvatarId);
-    user.markModified('avatarLibrary');
 
+    user.avatarLibrary.push(toBeAddedAvatarId);
     if (user.avatarLibrary.length > librarySize) {
       user.avatarLibrary.shift();
     }
+
+    user.markModified('avatarLibrary');
     await user.save();
 
     sendReplyToCommand(
