@@ -191,11 +191,6 @@ router.get(
   },
 );
 
-// Temporary redirect to the custom avatar submission page. Used where the profileUsername is not easily obtained
-router.get('/customavatar/redirect', async (req, res) => {
-  return res.redirect(`/profile/${req.user.username}/customavatar`);
-});
-
 const storage = multer.memoryStorage();
 const multerMiddleware = multer({
   storage: storage,
@@ -329,22 +324,22 @@ async function validateUploadAvatarRequest(
     }
   }
 
-  // Check: Does not exceed avatar library size
+  // Check: User has space in their avatar library
   const librarySize = await getAvatarLibrarySizeForUser(user.usernameLower);
   if (user.avatarLibrary && user.avatarLibrary.length >= librarySize) {
     return {
       valid: false,
-      errMsg: `You have exceeded your maximum number of avatars: ${librarySize}. Please support our Patreon to increase this limit.`,
+      errMsg: `You have exceeded your maximum number of avatars: ${librarySize}.`,
     };
   }
 
+  // Check: Both a singular res and spy avatar were submitted
   if (
     !files['avatarRes'] ||
     !files['avatarSpy'] ||
     files['avatarRes'].length !== 1 ||
     files['avatarSpy'].length !== 1
   ) {
-    // Check: Both a singular res and spy avatar were submitted
     return {
       valid: false,
       errMsg: `You must submit both a Resistance and Spy avatar.`,
@@ -485,11 +480,6 @@ router.get(
     });
   },
 );
-
-// Temporary redirect to the profile edit page. Used where the profileUsername is not easily obtained
-router.get('/edit/redirect', async (req, res) => {
-  return res.redirect(`/profile/${req.user.username}/edit`);
-});
 
 // update a biography
 router.post('/:profileUsername', checkProfileOwnership, (req, res) => {

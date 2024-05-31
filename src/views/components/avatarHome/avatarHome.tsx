@@ -52,19 +52,8 @@ export function AvatarHome() {
     require('./styles.css');
     require('react-multi-carousel/lib/styles.css');
 
-    setIsLoading(true);
-
-    // Extract username from route of form '/profile/:profileusername/avatar'
-    const match = window.location.pathname.match(/\/profile\/([^\/]+)\/avatar/);
-    const extractedUsername = match ? match[1] : '';
-    setUsername(extractedUsername);
-
-    void fetchUserAvatarInfo();
-
-    async function fetchUserAvatarInfo() {
-      const response = await fetch(
-        getLinks.getalluseravatars(extractedUsername),
-      );
+    async function fetchUserAvatarInfo(username: string) {
+      const response = await fetch(getLinks.getalluseravatars(username));
       const data: AllAvatarsRouteReturnType = await response.json();
 
       setCurrentResImgLink(
@@ -77,6 +66,15 @@ export function AvatarHome() {
 
       setIsLoading(false);
     }
+
+    setIsLoading(true);
+
+    // Extract username from route of form '/profile/:profileusername/avatar'
+    const match = window.location.pathname.match(/\/profile\/([^\/]+)\/avatar/);
+    const extractedUsername = match ? match[1] : '';
+    setUsername(extractedUsername);
+
+    void fetchUserAvatarInfo(extractedUsername);
   }, []);
 
   const changeAvatarRequest = () => {
