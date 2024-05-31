@@ -31,10 +31,6 @@ export interface IS3Controller {
   isValidLink(link: string): boolean;
 }
 
-export class InvalidLinkError extends Error {
-  message = `Invalid link provided`;
-}
-
 export class S3Agent {
   private s3Controller: IS3Controller;
 

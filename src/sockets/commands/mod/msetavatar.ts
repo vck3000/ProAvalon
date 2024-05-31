@@ -1,8 +1,11 @@
 import { Command } from '../types';
 import { sendReplyToCommand } from '../../sockets';
 import { SocketUser } from '../../types';
-import userAdapter, { UserNotFoundError } from '../../../databaseAdapters/user';
-import { InvalidLinkError } from '../../../clients/s3/S3Agent';
+import userAdapter from '../../../databaseAdapters/user';
+import { S3Agent } from '../../../clients/s3/S3Agent';
+import S3Controller from '../../../clients/s3/S3Controller';
+
+const s3Agent = new S3Agent(new S3Controller());
 
 export const msetavatar: Command = {
   command: 'msetavatar',
@@ -20,19 +23,25 @@ export const msetavatar: Command = {
     const resLink = args[2];
     const spyLink = args[3];
 
-    try {
-      await userAdapter.updateAvatar(username, resLink, spyLink);
+    if (
+      !s3Agent.isValidLink(resLink, 'res') ||
+      !s3Agent.isValidLink(spyLink, 'spy')
+    ) {
+      sendReplyToCommand(senderSocket, `Invalid avatar links provided.`);
+    }
 
+    const user = await userAdapter.getUser(username);
+    if (!user) {
       sendReplyToCommand(
         senderSocket,
-        `Successfully changed avatars for user: ${username}.`,
+        `Invalid username. Could not find: ${username}.`,
       );
-    } catch (e) {
-      if (e instanceof UserNotFoundError || e instanceof InvalidLinkError) {
-        sendReplyToCommand(senderSocket, `Error: ${e.message}`);
-      } else {
-        throw e;
-      }
     }
+
+    await userAdapter.updateAvatar(user, resLink, spyLink);
+    sendReplyToCommand(
+      senderSocket,
+      `Successfully changed avatars for user: ${username}.`,
+    );
   },
 };
