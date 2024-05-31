@@ -217,7 +217,8 @@ export function AvatarHome() {
 
       <h4>
         <strong style={{ color: '#1976D2' }}>
-          For a limited time until the DD/MM/YYYY, all users will be given a
+          {/*  TODO-kev: Update once date past */}
+          For a limited time until the 16/06/2024, all users will be given a
           minimum avatar library size of 2!
         </strong>
       </h4>

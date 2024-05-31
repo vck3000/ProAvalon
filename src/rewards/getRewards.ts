@@ -137,7 +137,7 @@ export async function getAvatarLibrarySizeForUser(
     }
   };
 
-  // TODO-kev: Temporary minLibrarySize for feature launch. To be disabled DD/MM/YYYY
+  // TODO-kev: Temporary minLibrarySize for feature launch. To be disabled 16/06/2024
   return Math.max(
     await patreonLibrarySize(),
     modLibrarySize(),
