@@ -11,7 +11,11 @@ export class UserNotFoundError extends Error {
 
 interface DatabaseAdapter {
   getUser(username: string): Promise<IUser>;
-  updateAvatar(username: string, resLink: string, spyLink: string): void;
+  updateAvatar(
+    username: string,
+    resLink: string,
+    spyLink: string,
+  ): Promise<void>;
 }
 
 const s3Agent = new S3Agent(new S3Controller());
@@ -24,7 +28,9 @@ class MongoUserAdapter implements DatabaseAdapter {
   }
 
   async updateAvatar(username: string, resLink: string, spyLink: string) {
-    const user = await this.getUser(username);
+    const usernameLower = username.toLowerCase();
+
+    const user = await this.getUser(usernameLower);
     if (!user) {
       throw new UserNotFoundError(username);
     }
