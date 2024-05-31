@@ -1,29 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import Carousel from 'react-multi-carousel';
 import Swal from 'sweetalert2';
 
 import { S3AvatarSet } from '../../../clients/s3/S3Agent';
 import { AllUserAvatars } from '../../../routes/profile';
 import { BaseAvatarLinks } from '../constants';
-
-const responsive = {
-  avatar3: {
-    breakpoint: { max: 3000, min: 1098 },
-    items: 3,
-  },
-  avatar2: {
-    breakpoint: { max: 1098, min: 732 },
-    items: 2,
-  },
-  avatar1: {
-    breakpoint: { max: 732, min: 464 },
-    items: 1,
-  },
-  mobile: {
-    breakpoint: { max: 464, min: 0 },
-    items: 1,
-  },
-};
 
 const getLinks = {
   approvedAvatars: (username: string) =>
