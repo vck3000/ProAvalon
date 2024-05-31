@@ -140,42 +140,48 @@ export function AvatarLookup() {
     setSelectedOtherAvatarSet(null);
   };
 
+  interface AvatarLibraryProps {
+    avatarLibrary: S3AvatarSet[] | null;
+    selectedAvatarSet: S3AvatarSet | null;
+    handleClickOnAvatar: (avatarSet: S3AvatarSet) => void;
+  }
+
+  const AvatarLibraryGridView = ({
+    avatarLibrary,
+    selectedAvatarSet,
+    handleClickOnAvatar,
+  }: AvatarLibraryProps) => {
+    return (
+      <div className="grid-container">
+        {avatarLibrary.map((avatarSet) => (
+          <div
+            key={avatarSet.avatarSetId}
+            className={`avatarSet grid-item ${
+              selectedAvatarSet === avatarSet ? 'selected' : ''
+            }`}
+            onClick={() => handleClickOnAvatar(avatarSet)}
+          >
+            <h3 className="avatarTitle">Avatar {avatarSet.avatarSetId}</h3>
+            <img
+              src={avatarSet.resLink}
+              alt={`Resistance avatar ${avatarSet.avatarSetId}`}
+              className="avatarImg"
+              draggable={false}
+            />
+            <img
+              src={avatarSet.spyLink}
+              alt={`Spy avatar ${avatarSet.avatarSetId}`}
+              className="avatarImg"
+              draggable={false}
+            />
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div>
-      {/*Below is a temporary grid view, to be removed before merge*/}
-      {targetUserOtherApprovedAvatars ? (
-        <div>
-          <h3>
-            <u>{targetUsername}'s other approved avatars:</u>
-          </h3>
-          <div className="grid-container">
-            {targetUserOtherApprovedAvatars.map((avatarSet) => (
-              <div
-                key={avatarSet.avatarSetId}
-                className={`avatarSet grid-item ${
-                  selectedOtherAvatarSet === avatarSet ? 'selected' : ''
-                }`}
-                onClick={() => handleClickOnOtherAvatar(avatarSet)}
-              >
-                <h3 className="avatarTitle">Avatar {avatarSet.avatarSetId}</h3>
-                <img
-                  src={avatarSet.resLink}
-                  alt={`Resistance avatar ${avatarSet.avatarSetId}`}
-                  className="avatarImg"
-                  draggable={false}
-                />
-                <img
-                  src={avatarSet.spyLink}
-                  alt={`Spy avatar ${avatarSet.avatarSetId}`}
-                  className="avatarImg"
-                  draggable={false}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : null}
-
       <h1>
         <u>User's Avatars:</u>
       </h1>
@@ -244,39 +250,11 @@ export function AvatarLookup() {
               <h3>
                 <u>{targetUsername}'s avatar library:</u>
               </h3>
-              <Carousel
-                responsive={responsive}
-                containerClass="carousel-container"
-                showDots={true}
-                keyBoardControl={true}
-                removeArrowOnDeviceType={['mobile']}
-              >
-                {targetUserAvatarLibrary.map((avatarSet) => (
-                  <div
-                    key={avatarSet.avatarSetId}
-                    className={`avatarSet ${
-                      selectedAvatarLibrarySet === avatarSet ? 'selected' : ''
-                    }`}
-                    onClick={() => handleClickOnAvatarInLibrary(avatarSet)}
-                  >
-                    <h3 className="avatarTitle">
-                      Avatar {avatarSet.avatarSetId}
-                    </h3>
-                    <img
-                      src={avatarSet.resLink}
-                      alt={`Resistance avatar ${avatarSet.avatarSetId}`}
-                      className="avatarImg"
-                      draggable={false}
-                    />
-                    <img
-                      src={avatarSet.spyLink}
-                      alt={`Spy avatar ${avatarSet.avatarSetId}`}
-                      className="avatarImg"
-                      draggable={false}
-                    />
-                  </div>
-                ))}
-              </Carousel>
+              <AvatarLibraryGridView
+                avatarLibrary={targetUserAvatarLibrary}
+                selectedAvatarSet={selectedAvatarLibrarySet}
+                handleClickOnAvatar={handleClickOnAvatarInLibrary}
+              />
             </div>
           ) : null}
 
@@ -286,39 +264,11 @@ export function AvatarLookup() {
                 <u>{targetUsername}'s other approved avatars:</u>
               </h3>
 
-              <Carousel
-                responsive={responsive}
-                containerClass="carousel-container"
-                showDots={true}
-                keyBoardControl={true}
-                removeArrowOnDeviceType={['mobile']}
-              >
-                {targetUserOtherApprovedAvatars.map((avatarSet) => (
-                  <div
-                    key={avatarSet.avatarSetId}
-                    className={`avatarSet ${
-                      selectedOtherAvatarSet === avatarSet ? 'selected' : ''
-                    }`}
-                    onClick={() => handleClickOnOtherAvatar(avatarSet)}
-                  >
-                    <h3 className="avatarTitle">
-                      Avatar {avatarSet.avatarSetId}
-                    </h3>
-                    <img
-                      src={avatarSet.resLink}
-                      alt={`Resistance avatar ${avatarSet.avatarSetId}`}
-                      className="avatarImg"
-                      draggable={false}
-                    />
-                    <img
-                      src={avatarSet.spyLink}
-                      alt={`Spy avatar ${avatarSet.avatarSetId}`}
-                      className="avatarImg"
-                      draggable={false}
-                    />
-                  </div>
-                ))}
-              </Carousel>
+              <AvatarLibraryGridView
+                avatarLibrary={targetUserOtherApprovedAvatars}
+                selectedAvatarSet={selectedOtherAvatarSet}
+                handleClickOnAvatar={handleClickOnOtherAvatar}
+              />
 
               <button
                 className={'btn btn-info'}
@@ -327,6 +277,7 @@ export function AvatarLookup() {
               >
                 Swap Avatars
               </button>
+
               {selectedOtherAvatarSet && selectedAvatarLibrarySet ? (
                 <h4 className="button-label">
                   Add{' '}
