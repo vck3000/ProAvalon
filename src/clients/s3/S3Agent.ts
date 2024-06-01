@@ -1,6 +1,3 @@
-import User from '../../models/user';
-import { getAvatarLibrarySizeForUser } from '../../rewards/getRewards';
-
 enum FolderName {
   APPROVED = 'approved_avatars',
   PENDING = 'pending_avatars',
@@ -8,16 +5,22 @@ enum FolderName {
 
 const SUPPORTED_EXTENSIONS = ['png'];
 
-interface S3AvatarLinks {
+export interface S3AvatarSet {
+  avatarSetId: number;
   resLink: string;
   spyLink: string;
 }
 
 export interface IS3Controller {
   listObjectKeys(prefixes: string[]): Promise<string[]>;
-  uploadFile(key: string, fileContent: Buffer, contentType: string): any;
-  deleteFile(link: string): any;
-  moveFile(oldLink: string, newLink: string): any;
+  uploadFile(
+    key: string,
+    fileContent: Buffer,
+    contentType: string,
+  ): Promise<string>;
+  deleteFile(link: string): Promise<void>;
+  moveFile(oldLink: string, newLink: string): Promise<void>;
+  transformKeyToLink(key: string): string;
 }
 
 export class S3Agent {
@@ -38,7 +41,7 @@ export class S3Agent {
     username: string,
     resAvatar: Buffer,
     spyAvatar: Buffer,
-  ): Promise<S3AvatarLinks> {
+  ): Promise<S3AvatarSet> {
     const usernameLower = username.toLowerCase();
     const pendingPrefixWithUsername = `${FolderName.PENDING}/${usernameLower}/`;
 
@@ -47,10 +50,10 @@ export class S3Agent {
       pendingPrefixWithUsername,
       `${FolderName.APPROVED}/${usernameLower}/`,
     ]);
-    const counter = this.getCurrentKeyCounter(existingObjectKeys);
+    const newAvatarSetId = this.getCurrentKeyCounter(existingObjectKeys) + 1;
 
-    const resFileName = `${usernameLower}_res_${counter + 1}.png`;
-    const spyFileName = `${usernameLower}_spy_${counter + 1}.png`;
+    const resFileName = `${usernameLower}_res_${newAvatarSetId}.png`;
+    const spyFileName = `${usernameLower}_spy_${newAvatarSetId}.png`;
 
     const resKey = `${pendingPrefixWithUsername}${resFileName}`;
     const spyKey = `${pendingPrefixWithUsername}${spyFileName}`;
@@ -82,6 +85,7 @@ export class S3Agent {
     }
 
     return {
+      avatarSetId: newAvatarSetId,
       resLink,
       spyLink,
     };
@@ -105,29 +109,31 @@ export class S3Agent {
     );
   }
 
-  public async rejectAvatarRequest(s3AvatarLinks: S3AvatarLinks) {
-    if (!this.isValidPendingAvatarRequest(s3AvatarLinks)) {
+  public async rejectAvatarRequest(s3AvatarSet: S3AvatarSet) {
+    if (!this.isValidPendingAvatarRequest(s3AvatarSet)) {
       throw new Error(
-        `Invalid links provided: resLink="${s3AvatarLinks.resLink}" spyLink="${s3AvatarLinks.spyLink}"`,
+        `Invalid links provided: resLink="${s3AvatarSet.resLink}" spyLink="${s3AvatarSet.spyLink}"`,
       );
     }
 
-    await this.s3Controller.deleteFile(s3AvatarLinks.resLink);
-    await this.s3Controller.deleteFile(s3AvatarLinks.spyLink);
+    await this.s3Controller.deleteFile(s3AvatarSet.resLink);
+    await this.s3Controller.deleteFile(s3AvatarSet.spyLink);
   }
 
-  public async approveAvatarRequest(s3AvatarLinks: S3AvatarLinks) {
-    if (!this.isValidPendingAvatarRequest(s3AvatarLinks)) {
+  public async approveAvatarRequest(
+    s3AvatarSet: S3AvatarSet,
+  ): Promise<S3AvatarSet> {
+    if (!this.isValidPendingAvatarRequest(s3AvatarSet)) {
       throw new Error(
-        `Invalid links provided: resLink="${s3AvatarLinks.resLink}" spyLink="${s3AvatarLinks.spyLink}"`,
+        `Invalid links provided: resLink="${s3AvatarSet.resLink}" spyLink="${s3AvatarSet.spyLink}"`,
       );
     }
 
-    const newResLink = s3AvatarLinks.resLink.replace(
+    const newResLink = s3AvatarSet.resLink.replace(
       FolderName.PENDING,
       FolderName.APPROVED,
     );
-    const newSpyLink = s3AvatarLinks.spyLink.replace(
+    const newSpyLink = s3AvatarSet.spyLink.replace(
       FolderName.PENDING,
       FolderName.APPROVED,
     );
@@ -135,29 +141,30 @@ export class S3Agent {
     let firstOnePassed = false;
 
     try {
-      await this.s3Controller.moveFile(s3AvatarLinks.resLink, newResLink);
+      await this.s3Controller.moveFile(s3AvatarSet.resLink, newResLink);
       firstOnePassed = true;
 
-      await this.s3Controller.moveFile(s3AvatarLinks.spyLink, newSpyLink);
+      await this.s3Controller.moveFile(s3AvatarSet.spyLink, newSpyLink);
     } catch (e) {
       // If the first one passed but the second one failed, move the first one back.
       if (firstOnePassed) {
-        await this.s3Controller.moveFile(newResLink, s3AvatarLinks.resLink);
+        await this.s3Controller.moveFile(newResLink, s3AvatarSet.resLink);
       }
 
       throw e;
     }
 
     return {
+      avatarSetId: s3AvatarSet.avatarSetId,
       resLink: newResLink,
       spyLink: newSpyLink,
     };
   }
 
-  private isValidPendingAvatarRequest(s3AvatarLinks: S3AvatarLinks) {
+  private isValidPendingAvatarRequest(s3AvatarSet: S3AvatarSet) {
     return (
-      s3AvatarLinks.resLink.includes(FolderName.PENDING) &&
-      s3AvatarLinks.spyLink.includes(FolderName.PENDING)
+      s3AvatarSet.resLink.includes(FolderName.PENDING) &&
+      s3AvatarSet.spyLink.includes(FolderName.PENDING)
     );
   }
 
@@ -175,5 +182,28 @@ export class S3Agent {
       })
       .filter((approvedAvatarId) => !isNaN(approvedAvatarId))
       .sort((a, b) => a - b);
+  }
+
+  // Assumes the avatarLibrary is updated accurately
+  public getUsersAvatarLibraryLinks(
+    usernameLower: string,
+    avatarLibrary: number[],
+  ): S3AvatarSet[] {
+    let avatarLibraryLinks: S3AvatarSet[] = [];
+
+    avatarLibrary.forEach((avatarId) => {
+      const avatarSet: S3AvatarSet = {
+        avatarSetId: avatarId,
+        resLink: this.s3Controller.transformKeyToLink(
+          `${FolderName.APPROVED}/${usernameLower}/${usernameLower}_res_${avatarId}.png`,
+        ),
+        spyLink: this.s3Controller.transformKeyToLink(
+          `${FolderName.APPROVED}/${usernameLower}/${usernameLower}_spy_${avatarId}.png`,
+        ),
+      };
+      avatarLibraryLinks.push(avatarSet);
+    });
+
+    return avatarLibraryLinks;
   }
 }

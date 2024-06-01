@@ -1,24 +1,24 @@
 // @ts-nocheck
 import express from 'express';
-import sanitizeHtml from 'sanitize-html';
-import url from 'url';
-import { checkProfileOwnership, isModMiddleware } from './middleware';
-import User from '../models/user';
-import avatarRequest from '../models/avatarRequest';
-import ModLog from '../models/modLog';
-import { createNotification } from '../myFunctions/createNotification';
-import multer from 'multer';
 import imageSize from 'image-size';
-import S3Controller from '../clients/s3/S3Controller';
-import { S3Agent } from '../clients/s3/S3Agent';
-import { PatreonAgent } from '../clients/patreon/patreonAgent';
-import { PatreonController } from '../clients/patreon/patreonController';
-import { getPatreonRewardTierForUser } from '../rewards/getRewards';
+import multer from 'multer';
+import sanitizeHtml from 'sanitize-html';
 
-const s3Controller = new S3Controller();
-const s3Agent = new S3Agent(s3Controller);
+import avatarRoutes from './avatarRoutes';
+import { checkProfileOwnership, isModMiddleware } from '../middleware';
+import User from '../../models/user';
+import avatarRequest from '../../models/avatarRequest';
+import ModLog from '../../models/modLog';
 
-const router = express.Router();
+import S3Controller from '../../clients/s3/S3Controller';
+import { S3Agent } from '../../clients/s3/S3Agent';
+import { PatreonAgent } from '../../clients/patreon/patreonAgent';
+import { PatreonController } from '../../clients/patreon/patreonController';
+import { createNotification } from '../../myFunctions/createNotification';
+import {
+  getAndUpdatePatreonRewardTierForUser,
+  getAvatarLibrarySizeForUser,
+} from '../../rewards/getRewards';
 
 const MAX_ACTIVE_AVATAR_REQUESTS = 2;
 const MIN_GAMES_REQUIRED = 100;
@@ -48,6 +48,12 @@ const sanitizeHtmlAllowedAttributesForumThread = {
   span: ['style'],
   b: ['style'],
 };
+
+const router = express.Router();
+router.use(avatarRoutes);
+
+const s3Agent = new S3Agent(new S3Controller());
+const patreonAgent = new PatreonAgent(new PatreonController());
 
 // Show the mod approving rejecting page
 router.get('/avatargetlinktutorial', (req, res) => {
@@ -171,26 +177,17 @@ router.post(
   },
 );
 
-// Show the customavatar edit page
+// Show the custom avatar submission page
 router.get(
-  '/:profileUsername/changeavatar',
+  '/:profileUsername/customavatar',
   checkProfileOwnership,
   (req, res) => {
-    User.findOne(
-      { usernameLower: req.params.profileUsername.toLowerCase() },
-      (err, foundUser) => {
-        if (err) {
-          console.log(err);
-        } else {
-          res.render('profile/changeavatar', {
-            username: foundUser.username,
-            MAX_FILESIZE_STR,
-            VALID_DIMENSIONS,
-            VALID_DIMENSIONS_STR,
-          });
-        }
-      },
-    );
+    res.render('profile/customavatar', {
+      username: req.user.username,
+      MAX_FILESIZE_STR,
+      VALID_DIMENSIONS,
+      VALID_DIMENSIONS_STR,
+    });
   },
 );
 
@@ -230,9 +227,9 @@ const upload = function (req, res, next) {
   });
 };
 
-// Update the customavatar
+// Submit a custom avatar request
 router.post(
-  '/:profileUsername/changeavatar',
+  '/:profileUsername/customavatar',
   checkProfileOwnership,
   upload,
   async (req, res) => {
@@ -327,6 +324,15 @@ async function validateUploadAvatarRequest(
     }
   }
 
+  // Check: User has space in their avatar library
+  const librarySize = await getAvatarLibrarySizeForUser(user.usernameLower);
+  if (user.avatarLibrary && user.avatarLibrary.length >= librarySize) {
+    return {
+      valid: false,
+      errMsg: `You have exceeded your maximum number of avatars: ${librarySize}.`,
+    };
+  }
+
   // Check: Both a singular res and spy avatar were submitted
   if (
     !files['avatarRes'] ||
@@ -372,7 +378,7 @@ async function validateUploadAvatarRequest(
     };
   }
 
-  const patreonRewards = await getPatreonRewardTierForUser(
+  const patreonRewards = await getAndUpdatePatreonRewardTierForUser(
     username.toLowerCase(),
   );
 
@@ -455,28 +461,11 @@ router.post(
   },
 );
 
-const CLIENT_ID = process.env.patreon_client_ID;
-const redirectURL = process.env.patreon_redirectURL;
-
-const loginUrl = url.format({
-  protocol: 'https',
-  host: 'patreon.com',
-  pathname: '/oauth2/authorize',
-  query: {
-    response_type: 'code',
-    client_id: CLIENT_ID,
-    redirect_uri: redirectURL,
-    state: 'chill',
-  },
-});
-
 // show the edit page
 router.get(
   '/:profileUsername/edit',
   checkProfileOwnership,
   async (req, res) => {
-    const patreonAgent = new PatreonAgent(new PatreonController());
-
     const patronDetails = await patreonAgent.findOrUpdateExistingPatronDetails(
       req.params.profileUsername.toLowerCase(),
     );

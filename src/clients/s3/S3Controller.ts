@@ -9,7 +9,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { IS3Controller } from './S3Agent';
 
-export default class S3Controller implements IS3Controller{
+export default class S3Controller implements IS3Controller {
   private client: S3Client;
   private publicFileLinkPrefix: string;
   private bucket: string;
@@ -150,5 +150,9 @@ export default class S3Controller implements IS3Controller{
 
   private isValidLink(link: string) {
     return link.startsWith(this.publicFileLinkPrefix);
+  }
+
+  public transformKeyToLink(key: string) {
+    return `${this.publicFileLinkPrefix}${key}`;
   }
 }
