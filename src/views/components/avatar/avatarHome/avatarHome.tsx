@@ -23,7 +23,9 @@ export function AvatarHome() {
   const [currentSpyImgLink, setCurrentSpyImgLink] = useState<string | null>(
     null,
   );
-  const [avatarLibrary, setAvatarLibrary] = useState<S3AvatarSet[]>([]);
+  const [avatarLibrary, setAvatarLibrary] = useState<S3AvatarSet[] | null>(
+    null,
+  );
   const [selectedAvatarSet, setSelectedAvatarSet] =
     useState<S3AvatarSet | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -149,25 +151,29 @@ export function AvatarHome() {
       />
 
       <br />
-      <div className={'align-horizontal'}>
-        <button
-          className="btn btn-info"
-          id="changeAvatarBtn"
-          onClick={() => changeAvatarRequest()}
-          disabled={!Boolean(selectedAvatarSet)}
-        >
-          Change avatar
-        </button>
-        <h4>
-          Selected avatar ID:{' '}
-          {selectedAvatarSet ? selectedAvatarSet.avatarSetId : 'None selected'}
-        </h4>
-      </div>
+
+      {avatarLibrary.length !== 0 ? (
+        <div className={'align-horizontal'}>
+          <button
+            className="btn btn-info"
+            id="changeAvatarBtn"
+            onClick={() => changeAvatarRequest()}
+            disabled={!Boolean(selectedAvatarSet)}
+          >
+            Change avatar
+          </button>
+          <h4>
+            Selected avatar ID:{' '}
+            {selectedAvatarSet
+              ? selectedAvatarSet.avatarSetId
+              : 'None selected'}
+          </h4>
+        </div>
+      ) : null}
 
       <h4>
-        *This feature is available to current Patreon supporters. The size of
-        your Avatar Library is determined by your total games played and Patreon
-        tier:
+        *The size of your Avatar Library is determined by your total games
+        played and Patreon tier:
       </h4>
       <h4>
         <ul>
