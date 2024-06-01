@@ -165,20 +165,16 @@ export function AvatarHome() {
       </div>
 
       <h4>
-        <strong style={{ color: '#1976D2' }}>
-          {/*  TODO-kev: Update once date past */}
-          For a limited time until the 16/06/2024, all users will be given a
-          minimum avatar library size of 2!
-        </strong>
-      </h4>
-      <h4>
         *This feature is available to current Patreon supporters. The size of
-        your Avatar Library is determined by your Patreon tier:
+        your Avatar Library is determined by your total games played and Patreon
+        tier:
       </h4>
       <h4>
         <ul>
-          <li>Tier 1: 2 Avatars</li>
-          <li>Tier 2: 3 Avatars</li>
+          <li>100+ games played: 1 Avatar</li>
+          <li>500+ games played: 2 Avatars</li>
+          <li>Tier 1: 3 Avatars</li>
+          <li>Tier 2: 4 Avatars</li>
           <li>Tier 3: 5 Avatars</li>
           <li>Tier 4: 10 Avatars</li>
         </ul>

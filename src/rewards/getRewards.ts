@@ -115,6 +115,17 @@ export async function getAvatarLibrarySizeForUser(
   usernameLower: string,
   patreonReward?: RewardType,
 ): Promise<number> {
+  const defaultLibrarySize = async () => {
+    const user = await userAdapter.getUser(usernameLower);
+    if (user.totalGamesPlayed > 100) {
+      return 1;
+    } else if (user.totalGamesPlayed > 500) {
+      return 2;
+    } else {
+      return 0;
+    }
+  };
+
   const modLibrarySize = () => {
     return isMod(usernameLower) ? 5 : 0;
   };
@@ -133,15 +144,14 @@ export async function getAvatarLibrarySizeForUser(
     } else if (patreonReward === constants.TIER4_BADGE) {
       return 10;
     } else {
-      return 1;
+      return 0;
     }
   };
 
-  // TODO-kev: Temporary minLibrarySize for feature launch. To be disabled 16/06/2024
   return Math.max(
     await patreonLibrarySize(),
     modLibrarySize(),
-    TEMP_MIN_LIBRARY_SIZE,
+    await defaultLibrarySize(),
   );
 }
 
