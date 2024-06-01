@@ -117,10 +117,10 @@ export async function getAvatarLibrarySizeForUser(
 ): Promise<number> {
   const defaultLibrarySize = async () => {
     const user = await userAdapter.getUser(usernameLower);
-    if (user.totalGamesPlayed > 100) {
-      return 1;
-    } else if (user.totalGamesPlayed > 500) {
+    if (user.totalGamesPlayed > 500) {
       return 2;
+    } else if (user.totalGamesPlayed > 100) {
+      return 1;
     } else {
       return 0;
     }
