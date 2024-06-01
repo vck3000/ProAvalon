@@ -38,7 +38,7 @@ export const msetavatar: Command = {
       );
     }
 
-    await userAdapter.updateAvatar(user, resLink, spyLink);
+    await userAdapter.updateAvatar(username, resLink, spyLink);
     sendReplyToCommand(
       senderSocket,
       `Successfully changed avatars for user: ${username}.`,
