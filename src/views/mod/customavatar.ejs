@@ -56,6 +56,10 @@
 </style>
 
 <div class="container myContainer">
+    <div react-entrypoint id="avatarLibraryDiv"><%- avatarLookupReact %></div>
+
+    <br>
+
     <h1><u>Process custom avatars:</u></h1>
     Hi mods! Thanks for taking your time on helping the site with these custom avatars :).
 
@@ -210,3 +214,6 @@
 <br>
 
 <%- include('../partials/footer') %>
+
+<script type="text/javascript" src="<%-getVersionedPath('/dist_webpack/runtime.bundle.js')%>"></script>
+<script type="text/javascript" src="<%-getVersionedPath('/dist_webpack/avatarLookup.bundle.js')%>"></script>

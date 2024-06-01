@@ -1,3 +1,5 @@
+import userAdapter from '../../databaseAdapters/user';
+
 enum FolderName {
   APPROVED = 'approved_avatars',
   PENDING = 'pending_avatars',
@@ -11,6 +13,11 @@ export interface S3AvatarSet {
   spyLink: string;
 }
 
+export interface AllApprovedAvatars {
+  avatarLibrary: S3AvatarSet[];
+  approvedAvatarsNotInLibrary: S3AvatarSet[];
+}
+
 export interface IS3Controller {
   listObjectKeys(prefixes: string[]): Promise<string[]>;
   uploadFile(
@@ -21,6 +28,7 @@ export interface IS3Controller {
   deleteFile(link: string): Promise<void>;
   moveFile(oldLink: string, newLink: string): Promise<void>;
   transformKeyToLink(key: string): string;
+  isValidLink(link: string): boolean;
 }
 
 export class S3Agent {
@@ -184,14 +192,13 @@ export class S3Agent {
       .sort((a, b) => a - b);
   }
 
-  // Assumes the avatarLibrary is updated accurately
-  public getUsersAvatarLibraryLinks(
+  public getAvatarSetsFromIds(
     usernameLower: string,
-    avatarLibrary: number[],
+    avatarIds: number[],
   ): S3AvatarSet[] {
     let avatarLibraryLinks: S3AvatarSet[] = [];
 
-    avatarLibrary.forEach((avatarId) => {
+    avatarIds.forEach((avatarId) => {
       const avatarSet: S3AvatarSet = {
         avatarSetId: avatarId,
         resLink: this.s3Controller.transformKeyToLink(
@@ -205,5 +212,35 @@ export class S3Agent {
     });
 
     return avatarLibraryLinks;
+  }
+
+  public async getAllApprovedAvatarsForUser(
+    usernameLower: string,
+    userAvatarLibrary: number[],
+  ): Promise<AllApprovedAvatars> {
+    const approvedAvatarIds = await this.getApprovedAvatarIdsForUser(
+      usernameLower,
+    );
+    const approvedAvatarIdsNotInLibrary = approvedAvatarIds.filter(
+      (avatarId) => !userAvatarLibrary.includes(avatarId),
+    );
+
+    return {
+      avatarLibrary:
+        userAvatarLibrary && userAvatarLibrary.length !== 0
+          ? this.getAvatarSetsFromIds(usernameLower, userAvatarLibrary)
+          : null,
+      approvedAvatarsNotInLibrary:
+        approvedAvatarIdsNotInLibrary.length !== 0
+          ? this.getAvatarSetsFromIds(
+              usernameLower,
+              approvedAvatarIdsNotInLibrary,
+            )
+          : null,
+    };
+  }
+
+  public isValidLink(link: string, type: string) {
+    return this.s3Controller.isValidLink(link) && link.includes(type);
   }
 }

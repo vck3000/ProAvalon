@@ -1,5 +1,7 @@
 // @ts-nocheck
 import express from 'express';
+import React from 'react';
+import { renderToString } from 'react-dom/server';
 import imageSize from 'image-size';
 import multer from 'multer';
 import sanitizeHtml from 'sanitize-html';
@@ -9,9 +11,10 @@ import { checkProfileOwnership, isModMiddleware } from '../middleware';
 import User from '../../models/user';
 import avatarRequest from '../../models/avatarRequest';
 import ModLog from '../../models/modLog';
+import AvatarLookup from '../../views/components/avatar/avatarLookup';
 
 import S3Controller from '../../clients/s3/S3Controller';
-import { S3Agent } from '../../clients/s3/S3Agent';
+import { AllApprovedAvatars, S3Agent } from '../../clients/s3/S3Agent';
 import { PatreonAgent } from '../../clients/patreon/patreonAgent';
 import { PatreonController } from '../../clients/patreon/patreonController';
 import { createNotification } from '../../myFunctions/createNotification';
@@ -61,19 +64,98 @@ router.get('/avatargetlinktutorial', (req, res) => {
 });
 
 // Show the mod approving rejecting page
-router.get('/mod/customavatar', isModMiddleware, (req, res) => {
-  avatarRequest.find({ processed: false }).exec((err, allAvatarRequests) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.render('mod/customavatar', {
-        customAvatarRequests: allAvatarRequests,
-        MAX_FILESIZE_STR,
-        VALID_DIMENSIONS_STR,
-      });
-    }
+router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
+  const customAvatarRequests = await avatarRequest.find({ processed: false });
+  const avatarLookupReact = renderToString(<AvatarLookup />);
+
+  res.render('mod/customavatar', {
+    customAvatarRequests,
+    MAX_FILESIZE_STR,
+    VALID_DIMENSIONS_STR,
+    avatarLookupReact,
   });
 });
+
+export interface AllUserAvatars {
+  currentResLink: string | null;
+  currentSpyLink: string | null;
+  allApprovedAvatars: AllApprovedAvatars;
+}
+
+// Get all the approved avatars for a user. Only available to mods
+router.get('/mod/approvedavatars', isModMiddleware, async (req, res) => {
+  const username = req.query.username as string;
+  const user = await User.findOne({ usernameLower: username.toLowerCase() });
+
+  if (!user) {
+    return res.status(400).send(`User does not exist: ${username}.`);
+  }
+
+  const userApprovedAvatars: AllApprovedAvatars =
+    await s3Agent.getAllApprovedAvatarsForUser(
+      user.usernameLower,
+      user.avatarLibrary,
+    );
+
+  const result: AllUserAvatars = {
+    currentResLink: user.avatarImgRes,
+    currentSpyLink: user.avatarImgSpy,
+    allApprovedAvatars: userApprovedAvatars,
+  };
+
+  return res.status(200).send(result);
+});
+
+// Moderator update a user's avatarLibrary
+router.post(
+  '/mod/updateuseravatarlibrary',
+  isModMiddleware,
+  async (req, res) => {
+    console.log(req.body);
+    if (
+      !req.body.username ||
+      !req.body.toBeAddedAvatarId ||
+      !req.body.toBeRemovedAvatarId
+    ) {
+      return res.status(400).send('Bad input.');
+    }
+
+    const user = await User.findOne({ usernameLower: req.body.username });
+
+    if (user.avatarLibrary.includes(req.body.toBeAddedAvatarId)) {
+      return res
+        .status(400)
+        .send(
+          `Avatar ${req.body.toBeAddedAvatarId} already exists in ${req.body.username}'s avatar library.`,
+        );
+    }
+
+    if (
+      !(
+        await s3Agent.getApprovedAvatarIdsForUser(
+          req.body.username.toLowerCase(),
+        )
+      ).includes(req.body.toBeAddedAvatarId)
+    ) {
+      return res
+        .status(400)
+        .send(`Avatar ${req.body.toBeAddedAvatarId} does not exist.`);
+    }
+
+    const index = user.avatarLibrary.indexOf(req.body.toBeRemovedAvatarId);
+    user.avatarLibrary.splice(index, 1);
+    user.avatarLibrary.push(req.body.toBeAddedAvatarId);
+
+    user.markModified('avatarLibrary');
+    await user.save();
+
+    return res
+      .status(200)
+      .send(
+        `Successfully updated ${req.body.username}'s avatar library. Added Avatar ${req.body.toBeAddedAvatarId} and removed Avatar ${req.body.toBeRemovedAvatarId}.`,
+      );
+  },
+);
 
 // moderator approve or reject custom avatar requests
 router.post(

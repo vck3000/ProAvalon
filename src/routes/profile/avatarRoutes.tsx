@@ -3,7 +3,7 @@ import express, { Response } from 'express';
 import { renderToString } from 'react-dom/server';
 
 import User from '../../models/user';
-import AvatarHome from '../../views/components/avatarHome';
+import AvatarHome from '../../views/components/avatar/avatarHome';
 import { EnrichedRequest } from '../types';
 import { checkProfileOwnership } from '../middleware';
 
@@ -45,16 +45,6 @@ router.post(
       return res.status(400).send('Bad input.');
     }
 
-    const patronDetails = await patreonAgent.findOrUpdateExistingPatronDetails(
-      req.user.usernameLower,
-    );
-
-    if (!isMod(req.user.username) && !patronDetails.isPledgeActive) {
-      return res
-        .status(403)
-        .send('You need to be a Patreon Supporter to enable this feature.');
-    }
-
     const user = await User.findOne({
       usernameLower: req.user.usernameLower,
     });
@@ -64,6 +54,7 @@ router.post(
         .status(400)
         .send('Unable to use an avatar that is not in your avatar library.');
     }
+
     if (
       user.avatarImgRes === req.body.resLink ||
       user.avatarImgSpy === req.body.spyLink
@@ -92,10 +83,7 @@ router.get(
       currentResLink: user.avatarImgRes,
       currentSpyLink: user.avatarImgSpy,
       avatarLibrary: user.avatarLibrary
-        ? s3Agent.getUsersAvatarLibraryLinks(
-            user.usernameLower,
-            user.avatarLibrary,
-          )
+        ? s3Agent.getAvatarSetsFromIds(user.usernameLower, user.avatarLibrary)
         : null,
     };
 

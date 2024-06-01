@@ -148,7 +148,7 @@ export default class S3Controller implements IS3Controller {
     };
   }
 
-  private isValidLink(link: string) {
+  public isValidLink(link: string) {
     return link.startsWith(this.publicFileLinkPrefix);
   }
 

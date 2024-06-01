@@ -1,29 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import Carousel from 'react-multi-carousel';
 import Swal from 'sweetalert2';
 
-import { S3AvatarSet } from '../../../clients/s3/S3Agent';
-import { AllAvatarsRouteReturnType } from '../../../routes/profile/avatarRoutes';
-import { BaseAvatarLinks } from '../constants';
-
-const responsive = {
-  avatar3: {
-    breakpoint: { max: 3000, min: 1098 },
-    items: 3,
-  },
-  avatar2: {
-    breakpoint: { max: 1098, min: 732 },
-    items: 2,
-  },
-  avatar1: {
-    breakpoint: { max: 732, min: 464 },
-    items: 1,
-  },
-  mobile: {
-    breakpoint: { max: 464, min: 0 },
-    items: 1,
-  },
-};
+import { S3AvatarSet } from '../../../../clients/s3/S3Agent';
+import { AllAvatarsRouteReturnType } from '../../../../routes/profile/avatarRoutes';
+import { BaseAvatarLinks } from '../../constants';
+import { AvatarLibraryGridView } from '../common/avatarLibraryGridView';
 
 const getLinks = {
   getalluseravatars: (username: string) =>
@@ -42,15 +23,16 @@ export function AvatarHome() {
   const [currentSpyImgLink, setCurrentSpyImgLink] = useState<string | null>(
     null,
   );
-  const [avatarLibrary, setAvatarLibrary] = useState<S3AvatarSet[]>([]);
+  const [avatarLibrary, setAvatarLibrary] = useState<S3AvatarSet[] | null>(
+    null,
+  );
   const [selectedAvatarSet, setSelectedAvatarSet] =
     useState<S3AvatarSet | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    require('../../styles.css');
+    require('../../../styles.css');
     require('./styles.css');
-    require('react-multi-carousel/lib/styles.css');
 
     async function fetchUserAvatarInfo(username: string) {
       const response = await fetch(getLinks.getalluseravatars(username));
@@ -162,76 +144,45 @@ export function AvatarHome() {
         sets here.
       </h4>
       <br />
-      <Carousel
-        responsive={responsive}
-        containerClass="carousel-container"
-        showDots={true}
-        keyBoardControl={true}
-        removeArrowOnDeviceType={['mobile']}
-      >
-        {avatarLibrary.length === 0 ? (
-          <p className={'alignCenter'}>
-            Your avatar library is currently empty.
-          </p>
-        ) : (
-          avatarLibrary.map((avatarSet) => (
-            <div
-              key={avatarSet.avatarSetId}
-              className={`avatarSet ${
-                selectedAvatarSet === avatarSet ? 'selected' : ''
-              }`}
-              onClick={() => handleClickOnAvatarInLibrary(avatarSet)}
-            >
-              <h3 className="avatarTitle">Avatar {avatarSet.avatarSetId}</h3>
-              <img
-                src={avatarSet.resLink}
-                alt={`Resistance avatar ${avatarSet.avatarSetId}`}
-                className="avatarImg"
-                draggable={false}
-              />
-              <img
-                src={avatarSet.spyLink}
-                alt={`Spy avatar ${avatarSet.avatarSetId}`}
-                className="avatarImg"
-                draggable={false}
-              />
-            </div>
-          ))
-        )}
-      </Carousel>
+      <AvatarLibraryGridView
+        avatarLibrary={avatarLibrary}
+        selectedAvatarSet={selectedAvatarSet}
+        handleClickOnAvatar={handleClickOnAvatarInLibrary}
+      />
+
       <br />
-      <div className={'align-horizontal'}>
-        <button
-          className="btn btn-info"
-          id="changeAvatarBtn"
-          onClick={() => changeAvatarRequest()}
-          disabled={!Boolean(selectedAvatarSet)}
-        >
-          Change avatar
-        </button>
-        <h4>
-          Selected avatar ID:{' '}
-          {selectedAvatarSet ? selectedAvatarSet.avatarSetId : 'None selected'}
-        </h4>
-      </div>
+
+      {avatarLibrary.length !== 0 ? (
+        <div className={'align-horizontal'}>
+          <button
+            className="btn btn-info"
+            id="changeAvatarBtn"
+            onClick={() => changeAvatarRequest()}
+            disabled={!Boolean(selectedAvatarSet)}
+          >
+            Change avatar
+          </button>
+          <h4>
+            Selected avatar ID:{' '}
+            {selectedAvatarSet
+              ? selectedAvatarSet.avatarSetId
+              : 'None selected'}
+          </h4>
+        </div>
+      ) : null}
 
       <h4>
-        <strong style={{ color: '#1976D2' }}>
-          {/*  TODO-kev: Update once date past */}
-          For a limited time until the 16/06/2024, all users will be given a
-          minimum avatar library size of 2!
-        </strong>
-      </h4>
-      <h4>
-        *This feature is available to current Patreon supporters. The size of
-        your Avatar Library is determined by your Patreon tier:
+        *The size of your Avatar Library is determined by your total games
+        played and Patreon tier:
       </h4>
       <h4>
         <ul>
-          <li>Tier 1: 2 Avatars</li>
-          <li>Tier 2: 3 Avatars</li>
-          <li>Tier 3: 5 Avatars</li>
-          <li>Tier 4: 10 Avatars</li>
+          <li>100+ games played: 1 Avatar</li>
+          <li>500+ games played: 2 Avatars</li>
+          <li>Patreon Tier 1: 3 Avatars</li>
+          <li>Patreon Tier 2: 4 Avatars</li>
+          <li>Patreon Tier 3: 5 Avatars</li>
+          <li>Patreon Tier 4: 10 Avatars</li>
         </ul>
       </h4>
       <h4>
