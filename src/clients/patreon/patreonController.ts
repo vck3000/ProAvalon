@@ -98,10 +98,10 @@ export class PatreonController implements IPatreonController {
     const lastChargeDate = new Date(memberData.last_charge_date);
 
     // Check payment received to update currentPledgeExpiryDate
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const thirtyOneDaysAgo = new Date(Date.now() - 31 * 24 * 60 * 60 * 1000);
     const hasPaid =
       memberData.last_charge_status === 'Paid' &&
-      lastChargeDate > thirtyDaysAgo;
+      lastChargeDate > thirtyOneDaysAgo;
 
     return hasPaid
       ? {
