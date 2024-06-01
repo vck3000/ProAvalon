@@ -11,7 +11,7 @@ import { checkProfileOwnership, isModMiddleware } from '../middleware';
 import User from '../../models/user';
 import avatarRequest from '../../models/avatarRequest';
 import ModLog from '../../models/modLog';
-import AvatarLookup from '../../views/components/avatarLookup';
+import AvatarLookup from '../../views/components/avatar/avatarLookup';
 
 import S3Controller from '../../clients/s3/S3Controller';
 import { AllApprovedAvatars, S3Agent } from '../../clients/s3/S3Agent';

@@ -3,7 +3,7 @@ import express, { Response } from 'express';
 import { renderToString } from 'react-dom/server';
 
 import User from '../../models/user';
-import AvatarHome from '../../views/components/avatarHome';
+import AvatarHome from '../../views/components/avatar/avatarHome';
 import { EnrichedRequest } from '../types';
 import { checkProfileOwnership } from '../middleware';
 

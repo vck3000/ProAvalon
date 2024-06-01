@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import Carousel from 'react-multi-carousel';
 import Swal from 'sweetalert2';
 
-import { S3AvatarSet } from '../../../clients/s3/S3Agent';
-import { AllAvatarsRouteReturnType } from '../../../routes/profile/avatarRoutes';
-import { BaseAvatarLinks } from '../constants';
+import { S3AvatarSet } from '../../../../clients/s3/S3Agent';
+import { AllAvatarsRouteReturnType } from '../../../../routes/profile/avatarRoutes';
+import { BaseAvatarLinks } from '../../constants';
 
 const responsive = {
   avatar3: {
@@ -48,7 +48,7 @@ export function AvatarHome() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    require('../../styles.css');
+    require('../../../styles.css');
     require('./styles.css');
     require('react-multi-carousel/lib/styles.css');
 

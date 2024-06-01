@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 
-import { S3AvatarSet } from '../../../clients/s3/S3Agent';
-import { AllUserAvatars } from '../../../routes/profile';
-import { BaseAvatarLinks } from '../constants';
+import { S3AvatarSet } from '../../../../clients/s3/S3Agent';
+import { AllUserAvatars } from '../../../../routes/profile';
+import { BaseAvatarLinks } from '../../constants';
+import { AvatarLibraryGridView } from '../common/avatarLibraryGridView';
 
 const getLinks = {
   approvedAvatars: (username: string) =>
@@ -33,7 +34,6 @@ export function AvatarLookup() {
     useState<S3AvatarSet | null>(null);
 
   useEffect(() => {
-    require('react-multi-carousel/lib/styles.css');
     require('./styles.css');
   }, []);
 
@@ -117,46 +117,6 @@ export function AvatarLookup() {
 
     setSelectedAvatarLibrarySet(null);
     setSelectedOtherAvatarSet(null);
-  };
-
-  interface AvatarLibraryProps {
-    avatarLibrary: S3AvatarSet[] | null;
-    selectedAvatarSet: S3AvatarSet | null;
-    handleClickOnAvatar: (avatarSet: S3AvatarSet) => void;
-  }
-
-  const AvatarLibraryGridView = ({
-    avatarLibrary,
-    selectedAvatarSet,
-    handleClickOnAvatar,
-  }: AvatarLibraryProps) => {
-    return (
-      <div className="grid-container">
-        {avatarLibrary.map((avatarSet) => (
-          <div
-            key={avatarSet.avatarSetId}
-            className={`avatarSet grid-item ${
-              selectedAvatarSet === avatarSet ? 'selected' : ''
-            }`}
-            onClick={() => handleClickOnAvatar(avatarSet)}
-          >
-            <h3 className="avatarTitle">Avatar {avatarSet.avatarSetId}</h3>
-            <img
-              src={avatarSet.resLink}
-              alt={`Resistance avatar ${avatarSet.avatarSetId}`}
-              className="avatarImg"
-              draggable={false}
-            />
-            <img
-              src={avatarSet.spyLink}
-              alt={`Spy avatar ${avatarSet.avatarSetId}`}
-              className="avatarImg"
-              draggable={false}
-            />
-          </div>
-        ))}
-      </div>
-    );
   };
 
   return (
