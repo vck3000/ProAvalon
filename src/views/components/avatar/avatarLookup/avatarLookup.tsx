@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 
+import { AvatarLibraryGridView } from '../common/avatarLibraryGridView';
+
 import { S3AvatarSet } from '../../../../clients/s3/S3Agent';
 import { AllUserAvatars } from '../../../../routes/profile';
 import { BaseAvatarLinks } from '../../constants';
-import { AvatarLibraryGridView } from '../common/avatarLibraryGridView';
 
 const getLinks = {
   approvedAvatars: (username: string) =>

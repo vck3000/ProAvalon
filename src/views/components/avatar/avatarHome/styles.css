@@ -5,50 +5,10 @@
     flex-direction: column;
 }
 
-.avatarImg {
-    width: 128px;
-    height: 128px;
-    margin: 10px;
-    display: inline-block;
-}
-
-.avatarSet {
-    padding-top: 2em;
-    padding-bottom: 2em;
-    border-radius: 20px;
-}
-
 .alignCenter {
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-/*Below is the carousel container*/
-.react-multi-carousel-list {
-    max-width: 1100px;
-}
-
-.react-multi-carousel-item .avatarSet:hover {
-    border-radius: 20px;
-    transform: scale(1.05);
-}
-
-.react-multi-carousel-item .avatarSet:hover:not(.selected) {
-    background-color: #e0e0e0;
-}
-
-.react-multi-carousel-item .avatarSet {
-    margin: 15px;
-    cursor: pointer;
-    display: block;
-    text-align: center;
-    /*Avatar imgs total width = 296px. Add extra 40px to background highlight*/
-    width: 336px;
-}
-
-.selected {
-    background: #bbdefb;
 }
 
 .align-horizontal {
