@@ -45,16 +45,6 @@ router.post(
       return res.status(400).send('Bad input.');
     }
 
-    const patronDetails = await patreonAgent.findOrUpdateExistingPatronDetails(
-      req.user.usernameLower,
-    );
-
-    if (!isMod(req.user.username) && !patronDetails.isPledgeActive) {
-      return res
-        .status(403)
-        .send('You need to be a Patreon Supporter to enable this feature.');
-    }
-
     const user = await User.findOne({
       usernameLower: req.user.usernameLower,
     });
@@ -64,6 +54,7 @@ router.post(
         .status(400)
         .send('Unable to use an avatar that is not in your avatar library.');
     }
+
     if (
       user.avatarImgRes === req.body.resLink ||
       user.avatarImgSpy === req.body.spyLink

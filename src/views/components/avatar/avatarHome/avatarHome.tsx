@@ -173,10 +173,10 @@ export function AvatarHome() {
         <ul>
           <li>100+ games played: 1 Avatar</li>
           <li>500+ games played: 2 Avatars</li>
-          <li>Tier 1: 3 Avatars</li>
-          <li>Tier 2: 4 Avatars</li>
-          <li>Tier 3: 5 Avatars</li>
-          <li>Tier 4: 10 Avatars</li>
+          <li>Patreon Tier 1: 3 Avatars</li>
+          <li>Patreon Tier 2: 4 Avatars</li>
+          <li>Patreon Tier 3: 5 Avatars</li>
+          <li>Patreon Tier 4: 10 Avatars</li>
         </ul>
       </h4>
       <h4>
