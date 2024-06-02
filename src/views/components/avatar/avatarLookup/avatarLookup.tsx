@@ -133,8 +133,26 @@ export function AvatarLookup() {
     }
   };
 
-  const handleDeleteAvatar = () => {
-    // TODO-kev: Complete
+  const handleDeleteAvatar = async () => {
+    const result = await Swal.fire({
+      title:
+        'This is permanent. Are you sure you wish to delete this avatar set?',
+      html: `
+        <div class="avatarSet" style="display: flex; justify-content: center; align-items: center;">
+          <img src="${lastSelectedAvatarSet.resLink}" alt="test" class="avatarImg">
+          <img src="${lastSelectedAvatarSet.spyLink}" alt="test" class="avatarImg">
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'Delete',
+      confirmButtonColor: '#ff6961',
+    });
+
+    if (result.isConfirmed) {
+      // TODO-kev: complete
+
+      console.log('Delete');
+    }
     return;
   };
 
