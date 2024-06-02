@@ -156,23 +156,34 @@ router.post(
   },
 );
 
-router.post('/mod/removeuseravatar', isModMiddleware, async (req, res) => {
-  if (!req.body.username || !req.body.toBeDeletedAvatarId) {
+router.post('/mod/deleteuseravatar', isModMiddleware, async (req, res) => {
+  if (
+    !req.body.username ||
+    !req.body.toBeDeletedAvatarId ||
+    !req.body.toBeDeletedResLink ||
+    !req.body.toBeDeletedSpyLink
+  ) {
     return res.status(400).send('Bad input.');
   }
 
   const username = req.body.username;
   const toBeDeletedAvatarId = req.body.toBeDeletedAvatarId;
+  const toBeDeletedResLink = req.body.toBeDeletedResLink;
+  const toBeDeletedSpyLink = req.body.toBeDeletedSpyLink;
   const approvedAvatarIds = await s3Agent.getApprovedAvatarIdsForUser(username);
 
-  if (approvedAvatarIds.includes(toBeDeletedAvatarId)) {
+  if (!approvedAvatarIds.includes(toBeDeletedAvatarId)) {
     return res
       .status(400)
       .send(`Unable to delete Avatar ${toBeDeletedAvatarId}. Does not exist.`);
   }
 
   try {
-    await s3Agent.deleteAvatarById(username.toLowerCase(), toBeDeletedAvatarId);
+    await s3Agent.deleteAvatars(
+      username.toLowerCase(),
+      toBeDeletedResLink,
+      toBeDeletedSpyLink,
+    );
     return res
       .status(200)
       .send(

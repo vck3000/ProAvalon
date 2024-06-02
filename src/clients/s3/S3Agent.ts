@@ -240,14 +240,13 @@ export class S3Agent {
     };
   }
 
-  public async deleteAvatarById(
+  public async deleteAvatars(
     usernameLower: string,
-    avatarId: number,
+    resLink: string,
+    spyLink: string,
   ): Promise<void> {
-    const avatarSet = this.getAvatarSetsFromIds(usernameLower, [avatarId])[0];
-
-    await this.s3Controller.deleteFile(avatarSet.resLink);
-    await this.s3Controller.deleteFile(avatarSet.spyLink);
+    await this.s3Controller.deleteFile(resLink);
+    await this.s3Controller.deleteFile(spyLink);
   }
 
   public isValidLink(link: string, type: string) {

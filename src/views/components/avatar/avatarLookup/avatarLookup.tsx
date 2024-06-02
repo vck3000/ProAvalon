@@ -11,6 +11,7 @@ const getLinks = {
   approvedAvatars: (username: string) =>
     `/profile/mod/approvedavatars?username=${username}`,
   updateUserAvatarLibrary: '/profile/mod/updateuseravatarlibrary',
+  deleteUserAvatar: '/profile/mod/deleteuseravatar',
 };
 
 export function AvatarLookup() {
@@ -149,9 +150,32 @@ export function AvatarLookup() {
     });
 
     if (result.isConfirmed) {
-      // TODO-kev: complete
+      await Swal.fire({
+        title: 'Sending request',
+        didOpen: async () => {
+          Swal.showLoading();
+          const response = await fetch(getLinks.deleteUserAvatar, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username: targetUsername,
+              toBeDeletedAvatarId: lastSelectedAvatarSet.avatarSetId,
+              toBeDeletedResLink: lastSelectedAvatarSet.resLink,
+              toBeDeletedSpyLink: lastSelectedAvatarSet.spyLink,
+            }),
+          });
 
-      console.log('Delete');
+          if (response.status === 200) {
+            Swal.close();
+            Swal.fire({ title: await response.text(), icon: 'success' });
+          } else {
+            Swal.close();
+            Swal.fire({ title: await response.text(), icon: 'error' });
+          }
+        },
+      });
     }
     return;
   };
