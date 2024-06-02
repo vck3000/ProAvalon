@@ -147,9 +147,16 @@ export function AvatarLookup() {
       showCancelButton: true,
       confirmButtonText: 'Delete',
       confirmButtonColor: '#ff6961',
+      input: 'text',
+      inputPlaceholder: 'Please enter your reason for deleting the avatar.',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'Please enter a reason.';
+        }
+      },
     });
 
-    if (result.isConfirmed) {
+    if (result.isConfirmed && result.value) {
       await Swal.fire({
         title: 'Sending request',
         didOpen: async () => {
@@ -164,6 +171,7 @@ export function AvatarLookup() {
               toBeDeletedAvatarId: lastSelectedAvatarSet.avatarSetId,
               toBeDeletedResLink: lastSelectedAvatarSet.resLink,
               toBeDeletedSpyLink: lastSelectedAvatarSet.spyLink,
+              deletionReason: result.value,
             }),
           });
 

@@ -161,7 +161,8 @@ router.post('/mod/deleteuseravatar', isModMiddleware, async (req, res) => {
     !req.body.username ||
     !req.body.toBeDeletedAvatarId ||
     !req.body.toBeDeletedResLink ||
-    !req.body.toBeDeletedSpyLink
+    !req.body.toBeDeletedSpyLink ||
+    !req.body.deletionReason
   ) {
     return res.status(400).send('Bad input.');
   }
@@ -170,6 +171,7 @@ router.post('/mod/deleteuseravatar', isModMiddleware, async (req, res) => {
   const toBeDeletedAvatarId = req.body.toBeDeletedAvatarId;
   const toBeDeletedResLink = req.body.toBeDeletedResLink;
   const toBeDeletedSpyLink = req.body.toBeDeletedSpyLink;
+  const deletionReason = req.body.deletionReason;
   const approvedAvatarIds = await s3Agent.getApprovedAvatarIdsForUser(username);
 
   if (!approvedAvatarIds.includes(toBeDeletedAvatarId)) {
