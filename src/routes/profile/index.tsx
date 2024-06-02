@@ -171,11 +171,13 @@ router.post('/mod/deleteuseravatar', isModMiddleware, async (req, res) => {
   }
 
   const modWhoProcessed = req.user;
-  const username = req.body.username;
+  const targetUsername = req.body.username;
   const toBeDeletedAvatarSet: S3AvatarSet = req.body.toBeDeletedAvatarSet;
   const deletionReason = req.body.deletionReason;
 
-  const approvedAvatarIds = await s3Agent.getApprovedAvatarIdsForUser(username);
+  const approvedAvatarIds = await s3Agent.getApprovedAvatarIdsForUser(
+    targetUsername,
+  );
   if (!approvedAvatarIds.includes(toBeDeletedAvatarSet.avatarSetId)) {
     return res
       .status(400)
@@ -186,7 +188,7 @@ router.post('/mod/deleteuseravatar', isModMiddleware, async (req, res) => {
 
   try {
     await s3Agent.deleteAvatars(
-      username.toLowerCase(),
+      targetUsername.toLowerCase(),
       toBeDeletedAvatarSet.resLink,
       toBeDeletedAvatarSet.spyLink,
     );
@@ -195,7 +197,7 @@ router.post('/mod/deleteuseravatar', isModMiddleware, async (req, res) => {
     throw e;
   }
 
-  await userAdapter.removeAvatar(toBeDeletedAvatarSet);
+  await userAdapter.removeAvatar(targetUsername, toBeDeletedAvatarSet);
 
   await ModLog.create({
     type: 'avatarDelete',
@@ -207,7 +209,7 @@ router.post('/mod/deleteuseravatar', isModMiddleware, async (req, res) => {
     data: {
       avatarId: toBeDeletedAvatarSet.avatarSetId,
       modComment: deletionReason,
-      username,
+      username: targetUsername,
     },
     dateCreated: new Date(),
   });
@@ -215,7 +217,7 @@ router.post('/mod/deleteuseravatar', isModMiddleware, async (req, res) => {
   return res
     .status(200)
     .send(
-      `Successfully removed Avatar ${toBeDeletedAvatarId} from ${username}`,
+      `Successfully removed Avatar ${toBeDeletedAvatarSet.avatarSetId} from ${targetUsername}`,
     );
 });
 
