@@ -22,6 +22,7 @@ import {
   getAndUpdatePatreonRewardTierForUser,
   getAvatarLibrarySizeForUser,
 } from '../../rewards/getRewards';
+import userAdapter from '../../databaseAdapters/user';
 
 const MAX_ACTIVE_AVATAR_REQUESTS = 2;
 const MIN_GAMES_REQUIRED = 100;
@@ -192,6 +193,12 @@ router.post('/mod/deleteuseravatar', isModMiddleware, async (req, res) => {
     res.status(500).send(`Something went wrong.`);
     throw e;
   }
+
+  await userAdapter.removeAvatar(
+    toBeDeletedAvatarId,
+    toBeDeletedResLink,
+    toBeDeletedResLink,
+  );
 
   await ModLog.create({
     type: 'avatarDelete',

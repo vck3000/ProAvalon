@@ -8,6 +8,12 @@ interface DatabaseAdapter {
     resLink: string,
     spyLink: string,
   ): Promise<void>;
+  removeAvatar(
+    username: string,
+    avatarId: number,
+    resLink: string,
+    spyLink: string,
+  ): Promise<void>;
 }
 
 class MongoUserAdapter implements DatabaseAdapter {
@@ -22,6 +28,25 @@ class MongoUserAdapter implements DatabaseAdapter {
 
     user.avatarImgRes = resLink;
     user.avatarImgSpy = spyLink;
+    await user.save();
+  }
+
+  async removeAvatar(
+    username: string,
+    avatarId: number,
+    resLink: string,
+    spyLink: string,
+  ) {
+    const user = await this.getUser(username);
+    user.avatarLibrary = user.avatarLibrary.filter((id) => id !== avatarId);
+
+    if (user.avatarImgRes === resLink) {
+      user.avatarImgRes = null;
+    }
+    if (user.avatarImgSpy === spyLink) {
+      user.avatarImgSpy = null;
+    }
+
     await user.save();
   }
 }
