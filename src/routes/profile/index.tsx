@@ -111,7 +111,6 @@ router.post(
   '/mod/updateuseravatarlibrary',
   isModMiddleware,
   async (req, res) => {
-    console.log(req.body);
     if (
       !req.body.username ||
       !req.body.toBeAddedAvatarId ||
@@ -156,6 +155,34 @@ router.post(
       );
   },
 );
+
+router.post('/mod/removeuseravatar', isModMiddleware, async (req, res) => {
+  if (!req.body.username || !req.body.toBeDeletedAvatarId) {
+    return res.status(400).send('Bad input.');
+  }
+
+  const username = req.body.username;
+  const toBeDeletedAvatarId = req.body.toBeDeletedAvatarId;
+  const approvedAvatarIds = await s3Agent.getApprovedAvatarIdsForUser(username);
+
+  if (approvedAvatarIds.includes(toBeDeletedAvatarId)) {
+    return res
+      .status(400)
+      .send(`Unable to delete Avatar ${toBeDeletedAvatarId}. Does not exist.`);
+  }
+
+  try {
+    await s3Agent.deleteAvatarById(username.toLowerCase(), toBeDeletedAvatarId);
+    return res
+      .status(200)
+      .send(
+        `Successfully removed Avatar ${toBeDeletedAvatarId} from ${username}`,
+      );
+  } catch (e) {
+    res.status(500).send(`Something went wrong.`);
+    throw e;
+  }
+});
 
 // moderator approve or reject custom avatar requests
 router.post(
