@@ -34,6 +34,9 @@ export function AvatarLookup() {
   const [selectedOtherAvatarSet, setSelectedOtherAvatarSet] =
     useState<S3AvatarSet | null>(null);
 
+  const [lastSelectedAvatarSet, setLastSelectedAvatarSet] =
+    useState<S3AvatarSet | null>(null);
+
   useEffect(() => {
     require('./styles.css');
   }, []);
@@ -97,15 +100,42 @@ export function AvatarLookup() {
   };
 
   const handleClickOnAvatarInLibrary = (avatarSet: S3AvatarSet) => {
-    selectedAvatarLibrarySet === avatarSet
-      ? setSelectedAvatarLibrarySet(null)
-      : setSelectedAvatarLibrarySet(avatarSet);
+    if (selectedAvatarLibrarySet !== avatarSet) {
+      // Selected new avatar set
+      setSelectedAvatarLibrarySet(avatarSet);
+      setLastSelectedAvatarSet(avatarSet);
+    } else {
+      // Unselected avatar set
+      if (selectedAvatarLibrarySet === lastSelectedAvatarSet) {
+        selectedOtherAvatarSet
+          ? setLastSelectedAvatarSet(selectedOtherAvatarSet)
+          : setLastSelectedAvatarSet(null);
+      }
+
+      setSelectedAvatarLibrarySet(null);
+    }
   };
 
   const handleClickOnOtherAvatar = (avatarSet: S3AvatarSet) => {
-    selectedOtherAvatarSet === avatarSet
-      ? setSelectedOtherAvatarSet(null)
-      : setSelectedOtherAvatarSet(avatarSet);
+    if (selectedOtherAvatarSet !== avatarSet) {
+      // Selected new avatar set
+      setSelectedOtherAvatarSet(avatarSet);
+      setLastSelectedAvatarSet(avatarSet);
+    } else {
+      // Unselected avatar set
+      if (selectedOtherAvatarSet === lastSelectedAvatarSet) {
+        selectedAvatarLibrarySet
+          ? setLastSelectedAvatarSet(selectedAvatarLibrarySet)
+          : setLastSelectedAvatarSet(null);
+      }
+
+      setSelectedOtherAvatarSet(null);
+    }
+  };
+
+  const handleDeleteAvatar = () => {
+    // TODO-kev: Complete
+    return;
   };
 
   const handleClearUser = () => {
@@ -118,6 +148,8 @@ export function AvatarLookup() {
 
     setSelectedAvatarLibrarySet(null);
     setSelectedOtherAvatarSet(null);
+
+    setLastSelectedAvatarSet(null);
   };
 
   return (
@@ -230,6 +262,29 @@ export function AvatarLookup() {
                 <h4 className="button-label">
                   Select an avatar from the avatar library and the other
                   approved avatars.
+                </h4>
+              )}
+            </div>
+          ) : null}
+
+          {targetUserAvatarLibrary || targetUserOtherApprovedAvatars ? (
+            <div>
+              <button
+                className={'btn btn-danger'}
+                onClick={handleDeleteAvatar}
+                disabled={!lastSelectedAvatarSet}
+              >
+                Delete Avatar
+              </button>
+              {lastSelectedAvatarSet ? (
+                <h4 className="button-label">
+                  Remove{' '}
+                  <strong>Avatar {lastSelectedAvatarSet.avatarSetId}</strong>{' '}
+                  permanently.
+                </h4>
+              ) : (
+                <h4 className="button-label">
+                  Select an avatar to remove permanently.
                 </h4>
               )}
             </div>
