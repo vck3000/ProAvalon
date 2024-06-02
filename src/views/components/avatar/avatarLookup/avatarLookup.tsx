@@ -168,9 +168,7 @@ export function AvatarLookup() {
             },
             body: JSON.stringify({
               username: targetUsername,
-              toBeDeletedAvatarId: lastSelectedAvatarSet.avatarSetId,
-              toBeDeletedResLink: lastSelectedAvatarSet.resLink,
-              toBeDeletedSpyLink: lastSelectedAvatarSet.spyLink,
+              toBeDeletedAvatarSet: lastSelectedAvatarSet,
               deletionReason: result.value,
             }),
           });

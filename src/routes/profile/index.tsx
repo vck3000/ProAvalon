@@ -14,7 +14,11 @@ import ModLog from '../../models/modLog';
 import AvatarLookup from '../../views/components/avatar/avatarLookup';
 
 import S3Controller from '../../clients/s3/S3Controller';
-import { AllApprovedAvatars, S3Agent } from '../../clients/s3/S3Agent';
+import {
+  AllApprovedAvatars,
+  S3Agent,
+  S3AvatarSet,
+} from '../../clients/s3/S3Agent';
 import { PatreonAgent } from '../../clients/patreon/patreonAgent';
 import { PatreonController } from '../../clients/patreon/patreonController';
 import { createNotification } from '../../myFunctions/createNotification';
@@ -160,45 +164,38 @@ router.post(
 router.post('/mod/deleteuseravatar', isModMiddleware, async (req, res) => {
   if (
     !req.body.username ||
-    !req.body.toBeDeletedAvatarId ||
-    !req.body.toBeDeletedResLink ||
-    !req.body.toBeDeletedSpyLink ||
+    !req.body.toBeDeletedAvatarSet ||
     !req.body.deletionReason
   ) {
     return res.status(400).send('Bad input.');
   }
 
-  const username = req.body.username;
-  const toBeDeletedAvatarId = req.body.toBeDeletedAvatarId;
-  const toBeDeletedResLink = req.body.toBeDeletedResLink;
-  const toBeDeletedSpyLink = req.body.toBeDeletedSpyLink;
-  const deletionReason = req.body.deletionReason;
   const modWhoProcessed = req.user;
+  const username = req.body.username;
+  const toBeDeletedAvatarSet: S3AvatarSet = req.body.toBeDeletedAvatarSet;
+  const deletionReason = req.body.deletionReason;
 
   const approvedAvatarIds = await s3Agent.getApprovedAvatarIdsForUser(username);
-
-  if (!approvedAvatarIds.includes(toBeDeletedAvatarId)) {
+  if (!approvedAvatarIds.includes(toBeDeletedAvatarSet.avatarSetId)) {
     return res
       .status(400)
-      .send(`Unable to delete Avatar ${toBeDeletedAvatarId}. Does not exist.`);
+      .send(
+        `Unable to delete Avatar ${toBeDeletedAvatarSet.avatarSetId}. Does not exist.`,
+      );
   }
 
   try {
     await s3Agent.deleteAvatars(
       username.toLowerCase(),
-      toBeDeletedResLink,
-      toBeDeletedSpyLink,
+      toBeDeletedAvatarSet.resLink,
+      toBeDeletedAvatarSet.spyLink,
     );
   } catch (e) {
     res.status(500).send(`Something went wrong.`);
     throw e;
   }
 
-  await userAdapter.removeAvatar(
-    toBeDeletedAvatarId,
-    toBeDeletedResLink,
-    toBeDeletedResLink,
-  );
+  await userAdapter.removeAvatar(toBeDeletedAvatarSet);
 
   await ModLog.create({
     type: 'avatarDelete',
@@ -208,7 +205,7 @@ router.post('/mod/deleteuseravatar', isModMiddleware, async (req, res) => {
       usernameLower: modWhoProcessed.usernameLower,
     },
     data: {
-      avatarId: toBeDeletedAvatarId,
+      avatarId: toBeDeletedAvatarSet.avatarSetId,
       modComment: deletionReason,
       username,
     },
