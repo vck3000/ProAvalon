@@ -172,6 +172,8 @@ router.post('/mod/deleteuseravatar', isModMiddleware, async (req, res) => {
   const toBeDeletedResLink = req.body.toBeDeletedResLink;
   const toBeDeletedSpyLink = req.body.toBeDeletedSpyLink;
   const deletionReason = req.body.deletionReason;
+  const modWhoProcessed = req.user;
+
   const approvedAvatarIds = await s3Agent.getApprovedAvatarIdsForUser(username);
 
   if (!approvedAvatarIds.includes(toBeDeletedAvatarId)) {
@@ -186,15 +188,31 @@ router.post('/mod/deleteuseravatar', isModMiddleware, async (req, res) => {
       toBeDeletedResLink,
       toBeDeletedSpyLink,
     );
-    return res
-      .status(200)
-      .send(
-        `Successfully removed Avatar ${toBeDeletedAvatarId} from ${username}`,
-      );
   } catch (e) {
     res.status(500).send(`Something went wrong.`);
     throw e;
   }
+
+  await ModLog.create({
+    type: 'avatarDelete',
+    modWhoMade: {
+      id: modWhoProcessed._id,
+      username: modWhoProcessed.username,
+      usernameLower: modWhoProcessed.usernameLower,
+    },
+    data: {
+      avatarId: toBeDeletedAvatarId,
+      modComment: deletionReason,
+      username,
+    },
+    dateCreated: new Date(),
+  });
+
+  return res
+    .status(200)
+    .send(
+      `Successfully removed Avatar ${toBeDeletedAvatarId} from ${username}`,
+    );
 });
 
 // moderator approve or reject custom avatar requests
