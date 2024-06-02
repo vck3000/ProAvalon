@@ -284,7 +284,7 @@ export function AvatarLookup() {
             />
           </div>
 
-          {targetUserAvatarLibrary ? (
+          {targetUserAvatarLibrary && targetUserAvatarLibrary.length !== 0 ? (
             <div>
               <h3>
                 <u>{targetUsername}'s avatar library:</u>
@@ -297,7 +297,8 @@ export function AvatarLookup() {
             </div>
           ) : null}
 
-          {targetUserOtherApprovedAvatars ? (
+          {targetUserOtherApprovedAvatars &&
+          targetUserOtherApprovedAvatars.length !== 0 ? (
             <div>
               <h3>
                 <u>{targetUsername}'s other approved avatars:</u>
@@ -334,7 +335,9 @@ export function AvatarLookup() {
             </div>
           ) : null}
 
-          {targetUserAvatarLibrary || targetUserOtherApprovedAvatars ? (
+          {(targetUserAvatarLibrary && targetUserAvatarLibrary.length !== 0) ||
+          (targetUserOtherApprovedAvatars &&
+            targetUserOtherApprovedAvatars.length !== 0) ? (
             <div>
               <button
                 className={'btn btn-danger'}
