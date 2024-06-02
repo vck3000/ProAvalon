@@ -195,14 +195,14 @@ export function AvatarLookup() {
         (avatarSet) => avatarSet !== lastSelectedAvatarSet,
       );
       setTargetUserAvatarLibrary(updatedAvatarSet);
-    }
-
-    if (lastSelectedAvatarSet === selectedOtherAvatarSet) {
+    } else if (lastSelectedAvatarSet === selectedOtherAvatarSet) {
       const updatedAvatarSet = targetUserOtherApprovedAvatars.filter(
         (avatarSet) => avatarSet !== lastSelectedAvatarSet,
       );
       setTargetUserOtherApprovedAvatars(updatedAvatarSet);
     }
+
+    setLastSelectedAvatarSet(null);
   };
 
   const handleClearUser = () => {
