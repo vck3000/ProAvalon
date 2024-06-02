@@ -44,7 +44,7 @@ export function AvatarLookup() {
 
   const handleGetAvatars = async () => {
     if (!inputUsername) {
-      Swal.fire({
+      await Swal.fire({
         title: 'Please enter a username.',
         icon: 'warning',
       });
@@ -67,12 +67,12 @@ export function AvatarLookup() {
         data.allApprovedAvatars.approvedAvatarsNotInLibrary,
       );
     } else {
-      Swal.fire({ title: await response.text(), icon: 'error' });
+      await Swal.fire({ title: await response.text(), icon: 'error' });
     }
   };
 
-  const handleSwapAvatar = () => {
-    Swal.fire({
+  const handleSwapAvatar = async () => {
+    await Swal.fire({
       title: 'Sending request',
       didOpen: async () => {
         Swal.showLoading();
@@ -91,10 +91,10 @@ export function AvatarLookup() {
         if (response.status === 200) {
           await handleGetAvatars();
           Swal.close();
-          Swal.fire({ title: await response.text(), icon: 'success' });
+          await Swal.fire({ title: await response.text(), icon: 'success' });
         } else {
           Swal.close();
-          Swal.fire({ title: await response.text(), icon: 'error' });
+          await Swal.fire({ title: await response.text(), icon: 'error' });
         }
       },
     });
@@ -177,10 +177,10 @@ export function AvatarLookup() {
 
           if (response.status === 200) {
             Swal.close();
-            Swal.fire({ title: await response.text(), icon: 'success' });
+            await Swal.fire({ title: await response.text(), icon: 'success' });
           } else {
             Swal.close();
-            Swal.fire({ title: await response.text(), icon: 'error' });
+            await Swal.fire({ title: await response.text(), icon: 'error' });
           }
         },
       });
