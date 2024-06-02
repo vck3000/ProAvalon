@@ -137,7 +137,7 @@ export function AvatarLookup() {
   const handleDeleteAvatar = async () => {
     const result = await Swal.fire({
       title:
-        'This is permanent. Are you sure you wish to delete this avatar set?',
+        'This is permanent. Are you sure you want to delete this avatar set?',
       html: `
         <div class="avatarSet" style="display: flex; justify-content: center; align-items: center;">
           <img src="${lastSelectedAvatarSet.resLink}" alt="test" class="avatarImg">
