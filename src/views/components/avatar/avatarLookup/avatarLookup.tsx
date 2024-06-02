@@ -174,6 +174,8 @@ export function AvatarLookup() {
           });
 
           if (response.status === 200) {
+            updatePostDeleteAvatar();
+
             Swal.close();
             await Swal.fire({ title: await response.text(), icon: 'success' });
           } else {
@@ -184,6 +186,23 @@ export function AvatarLookup() {
       });
     }
     return;
+  };
+
+  // Update front-end view following avatar deletion
+  const updatePostDeleteAvatar = () => {
+    if (lastSelectedAvatarSet === selectedAvatarLibrarySet) {
+      const updatedAvatarSet = targetUserAvatarLibrary.filter(
+        (avatarSet) => avatarSet !== lastSelectedAvatarSet,
+      );
+      setTargetUserAvatarLibrary(updatedAvatarSet);
+    }
+
+    if (lastSelectedAvatarSet === selectedOtherAvatarSet) {
+      const updatedAvatarSet = targetUserOtherApprovedAvatars.filter(
+        (avatarSet) => avatarSet !== lastSelectedAvatarSet,
+      );
+      setTargetUserOtherApprovedAvatars(updatedAvatarSet);
+    }
   };
 
   const handleClearUser = () => {
