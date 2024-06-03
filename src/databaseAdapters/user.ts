@@ -5,7 +5,7 @@ import { getAvatarLibrarySizeForUser } from '../rewards/getRewards';
 
 interface DatabaseAdapter {
   getUser(username: string): Promise<IUser>;
-  updateAvatar(
+  setTemporaryAvatar(
     username: string,
     resLink: string,
     spyLink: string,
@@ -19,7 +19,7 @@ class MongoUserAdapter implements DatabaseAdapter {
     })) as IUser;
   }
 
-  async updateAvatar(username: string, resLink: string, spyLink: string) {
+  async setTemporaryAvatar(username: string, resLink: string, spyLink: string) {
     const user = await this.getUser(username);
 
     user.avatarImgRes = resLink;
