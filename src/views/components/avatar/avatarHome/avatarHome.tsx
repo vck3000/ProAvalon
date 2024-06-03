@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 
+import { DarkModeContext } from '../../../contexts/DarkModeContext';
+
 import { S3AvatarSet } from '../../../../clients/s3/S3Agent';
 import { AllAvatarsRouteReturnType } from '../../../../routes/profile/avatarRoutes';
 import { BaseAvatarLinks } from '../../constants';
@@ -16,6 +18,7 @@ const getLinks = {
 };
 
 export function AvatarHome() {
+  const [darkMode, setDarkMode] = useState<boolean>(false);
   const [username, setUsername] = useState<string | null>(null);
   const [currentResImgLink, setCurrentResImgLink] = useState<string | null>(
     null,
@@ -50,6 +53,10 @@ export function AvatarHome() {
     }
 
     setIsLoading(true);
+
+    // Extract dark mode cookie. Ideally this should be done in a higher up react component
+    // @ts-ignore
+    setDarkMode(docCookies.getItem('optionDisplayDarkTheme'));
 
     // Extract username from route of form '/profile/:profileusername/avatar'
     const match = window.location.pathname.match(/\/profile\/([^\/]+)\/avatar/);
@@ -107,89 +114,91 @@ export function AvatarHome() {
 
   return (
     <div>
-      <h1>
-        <u>Avatar Home</u>
-      </h1>
-      <br />
-      <h3>Current Avatar Set:</h3>
-      <h4>
-        This is your current avatar. You may submit a custom avatar request by
-        clicking the button below.
-      </h4>
-      <div className="avatarSet" id="currentAvatarSetDiv">
-        <img
-          alt="Current Resistance Avatar"
-          className="avatarImg"
-          src={currentResImgLink}
-        ></img>
-        <img
-          alt="Current Spy Avatar"
-          className="avatarImg"
-          src={currentSpyImgLink}
-        ></img>
-      </div>
-      <a className="btn btn-info" href={getLinks.customavatar(username)}>
-        Submit a custom avatar
-      </a>
-      <hr
-        style={{
-          borderColor: 'lightgrey',
-          borderStyle: 'solid',
-          margin: '2em',
-        }}
-      />
-      <h3>Avatar Library*: </h3>
-      <h4>
-        Here are all your approved avatar sets. You can change between avatar
-        sets here.
-      </h4>
-      <br />
-      <AvatarLibraryGridView
-        avatarLibrary={avatarLibrary}
-        selectedAvatarSet={selectedAvatarSet}
-        handleClickOnAvatar={handleClickOnAvatarInLibrary}
-      />
-
-      <br />
-
-      {avatarLibrary.length !== 0 ? (
-        <div className={'align-horizontal'}>
-          <button
-            className="btn btn-info"
-            id="changeAvatarBtn"
-            onClick={() => changeAvatarRequest()}
-            disabled={!Boolean(selectedAvatarSet)}
-          >
-            Change avatar
-          </button>
-          <h4>
-            Selected avatar ID:{' '}
-            {selectedAvatarSet
-              ? selectedAvatarSet.avatarSetId
-              : 'None selected'}
-          </h4>
+      <DarkModeContext.Provider value={darkMode}>
+        <h1>
+          <u>Avatar Home</u>
+        </h1>
+        <br />
+        <h3>Current Avatar Set:</h3>
+        <h4>
+          This is your current avatar. You may submit a custom avatar request by
+          clicking the button below.
+        </h4>
+        <div className="avatarSet" id="currentAvatarSetDiv">
+          <img
+            alt="Current Resistance Avatar"
+            className="avatarImg"
+            src={currentResImgLink}
+          ></img>
+          <img
+            alt="Current Spy Avatar"
+            className="avatarImg"
+            src={currentSpyImgLink}
+          ></img>
         </div>
-      ) : null}
+        <a className="btn btn-info" href={getLinks.customavatar(username)}>
+          Submit a custom avatar
+        </a>
+        <hr
+          style={{
+            borderColor: 'lightgrey',
+            borderStyle: 'solid',
+            margin: '2em',
+          }}
+        />
+        <h3>Avatar Library*: </h3>
+        <h4>
+          Here are all your approved avatar sets. You can change between avatar
+          sets here.
+        </h4>
+        <br />
+        <AvatarLibraryGridView
+          avatarLibrary={avatarLibrary}
+          selectedAvatarSet={selectedAvatarSet}
+          handleClickOnAvatar={handleClickOnAvatarInLibrary}
+        />
 
-      <h4>
-        *The size of your Avatar Library is determined by your total games
-        played and Patreon tier:
-      </h4>
-      <h4>
-        <ul>
-          <li>100+ games played: 1 Avatar</li>
-          <li>500+ games played: 2 Avatars</li>
-          <li>Patreon Tier 1: 3 Avatars</li>
-          <li>Patreon Tier 2: 4 Avatars</li>
-          <li>Patreon Tier 3: 5 Avatars</li>
-          <li>Patreon Tier 4: 10 Avatars</li>
-        </ul>
-      </h4>
-      <h4>
-        To link your Patreon account or if you would like to support the
-        development of the site please do so from your profile page{' '}
-        <a href={getLinks.edit(username)}>here</a>.
-      </h4>
+        <br />
+
+        {avatarLibrary.length !== 0 ? (
+          <div className={'align-horizontal'}>
+            <button
+              className="btn btn-info"
+              id="changeAvatarBtn"
+              onClick={() => changeAvatarRequest()}
+              disabled={!Boolean(selectedAvatarSet)}
+            >
+              Change avatar
+            </button>
+            <h4>
+              Selected avatar ID:{' '}
+              {selectedAvatarSet
+                ? selectedAvatarSet.avatarSetId
+                : 'None selected'}
+            </h4>
+          </div>
+        ) : null}
+
+        <h4>
+          *The size of your Avatar Library is determined by your total games
+          played and Patreon tier:
+        </h4>
+        <h4>
+          <ul>
+            <li>100+ games played: 1 Avatar</li>
+            <li>500+ games played: 2 Avatars</li>
+            <li>Patreon Tier 1: 3 Avatars</li>
+            <li>Patreon Tier 2: 4 Avatars</li>
+            <li>Patreon Tier 3: 5 Avatars</li>
+            <li>Patreon Tier 4: 10 Avatars</li>
+          </ul>
+        </h4>
+        <h4>
+          To link your Patreon account or if you would like to support the
+          development of the site please do so from your profile page{' '}
+          <a href={getLinks.edit(username)}>here</a>.
+        </h4>
+      </DarkModeContext.Provider>
     </div>
   );
 }
