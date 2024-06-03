@@ -1,3 +1,3 @@
 import { createContext } from 'react';
 
-export const DarkModeContext = createContext(false);
+export const DarkModeContext = createContext<boolean>(false);

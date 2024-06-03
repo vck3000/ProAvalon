@@ -20,8 +20,7 @@ export function AvatarLibraryGridView({
   const darkMode = useContext(DarkModeContext);
 
   return (
-    <div className="grid-container">
-      <p>Dark Mode: {darkMode}</p>
+    <div className={`grid-container ${darkMode ? 'dark' : ''}`}>
       {avatarLibrary.map((avatarSet) => (
         <div
           key={avatarSet.avatarSetId}

@@ -19,6 +19,7 @@ const getLinks = {
 
 export function AvatarHome() {
   const [darkMode, setDarkMode] = useState<boolean>(false);
+
   const [username, setUsername] = useState<string | null>(null);
   const [currentResImgLink, setCurrentResImgLink] = useState<string | null>(
     null,
@@ -56,7 +57,8 @@ export function AvatarHome() {
 
     // Extract dark mode cookie. Ideally this should be done in a higher up react component
     // @ts-ignore
-    setDarkMode(docCookies.getItem('optionDisplayDarkTheme'));
+    const darkModeString = docCookies.getItem('optionDisplayDarkTheme');
+    setDarkMode(darkModeString === 'true');
 
     // Extract username from route of form '/profile/:profileusername/avatar'
     const match = window.location.pathname.match(/\/profile\/([^\/]+)\/avatar/);

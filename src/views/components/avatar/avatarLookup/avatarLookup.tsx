@@ -6,6 +6,7 @@ import { AvatarLibraryGridView } from '../common/avatarLibraryGridView';
 import { S3AvatarSet } from '../../../../clients/s3/S3Agent';
 import { AllUserAvatars } from '../../../../routes/profile';
 import { BaseAvatarLinks } from '../../constants';
+import { DarkModeContext } from '../../../contexts/DarkModeContext';
 
 const getLinks = {
   approvedAvatars: (username: string) =>
@@ -14,6 +15,8 @@ const getLinks = {
 };
 
 export function AvatarLookup() {
+  const [darkMode, setDarkMode] = useState<boolean>(false);
+
   const [inputUsername, setInputUsername] = useState<string>('');
 
   const [targetUsername, setTargetUsername] = useState<string | null>(null);
@@ -36,6 +39,11 @@ export function AvatarLookup() {
 
   useEffect(() => {
     require('./styles.css');
+
+    // Extract dark mode cookie. Ideally this should be done in a higher up react component
+    // @ts-ignore
+    const darkModeString = docCookies.getItem('optionDisplayDarkTheme');
+    setDarkMode(darkModeString === 'true');
   }, []);
 
   const handleGetAvatars = async () => {
@@ -122,120 +130,129 @@ export function AvatarLookup() {
 
   return (
     <div>
-      <h1>
-        <u>User's Avatars:</u>
-      </h1>
-      <br />
-      <div id="approvedAvatarsForUser" className="scrollableWindow alignCenter">
-        <p>Here you can see all the approved avatars for a user.</p>
-      </div>
-
-      <div style={{ display: 'flex', alignItems: 'center', width: '333px' }}>
-        <input
-          type="text"
-          name="username"
-          className="form-control"
-          id="getUserAvatarsInput"
-          placeholder="Enter username"
-          style={{ marginRight: '10px' }}
-          value={inputUsername}
-          onChange={(e) => setInputUsername(e.target.value)}
-          onKeyDown={async (e) => {
-            if (e.key === 'Enter') {
-              await handleGetAvatars();
-            }
-          }}
-        />
-        <button
-          className="btn btn-warning"
-          id="getUserAvatarsButton"
-          onClick={handleGetAvatars}
+      <DarkModeContext.Provider value={darkMode}>
+        <h1>
+          <u>User's Avatars:</u>
+        </h1>
+        <br />
+        <div
+          id="approvedAvatarsForUser"
+          className="scrollableWindow alignCenter"
         >
-          Get Avatars
-        </button>
+          <p>Here you can see all the approved avatars for a user.</p>
+        </div>
 
-        {targetUsername ? (
+        <div style={{ display: 'flex', alignItems: 'center', width: '333px' }}>
+          <input
+            type="text"
+            name="username"
+            className="form-control"
+            id="getUserAvatarsInput"
+            placeholder="Enter username"
+            style={{ marginRight: '10px' }}
+            value={inputUsername}
+            onChange={(e) => setInputUsername(e.target.value)}
+            onKeyDown={async (e) => {
+              if (e.key === 'Enter') {
+                await handleGetAvatars();
+              }
+            }}
+          />
           <button
-            className="btn btn-danger"
+            className="btn btn-warning"
             id="getUserAvatarsButton"
-            style={{ marginLeft: '5px' }}
-            onClick={handleClearUser}
+            onClick={handleGetAvatars}
           >
-            Clear
+            Get Avatars
           </button>
-        ) : null}
-      </div>
 
-      {targetUsername ? (
-        <div>
-          <h3>
-            <u>{targetUsername}'s current avatar:</u>
-          </h3>
-          <br />
-          <div className="avatarSet" id="currentAvatarSetDiv">
-            <img
-              alt="Current Resistance Avatar"
-              className="avatarImg"
-              src={targetUserResAvatar}
-            />
-            <img
-              alt="Current Spy Avatar"
-              className="avatarImg"
-              src={targetUserSpyAvatar}
-            />
-          </div>
-
-          {targetUserAvatarLibrary ? (
-            <div>
-              <h3>
-                <u>{targetUsername}'s avatar library:</u>
-              </h3>
-              <AvatarLibraryGridView
-                avatarLibrary={targetUserAvatarLibrary}
-                selectedAvatarSet={selectedAvatarLibrarySet}
-                handleClickOnAvatar={handleClickOnAvatarInLibrary}
-              />
-            </div>
-          ) : null}
-
-          {targetUserOtherApprovedAvatars ? (
-            <div>
-              <h3>
-                <u>{targetUsername}'s other approved avatars:</u>
-              </h3>
-
-              <AvatarLibraryGridView
-                avatarLibrary={targetUserOtherApprovedAvatars}
-                selectedAvatarSet={selectedOtherAvatarSet}
-                handleClickOnAvatar={handleClickOnOtherAvatar}
-              />
-
-              <button
-                className={'btn btn-info'}
-                onClick={handleSwapAvatar}
-                disabled={!selectedOtherAvatarSet || !selectedAvatarLibrarySet}
-              >
-                Swap Avatars
-              </button>
-
-              {selectedOtherAvatarSet && selectedAvatarLibrarySet ? (
-                <h4 className="button-label">
-                  Add{' '}
-                  <strong>Avatar {selectedOtherAvatarSet.avatarSetId}</strong>{' '}
-                  and remove{' '}
-                  <strong>Avatar {selectedAvatarLibrarySet.avatarSetId}</strong>{' '}
-                  from the avatar library
-                </h4>
-              ) : (
-                <h4 className="button-label">
-                  Select an avatar from the avatar library and the other
-                  approved avatars.
-                </h4>
-              )}
-            </div>
+          {targetUsername ? (
+            <button
+              className="btn btn-danger"
+              id="getUserAvatarsButton"
+              style={{ marginLeft: '5px' }}
+              onClick={handleClearUser}
+            >
+              Clear
+            </button>
           ) : null}
         </div>
-      ) : null}
+
+        {targetUsername ? (
+          <div>
+            <h3>
+              <u>{targetUsername}'s current avatar:</u>
+            </h3>
+            <br />
+            <div className="avatarSet" id="currentAvatarSetDiv">
+              <img
+                alt="Current Resistance Avatar"
+                className="avatarImg"
+                src={targetUserResAvatar}
+              />
+              <img
+                alt="Current Spy Avatar"
+                className="avatarImg"
+                src={targetUserSpyAvatar}
+              />
+            </div>
+
+            {targetUserAvatarLibrary ? (
+              <div>
+                <h3>
+                  <u>{targetUsername}'s avatar library:</u>
+                </h3>
+                <AvatarLibraryGridView
+                  avatarLibrary={targetUserAvatarLibrary}
+                  selectedAvatarSet={selectedAvatarLibrarySet}
+                  handleClickOnAvatar={handleClickOnAvatarInLibrary}
+                />
+              </div>
+            ) : null}
+
+            {targetUserOtherApprovedAvatars ? (
+              <div>
+                <h3>
+                  <u>{targetUsername}'s other approved avatars:</u>
+                </h3>
+
+                <AvatarLibraryGridView
+                  avatarLibrary={targetUserOtherApprovedAvatars}
+                  selectedAvatarSet={selectedOtherAvatarSet}
+                  handleClickOnAvatar={handleClickOnOtherAvatar}
+                />
+
+                <button
+                  className={'btn btn-info'}
+                  onClick={handleSwapAvatar}
+                  disabled={
+                    !selectedOtherAvatarSet || !selectedAvatarLibrarySet
+                  }
+                >
+                  Swap Avatars
+                </button>
+
+                {selectedOtherAvatarSet && selectedAvatarLibrarySet ? (
+                  <h4 className="button-label">
+                    Add{' '}
+                    <strong>Avatar {selectedOtherAvatarSet.avatarSetId}</strong>{' '}
+                    and remove{' '}
+                    <strong>
+                      Avatar {selectedAvatarLibrarySet.avatarSetId}
+                    </strong>{' '}
+                    from the avatar library
+                  </h4>
+                ) : (
+                  <h4 className="button-label">
+                    Select an avatar from the avatar library and the other
+                    approved avatars.
+                  </h4>
+                )}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+      </DarkModeContext.Provider>
     </div>
   );
 }

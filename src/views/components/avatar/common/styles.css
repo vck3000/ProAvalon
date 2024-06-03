@@ -1,8 +1,3 @@
-/*General styling*/
-.selected {
-    background: #bbdefb;
-}
-
 /*Avatar styling*/
 .avatarImg {
     width: 128px;
@@ -31,6 +26,19 @@
 
 .grid-container .avatarSet:hover:not(.selected) {
     background-color: #e0e0e0;
+}
+
+.grid-container.dark .avatarSet:hover:not(.selected) {
+    background-color: #303030;
+}
+
+/*General styling*/
+.grid-container .selected {
+    background: #bbdefb;
+}
+
+.grid-container.dark .selected {
+    background: #1565c0;
 }
 
 .grid-container .avatarSet {
