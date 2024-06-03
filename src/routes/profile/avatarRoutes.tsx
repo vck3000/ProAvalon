@@ -70,6 +70,16 @@ router.post(
   },
 );
 
+// Reset user's avatar to default
+router.post(
+  '/:profileUsername/avatar/resetavatar',
+  checkProfileOwnership,
+  async (req: EnrichedRequest, res: Response) => {
+    console.log('this hit');
+    return res.status(200).send('Avatar reset successful.');
+  },
+);
+
 // Get a user's avatar library links
 router.get(
   '/:profileUsername/avatar/getalluseravatars',
