@@ -22,6 +22,7 @@ import {
   getAndUpdatePatreonRewardTierForUser,
   getAvatarLibrarySizeForUser,
 } from '../../rewards/getRewards';
+import userAdapter from '../../databaseAdapters/user';
 
 const MAX_ACTIVE_AVATAR_REQUESTS = 2;
 const MIN_GAMES_REQUIRED = 100;
@@ -171,9 +172,9 @@ router.post(
     }
 
     const avatarReq = await avatarRequest.findById(req.body.avatarreqid);
-    const userRequestingAvatar = await User.findOne({
-      usernameLower: avatarReq.forUsername.toLowerCase(),
-    });
+    const userRequestingAvatar = await userAdapter.getUser(
+      avatarReq.forUsername.toLowercase(),
+    );
 
     const modWhoProcessed = req.user;
     const decision = req.body.decision;
@@ -196,10 +197,10 @@ router.post(
 
       await avatarReq.save();
 
-      userRequestingAvatar.avatarImgRes = avatarReq.resLink;
-      userRequestingAvatar.avatarImgSpy = avatarReq.spyLink;
-
-      await userRequestingAvatar.save();
+      await userAdapter.setAvatarAndUpdateLibrary(
+        userRequestingAvatar.username,
+        approvedAvatarLinks,
+      );
 
       let str = `Your avatar request was approved by ${modWhoProcessed.username}! Their comment was: "${modComment}"`;
       createNotification(

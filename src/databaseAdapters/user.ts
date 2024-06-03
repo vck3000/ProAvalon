@@ -1,5 +1,7 @@
 import User from '../models/user';
 import { IUser } from '../gameplay/types';
+import { S3AvatarSet } from '../clients/s3/S3Agent';
+import { getAvatarLibrarySizeForUser } from '../rewards/getRewards';
 
 interface DatabaseAdapter {
   getUser(username: string): Promise<IUser>;
@@ -22,6 +24,24 @@ class MongoUserAdapter implements DatabaseAdapter {
 
     user.avatarImgRes = resLink;
     user.avatarImgSpy = spyLink;
+    await user.save();
+  }
+
+  async setAvatarAndUpdateLibrary(username: string, avatarSet: S3AvatarSet) {
+    const user = await this.getUser(username);
+
+    user.avatarImgRes = avatarSet.resLink;
+    user.avatarImgSpy = avatarSet.spyLink;
+    user.avatarLibrary.push(avatarSet.avatarSetId);
+
+    const librarySize = await getAvatarLibrarySizeForUser(
+      username.toLowerCase(),
+    );
+
+    while (user.avatarLibrary.length > librarySize) {
+      user.avatarLibrary.shift();
+    }
+
     await user.save();
   }
 }

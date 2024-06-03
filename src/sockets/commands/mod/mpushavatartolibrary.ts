@@ -51,7 +51,7 @@ export const mpushavatartolibrary: Command = {
     const librarySize = await getAvatarLibrarySizeForUser(usernameLower);
 
     user.avatarLibrary.push(toBeAddedAvatarId);
-    if (user.avatarLibrary.length > librarySize) {
+    while (user.avatarLibrary.length > librarySize) {
       user.avatarLibrary.shift();
     }
 
