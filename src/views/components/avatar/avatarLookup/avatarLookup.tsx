@@ -143,6 +143,14 @@ export function AvatarLookup() {
           <img src="${lastSelectedAvatarSet.resLink}" alt="test" class="avatarImg">
           <img src="${lastSelectedAvatarSet.spyLink}" alt="test" class="avatarImg">
         </div>
+        <div style="text-align: left; font-size: 16px">
+          <p>Possible reasons include:</p>
+          <ul>
+            <li>Accidental avatar approval</li>
+            <li>Removing duplicate avatars</li>
+            <li>Removing a temporarily set avatar (e.g. Tourney avatars)</li>
+          </ul>
+        </div>
       `,
       showCancelButton: true,
       confirmButtonText: 'Delete',
