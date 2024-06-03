@@ -173,7 +173,7 @@ router.post(
 
     const avatarReq = await avatarRequest.findById(req.body.avatarreqid);
     const userRequestingAvatar = await userAdapter.getUser(
-      avatarReq.forUsername.toLowercase(),
+      avatarReq.forUsername.toLowerCase(),
     );
 
     const modWhoProcessed = req.user;
@@ -184,6 +184,7 @@ router.post(
 
     if (decision) {
       const approvedAvatarLinks = await s3Agent.approveAvatarRequest({
+        avatarSetId: avatarReq.avatarSetId,
         resLink: avatarReq.resLink,
         spyLink: avatarReq.spyLink,
       });
@@ -346,6 +347,7 @@ router.post(
       forUsername: req.params.profileUsername.toLowerCase(),
       resLink: avatarLinks.resLink,
       spyLink: avatarLinks.spyLink,
+      avatarSetId: avatarLinks.avatarSetId,
       msgToMod: msgToMod,
       dateRequested: new Date(),
       processed: false,

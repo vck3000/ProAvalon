@@ -5,6 +5,7 @@ const avatarRequestSchema = new mongoose.Schema({
 
   resLink: String,
   spyLink: String,
+  avatarSetId: Number,
   msgToMod: String,
 
   dateRequested: Date,
