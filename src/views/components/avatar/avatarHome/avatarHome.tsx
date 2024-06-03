@@ -109,6 +109,9 @@ export function AvatarHome() {
         });
 
         if (response.status === 200) {
+          setCurrentResImgLink(BaseAvatarLinks.baseRes);
+          setCurrentSpyImgLink(BaseAvatarLinks.baseSpy);
+
           Swal.close();
           await Swal.fire({ title: await response.text(), icon: 'success' });
         } else {
@@ -159,6 +162,10 @@ export function AvatarHome() {
           marginLeft: '5px',
         }}
         onClick={handleResetAvatar}
+        disabled={
+          currentResImgLink === BaseAvatarLinks.baseRes &&
+          currentSpyImgLink === BaseAvatarLinks.baseSpy
+        }
       >
         Reset avatar
       </button>
