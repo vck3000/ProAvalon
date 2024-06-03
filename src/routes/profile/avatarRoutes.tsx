@@ -10,11 +10,8 @@ import { checkProfileOwnership } from '../middleware';
 import userAdapter from '../../databaseAdapters/user';
 import { S3AvatarSet, S3Agent } from '../../clients/s3/S3Agent';
 import S3Controller from '../../clients/s3/S3Controller';
-import { PatreonAgent } from '../../clients/patreon/patreonAgent';
-import { PatreonController } from '../../clients/patreon/patreonController';
 
 import { getAndUpdatePatreonRewardTierForUser } from '../../rewards/getRewards';
-import { isMod } from '../../modsadmins/mods';
 
 export type AllAvatarsRouteReturnType = {
   currentResLink: string;
@@ -24,7 +21,6 @@ export type AllAvatarsRouteReturnType = {
 
 const router = express.Router();
 const s3Agent = new S3Agent(new S3Controller());
-const patreonAgent = new PatreonAgent(new PatreonController());
 
 // Show the user's avatar homepage
 router.get(
