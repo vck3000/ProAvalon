@@ -71,13 +71,11 @@ router.post(
   '/:profileUsername/avatar/resetavatar',
   checkProfileOwnership,
   async (req: EnrichedRequest, res: Response) => {
-    const user = await userAdapter.getUser(req.user.username);
-
-    if (!user.avatarImgRes && !user.avatarImgSpy) {
+    if (!req.user.avatarImgRes && !req.user.avatarImgSpy) {
       return res.status(400).send('You are already using the default avatar.');
     }
 
-    await userAdapter.resetAvatar(req.user.username);
+    await userAdapter.updateAvatar(req.user.username, null, null);
 
     return res.status(200).send('Avatar reset successful.');
   },
