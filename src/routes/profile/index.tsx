@@ -31,6 +31,7 @@ const VALID_DIMENSIONS_STR = '128x128px or 1024x1024px';
 const MAX_FILESIZE = 1048576; // 1MB
 const MAX_FILESIZE_STR = '1MB';
 const MIN_TIME_SINCE_LAST_AVATAR_APPROVAL = 3 * 30 * 24 * 60 * 60 * 1000; // 3 months
+const MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR = '3 months';
 
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',
@@ -104,6 +105,7 @@ router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
     updatedAvatarRequests,
     MAX_FILESIZE_STR,
     VALID_DIMENSIONS_STR,
+    MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR,
     avatarLookupReact,
   });
 });
