@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { S3AvatarSet } from '../../../../clients/s3/S3Agent';
-import { DarkModeContext } from '../../../contexts/DarkModeContext';
 
 interface AvatarLibraryProps {
   avatarLibrary: S3AvatarSet[] | null;
@@ -17,10 +16,8 @@ export function AvatarLibraryGridView({
     require('./styles.css');
   }, []);
 
-  const darkMode = useContext(DarkModeContext);
-
   return (
-    <div className={`grid-container ${darkMode ? 'dark' : ''}`}>
+    <div className={`grid-container`}>
       {avatarLibrary.map((avatarSet) => (
         <div
           key={avatarSet.avatarSetId}

@@ -28,7 +28,7 @@
     background-color: #e0e0e0;
 }
 
-.grid-container.dark .avatarSet:hover:not(.selected) {
+.dark .grid-container .avatarSet:hover:not(.selected) {
     background-color: #303030;
 }
 
@@ -36,7 +36,7 @@
     background: #bbdefb;
 }
 
-.grid-container.dark .selected {
+.dark .grid-container .selected {
     background: #1565c0;
 }
 
