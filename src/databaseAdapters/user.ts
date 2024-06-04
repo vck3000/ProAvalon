@@ -5,7 +5,7 @@ import { getAvatarLibrarySizeForUser } from '../rewards/getRewards';
 
 interface DatabaseAdapter {
   getUser(username: string): Promise<IUser>;
-  setTemporaryAvatar(
+  setAvatarLinks(
     username: string,
     resLink: string,
     spyLink: string,
@@ -19,7 +19,8 @@ class MongoUserAdapter implements DatabaseAdapter {
     })) as IUser;
   }
 
-  async setTemporaryAvatar(username: string, resLink: string, spyLink: string) {
+  // Does not update the user's avatar Library. Only used by mods
+  async setAvatarLinks(username: string, resLink: string, spyLink: string) {
     const user = await this.getUser(username);
 
     user.avatarImgRes = resLink;
