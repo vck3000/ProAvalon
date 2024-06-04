@@ -171,9 +171,9 @@ router.post('/mod/deleteuseravatar', isModMiddleware, async (req, res) => {
   }
 
   const modWhoProcessed = req.user;
-  const targetUsername = req.body.username;
+  const targetUsername: string = req.body.username;
   const toBeDeletedAvatarSet: S3AvatarSet = req.body.toBeDeletedAvatarSet;
-  const deletionReason = req.body.deletionReason;
+  const deletionReason: string = req.body.deletionReason;
 
   const approvedAvatarIds = await s3Agent.getApprovedAvatarIdsForUser(
     targetUsername,
