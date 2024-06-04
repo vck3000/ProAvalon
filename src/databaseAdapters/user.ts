@@ -10,6 +10,7 @@ interface DatabaseAdapter {
     resLink: string,
     spyLink: string,
   ): Promise<void>;
+  resetAvatar(username: string): Promise<void>;
   setAvatarAndUpdateLibrary(
     username: string,
     avatarSet: S3AvatarSet,
@@ -31,6 +32,10 @@ class MongoUserAdapter implements DatabaseAdapter {
     user.avatarImgSpy = spyLink;
 
     await user.save();
+  }
+
+  async resetAvatar(username: string) {
+    await this.setAvatarLinks(username, null, null);
   }
 
   async setAvatarAndUpdateLibrary(username: string, avatarSet: S3AvatarSet) {

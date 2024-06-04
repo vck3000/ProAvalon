@@ -75,7 +75,7 @@ router.post(
       return res.status(400).send('You are already using the default avatar.');
     }
 
-    await userAdapter.setAvatarLinks(req.user.username, null, null);
+    await userAdapter.resetAvatar(req.user.username);
 
     return res.status(200).send('Avatar reset successful.');
   },
