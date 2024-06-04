@@ -10,6 +10,10 @@ interface DatabaseAdapter {
     resLink: string,
     spyLink: string,
   ): Promise<void>;
+  setAvatarAndUpdateLibrary(
+    username: string,
+    avatarSet: S3AvatarSet,
+  ): Promise<void>;
 }
 
 class MongoUserAdapter implements DatabaseAdapter {
@@ -19,7 +23,7 @@ class MongoUserAdapter implements DatabaseAdapter {
     })) as IUser;
   }
 
-  // Does not update the user's avatar Library. Only used by mods
+  // Does not update the user's avatar Library. Only used by mods or in avatar resets
   async setAvatarLinks(username: string, resLink: string, spyLink: string) {
     const user = await this.getUser(username);
 
