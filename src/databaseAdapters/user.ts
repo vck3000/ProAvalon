@@ -25,6 +25,7 @@ class MongoUserAdapter implements DatabaseAdapter {
 
     user.avatarImgRes = resLink;
     user.avatarImgSpy = spyLink;
+
     await user.save();
   }
 

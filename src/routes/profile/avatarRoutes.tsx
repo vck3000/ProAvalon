@@ -10,11 +10,8 @@ import { checkProfileOwnership } from '../middleware';
 import userAdapter from '../../databaseAdapters/user';
 import { S3AvatarSet, S3Agent } from '../../clients/s3/S3Agent';
 import S3Controller from '../../clients/s3/S3Controller';
-import { PatreonAgent } from '../../clients/patreon/patreonAgent';
-import { PatreonController } from '../../clients/patreon/patreonController';
 
 import { getAndUpdatePatreonRewardTierForUser } from '../../rewards/getRewards';
-import { isMod } from '../../modsadmins/mods';
 
 export type AllAvatarsRouteReturnType = {
   currentResLink: string;
@@ -24,7 +21,6 @@ export type AllAvatarsRouteReturnType = {
 
 const router = express.Router();
 const s3Agent = new S3Agent(new S3Controller());
-const patreonAgent = new PatreonAgent(new PatreonController());
 
 // Show the user's avatar homepage
 router.get(
@@ -67,6 +63,21 @@ router.post(
     await user.save();
 
     res.status(200).send('Successfully changed avatar.');
+  },
+);
+
+// Reset user's avatar to default
+router.post(
+  '/:profileUsername/avatar/resetavatar',
+  checkProfileOwnership,
+  async (req: EnrichedRequest, res: Response) => {
+    if (!req.user.avatarImgRes && !req.user.avatarImgSpy) {
+      return res.status(400).send('You are already using the default avatar.');
+    }
+
+    await userAdapter.updateAvatar(req.user.username, null, null);
+
+    return res.status(200).send('Avatar reset successful.');
   },
 );
 
