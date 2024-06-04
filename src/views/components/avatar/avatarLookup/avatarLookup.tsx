@@ -136,8 +136,7 @@ export function AvatarLookup() {
 
   const handleDeleteAvatar = async () => {
     const result = await Swal.fire({
-      title:
-        'This is permanent. Are you sure you want to delete this avatar set?',
+      title: 'Are you sure you want to delete this avatar set?',
       html: `
         <div style="text-align: left; font-size: 16px">
           <p>When to use this:</p>
@@ -153,7 +152,7 @@ export function AvatarLookup() {
         </div>
       `,
       showCancelButton: true,
-      confirmButtonText: 'Delete',
+      confirmButtonText: 'Delete permanently',
       confirmButtonColor: '#ff6961',
       input: 'text',
       inputPlaceholder: 'Please enter your reason for deleting the avatar.',
