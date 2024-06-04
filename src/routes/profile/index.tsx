@@ -76,21 +76,13 @@ router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
     resLink: string;
     spyLink: string;
     lastApprovedAvatarDate: Date | null;
-    enoughTimeElapsed: boolean;
+    enoughTimeElapsed: boolean; // TODO-kev: Think of a better name
   }
 
   const updatedAvatarRequests: Promise<UpdatedAvatarRequest[]> =
     await Promise.all(
       customAvatarRequests.map(async (avatarReq) => {
         const user = await userAdapter.getUser(avatarReq.forUsername);
-
-        let enoughTimeElapsed = false;
-
-        if (user.lastApprovedAvatarDate) {
-          enoughTimeElapsed =
-            user.lastApprovedAvatarDate <
-            new Date() - MIN_TIME_SINCE_LAST_AVATAR_APPROVAL;
-        }
 
         return {
           id: avatarReq.id,
@@ -100,7 +92,10 @@ router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
           lastApprovedAvatarDate: user.lastApprovedAvatarDate
             ? user.lastApprovedAvatarDate
             : null,
-          enoughTimeElapsed,
+          enoughTimeElapsed: user.lastApprovedAvatarDate
+            ? user.lastApprovedAvatarDate <
+              new Date() - MIN_TIME_SINCE_LAST_AVATAR_APPROVAL
+            : true,
         };
       }),
     );
@@ -443,15 +438,6 @@ async function validateUploadAvatarRequest(
         errMsg: `You cannot submit more than ${MAX_ACTIVE_AVATAR_REQUESTS} active custom avatar requests.`,
       };
     }
-  }
-
-  // Check: User has space in their avatar library
-  const librarySize = await getAvatarLibrarySizeForUser(user.usernameLower);
-  if (user.avatarLibrary && user.avatarLibrary.length >= librarySize) {
-    return {
-      valid: false,
-      errMsg: `You have exceeded your maximum number of avatars: ${librarySize}.`,
-    };
   }
 
   // Check: Both a singular res and spy avatar were submitted
