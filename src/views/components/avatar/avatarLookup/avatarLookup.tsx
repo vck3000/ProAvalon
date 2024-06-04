@@ -139,17 +139,17 @@ export function AvatarLookup() {
       title:
         'This is permanent. Are you sure you want to delete this avatar set?',
       html: `
+        <div style="text-align: left; font-size: 16px">
+          <p>When to use this:</p>
+          <ul>
+            <li>Revert an accidental avatar approval.</li>
+            <li>Remove duplicate avatars.</li>
+            <li>Upgraded resolutions of an existing avatar.</li>
+          </ul>
+        </div>
         <div class="avatarSet" style="display: flex; justify-content: center; align-items: center;">
           <img src="${lastSelectedAvatarSet.resLink}" alt="test" class="avatarImg">
           <img src="${lastSelectedAvatarSet.spyLink}" alt="test" class="avatarImg">
-        </div>
-        <div style="text-align: left; font-size: 16px">
-          <p>Possible reasons include:</p>
-          <ul>
-            <li>Accidental avatar approval</li>
-            <li>Removing duplicate avatars</li>
-            <li>Removing a temporarily set avatar (e.g. Tourney avatars)</li>
-          </ul>
         </div>
       `,
       showCancelButton: true,
