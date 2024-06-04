@@ -104,7 +104,7 @@ router.get('/mod/approvedavatars', isModMiddleware, async (req, res) => {
   return res.status(200).send(result);
 });
 
-// Moderator update a user's avatarLibrary
+// Moderator swap an avatar in a user's avatarLibrary
 router.post(
   '/mod/updateuseravatarlibrary',
   isModMiddleware,
@@ -147,7 +147,7 @@ router.post(
     await user.save();
 
     console.log(
-      `Mod updated avatar library: mod=${req.user.usernameLower} forUser=${req.body.username} removedAvatarId=${req.body.toBeRemovedAvatarId} addedAvatarId=${req.body.toBeAddedAvatarId}`,
+      `Mod updated user avatar library: mod=${req.user.usernameLower} forUser=${req.body.username} removedAvatarId=${req.body.toBeRemovedAvatarId} addedAvatarId=${req.body.toBeAddedAvatarId}`,
     );
 
     return res
