@@ -109,7 +109,6 @@ router.post(
   '/mod/updateuseravatarlibrary',
   isModMiddleware,
   async (req, res) => {
-    console.log(req.body);
     if (
       !req.body.username ||
       !req.body.toBeAddedAvatarId ||
@@ -146,6 +145,10 @@ router.post(
 
     user.markModified('avatarLibrary');
     await user.save();
+
+    console.log(
+      `Mod updated avatar library: mod=${req.user.usernameLower} forUser=${req.body.username} removedAvatarId=${req.body.toBeRemovedAvatarId} addedAvatarId=${req.body.toBeAddedAvatarId}`,
+    );
 
     return res
       .status(200)
