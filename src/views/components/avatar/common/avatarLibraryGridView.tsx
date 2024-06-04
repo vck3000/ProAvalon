@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { S3AvatarSet } from '../../../../clients/s3/S3Agent';
 
 interface AvatarLibraryProps {
@@ -17,7 +17,7 @@ export function AvatarLibraryGridView({
   }, []);
 
   return (
-    <div className="grid-container">
+    <div className={`grid-container`}>
       {avatarLibrary.map((avatarSet) => (
         <div
           key={avatarSet.avatarSetId}

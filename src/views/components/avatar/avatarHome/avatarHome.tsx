@@ -11,6 +11,8 @@ const getLinks = {
     `/profile/${username}/avatar/getalluseravatars`,
   changeavatar: (username: string) =>
     `/profile/${username}/avatar/changeavatar`,
+  resetavatar: (username: string) => `/profile/${username}/avatar/resetavatar`,
+
   customavatar: (username: string) => `/profile/${username}/customavatar`,
   edit: (username: string) => `/profile/${username}/edit`,
 };
@@ -97,6 +99,29 @@ export function AvatarHome() {
     setSelectedAvatarSet(selectedAvatarSet === avatarSet ? null : avatarSet);
   };
 
+  const handleResetAvatar = async () => {
+    await Swal.fire({
+      title: 'Sending request',
+      didOpen: async () => {
+        Swal.showLoading();
+        const response = await fetch(getLinks.resetavatar(username), {
+          method: 'POST',
+        });
+
+        if (response.status === 200) {
+          setCurrentResImgLink(BaseAvatarLinks.baseRes);
+          setCurrentSpyImgLink(BaseAvatarLinks.baseSpy);
+
+          Swal.close();
+          await Swal.fire({ title: await response.text(), icon: 'success' });
+        } else {
+          Swal.close();
+          await Swal.fire({ title: await response.text(), icon: 'error' });
+        }
+      },
+    });
+  };
+
   if (isLoading) {
     return (
       <div className="loading-container">
@@ -131,6 +156,19 @@ export function AvatarHome() {
       <a className="btn btn-info" href={getLinks.customavatar(username)}>
         Submit a custom avatar
       </a>
+      <button
+        className="btn btn-warning"
+        style={{
+          marginLeft: '5px',
+        }}
+        onClick={handleResetAvatar}
+        disabled={
+          currentResImgLink === BaseAvatarLinks.baseRes &&
+          currentSpyImgLink === BaseAvatarLinks.baseSpy
+        }
+      >
+        Reset avatar
+      </button>
       <hr
         style={{
           borderColor: 'lightgrey',
