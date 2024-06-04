@@ -68,6 +68,20 @@
 
     <%- include('../partials/customAvatarRules', MAX_FILESIZE_STR, VALID_DIMENSIONS_STR) %>
 
+    <h3>Approving avatars beyond a user's avatar library size:</h3>
+    <p><u>Use case: Tourney avatars a user does not want to include in their library</u></p>
+    <p>Procedure:</p>
+    <ol>
+        <li>Approve user's tourney avatar</li>
+        <li>After the tourney, swap it with the desired avatar.</li>
+    </ol>
+    <p><u>Use case: Replacing old avatars</u></p>
+    <p>Procedure:</p>
+    <ol>
+        <li>Check the last date for an avatar approval.</li>
+        <li>Approve only if it has been at least 3 months since.</li>
+    </ol>
+
     <br>
     <br>
 
