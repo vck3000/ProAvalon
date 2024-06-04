@@ -10,10 +10,7 @@ interface DatabaseAdapter {
     resLink: string,
     spyLink: string,
   ): Promise<void>;
-  updateAvatarAndLibrary(
-    username: string,
-    avatarSet: S3AvatarSet,
-  ): Promise<void>;
+  approveAvatar(username: string, avatarSet: S3AvatarSet): Promise<void>;
 }
 
 class MongoUserAdapter implements DatabaseAdapter {
@@ -33,20 +30,19 @@ class MongoUserAdapter implements DatabaseAdapter {
     await user.save();
   }
 
-  async updateAvatarAndLibrary(username: string, avatarSet: S3AvatarSet) {
+  async approveAvatar(username: string, avatarSet: S3AvatarSet) {
     const user = await this.getUser(username);
-
     const librarySize = await getAvatarLibrarySizeForUser(
       username.toLowerCase(),
     );
 
-    if (user.avatarLibrary.length >= librarySize) {
-      return;
+    if (user.avatarLibrary.length < librarySize) {
+      user.avatarImgRes = avatarSet.resLink;
+      user.avatarImgSpy = avatarSet.spyLink;
+      user.avatarLibrary.push(avatarSet.avatarSetId);
     }
 
-    user.avatarImgRes = avatarSet.resLink;
-    user.avatarImgSpy = avatarSet.spyLink;
-    user.avatarLibrary.push(avatarSet.avatarSetId);
+    user.lastApprovedAvatarDate = new Date();
 
     await user.save();
   }

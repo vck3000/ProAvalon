@@ -198,7 +198,7 @@ router.post(
 
       await avatarReq.save();
 
-      await userAdapter.updateAvatarAndLibrary(
+      await userAdapter.approveAvatar(
         userRequestingAvatar.username,
         approvedAvatarLinks,
       );
