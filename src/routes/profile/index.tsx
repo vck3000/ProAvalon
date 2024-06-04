@@ -66,11 +66,37 @@ router.get('/avatargetlinktutorial', (req, res) => {
 
 // Show the mod approving rejecting page
 router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
-  const customAvatarRequests = await avatarRequest.find({ processed: false });
   const avatarLookupReact = renderToString(<AvatarLookup />);
+  const customAvatarRequests = await avatarRequest.find({ processed: false });
+
+  interface UpdatedAvatarRequest {
+    id: string;
+    forUsername: string;
+    resLink: string;
+    spyLink: string;
+    lastApprovedAvatarDate: Date | null;
+    enoughTimeElapsed: boolean;
+  }
+
+  const updatedAvatarRequests: Promise<UpdatedAvatarRequest[]> =
+    await Promise.all(
+      customAvatarRequests.map(async (avatarReq) => {
+        const user = await userAdapter.getUser(avatarReq.forUsername);
+
+        return {
+          id: avatarReq.id,
+          forUsername: avatarReq.forUsername,
+          resLink: avatarReq.resLink,
+          spyLink: avatarReq.spyLink,
+          lastApprovedAvatarDate: user.lastApprovedAvatarDate
+            ? user.lastApprovedAvatarDate
+            : null,
+        };
+      }),
+    );
 
   res.render('mod/customavatar', {
-    customAvatarRequests,
+    updatedAvatarRequests,
     MAX_FILESIZE_STR,
     VALID_DIMENSIONS_STR,
     avatarLookupReact,

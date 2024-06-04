@@ -71,13 +71,20 @@
     <br>
     <br>
 
-    <% if(locals.customAvatarRequests){ %>
+    <% if(updatedAvatarRequests){ %>
 
-        <% customAvatarRequests.forEach(function(avreq){ %>
+        <% updatedAvatarRequests.forEach(function(avreq){ %>
 
             <div class="panel panel-default rootRequest singleReq" reqId="<%= avreq.id %>">
                 <div class="panel-heading"><h2>For user: <%= avreq.forUsername %></h2></div>
+
                 <div class="panel-body">
+
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            Last approved avatar date: <%= avreq.lastApprovedAvatarDate ? avreq.lastApprovedAvatarDate : "N/A" %>
+                        </div>
+                    </div>
 
 
                     <div class="row">
@@ -138,7 +145,7 @@
 
     <% } %>
 
-    <% if(customAvatarRequests.length === 0){ %>
+    <% if(updatedAvatarRequests.length === 0){ %>
         <div class="well">No requests!</div>
     <% } %>
 
