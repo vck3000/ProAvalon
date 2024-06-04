@@ -80,7 +80,7 @@
 
                 <div class="panel-body">
 
-                    <div class="panel panel-info">
+                    <div class="panel <%= avreq.enoughTimeElapsed ? "panel-success" : "panel-danger"%>">
                         <div class="panel-heading">
                             Last approved avatar date: <%= avreq.lastApprovedAvatarDate ? avreq.lastApprovedAvatarDate : "N/A" %>
                         </div>

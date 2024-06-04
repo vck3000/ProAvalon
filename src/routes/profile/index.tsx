@@ -30,6 +30,7 @@ const VALID_DIMENSIONS = [128, 1024];
 const VALID_DIMENSIONS_STR = '128x128px or 1024x1024px';
 const MAX_FILESIZE = 1048576; // 1MB
 const MAX_FILESIZE_STR = '1MB';
+const MIN_TIME_SINCE_LAST_AVATAR_APPROVAL = 3 * 30 * 24 * 60 * 60 * 1000; // 3 months
 
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',
@@ -83,6 +84,14 @@ router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
       customAvatarRequests.map(async (avatarReq) => {
         const user = await userAdapter.getUser(avatarReq.forUsername);
 
+        let enoughTimeElapsed = false;
+
+        if (user.lastApprovedAvatarDate) {
+          enoughTimeElapsed =
+            user.lastApprovedAvatarDate <
+            new Date() - MIN_TIME_SINCE_LAST_AVATAR_APPROVAL;
+        }
+
         return {
           id: avatarReq.id,
           forUsername: avatarReq.forUsername,
@@ -91,6 +100,7 @@ router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
           lastApprovedAvatarDate: user.lastApprovedAvatarDate
             ? user.lastApprovedAvatarDate
             : null,
+          enoughTimeElapsed,
         };
       }),
     );
