@@ -1,4 +1,5 @@
 <%- include('../partials/header') %>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 
 <style>
     .myContainer {
@@ -82,9 +83,10 @@
 
                     <div class="panel <%= avreq.overallValid ? "panel-success" : "panel-danger"%>">
                         <div class="panel-heading">
-                            Last approved avatar date: <%= avreq.lastApprovedAvatarDate ? avreq.lastApprovedAvatarDate : "N/A" %>
-                            <br />
-                            <br />
+                            <p>
+                                Last approved avatar date:
+                                <span class="lastApprovedAvatarDate" data-date="<%= avreq.lastApprovedAvatarDate %>"></span>
+                            </p>
                             <%= avreq.enoughTimeElapsed ?
                                     `✅ It has been more than ${MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR}` :
                                     `❌ It has been less than ${MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR}` %>
@@ -170,6 +172,15 @@
                $(element).replaceWith(img);
            }
         });
+
+        $('.lastApprovedAvatarDate').each(function() {
+            const date = $(this).data('date');
+            if (date) {
+                this.textContent = moment(date).format('LL');
+            } else {
+                this.textContent = 'N/A';
+            }
+          })
 
         $('.approve').on('click', function(e) {
           var id = $(e.target).closest('.rootRequest').attr('reqid');
