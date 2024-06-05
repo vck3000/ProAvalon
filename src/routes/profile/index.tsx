@@ -241,7 +241,7 @@ router.post(
 
       await avatarReq.save();
 
-      // Push approved avatar to library if there is space
+      // Only set and add avatar to library if there is space
       const librarySize = await getAvatarLibrarySizeForUser(
         userRequestingAvatar.usernameLower,
       );

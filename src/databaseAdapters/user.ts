@@ -40,14 +40,13 @@ class MongoUserAdapter implements DatabaseAdapter {
     addToLibrary: boolean,
   ): Promise<void> {
     const user = await this.getUser(username);
+    user.lastApprovedAvatarDate = new Date();
 
     if (addToLibrary) {
       user.avatarLibrary.push(avatarSet.avatarSetId);
+      user.avatarImgRes = avatarSet.resLink;
+      user.avatarImgSpy = avatarSet.spyLink;
     }
-
-    user.avatarImgRes = avatarSet.resLink;
-    user.avatarImgSpy = avatarSet.spyLink;
-    user.lastApprovedAvatarDate = new Date();
 
     await user.save();
   }
