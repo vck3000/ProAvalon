@@ -84,13 +84,14 @@
                         <div class="panel-heading">
                             Last approved avatar date: <%= avreq.lastApprovedAvatarDate ? avreq.lastApprovedAvatarDate : "N/A" %>
                             <br />
+                            <br />
                             <%= avreq.enoughTimeElapsed ?
                                     `✅ It has been more than ${MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR}` :
                                     `❌ It has been less than ${MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR}` %>
                             <br />
                             <%= avreq.hasLibrarySpace ?
-                                    `✅ Avatar library has space` :
-                                    `❌ Avatar library is full` %>
+                                    `✅ Avatar library has space.` :
+                                    `❌ Avatar library is full. Please update the user's avatar library after approval.` %>
                         </div>
                     </div>
 
