@@ -1,5 +1,5 @@
 // @ts-nocheck
-import express from 'express';
+import express, { Response } from 'express';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import imageSize from 'image-size';
@@ -27,6 +27,7 @@ import {
   getAvatarLibrarySizeForUser,
 } from '../../rewards/getRewards';
 import userAdapter from '../../databaseAdapters/user';
+import { EnrichedRequest } from '../types';
 
 const MAX_ACTIVE_AVATAR_REQUESTS = 2;
 const MIN_GAMES_REQUIRED = 100;
@@ -161,65 +162,69 @@ router.post(
   },
 );
 
-router.post('/mod/deleteuseravatar', isModMiddleware, async (req, res) => {
-  if (
-    !req.body.username ||
-    !req.body.toBeDeletedAvatarSet ||
-    !req.body.deletionReason
-  ) {
-    return res.status(400).send('Bad input.');
-  }
+router.post(
+  '/mod/deleteuseravatar',
+  isModMiddleware,
+  async (req: EnrichedRequest, res: Response) => {
+    if (
+      !req.body.username ||
+      !req.body.toBeDeletedAvatarSet ||
+      !req.body.deletionReason
+    ) {
+      return res.status(400).send('Bad input.');
+    }
 
-  const modWhoProcessed = req.user;
-  const targetUsername: string = req.body.username;
-  const toBeDeletedAvatarSet: S3AvatarSet = req.body.toBeDeletedAvatarSet;
-  const deletionReason: string = req.body.deletionReason;
+    const modWhoProcessed = req.user;
+    const targetUsername: string = req.body.username;
+    const toBeDeletedAvatarSet: S3AvatarSet = req.body.toBeDeletedAvatarSet;
+    const deletionReason: string = req.body.deletionReason;
 
-  const approvedAvatarIds = await s3Agent.getApprovedAvatarIdsForUser(
-    targetUsername,
-  );
-  if (!approvedAvatarIds.includes(toBeDeletedAvatarSet.avatarSetId)) {
-    return res
-      .status(400)
-      .send(
-        `Unable to delete Avatar ${toBeDeletedAvatarSet.avatarSetId}. Does not exist.`,
+    const approvedAvatarIds = await s3Agent.getApprovedAvatarIdsForUser(
+      targetUsername,
+    );
+    if (!approvedAvatarIds.includes(toBeDeletedAvatarSet.avatarSetId)) {
+      return res
+        .status(400)
+        .send(
+          `Unable to delete Avatar ${toBeDeletedAvatarSet.avatarSetId}. Does not exist.`,
+        );
+    }
+
+    try {
+      await s3Agent.deleteAvatars(
+        targetUsername.toLowerCase(),
+        toBeDeletedAvatarSet.resLink,
+        toBeDeletedAvatarSet.spyLink,
       );
-  }
+    } catch (e) {
+      res.status(500).send(`Something went wrong.`);
+      throw e;
+    }
 
-  try {
-    await s3Agent.deleteAvatars(
-      targetUsername.toLowerCase(),
-      toBeDeletedAvatarSet.resLink,
-      toBeDeletedAvatarSet.spyLink,
-    );
-  } catch (e) {
-    res.status(500).send(`Something went wrong.`);
-    throw e;
-  }
+    await userAdapter.removeAvatar(targetUsername, toBeDeletedAvatarSet);
 
-  await userAdapter.removeAvatar(targetUsername, toBeDeletedAvatarSet);
+    await ModLog.create({
+      type: 'avatarDelete',
+      modWhoMade: {
+        id: modWhoProcessed._id,
+        username: modWhoProcessed.username,
+        usernameLower: modWhoProcessed.usernameLower,
+      },
+      data: {
+        avatarId: toBeDeletedAvatarSet.avatarSetId,
+        modComment: deletionReason,
+        username: targetUsername,
+      },
+      dateCreated: new Date(),
+    });
 
-  await ModLog.create({
-    type: 'avatarDelete',
-    modWhoMade: {
-      id: modWhoProcessed._id,
-      username: modWhoProcessed.username,
-      usernameLower: modWhoProcessed.usernameLower,
-    },
-    data: {
-      avatarId: toBeDeletedAvatarSet.avatarSetId,
-      modComment: deletionReason,
-      username: targetUsername,
-    },
-    dateCreated: new Date(),
-  });
-
-  return res
-    .status(200)
-    .send(
-      `Successfully removed Avatar ${toBeDeletedAvatarSet.avatarSetId} from ${targetUsername}`,
-    );
-});
+    return res
+      .status(200)
+      .send(
+        `Successfully removed Avatar ${toBeDeletedAvatarSet.avatarSetId} from ${targetUsername}`,
+      );
+  },
+);
 
 // moderator approve or reject custom avatar requests
 router.post(
