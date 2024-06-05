@@ -105,13 +105,19 @@
                                 Last approved avatar date:
                                 <span class="lastApprovedAvatarDate" data-date="<%= avreq.lastApprovedAvatarDate %>"></span>
                             </p>
-                            <%= avreq.enoughTimeElapsed ?
-                                    `✅ It has been more than ${MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR}.` :
-                                    `❌ It has been less than ${MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR}.` %>
-                            <br />
+
                             <%= avreq.hasLibrarySpace ?
-                                    `✅ Avatar library has space.` :
-                                    `❌ Avatar library is full. Please update the user's avatar library after approval.` %>
+                                    `✅ User avatar library is not full.` :
+                                    `❌ User avatar library is full. Please check the user's avatar library before and after approval.` %>
+                            <br />
+
+                            <% if (!avreq.hasLibrarySpace) { %>
+                                <%= avreq.enoughTimeElapsed ?
+                                        `✅ It has been more than ${MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR}.` :
+                                        `❌ It has been less than ${MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR}.`
+                                %>
+                            <% } %>
+
                         </div>
                     </div>
 
