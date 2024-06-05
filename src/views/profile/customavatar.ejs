@@ -88,8 +88,10 @@
         <div class="form-group">
             <label for="msgToMod">Message to the moderators</label>
             <% if (maxLibrarySize !== 0 && currentLibrarySize >= maxLibrarySize) { %>
-                <p>Your avatar library is full. Please specify an avatar ID to swap out if your request is approved.</p>
-                <p>Current avatar library: [<%= currentLibrary %>]</p>
+                <p>Your avatar library is full. If your request is approved, your oldest avatar will be removed from your library by default</p>
+                <p>If you wish to keep the oldest avatar, please include in the comments your oldest avatar ID and the avatar you want to remove instead.</p>
+                <p>Example: oldest ID: 2, remove ID: 4, [reason for request]</p>
+                <p>Current avatar library (oldest -> recent): [<%= currentLibrary %>]</p>
             <% } %>
             <input type="text" name="msgToMod" class="form-control" id="msgToMod" placeholder="Message">
         </div>
