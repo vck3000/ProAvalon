@@ -88,8 +88,8 @@
                                 <span class="lastApprovedAvatarDate" data-date="<%= avreq.lastApprovedAvatarDate %>"></span>
                             </p>
                             <%= avreq.enoughTimeElapsed ?
-                                    `✅ It has been more than ${MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR}` :
-                                    `❌ It has been less than ${MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR}` %>
+                                    `✅ It has been more than ${MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR}.` :
+                                    `❌ It has been less than ${MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR}.` %>
                             <br />
                             <%= avreq.hasLibrarySpace ?
                                     `✅ Avatar library has space.` :
