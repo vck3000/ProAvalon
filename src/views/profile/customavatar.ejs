@@ -88,7 +88,7 @@
         <div class="form-group">
             <label for="msgToMod">Message to the moderators</label>
             <% if (maxLibrarySize !== 0 && currentLibrarySize >= maxLibrarySize) { %>
-                <p>Your avatar library is full. Please specify an avatar ID to swap out.</p>
+                <p>Your avatar library is full. Please specify an avatar ID to swap out if your avatar is approved.</p>
                 <p>Current avatar library: [<%= currentLibrary %>]</p>
             <% } %>
             <input type="text" name="msgToMod" class="form-control" id="msgToMod" placeholder="Message">
