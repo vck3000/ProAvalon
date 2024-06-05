@@ -77,13 +77,24 @@ router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
     resLink: string;
     spyLink: string;
     lastApprovedAvatarDate: Date | null;
-    enoughTimeElapsed: boolean; // TODO-kev: Think of a better name
+    enoughTimeElapsed: boolean;
+    hasLibrarySpace: boolean;
+    overallValid: boolean;
   }
 
   const updatedAvatarRequests: Promise<UpdatedAvatarRequest[]> =
     await Promise.all(
       customAvatarRequests.map(async (avatarReq) => {
         const user = await userAdapter.getUser(avatarReq.forUsername);
+        const librarySize = await getAvatarLibrarySizeForUser(
+          user.usernameLower,
+        );
+        const enoughTimeElapsed = user.lastApprovedAvatarDate
+          ? user.lastApprovedAvatarDate <
+            new Date() - MIN_TIME_SINCE_LAST_AVATAR_APPROVAL
+          : true;
+        const hasLibrarySpace = user.avatarLibrary.length < librarySize;
+        const overallValid = enoughTimeElapsed && hasLibrarySpace;
 
         return {
           id: avatarReq.id,
@@ -93,10 +104,9 @@ router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
           lastApprovedAvatarDate: user.lastApprovedAvatarDate
             ? user.lastApprovedAvatarDate
             : null,
-          enoughTimeElapsed: user.lastApprovedAvatarDate
-            ? user.lastApprovedAvatarDate <
-              new Date() - MIN_TIME_SINCE_LAST_AVATAR_APPROVAL
-            : true,
+          enoughTimeElapsed,
+          hasLibrarySpace,
+          overallValid,
         };
       }),
     );
