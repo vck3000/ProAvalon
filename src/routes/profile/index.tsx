@@ -316,12 +316,19 @@ router.post(
 router.get(
   '/:profileUsername/customavatar',
   checkProfileOwnership,
-  (req, res) => {
+  async (req, res) => {
+    const maxLibrarySize = await getAvatarLibrarySizeForUser(
+      req.user.usernameLower,
+    );
+
     res.render('profile/customavatar', {
       username: req.user.username,
       MAX_FILESIZE_STR,
       VALID_DIMENSIONS,
       VALID_DIMENSIONS_STR,
+      maxLibrarySize,
+      currentLibrarySize: req.user.avatarLibrary.length,
+      currentLibrary: req.user.avatarLibrary,
     });
   },
 );
