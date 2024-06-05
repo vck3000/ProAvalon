@@ -231,9 +231,17 @@ router.post(
 
       await avatarReq.save();
 
+      // Push approved avatar to library if there is space
+      const librarySize = await getAvatarLibrarySizeForUser(
+        userRequestingAvatar.usernameLower,
+      );
+      const addToLibrary =
+        userRequestingAvatar.avatarLibrary.length < librarySize;
+
       await userAdapter.approveAvatar(
-        userRequestingAvatar.username,
+        userRequestingAvatar.usernameLower,
         approvedAvatarLinks,
+        addToLibrary,
       );
 
       let str = `Your avatar request was approved by ${modWhoProcessed.username}! Their comment was: "${modComment}"`;
