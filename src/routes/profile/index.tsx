@@ -14,7 +14,11 @@ import ModLog from '../../models/modLog';
 import AvatarLookup from '../../views/components/avatar/avatarLookup';
 
 import S3Controller from '../../clients/s3/S3Controller';
-import { AllApprovedAvatars, S3Agent } from '../../clients/s3/S3Agent';
+import {
+  AllApprovedAvatars,
+  S3Agent,
+  S3AvatarSet,
+} from '../../clients/s3/S3Agent';
 import { PatreonAgent } from '../../clients/patreon/patreonAgent';
 import { PatreonController } from '../../clients/patreon/patreonController';
 import { createNotification } from '../../myFunctions/createNotification';
@@ -157,6 +161,66 @@ router.post(
       );
   },
 );
+
+router.post('/mod/deleteuseravatar', isModMiddleware, async (req, res) => {
+  if (
+    !req.body.username ||
+    !req.body.toBeDeletedAvatarSet ||
+    !req.body.deletionReason
+  ) {
+    return res.status(400).send('Bad input.');
+  }
+
+  const modWhoProcessed = req.user;
+  const targetUsername: string = req.body.username;
+  const toBeDeletedAvatarSet: S3AvatarSet = req.body.toBeDeletedAvatarSet;
+  const deletionReason: string = req.body.deletionReason;
+
+  const approvedAvatarIds = await s3Agent.getApprovedAvatarIdsForUser(
+    targetUsername,
+  );
+  if (!approvedAvatarIds.includes(toBeDeletedAvatarSet.avatarSetId)) {
+    return res
+      .status(400)
+      .send(
+        `Unable to delete Avatar ${toBeDeletedAvatarSet.avatarSetId}. Does not exist.`,
+      );
+  }
+
+  try {
+    await s3Agent.deleteAvatars(
+      targetUsername.toLowerCase(),
+      toBeDeletedAvatarSet.resLink,
+      toBeDeletedAvatarSet.spyLink,
+    );
+  } catch (e) {
+    res.status(500).send(`Something went wrong.`);
+    throw e;
+  }
+
+  await userAdapter.removeAvatar(targetUsername, toBeDeletedAvatarSet);
+
+  await ModLog.create({
+    type: 'avatarDelete',
+    modWhoMade: {
+      id: modWhoProcessed._id,
+      username: modWhoProcessed.username,
+      usernameLower: modWhoProcessed.usernameLower,
+    },
+    data: {
+      avatarId: toBeDeletedAvatarSet.avatarSetId,
+      modComment: deletionReason,
+      username: targetUsername,
+    },
+    dateCreated: new Date(),
+  });
+
+  return res
+    .status(200)
+    .send(
+      `Successfully removed Avatar ${toBeDeletedAvatarSet.avatarSetId} from ${targetUsername}`,
+    );
+});
 
 // moderator approve or reject custom avatar requests
 router.post(

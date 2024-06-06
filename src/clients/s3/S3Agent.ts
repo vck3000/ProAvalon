@@ -240,6 +240,15 @@ export class S3Agent {
     };
   }
 
+  public async deleteAvatars(
+    usernameLower: string,
+    resLink: string,
+    spyLink: string,
+  ): Promise<void> {
+    await this.s3Controller.deleteFile(resLink);
+    await this.s3Controller.deleteFile(spyLink);
+  }
+
   public isValidLink(link: string, type: string) {
     return this.s3Controller.isValidLink(link) && link.includes(type);
   }
