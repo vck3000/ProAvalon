@@ -57,14 +57,18 @@ services:
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: pass
-    user: "$UID:$GID"
+    user: "$UID:$GID" # TODO-kev: Warning where UID and GID are not set, defaults to blank string
+    depends_on:
+      - victoria-metrics
 
-#  vmagent:
-#    image: victoriametrics/vmagent:latest
-#    ports:
-#      - 8429:8429
-#    volumes:
-#      - ./docker-compose-data/vmagent:/data
-#    restart: always
-#    command:
-#      - -remoteWrite.url=https://victoria-metrics:8428/api/v1/write
+  vmagent:
+    image: victoriametrics/vmagent:latest
+    ports:
+      - 8429:8429
+    volumes:
+      - ./docker-compose-data/vmagent:/data
+    restart: always
+    depends_on:
+      - victoria-metrics
+    command:
+      - -remoteWrite.url=https://victoria-metrics:8428/api/v1/write
