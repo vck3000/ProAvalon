@@ -1039,19 +1039,6 @@ export const server = function (io: SocketServer): void {
         socket.emit('allChatToClient', msg4);
       }
 
-      if (
-        (socket.request.user.avatarImgRes &&
-          !socket.request.user.avatarImgRes.includes('proavalon.com')) ||
-        (socket.request.user.avatarImgSpy &&
-          !socket.request.user.avatarImgSpy.includes('proavalon.com'))
-      ) {
-        socket.emit('allChatToClient', {
-          message:
-            'IMPORTANT: Your avatar link is outdated. Please re-upload your custom avatar by the 19th of May 2024.',
-          classStr: 'all-chat-text-red',
-        });
-      }
-
       updateCurrentPlayersList(io);
       updateCurrentGamesList(io);
 

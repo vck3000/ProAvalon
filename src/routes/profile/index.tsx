@@ -14,17 +14,18 @@ import ModLog from '../../models/modLog';
 import AvatarLookup from '../../views/components/avatar/avatarLookup';
 
 import S3Controller from '../../clients/s3/S3Controller';
-import { AllApprovedAvatars, S3Agent } from '../../clients/s3/S3Agent';
+import {
+  AllApprovedAvatars,
+  S3Agent,
+  S3AvatarSet,
+} from '../../clients/s3/S3Agent';
 import { PatreonAgent } from '../../clients/patreon/patreonAgent';
 import { PatreonController } from '../../clients/patreon/patreonController';
 import { createNotification } from '../../myFunctions/createNotification';
-import {
-  getAndUpdatePatreonRewardTierForUser,
-  getAvatarLibrarySizeForUser,
-} from '../../rewards/getRewards';
+import { getAndUpdatePatreonRewardTierForUser } from '../../rewards/getRewards';
 import userAdapter from '../../databaseAdapters/user';
 
-const MAX_ACTIVE_AVATAR_REQUESTS = 2;
+const MAX_ACTIVE_AVATAR_REQUESTS = 1;
 const MIN_GAMES_REQUIRED = 100;
 const VALID_DIMENSIONS = [128, 1024];
 const VALID_DIMENSIONS_STR = '128x128px or 1024x1024px';
@@ -150,12 +151,11 @@ router.get('/mod/approvedavatars', isModMiddleware, async (req, res) => {
   return res.status(200).send(result);
 });
 
-// Moderator update a user's avatarLibrary
+// Moderator swap an avatar in a user's avatarLibrary
 router.post(
   '/mod/updateuseravatarlibrary',
   isModMiddleware,
   async (req, res) => {
-    console.log(req.body);
     if (
       !req.body.username ||
       !req.body.toBeAddedAvatarId ||
@@ -193,6 +193,10 @@ router.post(
     user.markModified('avatarLibrary');
     await user.save();
 
+    console.log(
+      `Mod updated user avatar library: mod=${req.user.usernameLower} forUser=${req.body.username} removedAvatarId=${req.body.toBeRemovedAvatarId} addedAvatarId=${req.body.toBeAddedAvatarId}`,
+    );
+
     return res
       .status(200)
       .send(
@@ -200,6 +204,66 @@ router.post(
       );
   },
 );
+
+router.post('/mod/deleteuseravatar', isModMiddleware, async (req, res) => {
+  if (
+    !req.body.username ||
+    !req.body.toBeDeletedAvatarSet ||
+    !req.body.deletionReason
+  ) {
+    return res.status(400).send('Bad input.');
+  }
+
+  const modWhoProcessed = req.user;
+  const targetUsername: string = req.body.username;
+  const toBeDeletedAvatarSet: S3AvatarSet = req.body.toBeDeletedAvatarSet;
+  const deletionReason: string = req.body.deletionReason;
+
+  const approvedAvatarIds = await s3Agent.getApprovedAvatarIdsForUser(
+    targetUsername,
+  );
+  if (!approvedAvatarIds.includes(toBeDeletedAvatarSet.avatarSetId)) {
+    return res
+      .status(400)
+      .send(
+        `Unable to delete Avatar ${toBeDeletedAvatarSet.avatarSetId}. Does not exist.`,
+      );
+  }
+
+  try {
+    await s3Agent.deleteAvatars(
+      targetUsername.toLowerCase(),
+      toBeDeletedAvatarSet.resLink,
+      toBeDeletedAvatarSet.spyLink,
+    );
+  } catch (e) {
+    res.status(500).send(`Something went wrong.`);
+    throw e;
+  }
+
+  await userAdapter.removeAvatar(targetUsername, toBeDeletedAvatarSet);
+
+  await ModLog.create({
+    type: 'avatarDelete',
+    modWhoMade: {
+      id: modWhoProcessed._id,
+      username: modWhoProcessed.username,
+      usernameLower: modWhoProcessed.usernameLower,
+    },
+    data: {
+      avatarId: toBeDeletedAvatarSet.avatarSetId,
+      modComment: deletionReason,
+      username: targetUsername,
+    },
+    dateCreated: new Date(),
+  });
+
+  return res
+    .status(200)
+    .send(
+      `Successfully removed Avatar ${toBeDeletedAvatarSet.avatarSetId} from ${targetUsername}`,
+    );
+});
 
 // moderator approve or reject custom avatar requests
 router.post(

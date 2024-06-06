@@ -10,11 +10,13 @@ interface DatabaseAdapter {
     resLink: string,
     spyLink: string,
   ): Promise<void>;
+  resetAvatar(username: string): Promise<void>;
   setAvatarAndUpdateLibrary(
     username: string,
     avatarSet: S3AvatarSet,
     librarySize: number,
   ): Promise<void>;
+  removeAvatar(username: string, avatarSet: S3AvatarSet): Promise<void>;
 }
 
 class MongoUserAdapter implements DatabaseAdapter {
@@ -34,6 +36,10 @@ class MongoUserAdapter implements DatabaseAdapter {
     await user.save();
   }
 
+  async resetAvatar(username: string) {
+    await this.setAvatarLinks(username, null, null);
+  }
+
   async setAvatarAndUpdateLibrary(
     username: string,
     avatarSet: S3AvatarSet,
@@ -48,6 +54,22 @@ class MongoUserAdapter implements DatabaseAdapter {
 
     while (user.avatarLibrary.length > librarySize) {
       user.avatarLibrary.shift();
+    }
+
+    await user.save();
+  }
+
+  async removeAvatar(username: string, avatarSet: S3AvatarSet) {
+    const user = await this.getUser(username);
+    user.avatarLibrary = user.avatarLibrary.filter(
+        (id) => id !== avatarSet.avatarSetId,
+    );
+
+    if (user.avatarImgRes === avatarSet.resLink) {
+      user.avatarImgRes = null;
+    }
+    if (user.avatarImgSpy === avatarSet.spyLink) {
+      user.avatarImgSpy = null;
     }
 
     await user.save();
