@@ -37,11 +37,34 @@ services:
     command: server /data --console-address ":9001"
 
   victoria-metrics:
-    image: victoriametrics/victoria-metrics:latest # TODO-kev: See if can specify a specific version
+    image: victoriametrics/victoria-metrics:latest
     ports:
       - 8428:8428
     volumes:
       - ./docker-compose-data/victoria-metrics:/data
     restart: always
     command:
-      - '--storageDataPath=/data'
+      - -storageDataPath=/data
+      - -retentionPeriod=100y
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - 3001:3000
+    volumes:
+      - ./docker-compose-data/grafana:/var/lib/grafana
+    restart: always
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: pass
+    user: "$UID:$GID"
+
+#  vmagent:
+#    image: victoriametrics/vmagent:latest
+#    ports:
+#      - 8429:8429
+#    volumes:
+#      - ./docker-compose-data/vmagent:/data
+#    restart: always
+#    command:
+#      - -remoteWrite.url=https://victoria-metrics:8428/api/v1/write
