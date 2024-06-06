@@ -22,13 +22,10 @@ import {
 import { PatreonAgent } from '../../clients/patreon/patreonAgent';
 import { PatreonController } from '../../clients/patreon/patreonController';
 import { createNotification } from '../../myFunctions/createNotification';
-import {
-  getAndUpdatePatreonRewardTierForUser,
-  getAvatarLibrarySizeForUser,
-} from '../../rewards/getRewards';
+import { getAndUpdatePatreonRewardTierForUser } from '../../rewards/getRewards';
 import userAdapter from '../../databaseAdapters/user';
 
-const MAX_ACTIVE_AVATAR_REQUESTS = 2;
+const MAX_ACTIVE_AVATAR_REQUESTS = 1;
 const MIN_GAMES_REQUIRED = 100;
 const VALID_DIMENSIONS = [128, 1024];
 const VALID_DIMENSIONS_STR = '128x128px or 1024x1024px';
@@ -111,7 +108,7 @@ router.get('/mod/approvedavatars', isModMiddleware, async (req, res) => {
   return res.status(200).send(result);
 });
 
-// Moderator update a user's avatarLibrary
+// Moderator swap an avatar in a user's avatarLibrary
 router.post(
   '/mod/updateuseravatarlibrary',
   isModMiddleware,
@@ -152,6 +149,10 @@ router.post(
 
     user.markModified('avatarLibrary');
     await user.save();
+
+    console.log(
+      `Mod updated user avatar library: mod=${req.user.usernameLower} forUser=${req.body.username} removedAvatarId=${req.body.toBeRemovedAvatarId} addedAvatarId=${req.body.toBeAddedAvatarId}`,
+    );
 
     return res
       .status(200)
@@ -470,15 +471,6 @@ async function validateUploadAvatarRequest(
         errMsg: `You cannot submit more than ${MAX_ACTIVE_AVATAR_REQUESTS} active custom avatar requests.`,
       };
     }
-  }
-
-  // Check: User has space in their avatar library
-  const librarySize = await getAvatarLibrarySizeForUser(user.usernameLower);
-  if (user.avatarLibrary && user.avatarLibrary.length >= librarySize) {
-    return {
-      valid: false,
-      errMsg: `You have exceeded your maximum number of avatars: ${librarySize}.`,
-    };
   }
 
   // Check: Both a singular res and spy avatar were submitted
