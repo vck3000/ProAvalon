@@ -212,3 +212,57 @@ io.use(
 );
 
 socketServer(io);
+
+// TODO-kev: Test - remove all lines below this once extracted out
+// https://www.npmjs.com/package/prom-client/v/11.5.3
+const promClient = require('prom-client');
+
+const testCounter = new promClient.Counter({
+  name: 'test_counter',
+  help: 'helper message',
+});
+
+async function pushMetricsToVictoriaMetrics() {
+  const metrics = await promClient.register.metrics();
+
+  const vmURL = 'http://localhost:8428/api/v1/import/prometheus';
+
+  console.log('Metrics:', metrics);
+
+  try {
+    const response = await fetch(vmURL, {
+      method: 'POST',
+      body: metrics,
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to push metrics: ${response.status} - ${response.statusText}`,
+      );
+    }
+
+    const responseBody = await response.text(); // Define responseBody here
+    console.log(
+      'Response:',
+      response.status,
+      response.statusText,
+      responseBody,
+    );
+  } catch (error) {
+    console.error('Error pushing metrics:', error);
+  }
+}
+
+// Periodically push metrics to VictoriaMetrics
+setInterval(async () => {
+  console.log('HIT');
+
+  let randomInt = Math.floor(Math.random() * 10);
+  testCounter.inc(randomInt);
+
+  await pushMetricsToVictoriaMetrics();
+  await promClient.register.resetMetrics();
+}, 5000); // Push every 5sec
