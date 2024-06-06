@@ -11,6 +11,7 @@ const getLinks = {
   approvedAvatars: (username: string) =>
     `/profile/mod/approvedavatars?username=${username}`,
   updateUserAvatarLibrary: '/profile/mod/updateuseravatarlibrary',
+  deleteUserAvatar: '/profile/mod/deleteuseravatar',
 };
 
 export function AvatarLookup() {
@@ -34,13 +35,16 @@ export function AvatarLookup() {
   const [selectedOtherAvatarSet, setSelectedOtherAvatarSet] =
     useState<S3AvatarSet | null>(null);
 
+  const [lastSelectedAvatarSet, setLastSelectedAvatarSet] =
+    useState<S3AvatarSet | null>(null);
+
   useEffect(() => {
     require('./styles.css');
   }, []);
 
   const handleGetAvatars = async () => {
     if (!inputUsername) {
-      Swal.fire({
+      await Swal.fire({
         title: 'Please enter a username.',
         icon: 'warning',
       });
@@ -63,12 +67,12 @@ export function AvatarLookup() {
         data.allApprovedAvatars.approvedAvatarsNotInLibrary,
       );
     } else {
-      Swal.fire({ title: await response.text(), icon: 'error' });
+      await Swal.fire({ title: await response.text(), icon: 'error' });
     }
   };
 
-  const handleSwapAvatar = () => {
-    Swal.fire({
+  const handleSwapAvatar = async () => {
+    await Swal.fire({
       title: 'Sending request',
       didOpen: async () => {
         Swal.showLoading();
@@ -87,25 +91,125 @@ export function AvatarLookup() {
         if (response.status === 200) {
           await handleGetAvatars();
           Swal.close();
-          Swal.fire({ title: await response.text(), icon: 'success' });
+          await Swal.fire({ title: await response.text(), icon: 'success' });
         } else {
           Swal.close();
-          Swal.fire({ title: await response.text(), icon: 'error' });
+          await Swal.fire({ title: await response.text(), icon: 'error' });
         }
       },
     });
   };
 
   const handleClickOnAvatarInLibrary = (avatarSet: S3AvatarSet) => {
-    selectedAvatarLibrarySet === avatarSet
-      ? setSelectedAvatarLibrarySet(null)
-      : setSelectedAvatarLibrarySet(avatarSet);
+    if (selectedAvatarLibrarySet !== avatarSet) {
+      // Selected new avatar set
+      setSelectedAvatarLibrarySet(avatarSet);
+      setLastSelectedAvatarSet(avatarSet);
+    } else {
+      // Unselected avatar set
+      if (selectedAvatarLibrarySet === lastSelectedAvatarSet) {
+        selectedOtherAvatarSet
+          ? setLastSelectedAvatarSet(selectedOtherAvatarSet)
+          : setLastSelectedAvatarSet(null);
+      }
+
+      setSelectedAvatarLibrarySet(null);
+    }
   };
 
   const handleClickOnOtherAvatar = (avatarSet: S3AvatarSet) => {
-    selectedOtherAvatarSet === avatarSet
-      ? setSelectedOtherAvatarSet(null)
-      : setSelectedOtherAvatarSet(avatarSet);
+    if (selectedOtherAvatarSet !== avatarSet) {
+      // Selected new avatar set
+      setSelectedOtherAvatarSet(avatarSet);
+      setLastSelectedAvatarSet(avatarSet);
+    } else {
+      // Unselected avatar set
+      if (selectedOtherAvatarSet === lastSelectedAvatarSet) {
+        selectedAvatarLibrarySet
+          ? setLastSelectedAvatarSet(selectedAvatarLibrarySet)
+          : setLastSelectedAvatarSet(null);
+      }
+
+      setSelectedOtherAvatarSet(null);
+    }
+  };
+
+  const handleDeleteAvatar = async () => {
+    const result = await Swal.fire({
+      title: 'Are you sure you want to delete this avatar set?',
+      html: `
+        <div style="text-align: left; font-size: 16px">
+          <p>When to use this:</p>
+          <ul>
+            <li>Revert an accidental avatar approval.</li>
+            <li>Remove duplicate avatars.</li>
+            <li>Upgraded resolutions of an existing avatar.</li>
+          </ul>
+        </div>
+        <div class="avatarSet" style="display: flex; justify-content: center; align-items: center;">
+          <img src="${lastSelectedAvatarSet.resLink}" alt="test" class="avatarImg">
+          <img src="${lastSelectedAvatarSet.spyLink}" alt="test" class="avatarImg">
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'Delete permanently',
+      confirmButtonColor: '#ff6961',
+      input: 'text',
+      inputPlaceholder: 'Please enter your reason for deleting the avatar.',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'Please enter a reason.';
+        }
+      },
+    });
+
+    if (result.isConfirmed && result.value) {
+      await Swal.fire({
+        title: 'Sending request',
+        didOpen: async () => {
+          Swal.showLoading();
+          const response = await fetch(getLinks.deleteUserAvatar, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username: targetUsername,
+              toBeDeletedAvatarSet: lastSelectedAvatarSet,
+              deletionReason: result.value,
+            }),
+          });
+
+          if (response.status === 200) {
+            updatePostDeleteAvatar();
+
+            Swal.close();
+            await Swal.fire({ title: await response.text(), icon: 'success' });
+          } else {
+            Swal.close();
+            await Swal.fire({ title: await response.text(), icon: 'error' });
+          }
+        },
+      });
+    }
+    return;
+  };
+
+  // Update front-end view following avatar deletion
+  const updatePostDeleteAvatar = () => {
+    if (lastSelectedAvatarSet === selectedAvatarLibrarySet) {
+      const updatedAvatarSet = targetUserAvatarLibrary.filter(
+        (avatarSet) => avatarSet !== lastSelectedAvatarSet,
+      );
+      setTargetUserAvatarLibrary(updatedAvatarSet);
+    } else if (lastSelectedAvatarSet === selectedOtherAvatarSet) {
+      const updatedAvatarSet = targetUserOtherApprovedAvatars.filter(
+        (avatarSet) => avatarSet !== lastSelectedAvatarSet,
+      );
+      setTargetUserOtherApprovedAvatars(updatedAvatarSet);
+    }
+
+    setLastSelectedAvatarSet(null);
   };
 
   const handleClearUser = () => {
@@ -118,6 +222,8 @@ export function AvatarLookup() {
 
     setSelectedAvatarLibrarySet(null);
     setSelectedOtherAvatarSet(null);
+
+    setLastSelectedAvatarSet(null);
   };
 
   return (
@@ -185,7 +291,7 @@ export function AvatarLookup() {
             />
           </div>
 
-          {targetUserAvatarLibrary ? (
+          {targetUserAvatarLibrary && targetUserAvatarLibrary.length !== 0 ? (
             <div>
               <h3>
                 <u>{targetUsername}'s avatar library:</u>
@@ -198,7 +304,8 @@ export function AvatarLookup() {
             </div>
           ) : null}
 
-          {targetUserOtherApprovedAvatars ? (
+          {targetUserOtherApprovedAvatars &&
+          targetUserOtherApprovedAvatars.length !== 0 ? (
             <div>
               <h3>
                 <u>{targetUsername}'s other approved avatars:</u>
@@ -230,6 +337,31 @@ export function AvatarLookup() {
                 <h4 className="button-label">
                   Select an avatar from the avatar library and the other
                   approved avatars.
+                </h4>
+              )}
+            </div>
+          ) : null}
+
+          {(targetUserAvatarLibrary && targetUserAvatarLibrary.length !== 0) ||
+          (targetUserOtherApprovedAvatars &&
+            targetUserOtherApprovedAvatars.length !== 0) ? (
+            <div>
+              <button
+                className={'btn btn-danger'}
+                onClick={handleDeleteAvatar}
+                disabled={!lastSelectedAvatarSet}
+              >
+                Delete Avatar
+              </button>
+              {lastSelectedAvatarSet ? (
+                <h4 className="button-label">
+                  Remove{' '}
+                  <strong>Avatar {lastSelectedAvatarSet.avatarSetId}</strong>{' '}
+                  permanently.
+                </h4>
+              ) : (
+                <h4 className="button-label">
+                  Select an avatar to remove permanently.
                 </h4>
               )}
             </div>
