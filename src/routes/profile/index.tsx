@@ -1,24 +1,28 @@
 // @ts-nocheck
 import express from 'express';
-import sanitizeHtml from 'sanitize-html';
-import url from 'url';
-import { checkProfileOwnership, isModMiddleware } from './middleware';
-import User from '../models/user';
-import avatarRequest from '../models/avatarRequest';
-import ModLog from '../models/modLog';
-import { createNotification } from '../myFunctions/createNotification';
-import multer from 'multer';
+import React from 'react';
+import { renderToString } from 'react-dom/server';
 import imageSize from 'image-size';
-import S3Controller from '../clients/s3/S3Controller';
-import { S3Agent } from '../clients/s3/S3Agent';
-import { PatreonAgent } from '../clients/patreon/patreonAgent';
-import { PatreonController } from '../clients/patreon/patreonController';
-import { getPatreonRewardTierForUser } from '../rewards/getRewards';
+import multer from 'multer';
+import sanitizeHtml from 'sanitize-html';
 
-const s3Controller = new S3Controller();
-const s3Agent = new S3Agent(s3Controller);
+import avatarRoutes from './avatarRoutes';
+import { checkProfileOwnership, isModMiddleware } from '../middleware';
+import User from '../../models/user';
+import avatarRequest from '../../models/avatarRequest';
+import ModLog from '../../models/modLog';
+import AvatarLookup from '../../views/components/avatar/avatarLookup';
 
-const router = express.Router();
+import S3Controller from '../../clients/s3/S3Controller';
+import { AllApprovedAvatars, S3Agent } from '../../clients/s3/S3Agent';
+import { PatreonAgent } from '../../clients/patreon/patreonAgent';
+import { PatreonController } from '../../clients/patreon/patreonController';
+import { createNotification } from '../../myFunctions/createNotification';
+import {
+  getAndUpdatePatreonRewardTierForUser,
+  getAvatarLibrarySizeForUser,
+} from '../../rewards/getRewards';
+import userAdapter from '../../databaseAdapters/user';
 
 const MAX_ACTIVE_AVATAR_REQUESTS = 2;
 const MIN_GAMES_REQUIRED = 100;
@@ -49,25 +53,110 @@ const sanitizeHtmlAllowedAttributesForumThread = {
   b: ['style'],
 };
 
+const router = express.Router();
+router.use(avatarRoutes);
+
+const s3Agent = new S3Agent(new S3Controller());
+const patreonAgent = new PatreonAgent(new PatreonController());
+
 // Show the mod approving rejecting page
 router.get('/avatargetlinktutorial', (req, res) => {
   res.render('profile/avatargetlinktutorial');
 });
 
 // Show the mod approving rejecting page
-router.get('/mod/customavatar', isModMiddleware, (req, res) => {
-  avatarRequest.find({ processed: false }).exec((err, allAvatarRequests) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.render('mod/customavatar', {
-        customAvatarRequests: allAvatarRequests,
-        MAX_FILESIZE_STR,
-        VALID_DIMENSIONS_STR,
-      });
-    }
+router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
+  const customAvatarRequests = await avatarRequest.find({ processed: false });
+  const avatarLookupReact = renderToString(<AvatarLookup />);
+
+  res.render('mod/customavatar', {
+    customAvatarRequests,
+    MAX_FILESIZE_STR,
+    VALID_DIMENSIONS_STR,
+    avatarLookupReact,
   });
 });
+
+export interface AllUserAvatars {
+  currentResLink: string | null;
+  currentSpyLink: string | null;
+  allApprovedAvatars: AllApprovedAvatars;
+}
+
+// Get all the approved avatars for a user. Only available to mods
+router.get('/mod/approvedavatars', isModMiddleware, async (req, res) => {
+  const username = req.query.username as string;
+  const user = await User.findOne({ usernameLower: username.toLowerCase() });
+
+  if (!user) {
+    return res.status(400).send(`User does not exist: ${username}.`);
+  }
+
+  const userApprovedAvatars: AllApprovedAvatars =
+    await s3Agent.getAllApprovedAvatarsForUser(
+      user.usernameLower,
+      user.avatarLibrary,
+    );
+
+  const result: AllUserAvatars = {
+    currentResLink: user.avatarImgRes,
+    currentSpyLink: user.avatarImgSpy,
+    allApprovedAvatars: userApprovedAvatars,
+  };
+
+  return res.status(200).send(result);
+});
+
+// Moderator update a user's avatarLibrary
+router.post(
+  '/mod/updateuseravatarlibrary',
+  isModMiddleware,
+  async (req, res) => {
+    console.log(req.body);
+    if (
+      !req.body.username ||
+      !req.body.toBeAddedAvatarId ||
+      !req.body.toBeRemovedAvatarId
+    ) {
+      return res.status(400).send('Bad input.');
+    }
+
+    const user = await User.findOne({ usernameLower: req.body.username });
+
+    if (user.avatarLibrary.includes(req.body.toBeAddedAvatarId)) {
+      return res
+        .status(400)
+        .send(
+          `Avatar ${req.body.toBeAddedAvatarId} already exists in ${req.body.username}'s avatar library.`,
+        );
+    }
+
+    if (
+      !(
+        await s3Agent.getApprovedAvatarIdsForUser(
+          req.body.username.toLowerCase(),
+        )
+      ).includes(req.body.toBeAddedAvatarId)
+    ) {
+      return res
+        .status(400)
+        .send(`Avatar ${req.body.toBeAddedAvatarId} does not exist.`);
+    }
+
+    const index = user.avatarLibrary.indexOf(req.body.toBeRemovedAvatarId);
+    user.avatarLibrary.splice(index, 1);
+    user.avatarLibrary.push(req.body.toBeAddedAvatarId);
+
+    user.markModified('avatarLibrary');
+    await user.save();
+
+    return res
+      .status(200)
+      .send(
+        `Successfully updated ${req.body.username}'s avatar library. Added Avatar ${req.body.toBeAddedAvatarId} and removed Avatar ${req.body.toBeRemovedAvatarId}.`,
+      );
+  },
+);
 
 // moderator approve or reject custom avatar requests
 router.post(
@@ -83,9 +172,9 @@ router.post(
     }
 
     const avatarReq = await avatarRequest.findById(req.body.avatarreqid);
-    const userRequestingAvatar = await User.findOne({
-      usernameLower: avatarReq.forUsername.toLowerCase(),
-    });
+    const userRequestingAvatar = await userAdapter.getUser(
+      avatarReq.forUsername.toLowerCase(),
+    );
 
     const modWhoProcessed = req.user;
     const decision = req.body.decision;
@@ -95,6 +184,7 @@ router.post(
 
     if (decision) {
       const approvedAvatarLinks = await s3Agent.approveAvatarRequest({
+        avatarSetId: avatarReq.avatarSetId,
         resLink: avatarReq.resLink,
         spyLink: avatarReq.spyLink,
       });
@@ -108,10 +198,10 @@ router.post(
 
       await avatarReq.save();
 
-      userRequestingAvatar.avatarImgRes = avatarReq.resLink;
-      userRequestingAvatar.avatarImgSpy = avatarReq.spyLink;
-
-      await userRequestingAvatar.save();
+      await userAdapter.setAvatarAndUpdateLibrary(
+        userRequestingAvatar.username,
+        approvedAvatarLinks,
+      );
 
       let str = `Your avatar request was approved by ${modWhoProcessed.username}! Their comment was: "${modComment}"`;
       createNotification(
@@ -171,26 +261,17 @@ router.post(
   },
 );
 
-// Show the customavatar edit page
+// Show the custom avatar submission page
 router.get(
-  '/:profileUsername/changeavatar',
+  '/:profileUsername/customavatar',
   checkProfileOwnership,
   (req, res) => {
-    User.findOne(
-      { usernameLower: req.params.profileUsername.toLowerCase() },
-      (err, foundUser) => {
-        if (err) {
-          console.log(err);
-        } else {
-          res.render('profile/changeavatar', {
-            username: foundUser.username,
-            MAX_FILESIZE_STR,
-            VALID_DIMENSIONS,
-            VALID_DIMENSIONS_STR,
-          });
-        }
-      },
-    );
+    res.render('profile/customavatar', {
+      username: req.user.username,
+      MAX_FILESIZE_STR,
+      VALID_DIMENSIONS,
+      VALID_DIMENSIONS_STR,
+    });
   },
 );
 
@@ -230,9 +311,9 @@ const upload = function (req, res, next) {
   });
 };
 
-// Update the customavatar
+// Submit a custom avatar request
 router.post(
-  '/:profileUsername/changeavatar',
+  '/:profileUsername/customavatar',
   checkProfileOwnership,
   upload,
   async (req, res) => {
@@ -266,6 +347,7 @@ router.post(
       forUsername: req.params.profileUsername.toLowerCase(),
       resLink: avatarLinks.resLink,
       spyLink: avatarLinks.spyLink,
+      avatarSetId: avatarLinks.avatarSetId,
       msgToMod: msgToMod,
       dateRequested: new Date(),
       processed: false,
@@ -327,6 +409,15 @@ async function validateUploadAvatarRequest(
     }
   }
 
+  // Check: User has space in their avatar library
+  const librarySize = await getAvatarLibrarySizeForUser(user.usernameLower);
+  if (user.avatarLibrary && user.avatarLibrary.length >= librarySize) {
+    return {
+      valid: false,
+      errMsg: `You have exceeded your maximum number of avatars: ${librarySize}.`,
+    };
+  }
+
   // Check: Both a singular res and spy avatar were submitted
   if (
     !files['avatarRes'] ||
@@ -372,7 +463,7 @@ async function validateUploadAvatarRequest(
     };
   }
 
-  const patreonRewards = await getPatreonRewardTierForUser(
+  const patreonRewards = await getAndUpdatePatreonRewardTierForUser(
     username.toLowerCase(),
   );
 
@@ -455,28 +546,11 @@ router.post(
   },
 );
 
-const CLIENT_ID = process.env.patreon_client_ID;
-const redirectURL = process.env.patreon_redirectURL;
-
-const loginUrl = url.format({
-  protocol: 'https',
-  host: 'patreon.com',
-  pathname: '/oauth2/authorize',
-  query: {
-    response_type: 'code',
-    client_id: CLIENT_ID,
-    redirect_uri: redirectURL,
-    state: 'chill',
-  },
-});
-
 // show the edit page
 router.get(
   '/:profileUsername/edit',
   checkProfileOwnership,
   async (req, res) => {
-    const patreonAgent = new PatreonAgent(new PatreonController());
-
     const patronDetails = await patreonAgent.findOrUpdateExistingPatronDetails(
       req.params.profileUsername.toLowerCase(),
     );

@@ -5,7 +5,7 @@
   "scripts": {
     "build": "rm -rf out; rm -f ./assets/dist_webpack/*; tsc && webpack --config webpack.prod.js && cp -R ./src/views ./out",
     "dev": "concurrently -k \"npm:dev:tsnd\" \"npm:dev:webpack\"",
-    "dev:tsnd": "ts-node-dev --respawn --inspect --ignore-watch \".tsx$\" ./src/app.ts",
+    "dev:tsnd": "ts-node-dev --respawn --inspect --ignore-watch \"views/.*\\.tsx$\" ./src/app.ts",
     "dev:webpack": "rm -f ./assets/dist_webpack/* && webpack serve --config webpack.dev.js",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --fix",
@@ -27,6 +27,7 @@
     "connect-flash": "^0.1.1",
     "connect-mongodb-session": "^5.0.0",
     "cookie-parser": "^1.4.3",
+    "css-loader": "^7.1.1",
     "discord.js": "^12.5.3",
     "dotenv": "^8.1.0",
     "ejs": "^3.1.7",
@@ -60,11 +61,15 @@
     "socket.io": "^4.1.2",
     "socket.io-client": "^2.3.0",
     "staticify": "^3.1.0",
+    "style-loader": "^4.0.0",
     "sweetalert2": "^11.10.5",
     "treeify": "^1.1.0",
     "typescript": "^4.9.5",
     "uuid": "^3.3.3",
     "validator": "^13.7.0"
+  },
+  "resolutions": {
+    "@types/react": "^17.0.2"
   },
   "nodemonConfig": {
     "ignore": [

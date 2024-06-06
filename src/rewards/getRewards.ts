@@ -13,12 +13,28 @@ import { PatreonAgent } from '../clients/patreon/patreonAgent';
 import { IUser } from '../gameplay/types';
 import { PatreonController } from '../clients/patreon/patreonController';
 import constants from './constants';
+import { S3Agent } from '../clients/s3/S3Agent';
+import S3Controller from '../clients/s3/S3Controller';
+import userAdapter from '../databaseAdapters/user';
 
-export async function getPatreonRewardTierForUser(
+const s3Agent = new S3Agent(new S3Controller());
+const patreonAgent = new PatreonAgent(new PatreonController());
+
+const TEMP_MIN_LIBRARY_SIZE = 2;
+
+// Returns Patreon Tier for User. Will update the users avatar library based on tier
+export async function getAndUpdatePatreonRewardTierForUser(
   usernameLower: string,
 ): Promise<RewardType> {
-  const patreonAgent = new PatreonAgent(new PatreonController());
+  const patreonTier = await getPatreonRewardTierForUser(usernameLower);
+  await updateUsersAvatarLibrary(usernameLower, patreonTier);
 
+  return patreonTier;
+}
+
+async function getPatreonRewardTierForUser(
+  usernameLower: string,
+): Promise<RewardType> {
   const patronDetails = await patreonAgent.findOrUpdateExistingPatronDetails(
     usernameLower,
   );
@@ -46,7 +62,7 @@ export async function getPatreonRewardTierForUser(
 
 export async function getAllRewardsForUser(user: IUser): Promise<RewardType[]> {
   const rewardsSatisfied: RewardType[] = [];
-  const patreonReward = await getPatreonRewardTierForUser(
+  const patreonReward = await getAndUpdatePatreonRewardTierForUser(
     user.username.toLowerCase(),
   );
 
@@ -97,18 +113,84 @@ export async function userHasReward(
 
 export async function getAvatarLibrarySizeForUser(
   usernameLower: string,
+  patreonReward?: RewardType,
 ): Promise<number> {
-  const patreonReward = await getPatreonRewardTierForUser(usernameLower);
+  const defaultLibrarySize = async () => {
+    const user = await userAdapter.getUser(usernameLower);
+    if (user.totalGamesPlayed > 500) {
+      return 2;
+    } else if (user.totalGamesPlayed > 100) {
+      return 1;
+    } else {
+      return 0;
+    }
+  };
 
-  if (!patreonReward) {
-    return 1;
-  } else if (patreonReward === constants.TIER1_BADGE) {
-    return 2;
-  } else if (patreonReward === constants.TIER2_BADGE) {
-    return 3;
-  } else if (patreonReward === constants.TIER3_BADGE) {
-    return 5;
-  } else if (patreonReward === constants.TIER4_BADGE) {
-    return 10;
+  const modLibrarySize = () => {
+    return isMod(usernameLower) ? 5 : 0;
+  };
+
+  const patreonLibrarySize = async () => {
+    if (!patreonReward) {
+      patreonReward = await getPatreonRewardTierForUser(usernameLower);
+    }
+
+    if (patreonReward === constants.TIER1_BADGE) {
+      return 2;
+    } else if (patreonReward === constants.TIER2_BADGE) {
+      return 3;
+    } else if (patreonReward === constants.TIER3_BADGE) {
+      return 5;
+    } else if (patreonReward === constants.TIER4_BADGE) {
+      return 10;
+    } else {
+      return 0;
+    }
+  };
+
+  return Math.max(
+    await patreonLibrarySize(),
+    modLibrarySize(),
+    await defaultLibrarySize(),
+  );
+}
+
+async function updateUsersAvatarLibrary(
+  usernameLower: string,
+  patreonReward: any,
+) {
+  const user = await userAdapter.getUser(usernameLower);
+  const librarySize = await getAvatarLibrarySizeForUser(
+    usernameLower,
+    patreonReward,
+  );
+
+  if (user.avatarLibrary.length === librarySize) {
+    return;
   }
+
+  const approvedAvatarIds = await s3Agent.getApprovedAvatarIdsForUser(
+    usernameLower,
+  );
+  const approvedAvatarIdsNotInLibrary = approvedAvatarIds.filter(
+    (id) => !user.avatarLibrary.includes(id),
+  );
+
+  if (user.avatarLibrary.length < librarySize) {
+    // Add approved avatars until librarySize is reached OR all approvedAvatarIds are added
+    const numAvatarsToAdd = Math.min(
+      approvedAvatarIdsNotInLibrary.length,
+      librarySize - user.avatarLibrary.length,
+    );
+
+    user.avatarLibrary.push(
+      ...approvedAvatarIdsNotInLibrary.slice(-numAvatarsToAdd),
+    );
+  } else {
+    // Remove oldest avatars
+    user.avatarLibrary.splice(0, user.avatarLibrary.length - librarySize);
+  }
+
+  user.markModified('avatarLibrary');
+  await user.save();
 }
